@@ -1,0 +1,207 @@
+***	Version 1.5.2	(Jérôme Combes, Août 2013)		***
+- Améliorations :
+Statistiques / Feuille de temps : période paramètrable
+
+***	Version 1.5.1	(Jérôme Combes, Août 2013)		***
+- Correction de bugs :
+Correction du bug introduit dans la version 1.5 qui empêchait l'affichage des lignes postes lors de la configuration des tableaux.
+  Fichiers planning/postes_cfg/modif.php, lignes.php, horaires.php et groupes.php
+
+***	Version 1.5	(Jérôme Combes, Août 2013)		***
+- Améliorations :
+Gestion de 2 sites
+Signatures des e-mails paramétrable
+Les fonctions JS calendrier et verif_form prennent en paramètre optionnel le nom du formulaire
+La fonction PHP nom prend en paramètre le format de l'affichage du nom
+Prise en charge de plugins
+Possibilité d'enregistrer des tâches planifiées
+Importation des agents et authentification LDAP (plugin ldap)
+Saisie des plannings de présence par les agents avec validation par l'administrateur (plugin planningHebdo)
+Gestion des congés (plugin conges)
+
+- Correction de bugs :
+Fichier personnel/suppression-liste.php : correction du contrôle de la session $_SESSION['perso_actif']=="Supprimé", la mauvaise valeur empêchait la suppression définitive
+Fichier personnel/class.personnel.php : ajout du filtre supprime<>'1' pour ne plus afficher les agents supprimés
+DB : table acces, ajout du droit permettant l'accès à la page planning/postes_cfg/groupes2.php
+Fichier planning/postes_cfg/horaires.php : correction de l'erreur qui supprimait les premiers horaires du premier tableau lors de la validation de la modification des horaires
+Fichier planning/poste/importer.php : correction de l'importation d'un modèle lorsqu'un seul modèle est créé (les imports étaient incohérents dans ce cas car tous les paramétres n'étaient pas transmis lors du clique sur le lien de confirmation ("Oui"))
+Fichier planning/poste/importer.php : le contrôle des absences prend à présent en compte les absences de quelques heures
+
+***	Version 1.4	(Jérôme Combes, Juin 2013)		***
+- Améliorations :
+Conversion des fichiers en utf8.
+Conversion des caractères spéciaux et accents de la base de données en entités HTML.
+Nettoyage du code, suppression des fonctions plus utilisées, suppression de fichiers plus utilisés.
+Ajout d'un paragraphe d'informations sur les fichiers.
+Mise à jour du calendrier (Calendrier de Sylvain Baudoin, Version 2.5).
+Coloration des cellules du planning en fonction du statut de l'agent (paramétrable)
+Affichage des étages des postes dans le planning (paramétrable).
+Affichage de la liste des absents sur la page du planning
+Réglages des horaires au quart d'heure près
+
+- Sécurité :
+Redirection vers la page index.php (affichage du planning) si l'utilisateur tente d'accéder directement un fichier php d'un sous-dossier
+
+- Correction de bugs :
+Fichier js/script.js : Modification de la fonction js removeAccents (elle comportait des caractères invalides)
+Fichier include/footer.php : utilisation de la classe css footer, ajout de la ligne $version=$config['Version'];
+Fichier statistiques/export.php : 
+  Remplace les variables $_SESSION['debut'] et $_SESSION['fin'] par $_SESSION['stat_debut'] et $_SESSION['stat_fin'] : permet de corriger le bug d'affichage de date dans les statistiques exportées
+
+***	Version 1.3.3	(Jérôme Combes, Mai 2013)		***
+- Améliorations : 
+Possibilité de choisir les heures hebdomadaires des agents au quart d'heure près (paramètrable dans la page config. avancée)
+Possibilité d'utiliser 3 plannings hebdomadaires
+
+***	Version 1.3.2	(Jérôme Combes, Avril 2013)		***
+- Améliorations : 
+Ajout de la définition du timezone (Europe/Paris, page index.php)
+Modification de la session date --> PLdate des pages planning/poste/index.php, enregistrer.php, importer.php, supprimer.php et validation.php
+Ajout d'une condition : si un tableau (général, rangement ou réserve) est vide, il n'est pas affiché dans la page planning/poste/index.php
+
+***	Version 1.3.1	(Jérôme Combes, Mars 2013)		***
+- Correction de bugs : 
+Correction du problème qui empêchait l'affichage du planning suite à l'authentification (initialisation de la variable $service, fichier planning/poste/index.php)
+Affichage du numéro de version sur la page d'authentification
+Contrôle si les droits d'accès aux pages 'planning/modeles/* sont renseignés, les ajoute dans le cas contraire (fichier include/maj.php, seule la version 1.O est concernée). 
+
+***	Version 1.3	(Jérôme Combes, Septembre 2012)		***
+- Améliorations :
+Possibilité de grouper les tableaux par semaine
+Utilisation de l'id pour les lignes de séparation dans la tables pl_poste_lignes, permet la modification des lignes existantes
+
+***	Version 1.2.1	(Jérôme Combes, Février 2012)		***
+- Correction de bugs : 
+Renommage du champ text -> texte de la table "infos"
+
+***	Version 1.2	(Jérôme Combes, Février 2012)		***
+- Améliorations : 
+Nommage des tableaux. Les dates ne sont plus utilisées pour nommer les tableaux. L'utilisateur choisi le nom des tableaux
+L'utilisateur choisi le tableau voulu lors de la création de planning.
+Les lignes de séparation des tableaux sont modifiables
+Possibilité d'ajouter des message d'information
+Possibilité de choisir le nombre de semaine (1 ou 2) pour les planning personnel (horaires de travail)
+Possibilité de créer des postes non bloquant (un agent peut être placé sur un poste non-bloquant et en même temps sur un autre poste (bloquant ou non).
+
+
+
+***	ChangeLog Version 1.4 en détail				***
+- Améliorations :
+Conversion des fichiers en utf8.
+Conversion des caractères spéciaux et accents de la base de données en entités HTML.
+Nettoyage du code, suppression des fonctions plus utilisées, suppression de fichiers plus utilisés.
+Ajout d'un paragraphe d'informations sur les fichiers.
+Mise à jour du calendrier (Sylvain Baudoin, Version 2.5).
+Coloration des cellules du planning en fonction du statut de l'agent (paramétrable)
+Affichage des étages des postes dans le planning (paramétrable).
+Affichage de la liste des absents sur la page du planning
+Réglages des horaires au quart d'heure près
+
+Détail Conversion :
+Modification des fonctions PHP utilisant htmlentities dans le fichiers db.php (ISO-8859-1 remplacé par UTF-8)
+Modification des fonctions PHP utilisant html_entity_decode dans le fichier planning/postes_cfg/index.php (ISO-8859-1 remplacé par UTF-8)
+Fichier planning/poste/menudiv.php :Suppression des fonctions utf8_encode
+Fichier include/function.php : 
+  Ajout du paramétre $mail->CharSet="utf-8"; dans la fonction mail2 utilisant la class PHPMailer (PHPMailer utilisant ISO-8859-1 par défaut)
+  Ajout de la fonction PHP "decode" permettant de faire utf8_decode sur tous les éléments d'un tableau via array_map
+  Creation des fonctions is_serialized, removeAccents, pl_stristr
+  Fonction selectHeures prend le paramétre $quart (default=false) pour afficher les quarts d'heures dans les menus déroulant
+Fichier statistiques/export.php : Ajout de $lignes=array_map("utf8_decode",$lignes); de façon à encoder l'ensemble du tableau en iso-8859-1 dans le fichiers csv/xls
+Fichier personnel/valid.php : Ajout des html_entities : de cette façon les ajout et, modification sont codés en entités html dans la base de données
+Fichier personnel/valid.php : La fonction locale supprime_accents est remplacée par la fonction removeAccents du fichier include/function.php
+Fichiers personnel/* - personnel/* : remplacement de Supprimé par Supprim&eacute;
+Fichier planning/modeles/valid.php : ajout de htmlentities avant delete
+Fichier planning/poste/enregistrer.php : ajout $nom=htmlentities
+Fichier panning/poste/importer.php : ajout $nom=htmlentities
+Utilisation des fonctions db::insert2, db::update2 db::delete dans les fichiers suivants :
+  activites/valid.php; absences/infos.php ; infos/index.php ; planning/modeles/valid.php; postes/valid.php; 
+Utilisation de la fonction htmlentities pour les fichiers suivants :
+  absences/infos.php ; infos/index.php
+Fichier include/db.php : 
+  Ajout de la fonction delete2 qui prend un tableau comme 2eme variable (array("id"=>$id))
+  Ajout if(!is_serialized) avant htmlentities
+  Ajout du  4eme double_encode=false : evite d'encoder une entité déjà encodée
+  Ajout de la fonction db::update2latin1 : même fonction que db::update2 mais converti les données ISO-8859-1 en htmlentities : seulement pour la mise à jour vers la version UTF8 du planning
+Création des fichiers suivants :
+  absences/class.absences.php ; activites/class.activites.inc ; personnel/class.personnel.inc ; postes/class.postes.inc
+Fonction personnel::fetch : indexation des résultats avec $id et supprime l'utilisateur toutlemonde si $config['toutlemonde']==0
+Fichier activites/index.php : utilisation de la function activites::fetch
+Fichier personnel/index.php : utilisation de personnel::fetch, remplace $db->result par $agents et $db->nb par count($agents)
+  Remplacement de for($i=0; $i<count($agents), $i++) par foreach($agents as $agent) (Suite à l'indexation de la fonction personnel::fetch)
+Fichier postes/index.php : utilisation de postes::fetch, remplace $db->result par $postes et $db->nb par count($postes)
+Fichier absences/voir.php : utilisation de absences::fetch, remplace if($debut ...) par a->fetch(...), remplace $db->result par $absences
+Fichier setup/db_structure.php : Ajout de "default charset=utf8"
+DB : tables select_abs, select_services, select_statuts : champ valeur change devient text
+DB : tables select_abs, select_services, select_statuts : Caractères accentués du champ valeur convertis en entités HTML
+DB : table personnel : les champs : nom, prenom, mail, statut, service, responsabilite, commentaires, temps, informations et recup deviennent text
+DB : table personnel : les champs : nom, prenom, mail, statut, service, responsabilite, commentaires, temps, informations sont convertis en entités HTML
+DB : conversion des données en entités HTML des tables : absences, absences_infos, acces, activites, config, infos, lignes, pl_poste_modeles, pl_poste_modeles_tab,
+  pl_poste_tab, postes
+DB : table pl_poste_ligne : champ poste converti en entités HTML
+DB table personnel : Change actif en varchar(20), remplace supprimé par supprim&eacute;
+
+Détail Nettoyage :
+Fichier postes/valid.php : suppression du bloque if(isset($_GET['groupe'])), suppression des variables $groupe et $groupe_id
+Nettoyage du setup : modification des fichiers setup/db_structure.php et db_data.php de façon à ne plus utiliser le setup/maj.php
+Suppressions des fichiers : include/horaires.js ; planning/poste/modeles.php ; planning/poste/statutCouleur.php ;
+  calendrier/date.php ; calendrier/valid.php
+Fichier include/footer.php : utilisation de la classe css footer
+Fichier planning/poste/fonctions.php : suppression des fonctions presents et presents2
+Fichier setup/db_structure.php : suppression des champs conges_* de la table personnel
+Fichier include/maj.php : suppression des champs conges_* dans la table personnel
+Fichier personnel/valid.php : suppression des variables $conges_*, modification des requêtes insert et update
+Fichier personnel/index.php : remplacement de la fonction JS selectAll par checkall
+Fichier planning/postes_cfg/index.php : remplacement de la fonction JS selectAll par checkall
+Fichier include/function.php : suppression des fonctions equipe, equipe_infos, deplaces, creerPlanningHebdo, import_jour, synchro_echange,
+  accents, addHeure, comptHeure, import_horaires, responsables, tableau_sans_doublons, tableau_vivier(1 et 2), union, validite_last(1 et 2), 
+  validite_tab
+Fichier personnel/modif.php et valid.php : suppression des variables responsabilite
+Fichier setup/db_structure.php et include/maj.php : suppresion du champs responsabilite de la table personnel
+Fichier planning/poste/index.php : suppression de la variable $hebdo_valide et des contrôles liés
+Fichier include/horaires.php : suppresion des fonctions horaires_a_soustraire, horaires_form2, horaires_form2b, horaires_soustraits,
+  horaires_cadrage, horaires_form, heure_alpha, heure_num, horaires_num
+Fichier js/script.js : suppression des fonctions : MM_findObj, MM_validateForm, supprimer_poste, selectAll (remplacée par checkall), Get_Onclick
+Fichier calendrier/index.php : suppression des "case" pl_fixe et pl_internes
+
+Détail Calendrier :
+Le dossier include/calendrier contient le script de Sylvain Baudoin.
+La nouvelle version permet d'appeler une fonction JavaScript en sortie avec la date en paramètre.
+Le fichier include/calendrier.php appelle le fichier calendrier/calendar.php et permet d'afficher le calendrier dans le planning
+Création du fichier js/calendrier.js qui contient les fonctions JavaScript de sortie, setPlDate (met à jour la page planning) et 
+  SetDate (met à jour les champs date des autres pages)
+Le fichier include/calendrier.php inclus dans un premier temps la feuille de style par défaut (include/calendrier/calendar.css) 
+  puis la feuille de style personalisée css/calendrier.css
+
+
+Détail Coloration des cellules du planning en fonction du statut de l'agent :
+ajout des pavés commençant par "if($GLOBALS['config']['statutCouleur']){" dans les fichiers planning/poste/index.php,
+  fonctions.php et menudiv.php
+DB : ajout de la ligne "statutCouleur" dans la table config.
+
+Détail autres améliorations :
+Fichier postes/valid.php : ajout de trim($_GET['nom']), vérification si le nom est renseigné en cas d'ajout et de modif, sinon message avec retour et exit.
+Fichier script.js : déplacé dans le dossier js, fichiers include/header.php, setup/header.php et menudiv.php modifiés en conséquence
+Fichiers style.css, print.css et calendrier/calendrier.css : déplacés dans le dossier css. fichiers include/haeder.php, setup/header.php et calendrier/index.php modifiés en conséquence
+Fichier index.php : remplace "<script>location.href=setup..." par header("Location:..."
+Fichier authentification.php : remplace "<script>location.href=setup..." par header("Location:..."
+Fichier planning/postes_cfg/horaires.php : les scripts JS sont déplacés dans le fichier js/script.js
+Fichier planning/postes_cfg/lignes.php : les scripts JS sont déplacés dans le fichier js/script.js
+
+- Sécurité :
+Redirection vers la page index.php (affichage du planning) si l'utilisateur tente d'accéder directement un fichier php d'un sous-dossier
+Tous les sous-dossier ont à présent un fichier class.<nom_du_dossier>.php, ce fichier contient des fonctions utiles à l'ensemble du dossier.
+  Ce fichier est appelé par tous les autres fichiers du dossier
+  Ce fichier vérifie la présence de la variable $version initiée dans les fichiers index.php et authentification.php.
+  Si cette variable est absente, c'est que l'utilisateur tente d'accéder directement aux fichiers, 
+  dans ce cas, redirection vers la page index.php
+Fichier js/script.js : modification des fonctions ItemSelMenu et bataille navale de façon à appeler les fichiers 
+  planning/poste/menudiv.php et planning/poste/majdb.php en passant par index.php (index.php?page= ...)
+Modification des fichiers planning/poste/menudiv.php et planning/poste/majdb.php en conséquance (suppression session_start, modification
+  des fichiers include ...)
+DB : ajout des fichiers  planning/poste/menudiv.php et planning/poste/majdb.php dans la table acces
+
+- Correction de bugs :
+Fichier js/script.js : Modification de la fonction js removeAccents (elle comportait des caractères invalides)
+Fichier include/footer.php : utilisation de la classe css footer, ajout de la ligne $version=$config['Version'];
+Fichier statistiques/export.php : 
+  Remplace les variables $_SESSION['debut'] et $_SESSION['fin'] par $_SESSION['stat_debut'] et $_SESSION['stat_fin'] : permet de corriger le bug d'affichage de date dans les statistiques exportées

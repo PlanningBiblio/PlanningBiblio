@@ -1,0 +1,53 @@
+/********************************************************************************************************************************
+* Planning Biblio, Version 1.5.2													*
+* Licence GNU/GPL (version 2 et au dela)											*
+* Voir les fichiers README.txt et COPYING.txt											*
+* Copyright (C) 2011-2013 - Jérôme Combes											*
+*																*
+* Fichier : css/print.css													*
+* Création : mai 2011														*
+* Dernière modification : 17 décembre 2012											*
+* Auteur : Jérôme Combes, jerome@planningbilbio.fr										*
+*																*
+* Description :															*
+* Feuille de style pour les impressions (media=print)										*
+*																*
+* Incluse dans les fichiers include/header.php et setup/header.php								*
+*********************************************************************************************************************************/
+
+#planning{
+	width:297mm;
+	height:210mm;
+	-webkit-transform:rotate(90deg);
+	-moz-transform:rotate(-90deg);
+	rotation:90deg;
+	position:absolute;
+	left:-40mm;
+	bottom:50mm;
+}
+#tabsemaine1 {
+	font-size:11pt;
+	white-space: nowrap;
+	}
+
+#tableau td {
+	padding-left:2mm;
+	padding-right:1mm;
+}
+
+#date_planning {
+	font-weight:bold;
+	font-size:18pt;
+	color:#7D3C25;
+	margin-bottom:5mm;
+	}
+#validation {
+	position:absolute;
+	right:10mm;
+	top:0mm;
+	white-space: nowrap;
+	}
+	
+a, img, .noprint, .popper, .footer{
+	display:none;
+	}
