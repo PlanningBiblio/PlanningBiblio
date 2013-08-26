@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 2 août 2013
+Dernière modification : 26 août 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -43,6 +43,7 @@ body{
 <![endif]-->
 <?php
 echo "<script type='text/JavaScript' src='{$config['url']}/js/script.js'></script>\n";
+echo "<script type='text/JavaScript' src='{$config['url']}/js/jquery-1.10.2.js'></script>\n";
 foreach($plugins as $elem){
   if(file_exists("plugins/$elem/js/script.$elem.js")){
     echo "<script type='text/JavaScript' src='{$config['url']}/plugins/$elem/js/script.$elem.js'></script>\n";

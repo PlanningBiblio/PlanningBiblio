@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 2 août 2013
+Dernière modification : 26 août 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -125,7 +125,15 @@ function dateFr(date){
   date=tab[2]+"/"+tab[1]+"/"+tab[0];
   return date;
 }
-	
+
+function diffMinutes(debut,fin){		// Calcul la différence en minutes entre 2 heures (formats H:i:s)
+  var d=new Date("Mon, 26 Aug 2013 "+debut);	// Nombre de milisecondes
+  d=d.getTime()/60000;				// Converti en minutes
+  var f=new Date("Mon, 26 Aug 2013 "+fin);
+  f=f.getTime()/60000;
+  return f-d;
+}
+
 function file(fichier){
   if(fichier.indexOf("php?")>0)				// l'ajout du parametre unique ms (nombre de millisecondes depuis le 1er Janvier 1970)
     fichier=fichier+"&ms="+new Date().getTime();	// permet d'eviter les problème de cache (le navigateur pense ouvrir une nouvelle page)	

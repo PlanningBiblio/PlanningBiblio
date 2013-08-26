@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 13 août 2013
+Dernière modification : 26 août 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -577,20 +577,21 @@ function selectHeure($min,$max,$blank=false,$quart=false,$selectedValue=null){
   }
 }
 
-function selectTemps($jour,$i,$periodes=null){
+function selectTemps($jour,$i,$periodes=null,$class=null){
   $temps=null;
   $select1=null;
   $select2=null;
   $select3=null;
   $select4=null;
+  $class=$class?"class='$class'":null;
   if(array_key_exists("temps",$GLOBALS)){
     $temps=$GLOBALS['temps'];
   }
   if($periodes){
-    $select="<select name='temps{$periodes}[$jour][$i]'>\n";
+    $select="<select name='temps{$periodes}[$jour][$i]' $class>\n";
   }
   else{
-    $select="<select name='temps[$jour][$i]'>\n";
+    $select="<select name='temps[$jour][$i]' $class>\n";
   }
   $select.="<option value=''>&nbsp;</option>\n";
   for($j=8;$j<23;$j++){

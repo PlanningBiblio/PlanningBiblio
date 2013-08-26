@@ -1,6 +1,9 @@
 ***	Version 1.5.2	(Jérôme Combes, Août 2013)		***
 - Améliorations :
 Statistiques / Feuille de temps : période paramètrable
+Ajout de la Bibliothèque JQuery
+Fonction selectTemps prend en 4ème paramètre $class (Class CSS)
+Fonction JS diffMinutes calcul la différence en minutes entre 2 heures
 
 ***	Version 1.5.1	(Jérôme Combes, Août 2013)		***
 - Correction de bugs :
