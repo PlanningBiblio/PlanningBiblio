@@ -127,8 +127,8 @@ function dateFr(date){
 }
 
 function diffMinutes(debut,fin){		// Calcul la différence en minutes entre 2 heures (formats H:i:s)
-  var d=new Date("Mon, 26 Aug 2013 "+debut);	// Nombre de milisecondes
-  d=d.getTime()/60000;				// Converti en minutes
+  var d=new Date("Mon, 26 Aug 2013 "+debut);
+  d=d.getTime()/60000;				// Nombre de milisecondes, converti en minutes
   var f=new Date("Mon, 26 Aug 2013 "+fin);
   f=f.getTime()/60000;
   return f-d;
