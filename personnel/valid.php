@@ -35,7 +35,7 @@ if(isset($_POST['id'])){
   $depart=$_POST['depart'];
   $informations=trim(htmlentities($_POST['informations'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
   $recup=trim(htmlentities($_POST['recup'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
-  $site=$_POST['site'];
+  $site=isset($_POST['site'])?$_POST['site']:null;
   $droits=isset($_POST['droits'])?$_POST['droits']:array();
   // Multisites, Gestion des absences : si droits de gérer les absences de l'un des 2 sites (201,202), ajoute le droit 1 pour débloquer les champs administrateur
   if(in_array(201,$droits) or in_array(202,$droits)){

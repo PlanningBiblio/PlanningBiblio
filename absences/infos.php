@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/infos.php
 Création : mai 2011
-Dernière modification : 24 juillet 2013
+Dernière modification : 27 août 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -82,7 +82,7 @@ else{
     $debut=$db->result[0]['debut'];
     $fin=$db->result[0]['fin'];
     $texte=$db->result[0]['texte'];
-    echo "<h4>Modifications des informations sur les congés</h4>\n";
+    echo "<h4>Modifications des informations sur les absences</h4>\n";
   }
   else{
     $debut=null;
