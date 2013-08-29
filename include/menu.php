@@ -57,6 +57,10 @@ else if (dom) { skn = document.getElementById("topdeck").style }
 else if (iex) { skn = topdeck.style }
 skn.top = "45px";
 
+$("html").mousemove(function(e){
+  document.position.x.value=e.pageX;
+});
+
 function pop(msg){
   a=true;
   skn.visibility = "hidden";
