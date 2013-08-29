@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/index.php
 Création : mai 2011
-Dernière modification : 24 juillet 2013
+Dernière modification : 28 août 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -18,7 +18,6 @@ Page appelée par la page index.php
 */
 
 require_once "class.absences.php";
-var_dump($droits);
 ?>
 
 <h3>Absences</h3>

@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 26 août 2013
+Dernière modification : 29 août 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -292,7 +292,7 @@ function dateFr($date,$heure=null){
     return null;
   if(substr($date,4,1)=="-"){
     $dateFr=substr($date,8,2)."/".substr($date,5,2)."/".substr($date,0,4);
-    if($heure and substr($date,13,1)==":"){
+    if($heure and substr($date,13,1)==":" and substr($date,11,8)!="00:00:00" and substr($date,11,8)!="23:59:59"){
       $dateFr.=" ".substr($date,11,2)."h".substr($date,14,2);
     }
     return $dateFr;

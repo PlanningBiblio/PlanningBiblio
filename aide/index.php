@@ -24,7 +24,7 @@ if(!$version){
 
 <h3>Aide en ligne</h3>
 
-<a id='a_retour' href='index.php?page=aide/index.php'>Retour</a>
+<a id='a_retour' href='#'>Retour</a>
 
 <div id='aide'>
 <ol>
