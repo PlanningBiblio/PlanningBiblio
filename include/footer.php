@@ -20,6 +20,7 @@ if(!$version){
   header("Location: ../index.php");
 }
 ?>
+</div> <!-- content or planningPoste -->
 <div class='footer'>
 PlanningBiblio (<?php echo $version; ?>) - Copyright &copy; 2011-2013 - Jérôme Combes - 
 <a href='http://www.planningbiblio.fr' target='_blank' style='font-size:9pt;'>www.planningbiblio.fr</a>

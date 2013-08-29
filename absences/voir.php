@@ -18,7 +18,6 @@ Page appelée par la page index.php
 */
 
 require_once "class.absences.php";
-echo "<div id='content'>\n";
 echo "<h3>Liste des absences</h3>\n";
 
 //	Initialisation des variables
@@ -61,7 +60,7 @@ echo "&nbsp;&nbsp;<input type='submit' value='OK' />\n";
 echo "&nbsp;&nbsp;<input type='button' value='Effacer' onclick='location.href=\"index.php?page=absences/voir.php\"' />\n";
 echo "</form>\n";
 
-echo "<table cellspacing='0'>\n";
+echo "<table class='tableauStandard'>\n";
 echo "<tr class='th'>\n";
 echo "<td style='width:20px'>&nbsp;</td>\n";
 echo "<td>Début\n";
@@ -105,5 +104,4 @@ if($absences){
 }
 echo "</table>";
 echo "<br/><a href='index.php?page=absences/index.php'>Retour</a>";
-echo "</div>\n"; // content
 ?>

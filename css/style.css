@@ -46,7 +46,12 @@ body {
 	color:#BE541A;
 }
 
-#content td{
+.tableauStandard{
+  border-spacing: 0px;
+  border-collapse: collapse;
+}
+
+.tableauStandard td{
   text-align: center;
   vertical-align:top;
   padding: 0 20px 0 20px;

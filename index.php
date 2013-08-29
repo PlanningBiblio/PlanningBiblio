@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 19 août 2013
+Dernière modification : 29 août 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -82,6 +82,8 @@ $_SESSION['droits']=$droits;
 $db=new db();
 $db->query("SELECT * FROM `{$dbprefix}acces` WHERE `page`='$page';");
 
+$divId=substr($page,0,24)=="planning/poste/index.php"?"planningPoste":"content";
+echo "<div id='$divId'>\n";
 if(in_array($db->result[0]['groupe_id'],$droits)){
   include $page;
 }
