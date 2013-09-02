@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.5.2
+Planning Biblio, Version 1.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification : 29 août 2013
+Dernière modification : 30 août 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -46,17 +46,6 @@ body {
 	color:#BE541A;
 }
 
-.tableauStandard{
-  border-spacing: 0px;
-  border-collapse: collapse;
-}
-
-.tableauStandard td{
-  text-align: center;
-  vertical-align:top;
-  padding: 0 20px 0 20px;
-}
-
 #logo {
 	position: absolute;
 	left: 15px;
@@ -87,6 +76,43 @@ body {
 
 #ferie {
 	color: #FF5E0E;
+}
+
+
+/* Les tableaux */
+.tableauStandard,.tableauFiches{
+  border-spacing: 0px;
+  border-collapse: collapse;
+}
+
+.tableauStandard td{
+  text-align: center;
+  vertical-align:top;
+  padding: 0 20px 0 20px;
+}
+
+.tableauFiches td{
+  text-align: left;
+  vertical-align:top;
+  padding: 0 60px 7px 10px;
+}
+
+.tableauFiches .td_validation{
+  text-align: center;
+  padding-top: 20px;
+}
+
+.tableauFiches select{
+  width: 100%;
+}
+
+.tableauFiches textarea{
+  width: 100%;
+  height: 100px;
+} 
+
+.tableauFiches input[type=button],.tableauFiches input[type=submit]{
+  margin: 0 20px 0 20px;
 }
 
 /*		Menu JavaScript		*/

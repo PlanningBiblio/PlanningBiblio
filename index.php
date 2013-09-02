@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.5.2
+Planning Biblio, Version 1.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 29 août 2013
+Dernière modification : 2 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -22,14 +22,14 @@ Page en sortie :inclus le fichier footer.php
 
 session_start();
 
-ini_set('display_errors',1);
+ini_set('display_errors',0);
 ini_set('error_reporting',E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 
 date_default_timezone_set("Europe/Paris");
 
 
 // Initialisation des variables
-$version="1.5.2";
+$version="1.5.3";
 $get_menu=isset($_GET['menu'])?$_GET['menu']:"";
 $post_menu=isset($_POST['menu'])?$_POST['menu']:"";
 $page=isset($_GET['page'])?$_GET['page']:"planning/poste/index.php";

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.5.2
+Planning Biblio, Version 1.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 23 août 2013
+Dernière modification : 2 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -283,8 +283,12 @@ if(strcmp("1.5.1",$config['Version'])>0){
 
 //	Mise a  jour de la base version 1.5.1 -> 1.5.2
 if(strcmp("1.5.2",$config['Version'])>0){
-  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`type`,`valeur`,`commentaires`,`categorie`,`ordre`) VALUES ('Affiche_services','boolean','1','Afficher les services dans le menu d&eacute;roulant du planning','Affichage','7');";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.5.2' WHERE `nom`='Version';";
+}
+
+//	Mise a  jour de la base version 1.5.2 -> 1.5.3
+if(strcmp("1.5.3",$config['Version'])>0){
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.5.3' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage

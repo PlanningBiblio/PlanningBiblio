@@ -1,3 +1,14 @@
+***	Version 1.5.3	(Jérôme Combes, Septembre 2013)		***
+- Améliorations :
+Améliore l'affichage des tableaux en utilisant la feuille de style (classes .tableauStandard et .tableauFiches)
+Améliore l'affichage des dates (include/function.php : fonction dateFr())
+Remplacement d'un message dans absences/infos.php ("Informations sur les congés" devient "Informations sur les absences")
+
+- Correction de bugs :
+Corrige la position des sous-menus dans les navigateurs Chrome, IE, Safari ...
+Corrige le bug empêchant le changement de mois à partir du calendier du planning (style.css #divcalendrier)
+
+
 ***	Version 1.5.2	(Jérôme Combes, Août 2013)		***
 - Améliorations :
 Statistiques / Feuille de temps : période paramètrable
