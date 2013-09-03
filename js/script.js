@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 26 août 2013
+Dernière modification : 3 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -75,7 +75,10 @@ function annuler(nb){
   }
 }
 	
-function calendrier(champ,form="form"){
+function calendrier(champ,form){
+  if(form==undefined){
+    form="form";
+  }
   url="include/calendrier.php?champ="+champ+"&form="+form;
   
   X=document.body.clientWidth;
@@ -334,7 +337,10 @@ function verif_date(d){
   return ok;
 }
  
-function verif_form(champs,form="form"){
+function verif_form(champs,form){
+  if(form==undefined){
+    form="form";
+  }
   erreurs="";
   valeur1="";
   valeur2="";
