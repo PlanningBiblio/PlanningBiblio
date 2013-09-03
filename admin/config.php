@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : activites/config.php
 Création : mai 2011
-Dernière modification : 20 juillet 2013
+Dernière modification : 3 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -92,19 +92,18 @@ if(!$_POST){			//		Affichage des paramètres
 else{			// enregistrement des paramètres
   $keys=array_keys($_POST);
   $erreur=false;
+  $db=new dbh();
+  $db->prepare("UPDATE `{$dbprefix}config` SET `valeur`=:valeur WHERE `nom`=:nom");
   foreach($keys as $elem){
     if(!in_array($elem,array("page","Valider","Annuler"))){
       $_POST[$elem]=str_replace("'","&apos;",$_POST[$elem]);
       if(substr($elem,-9)=="-Password"){
 	$_POST[$elem]=encrypt($_POST[$elem]);
       }
-      $req="UPDATE `{$dbprefix}config` SET `valeur`='{$_POST[$elem]}' WHERE `nom`='$elem';";
-      $db=new db();
-      $db->query($req);
-      if($db->error)
-	$erreur=true;
+      $db->execute(array(":nom"=>$elem,":valeur"=>$_POST[$elem]));
     }
   }
+
   if($erreur){
     echo "<div style='color:red;font-weight:bold;'>Il y a eu des erreurs pendant la modification.<br/>
     Veuillez vérifier la configuration.</div>\n";

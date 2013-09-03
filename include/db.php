@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 13 août 2013
+Dernière modification : 3 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -177,4 +177,38 @@ class db{
   }
 
 }
+
+class dbh{
+  var $dbhost;
+  var $dbname;
+  var $dbuser;
+  var $dbpass;
+  var $pdo;
+  var $stmt;
+  var $result;
+
+
+  function dbh(){
+    $this->dbhost=$GLOBALS['config']['dbhost'];
+    $this->dbname=$GLOBALS['config']['dbname'];
+    $this->dbuser=$GLOBALS['config']['dbuser'];
+    $this->dbpass=$GLOBALS['config']['dbpass'];
+
+    $this->pdo=new PDO("mysql:host={$this->dbhost};dbname={$this->dbname}",$this->dbuser,$this->dbpass);
+  }
+
+  function exec($sql){
+    $this->pdo->exec($sql);
+  }
+
+  function prepare($sql){
+    $this->stmt=$this->pdo->prepare($sql);
+  }
+
+  function execute($data){
+    $this->stmt->execute($data);
+    $this->result=$this->stmt->fetchAll();
+  }
+}
+
 ?>
