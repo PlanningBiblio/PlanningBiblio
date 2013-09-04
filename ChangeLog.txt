@@ -1,4 +1,11 @@
-***	Version 1.5.3	(Jérôme Combes, Septembre 2013)		***
+***	Version 1.5.4	(Jérôme Combes, 4 septembre 2013)		***
+- Améliorations :
+Ajout des infobulles sur les icônes de la page "planning"
+
+- Correction de bugs :
+Corrige les bugs JavaScript qui empêchait la modification du mot de passe et la saisie des plannings de présences (avec le Plugin PlanningHebdo)
+
+***	Version 1.5.3	(Jérôme Combes, 2 septembre 2013)		***
 - Améliorations :
 Améliore l'affichage des tableaux en utilisant la feuille de style (classes .tableauStandard et .tableauFiches)
 Améliore l'affichage des dates (include/function.php : fonction dateFr())
@@ -11,7 +18,7 @@ Corrige le bug empêchant le changement de mois à partir du calendier du planni
 
 ***	Version 1.5.2	(Jérôme Combes, Août 2013)		***
 - Améliorations :
-Statistiques / Feuille de temps : période paramètrable
+Statistiques / Feuille de temps : période paramétrable
 Ajout de la Bibliothèque JQuery
 Fonction selectTemps prend en 4ème paramètre $class (Class CSS)
 Fonction JS diffMinutes calcul la différence en minutes entre 2 heures
@@ -64,7 +71,7 @@ Fichier statistiques/export.php :
 
 ***	Version 1.3.3	(Jérôme Combes, Mai 2013)		***
 - Améliorations : 
-Possibilité de choisir les heures hebdomadaires des agents au quart d'heure près (paramètrable dans la page config. avancée)
+Possibilité de choisir les heures hebdomadaires des agents au quart d'heure près (paramétrable dans la page config. avancée)
 Possibilité d'utiliser 3 plannings hebdomadaires
 
 ***	Version 1.3.2	(Jérôme Combes, Avril 2013)		***

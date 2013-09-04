@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 1.5.3
+Planning Biblio, Version 1.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
@@ -289,6 +289,11 @@ if(strcmp("1.5.2",$config['Version'])>0){
 //	Mise a  jour de la base version 1.5.2 -> 1.5.3
 if(strcmp("1.5.3",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.5.3' WHERE `nom`='Version';";
+}
+
+//	Mise a  jour de la base version 1.5.3 -> 1.5.4
+if(strcmp("1.5.4",$config['Version'])>0){
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.5.4' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage

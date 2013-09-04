@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 1.5.3
+Planning Biblio, Version 1.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
@@ -99,7 +99,7 @@ $sql[]="INSERT INTO `{$dbprefix}activites` VALUES(11, 'Renseignement r&eacute;se
 $sql[]="INSERT INTO `{$dbprefix}activites` VALUES(12, 'Renseignement sp&eacute;cialis&eacute;');";
 
 // Insertion de la config
-$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Version', 'info', '1.5.3', 'Version de l&apos;application','','','');";
+$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Version', 'info', '1.5.4', 'Version de l&apos;application','','','');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'url', '', '', 'URL du dossier de base.\r\nPermet de construire l&apos;URL compl&egrave;te de chaque page.','','','');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Mail-IsEnabled', 'boolean', '0', 'Active ou d&eacute;sactive l&apos;envoi des mails','Messagerie','','10');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'toutlemonde', 'boolean', '0', 'Affiche ou non l&apos;utilisateur \"tout le monde\" dans le menu.','','','');";
