@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification : 30 août 2013
+Dernière modification : 4 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -793,6 +793,17 @@ img{
 
 #joursFeries .c100{
   width:100px;
+}
+
+.infobulle{
+  position: absolute;
+  background: #7D3C25;
+  padding: 3px 7px;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  color: #D4D4D4;
+  text-align: center;
+  white-space: nowrap;
 }
 
 /*	Footer	*/

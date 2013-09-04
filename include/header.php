@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 26 août 2013
+Dernière modification : 4 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -42,8 +42,9 @@ body{
 </style>
 <![endif]-->
 <?php
+echo "<script type='text/JavaScript' src='{$config['url']}/js/jquery-1.10.2.min.js'></script>\n";
 echo "<script type='text/JavaScript' src='{$config['url']}/js/script.js'></script>\n";
-echo "<script type='text/JavaScript' src='{$config['url']}/js/jquery-1.10.2.js'></script>\n";
+echo "<script type='text/JavaScript' src='{$config['url']}/js/infobulles.js'></script>\n";
 foreach($plugins as $elem){
   if(file_exists("plugins/$elem/js/script.$elem.js")){
     echo "<script type='text/JavaScript' src='{$config['url']}/plugins/$elem/js/script.$elem.js'></script>\n";
@@ -70,3 +71,6 @@ EOD;
 <div style='position:relative;top:30px;'>
 <iframe id='calendrier' style='display:none' scrolling='no'></iframe>
 </div>
+
+
+
