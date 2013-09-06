@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.5.4
+Planning Biblio, Version 1.5.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : setup/fin.php
 Création : mai 2011
-Dernière modification : 18 juillet 2013
+Dernière modification : 6 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -17,13 +17,12 @@ du responsable.
 Affiche le message "configuration terminée" et invite l'utilisateur à se connecter au planning
 */
 
+$version="1.5.5";
 include "../include/config.php";
 include "header.php";
 
-$url=$_POST['url'];
-$nom=$_POST['nom'];
-$prenom=$_POST['prenom'];
-$login=$_POST['login'];
+$nom=htmlentities($_POST['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
+$prenom=htmlentities($_POST['prenom'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
 $password=$_POST['password'];
 $email=$_POST['email'];
 $dbprefix=$_POST['dbprefix'];
@@ -43,19 +42,9 @@ if($password!=$_POST['password2']){
   exit;
 }
 	
-$sql="INSERT INTO `{$dbprefix}personnel` (`nom`,`prenom`,`mail`,`postes`,`actif`,`droits`,`login`,`password`,`commentaires`) ";
-$sql.="VALUES ('$nom','$prenom','$email','a:11:{i:0;s:2:\"20\";i:1;s:2:\"22\";i:2;s:2:\"13\";i:3;s:1:\"1\";i:4;s:1:\"5\";i:5;s:2:\"21\";i:6;s:2:\"12\";i:7;s:2:\"17\";i:8;s:1:\"4\";i:9;i:99;i:10;i:100;}','Inactif',";
-$sql.="'a:11:{i:0;s:2:\"22\";i:1;s:2:\"13\";i:2;s:1:\"1\";i:3;s:1:\"5\";i:4;s:2:\"21\";i:5;s:2:\"23\";i:6;s:2:\"12\";i:7;s:2:\"17\";i:8;s:1:\"4\";i:9;i:99;i:10;i:100;}',";
-$sql.="'$login',MD5('$password'),'Compte créé lors de l\'installation du planning');";
-
+$sql="UPDATE `{$dbprefix}personnel` SET `nom`='$nom', `prenom`='$prenom', `password`=MD5('$password'), `mail`='$email' WHERE `id`='1';";
 $db=new db();
 $db->query($sql);
-if($db->error){
-  $erreur=true;
-}
-
-$db=new db();
-$db->query("UPDATE `{$dbprefix}config` SET `valeur`='$url' WHERE `nom`='url';");
 if($db->error){
   $erreur=true;
 }
@@ -65,9 +54,9 @@ if($erreur){
   echo "<a href='javascript:history.back();'>Retour</a>\n";
 }
 else{
-  echo "<h3>La configuration est terminée.</h3>\n";
-  echo "Veuillez verifier l'installation. Si tout fonctionne, supprimez le dossier \"setup\".<br/>\n";
-  echo "<p><a href='{$url}/authentification.php?newlogin=$login'>Se connecter au planning</a><br/><br/></p>\n";
+  echo "<h3>L'installation est terminée.</h3>\n";
+  echo "Veuillez verifier l'installation.<br/>Si tout fonctionne, supprimez le dossier \"setup\".<br/>\n";
+  echo "<p><a href='../authentification.php?newlogin=admin'>Se connecter au planning</a><br/><br/></p>\n";
 }
 include "footer.php";
 ?>

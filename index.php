@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.5.4
+Planning Biblio, Version 1.5.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 2 septembre 2013
+Dernière modification : 6 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -29,7 +29,7 @@ date_default_timezone_set("Europe/Paris");
 
 
 // Initialisation des variables
-$version="1.5.4";
+$version="1.5.5";
 $get_menu=isset($_GET['menu'])?$_GET['menu']:"";
 $post_menu=isset($_POST['menu'])?$_POST['menu']:"";
 $page=isset($_GET['page'])?$_GET['page']:"planning/poste/index.php";
@@ -59,9 +59,9 @@ else{
 //		Si pas de session, redirection vers la page d'authentification
 if(!$_SESSION['login_id']){
   if($get_menu=="off" or $post_menu=="off")	// dans le cas d'une action executée dans un popup alors que la session a été perdue, on affiche la page d'auth sur le parent
-    echo "<script type='text/JavaScript'>parent.location.href='{$config['url']}/authentification.php';</script>\n";
+    echo "<script type='text/JavaScript'>parent.location.href='authentification.php';</script>\n";
   else
-    header("Location: {$config['url']}/authentification.php");		// session perdu, on affiche la page d'authentification
+    header("Location: authentification.php");		// session perdue, on affiche la page d'authentification
 }
 
 //		La page d'impression n'est pas compatible avec le DocType

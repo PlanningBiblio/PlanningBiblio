@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 1.5.4
+Planning Biblio, Version 1.5.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
@@ -297,7 +297,7 @@ $tab_agent=join($listparservices,";");
 <html>
 <head>
 <title>Planning, menudiv</title>
-<?php echo "<script type='text/JavaScript' src='{$config['url']}/js/script.js'></script>\n"; ?>
+<?php echo "<script type='text/JavaScript' src='js/script.js'></script>\n"; ?>
 <meta http-equiv="content-Type" content="text/html;CHARSET=UTF-8" />
 </head>
 <body style='background:#CCDDEE;'>

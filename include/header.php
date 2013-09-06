@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.5.4
+Planning Biblio, Version 1.5.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 4 septembre 2013
+Dernière modification : 6 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -26,8 +26,8 @@ if(!$version){
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <?php
-echo "<link rel='StyleSheet' href='{$config['url']}/css/style.css' type='text/css' media='screen'/>\n";
-echo "<link rel='StyleSheet' href='{$config['url']}/css/print.css' type='text/css' media='print'/>\n";
+echo "<link rel='StyleSheet' href='css/style.css' type='text/css' media='screen'/>\n";
+echo "<link rel='StyleSheet' href='css/print.css' type='text/css' media='print'/>\n";
 ?>
 
 <!--[if IE]>
@@ -42,12 +42,12 @@ body{
 </style>
 <![endif]-->
 <?php
-echo "<script type='text/JavaScript' src='{$config['url']}/js/jquery-1.10.2.min.js'></script>\n";
-echo "<script type='text/JavaScript' src='{$config['url']}/js/script.js'></script>\n";
-echo "<script type='text/JavaScript' src='{$config['url']}/js/infobulles.js'></script>\n";
+echo "<script type='text/JavaScript' src='js/jquery-1.10.2.min.js'></script>\n";
+echo "<script type='text/JavaScript' src='js/script.js'></script>\n";
+echo "<script type='text/JavaScript' src='js/infobulles.js'></script>\n";
 foreach($plugins as $elem){
   if(file_exists("plugins/$elem/js/script.$elem.js")){
-    echo "<script type='text/JavaScript' src='{$config['url']}/plugins/$elem/js/script.$elem.js'></script>\n";
+    echo "<script type='text/JavaScript' src='plugins/$elem/js/script.$elem.js'></script>\n";
   }
 }
 ?>

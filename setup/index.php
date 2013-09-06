@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.5.4
+Planning Biblio, Version 1.5.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : setup/index.php
 Création : mai 2011
-Dernière modification : 2 septembre 2013
+Dernière modification : 6 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -19,7 +19,7 @@ Formulaire soumis au fichier setup/createdb.php
 
 session_start();
 session_destroy();
-$version="1.5.4";
+$version="1.5.5";
 
 include "header.php";
 include "../include/function.php";
@@ -31,9 +31,13 @@ if(!$inF=fopen($Fnm,"w\n")){
   $msg.="<br/><a href='index.php'>Re-vérifier</a>";
 }
 
+echo "<h2>Installation de Planning Biblio $version</h2>\n";
 ?>
 <h3>Création de la base de donnée</h3>
-<br/>
+<p>
+Veuillez entrer ci-dessous les informations<br/>
+n&eacute;cessaires &agrave; la cr&eacute;ation de la base de donn&eacute;es.
+</p>
 <form name='form' method='post' action='createdb.php'>
 <fieldset>
 <table>

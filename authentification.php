@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.5.4
+Planning Biblio, Version 1.5.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 2 septembre 2013
+Dernière modification : 6 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -34,7 +34,7 @@ if(!file_exists("include/config.php")){
   exit;
 }
 
-$version="1.5.4";
+$version="1.5.5";
 
 include "include/config.php";
 include "include/doctype.php";

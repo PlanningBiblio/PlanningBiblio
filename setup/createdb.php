@@ -1,23 +1,23 @@
 <?php
-/********************************************************************************************************************************
-* Planning Biblio, Version 1.5.4													*
-* Licence GNU/GPL (version 2 et au dela)											*
-* Voir les fichiers README.txt et COPYING.txt											*
-* Copyright (C) 2011-2013 - Jérôme Combes											*
-*																*
-* Fichier : setup/createdb.php													*
-* Création : mai 2011														*
-* Dernière modification : 14 décembre 2012											*
-* Auteur : Jérôme Combes, jerome@planningbilbio.fr										*
-*																*
-* Description :															*
-* Créer la base de données. Vérifie si la base et l'utilisateur MySQL existent. Les supprimes si demandé. Créé l'utilisateur et *
-* la base.															*
-* Inclus le fichiers setup/db_structure.php et setup/db_data.php afin de créer les tables et les remplir.			*
-* Inclus ensuite le fichier setup/createconfig.php si la base a été créée correctement						*
-*																*
-* Ce fichier valide le formulaire de la page setup/index.php									*
-*********************************************************************************************************************************/
+/*
+Planning Biblio, Version 1.5.5
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.txt et COPYING.txt
+Copyright (C) 2011-2013 - Jérôme Combes
+
+Fichier : setup/createdb.php
+Création : mai 2011
+Dernière modification : 14 décembre 2012
+Auteur : Jérôme Combes, jerome@planningbilbio.fr
+
+Description :
+Créer la base de données. Vérifie si la base et l'utilisateur MySQL existent. Les supprimes si demandé. Créé l'utilisateur et 
+la base.
+Inclus le fichiers setup/db_structure.php et setup/db_data.php afin de créer les tables et les remplir.
+Inclus ensuite le fichier setup/createconfig.php si la base a été créée correctement
+
+Ce fichier valide le formulaire de la page setup/index.php
+*/
 
 //	Variables
 $dbprefix=$_POST['dbprefix'];

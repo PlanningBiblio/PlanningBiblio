@@ -1,40 +1,35 @@
 <?php
-/********************************************************************************************************************************
-* Planning Biblio, Version 1.5.4													*
-* Licence GNU/GPL (version 2 et au dela)											*
-* Voir les fichiers README.txt et COPYING.txt											*
-* Copyright (C) 2011-2013 - Jérôme Combes											*
-*																*
-* Fichier : setup/config.php													*
-* Création : mai 2011														*
-* Dernière modification : 14 décembre 2012											*
-* Auteur : Jérôme Combes, jerome@planningbilbio.fr										*
-*																*
-* Description :															*
-* Affiche le formulaire demandant le nom, prénom, adresse email et mot de passe du responsable du planning pour créer son 	*
-* compte lors de l'installation													*
-*																*
-* Page incluse dans le fichier setup/createconfig.php										*
-* Formulaire soumis au fichier setup/fin.php											*
-*********************************************************************************************************************************/
+/*
+Planning Biblio, Version 1.5.5
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.txt et COPYING.txt
+Copyright (C) 2011-2013 - Jérôme Combes
 
-$tmp="http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-$tab=explode("setup",$tmp);
-$url=$tab[0];
+Fichier : setup/config.php
+Création : mai 2011
+Dernière modification : 6 septembre 2013
+Auteur : Jérôme Combes, jerome@planningbilbio.fr
+
+Description :
+Affiche le formulaire demandant le nom, prénom, adresse email et mot de passe du responsable du planning pour créer son 
+compte lors de l'installation
+
+Page incluse dans le fichier setup/createconfig.php
+Formulaire soumis au fichier setup/fin.php
+*/
 ?>
-<h3>Configuration</h3>
+<h3>Cr&eacute;ation du compte administrateur</h3>
+<p>Veuillez entrer ci-dessous les informations demand&eacute;es<br/>
+pour la cr&eacute;ation du compte administrateur (login <b>"admin</b>").<br/>
+Ce compte servira &agrave; param&eacute;trer l'application. Il aura tous les droits.<br/>
 <form name='form' method='post' action='fin.php'>
+<input type='hidden' name='dbprefix' value='<?php echo $_POST['dbprefix']; ?>' />
 <fieldset>
 <table>
-<tr><td>URL</td>
-<?php echo "<td><input type='text' name='url' value='$url' /></td></tr>\n"; ?>
-<?php echo "<td><input type='hidden' name='dbprefix' value='{$_POST['dbprefix']}' /></td></tr>\n"; ?>
-<tr><td>Prénom du reponsable du planning</td>
-<td><input type='text' name='prenom' onchange='createlogin();' /></td></tr>
-<tr><td>Nom</td>
-<td><input type='text' name='nom'  onchange='createlogin();' /></td></tr>
-<tr><td>Login </td>
-<td><input type='text' name='login' value='admin'/></td></tr>
+<tr><td>Nom de l'administrateur</td>
+<td><input type='text' name='nom' /></td></tr>
+<tr><td>Prénom</td>
+<td><input type='text' name='prenom' /></td></tr>
 <tr><td>Mot de passe</td>
 <td><input type='password' name='password' /></td></tr>
 <tr><td>Confirmez le mot de passe</td>
