@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/menu.php
 Création : mai 2011
-Dernière modification : 20 août 2013
+Dernière modification : 6 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -55,19 +55,19 @@ var iex = (document.all);
 if (nava) { skn = document.topdeck }
 else if (dom) { skn = document.getElementById("topdeck").style }
 else if (iex) { skn = topdeck.style }
-skn.top = "45px";
 
-$("html").mousemove(function(e){
-  document.position.x.value=e.pageX;
-});
-
-function pop(msg){
+function pop(msg,td){
   a=true;
   skn.visibility = "hidden";
-  skn.left = (document.position.x.value-100)+"px";
 
-  var content ="<table border='0' cellpadding='0' cellspacing='0' bgcolor='#000000' width='200px'><tr><td>";
-  content =content+"<table width='100%' border='0' cellpadding='0' cellspacing='1'>";
+  posLeft = td.offset().left+td.width()/2-100;
+  skn.left=posLeft+"px";
+
+  posTop = td.offset().top+td.height()+2;
+  skn.top=posTop+"px";
+
+  var content ="<table border='0' cellpadding='0' cellspacing='0' style='background:#000000;width:200px:'><tr><td>";
+  content =content+"<table style='width:100%;' border='0' cellpadding='0' cellspacing='1'>";
   pass = 0
   while (pass < msg.length){
     content += "<tr><td class='menu_td2' ><font size='1' face=\"verdana\">&nbsp;&nbsp;"+msg[pass]+"<\/font><\/td><\/tr>";
@@ -104,7 +104,7 @@ echo "<td style='width:340px;text-align:left' rowspan='4'><font class='noprint'>
 echo "<tr><td>&nbsp;</td></tr>\n";
 echo "<tr id='topmenu'>\n";
 foreach($keys as $key){
-  echo "<td style='text-align:center;' onmousemove='pop(zlien[$key])' class='menu_td'><a href='index.php?page={$menu[$key][0]['url']}' class='ejsmenu2'>{$menu[$key][0]['titre']}</a></td>\n";
+  echo "<td style='text-align:center;' onmousemove='pop(zlien[$key],$(this))' class='menu_td'><a href='index.php?page={$menu[$key][0]['url']}' class='ejsmenu2'>{$menu[$key][0]['titre']}</a></td>\n";
 }
 echo "<td align='right'  ><font  class='noprint' style='font-size:19px'>\n";
 echo $_SESSION['login_prenom']." ".$_SESSION['login_nom'];
