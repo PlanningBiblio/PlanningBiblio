@@ -67,7 +67,7 @@ function pop(msg,td){
   skn.top=posTop+"px";
 
   var content ="<table border='0' cellpadding='0' cellspacing='0' style='background:#000000;width:200px:'><tr><td>";
-  content =content+"<table style='width:100%;' border='0' cellpadding='0' cellspacing='1'>";
+  content =content+"<table style='width:100%;min-width:200px;' border='0' cellpadding='0' cellspacing='1'>";
   pass = 0
   while (pass < msg.length){
     content += "<tr><td class='menu_td2' ><font size='1' face=\"verdana\">&nbsp;&nbsp;"+msg[pass]+"<\/font><\/td><\/tr>";
