@@ -7,11 +7,11 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : statistiques/service.php
 Création : 9 septembre 2013
-Dernière modification : 9 septembre 2013
+Dernière modification : 10 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
-Affiche les statistiques service
+Affiche les statistiques par service
 
 Page appelée par le fichier index.php, accessible par le menu statistiques / Par service
 */
@@ -26,6 +26,9 @@ $postes=null;
 $selected=null;
 $heure=null;
 $services_tab=null;
+$exists_h19=false;
+$exists_h20=false;
+$exists_JF=false;
 
 include "include/horaires.php";
 //		--------------		Initialisation  des variables 'debut','fin' et 'service'		-------------------
@@ -100,7 +103,7 @@ if(is_array($services) and $services[0]){
   }
 
   //	Recherche des infos dans le tableau $resultat (issu de pl_poste et postes)
-  //	pour chaques services sélectionnés
+  //	pour chaque service sélectionné
 
   foreach($services as $service){
     if(array_key_exists($service,$tab)){
@@ -155,15 +158,18 @@ if(is_array($services) and $services[0]){
 		$feries[$elem['date']][1]=0;
 	      }
 	      $feries[$elem['date']][1]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
+	      $exists_JF=true;
 	    }
 
 	    //	On compte les 19-20
 	    if($elem['debut']=="19:00:00"){
 	      $h19[]=$elem['date'];
+	      $exists_h19=true;
 	    }
 	    //	On compte les 20-22
 	    if($elem['debut']=="20:00:00"){
 	      $h20[]=$elem['date'];
+	      $exists_h20=true;
 	    }
 	  }
 	  else{				// On compte les absences
@@ -206,9 +212,7 @@ echo "<td><select name='services[]' multiple='multiple' size='20' onchange='veri
 if(is_array($services_list)){
   echo "<option value='Tous'>Tous</option>\n";
   foreach($services_list as $elem){
-    if($postes){
-      $selected=in_array($elem['id'],$services)?"selected='selected'":null;
-    }
+    $selected=in_array($elem['id'],$services)?"selected='selected'":null;
     echo "<option value='{$elem['id']}' $selected>{$elem['valeur']}</option>\n";
   }
 }
@@ -240,9 +244,15 @@ if($tab){
   if($config['Dimanche']){
     echo "<td style='width:120px; padding-left:8px;'>Dimanche</td>\n";
   }
-  echo "<td style='width:120px; padding-left:8px;'>J. Feri&eacute;s</td>\n";
-  echo "<td style='width:120px; padding-left:8px;'>19-20</td>\n";
-  echo "<td style='width:120px; padding-left:8px;'>20-22</td>\n";
+  if($exists_JF){
+    echo "<td style='width:120px; padding-left:8px;'>J. F&eacute;ri&eacute;s</td>\n";
+  }
+  if($exists_h19){
+    echo "<td style='width:120px; padding-left:8px;'>19-20</td>\n";
+  }
+  if($exists_h20){
+    echo "<td style='width:120px; padding-left:8px;'>20-22</td>\n";
+  }
   echo "<td style='width:120px; padding-left:8px;'>Absences</td></tr>\n";
   foreach($tab as $elem){
     echo "<tr style='vertical-align:top;'>\n";
@@ -290,37 +300,44 @@ if($tab){
       echo "</td>\n";
     }
 
-    echo "<td style='padding-left:8px;'>";					//	Jours feries
-    $ferie=count($elem[9])>1?"J. feri&eacute;s":"J. feri&eacute;";
-    echo count($elem[9])." $ferie";		//	nombre de dimanche
-    echo "<br/>\n";
-    sort($elem[9]);				//	tri les dimanches par dates croissantes
-    foreach($elem[9] as $ferie){		// 	Affiche les dates et heures des dimanches
-      echo dateFr($ferie[0]);			//	date
-      echo "&nbsp;:&nbsp;".number_format($ferie[1],1,',',' ')."<br/>";	//	heures
+    if($exists_JF){
+      echo "<td style='padding-left:8px;'>";					//	Jours feries
+      $ferie=count($elem[9])>1?"J. f&eacute;ri&eacute;s":"J. f&eacute;ri&eacute;";
+      echo count($elem[9])." $ferie";		//	nombre de jours fériés
+      echo "<br/>\n";
+      sort($elem[9]);				//	tri les jours fériés par dates croissantes
+      foreach($elem[9] as $ferie){		// 	Affiche les dates et heures des jours fériés
+	echo dateFr($ferie[0]);			//	date
+	echo "&nbsp;:&nbsp;".number_format($ferie[1],1,',',' ')."<br/>";	//	heures
+      }
+      echo "</td>";	
     }
-    echo "</td>";	
 
-    echo "<td>\n";				//	Affichage des 19-20
-    if(array_key_exists(0,$elem[7])){
-      sort($elem[7]);
-      echo "Nb 19-20 : ";
-      echo count($elem[7]);
-      foreach($elem[7] as $h19){
-	echo "<br/>".dateFr($h19);
+    if($exists_h19){
+      echo "<td>\n";				//	Affichage des 19-20
+      if(array_key_exists(0,$elem[7])){
+	sort($elem[7]);
+	echo "Nb 19-20 : ";
+	echo count($elem[7]);
+	foreach($elem[7] as $h19){
+	  echo "<br/>".dateFr($h19);
+	}
       }
+      echo "</td>\n";
     }
-    echo "</td>\n";
-    echo "<td>\n";				//	Affichage des 20-22
-    if(array_key_exists(0,$elem[8])){
-      sort($elem[8]);
-      echo "Nb 20-22 : ";
-      echo count($elem[8]);
-      foreach($elem[8] as $h20){
-	echo "<br/>".dateFr($h20);
+
+    if($exists_h20){
+      echo "<td>\n";				//	Affichage des 20-22
+      if(array_key_exists(0,$elem[8])){
+	sort($elem[8]);
+	echo "Nb 20-22 : ";
+	echo count($elem[8]);
+	foreach($elem[8] as $h20){
+	  echo "<br/>".dateFr($h20);
+	}
       }
+      echo "</td>\n";
     }
-    echo "</td>\n";
 	    
     echo "<td>\n";
     if($elem[5]){				//	Affichage du total d'heures d'absences

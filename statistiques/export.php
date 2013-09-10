@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : statistiques/export.php
 Création : mai 2011
-Dernière modification : 22 août 2012
+Dernière modification : 10 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -41,119 +41,6 @@ $fin=dateAlpha($_SESSION['stat_fin']);
 $lignes=Array();
 
 switch($_GET['nom']){
-  case "agents" : 									// Agents
-    $lignes=array("Statistiques par agent du $debut au $fin",null,"Postes");
-    $lignes[]=join(array("Nom","Prénom","Heures","Moyenne hebdo","Poste","Etage","Heures par poste"),$separateur);
-    foreach($tab as $elem){
-      $jour=$elem[2]/$nbJours;
-      $hebdo=$jour*$joursParSemaine;
-      foreach($elem[1] as $poste){
-	$cellules=Array();
-	$cellules[]=$elem[0][1];									// nom
-	$cellules[]=$elem[0][2];									// prénom
-	$cellules[]=number_format($elem[2],2,',',' ');				// Nombre d'heures
-	// $cellules[]=number_format(round($jour,2),2,',',' ');		// moyenne jour
-	$cellules[]=number_format(round($hebdo,2),2,',',' ');		// moyenne hebdo
-	$cellules[]=$poste[1];										// Nom du poste
-	$cellules[]=$poste[2];										// Etage
-	$cellules[]=number_format($poste[3],2,',',' ');				// Heures par poste
-	$lignes[]=join($cellules,$separateur);
-      }
-    }
-    $lignes[]=null;
-    $lignes[]="Samedis";
-    $lignes[]=join(array("Nom","Prénom","Nombre de samedis","Dates","Heures"),$separateur);
-    foreach($tab as $elem){
-      foreach($elem[3] as $samedi){
-	$cellules=Array();
-	$cellules[]=$elem[0][1];							// nom
-	$cellules[]=$elem[0][2];							// prénom
-	$cellules[]=count($elem[3]);						// nombre de samedi
-	$cellules[]=dateFr($samedi[0]);						// date
-	$cellules[]=number_format($samedi[1],2,',',' ');	// heures
-	$lignes[]=join($cellules,$separateur);
-      }
-    }
-    if($config['Dimanche']){
-      $lignes[]=null;
-      $lignes[]="Dimanches";
-      $lignes[]=join(array("Nom","Prénom","Nombre de dimanches","Dates","Heures"),$separateur);
-      foreach($tab as $elem){
-	foreach($elem[6] as $dimanche){
-	  $cellules=Array();
-	  $cellules[]=$elem[0][1];							// nom
-	  $cellules[]=$elem[0][2];							// prénom
-	  $cellules[]=count($elem[6]);						// nombre de dimanche
-	  $cellules[]=dateFr($dimanche[0]);						// date
-	  $cellules[]=number_format($dimanche[1],2,',',' ');	// heures
-	  $lignes[]=join($cellules,$separateur);
-	}
-      }
-    }
-
-    //		Affichage des jours feries
-    $lignes[]=null;
-    $lignes[]="Jours feriés";
-    $lignes[]=join(array("Nom","Prénom","Nombre de jours feriés","Dates","Heures"),$separateur);
-    foreach($tab as $elem){
-      foreach($elem[9] as $ferie){
-	$cellules=Array();
-	$cellules[]=$elem[0][1];							// nom
-	$cellules[]=$elem[0][2];							// prénom
-	$cellules[]=count($elem[9]);						// nombre de J. Feriés
-	$cellules[]=dateFr($ferie[0]);						// date
-	$cellules[]=number_format($ferie[1],2,',',' ');	// heures
-	$lignes[]=join($cellules,$separateur);
-      }
-    }
-
-    //	Affichage des 19-20h
-    $lignes[]=null;
-    $lignes[]="19h-20h";
-    $lignes[]=join(array("Nom","Prénom","Nombre de 19h-20h","Dates"),$separateur);
-    foreach($tab as $elem){
-      foreach($elem[7] as $h19){
-	$cellules=Array();
-	$cellules[]=$elem[0][1];							// nom
-	$cellules[]=$elem[0][2];							// prénom
-	$cellules[]=count($elem[7]);						// nombre de dimanche
-	$cellules[]=dateFr($h19);						// date
-	$lignes[]=join($cellules,$separateur);
-      }
-    }
-
-    //	Affichage des 20-22h
-    $lignes[]=null;
-    $lignes[]="20h-22h";
-    $lignes[]=join(array("Nom","Prénom","Nombre de 20h-22h","Dates"),$separateur);
-    foreach($tab as $elem){
-      foreach($elem[8] as $h20){
-	$cellules=Array();
-	$cellules[]=$elem[0][1];							// nom
-	$cellules[]=$elem[0][2];							// prénom
-	$cellules[]=count($elem[7]);						// nombre de dimanche
-	$cellules[]=dateFr($h20);						// date
-	$lignes[]=join($cellules,$separateur);
-      }
-    }
-
-    $lignes[]=null;
-    $lignes[]="Absences";
-    $lignes[]=join(array("Nom","Prénom","Heures d'absences","Dates","Heures"),$separateur);
-    foreach($tab as $elem){
-      $total_absences=$elem[5];
-      foreach($elem[4] as $absences){
-	$cellules=Array();
-	$cellules[]=$elem[0][1];							// nom
-	$cellules[]=$elem[0][2];							// prénom
-	$cellules[]=number_format($total_absences,2,',',' ');;						// heures total d'absences
-	$cellules[]=dateFr($absences[0]);					// date
-	$cellules[]=number_format($absences[1],2,',',' ');	// heures
-	$lignes[]=join($cellules,$separateur);
-      }
-    }
-    break;
-
   case "postes" : 									// Postes
     $lignes=array("Statistiques par poste du $debut au $fin",null);
     $lignes[]=join(array("Poste","Etage","Obligatoire/renfort","Heures","Moyenne jour","Moyenne hebdo","Nom de l'agent","Prénom de l'agent","Heures par agent"),$separateur);
@@ -270,11 +157,16 @@ switch($_GET['nom']){
   $cellules[]=$total; //$agents[7];
   $lignes[]=join($cellules,$separateur);
   break;
+
+  default :
+    $lignes=statistiques1($_GET['nom'],$tab,$debut,$fin,$separateur,$nbJours,$jour,$joursParSemaine);
+    break;
 }
 
 $inF = fopen($Fnm,"w\n");
 
 $lignes=array_map("utf8_decode",$lignes);
+$lignes=array_map("html_entity_decode_latin1",$lignes);
 
 foreach($lignes as $elem){
   if($_GET['type']=="csv"){

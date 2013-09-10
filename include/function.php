@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 29 août 2013
+Dernière modification : 10 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -421,6 +421,14 @@ function HrToMin($heure){
   }
   return $minutes;
 }
+
+function html_entity_decode_latin1($n){
+  if(is_array($n)){
+    return array_map("html_entity_decode_latin1",$n);
+  }
+  return html_entity_decode($n,ENT_QUOTES|ENT_IGNORE,"ISO-8859-1");
+}
+
 
 function is_serialized($string){
   if(is_array(@unserialize($string))){
