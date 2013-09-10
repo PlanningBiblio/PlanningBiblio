@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : setup/db_data.php
 Création : mai 2011
-Dernière modification : 6 septembre 2013
+Dernière modification : 9 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -51,6 +51,8 @@ $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Statistiques export', 17, 
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'stats postes par agent', 17, 'Statistiques', 'statistiques/postes.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Statistiques Postes de renfort', 17, 'Statistiques', 'statistiques/postes_renfort.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Statistiques par poste (synth&egrave;se)', 17, 'Statistiques', 'statistiques/postes_synthese.php');";
+$sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Statistiques', 17, 'Statistiques', 'statistiques/service.php');";
+$sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Statistiques', 17, 'Statistiques', 'statistiques/statut.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Feuille de temps-  index', 17, 'Statistiques', 'statistiques/temps.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Configuration avanc&eacute;e', 20, 'Configuration avanc&eacute;e', 'admin/config.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Personnel - Suppression', 21, 'Gestion du personnel', 'personnel/suppression.php');";
@@ -99,7 +101,7 @@ $sql[]="INSERT INTO `{$dbprefix}activites` VALUES(11, 'Renseignement r&eacute;se
 $sql[]="INSERT INTO `{$dbprefix}activites` VALUES(12, 'Renseignement sp&eacute;cialis&eacute;');";
 
 // Insertion de la config
-$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Version', 'info', '1.5.5', 'Version de l&apos;application','','','');";
+$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Version', 'info', '1.5.6', 'Version de l&apos;application','','','');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Mail-IsEnabled', 'boolean', '0', 'Active ou d&eacute;sactive l&apos;envoi des mails','Messagerie','','10');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'toutlemonde', 'boolean', '0', 'Affiche ou non l&apos;utilisateur \"tout le monde\" dans le menu.','','','');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Mail-IsMail-IsSMTP', 'enum', 'IsSMTP', 'Classe &agrave; utiliser : SMTP, fonction PHP IsMail','Messagerie','IsSMTP,IsMail','10');";
@@ -156,6 +158,8 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES
   ('40','30','Par poste','statistiques/postes.php'),
   ('40','40','Par poste (Synthèse)','statistiques/postes_synthese.php'),
   ('40','50','Postes de renfort','statistiques/postes_renfort.php'),
+  ('40','60','Par service','statistiques/service.php'),
+  ('40','70','Par statut','statistiques/statut.php'),
   ('50','0','Administration','admin/index.php'),
   ('50','10','Informations','infos/index.php'),
   ('50','20','Les activités','activites/index.php'),

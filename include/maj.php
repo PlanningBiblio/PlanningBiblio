@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 6 septembre 2013
+Dernière modification : 9 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -301,6 +301,14 @@ if(strcmp("1.5.5",$config['Version'])>0){
   //	Suppression de la ligne "url" dans la table config
   $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom`='url';";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.5.5' WHERE `nom`='Version';";
+}
+
+//	Mise a  jour de la base version 1.5.5 -> 1.5.6
+if(strcmp("1.5.6",$config['Version'])>0){
+  $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES 
+    ('40','60','Par service','statistiques/service.php'), ('40','70','Par statut','statistiques/statut.php');";
+  $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Statistiques', 17, 'Statistiques', 'statistiques/service.php'),
+    (NULL, 'Statistiques', 17, 'Statistiques', 'statistiques/statut.php');";
 }
 
 //	Execution des requetes et affichage

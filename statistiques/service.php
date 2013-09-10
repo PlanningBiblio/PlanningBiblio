@@ -5,67 +5,81 @@ Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
-Fichier : statistiques/agents.php
-Création : mai 2011
-Dernière modification : 14 décembre 2012
+Fichier : statistiques/service.php
+Création : 9 septembre 2013
+Dernière modification : 9 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
-Affiche les statistiques par agent: nom des postes occupés, nombre d'heures par poste, nombre de samedis travaillés, 
-jours feriés travaillés, nombre d'heures d'absences
+Affiche les statistiques service
 
-Page appelée par le fichier index.php, accessible par le menu statistiques / Par agents
+Page appelée par le fichier index.php, accessible par le menu statistiques / Par service
 */
 
 require_once "class.statistiques.php";
 
-echo "<h3>Statistiques par agent</h3>\n";
+echo "<h3>Statistiques par service</h3>\n";
 
 // Initialisation des variables :
 $joursParSemaine=$config['Dimanche']?7:6;
 $postes=null;
 $selected=null;
 $heure=null;
-$agent_tab=null;
+$services_tab=null;
 
 include "include/horaires.php";
-//		--------------		Initialisation  des variables 'debut','fin' et 'agents'		-------------------
-if(!array_key_exists('stat_agents_agents',$_SESSION)){
-  $_SESSION['stat_agents_agents']=null;
+//		--------------		Initialisation  des variables 'debut','fin' et 'service'		-------------------
+if(!array_key_exists('stat_service_services',$_SESSION['oups'])){
+  $_SESSION['oups']['stat_service_services']=null;
 }
-if(!array_key_exists('stat_debut',$_SESSION)){
-  $_SESSION['stat_debut']=null;
-  $_SESSION['stat_fin']=null;
+if(!array_key_exists('stat_debut',$_SESSION['oups'])){
+  $_SESSION['oups']['stat_debut']=null;
+  $_SESSION['oups']['stat_fin']=null;
 }
-$debut=isset($_GET['debut'])?$_GET['debut']:$_SESSION['stat_debut'];
-$fin=isset($_GET['fin'])?$_GET['fin']:$_SESSION['stat_fin'];
-$agents=isset($_GET['agents'])?$_GET['agents']:$_SESSION['stat_agents_agents'];
+$debut=isset($_GET['debut'])?$_GET['debut']:$_SESSION['oups']['stat_debut'];
+$fin=isset($_GET['fin'])?$_GET['fin']:$_SESSION['oups']['stat_fin'];
+$services=isset($_GET['services'])?$_GET['services']:$_SESSION['oups']['stat_service_services'];
 if(!$debut){
   $debut=date("Y")."-01-01";
 }
-$_SESSION['stat_debut']=$debut;
+$_SESSION['oups']['stat_debut']=$debut;
 if(!$fin){
   $fin=date("Y-m-d");
 }
-$_SESSION['stat_fin']=$fin;
-$_SESSION['stat_agents_agents']=$agents;
+$_SESSION['oups']['stat_fin']=$fin;
+$_SESSION['oups']['stat_service_services']=$services;
 $tab=array();
 
-//		--------------		Récupération de la liste des agents pour le menu déroulant		------------------------
+//		--------------		Récupération de la liste des services pour le menu déroulant		------------------------
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif`='Actif' ORDER BY `nom`,`prenom`;");
-$agents_list=$db->result;
+$db->select("select_services");
+$services_list=$db->result;
 
-if(is_array($agents) and $agents[0]){
+if(is_array($services) and $services[0]){
   //	Recherche du nombre de jours concernés
   $db=new db();
-  $db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debut' AND '$fin' GROUP BY `date`;");
+  $db->select("pl_poste","date","`date` BETWEEN '$debut' AND '$fin'","GROUP BY `date`");
   $nbJours=$db->nb;
   $nbSemaines=$nbJours>0?$nbJours/$joursParSemaine:1;
 
-  //	Recherche des infos dans pl_poste et postes pour tous les agents sélectionnés
+
+  // Recherche des services de chaque agent
+  $db=new db();
+  $db->select("personnel","id,service");
+  foreach($db->result as $elem){
+    $servId=null;
+    foreach($services_list as $serv){
+      if($serv['valeur']==$elem['service']){
+	$servId=$serv['id'];
+	continue;
+      }
+    }
+    $agents[$elem['id']]=array("id"=>$elem['id'],"service"=>$elem['service'],"service_id"=>$servId);
+  }
+
+  //	Recherche des infos dans pl_poste et postes pour tous les services sélectionnés
   //	On stock le tout dans le tableau $resultat
-  $agents_select=join($agents,",");
+
   $db=new db();
   $req="SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
     `{$dbprefix}pl_poste`.`date` as `date`, `{$dbprefix}pl_poste`.`perso_id` as `perso_id`, 
@@ -75,23 +89,29 @@ if(is_array($agents) and $agents[0]){
     INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` 
     WHERE `{$dbprefix}pl_poste`.`date`>='$debut' AND `{$dbprefix}pl_poste`.`date`<='$fin' 
     AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' 
-    AND `{$dbprefix}pl_poste`.`perso_id` IN ($agents_select) 
     ORDER BY `poste_nom`,`etage`;";
   $db->query($req);
   $resultat=$db->result;
-  
+
+  // Ajoute le service pour chaque agents dans le tableau resultat
+  for($i=0;$i<count($resultat);$i++){
+    $resultat[$i]['service']=$agents[$resultat[$i]['perso_id']]['service'];
+    $resultat[$i]['service_id']=$agents[$resultat[$i]['perso_id']]['service_id'];
+  }
+
   //	Recherche des infos dans le tableau $resultat (issu de pl_poste et postes)
-  //	pour chaques agents sélectionnés
-  foreach($agents as $agent){
-    if(array_key_exists($agent,$tab)){
-      $heures=$tab[$agent][2];
-      $total_absences=$tab[$agent][5];
-      $samedi=$tab[$agent][3];
-      $dimanche=$tab[$agent][6];
-      $h19=$tab[$agent][7];
-      $h20=$tab[$agent][8];
-      $absences=$tab[$agent][4];
-      $feries=$tab[$agent][9];
+  //	pour chaques services sélectionnés
+
+  foreach($services as $service){
+    if(array_key_exists($service,$tab)){
+      $heures=$tab[$service][2];
+      $total_absences=$tab[$service][5];
+      $samedi=$tab[$service][3];
+      $dimanche=$tab[$service][6];
+      $h19=$tab[$service][7];
+      $h20=$tab[$service][8];
+      $absences=$tab[$service][4];
+      $feries=$tab[$service][9];
     }
     else{
       $heures=0;
@@ -106,9 +126,9 @@ if(is_array($agents) and $agents[0]){
     $postes=Array();
     if(is_array($resultat)){
       foreach($resultat as $elem){
-	if($agent==$elem['perso_id']){
+	if($service==$elem['service_id']){
 	  if($elem['absent']!="1"){		// on compte les heures et les samedis pour lesquels l'agent n'est pas absent
-	    // on créé un tableau par poste avec son nom, étage et la somme des heures faites par agent
+	    // on créé un tableau par poste avec son nom, étage et la somme des heures faites par service
 	    if(!array_key_exists($elem['poste'],$postes)){
 	      $postes[$elem['poste']]=Array($elem['poste'],$elem['poste_nom'],$elem['etage'],0);
 	    }
@@ -137,12 +157,6 @@ if(is_array($agents) and $agents[0]){
 	      $feries[$elem['date']][1]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
 	    }
 
-	    foreach($agents_list as $elem2){
-	      if($elem2['id']==$agent){	// on créé un tableau avec le nom et le prénom de l'agent.
-		$agent_tab=array($agent,$elem2['nom'],$elem2['prenom']);
-		break;
-	      }
-	    }
 	    //	On compte les 19-20
 	    if($elem['debut']=="19:00:00"){
 	      $h19[]=$elem['date'];
@@ -163,8 +177,8 @@ if(is_array($agents) and $agents[0]){
 	    
 						    // A CONTINUER  
 	  }
-			    // On met dans tab tous les éléments (infos postes + agents + heures)
-	  $tab[$agent]=array($agent_tab,$postes,$heures,$samedi,$absences,$total_absences,$dimanche,$h19,$h20,$feries);
+	  // On met dans tab tous les éléments (infos postes + services + heures)
+	  $tab[$service]=array($elem['service'],$postes,$heures,$samedi,$absences,$total_absences,$dimanche,$h19,$h20,$feries);
 	}
       }
     }
@@ -177,7 +191,7 @@ $_SESSION['stat_tab']=$tab;
 echo "<table><tr style='vertical-align:top;'><td style='width:300px;'>\n";
 //		--------------		Affichage du formulaire permettant de sélectionner les dates et les agents		-------------
 echo "<form name='form' action='index.php' method='get'>\n";
-echo "<input type='hidden' name='page' value='statistiques/agents.php' />\n";
+echo "<input type='hidden' name='page' value='statistiques/service.php' />\n";
 echo "<table>\n";
 echo "<tr><td>Début : </td>\n";
 echo "<td><input type='text' name='debut' value='$debut' />&nbsp;<img src='img/calendrier.gif' onclick='calendrier(\"debut\");' alt='calendrier' />\n";
@@ -185,26 +199,28 @@ echo "</td></tr>\n";
 echo "<tr><td>Fin : </td>\n";
 echo "<td><input type='text' name='fin' value='$fin' />&nbsp;<img src='img/calendrier.gif' onclick='calendrier(\"fin\");' alt='calendrier' />\n";
 echo "</td></tr>\n";
-echo "<tr style='vertical-align:top'><td>Agents : </td>\n";
-echo "<td><select name='agents[]' multiple='multiple' size='20' onchange='verif_select(\"agents\");'>\n";
-if(is_array($agents_list)){
+echo "<tr style='vertical-align:top'><td>Services : </td>\n";
+
+echo "<td><select name='services[]' multiple='multiple' size='20' onchange='verif_select(\"services\");'>\n";
+
+if(is_array($services_list)){
   echo "<option value='Tous'>Tous</option>\n";
-  foreach($agents_list as $elem){
+  foreach($services_list as $elem){
     if($postes){
-	    $selected=in_array($elem['id'],$agents)?"selected='selected'":null;
+      $selected=in_array($elem['id'],$services)?"selected='selected'":null;
     }
-    echo "<option value='{$elem['id']}' $selected>{$elem['nom']} {$elem['prenom']}</option>\n";
+    echo "<option value='{$elem['id']}' $selected>{$elem['valeur']}</option>\n";
   }
 }
 echo "</select></td></tr>\n";
 echo "<tr><td colspan='2' style='text-align:center;'>\n";
-echo "<input type='button' value='Effacer' onclick='location.href=\"index.php?page=statistiques/agents.php&amp;debut=&amp;fin=&amp;agents=\"' />\n";
+echo "<input type='button' value='Effacer' onclick='location.href=\"index.php?page=statistiques/service.php&amp;debut=&amp;fin=&amp;agents=\"' />\n";
 echo "&nbsp;&nbsp;<input type='submit' value='OK' />\n";
 echo "</td></tr>\n";
 echo "<tr><td colspan='2'><hr/></td></tr>\n";
 echo "<tr><td>Exporter </td>\n";
-echo "<td><a href='javascript:export_stat(\"agents\",\"csv\");'>CSV</a>&nbsp;&nbsp;\n";
-echo "<a href='javascript:export_stat(\"agents\",\"xsl\");'>XLS</a></td></tr>\n";
+echo "<td><a href='javascript:export_stat(\"service\",\"csv\");'>CSV</a>&nbsp;&nbsp;\n";
+echo "<a href='javascript:export_stat(\"service\",\"xsl\");'>XLS</a></td></tr>\n";
 echo "</table>\n";
 echo "</form>\n";
 
@@ -213,12 +229,12 @@ echo "</td><td>\n";
 
 // 		--------------------------		Affichage du tableau de résultat		--------------------
 if($tab){
-  echo "<b>Statistiques par agent du ".dateFr($debut)." au ".dateFr($fin)."</b><br/>\n";
+  echo "<b>Statistiques par service du ".dateFr($debut)." au ".dateFr($fin)."</b><br/>\n";
   echo $nbJours>1?"$nbJours jours, ":"$nbJours jour, ";
   echo $nbSemaines>1?number_format($nbSemaines,1,',',' ')." semaines":number_format($nbSemaines,1,',',' ')." semaine";
   echo "<table border='1' cellspacing='0' cellpadding='0'>\n";
   echo "<tr class='th'>\n";
-  echo "<td style='width:200px; padding-left:8px;'>Agents</td>\n";
+  echo "<td style='width:200px; padding-left:8px;'>Services</td>\n";
   echo "<td style='width:280px; padding-left:8px;'>Postes</td>\n";
   echo "<td style='width:120px; padding-left:8px;'>Samedi</td>\n";
   if($config['Dimanche']){
@@ -230,8 +246,8 @@ if($tab){
   echo "<td style='width:120px; padding-left:8px;'>Absences</td></tr>\n";
   foreach($tab as $elem){
     echo "<tr style='vertical-align:top;'>\n";
-    //	Affichage du nom des agents dans la 1ère colonne
-    echo "<td style='padding-left:8px;'><b>{$elem[0][1]} {$elem[0][2]}</b><br/>\n";
+    //	Affichage du nom des services dans la 1ère colonne
+    echo "<td style='padding-left:8px;'><b>{$elem[0]}</b><br/>\n";
     echo "Total : ".number_format($elem[2],1,',',' ')." heures<br/>\n";
     $jour=$elem[2]/$nbJours;
     $hebdo=$jour*$joursParSemaine;
@@ -245,7 +261,6 @@ if($tab){
       echo "<tr style='vertical-align:top;'><td>\n";
       echo "{$poste[1]} ({$poste[2]})";
       echo "</td><td>\n";
-      // $heure=$agent[3]>1?"heures":"heure";
       echo number_format($poste[3],1,',',' ')." $heure";
       echo "</td></tr>\n";
     }
