@@ -1,23 +1,24 @@
 <?php
-/********************************************************************************************************************************
-* Planning Biblio, Version 1.5.5													*
-* Licence GNU/GPL (version 2 et au dela)											*
-* Voir les fichiers README.txt et COPYING.txt											*
-* Copyright (C) 2011-2013 - Jérôme Combes											*
-*																*
-* Fichier : statistiques/postes.php												*
-* Création : mai 2011														*
-* Dernière modification : 17 décembre 2012											*
-* Auteur : Jérôme Combes, jerome@planningbilbio.fr										*
-*																*
-* Description :															*
-* Affiche les statistiques par poste: nombre d'heures d'ouverture, moyen par jour et par semaine, nom des agents ayant occupé 	*
-* le poste, nombre d'heures de chaque agent.											*
-*																*
-* Page appelée par le fichier index.php, accessible par le menu statistiques / Par poste					*
-*********************************************************************************************************************************/
+/*
+Planning Biblio, Version 1.5.5
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.txt et COPYING.txt
+Copyright (C) 2011-2013 - Jérôme Combes
+
+Fichier : statistiques/postes.php
+Création : mai 2011
+Dernière modification : 11 septembre 2013
+Auteur : Jérôme Combes, jerome@planningbilbio.fr
+
+Description :
+Affiche les statistiques par poste: nombre d'heures d'ouverture, moyen par jour et par semaine, nom des agents ayant occupé 
+le poste, nombre d'heures de chaque agent.
+
+Page appelée par le fichier index.php, accessible par le menu statistiques / Par poste
+*/
 
 require_once "class.statistiques.php";
+require_once "personnel/class.personnel.php";
 
 echo "<h3>Statistiques par poste</h3>\n";
 
@@ -51,6 +52,11 @@ if(!$tri)
   $tri="cmp_01";
 $_SESSION['stat_poste_tri']=$tri;
 $tab=Array();
+
+// Récupération des infos sur les agents
+$p=new personnel();
+$p->fetch();
+$agents_infos=$p->elements;
 
 //		--------------		Récupération de la liste des postes pour le menu déroulant		------------------------
 $db=new db();
@@ -88,12 +94,15 @@ if(is_array($postes)){
     else
       $heures=0;
     $agents=array();
+    $services=array();
+    $statuts=array();
     if(is_array($resultat)){
       foreach($resultat as $elem){
 	if($poste==$elem['poste']){
 	  // on créé un tableau par agent avec son nom, prénom et la somme des heures faites par poste
-	  if(!array_key_exists($elem['perso_id'],$agents))
+	  if(!array_key_exists($elem['perso_id'],$agents)){
 	    $agents[$elem['perso_id']]=array($elem['perso_id'],$elem['nom'],$elem['prenom'],0);
+	  }
 	  $agents[$elem['perso_id']][3]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
 	  $heures+=diff_heures($elem['debut'],$elem['fin'],"decimal");
 	  
@@ -103,8 +112,24 @@ if(is_array($postes)){
 	      break;
 	    }
 	  }
+	  // On créé un tableau par service
+	  $service=$agents_infos[$elem['perso_id']]['service'];
+	  $service=$service?$service:"ZZZ_Autre";
+	  if(!array_key_exists($service,$services)){
+	    $services[$service]=array("nom"=>$service,"heures"=>0);
+	  }
+	  $services[$service]["heures"]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
+	  
+	  // On créé un tableau par statut
+	  $statut=$agents_infos[$elem['perso_id']]['statut'];
+	  $statut=$statut?$statut:"ZZZ_Autre";
+	  if(!array_key_exists($statut,$statuts)){
+	    $statuts[$statut]=array("nom"=>$statut,"heures"=>0);
+	  }
+	  $statuts[$statut]["heures"]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
+
 	  //	On met dans tab tous les éléments (infos postes + agents + heures du poste)
-	  $tab[$poste]=array($poste_tab,$agents,$heures);
+	  $tab[$poste]=array($poste_tab,$agents,$heures,"services"=>$services,"statuts"=>$statuts);
 	}
       }
     }
@@ -177,7 +202,8 @@ if($tab){
   echo "<tr class='th'>\n";
   echo "<td style='width:200px; padding-left:8px;'>Postes</td>\n";
   echo "<td style='width:300px; padding-left:8px;'>Agents</td>\n";
-  echo "<td style='width:100px; padding-left:8px;'>Heures</td></tr>\n";
+  echo "<td style='width:300px; padding-left:8px;'>Services</td>\n";
+  echo "<td style='width:300px; padding-left:8px;'>Statuts</td></tr>\n";
   foreach($tab as $elem){
     $color=$elem[0][3]=="Obligatoire"?"#00FA92":"#FFFFFF";
     echo "<tr style='vertical-align:top; background:$color;'>\n";
@@ -191,17 +217,32 @@ if($tab){
     echo "</td>\n";
     //	Affichage du noms des agents dans la 2eme colonne
     echo "<td style='padding-left:8px;'>";
+    echo "<table style='width:100%;'>";
     foreach($elem[1] as $agent){
-      echo "{$agent[1]} {$agent[2]}";
-      echo "<br/>\n";
+      echo "<tr><td>{$agent[1]} {$agent[2]}</td>";
+      echo "<td style='text-align:right;'>".number_format($agent[3],2,',',' ')."</td></tr>\n";
     }
+    echo "</table>\n";
     echo "</td>\n";
-    //	Affichage des heures des agents dans la 3eme colonne
-    echo "<td style='padding-right:8px;text-align:right;'>";
-    foreach($elem[1] as $agent){
-      echo number_format($agent[3],1,',',' ');
-      echo "<br/>\n";
+    // Services
+    echo "<td>";
+    sort($elem['services']);
+    echo "<table style='width:100%;'>\n";
+    foreach($elem['services'] as $service){
+      echo "<tr><td>".str_replace("ZZZ_","",$service['nom'])."</td>";
+      echo "<td style='text-align:right;'>".number_format($service['heures'],2,',',' ')."</td></tr>";
     }
+    echo "</table>\n";
+    echo "</td>\n";
+    // Statuts
+    echo "<td>";
+    sort($elem['statuts']);
+    echo "<table style='width:100%;'>\n";
+    foreach($elem['statuts'] as $statut){
+      echo "<tr><td>".str_replace("ZZZ_","",$statut['nom'])."</td>";
+      echo "<td style='text-align:right;'>".number_format($statut['heures'],2,',',' ')."</td></tr>";
+    }
+    echo "</table>\n";
     echo "</td></tr>\n";
   }
   echo "</table>\n";

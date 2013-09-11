@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : statistiques/export.php
 Création : mai 2011
-Dernière modification : 10 septembre 2013
+Dernière modification : 11 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,8 +20,11 @@ Page appelée par la fonction JavaScript "export_stat" lors du clique sur les li
 require_once "class.statistiques.php";
 
  // Compter les jours ouvrables (ou ouvrés) entre début et fin
-$nbJours=compte_jours($_SESSION['debut'],$_SESSION['fin'],"ouvrables");
-$joursParSemaine=6;		// 5 jours ouvrés, 6 jours ouvrables
+$db=new db();
+$db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '{$_SESSION['stat_debut']}' AND '{$_SESSION['stat_fin']}' GROUP BY `date`;");
+$nbJours=$db->nb;
+
+$joursParSemaine=$config['Dimanche']?7:6;
 $Fnm = "data/stat_".$_GET['nom'];
 
 if($_GET['type']=="csv"){
@@ -43,21 +46,58 @@ $lignes=Array();
 switch($_GET['nom']){
   case "postes" : 									// Postes
     $lignes=array("Statistiques par poste du $debut au $fin",null);
+    $lignes[]="Les agents";
     $lignes[]=join(array("Poste","Etage","Obligatoire/renfort","Heures","Moyenne jour","Moyenne hebdo","Nom de l'agent","Prénom de l'agent","Heures par agent"),$separateur);
     foreach($tab as $elem){
-    $jour=$elem[2]/$nbJours;
-    $hebdo=$jour*$joursParSemaine;
-    foreach($elem[1] as $agent){
+      $jour=$elem[2]/$nbJours;
+      $hebdo=$jour*$joursParSemaine;
+      foreach($elem[1] as $agent){
 	$cellules=Array();
-	$cellules[]=$elem[0][1];									// nom du poste
-	$cellules[]=$elem[0][2];									// Etage
-	$cellules[]=$elem[0][3];									// Obligatoire
-	$cellules[]=number_format($elem[2],2,',',' ');				// Nombre d'heures
-	$cellules[]=number_format(round($jour,2),2,',',' ');		// moyenne jour
-	$cellules[]=number_format(round($hebdo,2),2,',',' ');		// moyenne hebdo
-	$cellules[]=$agent[1];										// Nom de l'agent
-	$cellules[]=$agent[2];										// Prénom
-	$cellules[]=number_format($agent[3],2,',',' ');				// Heures par agent
+	$cellules[]=$elem[0][1];			// nom du poste
+	$cellules[]=$elem[0][2];			// Etage
+	$cellules[]=$elem[0][3];			// Obligatoire
+	$cellules[]=number_format($elem[2],2,',',' ');	// Nombre d'heures
+	$cellules[]=number_format($jour,2,',',' ');	// moyenne jour
+	$cellules[]=number_format($hebdo,2,',',' ');	// moyenne hebdo
+	$cellules[]=$agent[1];				// Nom de l'agent
+	$cellules[]=$agent[2];				// Prénom
+	$cellules[]=number_format($agent[3],2,',',' ');	// Heures par agent
+	$lignes[]=join($cellules,$separateur);
+      }
+    }
+    $lignes[]=null;
+    $lignes[]="Les services";
+    foreach($tab as $elem){
+      $jour=$elem[2]/$nbJours;
+      $hebdo=$jour*$joursParSemaine;
+      foreach($elem["services"] as $service){
+	$cellules=Array();
+	$cellules[]=$elem[0][1];				// nom du poste
+	$cellules[]=$elem[0][2];				// Etage
+	$cellules[]=$elem[0][3];				// Obligatoire
+	$cellules[]=number_format($elem[2],2,',',' ');		// Nombre d'heures
+	$cellules[]=number_format($jour,2,',',' ');		// moyenne jour
+	$cellules[]=number_format($hebdo,2,',',' ');		// moyenne hebdo
+	$cellules[]=str_replace("ZZZ_",null,$service["nom"]);	// Nom du service
+	$cellules[]=number_format($service["heures"],2,',',' ');// Heures par agent
+	$lignes[]=join($cellules,$separateur);
+      }
+    }
+    $lignes[]=null;
+    $lignes[]="Les statuts";
+    foreach($tab as $elem){
+      $jour=$elem[2]/$nbJours;
+      $hebdo=$jour*$joursParSemaine;
+      foreach($elem["statuts"] as $statut){
+	$cellules=Array();
+	$cellules[]=$elem[0][1];				// nom du poste
+	$cellules[]=$elem[0][2];				// Etage
+	$cellules[]=$elem[0][3];				// Obligatoire
+	$cellules[]=number_format($elem[2],2,',',' ');		// Nombre d'heures
+	$cellules[]=number_format($jour,2,',',' ');		// moyenne jour
+	$cellules[]=number_format($hebdo,2,',',' ');		// moyenne hebdo
+	$cellules[]=str_replace("ZZZ_",null,$statut["nom"]);	// Nom du statut
+	$cellules[]=number_format($statut["heures"],2,',',' ');	// Heures par agent
 	$lignes[]=join($cellules,$separateur);
       }
     }
