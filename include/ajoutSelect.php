@@ -1,20 +1,20 @@
 <?php
-/********************************************************************************************************************************
-* Planning Biblio, Version 1.5.5													*
-* Licence GNU/GPL (version 2 et au dela)											*
-* Voir les fichiers README.txt et COPYING.txt											*
-* Copyright (C) 2011-2013 - Jérôme Combes											*
-*																*
-* Fichier : include/ajoutSelect.php												*
-* Création : mai 2011														*
-* Dernière modification : 17 janvier 2013											*
-* Auteur : Jérôme Combes, jerome@planningbilbio.fr										*
-*																*
-* Description :															*
-* Permet d'ajouter et de supprimer des éléments dans les menu déroulant (motif d'absence, statut, service de rattachement ...)	*
-* S'ouvre dans un cadre flottant à l'aide des fonctions JS ajoutSelect et popup							*
-*																*
-*********************************************************************************************************************************/
+/*
+Planning Biblio, Version 1.5.5
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.txt et COPYING.txt
+Copyright (C) 2011-2013 - Jérôme Combes
+
+Fichier : include/ajoutSelect.php
+Création : mai 2011
+Dernière modification : 12 septembre 2013
+Auteur : Jérôme Combes, jerome@planningbilbio.fr
+
+Description :
+Permet d'ajouter et de supprimer des éléments dans les menu déroulant (motif d'absence, statut, service de rattachement ...)
+S'ouvre dans un cadre flottant à l'aide des fonctions JS ajoutSelect et popup
+
+*/
 
 // pas de $version=acces direct  => redirection vers la page index.php
 if(!$version){
@@ -23,8 +23,7 @@ if(!$version){
 
 $terme=$_GET['terme'];
 $table=$_GET['table'];
-
-if($_GET['action']=="ajout"){
+if(isset($_GET['action']) and $_GET['action']=="ajout"){
   $nouveau=$_GET['nouveau'];
   $apres=$_GET['apres'];
   $db=new db();
@@ -35,8 +34,7 @@ if($_GET['action']=="ajout"){
   echo "<script type='text/JavaScript'>parent.window.location.reload(false);</script>";
   echo "<script type='text/JavaScript'>popup_closed();</script>";
 }
-elseif($_GET['action']=="suppression")
-  {
+elseif(isset($_GET['action']) and $_GET['action']=="suppression"){
   $rang=$_GET['rang'];
   
   //		---------------		verifions si la valeur à supprimer et urilisée		----------------//
@@ -52,11 +50,13 @@ elseif($_GET['action']=="suppression")
     $req="select * from {$dbprefix}personnel where statut='$valeur';";
   elseif($table=="select_services")
     $req="select * from {$dbprefix}personnel where service='$valeur';";
-  
+  elseif($table=="select_etages")
+    $req="select * from {$dbprefix}postes where etage='$valeur';";
+
   $db=new db();
   $db->query($req);
   if($db->result){		//		---------------		si la valeur à supprimer et urilisée		----------------//
-    echo "<br/><font color='red'>Impossible de supprimer le motif \"$valeur\" car cette valeur est utilisée</font><br/><br/>";
+    echo "<br/><font color='red'>Impossible de supprimer \"$valeur\" car cette valeur est utilisée</font><br/><br/>";
     echo "<a href='javascript:popup_closed();'>Fermer</a><br/><br/><hr>";
   }
   else{
@@ -72,8 +72,9 @@ elseif($_GET['action']=="suppression")
 <script type='text/JavaScript'>
 <!--
 function valider(action){
-  if(action=="ajout" && document.form.apres.value==0)
+  if(action=="ajout" && document.form.apres.value==0){
     document.form.apres.value=rang;
+  }
   document.form.action.value=action;
   document.form.submit();
 }
@@ -127,6 +128,9 @@ foreach($db_select->result as $elem){
   $rang=$elem['rang'];
 }
 echo "</select>\n";
+if(!$rang){
+  $rang=0;
+}
 echo "<script type='text/JavaScript'>rang=$rang;</script>\n";
 ?>
 

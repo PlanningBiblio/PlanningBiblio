@@ -197,7 +197,8 @@ if(in_array(21,$droits)){
     echo "<option $select1 value='".$elem['valeur']."'>".$elem['valeur']."</option>\n";
   }
   echo "</select>\n";
-  echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_statuts&amp;terme=statut\",400,400);'>*</a>\n";
+  echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_statuts&amp;terme=statut\",400,400);'>\n";
+  echo "<img src='img/add.gif' alt='*' style=width:15px;'/></a>\n";
 }
 else{
   echo $statut;
@@ -215,7 +216,8 @@ if(in_array(21,$droits)){
     echo "<option $select1 value='".$elem['valeur']."'>".$elem['valeur']."</option>\n";
   }
   echo "</select>\n";
-  echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_services&amp;terme=service\",400,400);'>*</a>\n";
+  echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_services&amp;terme=service\",400,400);'>\n";
+  echo "<img src='img/add.gif' alt='*' style=width:15px;'/></a>\n";
 }
 else{
   echo $service;

@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 13 août 2013
+Dernière modification : 12 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -223,7 +223,7 @@ $sql[]="CREATE TABLE `{$dbprefix}postes` (
   `groupe` varchar(30) NOT NULL DEFAULT '',
   `groupe_id` int(11) NOT NULL DEFAULT '0',
   `obligatoire` varchar(15) NOT NULL,
-  `etage` varchar(10) NOT NULL,
+  `etage` TEXT NOT NULL,
   `activites` text NOT NULL,
   `statistiques` ENUM('0','1') DEFAULT '1',
   `bloquant` enum('0','1') DEFAULT '1',
@@ -231,6 +231,13 @@ $sql[]="CREATE TABLE `{$dbprefix}postes` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
 $sql[]="CREATE TABLE `{$dbprefix}select_abs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `valeur` text NOT NULL DEFAULT '',
+  `rang` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+$sql[]="CREATE TABLE `{$dbprefix}select_etages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `valeur` text NOT NULL DEFAULT '',
   `rang` int(11) NOT NULL DEFAULT '0',

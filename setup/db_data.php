@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : setup/db_data.php
 Création : mai 2011
-Dernière modification : 9 septembre 2013
+Dernière modification : 12 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -342,6 +342,9 @@ $sql[]="INSERT INTO `{$dbprefix}select_abs` VALUES (NULL, 'Stage', 9);";
 $sql[]="INSERT INTO `{$dbprefix}select_abs` VALUES (NULL, 'R&eacute;union', 10);";
 $sql[]="INSERT INTO `{$dbprefix}select_abs` VALUES (NULL, 'Entretien', 11);";
 $sql[]="INSERT INTO `{$dbprefix}select_abs` VALUES (NULL, 'Autre', 12);";
+
+//	Insertion des étages
+$sql[]="INSERT INTO `{$dbprefix}select_etages` (`valeur`,`rang`) VALUES ('Mezzanine',1),('RDC',2),('RDJ',3),('Magasins',4);";
 
 //	Insertion des noms des services
 $sql[]="INSERT INTO `{$dbprefix}select_services` VALUES (NULL, 'P&ocirc;le public', 1, '');";

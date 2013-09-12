@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : postes/modif.php
 Création : mai 2011
-Dernière modification : 2 juillet 2013
+Dernière modification : 12 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -58,6 +58,11 @@ else{
 }
 	
 $checked=null;
+
+// Recherche des étages
+$db=new db();
+$db->select("select_etages",null,null,"order by rang");
+$etages=$db->result;
 	
 echo "<form method='get' action='#' name='form'>";
 echo "<input type='hidden' name='page' value='postes/valid.php' />\n";
@@ -74,11 +79,13 @@ echo "Etage :";
 echo "</td><td>";
 echo "<select name='etage' style='width:255px'>";
 echo "<option value=''>&nbsp;</option>\n";
-echo "<option value='Mezzanine'>Mezzanine</option>\n";
-echo "<option value='RDC'>RDC</option>\n";
-echo "<option value='RDJ'>RDJ</option>\n";
-echo "<option value='Magasins'>Magasins</option>\n";
+foreach($etages as $elem){
+  $selected=$etage==$elem['valeur']?"selected='selected'":null;
+  echo "<option value='{$elem['valeur']}' $selected >{$elem['valeur']}</option>\n";
+}
 echo "</select>\n";
+echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_etages&amp;terme=&eacute;tage\",400,400);'>\n";
+echo "<img src='img/add.gif' alt='*' style=width:15px;'/></a>\n";
 echo "</td></tr>";
 
 echo "<tr><td>";
@@ -131,4 +138,3 @@ echo "<input type='submit' value='Valider'/>\n";
 echo "</td></tr>\n";
 echo "</table>\n";
 echo "</form>\n";
-echo "<script type='text/JavaScript'>document.form.etage.value='$etage';</script>\n";
