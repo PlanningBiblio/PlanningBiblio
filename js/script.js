@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 3 septembre 2013
+Dernière modification : 12 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -61,10 +61,6 @@ document.onmousemove=suivre_souris;
 
 
 //	---------------------------		Fonctions communes		------------------------	//
-function ajoutSelect(table,terme){
-  document.write("<a href='javascript:popup(\"include/ajoutSelect.php&table="+table+"&terme="+terme+"\",400,400);'>*</a>");
-}
-
 function annuler(nb){
   if(opener){
     opener.window.location.reload(false);

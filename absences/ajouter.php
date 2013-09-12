@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 15 août 2013
+Dernière modification : 12 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -255,8 +255,10 @@ else{					//	Formulaire
     echo "<option value='".$elem['valeur']."'>".$elem['valeur']."</option>\n";
   }
   echo "</select>\n";
-  if(in_array(1,$droits))
-    echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_abs&amp;terme=modif\",400,400);'>*</a>\n";
+  if(in_array(1,$droits)){
+    echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_abs&amp;terme=motif\",400,400);'>\n";
+    echo "<img src='img/add.gif' alt='*' style=width:15px;'/></a>\n";
+  }
   echo "</td></tr><tr valign='top'><td>\n";
   echo "Commentaires : \n";
   echo "</td><td>\n";
