@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : statistiques/class.statistiques.php
 Création : 16 janvier 2013
-Dernière modification : 10 septembre 2013
+Dernière modification : 13 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -29,10 +29,35 @@ function statistiques1($nom,$tab,$debut,$fin,$separateur,$nbJours,$jour,$joursPa
 
   $lignes=array($titre,null,"Postes");
   if($nom=="agent"){
-    $lignes[]=join(array("Nom","Prénom","Heures","Moyenne hebdo","Poste","Etage","Heures par poste"),$separateur);
+    $cellules=array("Nom","Prénom","Heures","Moyenne hebdo");
+    if($GLOBALS['config']['Multisites-nombre']>1){
+      for($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++){
+	$cellules[]="Heures ".$GLOBALS['config']["Multisites-site{$i}"];
+	$cellules[]="Moyenne ".$GLOBALS['config']["Multisites-site{$i}"];
+      }
+    }
+    $cellules[]="Poste";
+    if($GLOBALS['config']['Multisites-nombre']>1){
+      $cellules[]="Site";
+    }
+    $cellules=array_merge($cellules,array("Etage","Heures par poste"));
+    $lignes[]=join($cellules,$separateur);
   }
   else{
-    $lignes[]=join(array(ucfirst($nom),"Heures","Moyenne hebdo","Poste","Etage","Heures par poste"),$separateur);
+    $cellules=array(ucfirst($nom),"Heures","Moyenne hebdo");
+    if($GLOBALS['config']['Multisites-nombre']>1){
+      for($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++){
+	$cellules[]="Heures ".$GLOBALS['config']["Multisites-site{$i}"];
+	$cellules[]="Moyenne ".$GLOBALS['config']["Multisites-site{$i}"];
+      }
+    }
+    $cellules[]="Poste";
+    if($GLOBALS['config']['Multisites-nombre']>1){
+      $cellules[]="Site";
+    }
+    $cellules=array_merge($cellules,array("Etage","Heures par poste"));
+    $lignes[]=join($cellules,$separateur);
+
   }
   foreach($tab as $elem){
     $jour=$elem[2]/$nbJours;
@@ -46,12 +71,26 @@ function statistiques1($nom,$tab,$debut,$fin,$separateur,$nbJours,$jour,$joursPa
       else{
 	$cellules[]=$elem[0];		// nom du service ou du statut
       }
-      $cellules[]=number_format($elem[2],2,',',' ');				// Nombre d'heures
-      // $cellules[]=number_format(round($jour,2),2,',',' ');		// moyenne jour
-      $cellules[]=number_format(round($hebdo,2),2,',',' ');		// moyenne hebdo
-      $cellules[]=$poste[1];										// Nom du poste
-      $cellules[]=$poste[2];										// Etage
-      $cellules[]=number_format($poste[3],2,',',' ');				// Heures par poste
+      $cellules[]=number_format($elem[2],2,',',' ');			// Nombre d'heures
+      $cellules[]=number_format($hebdo,2,',',' ');		// moyenne hebdo
+      if($GLOBALS['config']['Multisites-nombre']>1){
+	for($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++){
+	  $jour=$elem["sites"][$i]/$nbJours;
+	  $hebdo=$jour*$joursParSemaine;
+	  $cellules[]=number_format($elem["sites"][$i],2,',',' ');
+	  $cellules[]=number_format($hebdo,2,',',' ');
+	}
+      }
+      $cellules[]=$poste[1];						// Nom du poste
+      $site=null;
+      if($poste["site"]>0 and $GLOBALS['config']['Multisites-nombre']>1){
+	$site=$GLOBALS['config']["Multisites-site{$poste['site']}"]." ";
+      }
+      if($GLOBALS['config']['Multisites-nombre']>1){
+	$cellules[]=$site;
+      }
+      $cellules[]=$poste[2];						// Etage
+      $cellules[]=number_format($poste[3],2,',',' ');			// Heures par poste
       $lignes[]=join($cellules,$separateur);
     }
   }

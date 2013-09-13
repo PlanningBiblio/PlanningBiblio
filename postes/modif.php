@@ -31,6 +31,7 @@ if(isset($_GET['id'])){
   $db->select("postes",null,"id='$id'");
   $nom=$db->result[0]['nom'];
   $etage=$db->result[0]['etage'];
+  $site=$db->result[0]['site'];
   $activites=unserialize($db->result[0]['activites']);
   $obligatoire=$db->result[0]['obligatoire']=="Obligatoire"?"checked='checked'":"";
   $renfort=$db->result[0]['obligatoire']=="Renfort"?"checked='checked'":"";
@@ -55,6 +56,7 @@ else{
   $bloq1="checked='checked'";
   $bloq2=null;
   $activites=array();
+  $site=0;
 }
 	
 $checked=null;
@@ -108,6 +110,19 @@ echo "</td><td>";
 echo "<input type='radio' name='statistiques' value='1' $stat1/> Oui\n";
 echo "<input type='radio' name='statistiques' value='0' $stat2/> Non\n";
 echo "</td></tr>";
+
+if($config['Multisites-nombre']>1){
+  echo "<tr><td>Sites</td>\n";
+  echo "<td><select name='site'>";
+  echo "<option value='0'>&nbsp;</option>\n";
+  for($i=1;$i<count($config['Multisites-nombre'])+2;$i++){
+    $selected=$site==$i?"selected='selected'":null;
+    echo "<option value='$i' $selected >".$config["Multisites-site{$i}"]."</option>\n";
+  }
+  echo "</select>";
+  echo "</td></tr>\n";
+
+}
 
 echo "</table>\n";
 echo "</td><td>\n";

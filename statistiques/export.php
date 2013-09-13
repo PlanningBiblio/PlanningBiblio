@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : statistiques/export.php
 Création : mai 2011
-Dernière modification : 11 septembre 2013
+Dernière modification : 13 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :

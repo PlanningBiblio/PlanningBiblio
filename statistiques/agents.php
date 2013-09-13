@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : statistiques/agents.php
 Création : mai 2011
-Dernière modification : 10 septembre 2013
+Dernière modification : 13 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -27,6 +27,12 @@ $postes=null;
 $selected=null;
 $heure=null;
 $agent_tab=null;
+$exists_h19=false;
+$exists_h20=false;
+$exists_JF=false;
+$exists_absences=false;
+$exists_samedi=false;
+$exists_dimanche=false;
 
 include "include/horaires.php";
 //		--------------		Initialisation  des variables 'debut','fin' et 'agents'		-------------------
@@ -70,7 +76,8 @@ if(is_array($agents) and $agents[0]){
   $req="SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
     `{$dbprefix}pl_poste`.`date` as `date`, `{$dbprefix}pl_poste`.`perso_id` as `perso_id`, 
     `{$dbprefix}pl_poste`.`poste` as `poste`, `{$dbprefix}pl_poste`.`absent` as `absent`, 
-    `{$dbprefix}postes`.`nom` as `poste_nom`, `{$dbprefix}postes`.`etage` as `etage` 
+    `{$dbprefix}postes`.`nom` as `poste_nom`, `{$dbprefix}postes`.`etage` as `etage`, 
+    `{$dbprefix}pl_poste`.`site` as `site` 
     FROM `{$dbprefix}pl_poste` 
     INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` 
     WHERE `{$dbprefix}pl_poste`.`date`>='$debut' AND `{$dbprefix}pl_poste`.`date`<='$fin' 
@@ -92,6 +99,7 @@ if(is_array($agents) and $agents[0]){
       $h20=$tab[$agent][8];
       $absences=$tab[$agent][4];
       $feries=$tab[$agent][9];
+      $sites=$tab[$agent]["sites"];
     }
     else{
       $heures=0;
@@ -102,6 +110,10 @@ if(is_array($agents) and $agents[0]){
       $h19=array();
       $h20=array();
       $feries=array();
+      $sites=array();
+      for($i=1;$i<=$config['Multisites-nombre'];$i++){
+	$sites[$i]=0;
+      }
     }
     $postes=Array();
     if(is_array($resultat)){
@@ -110,9 +122,15 @@ if(is_array($agents) and $agents[0]){
 	  if($elem['absent']!="1"){		// on compte les heures et les samedis pour lesquels l'agent n'est pas absent
 	    // on créé un tableau par poste avec son nom, étage et la somme des heures faites par agent
 	    if(!array_key_exists($elem['poste'],$postes)){
-	      $postes[$elem['poste']]=Array($elem['poste'],$elem['poste_nom'],$elem['etage'],0);
+	      $postes[$elem['poste']]=Array($elem['poste'],$elem['poste_nom'],$elem['etage'],0,"site"=>$elem['site']);
 	    }
+	    // On compte toutes les heures pour ce poste (index 3)
 	    $postes[$elem['poste']][3]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
+	    // On compte les heures de chaque site
+	    if($config['Multisites-nombre']>1){
+	      $sites[$elem['site']]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
+	    }
+	    // On compte toutes les heures (globales)
 	    $heures+=diff_heures($elem['debut'],$elem['fin'],"decimal");
 	    $d=new datePl($elem['date']);
 	    if($d->sam=="samedi"){	// tableau des samedis
@@ -121,6 +139,7 @@ if(is_array($agents) and $agents[0]){
 		$samedi[$elem['date']][1]=0;
 	      }
 	      $samedi[$elem['date']][1]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
+	      $exists_samedi=true;
 	    }
 	    if($d->position==0){		// tableau des dimanches
 	      if(!array_key_exists($elem['date'],$dimanche)){ 	// on stock les dates et la somme des heures faites par date
@@ -128,6 +147,7 @@ if(is_array($agents) and $agents[0]){
 		$dimanche[$elem['date']][1]=0;
 	      }
 	      $dimanche[$elem['date']][1]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
+	      $exists_dimanche=true;
 	    }
 	    if(jour_ferie($elem['date'])){
 	      if(!array_key_exists($elem['date'],$feries)){
@@ -135,6 +155,7 @@ if(is_array($agents) and $agents[0]){
 		$feries[$elem['date']][1]=0;
 	      }
 	      $feries[$elem['date']][1]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
+	      $exists_JF=true;
 	    }
 
 	    foreach($agents_list as $elem2){
@@ -146,10 +167,12 @@ if(is_array($agents) and $agents[0]){
 	    //	On compte les 19-20
 	    if($elem['debut']=="19:00:00"){
 	      $h19[]=$elem['date'];
+	      $exists_h19=true;
 	    }
 	    //	On compte les 20-22
 	    if($elem['debut']=="20:00:00"){
 	      $h20[]=$elem['date'];
+	      $exists_h20=true;
 	    }
 	  }
 	  else{				// On compte les absences
@@ -159,12 +182,13 @@ if(is_array($agents) and $agents[0]){
 	    }
 	    $absences[$elem['date']][1]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
 	    $total_absences+=diff_heures($elem['debut'],$elem['fin'],"decimal");
+	    $exists_absences=true;
 	    // $absences[]=array($elem['date'],diff_heures($elem['debut'],$elem['fin'],"decimal"));
 	    
 						    // A CONTINUER  
 	  }
 			    // On met dans tab tous les éléments (infos postes + agents + heures)
-	  $tab[$agent]=array($agent_tab,$postes,$heures,$samedi,$absences,$total_absences,$dimanche,$h19,$h20,$feries);
+	  $tab[$agent]=array($agent_tab,$postes,$heures,$samedi,$absences,$total_absences,$dimanche,$h19,$h20,$feries,"sites"=>$sites);
 	}
       }
     }
@@ -215,54 +239,90 @@ echo "</td><td>\n";
 if($tab){
   echo "<b>Statistiques par agent du ".dateFr($debut)." au ".dateFr($fin)."</b><br/>\n";
   echo $nbJours>1?"$nbJours jours, ":"$nbJours jour, ";
-  echo $nbSemaines>1?number_format($nbSemaines,1,',',' ')." semaines":number_format($nbSemaines,1,',',' ')." semaine";
+  echo $nbSemaines>1?number_format($nbSemaines,2,',',' ')." semaines":number_format($nbSemaines,2,',',' ')." semaine";
   echo "<table border='1' cellspacing='0' cellpadding='0'>\n";
   echo "<tr class='th'>\n";
   echo "<td style='width:200px; padding-left:8px;'>Agents</td>\n";
   echo "<td style='width:280px; padding-left:8px;'>Postes</td>\n";
-  echo "<td style='width:120px; padding-left:8px;'>Samedi</td>\n";
-  if($config['Dimanche']){
+  if($exists_samedi){
+    echo "<td style='width:120px; padding-left:8px;'>Samedi</td>\n";
+  }
+  if($exists_dimanche){
     echo "<td style='width:120px; padding-left:8px;'>Dimanche</td>\n";
   }
-  echo "<td style='width:120px; padding-left:8px;'>J. Feri&eacute;s</td>\n";
-  echo "<td style='width:120px; padding-left:8px;'>19-20</td>\n";
-  echo "<td style='width:120px; padding-left:8px;'>20-22</td>\n";
-  echo "<td style='width:120px; padding-left:8px;'>Absences</td></tr>\n";
+  if($exists_JF){
+    echo "<td style='width:120px; padding-left:8px;'>J. Feri&eacute;s</td>\n";
+  }
+  if($exists_h19){
+    echo "<td style='width:120px; padding-left:8px;'>19-20</td>\n";
+  }
+  if($exists_h20){
+    echo "<td style='width:120px; padding-left:8px;'>20-22</td>\n";
+  }
+  if($exists_absences){
+    echo "<td style='width:120px; padding-left:8px;'>Absences</td></tr>\n";
+  }
+
   foreach($tab as $elem){
-    echo "<tr style='vertical-align:top;'>\n";
-    //	Affichage du nom des agents dans la 1ère colonne
-    echo "<td style='padding-left:8px;'><b>{$elem[0][1]} {$elem[0][2]}</b><br/>\n";
-    echo "Total : ".number_format($elem[2],1,',',' ')." heures<br/>\n";
+    // Calcul des moyennes
     $jour=$elem[2]/$nbJours;
     $hebdo=$jour*$joursParSemaine;
-    // echo "Moyenne jour. : ".round($jour,2)." heures<br/>\n";
-    echo "Moyenne hebdo. : ".number_format(round($hebdo,2),2,',',' ')." heures<br/>\n";
+
+    echo "<tr style='vertical-align:top;'>\n";
+    //	Affichage du nom des agents dans la 1ère colonne
+    echo "<td style='padding-left:8px;'>\n";
+    echo "<table><tr><td colspan='2'><b>{$elem[0][1]} {$elem[0][2]}</b></td></tr>\n";
+    echo "<tr><td>Total</td>\n";
+    echo "<td style='text-align:right;'>".number_format($elem[2],2,',',' ')."</td></tr>\n";
+    echo "<tr><td>Moyenne hebdo</td>\n";
+    echo "<td style='text-align:right;'>".number_format(round($hebdo,2),2,',',' ')."</td></tr>\n";
+    if($config['Multisites-nombre']>1){
+      for($i=1;$i<=$config['Multisites-nombre'];$i++){
+	// Calcul des moyennes
+	$jour=$elem["sites"][$i]/$nbJours;
+	$hebdo=$jour*$joursParSemaine;
+	echo "<tr><td colspan='2' style='padding-top:20px;'><u>".$config["Multisites-site{$i}"]."</u></td></tr>";
+	echo "<tr><td>Total</td>";
+	echo "<td style='text-align:right;'>".number_format($elem["sites"][$i],2,',',' ')."</td></tr>";;
+	echo "<tr><td>Moyenne</td>";
+	echo "<td style='text-align:right;'>".number_format($hebdo,2,',',' ')."</td></tr>";
+      }
+    }
+    echo "</table>\n";
     echo "</td>\n";
     //	Affichage du noms des postes et des heures dans la 2eme colonne
     echo "<td style='padding-left:8px;'>";
     echo "<table>\n";
     foreach($elem[1] as $poste){
+      $site=null;
+      if($poste["site"]>0 and $config['Multisites-nombre']>1){
+	$site=$config["Multisites-site{$poste['site']}"]." ";
+      }
+      $etage=$poste[2]?$poste[2]:null;
+      $siteEtage=($site or $etage)?"($site{$etage})":null;
       echo "<tr style='vertical-align:top;'><td>\n";
-      echo "{$poste[1]} ({$poste[2]})";
+      echo "{$poste[1]} $siteEtage";
       echo "</td><td>\n";
-      // $heure=$agent[3]>1?"heures":"heure";
-      echo number_format($poste[3],1,',',' ')." $heure";
+      echo number_format($poste[3],2,',',' ')." $heure";
       echo "</td></tr>\n";
     }
     echo "</table>\n";
     echo "</td>\n";
     //	Affichage du nombre de samedis travaillés et les heures faites par samedi
-    echo "<td style='padding-left:8px;'>";
-    $samedi=count($elem[3])>1?"samedis":"samedi";
-    echo count($elem[3])." $samedi";		//	nombre de samedi
-    echo "<br/>\n";
-    sort($elem[3]);				//	tri les samedis par dates croissantes
-    foreach($elem[3] as $samedi){			//	Affiche les dates et heures des samedis
-      echo dateFr($samedi[0]);			//	date
-      echo "&nbsp;:&nbsp;".number_format($samedi[1],1,',',' ')."<br/>";	// heures
+    if($exists_samedi){
+      echo "<td style='padding-left:8px;'>";
+      $samedi=count($elem[3])>1?"samedis":"samedi";
+      echo count($elem[3])." $samedi";		//	nombre de samedi
+      echo "<br/>\n";
+      sort($elem[3]);				//	tri les samedis par dates croissantes
+      foreach($elem[3] as $samedi){			//	Affiche les dates et heures des samedis
+	echo dateFr($samedi[0]);			//	date
+	echo "&nbsp;:&nbsp;".number_format($samedi[1],2,',',' ')."<br/>";	// heures
+      }
+      echo "</td>\n";
     }
-    echo "</td>\n";
-    if($config['Dimanche']){
+
+    if($exists_dimanche){
       echo "<td style='padding-left:8px;'>";
       $dimanche=count($elem[6])>1?"dimanches":"dimanche";
       echo count($elem[6])." $dimanche";	//	nombre de dimanche
@@ -270,54 +330,63 @@ if($tab){
       sort($elem[6]);				//	tri les dimanches par dates croissantes
       foreach($elem[6] as $dimanche){		//	Affiche les dates et heures des dimanches
 	echo dateFr($dimanche[0]);		//	date
-	echo "&nbsp;:&nbsp;".number_format($dimanche[1],1,',',' ')."<br/>";	//	heures
+	echo "&nbsp;:&nbsp;".number_format($dimanche[1],2,',',' ')."<br/>";	//	heures
       }
       echo "</td>\n";
     }
 
-    echo "<td style='padding-left:8px;'>";					//	Jours feries
-    $ferie=count($elem[9])>1?"J. feri&eacute;s":"J. feri&eacute;";
-    echo count($elem[9])." $ferie";		//	nombre de dimanche
-    echo "<br/>\n";
-    sort($elem[9]);				//	tri les dimanches par dates croissantes
-    foreach($elem[9] as $ferie){		// 	Affiche les dates et heures des dimanches
-      echo dateFr($ferie[0]);			//	date
-      echo "&nbsp;:&nbsp;".number_format($ferie[1],1,',',' ')."<br/>";	//	heures
+    if($exists_JF){
+      echo "<td style='padding-left:8px;'>";					//	Jours feries
+      $ferie=count($elem[9])>1?"J. feri&eacute;s":"J. feri&eacute;";
+      echo count($elem[9])." $ferie";		//	nombre de dimanche
+      echo "<br/>\n";
+      sort($elem[9]);				//	tri les dimanches par dates croissantes
+      foreach($elem[9] as $ferie){		// 	Affiche les dates et heures des dimanches
+	echo dateFr($ferie[0]);			//	date
+	echo "&nbsp;:&nbsp;".number_format($ferie[1],2,',',' ')."<br/>";	//	heures
+      }
+      echo "</td>";	
     }
-    echo "</td>";	
 
-    echo "<td>\n";				//	Affichage des 19-20
-    if(array_key_exists(0,$elem[7])){
-      sort($elem[7]);
-      echo "Nb 19-20 : ";
-      echo count($elem[7]);
-      foreach($elem[7] as $h19){
-	echo "<br/>".dateFr($h19);
+    if($exists_h19){
+      echo "<td>\n";				//	Affichage des 19-20
+      if(array_key_exists(0,$elem[7])){
+	sort($elem[7]);
+	echo "Nb 19-20 : ";
+	echo count($elem[7]);
+	foreach($elem[7] as $h19){
+	  echo "<br/>".dateFr($h19);
+	}
       }
+      echo "</td>\n";
     }
-    echo "</td>\n";
-    echo "<td>\n";				//	Affichage des 20-22
-    if(array_key_exists(0,$elem[8])){
-      sort($elem[8]);
-      echo "Nb 20-22 : ";
-      echo count($elem[8]);
-      foreach($elem[8] as $h20){
-	echo "<br/>".dateFr($h20);
+
+    if($exists_h20){
+      echo "<td>\n";				//	Affichage des 20-22
+      if(array_key_exists(0,$elem[8])){
+	sort($elem[8]);
+	echo "Nb 20-22 : ";
+	echo count($elem[8]);
+	foreach($elem[8] as $h20){
+	  echo "<br/>".dateFr($h20);
+	}
       }
+      echo "</td>\n";
     }
-    echo "</td>\n";
 	    
-    echo "<td>\n";
-    if($elem[5]){				//	Affichage du total d'heures d'absences
-      echo "Total : ".number_format($elem[5],1,',',' ')."<br/>";
+    if($exists_absences){
+      echo "<td>\n";
+      if($elem[5]){				//	Affichage du total d'heures d'absences
+	echo "Total : ".number_format($elem[5],2,',',' ')."<br/>";
+      }
+      sort($elem[4]);				//	tri les absences par dates croissantes
+      foreach($elem[4] as $absences){		//	Affiche les dates et heures des absences
+	echo dateFr($absences[0]);		//	date
+	echo "&nbsp;:&nbsp;".number_format($absences[1],2,',',' ')."<br/>";	// heures
+	// echo "&nbsp;:&nbsp;".$absences[1]."<br/>";	// heures
+      }
+      echo "</td>\n";
     }
-    sort($elem[4]);				//	tri les absences par dates croissantes
-    foreach($elem[4] as $absences){		//	Affiche les dates et heures des absences
-      echo dateFr($absences[0]);		//	date
-      echo "&nbsp;:&nbsp;".number_format($absences[1],1,',',' ')."<br/>";	// heures
-      // echo "&nbsp;:&nbsp;".$absences[1]."<br/>";	// heures
-    }
-    echo "</td>\n";
     echo "</tr>\n";
   }
   echo "</table>\n";

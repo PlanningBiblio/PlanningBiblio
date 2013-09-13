@@ -227,6 +227,7 @@ $sql[]="CREATE TABLE `{$dbprefix}postes` (
   `activites` text NOT NULL,
   `statistiques` ENUM('0','1') DEFAULT '1',
   `bloquant` enum('0','1') DEFAULT '1',
+  `site` INT(1) DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 

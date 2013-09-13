@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : setup/db_data.php
 Création : mai 2011
-Dernière modification : 12 septembre 2013
+Dernière modification : 13 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -158,8 +158,8 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES
   ('40','30','Par poste','statistiques/postes.php'),
   ('40','40','Par poste (Synthèse)','statistiques/postes_synthese.php'),
   ('40','50','Postes de renfort','statistiques/postes_renfort.php'),
-  ('40','60','Par service','statistiques/service.php'),
-  ('40','70','Par statut','statistiques/statut.php'),
+  ('40','24','Par service','statistiques/service.php'),
+  ('40','26','Par statut','statistiques/statut.php'),
   ('50','0','Administration','admin/index.php'),
   ('50','10','Informations','infos/index.php'),
   ('50','20','Les activités','activites/index.php'),

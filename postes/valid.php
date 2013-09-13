@@ -1,20 +1,20 @@
 <?php
-/********************************************************************************************************************************
-* Planning Biblio, Version 1.5.5													*
-* Licence GNU/GPL (version 2 et au dela)											*
-* Voir les fichiers README.txt et COPYING.txt											*
-* Copyright (C) 2011-2013 - Jérôme Combes											*
-*																*
-* Fichier : postes/valid.php													*
-* Création : mai 2011														*
-* Dernière modification : 16 janvier 2013											*
-* Auteur : Jérôme Combes, jerome@planningbilbio.fr										*
-*																*
-* Description :															*
-* Valide l'ajout, la modification ou la suppression d'un poste.									*
-*																*
-* Page appelée par le fichier index.php.											*
-*********************************************************************************************************************************/
+/*
+Planning Biblio, Version 1.5.5
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.txt et COPYING.txt
+Copyright (C) 2011-2013 - Jérôme Combes
+
+Fichier : postes/valid.php
+Création : mai 2011
+Dernière modification : 12 septembre 2013
+Auteur : Jérôme Combes, jerome@planningbilbio.fr
+
+Description :
+Valide l'ajout, la modification ou la suppression d'un poste.
+
+Page appelée par le fichier index.php.
+*/
 
 require_once "class.postes.php";
 
@@ -35,9 +35,10 @@ if(isset($_GET['nom'])){
   $obligatoire=$_GET['obligatoire'];
   $statistiques=$_GET['statistiques'];
   $bloquant=$_GET['bloquant'];
+  $site=$_GET['site'];
 
   $data=array("nom"=>$nom,"obligatoire"=>$obligatoire,"etage"=>$etage,"activites"=>$activites,
-  "statistiques"=>$statistiques,"bloquant"=>$bloquant);
+  "statistiques"=>$statistiques,"bloquant"=>$bloquant,"site"=>$site);
 }
 
 switch($action){
