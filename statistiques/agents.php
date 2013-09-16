@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : statistiques/agents.php
 Création : mai 2011
-Dernière modification : 13 septembre 2013
+Dernière modification : 16 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -55,8 +55,29 @@ if(!$fin){
 }
 $_SESSION['stat_fin']=$fin;
 $_SESSION['stat_agents_agents']=$agents;
-$tab=array();
 
+// Filtre les sites
+if(!array_key_exists('stat_agents_sites',$_SESSION)){
+  $_SESSION['stat_agents_sites']=null;
+}
+$selectedSites=isset($_GET['selectedSites'])?$_GET['selectedSites']:$_SESSION['stat_agents_sites'];
+if($config['Multisites-nombre']>1 and !$selectedSites){
+  $selectedSites=array();
+  for($i=1;$i<=$config['Multisites-nombre'];$i++){
+    $selectedSites[]=$i;
+  }
+}
+$_SESSION['stat_agents_sites']=$selectedSites;
+
+// Filtre les sites dans les requêtes SQL
+if($config['Multisites-nombre']>1 and is_array($selectedSites)){
+  $reqSites="AND `{$dbprefix}pl_poste`.`site` IN (0,".join(",",$selectedSites).")";
+}
+else{
+  $reqSites=null;
+}
+
+$tab=array();
 //		--------------		Récupération de la liste des agents pour le menu déroulant		------------------------
 $db=new db();
 $db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif`='Actif' ORDER BY `nom`,`prenom`;");
@@ -65,7 +86,7 @@ $agents_list=$db->result;
 if(is_array($agents) and $agents[0]){
   //	Recherche du nombre de jours concernés
   $db=new db();
-  $db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debut' AND '$fin' GROUP BY `date`;");
+  $db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debut' AND '$fin' $reqSites GROUP BY `date`;");
   $nbJours=$db->nb;
   $nbSemaines=$nbJours>0?$nbJours/$joursParSemaine:1;
 
@@ -82,7 +103,7 @@ if(is_array($agents) and $agents[0]){
     INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` 
     WHERE `{$dbprefix}pl_poste`.`date`>='$debut' AND `{$dbprefix}pl_poste`.`date`<='$fin' 
     AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' 
-    AND `{$dbprefix}pl_poste`.`perso_id` IN ($agents_select) 
+    AND `{$dbprefix}pl_poste`.`perso_id` IN ($agents_select) $reqSites 
     ORDER BY `poste_nom`,`etage`;";
   $db->query($req);
   $resultat=$db->result;
@@ -215,12 +236,24 @@ if(is_array($agents_list)){
   echo "<option value='Tous'>Tous</option>\n";
   foreach($agents_list as $elem){
     if($postes){
-	    $selected=in_array($elem['id'],$agents)?"selected='selected'":null;
+      $selected=in_array($elem['id'],$agents)?"selected='selected'":null;
     }
     echo "<option value='{$elem['id']}' $selected>{$elem['nom']} {$elem['prenom']}</option>\n";
   }
 }
 echo "</select></td></tr>\n";
+if($config['Multisites-nombre']>1){
+  $nbSites=$config['Multisites-nombre'];
+  echo "<tr style='vertical-align:top'><td>Sites : </td>\n";
+  echo "<td><select name='selectedSites[]' multiple='multiple' size='".($nbSites+1)."' onchange='verif_select(\"selectedSites\");'>\n";
+  echo "<option value='Tous'>Tous</option>\n";
+  for($i=1;$i<=$nbSites;$i++){
+    $selected=in_array($i,$selectedSites)?"selected='selected'":null;
+    echo "<option value='$i' $selected>{$config["Multisites-site$i"]}</option>\n";
+  }
+  echo "</select></td></tr>\n";
+}
+
 echo "<tr><td colspan='2' style='text-align:center;'>\n";
 echo "<input type='button' value='Effacer' onclick='location.href=\"index.php?page=statistiques/agents.php&amp;debut=&amp;fin=&amp;agents=\"' />\n";
 echo "&nbsp;&nbsp;<input type='submit' value='OK' />\n";
@@ -278,14 +311,16 @@ if($tab){
     echo "<td style='text-align:right;'>".number_format(round($hebdo,2),2,',',' ')."</td></tr>\n";
     if($config['Multisites-nombre']>1){
       for($i=1;$i<=$config['Multisites-nombre'];$i++){
-	// Calcul des moyennes
-	$jour=$elem["sites"][$i]/$nbJours;
-	$hebdo=$jour*$joursParSemaine;
-	echo "<tr><td colspan='2' style='padding-top:20px;'><u>".$config["Multisites-site{$i}"]."</u></td></tr>";
-	echo "<tr><td>Total</td>";
-	echo "<td style='text-align:right;'>".number_format($elem["sites"][$i],2,',',' ')."</td></tr>";;
-	echo "<tr><td>Moyenne</td>";
-	echo "<td style='text-align:right;'>".number_format($hebdo,2,',',' ')."</td></tr>";
+	if($elem["sites"][$i]){
+	  // Calcul des moyennes
+	  $jour=$elem["sites"][$i]/$nbJours;
+	  $hebdo=$jour*$joursParSemaine;
+	  echo "<tr><td colspan='2' style='padding-top:20px;'><u>".$config["Multisites-site{$i}"]."</u></td></tr>";
+	  echo "<tr><td>Total</td>";
+	  echo "<td style='text-align:right;'>".number_format($elem["sites"][$i],2,',',' ')."</td></tr>";;
+	  echo "<tr><td>Moyenne</td>";
+	  echo "<td style='text-align:right;'>".number_format($hebdo,2,',',' ')."</td></tr>";
+	}
       }
     }
     echo "</table>\n";
