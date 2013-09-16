@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : statistiques/postes.php
 Création : mai 2011
-Dernière modification : 11 septembre 2013
+Dernière modification : 16 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -51,6 +51,28 @@ $_SESSION['stat_poste_postes']=$postes;
 if(!$tri)
   $tri="cmp_01";
 $_SESSION['stat_poste_tri']=$tri;
+
+// Filtre les sites
+if(!array_key_exists('stat_poste_sites',$_SESSION)){
+  $_SESSION['stat_poste_sites']=null;
+}
+$selectedSites=isset($_GET['selectedSites'])?$_GET['selectedSites']:$_SESSION['stat_poste_sites'];
+if($config['Multisites-nombre']>1 and !$selectedSites){
+  $selectedSites=array();
+  for($i=1;$i<=$config['Multisites-nombre'];$i++){
+    $selectedSites[]=$i;
+  }
+}
+$_SESSION['stat_poste_sites']=$selectedSites;
+
+// Filtre les sites dans les requêtes SQL
+if($config['Multisites-nombre']>1 and is_array($selectedSites)){
+  $reqSites="AND `{$dbprefix}pl_poste`.`site` IN (0,".join(",",$selectedSites).")";
+}
+else{
+  $reqSites=null;
+}
+
 $tab=Array();
 
 // Récupération des infos sur les agents
@@ -66,7 +88,7 @@ $postes_list=$db->result;
 if(is_array($postes)){
   //	Recherche du nombre de jours concernés
   $db=new db();
-  $db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debut' AND '$fin' GROUP BY `date`;");
+  $db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debut' AND '$fin' $reqSites GROUP BY `date`;");
   $nbJours=$db->nb;
   $nbSemaines=$nbJours>0?$nbJours/$joursParSemaine:1;
   
@@ -77,11 +99,11 @@ if(is_array($postes)){
   $req="SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
     `{$dbprefix}pl_poste`.`date` as `date`,  `{$dbprefix}pl_poste`.`poste` as `poste`, 
     `{$dbprefix}personnel`.`nom` as `nom`, `{$dbprefix}personnel`.`prenom` as `prenom`, 
-    `{$dbprefix}personnel`.`id` as `perso_id` FROM `{$dbprefix}pl_poste` 
+    `{$dbprefix}personnel`.`id` as `perso_id`, `{$dbprefix}pl_poste`.site as `site` FROM `{$dbprefix}pl_poste` 
     INNER JOIN `{$dbprefix}personnel` ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id` 
     WHERE `{$dbprefix}pl_poste`.`date`>='$debut' AND `{$dbprefix}pl_poste`.`date`<='$fin' 
     AND `{$dbprefix}pl_poste`.`poste` IN ($postes_select) AND `{$dbprefix}pl_poste`.`absent`<>'1' 
-    AND `{$dbprefix}pl_poste`.`supprime`<>'1' ORDER BY `poste`,`nom`,`prenom`;";
+    AND `{$dbprefix}pl_poste`.`supprime`<>'1' $reqSites ORDER BY `poste`,`nom`,`prenom`;";
   $db->query($req);
   $resultat=$db->result;
   
@@ -89,10 +111,16 @@ if(is_array($postes)){
   //	Recherche des infos dans le tableau $resultat (issu de pl_poste et personnel)
   //	pour chaques postes sélectionnés
   foreach($postes as $poste){
-    if(array_key_exists($poste,$tab))
+    if(array_key_exists($poste,$tab)){
       $heures=$tab[$poste][2];
-    else
+      $sites=$tab[$poste]["sites"];
+    }
+    else{
       $heures=0;
+      for($i=1;$i<=$config['Multisites-nombre'];$i++){
+	$sites[$i]=0;
+      }
+    }
     $agents=array();
     $services=array();
     $statuts=array();
@@ -101,9 +129,14 @@ if(is_array($postes)){
 	if($poste==$elem['poste']){
 	  // on créé un tableau par agent avec son nom, prénom et la somme des heures faites par poste
 	  if(!array_key_exists($elem['perso_id'],$agents)){
-	    $agents[$elem['perso_id']]=array($elem['perso_id'],$elem['nom'],$elem['prenom'],0);
+	    $agents[$elem['perso_id']]=array($elem['perso_id'],$elem['nom'],$elem['prenom'],0,"site"=>$elem['site']);
 	  }
 	  $agents[$elem['perso_id']][3]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
+	  // On compte les heures de chaque site
+	  if($config['Multisites-nombre']>1){
+	    $sites[$elem['site']]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
+	  }
+	  // On compte toutes les heures (globales)
 	  $heures+=diff_heures($elem['debut'],$elem['fin'],"decimal");
 	  
 	  foreach($postes_list as $elem2){
@@ -129,7 +162,7 @@ if(is_array($postes)){
 	  $statuts[$statut]["heures"]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
 
 	  //	On met dans tab tous les éléments (infos postes + agents + heures du poste)
-	  $tab[$poste]=array($poste_tab,$agents,$heures,"services"=>$services,"statuts"=>$statuts);
+	  $tab[$poste]=array($poste_tab,$agents,$heures,"services"=>$services,"statuts"=>$statuts,"sites"=>$sites);
 	}
       }
     }
@@ -179,6 +212,19 @@ if(is_array($postes_list)){
   }
 }
 echo "</select></td></tr>\n";
+
+if($config['Multisites-nombre']>1){
+  $nbSites=$config['Multisites-nombre'];
+  echo "<tr style='vertical-align:top'><td>Sites : </td>\n";
+  echo "<td><select name='selectedSites[]' multiple='multiple' size='".($nbSites+1)."' onchange='verif_select(\"selectedSites\");'>\n";
+  echo "<option value='Tous'>Tous</option>\n";
+  for($i=1;$i<=$nbSites;$i++){
+    $selected=in_array($i,$selectedSites)?"selected='selected'":null;
+    echo "<option value='$i' $selected>{$config["Multisites-site$i"]}</option>\n";
+  }
+  echo "</select></td></tr>\n";
+}
+
 echo "<tr><td colspan='2' style='text-align:center;'>\n";
 echo "<input type='button' value='Effacer' onclick='location.href=\"index.php?page=statistiques/postes.php&amp;debut=&amp;fin=&amp;postes=\"' />\n";
 echo "&nbsp;&nbsp;<input type='submit' value='OK' />\n";
@@ -208,12 +254,47 @@ if($tab){
     $color=$elem[0][3]=="Obligatoire"?"#00FA92":"#FFFFFF";
     echo "<tr style='vertical-align:top; background:$color;'>\n";
     //	Affichage du nom du poste dans la 1ère colonne
-    echo "<td style='padding-left:8px;'><b>{$elem[0][1]} ({$elem[0][2]})</b><br/><br/>\n";
-    echo "Total : ".number_format($elem[2],2,',',' ')." heures<br/>\n";
+    $siteEtage=array();
+    if($config['Multisites-nombre']>1){
+      for($i=1;$i<=$config['Multisites-nombre'];$i++){
+	if($elem["sites"][$i]==$elem[2]){
+	  $siteEtage[]=$config["Multisites-site{$i}"];
+	  continue;
+	}
+      }
+    }
+    if($elem[0][2]){
+      $siteEtage[]=$elem[0][2];
+    }
+    if(!empty($siteEtage)){
+      $siteEtage="(".join(" ",$siteEtage).")";
+    }
+    echo "<td style='padding-left:8px;'>";
+    echo "<table><tr><td colspan='2'><b>{$elem[0][1]}</b></td></tr>";
+    echo "<tr><td colspan='2'><i>$siteEtage</i></td></tr>\n";
+    echo "<tr><td>Total</td>";
+    echo "<td style='text-align:right;'>".number_format($elem[2],2,',',' ')."</td></tr>\n";
     $jour=$elem[2]/$nbJours;
     $hebdo=$jour*$joursParSemaine;
-    echo "Moyenne jour. : ".number_format(round($jour,2),2,',',' ')." heures<br/>\n";
-    echo "Moyenne hebdo. : ".number_format(round($hebdo,2),2,',',' ')." heures<br/>\n";
+    echo "<tr><td>Moyenne jour</td>";
+    echo "<td style='text-align:right;'>".number_format(round($jour,2),2,',',' ')."</td></tr>\n";
+    echo "<tr><td>Moyenne hebdo.</td>";
+    echo "<td style='text-align:right;'>".number_format(round($hebdo,2),2,',',' ')."</td></tr>\n";
+    if($config['Multisites-nombre']>1){
+      for($i=1;$i<=$config['Multisites-nombre'];$i++){
+	if($elem["sites"][$i] and $elem["sites"][$i]!=$elem[2]){
+	  // Calcul des moyennes
+	  $jour=$elem["sites"][$i]/$nbJours;
+	  $hebdo=$jour*$joursParSemaine;
+	  echo "<tr><td colspan='2' style='padding-top:20px;'><u>".$config["Multisites-site{$i}"]."</u></td></tr>";
+	  echo "<tr><td>Total</td>";
+	  echo "<td style='text-align:right;'>".number_format($elem["sites"][$i],2,',',' ')."</td></tr>";;
+	  echo "<tr><td>Moyenne</td>";
+	  echo "<td style='text-align:right;'>".number_format($hebdo,2,',',' ')."</td></tr>";
+	}
+      }
+    }
+    echo "</table>\n";
     echo "</td>\n";
     //	Affichage du noms des agents dans la 2eme colonne
     echo "<td style='padding-left:8px;'>";

@@ -336,7 +336,7 @@ if($tab){
       $etage=$poste[2]?$poste[2]:null;
       $siteEtage=($site or $etage)?"($site{$etage})":null;
       echo "<tr style='vertical-align:top;'><td>\n";
-      echo "{$poste[1]} $siteEtage";
+      echo "<b>{$poste[1]}</b><br/><i>$siteEtage</i>";
       echo "</td><td>\n";
       echo number_format($poste[3],2,',',' ')." $heure";
       echo "</td></tr>\n";

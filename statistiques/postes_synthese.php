@@ -1,20 +1,20 @@
 <?php
-/********************************************************************************************************************************
-* Planning Biblio, Version 1.5.5													*
-* Licence GNU/GPL (version 2 et au dela)											*
-* Voir les fichiers README.txt et COPYING.txt											*
-* Copyright (C) 2011-2013 - Jérôme Combes											*
-*																*
-* Fichier : statistiques/postes_synthese.php											*
-* Création : mai 2011														*
-* Dernière modification : 17 décembre 2012											*
-* Auteur : Jérôme Combes, jerome@planningbilbio.fr										*
-*																*
-* Description :															*
-* Affiche le nombre total d'heures d'ouverture de chaque poste, la moyen par jour et par semaine				*
-*																*
-* Page appelée par le fichier index.php, accessible par le menu statistiques / Par poste (Synthèse)				*
-*********************************************************************************************************************************/
+/*
+Planning Biblio, Version 1.5.5
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.txt et COPYING.txt
+Copyright (C) 2011-2013 - Jérôme Combes
+
+Fichier : statistiques/postes_synthese.php
+Création : mai 2011
+Dernière modification : 16 septembre 2013
+Auteur : Jérôme Combes, jerome@planningbilbio.fr
+
+Description :
+Affiche le nombre total d'heures d'ouverture de chaque poste, la moyen par jour et par semaine
+
+Page appelée par le fichier index.php, accessible par le menu statistiques / Par poste (Synthèse)
+*/
 
 require_once "class.statistiques.php";
 
@@ -46,6 +46,28 @@ $_SESSION['stat_poste_postes']=$postes;
 if(!$tri)
   $tri="cmp_01";
 $_SESSION['stat_poste_tri']=$tri;
+
+// Filtre les sites
+if(!array_key_exists('stat_poste_sites',$_SESSION)){
+  $_SESSION['stat_poste_sites']=null;
+}
+$selectedSites=isset($_GET['selectedSites'])?$_GET['selectedSites']:$_SESSION['stat_poste_sites'];
+if($config['Multisites-nombre']>1 and !$selectedSites){
+  $selectedSites=array();
+  for($i=1;$i<=$config['Multisites-nombre'];$i++){
+    $selectedSites[]=$i;
+  }
+}
+$_SESSION['stat_poste_sites']=$selectedSites;
+
+// Filtre les sites dans les requêtes SQL
+if($config['Multisites-nombre']>1 and is_array($selectedSites)){
+  $reqSites="AND `{$dbprefix}pl_poste`.`site` IN (0,".join(",",$selectedSites).")";
+}
+else{
+  $reqSites=null;
+}
+
 $tab=array();
 
 $total_heures=0;
@@ -61,7 +83,7 @@ $postes_list=$db->result;
 if(is_array($postes)){
   //	Recherche du nombre de jours concernés
   $db=new db();
-  $db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debut' AND '$fin' GROUP BY `date`;");
+  $db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debut' AND '$fin' $reqSites GROUP BY `date`;");
   $nbJours=$db->nb;
   $nbSemaines=$nbJours>0?$nbJours/$joursParSemaine:1;
   
@@ -72,11 +94,12 @@ if(is_array($postes)){
   $req="SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
     `{$dbprefix}pl_poste`.`date` as `date`,  `{$dbprefix}pl_poste`.`poste` as `poste`, 
     `{$dbprefix}personnel`.`nom` as `nom`, `{$dbprefix}personnel`.`prenom` as `prenom`, 
-    `{$dbprefix}personnel`.`id` as `perso_id` FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}personnel` 
+    `{$dbprefix}personnel`.`id` as `perso_id`, `{$dbprefix}pl_poste`.site as `site` 
+    FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}personnel` 
     ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id` 
     WHERE `{$dbprefix}pl_poste`.`date`>='$debut' AND `{$dbprefix}pl_poste`.`date`<='$fin' 
     AND `{$dbprefix}pl_poste`.`poste` IN ($postes_select) AND `{$dbprefix}pl_poste`.`absent`<>'1' 
-    AND `{$dbprefix}pl_poste`.`supprime`<>'1' ORDER BY `poste`,`nom`,`prenom`;";
+    AND `{$dbprefix}pl_poste`.`supprime`<>'1' $reqSites ORDER BY `poste`,`nom`,`prenom`;";
   $db->query($req);
   $resultat=$db->result;
   
@@ -84,9 +107,13 @@ if(is_array($postes)){
   foreach($postes as $poste){
     if(array_key_exists($poste,$tab)){
       $heures=$tab[$poste][2];
+      $sites=$tab[$poste]["sites"];
     }
     else{
       $heures=0;
+      for($i=1;$i<=$config['Multisites-nombre'];$i++){
+	$sites[$i]=0;
+      }
     }
     $agents=array();
     if(is_array($resultat)){
@@ -94,9 +121,14 @@ if(is_array($postes)){
 	if($poste==$elem['poste']){
 	  //	On créé un tableau par agent avec son nom, prénom et la somme des heures faites par poste
 	  if(!array_key_exists($elem['perso_id'],$agents)){
-	    $agents[$elem['perso_id']]=Array($elem['perso_id'],$elem['nom'],$elem['prenom'],0);
+	    $agents[$elem['perso_id']]=Array($elem['perso_id'],$elem['nom'],$elem['prenom'],0,"site"=>$elem['site']);
 	  }
 	  $agents[$elem['perso_id']][3]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
+	  // On compte les heures de chaque site
+	  if($config['Multisites-nombre']>1){
+	    $sites[$elem['site']]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
+	  }
+	  // On compte toutes les heures (globales)
 	  $heures+=diff_heures($elem['debut'],$elem['fin'],"decimal");
 	  
 	  foreach($postes_list as $elem2){
@@ -106,7 +138,7 @@ if(is_array($postes)){
 	    }
 	  }
 	//	On met dans tab tous les éléments (infos postes + agents + heures du poste)
-	$tab[$poste]=array($poste_tab,$agents,$heures);
+	$tab[$poste]=array($poste_tab,$agents,$heures,"sites"=>$sites);
 	}
       }
     }
@@ -156,6 +188,19 @@ if(is_array($postes_list)){
   }
 }
 echo "</select></td></tr>\n";
+
+if($config['Multisites-nombre']>1){
+  $nbSites=$config['Multisites-nombre'];
+  echo "<tr style='vertical-align:top'><td>Sites : </td>\n";
+  echo "<td><select name='selectedSites[]' multiple='multiple' size='".($nbSites+1)."' onchange='verif_select(\"selectedSites\");'>\n";
+  echo "<option value='Tous'>Tous</option>\n";
+  for($i=1;$i<=$nbSites;$i++){
+    $selected=in_array($i,$selectedSites)?"selected='selected'":null;
+    echo "<option value='$i' $selected>{$config["Multisites-site$i"]}</option>\n";
+  }
+  echo "</select></td></tr>\n";
+}
+
 echo "<tr><td colspan='2' style='text-align:center;'>\n";
 echo "<input type='button' value='Effacer' onclick='location.href=\"index.php?page=statistiques/postes_synthese.php&amp;debut=&amp;fin=&amp;postes=\"' />\n";
 echo "&nbsp;&nbsp;<input type='submit' value='OK' />\n";
@@ -189,8 +234,23 @@ if($tab){
     $total_heures+=$elem[2];
     $total_jour+=$jour;
     $total_hebdo+=$hebdo;
+    $siteEtage=array();
+    if($config['Multisites-nombre']>1){
+      for($i=1;$i<=$config['Multisites-nombre'];$i++){
+	if($elem["sites"][$i]==$elem[2]){
+	  $siteEtage[]=$config["Multisites-site{$i}"];
+	  continue;
+	}
+      }
+    }
+    if($elem[0][2]){
+      $siteEtage[]=$elem[0][2];
+    }
+    if(!empty($siteEtage)){
+      $siteEtage="(".join(" ",$siteEtage).")";
+    }
     echo "<tr style='vertical-align:top; background:$color;'>\n";
-    echo "<td style='padding-left:8px;'><b>{$elem[0][1]} ({$elem[0][2]})</b></td>\n";
+    echo "<td style='padding-left:8px;'><b>{$elem[0][1]}</b><br/><i>$siteEtage</i></td>\n";
     echo "<td style='padding-right:8px;text-align:right;'>".number_format(round($elem[2],2),2,',',' ')."</td>\n";
     echo "<td style='padding-right:8px;text-align:right;'>".number_format(round($jour,2),2,',',' ')."</td>\n";
     echo "<td style='padding-right:8px;text-align:right;'>".number_format(round($hebdo,2),2,',',' ')."</td></tr>\n";
