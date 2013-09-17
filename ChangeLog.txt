@@ -1,3 +1,13 @@
+***	Version 1.5.4	(Jérôme Combes, 17 septembre 2013)		***
+- Améliorations :
+Corrige la position des sous-menus
+Supprime la variable $config['url'] simplifiant les migrations
+Ajout des statistiques par service et par statut
+Ajout des heures faites sur chaque site dans les statistiques
+Ajout du filtre sur les sites dans les statistiques
+Ajout des heures par service et par statut dans les statistiques par poste
+Permet la modification des étages des postes
+
 ***	Version 1.5.4	(Jérôme Combes, 4 septembre 2013)		***
 - Améliorations :
 Ajout des infobulles sur les icônes de la page "planning"
