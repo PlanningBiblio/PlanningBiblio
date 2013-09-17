@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 13 septembre 2013
+Dernière modification : 17 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -300,21 +300,19 @@ if(strcmp("1.5.4",$config['Version'])>0){
 if(strcmp("1.5.5",$config['Version'])>0){
   //	Suppression de la ligne "url" dans la table config
   $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom`='url';";
-  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.5.5' WHERE `nom`='Version';";
-}
-
-//	Mise a  jour de la base version 1.5.5 -> 1.5.6
-if(strcmp("1.5.6",$config['Version'])>0){
+  //	Ajout des nouvelles statistiques dans le menu
   $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES 
     ('40','24','Par service','statistiques/service.php'), ('40','26','Par statut','statistiques/statut.php');";
   $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Statistiques', 17, 'Statistiques', 'statistiques/service.php'),
     (NULL, 'Statistiques', 17, 'Statistiques', 'statistiques/statut.php');";
+  //	Modification des étages dans les selects
   $sql[]="CREATE TABLE `{$dbprefix}select_etages` (`id` int(11) NOT NULL AUTO_INCREMENT, `valeur` text NOT NULL DEFAULT '', 
     `rang` int(11) NOT NULL DEFAULT '0', PRIMARY KEY (`id`) ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
   $sql[]="INSERT INTO `{$dbprefix}select_etages` (`valeur`,`rang`) VALUES ('Mezzanine',1),('RDC',2),('RDJ',3),('Magasins',4);";
   $sql[]="ALTER TABLE `{$dbprefix}postes` CHANGE `etage` `etage` TEXT;";
   $sql[]="ALTER TABLE `{$dbprefix}postes` ADD `site` INT(1) DEFAULT '1';";
-  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.5.6' WHERE `nom`='Version';";
+  //	Numéro de version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.5.5' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage

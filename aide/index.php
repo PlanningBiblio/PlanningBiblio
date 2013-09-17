@@ -1,20 +1,20 @@
 <?php
-/************************************************************************************************************************
-* Planning Biblio, Version 1.5.5												*
-* Licence GNU/GPL (version 2 et au dela)										*
-* Voir les fichiers README.txt et COPYING.txt										*
-* Copyright (C) 2011-2013 - Jérôme Combes										*
-*															*
-* Fichier : aide/index.php												*
-* Création : mai 2011													*
-* Dernière modification : 16 janvier 2013										*
-* Auteur : Jérôme Combes, jerome@planningbilbio.fr									*
-*															*
-* Description :														*
-* Affiche l'aide en ligne												*
-*															*
-* Page appelée par la page index.php											*
-*************************************************************************************************************************/
+/*
+Planning Biblio, Version 1.5.5
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.txt et COPYING.txt
+Copyright (C) 2011-2013 - Jérôme Combes
+
+Fichier : aide/index.php
+Création : mai 2011
+Dernière modification : 17 septembre 2013
+Auteur : Jérôme Combes, jerome@planningbilbio.fr
+
+Description :
+Affiche l'aide en ligne
+
+Page appelée par la page index.php
+*/
 
 // pas de $version=acces direct aux pages de ce dossier => redirection vers la page index.php
 if(!$version){
@@ -76,6 +76,8 @@ if(!$version){
 	<ol>
 	<li><a href='#stat_temps'>Feuille de temps</a></li>
 	<li><a href='#stat_agent'>Statistiques par agent</a></li>
+	<li><a href='#stat_service'>Statistiques par service</a></li>
+	<li><a href='#stat_statut'>Statistiques par statut</a></li>
 	<li><a href='#stat_poste'>Statistiques par poste</a></li>
 	<li><a href='#stat_renfort'>Statistiques par postes de renfort</a></li>
 	<li><a href='#stat_synthese'>Statistiques par postes (Synthèse)</a></li>
@@ -107,13 +109,13 @@ Vous pouvez modifier les informations relatives à une absence en cliquant sur l
 <h4>1.2) Ajouter une absence</h4>
 <u><b>Si vous n'avez pas le droit de gérer les absences :</b></u><br/>
 Vous permet d'enregistrer une absence à l'avance si elle est prévue.<br/>
-Choisissez la date de début et de fin à l'aide des calendriers, le motif de l'absence (ex: Congé payé) et un commentaire éventuel.<br/>
+Choisissez la date de début et de fin à l'aide des calendriers, le motif de l'absence (ex: Formation) et un commentaire éventuel.<br/>
 Cliquez sur "Valider", une page de confirmation s'affiche, si tout est correct, cliquez de nouveau sur "Valider".<br/>
 
 <br/>
 <u><b>Si vous avez le droit de gérer les absences :</b></u><br/>
 Vous permet d'enregistrer les absences des agents.<br/> 
-Choisissez le nom de l'agent dans le menu déroulant, la date de début et de fin à l'aide des calendriers, le motif de l'absence (ex: Congé payé) et un commentaire éventuel.<br/>
+Choisissez le nom de l'agent dans le menu déroulant, la date de début et de fin à l'aide des calendriers, le motif de l'absence (ex: Formation) et un commentaire éventuel.<br/>
 Cliquez sur "Valider", une page de confirmation s'affiche, si tout est correct, cliquez de nouveau sur "Valider".<br/>
 
 <a name='abs_infos'></a>
@@ -125,20 +127,24 @@ Le message sera affiché pendant la période choisie dans le cadre permettant d'
 
 <a name='agenda'></a>
 <h3>2.) Agenda</h3>
-Permet d'afficher l'agenda d'un agent entre 2 dates.<br/>
-Sélectionnez la date de début et de fin à l'aide des calendriers et le nom de l'agent dans le menu déroulant puis validez en cliquant sur "OK".<br/>
-Les heures de pr&eacute;sence, les absences et la liste des postes occupés par l'agent s'affichent avec les heures de début et de fin.<br/>
+Permet d'afficher votre agenda entre 2 dates.<br/>
+Sélectionnez la date de début et de fin à l'aide des calendriers puis validez en cliquant sur "OK".<br/>
+Vos heures de pr&eacute;sence, vos absences et la liste des postes occupés s'affichent avec les heures de début et de fin.<br/>
+<u>Si vous en avez le droits</u>, vous pouvez voir les agendas des autres agents. 
+Vous pouvez dans ce cas s&eacute;lectionnez le nom de  l'agent dans un menu déroulant.
 
 <a name='planning'></a>
 <h3>3.) Planning</h3>
 <a name='pl_consul'></a>
 <h4>3.1) Consultation</h4>
 Permet à tous les agents de consulter le planning.<br/>
+Si votre biblioth&egrave;que a plusieurs sites, s&eacute;lectionnez le site voulu dans le sous menu "Planning".<br/>
 Sélectionnez la date voulue à l'aide du calendrier ou du jour de la semaine et le planning choisi s'affiche.<br/>
-Par défaut, le planning du jour courant est affiché.<br/>
+Par défaut, le planning du jour courant du premier site est affiché.<br/>
 Si le planning n'est pas terminé, le message "Le planning du [date] n'est pas validé" s'affiche.<br/>
 Sinon, un tableau composé en lignes du nom des postes et en colonnes des horaires s'affiche.<br/>
 Dans les cellules apparaissent le nom des agents.<br/>
+Selon la configuration de l'application, la liste des absents et/ou des présents est affiché en bas du planning.
 
 <a name='pl_modif'></a>
 <h4>3.2) Modification</h4>
@@ -156,7 +162,7 @@ En fonction des heures faites et à faire, la couleur de la cellule change :
 <ul style='margin-top:0px;'>
 <li>Vert : le quota d'heure par semaine sera atteint à plus ou moins 30 minutes.</li>
 <li>Rouge : soit l'agent fera plus de 7 heures par jours, soit l'agent dépassera son quota de plus de 30 minutes.</li>
-<li>Noir : Aucun problème.</li>
+<li>Noir : Le quota ne sera pas atteint.</li>
 </ul>
 Si un agent a déjà effectué le poste choisi dans la journée, il apparaîtra en rouge dans le menu avec le message 
 "(DP)" (Déjà Placé).<br/>
@@ -181,7 +187,7 @@ copie pour un autre jour ou une autre semaine.<br/>
 Pour récupérer un modèle, cliquez sur l'icône représentant un dossier jaune. Sélectionnez le nom du modèle à 
 importer dans le menu déroulant.<br/>
 Lorsque le nom est suivi de "(semaine)", il s'agit d'un planning d'une semaine complète. Dans ce cas, les plannings 
-du lundi au samedi de la semaine courante seront remplacés par ceux du modèle.<br/>
+du lundi au samedi/dimanche de la semaine courante seront remplacés par ceux du modèle.<br/>
 Lorsque le nom n'est pas suivi de "(semaine)", seul le jour courant sera remplacé.<br/>
 Attention, si vous avez déjà saisi des informations dans le planning, elles seront perdues.<br/>
 Pour modifier le nom d'un modèle ou en supprimer un, rendez-vous dans le menu "Administration - Les Modèles".
@@ -197,6 +203,7 @@ Pour ceci, cliquez sur l'icône représentant un cadenas en haut à droite.<br/>
 Une fois validé, le planning n'est plus modifiable. Votre nom ainsi que la date et l'heure de validation apparaissent en haut à droite du planning.<br/>
 Si vous devez modifier votre planning, cliquez sur l'icône représentant un cadenas ouvert.
 Modifiez le planning et validez-le de nouveau afin de le rendre accessible. Le nom, la date et l'heure de validation sont mis à jour.<br/>
+
 <a name='pl_imprime'></a>
 <h4>3.6) Impression</h4>
 Vous pouvez imprimer le planning en cliquant sur l'icône représentant une imprimante (en haut à droite) 
@@ -360,14 +367,11 @@ Vous pouvez modifier les noms, ajouter des activités, en supprimer (si elles ne
 <h3>8.) Statistiques</h3>
 <a name='stat_temps'></a>
 <h4>8.1) Feuille de temps</h4>
-La feuille de temps est un tableau qui vous permet de voir le nombre d'heures effectuées par jour par agent 
-pour la semaine choisie. L'avant dernière colonne est le total d'heures de la semaine par agent. 
-La dernière colonne affiche le quota d'heure par semaine.<br/>
-L'avant dernière ligne montre le total d'heures par jour et pour la semaine.<br/>
-La dernière ligne montre le nombre d'agents par jour et pour la semaine.<br/>
-Pour voir la feuille de temps d'une autre semaine, choisissez une date à l'aide du calendrier et cliquez sur "OK". 
-Le tableau de la semaine correspondant à la date choisie s'affichera.
-
+La feuille de temps est un tableau qui vous permet de voir le nombre d'heures effectuées par jour et par agent 
+entre deux dates. Par défaut, le tableau affiche les heures de la semaine courante.<br/>
+Les dernières colonnes affichent le total d'heures par agent sur la période, la moyenne hebdomadaire et les quotas d'heures 
+sur la période et par semaine.<br/>
+Les deux dernières lignes affichent le total d'heures et le nombre d'agents par jour.
 
 <a name='stat_agent'></a>
 <h4>8.2) Statistiques par agent</h4>
@@ -375,18 +379,27 @@ Les statistiques par agent affichent un tableau contenant par agent :
 <ul>
 <li>Le nombre d'heures faites entre les dates choisies</li>
 <li>La moyenne d'heures par semaine</li>
+<li>Le nombre d'heures et la moyenne hebdomadaire par site (si votre bibliothèque a plusieurs sites)</li>
 <li>Les postes occupés</li>
 <li>Les heures effectuées par poste</li>
 <li>Le nombre de samedis, dimanches et jours feriés travaillés</li>
 <li>Les dates des samedis, dimanches et jours feriés travaillés</li>
-<li>Le nombre d'heures d'asbsences ainsi que les jours correspondant.</li>
+<li>Le nombre d'heures d'absences ainsi que les jours correspondant.</li>
 </ul>
 Choisissez la date de début, la date de fin et les agents dans le menu déroulant.<br/>
 Vous pouvez sélectionner plusieurs agents à l'aide des touches du clavier CTRL ou MAJ ou en cliquant sur "Tous".<br/>
 Cliquez ensuite sur le bouton "OK".
 
+<a name='stat_service'></a>
+<h4>8.3) Statistiques par service</h4>
+Affiche les mêmes informations que les statistiques par agents en les groupant par service.
+
+<a name='stat_statut'></a>
+<h4>8.4) Statistiques par statut</h4>
+Affiche les mêmes informations que les statistiques par agents en les groupant par statut.
+
 <a name='stat_poste'></a>
-<h4>8.3) Statistiques par poste</h4>
+<h4>8.5) Statistiques par poste</h4>
 Les statistiques par poste affichent un tableau contenant par poste :
 <ul>
 <li>Le nombre d'heures faites entre les dates choisies</li>
@@ -401,7 +414,7 @@ Choisissez les postes dans le menu déroulant. Vous pouvez sélectionner plusieu
 Cliquez ensuite sur le bouton "OK".
 
 <a name='stat_renfort'></a>
-<h4>8.4) Statistiques par poste de renfort</h4>
+<h4>8.6) Statistiques par poste de renfort</h4>
 Les statistiques par poste de renfort affichent un tableau contenant par poste de renfort uniquement :
 <ul>
 <li>Le nombre d'heures faites entre les dates choisies</li>
@@ -416,7 +429,7 @@ Choisissez les postes dans le menu déroulant. Vous pouvez sélectionner plusieu
 Cliquez ensuite sur le bouton "OK".
 
 <a name='stat_synthese'></a>
-<h4>8.5) Statistiques par poste (Synthèse)</h4>
+<h4>8.7) Statistiques par poste (Synthèse)</h4>
 Les statistiques par poste (Synthèse) affichent un tableau contenant par poste :
 <ul>
 <li>Le nombre d'heures faites entre les dates choisies</li>

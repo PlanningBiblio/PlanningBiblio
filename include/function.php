@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 10 septembre 2013
+Dernière modification : 17 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -178,6 +178,16 @@ function cmp_jour($a,$b){
 
 function cmp_nom($a,$b){
   return $a['nom'] > $b['nom'];
+}
+
+function cmp_debut_fin_nom($a,$b){
+  if($a['debut'] == $b['debut']){
+    if($a['fin'] == $b['fin']){
+      return strtolower(html_entity_decode($a['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8")) > strtolower(html_entity_decode($b['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+    }
+    return $a['fin'] > $b['fin'];
+  }
+  return $a['debut'] > $b['debut'];
 }
 
 function cmp_semaine($a,$b){

@@ -22,7 +22,7 @@ Page en sortie :inclus le fichier footer.php
 
 session_start();
 
-ini_set('display_errors',1);
+ini_set('display_errors',0);
 ini_set('error_reporting',E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 
 date_default_timezone_set("Europe/Paris");
