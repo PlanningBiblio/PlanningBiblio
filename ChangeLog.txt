@@ -1,4 +1,4 @@
-***	Version 1.5.4	(Jérôme Combes, 17 septembre 2013)		***
+***	Version 1.5.5	(Jérôme Combes, 17 septembre 2013)		***
 - Améliorations :
 Corrige la position des sous-menus
 Supprime la variable $config['url'] simplifiant les migrations
