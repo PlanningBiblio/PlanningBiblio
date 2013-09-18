@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 4 septembre 2013
+Dernière modification : 18 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -55,10 +55,17 @@ $t=new tableau();
 $t->fetchAllGroups();
 $groupes=$t->elements;
 
-// Multisites : la variable $site est égale à 1 par défaut. Elle prend la valeur GET['site'] si elle existe, sinon la valeur de la SESSION ['site']
+// Multisites : la variable $site est égale à 1 par défaut.
+// Elle prend la valeur GET['site'] si elle existe, sinon la valeur de la SESSION ['site']
+// En dernier lieu, la valeur du site renseignée dans la fiche de l'agent
 $site=isset($_GET['site'])?$_GET['site']:null;
 if(!$site and array_key_exists("site",$_SESSION['oups'])){
   $site=$_SESSION['oups']['site'];
+}
+if(!$site){
+  $db=new db();
+  $db->select("personnel","site","id='{$_SESSION['login_id']}'");
+  $site=$db->result[0]['site'];
 }
 $site=$site?$site:1;
 $_SESSION['oups']['site']=$site;

@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 17 septembre 2013
+Dernière modification : 18 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -193,11 +193,7 @@ if(strcmp("1.5",$config['Version'])>0){
   // Multisites
   $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-nombre','enum','1','Nombre de sites','Multisites','1,2','3');";
   $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-site1','text','','Nom du site N°1','Multisites','','3');";
-  $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-resp1','text','','Nom du responsable du site N°1','Multisites','','3');";
-  $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-email1','text','','Email du responsable du site N°1','Multisites','','3');";
   $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-site2','text','','Nom du site N°2','Multisites','','3');";
-  $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-resp2','text','','Nom du responsable du site N°2','Multisites','','3');";
-  $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-email2','text','','Email du responsable du site N°2','Multisites','','3');";
   $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-agentsMultisites','boolean','0','Les agents peuvent travailler sur plusieurs sites','Multisites','','3');";
   $sql[]="ALTER TABLE `{$dbprefix}pl_poste_tab_affect` CHANGE `service` `site` INT;";
   $sql[]="ALTER TABLE `{$dbprefix}pl_poste` ADD `site` INT(3) DEFAULT 1;";
@@ -311,6 +307,11 @@ if(strcmp("1.5.5",$config['Version'])>0){
   $sql[]="INSERT INTO `{$dbprefix}select_etages` (`valeur`,`rang`) VALUES ('Mezzanine',1),('RDC',2),('RDJ',3),('Magasins',4);";
   $sql[]="ALTER TABLE `{$dbprefix}postes` CHANGE `etage` `etage` TEXT;";
   $sql[]="ALTER TABLE `{$dbprefix}postes` ADD `site` INT(1) DEFAULT '1';";
+  //	Multisites
+  $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom`='Multisites-resp1';";
+  $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom`='Multisites-email1';";
+  $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom`='Multisites-resp2';";
+  $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom`='Multisites-email2';";
   //	Numéro de version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.5.5' WHERE `nom`='Version';";
 }

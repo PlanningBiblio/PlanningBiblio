@@ -313,7 +313,7 @@ echo "</td></tr>\n";
 echo "<tr class='menudiv-titre'><td colspan='2'>".heure2($debut)." - ".heure2($fin)."</td></tr>\n";
 
 //		-----------		Affichage de la liste des services		----------//
-if($config['Affiche_services'] and $services){
+if($services){
   $i=0;
   foreach($services as $elem){
     if(array_key_exists($elem['service'],$newtab)){
@@ -324,12 +324,6 @@ if($config['Affiche_services'] and $services){
     }
     $i++;
   }
-}
-else{
-  echo "<tr onmouseover='this.style.background=\"#7B7B7B\";' onmouseout='this.style.background=\"#FFFFFF\";'>\n";
-  echo "<td colspan='2' style='width:200px;background:#FFFFFF;'>";
-  echo "Afficher les agents ici";
-  echo "</td></tr>\n";
 }
 //		-----------		Affichage des agents indisponibles		----------//
 if(count($newtab["Autres"]) and $config['agentsIndispo']){
