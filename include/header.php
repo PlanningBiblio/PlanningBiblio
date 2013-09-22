@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 6 septembre 2013
+Dernière modification : 19 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -24,37 +24,27 @@ if(!$version){
 <head>
 <title>Planning</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-<?php
-echo "<link rel='StyleSheet' href='css/style.css' type='text/css' media='screen'/>\n";
-echo "<link rel='StyleSheet' href='css/print.css' type='text/css' media='print'/>\n";
-?>
 
-<!--[if IE]>
-<style type='text/css' media='print'>
-body{
-  width:350mm;
-  height:240mm;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.75, M12=0, M21=0, M22=0.75, SizingMethod='auto expand'); progid:DXImageTransform.Microsoft.BasicImage(rotation=3);"; 
-  left:-10mm;
-  bottom:22mm;
-}
-</style>
-<![endif]-->
+<script type='text/JavaScript' src='js/jquery-1.10.2.min.js'></script>
+<script src="js/jquery-ui-1.10.3/ui/jquery-ui.js"></script>
+<script type='text/JavaScript' src='js/script.js'></script>
+<script type='text/JavaScript' src='js/infobulles.js'></script>
+<script type='text/JavaScript' src='js/dialog.js'></script>
+
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+<link rel='StyleSheet' href='css/jquery-ui-themes-1.10.3/themes/smoothness/jquery-ui.min.css' type='text/css' media='screen'/>
+<link rel='StyleSheet' href='css/style.css' type='text/css' media='screen'/>
+<link rel='StyleSheet' href='css/print.css' type='text/css' media='print'/>
+
 <?php
-echo "<script type='text/JavaScript' src='js/jquery-1.10.2.min.js'></script>\n";
-echo "<script type='text/JavaScript' src='js/script.js'></script>\n";
-echo "<script type='text/JavaScript' src='js/infobulles.js'></script>\n";
 foreach($plugins as $elem){
   if(file_exists("plugins/$elem/js/script.$elem.js")){
     echo "<script type='text/JavaScript' src='plugins/$elem/js/script.$elem.js'></script>\n";
   }
 }
-?>
-</head>
 
+echo "</head>\n";
 
-<?php
 echo $page=="aide/index.php"?"<body onscroll='position_retour();'>\n":"<body>\n";
 if(!isset($_GET['positionOff'])){
   echo <<<EOD
@@ -71,6 +61,3 @@ EOD;
 <div style='position:relative;top:30px;'>
 <iframe id='calendrier' style='display:none' scrolling='no'></iframe>
 </div>
-
-
-
