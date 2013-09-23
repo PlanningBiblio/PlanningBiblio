@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification : 20 septembre 2013
+Dernière modification : 23 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -14,6 +14,8 @@ Feuille de style principale du programme.
 
 Incluse dans les fichiers include/header.php et setup/header.php
 */
+
+@import "jquery-ui-themes-1.10.3/themes/humanity/jquery-ui.min.css";
 
 body,a,a:hover,input,select,textarea,button {
 	color:#7D3C25;
@@ -103,13 +105,13 @@ body {
   padding-top: 20px;
 }
 
-.tableauFiches select{
-  width: 100%;
-}
-
 .tableauFiches input[type=text]{
   width: 200px;
   text-align:center;
+}
+
+.tableauFiches select, .tableauFiches input[type=text].ui-widget-content{
+  width: 100%;
 }
 
 .tableauFiches textarea{
@@ -125,6 +127,7 @@ body {
   padding-top:20px;
   text-align:center;
 } 
+
 /*		Menu JavaScript		*/
 .navigation { position:relative;height:30px;}
 .popper { position: absolute; visibility: hidden; z-index:20; }
