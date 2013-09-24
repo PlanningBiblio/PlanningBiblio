@@ -36,3 +36,8 @@ Ressources :
  - Auteur         : Olravet
  - Date édition   : 05 Mai 2008
  - Website auteur : http://olravet.fr/
+
+  Fichiers et dossiers js/jquery*, css/jquery*
+  - Bibliothèques JQuery
+  - Bibliothèques et thèmes JQuery-UI
+  - Licence MIT : https://jquery.org/license
