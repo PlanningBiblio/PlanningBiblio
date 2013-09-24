@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 12 septembre 2013
+Dernière modification : 24 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -119,6 +119,25 @@ function checkall(form,me){
   }
 }
 
+function dateDiff(date1,date2){
+  var diff={}
+  var tmp=date2-date1;
+
+  tmp=Math.floor(tmp/1000);
+  diff.sec=tmp%60;
+  
+  tmp=Math.floor((tmp-diff.sec)/60);
+  diff.min=tmp%60;
+  
+  tmp=Math.floor((tmp-diff.min)/60);
+  diff.hour=tmp%24;
+
+  tmp=Math.floor((tmp-diff.hour)/24);
+  diff.day=tmp;
+  
+  return diff;
+}
+  
 function dateFr(date){
   tab=date.split("-");
   date=tab[2]+"/"+tab[1]+"/"+tab[0];

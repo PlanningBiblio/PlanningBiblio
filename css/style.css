@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification : 23 septembre 2013
+Dernière modification : 24 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,7 +20,7 @@ Incluse dans les fichiers include/header.php et setup/header.php
 body,a,a:hover,input,select,textarea,button {
 	color:#7D3C25;
 	font-family:Verdana;
-	font-size:16px;
+	font-size:14px;
 	}
 
 input:disabled {
@@ -28,7 +28,7 @@ input:disabled {
 }
 
 input,select,textarea {
-	font-size:14px;
+	font-size:12px;
 	}
 
 body {
@@ -190,7 +190,7 @@ select
 	{
 	margin-left:10px;
 	color:#7D3C25;
-	font-size:18pt;
+	font-size:16pt;
 	}
 
 #onglets ul {
@@ -827,9 +827,8 @@ img{
   font-size:9pt;
 }
 
-/* JQuery UI Dialog */
-div#users-contain { width: 350px; margin: 20px 0; }
-div#users-contain table { margin: 1em 0; border-collapse: collapse; width: 100%; }
-div#users-contain table td, div#users-contain table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
-.ui-dialog .ui-state-error { padding: .3em; }
-.validateTips { border: 1px solid transparent; padding: 0.3em; }
+/* JQuery UI */
+.ui-widget-header {
+  background: #FF7F3F url(images/ui-bg_glass_25_cb842e_1x400.png) 50% 50% repeat-x;
+  color:#7D3C25;
+}
