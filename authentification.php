@@ -1,4 +1,4 @@
-// <?php
+<?php
 /*
 Planning Biblio, Version 1.5.6
 Licence GNU/GPL (version 2 et au dela)
