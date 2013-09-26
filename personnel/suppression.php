@@ -1,21 +1,21 @@
 <?php
-/********************************************************************************************************************************
-* Planning Biblio, Version 1.5.6													*
-* Licence GNU/GPL (version 2 et au dela)											*
-* Voir les fichiers README.txt et COPYING.txt											*
-* Copyright (C) 2011-2013 - Jérôme Combes											*
-*																*
-* Fichier : personnel/suppression.php												*
-* Création : mai 2011														*
-* Dernière modification : 16 janvier 2013											*
-* Auteur : Jérôme Combes, jerome@planningbilbio.fr										*
-*																*
-* Description :															*
-* Supprime un agent à partir de la liste des agents en cliquant sur l'icône corbeille (fichier personnel/index.php).		*
-* L'agent n'est pas supprimé définitivement, il est marqué comme supprimé dans la table personnel (champ supprime=1)		*
-*																*
-* Cette page est appelée par le fichier index.php										*
-*********************************************************************************************************************************/
+/*
+Planning Biblio, Version 1.5.6
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.txt et COPYING.txt
+Copyright (C) 2011-2013 - Jérôme Combes
+
+Fichier : personnel/suppression.php
+Création : mai 2011
+Dernière modification : 26 septembre 2013
+Auteur : Jérôme Combes, jerome@planningbilbio.fr
+
+Description :
+Supprime un agent à partir de la liste des agents en cliquant sur l'icône corbeille (fichier personnel/index.php).
+L'agent n'est pas supprimé définitivement, il est marqué comme supprimé dans la table personnel (champ supprime=1)
+
+Cette page est appelée par le fichier index.php
+*/
 
 require_once "class.personnel.php";
 
@@ -47,7 +47,7 @@ function etape1(){
   echo "&nbsp;&nbsp;\n";
   if($db->result[0]['actif']=="Supprim&eacute;")		// Suppression définitive
     echo "<a href='index.php?page=personnel/suppression.php&amp;menu=off&amp;id=$id&amp;etape=etape4'>Oui</a>\n";
-  else										// Marqué comme supprimé
+  else								// Marqué comme supprimé
     echo "<a href='index.php?page=personnel/suppression.php&amp;menu=off&amp;id=$id&amp;etape=etape2'>Oui</a>\n";
 }
 
@@ -72,8 +72,7 @@ function etape3(){
   global $id;
   $date=$_GET['date'];
       //	Mise à jour de la table personnel
-  $req="UPDATE `{$GLOBALS['dbprefix']}personnel` SET `actif`='Supprim&eacute;', `commentaires`='Supprim&eacute;', 
-  `depart`='$date' WHERE `id`='$id';";	
+  $req="UPDATE `{$GLOBALS['dbprefix']}personnel` SET `supprime`='1', `actif`='Supprim&eacute;', `depart`='$date' WHERE `id`='$id';";	
   $db=new db();
   $db->query($req);
       //	Mise à jour de la table pl_poste
@@ -86,7 +85,7 @@ function etape3(){
 function etape4(){
   global $id;
       //	Mise à jour de la table personnel
-  $req="UPDATE `{$GLOBALS['dbprefix']}personnel` SET `supprime`='1',`login`=CONCAT(`id`,'.',`login`) WHERE `id`='$id';";
+  $req="UPDATE `{$GLOBALS['dbprefix']}personnel` SET `supprime`='2',`login`=CONCAT(`id`,'.',`login`) WHERE `id`='$id';";
   $db=new db();
   $db->query($req);
   echo "<script type='text/JavaScript'>parent.window.location.reload(false);</script>";

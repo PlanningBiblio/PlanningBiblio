@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/suppression-liste.php
 Création : mai 2011
-Dernière modification : 28 juin 2013
+Dernière modification : 26 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -26,10 +26,10 @@ for($i=0;$i<count($keys);$i++){
 }
 $liste=join($liste,",");
 if($_SESSION['perso_actif']=="Supprimé"){
-  $req="UPDATE `{$dbprefix}personnel` SET `supprime`='1',`login`=CONCAT(`id`,'.',`login`) WHERE `id` IN ($liste);";
+  $req="UPDATE `{$dbprefix}personnel` SET `supprime`='2',`login`=CONCAT(`id`,'.',`login`) WHERE `id` IN ($liste);";
 }
 else{
-  $req="UPDATE `{$dbprefix}personnel` SET `actif`='Supprim&eacute;' WHERE `id` IN ($liste);";
+  $req="UPDATE `{$dbprefix}personnel` SET `supprime`='1', `actif`='Supprim&eacute;' WHERE `id` IN ($liste);";
 }
 $db=new db();
 $db->query($req);

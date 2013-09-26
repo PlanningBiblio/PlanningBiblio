@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 2 août 2013
+Dernière modification : 26 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -89,6 +89,7 @@ $tri=isset($_GET['tri'])?$_GET['tri']:"nom,prenom";
 echo "<script type='text/JavaScript'>document.form2.actif.value='".$_GET['actif']."';</script>";
 
 $p=new personnel();
+$p->supprime=strstr($_GET['actif'],"Supprim")?array(1):array(0);
 $p->fetch($tri,$_GET['actif'],$nom);
 $agents=$p->elements;
 

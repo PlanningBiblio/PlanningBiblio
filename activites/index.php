@@ -1,20 +1,20 @@
 <?php
-/************************************************************************************************************************
-* Planning Biblio, Version 1.5.6												*
-* Licence GNU/GPL (version 2 et au dela)										*
-* Voir les fichiers README.txt et COPYING.txt										*
-* Copyright (C) 2011-2013 - Jérôme Combes										*
-*															*
-* Fichier : activites/index.php												*
-* Création : mai 2011													*
-* Dernière modification : 11 janvier 2013										*
-* Auteur : Jérôme Combes, jerome@planningbilbio.fr									*
-*															*
-* Description :														*
-* Affiche la liste des activités, avec filtre sur le nom de l'activité							*
-*															*
-* Page appelée par la page index.php											*
-*************************************************************************************************************************/
+/*
+Planning Biblio, Version 1.5.6
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.txt et COPYING.txt
+Copyright (C) 2011-2013 - Jérôme Combes
+
+Fichier : activites/index.php
+Création : mai 2011
+Dernière modification : 26 septembre 2013
+Auteur : Jérôme Combes, jerome@planningbilbio.fr
+
+Description :
+Affiche la liste des activités, avec filtre sur le nom de l'activité
+
+Page appelée par la page index.php
+*/
 
 require_once "class.activites.php";
 
@@ -41,7 +41,7 @@ if($db->result){
 
 // 		Contrôle si l'activité est attribuée à un agent pour en interdire la suppression
 $db=new db();
-$db->query("SELECT `postes` FROM `{$dbprefix}personnel` WHERE `supprime`<>'1' GROUP BY `postes`;");
+$db->query("SELECT `postes` FROM `{$dbprefix}personnel` WHERE `supprime`<>'2' GROUP BY `postes`;");
 if($db->result){
   foreach($db->result as $elem){
     $tab[]=unserialize($elem['postes']);

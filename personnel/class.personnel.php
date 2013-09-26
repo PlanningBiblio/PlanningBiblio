@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 23 juillet 2013
+Dernière modification : 26 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -24,15 +24,28 @@ if(!$version){
 
 class personnel{
   public $elements=array();
+  // supprime : permet de sélectionner les agents selon leur état de suppression
+  // Tableau, valeur 0=pas supprimé, 1=1ère suppression (corbeille), 2=suppression définitive
+  public $supprime=array(0);
 
   public function personnel(){
   }
 
   public function fetch($tri="nom",$actif=null,$name=null){
-    //	Select All with filter "actif"
+    $filter=array();
+
+    // Filtre selon le champ actif (administratif, service public)
     $actif=htmlentities($actif,ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
-    $actif=$actif?"`actif`='$actif'":null;
-    $filter=$actif?"supprime<>'1' AND $actif":"supprime<>'1'";
+    if($actif){
+      $filter[]="`actif`='$actif'";
+    }
+
+    // Filtre selon le champ supprime
+    $supprime=join("','",$this->supprime);
+    $filter[]="`supprime` IN ('$supprime')";
+
+    $filter=join(" AND ",$filter);
+
     $db=new db();
     $db->select("personnel",null,$filter,"ORDER BY $tri");
     $all=$db->result;
