@@ -2,6 +2,7 @@
 - Améliorations :
 Modification du champ "supprime" de la table "personnel", facilite l'utilisation de la fonction personnel::fetch()
 Suppression des informations personnel des agents lors de la suppression definitive (garde nom, prenom, statut, service pour les stats et l'historique des plannings)
+Affiche les jours de fermeture dans les agendas
 
 ***	Version 1.5.6	(Jérôme Combes, 24 septembre 2013)		***
 - Améliorations :

@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 1.5.6
+Planning Biblio, Version 1.5.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
@@ -324,6 +324,7 @@ if(strcmp("1.5.7",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}personnel` SET `supprime`='2' WHERE `supprime`='1';";
   $sql[]="UPDATE `{$dbprefix}personnel` SET `supprime`='1' WHERE `actif` LIKE 'Supprim%';";
   $sql[]="UPDATE `{$dbprefix}menu` SET `titre`='Jours de fermeture' WHERE `url`='joursFeries/index.php';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.5.7' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage

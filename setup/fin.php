@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 1.5.6
+Planning Biblio, Version 1.5.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
@@ -17,7 +17,7 @@ du responsable.
 Affiche le message "configuration terminée" et invite l'utilisateur à se connecter au planning
 */
 
-$version="1.5.6";
+$version="1.5.7";
 include "../include/config.php";
 include "header.php";
 
