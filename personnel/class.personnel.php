@@ -31,6 +31,33 @@ class personnel{
   public function personnel(){
   }
 
+  public function delete($liste){
+    $update=array("supprime"=>"2","login"=>"CONCAT(id,".time().")","mail"=>null,"arrivee"=>null,"depart"=>null,"postes"=>null,"droits"=>null,
+      "password"=>null,"commentaires"=>"Suppression définitive le ".date("d/m/Y"), "last_login"=>null, "temps"=>null, 
+      "informations"=>null, "recup"=>null, "heuresTravail"=>null, "heuresHebdo"=>null, "site"=>null);
+    
+    $db=new db();
+    $db->update2("personnel",$update,"`id` IN ($liste)");
+
+    $db=new db();
+    $db->select("plugins");
+    $plugins=array();
+    if($db->result){
+      foreach($db->result as $elem){
+	$plugins[]=$elem['nom'];
+      }
+    }
+ 
+    $version=$GLOBALS['config']['Version'];	// Pour autoriser les accès aux pages suppression_agents
+    if(in_array("conges",$plugins)){
+      include "plugins/conges/suppression_agents.php";
+    }
+    if(in_array("planningHebdo",$plugins)){
+      include "plugins/planningHebdo/suppression_agents.php";
+    }
+
+  }
+
   public function fetch($tri="nom",$actif=null,$name=null){
     $filter=array();
 

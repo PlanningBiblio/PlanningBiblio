@@ -320,7 +320,7 @@ if(strcmp("1.5.6",$config['Version'])>0){
 }
 
 if(strcmp("1.5.7",$config['Version'])>0){
-  $sql[]="ALTER TABLE `{$dbprefix}personnel` CHANGE `supprime` `supprime` ENUM('0','1','2');";
+  $sql[]="ALTER TABLE `{$dbprefix}personnel` CHANGE `supprime` `supprime` ENUM('0','1','2') NOT NULL DEFAULT '0';";
   $sql[]="UPDATE `{$dbprefix}personnel` SET `supprime`='2' WHERE `supprime`='1';";
   $sql[]="UPDATE `{$dbprefix}personnel` SET `supprime`='1' WHERE `actif` LIKE 'Supprim%';";
 }

@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 13 août 2013
+Dernière modification : 26 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -126,6 +126,12 @@ switch($action){
     $update=array("nom"=>$nom, "prenom"=>$prenom, "mail"=>$mail, "statut"=>$statut, "service"=>$service, "heuresHebdo"=>$heuresHebdo, 
       "heuresTravail"=>$heuresTravail, "actif"=>$actif, "droits"=>$droits, "arrivee"=>$arrivee, "depart"=>$depart, "postes"=>$postes,
       "informations"=>$informations, "recup"=>$recup, "site"=>$site);
+    // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
+    if(!strstr($actif,"Supprim")){
+      $update["supprime"]="0";
+      $update["depart"]="0000-00-00";
+    }
+    // Mise à jour de l'emploi du temps si modifié à partir de la fiche de l'agent
     if($temps){
       $update["temps"]=$temps;
     }

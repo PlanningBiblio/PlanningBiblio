@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 3 septembre 2013
+Dernière modification : 26 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -86,7 +86,12 @@ class db{
       if(!is_serialized($set[$field]))
 	$set[$field]=htmlentities($set[$field],ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
       $set[$field]=mysql_real_escape_string($set[$field],$this->conn);
-      $tmp[]="`{$field}`='{$set[$field]}'";
+      if(substr($set[$field],0,7)=="CONCAT("){
+	$tmp[]="`{$field}`={$set[$field]}";
+      }
+      else{
+	$tmp[]="`{$field}`='{$set[$field]}'";
+      }
     }
     $set=join(",",$tmp);
     if(is_array($where)){

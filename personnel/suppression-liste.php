@@ -26,13 +26,15 @@ for($i=0;$i<count($keys);$i++){
 }
 $liste=join($liste,",");
 if($_SESSION['perso_actif']=="Supprimé"){
-  $req="UPDATE `{$dbprefix}personnel` SET `supprime`='2',`login`=CONCAT(`id`,'.',`login`) WHERE `id` IN ($liste);";
+  $p=new personnel();
+  $p->delete($liste);
+//   $req="UPDATE `{$dbprefix}personnel` SET `supprime`='2',`login`=CONCAT(`id`,'.',`login`) WHERE `id` IN ($liste);";
 }
 else{
   $req="UPDATE `{$dbprefix}personnel` SET `supprime`='1', `actif`='Supprim&eacute;' WHERE `id` IN ($liste);";
+  $db=new db();
+  $db->query($req);
 }
-$db=new db();
-$db->query($req);
 
 echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/index.php';</script>\n";
 ?>

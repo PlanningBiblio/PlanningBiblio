@@ -102,7 +102,7 @@ $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `temps` text NOT NULL,
   `informations` text NOT NULL,
   `recup` text NOT NULL,
-  `supprime` ENUM('0','1','2') DEFAULT '0',
+  `supprime` ENUM('0','1','2') NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `login` (`login`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";

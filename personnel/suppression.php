@@ -85,9 +85,11 @@ function etape3(){
 function etape4(){
   global $id;
       //	Mise à jour de la table personnel
-  $req="UPDATE `{$GLOBALS['dbprefix']}personnel` SET `supprime`='2',`login`=CONCAT(`id`,'.',`login`) WHERE `id`='$id';";
-  $db=new db();
-  $db->query($req);
+  $p=new personnel();
+  $p->delete($id);
+//   $req="UPDATE `{$GLOBALS['dbprefix']}personnel` SET `supprime`='2',`login`=CONCAT(`id`,'.',`login`) WHERE `id`='$id';";
+/*  $db=new db();
+  $db->query($req);*/
   echo "<script type='text/JavaScript'>parent.window.location.reload(false);</script>";
   echo "<script type='text/JavaScript'>popup_closed();</script>";
 }
