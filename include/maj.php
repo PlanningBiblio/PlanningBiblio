@@ -323,7 +323,9 @@ if(strcmp("1.5.7",$config['Version'])>0){
   $sql[]="ALTER TABLE `{$dbprefix}personnel` CHANGE `supprime` `supprime` ENUM('0','1','2') NOT NULL DEFAULT '0';";
   $sql[]="UPDATE `{$dbprefix}personnel` SET `supprime`='2' WHERE `supprime`='1';";
   $sql[]="UPDATE `{$dbprefix}personnel` SET `supprime`='1' WHERE `actif` LIKE 'Supprim%';";
+  $sql[]="UPDATE `{$dbprefix}menu` SET `titre`='Jours de fermeture' WHERE `url`='joursFeries/index.php';";
 }
+
 //	Execution des requetes et affichage
 foreach($sql as $elem){
   $db=new db();

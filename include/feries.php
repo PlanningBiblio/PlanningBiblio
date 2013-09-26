@@ -1,21 +1,21 @@
 <?php
-/********************************************************************************************************************************
-* Planning Biblio, Version 1.5.6													*
-* Licence GNU/GPL (version 2 et au dela)											*
-* Voir les fichiers README.txt et COPYING.txt											*
-* Copyright (C) 2011-2013 - Jérôme Combes											*
-*																*
-* Fichier : include/feries.php													*
-* Création : février 2012													*
-* Dernière modification : 17 janvier 2013											*
-* Auteur : Jérôme Combes, jerome@planningbilbio.fr										*
-*																*
-* Description :															*
-* Contient la fonction jour_ferie permettant de déterminer rapidement si un jour est férié (fêtes...)				*
-* Fonction jour_ferie de Olravet (http://olravet.fr) du 05 Mai 2008 modifiée pour prendre en paramètre la date au format 	*
-* YYYY-MM-DD et pour retourner le nom du jour ferié										*
-* Code source de Olravet commenté en page de cette page										*
-*********************************************************************************************************************************/
+/*
+Planning Biblio, Version 1.5.7
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.txt et COPYING.txt
+Copyright (C) 2011-2013 - Jérôme Combes
+
+Fichier : include/feries.php
+Création : février 2012
+Dernière modification : 17 janvier 2013
+Auteur : Jérôme Combes, jerome@planningbilbio.fr
+
+Description :
+Contient la fonction jour_ferie permettant de déterminer rapidement si un jour est férié (fêtes...)
+Fonction jour_ferie de Olravet (http://olravet.fr) du 05 Mai 2008 modifiée pour prendre en paramètre la date au format 
+YYYY-MM-DD et pour retourner le nom du jour ferié
+Code source de Olravet commenté en page de cette page
+*/
 
 // pas de $version=acces direct  => redirection vers la page index.php
 if(!$version){

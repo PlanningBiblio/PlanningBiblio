@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.5.6
+Planning Biblio, Version 1.5.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification : 24 septembre 2013
+Dernière modification : 26 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -14,8 +14,6 @@ Feuille de style principale du programme.
 
 Incluse dans les fichiers include/header.php et setup/header.php
 */
-
-@import "jquery-ui-themes-1.10.3/themes/humanity/jquery-ui.min.css";
 
 body,a,a:hover,input,select,textarea,button {
 	color:#7D3C25;
@@ -76,8 +74,8 @@ body {
   text-align:center;
 }
 
-#ferie {
-	color: #FF5E0E;
+#ferie,.ferie {
+  color: #FF5E0E;
 }
 
 

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.5.6
+Planning Biblio, Version 1.5.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 23 septembre 2013
+Dernière modification : 26 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -32,6 +32,7 @@ if(!$version){
 <script type='text/JavaScript' src='js/dialog.js'></script>
 
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+<link rel='StyleSheet' href='css/jquery-ui-themes-1.10.3/themes/humanity/jquery-ui.min.css' type='text/css' media='screen'/>
 <link rel='StyleSheet' href='css/style.css' type='text/css' media='screen'/>
 <link rel='StyleSheet' href='css/print.css' type='text/css' media='print'/>
 

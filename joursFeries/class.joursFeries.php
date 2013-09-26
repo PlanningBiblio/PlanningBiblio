@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.5.6
+Planning Biblio, Version 1.5.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : joursFeries/class.joursFeries.php
 Création : 25 juillet 2013
-Dernière modification : 1er août 2013
+Dernière modification : 26 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,9 +23,12 @@ if(!$version){
 
 class joursFeries{
   public $annee=null;
+  public $debut=null;
+  public $fin=null;
   public $auto=null;
   public $elements=array();
   public $error=false;
+  public $index=null;
 
   public function joursFeries(){
   }
@@ -36,12 +39,31 @@ class joursFeries{
   }
 
   public function fetch(){
-    // Recherche des jours fériés enregistrés dans la base de données 
     $tab=array();
+    $annees=array();
+
+    if($this->annee){
+      // Initilisation des dates de début et de fin
+      $this->debut=substr($this->annee,0,4)."-09-01";
+      $this->fin=(substr($this->annee,0,4)+1)."-08-31";
+      $annees[]=$this->annee;
+    }
+    else{
+      $first=date("m",strtotime($this->debut))<9?date("Y",strtotime($this->debut))-1:date("Y",strtotime($this->debut));
+      $last=date("m",strtotime($this->fin))<9?date("Y",strtotime($this->fin))-1:date("Y",strtotime($this->fin));
+      for($year=$first;$year<=$last;$year++){
+	$annees[]=$year."-".($year+1);
+      }
+    }
+
+    // Recherche des jours fériés enregistrés dans la base de données
+    $annees=join("','",$annees);
     $db=new db();
-    $db->select("joursFeries","*","annee='{$this->annee}'","ORDER BY `jour`");
+    $db->select("joursFeries","*","annee in ('$annees')","ORDER BY `jour`");
     if($db->result){
-      $tab=$db->result;
+      foreach($db->result as $elem){
+	$tab[$elem['jour']]=$elem;
+      }
     }
 
     if(empty($tab) or $this->auto){
@@ -51,19 +73,22 @@ class joursFeries{
       }
 
       // Recherche des jours fériés avec la fonction "jour_ferie"
-      $debut=substr($this->annee,0,4)."-09-01";
-      $fin=date("Y-m-d",strtotime("+1 year",strtotime($debut)));
-      for($date=$debut;$date<$fin;$date=date("Y-m-d",strtotime("+1 day",strtotime($date)))){
+      for($date=$this->debut;$date<$this->fin;$date=date("Y-m-d",strtotime("+1 day",strtotime($date)))){
 	if(jour_ferie($date)){
 	  if(!in_array($date,$tmp)){
-	    $tab[]=array("jour"=>$date,"ferie"=>1,"fermeture"=>0,
+	    $line=array("jour"=>$date,"ferie"=>1,"fermeture"=>0,
 	      "nom"=>htmlentities(jour_ferie($date),ENT_QUOTES|ENT_IGNORE,"UTF-8"),
 	      "commentaire"=>"Ajouté automatiquement");
+	    if($this->index and $this->index=="date"){
+	      $tab[$date]=$line;
+	    }else{
+	      $tab[]=$line;
+	    }
 	  }
 	}
       }
     }
-  usort($tab,"cmp_jour");
+  @usort($tab,"cmp_jour",true);
   $this->elements=$tab;
   }
 

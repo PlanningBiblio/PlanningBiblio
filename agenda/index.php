@@ -1,13 +1,13 @@
 <?php
 /*
-Panning Biblio, Version 1.5
+Panning Biblio, Version 1.5.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 20 août 2013
+Dernière modification : 26 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -21,6 +21,9 @@ Page appelée par la page index.php
 if(!$version){
   header("Location: ../index.php");
 }
+
+// Includes
+include "joursFeries/class.joursFeries.php";
 
 //	Initialisation des variables
 if(!array_key_exists('agenda_debut',$_SESSION)){
@@ -65,6 +68,15 @@ if(is_array($agents)){
   }
 }
 
+// Jours fériés
+$j=new joursFeries();
+$j->debut=$debut;
+$j->fin=$fin;
+$j->index="date";
+$j->fetch();
+$joursFeries=$j->elements;
+
+// Affichage
 if(isset($agent)){
   echo "<h3>Agenda de $agent du ".dateFr($debut)." au ".dateFr($fin).".</h3><br/>\n";
 }
@@ -156,8 +168,20 @@ while($current<=$fin){
   }
   echo "<td>";
   echo "<div style='font-weight:bold;text-decoration:underline;margin-bottom:10px;'>$date_aff</div>\n";
-  echo "<div>\n";
 
+  // Jours fériés : affiche Bibliothèque fermée et passe au jour suivant
+  if(array_key_exists($current,$joursFeries) and $joursFeries[$current]['fermeture']){
+    echo "<div class='ferie'>\n";
+    echo "Biblioth&egrave;que ferm&eacute;e<br/><b>{$joursFeries[$current]['nom']}</b>";
+    echo "</div></td>\n";
+    $current=date("Y-m-d",mktime(0,0,0,$date_tab[1],$date_tab[2]+1,$date_tab[0]));
+    if(($nb)%$nbColonnes==0){
+      echo "</tr>\n";
+    }
+    continue;
+  }
+
+  echo "<div>\n";
   $site=null;
   if($config['Multisites-nombre']>1 and $config['Multisites-agentsMultisites'] and isset($horaires[4])){
     if($horaires[4]){

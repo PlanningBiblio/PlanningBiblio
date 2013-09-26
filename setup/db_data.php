@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : setup/db_data.php
 Création : mai 2011
-Dernière modification : 17 septembre 2013
+Dernière modification : 26 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -167,7 +167,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES
   ('50','40','Les postes','postes/index.php'),
   ('50','50','Les modèles','planning/modeles/index.php'),
   ('50','60','Les tableaux','planning/postes_cfg/index.php'),
-  ('50','70','Les jours fériés','joursFeries/index.php'),
+  ('50','70','Jours de fermeture','joursFeries/index.php'),
   ('50','80','Configuration','admin/config.php'),
   ('60','0','Aide','aide/index.php');";
 
