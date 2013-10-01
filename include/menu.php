@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/menu.php
 Création : mai 2011
-Dernière modification : 6 septembre 2013
+Dernière modification : 27 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -133,7 +133,9 @@ echo "<div id='logout_text'><a href='authentification.php' >Déconnexion</a></di
 </table>
 </div>
 </div>
+<div class='noprint'>
 <br/>
 <br/>
+</div> <!-- noprint -->
 <iframe id='popup' style='display:none;' ></iframe>
 <!--				Fin du menu			-->

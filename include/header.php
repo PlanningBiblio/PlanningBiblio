@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 26 septembre 2013
+Dernière modification : 27 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -58,6 +58,6 @@ EOD;
 ?>
 
 <div id='opac' style='display:none'></div>
-<div style='position:relative;top:30px;'>
+<div style='position:relative;top:30px;' class='noprint'>
 <iframe id='calendrier' style='display:none' scrolling='no'></iframe>
 </div>

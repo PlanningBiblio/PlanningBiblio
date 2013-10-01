@@ -1,19 +1,23 @@
-/********************************************************************************************************************************
-* Planning Biblio, Version 1.5.7
-* Licence GNU/GPL (version 2 et au dela)											*
-* Voir les fichiers README.txt et COPYING.txt											*
-* Copyright (C) 2011-2013 - Jérôme Combes											*
-*																*
-* Fichier : css/print.css													*
-* Création : mai 2011														*
-* Dernière modification : 17 décembre 2012											*
-* Auteur : Jérôme Combes, jerome@planningbilbio.fr										*
-*																*
-* Description :															*
-* Feuille de style pour les impressions (media=print)										*
-*																*
-* Incluse dans les fichiers include/header.php et setup/header.php								*
-*********************************************************************************************************************************/
+/*
+Planning Biblio, Version 1.5.7
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.txt et COPYING.txt
+Copyright (C) 2011-2013 - Jérôme Combes
+
+Fichier : css/print.css
+Création : mai 2011
+Dernière modification : 27 septembre 2013
+Auteur : Jérôme Combes, jerome@planningbilbio.fr
+
+Description :
+Feuille de style pour les impressions (media=print)
+
+Incluse dans les fichiers include/header.php et setup/header.php
+*/
+
+body{
+  font-size:10pt;
+}
 
 #planning{
 	width:297mm;
@@ -26,7 +30,7 @@
 	bottom:50mm;
 }
 #tabsemaine1 {
-	font-size:11pt;
+	font-size:10pt;
 	white-space: nowrap;
 	}
 
@@ -48,6 +52,7 @@
 	white-space: nowrap;
 	}
 	
-a, img, .noprint, .popper, .footer{
+a, img, .noprint, .popper, .footer, .navigation, .ui-widget-header{
 	display:none;
 	}
+
