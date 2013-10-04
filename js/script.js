@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 24 septembre 2013
+Dernière modification : 4 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -658,7 +658,7 @@ function affiche_activites(div,action){
 }
 
 // 	bataille_navale : menu contextuel : met à jour la base de données en arrière plan et affiche les modifs en JS dans le planning
-function bataille_navale(perso_id,couleur,nom,barrer,ajouter,statut){
+function bataille_navale(perso_id,couleur,nom,barrer,ajouter,classe){
   db=file("index.php?page=planning/poste/majdb.php&poste="+poste+"&debut="+debut+"&fin="+fin+"&perso_id="+perso_id+"&date="+date+"&barrer="+barrer+"&ajouter="+ajouter);
   
   if(!perso_id && !barrer){			//	Supprimer tout
@@ -678,8 +678,8 @@ function bataille_navale(perso_id,couleur,nom,barrer,ajouter,statut){
     document.getElementById("cellule"+cellule).style.background=couleur;
     document.getElementById("cellule"+cellule).style.color="black";
     document.getElementById("cellule"+cellule).style.textDecoration="";
-    document.getElementById("td"+cellule).className="statut_"+statut;
-    document.getElementById("cellule"+cellule).className="cellule statut_"+statut;
+    document.getElementById("td"+cellule).className=+classe;
+    document.getElementById("cellule"+cellule).className="cellule "+classe;
     document.getElementById("cellule"+cellule+"b").style.display="none";
   }
   else if(perso_id && barrer){			// barrer et ajoute un autre
@@ -688,7 +688,7 @@ function bataille_navale(perso_id,couleur,nom,barrer,ajouter,statut){
     document.getElementById("cellule"+cellule+"b").style.background=couleur;
     document.getElementById("cellule"+cellule+"b").innerHTML=nom;
     document.getElementById("td"+cellule).className="";
-    document.getElementById("cellule"+cellule+"b").className="cellule statut_"+statut;
+    document.getElementById("cellule"+cellule+"b").className="cellule "+classe;
     document.getElementById("cellule"+cellule+"b").style.display="";
   }
   else if(perso_id && ajouter){			// ajouter un agent

@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification : 26 septembre 2013
+Dernière modification : 4 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -409,6 +409,10 @@ select
   cursor:pointer;
 }
 
+.menudiv-gris{
+  background:#7B7B7B;
+}
+
 #tab_titre{	/* planning/poste/index.php */
   width:100%;
   border: none;
@@ -751,12 +755,12 @@ img{
 .cellule,.statut_moniteur,.statut_permanent{
 }
 
-.statut_moniteur{
+.statut_moniteur, .service_moniteur{
   background:yellow;
   font-style:italic;
 }
 
-.statut_permanent{
+.statut_permanent, .service_permanent{
   background:#FFFFFF;
   font-weight:bold;
 }

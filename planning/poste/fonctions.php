@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 15 août 2013
+Dernière modification : 4 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -47,9 +47,16 @@ function cellule_poste($debut,$fin,$colspan,$output,$poste){
 	  $color=$elem['absent']==2?"orange":"red";
 	  $resultat="<s style='color:$color;'>$resultat</s>";
 	}
-	//		Classe en fonction du statut
-	$classe[$i]="statut_".strtolower(removeAccents($elem['statut']));
 
+	// Classe en fonction du statut et du service
+	$class_tmp=array();
+	if($elem['statut']){
+	  $class_tmp[]="statut_".strtolower(removeAccents($elem['statut']));
+	}
+	if($elem['service']){
+	  $class_tmp[]="service_".strtolower(removeAccents($elem['service']));
+	}
+	$classe[$i]=empty($class_tmp)?null:join(" ",$class_tmp);
 
 	$resultats[$i]=$resultat;
 	$i++;

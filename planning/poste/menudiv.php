@@ -461,10 +461,19 @@ if($agents_tous){
       $nom_menu="<font style='color:red'>$nom_menu</font>\n";
     
     
+    // Classe en fonction du statut et du service
+    $class_tmp=array();
+    if($elem['statut']){
+      $class_tmp[]="statut_".strtolower(removeAccents($elem['statut']));
+    }
+    if($elem['service']){
+      $class_tmp[]="service_".strtolower(removeAccents($elem['service']));
+    }
+    $classe=empty($class_tmp)?null:join(" ",$class_tmp);
+
     //	Affichage des lignes
-    $statut=strtolower(removeAccents($elem['statut']));
-    echo "<tr id='tr{$elem['id']}' style='display:none;height:21px;' onmouseover='this.style.background=\"#7B7B7B\";' onmouseout='this.style.background=\"#FFFFFF\";'>\n";
-    echo "<td style='width:200px;color:$color;' onclick='bataille_navale({$elem['id']},null,\"$nom\",0,0,\"$statut\");'>";
+    echo "<tr id='tr{$elem['id']}' style='display:none;height:21px;' onmouseover='$(this).removeClass();$(this).addClass(\"menudiv-gris\");' onmouseout='$(this).removeClass();$(this).addClass(\"$classe\");' class='$classe'>\n";
+    echo "<td style='width:200px;color:$color;' onclick='bataille_navale({$elem['id']},null,\"$nom\",0,0,\"$classe\");'>";
     echo $nom_menu;
 
     //	Afficher ici les horaires si besoin
@@ -472,9 +481,9 @@ if($agents_tous){
     
     //	Affichage des liens d'ajout et de remplacement
     if(!$cellule_vide and !$max_perso and !$sr and !$sr_init)
-      echo "<a href='javascript:bataille_navale(".$elem['id'].",null,\"$nom\",0,1,\"$statut\");'>+</a>";
+      echo "<a href='javascript:bataille_navale(".$elem['id'].",null,\"$nom\",0,1,\"$classe\");'>+</a>";
     if(!$cellule_vide and !$max_perso)
-      echo "&nbsp;<a style='color:red' href='javascript:bataille_navale(".$elem['id'].",null,\"$nom\",1,1,\"$statut\");'>x</a>&nbsp;";
+      echo "&nbsp;<a style='color:red' href='javascript:bataille_navale(".$elem['id'].",null,\"$nom\",1,1,\"$classe\");'>x</a>&nbsp;";
     echo "</td></tr>\n";
     
   }	
