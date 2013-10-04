@@ -752,18 +752,6 @@ img{
 /*	Cellules et Statuts	*/
 /* class cellule = cellule par défaut */
 /* statut_xxx	 = complète le style de la classe cellule en fonction du statut */
-.cellule,.statut_moniteur,.statut_permanent{
-}
-
-.statut_moniteur, .service_moniteur{
-  background:yellow;
-  font-style:italic;
-}
-
-.statut_permanent, .service_permanent{
-  background:#FFFFFF;
-  font-weight:bold;
-}
 
 /*	Messages de validation	*/
 .MessageOK,.MessageErreur{

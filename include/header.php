@@ -35,6 +35,7 @@ if(!$version){
 <link rel='StyleSheet' href='css/jquery-ui-themes-1.10.3/themes/humanity/jquery-ui.min.css' type='text/css' media='screen'/>
 <link rel='StyleSheet' href='css/style.css' type='text/css' media='screen'/>
 <link rel='StyleSheet' href='css/print.css' type='text/css' media='print'/>
+<link rel='StyleSheet' href='css/custom.css' type='text/css' media='all'/>
 
 <?php
 foreach($plugins as $elem){

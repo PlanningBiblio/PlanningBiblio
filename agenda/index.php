@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 27 septembre 2013
+Dernière modification : 4 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -103,7 +103,7 @@ else{
 }
 
 if(!isset($agent)){
-  echo "<br/><br/>";
+  echo "<br/><br/><br/><br/>";
   include "include/footer.php";
   exit;
 }
@@ -239,5 +239,6 @@ while($current<=$fin){
     echo "</tr>\n";
 }		
 echo "</table>\n";
+echo "<br/><br/><br/><br/>";
 echo "<script type='text/JavaScript'>document.form.perso_id.value='$perso_id';</script>\n";
 ?>

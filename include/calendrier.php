@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/calendrier.php
 Création : mai 2011
-Dernière modification : 23 juillet 2013
+Dernière modification : 4 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -27,6 +27,7 @@ session_start();
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel='StyleSheet' href='calendrier/calendar.css' type='text/css' />
 <link rel='StyleSheet' href='../css/calendrier.css' type='text/css' />
+<link rel='StyleSheet' href='../css/custom.css' type='text/css' />
 <script type="text/JavaScript" src='../js/calendrier.js'></script>
 </head>
 <body>
