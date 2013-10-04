@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 26 septembre 2013
+Dernière modification : 4 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -325,6 +325,10 @@ if(strcmp("1.5.7",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}personnel` SET `supprime`='1' WHERE `actif` LIKE 'Supprim%';";
   $sql[]="UPDATE `{$dbprefix}menu` SET `titre`='Jours de fermeture' WHERE `url`='joursFeries/index.php';";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.5.7' WHERE `nom`='Version';";
+}
+
+if(strcmp("1.5.8",$config['Version'])>0){
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.5.8' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage

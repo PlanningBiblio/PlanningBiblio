@@ -29,7 +29,7 @@ date_default_timezone_set("Europe/Paris");
 
 
 // Initialisation des variables
-$version="1.5.7";
+$version="1.5.8";
 $get_menu=isset($_GET['menu'])?$_GET['menu']:"";
 $post_menu=isset($_POST['menu'])?$_POST['menu']:"";
 $page=isset($_GET['page'])?$_GET['page']:"planning/poste/index.php";

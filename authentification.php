@@ -34,7 +34,7 @@ if(!file_exists("include/config.php")){
   exit;
 }
 
-$version="1.5.7";
+$version="1.5.8";
 
 include "include/config.php";
 include "include/doctype.php";
