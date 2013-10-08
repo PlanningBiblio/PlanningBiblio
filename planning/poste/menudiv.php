@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/menudiv.php
 Création : mai 2011
-Dernière modification : 23 août 2013
+Dernière modification : 7 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -218,8 +218,17 @@ if($poste!=0){		//	repas
     $req_poste="(".join($tab," AND ").") AND ";
   }
 }
-	// requete final sélection tous les agents formés aux activités demandées et disponible (non exclus)
-$req="SELECT * FROM `{$dbprefix}personnel` WHERE $req_poste `actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00') AND `id` NOT IN ($exclus) ORDER BY `nom`,`prenom`;";
+
+// Requete final sélection tous les agents formés aux activités demandées et disponible (non exclus)
+// Multisites : Si les agents ne sont pas autorisés à travailler sur le site sélectionné, on les retire
+if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
+  $req_site=" AND `site`='$site' ";
+}
+else{
+  $req_site=null;
+}
+
+$req="SELECT * FROM `{$dbprefix}personnel` WHERE $req_poste `actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00') AND `id` NOT IN ($exclus) $req_site ORDER BY `nom`,`prenom`;";
 $db=new db();
 $db->query($req);
 $agents_dispo=$db->result;
@@ -232,7 +241,7 @@ foreach($agents_dispo as $elem){
 $agents_qualif=join($agents_qualif,",");
 $absents=join($absents,",");
 $tab_deja_place=join($tab_deja_place,",");
-$req="SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00') AND `id` NOT IN ($agents_qualif) AND `id` NOT IN ($tab_deja_place) AND `id` NOT IN ($absents) ORDER BY `nom`,`prenom`;";
+$req="SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00') AND `id` NOT IN ($agents_qualif) AND `id` NOT IN ($tab_deja_place) AND `id` NOT IN ($absents)  $req_site ORDER BY `nom`,`prenom`;";
 $db=new db();
 $db->query($req);
 $autres_agents=$db->result;
