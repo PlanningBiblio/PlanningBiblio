@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 26 septembre 2013
+Dernière modification : 9 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -86,6 +86,7 @@ $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `prenom` text NOT NULL DEFAULT '',
   `mail` text NOT NULL DEFAULT '',
   `statut` text NOT NULL DEFAULT '',
+  `categorie` VARCHAR(30) NOT NULL DEFAULT '',
   `service` text NOT NULL,
   `arrivee` date NOT NULL DEFAULT '0000-00-00',
   `depart` date NOT NULL DEFAULT '0000-00-00',

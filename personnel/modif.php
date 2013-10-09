@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 19 août 2013
+Dernière modification : 9 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -43,6 +43,7 @@ if(isset($_GET['id'])){		//	récupération des infos de l'agent en cas de modif
   $prenom=$db->result[0]['prenom'];
   $mail=$db->result[0]['mail'];
   $statut=$db->result[0]['statut'];
+  $categorie=$db->result[0]['categorie'];
   $service=$db->result[0]['service'];
   $heuresHebdo=$db->result[0]['heuresHebdo'];
   $heuresTravail=$db->result[0]['heuresTravail'];
@@ -66,6 +67,7 @@ else{		// pas d'id, donc ajout d'un agent
   $prenom=null;
   $mail=null;
   $statut=null;
+  $categorie=null;
   $service=null;
   $heuresHebdo=null;
   $heuresTravail=null;
@@ -86,6 +88,8 @@ else{		// pas d'id, donc ajout d'un agent
 
 $jours=Array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
 global $temps;
+$categories=array("Titulaire","Contractuel");
+
 //		--------------		Début listes des activités		---------------------//	
 $db=new db();			//	toutes les activités
 $db->query("SELECT `id`,`nom` FROM `{$dbprefix}activites` ORDER BY `id`;");
@@ -202,6 +206,23 @@ if(in_array(21,$droits)){
 }
 else{
   echo $statut;
+}
+echo "</td></tr>";
+
+echo "<tr><td>";
+echo "Catégorie :";
+echo "</td><td>";
+if(in_array(21,$droits)){
+  echo "<select name='categorie' id='categorie' style='width:405px'>\n";
+  echo "<option value=''>Aucune</option>\n";
+  foreach($categories as $elem){
+    $select1=$elem==$categorie?"selected='selected'":null;
+    echo "<option $select1 value='{$elem}'>{$elem}</option>\n";
+  }
+  echo "</select>\n";
+}
+else{
+  echo $categorie;
 }
 echo "</td></tr>";
 

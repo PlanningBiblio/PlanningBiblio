@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 26 septembre 2013
+Dernière modification : 9 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -25,6 +25,7 @@ if(isset($_POST['id'])){
   $prenom=trim(htmlentities($_POST['prenom'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
   $mail=trim(htmlentities($_POST['mail'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
   $statut=trim(htmlentities($_POST['statut'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+  $categorie=trim(htmlentities($_POST['categorie'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
   $service=trim(htmlentities($_POST['service'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
   $heuresHebdo=$_POST['heuresHebdo'];
   $heuresTravail=$_POST['heuresTravail'];
@@ -61,6 +62,7 @@ else{
   $prenom=null;
   $mail=null;
   $statut=null;
+  $categorie=null;
   $service=null;
   $heuresHebdo=null;
   $heuresTravail=null;
@@ -82,7 +84,7 @@ switch($action){
     $mdp=gen_trivial_password();
     $mdp_crypt=md5($mdp);
     sendmail("Création de compte","Login : $login <br>Mot de passe : $mdp","$mail");
-    $insert=array("nom"=>$nom,"prenom"=>$prenom,"mail"=>$mail,"statut"=>$statut,"service"=>$service,"heuresHebdo"=>$heuresHebdo,
+    $insert=array("nom"=>$nom,"prenom"=>$prenom,"mail"=>$mail,"statut"=>$statut,"categorie"=>$categorie,"service"=>$service,"heuresHebdo"=>$heuresHebdo,
       "heuresTravail"=>$heuresTravail,"arrivee"=>$arrivee,"depart"=>$depart,"login"=>$login,"password"=>$mdp_crypt,"actif"=>$actif,
       "droits"=>$droits,"postes"=>$postes,"temps"=>$temps,"informations"=>$informations,"recup"=>$recup,"site"=>$site);
     if(in_array("conges",$plugins)){
@@ -123,7 +125,7 @@ switch($action){
     break;
 
   case "modif" :
-    $update=array("nom"=>$nom, "prenom"=>$prenom, "mail"=>$mail, "statut"=>$statut, "service"=>$service, "heuresHebdo"=>$heuresHebdo, 
+    $update=array("nom"=>$nom, "prenom"=>$prenom, "mail"=>$mail, "statut"=>$statut, "categorie"=>$categorie, "service"=>$service, "heuresHebdo"=>$heuresHebdo, 
       "heuresTravail"=>$heuresTravail, "actif"=>$actif, "droits"=>$droits, "arrivee"=>$arrivee, "depart"=>$depart, "postes"=>$postes,
       "informations"=>$informations, "recup"=>$recup, "site"=>$site);
     // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
