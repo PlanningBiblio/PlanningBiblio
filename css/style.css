@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification : 9 octobre 2013
+Dernière modification :11 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -90,7 +90,6 @@ body {
   text-align: center;
   vertical-align:top;
   padding: 0 20px 0 20px;
-  font-size:8pt;
 }
 
 .tableauFiches td{
