@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 9 octobre 2013
+Dernière modification : 15 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -55,8 +55,14 @@ if(isset($_POST['id'])){
   if(in_array($id,array(1,3)))		// Ajoute config. avancée à l'utilisateur admin et au 1er agent créé.
     $droits[]=20;
   $droits=serialize($droits);
+
+
+  // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
+  $eDTSamedi=isset($_POST['EDTSamedi'])?$_POST['EDTSamedi']:null;
+  $premierLundi=$_POST['premierLundi'];
+  $dernierLundi=$_POST['dernierLundi'];
 }
-else{
+else{ // ?????????????
   $id=null;
   $nom=null;
   $prenom=null;
@@ -96,7 +102,7 @@ switch($action){
     }
     $db=new db();
     $db->insert2("personnel",$insert);
-
+/*
     //	Mise à jour de la table pl_poste en cas de modification de la date de départ
     $db=new db();		// On met supprime=0 partout pour cet agent
     $db->query("UPDATE `{$GLOBALS['dbprefix']}pl_poste` SET `supprime`='0' WHERE `perso_id`='$id';");
@@ -105,6 +111,14 @@ switch($action){
       $db=new db();
       $db->query("UPDATE `{$GLOBALS['dbprefix']}pl_poste` SET `supprime`='1' WHERE `perso_id`='$id' AND `date`>'$depart';");
     }
+*/
+    // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
+    $db=new db();
+    $db->select("personnel","MAX(`id`) AS `id`");
+    $id=$db->result[0]['id'];
+    $p=new personnel();
+    $p->updateEDTSamedi($eDTSamedi,$premierLundi,$dernierLundi,$id);
+    
 	    
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/index.php';</script>";
     break;
@@ -157,6 +171,11 @@ switch($action){
       $db=new db();
       $db->query("UPDATE `{$GLOBALS['dbprefix']}pl_poste` SET `supprime`='1' WHERE `perso_id`='$id' AND `date`>'$depart';");
     }
+
+    // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
+    $p=new personnel();
+    $p->updateEDTSamedi($eDTSamedi,$premierLundi,$dernierLundi,$id);
+
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/index.php';</script>";
     break;
 }

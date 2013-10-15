@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 26 septembre 2013
+Dernière modification : 15 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -109,5 +109,39 @@ class personnel{
     $db->select("personnel",null,"id='$id'");
     $this->elements=$db->result;
   }
+
+
+  public function fetchEDTSamedi($perso_id,$debut,$fin){
+    if(!$GLOBALS['config']['EDTSamedi']){
+      return false;
+    }
+    $db=new db();
+    $db->select("EDTSamedi","*","semaine>='$debut' AND semaine<='$fin' AND perso_id='$perso_id'");
+    if($db->result){
+      foreach($db->result as $elem){
+	$this->elements[]=$elem['semaine'];
+      }
+    }
+  }
+
+  public function updateEDTSamedi($eDTSamedi,$debut,$fin,$perso_id){
+    if(!$GLOBALS['config']['EDTSamedi']){
+      return false;
+    }
+
+    $db=new db();
+    $db->delete("EDTSamedi","`semaine`>='$debut' AND `semaine`<='$fin' AND `perso_id`='$perso_id'");
+
+    if($eDTSamedi and !empty($eDTSamedi)){
+      $insert=array();
+      foreach($eDTSamedi as $elem){
+	$insert[]=array("perso_id"=>$perso_id, "semaine"=>$elem);
+      }
+      $db=new db();
+      $db->insert2("EDTSamedi",$insert);
+    }
+ }
+
 }
+
 ?>

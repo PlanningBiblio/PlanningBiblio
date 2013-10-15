@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 9 octobre 2013
+Dernière modification : 15 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -298,6 +298,13 @@ $sql[]="CREATE TABLE `{$dbprefix}joursFeries` (
   `fermeture` INT(1), 
   `nom` TEXT,
   `commentaire` TEXT,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+$sql[]="CREATE TABLE `{$dbprefix}EDTSamedi` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `perso_id` INT(11) NOT NULL,
+  `semaine` DATE,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 

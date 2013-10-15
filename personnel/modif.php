@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 9 octobre 2013
+Dernière modification : 14 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -473,10 +473,16 @@ switch($config['nb_semaine']){
 }
 $fin=$config['Dimanche']?array(8,15,22):array(7,14,21);
 $debut=array(1,8,15);
-?>
 
-<?php
+if($config['EDTSamedi']){
+  $config['nb_semaine']=2;
+  $cellule=array("Semaine standard","Semaine avec samedi");
+}
+
 for($j=0;$j<$config['nb_semaine'];$j++){
+  if($config['EDTSamedi']){
+    echo $j==0?"<br/><b>Emploi du temps standard</b>":"<br/><b>Emploi du temps des semaines avec samedi travaillé</b>";
+  }
   echo "<br/>\n";
   echo "<table border='1' cellspacing='0'>\n";
   echo "<tr style='text-align:center;'><td style='width:150px;'>{$cellule[$j]}</td><td style='width:150px;'>Heure d'arrivée</td>";
@@ -517,10 +523,53 @@ for($j=0;$j<$config['nb_semaine'];$j++){
   }
   echo "</table>\n";
 }
+
+// EDTSamedi : emploi du temps différents les semaines avec samedi travaillé
+if($config['EDTSamedi']){
+  $d=new datePl(date("Y")."-09-01");
+  $premierLundi=$d->dates[0];
+  $d=new datePl((date("Y")+1)."-09-01");
+  $dernierLundi=$d->dates[0];
+  $current=$premierLundi;
+  $i=0;
+  $j=0;
+
+  $p=new personnel();
+  $p->fetchEDTSamedi($id,$premierLundi,$dernierLundi);
+  $edt=$p->elements;
+
+  echo "<input type='hidden' name='premierLundi' value='$premierLundi' />\n";
+  echo "<input type='hidden' name='dernierLundi' value='$dernierLundi' />\n";
+  echo "<div id='EDTChoix'>\n";
+  echo "<h3>Choix des emplois du temps</h3>\n";
+  echo "<p>Cochez les semaines avec le samedi travaill&eacute;</p>\n";
+  echo "<table class='tableauStandard'>";
+
+  while($current<=$dernierLundi){
+    $lundi=date("d/m/Y",strtotime($current));
+    $dimanche=date("d/m/Y",strtotime("+6 day",strtotime($current)));
+
+    $j++;
+    if(!$i%3){
+      echo "<tr>";
+    }
+    $checked=in_array($current,$edt)?"checked='checked'":null;
+    echo "<td>Du $lundi au $dimanche";
+    echo "<input type='checkbox' value='$current' name='EDTSamedi[]' $checked /></td>\n";
+      
+    if($j==3){
+      $j=0;
+      echo "</tr>";
+    }
+    $i++;
+    $current=date("Y-m-d",strtotime("+7 day",strtotime($current)));
+  }
+  echo "</table>\n";
+  echo "</div>\n";
+
+}
 ?>
 
-<?php
-?>
 </div>
 <!--	FIN Emploi du temps-->
 
