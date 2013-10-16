@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 14 octobre 2013
+Dernière modification : 16 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -525,14 +525,13 @@ for($j=0;$j<$config['nb_semaine'];$j++){
 }
 
 // EDTSamedi : emploi du temps différents les semaines avec samedi travaillé
+// Choix des semaines avec samedi travaillé
 if($config['EDTSamedi']){
-  $d=new datePl(date("Y")."-09-01");
+  $d=new datePl((date("Y")-1)."-09-01");
   $premierLundi=$d->dates[0];
-  $d=new datePl((date("Y")+1)."-09-01");
+  $d=new datePl((date("Y")+3)."-09-01");
   $dernierLundi=$d->dates[0];
   $current=$premierLundi;
-  $i=0;
-  $j=0;
 
   $p=new personnel();
   $p->fetchEDTSamedi($id,$premierLundi,$dernierLundi);
@@ -543,30 +542,49 @@ if($config['EDTSamedi']){
   echo "<div id='EDTChoix'>\n";
   echo "<h3>Choix des emplois du temps</h3>\n";
   echo "<p>Cochez les semaines avec le samedi travaill&eacute;</p>\n";
-  echo "<table class='tableauStandard'>";
 
-  while($current<=$dernierLundi){
-    $lundi=date("d/m/Y",strtotime($current));
-    $dimanche=date("d/m/Y",strtotime("+6 day",strtotime($current)));
-
-    $j++;
-    if(!$i%3){
-      echo "<tr>";
-    }
-    $checked=in_array($current,$edt)?"checked='checked'":null;
-    echo "<td>Du $lundi au $dimanche";
-    echo "<input type='checkbox' value='$current' name='EDTSamedi[]' $checked /></td>\n";
-      
-    if($j==3){
-      $j=0;
-      echo "</tr>";
-    }
-    $i++;
-    $current=date("Y-m-d",strtotime("+7 day",strtotime($current)));
+  echo "<div id='EDTTabs'>\n";
+  echo "<ul>";
+  for($i=0;$i<4;$i++){
+    $annee=(date("Y")+$i-1)."-".(date("Y")+$i);
+    echo "<li><a href='#EDTTabs-$i' id='EDTA-$i'>Année $annee</a></li>\n";
   }
-  echo "</table>\n";
-  echo "</div>\n";
+  echo "</ul>\n";
 
+  for($i=0;$i<4;$i++){
+    $d=new datePl((date("Y")-1+$i)."-09-01");
+    $premierLundi=$d->dates[0];
+    $d=new datePl((date("Y")+$i)."-09-01");
+    $dernierLundi=$d->dates[0];
+    if(date("Y-m-d")>=$premierLundi and date("Y-m-d")<=$dernierLundi){
+      $currentTab="#EDTA-$i";
+    }
+    $current=$premierLundi;
+    $j=0;
+
+    echo "<div id=EDTTabs-$i>";
+    echo "<table class='tableauStandard'>";
+    echo "<tr><td>";
+
+    while($current<=$dernierLundi){
+      $lundi=date("d/m/Y",strtotime($current));
+      $dimanche=date("d/m/Y",strtotime("+6 day",strtotime($current)));
+      $semaine=date("W",strtotime($current));
+      $checked=in_array($current,$edt)?"checked='checked'":null;
+      echo "S$semaine : $lundi &rarr; $dimanche";
+      echo "<input type='checkbox' value='$current' name='EDTSamedi[]' $checked /><br/>\n";
+	
+      if($j==17 or $j==35){
+	echo "</td><td>";
+      }
+      $j++;
+      $current=date("Y-m-d",strtotime("+7 day",strtotime($current)));
+    }
+    echo "</td></tr>\n";
+    echo "</table>\n";
+    echo "</div>\n";
+  }
+  echo "</div>\n";
 }
 ?>
 
@@ -655,5 +673,14 @@ function verif_form_agent(){
     }
   }
 }
+
+// Affichage du choix des semaine avec samedi travaillé avec onglets
+// Et sélection de l'onglet correspondant à l'année en cours
+<?php
+if($config['EDTSamedi']){
+  echo "$(\"#EDTTabs\").tabs();\n";
+  echo "$(\"$currentTab\").click();\n";
+}
+?>
 -->
 </script>

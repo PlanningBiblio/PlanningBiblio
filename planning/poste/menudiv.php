@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/menudiv.php
 Création : mai 2011
-Dernière modification : 7 octobre 2013
+Dernière modification : 16 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,6 +20,7 @@ Cette page est appelée par la fonction ItemSelMenu(e) déclendhée lors d'un cl
 
 require_once "fonctions.php";
 include "include/horaires.php";
+include "personnel/class.personnel.php";
 
 //	Initilisation des variables
 $site=$_SESSION['oups']['site'];
@@ -139,12 +140,13 @@ foreach($db->result as $elem){
     $jour=6;
   }
 
-  // Si semaine paire, position +7 : lundi A = 0 , lundi B = 7 , dimanche B = 13
-  if($config['nb_semaine']=="2" and !($semaine%2)){
+  // Si utilisation de 2 plannings hebdo (semaine paire et semaine impaire)
+  // Si semaine paire, position +=7 : lundi A = 0 , lundi B = 7 , dimanche B = 13
+  if($config['nb_semaine']=="2" and !($semaine%2) and !$config['EDTSamedi']){
     $jour+=7;
   }
   // Si utilisation de 3 plannings hebdo
-  elseif($config['nb_semaine']=="3"){
+  elseif($config['nb_semaine']=="3" and !$config['EDTSamedi']){
     if($semaine3==2){
       $jour+=7;
     }
@@ -153,9 +155,26 @@ foreach($db->result as $elem){
     }
   }
 
+  // Si utilisation d'un planning pour les semaines sans samedi et un planning pour les semaines avec samedi travaillé
+  if($config['EDTSamedi']){
+    // Pour chaque agent, recherche si la semaine courante est avec samedi travaillé ou non
+    $p=new personnel();
+    $p->fetchEDTSamedi($elem['id'],$j1,$j1);
+    // Si oui, utilisation du 2ème emploi du temps ($jour+=7)
+    if(!empty($p->elements)){
+      $jour+=7;
+    }
+  }
+
   if(!empty($temps) and array_key_exists($jour,$temps)){
     $heures=$temps[$jour];
-    if($heures[0]>$debut)				// Si l'agent commence le travail après l'heure de début du poste
+    if($heures[0] and $heures[1] and !$heures[3]){ 	// Pour les agents ne travaillant que le matin
+      $heures[3]=$heures[1];				// Fin de journée = fin de matinée
+    }
+    if($heures[2] and $heures[3] and !$heures[0]){ 	// Pour les agents ne travaillant que l'après midi
+      $heures[0]=$heures[2];				// Début de journée = début d'après midi
+    }
+    if($heures[0]>$debut)			// Si l'agent commence le travail après l'heure de début du poste
       $aExclure=true;
     if($heures[3]<$fin)				// Si l'agent fini le travail avant l'heure de fin du poste
       $aExclure=true;
