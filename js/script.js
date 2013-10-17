@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 4 octobre 2013
+Dernière modification : 17 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -702,7 +702,11 @@ function bataille_navale(perso_id,couleur,nom,barrer,ajouter,classe){
 }
 
 //	groupe_tab : utiliser pour menudiv
-function groupe_tab(id,tab){			// améliorer les variables (tableaux) pour plus d'évolution
+function groupe_tab(id,tab,hide){			// améliorer les variables (tableaux) pour plus d'évolution
+  if(hide==undefined){
+    hide=1;
+  }
+
   //		tab="1,2,3,4,5;6,7,8,9,10;11,12,13,14,15"
   tmp=tab.split(';');
   //		tmp=array("1,2,3,4,5","6,7,8,9,10","11,12,13,14,15")
@@ -712,10 +716,12 @@ function groupe_tab(id,tab){			// améliorer les variables (tableaux) pour plus 
     //		tab=array(array(1,2,3,4,5),array(6,7,8,9,10),array(11,12,13,14,15))
   
   //		On cache tout le sous-menu
-  for(i=0;i<tab.length;i++){
-    if(tab[i][0]){
-      for(j=0;j<tab[i].length;j++){
-	      document.getElementById("tr"+tab[i][j]).style.display="none";
+  if(hide==1){
+    for(i=0;i<tab.length;i++){
+      if(tab[i][0]){
+	for(j=0;j<tab[i].length;j++){
+		document.getElementById("tr"+tab[i][j]).style.display="none";
+	}
       }
     }
   }
@@ -726,6 +732,12 @@ function groupe_tab(id,tab){			// améliorer les variables (tableaux) pour plus 
       document.getElementById("tr"+tab[id][i]).style.display="";
     }
   }
+}
+
+function groupe_tab_hide(){
+  $(".tr_liste").each(function(){
+    $(this).hide();
+  });
 }
 
 //	ItemSelMenu : Menu contextuel

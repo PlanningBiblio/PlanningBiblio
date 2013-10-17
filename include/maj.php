@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 15 octobre 2013
+Dernière modification : 17 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -338,6 +338,7 @@ if(strcmp("1.5.9",$config['Version'])>0){
 
 if(strcmp("1.6",$config['Version'])>0){
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`) VALUES ('EDTSamedi', 'boolean', '0', 'Emplois du temps diff&eacute;rents les semaines o&ugrave; les samedis sont travaill&eacute;s');";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('ClasseParService', 'boolean', '1', 'Classer les agents par service dans le menu d&eacute;roulant du planning','Affichage','7');";
   $sql[]="CREATE TABLE `{$dbprefix}EDTSamedi` ( `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY , `perso_id` INT(11) NOT NULL , `semaine` DATE);";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.5.9' WHERE `nom`='Version';";
 }
