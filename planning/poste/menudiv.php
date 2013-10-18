@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/menudiv.php
 Création : mai 2011
-Dernière modification : 17 octobre 2013
+Dernière modification : 18 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -19,6 +19,7 @@ Cette page est appelée par la fonction ItemSelMenu(e) déclendhée lors d'un cl
 */
 
 require_once "fonctions.php";
+require_once "class.planning.php";
 include "include/horaires.php";
 include "personnel/class.personnel.php";
 
@@ -83,9 +84,6 @@ $db=new db();
 $db->query("SELECT `{$dbprefix}personnel`.`service` AS `service`, `{$dbprefix}select_services`.`couleur` AS `couleur` FROM `{$dbprefix}personnel` INNER JOIN `{$dbprefix}select_services`
 	ON `{$dbprefix}personnel`.`service`=`{$dbprefix}select_services`.`valeur` WHERE `{$dbprefix}personnel`.`service`<>'' GROUP BY `service`;");
 $services=$db->result;
-
-// recherche des personnes à exclure (déja placés)
-//$req="SELECT `perso_id` FROM `{$dbprefix}pl_poste` WHERE ((`debut`>='$debut' AND `debut`<'$fin') OR (`fin`>'$debut' AND `fin`<='$fin')) AND `date`='$date'";
 
 //	Ne pas regarder les postes non-bloquant et ne pas regarder si le poste est non-bloquant
 if($bloquant=='1'){
@@ -208,7 +206,6 @@ foreach($db->result as $elem){
     $tab_exclus[]=$elem['id'];
   }
 }
-
 
 $exclus=join($tab_exclus,",");
 
@@ -356,118 +353,9 @@ if($services and $config['ClasseParService']){
 
 //		-----------		Affichage de la liste des agents s'ils ne sont pas classés par services		----------//
 if(!$config['ClasseParService']){
-  foreach($agents_dispo as $elem){
-    // on retire l'utilisateur "tout le monde"
-    if($elem['id']==2){
-      continue;
-    }
-    $color='black';
-    $sr=0;
-    $sr_cellule=null;
-    $nom=$elem['nom'];
-    if($elem['prenom']){
-      $nom.=" ".substr($elem['prenom'],0,1).".";
-    }
-    
-    //			----------------------		Sans repas		------------------------------------------//
-    //			(Peut être amélioré : vérifie si l'agent est déjà placé entre 11h30 et 14h30 
-    //			mais ne vérfie pas la continuité. Ne marque pas la 2ème cellule en javascript (rafraichissement OK))
-    if($debut>="11:30:00" and $fin<="14:30:00"){
-      $db_sr=new db();
-      $db_sr->query("SELECT * FROM `{$dbprefix}pl_poste` WHERE `date`='$date' AND `perso_id`='{$elem['id']}' AND `debut` >='11:30:00' AND `fin`<='14:30:00';");
-      if($db_sr->result){
-	$sr=1;
-	$nom.=" (SR)";
-	$color='red';
-      }
-    }
-	    
-    $nom_menu=$nom;
-    //			----------------------		Déjà placés		-----------------------------------------------------//
-    if(in_array($elem['id'],$deja)){					//	Déjà placé pour ce poste
-      $nom_menu.=" ".$msg_deja_place;
-      $color='red';
-    }
-    //			----------------------		FIN Déjà placés		-----------------------------------------------------//
-    
-    // affihage des heures faites ce jour + les heures de la cellule
-    $db_heures = new db();
-    $db_heures->query("SELECT `{$dbprefix}pl_poste`.`debut` AS `debut`,`{$dbprefix}pl_poste`.`fin` AS `fin` FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` WHERE `{$dbprefix}pl_poste`.`perso_id`='{$elem['id']}' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`date`='$date' AND `{$dbprefix}postes`.`statistiques`='1';");
-    if($stat){ 	// vérifier si le poste est compté dans les stats
-      $hres_jour=diff_heures($debut,$fin,"decimal");
-    }
-    if($db_heures->result){
-      foreach($db_heures->result as $hres){
-	$hres_jour=$hres_jour+diff_heures($hres['debut'],$hres['fin'],"decimal");
-      }
-    }
-    
-    // affihage des heures faites cette semaine + les heures de la cellule
-    $db_heures = new db();
-    $db_heures->query("SELECT `{$dbprefix}pl_poste`.`debut` AS `debut`,`{$dbprefix}pl_poste`.`fin` AS `fin` FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` WHERE `{$dbprefix}pl_poste`.`perso_id`='{$elem['id']}' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`date` BETWEEN '$j1' AND '$j7' AND `{$dbprefix}postes`.`statistiques`='1';");
-
-    if($stat){ 	// vérifier si le poste est compté dans les stats
-      $hres_sem=diff_heures($debut,$fin,"decimal");
-    }
-    if($db_heures->result){
-      foreach($db_heures->result as $hres){
-	$hres_sem=$hres_sem+diff_heures($hres['debut'],$hres['fin'],"decimal");
-      }
-    }
-
-    // affihage des heures faites les 4 dernières semaines + les heures de la cellule
-    $hres_4sem=null;
-    if($config['hres4semaines']){
-      $date1=date("Y-m-d",strtotime("-3 weeks",strtotime($j1)));
-      $date2=$j7;	// fin de semaine courante
-      $db_hres4 = new db();
-      $db_hres4->query("SELECT `{$dbprefix}pl_poste`.`debut` AS `debut`,`{$dbprefix}pl_poste`.`fin` AS `fin` FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` WHERE `{$dbprefix}pl_poste`.`perso_id`='{$elem['id']}' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`date` BETWEEN '$date1' AND '$date2' AND `{$dbprefix}postes`.`statistiques`='1';");
-      if($stat){ 	// vérifier si le poste est compté dans les stats
-	$hres_4sem=diff_heures($debut,$fin,"decimal");
-      }
-      if($db_hres4->result){
-	foreach($db_hres4->result as $hres){
-	  $hres_4sem=$hres_4sem+diff_heures($hres['debut'],$hres['fin'],"decimal");
-	}
-      }
-      $hres_4sem=" / ".$hres_4sem;
-    }
-
-    //	Mise en forme de la ligne avec le nom et les heures et la couleur en fonction des heures faites
-    $nom_menu.="&nbsp;$hres_jour / $hres_sem / {$elem['heuresHebdo']} $hres_4sem";
-    if($hres_jour>7)			// plus de 7h:jour : rouge
-      $nom_menu="<font style='color:red'>$nom_menu</font>\n";
-    elseif(($elem['heuresHebdo']-$hres_sem)<=0.5 and ($hres_sem-$elem['heuresHebdo'])<=0.5)		// 0,5 du quota hebdo : vert
-      $nom_menu="<font style='color:green'>$nom_menu</font>\n";
-    elseif($hres_sem>$elem['heuresHebdo'])			// plus du quota hebdo : rouge
-      $nom_menu="<font style='color:red'>$nom_menu</font>\n";
-    
-    
-    // Classe en fonction du statut et du service
-    $class_tmp=array();
-    if($elem['statut']){
-      $class_tmp[]="statut_".strtolower(removeAccents($elem['statut']));
-    }
-    if($elem['service']){
-      $class_tmp[]="service_".strtolower(removeAccents($elem['service']));
-    }
-    $classe=empty($class_tmp)?null:join(" ",$class_tmp);
-
-    //	Affichage des lignes
-    echo "<tr id='tr{$elem['id']}' style='height:21px;' onmouseover='$(this).removeClass();$(this).addClass(\"menudiv-gris\");groupe_tab_hide();' onmouseout='$(this).removeClass();$(this).addClass(\"$classe\");' class='$classe'>\n";
-    echo "<td style='width:200px;color:$color;' onclick='bataille_navale({$elem['id']},null,\"$nom\",0,0,\"$classe\");'>";
-    echo $nom_menu;
-
-    //	Afficher ici les horaires si besoin
-    echo "</td><td style='text-align:right;width:20px'>";
-    
-    //	Affichage des liens d'ajout et de remplacement
-    if(!$cellule_vide and !$max_perso and !$sr and !$sr_init)
-      echo "<a href='javascript:bataille_navale(".$elem['id'].",null,\"$nom\",0,1,\"$classe\");'>+</a>";
-    if(!$cellule_vide and !$max_perso)
-      echo "&nbsp;<a style='color:red' href='javascript:bataille_navale(".$elem['id'].",null,\"$nom\",1,1,\"$classe\");'>x</a>&nbsp;";
-    echo "</td></tr>\n";
-  }	
+  $hide=false;
+  $p=new planning();
+  $p->menudivAfficheAgents($agents_dispo,$date,$debut,$fin,$deja,$msg_deja_place,$stat,$cellule_vide,$max_perso,$sr_init,$hide);
 }
 
 //		-----------		Affichage des agents indisponibles		----------//
@@ -482,7 +370,7 @@ if(count($newtab["Autres"]) and $config['agentsIndispo']){
 
 //		-----------		Affichage de l'utilisateur "tout le monde"		----------//
 if(!in_array(2,$tab_exclus) and $config['toutlemonde']){
-  echo "<tr onmouseover='this.style.background=\"#7B7B7B\";' onmouseout='this.style.background=\"#FFFFFF\";' >\n";
+  echo "<tr onmouseover='this.style.background=\"#7B7B7B\";groupe_tab_hide();' onmouseout='this.style.background=\"#FFFFFF\";'>\n";
   echo "<td colspan='3' style='width:200px;color:black;' ";
   echo "onclick='bataille_navale(2,\"#FFFFFF\",\"Tout le monde\",0,0,\"\");'>Tout le monde</td></tr>\n";
   $nbCol++;
@@ -500,139 +388,19 @@ echo "</table>\n";
 	
 //	--------------		Affichage des agents			----------------//
 echo "<table style='background:#FFFFFF;position:absolute;left:200px;top:8px;' frame='box' cellspacing='0' cellpadding='0' id='menudivtab2' rules='rows' border='1'>\n";
-if($agents_tous){
-  foreach($agents_tous as $elem){
-    $newtab[$elem['service']][]=$elem['id'];  		// Affichage par service
-    $color='black';
-    $sr=0;
-    $sr_cellule=null;
-    $nom=$elem['nom'];
-    if($elem['prenom']){
-      $nom.=" ".substr($elem['prenom'],0,1).".";
-    }
-    
-    //			----------------------		Sans repas		------------------------------------------//
-    //			(Peut être amélioré : vérifie si l'agent est déjà placé entre 11h30 et 14h30 
-    //			mais ne vérfie pas la continuité. Ne marque pas la 2ème cellule en javascript (rafraichissement OK))
-    if($debut>="11:30:00" and $fin<="14:30:00"){
-      $db_sr=new db();
-      $db_sr->query("SELECT * FROM `{$dbprefix}pl_poste` WHERE `date`='$date' AND `perso_id`='{$elem['id']}' AND `debut` >='11:30:00' AND `fin`<='14:30:00';");
-      if($db_sr->result){
-	$sr=1;
-	$nom.=" (SR)";
-	$color='red';
-      }
-    }
-	    
-    $nom_menu=$nom;
-    //			----------------------		Déjà placés		-----------------------------------------------------//
-    if(in_array($elem['id'],$deja)){					//	Déjà placé pour ce poste
-      $nom_menu.=" ".$msg_deja_place;
-      $color='red';
-    }
-    //			----------------------		FIN Déjà placés		-----------------------------------------------------//
-    
-    //			Horaires tronqués (l'agent n'est pas disponible pendant toute la plage horaire
-    //			A priori non utilisé par la BULAC, la requete de sélection des agents élimine ceux qui ne sont pas complétement dispo
-/*
-    $db_hrs=new db();
-    $db_hrs->query("select * from {$dbprefix}pl_poste where date='$date' and perso_id='".$elem['id']."' and debut>='$debut' and fin<='$fin';");
-    if($db_hrs->result)
-	    {
-	    $hrs="";
-	    $horaires_a_soustraire=array();
-	    foreach($db_hrs->result as $elem2)
-		    {
-		    if($debut!=$elem2['debut'])
-			    $hrs.=heure3($debut)."->".heure3($elem2['debut']);
-		    if($debut!=$elem2['debut'] and $elem2['fin']!=$fin)
-			    $hrs.=" / ";
-		    if($elem2['fin']!=$fin)
-			    $hrs.=heure3($elem2['fin'])."->".heure3($fin);
-		    $nom.="<br/>".$hrs;
-		    $nom_menu.="<br/>".$hrs;
-		    $ligneAdd++;
-		    }
-	    }
-*/		
-    // affihage des heures faites ce jour + les heures de la cellule
-    $db_heures = new db();
-    $db_heures->query("SELECT `{$dbprefix}pl_poste`.`debut` AS `debut`,`{$dbprefix}pl_poste`.`fin` AS `fin` FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` WHERE `{$dbprefix}pl_poste`.`perso_id`='{$elem['id']}' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`date`='$date' AND `{$dbprefix}postes`.`statistiques`='1';");
-    if($stat){ 	// vérifier si le poste est compté dans les stats
-      $hres_jour=diff_heures($debut,$fin,"decimal");
-    }
-    if($db_heures->result){
-      foreach($db_heures->result as $hres){
-	$hres_jour=$hres_jour+diff_heures($hres['debut'],$hres['fin'],"decimal");
-      }
-    }
-    
-    // affihage des heures faites cette semaine + les heures de la cellule
-    $db_heures = new db();
-    $db_heures->query("SELECT `{$dbprefix}pl_poste`.`debut` AS `debut`,`{$dbprefix}pl_poste`.`fin` AS `fin` FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` WHERE `{$dbprefix}pl_poste`.`perso_id`='{$elem['id']}' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`date` BETWEEN '$j1' AND '$j7' AND `{$dbprefix}postes`.`statistiques`='1';");
 
-    if($stat){ 	// vérifier si le poste est compté dans les stats
-      $hres_sem=diff_heures($debut,$fin,"decimal");
-    }
-    if($db_heures->result){
-      foreach($db_heures->result as $hres){
-	$hres_sem=$hres_sem+diff_heures($hres['debut'],$hres['fin'],"decimal");
-      }
-    }
+//		-----------		Affichage de la liste des agents s'ils sont classés par services		----------//
+if($agents_tous and $config['ClasseParService']){
+  $hide=true;
+  $p=new planning();
+  $p->menudivAfficheAgents($agents_tous,$date,$debut,$fin,$deja,$msg_deja_place,$stat,$cellule_vide,$max_perso,$sr_init,$hide);
+}
 
-    // affihage des heures faites les 4 dernières semaines + les heures de la cellule
-    $hres_4sem=null;
-    if($config['hres4semaines']){
-      $date1=date("Y-m-d",strtotime("-3 weeks",strtotime($j1)));
-      $date2=$j7;	// fin de semaine courante
-      $db_hres4 = new db();
-      $db_hres4->query("SELECT `{$dbprefix}pl_poste`.`debut` AS `debut`,`{$dbprefix}pl_poste`.`fin` AS `fin` FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` WHERE `{$dbprefix}pl_poste`.`perso_id`='{$elem['id']}' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`date` BETWEEN '$date1' AND '$date2' AND `{$dbprefix}postes`.`statistiques`='1';");
-      if($stat){ 	// vérifier si le poste est compté dans les stats
-	$hres_4sem=diff_heures($debut,$fin,"decimal");
-      }
-      if($db_hres4->result){
-	foreach($db_hres4->result as $hres){
-	  $hres_4sem=$hres_4sem+diff_heures($hres['debut'],$hres['fin'],"decimal");
-	}
-      }
-      $hres_4sem=" / ".$hres_4sem;
-    }
-
-    //	Mise en forme de la ligne avec le nom et les heures et la couleur en fonction des heures faites
-    $nom_menu.="&nbsp;$hres_jour / $hres_sem / {$elem['heuresHebdo']} $hres_4sem";
-    if($hres_jour>7)			// plus de 7h:jour : rouge
-      $nom_menu="<font style='color:red'>$nom_menu</font>\n";
-    elseif(($elem['heuresHebdo']-$hres_sem)<=0.5 and ($hres_sem-$elem['heuresHebdo'])<=0.5)		// 0,5 du quota hebdo : vert
-      $nom_menu="<font style='color:green'>$nom_menu</font>\n";
-    elseif($hres_sem>$elem['heuresHebdo'])			// plus du quota hebdo : rouge
-      $nom_menu="<font style='color:red'>$nom_menu</font>\n";
-    
-    
-    // Classe en fonction du statut et du service
-    $class_tmp=array();
-    if($elem['statut']){
-      $class_tmp[]="statut_".strtolower(removeAccents($elem['statut']));
-    }
-    if($elem['service']){
-      $class_tmp[]="service_".strtolower(removeAccents($elem['service']));
-    }
-    $classe=empty($class_tmp)?null:join(" ",$class_tmp);
-
-    //	Affichage des lignes
-    echo "<tr id='tr{$elem['id']}' style='display:none;height:21px;' onmouseover='$(this).removeClass();$(this).addClass(\"menudiv-gris\");' onmouseout='$(this).removeClass();$(this).addClass(\"$classe\");$(this).addClass(\"tr_liste\");' class='$classe tr_liste'>\n";
-    echo "<td style='width:200px;color:$color;' onclick='bataille_navale({$elem['id']},null,\"$nom\",0,0,\"$classe\");'>";
-    echo $nom_menu;
-
-    //	Afficher ici les horaires si besoin
-    echo "</td><td style='text-align:right;width:20px'>";
-    
-    //	Affichage des liens d'ajout et de remplacement
-    if(!$cellule_vide and !$max_perso and !$sr and !$sr_init)
-      echo "<a href='javascript:bataille_navale(".$elem['id'].",null,\"$nom\",0,1,\"$classe\");'>+</a>";
-    if(!$cellule_vide and !$max_perso)
-      echo "&nbsp;<a style='color:red' href='javascript:bataille_navale(".$elem['id'].",null,\"$nom\",1,1,\"$classe\");'>x</a>&nbsp;";
-    echo "</td></tr>\n";
-  }
+//		-----------		Affichage de la liste des agents indisponibles 'ils ne sont pas classés par services	----------//
+if($autres_agents and !$config['ClasseParService'] and $config['agentsIndispo']){
+  $hide=true;
+  $p=new planning();
+  $p->menudivAfficheAgents($autres_agents,$date,$debut,$fin,$deja,$msg_deja_place,$stat,$cellule_vide,$max_perso,$sr_init,$hide);
 }
 
 echo "</table>";
