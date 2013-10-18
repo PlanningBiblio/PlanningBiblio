@@ -244,7 +244,7 @@ else{
   $req_site=null;
 }
 
-$req="SELECT * FROM `{$dbprefix}personnel` WHERE $req_poste `actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00') AND `id` NOT IN ($exclus) $req_site ORDER BY `nom`,`prenom`;";
+$req="SELECT * FROM `{$dbprefix}personnel` WHERE $req_poste `actif` LIKE 'Actif' AND (`depart` > '$date' OR `depart` = '0000-00-00') AND `id` NOT IN ($exclus) $req_site ORDER BY `nom`,`prenom`;";
 $db=new db();
 $db->query($req);
 $agents_dispo=$db->result;

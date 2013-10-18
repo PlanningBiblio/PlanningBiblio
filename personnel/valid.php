@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 15 octobre 2013
+Dernière modification : 18 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -145,7 +145,13 @@ switch($action){
     // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
     if(!strstr($actif,"Supprim")){
       $update["supprime"]="0";
-      $update["depart"]="0000-00-00";
+      // Si l'agent était supprimé et qu'on le réintégre, on change sa date de départ 
+      // pour qu'il ne soit pas supprimé de la liste des agents actifs
+      $db=new db();
+      $db->select("personnel","*","id='$id'");
+      if(strstr($db->result[0]['actif'],"Supprim") and $db->result[0]['depart']<=date("Y-m-d")){
+       $update["depart"]="0000-00-00";
+      }
     }
     // Mise à jour de l'emploi du temps si modifié à partir de la fiche de l'agent
     if($temps){
