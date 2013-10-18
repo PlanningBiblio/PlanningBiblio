@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 16 octobre 2013
+Dernière modification : 18 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -527,16 +527,17 @@ for($j=0;$j<$config['nb_semaine'];$j++){
 // EDTSamedi : emploi du temps différents les semaines avec samedi travaillé
 // Choix des semaines avec samedi travaillé
 if($config['EDTSamedi']){
+  // Recherche des semaines avec samedi travaillé entre le 1er septembre de N-1 et le 31 août de N+3
   $d=new datePl((date("Y")-1)."-09-01");
   $premierLundi=$d->dates[0];
-  $d=new datePl((date("Y")+3)."-09-01");
+  $d=new datePl((date("Y")+3)."-08-31");
   $dernierLundi=$d->dates[0];
-  $current=$premierLundi;
 
   $p=new personnel();
   $p->fetchEDTSamedi($id,$premierLundi,$dernierLundi);
   $edt=$p->elements;
 
+  // inputs premierLundi et dernierLundi pour mise à jour (validation=suppression et insertion des nouveaux élements)
   echo "<input type='hidden' name='premierLundi' value='$premierLundi' />\n";
   echo "<input type='hidden' name='dernierLundi' value='$dernierLundi' />\n";
   echo "<div id='EDTChoix'>\n";
@@ -554,8 +555,9 @@ if($config['EDTSamedi']){
   for($i=0;$i<4;$i++){
     $d=new datePl((date("Y")-1+$i)."-09-01");
     $premierLundi=$d->dates[0];
-    $d=new datePl((date("Y")+$i)."-09-01");
+    $d=new datePl((date("Y")+$i)."-08-31");
     $dernierLundi=$d->dates[0];
+
     if(date("Y-m-d")>=$premierLundi and date("Y-m-d")<=$dernierLundi){
       $currentTab="#EDTA-$i";
     }
@@ -567,6 +569,12 @@ if($config['EDTSamedi']){
     echo "<tr><td>";
 
     while($current<=$dernierLundi){
+      // Evite de mettre la même semaine (fin août - début septembre) dans 2 années universitaires
+      if($current==$last){
+	$last=$current;
+	$current=date("Y-m-d",strtotime("+7 day",strtotime($current)));
+	continue;
+      }
       $lundi=date("d/m/Y",strtotime($current));
       $dimanche=date("d/m/Y",strtotime("+6 day",strtotime($current)));
       $semaine=date("W",strtotime($current));
@@ -578,12 +586,14 @@ if($config['EDTSamedi']){
 	echo "</td><td>";
       }
       $j++;
+      $last=$current;
       $current=date("Y-m-d",strtotime("+7 day",strtotime($current)));
     }
     echo "</td></tr>\n";
     echo "</table>\n";
     echo "</div>\n";
   }
+  echo "</div>\n";
   echo "</div>\n";
 }
 ?>
