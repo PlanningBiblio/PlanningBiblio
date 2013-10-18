@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 15 octobre 2013
+Dernière modification : 18 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -60,7 +60,7 @@ $sql[]="CREATE TABLE `{$dbprefix}config` (
   `type` varchar(20) NOT NULL,
   `valeur` text NOT NULL,
   `commentaires` text NOT NULL,
-  `categorie` VARCHAR( 20 ) NOT NULL,
+  `categorie` VARCHAR( 100 ) NOT NULL,
   `valeurs` TEXT NOT NULL,
   `ordre` INT(2) NOT NULL,
   PRIMARY KEY (`id`)

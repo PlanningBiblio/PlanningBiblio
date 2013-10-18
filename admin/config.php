@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : activites/config.php
 Création : mai 2011
-Dernière modification : 3 septembre 2013
+Dernière modification : 18 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -24,20 +24,34 @@ if(!$version){
 echo "<h3>Configuration</h3>\n";
 
 if(!$_POST){			//		Affichage des paramètres
-  $last_category="";
+  $last_category=null;
   $db=new db();
   $db->query("SELECT * FROM `{$dbprefix}config` ORDER BY `ordre`,`id`;");
 
   echo "<form name='form' action='index.php' method='post'>\n";
   echo "<input type='hidden' name='page' value='admin/config.php' />\n";
-  echo "<table cellspacing='0' cellpadding='5' style='width:100%;'>\n";
-  echo "<tr class='th'><td>Nom</td><td>Valeur</td><td>Commentaires</td></tr>\n";
+  echo "<div id='accordion'>\n";
+
   foreach($db->result as $elem){
     if(substr($elem['nom'],-9)=="-Password"){
       $elem['valeur']=decrypt($elem['valeur']);
     }
-    if($elem['categorie']!=$last_category)
-      echo "<tr><td colspan='3'><hr/><h3 style='text-decoration:underline;'>{$elem['categorie']}</h3></td></tr>\n";
+
+    if(!$last_category){
+      echo "<h3>{$elem['categorie']}</h3>\n";
+      echo "<div>";
+      echo "<table cellspacing='0' cellpadding='5' style='width:100%;'>\n";
+      echo "<tr class='th'><td style='width:200px;'>Nom</td><td style='width:400px;'>Valeur</td><td>Commentaires</td></tr>\n";
+    }
+    elseif($elem['categorie']!=$last_category){
+      echo "</table>\n";
+      echo "</div>\n";
+      echo "<h3>{$elem['categorie']}</h3>\n";
+      echo "<div>";
+      echo "<table cellspacing='0' cellpadding='5' style='width:100%;'>\n";
+      echo "<tr class='th'><td style='width:200px;'>Nom</td><td style='width:400px;'>Valeur</td><td>Commentaires</td></tr>\n";
+    }
+
     $last_category=$elem['categorie'];
     echo "<tr style='vertical-align:top;'><td style='width:180px;'>{$elem['nom']}</td><td>\n";
     switch($elem ['type']){
@@ -82,6 +96,8 @@ if(!$_POST){			//		Affichage des paramètres
     
   }
   echo "</table>\n";
+  echo "</div>\n";
+  echo "</div>\n";
   echo "<div style='text-align:center;margin:20px;'>\n";
   echo "<input type='button' value='Annuler' onclick='document.location.href=\"index.php\";' />\n";
   echo "&nbsp;&nbsp;&nbsp;\n";
@@ -114,3 +130,8 @@ else{			// enregistrement des paramètres
   }
 }
 ?>
+<script type='text/JavaScript'>
+$("#accordion").accordion({
+  heightStyle: "content"
+});
+</script>

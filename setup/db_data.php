@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : setup/db_data.php
 Création : mai 2011
-Dernière modification : 17 octobre 2013
+Dernière modification : 18 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -101,9 +101,9 @@ $sql[]="INSERT INTO `{$dbprefix}activites` VALUES(11, 'Renseignement r&eacute;se
 $sql[]="INSERT INTO `{$dbprefix}activites` VALUES(12, 'Renseignement sp&eacute;cialis&eacute;');";
 
 // Insertion de la config
-$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Version', 'info', '1.5.9', 'Version de l&apos;application','','','');";
+$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Version', 'info', '1.5.9', 'Version de l&apos;application','Divers','','0');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Mail-IsEnabled', 'boolean', '0', 'Active ou d&eacute;sactive l&apos;envoi des mails','Messagerie','','10');";
-$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'toutlemonde', 'boolean', '0', 'Affiche ou non l&apos;utilisateur \"tout le monde\" dans le menu.','','','');";
+$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'toutlemonde', 'boolean', '0', 'Affiche ou non l&apos;utilisateur \"tout le monde\" dans le menu.','Menu d&eacute;roulant du planning','','5');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Mail-IsMail-IsSMTP', 'enum', 'IsSMTP', 'Classe &agrave; utiliser : SMTP, fonction PHP IsMail','Messagerie','IsSMTP,IsMail','10');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Mail-WordWrap', '', '50', '','Messagerie','','10');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Mail-Hostname', '', '', 'Nom d''h&ocirc;te du serveur pour l&apos;envoi des mails.','Messagerie','','10');";
@@ -116,16 +116,16 @@ $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Mail-Password', 'password
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Mail-From', '', 'no-reply@planningbiblio.fr', 'Adresse email de l&apos;expediteur.','Messagerie','','10');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Mail-FromName', '', 'Planning', 'Nom de l&apos;expediteur.','Messagerie','','10');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Mail-Signature', 'textarea', 'Ce message a été envoyé par Planning Biblio.\nMerci de ne pas y répondre.', 'Signature des e-mails','Messagerie','','10');";
-$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Dimanche', 'boolean', '0', 'Utiliser le planning le dimanche','','','');";
-$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL ,'nb_semaine','enum','1','Nombre de semaine pour l\'emploi du temps','','1,2,3','');";
-$sql[]="INSERT INTO `{$dbprefix}config` (nom,ordre,commentaires) VALUES ('dateDebutPlHebdo','0','Date de d&eacute;but permettant la rotation des plannings hebdomadaires (pour l&apos;utilisation de 3 plannings hebdomadaires. Format YYYY-MM-DD)');";
-$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL ,'ctrlHresAgents','boolean','1','Contrôle des heures des agents le samedi et le dimanche','','','');";
-$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL ,'agentsIndispo','boolean','1','Afficher les agents indisponibles','','','');";
-$sql[]="INSERT INTO `{$dbprefix}config` VALUES (null ,'affiche_etage','boolean','0','Afficher les &eacute;tages des postes dans le planning','Affichage','','7');";
-$sql[]="INSERT INTO `{$dbprefix}config` (nom,type,valeur,valeurs,ordre,commentaires) VALUES ('heuresPrecision','enum','heure','heure,demi-heure,quart d&apos;heure','0','Pr&eacute;cision des heures hebdomadaires');";
-$sql[]="INSERT INTO `{$dbprefix}config` (nom,type,valeur,valeurs,commentaires,categorie,ordre) VALUES ('absences_planning','enum','',',simple,détaillé,absents et présents','Afficher la liste des absences sur la page du planning','Affichage','7');";
-$sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Auth-Mode','enum','SQL','M&eacute;thode d&apos;authentification','Authentification','SQL','5');"; 
-$sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'absencesApresValidation','boolean','1','Autoriser l&apos;enregistrement des absences apr&egrave;s validation des plannings','','','');";
+$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Dimanche', 'boolean', '0', 'Utiliser le planning le dimanche','Divers','','0');";
+$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL ,'nb_semaine','enum','1','Nombre de semaine pour l\'emploi du temps','Divers','1,2,3','0');";
+$sql[]="INSERT INTO `{$dbprefix}config` (nom,ordre,commentaires,categorie,ordre) VALUES ('dateDebutPlHebdo','0','Date de d&eacute;but permettant la rotation des plannings hebdomadaires (pour l&apos;utilisation de 3 plannings hebdomadaires. Format YYYY-MM-DD)','Divers','0');";
+$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL ,'ctrlHresAgents','boolean','1','Contrôle des heures des agents le samedi et le dimanche','Divers','','0');";
+$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL ,'agentsIndispo','boolean','1','Afficher les agents indisponibles','Menu d&eacute;roulant du planning','','5');";
+$sql[]="INSERT INTO `{$dbprefix}config` VALUES (null ,'affiche_etage','boolean','0','Afficher les &eacute;tages des postes dans le planning','Affichage','','3');";
+$sql[]="INSERT INTO `{$dbprefix}config` (nom,type,valeur,valeurs,ordre,commentaires,categorie) VALUES ('heuresPrecision','enum','heure','heure,demi-heure,quart d&apos;heure','0','Pr&eacute;cision des heures hebdomadaires','Divers');";
+$sql[]="INSERT INTO `{$dbprefix}config` (nom,type,valeur,valeurs,commentaires,categorie,ordre) VALUES ('absences_planning','enum','',',simple,détaillé,absents et présents','Afficher la liste des absences sur la page du planning','Affichage','3');";
+$sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Auth-Mode','enum','SQL','M&eacute;thode d&apos;authentification','Authentification','SQL','7');"; 
+$sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'absencesApresValidation','boolean','1','Autoriser l&apos;enregistrement des absences apr&egrave;s validation des plannings','Divers','','0');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-nombre','enum','1','Nombre de sites','Multisites','1,2','15');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-site1','text','','Nom du site N°1','Multisites','','15');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-resp1','text','','Nom du responsable du site N°1','Multisites','','15');";
@@ -134,11 +134,11 @@ $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-site2','text','
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-resp2','text','','Nom du responsable du site N°2','Multisites','','15');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-email2','text','','Email du responsable du site N°2','Multisites','','15');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-agentsMultisites','boolean','0','Les agents peuvent travailler sur plusieurs sites','Multisites','','15');";
-$sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'hres4semaines','boolean','0','Afficher le total d&apos;heures des 4 derni&egrave,res semaine dans le menu','Affichage','','7');";
-$sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`type`,`valeur`,`commentaires`,`categorie`,`ordre`) VALUES ('Auth-Anonyme','boolean','0','Autoriser les logins anonymes','Authentification','5');";
-$sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`type`,`commentaires`,`categorie`,`ordre`) VALUES ('titre','text','Titre affich&eacute; sur la page d&apos;accueil','Affichage','7');";
-$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`) VALUES ('EDTSamedi', 'boolean', '0', 'Emplois du temps diff&eacute;rents les semaines o&ugrave; les samedis sont travaill&eacute;s');";
-$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('ClasseParService', 'boolean', '1', 'Classer les agents par service dans le menu d&eacute;roulant du planning','Affichage','7');";
+$sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'hres4semaines','boolean','0','Afficher le total d&apos;heures des 4 derni&egrave,res semaine dans le menu','Menu d&eacute;roulant du planning','','5');";
+$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('Auth-Anonyme','boolean','0','Autoriser les logins anonymes','Authentification','7');";
+$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `commentaires`, `categorie`, `ordre`) VALUES ('titre','text','Titre affich&eacute; sur la page d&apos;accueil','Affichage','3');";
+$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('EDTSamedi', 'boolean', '0', 'Emplois du temps diff&eacute;rents les semaines o&ugrave; les samedis sont travaill&eacute;s', 'Divers','0');";
+$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('ClasseParService', 'boolean', '1', 'Classer les agents par service dans le menu d&eacute;roulant du planning','Menu d&eacute;roulant du planning','5');";
 
 //	Lignes de séparations
 $sql[]="INSERT INTO `{$dbprefix}lignes` VALUES (null,'Magasins');";
