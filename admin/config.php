@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : activites/config.php
 Création : mai 2011
-Dernière modification : 18 octobre 2013
+Dernière modification : 19 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -134,4 +134,7 @@ else{			// enregistrement des paramètres
 $("#accordion").accordion({
   heightStyle: "content"
 });
+
+$("input[type='button']").button();
+$("input[type='submit']").button();
 </script>

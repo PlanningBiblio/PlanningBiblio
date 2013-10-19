@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 18 octobre 2013
+Dernière modification : 19 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -495,8 +495,8 @@ for($j=0;$j<$config['nb_semaine'];$j++){
   for($i=$debut[$j];$i<$fin[$j];$i++){
     $k=$i-($j*7)-1;
     if(in_array(21,$droits) and !in_array("planningHebdo",$plugins)){
-      echo "<tr><td>{$jours[$k]}</td><td>".selectTemps($i-1,0)."</td><td>".selectTemps($i-1,1)."</td>";
-      echo "<td>".selectTemps($i-1,2)."</td><td>".selectTemps($i-1,3)."</td>";
+      echo "<tr><td>{$jours[$k]}</td><td>".selectTemps($i-1,0,null,"select$j")."</td><td>".selectTemps($i-1,1,null,"select$j")."</td>";
+      echo "<td>".selectTemps($i-1,2,null,"select$j")."</td><td>".selectTemps($i-1,3,null,"select$j")."</td>";
       if($config['Multisites-nombre']>1 and $config['Multisites-agentsMultisites']){
 	$select1=$temps[$i-1][4]==1?"selected='selected'":null;
 	$select2=$temps[$i-1][4]==2?"selected='selected'":null;
@@ -522,6 +522,7 @@ for($j=0;$j<$config['nb_semaine'];$j++){
     }
   }
   echo "</table>\n";
+  echo "Total : <font style='font-weight:bold;' id='heures$j'></font><br/>\n";
 }
 
 // EDTSamedi : emploi du temps différents les semaines avec samedi travaillé
@@ -691,6 +692,13 @@ if($config['EDTSamedi']){
   echo "$(\"#EDTTabs\").tabs();\n";
   echo "$(\"$currentTab\").click();\n";
 }
+
+// Affichage du nombre d'heures correspondant à chaque emploi du temps
+for($i=0;$i<$config['nb_semaine'];$i++){
+  echo "$(\".select$i\").change(function(){calculHeures($(this),\"\",\"form\",\"heures$i\",$i);});\n";
+  echo "$(\"document\").ready(function(){calculHeures($(this),\"\",\"form\",\"heures$i\",$i);});\n";
+}
 ?>
+
 -->
 </script>

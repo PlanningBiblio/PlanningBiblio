@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 17 octobre 2013
+Dernière modification : 19 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -71,6 +71,52 @@ function annuler(nb){
   }
 }
 	
+// Fonction permettant d'afficher les heures correspondantes à chaque tableau d'emploi du temps
+// lors de la modification d'un select ou au chargement d'une page
+function calculHeures(object,num,form,tip,numero){
+  // Num : si horaires prédéfinis, 2 tableaux, num = null ou 2
+  // Numero : numéro du tableau, en fonction de la variable $config['nb_semaine'], on peut avoir jusqu'à 3 tableaux
+  // tip : Affichage qui sera mis à jour
+  debut=numero*7;
+  fin=debut+7;
+  
+  heures=0;
+  elements=document.forms[form].elements;
+  
+  for(i=debut;i<fin;i++){
+    if(elements["temps"+num+"["+i+"][0]"]){
+      debut1=elements["temps"+num+"["+i+"][0]"].value;
+      fin1=elements["temps"+num+"["+i+"][1]"].value;
+      debut2=elements["temps"+num+"["+i+"][2]"].value;
+      fin2=elements["temps"+num+"["+i+"][3]"].value;
+      diff=0;
+      // Journée avec pause le midi
+      if(debut1 && fin1 && debut2 && fin2){
+	diff=diffMinutes(debut1,fin1);
+	diff+=diffMinutes(debut2,fin2);
+      }
+      // Matin uniquement
+      else if(debut1 && fin1){
+	diff=diffMinutes(debut1,fin1);
+      }
+      // Après midi seulement
+      else if(debut2 && fin2){
+	diff=diffMinutes(debut2,fin2);
+      }
+      // Journée complète sans pause
+      else if(debut1 && fin2){
+	diff=diffMinutes(debut1,fin2);
+      }
+      heures+=diff;
+    }
+  }
+  heures=heure4(heures/60);
+  document.getElementById(tip).innerHTML=heures;
+}
+
+
+
+
 function calendrier(champ,form){
   if(form==undefined){
     form="form";
