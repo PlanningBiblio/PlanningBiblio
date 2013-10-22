@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 18 octobre 2013
+Dernière modification : 21 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -24,7 +24,9 @@ if(!$version){
 
 class planning{
 
-  public function menudivAfficheAgents($agents,$date,$debut,$fin,$deja,$msg_deja_place,$stat,$cellule_vide,$max_perso,$sr_init,$hide){
+  public function menudivAfficheAgents($agents,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP){
+    $msg_deja_place="<font style='color:red;font-weight:bold;'>(DP)</font>";
+    $msg_deuxSP="<font style='color:red;font-weight:bold;'>(2 SP)</font>";
     $config=$GLOBALS['config'];
     $dbprefix=$config['dbprefix'];
     $d=new datePl($date);
@@ -83,6 +85,14 @@ class planning{
 	$color='red';
       }
       //			----------------------		FIN Déjà placés		-----------------------------------------------------//
+
+      // Vérifie si l'agent fera 2 plages de service public de suite
+      if($config['Alerte2SP']){
+	if(in_array($elem['id'],$deuxSP)){
+	  $nom_menu.=" ".$msg_deuxSP;
+	  $color='red';
+	}
+      }
       
       // affihage des heures faites ce jour + les heures de la cellule
       $db_heures = new db();

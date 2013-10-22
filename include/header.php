@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 19 octobre 2013
+Dernière modification : 21 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -30,8 +30,10 @@ if(!$version){
 <script type='text/JavaScript' src='js/script.js'></script>
 <script type='text/JavaScript' src='js/infobulles.js'></script>
 <script type='text/JavaScript' src='js/dialog.js'></script>
+<script type='text/JavaScript' src='js/dataTables/jquery.dataTables.min.js'></script>
 
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+<link rel='StyleSheet' href='css/dataTables/jquery.dataTables_themeroller.css' type='text/css' media='screen'/>
 <link rel='StyleSheet' href='css/jquery-ui-themes-1.10.3/themes/bulac/jquery-ui-1.10.3.custom.min.css' type='text/css' media='screen'/>
 <link rel='StyleSheet' href='css/style.css' type='text/css' media='screen'/>
 <link rel='StyleSheet' href='css/print.css' type='text/css' media='print'/>

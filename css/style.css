@@ -809,6 +809,23 @@ img{
   white-space: nowrap;
 }
 
+/*	DataTables */
+.dataTable tbody tr.odd {
+  background-color:#FFD8C4;
+}
+
+.dataTable tbody tr.odd td.sorting_1,
+.dataTable tbody tr.odd td.sorting_2,
+.dataTable tbody tr.odd td.sorting_3{
+  background-color:#FFBE9D;
+}
+
+.dataTable tbody tr.even td.sorting_1,
+.dataTable tbody tr.even td.sorting_2,
+.dataTable tbody tr.even td.sorting_3{
+  background-color:#FEE7DC;
+}
+
 /*	Footer	*/
 .footer{
   text-align:center;

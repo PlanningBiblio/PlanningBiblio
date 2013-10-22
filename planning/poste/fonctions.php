@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 4 octobre 2013
+Dernière modification : 21 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -83,6 +83,18 @@ function deja_place($date,$poste){
     }
   }
   return $deja;
+}
+
+function deuxSP($date,$debut,$fin){
+  $tab=array(0);
+  $db=new db();
+  $db->select("pl_poste","perso_id","date='$date' AND (debut='$fin' OR fin='$debut')","group by perso_id");
+  if($db->result){
+    foreach($db->result as $elem){
+      $tab[]=$elem['perso_id'];
+    }
+  }
+  return $tab;
 }
 
 //--------		Vérifier si le poste demandé appartient à un groupe, si oui, on recherche les personnes qualifiées pour ce groupe (poste=groupe) --------//

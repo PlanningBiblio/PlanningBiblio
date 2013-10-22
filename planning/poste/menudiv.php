@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/menudiv.php
 Création : mai 2011
-Dernière modification : 18 octobre 2013
+Dernière modification : 21 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -30,7 +30,6 @@ $poste=$_GET['poste'];
 $debut=$_GET['debut'];
 $fin=$_GET['fin'];
 $sr=0;
-$msg_deja_place="(DP)";
 $cellule_vide=true;
 $max_perso=false;
 $tab_exclus=array(0);
@@ -212,6 +211,9 @@ $exclus=join($tab_exclus,",");
 // Contrôle du personnel déjà placé dans la ligne
 $deja=deja_place($date,$poste);
 
+// Contrôle du personnel placé juste avant ou juste après la plage choisie
+$deuxSP=deuxSP($date,$debut,$fin);
+
 //		-----------------------------		Contrôle si la cellule est vide 		-----------------------------//
 $db=new db();
 $db->select("pl_poste",null,"`poste`='$poste' AND `debut`='$debut' AND `fin`='$fin' AND `date`='$date' AND `site`='$site'");
@@ -355,7 +357,7 @@ if($services and $config['ClasseParService']){
 if(!$config['ClasseParService']){
   $hide=false;
   $p=new planning();
-  $p->menudivAfficheAgents($agents_dispo,$date,$debut,$fin,$deja,$msg_deja_place,$stat,$cellule_vide,$max_perso,$sr_init,$hide);
+  $p->menudivAfficheAgents($agents_dispo,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP);
 }
 
 //		-----------		Affichage des agents indisponibles		----------//
@@ -393,14 +395,14 @@ echo "<table style='background:#FFFFFF;position:absolute;left:200px;top:8px;' fr
 if($agents_tous and $config['ClasseParService']){
   $hide=true;
   $p=new planning();
-  $p->menudivAfficheAgents($agents_tous,$date,$debut,$fin,$deja,$msg_deja_place,$stat,$cellule_vide,$max_perso,$sr_init,$hide);
+  $p->menudivAfficheAgents($agents_tous,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP);
 }
 
 //		-----------		Affichage de la liste des agents indisponibles 'ils ne sont pas classés par services	----------//
 if($autres_agents and !$config['ClasseParService'] and $config['agentsIndispo']){
   $hide=true;
   $p=new planning();
-  $p->menudivAfficheAgents($autres_agents,$date,$debut,$fin,$deja,$msg_deja_place,$stat,$cellule_vide,$max_perso,$sr_init,$hide);
+  $p->menudivAfficheAgents($autres_agents,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP);
 }
 
 echo "</table>";
