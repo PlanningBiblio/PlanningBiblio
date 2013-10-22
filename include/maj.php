@@ -347,7 +347,7 @@ if(strcmp("1.6",$config['Version'])>0){
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('Alerte2SP', 'boolean', '0', 'Alerter si l&apos;agent fera 2 plages de service public de suite','Menu d&eacute;roulant du planning','5');";
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('CatAFinDeService', 'boolean', '0', 'Alerter si aucun agent de cat&eacute;gorie A n&apos;est plac&eacute; en fin de service','Divers','0');";
   $sql[]="CREATE TABLE `{$dbprefix}EDTSamedi` ( `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY , `perso_id` INT(11) NOT NULL , `semaine` DATE);";
-  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.5.9' WHERE `nom`='Version';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.6' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage
