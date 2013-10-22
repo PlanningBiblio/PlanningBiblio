@@ -1,3 +1,25 @@
+***	Version 1.6	(Jérôme Combes, 22 octobre 2013)		***
+- Améliorations :
+Possibilité d'avoir un emploi du temps différent les semaines où le samedis est travaillé
+Affichage du total d'heures de chaque emploi du temps
+Possibilité d'afficher directement les agents dans le menu déroulant du planning, sans les classer par catégorie
+Alerte si l'agent est placé dans 2 plages de SP consécutives (paramétrable)
+Amélioration de l'affichage de la page de configuration (accordéon)
+
+- Correction de bugs :
+Les agents n'apparaissent plus dans le menu déroulant après leur date de départ
+La date de départ n'est plus efface lors de la validation de la fiche des agents
+
+***	Version 1.5.9	(Jérôme Combes, 11 octobre 2013)		***
+- Améliorations :
+N'affiche plus les agents des autres sites dans la liste des agents indisponibles (avec l'option multisites)
+Ajout du champ "catégorie" dans la fiche des agents avec les choix "titulaire" et "contractuel"
+
+***	Version 1.5.8	(Jérôme Combes, 4 octobre 2013)			***
+- Améliorations :
+Style différent dans le planning en fonction du service et/ou du statut de l'agents
+Style personnalisé dans une feuille de style dédiée (css/custom.css)
+
 ***	Version 1.5.7	(Jérôme Combes, 26 septembre 2013)		***
 - Améliorations :
 Modification du champ "supprime" de la table "personnel", facilite l'utilisation de la fonction personnel::fetch()
