@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 18 septembre 2013
+Dernière modification : 24 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -460,13 +460,30 @@ else{
 if($config['absences_planning']){
   $a=new absences();
   $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date." 00:00:00",$date." 23:59:59");
+  $absences=$a->elements;
+
+  // Ajout des congés
+  // Pour éviter les doublons lors de l'ajout des congés, on créé un tableaux avec les ID des agents absents
+  $absences_id=array();
+  foreach($absences as $elem){
+    $absences_id[]=$elem['perso_id'];
+  }
+
+  // Ajout des congés
+  if(in_array("conges",$plugins)){
+    include "plugins/conges/planning.php";
+  }
+
+  // Tri des absences par nom
+  usort($absences,"cmp_nom_prenom");
+
   switch($config['absences_planning']){
     case "simple" :
-      if(!empty($a->elements)){
+      if(!empty($absences)){
 	echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
 	echo "<table id='planning_absences' cellspacing='0' style='margin:5px 0 0 0;'>\n";
 	$class="tr1";
-	foreach($a->elements as $elem){
+	foreach($absences as $elem){
 	  $heures=null;
 	  $debut=null;
 	  $fin=null;
@@ -494,12 +511,12 @@ if($config['absences_planning']){
       break;
 
     case "détaillé" :
-      if(!empty($a->elements)){
+      if(!empty($absences)){
 	echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
 	echo "<table id='planning_absences' cellspacing='0' style='margin:5px 0 0 0;'>\n";
 	echo "<tr class='th'><td>Nom</td><td>Pr&eacute;nom</td><td>D&eacute;but</td><td>Fin</td><td>Motif</td></tr>\n";
 	$class="tr1";
-	foreach($a->elements as $elem){
+	foreach($absences as $elem){
 	  $class=$class=="tr1"?"tr2":"tr1";
 	  echo "<tr class='$class'><td>{$elem['nom']}</td><td>{$elem['prenom']}</td>";
 	  echo "<td>{$elem['debutAff']}</td><td>{$elem['finAff']}</td>";
@@ -516,18 +533,18 @@ if($config['absences_planning']){
       $absents=array(2);	// 2 = Utilisateur "Tout le monde", on le supprime
 
       // On exclus ceux qui sont absents toute la journée
-      $a2=new absences();
-      $a2->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date." 00:00:00",$date." 23:59:59");
-      if($a2->elements){
-	foreach($a2->elements as $elem){
+      if(!empty($absences)){
+	foreach($absences as $elem){
 	  if($elem['debut']<=$date." 00:00:00" and $elem['fin']>=$date." 23:59:59"){
 	    $absents[]=$elem['perso_id'];
 	  }
 	}
       }
+
       // recherche des personnes à exclure (ne travaillant ce jour)
       $db=new db();
-      $db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00') ORDER BY `nom`,`prenom`;");
+//       $db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00') ORDER BY `nom`,`prenom`;");
+      $db->select("personnel","*","`actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00')","ORDER BY `nom`,`prenom`");
 
       $verif=true;	// verification des heures des agents
       if(!$config['ctrlHresAgents'] and ($d->position==6 or $d->position==0)){
@@ -577,18 +594,21 @@ if($config['absences_planning']){
 		$site=$config['Multisites-site'.$elem['site']];
 	      }
 	    }
+	    $site=$site?$site.", ":null;
+
+
 	    $horaires=null;
 	    if(!$heures[1] and !$heures[2]){		// Pas de pause le midi
-	      $horaires=", ".heure2($heures[0])." - ".heure2($heures[3]);
+	      $horaires=heure2($heures[0])." - ".heure2($heures[3]);
 	    }
 	    elseif(!$heures[2] and !$heures[3]){	// matin seulement
-	      $horaires=", ".heure2($heures[0])." - ".heure2($heures[1]);
+	      $horaires=heure2($heures[0])." - ".heure2($heures[1]);
 	    }
 	    elseif(!$heures[0] and !$heures[1]){	// après midi seulement
-	      $horaires=", ".heure2($heures[2])." - ".heure2($heures[3]);
+	      $horaires=heure2($heures[2])." - ".heure2($heures[3]);
 	    }
 	    else{		// matin et après midi avec pause
-	      $horaires=", ".heure2($heures[0])." - ".heure2($heures[1])." &amp; ".heure2($heures[2])." - ".heure2($heures[3]);
+	      $horaires=heure2($heures[0])." - ".heure2($heures[1])." &amp; ".heure2($heures[2])." - ".heure2($heures[3]);
 	    }
 	    $presents[]=array("id"=>$elem['id'],"nom"=>$elem['nom']." ".$elem['prenom'],"site"=>$site,"heures"=>$horaires);
 	  }
@@ -597,7 +617,7 @@ if($config['absences_planning']){
 
       echo "<table id='planning_absences' cellspacing='0' style='margin:5px 0 0 0;' >\n";
       echo "<tr><td style='width:60%;'><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des présents</h3></td>\n";
-      if(!empty($a->elements)){
+      if(!empty($absences)){
 	echo "<td><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3></td>";
       }
       echo "</tr>\n";
@@ -617,7 +637,7 @@ if($config['absences_planning']){
       echo "<td>";
       echo "<table cellspacing='0'>";
       $class="tr1";
-      foreach($a->elements as $elem){
+      foreach($absences as $elem){
 	$heures=null;
 	$debut=null;
 	$fin=null;
