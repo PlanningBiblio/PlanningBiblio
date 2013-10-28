@@ -1,0 +1,8 @@
+maj.sh
+*~
+data/*
+include/config.php
+plugins/conges*
+plugins/ldap*
+plugins/pla*
+
