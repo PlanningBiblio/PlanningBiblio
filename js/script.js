@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 19 octobre 2013
+Dernière modification : 28 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -356,6 +356,23 @@ function supprime_jourFerie(id){
       document.getElementById("jour"+id).value="";
     }
   }
+}
+
+function verif_categorieA(){
+  var requete = $.ajax({
+    url: "planning/poste/ajax.categorieA.php",
+    type: "get",
+    data: "date="+date+"&site="+site,
+    success: function(){
+      if(requete.responseText == "true"){
+	$("#planningTips").hide();
+      }
+      else {
+	$("#planningTips").html("Attention,<br/>Pas d&apos;agent de cat&eacute;gorie A en fin de service.");
+	$("#planningTips").show();
+      }
+    }
+  });
 }
 
 function verif_date(d){
@@ -745,6 +762,9 @@ function bataille_navale(perso_id,couleur,nom,barrer,ajouter,classe){
     document.getElementById("cellule"+cellule+"b").style.display="";
   }
   document.getElementById("menudiv").style.display = "none" ;	// cacher le menudiv
+
+  // Affiche un message en haut du planning si pas de catégorie A en fin de service 
+  verif_categorieA();
 }
 
 //	groupe_tab : utiliser pour menudiv

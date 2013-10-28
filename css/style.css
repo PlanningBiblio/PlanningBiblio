@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification :19 octobre 2013
+Dernière modification :28 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -344,6 +344,13 @@ select
 /* Calendrier, titre (Semaine ...), Boutons de droite */
 #divcalendrier {
   margin : 10px 0 0 0;
+}
+
+#planningTips{
+  margin:20px 0px;
+  color: #FF5E0E;
+  font-weight:bold;
+  display:none;
 }
 
 #tabsemaine1 {

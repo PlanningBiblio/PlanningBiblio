@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 24 octobre 2013
+Dernière modification : 28 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -222,6 +222,7 @@ if($verrou){
 echo "<a href='index.php' title='Actualiser'><img id='rafraichir' src='img/rafraichir.jpg' alt='rafraichir' /></a>\n";
 echo "</div>\n";
 
+echo "<div id='planningTips'>&nbsp;</div>";
 echo "</td></tr>\n";
 
 //----------------------	FIN Verrouillage du planning		-----------------------//
@@ -454,34 +455,187 @@ else{
     }
   }
   echo "</table>\n";
-}
 
-// Affichage des absences
-if($config['absences_planning']){
-  $a=new absences();
-  $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date." 00:00:00",$date." 23:59:59");
-  $absences=$a->elements;
+  // Affichage des absences
+  if($config['absences_planning']){
+    $a=new absences();
+    $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date." 00:00:00",$date." 23:59:59");
+    $absences=$a->elements;
 
-  // Ajout des congés
-  // Pour éviter les doublons lors de l'ajout des congés, on créé un tableaux avec les ID des agents absents
-  $absences_id=array();
-  foreach($absences as $elem){
-    $absences_id[]=$elem['perso_id'];
-  }
+    // Ajout des congés
+    // Pour éviter les doublons lors de l'ajout des congés, on créé un tableaux avec les ID des agents absents
+    $absences_id=array();
+    foreach($absences as $elem){
+      $absences_id[]=$elem['perso_id'];
+    }
 
-  // Ajout des congés
-  if(in_array("conges",$plugins)){
-    include "plugins/conges/planning.php";
-  }
+    // Ajout des congés
+    if(in_array("conges",$plugins)){
+      include "plugins/conges/planning.php";
+    }
 
-  // Tri des absences par nom
-  usort($absences,"cmp_nom_prenom");
+    // Tri des absences par nom
+    usort($absences,"cmp_nom_prenom");
 
-  switch($config['absences_planning']){
-    case "simple" :
-      if(!empty($absences)){
-	echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
-	echo "<table id='planning_absences' cellspacing='0' style='margin:5px 0 0 0;'>\n";
+    switch($config['absences_planning']){
+      case "simple" :
+	if(!empty($absences)){
+	  echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
+	  echo "<table id='planning_absences' cellspacing='0' style='margin:5px 0 0 0;'>\n";
+	  $class="tr1";
+	  foreach($absences as $elem){
+	    $heures=null;
+	    $debut=null;
+	    $fin=null;
+	    if($elem['debut']>"$date 00:00:00"){
+	      $debut=substr($elem['debut'],-8);
+	    }
+	    if($elem['fin']<"$date 23:59:59"){
+	      $fin=substr($elem['fin'],-8);
+	    }
+	    if($debut and $fin){
+	      $heures="de ".heure2($debut)." à ".heure2($fin);
+	    }
+	    elseif($debut){
+	      $heures="à partir de ".heure2($debut);
+	    }
+	    elseif($fin){
+	      $heures="jusqu'à ".heure2($fin);
+	    }
+
+	    $class=$class=="tr1"?"tr2":"tr1";
+	    echo "<tr class='$class'><td>{$elem['nom']} {$elem['prenom']} ({$elem['motif']}) $heures</td></tr>\n";
+	  }
+	  echo "</table>\n";
+	}
+	break;
+
+      case "détaillé" :
+	if(!empty($absences)){
+	  echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
+	  echo "<table id='planning_absences' cellspacing='0' style='margin:5px 0 0 0;'>\n";
+	  echo "<tr class='th'><td>Nom</td><td>Pr&eacute;nom</td><td>D&eacute;but</td><td>Fin</td><td>Motif</td></tr>\n";
+	  $class="tr1";
+	  foreach($absences as $elem){
+	    $class=$class=="tr1"?"tr2":"tr1";
+	    echo "<tr class='$class'><td>{$elem['nom']}</td><td>{$elem['prenom']}</td>";
+	    echo "<td>{$elem['debutAff']}</td><td>{$elem['finAff']}</td>";
+	    echo "<td>{$elem['motif']}</td></tr>\n";
+	  }
+	  echo "</table>\n";
+	}
+	break;
+
+      case "absents et présents" :
+	// Sélection des agents présents
+	$heures=null;
+	$presents=array();
+	$absents=array(2);	// 2 = Utilisateur "Tout le monde", on le supprime
+
+	// On exclus ceux qui sont absents toute la journée
+	if(!empty($absences)){
+	  foreach($absences as $elem){
+	    if($elem['debut']<=$date." 00:00:00" and $elem['fin']>=$date." 23:59:59"){
+	      $absents[]=$elem['perso_id'];
+	    }
+	  }
+	}
+
+	// recherche des personnes à exclure (ne travaillant ce jour)
+	$db=new db();
+  //       $db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00') ORDER BY `nom`,`prenom`;");
+	$db->select("personnel","*","`actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00')","ORDER BY `nom`,`prenom`");
+
+	$verif=true;	// verification des heures des agents
+	if(!$config['ctrlHresAgents'] and ($d->position==6 or $d->position==0)){
+	  $verif=false; // on ne verifie pas les heures des agents le samedi et le dimanche (Si ctrlHresAgents est desactivé)
+	}
+		
+	if($db->result and $verif){
+	  foreach($db->result as $elem){
+	    $heures=null;
+	    $temps=unserialize($elem['temps']);
+
+	    $jour=$d->position-1;		// jour de la semaine lundi = 0 ,dimanche = 6
+	    if($jour==-1){
+	      $jour=6;
+	    }
+
+	    // Si semaine paire, position +7 : lundi A = 0 , lundi B = 7 , dimanche B = 13
+	    if($config['nb_semaine']=="2" and !($semaine%2)){
+	      $jour+=7;
+	    }
+	    // Si utilisation de 3 plannings hebdo
+	    elseif($config['nb_semaine']=="3"){
+	      if($semaine3==2){
+		$jour+=7;
+	      }
+	      elseif($semaine3==3){
+		$jour+=14;
+	      }
+	    }
+
+	    // Si l'emploi du temps est renseigné
+	    if(!empty($temps) and array_key_exists($jour,$temps)){
+	      // S'il y a une heure de début (matin ou midi)
+	      if($temps[$jour][0] or $temps[$jour][2]){
+		$heures=$temps[$jour];
+	      }
+	    }
+
+	    // S'il y a des horaires correctement renseignés
+	    if($heures and !in_array($elem['id'],$absents)){
+	      $site=null;
+		if($config['Multisites-nombre']>1){
+		if($config['Multisites-agentsMultisites']==1 and isset($heures[4])){
+		  $site=$config['Multisites-site'.$heures[4]];
+		}
+		else{
+		  $site=$config['Multisites-site'.$elem['site']];
+		}
+	      }
+	      $site=$site?$site.", ":null;
+
+
+	      $horaires=null;
+	      if(!$heures[1] and !$heures[2]){		// Pas de pause le midi
+		$horaires=heure2($heures[0])." - ".heure2($heures[3]);
+	      }
+	      elseif(!$heures[2] and !$heures[3]){	// matin seulement
+		$horaires=heure2($heures[0])." - ".heure2($heures[1]);
+	      }
+	      elseif(!$heures[0] and !$heures[1]){	// après midi seulement
+		$horaires=heure2($heures[2])." - ".heure2($heures[3]);
+	      }
+	      else{		// matin et après midi avec pause
+		$horaires=heure2($heures[0])." - ".heure2($heures[1])." &amp; ".heure2($heures[2])." - ".heure2($heures[3]);
+	      }
+	      $presents[]=array("id"=>$elem['id'],"nom"=>$elem['nom']." ".$elem['prenom'],"site"=>$site,"heures"=>$horaires);
+	    }
+	  }
+	}
+
+	echo "<table id='planning_absences' cellspacing='0' style='margin:5px 0 0 0;' >\n";
+	echo "<tr><td style='width:60%;'><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des présents</h3></td>\n";
+	if(!empty($absences)){
+	  echo "<td><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3></td>";
+	}
+	echo "</tr>\n";
+
+	// Liste des présents
+	echo "<tr style='vertical-align:top;'><td>";
+	echo "<table cellspacing='0'> ";
+	$class="tr1";
+	foreach($presents as $elem){
+	  $class=$class=="tr1"?"tr2":"tr1";
+	  echo "<tr class='$class'><td>{$elem['nom']}</td><td style='padding-left:15px;'>{$elem['site']}{$elem['heures']}</td></tr>\n";
+	}
+	echo "</table>\n";
+	echo "</td>\n";
+
+	// Liste des absents
+	echo "<td>";
+	echo "<table cellspacing='0'>";
 	$class="tr1";
 	foreach($absences as $elem){
 	  $heures=null;
@@ -494,177 +648,24 @@ if($config['absences_planning']){
 	    $fin=substr($elem['fin'],-8);
 	  }
 	  if($debut and $fin){
-	    $heures="de ".heure2($debut)." à ".heure2($fin);
+	    $heures=", ".heure2($debut)." - ".heure2($fin);
 	  }
 	  elseif($debut){
-	    $heures="à partir de ".heure2($debut);
+	    $heures=" à partir de ".heure2($debut);
 	  }
 	  elseif($fin){
-	    $heures="jusqu'à ".heure2($fin);
+	    $heures=" jusqu'à ".heure2($fin);
 	  }
 
 	  $class=$class=="tr1"?"tr2":"tr1";
-	  echo "<tr class='$class'><td>{$elem['nom']} {$elem['prenom']} ({$elem['motif']}) $heures</td></tr>\n";
+	  echo "<tr class='$class'><td>{$elem['nom']} {$elem['prenom']}</td><td style='padding-left:15px;'>{$elem['motif']}{$heures}</td></tr>\n";
 	}
 	echo "</table>\n";
-      }
-      break;
-
-    case "détaillé" :
-      if(!empty($absences)){
-	echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
-	echo "<table id='planning_absences' cellspacing='0' style='margin:5px 0 0 0;'>\n";
-	echo "<tr class='th'><td>Nom</td><td>Pr&eacute;nom</td><td>D&eacute;but</td><td>Fin</td><td>Motif</td></tr>\n";
-	$class="tr1";
-	foreach($absences as $elem){
-	  $class=$class=="tr1"?"tr2":"tr1";
-	  echo "<tr class='$class'><td>{$elem['nom']}</td><td>{$elem['prenom']}</td>";
-	  echo "<td>{$elem['debutAff']}</td><td>{$elem['finAff']}</td>";
-	  echo "<td>{$elem['motif']}</td></tr>\n";
-	}
+	echo "</td></tr>\n";
 	echo "</table>\n";
-      }
-      break;
+	break;
 
-    case "absents et présents" :
-      // Sélection des agents présents
-      $heures=null;
-      $presents=array();
-      $absents=array(2);	// 2 = Utilisateur "Tout le monde", on le supprime
-
-      // On exclus ceux qui sont absents toute la journée
-      if(!empty($absences)){
-	foreach($absences as $elem){
-	  if($elem['debut']<=$date." 00:00:00" and $elem['fin']>=$date." 23:59:59"){
-	    $absents[]=$elem['perso_id'];
-	  }
-	}
-      }
-
-      // recherche des personnes à exclure (ne travaillant ce jour)
-      $db=new db();
-//       $db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00') ORDER BY `nom`,`prenom`;");
-      $db->select("personnel","*","`actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00')","ORDER BY `nom`,`prenom`");
-
-      $verif=true;	// verification des heures des agents
-      if(!$config['ctrlHresAgents'] and ($d->position==6 or $d->position==0)){
-	$verif=false; // on ne verifie pas les heures des agents le samedi et le dimanche (Si ctrlHresAgents est desactivé)
-      }
-	      
-      if($db->result and $verif){
-	foreach($db->result as $elem){
-	  $heures=null;
-	  $temps=unserialize($elem['temps']);
-
-	  $jour=$d->position-1;		// jour de la semaine lundi = 0 ,dimanche = 6
-	  if($jour==-1){
-	    $jour=6;
-	  }
-
-	  // Si semaine paire, position +7 : lundi A = 0 , lundi B = 7 , dimanche B = 13
-	  if($config['nb_semaine']=="2" and !($semaine%2)){
-	    $jour+=7;
-	  }
-	  // Si utilisation de 3 plannings hebdo
-	  elseif($config['nb_semaine']=="3"){
-	    if($semaine3==2){
-	      $jour+=7;
-	    }
-	    elseif($semaine3==3){
-	      $jour+=14;
-	    }
-	  }
-
-	  // Si l'emploi du temps est renseigné
-	  if(!empty($temps) and array_key_exists($jour,$temps)){
-	    // S'il y a une heure de début (matin ou midi)
-	    if($temps[$jour][0] or $temps[$jour][2]){
-	      $heures=$temps[$jour];
-	    }
-	  }
-
-	  // S'il y a des horaires correctement renseignés
-	  if($heures and !in_array($elem['id'],$absents)){
-	    $site=null;
-	      if($config['Multisites-nombre']>1){
-	      if($config['Multisites-agentsMultisites']==1 and isset($heures[4])){
-		$site=$config['Multisites-site'.$heures[4]];
-	      }
-	      else{
-		$site=$config['Multisites-site'.$elem['site']];
-	      }
-	    }
-	    $site=$site?$site.", ":null;
-
-
-	    $horaires=null;
-	    if(!$heures[1] and !$heures[2]){		// Pas de pause le midi
-	      $horaires=heure2($heures[0])." - ".heure2($heures[3]);
-	    }
-	    elseif(!$heures[2] and !$heures[3]){	// matin seulement
-	      $horaires=heure2($heures[0])." - ".heure2($heures[1]);
-	    }
-	    elseif(!$heures[0] and !$heures[1]){	// après midi seulement
-	      $horaires=heure2($heures[2])." - ".heure2($heures[3]);
-	    }
-	    else{		// matin et après midi avec pause
-	      $horaires=heure2($heures[0])." - ".heure2($heures[1])." &amp; ".heure2($heures[2])." - ".heure2($heures[3]);
-	    }
-	    $presents[]=array("id"=>$elem['id'],"nom"=>$elem['nom']." ".$elem['prenom'],"site"=>$site,"heures"=>$horaires);
-	  }
-	}
-      }
-
-      echo "<table id='planning_absences' cellspacing='0' style='margin:5px 0 0 0;' >\n";
-      echo "<tr><td style='width:60%;'><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des présents</h3></td>\n";
-      if(!empty($absences)){
-	echo "<td><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3></td>";
-      }
-      echo "</tr>\n";
-
-      // Liste des présents
-      echo "<tr style='vertical-align:top;'><td>";
-      echo "<table cellspacing='0'> ";
-      $class="tr1";
-      foreach($presents as $elem){
-	$class=$class=="tr1"?"tr2":"tr1";
-	echo "<tr class='$class'><td>{$elem['nom']}</td><td style='padding-left:15px;'>{$elem['site']}{$elem['heures']}</td></tr>\n";
-      }
-      echo "</table>\n";
-      echo "</td>\n";
-
-      // Liste des absents
-      echo "<td>";
-      echo "<table cellspacing='0'>";
-      $class="tr1";
-      foreach($absences as $elem){
-	$heures=null;
-	$debut=null;
-	$fin=null;
-	if($elem['debut']>"$date 00:00:00"){
-	  $debut=substr($elem['debut'],-8);
-	}
-	if($elem['fin']<"$date 23:59:59"){
-	  $fin=substr($elem['fin'],-8);
-	}
-	if($debut and $fin){
-	  $heures=", ".heure2($debut)." - ".heure2($fin);
-	}
-	elseif($debut){
-	  $heures=" à partir de ".heure2($debut);
-	}
-	elseif($fin){
-	  $heures=" jusqu'à ".heure2($fin);
-	}
-
-	$class=$class=="tr1"?"tr2":"tr1";
-	echo "<tr class='$class'><td>{$elem['nom']} {$elem['prenom']}</td><td style='padding-left:15px;'>{$elem['motif']}{$heures}</td></tr>\n";
-      }
-      echo "</table>\n";
-      echo "</td></tr>\n";
-      echo "</table>\n";
-      break;
-
+    }
   }
 }
 					//---------------	FIN Affichage des absences		-----------------//
@@ -674,8 +675,13 @@ if($config['absences_planning']){
 <script type='text/JavaScript'>		//--------------	Modification du menu contextuel		----------------//
 <?php
 echo "date='$date';";
+echo "site='$site';";
 ?>
 document.onmousedown  = mouseSelect;
 document.getElementById('tableau').oncontextmenu  = ItemSelMenu;
 					//--------------	FIN Modification du menu contextuel	----------------//
+$("document").ready(function(){
+  // Vérifions si un agent de catégorie A est placé en fin de service
+  verif_categorieA();
+});
 </script>

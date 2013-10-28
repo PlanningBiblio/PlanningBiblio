@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 21 octobre 2013
+Dernière modification : 28 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,7 +23,64 @@ if(!$version){
 
 
 class planning{
+  public $date=null;
+  public $site=1;
+  public $categorieA=false;
 
+
+  // Recherche les agents de catégorie A en fin de service
+  public function finDeService(){
+    $date=$this->date;
+    $site=$this->site;
+
+    // Sélection du tableau utilisé
+    $db=new db();
+    $db->select("pl_poste_tab_affect","tableau","date='$date' AND site='$site'");
+    $tableau=$db->result[0]["tableau"];
+
+    // Sélection de l'heure de fin
+    $db=new db();
+    $db->select("pl_poste_horaires","MAX(fin) AS maxFin","numero='$tableau'");
+    $fin=$db->result[0]["maxFin"];
+
+    // Sélection des agents en fin de service
+    $perso_ids=array();
+    $db=new db();
+    $db->select("pl_poste","perso_id","fin='$fin' and site='$site' and `date`='$date' and supprime='0' and absent='0'");
+    if($db->result){
+      foreach($db->result as $elem){
+	$perso_ids[]=$elem['perso_id'];
+      }
+    }
+    if(empty($perso_ids)){
+      return false;
+    }
+    $perso_ids=join(",",$perso_ids);
+
+    // Sélection des statuts des agents en fin de service
+    $statuts=array();
+    $db=new db();
+    $db->select("personnel","statut","id IN ($perso_ids)");
+    if($db->result){
+      foreach($db->result as $elem){
+	if(in_array($elem['statut'],$statuts)){
+	  continue;
+	}
+	$statuts[]=strtolower($elem['statut']);
+      }
+    }
+
+    if(in_array("conservateur",$statuts)){
+      $this->categorieA=true;
+    }
+
+    if(in_array("biblioth&eacute;caire",$statuts)){
+      $this->categorieA=true;
+    }
+  }
+
+
+  // Affiche la liste des agents dans le menudiv
   public function menudivAfficheAgents($agents,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP){
     $msg_deja_place="<font style='color:red;font-weight:bold;'>(DP)</font>";
     $msg_deuxSP="<font style='color:red;font-weight:bold;'>(2 SP)</font>";
