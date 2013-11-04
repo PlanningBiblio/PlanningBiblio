@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 28 octobre 2013
+Dernière modification : 4 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -368,7 +368,7 @@ function verif_categorieA(){
 	$("#planningTips").hide();
       }
       else {
-	$("#planningTips").html("Attention,<br/>Pas d&apos;agent de cat&eacute;gorie A en fin de service.");
+	$("#planningTips").html("<div class='noprint'>Attention,<br/>Pas d&apos;agent de cat&eacute;gorie A en fin de service.</div>");
 	$("#planningTips").show();
       }
     }

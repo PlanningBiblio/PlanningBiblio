@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 28 octobre 2013
+Dernière modification : 4 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -149,6 +149,7 @@ switch($config['nb_semaine']){
   default :	$affSem=$semaine;	break;	
 }
 echo "<b>Semaine $affSem</b>\n";
+echo "</div>";
 echo "<div id='semaine_planning'<b>Du ".dateFr($j1)." au ".dateFr($j7)."</b>\n";
 echo "</div>\n";
 echo "<div id='date_planning'>Planning du $dateAlpha";
@@ -171,7 +172,7 @@ if($config['Dimanche']){
 echo "</tr></table>";
   
 if($config['Multisites-nombre']>1){
-  echo "<h3>{$config['Multisites-site'.$site]}</h3>";
+  echo "<h3 id='h3-Multisites'>{$config['Multisites-site'.$site]}</h3>";
 }
 //	---------------------		Affichage des messages d'informations		-----------------//
 echo "<div id='messages_infos'>\n";

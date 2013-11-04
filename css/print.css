@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : css/print.css
 Création : mai 2011
-Dernière modification : 27 septembre 2013
+Dernière modification : 4 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -45,6 +45,11 @@ body{
 	color:#7D3C25;
 	margin-bottom:5mm;
 	}
+
+#h3-Multisites{
+  font-size:16pt;
+}
+
 #validation {
 	position:absolute;
 	right:10mm;

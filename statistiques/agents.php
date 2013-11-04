@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : statistiques/agents.php
 Création : mai 2011
-Dernière modification : 16 septembre 2013
+Dernière modification : 4 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -306,9 +306,9 @@ if($tab){
     echo "<td style='padding-left:8px;'>\n";
     echo "<table><tr><td colspan='2'><b>{$elem[0][1]} {$elem[0][2]}</b></td></tr>\n";
     echo "<tr><td>Total</td>\n";
-    echo "<td style='text-align:right;'>".number_format($elem[2],2,',',' ')."</td></tr>\n";
+    echo "<td class='statistiques-heures'>".number_format($elem[2],2,',',' ')."</td></tr>\n";
     echo "<tr><td>Moyenne hebdo</td>\n";
-    echo "<td style='text-align:right;'>".number_format(round($hebdo,2),2,',',' ')."</td></tr>\n";
+    echo "<td class='statistiques-heures'>".number_format(round($hebdo,2),2,',',' ')."</td></tr>\n";
     if($config['Multisites-nombre']>1){
       for($i=1;$i<=$config['Multisites-nombre'];$i++){
 	if($elem["sites"][$i]){
@@ -317,9 +317,9 @@ if($tab){
 	  $hebdo=$jour*$joursParSemaine;
 	  echo "<tr><td colspan='2' style='padding-top:20px;'><u>".$config["Multisites-site{$i}"]."</u></td></tr>";
 	  echo "<tr><td>Total</td>";
-	  echo "<td style='text-align:right;'>".number_format($elem["sites"][$i],2,',',' ')."</td></tr>";;
+	  echo "<td class='statistiques-heures'>".number_format($elem["sites"][$i],2,',',' ')."</td></tr>";;
 	  echo "<tr><td>Moyenne</td>";
-	  echo "<td style='text-align:right;'>".number_format($hebdo,2,',',' ')."</td></tr>";
+	  echo "<td class='statistiques-heures'>".number_format($hebdo,2,',',' ')."</td></tr>";
 	}
       }
     }
