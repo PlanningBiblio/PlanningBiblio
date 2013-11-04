@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 28 octobre 2013
+Dernière modification : 31 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -16,7 +16,12 @@ Classe planning
 Utilisée par les fichiers du dossier "planning/poste"
 */
 
-// pas de $version=acces direct aux pages de ce dossier => redirection vers la page index.php
+// Securité : Traitement pour une reponse Ajax
+if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
+  $version="ajax";
+}
+
+// Si pas de $version ou pas de reponseAjax => acces direct aux pages de ce dossier => redirection vers la page index.php
 if(!$version){
   header("Location: ../../index.php");
 }
@@ -191,11 +196,15 @@ class planning{
 	    $hres_4sem=$hres_4sem+diff_heures($hres['debut'],$hres['fin'],"decimal");
 	  }
 	}
-	$hres_4sem=" / ".$hres_4sem;
+	$hres_4sem=" / <font title='Heures des 4 derni&egrave;res semaines'>$hres_4sem</font>";
       }
 
       //	Mise en forme de la ligne avec le nom et les heures et la couleur en fonction des heures faites
-      $nom_menu.="&nbsp;$hres_jour / $hres_sem / {$elem['heuresHebdo']} $hres_4sem";
+      $nom_menu.="&nbsp;<font title='Heures du jour'>$hres_jour</font> / ";
+      $nom_menu.="<font title='Heures de la semaine'>$hres_sem</font> / ";
+      $nom_menu.="<font title='Quota hebdomadaire'>{$elem['heuresHebdo']}</font>";
+      $nom_menu.=$hres_4sem;
+
       if($hres_jour>7)			// plus de 7h:jour : rouge
 	$nom_menu="<font style='color:red'>$nom_menu</font>\n";
       elseif(($elem['heuresHebdo']-$hres_sem)<=0.5 and ($hres_sem-$elem['heuresHebdo'])<=0.5)		// 0,5 du quota hebdo : vert

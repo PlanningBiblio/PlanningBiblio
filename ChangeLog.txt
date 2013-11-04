@@ -219,9 +219,9 @@ Fichier include/function.php : suppression des fonctions equipe, equipe_infos, d
   accents, addHeure, comptHeure, import_horaires, responsables, tableau_sans_doublons, tableau_vivier(1 et 2), union, validite_last(1 et 2), 
   validite_tab
 Fichier personnel/modif.php et valid.php : suppression des variables responsabilite
-Fichier setup/db_structure.php et include/maj.php : suppresion du champs responsabilite de la table personnel
+Fichier setup/db_structure.php et include/maj.php : suppression du champs responsabilite de la table personnel
 Fichier planning/poste/index.php : suppression de la variable $hebdo_valide et des contrôles liés
-Fichier include/horaires.php : suppresion des fonctions horaires_a_soustraire, horaires_form2, horaires_form2b, horaires_soustraits,
+Fichier include/horaires.php : suppression des fonctions horaires_a_soustraire, horaires_form2, horaires_form2b, horaires_soustraits,
   horaires_cadrage, horaires_form, heure_alpha, heure_num, horaires_num
 Fichier js/script.js : suppression des fonctions : MM_findObj, MM_validateForm, supprimer_poste, selectAll (remplacée par checkall), Get_Onclick
 Fichier calendrier/index.php : suppression des "case" pl_fixe et pl_internes

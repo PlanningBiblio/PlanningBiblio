@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 12 septembre 2013
+Dernière modification : 31 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -114,7 +114,7 @@ echo "<input type='text' name='fin' value='{$fin}' />\n";
 echo "<img src='img/calendrier.gif' border='0' onclick='calendrier(\"fin\");' alt='calendrier' />";
 echo "</td></tr>\n";
 echo "<tr id='hre_fin' $display ><td>\n";
-echo "Heure de début : \n";
+echo "Heure de fin : \n";
 echo "</td><td>\n";
 echo "<select name='hre_fin'>\n";
 selectHeure(8,23,true);

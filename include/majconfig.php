@@ -6,7 +6,7 @@ Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : setup/createconfig.php
-Création : mai 2011
+Création : 31 octobre 2013
 Dernière modification : 31 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
@@ -18,7 +18,12 @@ nom de la base de données à créer, identifiant de l'utilisateur de la base de
 Inclus ensuite le fichier setup/config.php affichant le formulaire demandant les informations sur le responsable du planning 
 */
 
-$Fnm = "../include/config.php";
+// Sécurité
+if(!$version){
+  header("Location: ../index.php");
+}
+
+$Fnm = "include/config.php";
 
 $file=Array();
 $file[]="<?php\n";
@@ -54,10 +59,10 @@ $file[]="global \$config;\n";
 $file[]="\$config=Array();\n\n";
 $file[]="//		Paramètres MySQL\n";
 $file[]="\$config['dbhost']=\"localhost\";\n";
-$file[]="\$config['dbname']=\"{$_POST['dbname']}\";\n";
-$file[]="\$config['dbuser']=\"{$_POST['dbuser']}\";\n";
-$file[]="\$config['dbpass']=\"{$_POST['dbpass']}\";\n";
-$file[]="\$config['dbprefix']=\"{$_POST['dbprefix']}\";\n";
+$file[]="\$config['dbname']=\"{$config['dbname']}\";\n";
+$file[]="\$config['dbuser']=\"{$config['dbuser']}\";\n";
+$file[]="\$config['dbpass']=\"{$config['dbpass']}\";\n";
+$file[]="\$config['dbprefix']=\"{$config['dbprefix']}\";\n";
 $file[]="\$dbprefix=\$config['dbprefix'];\n\n";
 $file[]="include 'db.php';\n\n";
 $file[]="//		Récuperation des paramètres stockés dans la base de données\n";
@@ -69,7 +74,7 @@ $file[]="}\n\n";
 $file[]="?>\n";
 
 if(!$inF=fopen($Fnm,"w\n")){
-  echo "<p style='color:red;'>Ne peut pas créer le fichier include/config.php. Vérifiez les droits d'accès au dossier include.</p>\n";
+  echo "<p style='color:red;'>Ne peut pas modifier le fichier include/config.php. V&eacute;rifiez les droits d&apos;acc&egrave;s au dossier include.</p>\n";
   exit;
 }
 
@@ -77,7 +82,4 @@ foreach($file as $line){
   fputs($inF,$line);
 }
 fclose($inF);
-
-echo "<p>Le fichier config.php a bien été créé.</p>\n";
-include "config.php";
 ?>

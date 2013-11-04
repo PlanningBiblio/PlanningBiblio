@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 21 octobre 2013
+Dernière modification : 31 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -348,6 +348,11 @@ if(strcmp("1.6",$config['Version'])>0){
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('CatAFinDeService', 'boolean', '0', 'Alerter si aucun agent de cat&eacute;gorie A n&apos;est plac&eacute; en fin de service','Divers','0');";
   $sql[]="CREATE TABLE `{$dbprefix}EDTSamedi` ( `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY , `perso_id` INT(11) NOT NULL , `semaine` DATE);";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.6' WHERE `nom`='Version';";
+}
+
+if(strcmp("1.6.1",$config['Version'])>0){
+  include "majconfig.php";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.6.1' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage

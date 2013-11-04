@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/menudiv.php
 Création : mai 2011
-Dernière modification : 21 octobre 2013
+Dernière modification : 31 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -319,18 +319,8 @@ else{
 $tab_agent=join($listparservices,";");
 	
 // début d'affichage
-?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-<head>
-<title>Planning, menudiv</title>
-<?php echo "<script type='text/JavaScript' src='js/script.js'></script>\n"; ?>
-<meta http-equiv="content-Type" content="text/html;CHARSET=UTF-8" />
-</head>
-<body style='background:#CCDDEE;'>
-<table bgcolor='#FFFFFF' frame='box' cellspacing='0' cellpadding='0' id='menudivtab' rules='rows' border='1'>
+echo "<table frame='box' cellspacing='0' cellpadding='0' id='menudivtab' rules='rows' border='1'>\n";
 
-<?php
 	//		Affichage du nom du poste et des heures
 echo "<tr class='menudiv-titre'><td colspan='2'>$aff_poste";
 if(in_array(13,$droits)){
@@ -344,7 +334,7 @@ if($services and $config['ClasseParService']){
   $i=0;
   foreach($services as $elem){
     if(array_key_exists($elem['service'],$newtab)){
-      echo "<tr onmouseover='this.style.background=\"#7B7B7B\";' onmouseout='this.style.background=\"#FFFFFF\";'>\n";
+      echo "<tr onmouseover='$(this).addClass(\"menudiv-gris\");' onmouseout='$(this).removeClass(\"menudiv-gris\");'>\n";
       echo "<td colspan='2' style='width:200px;background:{$elem['couleur']};' onmouseover='groupe_tab($i,\"$tab_agent\",1);'>";
       echo $elem['service'];
       echo "</td></tr>\n";
@@ -364,7 +354,7 @@ if(!$config['ClasseParService']){
 if(count($newtab["Autres"]) and $config['agentsIndispo']){
   $i=count($services);
   $groupe_tab_hide=$config['ClasseParService']?1:0;
-  echo "<tr onmouseover='this.style.background=\"#7B7B7B\";' onmouseout='this.style.background=\"#FFFFFF\";'>\n";
+  echo "<tr onmouseover='$(this).addClass(\"menudiv-gris\");' onmouseout='$(this).removeClass(\"menudiv-gris\");'>\n";
   echo "<td colspan='2' style='width:200px;' onmouseover='groupe_tab($i,\"$tab_agent\",$groupe_tab_hide);' >";
   echo "Agents indisponibles";
   echo "</td></tr>\n";
@@ -372,7 +362,7 @@ if(count($newtab["Autres"]) and $config['agentsIndispo']){
 
 //		-----------		Affichage de l'utilisateur "tout le monde"		----------//
 if(!in_array(2,$tab_exclus) and $config['toutlemonde']){
-  echo "<tr onmouseover='this.style.background=\"#7B7B7B\";groupe_tab_hide();' onmouseout='this.style.background=\"#FFFFFF\";'>\n";
+  echo "<tr onmouseover='$(this).addClass(\"menudiv-gris\");groupe_tab_hide();' onmouseout='$(this).removeClass(\"menudiv-gris\");'>\n";
   echo "<td colspan='3' style='width:200px;color:black;' ";
   echo "onclick='bataille_navale(2,\"#FFFFFF\",\"Tout le monde\",0,0,\"\");'>Tout le monde</td></tr>\n";
   $nbCol++;
@@ -380,14 +370,14 @@ if(!in_array(2,$tab_exclus) and $config['toutlemonde']){
 //~ -----				Affiche de la "Case vide"  (suppression)	--------------------------//
 if(!$cellule_vide){
   $groupe_tab=$config['ClasseParService']?"groupe_tab(\"vide\",\"$tab_agent\",1);":null;
-  echo "<tr onmouseover='$groupe_tab this.style.background=\"#7B7B7B\";' onmouseout='this.style.background=\"#FFFFFF\";'>";
+  echo "<tr onmouseover='$groupe_tab $(this).addClass(\"menudiv-gris\");' onmouseout='$(this).removeClass(\"menudiv-gris\");'>";
   echo "<td colspan='1' onclick='bataille_navale(0,\"#FFFFFF\",\"&nbsp;\",0,0,\"\");'>";
   echo "Supprimer</td><td>&nbsp;";
   echo "<a style='color:red' href='javascript:bataille_navale(0,\"#FFFFFF\",\"&nbsp;\",1,0,\"\");'>Barrer</a>&nbsp;&nbsp;</td></tr>";
   $nbCol++;
 }
 echo "</table>\n";
-	
+
 //	--------------		Affichage des agents			----------------//
 echo "<table style='background:#FFFFFF;position:absolute;left:200px;top:8px;' frame='box' cellspacing='0' cellpadding='0' id='menudivtab2' rules='rows' border='1'>\n";
 
@@ -406,9 +396,6 @@ if($autres_agents and !$config['ClasseParService'] and $config['agentsIndispo'])
 }
 
 echo "</table>";
-echo "</body>";
-echo "</html>";
-
 // 	Les lignes suivantes permettent de compter le nombre de lignes afin de placer correctement le menu en fonction de sa hauteur
 $nbCol=$db->nb+1;
 $nbCol=($nbCol+$ligneAdd);

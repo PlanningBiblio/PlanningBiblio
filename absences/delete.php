@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/delete.php
 Création : mai 2011
-Dernière modification : 20 août 2013
+Dernière modification : 31 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -86,7 +86,7 @@ else{
     }
   }
   $destinataires=join(";",$tmp);
-  sendmail("Suppresion d'une absence",$message,$destinataires);
+  sendmail("Suppression d'une absence",$message,$destinataires);
 
   // Mise à jour du champs 'absent' dans 'pl_poste'
   $db=new db();

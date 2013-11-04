@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/validation.php
 Création : 28 octobre 2013
-Dernière modification : 28 octobre 2013
+Dernière modification : 31 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -19,16 +19,6 @@ Affiche "true" ou "false"
 */
 
 session_start();
-
-// Securite : Traitement pour une reponse Ajax uniquement
-if (!array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) or !strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-  echo "Acc&eacute;s refus&eacute;";
-  exit;
-}
-
-
-// Variables
-$version="ajax";
 
 // Includes
 include "../../include/config.php";

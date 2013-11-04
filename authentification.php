@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 6 septembre 2013
+Dernière modification : 4 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -48,7 +48,7 @@ if(isset($_GET['login']) and $_GET['login']=="anonyme" and $config['Auth-Anonyme
   $_SESSION['login_nom']="Anonyme";
   $_SESSION['login_prenom']="";
   $_SESSION['oups']=array("Auth-Mode"=>"Anonyme");
-  echo "<script type='text/JavaScript'>location.href='{$GLOBALS['config']['url']}';</script>";
+  header("Location: index.php");
 }
 
 //	Vérification du login et du mot de passe
@@ -109,7 +109,8 @@ else{		//		Formulaire d'authentification
     <div id='auth'>
     <center><br/><img src='img/logo.png' alt='logo' /></center>
     <h1 id='title'>{$config['titre']}</h1>
-    <h2 style='text-align:center;'>Planning - Authentification</h2>
+    <h2 id='h2-planning-authentification'>Planning - Authentification</h2>
+    <h2 id='h2-authentification'>Authentification</h2>
     <form name='form' method='post' action='authentification.php'>
     <input type='hidden' name='auth' value='' />
     <table style='width:100%;'>

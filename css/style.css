@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.6
+Planning Biblio, Version 1.5.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification :28 octobre 2013
+Dernière modification : 31 octobre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -44,6 +44,14 @@ body {
 
 #auth, #auth input {
 	color:#BE541A;
+}
+
+#h2-authentification, #h2-planning-authentification {
+  text-align:center;
+}
+
+#h2-authentification {
+  display:none;
 }
 
 #logo {
@@ -346,11 +354,11 @@ select
   margin : 10px 0 0 0;
 }
 
-#planningTips{
-  margin:20px 0px;
+#planningTips {
+  margin: 20px 0px;
   color: #FF5E0E;
-  font-weight:bold;
-  display:none;
+  font-weight: bold;
+  display: none;
 }
 
 #tabsemaine1 {
@@ -414,10 +422,11 @@ select
 #menudivtab, #menudivtab2{
   position:absolute;
   cursor:pointer;
+  background: #FFFFFF;
 }
 
 .menudiv-gris{
-  background:#7B7B7B;
+  background:#CCCCCC;
 }
 
 #tab_titre{	/* planning/poste/index.php */
