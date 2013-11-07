@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 18 octobre 2013
+Dernière modification : 7 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -179,6 +179,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_tab` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `tableau` int(20) NOT NULL,
   `nom` text NOT NULL,
+  `site` INT(2) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
@@ -200,6 +201,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_tab_grp` (
   `Vendredi` INT,
   `Samedi` INT,
   `Dimanche` INT,
+  `site` INT(2) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 

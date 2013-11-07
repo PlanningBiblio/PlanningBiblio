@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 4 novembre 2013
+Dernière modification : 7 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -231,7 +231,6 @@ echo "</table></div>\n";
 
 //		---------------		FIN Affichage du titre et du calendrier		--------------------------//
 //		---------------		Choix du tableau	-----------------------------//	
-//	$site : pour affichage de 2 tableaux différents : BMI
 $db=new db();
 $db->query("SELECT `tableau` FROM `{$dbprefix}pl_poste_tab_affect` WHERE `date`='$date' AND `site`='$site';");
 if(!$db->result[0]['tableau'] and !isset($_GET['tableau']) and !isset($_GET['groupe']) and $autorisation){
@@ -250,8 +249,11 @@ if(!$db->result[0]['tableau'] and !isset($_GET['tableau']) and !isset($_GET['gro
       <select name='tableau'>
       <option value=''>&nbsp;</option>
 EOD;
-      foreach($db->result as $elem)
-	echo "<option value='{$elem['tableau']}'>{$elem['nom']}</option>\n";
+      foreach($db->result as $elem){
+	if($elem['site']==$site or $config['Multisites-nombre']<2){
+	  echo "<option value='{$elem['tableau']}'>{$elem['nom']}</option>\n";
+	}
+      }
       echo <<<EOD
       </select></td>
       <td><input type='submit' value='Valider' /></td></tr>
@@ -269,8 +271,11 @@ EOD;
 	<td><select name='groupe'>
 	<option value=''>&nbsp;</option>
 EOD;
-	foreach($groupes as $elem)
-	  echo "<option value='{$elem['id']}'>{$elem['nom']}</option>\n";
+	foreach($groupes as $elem){
+	  if($elem['site']==$site or $config['Multisites-nombre']<2){
+	    echo "<option value='{$elem['id']}'>{$elem['nom']}</option>\n";
+	  }
+	}
 	echo <<<EOD
 	</select></td>
 	<td><input type='submit' value='Valider' /></td></tr>
@@ -482,7 +487,7 @@ else{
       case "simple" :
 	if(!empty($absences)){
 	  echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
-	  echo "<table id='planning_absences' cellspacing='0' style='margin:5px 0 0 0;'>\n";
+	  echo "<table class='tableauStandard'>\n";
 	  $class="tr1";
 	  foreach($absences as $elem){
 	    $heures=null;
@@ -505,7 +510,7 @@ else{
 	    }
 
 	    $class=$class=="tr1"?"tr2":"tr1";
-	    echo "<tr class='$class'><td>{$elem['nom']} {$elem['prenom']} ({$elem['motif']}) $heures</td></tr>\n";
+	    echo "<tr class='$class'><td style='text-align:left;'>{$elem['nom']} {$elem['prenom']} $heures</td></tr>\n";
 	  }
 	  echo "</table>\n";
 	}
@@ -514,7 +519,7 @@ else{
       case "détaillé" :
 	if(!empty($absences)){
 	  echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
-	  echo "<table id='planning_absences' cellspacing='0' style='margin:5px 0 0 0;'>\n";
+	  echo "<table class='tableauStandard'>\n";
 	  echo "<tr class='th'><td>Nom</td><td>Pr&eacute;nom</td><td>D&eacute;but</td><td>Fin</td><td>Motif</td></tr>\n";
 	  $class="tr1";
 	  foreach($absences as $elem){
@@ -616,8 +621,8 @@ else{
 	  }
 	}
 
-	echo "<table id='planning_absences' cellspacing='0' style='margin:5px 0 0 0;' >\n";
-	echo "<tr><td style='width:60%;'><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des présents</h3></td>\n";
+	echo "<table class='tableauStandard'>\n";
+	echo "<tr><td><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des présents</h3></td>\n";
 	if(!empty($absences)){
 	  echo "<td><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3></td>";
 	}

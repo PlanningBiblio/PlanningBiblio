@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 4 novembre 2013
+Dernière modification : 5 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -119,12 +119,12 @@ elseif($confirm=="confirm1"){		//	1ere Confirmation
 	$db2=new db();
 	$db2->select("pl_poste_verrou","*","date='{$elem['date']}' AND site='{$elem['site']}'");
 	if($db2->result){
-	  $datesValidees[]="<li>".dateFr($elem['date'])."</li>";
+	  $datesValidees[]=dateFr($elem['date']);
 	}
       }
     }
     if(!empty($datesValidees)){
-      $datesValidees=join("\n",$datesValidees);
+      $datesValidees=join(" ; ",$datesValidees);
       if(!$admin){
 	$disableSubmit="disabled='disabled'";
       }
@@ -135,8 +135,8 @@ elseif($confirm=="confirm1"){		//	1ere Confirmation
 
   if($datesValidees){
     if($admin){
-      echo "<div style='color:red;text-align:justify;margin: 20px 70px 0 0;'>Attention, l'agent sélectionné apparaît dans des plannings validés : \n";
-      echo "<ul style='color:red;margin-top:0px;'>$datesValidees</ul> <br/></div>\n";
+      echo "<p style='color:red;text-align:left;margin:20px 90px 0 0;font-weight:bold;'>";
+      echo "Attention, l'agent sélectionné apparaît dans des plannings validés : $datesValidees<br/><br/></p>\n";
     }
     else{
       echo "<p style='color:red;text-align:justify;'>Vous ne pouvez pas ajouter d'absences pour les dates suivantes car les plannings sont validés : $datesValidees <br/>\n";

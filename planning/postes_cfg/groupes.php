@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/postes_cfg/groupes.php
 Création : 18 septembre 2012
-Dernière modification : 21 août 2013
+Dernière modification : 7 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -75,17 +75,29 @@ echo <<<EOD
   <td style='width:300px;'><input type='text' name='nom' id='Nom' value='{$groupe['nom']}' style='width:100%;' onkeyup='ctrl_nom(this);'/></td>
   <td style='padding-left:30px;color:red;'><font id='nom_utilise' style='display:none;'>
     Ce nom est d&eacute;j&agrave; utilis&eacute;</font></td></tr>
-<tr><td colspan='2' style='padding-top:20px;text-align:justify;'>Choisissez les tableaux que vous souhaitez affecter &agrave; chacun des jours de la semaine</td></tr>
 EOD;
+
+if($config['Multisites-nombre']>1){
+  echo "<tr><td>Site</td>\n";
+  echo "<td><select name='site' id='selectSite' style='width:100%;'>\n";
+  echo "<option value=''>&nbsp;</option>\n";
+  for($i=1;$i<=$config['Multisites-nombre'];$i++){
+    $selected=$groupe['site']==$i?"selected='selected'":null;
+    echo "<option value='$i' $selected >".$config["Multisites-site$i"]."</option>\n";
+  }
+  echo "</select></td></tr>\n";
+}
+
+echo "<tr><td colspan='2' style='padding-top:20px;text-align:justify;'>Choisissez les tableaux que vous souhaitez affecter &agrave; chacun des jours de la semaine</td></tr>\n";
 foreach($semaine as $jour){
   echo <<<EOD
   <tr><td style='padding-left:20px;'>$jour</td>
-    <td><select name='$jour' id='$jour' style='width:100%;'>
+    <td><select name='$jour' id='$jour' class='selectTableaux' style='width:100%;'>
     <option value=''>&nbsp;</option>
 EOD;
     foreach($tableaux as $tab){
       $selected=$tab['tableau']==$groupe[$jour]?"selected='selected'":null;
-      echo "<option value='{$tab['tableau']}' $selected >{$tab['nom']}</option>\n";
+      echo "<option value='{$tab['tableau']}' $selected class='optionSite{$tab['site']}'>{$tab['nom']}</option>\n";
     }
   echo "</select></td></tr>\n";
 }
@@ -97,4 +109,22 @@ echo <<<EOD
 </table>
 </form>
 EOD;
+
+if($config['Multisites-nombre']>1){
+  echo <<<EOD
+  <script type='text/JavaScript'>
+  $(document).ready(function(){
+    $(".optionSite1").hide();
+    $(".optionSite2").hide();
+    $(".optionSite"+$("#selectSite").val()).show();
+  });
+  $("#selectSite").change(function(){
+    $(".optionSite1").hide();
+    $(".optionSite2").hide();
+    $(".optionSite"+$("#selectSite").val()).show();
+    $(".selectTableaux").val("");
+  });
+  </script>
+EOD;
+}
 ?>

@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/postes_cfg/lignes.php
 Création : mai 2011
-Dernière modification : 21 août 2013
+Dernière modification : 7 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -19,10 +19,9 @@ Page incluse dans le fichier "planning/postes_cfg/modif.php"
 */
 
 require_once "class.tableaux.php";
-?>
 
-<h3>Configuration des lignes du tableau</h3>
-<?php
+echo "<h3>Configuration des lignes</h3>\n";
+
 //	Si validation, enregistrement des infos
 if(isset($_POST['valid'])){	
   $keys=array_keys($_POST);
@@ -70,19 +69,19 @@ if(isset($_POST['valid'])){
   }
 }
 
-//	Liste des tableaux
-$db=new db();
-$db->query("SELECT * FROM `{$dbprefix}pl_poste_tab` ORDER BY `nom`;");
-$tableaux=$db->result;
-
 //	Liste des horaires
 $db=new db();
 $db->query("SELECT * FROM `{$dbprefix}pl_poste_horaires` WHERE `numero` ='$tableauNumero' ORDER BY `tableau`,`debut`,`fin`;");
 $horaires=$db->result;
 
 //	Liste des postes
+$reqSite=null;
+if($config['Multisites-nombre']>1){
+  $reqSite="WHERE `site`='$site'";
+}
+
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}postes` ORDER BY `nom`;");
+$db->query("SELECT * FROM `{$dbprefix}postes` $reqSite ORDER BY `nom`;");
 $postes=$db->result;
 
 //	Liste des lignes de séparation
@@ -102,27 +101,6 @@ $cellules_grises=array();
 if($db->result)
 foreach($db->result as $elem)
 		$cellules_grises[]="{$elem['tableau']}_{$elem['ligne']}_{$elem['colonne']}";
-
-//	Affichage du menu déroulant permettant la sélection du tableau
-if($tableaux[0]){
-  echo "<form method='get' action='index.php' name='form3'>\n";
-  echo "<input type='hidden' name='page' value='planning/postes_cfg/modif.php' />\n";
-  echo "<input type='hidden' name='cfg-type' value='lignes' />\n";
-  echo "<table><tr>\n";
-  echo "<td>Sélection du tableau</td>\n";
-  echo "<td><select name='numero' onchange='document.form3.submit();' style='width:200px;'>\n";
-  echo "<option value=''>&nbsp;</option>\n";
-  for($i=0;$i<count($tableaux);$i++){
-    $selected=$tableaux[$i]['tableau']==$tableauNumero?"selected='selected'":null;
-    $id=in_array(13,$droits)?$tableaux[$i]['tableau']." : ":null;
-    echo "<option value='{$tableaux[$i]['tableau']}' $selected>$id {$tableaux[$i]['nom']}</option>\n";
-  }
-  echo "</select></td>\n";
-  echo "</tr></table>\n";
-  echo "</form>\n";
-  echo "<br/>\n";
-}
-
 
 //		Tableau $tab [nom,horaire1[debut,fin],horaire2[debut,fin],horaire3[debut,fin] ... ]
 //		Tri des horaires : général puis réserve puis rangement	

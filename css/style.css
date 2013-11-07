@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification : 4 novembre 2013
+Dernière modification : 5 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -756,13 +756,6 @@ img{
   background:#FFFFFF;
   font-size:12pt;
   font-weight: bold;
-}
-
-/*	Absences		*/
-#planning_absences{
-  width:1024px;
-  margin-top:30px;
-  text-align:left;
 }
 
 /*	Cellules et Statuts	*/

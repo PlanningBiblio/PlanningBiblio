@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/postes_cfg/index.php
 Création : mai 2011
-Dernière modification : 21 juillet 2013
+Dernière modification : 7 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -55,18 +55,22 @@ else{
   <form name='form' method='get' action='index.php'>
   <table cellspacing='0' style='width:90%;'> 
   <tr class='th'>
-  <td style='width:75px;'><input type='checkbox' onclick='checkall("form",this);' /></td>
+  <td style='width:90px;'><input type='checkbox' onclick='checkall("form",this);' /></td>
 EOD;
   if(in_array(13,$droits))
-    echo "<td style='width:75px;'>ID</td>\n";
-  echo <<<EOD
-  <td style='width:150px;'>Nom</td></tr>
-EOD;
+    echo "<td style='width:25px;'>ID</td>\n";
+  echo "<td style='width:250px;'>Nom</td>\n";
+  if($config['Multisites-nombre']>1){
+    echo "<td >Site</td>\n";
+  }
+  echo "</tr>\n";
+
   $class="tr1";
   $i=0;
   foreach($db->result as $elem){
     $class=$class=="tr1"?"tr2":"tr1";
-    echo "<tr class='$class'><td style='width:120px;'>\n";
+    $site="Multisites-site{$elem['site']}";
+    echo "<tr class='$class'><td>\n";
     echo "<input type='checkbox' name='chk$i' value='{$elem['tableau']}'/>\n";
     echo "<a href='index.php?page=planning/postes_cfg/modif.php&amp;numero={$elem['tableau']}'>\n";
     echo "<img src='img/modif.png' alt='Modification' /></a>\n";
@@ -78,7 +82,11 @@ EOD;
     }
     echo "</td>\n";
     echo "<td>{$elem['tableau']}</td>\n";
-    echo "<td>{$elem['nom']}</td></tr>\n";
+    echo "<td>{$elem['nom']}</td>\n";
+    if($config['Multisites-nombre']>1){
+      echo "<td>{$config[$site]}</td>\n";
+    }
+    echo "</tr>\n";
     $i++;
   }
   echo "</table></form>\n";
@@ -101,7 +109,12 @@ EOD;
 if(in_array(13,$droits)){
   echo "<td>ID</td>\n";
 }
-echo "<td>Nom</td></tr>\n";
+echo "<td>Nom</td>\n";
+if($config['Multisites-nombre']>1){
+  echo "<td >Site</td>\n";
+}
+echo "</tr>\n";
+
 if(is_array($groupes)){
   foreach($groupes as $elem){
     $id=in_array(13,$droits)?"<td>{$elem['id']}</td>":null;
@@ -109,7 +122,11 @@ if(is_array($groupes)){
     echo "<img src='img/modif.png' border='0' alt='modif' /></a>\n";
     echo "<a href='javascript:supprime_groupe(\"{$elem['id']}\",\"".addslashes(html_entity_decode($elem['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8"))."\");'><img src='img/drop.gif' border='0' alt='Suppression' /></a>\n";
     echo "</td>\n";
-    echo "$id<td>{$elem['nom']}</td></tr>\n";
+    echo "$id<td>{$elem['nom']}</td>\n";
+    if($config['Multisites-nombre']>1){
+      echo "<td>".$config["Multisites-site{$elem['site']}"]."</td>\n";
+    }
+    echo "</tr>\n";
   }
 }
 echo "</table>\n";

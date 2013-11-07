@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 31 octobre 2013
+Dernière modification : 7 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -352,6 +352,8 @@ if(strcmp("1.6",$config['Version'])>0){
 
 if(strcmp("1.6.1",$config['Version'])>0){
   include "majconfig.php";
+  $sql[]="ALTER TABLE `{$dbprefix}pl_poste_tab` ADD `site` INT(2) NOT NULL DEFAULT 1;";
+  $sql[]="ALTER TABLE `{$dbprefix}pl_poste_tab_grp` ADD `site` INT(2) NOT NULL DEFAULT 1;";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.6.1' WHERE `nom`='Version';";
 }
 

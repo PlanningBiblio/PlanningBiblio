@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 4 novembre 2013
+Dernière modification : 7 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -198,6 +198,29 @@ function diffMinutes(debut,fin){		// Calcul la différence en minutes entre 2 he
   return f-d;
 }
 
+//function to create error and alert dialogs
+function errorHighlight(e, type, icon) {
+    if (!icon) {
+        if (type === 'highlight') {
+            icon = 'ui-icon-info';
+        } else {
+            icon = 'ui-icon-alert';
+        }
+    }
+    return e.each(function() {
+        $(this).addClass('ui-widget');
+        var alertHtml = '<div class="ui-state-' + type + ' ui-corner-all" style="padding:0 .7em;">';
+        alertHtml += '<p>';
+        alertHtml += '<span class="ui-icon ' + icon + '" style="float:left;margin-right: .3em;"></span>';
+        alertHtml += $(this).text();
+        alertHtml += '</p>';
+        alertHtml += '</div>';
+
+        $(this).html(alertHtml);
+    });
+}
+
+  
 function file(fichier){
   if(fichier.indexOf("php?")>0)				// l'ajout du parametre unique ms (nombre de millisecondes depuis le 1er Janvier 1970)
     fichier=fichier+"&ms="+new Date().getTime();	// permet d'eviter les problème de cache (le navigateur pense ouvrir une nouvelle page)	
@@ -356,6 +379,33 @@ function supprime_jourFerie(id){
       document.getElementById("jour"+id).value="";
     }
   }
+}
+
+function tabSiteUpdate(){
+  site=$("#selectSite").val();
+  numero=$("#numero").val();
+  var requete = $.ajax({
+    url: "planning/postes_cfg/ajax.siteUpdate.php",
+    type: "get",
+    data: "numero="+numero+"&site="+site,
+    success: function(){
+      $("#TableauxTips").html("Le site a &eacute;t&eacute; modifi&eacute; avec succ&egrave;s");
+      errorHighlight($("#TableauxTips"),"highlight");
+      $("#TableauxTips").css("top",$("#submitSite").offset().top-15);
+      $("#TableauxTips").css("left",$("#submitSite").offset().left+100);
+      $("#TableauxTips").show();
+      var timeout=setTimeout(function(){$("#TableauxTips").hide();},5000);
+      location.reload(false);	// on rafraichi pour mettre à jour le tableau des lignes
+    },
+    error: function(){
+      $("#TableauxTips").html("Une erreur est survenue pendant la modification du site.");
+      errorHighlight($("#TableauxTips"),"error");
+      $("#TableauxTips").css("top",$("#submitSite").offset().top-15);
+      $("#TableauxTips").css("left",$("#submitSite").offset().left+100);
+      $("#TableauxTips").show();
+      var timeout=setTimeout(function(){$("#TableauxTips").hide();},5000);
+    }
+  });
 }
 
 function verif_categorieA(){

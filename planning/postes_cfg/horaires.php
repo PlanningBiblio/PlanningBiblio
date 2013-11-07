@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/postes_cfg/horaires.php
 Création : mai 2011
-Dernière modification : 21 août 2013
+Dernière modification : 7 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -22,7 +22,6 @@ require_once "class.tableaux.php";
 echo "<h3>Configuration des horaires</h3>\n";
 
 $horaires=Array();
-$tableaux=Array();
 $tableau=null;
 $disabled=null;
 
@@ -54,35 +53,10 @@ if(isset($_POST['action'])){
   $db->query($req);
 }
 
-//	Liste des tableaux
-$db=new db();
-$db->query("SELECT * FROM `{$dbprefix}pl_poste_tab` ORDER BY `nom`;");
-$tableaux=$db->result;
-
 //	Liste des horaires
 $db=new db();
 $db->query("SELECT * FROM `{$dbprefix}pl_poste_horaires` WHERE `numero` ='$tableauNumero' ORDER BY `tableau`,`debut`,`fin`;");
 $horaires=$db->result;
-
-//	Affichage du menu déroulant permettant la sélection du tableau
-if($tableaux[0]){
-  echo "<form method='post' action='index.php' name='form'>\n";
-  echo "<input type='hidden' name='page' value='planning/postes_cfg/modif.php' />\n";
-  echo "<input type='hidden' name='cfg-type' value='horaires' />\n";
-  echo "<table><tr>\n";
-  echo "<td>Sélection du tableau</td>\n";
-  echo "<td><select name='numero' onchange='document.form.submit();' style='width:240px;'>\n";
-  echo "<option value=''>&nbsp;</option>\n";
-  for($i=0;$i<count($tableaux);$i++){
-    $selected=$tableaux[$i]['tableau']==$tableauNumero?"selected='selected'":null;
-    $id=in_array(13,$droits)?$tableaux[$i]['tableau']." : ":null;
-    echo "<option value='{$tableaux[$i]['tableau']}' $selected>$id {$tableaux[$i]['nom']}</option>\n";
-  }
-  echo "</select></td>\n";
-  echo "</tr></table>\n";
-  echo "</form>\n";
-  echo "<br/>\n";
-}
 
 //	Liste des tableaux utilisés
 $used=array();
@@ -172,10 +146,6 @@ if($horaires[0]){
   echo "<tr><td><img src='img/add.gif' alt='ajouter' style='cursor:pointer' onclick='add_horaires(\"{$elem['tableau']}\");'/></td></tr>\n";
   echo "</table></td>\n";
   echo "<td><input type='submit' value='Valider' style='width:100px;'/><br/><br/>\n";
-  echo "<input type='button' value='Copier' onclick='popup(\"planning/postes_cfg/copie.php&amp;numero=$tableauNumero\",400,200);' style='width:100px;'/><br/><br/>\n";
-  if(!in_array($tableauNumero,$used)){
-    echo "<input type='button' value='Supprimer' onclick='popup(\"planning/postes_cfg/suppression.php&amp;numero=$tableauNumero\",400,130);' style='width:100px;'/><br/><br/>\n";
-  }
   echo "<input type='button' value='Retour' onclick='location.href=\"index.php?page=planning/postes_cfg/index.php\";'/ style='width:100px;'></td>\n";
   echo "</tr></table></form>\n";
 }
