@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 5 novembre 2013
+Dernière modification : 8 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -133,18 +133,7 @@ elseif($confirm=="confirm1"){		//	1ere Confirmation
 
   echo "<b>Confirmation</b>\n";
 
-  if($datesValidees){
-    if($admin){
-      echo "<p style='color:red;text-align:left;margin:20px 90px 0 0;font-weight:bold;'>";
-      echo "Attention, l'agent sélectionné apparaît dans des plannings validés : $datesValidees<br/><br/></p>\n";
-    }
-    else{
-      echo "<p style='color:red;text-align:justify;'>Vous ne pouvez pas ajouter d'absences pour les dates suivantes car les plannings sont validés : $datesValidees <br/>\n";
-      echo "Veuillez modifier vos dates ou contacter le responsable du planning.</p>";
-    }
-  }
-
-  echo "<table><tr><td>\n";
+  echo "<table style='margin-top:20px;'><tr><td>\n";
   echo "Nom, Prénom :</td><td>\n";
   echo $nom." ".$prenom;
   echo "</td></tr><tr><td>\n";
@@ -180,6 +169,19 @@ elseif($confirm=="confirm1"){		//	1ere Confirmation
   echo "<input type='hidden' name='commentaires' value='$commentaires' />\n";
   echo "<input type='hidden' name='confirm' value='confirm2' />\n";
   echo "<input type='hidden' name='menu' value='$menu' />\n";
+
+  if($datesValidees){
+    if($admin){
+      echo "<div id='AbsencesTips' class='ui-widget' style='margin: 0px 120px 20px 0;'>";
+      echo "Attention, l'agent sélectionné apparaît dans des plannings validés : $datesValidees</div>\n";
+    }
+    else{
+      echo "<div id='AbsencesTips' class='ui-widget' style='margin: 0px 120px 20px 0;'>";
+      echo "Vous ne pouvez pas ajouter d'absences pour les dates suivantes car les plannings sont validés : $datesValidees <br/>\n";
+      echo "Veuillez modifier vos dates ou contacter le responsable du planning.</div>";
+    }
+  }
+
   if($menu=="off")
     echo "<input type='button' value='Annuler' onclick='popup_closed();' />";
   else
@@ -291,3 +293,6 @@ if($db->result){
 }
 ?>
 </td></tr></table>
+<script type='text/JavaScript'>
+errorHighlight($("#AbsencesTips"),"error");
+</script>
