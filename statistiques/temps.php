@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 22 août 2013
+Dernière modification : 12 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -200,15 +200,14 @@ if(is_array($tab)){
   echo <<<EOD
   <table style='text-align:center' border='1' cellspacing='0' cellpadding='0'>
   <tr class='th' style='background:#DDDDDD;'>
-  <td style='width:200px;'>Agents
+  <td>Agents
   &nbsp;&nbsp;<a href='index.php?page=statistiques/temps.php&amp;tri=agent'><img src='img/up.png' alt='+' border='0' style='width:10px;'/></a>
   <a href='index.php?page=statistiques/temps.php&amp;tri=agent%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>
-
   </td>
-  <td style='width:130px;'>Statut
+
+  <td>Statut
   &nbsp;&nbsp;<a href='index.php?page=statistiques/temps.php&amp;tri=statut'><img src='img/up.png' alt='+' border='0' style='width:10px;'/></a>
   <a href='index.php?page=statistiques/temps.php&amp;tri=statut%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>
-
   </td>
 EOD;
   foreach($dates as $d){
@@ -232,6 +231,17 @@ EOD;
   &nbsp;&nbsp;<a href='index.php?page=statistiques/temps.php&amp;tri=max'><img src='img/up.png' alt='+' border='0' style='width:10px;'/></a>
   <a href='index.php?page=statistiques/temps.php&amp;tri=max%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>
   </td>
+
+  <td>Agents
+  &nbsp;&nbsp;<a href='index.php?page=statistiques/temps.php&amp;tri=agent'><img src='img/up.png' alt='+' border='0' style='width:10px;'/></a>
+  <a href='index.php?page=statistiques/temps.php&amp;tri=agent%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>
+  </td>
+
+  <td>Statut
+  &nbsp;&nbsp;<a href='index.php?page=statistiques/temps.php&amp;tri=statut'><img src='img/up.png' alt='+' border='0' style='width:10px;'/></a>
+  <a href='index.php?page=statistiques/temps.php&amp;tri=statut%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>
+  </td>
+
   </tr>
 EOD;
 
@@ -254,6 +264,7 @@ EOD;
     
     // Affichage des lignes : Nom, heures par jour, par semaine, heures prévues
     echo "<tr><td style='background:$couleur;'>{$elem['nom']} {$elem['prenom']}</td>\n";
+    $elem['statut']=$elem['statut']?$elem['statut']:"&nbsp;";
     echo "<td style='background:$couleur;'>{$elem['statut']}</td>\n";
     foreach($dates as $d){
       $background=$elem[$d[0]]=="-"?"#FFFFFF":"yellow";
@@ -264,7 +275,10 @@ EOD;
       echo "<td>{$elem['max']}</td>\n";
     }
     echo "<td $color>{$elem['semaine']}</td>\n";
-    echo "<td style='background:#AAAAAA;'>{$elem['heuresHebdo']}</td></tr>\n";
+    echo "<td style='background:#AAAAAA;'>{$elem['heuresHebdo']}</td>\n";
+    echo "<td style='background:$couleur;'>{$elem['nom']} {$elem['prenom']}</td>\n";
+    echo "<td style='background:$couleur;'>{$elem['statut']}</td>\n";
+    echo "</tr>\n";
   }
   // Affichage de la ligne "Nombre d'heures"
   echo "<tr style='background:#DDDDDD;'><td colspan='2'>Nombre d'heures</td>\n";
@@ -273,6 +287,7 @@ EOD;
     echo "<td>{$heures[$d[0]]}</td>\n";
   }
   echo "<td>$totalHeures</td><td colspan='$colspan'>&nbsp;</td>\n";
+  echo "<td colspan='2'>Nombre d'heures</td>\n";
   echo "</tr>\n";
 
   // Affichage de la ligne "Nombre d'agents"
@@ -281,7 +296,10 @@ EOD;
     echo "<td>{$nbAgents[$d[0]]}</td>\n";
   }
   echo "<td>$totalAgents</td>\n";
-  echo "<td colspan='$colspan'>&nbsp;</td></tr>\n";
+  echo "<td colspan='$colspan'>&nbsp;</td>\n";
+  echo "<td colspan='2'>Nombre d'agents</td>\n";
+
+  echo "</tr>\n";
   echo "</table>\n";
   echo "Exporter \n";
   echo "<a href='javascript:export_stat(\"temps\",\"csv\");'>CSV</a>&nbsp;&nbsp;\n";
