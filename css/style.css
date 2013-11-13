@@ -824,6 +824,20 @@ img{
   white-space:nowrap;
 }
 
+#table_temps{
+  text-align:center;
+}
+
+/*	FixedColumns	*/
+.DTFC_LeftBodyLiner{
+  overflow:hidden;
+}
+
+.bg-yellow{
+  background:yellow;
+  font-weight:bold;
+}
+
 /*	DataTables */
 .dataTable tbody tr.odd {
   background-color:#FFD8C4;

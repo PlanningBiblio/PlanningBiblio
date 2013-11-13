@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 12 novembre 2013
+Dernière modification : 13 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -198,51 +198,28 @@ if(is_array($tab)){
   }
 
   echo <<<EOD
-  <table style='text-align:center' border='1' cellspacing='0' cellpadding='0'>
-  <tr class='th' style='background:#DDDDDD;'>
-  <td>Agents
-  &nbsp;&nbsp;<a href='index.php?page=statistiques/temps.php&amp;tri=agent'><img src='img/up.png' alt='+' border='0' style='width:10px;'/></a>
-  <a href='index.php?page=statistiques/temps.php&amp;tri=agent%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>
-  </td>
-
-  <td>Statut
-  &nbsp;&nbsp;<a href='index.php?page=statistiques/temps.php&amp;tri=statut'><img src='img/up.png' alt='+' border='0' style='width:10px;'/></a>
-  <a href='index.php?page=statistiques/temps.php&amp;tri=statut%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>
-  </td>
+  <table id='table_temps'>
+  <thead>
+  <tr>
+  <th>Agents</th>
+  <th>Statut</th>
 EOD;
   foreach($dates as $d){
-    echo "<td style='width:90px;'>{$d[1]}</td>\n";
+    echo "<th>{$d[1]}</th>\n";
   }
   //Si nbSemaine == 1, le total=moyenne : on ne l'affiche pas
   $colspan=1;
   if($nbSemaines!=1){
     $colspan=3;
-    echo <<<EOD
-    <td style='width:90px;'>Total
-    &nbsp;&nbsp;<a href='index.php?page=statistiques/temps.php&amp;tri=total'><img src='img/up.png' alt='+' border='0' style='width:10px;'/></a>
-    <a href='index.php?page=statistiques/temps.php&amp;tri=total%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>
-    </td>
-    <td>Max.</td>
-EOD;
+    echo "<th>Total</th>\n";
+    echo "<th>Max.</th>\n";
   }
   echo <<<EOD
-  <td style='width:90px;'>Moyenne<br/>Hebdo.</td>
-  <td style='width:90px;'>Max.<br/>Hebdo.
-  &nbsp;&nbsp;<a href='index.php?page=statistiques/temps.php&amp;tri=max'><img src='img/up.png' alt='+' border='0' style='width:10px;'/></a>
-  <a href='index.php?page=statistiques/temps.php&amp;tri=max%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>
-  </td>
-
-  <td>Agents
-  &nbsp;&nbsp;<a href='index.php?page=statistiques/temps.php&amp;tri=agent'><img src='img/up.png' alt='+' border='0' style='width:10px;'/></a>
-  <a href='index.php?page=statistiques/temps.php&amp;tri=agent%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>
-  </td>
-
-  <td>Statut
-  &nbsp;&nbsp;<a href='index.php?page=statistiques/temps.php&amp;tri=statut'><img src='img/up.png' alt='+' border='0' style='width:10px;'/></a>
-  <a href='index.php?page=statistiques/temps.php&amp;tri=statut%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>
-  </td>
-
+  <th>Moyenne<br/>Hebdo.</th>
+  <th>Max. Hebdo.</th>
   </tr>
+  </thead>
+  <tbody>
 EOD;
 
   foreach($tab as $elem){
@@ -267,39 +244,38 @@ EOD;
     $elem['statut']=$elem['statut']?$elem['statut']:"&nbsp;";
     echo "<td style='background:$couleur;'>{$elem['statut']}</td>\n";
     foreach($dates as $d){
-      $background=$elem[$d[0]]=="-"?"#FFFFFF":"yellow";
-      echo "<td style='background:$background;'>{$elem[$d[0]]}</td>\n";
+      $class=$elem[$d[0]]!="-"?"bg-yellow":null;
+      echo "<td class='$class'>{$elem[$d[0]]}</td>\n";
     }
     if($nbSemaines!=1){
       echo "<td $color>{$elem['total']}</td>\n";
       echo "<td>{$elem['max']}</td>\n";
     }
     echo "<td $color>{$elem['semaine']}</td>\n";
-    echo "<td style='background:#AAAAAA;'>{$elem['heuresHebdo']}</td>\n";
-    echo "<td style='background:$couleur;'>{$elem['nom']} {$elem['prenom']}</td>\n";
-    echo "<td style='background:$couleur;'>{$elem['statut']}</td>\n";
+    echo "<td style='background:#DDDDDD;'>{$elem['heuresHebdo']}</td>\n";
     echo "</tr>\n";
   }
+  echo "</tbody>\n";
+
   // Affichage de la ligne "Nombre d'heures"
-  echo "<tr style='background:#DDDDDD;'><td colspan='2'>Nombre d'heures</td>\n";
+  echo "<tfoot><tr style='background:#DDDDDD;'><th colspan='2'>Nombre d'heures</th>\n";
 
   foreach($dates as $d){
-    echo "<td>{$heures[$d[0]]}</td>\n";
+    echo "<th>{$heures[$d[0]]}</th>\n";
   }
-  echo "<td>$totalHeures</td><td colspan='$colspan'>&nbsp;</td>\n";
-  echo "<td colspan='2'>Nombre d'heures</td>\n";
+  echo "<th>$totalHeures</th><th colspan='$colspan'>&nbsp;</th>\n";
   echo "</tr>\n";
+
 
   // Affichage de la ligne "Nombre d'agents"
-  echo "<tr style='background:#DDDDDD;'><td colspan='2'>Nombre d'agents</td>\n";
+  echo "<tr style='background:#DDDDDD;'><th colspan='2'>Nombre d'agents</th>\n";
   foreach($dates as $d){
-    echo "<td>{$nbAgents[$d[0]]}</td>\n";
+    echo "<th>{$nbAgents[$d[0]]}</th>\n";
   }
-  echo "<td>$totalAgents</td>\n";
-  echo "<td colspan='$colspan'>&nbsp;</td>\n";
-  echo "<td colspan='2'>Nombre d'agents</td>\n";
-
+  echo "<th>$totalAgents</th><th colspan='$colspan'>&nbsp;</th>\n";
   echo "</tr>\n";
+
+  echo "</tfoot>\n";
   echo "</table>\n";
   echo "Exporter \n";
   echo "<a href='javascript:export_stat(\"temps\",\"csv\");'>CSV</a>&nbsp;&nbsp;\n";
@@ -309,3 +285,19 @@ else{			// Si pas d'élément
   echo "Les plannings de la période choisie sont vides.<br/><br/><br/><br/><br/><br/>";
 }
 ?>
+<script type='text/JavaScript'>
+$(document).ready(function(){
+  var oTable=$("#table_temps").dataTable({
+    "bJQueryUI": true,
+    "sPaginationType": "full_numbers",
+    "bStateSave": false,
+    "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"Tous"]],
+    "iDisplayLength" : -1,
+    "oLanguage" : {"sUrl" : "js/dataTables/french.txt"},
+    "sScrollX": "100%",
+  });
+  new FixedColumns( oTable, {
+    "iLeftColumns" : 2
+  });
+});
+</script>
