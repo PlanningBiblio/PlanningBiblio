@@ -23,12 +23,9 @@ echo "<h3>Feuille de temps</h3>\n";
 include "include/horaires.php";
 
 //	Initialisation des variables
-if(!array_key_exists('stat_temps_tri',$_SESSION)){
-  $_SESSION['stat_temps_tri']=null;
-}
 if(isset($_GET['debut'])){
-  $debut=$_GET['debut'];
-  $fin=$_GET['fin']?$_GET['fin']:$debut;
+  $debut=dateFr($_GET['debut']);
+  $fin=$_GET['fin']?dateFr($_GET['fin']):$debut;
 }
 elseif(array_key_exists("stat_temps_debut",$_SESSION['oups'])){
   $debut=$_SESSION['oups']['stat_temps_debut'];
@@ -65,22 +62,9 @@ $totalAgents=0;		// Les totaux
 $totalHeures=0;
 $siteHeures=array(0,0);	// Heures par site
 $siteAgents=array(0,0);	// Agents par site
-
-// Les tris
-$tri=isset($_GET['tri'])?$_GET['tri']:$_SESSION['stat_temps_tri'];
-$_SESSION['stat_temps_tri']=$tri;
-$tri2=null;
-
-switch($tri){
-  case "agent desc" :	$tri="`nom` desc, `prenom` desc";		break;
-  case "statut" :	$tri="`statut`,`nom`,`prenom`";			break;
-  case "statut desc" :	$tri="`statut` desc,`nom`,`prenom`";		break;
-  case "total" :	$tri="`nom`,`prenom`"; $tri2="total";		break;
-  case "total desc" :	$tri="`nom`,`prenom`"; $tri2="totaldesc";	break;
-  case "max" :		$tri="`heuresHebdo`,`nom`,`prenom`";		break;
-  case "max desc" :	$tri="`heuresHebdo` desc,`nom`,`prenom`";	break;
-  default :		$tri="`nom`, `prenom`";				break;
-}
+// DatePicker veut les dates au format MM/JJ/AAAA pour les convertir ensuite en JJ/MM/AAAA
+$debutDatePicker=	preg_replace("/([0-9]{1,4})-([0-9]{1,2})-([0-9]{1,2})/","$2/$3/$1",$debut);
+$finDatePicker=		preg_replace("/([0-9]{1,4})-([0-9]{1,2})-([0-9]{1,2})/","$2/$3/$1",$fin);
 
 // Récupération des couleur en fonction des statuts
 $db=new db();
@@ -95,7 +79,7 @@ $req.="`{$dbprefix}personnel`.`heuresHebdo` AS `heuresHebdo`,`{$dbprefix}personn
 $req.="FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}personnel` ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id` ";
 $req.="INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}postes`.`id`=`{$dbprefix}pl_poste`.`poste` ";
 $req.="WHERE `date`>='$debut' AND `date`<='$fin' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' ";
-$req.="ORDER BY $tri;";
+$req.="ORDER BY `nom`,`prenom`;";
 
 // Recherche des élements dans pl_poste afin  de compter les heures et le nombre d'agents
 $db=new db();
@@ -168,6 +152,8 @@ $_SESSION['oups']['stat_nbAgents']=$nbAgents;
 // Formatage des données pour affichage
 $keys=array_keys($tab);
 foreach($keys as $key){
+  $tab[$key]['site1Semaine']=$tab[$key]['site1']?number_format($tab[$key]['site1']/$nbSemaines,2,'.',' '):"-";
+  $tab[$key]['site2Semaine']=$tab[$key]['site2']?number_format($tab[$key]['site2']/$nbSemaines,2,'.',' '):"-";
   $tab[$key]['site1']=$tab[$key]['site1']?number_format($tab[$key]['site1'],2,'.',' '):"-";
   $tab[$key]['site2']=$tab[$key]['site2']?number_format($tab[$key]['site2'],2,'.',' '):"-";
   $tab[$key]['total']=number_format($tab[$key]['total'],2,'.',' ');
@@ -181,7 +167,7 @@ foreach($keys as $key){
 
 foreach($dates as $d){
   $heures[$d[0]]=$heures[$d[0]]!=0?number_format($heures[$d[0]],2,'.',' '):"-";
-  $nbAgents[$d[0]]=$nbAgents[$d[0]]!=0?:"-";
+  $nbAgents[$d[0]]=$nbAgents[$d[0]]!=0?$nbAgents[$d[0]]:"-";
 }
 $totalHeures=$totalHeures!=0?number_format($totalHeures,2,'.',' '):"-";
 $siteHeures[1]=$siteHeures[1]!=0?number_format($siteHeures[1],2,'.',' '):"-";
@@ -197,12 +183,11 @@ echo <<<EOD
 <td>
 <form name='form' method='get' action='index.php'>
 <input type='hidden' name='page' value='statistiques/temps.php' />
-Début : <input type='text' name='debut' id='debut' value='$debut' />&nbsp;
-<img src='img/calendrier.gif' onclick='calendrier("debut");' alt='date'/>&nbsp;
-Fin : <input type='text' name='fin' id='fin' value='$fin' />&nbsp;
-<img src='img/calendrier.gif' onclick='calendrier("fin");' alt='date'/>&nbsp;
-<input type='submit' value='OK' /></form>
+Début : <input type='text' name='debut' class='datepicker' value='$debutDatePicker' />&nbsp;
+Fin : <input type='text' name='fin' class='datepicker' value='$finDatePicker' />&nbsp;
+<input type='submit' value='OK' id='submit'/></form>
 </td></tr></table>
+<br/>
 EOD;
 
 // S'il y a des éléments, affiche le tableau
@@ -228,7 +213,13 @@ EOD;
   // Total par site
   if($config['Multisites-nombre']>1){
     echo "<th>{$config['Multisites-site1']}</th>\n";
+    if($nbSemaines!=1){
+      echo "<th>Moyenne Hebdo.</th>\n";
+    }
     echo "<th>{$config['Multisites-site2']}</th>\n";
+    if($nbSemaines!=1){
+      echo "<th>Moyenne Hebdo.</th>\n";
+    }
   }
 
   // Total, moyenne, max
@@ -275,7 +266,13 @@ EOD;
 
     if($config['Multisites-nombre']>1){
       echo "<td>{$elem['site1']}</td>\n";
+      if($nbSemaines!=1){
+	echo "<td>{$elem['site1Semaine']}</td>\n";
+      }
       echo "<td>{$elem['site2']}</td>\n";
+      if($nbSemaines!=1){
+	echo "<td>{$elem['site2Semaine']}</td>\n";
+      }
     }
 
     if($nbSemaines!=1){
@@ -297,7 +294,13 @@ EOD;
 
   if($config['Multisites-nombre']>1){
     echo "<th>{$siteHeures[1]}</th>\n";
+    if($nbSemaines!=1){
+      echo "<th>&nbsp;</th>\n";
+    }
     echo "<th>{$siteHeures[2]}</th>\n";
+    if($nbSemaines!=1){
+      echo "<th>&nbsp;</th>\n";
+    }
   }
 
   echo "<th>$totalHeures</th><th colspan='$colspan'>&nbsp;</th>\n";
@@ -312,7 +315,13 @@ EOD;
 
   if($config['Multisites-nombre']>1){
     echo "<th>{$siteAgents[1]}</th>\n";
+    if($nbSemaines!=1){
+      echo "<th>&nbsp;</th>\n";
+    }
     echo "<th>{$siteAgents[2]}</th>\n";
+    if($nbSemaines!=1){
+      echo "<th>&nbsp;</th>\n";
+    }
   }
 
   echo "<th>$totalAgents</th><th colspan='$colspan'>&nbsp;</th>\n";
@@ -330,10 +339,14 @@ else{			// Si pas d'élément
 ?>
 <script type='text/JavaScript'>
 $(document).ready(function(){
+  $(".datepicker").datepicker();
+  $(".datepicker").datepicker("option", "dateFormat", "dd/mm/yy");
+  $("#submit").button();
+
   var oTable=$("#table_temps").dataTable({
     "bJQueryUI": true,
     "sPaginationType": "full_numbers",
-    "bStateSave": false,
+    "bStateSave": true,
     "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"Tous"]],
     "iDisplayLength" : -1,
     "oLanguage" : {"sUrl" : "js/dataTables/french.txt"},
