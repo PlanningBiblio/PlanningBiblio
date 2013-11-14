@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 13 novembre 2013
+Dernière modification : 14 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -63,6 +63,8 @@ $nb=count($dates);	// Nombre de dates
 $nbSemaines=$nb/($config['Dimanche']?7:6);	// Nombre de semaines
 $totalAgents=0;		// Les totaux
 $totalHeures=0;
+$siteHeures=array(0,0);	// Heures par site
+$siteAgents=array(0,0);	// Agents par site
 
 // Les tris
 $tri=isset($_GET['tri'])?$_GET['tri']:$_SESSION['stat_temps_tri'];
@@ -87,6 +89,7 @@ $couleurStatut=$db->result;
 
 $req="SELECT `{$dbprefix}pl_poste`.`date` AS `date`, `{$dbprefix}pl_poste`.`debut` AS `debut`, ";
 $req.="`{$dbprefix}pl_poste`.`fin` AS `fin`, `{$dbprefix}personnel`.`id` AS `perso_id`, ";
+$req.="`{$dbprefix}pl_poste`.`site` AS `site`, ";
 $req.="`{$dbprefix}personnel`.`nom` AS `nom`,`{$dbprefix}personnel`.`prenom` AS `prenom`, ";
 $req.="`{$dbprefix}personnel`.`heuresHebdo` AS `heuresHebdo`,`{$dbprefix}personnel`.`statut` AS `statut` ";
 $req.="FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}personnel` ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id` ";
@@ -101,8 +104,8 @@ if($db->result){
   foreach($db->result as $elem){
     if(!array_key_exists($elem['perso_id'],$tab)){		// création d'un tableau de données par agent (id, nom, heures de chaque jour ...)
       $tab[$elem['perso_id']]=Array("perso_id"=>$elem['perso_id'],"nom"=>$elem['nom'],
-      "prenom"=>$elem['prenom'],"heuresHebdo"=>$elem['heuresHebdo'],"statut"=>$elem['statut'],"total"=>0,"semaine"=>0,
-      "max"=>$nbSemaines*$elem['heuresHebdo']);
+      "prenom"=>$elem['prenom'],"heuresHebdo"=>$elem['heuresHebdo'],"statut"=>$elem['statut'],"site1"=>0,"site2"=>0,"total"=>0,
+      "semaine"=>0,"max"=>$nbSemaines*$elem['heuresHebdo']);
       foreach($dates as $d){
 	$tab[$elem['perso_id']][$d[0]]=0;
       }
@@ -112,7 +115,9 @@ if($db->result){
     $position=$d->position!=0?$d->position-1:6;
     $tab[$elem['perso_id']][$elem['date']]+=diff_heures($elem['debut'],$elem['fin'],"decimal");	// ajout des heures par jour
     $tab[$elem['perso_id']]['total']+=diff_heures($elem['debut'],$elem['fin'],"decimal");	// ajout des heures sur toutes la période
+    $tab[$elem['perso_id']]["site{$elem['site']}"]+=diff_heures($elem['debut'],$elem['fin'],"decimal");	// ajout des heures sur toutes la période
     $totalHeures+=diff_heures($elem['debut'],$elem['fin'],"decimal");		// compte la somme des heures sur la période
+    $siteHeures[$elem['site']]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
   }
 }
 
@@ -139,6 +144,12 @@ foreach($dates as $d){
       if(!in_array($elem['perso_id'],$agents_id) and $elem[$d[0]]){
 	$agents_id[]=$elem['perso_id'];
 	$totalAgents++;
+	if($elem['site1']){
+	  $siteAgents[1]++;
+	}
+	if($elem['site2']){
+	  $siteAgents[2]++;
+	}
       }
     }
   }
@@ -157,6 +168,8 @@ $_SESSION['oups']['stat_nbAgents']=$nbAgents;
 // Formatage des données pour affichage
 $keys=array_keys($tab);
 foreach($keys as $key){
+  $tab[$key]['site1']=$tab[$key]['site1']?number_format($tab[$key]['site1'],2,'.',' '):"-";
+  $tab[$key]['site2']=$tab[$key]['site2']?number_format($tab[$key]['site2'],2,'.',' '):"-";
   $tab[$key]['total']=number_format($tab[$key]['total'],2,'.',' ');
   $tab[$key]['semaine']=number_format($tab[$key]['total']/$nbSemaines,2,'.',' ');		// ajout la moyenne par semaine
   $tab[$key]['heuresHebdo']=$tab[$key]['max']!=0?number_format($tab[$key]['heuresHebdo'],2,'.',' '):"-";
@@ -169,8 +182,12 @@ foreach($keys as $key){
 foreach($dates as $d){
   $heures[$d[0]]=$heures[$d[0]]!=0?number_format($heures[$d[0]],2,'.',' '):"-";
   $nbAgents[$d[0]]=$nbAgents[$d[0]]!=0?:"-";
-  $totalHeures=$totalHeures!=0?number_format($totalHeures,2,'.',' '):"-";
 }
+$totalHeures=$totalHeures!=0?number_format($totalHeures,2,'.',' '):"-";
+$siteHeures[1]=$siteHeures[1]!=0?number_format($siteHeures[1],2,'.',' '):"-";
+$siteHeures[2]=$siteHeures[2]!=0?number_format($siteHeures[2],2,'.',' '):"-";
+$siteAgents[1]=$siteAgents[1]!=0?$siteAgents[1]:"-";
+$siteAgents[2]=$siteAgents[2]!=0?$siteAgents[2]:"-";
 
 
 //			-------------		Affichage du tableau		---------------------//
@@ -207,20 +224,28 @@ EOD;
   foreach($dates as $d){
     echo "<th>{$d[1]}</th>\n";
   }
+
+  // Total par site
+  if($config['Multisites-nombre']>1){
+    echo "<th>{$config['Multisites-site1']}</th>\n";
+    echo "<th>{$config['Multisites-site2']}</th>\n";
+  }
+
+  // Total, moyenne, max
+  echo "<th>Total</th>\n";
+  echo "<th>Max.</th>\n";
+
   //Si nbSemaine == 1, le total=moyenne : on ne l'affiche pas
   $colspan=1;
   if($nbSemaines!=1){
     $colspan=3;
-    echo "<th>Total</th>\n";
-    echo "<th>Max.</th>\n";
+    echo "<th>Moyenne<br/>Hebdo.</th>\n";
+    echo "<th>Max. Hebdo.</th>\n";
   }
-  echo <<<EOD
-  <th>Moyenne<br/>Hebdo.</th>
-  <th>Max. Hebdo.</th>
-  </tr>
-  </thead>
-  <tbody>
-EOD;
+
+  echo "</tr>\n";
+  echo "</thead>\n";
+  echo "<tbody>\n";
 
   foreach($tab as $elem){
 
@@ -247,12 +272,18 @@ EOD;
       $class=$elem[$d[0]]!="-"?"bg-yellow":null;
       echo "<td class='$class'>{$elem[$d[0]]}</td>\n";
     }
+
+    if($config['Multisites-nombre']>1){
+      echo "<td>{$elem['site1']}</td>\n";
+      echo "<td>{$elem['site2']}</td>\n";
+    }
+
     if($nbSemaines!=1){
       echo "<td $color>{$elem['total']}</td>\n";
       echo "<td>{$elem['max']}</td>\n";
     }
     echo "<td $color>{$elem['semaine']}</td>\n";
-    echo "<td style='background:#DDDDDD;'>{$elem['heuresHebdo']}</td>\n";
+    echo "<td>{$elem['heuresHebdo']}</td>\n";
     echo "</tr>\n";
   }
   echo "</tbody>\n";
@@ -263,6 +294,12 @@ EOD;
   foreach($dates as $d){
     echo "<th>{$heures[$d[0]]}</th>\n";
   }
+
+  if($config['Multisites-nombre']>1){
+    echo "<th>{$siteHeures[1]}</th>\n";
+    echo "<th>{$siteHeures[2]}</th>\n";
+  }
+
   echo "<th>$totalHeures</th><th colspan='$colspan'>&nbsp;</th>\n";
   echo "</tr>\n";
 
@@ -272,6 +309,12 @@ EOD;
   foreach($dates as $d){
     echo "<th>{$nbAgents[$d[0]]}</th>\n";
   }
+
+  if($config['Multisites-nombre']>1){
+    echo "<th>{$siteAgents[1]}</th>\n";
+    echo "<th>{$siteAgents[2]}</th>\n";
+  }
+
   echo "<th>$totalAgents</th><th colspan='$colspan'>&nbsp;</th>\n";
   echo "</tr>\n";
 
