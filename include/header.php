@@ -27,6 +27,7 @@ if(!$version){
 
 <script type='text/JavaScript' src='js/jquery-1.10.2.min.js'></script>
 <script type='text/JavaScript' src='js/jquery-ui-1.10.3/ui/jquery-ui.js'></script>
+<script type='text/JavaScript' src='js/datePickerFr.js'></script>
 <script type='text/JavaScript' src='js/carhartl-jquery-cookie-3caf209/jquery.cookie.js'></script>
 <script type='text/JavaScript' src='js/dataTables/jquery.dataTables.min.js'></script>
 <script type='text/JavaScript' src='js/dataTables/FixedColumns.nightly.js'></script>

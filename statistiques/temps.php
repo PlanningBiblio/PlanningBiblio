@@ -62,9 +62,6 @@ $totalAgents=0;		// Les totaux
 $totalHeures=0;
 $siteHeures=array(0,0);	// Heures par site
 $siteAgents=array(0,0);	// Agents par site
-// DatePicker veut les dates au format MM/JJ/AAAA pour les convertir ensuite en JJ/MM/AAAA
-$debutDatePicker=	preg_replace("/([0-9]{1,4})-([0-9]{1,2})-([0-9]{1,2})/","$2/$3/$1",$debut);
-$finDatePicker=		preg_replace("/([0-9]{1,4})-([0-9]{1,2})-([0-9]{1,2})/","$2/$3/$1",$fin);
 
 // Récupération des couleur en fonction des statuts
 $db=new db();
@@ -183,8 +180,8 @@ echo <<<EOD
 <td>
 <form name='form' method='get' action='index.php'>
 <input type='hidden' name='page' value='statistiques/temps.php' />
-Début : <input type='text' name='debut' class='datepicker' value='$debutDatePicker' />&nbsp;
-Fin : <input type='text' name='fin' class='datepicker' value='$finDatePicker' />&nbsp;
+Début : <input type='text' name='debut' class='datepicker' value='$debutFr' />&nbsp;
+Fin : <input type='text' name='fin' class='datepicker' value='$finFr' />&nbsp;
 <input type='submit' value='OK' id='submit'/></form>
 </td></tr></table>
 <br/>
@@ -340,7 +337,6 @@ else{			// Si pas d'élément
 <script type='text/JavaScript'>
 $(document).ready(function(){
   $(".datepicker").datepicker();
-  $(".datepicker").datepicker("option", "dateFormat", "dd/mm/yy");
   $("#submit").button();
 
   var oTable=$("#table_temps").dataTable({

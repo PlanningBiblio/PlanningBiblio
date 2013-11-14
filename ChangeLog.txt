@@ -1,3 +1,17 @@
+***	Version 1.6.1	(Jérôme Combes, 14 Novembre 2013)		***
+- Améliorations :
+Ajoute les agents en congés dans la liste des absences en bas du planning (plugin congés)
+Affiche une alerte en haut du planning s'il n'y a pas d'agents de catégorie A en fin de service
+Infobulles sur les chiffres du menudiv
+Amélioration de l'affichage des statistiques
+Amélioration de l'affichage d'alerte en cas d'enregistrement d'absence sur un planning validé
+Gestion des sites au niveau des postes et des tableaux
+Amélioration de l'affichage du tableau "Feuilles de temps" avec les 2 premières colonnes fixes.
+Ajout des totaux et moyennes par sites dans la feuille de temps
+
+- Correction de bugs :
+Correction de l'authentification anonyme
+
 ***	Version 1.6	(Jérôme Combes, 22 octobre 2013)		***
 - Améliorations :
 Possibilité d'avoir un emploi du temps différent les semaines où le samedis est travaillé
