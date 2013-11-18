@@ -7,7 +7,7 @@ Amélioration de l'affichage des statistiques
 Amélioration de l'affichage d'alerte en cas d'enregistrement d'absence sur un planning validé
 Gestion des sites au niveau des postes et des tableaux
 Amélioration de l'affichage du tableau "Feuilles de temps" avec les 2 premières colonnes fixes.
-Ajout des totaux et moyennes par sites dans la feuille de temps
+Ajout des totaux et moyennes par site dans la feuille de temps
 
 - Correction de bugs :
 Correction de l'authentification anonyme

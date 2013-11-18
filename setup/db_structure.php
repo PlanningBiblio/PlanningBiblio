@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 7 novembre 2013
+Dernière modification : 15 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -104,6 +104,8 @@ $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `informations` text NOT NULL,
   `recup` text NOT NULL,
   `supprime` ENUM('0','1','2') NOT NULL DEFAULT '0',
+  `mailResponsable` TEXT NOT NULL DEFAULT '',
+  `matricule` VARCHAR(100) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `login` (`login`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";

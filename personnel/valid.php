@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 18 octobre 2013
+Dernière modification : 15 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -61,6 +61,8 @@ if(isset($_POST['id'])){
   $eDTSamedi=isset($_POST['EDTSamedi'])?$_POST['EDTSamedi']:null;
   $premierLundi=$_POST['premierLundi'];
   $dernierLundi=$_POST['dernierLundi'];
+  $mailResponsable=trim(htmlentities($_POST['mailResponsable'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+  $matricule=trim(htmlentities($_POST['matricule'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
 }
 else{ // ?????????????
   $id=null;
@@ -81,6 +83,8 @@ else{ // ?????????????
   $recup=null;
   $site=null;
   $droits=array();
+  $mailResponsable=null;
+  $matricule=null;
 }
 
 
@@ -92,7 +96,7 @@ switch($action){
     sendmail("Création de compte","Login : $login <br>Mot de passe : $mdp","$mail");
     $insert=array("nom"=>$nom,"prenom"=>$prenom,"mail"=>$mail,"statut"=>$statut,"categorie"=>$categorie,"service"=>$service,"heuresHebdo"=>$heuresHebdo,
       "heuresTravail"=>$heuresTravail,"arrivee"=>$arrivee,"depart"=>$depart,"login"=>$login,"password"=>$mdp_crypt,"actif"=>$actif,
-      "droits"=>$droits,"postes"=>$postes,"temps"=>$temps,"informations"=>$informations,"recup"=>$recup,"site"=>$site);
+      "droits"=>$droits,"postes"=>$postes,"temps"=>$temps,"informations"=>$informations,"recup"=>$recup,"site"=>$site,"mailResponsable"=>$mailResponsable,"matricule"=>$matricule);
     if(in_array("conges",$plugins)){
       $insert["congesCredit"]=heure4($_POST['congesCredit']);
       $insert["congesReliquat"]=heure4($_POST['congesReliquat']);
@@ -141,7 +145,7 @@ switch($action){
   case "modif" :
     $update=array("nom"=>$nom, "prenom"=>$prenom, "mail"=>$mail, "statut"=>$statut, "categorie"=>$categorie, "service"=>$service, "heuresHebdo"=>$heuresHebdo, 
       "heuresTravail"=>$heuresTravail, "actif"=>$actif, "droits"=>$droits, "arrivee"=>$arrivee, "depart"=>$depart, "postes"=>$postes,
-      "informations"=>$informations, "recup"=>$recup, "site"=>$site);
+      "informations"=>$informations, "recup"=>$recup, "site"=>$site, "mailResponsable"=>$mailResponsable, "matricule"=>$matricule);
     // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
     if(!strstr($actif,"Supprim")){
       $update["supprime"]="0";

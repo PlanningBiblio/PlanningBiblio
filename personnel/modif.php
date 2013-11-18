@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 19 octobre 2013
+Dernière modification : 15 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,10 +20,7 @@ Cette page est appelée par le fichier index.php
 */
 
 require_once "class.personnel.php";
-
 // NB : le champ poste et les fonctions postes_... sont utilisés pour l'attribution des activités (qualification)
-
-
 $db_groupes=new db();		// contrôle des droits d'accès à cette page (sera amélioré prochaienement)
 $db_groupes->query("select groupe_id,groupe from {$dbprefix}acces where groupe_id not in (99,100) group by groupe;");
 $db_statuts=new db();
@@ -33,6 +30,7 @@ $db_services->query("SELECT * FROM `{$dbprefix}select_services` ORDER BY `rang`;
 
 $acces=array();
 $postes_attribues=array();
+$recupAgents=array("Prime","Temps");
 
 if(isset($_GET['id'])){		//	récupération des infos de l'agent en cas de modif
   $id=$_GET['id'];
@@ -55,6 +53,8 @@ if(isset($_GET['id'])){		//	récupération des infos de l'agent en cas de modif
   if(is_array($postes_attribues))
     sort($postes_attribues);
   $acces=unserialize($db->result[0]['droits']);
+  $matricule=$db->result[0]['matricule'];
+  $mailResponsable=$db->result[0]['mailResponsable'];
   $informations=stripslashes($db->result[0]['informations']);
   $recup=stripslashes($db->result[0]['recup']);
   $siteAffect=$db->result[0]['site'];
@@ -77,6 +77,8 @@ else{		// pas d'id, donc ajout d'un agent
   $temps=null;
   $postes_attribues=array();
   $access=array();
+  $matricule=null;
+  $mailResponsable=null;
   $informations=null;
   $recup=null;
   $siteAffect=null;
@@ -380,17 +382,47 @@ else
   echo "</td><td>".dateFr($depart);
 echo "</td></tr>";
 
+echo "<tr><td>";
+echo "Matricule : ";
+echo "</td><td>";
+echo in_array(21,$droits)?"<input type='text' value='$matricule' name='matricule' style='width:400px' />":"$matricule</a>";
+echo "</td></tr>";
+
+echo "<tr><td>";
+echo "E-mail du responsable: ";
+if(in_array(21,$droits))
+	echo "<a href='mailto:$mailResponsable'>$mailResponsable</a>";
+echo "</td><td>";
+echo in_array(21,$droits)?"<input type='text' value='$mailResponsable' name='mailResponsable' style='width:400px' />":"<a href='mailto:$mailResponsable'>$mail</a>";
+echo "</td></tr>";
+
 echo "<tr style='vertical-align:top;'><td>";
 echo "Informations :";
 echo "</td><td>";
 echo in_array(21,$droits)?"<textarea name='informations' style='width:400px' cols='10' rows='4'>$informations</textarea>":str_replace("\n","<br/>",$informations);
 echo "</td></tr>";
 
-echo "<tr style='vertical-align:top;'><td>";
-echo "Récupération du samedi :";
-echo "</td><td>";
-echo in_array(21,$droits)?"<textarea name='recup' style='width:400px' cols='10' rows='4'>$recup</textarea>":str_replace("\n","<br/>",$recup);
-echo "</td></tr>";
+if($config['Recup-Agent']){
+  echo "<tr style='vertical-align:top;'><td>";
+  echo "Récupération du samedi :";
+  echo "</td><td>";
+  if($config['Recup-Agent']=="Texte" and in_array(21,$droits)){
+    echo "<textarea name='recup' style='width:400px' cols='10' rows='4'>$recup</textarea>";
+  }
+  if(htmlentities($config['Recup-Agent'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false)=="Menu d&eacute;roulant" and in_array(21,$droits)){
+    echo "<select name='recup' style='width:400px'>\n";
+    echo "<option value=''>&nbsp;</option>\n";
+    foreach($recupAgents as $elem){
+      $selected=$recup==$elem?"selected='selected'":null;
+      echo "<option value='$elem' $selected>$elem</option>\n";
+    }
+    echo "</select>\n";
+  }
+  if(!in_array(21,$droits)){
+    echo str_replace("\n","<br/>",$recup);
+  }
+  echo "</td></tr>";
+}
 
 if($id){
   echo "<tr><td>\n";

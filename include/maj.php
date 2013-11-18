@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 7 novembre 2013
+Dernière modification : 15 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -355,6 +355,15 @@ if(strcmp("1.6.1",$config['Version'])>0){
   $sql[]="ALTER TABLE `{$dbprefix}pl_poste_tab` ADD `site` INT(2) NOT NULL DEFAULT 1;";
   $sql[]="ALTER TABLE `{$dbprefix}pl_poste_tab_grp` ADD `site` INT(2) NOT NULL DEFAULT 1;";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.6.1' WHERE `nom`='Version';";
+}
+
+if(strcmp("1.6.2",$config['Version'])>0){
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`type`,`valeurs`,`valeur`,`commentaires`,`categorie`,`ordre`) 
+    VALUES ('Recup-Agent','enum',',Texte,Menu d&eacute;roulant','Texte','Type de champ pour la r&eacute;cup&eacute;ration des samedis dans la fiche des agents.<br/>Rien [vide], champ <b>texte</b> ou <b>menu déroulant</b>','Congés','40');";
+  $sql[]="ALTER TABLE `{$dbprefix}personnel` ADD `mailResponsable`  TEXT, ADD `matricule` VARCHAR(100);";
+  $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Statistiques', 17, 'Statistiques', 'statistiques/samedis.php');";
+  $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES ('40','60','Samedis','statistiques/samedis.php');";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.6.2' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage

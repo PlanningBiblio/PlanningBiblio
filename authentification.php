@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 4 novembre 2013
+Dernière modification : 14 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -118,7 +118,7 @@ else{		//		Formulaire d'authentification
     <td><input type='text' name='login' value='$login' /></td></tr>
     <tr><td align='right'>Mot de passe : </td>
     <td><input type='password' name='password' /></td></tr>
-    <tr><td colspan='2' align='center'><br/><input type='submit' value='Valider' /></td></tr>
+    <tr><td colspan='2' align='center'><br/><input type='submit' id='submit' value='Valider' /></td></tr>
 EOD;
     if($config['Auth-Anonyme']){
       echo "<tr><td colspan='2' align='center'><br/><a href='authentification.php?login=anonyme'>Accès anonyme</a></td></tr>\n";
@@ -136,3 +136,6 @@ EOD;
 
 include "include/footer.php";
 ?>
+<script type='text/JavaScript'>
+$("#submit").button();
+</script>

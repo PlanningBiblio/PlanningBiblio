@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : activites/config.php
 Création : mai 2011
-Dernière modification : 19 octobre 2013
+Dernière modification : 15 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -68,6 +68,7 @@ if(!$_POST){			//		Affichage des paramètres
 	$options=explode(",",$elem['valeurs']);
 	foreach($options as $option){
 	  $selected=$option==$elem['valeur']?"selected='selected'":null;
+	  $selected=$option==htmlentities($elem['valeur'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false)?"selected='selected'":$selected;
 	  echo "<option value='$option' $selected >$option</option>\n";
 	}
 	echo "</select>\n";

@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 26 septembre 2013
+Dernière modification : 14 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -84,66 +84,34 @@ else{
   $_SESSION['perso_actif']='Actif';
 }
 
-$tri=isset($_GET['tri'])?$_GET['tri']:"nom,prenom";
-	
 echo "<script type='text/JavaScript'>document.form2.actif.value='".$_GET['actif']."';</script>";
 
 $p=new personnel();
 $p->supprime=strstr($_GET['actif'],"Supprim")?array(1):array(0);
-$p->fetch($tri,$_GET['actif'],$nom);
+$p->fetch("nom,prenom",$_GET['actif'],$nom);
 $agents=$p->elements;
 
 echo "<form name='form' method='post' action='index.php' onsubmit='return confirm(\"Etes vous sûr de vouloir supprimer les agents sélectionnés ?\");'>\n";
-echo "<table style='width:100%' cellspacing='0'>";
-echo "<tr class='th'><td>";
-echo "<input type='checkbox' onclick='checkall(\"form\",this);' />";
-echo "</td><td>";
-if(in_array(13,$droits)){
-  echo "ID";
-  echo "&nbsp;&nbsp;<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=id'><img src='img/up.png' alt='-' border='0' style='width:10px;'/></a>\n";
-  echo "<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=id%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
-  echo "</td><td>";
-}
-echo "Nom";
-echo "&nbsp;&nbsp;<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=nom,prenom'><img src='img/up.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=nom%20desc,prenom%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "</td><td>";
-echo "Pr&#233;nom";
-echo "&nbsp;&nbsp;<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=prenom,nom'><img src='img/up.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=prenom%20desc,nom%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "</td><td>";
-echo "Heures";
-echo "&nbsp;&nbsp;<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=heuresHebdo'><img src='img/up.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=heuresHebdo%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "</td><td>";
-echo "Statut";
-echo "&nbsp;&nbsp;<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=statut'><img src='img/up.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=statut%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "</td><td>";
-echo "Service";
-echo "&nbsp;&nbsp;<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=service'><img src='img/up.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=service%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "</td>\n";
-if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
-  echo "<td>Site";
-  echo "&nbsp;&nbsp;<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=site'><img src='img/up.png' alt='-' border='0' style='width:10px;'/></a>\n";
-  echo "<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=site%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
-  echo "</td>\n";
-}
-echo "<td>";
-echo "Arriv&#233;e";
-echo "&nbsp;&nbsp;<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=arrivee'><img src='img/up.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=arrivee%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "</td><td>";
-echo "D&#233;part";
-echo "&nbsp;&nbsp;<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=depart'><img src='img/up.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=depart%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "</td><td>";
-echo "Accès";
-echo "&nbsp;&nbsp;<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=last_login'><img src='img/up.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "<a href='index.php?page=personnel/index.php&amp;nom=$nom&amp;tri=last_login%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "</td></tr>";
+echo "<table id='table_agents'>\n";
+echo "<thead>\n";
+echo "<tr><th><input type='checkbox' id='checkAll'/></th>\n";
 
+if(in_array(13,$droits)){
+  echo "<th>ID</th>";
+}
+echo "<th>Nom</th>";
+echo "<th>Pr&#233;nom</th>";
+echo "<th>Heures</th>";
+echo "<th>Statut</th>";
+echo "<th>Service</th>";
+if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
+  echo "<th>Site</th>\n";
+}
+echo "<th>Arriv&#233;e</th>";
+echo "<th>D&#233;part</th>";
+echo "<th>Acc&egrave;s</th>";
+echo "</thead>\n";
+echo "<tbody>\n";
 $i=0;
 $class="tr1";
 foreach($agents as $agent){
@@ -163,7 +131,7 @@ foreach($agents as $agent){
   $class=$class=="tr2"?"tr1":"tr2";
 
   echo "<tr class='$class'><td>\n";
-  echo "<input type='checkbox' name='chk$i' value='$id' />\n";
+  echo "<input type='checkbox' name='chk$i' value='$id' class='checkAgent'/>\n";
   echo "<a href='index.php?page=personnel/modif.php&amp;id=$id'><img src='img/modif.png' border='0' alt='Modif' /></a>";
   if(in_array(21,$droits) and $id!=$_SESSION['login_id']){
     echo "&nbsp;";
@@ -189,6 +157,7 @@ foreach($agents as $agent){
   $i++;
 }
 
+echo "</tbody>";
 echo "</table>";
 echo "<input type='hidden' name='page' value='personnel/suppression-liste.php' />\n";
 echo "<input type='submit' value='Supprimer la sélection' />\n";
@@ -204,3 +173,22 @@ function date1($date){
   return $date;
 }
 ?>
+<script type='text/JavaScript'>
+$(document).ready(function(){
+  $("#table_agents").dataTable({
+    "bJQueryUI": true,
+    "sPaginationType": "full_numbers",
+    "bStateSave": true,
+    "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"Tous"]],
+    "iDisplayLength" : 25,
+    "aaSorting" : [[2,"asc"],[3,"asc"]],
+    "oLanguage" : {"sUrl" : "js/dataTables/french.txt"},
+    "aoColumns" : [{"bSortable":false},{"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},
+      {"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},],
+  });
+});
+
+$("#checkAll").click(function(){
+  $(".checkAgent:visible").click();
+});
+</script>
