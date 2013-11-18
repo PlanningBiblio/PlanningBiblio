@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : statistiques/export.php
 Création : mai 2011
-Dernière modification : 13 septembre 2013
+Dernière modification : 18 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -197,6 +197,10 @@ switch($_GET['nom']){
   $cellules[]=$total; //$agents[7];
   $lignes[]=join($cellules,$separateur);
   break;
+
+  case "samedis" : // Samedis
+    $lignes=statistiquesSamedis($tab,$debut,$fin,$separateur,$nbJours,$jour,$joursParSemaine);
+    break;
 
   default :
     $lignes=statistiques1($_GET['nom'],$tab,$debut,$fin,$separateur,$nbJours,$jour,$joursParSemaine);

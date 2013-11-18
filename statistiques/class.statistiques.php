@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : statistiques/class.statistiques.php
 Création : 16 janvier 2013
-Dernière modification : 13 septembre 2013
+Dernière modification : 18 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -245,6 +245,33 @@ function statistiques1($nom,$tab,$debut,$fin,$separateur,$nbJours,$jour,$joursPa
       $cellules[]=number_format($total_absences,2,',',' ');;						// heures total d'absences
       $cellules[]=dateFr($absences[0]);					// date
       $cellules[]=number_format($absences[1],2,',',' ');	// heures
+      $lignes[]=join($cellules,$separateur);
+    }
+  }
+  return $lignes;
+}
+
+function statistiquesSamedis($tab,$debut,$fin,$separateur,$nbJours,$jour,$joursParSemaine){
+  $titre="Statistiques sur les samedis travaillés du $debut au $fin";
+  $lignes=array($titre,null);
+
+  $cellules=array("Nom","Prénom","Prime / Temps","Nombre","Total d'heures","Dates","Heures");
+  $lignes[]=join($cellules,$separateur);
+  
+  foreach($tab as $elem){
+    $heures=0;
+    foreach($elem[3] as $samedi){
+      $heures+=$samedi[1];
+    }
+    foreach($elem[3] as $samedi){
+      $cellules=Array();
+      $cellules[]=$elem[0][1];	// nom
+      $cellules[]=$elem[0][2];	// prénom
+      $cellules[]=$elem[0][3];	// Prime / Temps (champ récup de la fiche agent)
+      $cellules[]=count($elem[3]);	// nombre de samedi
+      $cellules[]=number_format($heures,2,',',' ');	// Total d'heures
+      $cellules[]=dateFr($samedi[0]);						// date
+      $cellules[]=number_format($samedi[1],2,',',' ');	// heures
       $lignes[]=join($cellules,$separateur);
     }
   }

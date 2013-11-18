@@ -238,8 +238,8 @@ echo "&nbsp;&nbsp;<input type='submit' value='OK' />\n";
 echo "</td></tr>\n";
 echo "<tr><td colspan='2'><hr/></td></tr>\n";
 echo "<tr><td>Exporter </td>\n";
-echo "<td><a href='javascript:export_stat(\"agent\",\"csv\");'>CSV</a>&nbsp;&nbsp;\n";
-echo "<a href='javascript:export_stat(\"agent\",\"xsl\");'>XLS</a></td></tr>\n";
+echo "<td><a href='javascript:export_stat(\"samedis\",\"csv\");'>CSV</a>&nbsp;&nbsp;\n";
+echo "<a href='javascript:export_stat(\"samedis\",\"xsl\");'>XLS</a></td></tr>\n";
 echo "</table>\n";
 echo "</form>\n";
 
@@ -294,7 +294,7 @@ if($tab){
     //	Nombre de samedis travaillés
     echo "<td>".count($elem[3])."</td>\n";
     //	Nombre d'heures
-    echo "<td>".number_format($heures,2,',',' ')."</td>\n";
+    echo "<td>".number_format($heures,2,'.',' ')."</td>\n";
     //	Affichage du nombre de samedis travaillés et les heures faites par samedi
     echo "<td>";
     foreach($elem[3] as $samedi){			//	Affiche les dates et heures des samedis
