@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : statistiques/class.statistiques.php
 Création : 16 janvier 2013
-Dernière modification : 18 novembre 2013
+Dernière modification : 20 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -278,4 +278,79 @@ function statistiquesSamedis($tab,$debut,$fin,$separateur,$nbJours,$jour,$joursP
   return $lignes;
 }
 
+class statistiques{
+  public $debut=null;
+  public $fin=null;
+  public $joursParSemaine=null;
+  public $selectedSites=null;
+
+  public function ouverture(){
+
+    // Recherche du nombre d'heures, de jours et de semaine d'ouverture au public par site
+    $debut=$this->debut;
+    $fin=$this->fin;
+    $joursParSemaine=$this->joursParSemaine;
+    $selectedSites=$this->selectedSites;
+    $totalHeures=array();
+    $totalJours=array();
+    $totalSemaines=array();
+
+    if($GLOBALS['config']['Multisites-nombre']>1 and is_array($selectedSites)){
+      $reqSites="AND `site` IN (0,".join(",",$selectedSites).")";
+    }
+    else{
+      $reqSites=null;
+    }
+
+    for($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++){
+      // Nombre d'heures
+      $totalHeures[$i]=0;
+      $db=new db();
+      $db->select("pl_poste","*","`date` BETWEEN '$debut' AND '$fin' AND `site`='$i' $reqSites AND absent='0' AND supprime='0'","GROUP BY `date`,`debut`,`fin`");
+      $lastDate=null;
+      $lastEnd=null;
+      if($db->result){
+	foreach($db->result as $elem){
+	  if($elem['date']==$lastDate and $elem['debut']<$lastEnd){
+	    $totalHeures[$i]+=diff_heures($lastEnd,$elem['fin'],"decimal");
+	  }
+	  else{
+	    $totalHeures[$i]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
+	  }
+	  $lastDate=$elem['date'];
+	  $lastEnd=$elem['fin'];
+	}
+      }
+
+      // Nombre de jours
+      $totalJours[$i]=0;
+      $db=new db();
+      $db->select("pl_poste","date","`date` BETWEEN '$debut' AND '$fin' AND `site`='$i' $reqSites AND absent='0' AND supprime='0'","GROUP BY `date`");
+      $totalJours[$i]=$db->nb;
+
+      // Nombre de semaines
+      $totalSemaines[$i]=$totalJours[$i]>0?$totalJours[$i]/$joursParSemaine:1;
+    }
+
+    $echo="<p style='margin-top:0px;'>";
+    for($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++){
+      if($GLOBALS['config']['Multisites-nombre']>1){
+	if(in_array($i,$selectedSites)){
+	  $echo.="<br/>{$GLOBALS['config']["Multisites-site$i"]}, ouverture au public : ";
+	}
+      }else{
+	$echo.="<br/>Ouverture au public : ";
+      }
+      if(in_array($i,$selectedSites)){
+	$echo.=heure4($totalHeures[$i]);
+	$echo.=", {$totalJours[$i]} jours, ";
+	$echo.=number_format($totalSemaines[$i],1,',',' ')." semaines";
+      }
+    }
+    $echo.="</p>\n";
+    $this->ouvertureTexte=$echo;
+  }
+
+
+}
 ?>

@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : statistiques/postes_synthese.php
 Création : mai 2011
-Dernière modification : 16 septembre 2013
+Dernière modification : 20 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -59,7 +59,6 @@ if($config['Multisites-nombre']>1 and !$selectedSites){
   }
 }
 $_SESSION['stat_poste_sites']=$selectedSites;
-
 // Filtre les sites dans les requêtes SQL
 if($config['Multisites-nombre']>1 and is_array($selectedSites)){
   $reqSites="AND `{$dbprefix}pl_poste`.`site` IN (0,".join(",",$selectedSites).")";
@@ -81,12 +80,6 @@ $db->query("SELECT * FROM `{$dbprefix}postes` WHERE `statistiques`='1' ORDER BY 
 $postes_list=$db->result;
 
 if(is_array($postes)){
-  //	Recherche du nombre de jours concernés
-  $db=new db();
-  $db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debut' AND '$fin' $reqSites GROUP BY `date`;");
-  $nbJours=$db->nb;
-  $nbSemaines=$nbJours>0?$nbJours/$joursParSemaine:1;
-  
   //	Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
   //	On stock le tout dans le tableau $resultat
   $postes_select=join($postes,",");
@@ -145,8 +138,16 @@ if(is_array($postes)){
   }
 }
 
+// Heures et jours d'ouverture au public
+$s=new statistiques();
+$s->debut=$debut;
+$s->fin=$fin;
+$s->joursParSemaine=$joursParSemaine;
+$s->selectedSites=$selectedSites;
+$s->ouverture();
+$ouverture=$s->ouvertureTexte;
+
 //		-------------		Tri du tableau		------------------------------
-// $tab[poste_id]=Array(Array(poste_id,poste_nom,etage,obligatoire),Array[perso_id]=Array(perso_id,nom,prenom,heures),heures)
 usort($tab,$tri);
 
 // passage en session du tableau pour le fichier export.php
@@ -217,10 +218,8 @@ echo "</td><td>\n";
 
 // 		--------------------------		Affichage du tableau de résultat		--------------------
 if($tab){
-  echo "<b>Statistiques par poste (Synthèse) du ".dateFr($debut)." au ".dateFr($fin)."</b><br/>\n";
-  echo $nbJours>1?"$nbJours jours, ":"$nbJours jour, ";
-  echo $nbSemaines>1?number_format($nbSemaines,1,',',' ')." semaines":number_format($nbSemaines,1,',',' ')." semaine";
-
+  echo "<b>Statistiques par poste (Synthèse) du ".dateFr($debut)." au ".dateFr($fin)."</b>\n";
+  echo $ouverture;
   echo "<table border='1' cellspacing='0' cellpadding='0'>\n";
   echo "<tr class='th'>\n";
   echo "<td style='width:200px; padding-left:8px;'>Postes</td>\n";

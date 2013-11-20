@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : statistiques/service.php
 Création : 9 septembre 2013
-Dernière modification : 4 novembre 2013
+Dernière modification : 20 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -85,8 +85,6 @@ if(is_array($services) and $services[0]){
   $db=new db();
   $db->select("pl_poste","date","`date` BETWEEN '$debut' AND '$fin' $reqSites","GROUP BY `date`");
   $nbJours=$db->nb;
-  $nbSemaines=$nbJours>0?$nbJours/$joursParSemaine:1;
-
 
   // Recherche des services de chaque agent
   $db=new db();
@@ -222,6 +220,16 @@ if(is_array($services) and $services[0]){
     }
   }
 }
+
+// Heures et jours d'ouverture au public
+$s=new statistiques();
+$s->debut=$debut;
+$s->fin=$fin;
+$s->joursParSemaine=$joursParSemaine;
+$s->selectedSites=$selectedSites;
+$s->ouverture();
+$ouverture=$s->ouvertureTexte;
+
 // passage en session du tableau pour le fichier export.php
 $_SESSION['stat_tab']=$tab;
 
@@ -278,9 +286,8 @@ echo "</td><td>\n";
 
 // 		--------------------------		Affichage du tableau de résultat		--------------------
 if($tab){
-  echo "<b>Statistiques par service du ".dateFr($debut)." au ".dateFr($fin)."</b><br/>\n";
-  echo $nbJours>1?"$nbJours jours, ":"$nbJours jour, ";
-  echo $nbSemaines>1?number_format($nbSemaines,2,',',' ')." semaines":number_format($nbSemaines,2,',',' ')." semaine";
+  echo "<b>Statistiques par service du ".dateFr($debut)." au ".dateFr($fin)."</b>\n";
+  echo $ouverture;
   echo "<table border='1' cellspacing='0' cellpadding='0'>\n";
   echo "<tr class='th'>\n";
   echo "<td style='width:200px; padding-left:8px;'>Services</td>\n";
