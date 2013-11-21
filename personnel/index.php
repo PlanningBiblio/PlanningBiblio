@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 14 novembre 2013
+Dernière modification : 21 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -184,7 +184,13 @@ $(document).ready(function(){
     "aaSorting" : [[2,"asc"],[3,"asc"]],
     "oLanguage" : {"sUrl" : "js/dataTables/french.txt"},
     "aoColumns" : [{"bSortable":false},{"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},
-      {"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},],
+      {"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},
+      <?php
+      if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
+	echo '{"bSortable":true},';
+      }
+      ?>
+      ],
   });
 });
 

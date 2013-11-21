@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 4 octobre 2013
+Dernière modification : 21 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -115,7 +115,7 @@ $temps=unserialize($db->result[0]['temps']);		//	$temps = emploi du temps
 
 //	Selection des absences
 $db=new db();
-$db->select("absences",null,"perso_id='$perso_id'");
+$db->select("absences",null,"`perso_id`='$perso_id' AND `valide`>0");
 $absences=$db->result;					//	$absences = tableau d'absences
 	
 //	Selection des postes occupés

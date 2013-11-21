@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 20 août 2013
+Dernière modification : 21 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,11 +23,13 @@ if(!$version){
 
 class absences{
   public $elements=array();
+  public $valide=false;
 
   public function absences(){
   }
 
   public function fetch($sort="`debut`,`fin`,`nom`,`prenom`",$only_me=null,$name=null,$debut=null,$fin=null,$sites=null){
+    $filter="";
     //	DB prefix
     $dbprefix=$GLOBALS['config']['dbprefix'];
     // Date, debut, fin
@@ -47,15 +49,21 @@ class absences{
       $sites_req="AND `{$dbprefix}personnel`.`site` IN ($sites)";
     }
 
+    if($this->valide){
+      $filter.=" AND `{$dbprefix}absences`.`valide`>0 ";
+
+    }
+
     //	Select All
     $req="SELECT `{$dbprefix}personnel`.`nom` AS `nom`, `{$dbprefix}personnel`.`prenom` AS `prenom`, "
       ."`{$dbprefix}personnel`.`id` AS `perso_id`, "
       ."`{$dbprefix}absences`.`id` AS `id`, `{$dbprefix}absences`.`debut` AS `debut`, "
       ."`{$dbprefix}absences`.`fin` AS `fin`, `{$dbprefix}absences`.`nbjours` AS `nbjours`, "
-      ."`{$dbprefix}absences`.`motif` AS `motif`, `{$dbprefix}absences`.`commentaires` AS `commentaires` "
+      ."`{$dbprefix}absences`.`motif` AS `motif`, `{$dbprefix}absences`.`commentaires` AS `commentaires`, "
+      ."`{$dbprefix}absences`.`valide` AS `valide`, `{$dbprefix}absences`.`validation` AS `validation` "
       ."FROM `{$dbprefix}absences` INNER JOIN `{$dbprefix}personnel` "
       ."ON `{$dbprefix}absences`.`perso_id`=`{$dbprefix}personnel`.`id` "
-      ."WHERE $dates $only_me $sites_req ORDER BY $sort;";
+      ."WHERE $dates $only_me $sites_req $filter ORDER BY $sort;";
     $db=new db();
     $db->query($req);
 

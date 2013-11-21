@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 15 novembre 2013
+Dernière modification : 20 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -28,6 +28,8 @@ $sql[]="CREATE TABLE `{$dbprefix}absences` (
   `commentaires` text NOT NULL,
   `etat` text NOT NULL,
   `demande` datetime NOT NULL,
+  `valide` INT(11) NOT NULL DEFAULT 0,
+  `validation` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 

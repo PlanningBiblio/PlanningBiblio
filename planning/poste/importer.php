@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/importer.php
 Création : mai 2011
-Dernière modification : 19 juillet 2013
+Dernière modification : 21 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -128,7 +128,7 @@ else{					// Etape 2 : Insertion des données
 	  $debut=$elem." ".$elem2['debut'];
 	  $fin=$elem." ".$elem2['fin'];
 	  $db2=new db();
-	  $db2->select("absences","*","`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}'");
+	  $db2->select("absences","*","`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' AND `valide`>0");
 	  $absent=$db2->result?1:0;
 	  $values[]="('{$elem}','{$elem2['perso_id']}','{$elem2['poste']}','{$elem2['debut']}','{$elem2['fin']}','$absent','$site')";
 	}
@@ -138,7 +138,7 @@ else{					// Etape 2 : Insertion des données
 	  $debut=$elem." ".$elem2['debut'];
 	  $fin=$elem." ".$elem2['fin'];
 	  $db2=new db();
-	  $db2->select("absences","*","`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}'");
+	  $db2->select("absences","*","`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' AND `valide`>0");
 	  if($db2->nb==0){
 	    $values[]="('{$elem}','{$elem2['perso_id']}','{$elem2['poste']}','{$elem2['debut']}','{$elem2['fin']}','0','$site')";
 	  }

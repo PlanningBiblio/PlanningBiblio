@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 8 novembre 2013
+Dernière modification : 20 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -33,6 +33,14 @@ if($confirm){
   $hre_debut=$_GET['hre_debut']?$_GET['hre_debut']:"00:00:00";
   $hre_fin=$_GET['hre_fin']?$_GET['hre_fin']:"23:59:59";
   $commentaires=$_GET['commentaires'];
+  if($config['Absences-validation']=='0'){
+    $valide=1;
+    $validation=date("Y-m-d H:i:s");
+  }
+  else{
+    $valide=0;
+    $validation="0000-00-00 00:00:00";
+  }
 }
 
 echo <<<EOD
@@ -62,18 +70,25 @@ if($confirm=="confirm2"){		//	2eme confirmation
   $fin_sql=$fin." ".$hre_fin;
 
   $db=new db();				//	ajout de l'absence dans la table 'absence'
-  $db->query("insert into {$dbprefix}absences (perso_id,debut,fin,nbjours,motif,commentaires,`demande`) 
-  values ('$perso_id','$debut_sql','$fin_sql','$nbjours','$motif','$commentaires',SYSDATE());");
+  $insert=array("perso_id"=>$perso_id, "debut"=>$debut_sql, "fin"=>$fin_sql, "nbjours"=>$nbjours, "motif"=>$motif, 
+    "commentaires"=>$commentaires, "demande"=>date("Y-m-d H:i:s"), "valide"=>$valide, "validation"=>$validation);
+  $db->insert2("absences", $insert);
 
 				      //	Mise à jour du champs 'absents' dans 'pl_poste'
-  $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1' WHERE
-    ((CONCAT(`date`,' ',`debut`) < '$fin_sql' AND CONCAT(`date`,' ',`debut`) >= '$debut_sql')
-    OR (CONCAT(`date`,' ',`fin`) > '$debut_sql' AND CONCAT(`date`,' ',`fin`) <= '$fin_sql'))
-    AND `perso_id`='$perso_id'";
-  $db=new db();
-  $db->query($req);
+  if($config['Absences-validation']=='0'){
+    $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1' WHERE
+      ((CONCAT(`date`,' ',`debut`) < '$fin_sql' AND CONCAT(`date`,' ',`debut`) >= '$debut_sql')
+      OR (CONCAT(`date`,' ',`fin`) > '$debut_sql' AND CONCAT(`date`,' ',`fin`) <= '$fin_sql'))
+      AND `perso_id`='$perso_id'";
+    $db=new db();
+    $db->query($req);
+  }
   
-  $message="Nouvelle absence : <br/>$prenom $nom<br/>Début : ".dateFr($debut);
+  if($config['Absences-validation']=='0'){
+    $message="Nouvelle absence : <br/>$prenom $nom<br/>Début : ".dateFr($debut);
+  }else{
+    $message="Nouvelle demande d'absence : <br/>$prenom $nom<br/>Début : ".dateFr($debut);
+  }
   if($hre_debut!="00:00:00")
     $message.=" ".heure3($hre_debut);
   $message.="<br/>Fin : ".dateFr($fin);

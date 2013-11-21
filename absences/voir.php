@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 29 août 2013
+Dernière modification : 21 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -60,33 +60,28 @@ echo "&nbsp;&nbsp;<input type='submit' value='OK' />\n";
 echo "&nbsp;&nbsp;<input type='button' value='Effacer' onclick='location.href=\"index.php?page=absences/voir.php\"' />\n";
 echo "</form>\n";
 
-echo "<table class='tableauStandard'>\n";
-echo "<tr class='th'>\n";
-echo "<td style='width:20px'>&nbsp;</td>\n";
-echo "<td>Début\n";
-echo "&nbsp;&nbsp;<a href='index.php?page=absences/voir.php&amp;debut=$debut&amp;fin=$fin&amp;tri=debut,fin,nom,prenom'><img src='img/up.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "<a href='index.php?page=absences/voir.php&amp;debut=$debut&amp;fin=$fin&amp;tri=debut%20desc,fin%20desc,nom,prenom'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "</td>\n";
-echo "<td>Fin\n";
-echo "&nbsp;&nbsp;<a href='index.php?page=absences/voir.php&amp;debut=$debut&amp;fin=$fin&amp;tri=fin,debut,nom,prenom'><img src='img/up.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "<a href='index.php?page=absences/voir.php&amp;debut=$debut&amp;fin=$fin&amp;tri=fin%20desc,debut%20desc,nom,prenom'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "</td>\n";
-echo "<td>Nom\n";
-echo "&nbsp;&nbsp;<a href='index.php?page=absences/voir.php&amp;debut=$debut&amp;fin=$fin&amp;tri=nom,prenom,debut,fin'><img src='img/up.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "<a href='index.php?page=absences/voir.php&amp;debut=$debut&amp;fin=$fin&amp;tri=nom%20desc,prenom%20desc,debut,fin'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "</td>\n";
-echo "<td>Motif\n";
-echo "&nbsp;&nbsp;<a href='index.php?page=absences/voir.php&amp;debut=$debut&amp;fin=$fin&amp;tri=motif,debut,fin,nom,prenom'><img src='img/up.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "<a href='index.php?page=absences/voir.php&amp;debut=$debut&amp;fin=$fin&amp;tri=motif%20desc,debut,fin,nom,prenom'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "</td>\n";
-echo "<td>Commentaires</td>\n";
-echo "</tr>\n";
+echo "<br/>\n";
+echo "<table id='tableAbsences'>\n";
+echo "<thead><tr>\n";
+echo "<td>&nbsp;</th>\n";
+echo "<th>Début</th>\n";
+echo "<th>Fin</th>\n";
+if($admin){
+  echo "<th>Nom</th>\n";
+}
+echo "<th>&Eacute;tat</th>\n";
+echo "<th>Motif</th>\n";
+echo "<th>Commentaires</th>\n";
+echo "</tr></thead>\n";
+echo "<tbody>\n";
 
 $i=0;
 if($absences){
   foreach($absences as $elem){
-    $class=$i%2?"tr1":"tr2";
-    echo "<tr class='$class'>\n";
+    $etat=$elem['valide']>0?"Valid&eacute;":"Demand&eacute";
+    $etat=$elem['valide']<0?"Refus&eacute;":$etat;
+
+    echo "<tr>\n";
     if($admin or in_array(6,$droits)){
       echo "<td><a href='index.php?page=absences/modif.php&amp;id=".$elem['id']."'>\n";
       echo "<img border='0' src='img/modif.png' alt='Modif' /></a></td>\n";
@@ -96,12 +91,40 @@ if($absences){
     }
     echo "<td>".dateFr($elem['debut'],true)."</td>";
     echo "<td>".datefr($elem['fin'],true)."</td>";
-    echo "<td>{$elem['nom']} {$elem['prenom']}</td>";
+    if($admin){
+      echo "<td>{$elem['nom']} {$elem['prenom']}</td>";
+    }
+    echo "<td>$etat</td>\n";
     echo "<td>{$elem['motif']}</td>\n";
     echo "<td>{$elem['commentaires']}</td></tr>\n";
     $i++;
   }
 }
-echo "</table>";
+echo "</tbody></table>";
 echo "<br/><a href='index.php?page=absences/index.php'>Retour</a>";
 ?>
+
+<script type='text/JavaScript'>
+$(document).ready(function() {
+  $("#tableAbsences").dataTable({
+    "bJQueryUI": true,
+    "sPaginationType": "full_numbers",
+    "bStateSave": true,
+    "aaSorting" : [[1,"asc"],[2,"asc"]],
+    "aoColumns" : [{"bSortable":false},{"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},
+      {"bSortable":true},
+      <?php
+      if($admin){
+	echo '{"bSortable":true},';
+      }
+      ?>
+      ],
+    "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"Tous"]],
+    "iDisplayLength" : 25,
+    "oLanguage" : {"sUrl" : "js/dataTables/french.txt"}
+  });
+
+  $(document).tooltip();
+  $("#ajouter").button();
+});
+</script>

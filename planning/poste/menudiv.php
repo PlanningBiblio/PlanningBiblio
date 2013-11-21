@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/menudiv.php
 Création : mai 2011
-Dernière modification : 31 octobre 2013
+Dernière modification : 21 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -98,8 +98,7 @@ if($bloquant=='1'){
 
 // recherche des personnes à exclure (absents)
 $db=new db();
-$req="SELECT `perso_id` FROM `{$dbprefix}absences` WHERE (`debut`<'$date $fin' AND `fin` >'$date $debut');";
-$db->query($req);
+$db->select("absences","perso_id","`debut`<'$date $fin' AND `fin` >'$date $debut' AND `valide`>0");
 if($db->result){
   foreach($db->result as $elem){
     $tab_exclus[]=$elem['perso_id'];
