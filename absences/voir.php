@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 21 novembre 2013
+Dernière modification : 22 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -29,8 +29,16 @@ if(!$admin){
 
 $agent=isset($_GET['agent'])?$_GET['agent']:null;
 $tri=isset($_GET['tri'])?$_GET['tri']:"`debut`,`fin`,`nom`,`prenom`";
-$debut=isset($_GET['debut'])?$_GET['debut']:null;
-$fin=isset($_GET['fin'])?$_GET['fin']:null;
+$debut=isset($_GET['debut'])?dateFr($_GET['debut']):(isset($_SESSION['oups']['absences_debut'])?$_SESSION['oups']['absences_debut']:null);
+$fin=isset($_GET['fin'])?dateFr($_GET['fin']):(isset($_SESSION['oups']['absences_fin'])?$_SESSION['oups']['absences_fin']:null);
+if(isset($_GET['reset'])){
+  $debut=null;
+  $fin=null;
+}
+$_SESSION['oups']['absences_debut']=$debut;
+$_SESSION['oups']['absences_fin']=$fin;
+$debutFr=dateFr($debut);
+$finFr=dateFr($fin);
 
 // Multisites : filtre pour n'afficher que les agents du site voulu
 $sites=null;
@@ -50,14 +58,14 @@ $absences=$a->elements;
   
 echo "<form name='form' method='get' action='index.php'>\n";
 echo "<input type='hidden' name='page' value='absences/voir.php' />\n";
-echo "Début : <input type='text' name='debut' value='$debut' />&nbsp;<img src='img/calendrier.gif' onclick='calendrier(\"debut\");' alt='calendrier' />\n";
-echo "&nbsp;&nbsp;Fin : <input type='text' name='fin' value='$fin' />&nbsp;<img src='img/calendrier.gif' onclick='calendrier(\"fin\");' alt='calendrier' />\n";
+echo "Début : <input type='text' name='debut' value='$debutFr' class='datepicker'/>\n";
+echo "&nbsp;&nbsp;Fin : <input type='text' name='fin' value='$finFr'  class='datepicker'/>\n";
 
 if($admin){
   echo "&nbsp;&nbsp;Agent : <input type='text' name='agent' value='$agent' />\n";
 }
-echo "&nbsp;&nbsp;<input type='submit' value='OK' />\n";
-echo "&nbsp;&nbsp;<input type='button' value='Effacer' onclick='location.href=\"index.php?page=absences/voir.php\"' />\n";
+echo "&nbsp;&nbsp;<input type='submit' value='OK' class='button'/>\n";
+echo "&nbsp;&nbsp;<input type='button' value='Effacer' onclick='location.href=\"index.php?page=absences/voir.php&amp;reset\"'  class='button' />\n";
 echo "</form>\n";
 
 echo "<br/>\n";
@@ -69,8 +77,9 @@ echo "<th>Fin</th>\n";
 if($admin){
   echo "<th>Nom</th>\n";
 }
-echo "<th>&Eacute;tat</th>\n";
-echo "<th>Motif</th>\n";
+if($config['Absences-validation']){
+  echo "<th>&Eacute;tat</th>\n";
+}echo "<th>Motif</th>\n";
 echo "<th>Commentaires</th>\n";
 echo "</tr></thead>\n";
 echo "<tbody>\n";
@@ -78,8 +87,8 @@ echo "<tbody>\n";
 $i=0;
 if($absences){
   foreach($absences as $elem){
-    $etat=$elem['valide']>0?"Valid&eacute;":"Demand&eacute";
-    $etat=$elem['valide']<0?"Refus&eacute;":$etat;
+    $etat=$elem['valide']>0?"Valid&eacute;e":"Demand&eacute;e";
+    $etat=$elem['valide']<0?"Refus&eacute;e":$etat;
 
     echo "<tr>\n";
     if($admin or in_array(6,$droits)){
@@ -94,7 +103,9 @@ if($absences){
     if($admin){
       echo "<td>{$elem['nom']} {$elem['prenom']}</td>";
     }
-    echo "<td>$etat</td>\n";
+    if($config['Absences-validation']){
+      echo "<td>$etat</td>\n";
+    }
     echo "<td>{$elem['motif']}</td>\n";
     echo "<td>{$elem['commentaires']}</td></tr>\n";
     $i++;
@@ -106,15 +117,19 @@ echo "<br/><a href='index.php?page=absences/index.php'>Retour</a>";
 
 <script type='text/JavaScript'>
 $(document).ready(function() {
+  $(".datepicker").datepicker();
+  $(".button").button();
   $("#tableAbsences").dataTable({
     "bJQueryUI": true,
     "sPaginationType": "full_numbers",
     "bStateSave": true,
     "aaSorting" : [[1,"asc"],[2,"asc"]],
     "aoColumns" : [{"bSortable":false},{"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},
-      {"bSortable":true},
       <?php
       if($admin){
+	echo '{"bSortable":true},';
+      }
+      if($config['Absences-validation']){
 	echo '{"bSortable":true},';
       }
       ?>

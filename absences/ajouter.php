@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 20 novembre 2013
+Dernière modification : 25 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -56,13 +56,18 @@ if($confirm=="confirm2"){		//	2eme confirmation
   $responsables=$a->responsables;
 
   $db_perso=new db();
-  $db_perso->query("select nom,prenom,mail from {$dbprefix}personnel where id=$perso_id;");
+  $db_perso->select("personnel","*","id=$perso_id");
   $nom=$db_perso->result[0]['nom'];
   $prenom=$db_perso->result[0]['prenom'];
-  $destinataires=$db_perso->result[0]['mail'];
-  foreach($responsables as $elem){
-    if(verifmail($elem['mail'])){
-      $destinataires.=";{$elem['mail']}";
+  $destinataires=array();
+  $destinataires[]=$db_perso->result[0]['mail'];
+
+  if($config['Absences-notifications']=="A tous" or $config['Absences-notifications']=="Au responsable direct"){
+    $destinataires[]=$db_perso->result[0]['mailResponsable'];
+  }
+  if($config['Absences-notifications']=="A tous" or substr($config['Absences-notifications'],0,25)=="Aux agents ayant le droit"){
+    foreach($responsables as $elem){
+      $destinataires[]=$elem['mail'];
     }
   }
 
@@ -84,11 +89,9 @@ if($confirm=="confirm2"){		//	2eme confirmation
     $db->query($req);
   }
   
-  if($config['Absences-validation']=='0'){
-    $message="Nouvelle absence : <br/>$prenom $nom<br/>Début : ".dateFr($debut);
-  }else{
-    $message="Nouvelle demande d'absence : <br/>$prenom $nom<br/>Début : ".dateFr($debut);
-  }
+  $titre=$config['Absences-validation']?"Nouvelle demande d'absence":"Nouvelle absence";
+  $message="$titre : <br/>$prenom $nom<br/>Début : ".dateFr($debut);
+
   if($hre_debut!="00:00:00")
     $message.=" ".heure3($hre_debut);
   $message.="<br/>Fin : ".dateFr($fin);
@@ -97,13 +100,13 @@ if($confirm=="confirm2"){		//	2eme confirmation
   $message.="<br/>Motif : $motif<br/>";
   if($commentaires)
     $message.="Commentaire:<br/>$commentaires<br/>";
-  sendmail("Nouvelle absence",$message,$destinataires);
+  sendmail($titre,$message,$destinataires);
   if($menu=="off"){
     echo "<script type=text/JavaScript>parent.document.location.reload(false);</script>\n";
     echo "<script type=text/JavaScript>popup_closed();</script>\n";
   }
   else{
-    echo "L'absence a été enregistrée";
+    echo $config['Absences-validation']?"La demande d'absence a &eacute;t&eacute; enregistr&eacute;e":"L'absence a été enregistrée";
     echo "<br/><br/>";
     echo "<a href='index.php?page=absences/index.php'>Retour</a>";
   }

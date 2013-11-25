@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 24 octobre 2013
+Dernière modification : 22 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -639,7 +639,9 @@ function selectTemps($jour,$i,$periodes=null,$class=null){
 function sendmail($Sujet,$Message,$destinataires,$alert=true){
   if(!$GLOBALS['config']['Mail-IsEnabled'])
     return false;
-  $destinataires=explode(";",$destinataires);
+  if(!is_array($destinataires)){
+    $destinataires=explode(";",$destinataires);
+  }
   if($destinataires[0]){
     $Entete="<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
     $Entete.="<html><head><title>Planning</title></head><body>";
@@ -655,7 +657,6 @@ function sendmail($Sujet,$Message,$destinataires,$alert=true){
     foreach($destinataires as $destinataire){
       if(verifmail($destinataire)){
 	$to[]=$destinataire;
-// 	mail2($destinataire,$Sujet,$Message);
       }
       elseif($alert){
 	echo "<script type='text/JavaScript'>alert('Adresse mail invalide (\"$destinataire\")');</script>";

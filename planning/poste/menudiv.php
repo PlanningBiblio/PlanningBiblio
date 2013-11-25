@@ -98,7 +98,8 @@ if($bloquant=='1'){
 
 // recherche des personnes à exclure (absents)
 $db=new db();
-$db->select("absences","perso_id","`debut`<'$date $fin' AND `fin` >'$date $debut' AND `valide`>0");
+$filter=$config['Absences-validation']?"AND `valide`>0":null;
+$db->select("absences","perso_id","`debut`<'$date $fin' AND `fin` >'$date $debut' $filter ");
 if($db->result){
   foreach($db->result as $elem){
     $tab_exclus[]=$elem['perso_id'];

@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 21 novembre 2013
+Dernière modification : 25 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -49,9 +49,8 @@ class absences{
       $sites_req="AND `{$dbprefix}personnel`.`site` IN ($sites)";
     }
 
-    if($this->valide){
+    if($this->valide and $GLOBALS['config']['Absences-validation']){
       $filter.=" AND `{$dbprefix}absences`.`valide`>0 ";
-
     }
 
     //	Select All
@@ -171,7 +170,7 @@ class absences{
     foreach($db->result as $elem){
       $d=unserialize($elem['droits']);
       foreach($droitsAbsences as $elem2){
-	if(in_array($elem2,$d) and !in_array($elem,$responsables)){
+	if(is_array($d) and in_array($elem2,$d) and !in_array($elem,$responsables)){
 	  $responsables[]=$elem;
 	}
       }
