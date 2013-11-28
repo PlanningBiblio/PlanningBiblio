@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 22 novembre 2013
+Dernière modification : 28 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -87,11 +87,11 @@ echo "<tbody>\n";
 $i=0;
 if($absences){
   foreach($absences as $elem){
-    $etat=$elem['valide']>0?"Valid&eacute;e":"Demand&eacute;e";
+    $etat=$elem['valide']>0?"Valid&eacute;e":"En attende de validation";
     $etat=$elem['valide']<0?"Refus&eacute;e":$etat;
 
     echo "<tr>\n";
-    if($admin or in_array(6,$droits)){
+    if($admin or (!$config['Absences-adminSeulement'] and in_array(6,$droits))){
       echo "<td><a href='index.php?page=absences/modif.php&amp;id=".$elem['id']."'>\n";
       echo "<img border='0' src='img/modif.png' alt='Modif' /></a></td>\n";
     }

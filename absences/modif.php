@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 25 novembre 2013
+Dernière modification : 26 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -50,18 +50,25 @@ if($hre_debut=="00:00:00" and $hre_fin=="23:59:59"){
   $checked="checked='checked'";
   $display="style='display:none;'";
 }
-$select1=$valide>0?"selected='selected'":null;
-$select2=$valide<0?"selected='selected'":null;
+$select1=$valide==0?"selected='selected'":null;
+$select2=$valide>0?"selected='selected'":null;
+$select3=$valide<0?"selected='selected'":null;
 $validation_texte=$valide>0?"Valid&eacute;e":"&nbsp;";
 $validation_texte=$valide<0?"Refus&eacute;e":$validation_texte;
-$validation_texte=$valide==0?"Demand&eacute;e":$validation_texte;
+$validation_texte=$valide==0?"En attente de validation":$validation_texte;
 
 // Sécurité
 // Droit 1 = modification de toutes les absences
 // Droit 6 = modification de ses propres absences
+// Les admins ont toujours accès à cette page
 $acces=in_array(1,$droits)?true:false;
 if(!$acces){
+  // Les non admin ayant le droits de modifier leurs absences ont accès si l'absence les concerne
   $acces=(in_array(6,$droits) and $perso_id==$_SESSION['login_id'])?true:false;
+}
+// Si config Absences-adminSeulement, seuls les admins ont accès à cette page
+if($config['Absences-adminSeulement'] and !in_array(1,$droits)){
+  $acces=false;
 }
 if(!$acces){
   echo "<div id='acces_refuse'>Accès refusé</div>\n";
@@ -93,7 +100,7 @@ echo "<h3>Modification de l'absence</h3>\n";
 echo "<form name='form' method='get' action='index.php' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");'>\n";
 echo "<input type='hidden' name='page' value='absences/modif2.php' />\n";
 echo "<input type='hidden' name='perso_id' value='$perso_id' />\n";		// nécessaire pour verif_absences
-echo "<table>\n";
+echo "<table class='tableauFiches'>\n";
 echo "<tr><td>Nom, Prénom : </td><td>";
 echo $db->result[0]['nom'];
 echo "&nbsp;";
@@ -133,7 +140,7 @@ echo "</td></tr>\n";
 echo "<tr><td>";
 echo "Motif : </td><td>";
 
-echo "<select name='motif'>\n";
+echo "<select name='motif' style='width:90%;'>\n";
 echo "<option value=''>-----------------------</option>\n";
 $db_select=new db();
 $db_select->query("select valeur from {$dbprefix}select_abs order by rang;");
@@ -156,13 +163,14 @@ if($config['Absences-validation']){
   echo "<tr><td>Validation : </td><td>\n";
   if($admin){
     echo "<select name='valide'>\n";
-    echo "<option value=''>&nbsp;</option>\n";
-    echo "<option value='1' $select1>Accept&eacute;e</option>\n";
-    echo "<option value='-1' $select2>Refus&eacute;e</option>\n";
+    echo "<option value='0' $select1>En attente de validation</option>\n";
+    echo "<option value='1' $select2>Accept&eacute;e</option>\n";
+    echo "<option value='-1' $select3>Refus&eacute;e</option>\n";
     echo "</select>\n";
   }
   else{
     echo $validation_texte;
+    echo "<input type='hidden' name='valide' value='$valide' />\n";
   }
   echo "</td></tr>\n";
 }

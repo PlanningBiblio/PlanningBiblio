@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 25 novembre 2013
+Dernière modification : 28 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -21,6 +21,7 @@ Page appelée par la page index.php
 require_once "class.absences.php";
 
 //	Initialisation des variables
+$admin=in_array(1,$droits)?true:false;
 $menu=isset($_GET['menu'])?$_GET['menu']:null;
 $confirm=isset($_GET['confirm'])?$_GET['confirm']:null;
 $perso_id=isset($_GET['perso_id'])?$_GET['perso_id']:null;
@@ -36,11 +37,32 @@ if($confirm){
   if($config['Absences-validation']=='0'){
     $valide=1;
     $validation=date("Y-m-d H:i:s");
+    $validationText=null;
   }
-  else{
+  elseif(!$admin){
     $valide=0;
+    $validationText="En attente de validation";
     $validation="0000-00-00 00:00:00";
   }
+  elseif($admin){
+    $valide=$_GET['valide'];
+    $validationText="En attente de validation";
+    $validation="0000-00-00 00:00:00";
+    if($valide>0){
+      $validationText="Valid&eacute;e";
+      $validation=date("Y-m-d H:i:s");
+    }
+    elseif($valide<0){
+      $validationText="Refus&eacute;e";
+      $validation=date("Y-m-d H:i:s");
+    }
+  }
+}
+
+if($config['Absences-adminSeulement'] and !$admin){
+  echo "<div id='acces_refuse'>Accès refusé</div>\n";
+  include "include/footer.php";
+  exit;
 }
 
 echo <<<EOD
@@ -125,7 +147,6 @@ elseif($confirm=="confirm1"){		//	1ere Confirmation
 
   // Interdiction d'ajouter des absences si l'agent apparaît dans un planning validé pour les dates sélectionnées
   // Si CONFIG absencesApresValidation = 0
-  $admin=in_array(1,$droits)?true:false;
   $disableSubmit=null;
   $datesValidees=null;
   if($config['absencesApresValidation']==0){
@@ -151,7 +172,7 @@ elseif($confirm=="confirm1"){		//	1ere Confirmation
 
   echo "<b>Confirmation</b>\n";
 
-  echo "<table style='margin-top:20px;'><tr><td>\n";
+  echo "<table class='tableauFiches'><tr><td>\n";
   echo "Nom, Prénom :</td><td>\n";
   echo $nom." ".$prenom;
   echo "</td></tr><tr><td>\n";
@@ -172,7 +193,15 @@ elseif($confirm=="confirm1"){		//	1ere Confirmation
   echo "</td></tr><tr><td>\n";
   echo "Commentaires : </td><td>\n";
   echo $commentaires;
-  echo "</td></tr><tr><td>\n";
+  echo "</td></tr>\n";
+
+  if($config['Absences-validation']){
+    echo "<tr><td>Validation : </td><td>\n";
+    echo $validationText;
+    echo "</td></tr>\n";
+  }
+
+  echo "<tr><td>\n";
   echo "&nbsp;";
   echo "</td></tr></table>\n";
   echo "<form method='get' action='index.php' name='form'>\n";
@@ -185,6 +214,7 @@ elseif($confirm=="confirm1"){		//	1ere Confirmation
   echo "<input type='hidden' name='nbjours' value='$nbjours' />\n";
   echo "<input type='hidden' name='motif' value='$motif' />\n";
   echo "<input type='hidden' name='commentaires' value='$commentaires' />\n";
+  echo "<input type='hidden' name='valide' value='$valide' />\n";
   echo "<input type='hidden' name='confirm' value='confirm2' />\n";
   echo "<input type='hidden' name='menu' value='$menu' />\n";
 
@@ -211,11 +241,13 @@ elseif($confirm=="confirm1"){		//	1ere Confirmation
 else{					//	Formulaire
   echo "<form name='form' action='index.php' method='get' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");' >\n";
   echo "<input type='hidden' name='page' value='absences/ajouter.php' />\n";
-  echo "<table>\n";
+  echo "<input type='hidden' name='menu' value='$menu' />\n";
+  echo "<input type='hidden' name='confirm' value='confirm1' />\n";
+  echo "<table class='tableauFiches'>\n";
   echo "<tr><td>\n";
-  echo "Nom, prénom : \n";
-  echo "</td><td>\n";
-  if(in_array(1,$droits)){
+  echo "Nom, prénom : </td>\n";
+  echo "<td>\n";
+  if($admin){
     $db_perso=new db();
     $db_perso->query("select * from {$dbprefix}personnel where actif='Actif' order by nom,prenom;");
     echo "<select name='perso_id'>\n";
@@ -240,7 +272,7 @@ else{					//	Formulaire
   echo "<tr><td>\n";
   echo "Date de début : \n";
   echo "</td><td>";
-  echo "<input type='text' name='debut' value='$debut' />&nbsp;\n";
+  echo "<input type='text' name='debut' value='$debut' style='width:85%;'/>&nbsp;\n";
   echo "<img src='img/calendrier.gif' onclick='calendrier(\"debut\");' alt='début' />\n";
   echo "</td></tr>\n";
   echo "<tr id='hre_debut' style='display:none;'><td>\n";
@@ -253,7 +285,7 @@ else{					//	Formulaire
   echo "<tr><td>\n";
   echo "Date de fin : \n";
   echo "</td><td>";
-  echo "<input type='text' name='fin' value='$fin' />&nbsp;\n";
+  echo "<input type='text' name='fin' value='$fin' style='width:85%;'/>&nbsp;\n";
   echo "<img src='img/calendrier.gif' onclick='calendrier(\"fin\");' alt='fin' />\n";
   echo "</td></tr>\n";
   echo "<tr id='hre_fin' style='display:none;'><td>\n";
@@ -268,7 +300,7 @@ else{					//	Formulaire
   echo "Motif : \n";
   echo "</td><td>\n";
 
-  echo "<select name='motif'>\n";
+  echo "<select name='motif' style='width:87%;'>\n";
   echo "<option value=''>-----------------------</option>\n";
   $db_select=new db();
   $db_select->query("select valeur from {$dbprefix}select_abs order by rang;");
@@ -276,17 +308,32 @@ else{					//	Formulaire
     echo "<option value='".$elem['valeur']."'>".$elem['valeur']."</option>\n";
   }
   echo "</select>\n";
-  if(in_array(1,$droits)){
+  if($admin){
     echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_abs&amp;terme=motif\",400,400);'>\n";
     echo "<img src='img/add.gif' alt='*' style=width:15px;'/></a>\n";
   }
   echo "</td></tr><tr valign='top'><td>\n";
   echo "Commentaires : \n";
   echo "</td><td>\n";
-  echo "<textarea name='commentaires' cols='16' rows='5' style='width:150px;'></textarea>\n";
-  echo "<input type='hidden' name='menu' value='$menu' />\n";
-  echo "<input type='hidden' name='confirm' value='confirm1' />\n";
-  echo "</td></tr><tr><td>&nbsp;\n";
+  echo "<textarea name='commentaires' cols='16' rows='5' ></textarea>\n";
+  echo "</td></tr>\n";
+
+  if($config['Absences-validation']){
+    echo "<tr><td>Validation : </td><td>\n";
+    if($admin){
+      echo "<select name='valide'>\n";
+      echo "<option value='0'>En attente de validation</option>\n";
+      echo "<option value='1'>Accept&eacute;e</option>\n";
+      echo "<option value='-1'>Refus&eacute;e</option>\n";
+      echo "</select>\n";
+    }
+    else{
+      echo "En attente de validation";
+    }
+    echo "</td></tr>\n";
+  }
+
+  echo "<tr><td>&nbsp;\n";
   echo "</td></tr><tr><td colspan='2'>\n";
   if($menu=="off")
     echo "<input type='button' value='Annuler' onclick='popup_closed();' />";

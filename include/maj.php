@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 22 novembre 2013
+Dernière modification : 28 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -366,11 +366,13 @@ if(strcmp("1.6.2",$config['Version'])>0){
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) 
     VALUES ('Absences-validation','boolean','0','Les absences doivent &ecirc;tre valid&eacute;es par un administrateur avant d&apos;&ecirc;tre prises en compte','Absences','2');";
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-    VALUES ('Absences-notifications','enum','A tous','Aux agents ayant le droit de g&eacute;rer les absences,Au responsable direct,A tous','A qui les notifications d&apos;absences doivent-elles &ecirc;tre envoy&eacute;es','Absences','2');";
+    VALUES ('Absences-notifications','enum','A tous','Aux agents ayant le droit de g&eacute;rer les absences,Au responsable direct,A tous,A l&apos;agent concern&eacute; seulement','A qui les notifications d&apos;absences doivent-elles &ecirc;tre envoy&eacute;es','Absences','2');";
   $sql[]="UPDATE `{$dbprefix}config` SET `categorie`='Absences', `ordre`='2' WHERE `nom`='absencesApresValidation';";
   $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `valide` INT(11) NOT NULL DEFAULT 0, ADD `validation` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00';";
   $sql[]="UPDATE `{$dbprefix}absences` SET `valide`='1', `validation`=`demande`;";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.6.2' WHERE `nom`='Version';";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) 
+    VALUES ('Absences-adminSeulement','boolean','0','Autoriser la saisie des absences aux administrateurs seulement.','Absences','2');";
 }
 
 //	Execution des requetes et affichage
