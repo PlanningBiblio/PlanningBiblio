@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 25 novembre 2013
+Dernière modification : 29 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -118,6 +118,9 @@ $db->update2("absences",$update,$where);
 echo "<h3>Modification de l'absence</h3>\n";
 
 // Envoi d'un mail à l'agent et aux responsables
+// MLV
+// Pas d'envoi en cas de modif
+/*
 $sujet="Modification d'une absence";
 if($valide1<=0 and $valide>0){
   $sujet="Validation d'une absence";
@@ -157,7 +160,7 @@ if($config['Absences-notifications']=="A tous" or substr($config['Absences-notif
   }
 }
 sendmail($sujet,$message,$destinataires);
-
+*/
 echo "<h4>Votre demande à été enregistrée</h4>";
 echo "<a href='javascript:annuler(2);'>Retour</a>\n";
 ?>

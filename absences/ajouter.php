@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 28 novembre 2013
+Dernière modification : 29 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -114,6 +114,13 @@ if($confirm=="confirm2"){		//	2eme confirmation
   $titre=$config['Absences-validation']?"Nouvelle demande d'absence":"Nouvelle absence";
   $message="$titre : <br/>$prenom $nom<br/>Début : ".dateFr($debut);
 
+  // MLV
+  // Message personnalisé
+  $titre="Votre demande de congé";
+  $message.="Votre demande de cong&eacute; a reçu un avis favorable de la cellule planning.<br/>";
+  $message.="Celle-ci est maintenant transmise &agrave; votre responsable direct pour demande de validation.<br/>";
+  $message.="<br/>$prenom $nom<br/>Début : ".dateFr($debut);
+
   if($hre_debut!="00:00:00")
     $message.=" ".heure3($hre_debut);
   $message.="<br/>Fin : ".dateFr($fin);
@@ -122,7 +129,13 @@ if($confirm=="confirm2"){		//	2eme confirmation
   $message.="<br/>Motif : $motif<br/>";
   if($commentaires)
     $message.="Commentaire:<br/>$commentaires<br/>";
-  sendmail($titre,$message,$destinataires);
+
+  // MLV
+  // Envoi seulement lors d'un ajout en attente (cellule planning=favorable, attente validation hierarchique)
+  if($valide==0){
+    sendmail($titre,$message,$destinataires);
+  }
+
   if($menu=="off"){
     echo "<script type=text/JavaScript>parent.document.location.reload(false);</script>\n";
     echo "<script type=text/JavaScript>popup_closed();</script>\n";
