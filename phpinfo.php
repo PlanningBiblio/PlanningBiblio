@@ -1,6 +1,6 @@
 <?php
 /************************************************************************************************************************
-* Planning Biblio, Version 1.6.1
+* Planning Biblio, Version 1.6.2
 * Licence GNU/GPL (version 2 et au dela)										*
 * Voir les fichiers README.txt et COPYING.txt										*
 * Copyright (C) 2011-2013 - Jérôme Combes										*
