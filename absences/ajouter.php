@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 1.6.1
+Planning Biblio, Version 1.6.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
@@ -9,6 +9,7 @@ Fichier : absences/ajouter.php
 Création : mai 2011
 Dernière modification : 29 novembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Fichier personnalisé MLV
 
 Description :
 Permet d'ajouter une absence. Formulaire, confirmation et validation.
