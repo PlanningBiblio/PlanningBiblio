@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : aide/index.php
 Création : mai 2011
-Dernière modification : 17 septembre 2013
+Dernière modification : 3 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -81,9 +81,11 @@ if(!$version){
 	<li><a href='#stat_poste'>Statistiques par poste</a></li>
 	<li><a href='#stat_renfort'>Statistiques par postes de renfort</a></li>
 	<li><a href='#stat_synthese'>Statistiques par postes (Synthèse)</a></li>
+	<li><a href='#stat_samedis'>Statistiques par samedis</a></li>
 	</ol>
 	</li>
 <li><a href="#informations">Les informations</a></li>
+<li><a href="#fermeture">Jours de fermeture</a></li>
 </ol>
 
 
@@ -95,27 +97,31 @@ if(!$version){
 <u><b>Si vous n'avez pas le droit de gérer les absences :</b></u><br/>
 Vous pouvez voir la liste de vos absences entre 2 dates.<br/>
 Sélectionnez la date de début et la date de fin à l'aide des calendriers puis validez en cliquant sur "OK".<br/>
-La liste de vos absences durant cette période s'affiche avec les dates de début, de fin, le motif de l'absence et un commentaire éventuel.<br/>
+La liste de vos absences durant cette période s'affiche avec les dates de début, de fin, le motif de l'absence et un commentaire éventuel.<br/><br/>
+Si vous avez le droit de modifier vos absences, vous pouvez cliquer sur l'icône <img src='img/modif.png' alt='Feuille de papier et crayon' /> 
+sur la ligne de l'absence que vous souhaitez modifier, vous verrez alors apparaître le détail de l'absence et vous pourrez la modifier.<br/>
 <br/>
 <u><b>Si vous avez le droit de gérer les absences :</b></u><br/>
-Vous permet de voir la liste des absents entre 2 dates.<br/>
+Vous pouvez voir la liste des absents entre 2 dates.<br/>
 Sélectionnez la date de début et la date de fin à l'aide des calendriers puis validez en cliquant sur "OK".<br/>
 La liste des absents durant cette période s'affiche avec les dates de début, de fin, le nom de l'agent, le motif de l'absence et un commentaire éventuel.<br/>
 Vous pouvez afficher les absences d'une personne en particulier en tapant son nom (ou prénom) dans le champ "agent" puis en cliquant sur "OK".<br/>
-Vous pouvez modifier les informations relatives à une absence en cliquant sur l'icône représentant une feuille et un crayon en début de ligne.<br/>
+Vous pouvez modifier les informations relatives à une absence en cliquant sur l'icône <img src='img/modif.png' alt='Feuille de papier et crayon' /> en début de ligne.<br/>
 
 
 <a name='abs_ajouter'></a>
 <h4>1.2) Ajouter une absence</h4>
-<u><b>Si vous n'avez pas le droit de gérer les absences :</b></u><br/>
+<u><b>Si vous avez le droit d'enregistrer vos propres absences</b></u><br/>
 Vous permet d'enregistrer une absence à l'avance si elle est prévue.<br/>
-Choisissez la date de début et de fin à l'aide des calendriers, le motif de l'absence (ex: Formation) et un commentaire éventuel.<br/>
+Choisissez les dates de début et de fin à l'aide des calendriers, si besoin : les heures de début et de fin, 
+le motif de l'absence (ex: Formation) et un commentaire éventuel.<br/>
 Cliquez sur "Valider", une page de confirmation s'affiche, si tout est correct, cliquez de nouveau sur "Valider".<br/>
 
 <br/>
 <u><b>Si vous avez le droit de gérer les absences :</b></u><br/>
 Vous permet d'enregistrer les absences des agents.<br/> 
-Choisissez le nom de l'agent dans le menu déroulant, la date de début et de fin à l'aide des calendriers, le motif de l'absence (ex: Formation) et un commentaire éventuel.<br/>
+Choisissez le nom de l'agent dans le menu déroulant, les dates de début et de fin à l'aide des calendriers, si besoin : les heures 
+de début et de fin, le motif de l'absence (ex: Formation) et un commentaire éventuel.<br/>
 Cliquez sur "Valider", une page de confirmation s'affiche, si tout est correct, cliquez de nouveau sur "Valider".<br/>
 
 <a name='abs_infos'></a>
@@ -153,11 +159,14 @@ Pour commencer, vous devez choisir un tableau ou un groupe de tableaux dans les 
 (Plus d'infos : voir <a href='#config_planning'>4) Configuration du planning</a>).<br/>
 Si vous ajoutez un tableau, il sera affecté au jour courant. Si vous choisissez un groupe, les tableaux de 
 ce groupe seront affectés à chacun des jours de la semaine (du lundi au samedi/dimanche).<br/>
-Après validation, un tableau vide s'affiche.<br/>
-Lors du clique-droit dans les cellules, un menu déroulant avec le nom des services s'affiche.<br/>
-En passant la souris devant le nom d'un service, les agents appartenant à ce service, disponibles  et qualifiés pour le poste choisi s'affichent dans un sous menu.<br/>
+Après validation, un tableau vide s'affiche.<br/><br/>
+
+Lors d'un clic-droit dans les cellules, un menu apparaît.<br/>
+Ce menu est constitué de la liste des agents disponibles et qualifiés pour le poste choisi ou de la liste des services (selon la configuration de l'application).<br/>
+Si la liste des services s'affiche, en passant la souris devant le nom d'un service, les agents appartenant à ce service, disponibles  et qualifiés pour le poste choisi apparaîssent dans un sous menu.<br/>
 En cliquant sur le nom d'un agent, il est placé dans la cellule.<br/>
-Dans le menu déroulant, face au nom des agents, sont affichées les heures faites par jour, par semaine et le nombre d'heures que l'agent doit faire par semaine.<br/>
+Dans le menu déroulant, face au nom des agents, sont affichées les heures faites par jour, par semaine et le nombre d'heures que l'agent doit faire par semaine.<br/><br/>
+
 En fonction des heures faites et à faire, la couleur de la cellule change :
 <ul style='margin-top:0px;'>
 <li>Vert : le quota d'heure par semaine sera atteint à plus ou moins 30 minutes.</li>
@@ -167,15 +176,14 @@ En fonction des heures faites et à faire, la couleur de la cellule change :
 Si un agent a déjà effectué le poste choisi dans la journée, il apparaîtra en rouge dans le menu avec le message 
 "(DP)" (Déjà Placé).<br/>
 Si un agent est placé en continu entre 11h30 et 14h30, le message "(SR)" (Sans Repas) apparaîtra à coté de son nom 
-dans les cellules concernées par ces horaires.<br/>
-Dans ce cas, dans le menu déroulant, il apparaîtra en rouge avec le message "(SR)".<br/>
+dans les cellules concernées par ces horaires. Dans ce cas, il apparaîtra en rouge avec le message "(SR)" dans le menu.<br/>
 <br/>
 Si un agent est placé dans une cellule, vous pouvez :
 <ul style='margin-top:0px;'>
 <li>le supprimer en choisissant "Supprimer" dans le menu.</li>
 <li>le barrer en choisissant "Barrer", dans ce cas, il est considéré comme prévu à ce poste mais absent.</li>
 <li>le remplacer par un autre agent en choisissant un autre agent dans la liste.</li>
-<li>le barrer ET le remplacer en cliquant sur la croix rouge <font style='color:red;font-weight:bold;'>x</font> face un nom du nouvel agent.</li>
+<li>le barrer ET le remplacer en cliquant sur la croix rouge <font style='color:red;font-weight:bold;'>x</font> face au nom du nouvel agent.</li>
 <li>ajouter un 2<sup>ème</sup> agent en cliquant sur la croix bleue <font style='color:blue;font-weight:bold;'>+</font> face au nom du nouvel agent.</li>
 </ul>
 
@@ -227,14 +235,14 @@ Vous pouvez copier un tableau existant et modifier le nouveau tableau de façon 
 <a name="config_tableau"></a>
 <h4>4.2) Création d'un nouveau tableau (Copie)</h4>
 Pour créer un nouveau tableau, rendez-vous dans le menu Administration - Les tableaux.<br/>
-Choisissez un tableau dans la liste et cliquez sur l'icône "Copie".<br/>
+Choisissez un tableau dans la liste et cliquez sur l'icône <img src='img/copy.png' alt='Copie' />.<br/>
 Saisissez le nom du nouveau tableau et cliquez sur "Copier".<br/>
 Votre nouveau tableau apparaît dans la liste.<br/>
 
 
 <a name="config_horaires"></a>
 <h4>4.3) Configuration des horaires</h4>
-Repérez le tableau à modifier dans la liste. Cliquez sur l'icône représentant une feuille et un crayon se trouvant devant ce tableau.<br/>
+Repérez le tableau à modifier dans la liste. Cliquez sur l'icône <img src='img/modif.png' alt='Modifier' /> se trouvant devant ce tableau.<br/>
 Modifiez les horaires à l'aide des menus déroulant. Vous devez respecter les règles suivantes :
 <ul>
 <li>Tous les tableaux doivent commencer et finir aux mêmes heures (ex: début : 9h, fin 22h pour tous les tableaux).</li>
@@ -256,8 +264,8 @@ Une fois termniné, cliquez sur "<b>Valider</b>".<br/>
 <h4>4.5) Les groupes</h4>
 Vous pouvez créer un groupe de tableaux de façon à affecter tel ou tel tableau à chacun des jours de 
 la semaine.<br/>
-De cette façon, lors de la création du planning du premier jour de la semaine, vous choisissez un 
-groupe et les tableaux sont affectés du lundi au samedi (ou dimanche).
+De cette façon, lors de la création du planning du premier jour de la semaine, vous choisirez un 
+groupe et les tableaux seront affectés du lundi au samedi (ou dimanche).
 
 <a name="config_lignes_sep"></a>
 <h4>4.6) Les lignes de séparation</h4>
@@ -269,7 +277,7 @@ Vous pouvez ajouter, modifier, supprimer des lignes de séparation dans le menu 
 <h3>5) Les agents</h3>
 Dans le menu "Administration/Les agents", vous pouvez voir la liste de tous les agents enregistrés dans l'application.<br/>
 Vous pouvez filtrer les agents de "service public" et les agents "administratifs" (ne faisant pas de service public).<br/>
-Vous pouvez également rechercher un agent en tapant son nom dans le cadre "Nom" puis en cliquant sur "OK".<br/>
+Vous pouvez également rechercher un agent en tapant son nom dans le cadre "Rechercher".<br/>
 
 <a name="agent_ajout"></a>
 <h4>5.1 ) Ajout d'un agent</h4>
@@ -282,8 +290,12 @@ Pour ajouter un agent, cliquez sur le bouton « Ajouter » puis remplissez le 
 plannings, choisissez « administratif » pour les personnes qui doivent agir
 sur le planning (gestion des congés, absences, ... ) mais qui n'apparaitront pas dans les
 plannings.<br/>
-
+Complétez le champ "E-mail du responsable" si vous souhaitez qu'il soit notifié dans absences de l'agent. (Selon la configuration de l'application).
 <br/>
+Le champ "Récupération du samedi" est soit une zone de texte dans laquelle vous pouvez saisir des notes, soit un menu déroulant avec les 
+options "Prime" et "Temps" (selon la configuration de l'application). S'il s'agit d'un menu déroulant, choisissez l'option voulue par 
+l'agent. Cela permettra de calculer le temps ou les primes à reverser à l'agent dans le menu "statistiques"/"Samedis".<br/><br/>
+
 <b><u>2<sup>ème</sup> onglet : Les activités</u></b><br/>
 Dans le 2<sup>ème</sup> onglet, vous devez affecter une liste d'activités à l'agent.<br/>
 Sélectionnez dans la liste de gauche les activités que pourra effectuer l'agent puis cliquez sur "Attribuer".<br/>
@@ -292,15 +304,15 @@ Pour retirer une activité, sélectionnez-la dans la liste de droite puis clique
 <br/>
 <b><u>3<sup>ème</sup> onglet : L'emploi du temps</u></b><br/>
 Dans le 3<sup>ème</sup> onglet, vous devez renseigner l'emploi du temps général de l'agent (heures de présence à la bibliothèque).<br/>
-Pour chaque journée (du lundi ou samedi), sélectionnez les heures d'arrivée et de départ ainsi que les heures de début et de fin de pause.<br/>
+Pour chaque journée (du lundi au samedi/dimanche), sélectionnez les heures d'arrivée et de départ ainsi que les heures de début et de fin de pause.<br/>
 
 <br/>
 <b><u>4<sup>ème</sup> onglet : Les droits d'accès</u></b><br/>
 Dans le 4<sup>ème</sup> onglet, vous devez renseigner les droits d'accès à l'application.<br/>
-Par défaut, un agent peut gérer ses absences, voir son agenda et accéder au planning en lecture seule. 
-Dans ce cas, vous ne devez rien cocher. Vous pouvez ajouter l'accès à la gestion des absences (de tous les agents), 
-gestion du personnel, des postes, à la modification du planning et aux statistiques. Le débogage permet d'afficher des 
-informations supplémentaires lors de l'utilisation de l'application (ex : Numéro "ID" des agents ou 
+Par défaut, un agent peut ajouter ses absences, voir son agenda et accéder au planning en lecture seule. 
+Dans ce cas, vous ne devez rien cocher. Vous pouvez ajouter l'accès à la modification de absences de l'agent, la gestion des absences 
+(de tous les agents), la gestion du personnel, des postes, la modification du planning et l'accès aux statistiques. 
+Le débogage permet d'afficher des informations supplémentaires lors de l'utilisation de l'application (ex : Numéro "ID" des agents ou 
 des postes dans les listes, nom des postes et horaires dans le menu déroulant du planning.)<br/>
 
 <br/>
@@ -309,8 +321,7 @@ Une fois les informations saisies, validez le formulaire (bouton "Valider" en ha
 
 <a name="agent_modif"></a>
 <h4>5.2 ) Modification de la fiche d'un agent</h4>
-A partir de la liste des agents, cliquez sur la première icône (représentant une feuille de papier et un crayon) 
-devant le nom de l'agent choisi.<br/>
+A partir de la liste des agents, cliquez sur l'icône <img src='img/modif.png' alt='Modifier' /> devant le nom de l'agent choisi.<br/>
 Un formulaire s'ouvre avec les informations relatives à l'agent.<br/>
 Pour plus d'informations, référez-vous à l'article "Ajout d'un agent".
 
@@ -340,7 +351,7 @@ Vous pouvez rechercher un poste en tapant son nom dans le cadre "Rechercher" pui
 <a name="poste_ajout"></a>
 <h4>6.1 ) Ajout d'un poste</h4>
 Pour ajouter un poste, cliquez sur le bouton « Ajouter » puis complétez le formulaire.<br/>
-Remplissez le nom du poste, choisissez son étage.<br/>
+Remplissez le nom du poste, choisissez son site (si configuration multisites), son étage.<br/>
 Cochez la case "Obligatoire" s'il est obligatoire ou "Renfort" s'il s'agit d'un poste de renfort.<br/>
 Cochez la case "Non" face à "Bloquant" si vous souhaitez pouvoir placer un agent sur ce poste et sur un autre en même temps.<br/> 
 Cochez la case "Non" face à "Statistiques" si vous ne souhaitez pas voir apparaître ce poste dans les statistiques.<br/>
@@ -349,7 +360,7 @@ Validez.
 
 <a name="poste_modif"></a>
 <h4>6.2 ) Modification d'un poste</h4>
-Trouvez le poste dans la liste, cliquez sur la première icône (représentant une feuille de papier et un crayon) 
+Trouvez le poste dans la liste, cliquez sur l'icône <img src='img/modif.png' alt='Modifier' />
 devant le nom du poste à modifier.<br/>
 Modifier le formulaire (référez-vous à l'article "Ajout d'un poste" pour plus d'informations).
 
@@ -370,7 +381,8 @@ Vous pouvez modifier les noms, ajouter des activités, en supprimer (si elles ne
 La feuille de temps est un tableau qui vous permet de voir le nombre d'heures effectuées par jour et par agent 
 entre deux dates. Par défaut, le tableau affiche les heures de la semaine courante.<br/>
 Les dernières colonnes affichent le total d'heures par agent sur la période, la moyenne hebdomadaire et les quotas d'heures 
-sur la période et par semaine.<br/>
+sur la période et par semaine. 
+Si vous avez plusieurs sites, le total et la moyenne par site sont également affichés dans les dernières colonnes.<br/>
 Les deux dernières lignes affichent le total d'heures et le nombre d'agents par jour.
 
 <a name='stat_agent'></a>
@@ -442,8 +454,23 @@ Choisissez le tri désiré (nom du poste, étage, obligatoire/renfort, nombre d'
 Choisissez les postes dans le menu déroulant. Vous pouvez sélectionner plusieurs postes à l'aide des touches du clavier CTRL ou MAJ ou en cliquant sur "Tous".<br/>
 Cliquez ensuite sur le bouton "OK".
 
+<a name='stat_samedi'></a>
+<h4>8.8) Statistiques par samedi</h4>
+Les statistiques par samedi affichent pour chaque agent, le nombre de samedis travaillés, le nombre d'heures de service public correspondant, 
+ainsi que les dates et le nombre d'heures de service pour chacune des dates.<br/>
+Une colonne affiche pour chaque agent son choix de recevoir une prime ou de récupérer ses heures (temps). Cette information est renseignée 
+dans la fiche de l'agent.<br/>
+Vous pouvez effectuer un tri sur chaque colonne et filtrer à l'aide du champ "Rechercher" (recherche dans toutes les colonnes).
+
 <a name="informations"></a>
 <h3>9) Les informations</h3>
-Dans le menu "Administration/Informations", vous pouvez ajouter, modifier et supprimer des messages d'informations qui seront affichés aux dates voulues en haut des plannings. 
+Dans le menu "Administration / Informations", vous pouvez ajouter, modifier et supprimer des messages d'informations qui seront affichés aux dates voulues en haut des plannings. 
 
+<a name="fermeture"></a>
+<h3>10) Jours de fermeture</h3>
+Dans le menu "Administration / Jours de fermeture", vous pouvez renseigner, pour chaque année universitaire, les jours fériés et les jours de fermeture de la bibliothèque.<br/>
+Les jours fériés apparaissent automatiquement, vous pouvez y ajouter vos jours de fermeture en renseignant les dates, un nom et un commentaire. 
+Cochez également si le jour est férié et/ou fermé.<br/>
+Le nom des jours fériés apparaitra en haut des plannings et dans les agendas. Vous aurez également les informations sur le nombre 
+de jours fériés travaillés ainsi que le nombre d'heures correspondant pour chaque agent dans les statistiques par agent.
 </div>
