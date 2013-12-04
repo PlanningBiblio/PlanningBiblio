@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : aide/index.php
 Création : mai 2011
-Dernière modification : 3 décembre 2013
+Dernière modification : 4 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -163,7 +163,7 @@ Après validation, un tableau vide s'affiche.<br/><br/>
 
 Lors d'un clic-droit dans les cellules, un menu apparaît.<br/>
 Ce menu est constitué de la liste des agents disponibles et qualifiés pour le poste choisi ou de la liste des services (selon la configuration de l'application).<br/>
-Si la liste des services s'affiche, en passant la souris devant le nom d'un service, les agents appartenant à ce service, disponibles  et qualifiés pour le poste choisi apparaîssent dans un sous menu.<br/>
+Si la liste des services s'affiche, en passant la souris devant le nom d'un service, les agents appartenant à ce service, disponibles  et qualifiés pour le poste choisi apparaissent dans un sous menu.<br/>
 En cliquant sur le nom d'un agent, il est placé dans la cellule.<br/>
 Dans le menu déroulant, face au nom des agents, sont affichées les heures faites par jour, par semaine et le nombre d'heures que l'agent doit faire par semaine.<br/><br/>
 
@@ -290,7 +290,7 @@ Pour ajouter un agent, cliquez sur le bouton « Ajouter » puis remplissez le 
 plannings, choisissez « administratif » pour les personnes qui doivent agir
 sur le planning (gestion des congés, absences, ... ) mais qui n'apparaitront pas dans les
 plannings.<br/>
-Complétez le champ "E-mail du responsable" si vous souhaitez qu'il soit notifié dans absences de l'agent. (Selon la configuration de l'application).
+Complétez le champ "E-mail du responsable" si vous souhaitez qu'il soit notifié des absences de l'agent. (Selon la configuration de l'application).
 <br/>
 Le champ "Récupération du samedi" est soit une zone de texte dans laquelle vous pouvez saisir des notes, soit un menu déroulant avec les 
 options "Prime" et "Temps" (selon la configuration de l'application). S'il s'agit d'un menu déroulant, choisissez l'option voulue par 
@@ -471,6 +471,6 @@ Dans le menu "Administration / Informations", vous pouvez ajouter, modifier et s
 Dans le menu "Administration / Jours de fermeture", vous pouvez renseigner, pour chaque année universitaire, les jours fériés et les jours de fermeture de la bibliothèque.<br/>
 Les jours fériés apparaissent automatiquement, vous pouvez y ajouter vos jours de fermeture en renseignant les dates, un nom et un commentaire. 
 Cochez également si le jour est férié et/ou fermé.<br/>
-Le nom des jours fériés apparaitra en haut des plannings et dans les agendas. Vous aurez également les informations sur le nombre 
+Le nom des jours fériés apparaîtra en haut des plannings et dans les agendas. Vous aurez également les informations sur le nombre 
 de jours fériés travaillés ainsi que le nombre d'heures correspondant pour chaque agent dans les statistiques par agent.
 </div>
