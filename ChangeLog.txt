@@ -1,3 +1,14 @@
+***	Version 1.6.2	(Jérôme Combes, 3 Décembre 2013)		***
+- Améliorations :
+Ajout des champs matricule et email du responsable dans la fiche des agents
+Statistiques sur les samedis travaillés
+Affichage du nombre d'heures d'ouverture au public dans les statistiques
+Absences avec validation (selon configuration)
+Choix des destinataires des notifications lors de la saisie/validation des absences parmis : 
+  tous les gestionnaires d'absences, le responsable hierarchique de l'agent, l'agent lui-même
+Permet la saisie des absences aux administrateurs seulement (selon configuration).
+Mise à jour de l'aide en ligne
+
 ***	Version 1.6.1	(Jérôme Combes, 14 Novembre 2013)		***
 - Améliorations :
 Ajoute les agents en congés dans la liste des absences en bas du planning (plugin congés)
