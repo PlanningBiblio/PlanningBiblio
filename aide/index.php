@@ -266,7 +266,7 @@ Choisissez le nom du poste ou une ligne de séparation dans les menus déroulant
 Vous pouvez "griser" des cellules en cochant les cases "G". Ceci permet de marquer la cellule pour que personne n'y soit placé.<br/>
 Vous pouvez supprimer des lignes en cliquant sur le signe <img src='img/drop.gif' alt='Supprimer'/>. 
 Ne supprimer pas de ligne dans un tableau en cours d'utilisation ou qui a été utilisé car si des agents y sont placés, vous ne les verrez plus dans les plannings concernés.<br/>
-Une fois termniné, cliquez sur "<b>Valider</b>".<br/>
+Une fois terminé, cliquez sur "<b>Valider</b>".<br/>
 
 <a name="config_groupes"></a>
 <h4>4.5) Les groupes</h4>
@@ -294,9 +294,9 @@ Pour ajouter un agent, cliquez sur le bouton « Ajouter » puis remplissez le 
 <br/>Les champs nom, prénom et e-mail sont obligatoires.
 <br/>Choisissez le statut, le service de rattachement et le nombre d'heures hebdomadaires que l'agent doit faire en service public.
 <br/>Dans le menu déroulant « Service public / Administratif » choisissez
-« Service public » pour toutes les personnes qui pourront apparaitre dans les
+« Service public » pour toutes les personnes qui pourront apparaître dans les
 plannings, choisissez « administratif » pour les personnes qui doivent agir
-sur le planning (gestion des congés, absences, ... ) mais qui n'apparaitront pas dans les
+sur le planning (gestion des congés, absences, ... ) mais qui n'apparaîtront pas dans les
 plannings.<br/>
 <<<<<<< HEAD
 Complétez le champ "E-mail du responsable" si vous souhaitez qu'il soit notifié dans absences de l'agent. (Selon la configuration de l'application).
