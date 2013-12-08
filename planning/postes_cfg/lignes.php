@@ -178,6 +178,7 @@ if($tableauNumero){
 
 //	Pour contrôler ensuite si les tableaux existent
 $exist=array(1,2,3);
+
 echo "<script type='text/JavaScript'>\n";
 //	Affichage en JavaScript des lignes enregistrées
 if(is_array($lignes)){
@@ -190,7 +191,7 @@ if(is_array($lignes)){
     if($lignes[$i]['type']!="titre"){
       echo "document.getElementById('tr_select_{$lignes[$i]['tableau']}_{$lignes[$i]['ligne']}').style.display='';\n";
       echo "couleur('select_{$lignes[$i]['tableau']}_',{$lignes[$i]['ligne']});\n";
-      if($lignes[$i+1]['tableau']!=$lignes[$i]['tableau'])
+      if(array_key_exists($i+1,$lignes) and $lignes[$i+1]['tableau']!=$lignes[$i]['tableau'])
 	echo "document.getElementById('supprime_select_{$lignes[$i]['tableau']}_{$lignes[$i]['ligne']}').style.display='none';\n";
     }
     //	Pour contrôler ensuite si les tableaux existent
