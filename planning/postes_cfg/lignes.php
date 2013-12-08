@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/postes_cfg/lignes.php
 Création : mai 2011
-Dernière modification : 7 novembre 2013
+Dernière modification : 7 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -103,15 +103,15 @@ foreach($db->result as $elem)
 		$cellules_grises[]="{$elem['tableau']}_{$elem['ligne']}_{$elem['colonne']}";
 
 //		Tableau $tab [nom,horaire1[debut,fin],horaire2[debut,fin],horaire3[debut,fin] ... ]
-//		Tri des horaires : général puis réserve puis rangement	
-$tabs=array(array("general"),array("reserve"),array("rangement"));
+//		Tri des horaires
+$tabs=array(array(1),array(2),array(3));
 if(is_array($horaires))
 foreach($horaires as $elem){
-  if($elem['tableau']=="general")
+  if($elem['tableau']==1)
     $tabs[0][]=$elem;
-  if($elem['tableau']=="reserve")
+  if($elem['tableau']==2)
     $tabs[1][]=$elem;
-  if($elem['tableau']=="rangement")
+  if($elem['tableau']==3)
     $tabs[2][]=$elem;
 }
 
@@ -136,7 +136,7 @@ if($tableauNumero){
     echo "</tr>\n";
 
     //	Lignes <select>
-    for($i=0;$i<30;$i++){
+    for($i=0;$i<100;$i++){
       echo "<tr id='tr_select_{$tab[0]}_$i' style='display:none;'>\n";
       echo "<td id='td_select_{$tab[0]}_{$i}_0' >\n";
       echo "<select name='select_{$tab[0]}_$i' style='width:200px;' onchange='couleur(\"select_{$tab[0]}_\",$i);'>\n";
@@ -177,7 +177,7 @@ if($tableauNumero){
   }
 
 //	Pour contrôler ensuite si les tableaux existent
-$exist=array("general","reserve","rangement");
+$exist=array(1,2,3);
 echo "<script type='text/JavaScript'>\n";
 //	Affichage en JavaScript des lignes enregistrées
 if(is_array($lignes)){
@@ -194,11 +194,11 @@ if(is_array($lignes)){
 	echo "document.getElementById('supprime_select_{$lignes[$i]['tableau']}_{$lignes[$i]['ligne']}').style.display='none';\n";
     }
     //	Pour contrôler ensuite si les tableaux existent
-    if($lignes[$i]['tableau']=="general")
+    if($lignes[$i]['tableau']==1)
       $exist[0]=null;
-    if($lignes[$i]['tableau']=="reserve")
+    if($lignes[$i]['tableau']==2)
       $exist[1]=null;
-    if($lignes[$i]['tableau']=="rangement")
+    if($lignes[$i]['tableau']==3)
       $exist[2]=null;
   }
 }

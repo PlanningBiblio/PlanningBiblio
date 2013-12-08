@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 21 novembre 2013
+Dernière modification : 7 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -390,15 +390,15 @@ else{
   }
 	  
   //		Tableau $tab [nom,horaire1[debut,fin],horaire2[debut,fin],horaire3[debut,fin] ... ]
-  //		Tri des horaires : général puis réserve puis rangement	
-  $tabs=array(array("general"),array("reserve"),array("rangement"));
+  //		Tri des horaires
+  $tabs=array(array(1),array(2),array(3));
   if(is_array($horaires)){
     foreach($horaires as $elem){
-      if($elem['tableau']=="general")
+      if($elem['tableau']==1)
 	$tabs[0][]=$elem;
-      if($elem['tableau']=="reserve")
+      if($elem['tableau']==2)
 	$tabs[1][]=$elem;
-      if($elem['tableau']=="rangement")
+      if($elem['tableau']==3)
 	$tabs[2][]=$elem;
     }
   }

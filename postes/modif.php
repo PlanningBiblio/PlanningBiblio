@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : postes/modif.php
 Création : mai 2011
-Dernière modification : 12 septembre 2013
+Dernière modification : 7 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -71,11 +71,24 @@ echo "<input type='hidden' name='page' value='postes/valid.php' />\n";
 echo "<table style='width:100%'>";
 echo "<tr style='vertical-align:top;'><td style='width:50%'>\n";
 echo "<table>\n";
-echo "<tr><td style='width:150px'>";
+echo "<tr><td style='width:160px'>";
 echo "Nom du poste :";
 echo "</td><td>";
 echo "<input type='text' value='$nom' name='nom' style='width:250px'/>";
 echo "</td></tr>";
+
+if($config['Multisites-nombre']>1){
+  echo "<tr><td>Sites</td>\n";
+  echo "<td><select name='site' style='width:255px'>";
+  echo "<option value='0'>&nbsp;</option>\n";
+  for($i=1;$i<count($config['Multisites-nombre'])+2;$i++){
+    $selected=$site==$i?"selected='selected'":null;
+    echo "<option value='$i' $selected >".$config["Multisites-site{$i}"]."</option>\n";
+  }
+  echo "</select>";
+  echo "</td></tr>\n";
+}
+
 echo "<tr><td style='width:150px'>";
 echo "Etage :";
 echo "</td><td>";
@@ -110,19 +123,6 @@ echo "</td><td>";
 echo "<input type='radio' name='statistiques' value='1' $stat1/> Oui\n";
 echo "<input type='radio' name='statistiques' value='0' $stat2/> Non\n";
 echo "</td></tr>";
-
-if($config['Multisites-nombre']>1){
-  echo "<tr><td>Sites</td>\n";
-  echo "<td><select name='site'>";
-  echo "<option value='0'>&nbsp;</option>\n";
-  for($i=1;$i<count($config['Multisites-nombre'])+2;$i++){
-    $selected=$site==$i?"selected='selected'":null;
-    echo "<option value='$i' $selected >".$config["Multisites-site{$i}"]."</option>\n";
-  }
-  echo "</select>";
-  echo "</td></tr>\n";
-
-}
 
 echo "</table>\n";
 echo "</td><td>\n";

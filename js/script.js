@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 18 novembre 2013
+Dernière modification : 7 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -974,7 +974,7 @@ function change_horaires(elem){
 //	--------------------------------	Tableaux - Lignes	-------------------------	//
 function ajout(nom,id){
   id++;
-  for(i=id;i<30;i++){
+  for(i=id;i<100;i++){
     if(document.getElementById("tr_"+nom+i).style.display=="none"){
       document.getElementById("tr_"+nom+i).style.display="";
       fin=i;

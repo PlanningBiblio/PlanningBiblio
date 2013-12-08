@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 28 novembre 2013
+Dernière modification : 7 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -370,11 +370,23 @@ if(strcmp("1.6.2",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}config` SET `categorie`='Absences', `ordre`='2' WHERE `nom`='absencesApresValidation';";
   $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `valide` INT(11) NOT NULL DEFAULT 0, ADD `validation` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00';";
   $sql[]="UPDATE `{$dbprefix}absences` SET `valide`='1', `validation`=`demande`;";
-  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.6.2' WHERE `nom`='Version';";
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) 
     VALUES ('Absences-adminSeulement','boolean','0','Autoriser la saisie des absences aux administrateurs seulement.','Absences','2');";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.6.2' WHERE `nom`='Version';";
 }
 
+if(strcmp("1.6.3",$config['Version'])>0){
+  $sql[]="UPDATE `{$dbprefix}pl_poste_cellules` SET `tableau`='1' WHERE `tableau`='general';";
+  $sql[]="UPDATE `{$dbprefix}pl_poste_cellules` SET `tableau`='2' WHERE `tableau`='reserve';";
+  $sql[]="UPDATE `{$dbprefix}pl_poste_cellules` SET `tableau`='3' WHERE `tableau`='rangement';";
+  $sql[]="UPDATE `{$dbprefix}pl_poste_horaires` SET `tableau`='1' WHERE `tableau`='general';";
+  $sql[]="UPDATE `{$dbprefix}pl_poste_horaires` SET `tableau`='2' WHERE `tableau`='reserve';";
+  $sql[]="UPDATE `{$dbprefix}pl_poste_horaires` SET `tableau`='3' WHERE `tableau`='rangement';";
+  $sql[]="UPDATE `{$dbprefix}pl_poste_lignes` SET `tableau`='1' WHERE `tableau`='general';";
+  $sql[]="UPDATE `{$dbprefix}pl_poste_lignes` SET `tableau`='2' WHERE `tableau`='reserve';";
+  $sql[]="UPDATE `{$dbprefix}pl_poste_lignes` SET `tableau`='3' WHERE `tableau`='rangement';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.6.3' WHERE `nom`='Version';";
+}
 //	Execution des requetes et affichage
 foreach($sql as $elem){
   $db=new db();
