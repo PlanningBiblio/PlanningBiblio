@@ -1,3 +1,10 @@
+***	Version 1.6.3	(Jérôme Combes, 9 Décembre 2013)		***
+- Améliorations :
+Remplace les nom des tableaux (general, reserve, rangement) par des numéros (1,2,3) dans la base de données
+
+- Correction de bugs :
+Correction du tri des dates dans les dataTables
+
 ***	Version 1.6.2	(Jérôme Combes, 3 Décembre 2013)		***
 - Améliorations :
 Ajout des champs matricule et email du responsable dans la fiche des agents

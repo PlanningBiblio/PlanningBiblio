@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 1.6.2
+Planning Biblio, Version 1.6.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
@@ -29,7 +29,7 @@ date_default_timezone_set("Europe/Paris");
 
 
 // Initialisation des variables
-$version="1.6.2";
+$version="1.6.3";
 $get_menu=isset($_GET['menu'])?$_GET['menu']:"";
 $post_menu=isset($_POST['menu'])?$_POST['menu']:"";
 $page=isset($_GET['page'])?$_GET['page']:"planning/poste/index.php";
