@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 21 novembre 2013
+Dernière modification : 9 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -130,7 +130,7 @@ foreach($agents as $agent){
 
   $class=$class=="tr2"?"tr1":"tr2";
 
-  echo "<tr class='$class'><td>\n";
+  echo "<tr class='$class'><td style='white-space:nowrap;'>\n";
   echo "<input type='checkbox' name='chk$i' value='$id' class='checkAgent'/>\n";
   echo "<a href='index.php?page=personnel/modif.php&amp;id=$id'><img src='img/modif.png' border='0' alt='Modif' /></a>";
   if(in_array(21,$droits) and $id!=$_SESSION['login_id']){
@@ -184,7 +184,7 @@ $(document).ready(function(){
     "aaSorting" : [[2,"asc"],[3,"asc"]],
     "oLanguage" : {"sUrl" : "js/dataTables/french.txt"},
     "aoColumns" : [{"bSortable":false},{"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},
-      {"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},
+      {"bSortable":true},{"bSortable":true},{"sType": "date-fr"},{"sType": "date-fr"},{"sType": "date-fr"},
       <?php
       if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
 	echo '{"bSortable":true},';
