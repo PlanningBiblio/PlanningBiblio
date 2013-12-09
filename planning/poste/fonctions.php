@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.2
+Planning Biblio, Version 1.6.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 21 octobre 2013
+Dernière modification : 8 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -51,10 +51,10 @@ function cellule_poste($debut,$fin,$colspan,$output,$poste){
 	// Classe en fonction du statut et du service
 	$class_tmp=array();
 	if($elem['statut']){
-	  $class_tmp[]="statut_".strtolower(removeAccents($elem['statut']));
+	  $class_tmp[]="statut_".strtolower(removeAccents(str_replace(" ","_",$elem['statut'])));
 	}
 	if($elem['service']){
-	  $class_tmp[]="service_".strtolower(removeAccents($elem['service']));
+	  $class_tmp[]="service_".strtolower(removeAccents(str_replace(" ","_",$elem['service'])));
 	}
 	$classe[$i]=empty($class_tmp)?null:join(" ",$class_tmp);
 

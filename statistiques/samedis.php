@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.2
+Planning Biblio, Version 1.6.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : statistiques/samedis.php
 Création : 15 novembre 2013
-Dernière modification : 18 novembre 2013
+Dernière modification : 9 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -371,6 +371,23 @@ $(document).ready(function() {
     "sPaginationType": "full_numbers",
     "bStateSave": true,
     "aaSorting" : [[0,"asc"]],
+    "aoColumns" : [{"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},{"sType": "date-fr"},
+      <?php
+      if($exists_JF){
+	echo '{"bSortable":true},';
+      }
+      if($exists_h19){
+	echo '{"bSortable":true},';
+      }
+      if($exists_h20){
+	echo '{"bSortable":true},';
+      }
+      if($exists_absences){
+	echo '{"bSortable":true},';
+      }
+      ?>
+      ],
+
     "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"Tous"]],
     "iDisplayLength" : -1,
     "oLanguage" : {"sUrl" : "js/dataTables/french.txt"}

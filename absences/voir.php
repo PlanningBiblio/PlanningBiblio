@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.2
+Planning Biblio, Version 1.6.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 28 novembre 2013
+Dernière modification : 9 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -122,9 +122,9 @@ $(document).ready(function() {
   $("#tableAbsences").dataTable({
     "bJQueryUI": true,
     "sPaginationType": "full_numbers",
-    "bStateSave": true,
+    "bStateSave": false,
     "aaSorting" : [[1,"asc"],[2,"asc"]],
-    "aoColumns" : [{"bSortable":false},{"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},
+    "aoColumns" : [{"bSortable":false},{"sType": "date-fr"},{"sType": "date-fr-fin"},{"bSortable":true},{"bSortable":true},
       <?php
       if($admin){
 	echo '{"bSortable":true},';
