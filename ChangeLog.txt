@@ -1,6 +1,8 @@
-***	Version 1.6.3	(Jérôme Combes, 9 Décembre 2013)		***
+***	Version 1.6.3	(Jérôme Combes, 10 Décembre 2013)		***
 - Améliorations :
-Remplace les nom des tableaux (general, reserve, rangement) par des numéros (1,2,3) dans la base de données
+Remplace les noms de tableaux (general, reserve, rangement) par des numéros (1,2,3) dans la base de données
+Autorise 100 lignes par tableau au lieu de 30
+Permet la sélection des horaires à partir de 7h dans les emplois du temps
 
 - Correction de bugs :
 Correction du tri des dates dans les dataTables

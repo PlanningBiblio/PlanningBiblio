@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 22 novembre 2013
+Dernière modification : 10 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -619,7 +619,7 @@ function selectTemps($jour,$i,$periodes=null,$class=null){
     $select="<select name='temps[$jour][$i]' $class>\n";
   }
   $select.="<option value=''>&nbsp;</option>\n";
-  for($j=8;$j<23;$j++){
+  for($j=7;$j<23;$j++){
     $z=$j<10?"0":"";
     if($temps){
       $select1=$temps[$jour][$i]==$z.$j.":00:00"?"selected='selected'":"";
