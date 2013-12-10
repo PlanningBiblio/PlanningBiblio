@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification : 5 novembre 2013
+Dernière modification : 10 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -71,11 +71,11 @@ body {
 #logout_img{
   text-align:right;
   width:42px;
-  display:none;
 }
 
 #logout_text a{
   font-size:13pt;
+  display:none;
 }
 
 #title{
