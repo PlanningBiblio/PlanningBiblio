@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.3
+Planning Biblio, Version 1.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 7 décembre 2013
+Dernière modification : 17 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -387,6 +387,11 @@ if(strcmp("1.6.3",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}pl_poste_lignes` SET `tableau`='3' WHERE `tableau`='rangement';";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.6.3' WHERE `nom`='Version';";
 }
+
+if(strcmp("1.6.4",$config['Version'])>0){
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.6.4' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach($sql as $elem){
   $db=new db();

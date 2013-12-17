@@ -1,3 +1,12 @@
+***	Version 1.6.4	(Jérôme Combes, 17 Décembre 2013)		***
+- Améliorations :
+Modification du logo
+
+- Correction de bugs :
+Correction du bug permettant les logins des utilisateurs supprimés
+Correction du bug empechant le changement de mois sur le calendrier de la page principale
+Correction du bug affichant le mauvais tableau lors de la modification des tableaux (menu admin/les tableaux)
+
 ***	Version 1.6.3	(Jérôme Combes, 10 Décembre 2013)		***
 - Améliorations :
 Remplace les noms de tableaux (general, reserve, rangement) par des numéros (1,2,3) dans la base de données
