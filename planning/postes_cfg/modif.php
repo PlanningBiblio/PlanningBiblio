@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/postes_cfg/modif.php
 Création : mai 2011
-Dernière modification : 7 novembre 2013
+Dernière modification : 17 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -29,7 +29,7 @@ if(isset($_GET['numero']))
 $_SESSION['cfg_num']=$tableauNumero;
 
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}pl_poste_tab` WHERE `id`='$tableauNumero';");
+$db->query("SELECT * FROM `{$dbprefix}pl_poste_tab` WHERE `tableau`='$tableauNumero';");
 $tableauNom=$db->result[0]['nom'];
 
 // Affichage

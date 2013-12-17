@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 14 novembre 2013
+Dernière modification : 17 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -107,7 +107,7 @@ elseif(array_key_exists("login_id",$_SESSION)){		//		logout
 else{		//		Formulaire d'authentification
   echo <<<EOD
     <div id='auth'>
-    <center><br/><img src='img/logo.png' alt='logo' /></center>
+    <center><img src='img/logo.png' alt='logo' id='auth-logo'/></center>
     <h1 id='title'>{$config['titre']}</h1>
     <h2 id='h2-planning-authentification'>Planning - Authentification</h2>
     <h2 id='h2-authentification'>Authentification</h2>

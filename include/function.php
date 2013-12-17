@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 10 décembre 2013
+Dernière modification : 11 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -120,7 +120,7 @@ function absents($date,$tables){
 function authSQL($login,$password){
   $auth=false;
   $db=new db();
-  $db->select("personnel","id,nom,prenom","login='$login' AND password=MD5('$password') AND actif NOT LIKE 'Supprime';");
+  $db->select("personnel","id,nom,prenom","login='$login' AND password=MD5('$password') AND `supprime`='0';");
   if($db->nb==1 and $login!=null){
     $auth=true;
     $_SESSION['oups']['Auth-Mode']="SQL";

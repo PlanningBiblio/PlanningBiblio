@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification : 10 décembre 2013
+Dernière modification : 17 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -43,14 +43,20 @@ body {
 }
 
 #auth, #auth input {
-	color:#BE541A;
+  color:#7D3C25;
+}
+
+#auth-logo{
+  width:200px;
+  margin:15px;
 }
 
 #h2-authentification, #h2-planning-authentification {
   text-align:center;
+  margin: 30px 0 30px;
 }
 
-#h2-authentification {
+#h2-planning-authentification {
   display:none;
 }
 
