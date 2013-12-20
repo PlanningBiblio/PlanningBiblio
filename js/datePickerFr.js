@@ -1,3 +1,21 @@
+/*
+Planning Biblio, Version 1.6.4
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.txt et COPYING.txt
+Copyright (C) 2011-2013 - Jérôme Combes
+
+Fichier : js/datepickerFr.js
+Création : 14 novembre 2013
+Dernière modification : 20 décembre 2013
+Auteur : Jérôme Combes, jerome@planningbilbio.fr
+
+Description :
+Initialise les variables du plugin JQuery UI DatePicker
+Permet l'utilisation du plugin DatePicker sur les champs ayant la classe "datepicker"
+
+Cette page est appelée par le fichier index.php
+*/
+
 /* French initialisation for the jQuery UI date picker plugin. */
 /* Written by Keith Wood (kbwood{at}iinet.com.au),
                          Stéphane Nahmani (sholby@sholby.net),
@@ -22,4 +40,10 @@ jQuery(function($){
                 showMonthAfterYear: false,
                 yearSuffix: ''};
         $.datepicker.setDefaults($.datepicker.regional['fr']);
+});
+
+$(function(){
+  $(document).ready(function() {
+    $(".datepicker").datepicker();
+  });
 });

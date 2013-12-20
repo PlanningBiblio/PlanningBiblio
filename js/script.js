@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 7 décembre 2013
+Dernière modification : 19 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -486,6 +486,10 @@ function verif_form(champs,form){
     if(valeur=="")
       erreurs=erreurs+"\n - "+objet;
     else if(type){
+      if(type.substr(0,4)=="date"){
+	// Converti les dates JJ/MM/AAAA en AAAA-MM-JJ
+        valeur=valeur.replace(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/g,"$3-$2-$1");
+      }
       if(type.substr(0,4)=="date" && verif_date(valeur)==0)
 	erreurs=erreurs+"\n - "+objet+" doit être au format AAAA-MM-JJ";
       if(type=="date1"){
