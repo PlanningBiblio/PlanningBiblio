@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 19 décembre 2013
+Dernière modification : 21 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -260,6 +260,16 @@ function heure4(heure){
     }
   }
   return heure;
+}
+
+function information(message,type,top){
+  if(top==undefined){
+    top=60;
+  }
+  $("body").append("<div id='JSInformation'>"+message+"</div>");
+  errorHighlight($("#JSInformation"),type);
+  position($("#JSInformation"),top,"center");
+  setTimeout("$('#JSInformation').hide()",5000);
 }
 
 function initform(objet){
@@ -623,6 +633,16 @@ function getWindowHeight(){
     }
   }
   return windowHeight;
+}
+
+function position(object,top,left){
+  object.css("position","absolute");
+  object.css("top",top);
+  object.css("z-index",10);
+  if(left=="center"){
+    left=($("body").width()-object.width())/2;
+    object.css("left",left);
+  }
 }
 
 function position_retour(){
