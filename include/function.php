@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 11 décembre 2013
+Dernière modification : 26 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -743,7 +743,6 @@ function tri($tab){
 }
 	
 function verifmail($texte){
-  $resultats = ereg("^[^@ ]+@[^@ ]+\.[^@ \.]+$", $texte, $poubelle);
-  return $resultats;
+  return preg_match("/^[^@ ]+@[^@ ]+\.[^@ \.]+$/", $texte);
 }
 ?>

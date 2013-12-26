@@ -397,6 +397,8 @@ if(strcmp("1.6.5",$config['Version'])>0){
     VALUES ('display_errors','boolean','0','Afficher les erreurs PHP','D&eacute;bogage','4');";
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
     VALUES ('error_reporting','enum','4','0,1,2,3,4,5','Type d&apos;erreurs PHP &agrave; afficher','D&eacute;bogage','4');";
+  $sql[]="UPDATE `{$dbprefix}config` SET `categorie`=' Divers' WHERE `categorie`='Divers';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `type`='date' WHERE `nom`='dateDebutPlHebdo';";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.6.5' WHERE `nom`='Version';";
 }
 

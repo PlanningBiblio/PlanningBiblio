@@ -87,7 +87,7 @@ echo "<tbody>\n";
 $i=0;
 if($absences){
   foreach($absences as $elem){
-    $etat=$elem['valide']>0?"Valid&eacute;e":"En attende de validation";
+    $etat=$elem['valide']>0?"Valid&eacute;e":"En attente de validation";
     $etat=$elem['valide']<0?"Refus&eacute;e":$etat;
 
     echo "<tr>\n";

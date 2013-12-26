@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : activites/config.php
 Création : mai 2011
-Dernière modification : 15 novembre 2013
+Dernière modification : 26 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -26,7 +26,7 @@ echo "<h3>Configuration</h3>\n";
 if(!$_POST){			//		Affichage des paramètres
   $last_category=null;
   $db=new db();
-  $db->query("SELECT * FROM `{$dbprefix}config` ORDER BY `ordre`,`id`;");
+  $db->query("SELECT * FROM `{$dbprefix}config` ORDER BY `categorie`,`id`;");
 
   echo "<form name='form' action='index.php' method='post'>\n";
   echo "<input type='hidden' name='page' value='admin/config.php' />\n";
@@ -41,7 +41,7 @@ if(!$_POST){			//		Affichage des paramètres
       echo "<h3>{$elem['categorie']}</h3>\n";
       echo "<div>";
       echo "<table cellspacing='0' cellpadding='5' style='width:100%;'>\n";
-      echo "<tr class='th'><td style='width:200px;'>Nom</td><td style='width:400px;'>Valeur</td><td>Commentaires</td></tr>\n";
+      echo "<tr><td class='ui-widget-header ui-corner-left' style='width:200px;border-right:0px;'>Nom</td><td style='width:400px;border-left:0px;border-right:0px;' class='ui-widget-header'>Valeur</td><td class='ui-widget-header ui-corner-right' style='border-left:0px;'>Commentaires</td></tr>\n";
     }
     elseif($elem['categorie']!=$last_category){
       echo "</table>\n";
@@ -49,12 +49,12 @@ if(!$_POST){			//		Affichage des paramètres
       echo "<h3>{$elem['categorie']}</h3>\n";
       echo "<div>";
       echo "<table cellspacing='0' cellpadding='5' style='width:100%;'>\n";
-      echo "<tr class='th'><td style='width:200px;'>Nom</td><td style='width:400px;'>Valeur</td><td>Commentaires</td></tr>\n";
+      echo "<tr><td class='ui-widget-header ui-corner-left' style='width:200px;border-right:0px;'>Nom</td><td style='width:400px;border-left:0px;border-right:0px;' class='ui-widget-header'>Valeur</td><td class='ui-widget-header ui-corner-right' style='border-left:0px;'>Commentaires</td></tr>\n";
     }
 
     $last_category=$elem['categorie'];
     echo "<tr style='vertical-align:top;'><td style='width:180px;'>{$elem['nom']}</td><td>\n";
-    switch($elem ['type']){
+    switch($elem['type']){
       case "boolean" :
 	$selected=$elem['valeur']?"selected='selected'":null;
 	echo "<select name='{$elem['nom']}' style='width:305px;'>\n";
@@ -87,6 +87,10 @@ if(!$_POST){			//		Affichage des paramètres
 	echo "<textarea name='{$elem['nom']}' style='width:300px;height:100px;' rows='1' cols='1'>$valeur</textarea>\n";
 	break;
 
+      case "date" :
+	echo "<input type='text' name='{$elem['nom']}' value='".dateFr($elem['valeur'])."' style='width:300px;' class='datepicker'/>\n";
+	break;
+
       default :
 	echo "<input type='text' name='{$elem['nom']}' value='{$elem['valeur']}' style='width:300px;'/>\n";
 	break;
@@ -116,6 +120,10 @@ else{			// enregistrement des paramètres
       $_POST[$elem]=str_replace("'","&apos;",$_POST[$elem]);
       if(substr($elem,-9)=="-Password"){
 	$_POST[$elem]=encrypt($_POST[$elem]);
+      }
+      // Si date au format JJ/MM/AAAA, conversion en AAAA-MM-JJ
+      if(preg_match("/^[0-9]{2}\/[0-9]{2}\/[0-9]{4}/",$_POST[$elem])){
+	$_POST[$elem]=dateFr($_POST[$elem]);
       }
       $db->execute(array(":nom"=>$elem,":valeur"=>$_POST[$elem]));
     }
