@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification : 17 décembre 2013
+Dernière modification : 26 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -767,37 +767,8 @@ img{
 /*	Cellules et Statuts	*/
 /* class cellule = cellule par défaut */
 /* statut_xxx	 = complète le style de la classe cellule en fonction du statut */
+/* service_xxx	 = complète le style de la classe cellule en fonction du service */
 
-/*	Messages de validation	*/
-.MessageOK,.MessageErreur{
-  position: absolute;
-  top: 130px;
-  left: 80px;
-  z-index: 5;
-  text-align:center;
-  font-size: 14pt;
-  font-weight:bold;
-  padding: 4px 10px 4px 10px;
-
-}
-
-.MessageOK{
-  color:green;
-  background: #b3f4b3;
-  border-top:solid 2px green;
-  border-right:solid 2px green;
-  border-bottom:solid 2px green;
-  border-left:solid 2px green;
-}
-
-.MessageErreur{
-  color:red;
-  background: #f4dfdf;
-  border-top:solid 2px red;
-  border-right:solid 2px red;
-  border-bottom:solid 2px red;
-  border-left:solid 2px red;
-}
 
 /*	Jours Fériés	*/
 #joursFeries table{

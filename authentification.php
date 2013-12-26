@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 17 décembre 2013
+Dernière modification : 26 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -18,9 +18,6 @@ Page en sortie :inclus le fichier footer.php
 */
 
 session_start();
-
-ini_set('display_errors',0);
-ini_set('error_reporting',E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 
 // Initialisation des variables
 $page=null;
@@ -37,6 +34,18 @@ if(!file_exists("include/config.php")){
 $version="1.6.4";
 
 include "include/config.php";
+
+ini_set('display_errors',$config['display_errors']);
+switch($config['error_reporting']){
+  case 0: error_reporting(0); break;
+  case 1: error_reporting(E_ERROR | E_WARNING | E_PARSE); break;
+  case 2: error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE); break;
+  case 3: error_reporting(E_ALL ^ (E_NOTICE | E_WARNING)); break;
+  case 4: error_reporting(E_ALL ^ E_NOTICE); break;
+  case 5: error_reporting(E_ALL); break;
+  default: error_reporting(E_ALL ^ E_NOTICE); break;
+}
+
 include "include/doctype.php";
 include "plugins/plugins.php";
 include "include/header.php";
