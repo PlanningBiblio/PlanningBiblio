@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 7 décembre 2013
+Dernière modification : 27 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -466,7 +466,7 @@ else{
   if($config['absences_planning']){
     $a=new absences();
     $a->valide=true;
-    $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date." 00:00:00",$date." 23:59:59");
+    $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date,$date);
     $absences=$a->elements;
 
     // Ajout des congés

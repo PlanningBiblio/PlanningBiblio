@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 9 décembre 2013
+Dernière modification : 27 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -18,6 +18,7 @@ Page appelée par la page index.php
 */
 
 require_once "class.absences.php";
+require_once "personnel/class.personnel.php";
 echo "<h3>Liste des absences</h3>\n";
 
 //	Initialisation des variables
@@ -27,7 +28,16 @@ if(!$admin){
   $only_me=" AND `{$dbprefix}personnel`.`id`='{$_SESSION['login_id']}' ";
 }
 
-$agent=isset($_GET['agent'])?$_GET['agent']:null;
+// $agent=isset($_GET['agent'])?$_GET['agent']:null;
+if($admin){
+  $perso_id=isset($_GET['perso_id'])?$_GET['perso_id']:(isset($_SESSION['oups']['absences_perso_id'])?$_SESSION['oups']['absences_perso_id']:$_SESSION['login_id']);
+}
+else{
+  $perso_id=$_SESSION['login_id'];
+}
+if(isset($_GET['reset'])){
+  $perso_id=$_SESSION['login_id'];
+}
 $tri=isset($_GET['tri'])?$_GET['tri']:"`debut`,`fin`,`nom`,`prenom`";
 $debut=isset($_GET['debut'])?dateFr($_GET['debut']):(isset($_SESSION['oups']['absences_debut'])?$_SESSION['oups']['absences_debut']:null);
 $fin=isset($_GET['fin'])?dateFr($_GET['fin']):(isset($_SESSION['oups']['absences_fin'])?$_SESSION['oups']['absences_fin']:null);
@@ -53,8 +63,15 @@ if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
 }
 
 $a=new absences();
-$a->fetch($tri,$only_me,$agent,$debut,$fin,$sites);
+$a->fetch($tri,$only_me,$perso_id,$debut,$fin,$sites);
 $absences=$a->elements;
+
+// Recherche des agents
+if($admin){
+  $p=new personnel();
+  $p->fetch();
+  $agents=$p->elements;
+}
   
 echo "<form name='form' method='get' action='index.php'>\n";
 echo "<input type='hidden' name='page' value='absences/voir.php' />\n";
@@ -62,10 +79,19 @@ echo "Début : <input type='text' name='debut' value='$debutFr' class='datepicke
 echo "&nbsp;&nbsp;Fin : <input type='text' name='fin' value='$finFr'  class='datepicker'/>\n";
 
 if($admin){
-  echo "&nbsp;&nbsp;Agent : <input type='text' name='agent' value='$agent' />\n";
+  echo "&nbsp;&nbsp;Agent : ";
+  echo "<select name='perso_id'>";
+  $selected=$perso_id==0?"selected='selected'":null;
+  echo "<option value='0' $selected >Tous</option>";
+  foreach($agents as $agent){
+    $selected=$agent['id']==$perso_id?"selected='selected'":null;
+    echo "<option value='{$agent['id']}' $selected >{$agent['nom']} {$agent['prenom']}</option>";
+  }
+  echo "</select>\n";
 }
-echo "&nbsp;&nbsp;<input type='submit' value='OK' class='button'/>\n";
-echo "&nbsp;&nbsp;<input type='button' value='Effacer' onclick='location.href=\"index.php?page=absences/voir.php&amp;reset\"'  class='button' />\n";
+
+echo "&nbsp;&nbsp;<input type='submit' value='OK' class='ui-button'/>\n";
+echo "&nbsp;&nbsp;<input type='button' value='Effacer' onclick='location.href=\"index.php?page=absences/voir.php&amp;reset\"'  class='ui-button' />\n";
 echo "</form>\n";
 
 echo "<br/>\n";
@@ -117,8 +143,6 @@ echo "<br/><a href='index.php?page=absences/index.php'>Retour</a>";
 
 <script type='text/JavaScript'>
 $(document).ready(function() {
-  $(".datepicker").datepicker();
-  $(".button").button();
   $("#tableAbsences").dataTable({
     "bJQueryUI": true,
     "sPaginationType": "full_numbers",

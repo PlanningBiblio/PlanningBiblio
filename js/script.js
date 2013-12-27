@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 21 décembre 2013
+Dernière modification : 27 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -1135,3 +1135,11 @@ function verif_select(nom){
   }
 }
 //	--------------------------------	FIN Statistiques	---------------------------------	//
+
+// Initialisations JQuery-UI
+$(function(){
+  $(document).ready(function() {
+    $(".ui-button").button();
+    $(".datepicker").datepicker();
+  });
+});
