@@ -26,7 +26,7 @@ echo "<h3>Configuration</h3>\n";
 if(!$_POST){			//		Affichage des paramètres
   $last_category=null;
   $db=new db();
-  $db->query("SELECT * FROM `{$dbprefix}config` ORDER BY `categorie`,`id`;");
+  $db->query("SELECT * FROM `{$dbprefix}config` ORDER BY `categorie`,`ordre`,`id`;");
 
   echo "<form name='form' action='index.php' method='post'>\n";
   echo "<input type='hidden' name='page' value='admin/config.php' />\n";

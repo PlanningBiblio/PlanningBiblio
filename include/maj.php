@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 26 décembre 2013
+Dernière modification : 27 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -399,6 +399,23 @@ if(strcmp("1.6.5",$config['Version'])>0){
     VALUES ('error_reporting','enum','4','0,1,2,3,4,5','Type d&apos;erreurs PHP &agrave; afficher','D&eacute;bogage','4');";
   $sql[]="UPDATE `{$dbprefix}config` SET `categorie`=' Divers' WHERE `categorie`='Divers';";
   $sql[]="UPDATE `{$dbprefix}config` SET `type`='date' WHERE `nom`='dateDebutPlHebdo';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='A qui les notifications de nouvelles absences doivent-elles &ecirc;tre envoy&eacute;es', 
+    `valeurs`='Aux agents ayant le droit de g&eacute;rer les absences,Au responsable direct,A la cellule planning,A tous,A l&apos;agent concern&eacute;' 
+    WHERE `nom`='Absences-notifications';";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
+    VALUES ('Absences-notifications2','enum','Au responsable direct','Aux agents ayant le droit de g&eacute;rer les absences,Au responsable direct,A la cellule planning,A tous,A l&apos;agent concern&eacute;','A qui les notifications de validation niveau 1 doivent-elles &ecirc;tre envoy&eacute;es','Absences','2');";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
+    VALUES ('Absences-notifications3','enum','A l&apos;agent concern&eacute;','Aux agents ayant le droit de g&eacute;rer les absences,Au responsable direct,A la cellule planning,A tous,A l&apos;agent concern&eacute;','A qui les notifications de validation niveau 2 doivent-elles &ecirc;tre envoy&eacute;es','Absences','2');";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `commentaires`, `categorie`, `ordre`) 
+    VALUES ('Mail-Planning','textarea','Adresses e-mails de la cellule planning, s&eacute;par&eacute;es par des ;','Messagerie','10');";
+  $sql[]="UPDATE `{$dbprefix}config` SET `nom`='Absences-apresValidation' WHERE `nom`='absencesApresValidation';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `ordre`='10' WHERE `nom`='Absences-apresValidation';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `ordre`='20' WHERE `nom`='Absences-adminSeulement';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `ordre`='30' WHERE `nom`='Absences-validation';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `ordre`='40' WHERE `nom`='Absences-notifications';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `ordre`='50' WHERE `nom`='Absences-notifications2';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `ordre`='60' WHERE `nom`='Absences-notifications3';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `nom`='Absences-planning', `categorie`='Absences', `ordre`='25' WHERE `nom`='absences_planning';";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.6.5' WHERE `nom`='Version';";
 }
 

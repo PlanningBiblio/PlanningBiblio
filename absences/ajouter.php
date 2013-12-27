@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 28 novembre 2013
+Dernière modification : 27 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -146,10 +146,10 @@ elseif($confirm=="confirm1"){		//	1ere Confirmation
 
 
   // Interdiction d'ajouter des absences si l'agent apparaît dans un planning validé pour les dates sélectionnées
-  // Si CONFIG absencesApresValidation = 0
+  // Si CONFIG Absences-apresValidation = 0
   $disableSubmit=null;
   $datesValidees=null;
-  if($config['absencesApresValidation']==0){
+  if($config['Absences-apresValidation']==0){
     $datesValidees=array();
     $db=new db();
     $db->select("pl_poste","date,site","perso_id='$perso_id' AND date>='$debut' AND date<='$fin'","group by date");

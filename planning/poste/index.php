@@ -463,7 +463,7 @@ else{
   echo "</table>\n";
 
   // Affichage des absences
-  if($config['absences_planning']){
+  if($config['Absences-planning']){
     $a=new absences();
     $a->valide=true;
     $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date,$date);
