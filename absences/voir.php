@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 27 décembre 2013
+Dernière modification : 3 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -28,7 +28,6 @@ if(!$admin){
   $only_me=" AND `{$dbprefix}personnel`.`id`='{$_SESSION['login_id']}' ";
 }
 
-// $agent=isset($_GET['agent'])?$_GET['agent']:null;
 if($admin){
   $perso_id=isset($_GET['perso_id'])?$_GET['perso_id']:(isset($_SESSION['oups']['absences_perso_id'])?$_SESSION['oups']['absences_perso_id']:$_SESSION['login_id']);
 }
@@ -47,6 +46,7 @@ if(isset($_GET['reset'])){
 }
 $_SESSION['oups']['absences_debut']=$debut;
 $_SESSION['oups']['absences_fin']=$fin;
+$_SESSION['oups']['absences_perso_id']=$perso_id;
 $debutFr=dateFr($debut);
 $finFr=dateFr($fin);
 
@@ -113,8 +113,10 @@ echo "<tbody>\n";
 $i=0;
 if($absences){
   foreach($absences as $elem){
-    $etat=$elem['valide']>0?"Valid&eacute;e":"En attente de validation";
-    $etat=$elem['valide']<0?"Refus&eacute;e":$etat;
+    $etat=$elem['valide']>0?"Valid&eacute;e, ".nom($elem['valide']).", ".dateFr($elem['validation'],true):"En attente de validation";
+    $etat=$elem['valide']<0?"Refus&eacute;e, ".nom(-$elem['valide']).", ".dateFr($elem['validation'],true):$etat;
+    $etatStyle=$elem['valide']==0?"font-weight:bold;":null;
+    $etatStyle=$elem['valide']<0?"color:red;":$etatStyle;
 
     echo "<tr>\n";
     if($admin or (!$config['Absences-adminSeulement'] and in_array(6,$droits))){
@@ -130,7 +132,7 @@ if($absences){
       echo "<td>{$elem['nom']} {$elem['prenom']}</td>";
     }
     if($config['Absences-validation']){
-      echo "<td>$etat</td>\n";
+      echo "<td style='$etatStyle'>$etat</td>\n";
     }
     echo "<td>{$elem['motif']}</td>\n";
     echo "<td>{$elem['commentaires']}</td></tr>\n";
@@ -146,7 +148,7 @@ $(document).ready(function() {
   $("#tableAbsences").dataTable({
     "bJQueryUI": true,
     "sPaginationType": "full_numbers",
-    "bStateSave": false,
+    "bStateSave": true,
     "aaSorting" : [[1,"asc"],[2,"asc"]],
     "aoColumns" : [{"bSortable":false},{"sType": "date-fr"},{"sType": "date-fr-fin"},{"bSortable":true},{"bSortable":true},
       <?php

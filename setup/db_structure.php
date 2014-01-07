@@ -30,6 +30,8 @@ $sql[]="CREATE TABLE `{$dbprefix}absences` (
   `demande` datetime NOT NULL,
   `valide` INT(11) NOT NULL DEFAULT 0,
   `validation` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `valideN1` INT(11) NOT NULL DEFAULT 0,
+  `validationN1` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 

@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 27 décembre 2013
+Dernière modification : 2 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -398,7 +398,7 @@ if(strcmp("1.6.5",$config['Version'])>0){
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
     VALUES ('error_reporting','enum','4','0,1,2,3,4,5','Type d&apos;erreurs PHP &agrave; afficher','D&eacute;bogage','4');";
   $sql[]="UPDATE `{$dbprefix}config` SET `categorie`=' Divers' WHERE `categorie`='Divers';";
-  $sql[]="UPDATE `{$dbprefix}config` SET `type`='date' WHERE `nom`='dateDebutPlHebdo';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `type`='date', `commentaires`='Date de d&eacute;but permettant la rotation des plannings hebdomadaires (pour l&apos;utilisation de 3 plannings hebdomadaires. Format JJ/MM/AAAA)' WHERE `nom`='dateDebutPlHebdo';";
   $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='A qui les notifications de nouvelles absences doivent-elles &ecirc;tre envoy&eacute;es', 
     `valeurs`='Aux agents ayant le droit de g&eacute;rer les absences,Au responsable direct,A la cellule planning,A tous,A l&apos;agent concern&eacute;' 
     WHERE `nom`='Absences-notifications';";
@@ -416,6 +416,8 @@ if(strcmp("1.6.5",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}config` SET `ordre`='50' WHERE `nom`='Absences-notifications2';";
   $sql[]="UPDATE `{$dbprefix}config` SET `ordre`='60' WHERE `nom`='Absences-notifications3';";
   $sql[]="UPDATE `{$dbprefix}config` SET `nom`='Absences-planning', `categorie`='Absences', `ordre`='25' WHERE `nom`='absences_planning';";
+  $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `valideN1` INT(11) NOT NULL DEFAULT 0, ADD `validationN1` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00';";
+  $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`) VALUES ('Gestion des absences, validation N2', 8, 'Gestion des absences, validation N2');";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.6.5' WHERE `nom`='Version';";
 }
 
