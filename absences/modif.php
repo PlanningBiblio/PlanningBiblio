@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.3
+Planning Biblio, Version 1.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 26 novembre 2013
+Dernière modification : 3 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -22,6 +22,7 @@ require_once "class.absences.php";
 $display=null;
 $checked=null;
 $admin=in_array(1,$droits)?true:false;
+$adminN2=in_array(8,$droits)?true:false;
 
 $id=$_GET['id'];
 $db=new db();
@@ -30,6 +31,7 @@ $req="SELECT `{$dbprefix}personnel`.`id` AS `perso_id`, `{$dbprefix}personnel`.`
   `{$dbprefix}absences`.`debut` AS `debut`, `{$dbprefix}absences`.`fin` AS `fin`, 
   `{$dbprefix}absences`.`nbjours` AS `nbjours`, `{$dbprefix}absences`.`motif` AS `motif`, 
   `{$dbprefix}absences`.`valide` AS `valide`, `{$dbprefix}absences`.`validation` AS `validation`, 
+  `{$dbprefix}absences`.`valideN1` AS `valideN1`, `{$dbprefix}absences`.`validationN1` AS `validationN1`, 
   `{$dbprefix}absences`.`commentaires` AS `commentaires` 
   FROM `{$dbprefix}absences` INNER JOIN `{$dbprefix}personnel` 
   ON `{$dbprefix}absences`.`perso_id`=`{$dbprefix}personnel`.`id` WHERE `{$dbprefix}absences`.`id`='$id';";
@@ -42,6 +44,8 @@ $fin=$db->result[0]['fin'];
 $site=$db->result[0]['site'];
 $valide=$db->result[0]['valide'];
 $validation=$db->result[0]['validation'];
+$valideN1=$db->result[0]['valideN1'];
+$validationN1=$db->result[0]['validationN1'];
 $hre_debut=substr($debut,-8);
 $hre_fin=substr($fin,-8);
 $debut=substr($debut,0,10);
@@ -53,9 +57,19 @@ if($hre_debut=="00:00:00" and $hre_fin=="23:59:59"){
 $select1=$valide==0?"selected='selected'":null;
 $select2=$valide>0?"selected='selected'":null;
 $select3=$valide<0?"selected='selected'":null;
+$select4=null;
+$select5=null;
+if($valide==0 and $valideN1!=0){
+  $select4=$valideN1>0?"selected='selected'":null;
+  $select5=$valideN1<0?"selected='selected'":null;
+}
 $validation_texte=$valide>0?"Valid&eacute;e":"&nbsp;";
 $validation_texte=$valide<0?"Refus&eacute;e":$validation_texte;
 $validation_texte=$valide==0?"En attente de validation":$validation_texte;
+if($valide==0 and $valideN1!=0){
+  $validation_texte=$valideN1>0?"Valid&eacute;e (en attente de validation hi&eacute;rarchique)":$validation_texte;
+  $validation_texte=$valideN1<0?"Refus&eacute;e (en attente de validation hi&eacute;rarchique)":$validation_texte;
+}
 
 // Sécurité
 // Droit 1 = modification de toutes les absences
@@ -164,8 +178,12 @@ if($config['Absences-validation']){
   if($admin){
     echo "<select name='valide'>\n";
     echo "<option value='0' $select1>En attente de validation</option>\n";
-    echo "<option value='1' $select2>Accept&eacute;e</option>\n";
-    echo "<option value='-1' $select3>Refus&eacute;e</option>\n";
+    echo "<option value='2' $select4>Accept&eacute;e (En attente de validation hi&eacute;rarchique)</option>\n";
+    echo "<option value='-2' $select5>Refus&eacute;e (En attente de validation hi&eacute;rarchique)</option>\n";
+    if($adminN2){
+      echo "<option value='1' $select2>Accept&eacute;e</option>\n";
+      echo "<option value='-1' $select3>Refus&eacute;e</option>\n";
+    }
     echo "</select>\n";
   }
   else{

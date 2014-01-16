@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.3
+Planning Biblio, Version 1.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : statistiques/class.statistiques.php
 Création : 16 janvier 2013
-Dernière modification : 20 novembre 2013
+Dernière modification : 10 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -341,7 +341,7 @@ class statistiques{
       }else{
 	$echo.="<br/>Ouverture au public : ";
       }
-      if(in_array($i,$selectedSites)){
+      if(is_array($selectedSites) and in_array($i,$selectedSites)){
 	$echo.=heure4($totalHeures[$i]);
 	$echo.=", {$totalJours[$i]} jours, ";
 	$echo.=number_format($totalSemaines[$i],1,',',' ')." semaines";

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.3
+Planning Biblio, Version 1.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 14 novembre 2013
+Dernière modification : 26 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -18,9 +18,6 @@ Page en sortie :inclus le fichier footer.php
 */
 
 session_start();
-
-ini_set('display_errors',0);
-ini_set('error_reporting',E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 
 // Initialisation des variables
 $page=null;
@@ -34,9 +31,21 @@ if(!file_exists("include/config.php")){
   exit;
 }
 
-$version="1.6.3";
+$version="1.6.4";
 
 include "include/config.php";
+
+ini_set('display_errors',$config['display_errors']);
+switch($config['error_reporting']){
+  case 0: error_reporting(0); break;
+  case 1: error_reporting(E_ERROR | E_WARNING | E_PARSE); break;
+  case 2: error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE); break;
+  case 3: error_reporting(E_ALL ^ (E_NOTICE | E_WARNING)); break;
+  case 4: error_reporting(E_ALL ^ E_NOTICE); break;
+  case 5: error_reporting(E_ALL); break;
+  default: error_reporting(E_ALL ^ E_NOTICE); break;
+}
+
 include "include/doctype.php";
 include "plugins/plugins.php";
 include "include/header.php";
@@ -107,7 +116,7 @@ elseif(array_key_exists("login_id",$_SESSION)){		//		logout
 else{		//		Formulaire d'authentification
   echo <<<EOD
     <div id='auth'>
-    <center><br/><img src='img/logo.png' alt='logo' /></center>
+    <center><img src='img/logo.png' alt='logo' id='auth-logo'/></center>
     <h1 id='title'>{$config['titre']}</h1>
     <h2 id='h2-planning-authentification'>Planning - Authentification</h2>
     <h2 id='h2-authentification'>Authentification</h2>

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.3
+Planning Biblio, Version 1.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : postes/index.php
 Création : mai 2011
-Dernière modification : 8 novembre 2013
+Dernière modification : 16 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -96,10 +96,14 @@ for($i=0;$i<count($postes);$i++){
   $activites=array();
   $activitesAffichees=array();
   $activitesPoste=unserialize($postes[$i]['activites']);
-  foreach($activitesPoste as $act){
-    $activites[]=$activitesTab[$act];
-    if(count($activitesAffichees)<3){
-      $activitesAffichees[]=$activitesTab[$act];
+  if(is_array($activitesPoste)){
+    foreach($activitesPoste as $act){
+      if(array_key_exists($act,$activitesTab)){
+	$activites[]=$activitesTab[$act];
+	if(count($activitesAffichees)<3){
+	  $activitesAffichees[]=$activitesTab[$act];
+	}
+      }
     }
   }
   $activites=join(", ",$activites);

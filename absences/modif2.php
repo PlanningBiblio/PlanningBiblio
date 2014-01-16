@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.3
+Planning Biblio, Version 1.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 29 novembre 2013
+Dernière modification : 16 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 Fichier personnalisé MLV
 
@@ -29,10 +29,22 @@ $hre_fin=$_GET['hre_fin']?$_GET['hre_fin']:"23:59:59";
 $debut_sql=$debut." ".$hre_debut;
 $fin_sql=$fin." ".$hre_fin;
 $isValidate=true;
+$valideN1=0;
+$valideN2=0;
+$validationN1=null;
+$validationN2=null;
+
 if($config['Absences-validation']){
-  $valide=$_GET['valide']*$_SESSION['login_id'];
-  $validation=date("Y-m-d H:i:s");
-  $isValidate=$valide>0?true:false;
+  $valide=$_GET['valide'];
+  if($valide==1 or $valide==-1){
+    $valideN2=$valide*$_SESSION['login_id'];
+    $validationN2=date("Y-m-d H:i:s");
+  }
+  if($valide==2 or $valide==-2){
+    $valideN1=$valide*$_SESSION['login_id'];
+    $validationN1=date("Y-m-d H:i:s");
+  }
+  $isValidate=$valideN2>0?true:false;
 }
 
 $motif=$_GET['motif'];
@@ -83,12 +95,13 @@ if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
   }
 }
 
-				// pour mise à jour du champs 'absent' dans 'pl_poste'
+// Pour mise à jour du champs 'absent' dans 'pl_poste'
 $db=new db();
 $db->query("SELECT * FROM `{$dbprefix}absences` WHERE `id`='$id';");
 $debut1=$db->result[0]['debut'];
 $fin1=$db->result[0]['fin'];
-$valide1=$db->result[0]['valide'];
+$valide1N1=$db->result[0]['valideN1'];
+$valide1N2=$db->result[0]['valide'];
 $perso_id=$db->result[0]['perso_id'];
 
 if(($debut!=$debut1 or $fin!=$fin1) and $isValidate){			// mise à jour du champs 'absent' dans 'pl_poste'
@@ -110,25 +123,90 @@ if(($debut!=$debut1 or $fin!=$fin1) and $isValidate){			// mise à jour du champ
 $db=new db();
 $update=array("motif"=>$motif, "nbjours"=>$nbjours, "commentaires"=>$commentaires, "debut"=>$debut_sql, "fin"=>$fin_sql);
 if($config['Absences-validation']){
-  $update["valide"]=$valide;
-  $update["validation"]=$validation;
+  if($valideN1){
+    $update["valideN1"]=$valideN1;
+    $update["validationN1"]=$validationN1;
+  }
+  if($valideN2){
+    $update["valide"]=$valideN2;
+    $update["validation"]=$validationN2;
+  }
 }
 $where=array("id"=>$id);
 $db->update2("absences",$update,$where);
 
-echo "<h3>Modification de l'absence</h3>\n";
-
-// Envoi d'un mail à l'agent et aux responsables
+// Envoi d'un mail de notification
 // MLV
 // Pas d'envoi en cas de modif
 /*
 $sujet="Modification d'une absence";
-if($valide1<=0 and $valide>0){
-  $sujet="Validation d'une absence";
+
+// Liste des responsables
+$a=new absences();
+$a->getResponsables($debut,$fin,$perso_id);
+$responsables=$a->responsables;
+
+// Choix des destinataires des notifications selon le degré de validation
+// Si l'agent lui même modifie son absence ou si pas de validation, la notification est envoyée au 1er groupe
+if($_SESSION['login_id']==$perso_id or $config['Absences-validation']=='0'){
+  $notifications=$config['Absences-notifications'];
 }
-elseif($valide1>=0 and $valide<0){
-  $sujet="Refus d'une absence";
+else{
+  if($valide1N2<=0 and $valideN2>0){
+    $sujet="Validation d'une absence";
+    $validationText="Valid&eacute;e";
+    $notifications=$config['Absences-notifications3'];
+  }
+  elseif($valide1N2>=0 and $valideN2<0){
+    $sujet="Refus d'une absence";
+    $validationText="Refus&eacute;e";
+    $notifications=$config['Absences-notifications'];
+  }
+  elseif($valide1N1<=0 and $valideN1>0){
+    $sujet="Acceptation d'une absence (en attente de validation hiérarchique)";
+    $validationText="Accept&eacute;e (en attente de validation hi&eacute;rarchique)";
+    $notifications=$config['Absences-notifications2'];
+  }
+  elseif($valide1N1>=0 and $valideN1<0){
+    $sujet="Refus d'une absence (en attente de validation hiérarchique)";
+    $validationText="Refus&eacute;e (en attente de validation hi&eacute;rarchique)";
+    $notifications=$config['Absences-notifications2'];
+  }
+  else{
+    $sujet="Modification d'une absence";
+    $validationText=null;
+    $notifications=$config['Absences-notifications'];
+  }
 }
+
+// Choix des destinataires en fonction de la configuration
+$destinataires=array();
+switch($notifications){
+  case "Aux agents ayant le droit de g&eacute;rer les absences" :
+    foreach($responsables as $elem){
+      $destinataires[]=$elem['mail'];
+    }
+    break;
+  case "Au responsable direct" :
+    $destinataires[]=$mailResponsable;
+    break;
+  case "A la cellule planning" :
+    $destinataires[]=$config['Mail-Planning'];
+    break;
+  case "A l&apos;agent concern&eacute;" :
+    $destinataires[]=$mail;
+    break;
+  case "A tous" :
+    $destinataires[]=$mail;
+    $destinataires[]=$mailResponsable;
+    $destinataires[]=$config['Mail-Planning'];
+    foreach($responsables as $elem){
+      $destinataires[]=$elem['mail'];
+    }
+    break;
+}
+
+// Message
 $message="$sujet : <br/>$prenom $nom<br/>Début : ".dateFr($debut);
 if($hre_debut!="00:00:00")
   $message.=" ".heure3($hre_debut);
@@ -138,30 +216,16 @@ if($hre_fin!="23:59:59")
 $message.="<br/>Motif : $motif<br/>";
 if($commentaires)
   $message.="Commentaire:<br/>$commentaires<br/>";
-
-$a=new absences();
-$a->getResponsables($debut,$fin,$perso_id);
-$responsables=$a->responsables;
-
-$destinataires=array();
-if(verifmail($mail)){
-  $destinataires[]=$mail;
-}
-else{
-  echo "<font style='color:red;'>L'adresse e-mail enregistrée pour $nom $prenom n'est pas valide.\n";
-  echo "<br/>La notification ne lui sera pas envoyée.</font>\n";
+if($config['Absences-validation']){
+  $message.="<br/>Validation : <br/>\n";
+  $message.=$validationText;
+  $message.="<br/>\n";
 }
 
-if($config['Absences-notifications']=="A tous" or $config['Absences-notifications']=="Au responsable direct"){
-  $destinataires[]=$mailResponsable;
-}
-if($config['Absences-notifications']=="A tous" or substr($config['Absences-notifications'],0,25)=="Aux agents ayant le droit"){
-  foreach($responsables as $elem){
-    $destinataires[]=$elem['mail'];
-  }
-}
 sendmail($sujet,$message,$destinataires);
 */
-echo "<h4>Votre demande à été enregistrée</h4>";
+
+echo "<h3>Modification de l'absence</h3>\n";
+echo "<h4>Votre demande &agrave; &eacute;t&eacute; enregistr&eacute;e</h4>";
 echo "<a href='javascript:annuler(2);'>Retour</a>\n";
 ?>

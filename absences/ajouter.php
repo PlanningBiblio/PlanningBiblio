@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.3
+Planning Biblio, Version 1.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 29 novembre 2013
+Dernière modification : 16 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 Fichier personnalisé MLV
 
@@ -23,6 +23,7 @@ require_once "class.absences.php";
 
 //	Initialisation des variables
 $admin=in_array(1,$droits)?true:false;
+$adminN2=in_array(8,$droits)?true:false;
 $menu=isset($_GET['menu'])?$_GET['menu']:null;
 $confirm=isset($_GET['confirm'])?$_GET['confirm']:null;
 $perso_id=isset($_GET['perso_id'])?$_GET['perso_id']:null;
@@ -35,27 +36,43 @@ if($confirm){
   $hre_debut=$_GET['hre_debut']?$_GET['hre_debut']:"00:00:00";
   $hre_fin=$_GET['hre_fin']?$_GET['hre_fin']:"23:59:59";
   $commentaires=$_GET['commentaires'];
+  $valide=isset($_GET['valide'])?$_GET['valide']:0;
+  $valideN1=0;
+  $valideN2=0;
   if($config['Absences-validation']=='0'){
-    $valide=1;
+    $valideN2=1;
     $validation=date("Y-m-d H:i:s");
     $validationText=null;
   }
   elseif(!$admin){
-    $valide=0;
+    $valideN2=0;
     $validationText="En attente de validation";
     $validation="0000-00-00 00:00:00";
   }
   elseif($admin){
-    $valide=$_GET['valide'];
     $validationText="En attente de validation";
     $validation="0000-00-00 00:00:00";
-    if($valide>0){
+    if($valide==1){
+      $valideN2=$_SESSION['login_id'];
       $validationText="Valid&eacute;e";
       $validation=date("Y-m-d H:i:s");
     }
-    elseif($valide<0){
+    elseif($valide==-1){
+      $valideN2=$_SESSION['login_id']*-1;
       $validationText="Refus&eacute;e";
       $validation=date("Y-m-d H:i:s");
+    }
+    elseif($valide==2){
+      $valideN2=0;
+      $valideN1=$_SESSION['login_id'];
+      $validationText="Accept&eacute;e (en attente de validation hi&eacute;rarchique)";
+      $validationN1=date("Y-m-d H:i:s");
+    }
+    elseif($valide==-2){
+      $valideN2=0;
+      $valideN1=$_SESSION['login_id']*-1;
+      $validationText="Refus&eacute;e (en attente de validation hi&eacute;rarchique)";
+      $validationN1=date("Y-m-d H:i:s");
     }
   }
 }
@@ -82,28 +99,63 @@ if($confirm=="confirm2"){		//	2eme confirmation
   $db_perso->select("personnel","*","id=$perso_id");
   $nom=$db_perso->result[0]['nom'];
   $prenom=$db_perso->result[0]['prenom'];
-  $destinataires=array();
-  $destinataires[]=$db_perso->result[0]['mail'];
 
-  if($config['Absences-notifications']=="A tous" or $config['Absences-notifications']=="Au responsable direct"){
-    $destinataires[]=$db_perso->result[0]['mailResponsable'];
+  // Choix des destinataires des notifications selon le degré de validation
+  $notifications=$config['Absences-notifications'];
+  if($config['Absences-validation'] and $valideN1!=0){
+    $notifications=$config['Absences-notifications2'];
   }
-  if($config['Absences-notifications']=="A tous" or substr($config['Absences-notifications'],0,25)=="Aux agents ayant le droit"){
-    foreach($responsables as $elem){
-      $destinataires[]=$elem['mail'];
-    }
+  elseif($config['Absences-validation'] and $valideN2!=0){
+    $notifications=$config['Absences-notifications3'];
+  }
+
+  // Choix des destinataires des notifications selon la configuration
+  $destinataires=array();
+  switch($notifications){
+    case "Aux agents ayant le droit de g&eacute;rer les absences" :
+      foreach($responsables as $elem){
+	$destinataires[]=$elem['mail'];
+      }
+      break;
+    case "Au responsable direct" :
+      $destinataires[]=$db_perso->result[0]['mailResponsable'];
+      break;
+    case "A la cellule planning" :
+      $destinataires[]=$config['Mail-Planning'];
+      break;
+    case "A l&apos;agent concern&eacute;" :
+      $destinataires[]=$db_perso->result[0]['mail'];
+      break;
+    case "A tous" :
+      $destinataires[]=$db_perso->result[0]['mail'];
+      $destinataires[]=$db_perso->result[0]['mailResponsable'];
+      $destinataires[]=$config['Mail-Planning'];
+      foreach($responsables as $elem){
+	$destinataires[]=$elem['mail'];
+      }
+      break;
   }
 
   $debut_sql=$debut." ".$hre_debut;
   $fin_sql=$fin." ".$hre_fin;
 
-  $db=new db();				//	ajout de l'absence dans la table 'absence'
+  // Ajout de l'absence dans la table 'absence'
+  $db=new db();
   $insert=array("perso_id"=>$perso_id, "debut"=>$debut_sql, "fin"=>$fin_sql, "nbjours"=>$nbjours, "motif"=>$motif, 
-    "commentaires"=>$commentaires, "demande"=>date("Y-m-d H:i:s"), "valide"=>$valide, "validation"=>$validation);
+    "commentaires"=>$commentaires, "demande"=>date("Y-m-d H:i:s"));
+  if($valideN1!=0){
+    $insert["valideN1"]=$valideN1;
+    $insert["validationN1"]=$validationN1;
+  }
+  else{
+    $insert["valide"]=$valideN2;
+    $insert["validation"]=$validation;
+  }
+
   $db->insert2("absences", $insert);
 
-				      //	Mise à jour du champs 'absents' dans 'pl_poste'
-  if($config['Absences-validation']=='0'){
+  // Mise à jour du champs 'absents' dans 'pl_poste'
+  if($valideN2>0){
     $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1' WHERE
       ((CONCAT(`date`,' ',`debut`) < '$fin_sql' AND CONCAT(`date`,' ',`debut`) >= '$debut_sql')
       OR (CONCAT(`date`,' ',`fin`) > '$debut_sql' AND CONCAT(`date`,' ',`fin`) <= '$fin_sql'))
@@ -129,7 +181,7 @@ if($confirm=="confirm2"){		//	2eme confirmation
     $message.=" ".heure3($hre_fin);
   $message.="<br/>Motif : $motif<br/>";
   if($commentaires)
-    $message.="Commentaire:<br/>$commentaires<br/>";
+    $message.="<br/>Commentaire:<br/>$commentaires<br/>";
 
   // MLV
   // Envoi seulement lors d'un ajout en attente (cellule planning=favorable, attente validation hierarchique)
@@ -138,8 +190,8 @@ if($confirm=="confirm2"){		//	2eme confirmation
   }
 
   if($menu=="off"){
-    echo "<script type=text/JavaScript>parent.document.location.reload(false);</script>\n";
-    echo "<script type=text/JavaScript>popup_closed();</script>\n";
+    echo "<script type='text/JavaScript'>parent.document.location.reload(false);</script>\n";
+    echo "<script type='text/JavaScript'>popup_closed();</script>\n";
   }
   else{
     echo $config['Absences-validation']?"La demande d'absence a &eacute;t&eacute; enregistr&eacute;e":"L'absence a été enregistrée";
@@ -158,12 +210,11 @@ elseif($confirm=="confirm1"){		//	1ere Confirmation
   $nom=$db->result[0]['nom'];
   $prenom=$db->result[0]['prenom'];
 
-
   // Interdiction d'ajouter des absences si l'agent apparaît dans un planning validé pour les dates sélectionnées
-  // Si CONFIG absencesApresValidation = 0
+  // Si CONFIG Absences-apresValidation = 0
   $disableSubmit=null;
   $datesValidees=null;
-  if($config['absencesApresValidation']==0){
+  if($config['Absences-apresValidation']==0){
     $datesValidees=array();
     $db=new db();
     $db->select("pl_poste","date,site","perso_id='$perso_id' AND date>='$debut' AND date<='$fin'","group by date");
@@ -293,7 +344,7 @@ else{					//	Formulaire
   echo "Heure de début : \n";
   echo "</td><td>\n";
   echo "<select name='hre_debut'>\n";
-  selectHeure(8,23,true);
+  selectHeure(7,23,true);
   echo "</select>\n";
   echo "</td></tr>\n";
   echo "<tr><td>\n";
@@ -306,7 +357,7 @@ else{					//	Formulaire
   echo "Heure de fin : \n";
   echo "</td><td>\n";
   echo "<select name='hre_fin'>\n";
-  selectHeure(8,23,true);
+  selectHeure(7,23,true);
   echo "</select>\n";
   echo "</td></tr>\n";
   
@@ -337,8 +388,12 @@ else{					//	Formulaire
     if($admin){
       echo "<select name='valide'>\n";
       echo "<option value='0'>En attente de validation</option>\n";
-      echo "<option value='1'>Accept&eacute;e</option>\n";
-      echo "<option value='-1'>Refus&eacute;e</option>\n";
+      echo "<option value='2' >Accept&eacute;e (En attente de validation hi&eacute;rarchique)</option>\n";
+      echo "<option value='-2' >Refus&eacute;e (En attente de validation hi&eacute;rarchique)</option>\n";
+      if($adminN2){
+	echo "<option value='1' >Accept&eacute;e</option>\n";
+	echo "<option value='-1' >Refus&eacute;e</option>\n";
+      }
       echo "</select>\n";
     }
     else{

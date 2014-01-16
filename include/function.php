@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.3
+Planning Biblio, Version 1.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 22 novembre 2013
+Dernière modification : 26 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -120,7 +120,7 @@ function absents($date,$tables){
 function authSQL($login,$password){
   $auth=false;
   $db=new db();
-  $db->select("personnel","id,nom,prenom","login='$login' AND password=MD5('$password') AND actif NOT LIKE 'Supprime';");
+  $db->select("personnel","id,nom,prenom","login='$login' AND password=MD5('$password') AND `supprime`='0';");
   if($db->nb==1 and $login!=null){
     $auth=true;
     $_SESSION['oups']['Auth-Mode']="SQL";
@@ -619,7 +619,7 @@ function selectTemps($jour,$i,$periodes=null,$class=null){
     $select="<select name='temps[$jour][$i]' $class>\n";
   }
   $select.="<option value=''>&nbsp;</option>\n";
-  for($j=8;$j<23;$j++){
+  for($j=7;$j<23;$j++){
     $z=$j<10?"0":"";
     if($temps){
       $select1=$temps[$jour][$i]==$z.$j.":00:00"?"selected='selected'":"";
@@ -743,7 +743,6 @@ function tri($tab){
 }
 	
 function verifmail($texte){
-  $resultats = ereg("^[^@ ]+@[^@ ]+\.[^@ \.]+$", $texte, $poubelle);
-  return $resultats;
+  return preg_match("/^[^@ ]+@[^@ ]+\.[^@ \.]+$/", $texte);
 }
 ?>

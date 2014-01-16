@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.3
+Planning Biblio, Version 1.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 15 novembre 2013
+Dernière modification : 16 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -167,7 +167,7 @@ else
 echo "<form method='post' action='index.php' name='form'>\n";
 echo "<input type='hidden' name='page' value='personnel/valid.php' />\n";
 //			Début Infos générales	
-echo "<div id='main' style='margin-left:80px'>\n";
+echo "<div id='main' style='margin-left:80px;padding-top:30px;'>\n";
 echo "<input type='hidden' value='$action' name='action' />";
 echo "<input type='hidden' value='$id' name='id' />";
 
@@ -442,7 +442,7 @@ if($id){
 <!--	Fin Info générales	-->
 
 <!--	Début Qualif	-->
-<div id='qualif' style='margin-left:80px;display:none;'>
+<div id='qualif' style='margin-left:80px;display:none;padding-top:30px;'>
 <table style='width:90%;'>
 <tr style='vertical-align:top;'><td>
 <b>Activités disponibles</b><br/>
@@ -472,7 +472,7 @@ if(in_array(21,$droits)){
 }
 ?>
 </td><td>
-<b>Activités attribueés</b><br/>
+<b>Activités attribu&eacute;es</b><br/>
 <div id='attrib_div'>
 <?php
 if(in_array(21,$droits)){
@@ -496,7 +496,7 @@ else{
 <!--	FIN Qualif	-->
 
 <!--	Emploi du temps		-->
-<div id='temps' style='margin-left:80px;display:none'>
+<div id='temps' style='margin-left:80px;display:none;padding-top:30px;'>
 <?php
 switch($config['nb_semaine']){
   case 2	: $cellule=array("Semaine Impaire","Semaine Paire");		break;
@@ -515,7 +515,6 @@ for($j=0;$j<$config['nb_semaine'];$j++){
   if($config['EDTSamedi']){
     echo $j==0?"<br/><b>Emploi du temps standard</b>":"<br/><b>Emploi du temps des semaines avec samedi travaillé</b>";
   }
-  echo "<br/>\n";
   echo "<table border='1' cellspacing='0'>\n";
   echo "<tr style='text-align:center;'><td style='width:150px;'>{$cellule[$j]}</td><td style='width:150px;'>Heure d'arrivée</td>";
   echo "<td style='width:150px;'>Début de pause</td><td style='width:150px;'>Fin de pause</td>";
@@ -635,7 +634,7 @@ if($config['EDTSamedi']){
 <!--	FIN Emploi du temps-->
 
 <!--	Droits d'accès		-->
-<div id='access' style='margin-left:80px;display:none'>
+<div id='access' style='margin-left:80px;display:none;padding-top:30px;'>
 <?php
 foreach($db_groupes->result as $elem){		// gestion des droits d'accès au planning
   $disabled=in_array(21,$droits)?null:"disabled='disabled'";	// désactive la modif des accès pour l'affichage en lecture seule

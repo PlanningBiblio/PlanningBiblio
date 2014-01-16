@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.3
+Planning Biblio, Version 1.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : joursFeries/index.php
 Création : 25 juillet 2013
-Dernière modification : 25 juillet 2013
+Dernière modification : 21 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -43,11 +43,12 @@ $jours=$j->elements;
 // Notifications
 if(isset($_GET['message'])){
   switch($_GET['message']){
-    case "OK" : $message="La liste des jours fériés a été modifée avec succés."; $class="MessageOK";	break;
-    case "Erreur" : $message="Une erreur est survenue lors de la modification de la liste des jours fériés."; $class="MessageErreur"; break;
+    case "OK" : $message="La liste des jours fériés a été modifée avec succés."; $type="highlight"; break;
+    case "Erreur" : $message="Une erreur est survenue lors de la modification de la liste des jours fériés."; $type="error"; break;
   }
-  echo "<div class='$class' id='information'>$message</div>\n";
-  echo "<script type='text/JavaScript'>setTimeout(\"document.getElementById('information').style.display='none'\",3000);</script>\n";
+  if($message){
+    echo "<script type='text/JavaScript'>information('$message','$type');</script>\n";
+  }
 }
 
 // Affichage

@@ -1,21 +1,13 @@
 <?php
 /*
-<<<<<<< HEAD
-<<<<<<< HEAD
-Planning Biblio, Version 1.6.2
-=======
-Planning Biblio, Version 1.6.2
->>>>>>> master
-=======
-Planning Biblio, Version 1.6.3
->>>>>>> master
+Planning Biblio, Version 1.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 6 septembre 2013
+Dernière modification : 16 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -30,14 +22,8 @@ Page en sortie :inclus le fichier footer.php
 
 session_start();
 
-ini_set('display_errors',0);
-ini_set('error_reporting',E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
-
-date_default_timezone_set("Europe/Paris");
-
-
 // Initialisation des variables
-$version="1.6.3";
+$version="1.6.4";
 $get_menu=isset($_GET['menu'])?$_GET['menu']:"";
 $post_menu=isset($_POST['menu'])?$_POST['menu']:"";
 $page=isset($_GET['page'])?$_GET['page']:"planning/poste/index.php";
@@ -50,6 +36,20 @@ if(!file_exists("include/config.php")){
 }
 
 include "include/config.php";
+
+ini_set('display_errors',$config['display_errors']);
+switch($config['error_reporting']){
+  case 0: error_reporting(0); break;
+  case 1: error_reporting(E_ERROR | E_WARNING | E_PARSE); break;
+  case 2: error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE); break;
+  case 3: error_reporting(E_ALL ^ (E_NOTICE | E_WARNING)); break;
+  case 4: error_reporting(E_ALL ^ E_NOTICE); break;
+  case 5: error_reporting(E_ALL); break;
+  default: error_reporting(E_ALL ^ E_NOTICE); break;
+}
+
+date_default_timezone_set("Europe/Paris");
+
 include "include/function.php";
 
 // Vérification de la version de la base de données

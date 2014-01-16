@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.3
+Planning Biblio, Version 1.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 7 décembre 2013
+Dernière modification : 10 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -463,10 +463,10 @@ else{
   echo "</table>\n";
 
   // Affichage des absences
-  if($config['absences_planning']){
+  if($config['Absences-planning']){
     $a=new absences();
     $a->valide=true;
-    $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date." 00:00:00",$date." 23:59:59");
+    $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date,$date);
     $absences=$a->elements;
 
     // Ajout des congés
@@ -484,7 +484,7 @@ else{
     // Tri des absences par nom
     usort($absences,"cmp_nom_prenom");
 
-    switch($config['absences_planning']){
+    switch($config['Absences-planning']){
       case "simple" :
 	if(!empty($absences)){
 	  echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.3
+Planning Biblio, Version 1.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : include/menu.php
 Création : mai 2011
-Dernière modification : 27 septembre 2013
+Dernière modification : 17 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -100,7 +100,9 @@ document.onclick = kill;
 <?php
 echo "<div id='topgauche'>\n";
 echo "<table cellpadding='0' cellspacing='0' border='0' style='width:100%;'><tr>\n";
-echo "<td style='width:340px;text-align:left' rowspan='4'><font class='noprint'>&nbsp;<img src='img/logo.png' alt='Logo' id='logo'/></font></td></tr>\n";
+echo "<td style='width:340px;text-align:left' rowspan='4'><font class='noprint'>\n";
+echo "<a href='index.php'><img src='img/logo.png' alt='Logo' id='logo' style='width:160px;margin-top:7px;' border='0'/></a>\n";
+echo "</font></td></tr>\n";
 echo "<tr><td>&nbsp;</td></tr>\n";
 echo "<tr id='topmenu'>\n";
 foreach($keys as $key){
@@ -110,8 +112,8 @@ echo "<td align='right'  ><font  class='noprint' style='font-size:19px'>\n";
 echo $_SESSION['login_prenom']." ".$_SESSION['login_nom'];
 echo "</font></td>\n";
 echo "<td id='logout_img'>\n";
-echo "<a href='authentification.php' >\n";
-echo "<img src='img/loggoff.png' border='0' style='width:16px;' alt='Déconnexion' /></a></td>\n";
+echo "<a href='authentification.php' title='Déconnexion' >\n";
+echo "<img src='img/loggoff.png' border='0' style='width:16px;'/></a></td>\n";
 echo "</tr>\n";
 echo "<tr><td colspan='$colspan' style='text-align:right;'>\n";
 
@@ -129,7 +131,6 @@ echo "<div id='logout_text'><a href='authentification.php' >Déconnexion</a></di
 ?>
 </td>
 </tr>
-<tr><td>&nbsp;</td></tr>
 </table>
 </div>
 </div>

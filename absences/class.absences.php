@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.3
+Planning Biblio, Version 1.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 25 novembre 2013
+Dernière modification : 27 décembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -28,7 +28,7 @@ class absences{
   public function absences(){
   }
 
-  public function fetch($sort="`debut`,`fin`,`nom`,`prenom`",$only_me=null,$name=null,$debut=null,$fin=null,$sites=null){
+  public function fetch($sort="`debut`,`fin`,`nom`,`prenom`",$only_me=null,$agent=null,$debut=null,$fin=null,$sites=null){
     $filter="";
     //	DB prefix
     $dbprefix=$GLOBALS['config']['dbprefix'];
@@ -36,6 +36,9 @@ class absences{
     $date=date("Y-m-d");
     if($debut){
       $fin=$fin?$fin:$date;
+      if(strlen($fin)==10){
+	$fin=$fin." 23:59:59";
+      }
       $dates="`debut`<='$fin' AND `fin`>='$debut'";
     }
     else{
@@ -51,6 +54,15 @@ class absences{
 
     if($this->valide and $GLOBALS['config']['Absences-validation']){
       $filter.=" AND `{$dbprefix}absences`.`valide`>0 ";
+    }
+
+    if($agent==0){
+      $agent=null;
+    }
+
+    if(is_numeric($agent)){
+      $filter.=" AND `{$dbprefix}personnel`.`id`='$agent' ";
+      $agent=null;
     }
 
     //	Select All
@@ -91,10 +103,10 @@ class absences{
     //	By default $result=$all
     $result=$all;
     //	If name, keep only matching results
-    if(is_array($all) and $name){
+    if(is_array($all) and $agent){
       $result=array();
       foreach($all as $elem){
-	if(pl_stristr($elem['nom'],$name) or pl_stristr($elem['prenom'],$name)){
+	if(pl_stristr($elem['nom'],$agent) or pl_stristr($elem['prenom'],$agent)){
 	  $result[]=$elem;
 	}
       }
