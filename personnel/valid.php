@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 15 novembre 2013
+Dernière modification : 15 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -59,8 +59,8 @@ if(isset($_POST['id'])){
 
   // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
   $eDTSamedi=isset($_POST['EDTSamedi'])?$_POST['EDTSamedi']:null;
-  $premierLundi=$_POST['premierLundi'];
-  $dernierLundi=$_POST['dernierLundi'];
+  $premierLundi=isset($_POST['premierLundi'])?$_POST['premierLundi']:null;
+  $dernierLundi=isset($_POST['dernierLundi'])?$_POST['dernierLundi']:null;
   $mailResponsable=trim(htmlentities($_POST['mailResponsable'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
   $matricule=trim(htmlentities($_POST['matricule'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
 }
@@ -90,6 +90,10 @@ else{ // ?????????????
 
 switch($action){
   case "ajout" :
+    $db=new db();
+    $db->select("personnel","MAX(`id`) AS `id`");
+    $id=$db->result[0]['id']+1;
+
     $login=login($nom,$prenom);
     $mdp=gen_trivial_password();
     $mdp_crypt=md5($mdp);
@@ -98,11 +102,7 @@ switch($action){
       "heuresTravail"=>$heuresTravail,"arrivee"=>$arrivee,"depart"=>$depart,"login"=>$login,"password"=>$mdp_crypt,"actif"=>$actif,
       "droits"=>$droits,"postes"=>$postes,"temps"=>$temps,"informations"=>$informations,"recup"=>$recup,"site"=>$site,"mailResponsable"=>$mailResponsable,"matricule"=>$matricule);
     if(in_array("conges",$plugins)){
-      $insert["congesCredit"]=heure4($_POST['congesCredit']);
-      $insert["congesReliquat"]=heure4($_POST['congesReliquat']);
-      $insert["congesAnticipation"]=heure4($_POST['congesAnticipation']);
-      $insert["recupSamedi"]=heure4($_POST['recupSamedi']);
-      $insert["congesAnnuel"]=heure4($_POST['congesAnnuel']);
+      include "plugins/conges/ficheAgentValid.php";
     }
     $db=new db();
     $db->insert2("personnel",$insert);
@@ -117,9 +117,6 @@ switch($action){
     }
 */
     // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
-    $db=new db();
-    $db->select("personnel","MAX(`id`) AS `id`");
-    $id=$db->result[0]['id'];
     $p=new personnel();
     $p->updateEDTSamedi($eDTSamedi,$premierLundi,$dernierLundi,$id);
     
@@ -163,11 +160,7 @@ switch($action){
     }
 
     if(in_array("conges",$plugins)){
-      $update["congesCredit"]=heure4($_POST['congesCredit']);
-      $update["congesReliquat"]=heure4($_POST['congesReliquat']);
-      $update["congesAnticipation"]=heure4($_POST['congesAnticipation']);
-      $update["recupSamedi"]=heure4($_POST['recupSamedi']);
-      $update["congesAnnuel"]=heure4($_POST['congesAnnuel']);
+      include "plugins/conges/ficheAgentValid.php";
     }
 
     $db=new db();

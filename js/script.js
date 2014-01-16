@@ -6,7 +6,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 27 décembre 2013
+Dernière modification : 9 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -269,7 +269,7 @@ function information(message,type,top){
   $("body").append("<div id='JSInformation'>"+message+"</div>");
   errorHighlight($("#JSInformation"),type);
   position($("#JSInformation"),top,"center");
-  setTimeout("$('#JSInformation').hide()",5000);
+  setTimeout("$('#JSInformation').remove()",5000);
 }
 
 function initform(objet){

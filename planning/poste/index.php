@@ -7,7 +7,7 @@ Copyright (C) 2011-2013 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 27 décembre 2013
+Dernière modification : 10 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -484,7 +484,7 @@ else{
     // Tri des absences par nom
     usort($absences,"cmp_nom_prenom");
 
-    switch($config['absences_planning']){
+    switch($config['Absences-planning']){
       case "simple" :
 	if(!empty($absences)){
 	  echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
