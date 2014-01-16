@@ -3,7 +3,7 @@
 Planning Biblio, Version 1.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
-Copyright (C) 2011-2013 - Jérôme Combes
+Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/class.menu.inc
 Création : 22 juillet 2013

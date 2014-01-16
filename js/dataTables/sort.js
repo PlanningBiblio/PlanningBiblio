@@ -2,7 +2,7 @@
 Planning Biblio, Version 1.6.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
-Copyright (C) 2011-2013 - Jérôme Combes
+Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/dataTables/sort.js
 Création : 9 décembre 2013

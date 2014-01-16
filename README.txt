@@ -1,4 +1,4 @@
- Copyright (C) 2011-2013 - Jérôme Combes
+ Copyright (C) 2011-2014 - Jérôme Combes
 
  Planning Biblio est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
  suivant les termes de la "GNU General Public License", telle que publiée par la 
