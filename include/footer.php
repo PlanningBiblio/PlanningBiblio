@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/footer.php
 Création : mai 2011
-Dernière modification : 4 spetembre 2013
+Dernière modification : 17 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -22,7 +22,7 @@ if(!$version){
 ?>
 </div> <!-- content or planningPoste -->
 <div class='footer'>
-PlanningBiblio (<?php echo $version; ?>) - Copyright &copy; 2011-2013 - J&eacute;r&ocirc;me Combes - 
+PlanningBiblio (<?php echo $version; ?>) - Copyright &copy; 2011-2014 - J&eacute;r&ocirc;me Combes - 
 <a href='http://www.planningbiblio.fr' target='_blank' style='font-size:9pt;'>www.planningbiblio.fr</a>
 </div>
 </body>
