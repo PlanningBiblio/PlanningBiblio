@@ -1,9 +1,9 @@
 <?php
 /*
-Planning Biblio, Version 1.6.4
+Planning Biblio, Version 1.6.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
-Copyright (C) 2011-2013 - Jérôme Combes
+Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
@@ -23,7 +23,7 @@ Page en sortie :inclus le fichier footer.php
 session_start();
 
 // Initialisation des variables
-$version="1.6.4";
+$version="1.6.5";
 $get_menu=isset($_GET['menu'])?$_GET['menu']:"";
 $post_menu=isset($_POST['menu'])?$_POST['menu']:"";
 $page=isset($_GET['page'])?$_GET['page']:"planning/poste/index.php";

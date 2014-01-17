@@ -3,7 +3,7 @@
 Panning Biblio, Version 1.5.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
-Copyright (C) 2011-2013 - Jérôme Combes
+Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011

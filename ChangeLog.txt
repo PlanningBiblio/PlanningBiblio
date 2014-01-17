@@ -1,3 +1,15 @@
+***	Version 1.6.5	(Jérôme Combes, 16 janvier 2014)		***
+- Améliorations :
+Amélioration de l'affichage des notifications (JQuery-UI highlight et error)
+Amélioration des champs date (utilisation de JQuery-UI DatePicker, format JJ/MM/AAAA)
+Gestion du report des erreurs PHP à partir de la page de configuration
+Menu déroulant pour sélectionner les agents sur la page affichant la liste des absents
+Personalisation des destinataires des notifications d'absences en fonction du degré de validation (admin/config)
+
+- Corrections
+Faute de frappe dans la fiche des agents, onglet activités
+Remplace les fonctions PHP ereg (obsolètes) par preg_match
+
 ***	Version 1.6.4	(Jérôme Combes, 17 Décembre 2013)		***
 - Améliorations :
 Modification du logo
