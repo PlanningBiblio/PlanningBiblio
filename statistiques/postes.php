@@ -215,8 +215,8 @@ if(is_array($postes_list)){
     if($postes){
       $selected=in_array($elem['id'],$postes)?"selected='selected'":null;
     }
-    $color=$elem['obligatoire']=="Obligatoire"?"#00FA92":"#FFFFFF";
-    echo "<option value='{$elem['id']}' $selected style='background:$color;'>{$elem['nom']} ({$elem['etage']})</option>\n";
+    $class=$elem['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
+    echo "<option value='{$elem['id']}' $selected class='$class' >{$elem['nom']} ({$elem['etage']})</option>\n";
   }
 }
 echo "</select></td></tr>\n";
@@ -258,8 +258,8 @@ if($tab){
   echo "<td style='width:300px; padding-left:8px;'>Services</td>\n";
   echo "<td style='width:300px; padding-left:8px;'>Statuts</td></tr>\n";
   foreach($tab as $elem){
-    $color=$elem[0][3]=="Obligatoire"?"#00FA92":"#FFFFFF";
-    echo "<tr style='vertical-align:top; background:$color;'>\n";
+    $class=$elem[0][3]=="Obligatoire"?"td_obligatoire":"td_renfort";
+    echo "<tr style='vertical-align:top;' class='$class'>\n";
     //	Affichage du nom du poste dans la 1ère colonne
     $siteEtage=array();
     if($config['Multisites-nombre']>1){

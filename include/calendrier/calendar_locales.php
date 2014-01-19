@@ -61,9 +61,9 @@ $CalLun = "&#x263E;";
 
 // Months (from January to December)
 // Mois (de janvier a decembre)
-$MONTHS["fr"] = array("janvier", "f&eacute;vrier", "mars", "avril", "mai",
-                "juin", "juillet", "ao&ucirc;t", "septembre", "octobre",
-                "novembre", "d&eacute;cembre");
+$MONTHS["fr"] = array("Janvier", "F&eacute;vrier", "Mars", "Avril", "Mai",
+                "Juin", "Juillet", "Ao&ucirc;t", "Septembre", "Octobre",
+                "Novembre", "D&eacute;cembre");
 $MONTHS["en"] = array("January", "February", "March", "April", "May",
                 "June", "Jully", "August", "September", "October", "November",
                 "December");
@@ -107,7 +107,7 @@ $MONTH_HEADER["zh"] = "&#x2600; %y, %m";
 
 // Call back to the current date name value
 // Valeur du nom de rappel vers la date courante
-$CALLBACK["fr"] = "aujourd'hui";
+$CALLBACK["fr"] = "Aujourd'hui";
 $CALLBACK["en"] = "Today";
 $CALLBACK["de"] = "Heute";
 $CALLBACK["es"] = "hoy";

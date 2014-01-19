@@ -393,6 +393,9 @@ select
 
 .td_postes {
   width:192px;
+  font-size:12pt;
+  font-weight: bold;
+
 }
 
 .th{
@@ -756,14 +759,10 @@ img{
 
 .td_obligatoire{
   background:#00FA92;
-  font-size:12pt;
-  font-weight: bold;
 }
 
 .td_renfort{
   background:#FFFFFF;
-  font-size:12pt;
-  font-weight: bold;
 }
 
 /*	Cellules et Statuts	*/
