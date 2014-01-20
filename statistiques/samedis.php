@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/samedis.php
 Création : 15 novembre 2013
-Dernière modification : 9 décembre 2013
+Dernière modification : 20 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -39,26 +39,27 @@ if(!array_key_exists('stat_debut',$_SESSION)){
   $_SESSION['stat_debut']=null;
   $_SESSION['stat_fin']=null;
 }
-$debut=isset($_GET['debut'])?dateFr($_GET['debut']):$_SESSION['stat_debut'];
-$fin=isset($_GET['fin'])?dateFr($_GET['fin']):$_SESSION['stat_fin'];
+$debut=isset($_GET['debut'])?$_GET['debut']:$_SESSION['stat_debut'];
+$fin=isset($_GET['fin'])?$_GET['fin']:$_SESSION['stat_fin'];
 $agents=isset($_GET['agents'])?$_GET['agents']:$_SESSION['stat_samedis_agents'];
+$debutSQL=dateFr($debut);
+$finSQL=dateFr($fin);
+
 if(!$debut){
-  $debut=date("Y")."-01-01";
+  $debut="01/01/".date("Y");
 }
 $_SESSION['stat_debut']=$debut;
 if(!$fin){
-  $fin=date("Y-m-d");
+  $fin=date("d/m/Y");
 }
 $_SESSION['stat_fin']=$fin;
 $_SESSION['stat_samedis_agents']=$agents;
-$debutFr=dateFr($debut);
-$finFr=dateFr($fin);
 
 // Sélection des samedis entre le début et la fin
 $dates=array();
-$d=new datePl($debut);
-$current=$debut<=$d->dates[5]?$d->dates[5]:date("Y-m-d",strtotime("+1 week",strtotime($d->dates[5])));
-while($current<=$fin){
+$d=new datePl($debutSQL);
+$current=$debutSQL<=$d->dates[5]?$d->dates[5]:date("Y-m-d",strtotime("+1 week",strtotime($d->dates[5])));
+while($current<=$finSQL){
   $dates[]=$current;
   $current=date("Y-m-d",strtotime("+1 week",strtotime($current)));
 }
@@ -197,16 +198,16 @@ if(is_array($agents) and $agents[0] and $dates){
 $_SESSION['stat_tab']=$tab;
 
 //		--------------		Affichage en 2 partie : formulaire à gauche, résultat à droite
-echo "<table><tr style='vertical-align:top;'><td style='width:300px;'>\n";
+echo "<table><tr style='vertical-align:top;'><td id='stat-col1'>\n";
 //		--------------		Affichage du formulaire permettant de sélectionner les dates et les agents		-------------
 echo "<form name='form' action='index.php' method='get'>\n";
 echo "<input type='hidden' name='page' value='statistiques/samedis.php' />\n";
 echo "<table>\n";
 echo "<tr><td>Début : </td>\n";
-echo "<td><input type='text' name='debut' value='$debutFr' class='datepicker'/>\n";
+echo "<td><input type='text' name='debut' value='$debut' class='datepicker'/>\n";
 echo "</td></tr>\n";
 echo "<tr><td>Fin : </td>\n";
-echo "<td><input type='text' name='fin' value='$finFr' class='datepicker'/>\n";
+echo "<td><input type='text' name='fin' value='$fin' class='datepicker'/>\n";
 echo "</td></tr>\n";
 echo "<tr style='vertical-align:top'><td>Agents : </td>\n";
 echo "<td><select name='agents[]' multiple='multiple' size='20' onchange='verif_select(\"agents\");'>\n";
@@ -248,7 +249,7 @@ echo "</td><td>\n";
 
 // 		--------------------------		Affichage du tableau de résultat		--------------------
 if($tab){
-  echo "<b>Statistiques sur les samedis du ".dateFr($debut)." au ".dateFr($fin)."</b><br/>\n";
+  echo "<b>Statistiques sur les samedis du $debut au $fin</b><br/>\n";
   echo $nbJours>1?"$nbJours samedis":"$nbJours samedi";
   echo "<br/><br/>\n";
   echo "<table id='table_samedis'>\n";
@@ -364,8 +365,6 @@ echo "</td></tr></table>\n";
 ?>
 <script type='text/JavaScript'>
 $(document).ready(function() {
-  $(".datepicker").datepicker();
-
   $("#table_samedis").dataTable({
     "bJQueryUI": true,
     "sPaginationType": "full_numbers",

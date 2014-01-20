@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/postes_synthese.php
 Création : mai 2011
-Dernière modification : 20 novembre 2013
+Dernière modification : 20 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -18,7 +18,7 @@ Page appelée par le fichier index.php, accessible par le menu statistiques / Pa
 
 require_once "class.statistiques.php";
 
-echo "<h3>Statistiques par poste</h3>\n";
+echo "<h3>Statistiques par poste (Synthèse)</h3>\n";
 //	Variables :
 $joursParSemaine=$config['Dimanche']?7:6;
 
@@ -36,11 +36,14 @@ $debut=isset($_GET['debut'])?$_GET['debut']:$_SESSION['stat_debut'];
 $fin=isset($_GET['fin'])?$_GET['fin']:$_SESSION['stat_fin'];
 $postes=isset($_GET['postes'])?$_GET['postes']:$_SESSION['stat_poste_postes'];
 $tri=isset($_GET['tri'])?$_GET['tri']:$_SESSION['stat_poste_tri'];
+$debutSQL=dateFr($debut);
+$finSQL=dateFr($fin);
+
 if(!$debut)
-  $debut=date("Y")."-01-01";
+  $debut="01/01/".date("Y");
 $_SESSION['stat_debut']=$debut;
 if(!$fin)
-  $fin=date("Y-m-d");
+  $fin=date("d/m/Y");
 $_SESSION['stat_fin']=$fin;
 $_SESSION['stat_poste_postes']=$postes;
 if(!$tri)
@@ -90,7 +93,7 @@ if(is_array($postes)){
     `{$dbprefix}personnel`.`id` as `perso_id`, `{$dbprefix}pl_poste`.site as `site` 
     FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}personnel` 
     ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id` 
-    WHERE `{$dbprefix}pl_poste`.`date`>='$debut' AND `{$dbprefix}pl_poste`.`date`<='$fin' 
+    WHERE `{$dbprefix}pl_poste`.`date`>='$debutSQL' AND `{$dbprefix}pl_poste`.`date`<='$finSQL' 
     AND `{$dbprefix}pl_poste`.`poste` IN ($postes_select) AND `{$dbprefix}pl_poste`.`absent`<>'1' 
     AND `{$dbprefix}pl_poste`.`supprime`<>'1' $reqSites ORDER BY `poste`,`nom`,`prenom`;";
   $db->query($req);
@@ -140,8 +143,8 @@ if(is_array($postes)){
 
 // Heures et jours d'ouverture au public
 $s=new statistiques();
-$s->debut=$debut;
-$s->fin=$fin;
+$s->debut=$debutSQL;
+$s->fin=$finSQL;
 $s->joursParSemaine=$joursParSemaine;
 $s->selectedSites=$selectedSites;
 $s->ouverture();
@@ -154,16 +157,16 @@ usort($tab,$tri);
 $_SESSION['stat_tab']=$tab;
 	
 //		--------------		Affichage en 2 partie : formulaire à gauche, résultat à droite
-echo "<table><tr style='vertical-align:top;'><td style='width:300px;'>\n";
+echo "<table><tr style='vertical-align:top;'><td id='stat-col1'>\n";
 //		--------------		Affichage du formulaire permettant de sélectionner les dates et les postes		-------------
 echo "<form name='form' action='index.php' method='get'>\n";
 echo "<input type='hidden' name='page' value='statistiques/postes_synthese.php' />\n";
 echo "<table>\n";
 echo "<tr><td>Début : </td>\n";
-echo "<td><input type='text' name='debut' value='$debut' />&nbsp;<img src='img/calendrier.gif' onclick='calendrier(\"debut\");' alt='calendrier' />\n";
+echo "<td><input type='text' name='debut' value='$debut' class='datepicker' />\n";
 echo "</td></tr>\n";
 echo "<tr><td>Fin : </td>\n";
-echo "<td><input type='text' name='fin' value='$fin' />&nbsp;<img src='img/calendrier.gif' onclick='calendrier(\"fin\");' alt='calendrier' />\n";
+echo "<td><input type='text' name='fin' value='$fin' class='datepicker' />\n";
 echo "</td></tr>\n";
 echo "<tr><td>Tri : </td>\n";
 echo "<td>\n";
@@ -184,8 +187,8 @@ if(is_array($postes_list)){
     if($postes){
       $selected=in_array($elem['id'],$postes)?"selected='selected'":null;
     }
-    $color=$elem['obligatoire']=="Obligatoire"?"#00FA92":"#FFFFFF";
-    echo "<option value='{$elem['id']}' $selected style='background:$color;'>{$elem['nom']} ({$elem['etage']})</option>\n";
+    $class=$elem['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
+    echo "<option value='{$elem['id']}' $selected class='$class'>{$elem['nom']} ({$elem['etage']})</option>\n";
   }
 }
 echo "</select></td></tr>\n";
@@ -218,7 +221,12 @@ echo "</td><td>\n";
 
 // 		--------------------------		Affichage du tableau de résultat		--------------------
 if($tab){
-  echo "<b>Statistiques par poste (Synthèse) du ".dateFr($debut)." au ".dateFr($fin)."</b>\n";
+  //	Recherche du nombre de jours concernés
+  $db=new db();
+  $db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debutSQL' AND '$finSQL' $reqSites GROUP BY `date`;");
+  $nbJours=$db->nb;
+
+  echo "<b>Statistiques par poste (Synthèse) du $debut au $fin</b>\n";
   echo $ouverture;
   echo "<table border='1' cellspacing='0' cellpadding='0'>\n";
   echo "<tr class='th'>\n";
@@ -227,12 +235,14 @@ if($tab){
   echo "<td style='width:100px; padding-left:8px;'>Moyenne jour</td>\n";
   echo "<td style='width:180px; padding-left:8px;'>Moyenne hebdomadaire</td></tr>\n";
   foreach($tab as $elem){
-    $color=$elem[0][3]=="Obligatoire"?"#00FA92":"#FFFFFF";
+    $class=$elem[0][3]=="Obligatoire"?"td_obligatoire":"td_renfort";
     $jour=$elem[2]/$nbJours;
     $hebdo=$jour*$joursParSemaine;
     $total_heures+=$elem[2];
     $total_jour+=$jour;
     $total_hebdo+=$hebdo;
+
+    // Sites
     $siteEtage=array();
     if($config['Multisites-nombre']>1){
       for($i=1;$i<=$config['Multisites-nombre'];$i++){
@@ -242,13 +252,18 @@ if($tab){
 	}
       }
     }
+    // Etages
     if($elem[0][2]){
       $siteEtage[]=$elem[0][2];
     }
     if(!empty($siteEtage)){
       $siteEtage="(".join(" ",$siteEtage).")";
     }
-    echo "<tr style='vertical-align:top; background:$color;'>\n";
+    else{
+      $siteEtage=null;
+    }
+
+    echo "<tr style='vertical-align:top;' class='$class'>\n";
     echo "<td style='padding-left:8px;'><b>{$elem[0][1]}</b><br/><i>$siteEtage</i></td>\n";
     echo "<td style='padding-right:8px;text-align:right;'>".number_format(round($elem[2],2),2,',',' ')."</td>\n";
     echo "<td style='padding-right:8px;text-align:right;'>".number_format(round($jour,2),2,',',' ')."</td>\n";

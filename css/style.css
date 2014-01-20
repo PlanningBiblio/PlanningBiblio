@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification : 19 janvier 2014
+Dernière modification : 20 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -451,73 +451,6 @@ select
 	display:none;
 	}
 
-.dragme
-	{
-	position:relative;
-	color:#7D3C25;
-	text-decoration:none;
-	font-size:9.5pt;
-	font-family:Verdana;
-	}
-
-.index
-	{
-	color:#CC3300;
-	text-decoration:none;
-	font-size:10px
-	}
-
-.index2
-	{
-	color:#CC3300;
-	font-size:10.0pt;
-	font-family:Verdana;
-	text-decoration:none;
-	}
-
-.landscape
-	{
-	writing-mode:tb-rl;
-	white-space: nowrap;
-	text-align:center;
-	color:#7D3C25;
-	text-decoration:none;
-	font-size:9pt;
-	font-family:Verdana;
-	}
-
-.landscape1
-	{
-	writing-mode:tb-rl;
-	white-space: nowrap;
-	color:#FFFFFF;
-	text-decoration:none;
-	font-size:10pt;
-	font-family:Verdana;
-	font-weight: bold;
-	text-align:center;
-	}
-
-.landscape-left
-	{
-	writing-mode:tb-rl;
-	white-space: nowrap; /*normal*/
-	text-align:left;
-	color:#7D3C25;
-	text-decoration:none;
-	font-size:8.5pt;
-	font-family:Verdana;
-	}
-	
-
-.lien
-	{
-	color:#CC3300;
-	text-decoration:none;
-	font-size:10.0pt;
-	font-family:Verdana;
-	}
-
 .menu
 	{
 	background:white;
@@ -564,19 +497,6 @@ a:hover.menuRed, a:hover.menu {
 	font-weight: bold
 	}
 
-.hidden
-	{
-	display:none;
-	}
-	
-.recherche
-	{
-	color:#CC3300;
-	text-decoration:none;
-	font-size:10.0pt;
-	font-family:Verdana;
-	}
-	
 .right
 	{
 	color:#7D3C25;
@@ -593,11 +513,6 @@ a:hover.menuRed, a:hover.menu {
 	text-decoration:none;
 	font-size:9.0pt;
 	font-family:Verdana;
-	}
-
-.text_clic
-	{
-	cursor:pointer;
 	}
 
 .titre
@@ -629,15 +544,6 @@ a:hover.menuRed, a:hover.menu {
 	color:#FFF;
 	text-decoration:none;
 	font-size:11.0pt;
-	font-family:Verdana;
-	font-weight: bold
-	}
-
-.tr10
-	{
-	color:#FFF;
-	text-decoration:none;
-	font-size:9.5pt;
 	font-family:Verdana;
 	font-weight: bold
 	}
@@ -700,9 +606,6 @@ a:hover.menuRed, a:hover.menu {
 }
 
 
-/*                                                                            */
-/* Feuille de style du calendrier                                             */
-/*                                                                            */
 /*		DIV Flotant		*/
 #calendrier {		
 	position:absolute;
@@ -797,6 +700,15 @@ img{
 }
 
 /*	Statistiques	*/
+/* Statistiques */
+#stat-col1{
+  width:350px;
+}
+
+#stat-col1 select,#stat-col1 input[type=text]{
+  width:250px;
+}
+
 .statistiques-heures{
   text-align:right;
   white-space:nowrap;

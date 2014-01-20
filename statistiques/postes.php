@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/postes.php
 Création : mai 2011
-Dernière modification : 20 novembre 2013
+Dernière modification : 20 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -41,11 +41,14 @@ $debut=isset($_GET['debut'])?$_GET['debut']:$_SESSION['stat_debut'];
 $fin=isset($_GET['fin'])?$_GET['fin']:$_SESSION['stat_fin'];
 $postes=isset($_GET['postes'])?$_GET['postes']:$_SESSION['stat_poste_postes'];
 $tri=isset($_GET['tri'])?$_GET['tri']:$_SESSION['stat_poste_tri'];
+$debutSQL=dateFr($debut);
+$finSQL=dateFr($fin);
+
 if(!$debut)
-  $debut=date("Y")."-01-01";
+  $debut="01/01/".date("Y");
 $_SESSION['stat_debut']=$debut;
 if(!$fin)
-  $fin=date("Y-m-d");
+  $fin=date("d/m/Y");
 $_SESSION['stat_fin']=$fin;
 $_SESSION['stat_poste_postes']=$postes;
 if(!$tri)
@@ -88,7 +91,7 @@ $postes_list=$db->result;
 if(is_array($postes)){
   //	Recherche du nombre de jours concernés
   $db=new db();
-  $db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debut' AND '$fin' $reqSites GROUP BY `date`;");
+  $db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debutSQL' AND '$finSQL' $reqSites GROUP BY `date`;");
   $nbJours=$db->nb;
   
   //	Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
@@ -100,7 +103,7 @@ if(is_array($postes)){
     `{$dbprefix}personnel`.`nom` as `nom`, `{$dbprefix}personnel`.`prenom` as `prenom`, 
     `{$dbprefix}personnel`.`id` as `perso_id`, `{$dbprefix}pl_poste`.site as `site` FROM `{$dbprefix}pl_poste` 
     INNER JOIN `{$dbprefix}personnel` ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id` 
-    WHERE `{$dbprefix}pl_poste`.`date`>='$debut' AND `{$dbprefix}pl_poste`.`date`<='$fin' 
+    WHERE `{$dbprefix}pl_poste`.`date`>='$debutSQL' AND `{$dbprefix}pl_poste`.`date`<='$finSQL' 
     AND `{$dbprefix}pl_poste`.`poste` IN ($postes_select) AND `{$dbprefix}pl_poste`.`absent`<>'1' 
     AND `{$dbprefix}pl_poste`.`supprime`<>'1' $reqSites ORDER BY `poste`,`nom`,`prenom`;";
   $db->query($req);
@@ -170,8 +173,8 @@ if(is_array($postes)){
 
 // Heures et jours d'ouverture au public
 $s=new statistiques();
-$s->debut=$debut;
-$s->fin=$fin;
+$s->debut=$debutSQL;
+$s->fin=$finSQL;
 $s->joursParSemaine=$joursParSemaine;
 $s->selectedSites=$selectedSites;
 $s->ouverture();
@@ -185,16 +188,17 @@ usort($tab,$tri);
 $_SESSION['stat_tab']=$tab;
 
 //		--------------		Affichage en 2 partie : formulaire à gauche, résultat à droite
-echo "<table><tr style='vertical-align:top;'><td style='width:300px;'>\n";
+echo "<div id='statistiques'>\n";
+echo "<table><tr style='vertical-align:top;'><td id='stat-col1'>\n";
 //		--------------		Affichage du formulaire permettant de sélectionner les dates et les postes		-------------
 echo "<form name='form' action='index.php' method='get'>\n";
 echo "<input type='hidden' name='page' value='statistiques/postes.php' />\n";
 echo "<table>\n";
 echo "<tr><td>Début : </td>\n";
-echo "<td><input type='text' name='debut' value='$debut' />&nbsp;<img src='img/calendrier.gif' onclick='calendrier(\"debut\");' alt='calendrier' />\n";
+echo "<td><input type='text' name='debut' value='$debut' class='datepicker'/>\n";
 echo "</td></tr>\n";
 echo "<tr><td>Fin : </td>\n";
-echo "<td><input type='text' name='fin' value='$fin' />&nbsp;<img src='img/calendrier.gif' onclick='calendrier(\"fin\");' alt='calendrier' />\n";
+echo "<td><input type='text' name='fin' value='$fin' class='datepicker'/>\n";
 echo "</td></tr>\n";
 echo "<tr><td>Tri : </td>\n";
 echo "<td>\n";
@@ -249,7 +253,7 @@ echo "</td><td>\n";
 
 // 		--------------------------		Affichage du tableau de résultat		--------------------
 if($tab){
-  echo "<b>Statistiques par poste du ".dateFr($debut)." au ".dateFr($fin)."</b>\n";
+  echo "<b>Statistiques par poste du $debut au $fin</b>\n";
   echo $ouverture;
   echo "<table border='1' cellspacing='0' cellpadding='0'>\n";
   echo "<tr class='th'>\n";
@@ -261,6 +265,7 @@ if($tab){
     $class=$elem[0][3]=="Obligatoire"?"td_obligatoire":"td_renfort";
     echo "<tr style='vertical-align:top;' class='$class'>\n";
     //	Affichage du nom du poste dans la 1ère colonne
+    // Sites
     $siteEtage=array();
     if($config['Multisites-nombre']>1){
       for($i=1;$i<=$config['Multisites-nombre'];$i++){
@@ -270,11 +275,15 @@ if($tab){
 	}
       }
     }
+    // Etages
     if($elem[0][2]){
       $siteEtage[]=$elem[0][2];
     }
     if(!empty($siteEtage)){
       $siteEtage="(".join(" ",$siteEtage).")";
+    }
+    else{
+      $siteEtage=null;
     }
     echo "<td style='padding-left:8px;'>";
     echo "<table><tr><td colspan='2'><b>{$elem[0][1]}</b></td></tr>";
@@ -337,5 +346,6 @@ if($tab){
 }
 //		----------------------			Fin d'affichage		----------------------------
 echo "</td></tr></table>\n";
+echo "</div> <!-- Statistiques -->\n";
 echo "<script type='text/JavaScript'>document.form.tri.value='$tri';</script>\n";
 ?>
