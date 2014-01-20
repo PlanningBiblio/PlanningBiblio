@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.5
+Planning Biblio, Version 1.6.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/service.php
 Création : 9 septembre 2013
-Dernière modification : 20 novembre 2013
+Dernière modification : 20 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -32,25 +32,28 @@ $exists_JF=false;
 
 include "include/horaires.php";
 //		--------------		Initialisation  des variables 'debut','fin' et 'service'		-------------------
-if(!array_key_exists('stat_service_services',$_SESSION['oups'])){
-  $_SESSION['oups']['stat_service_services']=null;
+if(!array_key_exists('stat_service_services',$_SESSION)){
+  $_SESSION['stat_service_services']=null;
 }
-if(!array_key_exists('stat_debut',$_SESSION['oups'])){
-  $_SESSION['oups']['stat_debut']=null;
-  $_SESSION['oups']['stat_fin']=null;
+if(!array_key_exists('stat_debut',$_SESSION)){
+  $_SESSION['stat_debut']=null;
+  $_SESSION['stat_fin']=null;
 }
-$debut=isset($_GET['debut'])?$_GET['debut']:$_SESSION['oups']['stat_debut'];
-$fin=isset($_GET['fin'])?$_GET['fin']:$_SESSION['oups']['stat_fin'];
-$services=isset($_GET['services'])?$_GET['services']:$_SESSION['oups']['stat_service_services'];
+$debut=isset($_GET['debut'])?$_GET['debut']:$_SESSION['stat_debut'];
+$fin=isset($_GET['fin'])?$_GET['fin']:$_SESSION['stat_fin'];
+$services=isset($_GET['services'])?$_GET['services']:$_SESSION['stat_service_services'];
+$debutSQL=dateFr($debut);
+$finSQL=dateFr($fin);
+
 if(!$debut){
-  $debut=date("Y")."-01-01";
+  $debut="01/01/".date("Y");
 }
-$_SESSION['oups']['stat_debut']=$debut;
+$_SESSION['stat_debut']=$debut;
 if(!$fin){
-  $fin=date("Y-m-d");
+  $fin=date("d/m/Y");
 }
-$_SESSION['oups']['stat_fin']=$fin;
-$_SESSION['oups']['stat_service_services']=$services;
+$_SESSION['stat_fin']=$fin;
+$_SESSION['stat_service_services']=$services;
 
 // Filtre les sites
 if(!array_key_exists('stat_service_sites',$_SESSION)){
@@ -83,7 +86,7 @@ $services_list=$db->result;
 if(is_array($services) and $services[0]){
   //	Recherche du nombre de jours concernés
   $db=new db();
-  $db->select("pl_poste","date","`date` BETWEEN '$debut' AND '$fin' $reqSites","GROUP BY `date`");
+  $db->select("pl_poste","date","`date` BETWEEN '$debutSQL' AND '$finSQL' $reqSites","GROUP BY `date`");
   $nbJours=$db->nb;
 
   // Recherche des services de chaque agent
@@ -111,7 +114,7 @@ if(is_array($services) and $services[0]){
     `{$dbprefix}pl_poste`.`site` as `site` 
     FROM `{$dbprefix}pl_poste` 
     INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` 
-    WHERE `{$dbprefix}pl_poste`.`date`>='$debut' AND `{$dbprefix}pl_poste`.`date`<='$fin' 
+    WHERE `{$dbprefix}pl_poste`.`date`>='$debutSQL' AND `{$dbprefix}pl_poste`.`date`<='$finSQL' 
     AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' $reqSites 
     ORDER BY `poste_nom`,`etage`;";
   $db->query($req);
@@ -223,8 +226,8 @@ if(is_array($services) and $services[0]){
 
 // Heures et jours d'ouverture au public
 $s=new statistiques();
-$s->debut=$debut;
-$s->fin=$fin;
+$s->debut=$debutSQL;
+$s->fin=$finSQL;
 $s->joursParSemaine=$joursParSemaine;
 $s->selectedSites=$selectedSites;
 $s->ouverture();
@@ -234,16 +237,16 @@ $ouverture=$s->ouvertureTexte;
 $_SESSION['stat_tab']=$tab;
 
 //		--------------		Affichage en 2 partie : formulaire à gauche, résultat à droite
-echo "<table><tr style='vertical-align:top;'><td style='width:300px;'>\n";
+echo "<table><tr style='vertical-align:top;'><td id='stat-col1'>\n";
 //		--------------		Affichage du formulaire permettant de sélectionner les dates et les agents		-------------
 echo "<form name='form' action='index.php' method='get'>\n";
 echo "<input type='hidden' name='page' value='statistiques/service.php' />\n";
 echo "<table>\n";
 echo "<tr><td>Début : </td>\n";
-echo "<td><input type='text' name='debut' value='$debut' />&nbsp;<img src='img/calendrier.gif' onclick='calendrier(\"debut\");' alt='calendrier' />\n";
+echo "<td><input type='text' name='debut' value='$debut' class='datepicker'/>\n";
 echo "</td></tr>\n";
 echo "<tr><td>Fin : </td>\n";
-echo "<td><input type='text' name='fin' value='$fin' />&nbsp;<img src='img/calendrier.gif' onclick='calendrier(\"fin\");' alt='calendrier' />\n";
+echo "<td><input type='text' name='fin' value='$fin' class='datepicker'/>\n";
 echo "</td></tr>\n";
 echo "<tr style='vertical-align:top'><td>Services : </td>\n";
 
@@ -286,7 +289,7 @@ echo "</td><td>\n";
 
 // 		--------------------------		Affichage du tableau de résultat		--------------------
 if($tab){
-  echo "<b>Statistiques par service du ".dateFr($debut)." au ".dateFr($fin)."</b>\n";
+  echo "<b>Statistiques par service du $debut au $fin</b>\n";
   echo $ouverture;
   echo "<table border='1' cellspacing='0' cellpadding='0'>\n";
   echo "<tr class='th'>\n";

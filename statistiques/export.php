@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.5
+Planning Biblio, Version 1.6.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/export.php
 Création : mai 2011
-Dernière modification : 18 novembre 2013
+Dernière modification : 20 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,8 +20,13 @@ Page appelée par la fonction JavaScript "export_stat" lors du clique sur les li
 require_once "class.statistiques.php";
 
  // Compter les jours ouvrables (ou ouvrés) entre début et fin
+$debut=$_SESSION['stat_debut'];
+$fin=$_SESSION['stat_fin'];
+$debutSQL=dateFr($debut);
+$finSQL=dateFr($fin);
+
 $db=new db();
-$db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '{$_SESSION['stat_debut']}' AND '{$_SESSION['stat_fin']}' GROUP BY `date`;");
+$db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debutSQL' AND '$finSQL' GROUP BY `date`;");
 $nbJours=$db->nb;
 
 $joursParSemaine=$config['Dimanche']?7:6;
@@ -38,8 +43,8 @@ else{
 
 $tab=$_SESSION['stat_tab'];
 
-$debut=dateAlpha($_SESSION['stat_debut']);
-$fin=dateAlpha($_SESSION['stat_fin']);
+$debut=dateAlpha($debutSQL);
+$fin=dateAlpha($finSQL);
 
 $lignes=Array();
 

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.5
+Planning Biblio, Version 1.6.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 31 octobre 2013
+Dernière modification : 20 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -130,21 +130,25 @@ class planning{
       //			----------------------		Sans repas		------------------------------------------//
       //			(Peut être amélioré : vérifie si l'agent est déjà placé entre 11h30 et 14h30 
       //			mais ne vérfie pas la continuité. Ne marque pas la 2ème cellule en javascript (rafraichissement OK))
-      if($debut>="11:30:00" and $fin<="14:30:00"){
-	$db_sr=new db();
-	$db_sr->query("SELECT * FROM `{$dbprefix}pl_poste` WHERE `date`='$date' AND `perso_id`='{$elem['id']}' AND `debut` >='11:30:00' AND `fin`<='14:30:00';");
-	if($db_sr->result){
-	  $sr=1;
-	  $nom.=" (SR)";
-	  $color='red';
+      if($config['Planning-sansRepas']){
+	if($debut>="11:30:00" and $fin<="14:30:00"){
+	  $db_sr=new db();
+	  $db_sr->query("SELECT * FROM `{$dbprefix}pl_poste` WHERE `date`='$date' AND `perso_id`='{$elem['id']}' AND `debut` >='11:30:00' AND `fin`<='14:30:00';");
+	  if($db_sr->result){
+	    $sr=1;
+	    $nom.=" (SR)";
+	    $color='red';
+	  }
 	}
       }
 	      
       $nom_menu=$nom;
       //			----------------------		Déjà placés		-----------------------------------------------------//
-      if(in_array($elem['id'],$deja)){					//	Déjà placé pour ce poste
-	$nom_menu.=" ".$msg_deja_place;
-	$color='red';
+      if($config['Planning-dejaPlace']){
+	if(in_array($elem['id'],$deja)){	// Déjà placé pour ce poste
+	  $nom_menu.=" ".$msg_deja_place;
+	  $color='red';
+	}
       }
       //			----------------------		FIN Déjà placés		-----------------------------------------------------//
 

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.5
+Planning Biblio, Version 1.6.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 10 janvier 2014
+Dernière modification : 19 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -434,7 +434,7 @@ else{
 	foreach($lignes as $ligne){
 	  if($ligne['tableau']==$tab[0] and $ligne['type']=="poste"){
 	    $class=$postes[$ligne['poste']]['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
-	    echo "<tr><td class='$class'>{$postes[$ligne['poste']]['nom']}";
+	    echo "<tr><td class='td_postes $class'>{$postes[$ligne['poste']]['nom']}";
 	    if($config['affiche_etage']){
 	      echo " ({$postes[$ligne['poste']]['etage']})";
 	    }

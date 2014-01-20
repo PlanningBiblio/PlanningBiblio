@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.5
+Planning Biblio, Version 1.6.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/menu.php
 Création : mai 2011
-Dernière modification : 17 décembre 2013
+Dernière modification : 18 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -101,7 +101,7 @@ document.onclick = kill;
 echo "<div id='topgauche'>\n";
 echo "<table cellpadding='0' cellspacing='0' border='0' style='width:100%;'><tr>\n";
 echo "<td style='width:340px;text-align:left' rowspan='4'><font class='noprint'>\n";
-echo "<a href='index.php'><img src='img/logo.png' alt='Logo' id='logo' style='width:160px;margin-top:7px;' border='0'/></a>\n";
+echo "<a href='index.php'><img src='img/logo.png' alt='Logo' id='logo' border='0'/></a>\n";
 echo "</font></td></tr>\n";
 echo "<tr><td>&nbsp;</td></tr>\n";
 echo "<tr id='topmenu'>\n";

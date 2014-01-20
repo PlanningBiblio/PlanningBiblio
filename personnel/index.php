@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.5
+Planning Biblio, Version 1.6.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 9 décembre 2013
+Dernière modification : 19 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -113,7 +113,6 @@ echo "<th>Acc&egrave;s</th>";
 echo "</thead>\n";
 echo "<tbody>\n";
 $i=0;
-$class="tr1";
 foreach($agents as $agent){
   $id=$agent['id'];
   
@@ -128,9 +127,7 @@ foreach($agents as $agent){
   }
   $agent['service']=str_replace("`","'",$agent['service']);
 
-  $class=$class=="tr2"?"tr1":"tr2";
-
-  echo "<tr class='$class'><td style='white-space:nowrap;'>\n";
+  echo "<tr><td style='white-space:nowrap;'>\n";
   echo "<input type='checkbox' name='chk$i' value='$id' class='checkAgent'/>\n";
   echo "<a href='index.php?page=personnel/modif.php&amp;id=$id'><img src='img/modif.png' border='0' alt='Modif' /></a>";
   if(in_array(21,$droits) and $id!=$_SESSION['login_id']){
