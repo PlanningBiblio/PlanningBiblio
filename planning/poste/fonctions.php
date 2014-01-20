@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 8 décembre 2013
+Dernière modification : 20 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -33,14 +33,18 @@ function cellule_poste($debut,$fin,$colspan,$output,$poste){
 	if($elem['prenom'])
 	  $resultat.=" ".substr($elem['prenom'],0,1).".";
 	//		Affichage des sans repas
-	if($debut>="11:30:00" and $fin<="14:30:00"){
-	  $sr=0;
-	  foreach($GLOBALS['cellules'] as $elem2){
-	    if($elem2['debut']>="11:30:00" and $elem2['fin']<="14:30:00" and $elem2['perso_id']==$elem['perso_id'])
-		    $sr++;
+	if($GLOBALS['config']['Planning-sansRepas']){
+	  if($debut>="11:30:00" and $fin<="14:30:00"){
+	    $sr=0;
+	    foreach($GLOBALS['cellules'] as $elem2){
+	      if($elem2['debut']>="11:30:00" and $elem2['fin']<="14:30:00" and $elem2['perso_id']==$elem['perso_id']){
+		$sr++;
+	      }
+	    }
+	    if($sr>1){
+	      $resultat.="<label class='sansRepas'> (SR)</label>";
+	    }
 	  }
-	  if($sr>1)
-	    $resultat.=" (SR)";
 	}
 	//		On barre les absents
 	if($elem['absent'] or $elem['supprime']){
