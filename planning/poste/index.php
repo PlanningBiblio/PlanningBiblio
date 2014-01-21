@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 19 janvier 2014
+Dernière modification : 21 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -420,7 +420,7 @@ else{
   foreach($tabs as $tab){
     if(array_key_exists(1,$tab)){
       //		Lignes horaires
-      echo "<tr id='tr_horaires'>\n";
+      echo "<tr class='tr_horaires'>\n";
       echo "<td class='td_postes'>{$titres[$tab[0]]}</td>\n";
       $colspan=0;
       for($i=1;$i<count($tab);$i++){

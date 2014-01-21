@@ -1,3 +1,12 @@
+***	Version 1.6.7	(Jérôme Combes, 21 janvier 2014)		***
+- Améliorations :
+Nombre de tableaux paramétrable
+
+***	Version 1.6.6	(Jérôme Combes, 20 janvier 2014)		***
+- Améliorations :
+Améliorations du style
+Permet d'afficher ou non les notifications "Sans Repas" et "Déjà placé"
+
 ***	Version 1.6.5	(Jérôme Combes, 16 janvier 2014)		***
 - Améliorations :
 Amélioration de l'affichage des notifications (JQuery-UI highlight et error)

@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 9 janvier 2014
+Dernière modification : 21 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -389,6 +389,20 @@ function supprime_jourFerie(id){
       document.getElementById("jour"+id).value="";
     }
   }
+}
+
+function tableauxNombre(){
+$.ajax({
+    url: "planning/postes_cfg/ajax.tableaux.php",
+    type: "get",
+    data: "id="+$("#id").val()+"&nombre="+$("#nombre").val(),
+    success: function(){
+      location.href="index.php?page=planning/postes_cfg/modif.php&numero="+$("#id").val();
+    },
+    error: function(){
+      information("Une erreur est survenue lors de la modification du nombre de tableaux.","error");
+    }
+  });
 }
 
 function tabSiteUpdate(){

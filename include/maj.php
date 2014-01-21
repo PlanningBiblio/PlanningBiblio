@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 20 janvier 2014
+Dernière modification : 21 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -426,6 +426,10 @@ if(strcmp("1.6.6",$config['Version'])>0){
     VALUES ('Planning-sansRepas','boolean','1','Afficher une notification pour les Sans Repas dans le menu d&eacute;roulant et dans le planning','Menu d&eacute;roulant du planning','10'),
     ('Planning-dejaPlace','boolean','1','Afficher une notification pour les agents d&eacute;j&agrave; plac&eacute; sur un poste dans le menu d&eacute;roulant du planning','Menu d&eacute;roulant du planning','11');";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.6.6' WHERE `nom`='Version';";
+}
+
+if(strcmp("1.6.7",$config['Version'])>0){
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.6.7' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage

@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/class.tableaux.php
 Création : mai 2011
-Dernière modification : 07 novembre 2013
+Dernière modification : 21 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,7 +23,11 @@ if(!$version and !strpos($_SERVER['SCRIPT_NAME'],"groupes_supp.php")){
 
 class tableau{
   public $elements=array();
-  
+  public $id=null;
+  public $length=null;
+  public $next=null;
+  public $numbers=null;
+
   public function deleteGroup($id){
     $db=new db();
     $db->delete("pl_poste_tab_grp","`id`='$id'");
@@ -53,6 +57,62 @@ class tableau{
     $db=new db();
     $db->select("pl_poste_tab_grp","*","`id`='$id'");
     $this->elements=$db->result[0];
+  }
+
+  public  function getNumbers(){
+    $db=new db();
+    $db->select("pl_poste_horaires","tableau","numero='{$this->id}'","group by tableau");
+    if(!$db->result){
+      return;
+    }
+
+    $numbers=array();
+    foreach($db->result as $elem){
+      $numbers[]=$elem['tableau'];
+    }
+    $length=count($numbers);
+    sort($numbers);
+    $next=$numbers[$length-1]+1;
+    
+    $this->length=$length;
+    $this->next=$next;
+    $this->numbers=$numbers;
+  }
+
+  public  function setNumbers($number){
+    $this->getNumbers();
+    $length=$this->length;
+    $next=$this->next;
+    $numbers=$this->numbers;
+    $id=$this->id;
+
+    $diff=intval($number)-intval($length);
+    if($diff==0){
+      return;
+    }
+
+    if($diff>0){
+      for($i=$next;$i<($diff+$next);$i++){
+	$horaires=array("debut"=>"09:00:00","fin"=>"10:00:00","tableau"=>$i,"numero"=>$id);
+	$db=new db();
+	$db->insert2("pl_poste_horaires",$horaires);
+
+	$lignes=array("ligne"=>0,"poste"=>0,"type"=>"poste","tableau"=>$i,"numero"=>$id);
+	$db=new db();
+	$db->insert2("pl_poste_lignes",$lignes);
+      }
+    }
+
+    if($diff<0){
+      $i=$number;
+      while($numbers[$i]){
+	$db=new db();
+	$db->delete("pl_poste_horaires","tableau='{$numbers[$i]}' AND numero=$id");
+	$db=new db();
+	$db->delete("pl_poste_lignes","tableau='{$numbers[$i]}' AND numero=$id");
+	$i++;
+      }
+    }
   }
 
   public function update($post){

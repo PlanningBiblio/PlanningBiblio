@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/modif.php
 Création : mai 2011
-Dernière modification : 17 décembre 2013
+Dernière modification : 21 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -39,6 +39,7 @@ echo "<ul>\n";
 if($config['Multisites-nombre']>1){
   echo "<li><a href='#div_site' id='site'>Site</a></li>\n";
 }
+echo "<li><a href='#div_tableaux' id='tableaux'>Nombre de tableaux</a></li>\n";
 echo "<li><a href='#div_horaires' id='horaires'>Horaires</a></li>\n";
 echo "<li><a href='#div_lignes' id='lignes'>Lignes</a></li>\n";
 echo "<li style='position:absolute;right:10px;top:8px;'><a id='retour'>Retour</a></li>\n";
@@ -50,6 +51,11 @@ if($config['Multisites-nombre']>1){
   include "site.php";
   echo "</div>\n";
 }
+
+// Onglet Tableaux
+echo "<div id='div_tableaux'>\n";
+include "tableaux.php";
+echo "</div>\n";
 
 // Onglet Horaires
 echo "<div id='div_horaires'>\n";
