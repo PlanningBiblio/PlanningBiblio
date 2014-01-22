@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/lignes.php
 Création : mai 2011
-Dernière modification : 21 janvier 2014
+Dernière modification : 22 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -19,8 +19,6 @@ Page incluse dans le fichier "planning/postes_cfg/modif.php"
 */
 
 require_once "class.tableaux.php";
-
-echo "<h3>Configuration des lignes</h3>\n";
 
 //	Si validation, enregistrement des infos
 if(isset($_POST['valid'])){	
@@ -123,12 +121,19 @@ if(is_array($horaires)){
 
 // affichage du tableau :
 // affichage de la lignes des horaires
+echo "<form name='form4' action='index.php' method='post' >\n";
+echo "<input type='hidden' name='page' value='planning/postes_cfg/modif.php' />\n";
+echo "<input type='hidden' name='cfg-type' value='lignes' />\n";
+echo "<input type='hidden' name='numero' value='$tableauNumero' />\n";
+echo "<table style='width:100%;'><tr><td>";
+echo "<h3>Configuration des lignes</h3>\n";
+echo "</td><td style='text-align:right;'>\n";
+echo "<input type='button' value='Retour' class='ui-button retour'/>\n";
+echo "<input type='submit' name='valid' value='Valider' class='ui-button'/>\n";
+echo "</td></tr></table>\n";
+
 if($tableauNumero){
-  echo "<form name='form4' action='index.php' method='post' >\n";
-  echo "<input type='hidden' name='page' value='planning/postes_cfg/modif.php' />\n";
-  echo "<input type='hidden' name='cfg-type' value='lignes' />\n";
-  echo "<input type='hidden' name='numero' value='$tableauNumero' />\n";
-  echo "<table style='width:1250px' cellspacing='0' cellpadding='0' border='1'>\n";
+  echo "<table style='width:1250px;' cellspacing='0' cellpadding='0' border='1' >\n";
 
   foreach($tabs as $tab){
     //		Ligne horaires
@@ -177,10 +182,8 @@ if($tableauNumero){
       }
   }
   echo "</table>\n";
-  echo "<br/><input type='submit' name='valid' value='Valider' />\n";
-  echo "<input type='button' value='Retour' onclick='location.href=\"index.php?page=planning/postes_cfg/index.php\";'/>\n";
-  echo "</form>\n";
-  }
+}
+echo "</form>\n";
 
 //	Pour contrôler ensuite si les tableaux existent
 $exist=array(1,2,3);

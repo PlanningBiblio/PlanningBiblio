@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/tableaux.php
 Création : 21 janvier 2014
-Dernière modification : 21 janvier 2014
+Dernière modification : 22 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -24,12 +24,18 @@ $t->getNumbers();
 $nombre=$t->length;
 
 echo <<<EOD
-  <h3>Choix du nombre de tableaux</h3>
   <form name='form' action='index.php' method='get'>
   <input type='hidden' name='id' id='id' value='$tableauNumero' />
+  <table style='width:100%;'><tr><td>
+    <h3>Choix du nombre de tableaux</h3>
+    </td><td style='text-align:right;'>
+      <input type='button' value='Retour' class='ui-button retour'/>
+      <input type='button' value='Valider' class='ui-button' onclick='tableauxNombre();'/>
+  </td></tr></table>
+
   <table class='tableauFiche'>
-  <tr><td>Nombre de tableaux</td>
-    <td><select name='nombre' id='nombre' onchange='tableauxNombre();'>
+    <tr><td>Nombre de tableaux</td>
+      <td><select name='nombre' id='nombre'>
 EOD;
   for($i=1;$i<16;$i++){
     $selected=$i==$nombre?"selected='selected'":null;

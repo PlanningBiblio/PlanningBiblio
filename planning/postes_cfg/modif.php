@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/modif.php
 Création : mai 2011
-Dernière modification : 21 janvier 2014
+Dernière modification : 22 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -42,7 +42,6 @@ if($config['Multisites-nombre']>1){
 echo "<li><a href='#div_tableaux' id='tableaux'>Nombre de tableaux</a></li>\n";
 echo "<li><a href='#div_horaires' id='horaires'>Horaires</a></li>\n";
 echo "<li><a href='#div_lignes' id='lignes'>Lignes</a></li>\n";
-echo "<li style='position:absolute;right:10px;top:8px;'><a id='retour'>Retour</a></li>\n";
 echo "</ul>\n";
 
 // Onglet Site
@@ -76,7 +75,7 @@ echo "</div>\n";
 <!-- Initialisation des onglets, lien retour et affichage d'informations -->
 <script type='text/JavaScript'>
 $("#tabs").tabs();
-$("#retour").click(function(){
+$(".retour").click(function(){
   document.location.href="index.php?page=planning/postes_cfg/index.php";
 });
 
