@@ -82,7 +82,7 @@ echo "<input type='hidden' name='page' value='planning/postes_cfg/modif.php' />\
 echo "<input type='hidden' name='cfg-type' value='horaires' />\n";
 echo "<input type='hidden' name='numero' value='$tableauNumero' />\n";
 echo "<input type='hidden' name='action' value='modif' />\n";
-echo "<table style='width:100%;'><tr><td>";
+echo "<table><tr><td style='width:600px;'>";
 echo "<h3>Configuration des horaires</h3>\n";
 echo "</td><td style='text-align:right;'>\n";
 echo "<input type='button' value='Retour' class='ui-button retour'/>\n";

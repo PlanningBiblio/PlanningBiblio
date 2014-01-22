@@ -26,7 +26,7 @@ $nombre=$t->length;
 echo <<<EOD
   <form name='form' action='index.php' method='get'>
   <input type='hidden' name='id' id='id' value='$tableauNumero' />
-  <table style='width:100%;'><tr><td>
+  <table><tr><td style='width:600px;'>
     <h3>Choix du nombre de tableaux</h3>
     </td><td style='text-align:right;'>
       <input type='button' value='Retour' class='ui-button retour'/>
@@ -34,7 +34,7 @@ echo <<<EOD
   </td></tr></table>
 
   <table class='tableauFiche'>
-    <tr><td>Nombre de tableaux</td>
+    <tr><td>Nombre de tableaux :</td>
       <td><select name='nombre' id='nombre'>
 EOD;
   for($i=1;$i<16;$i++){

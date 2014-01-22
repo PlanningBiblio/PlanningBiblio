@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 6 janvier 2014
+Dernière modification : 22 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -28,6 +28,7 @@ $confirm=isset($_GET['confirm'])?$_GET['confirm']:null;
 $perso_id=isset($_GET['perso_id'])?$_GET['perso_id']:null;
 $debut=isset($_GET['debut'])?$_GET['debut']:null;
 $fin=isset($_GET['fin'])?$_GET['fin']:null;
+$quart=substr($config['heuresPrecision'],0,5)=="quart"?true:false;
 if($confirm){
   $fin=$fin?$fin:$debut;
   $nbjours=isset($_GET['nbjours'])?$_GET['nbjours']:0;
@@ -337,7 +338,7 @@ else{					//	Formulaire
   echo "Heure de début : \n";
   echo "</td><td>\n";
   echo "<select name='hre_debut'>\n";
-  selectHeure(7,23,true);
+  selectHeure(7,23,true,$quart);
   echo "</select>\n";
   echo "</td></tr>\n";
   echo "<tr><td>\n";
@@ -350,7 +351,7 @@ else{					//	Formulaire
   echo "Heure de fin : \n";
   echo "</td><td>\n";
   echo "<select name='hre_fin'>\n";
-  selectHeure(7,23,true);
+  selectHeure(7,23,true,$quart);
   echo "</select>\n";
   echo "</td></tr>\n";
   

@@ -125,7 +125,7 @@ echo "<form name='form4' action='index.php' method='post' >\n";
 echo "<input type='hidden' name='page' value='planning/postes_cfg/modif.php' />\n";
 echo "<input type='hidden' name='cfg-type' value='lignes' />\n";
 echo "<input type='hidden' name='numero' value='$tableauNumero' />\n";
-echo "<table style='width:100%;'><tr><td>";
+echo "<table><tr><td style='width:600px;'>";
 echo "<h3>Configuration des lignes</h3>\n";
 echo "</td><td style='text-align:right;'>\n";
 echo "<input type='button' value='Retour' class='ui-button retour'/>\n";
