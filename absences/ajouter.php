@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 6 janvier 2014
+Dernière modification : 23 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,6 +23,7 @@ require_once "class.absences.php";
 //	Initialisation des variables
 $admin=in_array(1,$droits)?true:false;
 $adminN2=in_array(8,$droits)?true:false;
+$quartDHeure=$config['heuresPrecision']=="quart d&apos;heure"?true:false;
 $menu=isset($_GET['menu'])?$_GET['menu']:null;
 $confirm=isset($_GET['confirm'])?$_GET['confirm']:null;
 $perso_id=isset($_GET['perso_id'])?$_GET['perso_id']:null;
@@ -120,15 +121,18 @@ if($confirm=="confirm2"){		//	2eme confirmation
       $destinataires[]=$db_perso->result[0]['mailResponsable'];
       break;
     case "A la cellule planning" :
-      $destinataires[]=$config['Mail-Planning'];
+      $destinataires=explode(";",$config['Mail-Planning']);
       break;
     case "A l&apos;agent concern&eacute;" :
       $destinataires[]=$db_perso->result[0]['mail'];
       break;
+    case "A l&apos;agent concerné" :
+      $destinataires[]=$db_perso->result[0]['mail'];
+      break;
     case "A tous" :
+      $destinataires=explode(";",$config['Mail-Planning']);
       $destinataires[]=$db_perso->result[0]['mail'];
       $destinataires[]=$db_perso->result[0]['mailResponsable'];
-      $destinataires[]=$config['Mail-Planning'];
       foreach($responsables as $elem){
 	$destinataires[]=$elem['mail'];
       }
@@ -163,7 +167,7 @@ if($confirm=="confirm2"){		//	2eme confirmation
     $db->query($req);
   }
   
-  $titre=$config['Absences-validation']?"Nouvelle demande d'absence":"Nouvelle absence";
+  $titre=$config['Absences-validation']?"Nouvelle demande d absence":"Nouvelle absence";
   $message="$titre : <br/>$prenom $nom<br/>Début : ".dateFr($debut);
 
   if($hre_debut!="00:00:00")
@@ -337,7 +341,7 @@ else{					//	Formulaire
   echo "Heure de début : \n";
   echo "</td><td>\n";
   echo "<select name='hre_debut'>\n";
-  selectHeure(7,23,true);
+  selectHeure(7,23,true,$quartDHeure);
   echo "</select>\n";
   echo "</td></tr>\n";
   echo "<tr><td>\n";
@@ -350,7 +354,7 @@ else{					//	Formulaire
   echo "Heure de fin : \n";
   echo "</td><td>\n";
   echo "<select name='hre_fin'>\n";
-  selectHeure(7,23,true);
+  selectHeure(7,23,true,$quartDHeure);
   echo "</select>\n";
   echo "</td></tr>\n";
   

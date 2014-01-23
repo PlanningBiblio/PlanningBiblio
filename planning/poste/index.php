@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 19 janvier 2014
+Dernière modification : 23 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -119,7 +119,7 @@ if($db_verrou->result){
 
 //	Selection des messages d'informations
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}infos` WHERE `fin`>='$date' ORDER BY `debut`,`fin`;");
+$db->query("SELECT * FROM `{$dbprefix}infos` WHERE `debut`<='$date' AND `fin`>='$date' ORDER BY `debut`,`fin`;");
 $messages_infos=null;
 if($db->result){
   foreach($db->result as $elem){

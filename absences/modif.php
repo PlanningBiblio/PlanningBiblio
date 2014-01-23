@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 3 janvier 2014
+Dernière modification : 23 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,6 +23,7 @@ $display=null;
 $checked=null;
 $admin=in_array(1,$droits)?true:false;
 $adminN2=in_array(8,$droits)?true:false;
+$quartDHeure=$config['heuresPrecision']=="quart d&apos;heure"?true:false;
 
 $id=$_GET['id'];
 $db=new db();
@@ -134,7 +135,7 @@ echo "<tr id='hre_debut' $display ><td>\n";
 echo "Heure de début : \n";
 echo "</td><td>\n";
 echo "<select name='hre_debut'>\n";
-selectHeure(8,23,true);
+selectHeure(7,23,true,$quartDHeure);
 echo "</select>\n";
 echo "</td></tr>\n";
 
@@ -147,7 +148,7 @@ echo "<tr id='hre_fin' $display ><td>\n";
 echo "Heure de fin : \n";
 echo "</td><td>\n";
 echo "<select name='hre_fin'>\n";
-selectHeure(8,23,true);
+selectHeure(7,23,true,$quartDHeure);
 echo "</select>\n";
 echo "</td></tr>\n";
 
