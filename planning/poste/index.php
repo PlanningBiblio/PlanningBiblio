@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 21 janvier 2014
+Dernière modification : 23 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -119,7 +119,7 @@ if($db_verrou->result){
 
 //	Selection des messages d'informations
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}infos` WHERE `fin`>='$date' ORDER BY `debut`,`fin`;");
+$db->query("SELECT * FROM `{$dbprefix}infos` WHERE `debut`<='$date' AND `fin`>='$date' ORDER BY `debut`,`fin`;");
 $messages_infos=null;
 if($db->result){
   foreach($db->result as $elem){
@@ -391,15 +391,18 @@ else{
 	  
   //		Tableau $tab [nom,horaire1[debut,fin],horaire2[debut,fin],horaire3[debut,fin] ... ]
   //		Tri des horaires
-  $tabs=array(array(1),array(2),array(3));
+  $tabs=array();
   if(is_array($horaires)){
     foreach($horaires as $elem){
-      if($elem['tableau']==1)
-	$tabs[0][]=$elem;
-      if($elem['tableau']==2)
-	$tabs[1][]=$elem;
-      if($elem['tableau']==3)
-	$tabs[2][]=$elem;
+      if(!in_array(array($elem['tableau']),$tabs)){
+	$tabs[]=array($elem['tableau']);
+      }
+    }
+  }
+
+  if(is_array($horaires)){
+    foreach($horaires as $elem){
+      $tabs[$elem['tableau']-1][]=$elem;
     }
   }
 
@@ -420,8 +423,9 @@ else{
   foreach($tabs as $tab){
     if(array_key_exists(1,$tab)){
       //		Lignes horaires
+      $line_name=array_key_exists($tab[0],$titres)?$titres[$tab[0]]:"&nbsp;";
       echo "<tr class='tr_horaires'>\n";
-      echo "<td class='td_postes'>{$titres[$tab[0]]}</td>\n";
+      echo "<td class='td_postes'>$line_name</td>\n";
       $colspan=0;
       for($i=1;$i<count($tab);$i++){
 	echo "<td colspan='".nb30($tab[$i]['debut'],$tab[$i]['fin'])."'>".heure3($tab[$i]['debut'])."-".heure3($tab[$i]['fin'])."</td>";
