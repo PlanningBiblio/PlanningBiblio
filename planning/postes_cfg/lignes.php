@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/lignes.php
 Création : mai 2011
-Dernière modification : 22 janvier 2014
+Dernière modification : 27 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -28,7 +28,7 @@ if(isset($_POST['valid'])){
   $db->query("DELETE FROM `{$dbprefix}pl_poste_lignes` WHERE `numero`='$tableauNumero';");
   foreach($keys as $key){	//		Insertion des données dans la table pl_poste_lignes
     if($_POST[$key] and substr($key,0,6)=="select"){
-      $tab=explode("_",$key);  //1: tableau ; 2 lignes	/////////////////////////
+      $tab=explode("_",$key);  //1: tableau ; 2 lignes
       if(substr($tab[1],-5)=="Titre"){
 	$type="titre";
 	$tab[1]=substr($tab[1],0,-5);
@@ -38,7 +38,7 @@ if(isset($_POST['valid'])){
 	$_POST[$key]=substr($_POST[$key],0,-5);
       }
       else{
-	$type="poste";					////////////////////////*/
+	$type="poste";
       }
       $values[]="('$tableauNumero','{$tab[1]}','{$tab[2]}','{$_POST[$key]}','$type')";
     }
@@ -67,57 +67,27 @@ if(isset($_POST['valid'])){
   }
 }
 
-//	Liste des horaires
-$db=new db();
-$db->query("SELECT * FROM `{$dbprefix}pl_poste_horaires` WHERE `numero` ='$tableauNumero' ORDER BY `tableau`,`debut`,`fin`;");
-$horaires=$db->result;
-
-//	Liste des postes
+// Liste des postes
 $reqSite=null;
 if($config['Multisites-nombre']>1){
-  $reqSite="WHERE `site`='$site'";
+  $reqSite="`site`='$site'";
 }
 
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}postes` $reqSite ORDER BY `nom`;");
+$db->select("postes",null,$reqSite,"ORDER BY nom");
 $postes=$db->result;
 
-//	Liste des lignes de séparation
+// Liste des lignes de séparation
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}lignes` ORDER BY `nom`;");
+$db->select("lignes",null,null,"ORDER BY nom");
 $lignes_sep=$db->result;
 
-//	Liste des lignes enregistrées
-$db=new db();
-$db->query("SELECT * FROM `{$dbprefix}pl_poste_lignes` WHERE `numero`='$tableauNumero' ORDER BY `tableau`,`ligne`;");
-$lignes=$db->result;
 
-//	Liste des cellules grises
-$db=new db();
-$db->query("SELECT * FROM `{$dbprefix}pl_poste_cellules` WHERE `numero`='$tableauNumero' ORDER BY `tableau`,`ligne`,`colonne`;");
-$cellules_grises=array();
-if($db->result){
-  foreach($db->result as $elem){
-    $cellules_grises[]="{$elem['tableau']}_{$elem['ligne']}_{$elem['colonne']}";
-  }
-}
-
-//		Tableau $tab [nom,horaire1[debut,fin],horaire2[debut,fin],horaire3[debut,fin] ... ]
-//		Tri des horaires
-$tabs=array();
-if(is_array($horaires)){
-  foreach($horaires as $elem){
-    if(!in_array(array($elem['tableau']),$tabs)){
-      $tabs[]=array($elem['tableau']);
-    }
-  }
-}
-
-if(is_array($horaires)){
-  foreach($horaires as $elem){
-    $tabs[$elem['tableau']-1][]=$elem;
-  }
-}
+// Le tableau (contenant les sous-tableaux)
+$t=new tableau();
+$t->id=$tableauNumero;
+$t->get();
+$tabs=$t->elements;
 
 // affichage du tableau :
 // affichage de la lignes des horaires
@@ -134,28 +104,80 @@ echo "</td></tr></table>\n";
 
 if($tableauNumero){
   echo "<table style='width:1250px;' cellspacing='0' cellpadding='0' border='1' >\n";
-
   foreach($tabs as $tab){
-    //		Ligne horaires
+    // Lignes Titre et Horaires
     echo "<tr class='tr_horaires' style='text-align:center;'>\n";
-    echo "<td style='width:260px'><input type='text' name='select_{$tab[0]}Titre_0' class='tr_horaires' style='text-align:center;width:100%;'/></td>\n";
+    echo "<td style='width:260px'><input type='text' name='select_{$tab['nom']}Titre_0' class='tr_horaires' style='text-align:center;width:100%;' value='{$tab['titre']}'/></td>\n";
     $colspan=0;
-    for($i=1;$i<count($tab);$i++){
-      echo "<td colspan='".nb30($tab[$i]['debut'],$tab[$i]['fin'])."'>".heure3($tab[$i]['debut'])."-".heure3($tab[$i]['fin'])."</td>";
-      $colspan+=nb30($tab[$i]['debut'],$tab[$i]['fin']);
+    foreach($tab['horaires'] as $horaire){
+      echo "<td colspan='".nb30($horaire['debut'],$horaire['fin'])."'>".heure3($horaire['debut'])."-".heure3($horaire['fin'])."</td>";
+      $colspan+=nb30($horaire['debut'],$horaire['fin']);
     }
     echo "</tr>\n";
+    
+    // Lignes Postes et Lignes de séparation
+    $i=0;
+    foreach($tab['lignes'] as $ligne){
+      echo "<tr id='tr_select_{$tab['nom']}_$i'>\n";
+      // Première colonne
+      echo "<td id='td_select_{$tab['nom']}_{$i}_0' >\n";
+      // Sélection des postes et des lignes de séparation
+      echo "<select name='select_{$tab['nom']}_$i' style='width:200px;color:black;font-weight:normal;' class='tab_select'>\n";
+      echo "<option value=''>&nbsp;</option>\n";
+      // Les postes
+      if(is_array($postes)){
+	foreach($postes as $poste){
+	  $class=$poste['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
+	  $selected=($ligne['type']=="poste" and $poste['id']==$ligne['poste'])?"selected='selected'":null;
+	  echo "<option value='{$poste['id']}' $selected class='$class'>{$poste['nom']} ({$poste['etage']})</option>\n";
+	}
+      }
+      // Les lignes de séparation
+      foreach($lignes_sep as $ligne_sep){
+	$selected=($ligne['type']=="ligne" and $ligne_sep['id']==$ligne['poste'])?"selected='selected'":null;
+	echo "<option value='{$ligne_sep['id']}Ligne' class='tr_horaires' $selected style='font-weight:normal;'>{$ligne_sep['nom']}</option>\n";
+      }
+      echo "</select>&nbsp;&nbsp;\n";
+      // Boutons ajout et suppression
+//       echo "<a href='javascript:ajout(\"select_{$tab['nom']}_\",$i);' id='ajout_select_{$tab['nom']}_$i' >\n";
+      echo "<img src='img/add.gif' border='0' alt='Ajouter' class='add_button' style='cursor:pointer;'/>\n";
+//       echo "</a>\n";
+      echo "<a href='javascript:supprime_tab(\"{$tab['nom']}_\",$i);' id='supprime_select_{$tab['nom']}_$i'>\n";
+      echo "<img src='img/drop.gif' border='0' alt='Supprimer' /></a>\n";
+      echo "</td>\n";
+
+      // Cellules (grises ou non)
+      $j=1;
+      foreach($tab['horaires'] as $horaire){
+	$class=null;
+	$checked=null;
+	if(in_array("{$i}_{$j}",$tab['cellules_grises'])){
+	  $class="class='cellule_grise'";
+	  $checked="checked='checked'";
+	}
+	echo "<td id='td_select_{$tab['nom']}_{$i}_$j' $class colspan='".nb30($horaire['debut'],$horaire['fin'])."' style='text-align:center;'>\n";
+	echo "<input type='checkbox' name='checkbox_{$tab['nom']}_{$i}_$j' $checked onclick='couleur2(this,\"td_select_{$tab['nom']}_{$i}_$j\");'/> G\n";
+	echo "</td>\n";
+	$j++;
+      }
+      echo "<td id='td_select_{$tab['nom']}_$i' colspan='$colspan' style='display:none;'>\n";
+      echo "</tr>\n"; 
+    $i++;
+    }
+  }
+
 
     //	Lignes <select>
-    for($i=0;$i<100;$i++){
+/*    for($i=0;$i<100;$i++){
       echo "<tr id='tr_select_{$tab[0]}_$i' style='display:none;'>\n";
       echo "<td id='td_select_{$tab[0]}_{$i}_0' >\n";
       echo "<select name='select_{$tab[0]}_$i' style='width:200px;' onchange='couleur(\"select_{$tab[0]}_\",$i);'>\n";
       echo "<option value=''>&nbsp;</option>\n";
-      if(is_array($postes))
-      foreach($postes as $poste){
-	$background=$poste['obligatoire']=="Obligatoire"?"#00FA92":"#FFFFFF";
-	echo "<option value='{$poste['id']}' style='background:$background;color:#7D3C25;'>{$poste['nom']} ({$poste['etage']})</option>\n";
+      if(is_array($postes)){
+	foreach($postes as $poste){
+	  $background=$poste['obligatoire']=="Obligatoire"?"#00FA92":"#FFFFFF";
+	  echo "<option value='{$poste['id']}' style='background:$background;color:#7D3C25;'>{$poste['nom']} ({$poste['etage']})</option>\n";
+	}
       }
       foreach($lignes_sep as $ligne_sep){
 	echo "<option value='{$ligne_sep['id']}Ligne' style='background:#7D3C25;color:#FFFFFF;'>{$ligne_sep['nom']}</option>\n";
@@ -177,10 +199,9 @@ if($tableauNumero){
 	echo "</td>\n";
       }
       echo "<td id='td_select_{$tab[0]}_$i' colspan='$colspan' style='display:none;'>\n";
-	      
       echo "</tr>\n"; 
       }
-  }
+  }*/
   echo "</table>\n";
 }
 echo "</form>\n";
@@ -188,15 +209,15 @@ echo "</form>\n";
 //	Pour contrôler ensuite si les tableaux existent
 $exist=array(1,2,3);
 
-echo "<script type='text/JavaScript'>\n";
+// echo "<script type='text/JavaScript'>\n";
 //	Affichage en JavaScript des lignes enregistrées
-if(is_array($lignes)){
+/*if(is_array($lignes)){
   for($i=0;$i<count($lignes);$i++){
     if($lignes[$i]['type']=="titre")
       $lignes[$i]['tableau'].="Titre";
     if($lignes[$i]['type']=="ligne")
       $lignes[$i]['poste'].="Ligne";
-    echo "document.form4.select_{$lignes[$i]['tableau']}_{$lignes[$i]['ligne']}.value='".html_entity_decode($lignes[$i]['poste'],ENT_QUOTES|ENT_IGNORE,"UTF-8")."';\n";
+//     echo "document.form4.select_{$lignes[$i]['tableau']}_{$lignes[$i]['ligne']}.value='".html_entity_decode($lignes[$i]['poste'],ENT_QUOTES|ENT_IGNORE,"UTF-8")."';\n";
     if($lignes[$i]['type']!="titre"){
       echo "document.getElementById('tr_select_{$lignes[$i]['tableau']}_{$lignes[$i]['ligne']}').style.display='';\n";
       echo "couleur('select_{$lignes[$i]['tableau']}_',{$lignes[$i]['ligne']});\n";
@@ -219,5 +240,31 @@ foreach($exist as $elem){
     echo "document.getElementById('supprime_select_{$elem}_0').style.display='none';\n";
   }
 }
-echo "</script>\n";
+*/
 ?>
+<script type='text/JavaScript'>
+$("document").ready(function(){
+  // Applique la même class que l'option selectionnée au select et au td pour chaque select poste lors du chargement
+  $(".tab_select").each(function(){
+    var myClass=$(this).find(":selected").attr("class");
+    $(this).removeClass();
+    $(this).addClass(myClass);
+    $(this).closest("td").removeClass();
+    $(this).closest("td").addClass(myClass);
+  });
+});
+
+// Change la class du select et du td lorsque l'on change d'option dans les listes des postes
+$(".tab_select").change(function(){
+  var myClass=$(this).find(":selected").attr("class");
+  $(this).removeClass();
+  $(this).addClass(myClass);
+  $(this).closest("td").removeClass();
+  $(this).closest("td").addClass(myClass);
+});
+
+// Ajout de nouvelles lignes (clone)
+$(".add_button").click(function(){
+  $(this).closest("tr").clone().insertAfter($(this).closest("tr"));
+});
+</script>

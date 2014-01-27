@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 23 janvier 2014
+Dernière modification : 24 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -430,6 +430,13 @@ if(strcmp("1.6.6",$config['Version'])>0){
 
 if(strcmp("1.6.7",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.6.7' WHERE `nom`='Version';";
+}
+
+if(strcmp("1.6.8",$config['Version'])>0){
+  $sql[]="ALTER TABLE `{$dbprefix}pl_poste_cellules` CHANGE `tableau` `tableau` INT(11);";
+  $sql[]="ALTER TABLE `{$dbprefix}pl_poste_horaires` CHANGE `tableau` `tableau` INT(11);";
+  $sql[]="ALTER TABLE `{$dbprefix}pl_poste_lignes` CHANGE `tableau` `tableau` INT(11);";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.6.8' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage

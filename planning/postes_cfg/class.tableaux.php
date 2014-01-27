@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/class.tableaux.php
 Création : mai 2011
-Dernière modification : 21 janvier 2014
+Dernière modification : 27 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -57,6 +57,81 @@ class tableau{
     $db=new db();
     $db->select("pl_poste_tab_grp","*","`id`='$id'");
     $this->elements=$db->result[0];
+  }
+
+  // Recherche tous les éléments d'un tableau pour l'afficher
+  public function get(){
+    $tableauNumero=$this->id;
+
+    // Liste des tableaux
+    $tableaux=array();
+    $db=new db();
+    $db->select("pl_poste_horaires","tableau","numero=$tableauNumero","GROUP BY `tableau`");
+    if($db->result){
+      foreach($db->result as $elem){
+	$tableaux[]=$elem['tableau'];
+      }
+    }
+
+    // Liste des horaires
+    $db=new db();
+    $db->select("pl_poste_horaires","*","numero=$tableauNumero","ORDER BY `tableau`,`debut`,`fin`");
+    $horaires=$db->result;
+
+    // Liste des lignes enregistrées
+    $db=new db();
+    $db->select("pl_poste_lignes",null,"numero=$tableauNumero","ORDER BY tableau,ligne");
+    $lignes=$db->result;
+
+    $titres=array();
+    foreach($lignes as $ligne){
+      if($ligne['type']=='titre'){
+	$titres[$ligne['tableau']]=$ligne['poste'];
+      }
+    }
+
+    // Liste des cellules grises
+    $db=new db();
+    $db->select("pl_poste_cellules",null,"numero=$tableauNumero","ORDER BY tableau,ligne,colonne");
+    $cellules_grises=array();
+    if($db->result){
+      foreach($db->result as $elem){
+	$cellules_grises[]=array("tableau"=>$elem['tableau'],"nom"=>"{$elem['ligne']}_{$elem['colonne']}");
+      }
+    }
+
+    // Construction du grand tableau
+    $tabs=array();
+    foreach($tableaux as $elem){
+      // Initilisation des sous-tableaux et noms des sous-tableaux
+      $tabs[$elem]=array("nom"=>$elem,"titre"=>null,"horaires"=>array(),"lignes"=>array(),"cellules_grises"=>array());
+
+      // Titres et lignes des sous-tableaux
+      foreach($lignes as $ligne){
+	// Titres
+	if($ligne['tableau']==$elem and $ligne['type']=="titre"){
+	  $tabs[$elem]['titre']=$ligne['poste'];
+	// Lignes (postes et lignes de séparation
+	}elseif($ligne['tableau']==$elem){
+	  $tabs[$elem]['lignes'][]=$ligne;
+	}
+      }
+
+      // Horaires des sous-tableaux
+      foreach($horaires as $horaire){
+	if($horaire['tableau']==$elem){
+	  $tabs[$elem]['horaires'][]=array("debut"=>$horaire['debut'],"fin"=>$horaire['fin']);
+	}
+      }
+
+      // Cellules Grises
+      foreach($cellules_grises as $cellule){
+	if($cellule['tableau']==$elem){
+	  $tabs[$elem]['cellules_grises'][]=$cellule['nom'];
+	}
+      }
+    }
+    $this->elements=$tabs;
   }
 
   public  function getNumbers(){

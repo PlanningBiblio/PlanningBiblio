@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 23 janvier 2014
+Dernière modification : 27 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -360,17 +360,6 @@ else{
   
   
   //	------------		Affichage du tableau			--------------------//
-  $numero=$tab;
-  //	Liste des horaires
-  $db=new db();
-  $db->query("SELECT * FROM `{$dbprefix}pl_poste_horaires` WHERE `numero` ='$numero' ORDER BY `tableau`,`debut`,`fin`;");
-  $horaires=$db->result;
-
-  //	Liste des lignes enregistrées
-  $db=new db();
-  $db->query("SELECT * FROM `{$dbprefix}pl_poste_lignes` WHERE `numero`='$numero' ORDER BY `tableau`,`ligne`;");
-  $lignes=$db->result;
-
   //	Lignes de separation
   $db=new db();
   $db->select("lignes");
@@ -380,40 +369,11 @@ else{
     }
   }
 
-  if(is_array($lignes)){
-    foreach($lignes as $elem){
-      if($elem['type']=='titre'){
-	$index=$elem['tableau'];
-	$titres[$index]=$elem['poste'];
-      }
-    }
-  }
-	  
-  //		Tableau $tab [nom,horaire1[debut,fin],horaire2[debut,fin],horaire3[debut,fin] ... ]
-  //		Tri des horaires
-  $tabs=array();
-  if(is_array($horaires)){
-    foreach($horaires as $elem){
-      if(!in_array(array($elem['tableau']),$tabs)){
-	$tabs[]=array($elem['tableau']);
-      }
-    }
-  }
-
-  if(is_array($horaires)){
-    foreach($horaires as $elem){
-      $tabs[$elem['tableau']-1][]=$elem;
-    }
-  }
-
-  //	Liste des cellules grises
-  $db=new db();
-  $db->query("SELECT * FROM `{$dbprefix}pl_poste_cellules` WHERE `numero`='$numero' ORDER BY `tableau`,`ligne`,`colonne`;");
-  $cellules_grises=array();
-  if($db->result)
-  foreach($db->result as $elem){
-    $cellules_grises[]="{$elem['tableau']}_{$elem['ligne']}_{$elem['colonne']}";
-  }
+  // Récupération de la structure du tableau
+  $t=new tableau();
+  $t->id=$tab;
+  $t->get();
+  $tabs=$t->elements;
 
   // affichage du tableau :
   // affichage de la lignes des horaires
@@ -421,48 +381,45 @@ else{
   echo "<table id='tabsemaine1' cellspacing='0' cellpadding='0' class='text'>\n";
   $k=0;
   foreach($tabs as $tab){
-    if(array_key_exists(1,$tab)){
-      //		Lignes horaires
-      $line_name=array_key_exists($tab[0],$titres)?$titres[$tab[0]]:"&nbsp;";
-      echo "<tr class='tr_horaires'>\n";
-      echo "<td class='td_postes'>$line_name</td>\n";
-      $colspan=0;
-      for($i=1;$i<count($tab);$i++){
-	echo "<td colspan='".nb30($tab[$i]['debut'],$tab[$i]['fin'])."'>".heure3($tab[$i]['debut'])."-".heure3($tab[$i]['fin'])."</td>";
-	$colspan+=nb30($tab[$i]['debut'],$tab[$i]['fin']);
-      }
-      echo "</tr>\n";
-      
-      //	Lignes postes et grandes lignes
-      if(is_array($lignes)){
-	foreach($lignes as $ligne){
-	  if($ligne['tableau']==$tab[0] and $ligne['type']=="poste"){
-	    $class=$postes[$ligne['poste']]['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
-	    echo "<tr><td class='td_postes $class'>{$postes[$ligne['poste']]['nom']}";
-	    if($config['affiche_etage']){
-	      echo " ({$postes[$ligne['poste']]['etage']})";
-	    }
-	    echo "</td>\n";
-	    for($i=1;$i<count($tab);$i++){
-		    // recherche des infos à afficher dans chaque cellule 
-		    // fonction cellule_poste(debut,fin,colspan,affichage,poste)
-	      if(in_array("{$tab[0]}_{$ligne['ligne']}_{$i}",$cellules_grises)){
-		echo "<td colspan='".nb30($tab[$i]['debut'],$tab[$i]['fin'])."' class='cellule_grise' oncontextmenu='cellule=\"\";' >&nbsp;</td>";
-	      }
-	      else{
-		echo cellule_poste($tab[$i]["debut"],$tab[$i]["fin"],nb30($tab[$i]['debut'],$tab[$i]['fin']),"noms",$ligne['poste']);
-	      }
-	    }
-	    echo "</tr>\n";
-	  }
-	  if($ligne['tableau']==$tab[0] and $ligne['type']=="ligne"){
-	    echo "<tr class='tr_separation'>\n";
-	    echo "<td>{$lignes_sep[$ligne['poste']]}</td><td colspan='$colspan'>&nbsp;</td></tr>\n";
-	  }
-	}
-      }
-    $k++;
+    //		Lignes horaires
+    echo "<tr class='tr_horaires'>\n";
+    echo "<td class='td_postes'>{$tab['titre']}</td>\n";
+    $colspan=0;
+    foreach($tab['horaires'] as $horaires){
+      echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin'])."</td>";
+      $colspan+=nb30($horaires['debut'],$horaires['fin']);
     }
+    echo "</tr>\n";
+    
+    //	Lignes postes et grandes lignes
+    foreach($tab['lignes'] as $ligne){
+      if($ligne['type']=="poste" and $ligne['poste']){
+	$class=$postes[$ligne['poste']]['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
+	echo "<tr><td class='td_postes $class'>{$postes[$ligne['poste']]['nom']}";
+	if($config['affiche_etage']){
+	  echo " ({$postes[$ligne['poste']]['etage']})";
+	}
+	echo "</td>\n";
+	$i=1;
+	foreach($tab['horaires'] as $horaires){
+	  // recherche des infos à afficher dans chaque cellule 
+	  // fonction cellule_poste(debut,fin,colspan,affichage,poste)
+	  if(in_array("{$ligne['ligne']}_{$i}",$tab['cellules_grises'])){
+	    echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."' class='cellule_grise' oncontextmenu='cellule=\"\";' >&nbsp;</td>";
+	  }
+	  else{
+	    echo cellule_poste($horaires["debut"],$horaires["fin"],nb30($horaires['debut'],$horaires['fin']),"noms",$ligne['poste']);
+	  }
+	$i++;
+	}
+	echo "</tr>\n";
+      }
+      if($ligne['type']=="ligne"){
+	echo "<tr class='tr_separation'>\n";
+	echo "<td>{$lignes_sep[$ligne['poste']]}</td><td colspan='$colspan'>&nbsp;</td></tr>\n";
+      }
+    }
+    $k++;
   }
   echo "</table>\n";
 
