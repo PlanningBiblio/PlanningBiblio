@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 1.6.6
+Planning Biblio, Version 1.6.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
@@ -40,7 +40,7 @@ if($config['Absences-validation']){
     $valideN2=$valide*$_SESSION['login_id'];
     $validationN2=date("Y-m-d H:i:s");
   }
-  if($valide==2 or $valide==-2){
+  elseif($valide==2 or $valide==-2){
     $valideN1=$valide*$_SESSION['login_id'];
     $validationN1=date("Y-m-d H:i:s");
   }
@@ -160,7 +160,7 @@ else{
   elseif($valide1N2>=0 and $valideN2<0){
     $sujet="Refus d'une absence";
     $validationText="Refus&eacute;e";
-    $notifications=$config['Absences-notifications'];
+    $notifications=$config['Absences-notifications3'];
   }
   elseif($valide1N1<=0 and $valideN1>0){
     $sujet="Acceptation d'une absence (en attente de validation hiérarchique)";
@@ -191,15 +191,18 @@ switch($notifications){
     $destinataires[]=$mailResponsable;
     break;
   case "A la cellule planning" :
-    $destinataires[]=$config['Mail-Planning'];
+    $destinataires=explode(";",$config['Mail-Planning']);
     break;
   case "A l&apos;agent concern&eacute;" :
     $destinataires[]=$mail;
     break;
+  case "A l&apos;agent concerné" :
+    $destinataires[]=$mail;
+    break;
   case "A tous" :
+    $destinataires=explode(";",$config['Mail-Planning']);
     $destinataires[]=$mail;
     $destinataires[]=$mailResponsable;
-    $destinataires[]=$config['Mail-Planning'];
     foreach($responsables as $elem){
       $destinataires[]=$elem['mail'];
     }

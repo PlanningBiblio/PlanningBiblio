@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.6
+Planning Biblio, Version 1.6.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 26 décembre 2013
+Dernière modification : 23 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -642,7 +642,7 @@ function sendmail($Sujet,$Message,$destinataires,$alert=true){
   if(!is_array($destinataires)){
     $destinataires=explode(";",$destinataires);
   }
-  if($destinataires[0]){
+  if(!empty($destinataires)){
     $Entete="<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
     $Entete.="<html><head><title>Planning</title></head><body>";
     $Message=$Entete.$Message;
@@ -652,7 +652,7 @@ function sendmail($Sujet,$Message,$destinataires,$alert=true){
     $Sujet = stripslashes($Sujet);
     $Sujet = "Planning : $Sujet";
     $Message = stripslashes($Message);
-    $Message= eregi_replace("\n|\r\n\n|\r\n", "<br/>", $Message) ;
+    $Message= str_replace(array("\n","\r\n\n","\r\n"), "<br/>", $Message);
     $to=array();
     foreach($destinataires as $destinataire){
       if(verifmail($destinataire)){

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.6
+Planning Biblio, Version 1.6.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 26 décembre 2013
+Dernière modification : 24 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -31,7 +31,7 @@ if(!file_exists("include/config.php")){
   exit;
 }
 
-$version="1.6.6";
+$version="1.6.8";
 
 include "include/config.php";
 
@@ -127,7 +127,7 @@ else{		//		Formulaire d'authentification
     <td><input type='text' name='login' value='$login' /></td></tr>
     <tr><td align='right'>Mot de passe : </td>
     <td><input type='password' name='password' /></td></tr>
-    <tr><td colspan='2' align='center'><br/><input type='submit' id='submit' value='Valider' /></td></tr>
+    <tr><td colspan='2' align='center'><br/><input type='submit' class='ui-button' value='Valider' /></td></tr>
 EOD;
     if($config['Auth-Anonyme']){
       echo "<tr><td colspan='2' align='center'><br/><a href='authentification.php?login=anonyme'>Accès anonyme</a></td></tr>\n";
@@ -145,6 +145,3 @@ EOD;
 
 include "include/footer.php";
 ?>
-<script type='text/JavaScript'>
-$("#submit").button();
-</script>

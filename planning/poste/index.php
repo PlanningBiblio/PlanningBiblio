@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.6
+Planning Biblio, Version 1.6.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 19 janvier 2014
+Dernière modification : 30 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -119,7 +119,7 @@ if($db_verrou->result){
 
 //	Selection des messages d'informations
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}infos` WHERE `fin`>='$date' ORDER BY `debut`,`fin`;");
+$db->query("SELECT * FROM `{$dbprefix}infos` WHERE `debut`<='$date' AND `fin`>='$date' ORDER BY `debut`,`fin`;");
 $messages_infos=null;
 if($db->result){
   foreach($db->result as $elem){
@@ -356,6 +356,10 @@ else{
   global $cellules;
   $cellules=$db->result;
   
+  // Informations sur les congés
+  if(in_array("conges",$plugins)){
+    include "plugins/conges/planning_cellules.php";
+  }
   //--------------	FIN Recherche des infos cellules	------------//
   
   

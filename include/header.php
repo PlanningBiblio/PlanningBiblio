@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.6
+Planning Biblio, Version 1.6.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 9 décembre 2013
+Dernière modification : 29 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -34,7 +34,6 @@ if(!$version){
 <script type='text/JavaScript' src='js/dataTables/sort.js'></script>
 <script type='text/JavaScript' src='js/script.js'></script>
 <script type='text/JavaScript' src='js/infobulles.js'></script>
-<script type='text/JavaScript' src='js/dialog.js'></script>
 
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link rel='StyleSheet' href='css/dataTables/jquery.dataTables_themeroller.css' type='text/css' media='screen'/>

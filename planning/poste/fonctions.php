@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.6
+Planning Biblio, Version 1.6.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 20 janvier 2014
+Dernière modification : 30 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -48,10 +48,13 @@ function cellule_poste($debut,$fin,$colspan,$output,$poste){
 	}
 	//		On barre les absents
 	if($elem['absent'] or $elem['supprime']){
-	  $color=$elem['absent']==2?"orange":"red";
-	  $resultat="<s style='color:$color;'>$resultat</s>";
+	  $resultat="<s style='color:red;'>$resultat</s>";
 	}
-
+	//		On barre les congés
+	if(in_array("conges",$GLOBALS['plugins'])){
+	  include "plugins/conges/planning_cellule_poste.php";
+	}
+	  
 	// Classe en fonction du statut et du service
 	$class_tmp=array();
 	if($elem['statut']){
