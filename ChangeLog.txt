@@ -1,11 +1,22 @@
-***	Version 1.6.7	(Jérôme Combes, 21 janvier 2014)		***
+***	Version 1.6.9	(Jérôme Combes, février 2014)		***
 - Améliorations :
 Nombre de tableaux paramétrable
 
+***	Version 1.6.8	(Jérôme Combes, 30 janvier 2014)		***
+- Améliorations :
+Correction d'un manque de redirection après authentification CAS
+Suppression du lien vers fichier js/dialog.js (supprimé plutôt)
+Modification de la méthode de marquage des congés dans les plannings (plugin)
+
+***	Version 1.6.7	(Jérôme Combes, 23 janvier 2014)		***
+- Améliorations :
+Corrections sur les envois de notifications d'absences
+
 ***	Version 1.6.6	(Jérôme Combes, 20 janvier 2014)		***
 - Améliorations :
-Améliorations du style
+Amélioration du style
 Permet d'afficher ou non les notifications "Sans Repas" et "Déjà placé"
+
 
 ***	Version 1.6.5	(Jérôme Combes, 16 janvier 2014)		***
 - Améliorations :
