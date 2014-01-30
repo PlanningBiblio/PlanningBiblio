@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 23 janvier 2014
+Dernière modification : 30 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -356,6 +356,10 @@ else{
   global $cellules;
   $cellules=$db->result;
   
+  // Informations sur les congés
+  if(in_array("conges",$plugins)){
+    include "plugins/conges/planning_cellules.php";
+  }
   //--------------	FIN Recherche des infos cellules	------------//
   
   
