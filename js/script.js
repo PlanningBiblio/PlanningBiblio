@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 21 janvier 2014
+Dernière modification : 30 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -1022,8 +1022,12 @@ function ajout(nom,id){
   for(i=fin;i>id;i--){
     j=i-1;
     document.form4.elements[nom+i].selectedIndex=document.form4.elements[nom+j].selectedIndex;
+    document.form4.elements[nom+i].className=document.form4.elements[nom+j].className;
+    document.getElementById("td_"+nom+i+"_0").className=document.getElementById("td_"+nom+j+"_0").className;
   }
   document.form4.elements[nom+id].selectedIndex=0;
+  document.form4.elements[nom+id].className=null;
+  document.getElementById("td_"+nom+i+"_0").className=null;
 }
 
 function couleur(nom,id){

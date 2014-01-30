@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/lignes.php
 Création : mai 2011
-Dernière modification : 27 janvier 2014
+Dernière modification : 30 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -107,7 +107,9 @@ if($tableauNumero){
   foreach($tabs as $tab){
     // Lignes Titre et Horaires
     echo "<tr class='tr_horaires' style='text-align:center;'>\n";
-    echo "<td style='width:260px'><input type='text' name='select_{$tab['nom']}Titre_0' class='tr_horaires' style='text-align:center;width:100%;' value='{$tab['titre']}'/></td>\n";
+    echo "<td style='width:260px;white-space:nowrap;'>\n";
+    echo "<input type='text' name='select_{$tab['nom']}Titre_0' class='tr_horaires' style='text-align:center;width:220px;' value='{$tab['titre']}'/>\n";
+    echo "<img src='img/add.gif' border='0' alt='Ajouter' style='cursor:pointer;' onclick='ajout(\"select_{$tab["nom"]}_\",-1);'/></td>\n";
     $colspan=0;
     foreach($tab['horaires'] as $horaire){
       echo "<td colspan='".nb30($horaire['debut'],$horaire['fin'])."'>".heure3($horaire['debut'])."-".heure3($horaire['fin'])."</td>";
@@ -116,9 +118,9 @@ if($tableauNumero){
     echo "</tr>\n";
     
     // Lignes Postes et Lignes de séparation
-    $i=0;
-    foreach($tab['lignes'] as $ligne){
-      echo "<tr id='tr_select_{$tab['nom']}_$i'>\n";
+    for($i=0;$i<100;$i++){
+      $display=array_key_exists($i,$tab['lignes'])?null:"style='display:none;'";
+      echo "<tr id='tr_select_{$tab['nom']}_$i' $display>\n";
       // Première colonne
       echo "<td id='td_select_{$tab['nom']}_{$i}_0' >\n";
       // Sélection des postes et des lignes de séparation
@@ -128,22 +130,19 @@ if($tableauNumero){
       if(is_array($postes)){
 	foreach($postes as $poste){
 	  $class=$poste['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
-	  $selected=($ligne['type']=="poste" and $poste['id']==$ligne['poste'])?"selected='selected'":null;
+	  $selected=($tab['lignes'][$i] and $tab['lignes'][$i]['type']=="poste" and $poste['id']==$tab['lignes'][$i]['poste'])?"selected='selected'":null;
 	  echo "<option value='{$poste['id']}' $selected class='$class'>{$poste['nom']} ({$poste['etage']})</option>\n";
 	}
       }
       // Les lignes de séparation
       foreach($lignes_sep as $ligne_sep){
-	$selected=($ligne['type']=="ligne" and $ligne_sep['id']==$ligne['poste'])?"selected='selected'":null;
+	$selected=($tab['lignes'][$i]['type']=="ligne" and $ligne_sep['id']==$tab['lignes'][$i]['poste'])?"selected='selected'":null;
 	echo "<option value='{$ligne_sep['id']}Ligne' class='tr_horaires' $selected style='font-weight:normal;'>{$ligne_sep['nom']}</option>\n";
       }
       echo "</select>&nbsp;&nbsp;\n";
       // Boutons ajout et suppression
-//       echo "<a href='javascript:ajout(\"select_{$tab['nom']}_\",$i);' id='ajout_select_{$tab['nom']}_$i' >\n";
-      echo "<img src='img/add.gif' border='0' alt='Ajouter' class='add_button' style='cursor:pointer;'/>\n";
-//       echo "</a>\n";
-      echo "<a href='javascript:supprime_tab(\"{$tab['nom']}_\",$i);' id='supprime_select_{$tab['nom']}_$i'>\n";
-      echo "<img src='img/drop.gif' border='0' alt='Supprimer' /></a>\n";
+      echo "<img src='img/add.gif' border='0' alt='Ajouter' style='cursor:pointer;' onclick='ajout(\"select_{$tab["nom"]}_\",$i);'/>\n";
+      echo "<img src='img/drop.gif' border='0' alt='Supprimer' style='cursor:pointer;' onclick='supprime_tab(\"{$tab["nom"]}_\",$i);' />\n";
       echo "</td>\n";
 
       // Cellules (grises ou non)
@@ -162,86 +161,13 @@ if($tableauNumero){
       }
       echo "<td id='td_select_{$tab['nom']}_$i' colspan='$colspan' style='display:none;'>\n";
       echo "</tr>\n"; 
-    $i++;
     }
   }
-
-
-    //	Lignes <select>
-/*    for($i=0;$i<100;$i++){
-      echo "<tr id='tr_select_{$tab[0]}_$i' style='display:none;'>\n";
-      echo "<td id='td_select_{$tab[0]}_{$i}_0' >\n";
-      echo "<select name='select_{$tab[0]}_$i' style='width:200px;' onchange='couleur(\"select_{$tab[0]}_\",$i);'>\n";
-      echo "<option value=''>&nbsp;</option>\n";
-      if(is_array($postes)){
-	foreach($postes as $poste){
-	  $background=$poste['obligatoire']=="Obligatoire"?"#00FA92":"#FFFFFF";
-	  echo "<option value='{$poste['id']}' style='background:$background;color:#7D3C25;'>{$poste['nom']} ({$poste['etage']})</option>\n";
-	}
-      }
-      foreach($lignes_sep as $ligne_sep){
-	echo "<option value='{$ligne_sep['id']}Ligne' style='background:#7D3C25;color:#FFFFFF;'>{$ligne_sep['nom']}</option>\n";
-      }
-      echo "</select>&nbsp;&nbsp;<a href='javascript:ajout(\"select_{$tab[0]}_\",$i);' id='ajout_select_${tab[0]}_$i' >\n";
-      echo "<img src='img/add.gif' border='0' alt='Ajouter' /></a>\n";
-      echo "<a href='javascript:supprime_tab(\"{$tab[0]}_\",$i);' id='supprime_select_${tab[0]}_$i'>\n";
-      echo "<img src='img/drop.gif' border='0' alt='Supprimer' /></a>\n";
-      echo "</td>\n";
-      for($j=1;$j<count($tab);$j++){
-	$class=null;
-	$checked=null;
-	if(in_array("{$tab[0]}_{$i}_{$j}",$cellules_grises)){
-	  $class="class='cellule_grise'";
-	  $checked="checked='checked'";
-	}
-	echo "<td id='td_select_{$tab[0]}_{$i}_$j' $class colspan='".nb30($tab[$j]['debut'],$tab[$j]['fin'])."' style='text-align:center;'>\n";
-	echo "<input type='checkbox' name='checkbox_{$tab[0]}_{$i}_$j' $checked onclick='couleur2(this,\"td_select_{$tab[0]}_{$i}_$j\");'/> G\n";
-	echo "</td>\n";
-      }
-      echo "<td id='td_select_{$tab[0]}_$i' colspan='$colspan' style='display:none;'>\n";
-      echo "</tr>\n"; 
-      }
-  }*/
   echo "</table>\n";
 }
 echo "</form>\n";
-
-//	Pour contrôler ensuite si les tableaux existent
-$exist=array(1,2,3);
-
-// echo "<script type='text/JavaScript'>\n";
-//	Affichage en JavaScript des lignes enregistrées
-/*if(is_array($lignes)){
-  for($i=0;$i<count($lignes);$i++){
-    if($lignes[$i]['type']=="titre")
-      $lignes[$i]['tableau'].="Titre";
-    if($lignes[$i]['type']=="ligne")
-      $lignes[$i]['poste'].="Ligne";
-//     echo "document.form4.select_{$lignes[$i]['tableau']}_{$lignes[$i]['ligne']}.value='".html_entity_decode($lignes[$i]['poste'],ENT_QUOTES|ENT_IGNORE,"UTF-8")."';\n";
-    if($lignes[$i]['type']!="titre"){
-      echo "document.getElementById('tr_select_{$lignes[$i]['tableau']}_{$lignes[$i]['ligne']}').style.display='';\n";
-      echo "couleur('select_{$lignes[$i]['tableau']}_',{$lignes[$i]['ligne']});\n";
-      if(array_key_exists($i+1,$lignes) and $lignes[$i+1]['tableau']!=$lignes[$i]['tableau'])
-	echo "document.getElementById('supprime_select_{$lignes[$i]['tableau']}_{$lignes[$i]['ligne']}').style.display='none';\n";
-    }
-    //	Pour contrôler ensuite si les tableaux existent
-    if($lignes[$i]['tableau']==1)
-      $exist[0]=null;
-    if($lignes[$i]['tableau']==2)
-      $exist[1]=null;
-    if($lignes[$i]['tableau']==3)
-      $exist[2]=null;
-  }
-}
-//	Affichage en JavaScript des premières lignes (si rien n'est enregistré)
-foreach($exist as $elem){
-  if($elem){
-    echo "document.getElementById('tr_select_{$elem}_0').style.display='';\n";
-    echo "document.getElementById('supprime_select_{$elem}_0').style.display='none';\n";
-  }
-}
-*/
 ?>
+
 <script type='text/JavaScript'>
 $("document").ready(function(){
   // Applique la même class que l'option selectionnée au select et au td pour chaque select poste lors du chargement
@@ -261,10 +187,5 @@ $(".tab_select").change(function(){
   $(this).addClass(myClass);
   $(this).closest("td").removeClass();
   $(this).closest("td").addClass(myClass);
-});
-
-// Ajout de nouvelles lignes (clone)
-$(".add_button").click(function(){
-  $(this).closest("tr").clone().insertAfter($(this).closest("tr"));
 });
 </script>

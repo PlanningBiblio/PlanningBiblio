@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/class.tableaux.php
 Création : mai 2011
-Dernière modification : 27 janvier 2014
+Dernière modification : 30 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -171,10 +171,6 @@ class tableau{
 	$horaires=array("debut"=>"09:00:00","fin"=>"10:00:00","tableau"=>$i,"numero"=>$id);
 	$db=new db();
 	$db->insert2("pl_poste_horaires",$horaires);
-
-	$lignes=array("ligne"=>0,"poste"=>0,"type"=>"poste","tableau"=>$i,"numero"=>$id);
-	$db=new db();
-	$db->insert2("pl_poste_lignes",$lignes);
       }
     }
 
