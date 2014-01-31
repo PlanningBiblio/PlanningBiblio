@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.8
+Planning Biblio, Version 1.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/index.php
 Création : mai 2011
-Dernière modification : 7 novembre 2013
+Dernière modification : 30 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -116,9 +116,11 @@ if($config['Multisites-nombre']>1){
 echo "</tr>\n";
 
 if(is_array($groupes)){
+  $class="tr1";
   foreach($groupes as $elem){
+    $class=$class=="tr1"?"tr2":"tr1";
     $id=in_array(13,$droits)?"<td>{$elem['id']}</td>":null;
-    echo "<tr><td><a href='index.php?page=planning/postes_cfg/groupes.php&amp;id={$elem['id']}'>\n";
+    echo "<tr class='$class'><td><a href='index.php?page=planning/postes_cfg/groupes.php&amp;id={$elem['id']}'>\n";
     echo "<img src='img/modif.png' border='0' alt='modif' /></a>\n";
     echo "<a href='javascript:supprime_groupe(\"{$elem['id']}\",\"".addslashes(html_entity_decode($elem['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8"))."\");'><img src='img/drop.gif' border='0' alt='Suppression' /></a>\n";
     echo "</td>\n";

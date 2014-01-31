@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.8
+Planning Biblio, Version 1.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 20 novembre 2013
+Dernière modification : 24 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -133,7 +133,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste` (
 $sql[]="CREATE TABLE `{$dbprefix}pl_poste_cellules` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `numero` int(11) NOT NULL,
-  `tableau` varchar(20) NOT NULL,
+  `tableau` int(11) NOT NULL,
   `ligne` int(11) NOT NULL,
   `colonne` int(11) NOT NULL,
   PRIMARY KEY (`id`)
@@ -143,7 +143,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_horaires` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `debut` time NOT NULL DEFAULT '00:00:00',
   `fin` time NOT NULL DEFAULT '00:00:00',
-  `tableau` varchar(15) NOT NULL,
+  `tableau` int(11) NOT NULL,
   `numero` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
@@ -151,7 +151,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_horaires` (
 $sql[]="CREATE TABLE `{$dbprefix}pl_poste_lignes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `numero` int(11) NOT NULL,
-  `tableau` varchar(20) NOT NULL,
+  `tableau` int(11) NOT NULL,
   `ligne` int(11) NOT NULL,
   `poste` varchar(30) NOT NULL,
   `type` enum('poste','ligne','titre') NOT NULL,

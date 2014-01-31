@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.8
+Planning Biblio, Version 1.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/class.tableaux.php
 Création : mai 2011
-Dernière modification : 07 novembre 2013
+Dernière modification : 30 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,7 +23,11 @@ if(!$version and !strpos($_SERVER['SCRIPT_NAME'],"groupes_supp.php")){
 
 class tableau{
   public $elements=array();
-  
+  public $id=null;
+  public $length=null;
+  public $next=null;
+  public $numbers=null;
+
   public function deleteGroup($id){
     $db=new db();
     $db->delete("pl_poste_tab_grp","`id`='$id'");
@@ -53,6 +57,133 @@ class tableau{
     $db=new db();
     $db->select("pl_poste_tab_grp","*","`id`='$id'");
     $this->elements=$db->result[0];
+  }
+
+  // Recherche tous les éléments d'un tableau pour l'afficher
+  public function get(){
+    $tableauNumero=$this->id;
+
+    // Liste des tableaux
+    $tableaux=array();
+    $db=new db();
+    $db->select("pl_poste_horaires","tableau","numero=$tableauNumero","GROUP BY `tableau`");
+    if($db->result){
+      foreach($db->result as $elem){
+	$tableaux[]=$elem['tableau'];
+      }
+    }
+
+    // Liste des horaires
+    $db=new db();
+    $db->select("pl_poste_horaires","*","numero=$tableauNumero","ORDER BY `tableau`,`debut`,`fin`");
+    $horaires=$db->result;
+
+    // Liste des lignes enregistrées
+    $db=new db();
+    $db->select("pl_poste_lignes",null,"numero=$tableauNumero","ORDER BY tableau,ligne");
+    $lignes=$db->result;
+
+    $titres=array();
+    foreach($lignes as $ligne){
+      if($ligne['type']=='titre'){
+	$titres[$ligne['tableau']]=$ligne['poste'];
+      }
+    }
+
+    // Liste des cellules grises
+    $db=new db();
+    $db->select("pl_poste_cellules",null,"numero=$tableauNumero","ORDER BY tableau,ligne,colonne");
+    $cellules_grises=array();
+    if($db->result){
+      foreach($db->result as $elem){
+	$cellules_grises[]=array("tableau"=>$elem['tableau'],"nom"=>"{$elem['ligne']}_{$elem['colonne']}");
+      }
+    }
+
+    // Construction du grand tableau
+    $tabs=array();
+    foreach($tableaux as $elem){
+      // Initilisation des sous-tableaux et noms des sous-tableaux
+      $tabs[$elem]=array("nom"=>$elem,"titre"=>null,"horaires"=>array(),"lignes"=>array(),"cellules_grises"=>array());
+
+      // Titres et lignes des sous-tableaux
+      foreach($lignes as $ligne){
+	// Titres
+	if($ligne['tableau']==$elem and $ligne['type']=="titre"){
+	  $tabs[$elem]['titre']=$ligne['poste'];
+	// Lignes (postes et lignes de séparation
+	}elseif($ligne['tableau']==$elem){
+	  $tabs[$elem]['lignes'][]=$ligne;
+	}
+      }
+
+      // Horaires des sous-tableaux
+      foreach($horaires as $horaire){
+	if($horaire['tableau']==$elem){
+	  $tabs[$elem]['horaires'][]=array("debut"=>$horaire['debut'],"fin"=>$horaire['fin']);
+	}
+      }
+
+      // Cellules Grises
+      foreach($cellules_grises as $cellule){
+	if($cellule['tableau']==$elem){
+	  $tabs[$elem]['cellules_grises'][]=$cellule['nom'];
+	}
+      }
+    }
+    $this->elements=$tabs;
+  }
+
+  public  function getNumbers(){
+    $db=new db();
+    $db->select("pl_poste_horaires","tableau","numero='{$this->id}'","group by tableau");
+    if(!$db->result){
+      return;
+    }
+
+    $numbers=array();
+    foreach($db->result as $elem){
+      $numbers[]=$elem['tableau'];
+    }
+    $length=count($numbers);
+    sort($numbers);
+    $next=$numbers[$length-1]+1;
+    
+    $this->length=$length;
+    $this->next=$next;
+    $this->numbers=$numbers;
+  }
+
+  public  function setNumbers($number){
+    $this->getNumbers();
+    $length=$this->length;
+    $next=$this->next;
+    $numbers=$this->numbers;
+    $id=$this->id;
+
+    $diff=intval($number)-intval($length);
+    if($diff==0){
+      return;
+    }
+
+    if($diff>0){
+      for($i=$next;$i<($diff+$next);$i++){
+	$horaires=array("debut"=>"09:00:00","fin"=>"10:00:00","tableau"=>$i,"numero"=>$id);
+	$db=new db();
+	$db->insert2("pl_poste_horaires",$horaires);
+      }
+    }
+
+    if($diff<0){
+      $i=$number;
+      while($numbers[$i]){
+	$db=new db();
+	$db->delete("pl_poste_horaires","tableau='{$numbers[$i]}' AND numero=$id");
+	$db=new db();
+	$db->delete("pl_poste_lignes","tableau='{$numbers[$i]}' AND numero=$id");
+	$i++;
+      }
+    }
   }
 
   public function update($post){

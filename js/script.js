@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.6.8
+Planning Biblio, Version 1.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 9 janvier 2014
+Dernière modification : 30 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -389,6 +389,20 @@ function supprime_jourFerie(id){
       document.getElementById("jour"+id).value="";
     }
   }
+}
+
+function tableauxNombre(){
+$.ajax({
+    url: "planning/postes_cfg/ajax.tableaux.php",
+    type: "get",
+    data: "id="+$("#id").val()+"&nombre="+$("#nombre").val(),
+    success: function(){
+      location.href="index.php?page=planning/postes_cfg/modif.php&numero="+$("#id").val();
+    },
+    error: function(){
+      information("Une erreur est survenue lors de la modification du nombre de tableaux.","error");
+    }
+  });
 }
 
 function tabSiteUpdate(){
@@ -1008,8 +1022,12 @@ function ajout(nom,id){
   for(i=fin;i>id;i--){
     j=i-1;
     document.form4.elements[nom+i].selectedIndex=document.form4.elements[nom+j].selectedIndex;
+    document.form4.elements[nom+i].className=document.form4.elements[nom+j].className;
+    document.getElementById("td_"+nom+i+"_0").className=document.getElementById("td_"+nom+j+"_0").className;
   }
   document.form4.elements[nom+id].selectedIndex=0;
+  document.form4.elements[nom+id].className=null;
+  document.getElementById("td_"+nom+i+"_0").className=null;
 }
 
 function couleur(nom,id){

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.6.8
+Planning Biblio, Version 1.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/horaires.php
 Création : mai 2011
-Dernière modification : 7 novembre 2013
+Dernière modification : 22 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -18,8 +18,6 @@ Page incluse dans le fichier "planning/postes_cfg/modif.php"
 */
 
 require_once "class.tableaux.php";
-
-echo "<h3>Configuration des horaires</h3>\n";
 
 $horaires=Array();
 $tableau=null;
@@ -77,14 +75,21 @@ if($db->result){
 
 
 //	Affichage des horaires
-if($horaires[0]){
-  $quart=$config['heuresPrecision']=="quart d&apos;heure"?true:false;
+$quart=$config['heuresPrecision']=="quart d&apos;heure"?true:false;
 
-  echo "<form name='form2' action='index.php' method='post'>\n";
-  echo "<input type='hidden' name='page' value='planning/postes_cfg/modif.php' />\n";
-  echo "<input type='hidden' name='cfg-type' value='horaires' />\n";
-  echo "<input type='hidden' name='numero' value='$tableauNumero' />\n";
-  echo "<input type='hidden' name='action' value='modif' />\n";
+echo "<form name='form2' action='index.php' method='post'>\n";
+echo "<input type='hidden' name='page' value='planning/postes_cfg/modif.php' />\n";
+echo "<input type='hidden' name='cfg-type' value='horaires' />\n";
+echo "<input type='hidden' name='numero' value='$tableauNumero' />\n";
+echo "<input type='hidden' name='action' value='modif' />\n";
+echo "<table><tr><td style='width:600px;'>";
+echo "<h3>Configuration des horaires</h3>\n";
+echo "</td><td style='text-align:right;'>\n";
+echo "<input type='button' value='Retour' class='ui-button retour'/>\n";
+echo "<input type='submit' value='Valider' class='ui-button'/>\n";
+echo "</td></tr></table>\n";
+
+if($horaires[0]){
   echo "<table><tr style='vertical-align:top;'>";
 
   $numero=1;
@@ -106,10 +111,16 @@ if($horaires[0]){
 							// Affichage des boutons ajouter
       echo "<tr><td><img src='img/add.gif' alt='ajouter' style='cursor:pointer' onclick='add_horaires(\"{$tableau}\");'/></td></tr>\n";
       echo "</table></td>";
+
+      // Affichage des tableaux sur plusieurs lignes de 4
+      if(!(($numero-1)%4)){
+	echo "</tr><tr style='vertical-align:top;'>";
+      }
     }
 
     if($elem['tableau']!=$tableau){			// Affichage du début des tableaux
-      echo "<td style='width:200px;'><table><tr><td colspan='2'><b>Tableau $numero</b></td></tr>\n";
+      $padding=$numero>4?"style='padding-top:40px;'":null;
+      echo "<td style='width:200px;'><table><tr><td colspan='2' $padding ><b>Tableau $numero</b></td></tr>\n";
       $numero++;
     }
 
@@ -145,8 +156,7 @@ if($horaires[0]){
 							// Affichage du bouton ajouter du dernier tableau
   echo "<tr><td><img src='img/add.gif' alt='ajouter' style='cursor:pointer' onclick='add_horaires(\"{$elem['tableau']}\");'/></td></tr>\n";
   echo "</table></td>\n";
-  echo "<td><input type='submit' value='Valider' style='width:100px;'/><br/><br/>\n";
-  echo "<input type='button' value='Retour' onclick='location.href=\"index.php?page=planning/postes_cfg/index.php\";'/ style='width:100px;'></td>\n";
-  echo "</tr></table></form>\n";
+  echo "</tr></table>\n";
 }
+echo "</form>\n";
 ?>
