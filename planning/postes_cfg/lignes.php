@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/lignes.php
 Création : mai 2011
-Dernière modification : 30 janvier 2014
+Dernière modification : 3 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -19,53 +19,6 @@ Page incluse dans le fichier "planning/postes_cfg/modif.php"
 */
 
 require_once "class.tableaux.php";
-
-//	Si validation, enregistrement des infos
-if(isset($_POST['valid'])){	
-  $keys=array_keys($_POST);
-  $values=array();
-  $db=new db();			//		Suppression des infos concernant ce tableau dans la table pl_poste_lignes
-  $db->query("DELETE FROM `{$dbprefix}pl_poste_lignes` WHERE `numero`='$tableauNumero';");
-  foreach($keys as $key){	//		Insertion des données dans la table pl_poste_lignes
-    if($_POST[$key] and substr($key,0,6)=="select"){
-      $tab=explode("_",$key);  //1: tableau ; 2 lignes
-      if(substr($tab[1],-5)=="Titre"){
-	$type="titre";
-	$tab[1]=substr($tab[1],0,-5);
-      }
-      elseif(substr($_POST[$key],-5)=="Ligne"){
-	$type="ligne";
-	$_POST[$key]=substr($_POST[$key],0,-5);
-      }
-      else{
-	$type="poste";
-      }
-      $values[]="('$tableauNumero','{$tab[1]}','{$tab[2]}','{$_POST[$key]}','$type')";
-    }
-  }
-  if($values[0]){
-    $sql="INSERT INTO `{$dbprefix}pl_poste_lignes` (`numero`,`tableau`,`ligne`,`poste`,`type`) VALUES ";
-    $sql.=join($values,",").";";
-    $db=new db();
-    $db->query($sql);
-  }
-
-  $values=array();
-  $db=new db();			//		Suppression des infos concernant ce tableau dans la table pl_poste_cellules
-  $db->query("DELETE FROM `{$dbprefix}pl_poste_cellules` WHERE `numero`='$tableauNumero';");
-  foreach($keys as $key){	//		Insertion des données dans la table pl_poste_cellules
-    if($_POST[$key] and substr($key,0,8)=="checkbox"){
-      $tab=explode("_",$key);  //1: tableau ; 2 lignes ; 3 colonnes
-      $values[]="('$tableauNumero','{$tab[1]}','{$tab[2]}','{$tab[3]}')";
-    }
-  }
-  if(!empty($values)){
-    $sql="INSERT INTO `{$dbprefix}pl_poste_cellules` (`numero`,`tableau`,`ligne`,`colonne`) VALUES ";
-    $sql.=join($values,",").";";
-    $db=new db();
-    $db->query($sql);
-  }
-}
 
 // Liste des postes
 $reqSite=null;
@@ -89,9 +42,8 @@ $t->id=$tableauNumero;
 $t->get();
 $tabs=$t->elements;
 
-// affichage du tableau :
-// affichage de la lignes des horaires
-echo "<form name='form4' action='index.php' method='post' >\n";
+// Affichage du tableau :
+echo "<form name='form4' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='planning/postes_cfg/modif.php' />\n";
 echo "<input type='hidden' name='cfg-type' value='lignes' />\n";
 echo "<input type='hidden' name='numero' value='$tableauNumero' />\n";
@@ -99,7 +51,7 @@ echo "<table><tr><td style='width:600px;'>";
 echo "<h3>Configuration des lignes</h3>\n";
 echo "</td><td style='text-align:right;'>\n";
 echo "<input type='button' value='Retour' class='ui-button retour'/>\n";
-echo "<input type='submit' name='valid' value='Valider' class='ui-button'/>\n";
+echo "<input type='button' name='valid' value='Valider' class='ui-button' onclick='configLignes();'/>\n";
 echo "</td></tr></table>\n";
 
 if($tableauNumero){
@@ -108,7 +60,7 @@ if($tableauNumero){
     // Lignes Titre et Horaires
     echo "<tr class='tr_horaires' style='text-align:center;'>\n";
     echo "<td style='width:260px;white-space:nowrap;'>\n";
-    echo "<input type='text' name='select_{$tab['nom']}Titre_0' class='tr_horaires' style='text-align:center;width:220px;' value='{$tab['titre']}'/>\n";
+    echo "<input type='text' name='select_{$tab['nom']}Titre_0' class='tr_horaires select_titre' style='text-align:center;width:220px;' value='{$tab['titre']}'/>\n";
     echo "<img src='img/add.gif' border='0' alt='Ajouter' style='cursor:pointer;' onclick='ajout(\"select_{$tab["nom"]}_\",-1);'/></td>\n";
     $colspan=0;
     foreach($tab['horaires'] as $horaire){
@@ -169,11 +121,12 @@ echo "</form>\n";
 ?>
 
 <script type='text/JavaScript'>
+// Applique la même class que l'option selectionnée au select et au td pour chaque select poste lors du chargement
 $("document").ready(function(){
-  // Applique la même class que l'option selectionnée au select et au td pour chaque select poste lors du chargement
   $(".tab_select").each(function(){
     var myClass=$(this).find(":selected").attr("class");
     $(this).removeClass();
+    $(this).addClass("tab_select");
     $(this).addClass(myClass);
     $(this).closest("td").removeClass();
     $(this).closest("td").addClass(myClass);
@@ -184,8 +137,50 @@ $("document").ready(function(){
 $(".tab_select").change(function(){
   var myClass=$(this).find(":selected").attr("class");
   $(this).removeClass();
+  $(this).addClass("tab_select");
   $(this).addClass(myClass);
   $(this).closest("td").removeClass();
   $(this).closest("td").addClass(myClass);
 });
+
+// Validation AJAX pour éviter le problème de limitation à 1000 éléments en post
+// N'envoie que les éléments sélectionnés et visibles
+function configLignes(){
+  tab=new Array();
+  // Récupération des titres
+  $(".select_titre").each(function(){
+    tab.push($(this).attr("name")+"="+$(this).val());
+  });
+
+  // Récupération des postes
+  $(".tab_select:visible").each(function(){
+    tab.push($(this).attr("name")+"="+$(this).val());
+  });
+
+  // Récupération des cellules grises
+  $("input[type=checkbox]:checked:visible").each(function(){
+    tab.push($(this).attr("name")+"="+$(this).val());
+  });
+
+  // La variable data contient tous les éléments à enregistrer
+  var data="id="+$("#id").val();
+  for(elem in tab){
+    data+="&"+tab[elem];
+  }
+
+  // Enregistrement des données en ajax (fichier ajax.lignes.php)
+  $.ajax({
+    url: "planning/postes_cfg/ajax.lignes.php",
+    type: "post",
+    data: data,
+    success: function(){
+      information("Le tableau a été enregistré","highlight");
+      return true;
+    },
+    error: function(){
+      information("Une erreur est survenue lors de l'enregistrement du tableau.","error");
+      return false;
+    }
+  });
+}
 </script>

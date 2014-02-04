@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/horaires.php
 Création : mai 2011
-Dernière modification : 22 janvier 2014
+Dernière modification : 3 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -95,7 +95,7 @@ if($horaires[0]){
   $numero=1;
   foreach($horaires as $elem){
     if($tableau and $elem['tableau']!=$tableau){	// Affichage de la fin des tableaux (sauf dernier tableau)
-      for($j=0;$j<50;$j++){				// Affichage des select cachés pour les ajouts (sauf dernier tableau)
+      for($j=0;$j<25;$j++){				// Affichage des select cachés pour les ajouts (sauf dernier tableau)
 	echo "<tr id='tr_{$tableau}_$j' style='display:none;'><td>\n";
 	echo "<select name='debut_{$tableau}_new$j' style='width:75px;'>\n";
 	selectHeure(6,23,true,$quart);
@@ -140,7 +140,7 @@ if($horaires[0]){
     echo "</tr>\n";
   }
 							// Affichage de la fin du dernier tableau
-  for($j=0;$j<50;$j++){					// Affichage des select cachés pour les ajouts du dernier tableau
+  for($j=0;$j<25;$j++){					// Affichage des select cachés pour les ajouts du dernier tableau
     echo "<tr id='tr_{$tableau}_$j' style='display:none;'><td>\n";
     echo "<select name='debut_{$tableau}_new$j' style='width:75px;'>\n";
     selectHeure(6,23,true,$quart);
