@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/password.php
 Création : mai 2011
-Dernière modification : 23 juillet 2013
+Dernière modification : 4 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -40,10 +40,9 @@ if(!isset($_GET['nouveau'])){
   echo "</td><td>\n";
   echo "<input type='password' name='confirm'/>\n";
   echo "</td></tr>\n";
-  echo "<tr><td>\n";
-  echo "<br/><input type='button' value='Annuler' onclick='history.back();'/>";
-  echo "</td><td>\n";
-  echo "<br/><input type='submit' value='Modifier'/>\n";
+  echo "<tr><td colspan='2' style='text-align:center;'>\n";
+  echo "<br/><input type='button' value='Annuler' onclick='history.back();' class='ui-button'/>";
+  echo "<input type='submit' value='Modifier' class='ui-button' style='margin-left:30px;'/>\n";
   echo "</td></tr>\n";
   echo "</table></form>\n";
 }
