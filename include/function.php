@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 23 janvier 2014
+Dernière modification : 4 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -655,8 +655,8 @@ function sendmail($Sujet,$Message,$destinataires,$alert=true){
     $Message= str_replace(array("\n","\r\n\n","\r\n"), "<br/>", $Message);
     $to=array();
     foreach($destinataires as $destinataire){
-      if(verifmail($destinataire)){
-	$to[]=$destinataire;
+      if(verifmail(trim($destinataire))){
+	$to[]=trim($destinataire);
       }
       elseif($alert){
 	echo "<script type='text/JavaScript'>alert('Adresse mail invalide (\"$destinataire\")');</script>";
