@@ -1,4 +1,4 @@
-***	Version 1.6.9	(Jérôme Combes, février 2014)		***
+***	Version 1.7	(Jérôme Combes, 4 février 2014)		***
 - Améliorations :
 Nombre de tableaux paramétrable
 
