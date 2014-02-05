@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : postes/index.php
 Création : mai 2011
-Dernière modification : 16 janvier 2014
+Dernière modification : 5 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -122,7 +122,8 @@ for($i=0;$i<count($postes);$i++){
   }
   echo "<td>{$postes[$i]['nom']}</td>\n";
   if($config['Multisites-nombre']>1){
-    echo "<td>".$config["Multisites-site{$postes[$i]['site']}"]."</td>\n";
+    $site=array_key_exists("Multisites-site{$postes[$i]['site']}",$config)?$config["Multisites-site{$postes[$i]['site']}"]:"-";
+    echo "<td>$site</td>\n";
   }
   echo "<td>{$postes[$i]['etage']}</td>\n";
   echo "<td title='$activites' size='100'>$activitesAffichees</td>\n";
@@ -141,7 +142,7 @@ $(document).ready(function() {
   $("#tablePostes").dataTable({
     "bJQueryUI": true,
     "sPaginationType": "full_numbers",
-    "bStateSave": false,
+    "bStateSave": true,
     "aaSorting" : [[2,"asc"],[3,"asc"],[4,"asc"]],
     "aoColumns" : [{"bSortable":false},{"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},
       {"bSortable":true},{"bSortable":true},{"bSortable":true},

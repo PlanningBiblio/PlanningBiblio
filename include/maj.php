@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 31 janvier 2014
+Dernière modification : 5 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -441,6 +441,15 @@ if(strcmp("1.7",$config['Version'])>0){
   $sql[]="ALTER TABLE `{$dbprefix}pl_poste_horaires` CHANGE `tableau` `tableau` INT(11);";
   $sql[]="ALTER TABLE `{$dbprefix}pl_poste_lignes` CHANGE `tableau` `tableau` INT(11);";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.7' WHERE `nom`='Version';";
+}
+
+if(strcmp("1.7.1",$config['Version'])>0){
+  //	Ajout des catégories
+  $sql[]="CREATE TABLE `{$dbprefix}select_categories` (`id` int(11) NOT NULL AUTO_INCREMENT, `valeur` text NOT NULL DEFAULT '', 
+    `rang` int(11) NOT NULL DEFAULT '0', PRIMARY KEY (`id`) ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+  $sql[]="INSERT INTO `{$dbprefix}select_categories` (`valeur`,`rang`) VALUES ('Catégorie A',10),('Catégorie B',20),('Catégorie C',30),('Commun',40);";
+  $sql[]="ALTER TABLE `{$dbprefix}postes` ADD `categorie` VARCHAR(20);";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.7.1' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage
