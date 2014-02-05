@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7
+Planning Biblio, Version 1.7.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : postes/modif.php
 Création : mai 2011
-Dernière modification : 7 décembre 2013
+Dernière modification : 5 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -31,6 +31,7 @@ if(isset($_GET['id'])){
   $db->select("postes",null,"id='$id'");
   $nom=$db->result[0]['nom'];
   $etage=$db->result[0]['etage'];
+  $categorie=$db->result[0]['categorie'];
   $site=$db->result[0]['site'];
   $activites=unserialize($db->result[0]['activites']);
   $obligatoire=$db->result[0]['obligatoire']=="Obligatoire"?"checked='checked'":"";
@@ -49,6 +50,7 @@ else{
   $id=null;
   $nom=null;
   $etage=null;
+  $categorie=null;
   $obligatoire="checked='checked'";
   $renfort=null;
   $stat1="checked='checked'";
@@ -58,14 +60,19 @@ else{
   $activites=array();
   $site=0;
 }
-	
+
 $checked=null;
 
 // Recherche des étages
 $db=new db();
 $db->select("select_etages",null,null,"order by rang");
 $etages=$db->result;
-	
+
+// Recherche des catégories
+$db=new db();
+$db->select("select_categories",null,null,"order by rang");
+$categories=$db->result;
+
 echo "<form method='get' action='#' name='form'>";
 echo "<input type='hidden' name='page' value='postes/valid.php' />\n";
 echo "<table style='width:100%'>";
@@ -78,7 +85,7 @@ echo "<input type='text' value='$nom' name='nom' style='width:250px'/>";
 echo "</td></tr>";
 
 if($config['Multisites-nombre']>1){
-  echo "<tr><td>Sites</td>\n";
+  echo "<tr><td>Site</td>\n";
   echo "<td><select name='site' style='width:255px'>";
   echo "<option value='0'>&nbsp;</option>\n";
   for($i=1;$i<count($config['Multisites-nombre'])+2;$i++){
@@ -89,7 +96,7 @@ if($config['Multisites-nombre']>1){
   echo "</td></tr>\n";
 }
 
-echo "<tr><td style='width:150px'>";
+echo "<tr><td>";
 echo "Etage :";
 echo "</td><td>";
 echo "<select name='etage' style='width:255px'>";
@@ -101,6 +108,18 @@ foreach($etages as $elem){
 echo "</select>\n";
 echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_etages&amp;terme=&eacute;tage\",400,400);'>\n";
 echo "<img src='img/add.gif' alt='*' style=width:15px;'/></a>\n";
+echo "</td></tr>";
+
+echo "<tr><td>";
+echo "Cat&eacute;gorie n&eacute;cessaire : ";
+echo "</td><td>";
+echo "<select name='categorie' style='width:255px'>";
+echo "<option value=''>&nbsp;</option>\n";
+foreach($categories as $elem){
+  $selected=$categorie==$elem['valeur']?"selected='selected'":null;
+  echo "<option value='{$elem['valeur']}' $selected >{$elem['valeur']}</option>\n";
+}
+echo "</select>\n";
 echo "</td></tr>";
 
 echo "<tr><td>";
@@ -147,9 +166,9 @@ echo "<tr><td colspan='2' style='text-align:center;'>\n";
 echo "<br/><br/>";
 echo "<input type='hidden' value='$action' name='action'/>";
 echo "<input type='hidden' value='$id' name='id'/>\n";
-echo "<input type='button' value='Annuler' onclick='history.go(-1);'/>\n";
+echo "<input type='button' value='Annuler' onclick='history.go(-1);' class='ui-button'/>\n";
 echo "&nbsp;&nbsp;&nbsp;\n";
-echo "<input type='submit' value='Valider'/>\n";
+echo "<input type='submit' value='Valider' class='ui-button'/>\n";
 echo "</td></tr>\n";
 echo "</table>\n";
 echo "</form>\n";

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7
+Planning Biblio, Version 1.7.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 30 janvier 2014
+Dernière modification : 5 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -189,7 +189,7 @@ $db=new db();
 $db->query("SELECT * FROM `{$dbprefix}postes` ORDER BY `id`;");
 if($db->result){
   foreach($db->result as $elem){
-    $postes[$elem['id']]=Array("nom"=>$elem['nom'],"etage"=>$elem['etage'],"obligatoire"=>$elem['obligatoire']);
+    $postes[$elem['id']]=Array("nom"=>$elem['nom'],"etage"=>$elem['etage'],"obligatoire"=>$elem['obligatoire'],"categorie"=>$elem['categorie']);
   }
 }
 //	-----------------------		FIN Récupération des postes	-----------------------------//
@@ -398,8 +398,10 @@ else{
     //	Lignes postes et grandes lignes
     foreach($tab['lignes'] as $ligne){
       if($ligne['type']=="poste" and $ligne['poste']){
-	$class=$postes[$ligne['poste']]['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
-	echo "<tr><td class='td_postes $class'>{$postes[$ligne['poste']]['nom']}";
+	$classTD=$postes[$ligne['poste']]['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
+	$classTR=str_replace(array("&eacute;"," "),array("e",""),$postes[$ligne['poste']]['categorie']);
+
+	echo "<tr class='tr_$classTR'><td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
 	if($config['affiche_etage']){
 	  echo " ({$postes[$ligne['poste']]['etage']})";
 	}
