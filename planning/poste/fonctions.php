@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 30 janvier 2014
+Dernière modification : 6 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,7 +20,6 @@ if(!$version){
 }
 
 function cellule_poste($debut,$fin,$colspan,$output,$poste){
-  $couleurs=array(null,null);
   $resultats=array(null,null);
   $classe=array(null,null);
   $i=0;
@@ -71,10 +70,9 @@ function cellule_poste($debut,$fin,$colspan,$output,$poste){
     }
   }
   $GLOBALS['idCellule']++;
-  $classe_td=$resultats[1]?null:$classe[0];
-  $cellule="<td id='td{$GLOBALS['idCellule']}' colspan='$colspan' style='text-align:center;' oncontextmenu='debut=\"$debut\";fin=\"$fin\";poste=\"$poste\";output=\"$output\";cellule={$GLOBALS['idCellule']}' class='$classe_td' >";
-  $cellule.="<div id='cellule{$GLOBALS['idCellule']}' style='width:100%;{$couleurs[0]}' class='cellule {$classe[0]}' >{$resultats[0]}</div>";
-  $cellule.="<div id='cellule{$GLOBALS['idCellule']}b' style='width:100%;{$couleurs[1]}' class='cellule {$classe[1]}' >{$resultats[1]}</div>";
+  $cellule="<td id='td{$GLOBALS['idCellule']}' colspan='$colspan' style='text-align:center;' oncontextmenu='debut=\"$debut\";fin=\"$fin\";poste=\"$poste\";output=\"$output\";cellule={$GLOBALS['idCellule']}' class='{$classe[0]}' >";
+  $cellule.="<div id='cellule{$GLOBALS['idCellule']}' class='cellule {$classe[0]}' >{$resultats[0]}</div>";
+  $cellule.="<div id='cellule{$GLOBALS['idCellule']}b' class='cellule {$classe[1]}' >{$resultats[1]}</div>";
   $cellule.="</td>\n";
   return $cellule;
 }
