@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 20 janvier 2014
+Dernière modification : 6 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -229,7 +229,7 @@ class planning{
 
       //	Affichage des lignes
       echo "<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$(this).removeClass();$(this).addClass(\"menudiv-gris\"); $groupe_hide' onmouseout='$(this).removeClass();$addClass' class='$classe $classTrListe'>\n";
-      echo "<td style='width:200px;color:$color;' onclick='bataille_navale({$elem['id']},null,\"$nom\",0,0,\"$classe\");'>";
+      echo "<td style='width:200px;color:$color;' onclick='bataille_navale({$elem['id']},\"$nom\",0,0,\"$classe\");'>";
       echo $nom_menu;
 
       //	Afficher ici les horaires si besoin
@@ -237,9 +237,9 @@ class planning{
       
       //	Affichage des liens d'ajout et de remplacement
       if(!$cellule_vide and !$max_perso and !$sr and !$sr_init)
-	echo "<a href='javascript:bataille_navale(".$elem['id'].",null,\"$nom\",0,1,\"$classe\");'>+</a>";
+	echo "<a href='javascript:bataille_navale(".$elem['id'].",\"$nom\",0,1,\"$classe\");'>+</a>";
       if(!$cellule_vide and !$max_perso)
-	echo "&nbsp;<a style='color:red' href='javascript:bataille_navale(".$elem['id'].",null,\"$nom\",1,1,\"$classe\");'>x</a>&nbsp;";
+	echo "&nbsp;<a style='color:red' href='javascript:bataille_navale(".$elem['id'].",\"$nom\",1,1,\"$classe\");'>x</a>&nbsp;";
       echo "</td></tr>\n";
     }
 

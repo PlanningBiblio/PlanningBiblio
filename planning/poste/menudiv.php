@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/menudiv.php
 Création : mai 2011
-Dernière modification : 21 novembre 2013
+Dernière modification : 6 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -364,16 +364,16 @@ if(count($newtab["Autres"]) and $config['agentsIndispo']){
 if(!in_array(2,$tab_exclus) and $config['toutlemonde']){
   echo "<tr onmouseover='$(this).addClass(\"menudiv-gris\");groupe_tab_hide();' onmouseout='$(this).removeClass(\"menudiv-gris\");'>\n";
   echo "<td colspan='3' style='width:200px;color:black;' ";
-  echo "onclick='bataille_navale(2,\"#FFFFFF\",\"Tout le monde\",0,0,\"\");'>Tout le monde</td></tr>\n";
+  echo "onclick='bataille_navale(2,\"Tout le monde\",0,0,\"\");'>Tout le monde</td></tr>\n";
   $nbCol++;
 }
 //~ -----				Affiche de la "Case vide"  (suppression)	--------------------------//
 if(!$cellule_vide){
   $groupe_tab=$config['ClasseParService']?"groupe_tab(\"vide\",\"$tab_agent\",1);":null;
   echo "<tr onmouseover='$groupe_tab $(this).addClass(\"menudiv-gris\");' onmouseout='$(this).removeClass(\"menudiv-gris\");'>";
-  echo "<td colspan='1' onclick='bataille_navale(0,\"#FFFFFF\",\"&nbsp;\",0,0,\"\");'>";
+  echo "<td colspan='1' onclick='bataille_navale(0,\"&nbsp;\",0,0,\"\");'>";
   echo "Supprimer</td><td>&nbsp;";
-  echo "<a style='color:red' href='javascript:bataille_navale(0,\"#FFFFFF\",\"&nbsp;\",1,0,\"\");'>Barrer</a>&nbsp;&nbsp;</td></tr>";
+  echo "<a style='color:red' href='javascript:bataille_navale(0,\"&nbsp;\",1,0,\"\");'>Barrer</a>&nbsp;&nbsp;</td></tr>";
   $nbCol++;
 }
 echo "</table>\n";

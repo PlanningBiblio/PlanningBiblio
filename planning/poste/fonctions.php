@@ -70,7 +70,8 @@ function cellule_poste($debut,$fin,$colspan,$output,$poste){
     }
   }
   $GLOBALS['idCellule']++;
-  $cellule="<td id='td{$GLOBALS['idCellule']}' colspan='$colspan' style='text-align:center;' oncontextmenu='debut=\"$debut\";fin=\"$fin\";poste=\"$poste\";output=\"$output\";cellule={$GLOBALS['idCellule']}' class='{$classe[0]}' >";
+  $classTD=$resultats[1]?null:$classe[0];
+  $cellule="<td id='td{$GLOBALS['idCellule']}' colspan='$colspan' style='text-align:center;' oncontextmenu='debut=\"$debut\";fin=\"$fin\";poste=\"$poste\";output=\"$output\";cellule={$GLOBALS['idCellule']}' class='$classTD' >";
   $cellule.="<div id='cellule{$GLOBALS['idCellule']}' class='cellule {$classe[0]}' >{$resultats[0]}</div>";
   $cellule.="<div id='cellule{$GLOBALS['idCellule']}b' class='cellule {$classe[1]}' >{$resultats[1]}</div>";
   $cellule.="</td>\n";
