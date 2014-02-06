@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 30 janvier 2014
+Dernière modification : 6 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -810,47 +810,61 @@ function affiche_activites(div,action){
 }
 
 // 	bataille_navale : menu contextuel : met à jour la base de données en arrière plan et affiche les modifs en JS dans le planning
-function bataille_navale(perso_id,couleur,nom,barrer,ajouter,classe){
+function bataille_navale(perso_id,nom,barrer,ajouter,classe){
   db=file("index.php?page=planning/poste/majdb.php&poste="+poste+"&debut="+debut+"&fin="+fin+"&perso_id="+perso_id+"&date="+date+"&barrer="+barrer+"&ajouter="+ajouter);
   
-  if(!perso_id && !barrer){			//	Supprimer tout
-    document.getElementById("cellule"+cellule).innerHTML="&nbsp;";
-    document.getElementById("cellule"+cellule).style.background="#FFFFFF";
-    document.getElementById("cellule"+cellule+"b").style.display="none";
-    document.getElementById("td"+cellule).className="";
+  if(!perso_id && !barrer){			// Supprimer tout
+    $("#cellule"+cellule).html("&nbsp;");
+    $("#cellule"+cellule).css("textDecoration","");
+    $("#cellule"+cellule+"b").hide();
+    $("#cellule"+cellule).removeClass();
+    $("#td"+cellule).removeClass();
   }
-  else if(!perso_id && barrer){			//	Barrer l'(es) agent(s) placé(s)
-    document.getElementById("cellule"+cellule).style.color="red";
-    document.getElementById("cellule"+cellule).style.textDecoration="line-through";
-    document.getElementById("cellule"+cellule+"b").style.color="red";
-    document.getElementById("cellule"+cellule+"b").style.textDecoration="line-through";
+  else if(!perso_id && barrer){			// Barrer l'(es) agent(s) placé(s)
+    $("#cellule"+cellule).css("color","red");
+    $("#cellule"+cellule).css("textDecoration","line-through");
+    $("#cellule"+cellule+"b").css("color","red");
+    $("#cellule"+cellule+"b").css("textDecoration","line-through");
   }
   else if(perso_id && !barrer && !ajouter){	// Remplacer l'agent placé par un autre
-    document.getElementById("cellule"+cellule).innerHTML=nom;
-    document.getElementById("cellule"+cellule).style.background=couleur;
-    document.getElementById("cellule"+cellule).style.color="black";
-    document.getElementById("cellule"+cellule).style.textDecoration="";
-    document.getElementById("td"+cellule).className=+classe;
-    document.getElementById("cellule"+cellule).className="cellule "+classe;
-    document.getElementById("cellule"+cellule+"b").style.display="none";
+    $("#cellule"+cellule).text(nom);
+    $("#cellule"+cellule).css("color","black");
+    $("#cellule"+cellule).css("textDecoration","");
+    $("#td"+cellule).attr("class",classe);
+    $("#cellule"+cellule).attr("class","cellule "+classe);
+    $("#cellule"+cellule+"b").hide();
   }
   else if(perso_id && barrer){			// barrer et ajoute un autre
-    document.getElementById("cellule"+cellule).style.textDecoration="line-through";
-    document.getElementById("cellule"+cellule).style.color="red";
-    document.getElementById("cellule"+cellule+"b").style.background=couleur;
-    document.getElementById("cellule"+cellule+"b").innerHTML=nom;
-    document.getElementById("td"+cellule).className="";
-    document.getElementById("cellule"+cellule+"b").className="cellule "+classe;
-    document.getElementById("cellule"+cellule+"b").style.display="";
+    $("#td"+cellule).removeClass();
+    $("#cellule"+cellule).css("textDecoration","line-through");
+    $("#cellule"+cellule).css("color","red");
+    $("#cellule"+cellule+"b").text(nom);
+    $("#cellule"+cellule+"b").attr("class","cellule "+classe);
+    $("#cellule"+cellule+"b").show();
   }
   else if(perso_id && ajouter){			// ajouter un agent
-    document.getElementById("cellule"+cellule+"b").style.background=couleur;
-    document.getElementById("cellule"+cellule+"b").style.color="black";
-    document.getElementById("cellule"+cellule+"b").style.textDecoration="";
-    document.getElementById("cellule"+cellule+"b").innerHTML=nom;
-    document.getElementById("cellule"+cellule+"b").style.display="";
+    if($("#cellule"+cellule).text()<nom){
+      var nom1=$("#cellule"+cellule).text();
+      var nom2=nom;
+      var classe1=$("#cellule"+cellule).attr("class");
+      var classe2=classe;
+    }
+    else{
+      var nom1=nom;
+      var nom2=$("#cellule"+cellule).text();
+      var classe1=classe;
+      var classe2=$("#cellule"+cellule).attr("class");
+    }
+    $("#td"+cellule).removeClass();
+    $("#cellule"+cellule).text(nom1);
+    $("#cellule"+cellule+"b").text(nom2);
+    $("#cellule"+cellule).attr("class",classe1);
+    $("#cellule"+cellule+"b").attr("class",classe2);
+    $("#cellule"+cellule+"b").css("color","black");
+    $("#cellule"+cellule+"b").css("textDecoration","");
+    $("#cellule"+cellule+"b").show();
   }
-  document.getElementById("menudiv").style.display = "none" ;	// cacher le menudiv
+  $("#menudiv").hide();				// cacher le menudiv
 
   // Affiche un message en haut du planning si pas de catégorie A en fin de service 
   verif_categorieA();
