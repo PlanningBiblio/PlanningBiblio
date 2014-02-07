@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 5 février 2014
+Dernière modification : 6 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -337,8 +337,7 @@ if(!$verrou and !$autorisation){
 else{
   echo ($verrou ? "<script type='text/JavaScript'>menudiv_display='none';</script>" : "<script type='text/JavaScript'>menudiv_display='';</script>");
   
-  echo "<div id='menudiv' style='display:none;' onmouseover='javascript:overpopupmenu=true;' onmouseout='javascript:overpopupmenu=false;'>";
-  echo "</div>\n";
+  echo "<div id='menudiv' style='display:none;'>&nbsp;</div>\n";
   
   //--------------	Recherche des infos cellules	------------//
   // Toutes les infos seront stockées danx un tableau et utilisées par les fonctions cellules_postes
@@ -646,16 +645,23 @@ else{
 ?>
 </div>
 </div>
-<script type='text/JavaScript'>		//--------------	Modification du menu contextuel		----------------//
+<script type='text/JavaScript'>
+// Menu contextuel
 <?php
+// Variables JavaScript
 echo "date='$date';";
 echo "site='$site';";
 ?>
-document.onmousedown  = mouseSelect;
+// Masque le menu lorsque l'on clique en dehors
+$("html").click(function(){
+  $("#menudiv").hide();
+});
+
+// Affiche le menu lorsque l'on clique-droit dans le tableau
 document.getElementById('tableau').oncontextmenu  = ItemSelMenu;
-					//--------------	FIN Modification du menu contextuel	----------------//
+
+// Vérifions si un agent de catégorie A est placé en fin de service
 $("document").ready(function(){
-  // Vérifions si un agent de catégorie A est placé en fin de service
   verif_categorieA();
 });
 </script>

@@ -16,10 +16,7 @@ Cette page est appelée par les fichiers include/header.php, setup/header.php et
 */
 
 //	----------------------------		Variables			------------------------	//
-var server;
-server=document.location.href.split("/");
-fullURL=server[0]+"//"+server[2]+"/"+server[3]+"/";
-server=server[0]+"//"+server[2]+"/";
+//	----------------------------		Variables Menu contextuel	------------------------	//
 var poste;
 var output;
 var perso_id;
@@ -29,14 +26,6 @@ var fin;
 var tableau;
 var tab_menu;
 var menudiv_display="none";
-
-//	----------------------------		Variables Menu contextuel	------------------------	//
-var ie  = document.all
-var ns6 = document.getElementById&&!document.all
-var isMenu  = false ;
-var menuSelObj = null ;
-var overpopupmenu = false;
-//	----------------------------		FIN Variables Menu contextuel	------------------------	//
 //	----------------------------		Position du pointeur		-----------------------		//
 // Detection du navigateur
 nc6=(typeof(window.controllers) !='undefined' && typeof(window.locationbar) != 'undefined')?true:false;
@@ -918,74 +907,22 @@ function  ItemSelMenu(e){
   text=file("index.php?page=planning/poste/menudiv.php&debut="+debut+"&fin="+fin+"&poste="+poste+"&date="+date+"&menu=off&positionOff=");
   hauteur=146;
   document.getElementById("menudiv").innerHTML=text;
-  var obj = ns6 ? e.target.parentNode : event.srcElement.parentElement; 
-  menuSelObj = obj ;
- 
-  if (ns6){
-    /*
-    e.clientY : position du pointeur en hauteur indépendant du scroll
-    document.body.clientHeight : hauteur de l'écran : valeur fixe
-    
-    */
-    if(document.body.clientWidth-e.clientX<320){
-      document.getElementById("menudiv").style.left = e.clientX-360+"px";
-      document.getElementById("menudivtab").style.left = "220px";
-      document.getElementById("menudivtab2").style.left = "0px";
-      }
-    else{
-      document.getElementById("menudiv").style.left = e.clientX+document.body.scrollLeft+"px";
-    }
-    if(document.body.clientHeight-e.clientY<hauteur){
-      if(document.body.clientHeight<hauteur){
-	document.getElementById("menudiv").style.top =document.body.scrollTop+"px";
-      }
-      else{
-	document.getElementById("menudiv").style.top =document.body.scrollTop+document.body.clientHeight-hauteur+"px";
-      }
-    }
-    else{
-      document.getElementById("menudiv").style.top = e.clientY+document.body.scrollTop+"px";
-    }
+
+  if($(window).width()-e.clientX<320){
+    $("#menudiv").css("left",e.pageX-360);
+    $("#menudivtab").css("left",220);
+    $("#menudivtab2").css("left",0);
+  }else{
+    $("#menudiv").css("left",e.pageX);
   }
-  else{
-    if(document.body.clientWidth-event.clientX+document.body.scrollLeft<320){
-      document.getElementById("menudiv").style.pixelLeft = document.body.clientWidth-360;
-      document.getElementById("menudivtab").style.pixelLeft = 220;
-      document.getElementById("menudivtab2").style.pixelLeft = 0;
-    }
-    else{
-      document.getElementById("menudiv").style.pixelLeft = event.clientX+document.body.scrollLeft;
-    }
-    if(document.body.clientHeight-event.clientY<hauteur){
-      if(document.body.clientHeight<hauteur){
-	document.getElementById("menudiv").style.pixelTop =document.body.scrollTop;
-      }
-      else{
-	document.getElementById("menudiv").style.pixelTop =document.body.scrollTop+document.body.clientHeight-hauteur;
-      }
-    }
-    else{
-      document.getElementById("menudiv").style.pixelTop = event.clientY+document.body.scrollTop;
-    }
+  if($(window).height()-e.pageY<hauteur){
+    $("#menudiv").css("top",e.pageY-hauteur);
+  }else{
+    $("#menudiv").css("top",e.pageY);
   }
 
   document.getElementById("menudiv").style.display = menudiv_display;
-  isMenu = true;
   return false ;
-}
-
-function mouseSelect(e){
-  var obj = ns6 ? e.target.parentNode : event.srcElement.parentElement;
-  if( isMenu ){
-    if( overpopupmenu == false ){
-      isMenu = false ;
-      overpopupmenu = false;
-      document.getElementById("menudiv").style.display = "none" ;
-      return true ;
-    }
-    return true ;
-  }
-  return false;
 }
 
 function refresh_poste(validation){		// actualise le planning en cas de modification
