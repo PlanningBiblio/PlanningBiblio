@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 4 février 2014
+Dernière modification : 11 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -182,6 +182,19 @@ function cmp_nom($a,$b){
 
 function cmp_nom_prenom($a,$b){
   if(strtolower($a['nom']) == strtolower($b['nom'])){
+    return strtolower($a['prenom']) > strtolower($b['prenom']);
+  }
+  return strtolower($a['nom']) > strtolower($b['nom']);
+}
+
+function cmp_nom_prenom_debut_fin($a,$b){
+  if(strtolower($a['nom']) == strtolower($b['nom'])){
+    if(strtolower($a['prenom']) == strtolower($b['prenom'])){
+      if(strtolower($a['debut']) == strtolower($b['debut'])){
+	return strtolower($a['fin']) > strtolower($b['fin']);
+      }
+      return strtolower($a['debut']) > strtolower($b['debut']);
+    }
     return strtolower($a['prenom']) > strtolower($b['prenom']);
   }
   return strtolower($a['nom']) > strtolower($b['nom']);
