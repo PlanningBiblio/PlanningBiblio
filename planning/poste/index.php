@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 6 février 2014
+Dernière modification : 11 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -436,19 +436,12 @@ else{
     $absences=$a->elements;
 
     // Ajout des congés
-    // Pour éviter les doublons lors de l'ajout des congés, on créé un tableaux avec les ID des agents absents
-    $absences_id=array();
-    foreach($absences as $elem){
-      $absences_id[]=$elem['perso_id'];
-    }
-
-    // Ajout des congés
     if(in_array("conges",$plugins)){
       include "plugins/conges/planning.php";
     }
 
     // Tri des absences par nom
-    usort($absences,"cmp_nom_prenom");
+    usort($absences,"cmp_nom_prenom_debut_fin");
 
     switch($config['Absences-planning']){
       case "simple" :
@@ -486,16 +479,15 @@ else{
       case "détaillé" :
 	if(!empty($absences)){
 	  echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
-	  echo "<table class='tableauStandard'>\n";
-	  echo "<tr class='th'><td>Nom</td><td>Pr&eacute;nom</td><td>D&eacute;but</td><td>Fin</td><td>Motif</td></tr>\n";
-	  $class="tr1";
+	  echo "<table id='tableAbsences'><thead>\n";
+	  echo "<tr><th>Nom</th><th>Pr&eacute;nom</th><th>D&eacute;but</th><th>Fin</th><th>Motif</th></tr></thead>\n";
+	  echo "<tbody>\n";
 	  foreach($absences as $elem){
-	    $class=$class=="tr1"?"tr2":"tr1";
-	    echo "<tr class='$class'><td>{$elem['nom']}</td><td>{$elem['prenom']}</td>";
+	    echo "<tr><td>{$elem['nom']}</td><td>{$elem['prenom']}</td>";
 	    echo "<td>{$elem['debutAff']}</td><td>{$elem['finAff']}</td>";
 	    echo "<td>{$elem['motif']}</td></tr>\n";
 	  }
-	  echo "</table>\n";
+	  echo "</tbody></table>\n";
 	}
 	break;
 
@@ -516,7 +508,6 @@ else{
 
 	// recherche des personnes à exclure (ne travaillant ce jour)
 	$db=new db();
-  //       $db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00') ORDER BY `nom`,`prenom`;");
 	$db->select("personnel","*","`actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00')","ORDER BY `nom`,`prenom`");
 
 	$verif=true;	// verification des heures des agents
@@ -660,8 +651,18 @@ $("html").click(function(){
 // Affiche le menu lorsque l'on clique-droit dans le tableau
 document.getElementById('tableau').oncontextmenu  = ItemSelMenu;
 
-// Vérifions si un agent de catégorie A est placé en fin de service
 $("document").ready(function(){
+  // Vérifions si un agent de catégorie A est placé en fin de service
   verif_categorieA();
+
+  // DataTable (tableau des absences)
+  $("#tableAbsences").dataTable({
+    "bJQueryUI": true,
+    "sPaginationType": "full_numbers",
+    "bStateSave": true,
+    "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"Tous"]],
+    "iDisplayLength" : 25,
+    "oLanguage" : {"sUrl" : "js/dataTables/french.txt"}
+  });
 });
 </script>
