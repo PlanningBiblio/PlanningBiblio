@@ -1,3 +1,8 @@
+***	Version 1.7.1	(Jérôme Combes, 14 février 2014)		***
+- Améliorations :
+Améliore le positionnement du menu déroulant du planning
+Affiche les congés dans la liste des absents en bas du planning même si une absence est enregistrée (plugin Conges)
+
 ***	Version 1.7	(Jérôme Combes, 4 février 2014)		***
 - Améliorations :
 Nombre de tableaux paramétrable
