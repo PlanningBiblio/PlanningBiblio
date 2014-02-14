@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 11 février 2014
+Dernière modification : 12 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -360,6 +360,14 @@ function dateFr2($date){
     $dateEn=substr($date,6,4)."-".substr($date,3,2)."-".substr($date,0,2);
     return $dateEn;
   }
+}
+
+function dateFr3($date){
+  return preg_replace("/([0-9]{4})-([0-9]{2})-([0-9]{2})/","$3/$2/$1",$date);
+}
+
+function dateSQL($date){
+  return preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/","$3-$2-$1",$date);
 }
 
 function dateTimeFr($date){
