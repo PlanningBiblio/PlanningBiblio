@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 29 janvier 2014
+Dernière modification : 15 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -25,8 +25,8 @@ if(!$version){
 <title>Planning</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-<script type='text/JavaScript' src='js/jquery-1.10.2.min.js'></script>
-<script type='text/JavaScript' src='js/jquery-ui-1.10.3/ui/jquery-ui.js'></script>
+<script type='text/JavaScript' src='js/jquery-1.11.0.min.js'></script>
+<script type='text/JavaScript' src='js/jquery-ui-1.10.4/ui/jquery-ui.js'></script>
 <script type='text/JavaScript' src='js/datePickerFr.js'></script>
 <script type='text/JavaScript' src='js/carhartl-jquery-cookie-3caf209/jquery.cookie.js'></script>
 <script type='text/JavaScript' src='js/dataTables/jquery.dataTables.min.js'></script>

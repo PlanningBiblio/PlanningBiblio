@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 16 janvier 2014
+Dernière modification : 15 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,8 +23,20 @@ require_once "class.personnel.php";
 // NB : le champ poste et les fonctions postes_... sont utilisés pour l'attribution des activités (qualification)
 $db_groupes=new db();		// contrôle des droits d'accès à cette page (sera amélioré prochaienement)
 $db_groupes->query("select groupe_id,groupe from {$dbprefix}acces where groupe_id not in (99,100) group by groupe;");
-$db_statuts=new db();
-$db_statuts->query("select * from {$dbprefix}select_statuts order by rang;");
+$db=new db();
+$db->select("select_statuts",null,null,"order by rang");
+$statuts=$db->result;
+$db=new db();
+$db->select("select_categories",null,null,"order by rang");
+$categories=$db->result;
+$db=new db();
+$db->select("personnel","statut",null,"group by statut");
+$statuts_utilises=array();
+if($db->result){
+  foreach($db->result as $elem){
+    $statuts_utilises[]=$elem['statut'];
+  }
+}
 $db_services=new db();
 $db_services->query("SELECT * FROM `{$dbprefix}select_services` ORDER BY `rang`;");
 
@@ -90,7 +102,7 @@ else{		// pas d'id, donc ajout d'un agent
 
 $jours=Array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
 global $temps;
-$categories=array("Titulaire","Contractuel");
+$contrats=array("Titulaire","Contractuel");
 
 //		--------------		Début listes des activités		---------------------//	
 $db=new db();			//	toutes les activités
@@ -198,13 +210,12 @@ echo "</td><td>";
 if(in_array(21,$droits)){
   echo "<select name='statut' id='statut' style='width:405px'>\n";
   echo "<option value=''>Aucun</option>\n";
-  foreach($db_statuts->result as $elem){
+  foreach($statuts as $elem){
     $select1=$elem['valeur']==$statut?"selected='selected'":null;
     echo "<option $select1 value='".$elem['valeur']."'>".$elem['valeur']."</option>\n";
   }
   echo "</select>\n";
-  echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_statuts&amp;terme=statut\",400,400);'>\n";
-  echo "<img src='img/add.gif' alt='*' style=width:15px;'/></a>\n";
+  echo "<img src='img/add.gif' alt='*' style=width:15px;cursor:pointer;' id='add-statut-button'/>\n";
 }
 else{
   echo $statut;
@@ -217,7 +228,7 @@ echo "</td><td>";
 if(in_array(21,$droits)){
   echo "<select name='categorie' id='categorie' style='width:405px'>\n";
   echo "<option value=''>Aucune</option>\n";
-  foreach($categories as $elem){
+  foreach($contrats as $elem){
     $select1=$elem==$categorie?"selected='selected'":null;
     echo "<option $select1 value='{$elem}'>{$elem}</option>\n";
   }
@@ -686,8 +697,44 @@ foreach($db_groupes->result as $elem){		// gestion des droits d'accès au planni
 </div>
 <!--	FIN Droits d'accès		-->
 </form>
+
+
+<!--	Modification de la liste des statuts (Dialog Box) -->  
+<div id="add-statut-form" title="Liste des statuts" class='noprint'>
+  <p class="validateTips">Ajoutez, supprimez des statuts. Modifiez leur catégorie. Modifiez l'ordre des statuts dans les menus déroulant.</p>
+  <form>
+  <p><input type='text' id='add-statut-text' style='width:300px;'/>
+    <input type='button' id='add-statut-button2' class='ui-button' value='Ajouter' style='margin-left:15px;'/></p>
+  <fieldset>
+    <ul id="statuts-sortable">
+<?php
+    if(is_array($statuts)){
+      foreach($statuts as $elem){
+	echo "<li class='ui-state-default' id='li_{$elem['id']}'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>\n";
+	echo "<font id='valeur_{$elem['id']}'>{$elem['valeur']}</font>\n";
+	echo "<select id='categorie_{$elem['id']}' style='position:absolute;left:330px;'>\n";
+	echo "<option value='0'>&nbsp;</option>\n";
+	foreach($categories as $elem2){
+	  $selected=$elem2['id']==$elem['categorie']?"selected='selected'":null;
+	  echo "<option value='{$elem2['id']}' $selected>{$elem2['valeur']}</option>\n";
+	}
+	echo "</select>\n";
+	if(!in_array($elem['valeur'],$statuts_utilises)){
+	  echo "<span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>\n";
+	}
+	echo "</li>\n";
+      }
+    }
+?>
+    </ul>
+  </fieldset>
+  </form>
+</div>
+
+
 <script type='text/JavaScript'>
 <!--
+// Contrôle des champs lors de la validation
 function verif_form_agent(){
   erreur=false;
   message="Les champs suivant sont obligatoires :";
@@ -716,7 +763,7 @@ function verif_form_agent(){
   }
 }
 
-// Affichage du choix des semaine avec samedi travaillé avec onglets
+// Affichage du choix des semaines avec samedi travaillé avec onglets
 // Et sélection de l'onglet correspondant à l'année en cours
 <?php
 if($config['EDTSamedi']){
@@ -730,6 +777,88 @@ for($i=0;$i<$config['nb_semaine'];$i++){
   echo "$(\"document\").ready(function(){calculHeures($(this),\"\",\"form\",\"heures$i\",$i);});\n";
 }
 ?>
+
+
+// Paramétrage de la boite de dialogue permettant la modification des statuts
+$(function() {
+  $("#add-statut-form").dialog({
+    autoOpen: false,
+    height: 480,
+    width: 560,
+    modal: true,
+    resizable: false,
+    draggable: false,
+    buttons: {
+      Enregistrer: function() {
+	// Supprime les lignes cachées lors du clic sur la corbeille
+	$("#statuts-sortable li:hidden").each(function(){
+	  $(this).remove();
+	});
+	
+	// Enregistre les éléments du formulaire dans un tableau
+	tab=new Array();
+	$("#statuts-sortable li").each(function(){
+	  var id=$(this).attr("id").replace("li_","");
+	  tab.push(new Array($("#valeur_"+id).text(), $("#categorie_"+id+" option:selected").val(),$(this).index()));
+	});
+
+	// Transmet le tableau à la page de validation ajax
+	var jsonString = encodeURIComponent(JSON.stringify(tab));
+	$.ajax({
+	  url: "personnel/ajax.statuts.php",
+	  type: "post",
+	  data: "tab="+jsonString,
+	  success: function(){
+	    location.reload(false);
+	  },
+	  error: function(){
+	    alert("Erreur lors de l'enregistrement des modifications");
+	  }
+	});
+      },
+      Annuler: function() {
+	$(this).dialog( "close" );
+      },
+    },
+    close: function() {
+      $("#statuts-sortable li:hidden").each(function(){
+	$(this).show();
+      });
+    }
+  });
+
+  // Affiche la boite de dialogue permettant la modification des statuts
+  $("#add-statut-button")
+    .click(function() {
+      $("#add-statut-form").dialog( "open" );
+      return false;
+    });
+
+  // Permet de rendre la liste des statuts triable
+  $( "#statuts-sortable" ).sortable({
+    placeholder: "ui-state-highlight",
+  });
+
+  // Permet d'ajouter de nouveau statuts (click sur le bouton ajouter
+  $("#add-statut-button2").click(function(){
+    var randomnumber=Math.floor((Math.random()*10000)+100)
+    $("#statuts-sortable").append("<li id='li_"+randomnumber+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
+      +"<font id='valeur_"+randomnumber+"'>"+$("#add-statut-text").val()+"</font>"
+      +"<select id='categorie_"+randomnumber+"' style='position:absolute;left:330px;'>"
+      +"<option value='0'>&nbsp;</option>"
+      <?php
+      foreach($categories as $elem2){
+	echo "+\"<option value='{$elem2['id']}' >{$elem2['valeur']}</option>\"";
+      }
+      ?>
+      +"</select>"
+      +"<span class='ui-icon ui-icon-trash' style='position:relative;left:463px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
+      +"</li>");
+
+    // Reset du champ texte une fois l'ajout effectué
+    $("#add-statut-text").val(null);
+  });
+});
 
 -->
 </script>

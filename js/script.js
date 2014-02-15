@@ -386,7 +386,7 @@ function supprime_jourFerie(id){
 }
 
 function tableauxNombre(){
-$.ajax({
+  $.ajax({
     url: "planning/postes_cfg/ajax.tableaux.php",
     type: "get",
     data: "id="+$("#id").val()+"&nombre="+$("#nombre").val(),
