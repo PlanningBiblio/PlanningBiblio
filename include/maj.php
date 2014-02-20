@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 17 février 2014
+Dernière modification : 20 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -459,6 +459,9 @@ if(strcmp("1.7.2",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}select_statuts` SET `categorie`='2' WHERE `valeur` IN ('BAS');";
   $sql[]="UPDATE `{$dbprefix}select_statuts` SET `categorie`='3' WHERE `valeur` IN ('Magasinier','Etudiant','Moniteur');";
   $sql[]="ALTER TABLE `{$dbprefix}postes` CHANGE `categorie` `categorie` INT(11) NOT NULL DEFAULT '0';";
+  $sql[]="UPDATE `{$dbprefix}select_categories` SET `valeur`='Cat&eacute;gorie A' WHERE `valeur`='Catégorie A';";
+  $sql[]="UPDATE `{$dbprefix}select_categories` SET `valeur`='Cat&eacute;gorie B' WHERE `valeur`='Catégorie B';";
+  $sql[]="UPDATE `{$dbprefix}select_categories` SET `valeur`='Cat&eacute;gorie C' WHERE `valeur`='Catégorie C';";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.7.2' WHERE `nom`='Version';";
 }
 
