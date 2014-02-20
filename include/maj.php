@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 14 février 2014
+Dernière modification : 17 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -447,7 +447,7 @@ if(strcmp("1.7.1",$config['Version'])>0){
   //	Ajout des catégories
   $sql[]="CREATE TABLE `{$dbprefix}select_categories` (`id` int(11) NOT NULL AUTO_INCREMENT, `valeur` text NOT NULL DEFAULT '', 
     `rang` int(11) NOT NULL DEFAULT '0', PRIMARY KEY (`id`) ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
-  $sql[]="INSERT INTO `{$dbprefix}select_categories` (`valeur`,`rang`) VALUES ('Catégorie A',10),('Catégorie B',20),('Catégorie C',30),('Commun',40);";
+  $sql[]="INSERT INTO `{$dbprefix}select_categories` (`valeur`,`rang`) VALUES ('Cat&eacute;gorie A',10),('Cat&eacute;gorie B',20),('Cat&eacute;gorie C',30),('Commun',40);";
   $sql[]="ALTER TABLE `{$dbprefix}postes` ADD `categorie` VARCHAR(20);";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.7.1' WHERE `nom`='Version';";
 }
@@ -458,6 +458,7 @@ if(strcmp("1.7.2",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}select_statuts` SET `categorie`='1' WHERE `valeur` IN ('Conservateur','Biblioth&eacute;caire');";
   $sql[]="UPDATE `{$dbprefix}select_statuts` SET `categorie`='2' WHERE `valeur` IN ('BAS');";
   $sql[]="UPDATE `{$dbprefix}select_statuts` SET `categorie`='3' WHERE `valeur` IN ('Magasinier','Etudiant','Moniteur');";
+  $sql[]="ALTER TABLE `{$dbprefix}postes` CHANGE `categorie` `categorie` INT(11) NOT NULL DEFAULT '0';";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.7.2' WHERE `nom`='Version';";
 }
 

@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 14 février 2014
+Dernière modification : 17 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -237,6 +237,7 @@ $sql[]="CREATE TABLE `{$dbprefix}postes` (
   `statistiques` ENUM('0','1') DEFAULT '1',
   `bloquant` enum('0','1') DEFAULT '1',
   `site` INT(1) DEFAULT '1',
+  `categorie` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 

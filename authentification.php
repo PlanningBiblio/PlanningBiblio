@@ -7,13 +7,13 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 24 janvier 2014
+Dernière modification : 19 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
 Affiche le formulaire d'authentification, vérifie le login et le mot de passe et créé la session 
 
-Pages en entrée : inclus les fichiers config.php, doctype.php et header.php
+Pages en entrée : inclus les fichiers config.php et header.php
 Page en sortie :inclus le fichier footer.php
 */
 
@@ -46,7 +46,6 @@ switch($config['error_reporting']){
   default: error_reporting(E_ALL ^ E_NOTICE); break;
 }
 
-include "include/doctype.php";
 include "plugins/plugins.php";
 include "include/header.php";
 include "include/function.php";

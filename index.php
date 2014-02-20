@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 26 décembre 2013
+Dernière modification : 17 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -72,9 +72,6 @@ if(!$_SESSION['login_id']){
     header("Location: authentification.php");		// session perdue, on affiche la page d'authentification
 }
 
-//		La page d'impression n'est pas compatible avec le DocType
-if(substr($page,0,29)!="planning/poste/impression.php")
-  include "include/doctype.php";
 include "include/header.php";
 if(!$get_menu=="off")
   include "include/menu.php";
@@ -90,8 +87,7 @@ $_SESSION['droits']=$droits;
 $db=new db();
 $db->query("SELECT * FROM `{$dbprefix}acces` WHERE `page`='$page';");
 
-$divId=substr($page,0,24)=="planning/poste/index.php"?"planningPoste":"content";
-echo "<div id='$divId'>\n";
+echo "<div id='content'>\n";
 if(in_array($db->result[0]['groupe_id'],$droits)){
   include $page;
 }

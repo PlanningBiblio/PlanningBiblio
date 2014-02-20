@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification : 14 février 2014
+Dernière modification : 18 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -551,6 +551,11 @@ a:hover.menuRed, a:hover.menu {
 .cellule{
   width:100%;
   height:100%;
+}
+
+.demi_cellule{
+  width:100%;
+  height:50%;
 }
 
 .cellule_grise {

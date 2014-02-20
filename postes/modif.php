@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : postes/modif.php
 Création : mai 2011
-Dernière modification : 5 février 2014
+Dernière modification : 17 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -116,8 +116,8 @@ echo "</td><td>";
 echo "<select name='categorie' style='width:255px'>";
 echo "<option value=''>&nbsp;</option>\n";
 foreach($categories as $elem){
-  $selected=$categorie==$elem['valeur']?"selected='selected'":null;
-  echo "<option value='{$elem['valeur']}' $selected >{$elem['valeur']}</option>\n";
+  $selected=$categorie==$elem['id']?"selected='selected'":null;
+  echo "<option value='{$elem['id']}' $selected >{$elem['valeur']}</option>\n";
 }
 echo "</select>\n";
 echo "</td></tr>";
