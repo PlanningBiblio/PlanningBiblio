@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification : 6 février 2014
+Dernière modification : 18 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -553,6 +553,11 @@ a:hover.menuRed, a:hover.menu {
   height:100%;
 }
 
+.demi_cellule{
+  width:100%;
+  height:50%;
+}
+
 .cellule_grise {
 	text-align:center;
 	background:#FFCCB3;
@@ -697,6 +702,11 @@ img{
   text-align: center;
   white-space: nowrap;
 }
+
+/* Gestion des statuts dans la fiche agent (personnel/modif.php) */
+#statuts-sortable { list-style-type: none; margin: 0; padding: 0; }
+#statuts-sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; height: 18px; }
+#statuts-sortable li span { position: absolute; margin-left: -1.3em; }
 
 /*	Statistiques	*/
 /* Statistiques */

@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/db_data.php
 Création : mai 2011
-Dernière modification : 5 février 2014
+Dernière modification : 17 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -372,7 +372,7 @@ $sql[]="INSERT INTO `{$dbprefix}select_abs` VALUES (NULL, 'Entretien', 11);";
 $sql[]="INSERT INTO `{$dbprefix}select_abs` VALUES (NULL, 'Autre', 12);";
 
 //	Insertion des catégories
-$sql[]="INSERT INTO `{$dbprefix}select_categories` (`valeur`,`rang`) VALUES ('Catégorie A',10),('Catégorie B',20),('Catégorie C',30),('Commun',40);";
+$sql[]="INSERT INTO `{$dbprefix}select_categories` (`valeur`,`rang`) VALUES ('Cat&eacute;gorie A',10),('Cat&eacute;gorie B',20),('Cat&eacute;gorie C',30),('Commun',40);";
 
 //	Insertion des étages
 $sql[]="INSERT INTO `{$dbprefix}select_etages` (`valeur`,`rang`) VALUES ('Mezzanine',1),('RDC',2),('RDJ',3),('Magasins',4);";
@@ -386,13 +386,12 @@ $sql[]="INSERT INTO `{$dbprefix}select_services` VALUES (NULL, 'P&ocirc;le admin
 $sql[]="INSERT INTO `{$dbprefix}select_services` VALUES (NULL, 'Direction', 6, '');";
 
 //	Insertion des statuts
-$sql[]="INSERT INTO `{$dbprefix}select_statuts` VALUES (NULL, 'Conservateur', 1, '#93E3FE');";
-$sql[]="INSERT INTO `{$dbprefix}select_statuts` VALUES (NULL, 'Biblioth&eacute;caire', 2, '#B18CFE');";
-$sql[]="INSERT INTO `{$dbprefix}select_statuts` VALUES (NULL, 'AB', 3, '#CCE8B5');";
-$sql[]="INSERT INTO `{$dbprefix}select_statuts` VALUES (NULL, 'BAS', 4, '#FFB5AF');";
-$sql[]="INSERT INTO `{$dbprefix}select_statuts` VALUES (NULL, 'Magasinier', 5, '#EBF38F');";
-$sql[]="INSERT INTO `{$dbprefix}select_statuts` VALUES (NULL, 'Etudiant', 6, '#FFB43F');";
-$sql[]="INSERT INTO `{$dbprefix}select_statuts` VALUES (NULL, 'Garde de nuit', 7, '');";
-$sql[]="INSERT INTO `{$dbprefix}select_statuts` VALUES (NULL, 'Autre', 8, '');";
-
+$sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VALUES ('Conservateur', 1, 1);";
+$sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VALUES ('Biblioth&eacute;caire', 2, 1);";
+$sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VALUES ('AB', 3, 0);";
+$sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VALUES ('BAS', 4, 2);";
+$sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VALUES ('Magasinier', 5, 3);";
+$sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VALUES ('Etudiant', 6, 3);";
+$sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VALUES ('Garde de nuit', 7, 0);";
+$sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VALUES ('Autre', 8, 0);";
 ?>

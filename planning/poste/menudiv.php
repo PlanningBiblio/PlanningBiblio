@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/menudiv.php
 Création : mai 2011
-Dernière modification : 6 février 2014
+Dernière modification : 20 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -29,6 +29,7 @@ $date=$_GET['date'];
 $poste=$_GET['poste'];
 $debut=$_GET['debut'];
 $fin=$_GET['fin'];
+$categorie=$_GET['categorie'];
 $sr=0;
 $cellule_vide=true;
 $max_perso=false;
@@ -72,11 +73,30 @@ else{
 
 // nom et activités du poste
 $db=new db;
-$db->query("SELECT * FROM  `{$dbprefix}postes` WHERE `id`='$poste';");
+$db->select("postes",null,"id='$poste'");
 $aff_poste=$db->result[0]['nom'];
 $activites=unserialize($db->result[0]['activites']);
 $stat=$db->result[0]['statistiques'];
 $bloquant=$db->result[0]['bloquant'];
+$categorie=$db->result[0]['categorie'];
+
+// Liste des statuts correspondant à la catégorie nécessaire pour être placé sur le poste
+$statuts=array();
+if($categorie){
+  switch($categorie){
+    case 1 : $categories="1"; break;
+    case 2 : $categories="1,2"; break;
+    case 3 : $categories="1,2,3"; break;
+    default : $categories="1,2,3"; break;
+  }
+  $db=new db();
+  $db->select("select_statuts",null,"categorie IN ($categories)");
+  if($db->result){
+    foreach($db->result as $elem){
+     $statuts[]=$elem['valeur'];
+    }
+  }
+}
 
 //	Recherche des services
 $db=new db();
@@ -235,6 +255,9 @@ if($poste!=0){		//	repas
     }
     $req_poste="(".join($tab," AND ").") AND ";
   }
+  if(!empty($statuts)){
+    $req_statut="`statut` IN ('".join("','",$statuts)."') AND ";
+  }
 }
 
 // Requete final sélection tous les agents formés aux activités demandées et disponible (non exclus)
@@ -246,7 +269,7 @@ else{
   $req_site=null;
 }
 
-$req="SELECT * FROM `{$dbprefix}personnel` WHERE $req_poste `actif` LIKE 'Actif' AND (`depart` > '$date' OR `depart` = '0000-00-00') AND `id` NOT IN ($exclus) $req_site ORDER BY `nom`,`prenom`;";
+$req="SELECT * FROM `{$dbprefix}personnel` WHERE $req_poste $req_statut `actif` LIKE 'Actif' AND (`depart` > '$date' OR `depart` = '0000-00-00') AND `id` NOT IN ($exclus) $req_site ORDER BY `nom`,`prenom`;";
 $db=new db();
 $db->query($req);
 $agents_dispo=$db->result;
@@ -294,7 +317,7 @@ if($agents_dispo){
 if($autres_agents){
   foreach($autres_agents as $elem){
     if($elem['id']!=2)
-    $newtab["Autres"][]=$elem['id'];  		// Affichage des agents absents, hors horaires, non qualifiés
+      $newtab["Autres"][]=$elem['id'];  		// Affichage des agents absents, hors horaires, non qualifiés
   }
 }
 

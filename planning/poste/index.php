@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 11 février 2014
+Dernière modification : 17 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -87,7 +87,15 @@ else{
   $autorisation=in_array(12,$droits)?true:false;
 }
 //		-----------------		FIN Vérification des droits de modification (Autorisation)	----------//
-
+// Catégories
+$categories=array();
+$db=new db();
+$db->select("select_categories");
+if($db->result){
+  foreach($db->result as $elem){
+    $categories[$elem['id']]=$elem['valeur'];
+  }
+}
 //		---------------		changement de couleur du menu et de la periode en fonction du jour sélectionné	---------//
 $class=array('menu','menu','menu','menu','menu','menu','menu','menu','menu');
 $class2=array('menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2');
@@ -398,9 +406,12 @@ else{
     foreach($tab['lignes'] as $ligne){
       if($ligne['type']=="poste" and $ligne['poste']){
 	$classTD=$postes[$ligne['poste']]['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
-	$classTR=str_replace(array("&eacute;"," "),array("e",""),$postes[$ligne['poste']]['categorie']);
+	$classTR=null;
+	if(array_key_exists($postes[$ligne['poste']]['categorie'],$categories)){
+	  $classTR=str_replace(" ","",removeAccents(html_entity_decode($categories[$postes[$ligne['poste']]['categorie']],ENT_QUOTES|ENT_IGNORE,"UTF-8")));
+	}
 
-	echo "<tr class='tr_$classTR'><td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
+	echo "<tr class='tr_$classTR'><td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']} $classTR";
 	if($config['affiche_etage']){
 	  echo " ({$postes[$ligne['poste']]['etage']})";
 	}
@@ -408,12 +419,12 @@ else{
 	$i=1;
 	foreach($tab['horaires'] as $horaires){
 	  // recherche des infos à afficher dans chaque cellule 
-	  // fonction cellule_poste(debut,fin,colspan,affichage,poste)
+	  // fonction cellule_poste(debut,fin,colspan,affichage,poste,categorie)
 	  if(in_array("{$ligne['ligne']}_{$i}",$tab['cellules_grises'])){
 	    echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."' class='cellule_grise' oncontextmenu='cellule=\"\";' >&nbsp;</td>";
 	  }
 	  else{
-	    echo cellule_poste($horaires["debut"],$horaires["fin"],nb30($horaires['debut'],$horaires['fin']),"noms",$ligne['poste']);
+	    echo cellule_poste($horaires["debut"],$horaires["fin"],nb30($horaires['debut'],$horaires['fin']),"noms",$ligne['poste'],$postes[$ligne['poste']]['categorie']);
 	  }
 	$i++;
 	}
