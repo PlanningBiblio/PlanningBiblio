@@ -1,3 +1,12 @@
+***	Version 1.7.2	(Jérôme Combes, 21 février 2014)		***
+- Améliorations :
+Permet d'attribuer les catégories (A,B,C) aux statuts (et aux agents)
+Et de définir quelle catégorie est requise pour occuper chaque poste.
+Les lignes des postes peuvent être affichées différemment dans les plannings en fonction de leur catégorie (classe tr_CategorieA, ...)
+Les agents n'ayant pas la catégorie requise sont placés en agents indisponibles
+Possibilité de personnaliser l'email de notification de nouvelle absences
+Possibilité de choisir une liste de destinataires différente pour les notifications d'ajout et de modification d'absence
+
 ***	Version 1.7.1	(Jérôme Combes, 14 février 2014)		***
 - Améliorations :
 Améliore le positionnement du menu déroulant du planning
