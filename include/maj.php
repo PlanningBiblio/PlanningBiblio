@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 20 février 2014
+Dernière modification : 21 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -462,6 +462,32 @@ if(strcmp("1.7.2",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}select_categories` SET `valeur`='Cat&eacute;gorie A' WHERE `valeur`='Catégorie A';";
   $sql[]="UPDATE `{$dbprefix}select_categories` SET `valeur`='Cat&eacute;gorie B' WHERE `valeur`='Catégorie B';";
   $sql[]="UPDATE `{$dbprefix}select_categories` SET `valeur`='Cat&eacute;gorie C' WHERE `valeur`='Catégorie C';";
+
+  // Notifications d'absences
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeurs`='Aucune notification,Aux agents ayant le droit de g&eacute;rer les absences,Au responsable direct,A la cellule planning,A tous,A l&apos;agent concern&eacute;' 
+    WHERE `nom`='Absences-notifications';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeurs`='Aucune notification,Aux agents ayant le droit de g&eacute;rer les absences,Au responsable direct,A la cellule planning,A tous,A l&apos;agent concern&eacute;' 
+    WHERE `nom`='Absences-notifications2';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeurs`='Aucune notification,Aux agents ayant le droit de g&eacute;rer les absences,Au responsable direct,A la cellule planning,A tous,A l&apos;agent concern&eacute;' 
+    WHERE `nom`='Absences-notifications3';";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `commentaires`, `categorie`, `ordre`) 
+    VALUES ('Absences-notifications-titre','text','Titre personnalis&eacute; pour les notifications de nouvelles absences','Absences','70'),
+    ('Absences-notifications-message','textarea','Message personnalis&eacute; pour les notifications de nouvelles absences','Absences','80');";
+
+  $db_tmp=new db();
+  $db_tmp->query("SELECT * FROM `{$dbprefix}config` WHERE `nom`='Absences-notifications';");
+  $valeur1=$db_tmp->result[0]['valeur'];
+  $db_tmp=new db();
+  $db_tmp->query("SELECT * FROM `{$dbprefix}config` WHERE `nom`='Absences-notifications2';");
+  $valeur2=$db_tmp->result[0]['valeur'];
+
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='A qui les notifications de modification d&apos;absences doivent-elles &ecirc;tre envoy&eacute;es',
+    `valeur`='$valeur1' WHERE `nom`='Absences-notifications2';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='A qui les notifications de validation niveau 1 doivent-elles &ecirc;tre envoy&eacute;es',
+    `valeur`='$valeur2' WHERE `nom`='Absences-notifications3';";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
+    VALUES ('Absences-notifications4','enum','A l&apos;agent concern&eacute;','Aucune notification,Aux agents ayant le droit de g&eacute;rer les absences,Au responsable direct,A la cellule planning,A tous,A l&apos;agent concern&eacute;','A qui les notifications de validation niveau 2 doivent-elles &ecirc;tre envoy&eacute;es','Absences','65');";
+
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.7.2' WHERE `nom`='Version';";
 }
 

@@ -7,9 +7,8 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 16 janvier 2014
+Dernière modification : 21 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
-Fichier personnalisé MLV
 
 Description :
 Page validant la modification d'une absence : enregistrement dans la BDD des modifications
@@ -136,9 +135,6 @@ $where=array("id"=>$id);
 $db->update2("absences",$update,$where);
 
 // Envoi d'un mail de notification
-// MLV
-// Pas d'envoi en cas de modif
-/*
 $sujet="Modification d'une absence";
 
 // Liste des responsables
@@ -149,33 +145,33 @@ $responsables=$a->responsables;
 // Choix des destinataires des notifications selon le degré de validation
 // Si l'agent lui même modifie son absence ou si pas de validation, la notification est envoyée au 1er groupe
 if($_SESSION['login_id']==$perso_id or $config['Absences-validation']=='0'){
-  $notifications=$config['Absences-notifications'];
+  $notifications=$config['Absences-notifications2'];
 }
 else{
   if($valide1N2<=0 and $valideN2>0){
     $sujet="Validation d'une absence";
     $validationText="Valid&eacute;e";
-    $notifications=$config['Absences-notifications3'];
+    $notifications=$config['Absences-notifications4'];
   }
   elseif($valide1N2>=0 and $valideN2<0){
     $sujet="Refus d'une absence";
     $validationText="Refus&eacute;e";
-    $notifications=$config['Absences-notifications3'];
+    $notifications=$config['Absences-notifications4'];
   }
   elseif($valide1N1<=0 and $valideN1>0){
     $sujet="Acceptation d'une absence (en attente de validation hiérarchique)";
     $validationText="Accept&eacute;e (en attente de validation hi&eacute;rarchique)";
-    $notifications=$config['Absences-notifications2'];
+    $notifications=$config['Absences-notifications3'];
   }
   elseif($valide1N1>=0 and $valideN1<0){
     $sujet="Refus d'une absence (en attente de validation hiérarchique)";
     $validationText="Refus&eacute;e (en attente de validation hi&eacute;rarchique)";
-    $notifications=$config['Absences-notifications2'];
+    $notifications=$config['Absences-notifications3'];
   }
   else{
     $sujet="Modification d'une absence";
     $validationText=null;
-    $notifications=$config['Absences-notifications'];
+    $notifications=$config['Absences-notifications2'];
   }
 }
 
@@ -225,8 +221,10 @@ if($config['Absences-validation']){
   $message.="<br/>\n";
 }
 
-sendmail($sujet,$message,$destinataires);
-*/
+// Envoi du mail
+if(!empty($destinataires)){
+  sendmail($sujet,$message,$destinataires);
+}
 
 echo "<h3>Modification de l'absence</h3>\n";
 echo "<h4>Votre demande &agrave; &eacute;t&eacute; enregistr&eacute;e</h4>";

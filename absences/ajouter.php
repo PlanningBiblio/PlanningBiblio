@@ -7,9 +7,8 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 16 janvier 2014
+Dernière modification : 21 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
-Fichier personnalisé MLV
 
 Description :
 Permet d'ajouter une absence. Formulaire, confirmation et validation.
@@ -104,10 +103,10 @@ if($confirm=="confirm2"){		//	2eme confirmation
   // Choix des destinataires des notifications selon le degré de validation
   $notifications=$config['Absences-notifications'];
   if($config['Absences-validation'] and $valideN1!=0){
-    $notifications=$config['Absences-notifications2'];
+    $notifications=$config['Absences-notifications3'];
   }
   elseif($config['Absences-validation'] and $valideN2!=0){
-    $notifications=$config['Absences-notifications3'];
+    $notifications=$config['Absences-notifications4'];
   }
 
   // Choix des destinataires des notifications selon la configuration
@@ -168,16 +167,22 @@ if($confirm=="confirm2"){		//	2eme confirmation
     $db->query($req);
   }
   
-  $titre=$config['Absences-validation']?"Nouvelle demande d absence":"Nouvelle absence";
-  $message="$titre : <br/>$prenom $nom<br/>Début : ".dateFr($debut);
+  // Titre différent si titre personnalisé (config) ou si validation ou non des absences (config)
+  if($config['Absences-notifications-titre']){
+    $titre=$config['Absences-notifications-titre'];
+  }else{
+    $titre=$config['Absences-validation']?"Nouvelle demande d absence":"Nouvelle absence";
+  }
 
-  // MLV
-  // Message personnalisé
-  $titre="Votre demande de congé";
-  $message.="Votre demande de cong&eacute; a reçu un avis favorable de la cellule planning.<br/>";
-  $message.="Celle-ci est maintenant transmise &agrave; votre responsable direct pour demande de validation.<br/>";
+  // Si message personnalisé (config), celui-ci est inséré
+  if($config['Absences-notifications-message']){
+    $message=$config['Absences-notifications-message']."<br/>";
+  }else{
+    $message="$titre : ";
+  }
+
+  // On complète le message avec les informations de l'absence
   $message.="<br/>$prenom $nom<br/>Début : ".dateFr($debut);
-
   if($hre_debut!="00:00:00")
     $message.=" ".heure3($hre_debut);
   $message.="<br/>Fin : ".dateFr($fin);
@@ -187,9 +192,14 @@ if($confirm=="confirm2"){		//	2eme confirmation
   if($commentaires)
     $message.="<br/>Commentaire:<br/>$commentaires<br/>";
 
-  // MLV
-  // Envoi seulement lors d'un ajout en attente (cellule planning=favorable, attente validation hierarchique)
-  if($valide==0){
+  if($config['Absences-validation']){
+    $message.="<br/>Validation : <br/>\n";
+    $message.=$validationText;
+    $message.="<br/>\n";
+  }
+
+  // Envoi du mail
+  if(!empty($destinataires)){
     sendmail($titre,$message,$destinataires);
   }
 
