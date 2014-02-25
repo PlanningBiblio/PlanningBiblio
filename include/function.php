@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 12 février 2014
+Dernière modification : 24 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -258,6 +258,10 @@ function date_time($date){
 }
 
 function dateAlpha($date){
+  if(!$date or $date=="0000-00-00"){
+    return false;
+  }
+
   $tmp=explode("-",$date);
   $dayOfMonth=($tmp[2]=="01")?"1er":intval($tmp[2]);
   switch($tmp[1]){
