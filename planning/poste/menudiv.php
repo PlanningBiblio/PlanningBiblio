@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/menudiv.php
 Création : mai 2011
-Dernière modification : 20 février 2014
+Dernière modification : 26 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -29,7 +29,6 @@ $date=$_GET['date'];
 $poste=$_GET['poste'];
 $debut=$_GET['debut'];
 $fin=$_GET['fin'];
-$categorie=$_GET['categorie'];
 $sr=0;
 $cellule_vide=true;
 $max_perso=false;
@@ -78,17 +77,12 @@ $aff_poste=$db->result[0]['nom'];
 $activites=unserialize($db->result[0]['activites']);
 $stat=$db->result[0]['statistiques'];
 $bloquant=$db->result[0]['bloquant'];
-$categorie=$db->result[0]['categorie'];
+$categories=is_serialized($db->result[0]['categories'])?unserialize($db->result[0]['categories']):array();
 
-// Liste des statuts correspondant à la catégorie nécessaire pour être placé sur le poste
+// Liste des statuts correspondant aux catégories nécessaires pour être placé sur le poste
 $statuts=array();
-if($categorie){
-  switch($categorie){
-    case 1 : $categories="1"; break;
-    case 2 : $categories="1,2"; break;
-    case 3 : $categories="1,2,3"; break;
-    default : $categories="1,2,3"; break;
-  }
+if(!empty($categories)){
+  $categories=join(",",$categories);
   $db=new db();
   $db->select("select_statuts",null,"categorie IN ($categories)");
   if($db->result){
@@ -255,11 +249,11 @@ if($poste!=0){		//	repas
     }
     $req_poste="(".join($tab," AND ").") AND ";
   }
+  $req_statut=null;
   if(!empty($statuts)){
     $req_statut="`statut` IN ('".join("','",$statuts)."') AND ";
   }
 }
-
 // Requete final sélection tous les agents formés aux activités demandées et disponible (non exclus)
 // Multisites : Si les agents ne sont pas autorisés à travailler sur le site sélectionné, on les retire
 if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){

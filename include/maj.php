@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 21 février 2014
+Dernière modification : 25 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -489,6 +489,12 @@ if(strcmp("1.7.2",$config['Version'])>0){
     VALUES ('Absences-notifications4','enum','A l&apos;agent concern&eacute;','Aucune notification,Aux agents ayant le droit de g&eacute;rer les absences,Au responsable direct,A la cellule planning,A tous,A l&apos;agent concern&eacute;','A qui les notifications de validation niveau 2 doivent-elles &ecirc;tre envoy&eacute;es','Absences','65');";
 
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.7.2' WHERE `nom`='Version';";
+}
+
+if(strcmp("1.7.3",$config['Version'])>0){
+  $sql[]="ALTER TABLE `{$dbprefix}postes` CHANGE `categorie` `categories` TEXT NOT NULL DEFAULT '';";
+  $sql[]="DELETE FROM `{$dbprefix}select_categories` WHERE `valeur`='Commun';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.7.3' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage

@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 17 février 2014
+Dernière modification : 25 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -909,7 +909,7 @@ function  ItemSelMenu(e){
     return false;
 
   document.getElementById("menudiv").scrollTop=0;
-  text=file("index.php?page=planning/poste/menudiv.php&debut="+debut+"&fin="+fin+"&poste="+poste+"&date="+date+"&categorie="+categorie+"&menu=off&positionOff=");
+  text=file("index.php?page=planning/poste/menudiv.php&debut="+debut+"&fin="+fin+"&poste="+poste+"&date="+date+"&menu=off&positionOff=");
   hauteur=146;
   document.getElementById("menudiv").innerHTML=text;
 

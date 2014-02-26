@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : postes/modif.php
 Création : mai 2011
-Dernière modification : 17 février 2014
+Dernière modification : 26 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -31,7 +31,7 @@ if(isset($_GET['id'])){
   $db->select("postes",null,"id='$id'");
   $nom=$db->result[0]['nom'];
   $etage=$db->result[0]['etage'];
-  $categorie=$db->result[0]['categorie'];
+  $categories=is_serialized($db->result[0]['categories'])?unserialize($db->result[0]['categories']):array();
   $site=$db->result[0]['site'];
   $activites=unserialize($db->result[0]['activites']);
   $obligatoire=$db->result[0]['obligatoire']=="Obligatoire"?"checked='checked'":"";
@@ -71,7 +71,7 @@ $etages=$db->result;
 // Recherche des catégories
 $db=new db();
 $db->select("select_categories",null,null,"order by rang");
-$categories=$db->result;
+$categories_list=$db->result;
 
 echo "<form method='get' action='#' name='form'>";
 echo "<input type='hidden' name='page' value='postes/valid.php' />\n";
@@ -110,21 +110,9 @@ echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_etage
 echo "<img src='img/add.gif' alt='*' style=width:15px;'/></a>\n";
 echo "</td></tr>";
 
-echo "<tr><td>";
-echo "Cat&eacute;gorie n&eacute;cessaire : ";
-echo "</td><td>";
-echo "<select name='categorie' style='width:255px'>";
-echo "<option value=''>&nbsp;</option>\n";
-foreach($categories as $elem){
-  $selected=$categorie==$elem['id']?"selected='selected'":null;
-  echo "<option value='{$elem['id']}' $selected >{$elem['valeur']}</option>\n";
-}
-echo "</select>\n";
-echo "</td></tr>";
-
-echo "<tr><td>";
+echo "<tr><td style='padding-top:20px;'>";
 echo "Obligatoire / renfort :";
-echo "</td><td>";
+echo "</td><td style='padding-top:20px;'>";
 echo "<input type='radio' name='obligatoire' value='Obligatoire' $obligatoire/> Obligatoire\n";
 echo "<input type='radio' name='obligatoire' value='Renfort' $renfort/> Renfort\n";
 echo "</td></tr>";
@@ -159,6 +147,18 @@ if(is_array($actList->result)){
   }
 }
 echo "</td></tr>";
+
+if(is_array($categories_list) and !empty($categories_list)){
+  echo "<tr style='vertical-align:top;'><td style='padding-top:20px;'>";
+  echo "Cat&eacute;gories<sup>*</sup> :";
+  echo "</td><td style='padding-top:26px;'>";
+  foreach($categories_list as $elem){
+    $checked=in_array($elem['id'],$categories)?"checked='checked'":"";
+    echo "<input type='checkbox' name='categories[]' value='{$elem['id']}' $checked/> {$elem['valeur']}<br/>\n";
+  }
+  echo "</td></tr>";
+}
+
 echo "</table>\n";
 
 echo "</td></tr>\n";
@@ -169,6 +169,10 @@ echo "<input type='hidden' value='$id' name='id'/>\n";
 echo "<input type='button' value='Annuler' onclick='history.go(-1);' class='ui-button'/>\n";
 echo "&nbsp;&nbsp;&nbsp;\n";
 echo "<input type='submit' value='Valider' class='ui-button'/>\n";
+echo "</td></tr>\n";
+
+echo "<tr><td colspan='2' class='noteBasDePage'>\n";
+echo "* Si aucune cat&eacute;gorie n&apos;est s&eacute;lectionn&eacute;e, les agents de toutes les cat&eacute;gories pourront &ecirc;tre plac&eacute;s sur ce poste.";
 echo "</td></tr>\n";
 echo "</table>\n";
 echo "</form>\n";

@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification : 18 février 2014
+Dernière modification : 26 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -752,6 +752,13 @@ img{
 .dataTable tbody tr.even td.sorting_2,
 .dataTable tbody tr.even td.sorting_3{
   background-color:#FEE7DC;
+}
+
+.noteBasDePage{
+  text-align:left;
+  padding-top:30px;
+  font-style:italic;
+  font-size:10pt;
 }
 
 /*	Footer	*/

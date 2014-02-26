@@ -17,7 +17,7 @@ du responsable.
 Affiche le message "configuration terminée" et invite l'utilisateur à se connecter au planning
 */
 
-$version="1.7.2";
+$version="1.7.3";
 include "../include/config.php";
 include "header.php";
 

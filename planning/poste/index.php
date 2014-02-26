@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 17 février 2014
+Dernière modification : 26 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -197,7 +197,7 @@ $db=new db();
 $db->query("SELECT * FROM `{$dbprefix}postes` ORDER BY `id`;");
 if($db->result){
   foreach($db->result as $elem){
-    $postes[$elem['id']]=Array("nom"=>$elem['nom'],"etage"=>$elem['etage'],"obligatoire"=>$elem['obligatoire'],"categorie"=>$elem['categorie']);
+    $postes[$elem['id']]=Array("nom"=>$elem['nom'],"etage"=>$elem['etage'],"obligatoire"=>$elem['obligatoire'],"categories"=>is_serialized($elem['categories'])?unserialize($elem['categories']):array());
   }
 }
 //	-----------------------		FIN Récupération des postes	-----------------------------//
@@ -406,12 +406,17 @@ else{
     foreach($tab['lignes'] as $ligne){
       if($ligne['type']=="poste" and $ligne['poste']){
 	$classTD=$postes[$ligne['poste']]['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
-	$classTR=null;
-	if(array_key_exists($postes[$ligne['poste']]['categorie'],$categories)){
-	  $classTR=str_replace(" ","",removeAccents(html_entity_decode($categories[$postes[$ligne['poste']]['categorie']],ENT_QUOTES|ENT_IGNORE,"UTF-8")));
+	$classTR=array();
+	if(!empty($postes[$ligne['poste']]['categories'])){
+	  foreach($postes[$ligne['poste']]['categories'] as $cat){
+	    if(array_key_exists($cat,$categories)){
+	      $classTR[]="tr_".str_replace(" ","",removeAccents(html_entity_decode($categories[$cat],ENT_QUOTES|ENT_IGNORE,"UTF-8")));
+	    }
+	  }
 	}
+	$classTR=join(" ",$classTR);
 
-	echo "<tr class='tr_$classTR'><td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']} $classTR";
+	echo "<tr class='$classTR'><td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
 	if($config['affiche_etage']){
 	  echo " ({$postes[$ligne['poste']]['etage']})";
 	}
@@ -419,12 +424,12 @@ else{
 	$i=1;
 	foreach($tab['horaires'] as $horaires){
 	  // recherche des infos à afficher dans chaque cellule 
-	  // fonction cellule_poste(debut,fin,colspan,affichage,poste,categorie)
+	  // fonction cellule_poste(debut,fin,colspan,affichage,poste)
 	  if(in_array("{$ligne['ligne']}_{$i}",$tab['cellules_grises'])){
 	    echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."' class='cellule_grise' oncontextmenu='cellule=\"\";' >&nbsp;</td>";
 	  }
 	  else{
-	    echo cellule_poste($horaires["debut"],$horaires["fin"],nb30($horaires['debut'],$horaires['fin']),"noms",$ligne['poste'],$postes[$ligne['poste']]['categorie']);
+	    echo cellule_poste($horaires["debut"],$horaires["fin"],nb30($horaires['debut'],$horaires['fin']),"noms",$ligne['poste']);
 	  }
 	$i++;
 	}
