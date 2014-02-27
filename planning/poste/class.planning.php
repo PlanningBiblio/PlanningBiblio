@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.3
+Planning Biblio, Version 1.7.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 25 février 2014
+Dernière modification : 26 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -71,15 +71,18 @@ class planning{
 	if(in_array($elem['statut'],$statuts)){
 	  continue;
 	}
-	$statuts[]=strtolower($elem['statut']);
+	$statuts[]=$elem['statut'];
       }
     }
-
-    if(in_array("conservateur",$statuts)){
-      $this->categorieA=true;
+    if(empty($statuts)){
+      return false;
     }
+    $statuts=join("','",$statuts);
 
-    if(in_array("biblioth&eacute;caire",$statuts)){
+    // Recherche des statuts de catégorie A parmis les statuts fournis
+    $db=new db();
+    $db->select("select_statuts","*","valeur IN ('$statuts') AND categorie='1'");
+    if($db->result){
       $this->categorieA=true;
     }
   }
@@ -220,10 +223,10 @@ class planning{
       // Classe en fonction du statut et du service
       $class_tmp=array();
       if($elem['statut']){
-	$class_tmp[]="statut_".strtolower(removeAccents($elem['statut']));
+	$class_tmp[]="statut_".strtolower(removeAccents(str_replace(" ","_",$elem['statut'])));
       }
       if($elem['service']){
-	$class_tmp[]="service_".strtolower(removeAccents($elem['service']));
+	$class_tmp[]="service_".strtolower(removeAccents(str_replace(" ","_",$elem['service'])));
       }
       $classe=empty($class_tmp)?null:join(" ",$class_tmp);
 

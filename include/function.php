@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 24 février 2014
+Dernière modification : 26 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -600,9 +600,9 @@ function removeAccents($string){
     "è"=>"e","é"=>"e","ê"=>"e","ë"=>"e","ð"=>"e","Ç"=>"C","ç"=>"c","Ð"=>"d","Ì"=>"I","Í"=>"I",
     "Î"=>"I","Ï"=>"I","ì"=>"i","í"=>"i","î"=>"i","ï"=>"i","Ù"=>"U","Ú"=>"U","Û"=>"U","Ü"=>"U",
     "ù"=>"u","ú"=>"u","û"=>"u","ü"=>"u","Ñ"=>"N","ñ"=>"n","ÿ"=>"y","ý"=>"y","ŷ"=>"y","ỳ"=>"y",
-    "Ÿ"=>"Y","Ỳ"=>"Y","Ŷ"=>"Y");
+    "Ÿ"=>"Y","Ỳ"=>"Y","Ŷ"=>"Y","'"=>"_");
   $string=strtr($string,$pairs);
-  return $string;
+  return htmlentities($string,ENT_QUOTES|ENT_IGNORE,"UTF-8");
 }
 	
 function selectHeure($min,$max,$blank=false,$quart=false,$selectedValue=null){

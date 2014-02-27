@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 1.7.3
+Planning Biblio, Version 1.7.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
@@ -565,16 +565,16 @@ else{
 
 	    // S'il y a des horaires correctement renseignés
 	    if($heures and !in_array($elem['id'],$absents)){
-	      $site=null;
+	      $siteAgent=null;
 		if($config['Multisites-nombre']>1){
 		if($config['Multisites-agentsMultisites']==1 and isset($heures[4])){
-		  $site=$config['Multisites-site'.$heures[4]];
+		  $siteAgent=$config['Multisites-site'.$heures[4]];
 		}
 		else{
-		  $site=$config['Multisites-site'.$elem['site']];
+		  $siteAgent=$config['Multisites-site'.$elem['site']];
 		}
 	      }
-	      $site=$site?$site.", ":null;
+	      $siteAgent=$siteAgent?$siteAgent.", ":null;
 
 
 	      $horaires=null;
@@ -590,7 +590,7 @@ else{
 	      else{		// matin et après midi avec pause
 		$horaires=heure2($heures[0])." - ".heure2($heures[1])." &amp; ".heure2($heures[2])." - ".heure2($heures[3]);
 	      }
-	      $presents[]=array("id"=>$elem['id'],"nom"=>$elem['nom']." ".$elem['prenom'],"site"=>$site,"heures"=>$horaires);
+	      $presents[]=array("id"=>$elem['id'],"nom"=>$elem['nom']." ".$elem['prenom'],"site"=>$siteAgent,"heures"=>$horaires);
 	    }
 	  }
 	}

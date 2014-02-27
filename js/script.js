@@ -1,5 +1,5 @@
 /*
-Planning Biblio, Version 1.7.3
+Planning Biblio, Version 1.7.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
@@ -402,7 +402,7 @@ function tableauxNombre(){
 function tabSiteUpdate(){
   site=$("#selectSite").val();
   numero=$("#numero").val();
-  var requete = $.ajax({
+  $.ajax({
     url: "planning/postes_cfg/ajax.siteUpdate.php",
     type: "get",
     data: "numero="+numero+"&site="+site,
@@ -427,12 +427,12 @@ function tabSiteUpdate(){
 }
 
 function verif_categorieA(){
-  var requete = $.ajax({
+  $.ajax({
     url: "planning/poste/ajax.categorieA.php",
     type: "get",
     data: "date="+date+"&site="+site,
-    success: function(){
-      if(requete.responseText == "true"){
+    success: function(retour){
+      if(retour == "true"){
 	$("#planningTips").hide();
       }
       else {

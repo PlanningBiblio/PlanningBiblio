@@ -1,29 +1,21 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 19 janvier 2014
+Dernière modification : 26 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
-Affiche le tableau des agents avec les filtres "service public - administratif - supprimé" et Nom
-
+Affiche le tableau des agents avec les filtres "service public - administratif - supprimé" et le filtre "Rechercher" du tableau
 Cette page est appelée par le fichier index.php
 */
 
 require_once "class.personnel.php";
-
-if(!array_key_exists('agent_nom',$_SESSION)){
-  $_SESSION['agent_nom']=null;
-}
-
-$nom=isset($_GET['nom'])?$_GET['nom']:$_SESSION['agent_nom'];
-$_SESSION['agent_nom']=$nom;
 ?>
 
 <form name='form2' action='index.php' method='get'>
@@ -45,12 +37,6 @@ if(in_array(13,$droits)){
 }
 ?>
 </select>
-</td><td>
-<br/>
-Nom : 
-</td><td>
-<br/>
-<?php echo "<input type='text' name='nom' value='$nom' size='8' />\n"; ?>
 </td><td style='width:80px;'>
 <br/>
 <input type='submit' value='OK'/>
@@ -88,7 +74,7 @@ echo "<script type='text/JavaScript'>document.form2.actif.value='".$_GET['actif'
 
 $p=new personnel();
 $p->supprime=strstr($_GET['actif'],"Supprim")?array(1):array(0);
-$p->fetch("nom,prenom",$_GET['actif'],$nom);
+$p->fetch("nom,prenom",$_GET['actif']);
 $agents=$p->elements;
 
 echo "<form name='form' method='post' action='index.php' onsubmit='return confirm(\"Etes vous sûr de vouloir supprimer les agents sélectionnés ?\");'>\n";
