@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : aide/index.php
 Création : mai 2011
-Dernière modification : 4 décembre 2013
+Dernière modification : 26 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -49,7 +49,8 @@ if(!$version){
 <li><a href="#config_planning">Configuration du planning</a>
 	<ol>
 	<li><a href="#config_avertissement">Avertissement</a></li>
-	<li><a href="#config_tableau">Création d'un nouveau tableau (Copie)</a></li>
+	<li><a href="#config_copie">Création d'un nouveau tableau (Copie)</a></li>
+	<li><a href="#config_modif">Modification d'un tableau</a></li>
 	<li><a href="#config_horaires">Configuration des horaires</a></li>
 	<li><a href="#config_lignes">Configuration des lignes</a></li>
 	<li><a href="#config_groupes">Les groupes</a></li>
@@ -225,24 +226,30 @@ Pour ceci, dans Firefox, allez dans fichier, mise en page et cochez "Imprimer le
 
 <a name="config_avertissement"></a>
 <h4>4.1) Avertissement</h4>
-Vous pouvez modifier les horaires et les lignes des plannings mais il est vivement conseillé de ne pas modifier 
-un tableau en cours d'utilisation car vous risquez de perdre les informations enregistrées (affectation des agents) 
-si vous supprimez une ligne ou modifiez une plage horaire.<br/>
+Vous pouvez modifier le nombre de tableaux, les horaires et les lignes des plannings mais il est vivement conseillé de ne pas modifier 
+un tableau en cours d'utilisation car vous risqueriez de perdre les informations qui y sont enregistrées (affectation des agents). 
 Soyez donc très prudent.<br/>
-L'ajout d'une nouvelle ligne ne pose pas de problème.<br/>
 Vous pouvez copier un tableau existant et modifier le nouveau tableau de façon à ne pas affecter les plannings en cours d'utilisation.<br/>
 
-<a name="config_tableau"></a>
+<a name="config_copie"></a>
 <h4>4.2) Création d'un nouveau tableau (Copie)</h4>
 Pour créer un nouveau tableau, rendez-vous dans le menu Administration - Les tableaux.<br/>
 Choisissez un tableau dans la liste et cliquez sur l'icône <img src='img/copy.png' alt='Copie' />.<br/>
 Saisissez le nom du nouveau tableau et cliquez sur "Copier".<br/>
 Votre nouveau tableau apparaît dans la liste.<br/>
 
+<a name="config_modif"></a>
+<h4>4.3) Modification d'un tableau</h4>
+Repérez le tableau à modifier dans la liste et cliquez sur l'icône <img src='img/modif.png' alt='Modifier' /> le précédent.<br/>
+Une page avec 3 onglets s'affiche (4 onglets en configuration multisites).<br/>
+Choisissez le nombre de tableaux dans le premier onglet et validez.<br/>
+Si vous avez plusieurs sites, choisissez le nom du site auquel ce tableau sera affecté dans le deuxième onglet et validez.<br/>
+Attention, vous devez valider vos changements avant de changer d'onglet.<br/>
+Pour la configuration des horaires et des lignes, veuillez consulter les paragraphes suivants.
 
 <a name="config_horaires"></a>
-<h4>4.3) Configuration des horaires</h4>
-Repérez le tableau à modifier dans la liste. Cliquez sur l'icône <img src='img/modif.png' alt='Modifier' /> se trouvant devant ce tableau.<br/>
+<h4>4.4) Configuration des horaires</h4>
+Après avoir choisi le nombre de tableaux dans le premier onglet, cliquez sur l'onglet "Horaires".<br/>
 Modifiez les horaires à l'aide des menus déroulant. Vous devez respecter les règles suivantes :
 <ul>
 <li>Tous les tableaux doivent commencer et finir aux mêmes heures (ex: début : 9h, fin 22h pour tous les tableaux).</li>
@@ -250,8 +257,9 @@ Modifiez les horaires à l'aide des menus déroulant. Vous devez respecter les r
 </ul>
 Vous pouvez ajouter des menus déroulant en cliquant sur les signes <img src='img/add.gif' alt='+' />.<br/>
 Lorsque vous avez terminé, cliquez sur "<b>Valider</b>" et passez à la configuration des lignes (Onglet lignes).
+
 <a name="config_lignes"></a>
-<h4>4.4) Configuration des lignes</h4>
+<h4>4.5) Configuration des lignes</h4>
 Marquez les noms voulus dans la première colonne des lignes marrons (devant les horaires).<br/>
 Ajoutez des lignes en cliquant sur les signes <img src='img/add.gif' alt='+' />.<br/>
 Choisissez le nom du poste ou une ligne de séparation dans les menus déroulant pour chaque ligne.<br/>
@@ -261,14 +269,14 @@ Ne supprimer pas de ligne dans un tableau en cours d'utilisation ou qui a été 
 Une fois terminé, cliquez sur "<b>Valider</b>".<br/>
 
 <a name="config_groupes"></a>
-<h4>4.5) Les groupes</h4>
+<h4>4.6) Les groupes</h4>
 Vous pouvez créer un groupe de tableaux de façon à affecter tel ou tel tableau à chacun des jours de 
 la semaine.<br/>
 De cette façon, lors de la création du planning du premier jour de la semaine, vous choisirez un 
 groupe et les tableaux seront affectés du lundi au samedi (ou dimanche).
 
 <a name="config_lignes_sep"></a>
-<h4>4.6) Les lignes de séparation</h4>
+<h4>4.7) Les lignes de séparation</h4>
 Vous pouvez ajouter, modifier, supprimer des lignes de séparation dans le menu "Administration - Les tableaux".<br/>
 
 
@@ -277,7 +285,7 @@ Vous pouvez ajouter, modifier, supprimer des lignes de séparation dans le menu 
 <h3>5) Les agents</h3>
 Dans le menu "Administration/Les agents", vous pouvez voir la liste de tous les agents enregistrés dans l'application.<br/>
 Vous pouvez filtrer les agents de "service public" et les agents "administratifs" (ne faisant pas de service public).<br/>
-Vous pouvez également rechercher un agent en tapant son nom dans le cadre "Rechercher".<br/>
+Vous pouvez également rechercher un agent en tapant son nom ou son prénom dans le cadre "Rechercher".<br/>
 
 <a name="agent_ajout"></a>
 <h4>5.1 ) Ajout d'un agent</h4>
@@ -285,10 +293,12 @@ Pour ajouter un agent, cliquez sur le bouton « Ajouter » puis remplissez le 
 <b><u>1<sup>er</sup> onglet : Informations générales</u></b>
 <br/>Les champs nom, prénom et e-mail sont obligatoires.
 <br/>Choisissez le statut, le service de rattachement et le nombre d'heures hebdomadaires que l'agent doit faire en service public.
+<br/>Vous pouvez personnaliser la liste des statuts et des services en cliquant sur les signes <img src='img/add.gif' alt='Plus' /> 
+se trouvant à droite des menus déroulants. Vous devez attribuer une catégorie à chaque statut.
 <br/>Dans le menu déroulant « Service public / Administratif » choisissez
 « Service public » pour toutes les personnes qui pourront apparaître dans les
 plannings, choisissez « administratif » pour les personnes qui doivent agir
-sur le planning (gestion des congés, absences, ... ) mais qui n'apparaîtront pas dans les
+sur le planning (gestion du personnel, absences, ... ) mais qui n'apparaîtront pas dans les
 plannings.<br/>
 Complétez le champ "E-mail du responsable" si vous souhaitez qu'il soit notifié des absences de l'agent. (Selon la configuration de l'application).
 <br/>
@@ -305,6 +315,8 @@ Pour retirer une activité, sélectionnez-la dans la liste de droite puis clique
 <b><u>3<sup>ème</sup> onglet : L'emploi du temps</u></b><br/>
 Dans le 3<sup>ème</sup> onglet, vous devez renseigner l'emploi du temps général de l'agent (heures de présence à la bibliothèque).<br/>
 Pour chaque journée (du lundi au samedi/dimanche), sélectionnez les heures d'arrivée et de départ ainsi que les heures de début et de fin de pause.<br/>
+Si votre configuration permet la saisie d'un emploi différent les semaines où le samedi est travaillé, renseignez-le dans le 2<sup>ème</sup> tableau 
+et cochez les semaines avec samedi travaillé.<br/>
 
 <br/>
 <b><u>4<sup>ème</sup> onglet : Les droits d'accès</u></b><br/>
@@ -345,17 +357,18 @@ Trouvez l'agent dans la liste.
 
 <a name="postes"></a>
 <h3>6) Les postes</h3>
-Dans le menu "Administration/Les postes", vous pouvez voir la liste de tous les postes.<br/>
-Vous pouvez rechercher un poste en tapant son nom dans le cadre "Rechercher" puis en cliquant sur "OK".<br/>
+Dans le menu "Administration/Les postes", vous pouvez voir la liste des postes.<br/>
+Vous pouvez rechercher un poste en tapant son nom dans le cadre "Rechercher".<br/>
 
 <a name="poste_ajout"></a>
 <h4>6.1 ) Ajout d'un poste</h4>
-Pour ajouter un poste, cliquez sur le bouton « Ajouter » puis complétez le formulaire.<br/>
+Pour ajouter un poste, cliquez sur le bouton « Ajouter » puis complétez le formulaire.<br/><br/>
 Remplissez le nom du poste, choisissez son site (si configuration multisites), son étage.<br/>
 Cochez la case "Obligatoire" s'il est obligatoire ou "Renfort" s'il s'agit d'un poste de renfort.<br/>
 Cochez la case "Non" face à "Bloquant" si vous souhaitez pouvoir placer un agent sur ce poste et sur un autre en même temps.<br/> 
-Cochez la case "Non" face à "Statistiques" si vous ne souhaitez pas voir apparaître ce poste dans les statistiques.<br/>
-A droite, cochez les activités liées au poste.<br/>
+Cochez la case "Non" face à "Statistiques" si vous ne souhaitez pas voir apparaître ce poste dans les statistiques.<br/><br/>
+A droite, cochez les activités liées au poste et les catégories requises pour pouvoir occuper ce poste. 
+Si aucune catégorie n'est cochée, les agents de toutes catégories pourront être placés sur ce poste.<br/><br/>
 Validez.
 
 <a name="poste_modif"></a>
