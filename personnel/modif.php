@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 26 février 2014
+Dernière modification : 27 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -533,7 +533,8 @@ for($j=0;$j<$config['nb_semaine'];$j++){
   if($config['Multisites-nombre']>1 and $config['Multisites-agentsMultisites']){
     echo "<td>Site</td>";
   }
-  echo "</tr>\n";
+  echo "<td style='width:150px;'>Temps</td>";
+    echo "</tr>\n";
   for($i=$debut[$j];$i<$fin[$j];$i++){
     $k=$i-($j*7)-1;
     if(in_array(21,$droits) and !in_array("planningHebdo",$plugins)){
@@ -547,11 +548,15 @@ for($j=0;$j<$config['nb_semaine'];$j++){
 	echo "<option value='2' $select2 >{$config['Multisites-site2']}</option>\n";
 	echo "</select></td>";
       }
+      echo "<td id='heures_{$j}_$i'></td>\n";
       echo "</tr>\n";
     }
     else{
-      echo "<tr><td>{$jours[$k]}</td><td>".heure2($temps[$i-1][0])."</td><td>".heure2($temps[$i-1][1])."</td>";
-      echo "<td>".heure2($temps[$i-1][2])."</td><td>".heure2($temps[$i-1][3])."</td>";
+      echo "<tr><td>{$jours[$k]}</td>\n";
+      echo "<td id='temps_".($i-1)."_0'>".heure2($temps[$i-1][0])."</td>\n";
+      echo "<td id='temps_".($i-1)."_1'>".heure2($temps[$i-1][1])."</td>\n";
+      echo "<td id='temps_".($i-1)."_2'>".heure2($temps[$i-1][2])."</td>\n";
+      echo "<td id='temps_".($i-1)."_3'>".heure2($temps[$i-1][3])."</td>\n";
       if($config['Multisites-nombre']>1 and $config['Multisites-agentsMultisites']){
 	$site=null;
 	if($temps[$i-1][4]){
@@ -560,11 +565,12 @@ for($j=0;$j<$config['nb_semaine'];$j++){
 	}
 	echo "<td>$site</td>";
       }
+      echo "<td id='heures_{$j}_$i'></td>\n";
       echo "</tr>\n";
     }
   }
   echo "</table>\n";
-  echo "Total : <font style='font-weight:bold;' id='heures$j'></font><br/>\n";
+  echo "Total : <font style='font-weight:bold;' id='heures$j'></font><br/><br/>\n";
 }
 
 // EDTSamedi : emploi du temps différents les semaines avec samedi travaillé

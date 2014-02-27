@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 25 février 2014
+Dernière modification : 27 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -78,6 +78,14 @@ function calculHeures(object,num,form,tip,numero){
       fin1=elements["temps"+num+"["+i+"][1]"].value;
       debut2=elements["temps"+num+"["+i+"][2]"].value;
       fin2=elements["temps"+num+"["+i+"][3]"].value;
+    }
+    else{
+      debut1=heure5($("#temps"+num+"_"+i+"_0").text());
+      fin1=heure5($("#temps"+num+"_"+i+"_1").text());
+      debut2=heure5($("#temps"+num+"_"+i+"_2").text());
+      fin2=heure5($("#temps"+num+"_"+i+"_3").text());
+    }
+    if(debut1){
       diff=0;
       // Journée avec pause le midi
       if(debut1 && fin1 && debut2 && fin2){
@@ -97,6 +105,10 @@ function calculHeures(object,num,form,tip,numero){
 	diff=diffMinutes(debut1,fin2);
       }
       heures+=diff;
+      // Affichage du nombre d'heure pour chaque ligne
+      if(diff){
+	$("#heures"+num+"_"+numero+"_"+(i+1)).html(heure4(diff/60));
+      }
     }
   }
   heures=heure4(heures/60);
@@ -252,6 +264,17 @@ function heure4(heure){
     if(heure.indexOf("h")<0){
       heure+="h00";
     }
+  }
+  return heure;
+}
+
+function heure5(heure){
+  heure=heure.toString();
+  if(heure.indexOf("h")>0){
+    heure=heure.replace("h00",":00");
+    heure=heure.replace("h15",":25");
+    heure=heure.replace("h30",":50");
+    heure=heure.replace("h45",":75");
   }
   return heure;
 }
