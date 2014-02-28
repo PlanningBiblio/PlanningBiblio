@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 27 février 2014
+Dernière modification : 28 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -740,35 +740,6 @@ foreach($db_groupes->result as $elem){		// gestion des droits d'accès au planni
 
 <script type='text/JavaScript'>
 <!--
-// Contrôle des champs lors de la validation
-function verif_form_agent(){
-  erreur=false;
-  message="Les champs suivant sont obligatoires :";
-  if(!document.form.nom.value){
-    erreur=true;
-    message=message+"\n- Nom";
-  }
-  if(!document.form.prenom.value){
-    erreur=true;
-    message=message+"\n- prénom";
-  }
-  if(!document.form.mail.value){
-    erreur=true;
-    message=message+"\n- E-mail";
-  }
-  
-  if(erreur)
-    alert(message);
-  else{
-    if(!verif_mail(document.form.mail.value)){
-      alert("Adresse e-mail invalide");
-    }
-    else{
-      document.form.submit();
-    }
-  }
-}
-
 // Affichage du choix des semaines avec samedi travaillé avec onglets
 // Et sélection de l'onglet correspondant à l'année en cours
 <?php
@@ -783,88 +754,5 @@ for($i=0;$i<$config['nb_semaine'];$i++){
   echo "$(\"document\").ready(function(){calculHeures($(this),\"\",\"form\",\"heures$i\",$i);});\n";
 }
 ?>
-
-
-// Paramétrage de la boite de dialogue permettant la modification des statuts
-$(function() {
-  $("#add-statut-form").dialog({
-    autoOpen: false,
-    height: 480,
-    width: 560,
-    modal: true,
-    resizable: false,
-    draggable: false,
-    buttons: {
-      Enregistrer: function() {
-	// Supprime les lignes cachées lors du clic sur la corbeille
-	$("#statuts-sortable li:hidden").each(function(){
-	  $(this).remove();
-	});
-	
-	// Enregistre les éléments du formulaire dans un tableau
-	tab=new Array();
-	$("#statuts-sortable li").each(function(){
-	  var id=$(this).attr("id").replace("li_","");
-	  tab.push(new Array($("#valeur_"+id).text(), $("#categorie_"+id+" option:selected").val(),$(this).index()));
-	});
-
-	// Transmet le tableau à la page de validation ajax
-	var jsonString = encodeURIComponent(JSON.stringify(tab));
-	$.ajax({
-	  url: "personnel/ajax.statuts.php",
-	  type: "post",
-	  data: "tab="+jsonString,
-	  success: function(){
-	    location.reload(false);
-	  },
-	  error: function(){
-	    alert("Erreur lors de l'enregistrement des modifications");
-	  }
-	});
-      },
-      Annuler: function() {
-	$(this).dialog( "close" );
-      },
-    },
-    close: function() {
-      $("#statuts-sortable li:hidden").each(function(){
-	$(this).show();
-      });
-    }
-  });
-
-  // Affiche la boite de dialogue permettant la modification des statuts
-  $("#add-statut-button")
-    .click(function() {
-      $("#add-statut-form").dialog( "open" );
-      return false;
-    });
-
-  // Permet de rendre la liste des statuts triable
-  $( "#statuts-sortable" ).sortable({
-    placeholder: "ui-state-highlight",
-  });
-
-  // Permet d'ajouter de nouveau statuts (click sur le bouton ajouter
-  $("#add-statut-button2").click(function(){
-    var randomnumber=Math.floor((Math.random()*10000)+100)
-    $("#statuts-sortable").append("<li id='li_"+randomnumber+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
-      +"<font id='valeur_"+randomnumber+"'>"+$("#add-statut-text").val()+"</font>"
-      +"<select id='categorie_"+randomnumber+"' style='position:absolute;left:330px;'>"
-      +"<option value='0'>&nbsp;</option>"
-      <?php
-      foreach($categories as $elem2){
-	echo "+\"<option value='{$elem2['id']}' >{$elem2['valeur']}</option>\"";
-      }
-      ?>
-      +"</select>"
-      +"<span class='ui-icon ui-icon-trash' style='position:relative;left:463px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
-      +"</li>");
-
-    // Reset du champ texte une fois l'ajout effectué
-    $("#add-statut-text").val(null);
-  });
-});
-
 -->
 </script>
