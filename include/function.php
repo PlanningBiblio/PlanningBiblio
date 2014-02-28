@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 26 février 2014
+Dernière modification : 28 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -412,6 +412,23 @@ function gen_trivial_password($len = 6){
       $r .= chr(rand(0, 25) + ord('a'));
   }
   return $r;
+}
+
+// getJSFiles : permet de rechercher les scripts liés à la page courante (fichiers .js dans sous dossier js)
+function getJSFiles($page){
+  if(!$page){
+    return false;
+  }
+
+  $pos=strpos(strrev($page),"/");
+  $folder=substr($page,0,-$pos);
+  if(is_dir("{$folder}js")){
+    foreach(scandir("{$folder}js") as $elem){
+      if(substr($elem,-3)==".js"){
+	echo "<script type='text/JavaScript' src='{$folder}js/$elem'></script>\n";
+      }
+    }
+  }
 }
 
 function heure($heure){

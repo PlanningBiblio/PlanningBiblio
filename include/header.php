@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 17 février 2014
+Dernière modification : 28 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -35,6 +35,9 @@ if(!$version){
 <script type='text/JavaScript' src='js/dataTables/sort.js'></script>
 <script type='text/JavaScript' src='js/script.js'></script>
 <script type='text/JavaScript' src='js/infobulles.js'></script>
+<?php
+getJSFiles($page);
+?>
 
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link rel='StyleSheet' href='css/dataTables/jquery.dataTables_themeroller.css' type='text/css' media='screen'/>
@@ -42,16 +45,9 @@ if(!$version){
 <link rel='StyleSheet' href='css/style.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='css/print.css' type='text/css' media='print'/>
 <link rel='StyleSheet' href='css/custom.css' type='text/css' media='all'/>
+</head>
 
 <?php
-foreach($plugins as $elem){
-  if(file_exists("plugins/$elem/js/script.$elem.js")){
-    echo "<script type='text/JavaScript' src='plugins/$elem/js/script.$elem.js'></script>\n";
-  }
-}
-
-echo "</head>\n";
-
 echo $page=="aide/index.php"?"<body onscroll='position_retour();'>\n":"<body>\n";
 if(!isset($_GET['positionOff'])){
   echo <<<EOD

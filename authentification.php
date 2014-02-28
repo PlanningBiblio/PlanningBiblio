@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 19 février 2014
+Dernière modification : 28 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -47,8 +47,8 @@ switch($config['error_reporting']){
 }
 
 include "plugins/plugins.php";
-include "include/header.php";
 include "include/function.php";
+include "include/header.php";
 
 //	Login Anonyme
 if(isset($_GET['login']) and $_GET['login']=="anonyme" and $config['Auth-Anonyme']){
