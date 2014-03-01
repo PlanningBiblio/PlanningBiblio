@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification : 26 février 2014
+Dernière modification : 28 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -703,12 +703,12 @@ img{
   white-space: nowrap;
 }
 
-/* Gestion des statuts dans la fiche agent (personnel/modif.php) */
-#statuts-sortable { list-style-type: none; margin: 0; padding: 0; }
-#statuts-sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; height: 18px; }
-#statuts-sortable li span { position: absolute; margin-left: -1.3em; }
+/* Elements "sortable" (gestion des motifs d'absences, des statuts des agents */
+ul[id$="-sortable"] { list-style-type: none; margin: 0; padding: 0; }
+ul[id$="-sortable"] li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; height: 18px; }
+ul[id$="-sortable"] li span { position: absolute; margin-left: -1.3em; }
 
-/*	Statistiques	*/
+
 /* Statistiques */
 #stat-col1{
   width:350px;

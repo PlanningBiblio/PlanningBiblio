@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 21 février 2014
+Dernière modification : 28 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -19,6 +19,7 @@ Page appelée par la page index.php
 */
 
 require_once "class.absences.php";
+require_once "motifs.php";
 
 //	Initialisation des variables
 $admin=in_array(1,$droits)?true:false;
@@ -310,11 +311,11 @@ elseif($confirm=="confirm1"){		//	1ere Confirmation
   }
 
   if($menu=="off")
-    echo "<input type='button' value='Annuler' onclick='popup_closed();' />";
+    echo "<input type='button' class='ui-button' value='Annuler' onclick='popup_closed();' />";
   else
-    echo "<input type='button' value='Annuler' onclick='document.location.href=\"index.php?page=absences/index.php\";' />";
+    echo "<input type='button' class='ui-button' value='Annuler' onclick='document.location.href=\"index.php?page=absences/index.php\";' />";
   echo "&nbsp;&nbsp;\n";
-  echo "<input type='submit' value='Valider' $disableSubmit />\n";
+  echo "<input type='submit' class='ui-button' value='Valider' $disableSubmit />\n";
   echo "</form>\n";
 }
 else{					//	Formulaire
@@ -350,8 +351,8 @@ else{					//	Formulaire
   echo "</td></tr>\n";
   echo "<tr><td>\n";
   echo "Date de début : \n";
-  echo "</td><td>";
-  echo "<input type='text' name='debut' value='$debut' style='width:85%;'/>&nbsp;\n";
+  echo "</td><td style='white-space:nowrap;'>";
+  echo "<input type='text' name='debut' value='$debut' style='width:100%;'/>&nbsp;\n";
   echo "<img src='img/calendrier.gif' onclick='calendrier(\"debut\");' alt='début' />\n";
   echo "</td></tr>\n";
   echo "<tr id='hre_debut' style='display:none;'><td>\n";
@@ -363,8 +364,8 @@ else{					//	Formulaire
   echo "</td></tr>\n";
   echo "<tr><td>\n";
   echo "Date de fin : \n";
-  echo "</td><td>";
-  echo "<input type='text' name='fin' value='$fin' style='width:85%;'/>&nbsp;\n";
+  echo "</td><td style='white-space:nowrap;'>";
+  echo "<input type='text' name='fin' value='$fin' style='width:100%;'/>&nbsp;\n";
   echo "<img src='img/calendrier.gif' onclick='calendrier(\"fin\");' alt='fin' />\n";
   echo "</td></tr>\n";
   echo "<tr id='hre_fin' style='display:none;'><td>\n";
@@ -377,19 +378,17 @@ else{					//	Formulaire
   
   echo "<tr><td>\n";
   echo "Motif : \n";
-  echo "</td><td>\n";
+  echo "</td><td style='white-space:nowrap;'>\n";
 
-  echo "<select name='motif' style='width:87%;'>\n";
-  echo "<option value=''>-----------------------</option>\n";
-  $db_select=new db();
-  $db_select->query("select valeur from {$dbprefix}select_abs order by rang;");
-  foreach($db_select->result as $elem){
+  echo "<select name='motif' style='width:100%;'>\n";
+  echo "<option value=''></option>\n";
+  foreach($motifs as $elem){
     echo "<option value='".$elem['valeur']."'>".$elem['valeur']."</option>\n";
   }
   echo "</select>\n";
   if($admin){
     echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_abs&amp;terme=motif\",400,400);'>\n";
-    echo "<img src='img/add.gif' alt='*' style=width:15px;'/></a>\n";
+    echo "<img src='img/add.gif' alt='*' style=width:15px;cursor:pointer;' id='add-motif-button'/>\n";
   }
   echo "</td></tr><tr valign='top'><td>\n";
   echo "Commentaires : \n";
@@ -419,11 +418,11 @@ else{					//	Formulaire
   echo "<tr><td>&nbsp;\n";
   echo "</td></tr><tr><td colspan='2'>\n";
   if($menu=="off")
-    echo "<input type='button' value='Annuler' onclick='popup_closed();' />";
+    echo "<input type='button' class='ui-button' value='Annuler' onclick='popup_closed();' />";
   else
-    echo "<input type='button' value='Annuler' onclick='document.location.href=\"index.php?page=absences/index.php\";' />";
+    echo "<input type='button' class='ui-button' value='Annuler' onclick='document.location.href=\"index.php?page=absences/index.php\";' />";
   echo "&nbsp;&nbsp;\n";
-  echo "<input type='submit' value='Valider' />\n";
+  echo "<input type='submit' class='ui-button' value='Valider' />\n";
 
   echo "</td></tr></table>\n";
   echo "</form>\n";

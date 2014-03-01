@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 23 janvier 2014
+Dernière modification : 28 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -17,6 +17,7 @@ Page appelée par la page index.php
 */
 
 require_once "class.absences.php";
+require_once "motifs.php";
 
 //	Initialisation des variables
 $display=null;
@@ -91,7 +92,6 @@ if(!$acces){
   exit;
 }
 
-
 // Multisites, ne pas afficher les absences des agents d'un site non géré
 if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
   $sites=array();
@@ -127,46 +127,44 @@ echo "</td><td>\n";
 echo "<input type='checkbox' name='allday' $checked onclick='all_day();'/>\n";
 echo "</td></tr>\n";
 echo "<tr><td>";
-echo "Date de début : </td><td>";
-echo "<input type='text' name='debut' value='{$debut}' />\n";
+echo "Date de début : </td><td style='white-space:nowrap;'>";
+echo "<input type='text' name='debut' value='{$debut}' style='width:100%;'/>\n";
 echo "<img src='img/calendrier.gif' border='0' onclick='calendrier(\"debut\");' alt='calendrier' />";
 echo "</td></tr>\n";
 echo "<tr id='hre_debut' $display ><td>\n";
 echo "Heure de début : \n";
 echo "</td><td>\n";
 echo "<select name='hre_debut'>\n";
-selectHeure(7,23,true,$quartDHeure);
+selectHeure(7,23,true,$quartDHeure,$hre_debut);
 echo "</select>\n";
 echo "</td></tr>\n";
 
 echo "<tr><td>";
-echo "Date de fin : </td><td>";
-echo "<input type='text' name='fin' value='{$fin}' />\n";
+echo "Date de fin : </td><td style='white-space:nowrap;'>";
+echo "<input type='text' name='fin' value='{$fin}' style='width:100%;'/>\n";
 echo "<img src='img/calendrier.gif' border='0' onclick='calendrier(\"fin\");' alt='calendrier' />";
 echo "</td></tr>\n";
 echo "<tr id='hre_fin' $display ><td>\n";
 echo "Heure de fin : \n";
 echo "</td><td>\n";
 echo "<select name='hre_fin'>\n";
-selectHeure(7,23,true,$quartDHeure);
+selectHeure(7,23,true,$quartDHeure,$hre_fin);
 echo "</select>\n";
 echo "</td></tr>\n";
 
 echo "<tr><td>";
-echo "Motif : </td><td>";
+echo "Motif : </td><td style='white-space:nowrap;'>";
 
-echo "<select name='motif' style='width:90%;'>\n";
-echo "<option value=''>-----------------------</option>\n";
-$db_select=new db();
-$db_select->query("select valeur from {$dbprefix}select_abs order by rang;");
-foreach($db_select->result as $elem){
+echo "<select name='motif' style='width:100%;'>\n";
+echo "<option value=''></option>\n";
+foreach($motifs as $elem){
   $selected=$elem['valeur']==$motif?"selected='selected'":null;
   echo "<option value='".$elem['valeur']."' $selected>".$elem['valeur']."</option>\n";
 }
 echo "</select>\n";
 if($admin){
   echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_abs&amp;terme=motif\",400,400);'>\n";
-  echo "<img src='img/add.gif' alt='*' style=width:15px;'/></a>\n";
+  echo "<img src='img/add.gif' alt='*' style=width:15px;cursor:pointer;' id='add-motif-button'/>\n";
 }
 
 echo "</td></tr><tr style='vertical-align:top;'><td>";
@@ -196,19 +194,17 @@ if($config['Absences-validation']){
 
 echo "<tr><td colspan='2'><br/>\n";
 if($admin or $valide==0 or $config['Absences-validation']==0){
-  echo "<input type='button' value='Supprimer' onclick='document.location.href=\"index.php?page=absences/delete.php&amp;id=$id\";'/>";
+  echo "<input type='button' class='ui-button' value='Supprimer' onclick='document.location.href=\"index.php?page=absences/delete.php&amp;id=$id\";'/>";
   echo "&nbsp;&nbsp;\n";
-  echo "<input type='button' value='Annuler' onclick='annuler(1);'/>\n";
+  echo "<input type='button' class='ui-button' value='Annuler' onclick='annuler(1);'/>\n";
   echo "&nbsp;&nbsp;\n";
-  echo "<input type='submit' value='Valider'/>\n";
+  echo "<input type='submit' class='ui-button' value='Valider'/>\n";
 }
 else{
-  echo "<input type='button' value='Retour' onclick='annuler(1);'/>\n";
+  echo "<input type='button' class='ui-button' value='Retour' onclick='annuler(1);'/>\n";
 }
 echo "</td></tr>\n";
 echo "</table>\n";
 echo "<input type='hidden' name='id' value='$id'/>";
 echo "</form>\n";
-echo "<script type='text/JavaScript'>initform(\"hre_debut=$hre_debut\");</script>";
-echo "<script type='text/JavaScript'>initform(\"hre_fin=$hre_fin\");</script>";
 ?>
