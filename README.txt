@@ -8,7 +8,7 @@
  sans même la garantie implicite de COMMERCIALISABILITÉ ni d'ADÉQUATION À UN OBJECTIF PARTICULIER.
  Consultez la Licence Générale Publique GNU pour plus de détails.
 
- Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec ce programme (fichier COPYING.txt); 
+ Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec ce programme (fichier LICENSE); 
  si ce n'est pas le cas, consultez : http://www.gnu.org/licenses
 
  Site web de l'application PlanningBiblio : http://www.planningbiblio.fr

@@ -2,7 +2,7 @@
 /*
 Planning Biblio, Version 1.7.2
 Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.txt et COPYING.txt
+Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/suppression.php
