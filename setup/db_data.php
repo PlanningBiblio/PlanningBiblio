@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/db_data.php
 Création : mai 2011
-Dernière modification : 21 février 2014
+Dernière modification : 3 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -365,18 +365,18 @@ $sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `o
 $sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES (36, 'Renseignement kiosque', '', 0, 'Renfort', 'Mezzanine', 'a:2:{i:0;s:1:\"9\";i:1;s:2:\"10\";}','1','1');";
 
 //	Insertion des motif d'absences
-$sql[]="INSERT INTO `{$dbprefix}select_abs` VALUES (NULL, 'Non justifi&eacute;e', 1);";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` VALUES (NULL, 'Cong&eacute;s pay&eacute;s', 2);";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` VALUES (NULL, 'Maladie', 3);";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` VALUES (NULL, 'Cong&eacute; maternit&eacute;', 4);";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` VALUES (NULL, 'R&eacute;union syndicale', 5);";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` VALUES (NULL, 'Gr&egrave;ve', 6);";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` VALUES (NULL, 'Formation', 7);";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` VALUES (NULL, 'Concours', 8);";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` VALUES (NULL, 'Stage', 9);";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` VALUES (NULL, 'R&eacute;union', 10);";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` VALUES (NULL, 'Entretien', 11);";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` VALUES (NULL, 'Autre', 12);";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Non justifi&eacute;e', 1);";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Cong&eacute;s pay&eacute;s', 2);";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Maladie', 3);";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Cong&eacute; maternit&eacute;', 4);";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('R&eacute;union syndicale', 5);";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Gr&egrave;ve', 6);";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Formation', 7);";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Concours', 8);";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Stage', 9);";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('R&eacute;union', 10);";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Entretien', 11);";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Autre', 12);";
 
 //	Insertion des catégories
 $sql[]="INSERT INTO `{$dbprefix}select_categories` (`valeur`,`rang`) VALUES ('Cat&eacute;gorie A',10),('Cat&eacute;gorie B',20),('Cat&eacute;gorie C',30),('Commun',40);";

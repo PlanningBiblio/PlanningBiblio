@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 28 février 2014
+Dernière modification : 4 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -383,7 +383,9 @@ else{					//	Formulaire
   echo "<select name='motif' style='width:100%;'>\n";
   echo "<option value=''></option>\n";
   foreach($motifs as $elem){
-    echo "<option value='".$elem['valeur']."'>".$elem['valeur']."</option>\n";
+  $class=$elem['type']==2?"padding20":"bold";
+  $disabled=$elem['type']==1?"disabled='disabled'":null;
+  echo "<option value='".$elem['valeur']."' class='$class' $disabled >".$elem['valeur']."</option>\n";
   }
   echo "</select>\n";
   if($admin){

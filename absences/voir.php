@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 3 janvier 2014
+Dernière modification : 4 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -19,6 +19,10 @@ Page appelée par la page index.php
 
 require_once "class.absences.php";
 require_once "personnel/class.personnel.php";
+
+if(isset($_GET['messageOK'])){
+  echo "<script type='text/JavaScript'>information('".urldecode(addslashes($_GET['messageOK']))."','highlight');</script>\n";
+}
 echo "<h3>Liste des absences</h3>\n";
 
 //	Initialisation des variables
@@ -140,7 +144,6 @@ if($absences){
   }
 }
 echo "</tbody></table>";
-echo "<br/><a href='index.php?page=absences/index.php'>Retour</a>";
 ?>
 
 <script type='text/JavaScript'>

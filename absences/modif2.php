@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 21 février 2014
+Dernière modification : 4 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -226,7 +226,6 @@ if(!empty($destinataires)){
   sendmail($sujet,$message,$destinataires);
 }
 
-echo "<h3>Modification de l'absence</h3>\n";
-echo "<h4>Votre demande &agrave; &eacute;t&eacute; enregistr&eacute;e</h4>";
-echo "<a href='javascript:annuler(2);'>Retour</a>\n";
+echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&messageOK="
+  .urlencode("L'absence a été modifiée avec succés")."';</script>\n";
 ?>

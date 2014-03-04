@@ -5,7 +5,7 @@ Voir les fichiers README.txt et COPYING.txt
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/js/modif.js
-Création : 28 février 2014
+Création : 3 mars 2014
 Dernière modification : 28 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
@@ -104,6 +104,7 @@ $(function() {
 
   // Permet d'ajouter de nouveau statuts (click sur le bouton ajouter
   $("#add-statut-button2").click(function(){
+    // Récupère les options du premier select "catégorie" pour les réutiliser lors d'un ajout
     var select=$("select[id^=categorie_]");
     var select_id=select.attr("id");
     var options="";
@@ -117,7 +118,7 @@ $(function() {
       +"<select id='categorie_"+randomnumber+"' style='position:absolute;left:330px;'>"
       +options
       +"</select>"
-      +"<span class='ui-icon ui-icon-trash' style='position:relative;left:463px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
+      +"<span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
       +"</li>");
 
     // Reset du champ texte une fois l'ajout effectué

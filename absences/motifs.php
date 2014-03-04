@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/motifs.php
 Création : 28 février 2014
-Dernière modification : 28 février 2014
+Dernière modification : 3 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -32,6 +32,9 @@ if($db_motifs->result){
     $motifs_utilises[]=$elem['motif'];
   }
 }
+
+// Types de motifs
+$motifs_types=array(array("id"=>0,"valeur"=>"N1 cliquable"),array("id"=>1,"valeur"=>"N1 non-cliquable"),array("id"=>2,"valeur"=>"N2"));
 ?>
 
 <!--	Modification de la liste des motifs (Dialog Box) -->  
@@ -45,8 +48,17 @@ if($db_motifs->result){
 <?php
     if(is_array($motifs)){
       foreach($motifs as $elem){
+	$class=$elem['type']==2?"padding20":"bold";
 	echo "<li class='ui-state-default' id='li_{$elem['id']}'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>\n";
-	echo "<font id='valeur_{$elem['id']}'>{$elem['valeur']}</font>\n";
+	echo "<font class='$class' id='valeur_{$elem['id']}'>{$elem['valeur']}</font>\n";
+	echo "<select id='type_{$elem['id']}' style='position:absolute;left:330px;'>\n";
+	echo "<option value='0'>&nbsp;</option>\n";
+	foreach($motifs_types as $elem2){
+	  $selected=$elem2['id']==$elem['type']?"selected='selected'":null;
+	  echo "<option value='{$elem2['id']}' $selected>{$elem2['valeur']}</option>\n";
+	}
+	echo "</select>\n";
+
 	if(!in_array($elem['valeur'],$motifs_utilises)){
 	  echo "<span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>\n";
 	}

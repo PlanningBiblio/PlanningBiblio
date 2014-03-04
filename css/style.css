@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification : 28 février 2014
+Dernière modification : 3 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -708,6 +708,17 @@ ul[id$="-sortable"] { list-style-type: none; margin: 0; padding: 0; }
 ul[id$="-sortable"] li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; height: 18px; }
 ul[id$="-sortable"] li span { position: absolute; margin-left: -1.3em; }
 
+.bold{
+  font-weight:bold;
+}
+
+option.bold{
+  margin-top:3px;
+}
+
+.padding20{
+  padding-left:20px;
+}
 
 /* Statistiques */
 #stat-col1{

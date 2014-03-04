@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 25 février 2014
+Dernière modification : 3 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -245,6 +245,7 @@ $sql[]="CREATE TABLE `{$dbprefix}select_abs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `valeur` text NOT NULL DEFAULT '',
   `rang` int(11) NOT NULL DEFAULT '0',
+  `type` INT(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 

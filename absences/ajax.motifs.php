@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/ajax.motifs.php
 Création : 28 février 2014
-Dernière modification : 28 février 2014
+Dernière modification : 3 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -27,6 +27,6 @@ $db=new db();
 $db->delete("select_abs");
 foreach($tab as $elem){
   $db=new db();
-  $db->insert2("select_abs",array("valeur"=>$elem[0],"rang"=>$elem[2]));
+  $db->insert2("select_abs",array("valeur"=>$elem[0],"type"=>$elem[1],"rang"=>$elem[2]));
 }
 ?>

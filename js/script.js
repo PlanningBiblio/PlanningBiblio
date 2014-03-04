@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 27 février 2014
+Dernière modification : 4 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -613,7 +613,11 @@ function all_day(){
 function verif_absences(ctrl_form){
   if(!verif_form(ctrl_form))
     return false;
-  
+  if($("select[name=motif] option:selected").attr("disabled")=="disabled"){
+    alert("Le motif sélectionné n'est pas valide.\nVeuillez le modifier s'il vous plaît.");
+    return false;
+  }
+
   perso_id=document.form.perso_id.value;
   id=document.form.id.value;
   debut=document.form.debut.value;
