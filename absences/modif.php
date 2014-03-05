@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 4 mars 2014
+Dernière modification : 5 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -42,8 +42,10 @@ $perso_id=$db->result[0]['perso_id'];
 $motif=$db->result[0]['motif'];
 $motif_autre=$db->result[0]['motif_autre'];
 $commentaires=$db->result[0]['commentaires'];
-$debut=$db->result[0]['debut'];
-$fin=$db->result[0]['fin'];
+$debutSQL=$db->result[0]['debut'];
+$finSQL=$db->result[0]['fin'];
+$debut=dateFr3($debutSQL);
+$fin=dateFr3($finSQL);
 $site=$db->result[0]['site'];
 $valide=$db->result[0]['valide'];
 $validation=$db->result[0]['validation'];
@@ -131,8 +133,7 @@ echo "<input type='checkbox' name='allday' $checked onclick='all_day();'/>\n";
 echo "</td></tr>\n";
 echo "<tr><td>";
 echo "Date de début : </td><td style='white-space:nowrap;'>";
-echo "<input type='text' name='debut' value='{$debut}' style='width:100%;'/>\n";
-echo "<img src='img/calendrier.gif' border='0' onclick='calendrier(\"debut\");' alt='calendrier' />";
+echo "<input type='text' name='debut' value='$debut' style='width:100%;' class='datepicker'/>\n";
 echo "</td></tr>\n";
 echo "<tr id='hre_debut' $display ><td>\n";
 echo "Heure de début : \n";
@@ -144,8 +145,7 @@ echo "</td></tr>\n";
 
 echo "<tr><td>";
 echo "Date de fin : </td><td style='white-space:nowrap;'>";
-echo "<input type='text' name='fin' value='{$fin}' style='width:100%;'/>\n";
-echo "<img src='img/calendrier.gif' border='0' onclick='calendrier(\"fin\");' alt='calendrier' />";
+echo "<input type='text' name='fin' value='$fin' style='width:100%;' class='datepicker'/>\n";
 echo "</td></tr>\n";
 echo "<tr id='hre_fin' $display ><td>\n";
 echo "Heure de fin : \n";

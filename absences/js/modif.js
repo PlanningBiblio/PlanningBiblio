@@ -140,6 +140,9 @@ function verif_absences(ctrl_form){
   debut=document.form.debut.value;
   fin=document.form.fin.value;
   fin=fin?fin:debut;
+  debut=debut.replace(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/g,"$3-$2-$1");
+  fin=fin.replace(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/g,"$3-$2-$1");
+
   hre_debut=document.form.hre_debut.value;
   hre_fin=document.form.hre_fin.value;
   hre_debut=hre_debut?hre_debut:"00:00:00";

@@ -78,6 +78,8 @@ if($confirm){
     }
   }
 }
+$debutSQL=dateSQL($debut);
+$finSQL=dateSQL($fin);
 
 if($config['Absences-adminSeulement'] and !$admin){
   echo "<div id='acces_refuse'>Accès refusé</div>\n";
@@ -94,7 +96,7 @@ EOD;
 
 if($confirm=="confirm2"){		//	2eme confirmation
   $a=new absences();
-  $a->getResponsables($debut,$fin,$perso_id);
+  $a->getResponsables($debutSQL,$finSQL,$perso_id);
   $responsables=$a->responsables;
 
   $db_perso=new db();
@@ -141,8 +143,8 @@ if($confirm=="confirm2"){		//	2eme confirmation
       break;
   }
 
-  $debut_sql=$debut." ".$hre_debut;
-  $fin_sql=$fin." ".$hre_fin;
+  $debut_sql=$debutSQL." ".$hre_debut;
+  $fin_sql=$finSQL." ".$hre_fin;
 
   // Ajout de l'absence dans la table 'absence'
   $db=new db();
@@ -184,10 +186,10 @@ if($confirm=="confirm2"){		//	2eme confirmation
   }
 
   // On complète le message avec les informations de l'absence
-  $message.="<br/>$prenom $nom<br/>Début : ".dateFr($debut);
+  $message.="<br/>$prenom $nom<br/>Début : $debut";
   if($hre_debut!="00:00:00")
     $message.=" ".heure3($hre_debut);
-  $message.="<br/>Fin : ".dateFr($fin);
+  $message.="<br/>Fin : $fin";
   if($hre_fin!="23:59:59")
     $message.=" ".heure3($hre_fin);
   $message.="<br/>Motif : $motif";
@@ -232,7 +234,7 @@ elseif($confirm=="confirm1"){		//	1ere Confirmation
   if($config['Absences-apresValidation']==0){
     $datesValidees=array();
     $db=new db();
-    $db->select("pl_poste","date,site","perso_id='$perso_id' AND date>='$debut' AND date<='$fin'","group by date");
+    $db->select("pl_poste","date,site","perso_id='$perso_id' AND date>='$debutSQL' AND date<='$finSQL'","group by date");
     if($db->result){
       foreach($db->result as $elem){
 	$db2=new db();
@@ -257,13 +259,13 @@ elseif($confirm=="confirm1"){		//	1ere Confirmation
   echo $nom." ".$prenom;
   echo "</td></tr><tr><td>\n";
   echo "Début de l'absence : </td><td>\n";
-  echo dateFr($debut);
+  echo $debut;
   if($_GET['hre_debut'])
     echo "&nbsp;-&nbsp;".heure2($_GET['hre_debut']);
   echo "</td></tr>\n";
   echo "<tr><td>";
   echo "Fin de l'absence : </td><td>\n";
-  echo dateFr($fin);
+  echo $fin;
   if($_GET['hre_fin'])
     echo "&nbsp;-&nbsp;".heure2($_GET['hre_fin']);
   echo "</td></tr>\n";
@@ -356,8 +358,7 @@ else{					//	Formulaire
   echo "<tr><td>\n";
   echo "Date de début : \n";
   echo "</td><td style='white-space:nowrap;'>";
-  echo "<input type='text' name='debut' value='$debut' style='width:100%;'/>&nbsp;\n";
-  echo "<img src='img/calendrier.gif' onclick='calendrier(\"debut\");' alt='début' />\n";
+  echo "<input type='text' name='debut' value='$debut' style='width:100%;' class='datepicker'/>\n";
   echo "</td></tr>\n";
   echo "<tr id='hre_debut' style='display:none;'><td>\n";
   echo "Heure de début : \n";
@@ -369,8 +370,7 @@ else{					//	Formulaire
   echo "<tr><td>\n";
   echo "Date de fin : \n";
   echo "</td><td style='white-space:nowrap;'>";
-  echo "<input type='text' name='fin' value='$fin' style='width:100%;'/>&nbsp;\n";
-  echo "<img src='img/calendrier.gif' onclick='calendrier(\"fin\");' alt='fin' />\n";
+  echo "<input type='text' name='fin' value='$fin' style='width:100%;' class='datepicker'/>\n";
   echo "</td></tr>\n";
   echo "<tr id='hre_fin' style='display:none;'><td>\n";
   echo "Heure de fin : \n";

@@ -23,10 +23,12 @@ require_once "class.absences.php";
 $id=$_GET['id'];
 $debut=$_GET['debut'];
 $fin=$_GET['fin']?$_GET['fin']:$_GET['debut'];
+$debutSQL=dateSQL($debut);
+$finSQL=dateSQL($fin);
 $hre_debut=$_GET['hre_debut']?$_GET['hre_debut']:"00:00:00";
 $hre_fin=$_GET['hre_fin']?$_GET['hre_fin']:"23:59:59";
-$debut_sql=$debut." ".$hre_debut;
-$fin_sql=$fin." ".$hre_fin;
+$debut_sql=$debutSQL." ".$hre_debut;
+$fin_sql=$finSQL." ".$hre_fin;
 $isValidate=true;
 $valideN1=0;
 $valideN2=0;
@@ -104,7 +106,7 @@ $valide1N1=$db->result[0]['valideN1'];
 $valide1N2=$db->result[0]['valide'];
 $perso_id=$db->result[0]['perso_id'];
 
-if(($debut!=$debut1 or $fin!=$fin1) and $isValidate){			// mise à jour du champs 'absent' dans 'pl_poste'
+if(($debutSQL!=$debut1 or $finSQL!=$fin1) and $isValidate){			// mise à jour du champs 'absent' dans 'pl_poste'
   $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='0' WHERE
     ((CONCAT(`date`,' ',`debut`) < '$fin1' AND CONCAT(`date`,' ',`debut`) >= '$debut1')
     OR (CONCAT(`date`,' ',`fin`) > '$debut1' AND CONCAT(`date`,' ',`fin`) <= '$fin1'))
@@ -140,7 +142,7 @@ $sujet="Modification d'une absence";
 
 // Liste des responsables
 $a=new absences();
-$a->getResponsables($debut,$fin,$perso_id);
+$a->getResponsables($debutSQL,$finSQL,$perso_id);
 $responsables=$a->responsables;
 
 // Choix des destinataires des notifications selon le degré de validation
@@ -207,10 +209,10 @@ switch($notifications){
 }
 
 // Message
-$message="$sujet : <br/>$prenom $nom<br/>Début : ".dateFr($debut);
+$message="$sujet : <br/>$prenom $nom<br/>Début : $debut";
 if($hre_debut!="00:00:00")
   $message.=" ".heure3($hre_debut);
-$message.="<br/>Fin : ".dateFr($fin);
+$message.="<br/>Fin : $fin";
 if($hre_fin!="23:59:59")
   $message.=" ".heure3($hre_fin);
 $message.="<br/>Motif : $motif";
