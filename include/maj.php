@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 3 mars 2014
+Dernière modification : 4 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -499,6 +499,7 @@ if(strcmp("1.7.3",$config['Version'])>0){
 
 if(strcmp("1.7.4",$config['Version'])>0){
   $sql[]="ALTER TABLE `{$dbprefix}select_abs` ADD `type` INT(1) NOT NULL DEFAULT '0';";
+  $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `motif_autre` TEXT NOT NULL DEFAULT '';";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.7.4' WHERE `nom`='Version';";
 }
 

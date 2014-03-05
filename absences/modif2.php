@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 4 mars 2014
+Dernière modification : 5 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -47,8 +47,9 @@ if($config['Absences-validation']){
 }
 
 $motif=$_GET['motif'];
+$motif_autre=htmlentities($_GET['motif_autre'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
+$commentaires=htmlentities($_GET['commentaires'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
 $nbjours=isset($_GET['nbjours'])?$_GET['nbjours']:0;
-$commentaires=addslashes($_GET['commentaires']);
 
 $db=new db();
 $db->query("select {$dbprefix}personnel.id as perso_id, {$dbprefix}personnel.nom as nom, {$dbprefix}personnel.prenom as prenom, 
@@ -120,7 +121,7 @@ if(($debut!=$debut1 or $fin!=$fin1) and $isValidate){			// mise à jour du champ
 
 // Mise à jour de la table 'absences'
 $db=new db();
-$update=array("motif"=>$motif, "nbjours"=>$nbjours, "commentaires"=>$commentaires, "debut"=>$debut_sql, "fin"=>$fin_sql);
+$update=array("motif"=>$motif, "motif_autre"=>$motif_autre, "nbjours"=>$nbjours, "commentaires"=>$commentaires, "debut"=>$debut_sql, "fin"=>$fin_sql);
 if($config['Absences-validation']){
   if($valideN1){
     $update["valideN1"]=$valideN1;
@@ -212,7 +213,11 @@ if($hre_debut!="00:00:00")
 $message.="<br/>Fin : ".dateFr($fin);
 if($hre_fin!="23:59:59")
   $message.=" ".heure3($hre_fin);
-$message.="<br/>Motif : $motif<br/>";
+$message.="<br/>Motif : $motif";
+if($motif_autre){
+  $message.=" / $motif_autre";
+}
+echo "<br/>";
 if($commentaires)
   $message.="Commentaire:<br/>$commentaires<br/>";
 if($config['Absences-validation']){

@@ -6,15 +6,15 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/js/modif.js
 Création : 28 février 2014
-Dernière modification : 3 mars 2014
+Dernière modification : 5 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
 Fichier regroupant les fonctions JavaScript utiles à l'ajout et la modification des agents (modif.php)
 */
 
-// Paramétrage de la boite de dialogue permettant la modification des motifs
 $(function() {
+  // Paramétrage de la boite de dialogue permettant la modification des motifs
   $("#add-motif-form").dialog({
     autoOpen: false,
     height: 480,
@@ -96,8 +96,8 @@ $(function() {
     $("#add-motif-text").val(null);
   });
   
-    // Modifie la classe de la ligne lors du changement du select type (Boite de dialogue permettant de modifier la liste des motifs)
-    $("select[id^='type']").change(function(){
+  // Modifie la classe de la ligne lors du changement du select type (Boite de dialogue permettant de modifier la liste des motifs)
+  $("select[id^=type]").change(function(){
     if($(this).val()==2){
       $(this).prev("font").removeClass("bold");
       $(this).prev("font").addClass("padding20");
@@ -107,4 +107,49 @@ $(function() {
     }
   });
 
+  // Affiche ou masque le champ motif_autre en fonction de la valeur du select motif
+  $("select[name=motif]").change(function(){
+    if($(this).val().toLowerCase()=="autre" || $(this).val().toLowerCase()=="other"){
+      $("#tr_motif_autre").show();
+    }else{
+      $("#tr_motif_autre").hide();
+      $("input[name=motif_autre]").val("");
+    }
+  });
 });
+
+// Vérification des formulaires (ajouter et modifier)
+function verif_absences(ctrl_form){
+  if(!verif_form(ctrl_form))
+    return false;
+
+  if($("select[name=motif] option:selected").attr("disabled")=="disabled"){
+    alert("Le motif sélectionné n'est pas valide.\nVeuillez le modifier s'il vous plaît.");
+    return false;
+  }
+  
+  if($("select[name=motif]").val().toLowerCase()=="autre" || $("select[name=motif]").val().toLowerCase()=="other"){
+    if($("input[name=motif_autre]").val()==""){
+      alert("Veuillez choisir un motif.");
+      return false;
+    }
+  }
+ 
+  perso_id=document.form.perso_id.value;
+  id=document.form.id.value;
+  debut=document.form.debut.value;
+  fin=document.form.fin.value;
+  fin=fin?fin:debut;
+  hre_debut=document.form.hre_debut.value;
+  hre_fin=document.form.hre_fin.value;
+  hre_debut=hre_debut?hre_debut:"00:00:00";
+  hre_fin=hre_fin?hre_fin:"23:59:59";
+  debut=debut+" "+hre_debut;
+  fin=fin+" "+hre_fin;
+  db=file("index.php?page=absences/ctrl_ajax.php&perso_id="+perso_id+"&id="+id+"&debut="+debut+"&fin="+fin).split("###");
+  if(db[1]=="true"){
+    alert("Une absence est déjà enregistrée pour cet agent entre le "+db[2]+"\nVeuillez modifier les dates et horaires.");
+    return false;
+  }
+  return true;
+}

@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 4 mars 2014
+Dernière modification : 5 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -608,33 +608,6 @@ function all_day(){
     document.form.hre_debut.value="";
     document.form.hre_fin.value="";
   }
-}
-	
-function verif_absences(ctrl_form){
-  if(!verif_form(ctrl_form))
-    return false;
-  if($("select[name=motif] option:selected").attr("disabled")=="disabled"){
-    alert("Le motif sélectionné n'est pas valide.\nVeuillez le modifier s'il vous plaît.");
-    return false;
-  }
-
-  perso_id=document.form.perso_id.value;
-  id=document.form.id.value;
-  debut=document.form.debut.value;
-  fin=document.form.fin.value;
-  fin=fin?fin:debut;
-  hre_debut=document.form.hre_debut.value;
-  hre_fin=document.form.hre_fin.value;
-  hre_debut=hre_debut?hre_debut:"00:00:00";
-  hre_fin=hre_fin?hre_fin:"23:59:59";
-  debut=debut+" "+hre_debut;
-  fin=fin+" "+hre_fin;
-  db=file("index.php?page=absences/ctrl_ajax.php&perso_id="+perso_id+"&id="+id+"&debut="+debut+"&fin="+fin).split("###");
-  if(db[1]=="true"){
-    alert("Une absence est déjà enregistrée pour cet agent entre le "+db[2]+"\nVeuillez modifier les dates et horaires.");
-    return false;
-  }
-  return true;
 }
 //	--------------------------------	FIN Absences		---------------------------------	//
 //	--------------------------------	Aide			---------------------------------	//

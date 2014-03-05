@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 3 mars 2014
+Dernière modification : 4 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -31,7 +31,7 @@ $db=new db();
 $req="SELECT `{$dbprefix}personnel`.`id` AS `perso_id`, `{$dbprefix}personnel`.`nom` AS `nom`, 	
   `{$dbprefix}personnel`.`prenom` AS `prenom`, `{$dbprefix}absences`.`id` AS `id`, `{$dbprefix}personnel`.`site` AS `site`,  
   `{$dbprefix}absences`.`debut` AS `debut`, `{$dbprefix}absences`.`fin` AS `fin`, 
-  `{$dbprefix}absences`.`nbjours` AS `nbjours`, `{$dbprefix}absences`.`motif` AS `motif`, 
+  `{$dbprefix}absences`.`nbjours` AS `nbjours`, `{$dbprefix}absences`.`motif` AS `motif`, `{$dbprefix}absences`.`motif_autre` AS `motif_autre`, 
   `{$dbprefix}absences`.`valide` AS `valide`, `{$dbprefix}absences`.`validation` AS `validation`, 
   `{$dbprefix}absences`.`valideN1` AS `valideN1`, `{$dbprefix}absences`.`validationN1` AS `validationN1`, 
   `{$dbprefix}absences`.`commentaires` AS `commentaires` 
@@ -40,6 +40,7 @@ $req="SELECT `{$dbprefix}personnel`.`id` AS `perso_id`, `{$dbprefix}personnel`.`
 $db->query($req);
 $perso_id=$db->result[0]['perso_id'];
 $motif=$db->result[0]['motif'];
+$motif_autre=$db->result[0]['motif_autre'];
 $commentaires=$db->result[0]['commentaires'];
 $debut=$db->result[0]['debut'];
 $fin=$db->result[0]['fin'];
@@ -72,6 +73,8 @@ if($valide==0 and $valideN1!=0){
   $validation_texte=$valideN1>0?"Valid&eacute;e (en attente de validation hi&eacute;rarchique)":$validation_texte;
   $validation_texte=$valideN1<0?"Refus&eacute;e (en attente de validation hi&eacute;rarchique)":$validation_texte;
 }
+
+$display_autre=in_array(strtolower($motif),array("autre","other"))?null:"style='display:none;'";
 
 // Sécurité
 // Droit 1 = modification de toutes les absences
@@ -168,8 +171,12 @@ if($admin){
   echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_abs&amp;terme=motif\",400,400);'>\n";
   echo "<img src='img/add.gif' alt='*' style=width:15px;cursor:pointer;' id='add-motif-button'/>\n";
 }
+  echo "</td></tr>\n";
 
-echo "</td></tr><tr style='vertical-align:top;'><td>";
+  echo "<tr $display_autre id='tr_motif_autre'><td>Motif (autre) :</td>\n";
+  echo "<td><input type='text' name='motif_autre' style='width:100%;' value='$motif_autre'/></td></tr>\n";
+
+  echo "<tr style='vertical-align:top;'><td>\n";
 echo "Commentaires : </td><td>";
 echo "<textarea name='commentaires' cols='25' rows='5'>$commentaires</textarea>";
 echo "</td></tr>";

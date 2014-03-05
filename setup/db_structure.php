@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 3 mars 2014
+Dernière modification : 4 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -25,6 +25,7 @@ $sql[]="CREATE TABLE `{$dbprefix}absences` (
   `fin` datetime NOT NULL,
   `nbjours` int(11) NOT NULL DEFAULT '0',
   `motif` text NOT NULL DEFAULT '',
+  `motif_autre` text NOT NULL DEFAULT '',
   `commentaires` text NOT NULL,
   `etat` text NOT NULL,
   `demande` datetime NOT NULL,

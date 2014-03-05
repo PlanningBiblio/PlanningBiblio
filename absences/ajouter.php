@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 4 mars 2014
+Dernière modification : 5 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -34,9 +34,10 @@ if($confirm){
   $fin=$fin?$fin:$debut;
   $nbjours=isset($_GET['nbjours'])?$_GET['nbjours']:0;
   $motif=$_GET['motif'];
+  $motif_autre=htmlentities($_GET['motif_autre'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
   $hre_debut=$_GET['hre_debut']?$_GET['hre_debut']:"00:00:00";
   $hre_fin=$_GET['hre_fin']?$_GET['hre_fin']:"23:59:59";
-  $commentaires=$_GET['commentaires'];
+  $commentaires=htmlentities($_GET['commentaires'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
   $valide=isset($_GET['valide'])?$_GET['valide']:0;
   $valideN1=0;
   $valideN2=0;
@@ -88,7 +89,7 @@ echo <<<EOD
 <h3>Ajouter une absence</h3>
 <table>
 <tr style='vertical-align:top'>
-<td style='width:550px;'>
+<td style='width:560px;'>
 EOD;
 
 if($confirm=="confirm2"){		//	2eme confirmation
@@ -146,7 +147,7 @@ if($confirm=="confirm2"){		//	2eme confirmation
   // Ajout de l'absence dans la table 'absence'
   $db=new db();
   $insert=array("perso_id"=>$perso_id, "debut"=>$debut_sql, "fin"=>$fin_sql, "nbjours"=>$nbjours, "motif"=>$motif, 
-    "commentaires"=>$commentaires, "demande"=>date("Y-m-d H:i:s"));
+    "motif_autre"=>$motif_autre, "commentaires"=>$commentaires, "demande"=>date("Y-m-d H:i:s"));
   if($valideN1!=0){
     $insert["valideN1"]=$valideN1;
     $insert["validationN1"]=$validationN1;
@@ -189,7 +190,11 @@ if($confirm=="confirm2"){		//	2eme confirmation
   $message.="<br/>Fin : ".dateFr($fin);
   if($hre_fin!="23:59:59")
     $message.=" ".heure3($hre_fin);
-  $message.="<br/>Motif : $motif<br/>";
+  $message.="<br/>Motif : $motif";
+  if($motif_autre){
+    $message.=" / $motif_autre";
+  }
+  echo "<br/>";
   if($commentaires)
     $message.="<br/>Commentaire:<br/>$commentaires<br/>";
 
@@ -215,11 +220,6 @@ if($confirm=="confirm2"){		//	2eme confirmation
   }
 }
 elseif($confirm=="confirm1"){		//	1ere Confirmation
-  $commentaires=str_replace("\'","&#146;",$_GET['commentaires']);
-  $commentaires=str_replace('\"',"&#34;",$commentaires);
-  $commentaires=str_replace("'","&#146;",$commentaires);
-  $commentaires=str_replace('"',"&#34;",$commentaires);
-
   $db=new db();
   $db->query("select nom, prenom from {$dbprefix}personnel where id=$perso_id;");
   $nom=$db->result[0]['nom'];
@@ -270,6 +270,9 @@ elseif($confirm=="confirm1"){		//	1ere Confirmation
   echo "<tr><td>\n";
   echo "Motif : </td><td>\n";
   echo $motif;
+  if($motif_autre){
+    echo " / $motif_autre";
+  }
   echo "</td></tr><tr><td>\n";
   echo "Commentaires : </td><td>\n";
   echo $commentaires;
@@ -293,6 +296,7 @@ elseif($confirm=="confirm1"){		//	1ere Confirmation
   echo "<input type='hidden' name='hre_fin' value='{$_GET['hre_fin']}' />\n";
   echo "<input type='hidden' name='nbjours' value='$nbjours' />\n";
   echo "<input type='hidden' name='motif' value='$motif' />\n";
+  echo "<input type='hidden' name='motif_autre' value='$motif_autre' />\n";
   echo "<input type='hidden' name='commentaires' value='$commentaires' />\n";
   echo "<input type='hidden' name='valide' value='$valide' />\n";
   echo "<input type='hidden' name='confirm' value='confirm2' />\n";
@@ -389,10 +393,14 @@ else{					//	Formulaire
   }
   echo "</select>\n";
   if($admin){
-    echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_abs&amp;terme=motif\",400,400);'>\n";
     echo "<img src='img/add.gif' alt='*' style=width:15px;cursor:pointer;' id='add-motif-button'/>\n";
   }
-  echo "</td></tr><tr valign='top'><td>\n";
+  echo "</td></tr>\n";
+
+  echo "<tr style='display:none;' id='tr_motif_autre'><td>Motif (autre) :</td>\n";
+  echo "<td><input type='text' name='motif_autre' style='width:100%;'/></td></tr>\n";
+
+  echo "<tr style='vertical-align:top;'><td>\n";
   echo "Commentaires : \n";
   echo "</td><td>\n";
   echo "<textarea name='commentaires' cols='16' rows='5' ></textarea>\n";
