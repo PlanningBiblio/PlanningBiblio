@@ -1,3 +1,13 @@
+***	Version 1.7.4	(Jérôme Combes, 10 mars 2014)		***
+- Améliorations :
+Les motifs d'absence peuvent être classés avec 2 niveaux (ex: N1: Formation, N2: Formation interne, N3 Formation Mediadix)
+Permet le renseignement d'un motif "Autre" pour les absences
+Ajoute une colonne affichant le temps de travail journalier dans les emplois du temps
+Mise à jour de l'aide en ligne
+
+- Corrections :
+Corrige un bug empêchant le contrôle des catégories A en fin de service
+
 ***	Version 1.7.2	(Jérôme Combes, 21 février 2014)		***
 - Améliorations :
 Permet d'attribuer les catégories (A,B,C) aux statuts (et aux agents)
