@@ -48,11 +48,11 @@ if($confirm){
   }
   elseif(!$admin){
     $valideN2=0;
-    $validationText="En attente de validation";
+    $validationText="Demand&eacute;e";
     $validation="0000-00-00 00:00:00";
   }
   elseif($admin){
-    $validationText="En attente de validation";
+    $validationText="Demand&eacute;e";
     $validation="0000-00-00 00:00:00";
     if($valide==1){
       $valideN2=$_SESSION['login_id'];
@@ -418,10 +418,10 @@ else{					//	Formulaire
   echo "</td></tr>\n";
 
   if($config['Absences-validation']){
-    echo "<tr><td>Validation : </td><td>\n";
+    echo "<tr><td>&Eacute;tat : </td><td>\n";
     if($admin){
       echo "<select name='valide'>\n";
-      echo "<option value='0'>En attente de validation</option>\n";
+      echo "<option value='0'>Demand&eacute;e</option>\n";
       echo "<option value='2' >Accept&eacute;e (En attente de validation hi&eacute;rarchique)</option>\n";
       echo "<option value='-2' >Refus&eacute;e (En attente de validation hi&eacute;rarchique)</option>\n";
       if($adminN2){
@@ -431,7 +431,7 @@ else{					//	Formulaire
       echo "</select>\n";
     }
     else{
-      echo "En attente de validation";
+      echo "Demand&eacute;e";
     }
     echo "</td></tr>\n";
   }

@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 5 mars 2014
+Dernière modification : 12 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -70,7 +70,7 @@ if($valide==0 and $valideN1!=0){
 }
 $validation_texte=$valide>0?"Valid&eacute;e":"&nbsp;";
 $validation_texte=$valide<0?"Refus&eacute;e":$validation_texte;
-$validation_texte=$valide==0?"En attente de validation":$validation_texte;
+$validation_texte=$valide==0?"Demand&eacute;e":$validation_texte;
 if($valide==0 and $valideN1!=0){
   $validation_texte=$valideN1>0?"Valid&eacute;e (en attente de validation hi&eacute;rarchique)":$validation_texte;
   $validation_texte=$valideN1<0?"Refus&eacute;e (en attente de validation hi&eacute;rarchique)":$validation_texte;
@@ -185,7 +185,7 @@ if($config['Absences-validation']){
   echo "<tr><td>Validation : </td><td>\n";
   if($admin){
     echo "<select name='valide'>\n";
-    echo "<option value='0' $select1>En attente de validation</option>\n";
+    echo "<option value='0' $select1>Demand&eacute;e</option>\n";
     echo "<option value='2' $select4>Accept&eacute;e (En attente de validation hi&eacute;rarchique)</option>\n";
     echo "<option value='-2' $select5>Refus&eacute;e (En attente de validation hi&eacute;rarchique)</option>\n";
     if($adminN2){
@@ -202,7 +202,7 @@ if($config['Absences-validation']){
 }
 
 echo "<tr><td colspan='2'><br/>\n";
-if($admin or $valide==0 or $config['Absences-validation']==0){
+if($admin or ($valide==0 and $valideN1==0) or $config['Absences-validation']==0){
   echo "<input type='button' class='ui-button' value='Supprimer' onclick='document.location.href=\"index.php?page=absences/delete.php&amp;id=$id\";'/>";
   echo "&nbsp;&nbsp;\n";
   echo "<input type='button' class='ui-button' value='Annuler' onclick='annuler(1);'/>\n";
@@ -210,7 +210,7 @@ if($admin or $valide==0 or $config['Absences-validation']==0){
   echo "<input type='submit' class='ui-button' value='Valider'/>\n";
 }
 else{
-  echo "<input type='button' class='ui-button' value='Retour' onclick='annuler(1);'/>\n";
+  echo "<a href='index.php?page=absences/voir.php' class='ui-button'>Retour</a>\n";
 }
 echo "</td></tr>\n";
 echo "</table>\n";

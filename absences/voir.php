@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 4 mars 2014
+Dernière modification : 12 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -117,7 +117,10 @@ echo "<tbody>\n";
 $i=0;
 if($absences){
   foreach($absences as $elem){
-    $etat=$elem['valide']>0?"Valid&eacute;e, ".nom($elem['valide']).", ".dateFr($elem['validation'],true):"En attente de validation";
+    $etat="Demand&eacute;e";
+    $etat=$elem['valideN1']>0?"En attente de validation hierarchique, ".nom($elem['valideN1']).", ".dateFr($elem['validationN1'],true):$etat;
+    $etat=$elem['valideN1']<0?"En attente de validation hierarchique, ".nom(-$elem['valideN1']).", ".dateFr($elem['validationN1'],true):$etat;
+    $etat=$elem['valide']>0?"Valid&eacute;e, ".nom($elem['valide']).", ".dateFr($elem['validation'],true):$etat;
     $etat=$elem['valide']<0?"Refus&eacute;e, ".nom(-$elem['valide']).", ".dateFr($elem['validation'],true):$etat;
     $etatStyle=$elem['valide']==0?"font-weight:bold;":null;
     $etatStyle=$elem['valide']<0?"color:red;":$etatStyle;

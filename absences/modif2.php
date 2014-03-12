@@ -34,6 +34,7 @@ $valideN1=0;
 $valideN2=0;
 $validationN1=null;
 $validationN2=null;
+$validationText=null;
 
 if($config['Absences-validation']){
   $valide=$_GET['valide'];
@@ -42,7 +43,7 @@ if($config['Absences-validation']){
     $validationN2=date("Y-m-d H:i:s");
   }
   elseif($valide==2 or $valide==-2){
-    $valideN1=$valide*$_SESSION['login_id'];
+    $valideN1=($valide/2)*$_SESSION['login_id'];
     $validationN1=date("Y-m-d H:i:s");
   }
   $isValidate=$valideN2>0?true:false;
