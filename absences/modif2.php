@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 5 mars 2014
+Dernière modification : 12 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -227,6 +227,10 @@ if($config['Absences-validation']){
   $message.=$validationText;
   $message.="<br/>\n";
 }
+
+// Ajout du lien permettant de rebondir sur l'absence
+$url=createURL("absences/modif.php&id=$id");
+$message.="<br/><br/>Lien vers la demande d&apos;absence :<br/><a href='$url'>$url</a><br/><br/>";
 
 // Envoi du mail
 if(!empty($destinataires)){

@@ -19,7 +19,7 @@ Formulaire soumis au fichier setup/createdb.php
 
 session_start();
 session_destroy();
-$version="1.7.4";
+$version="1.7.5";
 
 include "header.php";
 include "../include/function.php";

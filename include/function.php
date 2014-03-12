@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 28 février 2014
+Dernière modification : 12 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -237,6 +237,14 @@ function compte_jours($date1, $date2, $jours){
     $current=date("Y-m-d", mktime(0, 0, 0, $tab[1], $tab[2]+1, $tab[0]));
   }
   return $count;
+}
+
+function createURL($page){
+  // Construction d'une URL
+  $port=strtolower(substr($_SERVER['SERVER_PROTOCOL'],0,strpos($_SERVER['SERVER_PROTOCOL'],"/",0)));
+  $url="$port://{$_SERVER['SERVER_NAME']}".substr($_SERVER['REQUEST_URI'],0,strpos($_SERVER['REQUEST_URI'],"/",1));
+  $url.="/index.php?page=".$page;
+  return $url;
 }
 
 function date_time($date){

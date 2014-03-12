@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 5 mars 2014
+Dernière modification : 12 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -161,6 +161,13 @@ if($confirm=="confirm2"){		//	2eme confirmation
 
   $db->insert2("absences", $insert);
 
+  // Récupération de l'ID de l'absence enregistrée pour la création du lien dans le mail
+  $db=new db();
+  $db->select("absences","MAX(id) AS id","debut='$debut_sql' AND fin='$fin_sql' AND perso_id='$perso_id'");
+  if($db->result){
+    $id=$db->result[0]['id'];
+  }
+
   // Mise à jour du champs 'absents' dans 'pl_poste'
   if($valideN2>0){
     $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1' WHERE
@@ -205,6 +212,10 @@ if($confirm=="confirm2"){		//	2eme confirmation
     $message.=$validationText;
     $message.="<br/>\n";
   }
+
+  // Ajout du lien permettant de rebondir sur l'absence
+  $url=createURL("absences/modif.php&id=$id");
+  $message.="<br/><br/>Lien vers la demande d&apos;absence :<br/><a href='$url'>$url</a><br/><br/>";
 
   // Envoi du mail
   if(!empty($destinataires)){
