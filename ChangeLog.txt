@@ -1,3 +1,8 @@
+***	Version 1.7.6	(Jérôme Combes, 17 mars 2014)		***
+- Améliorations :
+Distingue les absences demandées des absences en attente de validation hiérarchique
+Intègre les congés dans les agendas (plugin)
+
 ***	Version 1.7.5	(Jérôme Combes, 12 mars 2014)		***
 - Améliorations :
 Ajout d'un lien dans les notifications d'absences pour rebondir sur la fiche "absence"
