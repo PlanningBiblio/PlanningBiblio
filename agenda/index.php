@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 22 novembre 2013
+Dernière modification : 17 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -45,8 +45,10 @@ $d=new datePl(date("Y-m-d"));
 $order=isset($_GET['order'])?$_GET['order']:$_SESSION['agenda_order'];
 $debut=isset($_GET['debut'])?$_GET['debut']:$_SESSION['agenda_debut'];
 $fin=isset($_GET['fin'])?$_GET['fin']:$_SESSION['agenda_fin'];
-$debut=$debut?$debut:$d->dates[0];		// lundi de la semaine courante
-$fin=$fin?$fin:$d->dates[6];			// dimance de la semaine courante
+$debutSQL=$debut?dateSQL($debut):$d->dates[0];	// lundi de la semaine courante
+$debut=dateFr3($debutSQL);
+$finSQL=$fin?dateSQL($fin):$d->dates[6];	// dimance de la semaine courante
+$fin=dateFr3($fin);
 $order=$order?$order:"`date` desc";
 $_SESSION['agenda_debut']=$debut;
 $_SESSION['agenda_fin']=$fin;
@@ -70,15 +72,15 @@ if(is_array($agents)){
 
 // Jours fériés
 $j=new joursFeries();
-$j->debut=$debut;
-$j->fin=$fin;
+$j->debut=$debutSQL;
+$j->fin=$finSQL;
 $j->index="date";
 $j->fetch();
 $joursFeries=$j->elements;
 
 // Affichage
 if(isset($agent)){
-  echo "<h3>Agenda de $agent du ".dateFr($debut)." au ".dateFr($fin).".</h3><br/>\n";
+  echo "<h3>Agenda de $agent du $debut au $fin</h3><br/>\n";
 }
 else{
   echo "<h3>Agenda</h3>\n";
@@ -86,8 +88,8 @@ else{
 if(is_array($agents)){
   echo "<form name='form' method='get' action='index.php'>\n";
   echo "<input type='hidden' name='page' value='agenda/index.php' />\n";
-  echo "Début : <input type='text' name='debut' id='debut' value='$debut'/>&nbsp;<img src='img/calendrier.gif' onclick='calendrier(\"debut\");' alt='début'/>\n";
-  echo "&nbsp;&nbsp;Fin : <input type='text' name='fin' value='$fin'/>&nbsp;<img src='img/calendrier.gif' onclick='calendrier(\"fin\");' alt='fin'/>\n";
+  echo "Début : <input type='text' name='debut' id='debut' value='$debut' class='datepicker'/>\n";
+  echo "&nbsp;&nbsp;Fin : <input type='text' name='fin' value='$fin' class='datepicker'/>\n";
   if($admin){
     echo "&nbsp;&nbsp;Agent : \n";
     echo "<select name='perso_id'>\n";
@@ -95,7 +97,7 @@ if(is_array($agents)){
       echo "<option value='{$elem['id']}'>{$elem['nom']} {$elem['prenom']}</option>\n";
     echo "</select>\n";
   }
-  echo "&nbsp;&nbsp;<input type='submit' value='OK' />\n";
+  echo "&nbsp;&nbsp;<input type='submit' value='OK' class='ui-button'/>\n";
   echo "</form>\n";
 }
 else{
@@ -121,7 +123,9 @@ $absences=$db->result;					//	$absences = tableau d'absences
 	
 //	Selection des postes occupés
 $db=new db();
-$requete="SELECT pl_poste.`date` AS `date`, pl_poste.debut AS debut, pl_poste.fin AS fin, pl_poste.absent AS absent, postes.nom as poste FROM pl_poste INNER JOIN postes on pl_poste.poste=postes.id WHERE pl_poste.perso_id='$perso_id' and `date`>='$debut' and `date`<='$fin' order by $order,`debut`,`fin`;";
+$requete="SELECT pl_poste.`date` AS `date`, pl_poste.debut AS debut, pl_poste.fin AS fin, pl_poste.absent AS absent, 
+  postes.nom as poste FROM pl_poste INNER JOIN postes on pl_poste.poste=postes.id WHERE pl_poste.perso_id='$perso_id' 
+  and `date`>='$debutSQL' and `date`<='$finSQL' order by $order,`debut`,`fin`;";
 $requete=str_replace("pl_poste","`{$dbprefix}pl_poste`",$requete);
 $requete=str_replace("postes","`{$dbprefix}postes`",$requete);
 $db->query($requete);
@@ -131,8 +135,8 @@ echo "<br/>\n";
 echo "<table cellpadding='20' cellspacing='0' border='1'>\n";
 $nb=0;
 
-$current=$debut;
-while($current<=$fin){
+$current=$debutSQL;
+while($current<=$finSQL){
   $current_postes=array();
   $date_tab=explode("-",$current);
   $date_aff=dateAlpha($current);
@@ -183,54 +187,73 @@ while($current<=$fin){
     continue;
   }
 
-  echo "<div>\n";
-  $site=null;
-  if($config['Multisites-nombre']>1 and $config['Multisites-agentsMultisites'] and isset($horaires[4])){
-    if($horaires[4]){
-      $site="&agrave; ".$config['Multisites-site'.$horaires[4]];
-    }
-  }
+  // Si l'agent est absent : affiche s'il est abent toutes la journée ou ses heures d'absences
+  $absent=false;
+  $absences_affichage=null;
 
-  $horaire="";
-  if($horaires[0])
-    $horaire="Pr&eacute;sent(e) $site de ".heure2($horaires[0])." &agrave; ";
-  if($horaires[1])
-    $horaire.=heure2($horaires[1]);
-  if($horaires[1] and $horaires[2])
-    $horaire.=" et de ";
-  if($horaires[2])
-    $horaire.=heure2($horaires[2])." &agrave; ";
-  if($horaires[3])
-    $horaire.=heure2($horaires[3]);
-  echo $horaire;
-  echo "</div>\n";
-  echo "<div style='color:#FF5E0E;'>";
   foreach($current_abs as $elem){
-    if($elem['debut']<$current." 00:00:01" and $elem['fin']>$current." 23:59:58")
-      echo "Absent(e) toute la journ&eacute;e : ".$elem['motif'];
+    if($elem['debut']<$current." 00:00:01" and $elem['fin']>$current." 23:59:58"){
+      $absent=true;
+      $absences_affichage="Absent(e) toute la journ&eacute;e : ".$elem['motif'];
+    }
     elseif(substr($elem['debut'],0,10)==$current and substr($elem['fin'],0,10)==$current){
       $deb=heure2(substr($elem['debut'],-8));
       $fi=heure2(substr($elem['fin'],-8));
-      echo "Absent(e) de $deb &agrave; $fi : ".$elem['motif'];
+      $absences_affichage="Absent(e) de $deb &agrave; $fi : ".$elem['motif'];
     }
     elseif(substr($elem['debut'],0,10)==$current and $elem['fin']>$current." 23:59:58"){
       $deb=heure2(substr($elem['debut'],-8));
-      echo "Absent(e) &agrave; partir de $deb : ".$elem['motif'];
+      $absences_affichage="Absent(e) &agrave; partir de $deb : ".$elem['motif'];
     }
     elseif($elem['debut']<$current." 00:00:01" and substr($elem['fin'],0,10)==$current){
       $fi=heure2(substr($elem['fin'],-8));
-      echo "Absent(e) jusqu'&agrave; $fi : ".$elem['motif'];
+      $absences_affichage="Absent(e) jusqu'&agrave; $fi : ".$elem['motif'];
     }
-    else
-      echo $elem['debut']." --> ".$elem['fin']." : ".$elem['motif'];
+    else{
+      $absences_affichage=$elem['debut']." --> ".$elem['fin']." : ".$elem['motif'];
+    }
   }
-  echo "</div>\n";
+
+  // Intégration des congés
+  if(in_array("conges",$plugins)){
+    include "plugins/conges/agenda.php";
+  }
+
+  // Si l'agent n'est pas absent toute la journée : affiche ses heures de présences
+  if(!$absent){
+    echo "<div>\n";
+    $site=null;
+    if($config['Multisites-nombre']>1 and $config['Multisites-agentsMultisites'] and isset($horaires[4])){
+      if($horaires[4]){
+	$site="&agrave; ".$config['Multisites-site'.$horaires[4]];
+      }
+    }
+
+    $horaire="";
+    if($horaires[0])
+      $horaire="Pr&eacute;sent(e) $site de ".heure2($horaires[0])." &agrave; ";
+    if($horaires[1])
+      $horaire.=heure2($horaires[1]);
+    if($horaires[1] and $horaires[2])
+      $horaire.=" et de ";
+    if($horaires[2])
+      $horaire.=heure2($horaires[2])." &agrave; ";
+    if($horaires[3])
+      $horaire.=heure2($horaires[3]);
+    echo $horaire;
+    echo "</div>\n";
+  }
+
+  // Affichage des absences
+  echo "<div class='important'><p>$absences_affichage</p></div>\n";
+
   if(!empty($current_postes)){
     echo "<div style='margin-top:10px;'>Postes occup&eacute;s :<ul style='margin-top:0px;'>\n";
     foreach($current_postes as $elem){
       $heure=heure2($elem['debut'])." - ".heure2($elem['fin']);
-      $barre=$elem['absent']?"color:#FF5E0E;text-decoration:line-through;":null;
-      echo "<li style='$barre' >$heure {$elem['poste']}</li>\n";
+      $barre=$elem['absent']?"text-decoration:line-through;":null;
+      $class=$elem['absent']?"important":null;
+      echo "<li style='$barre' class='$class'>$heure {$elem['poste']}</li>\n";
     }
   echo "</ul></div>\n";
   }
