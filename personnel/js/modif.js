@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/js/modif.js
 Création : 3 mars 2014
-Dernière modification : 28 février 2014
+Dernière modification : 20 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -125,3 +125,41 @@ $(function() {
     $("#add-statut-text").val(null);
   });
 });
+
+$(document).ready(function(){
+  // Met à jour les select site des emplois du temps si les sites ont changé dans les infos générales
+  $("#personnel-a-li3").click(function(){
+    changeSelectSites();
+  });
+});
+
+function changeSelectSites(){
+  // Tous les sites
+  sites=new Array();
+  $("input:checkbox[name^=sites]").each(function(){
+    sites.push($(this).val());
+  });
+  
+  // Sites sélectionnés
+  sitesSelectionnes=new Array();
+  $("input:checkbox[name^=sites]:checked").each(function(){
+    sitesSelectionnes.push($(this).val());
+  });
+
+  if(sitesSelectionnes.length>1){
+    $(".edt-site-0").show();
+  }else{
+    $(".edt-site-0").hide();
+    $(".edt-site").val(sitesSelectionnes[0]);
+  }
+  
+  for(i=0;i<sites.length;i++){
+    $(".edt-site-"+sites[i]).hide();
+  }
+    
+  for(i=0;i<sitesSelectionnes.length;i++){
+    $(".edt-site-"+sitesSelectionnes[i]).show();
+  }
+  // Faire for (i=1, i<= nombre de site ...) .edt-site-i.hide
+  // Puis foreach tab, .edt-site-tabIndex.show
+}

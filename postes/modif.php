@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : postes/modif.php
 Création : mai 2011
-Dernière modification : 26 février 2014
+Dernière modification : 17 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -50,7 +50,7 @@ else{
   $id=null;
   $nom=null;
   $etage=null;
-  $categorie=null;
+  $categories=array();
   $obligatoire="checked='checked'";
   $renfort=null;
   $stat1="checked='checked'";

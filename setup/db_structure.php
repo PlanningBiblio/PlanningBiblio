@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 4 mars 2014
+Dernière modification : 18 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -104,7 +104,7 @@ $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `last_login` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `heuresHebdo` FLOAT(5) NOT NULL,
   `heuresTravail` FLOAT(5) NOT NULL,
-  `site` INT(1) NOT NULL,
+  `sites` TEXT NOT NULL DEFAULT '',
   `temps` text NOT NULL,
   `informations` text NOT NULL,
   `recup` text NOT NULL,

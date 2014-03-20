@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/menudiv.php
 Création : mai 2011
-Dernière modification : 26 février 2014
+Dernière modification : 19 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -40,6 +40,7 @@ $sr_init=null;
 $nbCol=0;
 $hres_jour=0;
 $hres_sem=0;
+$motifExclusion=array();
 
 $d=new datePl($date);
 $j1=$d->dates[0];
@@ -206,11 +207,12 @@ foreach($db->result as $elem){
     }
     elseif($heures[4]!=$site){
       $aExclure=true;
+      $motifExclusion[$elem['id']][]="Autre site";
     }
   }
   // Multisites : Contrôle si l'agent est prévu sur ce site si les agents ne sont pas autorisés à travailler sur plusieurs sites
   if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
-    if($elem['site']!=$site){
+    if($elem['sites'][0]!=$site){
       $aExclure=true;
     }
   }
@@ -257,7 +259,7 @@ if($poste!=0){		//	repas
 // Requete final sélection tous les agents formés aux activités demandées et disponible (non exclus)
 // Multisites : Si les agents ne sont pas autorisés à travailler sur le site sélectionné, on les retire
 if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
-  $req_site=" AND `site`='$site' ";
+  $req_site=" AND `sites` LIKE '%\"$site\"%' ";
 }
 else{
   $req_site=null;
@@ -364,7 +366,7 @@ if($services and $config['ClasseParService']){
 if(!$config['ClasseParService']){
   $hide=false;
   $p=new planning();
-  $p->menudivAfficheAgents($agents_dispo,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP);
+  $p->menudivAfficheAgents($agents_dispo,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion);
 }
 
 //		-----------		Affichage des agents indisponibles		----------//
@@ -402,14 +404,14 @@ echo "<table style='background:#FFFFFF;position:absolute;left:200px;top:8px;' fr
 if($agents_tous and $config['ClasseParService']){
   $hide=true;
   $p=new planning();
-  $p->menudivAfficheAgents($agents_tous,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP);
+  $p->menudivAfficheAgents($agents_tous,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion);
 }
 
 //		-----------		Affichage de la liste des agents indisponibles 'ils ne sont pas classés par services	----------//
 if($autres_agents and !$config['ClasseParService'] and $config['agentsIndispo']){
   $hide=true;
   $p=new planning();
-  $p->menudivAfficheAgents($autres_agents,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP);
+  $p->menudivAfficheAgents($autres_agents,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion);
 }
 
 echo "</table>";

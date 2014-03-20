@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 26 février 2014
+Dernière modification : 18 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -130,7 +130,7 @@ foreach($agents as $agent){
   echo "<td>{$agent['statut']}</td>";
   echo "<td>{$agent['service']}</td>";
   if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
-    $site=$agent['site']?$config["Multisites-site{$agent['site']}"]:"&nbsp;";
+    $site=$agent['sites'][0]?$config["Multisites-site{$agent['sites'][0]}"]:"&nbsp;";
     echo "<td>$site</td>";
   }
   echo "<td>$arrivee</td>";

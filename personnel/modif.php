@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 28 février 2014
+Dernière modification : 20 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -69,7 +69,8 @@ if(isset($_GET['id'])){		//	récupération des infos de l'agent en cas de modif
   $mailResponsable=$db->result[0]['mailResponsable'];
   $informations=stripslashes($db->result[0]['informations']);
   $recup=stripslashes($db->result[0]['recup']);
-  $siteAffect=$db->result[0]['site'];
+  $sites=$db->result[0]['sites'];
+  $sites=is_serialized($sites)?unserialize($sites):array();
   $action="modif";
   $titre=$nom." ".$prenom;
 }
@@ -93,7 +94,7 @@ else{		// pas d'id, donc ajout d'un agent
   $mailResponsable=null;
   $informations=null;
   $recup=null;
-  $siteAffect=null;
+  $sites=array();
   $titre="Ajout d'un agent";
   $action="ajout";
   if($_SESSION['perso_actif'] and $_SESSION['perso_actif']!="Supprim&eacute;")
@@ -159,7 +160,7 @@ $postes_dispo=postesNoms($postes_dispo,$postes_completNoms);
 <ul>		
 <li id='current'><a href='javascript:show("main","qualif,access,temps","li1");'>Infos générales</a></li>
 <li id='li2'><a href='javascript:show("qualif","main,access,temps","li2");'>Activités</a></li>
-<li id='li3'><a href='javascript:show("temps","main,qualif,access","li3");'>Emploi du temps</a></li>
+<li id='li3'><a href='javascript:show("temps","main,qualif,access","li3");' id='personnel-a-li3'>Emploi du temps</a></li>
 <li id='li4'><a href='javascript:show("access","main,qualif,temps","li4");'>Droits d'accès</a></li>
 <?php
 if(in_array(21,$droits)){
@@ -352,19 +353,37 @@ else{
 echo "</td></tr>";
 
 // Multisites si les agents ne sont pas autorisés à travailler sur plusieurs sites
+// Multi-sites et les agents sont affectés à un seul site
 if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
   echo "<tr><td>Site :</td><td>";
   if(in_array(21,$droits)){
-    $select1=$siteAffect==1?"selected='selected'":null;
-    $select2=$siteAffect==2?"selected='selected'":null;
-    echo "<select name='site' style='width:405px'>";
+    $select1=in_array(1,$sites)?"selected='selected'":null;
+    $select2=in_array(2,$sites)?"selected='selected'":null;
+    echo "<select name='sites[]' style='width:405px'>";
     echo "<option value=''>&nbsp;</option>\n";
     echo "<option value='1' $select1 >{$config['Multisites-site1']}</option>\n";
     echo "<option value='2' $select2 >{$config['Multisites-site2']}</option>\n";
     echo "</select>";
   }
   else{
-    echo $siteAffect?$config["Multisites-site{$siteAffect}"]:"Non défini";
+    echo $sites[0]?$config["Multisites-site{$sites[0]}"]:"Non défini";
+  }
+  echo "</td></tr>\n";
+}
+
+// Multi-sites et les agents peuvent être affectés à plusieurs sites
+if($config['Multisites-nombre']>1 and $config['Multisites-agentsMultisites']){
+  echo "<tr style='vertical-align:top;'><td>Sites :</td><td>";
+  for($i=1;$i<=$config['Multisites-nombre'];$i++){
+    if(in_array(21,$droits)){
+      $checked=in_array($i,$sites)?"checked='checked'":null;
+      echo "<input type='checkbox' name='sites[]' value='$i' $checked >{$config["Multisites-site$i"]}<br/>";
+    }
+    else{
+      if(in_array($i,$sites)){
+	echo $config["Multisites-site{$i}"]."<br/>";;
+      }
+    }
   }
   echo "</td></tr>\n";
 }
@@ -541,11 +560,12 @@ for($j=0;$j<$config['nb_semaine'];$j++){
       echo "<tr><td>{$jours[$k]}</td><td>".selectTemps($i-1,0,null,"select$j")."</td><td>".selectTemps($i-1,1,null,"select$j")."</td>";
       echo "<td>".selectTemps($i-1,2,null,"select$j")."</td><td>".selectTemps($i-1,3,null,"select$j")."</td>";
       if($config['Multisites-nombre']>1 and $config['Multisites-agentsMultisites']){
-	$select1=$temps[$i-1][4]==1?"selected='selected'":null;
-	$select2=$temps[$i-1][4]==2?"selected='selected'":null;
-	echo "<td><select name='temps[".($i-1)."][4]'><option value=''>&nbsp;</option>\n";
-	echo "<option value='1' $select1 >{$config['Multisites-site1']}</option>\n";
-	echo "<option value='2' $select2 >{$config['Multisites-site2']}</option>\n";
+	echo "<td><select name='temps[".($i-1)."][4]' class='edt-site'>\n";
+	echo "<option value='' class='edt-site-0'>&nbsp;</option>\n";
+	for($l=1;$l<=$config['Multisites-nombre'];$l++){
+	  $selected=$temps[$i-1][4]==$l?"selected='selected'":null;
+	  echo "<option value='$l' $selected class='edt-site-$l'>{$config["Multisites-site{$l}"]}</option>\n";
+	}
 	echo "</select></td>";
       }
       echo "<td id='heures_{$j}_$i'></td>\n";

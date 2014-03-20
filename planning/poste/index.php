@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 26 février 2014
+Dernière modification : 19 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,7 +20,7 @@ Cette page est appelée par la page index.php
 require_once "class.planning.php";
 require_once "planning/postes_cfg/class.tableaux.php";
 include_once "absences/class.absences.php";
-
+include_once "personnel/class.personnel.php";
 echo "<div id='planning'>\n";
 
 include "fonctions.php";
@@ -63,9 +63,9 @@ if(!$site and array_key_exists("site",$_SESSION['oups'])){
   $site=$_SESSION['oups']['site'];
 }
 if(!$site){
-  $db=new db();
-  $db->select("personnel","site","id='{$_SESSION['login_id']}'");
-  $site=$db->result[0]['site'];
+  $p=new personnel();
+  $p->fetchById($_SESSION['login_id']);
+  $site=$p->elements[0]['sites'][0];
 }
 $site=$site?$site:1;
 $_SESSION['oups']['site']=$site;
@@ -570,7 +570,7 @@ else{
 		if($config['Multisites-agentsMultisites']==1 and isset($heures[4])){
 		  $siteAgent=$config['Multisites-site'.$heures[4]];
 		}
-		else{
+		elseif(array_key_exists("Multisites-site{$elem['site']}",$config)){
 		  $siteAgent=$config['Multisites-site'.$elem['site']];
 		}
 	      }

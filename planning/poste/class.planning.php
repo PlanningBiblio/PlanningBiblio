@@ -89,7 +89,7 @@ class planning{
 
 
   // Affiche la liste des agents dans le menudiv
-  public function menudivAfficheAgents($agents,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP){
+  public function menudivAfficheAgents($agents,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion){
     $msg_deja_place="<font style='color:red;font-weight:bold;'>(DP)</font>";
     $msg_deuxSP="<font style='color:red;font-weight:bold;'>(2 SP)</font>";
     $config=$GLOBALS['config'];
@@ -162,7 +162,12 @@ class planning{
 	  $color='red';
 	}
       }
-      
+
+      // Motifs d'indisponibilité
+      if(array_key_exists($elem['id'],$motifExclusion)){
+	$nom_menu.=" (".join(", ",$motifExclusion[$elem['id']]).")";
+      }
+
       // affihage des heures faites ce jour + les heures de la cellule
       $db_heures = new db();
       $db_heures->query("SELECT `{$dbprefix}pl_poste`.`debut` AS `debut`,`{$dbprefix}pl_poste`.`fin` AS `fin` FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` WHERE `{$dbprefix}pl_poste`.`perso_id`='{$elem['id']}' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`date`='$date' AND `{$dbprefix}postes`.`statistiques`='1';");

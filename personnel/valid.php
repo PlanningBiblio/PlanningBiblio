@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 15 janvier 2014
+Dernière modification : 18 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -36,7 +36,7 @@ if(isset($_POST['id'])){
   $depart=$_POST['depart'];
   $informations=trim(htmlentities($_POST['informations'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
   $recup=trim(htmlentities($_POST['recup'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
-  $site=isset($_POST['site'])?$_POST['site']:null;
+  $sites=isset($_POST['sites'])?serialize($_POST['sites']):null;
   $droits=isset($_POST['droits'])?$_POST['droits']:array();
   // Multisites, Gestion des absences : si droits de gérer les absences de l'un des 2 sites (201,202), ajoute le droit 1 pour débloquer les champs administrateur
   if(in_array(201,$droits) or in_array(202,$droits)){
@@ -81,12 +81,11 @@ else{ // ?????????????
   $depart=null;
   $informations=null;
   $recup=null;
-  $site=null;
+  $sites=serialize(array());
   $droits=array();
   $mailResponsable=null;
   $matricule=null;
 }
-
 
 switch($action){
   case "ajout" :
@@ -100,7 +99,8 @@ switch($action){
     sendmail("Création de compte","Login : $login <br>Mot de passe : $mdp","$mail");
     $insert=array("nom"=>$nom,"prenom"=>$prenom,"mail"=>$mail,"statut"=>$statut,"categorie"=>$categorie,"service"=>$service,"heuresHebdo"=>$heuresHebdo,
       "heuresTravail"=>$heuresTravail,"arrivee"=>$arrivee,"depart"=>$depart,"login"=>$login,"password"=>$mdp_crypt,"actif"=>$actif,
-      "droits"=>$droits,"postes"=>$postes,"temps"=>$temps,"informations"=>$informations,"recup"=>$recup,"site"=>$site,"mailResponsable"=>$mailResponsable,"matricule"=>$matricule);
+      "droits"=>$droits,"postes"=>$postes,"temps"=>$temps,"informations"=>$informations,"recup"=>$recup,"sites"=>$sites,
+      "mailResponsable"=>$mailResponsable,"matricule"=>$matricule);
     if(in_array("conges",$plugins)){
       include "plugins/conges/ficheAgentValid.php";
     }
@@ -140,9 +140,10 @@ switch($action){
     break;
 
   case "modif" :
-    $update=array("nom"=>$nom, "prenom"=>$prenom, "mail"=>$mail, "statut"=>$statut, "categorie"=>$categorie, "service"=>$service, "heuresHebdo"=>$heuresHebdo, 
-      "heuresTravail"=>$heuresTravail, "actif"=>$actif, "droits"=>$droits, "arrivee"=>$arrivee, "depart"=>$depart, "postes"=>$postes,
-      "informations"=>$informations, "recup"=>$recup, "site"=>$site, "mailResponsable"=>$mailResponsable, "matricule"=>$matricule);
+    $update=array("nom"=>$nom, "prenom"=>$prenom, "mail"=>$mail, "statut"=>$statut, "categorie"=>$categorie, "service"=>$service, 
+      "heuresHebdo"=>$heuresHebdo, "heuresTravail"=>$heuresTravail, "actif"=>$actif, "droits"=>$droits, "arrivee"=>$arrivee, 
+      "depart"=>$depart, "postes"=>$postes, "informations"=>$informations, "recup"=>$recup, "sites"=>$sites, 
+      "mailResponsable"=>$mailResponsable, "matricule"=>$matricule);
     // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
     if(!strstr($actif,"Supprim")){
       $update["supprime"]="0";

@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 15 octobre 2013
+Dernière modification : 19 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -83,6 +83,7 @@ class personnel{
     $result=array();
     foreach($all as $elem){
       $result[$elem['id']]=$elem;
+      $result[$elem['id']]['sites']=unserialize($elem['sites']);
     }
 
     //	If name, keep only matching results
@@ -91,6 +92,7 @@ class personnel{
       foreach($all as $elem){
 	if(pl_stristr($elem['nom'],$name) or pl_stristr($elem['prenom'],$name)){
 	  $result[$elem['id']]=$elem;
+	  $result[$elem['id']]['sites']=unserialize($elem['sites']);
 	}
       }
     }
@@ -108,6 +110,7 @@ class personnel{
     $db=new db();
     $db->select("personnel",null,"id='$id'");
     $this->elements=$db->result;
+    $this->elements[0]['sites']=unserialize($db->result[0]['sites']);
   }
 
 
