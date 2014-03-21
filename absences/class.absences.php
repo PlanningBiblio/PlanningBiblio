@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 12 mars 2014
+Dernière modification : 20 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -48,8 +48,13 @@ class absences{
     // Multisites, filtre pour n'afficher que les agents des sites choisis
     $sites_req=null;
     if(!empty($sites)){
-      $sites=join(",",$sites);
-      $sites_req="AND `{$dbprefix}personnel`.`site` IN ($sites)";
+      $tmp=array();
+      foreach($sites as $site){
+	$tmp[]="`{$dbprefix}personnel`.`sites` LIKE '%\"$site\"%'";
+      }
+      if(!empty($tmp)){
+	$sites_req.=" AND (".join(" OR ",$tmp).") ";
+      }
     }
 
     if($this->valide and $GLOBALS['config']['Absences-validation']){
@@ -139,7 +144,7 @@ class absences{
     $responsables=array();
     $droitsAbsences=array();
     //	Si plusieurs sites et agents autorisés à travailler sur plusieurs sites, vérifions dans l'emploi du temps quels sont les sites concernés par l'absence
-    if($GLOBALS['config']['Multisites-nombre']>1 and $GLOBALS['config']['Multisites-agentsMultisites']){
+    if($GLOBALS['config']['Multisites-nombre']>1){
       $db=new db();
       $db->select("personnel","temps","id='$perso_id'");
       $temps=unserialize($db->result[0]['temps']);
@@ -165,13 +170,6 @@ class absences{
       if(empty($droitsAbsences)){
 	$droitsAbsences=array(201,202);
       }
-    }
-    //	Si plusieurs sites et agents non autorisés à travailler sur plusieurs sites, vérifions dans les infos générales quels sont les sites concernés par l'absence
-    elseif($GLOBALS['config']['Multisites-nombre']>1 and !$GLOBALS['config']['Multisites-agentsMultisites']){
-      $db=new db();
-      $db->select("personnel","site","id='$perso_id'");
-      $site=$db->result[0]['site'];
-      $droitsAbsences=array("20".$site);
     }
     // Si un seul site, le droit de gestion des absences est 1
     else{

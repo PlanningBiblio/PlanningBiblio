@@ -90,8 +90,8 @@ echo "<th>Pr&#233;nom</th>";
 echo "<th>Heures</th>";
 echo "<th>Statut</th>";
 echo "<th>Service</th>";
-if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
-  echo "<th>Site</th>\n";
+if($config['Multisites-nombre']>1){
+  echo "<th>Sites</th>\n";
 }
 echo "<th>Arriv&#233;e</th>";
 echo "<th>D&#233;part</th>";
@@ -129,9 +129,17 @@ foreach($agents as $agent){
   echo "<td>$heures</td>";
   echo "<td>{$agent['statut']}</td>";
   echo "<td>{$agent['service']}</td>";
-  if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
-    $site=$agent['sites'][0]?$config["Multisites-site{$agent['sites'][0]}"]:"&nbsp;";
-    echo "<td>$site</td>";
+  if($config['Multisites-nombre']>1){
+    $tmp=array();
+    if(!empty($agent['sites'])){
+      foreach($agent['sites'] as $site){
+	if($site){
+	  $tmp[]=$config["Multisites-site{$site}"];
+	}
+      }
+    }
+    $sites=!empty($tmp)?join(", ",$tmp):null;
+    echo "<td>$sites</td>";
   }
   echo "<td>$arrivee</td>";
   echo "<td>$depart</td>";
@@ -169,7 +177,7 @@ $(document).ready(function(){
     "aoColumns" : [{"bSortable":false},{"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},
       {"bSortable":true},{"bSortable":true},{"sType": "date-fr"},{"sType": "date-fr"},{"sType": "date-fr"},
       <?php
-      if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
+      if($config['Multisites-nombre']>1){
 	echo '{"bSortable":true},';
       }
       ?>

@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 12 mars 2014
+Dernière modification : 20 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -46,7 +46,7 @@ $debutSQL=$db->result[0]['debut'];
 $finSQL=$db->result[0]['fin'];
 $debut=dateFr3($debutSQL);
 $fin=dateFr3($finSQL);
-$site=$db->result[0]['site'];
+$sitesAgent=unserialize($db->result[0]['site']);
 $valide=$db->result[0]['valide'];
 $validation=$db->result[0]['validation'];
 $valideN1=$db->result[0]['valideN1'];
@@ -98,7 +98,7 @@ if(!$acces){
 }
 
 // Multisites, ne pas afficher les absences des agents d'un site non géré
-if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
+if($config['Multisites-nombre']>1){
   $sites=array();
   if(in_array(201,$droits)){
     $sites[]=1;
@@ -107,7 +107,13 @@ if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
     $sites[]=2;
   }
 
-  if(!in_array($site,$sites)){
+  $admin=false;
+  foreach($sites as $site){
+    if(in_array($site,$sites_agent)){
+      $admin=true;
+    }
+  }
+  if(!$admin){
     echo "<h3>Modification de l'absence</h3>\n";
     echo "Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>\n";
     echo "<a href='index.php?page=absences/voir.php'>Retour à la liste des absences</a><br/><br/>\n";

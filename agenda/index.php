@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 17 mars 2014
+Dernière modification : 20 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -223,7 +223,7 @@ while($current<=$finSQL){
   if(!$absent){
     echo "<div>\n";
     $site=null;
-    if($config['Multisites-nombre']>1 and $config['Multisites-agentsMultisites'] and isset($horaires[4])){
+    if($config['Multisites-nombre']>1 and isset($horaires[4])){
       if($horaires[4]){
 	$site="&agrave; ".$config['Multisites-site'.$horaires[4]];
       }

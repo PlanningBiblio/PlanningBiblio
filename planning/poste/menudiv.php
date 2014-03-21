@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/menudiv.php
 Création : mai 2011
-Dernière modification : 19 mars 2014
+Dernière modification : 20 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -198,7 +198,7 @@ foreach($db->result as $elem){
   }
 
   // Multisites : Contrôle si l'agent est prévu sur ce site si les agents sont autorisés à travailler sur plusieurs sites
-  if($config['Multisites-nombre']>1 and $config['Multisites-agentsMultisites']){
+  if($config['Multisites-nombre']>1){
     if(!isset($heures)){
       $aExclure=true;
     }
@@ -210,13 +210,6 @@ foreach($db->result as $elem){
       $motifExclusion[$elem['id']][]="Autre site";
     }
   }
-  // Multisites : Contrôle si l'agent est prévu sur ce site si les agents ne sont pas autorisés à travailler sur plusieurs sites
-  if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
-    if($elem['sites'][0]!=$site){
-      $aExclure=true;
-    }
-  }
-
   if($aExclure){
     $tab_exclus[]=$elem['id'];
   }
@@ -258,7 +251,7 @@ if($poste!=0){		//	repas
 }
 // Requete final sélection tous les agents formés aux activités demandées et disponible (non exclus)
 // Multisites : Si les agents ne sont pas autorisés à travailler sur le site sélectionné, on les retire
-if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
+if($config['Multisites-nombre']>1){
   $req_site=" AND `sites` LIKE '%\"$site\"%' ";
 }
 else{

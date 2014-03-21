@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 12 mars 2014
+Dernière modification : 20 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -56,7 +56,7 @@ $finFr=dateFr($fin);
 
 // Multisites : filtre pour n'afficher que les agents du site voulu
 $sites=null;
-if($config['Multisites-nombre']>1 and !$config['Multisites-agentsMultisites']){
+if($config['Multisites-nombre']>1){
   $sites=array();
   if(in_array(201,$droits)){
     $sites[]=1;

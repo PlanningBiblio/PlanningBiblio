@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 18 mars 2014
+Dernière modification : 20 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -520,6 +520,7 @@ if(strcmp("1.7.7",$config['Version'])>0){
     $sql[]="UPDATE `{$dbprefix}personnel` SET `sites`='$sites' WHERE `id`='{$elem['id']}';";
   }
   $sql[]="ALTER TABLE `{$dbprefix}personnel` DROP `site`;";
+  $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom`='Multisites-agentsMultisites';";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.7.7' WHERE `nom`='Version';";
 }
 

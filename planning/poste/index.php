@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 19 mars 2014
+Dernière modification : 20 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -567,7 +567,7 @@ else{
 	    if($heures and !in_array($elem['id'],$absents)){
 	      $siteAgent=null;
 		if($config['Multisites-nombre']>1){
-		if($config['Multisites-agentsMultisites']==1 and isset($heures[4])){
+		if(isset($heures[4])){
 		  $siteAgent=$config['Multisites-site'.$heures[4]];
 		}
 		elseif(array_key_exists("Multisites-site{$elem['site']}",$config)){
