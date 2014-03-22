@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 20 mars 2014
+Dernière modification : 21 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -146,6 +146,11 @@ while($current<=$finSQL){
     $jour=6;
   if($config['nb_semaine']==2 and $semaine%2==0)
     $jour=$jour+7;
+
+  //	Horaires de traval si plugin PlanningHebdo
+  if(in_array("planningHebdo",$plugins)){
+    include "plugins/planningHebdo/agenda.php";
+  }
 
   $horaires=null;
   if(array_key_exists($jour,$temps)){

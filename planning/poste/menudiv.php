@@ -141,7 +141,7 @@ foreach($db->result as $elem){
   $aExclure=false;
   // Si plugin PlanningHebdo : recherche des plannings correspondant à la date actuelle
   if(in_array("planningHebdo",$plugins)){
-    include "plugins/planningHebdo/menudiv.php";
+    include "plugins/planningHebdo/planning.php";
   }
   else{
     $temps=unserialize($elem['temps']);

@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 20 mars 2014
+Dernière modification : 21 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -150,6 +150,10 @@ class absences{
       $temps=unserialize($db->result[0]['temps']);
       $date=$debut;
       while($date<=$fin){
+	// Emploi du temps si plugin planningHebdo
+	if(in_array("plannningHebdo",$GLOBALS['plugins'])){
+	  include "plugins/planningHebdo/absences.php";
+	}
 	// Vérifions le numéro de la semaine de façon à contrôler le bon planning de présence hebdomadaire
 	$d=new datePl($date);
 	$jour=$d->position?$d->position:7;

@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 20 mars 2014
+Dernière modification : 22 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -535,6 +535,9 @@ else{
 	  foreach($db->result as $elem){
 	    $heures=null;
 	    $temps=unserialize($elem['temps']);
+	    if(in_array("planningHebdo",$plugins)){
+	      include "plugins/planningHebdo/planning.php";
+	    }
 
 	    $jour=$d->position-1;		// jour de la semaine lundi = 0 ,dimanche = 6
 	    if($jour==-1){
@@ -566,7 +569,7 @@ else{
 	    // S'il y a des horaires correctement renseignés
 	    if($heures and !in_array($elem['id'],$absents)){
 	      $siteAgent=null;
-		if($config['Multisites-nombre']>1){
+	      if($config['Multisites-nombre']>1){
 		if(isset($heures[4])){
 		  $siteAgent=$config['Multisites-site'.$heures[4]];
 		}

@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 20 mars 2014
+Dernière modification : 21 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -56,7 +56,7 @@ $nbjours=isset($_GET['nbjours'])?$_GET['nbjours']:0;
 
 $db=new db();
 $db->query("select {$dbprefix}personnel.id as perso_id, {$dbprefix}personnel.nom as nom, {$dbprefix}personnel.prenom as prenom, 
-  {$dbprefix}personnel.mail as mail, {$dbprefix}personnel.mailResponsable as mailResponsable, {$dbprefix}personnel.site as site 
+  {$dbprefix}personnel.mail as mail, {$dbprefix}personnel.mailResponsable as mailResponsable, {$dbprefix}personnel.sites as sites 
   FROM {$dbprefix}absences INNER JOIN {$dbprefix}personnel ON {$dbprefix}absences.perso_id={$dbprefix}personnel.id 
   WHERE {$dbprefix}absences.id='$id'");
 $perso_id=$db->result[0]['perso_id'];
@@ -90,8 +90,8 @@ if($config['Multisites-nombre']>1){
   }
 
   $admin=false;
-  foreach($sites as $site){
-    if(in_array($site,$sites_agent)){
+  foreach($sites_agent as $site){
+    if(in_array($site,$sites)){
       $admin=true;
     }
   }

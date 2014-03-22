@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 20 mars 2014
+Dernière modification : 21 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -29,7 +29,7 @@ $quartDHeure=$config['heuresPrecision']=="quart d&apos;heure"?true:false;
 $id=$_GET['id'];
 $db=new db();
 $req="SELECT `{$dbprefix}personnel`.`id` AS `perso_id`, `{$dbprefix}personnel`.`nom` AS `nom`, 	
-  `{$dbprefix}personnel`.`prenom` AS `prenom`, `{$dbprefix}absences`.`id` AS `id`, `{$dbprefix}personnel`.`site` AS `site`,  
+  `{$dbprefix}personnel`.`prenom` AS `prenom`, `{$dbprefix}absences`.`id` AS `id`, `{$dbprefix}personnel`.`sites` AS `sites`, 
   `{$dbprefix}absences`.`debut` AS `debut`, `{$dbprefix}absences`.`fin` AS `fin`, 
   `{$dbprefix}absences`.`nbjours` AS `nbjours`, `{$dbprefix}absences`.`motif` AS `motif`, `{$dbprefix}absences`.`motif_autre` AS `motif_autre`, 
   `{$dbprefix}absences`.`valide` AS `valide`, `{$dbprefix}absences`.`validation` AS `validation`, 
@@ -46,7 +46,7 @@ $debutSQL=$db->result[0]['debut'];
 $finSQL=$db->result[0]['fin'];
 $debut=dateFr3($debutSQL);
 $fin=dateFr3($finSQL);
-$sitesAgent=unserialize($db->result[0]['site']);
+$sitesAgent=unserialize($db->result[0]['sites']);
 $valide=$db->result[0]['valide'];
 $validation=$db->result[0]['validation'];
 $valideN1=$db->result[0]['valideN1'];
@@ -108,8 +108,8 @@ if($config['Multisites-nombre']>1){
   }
 
   $admin=false;
-  foreach($sites as $site){
-    if(in_array($site,$sites_agent)){
+  foreach($sites_agent as $site){
+    if(in_array($site,$sites)){
       $admin=true;
     }
   }
