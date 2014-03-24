@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 20 mars 2014
+Dernière modification : 24 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,6 +20,8 @@ Cette page est appelée par le fichier index.php
 */
 
 require_once "class.personnel.php";
+$admin=in_array(21,$droits)?true:false;
+
 // NB : le champ poste et les fonctions postes_... sont utilisés pour l'attribution des activités (qualification)
 $db_groupes=new db();		// contrôle des droits d'accès à cette page (sera amélioré prochaienement)
 $db_groupes->query("select groupe_id,groupe from {$dbprefix}acces where groupe_id not in (99,100) group by groupe;");
@@ -654,10 +656,14 @@ if($config['EDTSamedi']){
 <!--	Droits d'accès		-->
 <div id='access' style='margin-left:80px;display:none;padding-top:30px;'>
 <?php
+if(!$admin){
+  echo "<ul>\n";
+}
 foreach($db_groupes->result as $elem){		// gestion des droits d'accès au planning
-  $disabled=in_array(21,$droits)?null:"disabled='disabled'";	// désactive la modif des accès pour l'affichage en lecture seule
-  $disabled=$elem['groupe_id']==20?"disabled='disabled'":$disabled;  // désactive la modif de l'accès à config avancée pour tous 
-  
+  // N'affiche pas les droits d'accès à la configuration (réservée au compte admin)
+  if($elem['groupe_id']==20){
+    continue;
+  }
 
   //	Affichage des lignes avec checkboxes
   //	Gestion des absences si plusieurs sites
@@ -667,8 +673,13 @@ foreach($db_groupes->result as $elem){		// gestion des droits d'accès au planni
       $groupe_id=200+$i;
       if(is_array($acces)){
 	$checked=in_array($groupe_id,$acces)?"checked='checked'":null;
+	$checked2=$checked?"Oui":"Non";
       }
-      echo "<input type='checkbox' name='droits[]' $checked value='$groupe_id' $disabled />{$elem['groupe']} $site<br/>\n";
+      if($admin){
+	echo "<input type='checkbox' name='droits[]' $checked value='$groupe_id' $disabled />{$elem['groupe']} $site<br/>\n";
+      }else{
+	echo "<li>{$elem['groupe']} $site <label class='agent-acces-checked2'>$checked2</label></li>\n";
+      }
     }
   }
   //	Gestion des congés si plusieurs sites
@@ -678,8 +689,13 @@ foreach($db_groupes->result as $elem){		// gestion des droits d'accès au planni
       $groupe_id=400+$i;
       if(is_array($acces)){
 	$checked=in_array($groupe_id,$acces)?"checked='checked'":null;
+	$checked2=$checked?"Oui":"Non";
       }
-      echo "<input type='checkbox' name='droits[]' $checked value='$groupe_id' $disabled />{$elem['groupe']} $site<br/>\n";
+      if($admin){
+	echo "<input type='checkbox' name='droits[]' $checked value='$groupe_id' $disabled />{$elem['groupe']} $site<br/>\n";
+      }else{
+	echo "<li>{$elem['groupe']} $site <label class='agent-acces-checked2'>$checked2</label></li>\n";
+      }
     }
   }
   //	Modification des plannings si plusieurs sites
@@ -689,16 +705,29 @@ foreach($db_groupes->result as $elem){		// gestion des droits d'accès au planni
       $groupe_id=300+$i;
       if(is_array($acces)){
 	$checked=in_array($groupe_id,$acces)?"checked='checked'":null;
+	$checked2=$checked?"Oui":"Non";
       }
-      echo "<input type='checkbox' name='droits[]' $checked value='$groupe_id' $disabled />{$elem['groupe']} $site<br/>\n";
+      if($admin){
+	echo "<input type='checkbox' name='droits[]' $checked value='$groupe_id' $disabled />{$elem['groupe']} $site<br/>\n";
+      }else{
+	echo "<li>{$elem['groupe']} $site <label class='agent-acces-checked2'>$checked2</label></li>\n";
+      }
     }
   }
   else{
     if(is_array($acces)){
       $checked=in_array($elem['groupe_id'],$acces)?"checked='checked'":null;
+      $checked2=$checked?"Oui":"Non";
     }
-    echo "<input type='checkbox' name='droits[]' $checked value='{$elem['groupe_id']}' $disabled />{$elem['groupe']}<br/>\n";
+    if($admin){
+      echo "<input type='checkbox' name='droits[]' $checked value='{$elem['groupe_id']}' $disabled />{$elem['groupe']}<br/>\n";
+    }else{
+      echo "<li>{$elem['groupe']} <label class='agent-acces-checked2'>$checked2</label></li>\n";
+    }
   }
+}
+if(!$admin){
+  echo "</ul>\n";
 }
 ?>
 </div>

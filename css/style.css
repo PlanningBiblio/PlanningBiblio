@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification : 12 mars 2014
+Dernière modification : 24 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -92,6 +92,18 @@ body {
 
 #ferie,.ferie,.important {
   color: #FF5E0E;
+}
+
+/* Les agents */
+.agent-acces-checked2{
+  position:absolute;
+  left:500px;
+  font-weight:bold;
+}
+
+/* Importation des agents */
+#import-div td {
+  padding: 0 10px 0 10px;
 }
 
 
@@ -601,11 +613,6 @@ a:hover.menuRed, a:hover.menu {
 	right:20px;
 	background:#FFFFFF;
 	z-index:10;
-	}
-
-/*	Importation des agents		 */
-#import-div td {
-	padding: 0 10px 0 10px;
 	}
 
 /*	Messages d'informations (BMI)	*/
