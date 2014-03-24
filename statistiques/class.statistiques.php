@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/class.statistiques.php
 Création : 16 janvier 2013
-Dernière modification : 10 janvier 2014
+Dernière modification : 24 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -173,53 +173,57 @@ function statistiques1($nom,$tab,$debut,$fin,$separateur,$nbJours,$jour,$joursPa
   }
 
   //	Affichage des 19-20h
-  $lignes[]=null;
-  $lignes[]="19h-20h";
-  if($nom=="agent"){
-    $lignes[]=join(array("Nom","Prénom","Nombre de 19h-20h","Dates"),$separateur);
-  }
-  else{
-    $lignes[]=join(array(ucfirst($nom),"Nombre de 19h-20h","Dates"),$separateur);
-  }
-  
-  foreach($tab as $elem){
-    foreach($elem[7] as $h19){
-      $cellules=Array();
-      if($nom=="agent"){
-	$cellules[]=$elem[0][1];	// nom
-	$cellules[]=$elem[0][2];	// prénom
+  if($GLOBALS['config']['Statistiques-19-20']){
+    $lignes[]=null;
+    $lignes[]="19h-20h";
+    if($nom=="agent"){
+      $lignes[]=join(array("Nom","Prénom","Nombre de 19h-20h","Dates"),$separateur);
+    }
+    else{
+      $lignes[]=join(array(ucfirst($nom),"Nombre de 19h-20h","Dates"),$separateur);
+    }
+    
+    foreach($tab as $elem){
+      foreach($elem[7] as $h19){
+	$cellules=Array();
+	if($nom=="agent"){
+	  $cellules[]=$elem[0][1];	// nom
+	  $cellules[]=$elem[0][2];	// prénom
+	}
+	else{
+	  $cellules[]=$elem[0];		// nom du service ou du statut
+	}
+	$cellules[]=count($elem[7]);						// nombre de dimanche
+	$cellules[]=dateFr($h19);						// date
+	$lignes[]=join($cellules,$separateur);
       }
-      else{
-	$cellules[]=$elem[0];		// nom du service ou du statut
-      }
-      $cellules[]=count($elem[7]);						// nombre de dimanche
-      $cellules[]=dateFr($h19);						// date
-      $lignes[]=join($cellules,$separateur);
     }
   }
 
   //	Affichage des 20-22h
-  $lignes[]=null;
-  $lignes[]="20h-22h";
-  if($nom=="agent"){
-    $lignes[]=join(array("Nom","Prénom","Nombre de 20h-22h","Dates"),$separateur);
-  }
-  else{
-    $lignes[]=join(array(ucfirst($nom),"Nombre de 20h-22h","Dates"),$separateur);
-  }
-  foreach($tab as $elem){
-    foreach($elem[8] as $h20){
-      $cellules=Array();
-      if($nom=="agent"){
-	$cellules[]=$elem[0][1];	// nom
-	$cellules[]=$elem[0][2];	// prénom
+  if($GLOBALS['config']['Statistiques-20-22']){
+    $lignes[]=null;
+    $lignes[]="20h-22h";
+    if($nom=="agent"){
+      $lignes[]=join(array("Nom","Prénom","Nombre de 20h-22h","Dates"),$separateur);
+    }
+    else{
+      $lignes[]=join(array(ucfirst($nom),"Nombre de 20h-22h","Dates"),$separateur);
+    }
+    foreach($tab as $elem){
+      foreach($elem[8] as $h20){
+	$cellules=Array();
+	if($nom=="agent"){
+	  $cellules[]=$elem[0][1];	// nom
+	  $cellules[]=$elem[0][2];	// prénom
+	}
+	else{
+	  $cellules[]=$elem[0];		// nom du service ou du statut
+	}
+	$cellules[]=count($elem[7]);						// nombre de dimanche
+	$cellules[]=dateFr($h20);						// date
+	$lignes[]=join($cellules,$separateur);
       }
-      else{
-	$cellules[]=$elem[0];		// nom du service ou du statut
-      }
-      $cellules[]=count($elem[7]);						// nombre de dimanche
-      $cellules[]=dateFr($h20);						// date
-      $lignes[]=join($cellules,$separateur);
     }
   }
 

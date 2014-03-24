@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/agents.php
 Création : mai 2011
-Dernière modification : 20 janvier 2014
+Dernière modification : 24 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -188,12 +188,12 @@ if(is_array($agents) and $agents[0]){
 	      }
 	    }
 	    //	On compte les 19-20
-	    if($elem['debut']=="19:00:00"){
+	    if($config['Statistiques-19-20'] and $elem['debut']=="19:00:00"){
 	      $h19[]=$elem['date'];
 	      $exists_h19=true;
 	    }
 	    //	On compte les 20-22
-	    if($elem['debut']=="20:00:00"){
+	    if($config['Statistiques-20-22'] and $elem['debut']=="20:00:00"){
 	      $h20[]=$elem['date'];
 	      $exists_h20=true;
 	    }

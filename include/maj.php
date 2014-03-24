@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.3
+Planning Biblio, Version 1.7.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 20 mars 2014
+Dernière modification : 24 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -512,6 +512,7 @@ if(strcmp("1.7.6",$config['Version'])>0){
 }
 
 if(strcmp("1.7.7",$config['Version'])>0){
+  // Plusieurs sites possibles par agent
   $sql[]="ALTER TABLE `{$dbprefix}personnel` ADD `sites` TEXT NOT NULL DEFAULT '';";
   $tmp=new db();
   $tmp->select("personnel","id,site");
@@ -521,6 +522,10 @@ if(strcmp("1.7.7",$config['Version'])>0){
   }
   $sql[]="ALTER TABLE `{$dbprefix}personnel` DROP `site`;";
   $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom`='Multisites-agentsMultisites';";
+  // Statistiques : suppression des colonnes 19-20 et 20-22 selon la configuration
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`type`,`valeur`,`commentaires`,`categorie`,`ordre`) VALUES
+    ('Statistiques-19-20','boolean','1','Affiche ou non la colonne 19h-20h dans les statistiques','Statistiques','10'),
+    ('Statistiques-20-22','boolean','1','Affiche ou non la colonne 20h-22h dans les statistiques','Statistiques','20');";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.7.7' WHERE `nom`='Version';";
 }
 
