@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/service.php
 Création : 9 septembre 2013
-Dernière modification : 24 mars 2014
+Dernière modification : 25 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -29,6 +29,7 @@ $services_tab=null;
 $exists_h19=false;
 $exists_h20=false;
 $exists_JF=false;
+$exists_absences=false;
 
 include "include/horaires.php";
 //		--------------		Initialisation  des variables 'debut','fin' et 'service'		-------------------
@@ -212,9 +213,7 @@ if(is_array($services) and $services[0]){
 	    }
 	    $absences[$elem['date']][1]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
 	    $total_absences+=diff_heures($elem['debut'],$elem['fin'],"decimal");
-	    // $absences[]=array($elem['date'],diff_heures($elem['debut'],$elem['fin'],"decimal"));
-	    
-						    // A CONTINUER  
+	    $exists_absences=true;
 	  }
 	  // On met dans tab tous les éléments (infos postes + services + heures)
 	  $tab[$service]=array($elem['service'],$postes,$heures,$samedi,$absences,$total_absences,$dimanche,$h19,$h20,$feries,"sites"=>$sites);
@@ -232,7 +231,6 @@ $s->joursParSemaine=$joursParSemaine;
 $s->selectedSites=$selectedSites;
 $s->ouverture();
 $ouverture=$s->ouvertureTexte;
-
 // passage en session du tableau pour le fichier export.php
 $_SESSION['stat_tab']=$tab;
 
@@ -308,7 +306,9 @@ if($tab){
   if($exists_h20){
     echo "<td style='width:120px; padding-left:8px;'>20-22</td>\n";
   }
-  echo "<td style='width:120px; padding-left:8px;'>Absences</td></tr>\n";
+  if($exists_absences){
+    echo "<td style='width:120px; padding-left:8px;'>Absences</td></tr>\n";
+  }
   foreach($tab as $elem){
     $jour=$elem[2]/$nbJours;
     $hebdo=$jour*$joursParSemaine;
@@ -417,17 +417,18 @@ if($tab){
       echo "</td>\n";
     }
 	    
-    echo "<td>\n";
-    if($elem[5]){				//	Affichage du total d'heures d'absences
-      echo "Total : ".number_format($elem[5],2,',',' ')."<br/>";
+    if($exists_absences){
+      echo "<td>\n";
+      if($elem[5]){				//	Affichage du total d'heures d'absences
+	echo "Total : ".number_format($elem[5],2,',',' ')."<br/>";
+      }
+      sort($elem[4]);				//	tri les absences par dates croissantes
+      foreach($elem[4] as $absences){		//	Affiche les dates et heures des absences
+	echo dateFr($absences[0]);		//	date
+	echo "&nbsp;:&nbsp;".number_format($absences[1],2,',',' ')."<br/>";	// heures
+      }
+      echo "</td>\n";
     }
-    sort($elem[4]);				//	tri les absences par dates croissantes
-    foreach($elem[4] as $absences){		//	Affiche les dates et heures des absences
-      echo dateFr($absences[0]);		//	date
-      echo "&nbsp;:&nbsp;".number_format($absences[1],2,',',' ')."<br/>";	// heures
-      // echo "&nbsp;:&nbsp;".$absences[1]."<br/>";	// heures
-    }
-    echo "</td>\n";
     echo "</tr>\n";
   }
   echo "</table>\n";

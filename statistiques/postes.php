@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/postes.php
 Création : mai 2011
-Dernière modification : 20 janvier 2014
+Dernière modification : 25 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -148,7 +148,9 @@ if(is_array($postes)){
 	    }
 	  }
 	  // On créé un tableau par service
-	  $service=$agents_infos[$elem['perso_id']]['service'];
+	  if(array_key_exists($elem['perso_id'],$agents_infos)){
+	    $service=$agents_infos[$elem['perso_id']]['service'];
+	  }
 	  $service=$service?$service:"ZZZ_Autre";
 	  if(!array_key_exists($service,$services)){
 	    $services[$service]=array("nom"=>$service,"heures"=>0);
@@ -156,7 +158,9 @@ if(is_array($postes)){
 	  $services[$service]["heures"]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
 	  
 	  // On créé un tableau par statut
-	  $statut=$agents_infos[$elem['perso_id']]['statut'];
+	  if(array_key_exists($elem['perso_id'],$agents_infos)){
+	    $statut=$agents_infos[$elem['perso_id']]['statut'];
+	  }
 	  $statut=$statut?$statut:"ZZZ_Autre";
 	  if(!array_key_exists($statut,$statuts)){
 	    $statuts[$statut]=array("nom"=>$statut,"heures"=>0);

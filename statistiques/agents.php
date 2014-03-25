@@ -71,7 +71,6 @@ if($config['Multisites-nombre']>1 and !$selectedSites){
   }
 }
 $_SESSION['stat_agents_sites']=$selectedSites;
-
 // Filtre les sites dans les requêtes SQL
 if($config['Multisites-nombre']>1 and is_array($selectedSites)){
   $reqSites="AND `{$dbprefix}pl_poste`.`site` IN (0,".join(",",$selectedSites).")";
@@ -206,11 +205,8 @@ if(is_array($agents) and $agents[0]){
 	    $absences[$elem['date']][1]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
 	    $total_absences+=diff_heures($elem['debut'],$elem['fin'],"decimal");
 	    $exists_absences=true;
-	    // $absences[]=array($elem['date'],diff_heures($elem['debut'],$elem['fin'],"decimal"));
-	    
-						    // A CONTINUER  
 	  }
-			    // On met dans tab tous les éléments (infos postes + agents + heures)
+	  // On met dans tab tous les éléments (infos postes + agents + heures)
 	  $tab[$agent]=array($agent_tab,$postes,$heures,$samedi,$absences,$total_absences,$dimanche,$h19,$h20,$feries,"sites"=>$sites);
 	}
       }

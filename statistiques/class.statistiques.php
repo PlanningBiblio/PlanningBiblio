@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/class.statistiques.php
 Création : 16 janvier 2013
-Dernière modification : 24 mars 2014
+Dernière modification : 25 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -294,7 +294,7 @@ class statistiques{
     $debut=$this->debut;
     $fin=$this->fin;
     $joursParSemaine=$this->joursParSemaine;
-    $selectedSites=$this->selectedSites;
+    $selectedSites=$this->selectedSites?$this->selectedSites:array(1);
     $totalHeures=array();
     $totalJours=array();
     $totalSemaines=array();
