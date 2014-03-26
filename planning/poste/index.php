@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.4
+Planning Biblio, Version 1.7.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 22 mars 2014
+Dernière modification : 26 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -567,14 +567,11 @@ else{
 	    }
 
 	    // S'il y a des horaires correctement renseignés
+	    $siteAgent=null;
 	    if($heures and !in_array($elem['id'],$absents)){
-	      $siteAgent=null;
 	      if($config['Multisites-nombre']>1){
 		if(isset($heures[4])){
 		  $siteAgent=$config['Multisites-site'.$heures[4]];
-		}
-		elseif(array_key_exists("Multisites-site{$elem['site']}",$config)){
-		  $siteAgent=$config['Multisites-site'.$elem['site']];
 		}
 	      }
 	      $siteAgent=$siteAgent?$siteAgent.", ":null;

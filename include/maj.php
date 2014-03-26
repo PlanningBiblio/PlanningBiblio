@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 24 mars 2014
+Dernière modification : 26 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -508,6 +508,8 @@ if(strcmp("1.7.5",$config['Version'])>0){
 }
 
 if(strcmp("1.7.6",$config['Version'])>0){
+  // Affichage des absences en attente de validation N2
+  $sql[]="UPDATE `{$dbprefix}absences` SET `valideN1`=`valideN1`/2;";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.7.6' WHERE `nom`='Version';";
 }
 

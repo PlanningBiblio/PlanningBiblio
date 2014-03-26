@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 19 mars 2014
+Dernière modification : 25 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -34,7 +34,7 @@ class personnel{
   public function delete($liste){
     $update=array("supprime"=>"2","login"=>"CONCAT(id,".time().")","mail"=>null,"arrivee"=>null,"depart"=>null,"postes"=>null,"droits"=>null,
       "password"=>null,"commentaires"=>"Suppression définitive le ".date("d/m/Y"), "last_login"=>null, "temps"=>null, 
-      "informations"=>null, "recup"=>null, "heuresTravail"=>null, "heuresHebdo"=>null, "site"=>null);
+      "informations"=>null, "recup"=>null, "heuresTravail"=>null, "heuresHebdo"=>null, "sites"=>null);
     
     $db=new db();
     $db->update2("personnel",$update,"`id` IN ($liste)");

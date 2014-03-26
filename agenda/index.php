@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 21 mars 2014
+Dernière modification : 26 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -48,7 +48,7 @@ $fin=isset($_GET['fin'])?$_GET['fin']:$_SESSION['agenda_fin'];
 $debutSQL=$debut?dateSQL($debut):$d->dates[0];	// lundi de la semaine courante
 $debut=dateFr3($debutSQL);
 $finSQL=$fin?dateSQL($fin):$d->dates[6];	// dimance de la semaine courante
-$fin=dateFr3($fin);
+$fin=dateFr3($finSQL);
 $order=$order?$order:"`date` desc";
 $_SESSION['agenda_debut']=$debut;
 $_SESSION['agenda_fin']=$fin;

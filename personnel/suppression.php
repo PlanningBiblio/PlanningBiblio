@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/suppression.php
 Création : mai 2011
-Dernière modification : 26 septembre 2013
+Dernière modification : 25 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -35,17 +35,17 @@ function etape1(){
   global $id;
   global $nom;
   $db=new db();
-  $db->query("select nom,prenom,actif from {$GLOBALS['dbprefix']}personnel where id=$id;");
+  $db->select("personnel","nom,prenom,actif,supprime","id=$id");
   $nom=$db->result[0]['prenom']." ".$db->result[0]['nom'];
   
-  if($db->result[0]['actif']=="Supprim&eacute;")
+  if($db->result[0]['supprime']==1)
     echo "Etes-vous sûr de vouloir définitivement supprimer \"$nom\" ?\n";
   else
     echo "Etes-vous sûr de vouloir supprimer \"$nom\" ?\n";
   echo "<br/><br/>\n";
   echo "<a href='javascript:popup_closed();'>Non</a>\n";
   echo "&nbsp;&nbsp;\n";
-  if($db->result[0]['actif']=="Supprim&eacute;")		// Suppression définitive
+  if($db->result[0]['supprime']==1)		// Suppression définitive
     echo "<a href='index.php?page=personnel/suppression.php&amp;menu=off&amp;id=$id&amp;etape=etape4'>Oui</a>\n";
   else								// Marqué comme supprimé
     echo "<a href='index.php?page=personnel/suppression.php&amp;menu=off&amp;id=$id&amp;etape=etape2'>Oui</a>\n";
@@ -87,9 +87,6 @@ function etape4(){
       //	Mise à jour de la table personnel
   $p=new personnel();
   $p->delete($id);
-//   $req="UPDATE `{$GLOBALS['dbprefix']}personnel` SET `supprime`='2',`login`=CONCAT(`id`,'.',`login`) WHERE `id`='$id';";
-/*  $db=new db();
-  $db->query($req);*/
   echo "<script type='text/JavaScript'>parent.window.location.reload(false);</script>";
   echo "<script type='text/JavaScript'>popup_closed();</script>";
 }

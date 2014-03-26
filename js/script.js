@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.7.4
+Planning Biblio, Version 1.7.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 5 mars 2014
+Dernière modification : 26 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -216,9 +216,9 @@ function errorHighlight(e, type, icon) {
     return e.each(function() {
         $(this).addClass('ui-widget');
         var alertHtml = '<div class="ui-state-' + type + ' ui-corner-all" style="padding:0 .7em;">';
-        alertHtml += '<p>';
+        alertHtml += '<p style="text-align:center;">';
         alertHtml += '<span class="ui-icon ' + icon + '" style="float:left;margin-right: .3em;"></span>';
-        alertHtml += $(this).text();
+        alertHtml += $(this).html();
         alertHtml += '</p>';
         alertHtml += '</div>';
 

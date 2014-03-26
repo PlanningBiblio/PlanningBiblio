@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 1.7.4
+Planning Biblio, Version 1.7.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
@@ -38,8 +38,6 @@ if(in_array(13,$droits)){
 ?>
 </select>
 </td><td style='width:80px;'>
-<br/>
-<input type='submit' value='OK'/>
 </td><td>
 <br/>
 <?php

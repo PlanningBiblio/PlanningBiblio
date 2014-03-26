@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.4
+Planning Biblio, Version 1.7.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 24 mars 2014
+Dernière modification : 26 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -676,7 +676,7 @@ foreach($db_groupes->result as $elem){		// gestion des droits d'accès au planni
 	$checked2=$checked?"Oui":"Non";
       }
       if($admin){
-	echo "<input type='checkbox' name='droits[]' $checked value='$groupe_id' $disabled />{$elem['groupe']} $site<br/>\n";
+	echo "<input type='checkbox' name='droits[]' $checked value='$groupe_id' />{$elem['groupe']} $site<br/>\n";
       }else{
 	echo "<li>{$elem['groupe']} $site <label class='agent-acces-checked2'>$checked2</label></li>\n";
       }
@@ -692,7 +692,7 @@ foreach($db_groupes->result as $elem){		// gestion des droits d'accès au planni
 	$checked2=$checked?"Oui":"Non";
       }
       if($admin){
-	echo "<input type='checkbox' name='droits[]' $checked value='$groupe_id' $disabled />{$elem['groupe']} $site<br/>\n";
+	echo "<input type='checkbox' name='droits[]' $checked value='$groupe_id' />{$elem['groupe']} $site<br/>\n";
       }else{
 	echo "<li>{$elem['groupe']} $site <label class='agent-acces-checked2'>$checked2</label></li>\n";
       }
@@ -708,7 +708,7 @@ foreach($db_groupes->result as $elem){		// gestion des droits d'accès au planni
 	$checked2=$checked?"Oui":"Non";
       }
       if($admin){
-	echo "<input type='checkbox' name='droits[]' $checked value='$groupe_id' $disabled />{$elem['groupe']} $site<br/>\n";
+	echo "<input type='checkbox' name='droits[]' $checked value='$groupe_id' />{$elem['groupe']} $site<br/>\n";
       }else{
 	echo "<li>{$elem['groupe']} $site <label class='agent-acces-checked2'>$checked2</label></li>\n";
       }
@@ -720,7 +720,7 @@ foreach($db_groupes->result as $elem){		// gestion des droits d'accès au planni
       $checked2=$checked?"Oui":"Non";
     }
     if($admin){
-      echo "<input type='checkbox' name='droits[]' $checked value='{$elem['groupe_id']}' $disabled />{$elem['groupe']}<br/>\n";
+      echo "<input type='checkbox' name='droits[]' $checked value='{$elem['groupe_id']}' />{$elem['groupe']}<br/>\n";
     }else{
       echo "<li>{$elem['groupe']} <label class='agent-acces-checked2'>$checked2</label></li>\n";
     }
