@@ -52,7 +52,7 @@ if(isset($_POST['id'])){
   }
   $droits[]=99;
   $droits[]=100;
-  if(in_array($id,array(1,3)))		// Ajoute config. avancée à l'utilisateur admin et au 1er agent créé.
+  if($id==1)		// Ajoute config. avancée à l'utilisateur admin.
     $droits[]=20;
   $droits=serialize($droits);
 
