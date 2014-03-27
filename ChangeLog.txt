@@ -1,3 +1,16 @@
+***	Version 1.7.7	(Jérôme Combes, 27 mars 2014)		***
+- Améliorations :
+Permet d'affecter plusieurs sites par agent
+Suppression des colonnes 19-20 et 20-22 dans les statistiques possible à partir de la page admin/config.
+
+- Sécurité :
+Suppression des checkboxes grisées dans l'onglet "Droits d'accès" des fiches agents si l'agent logué n'a pas les droits de modification
+
+- Corrections :
+Corrige bug empechant l'affichage des heures d'ouverture dans les statistiques
+Le login créé lors de l'ajout d'un agent n'est plus tronqué à 20 caractères
+Modification des variables $config['Absences-notificationsX'] pour éviter les problèmes d'encodage de caractères
+
 ***	Version 1.7.6	(Jérôme Combes, 17 mars 2014)		***
 - Améliorations :
 Distingue les absences demandées des absences en attente de validation hiérarchique
