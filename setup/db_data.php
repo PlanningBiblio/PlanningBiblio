@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/db_data.php
 Création : mai 2011
-Dernière modification : 24 mars 2014
+Dernière modification : 27 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -145,25 +145,25 @@ $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeurs`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('Recup-Agent','enum',',Texte,Menu d&eacute;roulant','Texte','Type de champ pour la r&eacute;cup&eacute;ration des samedis dans la fiche des agents.<br/>Rien [vide], champ <b>texte</b> ou <b>menu d&eacute;roulant</b>','Congés','40');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) 
   VALUES ('Absences-validation','boolean','0','Les absences doivent &ecirc;tre valid&eacute;es par un administrateur avant d&apos;&ecirc;tre prises en compte','Absences','30');";
-$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications','enum','A tous','Aucune notification,Aux agents ayant le droit de g&eacute;rer les absences,Au responsable direct,A la cellule planning,A tous,A l&apos;agent concern&eacute;','A qui les notifications de nouvelles absences doivent-elles &ecirc;tre envoy&eacute;es','Absences','40');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) 
   VALUES ('Absences-adminSeulement','boolean','0','Autoriser la saisie des absences aux administrateurs seulement.','Absences','20');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) 
   VALUES ('display_errors','boolean','0','Afficher les erreurs PHP','D&eacute;bogage','4');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
   VALUES ('error_reporting','enum','4','0,1,2,3,4,5','Type d&apos;erreurs PHP &agrave; afficher','D&eacute;bogage','4');";
-$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications2','enum','A tous','Aucune notification,Aux agents ayant le droit de g&eacute;rer les absences,Au responsable direct,A la cellule planning,A tous,A l&apos;agent concern&eacute;','A qui les notifications de modification d&apos;absences doivent-elles &ecirc;tre envoy&eacute;es','Absences','50');";
-$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications3','enum','Au responsable direct','Aucune notification,Aux agents ayant le droit de g&eacute;rer les absences,Au responsable direct,A la cellule planning,A tous,A l&apos;agent concern&eacute;','A qui les notifications de validation niveau 1 doivent-elles &ecirc;tre envoy&eacute;es','Absences','60');";
-$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications4','enum','A l&apos;agent concern&eacute;','Aucune notification,Aux agents ayant le droit de g&eacute;rer les absences,Au responsable direct,A la cellule planning,A tous,A l&apos;agent concern&eacute;','A qui les notifications de validation niveau 2 doivent-elles &ecirc;tre envoy&eacute;es','Absences','65');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `commentaires`, `categorie`, `ordre`) 
   VALUES ('Mail-Planning','textarea','Adresses e-mails de la cellule planning, s&eacute;par&eacute;es par des ;','Messagerie','10');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) 
   VALUES ('Planning-sansRepas','boolean','1','Afficher une notification pour les Sans Repas dans le menu d&eacute;roulant et dans le planning','Menu d&eacute;roulant du planning','10'),
   ('Planning-dejaPlace','boolean','1','Afficher une notification pour les agents d&eacute;j&agrave; plac&eacute; sur un poste dans le menu d&eacute;roulant du planning','Menu d&eacute;roulant du planning','11');";
+$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
+  VALUES ('Absences-notifications','enum2','4','a:6:{i:0;a:2:{i:0;i:0;i:1;s:19:\"Aucune notification\";}i:1;a:2:{i:0;i:1;i:1;s:54:\"Aux agents ayant le droit de g&eacute;rer les absences\";}i:2;a:2:{i:0;i:2;i:1;s:21:\"Au responsable direct\";}i:3;a:2:{i:0;i:3;i:1;s:21:\"A la cellule planning\";}i:4;a:2:{i:0;i:4;i:1;s:6:\"A tous\";}i:5;a:2:{i:0;i:5;i:1;s:30:\"A l&apos;agent concern&eacute;\";}}','A qui les notifications de nouvelles absences doivent-elles &ecirc;tre envoy&eacute;es','Absences','40');";
+$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
+  VALUES ('Absences-notifications2','enum2','4','a:6:{i:0;a:2:{i:0;i:0;i:1;s:19:\"Aucune notification\";}i:1;a:2:{i:0;i:1;i:1;s:54:\"Aux agents ayant le droit de g&eacute;rer les absences\";}i:2;a:2:{i:0;i:2;i:1;s:21:\"Au responsable direct\";}i:3;a:2:{i:0;i:3;i:1;s:21:\"A la cellule planning\";}i:4;a:2:{i:0;i:4;i:1;s:6:\"A tous\";}i:5;a:2:{i:0;i:5;i:1;s:30:\"A l&apos;agent concern&eacute;\";}}','A qui les notifications de modification d&apos;absences doivent-elles &ecirc;tre envoy&eacute;es','Absences','50');";
+$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
+  VALUES ('Absences-notifications3','enum2','2','a:6:{i:0;a:2:{i:0;i:0;i:1;s:19:\"Aucune notification\";}i:1;a:2:{i:0;i:1;i:1;s:54:\"Aux agents ayant le droit de g&eacute;rer les absences\";}i:2;a:2:{i:0;i:2;i:1;s:21:\"Au responsable direct\";}i:3;a:2:{i:0;i:3;i:1;s:21:\"A la cellule planning\";}i:4;a:2:{i:0;i:4;i:1;s:6:\"A tous\";}i:5;a:2:{i:0;i:5;i:1;s:30:\"A l&apos;agent concern&eacute;\";}}','A qui les notifications de validation niveau 1 doivent-elles &ecirc;tre envoy&eacute;es','Absences','60');";
+$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
+  VALUES ('Absences-notifications4','enum2','5','a:6:{i:0;a:2:{i:0;i:0;i:1;s:19:\"Aucune notification\";}i:1;a:2:{i:0;i:1;i:1;s:54:\"Aux agents ayant le droit de g&eacute;rer les absences\";}i:2;a:2:{i:0;i:2;i:1;s:21:\"Au responsable direct\";}i:3;a:2:{i:0;i:3;i:1;s:21:\"A la cellule planning\";}i:4;a:2:{i:0;i:4;i:1;s:6:\"A tous\";}i:5;a:2:{i:0;i:5;i:1;s:30:\"A l&apos;agent concern&eacute;\";}}','A qui les notifications de validation niveau 2 doivent-elles &ecirc;tre envoy&eacute;es','Absences','65');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `commentaires`, `categorie`, `ordre`) 
   VALUES ('Absences-notifications-titre','text','Titre personnalis&eacute; pour les notifications de nouvelles absences','Absences','70'),
   ('Absences-notifications-message','textarea','Message personnalis&eacute; pour les notifications de nouvelles absences','Absences','80');";

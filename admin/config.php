@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : activites/config.php
 Création : mai 2011
-Dernière modification : 26 décembre 2013
+Dernière modification : 27 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -70,6 +70,16 @@ if(!$_POST){			//		Affichage des paramètres
 	  $selected=$option==$elem['valeur']?"selected='selected'":null;
 	  $selected=$option==htmlentities($elem['valeur'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false)?"selected='selected'":$selected;
 	  echo "<option value='$option' $selected >$option</option>\n";
+	}
+	echo "</select>\n";
+	break;
+
+      case "enum2" :
+	echo "<select name='{$elem['nom']}' style='width:305px;'>\n";
+	$options=unserialize($elem['valeurs']);
+	foreach($options as $option){
+	  $selected=$option[0]==$elem['valeur']?"selected='selected'":null;
+	  echo "<option value='{$option[0]}' $selected >{$option[1]}</option>\n";
 	}
 	echo "</select>\n";
 	break;

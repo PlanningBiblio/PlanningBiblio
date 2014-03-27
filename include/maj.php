@@ -530,6 +530,17 @@ if(strcmp("1.7.7",$config['Version'])>0){
     ('Statistiques-20-22','boolean','1','Affiche ou non la colonne 20h-22h dans les statistiques','Statistiques','20');";
   // Modification du champ login dans la table personnel
   $sql[]="ALTER TABLE `{$dbprefix}personnel` CHANGE `login` `login` VARCHAR(100) NOT NULL DEFAULT '';";
+  // Modification de la config pour les select Absences-notification
+  $sql[]="UPDATE `{$dbprefix}config` SET `type`='enum2', `valeurs`=
+    'a:6:{i:0;a:2:{i:0;i:0;i:1;s:19:\"Aucune notification\";}i:1;a:2:{i:0;i:1;i:1;s:54:\"Aux agents ayant le droit de g&eacute;rer les absences\";}i:2;a:2:{i:0;i:2;i:1;s:21:\"Au responsable direct\";}i:3;a:2:{i:0;i:3;i:1;s:21:\"A la cellule planning\";}i:4;a:2:{i:0;i:4;i:1;s:6:\"A tous\";}i:5;a:2:{i:0;i:5;i:1;s:30:\"A l&apos;agent concern&eacute;\";}}' 
+    WHERE `nom` IN ('Absences-notifications','Absences-notifications2','Absences-notifications3','Absences-notifications4');";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='0' WHERE `valeur` = 'Aucune notification';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1' WHERE `valeur` LIKE 'Aux agents ayant le droit de%';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2' WHERE `valeur` = 'Au responsable direct';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='3' WHERE `valeur` = 'A la cellule planning';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='4' WHERE `valeur` = 'A tous';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='5' WHERE `valeur` LIKE '%agent concern%';";
+
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.7.7' WHERE `nom`='Version';";
 }
 

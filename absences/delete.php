@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/delete.php
 Création : mai 2011
-Dernière modification : 31 octobre 2013
+Dernière modification : 27 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -27,6 +27,7 @@ $perso_id=$a->elements['perso_id'];
 $nom=$a->elements['nom'];
 $prenom=$a->elements['prenom'];
 $mail=$a->elements['mail'];
+$mailResponsable=$a->elements['mailResponsable'];
 $motif=$a->elements['motif'];
 $commentaires=$a->elements['commentaires'];
 
@@ -72,20 +73,32 @@ else{
   $a->getResponsables($debut,$fin,$perso_id);
   $responsables=$a->responsables;
 
-  $tmp=array();
-  if(verifmail($mail)){
-    $tmp[]=$mail;
+  $destinataires=array();
+  switch($config['Absences-notifications2']){
+    case 1 :
+      foreach($responsables as $elem){
+	$destinataires[]=$elem['mail'];
+      }
+      break;
+    case 2 :
+      $destinataires[]=$mailResponsable;
+      break;
+    case 3 :
+      $destinataires=explode(";",$config['Mail-Planning']);
+      break;
+    case 4 :
+      $destinataires=explode(";",$config['Mail-Planning']);
+      $destinataires[]=$mail;
+      $destinataires[]=$mailResponsable;
+      foreach($responsables as $elem){
+	$destinataires[]=$elem['mail'];
+      }
+      break;
+    case 5 :
+      $destinataires[]=$mail;
+      break;
   }
-  else{
-    echo "<font style='color:red;'>L'adresse e-mail enregistrée pour $nom $prenom n'est pas valide.\n";
-    echo "<br/>La notification ne lui sera pas envoyée.</font>\n";
-  }
-  foreach($responsables as $elem){
-    if(verifmail($elem['mail'])){
-      $tmp[]=$elem['mail'];
-    }
-  }
-  $destinataires=join(";",$tmp);
+
   sendmail("Suppression d'une absence",$message,$destinataires);
 
   // Mise à jour du champs 'absent' dans 'pl_poste'

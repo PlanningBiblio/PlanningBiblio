@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 21 mars 2014
+Dernière modification : 27 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -125,7 +125,8 @@ class absences{
   public function fetchById($id){
     $dbprefix=$GLOBALS['config']['dbprefix'];
     $req="SELECT `{$dbprefix}personnel`.`nom` AS `nom`, `{$dbprefix}personnel`.`prenom` AS `prenom`, "
-      ."`{$dbprefix}personnel`.`id` AS `perso_id`, `{$dbprefix}personnel`.`mail` AS `mail`,"
+      ."`{$dbprefix}personnel`.`id` AS `perso_id`, `{$dbprefix}personnel`.`mail` AS `mail`, "
+      ."`{$dbprefix}personnel`.`mailResponsable` AS `mailResponsable`, "
       ."`{$dbprefix}absences`.`id` AS `id`, `{$dbprefix}absences`.`debut` AS `debut`, "
       ."`{$dbprefix}absences`.`fin` AS `fin`, `{$dbprefix}absences`.`nbjours` AS `nbjours`, "
       ."`{$dbprefix}absences`.`motif` AS `motif`, `{$dbprefix}absences`.`commentaires` AS `commentaires` "
