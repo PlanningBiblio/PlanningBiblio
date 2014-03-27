@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.3
+Planning Biblio, Version 1.7.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 18 mars 2014
+Dernière modification : 27 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -98,7 +98,7 @@ $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `postes` text NOT NULL,
   `actif` varchar(20) NOT NULL DEFAULT 'true',
   `droits` varchar(500) NOT NULL,
-  `login` varchar(20) NOT NULL DEFAULT '',
+  `login` varchar(100) NOT NULL DEFAULT '',
   `password` varchar(40) NOT NULL DEFAULT '',
   `commentaires` text NOT NULL,
   `last_login` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',

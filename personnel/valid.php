@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 18 mars 2014
+Dernière modification : 27 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -64,7 +64,7 @@ if(isset($_POST['id'])){
   $mailResponsable=trim(htmlentities($_POST['mailResponsable'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
   $matricule=trim(htmlentities($_POST['matricule'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
 }
-else{ // ?????????????
+else{
   $id=null;
   $nom=null;
   $prenom=null;
@@ -96,6 +96,7 @@ switch($action){
     $login=login($nom,$prenom);
     $mdp=gen_trivial_password();
     $mdp_crypt=md5($mdp);
+
     sendmail("Création de compte","Login : $login <br>Mot de passe : $mdp","$mail");
     $insert=array("nom"=>$nom,"prenom"=>$prenom,"mail"=>$mail,"statut"=>$statut,"categorie"=>$categorie,"service"=>$service,"heuresHebdo"=>$heuresHebdo,
       "heuresTravail"=>$heuresTravail,"arrivee"=>$arrivee,"depart"=>$depart,"login"=>$login,"password"=>$mdp_crypt,"actif"=>$actif,
@@ -106,16 +107,7 @@ switch($action){
     }
     $db=new db();
     $db->insert2("personnel",$insert);
-/*
-    //	Mise à jour de la table pl_poste en cas de modification de la date de départ
-    $db=new db();		// On met supprime=0 partout pour cet agent
-    $db->query("UPDATE `{$GLOBALS['dbprefix']}pl_poste` SET `supprime`='0' WHERE `perso_id`='$id';");
-    if($depart!="0000-00-00" and $depart!=""){
-	  // Si une date de départ est précisée, on met supprime=1 au dela de cette date
-      $db=new db();
-      $db->query("UPDATE `{$GLOBALS['dbprefix']}pl_poste` SET `supprime`='1' WHERE `perso_id`='$id' AND `date`>'$depart';");
-    }
-*/
+
     // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
     $p=new personnel();
     $p->updateEDTSamedi($eDTSamedi,$premierLundi,$dernierLundi,$id);
@@ -213,10 +205,11 @@ function login($nom,$prenom){
   $tmp=join($tmp,".");
   $login=removeAccents(strtolower($tmp));
   $login=str_replace(" ","-",$login);
+  $login=substr($login,0,95);
   
   $i=1;
   $db=new db();
-  $db->query("select * from `{$GLOBALS['dbprefix']}personnel` where login='$login';");
+  $db->select("personnel",null,"login='$login'");
   while($db->result){
     $i++;
     if($i==2)
@@ -224,7 +217,7 @@ function login($nom,$prenom){
     else
       $login=substr($login,0,strlen($login)-1).$i;
     $db=new db();
-    $db->query("select * from `{$GLOBALS['dbprefix']}personnel` where login='$login';");
+    $db->select("personnel",null,"login='$login'");
   }
   return $login;
 }
