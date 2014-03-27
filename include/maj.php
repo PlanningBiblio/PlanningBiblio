@@ -541,6 +541,8 @@ if(strcmp("1.7.7",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='4' WHERE `valeur` = 'A tous';";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='5' WHERE `valeur` LIKE '%agent concern%';";
 
+  $sql[]="UPDATE `{$dbprefix}config` SET `categorie`='Absences' WHERE `categorie`='Asbences';";
+  
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.7.7' WHERE `nom`='Version';";
 }
 
