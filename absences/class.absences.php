@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.7
+Planning Biblio, Version 1.7.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 27 mars 2014
+Dernière modification : 31 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -24,6 +24,7 @@ if(!$version){
 class absences{
   public $elements=array();
   public $valide=false;
+  public $recipients=array();
 
   public function absences(){
   }
@@ -182,7 +183,7 @@ class absences{
     }
 
     $db=new db();
-    $db->select("personnel");
+    $db->select("personnel",null,"supprime='0'");
     foreach($db->result as $elem){
       $d=unserialize($elem['droits']);
       foreach($droitsAbsences as $elem2){
@@ -192,6 +193,41 @@ class absences{
       }
     }
     $this->responsables=$responsables;
+  }
+
+  public function getRecipients($notifications,$responsables,$mail,$mailResponsable){
+    // Retourne la liste des destinataires des notifications en fonctions de niveau de validation.
+    // $notifications : niveau de validation (Absences-notifications, Absences-notifications2, ...)
+    // $responsables : listes des agents (array) ayant le droit de gérer les absences
+    // $mail : mail de l'agent concerné par l'absence
+    // $mailResponsable : mail de son responsable direct
+
+    $recipients=array();
+    switch($notifications){
+      case 1 :
+	foreach($responsables as $elem){
+	  $recipients[]=$elem['mail'];
+	}
+	break;
+      case 2 :
+	$recipients[]=$mailResponsable;
+	break;
+      case 3 :
+	$recipients=explode(";",trim($GLOBAL['config']['Mail-Planning']));
+	break;
+      case 4 :
+	$recipients=explode(";",trim($GLOBAL['config']['Mail-Planning']));
+	$recipients[]=$mail;
+	$recipients[]=$mailResponsable;
+	foreach($responsables as $elem){
+	  $recipients[]=$elem['mail'];
+	}
+	break;
+      case 5 :
+	$recipients[]=$mail;
+	break;
+    }
+    $this->recipients=$recipients;
   }
 
 }

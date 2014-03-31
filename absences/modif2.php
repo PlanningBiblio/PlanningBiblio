@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.7
+Planning Biblio, Version 1.7.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 27 mars 2014
+Dernière modification : 31 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -186,31 +186,9 @@ else{
 }
 
 // Choix des destinataires en fonction de la configuration
-$destinataires=array();
-switch($notifications){
-  case 1 :
-    foreach($responsables as $elem){
-      $destinataires[]=$elem['mail'];
-    }
-    break;
-  case 2 :
-    $destinataires[]=$mailResponsable;
-    break;
-  case 3 :
-    $destinataires=explode(";",$config['Mail-Planning']);
-    break;
-  case 4 :
-    $destinataires=explode(";",$config['Mail-Planning']);
-    $destinataires[]=$mail;
-    $destinataires[]=$mailResponsable;
-    foreach($responsables as $elem){
-      $destinataires[]=$elem['mail'];
-    }
-    break;
-  case 5 :
-    $destinataires[]=$mail;
-    break;
-}
+$a=new absences();
+$a->getRecipients($notifications,$responsables,$mail,$mailResponsable);
+$destinataires=$a->recipients;
 
 // Message
 $message="$sujet : <br/>$prenom $nom<br/>Début : $debut";
