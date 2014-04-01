@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.7.7
+Planning Biblio, Version 1.7.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 26 mars 2014
+Dernière modification : 31 mars 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -80,10 +80,10 @@ function calculHeures(object,num,form,tip,numero){
       fin2=elements["temps"+num+"["+i+"][3]"].value;
     }
     else{
-      debut1=heure5($("#temps"+num+"_"+i+"_0").text());
-      fin1=heure5($("#temps"+num+"_"+i+"_1").text());
-      debut2=heure5($("#temps"+num+"_"+i+"_2").text());
-      fin2=heure5($("#temps"+num+"_"+i+"_3").text());
+      debut1=$("#temps"+num+"_"+i+"_0").text().replace("h",":");
+      fin1=$("#temps"+num+"_"+i+"_1").text().replace("h",":");
+      debut2=$("#temps"+num+"_"+i+"_2").text().replace("h",":");
+      fin2=$("#temps"+num+"_"+i+"_3").text().replace("h",":");
     }
     if(debut1){
       diff=0;
