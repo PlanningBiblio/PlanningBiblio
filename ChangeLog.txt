@@ -1,3 +1,10 @@
+***	Version 1.7.8	(Jérôme Combes, 1er avril 2014)		***
+- Améliorations :
+Utilisation d'une nouvelle fonction (absences::getRecipients) pour envoyer les notifications d'absences
+
+- Corrections :
+Corrige l'affichage des totaux d'heures par jour et par semaine dans les emplois du temps
+
 ***	Version 1.7.7	(Jérôme Combes, 27 mars 2014)		***
 - Améliorations :
 Permet d'affecter plusieurs sites par agent
