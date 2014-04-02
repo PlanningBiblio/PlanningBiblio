@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.7
+Planning Biblio, Version 1.7.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 26 mars 2014
+Dernière modification : 1er avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -417,7 +417,7 @@ else{
 	$classTR=join(" ",$classTR);
 
 	echo "<tr class='$classTR'><td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
-	if($config['affiche_etage']){
+	if($config['Affichage-etages'] and $postes[$ligne['poste']]['etage']){
 	  echo " ({$postes[$ligne['poste']]['etage']})";
 	}
 	echo "</td>\n";

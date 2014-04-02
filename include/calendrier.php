@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/calendrier.php
 Création : mai 2011
-Dernière modification : 4 octobre 2013
+Dernière modification : 2 avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -18,6 +18,9 @@ Utilisée par la fonction JS calendrier qui affiche la calendrier lors des clics
 */
 
 session_start();
+$version="1.7.8";
+include_once "../include/config.php";
+$theme=$config['Affichage-theme']?$config['Affichage-theme']:"default";
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -27,10 +30,10 @@ session_start();
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel='StyleSheet' href='calendrier/calendar.css' type='text/css' />
 <link rel='StyleSheet' href='../css/calendrier.css' type='text/css' />
-<link rel='StyleSheet' href='../css/custom.css' type='text/css' />
+<link rel='StyleSheet' href='../themes/<?php echo $theme ?>/<?php echo $theme; ?>.css' type='text/css' />
 <script type="text/JavaScript" src='../js/calendrier.js'></script>
 </head>
-<body>
+<body class='calendar_body'>
 <?php
 require_once("calendrier/calendar.php");
 $parametres=array("DATE_URL"=>"javascript:setPlDate('__DATE__')","USE_SESSION"=>true,"URL_DAY_DATE_FORMAT"=>"Ymd");

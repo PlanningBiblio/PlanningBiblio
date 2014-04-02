@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.7.3
+Planning Biblio, Version 1.7.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : css/style.css
 Création : mai 2011
-Dernière modification : 24 mars 2014
+Dernière modification : 1er avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -47,8 +47,10 @@ body {
 }
 
 #auth-logo{
-  width:200px;
   margin:15px;
+  width:200px;
+  height:80px;
+  background:url("../img/logo200.png") no-repeat right top;
 }
 
 #h2-authentification, #h2-planning-authentification {
@@ -63,9 +65,10 @@ body {
 #logo {
 	position: absolute;
 	left: 15px;
-	top: 5px;
+	top: 12px;
 	width:160px;
-	margin-top:7px;
+	height:54px;
+	background:url("../img/logo160.png") no-repeat right top;
 }
 
 #logo2 {
@@ -253,11 +256,11 @@ select
     }
 
 #onglets #current {
-    background-image:url("norm_right_on.gif");
+    background-image:url("../img/norm_right_on.gif");
     }
 
 #onglets #current a {
-    background-image:url("norm_left_on.gif");
+    background-image:url("../img/norm_left_on.gif");
     }
 
 #onglets {

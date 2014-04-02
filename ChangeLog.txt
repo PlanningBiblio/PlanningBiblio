@@ -1,6 +1,7 @@
-***	Version 1.7.8	(Jérôme Combes, 1er avril 2014)		***
+***	Version 1.7.8	(Jérôme Combes, 2 avril 2014)		***
 - Améliorations :
 Utilisation d'une nouvelle fonction (absences::getRecipients) pour envoyer les notifications d'absences
+Permet l'ajout de themes (dans le dossier "themes") et leur sélection à partir de la page administration/Configuration (variable $config['Affichage-theme'])
 
 - Corrections :
 Corrige l'affichage des totaux d'heures par jour et par semaine dans les emplois du temps

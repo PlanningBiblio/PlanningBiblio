@@ -101,7 +101,7 @@ document.onclick = kill;
 echo "<div id='topgauche'>\n";
 echo "<table cellpadding='0' cellspacing='0' border='0' style='width:100%;'><tr>\n";
 echo "<td style='width:340px;text-align:left' rowspan='4'><font class='noprint'>\n";
-echo "<a href='index.php'><img src='img/logo.png' alt='Logo' id='logo' border='0'/></a>\n";
+echo "<a href='index.php'><div id='logo'></div></a>\n";
 echo "</font></td></tr>\n";
 echo "<tr><td>&nbsp;</td></tr>\n";
 echo "<tr id='topmenu'>\n";
