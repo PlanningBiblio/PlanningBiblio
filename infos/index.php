@@ -116,12 +116,12 @@ else{
   Date de début :
   </td><td>
   <input type='text' name='debut' value='".$debut."'/>
-  <img src='img/calendrier.gif' onclick='calendrier(\"debut\");' alt='début' />
+  <img src='themes/default/images/calendrier.gif' onclick='calendrier(\"debut\");' alt='début' />
   </td></tr><tr><td>
   Date de fin :
   </td><td>
   <input type='text' name='fin' value='".$fin."'/>
-  <img src='img/calendrier.gif' onclick='calendrier(\"fin\");' alt='fin' />
+  <img src='themes/default/images/calendrier.gif' onclick='calendrier(\"fin\");' alt='fin' />
   </td></tr><tr><td>
   Texte : 
   </td><td>
@@ -143,9 +143,9 @@ else{
     echo "<tr><td style='padding-bottom:30px;' colspan='4'><b>Informations en cours</b></td></tr>\n";
     foreach($infos as $elem){
       echo "<tr><td><a href='index.php?page=infos/index.php&amp;id={$elem['id']}'>\n";
-      echo "<img src='img/modif.png' alt='Modif' border='0'/></a>\n";
+      echo "<img src='themes/default/images/modif.png' alt='Modif' border='0'/></a>\n";
       echo "<a href='index.php?page=infos/index.php&amp;id={$elem['id']}&amp;suppression'>\n";
-      echo "<img src='img/drop.gif' alt='Suppression' /></a></td>\n";
+      echo "<img src='themes/default/images/drop.gif' alt='Suppression' /></a></td>\n";
       echo "<td>".dateFr($elem['debut'])."</td>\n";
       echo "<td>".dateFr($elem['fin'])."</td>\n";
       echo "<td>{$elem['texte']}</td></tr>\n";

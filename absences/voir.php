@@ -128,7 +128,7 @@ if($absences){
     echo "<tr>\n";
     if($admin or (!$config['Absences-adminSeulement'] and in_array(6,$droits))){
       echo "<td><a href='index.php?page=absences/modif.php&amp;id=".$elem['id']."'>\n";
-      echo "<img border='0' src='img/modif.png' alt='Modif' /></a></td>\n";
+      echo "<img border='0' src='themes/default/images/modif.png' alt='Modif' /></a></td>\n";
     }
     else{
       echo "<td>&nbsp;</td>\n";

@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/calendrier.php
 Création : mai 2011
-Dernière modification : 2 avril 2014
+Dernière modification : 3 avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -29,7 +29,7 @@ $theme=$config['Affichage-theme']?$config['Affichage-theme']:"default";
 <title>Calendrier</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel='StyleSheet' href='calendrier/calendar.css' type='text/css' />
-<link rel='StyleSheet' href='../css/calendrier.css' type='text/css' />
+<link rel='StyleSheet' href='../themes/default/calendrier.css' type='text/css' />
 <link rel='StyleSheet' href='../themes/<?php echo $theme ?>/<?php echo $theme; ?>.css' type='text/css' />
 <script type="text/JavaScript" src='../js/calendrier.js'></script>
 </head>

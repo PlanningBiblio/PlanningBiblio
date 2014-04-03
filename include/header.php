@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 2 février 2014
+Dernière modification : 3 avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -41,14 +41,16 @@ getJSFiles($page);
 ?>
 
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-<link rel='StyleSheet' href='css/dataTables/jquery.dataTables_themeroller.css' type='text/css' media='all'/>
+<link rel='StyleSheet' href='themes/default/dataTables/jquery.dataTables_themeroller.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/<?php echo $theme; ?>/jquery-ui.min.css' type='text/css' media='all'/>
-<link rel='StyleSheet' href='css/style.css' type='text/css' media='all'/>
-<link rel='StyleSheet' href='css/print.css' type='text/css' media='print'/>
-<link rel='StyleSheet' href='themes/<?php echo $theme; ?>/<?php echo $theme; ?>.css' type='text/css' media='all'/>
-</head>
-
+<link rel='StyleSheet' href='themes/default/default.css' type='text/css' media='all'/>
+<link rel='StyleSheet' href='themes/default/print.css' type='text/css' media='print'/>
 <?php
+if($theme!="default"){
+  echo "<link rel='StyleSheet' href='themes/$theme/$theme.css' type='text/css' media='all'/>\n";
+}
+echo "</head>\n";
+
 echo $page=="aide/index.php"?"<body onscroll='position_retour();'>\n":"<body>\n";
 if(!isset($_GET['positionOff'])){
   echo <<<EOD

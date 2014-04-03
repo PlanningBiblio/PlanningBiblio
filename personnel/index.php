@@ -113,10 +113,10 @@ foreach($agents as $agent){
 
   echo "<tr><td style='white-space:nowrap;'>\n";
   echo "<input type='checkbox' name='chk$i' value='$id' class='checkAgent'/>\n";
-  echo "<a href='index.php?page=personnel/modif.php&amp;id=$id'><img src='img/modif.png' border='0' alt='Modif' /></a>";
+  echo "<a href='index.php?page=personnel/modif.php&amp;id=$id'><img src='themes/default/images/modif.png' border='0' alt='Modif' /></a>";
   if(in_array(21,$droits) and $id!=$_SESSION['login_id']){
     echo "&nbsp;";
-    echo "<a href='javascript:popup(\"personnel/suppression.php&amp;id=".$id."\",450,250);'><img src='img/suppr.png' border='0' alt='Suppression' /></a>";
+    echo "<a href='javascript:popup(\"personnel/suppression.php&amp;id=".$id."\",450,250);'><img src='themes/default/images/suppr.png' border='0' alt='Suppression' /></a>";
   }
   echo "</td>";
   if(in_array(13,$droits)){

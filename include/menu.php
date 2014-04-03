@@ -113,7 +113,7 @@ echo $_SESSION['login_prenom']." ".$_SESSION['login_nom'];
 echo "</font></td>\n";
 echo "<td id='logout_img'>\n";
 echo "<a href='authentification.php' title='Déconnexion' >\n";
-echo "<img src='img/loggoff.png' border='0' style='width:16px;'/></a></td>\n";
+echo "<img src='themes/default/images/logout.png' border='0' style='width:16px;'/></a></td>\n";
 echo "</tr>\n";
 echo "<tr><td colspan='$colspan' style='text-align:right;'>\n";
 

@@ -81,9 +81,9 @@ foreach($jours as $elem){
   $fermeture=$elem['fermeture']?"checked='checked'":null;
   echo <<<EOD
     <tr id='tr$i'><td><a href='javascript:supprime_jourFerie($i);'>
-      <img src='img/drop.gif' alt='Suppression' style='margin-right:10px;'/></a></td>
+      <img src='themes/default/images/drop.gif' alt='Suppression' style='margin-right:10px;'/></a></td>
     <td><input type='text' name='jour[$i]' value='{$elem['jour']}' class='c100' id='jour$i'/>
-      <img src="img/calendrier.gif" onclick="calendrier('jour[$i]');" alt="calendrier"></td>
+      <img src="themes/default/images/calendrier.gif" onclick="calendrier('jour[$i]');" alt="calendrier"></td>
     <td><input type='checkbox' name='ferie[$i]' value='1' $ferie /></td>
     <td><input type='checkbox' name='fermeture[$i]' value='1' $fermeture/></td>
     <td><input type='text' name='nom[$i]' value='{$elem['nom']}'  class='c350'/></td>
@@ -95,9 +95,9 @@ EOD;
 for($j=$i;$j<$i+15;$j++){
   echo <<<EOD
     <tr id='tr$j'><td><a href='javascript:supprime_jourFerie($j);'>
-      <img src='img/drop.gif' alt='Suppression' style='margin-right:10px;'/></a></td>
+      <img src='themes/default/images/drop.gif' alt='Suppression' style='margin-right:10px;'/></a></td>
     <td><input type='text' name='jour[$j]' class='c100' id='jour$j'/>
-      <img src="img/calendrier.gif" onclick="calendrier('jour[$j]');" alt="calendrier"></td>
+      <img src="themes/default/images/calendrier.gif" onclick="calendrier('jour[$j]');" alt="calendrier"></td>
     <td><input type='checkbox' name='ferie[$j]' value='1' /></td>
     <td><input type='checkbox' name='fermeture[$j]' value='1' /></td>
     <td><input type='text' name='nom[$j]' class='c350'/></td>

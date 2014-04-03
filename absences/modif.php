@@ -175,7 +175,7 @@ foreach($motifs as $elem){
 echo "</select>\n";
 if($admin){
   echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_abs&amp;terme=motif\",400,400);'>\n";
-  echo "<img src='img/add.gif' alt='*' style=width:15px;cursor:pointer;' id='add-motif-button'/>\n";
+  echo "<img src='themes/default/images/add.gif' alt='*' style=width:15px;cursor:pointer;' id='add-motif-button'/>\n";
 }
   echo "</td></tr>\n";
 

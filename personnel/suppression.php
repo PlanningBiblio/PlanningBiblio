@@ -58,7 +58,7 @@ function etape2(){
   echo "<input type='hidden' name='menu' value='off' />\n";
   echo "Sélectionner la date de départ : \n";
   echo "<input type='text' name='date' size='10' value='".date("Y-m-d")."'>";
-  echo "&nbsp;&nbsp;<img src='img/calendrier.gif' onclick='calendrier(\"date\");'>";
+  echo "&nbsp;&nbsp;<img src='themes/default/images/calendrier.gif' onclick='calendrier(\"date\");'>";
   echo "<br/><br/>\n";
   echo "<input type='button' value='Annuler' onclick='popup_closed();'>\n";
   echo "&nbsp;&nbsp;\n";

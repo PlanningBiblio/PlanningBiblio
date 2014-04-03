@@ -43,7 +43,7 @@ if($db->result){
   echo "<b>Informations sur les absences :</b><br/><br/>\n";
   foreach($db->result as $elem){
     if($admin){
-      echo "<a href='index.php?page=absences/infos.php&amp;id={$elem['id']}'><img src='img/modif.png' border='0' alt='modifier' /></a>&nbsp;";
+      echo "<a href='index.php?page=absences/infos.php&amp;id={$elem['id']}'><img src='themes/default/images/modif.png' border='0' alt='modifier' /></a>&nbsp;";
     }
     echo "Du ".dateFr($elem['debut'])." au ".dateFr($elem['fin'])." : {$elem['texte']}<br/>\n";
   }	

@@ -42,8 +42,8 @@ echo "<table style='width:100%' cellspacing='0'>";
 echo "<tr class='th'>\n";
 echo "<td style='width:80px;'>&nbsp;</td>\n";
 echo "<td>nom";
-echo "&nbsp;&nbsp;<a href='index.php?page=planning/modeles/index.php&amp;tri=nom'><img src='img/up.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "<a href='index.php?page=planning/modeles/index.php&amp;tri=nom%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
+echo "&nbsp;&nbsp;<a href='index.php?page=planning/modeles/index.php&amp;tri=nom'><img src='themes/default/images/up.png' alt='-' border='0' style='width:10px;'/></a>\n";
+echo "<a href='index.php?page=planning/modeles/index.php&amp;tri=nom%20desc'><img src='themes/default/images/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
 echo "</td>";
 echo "</tr>\n";
 
@@ -52,9 +52,9 @@ foreach($modeles as $elem){
   $class=$class=="tr2"?"tr1":"tr2";
   echo "<tr class='$class'>\n";
   echo "<td>\n";
-  echo "<a href='index.php?page=planning/modeles/modif.php&amp;nom={$elem['nom']}'><img src='img/modif.png' border='0' alt='Modif' /></a>";
+  echo "<a href='index.php?page=planning/modeles/modif.php&amp;nom={$elem['nom']}'><img src='themes/default/images/modif.png' border='0' alt='Modif' /></a>";
   echo "&nbsp;&nbsp;";
-  echo "<a href='javascript:supprime(\"planning/modeles\",\"{$elem['nom']}\");'><img src='img/suppr.png' border='0' alt='Suppression' /></a>";
+  echo "<a href='javascript:supprime(\"planning/modeles\",\"{$elem['nom']}\");'><img src='themes/default/images/suppr.png' border='0' alt='Suppression' /></a>";
   echo "</td>\n";
   echo "<td>{$elem['nom']}</td>\n";
   echo "</tr>\n";

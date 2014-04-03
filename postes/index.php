@@ -113,9 +113,9 @@ for($i=0;$i<count($postes);$i++){
   }
 
   echo "<tr><td style='white-space:nowrap;'>\n";
-  echo "<a href='index.php?page=postes/modif.php&amp;id=$id'><img src='img/modif.png' border='0' alt='modif' /></a>\n";
+  echo "<a href='index.php?page=postes/modif.php&amp;id=$id'><img src='themes/default/images/modif.png' border='0' alt='modif' /></a>\n";
   if(!in_array($id,$postes_utilises)){
-    echo "&nbsp;<a href='javascript:supprime(\"postes\",$id);'><img src='img/suppr.png' border='0' alt='supp' /></a></td>\n";
+    echo "&nbsp;<a href='javascript:supprime(\"postes\",$id);'><img src='themes/default/images/suppr.png' border='0' alt='supp' /></a></td>\n";
   }
   if(in_array(13,$droits)){
     echo "<td>{$postes[$i]['id']}</td>\n";

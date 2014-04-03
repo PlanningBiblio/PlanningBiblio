@@ -61,7 +61,7 @@ if($tableauNumero){
     echo "<tr class='tr_horaires' style='text-align:center;'>\n";
     echo "<td style='width:260px;white-space:nowrap;'>\n";
     echo "<input type='text' name='select_{$tab['nom']}Titre_0' class='tr_horaires select_titre' style='text-align:center;width:220px;' value='{$tab['titre']}'/>\n";
-    echo "<img src='img/add.gif' border='0' alt='Ajouter' style='cursor:pointer;' onclick='ajout(\"select_{$tab["nom"]}_\",-1);'/></td>\n";
+    echo "<img src='themes/default/images/add.gif' border='0' alt='Ajouter' style='cursor:pointer;' onclick='ajout(\"select_{$tab["nom"]}_\",-1);'/></td>\n";
     $colspan=0;
     foreach($tab['horaires'] as $horaire){
       echo "<td colspan='".nb30($horaire['debut'],$horaire['fin'])."'>".heure3($horaire['debut'])."-".heure3($horaire['fin'])."</td>";
@@ -93,8 +93,8 @@ if($tableauNumero){
       }
       echo "</select>&nbsp;&nbsp;\n";
       // Boutons ajout et suppression
-      echo "<img src='img/add.gif' border='0' alt='Ajouter' style='cursor:pointer;' onclick='ajout(\"select_{$tab["nom"]}_\",$i);'/>\n";
-      echo "<img src='img/drop.gif' border='0' alt='Supprimer' style='cursor:pointer;' onclick='supprime_tab(\"{$tab["nom"]}_\",$i);' />\n";
+      echo "<img src='themes/default/images/add.gif' border='0' alt='Ajouter' style='cursor:pointer;' onclick='ajout(\"select_{$tab["nom"]}_\",$i);'/>\n";
+      echo "<img src='themes/default/images/drop.gif' border='0' alt='Supprimer' style='cursor:pointer;' onclick='supprime_tab(\"{$tab["nom"]}_\",$i);' />\n";
       echo "</td>\n";
 
       // Cellules (grises ou non)

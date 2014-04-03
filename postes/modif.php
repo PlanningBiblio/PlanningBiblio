@@ -107,7 +107,7 @@ foreach($etages as $elem){
 }
 echo "</select>\n";
 echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_etages&amp;terme=&eacute;tage\",400,400);'>\n";
-echo "<img src='img/add.gif' alt='*' style=width:15px;'/></a>\n";
+echo "<img src='themes/default/images/add.gif' alt='*' style=width:15px;'/></a>\n";
 echo "</td></tr>";
 
 echo "<tr><td style='padding-top:20px;'>";

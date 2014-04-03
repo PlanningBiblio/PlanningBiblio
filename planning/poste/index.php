@@ -206,29 +206,29 @@ echo "<div id='validation'>\n";
 if($autorisation){
   if($verrou){
     echo "<font><u>Validation</u><br/>$perso2 $date_validation2 $heure_validation2<br/></font>\n";
-    echo "<a href='index.php?page=planning/poste/verrou.php&amp;date=$date&amp;verrou2=0&amp;site=$site' title='Déverrouiller le planning'><img id='deverrou' src='img/verrou.jpg' alt='verrou2=0' /></a>\n";
+    echo "<a href='index.php?page=planning/poste/verrou.php&amp;date=$date&amp;verrou2=0&amp;site=$site' title='Déverrouiller le planning'><img id='deverrou' src='themes/default/images/verrou.jpg' alt='verrou2=0' /></a>\n";
   }
   else{
-    echo "<a href='index.php?page=planning/poste/verrou.php&amp;date=$date&amp;verrou2=1&amp;site=$site' title='Verrouiller le planning'><img id='verrou' src='img/deverrou.jpg' alt='verrou1=1' /></a>\n";
+    echo "<a href='index.php?page=planning/poste/verrou.php&amp;date=$date&amp;verrou2=1&amp;site=$site' title='Verrouiller le planning'><img id='verrou' src='themes/default/images/deverrou.jpg' alt='verrou1=1' /></a>\n";
   }
 }
 
 if($autorisation){
-  echo "<a href='javascript:popup(\"planning/poste/enregistrer.php\",500,270);' title='Enregistrer comme modèle'><img src='img/save.jpg' alt='Enregistrer'/></a>&nbsp;";
+  echo "<a href='javascript:popup(\"planning/poste/enregistrer.php\",500,270);' title='Enregistrer comme modèle'><img src='themes/default/images/save.jpg' alt='Enregistrer'/></a>&nbsp;";
   if(!$verrou){
-    echo "<a href='javascript:popup(\"planning/poste/importer.php\",500,270);' title='Importer un modèle'><img src='img/open.jpg' alt='Importer'/></a>&nbsp;";
-    echo "<a href='javascript:popup(\"planning/poste/supprimer.php\",500,200);' title='Supprimer le planning'><img src='img/drop-20.gif' alt='Supprimer'/></a>&nbsp;";
+    echo "<a href='javascript:popup(\"planning/poste/importer.php\",500,270);' title='Importer un modèle'><img src='themes/default/images/open.jpg' alt='Importer'/></a>&nbsp;";
+    echo "<a href='javascript:popup(\"planning/poste/supprimer.php\",500,200);' title='Supprimer le planning'><img src='themes/default/images/drop-20.gif' alt='Supprimer'/></a>&nbsp;";
   }
 }
 if($verrou){
   if(!$autorisation){
     echo "<u>Validation</u> $perso2 $date_validation2 $heure_validation2<br/>\n";
   }
-  echo "<a href='javascript:print();' title='Imprimer le planning'><img id='imprimante' src='img/imprimante.gif' alt='imprimer' /></a>\n";
+  echo "<a href='javascript:print();' title='Imprimer le planning'><img id='imprimante' src='themes/default/images/imprimante.gif' alt='imprimer' /></a>\n";
   echo "<script type='text/JavaScript'>refresh_poste('$validation2');</script>";
 }
 
-echo "<a href='index.php' title='Actualiser'><img id='rafraichir' src='img/rafraichir.jpg' alt='rafraichir' /></a>\n";
+echo "<a href='index.php' title='Actualiser'><img id='rafraichir' src='themes/default/images/rafraichir.jpg' alt='rafraichir' /></a>\n";
 echo "</div>\n";
 
 echo "<div id='planningTips'>&nbsp;</div>";

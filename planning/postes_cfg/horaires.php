@@ -104,12 +104,12 @@ if($horaires[0]){
 	echo "<select name='fin_{$tableau}_new$j' style='width:75px;'>\n";
 	selectHeure(6,23,true,$quart);
 	echo "</select>\n";
-	echo "<img src='img/drop.gif' alt='supprimer' style='cursor:pointer;' onclick='document.form2.debut_{$elem['tableau']}_new$j.value=\"\";document.form2.fin_{$elem['tableau']}_new$j.value=\"\";'/>\n";
+	echo "<img src='themes/default/images/drop.gif' alt='supprimer' style='cursor:pointer;' onclick='document.form2.debut_{$elem['tableau']}_new$j.value=\"\";document.form2.fin_{$elem['tableau']}_new$j.value=\"\";'/>\n";
 	echo "</td>\n";
 	echo "</tr>\n";
       }
 							// Affichage des boutons ajouter
-      echo "<tr><td><img src='img/add.gif' alt='ajouter' style='cursor:pointer' onclick='add_horaires(\"{$tableau}\");'/></td></tr>\n";
+      echo "<tr><td><img src='themes/default/images/add.gif' alt='ajouter' style='cursor:pointer' onclick='add_horaires(\"{$tableau}\");'/></td></tr>\n";
       echo "</table></td>";
 
       // Affichage des tableaux sur plusieurs lignes de 4
@@ -134,7 +134,7 @@ if($horaires[0]){
     echo "<select name='fin_{$elem['tableau']}_{$elem['id']}' style='width:75px;' onchange='change_horaires(this);'>\n";
     selectHeure(6,23,true,$quart);
     echo "</select>\n";
-    echo "<img src='img/drop.gif' alt='supprimer' style='cursor:pointer;' onclick='document.form2.debut_{$elem['tableau']}_{$elem['id']}.value=\"\";document.form2.fin_{$elem['tableau']}_{$elem['id']}.value=\"\";'/>\n";
+    echo "<img src='themes/default/images/drop.gif' alt='supprimer' style='cursor:pointer;' onclick='document.form2.debut_{$elem['tableau']}_{$elem['id']}.value=\"\";document.form2.fin_{$elem['tableau']}_{$elem['id']}.value=\"\";'/>\n";
     echo "<script type='text/JavaScript'>document.form2.fin_{$elem['tableau']}_{$elem['id']}.value='{$elem['fin']}';</script>\n";	
     echo "</td>\n";
     echo "</tr>\n";
@@ -149,12 +149,12 @@ if($horaires[0]){
     echo "<select name='fin_{$tableau}_new$j' style='width:75px;'>\n";
     selectHeure(6,23,true,$quart);
     echo "</select>\n";
-    echo "<img src='img/drop.gif' alt='supprimer' style='cursor:pointer;' onclick='document.form2.debut_{$elem['tableau']}_new$j.value=\"\";document.form2.fin_{$elem['tableau']}_new$j.value=\"\";'/>\n";
+    echo "<img src='themes/default/images/drop.gif' alt='supprimer' style='cursor:pointer;' onclick='document.form2.debut_{$elem['tableau']}_new$j.value=\"\";document.form2.fin_{$elem['tableau']}_new$j.value=\"\";'/>\n";
     echo "</td>\n";
     echo "</tr>\n";
   }
 							// Affichage du bouton ajouter du dernier tableau
-  echo "<tr><td><img src='img/add.gif' alt='ajouter' style='cursor:pointer' onclick='add_horaires(\"{$elem['tableau']}\");'/></td></tr>\n";
+  echo "<tr><td><img src='themes/default/images/add.gif' alt='ajouter' style='cursor:pointer' onclick='add_horaires(\"{$elem['tableau']}\");'/></td></tr>\n";
   echo "</table></td>\n";
   echo "</tr></table>\n";
 }

@@ -91,19 +91,19 @@ if(in_array(13,$droits)){
 }
 echo "</td><td>";
 echo "Nom de l'activités\n";
-echo "&nbsp;&nbsp;<a href='index.php?page=activites/index.php&amp;nom=$nom&amp;tri=nom'><img src='img/up.png' alt='+' border='0' style='width:10px;'/></a>\n";
-echo "<a href='index.php?page=activites/index.php&amp;nom=$nom&amp;tri=nom%20desc'><img src='img/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
+echo "&nbsp;&nbsp;<a href='index.php?page=activites/index.php&amp;nom=$nom&amp;tri=nom'><img src='themes/default/images/up.png' alt='+' border='0' style='width:10px;'/></a>\n";
+echo "<a href='index.php?page=activites/index.php&amp;nom=$nom&amp;tri=nom%20desc'><img src='themes/default/images/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
 echo "</td></tr>\n";
 
 foreach($activites as $elem){
   $class=$class=="tr1"?"tr2":"tr1";
   echo "<tr class='$class'><td>\n";
   echo "<a href='index.php?page=activites/modif.php&amp;id={$elem['id']}'>\n";
-  echo "<img src='img/modif.png' border='0' alt='modif' /></a>\n";
+  echo "<img src='themes/default/images/modif.png' border='0' alt='modif' /></a>\n";
   if(!in_array($elem['id'],$activites_utilisees)){
     echo "&nbsp;&nbsp;";
     echo "<a href='javascript:supprime(\"activites\",{$elem['id']});'>";
-    echo "<img src='img/suppr.png' border='0' alt='supp' /></a>\n";
+    echo "<img src='themes/default/images/suppr.png' border='0' alt='supp' /></a>\n";
   }
   echo "</td>\n";
   if(in_array(13,$droits))

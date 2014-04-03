@@ -379,7 +379,7 @@ else{					//	Formulaire
   }
   echo "</select>\n";
   if($admin){
-    echo "<img src='img/add.gif' alt='*' style=width:15px;cursor:pointer;' id='add-motif-button'/>\n";
+    echo "<img src='themes/default/images/add.gif' alt='*' style=width:15px;cursor:pointer;' id='add-motif-button'/>\n";
   }
   echo "</td></tr>\n";
 

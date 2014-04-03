@@ -218,7 +218,7 @@ if(in_array(21,$droits)){
     echo "<option $select1 value='".$elem['valeur']."'>".$elem['valeur']."</option>\n";
   }
   echo "</select>\n";
-  echo "<img src='img/add.gif' alt='*' style=width:15px;cursor:pointer;' id='add-statut-button'/>\n";
+  echo "<img src='themes/default/images/add.gif' alt='*' style=width:15px;cursor:pointer;' id='add-statut-button'/>\n";
 }
 else{
   echo $statut;
@@ -254,7 +254,7 @@ if(in_array(21,$droits)){
   }
   echo "</select>\n";
   echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_services&amp;terme=service\",400,400);'>\n";
-  echo "<img src='img/add.gif' alt='*' style=width:15px;'/></a>\n";
+  echo "<img src='themes/default/images/add.gif' alt='*' style=width:15px;'/></a>\n";
 }
 else{
   echo $service;
@@ -377,7 +377,7 @@ if(in_array(21,$droits)){
   echo "(AAAA-MM-JJ) :";
   echo "</td><td>";
   echo "<input type='text' value='$arrivee' name='arrivee' style='width:400px' />";
-  echo "&nbsp;&nbsp;<img src='img/calendrier.gif' onclick='calendrier(\"arrivee\");' alt='arrivée' />";
+  echo "&nbsp;&nbsp;<img src='themes/default/images/calendrier.gif' onclick='calendrier(\"arrivee\");' alt='arrivée' />";
 }
 else
   echo "</td><td>".dateFr($arrivee);
@@ -389,7 +389,7 @@ if(in_array(21,$droits)){
   echo "(AAAA-MM-JJ) :";
   echo "</td><td>";
   echo "<input type='text' value='$depart' name='depart' style='width:400px' />";
-  echo "&nbsp;&nbsp;<img src='img/calendrier.gif' onclick='calendrier(\"depart\");' alt='départ' />";
+  echo "&nbsp;&nbsp;<img src='themes/default/images/calendrier.gif' onclick='calendrier(\"depart\");' alt='départ' />";
 }
 else
   echo "</td><td>".dateFr($depart);

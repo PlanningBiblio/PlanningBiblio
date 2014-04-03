@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/index.php
 Création : mai 2011
-Dernière modification : 30 janvier 2014
+Dernière modification : 3 avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -73,12 +73,12 @@ EOD;
     echo "<tr class='$class'><td>\n";
     echo "<input type='checkbox' name='chk$i' value='{$elem['tableau']}'/>\n";
     echo "<a href='index.php?page=planning/postes_cfg/modif.php&amp;numero={$elem['tableau']}'>\n";
-    echo "<img src='img/modif.png' alt='Modification' /></a>\n";
+    echo "<img src='themes/default/images/modif.png' alt='Modification' /></a>\n";
     echo "<a href='javascript:popup(\"planning/postes_cfg/copie.php&amp;retour=index.php&amp;numero={$elem['tableau']}\",400,200);'>\n";
-    echo "<img src='img/copy.png' alt='Copie'/></a>\n";
+    echo "<img src='themes/default/images/copy.png' alt='Copie'/></a>\n";
     if(!in_array($elem['tableau'],$used)){
       echo "<a href='javascript:popup(\"planning/postes_cfg/suppression.php&amp;numero={$elem['tableau']}\",400,130);'>\n";
-      echo "<img src='img/suppr.png' alt='Suppression' /></a>\n";
+      echo "<img src='themes/default/images/suppr.png' alt='Suppression' /></a>\n";
     }
     echo "</td>\n";
     echo "<td>{$elem['tableau']}</td>\n";
@@ -121,8 +121,8 @@ if(is_array($groupes)){
     $class=$class=="tr1"?"tr2":"tr1";
     $id=in_array(13,$droits)?"<td>{$elem['id']}</td>":null;
     echo "<tr class='$class'><td><a href='index.php?page=planning/postes_cfg/groupes.php&amp;id={$elem['id']}'>\n";
-    echo "<img src='img/modif.png' border='0' alt='modif' /></a>\n";
-    echo "<a href='javascript:supprime_groupe(\"{$elem['id']}\",\"".addslashes(html_entity_decode($elem['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8"))."\");'><img src='img/drop.gif' border='0' alt='Suppression' /></a>\n";
+    echo "<img src='themes/default/images/modif.png' border='0' alt='modif' /></a>\n";
+    echo "<a href='javascript:supprime_groupe(\"{$elem['id']}\",\"".addslashes(html_entity_decode($elem['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8"))."\");'><img src='themes/default/images/suppr.png' border='0' alt='Suppression' /></a>\n";
     echo "</td>\n";
     echo "$id<td>{$elem['nom']}</td>\n";
     if($config['Multisites-nombre']>1){
@@ -160,8 +160,8 @@ foreach($db->result as $elem){
 
   $class=$class=="tr2"?"tr1":"tr2";
   echo "<tr class='$class'>\n";
-  echo "<td><a href='index.php?page=planning/postes_cfg/lignes_sep.php&amp;action=modif&amp;id={$elem['id']}'><img src='img/modif.png' border='0' alt='modif' /></a>\n";
-  echo "<a $delete href='javascript:supprime_ligne(\"{$elem['id']}\",\"".addslashes(html_entity_decode($elem['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8"))."\");'><img src='img/drop.gif' border='0' alt='Suppression' /></a>\n";
+  echo "<td><a href='index.php?page=planning/postes_cfg/lignes_sep.php&amp;action=modif&amp;id={$elem['id']}'><img src='themes/default/images/modif.png' border='0' alt='modif' /></a>\n";
+  echo "<a $delete href='javascript:supprime_ligne(\"{$elem['id']}\",\"".addslashes(html_entity_decode($elem['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8"))."\");'><img src='themes/default/images/suppr.png' border='0' alt='Suppression' /></a>\n";
   echo "</td>\n";
   if(in_array(13,$droits)){
     echo "<td>{$elem['id']}</td>\n";
