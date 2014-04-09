@@ -5,6 +5,7 @@ include/config.php
 plugins/conges*
 plugins/ldap*
 plugins/pla*
+plugins/echanges*
 themes/bua*
 themes/bis*
 themes/bsb*

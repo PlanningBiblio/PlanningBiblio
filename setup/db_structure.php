@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.7
+Planning Biblio, Version 1.7.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 27 mars 2014
+Dernière modification : 4 avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -284,6 +284,7 @@ $sql[]="CREATE TABLE `{$dbprefix}select_statuts` (
 $sql[]="CREATE TABLE `{$dbprefix}plugins` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `nom` VARCHAR(30) NOT NULL,
+  `version` VARCHAR(20),
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 

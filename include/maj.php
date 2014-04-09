@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.8
+Planning Biblio, Version 1.7.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 2 avril 2014
+Dernière modification : 4 avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -551,6 +551,11 @@ if(strcmp("1.7.8",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}config` SET `nom`='Affichage-etages', `ordre` ='30'  WHERE `nom`='affiche_etage';";
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`type`,`valeur`,`categorie`,`ordre`,`commentaires`) VALUES ('Affichage-theme','text','default','Affichage',10,'Th&egrave;me de l&apos;application.');";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.7.8' WHERE `nom`='Version';";
+}
+
+if(strcmp("1.7.9",$config['Version'])>0){
+  $sql[]="ALTER TABLE `{$dbprefix}plugins` ADD `version` VARCHAR(20);";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.7.9' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage

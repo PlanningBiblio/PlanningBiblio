@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 31 mars 2014
+Dernière modification : 9 avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -163,6 +163,75 @@ function checkall(form,me){
     if(elems[i].type=="checkbox" && elems[i]!=me){
       elems[i].click();
     }
+  }
+}
+
+// checkDate1 : utilisée pour valider les formulaires Jquery-UI, la date (o) doit être supérieure ou égale à aujourd'hui
+function checkDate1( o, n) {
+  if(n==undefined){
+    n=false;
+  }
+  var today=new Date();
+  var d=new Date();
+  tmp=o.val().split("/");
+  d.setDate(parseInt(tmp[0]));
+  d.setMonth(parseInt(tmp[1])-1);
+  d.setFullYear(parseInt(tmp[2]));
+  diff=dateDiff(today,d);
+  if(diff.day<0){
+    if(n){
+      o.addClass( "ui-state-error" );
+      updateTips( n );
+    }
+    return false;
+  } else {
+    return true;
+  }
+}
+
+// checkDate2 : utilisée pour valider les formulaires Jquery-UI. date2 doit être supérieur à date1
+function checkDate2( date1, date2, n ) {
+  var d1=new Date();
+  tmp=date1.val().split("/");
+  d1.setDate(parseInt(tmp[0]));
+  d1.setMonth(parseInt(tmp[1])-1);
+  d1.setFullYear(parseInt(tmp[2]));
+
+  var d2=new Date();
+  tmp=date2.val().split("/");
+  d2.setDate(parseInt(tmp[0]));
+  d2.setMonth(parseInt(tmp[1])-1);
+  d2.setFullYear(parseInt(tmp[2]));
+
+  diff=dateDiff(d1,d2);
+  if(diff.day<0){
+    date2.addClass( "ui-state-error" );
+    updateTips( n );
+    return false;
+  } else {
+    return true;
+  }
+}
+
+// checkDiff : utilisée pour valider les formulaires Jquery-U, o1 et o2 doivent avoir des valeurs différentes
+function checkDiff( o1, o2, n ) {
+  if (o1.val() == o2.val()){
+    o2.addClass( "ui-state-error" );
+    updateTips( n );
+    return false;
+  } else {
+    return true;
+  }
+}
+
+// checkRegexp : utilisée pour valider les formulaires Jquery-UI.
+function checkRegexp( o, regexp, n ) {
+  if ( !( regexp.test( o.val() ) ) ) {
+    o.addClass( "ui-state-error" );
+    updateTips( n );
+    return false;
+  } else {
+    return true;
   }
 }
 
@@ -447,6 +516,17 @@ function tabSiteUpdate(){
       var timeout=setTimeout(function(){$("#TableauxTips").hide();},5000);
     }
   });
+}
+
+// updateTips : utilisée pour valider les formulaires Jquery-UI
+function updateTips( t ) {
+  var tips=$( ".validateTips" );
+  tips
+    .text( t )
+    .addClass( "ui-state-highlight" );
+  setTimeout(function() {
+    tips.removeClass( "ui-state-highlight", 1500 );
+  }, 500 );
 }
 
 function verif_categorieA(){
