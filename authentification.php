@@ -31,7 +31,7 @@ if(!file_exists("include/config.php")){
   exit;
 }
 
-$version="1.7.8";
+$version="1.7.9";
 
 include "include/config.php";
 
