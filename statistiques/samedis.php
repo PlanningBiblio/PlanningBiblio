@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/samedis.php
 Création : 15 novembre 2013
-Dernière modification : 20 janvier 2014
+Dernière modification : 29 avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -203,14 +203,14 @@ echo "<table><tr style='vertical-align:top;'><td id='stat-col1'>\n";
 echo "<form name='form' action='index.php' method='get'>\n";
 echo "<input type='hidden' name='page' value='statistiques/samedis.php' />\n";
 echo "<table>\n";
-echo "<tr><td>Début : </td>\n";
+echo "<tr><td><label class='intitule'>Début</label></td>\n";
 echo "<td><input type='text' name='debut' value='$debut' class='datepicker'/>\n";
 echo "</td></tr>\n";
-echo "<tr><td>Fin : </td>\n";
+echo "<tr><td><label class='intitule'>Fin</label></td>\n";
 echo "<td><input type='text' name='fin' value='$fin' class='datepicker'/>\n";
 echo "</td></tr>\n";
-echo "<tr style='vertical-align:top'><td>Agents : </td>\n";
-echo "<td><select name='agents[]' multiple='multiple' size='20' onchange='verif_select(\"agents\");'>\n";
+echo "<tr style='vertical-align:top'><td><label class='intitule'>Agents</label></td>\n";
+echo "<td><select name='agents[]' multiple='multiple' size='20' onchange='verif_select(\"agents\");' class='ui-widget-content ui-corner-all' >\n";
 if(is_array($agents_list)){
   echo "<option value='Tous'>Tous</option>\n";
   foreach($agents_list as $elem){
@@ -223,8 +223,8 @@ if(is_array($agents_list)){
 echo "</select></td></tr>\n";
 if($config['Multisites-nombre']>1){
   $nbSites=$config['Multisites-nombre'];
-  echo "<tr style='vertical-align:top'><td>Sites : </td>\n";
-  echo "<td><select name='selectedSites[]' multiple='multiple' size='".($nbSites+1)."' onchange='verif_select(\"selectedSites\");'>\n";
+  echo "<tr style='vertical-align:top'><td><label class='intitule'>Sites</label></td>\n";
+  echo "<td><select name='selectedSites[]' multiple='multiple' size='".($nbSites+1)."' onchange='verif_select(\"selectedSites\");' class='ui-widget-content ui-corner-all' >\n";
   echo "<option value='Tous'>Tous</option>\n";
   for($i=1;$i<=$nbSites;$i++){
     $selected=in_array($i,$selectedSites)?"selected='selected'":null;
@@ -233,9 +233,9 @@ if($config['Multisites-nombre']>1){
   echo "</select></td></tr>\n";
 }
 
-echo "<tr><td colspan='2' style='text-align:center;'>\n";
-echo "<input type='button' value='Effacer' onclick='location.href=\"index.php?page=statistiques/samedis.php&amp;debut=&amp;fin=&amp;agents=\"' />\n";
-echo "&nbsp;&nbsp;<input type='submit' value='OK' />\n";
+echo "<tr><td colspan='2' style='text-align:center;padding:10pt;'>\n";
+echo "<input type='button' value='Effacer' onclick='location.href=\"index.php?page=statistiques/samedis.php&amp;debut=&amp;fin=&amp;agents=\"' class='ui-button' />\n";
+echo "&nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />\n";
 echo "</td></tr>\n";
 echo "<tr><td colspan='2'><hr/></td></tr>\n";
 echo "<tr><td>Exporter </td>\n";

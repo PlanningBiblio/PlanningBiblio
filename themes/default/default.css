@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 3 avril 2014
+Dernière modification : 29 avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -34,6 +34,11 @@ body {
 	margin-top:0px;
 	margin-left:10px;
 	}
+
+h3{
+  margin-top:25px;
+  font-size:13pt;
+}
 
 #acces_refuse {
   margin: 60px 0 80px 0;
@@ -701,6 +706,10 @@ img{
   width:100px;
 }
 
+.intitule{
+  font-weight:bold;
+}
+
 .infobulle{
   position: absolute;
   background: #7D3C25;
@@ -723,6 +732,10 @@ ul[id$="-sortable"] li span { position: absolute; margin-left: -1.3em; }
 
 option.bold{
   margin-top:3px;
+}
+
+.center{
+  text-align:center;
 }
 
 .padding20{

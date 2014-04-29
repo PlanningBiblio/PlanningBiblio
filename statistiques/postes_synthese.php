@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/postes_synthese.php
 Création : mai 2011
-Dernière modification : 20 janvier 2014
+Dernière modification : 29 avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -162,15 +162,15 @@ echo "<table><tr style='vertical-align:top;'><td id='stat-col1'>\n";
 echo "<form name='form' action='index.php' method='get'>\n";
 echo "<input type='hidden' name='page' value='statistiques/postes_synthese.php' />\n";
 echo "<table>\n";
-echo "<tr><td>Début : </td>\n";
+echo "<tr><td><label class='intitule'>Début</label></td>\n";
 echo "<td><input type='text' name='debut' value='$debut' class='datepicker' />\n";
 echo "</td></tr>\n";
-echo "<tr><td>Fin : </td>\n";
+echo "<tr><td><label class='intitule'>Fin</label></td>\n";
 echo "<td><input type='text' name='fin' value='$fin' class='datepicker' />\n";
 echo "</td></tr>\n";
-echo "<tr><td>Tri : </td>\n";
+echo "<tr><td><label class='intitule'>Tri</label></td>\n";
 echo "<td>\n";
-echo "<select name='tri'>\n";
+echo "<select name='tri' class='ui-widget-content ui-corner-all' >\n";
 echo "<option value='cmp_01'>Nom du poste</option>\n";
 echo "<option value='cmp_02'>Etage</option>\n";
 echo "<option value='cmp_03'>Obligatoire</option>\n";
@@ -179,8 +179,8 @@ echo "<option value='cmp_2'>Heures du - au +</option>\n";
 echo "<option value='cmp_2desc'>Heures du + au -</option>\n";
 echo "</select>\n";
 echo "</td></tr>\n";
-echo "<tr style='vertical-align:top'><td>Postes : </td>\n";
-echo "<td><select name='postes[]' multiple='multiple' size='20' onchange='verif_select(\"postes\");'>\n";
+echo "<tr style='vertical-align:top'><td><label class='intitule'>Postes</label></td>\n";
+echo "<td><select name='postes[]' multiple='multiple' size='20' onchange='verif_select(\"postes\");'class='ui-widget-content ui-corner-all' >\n";
 if(is_array($postes_list)){
   echo "<option value='Tous'>Tous</option>\n";
   foreach($postes_list as $elem){
@@ -188,15 +188,16 @@ if(is_array($postes_list)){
       $selected=in_array($elem['id'],$postes)?"selected='selected'":null;
     }
     $class=$elem['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
-    echo "<option value='{$elem['id']}' $selected class='$class'>{$elem['nom']} ({$elem['etage']})</option>\n";
+    $etage=$elem['etage']?"({$elem['etage']})":null;
+    echo "<option value='{$elem['id']}' $selected class='$class'>{$elem['nom']} $etage</option>\n";
   }
 }
 echo "</select></td></tr>\n";
 
 if($config['Multisites-nombre']>1){
   $nbSites=$config['Multisites-nombre'];
-  echo "<tr style='vertical-align:top'><td>Sites : </td>\n";
-  echo "<td><select name='selectedSites[]' multiple='multiple' size='".($nbSites+1)."' onchange='verif_select(\"selectedSites\");'>\n";
+  echo "<tr style='vertical-align:top'><td><label class='intitule'>Sites</label></td>\n";
+  echo "<td><select name='selectedSites[]' multiple='multiple' size='".($nbSites+1)."' onchange='verif_select(\"selectedSites\");' class='ui-widget-content ui-corner-all' >\n";
   echo "<option value='Tous'>Tous</option>\n";
   for($i=1;$i<=$nbSites;$i++){
     $selected=in_array($i,$selectedSites)?"selected='selected'":null;
@@ -205,9 +206,9 @@ if($config['Multisites-nombre']>1){
   echo "</select></td></tr>\n";
 }
 
-echo "<tr><td colspan='2' style='text-align:center;'>\n";
-echo "<input type='button' value='Effacer' onclick='location.href=\"index.php?page=statistiques/postes_synthese.php&amp;debut=&amp;fin=&amp;postes=\"' />\n";
-echo "&nbsp;&nbsp;<input type='submit' value='OK' />\n";
+echo "<tr><td colspan='2' style='text-align:center;padding:10px;'>\n";
+echo "<input type='button' value='Effacer' onclick='location.href=\"index.php?page=statistiques/postes_synthese.php&amp;debut=&amp;fin=&amp;postes=\"' class='ui-button' />\n";
+echo "&nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />\n";
 echo "</td></tr>\n";
 echo "<tr><td colspan='2'><hr/></td></tr>\n";
 echo "<tr><td>Exporter </td>\n";
