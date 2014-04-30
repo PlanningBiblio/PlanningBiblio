@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/infos.php
 Création : mai 2011
-Dernière modification : 5 mars 2014
+Dernière modification : 30 avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -94,18 +94,17 @@ else{
   <input type='hidden' name='page' value='absences/infos.php'/>\n
   <input type='hidden' name='id' value='$id'/>\n
   <table class='tableauFiches'>
-  <tr><td>
-  Date de début :
+  <tr><td><label class='intitule'>Date de début</label>
   </td><td>
   <input type='text' name='debut' value='$debut' style='width:100%;' class='datepicker'/>
-  </td></tr><tr><td>
-  Date de fin :
+  </td></tr>
+  <tr><td><label class='intitule'>Date de fin</label>
   </td><td>
   <input type='text' name='fin' value='$fin' style='width:100%;' class='datepicker'/>
-  </td></tr><tr><td>
-  Texte : 
+  </td></tr>
+  <tr><td><label class='intitule'>Texte</label>
   </td><td>
-  <textarea name='texte' rows='3' cols='25'>".$texte."</textarea>
+  <textarea name='texte' rows='3' cols='25' class='ui-widget-content ui-corner-all'>".$texte."</textarea>
   </td></tr><tr><td>&nbsp;
   </td></tr>
   <tr><td colspan='2' style='text-align:center;'>\n";

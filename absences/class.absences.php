@@ -163,7 +163,7 @@ class absences{
 	// Récupération du numéro du site concerné par la date courante
 	$j=$jour-1+($semaine*7)-7;
 	$site=null;
-	if(array_key_exists($j,$temps)){
+	if(array_key_exists($j,$temps) and array_key_exists(4,$temps[$j])){
 	  $site=$temps[$j][4];
 	}
 	// Ajout du numéro du droit correspondant à la gestion des absences de ce site
@@ -213,10 +213,10 @@ class absences{
 	$recipients[]=$mailResponsable;
 	break;
       case 3 :
-	$recipients=explode(";",trim($GLOBAL['config']['Mail-Planning']));
+	$recipients=explode(";",trim($GLOBALS['config']['Mail-Planning']));
 	break;
       case 4 :
-	$recipients=explode(";",trim($GLOBAL['config']['Mail-Planning']));
+	$recipients=explode(";",trim($GLOBALS['config']['Mail-Planning']));
 	$recipients[]=$mail;
 	$recipients[]=$mailResponsable;
 	foreach($responsables as $elem){

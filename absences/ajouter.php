@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.8
+Planning Biblio, Version 1.7.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 31 mars 2014
+Dernière modification : 30 avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -317,12 +317,12 @@ else{					//	Formulaire
   echo "<input type='hidden' name='confirm' value='confirm1' />\n";
   echo "<table class='tableauFiches'>\n";
   echo "<tr><td>\n";
-  echo "Nom, prénom : </td>\n";
+  echo "<label class='intitule'>Nom, prénom </label></td>\n";
   echo "<td>\n";
   if($admin){
     $db_perso=new db();
     $db_perso->query("select * from {$dbprefix}personnel where actif='Actif' order by nom,prenom;");
-    echo "<select name='perso_id'>\n";
+    echo "<select name='perso_id' class='ui-widget-content ui-corner-all'>\n";
     foreach($db_perso->result as $elem){
       if($perso_id==$elem['id'])
 	echo "<option value='".$elem['id']."' selected='selected'>".$elem['nom']." ".$elem['prenom']."</option>\n";
@@ -337,40 +337,40 @@ else{					//	Formulaire
   }
   echo "</td></tr>\n";
   echo "<tr><td>\n";
-  echo "Journée(s) entière(s) : \n";
+  echo "<label class='intitule'>Journée(s) entière(s) </label>\n";
   echo "</td><td>\n";
   echo "<input type='checkbox' name='allday' checked='checked' onclick='all_day();'/>\n";
   echo "</td></tr>\n";
   echo "<tr><td>\n";
-  echo "Date de début : \n";
+  echo "<label class='intitule'>Date de début </label>\n";
   echo "</td><td style='white-space:nowrap;'>";
   echo "<input type='text' name='debut' value='$debut' style='width:100%;' class='datepicker'/>\n";
   echo "</td></tr>\n";
   echo "<tr id='hre_debut' style='display:none;'><td>\n";
-  echo "Heure de début : \n";
+  echo "<label class='intitule'>Heure de début </label>\n";
   echo "</td><td>\n";
-  echo "<select name='hre_debut'>\n";
+  echo "<select name='hre_debut' class='center ui-widget-content ui-corner-all'>\n";
   selectHeure(7,23,true,$quartDHeure);
   echo "</select>\n";
   echo "</td></tr>\n";
   echo "<tr><td>\n";
-  echo "Date de fin : \n";
+  echo "<label class='intitule'>Date de fin </label>\n";
   echo "</td><td style='white-space:nowrap;'>";
   echo "<input type='text' name='fin' value='$fin' style='width:100%;' class='datepicker'/>\n";
   echo "</td></tr>\n";
   echo "<tr id='hre_fin' style='display:none;'><td>\n";
-  echo "Heure de fin : \n";
+  echo "<label class='intitule'>Heure de fin </label>\n";
   echo "</td><td>\n";
-  echo "<select name='hre_fin'>\n";
+  echo "<select name='hre_fin' class='center ui-widget-content ui-corner-all'>\n";
   selectHeure(7,23,true,$quartDHeure);
   echo "</select>\n";
   echo "</td></tr>\n";
   
   echo "<tr><td>\n";
-  echo "Motif : \n";
+  echo "<label class='intitule'>Motif </label>\n";
   echo "</td><td style='white-space:nowrap;'>\n";
 
-  echo "<select name='motif' style='width:100%;'>\n";
+  echo "<select name='motif' style='width:100%;' class='ui-widget-content ui-corner-all'>\n";
   echo "<option value=''></option>\n";
   foreach($motifs as $elem){
   $class=$elem['type']==2?"padding20":"bold";
@@ -383,19 +383,19 @@ else{					//	Formulaire
   }
   echo "</td></tr>\n";
 
-  echo "<tr style='display:none;' id='tr_motif_autre'><td>Motif (autre) :</td>\n";
-  echo "<td><input type='text' name='motif_autre' style='width:100%;'/></td></tr>\n";
+  echo "<tr style='display:none;' id='tr_motif_autre'><td><label class='intitule'>Motif (autre)</label></td>\n";
+  echo "<td><input type='text' name='motif_autre' style='width:100%;' class='ui-widget-content ui-corner-all'/></td></tr>\n";
 
   echo "<tr style='vertical-align:top;'><td>\n";
-  echo "Commentaires : \n";
+  echo "<label class='intitule'>Commentaires </label>\n";
   echo "</td><td>\n";
-  echo "<textarea name='commentaires' cols='16' rows='5' ></textarea>\n";
+  echo "<textarea name='commentaires' cols='16' rows='5' class='ui-widget-content ui-corner-all'></textarea>\n";
   echo "</td></tr>\n";
 
   if($config['Absences-validation']){
-    echo "<tr><td>&Eacute;tat : </td><td>\n";
+    echo "<tr><td><label class='intitule'>&Eacute;tat </label></td><td>\n";
     if($admin){
-      echo "<select name='valide'>\n";
+      echo "<select name='valide' class='ui-widget-content ui-corner-all'>\n";
       echo "<option value='0'>Demand&eacute;e</option>\n";
       echo "<option value='2' >Accept&eacute;e (En attente de validation hi&eacute;rarchique)</option>\n";
       echo "<option value='-2' >Refus&eacute;e (En attente de validation hi&eacute;rarchique)</option>\n";
@@ -412,7 +412,7 @@ else{					//	Formulaire
   }
 
   echo "<tr><td>&nbsp;\n";
-  echo "</td></tr><tr><td colspan='2'>\n";
+  echo "</td></tr><tr><td colspan='2' style='text-align:center;'>\n";
   if($menu=="off")
     echo "<input type='button' class='ui-button' value='Annuler' onclick='popup_closed();' />";
   else

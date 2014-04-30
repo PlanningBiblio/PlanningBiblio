@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.7.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 20 mars 2014
+Dernière modification : 30 avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -79,12 +79,12 @@ if($admin){
   
 echo "<form name='form' method='get' action='index.php'>\n";
 echo "<input type='hidden' name='page' value='absences/voir.php' />\n";
-echo "Début : <input type='text' name='debut' value='$debutFr' class='datepicker'/>\n";
-echo "&nbsp;&nbsp;Fin : <input type='text' name='fin' value='$finFr'  class='datepicker'/>\n";
+echo "<label class='intitule'>Début :</label> <input type='text' name='debut' value='$debutFr' class='datepicker'/>\n";
+echo "&nbsp;&nbsp;<label class='intitule'>Fin :</label> <input type='text' name='fin' value='$finFr'  class='datepicker'/>\n";
 
 if($admin){
-  echo "&nbsp;&nbsp;Agent : ";
-  echo "<select name='perso_id'>";
+  echo "&nbsp;&nbsp;<label class='intitule'>Agent :</label> ";
+  echo "<select name='perso_id' class='ui-widget-content ui-corner-all'>";
   $selected=$perso_id==0?"selected='selected'":null;
   echo "<option value='0' $selected >Tous</option>";
   foreach($agents as $agent){

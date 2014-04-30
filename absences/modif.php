@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.7
+Planning Biblio, Version 1.7.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 27 mars 2014
+Dernière modification : 29 avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -127,44 +127,44 @@ echo "<form name='form' method='get' action='index.php' onsubmit='return verif_a
 echo "<input type='hidden' name='page' value='absences/modif2.php' />\n";
 echo "<input type='hidden' name='perso_id' value='$perso_id' />\n";		// nécessaire pour verif_absences
 echo "<table class='tableauFiches'>\n";
-echo "<tr><td>Nom, Prénom : </td><td>";
+echo "<tr><td><label class='intitule'>Nom, Prénom</label></td><td>";
 echo $db->result[0]['nom'];
 echo "&nbsp;";
 echo $db->result[0]['prenom'];
 echo "</td></tr>\n";
 echo "<tr><td>\n";
-echo "Journée(s) entière(s) : \n";
+echo "<label class='intitule'>Journée(s) entière(s)</label>\n";
 echo "</td><td>\n";
 echo "<input type='checkbox' name='allday' $checked onclick='all_day();'/>\n";
 echo "</td></tr>\n";
 echo "<tr><td>";
-echo "Date de début : </td><td style='white-space:nowrap;'>";
+echo "<label class='intitule'>Date de début</label></td><td style='white-space:nowrap;'>";
 echo "<input type='text' name='debut' value='$debut' style='width:100%;' class='datepicker'/>\n";
 echo "</td></tr>\n";
 echo "<tr id='hre_debut' $display ><td>\n";
-echo "Heure de début : \n";
+echo "<label class='intitule'>Heure de début</label>\n";
 echo "</td><td>\n";
-echo "<select name='hre_debut'>\n";
+echo "<select name='hre_debut' class='center ui-widget-content ui-corner-all'>\n";
 selectHeure(7,23,true,$quartDHeure,$hre_debut);
 echo "</select>\n";
 echo "</td></tr>\n";
 
 echo "<tr><td>";
-echo "Date de fin : </td><td style='white-space:nowrap;'>";
+echo "<label class='intitule'>Date de fin</label></td><td style='white-space:nowrap;'>";
 echo "<input type='text' name='fin' value='$fin' style='width:100%;' class='datepicker'/>\n";
 echo "</td></tr>\n";
 echo "<tr id='hre_fin' $display ><td>\n";
-echo "Heure de fin : \n";
+echo "<label class='intitule'>Heure de fin</label>\n";
 echo "</td><td>\n";
-echo "<select name='hre_fin'>\n";
+echo "<select name='hre_fin' class='center ui-widget-content ui-corner-all'>\n";
 selectHeure(7,23,true,$quartDHeure,$hre_fin);
 echo "</select>\n";
 echo "</td></tr>\n";
 
-echo "<tr><td>";
-echo "Motif : </td><td style='white-space:nowrap;'>";
+echo "<tr><td><label class='intitule'>Motif</label></td>\n";
+echo "<td style='white-space:nowrap;'>";
 
-echo "<select name='motif' style='width:100%;'>\n";
+echo "<select name='motif' style='width:100%;' class='ui-widget-content ui-corner-all'>\n";
 echo "<option value=''></option>\n";
 foreach($motifs as $elem){
   $selected=$elem['valeur']==$motif?"selected='selected'":null;
@@ -177,20 +177,20 @@ if($admin){
   echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_abs&amp;terme=motif\",400,400);'>\n";
   echo "<img src='themes/default/images/add.gif' alt='*' style=width:15px;cursor:pointer;' id='add-motif-button'/>\n";
 }
-  echo "</td></tr>\n";
+echo "</td></tr>\n";
 
-  echo "<tr $display_autre id='tr_motif_autre'><td>Motif (autre) :</td>\n";
-  echo "<td><input type='text' name='motif_autre' style='width:100%;' value='$motif_autre'/></td></tr>\n";
+echo "<tr $display_autre id='tr_motif_autre'><td><label class='intitule'>Motif (autre)</label></td>\n";
+echo "<td><input type='text' name='motif_autre' style='width:100%;' value='$motif_autre' class='ui-widget-content ui-corner-all'/></td></tr>\n";
 
-  echo "<tr style='vertical-align:top;'><td>\n";
-echo "Commentaires : </td><td>";
-echo "<textarea name='commentaires' cols='25' rows='5'>$commentaires</textarea>";
+echo "<tr style='vertical-align:top;'><td>\n";
+echo "<label class='intitule'>Commentaires</label></td><td>";
+echo "<textarea name='commentaires' cols='25' rows='5' class='ui-widget-content ui-corner-all'>$commentaires</textarea>";
 echo "</td></tr>";
 
 if($config['Absences-validation']){
-  echo "<tr><td>Validation : </td><td>\n";
+  echo "<tr><td><label class='intitule'>Validation</label></td><td>\n";
   if($admin){
-    echo "<select name='valide'>\n";
+    echo "<select name='valide' class='ui-widget-content ui-corner-all'>\n";
     echo "<option value='0' $select1>Demand&eacute;e</option>\n";
     echo "<option value='2' $select4>Accept&eacute;e (En attente de validation hi&eacute;rarchique)</option>\n";
     echo "<option value='-2' $select5>Refus&eacute;e (En attente de validation hi&eacute;rarchique)</option>\n";
