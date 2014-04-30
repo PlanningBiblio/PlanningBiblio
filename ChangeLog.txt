@@ -1,3 +1,9 @@
+***	Version 1.7.9	(Jérôme Combes, 30 avril 2014)		***
+- Améliorations :
+Ajout des fonctions JS check... et updateTips pour la validation des formulaires JQuery-UI
+Amélioration du style des formulaires des statistiques et des absences (style JQuery-UI)
+Amélioration du style des datepickers (style JQuery-UI)
+
 ***	Version 1.7.8	(Jérôme Combes, 2 avril 2014)		***
 - Améliorations :
 Utilisation d'une nouvelle fonction (absences::getRecipients) pour envoyer les notifications d'absences
