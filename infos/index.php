@@ -1,23 +1,23 @@
 <?php
-/********************************************************************************************************************************
-* Planning Biblio, Version 1.7.2
-* Licence GNU/GPL (version 2 et au dela)											*
-* Voir les fichiers README.md et LICENSE											*
-* Copyright (C) 2011-2014 - Jérôme Combes											*
-*																*
-* Fichier : infos/index.php													*
-* Création : février 2012													*
-* Dernière modification : 16 janvier 2013											*
-* Auteur : Jérôme Combes, jerome@planningbilbio.fr										*
-*																*
-* Description :															*
-* Affcihe le pied de page													*
-* Permet d'ajouter, de modifier et de supprimer un message d'information.							*
-* Le message apparaître pendant la période souhaitée en haut du planning.							*
-* L'affichage des messages est géré par la page planning/postes/index.php							*
-*																*
-* Cette page est appelée par le fichier index.php										*
-*********************************************************************************************************************************/
+/*
+Planning Biblio, Version 1.8
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.md et LICENSE
+Copyright (C) 2011-2014 - Jérôme Combes
+
+Fichier : infos/index.php
+Création : février 2012
+Dernière modification : 30 avril 2014
+Auteur : Jérôme Combes, jerome@planningbilbio.fr
+
+Description :
+Affcihe le pied de page
+Permet d'ajouter, de modifier et de supprimer un message d'information.
+Le message apparaître pendant la période souhaitée en haut du planning.
+L'affichage des messages est géré par la page planning/postes/index.php
+
+Cette page est appelée par le fichier index.php
+*/
 
 // pas de $version=acces direct aux pages de ce dossier => redirection vers la page index.php
 if(!$version){
@@ -43,9 +43,9 @@ elseif(isset($_GET['suppression'])){
   echo "<input type='hidden' name='suppression' value='oui'/>\n";
   echo "<input type='hidden' name='validation' value='oui'/>\n";
   echo "<input type='hidden' name='id' value='".$_GET['id']."'/>\n";
-  echo "<input type='button' value='Non' onclick='history.back();'/>\n";
+  echo "<input type='button' value='Non' onclick='history.back();'  class='ui-button'/>\n";
   echo "&nbsp;&nbsp;&nbsp;";
-  echo "<input type='submit' value='Oui' />\n";
+  echo "<input type='submit' value='Oui' class='ui-button'/>\n";
   echo "</form>\n";
 }
 //			----------------	FIN Suppression			-------------------------------//
@@ -55,17 +55,16 @@ elseif(isset($_GET['validation'])){		//		Validation
   echo "<br/><br/><a href='index.php?page=infos/index.php'>Retour</a>\n";
   $db=new db();
   if(isset($_GET['id']) and $_GET['id']!=null)
-    $db->update2("infos",array("debut"=>$_GET['debut'],"fin"=>$_GET['fin'],"texte"=>$_GET['texte']),array("id"=>$_GET['id']));
+    $db->update2("infos",array("debut"=>dateSQL($_GET['debut']),"fin"=>dateSQL($_GET['fin']),"texte"=>$_GET['texte']),array("id"=>$_GET['id']));
   else
-    $db->insert2("infos",array("debut"=>$_GET['debut'],"fin"=>$_GET['fin'],"texte"=>$_GET['texte']));
+    $db->insert2("infos",array("debut"=>dateSQL($_GET['debut']),"fin"=>dateSQL($_GET['fin']),"texte"=>$_GET['texte']));
 }
 //			---------------		Vérification			------------------------------//
 elseif(isset($_GET['debut'])){
   $texte=htmlentities($_GET['texte'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
   $_GET['fin']=$_GET['fin']?$_GET['fin']:$_GET['debut'];
   echo "<h4>Confirmation</h4>";
-  echo "Du ".dateFr($_GET['debut']);
-  echo " au ".dateFr($_GET['fin']);
+  echo "Du {$_GET['debut']} au {$_GET['fin']}";
   echo "<br/>";
   echo $texte;
   echo "<br/><br/>";
@@ -76,9 +75,9 @@ elseif(isset($_GET['debut'])){
   echo "<input type='hidden' name='texte' value='$texte'/>\n";
   echo "<input type='hidden' name='id' value='".$_GET['id']."'/>\n";
   echo "<input type='hidden' name='validation' value='validation'/>\n";
-  echo "<input type='button' value='Annuler' onclick='history.back();'/>";
+  echo "<input type='button' value='Annuler' onclick='history.back();' class='ui-button' />";
   echo "&nbsp;&nbsp;&nbsp;\n";
-  echo "<input type='submit' value='Valider'/>\n";
+  echo "<input type='submit' value='Valider' class='ui-button' />\n";
   echo "</form>";
 }
 //			----------------	FIN Validation du formulaire		-------------------------------//
@@ -92,8 +91,8 @@ else{
   if(isset($_GET['id'])){
     $db=new db();
     $db->query("select * from {$dbprefix}infos where id=".$_GET['id'].";");
-    $debut=$db->result[0]['debut'];
-    $fin=$db->result[0]['fin'];
+    $debut=dateFr($db->result[0]['debut']);
+    $fin=dateFr($db->result[0]['fin']);
     $texte=$db->result[0]['texte'];
     $titre="Modifications d'une informations\n";
   }
@@ -110,32 +109,24 @@ else{
   <input type='hidden' name='page' value='infos/index.php'/>\n
   <input type='hidden' name='id' value='$id'/>\n
   <table><tr style='vertical-align:top;'><td>
-  <table>
+  <table class='tableauFiches'>
   <tr><td style='padding-bottom:30px;' colspan='2'><b>$titre</b></td></tr>
-  <tr><td>
-  Date de début :
-  </td><td>
-  <input type='text' name='debut' value='".$debut."'/>
-  <img src='themes/default/images/calendrier.gif' onclick='calendrier(\"debut\");' alt='début' />
-  </td></tr><tr><td>
-  Date de fin :
-  </td><td>
-  <input type='text' name='fin' value='".$fin."'/>
-  <img src='themes/default/images/calendrier.gif' onclick='calendrier(\"fin\");' alt='fin' />
-  </td></tr><tr><td>
-  Texte : 
-  </td><td>
-  <textarea name='texte' rows='3' cols='16'>".$texte."</textarea>
+  <tr><td><label class='intitule'>Date de d&eacute;but</label></td>
+  <td><input type='text' name='debut' value='".$debut."' class='datepicker' /></td></tr>
+  <tr><td><label class='intitule'>Date de fin</label></td>
+  <td><input type='text' name='fin' value='".$fin."' class='datepicker'/></td></tr>
+  <tr><td><label class='intitule'>Texte</label></td>
+  <td><textarea name='texte' rows='3' cols='16' class='ui-widget-content ui-corner-all'>".$texte."</textarea>
   </td></tr><tr><td>&nbsp;
   </td></tr>
   <tr><td colspan='2'>\n";
   if(isset($_GET['id'])){
-    echo "<input type='button' value='Supprimer' onclick='document.location.href=\"index.php?page=infos/index.php&amp;id=".$_GET['id']."&amp;suppression=oui\";'/>\n";
+    echo "<input type='button' value='Supprimer' onclick='document.location.href=\"index.php?page=infos/index.php&amp;id=".$_GET['id']."&amp;suppression=oui\";' class='ui-button'/>\n";
     echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
   }
-  echo "<input type='button' value='Annuler' onclick='document.location.href=\"index.php?page=infos/index.php\";'/>
+  echo "<input type='button' value='Annuler' onclick='document.location.href=\"index.php?page=infos/index.php\";' class='ui-button' />
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <input type='submit' value='Valider'/>
+  <input type='submit' value='Valider' class='ui-button' />
   </td></tr></table>";
   if(!empty($infos) and !isset($_GET['id'])){
     echo "</td><td style='padding-left:100px;'>\n";

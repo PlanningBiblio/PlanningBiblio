@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.7
+Planning Biblio, Version 1.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 27 mars 2014
+Dernière modification : 14 mai 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -400,7 +400,7 @@ function decrypt($str){
   $key="AB0972FA445DDE66178ADF76";
   $str = mcrypt_decrypt(MCRYPT_3DES, $key, $str, MCRYPT_MODE_ECB);
 
-  $block = mcrypt_get_block_size('des', 'ecb');
+  $block = mcrypt_get_block_size('tripledes', 'ecb');
   $pad = ord($str[($len = strlen($str)) - 1]);
   return substr($str, 0, strlen($str) - $pad);
 }

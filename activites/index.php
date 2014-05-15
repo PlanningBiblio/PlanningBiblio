@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : activites/index.php
 Création : mai 2011
-Dernière modification : 26 septembre 2013
+Dernière modification : 30 avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -66,35 +66,25 @@ if($tab[0]){
 <form name="form" action="index.php">
 <input type='hidden' name='page' value='activites/index.php' />
 <table><tr valign='top'>
-<td style='width:270px'>
-<h3 style='margin-top:0px;'>Liste des activités</h3>
-</td>
-<td>
-Rechercher : 
-</td><td>
-<?php echo "<input type='text' name='nom' size='8' value='$nom' />\n"; ?>
-</td><td style='width:80px'>
-<input type='submit' value='OK'/>
-</td><td>
-<input type="button" value="Ajouter" onclick='location.href="index.php?page=activites/modif.php"'/>
+<td style='width:270px'><h3 style='margin-top:0px;'>Liste des activités</h3></td>
+<td><input type="button" value="Ajouter" onclick='location.href="index.php?page=activites/modif.php"' class='ui-button'/>
 </td></tr></table>
 </form>
 
 
 <?php
-echo "<table style='width:100%;' cellspacing='0'>\n";
-echo "<tr class='th'><td>";
+echo "<table id='tableActivities'>\n";
+echo "<thead><tr><th>\n";
 echo "&nbsp;";
 if(in_array(13,$droits)){
-  echo "</td><td>";
+  echo "</th><th>";
   echo "ID\n";
 }
-echo "</td><td>";
+echo "</th><th>";
 echo "Nom de l'activités\n";
-echo "&nbsp;&nbsp;<a href='index.php?page=activites/index.php&amp;nom=$nom&amp;tri=nom'><img src='themes/default/images/up.png' alt='+' border='0' style='width:10px;'/></a>\n";
-echo "<a href='index.php?page=activites/index.php&amp;nom=$nom&amp;tri=nom%20desc'><img src='themes/default/images/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "</td></tr>\n";
+echo "</th></tr></thead>\n";
 
+echo "<tbody>\n";
 foreach($activites as $elem){
   $class=$class=="tr1"?"tr2":"tr1";
   echo "<tr class='$class'><td>\n";
@@ -111,5 +101,5 @@ foreach($activites as $elem){
   echo "<td>{$elem['nom']}</td>\n";
   echo "</tr>\n";
 }
-echo "</table>\n";
+echo "</tbody></table>\n";
 ?>

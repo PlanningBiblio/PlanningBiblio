@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.7
+Planning Biblio, Version 1.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 26 mars 2014
+Dernière modification : 30 avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -92,7 +92,7 @@ if(is_array($agents)){
   echo "&nbsp;&nbsp;Fin : <input type='text' name='fin' value='$fin' class='datepicker'/>\n";
   if($admin){
     echo "&nbsp;&nbsp;Agent : \n";
-    echo "<select name='perso_id'>\n";
+    echo "<select name='perso_id' class='ui-widget-content ui-corner-all'>\n";
     foreach($agents as $elem)
       echo "<option value='{$elem['id']}'>{$elem['nom']} {$elem['prenom']}</option>\n";
     echo "</select>\n";

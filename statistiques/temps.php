@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 14 novembre 2013
+Dernière modification : 30 avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -163,14 +163,22 @@ foreach($keys as $key){
 }
 
 foreach($dates as $d){
-  $heures[$d[0]]=$heures[$d[0]]!=0?number_format($heures[$d[0]],2,'.',' '):"-";
-  $nbAgents[$d[0]]=$nbAgents[$d[0]]!=0?$nbAgents[$d[0]]:"-";
+  if(array_key_exists($d[0],$heures)){
+    $heures[$d[0]]=$heures[$d[0]]!=0?number_format($heures[$d[0]],2,'.',' '):"-";
+  }else{
+    $heures[$d[0]]="-";
+  }
+  if(array_key_exists($d[0],$nbAgents)){
+    $nbAgents[$d[0]]=$nbAgents[$d[0]]!=0?$nbAgents[$d[0]]:"-";
+  }else{
+    $nbAgents[$d[0]]="-";
+  }
 }
 $totalHeures=$totalHeures!=0?number_format($totalHeures,2,'.',' '):"-";
 $siteHeures[1]=$siteHeures[1]!=0?number_format($siteHeures[1],2,'.',' '):"-";
-$siteHeures[2]=$siteHeures[2]!=0?number_format($siteHeures[2],2,'.',' '):"-";
+$siteHeures[2]=array_key_exists(2,$siteHeures) and $siteHeures[2]!=0?number_format($siteHeures[2],2,'.',' '):"-";
 $siteAgents[1]=$siteAgents[1]!=0?$siteAgents[1]:"-";
-$siteAgents[2]=$siteAgents[2]!=0?$siteAgents[2]:"-";
+$siteAgents[2]=array_key_exists(2,$siteAgents) and $siteAgents[2]!=0?$siteAgents[2]:"-";
 
 
 //			-------------		Affichage du tableau		---------------------//
@@ -189,13 +197,6 @@ EOD;
 
 // S'il y a des éléments, affiche le tableau
 if(is_array($tab)){
-  if($tri2=="total"){
-    usort($tab,"cmp_semaine");
-  }
-  if($tri2=="totaldesc"){
-    usort($tab,"cmp_semainedesc");
-  }
-
   echo <<<EOD
   <table id='table_temps'>
   <thead>
