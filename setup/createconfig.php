@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
@@ -23,7 +23,7 @@ $Fnm = "../include/config.php";
 $file=Array();
 $file[]="<?php\n";
 $file[]="/*\n";
-$file[]="Planning Biblio, Version 1.7.2\n";
+$file[]="Planning Biblio, Version 1.8\n";
 $file[]="Licence GNU/GPL (version 2 et au dela)\n";
 $file[]="Voir les fichiers README.md et LICENSE\n";
 $file[]="Copyright (C) 2011-2014 - Jérôme Combes\n";

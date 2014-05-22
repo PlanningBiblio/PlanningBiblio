@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 30 avril 2014
+Dernière modification : 16 mai 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -190,7 +190,7 @@ echo <<<EOD
 <input type='hidden' name='page' value='statistiques/temps.php' />
 Début : <input type='text' name='debut' class='datepicker' value='$debutFr' />&nbsp;
 Fin : <input type='text' name='fin' class='datepicker' value='$finFr' />&nbsp;
-<input type='submit' value='OK' id='submit'/></form>
+<input type='submit' value='OK' id='submit' class='ui-button'/></form>
 </td></tr></table>
 <br/>
 EOD;
@@ -327,7 +327,7 @@ EOD;
 
   echo "</tfoot>\n";
   echo "</table>\n";
-  echo "Exporter \n";
+  echo "<br/>Exporter \n";
   echo "<a href='javascript:export_stat(\"temps\",\"csv\");'>CSV</a>&nbsp;&nbsp;\n";
   echo "<a href='javascript:export_stat(\"temps\",\"xls\");'>XLS</a>\n";
 }
@@ -335,22 +335,3 @@ else{			// Si pas d'élément
   echo "Les plannings de la période choisie sont vides.<br/><br/><br/><br/><br/><br/>";
 }
 ?>
-<script type='text/JavaScript'>
-$(document).ready(function(){
-  $(".datepicker").datepicker();
-  $("#submit").button();
-
-  var oTable=$("#table_temps").dataTable({
-    "bJQueryUI": true,
-    "sPaginationType": "full_numbers",
-    "bStateSave": true,
-    "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"Tous"]],
-    "iDisplayLength" : -1,
-    "oLanguage" : {"sUrl" : "js/dataTables/french.txt"},
-    "sScrollX": "100%",
-  });
-  new FixedColumns( oTable, {
-    "iLeftColumns" : 2
-  });
-});
-</script>

@@ -153,7 +153,42 @@ switch($_GET['nom']){
       }
     }
     break;
-  
+
+  // Absences
+  case "absences" :
+  $debut=date($_SESSION['oups']['stat_absences_debut']);
+  $fin=date($_SESSION['oups']['stat_absences_fin']);
+  $motifs=$_SESSION['oups']['stat_absences_motifs'];
+  $totaux=$_SESSION['oups']['stat_absences_totaux'];
+
+  // Première ligne et entête du tableau
+  $lignes[]="Statistiques sur les absences du $debut au $fin";		// Affichage du nom des colonnes
+  $tmp=array("Nom","Prénom","Nombre d'absences");
+  foreach($motifs as $m){
+    $tmp[]=str_replace("<br/>"," ",$m);
+  }
+  $lignes[]=join($tmp,$separateur);
+
+  // Contenu
+  foreach($tab as $elem){
+    $cellules=Array();
+    $cellules[]=html_entity_decode($elem['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8");		// Nom et prénom
+    $cellules[]=html_entity_decode($elem['prenom'],ENT_QUOTES|ENT_IGNORE,"UTF-8");
+    $cellules[]=$elem['total'];								// Total
+    foreach($motifs as $m){								// Nombre d'absences par motif
+      $cellules[]=$elem[$m]['total'];
+    }
+    $lignes[]=join($cellules,$separateur);
+  }
+
+  // Totaux (dernière ligne)
+  $cellules=Array("Totaux","",$totaux['_general']);
+  foreach($motifs as $m){								// Nombre d'absences par motif
+    $cellules[]=$totaux[$m];
+  }
+  $lignes[]=join($cellules,$separateur);
+  break;
+
   case "temps" :									// Feuille de temps
   $debutFr=dateFr($_SESSION['oups']['stat_temps_debut']);
   $finFr=dateFr($_SESSION['oups']['stat_temps_fin']);
