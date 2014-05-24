@@ -101,7 +101,6 @@ class planning{
     $semaine3=$d->semaine3;
     $ligneAdd=0;
 
-    $color='black';
     $sr=0;
     $sr_cellule=null;
 
@@ -118,6 +117,7 @@ class planning{
     }
 
     foreach($agents as $elem){
+      $color='black';
       if(!$config['ClasseParService']){
 	if($elem['id']==2){		// on retire l'utilisateur "tout le monde"
 	  continue;
