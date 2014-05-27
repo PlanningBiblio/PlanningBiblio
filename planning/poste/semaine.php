@@ -19,8 +19,6 @@ Cette page est appelée par la page index.php
 require_once "class.planning.php";
 require_once "planning/postes_cfg/class.tableaux.php";
 include_once "personnel/class.personnel.php";
-echo "<div id='planning'>\n";
-
 include "fonctions.php";
 
 // Initialisation des variables
@@ -103,6 +101,7 @@ if($db->result){
 
 
 //		---------------		Affichage du titre et du calendrier	--------------------------//
+echo "<div id='planning-semaine'>\n";
 echo "<div id='divcalendrier' class='text'>\n";
 
 echo "<form name='form' method='get' action='#'>\n";
@@ -126,12 +125,7 @@ echo "<b>Semaine $affSem</b>\n";
 echo "</div>";
 echo "<div id='semaine_planning'<b>Du ".dateFr($j1)." au ".dateFr($j7)."</b>\n";
 echo "</div>\n";
-echo "<div id='date_planning'>Planning du $dateAlpha";
-if(jour_ferie($date)){
-  echo " - <font id='ferie'>".jour_ferie($date)."</font>";
-}
 echo <<<EOD
-  </div>
   <table class='noprint' id='tab_jours'><tr valign='top'>
     <td><a href='index.php?date=$j1' class='menu' >Lundi</a> / </td>
     <td><a href='index.php?date=$j2' class='menu' >Mardi</a> / </td>
@@ -222,8 +216,12 @@ if($db->result){
 // Pour tous les jours de la semaine
 for($j=0;$j<=$fin;$j++){
   $date=$dates[$j];
-  echo "<p class='pl-semaine-date'>".dateAlpha($date)."</p>\n";
+
   //-----------------------------			Verrouillage du planning			-----------------------//
+  $perso2=null;
+  $date_validation2=null;
+  $heure_validation2=null;
+
   $db_verrou=new db();
   $db_verrou->query("SELECT * FROM `{$dbprefix}pl_poste_verrou` WHERE `date`='$date' AND `site`='$site';");
   if($db_verrou->result){
@@ -242,14 +240,22 @@ for($j=0;$j<=$fin;$j++){
   $db->query("SELECT `tableau` FROM `{$dbprefix}pl_poste_tab_affect` WHERE `date`='$date' AND `site`='$site';");
   $tab=$db->result[0]['tableau'];
 
-  if(!$tab){
-    echo "Le planning n'est pas validé.\n";
+  $validationMessage=null;
+  if($verrou and $tab){
+    $validationMessage="<u>Validation</u> : $perso2 $date_validation2 $heure_validation2";
   }
+  if(!$verrou or !$tab){
+    $attention=$autorisation?"Attention ! ":null;
+    $validationMessage="<font class='important bold'>$attention Le planning du ".dateFr($date)." n'est pas validé !</font>";
+  }
+
+  echo "<p class='pl-semaine-header'>\n";
+  echo "<font class='pl-semaine-date'>".dateAlpha($date)."</font>\n";
+  echo "<font class='pl-semaine-validation'>$validationMessage</font>\n";
+  echo "</p>\n";
+
 //-------------------------------	FIN Choix du tableau	-----------------------------//	
-//-------------------------------	Vérification si le planning semaine fixe est validé	------------------//
-  if(!$verrou){
-    echo "<p class='important bold' style='text-align:left;'>Le planning du ".dateFr($date)." n'est pas validé !</p>\n";
-  }
+//-------------------------------	Vérification si le planning est validé	------------------//
   if($verrou or $autorisation){
     //--------------	Recherche des infos cellules	------------//
     // Toutes les infos seront stockées danx un tableau et utilisées par les fonctions cellules_postes

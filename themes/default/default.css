@@ -382,11 +382,20 @@ select
   margin : 10px 0 0 0;
 }
 
+.pl-semaine-header{
+  text-align: left;
+  margin: 50px 0 5px 0;
+  width: 100%;
+}
+
 .pl-semaine-date{
   font-size: 16pt;
   font-family: bold;
-  text-align: left;
-  margin: 30pt 0 5pt 0;
+}
+
+.pl-semaine-validation{
+  position: absolute;
+  right:10px;
 }
 
 #planningTips {
