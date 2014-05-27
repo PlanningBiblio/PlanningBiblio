@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/db_data.php
 Création : mai 2011
-Dernière modification : 16 mai 2014
+Dernière modification : 26 mai 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,6 +20,7 @@ fichier setup/createdb.php
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Authentification', 99, '', 'authentification.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Planning - Index', 99, '', 'planning/index.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Planning par poste - Index', 99, '', 'planning/poste/index.php');";
+$sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Planning par poste - Semaine', 99, '', 'planning/poste/semaine.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Refresh postes', 99, '', 'planning/poste/validation.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Aide', 99, '', 'aide/index.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Absences - Index', 100, '', 'absences/index.php');";

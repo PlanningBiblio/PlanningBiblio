@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 15 mai 2014
+Dernière modification : 26 mai 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -561,6 +561,7 @@ if(strcmp("1.7.9",$config['Version'])>0){
 if(strcmp("1.8",$config['Version'])>0){
   $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES ('40','70','Absences','statistiques/absences.php');";
   $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Statistiques', 17, 'Statistiques', 'statistiques/absences.php');";
+  $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Planning par poste - Semaine', 99, '', 'planning/poste/semaine.php');";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.8' WHERE `nom`='Version';";
 }
 

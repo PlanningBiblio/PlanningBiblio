@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.7.9
+Planning Biblio, Version 1.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 30 avril 2014
+Dernière modification : 27 mai 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -380,6 +380,13 @@ select
 /* Calendrier, titre (Semaine ...), Boutons de droite */
 #divcalendrier {
   margin : 10px 0 0 0;
+}
+
+.pl-semaine-date{
+  font-size: 16pt;
+  font-family: bold;
+  text-align: left;
+  margin: 30pt 0 5pt 0;
 }
 
 #planningTips {
