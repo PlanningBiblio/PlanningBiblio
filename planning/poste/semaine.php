@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
-Dernière modification : 27 mai 2014
+Dernière modification : 28 mai 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -46,6 +46,7 @@ $j6=$dates[5];
 $j7=$dates[6];
 $dateAlpha=dateAlpha($date);
 
+$_SESSION['oups']['week']=true;
 //		------------------		FIN DATE		-----------------------//
 //		------------------		TABLEAU		-----------------------//
 // Multisites : la variable $site est égale à 1 par défaut.
@@ -165,37 +166,6 @@ if($db->result){
 }
 //	-----------------------		FIN Récupération des postes	-----------------------------//
 
-// Plannings de la semaines : les validations doivent être reportées en haut de chaque tableau
-/*
-echo "<div id='validation'>\n";
-if($autorisation){
-  if($verrou){
-    echo "<font><u>Validation</u><br/>$perso2 $date_validation2 $heure_validation2<br/></font>\n";
-    echo "<a href='index.php?page=planning/poste/verrou.php&amp;date=$date&amp;verrou2=0&amp;site=$site' title='Déverrouiller le planning'><img id='deverrou' src='themes/default/images/verrou.jpg' alt='verrou2=0' /></a>\n";
-  }
-  else{
-    echo "<a href='index.php?page=planning/poste/verrou.php&amp;date=$date&amp;verrou2=1&amp;site=$site' title='Verrouiller le planning'><img id='verrou' src='themes/default/images/deverrou.jpg' alt='verrou1=1' /></a>\n";
-  }
-}
-
-if($autorisation){
-  echo "<a href='javascript:popup(\"planning/poste/enregistrer.php\",500,270);' title='Enregistrer comme modèle'><img src='themes/default/images/save.jpg' alt='Enregistrer'/></a>&nbsp;";
-  if(!$verrou){
-    echo "<a href='javascript:popup(\"planning/poste/importer.php\",500,270);' title='Importer un modèle'><img src='themes/default/images/open.jpg' alt='Importer'/></a>&nbsp;";
-    echo "<a href='javascript:popup(\"planning/poste/supprimer.php\",500,200);' title='Supprimer le planning'><img src='themes/default/images/drop-20.gif' alt='Supprimer'/></a>&nbsp;";
-  }
-}
-if($verrou){
-  if(!$autorisation){
-    echo "<u>Validation</u> $perso2 $date_validation2 $heure_validation2<br/>\n";
-  }
-  echo "<a href='javascript:print();' title='Imprimer le planning'><img id='imprimante' src='themes/default/images/imprimante.gif' alt='imprimer' /></a>\n";
-  echo "<script type='text/JavaScript'>refresh_poste('$validation2');</script>";
-}
-
-echo "<a href='index.php' title='Actualiser'><img id='rafraichir' src='themes/default/images/rafraichir.jpg' alt='rafraichir' /></a>\n";
-echo "</div>\n";
-*/
 echo "<div id='planningTips'>&nbsp;</div>";
 echo "</td></tr>\n";
 
@@ -249,6 +219,7 @@ for($j=0;$j<=$fin;$j++){
     $validationMessage="<font class='important bold'>$attention Le planning du ".dateFr($date)." n'est pas validé !</font>";
   }
 
+  echo "<div id='tableau'>\n";
   echo "<p class='pl-semaine-header'>\n";
   echo "<font class='pl-semaine-date'>".dateAlpha($date)."</font>\n";
   echo "<font class='pl-semaine-validation'>$validationMessage</font>\n";
@@ -290,8 +261,7 @@ for($j=0;$j<=$fin;$j++){
     // affichage du tableau :
     // affichage de la lignes des horaires
 
-    echo "<div id='tableau'>\n";
-    echo "<table id='tabsemaine1' cellspacing='0' cellpadding='0' class='text'>\n";
+    echo "<table class='tabsemaine1' cellspacing='0' cellpadding='0' class='text'>\n";
     $k=0;
     foreach($tabs as $tab){
       //		Lignes horaires

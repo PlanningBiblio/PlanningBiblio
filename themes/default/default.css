@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 27 mai 2014
+Dernière modification : 28 mai 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -394,6 +394,7 @@ select
 }
 
 .pl-semaine-validation{
+  margin: 10px 0 0 0;
   position: absolute;
   right:10px;
 }
@@ -405,7 +406,7 @@ select
   display: none;
 }
 
-#tabsemaine1 {
+#tabsemaine1, .tabsemaine1 {
   width:1260px;
   empty-cells:show;
 }
@@ -413,7 +414,7 @@ select
 #tabsemaine1 tr{
 }
 
-#tabsemaine1 td{
+#tabsemaine1 td, .tabsemaine1 td{
   border-width : 1px;
   border-style : outset;
 }

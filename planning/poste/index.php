@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 26 mai 2014
+Dernière modification : 28 mai 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -29,10 +29,12 @@ include "fonctions.php";
 $verrou=false;
 //		------------------		DATE		-----------------------//
 $date=isset($_GET['date'])?$_GET['date']:null;
-if(!$date and array_key_exists('PLdate',$_SESSION))
-	$date=$_SESSION['PLdate'];
-elseif(!$date and !array_key_exists('PLdate',$_SESSION))
-	$date=date("Y-m-d");	
+if(!$date and array_key_exists('PLdate',$_SESSION)){
+  $date=$_SESSION['PLdate'];
+}
+elseif(!$date and !array_key_exists('PLdate',$_SESSION)){
+  $date=date("Y-m-d");
+}
 $_SESSION['PLdate']=$date;
 $dateFr=dateFr($date);
 $d=new datePl($date);
@@ -50,11 +52,7 @@ $j6=$dates[5];
 $j7=$dates[6];
 $dateAlpha=dateAlpha($date);
 
-// Affichage de tous les plannings de la semaine
-if(!isset($_GET['date']) and isset($_SESSION['oups']['week'])){
-  echo "<script type='text/Javascript'>document.location.href='index.php?page=planning/poste/semaine.php';</script>\n";
-}
-
+$_SESSION['oups']['week']=false;
 //		------------------		FIN DATE		-----------------------//
 //		------------------		TABLEAU		-----------------------//
 $t=new tableau();
