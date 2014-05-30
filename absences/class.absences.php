@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.8
+Planning Biblio, Version 1.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 31 mars 2014
+Dernière modification : 26 mai 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,10 +23,126 @@ if(!$version){
 
 class absences{
   public $elements=array();
+  public $error=false;
   public $valide=false;
   public $recipients=array();
+  public $minutes=0;
+  public $heures=0;
+  public $heures2=null;
 
   public function absences(){
+  }
+
+  public function calculTemps($debut,$fin,$perso_id){
+    $version=$GLOBALS['config']['Version'];
+    require_once "joursFeries/class.joursFeries.php";
+
+    $hre_debut=substr($debut,-8);
+    $hre_fin=substr($fin,-8);
+    $hre_fin=$hre_fin=="00:00:00"?"23:59:59":$hre_fin;
+    $debut=substr($debut,0,10);
+    $fin=substr($fin,0,10);
+
+    // Calcul du nombre d'heures correspondant à une absence
+    $current=$debut;
+    $difference=0;
+
+    // Pour chaque date
+    while($current<=$fin){
+
+      // On ignore les jours de fermeture
+      $j=new joursFeries();
+      $j->fetchByDate($current);
+      if(!empty($j->elements)){
+	foreach($j->elements as $elem){
+	  if($elem['fermeture']){
+	    $current=date("Y-m-d",strtotime("+1 day",strtotime($current)));
+	    continue 2;
+	  }
+	}
+      }
+
+      // On consulte le planning de présence de l'agent
+      // On ne calcule pas les heures si le plugin planningHebdo n'est pas installé, le calcul serait faux si les emplois du temps avait changé
+      if(!in_array("planningHebdo",$GLOBALS['plugins'])){
+	$this->error=true;
+	$this->message="Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
+	return false;
+      }
+
+      // On consulte le planning de présence de l'agent
+      if(in_array("planningHebdo",$GLOBALS['plugins'])){
+	require_once "plugins/planningHebdo/class.planningHebdo.php";
+
+	$p=new planningHebdo();
+	$p->perso_id=$perso_id;
+	$p->debut=$current;
+	$p->fin=$current;
+	$p->valide=true;
+	$p->fetch();
+	// Si le planning n'est pas validé pour l'une des dates, on retourne un message d'erreur et on arrête le calcul
+	if(empty($p->elements)){
+	  $this->error=true;
+	  $this->message="Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
+	  return false;
+	}
+
+	// Sinon, on calcule les heures d'absence
+	$d=new datePl($current);
+	$semaine=$d->semaine3;
+	$jour=$d->position?$d->position:7;
+	$jour=$jour+(($semaine-1)*7)-1;
+	$temps=null;
+	if(array_key_exists($jour,$p->elements[0]['temps'])){
+	  $temps=$p->elements[0]['temps'][$jour];
+	}
+      }
+
+      if($temps){
+	$temps[0]=strtotime($temps[0]);
+	$temps[1]=strtotime($temps[1]);
+	$temps[2]=strtotime($temps[2]);
+	$temps[3]=strtotime($temps[3]);
+	$debutAbsence=$current==$debut?$hre_debut:"00:00:00";
+	$finAbsence=$current==$fin?$hre_fin:"23:59:59";
+	$debutAbsence=strtotime($debutAbsence);
+	$finAbsence=strtotime($finAbsence);
+
+
+	// Calcul du temps du matin
+	if($temps[0] and $temps[1]){
+	  $debutAbsence1=$debutAbsence>$temps[0]?$debutAbsence:$temps[0];
+	  $finAbsence1=$finAbsence<$temps[1]?$finAbsence:$temps[1];
+	  if($finAbsence1>$debutAbsence1){
+	    $difference+=$finAbsence1-$debutAbsence1;
+	  }
+	}
+
+	// Calcul du temps de l'après-midi
+	if($temps[2] and $temps[3]){
+	  $debutAbsence2=$debutAbsence>$temps[2]?$debutAbsence:$temps[2];
+	  $finAbsence2=$finAbsence<$temps[3]?$finAbsence:$temps[3];
+	  if($finAbsence2>$debutAbsence2){
+	    $difference+=$finAbsence2-$debutAbsence2;
+	  }
+	}
+
+	// Calcul du temps de la journée s'il n'y a pas de pause le midi
+	if($temps[0] and $temps[3] and !$temps[1] and !$temps[2]){
+	  $debutAbsence=$debutAbsence>$temps[0]?$debutAbsence:$temps[0];
+	  $finAbsence=$finAbsence<$temps[3]?$finAbsence:$temps[3];
+	  if($finAbsence>$debutAbsence){
+	    $difference+=$finAbsence-$debutAbsence;
+	  }
+	}
+      }
+
+      $current=date("Y-m-d",strtotime("+1 day",strtotime($current)));
+    }
+
+    $this->minutes=$difference/60;
+    $this->heures=$difference/3600;
+    $this->heures2=str_replace(array(".00",".25",".50",".75"),array("h00","h15","h30","h45"),number_format($this->heures, 2, '.', ' '));
   }
 
   public function fetch($sort="`debut`,`fin`,`nom`,`prenom`",$only_me=null,$agent=null,$debut=null,$fin=null,$sites=null){

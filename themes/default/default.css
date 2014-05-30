@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 30 avril 2014
+Dernière modification : 29 mai 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -739,6 +739,10 @@ option.bold{
   text-align:center;
 }
 
+.nowrap{
+  white-space:nowrap;
+}
+
 .padding20{
   padding-left:20px;
 }
@@ -768,7 +772,6 @@ option.bold{
 
 .bg-yellow{
   background:yellow;
-  font-weight:bold;
 }
 
 /*	DataTables */

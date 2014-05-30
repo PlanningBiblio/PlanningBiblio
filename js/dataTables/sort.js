@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.6.2
+Planning Biblio, Version 1.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/dataTables/sort.js
 Création : 9 décembre 2013
-Dernière modification : 9 décembre 2013
+Dernière modification : 29 mai 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -55,6 +55,27 @@ jQuery.extend( jQuery.fn.dataTableExt.oSort, {
   },
 
   "date-fr-fin-desc": function ( a, b ) {
+    return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+  }
+});
+
+// Tri des heures au format 00h00 et 0h00
+jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+  "heure-fr-pre": function ( a ) {
+    if(!a){
+      return " ";
+    }
+    if(a.length==4){
+      a="0"+a;
+    }
+    return (a);
+  },
+
+  "heure-fr-asc": function ( a, b ) {
+    return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+  },
+
+  "heure-fr-desc": function ( a, b ) {
     return ((a < b) ? 1 : ((a > b) ? -1 : 0));
   }
 });

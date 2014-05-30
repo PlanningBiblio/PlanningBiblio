@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/absences.php
 Création : 15 mai 2014
-Dernière modification : 16 mai 2014
+Dernière modification : 29 mai 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -74,23 +74,66 @@ if(is_array($absences) and !empty($absences)){
 sort($motifs);
 
 // Regroupe les absences par agent et par motif
+// Et ajoute les heures correspondantes
 $tab=array();
-$totaux=array("_general"=>0);
+$totaux=array("_general"=>0,"_generalHeures"=>0);
 foreach($absences as $elem){
   if(!array_key_exists($elem['perso_id'],$tab)){
-    $tab[$elem['perso_id']]=array("nom"=>$elem['nom'],"prenom"=>$elem['prenom'],"total"=>0);
+    $tab[$elem['perso_id']]=array("nom"=>$elem['nom'],"prenom"=>$elem['prenom'],"total"=>0,"totalHeures"=>0);
   }
   if(!array_key_exists($elem['motif'],$tab[$elem['perso_id']])){
-    $tab[$elem['perso_id']][$elem['motif']]=array("total"=>0);
+    $tab[$elem['perso_id']][$elem['motif']]=array("total"=>0,"heures"=>0);
   }
   if(!array_key_exists($elem['motif'],$totaux)){
-    $totaux[$elem['motif']]=0;
+    $totaux[$elem['motif']]=array("frequence"=>0,"heures"=>0);
+  }
+  
+  // Total agent
+  $tab[$elem['perso_id']]['total']++;
+  // Totaux généraux
+  $totaux['_general']++;
+  // Total agent pour le motif courant
+  $tab[$elem['perso_id']][$elem['motif']]['total']++;
+  // Total pour ce motif
+  $totaux[$elem['motif']]['frequence']++;
+
+  // Ajout des heures d'absences
+  $a=new absences();
+  $a->calculTemps($elem['debut'],$elem['fin'],$elem['perso_id']);
+  $heures=$a->heures;
+
+  // heures agent pour le motif courant
+  if($a->error){
+    $tab[$elem['perso_id']][$elem['motif']]['heures']="N/A";
+  }
+  elseif(is_numeric($tab[$elem['perso_id']][$elem['motif']]['heures'])){
+    $tab[$elem['perso_id']][$elem['motif']]['heures']+=$heures;
+  }
+  // Total heures pour ce motif
+  if($a->error){
+    $totaux[$elem['motif']]['heures']="N/A";
+  }
+  elseif(is_numeric($totaux[$elem['motif']]['heures'])){
+    $totaux[$elem['motif']]['heures']+=$heures;
   }
 
-  $tab[$elem['perso_id']]['total']++;
-  $totaux['_general']++;
-  $tab[$elem['perso_id']][$elem['motif']]['total']++;
-  $totaux[$elem['motif']]++;
+
+  if($a->error){
+    // Total heures agent
+    $tab[$elem['perso_id']]['totalHeures']="N/A";
+    // Totaux heures généraux
+    $totaux['_generalHeures']="N/A";
+  }
+  else{
+    // Total heures agent
+    if(is_numeric($tab[$elem['perso_id']]['totalHeures'])){
+      $tab[$elem['perso_id']]['totalHeures']+=$heures;
+    }
+    // Totaux heures généraux
+    if(is_numeric($totaux['_generalHeures'])){
+      $totaux['_generalHeures']+=$heures;
+    }
+  }
 }
 
 // Pour les exports
@@ -127,7 +170,7 @@ echo <<<EOD
 EOD;
 
 echo "<table id='dataTableStatAbsences'>\n";
-echo "<thead><tr><th>Agents</th><th>Nombre d'absences</th>\n";
+echo "<thead><tr><th>Agents</th><th>Nombre</th><th>Heures</th>\n";
 foreach($motifs as $elem){
   echo "<th>$elem</th>\n";
 }
@@ -137,11 +180,20 @@ echo "<tbody>\n";
 
 foreach($tab as $elem){
   echo "<tr><td>{$elem['nom']} {$elem['prenom']}</td>\n";
-  echo "<td class='center bold'>{$elem['total']}</td>\n";
+  echo "<td class='center nowrap'>{$elem['total']}</td>\n";
+  echo "<td class='center nowrap'>".heure4($elem['totalHeures'])."</td>\n";
   foreach($motifs as $motif){
     $nb=array_key_exists($motif,$elem)?$elem[$motif]['total']:"-";
+    $heures=null;
+    if(array_key_exists($motif,$elem)){
+      if(is_numeric($elem[$motif]['heures'])){
+	$heures="- ".heure4($elem[$motif]['heures']);
+      }else{
+	$heures="- N/A";
+      }
+    }
     $class=array_key_exists($motif,$elem)?"bg-yellow":null;
-    echo "<td class='center $class'>$nb</td>\n";
+    echo "<td class='center nowrap $class'>$nb $heures</td>\n";
   }
   echo "</tr>\n";
 }
@@ -149,9 +201,12 @@ echo "</tbody>\n";
 
 // Affichage de la ligne "Totaux"
 echo "<tfoot><tr style='background:#DDDDDD;'><th>Totaux</th>\n";
-echo "<th>{$totaux['_general']}</th>\n";
+echo "<th class='nowrap'>{$totaux['_general']}</th>\n";
+$heures=is_numeric($totaux['_generalHeures'])?heure4($totaux['_generalHeures']):"N/A";
+echo "<th class='nowrap'>$heures</th>\n";
 foreach($motifs as $motif){
-  echo "<th>{$totaux[$motif]}</th>\n";
+  $heures=is_numeric($totaux[$motif]['heures'])?heure4($totaux[$motif]['heures']):"N/A";
+  echo "<th class='nowrap'>{$totaux[$motif]['frequence']} - $heures</th>\n";
 }
 echo "</tr></tfoot>\n";
 
