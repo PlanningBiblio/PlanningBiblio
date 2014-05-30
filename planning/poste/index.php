@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.8
+Planning Biblio, Version 1.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 1er avril 2014
+Dernière modification : 28 mai 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -29,10 +29,12 @@ include "fonctions.php";
 $verrou=false;
 //		------------------		DATE		-----------------------//
 $date=isset($_GET['date'])?$_GET['date']:null;
-if(!$date and array_key_exists('PLdate',$_SESSION))
-	$date=$_SESSION['PLdate'];
-elseif(!$date and !array_key_exists('PLdate',$_SESSION))
-	$date=date("Y-m-d");	
+if(!$date and array_key_exists('PLdate',$_SESSION)){
+  $date=$_SESSION['PLdate'];
+}
+elseif(!$date and !array_key_exists('PLdate',$_SESSION)){
+  $date=date("Y-m-d");
+}
 $_SESSION['PLdate']=$date;
 $dateFr=dateFr($date);
 $d=new datePl($date);
@@ -49,6 +51,8 @@ $j5=$dates[4];
 $j6=$dates[5];
 $j7=$dates[6];
 $dateAlpha=dateAlpha($date);
+
+$_SESSION['oups']['week']=false;
 //		------------------		FIN DATE		-----------------------//
 //		------------------		TABLEAU		-----------------------//
 $t=new tableau();
@@ -97,17 +101,16 @@ if($db->result){
   }
 }
 //		---------------		changement de couleur du menu et de la periode en fonction du jour sélectionné	---------//
-$class=array('menu','menu','menu','menu','menu','menu','menu','menu','menu');
-$class2=array('menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2','menu2');
- 
+$class=array('menu','menu','menu','menu','menu','menu','menu','menu');
+
 switch($jour){
   case "lun":	$jour3="Lundi";		$periode2='semaine';	$class[0]='menuRed';	break;
-  case "mar":	$jour3="Mardi";		$periode2='semaine';	$class[1]='menuRed'; break;
-  case "mer":	$jour3="Mercredi";	$periode2='semaine';	$class[2]='menuRed'; break;
+  case "mar":	$jour3="Mardi";		$periode2='semaine';	$class[1]='menuRed';	break;
+  case "mer":	$jour3="Mercredi";	$periode2='semaine';	$class[2]='menuRed';	break;
   case "jeu":	$jour3="Jeudi";		$periode2='semaine';	$class[3]='menuRed';	break;
-  case "ven":	$jour3="Vendredi";	$periode2='semaine';	$class[4]='menuRed'; break;
-  case "sam":	$jour3="Samedi";	$periode2='samedi';	$class[5]='menuRed'; break;
-  case "dim":	$jour3="Dimanche";	$periode2='samedi';	$class[6]='menuRed'; break;
+  case "ven":	$jour3="Vendredi";	$periode2='semaine';	$class[4]='menuRed';	break;
+  case "sam":	$jour3="Samedi";	$periode2='samedi';	$class[5]='menuRed';	break;
+  case "dim":	$jour3="Dimanche";	$periode2='samedi';	$class[6]='menuRed';	break;
 }
 	
 //-----------------------------			Verrouillage du planning			-----------------------//
@@ -177,6 +180,9 @@ EOD;
 if($config['Dimanche']){
     echo "<td align='center'> / <a href='index.php?date=$j7'  class='".$class[6]."' >Dimanche</a> </td>";
 }
+
+echo "<td> / <a href='index.php?page=planning/poste/semaine.php' class='{$class[7]}' >Semaine</a></td>\n";
+
 echo "</tr></table>";
   
 if($config['Multisites-nombre']>1){

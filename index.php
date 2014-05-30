@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 17 février 2014
+Dernière modification : 28 mai 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -27,6 +27,11 @@ $version="1.8";
 $get_menu=isset($_GET['menu'])?$_GET['menu']:"";
 $post_menu=isset($_POST['menu'])?$_POST['menu']:"";
 $page=isset($_GET['page'])?$_GET['page']:"planning/poste/index.php";
+// Affichage de tous les plannings de la semaine
+if($page=="planning/poste/index.php" and !isset($_GET['date']) and $_SESSION['oups']['week']){
+  $page="planning/poste/semaine.php";
+}
+
 $page=isset($_POST['page'])?$_POST['page']:$page;
 
 // Redirection vers setup si le fichier config est absent

@@ -1,5 +1,5 @@
 /*
-Planning Biblio, Version 1.7.9
+Planning Biblio, Version 1.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
@@ -382,6 +382,23 @@ select
   margin : 10px 0 0 0;
 }
 
+.pl-semaine-header{
+  text-align: left;
+  margin: 50px 0 5px 0;
+  width: 100%;
+}
+
+.pl-semaine-date{
+  font-size: 16pt;
+  font-family: bold;
+}
+
+.pl-semaine-validation{
+  margin: 10px 0 0 0;
+  position: absolute;
+  right:10px;
+}
+
 #planningTips {
   margin: 20px 0px;
   color: #FF5E0E;
@@ -389,7 +406,7 @@ select
   display: none;
 }
 
-#tabsemaine1 {
+#tabsemaine1, .tabsemaine1 {
   width:1260px;
   empty-cells:show;
 }
@@ -397,7 +414,7 @@ select
 #tabsemaine1 tr{
 }
 
-#tabsemaine1 td{
+#tabsemaine1 td, .tabsemaine1 td{
   border-width : 1px;
   border-style : outset;
 }
