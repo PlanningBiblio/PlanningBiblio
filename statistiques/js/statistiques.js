@@ -21,10 +21,11 @@ $(document).ready(function(){
   // DataTable Absences
   if($("#dataTableStatAbsences").length){
     // Définition des propriétés des colonnes
-    var nbCol=$("#dataTableStatAbsences thead th").length;
-    var columns=[{"bSortable":true},{"bSortable":true},{"sType":"heure-fr"},];
-    for(i=3;i<nbCol;i++){
+    var nbCol=$("#dataTableStatAbsences tfoot th").length;
+    var columns=[{"bSortable":true}];
+    for(i=1;i<(nbCol/2);i++){
       columns.push({"bSortable":true});
+      columns.push({"sType":"heure-fr"});
     }
 
     // DataTable
@@ -37,6 +38,7 @@ $(document).ready(function(){
       "oLanguage" : {"sUrl" : "js/dataTables/french.txt"},
       "sScrollX": "100%",
       "aoColumns" : columns,
+      "columnDefs": [{"visible": false, "targets": -1}]
     });
     
     // Colonnes fixes

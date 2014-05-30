@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/absences.php
 Création : 15 mai 2014
-Dernière modification : 29 mai 2014
+Dernière modification : 30 mai 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -169,10 +169,22 @@ echo <<<EOD
 <br/>
 EOD;
 
-echo "<table id='dataTableStatAbsences'>\n";
-echo "<thead><tr><th>Agents</th><th>Nombre</th><th>Heures</th>\n";
+echo <<<EOD
+<table id='dataTableStatAbsences'>
+<thead><tr>
+  <th rowspan='2'>Agents</th>
+  <th rowspan='2'>Total<br/>d'absences</th>
+  <th rowspan='2'>Total<br/>d'heures</th>
+EOD;
+
 foreach($motifs as $elem){
-  echo "<th>$elem</th>\n";
+  echo "<th colspan='2'>$elem</th>\n";
+}
+
+echo "</tr>\n<tr>";
+
+foreach($motifs as $elem){
+  echo "<th>Nombre</th><th>Heures</th>";
 }
 
 echo "</tr></thead>\n";
@@ -187,13 +199,14 @@ foreach($tab as $elem){
     $heures=null;
     if(array_key_exists($motif,$elem)){
       if(is_numeric($elem[$motif]['heures'])){
-	$heures="- ".heure4($elem[$motif]['heures']);
+	$heures=heure4($elem[$motif]['heures']);
       }else{
-	$heures="- N/A";
+	$heures="N/A";
       }
     }
     $class=array_key_exists($motif,$elem)?"bg-yellow":null;
-    echo "<td class='center nowrap $class'>$nb $heures</td>\n";
+    echo "<td class='center nowrap $class'>$nb</td>\n";
+    echo "<td class='center nowrap $class'>$heures</td>\n";
   }
   echo "</tr>\n";
 }
@@ -206,7 +219,8 @@ $heures=is_numeric($totaux['_generalHeures'])?heure4($totaux['_generalHeures']):
 echo "<th class='nowrap'>$heures</th>\n";
 foreach($motifs as $motif){
   $heures=is_numeric($totaux[$motif]['heures'])?heure4($totaux[$motif]['heures']):"N/A";
-  echo "<th class='nowrap'>{$totaux[$motif]['frequence']} - $heures</th>\n";
+  echo "<th class='nowrap'>{$totaux[$motif]['frequence']}</th>\n";
+  echo "<th class='nowrap'>$heures</th>\n";
 }
 echo "</tr></tfoot>\n";
 
