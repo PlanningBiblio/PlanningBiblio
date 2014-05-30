@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/export.php
 Création : mai 2011
-Dernière modification : 20 janvier 2014
+Dernière modification : 30 mai 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -163,9 +163,10 @@ switch($_GET['nom']){
 
   // Première ligne et entête du tableau
   $lignes[]="Statistiques sur les absences du $debut au $fin";		// Affichage du nom des colonnes
-  $tmp=array("Nom","Prénom","Nombre d'absences");
+  $tmp=array("Nom","Prénom","Total","Total d'heures");
   foreach($motifs as $m){
-    $tmp[]=str_replace("<br/>"," ",$m);
+    $tmp[]=str_replace("<br/>"," ",$m)." Nombre";
+    $tmp[]=str_replace("<br/>"," ",$m)." Heures";
   }
   $lignes[]=join($tmp,$separateur);
 
@@ -175,16 +176,19 @@ switch($_GET['nom']){
     $cellules[]=html_entity_decode($elem['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8");		// Nom et prénom
     $cellules[]=html_entity_decode($elem['prenom'],ENT_QUOTES|ENT_IGNORE,"UTF-8");
     $cellules[]=$elem['total'];								// Total
-    foreach($motifs as $m){								// Nombre d'absences par motif
-      $cellules[]=$elem[$m]['total'];
+    $cellules[]=$elem['totalHeures'];							// Total d'heures
+    foreach($motifs as $m){								
+      $cellules[]=$elem[$m]['total'];							// Nombre d'absences par motif
+      $cellules[]=$elem[$m]['heures'];							// Heures d'absences par motif
     }
     $lignes[]=join($cellules,$separateur);
   }
 
   // Totaux (dernière ligne)
-  $cellules=Array("Totaux","",$totaux['_general']);
+  $cellules=Array("Totaux","",$totaux['_general'],$totaux['_generalHeures']);
   foreach($motifs as $m){								// Nombre d'absences par motif
-    $cellules[]=$totaux[$m];
+    $cellules[]=$totaux[$m]['frequence'];
+    $cellules[]=$totaux[$m]['heures'];
   }
   $lignes[]=join($cellules,$separateur);
   break;

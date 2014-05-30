@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 14 mai 2014
+Dernière modification : 30 mai 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -474,8 +474,10 @@ function heure4($heure){
     $heure=str_replace(array("h00","h15","h30","h45"),array(".00",".25",".50",".75"),$heure);
   }
   else{
-    $heure=number_format($heure, 2, '.', ' ');
-    $heure=str_replace(array(".00",".25",".50",".75"),array("h00","h15","h30","h45"),$heure);
+    if(is_numeric($heure)){
+      $heure=number_format($heure, 2, '.', ' ');
+      $heure=str_replace(array(".00",".25",".50",".75"),array("h00","h15","h30","h45"),$heure);
+    }
   }
   return $heure;
 }
