@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/class.tableaux.php
 Création : mai 2011
-Dernière modification : 30 janvier 2014
+Dernière modification : 2 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -79,9 +79,12 @@ class tableau{
     $horaires=$db->result;
 
     // Liste des lignes enregistrées
+    $lignes=array();
     $db=new db();
     $db->select("pl_poste_lignes",null,"numero=$tableauNumero","ORDER BY tableau,ligne");
-    $lignes=$db->result;
+    if($db->result){
+      $lignes=$db->result;
+    }
 
     $titres=array();
     foreach($lignes as $ligne){

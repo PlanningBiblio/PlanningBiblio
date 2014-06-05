@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 1er avril 2014
+Dernière modification : 3 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -47,7 +47,6 @@ switch($config['error_reporting']){
 }
 
 include "plugins/plugins.php";
-include "include/function.php";
 include "include/header.php";
 
 //	Login Anonyme

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 26 septembre 2013
+Dernière modification : 5 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -21,6 +21,8 @@ Page appelée par le fichier include/config.php
 if(!$version){
   header("Location: ../index.php");
 }
+
+include_once "function.php";
 
 class db{
   var $host;
@@ -170,9 +172,10 @@ class db{
     else{
       $fields=array_keys($values);
       foreach($fields as $elem){
-	    if(!is_serialized($values[$elem]))
-	      $values[$elem]=htmlentities($values[$elem],ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
-	    $values[$elem]=mysql_real_escape_string($values[$elem],$this->conn);
+	if(!is_serialized($values[$elem])){
+	  $values[$elem]=htmlentities($values[$elem],ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
+	}
+	$values[$elem]=mysql_real_escape_string($values[$elem],$this->conn);
       }
       $fields=join(",",$fields);
       $tab[]="'".join("','",$values)."'";

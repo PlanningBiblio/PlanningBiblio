@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 28 mai 2014
+Dernière modification : 3 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -54,8 +54,6 @@ switch($config['error_reporting']){
 }
 
 date_default_timezone_set("Europe/Paris");
-
-include "include/function.php";
 
 // Vérification de la version de la base de données
 // Si la version est différente, mise à jour de la base de données 

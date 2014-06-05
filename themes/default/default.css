@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 29 mai 2014
+Dernière modification : 5 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -480,6 +480,20 @@ select
 #tab_titre{	/* planning/poste/index.php */
   width:100%;
   border: none;
+}
+
+#pl-notes-div1{
+  margin: 20px 0 0 0;
+}
+
+#pl-notes-div2{
+  margin: 20px 0 0 0;
+  text-align: left;
+}
+
+#pl-notes-text{
+  width: 100%;
+  height: 240px;
 }
 
 .print_only

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.4
+Planning Biblio, Version 1.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 26 février 2014
+Dernière modification : 5 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -31,6 +31,8 @@ class planning{
   public $date=null;
   public $site=1;
   public $categorieA=false;
+  public $notes=null;
+  public $notesTextarea=null;
 
 
   // Recherche les agents de catégorie A en fin de service
@@ -86,7 +88,6 @@ class planning{
       $this->categorieA=true;
     }
   }
-
 
   // Affiche la liste des agents dans le menudiv
   public function menudivAfficheAgents($agents,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion){
@@ -252,5 +253,31 @@ class planning{
     }
 
   }
+
+  // Notes
+  // Récupère les notes (en bas des plannings)
+  public function getNotes(){
+    $db=new db();
+    $db->select("pl_notes","text","date='{$this->date}'");
+    if($db->result){
+      $notes=$db->result[0]['text'];
+      $notes=str_replace("&lt;br/&gt;","<br/>",$notes);
+      $this->notes=$notes;
+      $this->notesTextarea=str_replace("<br/>","\n",$notes);
+    }
+  }
+
+  // Insertion, mise à jour des notes
+  public function updateNotes(){
+    $date=$this->date;
+    $text=$this->notes;
+
+    $db=new db();
+    $db->delete2("pl_notes",array("date"=>$date));
+
+    $db=new db();
+    $db->insert2("pl_notes",array("date"=>$date,"text"=>$text));
+  }
+
 }
 ?>

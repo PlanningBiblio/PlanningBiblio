@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.4
+Planning Biblio, Version 1.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/ajax.motifs.php
 Création : 28 février 2014
-Dernière modification : 3 mars 2014
+Dernière modification : 3 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,7 +20,6 @@ ini_set('display_errors',0);
 ini_set('error_reporting',E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 
 include "../include/config.php";
-include "../include/function.php";
 $tab=json_decode($_POST['tab']);
 
 $db=new db();

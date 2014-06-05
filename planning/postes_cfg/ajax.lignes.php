@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/ajax.lignes.php
 Création : 3 février 2014
-Dernière modification : 3 février
+Dernière modification : 3 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,7 +20,6 @@ ini_set('display_errors',0);
 error_reporting(0);
 
 include "../../include/config.php";
-include "../../include/function.php";
 include "class.tableaux.php";
 
 $keys=array_keys($_POST);

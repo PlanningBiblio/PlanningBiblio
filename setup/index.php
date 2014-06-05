@@ -22,7 +22,7 @@ session_destroy();
 $version="1.8";
 
 include "header.php";
-include "../include/function.php";
+include_once "../include/function.php";
 $password=gen_trivial_password(16);
 
 $Fnm = "../include/config.php";

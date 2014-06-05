@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 28 mai 2014
+Dernière modification : 5 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -143,7 +143,7 @@ if($db->result){
 echo "<div id='divcalendrier' class='text'>\n";
 
 echo "<form name='form' method='get' action='#'>\n";
-echo "<input type='hidden' id='date' name='date' />\n";
+echo "<input type='hidden' id='date' name='date' value='$date' />\n";
 echo "</form>\n";
 
 echo "<table id='tab_titre'>\n";
@@ -449,6 +449,37 @@ else{
     $k++;
   }
   echo "</table>\n";
+
+  // Notes : Affichage
+  $p=new planning();
+  $p->date=$date;
+  $p->getNotes();
+  $notes=$p->notes;
+  $notesTextarea=$p->notesTextarea;
+
+  echo <<<EOD
+  <div id='pl-notes-div1'>
+  $notes
+  </div>
+EOD;
+
+  // Notes : Modifications
+  if($autorisation){
+    echo <<<EOD
+    <div id='pl-notes-div2' class='noprint'>
+    <input type='button' class='ui-button' id='pl-notes-button' value='Ajouter un commentaire' />
+    </div>
+
+    <div id="pl-notes-form" title="Notes" class='noprint' style='display:none;'>
+      <p class="validateTips">Vous pouvez écrire ici un commentaire qui sera affiché en bas du planning.</p>
+      <form>
+      <fieldset>
+      <textarea id='pl-notes-text'>$notesTextarea</textarea>
+      </fieldset>
+      </form>
+    </div>
+EOD;
+  }
 
   // Affichage des absences
   if($config['Absences-planning']){
