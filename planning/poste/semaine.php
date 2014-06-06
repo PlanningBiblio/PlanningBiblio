@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
-Dernière modification : 28 mai 2014
+Dernière modification : 6 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -316,6 +316,19 @@ for($j=0;$j<=$fin;$j++){
     }
     echo "</table>\n";
   }
+
+  // Notes : Affichage
+  $p=new planning();
+  $p->date=$date;
+  $p->site=$site;
+  $p->getNotes();
+  $notes=$p->notes;
+
+  echo <<<EOD
+  <div class='pl-notes-div1'>
+  $notes
+  </div>
+EOD;
 }
 ?>
 </div>
