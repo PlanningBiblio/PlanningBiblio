@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.3
+Planning Biblio, Version 1.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/menudiv.php
 Création : mai 2011
-Dernière modification : 20 mars 2014
+Dernière modification : 6 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -29,7 +29,6 @@ $date=$_GET['date'];
 $poste=$_GET['poste'];
 $debut=$_GET['debut'];
 $fin=$_GET['fin'];
-$sr=0;
 $cellule_vide=true;
 $max_perso=false;
 $tab_exclus=array(0);
@@ -38,8 +37,6 @@ $agents_qualif=array(0);
 $tab_deja_place=array(0);
 $sr_init=null;
 $nbCol=0;
-$hres_jour=0;
-$hres_sem=0;
 $motifExclusion=array();
 
 $d=new datePl($date);

@@ -102,9 +102,6 @@ class planning{
     $semaine3=$d->semaine3;
     $ligneAdd=0;
 
-    $sr=0;
-    $sr_cellule=null;
-
     if($hide){
       $display="display:none;";
       $groupe_hide=null;
@@ -118,7 +115,11 @@ class planning{
     }
 
     foreach($agents as $elem){
+      $hres_jour=0;
+      $hres_sem=0;
+      $sr=0;
       $color='black';
+
       if(!$config['ClasseParService']){
 	if($elem['id']==2){		// on retire l'utilisateur "tout le monde"
 	  continue;
@@ -195,7 +196,7 @@ class planning{
       }
 
       // affihage des heures faites les 4 dernières semaines + les heures de la cellule
-      $hres_4sem=null;
+      $hres_4sem=0;
       if($config['hres4semaines']){
 	$date1=date("Y-m-d",strtotime("-3 weeks",strtotime($j1)));
 	$date2=$j7;	// fin de semaine courante
