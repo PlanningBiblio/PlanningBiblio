@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 5 juin 2014
+Dernière modification : 6 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -258,7 +258,7 @@ class planning{
   // Récupère les notes (en bas des plannings)
   public function getNotes(){
     $db=new db();
-    $db->select("pl_notes","text","date='{$this->date}'");
+    $db->select("pl_notes","text","date='{$this->date}' AND site='{$this->site}'");
     if($db->result){
       $notes=$db->result[0]['text'];
       $notes=str_replace("&lt;br/&gt;","<br/>",$notes);
@@ -270,13 +270,14 @@ class planning{
   // Insertion, mise à jour des notes
   public function updateNotes(){
     $date=$this->date;
+    $site=$this->site;
     $text=$this->notes;
 
     $db=new db();
-    $db->delete2("pl_notes",array("date"=>$date));
+    $db->delete2("pl_notes",array("date"=>$date,"site"=>$site));
 
     $db=new db();
-    $db->insert2("pl_notes",array("date"=>$date,"text"=>$text));
+    $db->insert2("pl_notes",array("date"=>$date,"site"=>$site,"text"=>$text));
   }
 
 }

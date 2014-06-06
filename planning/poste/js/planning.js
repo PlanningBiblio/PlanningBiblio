@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 5 juin 2014
+Dernière modification : 6 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -24,7 +24,8 @@ $(document).ready(function(){
 $(function() {
   // Notes
   var text=$("#pl-notes-text"),
-    date=$("#date");
+    date=$("#date"),
+    site=$("#site");
   allFields=$([]).add(text);
 
   // Bouton Notes
@@ -51,7 +52,7 @@ $(function() {
 	  $.ajax({
 	    url: "planning/poste/ajax.notes.php",
 	    type: "get",
-	    data: "date="+date.val()+"&text="+encodeURIComponent(text2),
+	    data: "date="+date.val()+"&site="+site.val()+"&text="+encodeURIComponent(text2),
 	    success: function(){
 	      if(text2){
 		$("#pl-notes-button").val("Modifier le commentaire");

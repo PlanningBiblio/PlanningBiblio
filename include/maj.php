@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 3 juin 2014
+Dernière modification : 6 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -562,7 +562,7 @@ if(strcmp("1.8",$config['Version'])>0){
   $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES ('40','70','Absences','statistiques/absences.php');";
   $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Statistiques', 17, 'Statistiques', 'statistiques/absences.php');";
   $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Planning par poste - Semaine', 99, '', 'planning/poste/semaine.php');";
-  $sql[]="CREATE TABLE `{$dbprefix}pl_notes` (`id` int(11) NOT NULL AUTO_INCREMENT, `date` DATE, `text` TEXT, PRIMARY KEY (`id`) ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+  $sql[]="CREATE TABLE `{$dbprefix}pl_notes` (`id` int(11) NOT NULL AUTO_INCREMENT, `date` DATE, `site` INT(3) NOT NULL DEFAULT 1, `text` TEXT, PRIMARY KEY (`id`) ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.8' WHERE `nom`='Version';";
 }
 

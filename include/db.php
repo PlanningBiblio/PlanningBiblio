@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 5 juin 2014
+Dernière modification : 6 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -130,8 +130,16 @@ class db{
   }
 
   function delete2($table,$where=array()){
-    $key=array_keys($where);
-    $where="`".$key[0]."`='".$where[$key[0]]."'";
+    if(!empty($where)){
+      $keys=array_keys($where);
+      $tmp=array();
+      foreach($keys as $key){
+	$tmp[]="`".$key."`='".$where[$key]."'";
+      }
+      $where=join(" AND ",$tmp);
+    }else{
+      $where=1;
+    }
     $requete="DELETE FROM `{$GLOBALS['config']['dbprefix']}$table` WHERE $where";
     $this->query($requete);
   }

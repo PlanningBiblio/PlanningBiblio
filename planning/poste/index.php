@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 5 juin 2014
+Dernière modification : 6 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -144,6 +144,7 @@ echo "<div id='divcalendrier' class='text'>\n";
 
 echo "<form name='form' method='get' action='#'>\n";
 echo "<input type='hidden' id='date' name='date' value='$date' />\n";
+echo "<input type='hidden' id='site' name='date' value='$site' />\n";
 echo "</form>\n";
 
 echo "<table id='tab_titre'>\n";
@@ -453,6 +454,7 @@ else{
   // Notes : Affichage
   $p=new planning();
   $p->date=$date;
+  $p->site=$site;
   $p->getNotes();
   $notes=$p->notes;
   $notesTextarea=$p->notesTextarea;

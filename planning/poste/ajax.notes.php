@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/ajax.notes.php
 Création : 3 juin 2014
-Dernière modification : 5 juin 2014
+Dernière modification : 6 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,6 +20,7 @@ include_once "class.planning.php";
 
 $p=new planning();
 $p->date=$_GET['date'];
+$p->site=$_GET['site'];
 $p->notes=$_GET['text'];
 $p->updateNotes();
 ?>
