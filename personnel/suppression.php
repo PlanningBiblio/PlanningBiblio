@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.7
+Planning Biblio, Version 1.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/suppression.php
 Création : mai 2011
-Dernière modification : 25 mars 2014
+Dernière modification : 12 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -57,8 +57,7 @@ function etape2(){
   echo "<input type='hidden' name='page' value='personnel/suppression.php' />\n";
   echo "<input type='hidden' name='menu' value='off' />\n";
   echo "Sélectionner la date de départ : \n";
-  echo "<input type='text' name='date' size='10' value='".date("Y-m-d")."'>";
-  echo "&nbsp;&nbsp;<img src='themes/default/images/calendrier.gif' onclick='calendrier(\"date\");'>";
+  echo "<input type='text' name='date' size='10' value='".date("d/m/Y")."' class='datepicker'>";
   echo "<br/><br/>\n";
   echo "<input type='button' value='Annuler' onclick='popup_closed();'>\n";
   echo "&nbsp;&nbsp;\n";
@@ -70,7 +69,7 @@ function etape2(){
 
 function etape3(){
   global $id;
-  $date=$_GET['date'];
+  $date=dateSQL($_GET['date']);
       //	Mise à jour de la table personnel
   $req="UPDATE `{$GLOBALS['dbprefix']}personnel` SET `supprime`='1', `actif`='Supprim&eacute;', `depart`='$date' WHERE `id`='$id';";	
   $db=new db();

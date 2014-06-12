@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : joursFeries/index.php
 Création : 25 juillet 2013
-Dernière modification : 21 décembre 2013
+Dernière modification : 12 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -32,6 +32,8 @@ if(!in_array($annee_suivante,$annees)){
 if(!in_array($annee_courante,$annees)){
   $annees[]=$annee_courante;
 }
+
+sort($annees);
 
 // Recherche des jours fériés enregistrés dans la base de données et avec la fonction jour_ferie
 $j=new joursFeries();
@@ -79,11 +81,11 @@ $i=0;
 foreach($jours as $elem){
   $ferie=$elem['ferie']?"checked='checked'":null;
   $fermeture=$elem['fermeture']?"checked='checked'":null;
+  $date=dateFr($elem['jour']);
   echo <<<EOD
     <tr id='tr$i'><td><a href='javascript:supprime_jourFerie($i);'>
       <img src='themes/default/images/drop.gif' alt='Suppression' style='margin-right:10px;'/></a></td>
-    <td><input type='text' name='jour[$i]' value='{$elem['jour']}' class='c100' id='jour$i'/>
-      <img src="themes/default/images/calendrier.gif" onclick="calendrier('jour[$i]');" alt="calendrier"></td>
+    <td><input type='text' name='jour[$i]' value='$date' class='c100 datepicker' id='jour$i'/></td>
     <td><input type='checkbox' name='ferie[$i]' value='1' $ferie /></td>
     <td><input type='checkbox' name='fermeture[$i]' value='1' $fermeture/></td>
     <td><input type='text' name='nom[$i]' value='{$elem['nom']}'  class='c350'/></td>
@@ -96,8 +98,7 @@ for($j=$i;$j<$i+15;$j++){
   echo <<<EOD
     <tr id='tr$j'><td><a href='javascript:supprime_jourFerie($j);'>
       <img src='themes/default/images/drop.gif' alt='Suppression' style='margin-right:10px;'/></a></td>
-    <td><input type='text' name='jour[$j]' class='c100' id='jour$j'/>
-      <img src="themes/default/images/calendrier.gif" onclick="calendrier('jour[$j]');" alt="calendrier"></td>
+    <td><input type='text' name='jour[$j]' class='c100 datepicker' id='jour$j'/></td>
     <td><input type='checkbox' name='ferie[$j]' value='1' /></td>
     <td><input type='checkbox' name='fermeture[$j]' value='1' /></td>
     <td><input type='text' name='nom[$j]' class='c350'/></td>
@@ -107,7 +108,7 @@ EOD;
 }
 
 echo <<<EOD
-  <tr><td colspan='6' style='padding:20px 0 0 20px;'><input type='submit' value='Valider' /></td></tr>
+  <tr><td colspan='6' style='padding:20px 0 0 20px;'><input type='submit' value='Valider' class='ui-button' /></td></tr>
   </table>
   </form>
 EOD;

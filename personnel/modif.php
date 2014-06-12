@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.7
+Planning Biblio, Version 1.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 26 mars 2014
+Dernière modification : 12 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -59,8 +59,8 @@ if(isset($_GET['id'])){		//	récupération des infos de l'agent en cas de modif
   $service=$db->result[0]['service'];
   $heuresHebdo=$db->result[0]['heuresHebdo'];
   $heuresTravail=$db->result[0]['heuresTravail'];
-  $arrivee=$db->result[0]['arrivee'];
-  $depart=$db->result[0]['depart'];
+  $arrivee=dateFr($db->result[0]['arrivee']);
+  $depart=dateFr($db->result[0]['depart']);
   $login=$db->result[0]['login'];
   $temps=unserialize($db->result[0]['temps']);
   $postes_attribues=unserialize($db->result[0]['postes']);
@@ -376,11 +376,10 @@ echo "Date d'arrivée ";
 if(in_array(21,$droits)){
   echo "(AAAA-MM-JJ) :";
   echo "</td><td>";
-  echo "<input type='text' value='$arrivee' name='arrivee' style='width:400px' />";
-  echo "&nbsp;&nbsp;<img src='themes/default/images/calendrier.gif' onclick='calendrier(\"arrivee\");' alt='arrivée' />";
+  echo "<input type='text' value='$arrivee' name='arrivee' style='width:400px' class='datepicker'/>";
 }
 else
-  echo "</td><td>".dateFr($arrivee);
+  echo "</td><td>".$arrivee;
 echo "</td></tr>";
 
 echo "<tr><td>";
@@ -388,11 +387,10 @@ echo "Date de départ ";
 if(in_array(21,$droits)){
   echo "(AAAA-MM-JJ) :";
   echo "</td><td>";
-  echo "<input type='text' value='$depart' name='depart' style='width:400px' />";
-  echo "&nbsp;&nbsp;<img src='themes/default/images/calendrier.gif' onclick='calendrier(\"depart\");' alt='départ' />";
+  echo "<input type='text' value='$depart' name='depart' style='width:400px'  class='datepicker'/>";
 }
 else
-  echo "</td><td>".dateFr($depart);
+  echo "</td><td>".$depart;
 echo "</td></tr>";
 
 echo "<tr><td>";

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : joursFeries/class.joursFeries.php
 Création : 25 juillet 2013
-Dernière modification : 26 septembre 2013
+Dernière modification : 12 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -121,7 +121,7 @@ class joursFeries{
       if($p['jour'][$elem] and $p['jour'][$elem]!="0000-00-00"){
 	$ferie=isset($p['ferie'][$elem])?1:0;
 	$fermeture=isset($p['fermeture'][$elem])?1:0;
-	$data[]=array("annee"=>$p['annee'],"jour"=>$p['jour'][$elem],"ferie"=>$ferie,"fermeture"=>$fermeture,"nom"=>$p['nom'][$elem],"commentaire"=>$p['commentaire'][$elem]);
+	$data[]=array("annee"=>$p['annee'],"jour"=>dateSQL($p['jour'][$elem]),"ferie"=>$ferie,"fermeture"=>$fermeture,"nom"=>$p['nom'][$elem],"commentaire"=>$p['commentaire'][$elem]);
       }
     }
     $db=new db();

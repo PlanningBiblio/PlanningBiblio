@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.7
+Planning Biblio, Version 1.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 27 mars 2014
+Dernière modification : 12 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -32,8 +32,8 @@ if(isset($_POST['id'])){
   $postes=serialize(explode(",",$_POST['postes']));
   $temps=isset($_POST['temps'])?serialize($_POST['temps']):null;
   $actif=$_POST['actif'];
-  $arrivee=$_POST['arrivee'];
-  $depart=$_POST['depart'];
+  $arrivee=dateSQL($_POST['arrivee']);
+  $depart=dateSQL($_POST['depart']);
   $informations=trim(htmlentities($_POST['informations'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
   $recup=trim(htmlentities($_POST['recup'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
   $sites=isset($_POST['sites'])?serialize($_POST['sites']):null;
