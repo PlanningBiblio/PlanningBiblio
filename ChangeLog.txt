@@ -1,3 +1,15 @@
+***	Version 1.8	(Jérôme Combes, 12 juin 2014)		***
+- Améliorations :
+Amélioration de l'affichage des pages activités et agenda
+Ajout des statistiques sur les absences
+Affichage de tous les plannings de la semaine sur une seule page
+Permet l'ajout de commentaires en bas des plannings
+
+- Corrections :
+Correction de la fonction PHP decrypt (des -> tripledes)
+Initilisations de variables dans statistiques/temps.php
+Initilisations de variables dans planning/poste/menudiv.php (menu déroulant du planning) : réinitialise correctement les couleurs et les heures des agents
+
 ***	Version 1.7.9	(Jérôme Combes, 30 avril 2014)		***
 - Améliorations :
 Ajout des fonctions JS check... et updateTips pour la validation des formulaires JQuery-UI
