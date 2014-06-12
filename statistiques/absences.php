@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/absences.php
 Création : 15 mai 2014
-Dernière modification : 30 mai 2014
+Dernière modification : 12 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -150,16 +150,16 @@ echo <<<EOD
 <td>
 <form name='form' method='get' action='index.php'>
 <input type='hidden' name='page' value='statistiques/absences.php' />
-Début : <input type='text' name='debut' class='datepicker' value='$debut' />&nbsp;
-Fin : <input type='text' name='fin' class='datepicker' value='$fin' />&nbsp;
+D&eacute;but <input type='text' name='debut' class='datepicker' value='$debut' />&nbsp;
+Fin <input type='text' name='fin' class='datepicker' value='$fin' />&nbsp;
 EOD;
 if($config['Multisites-nombre']>1){
   echo "Sites : ";
   echo "<select name='site'>\n";
-  echo "<option value='0'>Tous'>\n";
+  echo "<option value='0'>Tous</option>\n";
   for($i=1;$i<=$config['Multisites-nombre'];$i++){
     $selected=$i==$site?"selected='selected'":null;
-    echo "<option value='$i' $selected>{$config['Multisites-site$i']}</option>\n";
+    echo "<option value='$i' $selected>{$config["Multisites-site$i"]}</option>\n";
   }
   echo "</select>&nbsp;\n";
 }
