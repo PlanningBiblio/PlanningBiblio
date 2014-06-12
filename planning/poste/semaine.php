@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
-Dernière modification : 6 juin 2014
+Dernière modification : 11 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -210,6 +210,10 @@ for($j=0;$j<=$fin;$j++){
   $db->query("SELECT `tableau` FROM `{$dbprefix}pl_poste_tab_affect` WHERE `date`='$date' AND `site`='$site';");
   $tab=$db->result[0]['tableau'];
 
+  if(!$tab){
+    continue 1;
+  }
+
   $validationMessage=null;
   if($verrou and $tab){
     $validationMessage="<u>Validation</u> : $perso2 $date_validation2 $heure_validation2";
@@ -219,7 +223,7 @@ for($j=0;$j<=$fin;$j++){
     $validationMessage="<font class='important bold'>$attention Le planning du ".dateFr($date)." n'est pas validé !</font>";
   }
 
-  echo "<div id='tableau'>\n";
+  echo "<div class='tableau'>\n";
   echo "<p class='pl-semaine-header'>\n";
   echo "<font class='pl-semaine-date'>".dateAlpha($date)."</font>\n";
   echo "<font class='pl-semaine-validation'>$validationMessage</font>\n";
