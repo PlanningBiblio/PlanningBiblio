@@ -18,11 +18,6 @@
 -------------------------------------------------------------------------------------------------------------
 Ressources :
  
- Dossier calendrier (sauf fichier README.txt et index.php) : 
- - Programme de Sylvain BAUDOIN 
- - Version: 2.5
- - Copyright (c) 2005-2008 - Sylvain BAUDOIN
- 
  Fichiers include/phpmailer
  - Software: PHPMailer - PHP email class
  - Version: 5.0.2

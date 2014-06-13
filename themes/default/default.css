@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 1.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 11 juin 2014
+Dernière modification : 13 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -482,6 +482,22 @@ select
   border: none;
 }
 
+/* Calendrier affiché en haut des plannings */
+#pl-calendar{
+  border:0;
+  background: #FFFFFF;
+}
+
+#pl-calendar .ui-datepicker {
+  font-size:75%;
+}
+
+
+#pl-calendar .ui-datepicker a{
+  font-size:110%;
+}
+
+/* Notes affichées en bas des plannings */
 #pl-notes-div1, .pl-notes-div1{
   margin: 20px 0 0 0;
 }
@@ -654,21 +670,12 @@ a:hover.menuRed, a:hover.menu {
 	z-index:10;
 	}
 
-/*	Messages d'informations (BMI)	*/
+/*	Messages d'informations		*/
 #messages_infos {
 	color:#FF5E0E;	
 	font-weight:bold;
 	font-size:13pt;
 }
-
-
-/*		DIV Flotant		*/
-#calendrier {		
-	position:absolute;
-	background:#FFF;
-	width:190px;
-	height:165px;
-	}
 
 img{
   border: none;

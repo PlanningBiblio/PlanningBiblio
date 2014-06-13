@@ -1,3 +1,7 @@
+***	Version 1.8.1	(Jérôme Combes, 13 juin 2014)		***
+- Améliorations :
+Remplace les anciens calendiers par des datepickers
+
 ***	Version 1.8	(Jérôme Combes, 12 juin 2014)		***
 - Améliorations :
 Amélioration de l'affichage des pages activités et agenda

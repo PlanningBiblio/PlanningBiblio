@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.8
+Planning Biblio, Version 1.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 3 avril 2014
+Dernière modification : 12 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -65,5 +65,4 @@ EOD;
 
 <div id='opac' style='display:none'></div>
 <div style='position:relative;top:30px;' class='noprint'>
-<iframe id='calendrier' style='display:none' scrolling='no'></iframe>
 </div>

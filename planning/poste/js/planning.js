@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 1.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 6 juin 2014
+Dernière modification : 13 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -22,6 +22,16 @@ $(document).ready(function(){
 
 
 $(function() {
+  // Calendar
+  $("#pl-calendar").change(function(){
+    var date=dateFr($(this).val());
+    if($(this).attr("class").search("datepickerSemaine")>0){
+      window.location.href="?page=planning/poste/semaine.php&date="+date;
+    }else{
+      window.location.href="?date="+date;
+    }
+  });
+  
   // Notes
   var text=$("#pl-notes-text"),
     date=$("#date"),

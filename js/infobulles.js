@@ -4,7 +4,7 @@ Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
-Fichier : js/calendrier.js
+Fichier : js/infobulles.js
 Création : 4 septembre 2013
 Dernière modification : 4 septembre 2013
 Auteur : Jérôme Combes, jerome@planningbilbio.fr

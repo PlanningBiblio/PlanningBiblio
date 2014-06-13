@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.7.9
+Planning Biblio, Version 1.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 29 avril 2014
+Dernière modification : 13 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -26,26 +26,6 @@ var fin;
 var tableau;
 var tab_menu;
 var menudiv_display="none";
-//	----------------------------		Position du pointeur		-----------------------		//
-// Detection du navigateur
-nc6=(typeof(window.controllers) !='undefined' && typeof(window.locationbar) != 'undefined')?true:false;
-nc4=(document.layers)?true:false;
-ie4=(document.all)? true:false;
-
-// on lance la detection des mouvements du pointeur
-// instructions pour netscape 4.x
-if(nc4){
-  document.captureEvents(Event.MOUSEMOVE);
-}
-// Instructions pour Netscape 6.x
-if(nc6) {
-//   document.addEventListener("mousemove",document.onmousemove,true);
-  suivre_souris;
-}
-// Instructions pour IE
-document.onmousemove=suivre_souris;
-// fonction executée pour chaque mouvement de pointeur
-//	----------------------------		FIN Position du pointeur	------------------------	//
 //	----------------------------		FIN Variables			------------------------	//
 
 
@@ -113,29 +93,6 @@ function calculHeures(object,num,form,tip,numero){
   }
   heures=heure4(heures/60);
   document.getElementById(tip).innerHTML=heures;
-}
-
-
-
-
-function calendrier(champ,form){
-  if(form==undefined){
-    form="form";
-  }
-  url="include/calendrier.php?champ="+champ+"&form="+form;
-  
-  X=document.body.clientWidth;
-  Y=document.body.clientHeight;
-  x=document.position.x.value;
-  y=document.position.y.value;
-  if(x>X-210)
-    x=X-210;
-  if(y>Y-180)
-    y=Y-180;
-  document.getElementById('calendrier').style.left=x+"px";
-  document.getElementById('calendrier').style.top=y+"px";
-  document.getElementById('calendrier').style.display="block";
-  document.getElementById('calendrier').src=url;
 }
 
 function ctrl_form(champs){
@@ -438,24 +395,6 @@ function show(id,tab,li){
   for(i=0;i<tab.length;i++){			// cache le contenu des autres div
     document.getElementById(tab[i]).style.display="none";
   }
-}
-
-//	suivre_souris : determine la position de la souris pour l'affichage des calendriers
-function suivre_souris(e){
-  // Instruction pour Netscape 4 et supérieur
-  if(nc4 || nc6){
-    // On affete à x et y les positions X et Y du pointeur lors de l'évenement move
-    var x=e.pageX;
-    var y=e.pageY;
-  }
-  // Instructions équivalentes pour Internet Explorer
-  if(ie4){
-    var x = event.x;
-    var y = event.y;
-  }
-  // On affecte les données obtenues au champs du formulaire
-  document.position.x.value=x;
-  document.position.y.value=y;
 }
 
 // supprime(page,id)	Utilisée par postes et modeles

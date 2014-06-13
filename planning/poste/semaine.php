@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 1.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
-Dernière modification : 11 juin 2014
+Dernière modification : 13 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -112,7 +112,7 @@ echo "</form>\n";
 echo "<table id='tab_titre'>\n";
 echo "<tr><td><div class='noprint'>\n";
 ?>
-<iframe id='cal_iframe' src='include/calendrier.php?champ=pl_poste' frameborder='0' scrolling='no'></iframe>
+<div id='pl-calendar' class='datepicker datepickerSemaine'></div>
 <?php
 echo "</div></td><td class='titreSemFixe'>\n";
 echo "<div class='noprint'>\n";
