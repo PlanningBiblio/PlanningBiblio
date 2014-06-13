@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 1.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/js/statistiques.js
 Création : 15 mai 2014
-Dernière modification : 30 mai 2014
+Dernière modification : 13 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -22,10 +22,19 @@ $(document).ready(function(){
   if($("#dataTableStatAbsences").length){
     // Définition des propriétés des colonnes
     var nbCol=$("#dataTableStatAbsences tfoot th").length;
+    var iLeftColumns=2;
+    var afficheHeures=$("#afficheHeures").val();
+    if(afficheHeures){
+      nbCol=nbCol/2;
+      iLeftColumns=3;
+    }
+    
     var columns=[{"bSortable":true}];
-    for(i=1;i<(nbCol/2);i++){
+    for(i=1;i<nbCol;i++){
       columns.push({"bSortable":true});
-      columns.push({"sType":"heure-fr"});
+      if(afficheHeures){
+	columns.push({"sType":"heure-fr"});
+      }
     }
 
     // DataTable
@@ -43,7 +52,7 @@ $(document).ready(function(){
     
     // Colonnes fixes
     new FixedColumns( absencesTable, {
-      "iLeftColumns" : 3
+      "iLeftColumns" : iLeftColumns
     });
   }
 

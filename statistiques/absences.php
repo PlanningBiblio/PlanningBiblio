@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 1.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/absences.php
 Création : 15 mai 2014
-Dernière modification : 12 juin 2014
+Dernière modification : 13 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,6 +20,10 @@ require_once "class.statistiques.php";
 require_once "absences/class.absences.php";
 
 //	Initialisation des variables
+$afficheHeures=in_array("planningHebdo",$plugins)?true:false;
+$colspan=$afficheHeures?2:1;
+$rowspan=$afficheHeures?2:1;
+
 if(isset($_GET['debut'])){
   $debut=$_GET['debut'];
   $fin=$_GET['fin']?$_GET['fin']:$debut;
@@ -98,40 +102,41 @@ foreach($absences as $elem){
   $totaux[$elem['motif']]['frequence']++;
 
   // Ajout des heures d'absences
-  $a=new absences();
-  $a->calculTemps($elem['debut'],$elem['fin'],$elem['perso_id']);
-  $heures=$a->heures;
+  if($afficheHeures){
+    $a=new absences();
+    $a->calculTemps($elem['debut'],$elem['fin'],$elem['perso_id']);
+    $heures=$a->heures;
 
-  // heures agent pour le motif courant
-  if($a->error){
-    $tab[$elem['perso_id']][$elem['motif']]['heures']="N/A";
-  }
-  elseif(is_numeric($tab[$elem['perso_id']][$elem['motif']]['heures'])){
-    $tab[$elem['perso_id']][$elem['motif']]['heures']+=$heures;
-  }
-  // Total heures pour ce motif
-  if($a->error){
-    $totaux[$elem['motif']]['heures']="N/A";
-  }
-  elseif(is_numeric($totaux[$elem['motif']]['heures'])){
-    $totaux[$elem['motif']]['heures']+=$heures;
-  }
-
-
-  if($a->error){
-    // Total heures agent
-    $tab[$elem['perso_id']]['totalHeures']="N/A";
-    // Totaux heures généraux
-    $totaux['_generalHeures']="N/A";
-  }
-  else{
-    // Total heures agent
-    if(is_numeric($tab[$elem['perso_id']]['totalHeures'])){
-      $tab[$elem['perso_id']]['totalHeures']+=$heures;
+    // heures agent pour le motif courant
+    if($a->error){
+      $tab[$elem['perso_id']][$elem['motif']]['heures']="N/A";
     }
-    // Totaux heures généraux
-    if(is_numeric($totaux['_generalHeures'])){
-      $totaux['_generalHeures']+=$heures;
+    elseif(is_numeric($tab[$elem['perso_id']][$elem['motif']]['heures'])){
+      $tab[$elem['perso_id']][$elem['motif']]['heures']+=$heures;
+    }
+    // Total heures pour ce motif
+    if($a->error){
+      $totaux[$elem['motif']]['heures']="N/A";
+    }
+    elseif(is_numeric($totaux[$elem['motif']]['heures'])){
+      $totaux[$elem['motif']]['heures']+=$heures;
+    }
+
+    if($a->error){
+      // Total heures agent
+      $tab[$elem['perso_id']]['totalHeures']="N/A";
+      // Totaux heures généraux
+      $totaux['_generalHeures']="N/A";
+    }
+    else{
+      // Total heures agent
+      if(is_numeric($tab[$elem['perso_id']]['totalHeures'])){
+	$tab[$elem['perso_id']]['totalHeures']+=$heures;
+      }
+      // Totaux heures généraux
+      if(is_numeric($totaux['_generalHeures'])){
+	$totaux['_generalHeures']+=$heures;
+      }
     }
   }
 }
@@ -150,6 +155,7 @@ echo <<<EOD
 <td>
 <form name='form' method='get' action='index.php'>
 <input type='hidden' name='page' value='statistiques/absences.php' />
+<input type='hidden' id='afficheHeures' value='$afficheHeures' />
 D&eacute;but <input type='text' name='debut' class='datepicker' value='$debut' />&nbsp;
 Fin <input type='text' name='fin' class='datepicker' value='$fin' />&nbsp;
 EOD;
@@ -172,19 +178,23 @@ EOD;
 echo <<<EOD
 <table id='dataTableStatAbsences'>
 <thead><tr>
-  <th rowspan='2'>Agents</th>
-  <th rowspan='2'>Total<br/>d'absences</th>
-  <th rowspan='2'>Total<br/>d'heures</th>
+  <th rowspan='$rowspan'>Agents</th>
+  <th rowspan='$rowspan'>Total<br/>d'absences</th>
 EOD;
-
-foreach($motifs as $elem){
-  echo "<th colspan='2'>$elem</th>\n";
+if($afficheHeures){
+  echo "<th rowspan='$rowspan'>Total<br/>d'heures</th>\n";
 }
 
-echo "</tr>\n<tr>";
-
 foreach($motifs as $elem){
-  echo "<th>Nombre</th><th>Heures</th>";
+  echo "<th colspan='$colspan'>$elem</th>\n";
+}
+
+if($afficheHeures){
+  echo "</tr>\n<tr>";
+  foreach($motifs as $elem){
+    echo "<th>Nombre</th>";
+    echo "<th>Heures</th>";
+  }
 }
 
 echo "</tr></thead>\n";
@@ -193,11 +203,13 @@ echo "<tbody>\n";
 foreach($tab as $elem){
   echo "<tr><td>{$elem['nom']} {$elem['prenom']}</td>\n";
   echo "<td class='center nowrap'>{$elem['total']}</td>\n";
-  echo "<td class='center nowrap'>".heure4($elem['totalHeures'])."</td>\n";
+  if($afficheHeures){
+    echo "<td class='center nowrap'>".heure4($elem['totalHeures'])."</td>\n";
+  }
   foreach($motifs as $motif){
     $nb=array_key_exists($motif,$elem)?$elem[$motif]['total']:"-";
     $heures=null;
-    if(array_key_exists($motif,$elem)){
+    if(array_key_exists($motif,$elem) and $afficheHeures){
       if(is_numeric($elem[$motif]['heures'])){
 	$heures=heure4($elem[$motif]['heures']);
       }else{
@@ -206,7 +218,9 @@ foreach($tab as $elem){
     }
     $class=array_key_exists($motif,$elem)?"bg-yellow":null;
     echo "<td class='center nowrap $class'>$nb</td>\n";
-    echo "<td class='center nowrap $class'>$heures</td>\n";
+    if($afficheHeures){
+      echo "<td class='center nowrap $class'>$heures</td>\n";
+    }
   }
   echo "</tr>\n";
 }
@@ -215,12 +229,16 @@ echo "</tbody>\n";
 // Affichage de la ligne "Totaux"
 echo "<tfoot><tr style='background:#DDDDDD;'><th>Totaux</th>\n";
 echo "<th class='nowrap'>{$totaux['_general']}</th>\n";
-$heures=is_numeric($totaux['_generalHeures'])?heure4($totaux['_generalHeures']):"N/A";
-echo "<th class='nowrap'>$heures</th>\n";
-foreach($motifs as $motif){
-  $heures=is_numeric($totaux[$motif]['heures'])?heure4($totaux[$motif]['heures']):"N/A";
-  echo "<th class='nowrap'>{$totaux[$motif]['frequence']}</th>\n";
+if($afficheHeures){
+  $heures=is_numeric($totaux['_generalHeures'])?heure4($totaux['_generalHeures']):"N/A";
   echo "<th class='nowrap'>$heures</th>\n";
+}
+foreach($motifs as $motif){
+  echo "<th class='nowrap'>{$totaux[$motif]['frequence']}</th>\n";
+  if($afficheHeures){
+    $heures=is_numeric($totaux[$motif]['heures'])?heure4($totaux[$motif]['heures']):"N/A";
+    echo "<th class='nowrap'>$heures</th>\n";
+  }
 }
 echo "</tr></tfoot>\n";
 
