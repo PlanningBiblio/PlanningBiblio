@@ -1,6 +1,11 @@
-***	Version 1.8.1	(Jérôme Combes, 13 juin 2014)		***
+***	Version 1.8.1	(Jérôme Combes, 17 juin 2014)		***
 - Améliorations :
 Remplace les anciens calendiers par des datepickers
+Absences : Améliore l'affichage des emails de notifications d'absences
+Statistiques absences : n'affiche pas les heures si le plugins planningHebdo n'est pas installé
+
+- Corrections :
+Absences : Affiche les validations dans les mails notifiant les modifications d'absences
 
 ***	Version 1.8	(Jérôme Combes, 12 juin 2014)		***
 - Améliorations :
