@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.8
+Planning Biblio, Version 1.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 31 mars 2014
+Dernière modification : 17 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -34,7 +34,6 @@ $valideN1=0;
 $valideN2=0;
 $validationN1=null;
 $validationN2=null;
-$validationText=null;
 
 if($config['Absences-validation']){
   $valide=$_GET['valide'];
@@ -132,13 +131,22 @@ if(($debutSQL!=$debut1 or $finSQL!=$fin1) and $isValidate){			// mise à jour du
 $db=new db();
 $update=array("motif"=>$motif, "motif_autre"=>$motif_autre, "nbjours"=>$nbjours, "commentaires"=>$commentaires, "debut"=>$debut_sql, "fin"=>$fin_sql);
 if($config['Absences-validation']){
+  // Validation N1
   if($valideN1){
     $update["valideN1"]=$valideN1;
     $update["validationN1"]=$validationN1;
   }
+  // Validation N2
   if($valideN2){
     $update["valide"]=$valideN2;
     $update["validation"]=$validationN2;
+  }
+  // Retour à l'état demandé
+  if($valide==0){
+    $update["valide"]=0;
+    $update["valideN1"]=0;
+    $update["validation"]="0000-00-00 00:00:00";
+    $update["validationN1"]="0000-00-00 00:00:00";
   }
 }
 $where=array("id"=>$id);
@@ -160,27 +168,22 @@ if($_SESSION['login_id']==$perso_id or $config['Absences-validation']=='0'){
 else{
   if($valide1N2<=0 and $valideN2>0){
     $sujet="Validation d'une absence";
-    $validationText="Valid&eacute;e";
     $notifications=$config['Absences-notifications4'];
   }
   elseif($valide1N2>=0 and $valideN2<0){
     $sujet="Refus d'une absence";
-    $validationText="Refus&eacute;e";
     $notifications=$config['Absences-notifications4'];
   }
   elseif($valide1N1<=0 and $valideN1>0){
     $sujet="Acceptation d'une absence (en attente de validation hiérarchique)";
-    $validationText="Accept&eacute;e (en attente de validation hi&eacute;rarchique)";
     $notifications=$config['Absences-notifications3'];
   }
   elseif($valide1N1>=0 and $valideN1<0){
     $sujet="Refus d'une absence (en attente de validation hiérarchique)";
-    $validationText="Refus&eacute;e (en attente de validation hi&eacute;rarchique)";
     $notifications=$config['Absences-notifications3'];
   }
   else{
     $sujet="Modification d'une absence";
-    $validationText=null;
     $notifications=$config['Absences-notifications2'];
   }
 }
@@ -191,23 +194,40 @@ $a->getRecipients($notifications,$responsables,$mail,$mailResponsable);
 $destinataires=$a->recipients;
 
 // Message
-$message="$sujet : <br/>$prenom $nom<br/>Début : $debut";
+$message="<b><u>$sujet</u></b> : <br/><br/><b>$prenom $nom</b><br/><br/>Début : $debut";
 if($hre_debut!="00:00:00")
   $message.=" ".heure3($hre_debut);
 $message.="<br/>Fin : $fin";
 if($hre_fin!="23:59:59")
   $message.=" ".heure3($hre_fin);
-$message.="<br/>Motif : $motif";
+$message.="<br/><br/>Motif : $motif";
 if($motif_autre){
   $message.=" / $motif_autre";
 }
-echo "<br/>";
-if($commentaires)
-  $message.="Commentaire:<br/>$commentaires<br/>";
+$message.="<br/>";
+
 if($config['Absences-validation']){
+  $validationText="Demand&eacute;e";
+  if($valideN2>0){
+    $validationText="Valid&eacute;e";
+  }
+  elseif($valideN2<0){
+    $validationText="Refus&eacute;e";
+  }
+  elseif($valideN1>0){
+    $validationText="Accept&eacute;e (en attente de validation hi&eacute;rarchique)";
+  }
+  elseif($valideN1<0){
+    $validationText="Refus&eacute;e (en attente de validation hi&eacute;rarchique)";
+  }
+
   $message.="<br/>Validation : <br/>\n";
   $message.=$validationText;
   $message.="<br/>\n";
+}
+
+if($commentaires){
+  $message.="<br/>Commentaire:<br/>$commentaires<br/>";
 }
 
 // Ajout du lien permettant de rebondir sur l'absence

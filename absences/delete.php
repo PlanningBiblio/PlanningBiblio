@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.8
+Planning Biblio, Version 1.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/delete.php
 Création : mai 2011
-Dernière modification : 31 mars 2014
+Dernière modification : 17 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -30,6 +30,8 @@ $mail=$a->elements['mail'];
 $mailResponsable=$a->elements['mailResponsable'];
 $motif=$a->elements['motif'];
 $commentaires=$a->elements['commentaires'];
+$valideN1=$a->elements['valideN1'];
+$valideN2=$a->elements['valideN2'];
 
 // Sécurité
 // Droit 1 = modification de toutes les absences
@@ -50,14 +52,14 @@ if(!isset($_GET['confirm'])){
   echo "<form method='get' action='#' name='form'>\n";
   echo "<input type='hidden' name='page' value='absences/delete.php' />\n";
   echo "<input type='hidden' name='id' value='".$_GET['id']."' />\n";
-  echo "<input type='button' value='Non' onclick='annuler(1);' />\n";
+  echo "<input type='button' value='Non' onclick='annuler(1);' class='ui-button' />\n";
   echo "&nbsp;&nbsp;\n";
-  echo "<input type='submit' name='confirm' value='Oui' />\n";
+  echo "<input type='submit' name='confirm' value='Oui' class='ui-button' />\n";
   echo "</form>\n";
 }
 else{
   // Envoi d'un mail à l'agent et aux responsables
-  $message="Suppression d'une absence : <br/>$prenom $nom<br/>Début : ".dateFr($debut);
+  $message="<b><u/>Suppression d'une absence</u></b> : <br/><br/><b>$prenom $nom</b><br/><br/>Début : ".dateFr($debut);
   $hre_debut=substr($debut,-8);
   $hre_fin=substr($fin,-8);
   if($hre_debut!="00:00:00")
@@ -65,9 +67,31 @@ else{
   $message.="<br/>Fin : ".dateFr($fin);
   if($hre_fin!="23:59:59")
     $message.=" ".heure3($hre_fin);
-  $message.="<br/>Motif : $motif<br/>";
-  if($commentaires)
-    $message.="Commentaire:<br/>$commentaires<br/>";
+  $message.="<br/><br/>Motif : $motif<br/>";
+
+  if($config['Absences-validation']){
+    $validationText="Demand&eacute;e";
+    if($valideN2>0){
+      $validationText="Valid&eacute;e";
+    }
+    elseif($valideN2<0){
+      $validationText="Refus&eacute;e";
+    }
+    elseif($valideN1>0){
+      $validationText="Accept&eacute;e (en attente de validation hi&eacute;rarchique)";
+    }
+    elseif($valideN1<0){
+      $validationText="Refus&eacute;e (en attente de validation hi&eacute;rarchique)";
+    }
+
+    $message.="<br/>Validation pr&eacute;c&eacute;dente : <br/>\n";
+    $message.=$validationText;
+    $message.="<br/>\n";
+  }
+
+  if($commentaires){
+    $message.="<br/>Commentaire:<br/>$commentaires<br/>";
+  }
 
   $a=new absences();
   $a->getResponsables($debut,$fin,$perso_id);

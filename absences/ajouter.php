@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.9
+Planning Biblio, Version 1.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 30 avril 2014
+Dernière modification : 17 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -162,30 +162,32 @@ if($confirm=="confirm2"){		//	2eme confirmation
 
   // Si message personnalisé (config), celui-ci est inséré
   if($config['Absences-notifications-message']){
-    $message=$config['Absences-notifications-message']."<br/>";
+    $message="<b><u>{$config['Absences-notifications-message']}</u></b><br/>";
   }else{
-    $message="$titre : ";
+    $message="<b><u>$titre</u></b> : ";
   }
 
   // On complète le message avec les informations de l'absence
-  $message.="<br/>$prenom $nom<br/>Début : $debut";
+  $message.="<br/><br/><b>$prenom $nom</b><br/><br/>Début : $debut";
   if($hre_debut!="00:00:00")
     $message.=" ".heure3($hre_debut);
   $message.="<br/>Fin : $fin";
   if($hre_fin!="23:59:59")
     $message.=" ".heure3($hre_fin);
-  $message.="<br/>Motif : $motif";
+  $message.="<br/><br/>Motif : $motif";
   if($motif_autre){
     $message.=" / $motif_autre";
   }
-  echo "<br/>";
-  if($commentaires)
-    $message.="<br/>Commentaire:<br/>$commentaires<br/>";
+  $message.="<br/>";
 
   if($config['Absences-validation']){
     $message.="<br/>Validation : <br/>\n";
     $message.=$validationText;
     $message.="<br/>\n";
+  }
+
+  if($commentaires){
+    $message.="<br/>Commentaire:<br/>$commentaires<br/>";
   }
 
   // Ajout du lien permettant de rebondir sur l'absence
