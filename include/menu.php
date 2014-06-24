@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/menu.php
 Création : mai 2011
-Dernière modification : 18 janvier 2014
+Dernière modification : 23 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -113,7 +113,7 @@ echo $_SESSION['login_prenom']." ".$_SESSION['login_nom'];
 echo "</font></td>\n";
 echo "<td id='logout_img'>\n";
 echo "<a href='authentification.php' title='Déconnexion' >\n";
-echo "<img src='themes/default/images/logout.png' border='0' style='width:16px;'/></a></td>\n";
+echo "<span class='pl-icon pl-icon-logout'></span></a></td>\n";
 echo "</tr>\n";
 echo "<tr><td colspan='$colspan' style='text-align:right;'>\n";
 

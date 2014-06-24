@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.4
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : aide/index.php
 Création : mai 2011
-Dernière modification : 26 février 2014
+Dernière modification : 24 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -99,7 +99,7 @@ if(!$version){
 Vous pouvez voir la liste de vos absences entre 2 dates.<br/>
 Sélectionnez la date de début et la date de fin à l'aide des calendriers puis validez en cliquant sur "OK".<br/>
 La liste de vos absences durant cette période s'affiche avec les dates de début, de fin, le motif de l'absence et un commentaire éventuel.<br/><br/>
-Si vous avez le droit de modifier vos absences, vous pouvez cliquer sur l'icône <img src='themes/default/images/modif.png' alt='Feuille de papier et crayon' /> 
+Si vous avez le droit de modifier vos absences, vous pouvez cliquer sur l'icône <span class='pl-icon pl-icon-edit' title='Modifier'></span> 
 sur la ligne de l'absence que vous souhaitez modifier, vous verrez alors apparaître le détail de l'absence et vous pourrez la modifier.<br/>
 <br/>
 <u><b>Si vous avez le droit de gérer les absences :</b></u><br/>
@@ -107,7 +107,7 @@ Vous pouvez voir la liste des absents entre 2 dates.<br/>
 Sélectionnez la date de début et la date de fin à l'aide des calendriers puis validez en cliquant sur "OK".<br/>
 La liste des absents durant cette période s'affiche avec les dates de début, de fin, le nom de l'agent, le motif de l'absence et un commentaire éventuel.<br/>
 Vous pouvez afficher les absences d'une personne en particulier en tapant son nom (ou prénom) dans le champ "agent" puis en cliquant sur "OK".<br/>
-Vous pouvez modifier les informations relatives à une absence en cliquant sur l'icône <img src='themes/default/images/modif.png' alt='Feuille de papier et crayon' /> en début de ligne.<br/>
+Vous pouvez modifier les informations relatives à une absence en cliquant sur l'icône <span class='pl-icon pl-icon-edit' title='Modifier'></span> en début de ligne.<br/>
 
 
 <a name='abs_ajouter'></a>
@@ -234,13 +234,13 @@ Vous pouvez copier un tableau existant et modifier le nouveau tableau de façon 
 <a name="config_copie"></a>
 <h4>4.2) Création d'un nouveau tableau (Copie)</h4>
 Pour créer un nouveau tableau, rendez-vous dans le menu Administration - Les tableaux.<br/>
-Choisissez un tableau dans la liste et cliquez sur l'icône <img src='themes/default/images/copy.png' alt='Copie' />.<br/>
+Choisissez un tableau dans la liste et cliquez sur l'icône <span class='pl-icon pl-icon-copy' title='Copier'></span>.<br/>
 Saisissez le nom du nouveau tableau et cliquez sur "Copier".<br/>
 Votre nouveau tableau apparaît dans la liste.<br/>
 
 <a name="config_modif"></a>
 <h4>4.3) Modification d'un tableau</h4>
-Repérez le tableau à modifier dans la liste et cliquez sur l'icône <img src='themes/default/images/modif.png' alt='Modifier' /> le précédent.<br/>
+Repérez le tableau à modifier dans la liste et cliquez sur l'icône <span class='pl-icon pl-icon-edit' title='Modifier'></span> le précédent.<br/>
 Une page avec 3 onglets s'affiche (4 onglets en configuration multisites).<br/>
 Choisissez le nombre de tableaux dans le premier onglet et validez.<br/>
 Si vous avez plusieurs sites, choisissez le nom du site auquel ce tableau sera affecté dans le deuxième onglet et validez.<br/>
@@ -255,16 +255,16 @@ Modifiez les horaires à l'aide des menus déroulant. Vous devez respecter les r
 <li>Tous les tableaux doivent commencer et finir aux mêmes heures (ex: début : 9h, fin 22h pour tous les tableaux).</li>
 <li>Il ne doit pas y avoir de blanc entre 2 plages horaires (ex : 1<sup>ère</sup> plage : 9h-10h, la 2<sup>de</sup> doit commencer par 10h, etc ...).</li>
 </ul>
-Vous pouvez ajouter des menus déroulant en cliquant sur les signes <img src='themes/default/images/add.gif' alt='+' />.<br/>
+Vous pouvez ajouter des menus déroulant en cliquant sur les signes <span class='pl-icon pl-icon-add' title='Ajouter'></span>.<br/>
 Lorsque vous avez terminé, cliquez sur "<b>Valider</b>" et passez à la configuration des lignes (Onglet lignes).
 
 <a name="config_lignes"></a>
 <h4>4.5) Configuration des lignes</h4>
 Marquez les noms voulus dans la première colonne des lignes marrons (devant les horaires).<br/>
-Ajoutez des lignes en cliquant sur les signes <img src='themes/default/images/add.gif' alt='+' />.<br/>
+Ajoutez des lignes en cliquant sur les signes <span class='pl-icon pl-icon-add' title='Ajouter'></span>.<br/>
 Choisissez le nom du poste ou une ligne de séparation dans les menus déroulant pour chaque ligne.<br/>
 Vous pouvez "griser" des cellules en cochant les cases "G". Ceci permet de marquer la cellule pour que personne n'y soit placé.<br/>
-Vous pouvez supprimer des lignes en cliquant sur le signe <img src='themes/default/images/drop.gif' alt='Supprimer'/>. 
+Vous pouvez supprimer des lignes en cliquant sur le signe <span class='pl-icon pl-icon-drop' title='Supprimer'></span>. 
 Ne supprimer pas de ligne dans un tableau en cours d'utilisation ou qui a été utilisé car si des agents y sont placés, vous ne les verrez plus dans les plannings concernés.<br/>
 Une fois terminé, cliquez sur "<b>Valider</b>".<br/>
 
@@ -293,7 +293,7 @@ Pour ajouter un agent, cliquez sur le bouton « Ajouter » puis remplissez le 
 <b><u>1<sup>er</sup> onglet : Informations générales</u></b>
 <br/>Les champs nom, prénom et e-mail sont obligatoires.
 <br/>Choisissez le statut, le service de rattachement et le nombre d'heures hebdomadaires que l'agent doit faire en service public.
-<br/>Vous pouvez personnaliser la liste des statuts et des services en cliquant sur les signes <img src='themes/default/images/add.gif' alt='Plus' /> 
+<br/>Vous pouvez personnaliser la liste des statuts et des services en cliquant sur les signes <span class='pl-icon pl-icon-add' title='Ajouter'></span> 
 se trouvant à droite des menus déroulants. Vous devez attribuer une catégorie à chaque statut.
 <br/>Dans le menu déroulant « Service public / Administratif » choisissez
 « Service public » pour toutes les personnes qui pourront apparaître dans les
@@ -333,7 +333,7 @@ Une fois les informations saisies, validez le formulaire (bouton "Valider" en ha
 
 <a name="agent_modif"></a>
 <h4>5.2 ) Modification de la fiche d'un agent</h4>
-A partir de la liste des agents, cliquez sur l'icône <img src='themes/default/images/modif.png' alt='Modifier' /> devant le nom de l'agent choisi.<br/>
+A partir de la liste des agents, cliquez sur l'icône <span class='pl-icon pl-icon-edit' title='Modifier'></span> devant le nom de l'agent choisi.<br/>
 Un formulaire s'ouvre avec les informations relatives à l'agent.<br/>
 Pour plus d'informations, référez-vous à l'article "Ajout d'un agent".
 
@@ -373,7 +373,7 @@ Validez.
 
 <a name="poste_modif"></a>
 <h4>6.2 ) Modification d'un poste</h4>
-Trouvez le poste dans la liste, cliquez sur l'icône <img src='themes/default/images/modif.png' alt='Modifier' />
+Trouvez le poste dans la liste, cliquez sur l'icône <span class='pl-icon pl-icon-edit' title='Modifier'></span>
 devant le nom du poste à modifier.<br/>
 Modifier le formulaire (référez-vous à l'article "Ajout d'un poste" pour plus d'informations).
 

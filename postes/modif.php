@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.3
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : postes/modif.php
 Création : mai 2011
-Dernière modification : 17 mars 2014
+Dernière modification : 24 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -107,7 +107,7 @@ foreach($etages as $elem){
 }
 echo "</select>\n";
 echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_etages&amp;terme=&eacute;tage\",400,400);'>\n";
-echo "<img src='themes/default/images/add.gif' alt='*' style=width:15px;'/></a>\n";
+echo "<span class='pl-icon pl-icon-add' title='Ajouter'></span></a>\n";
 echo "</td></tr>";
 
 echo "<tr><td style='padding-top:20px;'>";

@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.8.1
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 13 juin 2014
+Dernière modification : 24 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -100,6 +100,56 @@ h3{
 
 #ferie,.ferie,.important {
   color: #FF5E0E;
+}
+
+/*	Icônes		*/
+.pl-icon{
+  padding: 13px;
+  text-decoration:none;
+}
+
+.pl-icon-add {
+  background:url("images/add.png") no-repeat center;
+}
+
+.pl-icon-copy {
+  background:url("images/copy.png") no-repeat center;
+}
+
+.pl-icon-drop {
+  background:url("images/drop.png") no-repeat center;
+}
+
+.pl-icon-edit {
+  background:url("images/edit.png") no-repeat center;
+}
+
+.pl-icon-lock {
+  background:url("images/lock.png") no-repeat center;
+}
+
+.pl-icon-logout {
+  background:url("images/logout.png") no-repeat center;
+}
+
+.pl-icon-open {
+  background:url("images/open.png") no-repeat center;
+}
+
+.pl-icon-printer {
+  background:url("images/printer.png") no-repeat center;
+}
+
+.pl-icon-refresh {
+  background:url("images/refresh.png") no-repeat center;
+}
+
+.pl-icon-save {
+  background:url("images/save.png") no-repeat center;
+}
+
+.pl-icon-unlock {
+  background:url("images/unlock.png") no-repeat center;
 }
 
 /* Les agents */
@@ -380,6 +430,10 @@ select
 /* Calendrier, titre (Semaine ...), Boutons de droite */
 #divcalendrier {
   margin : 10px 0 0 0;
+}
+
+.pl-validation {
+  margin: 0 0 10px 0;
 }
 
 .pl-semaine-header{

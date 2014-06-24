@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/horaires.php
 Création : mai 2011
-Dernière modification : 3 février 2014
+Dernière modification : 24 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -33,12 +33,14 @@ if(isset($_POST['action'])){
   foreach($keys as $key){
     if($key!="page" and $key!="action" and $key!="numero"){
       $tmp=explode("_",$key);				// debut_general_22
-      if(empty($tab[$tmp[1]."_".$tmp[2]]))
-	  $tab[$tmp[1]."_".$tmp[2]]=array($tmp[1]);	// tab[0]=tableau
-      if($tmp[0]=="debut")				// tab[1]=debut
-	  $tab[$tmp[1]."_".$tmp[2]][1]=$_POST[$key];
-      if($tmp[0]=="fin")				// tab[2]=fin
-	  $tab[$tmp[1]."_".$tmp[2]][2]=$_POST[$key];
+      if(array_key_exists(1,$tmp) and array_key_exists(2,$tmp)){
+	if(empty($tab[$tmp[1]."_".$tmp[2]]))
+	    $tab[$tmp[1]."_".$tmp[2]]=array($tmp[1]);	// tab[0]=tableau
+	if($tmp[0]=="debut")				// tab[1]=debut
+	    $tab[$tmp[1]."_".$tmp[2]][1]=$_POST[$key];
+	if($tmp[0]=="fin")				// tab[2]=fin
+	    $tab[$tmp[1]."_".$tmp[2]][2]=$_POST[$key];
+      }
     }
   }
   $values=array();
@@ -104,12 +106,12 @@ if($horaires[0]){
 	echo "<select name='fin_{$tableau}_new$j' style='width:75px;'>\n";
 	selectHeure(6,23,true,$quart);
 	echo "</select>\n";
-	echo "<img src='themes/default/images/drop.gif' alt='supprimer' style='cursor:pointer;' onclick='document.form2.debut_{$elem['tableau']}_new$j.value=\"\";document.form2.fin_{$elem['tableau']}_new$j.value=\"\";'/>\n";
+	echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$elem['tableau']}_new$j.value=\"\";document.form2.fin_{$elem['tableau']}_new$j.value=\"\";'></span>\n";
 	echo "</td>\n";
 	echo "</tr>\n";
       }
 							// Affichage des boutons ajouter
-      echo "<tr><td><img src='themes/default/images/add.gif' alt='ajouter' style='cursor:pointer' onclick='add_horaires(\"{$tableau}\");'/></td></tr>\n";
+      echo "<tr><td><span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer' onclick='add_horaires(\"{$tableau}\");'></span></td></tr>\n";
       echo "</table></td>";
 
       // Affichage des tableaux sur plusieurs lignes de 4
@@ -134,7 +136,7 @@ if($horaires[0]){
     echo "<select name='fin_{$elem['tableau']}_{$elem['id']}' style='width:75px;' onchange='change_horaires(this);'>\n";
     selectHeure(6,23,true,$quart);
     echo "</select>\n";
-    echo "<img src='themes/default/images/drop.gif' alt='supprimer' style='cursor:pointer;' onclick='document.form2.debut_{$elem['tableau']}_{$elem['id']}.value=\"\";document.form2.fin_{$elem['tableau']}_{$elem['id']}.value=\"\";'/>\n";
+    echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$elem['tableau']}_{$elem['id']}.value=\"\";document.form2.fin_{$elem['tableau']}_{$elem['id']}.value=\"\";'></span>\n";
     echo "<script type='text/JavaScript'>document.form2.fin_{$elem['tableau']}_{$elem['id']}.value='{$elem['fin']}';</script>\n";	
     echo "</td>\n";
     echo "</tr>\n";
@@ -149,12 +151,12 @@ if($horaires[0]){
     echo "<select name='fin_{$tableau}_new$j' style='width:75px;'>\n";
     selectHeure(6,23,true,$quart);
     echo "</select>\n";
-    echo "<img src='themes/default/images/drop.gif' alt='supprimer' style='cursor:pointer;' onclick='document.form2.debut_{$elem['tableau']}_new$j.value=\"\";document.form2.fin_{$elem['tableau']}_new$j.value=\"\";'/>\n";
+    echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$elem['tableau']}_new$j.value=\"\";document.form2.fin_{$elem['tableau']}_new$j.value=\"\";'></span>\n";
     echo "</td>\n";
     echo "</tr>\n";
   }
 							// Affichage du bouton ajouter du dernier tableau
-  echo "<tr><td><img src='themes/default/images/add.gif' alt='ajouter' style='cursor:pointer' onclick='add_horaires(\"{$elem['tableau']}\");'/></td></tr>\n";
+  echo "<tr><td><span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer' onclick='add_horaires(\"{$elem['tableau']}\");'></span></td></tr>\n";
   echo "</table></td>\n";
   echo "</tr></table>\n";
 }

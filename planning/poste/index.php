@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 13 juin 2014
+Dernière modification : 23 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -90,6 +90,7 @@ if($config['Multisites-nombre']>1){
 else{
   $autorisation=in_array(12,$droits)?true:false;
 }
+
 //		-----------------		FIN Vérification des droits de modification (Autorisation)	----------//
 // Catégories
 $categories=array();
@@ -212,30 +213,32 @@ if($db->result){
 echo "<div id='validation'>\n";
 if($autorisation){
   if($verrou){
-    echo "<font><u>Validation</u><br/>$perso2 $date_validation2 $heure_validation2<br/></font>\n";
-    echo "<a href='index.php?page=planning/poste/verrou.php&amp;date=$date&amp;verrou2=0&amp;site=$site' title='Déverrouiller le planning'><img id='deverrou' src='themes/default/images/verrou.jpg' alt='verrou2=0' /></a>\n";
+    echo "<div class='pl-validation'><u>Validation</u><br/>$perso2 $date_validation2 $heure_validation2</div>\n";
+    echo "<a href='index.php?page=planning/poste/verrou.php&amp;date=$date&amp;verrou2=0&amp;site=$site' title='Déverrouiller le planning'>\n";
+    echo "<span class='pl-icon pl-icon-unlock'></span></a>\n";
   }
   else{
-    echo "<a href='index.php?page=planning/poste/verrou.php&amp;date=$date&amp;verrou2=1&amp;site=$site' title='Verrouiller le planning'><img id='verrou' src='themes/default/images/deverrou.jpg' alt='verrou1=1' /></a>\n";
+    echo "<a href='index.php?page=planning/poste/verrou.php&amp;date=$date&amp;verrou2=1&amp;site=$site' title='Verrouiller le planning'>\n";
+    echo "<span class='pl-icon pl-icon-lock'></span></a>\n";
   }
 }
 
 if($autorisation){
-  echo "<a href='javascript:popup(\"planning/poste/enregistrer.php\",500,270);' title='Enregistrer comme modèle'><img src='themes/default/images/save.jpg' alt='Enregistrer'/></a>&nbsp;";
+  echo "<a href='javascript:popup(\"planning/poste/enregistrer.php\",500,270);' title='Enregistrer comme modèle'><span class='pl-icon pl-icon-save'></span></a>";
   if(!$verrou){
-    echo "<a href='javascript:popup(\"planning/poste/importer.php\",500,270);' title='Importer un modèle'><img src='themes/default/images/open.jpg' alt='Importer'/></a>&nbsp;";
-    echo "<a href='javascript:popup(\"planning/poste/supprimer.php\",500,200);' title='Supprimer le planning'><img src='themes/default/images/drop-20.gif' alt='Supprimer'/></a>&nbsp;";
+    echo "<a href='javascript:popup(\"planning/poste/importer.php\",500,270);' title='Importer un modèle'><span class='pl-icon pl-icon-open'></span></a>";
+    echo "<a href='javascript:popup(\"planning/poste/supprimer.php\",500,200);' title='Supprimer le planning'><span class='pl-icon pl-icon-drop'></span></a>";
   }
 }
 if($verrou){
   if(!$autorisation){
-    echo "<u>Validation</u> $perso2 $date_validation2 $heure_validation2<br/>\n";
+    echo "<div class='pl-validation'><u>Validation</u><br/>$perso2 $date_validation2 $heure_validation2</div>\n";
   }
-  echo "<a href='javascript:print();' title='Imprimer le planning'><img id='imprimante' src='themes/default/images/imprimante.gif' alt='imprimer' /></a>\n";
+  echo "<a href='javascript:print();' title='Imprimer le planning'><span class='pl-icon pl-icon-printer'></span></a>\n";
   echo "<script type='text/JavaScript'>refresh_poste('$validation2');</script>";
 }
 
-echo "<a href='index.php' title='Actualiser'><img id='rafraichir' src='themes/default/images/rafraichir.jpg' alt='rafraichir' /></a>\n";
+echo "<a href='index.php' title='Actualiser'><span class='pl-icon pl-icon-refresh'></a>\n";
 echo "</div>\n";
 
 echo "<div id='planningTips'>&nbsp;</div>";

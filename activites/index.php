@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : activites/index.php
 Création : mai 2011
-Dernière modification : 30 avril 2014
+Dernière modification : 24 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -89,11 +89,11 @@ foreach($activites as $elem){
   $class=$class=="tr1"?"tr2":"tr1";
   echo "<tr class='$class'><td>\n";
   echo "<a href='index.php?page=activites/modif.php&amp;id={$elem['id']}'>\n";
-  echo "<img src='themes/default/images/modif.png' border='0' alt='modif' /></a>\n";
+  echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
   if(!in_array($elem['id'],$activites_utilisees)){
     echo "&nbsp;&nbsp;";
     echo "<a href='javascript:supprime(\"activites\",{$elem['id']});'>";
-    echo "<img src='themes/default/images/suppr.png' border='0' alt='supp' /></a>\n";
+    echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
   }
   echo "</td>\n";
   if(in_array(13,$droits))

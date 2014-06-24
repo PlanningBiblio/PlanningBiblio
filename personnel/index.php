@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.7
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 18 mars 2014
+Dernière modification : 24 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -113,10 +113,10 @@ foreach($agents as $agent){
 
   echo "<tr><td style='white-space:nowrap;'>\n";
   echo "<input type='checkbox' name='chk$i' value='$id' class='checkAgent'/>\n";
-  echo "<a href='index.php?page=personnel/modif.php&amp;id=$id'><img src='themes/default/images/modif.png' border='0' alt='Modif' /></a>";
+  echo "<a href='index.php?page=personnel/modif.php&amp;id=$id'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>";
   if(in_array(21,$droits) and $id!=$_SESSION['login_id']){
     echo "&nbsp;";
-    echo "<a href='javascript:popup(\"personnel/suppression.php&amp;id=".$id."\",450,250);'><img src='themes/default/images/suppr.png' border='0' alt='Suppression' /></a>";
+    echo "<a href='javascript:popup(\"personnel/suppression.php&amp;id=".$id."\",450,250);'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>";
   }
   echo "</td>";
   if(in_array(13,$droits)){

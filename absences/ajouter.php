@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.1
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 17 juin 2014
+Dernière modification : 24 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -381,7 +381,7 @@ else{					//	Formulaire
   }
   echo "</select>\n";
   if($admin){
-    echo "<img src='themes/default/images/add.gif' alt='*' style=width:15px;cursor:pointer;' id='add-motif-button'/>\n";
+    echo "<span class='pl-icon pl-icon-add' title='Ajouter' id='add-motif-button' style='cursor:pointer'></span>\n";
   }
   echo "</td></tr>\n";
 

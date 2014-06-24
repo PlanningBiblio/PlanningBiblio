@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.8
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/index.php
 Création : mai 2011
-Dernière modification : 3 avril 2014
+Dernière modification : 24 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -70,15 +70,15 @@ EOD;
   foreach($db->result as $elem){
     $class=$class=="tr1"?"tr2":"tr1";
     $site="Multisites-site{$elem['site']}";
-    echo "<tr class='$class'><td>\n";
+    echo "<tr class='$class'><td style='white-space:nowrap;'>\n";
     echo "<input type='checkbox' name='chk$i' value='{$elem['tableau']}'/>\n";
     echo "<a href='index.php?page=planning/postes_cfg/modif.php&amp;numero={$elem['tableau']}'>\n";
-    echo "<img src='themes/default/images/modif.png' alt='Modification' /></a>\n";
+    echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
     echo "<a href='javascript:popup(\"planning/postes_cfg/copie.php&amp;retour=index.php&amp;numero={$elem['tableau']}\",400,200);'>\n";
-    echo "<img src='themes/default/images/copy.png' alt='Copie'/></a>\n";
+    echo "<span class='pl-icon pl-icon-copy' title='Copier'></span></a>\n";
     if(!in_array($elem['tableau'],$used)){
       echo "<a href='javascript:popup(\"planning/postes_cfg/suppression.php&amp;numero={$elem['tableau']}\",400,130);'>\n";
-      echo "<img src='themes/default/images/suppr.png' alt='Suppression' /></a>\n";
+      echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
     }
     echo "</td>\n";
     echo "<td>{$elem['tableau']}</td>\n";
@@ -91,7 +91,7 @@ EOD;
   }
   echo "</table></form>\n";
   $used=join($used,",");
-  echo "<br/><input type='button' value='Supprimer la s&eacute;lection' onclick='supprime_select(\"planning/postes_cfg/suppression.php\",\"$used\");'>\n";
+  echo "<br/><input type='button' value='Supprimer la s&eacute;lection' class='ui-button' onclick='supprime_select(\"planning/postes_cfg/suppression.php\",\"$used\");'>\n";
 }
 
 echo "</td><td>\n";
@@ -121,8 +121,9 @@ if(is_array($groupes)){
     $class=$class=="tr1"?"tr2":"tr1";
     $id=in_array(13,$droits)?"<td>{$elem['id']}</td>":null;
     echo "<tr class='$class'><td><a href='index.php?page=planning/postes_cfg/groupes.php&amp;id={$elem['id']}'>\n";
-    echo "<img src='themes/default/images/modif.png' border='0' alt='modif' /></a>\n";
-    echo "<a href='javascript:supprime_groupe(\"{$elem['id']}\",\"".addslashes(html_entity_decode($elem['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8"))."\");'><img src='themes/default/images/suppr.png' border='0' alt='Suppression' /></a>\n";
+    echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
+    echo "<a href='javascript:supprime_groupe(\"{$elem['id']}\",\"".addslashes(html_entity_decode($elem['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8"))."\");'>\n";
+    echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
     echo "</td>\n";
     echo "$id<td>{$elem['nom']}</td>\n";
     if($config['Multisites-nombre']>1){
@@ -134,7 +135,7 @@ if(is_array($groupes)){
 echo "</table>\n";
 
 echo <<<EOD
-<br/><input type='button' value='Nouveau groupe' onclick='location.href="index.php?page=planning/postes_cfg/groupes.php";' />
+<br/><input type='button' value='Nouveau groupe' class='ui-button' onclick='location.href="index.php?page=planning/postes_cfg/groupes.php";' />
 
 </td></tr>
 <tr><td style='padding-top:80px;'>
@@ -160,8 +161,10 @@ foreach($db->result as $elem){
 
   $class=$class=="tr2"?"tr1":"tr2";
   echo "<tr class='$class'>\n";
-  echo "<td><a href='index.php?page=planning/postes_cfg/lignes_sep.php&amp;action=modif&amp;id={$elem['id']}'><img src='themes/default/images/modif.png' border='0' alt='modif' /></a>\n";
-  echo "<a $delete href='javascript:supprime_ligne(\"{$elem['id']}\",\"".addslashes(html_entity_decode($elem['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8"))."\");'><img src='themes/default/images/suppr.png' border='0' alt='Suppression' /></a>\n";
+  echo "<td><a href='index.php?page=planning/postes_cfg/lignes_sep.php&amp;action=modif&amp;id={$elem['id']}'>\n";
+  echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
+  echo "<a $delete href='javascript:supprime_ligne(\"{$elem['id']}\",\"".addslashes(html_entity_decode($elem['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8"))."\");'>\n";
+  echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
   echo "</td>\n";
   if(in_array(13,$droits)){
     echo "<td>{$elem['id']}</td>\n";
@@ -175,7 +178,7 @@ echo <<<EOD
 <input type='hidden' name='page' value='planning/postes_cfg/lignes_sep.php' />
 <input type='hidden' name='action' value='ajout' />
 <input type='hidden' name='cfg-type' value='lignes_sep' />
-<br/><input type='submit' value='Nouvelle ligne' />
+<br/><input type='submit' value='Nouvelle ligne' class='ui-button'/>
 </form>
 </td></tr>
 

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/index.php
 Création : mai 2011
-Dernière modification : 28 août 2013
+Dernière modification : 24 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -43,7 +43,8 @@ if($db->result){
   echo "<b>Informations sur les absences :</b><br/><br/>\n";
   foreach($db->result as $elem){
     if($admin){
-      echo "<a href='index.php?page=absences/infos.php&amp;id={$elem['id']}'><img src='themes/default/images/modif.png' border='0' alt='modifier' /></a>&nbsp;";
+      echo "<a href='index.php?page=absences/infos.php&amp;id={$elem['id']}'>\n";
+      echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
     }
     echo "Du ".dateFr($elem['debut'])." au ".dateFr($elem['fin'])." : {$elem['texte']}<br/>\n";
   }	

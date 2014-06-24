@@ -1,21 +1,21 @@
 <?php
-/********************************************************************************************************************************
-* Planning Biblio, Version 1.7.2
-* Licence GNU/GPL (version 2 et au dela)											*
-* Voir les fichiers README.md et LICENSE											*
-* Copyright (C) 2011-2014 - Jérôme Combes											*
-*																*
-* Fichier : planning/postes_cfg/lignes_sep.php											*
-* Création : 13 septembre 2012													*
-* Dernière modification : 17 janvier 2013											*
-* Auteur : Jérôme Combes, jerome@planningbilbio.fr										*
-*																*
-* Description :															*
-* Permet d'ajouter, modifier et supprimer les lignes de séparation. Affichage des formulaires d'ajout et de modification	*
-* Validation de l'ajout, de la modification et de la suppression								*
-*																*
-* Page appelée par le fichier index.php, accessible à partir de la page planning/postes_cfg/index.php				*
-*********************************************************************************************************************************/
+/*
+Planning Biblio, Version 1.8.2
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.md et LICENSE
+Copyright (C) 2011-2014 - Jérôme Combes
+
+Fichier : planning/postes_cfg/lignes_sep.php
+Création : 13 septembre 2012
+Dernière modification : 24 juin 2014
+Auteur : Jérôme Combes, jerome@planningbilbio.fr
+
+Description :
+Permet d'ajouter, modifier et supprimer les lignes de séparation. Affichage des formulaires d'ajout et de modification
+Validation de l'ajout, de la modification et de la suppression
+
+Page appelée par le fichier index.php, accessible à partir de la page planning/postes_cfg/index.php
+*/
 
 require_once "class.tableaux.php";
 
@@ -57,12 +57,12 @@ switch($action){		//	Affichages
     <input type='hidden' name='action' value='modif2' />
     <input type='hidden' name='cfg-type' value='lignes_sep' />
     <input type='hidden' name='id' value='{$_GET['id']}' />
-    <table>
-    <tr><td style='width:100px;'>Nom</td>
-      <td><input type='text' name='nom' value='{$db->result[0]['nom']}' style='width:300px;' /></td></tr>
+    <table class='tableauFiches'>
+    <tr><td class='intitule'>Nom</td>
+      <td><input type='text' name='nom' value='{$db->result[0]['nom']}' class='ui-widget-content ui-corner-all'/></td></tr>
     <tr><td colspan='2' style=text-align:center;padding-top:20px;'>
-      <input type='button' value='Annuler' onclick='history.back();' />
-      <input type='submit' value='Valider' /></td></tr>
+      <input type='button' value='Annuler' onclick='history.back();' class='ui-button'/>
+      <input type='submit' value='Valider' class='ui-button'/></td></tr>
     </table>
     </form>
 EOD;
@@ -76,12 +76,12 @@ EOD;
     <input type='hidden' name='page' value='planning/postes_cfg/lignes_sep.php' />
     <input type='hidden' name='action' value='ajout2' />
     <input type='hidden' name='cfg-type' value='lignes_sep' />
-    <table>
-    <tr><td style='width:100px;'>Nom</td>
-      <td><input type='text' name='nom' style='width:300px;'/></td></tr>
+    <table class='tableauFiches'>
+    <tr><td class='intitule'>Nom</td>
+      <td><input type='text' name='nom' class='ui-widget-content ui-corner-all'/></td></tr>
     <tr><td colspan='2' style=text-align:center;padding-top:20px;'>
-      <input type='button' value='Annuler' onclick='history.back();' />
-      <input type='submit' value='Valider' /></td></tr>
+      <input type='button' value='Annuler' onclick='history.back();' class='ui-button' />
+      <input type='submit' value='Valider' class='ui-button' /></td></tr>
     </table>
     </form>
 EOD;

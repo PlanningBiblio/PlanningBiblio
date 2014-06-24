@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.3
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : postes/valid.php
 Création : mai 2011
-Dernière modification : 17 mars 2014
+Dernière modification : 24 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -35,7 +35,7 @@ if(isset($_GET['nom'])){
   $obligatoire=$_GET['obligatoire'];
   $statistiques=$_GET['statistiques'];
   $bloquant=$_GET['bloquant'];
-  $site=$_GET['site'];
+  $site=isset($_GET['site'])?$_GET['site']:1;
   $categories=isset($_GET['categories'])?serialize($_GET['categories']):serialize(array());
 
   $data=array("nom"=>$nom,"obligatoire"=>$obligatoire,"etage"=>$etage,"activites"=>$activites,

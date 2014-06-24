@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : postes/index.php
 Création : mai 2011
-Dernière modification : 5 février 2014
+Dernière modification : 24 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -113,9 +113,9 @@ for($i=0;$i<count($postes);$i++){
   }
 
   echo "<tr><td style='white-space:nowrap;'>\n";
-  echo "<a href='index.php?page=postes/modif.php&amp;id=$id'><img src='themes/default/images/modif.png' border='0' alt='modif' /></a>\n";
+  echo "<a href='index.php?page=postes/modif.php&amp;id=$id'><span class='pl-icon pl-icon-edit' title='Modifier' ></span></a>\n";
   if(!in_array($id,$postes_utilises)){
-    echo "&nbsp;<a href='javascript:supprime(\"postes\",$id);'><img src='themes/default/images/suppr.png' border='0' alt='supp' /></a></td>\n";
+    echo "&nbsp;<a href='javascript:supprime(\"postes\",$id);'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>\n";
   }
   if(in_array(13,$droits)){
     echo "<td>{$postes[$i]['id']}</td>\n";

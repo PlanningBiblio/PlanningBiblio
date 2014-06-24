@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.1
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : joursFeries/index.php
 Création : 25 juillet 2013
-Dernière modification : 12 juin 2014
+Dernière modification : 24 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -84,7 +84,7 @@ foreach($jours as $elem){
   $date=dateFr($elem['jour']);
   echo <<<EOD
     <tr id='tr$i'><td><a href='javascript:supprime_jourFerie($i);'>
-      <img src='themes/default/images/drop.gif' alt='Suppression' style='margin-right:10px;'/></a></td>
+      <span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>
     <td><input type='text' name='jour[$i]' value='$date' class='c100 datepicker' id='jour$i'/></td>
     <td><input type='checkbox' name='ferie[$i]' value='1' $ferie /></td>
     <td><input type='checkbox' name='fermeture[$i]' value='1' $fermeture/></td>
@@ -97,7 +97,7 @@ EOD;
 for($j=$i;$j<$i+15;$j++){
   echo <<<EOD
     <tr id='tr$j'><td><a href='javascript:supprime_jourFerie($j);'>
-      <img src='themes/default/images/drop.gif' alt='Suppression' style='margin-right:10px;'/></a></td>
+      <span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>
     <td><input type='text' name='jour[$j]' class='c100 datepicker' id='jour$j'/></td>
     <td><input type='checkbox' name='ferie[$j]' value='1' /></td>
     <td><input type='checkbox' name='fermeture[$j]' value='1' /></td>

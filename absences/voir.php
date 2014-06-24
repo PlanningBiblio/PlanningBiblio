@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.9
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 30 avril 2014
+Dernière modification : 24 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -128,7 +128,7 @@ if($absences){
     echo "<tr>\n";
     if($admin or (!$config['Absences-adminSeulement'] and in_array(6,$droits))){
       echo "<td><a href='index.php?page=absences/modif.php&amp;id=".$elem['id']."'>\n";
-      echo "<img border='0' src='themes/default/images/modif.png' alt='Modif' /></a></td>\n";
+      echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a></td>\n";
     }
     else{
       echo "<td>&nbsp;</td>\n";

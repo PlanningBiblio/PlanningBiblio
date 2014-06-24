@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : infos/index.php
 Création : février 2012
-Dernière modification : 30 avril 2014
+Dernière modification : 24 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -134,9 +134,9 @@ else{
     echo "<tr><td style='padding-bottom:30px;' colspan='4'><b>Informations en cours</b></td></tr>\n";
     foreach($infos as $elem){
       echo "<tr><td><a href='index.php?page=infos/index.php&amp;id={$elem['id']}'>\n";
-      echo "<img src='themes/default/images/modif.png' alt='Modif' border='0'/></a>\n";
+      echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
       echo "<a href='index.php?page=infos/index.php&amp;id={$elem['id']}&amp;suppression'>\n";
-      echo "<img src='themes/default/images/drop.gif' alt='Suppression' /></a></td>\n";
+      echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>\n";
       echo "<td>".dateFr($elem['debut'])."</td>\n";
       echo "<td>".dateFr($elem['fin'])."</td>\n";
       echo "<td>{$elem['texte']}</td></tr>\n";

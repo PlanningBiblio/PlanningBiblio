@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/groupes.php
 Création : 18 septembre 2012
-Dernière modification : 7 novembre 2013
+Dernière modification : 24 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -70,16 +70,16 @@ echo <<<EOD
 <form name='form' method='post' action='index.php' onsubmit='return ctrl_form($champs);'>
 <input type='hidden' name='page' value='planning/postes_cfg/groupes2.php' />
 <input type='hidden' name='id' value='$id' />
-<table style='width:900px;'>
-<tr><td style='width:200px;'>Nom du groupe</td>
-  <td style='width:300px;'><input type='text' name='nom' id='Nom' value='{$groupe['nom']}' style='width:100%;' onkeyup='ctrl_nom(this);'/></td>
+<table class='tableauFiches'>
+<tr><td class='intitule'>Nom du groupe</td>
+  <td><input type='text' name='nom' id='Nom' value='{$groupe['nom']}'  class='ui-widget-content ui-corner-all' onkeyup='ctrl_nom(this);'/></td>
   <td style='padding-left:30px;color:red;'><font id='nom_utilise' style='display:none;'>
     Ce nom est d&eacute;j&agrave; utilis&eacute;</font></td></tr>
 EOD;
 
 if($config['Multisites-nombre']>1){
-  echo "<tr><td>Site</td>\n";
-  echo "<td><select name='site' id='selectSite' style='width:100%;'>\n";
+  echo "<tr><td class='intitule'>Site</td>\n";
+  echo "<td><select name='site' id='selectSite' class='ui-widget-content ui-corner-all'>\n";
   echo "<option value=''>&nbsp;</option>\n";
   for($i=1;$i<=$config['Multisites-nombre'];$i++){
     $selected=$groupe['site']==$i?"selected='selected'":null;
@@ -91,8 +91,8 @@ if($config['Multisites-nombre']>1){
 echo "<tr><td colspan='2' style='padding-top:20px;text-align:justify;'>Choisissez les tableaux que vous souhaitez affecter &agrave; chacun des jours de la semaine</td></tr>\n";
 foreach($semaine as $jour){
   echo <<<EOD
-  <tr><td style='padding-left:20px;'>$jour</td>
-    <td><select name='$jour' id='$jour' class='selectTableaux' style='width:100%;'>
+  <tr><td style='padding-left:20px;' class='intitule'>$jour</td>
+    <td><select name='$jour' id='$jour' class='ui-widget-content ui-corner-all'>
     <option value=''>&nbsp;</option>
 EOD;
     foreach($tableaux as $tab){
@@ -104,8 +104,8 @@ EOD;
 
 echo <<<EOD
 <tr><td colspan='2' style='text-align:center;padding-top:20px;'>
-  <input type='button' value='Annuler' onclick='history.back();' />
-  <input type='submit' value='Valider' style='margin-left:30px;' id='submit'/>
+  <input type='button' value='Annuler' onclick='history.back();' class='ui-button'/>
+  <input type='submit' value='Valider' style='margin-left:30px;' id='submit' class='ui-button'/>
 </table>
 </form>
 EOD;

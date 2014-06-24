@@ -1,21 +1,21 @@
 <?php
-/********************************************************************************************************************************
-* Planning Biblio, Version 1.7.2
-* Licence GNU/GPL (version 2 et au dela)											*
-* Voir les fichiers README.md et LICENSE											*
-* Copyright (C) 2011-2014 - Jérôme Combes											*
-*																*
-* Fichier : planning/modeles/index.php												*
-* Création : mai 2011														*
-* Dernière modification : 16 janvier 2013											*
-* Auteur : Jérôme Combes, jerome@planningbilbio.fr										*
-*																*
-* Description :															*
-* Affiche la liste des modèles de planning enregistrés.										*
-* Permet de les supprimer (icône corbeille) ou de les renommer (icône papier)							*
-*																*
-* Cette page est appelée par le fichier index.php										*
-*********************************************************************************************************************************/
+/*
+Planning Biblio, Version 1.8.2
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.md et LICENSE
+Copyright (C) 2011-2014 - Jérôme Combes
+
+Fichier : planning/modeles/index.php
+Création : mai 2011
+Dernière modification : 24 juin 2014
+Auteur : Jérôme Combes, jerome@planningbilbio.fr
+
+Description :
+Affiche la liste des modèles de planning enregistrés.
+Permet de les supprimer (icône corbeille) ou de les renommer (icône papier)
+
+Cette page est appelée par le fichier index.php
+*/
 
 require_once "class.modeles.php";
 
@@ -38,26 +38,19 @@ $tri=isset($_GET['tri'])?$_GET['tri']:null;
 $cmp=$tri=="nom desc"?"cmp_1desc":"cmp_1";
 usort($modeles,$cmp);
 
-echo "<table style='width:100%' cellspacing='0'>";
-echo "<tr class='th'>\n";
-echo "<td style='width:80px;'>&nbsp;</td>\n";
-echo "<td>nom";
-echo "&nbsp;&nbsp;<a href='index.php?page=planning/modeles/index.php&amp;tri=nom'><img src='themes/default/images/up.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "<a href='index.php?page=planning/modeles/index.php&amp;tri=nom%20desc'><img src='themes/default/images/down.png' alt='-' border='0' style='width:10px;'/></a>\n";
-echo "</td>";
-echo "</tr>\n";
-
+echo "<table id='tableModeles'>";
+echo "<thead><tr><th>&nbsp;</th><th>nom</th></tr></thead>\n";
+echo "<tbody>\n";
 
 foreach($modeles as $elem){
-  $class=$class=="tr2"?"tr1":"tr2";
-  echo "<tr class='$class'>\n";
+  echo "<tr>\n";
   echo "<td>\n";
-  echo "<a href='index.php?page=planning/modeles/modif.php&amp;nom={$elem['nom']}'><img src='themes/default/images/modif.png' border='0' alt='Modif' /></a>";
-  echo "&nbsp;&nbsp;";
-  echo "<a href='javascript:supprime(\"planning/modeles\",\"{$elem['nom']}\");'><img src='themes/default/images/suppr.png' border='0' alt='Suppression' /></a>";
+  echo "<a href='index.php?page=planning/modeles/modif.php&amp;nom={$elem['nom']}'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>";
+  echo "<a href='javascript:supprime(\"planning/modeles\",\"{$elem['nom']}\");'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>";
   echo "</td>\n";
   echo "<td>{$elem['nom']}</td>\n";
   echo "</tr>\n";
 }
+echo "</tbody>\n";
 echo "</table>\n";
 ?>
