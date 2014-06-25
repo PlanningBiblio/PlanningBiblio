@@ -34,7 +34,7 @@ $tableauNom=$db->result[0]['nom'];
 
 // Affichage
 echo "<h3>Configuration du tableau &quot;$tableauNom&quot;</h3>\n";
-echo "<div id='tabs'>\n";
+echo "<div id='tabs' class='ui-tabs'>\n";
 echo "<ul>\n";
 if($config['Multisites-nombre']>1){
   echo "<li><a href='#div_site' id='site'>Site</a></li>\n";
@@ -74,7 +74,6 @@ echo "</div>\n";
 
 <!-- Initialisation des onglets, lien retour et affichage d'informations -->
 <script type='text/JavaScript'>
-$("#tabs").tabs();
 $(".retour").click(function(){
   document.location.href="index.php?page=planning/postes_cfg/index.php";
 });

@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.8.1
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 13 juin 2014
+Dernière modification : 25 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -379,21 +379,6 @@ function retour(page){
     rep=confirm("Etes vous sûr(e) de vouloir quitter cette page sans l'avoir validée ?");
     if(rep)
       document.location.href="index.php?page="+page;
-  }
-}
-
-function show(id,tab,li){
-  tab=tab.split(",");		// tab contient le nom des autres onglets
-  for(i=1;i<tab.length+2;i++){	// met l'onglet current = au li manquant (désactive l'onglet)
-    if(!document.getElementById("li"+i)){
-      document.getElementById("current").id="li"+i;
-    }
-  }
-  
-  document.getElementById(li).id="current";	// active l'onglet choisi
-  document.getElementById(id).style.display="";	// affiche le div choisi
-  for(i=0;i<tab.length;i++){			// cache le contenu des autres div
-    document.getElementById(tab[i]).style.display="none";
   }
 }
 
@@ -1135,5 +1120,30 @@ $(function(){
     $(".ui-button").button();
     $(".datepicker").datepicker();
     $(".datepicker").addClass("center ui-widget-content ui-corner-all");
+    // Onglets
+    $(".ui-tabs").tabs({
+      // Fonctions personnalisées pour les tabs .ui-tab-cancel et .ui-tab-submit dans personnel/modif.php
+      beforeActivate: function(event,ui){
+	if($(ui.newTab).hasClass("ui-tab-cancel")){
+ 	  window.location.href=$(".ui-tab-cancel > a").attr("href");
+	  return false;
+	}
+	if($(ui.newTab).hasClass("ui-tab-submit")){
+ 	  var command=$(".ui-tab-submit > a").attr("href");
+	  if(command.substring(0,11)=="javascript:"){
+	    command=command.substring(11,command.length);
+	    eval(command);
+	  }
+	  return false;
+	}
+      }
+    });
+    $(".ui-tab-submit").css("position","absolute");
+    $(".ui-tab-submit").css("right",5);
+    $(".ui-tab-submit").css("top",7);
+    var right=$(".ui-tab-submit").length>0?$(".ui-tab-submit").width()+10:5;
+    $(".ui-tab-cancel").css("position","absolute");
+    $(".ui-tab-cancel").css("right",right);
+    $(".ui-tab-cancel").css("top",7);
   });
 });

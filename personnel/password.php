@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/password.php
 Création : mai 2011
-Dernière modification : 4 février 2014
+Dernière modification : 25 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -25,20 +25,20 @@ echo "<h4>".$_SESSION['login_prenom']." ".$_SESSION['login_nom']."</h4>";
 if(!isset($_GET['nouveau'])){
   echo "<form name='form' method='get' action='#'>";
   echo "<input type='hidden' name='page' value='personnel/password.php' />\n";
-  echo "<table><tr><td>";
+  echo "<table class='tableauFiches'><tr><td>";
   echo "Ancien mot de passe : ";
   echo "</td><td>\n";
-  echo "<input type='password' name='ancien'/>\n";
+  echo "<input type='password' name='ancien' class='ui-widget-content ui-corner-all'/>\n";
   echo "</td></tr>\n";
   echo "<tr><td>\n";
   echo "Nouveau mot de passe : ";
   echo "</td><td>\n";
-  echo "<input type='password' name='nouveau'/>\n";
+  echo "<input type='password' name='nouveau' class='ui-widget-content ui-corner-all'/>\n";
   echo "</td></tr>\n";
   echo "<tr><td>\n";
   echo "Confirmer le nouveau mot de passe : ";
   echo "</td><td>\n";
-  echo "<input type='password' name='confirm'/>\n";
+  echo "<input type='password' name='confirm' class='ui-widget-content ui-corner-all'/>\n";
   echo "</td></tr>\n";
   echo "<tr><td colspan='2' style='text-align:center;'>\n";
   echo "<br/><input type='button' value='Annuler' onclick='history.back();' class='ui-button'/>";

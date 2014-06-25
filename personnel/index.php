@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 24 juin 2014
+Dernière modification : 25 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -115,7 +115,6 @@ foreach($agents as $agent){
   echo "<input type='checkbox' name='chk$i' value='$id' class='checkAgent'/>\n";
   echo "<a href='index.php?page=personnel/modif.php&amp;id=$id'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>";
   if(in_array(21,$droits) and $id!=$_SESSION['login_id']){
-    echo "&nbsp;";
     echo "<a href='javascript:popup(\"personnel/suppression.php&amp;id=".$id."\",450,250);'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>";
   }
   echo "</td>";

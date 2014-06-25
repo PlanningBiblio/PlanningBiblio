@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/infobulles.js
 Création : 4 septembre 2013
-Dernière modification : 4 septembre 2013
+Dernière modification : 25 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,8 +23,11 @@ $(function(){
     var bulle=$(".infobulle:last");
     bulle.append($(this).attr("title"));
     $(this).attr("title","");
-    var offset=$(this).children("img").length?30:20;
+    var offset=20;
     var posTop=$(this).offset().top-offset;
+    if($(this).offset().top<35){
+	posTop=$(this).offset().top+$(this).height()+offset;
+    }
     var posLeft=$(this).offset().left+$(this).width()/2-bulle.width()/2;
     if(posLeft+bulle.width()>$("body").width()){
       posLeft=$("body").width()-bulle.width();

@@ -7,13 +7,13 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 24 juin 2014
+Dernière modification : 25 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
 Affiche le formulaire permettant d'ajouter ou de modifier les agents.
 Page séparée en 4 <div> (Général, Activités, Emploi du temps, Droits d'accès. Ces <div> s'affichent lors des click sur
-les onglets (fonction JS show).
+les onglets.
 Ce formulaire est soumis au fichier personnel/valid.php
 
 Cette page est appelée par le fichier index.php
@@ -156,27 +156,24 @@ $postes_dispo=postesNoms($postes_dispo,$postes_completNoms);
 
 //		--------------		Début d'affichage			---------------------//
 ?>
+<h3><?php echo $titre; ?></h3>
 <!--		Menu						-->
-<div id='onglets'>
-<font id='titre'><?php echo $titre; ?></font>
+<div class='ui-tabs'>
 <ul>		
-<li id='current'><a href='javascript:show("main","qualif,access,temps","li1");'>Infos générales</a></li>
-<li id='li2'><a href='javascript:show("qualif","main,access,temps","li2");'>Activités</a></li>
-<li id='li3'><a href='javascript:show("temps","main,qualif,access","li3");' id='personnel-a-li3'>Emploi du temps</a></li>
-<li id='li4'><a href='javascript:show("access","main,qualif,temps","li4");'>Droits d'accès</a></li>
+<li><a href='#main'>Infos générales</a></li>
+<li><a href='#qualif'>Activités</a></li>
+<li><a href='#temps' id='personnel-a-li3'>Emploi du temps</a></li>
+<li><a href='#access'>Droits d'accès</a></li>
 <?php
 if(in_array(21,$droits)){
-  echo "<li id='li_annul'><a href='javascript:retour(\"personnel/index.php\");'>Annuler</a></li>\n";
-  echo "<li id='li_valid'><a href='javascript:verif_form_agent();'>Valider</a></li>\n";
+  echo "<li class='ui-tab-cancel'><a href='index.php?page=personnel/index.php'>Annuler</a></li>\n";
+  echo "<li class='ui-tab-submit'><a href='javascript:verif_form_agent();'>Valider</a></li>\n";
 }
-else
-  echo "<li id='li_valid'><a href='javascript:location.href=\"index.php?page=personnel/index.php\";'>Fermer</a></li>\n";
+else{
+  echo "<li class='ui-tab-cancel'><a href='index.php?page=personnel/index.php'>Fermer</a></li>\n";
+}
 ?>
 </ul>
-</div>
-<br/>
-<br/>
-<br/>
 
 <?php
 echo "<form method='post' action='index.php' name='form'>\n";
@@ -730,6 +727,7 @@ if(!$admin){
 ?>
 </div>
 <!--	FIN Droits d'accès		-->
+</div>	<!-- .ui-tabs	-->
 </form>
 
 
