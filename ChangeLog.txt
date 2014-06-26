@@ -1,3 +1,13 @@
+***	Version 1.8.2	(Jérôme Combes, 26 juin 2014)		***
+- Améliorations :
+Affichage : 
+. gestion des icônes depuis les CSS
+. utilisation des onglets JQuery-ui tabs
+. Intégration du thème default si celui renseigné dans la config n'existe pas
+Nettoyage du fichier js/script.js
+Planning semaine : ajout des icônes Rafraichir et imprimer
+Gestion des versions des plugins pour simplifier les mises à jour de la base de données
+
 ***	Version 1.8.1	(Jérôme Combes, 17 juin 2014)		***
 - Améliorations :
 Remplace les anciens calendiers par des datepickers
