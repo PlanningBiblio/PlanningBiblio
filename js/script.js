@@ -113,7 +113,7 @@ function ctrl_form(champs){
   else
     return true;
 }
-	
+
 function checkall(form,me){
   elems=document.forms[form].elements;
   for(i=0;i<elems.length;i++){
@@ -315,16 +315,6 @@ function information(message,type,top){
   setTimeout("$('#JSInformation').remove()",5000);
 }
 
-function initform(objet){
-  tab=objet.split(";");
-  for(i=0;i<tab.length;i++){
-    tab2=tab[i].split("=");
-    champ=tab2[0];
-    valeur=tab2[1];
-    document.form.elements[champ].value=valeur;
-  }
-}
-	
 function modif_mdp(){
   document.form.action.value="mdp";
   document.form.submit();
@@ -346,12 +336,6 @@ function popup_closed(){
   parent.document.getElementById("opac").style.display="none";
 }
 
-function popup_ctrl(url,autorisation,width,height){
-  if(autorisation){
-    popup(url,width,height);
-  }
-}
-
 function removeAccents(strAccents){
   strAccents = strAccents.split('');
   strAccentsOut = new Array();
@@ -368,18 +352,6 @@ function removeAccents(strAccents){
   }
   strAccentsOut = strAccentsOut.join('');
   return strAccentsOut;
-}
-
-function retour(page){
-  if(opener){
-    opener.window.location.reload(false);
-    window.close();
-  }
-  else{
-    rep=confirm("Etes vous sûr(e) de vouloir quitter cette page sans l'avoir validée ?");
-    if(rep)
-      document.location.href="index.php?page="+page;
-  }
 }
 
 // supprime(page,id)	Utilisée par postes et modeles
@@ -615,38 +587,6 @@ function all_day(){
 }
 //	--------------------------------	FIN Absences		---------------------------------	//
 //	--------------------------------	Aide			---------------------------------	//
-function getScrollingPosition(){
-  var position = [0, 0];
-  if (typeof window.pageYOffset != 'undefined'){
-    position = [window.pageXOffset,window.pageYOffset];
-  }
-  else if (typeof document.documentElement.scrollTop!= 'undefined' && document.documentElement.scrollTop > 0){
-    position = [document.documentElement.scrollLeft,document.documentElement.scrollTop];
-  }
-  else if (typeof document.body.scrollTop != 'undefined'){
-    position = [document.body.scrollLeft,document.body.scrollTop];
-  }
-  return position;
-}
-	
-function getWindowHeight(){
-  var windowHeight=0;
-  if(typeof(window.innerHeight)=='number') {
-    windowHeight=window.innerHeight;
-  }
-  else{
-    if(document.documentElement&& document.documentElement.clientHeight){
-      windowHeight = document.documentElement.clientHeight;
-    }
-    else{
-      if(document.body&&document.body.clientHeight){
-	  windowHeight=document.body.clientHeight;
-      }
-    }
-  }
-  return windowHeight;
-}
-
 function position(object,top,left){
   object.css("position","absolute");
   object.css("top",top);
@@ -658,10 +598,9 @@ function position(object,top,left){
 }
 
 function position_retour(){
-  var height=getWindowHeight();
-  var scroll=getScrollingPosition();
-  if(document.getElementById("a_retour"))
-    document.getElementById("a_retour").style.top=scroll[1]+height-50+"px";
+  var height=$(window).height();
+  var scroll=$(window).scrollTop();
+  $("#a_retour").css("top",scroll+height-50);
 }
 //	--------------------------------	FIN Aide		---------------------------------	//
 //	---------------------------		Personnel		---------------------------------------		//
@@ -795,18 +734,7 @@ function select_drop_all(select_dispo,select_attrib,hidden_attrib,width){	// Att
 }
 //	Fin Select Multpiles
 //	---------------------------		FIN Personnel 		--------------------------------	//
-//	--------------------------------	Planning/postes		---------------------------------	//
-function affiche_activites(div,action){
-  if(action=="affiche"){
-    document.getElementById("act"+div+"b").style.display="";
-    document.getElementById("act"+div).style.display="none";
-  }
-  else{
-    document.getElementById("act"+div).style.display="";
-    document.getElementById("act"+div+"b").style.display="none";
-  }
-}
-
+//	--------------------------------	Planning		---------------------------------	//
 // 	bataille_navale : menu contextuel : met à jour la base de données en arrière plan et affiche les modifs en JS dans le planning
 function bataille_navale(perso_id,nom,barrer,ajouter,classe){
   db=file("index.php?page=planning/poste/majdb.php&poste="+poste+"&debut="+debut+"&fin="+fin+"&perso_id="+perso_id+"&date="+date+"&barrer="+barrer+"&ajouter="+ajouter);
@@ -988,35 +916,6 @@ function ajout(nom,id){
   document.form4.elements[nom+id].selectedIndex=0;
   document.form4.elements[nom+id].className=null;
   document.getElementById("td_"+nom+i+"_0").className=null;
-}
-
-function couleur(nom,id){
-  background=document.form4.elements[nom+id].options[document.form4.elements[nom+id].selectedIndex].style.background;
-  color=document.form4.elements[nom+id].options[document.form4.elements[nom+id].selectedIndex].style.color;
-  if(isNaN(document.form4.elements[nom+id].value)){		// Si Grande Ligne
-    document.getElementById("tr_"+nom+id).style.background=background;
-    i=1;
-    while(document.getElementById("td_"+nom+id+"_"+i)){		// Affiche la cellule colspan
-      document.getElementById("td_"+nom+id+"_"+i).style.display="none";
-      i++;
-    }
-    document.getElementById("td_"+nom+id).style.display="";
-  }
-  else{													// Si poste
-    document.getElementById("tr_"+nom+id).style.background="#FFFFFF";
-    document.form4.elements[nom+id].style.background=background;
-    document.form4.elements[nom+id].style.color=color;
-    i=1;
-    while(document.getElementById("td_"+nom+id+"_"+i)){		// Affiche les différentes cellules
-      document.getElementById("td_"+nom+id+"_"+i).style.display="";
-      i++;
-    }
-  document.getElementById("td_"+nom+id).style.display="none";
-  }
-  document.getElementById("td_"+nom+id+"_0").style.background=background;
-  document.getElementById("tr_"+nom+id).style.color=color;
-  document.getElementById("ajout_"+nom+id).style.color=color;
-  document.getElementById("supprime_"+nom+id).style.color=color;
 }
 
 function couleur2(elem,td){

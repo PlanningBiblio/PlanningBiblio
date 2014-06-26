@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.1
+Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 12 juin 2014
+Dernière modification : 26 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,6 +20,13 @@ if(!$version){
   header("Location: ../index.php");
 }
 $theme=$config['Affichage-theme']?$config['Affichage-theme']:"default";
+$themeJQuery=$config['Affichage-theme']?$config['Affichage-theme']:"default";
+if(!file_exists("themes/$theme/$theme.css")){
+  $theme="default";
+}
+if(!file_exists("themes/$theme/jquery-ui.min.css")){
+  $themeJQuery="default";
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -42,13 +49,11 @@ getJSFiles($page);
 
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link rel='StyleSheet' href='themes/default/dataTables/jquery.dataTables_themeroller.css' type='text/css' media='all'/>
-<link rel='StyleSheet' href='themes/<?php echo $theme; ?>/jquery-ui.min.css' type='text/css' media='all'/>
+<link rel='StyleSheet' href='themes/<?php echo $themeJQuery; ?>/jquery-ui.min.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/default.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/print.css' type='text/css' media='print'/>
 <?php
-if($theme!="default"){
-  echo "<link rel='StyleSheet' href='themes/$theme/$theme.css' type='text/css' media='all'/>\n";
-}
+echo "<link rel='StyleSheet' href='themes/$theme/$theme.css' type='text/css' media='all'/>\n";
 echo "</head>\n";
 
 echo $page=="aide/index.php"?"<body onscroll='position_retour();'>\n":"<body>\n";

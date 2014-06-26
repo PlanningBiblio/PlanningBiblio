@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 25 juin 2014
+Dernière modification : 26 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -269,6 +269,11 @@ select
   margin: 0 0 10px 0;
 }
 
+#planning-semaine #td_boutons{
+  padding:30px;
+}
+
+}
 .pl-semaine-header{
   text-align: left;
   margin: 50px 0 5px 0;
@@ -373,7 +378,7 @@ select
 #pl-calendar{
   border:0;
   background: #FFFFFF;
-  margin-bottom:10px;
+  margin: 0 0 10px 12px;
 }
 
 #pl-calendar .ui-datepicker {
@@ -552,7 +557,7 @@ a:hover.menuRed, a:hover.menu {
 
 #a_retour {
 	position:absolute;
-	bottom:10px;
+	bottom:32px;
 	right:20px;
 	background:#FFFFFF;
 	z-index:10;
