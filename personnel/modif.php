@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 25 juin 2014
+Dernière modification : 27 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -206,7 +206,7 @@ echo "</td></tr>";
 
 echo "<tr><td>";
 echo "Statut :";
-echo "</td><td>";
+echo "</td><td style='white-space:nowrap'>";
 if(in_array(21,$droits)){
   echo "<select name='statut' id='statut' style='width:405px'>\n";
   echo "<option value=''>Aucun</option>\n";
@@ -241,7 +241,7 @@ echo "</td></tr>";
 
 echo "<tr><td>";
 echo "Service de rattachement:";
-echo "</td><td>";
+echo "</td><td style='white-space:nowrap'>";
 if(in_array(21,$droits)){
   echo "<select name='service' id='service' style='width:405px'>\n";
   echo "<option value=''>Aucun</option>\n";

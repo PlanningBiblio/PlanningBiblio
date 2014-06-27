@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 26 juin 2014
+Dernière modification : 27 juin 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -21,11 +21,11 @@ if(!$version){
 }
 $theme=$config['Affichage-theme']?$config['Affichage-theme']:"default";
 $themeJQuery=$config['Affichage-theme']?$config['Affichage-theme']:"default";
-if(!file_exists("themes/$theme/$theme.css")){
-  $theme="default";
-}
 if(!file_exists("themes/$theme/jquery-ui.min.css")){
   $themeJQuery="default";
+}
+if(!file_exists("themes/$theme/$theme.css")){
+  $theme="default";
 }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
