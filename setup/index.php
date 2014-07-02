@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/index.php
 Création : mai 2011
-Dernière modification : 13 juin 2014
+Dernière modification : 2 juillet 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -26,7 +26,7 @@ include_once "../include/function.php";
 $password=gen_trivial_password(16);
 
 $Fnm = "../include/config.php";
-if(!$inF=fopen($Fnm,"w\n")){
+if(!$inF=fopen("../include/test.php","w\n")){
   $msg="<br/>Important : Avant de continuer,<br/> Veuillez donner les droits d'&eacute;criture/modification <br/>aux dossiers \"include\" et \"data\".\n";
   $msg.="<br/><a href='index.php'>Re-vérifier</a>";
 }
