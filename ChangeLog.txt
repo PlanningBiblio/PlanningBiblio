@@ -1,3 +1,8 @@
+***	Version 1.8.3	(Jérôme Combes, 2 juillet 2014)		***
+- Améliorations :
+Importation LDAP
+Authentification LDAP et CAS
+
 ***	Version 1.8.2	(Jérôme Combes, 26 juin 2014)		***
 - Améliorations :
 Affichage : 

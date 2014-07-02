@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.1
+Planning Biblio, Version 1.8.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 13 juin 2014
+Dernière modification : 2 juillet 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -31,7 +31,7 @@ if(!file_exists("include/config.php")){
   exit;
 }
 
-$version="1.8.2";
+$version="1.8.3";
 
 include "include/config.php";
 
@@ -63,9 +63,8 @@ elseif(isset($_POST['login'])){
   $login=$_POST['login'];
   $password=$_POST['password'];
 
-  if(in_array("ldap",$plugins)){
-    include "plugins/ldap/auth.php";
-  }
+  include "ldap/auth.php";
+
   if($config['Auth-Mode']=="SQL" or $login=="admin"){
     $auth=authSQL($login,$password);
   }
@@ -105,9 +104,8 @@ elseif(isset($_GET['acces'])){
   }
 }
 elseif(array_key_exists("login_id",$_SESSION)){		//		logout
-  if(in_array("ldap",$plugins)){
-    include "plugins/ldap/logoutCAS.php";
-  }
+  include "ldap/logoutCAS.php";
+
   session_destroy();
   echo "<script type='text/JavaScript'>location.href='authentification.php{$authArgs}';</script>";
 }
@@ -136,9 +134,7 @@ EOD;
     </form></div>
 EOD;
 
-  if(in_array("ldap",$plugins)){
-    include "plugins/ldap/authCAS.php";
-  }
+  include "ldap/authCAS.php";
 }
 
 include "include/footer.php";

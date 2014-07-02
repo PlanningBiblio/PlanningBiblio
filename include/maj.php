@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 1.8.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 26 juin 2014
+Dernière modification : 2 juillet 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -572,6 +572,36 @@ if(strcmp("1.8.1",$config['Version'])>0){
 
 if(strcmp("1.8.2",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.8.2' WHERE `nom`='Version';";
+}
+
+if(strcmp("1.8.3",$config['Version'])>0){
+  //	Ajout des infos LDAP dans la table config
+  $db=new db();
+  $db->select("config","*","categorie='LDAP'");
+  if(!$db->result){
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`commentaires`,`categorie`,`ordre`) VALUES ('LDAP-Host','Nom d&apos;hote ou IP du serveur LDAP','LDAP','20');";
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`commentaires`,`categorie`,`ordre`) VALUES ('LDAP-Port','Port du serveur LDAP','LDAP','20');";
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`commentaires`,`categorie`,`ordre`) VALUES ('LDAP-Protocol','enum','Protocol du serveur LDAP','LDAP','ldap,ldaps','20');";
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`commentaires`,`categorie`,`ordre`) VALUES ('LDAP-Suffix','Suffix LDAP','LDAP','20');";
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`commentaires`,`categorie`,`ordre`) VALUES ('LDAP-Filter','Filtre','LDAP','20');";
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`commentaires`,`categorie`,`ordre`) VALUES ('LDAP-RDN','DN de connexion au serveur LDAP','LDAP','20');";
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`type`,`commentaires`,`categorie`,`ordre`) VALUES ('LDAP-Password','password','Mot de passe de connexion','LDAP','20');";
+  }
+  //	Ajout des infos CAS dans la table config
+  $db=new db();
+  $db->select("config","*","categorie='CAS'");
+  if(!$db->result){
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`commentaires`,`categorie`,`ordre`) VALUES ('CAS-Hostname','Nom d&apos;h&ocirc;te du serveur CAS','CAS','30');";
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`valeur`,`commentaires`,`categorie`,`ordre`) VALUES ('CAS-Port','8080','Port serveur CAS','CAS','30');";
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`valeur`,`commentaires`,`categorie`,`ordre`) VALUES ('CAS-Version','2','Version du serveur CAS','CAS','30');";
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`commentaires`,`categorie`,`ordre`) VALUES ('CAS-CACert','Certificat de l&apos;Autorit&eacute; de Certification','CAS','30');";
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`valeur`,`commentaires`,`categorie`,`ordre`) VALUES ('CAS-URI','cas','Page de connexion CAS','CAS','30');";
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`valeur`,`commentaires`,`categorie`,`ordre`) VALUES ('CAS-URI-Logout','cas/logout','Page de d&eacute;connexion CAS','CAS','30');";
+    $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.8.3' WHERE `nom`='Version';";
+  }
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeurs`='SQL,LDAP,LDAP-SQL,CAS,CAS-SQL' WHERE `nom`='Auth-Mode';";
+  $sql[]="DELETE FROM `{$dbprefix}plugins` WHERE `nom`='ldap'";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.8.3' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage

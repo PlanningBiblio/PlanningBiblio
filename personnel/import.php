@@ -1,20 +1,25 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/index.php
 Création : 27 juin 2013
-Dernière modification : 4 juillet 2013
+Dernière modification : 2 juillet 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
 Fichier permettant l'importation des agents dans le planning
 */
 
-if(in_array('ldap',$plugins)){
-  include "plugins/ldap/import.php";
+if(isset($_POST['import-type'])){
+  if($_POST['import-type']=="ldap"){
+    include "ldap/import2.php";
+  }
+}
+else{
+  include "ldap/import.php";
 }
 ?>
