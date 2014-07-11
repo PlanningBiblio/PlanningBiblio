@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 1.8.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 30 mai 2014
+Dernière modification : 8 juillet 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -676,7 +676,7 @@ function selectTemps($jour,$i,$periodes=null,$class=null){
   $select.="<option value=''>&nbsp;</option>\n";
   for($j=7;$j<23;$j++){
     $z=$j<10?"0":"";
-    if($temps){
+    if($temps and array_key_exists($jour,$temps)){
       $select1=$temps[$jour][$i]==$z.$j.":00:00"?"selected='selected'":"";
       $select2=$temps[$jour][$i]==$z.$j.":15:00"?"selected='selected'":"";
       $select3=$temps[$jour][$i]==$z.$j.":30:00"?"selected='selected'":"";
