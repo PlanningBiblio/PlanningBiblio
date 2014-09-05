@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/createdb.php
 Création : mai 2011
-Dernière modification : 14 décembre 2012
+Dernière modification : 5 septembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -31,17 +31,17 @@ include "header.php";
 //	Vérifions si l'utilisateur existe
 $user_exist=false;
 $req="SELECT * FROM `mysql`.`user` WHERE `User`='{$_POST['dbuser']}' AND `Host`='localhost';";
-$dbconn=mysql_connect("localhost",$_POST['adminuser'],$_POST['adminpass']);
-$query=mysql_query($req,$dbconn);
-if(mysql_fetch_array($query)){
+$dbconn=mysqli_connect("localhost",$_POST['adminuser'],$_POST['adminpass'],'mysql');
+$query=mysqli_query($dbconn,$req);
+if(mysqli_fetch_array($query)){
   $user_exist=true;
 }
-mysql_close($dbconn);
+mysqli_close($dbconn);
 
 //	Suppression de l'utilisateur si demandé
 if(isset($_POST['dropuser'])){
-  $dbconn=mysql_connect("localhost",$_POST['adminuser'],$_POST['adminpass']);
-  $query=mysql_query($req,$dbconn);
+  $dbconn=mysqli_connect("localhost",$_POST['adminuser'],$_POST['adminpass'],'mysql');
+  $query=mysqli_query($dbconn,$req);
   if($user_exist){
     $sql[]="DROP USER '{$_POST['dbuser']}'@'localhost';";
     $user_exist=false;
@@ -69,20 +69,20 @@ include "db_structure.php";
 //	Insertion des données
 include "db_data.php";
 
-$dbconn=mysql_connect("localhost",$_POST['adminuser'],$_POST['adminpass']);
+$dbconn=mysqli_connect("localhost",$_POST['adminuser'],$_POST['adminpass']);
 if($dbconn){
   foreach($sql as $elem){
     $message.=str_replace("\n","<br/>",$elem)."<br/>";
     if(trim($elem)){
-      if(!mysql_query($elem,$dbconn)){
+      if(!mysqli_query($dbconn,$elem)){
 	$erreur=true;
 	$message.="<p style='color:red'>ERROR : ";
-	$message.=mysql_error();
+	$message.=mysqli_error($dbconn);
 	$message.="</p>\n";
       }
     }
   }
-  mysql_close($dbconn);
+  mysqli_close($dbconn);
 }
 else{
   $erreur=true;

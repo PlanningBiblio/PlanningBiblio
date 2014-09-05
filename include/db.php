@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 1.8.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 6 juin 2014
+Dernière modification : 4 septembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -42,30 +42,32 @@ class db{
   }
 
   function connect(){
-    $this->conn=mysql_connect($this->host,$this->user,$this->password);
-    mysql_select_db($this->dbname,$this->conn);
+    $this->conn=mysqli_connect($this->host,$this->user,$this->password,$this->dbname);
+    if(mysqli_connect_errno($this->conn)){
+      echo "Failed to connect to MySQL: " . mysqli_connect_error();
+    }
   }
   
   function query($requete){
     $this->connect();
-    $req=mysql_query($requete,$this->conn);
-    
+    $req=mysqli_query($this->conn,$requete);
+
     if(!$req){
       echo "<br/><br/>### ERREUR SQL ###<br/><br/>$requete<br/><br/>";
-      echo mysql_error();
+      echo mysqli_error($this->conn);
       echo "<br/><br/>";
       $this->error=true;
     }
     elseif(strtolower(substr(trim($requete),0,6))=="select" or strtolower(substr(trim($requete),0,4))=="show"){
-      $this->nb=mysql_num_rows($req);
+      $this->nb=mysqli_num_rows($req);
       for($i=0;$i<$this->nb;$i++)
-	$this->result[]=mysql_fetch_array($req);
+	$this->result[]=mysqli_fetch_array($req);
     }
     $this->disconnect();
   }
 
   function disconnect(){
-    mysql_close($this->conn);
+    mysqli_close($this->conn);
   }
 
   function select($table,$infos=null,$where=null,$options=null){
@@ -87,7 +89,7 @@ class db{
     foreach($fields as $field){
       if(!is_serialized($set[$field]))
 	$set[$field]=htmlentities($set[$field],ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
-      $set[$field]=mysql_real_escape_string($set[$field],$this->conn);
+      $set[$field]=mysqli_real_escape_string($set[$field],$this->conn);
       if(substr($set[$field],0,7)=="CONCAT("){
 	$tmp[]="`{$field}`={$set[$field]}";
       }
@@ -102,7 +104,7 @@ class db{
     }
     $requete="UPDATE `{$GLOBALS['config']['dbprefix']}$table` SET $set WHERE $where;";
 
-    $req=mysql_query($requete,$this->conn);
+    $req=mysqli_query($this->conn,$requete);
     $this->disconnect();
   }
 
@@ -113,14 +115,14 @@ class db{
     foreach($fields as $field){
       if(!is_serialized($set[$field]))
 	$set[$field]=htmlentities($set[$field],ENT_QUOTES | ENT_IGNORE,"ISO-8859-1",false);
-      $set[$field]=mysql_real_escape_string($set[$field],$this->conn);
+      $set[$field]=mysqli_real_escape_string($set[$field],$this->conn);
       $tmp[]="`{$field}`='{$set[$field]}'";
     }
     $set=join(",",$tmp);
     $key=array_keys($where);
     $where="`".$key[0]."`='".$where[$key[0]]."'";
     $requete="UPDATE `{$GLOBALS['config']['dbprefix']}$table` SET $set WHERE $where;";
-    $req=mysql_query($requete,$this->conn);
+    $req=mysqli_query($this->conn,$requete);
     $this->disconnect();
   }
 
@@ -151,9 +153,9 @@ class db{
       $values=join("),(",$values);
     }
     $requete="INSERT INTO `{$GLOBALS['config']['dbprefix']}$table` $fields VALUES ($values);";
-    $req=mysql_query($requete,$this->conn);
-    if(mysql_error()){
-      echo mysql_error();
+    $req=mysqli_query($this->conn,$requete);
+    if(mysqli_error($this->conn)){
+      echo mysqli_error($this->conn);
       echo "<br/>".$requete;
     }
     $this->disconnect();
@@ -168,7 +170,7 @@ class db{
 	    foreach($fields as $elem){
 	      if(!is_serialized($values[$i][$elem]))
 		$values[$i][$elem]=htmlentities($values[$i][$elem],ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
-	      $values[$i][$elem]=mysql_real_escape_string($values[$i][$elem],$this->conn);
+	      $values[$i][$elem]=mysqli_real_escape_string($values[$i][$elem],$this->conn);
 	    }
       }
       $fields=join(",",$fields);
@@ -183,7 +185,7 @@ class db{
 	if(!is_serialized($values[$elem])){
 	  $values[$elem]=htmlentities($values[$elem],ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
 	}
-	$values[$elem]=mysql_real_escape_string($values[$elem],$this->conn);
+	$values[$elem]=mysqli_real_escape_string($values[$elem],$this->conn);
       }
       $fields=join(",",$fields);
       $tab[]="'".join("','",$values)."'";

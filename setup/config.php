@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/config.php
 Création : mai 2011
-Dernière modification : 6 septembre 2013
+Dernière modification : 5 septembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -36,9 +36,9 @@ Ce compte servira &agrave; param&eacute;trer l'application. Il aura tous les dro
 <td><input type='password' name='password2' /></td></tr>
 <tr><td>Email</td>
 <td><input type='text' name='email' value='' /></td></tr>
-<tr><td colspan='2' style='text-align:center'>
-<input type='reset' name='Anuuler'/>
-&nbsp;&nbsp;&nbsp;<input type='submit' value='Créer' />
+<tr><td colspan='2' style='text-align:center;padding-top:20px;'>
+<input type='reset' name='Anuuler' class='ui-button'/>
+&nbsp;&nbsp;&nbsp;<input type='submit' value='Créer' class='ui-button'/>
 </td></tr>
 </table>
 </fieldset>

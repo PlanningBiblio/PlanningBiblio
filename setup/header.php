@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.8
+Planning Biblio, Version 1.8.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/header.php
 Création : mai 2011
-Dernière modification : 3 avril 2014
+Dernière modification : 5 septembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,7 +20,10 @@ Affiche l'entête du setup. Appelé par les fichiers index.php, createdb.php et 
 <title>Planning, création de la base de donnée</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+<link rel='StyleSheet' href='../themes/default/jquery-ui.min.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='../themes/default/default.css' type='text/css' />
+<script type='text/JavaScript' src='../js/jquery-1.11.0.min.js'></script>
+<script type='text/JavaScript' src='../js/jquery-ui-1.10.4/ui/jquery-ui.js'></script>
 <script type='text/JavaScript' src='../js/script.js'></script>
 </head>
 <body>

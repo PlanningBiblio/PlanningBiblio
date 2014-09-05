@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.3
+Planning Biblio, Version 1.8.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/index.php
 Création : mai 2011
-Dernière modification : 2 juillet 2014
+Dernière modification : 5 septembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -19,7 +19,7 @@ Formulaire soumis au fichier setup/createdb.php
 
 session_start();
 session_destroy();
-$version="1.8.3";
+$version="1.8.4";
 
 include "header.php";
 include_once "../include/function.php";
@@ -57,9 +57,9 @@ n&eacute;cessaires &agrave; la cr&eacute;ation de la base de donn&eacute;es.
 <td><input type='checkbox' name='dropdb' /></td></tr>
 <tr><td>Supprimer l'utilisateur s'il existe ?</td>
 <td><input type='checkbox' name='dropuser' /></td></tr>
-<tr><td colspan='2' style='text-align:center'>
-<input type='reset' name='Anuuler'/>
-&nbsp;&nbsp;&nbsp;<input type='submit' value='Créer' />
+<tr><td colspan='2' style='text-align:center;padding-top:20px;'>
+<input type='reset' name='Anuuler' class='ui-button'/>
+&nbsp;&nbsp;&nbsp;<input type='submit' value='Créer' class='ui-button'/>
 </td></tr>
 <tr><td colspan='2' style='text-align:center;color:red;'><?php echo $msg; ?></td></tr>
 </table>
