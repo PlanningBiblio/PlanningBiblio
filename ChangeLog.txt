@@ -1,3 +1,8 @@
+***	Version 1.8.4	(Jérôme Combes, 12 septembre 2014)		***
+- Améliorations :
+Les fonctions mysql_* (obsolètes sous PHP5.5) sont remplacées par les fonctions mysqli_*
+
+
 ***	Version 1.8.3	(Jérôme Combes, 2 juillet 2014)		***
 - Améliorations :
 Importation LDAP
