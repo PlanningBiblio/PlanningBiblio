@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 1.8.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 27 juin 2014
+Dernière modification : 11 septembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -163,6 +163,11 @@ $postes_dispo=postesNoms($postes_dispo,$postes_completNoms);
 <li><a href='#main'>Infos générales</a></li>
 <li><a href='#qualif'>Activités</a></li>
 <li><a href='#temps' id='personnel-a-li3'>Emploi du temps</a></li>
+<?php
+if(in_array("conges",$plugins)){
+  echo "<li><a href='#conges'>Cong&eacute;s</a></li>";
+}
+?>
 <li><a href='#access'>Droits d'accès</a></li>
 <?php
 if(in_array(21,$droits)){
@@ -323,10 +328,6 @@ if(in_array(21,$droits)){
 else
   echo $heuresTravail." heures";
 echo "</td></tr>";
-
-if(in_array("conges",$plugins)){
-  include "plugins/conges/ficheAgent.php";
-}
 
 $select1=null;
 $select2=null;
@@ -727,6 +728,12 @@ if(!$admin){
 ?>
 </div>
 <!--	FIN Droits d'accès		-->
+
+<?php
+if(in_array("conges",$plugins)){
+  include "plugins/conges/ficheAgent.php";
+}
+?>
 </div>	<!-- .ui-tabs	-->
 </form>
 

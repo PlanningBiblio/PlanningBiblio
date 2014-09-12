@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 4 septembre 2014
+Dernière modification : 11 septembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -89,7 +89,7 @@ class db{
     foreach($fields as $field){
       if(!is_serialized($set[$field]))
 	$set[$field]=htmlentities($set[$field],ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
-      $set[$field]=mysqli_real_escape_string($set[$field],$this->conn);
+      $set[$field]=mysqli_real_escape_string($this->conn,$set[$field]);
       if(substr($set[$field],0,7)=="CONCAT("){
 	$tmp[]="`{$field}`={$set[$field]}";
       }
@@ -115,7 +115,7 @@ class db{
     foreach($fields as $field){
       if(!is_serialized($set[$field]))
 	$set[$field]=htmlentities($set[$field],ENT_QUOTES | ENT_IGNORE,"ISO-8859-1",false);
-      $set[$field]=mysqli_real_escape_string($set[$field],$this->conn);
+      $set[$field]=mysqli_real_escape_string($this->conn,$set[$field]);
       $tmp[]="`{$field}`='{$set[$field]}'";
     }
     $set=join(",",$tmp);
@@ -170,7 +170,7 @@ class db{
 	    foreach($fields as $elem){
 	      if(!is_serialized($values[$i][$elem]))
 		$values[$i][$elem]=htmlentities($values[$i][$elem],ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
-	      $values[$i][$elem]=mysqli_real_escape_string($values[$i][$elem],$this->conn);
+	      $values[$i][$elem]=mysqli_real_escape_string($this->conn,$values[$i][$elem]);
 	    }
       }
       $fields=join(",",$fields);
@@ -185,7 +185,7 @@ class db{
 	if(!is_serialized($values[$elem])){
 	  $values[$elem]=htmlentities($values[$elem],ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
 	}
-	$values[$elem]=mysqli_real_escape_string($values[$elem],$this->conn);
+	$values[$elem]=mysqli_real_escape_string($this->conn,$values[$elem]);
       }
       $fields=join(",",$fields);
       $tab[]="'".join("','",$values)."'";
