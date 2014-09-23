@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 1.8.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 24 juin 2014
+Dernière modification : 22 septembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -100,11 +100,10 @@ if(!$acces){
 // Multisites, ne pas afficher les absences des agents d'un site non géré
 if($config['Multisites-nombre']>1){
   $sites=array();
-  if(in_array(201,$droits)){
-    $sites[]=1;
-  }
-  if(in_array(202,$droits)){
-    $sites[]=2;
+  for($i=1;$i<=$config['Multisites-nombre'];$i++){
+    if(in_array((200+$i),$droits)){
+      $sites[]=$i;
+    }
   }
 
   $admin=false;

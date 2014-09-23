@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.1
+Planning Biblio, Version 1.8.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 17 juin 2014
+Dernière modification : 22 septembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -292,7 +292,9 @@ class absences{
       }
       // Si les jours d'absences ne concernent aucun site, on ajoute les responsables des 2 sites par sécurité
       if(empty($droitsAbsences)){
-	$droitsAbsences=array(201,202);
+	for($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++){
+	  $droitsAbsences[]=200+$i;
+	}
       }
     }
     // Si un seul site, le droit de gestion des absences est 1

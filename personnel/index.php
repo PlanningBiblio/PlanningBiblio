@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.3
+Planning Biblio, Version 1.8.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 2 juillet 2014
+Dernière modification : 22 septembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -161,28 +161,3 @@ function date1($date){
   return $date;
 }
 ?>
-<script type='text/JavaScript'>
-$(document).ready(function(){
-  $("#table_agents").dataTable({
-    "bJQueryUI": true,
-    "sPaginationType": "full_numbers",
-    "bStateSave": true,
-    "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"Tous"]],
-    "iDisplayLength" : 25,
-    "aaSorting" : [[2,"asc"],[3,"asc"]],
-    "oLanguage" : {"sUrl" : "js/dataTables/french.txt"},
-    "aoColumns" : [{"bSortable":false},{"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},
-      {"bSortable":true},{"bSortable":true},{"sType": "date-fr"},{"sType": "date-fr"},{"sType": "date-fr"},
-      <?php
-      if($config['Multisites-nombre']>1){
-	echo '{"bSortable":true},';
-      }
-      ?>
-      ],
-  });
-});
-
-$("#checkAll").click(function(){
-  $(".checkAgent:visible").click();
-});
-</script>

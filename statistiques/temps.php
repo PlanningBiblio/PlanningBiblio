@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 1.8.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 16 mai 2014
+Dernière modification : 23 septembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -125,11 +125,11 @@ foreach($dates as $d){
       if(!in_array($elem['perso_id'],$agents_id) and $elem[$d[0]]){
 	$agents_id[]=$elem['perso_id'];
 	$totalAgents++;
-	if($elem['site1']){
-	  $siteAgents[1]++;
-	}
-	if($elem['site2']){
-	  $siteAgents[2]++;
+
+	for($i=1;$i<=$config['Multisites-nombre'];$i++){
+	  if($elem["site$i"]){
+	    $siteAgents[$i]++;
+	  }
 	}
       }
     }
@@ -149,10 +149,10 @@ $_SESSION['oups']['stat_nbAgents']=$nbAgents;
 // Formatage des données pour affichage
 $keys=array_keys($tab);
 foreach($keys as $key){
-  $tab[$key]['site1Semaine']=$tab[$key]['site1']?number_format($tab[$key]['site1']/$nbSemaines,2,'.',' '):"-";
-  $tab[$key]['site2Semaine']=$tab[$key]['site2']?number_format($tab[$key]['site2']/$nbSemaines,2,'.',' '):"-";
-  $tab[$key]['site1']=$tab[$key]['site1']?number_format($tab[$key]['site1'],2,'.',' '):"-";
-  $tab[$key]['site2']=$tab[$key]['site2']?number_format($tab[$key]['site2'],2,'.',' '):"-";
+  for($i=1;$i<=$config['Multisites-nombre'];$i++){
+    $tab[$key]["site{$i}Semaine"]=$tab[$key]["site{$i}"]?number_format($tab[$key]["site{$i}"]/$nbSemaines,2,'.',' '):"-";
+    $tab[$key]["site{$i}"]=$tab[$key]["site{$i}"]?number_format($tab[$key]["site{$i}"],2,'.',' '):"-";
+  }
   $tab[$key]['total']=number_format($tab[$key]['total'],2,'.',' ');
   $tab[$key]['semaine']=number_format($tab[$key]['total']/$nbSemaines,2,'.',' ');		// ajout la moyenne par semaine
   $tab[$key]['heuresHebdo']=$tab[$key]['max']!=0?number_format($tab[$key]['heuresHebdo'],2,'.',' '):"-";
@@ -175,10 +175,19 @@ foreach($dates as $d){
   }
 }
 $totalHeures=$totalHeures!=0?number_format($totalHeures,2,'.',' '):"-";
-$siteHeures[1]=$siteHeures[1]!=0?number_format($siteHeures[1],2,'.',' '):"-";
-$siteHeures[2]=array_key_exists(2,$siteHeures) and $siteHeures[2]!=0?number_format($siteHeures[2],2,'.',' '):"-";
-$siteAgents[1]=$siteAgents[1]!=0?$siteAgents[1]:"-";
-$siteAgents[2]=array_key_exists(2,$siteAgents) and $siteAgents[2]!=0?$siteAgents[2]:"-";
+
+for($i=1;$i<=$config['Multisites-nombre'];$i++){
+  if(array_key_exists($i,$siteHeures) and $siteHeures[$i]!=0){
+    $siteHeures[$i]=number_format($siteHeures[$i],2,'.',' ');
+  }else{
+    $siteHeures[$i]="-";
+  }
+  if(array_key_exists($i,$siteAgents) and $siteAgents[$i]!=0){
+    $siteAgents[$i]=$siteAgents[$i];
+  }else{
+    $siteAgents[$i]="-";
+  }
+}
 
 
 //			-------------		Affichage du tableau		---------------------//
@@ -210,13 +219,11 @@ EOD;
 
   // Total par site
   if($config['Multisites-nombre']>1){
-    echo "<th>{$config['Multisites-site1']}</th>\n";
-    if($nbSemaines!=1){
-      echo "<th>Moyenne Hebdo.</th>\n";
-    }
-    echo "<th>{$config['Multisites-site2']}</th>\n";
-    if($nbSemaines!=1){
-      echo "<th>Moyenne Hebdo.</th>\n";
+    for($i=1;$i<=$config['Multisites-nombre'];$i++){
+      echo "<th>".$config["Multisites-site$i"]."</th>\n";
+      if($nbSemaines!=1){
+	echo "<th>Moyenne Hebdo.</th>\n";
+      }
     }
   }
 
@@ -263,13 +270,11 @@ EOD;
     }
 
     if($config['Multisites-nombre']>1){
-      echo "<td>{$elem['site1']}</td>\n";
-      if($nbSemaines!=1){
-	echo "<td>{$elem['site1Semaine']}</td>\n";
-      }
-      echo "<td>{$elem['site2']}</td>\n";
-      if($nbSemaines!=1){
-	echo "<td>{$elem['site2Semaine']}</td>\n";
+      for($i=1;$i<=$config['Multisites-nombre'];$i++){
+	echo "<td>{$elem["site$i"]}</td>\n";
+	if($nbSemaines!=1){
+	  echo "<td>{$elem["site{$i}Semaine"]}</td>\n";
+	}
       }
     }
 
@@ -291,13 +296,11 @@ EOD;
   }
 
   if($config['Multisites-nombre']>1){
-    echo "<th>{$siteHeures[1]}</th>\n";
-    if($nbSemaines!=1){
-      echo "<th>&nbsp;</th>\n";
-    }
-    echo "<th>{$siteHeures[2]}</th>\n";
-    if($nbSemaines!=1){
-      echo "<th>&nbsp;</th>\n";
+    for($i=1;$i<=$config['Multisites-nombre'];$i++){
+      echo "<th>{$siteHeures[$i]}</th>\n";
+      if($nbSemaines!=1){
+	echo "<th>&nbsp;</th>\n";
+      }
     }
   }
 
@@ -312,13 +315,11 @@ EOD;
   }
 
   if($config['Multisites-nombre']>1){
-    echo "<th>{$siteAgents[1]}</th>\n";
-    if($nbSemaines!=1){
-      echo "<th>&nbsp;</th>\n";
-    }
-    echo "<th>{$siteAgents[2]}</th>\n";
-    if($nbSemaines!=1){
-      echo "<th>&nbsp;</th>\n";
+    for($i=1;$i<=$config['Multisites-nombre'];$i++){
+      echo "<th>{$siteAgents[$i]}</th>\n";
+      if($nbSemaines!=1){
+	echo "<th>&nbsp;</th>\n";
+      }
     }
   }
 

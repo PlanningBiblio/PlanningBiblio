@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.4
+Planning Biblio, Version 1.8.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 11 septembre 2014
+Dernière modification : 23 septembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -678,8 +678,26 @@ foreach($db_groupes->result as $elem){		// gestion des droits d'accès au planni
       }
     }
   }
+
+  //	Gestion des absences, validation N2 si plusieurs sites
+  elseif($elem['groupe_id']==8 and $config['Multisites-nombre']>1){
+    for($i=1;$i<=$config['Multisites-nombre'];$i++){
+      $site=$config['Multisites-site'.$i];
+      $groupe_id=500+$i;
+      if(is_array($acces)){
+	$checked=in_array($groupe_id,$acces)?"checked='checked'":null;
+	$checked2=$checked?"Oui":"Non";
+      }
+      if($admin){
+	echo "<input type='checkbox' name='droits[]' $checked value='$groupe_id' />{$elem['groupe']} $site<br/>\n";
+      }else{
+	echo "<li>{$elem['groupe']} $site <label class='agent-acces-checked2'>$checked2</label></li>\n";
+      }
+    }
+  }
+
   //	Gestion des congés si plusieurs sites
-  elseif($elem['groupe_id']==2 and $config['Multisites-nombre']>1){
+  elseif($elem['groupe_id']==7 and $config['Multisites-nombre']>1){
     for($i=1;$i<$config['Multisites-nombre']+1;$i++){
       $site=$config['Multisites-site'.$i];
       $groupe_id=400+$i;
@@ -694,6 +712,24 @@ foreach($db_groupes->result as $elem){		// gestion des droits d'accès au planni
       }
     }
   }
+
+  //	Gestion des congés si plusieurs sites, Validation N2
+  elseif($elem['groupe_id']==2 and $config['Multisites-nombre']>1){
+    for($i=1;$i<$config['Multisites-nombre']+1;$i++){
+      $site=$config['Multisites-site'.$i];
+      $groupe_id=600+$i;
+      if(is_array($acces)){
+	$checked=in_array($groupe_id,$acces)?"checked='checked'":null;
+	$checked2=$checked?"Oui":"Non";
+      }
+      if($admin){
+	echo "<input type='checkbox' name='droits[]' $checked value='$groupe_id' />{$elem['groupe']} $site<br/>\n";
+      }else{
+	echo "<li>{$elem['groupe']} $site <label class='agent-acces-checked2'>$checked2</label></li>\n";
+      }
+    }
+  }
+
   //	Modification des plannings si plusieurs sites
   elseif($elem['groupe_id']==12 and $config['Multisites-nombre']>1){
     for($i=1;$i<$config['Multisites-nombre']+1;$i++){
@@ -710,6 +746,7 @@ foreach($db_groupes->result as $elem){		// gestion des droits d'accès au planni
       }
     }
   }
+
   else{
     if(is_array($acces)){
       $checked=in_array($elem['groupe_id'],$acces)?"checked='checked'":null;

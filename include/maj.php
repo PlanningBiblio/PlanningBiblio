@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.4
+Planning Biblio, Version 1.8.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 12 septembre 2014
+Dernière modification : 22 septembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -607,6 +607,24 @@ if(strcmp("1.8.3",$config['Version'])>0){
 if(strcmp("1.8.4",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.8.4' WHERE `nom`='Version';";
 }
+
+if(strcmp("1.8.5",$config['Version'])>0){
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeurs`='1,2,3,4,5,6,7,8,9,10' WHERE `nom`='Multisites-nombre';";
+  $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-site3','text','','Nom du site N°3','Multisites','','15');";
+  $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-site4','text','','Nom du site N°4','Multisites','','15');";
+  $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-site5','text','','Nom du site N°5','Multisites','','15');";
+  $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-site6','text','','Nom du site N°6','Multisites','','15');";
+  $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-site7','text','','Nom du site N°7','Multisites','','15');";
+  $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-site8','text','','Nom du site N°8','Multisites','','15');";
+  $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-site9','text','','Nom du site N°9','Multisites','','15');";
+  $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Multisites-site10','text','','Nom du site N°10','Multisites','','15');";
+  $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom`='Multisites-resp1';";
+  $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom`='Multisites-email1';";
+  $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom`='Multisites-resp2';";
+  $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom`='Multisites-email2';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.8.5' WHERE `nom`='Version';";
+}
+
 
 //	Execution des requetes et affichage
 foreach($sql as $elem){
