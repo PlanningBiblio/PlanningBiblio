@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.3
+Planning Biblio, Version 1.8.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : ldap/class.ldap.php
 Création : 2 juillet 2014
-Dernière modification : 2 juillet 2014
+Dernière modification : 26 septembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -16,7 +16,7 @@ Fichier inclus par ldap/auth.php
 */
 
 function authCAS(){
-  include "include/CAS-1.3.2/CAS.php";
+  include "include/CAS-1.3.3/CAS.php";
   phpCAS::setDebug("data/cas_debug.txt");
   phpCAS::client($GLOBALS['config']['CAS-Version'], $GLOBALS['config']['CAS-Hostname'], intval($GLOBALS['config']['CAS-Port']), $GLOBALS['config']['CAS-URI'],false);
   phpCAS::setExtraCurlOption(CURLOPT_SSLVERSION,3);

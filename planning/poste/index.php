@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.1
+Planning Biblio, Version 1.8.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 23 juin 2014
+Dernière modification : 24 septembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -163,7 +163,7 @@ switch($config['nb_semaine']){
 }
 echo "<b>Semaine $affSem</b>\n";
 echo "</div>";
-echo "<div id='semaine_planning'<b>Du ".dateFr($j1)." au ".dateFr($j7)."</b>\n";
+echo "<div id='semaine_planning'><b>Du ".dateFr($j1)." au ".dateFr($j7)."</b>\n";
 echo "</div>\n";
 echo "<div id='date_planning'>Planning du $dateAlpha";
 if(jour_ferie($date)){
