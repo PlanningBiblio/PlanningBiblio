@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 1.8.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/createconfig.php
 Création : mai 2011
-Dernière modification : 31 octobre 2013
+Dernière modification : 9 octobre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,14 +23,14 @@ $Fnm = "../include/config.php";
 $file=Array();
 $file[]="<?php\n";
 $file[]="/*\n";
-$file[]="Planning Biblio, Version 1.8\n";
+$file[]="Planning Biblio, Version {$_POST['version']}\n";
 $file[]="Licence GNU/GPL (version 2 et au dela)\n";
 $file[]="Voir les fichiers README.md et LICENSE\n";
 $file[]="Copyright (C) 2011-2014 - Jérôme Combes\n";
 $file[]="\n";
 $file[]="Fichier : include/config.php\n";
 $file[]="Création : mai 2011\n";
-$file[]="Dernière modification : 31 octobre 2013\n";
+$file[]="Dernière modification : 9 octobre 2014\n";
 $file[]="Auteur : Jérôme Combes, jerome@planningbilbio.fr\n";
 $file[]="\n";
 $file[]="Description :\n";
@@ -53,7 +53,7 @@ $file[]="}\n";
 $file[]="global \$config;\n";
 $file[]="\$config=Array();\n\n";
 $file[]="//		Paramètres MySQL\n";
-$file[]="\$config['dbhost']=\"localhost\";\n";
+$file[]="\$config['dbhost']=\"{$_POST['dbhost']}\";\n";
 $file[]="\$config['dbname']=\"{$_POST['dbname']}\";\n";
 $file[]="\$config['dbuser']=\"{$_POST['dbuser']}\";\n";
 $file[]="\$config['dbpass']=\"{$_POST['dbpass']}\";\n";

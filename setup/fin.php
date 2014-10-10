@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/fin.php
 Création : mai 2011
-Dernière modification : 13 juin 2014
+Dernière modification : 9 octobre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -56,7 +56,7 @@ if($erreur){
 else{
   echo "<h3>L'installation est terminée.</h3>\n";
   echo "Veuillez verifier l'installation.<br/>Si tout fonctionne, supprimez le dossier \"setup\".<br/>\n";
-  echo "<p><a href='../authentification.php?newlogin=admin'>Se connecter au planning</a><br/><br/></p>\n";
+  echo "<p><a href='../authentification.php?newlogin=admin' class='ui-button'>Se connecter au planning</a><br/><br/></p>\n";
 }
 include "footer.php";
 ?>

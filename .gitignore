@@ -2,6 +2,7 @@ maj.sh
 *~
 data/*
 include/config.php
+include/test.php
 plugins/conges*
 plugins/ldap*
 plugins/pla*
