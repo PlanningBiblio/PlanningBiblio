@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : ldap/class.ldap.php
 Création : 2 juillet 2014
-Dernière modification : 26 septembre 2014
+Dernière modification : 20 octobre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -64,14 +64,34 @@ function authLDAP($login,$password){
   }
 
   //	Connexion au serveur LDAP
+  // Recheche du DN de l'utilisateur
+  $dn=null;
   $ldapconn = ldap_connect($GLOBALS['config']['LDAP-Host'],$GLOBALS['config']['LDAP-Port'])
     or die ("Impossible de se connecter au serveur LDAP");
   ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
   ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
   if($ldapconn){
-    if(@ldap_bind($ldapconn,"uid=".$login.",".$GLOBALS['config']['LDAP-Suffix'],$password)){
-      $auth=true;
-      $_SESSION['oups']['Auth-Mode']="LDAP";
+    $ldapbind=ldap_bind($ldapconn,$GLOBALS['config']['LDAP-RDN'],decrypt($GLOBALS['config']['LDAP-Password']));
+    if($ldapbind){
+      $sr=ldap_search($ldapconn,$GLOBALS['config']['LDAP-Suffix'],"(uid=$login)",array("dn"));
+      $infos=ldap_get_entries($ldapconn,$sr);
+      if($infos[0]['dn']){
+	$dn=$infos[0]['dn'];
+      }
+    }
+  }
+
+  // Connexion au serveur LDAP avec le DN de l'utilisateur
+  if($dn){
+    $ldapconn = @ldap_connect($GLOBALS['config']['LDAP-Host'],$GLOBALS['config']['LDAP-Port'])
+      or die ("Impossible de se connecter au serveur LDAP");
+    ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
+    ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
+    if($ldapconn){
+      if(@ldap_bind($ldapconn,$dn,$password)){
+	$auth=true;
+	$_SESSION['oups']['Auth-Mode']="LDAP";
+      }
     }
   }
   return $auth;
