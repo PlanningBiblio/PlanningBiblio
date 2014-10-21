@@ -1,3 +1,10 @@
+***	Version 1.8.5	(Jérôme Combes, 21 octobre 2014)		***
+- Améliorations :
+Multisites : jusqu'à 10 sites
+Setup : Installation possible sur base de données MySQL distante
+CAS : Mise à jour de la bibliothèque phpCAS (1.3.3)
+LDAP : Permet l'authentification LDAP même si le DN n'est pas construit avec uid et ou=people
+
 ***	Version 1.8.4	(Jérôme Combes, 12 septembre 2014)		***
 - Améliorations :
 Les fonctions mysql_* (obsolètes sous PHP5.5) sont remplacées par les fonctions mysqli_*
