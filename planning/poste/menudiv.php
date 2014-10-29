@@ -7,8 +7,8 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/menudiv.php
 Création : mai 2011
-Dernière modification : 6 juin 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 29 octobre 2014
+Auteur : Jérôme Combes jerome@planningbilbio.fr, Christophe Le Guennec Christophe.Leguennec@u-pem.fr
 
 Description :
 Affiche le menu déroulant avec le nom des services et des agents dans la page planning/poste/index.php.
@@ -255,7 +255,7 @@ else{
   $req_site=null;
 }
 
-$req="SELECT * FROM `{$dbprefix}personnel` WHERE $req_poste $req_statut `actif` LIKE 'Actif' AND (`depart` > '$date' OR `depart` = '0000-00-00') AND `id` NOT IN ($exclus) $req_site ORDER BY `nom`,`prenom`;";
+$req="SELECT * FROM `{$dbprefix}personnel` WHERE $req_poste $req_statut `actif` LIKE 'Actif' AND `arrivee` <= '$date' AND (`depart` > '$date' OR `depart` = '0000-00-00') AND `id` NOT IN ($exclus) $req_site ORDER BY `nom`,`prenom`;"; 
 $db=new db();
 $db->query($req);
 $agents_dispo=$db->result;
@@ -268,7 +268,7 @@ foreach($agents_dispo as $elem){
 $agents_qualif=join($agents_qualif,",");
 $absents=join($absents,",");
 $tab_deja_place=join($tab_deja_place,",");
-$req="SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00') AND `id` NOT IN ($agents_qualif) AND `id` NOT IN ($tab_deja_place) AND `id` NOT IN ($absents)  $req_site ORDER BY `nom`,`prenom`;";
+$req="SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND `arrivee` <= '$date' AND (`depart` > $date OR `depart` = '0000-00-00') AND `id` NOT IN ($agents_qualif) AND `id` NOT IN ($tab_deja_place) AND `id` NOT IN ($absents)  $req_site ORDER BY `nom`,`prenom`;";
 $db=new db();
 $db->query($req);
 $autres_agents=$db->result;

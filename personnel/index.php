@@ -7,8 +7,8 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 22 septembre 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 29 octobre 2014
+Auteurs : Jérôme Combes jerome@planningbilbio.fr, Chritophe Le Guennec christophe.leguennec@u-pem.fr
 
 Description :
 Affiche le tableau des agents avec les filtres "service public - administratif - supprimé" et le filtre "Rechercher" du tableau
@@ -56,8 +56,7 @@ if(in_array(21,$droits)){
 //		Suppression des agents dont la date de départ est passée		//
 $tab=array(0);
 $db=new db();
-$db->query("UPDATE `{$dbprefix}personnel` SET `actif`='Supprim&eacute;' WHERE `depart`<SYSDATE() AND `depart`<>'0000-00-00' and `actif`<>'Supprimé';");
-
+$db->query("UPDATE `{$dbprefix}personnel` SET `supprime`='1', `actif`='Supprim&eacute;' WHERE `depart`<CURDATE() AND `depart`<>'0000-00-00' and `actif` NOT LIKE 'Supprim%'");
 
 if(isset($_GET['actif']))
   $_SESSION['perso_actif']=$_GET['actif'];
