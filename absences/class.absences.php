@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 22 septembre 2014
+Dernière modification : 30 octobre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -22,6 +22,7 @@ if(!$version){
 }
 
 class absences{
+  public $agents_supprimes=array(0);
   public $elements=array();
   public $error=false;
   public $valide=false;
@@ -177,6 +178,12 @@ class absences{
     if($this->valide and $GLOBALS['config']['Absences-validation']){
       $filter.=" AND `{$dbprefix}absences`.`valide`>0 ";
     }
+
+
+    // N'affiche que les absences des agents non supprimés par défaut : $this->agents_supprimes=array(0);
+    // Affiche les absences des agents supprimés si précisé : $this->agents_supprimes=array(0,1) ou array(0,1,2)
+    $deletedAgents=join("','",$this->agents_supprimes);
+    $filter.=" AND `{$dbprefix}personnel`.`supprime` IN ('$deletedAgents') ";
 
     if($agent==0){
       $agent=null;

@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 1.8.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 25 juin 2014
+Dernière modification : 30 octobre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -413,6 +413,41 @@ function tabSiteUpdate(){
     }
   });
 }
+
+// updateAgentsList : actualise la liste des agents d'un select en fonction d'un paramètre deleted=yes/no
+// Permet d'afficher ou non les agents supprimés dans un select (select_id) selon si une checkbox (me) est cochée ou non
+// le fichier ajax.updateAgentsList.php retourne un tableau [[id=> ,nom=>, prenom=> ],[id=> ,nom=>, prenom=> ], ...] encodé en JSON
+// Fonction utilisée dans les pages absences/voir.php et plugins/conges/voir.php
+
+function updateAgentsList(me,select_id){
+  var deleted=me.checked?"yes":"no";
+  var index=$("#perso_id").val();
+  var in_array=false;
+
+  $.ajax({
+    url: "personnel/ajax.updateAgentsList.php",
+    type: "get",
+    data: "deleted="+deleted,
+    success: function(result){
+      result=JSON.parse(result);
+      $("#"+select_id).html("<option value='0'>Tous</option>");
+      for(key in result){
+	$("#"+select_id).append("<option value='"+result[key]["id"]+"'>"+result[key]["nom"]+" "+result[key]["prenom"]+"</option>");
+	if(result[key]["id"]==index){
+	  in_array=true;
+	}
+      }
+      index=in_array?index:0;
+      $("#"+select_id).val(index);
+
+      $("#"+select_id).closest("span").effect("highlight",null,2000);
+    },
+    error: function(){
+      information("Une erreur est survenue lors de la mise à jour de la liste des agents.","error");
+    }
+  });
+}
+
 
 // updateTips : utilisée pour valider les formulaires Jquery-UI
 function updateTips( t ) {
