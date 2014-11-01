@@ -625,6 +625,12 @@ if(strcmp("1.8.5",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.8.5' WHERE `nom`='Version';";
 }
 
+if(strcmp("1.8.6",$config['Version'])>0){
+  $sql[]="UPDATE `{$dbprefix}config` SET `categorie`='Planning' WHERE `categorie`='Menu d&eacute;roulant du planning';";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`type`,`nom`,`valeurs`,`valeur`,`commentaires`,`categorie`,`ordre`) VALUES 
+    ('enum','Planning-NbAgentsCellule','1,2,3,4,5,6,7,8,10,11,12,13,14,15,16,17,18,19,20','2','Nombre d&apos;agents maximum par cellule','Planning','2');";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.8.6' WHERE `nom`='Version';";
+}
 
 //	Execution des requetes et affichage
 foreach($sql as $elem){

@@ -694,33 +694,3 @@ EOD;
 ?>
 </div>
 </div>
-<script type='text/JavaScript'>
-// Menu contextuel
-<?php
-// Variables JavaScript
-echo "date='$date';";
-echo "site='$site';";
-?>
-// Masque le menu lorsque l'on clique en dehors
-$("html").click(function(){
-  $("#menudiv").hide();
-});
-
-// Affiche le menu lorsque l'on clique-droit dans le tableau
-document.getElementById('tableau').oncontextmenu  = ItemSelMenu;
-
-$("document").ready(function(){
-  // Vérifions si un agent de catégorie A est placé en fin de service
-  verif_categorieA();
-
-  // DataTable (tableau des absences)
-  $("#tableAbsences").dataTable({
-    "bJQueryUI": true,
-    "sPaginationType": "full_numbers",
-    "bStateSave": true,
-    "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"Tous"]],
-    "iDisplayLength" : 25,
-    "oLanguage" : {"sUrl" : "js/dataTables/french.txt"}
-  });
-});
-</script>

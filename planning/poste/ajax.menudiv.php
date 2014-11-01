@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
-Fichier : planning/poste/menudiv.php
+Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 29 octobre 2014
+Dernière modification : 31 octobre 2014
 Auteur : Jérôme Combes jerome@planningbilbio.fr, Christophe Le Guennec Christophe.Leguennec@u-pem.fr
 
 Description :
@@ -18,14 +18,21 @@ et met à jour la base de données en arrière plan avec la fonction JavaScript 
 Cette page est appelée par la fonction ItemSelMenu(e) déclendhée lors d'un click-droit dans la page planning/poste/index.php
 */
 
+session_start();
+
+ini_set("display_error",1);
+ini_set("error_reporting",E_ALL);
+
+require_once "../../include/config.php";
+require_once "../../include/function.php";
+require_once "../../include/horaires.php";
+require_once "../../personnel/class.personnel.php";
 require_once "fonctions.php";
 require_once "class.planning.php";
-include "include/horaires.php";
-include "personnel/class.personnel.php";
 
 //	Initilisation des variables
 $site=$_SESSION['oups']['site'];
-$date=$_GET['date'];
+$date=$_SESSION['PLdate'];
 $poste=$_GET['poste'];
 $debut=$_GET['debut'];
 $fin=$_GET['fin'];
@@ -226,7 +233,7 @@ $db->select("pl_poste",null,"`poste`='$poste' AND `debut`='$debut' AND `fin`='$f
 if($db->result and $db->result[0]['perso_id']!='0'){
   $cellule_vide=false;
 }
-if($db->nb>1){
+if($db->nb>=$config['Planning-NbAgentsCellule']){
   $max_perso=true;
 }
 //		-----------------------------		FIN Contrôle si la cellule est vide 		-----------------------------//
@@ -342,9 +349,10 @@ echo "<tr class='menudiv-titre'><td colspan='2'>".heure2($debut)." - ".heure2($f
 if($services and $config['ClasseParService']){
   $i=0;
   foreach($services as $elem){
+    $class="service_".strtolower(removeAccents(str_replace(" ","_",$elem['service'])));
     if(array_key_exists($elem['service'],$newtab)){
-      echo "<tr onmouseover='$(this).addClass(\"menudiv-gris\");' onmouseout='$(this).removeClass(\"menudiv-gris\");'>\n";
-      echo "<td colspan='2' style='width:200px;background:{$elem['couleur']};' onmouseover='groupe_tab($i,\"$tab_agent\",1);'>";
+      echo "<tr onmouseover='$(this).removeClass();$(this).addClass(\"menudiv-gris\");' onmouseout='$(this).removeClass();$(this).addClass(\"$class\");' class='$class'>\n";
+      echo "<td colspan='2' style='width:200px;' onmouseover='groupe_tab($i,\"$tab_agent\",1);'>";
       echo $elem['service'];
       echo "</td></tr>\n";
     }
@@ -356,7 +364,7 @@ if($services and $config['ClasseParService']){
 if(!$config['ClasseParService']){
   $hide=false;
   $p=new planning();
-  $p->menudivAfficheAgents($agents_dispo,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion);
+  $p->menudivAfficheAgents($poste,$agents_dispo,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion);
 }
 
 //		-----------		Affichage des agents indisponibles		----------//
@@ -373,16 +381,16 @@ if(count($newtab["Autres"]) and $config['agentsIndispo']){
 if(!in_array(2,$tab_exclus) and $config['toutlemonde']){
   echo "<tr onmouseover='$(this).addClass(\"menudiv-gris\");groupe_tab_hide();' onmouseout='$(this).removeClass(\"menudiv-gris\");'>\n";
   echo "<td colspan='3' style='width:200px;color:black;' ";
-  echo "onclick='bataille_navale(2,\"Tout le monde\",0,0,\"\");'>Tout le monde</td></tr>\n";
+  echo "onclick='bataille_navale(\"$poste\",\"$debut\",\"$fin\",2,\"Tout le monde\",0,0,\"\");'>Tout le monde</td></tr>\n";
   $nbCol++;
 }
 //~ -----				Affiche de la "Case vide"  (suppression)	--------------------------//
 if(!$cellule_vide){
   $groupe_tab=$config['ClasseParService']?"groupe_tab(\"vide\",\"$tab_agent\",1);":null;
   echo "<tr onmouseover='$groupe_tab $(this).addClass(\"menudiv-gris\");' onmouseout='$(this).removeClass(\"menudiv-gris\");'>";
-  echo "<td colspan='1' onclick='bataille_navale(0,\"&nbsp;\",0,0,\"\");'>";
+  echo "<td colspan='1' onclick='bataille_navale(\"$poste\",\"$debut\",\"$fin\",0,\"&nbsp;\",0,0,\"\");'>";
   echo "Supprimer</td><td>&nbsp;";
-  echo "<a style='color:red' href='javascript:bataille_navale(0,\"&nbsp;\",1,0,\"\");'>Barrer</a>&nbsp;&nbsp;</td></tr>";
+  echo "<a style='color:red' href='javascript:bataille_navale(\"$poste\",\"$debut\",\"$fin\",0,\"&nbsp;\",1,0,\"\");'>Barrer</a>&nbsp;&nbsp;</td></tr>";
   $nbCol++;
 }
 echo "</table>\n";
@@ -394,14 +402,14 @@ echo "<table style='background:#FFFFFF;position:absolute;left:200px;top:8px;' fr
 if($agents_tous and $config['ClasseParService']){
   $hide=true;
   $p=new planning();
-  $p->menudivAfficheAgents($agents_tous,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion);
+  $p->menudivAfficheAgents($poste,$agents_tous,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion);
 }
 
 //		-----------		Affichage de la liste des agents indisponibles 'ils ne sont pas classés par services	----------//
 if($autres_agents and !$config['ClasseParService'] and $config['agentsIndispo']){
   $hide=true;
   $p=new planning();
-  $p->menudivAfficheAgents($autres_agents,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion);
+  $p->menudivAfficheAgents($poste,$autres_agents,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion);
 }
 
 echo "</table>";

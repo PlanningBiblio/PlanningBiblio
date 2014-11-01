@@ -15,20 +15,6 @@ Fichier contenant les principales fonctions JavaScript
 Cette page est appelée par les fichiers include/header.php, setup/header.php et planning/poste/menudiv.php
 */
 
-//	----------------------------		Variables			------------------------	//
-//	----------------------------		Variables Menu contextuel	------------------------	//
-var poste;
-var output;
-var perso_id;
-var date;
-var debut;
-var fin;
-var tableau;
-var tab_menu;
-var menudiv_display="none";
-//	----------------------------		FIN Variables			------------------------	//
-
-
 //	---------------------------		Fonctions communes		------------------------	//
 function annuler(nb){
   if(opener){
@@ -464,7 +450,6 @@ function verif_categorieA(){
   $.ajax({
     url: "planning/poste/ajax.categorieA.php",
     type: "get",
-    data: "date="+date+"&site="+site,
     success: function(retour){
       if(retour == "true"){
 	$("#planningTips").hide();
@@ -769,146 +754,6 @@ function select_drop_all(select_dispo,select_attrib,hidden_attrib,width){	// Att
 }
 //	Fin Select Multpiles
 //	---------------------------		FIN Personnel 		--------------------------------	//
-//	--------------------------------	Planning		---------------------------------	//
-// 	bataille_navale : menu contextuel : met à jour la base de données en arrière plan et affiche les modifs en JS dans le planning
-function bataille_navale(perso_id,nom,barrer,ajouter,classe){
-  db=file("index.php?page=planning/poste/majdb.php&poste="+poste+"&debut="+debut+"&fin="+fin+"&perso_id="+perso_id+"&date="+date+"&barrer="+barrer+"&ajouter="+ajouter);
-  
-  if(!perso_id && !barrer){			// Supprimer tout
-    $("#cellule"+cellule).html("&nbsp;");
-    $("#cellule"+cellule).css("textDecoration","");
-    $("#cellule"+cellule+"b").hide();
-    $("#cellule"+cellule).removeClass();
-    $("#td"+cellule).removeClass();
-  }
-  else if(!perso_id && barrer){			// Barrer l'(es) agent(s) placé(s)
-    $("#cellule"+cellule).css("color","red");
-    $("#cellule"+cellule).css("textDecoration","line-through");
-    $("#cellule"+cellule+"b").css("color","red");
-    $("#cellule"+cellule+"b").css("textDecoration","line-through");
-  }
-  else if(perso_id && !barrer && !ajouter){	// Remplacer l'agent placé par un autre
-    $("#cellule"+cellule).text(nom);
-    $("#cellule"+cellule).css("color","black");
-    $("#cellule"+cellule).css("textDecoration","");
-    $("#td"+cellule).attr("class",classe);
-    $("#cellule"+cellule).attr("class","cellule "+classe);
-    $("#cellule"+cellule+"b").hide();
-  }
-  else if(perso_id && barrer){			// barrer et ajoute un autre
-    $("#td"+cellule).removeClass();
-    $("#cellule"+cellule).css("textDecoration","line-through");
-    $("#cellule"+cellule).css("color","red");
-    $("#cellule"+cellule+"b").text(nom);
-    $("#cellule"+cellule+"b").attr("class","cellule "+classe);
-    $("#cellule"+cellule+"b").show();
-  }
-  else if(perso_id && ajouter){			// ajouter un agent
-    if($("#cellule"+cellule).text()<nom){
-      var nom1=$("#cellule"+cellule).text();
-      var nom2=nom;
-      var classe1=$("#cellule"+cellule).attr("class");
-      var classe2=classe;
-    }
-    else{
-      var nom1=nom;
-      var nom2=$("#cellule"+cellule).text();
-      var classe1=classe;
-      var classe2=$("#cellule"+cellule).attr("class");
-    }
-    $("#td"+cellule).removeClass();
-    $("#cellule"+cellule).text(nom1);
-    $("#cellule"+cellule+"b").text(nom2);
-    $("#cellule"+cellule).attr("class",classe1);
-    $("#cellule"+cellule+"b").attr("class",classe2);
-    $("#cellule"+cellule+"b").css("color","black");
-    $("#cellule"+cellule+"b").css("textDecoration","");
-    $("#cellule"+cellule+"b").show();
-  }
-  $("#menudiv").hide();				// cacher le menudiv
-
-  // Affiche un message en haut du planning si pas de catégorie A en fin de service 
-  verif_categorieA();
-}
-
-//	groupe_tab : utiliser pour menudiv
-function groupe_tab(id,tab,hide){			// améliorer les variables (tableaux) pour plus d'évolution
-  if(hide==undefined){
-    hide=1;
-  }
-
-  //		tab="1,2,3,4,5;6,7,8,9,10;11,12,13,14,15"
-  tmp=tab.split(';');
-  //		tmp=array("1,2,3,4,5","6,7,8,9,10","11,12,13,14,15")
-  var tab=new Array();
-  for(i=0;i<tmp.length;i++)
-    tab.push(tmp[i].split(','));
-    //		tab=array(array(1,2,3,4,5),array(6,7,8,9,10),array(11,12,13,14,15))
-  
-  //		On cache tout le sous-menu
-  if(hide==1){
-    for(i=0;i<tab.length;i++){
-      if(tab[i][0]){
-	for(j=0;j<tab[i].length;j++){
-		document.getElementById("tr"+tab[i][j]).style.display="none";
-	}
-      }
-    }
-  }
-	  
-  //		On affiche les agents du service voulu dans le sous-menu	
-  if(id!="vide" && tab[id][0]){
-    for(i=0;i<tab[id].length;i++){
-      document.getElementById("tr"+tab[id][i]).style.display="";
-    }
-  }
-}
-
-function groupe_tab_hide(){
-  $(".tr_liste").each(function(){
-    $(this).hide();
-  });
-}
-
-//	ItemSelMenu : Menu contextuel
-function  ItemSelMenu(e){
-  if(cellule=="")
-    return false;
-
-  document.getElementById("menudiv").scrollTop=0;
-  text=file("index.php?page=planning/poste/menudiv.php&debut="+debut+"&fin="+fin+"&poste="+poste+"&date="+date+"&menu=off&positionOff=");
-  hauteur=146;
-  document.getElementById("menudiv").innerHTML=text;
-
-  if($(window).width()-e.clientX<320){
-    $("#menudiv").css("left",e.pageX-360);
-    $("#menudivtab").css("left",220);
-    $("#menudivtab2").css("left",0);
-  }else{
-    $("#menudiv").css("left",e.pageX);
-  }
-  if($(window).height()-e.pageY<hauteur){
-    $("#menudiv").css("top",e.pageY-hauteur);
-  }else{
-    $("#menudiv").css("top",e.pageY);
-  }
-
-  document.getElementById("menudiv").style.display = menudiv_display;
-  return false ;
-}
-
-function refresh_poste(validation){		// actualise le planning en cas de modification
-  db=file("index.php?page=planning/poste/validation.php&menu=off");
-  db=db.split("###");
-  db=db[1];
-  if(db!=validation){
-    window.location.reload(false);
-  }
-  else{
-    setTimeout("refresh_poste('"+validation+"')",30000);
-  }
-}
-//	--------------------------------	FIN Planning/postes	---------------------------------	//
 //	--------------------------------	Tableaux		-------------------------	//
 //	--------------------------------	Tableaux - Horaires	-------------------------	//
 function add_horaires(tableau){

@@ -39,6 +39,7 @@ class db{
     $this->dbname=$GLOBALS['config']['dbname'];
     $this->user=$GLOBALS['config']['dbuser'];
     $this->password=$GLOBALS['config']['dbpass'];
+    $this->error=false;
   }
 
   function connect(){

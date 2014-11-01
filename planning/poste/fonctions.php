@@ -14,14 +14,19 @@ Description :
 Fonctions utilisées par les pages des dossiers planning/poste et planning/postes_cgf
 */
 
-// pas de $version=acces direct aux pages de ce dossier => redirection vers la page index.php
+// Securité : Traitement pour une reponse Ajax
+if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
+  $version='ajax';
+}
+
+// Si pas de $version ou pas de reponseAjax => acces direct aux pages de ce dossier => redirection vers la page index.php
 if(!$version){
-  header("Location: ../../index.php");
+  header("Location: ../index.php");
 }
 
 function cellule_poste($debut,$fin,$colspan,$output,$poste){
-  $resultats=array(null,null);
-  $classe=array(null,null);
+  $resultats=array();
+  $classe=array();
   $i=0;
   
   if($GLOBALS['cellules']){
@@ -64,17 +69,19 @@ function cellule_poste($debut,$fin,$colspan,$output,$poste){
 	}
 	$classe[$i]=empty($class_tmp)?null:join(" ",$class_tmp);
 
-	$resultats[$i]=$resultat;
+	$resultats[$i]=array("text"=>"<span class='cellSpan'>$resultat</span>", "perso_id"=>$elem['perso_id']);
 	$i++;
       }
     }
   }
   $GLOBALS['idCellule']++;
-  $classTD=$resultats[1]?null:$classe[0];
-  $classCellule=$resultats[1]?"demi_cellule":"cellule";
-  $cellule="<td id='td{$GLOBALS['idCellule']}' colspan='$colspan' style='text-align:center;' oncontextmenu='debut=\"$debut\";fin=\"$fin\";poste=\"$poste\";output=\"$output\";cellule={$GLOBALS['idCellule']}' class='$classTD' >";
-  $cellule.="<div id='cellule{$GLOBALS['idCellule']}' class='$classCellule {$classe[0]}' >{$resultats[0]}</div>";
-  $cellule.="<div id='cellule{$GLOBALS['idCellule']}b' class='$classCellule {$classe[1]}' >{$resultats[1]}</div>";
+  $cellule="<td id='td{$GLOBALS['idCellule']}' colspan='$colspan' style='text-align:center;' class='menuTrigger' 
+    oncontextmenu='cellule={$GLOBALS['idCellule']}'
+    data-start='$debut' data-end='$fin' data-situation='$poste' data-cell='{$GLOBALS['idCellule']}' >";
+  for($i=0;$i<count($resultats);$i++){
+    $cellule.="<div id='cellule{$GLOBALS['idCellule']}_$i' class='cellDiv {$classe[$i]}' data-perso_id='{$resultats[$i]['perso_id']}'>{$resultats[$i]['text']}</div>";
+  }
+
   $cellule.="</td>\n";
   return $cellule;
 }

@@ -90,7 +90,7 @@ class planning{
   }
 
   // Affiche la liste des agents dans le menudiv
-  public function menudivAfficheAgents($agents,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion){
+  public function menudivAfficheAgents($poste,$agents,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion){
     $msg_deja_place="<font style='color:red;font-weight:bold;'>(DP)</font>";
     $msg_deuxSP="<font style='color:red;font-weight:bold;'>(2 SP)</font>";
     $config=$GLOBALS['config'];
@@ -105,12 +105,10 @@ class planning{
     if($hide){
       $display="display:none;";
       $groupe_hide=null;
-      $addClass="$(this).addClass(\"tr_liste\");";
       $classTrListe="tr_liste";
     }else{
       $display=null;
       $groupe_hide="groupe_tab_hide();";
-      $addClass=null;
       $classTrListe=null;
     }
 
@@ -238,8 +236,8 @@ class planning{
       $classe=empty($class_tmp)?null:join(" ",$class_tmp);
 
       //	Affichage des lignes
-      echo "<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$(this).removeClass();$(this).addClass(\"menudiv-gris\"); $groupe_hide' onmouseout='$(this).removeClass();$addClass' class='$classe $classTrListe'>\n";
-      echo "<td style='width:200px;color:$color;' onclick='bataille_navale({$elem['id']},\"$nom\",0,0,\"$classe\");'>";
+      echo "<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$(this).removeClass();$(this).addClass(\"menudiv-gris\"); $groupe_hide' onmouseout='$(this).removeClass();$(this).addClass(\"$classe $classTrListe\");' class='$classe $classTrListe'>\n";
+      echo "<td style='width:200px;color:$color;' onclick='bataille_navale(\"$poste\",\"$debut\",\"$fin\",{$elem['id']},\"$nom\",0,0,\"$classe\");'>";
       echo $nom_menu;
 
       //	Afficher ici les horaires si besoin
@@ -247,9 +245,9 @@ class planning{
       
       //	Affichage des liens d'ajout et de remplacement
       if(!$cellule_vide and !$max_perso and !$sr and !$sr_init)
-	echo "<a href='javascript:bataille_navale(".$elem['id'].",\"$nom\",0,1,\"$classe\");'>+</a>";
+	echo "<a href='javascript:bataille_navale(\"$poste\",\"$debut\",\"$fin\",".$elem['id'].",\"$nom\",0,1,\"$classe\");'>+</a>";
       if(!$cellule_vide and !$max_perso)
-	echo "&nbsp;<a style='color:red' href='javascript:bataille_navale(".$elem['id'].",\"$nom\",1,1,\"$classe\");'>x</a>&nbsp;";
+	echo "&nbsp;<a style='color:red' href='javascript:bataille_navale(\"$poste\",\"$debut\",\"$fin\",".$elem['id'].",\"$nom\",1,1,\"$classe\");'>x</a>&nbsp;";
       echo "</td></tr>\n";
     }
 

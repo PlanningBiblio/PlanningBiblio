@@ -33,8 +33,8 @@ if(!in_array(12,$_SESSION['droits']) or !$config['CatAFinDeService']){
 
 // Recherche s'il y a des agents de catégorie A en fin de service
 $p=new planning();
-$p->date=$_GET['date'];
-$p->site=$_GET['site'];
+$p->date=$_SESSION['PLdate'];
+$p->site=$_SESSION['oups']['site'];
 $p->finDeService();
 
 if($p->categorieA){
