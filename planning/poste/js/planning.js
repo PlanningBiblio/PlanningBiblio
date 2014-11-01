@@ -14,6 +14,8 @@ Fichier regroupant les scripts JS nécessaires à la page planning/poste/index.p
 Fichier intégré par le fichier include/header.php avec la fonction getJSFiles.
 */
 
+perso_id_origine=0;
+
 // Chargement de la page
 $(document).ready(function(){
   // Vérifions si un agent de catégorie A est placé en fin de service
@@ -125,23 +127,19 @@ $(function() {
     }
   });
   
+  
+  $(".cellDiv").contextmenu(function(){
+    $(this).closest("td").attr("data-perso-id",$(this).attr("data-perso-id"));
+    perso_id_origine=$(this).attr("data-perso-id");
+  });
+  
   // Création du MenuDiv : menu affichant la liste des agents pour les placer dans les cellules
-  $(".menuTrigger div").contextmenu(function(e){
-    var dom=$(this).get( 0 );
-    dom=dom.nodeName;
-    if(dom=="TD"){
+  $(".menuTrigger").contextmenu(function(e){
     cellule=$(this).attr("data-cell");
     debut=$(this).attr("data-start");
     fin=$(this).attr("data-end");
     poste=$(this).attr("data-situation");
-    perso_id=0;
-    }else{
-      cellule=$(this).closest("td").attr("data-cell");
-      debut=$(this).closest("td").attr("data-start");
-      fin=$(this).closest("td").attr("data-end");
-      poste=$(this).closest("td").attr("data-situation");
-      perso_id=$(this).attr("data-perso_id");
-    }
+    perso_id=$(this).attr("data-perso-id");
 
     $.ajax({
       url: "planning/poste/ajax.menudiv.php",
@@ -198,10 +196,10 @@ function bataille_navale(poste,debut,fin,perso_id,nom,barrer,ajouter,classe){
   // évitons de travailler sur la hauteur du TD : adaptation automatique : garder la hauteur déclarée en CSS en min-height plutôt que height
   
   // Les cellule doivent être identifiable, supprimable et modifiable indépendament des autres
-  
+
   $.ajax({
     url: "planning/poste/ajax.updateCell.php",
-    data: "&poste="+poste+"&debut="+debut+"&fin="+fin+"&perso_id="+perso_id+"&barrer="+barrer+"&ajouter="+ajouter,
+    data: "&poste="+poste+"&debut="+debut+"&fin="+fin+"&perso_id="+perso_id+"&perso_id_origine="+perso_id_origine+"&barrer="+barrer+"&ajouter="+ajouter,
     type: "get",
     success: function(result){
       if(result){
@@ -231,19 +229,11 @@ function bataille_navale(poste,debut,fin,perso_id,nom,barrer,ajouter,classe){
 	
 	var agent=result[i]["nom"]+" "+result[i]["prenom"].substr(0,1)+".";
 	var perso_id=result[i]["perso_id"];
-	
-	$("#td"+cellule).append("<div id='cellule"+cellule+"_"+i+"' class='"+classes+"' data-perso_id='"+perso_id+"'> <span class='cellSpan'>"+agent+"</span></div>");
 
+	$("#td"+cellule).append("<div id='cellule"+cellule+"_"+i+"' class='"+classes+"' data-perso-id='"+perso_id+"' oncontextmenu='perso_id_origine="+perso_id+";'> <span class='cellSpan'>"+agent+"</span></div>");
+	// oncontextmenu='perso_id_origine="+perso_id+";' : necessaire car l'événement JQuery contextmenu sur .cellDiv ne marche pas sur les cellules modifiées
       }
-/*
-$cellule="<td id='td{$GLOBALS['idCellule']}' colspan='$colspan' style='text-align:center;' class='$tdClass' 
-    oncontextmenu='cellule={$GLOBALS['idCellule']}'
-    data-start='$debut' data-end='$fin' data-situation='$poste' data-cell='{$GLOBALS['idCellule']}' >";
-  for($i=0;$i<count($resultats);$i++){
-    $cellule.="<div id='cellule{$GLOBALS['idCellule']}_$i' class='cellDiv menuTrigger {$classe[$i]}' data-perso_id='{$resultats[$i]['perso_id']}'>{$resultats[$i]['text']}</div>";
-*/
-    
-    
+
       // Mise en forme de toute la ligne
       // Pour chaque TD
       $("#td"+cellule).closest("tr").find("td").each (function(i, index) {

@@ -77,9 +77,9 @@ function cellule_poste($debut,$fin,$colspan,$output,$poste){
   $GLOBALS['idCellule']++;
   $cellule="<td id='td{$GLOBALS['idCellule']}' colspan='$colspan' style='text-align:center;' class='menuTrigger' 
     oncontextmenu='cellule={$GLOBALS['idCellule']}'
-    data-start='$debut' data-end='$fin' data-situation='$poste' data-cell='{$GLOBALS['idCellule']}' >";
+    data-start='$debut' data-end='$fin' data-situation='$poste' data-cell='{$GLOBALS['idCellule']}' data-perso-id='0'>";
   for($i=0;$i<count($resultats);$i++){
-    $cellule.="<div id='cellule{$GLOBALS['idCellule']}_$i' class='cellDiv {$classe[$i]}' data-perso_id='{$resultats[$i]['perso_id']}'>{$resultats[$i]['text']}</div>";
+    $cellule.="<div id='cellule{$GLOBALS['idCellule']}_$i' class='cellDiv {$classe[$i]}' data-perso-id='{$resultats[$i]['perso_id']}'>{$resultats[$i]['text']}</div>";
   }
 
   $cellule.="</td>\n";

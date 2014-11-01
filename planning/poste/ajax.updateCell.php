@@ -28,6 +28,7 @@ ini_set("error_reporting",E_ALL);
 $site=$_SESSION['oups']['site'];
 $ajouter=$_GET['ajouter'];
 $perso_id=$_GET['perso_id'];
+$perso_id_origine=$_GET['perso_id_origine'];
 $date=$_SESSION['PLdate'];
 $debut=$_GET['debut'];
 $fin=$_GET['fin'];
@@ -37,23 +38,26 @@ $barrer=$_GET['barrer'];
 
 
 // Pärtie 1 : Enregistrement des nouveaux éléments
+
+// Suppression ou marquage absent
 if($perso_id==0){
   if($barrer){
-    $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1', `chgt_login`='{$_SESSION['login_id']}', `chgt_time`=SYSDATE() WHERE `date`='$date' AND `debut`='$debut' AND `fin`='$fin' AND `poste`='$poste' AND `site`='$site';";
+    $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1', `chgt_login`='{$_SESSION['login_id']}', `chgt_time`=SYSDATE() WHERE `date`='$date' AND `debut`='$debut' AND `fin`='$fin' AND `poste`='$poste' AND `site`='$site' AND `perso_id`='$perso_id_origine';";
   }
   else{
-    $req="DELETE FROM `{$dbprefix}pl_poste` WHERE `date`='$date' AND `debut`='$debut' AND `fin`='$fin' AND `poste`='$poste' AND `site`='$site';";
+    $req="DELETE FROM `{$dbprefix}pl_poste` WHERE `date`='$date' AND `debut`='$debut' AND `fin`='$fin' AND `poste`='$poste' AND `site`='$site' AND `perso_id`='$perso_id_origine';";
   }
 }
+// Remplacement
 else{
   if(!$barrer and !$ajouter){		// on remplace
     $db=new db();
-    $db->query("DELETE FROM `{$dbprefix}pl_poste` WHERE `date`='$date' AND `debut`='$debut' AND `fin`='$fin' AND `poste`='$poste' AND `site`='$site';");
+    $db->query("DELETE FROM `{$dbprefix}pl_poste` WHERE `date`='$date' AND `debut`='$debut' AND `fin`='$fin' AND `poste`='$poste' AND `site`='$site' AND `perso_id`='$perso_id_origine';");
     $req="INSERT INTO `{$dbprefix}pl_poste` (`date`,`debut`,`fin`,`poste`,`site`,`perso_id`,`chgt_login`,`chgt_time`) VALUES ('$date','$debut','$fin','$poste','$site','$perso_id','{$_SESSION['login_id']}',SYSDATE());";
   }
   elseif($barrer){			// on barre l'ancien et ajoute le nouveau
     $db=new db();
-    $db->query("UPDATE `{$dbprefix}pl_poste` SET `absent`='1', `chgt_login`='{$_SESSION['login_id']}' WHERE `date`='$date' AND `debut`='$debut' AND `fin`='$fin' AND `poste`='$poste' AND `site`='$site'");
+    $db->query("UPDATE `{$dbprefix}pl_poste` SET `absent`='1', `chgt_login`='{$_SESSION['login_id']}' WHERE `date`='$date' AND `debut`='$debut' AND `fin`='$fin' AND `poste`='$poste' AND `site`='$site' AND `perso_id`='$perso_id_origine'");
     $req="INSERT INTO `{$dbprefix}pl_poste` (`date`,`debut`,`fin`,`poste`,`site`,`perso_id`,`chgt_login`,`chgt_time`) VALUES ('$date','$debut','$fin','$poste','$site','$perso_id','{$_SESSION['login_id']}',SYSDATE());";
   }
   elseif($ajouter){			// on ajoute
