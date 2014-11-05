@@ -189,8 +189,9 @@ class planning{
       }
 
       // affihage des heures faites les 4 dernières semaines + les heures de la cellule
-      $hres_4sem=0;
+      $hres_4sem=null;
       if($config['hres4semaines']){
+	$hres_4sem=0;
 	$date1=date("Y-m-d",strtotime("-3 weeks",strtotime($j1)));
 	$date2=$j7;	// fin de semaine courante
 	$db_hres4 = new db();
