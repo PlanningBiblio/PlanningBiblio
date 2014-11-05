@@ -275,10 +275,15 @@ function information(message,type,top){
   if(top==undefined){
     top=60;
   }
+  
+  if(typeof(timeoutJSInfo)!== "undefined"){
+    window.clearTimeout(timeoutJSInfo);
+  }
+  $("#JSInformation").remove();
   $("body").append("<div id='JSInformation'>"+message+"</div>");
   errorHighlight($("#JSInformation"),type);
   position($("#JSInformation"),top,"center");
-  setTimeout("$('#JSInformation').remove()",5000);
+  timeoutJSInfo=window.setTimeout("$('#JSInformation').remove()",5000);
 }
 
 function modif_mdp(){

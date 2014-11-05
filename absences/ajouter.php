@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 24 juin 2014
+Dernière modification : 5 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -30,6 +30,12 @@ $confirm=isset($_GET['confirm'])?$_GET['confirm']:null;
 $perso_id=isset($_GET['perso_id'])?$_GET['perso_id']:null;
 $debut=isset($_GET['debut'])?$_GET['debut']:null;
 $fin=isset($_GET['fin'])?$_GET['fin']:null;
+
+// Pièces justificatives
+$pj1=(isset($_GET['pj1']) and $_GET['pj1'])?1:0;
+$pj2=(isset($_GET['pj2']) and $_GET['pj2'])?1:0;
+$so=(isset($_GET['so']) and $_GET['so'])?1:0;
+
 if($confirm){
   $fin=$fin?$fin:$debut;
   $nbjours=isset($_GET['nbjours'])?$_GET['nbjours']:0;
@@ -124,7 +130,8 @@ if($confirm=="confirm2"){		//	2eme confirmation
   // Ajout de l'absence dans la table 'absence'
   $db=new db();
   $insert=array("perso_id"=>$perso_id, "debut"=>$debut_sql, "fin"=>$fin_sql, "nbjours"=>$nbjours, "motif"=>$motif, 
-    "motif_autre"=>$motif_autre, "commentaires"=>$commentaires, "demande"=>date("Y-m-d H:i:s"));
+    "motif_autre"=>$motif_autre, "commentaires"=>$commentaires, "demande"=>date("Y-m-d H:i:s"), "pj1"=>$pj1, "pj2"=>$pj2, "so"=>$so );
+
   if($valideN1!=0){
     $insert["valideN1"]=$valideN1;
     $insert["validationN1"]=$validationN1;
@@ -240,36 +247,49 @@ elseif($confirm=="confirm1"){		//	1ere Confirmation
     }
   }
 
+  // Pièces justificatives
+  $pj1Display=$pj1?"inline":"none";
+  $pj2Display=$pj2?"inline":"none";
+  $soDisplay=$so?"inline":"none";
+
   echo "<b>Confirmation</b>\n";
 
-  echo "<table class='tableauFiches'><tr><td>\n";
-  echo "Nom, Prénom :</td><td>\n";
+  echo "<table class='tableauFiches'><tr><td class='intitule'>\n";
+  echo "Nom, Prénom</td><td>\n";
   echo $nom." ".$prenom;
-  echo "</td></tr><tr><td>\n";
-  echo "Début de l'absence : </td><td>\n";
+  echo "</td></tr><tr><td class='intitule'>\n";
+  echo "Début de l'absence</td><td>\n";
   echo $debut;
   if($_GET['hre_debut'])
     echo "&nbsp;-&nbsp;".heure2($_GET['hre_debut']);
   echo "</td></tr>\n";
-  echo "<tr><td>";
-  echo "Fin de l'absence : </td><td>\n";
+  echo "<tr><td class='intitule'>";
+  echo "Fin de l'absence</td><td>\n";
   echo $fin;
   if($_GET['hre_fin'])
     echo "&nbsp;-&nbsp;".heure2($_GET['hre_fin']);
   echo "</td></tr>\n";
-  echo "<tr><td>\n";
-  echo "Motif : </td><td>\n";
+  echo "<tr><td class='intitule'>\n";
+  echo "Motif</td><td>\n";
   echo $motif;
   if($motif_autre){
     echo " / $motif_autre";
   }
-  echo "</td></tr><tr><td>\n";
-  echo "Commentaires : </td><td>\n";
+  echo "</td></tr><tr><td class='intitule'>\n";
+  echo "Commentaires</td><td>\n";
   echo $commentaires;
   echo "</td></tr>\n";
 
+  echo "<tr><td class='intitule'>\n";
+  echo "Pi&egrave;ces justificatives</td><td>";
+  echo "<div class='absences-pj-fiche' style='display:$pj1Display;'>PJ1</div>";
+  echo "<div class='absences-pj-fiche' style='display:$pj2Display;'>PJ2</div>";
+  echo "<div class='absences-pj-fiche' style='display:$soDisplay;'>SO</div>";
+  echo "</td></tr>";
+
+
   if($config['Absences-validation']){
-    echo "<tr><td>Validation : </td><td>\n";
+    echo "<tr><td class='intitule'>Validation</td><td>\n";
     echo $validationText;
     echo "</td></tr>\n";
   }
@@ -291,6 +311,9 @@ elseif($confirm=="confirm1"){		//	1ere Confirmation
   echo "<input type='hidden' name='valide' value='$valide' />\n";
   echo "<input type='hidden' name='confirm' value='confirm2' />\n";
   echo "<input type='hidden' name='menu' value='$menu' />\n";
+  echo "<input type='hidden' name='pj1' value='$pj1' />\n";
+  echo "<input type='hidden' name='pj2' value='$pj2' />\n";
+  echo "<input type='hidden' name='so' value='$so' />\n";
 
   if($datesValidees){
     if($admin){
@@ -393,6 +416,13 @@ else{					//	Formulaire
   echo "</td><td>\n";
   echo "<textarea name='commentaires' cols='16' rows='5' class='ui-widget-content ui-corner-all'></textarea>\n";
   echo "</td></tr>\n";
+
+  echo "<tr style='vertical-align:top;'><td>\n";
+  echo "<label class='intitule'>Pi&egrave;ces justificatives</label></td><td>";
+  echo "<div class='absences-pj-fiche'>PJ1 <input type='checkbox' name='pj1' id='pj1' /></div>";
+  echo "<div class='absences-pj-fiche'>PJ2 <input type='checkbox' name='pj2' id='pj2' /></div>";
+  echo "<div class='absences-pj-fiche'>SO <input type='checkbox' name='so' id='so' /></div>";
+  echo "</td></tr>";
 
   if($config['Absences-validation']){
     echo "<tr><td><label class='intitule'>&Eacute;tat </label></td><td>\n";

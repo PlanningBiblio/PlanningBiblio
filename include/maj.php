@@ -633,7 +633,7 @@ if(strcmp("1.8.6",$config['Version'])>0){
   $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='absences/ctrl_ajax.php';";
   $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='statistiques/export.php';";
   $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='planning/postes_cfg/suppression.php';";
-
+  $sql[]= "ALTER TABLE  `{$dbprefix}absences` ADD `pj1` INT(1) DEFAULT 0, ADD `pj2` INT(1) DEFAULT 0, ADD `so` INT(1) DEFAULT 0;";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.8.6' WHERE `nom`='Version';";
 }
 

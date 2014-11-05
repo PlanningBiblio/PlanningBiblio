@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 6 juin 2014
+Dernière modification : 5 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -33,6 +33,9 @@ $sql[]="CREATE TABLE `{$dbprefix}absences` (
   `validation` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
   `valideN1` INT(11) NOT NULL DEFAULT 0,
   `validationN1` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `pj1` INT(1) DEFAULT 0,
+  `pj2` INT(1) DEFAULT 0,
+  `so` INT(1) DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
