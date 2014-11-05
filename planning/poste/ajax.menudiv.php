@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 31 octobre 2014
+Dernière modification : 5 novembre 2014
 Auteur : Jérôme Combes jerome@planningbilbio.fr, Christophe Le Guennec Christophe.Leguennec@u-pem.fr
 
 Description :
@@ -24,6 +24,7 @@ ini_set("display_error",1);
 ini_set("error_reporting",E_ALL);
 
 require_once "../../include/config.php";
+require_once "../../plugins/plugins.php";
 require_once "../../include/function.php";
 require_once "../../include/horaires.php";
 require_once "../../personnel/class.personnel.php";
@@ -128,7 +129,7 @@ if($db->result){
 
 // recherche des personnes à exclure (congés)
 if(in_array("conges",$plugins)){
-  include "plugins/conges/menudiv.php";
+  include "../../plugins/conges/menudiv.php";
 }
 
 // recherche des personnes à exclure (ne travaillant pas à cette heure)
@@ -145,7 +146,7 @@ foreach($db->result as $elem){
   $aExclure=false;
   // Si plugin PlanningHebdo : recherche des plannings correspondant à la date actuelle
   if(in_array("planningHebdo",$plugins)){
-    include "plugins/planningHebdo/planning.php";
+    include "../../plugins/planningHebdo/planning.php";
   }
   else{
     $temps=unserialize($elem['temps']);
