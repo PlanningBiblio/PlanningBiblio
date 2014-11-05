@@ -102,6 +102,18 @@ h3{
   color: #FF5E0E;
 }
 
+.absences-pj{
+  display:inline;
+  padding:0 8px;
+  white-space:nowrap;
+  text-align:center;
+}
+
+.absences-pj-fiche{
+  display:inline;
+  margin-right:40px;
+}
+
 /*	Icônes		*/
 .pl-icon{
   padding: 5px 13px 5px 13px;

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.5
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 22 septembre 2014
+Dernière modification : 5 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -34,6 +34,7 @@ $req="SELECT `{$dbprefix}personnel`.`id` AS `perso_id`, `{$dbprefix}personnel`.`
   `{$dbprefix}absences`.`nbjours` AS `nbjours`, `{$dbprefix}absences`.`motif` AS `motif`, `{$dbprefix}absences`.`motif_autre` AS `motif_autre`, 
   `{$dbprefix}absences`.`valide` AS `valide`, `{$dbprefix}absences`.`validation` AS `validation`, 
   `{$dbprefix}absences`.`valideN1` AS `valideN1`, `{$dbprefix}absences`.`validationN1` AS `validationN1`, 
+  `{$dbprefix}absences`.`pj1` AS `pj1`, `{$dbprefix}absences`.`pj2` AS `pj2`, `{$dbprefix}absences`.`so` AS `so`, 
   `{$dbprefix}absences`.`commentaires` AS `commentaires` 
   FROM `{$dbprefix}absences` INNER JOIN `{$dbprefix}personnel` 
   ON `{$dbprefix}absences`.`perso_id`=`{$dbprefix}personnel`.`id` WHERE `{$dbprefix}absences`.`id`='$id';";
@@ -77,6 +78,12 @@ if($valide==0 and $valideN1!=0){
 }
 
 $display_autre=in_array(strtolower($motif),array("autre","other"))?null:"style='display:none;'";
+
+// Pièces justificatives
+$pj1Checked=$db->result[0]['pj1']?"checked='checked'":null;
+$pj2Checked=$db->result[0]['pj2']?"checked='checked'":null;
+$soChecked=$db->result[0]['so']?"checked='checked'":null;
+
 
 // Sécurité
 // Droit 1 = modification de toutes les absences
@@ -184,6 +191,13 @@ echo "<td><input type='text' name='motif_autre' style='width:100%;' value='$moti
 echo "<tr style='vertical-align:top;'><td>\n";
 echo "<label class='intitule'>Commentaires</label></td><td>";
 echo "<textarea name='commentaires' cols='25' rows='5' class='ui-widget-content ui-corner-all'>$commentaires</textarea>";
+echo "</td></tr>";
+
+echo "<tr style='vertical-align:top;'><td>\n";
+echo "<label class='intitule'>Pi&egrave;ces justificatives</label></td><td>";
+echo "<div class='absences-pj-fiche'>PJ1 <input type='checkbox' name='pj1' id='pj1' $pj1Checked /></div>";
+echo "<div class='absences-pj-fiche'>PJ2 <input type='checkbox' name='pj2' id='pj2' $pj2Checked /></div>";
+echo "<div class='absences-pj-fiche'>SO <input type='checkbox' name='so' id='so' $soChecked /></div>";
 echo "</td></tr>";
 
 if($config['Absences-validation']){

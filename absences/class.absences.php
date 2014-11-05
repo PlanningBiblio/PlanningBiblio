@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.5
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 30 octobre 2014
+Dernière modification : 5 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -201,7 +201,8 @@ class absences{
       ."`{$dbprefix}absences`.`fin` AS `fin`, `{$dbprefix}absences`.`nbjours` AS `nbjours`, "
       ."`{$dbprefix}absences`.`motif` AS `motif`, `{$dbprefix}absences`.`commentaires` AS `commentaires`, "
       ."`{$dbprefix}absences`.`valide` AS `valide`, `{$dbprefix}absences`.`validation` AS `validation`, "
-      ."`{$dbprefix}absences`.`valideN1` AS `valideN1`, `{$dbprefix}absences`.`validationN1` AS `validationN1` "
+      ."`{$dbprefix}absences`.`valideN1` AS `valideN1`, `{$dbprefix}absences`.`validationN1` AS `validationN1`, "
+      ."`{$dbprefix}absences`.`pj1` AS `pj1`, `{$dbprefix}absences`.`pj2` AS `pj2`, `{$dbprefix}absences`.`so` AS `so` "
       ."FROM `{$dbprefix}absences` INNER JOIN `{$dbprefix}personnel` "
       ."ON `{$dbprefix}absences`.`perso_id`=`{$dbprefix}personnel`.`id` "
       ."WHERE $dates $only_me $sites_req $filter ORDER BY $sort;";
@@ -355,6 +356,11 @@ class absences{
 	break;
     }
     $this->recipients=$recipients;
+  }
+
+  function piecesJustif($id,$pj,$checked){
+    $db=new db();
+    $db->update2("absences",array($pj => $checked),array("id"=>$id));
   }
 
 }

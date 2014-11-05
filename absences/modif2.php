@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.5
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 22 septembre 2014
+Dernière modification : 5 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -34,6 +34,11 @@ $valideN1=0;
 $valideN2=0;
 $validationN1=null;
 $validationN2=null;
+
+// Pièces justificatives
+$pj1=isset($_GET['pj1'])?1:0;
+$pj2=isset($_GET['pj2'])?1:0;
+$so=isset($_GET['so'])?1:0;
 
 if($config['Absences-validation']){
   $valide=$_GET['valide'];
@@ -128,7 +133,9 @@ if(($debutSQL!=$debut1 or $finSQL!=$fin1) and $isValidate){			// mise à jour du
 
 // Mise à jour de la table 'absences'
 $db=new db();
-$update=array("motif"=>$motif, "motif_autre"=>$motif_autre, "nbjours"=>$nbjours, "commentaires"=>$commentaires, "debut"=>$debut_sql, "fin"=>$fin_sql);
+$update=array("motif"=>$motif, "motif_autre"=>$motif_autre, "nbjours"=>$nbjours, "commentaires"=>$commentaires, 
+  "debut"=>$debut_sql, "fin"=>$fin_sql, "pj1"=>$pj1, "pj2"=>$pj2, "so"=>$so);
+
 if($config['Absences-validation']){
   // Validation N1
   if($valideN1){

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.5
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 30 octobre 2014
+Dernière modification : 5 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -129,7 +129,7 @@ echo "</form>\n";
 echo "<br/>\n";
 echo "<table id='tableAbsences'>\n";
 echo "<thead><tr>\n";
-echo "<td>&nbsp;</th>\n";
+echo "<th>&nbsp;</th>\n";
 echo "<th>Début</th>\n";
 echo "<th>Fin</th>\n";
 if($admin){
@@ -137,14 +137,19 @@ if($admin){
 }
 if($config['Absences-validation']){
   echo "<th>&Eacute;tat</th>\n";
-}echo "<th>Motif</th>\n";
+}
+echo "<th>Motif</th>\n";
 echo "<th>Commentaires</th>\n";
+echo "<th><label style='white-space:nowrap'>Pi&egrave;ces justificatives</label><br/>\n";
+echo "<div class='absences-pj'>PJ 1</div><div class='absences-pj'>PJ 2</div><div class='absences-pj'>SO</div></th>\n";
 echo "</tr></thead>\n";
 echo "<tbody>\n";
 
 $i=0;
 if($absences){
   foreach($absences as $elem){
+    $id=$elem['id'];
+
     $etat="Demand&eacute;e";
     $etat=$elem['valideN1']>0?"En attente de validation hierarchique, ".nom($elem['valideN1']).", ".dateFr($elem['validationN1'],true):$etat;
     $etat=$elem['valideN1']<0?"En attente de validation hierarchique, ".nom(-$elem['valideN1']).", ".dateFr($elem['validationN1'],true):$etat;
@@ -153,9 +158,13 @@ if($absences){
     $etatStyle=$elem['valide']==0?"font-weight:bold;":null;
     $etatStyle=$elem['valide']<0?"color:red;":$etatStyle;
 
+    $pj1Checked=$elem['pj1']?"checked='checked'":null;
+    $pj2Checked=$elem['pj2']?"checked='checked'":null;
+    $soChecked=$elem['so']?"checked='checked'":null;
+
     echo "<tr>\n";
     if($admin or (!$config['Absences-adminSeulement'] and in_array(6,$droits))){
-      echo "<td><a href='index.php?page=absences/modif.php&amp;id=".$elem['id']."'>\n";
+      echo "<td><a href='index.php?page=absences/modif.php&amp;id=$id'>\n";
       echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a></td>\n";
     }
     else{
@@ -170,7 +179,12 @@ if($absences){
       echo "<td style='$etatStyle'>$etat</td>\n";
     }
     echo "<td>{$elem['motif']}</td>\n";
-    echo "<td>{$elem['commentaires']}</td></tr>\n";
+    echo "<td>{$elem['commentaires']}</td>\n";
+    echo "<td style='text-align:center;'>";
+    echo "<div class='absences-pj'><input type='checkbox' id='pj1-$id' $pj1Checked /></div>\n";
+    echo "<div class='absences-pj'><input type='checkbox' id='pj2-$id' $pj2Checked /></div>\n";
+    echo "<div class='absences-pj'><input type='checkbox' id='so-$id'  $soChecked  /></div>\n";
+    echo "</td></tr>\n";
     $i++;
   }
 }
@@ -193,7 +207,7 @@ $(document).ready(function() {
 	echo '{"bSortable":true},';
       }
       ?>
-      ],
+      {"bSortable":false},],
     "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"Tous"]],
     "iDisplayLength" : 25,
     "oLanguage" : {"sUrl" : "js/dataTables/french.txt"}
