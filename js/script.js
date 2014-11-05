@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 4 novembre 2014
+Dernière modification : 5 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -236,26 +236,6 @@ function errorHighlight(e, type, icon) {
 
         $(this).html(alertHtml);
     });
-}
-
-  
-function file(fichier){
-  if(fichier.indexOf("php?")>0)				// l'ajout du parametre unique ms (nombre de millisecondes depuis le 1er Janvier 1970)
-    fichier=fichier+"&ms="+new Date().getTime();	// permet d'eviter les problème de cache (le navigateur pense ouvrir une nouvelle page)	
-  else if(fichier.indexOf("php")>0)
-    fichier=fichier+"?ms="+new Date().getTime();
-    
-  if(window.XMLHttpRequest) // FIREFOX
-    xhr_object = new XMLHttpRequest();
-  else if(window.ActiveXObject) // IE
-    xhr_object = new ActiveXObject("Microsoft.XMLHTTP");
-  else
-    return(false);
-
-  xhr_object.open("GET", fichier, false);
-  xhr_object.send(null);	
-  if(xhr_object.readyState == 4) return(xhr_object.responseText);
-  else return(false);
 }
 
 function heure4(heure){

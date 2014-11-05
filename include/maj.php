@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.5
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 22 septembre 2014
+Dernière modification : 5 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -629,6 +629,11 @@ if(strcmp("1.8.6",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}config` SET `categorie`='Planning' WHERE `categorie`='Menu d&eacute;roulant du planning';";
   $sql[]="INSERT INTO `{$dbprefix}config` (`type`,`nom`,`valeurs`,`valeur`,`commentaires`,`categorie`,`ordre`) VALUES 
     ('enum','Planning-NbAgentsCellule','1,2,3,4,5,6,7,8,10,11,12,13,14,15,16,17,18,19,20','2','Nombre d&apos;agents maximum par cellule','Planning','2');";
+  $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='planning/poste/validation.php';";
+  $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='absences/ctrl_ajax.php';";
+  $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='statistiques/export.php';";
+  $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='planning/postes_cfg/suppression.php';";
+
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.8.6' WHERE `nom`='Version';";
 }
 

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.5
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/db_data.php
 Création : mai 2011
-Dernière modification : 22 septembre 2014
+Dernière modification : 5 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -21,12 +21,10 @@ $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Authentification', 99, '',
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Planning - Index', 99, '', 'planning/index.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Planning par poste - Index', 99, '', 'planning/poste/index.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Planning par poste - Semaine', 99, '', 'planning/poste/semaine.php');";
-$sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Refresh postes', 99, '', 'planning/poste/validation.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Aide', 99, '', 'aide/index.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Absences - Index', 100, '', 'absences/index.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Absences - Voir', 100, '', 'absences/voir.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Absences - Ajouter', 100, '', 'absences/ajouter.php');";
-$sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Controle des absences avant ajout ou modif', 100, '', 'absences/ctrl_ajax.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Personnel - Password', 100, '', 'personnel/password.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Admin Index', 100, '', 'admin/index.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Ajout Select', 100, '', 'include/ajoutSelect.php');";
@@ -48,7 +46,6 @@ $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Planning Poste - Enregistr
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'D&eacute;bogage', 13, 'D&eacute;bogage', '');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Statistiques', 17, 'Statistiques', 'statistiques/index.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'stats agents par poste', 17, 'Statistiques', 'statistiques/agents.php');";
-$sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Statistiques export', 17, 'Statistiques', 'statistiques/export.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'stats postes par agent', 17, 'Statistiques', 'statistiques/postes.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Statistiques Postes de renfort', 17, 'Statistiques', 'statistiques/postes_renfort.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Statistiques par poste (synth&egrave;se)', 17, 'Statistiques', 'statistiques/postes_synthese.php');";
@@ -63,7 +60,6 @@ $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Configuration des tableaux
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Configuration des horaires des tableaux', 22, 'Configuration des tableaux', 'planning/postes_cfg/horaires.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Configuration des horaires des tableaux', 22, 'Configuration des tableaux', 'planning/postes_cfg/copie.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Configuration des lignes des tableaux', 22, 'Configuration des tableaux', 'planning/postes_cfg/lignes.php');";
-$sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Configuration des tableaux : suppression', 22, 'Configuration des tableaux', 'planning/postes_cfg/suppression.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Activit&eacute;s - Index', 5, 'Gestion des postes','activites/index.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Activit&eacute;s - Modification', 5, 'Gestion des postes','activites/modif.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Activit&eacute;s - Validation', 5, 'Gestion des postes','activites/valid.php');";

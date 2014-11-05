@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.8.1
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 4 novembre 2014
+Dernière modification : 5 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -425,13 +425,18 @@ function groupe_tab_hide(){
 }
 
 function refresh_poste(validation){		// actualise le planning en cas de modification
-  db=file("index.php?page=planning/poste/validation.php&menu=off");
-  db=db.split("###");
-  db=db[1];
-  if(db!=validation){
-    window.location.reload(false);
-  }
-  else{
-    setTimeout("refresh_poste('"+validation+"')",30000);
-  }
+  $.ajax({
+    url: "planning/poste/ajax.refresh.php",
+    type: "get",
+    success: function(result){
+      if(result!=validation){
+	window.location.reload(false);
+      }else{
+	setTimeout("refresh_poste('"+validation+"')",30000);
+      }
+    },
+    error: function(result){
+      information(result.responseText,"error");
+    }
+  });
 }
