@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/postes_cfg/index.php
 Création : mai 2011
-Dernière modification : 24 juin 2014
+Dernière modification : 4 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -91,7 +91,7 @@ EOD;
   }
   echo "</table></form>\n";
   $used=join($used,",");
-  echo "<br/><input type='button' value='Supprimer la s&eacute;lection' class='ui-button' onclick='supprime_select(\"planning/postes_cfg/suppression.php\",\"$used\");'>\n";
+  echo "<br/><input type='button' value='Supprimer la s&eacute;lection' class='ui-button' onclick='supprime_select(\"planning/postes_cfg/ajax.suppression.php\",\"$used\");'>\n";
 }
 
 echo "</td><td>\n";

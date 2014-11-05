@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.8.5
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 30 octobre 2014
+Dernière modification : 4 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -343,8 +343,17 @@ function removeAccents(strAccents){
 // supprime(page,id)	Utilisée par postes et modeles
 function supprime(page,id){
   if(confirm("Etes vous sûr de vouloir supprimer cet élément ?")){
-    file("index.php?page="+page+"/valid.php&id="+id+"&action=supprime");
-    window.location.reload(false);
+    $.ajax({
+      url: page+"/ajax.delete.php",
+      type: "get",
+      data: "id="+id,
+      success: function(){
+	window.location.reload(false);
+      },
+      error: function(){
+	information("Une erreur est survenue lors de la suppression","error");
+      }
+    });
   }
 }
 
@@ -842,10 +851,22 @@ function supprime_groupe(id,nom){
 
 function supprime_ligne(id,nom){
   if(confirm("Etes-vous sûr de vouloir supprimer la ligne \""+nom+"\" ?")){
-    file("planning/postes_cfg/supp_lignes.php?id="+id);
-    location.href="index.php?page=planning/postes_cfg/index.php";
+    $.ajax({
+      url: "planning/postes_cfg/ajax.supp_lignes.php",
+      type: "get",
+      data: "id="+id,
+      success: function(){
+	location.href="index.php?page=planning/postes_cfg/index.php";
+      },
+      error: function(){
+	information("Une erreur est survenue lors de la suppression de la ligne \""+nom+"\"","error");
+      }
+    });
   }
 }
+
+
+
 //	Suppression des élements sélectionnés (page de suppression, exception (séparés par virgules))
 function supprime_select(page,except){
   except=except.split(",");
@@ -869,18 +890,33 @@ function supprime_select(page,except){
     alert("Les éléments sélectionnés ne peuvent être supprimés.");
   }
   else if(confirm("Etes-vous sûr(e) de vouloir supprimer les éléments sélectionnés ?")){
-    file("index.php?page="+page+"&ids="+ids);
+    $.ajax({
+      url: page,
+      type: "get",
+      data: "ids="+ids,
+      success: function(){
+	window.location.reload(false);
+      },
+      error: function(){
+	information("Une erreur est survenue lors de la suppression.","error");
+      }
+    });
   }
-  window.location.reload(false);
 }
 //	--------------------------------	FIN Tableaux		-------------------------	//
 //	--------------------------------	Statistiques		---------------------------------	//
 function export_stat(nom,type){
-  file("index.php?page=statistiques/export.php&nom="+nom+"&type="+type+"&menu=off");
-  if(type=="csv")
-    window.open("data/stat_"+nom+".csv");
-  else
-    window.open("data/stat_"+nom+".xls");
+  $.ajax({
+    url: "statistiques/export.php",
+    type: "get",
+    data: "nom="+nom+"&type="+type,
+    success: function(result){
+      window.open("data/"+result);
+    },
+    error: function(){
+      information("Une erreur est survenue lors de l'exportation.","error");
+    }
+  });
 }
 
 function verif_select(nom){

@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 13 juin 2014
+Dernière modification : 4 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -38,7 +38,7 @@ $(document).ready(function(){
 
   // Mise en forme des lignes du tableau planning
   // Pour chaque TD
-  $("#tabsemaine1 td").each(function(i, index) {
+  $(".tabsemaine1 td").each(function(i, index) {
     // Occuper toute la hauteur
     var nbDiv=$(index).find("div").length;
     if(nbDiv>0){

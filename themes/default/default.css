@@ -439,6 +439,7 @@ class cellule = cellule par défaut
 .cellSpan{
   display:block;
   padding:3px;
+  white-space: nowrap;
 }
 
 .menudiv-titre{

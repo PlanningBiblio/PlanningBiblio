@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.5
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 23 septembre 2014
+Dernière modification : 4 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -96,7 +96,9 @@ if($db->result){
     $position=$d->position!=0?$d->position-1:6;
     $tab[$elem['perso_id']][$elem['date']]+=diff_heures($elem['debut'],$elem['fin'],"decimal");	// ajout des heures par jour
     $tab[$elem['perso_id']]['total']+=diff_heures($elem['debut'],$elem['fin'],"decimal");	// ajout des heures sur toutes la période
-    $tab[$elem['perso_id']]["site{$elem['site']}"]+=diff_heures($elem['debut'],$elem['fin'],"decimal");	// ajout des heures sur toutes la période
+    if($elem["site"]){
+      $tab[$elem['perso_id']]["site{$elem['site']}"]+=diff_heures($elem['debut'],$elem['fin'],"decimal");	// ajout des heures sur toutes la période par site
+    }
     $totalHeures+=diff_heures($elem['debut'],$elem['fin'],"decimal");		// compte la somme des heures sur la période
     $siteHeures[$elem['site']]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
   }

@@ -399,7 +399,7 @@ else{
   // affichage du tableau :
   // affichage de la lignes des horaires
   echo "<div id='tableau'>\n";
-  echo "<table id='tabsemaine1' cellspacing='0' cellpadding='0' class='text'>\n";
+  echo "<table id='tabsemaine1' cellspacing='0' cellpadding='0' class='text tabsemaine1'>\n";
   $k=0;
   foreach($tabs as $tab){
     //		Lignes horaires

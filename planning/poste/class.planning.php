@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 6 juin 2014
+Dernière modification : 4 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -16,12 +16,7 @@ Classe planning
 Utilisée par les fichiers du dossier "planning/poste"
 */
 
-// Securité : Traitement pour une reponse Ajax
-if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
-  $version="ajax";
-}
-
-// Si pas de $version ou pas de reponseAjax => acces direct aux pages de ce dossier => redirection vers la page index.php
+// Si pas de $version => acces direct aux pages de ce dossier => redirection vers la page index.php
 if(!$version){
   header("Location: ../../index.php");
 }

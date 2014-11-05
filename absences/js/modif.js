@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.7.4
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/js/modif.js
 Création : 28 février 2014
-Dernière modification : 5 mars 2014
+Dernière modification : 4 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -149,10 +149,24 @@ function verif_absences(ctrl_form){
   hre_fin=hre_fin?hre_fin:"23:59:59";
   debut=debut+" "+hre_debut;
   fin=fin+" "+hre_fin;
-  db=file("index.php?page=absences/ctrl_ajax.php&perso_id="+perso_id+"&id="+id+"&debut="+debut+"&fin="+fin).split("###");
-  if(db[1]=="true"){
-    alert("Une absence est déjà enregistrée pour cet agent entre le "+db[2]+"\nVeuillez modifier les dates et horaires.");
-    return false;
-  }
-  return true;
+
+  var retour=false;
+  $.ajax({
+    url: "absences/ajax.control.php",
+    type: "get",
+    data: "perso_id="+perso_id+"&id="+id+"&debut="+debut+"&fin="+fin,
+    async: false,
+    success: function(result){
+      result=JSON.parse(result);
+      if(result[0]=="true"){
+	alert("Une absence est déjà enregistrée pour cet agent entre le "+result[1]+"\nVeuillez modifier les dates et horaires.");
+      }else{
+	 retour=true;
+      }
+    },
+    error: function(result){
+      information("Une erreur est survenue.","error");
+    }
+  });
+  return retour;
 }
