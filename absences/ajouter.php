@@ -36,8 +36,26 @@ $pj1=(isset($_GET['pj1']) and $_GET['pj1'])?1:0;
 $pj2=(isset($_GET['pj2']) and $_GET['pj2'])?1:0;
 $so=(isset($_GET['so']) and $_GET['so'])?1:0;
 
+$debutSQL=dateSQL($debut);
+$finSQL=dateSQL($fin);
+
+if($config['Absences-adminSeulement'] and !$admin){
+  echo "<div id='acces_refuse'>Accès refusé</div>\n";
+  include "include/footer.php";
+  exit;
+}
+
+echo <<<EOD
+<h3>Ajouter une absence</h3>
+<table>
+<tr style='vertical-align:top'>
+<td style='width:560px;'>
+EOD;
+
+// Enregitrement de l'absence
 if($confirm){
   $fin=$fin?$fin:$debut;
+  $finSQL=dateSQL($fin);
   $nbjours=isset($_GET['nbjours'])?$_GET['nbjours']:0;
   $motif=$_GET['motif'];
   $motif_autre=htmlentities($_GET['motif_autre'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
@@ -83,24 +101,7 @@ if($confirm){
       $validationN1=date("Y-m-d H:i:s");
     }
   }
-}
-$debutSQL=dateSQL($debut);
-$finSQL=dateSQL($fin);
 
-if($config['Absences-adminSeulement'] and !$admin){
-  echo "<div id='acces_refuse'>Accès refusé</div>\n";
-  include "include/footer.php";
-  exit;
-}
-
-echo <<<EOD
-<h3>Ajouter une absence</h3>
-<table>
-<tr style='vertical-align:top'>
-<td style='width:560px;'>
-EOD;
-
-if($confirm=="confirm2"){		//	2eme confirmation
   $a=new absences();
   $a->getResponsables($debutSQL,$finSQL,$perso_id);
   $responsables=$a->responsables;
@@ -211,138 +212,16 @@ if($confirm=="confirm2"){		//	2eme confirmation
     echo "<script type='text/JavaScript'>popup_closed();</script>\n";
   }
   else{
-    echo $config['Absences-validation']?"La demande d'absence a &eacute;t&eacute; enregistr&eacute;e":"L'absence a été enregistrée";
-    echo "<br/><br/>";
-    echo "<a href='index.php?page=absences/index.php'>Retour</a>";
+    $msg=($config['Absences-validation'] and !$admin)?"La demande d&apos;absence a &eacute;t&eacute; enregistr&eacute;e":"L&apos;absence a &eacute;t&eacute; enregistr&eacute;e";
+    $msg=urlencode($msg);
+    echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&messageOK=$msg';</script>\n";
   }
-}
-elseif($confirm=="confirm1"){		//	1ere Confirmation
-  $db=new db();
-  $db->query("select nom, prenom from {$dbprefix}personnel where id=$perso_id;");
-  $nom=$db->result[0]['nom'];
-  $prenom=$db->result[0]['prenom'];
-
-  // Interdiction d'ajouter des absences si l'agent apparaît dans un planning validé pour les dates sélectionnées
-  // Si CONFIG Absences-apresValidation = 0
-  $disableSubmit=null;
-  $datesValidees=null;
-  if($config['Absences-apresValidation']==0){
-    $datesValidees=array();
-    $db=new db();
-    $db->select("pl_poste","date,site","perso_id='$perso_id' AND date>='$debutSQL' AND date<='$finSQL'","group by date");
-    if($db->result){
-      foreach($db->result as $elem){
-	$db2=new db();
-	$db2->select("pl_poste_verrou","*","date='{$elem['date']}' AND site='{$elem['site']}'");
-	if($db2->result){
-	  $datesValidees[]=dateFr($elem['date']);
-	}
-      }
-    }
-    if(!empty($datesValidees)){
-      $datesValidees=join(" ; ",$datesValidees);
-      if(!$admin){
-	$disableSubmit="disabled='disabled'";
-      }
-    }
-  }
-
-  // Pièces justificatives
-  $pj1Display=$pj1?"inline":"none";
-  $pj2Display=$pj2?"inline":"none";
-  $soDisplay=$so?"inline":"none";
-
-  echo "<b>Confirmation</b>\n";
-
-  echo "<table class='tableauFiches'><tr><td class='intitule'>\n";
-  echo "Nom, Prénom</td><td>\n";
-  echo $nom." ".$prenom;
-  echo "</td></tr><tr><td class='intitule'>\n";
-  echo "Début de l'absence</td><td>\n";
-  echo $debut;
-  if($_GET['hre_debut'])
-    echo "&nbsp;-&nbsp;".heure2($_GET['hre_debut']);
-  echo "</td></tr>\n";
-  echo "<tr><td class='intitule'>";
-  echo "Fin de l'absence</td><td>\n";
-  echo $fin;
-  if($_GET['hre_fin'])
-    echo "&nbsp;-&nbsp;".heure2($_GET['hre_fin']);
-  echo "</td></tr>\n";
-  echo "<tr><td class='intitule'>\n";
-  echo "Motif</td><td>\n";
-  echo $motif;
-  if($motif_autre){
-    echo " / $motif_autre";
-  }
-  echo "</td></tr><tr><td class='intitule'>\n";
-  echo "Commentaires</td><td>\n";
-  echo $commentaires;
-  echo "</td></tr>\n";
-
-  if($admin){
-    echo "<tr><td class='intitule'>\n";
-    echo "Pi&egrave;ces justificatives</td><td>";
-    echo "<div class='absences-pj-fiche' style='display:$pj1Display;'>PJ1</div>";
-    echo "<div class='absences-pj-fiche' style='display:$pj2Display;'>PJ2</div>";
-    echo "<div class='absences-pj-fiche' style='display:$soDisplay;'>SO</div>";
-    echo "</td>\n";
-  }
-  echo "</tr>";
-
-
-  if($config['Absences-validation']){
-    echo "<tr><td class='intitule'>Validation</td><td>\n";
-    echo $validationText;
-    echo "</td></tr>\n";
-  }
-
-  echo "<tr><td>\n";
-  echo "&nbsp;";
-  echo "</td></tr></table>\n";
-  echo "<form method='get' action='index.php' name='form'>\n";
-  echo "<input type='hidden' name='page' value='absences/ajouter.php' />\n";
-  echo "<input type='hidden' name='perso_id' value='$perso_id' />\n";
-  echo "<input type='hidden' name='debut' value='$debut' />\n";
-  echo "<input type='hidden' name='fin' value='$fin' />\n";
-  echo "<input type='hidden' name='hre_debut' value='{$_GET['hre_debut']}' />\n";
-  echo "<input type='hidden' name='hre_fin' value='{$_GET['hre_fin']}' />\n";
-  echo "<input type='hidden' name='nbjours' value='$nbjours' />\n";
-  echo "<input type='hidden' name='motif' value='$motif' />\n";
-  echo "<input type='hidden' name='motif_autre' value='$motif_autre' />\n";
-  echo "<input type='hidden' name='commentaires' value='$commentaires' />\n";
-  echo "<input type='hidden' name='valide' value='$valide' />\n";
-  echo "<input type='hidden' name='confirm' value='confirm2' />\n";
-  echo "<input type='hidden' name='menu' value='$menu' />\n";
-  echo "<input type='hidden' name='pj1' value='$pj1' />\n";
-  echo "<input type='hidden' name='pj2' value='$pj2' />\n";
-  echo "<input type='hidden' name='so' value='$so' />\n";
-
-  if($datesValidees){
-    if($admin){
-      echo "<div id='AbsencesTips' class='ui-widget' style='margin: 0px 120px 20px 0;'>";
-      echo "Attention, l'agent sélectionné apparaît dans des plannings validés : $datesValidees</div>\n";
-    }
-    else{
-      echo "<div id='AbsencesTips' class='ui-widget' style='margin: 0px 120px 20px 0;'>";
-      echo "Vous ne pouvez pas ajouter d'absences pour les dates suivantes car les plannings sont validés : $datesValidees <br/>\n";
-      echo "Veuillez modifier vos dates ou contacter le responsable du planning.</div>";
-    }
-  }
-
-  if($menu=="off")
-    echo "<input type='button' class='ui-button' value='Annuler' onclick='popup_closed();' />";
-  else
-    echo "<input type='button' class='ui-button' value='Annuler' onclick='document.location.href=\"index.php?page=absences/index.php\";' />";
-  echo "&nbsp;&nbsp;\n";
-  echo "<input type='submit' class='ui-button' value='Valider' $disableSubmit />\n";
-  echo "</form>\n";
 }
 else{					//	Formulaire
   echo "<form name='form' action='index.php' method='get' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");' >\n";
   echo "<input type='hidden' name='page' value='absences/ajouter.php' />\n";
   echo "<input type='hidden' name='menu' value='$menu' />\n";
-  echo "<input type='hidden' name='confirm' value='confirm1' />\n";
+  echo "<input type='hidden' name='confirm' value='confirm' />\n";
   echo "<table class='tableauFiches'>\n";
   echo "<tr><td>\n";
   echo "<label class='intitule'>Nom, prénom </label></td>\n";
@@ -474,6 +353,3 @@ if($db->result){
 }
 ?>
 </td></tr></table>
-<script type='text/JavaScript'>
-errorHighlight($("#AbsencesTips"),"error");
-</script>
