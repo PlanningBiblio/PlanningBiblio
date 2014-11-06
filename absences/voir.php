@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 5 novembre 2014
+Dernière modification : 6 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -133,15 +133,19 @@ echo "<th>&nbsp;</th>\n";
 echo "<th>Début</th>\n";
 echo "<th>Fin</th>\n";
 if($admin){
-  echo "<th>Nom</th>\n";
+  echo "<th id='thNom'>Nom</th>\n";
 }
 if($config['Absences-validation']){
-  echo "<th>&Eacute;tat</th>\n";
+  echo "<th id='thValidation'>&Eacute;tat</th>\n";
 }
 echo "<th>Motif</th>\n";
 echo "<th>Commentaires</th>\n";
-echo "<th><label style='white-space:nowrap'>Pi&egrave;ces justificatives</label><br/>\n";
-echo "<div class='absences-pj'>PJ 1</div><div class='absences-pj'>PJ 2</div><div class='absences-pj'>SO</div></th>\n";
+
+if($admin){
+  echo "<th id='thPiecesJustif'><label style='white-space:nowrap'>Pi&egrave;ces justificatives</label><br/>\n";
+  echo "<div class='absences-pj'>PJ 1</div><div class='absences-pj'>PJ 2</div><div class='absences-pj'>SO</div></th>\n";
+}
+
 echo "</tr></thead>\n";
 echo "<tbody>\n";
 
@@ -180,40 +184,17 @@ if($absences){
     }
     echo "<td>{$elem['motif']}</td>\n";
     echo "<td>{$elem['commentaires']}</td>\n";
-    echo "<td style='text-align:center;'>";
-    echo "<div class='absences-pj'><input type='checkbox' id='pj1-$id' $pj1Checked /></div>\n";
-    echo "<div class='absences-pj'><input type='checkbox' id='pj2-$id' $pj2Checked /></div>\n";
-    echo "<div class='absences-pj'><input type='checkbox' id='so-$id'  $soChecked  /></div>\n";
-    echo "</td></tr>\n";
+
+    if($admin){
+      echo "<td style='text-align:center;'>";
+      echo "<div class='absences-pj'><input type='checkbox' id='pj1-$id' $pj1Checked /></div>\n";
+      echo "<div class='absences-pj'><input type='checkbox' id='pj2-$id' $pj2Checked /></div>\n";
+      echo "<div class='absences-pj'><input type='checkbox' id='so-$id'  $soChecked  /></div>\n";
+      echo "</td>\n";
+    }
+    echo "</tr>\n";
     $i++;
   }
 }
 echo "</tbody></table>";
 ?>
-
-<script type='text/JavaScript'>
-$(document).ready(function() {
-  $("#tableAbsences").dataTable({
-    "bJQueryUI": true,
-    "sPaginationType": "full_numbers",
-    "bStateSave": true,
-    "aaSorting" : [[1,"asc"],[2,"asc"]],
-    "aoColumns" : [{"bSortable":false},{"sType": "date-fr"},{"sType": "date-fr-fin"},{"bSortable":true},{"bSortable":true},
-      <?php
-      if($admin){
-	echo '{"bSortable":true},';
-      }
-      if($config['Absences-validation']){
-	echo '{"bSortable":true},';
-      }
-      ?>
-      {"bSortable":false},],
-    "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"Tous"]],
-    "iDisplayLength" : 25,
-    "oLanguage" : {"sUrl" : "js/dataTables/french.txt"}
-  });
-
-  $(document).tooltip();
-  $("#ajouter").button();
-});
-</script>

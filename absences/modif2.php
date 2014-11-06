@@ -105,6 +105,8 @@ if($config['Multisites-nombre']>1){
     include "include/footer.php";
     exit;
   }
+}else{
+  $admin=in_array(1,$droits)?true:false;
 }
 
 // Pour mise à jour du champs 'absent' dans 'pl_poste'
@@ -134,7 +136,11 @@ if(($debutSQL!=$debut1 or $finSQL!=$fin1) and $isValidate){			// mise à jour du
 // Mise à jour de la table 'absences'
 $db=new db();
 $update=array("motif"=>$motif, "motif_autre"=>$motif_autre, "nbjours"=>$nbjours, "commentaires"=>$commentaires, 
-  "debut"=>$debut_sql, "fin"=>$fin_sql, "pj1"=>$pj1, "pj2"=>$pj2, "so"=>$so);
+  "debut"=>$debut_sql, "fin"=>$fin_sql);
+
+if($admin){
+  $update=array_merge($update,array("pj1"=>$pj1, "pj2"=>$pj2, "so"=>$so));
+}
 
 if($config['Absences-validation']){
   // Validation N1

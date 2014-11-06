@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 5 novembre 2014
+Dernière modification : 6 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -193,12 +193,15 @@ echo "<label class='intitule'>Commentaires</label></td><td>";
 echo "<textarea name='commentaires' cols='25' rows='5' class='ui-widget-content ui-corner-all'>$commentaires</textarea>";
 echo "</td></tr>";
 
-echo "<tr style='vertical-align:top;'><td>\n";
-echo "<label class='intitule'>Pi&egrave;ces justificatives</label></td><td>";
-echo "<div class='absences-pj-fiche'>PJ1 <input type='checkbox' name='pj1' id='pj1' $pj1Checked /></div>";
-echo "<div class='absences-pj-fiche'>PJ2 <input type='checkbox' name='pj2' id='pj2' $pj2Checked /></div>";
-echo "<div class='absences-pj-fiche'>SO <input type='checkbox' name='so' id='so' $soChecked /></div>";
-echo "</td></tr>";
+if($admin){
+  echo "<tr style='vertical-align:top;'><td>\n";
+  echo "<label class='intitule'>Pi&egrave;ces justificatives</label></td><td>";
+  echo "<div class='absences-pj-fiche'>PJ1 <input type='checkbox' name='pj1' id='pj1' $pj1Checked /></div>";
+  echo "<div class='absences-pj-fiche'>PJ2 <input type='checkbox' name='pj2' id='pj2' $pj2Checked /></div>";
+  echo "<div class='absences-pj-fiche'>SO <input type='checkbox' name='so' id='so' $soChecked /></div>";
+  echo "</td>\n";
+}
+echo "</tr>\n";
 
 if($config['Absences-validation']){
   echo "<tr><td><label class='intitule'>Validation</label></td><td>\n";

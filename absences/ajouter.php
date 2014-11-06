@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 5 novembre 2014
+Dernière modification : 6 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -280,12 +280,15 @@ elseif($confirm=="confirm1"){		//	1ere Confirmation
   echo $commentaires;
   echo "</td></tr>\n";
 
-  echo "<tr><td class='intitule'>\n";
-  echo "Pi&egrave;ces justificatives</td><td>";
-  echo "<div class='absences-pj-fiche' style='display:$pj1Display;'>PJ1</div>";
-  echo "<div class='absences-pj-fiche' style='display:$pj2Display;'>PJ2</div>";
-  echo "<div class='absences-pj-fiche' style='display:$soDisplay;'>SO</div>";
-  echo "</td></tr>";
+  if($admin){
+    echo "<tr><td class='intitule'>\n";
+    echo "Pi&egrave;ces justificatives</td><td>";
+    echo "<div class='absences-pj-fiche' style='display:$pj1Display;'>PJ1</div>";
+    echo "<div class='absences-pj-fiche' style='display:$pj2Display;'>PJ2</div>";
+    echo "<div class='absences-pj-fiche' style='display:$soDisplay;'>SO</div>";
+    echo "</td>\n";
+  }
+  echo "</tr>";
 
 
   if($config['Absences-validation']){
@@ -417,12 +420,15 @@ else{					//	Formulaire
   echo "<textarea name='commentaires' cols='16' rows='5' class='ui-widget-content ui-corner-all'></textarea>\n";
   echo "</td></tr>\n";
 
-  echo "<tr style='vertical-align:top;'><td>\n";
-  echo "<label class='intitule'>Pi&egrave;ces justificatives</label></td><td>";
-  echo "<div class='absences-pj-fiche'>PJ1 <input type='checkbox' name='pj1' id='pj1' /></div>";
-  echo "<div class='absences-pj-fiche'>PJ2 <input type='checkbox' name='pj2' id='pj2' /></div>";
-  echo "<div class='absences-pj-fiche'>SO <input type='checkbox' name='so' id='so' /></div>";
-  echo "</td></tr>";
+  if($admin){
+    echo "<tr style='vertical-align:top;'><td>\n";
+    echo "<label class='intitule'>Pi&egrave;ces justificatives</label></td><td>";
+    echo "<div class='absences-pj-fiche'>PJ1 <input type='checkbox' name='pj1' id='pj1' /></div>";
+    echo "<div class='absences-pj-fiche'>PJ2 <input type='checkbox' name='pj2' id='pj2' /></div>";
+    echo "<div class='absences-pj-fiche'>SO <input type='checkbox' name='so' id='so' /></div>";
+    echo "</td>\n";
+  }
+  echo "</tr>";
 
   if($config['Absences-validation']){
     echo "<tr><td><label class='intitule'>&Eacute;tat </label></td><td>\n";

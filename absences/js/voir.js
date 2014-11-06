@@ -6,12 +6,40 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/js/voir.js
 Création : 5 novembre 2014
-Dernière modification : 5 novembre 2014
+Dernière modification : 6 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
 Fichier regroupant les fonctions JavaScript utiles à l'affichage des absences (voir.php)
 */
+
+$(document).ready(function() {
+  // DataTable : configuration des colonnes
+  var aoColumns=[{"bSortable":false},{"sType": "date-fr"},{"sType": "date-fr-fin"},{"bSortable":true},{"bSortable":true}];
+  if($("#thNom").length){
+   aoColumns.push({"bSortable":true});
+  }
+  if($("#thValidation").length){
+   aoColumns.push({"bSortable":true});
+  }
+  if($("#thPiecesJustif").length){
+   aoColumns.push({"bSortable":false});
+  }
+
+  $("#tableAbsences").dataTable({
+    "bJQueryUI": true,
+    "sPaginationType": "full_numbers",
+    "bStateSave": true,
+    "aaSorting" : [[1,"asc"],[2,"asc"]],
+    "aoColumns" : aoColumns,
+    "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"Tous"]],
+    "iDisplayLength" : 25,
+    "oLanguage" : {"sUrl" : "js/dataTables/french.txt"}
+  });
+
+  $(document).tooltip();
+});
+
 
 $(function(){
   $(".absences-pj input[type=checkbox]").click(function(){
