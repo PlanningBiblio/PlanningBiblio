@@ -305,11 +305,15 @@ function heure5(heure){
   return heure;
 }
 
-function information(message,type,top){
+function information(message,type,top,time){
   if(top==undefined){
     top=60;
   }
   
+  if(time==undefined){
+    time=5000;
+  }
+
   if(typeof(timeoutJSInfo)!== "undefined"){
     window.clearTimeout(timeoutJSInfo);
   }
@@ -317,7 +321,7 @@ function information(message,type,top){
   $("body").append("<div id='JSInformation'>"+message+"</div>");
   errorHighlight($("#JSInformation"),type);
   position($("#JSInformation"),top,"center");
-  timeoutJSInfo=window.setTimeout("$('#JSInformation').remove()",5000);
+  timeoutJSInfo=window.setTimeout("$('#JSInformation').remove()",time);
 }
 
 function modif_mdp(){

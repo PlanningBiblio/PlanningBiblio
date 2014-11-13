@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 27 juin 2014
+Dernière modification : 13 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -34,7 +34,7 @@ if(!file_exists("themes/$theme/$theme.css")){
 <title>Planning</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-<script type='text/JavaScript' src='js/jquery-1.11.0.min.js'></script>
+<script type='text/JavaScript' src='js/jquery-1.11.1.min.js'></script>
 <script type='text/JavaScript' src='js/jquery-ui-1.10.4/ui/jquery-ui.js'></script>
 <script type='text/JavaScript' src='js/datePickerFr.js'></script>
 <script type='text/JavaScript' src='js/carhartl-jquery-cookie-3caf209/jquery.cookie.js'></script>
