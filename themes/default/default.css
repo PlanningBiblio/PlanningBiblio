@@ -172,7 +172,6 @@ h3{
 .agent-acces-checked2{
   position:absolute;
   left:500px;
-  font-weight:bold;
 }
 
 /* Importation des agents */
@@ -802,3 +801,11 @@ class cellule = cellule par défaut
   background:yellow;
 }
 */
+
+.red{
+  color:red;
+}
+
+.green{
+  color:green;
+}

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.5
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 23 septembre 2014
+Dernière modification : 14 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -21,10 +21,40 @@ Cette page est appelée par le fichier index.php
 
 require_once "class.personnel.php";
 $admin=in_array(21,$droits)?true:false;
-
 // NB : le champ poste et les fonctions postes_... sont utilisés pour l'attribution des activités (qualification)
-$db_groupes=new db();		// contrôle des droits d'accès à cette page (sera amélioré prochaienement)
+
+// Gestion des droits d'accés
+$db_groupes=new db();
 $db_groupes->query("select groupe_id,groupe from {$dbprefix}acces where groupe_id not in (99,100) group by groupe;");
+
+// Tous les droits d'accés
+$groupes=array();
+if($db_groupes->result){
+  foreach($db_groupes->result as $elem){
+    $groupes[$elem['groupe_id']]=$elem;
+  }
+}
+
+// Si multisites, les droits de gestion des absences, congés et modification planning dépendent des sites : 
+// on les places dans un autre tableau pour simplifier l'affichage
+$groupes_sites=array();
+if($config['Multisites-nombre']>1){  
+  $groupes_sites[1]=$groupes[1];	// Absences, validation N1
+  unset($groupes[1]);
+  $groupes_sites[8]=$groupes[8];	// Absences, validation N2
+  unset($groupes[8]);
+  if(array_key_exists(7,$groupes)){	// Congés, validation N1
+    $groupes_sites[7]=$groupes[7];
+    unset($groupes[7]);
+  }
+  if(array_key_exists(7,$groupes)){	// Congés, validation N2
+    $groupes_sites[2]=$groupes[2];
+    unset($groupes[2]);
+  }
+  $groupes_sites[12]=$groupes[12];	// Modification des plannings
+  unset($groupes[12]);
+}
+
 $db=new db();
 $db->select("select_statuts",null,null,"order by rang");
 $statuts=$db->result;
@@ -184,7 +214,7 @@ else{
 echo "<form method='post' action='index.php' name='form'>\n";
 echo "<input type='hidden' name='page' value='personnel/valid.php' />\n";
 //			Début Infos générales	
-echo "<div id='main' style='margin-left:80px;padding-top:30px;'>\n";
+echo "<div id='main' style='margin-left:70px;padding-top:30px;'>\n";
 echo "<input type='hidden' value='$action' name='action' />";
 echo "<input type='hidden' value='$id' name='id' />";
 
@@ -451,7 +481,7 @@ if($id){
 <!--	Fin Info générales	-->
 
 <!--	Début Qualif	-->
-<div id='qualif' style='margin-left:80px;display:none;padding-top:30px;'>
+<div id='qualif' style='margin-left:70px;display:none;padding-top:30px;'>
 <table style='width:90%;'>
 <tr style='vertical-align:top;'><td>
 <b>Activités disponibles</b><br/>
@@ -505,7 +535,7 @@ else{
 <!--	FIN Qualif	-->
 
 <!--	Emploi du temps		-->
-<div id='temps' style='margin-left:80px;display:none;padding-top:30px;'>
+<div id='temps' style='margin-left:70px;display:none;padding-top:30px;'>
 <?php
 switch($config['nb_semaine']){
   case 2	: $cellule=array("Semaine Impaire","Semaine Paire");		break;
@@ -650,118 +680,96 @@ if($config['EDTSamedi']){
 <!--	FIN Emploi du temps-->
 
 <!--	Droits d'accès		-->
-<div id='access' style='margin-left:80px;display:none;padding-top:30px;'>
+<div id='access' style='margin-left:70px;display:none;padding-top:30px;'>
 <?php
 if(!$admin){
   echo "<ul>\n";
 }
-foreach($db_groupes->result as $elem){		// gestion des droits d'accès au planning
+
+// Affichage de tous les droits d'accès si un seul site ou des droits d'accès ne dépendant pas des sites
+foreach($groupes as $elem){
   // N'affiche pas les droits d'accès à la configuration (réservée au compte admin)
   if($elem['groupe_id']==20){
     continue;
   }
 
   //	Affichage des lignes avec checkboxes
-  //	Gestion des absences si plusieurs sites
-  if($elem['groupe_id']==1 and $config['Multisites-nombre']>1){
-    for($i=1;$i<$config['Multisites-nombre']+1;$i++){
-      $site=$config['Multisites-site'.$i];
-      $groupe_id=200+$i;
-      if(is_array($acces)){
-	$checked=in_array($groupe_id,$acces)?"checked='checked'":null;
-	$checked2=$checked?"Oui":"Non";
-      }
-      if($admin){
-	echo "<input type='checkbox' name='droits[]' $checked value='$groupe_id' />{$elem['groupe']} $site<br/>\n";
-      }else{
-	echo "<li>{$elem['groupe']} $site <label class='agent-acces-checked2'>$checked2</label></li>\n";
-      }
-    }
+  if(is_array($acces)){
+    $checked=in_array($elem['groupe_id'],$acces)?"checked='checked'":null;
+    $checked2=$checked?"Oui":"Non";
+    $class=$checked?"green bold":"red";
   }
-
-  //	Gestion des absences, validation N2 si plusieurs sites
-  elseif($elem['groupe_id']==8 and $config['Multisites-nombre']>1){
-    for($i=1;$i<=$config['Multisites-nombre'];$i++){
-      $site=$config['Multisites-site'.$i];
-      $groupe_id=500+$i;
-      if(is_array($acces)){
-	$checked=in_array($groupe_id,$acces)?"checked='checked'":null;
-	$checked2=$checked?"Oui":"Non";
-      }
-      if($admin){
-	echo "<input type='checkbox' name='droits[]' $checked value='$groupe_id' />{$elem['groupe']} $site<br/>\n";
-      }else{
-	echo "<li>{$elem['groupe']} $site <label class='agent-acces-checked2'>$checked2</label></li>\n";
-      }
-    }
-  }
-
-  //	Gestion des congés si plusieurs sites
-  elseif($elem['groupe_id']==7 and $config['Multisites-nombre']>1){
-    for($i=1;$i<$config['Multisites-nombre']+1;$i++){
-      $site=$config['Multisites-site'.$i];
-      $groupe_id=400+$i;
-      if(is_array($acces)){
-	$checked=in_array($groupe_id,$acces)?"checked='checked'":null;
-	$checked2=$checked?"Oui":"Non";
-      }
-      if($admin){
-	echo "<input type='checkbox' name='droits[]' $checked value='$groupe_id' />{$elem['groupe']} $site<br/>\n";
-      }else{
-	echo "<li>{$elem['groupe']} $site <label class='agent-acces-checked2'>$checked2</label></li>\n";
-      }
-    }
-  }
-
-  //	Gestion des congés si plusieurs sites, Validation N2
-  elseif($elem['groupe_id']==2 and $config['Multisites-nombre']>1){
-    for($i=1;$i<$config['Multisites-nombre']+1;$i++){
-      $site=$config['Multisites-site'.$i];
-      $groupe_id=600+$i;
-      if(is_array($acces)){
-	$checked=in_array($groupe_id,$acces)?"checked='checked'":null;
-	$checked2=$checked?"Oui":"Non";
-      }
-      if($admin){
-	echo "<input type='checkbox' name='droits[]' $checked value='$groupe_id' />{$elem['groupe']} $site<br/>\n";
-      }else{
-	echo "<li>{$elem['groupe']} $site <label class='agent-acces-checked2'>$checked2</label></li>\n";
-      }
-    }
-  }
-
-  //	Modification des plannings si plusieurs sites
-  elseif($elem['groupe_id']==12 and $config['Multisites-nombre']>1){
-    for($i=1;$i<$config['Multisites-nombre']+1;$i++){
-      $site=$config['Multisites-site'.$i];
-      $groupe_id=300+$i;
-      if(is_array($acces)){
-	$checked=in_array($groupe_id,$acces)?"checked='checked'":null;
-	$checked2=$checked?"Oui":"Non";
-      }
-      if($admin){
-	echo "<input type='checkbox' name='droits[]' $checked value='$groupe_id' />{$elem['groupe']} $site<br/>\n";
-      }else{
-	echo "<li>{$elem['groupe']} $site <label class='agent-acces-checked2'>$checked2</label></li>\n";
-      }
-    }
-  }
-
-  else{
-    if(is_array($acces)){
-      $checked=in_array($elem['groupe_id'],$acces)?"checked='checked'":null;
-      $checked2=$checked?"Oui":"Non";
-    }
-    if($admin){
-      echo "<input type='checkbox' name='droits[]' $checked value='{$elem['groupe_id']}' />{$elem['groupe']}<br/>\n";
-    }else{
-      echo "<li>{$elem['groupe']} <label class='agent-acces-checked2'>$checked2</label></li>\n";
-    }
+  if($admin){
+    echo "<input type='checkbox' name='droits[]' $checked value='{$elem['groupe_id']}' style='margin-right:10px;'/>{$elem['groupe']}<br/>\n";
+  }else{
+    echo "<li>{$elem['groupe']} <label class='agent-acces-checked2 $class'>$checked2</label></li>\n";
   }
 }
 if(!$admin){
   echo "</ul>\n";
 }
+
+// Affichage des droits d'accès dépendant des sites (si plusieurs sites)
+if($config['Multisites-nombre']>1){
+  echo "<table style='margin-top:50px;'><thead><tr><th>&nbsp;</th>\n";
+  for($i=1;$i<=$config['Multisites-nombre'];$i++){
+    echo "<th class='center' style='padding:0 10px;'>{$config["Multisites-site$i"]}</th>\n";
+  }
+  echo "</tr></thead>\n";
+  echo "<tbody>\n";
+
+  foreach($groupes_sites as $elem){
+    $groupe=ucfirst(str_replace("Gestion des ","",$elem['groupe']));
+    echo "<tr><td>$groupe</td>\n";
+
+    for($i=1;$i<$config['Multisites-nombre']+1;$i++){
+      $site=$config['Multisites-site'.$i];
+
+      // Gestion des absences N1
+      if($elem['groupe_id']==1){
+	$groupe_id=200+$i;
+      }
+
+      // Gestion des congés validation N2
+      elseif($elem['groupe_id']==2){
+	$groupe_id=600+$i;
+      }
+
+      // Gestion des congés N1
+      elseif($elem['groupe_id']==7){
+	$groupe_id=400+$i;
+      }
+
+      // Gestion des absences validation N2
+      elseif($elem['groupe_id']==8){
+	$groupe_id=500+$i;
+      }
+
+      // Modification des plannings si plusieurs sites
+      elseif($elem['groupe_id']==12){
+	$groupe_id=300+$i;
+      }
+
+      $checked=null;
+      $checked="Non";
+      if(is_array($acces)){
+	$checked=in_array($groupe_id,$acces)?"checked='checked'":null;
+	$checked2=$checked?"Oui":"Non";
+	$class=$checked?"green bold":"red";
+      }
+
+      if($admin){
+	echo "<td class='center'><input type='checkbox' name='droits[]' $checked value='$groupe_id' /></td>\n";
+      }else{
+	echo "<td class='center $class'>$checked2</td>\n";
+      }
+    }
+    echo "</tr>\n";
+  }
+  echo "<tbody></table>\n";
+}
+
+
 ?>
 </div>
 <!--	FIN Droits d'accès		-->

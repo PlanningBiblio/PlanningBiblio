@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/db_data.php
 Création : mai 2011
-Dernière modification : 22 septembre 2014
+Dernière modification : 14 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -34,7 +34,7 @@ $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Agenda - index', 100, 'Age
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Absences - Modif', 100, '', 'absences/modif.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Absences - Modif2', 100, '', 'absences/modif2.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Absences - Suppression', 100, '', 'absences/delete.php');";
-$sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Absences - Infos', 1, 'Gestion des absences', 'absences/infos.php');";
+$sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Absences - Infos', 1, 'Gestion des absences, validation N1', 'absences/infos.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Personnel - Index', 4, 'Voir le personnel', 'personnel/index.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Personnel - Modif', 4, 'Voir le personnel', 'personnel/modif.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Liste des postes - Index', 5, 'Gestion des postes', 'postes/index.php');";

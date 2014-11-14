@@ -627,6 +627,7 @@ if(strcmp("1.8.5",$config['Version'])>0){
 
 if(strcmp("1.8.6",$config['Version'])>0){
   $sql[]= "ALTER TABLE  `{$dbprefix}absences` ADD `pj1` INT(1) DEFAULT 0, ADD `pj2` INT(1) DEFAULT 0, ADD `so` INT(1) DEFAULT 0;";
+  $sql[]="UPDATE  `{$dbprefix}acces` SET `groupe`='Gestion des absences, validation N1' WHERE `groupe_id`='1';";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.8.6' WHERE `nom`='Version';";
 }
 
