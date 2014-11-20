@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 13 novembre 2014
+Dernière modification : 20 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -38,8 +38,9 @@ if(!file_exists("themes/$theme/$theme.css")){
 <script type='text/JavaScript' src='js/jquery-ui-1.10.4/ui/jquery-ui.js'></script>
 <script type='text/JavaScript' src='js/datePickerFr.js'></script>
 <script type='text/JavaScript' src='js/carhartl-jquery-cookie-3caf209/jquery.cookie.js'></script>
-<script type='text/JavaScript' src='js/dataTables/jquery.dataTables.min.js'></script>
-<script type='text/JavaScript' src='js/dataTables/FixedColumns.nightly.js'></script>
+<script type='text/JavaScript' src='js/DataTables-1.10.4/media/js/jquery.dataTables.min.js'></script>
+<script type='text/JavaScript' src='js/DataTables-1.10.4/extensions/FixedColumns/js/dataTables.fixedColumns.min.js'></script>
+<script type='text/JavaScript' src='js/DataTables-1.10.4/extensions/TableTools/js/dataTables.tableTools.min.js'></script>
 <script type='text/JavaScript' src='js/dataTables/sort.js'></script>
 <script type='text/JavaScript' src='js/script.js'></script>
 <script type='text/JavaScript' src='js/infobulles.js'></script>

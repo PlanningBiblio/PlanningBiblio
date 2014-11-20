@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.3
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 8 juillet 2014
+Dernière modification : 19 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -466,9 +466,12 @@ function heure3($heure){
   return $heure;
 }
 
-function heure4($heure){
-  if(!$heure){
+function heure4($heure,$return0=false){
+  if(!$heure and !$return0){
     return null;
+  }
+  if(!$heure and $return0){
+    return "0h00";
   }
   if(stripos($heure,"h")){
     $heure=str_replace(array("h00","h15","h30","h45"),array(".00",".25",".50",".75"),$heure);

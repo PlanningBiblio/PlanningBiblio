@@ -809,3 +809,15 @@ class cellule = cellule par défaut
 .green{
   color:green;
 }
+
+.orange{
+  color:orange;
+}
+
+.aRight{
+  text-align:right;
+}
+
+#tableConges td{
+  white-space: nowrap;
+}

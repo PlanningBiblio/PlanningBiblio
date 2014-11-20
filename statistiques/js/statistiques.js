@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.8.1
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/js/statistiques.js
 Création : 15 mai 2014
-Dernière modification : 13 juin 2014
+Dernière modification : 20 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -51,15 +51,13 @@ $(document).ready(function(){
     });
     
     // Colonnes fixes
-    new FixedColumns( absencesTable, {
-      "iLeftColumns" : iLeftColumns
-    });
+    new $.fn.dataTable.FixedColumns(absencesTable, init={"iLeftColumns" : iLeftColumns});
   }
 
 
   // DataTable Temps
   if($("#table_temps").length){
-    var tempsTable=$("#table_temps").dataTable({
+    var tempsTable=$("#table_temps").DataTable({
       "bJQueryUI": true,
       "sPaginationType": "full_numbers",
       "bStateSave": true,
@@ -70,8 +68,6 @@ $(document).ready(function(){
     });
 
     // Colonnes fixes
-    new FixedColumns( tempsTable, {
-      "iLeftColumns" : 2
-    });
+    new $.fn.dataTable.FixedColumns(tempsTable, init={"iLeftColumns" : 2});
   }
 });
