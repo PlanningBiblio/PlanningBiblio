@@ -32,7 +32,7 @@ $(document).ready(function(){
       "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"Tous"]],
       "iDisplayLength" : 25,
       "aaSorting" : [[2,"asc"],[3,"asc"]],
-      "oLanguage" : {"sUrl" : "js/dataTables/french.txt"},
+      "oLanguage" : {"sUrl" : "vendor/dataTables.french.lang"},
       "aoColumns" : aoCols,
     });
   }

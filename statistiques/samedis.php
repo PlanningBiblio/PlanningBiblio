@@ -389,7 +389,7 @@ $(document).ready(function() {
 
     "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"Tous"]],
     "iDisplayLength" : -1,
-    "oLanguage" : {"sUrl" : "js/dataTables/french.txt"}
+    "oLanguage" : {"sUrl" : "vendor/dataTables.french.lang"}
   });
 });
 </script>

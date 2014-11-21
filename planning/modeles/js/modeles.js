@@ -22,7 +22,7 @@ $(document).ready(function() {
     "aoColumns" : [{"bSortable":false},{"bSortable":true},],
     "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"Tous"]],
     "iDisplayLength" : 25,
-    "oLanguage" : {"sUrl" : "js/dataTables/french.txt"}
+    "oLanguage" : {"sUrl" : "vendor/dataTables.french.lang"}
   });
 });
 

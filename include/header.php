@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 20 novembre 2014
+Dernière modification : 21 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -34,14 +34,15 @@ if(!file_exists("themes/$theme/$theme.css")){
 <title>Planning</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-<script type='text/JavaScript' src='js/jquery-1.11.1.min.js'></script>
-<script type='text/JavaScript' src='js/jquery-ui-1.10.4/ui/jquery-ui.js'></script>
+<script type='text/JavaScript' src='vendor/jquery-1.11.1.min.js'></script>
+<script type='text/JavaScript' src='vendor/jquery-ui-1.11.2/jquery-ui.js'></script>
+<script type='text/JavaScript' src='vendor/carhartl-jquery-cookie-3caf209/jquery.cookie.js'></script>
+<script type='text/JavaScript' src='vendor/DataTables-1.10.4/media/js/jquery.dataTables.min.js'></script>
+<script type='text/JavaScript' src='vendor/DataTables-1.10.4/extensions/FixedColumns/js/dataTables.fixedColumns.min.js'></script>
+<script type='text/JavaScript' src='vendor/DataTables-1.10.4/extensions/TableTools/js/dataTables.tableTools.min.js'></script>
+<script type='text/JavaScript' src='vendor/dataTables.jqueryui.js'></script>
 <script type='text/JavaScript' src='js/datePickerFr.js'></script>
-<script type='text/JavaScript' src='js/carhartl-jquery-cookie-3caf209/jquery.cookie.js'></script>
-<script type='text/JavaScript' src='js/DataTables-1.10.4/media/js/jquery.dataTables.min.js'></script>
-<script type='text/JavaScript' src='js/DataTables-1.10.4/extensions/FixedColumns/js/dataTables.fixedColumns.min.js'></script>
-<script type='text/JavaScript' src='js/DataTables-1.10.4/extensions/TableTools/js/dataTables.tableTools.min.js'></script>
-<script type='text/JavaScript' src='js/dataTables/sort.js'></script>
+<script type='text/JavaScript' src='js/dataTables.sort.js'></script>
 <script type='text/JavaScript' src='js/script.js'></script>
 <script type='text/JavaScript' src='js/infobulles.js'></script>
 <?php
@@ -49,14 +50,16 @@ getJSFiles($page);
 ?>
 
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-<link rel='StyleSheet' href='themes/default/dataTables/jquery.dataTables_themeroller.css' type='text/css' media='all'/>
+<link rel='StyleSheet' href='vendor/DataTables-1.10.4/media/css/jquery.dataTables_themeroller.css' type='text/css' media='all'/>
+<link rel='StyleSheet' href='vendor/DataTables-1.10.4/media/css/dataTables.jqueryui.css' type='text/css' media='all'/>
+<link rel='StyleSheet' href='vendor/DataTables-1.10.4/extensions/TableTools/css/dataTables.tableTools.min.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/<?php echo $themeJQuery; ?>/jquery-ui.min.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/default.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/print.css' type='text/css' media='print'/>
-<?php
-echo "<link rel='StyleSheet' href='themes/$theme/$theme.css' type='text/css' media='all'/>\n";
-echo "</head>\n";
+<link rel='StyleSheet' href='themes/<?php echo "$theme/$theme"; ?>.css' type='text/css' media='all'/>
+</head>
 
+<?php
 echo $page=="aide/index.php"?"<body onscroll='position_retour();'>\n":"<body>\n";
 if(!isset($_GET['positionOff'])){
   echo <<<EOD
