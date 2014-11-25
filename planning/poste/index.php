@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.5
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 24 septembre 2014
+Dernière modification : 25 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -399,7 +399,7 @@ else{
   // affichage du tableau :
   // affichage de la lignes des horaires
   echo "<div id='tableau'>\n";
-  echo "<table id='tabsemaine1' cellspacing='0' cellpadding='0' class='text'>\n";
+  echo "<table id='tabsemaine1' cellspacing='0' cellpadding='0' class='text tabsemaine1'>\n";
   $k=0;
   foreach($tabs as $tab){
     //		Lignes horaires
@@ -694,33 +694,3 @@ EOD;
 ?>
 </div>
 </div>
-<script type='text/JavaScript'>
-// Menu contextuel
-<?php
-// Variables JavaScript
-echo "date='$date';";
-echo "site='$site';";
-?>
-// Masque le menu lorsque l'on clique en dehors
-$("html").click(function(){
-  $("#menudiv").hide();
-});
-
-// Affiche le menu lorsque l'on clique-droit dans le tableau
-document.getElementById('tableau').oncontextmenu  = ItemSelMenu;
-
-$("document").ready(function(){
-  // Vérifions si un agent de catégorie A est placé en fin de service
-  verif_categorieA();
-
-  // DataTable (tableau des absences)
-  $("#tableAbsences").dataTable({
-    "bJQueryUI": true,
-    "sPaginationType": "full_numbers",
-    "bStateSave": true,
-    "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"Tous"]],
-    "iDisplayLength" : 25,
-    "oLanguage" : {"sUrl" : "vendor/dataTables.french.lang"}
-  });
-});
-</script>

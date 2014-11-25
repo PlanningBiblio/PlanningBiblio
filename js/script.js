@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.8.5
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 30 octobre 2014
+Dernière modification : 5 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -14,20 +14,6 @@ Fichier contenant les principales fonctions JavaScript
 
 Cette page est appelée par les fichiers include/header.php, setup/header.php et planning/poste/menudiv.php
 */
-
-//	----------------------------		Variables			------------------------	//
-//	----------------------------		Variables Menu contextuel	------------------------	//
-var poste;
-var output;
-var perso_id;
-var date;
-var debut;
-var fin;
-var tableau;
-var tab_menu;
-var menudiv_display="none";
-//	----------------------------		FIN Variables			------------------------	//
-
 
 //	---------------------------		Fonctions communes		------------------------	//
 function annuler(nb){
@@ -252,26 +238,6 @@ function errorHighlight(e, type, icon) {
     });
 }
 
-  
-function file(fichier){
-  if(fichier.indexOf("php?")>0)				// l'ajout du parametre unique ms (nombre de millisecondes depuis le 1er Janvier 1970)
-    fichier=fichier+"&ms="+new Date().getTime();	// permet d'eviter les problème de cache (le navigateur pense ouvrir une nouvelle page)	
-  else if(fichier.indexOf("php")>0)
-    fichier=fichier+"?ms="+new Date().getTime();
-    
-  if(window.XMLHttpRequest) // FIREFOX
-    xhr_object = new XMLHttpRequest();
-  else if(window.ActiveXObject) // IE
-    xhr_object = new ActiveXObject("Microsoft.XMLHTTP");
-  else
-    return(false);
-
-  xhr_object.open("GET", fichier, false);
-  xhr_object.send(null);	
-  if(xhr_object.readyState == 4) return(xhr_object.responseText);
-  else return(false);
-}
-
 function heure4(heure){
   heure=heure.toString();
   if(heure.indexOf("h")>0){
@@ -366,8 +332,17 @@ function removeAccents(strAccents){
 // supprime(page,id)	Utilisée par postes et modeles
 function supprime(page,id){
   if(confirm("Etes vous sûr de vouloir supprimer cet élément ?")){
-    file("index.php?page="+page+"/valid.php&id="+id+"&action=supprime");
-    window.location.reload(false);
+    $.ajax({
+      url: page+"/ajax.delete.php",
+      type: "get",
+      data: "id="+id,
+      success: function(){
+	window.location.reload(false);
+      },
+      error: function(){
+	information("Une erreur est survenue lors de la suppression","error");
+      }
+    });
   }
 }
 
@@ -473,7 +448,6 @@ function verif_categorieA(){
   $.ajax({
     url: "planning/poste/ajax.categorieA.php",
     type: "get",
-    data: "date="+date+"&site="+site,
     success: function(retour){
       if(retour == "true"){
 	$("#planningTips").hide();
@@ -778,146 +752,6 @@ function select_drop_all(select_dispo,select_attrib,hidden_attrib,width){	// Att
 }
 //	Fin Select Multpiles
 //	---------------------------		FIN Personnel 		--------------------------------	//
-//	--------------------------------	Planning		---------------------------------	//
-// 	bataille_navale : menu contextuel : met à jour la base de données en arrière plan et affiche les modifs en JS dans le planning
-function bataille_navale(perso_id,nom,barrer,ajouter,classe){
-  db=file("index.php?page=planning/poste/majdb.php&poste="+poste+"&debut="+debut+"&fin="+fin+"&perso_id="+perso_id+"&date="+date+"&barrer="+barrer+"&ajouter="+ajouter);
-  
-  if(!perso_id && !barrer){			// Supprimer tout
-    $("#cellule"+cellule).html("&nbsp;");
-    $("#cellule"+cellule).css("textDecoration","");
-    $("#cellule"+cellule+"b").hide();
-    $("#cellule"+cellule).removeClass();
-    $("#td"+cellule).removeClass();
-  }
-  else if(!perso_id && barrer){			// Barrer l'(es) agent(s) placé(s)
-    $("#cellule"+cellule).css("color","red");
-    $("#cellule"+cellule).css("textDecoration","line-through");
-    $("#cellule"+cellule+"b").css("color","red");
-    $("#cellule"+cellule+"b").css("textDecoration","line-through");
-  }
-  else if(perso_id && !barrer && !ajouter){	// Remplacer l'agent placé par un autre
-    $("#cellule"+cellule).text(nom);
-    $("#cellule"+cellule).css("color","black");
-    $("#cellule"+cellule).css("textDecoration","");
-    $("#td"+cellule).attr("class",classe);
-    $("#cellule"+cellule).attr("class","cellule "+classe);
-    $("#cellule"+cellule+"b").hide();
-  }
-  else if(perso_id && barrer){			// barrer et ajoute un autre
-    $("#td"+cellule).removeClass();
-    $("#cellule"+cellule).css("textDecoration","line-through");
-    $("#cellule"+cellule).css("color","red");
-    $("#cellule"+cellule+"b").text(nom);
-    $("#cellule"+cellule+"b").attr("class","cellule "+classe);
-    $("#cellule"+cellule+"b").show();
-  }
-  else if(perso_id && ajouter){			// ajouter un agent
-    if($("#cellule"+cellule).text()<nom){
-      var nom1=$("#cellule"+cellule).text();
-      var nom2=nom;
-      var classe1=$("#cellule"+cellule).attr("class");
-      var classe2=classe;
-    }
-    else{
-      var nom1=nom;
-      var nom2=$("#cellule"+cellule).text();
-      var classe1=classe;
-      var classe2=$("#cellule"+cellule).attr("class");
-    }
-    $("#td"+cellule).removeClass();
-    $("#cellule"+cellule).text(nom1);
-    $("#cellule"+cellule+"b").text(nom2);
-    $("#cellule"+cellule).attr("class",classe1);
-    $("#cellule"+cellule+"b").attr("class",classe2);
-    $("#cellule"+cellule+"b").css("color","black");
-    $("#cellule"+cellule+"b").css("textDecoration","");
-    $("#cellule"+cellule+"b").show();
-  }
-  $("#menudiv").hide();				// cacher le menudiv
-
-  // Affiche un message en haut du planning si pas de catégorie A en fin de service 
-  verif_categorieA();
-}
-
-//	groupe_tab : utiliser pour menudiv
-function groupe_tab(id,tab,hide){			// améliorer les variables (tableaux) pour plus d'évolution
-  if(hide==undefined){
-    hide=1;
-  }
-
-  //		tab="1,2,3,4,5;6,7,8,9,10;11,12,13,14,15"
-  tmp=tab.split(';');
-  //		tmp=array("1,2,3,4,5","6,7,8,9,10","11,12,13,14,15")
-  var tab=new Array();
-  for(i=0;i<tmp.length;i++)
-    tab.push(tmp[i].split(','));
-    //		tab=array(array(1,2,3,4,5),array(6,7,8,9,10),array(11,12,13,14,15))
-  
-  //		On cache tout le sous-menu
-  if(hide==1){
-    for(i=0;i<tab.length;i++){
-      if(tab[i][0]){
-	for(j=0;j<tab[i].length;j++){
-		document.getElementById("tr"+tab[i][j]).style.display="none";
-	}
-      }
-    }
-  }
-	  
-  //		On affiche les agents du service voulu dans le sous-menu	
-  if(id!="vide" && tab[id][0]){
-    for(i=0;i<tab[id].length;i++){
-      document.getElementById("tr"+tab[id][i]).style.display="";
-    }
-  }
-}
-
-function groupe_tab_hide(){
-  $(".tr_liste").each(function(){
-    $(this).hide();
-  });
-}
-
-//	ItemSelMenu : Menu contextuel
-function  ItemSelMenu(e){
-  if(cellule=="")
-    return false;
-
-  document.getElementById("menudiv").scrollTop=0;
-  text=file("index.php?page=planning/poste/menudiv.php&debut="+debut+"&fin="+fin+"&poste="+poste+"&date="+date+"&menu=off&positionOff=");
-  hauteur=146;
-  document.getElementById("menudiv").innerHTML=text;
-
-  if($(window).width()-e.clientX<320){
-    $("#menudiv").css("left",e.pageX-360);
-    $("#menudivtab").css("left",220);
-    $("#menudivtab2").css("left",0);
-  }else{
-    $("#menudiv").css("left",e.pageX);
-  }
-  if($(window).height()-e.pageY<hauteur){
-    $("#menudiv").css("top",e.pageY-hauteur);
-  }else{
-    $("#menudiv").css("top",e.pageY);
-  }
-
-  document.getElementById("menudiv").style.display = menudiv_display;
-  return false ;
-}
-
-function refresh_poste(validation){		// actualise le planning en cas de modification
-  db=file("index.php?page=planning/poste/validation.php&menu=off");
-  db=db.split("###");
-  db=db[1];
-  if(db!=validation){
-    window.location.reload(false);
-  }
-  else{
-    setTimeout("refresh_poste('"+validation+"')",30000);
-  }
-}
-//	--------------------------------	FIN Planning/postes	---------------------------------	//
 //	--------------------------------	Tableaux		-------------------------	//
 //	--------------------------------	Tableaux - Horaires	-------------------------	//
 function add_horaires(tableau){
@@ -1006,10 +840,22 @@ function supprime_groupe(id,nom){
 
 function supprime_ligne(id,nom){
   if(confirm("Etes-vous sûr de vouloir supprimer la ligne \""+nom+"\" ?")){
-    file("planning/postes_cfg/supp_lignes.php?id="+id);
-    location.href="index.php?page=planning/postes_cfg/index.php";
+    $.ajax({
+      url: "planning/postes_cfg/ajax.supp_lignes.php",
+      type: "get",
+      data: "id="+id,
+      success: function(){
+	location.href="index.php?page=planning/postes_cfg/index.php";
+      },
+      error: function(){
+	information("Une erreur est survenue lors de la suppression de la ligne \""+nom+"\"","error");
+      }
+    });
   }
 }
+
+
+
 //	Suppression des élements sélectionnés (page de suppression, exception (séparés par virgules))
 function supprime_select(page,except){
   except=except.split(",");
@@ -1033,18 +879,33 @@ function supprime_select(page,except){
     alert("Les éléments sélectionnés ne peuvent être supprimés.");
   }
   else if(confirm("Etes-vous sûr(e) de vouloir supprimer les éléments sélectionnés ?")){
-    file("index.php?page="+page+"&ids="+ids);
+    $.ajax({
+      url: page,
+      type: "get",
+      data: "ids="+ids,
+      success: function(){
+	window.location.reload(false);
+      },
+      error: function(){
+	information("Une erreur est survenue lors de la suppression.","error");
+      }
+    });
   }
-  window.location.reload(false);
 }
 //	--------------------------------	FIN Tableaux		-------------------------	//
 //	--------------------------------	Statistiques		---------------------------------	//
 function export_stat(nom,type){
-  file("index.php?page=statistiques/export.php&nom="+nom+"&type="+type+"&menu=off");
-  if(type=="csv")
-    window.open("data/stat_"+nom+".csv");
-  else
-    window.open("data/stat_"+nom+".xls");
+  $.ajax({
+    url: "statistiques/export.php",
+    type: "get",
+    data: "nom="+nom+"&type="+type,
+    success: function(result){
+      window.open("data/"+result);
+    },
+    error: function(){
+      information("Une erreur est survenue lors de l'exportation.","error");
+    }
+  });
 }
 
 function verif_select(nom){

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : statistiques/export.php
 Création : mai 2011
-Dernière modification : 30 mai 2014
+Dernière modification : 4 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -17,6 +17,9 @@ les place dans les tableaux $cellules et $lignes, puis les écrit dans un fichie
 Page appelée par la fonction JavaScript "export_stat" lors du clique sur les liens "exporter" des pages de statistiques
 */
 
+session_start();
+require_once "../include/config.php";
+require_once "../include/function.php";
 require_once "class.statistiques.php";
 
  // Compter les jours ouvrables (ou ouvrés) entre début et fin
@@ -30,7 +33,7 @@ $db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debu
 $nbJours=$db->nb;
 
 $joursParSemaine=$config['Dimanche']?7:6;
-$Fnm = "data/stat_".$_GET['nom'];
+$Fnm = "stat_{$_GET['nom']}_".date("YmdHis");
 
 if($_GET['type']=="csv"){
   $separateur="';'";
@@ -40,6 +43,9 @@ else{
   $separateur="\t";
   $Fnm.=".xls";
 }
+
+echo $Fnm;	// Retour AJAX du nom de fichier
+$Fnm = "../data/$Fnm";
 
 $tab=$_SESSION['stat_tab'];
 

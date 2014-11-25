@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
-Fichier : planning/poste/validation.php
+Fichier : planning/poste/ajax.refresh.php
 Création : mai 2011
-Dernière modification : 19 juillet 2013
+Dernière modification : 5 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -17,12 +17,13 @@ modification a eue lieu à l'aide de la fonction JavaScript refresh_poste
 Cette page est appelée par la fonction JavaScript refresh_poste
 */
 
+session_start();
+require_once "../../include/config.php";
 require_once "class.planning.php";
 
-// Les 3 # permettent d'isoler le texte pour la fonction JavaScript (Refresh_Poste)
 $date=$_SESSION['PLdate'];
 $site=$_SESSION['oups']['site'];
 $db=new db();
 $db->query("SELECT `validation2` FROM `{$dbprefix}pl_poste_verrou` WHERE `date`='$date' AND `site`='$site';");
-echo "###{$db->result[0]['validation2']}###";
+echo $db->result[0]['validation2'];
 ?>

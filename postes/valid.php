@@ -1,17 +1,17 @@
 <?php
 /*
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : postes/valid.php
 Création : mai 2011
-Dernière modification : 24 juin 2014
+Dernière modification : 4 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
-Valide l'ajout, la modification ou la suppression d'un poste.
+Valide l'ajout ou la modification d'un poste.
 
 Page appelée par le fichier index.php.
 */
@@ -21,7 +21,7 @@ require_once "class.postes.php";
 $id=$_GET['id'];
 $action=$_GET['action'];
 
-if(!trim($_GET['nom']) and $action!="supprime"){
+if(!trim($_GET['nom'])){
   echo "<h3>Liste des postes</h3>\n";
   echo "Le nom est obligatoire<br/><br/>\n";
   echo "<a href='index.php?page=postes/index.php'>Retour</a>\n";
@@ -51,11 +51,6 @@ switch($action){
   case "modif" :
     $db=new db();
     $db->update2("postes",$data,array("id"=>$id));
-    break;
-	  
-  case "supprime" :
-    $db=new db();
-    $db->delete2("postes",array("id"=>$id));
     break;
 }
 

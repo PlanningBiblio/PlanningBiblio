@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 6 juin 2014
+Dernière modification : 4 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -16,12 +16,7 @@ Classe planning
 Utilisée par les fichiers du dossier "planning/poste"
 */
 
-// Securité : Traitement pour une reponse Ajax
-if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
-  $version="ajax";
-}
-
-// Si pas de $version ou pas de reponseAjax => acces direct aux pages de ce dossier => redirection vers la page index.php
+// Si pas de $version => acces direct aux pages de ce dossier => redirection vers la page index.php
 if(!$version){
   header("Location: ../../index.php");
 }
@@ -90,7 +85,7 @@ class planning{
   }
 
   // Affiche la liste des agents dans le menudiv
-  public function menudivAfficheAgents($agents,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion){
+  public function menudivAfficheAgents($poste,$agents,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion){
     $msg_deja_place="<font style='color:red;font-weight:bold;'>(DP)</font>";
     $msg_deuxSP="<font style='color:red;font-weight:bold;'>(2 SP)</font>";
     $config=$GLOBALS['config'];
@@ -105,12 +100,10 @@ class planning{
     if($hide){
       $display="display:none;";
       $groupe_hide=null;
-      $addClass="$(this).addClass(\"tr_liste\");";
       $classTrListe="tr_liste";
     }else{
       $display=null;
       $groupe_hide="groupe_tab_hide();";
-      $addClass=null;
       $classTrListe=null;
     }
 
@@ -196,8 +189,9 @@ class planning{
       }
 
       // affihage des heures faites les 4 dernières semaines + les heures de la cellule
-      $hres_4sem=0;
+      $hres_4sem=null;
       if($config['hres4semaines']){
+	$hres_4sem=0;
 	$date1=date("Y-m-d",strtotime("-3 weeks",strtotime($j1)));
 	$date2=$j7;	// fin de semaine courante
 	$db_hres4 = new db();
@@ -238,8 +232,8 @@ class planning{
       $classe=empty($class_tmp)?null:join(" ",$class_tmp);
 
       //	Affichage des lignes
-      echo "<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$(this).removeClass();$(this).addClass(\"menudiv-gris\"); $groupe_hide' onmouseout='$(this).removeClass();$addClass' class='$classe $classTrListe'>\n";
-      echo "<td style='width:200px;color:$color;' onclick='bataille_navale({$elem['id']},\"$nom\",0,0,\"$classe\");'>";
+      echo "<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$(this).removeClass();$(this).addClass(\"menudiv-gris\"); $groupe_hide' onmouseout='$(this).removeClass();$(this).addClass(\"$classe $classTrListe\");' class='$classe $classTrListe'>\n";
+      echo "<td style='width:200px;color:$color;' onclick='bataille_navale(\"$poste\",\"$debut\",\"$fin\",{$elem['id']},\"$nom\",0,0,\"$classe\");'>";
       echo $nom_menu;
 
       //	Afficher ici les horaires si besoin
@@ -247,9 +241,9 @@ class planning{
       
       //	Affichage des liens d'ajout et de remplacement
       if(!$cellule_vide and !$max_perso and !$sr and !$sr_init)
-	echo "<a href='javascript:bataille_navale(".$elem['id'].",\"$nom\",0,1,\"$classe\");'>+</a>";
+	echo "<a href='javascript:bataille_navale(\"$poste\",\"$debut\",\"$fin\",".$elem['id'].",\"$nom\",0,1,\"$classe\");'>+</a>";
       if(!$cellule_vide and !$max_perso)
-	echo "&nbsp;<a style='color:red' href='javascript:bataille_navale(".$elem['id'].",\"$nom\",1,1,\"$classe\");'>x</a>&nbsp;";
+	echo "&nbsp;<a style='color:red' href='javascript:bataille_navale(\"$poste\",\"$debut\",\"$fin\",".$elem['id'].",\"$nom\",1,1,\"$classe\");'>x</a>&nbsp;";
       echo "</td></tr>\n";
     }
 

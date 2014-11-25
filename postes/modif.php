@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : postes/modif.php
 Création : mai 2011
-Dernière modification : 24 juin 2014
+Dernière modification : 4 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -81,16 +81,16 @@ echo "<table>\n";
 echo "<tr><td style='width:160px'>";
 echo "Nom du poste :";
 echo "</td><td>";
-echo "<input type='text' value='$nom' name='nom' style='width:250px'/>";
+echo "<input type='text' value='$nom' name='nom' style='width:250px' class='ui-widget-content ui-corner-all'/>";
 echo "</td></tr>";
 
 if($config['Multisites-nombre']>1){
   echo "<tr><td>Site</td>\n";
-  echo "<td><select name='site' style='width:255px'>";
+  echo "<td><select name='site' style='width:255px' class='ui-widget-content ui-corner-all'>";
   echo "<option value='0'>&nbsp;</option>\n";
-  for($i=1;$i<count($config['Multisites-nombre'])+2;$i++){
+  for($i=1;$i<=$config['Multisites-nombre'];$i++){
     $selected=$site==$i?"selected='selected'":null;
-    echo "<option value='$i' $selected >".$config["Multisites-site{$i}"]."</option>\n";
+    echo "<option value='$i' $selected >{$config["Multisites-site{$i}"]}</option>\n";
   }
   echo "</select>";
   echo "</td></tr>\n";
@@ -99,7 +99,7 @@ if($config['Multisites-nombre']>1){
 echo "<tr><td>";
 echo "Etage :";
 echo "</td><td>";
-echo "<select name='etage' style='width:255px'>";
+echo "<select name='etage' style='width:255px' class='ui-widget-content ui-corner-all'>";
 echo "<option value=''>&nbsp;</option>\n";
 foreach($etages as $elem){
   $selected=$etage==$elem['valeur']?"selected='selected'":null;

@@ -1,4 +1,4 @@
-/* /* */
+/*
 Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 12 novembre 2014
+Dernière modification : 25 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -274,6 +274,41 @@ select
 	z-index:5;
 	}
 
+.th{
+  background-color:#FF7F3F;	/*FF5E0E;*/
+  font-weight:bold;
+  white-space: nowrap;
+}
+
+.tr1{
+  background-color:#FFD8C4;
+}
+
+.tr2{
+  background-color:#FFFFFF;
+}
+
+.striped{
+  text-decoration:line-through;
+}
+
+.aRight{
+  text-align:right;
+}
+
+.green{
+  color:green;
+}
+
+.orange{
+  color:#FFA500;
+}
+
+.red{
+  color:red;
+}
+
+
 /*		Plannings				*/
 /* Calendrier, titre (Semaine ...), Boutons de droite */
 #divcalendrier {
@@ -313,6 +348,75 @@ select
   display: none;
 }
 
+#date_planning, #semaine_planning {
+  margin-top: 6px;
+  font-weight:bold;
+}
+
+#semaine_planning{
+  display:none;
+}
+
+/*
+table #tabsemaine1 .tabsemaine1
+    -----------------------------------------------------------------------------------------------------
+tr .tr_horaires		|   td					|   td					|
+    -----------------------------------------------------------------------------------------------------
+tr  | td .td_postes	|   td >				|   td >				|
+    | [.td_obligatoire]	|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
+    | [.td_renfort]	|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
+    |			|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
+    -----------------------------------------------------------------------------------------------------
+tr  | td .td_postes	|   td >				|   td >				|
+    | [.td_obligatoire]	|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
+    | [.td_renfort]	|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
+    |			|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
+    -----------------------------------------------------------------------------------------------------
+tr .tr_separation
+    -----------------------------------------------------------------------------------------------------
+tr  | td .td_postes	|   td >				|   td >				|
+    | [.td_obligatoire]	|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
+    | [.td_renfort]	|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
+    |			|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
+    -----------------------------------------------------------------------------------------------------
+*/
+
+/*	Catégories, lignes du planning, en fonction de la catégorie requise par le poste	*/
+/*
+.tr_CategorieA td{
+}
+
+.tr_CategorieA td.td_obligatoire{
+}
+
+.tr_CategorieB td{
+}
+
+.tr_CategorieB td.td_obligatoire{
+}
+
+.tr_CategorieC td{
+}
+
+.tr_CategorieC td.td_obligatoire{
+}
+
+td.cellule_grise{
+}
+*/
+
+/*	Cellules et Statuts
+class cellule = cellule par défaut
+.statut_xxx	 = complète le style de la cellule en fonction du statut
+.service_xxx	 = complète le style de la cellule en fonction du service
+*/
+/*
+.statut_moniteur, td.statut_moniteur{
+  background:yellow;
+}
+*/
+
+
 #tabsemaine1, .tabsemaine1 {
   width:1260px;
   empty-cells:show;
@@ -326,13 +430,11 @@ select
   border-style : outset;
 }
 
-#date_planning, #semaine_planning {
-  margin-top: 6px;
+.tr_horaires, .tr_separation{
+  background: #7D3C25;
+  color:#FFFFFF;
+  font-size:12pt;
   font-weight:bold;
-}
-
-#semaine_planning{
-  display:none;
 }
 
 .td_postes {
@@ -342,18 +444,21 @@ select
 
 }
 
-.th{
-	background-color:#FF7F3F;	/*FF5E0E;*/
-	font-weight:bold;
-	white-space: nowrap;
+.td_obligatoire{
+  background:#00FA92;
 }
 
-.tr1{
-  background-color:#FFD8C4;
+.td_renfort{
+  background:#FFFFFF;
 }
 
-.tr2{
-  background-color:#FFFFFF;
+.cellDiv{
+}
+
+.cellSpan{
+  display:block;
+  padding:3px;
+  white-space: nowrap;
 }
 
 .menudiv-titre{
@@ -523,20 +628,11 @@ a:hover.menuRed, a:hover.menu {
 	font-weight: bold
 	}
 
-.cellule{
-  width:100%;
-  height:100%;
-}
-
-.demi_cellule{
-  width:100%;
-  height:50%;
-}
-
 .cellule_grise {
 	text-align:center;
 	background:#FFCCB3;
 	}
+
 /*																				*/
 /*	Setup																		*/
 /*																				*/
@@ -632,21 +728,6 @@ img{
 
 #tableau, .tableau{
   text-align:center;
-}
-
-.tr_horaires, .tr_separation{
-  background: #7D3C25;
-  color:#FFFFFF;
-  font-size:12pt;
-  font-weight:bold;
-}
-
-.td_obligatoire{
-  background:#00FA92;
-}
-
-.td_renfort{
-  background:#FFFFFF;
 }
 
 /*	Jours Fériés	*/
@@ -767,57 +848,7 @@ option.bold{
   font-size:9pt;
 }
 
-/*	Catégories, lignes du planning, en fonction de la catégorie requise par le poste	*/
-/*
-.tr_CategorieA td{
-}
-
-.tr_CategorieA td.td_obligatoire{
-}
-
-.tr_CategorieB td{
-}
-
-.tr_CategorieB td.td_obligatoire{
-}
-
-.tr_CategorieC td{
-}
-
-.tr_CategorieC td.td_obligatoire{
-}
-
-td.cellule_grise{
-}
-*/
-
-/*	Cellules et Statuts
-class cellule = cellule par défaut
-.statut_xxx	 = complète le style de la cellule en fonction du statut
-.service_xxx	 = complète le style de la cellule en fonction du service
-*/
-/*
-.statut_moniteur, td.statut_moniteur{
-  background:yellow;
-}
-*/
-
-.red{
-  color:red;
-}
-
-.green{
-  color:green;
-}
-
-.orange{
-  color:orange;
-}
-
-.aRight{
-  text-align:right;
-}
-
+/*	Congés	*/
 #tableConges td{
   white-space: nowrap;
 }

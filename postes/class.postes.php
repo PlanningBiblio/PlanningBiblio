@@ -1,20 +1,20 @@
 <?php
-/********************************************************************************************************************************
-* Planning Biblio, Version 1.7.2
-* Licence GNU/GPL (version 2 et au dela)											*
-* Voir les fichiers README.md et LICENSE											*
-* Copyright (C) 2011-2014 - Jérôme Combes											*
-*																*
-* Fichier : postes/class.postes.php												*
-* Création : 29 novembre 2012													*
-* Dernière modification : 16 janvier 2013											*
-* Auteur : Jérôme Combes, jerome@planningbilbio.fr										*
-*																*
-* Description :															*
-* Classe postes contenant la fonction postes::fetch permettant de rechercher les postes dans la base de données			*
-*																*
-* Utilisée par les fichiers du dossier "postes"											*
-*********************************************************************************************************************************/
+/*
+Planning Biblio, Version 1.8.6
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.md et LICENSE
+Copyright (C) 2011-2014 - Jérôme Combes
+
+Fichier : postes/class.postes.php
+Création : 29 novembre 2012
+Dernière modification : 4 novembre 2014
+Auteur : Jérôme Combes, jerome@planningbilbio.fr
+
+Description :
+Classe postes contenant la fonction postes::fetch permettant de rechercher les postes dans la base de données
+
+Utilisée par les fichiers du dossier "postes"
+*/
 
 // pas de $version=acces direct aux pages de ce dossier => redirection vers la page index.php
 if(!$version){
@@ -22,7 +22,14 @@ if(!$version){
 }
 
 class postes{
+  public $id=null;
+
   public function postes(){
+  }
+
+  public function delete(){
+    $db=new db();
+    $db->delete2("postes",array("id"=>$this->id));
   }
 
   public function fetch($sort="nom",$name=null,$group=null){
