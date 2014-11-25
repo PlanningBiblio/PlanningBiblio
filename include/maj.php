@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 5 novembre 2014
+Dernière modification : 25 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -635,6 +635,7 @@ if(strcmp("1.8.6",$config['Version'])>0){
   $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='planning/postes_cfg/suppression.php';";
   $sql[]= "ALTER TABLE  `{$dbprefix}absences` ADD `pj1` INT(1) DEFAULT 0, ADD `pj2` INT(1) DEFAULT 0, ADD `so` INT(1) DEFAULT 0;";
   $sql[]="UPDATE  `{$dbprefix}acces` SET `groupe`='Gestion des absences, validation N1' WHERE `groupe_id`='1';";
+  $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`) VALUES ('Gestion des absences, pi&egrave;ces justificatives', 701, 'Gestion des absences, pi&egrave;ces justificatives');";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.8.6' WHERE `nom`='Version';";
 }
 

@@ -141,7 +141,7 @@ if($config['Absences-validation']){
 echo "<th>Motif</th>\n";
 echo "<th>Commentaires</th>\n";
 
-if($admin){
+if(in_array(701,$droits)){
   echo "<th id='thPiecesJustif'><label style='white-space:nowrap'>Pi&egrave;ces justificatives</label><br/>\n";
   echo "<div class='absences-pj'>PJ 1</div><div class='absences-pj'>PJ 2</div><div class='absences-pj'>SO</div></th>\n";
 }
@@ -185,7 +185,7 @@ if($absences){
     echo "<td>{$elem['motif']}</td>\n";
     echo "<td>{$elem['commentaires']}</td>\n";
 
-    if($admin){
+    if(in_array(701,$droits)){
       echo "<td style='text-align:center;'>";
       echo "<div class='absences-pj'><input type='checkbox' id='pj1-$id' $pj1Checked /></div>\n";
       echo "<div class='absences-pj'><input type='checkbox' id='pj2-$id' $pj2Checked /></div>\n";

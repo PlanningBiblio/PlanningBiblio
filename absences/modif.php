@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 6 novembre 2014
+Dernière modification : 25 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -193,7 +193,7 @@ echo "<label class='intitule'>Commentaires</label></td><td>";
 echo "<textarea name='commentaires' cols='25' rows='5' class='ui-widget-content ui-corner-all'>$commentaires</textarea>";
 echo "</td></tr>";
 
-if($admin){
+if(in_array(701,$droits)){
   echo "<tr style='vertical-align:top;'><td>\n";
   echo "<label class='intitule'>Pi&egrave;ces justificatives</label></td><td>";
   echo "<div class='absences-pj-fiche'>PJ1 <input type='checkbox' name='pj1' id='pj1' $pj1Checked /></div>";
