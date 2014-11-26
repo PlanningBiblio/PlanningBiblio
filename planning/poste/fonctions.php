@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 25 février 2014
+Dernière modification : 26 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -69,7 +69,10 @@ function cellule_poste($debut,$fin,$colspan,$output,$poste){
 	}
 	$classe[$i]=empty($class_tmp)?null:join(" ",$class_tmp);
 
-	$resultats[$i]=array("text"=>"<span class='cellSpan'>$resultat</span>", "perso_id"=>$elem['perso_id']);
+	// Création d'une balise span avec les classes cellSpan, et agent_ de façon à les repérer et agir dessus à partir de la fonction JS bataille_navale.
+	$span="<span class='cellSpan agent_{$elem['perso_id']}'>$resultat</span>";
+
+	$resultats[$i]=array("text"=>$span, "perso_id"=>$elem['perso_id']);
 	$i++;
       }
     }

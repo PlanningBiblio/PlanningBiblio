@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 31 octobre 2014
+Dernière modification : 26 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -21,20 +21,22 @@ session_start();
 // Includes
 require_once "../../include/config.php";
 require_once "../../include/function.php";
+require_once "../../plugins/plugins.php";
 
-ini_set("display_errors",1);
+ini_set("display_errors",0);
 ini_set("error_reporting",E_ALL);
+
 //	Initialisation des variables
 $site=$_SESSION['oups']['site'];
-$ajouter=$_GET['ajouter'];
-$perso_id=$_GET['perso_id'];
-$perso_id_origine=$_GET['perso_id_origine'];
+$ajouter=$_POST['ajouter'];
+$perso_id=$_POST['perso_id'];
+$perso_id_origine=$_POST['perso_id_origine'];
 $date=$_SESSION['PLdate'];
-$debut=$_GET['debut'];
-$fin=$_GET['fin'];
-$absent=isset($_GET['absent'])?$_GET['absent']:"0";
-$poste=$_GET['poste'];
-$barrer=$_GET['barrer'];
+$debut=$_POST['debut'];
+$fin=$_POST['fin'];
+$absent=isset($_POST['absent'])?$_POST['absent']:"0";
+$poste=$_POST['poste'];
+$barrer=$_POST['barrer'];
 
 
 // Pärtie 1 : Enregistrement des nouveaux éléments
@@ -71,7 +73,7 @@ $db->query($req);
 
 
 // Partie 2 : Récupération de l'ensemble des éléments
-// Et transmission à la fonction JS bataille_navale
+// Et transmission à la fonction JS bataille_navale pour mise à jour de l'affichage de la cellule
 $db=new db();
 $db->query("SELECT `{$dbprefix}personnel`.`nom` AS `nom`,`{$dbprefix}personnel`.`prenom` AS `prenom`, 
   `{$dbprefix}personnel`.`statut` AS `statut`, `{$dbprefix}personnel`.`service` AS `service`, 
@@ -81,17 +83,33 @@ $db->query("SELECT `{$dbprefix}personnel`.`nom` AS `nom`,`{$dbprefix}personnel`.
   WHERE `{$dbprefix}pl_poste`.`date`='$date' AND `{$dbprefix}pl_poste`.`debut`='$debut' AND `{$dbprefix}pl_poste`.`fin`='$fin' 
   AND `{$dbprefix}pl_poste`.`poste`='$poste' AND `{$dbprefix}pl_poste`.`site`='$site' ORDER BY `nom`,`prenom`");
 
-if($db->result){
-  for($i=0;$i<$db->nb;$i++){
-    $db->result[$i]["statut"]=removeAccents($db->result[$i]["statut"]);
-    $db->result[$i]["service"]=removeAccents($db->result[$i]["service"]);
-  }
-
-  echo json_encode($db->result);
+if(!$db->result){
+  return;
 }
 
-// A CONTINUER : 
-// Traiter les congés pour les barrer en Orange
+$tab=$db->result;
+for($i=0;$i<count($tab);$i++){
+  // Mise en forme des statut et service pour affectation des classes css
+  $tab[$i]["statut"]=removeAccents($tab[$i]["statut"]);
+  $tab[$i]["service"]=removeAccents($tab[$i]["service"]);
+
+  // Ajout des Sans Repas (SR)
+  $tab[$i]["sr"]=0;
+  if($config['Planning-sansRepas'] and $debut>="11:30:00" and $fin<="14:30:00"){
+    $db=new db();
+    $db->select("pl_poste","*","`date`='$date' AND `perso_id`='{$tab[$i]['perso_id']}' AND `debut` >='11:30:00' AND `fin`<='14:30:00'");
+    if($db->nb>1){
+      $tab[$i]["sr"]=1;
+    }
+  }
+}
+
+// Marquage des congés
+if(in_array("conges",$plugins)){
+  include "../../plugins/conges/ajax.planning.updateCell.php";
+}
+
+echo json_encode($tab);
 
 /*
 Résultat :
@@ -101,8 +119,9 @@ Résultat :
     [statut] => Statut
     [service] => Service
     [perso_id] => 86
-    [absent] => 0
-    [supprime] => 0
+    [absent] => 0/1
+    [supprime] => 0/1
+    [sr] =>0/1
     )
   [1] => Array (
     ...

@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 25 novembre 2014
+Dernière modification : 26 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -182,31 +182,42 @@ $(function() {
 
 
 // Fonctions JavaScript
-// 	bataille_navale : menu contextuel : met à jour la base de données en arrière plan et affiche les modifs en JS dans le planning
-function bataille_navale(poste,debut,fin,perso_id,nom,barrer,ajouter,classe){
 
-  // Récupérer en Ajax les id, noms, prénom, service, statut dans agents placés
-  // Refaire la réquête précédente en $.ajax et y intégré la récupération des données
-  // Refaire ensuite l'affichage complet de la cellule. Tout effacer est recommencer avec le résultat de 
-    // la requête ajax.
-  //Attention à bien remettre en place les classes, les SR et les DP
-  // Pour les classes : les infos service et statut seront utilisées (voir s'il y a besoin d'autre chose : voir CSS)
-  // Pour les DP, il faudra peut être faire une autre requête, essayer de tout traiter avec une seule transaction ajax
-  // Pour les classes : elles devront couvrir toutes la largeur du TD : 
-  // évitons de travailler sur la hauteur du TD : adaptation automatique : garder la hauteur déclarée en CSS en min-height plutôt que height
-  
-  // Les cellule doivent être identifiable, supprimable et modifiable indépendament des autres
+function bataille_navale(poste,debut,fin,perso_id,barrer,ajouter){
+  /* 
+  bataille_navale : menu contextuel : met à jour la base de données en arrière plan et affiche les modifs en JS dans le planning
+  Récupére en Ajax les id, noms, prénom, service, statut dans agents placés
+  Met à jour la base de données en arrière plan
+  Refait ensuite l'affichage complet de la cellule. Efface est remplit la cellule avec les infos récupérées du fichier ajax.updateCell.php
+  Les cellules sont identifiables, supprimables et modifiables indépendament des autres
+  Les infos service et statut sont utilisées pour la mise en forme des cellules : utilisation des classes service_ et statut_
+  */
 
   $.ajax({
     url: "planning/poste/ajax.updateCell.php",
-    data: "&poste="+poste+"&debut="+debut+"&fin="+fin+"&perso_id="+perso_id+"&perso_id_origine="+perso_id_origine+"&barrer="+barrer+"&ajouter="+ajouter,
-    type: "get",
+    type: "post",
+    dataType: "json",
+    data: {poste: poste, debut: debut, fin: fin, perso_id: perso_id, perso_id_origine: perso_id_origine, barrer: barrer, ajouter: ajouter},
     success: function(result){
-      if(result){
-	result=JSON.parse(result);
+      $("#td"+cellule).html("");
+      
+      // Suppression du sans repas sur les cellules ainsi marquée
+      if(debut>="11:30:00" && fin <="14:30:00"){
+	  $(".agent_"+perso_id_origine).each(function(){
+	  var sr_debut=$(this).closest("td").data("start");
+	  var sr_fin=$(this).closest("td").data("end");
+	  if(sr_debut>="11:30:00" && sr_fin<="14:30:00"){
+	    $(this).find(".sansRepas").remove();
+	  }
+	});
+      }
+      
+      // Si pas de résultat (rien n'est affiché dans la cellule modifiée), 
+      // on réinitialise perso_id_origine pour ne pas avoir de rémanence pour la gestion de SR et suppression
+      if(!result){
+	perso_id_origine=0;
       }
 
-      $("#td"+cellule).html("");
       for(i in result){
 	// Exemple de cellule
 	// <div id='cellule11_0' class='cellule statut_bibas service_permanent' >Christophe C.</div>
@@ -218,10 +229,10 @@ function bataille_navale(poste,debut,fin,perso_id,nom,barrer,ajouter,classe){
 	  classes+=" red striped";
 	}
 
-	// Congés : A CONTINUER
-/*	if(result[i]["conges"]){
+	// Congés
+	if(result[i]["conges"]){
 	  classes+=" orange striped";
-	}*/
+	}
 
 	// Service et Statut
 	classes+=" service_"+result[i]["service"].toLowerCase().replace(" ","_");
@@ -230,8 +241,30 @@ function bataille_navale(poste,debut,fin,perso_id,nom,barrer,ajouter,classe){
 	var agent=result[i]["nom"]+" "+result[i]["prenom"].substr(0,1)+".";
 	var perso_id=result[i]["perso_id"];
 
-	$("#td"+cellule).append("<div id='cellule"+cellule+"_"+i+"' class='"+classes+"' data-perso-id='"+perso_id+"' oncontextmenu='perso_id_origine="+perso_id+";'> <span class='cellSpan'>"+agent+"</span></div>");
+	// Sans Repas
+	if(result[i]["sr"]){
+	  // Ajout du sans repas sur la cellule modifiée
+	  agent+="<label class='sansRepas'> (SR)</label>";
+	  
+	  // Ajout du sans repas sur les autres cellules concernées
+	  $(".agent_"+perso_id).each(function(){
+	    var sr_debut=$(this).closest("td").data("start");
+	    var sr_fin=$(this).closest("td").data("end");
+	    if(sr_debut>="11:30:00" && sr_fin<="14:30:00"){
+	      if($(this).text().indexOf("(SR)")==-1){
+		$(this).append("<label class='sansRepas'> (SR)</label>");
+	      }
+	    }
+	  });
+	}
+
+	// Création d'une balise span avec les classes cellSpan et agent_ de façon à les repérer et agir dessus 
+	debut=debut.replace(":","");
+	fin=fin.replace(":","");
+	var span="<span class='cellSpan agent_"+perso_id+"'>"+agent+"</span>";
+	var div="<div id='cellule"+cellule+"_"+i+"' class='"+classes+"' data-perso-id='"+perso_id+"' oncontextmenu='perso_id_origine="+perso_id+";'>"+span+"</div>"
 	// oncontextmenu='perso_id_origine="+perso_id+";' : necessaire car l'événement JQuery contextmenu sur .cellDiv ne marche pas sur les cellules modifiées
+	$("#td"+cellule).append(div);
       }
 
       // Mise en forme de toute la ligne
@@ -251,59 +284,6 @@ function bataille_navale(poste,debut,fin,perso_id,nom,barrer,ajouter,classe){
 	});
       });
 
-
-
-/*      if(!perso_id && !barrer){			// Supprimer tout
-	$("#cellule"+cellule+"_0").html("&nbsp;");
-	$("#cellule"+cellule+"_0").css("textDecoration","");
-	$("#cellule"+cellule+"_1").hide();
-	$("#cellule"+cellule+"_0").removeClass();
-	$("#td"+cellule).removeClass();
-      }
-      else if(!perso_id && barrer){			// Barrer l'(es) agent(s) placé(s)
-	$("#cellule"+cellule+"_0").css("color","red");
-	$("#cellule"+cellule+"_0").css("textDecoration","line-through");
-	$("#cellule"+cellule+"_1").css("color","red");
-	$("#cellule"+cellule+"_1").css("textDecoration","line-through");
-      }
-      else if(perso_id && !barrer && !ajouter){	// Remplacer l'agent placé par un autre
-	$("#cellule"+cellule+"_0").text(nom);
-	$("#cellule"+cellule+"_0").css("color","black");
-	$("#cellule"+cellule+"_0").css("textDecoration","");
-	$("#td"+cellule).attr("class",classe);
-	$("#cellule"+cellule+"_0").attr("class","cellule "+classe);
-	$("#cellule"+cellule+"_1").hide();
-      }
-      else if(perso_id && barrer){			// barrer et ajoute un autre
-	$("#td"+cellule).removeClass();
-	$("#cellule"+cellule+"_0").css("textDecoration","line-through");
-	$("#cellule"+cellule+"_0").css("color","red");
-	$("#cellule"+cellule+"_1").text(nom);
-	$("#cellule"+cellule+"_1").attr("class","cellule "+classe);
-	$("#cellule"+cellule+"_1").show();
-      }
-      else if(perso_id && ajouter){			// ajouter un agent
-	if($("#cellule"+cellule+"_0").text()<nom){
-	  var nom1=$("#cellule"+cellule+"_0").text();
-	  var nom2=nom;
-	  var classe1=$("#cellule"+cellule+"_0").attr("class");
-	  var classe2=classe;
-	}
-	else{
-	  var nom1=nom;
-	  var nom2=$("#cellule"+cellule+"_0").text();
-	  var classe1=classe;
-	  var classe2=$("#cellule"+cellule+"_0").attr("class");
-	}
-	$("#td"+cellule).removeClass();
-	$("#cellule"+cellule+"_0").text(nom1);
-	$("#cellule"+cellule+"_1").text(nom2);
-	$("#cellule"+cellule+"_0").attr("class",classe1);
-	$("#cellule"+cellule+"_1").attr("class",classe2);
-	$("#cellule"+cellule+"_1").css("color","black");
-	$("#cellule"+cellule+"_1").css("textDecoration","");
-	$("#cellule"+cellule+"_1").show();
-      }*/
       $("#menudiv").hide();				// cacher le menudiv
 
     },
@@ -323,63 +303,10 @@ Exemple de valeur pour la variable result :
     [perso_id] => 86
     [absent] => 0
     [supprime] => 0
+    [sr] => 0
     )
   [1] => Array (
     ...
-*/
-/*
-  if(!perso_id && !barrer){			// Supprimer tout
-    $("#cellule"+cellule+"_0").html("&nbsp;");
-    $("#cellule"+cellule+"_0").css("textDecoration","");
-    $("#cellule"+cellule+"_1").hide();
-    $("#cellule"+cellule+"_0").removeClass();
-    $("#td"+cellule).removeClass();
-  }
-  else if(!perso_id && barrer){			// Barrer l'(es) agent(s) placé(s)
-    $("#cellule"+cellule+"_0").css("color","red");
-    $("#cellule"+cellule+"_0").css("textDecoration","line-through");
-    $("#cellule"+cellule+"_1").css("color","red");
-    $("#cellule"+cellule+"_1").css("textDecoration","line-through");
-  }
-  else if(perso_id && !barrer && !ajouter){	// Remplacer l'agent placé par un autre
-    $("#cellule"+cellule+"_0").text(nom);
-    $("#cellule"+cellule+"_0").css("color","black");
-    $("#cellule"+cellule+"_0").css("textDecoration","");
-    $("#td"+cellule).attr("class",classe);
-    $("#cellule"+cellule+"_0").attr("class","cellule "+classe);
-    $("#cellule"+cellule+"_1").hide();
-  }
-  else if(perso_id && barrer){			// barrer et ajoute un autre
-    $("#td"+cellule).removeClass();
-    $("#cellule"+cellule+"_0").css("textDecoration","line-through");
-    $("#cellule"+cellule+"_0").css("color","red");
-    $("#cellule"+cellule+"_1").text(nom);
-    $("#cellule"+cellule+"_1").attr("class","cellule "+classe);
-    $("#cellule"+cellule+"_1").show();
-  }
-  else if(perso_id && ajouter){			// ajouter un agent
-    if($("#cellule"+cellule+"_0").text()<nom){
-      var nom1=$("#cellule"+cellule+"_0").text();
-      var nom2=nom;
-      var classe1=$("#cellule"+cellule+"_0").attr("class");
-      var classe2=classe;
-    }
-    else{
-      var nom1=nom;
-      var nom2=$("#cellule"+cellule+"_0").text();
-      var classe1=classe;
-      var classe2=$("#cellule"+cellule+"_0").attr("class");
-    }
-    $("#td"+cellule).removeClass();
-    $("#cellule"+cellule+"_0").text(nom1);
-    $("#cellule"+cellule+"_1").text(nom2);
-    $("#cellule"+cellule+"_0").attr("class",classe1);
-    $("#cellule"+cellule+"_1").attr("class",classe2);
-    $("#cellule"+cellule+"_1").css("color","black");
-    $("#cellule"+cellule+"_1").css("textDecoration","");
-    $("#cellule"+cellule+"_1").show();
-  }
-  $("#menudiv").hide();				// cacher le menudiv
 */
   // Affiche un message en haut du planning si pas de catégorie A en fin de service 
   verif_categorieA();

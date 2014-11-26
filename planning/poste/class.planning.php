@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 4 novembre 2014
+Dernière modification : 26 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -86,8 +86,9 @@ class planning{
 
   // Affiche la liste des agents dans le menudiv
   public function menudivAfficheAgents($poste,$agents,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion){
-    $msg_deja_place="<font style='color:red;font-weight:bold;'>(DP)</font>";
-    $msg_deuxSP="<font style='color:red;font-weight:bold;'>(2 SP)</font>";
+    $msg_deja_place="&nbsp;<font class='red bold'>(DP)</font>";
+    $msg_deuxSP="&nbsp;<font class='red bold'>(2 SP)</font>";
+    $msg_SR="&nbsp;<font class='red bold'>(SR)</font>";
     $config=$GLOBALS['config'];
     $dbprefix=$config['dbprefix'];
     $d=new datePl($date);
@@ -111,7 +112,6 @@ class planning{
       $hres_jour=0;
       $hres_sem=0;
       $sr=0;
-      $color='black';
 
       if(!$config['ClasseParService']){
 	if($elem['id']==2){		// on retire l'utilisateur "tout le monde"
@@ -134,18 +134,15 @@ class planning{
 	  $db_sr->query("SELECT * FROM `{$dbprefix}pl_poste` WHERE `date`='$date' AND `perso_id`='{$elem['id']}' AND `debut` >='11:30:00' AND `fin`<='14:30:00';");
 	  if($db_sr->result){
 	    $sr=1;
-	    $nom.=" (SR)";
-	    $color='red';
+	    $nom.=$msg_SR;
 	  }
 	}
       }
 	      
-      $nom_menu=$nom;
       //			----------------------		Déjà placés		-----------------------------------------------------//
       if($config['Planning-dejaPlace']){
 	if(in_array($elem['id'],$deja)){	// Déjà placé pour ce poste
-	  $nom_menu.=" ".$msg_deja_place;
-	  $color='red';
+	  $nom.=$msg_deja_place;
 	}
       }
       //			----------------------		FIN Déjà placés		-----------------------------------------------------//
@@ -153,14 +150,13 @@ class planning{
       // Vérifie si l'agent fera 2 plages de service public de suite
       if($config['Alerte2SP']){
 	if(in_array($elem['id'],$deuxSP)){
-	  $nom_menu.=" ".$msg_deuxSP;
-	  $color='red';
+	  $nom.=$msg_deuxSP;
 	}
       }
 
       // Motifs d'indisponibilité
       if(array_key_exists($elem['id'],$motifExclusion)){
-	$nom_menu.=" (".join(", ",$motifExclusion[$elem['id']]).")";
+	$nom.=" (".join(", ",$motifExclusion[$elem['id']]).")";
       }
 
       // affihage des heures faites ce jour + les heures de la cellule
@@ -208,17 +204,17 @@ class planning{
       }
 
       //	Mise en forme de la ligne avec le nom et les heures et la couleur en fonction des heures faites
-      $nom_menu.="&nbsp;<font title='Heures du jour'>$hres_jour</font> / ";
-      $nom_menu.="<font title='Heures de la semaine'>$hres_sem</font> / ";
-      $nom_menu.="<font title='Quota hebdomadaire'>{$elem['heuresHebdo']}</font>";
-      $nom_menu.=$hres_4sem;
+      $nom.="&nbsp;<font title='Heures du jour'>$hres_jour</font> / ";
+      $nom.="<font title='Heures de la semaine'>$hres_sem</font> / ";
+      $nom.="<font title='Quota hebdomadaire'>{$elem['heuresHebdo']}</font>";
+      $nom.=$hres_4sem;
 
       if($hres_jour>7)			// plus de 7h:jour : rouge
-	$nom_menu="<font style='color:red'>$nom_menu</font>\n";
+	$nom="<font style='color:red'>$nom</font>\n";
       elseif(($elem['heuresHebdo']-$hres_sem)<=0.5 and ($hres_sem-$elem['heuresHebdo'])<=0.5)		// 0,5 du quota hebdo : vert
-	$nom_menu="<font style='color:green'>$nom_menu</font>\n";
+	$nom="<font style='color:green'>$nom</font>\n";
       elseif($hres_sem>$elem['heuresHebdo'])			// plus du quota hebdo : rouge
-	$nom_menu="<font style='color:red'>$nom_menu</font>\n";
+	$nom="<font style='color:red'>$nom</font>\n";
       
       
       // Classe en fonction du statut et du service
@@ -233,17 +229,17 @@ class planning{
 
       //	Affichage des lignes
       echo "<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$(this).removeClass();$(this).addClass(\"menudiv-gris\"); $groupe_hide' onmouseout='$(this).removeClass();$(this).addClass(\"$classe $classTrListe\");' class='$classe $classTrListe'>\n";
-      echo "<td style='width:200px;color:$color;' onclick='bataille_navale(\"$poste\",\"$debut\",\"$fin\",{$elem['id']},\"$nom\",0,0,\"$classe\");'>";
-      echo $nom_menu;
+      echo "<td style='width:200px;font-weight:normal;' onclick='bataille_navale(\"$poste\",\"$debut\",\"$fin\",{$elem['id']},0,0);'>";
+      echo $nom;
 
       //	Afficher ici les horaires si besoin
       echo "</td><td style='text-align:right;width:20px'>";
       
       //	Affichage des liens d'ajout et de remplacement
       if(!$cellule_vide and !$max_perso and !$sr and !$sr_init)
-	echo "<a href='javascript:bataille_navale(\"$poste\",\"$debut\",\"$fin\",".$elem['id'].",\"$nom\",0,1,\"$classe\");'>+</a>";
+	echo "<a href='javascript:bataille_navale(\"$poste\",\"$debut\",\"$fin\",".$elem['id'].",0,1);'>+</a>";
       if(!$cellule_vide and !$max_perso)
-	echo "&nbsp;<a style='color:red' href='javascript:bataille_navale(\"$poste\",\"$debut\",\"$fin\",".$elem['id'].",\"$nom\",1,1,\"$classe\");'>x</a>&nbsp;";
+	echo "&nbsp;<a style='color:red' href='javascript:bataille_navale(\"$poste\",\"$debut\",\"$fin\",".$elem['id'].",1,1);'>x</a>&nbsp;";
       echo "</td></tr>\n";
     }
 
