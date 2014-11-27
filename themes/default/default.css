@@ -6,7 +6,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 25 novembre 2014
+Dernière modification : 27 novembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -461,6 +461,13 @@ class cellule = cellule par défaut
   white-space: nowrap;
 }
 
+.noteBasDePage{
+  text-align:left;
+  padding-top:30px;
+  font-style:italic;
+  font-size:10pt;
+}
+
 .menudiv-titre{
   background:#7B7B7B;
   color:#FFFFFF;
@@ -833,11 +840,9 @@ option.bold{
   background-color:#FEE7DC;
 }
 
-.noteBasDePage{
-  text-align:left;
-  padding-top:30px;
-  font-style:italic;
-  font-size:10pt;
+/*	JQuery-UI Accordion	*/
+.ui-accordion .ui-accordion-header{
+  margin-bottom: 0px;
 }
 
 /*	Footer	*/
