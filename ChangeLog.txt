@@ -1,3 +1,18 @@
+***	Version 1.8.6	(Jérôme Combes, 5 décembre 2014)		***
+- Améliorations :
+Planning : Possibilité de mettre jusqu'à 20 agents par cellule.
+Absences : Cases à cocher pour les pièces justificatives
+Absences : Suppression de la page de confirmation lors de l'ajout d'une absence
+Fiches Agents : Amélioration de l'affichage des droits d'accès
+
+JS : Fonction file() remplacée par $.ajax()
+Réorganisation des dossiers js et themes, création d'un dossier vendor
+Mise à jour des bibliothèques JQuery, JQuery-ui, DataDatble
+Ajout de l'extension TableTools pour DataTable (permet d'exporter les tables)
+
+- Corrections :
+Supprime le 0 de trop dans le menudiv
+
 ***	Version 1.8.5	(Jérôme Combes, Christophe Le Guennec, 29 octobre 2014)		***
 - Améliorations :
 Multisites : jusqu'à 10 sites
