@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 26 novembre 2014
+Dernière modification : 7 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -84,6 +84,7 @@ $db->query("SELECT `{$dbprefix}personnel`.`nom` AS `nom`,`{$dbprefix}personnel`.
   AND `{$dbprefix}pl_poste`.`poste`='$poste' AND `{$dbprefix}pl_poste`.`site`='$site' ORDER BY `nom`,`prenom`");
 
 if(!$db->result){
+  echo json_encode(array());
   return;
 }
 

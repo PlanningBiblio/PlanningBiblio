@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 25 novembre 2014
+Dernière modification : 7 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -215,11 +215,11 @@ if($autorisation){
   if($verrou){
     echo "<div class='pl-validation'><u>Validation</u><br/>$perso2 $date_validation2 $heure_validation2</div>\n";
     echo "<a href='index.php?page=planning/poste/verrou.php&amp;date=$date&amp;verrou2=0&amp;site=$site' title='Déverrouiller le planning'>\n";
-    echo "<span class='pl-icon pl-icon-unlock'></span></a>\n";
+    echo "<span class='pl-icon pl-icon-lock'></span></a>\n";
   }
   else{
     echo "<a href='index.php?page=planning/poste/verrou.php&amp;date=$date&amp;verrou2=1&amp;site=$site' title='Verrouiller le planning'>\n";
-    echo "<span class='pl-icon pl-icon-lock'></span></a>\n";
+    echo "<span class='pl-icon pl-icon-unlock'></span></a>\n";
   }
 }
 
@@ -436,7 +436,7 @@ else{
 	  // recherche des infos à afficher dans chaque cellule 
 	  // fonction cellule_poste(debut,fin,colspan,affichage,poste)
 	  if(in_array("{$ligne['ligne']}_{$i}",$tab['cellules_grises'])){
-	    echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."' class='cellule_grise' oncontextmenu='cellule=\"\";' >&nbsp;</td>";
+	    echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."' class='cellule_grise'>&nbsp;</td>";
 	  }
 	  else{
 	    echo cellule_poste($horaires["debut"],$horaires["fin"],nb30($horaires['debut'],$horaires['fin']),"noms",$ligne['poste']);
