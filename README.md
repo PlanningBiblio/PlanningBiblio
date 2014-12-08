@@ -1,29 +1,46 @@
 Planning Biblio
 ===============
 
-Planning Biblio est un logiciel développé en PHP-MySQL permettant de réaliser les plannings de service public
+Planning Biblio est un logiciel libre développé en PHP-MySQL permettant de réaliser les plannings de service public
+
+Site web : http://www.planningbiblio.fr
+Twitter : @jeromecombes , #PlanningBiblio
+Groupe Facebook : Les faiseurs de planning : https://www.facebook.com/groups/350347521813310
 
 ===============
- Copyright (C) 2011-2014 - Jérôme Combes
+Prérequis :
 
- Planning Biblio est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
- suivant les termes de la "GNU General Public License", telle que publiée par la 
- Free Software Foundation (version 2 et au dela).
+Serveur Apache 2.2 ou supérieur
+PHP 5.3 ou supérieur
+MySQL client/serveur 5 ou supérieur
 
- Planning Biblio est distribué dans l'espoir qu'il vous sera utile, mais SANS AUCUNE GARANTIE :
- sans même la garantie implicite de COMMERCIALISABILITÉ ni d'ADÉQUATION À UN OBJECTIF PARTICULIER.
- Consultez la Licence Générale Publique GNU pour plus de détails.
+Extensions PHP :
+- Calendar
+- Mcrypt
+- Mysqli
+- PDO
+- PDO-Mysql
+- CURL (si identification CAS)
+- LDAP (si utilisation avec un serveur LDAP)
 
- Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec ce programme (fichier LICENSE); 
- si ce n'est pas le cas, consultez : http://www.gnu.org/licenses
+===============
+Copyright (C) 2011-2014 - Jérôme Combes
 
- Site web de l'application PlanningBiblio : http://www.planningbiblio.fr
+Planning Biblio est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+suivant les termes de la "GNU General Public License", telle que publiée par la 
+Free Software Foundation (version 2 et au dela).
 
+Planning Biblio est distribué dans l'espoir qu'il vous sera utile, mais SANS AUCUNE GARANTIE :
+sans même la garantie implicite de COMMERCIALISABILITÉ ni d'ADÉQUATION À UN OBJECTIF PARTICULIER.
+Consultez la Licence Générale Publique GNU pour plus de détails.
+
+Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec ce programme (fichier LICENSE); 
+si ce n'est pas le cas, consultez : http://www.gnu.org/licenses
 
 ===============
 Ressources :
  
- Fichiers include/phpmailer
+ Dossier include/phpmailer
  - Software: PHPMailer - PHP email class
  - Version: 5.0.2
  - Copyright (c) 2004-2009, Andy Prevost. All Rights Reserved.
@@ -37,10 +54,20 @@ Ressources :
  - Date édition   : 05 Mai 2008
  - Website auteur : http://olravet.fr/
 
-  Fichier vendor/jquery-*.min.js
-  - Bibliothèques JQuery
-  - Licence MIT : https://jquery.org/license
+ Fichier vendor/jquery-*.min.js
+ - Bibliothèques JQuery
+ - About jQuery : http://learn.jquery.com/about-jquery
+ - Licence MIT : https://jquery.org/license
 
-  Fichiers et dossiers vendor/jquery-ui-*, themes/default/jquery-ui-min.css
-  - Bibliothèques et thèmes JQuery-UI
-  - Licence MIT : https://jquery.org/license
+ Fichiers et dossiers vendor/jquery-ui-*, themes/default/jquery-ui-min.css
+ - Bibliothèques et thèmes JQuery-UI
+ - About jQuery UI : http://jqueryui.com/about
+ - Licence MIT : https://jquery.org/license
+
+ Dossier DataTables*
+ - Site Web : http://www.datatables.net/
+ - Licence MIT : http://www.datatables.net/license/mit
+
+ JQuery-cookies
+ - GitHub : https://github.com/carhartl/jquery-cookie
+ - Licence MIT
