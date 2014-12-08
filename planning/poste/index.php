@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.8.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 7 décembre 2014
+Dernière modification : 8 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -414,8 +414,17 @@ else{
     
     //	Lignes postes et grandes lignes
     foreach($tab['lignes'] as $ligne){
+      // Regardons si la ligne est vide afin de ne pas l'afficher si $config['Planning-lignes-vides']=0
+      if(!$config['Planning-lignesVides'] and $verrou and isAnEmptyLine($ligne['poste'])){
+	continue;
+      }
+
+      // Lignes postes
       if($ligne['type']=="poste" and $ligne['poste']){
+	// Classe de la première cellule en fonction du type de poste (obligatoire ou de renfort)
 	$classTD=$postes[$ligne['poste']]['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
+
+	// Classe de la ligne en fonction des catégories requises par le poste
 	$classTR=array();
 	if(!empty($postes[$ligne['poste']]['categories'])){
 	  foreach($postes[$ligne['poste']]['categories'] as $cat){
@@ -426,7 +435,9 @@ else{
 	}
 	$classTR=join(" ",$classTR);
 
+	// Affichage de la ligne
 	echo "<tr class='$classTR'><td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
+	// Affichage ou non des étages
 	if($config['Affichage-etages'] and $postes[$ligne['poste']]['etage']){
 	  echo " ({$postes[$ligne['poste']]['etage']})";
 	}
@@ -434,10 +445,11 @@ else{
 	$i=1;
 	foreach($tab['horaires'] as $horaires){
 	  // recherche des infos à afficher dans chaque cellule 
-	  // fonction cellule_poste(debut,fin,colspan,affichage,poste)
+	  // Cellules grisées
 	  if(in_array("{$ligne['ligne']}_{$i}",$tab['cellules_grises'])){
 	    echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."' class='cellule_grise'>&nbsp;</td>";
 	  }
+	  // fonction cellule_poste(debut,fin,colspan,affichage,poste)
 	  else{
 	    echo cellule_poste($horaires["debut"],$horaires["fin"],nb30($horaires['debut'],$horaires['fin']),"noms",$ligne['poste']);
 	  }
@@ -445,6 +457,7 @@ else{
 	}
 	echo "</tr>\n";
       }
+      // Lignes de séparation
       if($ligne['type']=="ligne"){
 	echo "<tr class='tr_separation'>\n";
 	echo "<td>{$lignes_sep[$ligne['poste']]}</td><td colspan='$colspan'>&nbsp;</td></tr>\n";

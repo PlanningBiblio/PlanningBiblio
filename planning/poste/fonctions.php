@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.3
+Planning Biblio, Version 1.8.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 26 novembre 2014
+Dernière modification : 8 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -123,6 +123,21 @@ function groupe($poste){
   return $poste;
 }
 //--------		FIN Vérifier si le poste demandé appartient à un groupe, si oui, on recherche les personnes qualifiées pour ce groupe (poste=groupe) ---------//
+
+
+// Vérifie si la ligne du tableau correspondant au poste $poste est vide ou non
+function isAnEmptyLine($poste){
+  if(!$poste){
+    return false;
+  }
+  foreach($GLOBALS['cellules'] as $elem){
+    if($poste==$elem['poste']){
+      return false;
+    }
+  }
+  return true;
+}
+
 
 //		-------------	paramétrage de la largeur des colonnes		--------------//
 function nb30($debut,$fin){

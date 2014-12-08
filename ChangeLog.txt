@@ -1,3 +1,11 @@
+***	Version 1.8.7	(Jérôme Combes, 8 décembre 2014)		***
+- Améliorations :
+Planning : Possibilité de ne pas afficher les lignes vides dans les plannings validés (config Planning-lignesVides)
+
+- Corrections :
+Planning : Corrige l'erreur retournée lorsqu'une cellule est vidée (erreur générée en 1.8.6)
+
+
 ***	Version 1.8.6	(Jérôme Combes, 5 décembre 2014)		***
 - Améliorations :
 Planning : Possibilité de mettre jusqu'à 20 agents par cellule.
@@ -13,6 +21,7 @@ Ajout de l'extension TableTools pour DataTable (permet d'exporter les tables)
 - Corrections :
 Supprime le 0 de trop dans le menudiv
 
+
 ***	Version 1.8.5	(Jérôme Combes, Christophe Le Guennec, 29 octobre 2014)		***
 - Améliorations :
 Multisites : jusqu'à 10 sites
@@ -24,6 +33,7 @@ LDAP : Permet l'authentification LDAP même si le DN n'est pas construit avec ui
 Suppression automatique du personnel le lendemain de la date de départ et non le jour du départ.
 Affichage des agents dans le menu du planning seulement si la date d'arrivée est dépassée
 
+
 ***	Version 1.8.4	(Jérôme Combes, 12 septembre 2014)		***
 - Améliorations :
 Les fonctions mysql_* (obsolètes sous PHP5.5) sont remplacées par les fonctions mysqli_*
@@ -33,6 +43,7 @@ Les fonctions mysql_* (obsolètes sous PHP5.5) sont remplacées par les fonction
 - Améliorations :
 Importation LDAP
 Authentification LDAP et CAS
+
 
 ***	Version 1.8.2	(Jérôme Combes, 26 juin 2014)		***
 - Améliorations :
@@ -44,6 +55,7 @@ Nettoyage du fichier js/script.js
 Planning semaine : ajout des icônes Rafraichir et imprimer
 Gestion des versions des plugins pour simplifier les mises à jour de la base de données
 
+
 ***	Version 1.8.1	(Jérôme Combes, 17 juin 2014)		***
 - Améliorations :
 Remplace les anciens calendiers par des datepickers
@@ -52,6 +64,7 @@ Statistiques absences : n'affiche pas les heures si le plugins planningHebdo n'e
 
 - Corrections :
 Absences : Affiche les validations dans les mails notifiant les modifications d'absences
+
 
 ***	Version 1.8	(Jérôme Combes, 12 juin 2014)		***
 - Améliorations :
@@ -64,6 +77,7 @@ Permet l'ajout de commentaires en bas des plannings
 Correction de la fonction PHP decrypt (des -> tripledes)
 Initilisations de variables dans statistiques/temps.php
 Initilisations de variables dans planning/poste/menudiv.php (menu déroulant du planning) : réinitialise correctement les couleurs et les heures des agents
+
 
 ***	Version 1.7.9	(Jérôme Combes, 30 avril 2014)		***
 - Améliorations :
