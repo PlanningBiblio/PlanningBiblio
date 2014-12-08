@@ -1,6 +1,7 @@
 maj.sh
 *~
-data/*
+data/*.xls
+data/*.csv
 include/config.php
 include/test.php
 plugins/conges*
