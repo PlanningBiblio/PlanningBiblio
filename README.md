@@ -3,6 +3,7 @@ Planning Biblio
 
 Planning Biblio est un logiciel libre développé en PHP-MySQL permettant de réaliser les plannings de service public
 
+
 Site web : http://www.planningbiblio.fr
 
 Twitter : @jeromecombes , #PlanningBiblio
@@ -11,6 +12,34 @@ Groupe Facebook : Les faiseurs de planning : https://www.facebook.com/groups/350
 
 ===============
 Prérequis :
+
+Serveur Apache 2.2 ou supérieur
+
+PHP 5.3 ou supérieur
+
+MySQL client/serveur 5 ou supérieur
+
+Extensions PHP :
+- Calendar
+- Mcrypt
+- Mysqli
+- PDO
+- PDO-Mysql
+- CURL (si identification CAS)
+- LDAP (si utilisation avec un serveur LDAP)
+
+===============
+Copyright (C) 2011-2014 - Jérôme Combes
+
+Planning Biblio est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
+suivant les termes de la "GNU General Public License", telle que publiée par la 
+Free Software Foundation (version 2 et au dela).
+
+Planning Biblio est distribué dans l'espoir qu'il vous sera utile, mais SANS AUCUNE GARANTIE :
+sans même la garantie implicite de COMMERCIALISABILITÉ ni d'ADÉQUATION À UN OBJECTIF PARTICULIER.
+Consultez la Licence Générale Publique GNU pour plus de détails.
+
+=======
 
 Serveur Apache 2.2 ou supérieur
 PHP 5.3 ou supérieur
