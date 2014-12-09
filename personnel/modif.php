@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.8.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 14 novembre 2014
+Dernière modification : 9 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -98,7 +98,7 @@ if(isset($_GET['id'])){		//	récupération des infos de l'agent en cas de modif
     sort($postes_attribues);
   $acces=unserialize($db->result[0]['droits']);
   $matricule=$db->result[0]['matricule'];
-  $mailResponsable=$db->result[0]['mailResponsable'];
+  $mailsResponsables=explode(";",$db->result[0]['mailsResponsables']);
   $informations=stripslashes($db->result[0]['informations']);
   $recup=stripslashes($db->result[0]['recup']);
   $sites=$db->result[0]['sites'];
@@ -123,7 +123,7 @@ else{		// pas d'id, donc ajout d'un agent
   $postes_attribues=array();
   $access=array();
   $matricule=null;
-  $mailResponsable=null;
+  $mailsResponsables=array();
   $informations=null;
   $recup=null;
   $sites=array();
@@ -402,7 +402,6 @@ if($config['Multisites-nombre']>1){
 echo "<tr><td>";
 echo "Date d'arrivée ";
 if(in_array(21,$droits)){
-  echo "(AAAA-MM-JJ) :";
   echo "</td><td>";
   echo "<input type='text' value='$arrivee' name='arrivee' style='width:400px' class='datepicker'/>";
 }
@@ -413,7 +412,6 @@ echo "</td></tr>";
 echo "<tr><td>";
 echo "Date de départ ";
 if(in_array(21,$droits)){
-  echo "(AAAA-MM-JJ) :";
   echo "</td><td>";
   echo "<input type='text' value='$depart' name='depart' style='width:400px'  class='datepicker'/>";
 }
@@ -428,11 +426,23 @@ echo in_array(21,$droits)?"<input type='text' value='$matricule' name='matricule
 echo "</td></tr>";
 
 echo "<tr><td>";
-echo "E-mail du responsable: ";
-if(in_array(21,$droits))
-	echo "<a href='mailto:$mailResponsable'>$mailResponsable</a>";
+echo "E-mails des responsables : ";
+if(in_array(21,$droits)){
+  foreach($mailsResponsables as $elem){
+    $elem=trim($elem);
+    echo "<br/><a href='mailto:$elem' style='margin-left:30px;'>$elem</a>";
+  }
+}
 echo "</td><td>";
-echo in_array(21,$droits)?"<input type='text' value='$mailResponsable' name='mailResponsable' style='width:400px' />":"<a href='mailto:$mailResponsable'>$mail</a>";
+if(in_array(21,$droits)){
+  $mailsResponsables=join("; ",$mailsResponsables);
+  echo "<textarea name='mailsResponsables' style='width:400px' cols='10' rows='4'>$mailsResponsables</textarea>";
+}else{
+  foreach($mailsResponsables as $elem){
+    $elem=trim($elem);
+    echo "<a href='mailto:$elem' style='margin-left:30px;'>$elem</a><br/>";
+  }
+}
 echo "</td></tr>";
 
 echo "<tr style='vertical-align:top;'><td>";

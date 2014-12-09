@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.8.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 5 novembre 2014
+Dernière modification : 9 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -60,7 +60,7 @@ $nbjours=isset($_GET['nbjours'])?$_GET['nbjours']:0;
 
 $db=new db();
 $db->query("select {$dbprefix}personnel.id as perso_id, {$dbprefix}personnel.nom as nom, {$dbprefix}personnel.prenom as prenom, 
-  {$dbprefix}personnel.mail as mail, {$dbprefix}personnel.mailResponsable as mailResponsable, {$dbprefix}personnel.sites as sites 
+  {$dbprefix}personnel.mail as mail, {$dbprefix}personnel.mailsResponsables as mailsResponsables, {$dbprefix}personnel.sites as sites 
   FROM {$dbprefix}absences INNER JOIN {$dbprefix}personnel ON {$dbprefix}absences.perso_id={$dbprefix}personnel.id 
   WHERE {$dbprefix}absences.id='$id'");
 $perso_id=$db->result[0]['perso_id'];
@@ -68,7 +68,7 @@ $nom=$db->result[0]['nom'];
 $prenom=$db->result[0]['prenom'];
 $mail=$db->result[0]['mail'];
 $sites_agent=unserialize($db->result[0]['sites']);
-$mailResponsable=$db->result[0]['mailResponsable'];
+$mailsResponsables=explode(";",$db->result[0]['mailsResponsables']);
 
 // Sécurité
 // Droit 1 = modification de toutes les absences
@@ -202,7 +202,7 @@ else{
 
 // Choix des destinataires en fonction de la configuration
 $a=new absences();
-$a->getRecipients($notifications,$responsables,$mail,$mailResponsable);
+$a->getRecipients($notifications,$responsables,$mail,$mailsResponsables);
 $destinataires=$a->recipients;
 
 // Message

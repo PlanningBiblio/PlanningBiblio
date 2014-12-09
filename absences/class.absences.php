@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.8.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 5 novembre 2014
+Dernière modification : 9 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -251,7 +251,7 @@ class absences{
     $dbprefix=$GLOBALS['config']['dbprefix'];
     $req="SELECT `{$dbprefix}personnel`.`nom` AS `nom`, `{$dbprefix}personnel`.`prenom` AS `prenom`, "
       ."`{$dbprefix}personnel`.`id` AS `perso_id`, `{$dbprefix}personnel`.`mail` AS `mail`, "
-      ."`{$dbprefix}personnel`.`mailResponsable` AS `mailResponsable`, "
+      ."`{$dbprefix}personnel`.`mailsResponsables` AS `mailsResponsables`, "
       ."`{$dbprefix}absences`.`id` AS `id`, `{$dbprefix}absences`.`debut` AS `debut`, "
       ."`{$dbprefix}absences`.`fin` AS `fin`, `{$dbprefix}absences`.`nbjours` AS `nbjours`, "
       ."`{$dbprefix}absences`.`motif` AS `motif`, `{$dbprefix}absences`.`commentaires` AS `commentaires`, "
@@ -263,7 +263,9 @@ class absences{
     $db=new db();
     $db->query($req);
     if($db->result){
-      $this->elements=$db->result[0];
+      $elem=$db->result[0];
+      $elem['mailsResponsables']=explode(";",$elem['mailsResponsables']);
+      $this->elements=$elem;
     }
   }
 
@@ -323,36 +325,59 @@ class absences{
     $this->responsables=$responsables;
   }
 
-  public function getRecipients($notifications,$responsables,$mail,$mailResponsable){
+  public function getRecipients($notifications,$responsables,$mail,$mailsResponsables){
     // Retourne la liste des destinataires des notifications en fonctions de niveau de validation.
     // $notifications : niveau de validation (Absences-notifications, Absences-notifications2, ...)
     // $responsables : listes des agents (array) ayant le droit de gérer les absences
     // $mail : mail de l'agent concerné par l'absence
-    // $mailResponsable : mail de son responsable direct
+    // $mailsResponsables : mails de ses responsables (tableau)
 
     $recipients=array();
     switch($notifications){
       case 1 :
 	foreach($responsables as $elem){
-	  $recipients[]=$elem['mail'];
+	  if(verifmail(trim($elem['mail']))){
+	    $recipients[]=trim($elem['mail']);
+	  }
 	}
 	break;
       case 2 :
-	$recipients[]=$mailResponsable;
+	if(is_array($mailsResponsables)){
+	  foreach($mailsResponsables as $elem){
+	    if(verifmail(trim($elem))){
+	      $recipients[]=trim($elem);
+	    }
+	  }
+	}
 	break;
       case 3 :
 	$recipients=explode(";",trim($GLOBALS['config']['Mail-Planning']));
 	break;
       case 4 :
 	$recipients=explode(";",trim($GLOBALS['config']['Mail-Planning']));
-	$recipients[]=$mail;
-	$recipients[]=$mailResponsable;
+
+	if(verifmail(trim($mail))){
+	  $recipients[]=trim($mail);
+	}
+
+	if(is_array($mailsResponsables)){
+	  foreach($mailsResponsables as $elem){
+	    if(verifmail(trim($elem))){
+	      $recipients[]=trim($elem);
+	    }
+	  }
+	}
+
 	foreach($responsables as $elem){
-	  $recipients[]=$elem['mail'];
+	  if(verifmail(trim($elem['mail']))){
+	    $recipients[]=trim($elem['mail']);
+	  }
 	}
 	break;
       case 5 :
-	$recipients[]=$mail;
+	if(verifmail(trim($mail))){
+	  $recipients[]=trim($mail);
+	}
 	break;
     }
     $this->recipients=$recipients;

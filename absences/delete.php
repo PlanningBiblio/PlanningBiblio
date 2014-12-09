@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.1
+Planning Biblio, Version 1.8.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/delete.php
 Création : mai 2011
-Dernière modification : 17 juin 2014
+Dernière modification : 9 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -27,7 +27,7 @@ $perso_id=$a->elements['perso_id'];
 $nom=$a->elements['nom'];
 $prenom=$a->elements['prenom'];
 $mail=$a->elements['mail'];
-$mailResponsable=$a->elements['mailResponsable'];
+$mailsResponsables=$a->elements['mailsResponsables'];
 $motif=$a->elements['motif'];
 $commentaires=$a->elements['commentaires'];
 $valideN1=$a->elements['valideN1'];
@@ -98,7 +98,7 @@ else{
   $responsables=$a->responsables;
 
   $a=new absences();
-  $a->getRecipients($config['Absences-notifications2'],$responsables,$mail,$mailResponsable);
+  $a->getRecipients($config['Absences-notifications2'],$responsables,$mail,$mailsResponsables);
   $destinataires=$a->recipients;
 
   sendmail("Suppression d'une absence",$message,$destinataires);

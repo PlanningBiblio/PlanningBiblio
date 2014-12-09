@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.8.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 25 novembre 2014
+Dernière modification : 9 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -121,8 +121,9 @@ if($confirm){
   }
 
   // Choix des destinataires des notifications selon la configuration
+  $mailsResponsables=explode(";",$db_perso->result[0]['mailsResponsables']);
   $a=new absences();
-  $a->getRecipients($notifications,$responsables,$db_perso->result[0]['mail'],$db_perso->result[0]['mailResponsable']);
+  $a->getRecipients($notifications,$responsables,$db_perso->result[0]['mail'],$mailsResponsables);
   $destinataires=$a->recipients;
 
   $debut_sql=$debutSQL." ".$hre_debut;

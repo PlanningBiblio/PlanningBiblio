@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.1
+Planning Biblio, Version 1.8.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 12 juin 2014
+Dernière modification : 9 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -61,7 +61,7 @@ if(isset($_POST['id'])){
   $eDTSamedi=isset($_POST['EDTSamedi'])?$_POST['EDTSamedi']:null;
   $premierLundi=isset($_POST['premierLundi'])?$_POST['premierLundi']:null;
   $dernierLundi=isset($_POST['dernierLundi'])?$_POST['dernierLundi']:null;
-  $mailResponsable=trim(htmlentities($_POST['mailResponsable'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+  $mailsResponsables=trim(htmlentities(str_replace("\n","",$_POST['mailsResponsables']),ENT_QUOTES|ENT_IGNORE,"UTF-8"));
   $matricule=trim(htmlentities($_POST['matricule'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
 }
 else{
@@ -83,7 +83,7 @@ else{
   $recup=null;
   $sites=serialize(array());
   $droits=array();
-  $mailResponsable=null;
+  $mailsResponsables=null;
   $matricule=null;
 }
 
@@ -101,7 +101,7 @@ switch($action){
     $insert=array("nom"=>$nom,"prenom"=>$prenom,"mail"=>$mail,"statut"=>$statut,"categorie"=>$categorie,"service"=>$service,"heuresHebdo"=>$heuresHebdo,
       "heuresTravail"=>$heuresTravail,"arrivee"=>$arrivee,"depart"=>$depart,"login"=>$login,"password"=>$mdp_crypt,"actif"=>$actif,
       "droits"=>$droits,"postes"=>$postes,"temps"=>$temps,"informations"=>$informations,"recup"=>$recup,"sites"=>$sites,
-      "mailResponsable"=>$mailResponsable,"matricule"=>$matricule);
+      "mailsResponsables"=>$mailsResponsables,"matricule"=>$matricule);
     if(in_array("conges",$plugins)){
       include "plugins/conges/ficheAgentValid.php";
     }
@@ -135,7 +135,7 @@ switch($action){
     $update=array("nom"=>$nom, "prenom"=>$prenom, "mail"=>$mail, "statut"=>$statut, "categorie"=>$categorie, "service"=>$service, 
       "heuresHebdo"=>$heuresHebdo, "heuresTravail"=>$heuresTravail, "actif"=>$actif, "droits"=>$droits, "arrivee"=>$arrivee, 
       "depart"=>$depart, "postes"=>$postes, "informations"=>$informations, "recup"=>$recup, "sites"=>$sites, 
-      "mailResponsable"=>$mailResponsable, "matricule"=>$matricule);
+      "mailsResponsables"=>$mailsResponsables, "matricule"=>$matricule);
     // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
     if(!strstr($actif,"Supprim")){
       $update["supprime"]="0";

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.7
+Planning Biblio, Version 1.8.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 25 mars 2014
+Dernière modification : 9 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -111,6 +111,7 @@ class personnel{
     $db->select("personnel",null,"id='$id'");
     $this->elements=$db->result;
     $this->elements[0]['sites']=unserialize($db->result[0]['sites']);
+    $this->elements[0]['mailsResponsables']=explode(";",$db->result[0]['mailsResponsables']);
   }
 
 

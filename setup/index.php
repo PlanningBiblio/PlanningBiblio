@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 1.8.7
+Planning Biblio, Version 1.8.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
@@ -19,7 +19,7 @@ Formulaire soumis au fichier setup/createdb.php
 
 session_start();
 session_destroy();
-$version="1.8.7";
+$version="1.8.8";
 
 include "header.php";
 include_once "../include/function.php";

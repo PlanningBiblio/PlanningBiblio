@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.8.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 5 novembre 2014
+Dernière modification : 9 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -120,7 +120,7 @@ $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `informations` text NOT NULL,
   `recup` text NOT NULL,
   `supprime` ENUM('0','1','2') NOT NULL DEFAULT '0',
-  `mailResponsable` TEXT NOT NULL DEFAULT '',
+  `mailsResponsables` TEXT NOT NULL DEFAULT '',
   `matricule` VARCHAR(100) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `login` (`login`)
