@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 9 décembre 2014
+Dernière modification : 10 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -98,7 +98,8 @@ if(isset($_GET['id'])){		//	récupération des infos de l'agent en cas de modif
     sort($postes_attribues);
   $acces=unserialize($db->result[0]['droits']);
   $matricule=$db->result[0]['matricule'];
-  $mailsResponsables=explode(";",$db->result[0]['mailsResponsables']);
+  $mailsResponsables=explode(";",html_entity_decode($db->result[0]['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+  // $mailsResponsables : html_entity_decode necéssaire sinon ajoute des espaces après les accents ($mailsResponsables=join("; ",$mailsResponsables);)
   $informations=stripslashes($db->result[0]['informations']);
   $recup=stripslashes($db->result[0]['recup']);
   $sites=$db->result[0]['sites'];

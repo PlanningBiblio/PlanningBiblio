@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 9 décembre 2014
+Dernière modification : 10 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -19,6 +19,7 @@ Page appelée par la page index.php
 */
 
 require_once "class.absences.php";
+require_once "personnel/class.personnel.php";
 require_once "motifs.php";
 
 //	Initialisation des variables
@@ -106,10 +107,13 @@ if($confirm){
   $a->getResponsables($debutSQL,$finSQL,$perso_id);
   $responsables=$a->responsables;
 
-  $db_perso=new db();
-  $db_perso->select("personnel","*","id=$perso_id");
-  $nom=$db_perso->result[0]['nom'];
-  $prenom=$db_perso->result[0]['prenom'];
+  // Informations sur l'agent
+  $p=new personnel();
+  $p->fetchById($perso_id);
+  $nom=$p->elements[0]['nom'];
+  $prenom=$p->elements[0]['prenom'];
+  $mail=$p->elements[0]['mail'];
+  $mailsResponsables=$p->elements[0]['mailsResponsables'];
 
   // Choix des destinataires des notifications selon le degré de validation
   $notifications=$config['Absences-notifications'];
@@ -121,9 +125,8 @@ if($confirm){
   }
 
   // Choix des destinataires des notifications selon la configuration
-  $mailsResponsables=explode(";",$db_perso->result[0]['mailsResponsables']);
   $a=new absences();
-  $a->getRecipients($notifications,$responsables,$db_perso->result[0]['mail'],$mailsResponsables);
+  $a->getRecipients($notifications,$responsables,$mail,$mailsResponsables);
   $destinataires=$a->recipients;
 
   $debut_sql=$debutSQL." ".$hre_debut;

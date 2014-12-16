@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 9 décembre 2014
+Dernière modification : 10 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -61,7 +61,7 @@ if(isset($_POST['id'])){
   $eDTSamedi=isset($_POST['EDTSamedi'])?$_POST['EDTSamedi']:null;
   $premierLundi=isset($_POST['premierLundi'])?$_POST['premierLundi']:null;
   $dernierLundi=isset($_POST['dernierLundi'])?$_POST['dernierLundi']:null;
-  $mailsResponsables=trim(htmlentities(str_replace("\n","",$_POST['mailsResponsables']),ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+  $mailsResponsables=trim(str_replace(array("\n"," "),null,$_POST['mailsResponsables']));
   $matricule=trim(htmlentities($_POST['matricule'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
 }
 else{

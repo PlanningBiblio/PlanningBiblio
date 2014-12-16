@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.8.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 19 novembre 2014
+Dernière modification : 10 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -717,7 +717,7 @@ function sendmail($Sujet,$Message,$destinataires,$alert=true){
 	$to[]=trim($destinataire);
       }
       elseif($alert){
-	echo "<script type='text/JavaScript'>alert('Adresse mail invalide (\"$destinataire\")');</script>";
+	echo "<script type='text/JavaScript'>information('Adresse mail invalide (\"$destinataire\")','error');</script>";
       }
     }
     if(!empty($to)){

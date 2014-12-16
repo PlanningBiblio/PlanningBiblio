@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 9 décembre 2014
+Dernière modification : 10 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -111,7 +111,7 @@ class personnel{
     $db->select("personnel",null,"id='$id'");
     $this->elements=$db->result;
     $this->elements[0]['sites']=unserialize($db->result[0]['sites']);
-    $this->elements[0]['mailsResponsables']=explode(";",$db->result[0]['mailsResponsables']);
+    $this->elements[0]['mailsResponsables']=explode(";",html_entity_decode($db->result[0]['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
   }
 
 

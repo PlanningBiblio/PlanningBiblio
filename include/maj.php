@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 9 décembre 2014
+Dernière modification : 10 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -646,6 +646,10 @@ if(strcmp("1.8.7",$config['Version'])>0){
 
 if(strcmp("1.8.8",$config['Version'])>0){
   $sql[]="ALTER TABLE `{$dbprefix}personnel` CHANGE `mailResponsable` `mailsResponsables` TEXT;";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom d&apos;h&ocirc;te ou adresse IP du serveur LDAP' WHERE `nom`='LDAP-Host';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Protocol utilis&eacute;' WHERE `nom`='LDAP-Protocol';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Base LDAP' WHERE `nom`='LDAP-Suffix';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='DN de connexion au serveur LDAP, laissez vide si connexion anonyme' WHERE `nom`='LDAP-RDN';";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.8.8' WHERE `nom`='Version';";
 }
 

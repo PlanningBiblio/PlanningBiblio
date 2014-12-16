@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 9 décembre 2014
+Dernière modification : 10 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -68,7 +68,7 @@ $nom=$db->result[0]['nom'];
 $prenom=$db->result[0]['prenom'];
 $mail=$db->result[0]['mail'];
 $sites_agent=unserialize($db->result[0]['sites']);
-$mailsResponsables=explode(";",$db->result[0]['mailsResponsables']);
+$mailsResponsables=explode(";",html_entity_decode($db->result[0]['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
 
 // Sécurité
 // Droit 1 = modification de toutes les absences

@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 9 décembre 2014
+Dernière modification : 10 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -264,7 +264,7 @@ class absences{
     $db->query($req);
     if($db->result){
       $elem=$db->result[0];
-      $elem['mailsResponsables']=explode(";",$elem['mailsResponsables']);
+      $elem['mailsResponsables']=explode(";",html_entity_decode($elem['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
       $this->elements=$elem;
     }
   }
@@ -336,17 +336,13 @@ class absences{
     switch($notifications){
       case 1 :
 	foreach($responsables as $elem){
-	  if(verifmail(trim($elem['mail']))){
-	    $recipients[]=trim($elem['mail']);
-	  }
+	  $recipients[]=$elem['mail'];
 	}
 	break;
       case 2 :
 	if(is_array($mailsResponsables)){
 	  foreach($mailsResponsables as $elem){
-	    if(verifmail(trim($elem))){
-	      $recipients[]=trim($elem);
-	    }
+	    $recipients[]=$elem;
 	  }
 	}
 	break;
@@ -355,29 +351,20 @@ class absences{
 	break;
       case 4 :
 	$recipients=explode(";",trim($GLOBALS['config']['Mail-Planning']));
-
-	if(verifmail(trim($mail))){
-	  $recipients[]=trim($mail);
-	}
+	$recipients[]=$mail;
 
 	if(is_array($mailsResponsables)){
 	  foreach($mailsResponsables as $elem){
-	    if(verifmail(trim($elem))){
-	      $recipients[]=trim($elem);
-	    }
+	    $recipients[]=$elem;
 	  }
 	}
 
 	foreach($responsables as $elem){
-	  if(verifmail(trim($elem['mail']))){
-	    $recipients[]=trim($elem['mail']);
-	  }
+	  $recipients[]=$elem['mail'];
 	}
 	break;
       case 5 :
-	if(verifmail(trim($mail))){
-	  $recipients[]=trim($mail);
-	}
+	$recipients[]=$mail;
 	break;
     }
     $this->recipients=$recipients;
