@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.8.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 5 novembre 2014
+Dernière modification : 16 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -921,6 +921,10 @@ function verif_select(nom){
 // Initialisations JQuery-UI
 $(function(){
   $(document).ready(function() {
+    $(".ui-accordion").accordion({
+      heightStyle: "content"
+    });
+
     $(".ui-button").button();
     $(".datepicker").datepicker();
     $(".datepicker").addClass("center ui-widget-content ui-corner-all");

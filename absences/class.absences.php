@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 10 décembre 2014
+Dernière modification : 16 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -326,47 +326,55 @@ class absences{
   }
 
   public function getRecipients($notifications,$responsables,$mail,$mailsResponsables){
-    // Retourne la liste des destinataires des notifications en fonctions de niveau de validation.
-    // $notifications : niveau de validation (Absences-notifications, Absences-notifications2, ...)
-    // $responsables : listes des agents (array) ayant le droit de gérer les absences
-    // $mail : mail de l'agent concerné par l'absence
-    // $mailsResponsables : mails de ses responsables (tableau)
+    /*
+    Retourne la liste des destinataires des notifications en fonction du niveau de validation.
+    $notifications : Catégories de personnes à qui les notifications doivent être envoyées
+      tableau sérialisé issu de la config. : champ Absences-notifications, Absences-notifications2, 
+      Absences-notifications3, Absences-notifications4, en fonction du niveau de validation
+      Valeurs du tableau : 
+	0 : agents ayant le droits de gérer les absences
+	1 : responsables directs (mails enregistrés dans la fiche des agents)
+	2 : cellule planning (mails enregistrés dans la config.)
+	3 : l'agent
+    $responsables : listes des agents (array) ayant le droit de gérer les absences
+    $mail : mail de l'agent concerné par l'absence
+    $mailsResponsables : mails de ses responsables (tableau)
+    */
 
+    $notifications=unserialize(stripslashes($notifications));
     $recipients=array();
-    switch($notifications){
-      case 1 :
-	foreach($responsables as $elem){
-	  $recipients[]=$elem['mail'];
-	}
-	break;
-      case 2 :
-	if(is_array($mailsResponsables)){
-	  foreach($mailsResponsables as $elem){
-	    $recipients[]=$elem;
-	  }
-	}
-	break;
-      case 3 :
-	$recipients=explode(";",trim($GLOBALS['config']['Mail-Planning']));
-	break;
-      case 4 :
-	$recipients=explode(";",trim($GLOBALS['config']['Mail-Planning']));
-	$recipients[]=$mail;
 
-	if(is_array($mailsResponsables)){
-	  foreach($mailsResponsables as $elem){
-	    $recipients[]=$elem;
-	  }
-	}
-
-	foreach($responsables as $elem){
-	  $recipients[]=$elem['mail'];
-	}
-	break;
-      case 5 :
-	$recipients[]=$mail;
-	break;
+    // Agents ayant le droits de gérer les absences
+    if(in_array(0,$notifications)){
+      foreach($responsables as $elem){
+	$recipients[]=$elem['mail'];
+      }
     }
+
+    // Responsables directs
+    if(in_array(1,$notifications)){
+      if(is_array($mailsResponsables)){
+	foreach($mailsResponsables as $elem){
+	  $recipients[]=$elem;
+	}
+      }
+    }
+
+    // Cellule planning
+    if(in_array(2,$notifications)){
+      $mailsCellule=explode(";",trim($GLOBALS['config']['Mail-Planning']));
+      if(is_array($mailsCellule)){
+	foreach($mailsCellule as $elem){
+	  $recipients[]=$elem;
+	}
+      }
+    }
+
+    // L'agent
+    if(in_array(3,$notifications)){
+      $recipients[]=$mail;
+    }
+
     $this->recipients=$recipients;
   }
 

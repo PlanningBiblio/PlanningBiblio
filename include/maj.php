@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 10 décembre 2014
+Dernière modification : 16 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -645,11 +645,31 @@ if(strcmp("1.8.7",$config['Version'])>0){
 }
 
 if(strcmp("1.8.8",$config['Version'])>0){
+  // Plusieurs emails de responsables dans la fiche des agents
   $sql[]="ALTER TABLE `{$dbprefix}personnel` CHANGE `mailResponsable` `mailsResponsables` TEXT;";
+
+  // Commentaires config LDAP
   $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom d&apos;h&ocirc;te ou adresse IP du serveur LDAP' WHERE `nom`='LDAP-Host';";
   $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Protocol utilis&eacute;' WHERE `nom`='LDAP-Protocol';";
   $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Base LDAP' WHERE `nom`='LDAP-Suffix';";
   $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='DN de connexion au serveur LDAP, laissez vide si connexion anonyme' WHERE `nom`='LDAP-RDN';";
+
+  // Cases à cocher pour la sélection des notifications dans la config.
+  $sql[]="UPDATE `{$dbprefix}config` SET `type`='checkboxes', `valeurs`='a:4:{i:0;a:2:{i:0;i:0;i:1;s:54:\"Aux agents ayant le droit de g&eacute;rer les absences\";}i:1;a:2:{i:0;i:1;i:1;s:24:\"Aux responsables directs\";}i:2;a:2:{i:0;i:2;i:1;s:21:\"A la cellule planning\";}i:3;a:2:{i:0;i:3;i:1;s:30:\"A l&apos;agent concern&eacute;\";}}' where `nom` LIKE 'Absences-notifications%' AND `type`='enum2';";
+
+  // Converti les choix actuels pour les notifications
+  $db=new db();
+  $db->select("config","nom,valeur","`nom` LIKE 'Absences-notifications%' AND `type`='enum2'");
+  foreach($db->result as $elem){
+    $valeur=$elem['valeur'];
+    if($valeur==0){$valeur=addslashes(serialize(array()));}
+    if($valeur==1){$valeur=addslashes(serialize(array(0)));}
+    if($valeur==2){$valeur=addslashes(serialize(array(1)));}
+    if($valeur==3){$valeur=addslashes(serialize(array(2)));}
+    if($valeur==4){$valeur=addslashes(serialize(array(0,1,2,3)));}
+    if($valeur==5){$valeur=addslashes(serialize(array(3)));}
+    $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$valeur' where `nom` = '{$elem['nom']}';";
+  }
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.8.8' WHERE `nom`='Version';";
 }
 
