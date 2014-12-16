@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.5
+Planning Biblio, Version 1.8.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 29 octobre 2014
+Dernière modification : 10 décembre 2014
 Auteurs : Jérôme Combes jerome@planningbilbio.fr, Chritophe Le Guennec christophe.leguennec@u-pem.fr
 
 Description :
@@ -43,7 +43,7 @@ if(in_array(13,$droits)){
 <?php
 if(in_array(21,$droits)){
   echo "<input type='button' value='Ajouter' onclick='location.href=\"index.php?page=personnel/modif.php\";'/>\n";
-  if($config['LDAP-Host'] and $config['LDAP-RDN'] and $config['LDAP-Password']){
+  if($config['LDAP-Host'] and $config['LDAP-Suffix']){
     echo "<input type='button' value='Import LDAP' onclick='location.href=\"index.php?page=personnel/import.php\";'/>\n";
   }
 }
