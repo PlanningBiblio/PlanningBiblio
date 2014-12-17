@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 10 décembre 2014
+Dernière modification : 16 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -175,28 +175,28 @@ $responsables=$a->responsables;
 // Choix des destinataires des notifications selon le degré de validation
 // Si l'agent lui même modifie son absence ou si pas de validation, la notification est envoyée au 1er groupe
 if($_SESSION['login_id']==$perso_id or $config['Absences-validation']=='0'){
-  $notifications=$config['Absences-notifications2'];
+  $notifications=2;
 }
 else{
   if($valide1N2<=0 and $valideN2>0){
     $sujet="Validation d'une absence";
-    $notifications=$config['Absences-notifications4'];
+    $notifications=4;
   }
   elseif($valide1N2>=0 and $valideN2<0){
     $sujet="Refus d'une absence";
-    $notifications=$config['Absences-notifications4'];
+    $notifications=4;
   }
   elseif($valide1N1<=0 and $valideN1>0){
     $sujet="Acceptation d'une absence (en attente de validation hiérarchique)";
-    $notifications=$config['Absences-notifications3'];
+    $notifications=3;
   }
   elseif($valide1N1>=0 and $valideN1<0){
     $sujet="Refus d'une absence (en attente de validation hiérarchique)";
-    $notifications=$config['Absences-notifications3'];
+    $notifications=3;
   }
   else{
     $sujet="Modification d'une absence";
-    $notifications=$config['Absences-notifications2'];
+    $notifications=2;
   }
 }
 

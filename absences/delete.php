@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/delete.php
 Création : mai 2011
-Dernière modification : 9 décembre 2014
+Dernière modification : 16 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -98,7 +98,7 @@ else{
   $responsables=$a->responsables;
 
   $a=new absences();
-  $a->getRecipients($config['Absences-notifications2'],$responsables,$mail,$mailsResponsables);
+  $a->getRecipients(2,$responsables,$mail,$mailsResponsables);
   $destinataires=$a->recipients;
 
   sendmail("Suppression d'une absence",$message,$destinataires);

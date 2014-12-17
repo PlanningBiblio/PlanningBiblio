@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 16 décembre 2014
+Dernière modification : 18 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -670,6 +670,15 @@ if(strcmp("1.8.8",$config['Version'])>0){
     if($valeur==5){$valeur=addslashes(serialize(array(3)));}
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$valeur' where `nom` = '{$elem['nom']}';";
   }
+  $sql[]="UPDATE `{$dbprefix}config` SET `nom`='Absences-notifications1' WHERE `nom`='Absences-notifications';";
+
+  // Modification des commentaires
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Destinataires des notifications de nouvelles absences' WHERE `nom`='Absences-notifications1';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Destinataires des notifications de modification d&apos;absences' WHERE `nom`='Absences-notifications2';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Destinataires des notifications des validations niveau 1' WHERE `nom`='Absences-notifications3';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Destinataires des notifications des validations niveau 2' WHERE `nom`='Absences-notifications4';";
+
+  // Mise à jour de la version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.8.8' WHERE `nom`='Version';";
 }
 

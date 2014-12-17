@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : setup/db_data.php
 Création : mai 2011
-Dernière modification : 16 décembre 2014
+Dernière modification : 18 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -158,13 +158,13 @@ $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`
   VALUES ('Planning-sansRepas','boolean','1','Afficher une notification pour les Sans Repas dans le menu d&eacute;roulant et dans le planning','Planning','10'),
   ('Planning-dejaPlace','boolean','1','Afficher une notification pour les agents d&eacute;j&agrave; plac&eacute; sur un poste dans le menu d&eacute;roulant du planning','Planning','11');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications','checkboxes','a:4:{i:0;i:0;i:1;i:1;i:2;i:2;i:3;i:3;}','a:4:{i:0;a:2:{i:0;i:0;i:1;s:54:\"Aux agents ayant le droit de g&eacute;rer les absences\";}i:1;a:2:{i:0;i:1;i:1;s:24:\"Aux responsables directs\";}i:2;a:2:{i:0;i:2;i:1;s:21:\"A la cellule planning\";}i:3;a:2:{i:0;i:3;i:1;s:30:\"A l&apos;agent concern&eacute;\";}}','A qui les notifications de nouvelles absences doivent-elles &ecirc;tre envoy&eacute;es','Absences','40');";
+  VALUES ('Absences-notifications1','checkboxes','a:4:{i:0;i:0;i:1;i:1;i:2;i:2;i:3;i:3;}','a:4:{i:0;a:2:{i:0;i:0;i:1;s:54:\"Aux agents ayant le droit de g&eacute;rer les absences\";}i:1;a:2:{i:0;i:1;i:1;s:24:\"Aux responsables directs\";}i:2;a:2:{i:0;i:2;i:1;s:21:\"A la cellule planning\";}i:3;a:2:{i:0;i:3;i:1;s:30:\"A l&apos;agent concern&eacute;\";}}','Destinataires des notifications de nouvelles absences','Absences','40');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications2','checkboxes','a:4:{i:0;i:0;i:1;i:1;i:2;i:2;i:3;i:3;}','a:4:{i:0;a:2:{i:0;i:0;i:1;s:54:\"Aux agents ayant le droit de g&eacute;rer les absences\";}i:1;a:2:{i:0;i:1;i:1;s:24:\"Aux responsables directs\";}i:2;a:2:{i:0;i:2;i:1;s:21:\"A la cellule planning\";}i:3;a:2:{i:0;i:3;i:1;s:30:\"A l&apos;agent concern&eacute;\";}}','A qui les notifications de modification d&apos;absences doivent-elles &ecirc;tre envoy&eacute;es','Absences','50');";
+  VALUES ('Absences-notifications2','checkboxes','a:4:{i:0;i:0;i:1;i:1;i:2;i:2;i:3;i:3;}','a:4:{i:0;a:2:{i:0;i:0;i:1;s:54:\"Aux agents ayant le droit de g&eacute;rer les absences\";}i:1;a:2:{i:0;i:1;i:1;s:24:\"Aux responsables directs\";}i:2;a:2:{i:0;i:2;i:1;s:21:\"A la cellule planning\";}i:3;a:2:{i:0;i:3;i:1;s:30:\"A l&apos;agent concern&eacute;\";}}','Destinataires des notifications de modification d&apos;absences','Absences','50');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications3','checkboxes','a:1:{i:0;i:1:1;}','a:4:{i:0;a:2:{i:0;i:0;i:1;s:54:\"Aux agents ayant le droit de g&eacute;rer les absences\";}i:1;a:2:{i:0;i:1;i:1;s:24:\"Aux responsables directs\";}i:2;a:2:{i:0;i:2;i:1;s:21:\"A la cellule planning\";}i:3;a:2:{i:0;i:3;i:1;s:30:\"A l&apos;agent concern&eacute;\";}}','A qui les notifications de validation niveau 1 doivent-elles &ecirc;tre envoy&eacute;es','Absences','60');";
+  VALUES ('Absences-notifications3','checkboxes','a:1:{i:0;i:1;}','a:4:{i:0;a:2:{i:0;i:0;i:1;s:54:\"Aux agents ayant le droit de g&eacute;rer les absences\";}i:1;a:2:{i:0;i:1;i:1;s:24:\"Aux responsables directs\";}i:2;a:2:{i:0;i:2;i:1;s:21:\"A la cellule planning\";}i:3;a:2:{i:0;i:3;i:1;s:30:\"A l&apos;agent concern&eacute;\";}}','Destinataires des notifications des validations niveau 1','Absences','60');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications4','checkboxes','a:1:{i:0;i:1:3;}','a:4:{i:0;a:2:{i:0;i:0;i:1;s:54:\"Aux agents ayant le droit de g&eacute;rer les absences\";}i:1;a:2:{i:0;i:1;i:1;s:24:\"Aux responsables directs\";}i:2;a:2:{i:0;i:2;i:1;s:21:\"A la cellule planning\";}i:3;a:2:{i:0;i:3;i:1;s:30:\"A l&apos;agent concern&eacute;\";}}','A qui les notifications de validation niveau 2 doivent-elles &ecirc;tre envoy&eacute;es','Absences','65');";
+  VALUES ('Absences-notifications4','checkboxes','a:1:{i:0;i:3;}','a:4:{i:0;a:2:{i:0;i:0;i:1;s:54:\"Aux agents ayant le droit de g&eacute;rer les absences\";}i:1;a:2:{i:0;i:1;i:1;s:24:\"Aux responsables directs\";}i:2;a:2:{i:0;i:2;i:1;s:21:\"A la cellule planning\";}i:3;a:2:{i:0;i:3;i:1;s:30:\"A l&apos;agent concern&eacute;\";}}','Destinataires des notifications des validations niveau 2','Absences','65');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `commentaires`, `categorie`, `ordre`) 
   VALUES ('Absences-notifications-titre','text','Titre personnalis&eacute; pour les notifications de nouvelles absences','Absences','70'),
   ('Absences-notifications-message','textarea','Message personnalis&eacute; pour les notifications de nouvelles absences','Absences','80');";

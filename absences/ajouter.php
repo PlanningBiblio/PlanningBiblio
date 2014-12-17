@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 10 décembre 2014
+Dernière modification : 16 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -116,12 +116,12 @@ if($confirm){
   $mailsResponsables=$p->elements[0]['mailsResponsables'];
 
   // Choix des destinataires des notifications selon le degré de validation
-  $notifications=$config['Absences-notifications'];
+  $notifications=1;
   if($config['Absences-validation'] and $valideN1!=0){
-    $notifications=$config['Absences-notifications3'];
+    $notifications=3;
   }
   elseif($config['Absences-validation'] and $valideN2!=0){
-    $notifications=$config['Absences-notifications4'];
+    $notifications=4;
   }
 
   // Choix des destinataires des notifications selon la configuration

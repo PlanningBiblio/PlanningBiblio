@@ -325,34 +325,44 @@ class absences{
     $this->responsables=$responsables;
   }
 
-  public function getRecipients($notifications,$responsables,$mail,$mailsResponsables){
+  public function getRecipients($validation,$responsables,$mail,$mailsResponsables){
     /*
     Retourne la liste des destinataires des notifications en fonction du niveau de validation.
-    $notifications : Catégories de personnes à qui les notifications doivent être envoyées
-      tableau sérialisé issu de la config. : champ Absences-notifications, Absences-notifications2, 
-      Absences-notifications3, Absences-notifications4, en fonction du niveau de validation
-      Valeurs du tableau : 
-	0 : agents ayant le droits de gérer les absences
-	1 : responsables directs (mails enregistrés dans la fiche des agents)
-	2 : cellule planning (mails enregistrés dans la config.)
-	3 : l'agent
+    $validation = niveau de validation (int) :
+      1 : enregistrement d'une nouvelle absences
+      2 : modification d'une absence sans validation ou suppression
+      3 : validation N1
+      4 : validation N2
     $responsables : listes des agents (array) ayant le droit de gérer les absences
     $mail : mail de l'agent concerné par l'absence
     $mailsResponsables : mails de ses responsables (tableau)
     */
 
-    $notifications=unserialize(stripslashes($notifications));
+    $categories=$GLOBALS['config']["Absences-notifications{$validation}"];
+    $categories=unserialize(stripslashes($categories));
+    /*
+    $categories : Catégories de personnes à qui les notifications doivent être envoyées
+      tableau sérialisé issu de la config. : champ Absences-notifications, Absences-notifications2, 
+      Absences-notifications3, Absences-notifications4, en fonction du niveau de validation ($validation)
+      Valeurs du tableau : 
+	0 : agents ayant le droits de gérer les absences
+	1 : responsables directs (mails enregistrés dans la fiche des agents)
+	2 : cellule planning (mails enregistrés dans la config.)
+	3 : l'agent
+    */
+
+    // recipients : liste des mails qui sera retournée
     $recipients=array();
 
     // Agents ayant le droits de gérer les absences
-    if(in_array(0,$notifications)){
+    if(in_array(0,$categories)){
       foreach($responsables as $elem){
 	$recipients[]=$elem['mail'];
       }
     }
 
     // Responsables directs
-    if(in_array(1,$notifications)){
+    if(in_array(1,$categories)){
       if(is_array($mailsResponsables)){
 	foreach($mailsResponsables as $elem){
 	  $recipients[]=$elem;
@@ -361,7 +371,7 @@ class absences{
     }
 
     // Cellule planning
-    if(in_array(2,$notifications)){
+    if(in_array(2,$categories)){
       $mailsCellule=explode(";",trim($GLOBALS['config']['Mail-Planning']));
       if(is_array($mailsCellule)){
 	foreach($mailsCellule as $elem){
@@ -371,7 +381,7 @@ class absences{
     }
 
     // L'agent
-    if(in_array(3,$notifications)){
+    if(in_array(3,$categories)){
       $recipients[]=$mail;
     }
 
