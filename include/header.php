@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.8.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 21 novembre 2014
+Dernière modification : 18 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -51,7 +51,6 @@ getJSFiles($page);
 
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link rel='StyleSheet' href='vendor/DataTables-1.10.4/media/css/jquery.dataTables_themeroller.css' type='text/css' media='all'/>
-<link rel='StyleSheet' href='vendor/DataTables-1.10.4/media/css/dataTables.jqueryui.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='vendor/DataTables-1.10.4/extensions/TableTools/css/dataTables.tableTools.min.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/<?php echo $themeJQuery; ?>/jquery-ui.min.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/default.css' type='text/css' media='all'/>
