@@ -1,3 +1,11 @@
+***	Version 1.8.8	(Jérôme Combes, 18 décembre 2014)		***
+- Améliorations :
+Absences - notifications : Permet la saisie de plusieurs responsables directs dans la fiche des agents
+Absences - notifications : Cases à cocher permettant de choisir les destinataires des notifications dans la config.
+  Ceci offre plus de possibilités pour choisir les destinataires
+LDAP : connexion au serveur LDAP en anonyme possible (laisser les champs RDN et Password vides).
+
+
 ***	Version 1.8.7	(Jérôme Combes, 8 décembre 2014)		***
 - Améliorations :
 Planning : Possibilité de ne pas afficher les lignes vides dans les plannings validés (config Planning-lignesVides)
