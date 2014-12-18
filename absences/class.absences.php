@@ -7,7 +7,7 @@ Copyright (C) 2011-2014 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 16 décembre 2014
+Dernière modification : 18 décembre 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -357,7 +357,9 @@ class absences{
     // Agents ayant le droits de gérer les absences
     if(in_array(0,$categories)){
       foreach($responsables as $elem){
-	$recipients[]=$elem['mail'];
+	if(!in_array(trim(html_entity_decode($elem['mail'],ENT_QUOTES|ENT_IGNORE,"UTF-8")),$recipients)){
+	  $recipients[]=trim(html_entity_decode($elem['mail'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+	}
       }
     }
 
@@ -365,7 +367,9 @@ class absences{
     if(in_array(1,$categories)){
       if(is_array($mailsResponsables)){
 	foreach($mailsResponsables as $elem){
-	  $recipients[]=$elem;
+	  if(!in_array(trim(html_entity_decode($elem,ENT_QUOTES|ENT_IGNORE,"UTF-8")),$recipients)){
+	    $recipients[]=trim(html_entity_decode($elem,ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+	  }
 	}
       }
     }
@@ -375,14 +379,18 @@ class absences{
       $mailsCellule=explode(";",trim($GLOBALS['config']['Mail-Planning']));
       if(is_array($mailsCellule)){
 	foreach($mailsCellule as $elem){
-	  $recipients[]=$elem;
+	  if(!in_array(trim(html_entity_decode($elem,ENT_QUOTES|ENT_IGNORE,"UTF-8")),$recipients)){
+	    $recipients[]=trim(html_entity_decode($elem,ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+	  }
 	}
       }
     }
 
     // L'agent
     if(in_array(3,$categories)){
-      $recipients[]=$mail;
+      if(!in_array(trim(html_entity_decode($mail,ENT_QUOTES|ENT_IGNORE,"UTF-8")),$recipients)){
+	$recipients[]=trim(html_entity_decode($mail,ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+      }
     }
 
     $this->recipients=$recipients;
