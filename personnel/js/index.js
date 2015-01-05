@@ -2,7 +2,7 @@
 Planning Biblio, Version 1.8.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2014 - Jérôme Combes
+Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/js/index.js
 Création : 22 septembre 2014
