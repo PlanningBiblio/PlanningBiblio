@@ -1,3 +1,8 @@
+***	Version 1.8.9	(Jérôme Combes, 13 janvier 2015)		***
+- Correction :
+Planning : Utilise GET et POST pour transmettre les variables date et site entre les différentes pages de gestion des plannings
+au lieu d'utiliser les sessions qui étaient problématiques lors de l'utilisation de plusieurs fenêtres
+
 ***	Version 1.8.8	(Jérôme Combes, 18 décembre 2014)		***
 - Améliorations :
 Absences - notifications : Permet la saisie de plusieurs responsables directs dans la fiche des agents

@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 1.8.8
+Planning Biblio, Version 1.8.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
@@ -31,7 +31,7 @@ if(!file_exists("include/config.php")){
   exit;
 }
 
-$version="1.8.8";
+$version="1.8.9";
 
 include "include/config.php";
 
