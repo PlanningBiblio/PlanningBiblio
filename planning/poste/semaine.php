@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.1
+Planning Biblio, Version 1.8.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
-Dernière modification : 13 juin 2014
+Dernière modification : 12 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -302,12 +302,12 @@ for($j=0;$j<=$fin;$j++){
 	  $i=1;
 	  foreach($tab['horaires'] as $horaires){
 	    // recherche des infos à afficher dans chaque cellule 
-	    // fonction cellule_poste(debut,fin,colspan,affichage,poste)
+	    // fonction cellule_poste(date,debut,fin,colspan,affichage,poste,site)
 	    if(in_array("{$ligne['ligne']}_{$i}",$tab['cellules_grises'])){
 	      echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."' class='cellule_grise' oncontextmenu='cellule=\"\";' >&nbsp;</td>";
 	    }
 	    else{
-	      echo cellule_poste($horaires["debut"],$horaires["fin"],nb30($horaires['debut'],$horaires['fin']),"noms",$ligne['poste']);
+	      echo cellule_poste($date,$horaires["debut"],$horaires["fin"],nb30($horaires['debut'],$horaires['fin']),"noms",$ligne['poste'],$site);
 	    }
 	  $i++;
 	  }

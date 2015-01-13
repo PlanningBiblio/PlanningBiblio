@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.8.8
+Planning Biblio, Version 1.8.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 16 décembre 2014
+Dernière modification : 12 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -442,23 +442,6 @@ function updateTips( t ) {
   setTimeout(function() {
     tips.removeClass( "ui-state-highlight", 1500 );
   }, 500 );
-}
-
-function verif_categorieA(){
-  $.ajax({
-    url: "planning/poste/ajax.categorieA.php",
-    type: "get",
-    success: function(retour){
-      if(retour == "true"){
-	$("#planningTips").hide();
-      }
-      else {
-	$("#planningTips").html("<div class='noprint'>Attention, pas d&apos;agent de cat&eacute;gorie A en fin de service.</div>");
-	$("#planningTips").show();
-	errorHighlight($("#planningTips"),"error");
-      }
-    }
-  });
 }
 
 function verif_date(d){

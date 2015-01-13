@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/validation.php
 Création : 28 octobre 2013
-Dernière modification : 31 octobre 2013
+Dernière modification : 13 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -18,29 +18,20 @@ d'une cellule (fonction JS bataille_navale)
 Affiche "true" ou "false"
 */
 
-session_start();
-
 // Includes
 include "../../include/config.php";
 include "class.planning.php";
 
-// Si l'option CatAFinDeService n'est pas choisie ou si l'utilisateur n'a pas le droits de modifier le planning, 
-// on retourne "true" de façon à ne pas afficher l'alerte 
-if(!in_array(12,$_SESSION['droits']) or !$config['CatAFinDeService']){
-  echo "true";
-  exit;
-}
-
 // Recherche s'il y a des agents de catégorie A en fin de service
 $p=new planning();
-$p->date=$_SESSION['PLdate'];
-$p->site=$_SESSION['oups']['site'];
+$p->date=$_POST['date'];
+$p->site=$_POST['site'];
 $p->finDeService();
 
 if($p->categorieA){
-  echo "true";
+  echo json_encode("true");
 }
 else{
-  echo "false";
+  echo json_encode("false");
 }
 ?>

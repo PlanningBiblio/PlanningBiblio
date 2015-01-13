@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.7
+Planning Biblio, Version 1.8.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 8 décembre 2014
+Dernière modification : 12 janvier 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -24,7 +24,7 @@ if(!$version){
   header("Location: ../index.php");
 }
 
-function cellule_poste($debut,$fin,$colspan,$output,$poste){
+function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
   $resultats=array();
   $classe=array();
   $i=0;

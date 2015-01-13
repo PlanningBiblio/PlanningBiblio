@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.8.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 7 décembre 2014
+Dernière modification : 9 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -27,11 +27,11 @@ ini_set("display_errors",0);
 ini_set("error_reporting",E_ALL);
 
 //	Initialisation des variables
-$site=$_SESSION['oups']['site'];
+$site=$_POST['site'];
 $ajouter=$_POST['ajouter'];
 $perso_id=$_POST['perso_id'];
 $perso_id_origine=$_POST['perso_id_origine'];
-$date=$_SESSION['PLdate'];
+$date=$_POST['date'];
 $debut=$_POST['debut'];
 $fin=$_POST['fin'];
 $absent=isset($_POST['absent'])?$_POST['absent']:"0";

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.8.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 26 novembre 2014
+Dernière modification : 9 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -229,7 +229,7 @@ class planning{
 
       //	Affichage des lignes
       echo "<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$(this).removeClass();$(this).addClass(\"menudiv-gris\"); $groupe_hide' onmouseout='$(this).removeClass();$(this).addClass(\"$classe $classTrListe\");' class='$classe $classTrListe'>\n";
-      echo "<td style='width:200px;font-weight:normal;' onclick='bataille_navale(\"$poste\",\"$debut\",\"$fin\",{$elem['id']},0,0);'>";
+      echo "<td style='width:200px;font-weight:normal;' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},0,0,\"$site\");'>";
       echo $nom;
 
       //	Afficher ici les horaires si besoin
@@ -237,9 +237,9 @@ class planning{
       
       //	Affichage des liens d'ajout et de remplacement
       if(!$cellule_vide and !$max_perso and !$sr and !$sr_init)
-	echo "<a href='javascript:bataille_navale(\"$poste\",\"$debut\",\"$fin\",".$elem['id'].",0,1);'>+</a>";
+	echo "<a href='javascript:bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},0,1,\"$site\");'>+</a>";
       if(!$cellule_vide and !$max_perso)
-	echo "&nbsp;<a style='color:red' href='javascript:bataille_navale(\"$poste\",\"$debut\",\"$fin\",".$elem['id'].",1,1);'>x</a>&nbsp;";
+	echo "&nbsp;<a style='color:red' href='javascript:bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},1,1,\"$site\");'>x</a>&nbsp;";
       echo "</td></tr>\n";
     }
 

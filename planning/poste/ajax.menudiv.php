@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.8.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 26 novembre 2014
+Dernière modification : 12 janvier 2015
 Auteur : Jérôme Combes jerome@planningbilbio.fr, Christophe Le Guennec Christophe.Leguennec@u-pem.fr
 
 Description :
@@ -32,8 +32,8 @@ require_once "fonctions.php";
 require_once "class.planning.php";
 
 //	Initilisation des variables
-$site=$_SESSION['oups']['site'];
-$date=$_SESSION['PLdate'];
+$site=$_GET['site'];
+$date=$_GET['date'];
 $poste=$_GET['poste'];
 $debut=$_GET['debut'];
 $fin=$_GET['fin'];
@@ -365,6 +365,7 @@ if($services and $config['ClasseParService']){
 if(!$config['ClasseParService']){
   $hide=false;
   $p=new planning();
+  $p->site=$site;
   $p->menudivAfficheAgents($poste,$agents_dispo,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion);
 }
 
@@ -382,16 +383,16 @@ if(count($newtab["Autres"]) and $config['agentsIndispo']){
 if($config['toutlemonde']){
   echo "<tr onmouseover='$(this).addClass(\"menudiv-gris\");groupe_tab_hide();' onmouseout='$(this).removeClass(\"menudiv-gris\");'>\n";
   echo "<td colspan='3' style='width:200px;color:black;' ";
-  echo "onclick='bataille_navale(\"$poste\",\"$debut\",\"$fin\",2,0,0);'>Tout le monde</td></tr>\n";
+  echo "onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",2,0,0,\"$site\");'>Tout le monde</td></tr>\n";
   $nbCol++;
 }
 //~ -----				Affiche de la "Case vide"  (suppression)	--------------------------//
 if(!$cellule_vide){
   $groupe_tab=$config['ClasseParService']?"groupe_tab(\"vide\",\"$tab_agent\",1);":null;
   echo "<tr onmouseover='$groupe_tab $(this).addClass(\"menudiv-gris\");' onmouseout='$(this).removeClass(\"menudiv-gris\");'>";
-  echo "<td colspan='1' onclick='bataille_navale(\"$poste\",\"$debut\",\"$fin\",0,0,0);'>";
+  echo "<td colspan='1' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,0,0,\"$site\");'>";
   echo "Supprimer</td><td>&nbsp;";
-  echo "<a style='color:red' href='javascript:bataille_navale(\"$poste\",\"$debut\",\"$fin\",0,1,0);'>Barrer</a>&nbsp;&nbsp;</td></tr>";
+  echo "<a style='color:red' href='javascript:bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,1,0,\"$site\");'>Barrer</a>&nbsp;&nbsp;</td></tr>";
   $nbCol++;
 }
 echo "</table>\n";
@@ -403,6 +404,7 @@ echo "<table style='background:#FFFFFF;position:absolute;left:200px;top:8px;' fr
 if($agents_tous and $config['ClasseParService']){
   $hide=true;
   $p=new planning();
+  $p->site=$site;
   $p->menudivAfficheAgents($poste,$agents_tous,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion);
 }
 
@@ -410,6 +412,7 @@ if($agents_tous and $config['ClasseParService']){
 if($autres_agents and !$config['ClasseParService'] and $config['agentsIndispo']){
   $hide=true;
   $p=new planning();
+  $p->site=$site;
   $p->menudivAfficheAgents($poste,$autres_agents,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion);
 }
 

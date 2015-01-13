@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/importer.php
 Création : mai 2011
-Dernière modification : 22 novembre 2013
+Dernière modification : 12 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,8 +20,8 @@ Cette page est appelée par la fonction JavaScript Popup qui l'affiche dans un c
 require_once "class.planning.php";
 
 // Initialisation des variables
-$date=$_SESSION['PLdate'];
-$site=$_SESSION['oups']['site'];
+$date=$_GET['date'];
+$site=$_GET['site'];
 $attention="<span style='color:red;'>Attention, le planning actuel sera remplacé par le modèle<br/><br/></span>\n";
 
 // Sécurité
@@ -40,7 +40,6 @@ echo <<<EOD
   <b>Importation d'un modèle</b>
   <br/><br/>
 EOD;
-
 if(!isset($_GET['nom'])){		// Etape 1 : Choix du modèle à importer
   $db=new db();
   $db->query("SELECT `nom`,`jour` FROM `{$dbprefix}pl_poste_modeles` WHERE `site`='$site' GROUP BY `nom`;");
@@ -56,6 +55,8 @@ if(!isset($_GET['nom'])){		// Etape 1 : Choix du modèle à importer
     echo "<input type='hidden' name='page' value='planning/poste/importer.php' />\n";
     echo "<input type='hidden' name='menu' value='off' />\n";
     echo "<input type='hidden' name='nom' value='$nom' />\n";
+    echo "<input type='hidden' name='date' value='$date' />\n";
+    echo "<input type='hidden' name='site' value='$site' />\n";
     echo "Importer le modèle \"{$db->result[0]['nom']}\" $semaine?<br/><br/>\n";
     echo "Importer les absents ?&nbsp;&nbsp;";
     echo "<input type='checkbox' name='absents' /><br/><br/>\n";
@@ -70,6 +71,8 @@ if(!isset($_GET['nom'])){		// Etape 1 : Choix du modèle à importer
     echo "<form name='form' method='get' action='index.php' onsubmit='return ctrl_form(\"nom\");'>\n";
     echo "<input type='hidden' name='page' value='planning/poste/importer.php' />\n";
     echo "<input type='hidden' name='menu' value='off' />\n";
+    echo "<input type='hidden' name='date' value='$date' />\n";
+    echo "<input type='hidden' name='site' value='$site' />\n";
     echo "<select name='nom' id='nom'>\n";
     echo "<option value=''>&nbsp;</option>\n";
     foreach($db->result as $elem){
@@ -156,6 +159,6 @@ else{					// Etape 2 : Insertion des données
       }
     }
   }
-  echo "<script type='text/JavaScript'>top.document.location.href=\"index.php?date={$_SESSION['PLdate']}\";</script>\n";
+  echo "<script type='text/JavaScript'>top.document.location.href=\"index.php?date=$date\";</script>\n";
 }
 ?>

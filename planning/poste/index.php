@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.7
+Planning Biblio, Version 1.8.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 8 décembre 2014
+Dernière modification : 13 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -210,6 +210,11 @@ if($db->result){
 }
 //	-----------------------		FIN Récupération des postes	-----------------------------//
 
+// Vérifie si Catégorie A en fin de service si admin et config CatAFinDeService
+if($autorisation and $config['CatAFinDeService']){
+  echo "<div id='pl-verif-categorie-A'></div>\n";
+}
+
 echo "<div id='validation'>\n";
 if($autorisation){
   if($verrou){
@@ -224,10 +229,10 @@ if($autorisation){
 }
 
 if($autorisation){
-  echo "<a href='javascript:popup(\"planning/poste/enregistrer.php\",500,270);' title='Enregistrer comme modèle'><span class='pl-icon pl-icon-save'></span></a>";
+  echo "<a href='javascript:popup(\"planning/poste/enregistrer.php&date=$date&site=$site\",500,270);' title='Enregistrer comme modèle'><span class='pl-icon pl-icon-save'></span></a>";
   if(!$verrou){
-    echo "<a href='javascript:popup(\"planning/poste/importer.php\",500,270);' title='Importer un modèle'><span class='pl-icon pl-icon-open'></span></a>";
-    echo "<a href='javascript:popup(\"planning/poste/supprimer.php\",500,200);' title='Supprimer le planning'><span class='pl-icon pl-icon-drop'></span></a>";
+    echo "<a href='javascript:popup(\"planning/poste/importer.php&date=$date&site=$site\",500,270);' title='Importer un modèle'><span class='pl-icon pl-icon-open'></span></a>";
+    echo "<a href='javascript:popup(\"planning/poste/supprimer.php&date=$date&site=$site\",500,200);' title='Supprimer le planning'><span class='pl-icon pl-icon-drop'></span></a>";
   }
 }
 if($verrou){
@@ -238,7 +243,7 @@ if($verrou){
   echo "<script type='text/JavaScript'>refresh_poste('$validation2');</script>";
 }
 
-echo "<a href='index.php' title='Actualiser'><span class='pl-icon pl-icon-refresh'></a>\n";
+echo "<a href='index.php?date=$date&amp;site=$site' title='Actualiser'><span class='pl-icon pl-icon-refresh'></a>\n";
 echo "</div>\n";
 
 echo "<div id='planningTips'>&nbsp;</div>";
@@ -449,9 +454,9 @@ else{
 	  if(in_array("{$ligne['ligne']}_{$i}",$tab['cellules_grises'])){
 	    echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."' class='cellule_grise'>&nbsp;</td>";
 	  }
-	  // fonction cellule_poste(debut,fin,colspan,affichage,poste)
+	  // fonction cellule_poste(date,debut,fin,colspan,affichage,poste,site)
 	  else{
-	    echo cellule_poste($horaires["debut"],$horaires["fin"],nb30($horaires['debut'],$horaires['fin']),"noms",$ligne['poste']);
+	    echo cellule_poste($date,$horaires["debut"],$horaires["fin"],nb30($horaires['debut'],$horaires['fin']),"noms",$ligne['poste'],$site);
 	  }
 	$i++;
 	}

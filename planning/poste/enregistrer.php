@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.8.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/enregistrer.php
 Création : mai 2011
-Dernière modification : 19 juillet 2013
+Dernière modification : 13 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -24,9 +24,9 @@ require_once "class.planning.php";
 
 // Initialisation des variables
 $semaine=isset($_GET['semaine'])?$_GET['semaine']:null;
-$date=$_SESSION['PLdate'];
-$site=$_SESSION['oups']['site'];
-$dateFr=dateFr($_SESSION['PLdate']);
+$date=$_GET['date'];
+$site=$_GET['site'];
+$dateFr=dateFr($date);
 
 // Sécurité
 // Refuser l'accès aux agents n'ayant pas les droits de modifier le planning

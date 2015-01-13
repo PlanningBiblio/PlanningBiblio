@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.8.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 26 novembre 2014
+Dernière modification : 13 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -136,14 +136,16 @@ $(function() {
   // Création du MenuDiv : menu affichant la liste des agents pour les placer dans les cellules
   $(".menuTrigger").contextmenu(function(e){
     cellule=$(this).attr("data-cell");
+    date=$("#date").val();
     debut=$(this).attr("data-start");
     fin=$(this).attr("data-end");
     poste=$(this).attr("data-situation");
     perso_id=$(this).attr("data-perso-id");
+    site=$("#site").val();
 
     $.ajax({
       url: "planning/poste/ajax.menudiv.php",
-      data: "&cellule="+cellule+"&debut="+debut+"&fin="+fin+"&poste="+poste,
+      data: "&cellule="+cellule+"&date="+date+"&debut="+debut+"&fin="+fin+"&poste="+poste+"&site="+site,
       type: "get",
       success: function(result){
 	document.getElementById("menudiv").scrollTop=0;
@@ -183,7 +185,7 @@ $(function() {
 
 // Fonctions JavaScript
 
-function bataille_navale(poste,debut,fin,perso_id,barrer,ajouter){
+function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site){
   /* 
   bataille_navale : menu contextuel : met à jour la base de données en arrière plan et affiche les modifs en JS dans le planning
   Récupére en Ajax les id, noms, prénom, service, statut dans agents placés
@@ -192,12 +194,15 @@ function bataille_navale(poste,debut,fin,perso_id,barrer,ajouter){
   Les cellules sont identifiables, supprimables et modifiables indépendament des autres
   Les infos service et statut sont utilisées pour la mise en forme des cellules : utilisation des classes service_ et statut_
   */
+  if(site==undefined || site==""){
+    site=1;
+  }
 
   $.ajax({
     url: "planning/poste/ajax.updateCell.php",
     type: "post",
     dataType: "json",
-    data: {poste: poste, debut: debut, fin: fin, perso_id: perso_id, perso_id_origine: perso_id_origine, barrer: barrer, ajouter: ajouter},
+    data: {poste: poste, date: date, debut: debut, fin: fin, perso_id: perso_id, perso_id_origine: perso_id_origine, barrer: barrer, ajouter: ajouter, site: site},
     success: function(result){
       $("#td"+cellule).html("");
       
@@ -354,7 +359,9 @@ function groupe_tab_hide(){
 function refresh_poste(validation){		// actualise le planning en cas de modification
   $.ajax({
     url: "planning/poste/ajax.refresh.php",
-    type: "get",
+    type: "post",
+    dataType: "json",
+    data: {"date": $("#date").val(), "site": $("#site").val()},
     success: function(result){
       if(result!=validation){
 	window.location.reload(false);
@@ -364,6 +371,36 @@ function refresh_poste(validation){		// actualise le planning en cas de modifica
     },
     error: function(result){
       information(result.responseText,"error");
+      setTimeout("refresh_poste('"+validation+"')",30000);
+    }
+  });
+}
+
+function verif_categorieA(){
+  // Si div pl-verif-categorie-A n'existe pas (pas les droits admin ou pas demanandé dans la config)
+  // OU si pas de tableau affiché (.tabsemaine1) = pas de vérification, 
+  if($("#pl-verif-categorie-A").length<1 || $(".tabsemaine1").length<1){
+    return;
+  }
+
+  var date=$("#date").val();
+  var site=$("#site").val();
+
+  $.ajax({
+    url: "planning/poste/ajax.categorieA.php",
+    datatype: "json",
+    type: "post",
+    data: {"date": date, "site": site},
+    success: function(result){
+      result=JSON.parse(result);
+      if(result=="true"){
+	$("#planningTips").hide();
+      }
+      else {
+	$("#planningTips").html("<div class='noprint'>Attention, pas d&apos;agent de cat&eacute;gorie A en fin de service.</div>");
+	$("#planningTips").show();
+	errorHighlight($("#planningTips"),"error");
+      }
     }
   });
 }
