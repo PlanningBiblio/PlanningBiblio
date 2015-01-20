@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/modif.php
 Création : mai 2011
-Dernière modification : 22 janvier 2014
+Dernière modification : 20 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -52,25 +52,23 @@ if($config['Multisites-nombre']>1){
 }
 
 // Onglet Tableaux
-echo "<div id='div_tableaux'>\n";
+$displayTableaux=$config['Multisites-nombre']>1?"style='display:none;'":null;
+echo "<div id='div_tableaux' $displayTableaux >\n";
 include "tableaux.php";
 echo "</div>\n";
 
 // Onglet Horaires
-echo "<div id='div_horaires'>\n";
+echo "<div id='div_horaires' style='display:none;'>\n";
 include "horaires.php";
 echo "</div>\n";
 
 // Onglet Lignes
-echo "<div id='div_lignes'>\n";
+echo "<div id='div_lignes' style='display:none;'>\n";
 include "lignes.php";
 echo "</div>\n";
 
 echo "</div>\n";
 ?>
-
-<!-- Affichage des informations de mise à jour -->
-<div id='TableauxTips' class='ui-widget' style='position:absolute;'></div>
 
 <!-- Initialisation des onglets, lien retour et affichage d'informations -->
 <script type='text/JavaScript'>
@@ -78,11 +76,13 @@ $(".retour").click(function(){
   document.location.href="index.php?page=planning/postes_cfg/index.php";
 });
 
-$("#tabs").click(function(){
-  $("#TableauxTips").hide();
-});
-
 <?php
+if(isset($_REQUEST['message'])){
+  echo <<<EOD
+    information("{$_REQUEST['message']}","{$_REQUEST['msg-type']}");
+EOD;
+}
+
 if(isset($_REQUEST['cfg-type'])){
   echo <<<EOD
     $("#tabs").ready(function(){

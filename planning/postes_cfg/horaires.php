@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 1.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/horaires.php
 Création : mai 2011
-Dernière modification : 24 juin 2014
+Dernière modification : 20 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -19,20 +19,16 @@ Page incluse dans le fichier "planning/postes_cfg/modif.php"
 
 require_once "class.tableaux.php";
 
-$horaires=Array();
-$tableau=null;
-$disabled=null;
-
 //	Mise à jour du tableau (après validation)
 if(isset($_POST['action'])){
   $db=new db();
-  $db->query("DELETE FROM `{$dbprefix}pl_poste_horaires` WHERE `numero`='$tableauNumero';");
+  $db->delete2("pl_poste_horaires",array("numero"=>$tableauNumero));
 
   $keys=array_keys($_POST);
 
   foreach($keys as $key){
     if($key!="page" and $key!="action" and $key!="numero"){
-      $tmp=explode("_",$key);				// debut_general_22
+      $tmp=explode("_",$key);				// debut_1_22
       if(array_key_exists(1,$tmp) and array_key_exists(2,$tmp)){
 	if(empty($tab[$tmp[1]."_".$tmp[2]]))
 	    $tab[$tmp[1]."_".$tmp[2]]=array($tmp[1]);	// tab[0]=tableau
@@ -45,18 +41,35 @@ if(isset($_POST['action'])){
   }
   $values=array();
   foreach($tab as $elem){
-    if($elem[1]){
-      $values[]="('{$elem[1]}','{$elem[2]}','{$elem[0]}','$tableauNumero')";
+    if($elem[1] and $elem[2]){
+      $values[]=array("debut"=>$elem[1], "fin"=>$elem[2], "tableau"=>$elem[0], "numero"=>$tableauNumero);
+
     }
   }
-  $req="INSERT INTO `{$dbprefix}pl_poste_horaires` (`debut`,`fin`,`tableau`,`numero`) VALUES ".join($values,",").";";
-  $db->query($req);
+  $db=new db();
+  $db->insert2("pl_poste_horaires",$values);
+  if(!$db->error){
+    echo "<script type='text/JavaScript'>information(\"Les horaires ont été modifiés avec succès\",\"highlight\");</script>\n";
+  }else{
+    echo "<script type='text/JavaScript'>information(\"Une erreur est survenue lors de l'enregistrement des horaires\",\"error\");</script>\n";
+  }
 }
 
 //	Liste des horaires
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}pl_poste_horaires` WHERE `numero` ='$tableauNumero' ORDER BY `tableau`,`debut`,`fin`;");
+$db->select("pl_poste_horaires","*","`numero` ='$tableauNumero'","ORDER BY `tableau`,`debut`,`fin`");
 $horaires=$db->result;
+
+// Liste des tableaux
+$tableaux=array();
+if($horaires){
+  foreach($horaires as $elem){
+    if(!array_key_exists($elem['tableau'],$tableaux)){
+      $tableaux[$elem['tableau']]=array('tableau'=>$elem['tableau'], 'horaires'=>array());
+    }
+    $tableaux[$elem['tableau']]['horaires'][]=array("id"=>$elem["id"], "debut"=>$elem["debut"],"fin"=>$elem["fin"]);
+  }
+}
 
 //	Liste des tableaux utilisés
 $used=array();
@@ -75,7 +88,6 @@ if($db->result){
   }
 }
 
-
 //	Affichage des horaires
 $quart=$config['heuresPrecision']=="quart d&apos;heure"?true:false;
 
@@ -91,74 +103,56 @@ echo "<input type='button' value='Retour' class='ui-button retour'/>\n";
 echo "<input type='submit' value='Valider' class='ui-button'/>\n";
 echo "</td></tr></table>\n";
 
-if($horaires[0]){
-  echo "<table><tr style='vertical-align:top;'>";
+$numero=0;	// Numéro du tableau (numéro affiché)
+if(!empty($tableaux)){
+  foreach($tableaux as $t){
+    $tableau=$t['tableau'];
+    $numero++;
 
-  $numero=1;
-  foreach($horaires as $elem){
-    if($tableau and $elem['tableau']!=$tableau){	// Affichage de la fin des tableaux (sauf dernier tableau)
-      for($j=0;$j<25;$j++){				// Affichage des select cachés pour les ajouts (sauf dernier tableau)
-	echo "<tr id='tr_{$tableau}_$j' style='display:none;'><td>\n";
-	echo "<select name='debut_{$tableau}_new$j' style='width:75px;'>\n";
-	selectHeure(6,23,true,$quart);
-	echo "</select>\n";
-	echo "</td><td>\n";
-	echo "<select name='fin_{$tableau}_new$j' style='width:75px;'>\n";
-	selectHeure(6,23,true,$quart);
-	echo "</select>\n";
-	echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$elem['tableau']}_new$j.value=\"\";document.form2.fin_{$elem['tableau']}_new$j.value=\"\";'></span>\n";
-	echo "</td>\n";
-	echo "</tr>\n";
-      }
-							// Affichage des boutons ajouter
-      echo "<tr><td><span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer' onclick='add_horaires(\"{$tableau}\");'></span></td></tr>\n";
-      echo "</table></td>";
+    echo "<div id='div_horaires_{$tableau}' style='display:inline-block; width:200px; vertical-align:top; padding-bottom:30px;'>\n";
+    echo "<table id='tab_horaires_{$tableau}'>\n";
+    echo "<tr><td colspan='2' ><strong>Tableau $numero</strong></td></tr>\n";
 
-      // Affichage des tableaux sur plusieurs lignes de 4
-      if(!(($numero-1)%4)){
-	echo "</tr><tr style='vertical-align:top;'>";
-      }
+    $i=0;
+    foreach($t['horaires'] as $elem){
+      // Affichage des horaires existants
+      echo "<tr><td>\n";
+      echo "<select name='debut_{$tableau}_{$i}' style='width:75px;' >\n";
+      selectHeure(6,23,true,$quart,$elem['debut']);
+      echo "</select>\n";
+      echo "</td><td>\n";
+      echo "<select name='fin_{$tableau}_{$i}' style='width:75px;' onchange='change_horaires(this);'>\n";
+      selectHeure(6,23,true,$quart,$elem['fin']);
+      echo "</select>\n";
+      echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$tableau}_{$i}.value=\"\";document.form2.fin_{$tableau}_{$i}.value=\"\";'></span>\n";
+      echo "</td>\n";
+      echo "</tr>\n";
+      $i++;
     }
 
-    if($elem['tableau']!=$tableau){			// Affichage du début des tableaux
-      $padding=$numero>4?"style='padding-top:40px;'":null;
-      echo "<td style='width:200px;'><table><tr><td colspan='2' $padding ><b>Tableau $numero</b></td></tr>\n";
-      $numero++;
+    // Affichage des select cachés pour les ajouts
+    for($j=0;$j<25;$j++){				
+      echo "<tr id='tr_{$tableau}_$j' style='display:none;'><td>\n";
+      echo "<select name='debut_{$tableau}_{$i}' style='width:75px;'>\n";
+      selectHeure(6,23,true,$quart);
+      echo "</select>\n";
+      echo "</td><td>\n";
+      echo "<select name='fin_{$tableau}_{$i}' style='width:75px;' onchange='change_horaires(this);'>\n";
+      selectHeure(6,23,true,$quart);
+      echo "</select>\n";
+      echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$tableau}_{$i}.value=\"\";document.form2.fin_{$tableau}_{$i}.value=\"\";'></span>\n";
+      echo "</td>\n";
+      echo "</tr>\n";
+      $i++;
     }
 
-    $tableau=$elem['tableau'];
-    echo "<tr><td>\n";
-    echo "<select name='debut_{$elem['tableau']}_{$elem['id']}' style='width:75px;' $disabled>\n";
-    selectHeure(6,23,true,$quart);
-    echo "</select>\n";
-    echo "<script type='text/JavaScript'>document.form2.debut_{$elem['tableau']}_{$elem['id']}.value='{$elem['debut']}';</script>\n";	
-    echo "</td><td>\n";
-    echo "<select name='fin_{$elem['tableau']}_{$elem['id']}' style='width:75px;' onchange='change_horaires(this);'>\n";
-    selectHeure(6,23,true,$quart);
-    echo "</select>\n";
-    echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$elem['tableau']}_{$elem['id']}.value=\"\";document.form2.fin_{$elem['tableau']}_{$elem['id']}.value=\"\";'></span>\n";
-    echo "<script type='text/JavaScript'>document.form2.fin_{$elem['tableau']}_{$elem['id']}.value='{$elem['fin']}';</script>\n";	
-    echo "</td>\n";
-    echo "</tr>\n";
+    // Affichage des boutons ajouter
+    echo "<tr><td><span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer' onclick='add_horaires(\"{$tableau}\");'></span></td></tr>\n";
+
+    // Fin des tableaux
+    echo "</table></div> <!-- tab_horaires_{$tableau} &amp; div_horaires_{$tableau} -->\n";
   }
-							// Affichage de la fin du dernier tableau
-  for($j=0;$j<25;$j++){					// Affichage des select cachés pour les ajouts du dernier tableau
-    echo "<tr id='tr_{$tableau}_$j' style='display:none;'><td>\n";
-    echo "<select name='debut_{$tableau}_new$j' style='width:75px;'>\n";
-    selectHeure(6,23,true,$quart);
-    echo "</select>\n";
-    echo "</td><td>\n";
-    echo "<select name='fin_{$tableau}_new$j' style='width:75px;'>\n";
-    selectHeure(6,23,true,$quart);
-    echo "</select>\n";
-    echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$elem['tableau']}_new$j.value=\"\";document.form2.fin_{$elem['tableau']}_new$j.value=\"\";'></span>\n";
-    echo "</td>\n";
-    echo "</tr>\n";
-  }
-							// Affichage du bouton ajouter du dernier tableau
-  echo "<tr><td><span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer' onclick='add_horaires(\"{$elem['tableau']}\");'></span></td></tr>\n";
-  echo "</table></td>\n";
-  echo "</tr></table>\n";
 }
+
 echo "</form>\n";
 ?>

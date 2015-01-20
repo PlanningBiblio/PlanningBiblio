@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.8.9
+Planning Biblio, Version 1.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 12 janvier 2015
+Dernière modification : 20 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -379,21 +379,12 @@ function tabSiteUpdate(){
     type: "get",
     data: "numero="+numero+"&site="+site,
     success: function(){
-      $("#TableauxTips").html("Le site a &eacute;t&eacute; modifi&eacute; avec succ&egrave;s");
-      errorHighlight($("#TableauxTips"),"highlight");
-      $("#TableauxTips").css("top",$("#submitSite").offset().top-15);
-      $("#TableauxTips").css("left",$("#submitSite").offset().left+100);
-      $("#TableauxTips").show();
-      var timeout=setTimeout(function(){$("#TableauxTips").hide();},5000);
-      location.reload(false);	// on rafraichi pour mettre à jour le tableau des lignes
+      // On recharge la page pour mettre à jour le tableau des lignes
+      var message=encodeURIComponent("Le site a été modifié avec succès");
+      document.location.href="index.php?page=planning/postes_cfg/modif.php&message="+message+"&msg-type=highlight";
     },
     error: function(){
-      $("#TableauxTips").html("Une erreur est survenue pendant la modification du site.");
-      errorHighlight($("#TableauxTips"),"error");
-      $("#TableauxTips").css("top",$("#submitSite").offset().top-15);
-      $("#TableauxTips").css("left",$("#submitSite").offset().left+100);
-      $("#TableauxTips").show();
-      var timeout=setTimeout(function(){$("#TableauxTips").hide();},5000);
+      information("Une erreur est survenue lors la modification du site.","error");
     }
   });
 }
