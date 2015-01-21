@@ -1,3 +1,13 @@
+***	Version 1.9	(Jérôme Combes, 21 janvier 2015)		***
+- Améliorations :
+Planning : Ajoute les boutons "Supprimer tout" et "Barrer tout" dans le menu permettant de modifier les cellules
+
+- Corrections :
+Tableaux : Améliore l'affiche de la page de configuration les horaires
+Absences : Contrôle si l'absence posée ou modifiée concerne des plannings validés
+Agenda : Affiche toutes les absences dans les agendas
+
+
 ***	Version 1.8.9	(Jérôme Combes, 13 janvier 2015)		***
 - Correction :
 Planning : Utilise GET et POST pour transmettre les variables date et site entre les différentes pages de gestion des plannings
