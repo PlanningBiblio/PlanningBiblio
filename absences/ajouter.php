@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.8
+Planning Biblio, Version 1.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 16 décembre 2014
+Dernière modification : 21 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -226,6 +226,7 @@ else{					//	Formulaire
   echo "<input type='hidden' name='page' value='absences/ajouter.php' />\n";
   echo "<input type='hidden' name='menu' value='$menu' />\n";
   echo "<input type='hidden' name='confirm' value='confirm' />\n";
+  echo "<input type='hidden' id='admin' value='".($admin?1:0)."' />\n";
   echo "<table class='tableauFiches'>\n";
   echo "<tr><td>\n";
   echo "<label class='intitule'>Nom, prénom </label></td>\n";
