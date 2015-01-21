@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 1.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 30 avril 2014
+Dernière modification : 21 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -80,7 +80,7 @@ $joursFeries=$j->elements;
 
 // Affichage
 if(isset($agent)){
-  echo "<h3>Agenda de $agent du $debut au $fin</h3><br/>\n";
+  echo "<h3>Agenda de $agent du $debut au $fin</h3>\n";
 }
 else{
   echo "<h3>Agenda</h3>\n";
@@ -93,8 +93,10 @@ if(is_array($agents)){
   if($admin){
     echo "&nbsp;&nbsp;Agent : \n";
     echo "<select name='perso_id' class='ui-widget-content ui-corner-all'>\n";
-    foreach($agents as $elem)
-      echo "<option value='{$elem['id']}'>{$elem['nom']} {$elem['prenom']}</option>\n";
+    foreach($agents as $elem){
+      $selected=$elem['id']==$perso_id?"selected='selected'":null;
+      echo "<option value='{$elem['id']}' $selected >{$elem['nom']} {$elem['prenom']}</option>\n";
+    }
     echo "</select>\n";
   }
   echo "&nbsp;&nbsp;<input type='submit' value='OK' class='ui-button'/>\n";
@@ -194,28 +196,28 @@ while($current<=$finSQL){
 
   // Si l'agent est absent : affiche s'il est abent toutes la journée ou ses heures d'absences
   $absent=false;
-  $absences_affichage=null;
+  $absences_affichage=array();
 
   foreach($current_abs as $elem){
-    if($elem['debut']<$current." 00:00:01" and $elem['fin']>$current." 23:59:58"){
+    if($elem['debut']<=$current." 00:00:00" and $elem['fin']>=$current." 23:59:59"){
       $absent=true;
-      $absences_affichage="Absent(e) toute la journ&eacute;e : ".$elem['motif'];
+      $absences_affichage[]="Toute la journée : ".$elem['motif'];
     }
     elseif(substr($elem['debut'],0,10)==$current and substr($elem['fin'],0,10)==$current){
       $deb=heure2(substr($elem['debut'],-8));
       $fi=heure2(substr($elem['fin'],-8));
-      $absences_affichage="Absent(e) de $deb &agrave; $fi : ".$elem['motif'];
+      $absences_affichage[]="De $deb &agrave; $fi : ".$elem['motif'];
     }
-    elseif(substr($elem['debut'],0,10)==$current and $elem['fin']>$current." 23:59:58"){
+    elseif(substr($elem['debut'],0,10)==$current and $elem['fin']>=$current." 23:59:59"){
       $deb=heure2(substr($elem['debut'],-8));
-      $absences_affichage="Absent(e) &agrave; partir de $deb : ".$elem['motif'];
+      $absences_affichage[]="&Agrave; partir de $deb : ".$elem['motif'];
     }
-    elseif($elem['debut']<$current." 00:00:01" and substr($elem['fin'],0,10)==$current){
+    elseif($elem['debut']<=$current." 00:00:00" and substr($elem['fin'],0,10)==$current){
       $fi=heure2(substr($elem['fin'],-8));
-      $absences_affichage="Absent(e) jusqu'&agrave; $fi : ".$elem['motif'];
+      $absences_affichage[]="Jusqu'&agrave; $fi : ".$elem['motif'];
     }
     else{
-      $absences_affichage=$elem['debut']." --> ".$elem['fin']." : ".$elem['motif'];
+      $absences_affichage[]="{$elem['debut']} &rarr; {$elem['fin']} : {$elem['motif']}";
     }
   }
 
@@ -224,9 +226,9 @@ while($current<=$finSQL){
     include "plugins/conges/agenda.php";
   }
 
+
   // Si l'agent n'est pas absent toute la journée : affiche ses heures de présences
   if(!$absent){
-    echo "<div>\n";
     $site=null;
     if($config['Multisites-nombre']>1 and isset($horaires[4])){
       if($horaires[4]){
@@ -245,12 +247,20 @@ while($current<=$finSQL){
       $horaire.=heure2($horaires[2])." &agrave; ";
     if($horaires[3])
       $horaire.=heure2($horaires[3]);
-    echo $horaire;
-    echo "</div>\n";
+
+    echo "<p>$horaire</p>\n";
   }
 
   // Affichage des absences
-  echo "<div class='important'><p>$absences_affichage</p></div>\n";
+  if(!empty($absences_affichage)){
+    echo "<div class='important'>\n";
+    echo count($absences_affichage)==1?"Absence :":"Absences :";
+    echo "<ul style='margin-top:0px;'>\n";
+    foreach($absences_affichage as $elem){
+      echo "<li>$elem</li>\n";
+    }
+    echo "</ul></div>\n";
+  }
 
   if(!empty($current_postes)){
     echo "<div style='margin-top:10px;'>Postes occup&eacute;s :<ul style='margin-top:0px;'>\n";
@@ -269,5 +279,4 @@ while($current<=$finSQL){
 }		
 echo "</table>\n";
 echo "<br/><br/><br/><br/>";
-echo "<script type='text/JavaScript'>document.form.perso_id.value='$perso_id';</script>\n";
 ?>
