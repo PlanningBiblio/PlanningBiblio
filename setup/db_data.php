@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.9
+Planning Biblio, Version 1.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : setup/db_data.php
 Création : mai 2011
-Dernière modification : 18 décembre 2014
+Dernière modification : 21 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -32,7 +32,7 @@ $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Agenda - index', 100, 'Age
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Absences - Modif', 100, '', 'absences/modif.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Absences - Modif2', 100, '', 'absences/modif2.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Absences - Suppression', 100, '', 'absences/delete.php');";
-$sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Absences - Infos', 1, 'Gestion des absences, validation N1', 'absences/infos.php');";
+$sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Absences - Infos', 1, 'Gestion des absences', 'absences/infos.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Personnel - Index', 4, 'Voir le personnel', 'personnel/index.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Personnel - Modif', 4, 'Voir le personnel', 'personnel/modif.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Liste des postes - Index', 5, 'Gestion des postes', 'postes/index.php');";
@@ -102,7 +102,7 @@ $sql[]="INSERT INTO `{$dbprefix}activites` VALUES(11, 'Renseignement r&eacute;se
 $sql[]="INSERT INTO `{$dbprefix}activites` VALUES(12, 'Renseignement sp&eacute;cialis&eacute;');";
 
 // Insertion de la config
-$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Version', 'info', '1.8.9', 'Version de l&apos;application',' Divers','','0');";
+$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Version', 'info', '1.9', 'Version de l&apos;application',' Divers','','0');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Mail-IsEnabled', 'boolean', '0', 'Active ou d&eacute;sactive l&apos;envoi des mails','Messagerie','','10');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'toutlemonde', 'boolean', '0', 'Affiche ou non l&apos;utilisateur \"tout le monde\" dans le menu.','Planning','','5');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Mail-IsMail-IsSMTP', 'enum', 'IsSMTP', 'Classe &agrave; utiliser : SMTP, fonction PHP IsMail','Messagerie','IsSMTP,IsMail','10');";

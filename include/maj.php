@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.9
+Planning Biblio, Version 1.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 13 janvier 2015
+Dernière modification : 21 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -685,6 +685,11 @@ if(strcmp("1.8.8",$config['Version'])>0){
 if(strcmp("1.8.9",$config['Version'])>0){
   // Mise à jour de la version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.8.9' WHERE `nom`='Version';";
+}
+
+if(strcmp("1.9",$config['Version'])>0){
+  $sql[]="UPDATE  `{$dbprefix}acces` SET `groupe`='Gestion des absences' WHERE `groupe_id`='1';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.9' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage
