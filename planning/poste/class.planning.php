@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.9
+Planning Biblio, Version 1.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 9 janvier 2015
+Dernière modification : 21 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -85,7 +85,7 @@ class planning{
   }
 
   // Affiche la liste des agents dans le menudiv
-  public function menudivAfficheAgents($poste,$agents,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion){
+  public function menudivAfficheAgents($poste,$agents,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion){
     $msg_deja_place="&nbsp;<font class='red bold'>(DP)</font>";
     $msg_deuxSP="&nbsp;<font class='red bold'>(2 SP)</font>";
     $msg_SR="&nbsp;<font class='red bold'>(SR)</font>";
@@ -96,7 +96,6 @@ class planning{
     $j7=$d->dates[6];
     $semaine=$d->semaine;
     $semaine3=$d->semaine3;
-    $ligneAdd=0;
 
     if($hide){
       $display="display:none;";
@@ -236,9 +235,10 @@ class planning{
       echo "</td><td style='text-align:right;width:20px'>";
       
       //	Affichage des liens d'ajout et de remplacement
-      if(!$cellule_vide and !$max_perso and !$sr and !$sr_init)
+      $max_perso=$nbAgents>=$GLOBALS['config']['Planning-NbAgentsCellule']?true:false;
+      if($nbAgents>0 and !$max_perso and !$sr and !$sr_init)
 	echo "<a href='javascript:bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},0,1,\"$site\");'>+</a>";
-      if(!$cellule_vide and !$max_perso)
+      if($nbAgents>0 and !$max_perso)
 	echo "&nbsp;<a style='color:red' href='javascript:bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},1,1,\"$site\");'>x</a>&nbsp;";
       echo "</td></tr>\n";
     }

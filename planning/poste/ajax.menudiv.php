@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.9
+Planning Biblio, Version 1.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 12 janvier 2015
+Dernière modification : 21 janvier 2015
 Auteur : Jérôme Combes jerome@planningbilbio.fr, Christophe Le Guennec Christophe.Leguennec@u-pem.fr
 
 Description :
@@ -37,14 +37,12 @@ $date=$_GET['date'];
 $poste=$_GET['poste'];
 $debut=$_GET['debut'];
 $fin=$_GET['fin'];
-$cellule_vide=true;
-$max_perso=false;
+$perso_nom=$_GET['perso_nom'];
 $tab_exclus=array(0);
 $absents=array(0);
 $agents_qualif=array(0);
 $tab_deja_place=array(0);
 $sr_init=null;
-$nbCol=0;
 $motifExclusion=array();
 
 $d=new datePl($date);
@@ -52,7 +50,6 @@ $j1=$d->dates[0];
 $j7=$d->dates[6];
 $semaine=$d->semaine;
 $semaine3=$d->semaine3;
-$ligneAdd=0;
 
 //			----------------		Vérification des droits d'accès		-----------------------------//
 $url=explode("?",$_SERVER['REQUEST_URI']);
@@ -228,18 +225,12 @@ $deja=deja_place($date,$poste);
 // Contrôle du personnel placé juste avant ou juste après la plage choisie
 $deuxSP=deuxSP($date,$debut,$fin);
 
-//		-----------------------------		Contrôle si la cellule est vide 		-----------------------------//
+// Récupère le nombre d'agents déjà placés dans la cellule
 $db=new db();
-$db->select("pl_poste",null,"`poste`='$poste' AND `debut`='$debut' AND `fin`='$fin' AND `date`='$date' AND `site`='$site'");
-if($db->result and $db->result[0]['perso_id']!='0'){
-  $cellule_vide=false;
-}
-if($db->nb>=$config['Planning-NbAgentsCellule']){
-  $max_perso=true;
-}
-//		-----------------------------		FIN Contrôle si la cellule est vide 		-----------------------------//
+$db->select("pl_poste",null,"`poste`='$poste' AND `debut`='$debut' AND `fin`='$fin' AND `date`='$date' AND `site`='$site' AND `perso_id`>0");
+$nbAgents=$db->nb;
 
-	//--------------		Liste du personnel disponible			---------------//
+//--------------		Liste du personnel disponible			---------------//
 
 		// construction de la requete de sélection du personnel formé pour les activités demandées
 if($poste!=0){		//	repas
@@ -366,7 +357,7 @@ if(!$config['ClasseParService']){
   $hide=false;
   $p=new planning();
   $p->site=$site;
-  $p->menudivAfficheAgents($poste,$agents_dispo,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion);
+  $p->menudivAfficheAgents($poste,$agents_dispo,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion);
 }
 
 //		-----------		Affichage des agents indisponibles		----------//
@@ -384,16 +375,26 @@ if($config['toutlemonde']){
   echo "<tr onmouseover='$(this).addClass(\"menudiv-gris\");groupe_tab_hide();' onmouseout='$(this).removeClass(\"menudiv-gris\");'>\n";
   echo "<td colspan='3' style='width:200px;color:black;' ";
   echo "onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",2,0,0,\"$site\");'>Tout le monde</td></tr>\n";
-  $nbCol++;
 }
 //~ -----				Affiche de la "Case vide"  (suppression)	--------------------------//
-if(!$cellule_vide){
+if($nbAgents>0){
   $groupe_tab=$config['ClasseParService']?"groupe_tab(\"vide\",\"$tab_agent\",1);":null;
   echo "<tr onmouseover='$groupe_tab $(this).addClass(\"menudiv-gris\");' onmouseout='$(this).removeClass(\"menudiv-gris\");'>";
-  echo "<td colspan='1' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,0,0,\"$site\");'>";
-  echo "Supprimer</td><td>&nbsp;";
-  echo "<a style='color:red' href='javascript:bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,1,0,\"$site\");'>Barrer</a>&nbsp;&nbsp;</td></tr>";
-  $nbCol++;
+  echo "<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,0,0,\"$site\");'>";
+  echo "Supprimer $perso_nom</td><tr>\n";
+  echo "<tr onmouseover='$groupe_tab $(this).addClass(\"menudiv-gris\");' onmouseout='$(this).removeClass(\"menudiv-gris\");'>";
+  echo "<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,1,0,\"$site\");' class='red'>";
+  echo "Barrer $perso_nom</td></tr>";
+
+  // Ne pas afficher les lignes suivantes si un seul agent dans la cellule
+  if($nbAgents>1){
+    echo "<tr onmouseover='$groupe_tab $(this).addClass(\"menudiv-gris\");' onmouseout='$(this).removeClass(\"menudiv-gris\");'>";
+    echo "<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,0,0,\"$site\",1);'>";
+    echo "Tout supprimer</td><tr>\n";
+    echo "<tr onmouseover='$groupe_tab $(this).addClass(\"menudiv-gris\");' onmouseout='$(this).removeClass(\"menudiv-gris\");'>";
+    echo "<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,1,0,\"$site\",1);' class='red'>";
+    echo "Tout barrer</td></tr>";
+  }
 }
 echo "</table>\n";
 
@@ -405,7 +406,7 @@ if($agents_tous and $config['ClasseParService']){
   $hide=true;
   $p=new planning();
   $p->site=$site;
-  $p->menudivAfficheAgents($poste,$agents_tous,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion);
+  $p->menudivAfficheAgents($poste,$agents_tous,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion);
 }
 
 //		-----------		Affichage de la liste des agents indisponibles 'ils ne sont pas classés par services	----------//
@@ -413,12 +414,9 @@ if($autres_agents and !$config['ClasseParService'] and $config['agentsIndispo'])
   $hide=true;
   $p=new planning();
   $p->site=$site;
-  $p->menudivAfficheAgents($poste,$autres_agents,$date,$debut,$fin,$deja,$stat,$cellule_vide,$max_perso,$sr_init,$hide,$deuxSP,$motifExclusion);
+  $p->menudivAfficheAgents($poste,$autres_agents,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion);
 }
 
 echo "</table>";
-// 	Les lignes suivantes permettent de compter le nombre de lignes afin de placer correctement le menu en fonction de sa hauteur
-$nbCol=$db->nb+1;
-$nbCol=($nbCol+$ligneAdd);
 //--------------		FIN Liste du personnel disponible			---------------//
 ?>

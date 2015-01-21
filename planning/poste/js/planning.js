@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.8.9
+Planning Biblio, Version 1.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 13 janvier 2015
+Dernière modification : 21 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -14,7 +14,12 @@ Fichier regroupant les scripts JS nécessaires à la page planning/poste/index.p
 Fichier intégré par le fichier include/header.php avec la fonction getJSFiles.
 */
 
+/* Variables globales :
+- perso_id_origine transmise à ajax.updateCell.php pour maj de la base de données pour remplacer, barrer ou supprimer l'agent cliqué
+- perso_nom_origine transmoise à ajax.menudiv.php affichage du nom cliqué pour supprimer M. xxx, Barrer M. xxx
+*/
 perso_id_origine=0;
+perso_nom_origine=null;
 
 // Chargement de la page
 $(document).ready(function(){
@@ -130,7 +135,7 @@ $(function() {
   
   $(".cellDiv").contextmenu(function(){
     $(this).closest("td").attr("data-perso-id",$(this).attr("data-perso-id"));
-    perso_id_origine=$(this).attr("data-perso-id");
+    majPersoOrigine($(this).attr("data-perso-id"));
   });
   
   // Création du MenuDiv : menu affichant la liste des agents pour les placer dans les cellules
@@ -145,7 +150,8 @@ $(function() {
 
     $.ajax({
       url: "planning/poste/ajax.menudiv.php",
-      data: "&cellule="+cellule+"&date="+date+"&debut="+debut+"&fin="+fin+"&poste="+poste+"&site="+site,
+      datatype: "json",
+      data: {cellule: cellule, date: date, debut: debut, fin: fin, poste: poste, site: site, perso_nom: perso_nom_origine},
       type: "get",
       success: function(result){
 	document.getElementById("menudiv").scrollTop=0;
@@ -185,7 +191,7 @@ $(function() {
 
 // Fonctions JavaScript
 
-function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site){
+function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout){
   /* 
   bataille_navale : menu contextuel : met à jour la base de données en arrière plan et affiche les modifs en JS dans le planning
   Récupére en Ajax les id, noms, prénom, service, statut dans agents placés
@@ -198,11 +204,15 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site){
     site=1;
   }
 
+  if(tout==undefined){
+    tout=0;
+  }
+
   $.ajax({
     url: "planning/poste/ajax.updateCell.php",
     type: "post",
     dataType: "json",
-    data: {poste: poste, date: date, debut: debut, fin: fin, perso_id: perso_id, perso_id_origine: perso_id_origine, barrer: barrer, ajouter: ajouter, site: site},
+    data: {poste: poste, date: date, debut: debut, fin: fin, perso_id: perso_id, perso_id_origine: perso_id_origine, barrer: barrer, ajouter: ajouter, site: site, tout: tout},
     success: function(result){
       $("#td"+cellule).html("");
       
@@ -220,7 +230,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site){
       // Si pas de résultat (rien n'est affiché dans la cellule modifiée), 
       // on réinitialise perso_id_origine pour ne pas avoir de rémanence pour la gestion de SR et suppression
       if(!result){
-	perso_id_origine=0;
+	majPersoOrigine(0);
       }
 
       for(i in result){
@@ -267,8 +277,8 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site){
 	debut=debut.replace(":","");
 	fin=fin.replace(":","");
 	var span="<span class='cellSpan agent_"+perso_id+"'>"+agent+"</span>";
-	var div="<div id='cellule"+cellule+"_"+i+"' class='"+classes+"' data-perso-id='"+perso_id+"' oncontextmenu='perso_id_origine="+perso_id+";'>"+span+"</div>"
-	// oncontextmenu='perso_id_origine="+perso_id+";' : necessaire car l'événement JQuery contextmenu sur .cellDiv ne marche pas sur les cellules modifiées
+	var div="<div id='cellule"+cellule+"_"+i+"' class='"+classes+"' data-perso-id='"+perso_id+"' oncontextmenu='majPersoOrigine("+perso_id+");'>"+span+"</div>"
+	// oncontextmenu='majPersoOrigine("+perso_id+");' : necessaire car l'événement JQuery contextmenu sur .cellDiv ne marche pas sur les cellules modifiées
 	$("#td"+cellule).append(div);
       }
 
@@ -354,6 +364,15 @@ function groupe_tab_hide(){
   $(".tr_liste").each(function(){
     $(this).hide();
   });
+}
+
+/* majPersoOrigine : 
+  Fonction permettant de mettre à jour les variables globales perso_xx_origine lors de la mise à jour d'une cellule
+  C'est variables permette d'informer ajax.menudiv.php sur l'agent cliqué (id pour maj de la base de données, nom pour affichage)
+*/
+function majPersoOrigine(perso_id){
+  perso_id_origine=perso_id;
+  perso_nom_origine=$(".agent_"+perso_id+":eq(0)").text();
 }
 
 function refresh_poste(validation){		// actualise le planning en cas de modification

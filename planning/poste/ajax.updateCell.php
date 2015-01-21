@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.9
+Planning Biblio, Version 1.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 9 janvier 2015
+Dernière modification : 21 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -37,16 +37,25 @@ $fin=$_POST['fin'];
 $absent=isset($_POST['absent'])?$_POST['absent']:"0";
 $poste=$_POST['poste'];
 $barrer=$_POST['barrer'];
+$tout=$_POST['tout'];
 
 
 // Pärtie 1 : Enregistrement des nouveaux éléments
 
 // Suppression ou marquage absent
 if($perso_id==0){
-  if($barrer){
+  // Tout barrer
+  if($barrer and $tout){
+    $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1', `chgt_login`='{$_SESSION['login_id']}', `chgt_time`=SYSDATE() WHERE `date`='$date' AND `debut`='$debut' AND `fin`='$fin' AND `poste`='$poste' AND `site`='$site';";
+  // Barrer l'agent sélectionné
+  }elseif($barrer){
     $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1', `chgt_login`='{$_SESSION['login_id']}', `chgt_time`=SYSDATE() WHERE `date`='$date' AND `debut`='$debut' AND `fin`='$fin' AND `poste`='$poste' AND `site`='$site' AND `perso_id`='$perso_id_origine';";
   }
-  else{
+  // Tout supprimer
+  elseif($tout){
+    $req="DELETE FROM `{$dbprefix}pl_poste` WHERE `date`='$date' AND `debut`='$debut' AND `fin`='$fin' AND `poste`='$poste' AND `site`='$site';";
+  // Supprimer l'agent sélectionné
+  }else{
     $req="DELETE FROM `{$dbprefix}pl_poste` WHERE `date`='$date' AND `debut`='$debut' AND `fin`='$fin' AND `poste`='$poste' AND `site`='$site' AND `perso_id`='$perso_id_origine';";
   }
 }
