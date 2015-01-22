@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 27 novembre 2014
+Dernière modification : 22 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -843,6 +843,41 @@ option.bold{
 /*	JQuery-UI Accordion	*/
 .ui-accordion .ui-accordion-header{
   margin-bottom: 0px;
+}
+
+/*	Agenda	*/
+#div_agenda{
+  min-height:400px;
+}
+
+#div_agenda .information{
+  display: inline-block;
+}
+
+#tab_agenda td{
+  vertical-align: top;
+}
+
+#tab_agenda td{
+  border-right : 1px outset;
+  border-bottom : 1px outset;
+  border-radius : 0 0 5px 0;
+}
+
+#div_agenda .div_date{
+  font-weight:bold;
+  text-decoration:underline;
+  margin-bottom:10px;
+  text-align:center;
+}
+
+#div_agenda ul{
+  margin-top:0px;
+  padding-left:20px;
+}
+
+#div_agenda .postes{
+  margin-top: 10px;
 }
 
 /*	Footer	*/

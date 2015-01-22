@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.8
+Planning Biblio, Version 1.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 10 décembre 2014
+Dernière modification : 22 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -265,13 +265,13 @@ function date_time($date){
   }
 }
 
-function dateAlpha($date){
+function dateAlpha($date,$day=true,$year=true){
   if(!$date or $date=="0000-00-00"){
     return false;
   }
 
   $tmp=explode("-",$date);
-  $dayOfMonth=($tmp[2]=="01")?"1er":intval($tmp[2]);
+  $dayOfMonth=($tmp[2]=="01")?"1<sup>er</sup>":intval($tmp[2]);
   switch($tmp[1]){
     case "01" : $month="janvier" ; break;
     case "02" : $month="février" ; break;
@@ -286,17 +286,30 @@ function dateAlpha($date){
     case "11" : $month="novembre" ; break;
     case "12" : $month="décembre" ; break;
   }
-  $day=date("w", mktime(0, 0, 0, $tmp[1], $tmp[2], $tmp[0]));
-  switch($day){
-    case 1 : $day="Lundi"; break;
-    case 2 : $day="Mardi"; break;
-    case 3 : $day="Mercredi"; break;
-    case 4 : $day="Jeudi"; break;
-    case 5 : $day="Vendredi"; break;
-    case 6 : $day="Samedi"; break;
-    case 0 : $day="Dimanche"; break;
+
+  if($day){
+    $day=date("w", mktime(0, 0, 0, $tmp[1], $tmp[2], $tmp[0]));
+    switch($day){
+      case 1 : $day="Lundi"; break;
+      case 2 : $day="Mardi"; break;
+      case 3 : $day="Mercredi"; break;
+      case 4 : $day="Jeudi"; break;
+      case 5 : $day="Vendredi"; break;
+      case 6 : $day="Samedi"; break;
+      case 0 : $day="Dimanche"; break;
+    }
+    $return=$day." ".$dayOfMonth." ".$month;
+    if($year){
+      $return.=" ".$tmp[0];
+    }
   }
-  return $day." ".$dayOfMonth." ".$month." ".$tmp[0];
+  else{
+    $return=$dayOfMonth." ".$month;
+    if($year){
+      $return.=" ".$tmp[0];
+    }
+  }
+  return $return;
 }
 
 function dateAlpha2($date){
