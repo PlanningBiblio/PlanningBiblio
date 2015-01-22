@@ -1,6 +1,7 @@
 ***	Version 1.9	(Jérôme Combes, 21 janvier 2015)		***
 - Améliorations :
 Planning : Ajoute les boutons "Supprimer tout" et "Barrer tout" dans le menu permettant de modifier les cellules
+Agenda : Amélioration de l'affichage de l'agenda
 
 - Corrections :
 Tableaux : Améliore l'affiche de la page de configuration les horaires

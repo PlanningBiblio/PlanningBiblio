@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 21 janvier 2015
+Dernière modification : 22 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -33,7 +33,6 @@ if(!array_key_exists('agenda_debut',$_SESSION)){
   $_SESSION['agenda_perso_id']=$_SESSION['login_id'];
 }
 
-$nbColonnes=4;
 $admin=in_array(3,$droits)?true:false;
 if($admin){
   $perso_id=isset($_GET['perso_id'])?$_GET['perso_id']:$_SESSION['agenda_perso_id'];
@@ -79,6 +78,7 @@ $j->fetch();
 $joursFeries=$j->elements;
 
 // Affichage
+echo "<div id='div_agenda'>\n";
 if(isset($agent)){
   echo "<h3>Agenda de $agent du $debut au $fin</h3>\n";
 }
@@ -133,150 +133,185 @@ $requete=str_replace("postes","`{$dbprefix}postes`",$requete);
 $db->query($requete);
 $postes=$db->result;
 
-echo "<br/>\n";
-echo "<table cellpadding='20' cellspacing='0' border='1'>\n";
-$nb=0;
+if($debutSQL>$finSQL){
+  echo "<p class='information'>La date de fin doit &ecirc;tre sup&eacute;rieure &agrave; la date de d&eacute;but.</p>\n";
+}else{
+  echo <<<EOD
+    <br/>
+    <table cellpadding='10' cellspacing='2' border='0' id='tab_agenda'>
+    <thead>
+    <tr class='center'>
+    <th class='ui-widget-header ui-corner-all'>Lundi</th>
+    <th class='ui-widget-header ui-corner-all'>Mardi</th>
+    <th class='ui-widget-header ui-corner-all'>Mercredi</th>
+    <th class='ui-widget-header ui-corner-all'>Jeudi</th>
+    <th class='ui-widget-header ui-corner-all'>Vendredi</th>
+    <th class='ui-widget-header ui-corner-all'>Samedi</th>
+    <th class='ui-widget-header ui-corner-all'>Dimanche</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+EOD;
 
-$current=$debutSQL;
-while($current<=$finSQL){
-  $current_postes=array();
-  $date_tab=explode("-",$current);
-  $date_aff=dateAlpha($current);
-  $semaine=date("W",strtotime($current));
-  $jour=date("w",strtotime($current))-1;
-  if($jour<0)
-    $jour=6;
-  if($config['nb_semaine']==2 and $semaine%2==0)
-    $jour=$jour+7;
-
-  //	Horaires de traval si plugin PlanningHebdo
-  if(in_array("planningHebdo",$plugins)){
-    include "plugins/planningHebdo/agenda.php";
+  // Affiche des cellules vides devant le premier jour demandé de façon à avoir les lundis dans la première colonne
+  $d=new datePl($debutSQL);
+  $cellsBefore=$d->position>0?$d->position-1:6;
+  for($i=0;$i<$cellsBefore;$i++){
+    echo "<td class='cellule_grise'>&nbsp;</td>\n";
   }
+  $nb=$cellsBefore;
 
-  $horaires=null;
-  if(array_key_exists($jour,$temps)){
-    $horaires=$temps[$jour];
-  }
+  $current=$debutSQL;
+  while($current<=$finSQL){
+    $current_postes=array();
+    $date_tab=explode("-",$current);
+    $date_aff=dateAlpha($current,false,false);
+    $semaine=date("W",strtotime($current));
+    $jour=date("w",strtotime($current))-1;
+    if($jour<0)
+      $jour=6;
+    if($config['nb_semaine']==2 and $semaine%2==0)
+      $jour=$jour+7;
 
-  $d=new datePl($current);
-  $current_date=ucfirst($d->jour_complet);
-  if(is_array($postes))
-  foreach($postes as $elem){
-    if($elem['date']==$current){
-      $current_postes[]=$elem;
+    //	Horaires de traval si plugin PlanningHebdo
+    if(in_array("planningHebdo",$plugins)){
+      include "plugins/planningHebdo/agenda.php";
     }
-  }
-  $current_abs=array();
-  if(is_array($absences))
-  foreach($absences as $elem){
-    $abs_deb=substr($elem['debut'],0,10);
-    $abs_fin=substr($elem['fin'],0,10);
-    if(($abs_deb<$current and $abs_fin>$current) or $abs_deb==$current or $abs_fin==$current){
-      $current_abs[]=$elem;
-    }
-  }
-  if(($nb++)%$nbColonnes==0){
-    echo "<tr style='vertical-align:top;'>\n";
-  }
-  echo "<td>";
-  echo "<div style='font-weight:bold;text-decoration:underline;margin-bottom:10px;'>$date_aff</div>\n";
 
-  // Jours fériés : affiche Bibliothèque fermée et passe au jour suivant
-  if(array_key_exists($current,$joursFeries) and $joursFeries[$current]['fermeture']){
-    echo "<div class='ferie'>\n";
-    echo "Biblioth&egrave;que ferm&eacute;e<br/><b>{$joursFeries[$current]['nom']}</b>";
-    echo "</div></td>\n";
-    $current=date("Y-m-d",mktime(0,0,0,$date_tab[1],$date_tab[2]+1,$date_tab[0]));
-    if(($nb)%$nbColonnes==0){
-      echo "</tr>\n";
+    $horaires=null;
+    if(array_key_exists($jour,$temps)){
+      $horaires=$temps[$jour];
     }
-    continue;
-  }
 
-  // Si l'agent est absent : affiche s'il est abent toutes la journée ou ses heures d'absences
-  $absent=false;
-  $absences_affichage=array();
+    $d=new datePl($current);
+    $current_date=ucfirst($d->jour_complet);
+    if(is_array($postes))
+    foreach($postes as $elem){
+      if($elem['date']==$current){
+	$current_postes[]=$elem;
+      }
+    }
+    $current_abs=array();
+    if(is_array($absences))
+    foreach($absences as $elem){
+      $abs_deb=substr($elem['debut'],0,10);
+      $abs_fin=substr($elem['fin'],0,10);
+      if(($abs_deb<$current and $abs_fin>$current) or $abs_deb==$current or $abs_fin==$current){
+	$current_abs[]=$elem;
+      }
+    }
+    if(($nb++)%7==0){
+      echo "</tr><tr>\n";
+    }
+    echo "<td>";
+    echo "<div class='div_date'>$date_aff</div>\n";
 
-  foreach($current_abs as $elem){
-    if($elem['debut']<=$current." 00:00:00" and $elem['fin']>=$current." 23:59:59"){
-      $absent=true;
-      $absences_affichage[]="Toute la journée : ".$elem['motif'];
+    // Jours fériés : affiche Bibliothèque fermée et passe au jour suivant
+    if(array_key_exists($current,$joursFeries) and $joursFeries[$current]['fermeture']){
+      echo "<div class='ferie'>\n";
+      echo "Biblioth&egrave;que ferm&eacute;e<br/><b>{$joursFeries[$current]['nom']}</b>";
+      echo "</div></td>\n";
+      $current=date("Y-m-d",mktime(0,0,0,$date_tab[1],$date_tab[2]+1,$date_tab[0]));
+      if(($nb)%7==0){
+	echo "</tr>\n";
+      }
+      continue;
     }
-    elseif(substr($elem['debut'],0,10)==$current and substr($elem['fin'],0,10)==$current){
-      $deb=heure2(substr($elem['debut'],-8));
-      $fi=heure2(substr($elem['fin'],-8));
-      $absences_affichage[]="De $deb &agrave; $fi : ".$elem['motif'];
-    }
-    elseif(substr($elem['debut'],0,10)==$current and $elem['fin']>=$current." 23:59:59"){
-      $deb=heure2(substr($elem['debut'],-8));
-      $absences_affichage[]="&Agrave; partir de $deb : ".$elem['motif'];
-    }
-    elseif($elem['debut']<=$current." 00:00:00" and substr($elem['fin'],0,10)==$current){
-      $fi=heure2(substr($elem['fin'],-8));
-      $absences_affichage[]="Jusqu'&agrave; $fi : ".$elem['motif'];
-    }
-    else{
-      $absences_affichage[]="{$elem['debut']} &rarr; {$elem['fin']} : {$elem['motif']}";
-    }
-  }
 
-  // Intégration des congés
-  if(in_array("conges",$plugins)){
-    include "plugins/conges/agenda.php";
-  }
+    // Si l'agent est absent : affiche s'il est abent toutes la journée ou ses heures d'absences
+    $absent=false;
+    $absences_affichage=array();
 
-
-  // Si l'agent n'est pas absent toute la journée : affiche ses heures de présences
-  if(!$absent){
-    $site=null;
-    if($config['Multisites-nombre']>1 and isset($horaires[4])){
-      if($horaires[4]){
-	$site="&agrave; ".$config['Multisites-site'.$horaires[4]];
+    foreach($current_abs as $elem){
+      if($elem['debut']<=$current." 00:00:00" and $elem['fin']>=$current." 23:59:59"){
+	$absent=true;
+	$absences_affichage[]="Toute la journée : ".$elem['motif'];
+      }
+      elseif(substr($elem['debut'],0,10)==$current and substr($elem['fin'],0,10)==$current){
+	$deb=heure2(substr($elem['debut'],-8));
+	$fi=heure2(substr($elem['fin'],-8));
+	$absences_affichage[]="De $deb &agrave; $fi : ".$elem['motif'];
+      }
+      elseif(substr($elem['debut'],0,10)==$current and $elem['fin']>=$current." 23:59:59"){
+	$deb=heure2(substr($elem['debut'],-8));
+	$absences_affichage[]="&Agrave; partir de $deb : ".$elem['motif'];
+      }
+      elseif($elem['debut']<=$current." 00:00:00" and substr($elem['fin'],0,10)==$current){
+	$fi=heure2(substr($elem['fin'],-8));
+	$absences_affichage[]="Jusqu'&agrave; $fi : ".$elem['motif'];
+      }
+      else{
+	$absences_affichage[]="{$elem['debut']} &rarr; {$elem['fin']} : {$elem['motif']}";
       }
     }
 
-    $horaire="";
-    if($horaires[0])
-      $horaire="Pr&eacute;sent(e) $site de ".heure2($horaires[0])." &agrave; ";
-    if($horaires[1])
-      $horaire.=heure2($horaires[1]);
-    if($horaires[1] and $horaires[2])
-      $horaire.=" et de ";
-    if($horaires[2])
-      $horaire.=heure2($horaires[2])." &agrave; ";
-    if($horaires[3])
-      $horaire.=heure2($horaires[3]);
-
-    echo "<p>$horaire</p>\n";
-  }
-
-  // Affichage des absences
-  if(!empty($absences_affichage)){
-    echo "<div class='important'>\n";
-    echo count($absences_affichage)==1?"Absence :":"Absences :";
-    echo "<ul style='margin-top:0px;'>\n";
-    foreach($absences_affichage as $elem){
-      echo "<li>$elem</li>\n";
+    // Intégration des congés
+    if(in_array("conges",$plugins)){
+      include "plugins/conges/agenda.php";
     }
+
+
+    // Si l'agent n'est pas absent toute la journée : affiche ses heures de présences
+    if(!$absent){
+      $site=null;
+      if($config['Multisites-nombre']>1 and isset($horaires[4])){
+	if($horaires[4]){
+	  $site="&agrave; ".$config['Multisites-site'.$horaires[4]];
+	}
+      }
+
+      $horaire="";
+      if($horaires[0])
+	$horaire="Pr&eacute;sent(e) $site de ".heure2($horaires[0])." &agrave; ";
+      if($horaires[1])
+	$horaire.=heure2($horaires[1]);
+      if($horaires[1] and $horaires[2])
+	$horaire.=" et de ";
+      if($horaires[2])
+	$horaire.=heure2($horaires[2])." &agrave; ";
+      if($horaires[3])
+	$horaire.=heure2($horaires[3]);
+
+      echo "<p>$horaire</p>\n";
+    }
+
+    // Affichage des absences
+    if(!empty($absences_affichage)){
+      echo "<div class='important'>\n";
+      echo count($absences_affichage)==1?"Absence :":"Absences :";
+      echo "<ul>\n";
+      foreach($absences_affichage as $elem){
+	echo "<li>$elem</li>\n";
+      }
+      echo "</ul></div>\n";
+    }
+
+    if(!empty($current_postes)){
+      echo "<div class='postes'>Postes occup&eacute;s :<ul>\n";
+      foreach($current_postes as $elem){
+	$heure=heure2($elem['debut'])." - ".heure2($elem['fin']);
+	$barre=$elem['absent']?"text-decoration:line-through;":null;
+	$class=$elem['absent']?"important":null;
+	echo "<li style='$barre' class='$class'>$heure {$elem['poste']}</li>\n";
+      }
     echo "</ul></div>\n";
-  }
-
-  if(!empty($current_postes)){
-    echo "<div style='margin-top:10px;'>Postes occup&eacute;s :<ul style='margin-top:0px;'>\n";
-    foreach($current_postes as $elem){
-      $heure=heure2($elem['debut'])." - ".heure2($elem['fin']);
-      $barre=$elem['absent']?"text-decoration:line-through;":null;
-      $class=$elem['absent']?"important":null;
-      echo "<li style='$barre' class='$class'>$heure {$elem['poste']}</li>\n";
     }
-  echo "</ul></div>\n";
+	    
+    $current=date("Y-m-d",mktime(0,0,0,$date_tab[1],$date_tab[2]+1,$date_tab[0]));
+    if(($nb)%7==0)
+      echo "</tr>\n";
+  }		
+
+  // Cellules vides à la fin pour aller jusqu'au dimanche
+  $d=new datePl($finSQL);
+  $cellsAfter=$d->position>0?7-$d->position:0;
+  for($i=0;$i<$cellsAfter;$i++){
+    echo "<td class='cellule_grise'>&nbsp;</td>\n";
   }
-	  
-  $current=date("Y-m-d",mktime(0,0,0,$date_tab[1],$date_tab[2]+1,$date_tab[0]));
-  if(($nb)%$nbColonnes==0)
-    echo "</tr>\n";
-}		
-echo "</table>\n";
-echo "<br/><br/><br/><br/>";
+  echo "</tr>\n";
+  echo "</tbody>\n";
+  echo "</table>\n";
+}
+echo "</div>";
 ?>
