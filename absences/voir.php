@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.9.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 6 novembre 2014
+Dernière modification : 27 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -140,6 +140,7 @@ if($config['Absences-validation']){
 }
 echo "<th>Motif</th>\n";
 echo "<th>Commentaires</th>\n";
+echo "<th>Demande</th>\n";
 
 if(in_array(701,$droits)){
   echo "<th id='thPiecesJustif'><label style='white-space:nowrap'>Pi&egrave;ces justificatives</label><br/>\n";
@@ -183,7 +184,8 @@ if($absences){
       echo "<td style='$etatStyle'>$etat</td>\n";
     }
     echo "<td>{$elem['motif']}</td>\n";
-    echo "<td>{$elem['commentaires']}</td>\n";
+    echo "<td title='{$elem['commentaires']}'><div style='height:20px;overflow:hidden;'>{$elem['commentaires']}</div></td>\n";
+    echo "<td>".dateFr($elem['demande'],true)."</td>\n";
 
     if(in_array(701,$droits)){
       echo "<td style='text-align:center;'>";

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9
+Planning Biblio, Version 1.9.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 21 janvier 2015
+Dernière modification : 27 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -35,7 +35,7 @@ $req="SELECT `{$dbprefix}personnel`.`id` AS `perso_id`, `{$dbprefix}personnel`.`
   `{$dbprefix}absences`.`valide` AS `valide`, `{$dbprefix}absences`.`validation` AS `validation`, 
   `{$dbprefix}absences`.`valideN1` AS `valideN1`, `{$dbprefix}absences`.`validationN1` AS `validationN1`, 
   `{$dbprefix}absences`.`pj1` AS `pj1`, `{$dbprefix}absences`.`pj2` AS `pj2`, `{$dbprefix}absences`.`so` AS `so`, 
-  `{$dbprefix}absences`.`commentaires` AS `commentaires` 
+  `{$dbprefix}absences`.`commentaires` AS `commentaires`, `{$dbprefix}absences`.`demande` AS `demande`  
   FROM `{$dbprefix}absences` INNER JOIN `{$dbprefix}personnel` 
   ON `{$dbprefix}absences`.`perso_id`=`{$dbprefix}personnel`.`id` WHERE `{$dbprefix}absences`.`id`='$id';";
 $db->query($req);
@@ -43,6 +43,7 @@ $perso_id=$db->result[0]['perso_id'];
 $motif=$db->result[0]['motif'];
 $motif_autre=$db->result[0]['motif_autre'];
 $commentaires=$db->result[0]['commentaires'];
+$demande=dateFr($db->result[0]['demande'],true);
 $debutSQL=$db->result[0]['debut'];
 $finSQL=$db->result[0]['fin'];
 $debut=dateFr3($debutSQL);
@@ -223,6 +224,11 @@ if($config['Absences-validation']){
   }
   echo "</td></tr>\n";
 }
+
+echo <<<EOD
+  <tr><td><label>Demande</label></td>
+  <td>$demande</td></tr>
+EOD;
 
 echo "<tr><td colspan='2'><br/>\n";
 if($admin or ($valide==0 and $valideN1==0) or $config['Absences-validation']==0){

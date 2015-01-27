@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.9.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/js/voir.js
 Création : 5 novembre 2014
-Dernière modification : 6 novembre 2014
+Dernière modification : 27 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -15,13 +15,18 @@ Fichier regroupant les fonctions JavaScript utiles à l'affichage des absences (
 
 $(document).ready(function() {
   // DataTable : configuration des colonnes
-  var aoColumns=[{"bSortable":false},{"sType": "date-fr"},{"sType": "date-fr-fin"},{"bSortable":true},{"bSortable":true}];
+  var aoColumns=[{"bSortable":false},{"sType": "date-fr"},{"sType": "date-fr-fin"}];
   if($("#thNom").length){
    aoColumns.push({"bSortable":true});
   }
   if($("#thValidation").length){
    aoColumns.push({"bSortable":true});
   }
+  // Motif, Commentaires, Demande
+  aoColumns.push({"bSortable":true});
+  aoColumns.push({"bSortable":true});
+  aoColumns.push({"sType": "date-fr"});
+  
   if($("#thPiecesJustif").length){
    aoColumns.push({"bSortable":false});
   }

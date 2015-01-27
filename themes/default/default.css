@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.9
+Planning Biblio, Version 1.9.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 22 janvier 2015
+Dernière modification : 27 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -196,7 +196,7 @@ h3{
 .tableauFiches td{
   text-align: left;
   vertical-align:top;
-  padding: 0 60px 7px 10px;
+  padding: 0 60px 10px 10px;
 }
 
 .tableauFiches .td_validation{
@@ -751,7 +751,7 @@ img{
   width:100px;
 }
 
-.intitule{
+.intitule, label{
   font-weight: bold;
   white-space: nowrap;
 }

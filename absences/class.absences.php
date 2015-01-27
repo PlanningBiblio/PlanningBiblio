@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.8
+Planning Biblio, Version 1.9.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 18 décembre 2014
+Dernière modification : 27 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -202,7 +202,8 @@ class absences{
       ."`{$dbprefix}absences`.`motif` AS `motif`, `{$dbprefix}absences`.`commentaires` AS `commentaires`, "
       ."`{$dbprefix}absences`.`valide` AS `valide`, `{$dbprefix}absences`.`validation` AS `validation`, "
       ."`{$dbprefix}absences`.`valideN1` AS `valideN1`, `{$dbprefix}absences`.`validationN1` AS `validationN1`, "
-      ."`{$dbprefix}absences`.`pj1` AS `pj1`, `{$dbprefix}absences`.`pj2` AS `pj2`, `{$dbprefix}absences`.`so` AS `so` "
+      ."`{$dbprefix}absences`.`pj1` AS `pj1`, `{$dbprefix}absences`.`pj2` AS `pj2`, `{$dbprefix}absences`.`so` AS `so`, "
+      ."`{$dbprefix}absences`.`demande` AS `demande` "
       ."FROM `{$dbprefix}absences` INNER JOIN `{$dbprefix}personnel` "
       ."ON `{$dbprefix}absences`.`perso_id`=`{$dbprefix}personnel`.`id` "
       ."WHERE $dates $only_me $sites_req $filter ORDER BY $sort;";
@@ -256,7 +257,9 @@ class absences{
       ."`{$dbprefix}absences`.`fin` AS `fin`, `{$dbprefix}absences`.`nbjours` AS `nbjours`, "
       ."`{$dbprefix}absences`.`motif` AS `motif`, `{$dbprefix}absences`.`commentaires` AS `commentaires`, "
       ."`{$dbprefix}absences`.`valideN1` AS `valideN1`, `{$dbprefix}absences`.`validationN1` AS `validationN1`, "
-      ."`{$dbprefix}absences`.`valide` AS `valideN2`, `{$dbprefix}absences`.`validation` AS `validationN2` "
+      ."`{$dbprefix}absences`.`valide` AS `valideN2`, `{$dbprefix}absences`.`validation` AS `validationN2`, "
+      ."`{$dbprefix}absences`.`pj1` AS `pj1`, `{$dbprefix}absences`.`pj2` AS `pj2`, `{$dbprefix}absences`.`so` AS `so`, "
+      ."`{$dbprefix}absences`.`demande` AS `demande` "
       ."FROM `{$dbprefix}absences` INNER JOIN `{$dbprefix}personnel` "
       ."ON `{$dbprefix}absences`.`perso_id`=`{$dbprefix}personnel`.`id` "
       ."WHERE `{$dbprefix}absences`.`id`='$id';";

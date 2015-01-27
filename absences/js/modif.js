@@ -1,17 +1,21 @@
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.9.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/js/modif.js
 Création : 28 février 2014
-Dernière modification : 4 novembre 2014
+Dernière modification : 27 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
 Fichier regroupant les fonctions JavaScript utiles à l'ajout et la modification des agents (modif.php)
 */
+
+$(document).ready(function(){
+  $(document).tooltip();
+});
 
 $(function() {
   // Paramétrage de la boite de dialogue permettant la modification des motifs
