@@ -6,7 +6,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 27 janvier 2015
+Dernière modification : 31 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -478,18 +478,32 @@ class cellule = cellule par défaut
   font-weight: bold
 }
 
-#menudiv{
-  overflow:auto;
-  height:465px;
+#menudiv1{
   position:absolute;
   z-index:10;
-  width:440px;
+  width:230px;
+  overflow:auto;
 }
 
-#menudivtab, #menudivtab2{
+#menudiv2{
+  position:absolute;
+  z-index:20;
+  width:240px;
+  overflow:auto;
+}
+
+#menudivtab1, #menudivtab2{
   position:absolute;
   cursor:pointer;
   background: #FFFFFF;
+}
+
+#menudivtab1 td{
+  padding-left: 15px;
+}
+
+#menudivtab2 td{
+  padding-left: 10px;
 }
 
 .menudiv-gris{

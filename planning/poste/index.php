@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.9
+Planning Biblio, Version 1.9.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 13 janvier 2015
+Dernière modification : 2 février 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -353,15 +353,15 @@ if(!$tab){
 //-------------------------------	FIN Choix du tableau	-----------------------------//	
 //-------------------------------	Vérification si le planning semaine fixe est validé	------------------//
 
+// Div planning-data : permet de transmettre les valeurs $verrou et $autorisation à la fonction affichant le menudiv
+echo "<div id='planning-data' data-verrou='$verrou' data-autorisation='$autorisation' style='display:none;'>&nbsp;</div>\n";
+
 if(!$verrou and !$autorisation){
   echo "<br/><br/><font color='red'>Le planning du $dateFr n'est pas validé !</font><br/>\n";
-  echo "</body></html>\n";
+  include "include/footer.php";
+  exit;
 }
 else{
-  echo ($verrou ? "<script type='text/JavaScript'>menudiv_display='none';</script>" : "<script type='text/JavaScript'>menudiv_display='';</script>");
-  
-  echo "<div id='menudiv' style='display:none;'>&nbsp;</div>\n";
-  
   //--------------	Recherche des infos cellules	------------//
   // Toutes les infos seront stockées danx un tableau et utilisées par les fonctions cellules_postes
   $db=new db();

@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.9
+Planning Biblio, Version 1.9.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 21 janvier 2015
+Dernière modification : 2 février 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -16,7 +16,7 @@ Fichier intégré par le fichier include/header.php avec la fonction getJSFiles.
 
 /* Variables globales :
 - perso_id_origine transmise à ajax.updateCell.php pour maj de la base de données pour remplacer, barrer ou supprimer l'agent cliqué
-- perso_nom_origine transmoise à ajax.menudiv.php affichage du nom cliqué pour supprimer M. xxx, Barrer M. xxx
+- perso_nom_origine transmise à ajax.menudiv.php pour affichage du nom cliqué pour supprimer M. xxx, Barrer M. xxx
 */
 perso_id_origine=0;
 perso_nom_origine=null;
@@ -140,6 +140,10 @@ $(function() {
   
   // Création du MenuDiv : menu affichant la liste des agents pour les placer dans les cellules
   $(".menuTrigger").contextmenu(function(e){
+    // Si le planning est verrouillé ou pas admin, on quitte
+    if($("#planning-data").attr("data-verrou")>0 || $("#planning-data").attr("data-autorisation")!=1){
+      return false;
+    }
     cellule=$(this).attr("data-cell");
     date=$("#date").val();
     debut=$(this).attr("data-start");
@@ -154,24 +158,59 @@ $(function() {
       data: {cellule: cellule, date: date, debut: debut, fin: fin, poste: poste, site: site, perso_nom: perso_nom_origine},
       type: "get",
       success: function(result){
-	document.getElementById("menudiv").scrollTop=0;
-	hauteur=146;
-	document.getElementById("menudiv").innerHTML=result;
-
-	if($(window).width()-e.clientX<320){
-	  $("#menudiv").css("left",e.pageX-360);
-	  $("#menudivtab").css("left",220);
-	  $("#menudivtab2").css("left",0);
-	}else{
-	  $("#menudiv").css("left",e.pageX);
+	// si pas de result : on quitte (pas de droit admin)
+	if(!result){
+	  return false;
 	}
-	if($(window).height()-e.pageY<hauteur){
-	  $("#menudiv").css("top",e.pageY-hauteur);
-	}else{
-	  $("#menudiv").css("top",e.pageY);
-	}
+	// result = tableau1 et tableau2
+	result=JSON.parse(result);
 
-	document.getElementById("menudiv").style.display = menudiv_display;
+	// Affichage des tableaux
+	$("body").append("<div id='menudiv1'>"+result[0]+"</div>");
+	$("body").append("<div id='menudiv2'>"+result[1]+"</div>");
+
+	// Position horizontale du tableau 1
+	if($(window).width()-e.clientX<$("#menudiv1").width()){
+	  var left1=e.pageX-$("#menudiv1").width();
+	}else{
+	  var left1=e.pageX;
+	}
+	$("#menudiv1").css("left",left1);
+	
+	// Hauteur et position verticale du tableau 1
+	var h_tab=$("#menudivtab1").height();
+	var h_win=$(window).height();
+	
+	// Hauteur du tableau 1
+	$("#menudiv1").css("max-height",h_win-20);
+	$("#menudiv1").css("height",h_tab+5);
+
+	// Si tableau plus grand que l'écran
+	if(h_tab>h_win){
+	  var top1=$(window).scrollTop()+10;
+	}
+	// Si click en bas de l'écran
+	else if((e.pageY+(h_tab/2))>h_win+$(window).scrollTop()){
+	  var top1=h_win+$(window).scrollTop()-h_tab-10;
+	}
+	// Si click en haut de l'écran
+	else if((e.pageY-(h_tab/2))<$(window).scrollTop()){
+	  var top1=$(window).scrollTop()+10;
+	}
+	// Sinon
+	else{
+	  var top1=e.pageY-(h_tab/2);
+	}
+	
+	$("#menudiv1").css("top",top1);
+
+	// Position horizontale du tableau 2
+	if($(window).width()-e.clientX<($("#menudiv1").width()+$("#menudiv1").width())){
+	  var left2=left1-$("#menudiv1").width()-2;
+	}else{
+	  var left2=left1+$("#menudivtab1").width();
+	}
+	$("#menudiv2").css("left",left2);
       },
 
       error: function(result){
@@ -182,8 +221,18 @@ $(function() {
   });
 
   // Masque le menu lorsque l'on clique en dehors
-  $("html").click(function(){
-    $("#menudiv").hide();
+  $(document).click(function(){
+    $("#menudiv1").remove();
+    $("#menudiv2").remove();
+  });
+  
+  // Masque le menu lorsque l'on appuye sur échappe
+  $(document).keydown(function(e) {
+    // ESCAPE key pressed
+    if (e.keyCode == 27) {
+      $("#menudiv1").remove();
+      $("#menudiv2").remove();
+    }
   });
 
 });
@@ -299,7 +348,8 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
 	});
       });
 
-      $("#menudiv").hide();				// cacher le menudiv
+      $("#menudiv1").remove();				// cacher le menudiv
+      $("#menudiv2").remove();
 
     },
     error: function(result){
@@ -328,7 +378,7 @@ Exemple de valeur pour la variable result :
 }
 
 //	groupe_tab : utiliser pour menudiv
-function groupe_tab(id,tab,hide){			// améliorer les variables (tableaux) pour plus d'évolution
+function groupe_tab(id,tab,hide,me){			// améliorer les variables (tableaux) pour plus d'évolution
   if(hide==undefined){
     hide=1;
   }
@@ -358,6 +408,36 @@ function groupe_tab(id,tab,hide){			// améliorer les variables (tableaux) pour 
       document.getElementById("tr"+tab[id][i]).style.display="";
     }
   }
+  
+  // Hauteur et position verticale du tableau 2 (menudiv2)
+  var h_tab=$("#menudivtab2").height();
+  var h_win=$(window).height();
+  var pos=me.offset();
+  var y=pos.top+me.height()/2;
+
+  // Hauteur
+  $("#menudiv2").css("height",h_tab+5);    
+  $("#menudiv2").css("max-height",h_win-20);
+
+  // Position
+  // Si tableau plus grand que l'écran
+  if(h_tab>h_win){
+    var top2=$(window).scrollTop()+10;
+  }
+  // Si click en bas de l'écran
+  else if((y+(h_tab/2))>h_win+$(window).scrollTop()){
+    var top2=h_win+$(window).scrollTop()-h_tab-10;
+  }
+  // Si click en haut de l'écran
+  else if((y-(h_tab/2))<$(window).scrollTop()){
+    var top2=$(window).scrollTop()+10;
+  }
+  // Sinon
+  else{
+    var top2=y-(h_tab/2);
+  }
+  $("#menudiv2").css("top",top2);
+
 }
 
 function groupe_tab_hide(){

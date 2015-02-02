@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9
+Planning Biblio, Version 1.9.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 21 janvier 2015
+Dernière modification : 31 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -26,6 +26,7 @@ class planning{
   public $date=null;
   public $site=1;
   public $categorieA=false;
+  public $menudiv=null;
   public $notes=null;
   public $notesTextarea=null;
 
@@ -107,6 +108,7 @@ class planning{
       $classTrListe=null;
     }
 
+    $menudiv=null;
     foreach($agents as $elem){
       $hres_jour=0;
       $hres_sem=0;
@@ -227,21 +229,22 @@ class planning{
       $classe=empty($class_tmp)?null:join(" ",$class_tmp);
 
       //	Affichage des lignes
-      echo "<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$(this).removeClass();$(this).addClass(\"menudiv-gris\"); $groupe_hide' onmouseout='$(this).removeClass();$(this).addClass(\"$classe $classTrListe\");' class='$classe $classTrListe'>\n";
-      echo "<td style='width:200px;font-weight:normal;' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},0,0,\"$site\");'>";
-      echo $nom;
+      $menudiv.="<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$(this).removeClass();$(this).addClass(\"menudiv-gris\"); $groupe_hide' onmouseout='$(this).removeClass();$(this).addClass(\"$classe $classTrListe\");' class='$classe $classTrListe'>\n";
+      $menudiv.="<td style='width:200px;font-weight:normal;' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},0,0,\"$site\");'>";
+      $menudiv.=$nom;
 
       //	Afficher ici les horaires si besoin
-      echo "</td><td style='text-align:right;width:20px'>";
+      $menudiv.="</td><td style='text-align:right;width:20px'>";
       
       //	Affichage des liens d'ajout et de remplacement
       $max_perso=$nbAgents>=$GLOBALS['config']['Planning-NbAgentsCellule']?true:false;
       if($nbAgents>0 and !$max_perso and !$sr and !$sr_init)
-	echo "<a href='javascript:bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},0,1,\"$site\");'>+</a>";
+	$menudiv.="<a href='javascript:bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},0,1,\"$site\");'>+</a>";
       if($nbAgents>0 and !$max_perso)
-	echo "&nbsp;<a style='color:red' href='javascript:bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},1,1,\"$site\");'>x</a>&nbsp;";
-      echo "</td></tr>\n";
+	$menudiv.="&nbsp;<a style='color:red' href='javascript:bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},1,1,\"$site\");'>x</a>&nbsp;";
+      $menudiv.="</td></tr>\n";
     }
+  $this->menudiv=$menudiv;
 
   }
 
