@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.8
+Planning Biblio, Version 1.9.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 10 décembre 2014
+Dernière modification : 2 février 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -38,17 +38,24 @@ if(isset($_POST['id'])){
   $recup=trim(htmlentities($_POST['recup'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
   $sites=isset($_POST['sites'])?serialize($_POST['sites']):null;
   $droits=isset($_POST['droits'])?$_POST['droits']:array();
-  // Multisites, Gestion des absences : si droits de gérer les absences de l'un des 2 sites (201,202), ajoute le droit 1 pour débloquer les champs administrateur
-  if(in_array(201,$droits) or in_array(202,$droits)){
-    $droits[]=1;
-  }
-  // Multisites, Modification des plannings : si droits de modifier les plannings de l'un des 2 sites (301,302), ajoute le droit 12 pour débloquer les champs administrateur
-  if(in_array(301,$droits) or in_array(302,$droits)){
-    $droits[]=12;
-  }
-  // Multisites, Gestion des congés : si droits de gérer les congés de l'un des 2 sites (401,402), ajoute le droit 2 pour débloquer les champs administrateur
-  if(in_array(401,$droits) or in_array(402,$droits)){
-    $droits[]=2;
+  
+  for($i=1;$i<=$config['Multisites-nombre'];$i++){
+    // Multisites, Gestion des absences : si droits de gérer les absences de l'un des sites (201,202, ...), ajoute le droit 1 pour débloquer les champs administrateur
+    if(in_array((200+$i),$droits) and !in_array(1,$droits)){
+      $droits[]=1;
+    }
+    // Multisites, Gestion des absences validation N2 : si droits de gérer les absences N2 de l'un des sites (501,502, ...), ajoute le droit 8 pour débloquer les champs administrateur N2
+    if(in_array((500+$i),$droits) and !in_array(8,$droits)){
+      $droits[]=8;
+    }
+    // Multisites, Modification des plannings : si droits de modifier les plannings de l'un dessites (301,302, ...), ajoute le droit 12 pour débloquer les champs administrateur
+    if(in_array((300+$i),$droits) and !in_array(12,$droits)){
+      $droits[]=12;
+    }
+    // Multisites, Gestion des congés : si droits de gérer les congés de l'un des sites (401,402, ...), ajoute le droit 2 pour débloquer les champs administrateur
+    if(in_array((400+$i),$droits) and !in_array(2,$droits)){
+      $droits[]=2;
+    }
   }
   $droits[]=99;
   $droits[]=100;
