@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.9.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/index.php
 Création : mai 2011
-Dernière modification : 4 novembre 2014
+Dernière modification : 4 février 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -70,19 +70,19 @@ EOD;
   foreach($db->result as $elem){
     $class=$class=="tr1"?"tr2":"tr1";
     $site="Multisites-site{$elem['site']}";
-    echo "<tr class='$class'><td style='white-space:nowrap;'>\n";
+    echo "<tr id='tr-tableau-{$elem['tableau']}' class='$class'><td style='white-space:nowrap;'>\n";
     echo "<input type='checkbox' name='chk$i' value='{$elem['tableau']}'/>\n";
     echo "<a href='index.php?page=planning/postes_cfg/modif.php&amp;numero={$elem['tableau']}'>\n";
     echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
     echo "<a href='javascript:popup(\"planning/postes_cfg/copie.php&amp;retour=index.php&amp;numero={$elem['tableau']}\",400,200);'>\n";
     echo "<span class='pl-icon pl-icon-copy' title='Copier'></span></a>\n";
     if(!in_array($elem['tableau'],$used)){
-      echo "<a href='javascript:popup(\"planning/postes_cfg/suppression.php&amp;numero={$elem['tableau']}\",400,130);'>\n";
+      echo "<a href='javascript:supprimeTableau({$elem['tableau']});'>\n";
       echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
     }
     echo "</td>\n";
     echo "<td>{$elem['tableau']}</td>\n";
-    echo "<td>{$elem['nom']}</td>\n";
+    echo "<td id='td-tableau-{$elem['tableau']}-nom'>{$elem['nom']}</td>\n";
     if($config['Multisites-nombre']>1){
       echo "<td>{$config[$site]}</td>\n";
     }
@@ -120,12 +120,12 @@ if(is_array($groupes)){
   foreach($groupes as $elem){
     $class=$class=="tr1"?"tr2":"tr1";
     $id=in_array(13,$droits)?"<td>{$elem['id']}</td>":null;
-    echo "<tr class='$class'><td><a href='index.php?page=planning/postes_cfg/groupes.php&amp;id={$elem['id']}'>\n";
+    echo "<tr id='tr-groupe-{$elem['id']}' class='$class'><td><a href='index.php?page=planning/postes_cfg/groupes.php&amp;id={$elem['id']}'>\n";
     echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
-    echo "<a href='javascript:supprime_groupe(\"{$elem['id']}\",\"".addslashes(html_entity_decode($elem['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8"))."\");'>\n";
+    echo "<a href='javascript:supprimeGroupe({$elem['id']});'>\n";
     echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
     echo "</td>\n";
-    echo "$id<td>{$elem['nom']}</td>\n";
+    echo "$id<td id='td-groupe-{$elem['id']}-nom'>{$elem['nom']}</td>\n";
     if($config['Multisites-nombre']>1){
       echo "<td>".$config["Multisites-site{$elem['site']}"]."</td>\n";
     }
@@ -157,19 +157,21 @@ $class="tr2";
 foreach($db->result as $elem){
   $db2=new db();
   $db2->select("pl_poste_lignes","*","poste='{$elem['id']}' AND type='ligne'");
-  $delete=$db2->result?"style='display:none;'":null;
+  $delete=$db2->result?false:true;
 
   $class=$class=="tr2"?"tr1":"tr2";
-  echo "<tr class='$class'>\n";
+  echo "<tr id='tr-ligne-{$elem['id']}' class='$class'>\n";
   echo "<td><a href='index.php?page=planning/postes_cfg/lignes_sep.php&amp;action=modif&amp;id={$elem['id']}'>\n";
   echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
-  echo "<a $delete href='javascript:supprime_ligne(\"{$elem['id']}\",\"".addslashes(html_entity_decode($elem['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8"))."\");'>\n";
-  echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
+  if($delete){
+    echo "<a href='javascript:supprimeLigne({$elem['id']});'>\n";
+    echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
+  }
   echo "</td>\n";
   if(in_array(13,$droits)){
     echo "<td>{$elem['id']}</td>\n";
   }
-  echo "<td>{$elem['nom']}</td></tr>\n";
+  echo "<td id='td-ligne-{$elem['id']}-nom' >{$elem['nom']}</td></tr>\n";
 }
 
 echo <<<EOD

@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.9
+Planning Biblio, Version 1.9.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 20 janvier 2015
+Dernière modification : 4 février 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -357,38 +357,6 @@ function supprime_jourFerie(id){
   }
 }
 
-function tableauxNombre(){
-  $.ajax({
-    url: "planning/postes_cfg/ajax.tableaux.php",
-    type: "get",
-    data: "id="+$("#id").val()+"&nombre="+$("#nombre").val(),
-    success: function(){
-      location.href="index.php?page=planning/postes_cfg/modif.php&numero="+$("#id").val();
-    },
-    error: function(){
-      information("Une erreur est survenue lors de la modification du nombre de tableaux.","error");
-    }
-  });
-}
-
-function tabSiteUpdate(){
-  site=$("#selectSite").val();
-  numero=$("#numero").val();
-  $.ajax({
-    url: "planning/postes_cfg/ajax.siteUpdate.php",
-    type: "get",
-    data: "numero="+numero+"&site="+site,
-    success: function(){
-      // On recharge la page pour mettre à jour le tableau des lignes
-      var message=encodeURIComponent("Le site a été modifié avec succès");
-      document.location.href="index.php?page=planning/postes_cfg/modif.php&message="+message+"&msg-type=highlight";
-    },
-    error: function(){
-      information("Une erreur est survenue lors la modification du site.","error");
-    }
-  });
-}
-
 // updateAgentsList : actualise la liste des agents d'un select en fonction d'un paramètre deleted=yes/no
 // Permet d'afficher ou non les agents supprimés dans un select (select_id) selon si une checkbox (me) est cochée ou non
 // le fichier ajax.updateAgentsList.php retourne un tableau [[id=> ,nom=>, prenom=> ],[id=> ,nom=>, prenom=> ], ...] encodé en JSON
@@ -726,147 +694,6 @@ function select_drop_all(select_dispo,select_attrib,hidden_attrib,width){	// Att
 }
 //	Fin Select Multpiles
 //	---------------------------		FIN Personnel 		--------------------------------	//
-//	--------------------------------	Tableaux		-------------------------	//
-//	--------------------------------	Tableaux - Horaires	-------------------------	//
-function add_horaires(tableau){
-  for(i=0;i<50;i++){
-    if(document.getElementById("tr_"+tableau+"_"+i).style.display=="none"){
-      document.getElementById("tr_"+tableau+"_"+i).style.display="";
-      return;
-    }
-  }
-}
-
-function change_horaires(elem){
-  tmp=elem.name.split("_");
-  tmp[2]++;
-  elem2="debut_"+tmp[1]+"_"+tmp[2];
-  for(i=0;i<document.form2.elements.length;i++){
-    if(document.form2.elements[i].name==elem2){
-      document.form2.elements[i].selectedIndex=elem.selectedIndex;
-      break;
-    }
-  }
-}
-//	--------------------------------	FIN Tableaux - Horaires	-------------------------	//
-//	--------------------------------	Tableaux - Lignes	-------------------------	//
-function ajout(nom,id){
-  id++;
-  for(i=id;i<100;i++){
-    if(document.getElementById("tr_"+nom+i).style.display=="none"){
-      document.getElementById("tr_"+nom+i).style.display="";
-      fin=i;
-      break;
-    }
-  }
-  for(i=fin;i>id;i--){
-    j=i-1;
-    document.form4.elements[nom+i].selectedIndex=document.form4.elements[nom+j].selectedIndex;
-    document.form4.elements[nom+i].className=document.form4.elements[nom+j].className;
-    document.getElementById("td_"+nom+i+"_0").className=document.getElementById("td_"+nom+j+"_0").className;
-  }
-  document.form4.elements[nom+id].selectedIndex=0;
-  document.form4.elements[nom+id].className=null;
-  document.getElementById("td_"+nom+i+"_0").className=null;
-}
-
-function couleur2(elem,td){
-  if(elem.checked)
-    document.getElementById(td).className="cellule_grise";
-  else
-    document.getElementById(td).className="";
-}
-
-function supprime_tab(nom,id){
-  document.form4.elements["select_"+nom+id].value="";
-  document.getElementById("tr_select_"+nom+id).style.display="none";
-  i=1;
-}
-//	--------------------------------	FIN Tableaux - Lignes	-------------------------	//
-
-function ctrl_nom(me){
-  exist=false;
-  valeur=me.value.toLowerCase();
-  valeur=valeur.trim();
-  for(i=0;i<grp_nom.length;i++){
-    if(valeur==grp_nom[i]){
-      exist=true;
-    }
-  }
-  document.getElementById("submit").disabled=false;
-  document.getElementById("nom_utilise").style.display="none";
-  me.style.border=null;
-  me.style.background="#FFFFFF";
-    
-  if(exist){
-    me.style.border="solid 3px red";
-    me.style.background="#FFCCCC";
-    document.getElementById("submit").disabled=true;
-    document.getElementById("nom_utilise").style.display="";
-  }
-}
-
-function supprime_groupe(id,nom){
-  if(confirm("Etes-vous sûr de vouloir supprimer le groupe \""+nom+"\" ?")){
-    location.href="planning/postes_cfg/groupes_supp.php?id="+id;
-  }
-}
-
-function supprime_ligne(id,nom){
-  if(confirm("Etes-vous sûr de vouloir supprimer la ligne \""+nom+"\" ?")){
-    $.ajax({
-      url: "planning/postes_cfg/ajax.supp_lignes.php",
-      type: "get",
-      data: "id="+id,
-      success: function(){
-	location.href="index.php?page=planning/postes_cfg/index.php";
-      },
-      error: function(){
-	information("Une erreur est survenue lors de la suppression de la ligne \""+nom+"\"","error");
-      }
-    });
-  }
-}
-
-
-
-//	Suppression des élements sélectionnés (page de suppression, exception (séparés par virgules))
-function supprime_select(page,except){
-  except=except.split(",");
-  ids=new Array();
-  i=0;
-  while(document.form.elements["chk"+i]){
-    exception=false;
-    elem=document.form.elements["chk"+i];
-    if(elem.checked){
-      for(j=0;j<except.length;j++){
-	if(except[j]==elem.value)
-	  exception=true;
-      }
-      if(exception==false){
-	ids.push(elem.value);
-      }
-    }
-    i++;
-  }
-  if(!ids[0]){
-    alert("Les éléments sélectionnés ne peuvent être supprimés.");
-  }
-  else if(confirm("Etes-vous sûr(e) de vouloir supprimer les éléments sélectionnés ?")){
-    $.ajax({
-      url: page,
-      type: "get",
-      data: "ids="+ids,
-      success: function(){
-	window.location.reload(false);
-      },
-      error: function(){
-	information("Une erreur est survenue lors de la suppression.","error");
-      }
-    });
-  }
-}
-//	--------------------------------	FIN Tableaux		-------------------------	//
 //	--------------------------------	Statistiques		---------------------------------	//
 function export_stat(nom,type){
   $.ajax({

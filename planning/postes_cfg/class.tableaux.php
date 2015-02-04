@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 1.9.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/class.tableaux.php
 Création : mai 2011
-Dernière modification : 2 juin 2014
+Dernière modification : 4 février 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -17,7 +17,7 @@ Utilisée par les fichiers du dossier "planning/postes_cfg" et le fichier "plann
 */
 
 // pas de $version=acces direct aux pages de ce dossier => redirection vers la page index.php
-if(!$version and !strpos($_SERVER['SCRIPT_NAME'],"groupes_supp.php")){
+if(!$version){
   header("Location: ../../index.php");
 }
 
@@ -26,11 +26,38 @@ class tableau{
   public $id=null;
   public $length=null;
   public $next=null;
+  public $number=null;
   public $numbers=null;
 
-  public function deleteGroup($id){
-    $db=new db();
-    $db->delete("pl_poste_tab_grp","`id`='$id'");
+  public function deleteGroup(){
+    if($this->id){
+      $db=new db();
+      $db->delete("pl_poste_tab_grp","`id`='{$this->id}'");
+    }
+  }
+
+  public function deleteLine(){
+    if($this->id){
+      $db=new db();
+      $db->delete2("lignes",array("id"=>$this->id));
+    }
+  }
+
+  public function deleteTab(){
+    if($this->number){
+      $where=array("numero"=>$this->number);
+
+      $db=new db();
+      $db->delete2("pl_poste_horaires",$where);
+      $db=new db();
+      $db->delete2("pl_poste_cellules",$where);
+      $db=new db();
+      $db->delete2("pl_poste_lignes",$where);
+
+      $where=array("tableau"=>$this->number);
+      $db=new db();
+      $db->delete2("pl_poste_tab",$where);
+    }
   }
 
   public function fetchAll(){

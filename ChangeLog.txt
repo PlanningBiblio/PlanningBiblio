@@ -1,3 +1,14 @@
+***	Version 1.9.1	(Jérôme Combes, 4 février 2015)			***
+- Améliorations :
+Planning : Améliore le positionnement du menu permettant de placer les agents
+Absences : Affiche les dates de demandes dans la liste et dans les fiches
+Tableaux : Améliore les scripts de suppression des tableaux, groupes et lignes
+
+- Corrections :
+Tableaux : Corrige l'erreur empêchant la suppresion des tableaux
+Agents : Corrige une erreur de gestion des droits d'accès en multisites
+
+
 ***	Version 1.9	(Jérôme Combes, 21 janvier 2015)		***
 - Améliorations :
 Planning : Ajoute les boutons "Supprimer tout" et "Barrer tout" dans le menu permettant de modifier les cellules

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 1.9.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/lignes.php
 Création : mai 2011
-Dernière modification : 24 juin 2014
+Dernière modification : 4 février 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -59,7 +59,7 @@ if($tableauNumero){
   foreach($tabs as $tab){
     // Lignes Titre et Horaires
     echo "<tr class='tr_horaires' style='text-align:center;'>\n";
-    echo "<td style='width:260px;white-space:nowrap;'>\n";
+    echo "<td style='white-space:nowrap;'>\n";
     echo "<input type='text' name='select_{$tab['nom']}Titre_0' class='tr_horaires select_titre' style='text-align:center;width:220px;' value='{$tab['titre']}'/>\n";
     echo "<a href='javascript:ajout(\"select_{$tab["nom"]}_\",-1);'><span class='pl-icon pl-icon-add' title='Ajouter'></span></a></td>\n";
     $colspan=0;
@@ -74,7 +74,7 @@ if($tableauNumero){
       $display=array_key_exists($i,$tab['lignes'])?null:"style='display:none;'";
       echo "<tr id='tr_select_{$tab['nom']}_$i' $display>\n";
       // Première colonne
-      echo "<td id='td_select_{$tab['nom']}_{$i}_0' >\n";
+      echo "<td id='td_select_{$tab['nom']}_{$i}_0' style='white-space:nowrap;'>\n";
       // Sélection des postes et des lignes de séparation
       echo "<select name='select_{$tab['nom']}_$i' style='width:200px;color:black;font-weight:normal;' class='tab_select'>\n";
       echo "<option value=''>&nbsp;</option>\n";
