@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 2 février 2015
+Dernière modification : 19 février 2015
 Auteur : Jérôme Combes jerome@planningbilbio.fr, Christophe Le Guennec Christophe.Leguennec@u-pem.fr
 
 Description :
@@ -96,6 +96,7 @@ $db=new db();
 $db->query("SELECT `{$dbprefix}personnel`.`service` AS `service`, `{$dbprefix}select_services`.`couleur` AS `couleur` FROM `{$dbprefix}personnel` INNER JOIN `{$dbprefix}select_services`
 	ON `{$dbprefix}personnel`.`service`=`{$dbprefix}select_services`.`valeur` WHERE `{$dbprefix}personnel`.`service`<>'' GROUP BY `service`;");
 $services=$db->result;
+$services[]=array("service"=>"Sans service");
 
 //	Ne pas regarder les postes non-bloquant et ne pas regarder si le poste est non-bloquant
 if($bloquant=='1'){
@@ -287,10 +288,15 @@ if(is_array($autres_agents)){
 }
 
 			// Creation des différentes listes (par service + liste des absents + liste des non qualifiés)
+// Affichage par service
 if($agents_dispo){
   foreach($agents_dispo as $elem){
     if($elem['id']!=2){
-      $newtab[$elem['service']][]=$elem['id'];  		// BULAC AFFICHAGE par service
+      if(!trim($elem['service'])){
+	$newtab["Sans service"][]=$elem['id'];
+      }else{
+	$newtab[$elem['service']][]=$elem['id'];
+      }
     }
   }
 }
@@ -298,7 +304,7 @@ if($agents_dispo){
 if($autres_agents){
   foreach($autres_agents as $elem){
     if($elem['id']!=2)
-      $newtab["Autres"][]=$elem['id'];  		// Affichage des agents absents, hors horaires, non qualifiés
+      $newtab["Autres"][]=$elem['id'];  		// Affichage des agents hors horaires, non qualifiés
   }
 }
 

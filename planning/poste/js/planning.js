@@ -6,7 +6,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 2 février 2015
+Dernière modification : 19 février 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -205,10 +205,10 @@ $(function() {
 	$("#menudiv1").css("top",top1);
 
 	// Position horizontale du tableau 2
-	if($(window).width()-e.clientX<($("#menudiv1").width()+$("#menudiv1").width())){
-	  var left2=left1-$("#menudiv1").width()-2;
+	if($(window).width()-e.clientX<($("#menudiv1").width()+$("#menudiv2").width())){
+	  var left2=left1-$("#menudiv2").width();
 	}else{
-	  var left2=left1+$("#menudivtab1").width();
+	  var left2=left1+$("#menudiv1").width();
 	}
 	$("#menudiv2").css("left",left2);
       },
@@ -396,7 +396,7 @@ function groupe_tab(id,tab,hide,me){			// améliorer les variables (tableaux) po
     for(i=0;i<tab.length;i++){
       if(tab[i][0]){
 	for(j=0;j<tab[i].length;j++){
-		document.getElementById("tr"+tab[i][j]).style.display="none";
+	  document.getElementById("tr"+tab[i][j]).style.display="none";
 	}
       }
     }

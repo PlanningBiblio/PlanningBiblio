@@ -2,6 +2,7 @@ maj.sh
 *~
 data/*.xls
 data/*.csv
+data/ics/*
 include/config.php
 include/test.php
 plugins/conges*
