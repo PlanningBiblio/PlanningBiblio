@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 16 février 2015
+Dernière modification : 23 février 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -693,6 +693,7 @@ if(strcmp("1.9",$config['Version'])>0){
 }
 
 if(strcmp("1.9.1",$config['Version'])>0){
+  $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='planning/poste/verrou.php';";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.9.1' WHERE `nom`='Version';";
 }
 

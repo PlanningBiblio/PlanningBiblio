@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.9
+Planning Biblio, Version 1.9.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 12 janvier 2014
+Dernière modification : 23 février 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -46,13 +46,16 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
 	      }
 	    }
 	    if($sr>1){
-	      $resultat.="<label class='sansRepas'> (SR)</label>";
+	      $resultat.="<font class='sansRepas'> (SR)</font>";
 	    }
 	  }
 	}
+
+	$class_tmp=array();
 	//		On barre les absents
 	if($elem['absent'] or $elem['supprime']){
-	  $resultat="<s style='color:red;'>$resultat</s>";
+	  $class_tmp[]="red";
+	  $class_tmp[]="striped";
 	}
 	//		On barre les congés
 	if(in_array("conges",$GLOBALS['plugins'])){
@@ -60,14 +63,13 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
 	}
 	  
 	// Classe en fonction du statut et du service
-	$class_tmp=array();
 	if($elem['statut']){
 	  $class_tmp[]="statut_".strtolower(removeAccents(str_replace(" ","_",$elem['statut'])));
 	}
 	if($elem['service']){
 	  $class_tmp[]="service_".strtolower(removeAccents(str_replace(" ","_",$elem['service'])));
 	}
-	$classe[$i]=empty($class_tmp)?null:join(" ",$class_tmp);
+	$classe[$i]=join(" ",$class_tmp);
 
 	// Création d'une balise span avec les classes cellSpan, et agent_ de façon à les repérer et agir dessus à partir de la fonction JS bataille_navale.
 	$span="<span class='cellSpan agent_{$elem['perso_id']}'>$resultat</span>";

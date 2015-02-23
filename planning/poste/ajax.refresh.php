@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.9
+Planning Biblio, Version 1.9.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.refresh.php
 Création : mai 2011
-Dernière modification : 12 janvier 2015
+Dernière modification : 23 février 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,6 +23,6 @@ require_once "class.planning.php";
 $date=$_POST['date'];
 $site=$_POST['site'];
 $db=new db();
-$db->query("SELECT `validation2` FROM `{$dbprefix}pl_poste_verrou` WHERE `date`='$date' AND `site`='$site';");
+$db->select("pl_poste_verrou","validation2","`date`='$date' AND `site`='$site'");
 echo json_encode($db->result[0]['validation2']);
 ?>

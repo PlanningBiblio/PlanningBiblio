@@ -6,7 +6,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 31 janvier 2015
+Dernière modification : 20 février 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -308,6 +308,9 @@ select
   color:red;
 }
 
+.pointer{
+  cursor:pointer;
+}
 
 /*		Plannings				*/
 /* Calendrier, titre (Semaine ...), Boutons de droite */

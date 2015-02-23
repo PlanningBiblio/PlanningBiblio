@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : setup/db_data.php
 Création : mai 2011
-Dernière modification : 21 janvier 2015
+Dernière modification : 23 février 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -41,7 +41,6 @@ $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Liste des postes - Valid',
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Planning Poste - Suppression', 12, 'Modification du planning', 'planning/poste/supprimer.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Planning Poste - horaires', 12, 'Modification du planning', 'planning/poste/horaires.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Planning Poste - Importer un mod&egrave;le', 12, 'Modification du planning', 'planning/poste/importer.php');";
-$sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Planning Poste Verrouillage', 12, 'Modification du planning', 'planning/poste/verrou.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Planning Poste - Enregistrer un mod&egrave;le', 12, 'Modification du planning', 'planning/poste/enregistrer.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'D&eacute;bogage', 13, 'D&eacute;bogage', '');";
 $sql[]="INSERT INTO `{$dbprefix}acces` VALUES (NULL, 'Statistiques', 17, 'Statistiques', 'statistiques/index.php');";

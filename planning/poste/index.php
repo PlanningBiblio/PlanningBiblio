@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 2 février 2015
+Dernière modification : 24 février 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -126,6 +126,11 @@ if($db_verrou->result){
   $date_validation2=dateFr(substr($db_verrou->result[0]['validation2'],0,10));
   $heure_validation2=substr($db_verrou->result[0]['validation2'],11,5);
   $validation2=$db_verrou->result[0]['validation2'];
+}else{
+  $perso2=null;
+  $date_validation2=null;
+  $heure_validation2=null;
+  $validation2=null;
 }
 //	---------------		FIN changement de couleur du menu et de la periode en fonction du jour sélectionné	--------------------------//
 
@@ -217,15 +222,12 @@ if($autorisation and $config['CatAFinDeService']){
 
 echo "<div id='validation'>\n";
 if($autorisation){
-  if($verrou){
-    echo "<div class='pl-validation'><u>Validation</u><br/>$perso2 $date_validation2 $heure_validation2</div>\n";
-    echo "<a href='index.php?page=planning/poste/verrou.php&amp;date=$date&amp;verrou2=0&amp;site=$site' title='Déverrouiller le planning'>\n";
-    echo "<span class='pl-icon pl-icon-lock'></span></a>\n";
-  }
-  else{
-    echo "<a href='index.php?page=planning/poste/verrou.php&amp;date=$date&amp;verrou2=1&amp;site=$site' title='Verrouiller le planning'>\n";
-    echo "<span class='pl-icon pl-icon-unlock'></span></a>\n";
-  }
+  $display1=$verrou?null:"display:none";
+  $display2=$verrou?"display:none":null;
+
+  echo "<div class='pl-validation' style='$display1'><u>Validation</u><br/>$perso2 $date_validation2 $heure_validation2</div>\n";
+  echo "<span id='icon-lock' class='pl-icon pl-icon-lock pointer' data-date='$date' data-site='$site' title='Déverrouiller le planning' style='$display1'></span></a>\n";
+  echo "<span id='icon-unlock' class='pl-icon pl-icon-unlock pointer' data-date='$date' data-site='$site' title='Verrouiller le planning' style='$display2'></span></a>\n";
 }
 
 if($autorisation){
@@ -240,7 +242,6 @@ if($verrou){
     echo "<div class='pl-validation'><u>Validation</u><br/>$perso2 $date_validation2 $heure_validation2</div>\n";
   }
   echo "<a href='javascript:print();' title='Imprimer le planning'><span class='pl-icon pl-icon-printer'></span></a>\n";
-  echo "<script type='text/JavaScript'>refresh_poste('$validation2');</script>";
 }
 
 echo "<a href='index.php?date=$date&amp;site=$site' title='Actualiser'><span class='pl-icon pl-icon-refresh'></a>\n";
@@ -354,7 +355,13 @@ if(!$tab){
 //-------------------------------	Vérification si le planning semaine fixe est validé	------------------//
 
 // Div planning-data : permet de transmettre les valeurs $verrou et $autorisation à la fonction affichant le menudiv
-echo "<div id='planning-data' data-verrou='$verrou' data-autorisation='$autorisation' style='display:none;'>&nbsp;</div>\n";
+// data-validation pour les fonctions refresh_poste et verrouillage du planning
+echo "<div id='planning-data' data-verrou='$verrou' data-autorisation='$autorisation' data-validation='$validation2' style='display:none;'>&nbsp;</div>\n";
+
+// Actualisation du planning si validé et mis à jour depuis un autre poste
+if($verrou){
+  echo "<script type='text/JavaScript'>refresh_poste();</script>";
+}
 
 if(!$verrou and !$autorisation){
   echo "<br/><br/><font color='red'>Le planning du $dateFr n'est pas validé !</font><br/>\n";
@@ -374,7 +381,7 @@ else{
   FROM `{$dbprefix}pl_poste` 
   INNER JOIN `{$dbprefix}personnel` ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id` 
   WHERE `date`='$date' AND `{$dbprefix}pl_poste`.`site`='$site' 
-  ORDER BY `{$dbprefix}pl_poste`.`absent` desc,`{$dbprefix}personnel`.`nom`, `{$dbprefix}personnel`.`prenom` ;");
+  ORDER BY `{$dbprefix}personnel`.`nom`, `{$dbprefix}personnel`.`prenom` ;");
   global $cellules;
   $cellules=$db->result;
   

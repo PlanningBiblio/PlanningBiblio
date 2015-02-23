@@ -1,6 +1,8 @@
-***	Version 1.9.1	(Jérôme Combes, 4 février 2015)			***
+***	Version 1.9.1	(Jérôme Combes, 5 mars 2015)			***
 - Améliorations :
 Planning : Améliore le positionnement du menu permettant de placer les agents
+Planning : Validation des plannings en Ajax (pas de raffraichissement de la page)
+Planning : Ajoute un groupe "Sans service" dans le menu permettant de placer les agents
 Absences : Affiche les dates de demandes dans la liste et dans les fiches
 Tableaux : Améliore les scripts de suppression des tableaux, groupes et lignes
 

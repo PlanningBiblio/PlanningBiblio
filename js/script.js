@@ -6,7 +6,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 4 février 2015
+Dernière modification : 23 février 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -755,4 +755,7 @@ $(function(){
     $(".ui-tab-cancel").css("right",right);
     $(".ui-tab-cancel").css("top",7);
   });
+  
+  // Infobulles
+  $(document).tooltip();
 });

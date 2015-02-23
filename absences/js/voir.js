@@ -6,7 +6,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/js/voir.js
 Création : 5 novembre 2014
-Dernière modification : 27 janvier 2015
+Dernière modification : 20 février 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -42,7 +42,6 @@ $(document).ready(function() {
     "oLanguage" : {"sUrl" : "vendor/dataTables.french.lang"}
   });
 
-  $(document).tooltip();
 });
 
 

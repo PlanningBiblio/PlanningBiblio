@@ -6,7 +6,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 19 février 2015
+Dernière modification : 23 février 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -63,6 +63,64 @@ $(document).ready(function(){
 
 // Evénements JQuery
 $(function() {
+  
+  // Déverrouillage du planning
+  $("#icon-lock").click(function(){
+    var date=$(this).attr("data-date");
+    var site=$(this).attr("data-site");
+    
+    $.ajax({
+      url: "planning/poste/ajax.validation.php",
+      dataType: "json",
+      data: {date: date, site: site, verrou: 0 },
+      type: "get",
+      success: function(result){
+	if(result[1]=="highlight"){
+	  $("#icon-lock").hide();
+	  $(".pl-validation").hide();
+	  $("#icon-unlock").show();
+	  // data-verrou : pour activer le menudiv
+	  $("#planning-data").attr("data-verrou",0);
+	}
+	information(result[0],result[1]);
+      },
+      error: function(result){
+	information("Erreur lors du dev&eacute;rrouillage du planning","error");
+      }
+    });
+  });
+
+  // Validation du planning
+  $("#icon-unlock").click(function(){
+    var date=$(this).attr("data-date");
+    var site=$(this).attr("data-site");
+
+    $.ajax({
+      url: "planning/poste/ajax.validation.php",
+      dataType: "json",
+      data: {date: date, site: site, verrou: 1 },
+      type: "get",
+      success: function(result){
+	if(result[1]=="highlight"){
+	  $("#icon-unlock").hide();
+	  $("#icon-lock").show();
+	  $(".pl-validation").html(result[2]);
+	  $(".pl-validation").show();
+	  // data-verrou : pour désactiver le menudiv
+	  $("#planning-data").attr("data-verrou",1);
+	  // data-validation : actualise la date de validation pour éviter un refresh_poste inutile
+	  $("#planning-data").attr("data-validation",result[3]);
+	  // refresh_poste : contrôle toute les 30 sec si le planning est validé depuis un autre poste
+	  setTimeout("refresh_poste()",30000);
+	}
+	information(result[0],result[1]);
+      },
+      error: function(result){
+	information("Erreur lors du dev&eacute;rrouillage du planning","error");
+      }
+    });
+  });
+
   // Calendar
   $("#pl-calendar").change(function(){
     var date=dateFr($(this).val());
@@ -308,7 +366,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
 	// Sans Repas
 	if(result[i]["sr"]){
 	  // Ajout du sans repas sur la cellule modifiée
-	  agent+="<label class='sansRepas'> (SR)</label>";
+	  agent+="<font class='sansRepas'> (SR)</font>";
 	  
 	  // Ajout du sans repas sur les autres cellules concernées
 	  $(".agent_"+perso_id).each(function(){
@@ -316,7 +374,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
 	    var sr_fin=$(this).closest("td").data("end");
 	    if(sr_debut>="11:30:00" && sr_fin<="14:30:00"){
 	      if($(this).text().indexOf("(SR)")==-1){
-		$(this).append("<label class='sansRepas'> (SR)</label>");
+		$(this).append("<font class='sansRepas'> (SR)</font>");
 	      }
 	    }
 	  });
@@ -455,8 +513,13 @@ function majPersoOrigine(perso_id){
   perso_nom_origine=$(".agent_"+perso_id+":eq(0)").text();
 }
 
-function refresh_poste(validation){		// actualise le planning en cas de modification
-  $.ajax({
+// refresh_poste : Actualise le planning en cas de modification
+function refresh_poste(){
+  if($("#planning-data").attr("data-verrou")==0){
+    return false;
+  }
+  var validation=$("#planning-data").attr("data-validation");
+    $.ajax({
     url: "planning/poste/ajax.refresh.php",
     type: "post",
     dataType: "json",
@@ -465,12 +528,12 @@ function refresh_poste(validation){		// actualise le planning en cas de modifica
       if(result!=validation){
 	window.location.reload(false);
       }else{
-	setTimeout("refresh_poste('"+validation+"')",30000);
+	setTimeout("refresh_poste()",30000);
       }
     },
     error: function(result){
       information(result.responseText,"error");
-      setTimeout("refresh_poste('"+validation+"')",30000);
+      setTimeout("refresh_poste()",30000);
     }
   });
 }

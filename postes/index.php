@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 1.9.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : postes/index.php
 Création : mai 2011
-Dernière modification : 24 juin 2014
+Dernière modification : 20 février 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -157,7 +157,6 @@ $(document).ready(function() {
     "oLanguage" : {"sUrl" : "vendor/dataTables.french.lang"}
   });
 
-  $(document).tooltip();
   $("#ajouter").button();
 });
 </script>
