@@ -1,0 +1,54 @@
+// dot 2.26.3 on Linux 3.2.0-4-amd64
+// SchemaSpy rev 590
+digraph "personnel" {
+  graph [
+    rankdir="RL"
+    bgcolor="#f7f7f7"
+    nodesep="0.18"
+    ranksep="0.46"
+    fontname="Helvetica"
+    fontsize="11"
+  ];
+  node [
+    fontname="Helvetica"
+    fontsize="11"
+    shape="plaintext"
+  ];
+  edge [
+    arrowsize="0.8"
+  ];
+  "personnel" [
+    label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">personnel</TD></TR>
+      <TR><TD PORT="id" COLSPAN="3" BGCOLOR="#bed1b8" ALIGN="LEFT">id</TD></TR>
+      <TR><TD PORT="nom" COLSPAN="3" ALIGN="LEFT">nom</TD></TR>
+      <TR><TD PORT="prenom" COLSPAN="3" ALIGN="LEFT">prenom</TD></TR>
+      <TR><TD PORT="mail" COLSPAN="3" ALIGN="LEFT">mail</TD></TR>
+      <TR><TD PORT="statut" COLSPAN="3" ALIGN="LEFT">statut</TD></TR>
+      <TR><TD PORT="categorie" COLSPAN="3" ALIGN="LEFT">categorie</TD></TR>
+      <TR><TD PORT="service" COLSPAN="3" ALIGN="LEFT">service</TD></TR>
+      <TR><TD PORT="arrivee" COLSPAN="3" ALIGN="LEFT">arrivee</TD></TR>
+      <TR><TD PORT="depart" COLSPAN="3" ALIGN="LEFT">depart</TD></TR>
+      <TR><TD PORT="postes" COLSPAN="3" ALIGN="LEFT">postes</TD></TR>
+      <TR><TD PORT="actif" COLSPAN="3" ALIGN="LEFT">actif</TD></TR>
+      <TR><TD PORT="droits" COLSPAN="3" ALIGN="LEFT">droits</TD></TR>
+      <TR><TD PORT="login" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">login</TD></TR>
+      <TR><TD PORT="password" COLSPAN="3" ALIGN="LEFT">password</TD></TR>
+      <TR><TD PORT="commentaires" COLSPAN="3" ALIGN="LEFT">commentaires</TD></TR>
+      <TR><TD PORT="last_login" COLSPAN="3" ALIGN="LEFT">last_login</TD></TR>
+      <TR><TD PORT="heuresHebdo" COLSPAN="3" ALIGN="LEFT">heuresHebdo</TD></TR>
+      <TR><TD PORT="heuresTravail" COLSPAN="3" ALIGN="LEFT">heuresTravail</TD></TR>
+      <TR><TD PORT="temps" COLSPAN="3" ALIGN="LEFT">temps</TD></TR>
+      <TR><TD PORT="informations" COLSPAN="3" ALIGN="LEFT">informations</TD></TR>
+      <TR><TD PORT="recup" COLSPAN="3" ALIGN="LEFT">recup</TD></TR>
+      <TR><TD PORT="supprime" COLSPAN="3" ALIGN="LEFT">supprime</TD></TR>
+      <TR><TD PORT="mailsResponsables" COLSPAN="3" ALIGN="LEFT">mailsResponsables</TD></TR>
+      <TR><TD PORT="matricule" COLSPAN="3" ALIGN="LEFT">matricule</TD></TR>
+      <TR><TD PORT="sites" COLSPAN="3" ALIGN="LEFT">sites</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+    </TABLE>>
+    URL="tables/personnel.html"
+    tooltip="personnel"
+  ];
+}

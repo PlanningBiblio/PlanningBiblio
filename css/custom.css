@@ -1,0 +1,51 @@
+/*
+Planning Biblio, Version 1.7.1
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.txt et COPYING.txt
+Copyright (C) 2011-2014 - Jérôme Combes
+
+Fichier : css/custom.css
+Création : 4 octobre 2013
+Dernière modification : 6 février 2014
+Auteur : Jérôme Combes, jerome@planningbilbio.fr
+
+Description :
+Feuille de style personnalisée
+
+Incluse dans les fichiers include/header.php et setup/header.php
+*/
+
+/*	Catégories, lignes du planning, en fonction de la catégorie requise par le poste	*/
+/*
+.tr_CategorieA td{
+}
+
+.tr_CategorieA td.td_obligatoire{
+}
+
+.tr_CategorieB td{
+}
+
+.tr_CategorieB td.td_obligatoire{
+}
+
+.tr_CategorieC td{
+}
+
+.tr_CategorieC td.td_obligatoire{
+}
+
+td.cellule_grise{
+}
+*/
+
+/*	Cellules et Statuts
+class cellule = cellule par défaut
+.statut_xxx	 = complète le style de la cellule en fonction du statut
+.service_xxx	 = complète le style de la cellule en fonction du service
+*/
+/*
+.statut_moniteur, td.statut_moniteur{
+  background:yellow;
+}
+*/

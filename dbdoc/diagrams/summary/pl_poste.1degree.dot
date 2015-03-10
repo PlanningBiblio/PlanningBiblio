@@ -1,0 +1,40 @@
+// dot 2.26.3 on Linux 3.2.0-4-amd64
+// SchemaSpy rev 590
+digraph "pl_poste" {
+  graph [
+    rankdir="RL"
+    bgcolor="#f7f7f7"
+    nodesep="0.18"
+    ranksep="0.46"
+    fontname="Helvetica"
+    fontsize="11"
+  ];
+  node [
+    fontname="Helvetica"
+    fontsize="11"
+    shape="plaintext"
+  ];
+  edge [
+    arrowsize="0.8"
+  ];
+  "pl_poste" [
+    label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">pl_poste</TD></TR>
+      <TR><TD PORT="id" COLSPAN="3" BGCOLOR="#bed1b8" ALIGN="LEFT">id</TD></TR>
+      <TR><TD PORT="perso_id" COLSPAN="3" ALIGN="LEFT">perso_id</TD></TR>
+      <TR><TD PORT="date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">date</TD></TR>
+      <TR><TD PORT="poste" COLSPAN="3" ALIGN="LEFT">poste</TD></TR>
+      <TR><TD PORT="absent" COLSPAN="3" ALIGN="LEFT">absent</TD></TR>
+      <TR><TD PORT="chgt_login" COLSPAN="3" ALIGN="LEFT">chgt_login</TD></TR>
+      <TR><TD PORT="chgt_time" COLSPAN="3" ALIGN="LEFT">chgt_time</TD></TR>
+      <TR><TD PORT="debut" COLSPAN="3" ALIGN="LEFT">debut</TD></TR>
+      <TR><TD PORT="fin" COLSPAN="3" ALIGN="LEFT">fin</TD></TR>
+      <TR><TD PORT="supprime" COLSPAN="3" ALIGN="LEFT">supprime</TD></TR>
+      <TR><TD PORT="site" COLSPAN="3" ALIGN="LEFT">site</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+    </TABLE>>
+    URL="tables/pl_poste.html"
+    tooltip="pl_poste"
+  ];
+}

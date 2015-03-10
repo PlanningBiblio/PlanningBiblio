@@ -1,0 +1,970 @@
+FCC3 .START phpCAS-1.3.3 ****************** [CAS.php:438]
+FCC3 .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+FCC3 .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+FCC3 .|    <= ''
+FCC3 .<= ''
+FCC3 .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+FCC3 .<= ''
+FCC3 .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+FCC3 .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+FCC3 .<= ''
+FCC3 .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+FCC3 .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+FCC3 .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+FCC3 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+FCC3 .|    |    |    |    no user found [Client.php:1592]
+FCC3 .|    |    |    <= false
+FCC3 .|    |    |    no ticket found [Client.php:1453]
+FCC3 .|    |    <= false
+FCC3 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1254]
+FCC3 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1613]
+FCC3 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+FCC3 .|    |    |    |    |    Final URI: https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:3466]
+FCC3 .|    |    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+FCC3 .|    |    |    <= 'https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php'
+FCC3 .|    |    |    Redirect to : https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php [Client.php:1620]
+FCC3 .|    |    |    exit()
+FCC3 .|    |    |    -
+FCC3 .|    |    -
+FCC3 .|    -
+3EAC .START phpCAS-1.3.3 ****************** [CAS.php:438]
+3EAC .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+3EAC .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+3EAC .|    <= ''
+3EAC .<= ''
+3EAC .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+3EAC .<= ''
+3EAC .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+3EAC .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+3EAC .<= ''
+3EAC .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+3EAC .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+3EAC .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+3EAC .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+3EAC .|    |    |    |    no user found [Client.php:1592]
+3EAC .|    |    |    <= false
+3EAC .|    |    |    no ticket found [Client.php:1453]
+3EAC .|    |    <= false
+3EAC .|    |    => CAS_Client::redirectToCas(false) [Client.php:1254]
+3EAC .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1613]
+3EAC .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+3EAC .|    |    |    |    |    Final URI: https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:3466]
+3EAC .|    |    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+3EAC .|    |    |    <= 'https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php'
+3EAC .|    |    |    Redirect to : https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php [Client.php:1620]
+3EAC .|    |    |    exit()
+3EAC .|    |    |    -
+3EAC .|    |    -
+3EAC .|    -
+88C5 .START phpCAS-1.3.3 ****************** [CAS.php:438]
+88C5 .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+88C5 .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+88C5 .|    |    Ticket 'ST-1058732-HfoovAn2SacpSOhu60v2-cas.univ-lyon3.fr' found [Client.php:988]
+88C5 .|    <= ''
+88C5 .<= ''
+88C5 .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+88C5 .<= ''
+88C5 .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+88C5 .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+88C5 .<= ''
+88C5 .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+88C5 .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+88C5 .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+88C5 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+88C5 .|    |    |    |    no user found [Client.php:1592]
+88C5 .|    |    |    <= false
+88C5 .|    |    |    CAS 2 ticket `ST-1058732-HfoovAn2SacpSOhu60v2-cas.univ-lyon3.fr' is present [Client.php:1406]
+88C5 .|    |    |    => CAS_Client::validateCAS20('', NULL, NULL) [Client.php:1409]
+88C5 .|    |    |    |     [Client.php:3101]
+88C5 .|    |    |    |    => CAS_Client::getServerServiceValidateURL() [Client.php:3108]
+88C5 .|    |    |    |    |    => CAS_Client::getURL() [Client.php:453]
+88C5 .|    |    |    |    |    |    Final URI: https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:3466]
+88C5 .|    |    |    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+88C5 .|    |    |    |    <= 'https://cas.univ-lyon3.fr/cas/serviceValidate?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php'
+88C5 .|    |    |    |    => CAS_Client::_readURL('https://cas.univ-lyon3.fr/cas/serviceValidate?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php&ticket=ST-1058732-HfoovAn2SacpSOhu60v2-cas.univ-lyon3.fr', NULL, NULL, NULL) [Client.php:3118]
+88C5 .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+88C5 .|    |    |    |    |    |    Response Body: 
+88C5 .|    |    |    |    |    |    
+88C5 .|    |    |    |    |    |    
+88C5 .|    |    |    |    |    |    
+88C5 .|    |    |    |    |    |    
+88C5 .|    |    |    |    |    |    <cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>
+88C5 .|    |    |    |    |    |    	<cas:authenticationSuccess>
+88C5 .|    |    |    |    |    |    		<cas:user>christine.alarcon</cas:user>
+88C5 .|    |    |    |    |    |    
+88C5 .|    |    |    |    |    |    
+88C5 .|    |    |    |    |    |    	</cas:authenticationSuccess>
+88C5 .|    |    |    |    |    |    </cas:serviceResponse>
+88C5 .|    |    |    |    |    |     [CurlRequest.php:84]
+88C5 .|    |    |    |    |    <= true
+88C5 .|    |    |    |    <= true
+88C5 .|    |    |    |    => CAS_Client::_readExtraAttributesCas20(DOMNodeList) [Client.php:3176]
+88C5 .|    |    |    |    |    Testing for rubycas style attributes [Client.php:3294]
+88C5 .|    |    |    |    <= ''
+88C5 .|    |    |    |    Storing Proxy List [Client.php:3185]
+88C5 .|    |    |    |    => CAS_ProxyChain_AllowedList::isProxyListAllowed(array ()) [Client.php:3188]
+88C5 .|    |    |    |    |    No proxies were found in the response [AllowedList.php:81]
+88C5 .|    |    |    |    <= true
+88C5 .|    |    |    |    => CAS_Client::_renameSession('ST-1058732-HfoovAn2SacpSOhu60v2-cas.univ-lyon3.fr') [Client.php:3220]
+88C5 .|    |    |    |    |    Skipping session rename since phpCAS is not handling the session. [Client.php:3599]
+88C5 .|    |    |    |    <= ''
+88C5 .|    |    |    <= true
+88C5 .|    |    |    CAS 2 ticket `ST-1058732-HfoovAn2SacpSOhu60v2-cas.univ-lyon3.fr' was validated [Client.php:1412]
+88C5 .|    |    |    => CAS_Client::getURL() [Client.php:1472]
+88C5 .|    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+88C5 .|    |    |    Prepare redirect to : https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:1472]
+88C5 .|    |    |    => CAS_Client::getURL() [Client.php:1474]
+88C5 .|    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+88C5 .|    |    |    exit()
+88C5 .|    |    |    -
+88C5 .|    |    -
+88C5 .|    -
+2985 .START phpCAS-1.3.3 ****************** [CAS.php:438]
+2985 .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+2985 .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+2985 .|    <= ''
+2985 .<= ''
+2985 .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+2985 .<= ''
+2985 .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+2985 .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+2985 .<= ''
+2985 .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+2985 .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+2985 .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+2985 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+2985 .|    |    |    |    user = `christine.alarcon' [Client.php:1579]
+2985 .|    |    |    <= true
+2985 .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1380]
+2985 .|    |    <= true
+2985 .|    |    no need to authenticate [Client.php:1247]
+2985 .|    <= true
+2985 .<= ''
+3744 .START phpCAS-1.3.3 ****************** [CAS.php:438]
+3744 .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+3744 .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+3744 .|    |    Ticket 'ST-1058806-lvbbbtn6b3OjbZ6EPrjq-cas.univ-lyon3.fr' found [Client.php:988]
+3744 .|    <= ''
+3744 .<= ''
+3744 .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+3744 .<= ''
+3744 .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+3744 .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+3744 .<= ''
+3744 .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+3744 .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+3744 .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+3744 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+3744 .|    |    |    |    no user found [Client.php:1592]
+3744 .|    |    |    <= false
+3744 .|    |    |    CAS 2 ticket `ST-1058806-lvbbbtn6b3OjbZ6EPrjq-cas.univ-lyon3.fr' is present [Client.php:1406]
+3744 .|    |    |    => CAS_Client::validateCAS20('', NULL, NULL) [Client.php:1409]
+3744 .|    |    |    |     [Client.php:3101]
+3744 .|    |    |    |    => CAS_Client::getServerServiceValidateURL() [Client.php:3108]
+3744 .|    |    |    |    |    => CAS_Client::getURL() [Client.php:453]
+3744 .|    |    |    |    |    |    Final URI: https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:3466]
+3744 .|    |    |    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+3744 .|    |    |    |    <= 'https://cas.univ-lyon3.fr/cas/serviceValidate?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php'
+3744 .|    |    |    |    => CAS_Client::_readURL('https://cas.univ-lyon3.fr/cas/serviceValidate?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php&ticket=ST-1058806-lvbbbtn6b3OjbZ6EPrjq-cas.univ-lyon3.fr', NULL, NULL, NULL) [Client.php:3118]
+3744 .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+3744 .|    |    |    |    |    |    Response Body: 
+3744 .|    |    |    |    |    |    
+3744 .|    |    |    |    |    |    
+3744 .|    |    |    |    |    |    
+3744 .|    |    |    |    |    |    
+3744 .|    |    |    |    |    |    <cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>
+3744 .|    |    |    |    |    |    	<cas:authenticationSuccess>
+3744 .|    |    |    |    |    |    		<cas:user>etienne.debeauvillé</cas:user>
+3744 .|    |    |    |    |    |    
+3744 .|    |    |    |    |    |    
+3744 .|    |    |    |    |    |    	</cas:authenticationSuccess>
+3744 .|    |    |    |    |    |    </cas:serviceResponse>
+3744 .|    |    |    |    |    |     [CurlRequest.php:84]
+3744 .|    |    |    |    |    <= true
+3744 .|    |    |    |    <= true
+3744 .|    |    |    |    => CAS_Client::_readExtraAttributesCas20(DOMNodeList) [Client.php:3176]
+3744 .|    |    |    |    |    Testing for rubycas style attributes [Client.php:3294]
+3744 .|    |    |    |    <= ''
+3744 .|    |    |    |    Storing Proxy List [Client.php:3185]
+3744 .|    |    |    |    => CAS_ProxyChain_AllowedList::isProxyListAllowed(array ()) [Client.php:3188]
+3744 .|    |    |    |    |    No proxies were found in the response [AllowedList.php:81]
+3744 .|    |    |    |    <= true
+3744 .|    |    |    |    => CAS_Client::_renameSession('ST-1058806-lvbbbtn6b3OjbZ6EPrjq-cas.univ-lyon3.fr') [Client.php:3220]
+3744 .|    |    |    |    |    Skipping session rename since phpCAS is not handling the session. [Client.php:3599]
+3744 .|    |    |    |    <= ''
+3744 .|    |    |    <= true
+3744 .|    |    |    CAS 2 ticket `ST-1058806-lvbbbtn6b3OjbZ6EPrjq-cas.univ-lyon3.fr' was validated [Client.php:1412]
+3744 .|    |    |    => CAS_Client::getURL() [Client.php:1472]
+3744 .|    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+3744 .|    |    |    Prepare redirect to : https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:1472]
+3744 .|    |    |    => CAS_Client::getURL() [Client.php:1474]
+3744 .|    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+3744 .|    |    |    exit()
+3744 .|    |    |    -
+3744 .|    |    -
+3744 .|    -
+7EE4 .START phpCAS-1.3.3 ****************** [CAS.php:438]
+7EE4 .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+7EE4 .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+7EE4 .|    <= ''
+7EE4 .<= ''
+7EE4 .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+7EE4 .<= ''
+7EE4 .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+7EE4 .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+7EE4 .<= ''
+7EE4 .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+7EE4 .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+7EE4 .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+7EE4 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+7EE4 .|    |    |    |    user = `etienne.debeauvillé' [Client.php:1579]
+7EE4 .|    |    |    <= true
+7EE4 .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1380]
+7EE4 .|    |    <= true
+7EE4 .|    |    no need to authenticate [Client.php:1247]
+7EE4 .|    <= true
+7EE4 .<= ''
+B530 .START phpCAS-1.3.3 ****************** [CAS.php:438]
+B530 .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+B530 .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+B530 .|    <= ''
+B530 .<= ''
+B530 .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+B530 .<= ''
+B530 .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+B530 .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+B530 .<= ''
+B530 .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+B530 .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+B530 .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+B530 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+B530 .|    |    |    |    user = `etienne.debeauvillé' [Client.php:1579]
+B530 .|    |    |    <= true
+B530 .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1380]
+B530 .|    |    <= true
+B530 .|    |    no need to authenticate [Client.php:1247]
+B530 .|    <= true
+B530 .<= ''
+57D5 .START phpCAS-1.3.3 ****************** [CAS.php:438]
+57D5 .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+57D5 .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+57D5 .|    <= ''
+57D5 .<= ''
+57D5 .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+57D5 .<= ''
+57D5 .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+57D5 .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+57D5 .<= ''
+57D5 .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+57D5 .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+57D5 .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+57D5 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+57D5 .|    |    |    |    user = `etienne.debeauvillé' [Client.php:1579]
+57D5 .|    |    |    <= true
+57D5 .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1380]
+57D5 .|    |    <= true
+57D5 .|    |    no need to authenticate [Client.php:1247]
+57D5 .|    <= true
+57D5 .<= ''
+C165 .START phpCAS-1.3.3 ****************** [CAS.php:438]
+C165 .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+C165 .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+C165 .|    <= ''
+C165 .<= ''
+C165 .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+C165 .<= ''
+C165 .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+C165 .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+C165 .<= ''
+C165 .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+C165 .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+C165 .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+C165 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+C165 .|    |    |    |    user = `etienne.debeauvillé' [Client.php:1579]
+C165 .|    |    |    <= true
+C165 .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1380]
+C165 .|    |    <= true
+C165 .|    |    no need to authenticate [Client.php:1247]
+C165 .|    <= true
+C165 .<= ''
+C207 .START phpCAS-1.3.3 ****************** [CAS.php:438]
+C207 .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+C207 .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+C207 .|    |    Ticket 'ST-1059020-rz34cEZhOOJuddbqbbJN-cas.univ-lyon3.fr' found [Client.php:988]
+C207 .|    <= ''
+C207 .<= ''
+C207 .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+C207 .<= ''
+C207 .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+C207 .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+C207 .<= ''
+C207 .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+C207 .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+C207 .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+C207 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+C207 .|    |    |    |    no user found [Client.php:1592]
+C207 .|    |    |    <= false
+C207 .|    |    |    CAS 2 ticket `ST-1059020-rz34cEZhOOJuddbqbbJN-cas.univ-lyon3.fr' is present [Client.php:1406]
+C207 .|    |    |    => CAS_Client::validateCAS20('', NULL, NULL) [Client.php:1409]
+C207 .|    |    |    |     [Client.php:3101]
+C207 .|    |    |    |    => CAS_Client::getServerServiceValidateURL() [Client.php:3108]
+C207 .|    |    |    |    |    => CAS_Client::getURL() [Client.php:453]
+C207 .|    |    |    |    |    |    Final URI: https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:3466]
+C207 .|    |    |    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+C207 .|    |    |    |    <= 'https://cas.univ-lyon3.fr/cas/serviceValidate?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php'
+C207 .|    |    |    |    => CAS_Client::_readURL('https://cas.univ-lyon3.fr/cas/serviceValidate?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php&ticket=ST-1059020-rz34cEZhOOJuddbqbbJN-cas.univ-lyon3.fr', NULL, NULL, NULL) [Client.php:3118]
+C207 .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+C207 .|    |    |    |    |    |    Response Body: 
+C207 .|    |    |    |    |    |    
+C207 .|    |    |    |    |    |    
+C207 .|    |    |    |    |    |    
+C207 .|    |    |    |    |    |    
+C207 .|    |    |    |    |    |    <cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>
+C207 .|    |    |    |    |    |    	<cas:authenticationSuccess>
+C207 .|    |    |    |    |    |    		<cas:user>celine.lazzaroni</cas:user>
+C207 .|    |    |    |    |    |    
+C207 .|    |    |    |    |    |    
+C207 .|    |    |    |    |    |    	</cas:authenticationSuccess>
+C207 .|    |    |    |    |    |    </cas:serviceResponse>
+C207 .|    |    |    |    |    |     [CurlRequest.php:84]
+C207 .|    |    |    |    |    <= true
+C207 .|    |    |    |    <= true
+C207 .|    |    |    |    => CAS_Client::_readExtraAttributesCas20(DOMNodeList) [Client.php:3176]
+C207 .|    |    |    |    |    Testing for rubycas style attributes [Client.php:3294]
+C207 .|    |    |    |    <= ''
+C207 .|    |    |    |    Storing Proxy List [Client.php:3185]
+C207 .|    |    |    |    => CAS_ProxyChain_AllowedList::isProxyListAllowed(array ()) [Client.php:3188]
+C207 .|    |    |    |    |    No proxies were found in the response [AllowedList.php:81]
+C207 .|    |    |    |    <= true
+C207 .|    |    |    |    => CAS_Client::_renameSession('ST-1059020-rz34cEZhOOJuddbqbbJN-cas.univ-lyon3.fr') [Client.php:3220]
+C207 .|    |    |    |    |    Skipping session rename since phpCAS is not handling the session. [Client.php:3599]
+C207 .|    |    |    |    <= ''
+C207 .|    |    |    <= true
+C207 .|    |    |    CAS 2 ticket `ST-1059020-rz34cEZhOOJuddbqbbJN-cas.univ-lyon3.fr' was validated [Client.php:1412]
+C207 .|    |    |    => CAS_Client::getURL() [Client.php:1472]
+C207 .|    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+C207 .|    |    |    Prepare redirect to : https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:1472]
+C207 .|    |    |    => CAS_Client::getURL() [Client.php:1474]
+C207 .|    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+C207 .|    |    |    exit()
+C207 .|    |    |    -
+C207 .|    |    -
+C207 .|    -
+8EDB .START phpCAS-1.3.3 ****************** [CAS.php:438]
+8EDB .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+8EDB .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+8EDB .|    <= ''
+8EDB .<= ''
+8EDB .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+8EDB .<= ''
+8EDB .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+8EDB .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+8EDB .<= ''
+8EDB .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+8EDB .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+8EDB .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+8EDB .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+8EDB .|    |    |    |    user = `celine.lazzaroni' [Client.php:1579]
+8EDB .|    |    |    <= true
+8EDB .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1380]
+8EDB .|    |    <= true
+8EDB .|    |    no need to authenticate [Client.php:1247]
+8EDB .|    <= true
+8EDB .<= ''
+6352 .START phpCAS-1.3.3 ****************** [CAS.php:438]
+6352 .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+6352 .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+6352 .|    <= ''
+6352 .<= ''
+6352 .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+6352 .<= ''
+6352 .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+6352 .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+6352 .<= ''
+6352 .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+6352 .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+6352 .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+6352 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+6352 .|    |    |    |    no user found [Client.php:1592]
+6352 .|    |    |    <= false
+6352 .|    |    |    no ticket found [Client.php:1453]
+6352 .|    |    <= false
+6352 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1254]
+6352 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1613]
+6352 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+6352 .|    |    |    |    |    Final URI: https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:3466]
+6352 .|    |    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+6352 .|    |    |    <= 'https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php'
+6352 .|    |    |    Redirect to : https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php [Client.php:1620]
+6352 .|    |    |    exit()
+6352 .|    |    |    -
+6352 .|    |    -
+6352 .|    -
+9CFC .START phpCAS-1.3.3 ****************** [CAS.php:438]
+9CFC .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+9CFC .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+9CFC .|    |    Ticket 'ST-1059165-qdhmMC6rJXinBfWdlmuB-cas.univ-lyon3.fr' found [Client.php:988]
+9CFC .|    <= ''
+9CFC .<= ''
+9CFC .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+9CFC .<= ''
+9CFC .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+9CFC .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+9CFC .<= ''
+9CFC .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+9CFC .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+9CFC .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+9CFC .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+9CFC .|    |    |    |    no user found [Client.php:1592]
+9CFC .|    |    |    <= false
+9CFC .|    |    |    CAS 2 ticket `ST-1059165-qdhmMC6rJXinBfWdlmuB-cas.univ-lyon3.fr' is present [Client.php:1406]
+9CFC .|    |    |    => CAS_Client::validateCAS20('', NULL, NULL) [Client.php:1409]
+9CFC .|    |    |    |     [Client.php:3101]
+9CFC .|    |    |    |    => CAS_Client::getServerServiceValidateURL() [Client.php:3108]
+9CFC .|    |    |    |    |    => CAS_Client::getURL() [Client.php:453]
+9CFC .|    |    |    |    |    |    Final URI: https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:3466]
+9CFC .|    |    |    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+9CFC .|    |    |    |    <= 'https://cas.univ-lyon3.fr/cas/serviceValidate?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php'
+9CFC .|    |    |    |    => CAS_Client::_readURL('https://cas.univ-lyon3.fr/cas/serviceValidate?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php&ticket=ST-1059165-qdhmMC6rJXinBfWdlmuB-cas.univ-lyon3.fr', NULL, NULL, NULL) [Client.php:3118]
+9CFC .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+9CFC .|    |    |    |    |    |    Response Body: 
+9CFC .|    |    |    |    |    |    
+9CFC .|    |    |    |    |    |    
+9CFC .|    |    |    |    |    |    
+9CFC .|    |    |    |    |    |    
+9CFC .|    |    |    |    |    |    <cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>
+9CFC .|    |    |    |    |    |    	<cas:authenticationSuccess>
+9CFC .|    |    |    |    |    |    		<cas:user>jf.caillot</cas:user>
+9CFC .|    |    |    |    |    |    
+9CFC .|    |    |    |    |    |    
+9CFC .|    |    |    |    |    |    	</cas:authenticationSuccess>
+9CFC .|    |    |    |    |    |    </cas:serviceResponse>
+9CFC .|    |    |    |    |    |     [CurlRequest.php:84]
+9CFC .|    |    |    |    |    <= true
+9CFC .|    |    |    |    <= true
+9CFC .|    |    |    |    => CAS_Client::_readExtraAttributesCas20(DOMNodeList) [Client.php:3176]
+9CFC .|    |    |    |    |    Testing for rubycas style attributes [Client.php:3294]
+9CFC .|    |    |    |    <= ''
+9CFC .|    |    |    |    Storing Proxy List [Client.php:3185]
+9CFC .|    |    |    |    => CAS_ProxyChain_AllowedList::isProxyListAllowed(array ()) [Client.php:3188]
+9CFC .|    |    |    |    |    No proxies were found in the response [AllowedList.php:81]
+9CFC .|    |    |    |    <= true
+9CFC .|    |    |    |    => CAS_Client::_renameSession('ST-1059165-qdhmMC6rJXinBfWdlmuB-cas.univ-lyon3.fr') [Client.php:3220]
+9CFC .|    |    |    |    |    Skipping session rename since phpCAS is not handling the session. [Client.php:3599]
+9CFC .|    |    |    |    <= ''
+9CFC .|    |    |    <= true
+9CFC .|    |    |    CAS 2 ticket `ST-1059165-qdhmMC6rJXinBfWdlmuB-cas.univ-lyon3.fr' was validated [Client.php:1412]
+9CFC .|    |    |    => CAS_Client::getURL() [Client.php:1472]
+9CFC .|    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+9CFC .|    |    |    Prepare redirect to : https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:1472]
+9CFC .|    |    |    => CAS_Client::getURL() [Client.php:1474]
+9CFC .|    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+9CFC .|    |    |    exit()
+9CFC .|    |    |    -
+9CFC .|    |    -
+9CFC .|    -
+ACCE .START phpCAS-1.3.3 ****************** [CAS.php:438]
+ACCE .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+ACCE .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+ACCE .|    <= ''
+ACCE .<= ''
+ACCE .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+ACCE .<= ''
+ACCE .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+ACCE .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+ACCE .<= ''
+ACCE .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+ACCE .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+ACCE .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+ACCE .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+ACCE .|    |    |    |    user = `jf.caillot' [Client.php:1579]
+ACCE .|    |    |    <= true
+ACCE .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1380]
+ACCE .|    |    <= true
+ACCE .|    |    no need to authenticate [Client.php:1247]
+ACCE .|    <= true
+ACCE .<= ''
+4CDB .START phpCAS-1.3.3 ****************** [CAS.php:438]
+4CDB .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+4CDB .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+4CDB .|    <= ''
+4CDB .<= ''
+4CDB .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+4CDB .<= ''
+4CDB .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+4CDB .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+4CDB .<= ''
+4CDB .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+4CDB .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+4CDB .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+4CDB .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+4CDB .|    |    |    |    no user found [Client.php:1592]
+4CDB .|    |    |    <= false
+4CDB .|    |    |    no ticket found [Client.php:1453]
+4CDB .|    |    <= false
+4CDB .|    |    => CAS_Client::redirectToCas(false) [Client.php:1254]
+4CDB .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1613]
+4CDB .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+4CDB .|    |    |    |    |    Final URI: https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:3466]
+4CDB .|    |    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+4CDB .|    |    |    <= 'https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php'
+4CDB .|    |    |    Redirect to : https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php [Client.php:1620]
+4CDB .|    |    |    exit()
+4CDB .|    |    |    -
+4CDB .|    |    -
+4CDB .|    -
+FABD .START phpCAS-1.3.3 ****************** [CAS.php:438]
+FABD .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+FABD .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+FABD .|    <= ''
+FABD .<= ''
+FABD .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+FABD .<= ''
+FABD .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+FABD .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+FABD .<= ''
+FABD .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+FABD .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+FABD .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+FABD .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+FABD .|    |    |    |    no user found [Client.php:1592]
+FABD .|    |    |    <= false
+FABD .|    |    |    no ticket found [Client.php:1453]
+FABD .|    |    <= false
+FABD .|    |    => CAS_Client::redirectToCas(false) [Client.php:1254]
+FABD .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1613]
+FABD .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+FABD .|    |    |    |    |    Final URI: https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:3466]
+FABD .|    |    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+FABD .|    |    |    <= 'https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php'
+FABD .|    |    |    Redirect to : https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php [Client.php:1620]
+FABD .|    |    |    exit()
+FABD .|    |    |    -
+FABD .|    |    -
+FABD .|    -
+E7FD .START phpCAS-1.3.3 ****************** [CAS.php:438]
+E7FD .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+E7FD .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+E7FD .|    <= ''
+E7FD .<= ''
+E7FD .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+E7FD .<= ''
+E7FD .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+E7FD .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+E7FD .<= ''
+E7FD .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+E7FD .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+E7FD .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+E7FD .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+E7FD .|    |    |    |    no user found [Client.php:1592]
+E7FD .|    |    |    <= false
+E7FD .|    |    |    no ticket found [Client.php:1453]
+E7FD .|    |    <= false
+E7FD .|    |    => CAS_Client::redirectToCas(false) [Client.php:1254]
+E7FD .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1613]
+E7FD .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+E7FD .|    |    |    |    |    Final URI: https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:3466]
+E7FD .|    |    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+E7FD .|    |    |    <= 'https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php'
+E7FD .|    |    |    Redirect to : https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php [Client.php:1620]
+E7FD .|    |    |    exit()
+E7FD .|    |    |    -
+E7FD .|    |    -
+E7FD .|    -
+F9BD .START phpCAS-1.3.3 ****************** [CAS.php:438]
+F9BD .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+F9BD .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+F9BD .|    <= ''
+F9BD .<= ''
+F9BD .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+F9BD .<= ''
+F9BD .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+F9BD .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+F9BD .<= ''
+F9BD .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+F9BD .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+F9BD .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+F9BD .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+F9BD .|    |    |    |    no user found [Client.php:1592]
+F9BD .|    |    |    <= false
+F9BD .|    |    |    no ticket found [Client.php:1453]
+F9BD .|    |    <= false
+F9BD .|    |    => CAS_Client::redirectToCas(false) [Client.php:1254]
+F9BD .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1613]
+F9BD .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+F9BD .|    |    |    |    |    Final URI: https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:3466]
+F9BD .|    |    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+F9BD .|    |    |    <= 'https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php'
+F9BD .|    |    |    Redirect to : https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php [Client.php:1620]
+F9BD .|    |    |    exit()
+F9BD .|    |    |    -
+F9BD .|    |    -
+F9BD .|    -
+24EF .START phpCAS-1.3.3 ****************** [CAS.php:438]
+24EF .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+24EF .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+24EF .|    |    Ticket 'ST-1059271-m9xvCmzbEDx4zB7kvqpG-cas.univ-lyon3.fr' found [Client.php:988]
+24EF .|    <= ''
+24EF .<= ''
+24EF .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+24EF .<= ''
+24EF .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+24EF .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+24EF .<= ''
+24EF .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+24EF .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+24EF .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+24EF .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+24EF .|    |    |    |    no user found [Client.php:1592]
+24EF .|    |    |    <= false
+24EF .|    |    |    CAS 2 ticket `ST-1059271-m9xvCmzbEDx4zB7kvqpG-cas.univ-lyon3.fr' is present [Client.php:1406]
+24EF .|    |    |    => CAS_Client::validateCAS20('', NULL, NULL) [Client.php:1409]
+24EF .|    |    |    |     [Client.php:3101]
+24EF .|    |    |    |    => CAS_Client::getServerServiceValidateURL() [Client.php:3108]
+24EF .|    |    |    |    |    => CAS_Client::getURL() [Client.php:453]
+24EF .|    |    |    |    |    |    Final URI: https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:3466]
+24EF .|    |    |    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+24EF .|    |    |    |    <= 'https://cas.univ-lyon3.fr/cas/serviceValidate?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php'
+24EF .|    |    |    |    => CAS_Client::_readURL('https://cas.univ-lyon3.fr/cas/serviceValidate?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php&ticket=ST-1059271-m9xvCmzbEDx4zB7kvqpG-cas.univ-lyon3.fr', NULL, NULL, NULL) [Client.php:3118]
+24EF .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+24EF .|    |    |    |    |    |    Response Body: 
+24EF .|    |    |    |    |    |    
+24EF .|    |    |    |    |    |    
+24EF .|    |    |    |    |    |    
+24EF .|    |    |    |    |    |    
+24EF .|    |    |    |    |    |    <cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>
+24EF .|    |    |    |    |    |    	<cas:authenticationSuccess>
+24EF .|    |    |    |    |    |    		<cas:user>jf.caillot</cas:user>
+24EF .|    |    |    |    |    |    
+24EF .|    |    |    |    |    |    
+24EF .|    |    |    |    |    |    	</cas:authenticationSuccess>
+24EF .|    |    |    |    |    |    </cas:serviceResponse>
+24EF .|    |    |    |    |    |     [CurlRequest.php:84]
+24EF .|    |    |    |    |    <= true
+24EF .|    |    |    |    <= true
+24EF .|    |    |    |    => CAS_Client::_readExtraAttributesCas20(DOMNodeList) [Client.php:3176]
+24EF .|    |    |    |    |    Testing for rubycas style attributes [Client.php:3294]
+24EF .|    |    |    |    <= ''
+24EF .|    |    |    |    Storing Proxy List [Client.php:3185]
+24EF .|    |    |    |    => CAS_ProxyChain_AllowedList::isProxyListAllowed(array ()) [Client.php:3188]
+24EF .|    |    |    |    |    No proxies were found in the response [AllowedList.php:81]
+24EF .|    |    |    |    <= true
+24EF .|    |    |    |    => CAS_Client::_renameSession('ST-1059271-m9xvCmzbEDx4zB7kvqpG-cas.univ-lyon3.fr') [Client.php:3220]
+24EF .|    |    |    |    |    Skipping session rename since phpCAS is not handling the session. [Client.php:3599]
+24EF .|    |    |    |    <= ''
+24EF .|    |    |    <= true
+24EF .|    |    |    CAS 2 ticket `ST-1059271-m9xvCmzbEDx4zB7kvqpG-cas.univ-lyon3.fr' was validated [Client.php:1412]
+24EF .|    |    |    => CAS_Client::getURL() [Client.php:1472]
+24EF .|    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+24EF .|    |    |    Prepare redirect to : https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:1472]
+24EF .|    |    |    => CAS_Client::getURL() [Client.php:1474]
+24EF .|    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+24EF .|    |    |    exit()
+24EF .|    |    |    -
+24EF .|    |    -
+24EF .|    -
+5DB9 .START phpCAS-1.3.3 ****************** [CAS.php:438]
+5DB9 .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+5DB9 .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+5DB9 .|    <= ''
+5DB9 .<= ''
+5DB9 .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+5DB9 .<= ''
+5DB9 .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+5DB9 .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+5DB9 .<= ''
+5DB9 .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+5DB9 .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+5DB9 .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+5DB9 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+5DB9 .|    |    |    |    user = `jf.caillot' [Client.php:1579]
+5DB9 .|    |    |    <= true
+5DB9 .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1380]
+5DB9 .|    |    <= true
+5DB9 .|    |    no need to authenticate [Client.php:1247]
+5DB9 .|    <= true
+5DB9 .<= ''
+B5D6 .START phpCAS-1.3.3 ****************** [CAS.php:438]
+B5D6 .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+B5D6 .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+B5D6 .|    <= ''
+B5D6 .<= ''
+B5D6 .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+B5D6 .<= ''
+B5D6 .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+B5D6 .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+B5D6 .<= ''
+B5D6 .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+B5D6 .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+B5D6 .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+B5D6 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+B5D6 .|    |    |    |    no user found [Client.php:1592]
+B5D6 .|    |    |    <= false
+B5D6 .|    |    |    no ticket found [Client.php:1453]
+B5D6 .|    |    <= false
+B5D6 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1254]
+B5D6 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1613]
+B5D6 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+B5D6 .|    |    |    |    |    Final URI: https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:3466]
+B5D6 .|    |    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+B5D6 .|    |    |    <= 'https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php'
+B5D6 .|    |    |    Redirect to : https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php [Client.php:1620]
+B5D6 .|    |    |    exit()
+B5D6 .|    |    |    -
+B5D6 .|    |    -
+B5D6 .|    -
+B89E .START phpCAS-1.3.3 ****************** [CAS.php:438]
+B89E .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+B89E .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+B89E .|    |    Ticket 'ST-1060051-9nyH0L6udpBe1MkeD4Gp-cas.univ-lyon3.fr' found [Client.php:988]
+B89E .|    <= ''
+B89E .<= ''
+B89E .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+B89E .<= ''
+B89E .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+B89E .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+B89E .<= ''
+B89E .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+B89E .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+B89E .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+B89E .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+B89E .|    |    |    |    no user found [Client.php:1592]
+B89E .|    |    |    <= false
+B89E .|    |    |    CAS 2 ticket `ST-1060051-9nyH0L6udpBe1MkeD4Gp-cas.univ-lyon3.fr' is present [Client.php:1406]
+B89E .|    |    |    => CAS_Client::validateCAS20('', NULL, NULL) [Client.php:1409]
+B89E .|    |    |    |     [Client.php:3101]
+B89E .|    |    |    |    => CAS_Client::getServerServiceValidateURL() [Client.php:3108]
+B89E .|    |    |    |    |    => CAS_Client::getURL() [Client.php:453]
+B89E .|    |    |    |    |    |    Final URI: https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:3466]
+B89E .|    |    |    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+B89E .|    |    |    |    <= 'https://cas.univ-lyon3.fr/cas/serviceValidate?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php'
+B89E .|    |    |    |    => CAS_Client::_readURL('https://cas.univ-lyon3.fr/cas/serviceValidate?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php&ticket=ST-1060051-9nyH0L6udpBe1MkeD4Gp-cas.univ-lyon3.fr', NULL, NULL, NULL) [Client.php:3118]
+B89E .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+B89E .|    |    |    |    |    |    Response Body: 
+B89E .|    |    |    |    |    |    
+B89E .|    |    |    |    |    |    
+B89E .|    |    |    |    |    |    
+B89E .|    |    |    |    |    |    
+B89E .|    |    |    |    |    |    <cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>
+B89E .|    |    |    |    |    |    	<cas:authenticationSuccess>
+B89E .|    |    |    |    |    |    		<cas:user>souad.amrane</cas:user>
+B89E .|    |    |    |    |    |    
+B89E .|    |    |    |    |    |    
+B89E .|    |    |    |    |    |    	</cas:authenticationSuccess>
+B89E .|    |    |    |    |    |    </cas:serviceResponse>
+B89E .|    |    |    |    |    |     [CurlRequest.php:84]
+B89E .|    |    |    |    |    <= true
+B89E .|    |    |    |    <= true
+B89E .|    |    |    |    => CAS_Client::_readExtraAttributesCas20(DOMNodeList) [Client.php:3176]
+B89E .|    |    |    |    |    Testing for rubycas style attributes [Client.php:3294]
+B89E .|    |    |    |    <= ''
+B89E .|    |    |    |    Storing Proxy List [Client.php:3185]
+B89E .|    |    |    |    => CAS_ProxyChain_AllowedList::isProxyListAllowed(array ()) [Client.php:3188]
+B89E .|    |    |    |    |    No proxies were found in the response [AllowedList.php:81]
+B89E .|    |    |    |    <= true
+B89E .|    |    |    |    => CAS_Client::_renameSession('ST-1060051-9nyH0L6udpBe1MkeD4Gp-cas.univ-lyon3.fr') [Client.php:3220]
+B89E .|    |    |    |    |    Skipping session rename since phpCAS is not handling the session. [Client.php:3599]
+B89E .|    |    |    |    <= ''
+B89E .|    |    |    <= true
+B89E .|    |    |    CAS 2 ticket `ST-1060051-9nyH0L6udpBe1MkeD4Gp-cas.univ-lyon3.fr' was validated [Client.php:1412]
+B89E .|    |    |    => CAS_Client::getURL() [Client.php:1472]
+B89E .|    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+B89E .|    |    |    Prepare redirect to : https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:1472]
+B89E .|    |    |    => CAS_Client::getURL() [Client.php:1474]
+B89E .|    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+B89E .|    |    |    exit()
+B89E .|    |    |    -
+B89E .|    |    -
+B89E .|    -
+D68A .START phpCAS-1.3.3 ****************** [CAS.php:438]
+D68A .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+D68A .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+D68A .|    <= ''
+D68A .<= ''
+D68A .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+D68A .<= ''
+D68A .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+D68A .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+D68A .<= ''
+D68A .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+D68A .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+D68A .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+D68A .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+D68A .|    |    |    |    user = `souad.amrane' [Client.php:1579]
+D68A .|    |    |    <= true
+D68A .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1380]
+D68A .|    |    <= true
+D68A .|    |    no need to authenticate [Client.php:1247]
+D68A .|    <= true
+D68A .<= ''
+CD88 .START phpCAS-1.3.3 ****************** [CAS.php:438]
+CD88 .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+CD88 .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+CD88 .|    <= ''
+CD88 .<= ''
+CD88 .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+CD88 .<= ''
+CD88 .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+CD88 .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+CD88 .<= ''
+CD88 .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+CD88 .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+CD88 .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+CD88 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+CD88 .|    |    |    |    no user found [Client.php:1592]
+CD88 .|    |    |    <= false
+CD88 .|    |    |    no ticket found [Client.php:1453]
+CD88 .|    |    <= false
+CD88 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1254]
+CD88 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1613]
+CD88 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+CD88 .|    |    |    |    |    Final URI: https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:3466]
+CD88 .|    |    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+CD88 .|    |    |    <= 'https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php'
+CD88 .|    |    |    Redirect to : https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php [Client.php:1620]
+CD88 .|    |    |    exit()
+CD88 .|    |    |    -
+CD88 .|    |    -
+CD88 .|    -
+6D2F .START phpCAS-1.3.3 ****************** [CAS.php:438]
+6D2F .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+6D2F .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+6D2F .|    <= ''
+6D2F .<= ''
+6D2F .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+6D2F .<= ''
+6D2F .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+6D2F .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+6D2F .<= ''
+6D2F .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+6D2F .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+6D2F .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+6D2F .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+6D2F .|    |    |    |    no user found [Client.php:1592]
+6D2F .|    |    |    <= false
+6D2F .|    |    |    no ticket found [Client.php:1453]
+6D2F .|    |    <= false
+6D2F .|    |    => CAS_Client::redirectToCas(false) [Client.php:1254]
+6D2F .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1613]
+6D2F .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+6D2F .|    |    |    |    |    Final URI: https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:3466]
+6D2F .|    |    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+6D2F .|    |    |    <= 'https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php'
+6D2F .|    |    |    Redirect to : https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php [Client.php:1620]
+6D2F .|    |    |    exit()
+6D2F .|    |    |    -
+6D2F .|    |    -
+6D2F .|    -
+F597 .START phpCAS-1.3.3 ****************** [CAS.php:438]
+F597 .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+F597 .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+F597 .|    |    Ticket 'ST-1060390-3zUVn7Ql5ZNou1J1EmmI-cas.univ-lyon3.fr' found [Client.php:988]
+F597 .|    <= ''
+F597 .<= ''
+F597 .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+F597 .<= ''
+F597 .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+F597 .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+F597 .<= ''
+F597 .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+F597 .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+F597 .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+F597 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+F597 .|    |    |    |    no user found [Client.php:1592]
+F597 .|    |    |    <= false
+F597 .|    |    |    CAS 2 ticket `ST-1060390-3zUVn7Ql5ZNou1J1EmmI-cas.univ-lyon3.fr' is present [Client.php:1406]
+F597 .|    |    |    => CAS_Client::validateCAS20('', NULL, NULL) [Client.php:1409]
+F597 .|    |    |    |     [Client.php:3101]
+F597 .|    |    |    |    => CAS_Client::getServerServiceValidateURL() [Client.php:3108]
+F597 .|    |    |    |    |    => CAS_Client::getURL() [Client.php:453]
+F597 .|    |    |    |    |    |    Final URI: https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:3466]
+F597 .|    |    |    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+F597 .|    |    |    |    <= 'https://cas.univ-lyon3.fr/cas/serviceValidate?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php'
+F597 .|    |    |    |    => CAS_Client::_readURL('https://cas.univ-lyon3.fr/cas/serviceValidate?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php&ticket=ST-1060390-3zUVn7Ql5ZNou1J1EmmI-cas.univ-lyon3.fr', NULL, NULL, NULL) [Client.php:3118]
+F597 .|    |    |    |    |    => CAS_Request_CurlRequest::sendRequest() [AbstractRequest.php:242]
+F597 .|    |    |    |    |    |    Response Body: 
+F597 .|    |    |    |    |    |    
+F597 .|    |    |    |    |    |    
+F597 .|    |    |    |    |    |    
+F597 .|    |    |    |    |    |    
+F597 .|    |    |    |    |    |    <cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>
+F597 .|    |    |    |    |    |    	<cas:authenticationSuccess>
+F597 .|    |    |    |    |    |    		<cas:user>lionel.mignot</cas:user>
+F597 .|    |    |    |    |    |    
+F597 .|    |    |    |    |    |    
+F597 .|    |    |    |    |    |    	</cas:authenticationSuccess>
+F597 .|    |    |    |    |    |    </cas:serviceResponse>
+F597 .|    |    |    |    |    |     [CurlRequest.php:84]
+F597 .|    |    |    |    |    <= true
+F597 .|    |    |    |    <= true
+F597 .|    |    |    |    => CAS_Client::_readExtraAttributesCas20(DOMNodeList) [Client.php:3176]
+F597 .|    |    |    |    |    Testing for rubycas style attributes [Client.php:3294]
+F597 .|    |    |    |    <= ''
+F597 .|    |    |    |    Storing Proxy List [Client.php:3185]
+F597 .|    |    |    |    => CAS_ProxyChain_AllowedList::isProxyListAllowed(array ()) [Client.php:3188]
+F597 .|    |    |    |    |    No proxies were found in the response [AllowedList.php:81]
+F597 .|    |    |    |    <= true
+F597 .|    |    |    |    => CAS_Client::_renameSession('ST-1060390-3zUVn7Ql5ZNou1J1EmmI-cas.univ-lyon3.fr') [Client.php:3220]
+F597 .|    |    |    |    |    Skipping session rename since phpCAS is not handling the session. [Client.php:3599]
+F597 .|    |    |    |    <= ''
+F597 .|    |    |    <= true
+F597 .|    |    |    CAS 2 ticket `ST-1060390-3zUVn7Ql5ZNou1J1EmmI-cas.univ-lyon3.fr' was validated [Client.php:1412]
+F597 .|    |    |    => CAS_Client::getURL() [Client.php:1472]
+F597 .|    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+F597 .|    |    |    Prepare redirect to : https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:1472]
+F597 .|    |    |    => CAS_Client::getURL() [Client.php:1474]
+F597 .|    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+F597 .|    |    |    exit()
+F597 .|    |    |    -
+F597 .|    |    -
+F597 .|    -
+61B0 .START phpCAS-1.3.3 ****************** [CAS.php:438]
+61B0 .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+61B0 .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+61B0 .|    <= ''
+61B0 .<= ''
+61B0 .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+61B0 .<= ''
+61B0 .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+61B0 .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+61B0 .<= ''
+61B0 .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+61B0 .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+61B0 .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+61B0 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+61B0 .|    |    |    |    user = `lionel.mignot' [Client.php:1579]
+61B0 .|    |    |    <= true
+61B0 .|    |    |    user was already authenticated, no need to look for tickets [Client.php:1380]
+61B0 .|    |    <= true
+61B0 .|    |    no need to authenticate [Client.php:1247]
+61B0 .|    <= true
+61B0 .<= ''
+C2A3 .START phpCAS-1.3.3 ****************** [CAS.php:438]
+C2A3 .=> phpCAS::client('2', 'cas.univ-lyon3.fr', 443, 'cas', false) [class.ldap.php:21]
+C2A3 .|    => CAS_Client::__construct('2', false, 'cas.univ-lyon3.fr', 443, 'cas', false) [CAS.php:340]
+C2A3 .|    <= ''
+C2A3 .<= ''
+C2A3 .=> phpCAS::setExtraCurlOption(32, 3) [class.ldap.php:22]
+C2A3 .<= ''
+C2A3 .=> phpCAS::setNoCasServerValidation() [class.ldap.php:27]
+C2A3 .|    You have configured no validation of the legitimacy of the cas server. This is not recommended for production use. [CAS.php:1553]
+C2A3 .<= ''
+C2A3 .=> phpCAS::forceAuthentication() [class.ldap.php:29]
+C2A3 .|    => CAS_Client::forceAuthentication() [CAS.php:1015]
+C2A3 .|    |    => CAS_Client::isAuthenticated() [Client.php:1245]
+C2A3 .|    |    |    => CAS_Client::_wasPreviouslyAuthenticated() [Client.php:1356]
+C2A3 .|    |    |    |    no user found [Client.php:1592]
+C2A3 .|    |    |    <= false
+C2A3 .|    |    |    no ticket found [Client.php:1453]
+C2A3 .|    |    <= false
+C2A3 .|    |    => CAS_Client::redirectToCas(false) [Client.php:1254]
+C2A3 .|    |    |    => CAS_Client::getServerLoginURL(false, false) [Client.php:1613]
+C2A3 .|    |    |    |    => CAS_Client::getURL() [Client.php:342]
+C2A3 .|    |    |    |    |    Final URI: https://bu-planning.univ-lyon3.fr/authentification.php [Client.php:3466]
+C2A3 .|    |    |    |    <= 'https://bu-planning.univ-lyon3.fr/authentification.php'
+C2A3 .|    |    |    <= 'https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php'
+C2A3 .|    |    |    Redirect to : https://cas.univ-lyon3.fr/cas/login?service=https%3A%2F%2Fbu-planning.univ-lyon3.fr%2Fauthentification.php [Client.php:1620]
+C2A3 .|    |    |    exit()
+C2A3 .|    |    |    -
+C2A3 .|    |    -
+C2A3 .|    -
