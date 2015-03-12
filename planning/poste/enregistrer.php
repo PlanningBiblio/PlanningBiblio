@@ -24,8 +24,8 @@ require_once "class.planning.php";
 
 // Initialisation des variables
 $semaine=isset($_GET['semaine'])?$_GET['semaine']:null;
-$date=$_GET['date'];
-$site=$_GET['site'];
+$date=isset($_GET['date'])?$_GET['date']:null;
+$site=isset($_GET['site'])?$_GET['site']:null;
 $dateFr=dateFr($date);
 
 // Sécurité
@@ -70,7 +70,7 @@ elseif(!isset($_GET['confirm'])){		// Etape 2 : Vérifions si le nom n'est pas d
     echo "<b>Le modèle \"$nom\" existe<b><br/><br/>\n";
     echo "Voulez vous le remplacer ?<br/><br/>\n";
     echo "<a href='javascript:popup_closed();'>Non</a>&nbsp;&nbsp;\n";
-    echo "<a href='index.php?page=planning/poste/enregistrer.php&amp;confirm=oui&amp;menu=off&amp;nom=$nom&amp;semaine=$semaine'>Oui</a>\n";
+    echo "<a href='index.php?page=planning/poste/enregistrer.php&amp;menu=off&amp;nom=$nom&amp;date=$date&amp;semaine=$semaine'>Oui</a>\n";
   }
   else					// Etape 2b : si le nom n'existe pas, on enregistre le planning du jour
     enregistre_modele($nom,$date,$semaine,$site);
