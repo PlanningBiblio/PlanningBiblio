@@ -1,0 +1,831 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <link rel="stylesheet" href="calendar.css" type="text/css" />
+ <title>Documentation</title>
+ <style type="text/css">
+ body {
+ 	counter-reset: chapter;
+ 	text-align: justify;
+ }
+ 
+ h1:before {
+ 	content: counter(chapter) ". ";
+ 	counter-increment: chapter;
+ }
+ 
+ h1 {
+ 	counter-reset: section;
+ }
+ 
+ h2:before {
+ 	content: counter(chapter) "." counter(section) ". ";
+ 	counter-increment: section;
+ }
+ 
+ h2 {
+ 	counter-reset: sub_section;
+ 	padding-left: 10px;
+ }
+ 
+ h3:before {
+ 	content: counter(chapter) "." counter(section) "." counter(sub_section) ". ";
+ 	counter-increment: sub_section;
+ }
+ 
+ h3 {
+ 	padding-left: 20px;
+ }
+ 
+ var {
+ 	font-family: monospace;
+ 	font-style: italic;
+ }
+ 
+ .example_code {
+ 	background: #dcdcdc;
+ }
+ 
+ .parameter_list, .version_history, .style_list {
+	border: none;
+	border-collapse: collapse;
+ }
+ 
+ .parameter_list th, .parameter_list td, .version_history th, .version_history td, .style_list th, .style_list td  {
+ 	border: 1px solid black;
+ 	padding: 4px;
+ 	vertical-align: top;
+ }
+ 
+ .parameter_list th, .version_history th, .style_list th {
+ 	background: #b8b8b8;
+ 	white-space: nowrap;
+ }
+ 
+ .parameter {
+ 	font-family: monospace;
+ 	font-style: italic;
+ }
+ 
+ .default_value {
+ 	font-family: monospace;
+ 	font-size: 0.9em;
+ }
+ 
+ .parameter_list ul, .version_history ul, .style_list ul {
+	margin-bottom: 0;
+	margin-top: 0;
+ }
+ 
+ .note {
+ 	text-decoration: underline;
+ }
+ 
+ .file {
+ 	font-family: monospace;
+ 	font-size: 0.9em;
+ 	font-style: italic;
+ }
+ </style>
+</head>
+
+<body>
+<h1><a id="Sommary"></a>Summary</h1>
+<div id="table_contents">
+<ul>
+	<li><a href="#Summary">Summary</a></li>
+	<li><a href="#Description">Description</a></li>
+	<li><a href="#Installation">Installation and use</a>
+		<ul>
+			<li><a href="#Installation_installation">Installation</a></li>
+			<li><a href="#Installation_use">Using the scripts</a>
+				<ul>
+					<li>PHP integration</li>
+					<li>JavaScript integration</li>
+				</ul>
+			</li>
+			<li><a href="#Installation_settings">Settings and customisation</a>
+				<ul>
+					<li>The calendar parameters</li>
+					<li>Managing the links (clickable dates)</li>
+					<li>Styling the calendar</li>
+				</ul>
+			</li>
+			<li><a href="#Installation_internationalisation">Internationalisation</a></li>
+		</ul>
+	</li>
+	<li><a href="#History">Version history</a></li>
+	<li><a href="#Credits">Credits, licence and warranty</a></li>
+</ul>
+</div>
+
+<h1><a id="Description"></a>Description</h1>
+<p>Simple PHP calendar</p>
+
+<table class="calendar_main" summary="">
+	<tr class="calendar_title">
+		<td class="calendar_title_left_arrow">&lt;&lt;</td>
+		<td class="calendar_title_month">mai 2006</td>
+		<td class="calendar_title_right_arrow">&gt;&gt;</td>
+	</tr>
+	<tr>
+		<td colspan="3">
+			<table class="calendar_table" summary="">
+				<tr>
+					<th>lun</th>
+					<th>mar</th>
+					<th>mer</th>
+					<th>jeu</th>
+					<th>ven</th>
+					<th>sam</th>
+					<th>dim</th>
+				</tr>
+				<tr>
+					<td class="calendar_cell_day"><span class="calendar_day">1</span></td>
+					<td class="calendar_cell_day"><span class="calendar_day">2</span></td>
+					<td class="calendar_cell_day"><span class="calendar_day">3</span></td>
+					<td class="calendar_cell_day"><span class="calendar_day">4</span></td>
+					<td class="calendar_cell_day"><span class="calendar_day">5</span></td>
+					<td class="calendar_cell_weekend_today"><span class="calendar_weekend_today">6</span></td>
+					<td class="calendar_cell_weekend_day"><span class="calendar_weekend_day">7</span></td>
+				</tr>
+				<tr>
+					<td class="calendar_cell_day"><span class="calendar_day">8</span></td>
+					<td class="calendar_cell_day"><span class="calendar_day">9</span></td>
+					<td class="calendar_cell_day"><span class="calendar_day">10</span></td>
+					<td class="calendar_cell_day"><span class="calendar_day">11</span></td>
+					<td class="calendar_cell_day"><span class="calendar_day">12</span></td>
+					<td class="calendar_cell_weekend_day"><span class="calendar_weekend_day">13</span></td>
+					<td class="calendar_cell_weekend_day"><span class="calendar_weekend_day">14</span></td>
+				</tr>
+				<tr>
+					<td class="calendar_cell_day"><span class="calendar_day">15</span></td>
+					<td class="calendar_cell_day"><span class="calendar_day">16</span></td>
+					<td class="calendar_cell_day"><span class="calendar_day">17</span></td>
+					<td class="calendar_cell_day"><span class="calendar_day">18</span></td>
+					<td class="calendar_cell_day"><span class="calendar_day">19</span></td>
+					<td class="calendar_cell_weekend_day"><span class="calendar_weekend_day">20</span></td>
+					<td class="calendar_cell_weekend_day"><span class="calendar_weekend_day">21</span></td>
+				</tr>
+				<tr>
+					<td class="calendar_cell_day"><span class="calendar_day">22</span></td>
+					<td class="calendar_cell_day"><span class="calendar_day">23</span></td>
+					<td class="calendar_cell_day"><span class="calendar_day">24</span></td>
+					<td class="calendar_cell_day"><span class="calendar_day">25</span></td>
+					<td class="calendar_cell_day"><span class="calendar_day">26</span></td>
+					<td class="calendar_cell_weekend_day"><span class="calendar_weekend_day">27</span></td>
+					<td class="calendar_cell_weekend_day"><span class="calendar_weekend_day">28</span></td>
+				</tr>
+				<tr>
+					<td class="calendar_cell_day"><span class="calendar_day">29</span></td>
+					<td class="calendar_cell_day"><span class="calendar_day">30</span></td>
+					<td class="calendar_cell_day"><span class="calendar_day">31</span></td>
+					<td class="calendar_cell_other_month"><span class="calendar_other_month">1</span></td>
+					<td class="calendar_cell_other_month"><span class="calendar_other_month">2</span></td>
+					<td class="calendar_cell_weekend_other_month"><span class="calendar_weekend_other_month">3</span></td>
+					<td class="calendar_cell_weekend_other_month"><span class="calendar_weekend_other_month">4</span></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr class="calendar_footer">
+		<td class="calendar_footer_current_month">&nbsp;</td>
+		<td class="calendar_footer_current_month"><a href="/demo_fr.php?cal1_date=082006" class="calendar_footer_current_month_clickable">aujourd'hui</a></td>
+		<td class="calendar_footer_current_month">&nbsp;</td>
+	</tr>
+</table>
+
+<p>Version: v2.5<br/>
+Author: Sylvain Baudoin<br/>
+Licence: GPL (GNU General Public License)<br/>
+Please, report all errors to <a href="mailto:webmaster@themanualpage.org?subject=PHP%20calendar%20v2.5">webmaster@themanualpage.org</a></p>
+
+<h1><a id="Installation"></a>Installation and use</h1>
+<h2><a id="Installation_installation"></a>Installation</h2>
+<ol>
+	<li>Copy the files <span class="file">calendar.php</span>, <span class="file">calendar_js.php</span>
+	and <span class="file">calendar_locales.php</span> in a single directory of your Web site.</li>
+	<li>Copy the file <span class="file">calendar.css</span> to your Web site but not
+	necessarily in the same directory as the former files. For example, copy this file in the directory
+	where you have placed all the stylesheets of your Web site.</li>
+</ol>
+
+<p>You may rename the files:</p>
+<ul>
+	<li><span class="file">calendar.css</span>: give any name</li>
+	<li><span class="file">calendar.php</span>: give any name</li>
+	<li><span class="file">calendar_js.php</span>: give the same name as the file
+	<span class="file">calendar.php</span> and append <code>_js</code>. For example, if you renamed
+	the file <span class="file">calendar.php</span> to <span class="file">foo.php</span>,
+	rename the file <span class="file">calendar_js.php</span> to <span class="file">foo_js.php</span>.</li>
+	<li><span class="file">calendar_locales.php</span>: give any name <strong>then</strong>
+	edit the file <span class="file">calendar.php</span> in order to reference this new
+	filename at line 186.</li>
+</ul>
+
+<h2><a id="Installation_use"></a>Using the scripts</h2>
+<p>For a complete example, please refer to the demo page <span class="file">demo_en.php</span>.
+The complete description of the calendar configuration parameters is provided in a
+<a href="#Installation_settings">dedicated paragraph</a>.</p>
+
+<h3>PHP integration</h3>
+<p>Just proceed as follows in the PHP page where you want to display a calendar:</p>
+
+<pre class="example_code"><code>&lt;html&gt;
+&lt;head&gt;
+...
+<strong>&lt;link rel="stylesheet" href="calendar.css" type="text/css" /&gt;</strong>
+...
+&lt;/head&gt;
+
+&lt;body&gt;
+...
+&lt;?php
+...
+<strong>// Call to the main calendar script
+require_once("calendar.php");
+// Settings
+$params = array(...);
+// Display
+Calendar($params);</strong>
+...
+?&gt;
+&lt;body&gt;
+&lt;html&gt;</code></pre>
+
+<p>The paths to the stylesheet and the script <span class="file">calendar.php</span>
+must obviously be adapted in order to indicate the directory where you actually copied
+these files.</p>
+
+<p>Setting the calendar is done using a assocative array. For example:</p>
+
+<pre class="example_code"><code>$params = array(
+              "LANGUAGE_CODE" => "en",
+              "FIRST_WEEK_DAY" => 1,
+              "USE_SESSION" => true
+          );
+Calendar($params);</code></pre>
+
+<p><strong>WARNING!!!</strong> if you enable the use of the session (<var>USE_SESSION</var>
+= <code>true</code>), <strong>you</strong> must create the session at the very beginning
+of your page because the calendar script will not do it.</p>
+
+<p>If you want to put several calendars on the same page, do not bother include the script
+<span class="file">calendar.php</span> again: you just have to define the new settings for
+each new calendar and call the function <code>Calendar()</code> with these parameters:</p>
+
+<pre class="example_code"><code>...
+&lt;?php
+require_once("calendar.php");
+
+// First calendar
+$params1 = array(...);
+Calendar($params1);
+...
+?&gt;
+...
+&lt;?php
+// Second calendar
+$params2 = array(...);
+Calendar($params2);
+?&gt;
+...</code></pre>
+
+<p>Since version 2.1, it is possible to get the calendar HTML code inside your PHP code
+by setting the parameter <var>OUTPUT_MODE</var> to <code>"return"</code>. Example:</p>
+
+<pre class="example_code"><code>...
+&lt;?php
+require_once("calendar.php");
+
+$params1 = array(..., <strong>"OUTPUT_MODE" => "return"</strong>, ...);
+$html_calendar = Calendar($params1);
+...
+// Affichage du calendrier
+echo $html_calendar;
+...
+?&gt;
+...</code></pre>
+
+
+<h3>JavaScript integration</h3>
+<p><strong>WARNING!!!</strong> for the JavaScript integration mode it is still required
+to have a PHP Web server in order to execute the scripts <span class="file">calendar.php</span>
+and <span class="file">calendar_js.php</span>. The purpose of this JavaScript integration
+is to be able to display the calendar on Web pages in which it is not possible to write
+PHP code.</p>
+
+<p>Integration the calendar as a JavaScript is quite straightforward:</p>
+
+<pre class="example_code"><code>&lt;html&gt;
+&lt;head&gt;
+...
+<strong>&lt;link rel="stylesheet" href="calendar.css" type="text/css" /&gt;</strong>
+...
+&lt;/head&gt;
+
+&lt;body&gt;
+...
+&lt;!-- We display the calendar --&gt;
+<strong>&lt;script type="text/javascript" src="calendar_js.php?..."&gt;&lt;/script&gt;</strong>
+...
+&lt;body&gt;
+&lt;html&gt;</code></pre>
+
+<p>Setting the calendar is done by passing the calendar parameters along with their values
+as URL variables. For example, if you want to set the paremeters <var>CSS_PREFIX</var> to
+<code>"foo_"</code> and <var>USE_SESSION</var> to <code>true</code>, just do the following:</p>
+
+<pre class="example_code"><code>&lt;script type="text/javascript"
+  src="calendar_js.php<strong>?CSS_PREFIX=foo_&amp;USE_SESSION=true</strong>"&gt;
+&lt;/script&gt;</code></pre>
+
+<p><strong>WARNING!!!</strong> it is not possible to set the parameters <var>PRE_DATE_URL_FUNCTION</var>
+and <var>DATE_URL_FUNCTION</var> this way. In order to define these parameters, it is necessary
+to modify the script <span class="fichier">calendar_js.php</span> to define the required functions.</p>
+
+<p>Make sure that you have added the calendar's stylesheet to your page (see below, paragraph "Styling the calendar").</p>
+
+<h2><a id="Installation_settings"></a>Settings and customisation</h2>
+<h3>The calendar parameters</h3>
+<p>Setting the calendar is done by defining parameters. A default value is assigned
+to the parameters you have not defined:</p>
+
+<table class="parameter_list" summary="Calendar parameters">
+	<tr>
+		<th>Param&egrave;ter</th>
+		<th>Description</th>
+		<th>Default value</th>
+	</tr>
+	<tr>
+		<td class="parameter">PREFIX</td>
+		<td>
+			prefix of the URL and session parameters of the calendar. Define a
+			different value for each different calendar to display along in the
+			same page. Do not start this prefix by a digit.
+		</td>
+		<td class="default_value">"calendar_"</td>
+	</tr>
+	<tr>
+		<td class="parameter">CSS_PREFIX</td>
+		<td>
+			prefix of the CSS classes used for styling the calendar. To be used
+			to render the calendars for different styles.
+		</td>
+		<td class="default_value">"calendar_"</td>
+	</tr>
+	<tr>
+		<td class="parameter">DATE_URL</td>
+		<td>
+			if set, indicates a URL to use for making the days clickable.<br/>
+			Starting from version 2.4, <var>DATE_URL</var> is not systematically completed
+			with the URL parameter indicated by the calendar parameter
+			<var>URL_PARAMETER</var>. Instead, if the string "__DATE__" is found in
+			<var>DATE_URL</var>, the URL is not completed but the token is replaced by
+			the formatted date. This new working allows you to build more types
+			of URL, including JavaScript calls, without the need of a date URL
+			function (<var>DATE_URL_FUNCTION</var>). Example: if <var>DATE_URL</var> is
+			"javascript:myfunction(param1, '__DATE__', param3);", then the
+			following link will be constructed for the date 03/12/2008:
+			"javascript:myfunction(param1, '03122008', param3);".<br/>
+			Else, if <var>DATE_URL</var> does not contain the string "__DATE__", the
+			provided URL is completed as before with the URL parameter indicated
+			by the calendar parameter <var>URL_PARAMETER</var>.
+			If <var>DATE_URL_FUNCTION</var> is defined as well as this parameter, this
+			parameter is ignored and only <var>DATE_URL_FUNCTION</var> is taken into
+			account (except for the calendar title).
+		</td>
+		<td class="default_value">""</td>
+	</tr>
+	<tr>
+		<td class="parameter">URL_PARAMETER</td>
+		<td>
+			if the previous parameter (<var>DATE_URL</var>) is set, indicates the name of
+			the URL parameter used to complete the URL <var>DATE_URL</var> and pass the
+			clicked date. The date is formated according to the value of the parameter
+			<var>URL_DAY_DATE_FORMAT</var> for the days and <var>URL_MONTH_DATE_FORMAT</var>
+			for the month and year (title links).
+		</td>
+		<td class="default_value">"date"</td>
+	</tr>
+	<tr>
+		<td class="parameter">USE_SESSION</td>
+		<td>
+			set <code>true</code> to store the calendar rendering data in session. This allows
+			this script to remember the date to be displayed while browsing among
+			various pages.<br/>
+			<strong>WARNING!!!</strong> if you want to use sessions, you must create the session
+			first at the very beginning of the page, because this script will not do it.
+		</td>
+		<td class="default_value">false</td>
+	</tr>
+	<tr>
+		<td class="parameter">PRESERVE_URL</td>
+		<td>
+			when building the links for the "previous month" and "next month"
+			links, tells if current URL must be preserved (<code>true</code>) and the date
+			appended (<code>?xx=yyy&amp;...&amp;date=...</code>) or if the query string of the current
+			URL must be discarded (<code>false</code>) and just add the date parameter
+			(<code>?date=...</code>).
+		</td>
+		<td class="default_value">true</td>
+	</tr>
+	<tr>
+		<td class="parameter">JS</td>
+		<td>tells if the calendar is integrated as a JavaScript (<code>true</code>) or not.</td>
+		<td class="default_value">false</td>
+	</tr>
+	<tr>
+		<td class="parameter">JS_URL</td>
+		<td>
+			if the calendar is integrated as a JavaScript, this parameter gives
+			the URL of the page that integrates the calendar.
+		</td>
+		<td class="default_value">""</td>
+	</tr>
+	<tr>
+		<td class="parameter">FIRST_WEEK_DAY</td>
+		<td>
+			first day of the week: 1 for Monday, 2 for Tuesday, etc..., 7 or
+			0 for Sunday.
+		</td>
+		<td class="default_value">1 (Monday)</td>
+	</tr>
+	<tr>
+		<td class="parameter">LANGUAGE_CODE</td>
+		<td>2-letter ISO code of the language to use for rendering the calendar.</td>
+		<td class="default_value">"fr" (French)</td>
+	</tr>
+	<tr>
+		<td class="parameter">CLICKABLE_TITLE</td>
+		<td>
+			when <var>DATE_URL</var> is set, tells if the calendar title (i.e. the month +
+			year at the top of the calendar) is also clickable. In this case, the date passed
+			in the URL parameter has the format indicated by the parameter <var>URL_MONTH_DATE_FORMAT</var>.
+		</td>
+		<td class="default_value">true</td>
+	</tr>
+	<tr>
+		<td class="parameter">OUTPUT_MODE</td>
+		<td>
+			if set to <code>"return"</code>, will make the function Calendar return the
+			HTML code of the calendar. If set to <code>"echo"</code>, the HTML code of the calendar
+			is directly echoed into the response to the web browser. Use <code>"return"</code>
+			if you want to get the HTML code of the calendar into a PHP variable and make
+			some processing on it.
+		</td>
+		<td class="default_value">"echo"</td>
+	</tr>
+	<tr>
+		<td class="parameter">URL_DAY_DATE_FORMAT</td>
+		<td>
+			when <var>DATE_URL</var> is defined, tells the format of the calendar day dates
+			passed in the URL. This format must comply with the format supported by the PHP
+			function <code>date</code>. Has no effect if <var>DATE_URL</var> is not defined.
+		</td>
+		<td class="default_value">"dmY" (ddmmyyyy)</td>
+	</tr>
+	<tr>
+		<td class="parameter">URL_MONTH_DATE_FORMAT</td>
+		<td>
+			when <var>DATE_URL</var> is defined, tells the format of the month date passed
+			in the URL for the calendar's title. This format must comply with the format
+			supported by the PHP function <code>date</code>. Has no effect if <var>DATE_URL</var>
+			is not defined.
+		</td>
+		<td class="default_value">"mY" (mmyyyy)</td>
+	</tr>
+	<tr>
+		<td class="parameter">PRE_DATE_URL_FUNCTION</td>
+		<td>
+			<p>this parameter indicates the name of a user function to be called
+			before the calendar is generated and the function indicated by
+			<var>DATE_URL_FUNCTION</var> is called. This function is called with two
+			parameters:</p>
+			<ul>
+				<li>The first visible date of the calendar (format: ddmmyyyy)</li>
+				<li>The last visible date of the calendar (format: ddmmyyyy)</li>
+			</ul>
+			<p>This function is useful to define the range of dates that are going
+			to be displayed in the calendar, that is the range of dates for which
+			the function <var>DATE_URL_FUNCTION</var> will be called. This could be used to
+			optimize the execution of SQL queries used in <var>DATE_URL_FUNCTION</var>.</p>
+		</td>
+		<td class="default_value">"" (no custom pre date URL function used)</td>
+	</tr>
+	<tr>
+		<td class="parameter">DATE_URL_FUNCTION</td>
+		<td>
+			<p>indicates the name of a user function to be called to return the
+			target URL of the date passed as a parameter (format: ddmmyyyy): if
+			this parameter is defined, everytime a date is going to be rendered,
+			this function is called with the date as a parameter. If you want
+			this date to be clickable, simply returns the target URL; if you do
+			not want this date to be clickable, simply return <code>NULL</code>,
+			<code>FALSE</code> or even "".</p>
+			<p>If <var>DATE_URL</var> is defined as well as this parameter, only this
+			<var>DATE_URL_FUNCTION</var> parameter is taken into account.</p>
+		</td>
+		<td class="default_value">"" (no custom date URL function used)</td>
+	</tr>
+</table>
+
+<h3>Managing the links (clickable dates)</h3>
+<p>Starting from version 2.3 it is possible to have only some dates clickable. To do so define
+the parameter <var>DATE_URL_FUNCTION</var>: this parameter indicates a user function that
+is called for every day of the calendar and get a possible URL. The returned URL is then
+used as is for the date; conversely if the function returns <code>NULL</code>, <code>FALSE</code> or
+<code>""</code>, the date is not clickable.</p>
+
+<p>It is possible to define the parameter <var>PRE_DATE_URL_FUNCTION</var> to indicate another
+user function to be called before the whole calendar is generated. This function may be used
+to optimize the working of the function <var>DATE_URL_FUNCTION</var>, for instance to
+execute a SQL query to get the list of clickable dates, this latter list being used in
+<var>DATE_URL_FUNCTION</var>. With this only one single SQL query would have been called
+to build the whole calendar instead of calling a SQL query for every day of the calendar.</p>
+
+<p>The other way to have <strong>all</strong> the days of the calendar clickable still
+consists in defining the parameter <var>DATE_URL</var>. In this case, <strong>all</strong>
+the dates of the calendar will be clickable. The URL of the dates are then constructed as follows:</p>
+
+<p class="example_code"><code>&lt;value of the parameter DATE_URL&gt;&lt;?|&amp;&gt;&lt;value
+of the parameter URL_PARAMETER&gt;=&lt;day's date with the format URL_DAY_DATE_FORMAT&gt;</code></p>
+
+<p>For example, if you set <var>DATE_URL</var> to <code>"/dir1/dir2/script.php?foo=bar"</code>,
+<var>URL_PARAMETER</var> to <code>"event_date"</code> and <var>URL_DAY_DATE_FORMAT</var>
+to <code>"Ymd"</code>, then the day's URL will be the following:</p>
+
+<pre class="example_code"><code>/dir1/dir2/script.php?foo=bar&amp;event_date=20060813
+/dir1/dir2/script.php?foo=bar&amp;event_date=20060814
+...</code></pre>
+
+<p>The URL of the calendar title (i.e. the URL of the month) is constructed the same way
+but using <var>URL_MONTH_DATE_FORMAT</var> instead of <var>URL_DAY_DATE_FORMAT</var>.</p>
+
+<p>With the current version of the calendar (as well as the previous versions) it is not
+possible the have only few dates clickable using the calendar parameters. If you wish to
+have only a given set of dates clickable, you must change the PHP code of the script
+<code>calendar.php</code>, for example to get the dates from a database.</p>
+
+<h3>Styling the calendar</h3>
+<p>The style of the calendar is entirely defined using CSS. You must declare the calendar's
+style sheet in the HTML code of your pages. For example, add the following line in the
+header of your Web pages if you have placed the default calendar's style sheet file in
+the root of your Web site:</p>
+
+<pre class="example_code"><code>&lt;link rel="stylesheet" href="/calendar.css" type="text/css" /&gt;</code></pre>
+
+<p>You may use the default stylesheet (the file <code>calendar.css</code>) or your own styles.
+Starting with version 2.5, a new way of calculating the calendar CSS class names has been introduced.
+From now on CSS classes are used to style days as well as table cells. As Internet Explorer 6 does not
+handle correctly multiple classes it has been decided to calculate and apply a single CSS class per date.
+Each CSS class name is therefore the <strong>concatenation</strong> on the left with _ as a separator
+(in the following order) of the following keywords:</p>
+
+<table class="style_list" summary="Styles used with the calendar">
+	<tr>
+		<th>Case</th>
+		<th>Description</th>
+		<th>Keyword</th>
+	</tr>
+	<tr>
+		<td>Clickable date</td>
+		<td>If the date is clickable</td>
+		<td><code>clickable</code></td>
+	</tr>
+	<tr>
+		<td>Today</td>
+		<td>If the date being rendered is today</td>
+		<td><code>today</code></td>
+	</tr>
+	<tr>
+		<td>Other day of the current month, not being today</td>
+		<td>If the date being rendered is a day of the current month but is not today</td>
+		<td><code>day</code></td>
+	</tr>
+	<tr>
+		<td>Day of a month other than the current month</td>
+		<td>If the date being rendered is not a day of the current month</td>
+		<td><code>other_month</code></td>
+	</tr>
+	<tr>
+		<td>Week-end (Saturday or Sunday)</td>
+		<td>If the date being rendered is Saturday or Sunday</td>
+		<td><code>weekend</code></td>
+	</tr>
+</table>
+
+<p>The name of the class applied to a cell (tag &lt;td&gt;) is prefixed by <code>"cell_"</code>.</p>
+
+<p>Few examples to clarify things:</p>
+<ul>
+	<li>If today is Tuesday Arpil 14th 2009, the 2nd of May (that is a Saturday), if non-clickable,
+	will be rendered with the following styles:
+		<ul>
+			<li>Cell style: <code>weekend_other_month</code></li>
+			<li>Date style: <code>cell_weekend_other_month</code></li>
+		</ul>
+	</li>
+	<li>If today is Sunday April 12th 2009, this very day (if clickable) will be rendered
+	with the following styles:
+		<ul>
+			<li>Cell style: <code>weekend_today_clickable</code></li>
+			<li>Date style: <code>cell_weekend_today_clickable</code></li>
+		</ul>
+	</li>
+	<li>If today is Sunday April 12th 2009, Thursday 23rd of April (if clickable) will be rendered
+	with the following styles:
+		<ul>
+			<li>Cell style: <code>day_clickable</code></li>
+			<li>Date style: <code>cell_day_clickable</code></li>
+		</ul>
+	</li>
+</ul>
+
+<p>The final class names are those calculated above prefixed with the parameter  <var>CSS_PREFIX</var>.
+By example, if <var>CSS_PREFIX</var> equals <code>calendar_</code>, we will have the class
+<code>calendar_cell_day_clickable</code> for the cell of an ordinary clickable day of the current month.
+This allows you to define two different styles for two calendars laid out in the same page. For instance,
+if you set the parameter <var>CSS_PREFIX</var> to <code>foo_</code> for a calendar, then the
+CSS classes that will be used will be <var>foo_title</var> for the calendar title (year + month),
+<var>foo_weekend_day</var> for the weekend, etc.</p>
+
+<p>As this new convention is not compatible with the previous one you are required to
+migrate your old style classes to the new ones (on first sight you should only have to use
+the equivalent new names).</p>
+
+<p>You can find the complete list of class names and styles used for the headers and footers
+in the file <span class="fichier">calendar.css</span> (version 2.5 and above). Please, also
+check the demos provided with this script.</p>
+
+<p>If you want to hide the link that gets back to the current month located at the
+bottom of the calendar, set the CSS property <var>display</var> to <code>none</code>.</p>
+
+<h2><a id="Installation_internationalisation"></a>Internationalisation</h2>
+<p>Since version 2.0 of this program, the calendar may be rendered in different languages.
+<strong>The default language of the calendar is French</strong>. Version 2.0 comes with
+French, English, German, Spanish and Italian translations. Version 2.1 also comes with
+Chinese translations.</p>
+
+<p><span class="note">Reminder:</span> if you want to change the language, use the calendar
+parameter <var>LANGUAGE_CODE</var> (see <a href="#Installation_settings">Settings</a>)
+to give the ISO 639 code of the new language. You will find a list of the ISO 639 language
+codes on the Web site
+<a href="http://www.loc.gov/standards/iso639-2/langcodes.html">http://www.loc.gov/standards/iso639-2/langcodes.html</a>.
+Example:</p>
+
+<pre class="example_code"><code>&lt;?php
+...
+// Let's display the canlendar in German (ISO 639 code = de)
+$params = array(..., <strong>"LANGUAGE_CODE" => "de"</strong>, ...);
+Calendar($params);
+...
+?&gt;</code></pre>
+
+<p>To add a new translation to the calendar, proceed as follows:</p>
+
+<ol>
+	<li>Find the ISO 639 code of the new language.</li>
+	<li>Edit the file <span class="file">calendar_locales.php</span> and complete
+	the following three variables:
+		<ul>
+			<li><var>$MONTHS</var>: contains the names of the months, starting from January
+			and ending with December.</li>
+			<li><var>$WEEK_DAYS</var>: contains the short names of the week days, starting
+			from Sunday and ending with Saturday. Please, provide short names because these names
+			are used for the column headers of the calendar.</li>
+			<li><var>$MONTH_HEADER</var>: contains the format to apply to render month and year
+			in the calendar header (title). <code>%m</code> stands for the month
+			and <code>%y</code> stands for the 4-digit year. Example: <code>"%y - %m"</code>
+			will make the title be rendered as "2006 - January", "2006 - February", etc.</li>
+			<li><var>$CALLBACK</var>: contains the label of the link located at the bottom
+			of the calendar and bringing the browser back to the current's date.</li>
+		</ul>
+	</li>
+	<li>Give the language code in the calendar parameter <var>LANGUAGE_CODE</var>.</li>
+</ol>
+
+<h1><a id="History"></a>Version history</h1>
+<table class="version_history" summary="History of versions">
+	<tr>
+		<th>Version</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>2.5</td>
+		<td>
+			<ul>
+				<li>
+					styles improved: now CSS classes are generated for every possible cases
+					(week-end, non-clickable/clickable ordinary day, etc.) for the table cells
+					and dates.
+				</li>
+			</ul>
+		</td>
+	</tr>
+	<tr>
+		<td>2.4</td>
+		<td>
+			<ul>
+				<li>
+					<var>DATE_URL</var> may contain the string "__DATE__" that will
+					be replaced by the formatted date. This allows you to build more
+					URL without the need of a date URL function.
+				</li>
+				<li>Documentation updated and fixed</li>
+			</ul>
+		</td>
+	</tr>
+	<tr>
+		<td>2.3</td>
+		<td>
+			<ul>
+				<li>
+					Thanks to two new parameters <var>PRE_DATE_URL_FUNCTION</var> and
+					<var>DATE_URL_FUNCTION</var> it is possible to use a custom user function
+					that returns customized date URLs. With this feature you can now make
+					only some dates clickable according to rules you define.
+				</li>
+			</ul>
+		</td>
+	</tr>
+	<tr>
+		<td>2.2</td>
+		<td>
+			<ul>
+				<li>
+					It is now possible to specify absolute URLs ("http://...") in the parameter
+					<code>DATE_URL</code>. This was not supported by the previous versions.
+				</li>
+				<li>Add the use of the parameter <code>DATE_URL</code> in the demos.</li>
+			</ul>
+		</td>
+	</tr>
+	<tr>
+		<td>2.1</td>
+		<td>
+			<ul>
+				<li>
+					New parameters added: <code>CLICKABLE_TITLE</code>,
+					<code>OUTPUT_MODE</code>, <code>URL_DAY_DATE_FORMAT</code> and
+					<code>URL_MONTH_DATE_FORMAT</code>
+				</li>
+				<li>"Back to current month" link added</li>
+				<li>Few bugs and XHTML non-conformities fixed</li>
+				<li>Documentation:
+					<ul>
+						<li>Paragraph "Styling the calendar" completed</li>
+						<li>New paragraph "Managing the links"</li>
+						<li>New documentation for the new parameters</li>
+					</ul>
+				</li>
+				<li>New Chinese translations and demo</li>
+			</ul>
+		</td>
+	</tr>
+	<tr>
+		<td>2.0</td>
+		<td>
+			<ul>
+				<li>Change the way the calendar handles its parameters</li>
+				<li>Internationalisation support</li>
+				<li>New French and English documentation</li>
+			</ul>
+		</td>
+	</tr>
+	<tr>
+		<td>1.1</td>
+		<td>
+			<ul>
+				<li>Correction of a bug that made some days to be displayed twice</li>
+			</ul>
+		</td>
+	</tr>
+	<tr>
+		<td>1.0</td>
+		<td>
+			<ul>
+				<li>First version</li>
+			</ul>
+		</td>
+	</tr>
+</table>
+
+<h1><a id="Credits"></a>Credits, licence and warranty</h1>
+<p>Copyright (c) 2005-2009 - Sylvain BAUDOIN (webmaster@themanualpage.org)</p>
+
+<p>This PHP program may be redistributed and/or modified according to the terms
+of the GNU General Public License, as it has been published by the Free Software
+Foundation (version 2 and above).</p>
+
+<p>This program is distributed in the hope that it will be useful but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
+
+<p>You should have received a copy of the GNU General Public License along with
+this program; if not, write to <i>the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA</i>.</p>
+
+</body>
+</html>

@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<database name="planningBiblio" type="MySQL - 5.5.41-0+wheezy1">
+   <tables>
+      <table name="absences" numRows="583" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="1" name="perso_id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="2" name="debut" nullable="false" remarks="" size="19" type="DATETIME"/>
+         <column autoUpdated="false" digits="0" id="3" name="fin" nullable="false" remarks="" size="19" type="DATETIME"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="4" name="nbjours" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="5" name="motif" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="6" name="commentaires" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="7" name="etat" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="8" name="demande" nullable="false" remarks="" size="19" type="DATETIME"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="9" name="valide" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0000-00-00 00:00:00" digits="0" id="10" name="validation" nullable="false" remarks="" size="19" type="TIMESTAMP"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="11" name="valideN1" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0000-00-00 00:00:00" digits="0" id="12" name="validationN1" nullable="false" remarks="" size="19" type="TIMESTAMP"/>
+         <column autoUpdated="false" digits="0" id="13" name="motif_autre" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="14" name="pj1" nullable="true" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="15" name="pj2" nullable="true" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="16" name="so" nullable="true" remarks="" size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="absences_infos" numRows="1" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0000-00-00" digits="0" id="1" name="debut" nullable="false" remarks="" size="10" type="DATE"/>
+         <column autoUpdated="false" defaultValue="0000-00-00" digits="0" id="2" name="fin" nullable="false" remarks="" size="10" type="DATE"/>
+         <column autoUpdated="false" digits="0" id="3" name="texte" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="acces" numRows="69" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="nom" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="2" name="groupe_id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="3" name="groupe" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="4" name="page" nullable="false" remarks="" size="50" type="VARCHAR"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="activites" numRows="18" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="nom" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="config" numRows="75" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="nom" nullable="false" remarks="" size="30" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="2" name="type" nullable="false" remarks="" size="20" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="3" name="valeur" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="4" name="commentaires" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="5" name="categorie" nullable="false" remarks="" size="100" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="6" name="valeurs" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="7" name="ordre" nullable="false" remarks="" size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="cron" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="m" nullable="true" remarks="" size="2" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="2" name="h" nullable="true" remarks="" size="2" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="3" name="dom" nullable="true" remarks="" size="2" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="4" name="mon" nullable="true" remarks="" size="2" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="5" name="dow" nullable="true" remarks="" size="2" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="6" name="command" nullable="true" remarks="" size="200" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="7" name="comments" nullable="true" remarks="" size="500" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="0000-00-00 00:00:00" digits="0" id="8" name="last" nullable="true" remarks="" size="19" type="DATETIME"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="EDTSamedi" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="perso_id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="2" name="semaine" nullable="true" remarks="" size="10" type="DATE"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="infos" numRows="2" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="debut" nullable="true" remarks="" size="10" type="DATE"/>
+         <column autoUpdated="false" digits="0" id="2" name="fin" nullable="true" remarks="" size="10" type="DATE"/>
+         <column autoUpdated="false" digits="0" id="3" name="texte" nullable="true" remarks="" size="65535" type="TEXT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="joursFeries" numRows="27" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="annee" nullable="true" remarks="" size="10" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="2" name="jour" nullable="true" remarks="" size="10" type="DATE"/>
+         <column autoUpdated="false" digits="0" id="3" name="ferie" nullable="true" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="4" name="fermeture" nullable="true" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="5" name="nom" nullable="true" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="6" name="commentaire" nullable="true" remarks="" size="65535" type="TEXT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="lignes" numRows="1" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="nom" nullable="true" remarks="" size="65535" type="TEXT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="menu" numRows="26" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="niveau1" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="2" name="niveau2" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="3" name="titre" nullable="false" remarks="" size="100" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="4" name="url" nullable="false" remarks="" size="500" type="VARCHAR"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="personnel" numRows="125" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="nom" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="2" name="prenom" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="3" name="mail" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="4" name="statut" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" defaultValue="" digits="0" id="5" name="categorie" nullable="false" remarks="" size="30" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="6" name="service" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" defaultValue="0000-00-00" digits="0" id="7" name="arrivee" nullable="false" remarks="" size="10" type="DATE"/>
+         <column autoUpdated="false" defaultValue="0000-00-00" digits="0" id="8" name="depart" nullable="false" remarks="" size="10" type="DATE"/>
+         <column autoUpdated="false" digits="0" id="9" name="postes" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="10" name="actif" nullable="false" remarks="" size="20" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="11" name="droits" nullable="false" remarks="" size="500" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="" digits="0" id="12" name="login" nullable="false" remarks="" size="100" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="" digits="0" id="13" name="password" nullable="false" remarks="" size="40" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="14" name="commentaires" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" defaultValue="0000-00-00 00:00:00" digits="0" id="15" name="last_login" nullable="false" remarks="" size="19" type="DATETIME"/>
+         <column autoUpdated="false" digits="0" id="16" name="heuresHebdo" nullable="false" remarks="" size="12" type="FLOAT"/>
+         <column autoUpdated="false" digits="0" id="17" name="heuresTravail" nullable="false" remarks="" size="12" type="FLOAT"/>
+         <column autoUpdated="false" digits="0" id="18" name="temps" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="19" name="informations" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="20" name="recup" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="21" name="supprime" nullable="false" remarks="" size="2" type="ENUM"/>
+         <column autoUpdated="false" digits="0" id="22" name="mailsResponsables" nullable="true" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" defaultValue="" digits="0" id="23" name="matricule" nullable="false" remarks="" size="100" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="24" name="sites" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="login" unique="true">
+            <column ascending="true" name="login"/>
+         </index>
+      </table>
+      <table name="pl_notes" numRows="4" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="date" nullable="true" remarks="" size="10" type="DATE"/>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="2" name="site" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="3" name="text" nullable="true" remarks="" size="65535" type="TEXT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="pl_poste" numRows="1595" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="8" type="MEDIUMINT UNSIGNED"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="1" name="perso_id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0000-00-00" digits="0" id="2" name="date" nullable="false" remarks="" size="10" type="DATE"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="3" name="poste" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="4" name="absent" nullable="false" remarks="" size="2" type="ENUM"/>
+         <column autoUpdated="false" digits="0" id="5" name="chgt_login" nullable="true" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="6" name="chgt_time" nullable="false" remarks="" size="19" type="DATETIME"/>
+         <column autoUpdated="false" digits="0" id="7" name="debut" nullable="false" remarks="" size="8" type="TIME"/>
+         <column autoUpdated="false" digits="0" id="8" name="fin" nullable="false" remarks="" size="8" type="TIME"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="9" name="supprime" nullable="true" remarks="" size="2" type="ENUM"/>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="10" name="site" nullable="true" remarks="" size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="date" unique="false">
+            <column ascending="true" name="date"/>
+         </index>
+      </table>
+      <table name="pl_poste_cellules" numRows="195" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="numero" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="2" name="tableau" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="3" name="ligne" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="4" name="colonne" nullable="false" remarks="" size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="pl_poste_horaires" numRows="198" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="00:00:00" digits="0" id="1" name="debut" nullable="false" remarks="" size="8" type="TIME"/>
+         <column autoUpdated="false" defaultValue="00:00:00" digits="0" id="2" name="fin" nullable="false" remarks="" size="8" type="TIME"/>
+         <column autoUpdated="false" digits="0" id="3" name="tableau" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="4" name="numero" nullable="false" remarks="" size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="pl_poste_lignes" numRows="130" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="numero" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="2" name="tableau" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="3" name="ligne" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="4" name="poste" nullable="false" remarks="" size="30" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="5" name="type" nullable="false" remarks="" size="6" type="ENUM"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="pl_poste_modeles" numRows="921" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="nom" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="2" name="perso_id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="3" name="poste" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="4" name="commentaire" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="5" name="debut" nullable="false" remarks="" size="8" type="TIME"/>
+         <column autoUpdated="false" digits="0" id="6" name="fin" nullable="false" remarks="" size="8" type="TIME"/>
+         <column autoUpdated="false" digits="0" id="7" name="tableau" nullable="false" remarks="" size="20" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="8" name="jour" nullable="false" remarks="" size="10" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="9" name="site" nullable="false" remarks="" size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="pl_poste_modeles_tab" numRows="21" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="nom" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="2" name="jour" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="3" name="tableau" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="4" name="site" nullable="false" remarks="" size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="pl_poste_tab" numRows="8" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="tableau" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="2" name="nom" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="3" name="site" nullable="false" remarks="" size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="pl_poste_tab_affect" numRows="51" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="date" nullable="false" remarks="" size="10" type="DATE"/>
+         <column autoUpdated="false" digits="0" id="2" name="tableau" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="3" name="site" nullable="false" remarks="" size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="pl_poste_tab_grp" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="nom" nullable="true" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="2" name="Lundi" nullable="true" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="3" name="Mardi" nullable="true" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="4" name="Mercredi" nullable="true" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="5" name="Jeudi" nullable="true" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="6" name="Vendredi" nullable="true" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="7" name="Samedi" nullable="true" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="8" name="Dimanche" nullable="true" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="9" name="site" nullable="false" remarks="" size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="pl_poste_verrou" numRows="49" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0000-00-00" digits="0" id="1" name="date" nullable="false" remarks="" size="10" type="DATE"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="2" name="verrou" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0000-00-00 00:00:00" digits="0" id="3" name="validation" nullable="false" remarks="" size="19" type="DATETIME"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="4" name="perso" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="5" name="verrou2" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0000-00-00 00:00:00" digits="0" id="6" name="validation2" nullable="false" remarks="" size="19" type="DATETIME"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="7" name="perso2" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="8" name="vivier" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="9" name="site" nullable="false" remarks="" size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="plugins" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="nom" nullable="false" remarks="" size="30" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="2" name="version" nullable="true" remarks="" size="20" type="VARCHAR"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="postes" numRows="23" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="nom" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" defaultValue="" digits="0" id="2" name="groupe" nullable="false" remarks="" size="30" type="VARCHAR"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="3" name="groupe_id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="4" name="obligatoire" nullable="false" remarks="" size="15" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="5" name="etage" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="6" name="activites" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="7" name="statistiques" nullable="true" remarks="" size="2" type="ENUM"/>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="8" name="bloquant" nullable="true" remarks="" size="2" type="ENUM"/>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="9" name="site" nullable="true" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="10" name="categories" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="select_abs" numRows="13" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="valeur" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="2" name="rang" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="3" name="type" nullable="false" remarks="" size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="select_categories" numRows="3" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="valeur" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="2" name="rang" nullable="false" remarks="" size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="select_etages" numRows="26" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="valeur" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="2" name="rang" nullable="false" remarks="" size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="select_services" numRows="14" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="valeur" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" digits="0" id="2" name="rang" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="3" name="couleur" nullable="false" remarks="" size="10" type="VARCHAR"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="select_statuts" numRows="6" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="valeur" nullable="false" remarks="" size="65535" type="TEXT"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="2" name="rang" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="3" name="couleur" nullable="false" remarks="" size="7" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="4" name="categorie" nullable="true" remarks="" size="10" type="INT"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+   </tables>
+</database>

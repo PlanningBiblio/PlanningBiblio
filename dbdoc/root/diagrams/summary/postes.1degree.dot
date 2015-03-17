@@ -1,0 +1,40 @@
+// dot 2.26.3 on Linux 3.2.0-4-amd64
+// SchemaSpy rev 590
+digraph "postes" {
+  graph [
+    rankdir="RL"
+    bgcolor="#f7f7f7"
+    nodesep="0.18"
+    ranksep="0.46"
+    fontname="Helvetica"
+    fontsize="11"
+  ];
+  node [
+    fontname="Helvetica"
+    fontsize="11"
+    shape="plaintext"
+  ];
+  edge [
+    arrowsize="0.8"
+  ];
+  "postes" [
+    label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">postes</TD></TR>
+      <TR><TD PORT="id" COLSPAN="3" BGCOLOR="#bed1b8" ALIGN="LEFT">id</TD></TR>
+      <TR><TD PORT="nom" COLSPAN="3" ALIGN="LEFT">nom</TD></TR>
+      <TR><TD PORT="groupe" COLSPAN="3" ALIGN="LEFT">groupe</TD></TR>
+      <TR><TD PORT="groupe_id" COLSPAN="3" ALIGN="LEFT">groupe_id</TD></TR>
+      <TR><TD PORT="obligatoire" COLSPAN="3" ALIGN="LEFT">obligatoire</TD></TR>
+      <TR><TD PORT="etage" COLSPAN="3" ALIGN="LEFT">etage</TD></TR>
+      <TR><TD PORT="activites" COLSPAN="3" ALIGN="LEFT">activites</TD></TR>
+      <TR><TD PORT="statistiques" COLSPAN="3" ALIGN="LEFT">statistiques</TD></TR>
+      <TR><TD PORT="bloquant" COLSPAN="3" ALIGN="LEFT">bloquant</TD></TR>
+      <TR><TD PORT="site" COLSPAN="3" ALIGN="LEFT">site</TD></TR>
+      <TR><TD PORT="categories" COLSPAN="3" ALIGN="LEFT">categories</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+    </TABLE>>
+    URL="tables/postes.html"
+    tooltip="postes"
+  ];
+}
