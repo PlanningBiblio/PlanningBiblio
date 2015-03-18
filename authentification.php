@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 2 juillet 2014
+Dernière modification : 18 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,18 +20,20 @@ Page en sortie :inclus le fichier footer.php
 session_start();
 
 // Initialisation des variables
+$version="1.9.1";
 $page=null;
 $login=isset($_GET['newlogin'])?$_GET['newlogin']:null;
 $auth=null;
 $authArgs=null;
 
+if(!array_key_exists("oups",$_SESSION)){
+  $_SESSION['oups']=array("week"=>false);
+}
 // Redirection vers setup si le fichier config est absent
 if(!file_exists("include/config.php")){
   header("Location: setup/index.php");
   exit;
 }
-
-$version="1.9.1";
 
 include "include/config.php";
 
@@ -54,7 +56,7 @@ if(isset($_GET['login']) and $_GET['login']=="anonyme" and $config['Auth-Anonyme
   $_SESSION['login_id']=999999999;
   $_SESSION['login_nom']="Anonyme";
   $_SESSION['login_prenom']="";
-  $_SESSION['oups']=array("Auth-Mode"=>"Anonyme");
+  $_SESSION['oups']["Auth-Mode"]="Anonyme";
   header("Location: index.php");
 }
 
@@ -76,9 +78,6 @@ elseif(isset($_POST['login'])){
       $_SESSION['login_id']=$db->result[0]['id'];
       $_SESSION['login_nom']=$db->result[0]['nom'];
       $_SESSION['login_prenom']=$db->result[0]['prenom'];
-      if(!array_key_exists("oups",$_SESSION)){
-	$_SESSION['oups']=array();
-      }
       $db=new db();
       $db->query("update {$dbprefix}personnel set last_login=SYSDATE() where id='{$_SESSION['login_id']}';");
       echo "<script type='text/JavaScript'>document.location.href='index.php';</script>";

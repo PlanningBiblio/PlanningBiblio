@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9
+Planning Biblio, Version 1.9.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 22 janvier 2015
+Dernière modification : 18 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -526,7 +526,8 @@ function is_serialized($string){
 }
 
 function mail2($To,$Sujet,$Message){
-  require_once("phpmailer/class.phpmailer.php");
+  require_once("vendor/PHPMailer/class.phpmailer.php");
+  require_once("vendor/PHPMailer/class.smtp.php");
   $mail = new PHPMailer();
   if($GLOBALS['config']['Mail-IsMail-IsSMTP']=="IsMail")
     $mail->IsMail();

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.9
+Planning Biblio, Version 1.9.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/enregistrer.php
 Création : mai 2011
-Dernière modification : 13 janvier 2015
+Dernière modification : 18 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -70,7 +70,7 @@ elseif(!isset($_GET['confirm'])){		// Etape 2 : Vérifions si le nom n'est pas d
     echo "<b>Le modèle \"$nom\" existe<b><br/><br/>\n";
     echo "Voulez vous le remplacer ?<br/><br/>\n";
     echo "<a href='javascript:popup_closed();'>Non</a>&nbsp;&nbsp;\n";
-    echo "<a href='index.php?page=planning/poste/enregistrer.php&amp;confirm=oui&amp;menu=off&amp;nom=$nom&amp;semaine=$semaine'>Oui</a>\n";
+    echo "<a href='index.php?page=planning/poste/enregistrer.php&amp;confirm=oui&amp;menu=off&amp;nom=$nom&amp;semaine=$semaine&amp;date=$date&amp;site=$site'>Oui</a>\n";
   }
   else					// Etape 2b : si le nom n'existe pas, on enregistre le planning du jour
     enregistre_modele($nom,$date,$semaine,$site);

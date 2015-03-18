@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 13 juin 2014
+Dernière modification : 18 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -27,6 +27,11 @@ $version="1.9.1";
 $get_menu=isset($_GET['menu'])?$_GET['menu']:"";
 $post_menu=isset($_POST['menu'])?$_POST['menu']:"";
 $page=isset($_GET['page'])?$_GET['page']:"planning/poste/index.php";
+
+if(!array_key_exists("oups",$_SESSION)){
+  $_SESSION['oups']=array("week"=>false);
+}
+  
 // Affichage de tous les plannings de la semaine
 if($page=="planning/poste/index.php" and !isset($_GET['date']) and $_SESSION['oups']['week']){
   $page="planning/poste/semaine.php";

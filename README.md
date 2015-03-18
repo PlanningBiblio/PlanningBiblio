@@ -40,11 +40,18 @@ si ce n'est pas le cas, consultez : http://www.gnu.org/licenses
 ===============
 Ressources :
  
-Dossier include/phpmailer
- - Software: PHPMailer - PHP email class
- - Version: 5.0.2
- - Copyright (c) 2004-2009, Andy Prevost. All Rights Reserved.
- - Copyright (c) 2001-2003, Brent R. Matzelle
+Dossier vendor/PHPMailer
+ - Software: PHPMailer - The PHPMailer GitHub project
+ - Version: 5.2.9
+ - Lien https://github.com/PHPMailer/PHPMailer/
+ - Auteurs :
+    - Marcus Bointon (Synchro/coolbru) <phpmailer@synchromedia.co.uk>
+    - Jim Jagielski (jimjag) <jimjag@gmail.com>
+    - Andy Prevost (codeworxtech) <codeworxtech@users.sourceforge.net>
+    - Brent R. Matzelle (original founder)
+  - Copyright 2012 - 2014 Marcus Bointon
+  - Copyright 2010 - 2012 Jim Jagielski
+  - Copyright 2004 - 2009 Andy Prevost
 
 Fichier include/feries.php
  - contient la fonction jour_ferie permettant de déterminer rapidement si un jour est férié (fêtes...

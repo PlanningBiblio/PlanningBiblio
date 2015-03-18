@@ -1,3 +1,9 @@
+***	Version 1.9.2	(Jérôme Combes, 18 mars 2015)			***
+- Corrections :
+Mise à jour de la bibliothèque PHPMailer
+Initilisations de variables
+Corrige un bug empêchant l'enregistrement des modèles
+
 ***	Version 1.9.1	(Jérôme Combes, 5 mars 2015)			***
 - Améliorations :
 Planning : Améliore le positionnement du menu permettant de placer les agents
