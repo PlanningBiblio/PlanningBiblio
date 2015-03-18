@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 23 février 2015
+Dernière modification : 18 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -695,6 +695,10 @@ if(strcmp("1.9",$config['Version'])>0){
 if(strcmp("1.9.1",$config['Version'])>0){
   $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='planning/poste/verrou.php';";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.9.1' WHERE `nom`='Version';";
+}
+
+if(strcmp("1.9.2",$config['Version'])>0){
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.9.2' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage

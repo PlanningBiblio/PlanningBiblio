@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
@@ -20,7 +20,7 @@ Page en sortie :inclus le fichier footer.php
 session_start();
 
 // Initialisation des variables
-$version="1.9.1";
+$version="1.9.2";
 $page=null;
 $login=isset($_GET['newlogin'])?$_GET['newlogin']:null;
 $auth=null;
