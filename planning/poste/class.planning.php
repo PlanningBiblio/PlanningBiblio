@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 31 janvier 2015
+Dernière modification : 18 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -97,6 +97,7 @@ class planning{
     $j7=$d->dates[6];
     $semaine=$d->semaine;
     $semaine3=$d->semaine3;
+    $site=$this->site;
 
     if($hide){
       $display="display:none;";
