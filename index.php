@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.2
+Planning Biblio, Version 1.9.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 18 mars 2015
+Dernière modification : 25 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,7 +23,7 @@ Page en sortie :inclus le fichier footer.php
 session_start();
 
 // Initialisation des variables
-$version="1.9.2";
+$version="1.9.3";
 $get_menu=isset($_GET['menu'])?$_GET['menu']:"";
 $post_menu=isset($_POST['menu'])?$_POST['menu']:"";
 $page=isset($_GET['page'])?$_GET['page']:"planning/poste/index.php";
@@ -76,8 +76,10 @@ else{
 if(!$_SESSION['login_id']){
   if($get_menu=="off" or $post_menu=="off")	// dans le cas d'une action executée dans un popup alors que la session a été perdue, on affiche la page d'auth sur le parent
     echo "<script type='text/JavaScript'>parent.location.href='authentification.php';</script>\n";
-  else
-    header("Location: authentification.php");		// session perdue, on affiche la page d'authentification
+  else{
+    $redirURL=urlencode(addslashes($_SERVER['REQUEST_URI']));
+    header("Location: authentification.php?redirURL=$redirURL");		// session perdue, on affiche la page d'authentification
+  }
 }
 
 include "include/header.php";

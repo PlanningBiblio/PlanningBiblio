@@ -1,3 +1,7 @@
+***	Version 1.9.3	(Jérôme Combes, 25 mars 2015)			***
+- Améliorations :
+Accès direct aux pages souhaitées après authentification
+
 ***	Version 1.9.2	(Jérôme Combes, 18 mars 2015)			***
 - Corrections :
 Mise à jour de la bibliothèque PHPMailer

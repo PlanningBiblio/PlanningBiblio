@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.2
+Planning Biblio, Version 1.9.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 18 mars 2015
+Dernière modification : 25 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,11 +20,12 @@ Page en sortie :inclus le fichier footer.php
 session_start();
 
 // Initialisation des variables
-$version="1.9.2";
+$version="1.9.3";
 $page=null;
 $login=isset($_GET['newlogin'])?$_GET['newlogin']:null;
 $auth=null;
 $authArgs=null;
+$redirURL=isset($_REQUEST['redirURL'])?stripslashes($_REQUEST['redirURL']):"index.php";
 
 if(!array_key_exists("oups",$_SESSION)){
   $_SESSION['oups']=array("week"=>false);
@@ -71,21 +72,23 @@ elseif(isset($_POST['login'])){
     $auth=authSQL($login,$password);
   }
 
+  $authArgs=$authArgs?$authArgs.="&redirURL=$redirURL":null;
+
   if($auth){
     $db=new db();
     $db->query("select id,nom,prenom from {$dbprefix}personnel where login='$login';");
-    if($db->result){		
+    if($db->result){
       $_SESSION['login_id']=$db->result[0]['id'];
       $_SESSION['login_nom']=$db->result[0]['nom'];
       $_SESSION['login_prenom']=$db->result[0]['prenom'];
       $db=new db();
       $db->query("update {$dbprefix}personnel set last_login=SYSDATE() where id='{$_SESSION['login_id']}';");
-      echo "<script type='text/JavaScript'>document.location.href='index.php';</script>";
+      echo "<script type='text/JavaScript'>document.location.href='$redirURL';</script>";
     }
     else{
       echo "<div style='text-align:center'>\n";
       echo "<br/><br/><h3 style='color:red'>L'utilisateur n'existe pas dans le planning</h3>\n";
-      echo "<br/><a href='authentification.php'>Re-essayer</a>\n";
+      echo "<br/><a href='authentification.php{$authArgs}'>Re-essayer</a>\n";
       echo "</div>\n";
     }
   }
@@ -117,6 +120,7 @@ else{		//		Formulaire d'authentification
     <h2 id='h2-authentification'>Authentification</h2>
     <form name='form' method='post' action='authentification.php'>
     <input type='hidden' name='auth' value='' />
+    <input type='hidden' name='redirURL' value='$redirURL' />
     <table style='width:100%;'>
     <tr><td style='text-align:right;width:48%;'>Utilisateur : </td>
     <td><input type='text' name='login' value='$login' /></td></tr>
