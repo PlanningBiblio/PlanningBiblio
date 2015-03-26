@@ -100,15 +100,6 @@ function ctrl_form(champs){
     return true;
 }
 
-function checkall(form,me){
-  elems=document.forms[form].elements;
-  for(i=0;i<elems.length;i++){
-    if(elems[i].type=="checkbox" && elems[i]!=me){
-      elems[i].click();
-    }
-  }
-}
-
 // checkDate1 : utilisée pour valider les formulaires Jquery-UI, la date (o) doit être supérieure ou égale à aujourd'hui
 function checkDate1( o, n) {
   if(n==undefined){
@@ -778,6 +769,10 @@ $(function(){
       else if($(this).hasClass("dataTableDateFR")){
 	aoCol.push({"sType": "date-fr"});
       }
+      // si date FR Fin
+      else if($(this).hasClass("dataTableDateFR-fin")){
+	aoCol.push({"sType": "date-fr-fin"});
+      }
       // si pas de tri
       else if($(this).hasClass("dataTableNoSort")){
 	aoCol.push({"bSortable":false});
@@ -797,9 +792,15 @@ $(function(){
       var sort=JSON.parse($(this).attr("data-sort"));
     }
     
+    // Taille du tableau par défaut
+    var tableLength=25;
+    if($(this).attr("data-length")){
+      tableLength=$(this).attr("data-length")
+    }
+
     // save state ?
     var saveState=true;
-    if($(this).attr("data-StateSave") && ($(this).attr("data-StateSave")=="false" || $(this).attr("data-StateSave")=="0")){
+    if($(this).attr("data-stateSave") && ($(this).attr("data-stateSave")=="false" || $(this).attr("data-stateSave")=="0")){
       var saveState=false;
     }
 
@@ -809,10 +810,18 @@ $(function(){
       "sPaginationType": "full_numbers",
       "bStateSave": saveState,
       "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"All"]],
-      "iDisplayLength" : -1,
+      "iDisplayLength" : tableLength,
       "aaSorting" : sort,
       "aoColumns" : aoCol,
+      "oLanguage" : {"sUrl" : "vendor/dataTables.french.lang"}
     });
   });
 
+   // Check all checkboxes 
+   $(".CJCheckAll").click(function(){
+    $(this).closest("table").find("td input[type=checkbox]:visible").each(function(){
+      $(this).click();
+    });
+  });
+  
 });

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/index.php
 Création : mai 2011
-Dernière modification : 4 février 2015
+Dernière modification : 26 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -53,17 +53,20 @@ if(!$db->result){
 else{
   echo <<<EOD
   <form name='form' method='get' action='index.php'>
-  <table cellspacing='0' style='width:90%;'> 
-  <tr class='th'>
-  <td style='width:90px;'><input type='checkbox' onclick='checkall("form",this);' /></td>
+  <table cellspacing='0' style='width:90%;'>
+  <thead>
+  <tr class='th aLeft'>
+  <th style='width:90px;'><input type='checkbox' class='CJCheckAll' /></th>
 EOD;
-  if(in_array(13,$droits))
-    echo "<td style='width:25px;'>ID</td>\n";
-  echo "<td style='width:250px;'>Nom</td>\n";
+  if(in_array(13,$droits)){
+    echo "<th style='width:25px;'>ID</th>\n";
+  }
+  echo "<th style='width:250px;'>Nom</th>\n";
   if($config['Multisites-nombre']>1){
-    echo "<td >Site</td>\n";
+    echo "<th >Site</th>\n";
   }
   echo "</tr>\n";
+  echo "</thead>\n";
 
   $class="tr1";
   $i=0;
@@ -71,7 +74,7 @@ EOD;
     $class=$class=="tr1"?"tr2":"tr1";
     $site="Multisites-site{$elem['site']}";
     echo "<tr id='tr-tableau-{$elem['tableau']}' class='$class'><td style='white-space:nowrap;'>\n";
-    echo "<input type='checkbox' name='chk$i' value='{$elem['tableau']}'/>\n";
+    echo "<input type='checkbox' name='chk$i' value='{$elem['tableau']}' />\n";
     echo "<a href='index.php?page=planning/postes_cfg/modif.php&amp;numero={$elem['tableau']}'>\n";
     echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
     echo "<a href='javascript:popup(\"planning/postes_cfg/copie.php&amp;retour=index.php&amp;numero={$elem['tableau']}\",400,200);'>\n";
@@ -81,7 +84,9 @@ EOD;
       echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
     }
     echo "</td>\n";
-    echo "<td>{$elem['tableau']}</td>\n";
+    if(in_array(13,$droits)){
+      echo "<td>{$elem['tableau']}</td>\n";
+    }
     echo "<td id='td-tableau-{$elem['tableau']}-nom'>{$elem['nom']}</td>\n";
     if($config['Multisites-nombre']>1){
       echo "<td>{$config[$site]}</td>\n";

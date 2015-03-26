@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.9
+Planning Biblio, Version 1.9.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/samedis.php
 Création : 15 novembre 2013
-Dernière modification : 29 avril 2014
+Dernière modification : 26 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -252,14 +252,14 @@ if($tab){
   echo "<b>Statistiques sur les samedis du $debut au $fin</b><br/>\n";
   echo $nbJours>1?"$nbJours samedis":"$nbJours samedi";
   echo "<br/><br/>\n";
-  echo "<table id='table_samedis'>\n";
+  echo "<table id='tableStatSamedis' class='CJDataTable'>\n";
   echo "<thead>\n";
   echo "<tr>\n";
   echo "<th>Agents</th>\n";
   echo "<th>Prime / Temps</th>\n";
   echo "<th>Nombre</th>\n";
   echo "<th>Heures</th>\n";
-  echo "<th>Dates</th>\n";
+  echo "<th class='dataTableDateFR'>Dates</th>\n";
 
   if($exists_JF){
     echo "<th>J. Feri&eacute;s</th>\n";
@@ -363,33 +363,3 @@ if($tab){
 //		----------------------			Fin d'affichage		----------------------------
 echo "</td></tr></table>\n";
 ?>
-<script type='text/JavaScript'>
-$(document).ready(function() {
-  $("#table_samedis").dataTable({
-    "bJQueryUI": true,
-    "sPaginationType": "full_numbers",
-    "bStateSave": true,
-    "aaSorting" : [[0,"asc"]],
-    "aoColumns" : [{"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},{"sType": "date-fr"},
-      <?php
-      if($exists_JF){
-	echo '{"bSortable":true},';
-      }
-      if($exists_h19){
-	echo '{"bSortable":true},';
-      }
-      if($exists_h20){
-	echo '{"bSortable":true},';
-      }
-      if($exists_absences){
-	echo '{"bSortable":true},';
-      }
-      ?>
-      ],
-
-    "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"Tous"]],
-    "iDisplayLength" : -1,
-    "oLanguage" : {"sUrl" : "vendor/dataTables.french.lang"}
-  });
-});
-</script>

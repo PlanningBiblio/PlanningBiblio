@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.3
+Planning Biblio, Version 1.9.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : ldap/import.php
 Création : 2 juillet 2014
-Dernière modification : 2 juillet 2014
+Dernière modification : 26 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -44,7 +44,7 @@ echo "<input type='text' name='recherche-ldap' value='$req' />\n";
 ?>
 <input type='hidden' name='import-type' value='ldap' />
 <input type='hidden' name='page' value='personnel/import.php' />
-<input type='submit' value='Rechercher' />
+<input type='submit' value='Rechercher' class='ui-button' style='margin-left:30px;'/>
 </form>
 <br/>
 
@@ -110,22 +110,22 @@ if(isset($_GET['recherche-ldap'])){
   if(!empty($infos)){
     usort($infos,"cmp_ldap");
     $i=0;
-    $class="tr1";
     echo "<form name='form' method='post' action='index.php'>\n";
     echo "<input type='hidden' name='page' value='personnel/import.php' />\n";
     echo "<input type='hidden' name='import-type' value='ldap' />\n";
     echo "<input type='hidden' name='recherche' value='$req' />\n";
-    echo "<table cellspacing='0'>\n";
-    echo "<tr class='th'>\n";
-    echo "<td><input type='checkbox' onclick='checkall(\"form\",this);' /></td>\n";
-    echo "<td>Nom</td><td>Pr&eacute;nom</td><td>e-mail</td><td>Login</td></tr>\n";
+    echo "<table id='tableLdapImport' class='CJDataTable' data-sort='[[1,\"asc\"],[2,\"asc\"]]' data-length='50' >\n";
+    echo "<thead>\n";
+    echo "<tr>\n";
+    echo "<th class='dataTableNoSort aLeft'><input type='checkbox' class='CJCheckAll' /></th>\n";
+    echo "<th>Nom</th><th>Pr&eacute;nom</th><th>e-mail</th><th>Login</th></tr>\n";
+    echo "</thead><tbody>\n";
 
     foreach($infos as $info){
-      $class=$class=="tr1"?"tr2":"tr1";
       $sn=array_key_exists('sn',$info)?$info['sn'][0]:null;
       $givenname=array_key_exists('givenname',$info)?$info['givenname'][0]:null;
       $mail=array_key_exists('mail',$info)?$info['mail'][0]:null;
-      echo "<tr class='$class'>\n";
+      echo "<tr>\n";
       echo "<td><input type='checkbox' name='chk$i' value='".utf8_decode($info['uid'][0])."' /></td>\n";
       echo "<td>$sn</td>\n";
       echo "<td>$givenname</td>\n";
@@ -134,8 +134,9 @@ if(isset($_GET['recherche-ldap'])){
       echo "</tr>\n";
       $i++;
     }
+    echo "</tbody>\n";
     echo "</table><br/>\n";
-    echo "<input type='submit' value='Importer' />\n";
+    echo "<input type='submit' value='Importer' class='ui-button' />\n";
     echo "</form>\n";
   }
 }

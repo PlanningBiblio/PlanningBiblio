@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : postes/index.php
 Création : mai 2011
-Dernière modification : 20 février 2015
+Dernière modification : 26 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -53,25 +53,24 @@ if($db->result){
 }
 
 ?>
-<br/>
-
 <form name="form" action="#">
 <input type='hidden' name='page' value='postes/index.php' />
-<table><tr valign='top'>
+<table style='margin:20px 0;'><tr valign='top'>
 <td style='width:270px'><h3 style='margin-top:0px;'>Liste des postes</h3></td>
-<td><input type="button" value="Ajouter" id="ajouter" onclick='location.href="index.php?page=postes/modif.php"'/>
+<td>
+<input type="button" value="Ajouter" id="ajouter" onclick='location.href="index.php?page=postes/modif.php"' class='ui-button'/>
 </td></tr></table>
 </form>
 
 <?php
-
 echo "<script type='text/JavaScript'>document.form.groupe.value='$groupe';</script>";
 $p=new postes();
 $p->fetch($tri,$nom,$groupe);
 $postes=$p->elements;
 
-echo "<table id='tablePostes'>\n";
-echo "<thead><tr><th>&nbsp;</th>\n";
+$sort=in_array(13,$droits)?"[[2],[3]]":"[[1],[2]]";
+echo "<table id='tablePostes' class='CJDataTable' data-sort='$sort'>\n";
+echo "<thead><tr><th class='dataTableNoSort'>&nbsp;</th>\n";
 if(in_array(13,$droits)){
   echo "<th>ID</th>";
 }
@@ -136,27 +135,3 @@ for($i=0;$i<count($postes);$i++){
 echo "</tbody>\n";
 echo "</table>\n";
 ?>
-
-<script type='text/JavaScript'>
-$(document).ready(function() {
-  $("#tablePostes").dataTable({
-    "bJQueryUI": true,
-    "sPaginationType": "full_numbers",
-    "bStateSave": true,
-    "aaSorting" : [[2,"asc"],[3,"asc"],[4,"asc"]],
-    "aoColumns" : [{"bSortable":false},{"bSortable":true},{"bSortable":true},{"bSortable":true},{"bSortable":true},
-      {"bSortable":true},{"bSortable":true},{"bSortable":true},
-      <?php
-      if($config['Multisites-nombre']>1){
-	echo '{"bSortable":true},';
-      }
-      ?>
-      ],
-    "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"Tous"]],
-    "iDisplayLength" : 25,
-    "oLanguage" : {"sUrl" : "vendor/dataTables.french.lang"}
-  });
-
-  $("#ajouter").button();
-});
-</script>

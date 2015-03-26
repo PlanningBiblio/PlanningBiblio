@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 23 février 2015
+Dernière modification : 26 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -25,16 +25,6 @@ perso_nom_origine=null;
 $(document).ready(function(){
   // Vérifions si un agent de catégorie A est placé en fin de service
   verif_categorieA();
-
-  // DataTable (tableau des absences)
-  $("#tableAbsences").dataTable({
-    "bJQueryUI": true,
-    "sPaginationType": "full_numbers",
-    "bStateSave": true,
-    "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"Tous"]],
-    "iDisplayLength" : 25,
-    "oLanguage" : {"sUrl" : "vendor/dataTables.french.lang"}
-  });
 
   if($("#pl-notes-text").text()){
     $("#pl-notes-button").val("Modifier le commentaire");

@@ -78,9 +78,9 @@ $agents=$p->elements;
 $sort=in_array(13,$droits)?'[[2,"asc"],[3,"asc"]]':'[[1,"asc"],[2,"asc"]]';
 
 echo "<form name='form' method='post' action='index.php' onsubmit='return confirm(\"Etes vous sûr de vouloir supprimer les agents sélectionnés ?\");'>\n";
-echo "<table id='table_agents' class='CJDataTable' data-sort='$sort' data-StateSave='true'>\n";
+echo "<table id='tableAgents' class='CJDataTable' data-sort='$sort' >\n";
 echo "<thead>\n";
-echo "<tr><th class='dataTableNoSort' ><input type='checkbox' id='checkAll'/></th>\n";
+echo "<tr><th class='dataTableNoSort aLeft' ><input type='checkbox' class='CJCheckAll'/></th>\n";
 
 if(in_array(13,$droits)){
   echo "<th>ID</th>";
@@ -114,7 +114,7 @@ foreach($agents as $agent){
   $agent['service']=str_replace("`","'",$agent['service']);
 
   echo "<tr><td style='white-space:nowrap;'>\n";
-  echo "<input type='checkbox' name='chk$i' value='$id' class='checkAgent'/>\n";
+  echo "<input type='checkbox' name='chk$i' value='$id' />\n";
   echo "<a href='index.php?page=personnel/modif.php&amp;id=$id'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>";
   if(in_array(21,$droits) and $id!=$_SESSION['login_id']){
     echo "<a href='javascript:popup(\"personnel/suppression.php&amp;id=".$id."\",450,250);'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>";

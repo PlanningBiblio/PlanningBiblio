@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 27 janvier 2015
+Dernière modification : 26 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -91,7 +91,13 @@ if($admin){
   $p->fetch();
   $agents=$p->elements;
 }
-  
+
+// Tri par défaut du tableau
+$sort="[[0],[1]]";
+if($admin or (!$config['Absences-adminSeulement'] and in_array(6,$droits))){
+  $sort="[[1],[2]]";
+}
+
 echo "<form name='form' method='get' action='index.php'>\n";
 echo "<input type='hidden' name='page' value='absences/voir.php' />\n";
 echo "<table class='tableauStandard'><tbody><tr>\n";
@@ -127,11 +133,13 @@ echo "</tr></tbody></table>\n";
 echo "</form>\n";
 
 echo "<br/>\n";
-echo "<table id='tableAbsences'>\n";
+echo "<table id='tableAbsencesVoir' class='CJDataTable' data-sort='$sort' >\n";
 echo "<thead><tr>\n";
-echo "<th>&nbsp;</th>\n";
-echo "<th>Début</th>\n";
-echo "<th>Fin</th>\n";
+if($admin or (!$config['Absences-adminSeulement'] and in_array(6,$droits))){
+  echo "<th class='dataTableNoSort' >&nbsp;</th>\n";
+}
+echo "<th class='dataTableDateFR' >Début</th>\n";
+echo "<th class='dataTableDateFR-fin' >Fin</th>\n";
 if($admin){
   echo "<th id='thNom'>Nom</th>\n";
 }
@@ -140,10 +148,11 @@ if($config['Absences-validation']){
 }
 echo "<th>Motif</th>\n";
 echo "<th>Commentaires</th>\n";
-echo "<th>Demande</th>\n";
+echo "<th class='dataTableDateFR' >Demande</th>\n";
 
 if(in_array(701,$droits)){
-  echo "<th id='thPiecesJustif'><label style='white-space:nowrap'>Pi&egrave;ces justificatives</label><br/>\n";
+  echo "<th id='thPiecesJustif' class='dataTableNoSort' >\n";
+  echo "<label style='white-space:nowrap'>Pi&egrave;ces justificatives</label><br/>\n";
   echo "<div class='absences-pj'>PJ 1</div><div class='absences-pj'>PJ 2</div><div class='absences-pj'>SO</div></th>\n";
 }
 
@@ -171,9 +180,6 @@ if($absences){
     if($admin or (!$config['Absences-adminSeulement'] and in_array(6,$droits))){
       echo "<td><a href='index.php?page=absences/modif.php&amp;id=$id'>\n";
       echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a></td>\n";
-    }
-    else{
-      echo "<td>&nbsp;</td>\n";
     }
     echo "<td>".dateFr($elem['debut'],true)."</td>";
     echo "<td>".datefr($elem['fin'],true)."</td>";

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 24 février 2015
+Dernière modification : 26 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -562,8 +562,11 @@ EOD;
       case "détaillé" :
 	if(!empty($absences)){
 	  echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
-	  echo "<table id='tableAbsences'><thead>\n";
-	  echo "<tr><th>Nom</th><th>Pr&eacute;nom</th><th>D&eacute;but</th><th>Fin</th><th>Motif</th></tr></thead>\n";
+	  echo "<table id='tablePlanningAbsences' class='CJDataTable' data-sort='[[0],[1]]'><thead>\n";
+	  echo "<tr><th>Nom</th><th>Pr&eacute;nom</th>\n";
+	  echo "<th class='dataTableDateFR'>D&eacute;but</th>\n";
+	  echo "<th class='dataTableDateFR'>Fin</th>\n";
+	  echo "<th>Motif</th></tr></thead>\n";
 	  echo "<tbody>\n";
 	  foreach($absences as $elem){
 	    echo "<tr><td>{$elem['nom']}</td><td>{$elem['prenom']}</td>";

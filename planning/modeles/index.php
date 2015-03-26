@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 1.9.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/modeles/index.php
 Création : mai 2011
-Dernière modification : 24 juin 2014
+Dernière modification : 26 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -19,10 +19,8 @@ Cette page est appelée par le fichier index.php
 
 require_once "class.modeles.php";
 
-echo "<h3>Modèles de planning</h3>\n";
 
 //	Initialisation des variables
-$class=null;
 $db=new db();
 $db->query("SELECT * FROM `{$dbprefix}pl_poste_modeles` GROUP BY `nom`;");
 if(!$db->result){
@@ -33,13 +31,9 @@ if(!$db->result){
 	
 $modeles=$db->result;
 
-// tri
-$tri=isset($_GET['tri'])?$_GET['tri']:null;
-$cmp=$tri=="nom desc"?"cmp_1desc":"cmp_1";
-usort($modeles,$cmp);
-
-echo "<table id='tableModeles'>";
-echo "<thead><tr><th>&nbsp;</th><th>nom</th></tr></thead>\n";
+echo "<h3>Modèles de planning</h3>\n";
+echo "<table id='tableModeles' class='CJDataTable' data-sort='[[1]]'>";
+echo "<thead><tr><th class='dataTableNoSort'>&nbsp;</th><th>nom</th></tr></thead>\n";
 echo "<tbody>\n";
 
 foreach($modeles as $elem){

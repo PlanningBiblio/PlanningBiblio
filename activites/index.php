@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 1.9.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : activites/index.php
 Création : mai 2011
-Dernière modification : 24 juin 2014
+Dernière modification : 26 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -73,16 +73,17 @@ if($tab[0]){
 
 
 <?php
-echo "<table id='tableActivities'>\n";
-echo "<thead><tr><th>\n";
-echo "&nbsp;";
+// Tri par défaut du tableau
+$sort=in_array(13,$droits)?"[[2]]":"[[1]]";
+
+echo "<table id='tableActivites' class='CJDataTable' data-sort='$sort'>\n";
+echo "<thead><tr>\n";
+echo "<th class='dataTableNoSort'>&nbsp;</th>\n";
 if(in_array(13,$droits)){
-  echo "</th><th>";
-  echo "ID\n";
+  echo "<th>ID</th>\n";
 }
-echo "</th><th>";
-echo "Nom de l'activités\n";
-echo "</th></tr></thead>\n";
+echo "<th>Nom de l'activités</th>\n";
+echo "</tr></thead>\n";
 
 echo "<tbody>\n";
 foreach($activites as $elem){
