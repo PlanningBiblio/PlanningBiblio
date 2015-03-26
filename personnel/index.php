@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.8
+Planning Biblio, Version 1.9.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 10 décembre 2014
+Dernière modification : 26 mars 2015
 Auteurs : Jérôme Combes jerome@planningbilbio.fr, Chritophe Le Guennec christophe.leguennec@u-pem.fr
 
 Description :
@@ -74,10 +74,13 @@ $p->supprime=strstr($_GET['actif'],"Supprim")?array(1):array(0);
 $p->fetch("nom,prenom",$_GET['actif']);
 $agents=$p->elements;
 
+// tri par défaut du tableau
+$sort=in_array(13,$droits)?'[[2,"asc"],[3,"asc"]]':'[[1,"asc"],[2,"asc"]]';
+
 echo "<form name='form' method='post' action='index.php' onsubmit='return confirm(\"Etes vous sûr de vouloir supprimer les agents sélectionnés ?\");'>\n";
-echo "<table id='table_agents'>\n";
+echo "<table id='table_agents' class='CJDataTable' data-sort='$sort' data-StateSave='true'>\n";
 echo "<thead>\n";
-echo "<tr><th><input type='checkbox' id='checkAll'/></th>\n";
+echo "<tr><th class='dataTableNoSort' ><input type='checkbox' id='checkAll'/></th>\n";
 
 if(in_array(13,$droits)){
   echo "<th>ID</th>";
@@ -90,9 +93,9 @@ echo "<th>Service</th>";
 if($config['Multisites-nombre']>1){
   echo "<th>Sites</th>\n";
 }
-echo "<th>Arriv&#233;e</th>";
-echo "<th>D&#233;part</th>";
-echo "<th>Acc&egrave;s</th>";
+echo "<th class='dataTableDateFR' >Arriv&#233;e</th>";
+echo "<th class='dataTableDateFR' >D&#233;part</th>";
+echo "<th class='dataTableDateFR' >Acc&egrave;s</th>";
 echo "</thead>\n";
 echo "<tbody>\n";
 $i=0;

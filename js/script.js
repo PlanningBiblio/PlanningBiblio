@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 23 février 2015
+Dernière modification : 26 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -758,4 +758,61 @@ $(function(){
   
   // Infobulles
   $(document).tooltip();
+
+  
+  // DataTables
+  $(".CJDataTable").each(function(){
+    // Tri des colonnes en fonction des classes des th
+    var aoCol=[];
+    $(this).find("thead th").each(function(){
+
+      // Par défault, tri basic
+      if($(this).attr("class")==undefined){
+	aoCol.push({"bSortable":true});
+      }
+      // si date
+      else if($(this).hasClass("dataTableDate")){
+	aoCol.push({"sType": "date"});
+      }
+      // si date FR
+      else if($(this).hasClass("dataTableDateFR")){
+	aoCol.push({"sType": "date-fr"});
+      }
+      // si pas de tri
+      else if($(this).hasClass("dataTableNoSort")){
+	aoCol.push({"bSortable":false});
+      }
+      // Par défaut (encore) : tri basic
+      else{
+	aoCol.push({"bSortable":true});
+      }
+    });
+
+    // Tri au chargement du tableau
+    // Par défaut : 1ère colonne
+    var sort=[[0,"asc"]];
+    
+    // Si le tableau à l'attribut data-sort, on récupère sa valeur
+    if($(this).attr("data-sort")){
+      var sort=JSON.parse($(this).attr("data-sort"));
+    }
+    
+    // save state ?
+    var saveState=true;
+    if($(this).attr("data-StateSave") && ($(this).attr("data-StateSave")=="false" || $(this).attr("data-StateSave")=="0")){
+      var saveState=false;
+    }
+
+    // On applique le DataTable
+    $(this).dataTable({
+      "bJQueryUI": true,
+      "sPaginationType": "full_numbers",
+      "bStateSave": saveState,
+      "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"All"]],
+      "iDisplayLength" : -1,
+      "aaSorting" : sort,
+      "aoColumns" : aoCol,
+    });
+  });
+
 });
