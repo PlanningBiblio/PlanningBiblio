@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 26 mars 2015
+Dernière modification : 28 mars 2015
 Auteurs : Jérôme Combes jerome@planningbilbio.fr, Chritophe Le Guennec christophe.leguennec@u-pem.fr
 
 Description :
@@ -87,7 +87,7 @@ if(in_array(13,$droits)){
 }
 echo "<th>Nom</th>";
 echo "<th>Pr&#233;nom</th>";
-echo "<th>Heures</th>";
+echo "<th class='dataTableHeureFR'>Heures</th>";
 echo "<th>Statut</th>";
 echo "<th>Service</th>";
 if($config['Multisites-nombre']>1){

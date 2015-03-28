@@ -176,13 +176,13 @@ echo <<<EOD
 EOD;
 
 echo <<<EOD
-<table id='dataTableStatAbsences'>
+<table id='tableStatAbsences' class='CJDataTable' data-fixedColumns='3'>
 <thead><tr>
   <th rowspan='$rowspan'>Agents</th>
   <th rowspan='$rowspan'>Total<br/>d'absences</th>
 EOD;
 if($afficheHeures){
-  echo "<th rowspan='$rowspan'>Total<br/>d'heures</th>\n";
+  echo "<th rowspan='$rowspan' class='dataTableHeureFR'>Total<br/>d'heures</th>\n";
 }
 
 foreach($motifs as $elem){
@@ -193,7 +193,7 @@ if($afficheHeures){
   echo "</tr>\n<tr>";
   foreach($motifs as $elem){
     echo "<th>Nombre</th>";
-    echo "<th>Heures</th>";
+    echo "<th class='dataTableHeureFR'>Heures</th>";
   }
 }
 

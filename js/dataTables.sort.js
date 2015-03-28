@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.8.1
+Planning Biblio, Version 1.9.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : js/dataTables/sort.js
 Création : 9 décembre 2013
-Dernière modification : 13 juin 2014
+Dernière modification : 28 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -66,7 +66,7 @@ jQuery.extend( jQuery.fn.dataTableExt.oSort, {
       return " ";
     }
 
-    if(a.search("N/A")>0){
+    if(a.indexOf("N/A")>=0){
       a="0000";
     }
 

@@ -6,7 +6,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 26 mars 2015
+Dernière modification : 28 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -752,34 +752,80 @@ $(function(){
 
   
   // DataTables
+  /*
+  Les tableaux ayant la classe CJDataTable seront transformés en DataTable
+  Les paramètres suivant peuvent leur être transmis via les classes et les attributs data-
+  
+  Sur le tableau (balise <table>), les attributs suivants :
+  - data-sort : tri par défaut, doit être une chaine JSON du type [[0,"asc"],[1,"asc"]]. Valeur par défaut [[0,"asc"]]
+  - data-stateSave : garde en mémoire l'état du tableau (tris, recherches). Valeurs : 0, false, 1 ou true. Valeur par défaut = true
+  - data-length : nombre d'éléments affichés. Par défaut : 25
+  
+  Sur les balises th de l'entête, les classes suivantes permettent de définir le type de données contenues dans les cellules 
+  pour trier correctement les colonnes :
+  - dataTableNoSort : La colonne ne sera pas triable
+  - dataTableDateFR : La colonne contient des dates au format JJ-MM-AAAA [HH:mm:ss]. 
+      Si seule l'heure est affichée, le tri considère que la date est celle du jour
+  - dataTableDateFR-fin : La colonne des dates de fin
+  - dataTableHeureFR : La colonne contient des heures au format HH:mm[:ss]
+  */
+  
   $(".CJDataTable").each(function(){
+
     // Tri des colonnes en fonction des classes des th
     var aoCol=[];
-    $(this).find("thead th").each(function(){
+    
+    // Variables tr2 utilisées si 2 lignes en entête. tr2 = 2eme ligne
+    var tr2=null;
+    if($(this).find("thead tr").length==2){
+      tr2=$(this).find("thead tr:nth-child(2)");
+      tr2th=tr2.find("th");
+      tr2thNb=tr2th.length;
+      tr2Index=1;
+    }
 
-      // Par défault, tri basic
-      if($(this).attr("class")==undefined){
-	aoCol.push({"bSortable":true});
+    $(this).find("thead tr:first th").each(function(){
+      
+      var th=[$(this)];
+      
+      // Si colspan et 2 lignes en entête, on se base sur la 2ème ligne
+      if($(this).attr("colspan") && $(this).attr("colspan")>1 && tr2){
+	th=new Array();
+	for(i=0;i<$(this).attr("colspan");i++){
+	  th.push(tr2.find("th:nth-child("+tr2Index+")"));
+	  tr2Index++;
+	}
       }
-      // si date
-      else if($(this).hasClass("dataTableDate")){
-	aoCol.push({"sType": "date"});
-      }
-      // si date FR
-      else if($(this).hasClass("dataTableDateFR")){
-	aoCol.push({"sType": "date-fr"});
-      }
-      // si date FR Fin
-      else if($(this).hasClass("dataTableDateFR-fin")){
-	aoCol.push({"sType": "date-fr-fin"});
-      }
-      // si pas de tri
-      else if($(this).hasClass("dataTableNoSort")){
-	aoCol.push({"bSortable":false});
-      }
-      // Par défaut (encore) : tri basic
-      else{
-	aoCol.push({"bSortable":true});
+
+      for(i in th){
+	// Par défault, tri basic
+	if(th[i].attr("class")==undefined){
+	  aoCol.push({"bSortable":true});
+	}
+	// si date
+	else if(th[i].hasClass("dataTableDate")){
+	  aoCol.push({"sType": "date"});
+	}
+	// si date FR
+	else if(th[i].hasClass("dataTableDateFR")){
+	  aoCol.push({"sType": "date-fr"});
+	}
+	// si date FR Fin
+	else if(th[i].hasClass("dataTableDateFR-fin")){
+	  aoCol.push({"sType": "date-fr-fin"});
+	}
+	// si heures fr (00h00)
+	else if(th[i].hasClass("dataTableHeureFR")){
+	  aoCol.push({"sType": "heure-fr"});
+	}
+	// si pas de tri
+	else if(th[i].hasClass("dataTableNoSort")){
+	  aoCol.push({"bSortable":false});
+	}
+	// Par défaut (encore) : tri basic
+	else{
+	  aoCol.push({"bSortable":true});
+	}
       }
     });
 
@@ -804,17 +850,27 @@ $(function(){
       var saveState=false;
     }
 
+    // Colonnes fixes
+    var scollX=$(this).attr("data-fixedColumns")?"100%":"";
+    
     // On applique le DataTable
-    $(this).dataTable({
+    var CJDataTable=$(this).DataTable({
       "bJQueryUI": true,
       "sPaginationType": "full_numbers",
       "bStateSave": saveState,
-      "aLengthMenu" : [[25,50,75,100,-1],[25,50,75,100,"All"]],
+      "aLengthMenu" : [[10,25,50,75,100,-1],[10,25,50,75,100,"All"]],
       "iDisplayLength" : tableLength,
       "aaSorting" : sort,
       "aoColumns" : aoCol,
-      "oLanguage" : {"sUrl" : "vendor/dataTables.french.lang"}
+      "oLanguage" : {"sUrl" : "vendor/dataTables.french.lang"},
+      "sScrollX": scollX,
     });
+    
+    // Colonnes fixes
+    if($(this).attr("data-fixedColumns")){
+      var nb=$(this).attr("data-fixedColumns");
+      new $.fn.dataTable.FixedColumns(CJDataTable, init={"iLeftColumns" : nb});
+    }
   });
 
    // Check all checkboxes 

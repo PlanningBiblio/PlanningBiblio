@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 25 mars 2015
+Dernière modification : 28 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -27,6 +27,7 @@ $version="1.9.3";
 $get_menu=isset($_GET['menu'])?$_GET['menu']:"";
 $post_menu=isset($_POST['menu'])?$_POST['menu']:"";
 $page=isset($_GET['page'])?$_GET['page']:"planning/poste/index.php";
+$_SESSION['PLdate']=array_key_exists("PLdate",$_SESSION)?$_SESSION['PLdate']:date("Y-m-d");
 
 if(!array_key_exists("oups",$_SESSION)){
   $_SESSION['oups']=array("week"=>false);

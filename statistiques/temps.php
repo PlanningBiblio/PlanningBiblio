@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.9.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 4 novembre 2014
+Dernière modification : 28 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -209,7 +209,7 @@ EOD;
 // S'il y a des éléments, affiche le tableau
 if(is_array($tab)){
   echo <<<EOD
-  <table id='table_temps'>
+  <table id='tableStatTemps' class='CJDataTable' data-fixedColumns='2'>
   <thead>
   <tr>
   <th>Agents</th>
