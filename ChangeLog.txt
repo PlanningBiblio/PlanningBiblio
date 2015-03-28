@@ -1,6 +1,9 @@
-***	Version 1.9.3	(Jérôme Combes, 25 mars 2015)			***
+***	Version 1.9.3	(Jérôme Combes, 28 mars 2015)			***
 - Améliorations :
 Accès direct aux pages souhaitées après authentification
+
+- Corrections :
+Corrige les erreurs JavaScript "DataTable" affichés sur certains tableaux
 
 ***	Version 1.9.2	(Jérôme Combes, 18 mars 2015)			***
 - Corrections :
