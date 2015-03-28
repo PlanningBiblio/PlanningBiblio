@@ -864,6 +864,28 @@ $(function(){
       "aoColumns" : aoCol,
       "oLanguage" : {"sUrl" : "vendor/dataTables.french.lang"},
       "sScrollX": scollX,
+      "sDom": '<"H"lfr>t<"F"ip>T',
+      "oTableTools": {
+	"sSwfPath" : "vendor/DataTables-1.10.4/extensions/TableTools/swf/copy_csv_xls.swf",
+	"aButtons": [
+	  {
+	    "sExtends": "xls",
+	    "sButtonText": "Excel",
+	  },
+	  {
+	    "sExtends": "csv",
+	    "sButtonText": "CSV",
+	  },
+	  {
+	    "sExtends": "pdf",
+	    "sButtonText": "PDF",
+	  },
+	  {
+	    "sExtends": "print",
+	    "sButtonText": "Imprimer",
+	  },
+	]
+      }
     });
     
     // Colonnes fixes
