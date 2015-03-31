@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.2
+Planning Biblio, Version 1.9.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 18 mars 2015
+Dernière modification : 31 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -119,8 +119,8 @@ function absents($date,$tables){
 
 function authSQL($login,$password){
   $auth=false;
-  $db=new db();
-  $db->select("personnel","id,nom,prenom","login='$login' AND password=MD5('$password') AND `supprime`='0';");
+  $db=new dbh();
+  $db->select("personnel",array("id","nom","prenom"),array("login"=>$login, "password"=>MD5($password), "supprime"=>0));
   if($db->nb==1 and $login!=null){
     $auth=true;
     $_SESSION['oups']['Auth-Mode']="SQL";

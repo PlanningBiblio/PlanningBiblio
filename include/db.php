@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.4
+Planning Biblio, Version 1.9.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 11 septembre 2014
+Dernière modification : 31 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -29,7 +29,7 @@ class db{
   var $dbname;
   var $user;
   var $password;
-  var $conn;
+  var $conn=null;
   var $result;
   var $nb;
   var $error;
@@ -50,7 +50,10 @@ class db{
   }
   
   function query($requete){
-    $this->connect();
+    if(!$this->conn){
+      $this->connect();
+    }
+
     $req=mysqli_query($this->conn,$requete);
 
     if(!$req){
@@ -74,6 +77,38 @@ class db{
   function select($table,$infos=null,$where=null,$options=null){
     $infos=$infos?$infos:"*";
     $where=$where?$where:"1";
+    $requete="SELECT $infos FROM `{$GLOBALS['config']['dbprefix']}$table` WHERE $where $options";
+    $this->query($requete);
+  }
+
+  /*
+  Fonction permettant de rechercher des infos dans la base de données en utilisant MySQLi
+  @param string $table : nom de la table à interroger
+  @param string / array infos : valeurs qu'on souhaite récupérer. 
+    Si string, nom des champs séparés par des virgules
+    Si array : array(champ1, champ2, ...)
+  @param string / array where : filtre de recherche. 
+    Si string : champ1=valeur1 AND champ2=valeur2 ...,
+    Si array : array(champ1=>valeur1, champ2=>valeur2, ...)
+  @param string option : permet d'ajouter des options de recherche après where, ex : order by 
+  */
+  function select2($table,$infos="*",$where="1",$options=null){
+    $this->connect();
+
+    if(is_array($infos)){
+      $infos=join(",",$infos);
+    }
+
+    if(is_array($where)){
+      $tmp=array();
+      $keys=array_keys($where);
+      foreach($keys as $key){
+	$data=mysqli_real_escape_string($this->conn,$where[$key]);
+	$tmp[]="$key='$data'";
+      }
+      $where=join(" AND ",$tmp);
+    }
+
     $requete="SELECT $infos FROM `{$GLOBALS['config']['dbprefix']}$table` WHERE $where $options";
     $this->query($requete);
   }
@@ -224,9 +259,43 @@ class dbh{
     $this->stmt=$this->pdo->prepare($sql);
   }
 
-  function execute($data){
+  function execute($data=array()){
     $this->stmt->execute($data);
     $this->result=$this->stmt->fetchAll();
+    $this->nb=count($this->result);
+  }
+
+  /*
+  Fonction permettant de rechercher des infos dans la base de données en utilisant PDO_MySQL
+  @param string $table : nom de la table à interroger
+  @param string / array infos : valeurs qu'on souhaite récupérer. 
+    Si string, nom des champs séparés par des virgules
+    Si array : array(champ1, champ2, ...)
+  @param string / array where : filtre de recherche. 
+    Si string : champ1=valeur1 AND champ2=valeur2 ..., à éviter car les valeurs ne sont pas échappées dans ce cas
+    Si array : array(champ1=>valeur1, champ2=>valeur2, ...) à utiliser de préférence car les valeurs sont échapées par PDO_MySQL
+  @param string option : permet d'ajouter des options de recherche après where, ex : order by 
+  */
+  function select($table,$infos="*",$where="1",$options=null){
+
+    if(is_array($infos)){
+      $infos=join(",",$infos);
+    }
+
+    $data=array();
+    if(is_array($where)){
+      $fields=array();
+      $keys=array_keys($where);
+      foreach($keys as $key){
+	$data[":$key"]=$where[$key];
+	$fields[]="$key=:$key";
+      }
+      $where=join(" AND ",$fields);
+    }
+
+    $requete="SELECT $infos FROM `{$GLOBALS['config']['dbprefix']}$table` WHERE $where $options";
+    $this->prepare($requete);
+    $this->execute($data);
   }
 }
 
