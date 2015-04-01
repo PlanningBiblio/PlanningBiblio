@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.3
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 28 mars 2015
+Dernière modification : 1er avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -89,14 +89,14 @@ if(!$get_menu=="off")
 
 //		Recupération des droits d'accès de l'agent
 $db=new db();
-$db->query("SELECT droits FROM `{$dbprefix}personnel` WHERE `id`='{$_SESSION['login_id']}';");
+$db->select2("personnel","droits",array("id"=>$_SESSION['login_id']));
 $droits=unserialize($db->result[0]['droits']);
 $droits[]=99;	// Ajout du droit de consultation pour les connexions anonymes
 $_SESSION['droits']=$droits;
 
 //		Droits necessaires pour consulter la page en cours
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}acces` WHERE `page`='$page';");
+$db->select2("acces","*",array("page"=>$page));
 
 echo "<div id='content'>\n";
 if(in_array($db->result[0]['groupe_id'],$droits)){

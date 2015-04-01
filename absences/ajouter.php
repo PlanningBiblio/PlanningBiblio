@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 21 janvier 2015
+Dernière modification : 1er avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -133,7 +133,6 @@ if($confirm){
   $fin_sql=$finSQL." ".$hre_fin;
 
   // Ajout de l'absence dans la table 'absence'
-  $db=new db();
   $insert=array("perso_id"=>$perso_id, "debut"=>$debut_sql, "fin"=>$fin_sql, "nbjours"=>$nbjours, "motif"=>$motif, 
     "motif_autre"=>$motif_autre, "commentaires"=>$commentaires, "demande"=>date("Y-m-d H:i:s"), "pj1"=>$pj1, "pj2"=>$pj2, "so"=>$so );
 
@@ -146,22 +145,28 @@ if($confirm){
     $insert["validation"]=$validation;
   }
 
+  $db=new db();
   $db->insert2("absences", $insert);
 
   // Récupération de l'ID de l'absence enregistrée pour la création du lien dans le mail
+  $info=array(array("name"=>"MAX(id)","as"=>"id"));
+  $where=array("debut"=>$debut_sql, "fin"=>$fin_sql, "perso_id"=>$perso_id);
   $db=new db();
-  $db->select("absences","MAX(id) AS id","debut='$debut_sql' AND fin='$fin_sql' AND perso_id='$perso_id'");
+  $db->select2("absences",$info,$where);
   if($db->result){
     $id=$db->result[0]['id'];
   }
 
   // Mise à jour du champs 'absents' dans 'pl_poste'
   if($valideN2>0){
+    $db=new db();
+    $debut_sql=$db->escapeString($debut_sql);
+    $fin_sql=$db->escapeString($fin_sql);
+    $perso_id=$db->escapeString($perso_id);
     $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1' WHERE
       ((CONCAT(`date`,' ',`debut`) < '$fin_sql' AND CONCAT(`date`,' ',`debut`) >= '$debut_sql')
       OR (CONCAT(`date`,' ',`fin`) > '$debut_sql' AND CONCAT(`date`,' ',`fin`) <= '$fin_sql'))
       AND `perso_id`='$perso_id'";
-    $db=new db();
     $db->query($req);
   }
   
@@ -233,7 +238,7 @@ else{					//	Formulaire
   echo "<td>\n";
   if($admin){
     $db_perso=new db();
-    $db_perso->query("select * from {$dbprefix}personnel where actif='Actif' order by nom,prenom;");
+    $db_perso->select2("personnel","*",array("supprime"=>0),"order by nom,prenom");
     echo "<select name='perso_id' class='ui-widget-content ui-corner-all'>\n";
     foreach($db_perso->result as $elem){
       if($perso_id==$elem['id'])

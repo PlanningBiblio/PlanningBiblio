@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.8
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 16 décembre 2014
+Dernière modification : 1er avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -59,10 +59,11 @@ $commentaires=htmlentities($_GET['commentaires'],ENT_QUOTES|ENT_IGNORE,"UTF-8",f
 $nbjours=isset($_GET['nbjours'])?$_GET['nbjours']:0;
 
 $db=new db();
-$db->query("select {$dbprefix}personnel.id as perso_id, {$dbprefix}personnel.nom as nom, {$dbprefix}personnel.prenom as prenom, 
-  {$dbprefix}personnel.mail as mail, {$dbprefix}personnel.mailsResponsables as mailsResponsables, {$dbprefix}personnel.sites as sites 
-  FROM {$dbprefix}absences INNER JOIN {$dbprefix}personnel ON {$dbprefix}absences.perso_id={$dbprefix}personnel.id 
-  WHERE {$dbprefix}absences.id='$id'");
+$db->selectInnerJoin(array("absences","perso_id"),array("personnel","id"),
+  array(),
+  array(array("name"=>"id","as"=>"perso_id"),"nom","prenom","mail","mailsResponsables","sites"),
+  array("id"=>$id));
+
 $perso_id=$db->result[0]['perso_id'];
 $nom=$db->result[0]['nom'];
 $prenom=$db->result[0]['prenom'];
@@ -111,7 +112,7 @@ if($config['Multisites-nombre']>1){
 
 // Pour mise à jour du champs 'absent' dans 'pl_poste'
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}absences` WHERE `id`='$id';");
+$db->select2("absences","*",array("id"=>$id));
 $debut1=$db->result[0]['debut'];
 $fin1=$db->result[0]['fin'];
 $valide1N1=$db->result[0]['valideN1'];
@@ -119,22 +120,28 @@ $valide1N2=$db->result[0]['valide'];
 $perso_id=$db->result[0]['perso_id'];
 
 if(($debutSQL!=$debut1 or $finSQL!=$fin1) and $isValidate){			// mise à jour du champs 'absent' dans 'pl_poste'
+  $db=new db();
+  $debut1=$db->escapeString($debut1);
+  $fin1=$db->escapeString($fin1);
+  $perso_id=$db->escapeString($perso_id);
   $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='0' WHERE
     ((CONCAT(`date`,' ',`debut`) < '$fin1' AND CONCAT(`date`,' ',`debut`) >= '$debut1')
     OR (CONCAT(`date`,' ',`fin`) > '$debut1' AND CONCAT(`date`,' ',`fin`) <= '$fin1'))
     AND `perso_id`='$perso_id'";
-  $db=new db();
   $db->query($req);
+
+  $db=new db();
+  $debut1=$db->escapeString($debut1);
+  $fin1=$db->escapeString($fin1);
+  $perso_id=$db->escapeString($perso_id);
   $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1' WHERE
     ((CONCAT(`date`,' ',`debut`) < '$fin_sql' AND CONCAT(`date`,' ',`debut`) >= '$debut_sql')
     OR (CONCAT(`date`,' ',`fin`) > '$debut_sql' AND CONCAT(`date`,' ',`fin`) <= '$fin_sql'))
     AND `perso_id`='$perso_id'";
-  $db=new db();
   $db->query($req);
 }
 
 // Mise à jour de la table 'absences'
-$db=new db();
 $update=array("motif"=>$motif, "motif_autre"=>$motif_autre, "nbjours"=>$nbjours, "commentaires"=>$commentaires, 
   "debut"=>$debut_sql, "fin"=>$fin_sql);
 
@@ -162,6 +169,7 @@ if($config['Absences-validation']){
   }
 }
 $where=array("id"=>$id);
+$db=new db();
 $db->update2("absences",$update,$where);
 
 // Envoi d'un mail de notification

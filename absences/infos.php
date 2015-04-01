@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.9
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/infos.php
 Création : mai 2011
-Dernière modification : 30 avril 2014
+Dernière modification : 1er avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -18,15 +18,20 @@ Page appelée par la page index.php
 
 require_once "class.absences.php";
 
-echo "<h3>Informations sur les absences</h3>\n";
-
 //	Initialisation des variables
 $id=isset($_GET['id'])?$_GET['id']:null;
+$debut=$_GET['debut'];
+$fin=$_GET['fin'];
+$debutSQL=dateSQL($debut);
+$finSQL=dateSQL($fin);
+
+echo "<h3>Informations sur les absences</h3>\n";
+
 
 //			----------------		Suppression							-------------------------------//
 if(isset($_GET['suppression']) and isset($_GET['validation'])){
   $db=new db();
-  $db->query("delete from {$dbprefix}absences_infos where id=".$_GET['id'].";");
+  $db->delete2("absences_infos",array("id="=>$id));
   echo "<b>L'information a été supprimée</b>";
   echo "<br/><br/><a href='index.php?page=absences/index.php'>Retour</a>\n";
 }
@@ -46,11 +51,14 @@ elseif(isset($_GET['suppression'])){
 elseif(isset($_GET['validation'])){		//		Validation
   echo "<b>Votre demande a été enregistrée</b>\n";
   echo "<br/><br/><a href='index.php?page=absences/index.php'>Retour</a>\n";
-  $db=new db();
-  if(isset($_GET['id']) and $_GET['id']!=null)
-    $db->update2("absences_infos",array("debut"=>dateSQL($_GET['debut']),"fin"=>dateSQL($_GET['fin']),"texte"=>$_GET['texte']),array("id"=>$_GET['id']));
-  else
-    $db->insert2("absences_infos",array("debut"=>dateSQL($_GET['debut']),"fin"=>dateSQL($_GET['fin']),"texte"=>$_GET['texte']));
+  $texte=$_GET['texte'];
+  if(isset($_GET['id']) and $_GET['id']!=null){
+    $db=new db();
+    $db->update2("absences_infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte),array("id"=>$id));
+  }else{
+    $db=new db();
+    $db->insert2("absences_infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte));
+  }
 }
 elseif(isset($_GET['debut'])){		//		Vérification
   $texte=htmlentities($_GET['texte'],ENT_QUOTES|ENT_IGNORE,"UTF-8");
@@ -76,7 +84,7 @@ elseif(isset($_GET['debut'])){		//		Vérification
 else{
   if(isset($_GET['id'])){
     $db=new db();
-    $db->query("select * from {$dbprefix}absences_infos where id=".$_GET['id'].";");
+    $db->select2("absences_infos","*",array("id="=>$id));
     $debut=dateFr3($db->result[0]['debut']);
     $fin=dateFr3($db->result[0]['fin']);
     $texte=$db->result[0]['texte'];

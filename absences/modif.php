@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 27 janvier 2015
+Dernière modification : 1er avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -25,20 +25,14 @@ $checked=null;
 $admin=in_array(1,$droits)?true:false;
 $adminN2=in_array(8,$droits)?true:false;
 $quartDHeure=$config['heuresPrecision']=="quart d&apos;heure"?true:false;
-
 $id=$_GET['id'];
+
 $db=new db();
-$req="SELECT `{$dbprefix}personnel`.`id` AS `perso_id`, `{$dbprefix}personnel`.`nom` AS `nom`, 	
-  `{$dbprefix}personnel`.`prenom` AS `prenom`, `{$dbprefix}absences`.`id` AS `id`, `{$dbprefix}personnel`.`sites` AS `sites`, 
-  `{$dbprefix}absences`.`debut` AS `debut`, `{$dbprefix}absences`.`fin` AS `fin`, 
-  `{$dbprefix}absences`.`nbjours` AS `nbjours`, `{$dbprefix}absences`.`motif` AS `motif`, `{$dbprefix}absences`.`motif_autre` AS `motif_autre`, 
-  `{$dbprefix}absences`.`valide` AS `valide`, `{$dbprefix}absences`.`validation` AS `validation`, 
-  `{$dbprefix}absences`.`valideN1` AS `valideN1`, `{$dbprefix}absences`.`validationN1` AS `validationN1`, 
-  `{$dbprefix}absences`.`pj1` AS `pj1`, `{$dbprefix}absences`.`pj2` AS `pj2`, `{$dbprefix}absences`.`so` AS `so`, 
-  `{$dbprefix}absences`.`commentaires` AS `commentaires`, `{$dbprefix}absences`.`demande` AS `demande`  
-  FROM `{$dbprefix}absences` INNER JOIN `{$dbprefix}personnel` 
-  ON `{$dbprefix}absences`.`perso_id`=`{$dbprefix}personnel`.`id` WHERE `{$dbprefix}absences`.`id`='$id';";
-$db->query($req);
+$db->selectInnerJoin(array("absences","perso_id"),array("personnel","id"),
+  array("id","debut","fin","nbjours","motif","motif_autre","valide","validation","valideN1","validationN1","pj1","pj2","so","commentaires","demande"),
+  array(array("name"=>"id","as"=>"perso_id"),"nom","prenom","sites"),
+  array("id"=>$id));
+
 $perso_id=$db->result[0]['perso_id'];
 $motif=$db->result[0]['motif'];
 $motif_autre=$db->result[0]['motif_autre'];
@@ -115,9 +109,11 @@ if($config['Multisites-nombre']>1){
   }
 
   $admin=false;
-  foreach($sitesAgent as $site){
-    if(in_array($site,$sites)){
-      $admin=true;
+  if(is_array($sitesAgent)){
+    foreach($sitesAgent as $site){
+      if(in_array($site,$sites)){
+	$admin=true;
+      }
     }
   }
   if(!$admin){

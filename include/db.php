@@ -102,6 +102,7 @@ class db{
   @param string / array infos : valeurs qu'on souhaite récupérer. 
     Si string, nom des champs séparés par des virgules
     Si array : array(champ1, champ2, ...)
+    Si array : array(array(name=> name, as => as), ...)
   @param string / array where : filtre de recherche. 
     Si string : champ1=valeur1 AND champ2=valeur2 ...,
     Si array : array(champ1=>valeur1, champ2=>valeur2, ...)
@@ -111,7 +112,15 @@ class db{
     $this->connect();
 
     if(is_array($infos)){
-      $infos=join(",",$infos);
+      $tmp=array();
+      foreach($infos as $elem){
+	if(is_array($elem)){
+	  $tmp[]="{$elem['name']} AS `{$elem['as']}`";
+	}else{
+	  $tmp[]=$elem['name'];
+	}
+      }
+      $infos=join(",",$tmp);
     }
 
     if(is_array($where)){
