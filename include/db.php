@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.3
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 31 mars 2015
+Dernière modification : 1er avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -27,9 +27,10 @@ include_once "function.php";
 class db{
   var $host;
   var $dbname;
+  var $dbprefix;
   var $user;
   var $password;
-  var $conn=null;
+  var $conn;
   var $result;
   var $nb;
   var $error;
@@ -40,6 +41,8 @@ class db{
     $this->user=$GLOBALS['config']['dbuser'];
     $this->password=$GLOBALS['config']['dbpass'];
     $this->error=false;
+    $this->conn=null;
+    $this->dbprefix=$GLOBALS['config']['dbprefix'];
   }
 
   function connect(){
@@ -49,6 +52,18 @@ class db{
     }
   }
   
+  /**
+    * fonction de protection des caracteres speciaux
+    * @param string $str string à échapper
+    * @return string
+    * @access public
+    */
+  public function escapeString($str){
+    $this->connect();
+    $str=mysqli_real_escape_string($this->conn,$str);
+    return $str;
+  }
+
   function query($requete){
     if(!$this->conn){
       $this->connect();
@@ -81,7 +96,7 @@ class db{
     $this->query($requete);
   }
 
-  /*
+  /**
   Fonction permettant de rechercher des infos dans la base de données en utilisant MySQLi
   @param string $table : nom de la table à interroger
   @param string / array infos : valeurs qu'on souhaite récupérer. 
@@ -101,16 +116,90 @@ class db{
 
     if(is_array($where)){
       $tmp=array();
-      $keys=array_keys($where);
-      foreach($keys as $key){
-	$data=mysqli_real_escape_string($this->conn,$where[$key]);
-	$tmp[]="$key='$data'";
+      foreach($where as $key => $value){
+	$escapedValue=mysqli_real_escape_string($this->conn,$value);
+	$tmp[]="$key='$escapedValue'";
       }
       $where=join(" AND ",$tmp);
     }
 
     $requete="SELECT $infos FROM `{$GLOBALS['config']['dbprefix']}$table` WHERE $where $options";
     $this->query($requete);
+  }
+
+
+  /**
+  Fonction permettant de rechercher des infos dans la base de données en utilisant une jointure avec MySQLi
+  @param array table1 : tableau contenant le nom de la première table et son index à utiliser pour la jointure
+  @param array table2 : tableau contenant le nom de la seconde table et son index à utiliser pour la jointure
+  @param array table1Fields : champs de la première table à afficher.
+    Les valeurs peuvent être des chaînes de caractères (nom des champs)
+    Ou des tableaux ayant pour index "name" => le nom du champ et "as" => l'alias voulu
+  @param array table2Fields : champs de la seconde table à afficher.
+    Les valeurs peuvent être des chaînes de caractères (nom des champs)
+    Ou des tableaux ayant pour index "name" => le nom du champ et "as" => l'alias voulu
+  @param array table1Where : Filtre à appliquer sur la première table
+  @param array table2Where : Filtre à appliquer sur la première table
+  @param string options : permet d'ajouter des options de recherche après where, ex : order by 
+  */
+  public function selectInnerJoin($table1=array(), $table2=array(), $table1Fields=array(), 
+    $table2Fields=array(), $table1Where=array(), $table2Where=array(), $options=null){
+
+    if(empty($table1) or empty($table2)){
+      $this->error=true;
+      return false;
+    }
+
+    // Connection à la base de données
+    $this->connect();
+
+    // Initilisation des variables
+    $table1Name="{$this->dbprefix}".$table1[0];
+    $table2Name="{$this->dbprefix}".$table2[0];
+    $table1Index=$table1[1];
+    $table2Index=$table2[1];
+
+    // Construction de la requête
+    // Valeurs à retourner
+    $info=array();
+    foreach($table1Fields as $elem){
+      if(is_string($elem)){
+	$info[]="`$table1Name`.`$elem` AS `$elem`";
+      }elseif(is_array($elem)){
+	$info[]="`$table1Name`.`{$elem['name']}` AS `{$elem['as']}`";
+      }
+    }
+    foreach($table2Fields as $elem){
+      if(is_string($elem)){
+	$info[]="`$table2Name`.`$elem` AS `$elem`";
+      }elseif(is_array($elem)){
+	$info[]="`$table2Name`.`{$elem['name']}` AS `{$elem['as']}`";
+      }
+    }
+    $info=join(", ",$info);
+
+    // Construction de la requête
+    // Filtre "Where" et options
+    $where=array();
+    foreach($table1Where as $key => $value){
+      $escapedValue=htmlentities($value,ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
+      $escapedValue=mysqli_real_escape_string($this->conn,$escapedValue);
+      $where[]="`$table1Name`.`$key`='$escapedValue'";
+    }
+    foreach($table2Where as $key => $value){
+      $escapedValue=htmlentities($value,ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
+      $escapedValue=mysqli_real_escape_string($this->conn,$escapedValue);
+      $where[]="`$table2Name`.`$key`='$escapedValue'";
+    }
+    $where=join(" AND ",$where);
+  
+    // Construction de la requête
+    // Assemblage
+    $query="SELECT $info FROM `$table1Name` INNER JOIN `$table2Name` ON `$table1Name`.`$table1Index`=`$table2Name`.`$table2Index` ";
+    $query.="WHERE $where $options";
+
+    // Execution de la requête
+    $this->query($query);
   }
 
   function update($table,$set,$where=1){
@@ -135,8 +224,13 @@ class db{
     }
     $set=join(",",$tmp);
     if(is_array($where)){
-      $key=array_keys($where);
-      $where="`".$key[0]."`='".$where[$key[0]]."'";
+      $tmp=array();
+      foreach($where as $key => $value){
+	$escapedValue=htmlentities($value,ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
+	$escapedValue=mysqli_real_escape_string($this->conn,$escapedValue);
+	$tmp[]="`$key`='$escapedValue'";
+      }
+      $where=join(" AND ",$tmp);
     }
     $requete="UPDATE `{$GLOBALS['config']['dbprefix']}$table` SET $set WHERE $where;";
 
@@ -167,17 +261,19 @@ class db{
     $this->query($requete);
   }
 
-  function delete2($table,$where=array()){
-    if(!empty($where)){
+  function delete2($table,$where="1"){
+    $this->connect();
+
+    if(is_array($where)){
       $keys=array_keys($where);
       $tmp=array();
       foreach($keys as $key){
-	$tmp[]="`".$key."`='".$where[$key]."'";
+	$value=mysqli_real_escape_string($this->conn,$where[$key]);
+	$tmp[]="`".$key."`='$value'";
       }
       $where=join(" AND ",$tmp);
-    }else{
-      $where=1;
     }
+
     $requete="DELETE FROM `{$GLOBALS['config']['dbprefix']}$table` WHERE $where";
     $this->query($requete);
   }
@@ -203,17 +299,18 @@ class db{
     if(array_key_exists(0,$values)){
       $fields=array_keys($values[0]);
       for($i=0;$i<count($values);$i++){
-	    foreach($fields as $elem){
-	      if(!is_serialized($values[$i][$elem]))
-		$values[$i][$elem]=htmlentities($values[$i][$elem],ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
-	      $values[$i][$elem]=mysqli_real_escape_string($this->conn,$values[$i][$elem]);
+	foreach($fields as $elem){
+	  if(!is_serialized($values[$i][$elem])){
+	    $values[$i][$elem]=htmlentities($values[$i][$elem],ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
 	    }
+	  $values[$i][$elem]=mysqli_real_escape_string($this->conn,$values[$i][$elem]);
+	}
       }
       $fields=join(",",$fields);
 
       foreach($values as $elem){
 	$tab[]="'".join("','",$elem)."'";
-	}
+      }
     }
     else{
       $fields=array_keys($values);
@@ -265,7 +362,7 @@ class dbh{
     $this->nb=count($this->result);
   }
 
-  /*
+  /**
   Fonction permettant de rechercher des infos dans la base de données en utilisant PDO_MySQL
   @param string $table : nom de la table à interroger
   @param string / array infos : valeurs qu'on souhaite récupérer. 
