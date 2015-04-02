@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/suppression-liste.php
 Création : mai 2011
-Dernière modification : 26 septembre 2013
+Dernière modification : 2 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -28,11 +28,11 @@ $liste=join($liste,",");
 if($_SESSION['perso_actif']=="Supprimé"){
   $p=new personnel();
   $p->delete($liste);
-//   $req="UPDATE `{$dbprefix}personnel` SET `supprime`='2',`login`=CONCAT(`id`,'.',`login`) WHERE `id` IN ($liste);";
 }
 else{
-  $req="UPDATE `{$dbprefix}personnel` SET `supprime`='1', `actif`='Supprim&eacute;' WHERE `id` IN ($liste);";
   $db=new db();
+  $liste=$db->escapeString($liste);
+  $req="UPDATE `{$dbprefix}personnel` SET `supprime`='1', `actif`='Supprim&eacute;' WHERE `id` IN ($liste);";
   $db->query($req);
 }
 

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.8
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 10 décembre 2014
+Dernière modification : 2 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -25,7 +25,7 @@ $admin=in_array(21,$droits)?true:false;
 
 // Gestion des droits d'accés
 $db_groupes=new db();
-$db_groupes->query("select groupe_id,groupe from {$dbprefix}acces where groupe_id not in (99,100) group by groupe;");
+$db_groupes->select2("acces",array("groupe_id","groupe"),"groupe_id not in (99,100)","group by groupe");
 
 // Tous les droits d'accés
 $groupes=array();
@@ -56,21 +56,22 @@ if($config['Multisites-nombre']>1){
 }
 
 $db=new db();
-$db->select("select_statuts",null,null,"order by rang");
+$db->select2("select_statuts",null,null,"order by rang");
 $statuts=$db->result;
 $db=new db();
-$db->select("select_categories",null,null,"order by rang");
+$db->select2("select_categories",null,null,"order by rang");
 $categories=$db->result;
 $db=new db();
-$db->select("personnel","statut",null,"group by statut");
+$db->select2("personnel","statut",null,"group by statut");
 $statuts_utilises=array();
 if($db->result){
   foreach($db->result as $elem){
     $statuts_utilises[]=$elem['statut'];
   }
 }
+
 $db_services=new db();
-$db_services->query("SELECT * FROM `{$dbprefix}select_services` ORDER BY `rang`;");
+$db_services->select2("select_services",null,null,"ORDER BY `rang`");
 
 $acces=array();
 $postes_attribues=array();
@@ -79,7 +80,7 @@ $recupAgents=array("Prime","Temps");
 if(isset($_GET['id'])){		//	récupération des infos de l'agent en cas de modif
   $id=$_GET['id'];
   $db=new db();
-  $db->query("select * from {$dbprefix}personnel where id=$id");
+  $db->select2("personnel","*",array("id"=>$id));
   $actif=$db->result[0]['actif'];
   $nom=$db->result[0]['nom'];
   $prenom=$db->result[0]['prenom'];
@@ -140,7 +141,7 @@ $contrats=array("Titulaire","Contractuel");
 
 //		--------------		Début listes des activités		---------------------//	
 $db=new db();			//	toutes les activités
-$db->query("SELECT `id`,`nom` FROM `{$dbprefix}activites` ORDER BY `id`;");
+$db->select2("activites",array("id","nom"),null,"ORDER BY `id`");
 if($db->result)
 foreach($db->result as $elem){
   $postes_completNoms[]=array($elem['nom'],$elem['id']);

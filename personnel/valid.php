@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 2 février 2015
+Dernière modification : 2 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -97,7 +97,7 @@ else{
 switch($action){
   case "ajout" :
     $db=new db();
-    $db->select("personnel","MAX(`id`) AS `id`");
+    $db->select2("personnel",array(array("name"=>"MAX(`id`)", "as"=>"id")));
     $id=$db->result[0]['id']+1;
 
     $login=login($nom,$prenom);
@@ -127,15 +127,14 @@ switch($action){
     $mdp=gen_trivial_password();
     $mdp_crypt=md5($mdp);
     $db=new db();
-    $db->query("select login from {$dbprefix}personnel where id='$id';");
+    $db->select2("personnel","login",array("id"=>$id));
     $login=$db->result[0]['login'];
     sendmail("Modification du mot de passe","Login : $login <br>Mot de passe : $mdp","$mail");
 
-    $req="update {$dbprefix}personnel set password='$mdp_crypt' where id=$id;";
     $db=new db();
-    $db->query($req);
-    echo "<script type='text/JavaScript'>alert('Le mot de passe a été changé');</script>";
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/index.php';</script>";
+    $db->update2("personnel",array("password"=>$mdp_crypt),array("id"=>$id));
+    $msg=urlencode("Le mot de passe a été modifié et envoyé par e-mail à l'agent");
+    echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/index.php&msg={$msg}&msgType=success';</script>";
     break;
 
   case "modif" :
@@ -149,7 +148,7 @@ switch($action){
       // Si l'agent était supprimé et qu'on le réintégre, on change sa date de départ 
       // pour qu'il ne soit pas supprimé de la liste des agents actifs
       $db=new db();
-      $db->select("personnel","*","id='$id'");
+      $db->select2("personnel","*",array("id"=>$id));
       if(strstr($db->result[0]['actif'],"Supprim") and $db->result[0]['depart']<=date("Y-m-d")){
        $update["depart"]="0000-00-00";
       }
@@ -168,10 +167,12 @@ switch($action){
 
 	    //	Mise à jour de la table pl_poste en cas de modification de la date de départ
     $db=new db();		// On met supprime=0 partout pour cet agent
-    $db->query("UPDATE `{$GLOBALS['dbprefix']}pl_poste` SET `supprime`='0' WHERE `perso_id`='$id';");
+    $db->update2("pl_poste",array("supprime"=>"0"),array("perso_id"=>$id));
     if($depart!="0000-00-00" and $depart!=""){
 	    // Si une date de départ est précisée, on met supprime=1 au dela de cette date
       $db=new db();
+      $id=$db->escapeString($id);
+      $depart=$db->escapeString($depart);
       $db->query("UPDATE `{$GLOBALS['dbprefix']}pl_poste` SET `supprime`='1' WHERE `perso_id`='$id' AND `date`>'$depart';");
     }
 
@@ -216,7 +217,7 @@ function login($nom,$prenom){
   
   $i=1;
   $db=new db();
-  $db->select("personnel",null,"login='$login'");
+  $db->select2("personnel","*",array("login"=>$login));
   while($db->result){
     $i++;
     if($i==2)

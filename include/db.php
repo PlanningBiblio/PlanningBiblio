@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 1er avril 2015
+Dernière modification : 2 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -111,18 +111,24 @@ class db{
   function select2($table,$infos="*",$where="1",$options=null){
     $this->connect();
 
+	if($infos===null){
+		$infos="*";
+	}
     if(is_array($infos)){
       $tmp=array();
       foreach($infos as $elem){
 	if(is_array($elem)){
 	  $tmp[]="{$elem['name']} AS `{$elem['as']}`";
 	}else{
-	  $tmp[]=$elem['name'];
+	  $tmp[]=$elem;
 	}
       }
       $infos=join(",",$tmp);
     }
 
+	if($where===null){
+		$where="1";
+	}
     if(is_array($where)){
       $tmp=array();
       foreach($where as $key => $value){

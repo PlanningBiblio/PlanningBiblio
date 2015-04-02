@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.1
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/suppression.php
 Création : mai 2011
-Dernière modification : 12 juin 2014
+Dernière modification : 2 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -35,7 +35,7 @@ function etape1(){
   global $id;
   global $nom;
   $db=new db();
-  $db->select("personnel","nom,prenom,actif,supprime","id=$id");
+  $db->select2("personnel",array("nom","prenom","actif","supprime"),array("id"=>$id));
   $nom=$db->result[0]['prenom']." ".$db->result[0]['nom'];
   
   if($db->result[0]['supprime']==1)
@@ -71,11 +71,12 @@ function etape3(){
   global $id;
   $date=dateSQL($_GET['date']);
       //	Mise à jour de la table personnel
-  $req="UPDATE `{$GLOBALS['dbprefix']}personnel` SET `supprime`='1', `actif`='Supprim&eacute;', `depart`='$date' WHERE `id`='$id';";	
   $db=new db();
-  $db->query($req);
+  $db->update2("personnel",array("supprime"=>"1","actif"=>"Supprim&eacute;","depart"=>$date),array("id"=>$id));
       //	Mise à jour de la table pl_poste
   $db=new db();
+  $id=$db->escapeString($id);
+  $date=$db->escapeString($date);
   $db->query("UPDATE `{$GLOBALS['dbprefix']}pl_poste` SET `supprime`='1' WHERE `perso_id`='$id' AND `date`>'$date';");
   echo "<script type='text/JavaScript'>parent.window.location.reload(false);</script>";
   echo "<script type='text/JavaScript'>popup_closed();</script>";

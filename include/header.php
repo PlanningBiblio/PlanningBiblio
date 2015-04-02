@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 23 février 2015
+Dernière modification : 2 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -41,6 +41,7 @@ if(!file_exists("themes/$theme/$theme.css")){
 <script type='text/JavaScript' src='vendor/DataTables-1.10.4/extensions/FixedColumns/js/dataTables.fixedColumns.min.js'></script>
 <script type='text/JavaScript' src='vendor/DataTables-1.10.4/extensions/TableTools/js/dataTables.tableTools.min.js'></script>
 <script type='text/JavaScript' src='vendor/dataTables.jqueryui.js'></script>
+<script type='text/JavaScript' src='vendor/CJScript.js'></script>
 <script type='text/JavaScript' src='js/datePickerFr.js'></script>
 <script type='text/JavaScript' src='js/dataTables.sort.js'></script>
 <script type='text/JavaScript' src='js/script.js'></script>
@@ -67,6 +68,12 @@ if(!isset($_GET['positionOff'])){
   <input type='hidden' name='y' />
   </form>
 EOD;
+}
+
+if(isset($_GET['msg'])){
+	$msg=filter_var($_GET['msg'], FILTER_SANITIZE_STRING);
+	$msgType=filter_var($_GET['msgType'], FILTER_SANITIZE_STRING);
+	echo "<script type='text/JavaScript'>CJInfo('$msg','$msgType');</script>\n";
 }
 ?>
 

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 19 février 2015
+Dernière modification : 2 avril 2015
 Auteur : Jérôme Combes jerome@planningbilbio.fr, Christophe Le Guennec Christophe.Leguennec@u-pem.fr
 
 Description :
@@ -31,6 +31,7 @@ require_once "fonctions.php";
 require_once "class.planning.php";
 
 //	Initilisation des variables
+$login_id=$_SESSION['login_id'];
 $site=$_GET['site'];
 $date=$_GET['date'];
 $poste=$_GET['poste'];
@@ -60,7 +61,7 @@ if(!$_SESSION['login_id']){
 else{
   $autorisation=false;
   $db_admin=new db();			// Vérifions si l'utilisateur à les droits de modifier les plannings
-  $db_admin->query("SELECT `droits` FROM `{$dbprefix}personnel` WHERE `id`={$_SESSION['login_id']};");
+  $db_admin->select2("personnel","droits",array("id"=>$login_id));
   $droits=unserialize($db_admin->result[0]['droits']);
   if(!in_array(12,$droits)){
     exit;
@@ -71,7 +72,7 @@ else{
 
 // nom et activités du poste
 $db=new db;
-$db->select("postes",null,"id='$poste'");
+$db->select2("postes",null,array("id"=>$poste));
 $aff_poste=$db->result[0]['nom'];
 $activites=unserialize($db->result[0]['activites']);
 $stat=$db->result[0]['statistiques'];
@@ -83,6 +84,7 @@ $statuts=array();
 if(!empty($categories)){
   $categories=join(",",$categories);
   $db=new db();
+  $categories=$db->escapeString($categories);
   $db->select("select_statuts",null,"categorie IN ($categories)");
   if($db->result){
     foreach($db->result as $elem){
@@ -100,8 +102,16 @@ $services[]=array("service"=>"Sans service");
 
 //	Ne pas regarder les postes non-bloquant et ne pas regarder si le poste est non-bloquant
 if($bloquant=='1'){
-  $req="SELECT `{$dbprefix}pl_poste`.`perso_id` AS `perso_id` FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` WHERE ((`{$dbprefix}pl_poste`.`debut`>='$debut' AND `{$dbprefix}pl_poste`.`debut`<'$fin') OR (`{$dbprefix}pl_poste`.`fin`>'$debut' AND `{$dbprefix}pl_poste`.`fin`<='$fin')) AND `{$dbprefix}pl_poste`.`date`='$date' AND `{$dbprefix}postes`.`bloquant`='1'";
   $db=new db();
+  $dateSQL=$db->escapeString($date);
+  $debutSQL=$db->escapeString($debut);
+  $finSQL=$db->escapeString($fin);
+
+  $req="SELECT `{$dbprefix}pl_poste`.`perso_id` AS `perso_id` FROM `{$dbprefix}pl_poste` "
+  	."INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` "
+  	."WHERE ((`{$dbprefix}pl_poste`.`debut`>='$debutSQL' AND `{$dbprefix}pl_poste`.`debut`<'$finSQL') "
+  	."OR (`{$dbprefix}pl_poste`.`fin`>'$debutSQL' AND `{$dbprefix}pl_poste`.`fin`<='$finSQL')) AND `{$dbprefix}pl_poste`.`date`='$dateSQL' AND `{$dbprefix}postes`.`bloquant`='1'";
+
   $db->query($req);
   if($db->result)
   foreach($db->result as $elem){
@@ -111,9 +121,15 @@ if($bloquant=='1'){
 }
 
 // recherche des personnes à exclure (absents)
-$db=new db();
 $filter=$config['Absences-validation']?"AND `valide`>0":null;
-$db->select("absences","perso_id","`debut`<'$date $fin' AND `fin` >'$date $debut' $filter ");
+
+$db=new db();
+$dateSQL=$db->escapeString($date);
+$debutSQL=$db->escapeString($debut);
+$finSQL=$db->escapeString($fin);
+
+$db->select("absences","perso_id","`debut`<'$dateSQL $finSQL' AND `fin` >'$dateSQL $debutSQL' $filter ");
+
 if($db->result){
   foreach($db->result as $elem){
     $tab_exclus[]=$elem['perso_id'];
@@ -128,7 +144,9 @@ if(in_array("conges",$plugins)){
 
 // recherche des personnes à exclure (ne travaillant pas à cette heure)
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00');");
+$dateSQL=$db->escapeString($date);
+
+$db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` > $dateSQL OR `depart` = '0000-00-00');");
 
 $verif=true;	// verification des heures des agents
 if(!$config['ctrlHresAgents'] and ($d->position==6 or $d->position==0)){
@@ -224,12 +242,25 @@ $deuxSP=deuxSP($date,$debut,$fin);
 
 // Récupère le nombre d'agents déjà placés dans la cellule
 $db=new db();
-$db->select("pl_poste",null,"`poste`='$poste' AND `debut`='$debut' AND `fin`='$fin' AND `date`='$date' AND `site`='$site' AND `perso_id`>0");
+$dateSQL=$db->escapeString($date);
+$debutSQL=$db->escapeString($debut);
+$finSQL=$db->escapeString($fin);
+$posteSQL=$db->escapeString($poste);
+$siteSQL=$db->escapeString($site);
+
+$db->select("pl_poste",null,"`poste`='$posteSQL' AND `debut`='$debutSQL' AND `fin`='$finSQL' AND `date`='$dateSQL' AND `site`='$siteSQL' AND `perso_id`>0");
+
 $nbAgents=$db->nb;
 
 //--------------		Liste du personnel disponible			---------------//
 
 		// construction de la requete de sélection du personnel formé pour les activités demandées
+$db=new db();
+$dateSQL=$db->escapeString($date);
+
+$req_poste=null;
+$req_statut=null;
+
 if($poste!=0){		//	repas
   if(is_array($activites)){
     foreach($activites as $elem){
@@ -237,22 +268,23 @@ if($poste!=0){		//	repas
     }
     $req_poste="(".join($tab," AND ").") AND ";
   }
-  $req_statut=null;
   if(!empty($statuts)){
     $req_statut="`statut` IN ('".join("','",$statuts)."') AND ";
   }
 }
 // Requete final sélection tous les agents formés aux activités demandées et disponible (non exclus)
 // Multisites : Si les agents ne sont pas autorisés à travailler sur le site sélectionné, on les retire
+$req_site=null;
 if($config['Multisites-nombre']>1){
-  $req_site=" AND `sites` LIKE '%\"$site\"%' ";
-}
-else{
-  $req_site=null;
+  $siteSQL=$db->escapeString($site);
+  $req_site=" AND `sites` LIKE '%\"$siteSQL\"%' ";
 }
 
-$req="SELECT * FROM `{$dbprefix}personnel` WHERE $req_poste $req_statut `actif` LIKE 'Actif' AND `arrivee` <= '$date' AND (`depart` > '$date' OR `depart` = '0000-00-00') AND `id` NOT IN ($exclus) $req_site ORDER BY `nom`,`prenom`;"; 
-$db=new db();
+
+$req="SELECT * FROM `{$dbprefix}personnel` "
+  ."WHERE $req_poste $req_statut `actif` LIKE 'Actif' AND `arrivee` <= '$dateSQL' AND (`depart` > '$dateSQL' OR `depart` = '0000-00-00') "
+  ."AND `id` NOT IN ($exclus) $req_site ORDER BY `nom`,`prenom`;";
+
 $db->query($req);
 $agents_dispo=$db->result;
 
@@ -264,23 +296,18 @@ foreach($agents_dispo as $elem){
 $agents_qualif=join($agents_qualif,",");
 $absents=join($absents,",");
 $tab_deja_place=join($tab_deja_place,",");
-$req="SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND `arrivee` <= '$date' AND (`depart` > $date OR `depart` = '0000-00-00') AND `id` NOT IN ($agents_qualif) AND `id` NOT IN ($tab_deja_place) AND `id` NOT IN ($absents)  $req_site ORDER BY `nom`,`prenom`;";
+
 $db=new db();
+$dateSQL=$db->escapeString($date);
+
+$req="SELECT * FROM `{$dbprefix}personnel` "
+  ."WHERE `actif` LIKE 'Actif' AND `arrivee` <= '$dateSQL' AND (`depart` > $dateSQL OR `depart` = '0000-00-00') AND `id` NOT IN ($agents_qualif) "
+  ."AND `id` NOT IN ($tab_deja_place) AND `id` NOT IN ($absents)  $req_site ORDER BY `nom`,`prenom`;";
+
 $db->query($req);
 $autres_agents=$db->result;
 
-//		recherche des agents hors horaires qualifiés
-/*
-$horsHoraires=join($horsHoraires,",");
-$req="SELECT * FROM `{$dbprefix}personnel` WHERE $req_poste `actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00') AND `id` IN ($horsHoraires) ORDER BY `nom`,`prenom`;";
-$db=new db();
-$db->query($req);
-$agents_horsHoraires=$db->result;
-*/
 $agents_tous=$agents_dispo;
-// if(is_array($agents_horsHoraires))
-// foreach($agents_horsHoraires as $elem)
-	// $agents_tous[]=$elem;
 if(is_array($autres_agents)){
   foreach($autres_agents as $elem){
     $agents_tous[]=$elem;

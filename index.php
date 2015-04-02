@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 1er avril 2015
+Dernière modification : 2 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -16,8 +16,8 @@ Vérifie si la base de données doit être mise à jour, inclus les pages de con
 de fonctions communes, vérifie les droits à la page demandée en argument et l'inclus si l'utilisateur
 est autorisé à la consulter
 
-Pages en entrée : inclus les fichiers config.php, doctype.php et header.php
-Page en sortie :inclus le fichier footer.php
+Inclut au départ les fichiers config.php, doctype.php et header.php
+Inclut à la fin le fichier footer.php
 */
 
 session_start();
