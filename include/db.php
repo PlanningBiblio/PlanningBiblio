@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 2 avril 2015
+Dernière modification : 3 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -111,9 +111,9 @@ class db{
   function select2($table,$infos="*",$where="1",$options=null){
     $this->connect();
 
-	if($infos===null){
-		$infos="*";
-	}
+    if($infos===null){
+      $infos="*";
+    }
     if(is_array($infos)){
       $tmp=array();
       foreach($infos as $elem){
@@ -126,14 +126,16 @@ class db{
       $infos=join(",",$tmp);
     }
 
-	if($where===null){
-		$where="1";
-	}
+    // Filtre Where
+    // Par défaut, recherche tout
+    if($where===null){
+      $where="1";
+    }
+    // Si tableau, pour chaque entrée ...
     if(is_array($where)){
       $tmp=array();
       foreach($where as $key => $value){
-	$escapedValue=mysqli_real_escape_string($this->conn,$value);
-	$tmp[]="$key='$escapedValue'";
+	$tmp[]=$this->makeSearch($key,$value);
       }
       $where=join(" AND ",$tmp);
     }
@@ -197,14 +199,10 @@ class db{
     // Filtre "Where" et options
     $where=array();
     foreach($table1Where as $key => $value){
-      $escapedValue=htmlentities($value,ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
-      $escapedValue=mysqli_real_escape_string($this->conn,$escapedValue);
-      $where[]="`$table1Name`.`$key`='$escapedValue'";
+      $where[]=$this->makeSearch($key,$value);
     }
     foreach($table2Where as $key => $value){
-      $escapedValue=htmlentities($value,ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
-      $escapedValue=mysqli_real_escape_string($this->conn,$escapedValue);
-      $where[]="`$table2Name`.`$key`='$escapedValue'";
+      $where[]=$this->makeSearch($key,$value);
     }
     $where=join(" AND ",$where);
   
@@ -342,6 +340,50 @@ class db{
     $this->insert($table,$tab,$fields);
   }
 
+
+  function makeSearch($key,$value){
+    // Trim des valeurs et opérateurs
+    $value=trim($value);
+    // Par défaut, opérateur =
+    $operator="=";
+
+    // BETWEEN
+    if(substr($value,0,7)=="BETWEEN"){
+      $tmp=trim(substr($value,7));
+      $tmp=explode("AND",$tmp);
+      $value1=htmlentities(trim($tmp[0]),ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
+      $value1=$this->escapeString($value1);
+      $value2=htmlentities(trim($tmp[1]),ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
+      $value2=$this->escapeString($value2);
+      return "{$key} BETWEEN '$value1' AND '$value2'";
+
+    // Opérateurs =, >, <, >=, <=, <>
+    }elseif(substr($value,0,2)==">="){
+      $operator=">=";
+      $value=trim(substr($value,2));
+    }elseif(substr($value,0,2)=="<="){
+      $operator="<=";
+      $value=trim(substr($value,2));
+    }elseif(substr($value,0,2)=="<>"){
+      $operator="<>";
+      $value=trim(substr($value,2));
+    }elseif(substr($value,0,1)=="="){
+      $operator="=";
+      $value=trim(substr($value,1));
+    }elseif(substr($value,0,1)==">"){
+      $operator=">";
+      $value=trim(substr($value,1));
+    }elseif(substr($value,0,1)=="<"){
+      $operator="<";
+      $value=trim(substr($value,1));
+    }
+
+    $value=htmlentities($value,ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
+    $value=$this->escapeString($value);
+    return "{$key}{$operator}'$value'";
+  }
+
+
 }
 
 class dbh{
@@ -349,6 +391,8 @@ class dbh{
   var $dbname;
   var $dbuser;
   var $dbpass;
+  var $error;
+  var $fullErrors;
   var $pdo;
   var $stmt;
   var $result;
@@ -375,6 +419,10 @@ class dbh{
     $this->stmt->execute($data);
     $this->result=$this->stmt->fetchAll();
     $this->nb=count($this->result);
+    $errors=$this->stmt->errorInfo();
+
+    $this->error=$errors[1];
+    $this->fullErrors=$errors;
   }
 
   /**

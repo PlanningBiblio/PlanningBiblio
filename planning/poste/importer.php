@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.9
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/importer.php
 Création : mai 2011
-Dernière modification : 12 janvier 2015
+Dernière modification : 3 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -42,7 +42,7 @@ echo <<<EOD
 EOD;
 if(!isset($_GET['nom'])){		// Etape 1 : Choix du modèle à importer
   $db=new db();
-  $db->query("SELECT `nom`,`jour` FROM `{$dbprefix}pl_poste_modeles` WHERE `site`='$site' GROUP BY `nom`;");
+  $db->select2("pl_poste_modeles",array("nom","jour"),array("site"=>$site),"GROUP BY `nom`");
   if(!$db->result){			// Aucun modèle enregistré
     echo "Aucun modèle enregistré<br/><br/><a href='javascript:popup_closed();'>Fermer</a>\n";
   }
@@ -109,22 +109,37 @@ else{					// Etape 2 : Insertion des données
   foreach($dates as $elem){
     $i++;				// utilisé pour la colone jour du modèle (1=lundi, 2=mardi ...) : on commence à 1
     $sql=null;
-    $values=Array();
-    $absents=Array();
-    $jour=$semaine?"AND `jour`='$i'":null;
+    $values=array();
+    $absents=array();
 
-					// Importation du tableau
-    $db=new db();
-    $db->query("SELECT * FROM `{$dbprefix}pl_poste_modeles_tab` WHERE `nom`='$nom' AND `site`='$site' $jour;");
+    // Importation du tableau
+    // S'il s'agit d'un modèle pour une semaine
+    if($semaine){
+      $db=new db();
+      $db->select2("pl_poste_modeles_tab","*",array("nom"=>$nom, "site"=>$site, "jour"=>$i));
+    // S'il s'agit d'un modèle pour un seul jour
+    }else{
+      $db=new db();
+      $db->select2("pl_poste_modeles_tab","*",array("nom"=>$nom, "site"=>$site));
+    }
+
     $tableau=$db->result[0]['tableau'];
     $db=new db();
-    $db->query("DELETE FROM `{$dbprefix}pl_poste_tab_affect` WHERE `date`='$elem' AND `site`='$site';");
+    $db->delete2("pl_poste_tab_affect",array("date"=>$elem, "site"=>$site));
     $db=new db();
-    $db->query("INSERT INTO `{$dbprefix}pl_poste_tab_affect` (`date`,`tableau`,`site`) VALUES ('$elem','$tableau','$site');");
+    $db->insert2("pl_poste_tab_affect", array("date"=>$elem ,"tableau"=>$tableau ,"site"=>$site ));
 
+    // Importation des agents
+    // S'il s'agit d'un modèle pour une semaine
+    if($semaine){
+      $db=new db();
+      $db->select2("pl_poste_modeles","*", array("nom"=>$nom, "site"=>$site, "jour"=>$i));
+    // S'il s'agit d'un modèle pour un seul jour
+    }else{
+      $db=new db();
+      $db->select2("pl_poste_modeles","*", array("nom"=>$nom, "site"=>$site));
+    }
 
-    $db=new db();
-    $db->query("SELECT * FROM `{$dbprefix}pl_poste_modeles` WHERE `nom`='$nom' AND `site`='$site' $jour;");
     $filter=$config['Absences-validation']?"AND `valide`>0":null;
     if($db->result){
       if(isset($_GET['absents'])){	// on marque les absents
@@ -133,8 +148,9 @@ else{					// Etape 2 : Insertion des données
 	  $fin=$elem." ".$elem2['fin'];
 	  $db2=new db();
 	  $db2->select("absences","*","`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
-	  $absent=$db2->result?1:0;
-	  $values[]="('{$elem}','{$elem2['perso_id']}','{$elem2['poste']}','{$elem2['debut']}','{$elem2['fin']}','$absent','$site')";
+	  $absent=$db2->result?"1":"0";
+	  $values[]=array(":date"=>$elem, ":perso_id"=>$elem2['perso_id'], ":poste"=>$elem2['poste'], 
+	    ":debut"=>$elem2['debut'], ":fin"=>$elem2['fin'], ":absent"=>$absent, ":site"=>$site);
 	}
       }
       else{
@@ -144,18 +160,26 @@ else{					// Etape 2 : Insertion des données
 	  $db2=new db();
 	  $db2->select("absences","*","`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
 	  if($db2->nb==0){
-	    $values[]="('{$elem}','{$elem2['perso_id']}','{$elem2['poste']}','{$elem2['debut']}','{$elem2['fin']}','0','$site')";
+	    $values[]=array(":date"=>$elem, ":perso_id"=>$elem2['perso_id'], ":poste"=>$elem2['poste'], 
+	      ":debut"=>$elem2['debut'], ":fin"=>$elem2['fin'], ":absent"=>"0", ":site"=>$site);
 	  }
 	}
       }
       
-      if($values){			// insertion des données dans le planning du jour
-	$sql="INSERT INTO `{$dbprefix}pl_poste` (`date`,`perso_id`,`poste`,`debut`,`fin`,`absent`,`site`) VALUES ";
-	$sql.=join($values,",").";";
-	$delete=new db();
-	$delete->query("DELETE FROM `{$dbprefix}pl_poste` WHERE `date`='$elem' AND `site`='$site';");
-	$insert=new db();
-	$insert->query($sql);
+      // insertion des données dans le planning du jour
+      if(!empty($values)){
+	// Suppression des anciennes données
+	$db=new db();
+	$db->delete2("pl_poste", array("date"=>$elem, "site"=>$site));
+
+	// Insertion des nouvelles données
+	$req="INSERT INTO `{$dbprefix}pl_poste` (`date`,`perso_id`,`poste`,`debut`,`fin`,`absent`,`site`) ";
+	$req.="VALUES (:date, :perso_id, :poste, :debut, :fin, :absent, :site);";
+	$dbh=new dbh();
+	$dbh->prepare($req);
+	foreach($values as $value){
+	  $dbh->execute($value);
+	}
       }
     }
   }

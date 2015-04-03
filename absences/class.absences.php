@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 27 janvier 2015
+Dernière modification : 2 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -249,22 +249,12 @@ class absences{
   }
 
   public function fetchById($id){
-    $dbprefix=$GLOBALS['config']['dbprefix'];
-    $req="SELECT `{$dbprefix}personnel`.`nom` AS `nom`, `{$dbprefix}personnel`.`prenom` AS `prenom`, "
-      ."`{$dbprefix}personnel`.`id` AS `perso_id`, `{$dbprefix}personnel`.`mail` AS `mail`, "
-      ."`{$dbprefix}personnel`.`mailsResponsables` AS `mailsResponsables`, "
-      ."`{$dbprefix}absences`.`id` AS `id`, `{$dbprefix}absences`.`debut` AS `debut`, "
-      ."`{$dbprefix}absences`.`fin` AS `fin`, `{$dbprefix}absences`.`nbjours` AS `nbjours`, "
-      ."`{$dbprefix}absences`.`motif` AS `motif`, `{$dbprefix}absences`.`commentaires` AS `commentaires`, "
-      ."`{$dbprefix}absences`.`valideN1` AS `valideN1`, `{$dbprefix}absences`.`validationN1` AS `validationN1`, "
-      ."`{$dbprefix}absences`.`valide` AS `valideN2`, `{$dbprefix}absences`.`validation` AS `validationN2`, "
-      ."`{$dbprefix}absences`.`pj1` AS `pj1`, `{$dbprefix}absences`.`pj2` AS `pj2`, `{$dbprefix}absences`.`so` AS `so`, "
-      ."`{$dbprefix}absences`.`demande` AS `demande` "
-      ."FROM `{$dbprefix}absences` INNER JOIN `{$dbprefix}personnel` "
-      ."ON `{$dbprefix}absences`.`perso_id`=`{$dbprefix}personnel`.`id` "
-      ."WHERE `{$dbprefix}absences`.`id`='$id';";
     $db=new db();
-    $db->query($req);
+    $db->selectInnerJoin(array("absences","perso_id"),array("personnel","id"),
+      array("id","debut","fin","nbjours","motif","commentaires","valideN1","validationN1","pj1","pj2","so","demande",
+	array("name"=>"valide","as"=>"valideN2"),array("name"=>"validation","as"=>"validationN2")),
+      array("nom","prenom",array("name"=>"id","as"=>"perso_id"),"mail","mailsResponsables"),
+      array("id"=>$id));
     if($db->result){
       $elem=$db->result[0];
       $elem['mailsResponsables']=explode(";",html_entity_decode($elem['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
@@ -294,8 +284,10 @@ class absences{
 	// Récupération du numéro du site concerné par la date courante
 	$j=$jour-1+($semaine*7)-7;
 	$site=null;
-	if(array_key_exists($j,$temps) and array_key_exists(4,$temps[$j])){
-	  $site=$temps[$j][4];
+	if(is_array($temps)){
+	  if(array_key_exists($j,$temps) and array_key_exists(4,$temps[$j])){
+	    $site=$temps[$j][4];
+	  }
 	}
 	// Ajout du numéro du droit correspondant à la gestion des absences de ce site
 	if(!in_array("20".$site,$droitsAbsences) and $site){

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.3
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 28 mars 2015
+Dernière modification : 3 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -65,8 +65,13 @@ $siteAgents=array(0,0);	// Agents par site
 
 // Récupération des couleur en fonction des statuts
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}select_statuts`;");
+$db->select2("select_statuts");
 $couleurStatut=$db->result;
+
+// Recherche des élements dans pl_poste afin  de compter les heures et le nombre d'agents
+$db=new db();
+$debutREQ=$db->escapeString($debut);
+$finREQ=$db->escapeString($fin);
 
 $req="SELECT `{$dbprefix}pl_poste`.`date` AS `date`, `{$dbprefix}pl_poste`.`debut` AS `debut`, ";
 $req.="`{$dbprefix}pl_poste`.`fin` AS `fin`, `{$dbprefix}personnel`.`id` AS `perso_id`, ";
@@ -75,11 +80,9 @@ $req.="`{$dbprefix}personnel`.`nom` AS `nom`,`{$dbprefix}personnel`.`prenom` AS 
 $req.="`{$dbprefix}personnel`.`heuresHebdo` AS `heuresHebdo`,`{$dbprefix}personnel`.`statut` AS `statut` ";
 $req.="FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}personnel` ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id` ";
 $req.="INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}postes`.`id`=`{$dbprefix}pl_poste`.`poste` ";
-$req.="WHERE `date`>='$debut' AND `date`<='$fin' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' ";
+$req.="WHERE `date`>='$debutREQ' AND `date`<='$finREQ' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' ";
 $req.="ORDER BY `nom`,`prenom`;";
 
-// Recherche des élements dans pl_poste afin  de compter les heures et le nombre d'agents
-$db=new db();
 $db->query($req);
 if($db->result){
   foreach($db->result as $elem){
@@ -97,9 +100,15 @@ if($db->result){
     $tab[$elem['perso_id']][$elem['date']]+=diff_heures($elem['debut'],$elem['fin'],"decimal");	// ajout des heures par jour
     $tab[$elem['perso_id']]['total']+=diff_heures($elem['debut'],$elem['fin'],"decimal");	// ajout des heures sur toutes la période
     if($elem["site"]){
+      if(!array_key_exists("site{$elem['site']}",$tab[$elem['perso_id']])){
+	$tab[$elem['perso_id']]["site{$elem['site']}"]=0;
+      }
       $tab[$elem['perso_id']]["site{$elem['site']}"]+=diff_heures($elem['debut'],$elem['fin'],"decimal");	// ajout des heures sur toutes la période par site
     }
     $totalHeures+=diff_heures($elem['debut'],$elem['fin'],"decimal");		// compte la somme des heures sur la période
+    if(!array_key_exists($elem['site'],$siteHeures)){
+      $siteHeures[$elem['site']]=0;
+    }
     $siteHeures[$elem['site']]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
   }
 }
@@ -129,7 +138,10 @@ foreach($dates as $d){
 	$totalAgents++;
 
 	for($i=1;$i<=$config['Multisites-nombre'];$i++){
-	  if($elem["site$i"]){
+	  if(array_key_exists("site$i",$elem)){
+	    if(!array_key_exists($i,$siteAgents)){
+	      $siteAgents[$i]=0;
+	    }
 	    $siteAgents[$i]++;
 	  }
 	}
@@ -152,8 +164,8 @@ $_SESSION['oups']['stat_nbAgents']=$nbAgents;
 $keys=array_keys($tab);
 foreach($keys as $key){
   for($i=1;$i<=$config['Multisites-nombre'];$i++){
-    $tab[$key]["site{$i}Semaine"]=$tab[$key]["site{$i}"]?number_format($tab[$key]["site{$i}"]/$nbSemaines,2,'.',' '):"-";
-    $tab[$key]["site{$i}"]=$tab[$key]["site{$i}"]?number_format($tab[$key]["site{$i}"],2,'.',' '):"-";
+    $tab[$key]["site{$i}Semaine"]=array_key_exists("site{$i}",$tab[$key])?number_format($tab[$key]["site{$i}"]/$nbSemaines,2,'.',' '):"-";
+    $tab[$key]["site{$i}"]=array_key_exists("site{$i}",$tab[$key])?number_format($tab[$key]["site{$i}"],2,'.',' '):"-";
   }
   $tab[$key]['total']=number_format($tab[$key]['total'],2,'.',' ');
   $tab[$key]['semaine']=number_format($tab[$key]['total']/$nbSemaines,2,'.',' ');		// ajout la moyenne par semaine

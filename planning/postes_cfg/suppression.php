@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/suppression.php
 Création : 10 septembre 2012
-Dernière modification : 4 novembre 2014
+Dernière modification : 3 avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -18,16 +18,19 @@ Page appelée en arrière plan par la fonction JavaScript "popup" en cas de clic
 
 require_once "class.tableaux.php";
 
+
+$numero=$_GET['numero'];
+
 echo "<div style='text-align:center'>\n";
 if(isset($_GET['confirm'])){
   $db=new db();
-  $db->query("DELETE FROM `{$dbprefix}pl_poste_horaires` WHERE `numero`='{$_GET['numero']}';");
+  $db->delete2("pl_poste_horaires", array("numero"=>$numero));
   $db=new db();
-  $db->query("DELETE FROM `{$dbprefix}pl_poste_cellules` WHERE `numero`='{$_GET['numero']}';");
+  $db->delete2("pl_poste_cellules", array("numero"=>$numero));
   $db=new db();
-  $db->query("DELETE FROM `{$dbprefix}pl_poste_lignes` WHERE `numero`='{$_GET['numero']}';");
+  $db->delete2("pl_poste_lignes", array("numero"=>$numero));
   $db=new db();
-  $db->query("DELETE FROM `{$dbprefix}pl_poste_tab` WHERE `tableau`='{$_GET['numero']}';");
+  $db->delete2("pl_poste_tab", array("tableau"=>$numero));
   
   echo "<br/>Le tableau a été supprimé.<br/><br/>\n";
   echo "<a href='javascript:parent.location.href=\"index.php?page=planning/postes_cfg/index.php&cfg-type=horaires\";'>Fermer</a>&nbsp;&nbsp;&nbsp;\n";

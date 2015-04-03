@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.9
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/postes_synthese.php
 Création : mai 2011
-Dernière modification : 29 avril 2014
+Dernière modification : 3 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -64,10 +64,10 @@ if($config['Multisites-nombre']>1 and !$selectedSites){
 $_SESSION['stat_poste_sites']=$selectedSites;
 // Filtre les sites dans les requêtes SQL
 if($config['Multisites-nombre']>1 and is_array($selectedSites)){
-  $reqSites="AND `{$dbprefix}pl_poste`.`site` IN (0,".join(",",$selectedSites).")";
+  $sitesSQL="0,".join(",",$selectedSites);
 }
 else{
-  $reqSites=null;
+  $sitesSQL="0,1";
 }
 
 $tab=array();
@@ -87,15 +87,19 @@ if(is_array($postes)){
   //	On stock le tout dans le tableau $resultat
   $postes_select=join($postes,",");
   $db=new db();
+  $debutREQ=$db->escapeString($debutSQL);
+  $finREQ=$db->escapeString($finSQL);
+  $sitesREQ=$db->escapeString($sitesSQL);
   $req="SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
     `{$dbprefix}pl_poste`.`date` as `date`,  `{$dbprefix}pl_poste`.`poste` as `poste`, 
     `{$dbprefix}personnel`.`nom` as `nom`, `{$dbprefix}personnel`.`prenom` as `prenom`, 
     `{$dbprefix}personnel`.`id` as `perso_id`, `{$dbprefix}pl_poste`.site as `site` 
     FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}personnel` 
     ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id` 
-    WHERE `{$dbprefix}pl_poste`.`date`>='$debutSQL' AND `{$dbprefix}pl_poste`.`date`<='$finSQL' 
+    WHERE `{$dbprefix}pl_poste`.`date`>='$debutREQ' AND `{$dbprefix}pl_poste`.`date`<='$finREQ' 
     AND `{$dbprefix}pl_poste`.`poste` IN ($postes_select) AND `{$dbprefix}pl_poste`.`absent`<>'1' 
-    AND `{$dbprefix}pl_poste`.`supprime`<>'1' $reqSites ORDER BY `poste`,`nom`,`prenom`;";
+    AND `{$dbprefix}pl_poste`.`supprime`<>'1'  AND `{$dbprefix}pl_poste`.`site` IN ($sitesREQ) 
+    ORDER BY `poste`,`nom`,`prenom`;";
   $db->query($req);
   $resultat=$db->result;
   
@@ -224,7 +228,11 @@ echo "</td><td>\n";
 if($tab){
   //	Recherche du nombre de jours concernés
   $db=new db();
-  $db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debutSQL' AND '$finSQL' $reqSites GROUP BY `date`;");
+  $debutREQ=$db->escapeString($debutSQL);
+  $finREQ=$db->escapeString($finSQL);
+  $sitesREQ=$db->escapeString($sitesSQL);
+
+  $db->select("pl_poste","`date`","`date` BETWEEN '$debutREQ' AND '$finREQ' AND `site` IN ($sitesREQ)","GROUP BY `date`;");
   $nbJours=$db->nb;
 
   echo "<b>Statistiques par poste (Synthèse) du $debut au $fin</b>\n";

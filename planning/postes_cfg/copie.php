@@ -1,22 +1,22 @@
 <?php
-/********************************************************************************************************************************
-* Planning Biblio, Version 1.7.2
-* Licence GNU/GPL (version 2 et au dela)											*
-* Voir les fichiers README.md et LICENSE											*
-* Copyright (C) 2011-2015 - Jérôme Combes											*
-*																*
-* Fichier : planning/postes_cfg/copie.php											*
-* Création : mai 2011														*
-* Dernière modification : 16 janvier 2013											*
-* Auteur : Jérôme Combes, jerome@planningbilbio.fr										*
-*																*
-* Description :															*
-* Permet de copier un tableau existant. Affiche un formulaire demandant le nom du nouveau tableau. Insère les informations	*
-* dans la base de données après validation											*
-*																*
-* Page appelée par la fonction JavaScript "popup", qui ouvre cette page dans un cadre flottant, lors du click sur l'icône copie	*
-* de la page "planning/postes_cfg/index.php"											*
-*********************************************************************************************************************************/
+/*
+Planning Biblio, Version 1.9.4
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.md et LICENSE
+Copyright (C) 2011-2015 - Jérôme Combes
+
+Fichier : planning/postes_cfg/copie.php
+Création : mai 2011
+Dernière modification : 3 avril 2015
+Auteur : Jérôme Combes, jerome@planningbilbio.fr
+
+Description :
+Permet de copier un tableau existant. Affiche un formulaire demandant le nom du nouveau tableau. Insère les informations
+dans la base de données après validation
+
+Page appelée par la fonction JavaScript "popup", qui ouvre cette page dans un cadre flottant, lors du click sur l'icône copie
+de la page "planning/postes_cfg/index.php"
+*/
 
 require_once "class.tableaux.php";
 
@@ -26,24 +26,34 @@ $retour=isset($_GET['retour'])?$_GET['retour']:"modif.php";
 if(isset($_GET['confirm'])){
 	  //		Copie des horaires
   $values=array();
-  $db->query("SELECT `debut`,`fin`,`tableau` FROM `{$dbprefix}pl_poste_horaires` WHERE `numero`='$numero1' ORDER BY `tableau`,`debut`,`fin`;");
+  $db->select2("pl_poste_horaires",array("debut","fin","tableau"),array("numero"=>$numero1),"ORDER BY `tableau`,`debut`,`fin`");
   if($db->result){
     echo "<br/><br/><b>Copie en cours. Veuillez patienter ...</b>\n";
     $db2=new db();
-    $db2->query("SELECT MAX(`tableau`) AS `tableau` FROM `{$dbprefix}pl_poste_tab`;");
+    $db2->select2("pl_poste_tab",array(array("name"=>"MAX(tableau)","as"=>"tableau"),"site"));
     $numero2=$db2->result[0]['tableau']+1;
     foreach($db->result as $elem){
       if(array_key_exists('tableau',$elem)){
-	$values[]="('{$elem['debut']}','{$elem['fin']}','{$elem['tableau']}','$numero2')";
+	$values[]=array(":debut"=>$elem['debut'], ":fin"=>$elem['fin'], ":tableau"=>$elem['tableau'], ":numero"=>$numero2);
       }
     }
-    $req="INSERT INTO `{$dbprefix}pl_poste_horaires` (`debut`,`fin`,`tableau`,`numero`) VALUES ";
-    $req.=join($values,",").";";
-    $db2=new db();
-    $db2->query($req);
+    $req="INSERT INTO `{$dbprefix}pl_poste_horaires` (`debut`,`fin`,`tableau`,`numero`) VALUES (:debut, :fin, :tableau, :numero);";
+    $db2=new dbh();
+    $db2->prepare($req);
+    foreach($values as $elem){
+      $db2->execute($elem);
+    }
+
     $nom=htmlentities($_GET['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8");
-    $db2=new db();		//	Enregistrement du nouveau tableau
-    $db2->query("INSERT INTO `{$dbprefix}pl_poste_tab` (`nom`,`tableau`) VALUES ('$nom','$numero2');");
+
+    // Récupération du site
+    $db2=new db();
+    $db2->select2("pl_poste_tab","site",array("tableau"=>$numero1));
+    $site=$db2->result[0]["site"];
+
+    // Enregistrement du nouveau tableau
+    $db2=new db();		
+    $db2->insert2("pl_poste_tab", array("nom"=>$nom ,"tableau"=>$numero2, "site"=>$site));
   }
   else{		// par sécurité, si pas d'horaires à  copier, on stop le script pour éviter d'avoir une incohérence dans les numéros de tableaux
     echo "<script type='text/javaScript'>parent.location.href='index.php?page=planning/postes_cfg/modif.php&cfg-type=horaires&numero=$numero';</script>\n";
@@ -52,32 +62,39 @@ if(isset($_GET['confirm'])){
 
 	  //		Copie des lignes
   $values=array();
-  $db->query("SELECT `tableau`,`ligne`,`poste`,`type` FROM `{$dbprefix}pl_poste_lignes` WHERE `numero`='$numero1' ORDER BY `tableau`,`ligne`;");
+  $db->select2("pl_poste_lignes",array("tableau","ligne","poste","type"),array("numero"=>$numero1),"ORDER BY `tableau`,`ligne`");
   if($db->result){
     foreach($db->result as $elem){
       if(array_key_exists('ligne',$elem)){
-	$values[]="('{$elem['tableau']}','{$elem['ligne']}','{$elem['poste']}','{$elem['type']}','$numero2')";
+	$values[]=array(":tableau"=>$elem['tableau'], ":ligne"=>$elem['ligne'], ":poste"=>$elem['poste'], ":type"=>$elem['type'],
+	  "numero"=>$numero2);
       }
     }
-    $req="INSERT INTO `{$dbprefix}pl_poste_lignes` (`tableau`,`ligne`,`poste`,`type`,`numero`) VALUES ";
-    $req.=join($values,",").";";
-    $db2=new db();
-    $db2->query($req);
+    $req="INSERT INTO `{$dbprefix}pl_poste_lignes` (`tableau`,`ligne`,`poste`,`type`,`numero`) ";
+    $req.="VALUES (:tableau, :ligne, :poste, :type, :numero)";
+    $db2=new dbh();
+    $db2->prepare($req);
+    foreach($values as $elem){
+      $db2->execute($elem);
+    }
   }
 
 	  //		Copie des cellules grises
   $values=array();
-  $db->query("SELECT `ligne`,`colonne`,`tableau` FROM `{$dbprefix}pl_poste_cellules` WHERE `numero`='$numero1' ORDER BY `tableau`,`ligne`,`colonne`;");
+  $db->select2("pl_poste_cellules",array("ligne","colonne","tableau"),array("numero"=>$numero1),"ORDER BY `tableau`,`ligne`,`colonne`");
   if($db->result){
     foreach($db->result as $elem){
       if(array_key_exists('ligne',$elem) and array_key_exists('colonne',$elem)){
-	$values[]="('{$elem['ligne']}','{$elem['colonne']}','{$elem['tableau']}','$numero2')";
+	$values[]=array(":ligne"=>$elem['ligne'], ":colonne"=>$elem['colonne'], ":tableau"=>$elem['tableau'], ":numero"=>$numero2);
       }
     }
-    $req="INSERT INTO `{$dbprefix}pl_poste_cellules` (`ligne`,`colonne`,`tableau`,`numero`) VALUES ";
-    $req.=join($values,",").";";
-    $db2=new db();
-    $db2->query($req);
+    $req="INSERT INTO `{$dbprefix}pl_poste_cellules` (`ligne`,`colonne`,`tableau`,`numero`) ";
+    $req.="VALUES (:ligne, :colonne, :tableau, :numero)";
+    $db2=new dbh();
+    $db2->prepare($req);
+    foreach($values as $elem){
+      $db2->execute($elem);
+    }
   }
 
 	  //		Retour à  la page principale

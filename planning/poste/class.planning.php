@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.2
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 18 mars 2015
+Dernière modification : 3 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -110,6 +110,7 @@ class planning{
     }
 
     $menudiv=null;
+    if(is_array($agents))
     foreach($agents as $elem){
       $hres_jour=0;
       $hres_sem=0;
@@ -133,7 +134,7 @@ class planning{
       if($config['Planning-sansRepas']){
 	if($debut>="11:30:00" and $fin<="14:30:00"){
 	  $db_sr=new db();
-	  $db_sr->query("SELECT * FROM `{$dbprefix}pl_poste` WHERE `date`='$date' AND `perso_id`='{$elem['id']}' AND `debut` >='11:30:00' AND `fin`<='14:30:00';");
+	  $db_sr->select2("pl_poste","*",array("date"=>$date, "perso_id"=>$elem['id'], "debut"=>">=11:30:00", "fin"=>"<=14:30:00"));
 	  if($db_sr->result){
 	    $sr=1;
 	    $nom.=$msg_SR;
@@ -163,7 +164,12 @@ class planning{
 
       // affihage des heures faites ce jour + les heures de la cellule
       $db_heures = new db();
-      $db_heures->query("SELECT `{$dbprefix}pl_poste`.`debut` AS `debut`,`{$dbprefix}pl_poste`.`fin` AS `fin` FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` WHERE `{$dbprefix}pl_poste`.`perso_id`='{$elem['id']}' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`date`='$date' AND `{$dbprefix}postes`.`statistiques`='1';");
+      $db_heures->selectInnerJoin(array("pl_poste","poste"),array("postes","id"),
+	array("debut","fin"),
+	array(),
+	array("perso_id"=>$elem['id'], "absent"=>"<>1", "date"=>$date),
+	array("statistiques"=>"1"));
+
       if($stat){ 	// vérifier si le poste est compté dans les stats
 	$hres_jour=diff_heures($debut,$fin,"decimal");
       }
@@ -175,7 +181,10 @@ class planning{
       
       // affihage des heures faites cette semaine + les heures de la cellule
       $db_heures = new db();
-      $db_heures->query("SELECT `{$dbprefix}pl_poste`.`debut` AS `debut`,`{$dbprefix}pl_poste`.`fin` AS `fin` FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` WHERE `{$dbprefix}pl_poste`.`perso_id`='{$elem['id']}' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`date` BETWEEN '$j1' AND '$j7' AND `{$dbprefix}postes`.`statistiques`='1';");
+      $db_heures->selectInnerJoin(array("pl_poste","poste"),array("postes","id"),
+	array("debut","fin"),array(),
+	array("perso_id"=>$elem['id'], "absent"=>"<>1", "`date`"=>"BETWEEN{$j1}AND{$j7}"),
+	array("statistiques"=>"1"));
 
       if($stat){ 	// vérifier si le poste est compté dans les stats
 	$hres_sem=diff_heures($debut,$fin,"decimal");
@@ -193,7 +202,10 @@ class planning{
 	$date1=date("Y-m-d",strtotime("-3 weeks",strtotime($j1)));
 	$date2=$j7;	// fin de semaine courante
 	$db_hres4 = new db();
-	$db_hres4->query("SELECT `{$dbprefix}pl_poste`.`debut` AS `debut`,`{$dbprefix}pl_poste`.`fin` AS `fin` FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` WHERE `{$dbprefix}pl_poste`.`perso_id`='{$elem['id']}' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`date` BETWEEN '$date1' AND '$date2' AND `{$dbprefix}postes`.`statistiques`='1';");
+	$db_hres4->selectInnerJoin(array("pl_poste","poste"), array("postes","id"), array("debut","fin"), array(),
+	  array("perso_id"=>$elem['id'], "absent"=>"<>1", "`date`"=>"BETWEEN{$date1}AND{$date2}"),
+	  array("statistiques"=>"1"));
+
 	if($stat){ 	// vérifier si le poste est compté dans les stats
 	  $hres_4sem=diff_heures($debut,$fin,"decimal");
 	}

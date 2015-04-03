@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.8
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
-Fichier : activites/config.php
+Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 16 décembre 2014
+Dernière modification : 2 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -27,7 +27,7 @@ echo "<h3>Configuration</h3>\n";
 if($_POST){
   // Si les checkboxes ne sont pas cochées, elles ne sont pas transmises donc pas réinitialisées. Donc on les réinitialise ici.
   $db=new db();
-  $db->select("config","nom","type='checkboxes'");
+  $db->select2("config","nom",array("type"=>"checkboxes"));
   if($db->result){
     foreach($db->result as $elem){
       if(!array_key_exists($elem['nom'],$_POST)){

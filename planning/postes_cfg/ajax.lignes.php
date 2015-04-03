@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/ajax.lignes.php
 Création : 3 février 2014
-Dernière modification : 3 juin 2014
+Dernière modification : 3 mars 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,13 +23,14 @@ include "../../include/config.php";
 include "class.tableaux.php";
 
 $keys=array_keys($_POST);
-$values=array();
 $tableauNumero=$_POST['id'];
 
 // Suppression des infos concernant ce tableau dans la table pl_poste_lignes
 $db=new db();
-$db->query("DELETE FROM `{$dbprefix}pl_poste_lignes` WHERE `numero`='$tableauNumero';");
+$db->delete2("pl_poste_lignes",array("numero"=>$tableauNumero));
+
 // Insertion des données dans la table pl_poste_lignes
+$values=array();
 foreach($keys as $key){
   if($_POST[$key] and substr($key,0,6)=="select"){
     $tab=explode("_",$key);  //1: tableau ; 2 lignes
@@ -44,31 +45,40 @@ foreach($keys as $key){
     else{
       $type="poste";
     }
-    $values[]="('$tableauNumero','{$tab[1]}','{$tab[2]}','{$_POST[$key]}','$type')";
+    $values[]=array(":numero"=>$tableauNumero, ":tableau"=>$tab[1], ":ligne"=>$tab[2], ":poste"=>$_POST[$key], ":type"=>$type);
   }
 }
 if($values[0]){
-  $sql="INSERT INTO `{$dbprefix}pl_poste_lignes` (`numero`,`tableau`,`ligne`,`poste`,`type`) VALUES ";
-  $sql.=join($values,",").";";
-  $db=new db();
-  $db->query($sql);
+  $sql="INSERT INTO `{$dbprefix}pl_poste_lignes` (`numero`,`tableau`,`ligne`,`poste`,`type`) ";
+  $sql.="VALUES (:numero, :tableau, :ligne, :poste, :type);";
+
+  $db=new dbh();
+  $db->prepare($sql);
+  foreach($values as $elem){
+    $db->execute($elem);
+  }
 }
 
-$values=array();
 // Suppression des infos concernant ce tableau dans la table pl_poste_cellules
 $db=new db();
-$db->query("DELETE FROM `{$dbprefix}pl_poste_cellules` WHERE `numero`='$tableauNumero';");
+$db->delete2("pl_poste_cellules",array("numero"=>$tableauNumero));
+
 // Insertion des données dans la table pl_poste_cellules
+$values=array();
 foreach($keys as $key){
   if($_POST[$key] and substr($key,0,8)=="checkbox"){
     $tab=explode("_",$key);  //1: tableau ; 2 lignes ; 3 colonnes
-    $values[]="('$tableauNumero','{$tab[1]}','{$tab[2]}','{$tab[3]}')";
+    $values[]=array(":numero"=>$tableauNumero, ":tableau"=>$tab[1], ":ligne"=>$tab[2], ":colonne"=>$tab[3]);
   }
 }
 if(!empty($values)){
-  $sql="INSERT INTO `{$dbprefix}pl_poste_cellules` (`numero`,`tableau`,`ligne`,`colonne`) VALUES ";
-  $sql.=join($values,",").";";
-  $db=new db();
-  $db->query($sql);
+  $sql="INSERT INTO `{$dbprefix}pl_poste_cellules` (`numero`,`tableau`,`ligne`,`colonne`) ";
+  $sql.="VALUES (:numero, :tableau, :ligne, :colonne)";
+
+  $db=new dbh();
+  $db->prepare($sql);
+  foreach($values as $elem){
+    $db->execute($elem);
+  }
 }
 ?>

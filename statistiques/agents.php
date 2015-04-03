@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.9
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/agents.php
 Création : mai 2011
-Dernière modification : 29 avril 2014
+Dernière modification : 3 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -71,30 +71,37 @@ if($config['Multisites-nombre']>1 and !$selectedSites){
   }
 }
 $_SESSION['stat_agents_sites']=$selectedSites;
+
 // Filtre les sites dans les requêtes SQL
 if($config['Multisites-nombre']>1 and is_array($selectedSites)){
-  $reqSites="AND `{$dbprefix}pl_poste`.`site` IN (0,".join(",",$selectedSites).")";
+  $sitesSQL="0,".join(",",$selectedSites);
 }
 else{
-  $reqSites=null;
+  $sitesSQL="0,1";
 }
 
 $tab=array();
 //		--------------		Récupération de la liste des agents pour le menu déroulant		------------------------
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif`='Actif' ORDER BY `nom`,`prenom`;");
+$db->select2("personnel","*",array("actif"=>"Actif"),"ORDER BY `nom`,`prenom`");
 $agents_list=$db->result;
 
 if(is_array($agents) and $agents[0]){
   //	Recherche du nombre de jours concernés
   $db=new db();
-  $db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debutSQL' AND '$finSQL' $reqSites GROUP BY `date`;");
+  $debutREQ=$db->escapeString($debutSQL);
+  $finREQ=$db->escapeString($finSQL);
+  $sitesREQ=$db->escapeString($sitesSQL);
+  $db->select("pl_poste","`date`","`date` BETWEEN '$debutREQ' AND '$finREQ' AND `site` IN ($sitesREQ)","GROUP BY `date`;");
   $nbJours=$db->nb;
 
   //	Recherche des infos dans pl_poste et postes pour tous les agents sélectionnés
   //	On stock le tout dans le tableau $resultat
   $agents_select=join($agents,",");
   $db=new db();
+  $debutREQ=$db->escapeString($debutSQL);
+  $finREQ=$db->escapeString($finSQL);
+  $sitesREQ=$db->escapeString($sitesSQL);
   $req="SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
     `{$dbprefix}pl_poste`.`date` as `date`, `{$dbprefix}pl_poste`.`perso_id` as `perso_id`, 
     `{$dbprefix}pl_poste`.`poste` as `poste`, `{$dbprefix}pl_poste`.`absent` as `absent`, 
@@ -102,9 +109,9 @@ if(is_array($agents) and $agents[0]){
     `{$dbprefix}pl_poste`.`site` as `site` 
     FROM `{$dbprefix}pl_poste` 
     INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` 
-    WHERE `{$dbprefix}pl_poste`.`date`>='$debutSQL' AND `{$dbprefix}pl_poste`.`date`<='$finSQL' 
+    WHERE `{$dbprefix}pl_poste`.`date`>='$debutREQ' AND `{$dbprefix}pl_poste`.`date`<='$finREQ' 
     AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' 
-    AND `{$dbprefix}pl_poste`.`perso_id` IN ($agents_select) $reqSites 
+    AND `{$dbprefix}pl_poste`.`perso_id` IN ($agents_select) AND `{$dbprefix}pl_poste`.`site` IN ($sitesREQ) 
     ORDER BY `poste_nom`,`etage`;";
   $db->query($req);
   $resultat=$db->result;

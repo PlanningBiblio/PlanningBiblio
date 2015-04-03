@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 23 février 2014
+Dernière modification : 3 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -93,9 +93,8 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
 
 function deja_place($date,$poste){
   $deja=array(0);
-  $req="SELECT `perso_id` FROM `{$GLOBALS['config']['dbprefix']}pl_poste` WHERE `date`='$date' AND `absent`='0' AND `poste`='$poste' GROUP BY `perso_id`;";
   $db=new db();
-  $db->query($req);
+  $db->select2("pl_poste","perso_id",array("date"=>$date, "absent"=>"0", "poste"=>$poste),"GROUP BY `perso_id`");
   if($db->result){
     foreach($db->result as $elem){
       $deja[]=$elem['perso_id'];

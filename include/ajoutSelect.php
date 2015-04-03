@@ -1,17 +1,17 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/ajoutSelect.php
 Création : mai 2011
-Dernière modification : 12 septembre 2013
+Dernière modification : 2 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
-Permet d'ajouter et de supprimer des éléments dans les menu déroulant (motif d'absence, statut, service de rattachement ...)
+Permet d'ajouter et de supprimer des éléments dans les menu déroulant (service de rattachement, étage (pour les postes) ...)
 S'ouvre dans un cadre flottant à l'aide des fonctions JS ajoutSelect et popup
 
 */
@@ -27,7 +27,9 @@ if(isset($_GET['action']) and $_GET['action']=="ajout"){
   $nouveau=$_GET['nouveau'];
   $apres=$_GET['apres'];
   $db=new db();
-  $db->query("update {$dbprefix}$table set rang=rang+1 where rang>$apres;");
+  $apres=$db->escapeString($apres);
+  $tableSQL=$db->escapeString($table);
+  $db->query("update {$dbprefix}$tableSQL set rang=rang+1 where rang>$apres;");
   $rang=$apres+1;
   $db=new db();
   $db->insert2($table,array("valeur"=>$nouveau,"rang"=>$rang));
@@ -39,31 +41,31 @@ elseif(isset($_GET['action']) and $_GET['action']=="suppression"){
   
   //		---------------		verifions si la valeur à supprimer et urilisée		----------------//
   $existe=false;
-  $req="select valeur from {$dbprefix}$table where rang=$rang;";
   $db=new db();
-  $db->query($req);
+  $tableSQL=$db->escapeString($table);
+  $db->select2($tableSQL,"valeur",array("rang"=>$rang));
   $valeur=$db->result[0]['valeur'];
 
-  if($table=="select_abs")
-    $req="select * from {$dbprefix}absences where motif='$valeur';";
-  elseif($table=="select_statuts")
-    $req="select * from {$dbprefix}personnel where statut='$valeur';";
-  elseif($table=="select_services")
-    $req="select * from {$dbprefix}personnel where service='$valeur';";
-  elseif($table=="select_etages")
-    $req="select * from {$dbprefix}postes where etage='$valeur';";
+  if($table=="select_services"){
+    $db=new db();
+    $db->select2("personnel","*",array("service"=>$valeur));
+  }elseif($table=="select_etages"){
+    $db=new db();
+    $db->select2("postes","*",array("etage"=>$valeur));
+  }
 
-  $db=new db();
-  $db->query($req);
   if($db->result){		//		---------------		si la valeur à supprimer et urilisée		----------------//
     echo "<br/><font color='red'>Impossible de supprimer \"$valeur\" car cette valeur est utilisée</font><br/><br/>";
     echo "<a href='javascript:popup_closed();'>Fermer</a><br/><br/><hr>";
   }
   else{
     $db=new db();
-    $db->query("delete from {$dbprefix}$table where rang=$rang;");
+    $tableSQL=$db->escapeString($table);
+    $db->delete2($tableSQL,array("rang"=>$rang));
     $db=new db();
-    $db->query("update {$dbprefix}$table set rang=rang-1 where rang>$rang;");
+    $rangSQL=$db->escapeString($rang);
+    $tableSQL=$db->escapeString($table);
+    $db->query("update {$dbprefix}$tableSQL set rang=rang-1 where rang>$rangSQL;");
     echo "<script type='text/JavaScript'>parent.window.location.reload(false);</script>";
     echo "<script type='text/JavaScript'>popup_closed();</script>";
   }
@@ -122,7 +124,8 @@ echo "<input type='hidden' name='table' value='$table'/>";
 echo "<select name='apres' onchange='verif(\"ajout\");'>\n";
 echo "<option value='0'>-----------------------</option>\n";
 $db_select=new db();
-$db_select->query("select valeur,rang from {$dbprefix}$table order by rang;");
+$tableSQL=$db_select->escapeString($table);
+$db_select->select2($tableSQL,array("valeur","rang"),"1","order by rang");
 foreach($db_select->result as $elem){
   echo "<option value='".$elem['rang']."'>".$elem['valeur']."</option>\n";
   $rang=$elem['rang'];
@@ -158,7 +161,8 @@ echo "$terme à supprimer : ";
 echo "<select name='rang' onchange='verif(\"suppression\");'>\n";
 echo "<option value=''>-----------------------</option>\n";
 $db_select=new db();
-$db_select->query("select valeur,rang from {$dbprefix}$table order by rang;");
+$tableSQL=$db_select->escapeString($table);
+$db_select->select2($tableSQL,array("valeur","rang"),"1","order by rang");
 foreach($db_select->result as $elem){
   echo "<option value='".$elem['rang']."'>".$elem['valeur']."</option>\n";
 }

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.3
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : setup/fin.php
 Création : mai 2011
-Dernière modification : 9 octobre 2014
+Dernière modification : 3 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -25,7 +25,6 @@ $nom=htmlentities($_POST['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
 $prenom=htmlentities($_POST['prenom'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
 $password=$_POST['password'];
 $email=$_POST['email'];
-$dbprefix=$_POST['dbprefix'];
 $erreur=false;
 
 if(strlen($password)<6){
@@ -42,9 +41,9 @@ if($password!=$_POST['password2']){
   exit;
 }
 	
-$sql="UPDATE `{$dbprefix}personnel` SET `nom`='$nom', `prenom`='$prenom', `password`=MD5('$password'), `mail`='$email' WHERE `id`='1';";
+$password=md5($password);
 $db=new db();
-$db->query($sql);
+$db->update2("personnel",array("nom"=>$nom, "prenom"=>$prenom, "password"=>$password, "mail"=>$email), array("id"=>"1"));
 if($db->error){
   $erreur=true;
 }

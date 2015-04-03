@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.9
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/supprimer.php
 Création : mai 2011
-Dernière modification : 13 janvier 2015
+Dernière modification : 3 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -63,18 +63,28 @@ elseif(!isset($_GET['confirm'])){		// Etape 2 : Demande confirmation
   }
 }
 else{
-  if($_GET['semaineJour']=="semaine"){		// suppression de la semaine
-    $req[]="DELETE FROM `{$dbprefix}pl_poste` WHERE `site`='$site' AND `date` BETWEEN '$debut' AND '$fin';";
-    $req[]="DELETE FROM `{$dbprefix}pl_poste_tab_affect` WHERE `site`='$site' AND `date` BETWEEN '$debut' AND '$fin';";
+  // Suppression de la semaine
+  if($_GET['semaineJour']=="semaine"){
+    // Table pl_poste (affectation des agents)
+    $db=new db();
+    $siteSQL=$db->escapeString($site);
+    $db->query("DELETE FROM `{$dbprefix}pl_poste` WHERE `site`='$siteSQL' AND `date` BETWEEN '$debut' AND '$fin';");
+
+    // Table pl_poste_tab_affect (affectation des tableaux)
+    $db=new db();
+    $siteSQL=$db->escapeString($site);
+    $db->query("DELETE FROM `{$dbprefix}pl_poste_tab_affect` WHERE `site`='$siteSQL' AND `date` BETWEEN '$debut' AND '$fin';");
   }
-  else{						// suppression du jour
-    $req[]="DELETE FROM `{$dbprefix}pl_poste` WHERE `site`='$site' AND `date`='$date';";
-    $req[]="DELETE FROM `{$dbprefix}pl_poste_tab_affect` WHERE `site`='$site' AND `date`='$date';";
+  // Suppression du jour
+  else{
+    // Table pl_poste (affectation des agents)
+    $db=new db();
+    $db->delete2("pl_poste",array("site"=>$site, "date"=>$date));
+
+    // Table pl_poste_tab_affect (affectation des tableaux)
+    $db=new db();
+    $db->delete2("pl_poste_tab_affect",array("site"=>$site, "date"=>$date));
   }
-  $db=new db();
-  $db->query($req[0]);
-  $db=new db();
-  $db->query($req[1]);
   echo "<script type='text/JavaScript'>top.document.location.href=\"index.php\";</script>\n";
 }
 ?>

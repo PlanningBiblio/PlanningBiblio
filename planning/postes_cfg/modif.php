@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/modif.php
 Création : mai 2011
-Dernière modification : 20 janvier 2015
+Dernière modification : 3 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -29,7 +29,7 @@ if(isset($_GET['numero']))
 $_SESSION['cfg_num']=$tableauNumero;
 
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}pl_poste_tab` WHERE `tableau`='$tableauNumero';");
+$db->select2("pl_poste_tab","*",array("tableau"=>$tableauNumero));
 $tableauNom=$db->result[0]['nom'];
 
 // Affichage

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 22 janvier 2015
+Dernière modification : 2 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -114,7 +114,7 @@ if(!isset($agent)){
 
 //	Selection des horaires de travail
 $db=new db();
-$db->select("personnel","temps","id='$perso_id'");
+$db->select2("personnel","temps",array("id"=>$perso_id));
 $temps=unserialize($db->result[0]['temps']);		//	$temps = emploi du temps
 
 //	Selection des absences
@@ -125,9 +125,14 @@ $absences=$db->result;					//	$absences = tableau d'absences
 	
 //	Selection des postes occupés
 $db=new db();
+$perso_id=$db->escapeString($perso_id);
+$debutREQ=$db->escapeString($debutSQL);
+$finREQ=$db->escapeString($finSQL);
+$order=$db->escapeString($order);
+
 $requete="SELECT pl_poste.`date` AS `date`, pl_poste.debut AS debut, pl_poste.fin AS fin, pl_poste.absent AS absent, 
   postes.nom as poste FROM pl_poste INNER JOIN postes on pl_poste.poste=postes.id WHERE pl_poste.perso_id='$perso_id' 
-  and `date`>='$debutSQL' and `date`<='$finSQL' order by $order,`debut`,`fin`;";
+  and `date`>='$debutREQ' and `date`<='$finREQ' order by $order,`debut`,`fin`;";
 $requete=str_replace("pl_poste","`{$dbprefix}pl_poste`",$requete);
 $requete=str_replace("postes","`{$dbprefix}postes`",$requete);
 $db->query($requete);

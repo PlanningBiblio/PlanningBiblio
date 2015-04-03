@@ -71,28 +71,32 @@ $_SESSION['stat_statut_sites']=$selectedSites;
 
 // Filtre les sites dans les requêtes SQL
 if($config['Multisites-nombre']>1 and is_array($selectedSites)){
-  $reqSites="AND `{$dbprefix}pl_poste`.`site` IN (0,".join(",",$selectedSites).")";
+  $sitesSQL="0,".join(",",$selectedSites);
 }
 else{
-  $reqSites=null;
+  $sitesSQL="0,1";
 }
 
 $tab=array();
 
 //		--------------		Récupération de la liste des statuts pour le menu déroulant		------------------------
 $db=new db();
-$db->select("select_statuts");
+$db->select2("select_statuts");
 $statuts_list=$db->result;
 
 if(is_array($statuts) and $statuts[0]){
   //	Recherche du nombre de jours concernés
   $db=new db();
-  $db->select("pl_poste","date","`date` BETWEEN '$debutSQL' AND '$finSQL' $reqSites","GROUP BY `date`");
+  $debutREQ=$db->escapeString($debutSQL);
+  $finREQ=$db->escapeString($finSQL);
+  $sitesREQ=$db->escapeString($sitesSQL);
+
+  $db->select("pl_poste","`date`","`date` BETWEEN '$debutREQ' AND '$finREQ' AND `site` IN ($sitesREQ)","GROUP BY `date`;");
   $nbJours=$db->nb;
 
   // Recherche des statuts de chaque agent
   $db=new db();
-  $db->select("personnel","id,statut");
+  $db->select2("personnel",array("id","statut"));
   foreach($db->result as $elem){
     $statutId=null;
     foreach($statuts_list as $stat){
@@ -108,6 +112,10 @@ if(is_array($statuts) and $statuts[0]){
   //	On stock le tout dans le tableau $resultat
 
   $db=new db();
+  $debutREQ=$db->escapeString($debutSQL);
+  $finREQ=$db->escapeString($finSQL);
+  $sitesREQ=$db->escapeString($sitesSQL);
+
   $req="SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
     `{$dbprefix}pl_poste`.`date` as `date`, `{$dbprefix}pl_poste`.`perso_id` as `perso_id`, 
     `{$dbprefix}pl_poste`.`poste` as `poste`, `{$dbprefix}pl_poste`.`absent` as `absent`, 
@@ -115,8 +123,9 @@ if(is_array($statuts) and $statuts[0]){
     `{$dbprefix}pl_poste`.`site` as `site` 
     FROM `{$dbprefix}pl_poste` 
     INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` 
-    WHERE `{$dbprefix}pl_poste`.`date`>='$debutSQL' AND `{$dbprefix}pl_poste`.`date`<='$finSQL' 
-    AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' $reqSites 
+    WHERE `{$dbprefix}pl_poste`.`date`>='$debutREQ' AND `{$dbprefix}pl_poste`.`date`<='$finREQ' 
+    AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' 
+    AND `{$dbprefix}pl_poste`.`site` IN ($sitesREQ)
     ORDER BY `poste_nom`,`etage`;";
   $db->query($req);
   $resultat=$db->result;

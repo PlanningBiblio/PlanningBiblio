@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.3
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/samedis.php
 Création : 15 novembre 2013
-Dernière modification : 26 mars 2015
+Dernière modification : 3 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -79,27 +79,34 @@ if($config['Multisites-nombre']>1 and !$selectedSites){
 $_SESSION['stat_samedis_sites']=$selectedSites;
 
 // Filtre les sites dans les requêtes SQL
-$reqSites=null;
 if($config['Multisites-nombre']>1 and is_array($selectedSites)){
-  $reqSites="AND `{$dbprefix}pl_poste`.`site` IN (0,".join(",",$selectedSites).")";
+  $sitesSQL="0,".join(",",$selectedSites);
+}
+else{
+  $sitesSQL="0,1";
 }
 
 //		--------------		Récupération de la liste des agents pour le menu déroulant		------------------------
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif`='Actif' ORDER BY `nom`,`prenom`;");
+$db->select2("personnel","*",array("actif"=>"Actif"),"ORDER BY `nom`,`prenom`");
 $agents_list=$db->result;
 
 $tab=array();
 if(is_array($agents) and $agents[0] and $dates){
   //	Recherche du nombre de jours concernés
   $db=new db();
-  $db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` IN ('$dates') $reqSites GROUP BY `date`;");
+  $sitesREQ=$db->escapeString($sitesSQL);
+
+  $db->select("pl_poste","`date`","`date` IN ('$dates') AND `site` IN ($sitesREQ)","GROUP BY `date`;");
   $nbJours=$db->nb;
 
   //	Recherche des infos dans pl_poste et postes pour tous les agents sélectionnés
   //	On stock le tout dans le tableau $resultat
   $agents_select=join($agents,",");
+
   $db=new db();
+  $sitesREQ=$db->escapeString($sitesSQL);
+
   $req="SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
     `{$dbprefix}pl_poste`.`date` as `date`, `{$dbprefix}pl_poste`.`perso_id` as `perso_id`, 
     `{$dbprefix}pl_poste`.`poste` as `poste`, `{$dbprefix}pl_poste`.`absent` as `absent`, 
@@ -109,7 +116,7 @@ if(is_array($agents) and $agents[0] and $dates){
     INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` 
     WHERE `{$dbprefix}pl_poste`.`date` IN ('$dates') 
     AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' 
-    AND `{$dbprefix}pl_poste`.`perso_id` IN ($agents_select) $reqSites 
+    AND `{$dbprefix}pl_poste`.`perso_id` IN ($agents_select) AND `{$dbprefix}pl_poste`.`site` IN ($sitesREQ)
     ORDER BY `poste_nom`,`etage`;";
   $db->query($req);
   $resultat=$db->result;
