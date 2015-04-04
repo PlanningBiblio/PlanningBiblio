@@ -21,11 +21,14 @@ session_start();
 
 // Initialisation des variables
 $version="1.9.3";
+
+$login=filter_input(INPUT_GET,"newlogin",FILTER_SANITIZE_STRING);
+
+$redirURL=isset($_REQUEST['redirURL'])?stripslashes($_REQUEST['redirURL']):"index.php";
+
 $page=null;
-$login=isset($_GET['newlogin'])?$_GET['newlogin']:null;
 $auth=null;
 $authArgs=null;
-$redirURL=isset($_REQUEST['redirURL'])?stripslashes($_REQUEST['redirURL']):"index.php";
 
 if(!array_key_exists("oups",$_SESSION)){
   $_SESSION['oups']=array("week"=>false);

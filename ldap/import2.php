@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : ldap/import2.php
 Création : 2 juillet 2014
-Dernière modification : 3 avril 2015
+Dernière modification : 4 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -17,16 +17,18 @@ Recherche les informations sur les agents sélectionnés à partir de l'annuaire
 Fichier appelé par la page personnel/import.php	
 */
 
+$recherche=filter_input(INPUT_POST,"recherche",FILTER_SANITIZE_STRING);
+
 //	Récupération des uid des agents sélectionnés
-$keys=array_keys($_POST);
 $uids=array();
-foreach($keys as $key){
-  if(substr($key,0,3)=="chk"){
-    $uids[]=$_POST[$key];
+if(array_key_exists("chk",$_POST)){
+  foreach($_POST["chk"] as $key => $value){
+    $elem=filter_var($_POST["chk"][$key],FILTER_SANITIZE_STRING);
+    $uids[]=$elem;
   }
-}
-if(empty($uids)){
-  echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/import.php&import-type=ldap&message=empty&recherche-ldap={$_POST['recherche']}';</script>";
+}else{
+  $msg=urlencode("Aucun agent n&apos;est s&eacute;lectionn&eacute;.");
+  echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/import.php&import-type=ldap&msg=$msg&msgType=error&recherche-ldap=$recherche';</script>";
   exit;
 }
 
@@ -79,5 +81,5 @@ if($erreurs){
   $msg=urlencode("Les agents ont été importés avec succès");
   $msgType="success";
 }
-echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/import.php&import-type=ldap&msg=$msg&msgType=$msgType&recherche-ldap={$_POST['recherche']}';</script>";
+echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/import.php&import-type=ldap&msg=$msg&msgType=$msgType&recherche-ldap=$recherche';</script>";
 ?>

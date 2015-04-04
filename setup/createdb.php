@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : setup/createdb.php
 Création : mai 2011
-Dernière modification : 1er avril 2015
+Dernière modification : 4 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,13 +20,16 @@ Ce fichier valide le formulaire de la page setup/index.php
 */
 
 //	Variables
-$dbhost=$_POST['dbhost'];
-$dbname=$_POST['dbname'];
-$dbAdminUser=$_POST['adminuser'];
-$dbAdminPass=$_POST['adminpass'];
-$dbuser=$_POST['dbuser'];
-$dbpass=$_POST['dbpass'];
-$dbprefix=$_POST['dbprefix'];
+$dbhost=filter_input(INPUT_POST,"dbhost",FILTER_SANITIZE_STRING);
+$dbname=filter_input(INPUT_POST,"dbname",FILTER_SANITIZE_STRING);
+$dbAdminUser=filter_input(INPUT_POST,"adminuser",FILTER_SANITIZE_STRING);
+$dbAdminPass=filter_input(INPUT_POST,"adminpass",FILTER_UNSAFE_RAW);
+$dbuser=filter_input(INPUT_POST,"dbuser",FILTER_SANITIZE_STRING);
+$dbpass=filter_input(INPUT_POST,"dbpass",FILTER_UNSAFE_RAW);
+$dbprefix=filter_input(INPUT_POST,"dbprefix",FILTER_SANITIZE_STRING);
+$dropUser=filter_input(INPUT_POST,"dropuser",FILTER_SANITIZE_STRING);
+$dropDB=filter_input(INPUT_POST,"dropdb",FILTER_SANITIZE_STRING);
+
 $sql=Array();
 $erreur=false;
 $message="<p style='color:red'>Il y a eu des erreurs pendant la création de la base de données.<br/></p>\n";
@@ -56,14 +59,14 @@ if(mysqli_fetch_array($query)){
 }
 
 //	Suppression de l'utilisateur si demandé
-if(isset($_POST['dropuser'])){
+if($dropUser){
   if($user_exists){
     $sql[]="DROP USER '$dbuser'@'$dbhost';";
     $user_exists=false;
   }
 }
 //	Suppression de la base si demandé
-if(isset($_POST['dropdb'])){
+if($dropDB){
   $sql[]="DROP DATABASE IF EXISTS `$dbname` ;";
 }
 

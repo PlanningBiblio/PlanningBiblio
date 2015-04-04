@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.8
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/delete.php
 Création : mai 2011
-Dernière modification : 16 décembre 2014
+Dernière modification : 4 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -19,8 +19,11 @@ Page appelée par la page index.php après avoir cliqué sur l'icône supprimer 
 require_once "class.absences.php";
 
 // Initialisation des variables
+$id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
+$confirm=filter_input(INPUT_GET,"confirm",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+
 $a=new absences();
-$a->fetchById($_GET['id']);
+$a->fetchById($id);
 $debut=$a->elements['debut'];
 $fin=$a->elements['fin'];
 $perso_id=$a->elements['perso_id'];
@@ -47,11 +50,11 @@ if(!$acces){
 }
 
 echo "<h3>Suppression de l'absence</h3>";
-if(!isset($_GET['confirm'])){
+if(!$confirm){
   echo "<h4>Etes vous sûr de vouloir supprimer cette absence ?</h4>\n";
   echo "<form method='get' action='#' name='form'>\n";
   echo "<input type='hidden' name='page' value='absences/delete.php' />\n";
-  echo "<input type='hidden' name='id' value='".$_GET['id']."' />\n";
+  echo "<input type='hidden' name='id' value='$id' />\n";
   echo "<input type='button' value='Non' onclick='annuler(1);' class='ui-button' />\n";
   echo "&nbsp;&nbsp;\n";
   echo "<input type='submit' name='confirm' value='Oui' class='ui-button' />\n";
@@ -113,7 +116,7 @@ else{
   // suppression dans la table 'absences'
   $db->query($req);
   $db=new db();
-  $db->delete("absences","id='{$_GET['id']}'");
+  $db->delete2("absences",array("id"=>$id));
   echo "<h4>L'asbence a été supprimée</h4>\n";
   echo "<a href='javascript:annuler(3);'>Retour</a>\n";
 }

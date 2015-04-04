@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 2 avril 2015
+Dernière modification : 4 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,12 +20,13 @@ require_once "class.absences.php";
 require_once "motifs.php";
 
 //	Initialisation des variables
+$id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
+
 $display=null;
 $checked=null;
 $admin=in_array(1,$droits)?true:false;
 $adminN2=in_array(8,$droits)?true:false;
 $quartDHeure=$config['heuresPrecision']=="quart d&apos;heure"?true:false;
-$id=$_GET['id'];
 
 $db=new db();
 $db->selectInnerJoin(array("absences","perso_id"),array("personnel","id"),

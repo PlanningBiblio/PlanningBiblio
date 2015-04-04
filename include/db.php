@@ -199,9 +199,11 @@ class db{
     // Filtre "Where" et options
     $where=array();
     foreach($table1Where as $key => $value){
+      $key="`{$table1[0]}`.`$key`";
       $where[]=$this->makeSearch($key,$value);
     }
     foreach($table2Where as $key => $value){
+      $key="`{$table2[0]}`.`$key`";
       $where[]=$this->makeSearch($key,$value);
     }
     $where=join(" AND ",$where);

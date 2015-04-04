@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/infos.php
 Création : mai 2011
-Dernière modification : 1er avril 2015
+Dernière modification : 4 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -19,40 +19,42 @@ Page appelée par la page index.php
 require_once "class.absences.php";
 
 //	Initialisation des variables
-$id=isset($_GET['id'])?$_GET['id']:null;
-$debut=$_GET['debut'];
-$fin=$_GET['fin'];
+$id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
+$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$suppression=filter_input(INPUT_GET,"suppression",FILTER_SANITIZE_NUMBER_INT);
+$validation=filter_input(INPUT_GET,"validation",FILTER_CALLBACK,array("options"=>"sanitize_on01"));
+$texte=trim(filter_input(INPUT_GET,"texte",FILTER_SANITIZE_STRING));
+
 $debutSQL=dateSQL($debut);
 $finSQL=dateSQL($fin);
 
 echo "<h3>Informations sur les absences</h3>\n";
 
-
 //			----------------		Suppression							-------------------------------//
-if(isset($_GET['suppression']) and isset($_GET['validation'])){
+if($suppression and $validation){
   $db=new db();
   $db->delete2("absences_infos",array("id="=>$id));
   echo "<b>L'information a été supprimée</b>";
   echo "<br/><br/><a href='index.php?page=absences/index.php'>Retour</a>\n";
 }
-elseif(isset($_GET['suppression'])){
+elseif($suppression){
   echo "<h4>Etes vous sûr de vouloir supprimer cette information ?</h4>\n";
   echo "<form method='get' action='#' name='form'>\n";
   echo "<input type='hidden' name='page' value='absences/infos.php'/>\n";
-  echo "<input type='hidden' name='suppression' value='oui'/>\n";
-  echo "<input type='hidden' name='validation' value='oui'/>\n";
-  echo "<input type='hidden' name='id' value='".$_GET['id']."'/>\n";
+  echo "<input type='hidden' name='suppression' value='1'/>\n";
+  echo "<input type='hidden' name='validation' value='1'/>\n";
+  echo "<input type='hidden' name='id' value='$id'/>\n";
   echo "<input type='button' value='Non' onclick='history.back();' class='ui-button'/>\n";
   echo "<input type='submit' value='Oui' class='ui-button' style='margin-left:30px;'/>\n";
   echo "</form>\n";
 }
 //			----------------		FIN Suppression							-------------------------------//
 //			----------------		Validation du formulaire							-------------------------------//
-elseif(isset($_GET['validation'])){		//		Validation
+elseif($validation){		//		Validation
   echo "<b>Votre demande a été enregistrée</b>\n";
   echo "<br/><br/><a href='index.php?page=absences/index.php'>Retour</a>\n";
-  $texte=$_GET['texte'];
-  if(isset($_GET['id']) and $_GET['id']!=null){
+  if($id){
     $db=new db();
     $db->update2("absences_infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte),array("id"=>$id));
   }else{
@@ -60,31 +62,29 @@ elseif(isset($_GET['validation'])){		//		Validation
     $db->insert2("absences_infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte));
   }
 }
-elseif(isset($_GET['debut'])){		//		Vérification
-  $texte=htmlentities($_GET['texte'],ENT_QUOTES|ENT_IGNORE,"UTF-8");
-  $_GET['fin']=$_GET['fin']?$_GET['fin']:$_GET['debut'];
+elseif($debut){		//		Vérification
+  $fin=$fin?$fin:$debut;
   echo "<h4>Confirmation</h4>";
-  echo "Du {$_GET['debut']}";
-  echo " au {$_GET['fin']}";
+  echo "Du $debut au $fin";
   echo "<br/>";
   echo $texte;
   echo "<br/><br/>";
   echo "<form method='get' action='index.php' name='form'>";
   echo "<input type='hidden' name='page' value='absences/infos.php'/>\n";
-  echo "<input type='hidden' name='debut' value='".$_GET['debut']."'/>\n";
-  echo "<input type='hidden' name='fin' value='".$_GET['fin']."'/>\n";
+  echo "<input type='hidden' name='debut' value='$debut'/>\n";
+  echo "<input type='hidden' name='fin' value='$fin'/>\n";
   echo "<input type='hidden' name='texte' value='$texte'/>\n";
-  echo "<input type='hidden' name='id' value='".$_GET['id']."'/>\n";
-  echo "<input type='hidden' name='validation' value='validation'/>\n";
+  echo "<input type='hidden' name='id' value='$id'/>\n";
+  echo "<input type='hidden' name='validation' value='1'/>\n";
   echo "<input type='button' value='Annuler' onclick='history.back();' class='ui-button'/>";
   echo "<input type='submit' value='Valider' class='ui-button' style='margin-left:30px;'/>\n";
   echo "</form>";
 }
 //			----------------		FIN Validation du formulaire							-------------------------------//
 else{
-  if(isset($_GET['id'])){
+  if($id){
     $db=new db();
-    $db->select2("absences_infos","*",array("id="=>$id));
+    $db->select2("absences_infos","*",array("id"=>$id));
     $debut=dateFr3($db->result[0]['debut']);
     $fin=dateFr3($db->result[0]['fin']);
     $texte=$db->result[0]['texte'];
@@ -116,8 +116,8 @@ else{
   </td></tr><tr><td>&nbsp;
   </td></tr>
   <tr><td colspan='2' style='text-align:center;'>\n";
-  if(isset($_GET['id'])){
-    echo "<a href='index.php?page=absences/infos.php&amp;id={$_GET['id']}&amp;suppression=oui\";' class='ui-button' >Supprimer</a>";
+  if($id){
+    echo "<a href='index.php?page=absences/infos.php&amp;id=$id&amp;suppression=oui\";' class='ui-button' >Supprimer</a>";
   }
   echo "<a href='index.php?page=absences/index.php' class='ui-button' style='margin-left:30px;'>Annuler</a>";
   echo "<input type='submit' value='Valider' class='ui-button' style='margin-left:30px;'/>
