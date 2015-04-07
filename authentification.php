@@ -26,8 +26,8 @@ require_once "include/config.php";
 require_once "include/sanitize.php";
 
 $login=filter_input(INPUT_GET,"newlogin",FILTER_SANITIZE_STRING);
-
 $redirURL=isset($_REQUEST['redirURL'])?stripslashes($_REQUEST['redirURL']):"index.php";
+$redirURL=filter_var($redirURL,FILTER_SANITIZE_URL);
 
 $page=null;
 $auth=null;

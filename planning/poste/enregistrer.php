@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/enregistrer.php
 Création : mai 2011
-Dernière modification : 3 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,10 +23,12 @@ Cette page est appelée par la fonction JavaScript Popup qui l'affiche dans un c
 require_once "class.planning.php";
 
 // Initialisation des variables
-$semaine=isset($_GET['semaine'])?$_GET['semaine']:null;
-$date=$_GET['date'];
-$nom=isset($_GET['nom'])?trim(htmlentities($_GET['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8")):null;
-$site=$_GET['site'];
+$confirm=filter_input(INPUT_GET,"confirm",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
+$nom=trim(filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING));
+$semaine=filter_input(INPUT_GET,"semaine",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
+
 $dateFr=dateFr($date);
 
 // Sécurité
@@ -63,7 +65,7 @@ if(!$nom){			// Etape 1 : Choix du nom du modèle
   <input type='submit' value='Enregistrer' />
 EOD;
 }
-elseif(!isset($_GET['confirm'])){		// Etape 2 : Vérifions si le nom n'est pas déjà utilisé
+elseif(!$confirm){		// Etape 2 : Vérifions si le nom n'est pas déjà utilisé
   $db=new db();
   $db->select2("pl_poste_modeles","*",array("nom"=>$nom, "site"=>$site));
   if($db->result){				// Si le nom existe, on propose de le remplacer
@@ -95,15 +97,11 @@ function enregistre_modele($nom,$date,$semaine,$site){
   if($semaine){
     // Sélection des tableaux (structures)
     $tab_db=new db();
-    $siteSQL=$tab_db->escapeString($site);
-    $req_tab="SELECT * FROM `{$dbprefix}pl_poste_tab_affect` WHERE `date` BETWEEN '{$d->dates[0]}' AND '{$d->dates[6]}' AND `site`='$siteSQL';";
-    $tab_db->query($req_tab);
+    $tab_db->select2("pl_poste_tab_affect","*",array("date"=>"BETWEEN{$d->dates[0]}AND{$d->dates[6]}", "site"=>$site));
 
     // Sélection des agents placés dans les cellules
     $select=new db();
-    $siteSQL=$select->escapeString($site);
-    $req="SELECT * FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '{$d->dates[0]}' AND '{$d->dates[6]}' AND `site`='$siteSQL';";
-    $select->query($req);
+    $select->select2("pl_poste","*",array("date"=>"BETWEEN{$d->dates[0]}AND{$d->dates[6]}", "site"=>$site));
   }
   // Sélection des données du jour courant
   else{

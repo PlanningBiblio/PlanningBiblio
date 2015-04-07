@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 3 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -26,9 +26,13 @@ echo "<div id='planning'>\n";
 include "fonctions.php";
 
 // Initialisation des variables
+$groupe=filter_input(INPUT_GET,"groupe",FILTER_SANITIZE_NUMBER_INT);
+$site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
+$tableau=filter_input(INPUT_GET,"tableau",FILTER_SANITIZE_NUMBER_INT);
 $verrou=false;
+
 //		------------------		DATE		-----------------------//
-$date=isset($_GET['date'])?$_GET['date']:null;
+$date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
 if(!$date and array_key_exists('PLdate',$_SESSION)){
   $date=$_SESSION['PLdate'];
 }
@@ -42,7 +46,7 @@ $semaine=$d->semaine;
 $semaine3=$d->semaine3;
 $jour=$d->jour;
 $dates=$d->dates;
-$datesSemaine=join("','",$dates);
+$datesSemaine=join(",",$dates);
 $j1=$dates[0];
 $j2=$dates[1];
 $j3=$dates[2];
@@ -62,7 +66,6 @@ $groupes=$t->elements;
 // Multisites : la variable $site est égale à 1 par défaut.
 // Elle prend la valeur GET['site'] si elle existe, sinon la valeur de la SESSION ['site']
 // En dernier lieu, la valeur du site renseignée dans la fiche de l'agent
-$site=isset($_GET['site'])?$_GET['site']:null;
 if(!$site and array_key_exists("site",$_SESSION['oups'])){
   $site=$_SESSION['oups']['site'];
 }
@@ -75,8 +78,7 @@ $site=$site?$site:1;
 $_SESSION['oups']['site']=$site;
 
 $db=new db();
-$siteSQL=$db->escapeString($site);
-$db->select("pl_poste","*","`date` IN ('$datesSemaine') AND `site`='$siteSQL'");
+$db->select2("pl_poste","*",array("date"=>"IN$datesSemaine", "site"=>$site));
 $pasDeDonneesSemaine=$db->result?false:true;
 //		------------------		FIN TABLEAU		-----------------------//
 global $idCellule;
@@ -137,8 +139,7 @@ if($db->result){
 
 //	Selection des messages d'informations
 $db=new db();
-$dateSQL=$db->escapeString($date);
-$db->query("SELECT * FROM `{$dbprefix}infos` WHERE `debut`<='$dateSQL' AND `fin`>='$dateSQL' ORDER BY `debut`,`fin`;");
+$db->select2("infos","*",array("debut"=>"<={$date}", "fin"=>">={$date}"),"ORDER BY `debut`,`fin`");
 $messages_infos=null;
 if($db->result){
   foreach($db->result as $elem){
@@ -260,7 +261,7 @@ echo "</table></div>\n";
 $db=new db();
 $db->select2("pl_poste_tab_affect","tableau",array("date"=>$date, "site"=>$site));
 
-if(!$db->result[0]['tableau'] and !isset($_GET['tableau']) and !isset($_GET['groupe']) and $autorisation){
+if(!$db->result[0]['tableau'] and !$tableau and !$groupe and $autorisation){
   $db=new db();
   $db->select2("pl_poste_tab","*","1","order by `nom` DESC");
   if($db->result){
@@ -315,19 +316,19 @@ EOD;
   include "include/footer.php";
   exit;
 }
-elseif(isset($_GET['groupe']) and $autorisation){	//	Si Groupe en argument
+elseif($groupe and $autorisation){	//	Si Groupe en argument
   $t=new tableau();
-  $t->fetchGroup($_GET['groupe']);
-  $groupe=$t->elements;
+  $t->fetchGroup($groupe);
+  $groupeTab=$t->elements;
   $tmp=array();
-  $tmp[$dates[0]]=array($dates[0],$groupe['Lundi']);
-  $tmp[$dates[1]]=array($dates[1],$groupe['Mardi']);
-  $tmp[$dates[2]]=array($dates[2],$groupe['Mercredi']);
-  $tmp[$dates[3]]=array($dates[3],$groupe['Jeudi']);
-  $tmp[$dates[4]]=array($dates[4],$groupe['Vendredi']);
-  $tmp[$dates[5]]=array($dates[5],$groupe['Samedi']);
-  if(array_key_exists("Dimanche",$groupe)){
-    $tmp[$dates[6]]=array($dates[6],$groupe['Dimanche']);
+  $tmp[$dates[0]]=array($dates[0],$groupeTab['Lundi']);
+  $tmp[$dates[1]]=array($dates[1],$groupeTab['Mardi']);
+  $tmp[$dates[2]]=array($dates[2],$groupeTab['Mercredi']);
+  $tmp[$dates[3]]=array($dates[3],$groupeTab['Jeudi']);
+  $tmp[$dates[4]]=array($dates[4],$groupeTab['Vendredi']);
+  $tmp[$dates[5]]=array($dates[5],$groupeTab['Samedi']);
+  if(array_key_exists("Dimanche",$groupeTab)){
+    $tmp[$dates[6]]=array($dates[6],$groupeTab['Dimanche']);
   }
   foreach($tmp as $elem){
     $db=new db();
@@ -338,8 +339,8 @@ elseif(isset($_GET['groupe']) and $autorisation){	//	Si Groupe en argument
   $tab=$tmp[$date][1];
 
 }
-elseif(isset($_GET['tableau']) and $autorisation){	//	Si tableau en argument
-  $tab=$_GET['tableau'];
+elseif($tableau and $autorisation){	//	Si tableau en argument
+  $tab=$tableau;
   $db=new db();
   $db->delete2("pl_poste_tab_affect", array("date"=>$date, "site"=>$site));
   $db=new db();

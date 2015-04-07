@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/samedis.php
 Création : 15 novembre 2013
-Dernière modification : 3 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -63,7 +63,7 @@ while($current<=$finSQL){
   $dates[]=$current;
   $current=date("Y-m-d",strtotime("+1 week",strtotime($current)));
 }
-$dates=join("','",$dates);
+$dates=join(",",$dates);
 
 // Filtre les sites
 if(!array_key_exists('stat_samedis_sites',$_SESSION)){
@@ -95,30 +95,21 @@ $tab=array();
 if(is_array($agents) and $agents[0] and $dates){
   //	Recherche du nombre de jours concernés
   $db=new db();
-  $sitesREQ=$db->escapeString($sitesSQL);
-
-  $db->select("pl_poste","`date`","`date` IN ('$dates') AND `site` IN ($sitesREQ)","GROUP BY `date`;");
+  $db->select2("pl_poste","date",array("date"=>"IN{$dates}", "site"=>"IN{$sitesSQL}"),"GROUP BY `date`;");
   $nbJours=$db->nb;
 
   //	Recherche des infos dans pl_poste et postes pour tous les agents sélectionnés
   //	On stock le tout dans le tableau $resultat
-  $agents_select=join($agents,",");
+  $agents_select=join(",",$agents);
 
   $db=new db();
-  $sitesREQ=$db->escapeString($sitesSQL);
+  $db->selectInnerJoin(array("pl_poste","poste"),array("postes","id"),
+    array("debut","fin","date","perso_id","poste","absent"),
+    array(array("name"=>"nom","as"=>"poste_nom"),"etage","site"),
+    array("date"=>"IN{$dates}", "supprime"=>"<>1", "perso_id"=>"IN{$agents_select}", "site"=>"IN{$sitesSQL}"),
+    array("statistiques"=>"1"),
+    "ORDER BY `poste_nom`,`etage`");
 
-  $req="SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
-    `{$dbprefix}pl_poste`.`date` as `date`, `{$dbprefix}pl_poste`.`perso_id` as `perso_id`, 
-    `{$dbprefix}pl_poste`.`poste` as `poste`, `{$dbprefix}pl_poste`.`absent` as `absent`, 
-    `{$dbprefix}postes`.`nom` as `poste_nom`, `{$dbprefix}postes`.`etage` as `etage`, 
-    `{$dbprefix}pl_poste`.`site` as `site` 
-    FROM `{$dbprefix}pl_poste` 
-    INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` 
-    WHERE `{$dbprefix}pl_poste`.`date` IN ('$dates') 
-    AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' 
-    AND `{$dbprefix}pl_poste`.`perso_id` IN ($agents_select) AND `{$dbprefix}pl_poste`.`site` IN ($sitesREQ)
-    ORDER BY `poste_nom`,`etage`;";
-  $db->query($req);
   $resultat=$db->result;
   
   //	Recherche des infos dans le tableau $resultat (issu de pl_poste et postes) pour chaque agent sélectionné

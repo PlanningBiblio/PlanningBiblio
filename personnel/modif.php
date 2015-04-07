@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 2 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,6 +20,10 @@ Cette page est appelée par le fichier index.php
 */
 
 require_once "class.personnel.php";
+
+// Initialisation des variables
+$id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
+
 $admin=in_array(21,$droits)?true:false;
 // NB : le champ poste et les fonctions postes_... sont utilisés pour l'attribution des activités (qualification)
 
@@ -77,8 +81,7 @@ $acces=array();
 $postes_attribues=array();
 $recupAgents=array("Prime","Temps");
 
-if(isset($_GET['id'])){		//	récupération des infos de l'agent en cas de modif
-  $id=$_GET['id'];
+if($id){		//	récupération des infos de l'agent en cas de modif
   $db=new db();
   $db->select2("personnel","*",array("id"=>$id));
   $actif=$db->result[0]['actif'];

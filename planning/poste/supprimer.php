@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/supprimer.php
 Création : mai 2011
-Dernière modification : 3 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -21,8 +21,11 @@ l'icône "Suppression" de la page planning/poste/index.php
 require_once "class.planning.php";
 
 // Initialisation des variables
-$date=$_GET['date'];
-$site=$_GET['site'];
+$confirm=filter_input(INPUT_GET,"confirm",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
+$semaineJour=filter_input(INPUT_GET,"semaineJour",FILTER_SANITIZE_STRING);
+$site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
+
 $dateFr=dateFr($date);
 $d=new datePl($date);
 $debut=$d->dates[0];
@@ -44,14 +47,14 @@ if(!in_array($droit,$droits)){
 echo "<div style='text-align:center'>\n";
 echo "<br/>\n";
 
-if(!isset($_GET['semaineJour'])){		// Etape 1 : Suppression du jour ou de la semaine ?
+if(!$semaineJour){		// Etape 1 : Suppression du jour ou de la semaine ?
   echo "Voulez vous supprimer le planning du jour ($dateFr)<br/>ou de la semaine (du $debutFr au $finFr) ?<br/><br/>\n";
   echo "<a href='index.php?page=planning/poste/supprimer.php&amp;menu=off&amp;date=$date&amp;site=$site&amp;semaineJour=jour'>Jour</a>&nbsp;&nbsp;&nbsp;\n";
   echo "<a href='index.php?page=planning/poste/supprimer.php&amp;menu=off&amp;date=$date&amp;site=$site&amp;semaineJour=semaine'>Semaine</a><br/><br/>\n";
   echo "<a href='javascript:popup_closed();'>Annuler</a>\n";
 }
-elseif(!isset($_GET['confirm'])){		// Etape 2 : Demande confirmation
-  if($_GET['semaineJour']=="semaine"){		// confirmation pour la semaine
+elseif(!$confirm){		// Etape 2 : Demande confirmation
+  if($semaineJour=="semaine"){		// confirmation pour la semaine
     echo "Etes vous sûr de vouloir supprimer le planning de la semaine<br/>(du $debutFr au $finFr) ?<br/><br/>\n";
     echo "<a href='index.php?page=planning/poste/supprimer.php&amp;menu=off&amp;date=$date&amp;site=$site&amp;semaineJour=semaine&amp;confirm=on'>Oui</a>&nbsp;&nbsp;&nbsp;\n";
     echo "<a href='javascript:popup_closed();'>Non</a>\n";
@@ -64,16 +67,14 @@ elseif(!isset($_GET['confirm'])){		// Etape 2 : Demande confirmation
 }
 else{
   // Suppression de la semaine
-  if($_GET['semaineJour']=="semaine"){
+  if($semaineJour=="semaine"){
     // Table pl_poste (affectation des agents)
     $db=new db();
-    $siteSQL=$db->escapeString($site);
-    $db->query("DELETE FROM `{$dbprefix}pl_poste` WHERE `site`='$siteSQL' AND `date` BETWEEN '$debut' AND '$fin';");
+    $db->delete2("pl_poste",array("site"=>$site, "date"=>"BETWEEN{$debut}AND{$fin}"));
 
     // Table pl_poste_tab_affect (affectation des tableaux)
     $db=new db();
-    $siteSQL=$db->escapeString($site);
-    $db->query("DELETE FROM `{$dbprefix}pl_poste_tab_affect` WHERE `site`='$siteSQL' AND `date` BETWEEN '$debut' AND '$fin';");
+    $db->delete2("pl_poste_tab_affect",array("site"=>$site, "date"=>"BETWEEN{$debut}AND{$fin}"));
   }
   // Suppression du jour
   else{

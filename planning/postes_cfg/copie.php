@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/copie.php
 Création : mai 2011
-Dernière modification : 3 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,10 +20,15 @@ de la page "planning/postes_cfg/index.php"
 
 require_once "class.tableaux.php";
 
-$numero1=$_GET['numero'];
-$retour=isset($_GET['retour'])?$_GET['retour']:"modif.php";
+// Initilisation des variables
+$confirm=filter_input(INPUT_GET,"confirm",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$nom=trim(filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING));
+$numero1=filter_input(INPUT_GET,"numero",FILTER_SANITIZE_NUMBER_INT);
+$retour=filter_input(INPUT_GET,"retour",FILTER_SANITIZE_URL);
 
-if(isset($_GET['confirm'])){
+$retour=$retour?$retour:"modif.php";
+
+if($confirm){
 	  //		Copie des horaires
   $values=array();
   $db->select2("pl_poste_horaires",array("debut","fin","tableau"),array("numero"=>$numero1),"ORDER BY `tableau`,`debut`,`fin`");
@@ -43,8 +48,6 @@ if(isset($_GET['confirm'])){
     foreach($values as $elem){
       $db2->execute($elem);
     }
-
-    $nom=htmlentities($_GET['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8");
 
     // Récupération du site
     $db2=new db();

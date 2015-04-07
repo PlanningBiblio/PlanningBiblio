@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/suppression.php
 Création : mai 2011
-Dernière modification : 2 avril 2015
+Dernière modification : 10 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -19,11 +19,12 @@ Cette page est appelée par le fichier index.php
 
 require_once "class.personnel.php";
 
+// Initialisation des variables
+$id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
+$etape=filter_input(INPUT_GET,"etape",FILTER_SANITIZE_STRING);
+
 echo "<h3>Suppression</h3>\n";
 
-$id=$_GET['id'];
-
-$etape=isset($_GET['etape'])?$_GET['etape']:null;
 switch($etape){
   case "etape2"	: etape2();	break;
   case "etape3"	: etape3();	break;
@@ -69,7 +70,9 @@ function etape2(){
 
 function etape3(){
   global $id;
-  $date=dateSQL($_GET['date']);
+  $date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+  $date=dateSQL($date);
+
       //	Mise à jour de la table personnel
   $db=new db();
   $db->update2("personnel",array("supprime"=>"1","actif"=>"Supprim&eacute;","depart"=>$date),array("id"=>$id));

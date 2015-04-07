@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/postes.php
 Création : mai 2011
-Dernière modification : 3 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -99,20 +99,17 @@ if(is_array($postes)){
   
   //	Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
   //	On stock le tout dans le tableau $resultat
-  $postes_select=join($postes,",");
+  $postes_select=join(",",$postes);
   $db=new db();
-  $debutREQ=$db->escapeString($debutSQL);
-  $finREQ=$db->escapeString($finSQL);
-  $sitesREQ=$db->escapeString($sitesSQL);
-  $req="SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
-    `{$dbprefix}pl_poste`.`date` as `date`,  `{$dbprefix}pl_poste`.`poste` as `poste`, 
-    `{$dbprefix}personnel`.`nom` as `nom`, `{$dbprefix}personnel`.`prenom` as `prenom`, 
-    `{$dbprefix}personnel`.`id` as `perso_id`, `{$dbprefix}pl_poste`.site as `site` FROM `{$dbprefix}pl_poste` 
-    INNER JOIN `{$dbprefix}personnel` ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id` 
-    WHERE `{$dbprefix}pl_poste`.`date`>='$debutREQ' AND `{$dbprefix}pl_poste`.`date`<='$finREQ' 
-    AND `{$dbprefix}pl_poste`.`poste` IN ($postes_select) AND `{$dbprefix}pl_poste`.`absent`<>'1' 
-    AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}pl_poste`.`site` IN ($sitesREQ) ORDER BY `poste`,`nom`,`prenom`;";
-  $db->query($req);
+
+  $db->selectInnerJoin(array("pl_poste","perso_id"),array("personnel","id"),
+    array("debut","fin","date","poste","site"),
+    array("nom","prenom",array("name"=>"id", "as"=>"perso_id")),
+    array("date"=>">={$debutSQL}", "date"=>"<={$finSQL}", "poste"=>"IN{$postes_select}","absent"=>"<>1",
+      "supprime"=>"<>1", "site"=>"IN{$sitesSQL}"),
+    array(),
+    "ORDER BY `poste`,`nom`,`prenom`");
+
   $resultat=$db->result;
   
   
@@ -157,7 +154,7 @@ if(is_array($postes)){
 	  if(array_key_exists($elem['perso_id'],$agents_infos)){
 	    $service=$agents_infos[$elem['perso_id']]['service'];
 	  }
-	  $service=$service?$service:"ZZZ_Autre";
+	  $service=isset($service)?$service:"ZZZ_Autre";
 	  if(!array_key_exists($service,$services)){
 	    $services[$service]=array("nom"=>$service,"heures"=>0);
 	  }
@@ -167,7 +164,7 @@ if(is_array($postes)){
 	  if(array_key_exists($elem['perso_id'],$agents_infos)){
 	    $statut=$agents_infos[$elem['perso_id']]['statut'];
 	  }
-	  $statut=$statut?$statut:"ZZZ_Autre";
+	  $statut=isset($statut)?$statut:"ZZZ_Autre";
 	  if(!array_key_exists($statut,$statuts)){
 	    $statuts[$statut]=array("nom"=>$statut,"heures"=>0);
 	  }

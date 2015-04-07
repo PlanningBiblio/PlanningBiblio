@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.3
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 28 mars 2015
+Dernière modification : 7 avril 2015
 Auteurs : Jérôme Combes jerome@planningbilbio.fr, Chritophe Le Guennec christophe.leguennec@u-pem.fr
 
 Description :
@@ -16,6 +16,15 @@ Cette page est appelée par le fichier index.php
 */
 
 require_once "class.personnel.php";
+
+// Initialisation des variables
+$actif=filter_input(INPUT_GET,"actif",FILTER_SANITIZE_STRING);
+
+if(!$actif and array_key_exists('perso_actif',$_SESSION)){
+  $actif=$_SESSION['perso_actif'];
+}
+$_SESSION['perso_actif']=$actif;
+
 ?>
 
 <form name='form2' action='index.php' method='get'>
@@ -56,22 +65,13 @@ if(in_array(21,$droits)){
 //		Suppression des agents dont la date de départ est passée		//
 $tab=array(0);
 $db=new db();
-$db->query("UPDATE `{$dbprefix}personnel` SET `supprime`='1', `actif`='Supprim&eacute;' WHERE `depart`<CURDATE() AND `depart`<>'0000-00-00' and `actif` NOT LIKE 'Supprim%'");
+$db->update("personnel","`supprime`='1', `actif`='Supprim&eacute;'","`depart`<CURDATE() AND `depart`<>'0000-00-00' and `actif` NOT LIKE 'Supprim%'");
 
-if(isset($_GET['actif']))
-  $_SESSION['perso_actif']=$_GET['actif'];
-elseif(array_key_exists('perso_actif',$_SESSION))
-  $_GET['actif']=$_SESSION['perso_actif'];
-else{
-  $_GET['actif']='Actif';
-  $_SESSION['perso_actif']='Actif';
-}
-
-echo "<script type='text/JavaScript'>document.form2.actif.value='".$_GET['actif']."';</script>";
+echo "<script type='text/JavaScript'>document.form2.actif.value='$actif';</script>";
 
 $p=new personnel();
-$p->supprime=strstr($_GET['actif'],"Supprim")?array(1):array(0);
-$p->fetch("nom,prenom",$_GET['actif']);
+$p->supprime=strstr($actif,"Supprim")?array(1):array(0);
+$p->fetch("nom,prenom",$actif);
 $agents=$p->elements;
 
 // tri par défaut du tableau

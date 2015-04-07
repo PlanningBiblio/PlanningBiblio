@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/importer.php
 Création : mai 2011
-Dernière modification : 3 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,8 +20,11 @@ Cette page est appelée par la fonction JavaScript Popup qui l'affiche dans un c
 require_once "class.planning.php";
 
 // Initialisation des variables
-$date=$_GET['date'];
-$site=$_GET['site'];
+$date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
+$get_absents=filter_input(INPUT_GET,"absents",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$get_nom=filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING);
+$site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
+
 $attention="<span style='color:red;'>Attention, le planning actuel sera remplacé par le modèle<br/><br/></span>\n";
 
 // Sécurité
@@ -40,7 +43,7 @@ echo <<<EOD
   <b>Importation d'un modèle</b>
   <br/><br/>
 EOD;
-if(!isset($_GET['nom'])){		// Etape 1 : Choix du modèle à importer
+if(!$get_nom){		// Etape 1 : Choix du modèle à importer
   $db=new db();
   $db->select2("pl_poste_modeles",array("nom","jour"),array("site"=>$site),"GROUP BY `nom`");
   if(!$db->result){			// Aucun modèle enregistré
@@ -92,7 +95,7 @@ if(!isset($_GET['nom'])){		// Etape 1 : Choix du modèle à importer
 else{					// Etape 2 : Insertion des données
   $semaine=false;
   $dates=array();
-  if(substr($_GET['nom'],-10)=="###semaine"){	// S'il s'agit d'un modèle sur une semaine
+  if(substr($get_nom,-10)=="###semaine"){	// S'il s'agit d'un modèle sur une semaine
     $semaine=true;
     $d=new datePl($date);
     foreach($d->dates as $elem){	// Recherche de toute les dates de la semaine en cours pour insérer les données
@@ -102,7 +105,7 @@ else{					// Etape 2 : Insertion des données
   else{
     $dates[0]=$date;			// S'il ne s'agit pas d'un modèle semaine, insertion seulement pour le jour en cours
   }
-  $nom=str_replace("###semaine","",$_GET['nom']);
+  $nom=str_replace("###semaine","",$get_nom);
   $nom=htmlentities($nom,ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
   
   $i=0;
@@ -142,7 +145,7 @@ else{					// Etape 2 : Insertion des données
 
     $filter=$config['Absences-validation']?"AND `valide`>0":null;
     if($db->result){
-      if(isset($_GET['absents'])){	// on marque les absents
+      if($get_absents){	// on marque les absents
 	foreach($db->result as $elem2){
 	  $debut=$elem." ".$elem2['debut'];
 	  $fin=$elem." ".$elem2['fin'];

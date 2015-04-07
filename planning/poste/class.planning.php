@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 3 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -183,7 +183,7 @@ class planning{
       $db_heures = new db();
       $db_heures->selectInnerJoin(array("pl_poste","poste"),array("postes","id"),
 	array("debut","fin"),array(),
-	array("perso_id"=>$elem['id'], "absent"=>"<>1", "`date`"=>"BETWEEN{$j1}AND{$j7}"),
+	array("perso_id"=>$elem['id'], "absent"=>"<>1", "date"=>"BETWEEN{$j1}AND{$j7}"),
 	array("statistiques"=>"1"));
 
       if($stat){ 	// vérifier si le poste est compté dans les stats
@@ -203,7 +203,7 @@ class planning{
 	$date2=$j7;	// fin de semaine courante
 	$db_hres4 = new db();
 	$db_hres4->selectInnerJoin(array("pl_poste","poste"), array("postes","id"), array("debut","fin"), array(),
-	  array("perso_id"=>$elem['id'], "absent"=>"<>1", "`date`"=>"BETWEEN{$date1}AND{$date2}"),
+	  array("perso_id"=>$elem['id'], "absent"=>"<>1", "date"=>"BETWEEN{$date1}AND{$date2}"),
 	  array("statistiques"=>"1"));
 
 	if($stat){ 	// vérifier si le poste est compté dans les stats

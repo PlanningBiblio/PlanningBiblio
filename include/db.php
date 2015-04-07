@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 3 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -284,7 +284,7 @@ class db{
       $tmp=array();
       foreach($keys as $key){
 	$value=mysqli_real_escape_string($this->conn,$where[$key]);
-	$tmp[]="`".$key."`='$value'";
+	$tmp[]=$this->makeSearch($key,$value);
       }
       $where=join(" AND ",$tmp);
     }
@@ -358,9 +358,24 @@ class db{
       $value2=htmlentities(trim($tmp[1]),ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
       $value2=$this->escapeString($value2);
       return "{$key} BETWEEN '$value1' AND '$value2'";
+    }
+
+    // IN
+    elseif(substr($value,0,2)=="IN"){
+      $tmp=trim(substr($value,2));
+      $tmp=explode(",",$tmp);
+
+      $values=array();
+      foreach($tmp as $elem){
+	$values[]=$this->escapeString(htmlentities(trim($elem),ENT_QUOTES | ENT_IGNORE,"UTF-8",false));
+      }
+      $values=join("','",$values);
+
+      return "{$key} IN ('$values')";
+    }
 
     // Opérateurs =, >, <, >=, <=, <>
-    }elseif(substr($value,0,2)==">="){
+    elseif(substr($value,0,2)==">="){
       $operator=">=";
       $value=trim(substr($value,2));
     }elseif(substr($value,0,2)=="<="){

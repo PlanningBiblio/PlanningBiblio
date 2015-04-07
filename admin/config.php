@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 2 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -21,52 +21,63 @@ if(!$version){
   header("Location: ../index.php");
 }
 
-echo "<h3>Configuration</h3>\n";
-
 // Enregistrement des paramètres
 if($_POST){
+
+  // Initilisation des variables
+  $post=array();
+  foreach($_POST as $key => $value){
+    $key=filter_var($key,FILTER_SANITIZE_STRING);
+    if(is_array($value)){
+      foreach($value as $v2){
+	$post[$key][]=filter_var($v2,FILTER_SANITIZE_STRING);
+      }
+    }else{
+      $post[$key]=filter_var($value,FILTER_SANITIZE_STRING);
+    }
+  }
+
   // Si les checkboxes ne sont pas cochées, elles ne sont pas transmises donc pas réinitialisées. Donc on les réinitialise ici.
   $db=new db();
   $db->select2("config","nom",array("type"=>"checkboxes"));
   if($db->result){
     foreach($db->result as $elem){
-      if(!array_key_exists($elem['nom'],$_POST)){
-	$_POST[$elem['nom']]=array();
+      if(!array_key_exists($elem['nom'],$post)){
+	$post[$elem['nom']]=array();
       }
     }
   }
 
-  $keys=array_keys($_POST);
   $erreur=false;
   $db=new dbh();
   $db->prepare("UPDATE `{$dbprefix}config` SET `valeur`=:valeur WHERE `nom`=:nom");
-  foreach($keys as $elem){
-    if(!in_array($elem,array("page","Valider","Annuler"))){
-      $_POST[$elem]=str_replace("'","&apos;",$_POST[$elem]);
-      if(substr($elem,-9)=="-Password"){
-	$_POST[$elem]=encrypt($_POST[$elem]);
+  foreach($post as $key => $value){
+    if(!in_array($key,array("page","Valider","Annuler"))){
+      $value=str_replace("'","&apos;",$value);
+      if(substr($key,-9)=="-Password"){
+	$value=encrypt($value);
       }
       
       // Checkboxes
-      if(is_array($_POST[$elem])){
-	$_POST[$elem]=serialize($_POST[$elem]);
+      if(is_array($value)){
+	$value=serialize($value);
       }
 	
-      $db->execute(array(":nom"=>$elem,":valeur"=>$_POST[$elem]));
+      $db->execute(array(":nom"=>$key,":valeur"=>$value));
     }
   }
 
   if($erreur){
     echo <<<EOD
       <script type='text/JavaScript'>
-      information('Il y a eu des erreurs pendant la modification.<br/>Veuillez vérifier la configuration.','error');
+      CJInfo('Il y a eu des erreurs pendant la modification.<br/>Veuillez vérifier la configuration.','error');
       </script>
 EOD;
   }
   else{
     echo <<<EOD
       <script type='text/JavaScript'>
-      information('Les modifications ont été enregistrées.','highlight');
+      CJInfo('Les modifications ont été enregistrées.','highlight');
       </script>
 EOD;
   }
@@ -78,6 +89,7 @@ $last_category=null;
 $db=new db();
 $db->query("SELECT * FROM `{$dbprefix}config` ORDER BY `categorie`,`ordre`,`id`;");
 
+echo "<h3>Configuration</h3>\n";
 echo "<form name='form' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='admin/config.php' />\n";
 echo "<div id='accordion' class='ui-accordion'>\n";

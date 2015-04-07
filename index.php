@@ -31,6 +31,9 @@ if(!file_exists("include/config.php")){
   exit;
 }
 
+require_once "include/config.php";
+require_once "include/sanitize.php";
+
 // Error reporting
 ini_set('display_errors',$config['display_errors']);
 switch($config['error_reporting']){
@@ -42,9 +45,6 @@ switch($config['error_reporting']){
   case 5: error_reporting(E_ALL); break;
   default: error_reporting(E_ALL ^ E_NOTICE); break;
 }
-
-require_once "include/config.php";
-require_once "include/sanitize.php";
 
 // Initialisation des variables
 $date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));

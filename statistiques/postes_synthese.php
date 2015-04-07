@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/postes_synthese.php
 Création : mai 2011
-Dernière modification : 3 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -90,6 +90,8 @@ if(is_array($postes)){
   $debutREQ=$db->escapeString($debutSQL);
   $finREQ=$db->escapeString($finSQL);
   $sitesREQ=$db->escapeString($sitesSQL);
+  $postesREQ=$db->escapeString($postes_select);
+
   $req="SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
     `{$dbprefix}pl_poste`.`date` as `date`,  `{$dbprefix}pl_poste`.`poste` as `poste`, 
     `{$dbprefix}personnel`.`nom` as `nom`, `{$dbprefix}personnel`.`prenom` as `prenom`, 
@@ -97,7 +99,7 @@ if(is_array($postes)){
     FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}personnel` 
     ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id` 
     WHERE `{$dbprefix}pl_poste`.`date`>='$debutREQ' AND `{$dbprefix}pl_poste`.`date`<='$finREQ' 
-    AND `{$dbprefix}pl_poste`.`poste` IN ($postes_select) AND `{$dbprefix}pl_poste`.`absent`<>'1' 
+    AND `{$dbprefix}pl_poste`.`poste` IN ($postesREQ) AND `{$dbprefix}pl_poste`.`absent`<>'1' 
     AND `{$dbprefix}pl_poste`.`supprime`<>'1'  AND `{$dbprefix}pl_poste`.`site` IN ($sitesREQ) 
     ORDER BY `poste`,`nom`,`prenom`;";
   $db->query($req);
