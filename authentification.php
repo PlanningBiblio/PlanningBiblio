@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 1er avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -21,6 +21,9 @@ session_start();
 
 // Initialisation des variables
 $version="1.9.3";
+
+require_once "include/config.php";
+require_once "include/sanitize.php";
 
 $login=filter_input(INPUT_GET,"newlogin",FILTER_SANITIZE_STRING);
 
@@ -38,8 +41,6 @@ if(!file_exists("include/config.php")){
   header("Location: setup/index.php");
   exit;
 }
-
-include "include/config.php";
 
 ini_set('display_errors',$config['display_errors']);
 switch($config['error_reporting']){

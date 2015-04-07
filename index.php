@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 2 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -22,23 +22,8 @@ Inclut à la fin le fichier footer.php
 
 session_start();
 
-// Initialisation des variables
+// Version
 $version="1.9.3";
-$get_menu=isset($_GET['menu'])?$_GET['menu']:"";
-$post_menu=isset($_POST['menu'])?$_POST['menu']:"";
-$page=isset($_GET['page'])?$_GET['page']:"planning/poste/index.php";
-$_SESSION['PLdate']=array_key_exists("PLdate",$_SESSION)?$_SESSION['PLdate']:date("Y-m-d");
-
-if(!array_key_exists("oups",$_SESSION)){
-  $_SESSION['oups']=array("week"=>false);
-}
-  
-// Affichage de tous les plannings de la semaine
-if($page=="planning/poste/index.php" and !isset($_GET['date']) and $_SESSION['oups']['week']){
-  $page="planning/poste/semaine.php";
-}
-
-$page=isset($_POST['page'])?$_POST['page']:$page;
 
 // Redirection vers setup si le fichier config est absent
 if(!file_exists("include/config.php")){
@@ -46,8 +31,7 @@ if(!file_exists("include/config.php")){
   exit;
 }
 
-include "include/config.php";
-
+// Error reporting
 ini_set('display_errors',$config['display_errors']);
 switch($config['error_reporting']){
   case 0: error_reporting(0); break;
@@ -58,6 +42,37 @@ switch($config['error_reporting']){
   case 5: error_reporting(E_ALL); break;
   default: error_reporting(E_ALL ^ E_NOTICE); break;
 }
+
+require_once "include/config.php";
+require_once "include/sanitize.php";
+
+// Initialisation des variables
+$date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
+$menu_get=filter_input(INPUT_GET,"menu",FILTER_SANITIZE_STRING);
+$menu_post=filter_input(INPUT_POST,"menu",FILTER_SANITIZE_STRING);
+$menu=($menu_get=="off" or $menu_post=="off")?false:true;
+
+$page_get=filter_input(INPUT_GET,"page",FILTER_CALLBACK,array("options"=>"sanitize_page"));
+$page_post=filter_input(INPUT_POST,"page",FILTER_CALLBACK,array("options"=>"sanitize_page"));
+if($page_post){
+  $page=$page_post;
+}elseif($page_get){
+  $page=$page_get;
+}else{
+  $page="planning/poste/index.php";
+}
+
+$_SESSION['PLdate']=array_key_exists("PLdate",$_SESSION)?$_SESSION['PLdate']:date("Y-m-d");
+
+if(!array_key_exists("oups",$_SESSION)){
+  $_SESSION['oups']=array("week"=>false);
+}
+  
+// Affichage de tous les plannings de la semaine
+if($page=="planning/poste/index.php" and !$date and $_SESSION['oups']['week']){
+  $page="planning/poste/semaine.php";
+}
+
 
 date_default_timezone_set("Europe/Paris");
 
@@ -75,7 +90,7 @@ else{
 
 //		Si pas de session, redirection vers la page d'authentification
 if(!$_SESSION['login_id']){
-  if($get_menu=="off" or $post_menu=="off")	// dans le cas d'une action executée dans un popup alors que la session a été perdue, on affiche la page d'auth sur le parent
+  if(!$menu)	// dans le cas d'une action executée dans un popup alors que la session a été perdue, on affiche la page d'auth sur le parent
     echo "<script type='text/JavaScript'>parent.location.href='authentification.php';</script>\n";
   else{
     $redirURL=urlencode(addslashes($_SERVER['REQUEST_URI']));
@@ -84,8 +99,9 @@ if(!$_SESSION['login_id']){
 }
 
 include "include/header.php";
-if(!$get_menu=="off")
+if($menu){
   include "include/menu.php";
+}
 
 //		Recupération des droits d'accès de l'agent
 $db=new db();
@@ -105,7 +121,7 @@ if(in_array($db->result[0]['groupe_id'],$droits)){
 else{
   echo "<div id='acces_refuse'>Accès refusé</div>\n";
 }
-if($get_menu!="off" and $post_menu!="off"){
+if($menu){
   include "include/footer.php";
 }
 ?>
