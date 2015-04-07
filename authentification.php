@@ -20,7 +20,7 @@ Page en sortie :inclus le fichier footer.php
 session_start();
 
 // Initialisation des variables
-$version="1.9.3";
+$version="1.9.4";
 
 require_once "include/config.php";
 require_once "include/sanitize.php";

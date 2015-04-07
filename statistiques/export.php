@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/export.php
 Création : mai 2011
-Dernière modification : 4 novembre 2014
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -19,8 +19,14 @@ Page appelée par la fonction JavaScript "export_stat" lors du clique sur les li
 
 session_start();
 require_once "../include/config.php";
+require_once "../include/sanitize.php";
 require_once "../include/function.php";
 require_once "class.statistiques.php";
+
+
+// Initialisation des variables
+$nom=filter_input(INPUT_GET,"nom",FILTER_SANITIZE_URL);
+$type=filter_input(INPUT_GET,"type",FILTER_CALLBACK,array("options"=>"sanitize_file_extension"));
 
  // Compter les jours ouvrables (ou ouvrés) entre début et fin
 $debut=$_SESSION['stat_debut'];
@@ -33,9 +39,9 @@ $db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debu
 $nbJours=$db->nb;
 
 $joursParSemaine=$config['Dimanche']?7:6;
-$Fnm = "stat_{$_GET['nom']}_".date("YmdHis");
+$Fnm = "stat_{$nom}_".date("YmdHis");
 
-if($_GET['type']=="csv"){
+if($type=="csv"){
   $separateur="';'";
   $Fnm.=".csv";
 }
@@ -54,7 +60,7 @@ $fin=dateAlpha($finSQL);
 
 $lignes=Array();
 
-switch($_GET['nom']){
+switch($nom){
   case "postes" : 									// Postes
     $lignes=array("Statistiques par poste du $debut au $fin",null);
     $lignes[]="Les agents";
@@ -253,7 +259,7 @@ switch($_GET['nom']){
     break;
 
   default :
-    $lignes=statistiques1($_GET['nom'],$tab,$debut,$fin,$separateur,$nbJours,$jour,$joursParSemaine);
+    $lignes=statistiques1($nom,$tab,$debut,$fin,$separateur,$nbJours,$jour,$joursParSemaine);
     break;
 }
 
@@ -263,7 +269,7 @@ $lignes=array_map("utf8_decode",$lignes);
 $lignes=array_map("html_entity_decode_latin1",$lignes);
 
 foreach($lignes as $elem){
-  if($_GET['type']=="csv"){
+  if($type=="csv"){
     fputs($inF,"'$elem'\n");
   }
   else{

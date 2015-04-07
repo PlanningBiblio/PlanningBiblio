@@ -1,7 +1,11 @@
-***	Version 1.9.4	(Jérôme Combes, 3 avril 2015)			***
+***	Version 1.9.4	(Jérôme Combes, 7 avril 2015)			***
 - Corrections :
 Correction d'un bug empêchant la copie des tableaux en multisites
 Correction des vulnérabilités SQL Injection
+Correction des vulnérabilités LDAP Injection
+Correction des vulnérabilités Reflected XSS
+Correction des vulnérabilités Stored XSS
+Correction des vulnérabilités File Manipulation
 
 ***	Version 1.9.3	(Jérôme Combes, 31 mars 2015)			***
 - Améliorations :

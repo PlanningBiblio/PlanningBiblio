@@ -34,6 +34,7 @@ class db{
   var $result;
   var $nb;
   var $error;
+  var $msg;
   
   function db(){
     $this->host=$GLOBALS['config']['dbhost'];
@@ -48,7 +49,8 @@ class db{
   function connect(){
     $this->conn=mysqli_connect($this->host,$this->user,$this->password,$this->dbname);
     if(mysqli_connect_errno($this->conn)){
-      echo "Failed to connect to MySQL: " . mysqli_connect_error();
+      $this->error=true;
+      $this->msg=mysqli_connect_error();
     }
   }
   
@@ -72,15 +74,27 @@ class db{
     $req=mysqli_query($this->conn,$requete);
 
     if(!$req){
-      echo "<br/><br/>### ERREUR SQL ###<br/><br/>$requete<br/><br/>";
-      echo mysqli_error($this->conn);
-      echo "<br/><br/>";
       $this->error=true;
+      $this->error=mysqli_error($this->conn);
     }
     elseif(strtolower(substr(trim($requete),0,6))=="select" or strtolower(substr(trim($requete),0,4))=="show"){
       $this->nb=mysqli_num_rows($req);
-      for($i=0;$i<$this->nb;$i++)
-	$this->result[]=mysqli_fetch_array($req);
+      for($i=0;$i<$this->nb;$i++){
+	$result=array();
+	$tab=mysqli_fetch_assoc($req);
+	foreach($tab as $key => $value){
+	  if(is_serialized($value)){
+	    $tmp=unserialize($value);
+	    foreach($tmp as $key2 => $value2){
+	      $tmp[$key2]=filter_var($value2,FILTER_SANITIZE_STRING);
+	    }
+	    $result[$key]=serialize($tmp);
+	  }else{
+	    $result[$key]=filter_var($value,FILTER_SANITIZE_STRING);
+	  }
+	}
+	$this->result[]=$result;
+      }
     }
     $this->disconnect();
   }
@@ -302,8 +316,8 @@ class db{
     $requete="INSERT INTO `{$GLOBALS['config']['dbprefix']}$table` $fields VALUES ($values);";
     $req=mysqli_query($this->conn,$requete);
     if(mysqli_error($this->conn)){
-      echo mysqli_error($this->conn);
-      echo "<br/>".$requete;
+      $this->error=true;
+      $this->msg=mysqli_error($this->conn);
     }
     $this->disconnect();
   }
@@ -409,7 +423,7 @@ class dbh{
   var $dbuser;
   var $dbpass;
   var $error;
-  var $fullErrors;
+  var $msg;
   var $pdo;
   var $stmt;
   var $result;
@@ -434,12 +448,31 @@ class dbh{
 
   function execute($data=array()){
     $this->stmt->execute($data);
-    $this->result=$this->stmt->fetchAll();
+    $tmp=$this->stmt->fetchAll();
+    $this->nb=count($tmp);
+
+    for($i=0;$i<$this->nb;$i++){
+      $result=array();
+      foreach($tmp[$i] as $key => $value){
+	if(is_serialized($value)){
+	  $tmp=unserialize($value);
+	  foreach($tmp as $key2 => $value2){
+	    $tmp[$key2]=filter_var($value2,FILTER_SANITIZE_STRING);
+	  }
+	  $result[$key]=serialize($tmp);
+	}else{
+	  $result[$key]=filter_var($value,FILTER_SANITIZE_STRING);
+	}
+      }
+      $this->result[]=$result;
+    }
+
+
     $this->nb=count($this->result);
     $errors=$this->stmt->errorInfo();
 
     $this->error=$errors[1];
-    $this->fullErrors=$errors;
+    $this->msg=$errors;
   }
 
   /**

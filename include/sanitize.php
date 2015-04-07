@@ -39,6 +39,15 @@ function sanitize_dateSQL($input){
   return $reponse_filtre;
 }
 
+function sanitize_file_extension($input){
+  $reponse_filtre = null;
+  $extensions=array("xls","csv","pdf");
+  if(in_array($input,$extensions)){
+    $reponse_filtre = $input;
+  }
+  return $reponse_filtre;
+}
+
 // sanitize_heure retourne "00:00:00" par défaut
 function sanitize_heure($input){
   $reponse_filtre = "00:00:00";
