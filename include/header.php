@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 2 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -71,9 +71,9 @@ EOD;
 }
 
 if(isset($_GET['msg'])){
-	$msg=filter_var($_GET['msg'], FILTER_SANITIZE_STRING);
-	$msgType=filter_var($_GET['msgType'], FILTER_SANITIZE_STRING);
-	echo "<script type='text/JavaScript'>CJInfo('$msg','$msgType');</script>\n";
+  $msg=filter_input(INPUT_GET,"msg", FILTER_SANITIZE_STRING);
+  $msgType=filter_input(INPUT_GET,"msgType", FILTER_SANITIZE_STRING);
+  echo "<script type='text/JavaScript'>CJInfo('$msg','$msgType');</script>\n";
 }
 ?>
 

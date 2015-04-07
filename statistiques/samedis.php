@@ -39,11 +39,27 @@ if(!array_key_exists('stat_debut',$_SESSION)){
   $_SESSION['stat_debut']=null;
   $_SESSION['stat_fin']=null;
 }
-$debut=isset($_GET['debut'])?$_GET['debut']:$_SESSION['stat_debut'];
-$fin=isset($_GET['fin'])?$_GET['fin']:$_SESSION['stat_fin'];
-$agents=isset($_GET['agents'])?$_GET['agents']:$_SESSION['stat_samedis_agents'];
+
+$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$tri=filter_input(INPUT_GET,"tri",FILTER_SANITIZE_STRING);
+
+if(!$debut) { $debut=$_SESSION['stat_debut']; }
+if(!$fin) { $fin=$_SESSION['stat_fin']; }
+if(!$tri) { $tri=$_SESSION['stat_poste_tri']; }
+
 $debutSQL=dateFr($debut);
 $finSQL=dateFr($fin);
+
+$agents=array();
+if(isset($_GET['agents'])){
+  foreach($_GET['agents'] as $elem){
+    $agents[]=filter_var($elem,FILTER_SANITIZE_NUMBER_INT);
+  }
+}else{
+  $agents=$_SESSION['stat_samedis_agents'];
+}
+$_SESSION['stat_samedis_agents']=$agents;
 
 if(!$debut){
   $debut="01/01/".date("Y");
@@ -53,7 +69,6 @@ if(!$fin){
   $fin=date("d/m/Y");
 }
 $_SESSION['stat_fin']=$fin;
-$_SESSION['stat_samedis_agents']=$agents;
 
 // Sélection des samedis entre le début et la fin
 $dates=array();
@@ -67,19 +82,28 @@ $dates=join(",",$dates);
 
 // Filtre les sites
 if(!array_key_exists('stat_samedis_sites',$_SESSION)){
-  $_SESSION['stat_samedis_sites']=null;
+  $_SESSION['stat_samedis_sites']=array();
 }
-$selectedSites=isset($_GET['selectedSites'])?$_GET['selectedSites']:$_SESSION['stat_samedis_sites'];
-if($config['Multisites-nombre']>1 and !$selectedSites){
+
+if(isset($_GET['selectedSites'])){
   $selectedSites=array();
+  foreach($_GET['selectedSites'] as $elem){
+    $selectedSites[]=filter_var($elem,FILTER_SANITIZE_NUMBER_INT);
+  }
+}else{
+  $selectedSites=$_SESSION['stat_samedis_sites'];
+}
+
+if($config['Multisites-nombre']>1 and empty($selectedSites)){
   for($i=1;$i<=$config['Multisites-nombre'];$i++){
     $selectedSites[]=$i;
   }
 }
+
 $_SESSION['stat_samedis_sites']=$selectedSites;
 
 // Filtre les sites dans les requêtes SQL
-if($config['Multisites-nombre']>1 and is_array($selectedSites)){
+if($config['Multisites-nombre']>1){
   $sitesSQL="0,".join(",",$selectedSites);
 }
 else{

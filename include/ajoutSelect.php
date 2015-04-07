@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/ajoutSelect.php
 Création : mai 2011
-Dernière modification : 2 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -21,11 +21,15 @@ if(!$version){
   header("Location: ../index.php");
 }
 
-$terme=$_GET['terme'];
-$table=$_GET['table'];
-if(isset($_GET['action']) and $_GET['action']=="ajout"){
-  $nouveau=$_GET['nouveau'];
-  $apres=$_GET['apres'];
+// Initialisation des variables
+$action=filter_input(INPUT_GET,"action",FILTER_SANITIZE_STRING);
+$apres=filter_input(INPUT_GET,"apres",FILTER_SANITIZE_NUMBER_INT);
+$nouveau=filter_input(INPUT_GET,"nouveau",FILTER_SANITIZE_STRING);
+$rang=filter_input(INPUT_GET,"rang",FILTER_SANITIZE_NUMBER_INT);
+$table=filter_input(INPUT_GET,"table",FILTER_SANITIZE_STRING);
+$terme=filter_input(INPUT_GET,"terme",FILTER_SANITIZE_STRING);
+
+if($action=="ajout"){
   $db=new db();
   $apres=$db->escapeString($apres);
   $tableSQL=$db->escapeString($table);
@@ -36,9 +40,7 @@ if(isset($_GET['action']) and $_GET['action']=="ajout"){
   echo "<script type='text/JavaScript'>parent.window.location.reload(false);</script>";
   echo "<script type='text/JavaScript'>popup_closed();</script>";
 }
-elseif(isset($_GET['action']) and $_GET['action']=="suppression"){
-  $rang=$_GET['rang'];
-  
+elseif($action=="suppression"){
   //		---------------		verifions si la valeur à supprimer et urilisée		----------------//
   $existe=false;
   $db=new db();

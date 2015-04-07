@@ -25,7 +25,7 @@ $version="1.9.4";
 require_once "include/config.php";
 require_once "include/sanitize.php";
 
-$login=filter_input(INPUT_GET,"newlogin",FILTER_SANITIZE_STRING);
+$newLogin=filter_input(INPUT_GET,"newlogin",FILTER_SANITIZE_STRING);
 $redirURL=isset($_REQUEST['redirURL'])?stripslashes($_REQUEST['redirURL']):"index.php";
 $redirURL=filter_var($redirURL,FILTER_SANITIZE_URL);
 
@@ -67,8 +67,8 @@ if(isset($_GET['login']) and $_GET['login']=="anonyme" and $config['Auth-Anonyme
 
 //	Vérification du login et du mot de passe
 elseif(isset($_POST['login'])){
-  $login=$_POST['login'];
-  $password=$_POST['password'];
+  $login=filter_input(INPUT_POST,"login",FILTER_SANITIZE_STRING);
+  $password=filter_input(INPUT_POST,"password",FILTER_UNSAFE_RAW);
 
   include "ldap/auth.php";
 
@@ -127,7 +127,7 @@ else{		//		Formulaire d'authentification
     <input type='hidden' name='redirURL' value='$redirURL' />
     <table style='width:100%;'>
     <tr><td style='text-align:right;width:48%;'>Utilisateur : </td>
-    <td><input type='text' name='login' value='$login' /></td></tr>
+    <td><input type='text' name='login' value='$newLogin' /></td></tr>
     <tr><td align='right'>Mot de passe : </td>
     <td><input type='password' name='password' /></td></tr>
     <tr><td colspan='2' align='center'><br/><input type='submit' class='ui-button' value='Valider' /></td></tr>

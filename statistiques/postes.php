@@ -37,12 +37,43 @@ if(!array_key_exists('stat_debut',$_SESSION)){
   $_SESSION['stat_debut']=null;
   $_SESSION['stat_fin']=null;
 }
-$debut=isset($_GET['debut'])?$_GET['debut']:$_SESSION['stat_debut'];
-$fin=isset($_GET['fin'])?$_GET['fin']:$_SESSION['stat_fin'];
-$postes=isset($_GET['postes'])?$_GET['postes']:$_SESSION['stat_poste_postes'];
-$tri=isset($_GET['tri'])?$_GET['tri']:$_SESSION['stat_poste_tri'];
+
+$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$tri=filter_input(INPUT_GET,"tri",FILTER_SANITIZE_STRING);
+
+if(!$debut) { $debut=$_SESSION['stat_debut']; }
+if(!$fin) { $fin=$_SESSION['stat_fin']; }
+if(!$tri) { $tri=$_SESSION['stat_poste_tri']; }
+
 $debutSQL=dateFr($debut);
 $finSQL=dateFr($fin);
+
+// Postes
+if(isset($_GET['postes'])){
+  $postes=array();
+  foreach($_GET['postes'] as $elem){
+    $postes[]=filter_var($elem,FILTER_SANITIZE_NUMBER_INT);
+  }
+}else{
+  $postes=$_SESSION['stat_poste_postes'];
+}
+$_SESSION['stat_poste_postes']=$postes;
+
+// Filtre les sites
+if(!array_key_exists('stat_poste_sites',$_SESSION)){
+  $_SESSION['stat_poste_sites']=array();
+}
+
+if(isset($_GET['selectedSites'])){
+  $selectedSites=array();
+  foreach($_GET['selectedSites'] as $elem){
+    $selectedSites[]=filter_var($elem,FILTER_SANITIZE_NUMBER_INT);
+  }
+}else{
+  $selectedSites=$_SESSION['stat_poste_sites'];
+}
+
 
 if(!$debut)
   $debut="01/01/".date("Y");
@@ -50,18 +81,11 @@ $_SESSION['stat_debut']=$debut;
 if(!$fin)
   $fin=date("d/m/Y");
 $_SESSION['stat_fin']=$fin;
-$_SESSION['stat_poste_postes']=$postes;
 if(!$tri)
   $tri="cmp_01";
 $_SESSION['stat_poste_tri']=$tri;
 
-// Filtre les sites
-if(!array_key_exists('stat_poste_sites',$_SESSION)){
-  $_SESSION['stat_poste_sites']=null;
-}
-$selectedSites=isset($_GET['selectedSites'])?$_GET['selectedSites']:$_SESSION['stat_poste_sites'];
-if($config['Multisites-nombre']>1 and !$selectedSites){
-  $selectedSites=array();
+if($config['Multisites-nombre']>1 and empty($selectedSites)){
   for($i=1;$i<=$config['Multisites-nombre'];$i++){
     $selectedSites[]=$i;
   }

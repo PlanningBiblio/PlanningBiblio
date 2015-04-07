@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/ajax.supprimeLignes.php
 Création : 10 septembre 2012
-Dernière modification : 4 février 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,8 +20,10 @@ Page appelée en arrière plan par la fonction JavaScript "supprimeLigne"
 require_once "../../include/config.php";
 require_once "class.tableaux.php";
 
+$id=filter_input(INPUT_POST,"id",FILTER_SANITIZE_NUMBER_INT);
+
 $t=new tableau();
-$t->id=$_POST['id'];
+$t->id=$id;
 $t->deleteLine();
 echo json_encode(null);
 ?>

@@ -36,16 +36,17 @@ $exists_dimanche=false;
 
 include "include/horaires.php";
 //		--------------		Initialisation  des variables 'debut','fin' et 'agents'		-------------------
-if(!array_key_exists('stat_agents_agents',$_SESSION)){
-  $_SESSION['stat_agents_agents']=null;
-}
 if(!array_key_exists('stat_debut',$_SESSION)){
   $_SESSION['stat_debut']=null;
   $_SESSION['stat_fin']=null;
 }
-$debut=isset($_GET['debut'])?$_GET['debut']:$_SESSION['stat_debut'];
-$fin=isset($_GET['fin'])?$_GET['fin']:$_SESSION['stat_fin'];
-$agents=isset($_GET['agents'])?$_GET['agents']:$_SESSION['stat_agents_agents'];
+
+$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+
+if(!$debut){ $debut=$_SESSION['stat_debut']; }
+if(!$fin){ $fin=$_SESSION['stat_fin']; }
+
 $debutSQL=dateFr($debut);
 $finSQL=dateFr($fin);
 
@@ -57,15 +58,39 @@ if(!$fin){
   $fin=date("d/m/Y");
 }
 $_SESSION['stat_fin']=$fin;
+
+
+// Filtre les agents
+if(!array_key_exists('stat_agents_agents',$_SESSION)){
+  $_SESSION['stat_agents_agents']=null;
+}
+
+$agents=array();
+if(isset($_GET['agents'])){
+  foreach($_GET['agents'] as $elem){
+    $agents[]=filter_var($elem,FILTER_SANITIZE_NUMBER_INT);
+  }
+}else{
+  $agents=$_SESSION['stat_agents_agents'];
+}
 $_SESSION['stat_agents_agents']=$agents;
+
 
 // Filtre les sites
 if(!array_key_exists('stat_agents_sites',$_SESSION)){
-  $_SESSION['stat_agents_sites']=null;
+  $_SESSION['stat_agents_sites']=array();
 }
-$selectedSites=isset($_GET['selectedSites'])?$_GET['selectedSites']:$_SESSION['stat_agents_sites'];
-if($config['Multisites-nombre']>1 and !$selectedSites){
+
+if(isset($_GET['selectedSites'])){
   $selectedSites=array();
+  foreach($_GET['selectedSites'] as $elem){
+    $selectedSites[]=filter_var($elem,FILTER_SANITIZE_NUMBER_INT);
+  }
+}else{
+  $selectedSites=$_SESSION['stat_agents_sites'];
+}
+
+if($config['Multisites-nombre']>1 and empty($selectedSites)){
   for($i=1;$i<=$config['Multisites-nombre'];$i++){
     $selectedSites[]=$i;
   }

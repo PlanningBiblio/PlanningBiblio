@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : ldap/import2.php
 Création : 2 juillet 2014
-Dernière modification : 4 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -22,9 +22,9 @@ $recherche=filter_input(INPUT_POST,"recherche",FILTER_SANITIZE_STRING);
 //	Récupération des uid des agents sélectionnés
 $uids=array();
 if(array_key_exists("chk",$_POST)){
-  foreach($_POST["chk"] as $key => $value){
-    $elem=filter_var($_POST["chk"][$key],FILTER_SANITIZE_STRING);
-    $uids[]=$elem;
+  foreach($_POST["chk"] as $elem){
+    $elem=filter_var($elem,FILTER_SANITIZE_STRING);
+    $uids[]=filter_var($elem,FILTER_CALLBACK,array("options"=>"ldapspecialchars"));
   }
 }else{
   $msg=urlencode("Aucun agent n&apos;est s&eacute;lectionn&eacute;.");

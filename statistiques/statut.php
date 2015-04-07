@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.9
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/statut.php
 Création : 13 septembre 2013
-Dernière modification : 29 avril 2014
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -40,9 +40,13 @@ if(!array_key_exists('stat_debut',$_SESSION)){
   $_SESSION['stat_debut']=null;
   $_SESSION['stat_fin']=null;
 }
-$debut=isset($_GET['debut'])?$_GET['debut']:$_SESSION['stat_debut'];
-$fin=isset($_GET['fin'])?$_GET['fin']:$_SESSION['stat_fin'];
-$statuts=isset($_GET['statuts'])?$_GET['statuts']:$_SESSION['stat_statut_statuts'];
+
+$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+
+if(!$debut){ $debut=$_SESSION['stat_debut']; }
+if(!$fin){ $fin=$_SESSION['stat_fin']; }
+
 $debutSQL=dateFr($debut);
 $finSQL=dateFr($fin);
 
@@ -54,15 +58,38 @@ if(!$fin){
   $fin=date("d/m/Y");
 }
 $_SESSION['stat_fin']=$fin;
+
+// Filtre les statuts
+if(!array_key_exists('stat_statut_statuts',$_SESSION)){
+  $_SESSION['stat_statut_statuts']=null;
+}
+
+if(isset($_GET['statuts'])){
+  $statuts=array();
+  foreach($_GET['statuts'] as $elem){
+    $statuts[]=filter_var($elem,FILTER_SANITIZE_NUMBER_INT);
+  }
+}else{
+  $statuts=$_SESSION['stat_statut_statuts'];
+}
 $_SESSION['stat_statut_statuts']=$statuts;
+
 
 // Filtre les sites
 if(!array_key_exists('stat_statut_sites',$_SESSION)){
-  $_SESSION['stat_statut_sites']=null;
+  $_SESSION['stat_statut_sites']=array();
 }
-$selectedSites=isset($_GET['selectedSites'])?$_GET['selectedSites']:$_SESSION['stat_statut_sites'];
-if($config['Multisites-nombre']>1 and !$selectedSites){
+
+if(isset($_GET['selectedSites'])){
   $selectedSites=array();
+  foreach($_GET['selectedSites'] as $elem){
+    $selectedSites[]=filter_var($elem,FILTER_SANITIZE_NUMBER_INT);
+  }
+}else{
+  $selectedSites=$_SESSION['stat_statut_sites'];
+}
+
+if($config['Multisites-nombre']>1 and empty($selectedSites)){
   for($i=1;$i<=$config['Multisites-nombre'];$i++){
     $selectedSites[]=$i;
   }

@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/suppression.php
 Création : 10 septembre 2012
-Dernière modification : 3 avril 2014
+Dernière modification : 7 avril 2014
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -18,11 +18,12 @@ Page appelée en arrière plan par la fonction JavaScript "popup" en cas de clic
 
 require_once "class.tableaux.php";
 
-
-$numero=$_GET['numero'];
+// Initialisation des variables
+$confirm=filter_input(INPUT_GET,"confirm",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$numero=filter_input(INPUT_GET,"numero",FILTER_SANITIZE_NUMBER_INT);
 
 echo "<div style='text-align:center'>\n";
-if(isset($_GET['confirm'])){
+if($confirm){
   $db=new db();
   $db->delete2("pl_poste_horaires", array("numero"=>$numero));
   $db=new db();
@@ -38,7 +39,7 @@ if(isset($_GET['confirm'])){
 else{
   echo "<br/>Etes vous sûr(e) de vouloir supprimer ce tableau ?<br/><br/>\n";
   echo "<a href='javascript:popup_closed();'>Non</a>&nbsp;&nbsp;&nbsp;\n";
-  echo "<a href='index.php?page=planning/postes_cfg/suppression.php&amp;menu=off&amp;confirm=confirm&amp;numero={$_GET['numero']}'>Oui</a>&nbsp;&nbsp;&nbsp;\n";
+  echo "<a href='index.php?page=planning/postes_cfg/suppression.php&amp;menu=off&amp;confirm=confirm&amp;numero=$numero'>Oui</a>&nbsp;&nbsp;&nbsp;\n";
 }
 echo "</div>\n";
 ?>

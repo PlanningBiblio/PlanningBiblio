@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 3 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -24,8 +24,10 @@ include "include/horaires.php";
 
 //	Initialisation des variables
 if(isset($_GET['debut'])){
-  $debut=dateFr($_GET['debut']);
-  $fin=$_GET['fin']?dateFr($_GET['fin']):$debut;
+  $debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+  $fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+  $debut=dateSQL($debut);
+  $fin=$fin?dateFr($fin):$debut;
 }
 elseif(array_key_exists("stat_temps_debut",$_SESSION['oups'])){
   $debut=$_SESSION['oups']['stat_temps_debut'];

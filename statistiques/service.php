@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/service.php
 Création : 9 septembre 2013
-Dernière modification : 3 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -40,9 +40,13 @@ if(!array_key_exists('stat_debut',$_SESSION)){
   $_SESSION['stat_debut']=null;
   $_SESSION['stat_fin']=null;
 }
-$debut=isset($_GET['debut'])?$_GET['debut']:$_SESSION['stat_debut'];
-$fin=isset($_GET['fin'])?$_GET['fin']:$_SESSION['stat_fin'];
-$services=isset($_GET['services'])?$_GET['services']:$_SESSION['stat_service_services'];
+
+$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+
+if(!$debut){ $debut=$_SESSION['stat_debut']; }
+if(!$fin){ $fin=$_SESSION['stat_fin']; }
+
 $debutSQL=dateFr($debut);
 $finSQL=dateFr($fin);
 
@@ -54,20 +58,44 @@ if(!$fin){
   $fin=date("d/m/Y");
 }
 $_SESSION['stat_fin']=$fin;
+
+// Filtre les services
+if(!array_key_exists('stat_service_services',$_SESSION)){
+  $_SESSION['stat_service_services']=null;
+}
+
+if(isset($_GET['services'])){
+  $services=array();
+  foreach($_GET['services'] as $elem){
+    $services[]=filter_var($elem,FILTER_SANITIZE_NUMBER_INT);
+  }
+}else{
+  $services=$_SESSION['stat_service_services'];
+}
 $_SESSION['stat_service_services']=$services;
 
+
 // Filtre les sites
-if(!array_key_exists('stat_service_sites',$_SESSION)){
-  $_SESSION['stat_service_sites']=null;
+if(!array_key_exists('stat_services_sites',$_SESSION)){
+  $_SESSION['stat_services_sites']=array();
 }
-$selectedSites=isset($_GET['selectedSites'])?$_GET['selectedSites']:$_SESSION['stat_service_sites'];
-if($config['Multisites-nombre']>1 and !$selectedSites){
+
+if(isset($_GET['selectedSites'])){
   $selectedSites=array();
+  foreach($_GET['selectedSites'] as $elem){
+    $selectedSites[]=filter_var($elem,FILTER_SANITIZE_NUMBER_INT);
+  }
+}else{
+  $selectedSites=$_SESSION['stat_services_sites'];
+}
+
+if($config['Multisites-nombre']>1 and empty($selectedSites)){
   for($i=1;$i<=$config['Multisites-nombre'];$i++){
     $selectedSites[]=$i;
   }
 }
-$_SESSION['stat_service_sites']=$selectedSites;
+$_SESSION['stat_services_sites']=$selectedSites;
+
 
 // Filtre les sites dans les requêtes SQL
 if($config['Multisites-nombre']>1 and is_array($selectedSites)){

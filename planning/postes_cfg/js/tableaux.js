@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/js/tableaux.js
 Création : 4 février 2015
-Dernière modification : 4 février 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -34,10 +34,10 @@ function supprimeGroupe(id){
 	  tr=tr.next("tr");
 	}
  	$("#tr-groupe-"+id).remove();
-	information("Le groupe \""+nom+"\" a été supprimé avec succès","highlight");
+	CJInfo("Le groupe \""+nom+"\" a été supprimé avec succès","success");
       },
       error: function(result){
-	information("Une erreur est survenue lors de la suppression du groupe \""+nom+"\"","error");
+	CJInfo("Une erreur est survenue lors de la suppression du groupe \""+nom+"\"","error");
       }
     });
   }
@@ -63,10 +63,10 @@ function supprimeLigne(id){
 	  tr=tr.next("tr");
 	}
  	$("#tr-ligne-"+id).remove();
-	information("Le ligne \""+nom+"\" a été supprimée avec succès","highlight");
+	CJInfo("Le ligne \""+nom+"\" a été supprimée avec succès","success");
       },
       error: function(result){
-	information("Une erreur est survenue lors de la suppression de la ligne \""+nom+"\"","error");
+	CJInfo("Une erreur est survenue lors de la suppression de la ligne \""+nom+"\"","error");
       }
     });
   }
@@ -91,10 +91,10 @@ function supprimeTableau(tableau){
 	  tr=tr.next("tr");
 	}
  	$("#tr-tableau-"+tableau).remove();
-	information("Le tableau \""+nom+"\" a été supprimé avec succès","highlight");
+	CJInfo("Le tableau \""+nom+"\" a été supprimé avec succès","success");
       },
       error: function(result){
-	information("Une erreur est survenue lors de la suppression du tableau \""+nom+"\"","error");
+	CJInfo("Une erreur est survenue lors de la suppression du tableau \""+nom+"\"","error");
       }
     });
   }
@@ -210,7 +210,7 @@ function supprime_select(page,except){
 	window.location.reload(false);
       },
       error: function(){
-	information("Une erreur est survenue lors de la suppression.","error");
+	CJInfo("Une erreur est survenue lors de la suppression.","error");
       }
     });
   }
@@ -225,7 +225,7 @@ function tableauxNombre(){
       location.href="index.php?page=planning/postes_cfg/modif.php&numero="+$("#id").val();
     },
     error: function(){
-      information("Une erreur est survenue lors de la modification du nombre de tableaux.","error");
+      CJInfo("Une erreur est survenue lors de la modification du nombre de tableaux.","error");
     }
   });
 }
@@ -239,11 +239,11 @@ function tabSiteUpdate(){
     data: "numero="+numero+"&site="+site,
     success: function(){
       // On recharge la page pour mettre à jour le tableau des lignes
-      var message=encodeURIComponent("Le site a été modifié avec succès");
-      document.location.href="index.php?page=planning/postes_cfg/modif.php&message="+message+"&msg-type=highlight";
+      var msg=encodeURIComponent("Le site a été modifié avec succès");
+      document.location.href="index.php?page=planning/postes_cfg/modif.php&msg="+msg+"&msgType=success";
     },
     error: function(){
-      information("Une erreur est survenue lors la modification du site.","error");
+      CJInfo("Une erreur est survenue lors la modification du site.","error");
     }
   });
 }

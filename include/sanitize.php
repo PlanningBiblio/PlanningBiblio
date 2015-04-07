@@ -15,6 +15,25 @@ Page contenant les fonctions PHP de nettoyages de variables
 Page appelée par les fichiers index.php, et authentification.php
 */
 
+/**
+ * Sanitizes ldap search strings.
+ * See rfc2254
+ * @link http://www.faqs.org/rfcs/rfc2254.html
+ * @since 1.5.1 and 1.4.5
+ * @param string $string
+ * @return string sanitized string
+ * @author Squirrelmail Team
+ */
+function ldapspecialchars($string) {
+    $sanitized=array('\\' => '\5c',
+                     '*' => '\2a',
+                     '(' => '\28',
+                     ')' => '\29',
+                     "\x00" => '\00');
+
+    return str_replace(array_keys($sanitized),array_values($sanitized),$string);
+}
+
 function sanitize_dateFr($input){
   $reponse_filtre = null;
   // Vérifions si le format est valide
@@ -68,13 +87,14 @@ function sanitize_heure_fin($input){
   return $reponse_filtre;
 }
 
+
 // sanitize_on retourne false par défaut
 // Permet par exemple de controler les checkboxes
 function sanitize_on($input){
   $reponse_filtre = false;
   // Vérifions si le format est valide
   if($input){
-    $reponse_filtre = $input;
+    $reponse_filtre = true;
   }
   return $reponse_filtre;
 }

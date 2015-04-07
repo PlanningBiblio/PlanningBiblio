@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/modif.php
 Création : mai 2011
-Dernière modification : 3 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,13 +20,35 @@ Page appelée par le fichier index.php, accessible en cliquant sur les icônes "
 require_once "class.tableaux.php";
 include "planning/poste/fonctions.php";
 
+// Initialisation des variables
+$cfgType=filter_input(INPUT_POST,"cfg-type",FILTER_SANITIZE_STRING);
+$cfgTypeGet=filter_input(INPUT_GET,"cfg-type",FILTER_SANITIZE_STRING);
+$tableauNumero=filter_input(INPUT_POST,"numero",FILTER_SANITIZE_NUMBER_INT);
+$tableauGet=filter_input(INPUT_GET,"numero",FILTER_SANITIZE_NUMBER_INT);
+
 // Choix du tableau
-if(!in_array("cfg_num",$_SESSION))
-  $_SESSION['cfg_num']="1";
-$tableauNumero=isset($_POST['numero'])?$_POST['numero']:$_SESSION['cfg_num'];
-if(isset($_GET['numero']))
-  $tableauNumero=$_GET['numero'];
+if($tableauGet){
+  $tableauNumero=$tableauGet;
+}
+if(!$tableauNumero and in_array("cfg_num",$_SESSION)){
+  $tableauNumero=$_SESSION['cfg_num'];
+}
+if(!$tableauNumero and !in_array("cfg_num",$_SESSION)){
+  $tableauNumero="1";
+}
 $_SESSION['cfg_num']=$tableauNumero;
+
+// Choix de l'onglet (cfg-type)
+if($cfgTypeGet){
+  $cfgType=$cfgTypeGet;
+}
+if(!$cfgType and in_array("cfg_type",$_SESSION)){
+  $cfgType=$_SESSION['cfg_type'];
+}
+if(!$cfgType and !in_array("cfg_type",$_SESSION)){
+  $cfgType="tableaux";
+}
+$_SESSION['cfg_type']=$cfgType;
 
 $db=new db();
 $db->select2("pl_poste_tab","*",array("tableau"=>$tableauNumero));
@@ -77,16 +99,10 @@ $(".retour").click(function(){
 });
 
 <?php
-if(isset($_REQUEST['message'])){
+if($cfgType){
   echo <<<EOD
-    information("{$_REQUEST['message']}","{$_REQUEST['msg-type']}");
-EOD;
-}
-
-if(isset($_REQUEST['cfg-type'])){
-  echo <<<EOD
-    $("#tabs").ready(function(){
-      $("#{$_REQUEST['cfg-type']}").click();
+    $(document).ready(function(){
+      $("#div_{$cfgType}").click();
     });
 EOD;
 }

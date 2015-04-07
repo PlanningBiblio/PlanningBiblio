@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 4 avril 2015
+Dernière modification : 7 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -35,6 +35,8 @@ $db->selectInnerJoin(array("absences","perso_id"),array("personnel","id"),
   array("id"=>$id));
 
 $perso_id=$db->result[0]['perso_id'];
+$nom=$db->result[0]['nom'];
+$prenom=$db->result[0]['prenom'];
 $motif=$db->result[0]['motif'];
 $motif_autre=$db->result[0]['motif_autre'];
 $commentaires=$db->result[0]['commentaires'];
@@ -133,9 +135,9 @@ echo "<input type='hidden' name='perso_id' value='$perso_id' />\n";		// nécessa
 echo "<input type='hidden' id='admin' value='".($admin?1:0)."' />\n";
 echo "<table class='tableauFiches'>\n";
 echo "<tr><td><label class='intitule'>Nom, Prénom</label></td><td>";
-echo $db->result[0]['nom'];
+echo $nom;
 echo "&nbsp;";
-echo $db->result[0]['prenom'];
+echo $prenom;
 echo "</td></tr>\n";
 echo "<tr><td>\n";
 echo "<label class='intitule'>Journée(s) entière(s)</label>\n";
