@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : admin/index.php
 Création : mai 2011
-Dernière modification : 24 juillet 2013
+Dernière modification : 8 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -16,9 +16,9 @@ Affiche les liens vers les différentes pages de configurations (activités, age
 Page appelée par la page index.php
 */
 
-// pas de $version=acces direct aux pages de ce dossier => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+// pas de $version=acces direct aux pages de ce dossier => Accès refusé
+if(!isset($version)){
+  include_once "../include/accessDenied.php";
 }
 
 

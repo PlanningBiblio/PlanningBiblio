@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.8
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 10 décembre 2014
+Dernière modification : 8 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -17,9 +17,9 @@ personnel::fetch prend en paramètres $tri (nom de la colonne), $actif (string),
 Page appelée par les autres fichiers du dossier personnel
 */
 
-// pas de $version=acces direct aux pages de ce dossier => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+// pas de $version=acces direct aux pages de ce dossier => Accès refusé
+if(!isset($version)){
+  include_once "../include/accessDenied.php";
 }
 
 class personnel{

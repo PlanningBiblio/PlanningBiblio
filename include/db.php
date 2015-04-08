@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
@@ -17,12 +17,13 @@ INSERT, UPDATE, DELETE et autres requetes avec la fonction db::query($requete);
 Page appelée par le fichier include/config.php
 */
 
-// pas de $version=acces direct  => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
-}
+require_once "function.php";
+require_once "sanitize.php";
 
-include_once "function.php";
+// pas de $version=acces direct au fichier => Accès refusé
+if(!isset($version)){
+  include_once "accessDenied.php";
+}
 
 class db{
   var $host;

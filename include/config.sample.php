@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/config.sample.php
 Création : 2 avril 2015
-Dernière modification : 2 avril 2015
+Dernière modification : 8 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -26,12 +26,9 @@ if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['
   $version='ajax';
 }
 
-// Si pas de $version ou pas de reponseAjax => acces direct aux pages de ce dossier => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
-}
 global $config;
 $config=Array();
+
 //		Paramètres MySQL
 $config['dbhost']="your_db_host";
 $config['dbname']="your_db_name";
@@ -39,11 +36,18 @@ $config['dbuser']="your_db_user";
 $config['dbpass']="your_db_pass";
 $config['dbprefix']="your_db_prefix";
 $dbprefix=$config['dbprefix'];
-include 'db.php';
+
+include_once "db.php";
+
 //		Récuperation des paramètres stockés dans la base de données
 $db=new db();
 $db->query("SELECT * FROM `{$dbprefix}config` ORDER BY `id`;");
 foreach($db->result as $elem){
   $config[$elem['nom']]=$elem['valeur'];
+}
+
+// Si pas de $version ou pas de reponseAjax => acces direct au fichier => Accès refusé
+if(!isset($version)){
+  include_once "accessDenied.php";
 }
 ?>

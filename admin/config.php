@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 8 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -16,9 +16,9 @@ Affiche et modifie les paramètres de configuration (Serveur Mail, autres option
 Page appelée par la page index.php
 */
 
-// pas de $version=acces direct  => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+// pas de $version=acces direct aux pages de ce dossier => Accès refusé
+if(!isset($version)){
+  include_once "../include/accessDenied.php";
 }
 
 // Enregistrement des paramètres

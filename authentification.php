@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 8 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -17,16 +17,26 @@ Pages en entrée : inclus les fichiers config.php et header.php
 Page en sortie :inclus le fichier footer.php
 */
 
-session_start();
+// Cette page peut être chargée directment ou incluse dans la page index.php
+// La page index.php démarre déjà une session. On contrôle donc qu'aucune session n'existe avant de la démarrer
+// Si PHP version <5.4 et pas de session
+if(PHP_VERSION_ID<50400 and session_id()==''){
+  session_start();
+// Si PHP version >=5.4 et pas de session
+}elseif(PHP_VERSION_ID>=50400 and session_status() == PHP_SESSION_NONE){
+  session_start();
+}
 
 // Initialisation des variables
-$version="1.9.4";
+$version="1.9.5";
 
 require_once "include/config.php";
 require_once "include/sanitize.php";
 
 $newLogin=filter_input(INPUT_GET,"newlogin",FILTER_SANITIZE_STRING);
-$redirURL=isset($_REQUEST['redirURL'])?stripslashes($_REQUEST['redirURL']):"index.php";
+if(!isset($redirURL)){
+  $redirURL=isset($_REQUEST['redirURL'])?stripslashes($_REQUEST['redirURL']):"index.php";
+}
 $redirURL=filter_var($redirURL,FILTER_SANITIZE_URL);
 
 $page=null;
@@ -38,8 +48,7 @@ if(!array_key_exists("oups",$_SESSION)){
 }
 // Redirection vers setup si le fichier config est absent
 if(!file_exists("include/config.php")){
-  header("Location: setup/index.php");
-  exit;
+  include "include/noConfig.php";
 }
 
 ini_set('display_errors',$config['display_errors']);
@@ -56,17 +65,8 @@ switch($config['error_reporting']){
 include "plugins/plugins.php";
 include "include/header.php";
 
-//	Login Anonyme
-if(isset($_GET['login']) and $_GET['login']=="anonyme" and $config['Auth-Anonyme']){
-  $_SESSION['login_id']=999999999;
-  $_SESSION['login_nom']="Anonyme";
-  $_SESSION['login_prenom']="";
-  $_SESSION['oups']["Auth-Mode"]="Anonyme";
-  header("Location: index.php");
-}
-
 //	Vérification du login et du mot de passe
-elseif(isset($_POST['login'])){
+if(isset($_POST['login'])){
   $login=filter_input(INPUT_POST,"login",FILTER_SANITIZE_STRING);
   $password=filter_input(INPUT_POST,"password",FILTER_UNSAFE_RAW);
 
@@ -76,7 +76,12 @@ elseif(isset($_POST['login'])){
     $auth=authSQL($login,$password);
   }
 
-  $authArgs=$authArgs?$authArgs.="&redirURL=$redirURL":null;
+  if($authArgs and $redirURL){
+    $authArgs.="&redirURL=".urlencode($redirURL);
+  }elseif($redirURL){
+    $authArgs="?redirURL=".urlencode($redirURL);
+  }
+
 
   if($auth){
     $db=new db();
@@ -133,7 +138,7 @@ else{		//		Formulaire d'authentification
     <tr><td colspan='2' align='center'><br/><input type='submit' class='ui-button' value='Valider' /></td></tr>
 EOD;
     if($config['Auth-Anonyme']){
-      echo "<tr><td colspan='2' align='center'><br/><a href='authentification.php?login=anonyme'>Accès anonyme</a></td></tr>\n";
+      echo "<tr><td colspan='2' align='center'><br/><a href='index.php?login=anonyme'>Accès anonyme</a></td></tr>\n";
     }
     echo <<<EOD
     </table>

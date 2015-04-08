@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 8 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,13 +23,7 @@ Inclut à la fin le fichier footer.php
 session_start();
 
 // Version
-$version="1.9.4";
-
-// Redirection vers setup si le fichier config est absent
-if(!file_exists("include/config.php")){
-  header("Location: setup/index.php");
-  exit;
-}
+$version="1.9.5";
 
 require_once "include/config.php";
 require_once "include/sanitize.php";
@@ -62,6 +56,16 @@ if($page_post){
   $page="planning/poste/index.php";
 }
 
+// Login Anonyme
+$login=filter_input(INPUT_GET,"login",FILTER_SANITIZE_STRING);
+if($login and $login==="anonyme" and $config['Auth-Anonyme'] and !array_key_exists("login_id",$_SESSION)){
+  $_SESSION['login_id']=999999999;
+  $_SESSION['login_nom']="Anonyme";
+  $_SESSION['login_prenom']="";
+  $_SESSION['oups']["Auth-Mode"]="Anonyme";
+}
+
+
 $_SESSION['PLdate']=array_key_exists("PLdate",$_SESSION)?$_SESSION['PLdate']:date("Y-m-d");
 
 if(!array_key_exists("oups",$_SESSION)){
@@ -88,13 +92,20 @@ else{
   include "include/cron.php";
 }
 
-//		Si pas de session, redirection vers la page d'authentification
-if(!$_SESSION['login_id']){
-  if(!$menu)	// dans le cas d'une action executée dans un popup alors que la session a été perdue, on affiche la page d'auth sur le parent
-    echo "<script type='text/JavaScript'>parent.location.href='authentification.php';</script>\n";
-  else{
-    $redirURL=urlencode(addslashes($_SERVER['REQUEST_URI']));
-    header("Location: authentification.php?redirURL=$redirURL");		// session perdue, on affiche la page d'authentification
+// Si pas de session, redirection vers la page d'authentification
+if(!array_key_exists("login_id",$_SESSION)){
+  // Action executée dans un popup alors que la session a été perdue, on affiche
+  if(!$menu){
+    echo "<div style='margin:60px 30px;'>\n";
+    echo "<center>\n";
+    echo "Votre session a expiré.<br/><br/>\n";
+    echo "<a href='authentification.php' target='_top'>Cliquez ici pour vous reconnecter</a>\n";
+    echo "<center></div>\n";
+    exit;
+  }else{
+    // Session perdue, on affiche la page d'authentification
+    $redirURL="index.php?".$_SERVER['QUERY_STRING'];
+    include_once "authentification.php";
   }
 }
 

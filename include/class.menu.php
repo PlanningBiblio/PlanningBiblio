@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/class.menu.inc
 Création : 22 juillet 2013
-Dernière modification : 22 juillet 2013
+Dernière modification : 8 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -16,11 +16,10 @@ Fichier regroupant les fonctions permettant de construire le menu principal.
 Ce fichier est appelé par le fichier include/menu.php
 */
 
-// pas de $version=acces direct  => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+// pas de $version=acces direct au fichier => Accès refusé
+if(!isset($version)){
+  include_once "accessDenied.php";
 }
-
 
 class menu{
   public $elements=array();

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/feries.php
 Création : février 2012
-Dernière modification : 17 janvier 2013
+Dernière modification : 8 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -17,9 +17,9 @@ YYYY-MM-DD et pour retourner le nom du jour ferié
 Code source de Olravet commenté en page de cette page
 */
 
-// pas de $version=acces direct  => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+// pas de $version=acces direct au fichier => Accès refusé
+if(!isset($version)){
+  include_once "accessDenied.php";
 }
 
 function jour_ferie($date){

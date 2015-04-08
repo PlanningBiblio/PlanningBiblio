@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 8 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -15,10 +15,11 @@ Affcihe l'entête HTML
 Page notamment appelée par les fichiers index.php, admin/index.php
 */
 
-// pas de $version=acces direct  => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+// pas de $version=acces direct au fichier => Accès refusé
+if(!isset($version)){
+  include_once "accessDenied.php";
 }
+
 $theme=$config['Affichage-theme']?$config['Affichage-theme']:"default";
 $themeJQuery=$config['Affichage-theme']?$config['Affichage-theme']:"default";
 if(!file_exists("themes/$theme/jquery-ui.min.css")){
@@ -49,7 +50,6 @@ if(!file_exists("themes/$theme/$theme.css")){
 getJSFiles($page);
 ?>
 
-<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link rel='StyleSheet' href='vendor/DataTables-1.10.4/media/css/jquery.dataTables_themeroller.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='vendor/DataTables-1.10.4/extensions/TableTools/css/dataTables.tableTools.min.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/<?php echo $themeJQuery; ?>/jquery-ui.min.css' type='text/css' media='all'/>

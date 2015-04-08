@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
@@ -14,6 +14,11 @@ Description :
 Page contenant les fonctions PHP de nettoyages de variables
 Page appelée par les fichiers index.php, et authentification.php
 */
+
+// pas de $version=acces direct au fichier => Accès refusé
+if(!isset($version)){
+  include_once "accessDenied.php";
+}
 
 /**
  * Sanitizes ldap search strings.

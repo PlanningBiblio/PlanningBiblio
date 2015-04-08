@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 8 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -16,9 +16,9 @@ Cette page est appelée par la page index.php si la version du fichier index.php
 dans la base de données
 */
 
-// pas de $version=acces direct  => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+// pas de $version=acces direct au fichier => Accès refusé
+if(!isset($version)){
+  include_once "accessDenied.php";
 }
 
 echo "Mise &agrave; jour de la base de donn&eacute;es version {$config['Version']} --> $version<br/>\n";
@@ -707,6 +707,11 @@ if(strcmp("1.9.3",$config['Version'])>0){
 
 if(strcmp("1.9.4",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.9.4' WHERE `nom`='Version';";
+}
+
+if(strcmp("1.9.5",$config['Version'])>0){
+  include "majconfig.php";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.9.5' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage

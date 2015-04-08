@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 7 avril 2015
+Dernière modification : 9 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -16,9 +16,9 @@ Classe planning
 Utilisée par les fichiers du dossier "planning/poste"
 */
 
-// Si pas de $version => acces direct aux pages de ce dossier => redirection vers la page index.php
-if(!$version){
-  header("Location: ../../index.php");
+// pas de $version=acces direct aux pages de ce dossier => Accès refusé
+if(!isset($version)){
+  include_once "../../include/accessDenied.php";
 }
 
 
