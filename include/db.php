@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 8 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -83,15 +83,17 @@ class db{
 	$result=array();
 	$tab=mysqli_fetch_assoc($req);
 	foreach($tab as $key => $value){
-	  if(is_serialized($value)){
+	  if(isset($isCryptedPassword) and $isCryptedPassword===true){
+	    $result[$key]=filter_var($value,FILTER_UNSAFE_RAW);
+	 }elseif(is_serialized($value)){
 	    $tmp=unserialize($value);
-	    foreach($tmp as $key2 => $value2){
-	      $tmp[$key2]=filter_var($value2,FILTER_SANITIZE_STRING);
-	    }
-	    $result[$key]=serialize($tmp);
+	    $tmp=array_map("sanitize_array_unsafe",$tmp);
+	    $result[$key]=serialize($tmp); 
+	    $result[$key]=$value;
 	  }else{
 	    $result[$key]=filter_var($value,FILTER_SANITIZE_STRING);
 	  }
+	  $isCryptedPassword=($key=="type" and $value=="password")?true:false;
 	}
 	$this->result[]=$result;
       }
@@ -106,7 +108,7 @@ class db{
   function select($table,$infos=null,$where=null,$options=null){
     $infos=$infos?$infos:"*";
     $where=$where?$where:"1";
-    $requete="SELECT $infos FROM `{$GLOBALS['config']['dbprefix']}$table` WHERE $where $options";
+    $requete="SELECT $infos FROM `{$this->dbprefix}$table` WHERE $where $options";
     $this->query($requete);
   }
 
@@ -124,6 +126,7 @@ class db{
   */
   function select2($table,$infos="*",$where="1",$options=null){
     $this->connect();
+    $dbprefix=$this->dbprefix;
 
     if($infos===null){
       $infos="*";
@@ -154,7 +157,7 @@ class db{
       $where=join(" AND ",$tmp);
     }
 
-    $requete="SELECT $infos FROM `{$GLOBALS['config']['dbprefix']}$table` WHERE $where $options";
+    $requete="SELECT $infos FROM `{$dbprefix}$table` WHERE $where $options";
     $this->query($requete);
   }
 
@@ -213,11 +216,11 @@ class db{
     // Filtre "Where" et options
     $where=array();
     foreach($table1Where as $key => $value){
-      $key="`{$table1[0]}`.`$key`";
+      $key="`$table1Name`.`$key`";
       $where[]=$this->makeSearch($key,$value);
     }
     foreach($table2Where as $key => $value){
-      $key="`{$table2[0]}`.`$key`";
+      $key="`$table2Name`.`$key`";
       $where[]=$this->makeSearch($key,$value);
     }
     $where=join(" AND ",$where);
@@ -232,12 +235,14 @@ class db{
   }
 
   function update($table,$set,$where=1){
-    $requete="UPDATE `{$GLOBALS['config']['dbprefix']}$table` SET $set WHERE $where";
+    $requete="UPDATE `{$this->dbprefix}$table` SET $set WHERE $where";
     $this->query($requete);
   }
 
   function update2($table,$set,$where="1"){
     $this->connect();
+    $dbprefix=$this->dbprefix;
+
     $tmp=array();
     $fields=array_keys($set);
     foreach($fields as $field){
@@ -261,10 +266,8 @@ class db{
       }
       $where=join(" AND ",$tmp);
     }
-    $requete="UPDATE `{$GLOBALS['config']['dbprefix']}$table` SET $set WHERE $where;";
-
-    $req=mysqli_query($this->conn,$requete);
-    $this->disconnect();
+    $requete="UPDATE `{$dbprefix}$table` SET $set WHERE $where;";
+    $this->query($requete);
   }
 
   function update2latin1($table,$set,$where){
@@ -280,18 +283,18 @@ class db{
     $set=join(",",$tmp);
     $key=array_keys($where);
     $where="`".$key[0]."`='".$where[$key[0]]."'";
-    $requete="UPDATE `{$GLOBALS['config']['dbprefix']}$table` SET $set WHERE $where;";
-    $req=mysqli_query($this->conn,$requete);
-    $this->disconnect();
+    $requete="UPDATE `{$this->dbprefix}$table` SET $set WHERE $where;";
+    $this->query($requete);
   }
 
   function delete($table,$where=1){
-    $requete="DELETE FROM `{$GLOBALS['config']['dbprefix']}$table` WHERE $where";
+    $requete="DELETE FROM `{$this->dbprefix}$table` WHERE $where";
     $this->query($requete);
   }
 
   function delete2($table,$where="1"){
     $this->connect();
+    $dbprefix=$this->dbprefix;
 
     if(is_array($where)){
       $keys=array_keys($where);
@@ -303,27 +306,24 @@ class db{
       $where=join(" AND ",$tmp);
     }
 
-    $requete="DELETE FROM `{$GLOBALS['config']['dbprefix']}$table` WHERE $where";
+    $requete="DELETE FROM `{$dbprefix}$table` WHERE $where";
     $this->query($requete);
   }
 
   function insert($table,$values,$fields=null){
-    $this->connect();
     $fields=$fields?"($fields)":null;
     if(is_array($values)){
       $values=join("),(",$values);
     }
-    $requete="INSERT INTO `{$GLOBALS['config']['dbprefix']}$table` $fields VALUES ($values);";
-    $req=mysqli_query($this->conn,$requete);
-    if(mysqli_error($this->conn)){
-      $this->error=true;
-      $this->msg=mysqli_error($this->conn);
-    }
-    $this->disconnect();
+    $requete="INSERT INTO `{$this->dbprefix}$table` $fields VALUES ($values);";
+    $this->query($requete);
   }
 
   function insert2($table,$values,$options=null){
     $this->connect();
+    $dbprefix=$this->dbprefix;
+    $table=$dbprefix.$table;
+
     $tab=array();
     if(array_key_exists(0,$values)){
       $fields=array_keys($values[0]);
@@ -335,7 +335,7 @@ class db{
 	  $values[$i][$elem]=mysqli_real_escape_string($this->conn,$values[$i][$elem]);
 	}
       }
-      $fields=join(",",$fields);
+      $fields=join("`,`",$fields);
 
       foreach($values as $elem){
 	$tab[]="'".join("','",$elem)."'";
@@ -349,11 +349,12 @@ class db{
 	}
 	$values[$elem]=mysqli_real_escape_string($this->conn,$values[$elem]);
       }
-      $fields=join(",",$fields);
+      $fields=join("`,`",$fields);
       $tab[]="'".join("','",$values)."'";
     }
 
-    $this->insert($table,$tab,$fields);
+    $values=join("),(",$tab);
+    $this->query("INSERT INTO `$table` (`$fields`) VALUES ($values);");
   }
 
 
@@ -422,6 +423,7 @@ class dbh{
   var $dbname;
   var $dbuser;
   var $dbpass;
+  var $dbprefix;
   var $error;
   var $msg;
   var $pdo;
@@ -434,6 +436,7 @@ class dbh{
     $this->dbname=$GLOBALS['config']['dbname'];
     $this->dbuser=$GLOBALS['config']['dbuser'];
     $this->dbpass=$GLOBALS['config']['dbpass'];
+    $this->dbprefix=$GLOBALS['config']['dbprefix'];
 
     $this->pdo=new PDO("mysql:host={$this->dbhost};dbname={$this->dbname}",$this->dbuser,$this->dbpass);
   }
@@ -487,6 +490,7 @@ class dbh{
   @param string option : permet d'ajouter des options de recherche après where, ex : order by 
   */
   function select($table,$infos="*",$where="1",$options=null){
+    $table=$this->dbprefix.$table;
 
     if(is_array($infos)){
       $infos=join(",",$infos);
@@ -503,7 +507,7 @@ class dbh{
       $where=join(" AND ",$fields);
     }
 
-    $requete="SELECT $infos FROM `{$GLOBALS['config']['dbprefix']}$table` WHERE $where $options";
+    $requete="SELECT $infos FROM `$table` WHERE $where $options";
     $this->prepare($requete);
     $this->execute($data);
   }

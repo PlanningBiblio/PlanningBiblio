@@ -6,7 +6,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/js/tableaux.js
 Création : 4 février 2015
-Dernière modification : 7 avril 2015
+Dernière modification : 8 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -222,7 +222,8 @@ function tableauxNombre(){
     type: "get",
     data: "id="+$("#id").val()+"&nombre="+$("#nombre").val(),
     success: function(){
-      location.href="index.php?page=planning/postes_cfg/modif.php&numero="+$("#id").val();
+      var msg=encodeURIComponent("Le nombre de tableaux a été modifié avec succès");
+      location.href="index.php?page=planning/postes_cfg/modif.php&numero="+$("#id").val()+"&cfg-type=tableaux&msg="+msg+"&msgType=success";
     },
     error: function(){
       CJInfo("Une erreur est survenue lors de la modification du nombre de tableaux.","error");
@@ -240,7 +241,7 @@ function tabSiteUpdate(){
     success: function(){
       // On recharge la page pour mettre à jour le tableau des lignes
       var msg=encodeURIComponent("Le site a été modifié avec succès");
-      document.location.href="index.php?page=planning/postes_cfg/modif.php&msg="+msg+"&msgType=success";
+      document.location.href="index.php?page=planning/postes_cfg/modif.php&numero="+site+"&msg="+msg+"&msgType=success";
     },
     error: function(){
       CJInfo("Une erreur est survenue lors la modification du site.","error");

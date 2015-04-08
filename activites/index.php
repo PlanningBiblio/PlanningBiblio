@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.3
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : activites/index.php
 Création : mai 2011
-Dernière modification : 26 mars 2015
+Dernière modification : 8 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -32,7 +32,7 @@ $activites=$a->elements;
 $activites_utilisees=array();
 $tab=array();
 $db=new db();
-$db->query("SELECT `activites` FROM `{$dbprefix}postes` GROUP BY `activites`;");
+$db->select2("postes","activites","1","GROUP BY `activites");
 if($db->result){
   foreach($db->result as $elem){
     $tab[]=unserialize($elem['activites']);
@@ -41,13 +41,12 @@ if($db->result){
 
 // 		Contrôle si l'activité est attribuée à un agent pour en interdire la suppression
 $db=new db();
-$db->query("SELECT `postes` FROM `{$dbprefix}personnel` WHERE `supprime`<>'2' GROUP BY `postes`;");
+$db->select2("personnel","postes",array("supprime"=>"<>2"),"GROUP BY `postes`");
 if($db->result){
   foreach($db->result as $elem){
     $tab[]=unserialize($elem['postes']);
   }
 }
-
 if($tab[0]){
   foreach($tab as $elem){
     if(is_array($elem)){
@@ -87,8 +86,7 @@ echo "</tr></thead>\n";
 
 echo "<tbody>\n";
 foreach($activites as $elem){
-  $class=$class=="tr1"?"tr2":"tr1";
-  echo "<tr class='$class'><td>\n";
+  echo "<tr><td>\n";
   echo "<a href='index.php?page=activites/modif.php&amp;id={$elem['id']}'>\n";
   echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
   if(!in_array($elem['id'],$activites_utilisees)){

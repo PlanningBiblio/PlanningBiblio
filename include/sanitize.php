@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/sanitize.php
 Création : 7 avril 2015
-Dernière modification : 7 avril 2015
+Dernière modification : 8 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -32,6 +32,20 @@ function ldapspecialchars($string) {
                      "\x00" => '\00');
 
     return str_replace(array_keys($sanitized),array_values($sanitized),$string);
+}
+
+function sanitize_array_string($n){
+ if(is_array($n)){
+    return array_map("sanitize_array_string",$n);
+  }
+  return filter_var($n,FILTER_SANITIZE_STRING);
+}
+
+function sanitize_array_unsafe($n){
+ if(is_array($n)){
+    return array_map("sanitize_array_unsafe",$n);
+  }
+  return filter_var($n,FILTER_UNSAFE_RAW);
 }
 
 function sanitize_dateFr($input){

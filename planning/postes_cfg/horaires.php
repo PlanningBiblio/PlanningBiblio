@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/horaires.php
 Création : mai 2011
-Dernière modification : 20 janvier 2015
+Dernière modification : 8 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -49,9 +49,9 @@ if(isset($_POST['action'])){
   $db=new db();
   $db->insert2("pl_poste_horaires",$values);
   if(!$db->error){
-    echo "<script type='text/JavaScript'>information(\"Les horaires ont été modifiés avec succès\",\"highlight\");</script>\n";
+    echo "<script type='text/JavaScript'>CJInfo(\"Les horaires ont été modifiés avec succès\",\"success\");</script>\n";
   }else{
-    echo "<script type='text/JavaScript'>information(\"Une erreur est survenue lors de l'enregistrement des horaires\",\"error\");</script>\n";
+    echo "<script type='text/JavaScript'>CJInfo(\"Une erreur est survenue lors de l'enregistrement des horaires\",\"error\");</script>\n";
   }
 }
 
