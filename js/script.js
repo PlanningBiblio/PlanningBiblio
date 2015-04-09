@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.9.3
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 28 mars 2015
+Dernière modification : 9 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -78,7 +78,7 @@ function calculHeures(object,num,form,tip,numero){
     }
   }
   heures=heure4(heures/60);
-  document.getElementById(tip).innerHTML=heures;
+  $("#"+tip).text(heures);
 }
 
 function ctrl_form(champs){
@@ -318,6 +318,13 @@ function removeAccents(strAccents){
   }
   strAccentsOut = strAccentsOut.join('');
   return strAccentsOut;
+}
+
+// Supprime les balises HTML
+function sanitize_string(a){
+  reg=new RegExp("<.[^<>]*>", "gi" );
+  a=a.replace(reg,"").trim();
+  return a;
 }
 
 // supprime(page,id)	Utilisée par postes et modeles
