@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : ldap/import2.php
 Création : 2 juillet 2014
-Dernière modification : 7 avril 2015
+Dernière modification : 9 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -17,14 +17,15 @@ Recherche les informations sur les agents sélectionnés à partir de l'annuaire
 Fichier appelé par la page personnel/import.php	
 */
 
+require_once "class.ldap.php";
+
 $recherche=filter_input(INPUT_POST,"recherche",FILTER_SANITIZE_STRING);
 
 //	Récupération des uid des agents sélectionnés
 $uids=array();
 if(array_key_exists("chk",$_POST)){
   foreach($_POST["chk"] as $elem){
-    $elem=filter_var($elem,FILTER_SANITIZE_STRING);
-    $uids[]=filter_var($elem,FILTER_CALLBACK,array("options"=>"ldapspecialchars"));
+    $uids[]=ldap_escape($elem, '', LDAP_ESCAPE_FILTER);
   }
 }else{
   $msg=urlencode("Aucun agent n&apos;est s&eacute;lectionn&eacute;.");

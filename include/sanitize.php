@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/sanitize.php
 Création : 7 avril 2015
-Dernière modification : 8 avril 2015
+Dernière modification : 9 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -18,25 +18,6 @@ Page appelée par les fichiers index.php, et authentification.php
 // pas de $version=acces direct au fichier => Accès refusé
 if(!isset($version)){
   include_once "accessDenied.php";
-}
-
-/**
- * Sanitizes ldap search strings.
- * See rfc2254
- * @link http://www.faqs.org/rfcs/rfc2254.html
- * @since 1.5.1 and 1.4.5
- * @param string $string
- * @return string sanitized string
- * @author Squirrelmail Team
- */
-function ldapspecialchars($string) {
-    $sanitized=array('\\' => '\5c',
-                     '*' => '\2a',
-                     '(' => '\28',
-                     ')' => '\29',
-                     "\x00" => '\00');
-
-    return str_replace(array_keys($sanitized),array_values($sanitized),$string);
 }
 
 function sanitize_array_string($n){
