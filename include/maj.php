@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 8 avril 2015
+Dernière modification : 9 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -711,6 +711,7 @@ if(strcmp("1.9.4",$config['Version'])>0){
 
 if(strcmp("1.9.5",$config['Version'])>0){
   include "majconfig.php";
+  $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom`='error_reporting';";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.9.5' WHERE `nom`='Version';";
 }
 

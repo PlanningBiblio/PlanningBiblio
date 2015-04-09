@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/ajax.lignes.php
 Création : 3 février 2014
-Dernière modification : 7 mars 2015
+Dernière modification : 9 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -15,9 +15,9 @@ Met à jour les lignes des tableaux
 Appelé en Ajax via la fonction configLignes à partir de la page lignes.php (dans modif.php)
 */
 
-session_start();
 ini_set('display_errors',0);
-error_reporting(0);
+
+session_start();
 
 include "../../include/config.php";
 include "class.tableaux.php";

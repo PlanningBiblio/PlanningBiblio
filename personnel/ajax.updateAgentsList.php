@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.5
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : personnel/ajax.updateAgentsList.php
 Création : 30 octobre 2014
-Dernière modification : 30 octobre 2014
+Dernière modification : 9 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -17,7 +17,6 @@ Appelé en Ajax via la fonction JS updateAgentsList à partir de la page voir.ph
 */
 
 ini_set('display_errors',0);
-error_reporting(0);
 
 include "../include/config.php";
 include "class.personnel.php";

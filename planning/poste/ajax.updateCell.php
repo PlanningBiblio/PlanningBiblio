@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 1er avril 2015
+Dernière modification : 9 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -17,14 +17,13 @@ page planning/poste/index.php pour placer les agents
 Cette page est appelée par la function JavaScript "bataille_navale" utilisé par le fichier planning/poste/menudiv.php
 */
 
+ini_set("display_errors",0);
+
 session_start();
 // Includes
 require_once "../../include/config.php";
 require_once "../../include/function.php";
 require_once "../../plugins/plugins.php";
-
-ini_set("display_errors",0);
-ini_set("error_reporting",E_ALL);
 
 //	Initialisation des variables
 $site=$_POST['site'];
