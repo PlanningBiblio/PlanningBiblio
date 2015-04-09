@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 9 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -40,13 +40,14 @@ $prenom=$db->result[0]['prenom'];
 $motif=$db->result[0]['motif'];
 $motif_autre=$db->result[0]['motif_autre'];
 $commentaires=$db->result[0]['commentaires'];
-$demande=dateFr($db->result[0]['demande'],true);
-$debutSQL=$db->result[0]['debut'];
-$finSQL=$db->result[0]['fin'];
+$demande=filter_var($db->result[0]['demande'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
+$demande=dateFr($demande,true);
+$debutSQL=filter_var($db->result[0]['debut'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
+$finSQL=filter_var($db->result[0]['fin'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
 $debut=dateFr3($debutSQL);
 $fin=dateFr3($finSQL);
 $sitesAgent=unserialize($db->result[0]['sites']);
-$valide=$db->result[0]['valide'];
+$valide=filter_var($db->result[0]['valide'],FILTER_SANITIZE_NUMBER_INT);
 $validation=$db->result[0]['validation'];
 $valideN1=$db->result[0]['valideN1'];
 $validationN1=$db->result[0]['validationN1'];

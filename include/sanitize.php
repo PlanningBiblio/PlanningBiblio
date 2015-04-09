@@ -51,9 +51,24 @@ function sanitize_dateSQL($input){
   // Vérifions si le format est valide
   if(preg_match('#^(\d{4})-(\d{2})-(\d{2})$#', $input, $matches)){
     // Vérifions si la date existe
-//     if(checkdate($matches[2], $matches[3], $matches[1])){
-      $reponse_filtre = $input;
-//     }
+     if(checkdate($matches[2], $matches[3], $matches[1])){
+	$reponse_filtre = $input;
+     }
+  }
+  return $reponse_filtre;
+}
+
+function sanitize_dateTimeSQL($input){
+  $reponse_filtre = null;
+  // Vérifions si le format est valide
+  if(preg_match('#^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$#', $input, $matches)){
+    // Vérifions si la date existe
+     if(checkdate($matches[2], $matches[3], $matches[1])
+	and (intval($matches[4])>-1) and (intval($matches[4])<24)
+	and (intval($matches[5])>-1) and (intval($matches[5])<60)
+	and (intval($matches[6])>-1) and (intval($matches[6])<60)){
+	$reponse_filtre = $input;
+     }
   }
   return $reponse_filtre;
 }
