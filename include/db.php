@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 8 avril 2015
+Dernière modification : 10 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -87,10 +87,7 @@ class db{
 	  if(isset($isCryptedPassword) and $isCryptedPassword===true){
 	    $result[$key]=filter_var($value,FILTER_UNSAFE_RAW);
 	 }elseif(is_serialized($value)){
-	    $tmp=unserialize($value);
-	    $tmp=array_map("sanitize_array_unsafe",$tmp);
-	    $result[$key]=serialize($tmp); 
-	    $result[$key]=$value;
+	    $result[$key]=filter_var($value,FILTER_UNSAFE_RAW);
 	  }else{
 	    $result[$key]=filter_var($value,FILTER_SANITIZE_STRING);
 	  }
@@ -459,11 +456,7 @@ class dbh{
       $result=array();
       foreach($tmp[$i] as $key => $value){
 	if(is_serialized($value)){
-	  $tmp=unserialize($value);
-	  foreach($tmp as $key2 => $value2){
-	    $tmp[$key2]=filter_var($value2,FILTER_SANITIZE_STRING);
-	  }
-	  $result[$key]=serialize($tmp);
+	  $result[$key]=filter_var($value,FILTER_UNSAFE_RAW);
 	}else{
 	  $result[$key]=filter_var($value,FILTER_SANITIZE_STRING);
 	}
