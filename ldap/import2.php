@@ -25,6 +25,7 @@ $recherche=filter_input(INPUT_POST,"recherche",FILTER_SANITIZE_STRING);
 $uids=array();
 if(array_key_exists("chk",$_POST)){
   foreach($_POST["chk"] as $elem){
+    $elem=filter_var($elem,FILTER_SANITIZE_STRING);
     $uids[]=ldap_escape($elem, '', LDAP_ESCAPE_FILTER);
   }
 }else{

@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/sanitize.php
 Création : 7 avril 2015
-Dernière modification : 9 avril 2015
+Dernière modification : 10 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -82,8 +82,8 @@ function sanitize_file_extension($input){
   return $reponse_filtre;
 }
 
-// sanitize_heure retourne "00:00:00" par défaut
-function sanitize_heure($input){
+// sanitize_time retourne "00:00:00" par défaut
+function sanitize_time($input){
   $reponse_filtre = "00:00:00";
   // Vérifions si le format est valide
   if(preg_match('#^(\d{1,2}):(\d{2}):(\d{2})$#', $input, $matches)){
@@ -92,8 +92,8 @@ function sanitize_heure($input){
   return $reponse_filtre;
 }
 
-// sanitize_heure_fin retourne "23:59:59" par défaut
-function sanitize_heure_fin($input){
+// sanitize_time_end retourne "23:59:59" par défaut
+function sanitize_time_end($input){
   $reponse_filtre = "23:59:59";
   // Vérifions si le format est valide
   if(preg_match('#^(\d{1,2}):(\d{2}):(\d{2})$#', $input, $matches)){

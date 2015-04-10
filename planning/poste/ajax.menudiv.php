@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 2 avril 2015
+Dernière modification : 10 avril 2015
 Auteur : Jérôme Combes jerome@planningbilbio.fr, Christophe Le Guennec Christophe.Leguennec@u-pem.fr
 
 Description :
@@ -31,13 +31,14 @@ require_once "fonctions.php";
 require_once "class.planning.php";
 
 //	Initilisation des variables
+$site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
+$date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
+$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_time"));
+$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_time"));
+$perso_nom=filter_input(INPUT_GET,"perso_nom", FILTER_SANITIZE_STRING);
+$poste=filter_input(INPUT_GET,"poste",FILTER_SANITIZE_NUMBER_INT);
+
 $login_id=$_SESSION['login_id'];
-$site=$_GET['site'];
-$date=$_GET['date'];
-$poste=$_GET['poste'];
-$debut=$_GET['debut'];
-$fin=$_GET['fin'];
-$perso_nom=$_GET['perso_nom'];
 $tab_exclus=array(0);
 $absents=array(0);
 $agents_qualif=array(0);
@@ -152,15 +153,26 @@ $verif=true;	// verification des heures des agents
 if(!$config['ctrlHresAgents'] and ($d->position==6 or $d->position==0)){
   $verif=false; // on ne verifie pas les heures des agents le samedi et le dimanche (Si ctrlHresAgents est desactivé)
 }
-	
+
+// Si plugin PlanningHebdo : recherche des plannings correspondant à la date actuelle
+if(in_array("planningHebdo",$plugins)){
+  include "../../plugins/planningHebdo/planning.php";
+}
+
 if($db->result and $verif)
 foreach($db->result as $elem){
   $aExclure=false;
-  // Si plugin PlanningHebdo : recherche des plannings correspondant à la date actuelle
+
+  // Récupération du planning de présence
+  $temps=array();
+
+  // Si plugin PlanningHebdo : emploi du temps récupéré à partir de planningHebdo
   if(in_array("planningHebdo",$plugins)){
-    include "../../plugins/planningHebdo/planning.php";
-  }
-  else{
+    if(array_key_exists($elem['id'],$tempsPlanningHebdo)){
+      $temps=$tempsPlanningHebdo[$elem['id']];
+    }
+  }else{
+    // Emploi du temps récupéré à partir de la table personnel
     $temps=unserialize($elem['temps']);
   }
 

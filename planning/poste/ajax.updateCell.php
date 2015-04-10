@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 9 avril 2015
+Dernière modification : 10 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -26,17 +26,17 @@ require_once "../../include/function.php";
 require_once "../../plugins/plugins.php";
 
 //	Initialisation des variables
-$site=$_POST['site'];
-$ajouter=$_POST['ajouter'];
-$perso_id=$_POST['perso_id'];
-$perso_id_origine=$_POST['perso_id_origine'];
-$date=$_POST['date'];
-$debut=$_POST['debut'];
-$fin=$_POST['fin'];
-$absent=isset($_POST['absent'])?$_POST['absent']:"0";
-$poste=$_POST['poste'];
-$barrer=$_POST['barrer'];
-$tout=$_POST['tout'];
+$ajouter=filter_input(INPUT_POST,"ajouter",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$barrer=filter_input(INPUT_POST,"barrer",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$date=filter_input(INPUT_POST,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
+$debut=filter_input(INPUT_POST,"debut",FILTER_CALLBACK,array("options"=>"sanitize_time"));
+$fin=filter_input(INPUT_POST,"fin",FILTER_CALLBACK,array("options"=>"sanitize_time"));
+$perso_id=filter_input(INPUT_POST,"perso_id",FILTER_SANITIZE_NUMBER_INT);
+$perso_id_origine=filter_input(INPUT_POST,"perso_id_origine",FILTER_SANITIZE_NUMBER_INT);
+$poste=filter_input(INPUT_POST,"poste",FILTER_SANITIZE_NUMBER_INT);
+$site=filter_input(INPUT_POST,"site",FILTER_SANITIZE_NUMBER_INT);
+$tout=filter_input(INPUT_POST,"tout",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+
 $login_id=$_SESSION['login_id'];
 $now=date("Y-m-d H:i:s");
 

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 10 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -602,13 +602,30 @@ EOD;
 	if(!$config['ctrlHresAgents'] and ($d->position==6 or $d->position==0)){
 	  $verif=false; // on ne verifie pas les heures des agents le samedi et le dimanche (Si ctrlHresAgents est desactivé)
 	}
-		
+
+	// Si il y a des agents et verification des heures de présences
 	if($db->result and $verif){
+
+	  // Si plugin PlanningHebdo : recherche des plannings correspondant à la date actuelle
+	  if(in_array("planningHebdo",$plugins)){
+	    include "plugins/planningHebdo/planning.php";
+	  }
+
+	  // Pour chaque agent
 	  foreach($db->result as $elem){
 	    $heures=null;
-	    $temps=unserialize($elem['temps']);
+
+	    // Récupération du planning de présence
+	    $temps=array();
+
+	    // Si plugin PlanningHebdo : emploi du temps récupéré à partir de planningHebdo
 	    if(in_array("planningHebdo",$plugins)){
-	      include "plugins/planningHebdo/planning.php";
+	      if(array_key_exists($elem['id'],$tempsPlanningHebdo)){
+		$temps=$tempsPlanningHebdo[$elem['id']];
+	      }
+	    }else{
+	      // Emploi du temps récupéré à partir de la table personnel
+	      $temps=unserialize($elem['temps']);
 	    }
 
 	    $jour=$d->position-1;		// jour de la semaine lundi = 0 ,dimanche = 6
