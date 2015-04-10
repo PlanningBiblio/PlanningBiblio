@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/statut.php
 Création : 13 septembre 2013
-Dernière modification : 7 avril 2015
+Dernière modification : 10 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -17,22 +17,22 @@ Page appelée par le fichier index.php, accessible par le menu statistiques / Pa
 */
 
 require_once "class.statistiques.php";
-
-echo "<h3>Statistiques par statut</h3>\n";
+require_once "include/horaires.php";
 
 // Initialisation des variables :
+$debut=filter_input(INPUT_POST,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$fin=filter_input(INPUT_POST,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$post=filter_input_array(INPUT_POST,FILTER_SANITIZE_NUMBER_INT);
+$post_statuts=isset($post['statuts'])?$post['statuts']:null;
+$post_sites=isset($post['selectedSites'])?$post['selectedSites']:null;
+
 $joursParSemaine=$config['Dimanche']?7:6;
-$postes=null;
-$selected=null;
-$heure=null;
 $statuts_tab=null;
 $exists_h19=false;
 $exists_h20=false;
 $exists_JF=false;
 $exists_absences=false;
 
-include "include/horaires.php";
-//		--------------		Initialisation  des variables 'debut','fin' et 'statut'		-------------------
 if(!array_key_exists('stat_statut_statuts',$_SESSION)){
   $_SESSION['stat_statut_statuts']=null;
 }
@@ -64,10 +64,10 @@ if(!array_key_exists('stat_statut_statuts',$_SESSION)){
   $_SESSION['stat_statut_statuts']=null;
 }
 
-if(isset($_GET['statuts'])){
-  $statuts=array();
-  foreach($_GET['statuts'] as $elem){
-    $statuts[]=filter_var($elem,FILTER_SANITIZE_NUMBER_INT);
+$statuts=array();
+if($post_statuts){
+  foreach($post_statuts as $elem){
+    $statuts[]=$elem;
   }
 }else{
   $statuts=$_SESSION['stat_statut_statuts'];
@@ -80,10 +80,10 @@ if(!array_key_exists('stat_statut_sites',$_SESSION)){
   $_SESSION['stat_statut_sites']=array();
 }
 
-if(isset($_GET['selectedSites'])){
+if($post_sites){
   $selectedSites=array();
-  foreach($_GET['selectedSites'] as $elem){
-    $selectedSites[]=filter_var($elem,FILTER_SANITIZE_NUMBER_INT);
+  foreach($post_sites as $elem){
+    $selectedSites[]=$elem;
   }
 }else{
   $selectedSites=$_SESSION['stat_statut_sites'];
@@ -111,7 +111,7 @@ $db=new db();
 $db->select2("select_statuts");
 $statuts_list=$db->result;
 
-if(is_array($statuts) and $statuts[0]){
+if(!empty($statuts)){
   //	Recherche du nombre de jours concernés
   $db=new db();
   $debutREQ=$db->escapeString($debutSQL);
@@ -272,9 +272,10 @@ $ouverture=$s->ouvertureTexte;
 $_SESSION['stat_tab']=$tab;
 
 //		--------------		Affichage en 2 partie : formulaire à gauche, résultat à droite
+echo "<h3>Statistiques par statut</h3>\n";
 echo "<table><tr style='vertical-align:top;'><td id='stat-col1'>\n";
 //		--------------		Affichage du formulaire permettant de sélectionner les dates et les agents		-------------
-echo "<form name='form' action='index.php' method='get'>\n";
+echo "<form name='form' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='statistiques/statut.php' />\n";
 echo "<table>\n";
 echo "<tr><td><label class='intitule'>D&eacute;but</label></td>\n";

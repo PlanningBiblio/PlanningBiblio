@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/agents.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 10 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -18,14 +18,16 @@ Page appelée par le fichier index.php, accessible par le menu statistiques / Pa
 */
 
 require_once "class.statistiques.php";
-
-echo "<h3>Statistiques par agent</h3>\n";
+require_once "include/horaires.php";
 
 // Initialisation des variables :
+$debut=filter_input(INPUT_POST,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$fin=filter_input(INPUT_POST,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$post=filter_input_array(INPUT_POST,FILTER_SANITIZE_NUMBER_INT);
+$post_agents=isset($post['agents'])?$post['agents']:null;
+$post_sites=isset($post['selectedSites'])?$post['selectedSites']:null;
+
 $joursParSemaine=$config['Dimanche']?7:6;
-$postes=null;
-$selected=null;
-$heure=null;
 $agent_tab=null;
 $exists_h19=false;
 $exists_h20=false;
@@ -34,15 +36,11 @@ $exists_absences=false;
 $exists_samedi=false;
 $exists_dimanche=false;
 
-include "include/horaires.php";
-//		--------------		Initialisation  des variables 'debut','fin' et 'agents'		-------------------
+
 if(!array_key_exists('stat_debut',$_SESSION)){
   $_SESSION['stat_debut']=null;
   $_SESSION['stat_fin']=null;
 }
-
-$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
-$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
 
 if(!$debut){ $debut=$_SESSION['stat_debut']; }
 if(!$fin){ $fin=$_SESSION['stat_fin']; }
@@ -66,9 +64,9 @@ if(!array_key_exists('stat_agents_agents',$_SESSION)){
 }
 
 $agents=array();
-if(isset($_GET['agents'])){
-  foreach($_GET['agents'] as $elem){
-    $agents[]=filter_var($elem,FILTER_SANITIZE_NUMBER_INT);
+if($post_agents){
+  foreach($post_agents as $elem){
+    $agents[]=$elem;
   }
 }else{
   $agents=$_SESSION['stat_agents_agents'];
@@ -81,10 +79,10 @@ if(!array_key_exists('stat_agents_sites',$_SESSION)){
   $_SESSION['stat_agents_sites']=array();
 }
 
-if(isset($_GET['selectedSites'])){
-  $selectedSites=array();
-  foreach($_GET['selectedSites'] as $elem){
-    $selectedSites[]=filter_var($elem,FILTER_SANITIZE_NUMBER_INT);
+$selectedSites=array();
+if($post_sites){
+  foreach($post_sites as $elem){
+    $selectedSites[]=$elem;
   }
 }else{
   $selectedSites=$_SESSION['stat_agents_sites'];
@@ -111,7 +109,7 @@ $db=new db();
 $db->select2("personnel","*",array("actif"=>"Actif"),"ORDER BY `nom`,`prenom`");
 $agents_list=$db->result;
 
-if(is_array($agents) and $agents[0]){
+if(!empty($agents)){
   //	Recherche du nombre de jours concernés
   $db=new db();
   $debutREQ=$db->escapeString($debutSQL);
@@ -262,9 +260,10 @@ $ouverture=$s->ouvertureTexte;
 $_SESSION['stat_tab']=$tab;
 
 //		--------------		Affichage en 2 partie : formulaire à gauche, résultat à droite
+echo "<h3>Statistiques par agent</h3>\n";
 echo "<table><tr style='vertical-align:top;'><td id='stat-col1'>\n";
 //		--------------		Affichage du formulaire permettant de sélectionner les dates et les agents		-------------
-echo "<form name='form' action='index.php' method='get'>\n";
+echo "<form name='form' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='statistiques/agents.php' />\n";
 echo "<table>\n";
 echo "<tr><td><label class='intitule'>Début</label></td>\n";
@@ -275,6 +274,7 @@ echo "<td><input type='text' name='fin' value='$fin' class='datepicker'/>\n";
 echo "</td></tr>\n";
 echo "<tr style='vertical-align:top'><td><label class='intitule'>Agents</label></td>\n";
 echo "<td><select name='agents[]' multiple='multiple' size='20' onchange='verif_select(\"agents\");' class='ui-widget-content ui-corner-all' >\n";
+
 if(is_array($agents_list)){
   echo "<option value='Tous'>Tous</option>\n";
   foreach($agents_list as $elem){
@@ -376,11 +376,12 @@ if($tab){
 	$site=$config["Multisites-site{$poste['site']}"]." ";
       }
       $etage=$poste[2]?$poste[2]:null;
-      $siteEtage=($site or $etage)?"($site{$etage})":null;
+
+      $siteEtage=($site or $etage)?"(".trim($site.$etage).")":null;
       echo "<tr style='vertical-align:top;'><td>\n";
       echo "<b>{$poste[1]}</b><br/><i>$siteEtage</i>";
       echo "</td><td>\n";
-      echo number_format($poste[3],2,',',' ')." $heure";
+      echo number_format($poste[3],2,',',' ');
       echo "</td></tr>\n";
     }
     echo "</table>\n";

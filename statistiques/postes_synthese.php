@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/postes_synthese.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 10 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -17,13 +17,18 @@ Page appelée par le fichier index.php, accessible par le menu statistiques / Pa
 */
 
 require_once "class.statistiques.php";
+require_once "include/horaires.php";
 
-echo "<h3>Statistiques par poste (Synthèse)</h3>\n";
 //	Variables :
+$debut=filter_input(INPUT_POST,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$fin=filter_input(INPUT_POST,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$tri=filter_input(INPUT_POST,"tri",FILTER_SANITIZE_STRING);
+$post=filter_input_array(INPUT_POST,FILTER_SANITIZE_NUMBER_INT);
+$post_postes=isset($post['postes'])?$post['postes']:null;
+$post_sites=isset($post['selectedSites'])?$post['selectedSites']:null;
+
 $joursParSemaine=$config['Dimanche']?7:6;
 
-include "include/horaires.php";
-//		--------------		Initialisation  des variables 'debut','fin' et 'poste'		-------------------
 if(!array_key_exists('stat_poste_postes',$_SESSION)){
   $_SESSION['stat_poste_postes']=null;
   $_SESSION['stat_poste_tri']=null;
@@ -33,10 +38,6 @@ if(!array_key_exists('stat_debut',$_SESSION)){
   $_SESSION['stat_fin']=null;
 }
 
-$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
-$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
-$tri=filter_input(INPUT_GET,"tri",FILTER_SANITIZE_STRING);
-
 if(!$debut) { $debut=$_SESSION['stat_debut']; }
 if(!$fin) { $fin=$_SESSION['stat_fin']; }
 if(!$tri) { $tri=$_SESSION['stat_poste_tri']; }
@@ -45,10 +46,10 @@ $debutSQL=dateFr($debut);
 $finSQL=dateFr($fin);
 
 // Postes
-if(isset($_GET['postes'])){
-  $postes=array();
-  foreach($_GET['postes'] as $elem){
-    $postes[]=filter_var($elem,FILTER_SANITIZE_NUMBER_INT);
+$postes=array();
+if($post_postes){
+  foreach($post_postes as $elem){
+    $postes[]=$elem;
   }
 }else{
   $postes=$_SESSION['stat_poste_postes'];
@@ -60,10 +61,10 @@ if(!array_key_exists('stat_poste_sites',$_SESSION)){
   $_SESSION['stat_poste_sites']=array();
 }
 
-if(isset($_GET['selectedSites'])){
+if($post_sites){
   $selectedSites=array();
-  foreach($_GET['selectedSites'] as $elem){
-    $selectedSites[]=filter_var($elem,FILTER_SANITIZE_NUMBER_INT);
+  foreach($post_sites as $elem){
+    $selectedSites[]=$elem;
   }
 }else{
   $selectedSites=$_SESSION['stat_poste_sites'];
@@ -111,7 +112,7 @@ $db=new db();
 $db->query("SELECT * FROM `{$dbprefix}postes` WHERE `statistiques`='1' ORDER BY `etage`,`nom`;");
 $postes_list=$db->result;
 
-if(is_array($postes)){
+if(!empty($postes)){
   //	Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
   //	On stock le tout dans le tableau $resultat
   $postes_select=join($postes,",");
@@ -192,9 +193,10 @@ usort($tab,$tri);
 $_SESSION['stat_tab']=$tab;
 	
 //		--------------		Affichage en 2 partie : formulaire à gauche, résultat à droite
+echo "<h3>Statistiques par poste (Synthèse)</h3>\n";
 echo "<table><tr style='vertical-align:top;'><td id='stat-col1'>\n";
 //		--------------		Affichage du formulaire permettant de sélectionner les dates et les postes		-------------
-echo "<form name='form' action='index.php' method='get'>\n";
+echo "<form name='form' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='statistiques/postes_synthese.php' />\n";
 echo "<table>\n";
 echo "<tr><td><label class='intitule'>Début</label></td>\n";
@@ -266,14 +268,18 @@ if($tab){
   $db->select("pl_poste","`date`","`date` BETWEEN '$debutREQ' AND '$finREQ' AND `site` IN ($sitesREQ)","GROUP BY `date`;");
   $nbJours=$db->nb;
 
-  echo "<b>Statistiques par poste (Synthèse) du $debut au $fin</b>\n";
-  echo $ouverture;
-  echo "<table border='1' cellspacing='0' cellpadding='0'>\n";
-  echo "<tr class='th'>\n";
-  echo "<td style='width:200px; padding-left:8px;'>Postes</td>\n";
-  echo "<td style='width:100px; padding-left:8px;'>Total d'heures</td>\n";
-  echo "<td style='width:100px; padding-left:8px;'>Moyenne jour</td>\n";
-  echo "<td style='width:180px; padding-left:8px;'>Moyenne hebdomadaire</td></tr>\n";
+  echo <<<EOD
+  <strong>Statistiques par poste (Synthèse) du $debut au $fin</strong>
+  $ouverture
+  <table id='tableStatSynthese' class='CJDataTable'>
+  <thead><tr>
+    <th>Postes</th>
+    <th>Total d'heures</th>
+    <th>Moyenne jour</th>
+    <th>Moyenne hebdomadaire</th>
+  </tr></thead>
+  <tbody>
+EOD;
   foreach($tab as $elem){
     $class=$elem[0][3]=="Obligatoire"?"td_obligatoire":"td_renfort";
     $jour=$elem[2]/$nbJours;
@@ -304,15 +310,20 @@ if($tab){
     }
 
     echo "<tr style='vertical-align:top;' class='$class'>\n";
-    echo "<td style='padding-left:8px;'><b>{$elem[0][1]}</b><br/><i>$siteEtage</i></td>\n";
-    echo "<td style='padding-right:8px;text-align:right;'>".number_format(round($elem[2],2),2,',',' ')."</td>\n";
-    echo "<td style='padding-right:8px;text-align:right;'>".number_format(round($jour,2),2,',',' ')."</td>\n";
-    echo "<td style='padding-right:8px;text-align:right;'>".number_format(round($hebdo,2),2,',',' ')."</td></tr>\n";
+    echo "<td><strong>{$elem[0][1]}</strong>\n";
+    echo "<br/><i>$siteEtage</i></td>\n";
+    echo "<td>".number_format(round($elem[2],2),2,',',' ')."</td>\n";
+    echo "<td>".number_format(round($jour,2),2,',',' ')."</td>\n";
+    echo "<td>".number_format(round($hebdo,2),2,',',' ')."</td></tr>\n";
   }
-  echo "<tr><td style='padding-left:8px;'><b>Total</b></td>\n";
-  echo "<td style='padding-right:8px;text-align:right;'>".number_format(round($total_heures,2),2,',',' ')."</td>\n";
-  echo "<td style='padding-right:8px;text-align:right;'>".number_format(round($total_jour,2),2,',',' ')."</td>\n";
-  echo "<td style='padding-right:8px;text-align:right;'>".number_format(round($total_hebdo,2),2,',',' ')."</td></tr>\n";
+
+  echo "</tbody>\n";
+  echo "<tfooter><tr>\n";
+  echo "<th><strong>Total</strong></th>\n";
+  echo "<th>".number_format(round($total_heures,2),2,',',' ')."</th>\n";
+  echo "<th>".number_format(round($total_jour,2),2,',',' ')."</th>\n";
+  echo "<th>".number_format(round($total_hebdo,2),2,',',' ')."</th></tr>\n";
+  echo "</tfooter>\n";
   echo "</table>\n";
 }
 //		----------------------			Fin d'affichage		----------------------------

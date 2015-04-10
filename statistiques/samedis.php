@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/samedis.php
 Création : 15 novembre 2013
-Dernière modification : 7 avril 2015
+Dernière modification : 10 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -17,13 +17,15 @@ Page appelée par le fichier index.php, accessible par le menu statistiques / Sa
 */
 
 require_once "class.statistiques.php";
-include "include/horaires.php";
-
-echo "<h3>Statistiques sur les samedis travaill&eacute;s</h3>\n";
+require_once "include/horaires.php";
 
 // Initialisation des variables :
-$selected=null;
-$heure=null;
+$debut=filter_input(INPUT_POST,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$fin=filter_input(INPUT_POST,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$post=filter_input_array(INPUT_POST,FILTER_SANITIZE_NUMBER_INT);
+$post_agents=isset($post['agents'])?$post['agents']:null;
+$post_sites=isset($post['selectedSites'])?$post['selectedSites']:null;
+
 $agent_tab=null;
 $exists_h19=false;
 $exists_h20=false;
@@ -40,26 +42,11 @@ if(!array_key_exists('stat_debut',$_SESSION)){
   $_SESSION['stat_fin']=null;
 }
 
-$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
-$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
-$tri=filter_input(INPUT_GET,"tri",FILTER_SANITIZE_STRING);
-
 if(!$debut) { $debut=$_SESSION['stat_debut']; }
 if(!$fin) { $fin=$_SESSION['stat_fin']; }
-if(!$tri) { $tri=$_SESSION['stat_poste_tri']; }
 
 $debutSQL=dateFr($debut);
 $finSQL=dateFr($fin);
-
-$agents=array();
-if(isset($_GET['agents'])){
-  foreach($_GET['agents'] as $elem){
-    $agents[]=filter_var($elem,FILTER_SANITIZE_NUMBER_INT);
-  }
-}else{
-  $agents=$_SESSION['stat_samedis_agents'];
-}
-$_SESSION['stat_samedis_agents']=$agents;
 
 if(!$debut){
   $debut="01/01/".date("Y");
@@ -80,15 +67,26 @@ while($current<=$finSQL){
 }
 $dates=join(",",$dates);
 
+// Les agents
+$agents=array();
+if($post_agents){
+  foreach($post_agents as $elem){
+    $agents[]=$elem;
+  }
+}else{
+  $agents=$_SESSION['stat_samedis_agents'];
+}
+$_SESSION['stat_samedis_agents']=$agents;
+
 // Filtre les sites
 if(!array_key_exists('stat_samedis_sites',$_SESSION)){
   $_SESSION['stat_samedis_sites']=array();
 }
 
-if(isset($_GET['selectedSites'])){
-  $selectedSites=array();
-  foreach($_GET['selectedSites'] as $elem){
-    $selectedSites[]=filter_var($elem,FILTER_SANITIZE_NUMBER_INT);
+$selectedSites=array();
+if($post_sites){
+  foreach($post_sites as $elem){
+    $selectedSites[]=$elem;
   }
 }else{
   $selectedSites=$_SESSION['stat_samedis_sites'];
@@ -116,7 +114,7 @@ $db->select2("personnel","*",array("actif"=>"Actif"),"ORDER BY `nom`,`prenom`");
 $agents_list=$db->result;
 
 $tab=array();
-if(is_array($agents) and $agents[0] and $dates){
+if(!empty($agents) and $dates){
   //	Recherche du nombre de jours concernés
   $db=new db();
   $db->select2("pl_poste","date",array("date"=>"IN{$dates}", "site"=>"IN{$sitesSQL}"),"GROUP BY `date`;");
@@ -220,9 +218,10 @@ if(is_array($agents) and $agents[0] and $dates){
 $_SESSION['stat_tab']=$tab;
 
 //		--------------		Affichage en 2 partie : formulaire à gauche, résultat à droite
+echo "<h3>Statistiques sur les samedis travaill&eacute;s</h3>\n";
 echo "<table><tr style='vertical-align:top;'><td id='stat-col1'>\n";
 //		--------------		Affichage du formulaire permettant de sélectionner les dates et les agents		-------------
-echo "<form name='form' action='index.php' method='get'>\n";
+echo "<form name='form' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='statistiques/samedis.php' />\n";
 echo "<table>\n";
 echo "<tr><td><label class='intitule'>Début</label></td>\n";
