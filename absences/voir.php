@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 8 avril 2015
+Dernière modification : 11 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -65,8 +65,8 @@ $_SESSION['oups']['absences_fin']=$fin;
 $_SESSION['oups']['absences_perso_id']=$perso_id;
 $_SESSION['oups']['absences_agents_supprimes']=$agents_supprimes;
 
-$debutFr=dateFr($debut);
-$finFr=dateFr($fin);
+$debutSQL=dateSQL($debut);
+$finSQL=dateSQL($fin);
 
 // Multisites : filtre pour n'afficher que les agents du site voulu
 $sites=null;
@@ -85,7 +85,7 @@ if($agents_supprimes){
   $a->agents_supprimes=array(0,1);
 }
 $tri="`debut`,`fin`,`nom`,`prenom`";
-$a->fetch($tri,$only_me,$perso_id,$debut,$fin,$sites);
+$a->fetch($tri,$only_me,$perso_id,$debutSQL,$finSQL,$sites);
 $absences=$a->elements;
 
 // Recherche des agents
@@ -107,8 +107,8 @@ if($admin or (!$config['Absences-adminSeulement'] and in_array(6,$droits))){
 echo "<form name='form' method='get' action='index.php'>\n";
 echo "<input type='hidden' name='page' value='absences/voir.php' />\n";
 echo "<table class='tableauStandard'><tbody><tr>\n";
-echo "<td style='vertical-align:middle;'><label class='intitule'>Début :</label> <input type='text' name='debut' value='$debutFr' class='datepicker'/></td>\n";
-echo "<td style='vertical-align:middle;'><label class='intitule'>Fin :</label> <input type='text' name='fin' value='$finFr'  class='datepicker'/></td>\n";
+echo "<td style='vertical-align:middle;'><label class='intitule'>Début :</label> <input type='text' name='debut' value='$debut' class='datepicker'/></td>\n";
+echo "<td style='vertical-align:middle;'><label class='intitule'>Fin :</label> <input type='text' name='fin' value='$fin'  class='datepicker'/></td>\n";
 
 if($admin){
   echo "<td style='vertical-align:middle;text-align:left;'>\n";
