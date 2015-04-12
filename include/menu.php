@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/menu.php
 Création : mai 2011
-Dernière modification : 23 juin 2014
+Dernière modification : 13 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -49,51 +49,25 @@ $colspan=count($keys)+1;
 
 ?>
 
-var nava = (document.layers);
-var dom = (document.getElementById);
-var iex = (document.all);
-if (nava) { skn = document.topdeck }
-else if (dom) { skn = document.getElementById("topdeck").style }
-else if (iex) { skn = topdeck.style }
-
 function pop(msg,td){
-  a=true;
-  skn.visibility = "hidden";
-
-  posLeft = td.offset().left+td.width()/2-100;
-  skn.left=posLeft+"px";
+  $(".menu_table").remove();
 
   posTop = td.offset().top+td.height()+2;
-  skn.top=posTop+"px";
+  posLeft = td.offset().left+td.width()/2-100;
 
-  var content ="<table border='0' cellpadding='0' cellspacing='0' style='background:#000000;width:200px:'><tr><td>";
-  content =content+"<table style='width:100%;min-width:200px;' border='0' cellpadding='0' cellspacing='1'>";
-  pass = 0
-  while (pass < msg.length){
-    content += "<tr><td class='menu_td2' ><font size='1' face=\"verdana\">&nbsp;&nbsp;"+msg[pass]+"<\/font><\/td><\/tr>";
-    pass++;
+  var content ="<table cellspacing='1' border='0' class='menu_table' style='top:"+posTop+"px; left:"+posLeft+"px;'>";
+
+  for(i in msg){
+    content += "<tr><td class='menu_td2' >"+msg[i]+"</td></tr>";
   }
-  content += "<\/table><\/td><\/tr><\/table>";
-  if (nava){
-    skn.document.write(content);
-    skn.document.close();
-    skn.visibility = "visible";
-  }
-    else if (dom){
-      document.getElementById("topdeck").innerHTML = content;
-      skn.visibility = "visible";
-  }
-    else if (iex){
-      document.all("topdeck").innerHTML = content;
-      skn.visibility = "visible";
-  }
+  content += "</td></tr></table>";
+
+  $("body").append(content);
 }
 
-function kill(){
-  skn.visibility = "hidden";
-}
-
-document.onclick = kill;
+$(document).click(function(){
+  $(".menu_table").remove();
+});
 -->
 </script>
 

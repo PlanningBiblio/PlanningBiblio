@@ -6,7 +6,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 8 avril 2015
+Dernière modification : 13 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -228,9 +228,23 @@ h3{
 } 
 
 /*		Menu JavaScript		*/
+.menu_table{
+  position: absolute;
+  background: #000000;
+  min-width:200px;
+}
+
+.menu_table td{
+  padding : 1px 10px;
+}
+
+.ejsmenu2{
+  padding : 5px;
+}
+
 .navigation { position:relative;height:30px;}
 .popper { position: absolute; visibility: hidden; z-index:20; }
-a.ejsmenu, a:hover.ejsmenu {font-size:16px; text-decoration:none;}
+a.ejsmenu, a:hover.ejsmenu {font-size:16px; text-decoration:none; display:inline-block; width:100%;}
 a.ejsmenu2, a:hover.ejsmenu2 {font-size:16px; text-decoration:none;font-weight:bold;}
 
 td.menu_td:hover {		/* TD du menu top */
@@ -774,17 +788,6 @@ img{
 
 .intitule, label{
   font-weight: bold;
-  white-space: nowrap;
-}
-
-.infobulle{
-  position: absolute;
-  background: #7D3C25;
-  padding: 3px 7px;
-  border-radius: 3px;
-  -webkit-border-radius: 3px;
-  color: #D4D4D4;
-  text-align: center;
   white-space: nowrap;
 }
 
