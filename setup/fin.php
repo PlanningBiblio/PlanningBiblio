@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : setup/fin.php
 Création : mai 2011
-Dernière modification : 3 avril 2015
+Dernière modification : 13 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -21,10 +21,11 @@ $version="1.9.5";
 include "../include/config.php";
 include "header.php";
 
-$nom=htmlentities($_POST['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
-$prenom=htmlentities($_POST['prenom'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
-$password=$_POST['password'];
-$email=$_POST['email'];
+$nom=filter_input(INPUT_POST,"nom",FILTER_SANITIZE_STRING);
+$prenom=filter_input(INPUT_POST,"prenom",FILTER_SANITIZE_STRING);
+$password=filter_input(INPUT_POST,"password",FILTER_UNSAFE_RAW);
+$password2=filter_input(INPUT_POST,"password2",FILTER_UNSAFE_RAW);
+$email=filter_input(INPUT_POST,"email",FILTER_UNSAFE_RAW);
 $erreur=false;
 
 if(strlen($password)<6){
@@ -34,7 +35,7 @@ if(strlen($password)<6){
   exit;
 }
 
-if($password!=$_POST['password2']){
+if($password!=$password2){
   echo "<p style='color:red'>Les mots de passe ne correspondent pas.<br/>\n";
   echo "<a href='javascript:history.back();'>Retour</a></p>\n";
   include "footer.php";

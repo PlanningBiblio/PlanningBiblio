@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/suppression-liste.php
 Création : mai 2011
-Dernière modification : 2 avril 2015
+Dernière modification : 13 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -19,10 +19,12 @@ Cette page est appelée par le fichier index.php
 
 require_once "class.personnel.php";
 
-$keys=array_keys($_POST);
-for($i=0;$i<count($keys);$i++){
-  if(substr($keys[$i],0,3)=="chk")
-    $liste[]=$_POST[$keys[$i]];
+$post=filter_input_array(INPUT_POST,FILTER_SANITIZE_NUMBER_INT);
+
+foreach($post as $key => $value){
+  if(substr($key,0,3)=="chk"){
+    $liste[]=$value;
+  }
 }
 $liste=join($liste,",");
 if($_SESSION['perso_actif']=="Supprimé"){

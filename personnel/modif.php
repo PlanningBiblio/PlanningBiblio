@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 13 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,6 +23,8 @@ require_once "class.personnel.php";
 
 // Initialisation des variables
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
+
+$actif=null;
 
 $admin=in_array(21,$droits)?true:false;
 // NB : le champ poste et les fonctions postes_... sont utilisés pour l'attribution des activités (qualification)
@@ -153,7 +155,7 @@ foreach($db->result as $elem){
 
 $postes_dispo=array();		// les activités non attribuées (disponibles)
 if($postes_attribues){
-  $postes=join($postes_attribues,",");	//	activités attribuées séparées par des virgules (valeur transmise à valid.php) 	
+  $postes=join(",",$postes_attribues);	//	activités attribuées séparées par des virgules (valeur transmise à valid.php) 	
   if(is_array($postes_complet))
   foreach($postes_complet as $elem){
     if(!in_array($elem,$postes_attribues))
@@ -371,6 +373,7 @@ switch($actif){
   case "Actif" :		$select1="selected='selected'"; $actif2="Service public";	$display="style='display:none;'";	break;
   case "Inactif" :		$select2="selected='selected'"; $actif2="Administratif";	$display="style='display:none;'";	break;
   case "Supprim&eacute;" :	$select3="selected='selected'";	$actif2="Supprim&eacute;";	break;
+  default :			$select1="selected='selected'"; $actif2="Service public";	$display="style='display:none;'";	break;
 }
 echo "<tr><td>";
 echo "Service public / Administratif :";

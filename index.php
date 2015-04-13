@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 9 avril 2015
+Dernière modification : 13 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -24,6 +24,11 @@ session_start();
 
 // Version
 $version="1.9.5";
+
+// Redirection vers setup si le fichier config est absent
+if(!file_exists("include/config.php")){
+  include "include/noConfig.php";
+}
 
 require_once "include/config.php";
 require_once "include/sanitize.php";

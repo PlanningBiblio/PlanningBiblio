@@ -16,8 +16,32 @@ Affiche une page renvoyant vers le fichier setup/index.php si le fichier de conf
 Page appelée (include) par les fichiers authentification.php et index.php si le fichier include/config.php est absent
 */
 
-include "header.php";
+// Construction du chemin relatif pour trouver les fichiers css
+$dir1=dirname(__DIR__);
+// Fichier demandé
+$dir2=$_SERVER["SCRIPT_FILENAME"];
+// On récupère les 2 derniers dossiers de l'application plutôt que de récupérer le chemin absolut pour éviter les problèmes d'alias
+$tmp1=explode("/",$dir1);
+$tmp2=$tmp1[count($tmp1)-2]."/".$tmp1[count($tmp1)-1];
+// On recherche $tmp2 dans $dir2 pour récupérer la position
+$pos=stripos($dir2,$tmp2);
+$tmp3=substr($dir2,$pos);
+$nb=substr_count($tmp3,"/")-2;
+$path="";
+for($i=0;$i<$nb;$i++){
+  $path.="../";
+}
+
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Planning</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel='StyleSheet' href='<?php echo $path; ?>themes/default/default.css' type='text/css' media='all'/>
+</head>
+
+<body>
 <div id='auth-logo'></div>
 <h2 id='h2-authentification'>Fichier de configuration manquant</h2>
 <center>

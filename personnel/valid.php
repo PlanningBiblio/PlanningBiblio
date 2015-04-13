@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 2 avril 2015
+Dernière modification : 13 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -18,81 +18,67 @@ Cette page est appelée par le fichier index.php
 
 require_once "class.personnel.php";
 
-$action=$_POST['action'];
-if(isset($_POST['id'])){
-  $id=$_POST['id'];
-  $nom=trim(htmlentities($_POST['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
-  $prenom=trim(htmlentities($_POST['prenom'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
-  $mail=trim(htmlentities($_POST['mail'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
-  $statut=trim(htmlentities($_POST['statut'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
-  $categorie=trim(htmlentities($_POST['categorie'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
-  $service=trim(htmlentities($_POST['service'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
-  $heuresHebdo=$_POST['heuresHebdo'];
-  $heuresTravail=$_POST['heuresTravail'];
-  $postes=serialize(explode(",",$_POST['postes']));
-  $temps=isset($_POST['temps'])?serialize($_POST['temps']):null;
-  $actif=$_POST['actif'];
-  $arrivee=dateSQL($_POST['arrivee']);
-  $depart=dateSQL($_POST['depart']);
-  $informations=trim(htmlentities($_POST['informations'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
-  $recup=trim(htmlentities($_POST['recup'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
-  $sites=isset($_POST['sites'])?serialize($_POST['sites']):null;
-  $droits=isset($_POST['droits'])?$_POST['droits']:array();
-  
-  for($i=1;$i<=$config['Multisites-nombre'];$i++){
-    // Multisites, Gestion des absences : si droits de gérer les absences de l'un des sites (201,202, ...), ajoute le droit 1 pour débloquer les champs administrateur
-    if(in_array((200+$i),$droits) and !in_array(1,$droits)){
-      $droits[]=1;
-    }
-    // Multisites, Gestion des absences validation N2 : si droits de gérer les absences N2 de l'un des sites (501,502, ...), ajoute le droit 8 pour débloquer les champs administrateur N2
-    if(in_array((500+$i),$droits) and !in_array(8,$droits)){
-      $droits[]=8;
-    }
-    // Multisites, Modification des plannings : si droits de modifier les plannings de l'un dessites (301,302, ...), ajoute le droit 12 pour débloquer les champs administrateur
-    if(in_array((300+$i),$droits) and !in_array(12,$droits)){
-      $droits[]=12;
-    }
-    // Multisites, Gestion des congés : si droits de gérer les congés de l'un des sites (401,402, ...), ajoute le droit 2 pour débloquer les champs administrateur
-    if(in_array((400+$i),$droits) and !in_array(2,$droits)){
-      $droits[]=2;
-    }
+$post=filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
+
+$arrivee=filter_input(INPUT_POST,"arrivee",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$depart=filter_input(INPUT_POST,"depart",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$heuresHebdo=filter_input(INPUT_POST,"heuresHebdo",FILTER_SANITIZE_NUMBER_FLOAT);
+$heuresTravail=filter_input(INPUT_POST,"heuresTravail",FILTER_SANITIZE_NUMBER_FLOAT);
+$id=filter_input(INPUT_POST,"id",FILTER_SANITIZE_NUMBER_INT);
+$mail=trim(filter_input(INPUT_POST,"mail",FILTER_SANITIZE_EMAIL));
+
+$actif=$post['actif'];
+$action=$post['action'];
+$droits=array_key_exists("droits",$post)?$post['droits']:null;
+$categorie=trim($post['categorie']);
+$informations=trim($post['informations']);
+$mailsResponsables=trim(str_replace(array("\n"," "),null,$post['mailsResponsables']));
+$matricule=trim($post['matricule']);
+$nom=trim($post['nom']);
+$postes=$post['postes'];
+$prenom=trim($post['prenom']);
+$recup=trim($post['recup']);
+$service=$post['service'];
+$sites=array_key_exists("sites",$post)?$post['sites']:null;
+$statut=trim($post['statut']);
+$temps=array_key_exists("temps",$post)?$post['temps']:null;
+
+// Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
+$eDTSamedi=array_key_exists("EDTSamedi",$post)?$post['EDTSamedi']:null;
+$premierLundi=array_key_exists("premierLundi",$post)?$post['premierLundi']:null;
+$dernierLundi=array_key_exists("dernierLundi",$post)?$post['dernierLundi']:null;
+
+$droits=$droits?$droits:array();
+$postes=$postes?serialize(explode(",",$postes)):null;
+$sites=$sites?serialize($sites):null;
+$temps=$temps?serialize($temps):null;
+
+$arrivee=dateSQL($arrivee);
+$depart=dateSQL($depart);
+
+for($i=1;$i<=$config['Multisites-nombre'];$i++){
+  // Multisites, Gestion des absences : si droits de gérer les absences de l'un des sites (201,202, ...), ajoute le droit 1 pour débloquer les champs administrateur
+  if(in_array((200+$i),$droits) and !in_array(1,$droits)){
+    $droits[]=1;
   }
-  $droits[]=99;
-  $droits[]=100;
-  if($id==1)		// Ajoute config. avancée à l'utilisateur admin.
-    $droits[]=20;
-  $droits=serialize($droits);
-
-
-  // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
-  $eDTSamedi=isset($_POST['EDTSamedi'])?$_POST['EDTSamedi']:null;
-  $premierLundi=isset($_POST['premierLundi'])?$_POST['premierLundi']:null;
-  $dernierLundi=isset($_POST['dernierLundi'])?$_POST['dernierLundi']:null;
-  $mailsResponsables=trim(str_replace(array("\n"," "),null,$_POST['mailsResponsables']));
-  $matricule=trim(htmlentities($_POST['matricule'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+  // Multisites, Gestion des absences validation N2 : si droits de gérer les absences N2 de l'un des sites (501,502, ...), ajoute le droit 8 pour débloquer les champs administrateur N2
+  if(in_array((500+$i),$droits) and !in_array(8,$droits)){
+    $droits[]=8;
+  }
+  // Multisites, Modification des plannings : si droits de modifier les plannings de l'un dessites (301,302, ...), ajoute le droit 12 pour débloquer les champs administrateur
+  if(in_array((300+$i),$droits) and !in_array(12,$droits)){
+    $droits[]=12;
+  }
+  // Multisites, Gestion des congés : si droits de gérer les congés de l'un des sites (401,402, ...), ajoute le droit 2 pour débloquer les champs administrateur
+  if(in_array((400+$i),$droits) and !in_array(2,$droits)){
+    $droits[]=2;
+  }
 }
-else{
-  $id=null;
-  $nom=null;
-  $prenom=null;
-  $mail=null;
-  $statut=null;
-  $categorie=null;
-  $service=null;
-  $heuresHebdo=null;
-  $heuresTravail=null;
-  $postes=null;
-  $temps=null;
-  $actif='Actif';
-  $arrivee=date("Y-m-d");
-  $depart=null;
-  $informations=null;
-  $recup=null;
-  $sites=serialize(array());
-  $droits=array();
-  $mailsResponsables=null;
-  $matricule=null;
-}
+$droits[]=99;
+$droits[]=100;
+if($id==1)		// Ajoute config. avancée à l'utilisateur admin.
+  $droits[]=20;
+$droits=serialize($droits);
 
 switch($action){
   case "ajout" :
@@ -229,5 +215,4 @@ function login($nom,$prenom){
   }
   return $login;
 }
-
 ?>
