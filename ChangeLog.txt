@@ -1,6 +1,14 @@
-***	Version 1.9.5	(Jérôme Combes, 9 avril 2015)			***
+***	Version 1.9.5	(Jérôme Combes, 13 avril 2015)			***
 - Corrections :
+Corrige une erreur sur le contrôle des plannings validés lors de l'ajout ou modification d'une absences
+Corrige un problème de sélection des dates sur la page permettant de voir les absences
+Optimise la recherche des emplois du temps du plugin Planning Hebdo
+Supprime les fonctions error_reporting considérées comme des vulnérabilités Information Exposure Through an Error Message
 Correction des vulnérabilités XSHM
+Correction des vulnérabilités Client Potentiel XSS
+Correction des vulnérabilités Reflected XSS (absences/modif.php)
+Correction de la vulnérabilité LDAP Injection
+Correction des vulnérabilités Trust Boundary Violation (Sessions statistiques)
 
 ***	Version 1.9.4	(Jérôme Combes, 7 avril 2015)			***
 - Corrections :

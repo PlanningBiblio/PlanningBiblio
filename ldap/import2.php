@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : ldap/import2.php
 Création : 2 juillet 2014
-Dernière modification : 9 avril 2015
+Dernière modification : 13 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -19,13 +19,13 @@ Fichier appelé par la page personnel/import.php
 
 require_once "class.ldap.php";
 
-$recherche=filter_input(INPUT_POST,"recherche",FILTER_SANITIZE_STRING);
+$post=filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
+$recherche=$post["recherche"];
 
 //	Récupération des uid des agents sélectionnés
 $uids=array();
-if(array_key_exists("chk",$_POST)){
-  foreach($_POST["chk"] as $elem){
-    $elem=filter_var($elem,FILTER_SANITIZE_STRING);
+if(array_key_exists("chk",$post)){
+  foreach($post["chk"] as $elem){
     $uids[]=ldap_escape($elem, '', LDAP_ESCAPE_FILTER);
   }
 }else{
