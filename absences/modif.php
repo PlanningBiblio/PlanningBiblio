@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 9 avril 2015
+Dernière modification : 13 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -28,37 +28,44 @@ $admin=in_array(1,$droits)?true:false;
 $adminN2=in_array(8,$droits)?true:false;
 $quartDHeure=$config['heuresPrecision']=="quart d&apos;heure"?true:false;
 
-$db=new db();
-$db->selectInnerJoin(array("absences","perso_id"),array("personnel","id"),
-  array("id","debut","fin","nbjours","motif","motif_autre","valide","validation","valideN1","validationN1","pj1","pj2","so","commentaires","demande"),
-  array(array("name"=>"id","as"=>"perso_id"),"nom","prenom","sites"),
-  array("id"=>$id));
+$a=new absences();
+$a->fetchById($id);
 
-$perso_id=$db->result[0]['perso_id'];
-$nom=$db->result[0]['nom'];
-$prenom=$db->result[0]['prenom'];
-$motif=$db->result[0]['motif'];
-$motif_autre=$db->result[0]['motif_autre'];
-$commentaires=$db->result[0]['commentaires'];
-$demande=filter_var($db->result[0]['demande'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
+$perso_id=$a->elements['perso_id'];
+$nom=$a->elements['nom'];
+$prenom=$a->elements['prenom'];
+$motif=$a->elements['motif'];
+$motif_autre=$a->elements['motif_autre'];
+$commentaires=$a->elements['commentaires'];
+$demande=filter_var($a->elements['demande'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
+$debutSQL=filter_var($a->elements['debut'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
+$finSQL=filter_var($a->elements['fin'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
+$sitesAgent=unserialize($a->elements['sites']);
+$valide=filter_var($a->elements['valideN2'],FILTER_SANITIZE_NUMBER_INT);
+$validation=$a->elements['validationN2'];
+$valideN1=$a->elements['valideN1'];
+$validationN1=$a->elements['validationN1'];
+// Pièces justificatives
+$pj1Checked=$a->elements['pj1']?"checked='checked'":null;
+$pj2Checked=$a->elements['pj2']?"checked='checked'":null;
+$soChecked=$a->elements['so']?"checked='checked'":null;
+
+// Traitement des dates et des heures
 $demande=dateFr($demande,true);
-$debutSQL=filter_var($db->result[0]['debut'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
-$finSQL=filter_var($db->result[0]['fin'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
 $debut=dateFr3($debutSQL);
 $fin=dateFr3($finSQL);
-$sitesAgent=unserialize($db->result[0]['sites']);
-$valide=filter_var($db->result[0]['valide'],FILTER_SANITIZE_NUMBER_INT);
-$validation=$db->result[0]['validation'];
-$valideN1=$db->result[0]['valideN1'];
-$validationN1=$db->result[0]['validationN1'];
+
 $hre_debut=substr($debut,-8);
 $hre_fin=substr($fin,-8);
 $debut=substr($debut,0,10);
 $fin=substr($fin,0,10);
+
 if($hre_debut=="00:00:00" and $hre_fin=="23:59:59"){
   $checked="checked='checked'";
   $display="style='display:none;'";
 }
+
+// Initialisation des menus déroulants
 $select1=$valide==0?"selected='selected'":null;
 $select2=$valide>0?"selected='selected'":null;
 $select3=$valide<0?"selected='selected'":null;
@@ -77,12 +84,6 @@ if($valide==0 and $valideN1!=0){
 }
 
 $display_autre=in_array(strtolower($motif),array("autre","other"))?null:"style='display:none;'";
-
-// Pièces justificatives
-$pj1Checked=$db->result[0]['pj1']?"checked='checked'":null;
-$pj2Checked=$db->result[0]['pj2']?"checked='checked'":null;
-$soChecked=$db->result[0]['so']?"checked='checked'":null;
-
 
 // Sécurité
 // Droit 1 = modification de toutes les absences

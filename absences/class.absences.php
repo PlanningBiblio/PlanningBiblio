@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 8 avril 2015
+Dernière modification : 13 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -251,10 +251,11 @@ class absences{
   public function fetchById($id){
     $db=new db();
     $db->selectInnerJoin(array("absences","perso_id"),array("personnel","id"),
-      array("id","debut","fin","nbjours","motif","commentaires","valideN1","validationN1","pj1","pj2","so","demande",
-	array("name"=>"valide","as"=>"valideN2"),array("name"=>"validation","as"=>"validationN2")),
-      array("nom","prenom",array("name"=>"id","as"=>"perso_id"),"mail","mailsResponsables"),
+      array("id","debut","fin","nbjours","motif","motif_autre","commentaires","valideN1","validationN1","pj1","pj2","so","demande",
+      array("name"=>"valide","as"=>"valideN2"),array("name"=>"validation","as"=>"validationN2")),
+      array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mailsResponsables"),
       array("id"=>$id));
+
     if($db->result){
       $elem=$db->result[0];
       $elem['mailsResponsables']=explode(";",html_entity_decode($elem['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
