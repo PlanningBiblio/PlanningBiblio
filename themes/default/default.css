@@ -440,7 +440,7 @@ class cellule = cellule par défaut
 
 
 #tabsemaine1, .tabsemaine1 {
-  width:1260px;
+  width:100%;
   empty-cells:show;
 }
 

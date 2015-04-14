@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 10 avril 2015
+Dernière modification : 14 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -360,7 +360,12 @@ if(!$tab){
 
 // Div planning-data : permet de transmettre les valeurs $verrou et $autorisation à la fonction affichant le menudiv
 // data-validation pour les fonctions refresh_poste et verrouillage du planning
-echo "<div id='planning-data' data-verrou='$verrou' data-autorisation='$autorisation' data-validation='$validation2' style='display:none;'>&nbsp;</div>\n";
+// Lignes vides pour l'affichage ou non des lignes vides au chargement de la page et après validation (selon la config)
+
+$lignesVides=$config['Planning-lignesVides'];
+
+echo "<div id='planning-data' data-verrou='$verrou' data-autorisation='$autorisation' data-validation='$validation2' 
+  data-lignesVides='$lignesVides' style='display:none;'>&nbsp;</div>\n";
 
 // Actualisation du planning si validé et mis à jour depuis un autre poste
 if($verrou){
@@ -428,8 +433,9 @@ else{
     //	Lignes postes et grandes lignes
     foreach($tab['lignes'] as $ligne){
       // Regardons si la ligne est vide afin de ne pas l'afficher si $config['Planning-lignes-vides']=0
+      $displayTR=null;
       if(!$config['Planning-lignesVides'] and $verrou and isAnEmptyLine($ligne['poste'])){
-	continue;
+	$displayTR="style='display:none;'";
       }
 
       // Lignes postes
@@ -449,7 +455,8 @@ else{
 	$classTR=join(" ",$classTR);
 
 	// Affichage de la ligne
-	echo "<tr class='$classTR'><td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
+	echo "<tr class='pl-line $classTR' $displayTR >\n";
+	echo "<td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
 	// Affichage ou non des étages
 	if($config['Affichage-etages'] and $postes[$ligne['poste']]['etage']){
 	  echo " ({$postes[$ligne['poste']]['etage']})";

@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.9.3
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 26 mars 2015
+Dernière modification : 14 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -47,8 +47,6 @@ $(document).ready(function(){
       $(jtem).css("top",top);
     });
   });
-  
-  
 });
 
 // Evénements JQuery
@@ -72,6 +70,9 @@ $(function() {
 	  // data-verrou : pour activer le menudiv
 	  $("#planning-data").attr("data-verrou",0);
 	}
+	
+	// Affichage des lignes vides
+	$(".pl-line").show();
 	information(result[0],result[1]);
       },
       error: function(result){
@@ -103,6 +104,10 @@ $(function() {
 	  // refresh_poste : contrôle toute les 30 sec si le planning est validé depuis un autre poste
 	  setTimeout("refresh_poste()",30000);
 	}
+
+	// Masque les lignes vides
+	hideEmptyLines();
+
 	information(result[0],result[1]);
       },
       error: function(result){
@@ -493,6 +498,25 @@ function groupe_tab_hide(){
     $(this).hide();
   });
 }
+
+
+// Masque les lignes vides
+function hideEmptyLines(){
+  if($("#planning-data").attr("data-lignesVides")=="0" &&  $("#planning-data").attr("data-verrou")=="1"){
+    $(".pl-line").each(function(){
+      var hide=true;
+      $(this).find(".menuTrigger").each(function(){
+	if($(this).text()){
+	  hide=false;
+	}
+      });
+      if(hide==true){
+	$(this).hide();
+      }
+    });
+  }
+}
+
 
 /* majPersoOrigine : 
   Fonction permettant de mettre à jour les variables globales perso_xx_origine lors de la mise à jour d'une cellule
