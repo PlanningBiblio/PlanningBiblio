@@ -6,7 +6,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 9 avril 2015
+Dernière modification : 14 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -873,7 +873,7 @@ $(function(){
       "sScrollX": scollX,
       "sDom": '<"H"lfr>t<"F"ip>T',
       "oTableTools": {
-	"sSwfPath" : "vendor/DataTables-1.10.4/extensions/TableTools/swf/copy_csv_xls.swf",
+	"sSwfPath" : "vendor/DataTables-1.10.4/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
 	"aButtons": [
 	  {
 	    "sExtends": "xls",
