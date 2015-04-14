@@ -6,7 +6,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 13 avril 2015
+Dernière modification : 14 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -230,12 +230,13 @@ h3{
 /*		Menu JavaScript		*/
 .menu_table{
   position: absolute;
-  background: #000000;
   min-width:200px;
+  border: 1px solid #7D3C25;
 }
 
 .menu_table td{
   padding : 1px 10px;
+  border: 1px outset #7D3C25;
 }
 
 .ejsmenu2{

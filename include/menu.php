@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/menu.php
 Création : mai 2011
-Dernière modification : 13 avril 2015
+Dernière modification : 14 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -55,7 +55,7 @@ function pop(msg,td){
   posTop = td.offset().top+td.height()+2;
   posLeft = td.offset().left+td.width()/2-100;
 
-  var content ="<table cellspacing='1' border='0' class='menu_table' style='top:"+posTop+"px; left:"+posLeft+"px;'>";
+  var content ="<table cellspacing='0' border='0' class='menu_table' style='top:"+posTop+"px; left:"+posLeft+"px;'>";
 
   for(i in msg){
     content += "<tr><td class='menu_td2' >"+msg[i]+"</td></tr>";
