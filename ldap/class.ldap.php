@@ -34,10 +34,12 @@ function authCAS(){
   phpCAS::forceAuthentication();
 
   $login=phpCAS::getUser();
+  $login=filter_var($login,FILTER_SANITIZE_STRING);
+
 
   // Vérifions si l'utilisateur existe dans le planning
   $db=new db();
-  $db->select("personnel","id,nom,prenom","login='$login' AND `supprime`='0';");
+  $db->select2("personnel",array("id","nom","prenom"),array("login"=>$login, "supprime"=>"0"));
   if(!$db->result){
     echo <<<EOD
     <div id='JSInformation'>Vous avez &eacute;t&eacute; correctement identifi&eacute;(e) mais vous n&apos;est pas autoris&eacute;(e) &agrave; 

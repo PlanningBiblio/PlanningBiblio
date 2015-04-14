@@ -95,10 +95,18 @@ if(isset($_POST['login'])){
     }
   }
   else{
-    echo "<div style='text-align:center'>\n";
-    echo "<br/><br/><h3 style='color:red'>Erreur lors de l'authentification</h3>\n";
-    echo "<br/><a href='authentification.php{$authArgs}'>Re-essayer</a>\n";
-    echo "</div>\n";
+    echo <<<EOD
+    <div id='auth'>
+    <center><div id='auth-logo'></div></center>
+    <h1 id='title'>{$config['Affichage-titre']}</h1>
+    <h2 id='h2-planning-authentification'>Planning - Authentification</h2>
+    <h2 id='h2-authentification'>Authentification</h2>
+    <div style='text-align:center'>
+    <h3 style='color:red'>Erreur lors de l'authentification</h3>
+    <br/><a href='authentification.php{$authArgs}'>Re-essayer</a>
+    </div>
+    </div>
+EOD;
   }
 }
 elseif(isset($_GET['acces'])){
