@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 8 avril 2015
+Dernière modification : 15 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -55,7 +55,11 @@ getJSFiles($page);
 <link rel='StyleSheet' href='themes/<?php echo $themeJQuery; ?>/jquery-ui.min.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/default.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/print.css' type='text/css' media='print'/>
-<link rel='StyleSheet' href='themes/<?php echo "$theme/$theme"; ?>.css' type='text/css' media='all'/>
+<?php
+if($theme!="default"){
+  echo "<link rel='StyleSheet' href='themes/{$theme}/{$theme}.css' type='text/css' media='all'/>\n";
+}
+?>
 </head>
 
 <?php
