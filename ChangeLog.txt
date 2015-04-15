@@ -1,4 +1,4 @@
-***	Version 1.9.5	(Jérôme Combes, 13 avril 2015)			***
+***	Version 1.9.5	(Jérôme Combes, 15 avril 2015)			***
 - Corrections :
 Corrige une erreur sur le contrôle des plannings validés lors de l'ajout ou modification d'une absences
 Corrige un problème de sélection des dates sur la page permettant de voir les absences
@@ -9,6 +9,12 @@ Correction des vulnérabilités Client Potentiel XSS
 Correction des vulnérabilités Reflected XSS (absences/modif.php)
 Correction de la vulnérabilité LDAP Injection
 Correction des vulnérabilités Trust Boundary Violation (Sessions statistiques)
+Renforce l'authentification CAS
+Corrige les erreurs d'export PDF depuis les DataTables
+Masque les lignes vides (selon config) lors de la validation Ajax
+
+- Améliorations :
+Améliore l'affichage du menu
 
 ***	Version 1.9.4	(Jérôme Combes, 7 avril 2015)			***
 - Corrections :
