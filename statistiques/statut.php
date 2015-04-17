@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/statut.php
 Création : 13 septembre 2013
-Dernière modification : 10 avril 2015
+Dernière modification : 17 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -33,31 +33,17 @@ $exists_h20=false;
 $exists_JF=false;
 $exists_absences=false;
 
-if(!array_key_exists('stat_statut_statuts',$_SESSION)){
-  $_SESSION['stat_statut_statuts']=null;
-}
-if(!array_key_exists('stat_debut',$_SESSION)){
-  $_SESSION['stat_debut']=null;
-  $_SESSION['stat_fin']=null;
-}
+if(!$debut and array_key_exists('stat_debut',$_SESSION)){ $debut=$_SESSION['stat_debut']; }
+if(!$fin and array_key_exists('stat_fin',$_SESSION)){ $fin=$_SESSION['stat_fin']; }
 
-$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
-$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+if(!$debut){ $debut="01/01/".date("Y"); }
+if(!$fin){ $fin=date("d/m/Y"); }
 
-if(!$debut){ $debut=$_SESSION['stat_debut']; }
-if(!$fin){ $fin=$_SESSION['stat_fin']; }
+$_SESSION['stat_debut']=$debut;
+$_SESSION['stat_fin']=$fin;
 
 $debutSQL=dateFr($debut);
 $finSQL=dateFr($fin);
-
-if(!$debut){
-  $debut="01/01/".date("Y");
-}
-$_SESSION['stat_debut']=$debut;
-if(!$fin){
-  $fin=date("d/m/Y");
-}
-$_SESSION['stat_fin']=$fin;
 
 // Filtre les statuts
 if(!array_key_exists('stat_statut_statuts',$_SESSION)){
@@ -114,11 +100,7 @@ $statuts_list=$db->result;
 if(!empty($statuts)){
   //	Recherche du nombre de jours concernés
   $db=new db();
-  $debutREQ=$db->escapeString($debutSQL);
-  $finREQ=$db->escapeString($finSQL);
-  $sitesREQ=$db->escapeString($sitesSQL);
-
-  $db->select("pl_poste","`date`","`date` BETWEEN '$debutREQ' AND '$finREQ' AND `site` IN ($sitesREQ)","GROUP BY `date`;");
+  $db->select2("pl_poste","date", array("date"=>"BETWEEN{$debutSQL}AND{$finSQL}", "site"=>"IN{$sitesSQL}"),"GROUP BY `date`;");
   $nbJours=$db->nb;
 
   // Recherche des statuts de chaque agent
@@ -139,22 +121,12 @@ if(!empty($statuts)){
   //	On stock le tout dans le tableau $resultat
 
   $db=new db();
-  $debutREQ=$db->escapeString($debutSQL);
-  $finREQ=$db->escapeString($finSQL);
-  $sitesREQ=$db->escapeString($sitesSQL);
-
-  $req="SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
-    `{$dbprefix}pl_poste`.`date` as `date`, `{$dbprefix}pl_poste`.`perso_id` as `perso_id`, 
-    `{$dbprefix}pl_poste`.`poste` as `poste`, `{$dbprefix}pl_poste`.`absent` as `absent`, 
-    `{$dbprefix}postes`.`nom` as `poste_nom`, `{$dbprefix}postes`.`etage` as `etage`,
-    `{$dbprefix}pl_poste`.`site` as `site` 
-    FROM `{$dbprefix}pl_poste` 
-    INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` 
-    WHERE `{$dbprefix}pl_poste`.`date`>='$debutREQ' AND `{$dbprefix}pl_poste`.`date`<='$finREQ' 
-    AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' 
-    AND `{$dbprefix}pl_poste`.`site` IN ($sitesREQ)
-    ORDER BY `poste_nom`,`etage`;";
-  $db->query($req);
+  $db->selectInnerJoin(array("pl_poste","poste"),array("postes","id"),
+    array("debut","fin","date","perso_id","poste","absent"),
+    array(array("name"=>"nom","as"=>"poste_nom"),"etage","site"),
+    array("date"=>"BETWEEN{$debutSQL}AND{$finSQL}", "supprime"=>"<>1", "site"=> "IN{$sitesSQL}"),
+    array("statistiques"=>"1"),
+    "ORDER BY `poste_nom`,`etage`");
   $resultat=$db->result;
 
   // Ajoute le statut pour chaque agents dans le tableau resultat

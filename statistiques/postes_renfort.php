@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/postes_renfort.php
 Création : mai 2011
-Dernière modification : 10 avril 2015
+Dernière modification : 17 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -31,23 +31,26 @@ $post_sites=isset($post['selectedSites'])?$post['selectedSites']:null;
 $joursParSemaine=$config['Dimanche']?7:6;
 
 //		--------------		Initialisation  des variables 'debut','fin' et 'poste'		-------------------
-if(!array_key_exists('stat_poste_tri',$_SESSION))
-  $_SESSION['stat_poste_tri']=null;
-if(!array_key_exists('stat_postes_r',$_SESSION))
-  $_SESSION['stat_postes_r']=null;
-if(!array_key_exists('stat_debut',$_SESSION)){
-  $_SESSION['stat_debut']=null;
-  $_SESSION['stat_fin']=null;
-}
+if(!$debut and array_key_exists('stat_debut',$_SESSION)) { $debut=$_SESSION['stat_debut']; }
+if(!$fin and array_key_exists('stat_fin',$_SESSION)) { $fin=$_SESSION['stat_fin']; }
+if(!$tri and array_key_exists('stat_poste_tri',$_SESSION)) { $tri=$_SESSION['stat_poste_tri']; }
 
-if(!$debut) { $debut=$_SESSION['stat_debut']; }
-if(!$fin) { $fin=$_SESSION['stat_fin']; }
-if(!$tri) { $tri=$_SESSION['stat_poste_tri']; }
+if(!$debut) { $debut="01/01/".date("Y"); }
+if(!$fin) { $fin=date("d/m/Y"); }
+if(!$tri) { $tri="cmp_01"; }
+
+$_SESSION['stat_debut']=$debut; 
+$_SESSION['stat_fin']=$fin;
+$_SESSION['stat_poste_tri']=$tri;
 
 $debutSQL=dateFr($debut);
 $finSQL=dateFr($fin);
 
 // Postes
+if(!array_key_exists('stat_postes_r',$_SESSION)){
+  $_SESSION['stat_postes_r']=null;
+}
+
 $postes=array();
 if($post_postes){
   foreach($post_postes as $elem){
@@ -72,17 +75,7 @@ if($post_sites){
   $selectedSites=$_SESSION['stat_poste_sites'];
 }
 
-
-if(!$debut)
-  $debut="01/01/".date("Y");
-$_SESSION['stat_debut']=$debut;
-if(!$fin)
-  $fin=date("d/m/Y");
-$_SESSION['stat_fin']=$fin;
 $_SESSION['stat_postes_r']=$postes;
-if(!$tri)
-  $tri="cmp_01";
-$_SESSION['stat_poste_tri']=$tri;
 
 // Filtre les sites
 if(!array_key_exists('stat_poste_sites',$_SESSION)){

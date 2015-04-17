@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 8 avril 2015
+Dernière modification : 17 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -185,7 +185,7 @@ EOD;
     }
 
     $horaires=null;
-    if(array_key_exists($jour,$temps)){
+    if(is_array($temps) and array_key_exists($jour,$temps)){
       $horaires=$temps[$jour];
     }
 

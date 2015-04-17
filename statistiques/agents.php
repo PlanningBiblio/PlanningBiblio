@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/agents.php
 Création : mai 2011
-Dernière modification : 10 avril 2015
+Dernière modification : 17 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -36,27 +36,17 @@ $exists_absences=false;
 $exists_samedi=false;
 $exists_dimanche=false;
 
+if(!$debut and array_key_exists('stat_debut',$_SESSION)){ $debut=$_SESSION['stat_debut']; }
+if(!$fin and array_key_exists('stat_fin',$_SESSION)){ $fin=$_SESSION['stat_fin']; }
 
-if(!array_key_exists('stat_debut',$_SESSION)){
-  $_SESSION['stat_debut']=null;
-  $_SESSION['stat_fin']=null;
-}
+if(!$debut){ $debut="01/01/".date("Y"); }
+if(!$fin){ $fin=date("d/m/Y"); }
 
-if(!$debut){ $debut=$_SESSION['stat_debut']; }
-if(!$fin){ $fin=$_SESSION['stat_fin']; }
+$_SESSION['stat_debut']=$debut;
+$_SESSION['stat_fin']=$fin;
 
 $debutSQL=dateFr($debut);
 $finSQL=dateFr($fin);
-
-if(!$debut){
-  $debut="01/01/".date("Y");
-}
-$_SESSION['stat_debut']=$debut;
-if(!$fin){
-  $fin=date("d/m/Y");
-}
-$_SESSION['stat_fin']=$fin;
-
 
 // Filtre les agents
 if(!array_key_exists('stat_agents_agents',$_SESSION)){
@@ -278,7 +268,7 @@ echo "<td><select name='agents[]' multiple='multiple' size='20' onchange='verif_
 if(is_array($agents_list)){
   echo "<option value='Tous'>Tous</option>\n";
   foreach($agents_list as $elem){
-    if($postes){
+    if($agents){
       $selected=in_array($elem['id'],$agents)?"selected='selected'":null;
     }
     echo "<option value='{$elem['id']}' $selected>{$elem['nom']} {$elem['prenom']}</option>\n";
