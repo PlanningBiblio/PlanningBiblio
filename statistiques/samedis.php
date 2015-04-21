@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/samedis.php
 Création : 15 novembre 2013
-Dernière modification : 10 avril 2015
+Dernière modification : 17 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -34,28 +34,17 @@ $exists_absences=false;
 $exists_samedi=false;
 
 //		--------------		Initialisation  des variables 'debut','fin' et 'agents'		-------------------
-if(!array_key_exists('stat_samedis_agents',$_SESSION)){
-  $_SESSION['stat_samedis_agents']=null;
-}
-if(!array_key_exists('stat_debut',$_SESSION)){
-  $_SESSION['stat_debut']=null;
-  $_SESSION['stat_fin']=null;
-}
+if(!$debut and array_key_exists('stat_debut',$_SESSION)) { $debut=$_SESSION['stat_debut']; }
+if(!$fin and array_key_exists('stat_fin',$_SESSION)) { $fin=$_SESSION['stat_fin']; }
 
-if(!$debut) { $debut=$_SESSION['stat_debut']; }
-if(!$fin) { $fin=$_SESSION['stat_fin']; }
+if(!$debut){ $debut="01/01/".date("Y"); }
+if(!$fin){ $fin=date("d/m/Y"); }
+
+$_SESSION['stat_debut']=$debut;
+$_SESSION['stat_fin']=$fin;
 
 $debutSQL=dateFr($debut);
 $finSQL=dateFr($fin);
-
-if(!$debut){
-  $debut="01/01/".date("Y");
-}
-$_SESSION['stat_debut']=$debut;
-if(!$fin){
-  $fin=date("d/m/Y");
-}
-$_SESSION['stat_fin']=$fin;
 
 // Sélection des samedis entre le début et la fin
 $dates=array();
@@ -68,6 +57,10 @@ while($current<=$finSQL){
 $dates=join(",",$dates);
 
 // Les agents
+if(!array_key_exists('stat_samedis_agents',$_SESSION)){
+  $_SESSION['stat_samedis_agents']=null;
+}
+
 $agents=array();
 if($post_agents){
   foreach($post_agents as $elem){

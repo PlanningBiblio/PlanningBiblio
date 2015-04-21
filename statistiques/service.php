@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/service.php
 Création : 9 septembre 2013
-Dernière modification : 10 avril 2015
+Dernière modification : 17 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -33,28 +33,17 @@ $exists_h20=false;
 $exists_JF=false;
 $exists_absences=false;
 
-if(!array_key_exists('stat_service_services',$_SESSION)){
-  $_SESSION['stat_service_services']=null;
-}
-if(!array_key_exists('stat_debut',$_SESSION)){
-  $_SESSION['stat_debut']=null;
-  $_SESSION['stat_fin']=null;
-}
+if(!$debut and array_key_exists('stat_debut',$_SESSION)){ $debut=$_SESSION['stat_debut']; }
+if(!$fin and array_key_exists('stat_fin',$_SESSION)){ $fin=$_SESSION['stat_fin']; }
 
-if(!$debut){ $debut=$_SESSION['stat_debut']; }
-if(!$fin){ $fin=$_SESSION['stat_fin']; }
+if(!$debut){ $debut="01/01/".date("Y"); }
+if(!$fin){ $fin=date("d/m/Y"); }
+
+$_SESSION['stat_debut']=$debut;
+$_SESSION['stat_fin']=$fin;
 
 $debutSQL=dateFr($debut);
 $finSQL=dateFr($fin);
-
-if(!$debut){
-  $debut="01/01/".date("Y");
-}
-$_SESSION['stat_debut']=$debut;
-if(!$fin){
-  $fin=date("d/m/Y");
-}
-$_SESSION['stat_fin']=$fin;
 
 // Filtre les services
 if(!array_key_exists('stat_service_services',$_SESSION)){
@@ -112,11 +101,7 @@ $services_list=$db->result;
 if(!empty($services)){
   //	Recherche du nombre de jours concernés
   $db=new db();
-  $debutREQ=$db->escapeString($debutSQL);
-  $finREQ=$db->escapeString($finSQL);
-  $sitesREQ=$db->escapeString($sitesSQL);
-
-  $db->select("pl_poste","`date`","`date` BETWEEN '$debutREQ' AND '$finREQ' AND `site` IN ($sitesREQ)","GROUP BY `date`;");
+  $db->select2("pl_poste","date",array("date"=>"BETWEEN{$debutSQL}AND{$finSQL}", "site"=>"IN{$sitesSQL}"),"GROUP BY `date`;");
   $nbJours=$db->nb;
 
   // Recherche des services de chaque agent

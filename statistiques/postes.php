@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/postes.php
 Création : mai 2011
-Dernière modification : 10 avril 2015
+Dernière modification : 17 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -35,14 +35,18 @@ if(!array_key_exists('stat_poste_postes',$_SESSION)){
   $_SESSION['stat_poste_postes']=null;
   $_SESSION['stat_poste_tri']=null;
 }
-if(!array_key_exists('stat_debut',$_SESSION)){
-  $_SESSION['stat_debut']=null;
-  $_SESSION['stat_fin']=null;
-}
 
-if(!$debut) { $debut=$_SESSION['stat_debut']; }
-if(!$fin) { $fin=$_SESSION['stat_fin']; }
-if(!$tri) { $tri=$_SESSION['stat_poste_tri']; }
+if(!$debut and array_key_exists("stat_debut",$_SESSION)) { $debut=$_SESSION['stat_debut']; }
+if(!$fin and array_key_exists("stat_fin",$_SESSION)) { $fin=$_SESSION['stat_fin']; }
+if(!$tri and array_key_exists("stat_poste_tri",$_SESSION)) { $tri=$_SESSION['stat_poste_tri']; }
+
+if(!$debut){ $debut="01/01/".date("Y"); }
+if(!$fin) { $fin=date("d/m/Y"); }
+if(!$tri) { $tri="cmp_01"; }
+
+$_SESSION['stat_debut']=$debut;
+$_SESSION['stat_fin']=$fin;
+$_SESSION['stat_poste_tri']=$tri;
 
 $debutSQL=dateFr($debut);
 $finSQL=dateFr($fin);
@@ -71,17 +75,6 @@ if($post_sites){
 }else{
   $selectedSites=$_SESSION['stat_poste_sites'];
 }
-
-
-if(!$debut)
-  $debut="01/01/".date("Y");
-$_SESSION['stat_debut']=$debut;
-if(!$fin)
-  $fin=date("d/m/Y");
-$_SESSION['stat_fin']=$fin;
-if(!$tri)
-  $tri="cmp_01";
-$_SESSION['stat_poste_tri']=$tri;
 
 if($config['Multisites-nombre']>1 and empty($selectedSites)){
   for($i=1;$i<=$config['Multisites-nombre'];$i++){
@@ -113,10 +106,7 @@ $postes_list=$db->result;
 if(!empty($postes)){
   //	Recherche du nombre de jours concernés
   $db=new db();
-  $debutREQ=$db->escapeString($debutSQL);
-  $finREQ=$db->escapeString($finSQL);
-  $sitesREQ=$db->escapeString($sitesSQL);
-  $db->select("pl_poste","`date`","`date` BETWEEN '$debutREQ' AND '$finREQ' AND `site` IN ($sitesREQ)","GROUP BY `date`;");
+  $db->select2("pl_poste","date",array("date"=>"BETWEEN{$debutSQL}AND{$finSQL}", "site"=>"IN{$sitesSQL}"),"GROUP BY `date`;");
   $nbJours=$db->nb;
   
   //	Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
@@ -127,7 +117,7 @@ if(!empty($postes)){
   $db->selectInnerJoin(array("pl_poste","perso_id"),array("personnel","id"),
     array("debut","fin","date","poste","site"),
     array("nom","prenom",array("name"=>"id", "as"=>"perso_id")),
-    array("date"=>">={$debutSQL}", "date"=>"<={$finSQL}", "poste"=>"IN{$postes_select}","absent"=>"<>1",
+    array("date"=>"BETWEEN{$debutSQL}AND{$finSQL}", "poste"=>"IN{$postes_select}","absent"=>"<>1",
       "supprime"=>"<>1", "site"=>"IN{$sitesSQL}"),
     array(),
     "ORDER BY `poste`,`nom`,`prenom`");
