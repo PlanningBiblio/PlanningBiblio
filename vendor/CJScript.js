@@ -1,10 +1,9 @@
-/*
-Divers scripts JS
+/* Divers scripts JS
 Licence GNU/GPL (version 2 et au dela)
 
 Fichier : CJScript.js
 Création : mars 2015
-Dernière modification : 2 avril 2015
+Dernière modification : 23 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 */
 
@@ -64,11 +63,13 @@ function CJInfo(message,type,top,time,myClass){
     window.clearTimeout(timeoutCJInfo);
   }
 
-	var id=1;
-	$(".CJInfo").each(function(){
-		id=$(this).attr("data-id")>=id?($(this).attr("data-id")+1):id;
-		top=$(this).position().top+$(this).height();
-	});
+  var id=1;
+  $(".CJInfo").each(function(){
+    id=$(this).attr("data-id")>=id?($(this).attr("data-id")+1):id;
+    top=$(this).position().top+$(this).height();
+  });
+  
+  message=message.replace(/#BR#/g,"<br/>");
 
   $("body").append("<div class='CJInfo "+myClass+"' id='CJInfo"+id+"' data-id='"+id+"'>"+message+"</div>");
   CJErrorHighlight($("#CJInfo"+id),type);

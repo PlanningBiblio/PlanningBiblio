@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : ldap/import2.php
 Création : 2 juillet 2014
-Dernière modification : 13 avril 2015
+Dernière modification : 23 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -18,6 +18,15 @@ Fichier appelé par la page personnel/import.php
 */
 
 require_once "class.ldap.php";
+
+// Initialisation des variables
+$actif="Actif";
+$date=date("Y-m-d H:i:s");
+$commentaires= "Importation LDAP $date";
+$droits="a:2:{i:0;i:99;i:1;i:100;}";
+$password="password_bidon_pas_importé_depuis_ldap";
+$postes='a:1:{i:0;s:0:"";}';
+$erreurs=false;
 
 $post=filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
 $recherche=$post["recherche"];
@@ -46,38 +55,39 @@ if($ldapconn){
   $ldapbind=ldap_bind($ldapconn,$config['LDAP-RDN'],decrypt($config['LDAP-Password']));
 }
 
+// Préparation de la requête pour insérer les données dans la base de données
 $req="INSERT INTO `{$dbprefix}personnel` (`login`,`nom`,`prenom`,`mail`,`password`,`droits`,`arrivee`,`postes`,`actif`,`commentaires`) ";
 $req.="VALUES (:login, :nom, :prenom, :mail, :password, :droits, :arrivee, :postes, :actif, :commentaires);";
+$db=new dbh();
+$db->prepare($req);
 
-$date=date("Y-m-d H:i:s");
-
-$erreurs=false;
-//	Recuperation des infos LDAP
+// Recuperation des infos LDAP et insertion dans la base de données
 if($ldapbind){
-  $db=new dbh();
-  $db->prepare($req);
   foreach($uids as $uid){
     $filter="(uid=$uid)";
     $justthese=array("dn","uid","sn","givenname","userpassword","mail");
     $sr=ldap_search($ldapconn,$config['LDAP-Suffix'],$filter,$justthese);
     $infos=ldap_get_entries($ldapconn,$sr);
     if($infos[0]['uid']){
-      $infos[0]['sn'][0]=htmlentities($infos[0]['sn'][0],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
-      $infos[0]['givenname'][0]=htmlentities($infos[0]['givenname'][0],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
-      $values=array(":login"=>$infos[0]['uid'][0], ":nom"=>$infos[0]['sn'][0], ":prenom"=>$infos[0]['givenname'][0], 
-	":mail"=>$infos[0]['mail'][0], ":password"=>"password_bidon_pas_importé_depuis_ldap", ":droits"=>"a:2:{i:0;i:99;i:1;i:100;}",
-	":arrivee"=>$date, ":postes"=>'a:1:{i:0;s:0:"";}', ":actif"=>"Actif", ":commentaires"=> "Importation LDAP $date");
+      $login=$infos[0]['uid'][0];
+      $nom=array_key_exists("sn",$infos[0])?htmlentities($infos[0]['sn'][0],ENT_QUOTES|ENT_IGNORE,"UTF-8",false):"";
+      $prenom=array_key_exists("givenname",$infos[0])?htmlentities($infos[0]['givenname'][0],ENT_QUOTES|ENT_IGNORE,"UTF-8",false):"";
+      $mail=array_key_exists("mail",$infos[0])?$infos[0]['mail'][0]:"";
+
+      $values=array(":login"=>$login, ":nom"=>$nom, ":prenom"=>$prenom, ":mail"=>$mail, ":password"=> $password, ":droits"=> $droits,
+	":arrivee"=>$date, ":postes"=> $postes, ":actif"=> $actif, ":commentaires"=> $commentaires);
+
+      // Execution de la requête (insertion dans la base de données)
       $db->execute($values);
       if($db->error){
 	$erreurs=true;
       }
-      
     }
   }
 }
 
 if($erreurs){
-  $msg=urlencode("Il y a eu des erreus pendant l'importation.<br/>Veuillez vérifier la liste des agents");
+  $msg=urlencode("Il y a eu des erreus pendant l'importation.#BR#Veuillez vérifier la liste des agents");
   $msgType="error";
 }else{
   $msg=urlencode("Les agents ont été importés avec succès");
