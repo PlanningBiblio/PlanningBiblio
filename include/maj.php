@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 9 avril 2015
+Dernière modification : 24 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -714,6 +714,19 @@ if(strcmp("1.9.5",$config['Version'])>0){
   $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom`='error_reporting';";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.9.5' WHERE `nom`='Version';";
 }
+
+if(strcmp("1.9.6",$config['Version'])>0){
+  // Modification config. HeuresPrecision
+  $sql[]="UPDATE `{$dbprefix}config` SET type='enum2', `commentaires`='Pr&eacute;cision des heures', 
+    `valeurs`='[[\"heure\",\"Heure\"],[\"demi-heure\",\"Demi-heure\"],[\"quart-heure\",\"Quart d&apos;heure\"]]' WHERE `nom`='heuresPrecision';";
+
+  // Modification de la config pour les checkboxes Absences-notification
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeurs`='[[0,\"Aucune notification\"],[1,\"Aux agents ayant le droit de g&eacute;rer les absences\"],[2,\"Au responsable direct\"],[3,\"A la cellule planning\"],[4,\"A tous\"],[5,\"A l&apos;agent concern&eacute;\"]]'
+    WHERE `nom` IN ('Absences-notifications1','Absences-notifications2','Absences-notifications3','Absences-notifications4');";
+
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.9.6' WHERE `nom`='Version';";
+}
+
 
 //	Execution des requetes et affichage
 foreach($sql as $elem){

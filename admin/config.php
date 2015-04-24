@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 8 avril 2015
+Dernière modification : 24 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -129,8 +129,9 @@ foreach($db->result as $elem){
     // Valeurs proposées (champ valeurs) = tableau PHP à 2 dimensions
     // Valeurs choisies (champ valeur) =  tableau PHP à 1 dimension
     case "checkboxes" :
-      $valeurs=unserialize($elem['valeurs']);
+      $valeurs=json_decode(str_replace("&#34;",'"',$elem['valeurs']));
       $choisies=unserialize($elem['valeur']);
+
       if(is_array($valeurs)){
 	foreach($valeurs as $val){
 	  $checked=in_array($val[0],$choisies)?"checked='checked'":null;
@@ -154,7 +155,7 @@ foreach($db->result as $elem){
     // Select avec valeurs dans un tableau PHP à 2 dimensions
     case "enum2" :
       echo "<select name='{$elem['nom']}' style='width:305px;'>\n";
-      $options=unserialize($elem['valeurs']);
+      $options=json_decode(str_replace("&#34;",'"',$elem['valeurs']));
       foreach($options as $option){
 	$selected=$option[0]==$elem['valeur']?"selected='selected'":null;
 	echo "<option value='{$option[0]}' $selected >{$option[1]}</option>\n";

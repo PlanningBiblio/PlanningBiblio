@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/horaires.php
 Création : mai 2011
-Dernière modification : 8 avril 2015
+Dernière modification : 24 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -89,7 +89,7 @@ if($db->result){
 }
 
 //	Affichage des horaires
-$quart=$config['heuresPrecision']=="quart d&apos;heure"?true:false;
+$quart=$config['heuresPrecision']=="quart-heure"?true:false;
 
 echo "<form name='form2' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='planning/postes_cfg/modif.php' />\n";

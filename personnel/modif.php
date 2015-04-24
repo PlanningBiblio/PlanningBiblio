@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 13 avril 2015
+Dernière modification : 24 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -309,7 +309,7 @@ if(in_array(21,$droits)){
   echo "<option value='0'>&nbsp;</option>\n";
   for($i=1;$i<40;$i++){
     $j=array();
-    if($config['heuresPrecision']=="quart d&apos;heure"){
+    if($config['heuresPrecision']=="quart-heure"){
       $j[]=array($i,$i."h00");
       $j[]=array($i.".25",$i."h15");
       $j[]=array($i.".5",$i."h30");
@@ -342,7 +342,7 @@ if(in_array(21,$droits)){
   echo "<option value='0'>&nbsp;</option>\n";
   for($i=1;$i<40;$i++){
     $j=array();
-    if($config['heuresPrecision']=="quart d&apos;heure"){
+    if($config['heuresPrecision']=="quart-heure"){
       $j[]=array($i,$i."h00");
       $j[]=array($i.".25",$i."h15");
       $j[]=array($i.".5",$i."h30");

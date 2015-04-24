@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : setup/db_data.php
 Création : mai 2011
-Dernière modification : 9 avril 2015
+Dernière modification : 24 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -101,7 +101,7 @@ $sql[]="INSERT INTO `{$dbprefix}activites` VALUES(11, 'Renseignement r&eacute;se
 $sql[]="INSERT INTO `{$dbprefix}activites` VALUES(12, 'Renseignement sp&eacute;cialis&eacute;');";
 
 // Insertion de la config
-$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Version', 'info', '1.9.5', 'Version de l&apos;application',' Divers','','0');";
+$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Version', 'info', '1.9.6', 'Version de l&apos;application',' Divers','','0');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Mail-IsEnabled', 'boolean', '0', 'Active ou d&eacute;sactive l&apos;envoi des mails','Messagerie','','10');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'toutlemonde', 'boolean', '0', 'Affiche ou non l&apos;utilisateur \"tout le monde\" dans le menu.','Planning','','5');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Mail-IsMail-IsSMTP', 'enum', 'IsSMTP', 'Classe &agrave; utiliser : SMTP, fonction PHP IsMail','Messagerie','IsSMTP,IsMail','10');";
@@ -121,7 +121,7 @@ $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL ,'nb_semaine','enum','1','N
 $sql[]="INSERT INTO `{$dbprefix}config` (nom,type,ordre,commentaires,categorie) VALUES ('dateDebutPlHebdo','date','0','Date de d&eacute;but permettant la rotation des plannings hebdomadaires (pour l&apos;utilisation de 3 plannings hebdomadaires. Format JJ/MM/AAAA)',' Divers');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL ,'ctrlHresAgents','boolean','1','Contrôle des heures des agents le samedi et le dimanche',' Divers','','0');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL ,'agentsIndispo','boolean','1','Afficher les agents indisponibles','Planning','','5');";
-$sql[]="INSERT INTO `{$dbprefix}config` (nom,type,valeur,valeurs,ordre,commentaires,categorie) VALUES ('heuresPrecision','enum','heure','heure,demi-heure,quart d&apos;heure','0','Pr&eacute;cision des heures hebdomadaires',' Divers');";
+$sql[]="INSERT INTO `{$dbprefix}config` (nom,type,valeur,valeurs,ordre,commentaires,categorie) VALUES ('heuresPrecision','enum2','heure','[[\"heure\",\"Heure\"],[\"demi-heure\",\"Demi-heure\"],[\"quart-heure\",\"Quart d&apos;heure\"]]','0','Pr&eacute;cision des heures',' Divers');";
 $sql[]="INSERT INTO `{$dbprefix}config` (nom,type,valeur,valeurs,commentaires,categorie,ordre) VALUES ('Absences-planning','enum','',',simple,détaillé,absents et présents','Afficher la liste des absences sur la page du planning','Absences','25');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Auth-Mode','enum','SQL','M&eacute;thode d&apos;authentification','Authentification','SQL,LDAP,LDAP-SQL,CAS,CAS-SQL','7');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Absences-apresValidation','boolean','1','Autoriser l&apos;enregistrement des absences apr&egrave;s validation des plannings','Absences','','10');";
@@ -155,13 +155,13 @@ $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`
   VALUES ('Planning-sansRepas','boolean','1','Afficher une notification pour les Sans Repas dans le menu d&eacute;roulant et dans le planning','Planning','10'),
   ('Planning-dejaPlace','boolean','1','Afficher une notification pour les agents d&eacute;j&agrave; plac&eacute; sur un poste dans le menu d&eacute;roulant du planning','Planning','11');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications1','checkboxes','a:4:{i:0;i:0;i:1;i:1;i:2;i:2;i:3;i:3;}','a:4:{i:0;a:2:{i:0;i:0;i:1;s:54:\"Aux agents ayant le droit de g&eacute;rer les absences\";}i:1;a:2:{i:0;i:1;i:1;s:24:\"Aux responsables directs\";}i:2;a:2:{i:0;i:2;i:1;s:21:\"A la cellule planning\";}i:3;a:2:{i:0;i:3;i:1;s:30:\"A l&apos;agent concern&eacute;\";}}','Destinataires des notifications de nouvelles absences','Absences','40');";
+  VALUES ('Absences-notifications1','checkboxes','a:4:{i:0;i:0;i:1;i:1;i:2;i:2;i:3;i:3;}','[[0,\"Aucune notification\"],[1,\"Aux agents ayant le droit de g&eacute;rer les absences\"],[2,\"Au responsable direct\"],[3,\"A la cellule planning\"],[4,\"A tous\"],[5,\"A l&apos;agent concern&eacute;\"]]','Destinataires des notifications de nouvelles absences','Absences','40');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications2','checkboxes','a:4:{i:0;i:0;i:1;i:1;i:2;i:2;i:3;i:3;}','a:4:{i:0;a:2:{i:0;i:0;i:1;s:54:\"Aux agents ayant le droit de g&eacute;rer les absences\";}i:1;a:2:{i:0;i:1;i:1;s:24:\"Aux responsables directs\";}i:2;a:2:{i:0;i:2;i:1;s:21:\"A la cellule planning\";}i:3;a:2:{i:0;i:3;i:1;s:30:\"A l&apos;agent concern&eacute;\";}}','Destinataires des notifications de modification d&apos;absences','Absences','50');";
+  VALUES ('Absences-notifications2','checkboxes','a:4:{i:0;i:0;i:1;i:1;i:2;i:2;i:3;i:3;}','[[0,\"Aucune notification\"],[1,\"Aux agents ayant le droit de g&eacute;rer les absences\"],[2,\"Au responsable direct\"],[3,\"A la cellule planning\"],[4,\"A tous\"],[5,\"A l&apos;agent concern&eacute;\"]]','Destinataires des notifications de modification d&apos;absences','Absences','50');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications3','checkboxes','a:1:{i:0;i:1;}','a:4:{i:0;a:2:{i:0;i:0;i:1;s:54:\"Aux agents ayant le droit de g&eacute;rer les absences\";}i:1;a:2:{i:0;i:1;i:1;s:24:\"Aux responsables directs\";}i:2;a:2:{i:0;i:2;i:1;s:21:\"A la cellule planning\";}i:3;a:2:{i:0;i:3;i:1;s:30:\"A l&apos;agent concern&eacute;\";}}','Destinataires des notifications des validations niveau 1','Absences','60');";
+  VALUES ('Absences-notifications3','checkboxes','a:1:{i:0;i:1;}','[[0,\"Aucune notification\"],[1,\"Aux agents ayant le droit de g&eacute;rer les absences\"],[2,\"Au responsable direct\"],[3,\"A la cellule planning\"],[4,\"A tous\"],[5,\"A l&apos;agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 1','Absences','60');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications4','checkboxes','a:1:{i:0;i:3;}','a:4:{i:0;a:2:{i:0;i:0;i:1;s:54:\"Aux agents ayant le droit de g&eacute;rer les absences\";}i:1;a:2:{i:0;i:1;i:1;s:24:\"Aux responsables directs\";}i:2;a:2:{i:0;i:2;i:1;s:21:\"A la cellule planning\";}i:3;a:2:{i:0;i:3;i:1;s:30:\"A l&apos;agent concern&eacute;\";}}','Destinataires des notifications des validations niveau 2','Absences','65');";
+  VALUES ('Absences-notifications4','checkboxes','a:1:{i:0;i:3;}','[[0,\"Aucune notification\"],[1,\"Aux agents ayant le droit de g&eacute;rer les absences\"],[2,\"Au responsable direct\"],[3,\"A la cellule planning\"],[4,\"A tous\"],[5,\"A l&apos;agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 2','Absences','65');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `commentaires`, `categorie`, `ordre`) 
   VALUES ('Absences-notifications-titre','text','Titre personnalis&eacute; pour les notifications de nouvelles absences','Absences','70'),
   ('Absences-notifications-message','textarea','Message personnalis&eacute; pour les notifications de nouvelles absences','Absences','80');";
