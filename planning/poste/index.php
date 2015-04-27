@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 14 avril 2015
+Dernière modification : 27 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -365,7 +365,8 @@ if(!$tab){
 $lignesVides=$config['Planning-lignesVides'];
 
 echo "<div id='planning-data' data-verrou='$verrou' data-autorisation='$autorisation' data-validation='$validation2' 
-  data-lignesVides='$lignesVides' style='display:none;'>&nbsp;</div>\n";
+  data-lignesVides='$lignesVides' data-sr-debut='{$config['Planning-SR-debut']}' data-sr-fin='{$config['Planning-SR-fin']}' 
+  style='display:none;'>&nbsp;</div>\n";
 
 // Actualisation du planning si validé et mis à jour depuis un autre poste
 if($verrou){

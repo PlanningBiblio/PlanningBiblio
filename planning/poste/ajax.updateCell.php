@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 10 avril 2015
+Dernière modification : 27 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,10 +20,12 @@ Cette page est appelée par la function JavaScript "bataille_navale" utilisé pa
 ini_set("display_errors",0);
 
 session_start();
+
 // Includes
 require_once "../../include/config.php";
 require_once "../../include/function.php";
 require_once "../../plugins/plugins.php";
+require_once "class.planning.php";
 
 //	Initialisation des variables
 $ajouter=filter_input(INPUT_POST,"ajouter",FILTER_CALLBACK,array("options"=>"sanitize_on"));
@@ -133,16 +135,8 @@ for($i=0;$i<count($tab);$i++){
   $tab[$i]["service"]=removeAccents($tab[$i]["service"]);
 
   // Ajout des Sans Repas (SR)
-  $tab[$i]["sr"]=0;
-  if($config['Planning-sansRepas'] and $debut>="11:30:00" and $fin<="14:30:00"){
-    $db=new db();
-    $dateREQ=$db->escapeString($date);
-    $persoREQ=$db->escapeString($tab[$i]['perso_id']);
-    $db->select("pl_poste","*","`date`='$dateREQ' AND `perso_id`='$persoREQ' AND `debut` >='11:30:00' AND `fin`<='14:30:00'");
-    if($db->nb>1){
-      $tab[$i]["sr"]=1;
-    }
-  }
+  $p=new planning();
+  $tab[$i]["sr"]=$p->sansRepas($date,$debut,$fin,$tab[$i]["perso_id"]);
 }
 
 // Marquage des congés

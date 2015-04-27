@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 8 avril 2015
+Dernière modification : 24 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -198,6 +198,13 @@ function cmp_nom_prenom_debut_fin($a,$b){
     return strtolower($a['prenom']) > strtolower($b['prenom']);
   }
   return strtolower($a['nom']) > strtolower($b['nom']);
+}
+
+function cmp_debut_fin($a,$b){
+  if($a['debut'] == $b['debut']){
+    return $a['fin'] > $b['fin'];
+  }
+  return $a['debut'] > $b['debut'];
 }
 
 function cmp_debut_fin_nom($a,$b){

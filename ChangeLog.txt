@@ -1,3 +1,13 @@
+***	Version 1.9.6	(Jérôme Combes, 27 avril 2015)			***
+- Corrections :
+Statistiques : Corrige les erreurs de sélection de dates dans les statistiques
+Configuration : Corrige l'erreur empêchant la sélection de "Quart d'heure" dans Heures précision
+
+- Améliorations :
+Planning - Sans repas : Améliore la recherche des Sans Repas : 
+  - n'affiche SR que si l'agent est placé en continu entre les heures de début et de fin de la période "sans repas"
+  - heures de début et de fin de la période sans repas paramétrables
+
 ***	Version 1.9.5	(Jérôme Combes, 15 avril 2015)			***
 - Corrections :
 Corrige une erreur sur le contrôle des plannings validés lors de l'ajout ou modification d'une absences

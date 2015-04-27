@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 8 avril 2015
+Dernière modification : 27 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -36,19 +36,11 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
 	$resultat=$elem['nom'];
 	if($elem['prenom'])
 	  $resultat.=" ".substr($elem['prenom'],0,1).".";
+
 	//		Affichage des sans repas
-	if($GLOBALS['config']['Planning-sansRepas']){
-	  if($debut>="11:30:00" and $fin<="14:30:00"){
-	    $sr=0;
-	    foreach($GLOBALS['cellules'] as $elem2){
-	      if($elem2['debut']>="11:30:00" and $elem2['fin']<="14:30:00" and $elem2['perso_id']==$elem['perso_id']){
-		$sr++;
-	      }
-	    }
-	    if($sr>1){
-	      $resultat.="<font class='sansRepas'> (SR)</font>";
-	    }
-	  }
+	$p=new planning();
+	if($p->sansRepas($date,$debut,$fin,$elem['perso_id'])){
+	  $resultat.="<font class='sansRepas'>&nbsp;(SR)</font>";
 	}
 
 	$class_tmp=array();

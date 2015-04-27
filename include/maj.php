@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 24 avril 2015
+Dernière modification : 27 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -723,6 +723,17 @@ if(strcmp("1.9.6",$config['Version'])>0){
   // Modification de la config pour les checkboxes Absences-notification
   $sql[]="UPDATE `{$dbprefix}config` SET `valeurs`='[[0,\"Aucune notification\"],[1,\"Aux agents ayant le droit de g&eacute;rer les absences\"],[2,\"Au responsable direct\"],[3,\"A la cellule planning\"],[4,\"A tous\"],[5,\"A l&apos;agent concern&eacute;\"]]'
     WHERE `nom` IN ('Absences-notifications1','Absences-notifications2','Absences-notifications3','Absences-notifications4');";
+
+  // Configuration des sans repas
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `ordre`, `commentaires`) VALUES 
+    ('Planning-SR-debut', 'enum2', '11:30:00', 
+    '[[\"11:00:00\",\"11h00\"],[\"11:15:00\",\"11h15\"],[\"11:30:00\",\"11h30\"],[\"11:45:00\",\"11h45\"],[\"12:00:00\",\"12h00\"],[\"12:15:00\",\"12h15\"],[\"12:30:00\",\"12h30\"],[\"12:45:00\",\"12h45\"],[\"13:00:00\",\"13h00\"],[\"13:15:00\",\"13h15\"],[\"13:30:00\",\"13h30\"],[\"13:45:00\",\"13h45\"],[\"14:00:00\",\"14h00\"],[\"14:15:00\",\"14h15\"],[\"14:30:00\",\"14h30\"],[\"14:45:00\",\"14h45\"]]',
+    'Planning','11', 'Heure de début pour la vérification des sans repas');";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `ordre`, `commentaires`) VALUES 
+    ('Planning-SR-fin', 'enum2', '14:30:00', 
+    '[[\"11:15:00\",\"11h15\"],[\"11:30:00\",\"11h30\"],[\"11:45:00\",\"11h45\"],[\"12:00:00\",\"12h00\"],[\"12:15:00\",\"12h15\"],[\"12:30:00\",\"12h30\"],[\"12:45:00\",\"12h45\"],[\"13:00:00\",\"13h00\"],[\"13:15:00\",\"13h15\"],[\"13:30:00\",\"13h30\"],[\"13:45:00\",\"13h45\"],[\"14:00:00\",\"14h00\"],[\"14:15:00\",\"14h15\"],[\"14:30:00\",\"14h30\"],[\"14:45:00\",\"14h45\"],[\"15:00:00\",\"15h00\"]]',
+    'Planning','12', 'Heure de fin pour la vérification des sans repas');";
+  $sql[]="UPDATE `{$dbprefix}config` SET `ordre`='20' WHERE `nom`='Planning-dejaPlace';";
 
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.9.6' WHERE `nom`='Version';";
 }

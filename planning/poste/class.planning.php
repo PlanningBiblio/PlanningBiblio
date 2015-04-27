@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 9 avril 2015
+Dernière modification : 27 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -110,11 +110,11 @@ class planning{
     }
 
     $menudiv=null;
+
     if(is_array($agents))
     foreach($agents as $elem){
       $hres_jour=0;
       $hres_sem=0;
-      $sr=0;
 
       if(!$config['ClasseParService']){
 	if($elem['id']==2){		// on retire l'utilisateur "tout le monde"
@@ -127,19 +127,14 @@ class planning{
 	$nom.=" ".substr($elem['prenom'],0,1).".";
       }
 
-
       //			----------------------		Sans repas		------------------------------------------//
-      //			(Peut être amélioré : vérifie si l'agent est déjà placé entre 11h30 et 14h30 
-      //			mais ne vérfie pas la continuité. Ne marque pas la 2ème cellule en javascript (rafraichissement OK))
-      if($config['Planning-sansRepas']){
-	if($debut>="11:30:00" and $fin<="14:30:00"){
-	  $db_sr=new db();
-	  $db_sr->select2("pl_poste","*",array("date"=>$date, "perso_id"=>$elem['id'], "debut"=>">=11:30:00", "fin"=>"<=14:30:00"));
-	  if($db_sr->result){
-	    $sr=1;
-	    $nom.=$msg_SR;
-	  }
-	}
+      // $sr permet d'interdire l'ajout d'un agent sur une cellule déjà occupée si cela met l'agent en SR
+      $sr=0;
+
+      // Si sans repas, on ajoute (SR) à l'affichage
+      if($this->sansRepas($date,$debut,$fin,$elem['id'])){
+	$sr=1;
+	$nom.=$msg_SR;
       }
 	      
       //			----------------------		Déjà placés		-----------------------------------------------------//
@@ -285,6 +280,51 @@ class planning{
 
     $db=new db();
     $db->insert2("pl_notes",array("date"=>$date,"site"=>$site,"text"=>$text));
+  }
+
+  /**
+  * Fonction sansRepas
+  * Retourne true si l'agent est placé en continu entre les heures de début et de fin définies dans la config. pour les sans repas
+  * @param string $date
+  * @param string $debut
+  * @param string $fin
+  * @return int $sr (0/1)
+  */
+  public function sansRepas($date,$debut,$fin,$perso_id){
+    if($GLOBALS['config']['Planning-sansRepas']==0){
+      return 0;
+    }
+
+    $sr_debut=$GLOBALS['config']['Planning-SR-debut'];
+    $sr_fin=$GLOBALS['config']['Planning-SR-fin'];
+    // Par défaut, SR = false (pas de sans Repas)
+    $sr=0;
+    // Si la plage interrogée est dans ou à cheval sur la période de sans repas
+    if($debut<$sr_fin and $fin>$sr_debut){
+      // Recherche dans la base de données des autres plages concernées
+      $db=new db();
+      $db->select2("pl_poste","*",array("date"=>$date, "perso_id"=>$perso_id, "debut"=>"<$sr_fin", "fin"=>">$sr_debut"), "ORDER BY debut,fin");
+      if($db->result){
+	// Tableau result contient les plages de la base de données + la plage interrogée
+	$result=array_merge($db->result,array(array("debut"=>$debut, "fin"=>$fin)));
+	usort($result,"cmp_debut_fin");
+	// Si le plus petit début et inférieur ou égal au début de la période SR et la plus grande fin supérieure ou égale à la fin de la période SR
+	// = Possibilité que la période soit complète, on met SR=1
+	if($result[0]["debut"]<=$sr_debut and $result[count($result)-1]["fin"]>=$sr_fin){
+	  $sr=1;
+	  // On consulte toutes les plages à la recherche d'une interruption. Si interruption, sr=0 et on quitte la boucle
+	  $last_end=$result[0]['fin'];
+	  for($i=1;$i<count($result);$i++){
+	    if($result[$i]['debut']>$last_end){
+	      $sr=0;
+	      continue;
+	    }
+	    $last_end=$result[$i]['fin'];
+	  }
+	}
+      }
+    }
+    return $sr;
   }
 
 }

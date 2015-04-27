@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 14 avril 2015
+Dernière modification : 27 avril 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -309,6 +309,9 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
   if(tout==undefined){
     tout=0;
   }
+  
+  var sr_config_debut=$("#planning-data").attr("data-sr-debut");
+  var sr_config_fin=$("#planning-data").attr("data-sr-fin");
 
   $.ajax({
     url: "planning/poste/ajax.updateCell.php",
@@ -319,11 +322,11 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
       $("#td"+cellule).html("");
       
       // Suppression du sans repas sur les cellules ainsi marquée
-      if(debut>="11:30:00" && fin <="14:30:00"){
-	  $(".agent_"+perso_id_origine).each(function(){
+      if(fin > sr_config_debut && debut < sr_config_fin){
+	$(".agent_"+perso_id_origine).each(function(){
 	  var sr_debut=$(this).closest("td").data("start");
 	  var sr_fin=$(this).closest("td").data("end");
-	  if(sr_debut>="11:30:00" && sr_fin<="14:30:00"){
+	  if(sr_fin > sr_config_debut && sr_debut < sr_config_fin){
 	    $(this).find(".sansRepas").remove();
 	  }
 	});
@@ -367,7 +370,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
 	  $(".agent_"+perso_id).each(function(){
 	    var sr_debut=$(this).closest("td").data("start");
 	    var sr_fin=$(this).closest("td").data("end");
-	    if(sr_debut>="11:30:00" && sr_fin<="14:30:00"){
+	    if(sr_fin > sr_config_debut && sr_debut < sr_config_fin){
 	      if($(this).text().indexOf("(SR)")==-1){
 		$(this).append("<font class='sansRepas'> (SR)</font>");
 	      }
