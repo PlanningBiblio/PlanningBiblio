@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 1.9.6
+Planning Biblio, Version 1.9.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
@@ -28,7 +28,7 @@ if(PHP_VERSION_ID<50400 and session_id()==''){
 }
 
 // Initialisation des variables
-$version="1.9.6";
+$version="1.9.7";
 
 // Redirection vers setup si le fichier config est absent
 if(!file_exists("include/config.php")){
