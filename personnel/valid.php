@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 1.9.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 13 avril 2015
+Dernière modification : 12 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -22,8 +22,8 @@ $post=filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
 
 $arrivee=filter_input(INPUT_POST,"arrivee",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
 $depart=filter_input(INPUT_POST,"depart",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
-$heuresHebdo=filter_input(INPUT_POST,"heuresHebdo",FILTER_SANITIZE_NUMBER_FLOAT);
-$heuresTravail=filter_input(INPUT_POST,"heuresTravail",FILTER_SANITIZE_NUMBER_FLOAT);
+$heuresHebdo=filter_input(INPUT_POST,"heuresHebdo",FILTER_SANITIZE_STRING);
+$heuresTravail=filter_input(INPUT_POST,"heuresTravail",FILTER_SANITIZE_STRING);
 $id=filter_input(INPUT_POST,"id",FILTER_SANITIZE_NUMBER_INT);
 $mail=trim(filter_input(INPUT_POST,"mail",FILTER_SANITIZE_EMAIL));
 

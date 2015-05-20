@@ -1,3 +1,7 @@
+***	Version 1.9.7	(Jérôme Combes, 20 mai 2015)			***
+- Correction :
+Agents : corrige l'enregistrement des heures de service public et des heures de travail dans la fiche des agents
+
 ***	Version 1.9.6	(Jérôme Combes, 27 avril 2015)			***
 - Corrections :
 Statistiques : Corrige les erreurs de sélection de dates dans les statistiques
