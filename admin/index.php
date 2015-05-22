@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : admin/index.php
 Création : mai 2011
-Dernière modification : 8 avril 2015
+Dernière modification : 22 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -38,8 +38,8 @@ if(in_array(22,$droits))
   echo "<li><a href='index.php?page=planning/postes_cfg/index.php'>Les tableaux</a></li>\n";
 if(in_array(24,$droits))
   echo "<li><a href='index.php?page=admin/feries.php'>Jours feri&eacute;s</a></li>\n";
-if(in_array(24,$droits))
-  echo "<li><a href='index.php?page=plugins/planningHebdo/index.php'>Plannings de présence</a></li>\n";
+if(in_array(24,$droits) and $config['Module-PlanningHebdo'])
+  echo "<li><a href='index.php?page=planningHebdo/index.php'>Plannings de pr&eacute;sence</a></li>\n";
 if(in_array(20,$droits))
   echo "<li><a href='index.php?page=admin/config.php'>Configuration</a></li>\n";
 echo "</ul>\n";

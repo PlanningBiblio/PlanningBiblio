@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 1.9.7
+Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
@@ -740,6 +740,17 @@ if(strcmp("1.9.6",$config['Version'])>0){
 
 if(strcmp("1.9.7",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1.9.7' WHERE `nom`='Version';";
+}
+
+if(strcmp("2.0",$config['Version'])>0){
+  $sql[]="UPDATE `{$dbprefix}config` SET `categorie`='Planning' WHERE `nom`='CatAFinDeService';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `categorie`='Planning' WHERE `nom`='ctrlHresAgents';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `categorie`='Heures de pr&eacute;sence' WHERE `nom`='nb_semaine';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `categorie`='Heures de pr&eacute;sence' WHERE `nom`='dateDebutPlHebdo';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `categorie`='Heures de pr&eacute;sence' WHERE `nom`='EDTSamedi';";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES 
+    ('Module-PlanningHebdo', 'boolean', '0', 'Heures de pr&eacute;sence','40', 'Utiliser ou non le modue &ldquo;Planning Hebdo&rdquo;. (Incompatible avec l&apos;option EDTSamedi)');";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.0' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage

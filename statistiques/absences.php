@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.6
+Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/absences.php
 Création : 15 mai 2014
-Dernière modification : 17 avril 2015
+Dernière modification : 21 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -24,7 +24,7 @@ $debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize
 $fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
 $site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
 
-$afficheHeures=in_array("planningHebdo",$plugins)?true:false;
+$afficheHeures=$config['Module-PlanningHebdo']?true:false;
 $colspan=$afficheHeures?2:1;
 $rowspan=$afficheHeures?2:1;
 

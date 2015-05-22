@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.6
+Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 27 avril 2015
+Dernière modification : 20 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -614,9 +614,9 @@ EOD;
 	// Si il y a des agents et verification des heures de présences
 	if($db->result and $verif){
 
-	  // Si plugin PlanningHebdo : recherche des plannings correspondant à la date actuelle
-	  if(in_array("planningHebdo",$plugins)){
-	    include "plugins/planningHebdo/planning.php";
+	  // Si module PlanningHebdo : recherche des plannings correspondant à la date actuelle
+	  if($config['Module-PlanningHebdo']){
+	    include "planningHebdo/planning.php";
 	  }
 
 	  // Pour chaque agent
@@ -626,8 +626,8 @@ EOD;
 	    // Récupération du planning de présence
 	    $temps=array();
 
-	    // Si plugin PlanningHebdo : emploi du temps récupéré à partir de planningHebdo
-	    if(in_array("planningHebdo",$plugins)){
+	    // Si module PlanningHebdo : emploi du temps récupéré à partir de planningHebdo
+	    if($config['Module-PlanningHebdo']){
 	      if(array_key_exists($elem['id'],$tempsPlanningHebdo)){
 		$temps=$tempsPlanningHebdo[$elem['id']];
 	      }

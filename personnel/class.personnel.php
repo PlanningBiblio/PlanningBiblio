@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 8 avril 2015
+Dernière modification : 20 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -52,10 +52,13 @@ class personnel{
     if(in_array("conges",$plugins)){
       include "plugins/conges/suppression_agents.php";
     }
-    if(in_array("planningHebdo",$plugins)){
-      include "plugins/planningHebdo/suppression_agents.php";
-    }
+    if($config['Module-PlanningHebdo']){
+      require_once "planningHebdo/class.planningHebdo.php";
 
+      // recherche des personnes à exclure (congés)
+      $p=new planningHebdo();
+      $p->suppression_agents($liste);
+    }
   }
 
   public function fetch($tri="nom",$actif=null,$name=null){

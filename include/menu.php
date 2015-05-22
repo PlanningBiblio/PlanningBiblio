@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/menu.php
 Création : mai 2011
-Dernière modification : 14 avril 2015
+Dernière modification : 20 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -91,9 +91,9 @@ echo "<span class='pl-icon pl-icon-logout'></span></a></td>\n";
 echo "</tr>\n";
 echo "<tr><td colspan='$colspan' style='text-align:right;'>\n";
 
-// Si plugin PlanningHebdo, remplace "Changer le mot de passe" par "Mon Compte"
-if(in_array("planningHebdo",$plugins)){
-  echo "<a href='index.php?page=plugins/planningHebdo/monCompte.php' style='font-size:9pt;'>\n";
+// Si le module PlanningHebdo est activé, remplace "Changer le mot de passe" par "Mon Compte"
+if($config['Module-PlanningHebdo']){
+  echo "<a href='index.php?page=planningHebdo/monCompte.php' style='font-size:9pt;'>\n";
   echo "Mon Compte</a>\n";
 }
 // Mot de passe modifiable seulement si authentification SQL

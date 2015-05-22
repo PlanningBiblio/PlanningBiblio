@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 13 avril 2015
+Dernière modification : 20 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -64,16 +64,16 @@ class absences{
       }
 
       // On consulte le planning de présence de l'agent
-      // On ne calcule pas les heures si le plugin planningHebdo n'est pas installé, le calcul serait faux si les emplois du temps avait changé
-      if(!in_array("planningHebdo",$GLOBALS['plugins'])){
+      // On ne calcule pas les heures si le module planningHebdo n'est pas activé, le calcul serait faux si les emplois du temps avait changé
+      if(!$config['Module-PlanningHebdo']){
 	$this->error=true;
 	$this->message="Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
 	return false;
       }
 
       // On consulte le planning de présence de l'agent
-      if(in_array("planningHebdo",$GLOBALS['plugins'])){
-	require_once "plugins/planningHebdo/class.planningHebdo.php";
+      if($config['Module-PlanningHebdo']){
+	require_once "planningHebdo/class.planningHebdo.php";
 
 	$p=new planningHebdo();
 	$p->perso_id=$perso_id;
@@ -274,9 +274,22 @@ class absences{
       $temps=unserialize($db->result[0]['temps']);
       $date=$debut;
       while($date<=$fin){
-	// Emploi du temps si plugin planningHebdo
-	if(in_array("plannningHebdo",$GLOBALS['plugins'])){
-	  include "plugins/planningHebdo/absences.php";
+	// Emploi du temps si module planningHebdo activé
+	if($config['Module-PlanningHebdo']){
+	  include_once "planningHebdo/class.planningHebdo.php";
+	  $p=new planningHebdo();
+	  $p->perso_id=$perso_id;
+	  $p->debut=$date;
+	  $p->fin=$date;
+	  $p->valide=true;
+	  $p->fetch();
+
+	  if(empty($p->elements)){
+	    $temps=array();
+	  }
+	  else{  
+	    $temps=$p->elements[0]['temps'];
+	  }
 	}
 	// Vérifions le numéro de la semaine de façon à contrôler le bon planning de présence hebdomadaire
 	$d=new datePl($date);

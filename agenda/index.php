@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.6
+Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 17 avril 2015
+Dernière modification : 20 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -179,9 +179,22 @@ EOD;
     if($config['nb_semaine']==2 and $semaine%2==0)
       $jour=$jour+7;
 
-    //	Horaires de traval si plugin PlanningHebdo
-    if(in_array("planningHebdo",$plugins)){
-      include "plugins/planningHebdo/agenda.php";
+    //	Horaires de traval si le module PlanningHebdo est activé
+    if($config['Module-PlanningHebdo']){
+      include_once "class.planningHebdo.php";
+      $p=new planningHebdo();
+      $p->perso_id=$perso_id;
+      $p->debut=$current;
+      $p->fin=$current;
+      $p->valide=true;
+      $p->fetch();
+
+      if(empty($p->elements)){
+	$temps=array();
+      }
+      else{  
+	$temps=$p->elements[0]['temps'];
+      }
     }
 
     $horaires=null;

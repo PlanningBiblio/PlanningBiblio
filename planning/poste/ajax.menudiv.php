@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 10 avril 2015
+Dernière modification : 21 mai 2015
 Auteur : Jérôme Combes jerome@planningbilbio.fr, Christophe Le Guennec Christophe.Leguennec@u-pem.fr
 
 Description :
@@ -154,9 +154,23 @@ if(!$config['ctrlHresAgents'] and ($d->position==6 or $d->position==0)){
   $verif=false; // on ne verifie pas les heures des agents le samedi et le dimanche (Si ctrlHresAgents est desactivé)
 }
 
-// Si plugin PlanningHebdo : recherche des plannings correspondant à la date actuelle
-if(in_array("planningHebdo",$plugins)){
-  include "../../plugins/planningHebdo/planning.php";
+// Si module PlanningHebdo : recherche des plannings correspondant à la date actuelle
+if($config['Module-PlanningHebdo']){
+  include "../../planningHebdo/class.planningHebdo.php";
+  $p=new planningHebdo();
+  $p->debut=$date;
+  $p->fin=$date;
+  $p->valide=true;
+  $p->fetch();
+
+  $tempsPlanningHebdo=array();
+
+  if(!empty($p->elements)){
+    foreach($p->elements as $elem){
+      $tempsPlanningHebdo[$elem["perso_id"]]=$elem["temps"];
+    }
+  }
+
 }
 
 if($db->result and $verif)
@@ -166,8 +180,8 @@ foreach($db->result as $elem){
   // Récupération du planning de présence
   $temps=array();
 
-  // Si plugin PlanningHebdo : emploi du temps récupéré à partir de planningHebdo
-  if(in_array("planningHebdo",$plugins)){
+  // Si module PlanningHebdo : emploi du temps récupéré à partir de planningHebdo
+  if($config['Module-PlanningHebdo']){
     if(array_key_exists($elem['id'],$tempsPlanningHebdo)){
       $temps=$tempsPlanningHebdo[$elem['id']];
     }
