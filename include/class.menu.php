@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/class.menu.inc
 Création : 22 juillet 2013
-Dernière modification : 8 avril 2015
+Dernière modification : 25 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -32,6 +32,14 @@ class menu{
     $db=new db();
     $db->select("menu",null,null,"ORDER BY `niveau1`,`niveau2`");
     foreach($db->result as $elem){
+      if($elem['condition']){
+	if(substr($elem['condition'],0,7)=="config="){
+	  $value=substr($elem['condition'],7);
+	  if(!$GLOBALS['config'][$value]){
+	    continue;
+	  }
+	}
+      }
       $menu[$elem['niveau1']][$elem['niveau2']]['titre']=$elem['titre'];
       $menu[$elem['niveau1']][$elem['niveau2']]['url']=$elem['url'];
     }

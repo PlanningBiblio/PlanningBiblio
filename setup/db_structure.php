@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.8.8
+Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 9 décembre 2014
+Dernière modification : 25 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -305,6 +305,7 @@ $sql[]="CREATE TABLE `{$dbprefix}menu` (
   `niveau2` INT(11) NOT NULL, 
   `titre` VARCHAR(100) NOT NULL, 
   `url` VARCHAR(500) NOT NULL, 
+  `condition` VARCHAR(100) NULL, 
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
@@ -339,4 +340,9 @@ $sql[]="CREATE TABLE `{$dbprefix}EDTSamedi` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
+
+// Module planningHebdo
+$sql[]="CREATE TABLE `{$dbprefix}planningHebdo` (`id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `perso_id` INT(11) NOT NULL, `debut` DATE NOT NULL, `fin` DATE NOT NULL, `temps` TEXT NOT NULL, `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, `modif` INT(11) NOT NULL DEFAULT '0',`modification` TIMESTAMP, `valide` INT(11) NOT NULL DEFAULT '0',`validation` TIMESTAMP, `actuel` INT(1) NOT NULL DEFAULT '0', `remplace` INT(11) NOT NULL DEFAULT '0');";
+$sql[]="CREATE TABLE `{$dbprefix}planningHebdoConfig` (`id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `nom` VARCHAR(30), `valeur` TEXT);";
+$sql[]="CREATE TABLE `{$dbprefix}planningHebdoPeriodes` (`id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `annee` VARCHAR(9), `dates` TEXT);";
 ?>

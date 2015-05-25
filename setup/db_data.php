@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : setup/db_data.php
 Création : mai 2011
-Dernière modification : 20 mai 2015
+Dernière modification : 25 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -85,6 +85,12 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUE
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`) VALUES ('Gestion des absences, validation N2', 8, 'Gestion des absences, validation N2');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Statistiques', 17, 'Statistiques', 'statistiques/absences.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`) VALUES ('Gestion des absences, pi&egrave;ces justificatives', 701, 'Gestion des absences, pi&egrave;ces justificatives');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Planning Hebdo - Index','24','Validation des plannings de présences','planningHebdo/index.php');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Planning Hebdo - Configuration','24','Validation des plannings de présences','planningHebdo/configuration.php');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Planning Hebdo - Modif','100','planningHebdo/modif.php');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Planning Hebdo - Mon Compte','100','planningHebdo/monCompte.php');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Planning Hebdo - Validation','100','planningHebdo/valid.php');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Planning Hebdo - suppression','24','Validation des plannings de présences','planningHebdo/supprime.php');";
 
 //	Insertion des activités
 $sql[]="INSERT INTO `{$dbprefix}activites` VALUES(1, 'Assistance audiovisuel');";
@@ -202,6 +208,8 @@ $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`commentaires`,`categorie`,`ordre
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`valeur`,`commentaires`,`categorie`,`ordre`) VALUES ('CAS-URI','cas','Page de connexion CAS','CAS','30');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`,`valeur`,`commentaires`,`categorie`,`ordre`) VALUES ('CAS-URI-Logout','cas/logout','Page de d&eacute;connexion CAS','CAS','30');";
 
+// Cron
+$sql[]="INSERT INTO `{$dbprefix}cron` (`h`,`m`,`dom`,`mon`,`dow`,`command`,`comments`) VALUES ('0','0','*','*','*','planningHebdo/cron.daily.php','Daily Cron for planningHebdo module');";
 
 //	Lignes de séparations
 $sql[]="INSERT INTO `{$dbprefix}lignes` VALUES (null,'Magasins');";
@@ -210,33 +218,34 @@ $sql[]="INSERT INTO `{$dbprefix}lignes` VALUES (null,'Rez de chauss&eacute;e');"
 $sql[]="INSERT INTO `{$dbprefix}lignes` VALUES (null,'Rez de jardin');";
 
 // Menu
-$sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES 
-  ('10','0','Absences','absences/index.php'),
-  ('10','10','Voir les absences','absences/voir.php'),
-  ('10','20','Ajouter une absence','absences/ajouter.php'),
-  ('10','30','Informations','absences/infos.php'),
-  ('20','0','Agenda','agenda/index.php'),
-  ('30','0','Planning','planning/poste/index.php'),
-  ('40','0','Statistiques','statistiques/index.php'),
-  ('40','10','Feuille de temps','statistiques/temps.php'),
-  ('40','20','Par agent','statistiques/agents.php'),
-  ('40','30','Par poste','statistiques/postes.php'),
-  ('40','40','Par poste (Synthèse)','statistiques/postes_synthese.php'),
-  ('40','50','Postes de renfort','statistiques/postes_renfort.php'),
-  ('40','24','Par service','statistiques/service.php'),
-  ('40','60','Samedis','statistiques/samedis.php'),
-  ('40','70','Absences','statistiques/absences.php'),
-  ('40','26','Par statut','statistiques/statut.php'),
-  ('50','0','Administration','admin/index.php'),
-  ('50','10','Informations','infos/index.php'),
-  ('50','20','Les activités','activites/index.php'),
-  ('50','30','Les agents','personnel/index.php'),
-  ('50','40','Les postes','postes/index.php'),
-  ('50','50','Les modèles','planning/modeles/index.php'),
-  ('50','60','Les tableaux','planning/postes_cfg/index.php'),
-  ('50','70','Jours de fermeture','joursFeries/index.php'),
-  ('50','80','Configuration','admin/config.php'),
-  ('60','0','Aide','aide/index.php');";
+$sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES 
+  ('10','0','Absences','absences/index.php',NULL),
+  ('10','10','Voir les absences','absences/voir.php',NULL),
+  ('10','20','Ajouter une absence','absences/ajouter.php',NULL),
+  ('10','30','Informations','absences/infos.php',NULL),
+  ('20','0','Agenda','agenda/index.php',NULL),
+  ('30','0','Planning','planning/poste/index.php',NULL),
+  ('40','0','Statistiques','statistiques/index.php',NULL),
+  ('40','10','Feuille de temps','statistiques/temps.php',NULL),
+  ('40','20','Par agent','statistiques/agents.php',NULL),
+  ('40','30','Par poste','statistiques/postes.php',NULL),
+  ('40','40','Par poste (Synthèse)','statistiques/postes_synthese.php',NULL),
+  ('40','50','Postes de renfort','statistiques/postes_renfort.php',NULL),
+  ('40','24','Par service','statistiques/service.php',NULL),
+  ('40','60','Samedis','statistiques/samedis.php',NULL),
+  ('40','70','Absences','statistiques/absences.php',NULL),
+  ('40','26','Par statut','statistiques/statut.php',NULL),
+  ('50','0','Administration','admin/index.php',NULL),
+  ('50','10','Informations','infos/index.php',NULL),
+  ('50','20','Les activités','activites/index.php',NULL),
+  ('50','30','Les agents','personnel/index.php',NULL),
+  ('50','40','Les postes','postes/index.php',NULL),
+  ('50','50','Les modèles','planning/modeles/index.php',NULL),
+  ('50','60','Les tableaux','planning/postes_cfg/index.php',NULL),
+  ('50','70','Jours de fermeture','joursFeries/index.php',NULL),
+  ('50','75','Plannings de présence','planningHebdo/index.php','config=Module-PlanningHebdo'),
+  ('50','80','Configuration','admin/config.php',NULL),
+  ('60','0','Aide','aide/index.php',NULL);";
 
 //	Personnel
 $sql[]="INSERT INTO `{$dbprefix}personnel` (`id`,`nom`,`postes`,`actif`,`droits`,`login`,`password`,`commentaires`) VALUES (1, 'Administrateur', 'a:11:{i:0;s:2:\"20\";i:1;s:2:\"22\";i:2;s:2:\"13\";i:3;s:1:\"1\";i:4;s:1:\"5\";i:5;s:2:\"21\";i:6;s:2:\"12\";i:7;s:2:\"17\";i:8;s:1:\"4\";i:9;i:99;i:10;i:100;}', 'Inactif', 'a:15:{i:0;s:2:\"22\";i:1;s:2:\"13\";i:2;s:1:\"1\";i:3;s:2:\"25\";i:4;s:1:\"5\";i:5;s:2:\"21\";i:6;s:2:\"23\";i:7;s:2:\"12\";i:8;s:1:\"6\";i:9;s:2:\"17\";i:10;s:1:\"4\";i:11;s:1:\"3\";i:12;i:99;i:13;i:100;i:14;i:20;}', 'admin', '5f4dcc3b5aa765d61d8327deb882cf99', 'Compte cr&eacute;&eacute; lors de l&apos;installation du planning');";
@@ -362,6 +371,10 @@ $sql[]="INSERT INTO `{$dbprefix}pl_poste_cellules` VALUES (NULL, 1, '3', 9, 12);
 $sql[]="INSERT INTO `{$dbprefix}pl_poste_cellules` VALUES (NULL, 1, '3', 10, 12);";
 
 $sql[]="INSERT INTO `{$dbprefix}pl_poste_tab` (`tableau`,`nom`) VALUES(1, 'Tableau 1');";
+
+//	Planning Hebdo
+$sql[]="INSERT INTO `{$dbprefix}planningHebdoConfig` (`nom`,`valeur`) VALUES ('periodesDefinies','0'),('notifications','droit');";
+$sql[]="INSERT INTO `{$dbprefix}planningHebdoConfig` (`nom`,`valeur`) VALUES ('notifications','droit');";
 
 //	Insertion des postes
 $sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES (4, 'Inscription 1', '', 0, 'Obligatoire', 'RDC', 'a:2:{i:0;s:1:\"5\";i:1;s:1:\"9\";}','1','1');";
