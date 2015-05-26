@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/monCompte.php
 Création : 23 juillet 2013
-Dernière modification : 22 mai 2015
+Dernière modification : 26 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -102,8 +102,10 @@ if($configHebdo['periodesDefinies']){
   echo "<form name='form1' method='post' action='index.php' onsubmit='return plHebdoVerifForm();'>";
 }
 ?>
+<input type='hidden' name='retour' value='monCompte.php' />
 <input type='hidden' name='page' value='planningHebdo/valid.php' />
 <input type='hidden' name='action' value='ajout' />
+<input type='hidden' name='perso_id'id='perso_id' value='<?php echo $_SESSION['login_id']; ?>' />
 
 <!-- Affichage des tableaux avec la sélection des horaires -->
 <?php

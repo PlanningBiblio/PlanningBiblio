@@ -30,7 +30,7 @@ switch($post["action"]){
     	$msg=urlencode("Le planning a été ajouté avec succés.");
     	$msgType="success";    	
     }
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page=planningHebdo/monCompte.php&msg=$msg&msgType=$msgType';</script>\n";
+    echo "<script type='text/JavaScript'>document.location.href='index.php?page=planningHebdo/{$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";
     break;
 
   case "modif" :

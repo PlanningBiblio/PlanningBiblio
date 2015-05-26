@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/modif.php
 Création : 23 juillet 2013
-Dernière modification : 22 mai 2015
+Dernière modification : 26 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -26,47 +26,72 @@ $configHebdo=$p->config;
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 $retour=filter_input(INPUT_GET,"retour",FILTER_SANITIZE_STRING);
 
-$p=new planningHebdo();
-$p->id=$id;
-$p->fetch();
-$debut1=$p->elements[0]['debut'];
-$fin1=$p->elements[0]['fin'];
-$debut1Fr=dateFr($debut1);
-$fin1Fr=dateFr($fin1);
-
-$perso_id=$p->elements[0]['perso_id'];
-$temps=$p->elements[0]['temps'];
-$valide=$p->elements[0]['valide'];
-$remplace=$p->elements[0]['remplace'];
-
 // Sécurité
 $admin=in_array(24,$droits)?true:false;
+
+if($id){
+  $p=new planningHebdo();
+  $p->id=$id;
+  $p->fetch();
+  $debut1=$p->elements[0]['debut'];
+  $fin1=$p->elements[0]['fin'];
+  $debut1Fr=dateFr($debut1);
+  $fin1Fr=dateFr($fin1);
+
+  $perso_id=$p->elements[0]['perso_id'];
+  $temps=$p->elements[0]['temps'];
+  $valide=$p->elements[0]['valide'];
+  $remplace=$p->elements[0]['remplace'];
+
+  // Informations sur l'agents
+  $p=new personnel();
+  $p->fetchById($perso_id);
+  $sites=$p->elements[0]['sites'];
+
+  // Modif autorisée si n'est pas validé ou si validé avec des périodes non définies (BSB).
+  // Dans le 2eme cas copie du planning avec modification des dates
+  $action="modif";
+  $modifAutorisee=true;
+  if(!$admin and $valide and $configHebdo['periodesDefinies']){
+    $modifAutorisee=false;
+  }
+  if(!$admin and $valide){
+    $action="copie";
+  }
+
+}else{
+  $action="ajout";
+  $modifAutorisee=true;
+  $debut1=null;
+  $fin1=null;
+  $debut1Fr=null;
+  $fin1Fr=null;
+  $perso_id=null;
+  $temps=null;
+  $valide=null;
+  $remplace=null;
+  $sites=array();
+  for($i=1;$i<$config['Multisites-nombre']+1;$i++){
+    $sites[]=$i;
+  }
+}
+
+// Sécurité
 if(!$admin and $perso_id!=$_SESSION['login_id']){
   echo "<div id='acces_refuse'>Accès refusé</div>\n";
   include "include/footer.php";
   exit;
 }
 
-// Modif autorisée si n'est pas validé ou si validé avec des périodes non définies (BSB).
-// Dans le 2eme cas copie du planning avec modification des dates
-$action="modif";
-$modifAutorisee=true;
-if(!$admin and $valide and $configHebdo['periodesDefinies']){
-  $modifAutorisee=false;
-}
-if(!$admin and $valide){
-  $action="copie";
-}
-
-// Informations sur l'agents
-$p=new personnel();
-$p->fetchById($perso_id);
-$sites=$p->elements[0]['sites'];
 ?>
 
 <!-- Formulaire Planning-->
 <h3>Planning de présence</h3>
-<?php echo "Planning de <b>".nom($perso_id,"prenom nom")."</b> du $debut1Fr au $fin1Fr";?>
+<?php
+if($id){
+  echo "Planning de <b>".nom($perso_id,"prenom nom")."</b> du $debut1Fr au $fin1Fr";
+}
+?>
 <div id='planning'>
 <?php
 if(!$configHebdo['periodesDefinies']){
@@ -74,13 +99,30 @@ if(!$configHebdo['periodesDefinies']){
 }else{
   echo "<form name='form1' method='post' action='index.php' onsubmit='return verif_form(\"debut=date1;fin=date2Obligatoire\",\"form1\");'>\n";
 }
+
+if($id){
+  echo "<input type='hidden' name='perso_id' value='$perso_id' id='perso_id' />\n";
+}else{
+  $db=new db();
+  $db->select2("personnel","*",array("supprime"=>0),"order by nom,prenom");
+  echo "<h3>Nouveau planning</h3>\n";
+  echo "<div id='plHebdo-perso-id'>\n";
+  echo "<label for='perso_id'>Agent</label>\n";
+  echo "<select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id'>\n";
+  echo "<option value=''>&nbsp;</option>\n";
+  foreach($db->result as $elem){
+    $selected=$perso_id==$elem['id']?"selected='selected'":null;
+    echo "<option value='{$elem['id']}' $selected >{$elem['nom']} {$elem['prenom']}</option>\n";
+  }
+  echo "</select>\n";
+  echo "</div>\n";
+}
 ?>
 <input type='hidden' name='page' value='planningHebdo/valid.php' />
 <input type='hidden' name='action' value='<?php echo $action; ?>' />
 <input type='hidden' name='validation' value='0' />
 <input type='hidden' name='retour' value='<?php echo $retour; ?>' />
 <input type='hidden' name='id' value='<?php echo $id; ?>' />
-<input type='hidden' name='perso_id' value='<?php echo $perso_id; ?>' />
 <input type='hidden' name='valide' value='<?php echo $valide; ?>' />
 <input type='hidden' name='remplace' value='<?php echo $remplace; ?>' />
 

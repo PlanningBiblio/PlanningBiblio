@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/ajax.delete.php
 Création : 17 septembre 2013
-Dernière modification : 22 mai 2015
+Dernière modification : 26 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -15,7 +15,7 @@ Fichier permettant la suppression d'un planning de présence en arrière plan.
 Appelé par la fonction JS plHebdoSupprime (planningHebdo/js/script.planningHebdo.js)
 */
 
-require_once "../../include/config.php";
+require_once "../include/config.php";
 
 $id=$_GET['id'];
 $db=new db();

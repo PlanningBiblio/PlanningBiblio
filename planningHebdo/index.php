@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/index.php
 Création : 23 juillet 2013
-Dernière modification : 22 mai 2015
+Dernière modification : 26 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,11 +23,11 @@ $fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dat
 $reset=filter_input(INPUT_GET,"reset",FILTER_CALLBACK,array("options"=>"sanitize_on"));
 
 if(!$debut){
-	$debut=array_key_exists("planningHebdoDebut",$_SESSION['oups'])?$_SESSION['oups']['planningHebdoDebut']:null;
+  $debut=array_key_exists("planningHebdoDebut",$_SESSION['oups'])?$_SESSION['oups']['planningHebdoDebut']:null;
 }
 
 if(!$fin){
-	$fin=array_key_exists("planningHebdoFin",$_SESSION['oups'])?$_SESSION['oups']['planningHebdoFin']:null;
+  $fin=array_key_exists("planningHebdoFin",$_SESSION['oups'])?$_SESSION['oups']['planningHebdoFin']:null;
 }
 
 if($reset){
@@ -102,3 +102,4 @@ foreach($p->elements as $elem){
 }
 echo "</tbody></table>\n";
 ?>
+<a class='ui-button' href='index.php?page=planningHebdo/modif.php&amp;retour=index.php'>Nouveau planning</a>

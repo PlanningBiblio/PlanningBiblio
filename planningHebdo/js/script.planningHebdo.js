@@ -6,7 +6,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/js/script.planningHebdo.js
 Création : 26 août 2013
-Dernière modification : 22 mai 2015
+Dernière modification : 26 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -109,8 +109,8 @@ function plHebdoVerifForm(){
   debut=$("input[name=debut]").val().replace(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/g,"$3-$2-$1");
   fin=$("input[name=fin]").val().replace(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/g,"$3-$2-$1");
   id=$("input[name=id]").val();
-  perso_id=$("input[name=perso_id]").val();
-  
+  perso_id=$("#perso_id").val();
+
   id=id?"&id="+id:null;
   perso_id=perso_id?"&perso_id="+perso_id:null;
   

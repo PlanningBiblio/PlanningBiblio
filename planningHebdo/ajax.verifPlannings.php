@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Plugin planningHebdo Version 1.3.9
+Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : plugins/planningHebdo/ajax.verifPlannings.php
 Création : 2 octobre 2013
-Dernière modification : 5 novembre 2014
+Dernière modification : 26 mai
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -16,7 +16,7 @@ Fichier appelé en arrière plan par la fonction JS plHebdoVerifForm (js/script.
 */
 
 session_start();
-include "../../include/config.php";
+include "../include/config.php";
 
 // Filtre permettant de ne rechercher que les plannings de l'agent sélectionné
 $perso_id=isset($_GET['perso_id'])?$_GET['perso_id']:$_SESSION['login_id'];
