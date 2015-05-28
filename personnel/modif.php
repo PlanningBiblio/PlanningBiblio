@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 20 mai 2015
+Dernière modification : 28 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -708,6 +708,11 @@ if(!$admin){
 foreach($groupes as $elem){
   // N'affiche pas les droits d'accès à la configuration (réservée au compte admin)
   if($elem['groupe_id']==20){
+    continue;
+  }
+
+  // N'affiche pas les droits de gérer les plannings de présence si le module n'est pas activé
+  if(!$config['Module-PlanningHebdo'] and $elem['groupe_id']==24){
     continue;
   }
 
