@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 26 mai 2015
+Dernière modification : 28 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -51,6 +51,17 @@ class planningHebdo{
 
     $perso_id=array_key_exists("perso_id",$data)?$data["perso_id"]:$_SESSION['login_id'];
 
+    // Validation
+    // Par défaut = 0, si $data['validation'] valide = login de l'agent logué, validation = date courante
+
+    $valide=0;
+    $validation="0000-00-00 00:00:00";
+    if($data['validation']){
+      $valide=$_SESSION['login_id'];
+      $validation=date("Y-m-d H:i:s");
+    }
+
+
     // Si $data['annee'] : il y a 2 périodes distinctes avec des horaires définis 
     // (horaires normaux et horaires réduits) soit 2 tableaux à insérer
     if(array_key_exists("annee",$data)){
@@ -60,20 +71,24 @@ class planningHebdo{
       $dates=$this->periodes;
 
       // 1er tableau
-      $insert=array("perso_id"=>$perso_id,"debut"=>$dates[0][0],"fin"=>$dates[0][1],"temps"=>serialize($data['temps']));
+      $insert=array("perso_id"=>$perso_id,"debut"=>$dates[0][0],"fin"=>$dates[0][1],"temps"=>serialize($data['temps']), 
+	"valide"=>$valide, "validation"=>$validation);
 
       $db=new db();
       $db->insert2("planningHebdo",$insert);
       $this->error=$db->error;
       // 2ème tableau
-      $insert=array("perso_id"=>$perso_id,"debut"=>$dates[0][2],"fin"=>$dates[0][3],"temps"=>serialize($data['temps2']));
+      $insert=array("perso_id"=>$perso_id,"debut"=>$dates[0][2],"fin"=>$dates[0][3],"temps"=>serialize($data['temps2']),
+	"valide"=>$valide, "validation"=>$validation);
+
       $db=new db();
       $db->insert2("planningHebdo",$insert);
       $this->error=$db->error?$db->error:$this->error;
     }
     // Sinon, insertion d'un seul tableau
     else{
-      $insert=array("perso_id"=>$perso_id,"debut"=>$data['debut'],"fin"=>$data['fin'],"temps"=>serialize($data['temps']));
+      $insert=array("perso_id"=>$perso_id,"debut"=>$data['debut'],"fin"=>$data['fin'],"temps"=>serialize($data['temps']), 
+	"valide"=>$valide, "validation"=>$validation);
 
       // Dans le cas d'une copie (voir fonction copy)
       if(isset($data['remplace'])){

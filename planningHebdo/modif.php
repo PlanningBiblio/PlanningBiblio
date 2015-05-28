@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/modif.php
 Création : 23 juillet 2013
-Dernière modification : 26 mai 2015
+Dernière modification : 28 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -223,7 +223,7 @@ echo "<tr><td colspan='4' style='padding-top:20px;'>\n";
 echo "<input type='button' value='Retour' onclick='location.href=\"index.php?page=planningHebdo/$retour\";' class='ui-button' />\n";
 
 if($admin){
-  echo "<input type='submit' value='Enregistrer les modifications SANS valider' style='margin-left:30px;' class='ui-button' />\n";
+  echo "<input type='submit' value='Enregistrer SANS valider' style='margin-left:30px;' class='ui-button' />\n";
   if(!$configHebdo['periodesDefinies']){
     echo "<input type='button' value='Enregistrer et VALIDER'  style='margin-left:30px;' onclick='document.forms[\"form1\"].validation.value=1;if(plHebdoVerifForm()){document.forms[\"form1\"].submit();}' class='ui-button' />";
   }else{
