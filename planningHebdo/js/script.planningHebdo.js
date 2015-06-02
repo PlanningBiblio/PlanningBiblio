@@ -6,7 +6,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/js/script.planningHebdo.js
 Création : 26 août 2013
-Dernière modification : 26 mai 2015
+Dernière modification : 2 juin 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -90,16 +90,19 @@ function plHebdoCalculHeures2(){
 }
 
 function plHebdoSupprime(id){
-  if(confirm("Etes vous sûr(e) de vouloir supprimer ce planning de présence ?")){
+if(confirm("Etes vous sûr(e) de vouloir supprimer ce planning de présence ?")){
+    // Suppression du planning en arrière plan
     $.ajax({
       url: "planningHebdo/ajax.delete.php",
       data: "id="+id,
       type: "get",
       success: function(){
-	document.location.reload(false);
+	// On cache la ligne du planning supprimée dans le tableau
+	CJDataTableHideRow("#tr_"+id);
+	CJInfo("Le planning a été supprimé","success");
       },
       error: function(){
-	information("Erreur lors de la suppression du planning de pr&eacute;sence","error");
+	CJInfo("Erreur lors de la suppression du planning de pr&eacute;sence","error");
       }
     });
   }

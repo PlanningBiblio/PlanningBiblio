@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/ajax.delete.php
 Création : 17 septembre 2013
-Dernière modification : 26 mai 2015
+Dernière modification : 29 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -17,7 +17,7 @@ Appelé par la fonction JS plHebdoSupprime (planningHebdo/js/script.planningHebd
 
 require_once "../include/config.php";
 
-$id=$_GET['id'];
+$id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 $db=new db();
 $db->delete("planningHebdo","id=$id");
 $db=new db();

@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : plugins/planningHebdo/ajax.verifPlannings.php
 Création : 2 octobre 2013
-Dernière modification : 26 mai
+Dernière modification : 29 mai
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -18,24 +18,30 @@ Fichier appelé en arrière plan par la fonction JS plHebdoVerifForm (js/script.
 session_start();
 include "../include/config.php";
 
+// Initialisation des variables
+$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
+$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
+$id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
+$perso_id=filter_input(INPUT_GET,"perso_id",FILTER_SANITIZE_NUMBER_INT);
+
 // Filtre permettant de ne rechercher que les plannings de l'agent sélectionné
-$perso_id=isset($_GET['perso_id'])?$_GET['perso_id']:$_SESSION['login_id'];
+$perso_id=$perso_id?$perso_id:$_SESSION['login_id'];
 
 // Filtre permettant de ne pas regarder l'actuel planning et les plannings remplacant celui-ci
-$id=isset($_GET['id'])?" AND `id`<>'{$_GET['id']}' AND `remplace`<>'{$_GET['id']}' ":null;
+$id=$id?" AND `id`<>'$id' AND `remplace`<>'$id' ":null;
 
 // Filtre permettant de ne pas regarder le planning remplacé par le planning sélectionné
 $remplace=null;
-if(isset($_GET['id'])){
+if($id){
   $db=new db();
-  $db->select("planningHebdo","remplace","`id`='{$_GET['id']}'");
+  $db->select("planningHebdo","remplace","`id`='$id'");
   if($db->result[0]['remplace']){
     $remplace=" AND `id`<>'{$db->result[0]['remplace']}' AND `remplace`<>'{$db->result[0]['remplace']}' ";
   }
 }
 
 $db=new db();
-$db->select("planningHebdo","*","perso_id='$perso_id' AND `debut`<='{$_GET['fin']}' AND `fin`>='{$_GET['debut']}' $id $remplace ");
+$db->select("planningHebdo","*","perso_id='$perso_id' AND `debut`<='$fin' AND `fin`>='$debut' $id $remplace ");
 
 $result=array();
 if(!$db->result){

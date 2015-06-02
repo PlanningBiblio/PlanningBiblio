@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/index.php
 Création : 23 juillet 2013
-Dernière modification : 26 mai 2015
+Dernière modification : 29 mai 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -85,7 +85,7 @@ foreach($p->elements as $elem){
   $commentaires=$elem['remplace']?"Remplace le planning <br/>du $planningRemplace":null;
   $arrow=$elem['remplace']?"<font style='font-size:20pt;'>&rdsh;</font>":null;
 
-  echo "<tr>";
+  echo "<tr id='tr_{$elem['id']}'>";
   echo "<td style='white-space:nowrap;'>$arrow <a href='index.php?page=planningHebdo/modif.php&amp;id={$elem['id']}&amp;retour=index.php'/>";
     echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a>";
     echo "<a href='javascript:plHebdoSupprime({$elem['id']});' style='margin-left:6px;'/>";
