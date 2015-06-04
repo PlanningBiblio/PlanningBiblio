@@ -6,7 +6,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/js/script.planningHebdo.js
 Création : 26 août 2013
-Dernière modification : 2 juin 2015
+Dernière modification : 4 juin 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -89,8 +89,63 @@ function plHebdoCalculHeures2(){
   });
 }
 
+
+// Lors de la modification des select du tableau 1, on met à jour les autres tableaux si la case "Même planning" est cochée
+function plHebdoChangeHiddenSelect(){
+  $(".memePlanning").each(function(){
+    if($(this).prop("checked")){
+      var id=$(this).attr("data-id");
+      plHebdoCopySelect(id);
+    }
+  });
+}
+
+/* Copie des infos du tableau 1 vers les autres tableaux lorsque l'on coche la case "Même planning", 
+ou lorsque l'on modifie les select du tableau 1 est que la case "Même Planning" est cochée
+*/
+function plHebdoCopySelect(id){
+  // Copie les infos du tableau 1 vers le tableau sélectionné
+  var i=0;
+  $("#div"+id).find("select").each(function(){
+    var val=$("#div0").find("select:eq("+i+")").val();
+    $(this).val(val);
+    i++;
+  });
+
+  // Calcul et affichage des heures par jour et par semaine
+  plHebdoCalculHeures2();
+}
+
+/* Vérifie lors du chargement de la page, si les plannings semaine 2,3 ... sont les mêmes que le planning de la semaine 1
+Si oui, coche la case "Même planning que la semaine 1" et masque les tableaux correspondants
+*/
+function plHebdoMemePlanning(){
+  
+  var tab={};
+
+  $(".tableau").each(function(){
+    // On stock les infos des plannings dans des tableaux
+    var i=$(this).attr("data-id");
+    tab[i]=new Array();
+
+    $(this).find("select").each(function(){
+      tab[i].push($(this).val());
+  
+      // On compare le tableau courant au premier tableau
+      if(i>0){
+	// Si les tableaux sont les mêmes
+	if(JSON.stringify(tab[i]) == JSON.stringify(tab[0])){
+	  // On coche la case "Même planning ...", le tableau sera caché par l'évènement $(".memePlanning").click()
+	  $("#memePlanning"+i).click();
+	}
+      }
+    
+    });
+  });
+}
+
 function plHebdoSupprime(id){
-if(confirm("Etes vous sûr(e) de vouloir supprimer ce planning de présence ?")){
+  if(confirm("Etes vous sûr(e) de vouloir supprimer ce planning de présence ?")){
     // Suppression du planning en arrière plan
     $.ajax({
       url: "planningHebdo/ajax.delete.php",
@@ -171,3 +226,22 @@ function plHebdoVerifFormPeriodesDefinies(){
   }
   return result; 
 }
+
+$(function(){
+  // Action lors du click sur la case à cocher "Même planning qu'en semaine 1"
+  $(".memePlanning").click(function(){
+    var id=$(this).attr("data-id");
+    if($(this).prop("checked")){
+
+      // Masque le tableau
+      $("#div"+id).hide();
+      
+      // Copie des informations du tableau 1 vers le tableau sélectionné
+      plHebdoCopySelect(id);
+
+    }else{
+      // Affiche le tableau si on décoche la case
+      $("#div"+id).show();
+    }
+  });
+});
