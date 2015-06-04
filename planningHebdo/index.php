@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/index.php
 Création : 23 juillet 2013
-Dernière modification : 29 mai 2015
+Dernière modification : 4 juin 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -63,9 +63,9 @@ Début : <input type='text' name='debut' class='datepicker' value='$debut' />
     <th class='dataTableNoSort'>&nbsp;</th>
     <th>Agent</th>
     <th>Service</th>
-    <th class='dataTableDateFr'>Début</th>
-    <th class='dataTableDateFr'>Fin</th>
-    <th class='dataTableDateFr'>Saisie</th>
+    <th class='dataTableDateFR'>Début</th>
+    <th class='dataTableDateFR'>Fin</th>
+    <th class='dataTableDateFR'>Saisie</th>
     <th>Validation</th>
     <th>Actuel</th>
     <th>Commentaires</th>
