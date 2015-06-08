@@ -6,7 +6,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/js/script.planningHebdo.js
 Création : 26 août 2013
-Dernière modification : 4 juin 2015
+Dernière modification : 5 juin 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -127,20 +127,27 @@ function plHebdoMemePlanning(){
     // On stock les infos des plannings dans des tableaux
     var i=$(this).attr("data-id");
     tab[i]=new Array();
+    
+    var empty=true;
 
     $(this).find("select").each(function(){
       tab[i].push($(this).val());
-  
-      // On compare le tableau courant au premier tableau
-      if(i>0){
-	// Si les tableaux sont les mêmes
-	if(JSON.stringify(tab[i]) == JSON.stringify(tab[0])){
-	  // On coche la case "Même planning ...", le tableau sera caché par l'évènement $(".memePlanning").click()
-	  $("#memePlanning"+i).click();
-	}
+
+      // Test si le tableau 1 est vide pour ne pas cocher les cases lors de la création de nouveaux plannings
+      if($(this).val()){
+	empty=false;
       }
-    
     });
+
+    // On compare le tableau courant au premier tableau
+    if(i>0 && empty==false){
+      // Si les tableaux sont les mêmes
+      if(JSON.stringify(tab[i]) == JSON.stringify(tab[0])){
+	// On coche la case "Même planning ...", le tableau sera caché par l'évènement $(".memePlanning").click()
+	$("#memePlanning"+i).click();
+      }
+    }
+
   });
 }
 
@@ -243,5 +250,27 @@ $(function(){
       // Affiche le tableau si on décoche la case
       $("#div"+id).show();
     }
+  });
+  
+  $("#perso_id").change(function(){
+    $.ajax({
+      url: "planningHebdo/ajax.getSites.php",
+      dataType: "json",
+      type: "post",
+      data: {id: $(this).val()},
+      success: function(result){
+	var options="<option value=''>&nbsp;</option>\n";
+	for(i in result){
+	  options+= "<option value='"+result[i][0]+"'>"+result[i][1]+"</option>\n";
+	}
+	$(".selectSite").html(options);
+      },
+      error: function(result){
+	CJInfo("Imposssible de récupérer la liste des sites de l'agent","error");
+	CJInfo(result.responseText,"error");
+      }
+      
+    });
+    
   });
 });

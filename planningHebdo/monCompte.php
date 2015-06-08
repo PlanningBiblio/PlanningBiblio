@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/monCompte.php
 Création : 23 juillet 2013
-Dernière modification : 26 mai 2015
+Dernière modification : 5 juin 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -134,7 +134,15 @@ for($j=0;$j<$config['nb_semaine'];$j++){
   if($configHebdo['periodesDefinies']){
     echo "<br/>Horaires normaux <font id='heures_{$j}' style='font-weight:bold;position:absolute;left:300px;'>&nbsp;</font><br/>";
   }
-  echo "<table border='1' cellspacing='0' id='tableau{$j}' style='margin-bottom:30px;>\n";
+  echo "<h3>{$cellule[$j]}</h3>\n";
+
+  if($j>0){
+    echo "<p><input type='checkbox' name='memePlanning$j' class='memePlanning' data-id='$j' id='memePlanning$j' />";
+    echo "<label for='memePlanning$j' >Même planning qu'en {$cellule[0]}</label></p>\n";
+  }
+
+  echo "<div id='div$j'>\n";
+  echo "<table border='1' cellspacing='0' id='tableau{$j}' class='tableau' data-id='$j'  style='margin-bottom:10px;>\n";
   echo "<tr style='text-align:center;'><td style='width:150px;'>{$cellule[$j]}</td><td style='width:150px;'>Heure d'arrivée</td>";
   echo "<td style='width:150px;'>Début de pause</td><td style='width:150px;'>Fin de pause</td>";
   echo "<td style='width:150px;'>Heure de départ</td>";
@@ -148,7 +156,7 @@ for($j=0;$j<$config['nb_semaine'];$j++){
     echo "<tr style='text-align:center;'><td>{$jours[$k]}</td><td>".selectTemps($i-1,0,null,"select")."</td><td>".selectTemps($i-1,1,null,"select")."</td>";
     echo "<td>".selectTemps($i-1,2,null,"select")."</td><td>".selectTemps($i-1,3,null,"select")."</td>";
     if($config['Multisites-nombre']>1){
-      echo "<td><select name='temps[".($i-1)."][4]'>\n";
+      echo "<td><select name='temps[".($i-1)."][4]' class='select' >\n";
       if(count($sites)>1){
 	echo "<option value=''>&nbsp;</option>\n";
       }
@@ -166,6 +174,7 @@ for($j=0;$j<$config['nb_semaine'];$j++){
   if(!$configHebdo['periodesDefinies']){
     echo "Nombre d'heures : <font id='heures_{$j}' style='font-weight:bold;'>&nbsp;</font><br/>\n";
   }
+  echo "</div>\n";
 
   // Si périodes définies : formulaires pour la périodes horaires réduits
   if($configHebdo['periodesDefinies']){

@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 28 mai 2015
+Dernière modification : 5 juin 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -56,7 +56,7 @@ class planningHebdo{
 
     $valide=0;
     $validation="0000-00-00 00:00:00";
-    if($data['validation']){
+    if(array_key_exists("validation",$data)){
       $valide=$_SESSION['login_id'];
       $validation=date("Y-m-d H:i:s");
     }

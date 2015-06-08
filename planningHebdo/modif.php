@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/modif.php
 Création : 23 juillet 2013
-Dernière modification : 4 juin 2015
+Dernière modification : 5 juin 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -170,7 +170,7 @@ for($j=0;$j<$config['nb_semaine'];$j++){
       echo "<td id='temps_".($i-1)."_2'>".heure2($temps[$i-1][2])."</td><td id='temps_".($i-1)."_3'>".heure2($temps[$i-1][3])."</td>";
     }
     if($config['Multisites-nombre']>1){
-      echo "<td><select name='temps[".($i-1)."][4]' class='select'>\n";
+      echo "<td><select name='temps[".($i-1)."][4]' class='select selectSite'>\n";
       if(count($sites)>1){
 	echo "<option value=''>&nbsp;</option>\n";
       }
@@ -197,7 +197,7 @@ elseif($valide and !$admin){
   echo "Les anciens horaires seront conservés en attendant la validation des nouveaux.</p>\n";
 }
 elseif($valide and $admin and !$configHebdo['periodesDefinies']){
-  echo "<p style='width:850px;text-align:justify;'><b class='important'>Ces horaires ont été validés.</b><br/>";
+  echo "<p style='width:850px;text-align:justify;margin-top:30px;'><b class='important'>Ces horaires ont été validés.</b><br/>";
   echo "En tant qu'administrateur, vous pouvez les modifier et les enregistrer en tant que copie.<br/>";
   echo "Dans ce cas, modifiez la date de début et/ou de fin d'effet. ";
   echo "Les nouveaux horaires seront enregistrés et devront ensuite être validés. ";
