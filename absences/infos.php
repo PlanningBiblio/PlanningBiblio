@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/infos.php
 Création : mai 2011
-Dernière modification : 4 avril 2015
+Dernière modification : 18 juin 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -30,11 +30,10 @@ $debutSQL=dateSQL($debut);
 $finSQL=dateSQL($fin);
 
 echo "<h3>Informations sur les absences</h3>\n";
-
 //			----------------		Suppression							-------------------------------//
 if($suppression and $validation){
   $db=new db();
-  $db->delete2("absences_infos",array("id="=>$id));
+  $db->delete2("absences_infos",array("id"=>$id));
   echo "<b>L'information a été supprimée</b>";
   echo "<br/><br/><a href='index.php?page=absences/index.php'>Retour</a>\n";
 }
@@ -117,7 +116,7 @@ else{
   </td></tr>
   <tr><td colspan='2' style='text-align:center;'>\n";
   if($id){
-    echo "<a href='index.php?page=absences/infos.php&amp;id=$id&amp;suppression=oui\";' class='ui-button' >Supprimer</a>";
+    echo "<a href='index.php?page=absences/infos.php&amp;id=$id&amp;suppression=1' class='ui-button' >Supprimer</a>";
   }
   echo "<a href='index.php?page=absences/index.php' class='ui-button' style='margin-left:30px;'>Annuler</a>";
   echo "<input type='submit' value='Valider' class='ui-button' style='margin-left:30px;'/>
