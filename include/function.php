@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.6
+Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 24 avril 2015
+Dernière modification : 18 juin 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -248,8 +248,14 @@ function compte_jours($date1, $date2, $jours){
 
 function createURL($page){
   // Construction d'une URL
-  $port=strtolower(substr($_SERVER['SERVER_PROTOCOL'],0,strpos($_SERVER['SERVER_PROTOCOL'],"/",0)));
-  $url="$port://{$_SERVER['SERVER_NAME']}".substr($_SERVER['REQUEST_URI'],0,strpos($_SERVER['REQUEST_URI'],"/",1));
+  $protocol=strtolower(substr($_SERVER['SERVER_PROTOCOL'],0,strpos($_SERVER['SERVER_PROTOCOL'],"/",0)));
+  $port=$_SERVER['SERVER_PORT'];
+  if(($port==80 and $protocol=="http") or ($port==443 and $protocol=="https")){
+    $port=null;
+  }else{
+    $port=":".$port;
+  }
+  $url="$protocol://{$_SERVER['SERVER_NAME']}{$port}".substr($_SERVER['REQUEST_URI'],0,strpos($_SERVER['REQUEST_URI'],"/",1));
   $url.="/index.php?page=".$page;
   return $url;
 }
