@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/modif.php
 Création : 23 juillet 2013
-Dernière modification : 5 juin 2015
+Dernière modification : 19 juin 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,8 +23,13 @@ $p->getConfig();
 $configHebdo=$p->config;
 
 // Initialisation des variables
+$copy=filter_input(INPUT_GET,"copy",FILTER_SANITIZE_NUMBER_INT);
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 $retour=filter_input(INPUT_GET,"retour",FILTER_SANITIZE_STRING);
+
+if($copy){
+  $id=$copy;
+}
 
 // Sécurité
 $admin=in_array(24,$droits)?true:false;
@@ -59,6 +64,10 @@ if($id){
     $action="copie";
   }
 
+  if($copy){
+    $action="ajout";
+  }
+
 }else{
   $action="ajout";
   $modifAutorisee=true;
@@ -88,8 +97,8 @@ if(!$admin and $perso_id!=$_SESSION['login_id']){
 <!-- Formulaire Planning-->
 <h3>Planning de présence</h3>
 <?php
-if($id){
-  echo "Planning de <b>".nom($perso_id,"prenom nom")."</b> du $debut1Fr au $fin1Fr";
+if($id and !$copy){
+  echo "<h3>Planning de ".nom($perso_id,"prenom nom")." du $debut1Fr au $fin1Fr</h3>";
 }
 ?>
 <div id='planning'>
@@ -100,15 +109,23 @@ if(!$configHebdo['periodesDefinies']){
   echo "<form name='form1' method='post' action='index.php' onsubmit='return verif_form(\"debut=date1;fin=date2Obligatoire\",\"form1\");'>\n";
 }
 
-if($id){
+// Modification
+if($id and !$copy){
   echo "<input type='hidden' name='perso_id' value='$perso_id' id='perso_id' />\n";
+// Ajout ou copie
 }else{
   $db=new db();
   $db->select2("personnel","*",array("supprime"=>0),"order by nom,prenom");
-  echo "<h3>Nouveau planning</h3>\n";
+  // Copie
+  if($copy){
+    echo "<h3>Copie du planning de ".nom($perso_id,"prenom nom")." du $debut1Fr au $fin1Fr</h3>\n";
+  // Ajout
+  } else {
+    echo "<h3>Nouveau planning</h3>\n";
+  }
   echo "<div id='plHebdo-perso-id'>\n";
-  echo "<label for='perso_id'>Agent</label>\n";
-  echo "<select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id'>\n";
+  echo "<label for='perso_id'>Pour l'agent</label>\n";
+  echo "<select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id' style='position:absolute; left:200px; width:200px; text-align:center;' >\n";
   echo "<option value=''>&nbsp;</option>\n";
   foreach($db->result as $elem){
     $selected=$perso_id==$elem['id']?"selected='selected'":null;
@@ -117,6 +134,23 @@ if($id){
   echo "</select>\n";
   echo "</div>\n";
 }
+
+// Choix de la période d'utilisation et validation
+echo "<div id='periode'>\n";
+if(!$configHebdo['periodesDefinies']){
+  echo <<<EOD
+    <p><label for='debut'>Début d'utilisation</label>
+    <input type='text' name='debut' value='$debut1Fr' class='datepicker' style='position:absolute; left:200px; width:200px;' /></p>
+    <p><label for='fin'>Fin d'utilisation</label>
+    <input type='text' name='fin' value='$fin1Fr' class='datepicker' style='position:absolute; left:200px; width:200px;' /></p>
+EOD;
+}
+else{
+  echo "<input type='hidden' name='debut' value='$debut1'/>\n";
+  echo "<input type='hidden' name='fin' value='$fin1'/>\n";
+}
+echo "</div> <!-- id=periode -->\n";
+
 ?>
 <input type='hidden' name='page' value='planningHebdo/valid.php' />
 <input type='hidden' name='action' value='<?php echo $action; ?>' />
@@ -188,6 +222,8 @@ for($j=0;$j<$config['nb_semaine'];$j++){
   echo "</div>\n";
 }
 
+echo "<div id='informations' style='margin-top:30px;' >\n";
+
 if(!$modifAutorisee){
   echo "<p><b class='important'>Vos horaires ont été validés.</b><br/>Pour les modifier, contactez votre chef de service.</p>\n";
 }
@@ -196,7 +232,7 @@ elseif($valide and !$admin){
   echo "Vos nouveaux horaires seront enregistrés et devront être validés par un administrateur.<br/>";
   echo "Les anciens horaires seront conservés en attendant la validation des nouveaux.</p>\n";
 }
-elseif($valide and $admin and !$configHebdo['periodesDefinies']){
+elseif($valide and $admin and !$configHebdo['periodesDefinies'] and !$copy){
   echo "<p style='width:850px;text-align:justify;margin-top:30px;'><b class='important'>Ces horaires ont été validés.</b><br/>";
   echo "En tant qu'administrateur, vous pouvez les modifier et les enregistrer en tant que copie.<br/>";
   echo "Dans ce cas, modifiez la date de début et/ou de fin d'effet. ";
@@ -204,31 +240,21 @@ elseif($valide and $admin and !$configHebdo['periodesDefinies']){
   echo "Les anciens horaires seront conservés en attendant la validation des nouveaux.<br/>";
   echo "Vous pouvez également les enregistrer directement mais dans ce cas, vous ne conserverez pas les anciens horaires.</p>\n";
 }
-elseif($valide and $admin and $configHebdo['periodesDefinies']){
+elseif($valide and $admin and $configHebdo['periodesDefinies'] and !$copy){
   echo "<p style='width:850px;text-align:justify;'><b class='important'>Ces horaires ont été validés.</b><br/>";
   echo "En tant qu'administrateur, vous avez toujours la possibilité de les modifier et de les valider.</p>\n";
 }
 
-// Choix de la période d'utilisation et validation
-if($modifAutorisee and !$configHebdo['periodesDefinies']){
-  echo "<br/><b>Choisissez la période d'utilisation et validez</b> :\n";
-}
-
-echo "<table style='width:900px;'>\n";
-if(!$configHebdo['periodesDefinies']){
+if($copy and $config['Multisites-nombre']>1){
   echo <<<EOD
-    <tr>
-    <td>Date de début</td>
-    <td><input type='text' name='debut' value='$debut1Fr' class='datepicker'/></td>
-    <td>Date de fin</td>
-    <td><input type='text' name='fin' value='$fin1Fr' class='datepicker'/></tr>
+  <p id='info_copie' style='display:none;' class='important'><strong>
+    Attention : Veuillez vérifier les affectations aux sites avant d'enregistrer.
+  </strong></p>
 EOD;
 }
-else{
-  echo "<tr><td><input type='hidden' name='debut' value='$debut1'/></td>\n";
-  echo "<td><input type='hidden' name='fin' value='$fin1'/></td></tr>\n";
-}
-echo "<tr><td colspan='4' style='padding-top:20px;'>\n";
+echo "</div> <!-- id=informations -->\n";
+
+echo "<div id='boutons' style='padding-top:20px;'>\n";
 echo "<input type='button' value='Retour' onclick='location.href=\"index.php?page=planningHebdo/$retour\";' class='ui-button' />\n";
 
 if($admin){
@@ -238,17 +264,16 @@ if($admin){
   }else{
     echo "<input type='button' value='Enregistrer et VALIDER'  style='margin-left:30px;' onclick='document.forms[\"form1\"].validation.value=1;document.forms[\"form1\"].submit();' class='ui-button' />";
   }
-  if($valide and !$configHebdo['periodesDefinies']){
+  if($valide and !$configHebdo['periodesDefinies'] and !$copy){
     echo "<input type='button' value='Enregistrer une copie' style='margin-left:30px;' onclick='$(\"input[name=action]\").val(\"copie\");$(\"form[name=form1]\").submit();' class='ui-button' />\n";
   }
-  echo "</td></tr>\n";
 }
 elseif($modifAutorisee){
   echo "<input type='submit' value='Enregistrer les modifications' style='margin-left:30px;' class='ui-button' />\n";
 }
 
 ?>
-</table>
+</div> <!-- id=boutons -->
 
 </form>
 <script type='text/JavaScript'>
@@ -259,6 +284,9 @@ $("document").ready(function(){
 $(".select").change(function(){
   plHebdoCalculHeures($(this),"");
   plHebdoChangeHiddenSelect();
+});
+$("#perso_id").change(function(){
+  $("#info_copie").show();
 });
 </script>
 

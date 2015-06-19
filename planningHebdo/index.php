@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/index.php
 Création : 23 juillet 2013
-Dernière modification : 4 juin 2015
+Dernière modification : 18 juin 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -86,8 +86,11 @@ foreach($p->elements as $elem){
   $arrow=$elem['remplace']?"<font style='font-size:20pt;'>&rdsh;</font>":null;
 
   echo "<tr id='tr_{$elem['id']}'>";
-  echo "<td style='white-space:nowrap;'>$arrow <a href='index.php?page=planningHebdo/modif.php&amp;id={$elem['id']}&amp;retour=index.php'/>";
+  echo "<td style='white-space:nowrap;'>$arrow \n";
+    echo "<a href='index.php?page=planningHebdo/modif.php&amp;id={$elem['id']}&amp;retour=index.php'/>";
     echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a>";
+    echo "<a href='index.php?page=planningHebdo/modif.php&amp;copy={$elem['id']}&amp;retour=index.php'/>";
+    echo "<span class='pl-icon pl-icon-copy' title='Copier'></span></a>";
     echo "<a href='javascript:plHebdoSupprime({$elem['id']});' style='margin-left:6px;'/>";
     echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>";
   echo "<td>{$elem['nom']}</td>";

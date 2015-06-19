@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : plugins/planningHebdo/valid.php
 Création : 23 juillet 2013
-Dernière modification : 22 mai 2015
+Dernière modification : 19 juin 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -24,11 +24,20 @@ switch($post["action"]){
     $p=new planningHebdo();
     $p->add($post);
     if($p->error){
-    	$msg=urlencode("Une erreur est survenue lors de l'enregistrement du planning.");
-    	$msgType="error";    	
+      $msg=urlencode("Une erreur est survenue lors de l'enregistrement du planning.");
+
+      if($post['id']){
+	$msg=urlencode("Une erreur est survenue lors de la copie du planning.");
+      }
+
+      $msgType="error";    	
+
     }else{
-    	$msg=urlencode("Le planning a été ajouté avec succés.");
-    	$msgType="success";    	
+      $msg=urlencode("Le planning a été ajouté avec succés.");
+      if($post['id']){
+	$msg=urlencode("Le planning a été copié avec succés.");
+      }
+      $msgType="success";    	
     }
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=planningHebdo/{$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";
     break;
