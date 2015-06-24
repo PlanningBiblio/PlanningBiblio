@@ -52,7 +52,7 @@ class personnel{
     if(in_array("conges",$plugins)){
       include "plugins/conges/suppression_agents.php";
     }
-    if($config['Module-PlanningHebdo']){
+    if($config['PlanningHebdo']){
       require_once "planningHebdo/class.planningHebdo.php";
 
       // recherche des personnes à exclure (congés)

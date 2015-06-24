@@ -92,7 +92,7 @@ echo "</tr>\n";
 echo "<tr><td colspan='$colspan' style='text-align:right;'>\n";
 
 // Si le module PlanningHebdo est activé, remplace "Changer le mot de passe" par "Mon Compte"
-if($config['Module-PlanningHebdo']){
+if($config['PlanningHebdo']){
   echo "<a href='index.php?page=planningHebdo/monCompte.php' style='font-size:9pt;'>\n";
   echo "Mon Compte</a>\n";
 }

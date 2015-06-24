@@ -615,7 +615,7 @@ EOD;
 	if($db->result and $verif){
 
 	  // Si module PlanningHebdo : recherche des plannings correspondant à la date actuelle
-	  if($config['Module-PlanningHebdo']){
+	  if($config['PlanningHebdo']){
 	    include "planningHebdo/planning.php";
 	  }
 
@@ -627,7 +627,7 @@ EOD;
 	    $temps=array();
 
 	    // Si module PlanningHebdo : emploi du temps récupéré à partir de planningHebdo
-	    if($config['Module-PlanningHebdo']){
+	    if($config['PlanningHebdo']){
 	      if(array_key_exists($elem['id'],$tempsPlanningHebdo)){
 		$temps=$tempsPlanningHebdo[$elem['id']];
 	      }

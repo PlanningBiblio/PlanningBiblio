@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 28 mai 2015
+Dernière modification : 22 juin 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -751,19 +751,19 @@ if(strcmp("2.0",$config['Version'])>0){
 
   // Intégration du plugin Planning Hebdo
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES 
-    ('Module-PlanningHebdo', 'boolean', '0', 'Heures de pr&eacute;sence','40', 'Utiliser ou non le modue &ldquo;Planning Hebdo&rdquo;. (Incompatible avec l&apos;option EDTSamedi)');";
+    ('PlanningHebdo', 'boolean', '0', 'Heures de pr&eacute;sence','40', 'Utiliser ou non le modue &ldquo;Planning Hebdo&rdquo;. Ce module permet d&apos;enregistrer plusieurs plannings de pr&eacute;sence par agent en d&eacute;finissant des p&eacute;riodes d&apos;utilisation. (Incompatible avec l&apos;option EDTSamedi)');";
 
   // Si le plugin n'était pas installé, on créé les tables et apporte les modifications nécessaires
   $db=new db();
   $db->select2("plugins","*",array("nom"=>"planningHebdo"));
   if(!$db->result){
     // Droits d'accès
-    $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Planning Hebdo - Index','24','Validation des plannings de présences','planningHebdo/index.php');";
-    $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Planning Hebdo - Configuration','24','Validation des plannings de présences','planningHebdo/configuration.php');";
+    $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Planning Hebdo - Index','24','Gestion des plannings de présences','planningHebdo/index.php');";
+    $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Planning Hebdo - Configuration','24','Gestion des plannings de présences','planningHebdo/configuration.php');";
     $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Planning Hebdo - Modif','100','planningHebdo/modif.php');";
     $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Planning Hebdo - Mon Compte','100','planningHebdo/monCompte.php');";
     $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Planning Hebdo - Validation','100','planningHebdo/valid.php');";
-    $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Planning Hebdo - suppression','24','Validation des plannings de présences','planningHebdo/supprime.php');";
+    $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Planning Hebdo - suppression','24','Gestion des plannings de présences','planningHebdo/supprime.php');";
 
     // Création des tables
     $sql[]="CREATE TABLE `{$dbprefix}planningHebdo` (`id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `perso_id` INT(11) NOT NULL, `debut` DATE NOT NULL, `fin` DATE NOT NULL, `temps` TEXT NOT NULL, `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, `modif` INT(11) NOT NULL DEFAULT '0',`modification` TIMESTAMP, `valide` INT(11) NOT NULL DEFAULT '0',`validation` TIMESTAMP, `actuel` INT(1) NOT NULL DEFAULT '0', `remplace` INT(11) NOT NULL DEFAULT '0');";
@@ -783,6 +783,7 @@ if(strcmp("2.0",$config['Version'])>0){
   // Si le plugin était installé, on met à jour les liens
   else{
     // Modification des URL
+    $sql[]="UPDATE `{$dbprefix}acces` SET `groupe`='Gestion des plannings de présences' WHERE `groupe_id`='24';";
     $sql[]="UPDATE `{$dbprefix}acces` SET `page`='planningHebdo/index.php' WHERE `page`='plugins/planningHebdo/index.php';";
     $sql[]="UPDATE `{$dbprefix}acces` SET `page`='planningHebdo/configuration.php' WHERE `page`='plugins/planningHebdo/configuration.php';";
     $sql[]="UPDATE `{$dbprefix}acces` SET `page`='planningHebdo/modif.php' WHERE `page`='plugins/planningHebdo/modif.php';";
@@ -797,7 +798,12 @@ if(strcmp("2.0",$config['Version'])>0){
   }
 
   $sql[]="ALTER TABLE `{$dbprefix}menu` ADD `condition` VARCHAR(100) NULL;";
-  $sql[]="UPDATE `{$dbprefix}menu` SET `condition`='config=Module-PlanningHebdo' WHERE `url`='planningHebdo/index.php';";
+  $sql[]="UPDATE `{$dbprefix}menu` SET `condition`='config=PlanningHebdo' WHERE `url`='planningHebdo/index.php';";
+
+  // Planning Hebdo, saisie réservée aux admins
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES 
+    ('PlanningHebdo-Agents', 'boolean', '1', 'Heures de pr&eacute;sence','50', 'Autoriser les agents &agrave; saisir leurs plannings de pr&eacute;sence (avec le module Planning Hebdo). Les plannings saisis devront &ecirc;tre valid&eacute;s par un administrateur.');";
+
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.0' WHERE `nom`='Version';";
 }
 

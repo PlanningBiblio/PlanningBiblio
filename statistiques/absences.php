@@ -24,7 +24,7 @@ $debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize
 $fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
 $site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
 
-$afficheHeures=$config['Module-PlanningHebdo']?true:false;
+$afficheHeures=$config['PlanningHebdo']?true:false;
 $colspan=$afficheHeures?2:1;
 $rowspan=$afficheHeures?2:1;
 

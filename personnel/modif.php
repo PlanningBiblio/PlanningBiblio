@@ -583,7 +583,7 @@ for($j=0;$j<$config['nb_semaine'];$j++){
     echo "</tr>\n";
   for($i=$debut[$j];$i<$fin[$j];$i++){
     $k=$i-($j*7)-1;
-    if(in_array(21,$droits) and !$config['Module-PlanningHebdo']){
+    if(in_array(21,$droits) and !$config['PlanningHebdo']){
       echo "<tr><td>{$jours[$k]}</td><td>".selectTemps($i-1,0,null,"select$j")."</td><td>".selectTemps($i-1,1,null,"select$j")."</td>";
       echo "<td>".selectTemps($i-1,2,null,"select$j")."</td><td>".selectTemps($i-1,3,null,"select$j")."</td>";
       if($config['Multisites-nombre']>1){
@@ -712,7 +712,7 @@ foreach($groupes as $elem){
   }
 
   // N'affiche pas les droits de gérer les plannings de présence si le module n'est pas activé
-  if(!$config['Module-PlanningHebdo'] and $elem['groupe_id']==24){
+  if(!$config['PlanningHebdo'] and $elem['groupe_id']==24){
     continue;
   }
 

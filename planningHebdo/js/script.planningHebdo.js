@@ -6,7 +6,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/js/script.planningHebdo.js
 Création : 26 août 2013
-Dernière modification : 5 juin 2015
+Dernière modification : 24 juin 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -120,7 +120,14 @@ function plHebdoCopySelect(id){
 Si oui, coche la case "Même planning que la semaine 1" et masque les tableaux correspondants
 */
 function plHebdoMemePlanning(){
-  
+
+  // Si modification autorisée (select affichés)
+  if($(".tableau").find("select").length){
+    var modif=true;
+  }else{
+    var modif=false;
+  }
+
   var tab={};
 
   $(".tableau").each(function(){
@@ -130,21 +137,39 @@ function plHebdoMemePlanning(){
     
     var empty=true;
 
-    $(this).find("select").each(function(){
-      tab[i].push($(this).val());
+    if(modif){
+      $(this).find("select").each(function(){
+	var value=$(this).val();
+	tab[i].push(value);
 
-      // Test si le tableau 1 est vide pour ne pas cocher les cases lors de la création de nouveaux plannings
-      if($(this).val()){
-	empty=false;
-      }
-    });
+	// Test si le tableau 1 est vide pour ne pas cocher les cases lors de la création de nouveaux plannings
+	if(value){
+	  empty=false;
+	}
+      });
+    }else{
+      $(this).find(".td_heures").each(function(){
+	var value=$(this).text();
+	tab[i].push(value);
+
+	// Test si le tableau 1 est vide pour ne pas cocher les cases lors de la création de nouveaux plannings
+	if(value){
+	  empty=false;
+	}
+      });      
+    }
 
     // On compare le tableau courant au premier tableau
     if(i>0 && empty==false){
       // Si les tableaux sont les mêmes
       if(JSON.stringify(tab[i]) == JSON.stringify(tab[0])){
 	// On coche la case "Même planning ...", le tableau sera caché par l'évènement $(".memePlanning").click()
-	$("#memePlanning"+i).click();
+	if(modif){
+	  $("#memePlanning"+i).click();
+	}else{
+	  $("#memePlanning"+i).show();
+	  $("#div"+i).hide();
+	}
       }
     }
 

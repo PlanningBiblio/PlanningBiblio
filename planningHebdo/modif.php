@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/modif.php
 Création : 23 juillet 2013
-Dernière modification : 19 juin 2015
+Dernière modification : 24 juin 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -60,6 +60,10 @@ if($id){
   if(!$admin and $valide and $configHebdo['periodesDefinies']){
     $modifAutorisee=false;
   }
+  if(!$admin and !$config['PlanningHebdo-Agents']){
+    $modifAutorisee=false;
+  }
+
   if(!$admin and $valide){
     $action="copie";
   }
@@ -177,20 +181,25 @@ for($j=0;$j<$config['nb_semaine'];$j++){
 
   echo "<h3>{$cellule[$j]}</h3>\n";
 
+  // Affichage de la case à cocher "Même planning qu'en semaine 1"
   if($j>0){
-    echo "<p><input type='checkbox' name='memePlanning$j' class='memePlanning' data-id='$j' id='memePlanning$j' />";
-    echo "<label for='memePlanning$j' >Même planning qu'en {$cellule[0]}</label></p>\n";
+    if($modifAutorisee){
+      echo "<p><input type='checkbox' name='memePlanning$j' class='memePlanning' data-id='$j' id='memePlanning$j' />";
+      echo "<label for='memePlanning$j' >Même planning qu'en {$cellule[0]}</label></p>\n";
+    }else{
+      echo "<p style='display:none;' id='memePlanning$j' ><strong>Même planning qu'en {$cellule[0]}</strong></p>\n";
+    }
   }
 
   echo "<div id='div$j'>\n";
   echo "<table border='1' cellspacing='0' id='tableau{$j}' class='tableau' data-id='$j' >\n";
-  echo "<tr style='text-align:center;'><td style='width:150px;'>{$cellule[$j]}</td><td style='width:150px;'>Heure d'arrivée</td>";
-  echo "<td style='width:150px;'>Début de pause</td><td style='width:150px;'>Fin de pause</td>";
-  echo "<td style='width:150px;'>Heure de départ</td>";
+  echo "<tr style='text-align:center;'><td style='width:135px;'>{$cellule[$j]}</td><td style='width:135px;'>Heure d'arrivée</td>";
+  echo "<td style='width:135px;'>Début de pause</td><td style='width:135px;'>Fin de pause</td>";
+  echo "<td style='width:135px;'>Heure de départ</td>";
   if($config['Multisites-nombre']>1){
-    echo "<td>Site</td>";
+    echo "<td style='width:135px;'>Site</td>";
   }
-  echo "<td style='width:150px;'>Temps</td>";
+  echo "<td style='width:135px;'>Temps</td>";
   echo "</tr>\n";
   for($i=$debut[$j];$i<$fin[$j];$i++){
     $k=$i-($j*7)-1;
@@ -200,19 +209,25 @@ for($j=0;$j<$config['nb_semaine'];$j++){
       echo "<td>".selectTemps($i-1,2,null,"select")."</td><td>".selectTemps($i-1,3,null,"select")."</td>";
     }
     else{
-      echo "<td id='temps_".($i-1)."_0'>".heure2($temps[$i-1][0])."</td><td id='temps_".($i-1)."_1'>".heure2($temps[$i-1][1])."</td>";
-      echo "<td id='temps_".($i-1)."_2'>".heure2($temps[$i-1][2])."</td><td id='temps_".($i-1)."_3'>".heure2($temps[$i-1][3])."</td>";
+      echo "<td id='temps_".($i-1)."_0' class='td_heures'>".heure2($temps[$i-1][0])."</td><td id='temps_".($i-1)."_1' class='td_heures'>".heure2($temps[$i-1][1])."</td>";
+      echo "<td id='temps_".($i-1)."_2' class='td_heures'>".heure2($temps[$i-1][2])."</td><td id='temps_".($i-1)."_3' class='td_heures'>".heure2($temps[$i-1][3])."</td>";
     }
     if($config['Multisites-nombre']>1){
-      echo "<td><select name='temps[".($i-1)."][4]' class='select selectSite'>\n";
-      if(count($sites)>1){
-	echo "<option value=''>&nbsp;</option>\n";
+      if($modifAutorisee){
+	echo "<td><select name='temps[".($i-1)."][4]' class='select selectSite'>\n";
+	if(count($sites)>1){
+	  echo "<option value=''>&nbsp;</option>\n";
+	}
+	foreach($sites as $site){
+	  $selected=$temps[$i-1][4]==$site?"selected='selected'":null;
+	  echo "<option value='$site' $selected >{$config["Multisites-site{$site}"]}</option>\n";
+	}
+	echo "</select></td>";
+      }else{
+	$site=$temps[$i-1][4];
+	$site=$site?$config["Multisites-site{$site}"]:"&nbsp;";
+	echo "<td class='td_heures'>$site</td>\n";
       }
-      foreach($sites as $site){
-	$selected=$temps[$i-1][4]==$site?"selected='selected'":null;
-	echo "<option value='$site' $selected >{$config["Multisites-site{$site}"]}</option>\n";
-      }
-      echo "</select></td>";
     }
     echo "<td id='heures_{$j}_$i'></td>\n";
     echo "</tr>\n";

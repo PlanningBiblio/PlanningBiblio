@@ -180,7 +180,7 @@ EOD;
       $jour=$jour+7;
 
     //	Horaires de traval si le module PlanningHebdo est activé
-    if($config['Module-PlanningHebdo']){
+    if($config['PlanningHebdo']){
       include_once "class.planningHebdo.php";
       $p=new planningHebdo();
       $p->perso_id=$perso_id;

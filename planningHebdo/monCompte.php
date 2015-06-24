@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/monCompte.php
 Création : 23 juillet 2013
-Dernière modification : 5 juin 2015
+Dernière modification : 22 juin 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -84,103 +84,72 @@ EOD;
 
 <!-- Planning de présence -->
 <div id='planningPresence'>
-<table style='width:800px;'>
-<tr><td><h3>Planning de présence</h3></td>
-<td style='text-align:right;'>
-  <a href='#' onclick='document.getElementById("nouveauPlanning").style.display="";this.style.display="none";document.getElementById("historique").style.display="none";'>
-  Entrer un nouveau planning</a></td></tr>
-</table>
 
-<!-- Formulaire nouveau planning -->
-<div id='nouveauPlanning' style='display:none;'>
-Nouveau planning de présence
-<br/>
-<?php
-if($configHebdo['periodesDefinies']){
-  echo "<form name='form1' method='post' action='index.php' onsubmit='return plHebdoVerifFormPeriodesDefinies();'>";
-}else{
-  echo "<form name='form1' method='post' action='index.php' onsubmit='return plHebdoVerifForm();'>";
-}
-?>
-<input type='hidden' name='retour' value='monCompte.php' />
-<input type='hidden' name='page' value='planningHebdo/valid.php' />
-<input type='hidden' name='action' value='ajout' />
-<input type='hidden' name='perso_id'id='perso_id' value='<?php echo $_SESSION['login_id']; ?>' />
-
-<!-- Affichage des tableaux avec la sélection des horaires -->
-<?php
-switch($config['nb_semaine']){
-  case 2	: $cellule=array("Semaine Impaire","Semaine Paire");		break;
-  case 3	: $cellule=array("Semaine 1","Semaine 2","Semaine 3");		break;
-  default 	: $cellule=array("Jour");					break;
-}
-$fin=$config['Dimanche']?array(8,15,22):array(7,14,21);
-$debut=array(1,8,15);
-$jours=Array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
-?>
+<div style='display: inline-block; width:300px;'>
+<h3>Planning de présence</h3>
+</div>
 
 <?php
-// Si périodes définies : les dates de début et de fin sont forcées et il y a 2 plannings à saisir (horaires normaux et horaires réduits)
-if($configHebdo['periodesDefinies']){
-  echo "<p>Sélectionnez l'année\n";
-  echo "<select name='annee' class='selectAnnee'>\n";
-  foreach($annees as $annee){
-    echo "<option value='$annee'>$annee</option>\n";
-  }
-  echo "</select></p>\n";
-}
+if($config['PlanningHebdo-Agents']){
+  echo <<<EOD
+  <div style='display: inline-block; width:300px; position: absolute; right: 22px; text-align: right; margin-top:22px;'>
+  <a href='#' onclick='document.getElementById("nouveauPlanning").style.display="";this.style.display="none";document.getElementById("historique").style.display="none";' class='ui-button'>
+    Entrer un nouveau planning</a>
+  </div>
 
-for($j=0;$j<$config['nb_semaine'];$j++){
+  <!-- Formulaire nouveau planning -->
+  <div id='nouveauPlanning' style='display:none;'>
+  Nouveau planning de présence
+  <br/>
+EOD;
+ 
   if($configHebdo['periodesDefinies']){
-    echo "<br/>Horaires normaux <font id='heures_{$j}' style='font-weight:bold;position:absolute;left:300px;'>&nbsp;</font><br/>";
-  }
-  echo "<h3>{$cellule[$j]}</h3>\n";
-
-  if($j>0){
-    echo "<p><input type='checkbox' name='memePlanning$j' class='memePlanning' data-id='$j' id='memePlanning$j' />";
-    echo "<label for='memePlanning$j' >Même planning qu'en {$cellule[0]}</label></p>\n";
+    echo "<form name='form1' method='post' action='index.php' onsubmit='return plHebdoVerifFormPeriodesDefinies();'>";
+  }else{
+    echo "<form name='form1' method='post' action='index.php' onsubmit='return plHebdoVerifForm();'>";
   }
 
-  echo "<div id='div$j'>\n";
-  echo "<table border='1' cellspacing='0' id='tableau{$j}' class='tableau' data-id='$j'  style='margin-bottom:10px;>\n";
-  echo "<tr style='text-align:center;'><td style='width:150px;'>{$cellule[$j]}</td><td style='width:150px;'>Heure d'arrivée</td>";
-  echo "<td style='width:150px;'>Début de pause</td><td style='width:150px;'>Fin de pause</td>";
-  echo "<td style='width:150px;'>Heure de départ</td>";
-  if($config['Multisites-nombre']>1){
-    echo "<td>Site</td>";
+  echo <<<EOD
+  <input type='hidden' name='retour' value='monCompte.php' />
+  <input type='hidden' name='page' value='planningHebdo/valid.php' />
+  <input type='hidden' name='action' value='ajout' />
+  <input type='hidden' name='perso_id'id='perso_id' value='{$_SESSION['login_id']}' />
+
+EOD;
+
+  // Affichage des tableaux avec la sélection des horaires
+  switch($config['nb_semaine']){
+    case 2	: $cellule=array("Semaine Impaire","Semaine Paire");		break;
+    case 3	: $cellule=array("Semaine 1","Semaine 2","Semaine 3");		break;
+    default 	: $cellule=array("Jour");					break;
   }
-  echo "<td style='width:150px;'>Temps</td>";
-  echo "</tr>\n";
-  for($i=$debut[$j];$i<$fin[$j];$i++){
-    $k=$i-($j*7)-1;
-    echo "<tr style='text-align:center;'><td>{$jours[$k]}</td><td>".selectTemps($i-1,0,null,"select")."</td><td>".selectTemps($i-1,1,null,"select")."</td>";
-    echo "<td>".selectTemps($i-1,2,null,"select")."</td><td>".selectTemps($i-1,3,null,"select")."</td>";
-    if($config['Multisites-nombre']>1){
-      echo "<td><select name='temps[".($i-1)."][4]' class='select' >\n";
-      if(count($sites)>1){
-	echo "<option value=''>&nbsp;</option>\n";
-      }
-      foreach($sites as $site){
-	echo "<option value='$site' >{$config["Multisites-site{$site}"]}</option>\n";
-      }
-      echo "</select></td>";
+  $fin=$config['Dimanche']?array(8,15,22):array(7,14,21);
+  $debut=array(1,8,15);
+  $jours=Array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
+
+  // Si périodes définies : les dates de début et de fin sont forcées et il y a 2 plannings à saisir (horaires normaux et horaires réduits)
+  if($configHebdo['periodesDefinies']){
+    echo "<p>Sélectionnez l'année\n";
+    echo "<select name='annee' class='selectAnnee'>\n";
+    foreach($annees as $annee){
+      echo "<option value='$annee'>$annee</option>\n";
     }
-    echo "<td id='heures_{$j}_$i'></td>\n";
-    echo "</tr>\n";
+    echo "</select></p>\n";
   }
-  echo "</table>\n";
 
-  // Affichage du nombre d'heures si les periodes ne sont pas définies
-  if(!$configHebdo['periodesDefinies']){
-    echo "Nombre d'heures : <font id='heures_{$j}' style='font-weight:bold;'>&nbsp;</font><br/>\n";
-  }
-  echo "</div>\n";
+  for($j=0;$j<$config['nb_semaine'];$j++){
+    if($configHebdo['periodesDefinies']){
+      echo "<br/>Horaires normaux <font id='heures_{$j}' style='font-weight:bold;position:absolute;left:300px;'>&nbsp;</font><br/>";
+    }
+    echo "<h3>{$cellule[$j]}</h3>\n";
 
-  // Si périodes définies : formulaires pour la périodes horaires réduits
-  if($configHebdo['periodesDefinies']){
-    echo "<br/>\n";
-    echo "Horaires réduits <font id='heures2_{$j}' style='font-weight:bold;;position:absolute;left:300px;'>&nbsp;</font><br/>";
-    echo "<table border='1' cellspacing='0' id='tableau{$j}' style='margin-bottom:30px;'>\n";
+    if($j>0){
+      echo "<p><input type='checkbox' name='memePlanning$j' class='memePlanning' data-id='$j' id='memePlanning$j' />";
+      echo "<label for='memePlanning$j' >Même planning qu'en {$cellule[0]}</label></p>\n";
+    }
+
+    echo "<div id='div$j'>\n";
+    echo "<table border='1' cellspacing='0' id='tableau{$j}' class='tableau' data-id='$j'  style='margin-bottom:10px;>\n";
     echo "<tr style='text-align:center;'><td style='width:150px;'>{$cellule[$j]}</td><td style='width:150px;'>Heure d'arrivée</td>";
     echo "<td style='width:150px;'>Début de pause</td><td style='width:150px;'>Fin de pause</td>";
     echo "<td style='width:150px;'>Heure de départ</td>";
@@ -191,10 +160,10 @@ for($j=0;$j<$config['nb_semaine'];$j++){
     echo "</tr>\n";
     for($i=$debut[$j];$i<$fin[$j];$i++){
       $k=$i-($j*7)-1;
-      echo "<tr><td>{$jours[$k]}</td><td>".selectTemps($i-1,0,2,"select2")."</td><td>".selectTemps($i-1,1,2,"select2")."</td>";
-      echo "<td>".selectTemps($i-1,2,2,"select2")."</td><td>".selectTemps($i-1,3,2,"select2")."</td>";
+      echo "<tr style='text-align:center;'><td>{$jours[$k]}</td><td>".selectTemps($i-1,0,null,"select")."</td><td>".selectTemps($i-1,1,null,"select")."</td>";
+      echo "<td>".selectTemps($i-1,2,null,"select")."</td><td>".selectTemps($i-1,3,null,"select")."</td>";
       if($config['Multisites-nombre']>1){
-	echo "<td><select name='temps2[".($i-1)."][4]'>\n";
+	echo "<td><select name='temps[".($i-1)."][4]' class='select' >\n";
 	if(count($sites)>1){
 	  echo "<option value=''>&nbsp;</option>\n";
 	}
@@ -203,44 +172,83 @@ for($j=0;$j<$config['nb_semaine'];$j++){
 	}
 	echo "</select></td>";
       }
-      echo "<td id='heures2_{$j}_$i'></td>\n";
+      echo "<td id='heures_{$j}_$i'></td>\n";
       echo "</tr>\n";
     }
     echo "</table>\n";
+
+    // Affichage du nombre d'heures si les periodes ne sont pas définies
+    if(!$configHebdo['periodesDefinies']){
+      echo "Nombre d'heures : <font id='heures_{$j}' style='font-weight:bold;'>&nbsp;</font><br/>\n";
+    }
+    echo "</div>\n";
+
+    // Si périodes définies : formulaires pour la périodes horaires réduits
+    if($configHebdo['periodesDefinies']){
+      echo "<br/>\n";
+      echo "Horaires réduits <font id='heures2_{$j}' style='font-weight:bold;;position:absolute;left:300px;'>&nbsp;</font><br/>";
+      echo "<table border='1' cellspacing='0' id='tableau{$j}' style='margin-bottom:30px;'>\n";
+      echo "<tr style='text-align:center;'><td style='width:150px;'>{$cellule[$j]}</td><td style='width:150px;'>Heure d'arrivée</td>";
+      echo "<td style='width:150px;'>Début de pause</td><td style='width:150px;'>Fin de pause</td>";
+      echo "<td style='width:150px;'>Heure de départ</td>";
+      if($config['Multisites-nombre']>1){
+	echo "<td>Site</td>";
+      }
+      echo "<td style='width:150px;'>Temps</td>";
+      echo "</tr>\n";
+      for($i=$debut[$j];$i<$fin[$j];$i++){
+	$k=$i-($j*7)-1;
+	echo "<tr><td>{$jours[$k]}</td><td>".selectTemps($i-1,0,2,"select2")."</td><td>".selectTemps($i-1,1,2,"select2")."</td>";
+	echo "<td>".selectTemps($i-1,2,2,"select2")."</td><td>".selectTemps($i-1,3,2,"select2")."</td>";
+	if($config['Multisites-nombre']>1){
+	  echo "<td><select name='temps2[".($i-1)."][4]'>\n";
+	  if(count($sites)>1){
+	    echo "<option value=''>&nbsp;</option>\n";
+	  }
+	  foreach($sites as $site){
+	    echo "<option value='$site' >{$config["Multisites-site{$site}"]}</option>\n";
+	  }
+	  echo "</select></td>";
+	}
+	echo "<td id='heures2_{$j}_$i'></td>\n";
+	echo "</tr>\n";
+      }
+      echo "</table>\n";
+    }
+
   }
 
-}
+  echo "<br/>\n";
 
-// Choix de la période d'utilisation et validation 
-echo <<<EOD
-<br/>
+  // Choix de la période d'utilisation et validation 
+  if(!$configHebdo['periodesDefinies']){
+    echo <<<EOD
+    <b>Choisissez la période d'utilisation et validez</b> :
+    <table style='width:750px;'>
+    <tr>
+    <td>Date de début</td>
+    <td><input type='text' name='debut' class='datepicker'/></td>
+    <td>Date de fin</td>
+    <td><input type='text' name='fin' class='datepicker'/></td>
+    <td><input type='submit' value='Enregistrer' class='ui-button' />
+    </tr>
+    </table>
 EOD;
-if(!$configHebdo['periodesDefinies']){
+  }
+  else{
+    echo "<input type='submit' value='Valider' class='ui-button' />\n";
+  }
+
   echo <<<EOD
-  <b>Choisissez la période d'utilisation et validez</b> :
-  <table style='width:750px;'>
-  <tr>
-  <td>Date de début</td>
-  <td><input type='text' name='debut' class='datepicker'/></td>
-  <td>Date de fin</td>
-  <td><input type='text' name='fin' class='datepicker'/></td>
-  <td><input type='submit' value='Enregistrer' class='ui-button' />
-  </tr>
-  </table>
+  </form>
+  <script type='text/JavaScript'>
+  $(".select").change(function(){plHebdoCalculHeures($(this),"");});
+  $(".select2").change(function(){plHebdoCalculHeures($(this),2);});
+  </script>
+  </div> <!-- nouveauPlanning -->
 EOD;
 }
-else{
-  echo "<input type='submit' value='Valider' class='ui-button' />\n";
-}
-
 ?>
-</form>
-<script type='text/JavaScript'>
-$(".select").change(function(){plHebdoCalculHeures($(this),"");});
-$(".select2").change(function(){plHebdoCalculHeures($(this),2);});
-</script>
-</div> <!-- nouveauPlanning -->
-
 
 <!-- Historique des plannings de présence -->
 <div id='historique'>

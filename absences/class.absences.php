@@ -65,14 +65,14 @@ class absences{
 
       // On consulte le planning de présence de l'agent
       // On ne calcule pas les heures si le module planningHebdo n'est pas activé, le calcul serait faux si les emplois du temps avait changé
-      if(!$config['Module-PlanningHebdo']){
+      if(!$config['PlanningHebdo']){
 	$this->error=true;
 	$this->message="Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
 	return false;
       }
 
       // On consulte le planning de présence de l'agent
-      if($config['Module-PlanningHebdo']){
+      if($config['PlanningHebdo']){
 	require_once "planningHebdo/class.planningHebdo.php";
 
 	$p=new planningHebdo();
@@ -275,7 +275,7 @@ class absences{
       $date=$debut;
       while($date<=$fin){
 	// Emploi du temps si module planningHebdo activé
-	if($config['Module-PlanningHebdo']){
+	if($config['PlanningHebdo']){
 	  include_once "planningHebdo/class.planningHebdo.php";
 	  $p=new planningHebdo();
 	  $p->perso_id=$perso_id;

@@ -155,7 +155,7 @@ if(!$config['ctrlHresAgents'] and ($d->position==6 or $d->position==0)){
 }
 
 // Si module PlanningHebdo : recherche des plannings correspondant à la date actuelle
-if($config['Module-PlanningHebdo']){
+if($config['PlanningHebdo']){
   include "../../planningHebdo/class.planningHebdo.php";
   $p=new planningHebdo();
   $p->debut=$date;
@@ -181,7 +181,7 @@ foreach($db->result as $elem){
   $temps=array();
 
   // Si module PlanningHebdo : emploi du temps récupéré à partir de planningHebdo
-  if($config['Module-PlanningHebdo']){
+  if($config['PlanningHebdo']){
     if(array_key_exists($elem['id'],$tempsPlanningHebdo)){
       $temps=$tempsPlanningHebdo[$elem['id']];
     }
