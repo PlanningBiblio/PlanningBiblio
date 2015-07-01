@@ -90,12 +90,14 @@ if($id){
 }
 
 // Sécurité
-if(!$admin and $perso_id!=$_SESSION['login_id']){
+if(!$admin and $id and $perso_id!=$_SESSION['login_id']){
   echo "<div id='acces_refuse'>Accès refusé</div>\n";
   include "include/footer.php";
   exit;
 }
 
+// Perso_id si ajout via Mon Compte
+$perso_id=$_SESSION['login_id'];
 ?>
 
 <!-- Formulaire Planning-->
@@ -120,22 +122,31 @@ if($id and !$copy){
 }else{
   $db=new db();
   $db->select2("personnel","*",array("supprime"=>0),"order by nom,prenom");
+
+  // Non admin
+  if(!$admin){
+    echo "<h3>Nouveau planning pour ".nom($perso_id,"prenom nom")."</h3>\n";
+  }
   // Copie
-  if($copy){
+  elseif($copy){
     echo "<h3>Copie du planning de ".nom($perso_id,"prenom nom")." du $debut1Fr au $fin1Fr</h3>\n";
-  // Ajout
+  // Ajout par un admin
   } else {
     echo "<h3>Nouveau planning</h3>\n";
   }
   echo "<div id='plHebdo-perso-id'>\n";
-  echo "<label for='perso_id'>Pour l'agent</label>\n";
-  echo "<select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id' style='position:absolute; left:200px; width:200px; text-align:center;' >\n";
-  echo "<option value=''>&nbsp;</option>\n";
-  foreach($db->result as $elem){
-    $selected=$perso_id==$elem['id']?"selected='selected'":null;
-    echo "<option value='{$elem['id']}' $selected >{$elem['nom']} {$elem['prenom']}</option>\n";
+  if($admin){
+    echo "<label for='perso_id'>Pour l'agent</label>\n";
+    echo "<select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id' style='position:absolute; left:200px; width:200px; text-align:center;' >\n";
+    echo "<option value=''>&nbsp;</option>\n";
+    foreach($db->result as $elem){
+      $selected=$perso_id==$elem['id']?"selected='selected'":null;
+      echo "<option value='{$elem['id']}' $selected >{$elem['nom']} {$elem['prenom']}</option>\n";
+    }
+    echo "</select>\n";
+  }else{
+    echo "<input type='hidden' name='perso_id' value='$perso_id' id='perso_id' />\n";
   }
-  echo "</select>\n";
   echo "</div>\n";
 }
 

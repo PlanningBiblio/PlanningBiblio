@@ -6,7 +6,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/js/script.planningHebdo.js
 Création : 26 août 2013
-Dernière modification : 24 juin 2015
+Dernière modification : 1er juillet 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -201,9 +201,6 @@ function plHebdoVerifForm(){
   id=$("input[name=id]").val();
   perso_id=$("#perso_id").val();
 
-  id=id?"&id="+id:null;
-  perso_id=perso_id?"&perso_id="+perso_id:null;
-  
   if(!debut || !fin){
     alert("Les dates de début et de fin sont obligatoires");
     return false;
@@ -217,16 +214,16 @@ function plHebdoVerifForm(){
   var retour=false;
   $.ajax({
     url: "planningHebdo/ajax.verifPlannings.php",
-    data: "debut="+debut+"&fin="+fin+id+perso_id,
+    dataType: "json",
+    data: {debut: debut, fin: fin, id: id, perso_id: perso_id},
     type: "get",
     async: false,
     success: function(result){
-      result=JSON.parse(result);
       if(result["retour"]=="OK"){
 	retour="true";
       }else{
-        if(perso_id){
-	  message="Un planning est enregistré pour cet agent pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"])
+        if(result["autre_agent"]){
+	  message="Un planning est enregistré pour l'agent "+result["autre_agent"]+" pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"])
 	  +"\nVeuillez modifier les dates de début et/ou de fin ou modifier le premier planning.";
 	}else{
 	  message="Vous avez déjà enregistré un planning pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"])
