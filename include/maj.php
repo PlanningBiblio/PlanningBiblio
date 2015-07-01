@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 22 juin 2015
+Dernière modification : 1er juillet 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -767,18 +767,17 @@ if(strcmp("2.0",$config['Version'])>0){
 
     // Création des tables
     $sql[]="CREATE TABLE `{$dbprefix}planningHebdo` (`id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `perso_id` INT(11) NOT NULL, `debut` DATE NOT NULL, `fin` DATE NOT NULL, `temps` TEXT NOT NULL, `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, `modif` INT(11) NOT NULL DEFAULT '0',`modification` TIMESTAMP, `valide` INT(11) NOT NULL DEFAULT '0',`validation` TIMESTAMP, `actuel` INT(1) NOT NULL DEFAULT '0', `remplace` INT(11) NOT NULL DEFAULT '0');";
-    $sql[]="CREATE TABLE `{$dbprefix}planningHebdoConfig` (`id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `nom` VARCHAR(30), `valeur` TEXT);";
     $sql[]="CREATE TABLE `{$dbprefix}planningHebdoPeriodes` (`id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `annee` VARCHAR(9), `dates` TEXT);";
-
-    // Configuration
-    $sql[]="INSERT INTO `{$dbprefix}planningHebdoConfig` (`nom`,`valeur`) VALUES ('periodesDefinies','0'),('notifications','droit');";
-    $sql[]="INSERT INTO `{$dbprefix}planningHebdoConfig` (`nom`,`valeur`) VALUES ('notifications','droit');";
 
     // Menu administration
     $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES (50,75,'Plannings de présence','planningHebdo/index.php');";
 
     // Cron
     $sql[]="INSERT INTO `{$dbprefix}cron` (`h`,`m`,`dom`,`mon`,`dow`,`command`,`comments`) VALUES ('0','0','*','*','*','planningHebdo/cron.daily.php','Daily Cron for planningHebdo module');";
+
+    // Périodes définies
+    $periodesDefinies=0;
+    $notifications="droit";
   }
   // Si le plugin était installé, on met à jour les liens
   else{
@@ -795,6 +794,18 @@ if(strcmp("2.0",$config['Version'])>0){
 
     // Suppression de la table plugins
     $sql[]="DELETE FROM `{$dbprefix}plugins` WHERE `nom`='planningHebdo';";
+
+    // Configuration : Périodes définies
+    $db=new db();
+    $db->query("SELECT `valeur` FROM `{$dbprefix}planningHebdoConfig` WHERE `nom`='periodesDefinies';");
+    $periodesDefinies=$db->result[0]['valeur'];
+
+    // Configuration : Notifications
+    $db=new db();
+    $db->query("SELECT `valeur` FROM `{$dbprefix}planningHebdoConfig` WHERE `nom`='notifications';");
+    $notifications=$db->result[0]['valeur'];
+
+    $sql[]="DROP TABLE `{$dbprefix}planningHebdoConfig`;";
   }
 
   $sql[]="ALTER TABLE `{$dbprefix}menu` ADD `condition` VARCHAR(100) NULL;";
@@ -803,6 +814,16 @@ if(strcmp("2.0",$config['Version'])>0){
   // Planning Hebdo, saisie réservée aux admins
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES 
     ('PlanningHebdo-Agents', 'boolean', '1', 'Heures de pr&eacute;sence','50', 'Autoriser les agents &agrave; saisir leurs plannings de pr&eacute;sence (avec le module Planning Hebdo). Les plannings saisis devront &ecirc;tre valid&eacute;s par un administrateur.');";
+
+  // Configuration : périodes définies
+  // Période définies = 0 pour le moment. Option plus utilisée par la BUA. Développements complexes.
+/*
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES 
+    ('PlanningHebdo-PeriodesDefinies', 'hidden', '$periodesDefinies', 'Heures de pr&eacute;sence','60', 'Utiliser des périodes définies pour les plannings hebdomadaires (Module Planning Hebdo)');";
+*/
+  // Configuration : notifications
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `ordre`, `commentaires`) VALUES 
+    ('PlanningHebdo-Notifications', 'enum2', '$notifications', '[[\"droit\",\"Agents ayant le droit de g&eacute;rer les plannings de pr&eacute;sence\"],[\"Mail-Planning\",\"Cellule planning\"]]', 'Heures de pr&eacute;sence','70', 'A qui envoyer les notifications de nouveaux plannings de pr&eacute;sence (Module Planning Hebdo)');";
 
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.0' WHERE `nom`='Version';";
 }

@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/index.php
 Création : 23 juillet 2013
-Dernière modification : 18 juin 2015
+Dernière modification : 1er juillet 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -44,15 +44,26 @@ $p->debut=dateFr($debut);
 $p->fin=dateFr($fin);
 $p->fetch();
 
+echo"<h3>Plannings de présence</h3>\n";
+
+/*
+// Période définies = 0 pour le moment. Option sans doute plus utilisée. Développements complexes.
+if($config['PlanningHebdo-PeriodesDefinies']){
+  echo "<div id='config' style='padding:10px; text-align:right;'>\n";
+  echo "<a href='index.php?page=planningHebdo/configuration.php'>Configurer les p&eacute;riodes</a>\n";
+  echo "</div>\n";
+}
+*/
 echo <<<EOD
-<h3>Plannings de présence</h3>
+<div id='buttons'>
 <form name='form' method='get' action='index.php'>
 <input type='hidden' name='page' value='planningHebdo/index.php' />
 Début : <input type='text' name='debut' class='datepicker' value='$debut' />
 &nbsp;&nbsp;Fin : <input type='text' name='fin' class='datepicker' value='$fin' />
 &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />
 &nbsp;&nbsp;<input type='button' value='Effacer' onclick='location.href="index.php?page=planningHebdo/index.php&amp;reset=on"' class='ui-button' />
-<a href='index.php?page=planningHebdo/configuration.php' style='position:absolute;right:10px;'>Configuration</a>
+<a class='ui-button' href='index.php?page=planningHebdo/modif.php&amp;retour=index.php' style='position:absolute; right:10px;'>Entrer un nouveau planning</a>
+</div>
 </form>
 
 <br/>
@@ -105,4 +116,3 @@ foreach($p->elements as $elem){
 }
 echo "</tbody></table>\n";
 ?>
-<a class='ui-button' href='index.php?page=planningHebdo/modif.php&amp;retour=index.php'>Nouveau planning</a>

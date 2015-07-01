@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 19 juin 2015
+Dernière modification : 1er juillet 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -101,8 +101,7 @@ class planningHebdo{
 
     // Envoi d'un mail aux responsables
     $destinataires=array();
-    $this->getConfig();
-    if($this->config['notifications']=="droit"){
+    if($GLOBALS['config']['PlanningHebdo-Notifications']=="droit"){
       $p=new personnel();
       $p->fetch("nom");
       foreach($p->elements as $elem){
@@ -112,7 +111,7 @@ class planningHebdo{
 	}
       }
     }
-    elseif($this->config['notifications']=="Mail-Planning"){
+    elseif($GLOBALS['config']['PlanningHebdo-Notifications']=="Mail-Planning"){
       $destinataires=explode(";",$GLOBALS['config']['Mail-Planning']);
     }
 
@@ -349,8 +348,7 @@ class planningHebdo{
     $destinataires=array();
 
     // Les admins
-    $this->getConfig();
-    if($this->config['notifications']=="droit"){
+    if($GLOBALS['config']['PlanningHebdo-Notifications']=="droit"){
       $p=new personnel();
       $p->fetch("nom");
       foreach($p->elements as $elem){
@@ -360,7 +358,7 @@ class planningHebdo{
 	}
       }
     }
-    elseif($this->config['notifications']=="Mail-Planning"){
+    elseif($GLOBALS['config']['PlanningHebdo-Notifications']=="Mail-Planning"){
       $destinataires=explode(";",$GLOBALS['config']['Mail-Planning']);
     }
     // L'agent
@@ -386,16 +384,6 @@ class planningHebdo{
     }
   }
   
-  public function updateConfig($data){
-    $db=new db();
-    $db->update2("planningHebdoConfig",array("valeur"=>$data['periodesDefinies']),array("nom"=>"periodesDefinies"));
-    $this->error=$db->error?true:false;
-
-    $db=new db();
-    $db->update2("planningHebdoConfig",array("valeur"=>$data['notifications']),array("nom"=>"notifications"));
-    $this->error=$db->error?true:$this->error;
-  }
-
   public function updatePeriodes($data){
     $annee=array($data['annee'][0],$data['annee'][1]);
     // Convertion des dates JJ/MM/AAAA => AAAA-MM-JJ
