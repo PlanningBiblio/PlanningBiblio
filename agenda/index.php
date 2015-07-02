@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 20 mai 2015
+Dernière modification : 2 juillet 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -181,7 +181,7 @@ EOD;
 
     //	Horaires de traval si le module PlanningHebdo est activé
     if($config['PlanningHebdo']){
-      include_once "class.planningHebdo.php";
+      include_once "planningHebdo/class.planningHebdo.php";
       $p=new planningHebdo();
       $p->perso_id=$perso_id;
       $p->debut=$current;
