@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : ldap/class.ldap.php
 Création : 2 juillet 2014
-Dernière modification : 9 avril 2015
+Dernière modification : 7 juillet 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -22,9 +22,12 @@ if(!isset($version)){
 
 function authCAS(){
   include "vendor/CAS-1.3.3/CAS.php";
-  phpCAS::setDebug("data/cas_debug.txt");
+  if($GLOBALS['config']['CAS-Debug']){
+    $tmp_dir=sys_get_temp_dir();
+    phpCAS::setDebug("$tmp_dir/cas_debug.txt");
+  }
   phpCAS::client($GLOBALS['config']['CAS-Version'], $GLOBALS['config']['CAS-Hostname'], intval($GLOBALS['config']['CAS-Port']), $GLOBALS['config']['CAS-URI'],false);
-  phpCAS::setExtraCurlOption(CURLOPT_SSLVERSION,3);
+  phpCAS::setExtraCurlOption(CURLOPT_SSLVERSION,intval($GLOBALS['config']['CAS-SSLVersion']));
   if($GLOBALS['config']['CAS-CACert']){
     phpCAS::setCasServerCACert($GLOBALS['config']['CAS-CACert']);
   }

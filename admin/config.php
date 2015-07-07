@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 24 avril 2015
+Dernière modification : 7 juillet 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,6 +20,8 @@ Page appelée par la page index.php
 if(!isset($version)){
   include_once "../include/accessDenied.php";
 }
+
+$tmp_dir=sys_get_temp_dir();
 
 // Enregistrement des paramètres
 if($_POST){
@@ -185,7 +187,8 @@ foreach($db->result as $elem){
       break;
   }
 
-  echo "</td><td>{$elem['commentaires']}</td>\n";
+  $commentaires=str_replace("[TEMP]",$tmp_dir,$elem['commentaires']);
+  echo "</td><td>$commentaires</td>\n";
   echo "</tr>\n";
   
 }
