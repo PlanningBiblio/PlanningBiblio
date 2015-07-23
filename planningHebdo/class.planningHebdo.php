@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 8 juillet 2015
+Dernière modification : 23 juillet 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,9 +20,11 @@ if(!isset($version)){
   include_once "../include/accessDenied.php";
 }
 
-$path=substr($_SERVER['SCRIPT_NAME'],-9)=="index.php"?null:"../";
-$path=strpos($_SERVER['SCRIPT_NAME'],"plugins")?"../../":$path;
-require_once "{$path}personnel/class.personnel.php";
+if(!isset($path)){
+  $path=substr($_SERVER['SCRIPT_NAME'],-9)=="index.php"?null:"../";
+  $path=strpos($_SERVER['SCRIPT_NAME'],"plugins")?"../../":$path;
+  require_once "{$path}personnel/class.personnel.php";
+}
 
 class planningHebdo{
   public $agent=null;

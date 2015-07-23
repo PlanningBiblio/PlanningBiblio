@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 21 mai 2015
+Dernière modification : 23 juillet 2015
 Auteur : Jérôme Combes jerome@planningbilbio.fr, Christophe Le Guennec Christophe.Leguennec@u-pem.fr
 
 Description :
@@ -156,7 +156,7 @@ if(!$config['ctrlHresAgents'] and ($d->position==6 or $d->position==0)){
 
 // Si module PlanningHebdo : recherche des plannings correspondant à la date actuelle
 if($config['PlanningHebdo']){
-  include "../../planningHebdo/class.planningHebdo.php";
+  require_once "../../planningHebdo/class.planningHebdo.php";
   $p=new planningHebdo();
   $p->debut=$date;
   $p->fin=$date;

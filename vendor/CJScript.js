@@ -3,7 +3,7 @@ Licence GNU/GPL (version 2 et au dela)
 
 Fichier : CJScript.js
 Création : mars 2015
-Dernière modification : 2 juin 2015
+Dernière modification : 23 juillet 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 */
 
@@ -73,6 +73,15 @@ function CJFileExists(url){
   });
 }
 
+/**
+ * @function CJInfo
+ * Affiche des messages d'erreur ou d'information en haut de l'application
+ * @param string message : message à afficher, utiliser #BR# pour les sauts de lignes
+ * @param string type : type de message, valeurs = success ou error
+ * @param int top : position haute du message en pixel, default=82
+ * @param int time : temps d'affichage en milisecondes, default=8000
+ * @param string myClass : permet d'attribuer une classe au div affichant le message pour agir dessus à postériori (ex : $(".myClass").remove(); )
+ */
 function CJInfo(message,type,top,time,myClass){
   if(type==undefined || type=="success"){
   	type="highlight";
