@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 14 avril 2015
+Dernière modification : 23 juillet 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -231,12 +231,17 @@ h3{
 .menu_table{
   position: absolute;
   min-width:200px;
-  border: 1px solid #7D3C25;
+/*  border: 1px solid #7D3C25;*/
 }
 
 .menu_table td{
   padding : 1px 10px;
   border: 1px outset #7D3C25;
+  border-top: 0px;
+}
+
+.menu_table tr:first-child td{
+  border-top: 1px outset #7D3C25;
 }
 
 .ejsmenu2{
