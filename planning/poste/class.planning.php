@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.6
+Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 27 avril 2015
+Dernière modification : 30 juillet 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -113,6 +113,7 @@ class planning{
 
     if(is_array($agents))
     foreach($agents as $elem){
+      $heuresHebdo=intval($_SESSION['oups']['heuresSP'][$elem['id']]);
       $hres_jour=0;
       $hres_sem=0;
 
@@ -215,14 +216,14 @@ class planning{
       //	Mise en forme de la ligne avec le nom et les heures et la couleur en fonction des heures faites
       $nom.="&nbsp;<font title='Heures du jour'>$hres_jour</font> / ";
       $nom.="<font title='Heures de la semaine'>$hres_sem</font> / ";
-      $nom.="<font title='Quota hebdomadaire'>{$elem['heuresHebdo']}</font>";
+      $nom.="<font title='Quota hebdomadaire'>$heuresHebdo</font>";
       $nom.=$hres_4sem;
 
       if($hres_jour>7)			// plus de 7h:jour : rouge
 	$nom="<font style='color:red'>$nom</font>\n";
-      elseif(($elem['heuresHebdo']-$hres_sem)<=0.5 and ($hres_sem-$elem['heuresHebdo'])<=0.5)		// 0,5 du quota hebdo : vert
+      elseif(($heuresHebdo-$hres_sem)<=0.5 and ($hres_sem-$heuresHebdo)<=0.5)		// 0,5 du quota hebdo : vert
 	$nom="<font style='color:green'>$nom</font>\n";
-      elseif($hres_sem>$elem['heuresHebdo'])			// plus du quota hebdo : rouge
+      elseif($hres_sem>$heuresHebdo)			// plus du quota hebdo : rouge
 	$nom="<font style='color:red'>$nom</font>\n";
       
       

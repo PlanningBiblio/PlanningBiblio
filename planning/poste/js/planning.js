@@ -47,6 +47,16 @@ $(document).ready(function(){
       $(jtem).css("top",top);
     });
   });
+  
+  // Calcul des heures hebdomaraires des agents pour le menudiv
+  if($("#planning").length){
+    $.ajax({
+      url: "planning/poste/ajax.heuresSP.php",
+      dataType: "json",
+      type: "post",
+      data: {date: $("#date").val()},
+    });
+  }
 });
 
 // Evénements JQuery

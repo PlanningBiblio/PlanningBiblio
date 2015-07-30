@@ -82,7 +82,7 @@ if($id){
   $fin1=null;
   $debut1Fr=null;
   $fin1Fr=null;
-  $perso_id=null;
+  $perso_id=$_SESSION['login_id'];
   $temps=null;
   $valide=null;
   $remplace=null;
@@ -100,7 +100,7 @@ if(!$admin and $id and $perso_id!=$_SESSION['login_id']){
 }
 
 // Perso_id si ajout via Mon Compte
-$perso_id=$_SESSION['login_id'];
+// $perso_id=$_SESSION['login_id'];
 ?>
 
 <!-- Formulaire Planning-->

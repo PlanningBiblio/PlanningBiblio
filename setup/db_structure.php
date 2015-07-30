@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 1er juillet 2015
+Dernière modification : 29 juillet 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -74,6 +74,14 @@ $sql[]="CREATE TABLE `{$dbprefix}config` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
+$sql[]="CREATE TABLE `{$dbprefix}heures_SP` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT, 
+  `semaine` DATE,
+  `update_time` INT(11),
+  `heures` TEXT,
+  PRIMARY KEY (`id`))
+  ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
 $sql[]="CREATE TABLE `{$dbprefix}lignes` (
   `id` int AUTO_INCREMENT,
   nom text,
@@ -113,7 +121,7 @@ $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `password` varchar(40) NOT NULL DEFAULT '',
   `commentaires` text NOT NULL,
   `last_login` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `heuresHebdo` FLOAT(5) NOT NULL,
+  `heuresHebdo` VARCHAR(6) NOT NULL,
   `heuresTravail` FLOAT(5) NOT NULL,
   `sites` TEXT NOT NULL DEFAULT '',
   `temps` text NOT NULL,

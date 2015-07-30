@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 20 mai 2015
+Dernière modification : 30 juillet 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -131,6 +131,12 @@ class personnel{
     }
   }
 
+  public function update_time(){
+    $db=new db();
+    $db->query("show table status from {$GLOBALS['config']['dbname']} like '{$GLOBALS['dbprefix']}personnel';");
+    return $db->result[0]['Update_time'];
+  }
+  
   public function updateEDTSamedi($eDTSamedi,$debut,$fin,$perso_id){
     if(!$GLOBALS['config']['EDTSamedi']){
       return false;

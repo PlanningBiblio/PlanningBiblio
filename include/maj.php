@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 7 juillet 2015
+Dernière modification : 29 juillet 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -838,6 +838,18 @@ if(strcmp("2.0",$config['Version'])>0){
     ('CAS-Debug', 'boolean', '0', 'CAS','50', 'Activer le d&eacutebogage pour CAS. Cr&eacute;&eacute; un fichier &quot;cas_debug.txt&quot; dans le dossier &quot;[TEMP]&quot;');";
 
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.0' WHERE `nom`='Version';";
+}
+
+if(strcmp("2.0.1",$config['Version'])>0){
+  $sql[]="ALTER TABLE `{$dbprefix}personnel` CHANGE `heuresHebdo` `heuresHebdo` VARCHAR(6);";
+  $sql[]="CREATE TABLE `{$dbprefix}heures_SP` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT, 
+  `semaine` DATE,
+  `update_time` INT(11),
+  `heures` TEXT,
+  PRIMARY KEY (`id`))
+  ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.0.1' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage

@@ -1,18 +1,18 @@
 <?php
 /*
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 28 mai 2015
+Dernière modification : 23 juillet 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
 Affiche le formulaire permettant d'ajouter ou de modifier les agents.
-Page séparée en 4 <div> (Général, Activités, Emploi du temps, Droits d'accès. Ces <div> s'affichent lors des click sur
+Page séparée en 4 <div> (Général, Activités, Heures de présence, Droits d'accès. Ces <div> s'affichent lors des click sur
 les onglets.
 Ce formulaire est soumis au fichier personnel/valid.php
 
@@ -199,7 +199,7 @@ $postes_dispo=postesNoms($postes_dispo,$postes_completNoms);
 <ul>		
 <li><a href='#main'>Infos générales</a></li>
 <li><a href='#qualif'>Activités</a></li>
-<li><a href='#temps' id='personnel-a-li3'>Emploi du temps</a></li>
+<li><a href='#temps' id='personnel-a-li3'>Heures de pr&eacute;sence</a></li>
 <?php
 if(in_array("conges",$plugins)){
   echo "<li><a href='#conges'>Cong&eacute;s</a></li>";
@@ -307,6 +307,10 @@ echo "</td><td>";
 if(in_array(21,$droits)){
   echo "<select name='heuresHebdo' style='width:405px'>\n";
   echo "<option value='0'>&nbsp;</option>\n";
+  $select=$heuresHebdo=="50%"?"selected='selected'":null;
+  echo "<option $select value='50%'>50% du temps (voir Heures de pr&eacute;sence)</option>\n";
+  $select=$heuresHebdo=="100%"?"selected='selected'":null;
+  echo "<option $select value='100%'>100% du temps (voir Heures de pr&eacute;sence)</option>\n";
   for($i=1;$i<40;$i++){
     $j=array();
     if($config['heuresPrecision']=="quart-heure"){
@@ -323,14 +327,18 @@ if(in_array(21,$droits)){
       $j[]=array($i,$i."h00");
     }
     foreach($j as $elem){
-      $select=$elem[0]==$heuresHebdo?"selected='selected'":"";
+      $select=$elem[0]==$heuresHebdo?"selected='selected'":null;
       echo "<option $select value='{$elem[0]}'>{$elem[1]}</option>\n";
     }
   }
   echo "</select>\n";
 }
-else
-  echo $heuresHebdo." heures";
+else{
+  echo $heuresHebdo;
+  if(!stripos($heuresHebdo,"%")){
+    echo " heures";
+  }
+}
 echo "</td></tr>";
 
 
@@ -552,7 +560,7 @@ else{
 </div>
 <!--	FIN Qualif	-->
 
-<!--	Emploi du temps		-->
+<!--	Heures de présence		-->
 <div id='temps' style='margin-left:70px;display:none;padding-top:30px;'>
 <?php
 switch($config['nb_semaine']){
@@ -695,7 +703,7 @@ if($config['EDTSamedi']){
 ?>
 
 </div>
-<!--	FIN Emploi du temps-->
+<!--	FIN Heures de présence-->
 
 <!--	Droits d'accès		-->
 <div id='access' style='margin-left:70px;display:none;padding-top:30px;'>

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 23 juillet 2015
+Dernière modification : 30 juillet 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,6 +23,7 @@ if(!isset($version)){
 if(!isset($path)){
   $path=substr($_SERVER['SCRIPT_NAME'],-9)=="index.php"?null:"../";
   $path=strpos($_SERVER['SCRIPT_NAME'],"plugins")?"../../":$path;
+  $path=strpos($_SERVER['SCRIPT_NAME'],"planning/poste")?"../../":$path;
   require_once "{$path}personnel/class.personnel.php";
 }
 
@@ -385,6 +386,12 @@ class planningHebdo{
       $destinataires=join(";",$destinataires);
       sendmail($sujet,$message,$destinataires);
     }
+  }
+  
+  public function update_time(){
+    $db=new db();
+    $db->query("show table status from {$GLOBALS['config']['dbname']} like '{$GLOBALS['dbprefix']}planningHebdo';");
+    return $db->result[0]['Update_time'];
   }
   
   public function updatePeriodes($data){
