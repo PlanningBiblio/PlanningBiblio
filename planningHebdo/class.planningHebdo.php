@@ -23,7 +23,7 @@ if(!isset($version)){
 if(!isset($path)){
   $path=substr($_SERVER['SCRIPT_NAME'],-9)=="index.php"?null:"../";
   $path=strpos($_SERVER['SCRIPT_NAME'],"plugins")?"../../":$path;
-  $path=strpos($_SERVER['SCRIPT_NAME'],"planning/poste")?"../../":$path;
+  $path=strpos($_SERVER['SCRIPT_NAME'],"planning/poste/ajax")?"../../":$path;
   require_once "{$path}personnel/class.personnel.php";
 }
 

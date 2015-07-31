@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/modif.php
 Création : 23 juillet 2013
-Dernière modification : 1er juillet 2015
+Dernière modification : 30 juillet 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -98,9 +98,6 @@ if(!$admin and $id and $perso_id!=$_SESSION['login_id']){
   include "include/footer.php";
   exit;
 }
-
-// Perso_id si ajout via Mon Compte
-// $perso_id=$_SESSION['login_id'];
 ?>
 
 <!-- Formulaire Planning-->

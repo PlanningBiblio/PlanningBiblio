@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 23 juillet 2015
+Dernière modification : 30 juillet 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
