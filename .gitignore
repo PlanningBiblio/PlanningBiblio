@@ -1,5 +1,6 @@
 maj.sh
 *~
+*.kate-swp
 data/*.xls
 data/*.csv
 data/*.txt
