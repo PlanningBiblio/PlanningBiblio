@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.heuresSP.php
 Création : 30 juillet 2015
-Dernière modification : 30 juillet 2015
+Dernière modification : 7 août 2015
 Auteur : Jérôme Combes jerome@planningbilbio.fr
 
 Description :
@@ -69,6 +69,14 @@ if($config['PlanningHebdo']){
     // Recherche de tous les agents pouvant faire du service public
     $p=new personnel();
     $p->fetch("nom","Actif");
+    
+    // Recherche de tous les plannings de présence
+    $ph=new planningHebdo();
+    $ph->debut=$j1;
+    $ph->fin=$j7;
+    $ph->valide=true;
+    $ph->fetch();
+
     if(!empty($p->elements)){
       // Pour chaque agents
       foreach($p->elements as $key1 => $value1){
@@ -76,11 +84,6 @@ if($config['PlanningHebdo']){
 
 	if(strpos($value1["heuresHebdo"],"%")){
 	  $minutesHebdo=0;
-	  $ph=new planningHebdo();
-	  $ph->debut=$j1;
-	  $ph->fin=$j7;
-	  $ph->valide=true;
-	  $ph->fetch();
 	  if($ph->elements and !empty($ph->elements)){
 	    // Calcul des heures depuis les plannings de présence
 	    // Pour chaque jour de la semaine
@@ -125,6 +128,8 @@ if($config['PlanningHebdo']){
 	  $heuresSP[$key1]=$heuresRelles;
 	}
       }
+      // Utilisateur "Tout le monde"
+      $heuresSP[2]=0;
     }
     
     // Enregistrement des horaires dans la base de données
