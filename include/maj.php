@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 29 juillet 2015
+Dernière modification : 27 août 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -842,6 +842,13 @@ if(strcmp("2.0",$config['Version'])>0){
 
 if(strcmp("2.0.1",$config['Version'])>0){
   $sql[]="ALTER TABLE `{$dbprefix}personnel` CHANGE `heuresHebdo` `heuresHebdo` VARCHAR(6);";
+  $sql[]="CREATE TABLE `{$dbprefix}heures_Absences` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT, 
+  `semaine` DATE,
+  `update_time` INT(11),
+  `heures` TEXT,
+  PRIMARY KEY (`id`))
+  ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
   $sql[]="CREATE TABLE `{$dbprefix}heures_SP` (
   `id` INT(11) NOT NULL AUTO_INCREMENT, 
   `semaine` DATE,
@@ -849,6 +856,10 @@ if(strcmp("2.0.1",$config['Version'])>0){
   `heures` TEXT,
   PRIMARY KEY (`id`))
   ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES 
+  ('Planning-Absences-Heures-Hebdo', 'boolean', '0', 'Planning','30', 'Prendre en compte les absences pour calculer le nombre d&apos;heures de SP &agrave; effectuer');";
+
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.0.1' WHERE `nom`='Version';";
 }
 

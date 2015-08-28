@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 30 juillet 2015
+Dernière modification : 27 août 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -113,7 +113,22 @@ class planning{
 
     if(is_array($agents))
     foreach($agents as $elem){
+      // Heures hebdomadaires (heures à faire en SP)
       $heuresHebdo=intval($_SESSION['oups']['heuresSP'][$elem['id']]);
+      $heuresHebdoTitle="Quota hebdomadaire";
+      
+      // Heures hebdomadaires avec prise en compte des absences
+      if($config["Planning-Absences-Heures-Hebdo"] and array_key_exists($elem['id'],$_SESSION['oups']['heuresAbsences'])){
+	$heuresAbsences=$_SESSION['oups']['heuresAbsences'][$elem['id']];
+	if(is_numeric($heuresAbsences)){
+	  $heuresHebdoTitle="Quota hebdomadaire = $heuresHebdo - $heuresAbsences (Absences)";
+	  $heuresHebdo=$heuresHebdo-$heuresAbsences;
+	}else{
+	  $heuresHebdoTitle="Quota hebdomadaire : Erreur de calcul des heures d&apos;absences";
+	  $heuresHebdo="Erreur";
+	}
+      }
+      
       $hres_jour=0;
       $hres_sem=0;
 
@@ -216,7 +231,8 @@ class planning{
       //	Mise en forme de la ligne avec le nom et les heures et la couleur en fonction des heures faites
       $nom.="&nbsp;<font title='Heures du jour'>$hres_jour</font> / ";
       $nom.="<font title='Heures de la semaine'>$hres_sem</font> / ";
-      $nom.="<font title='Quota hebdomadaire'>$heuresHebdo</font>";
+
+      $nom.="<font title='$heuresHebdoTitle'>$heuresHebdo</font>"; //  {$_SESSION['oups']['heuresAbsences'][$elem['id']]}
       $nom.=$hres_4sem;
 
       if($hres_jour>7)			// plus de 7h:jour : rouge

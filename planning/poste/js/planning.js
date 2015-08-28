@@ -48,15 +48,25 @@ $(document).ready(function(){
     });
   });
   
-  // Calcul des heures hebdomaraires des agents pour le menudiv
+  // Actions lancées lors de l'affichage du planning
   if($("#planning").length){
+    // Calcul des heures hebdomaraires des agents pour le menudiv
     $.ajax({
       url: "planning/poste/ajax.heuresSP.php",
       dataType: "json",
       type: "post",
       data: {date: $("#date").val()},
     });
+
+    // Calcul des heures d'absences des agents pour le menudiv
+    $.ajax({
+      url: "planning/poste/ajax.heuresAbsences.php",
+      dataType: "json",
+      type: "post",
+      data: {date: $("#date").val()},
+    });
   }
+  
 });
 
 // Evénements JQuery

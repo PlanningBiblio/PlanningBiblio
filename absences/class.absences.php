@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 20 mai 2015
+Dernière modification : 26 août 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -23,20 +23,36 @@ if(!isset($version)){
 
 class absences{
   public $agents_supprimes=array(0);
+  public $debut=null;
+  public $edt=array();
   public $elements=array();
   public $error=false;
-  public $valide=false;
-  public $recipients=array();
-  public $minutes=0;
+  public $fin=null;
   public $heures=0;
   public $heures2=null;
+  public $ignoreFermeture=false;
+  public $minutes=0;
+  public $perso_id=null;
+  public $recipients=array();
+  public $valide=false;
 
   public function absences(){
   }
 
+  /**
+  * @function calculTemps
+  * @param debut string, date de début au format YYYY-MM-DD [H:i:s]
+  * @param fin string, date de fin au format YYYY-MM-DD [H:i:s]
+  * @param perso_id int, id de l'agent
+  * Calcule le temps de travail d'un agent entre 2 dates.
+  * Utilisé pour calculer le nombre d'heures correspondant à une absence
+  * Ne calcule pas le temps correspondant aux jours de fermeture
+  */
   public function calculTemps($debut,$fin,$perso_id){
     $version=$GLOBALS['config']['Version'];
-    require_once "joursFeries/class.joursFeries.php";
+
+    $path=strpos($_SERVER['SCRIPT_NAME'],"planning/poste/ajax")?"../../":null;
+    require_once "{$path}joursFeries/class.joursFeries.php";
 
     $hre_debut=substr($debut,-8);
     $hre_fin=substr($fin,-8);
@@ -64,16 +80,16 @@ class absences{
       }
 
       // On consulte le planning de présence de l'agent
-      // On ne calcule pas les heures si le module planningHebdo n'est pas activé, le calcul serait faux si les emplois du temps avait changé
-      if(!$config['PlanningHebdo']){
+      // On ne calcule pas les heures si le module planningHebdo n'est pas activé, le calcul serait faux si les emplois du temps avaient changé
+      if(!$GLOBALS['config']['PlanningHebdo']){
 	$this->error=true;
 	$this->message="Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
 	return false;
       }
 
       // On consulte le planning de présence de l'agent
-      if($config['PlanningHebdo']){
-	require_once "planningHebdo/class.planningHebdo.php";
+      if($GLOBALS['config']['PlanningHebdo']){
+	require_once "{$path}planningHebdo/class.planningHebdo.php";
 
 	$p=new planningHebdo();
 	$p->perso_id=$perso_id;
@@ -96,6 +112,148 @@ class absences{
 	$temps=null;
 	if(array_key_exists($jour,$p->elements[0]['temps'])){
 	  $temps=$p->elements[0]['temps'][$jour];
+	}
+      }
+
+      if($temps){
+	$temps[0]=strtotime($temps[0]);
+	$temps[1]=strtotime($temps[1]);
+	$temps[2]=strtotime($temps[2]);
+	$temps[3]=strtotime($temps[3]);
+	$debutAbsence=$current==$debut?$hre_debut:"00:00:00";
+	$finAbsence=$current==$fin?$hre_fin:"23:59:59";
+	$debutAbsence=strtotime($debutAbsence);
+	$finAbsence=strtotime($finAbsence);
+
+
+	// Calcul du temps du matin
+	if($temps[0] and $temps[1]){
+	  $debutAbsence1=$debutAbsence>$temps[0]?$debutAbsence:$temps[0];
+	  $finAbsence1=$finAbsence<$temps[1]?$finAbsence:$temps[1];
+	  if($finAbsence1>$debutAbsence1){
+	    $difference+=$finAbsence1-$debutAbsence1;
+	  }
+	}
+
+	// Calcul du temps de l'après-midi
+	if($temps[2] and $temps[3]){
+	  $debutAbsence2=$debutAbsence>$temps[2]?$debutAbsence:$temps[2];
+	  $finAbsence2=$finAbsence<$temps[3]?$finAbsence:$temps[3];
+	  if($finAbsence2>$debutAbsence2){
+	    $difference+=$finAbsence2-$debutAbsence2;
+	  }
+	}
+
+	// Calcul du temps de la journée s'il n'y a pas de pause le midi
+	if($temps[0] and $temps[3] and !$temps[1] and !$temps[2]){
+	  $debutAbsence=$debutAbsence>$temps[0]?$debutAbsence:$temps[0];
+	  $finAbsence=$finAbsence<$temps[3]?$finAbsence:$temps[3];
+	  if($finAbsence>$debutAbsence){
+	    $difference+=$finAbsence-$debutAbsence;
+	  }
+	}
+      }
+
+      $current=date("Y-m-d",strtotime("+1 day",strtotime($current)));
+    }
+
+    $this->minutes=$difference/60;
+    $this->heures=$difference/3600;
+    $this->heures2=str_replace(array(".00",".25",".50",".75"),array("h00","h15","h30","h45"),number_format($this->heures, 2, '.', ' '));
+  }
+
+  /**
+  * @function calculTemps2
+  * @param debut string, date de début au format YYYY-MM-DD [H:i:s]
+  * @param fin string, date de fin au format YYYY-MM-DD [H:i:s]
+  * @param edt array, tableau contenant les emplois du temps des agents
+  * @param perso_id int, id de l'agent
+  * @param ignoreFermeture boolean, default=false : ignorer les jours de fermeture
+  * Calcule le temps de travail d'un agents entre 2 dates.
+  * Utilisé pour calculer le nombre d'heures correspondant à une absence
+  * Les heures de présences sont données en paramètre dans un tableau. Offre de meilleurs performance que la fonction calculTemps 
+  * lorsqu'elle est executée pour plusieurs agents
+  */
+  public function calculTemps2(){
+    $version=$GLOBALS['config']['Version'];
+
+    $path=strpos($_SERVER['SCRIPT_NAME'],"planning/poste/ajax")?"../../":null;
+    require_once "{$path}joursFeries/class.joursFeries.php";
+
+    $debut=$this->debut;
+    $edt=$this->edt;
+    $fin=$this->fin;
+    $perso_id=$this->perso_id;
+
+    $hre_debut=substr($debut,-8);
+    $hre_fin=substr($fin,-8);
+    $hre_fin=$hre_fin=="00:00:00"?"23:59:59":$hre_fin;
+    $debut=substr($debut,0,10);
+    $fin=substr($fin,0,10);
+
+    // Calcul du nombre d'heures correspondant à une absence
+    $current=$debut;
+    $difference=0;
+
+    // Pour chaque date
+    while($current<=$fin){
+      // On ignore les jours de fermeture
+      if(!$this->ignoreFermeture){
+	$j=new joursFeries();
+	$j->fetchByDate($current);
+	if(!empty($j->elements)){
+	  foreach($j->elements as $elem){
+	    if($elem['fermeture']){
+	      $current=date("Y-m-d",strtotime("+1 day",strtotime($current)));
+	      continue 2;
+	    }
+	  }
+	}
+      }
+
+      // On consulte le planning de présence de l'agent
+      // On ne calcule pas les heures si le module planningHebdo n'est pas activé, le calcul serait faux si les emplois du temps avaient changé
+      if(!$GLOBALS['config']['PlanningHebdo']){
+	$this->error=true;
+	$this->message="Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
+	$this->minutes="N/A";
+	$this->heures="N/A";
+	$this->heures2="N/A";
+	return false;
+      }
+
+      // On consulte le planning de présence de l'agent
+      if($GLOBALS['config']['PlanningHebdo']){
+	require_once "{$path}planningHebdo/class.planningHebdo.php";
+
+	$edt=array();
+	if($this->edt and !empty($this->edt)){
+	  foreach($this->edt as $elem){
+	    if($elem['perso_id'] == $perso_id){
+	      $edt=$elem;
+	      break;
+	    }
+	  }
+	}
+
+	// Si le planning n'est pas validé pour l'une des dates, on retourne un message d'erreur et on arrête le calcul
+	if(empty($edt)){
+	  $this->error=true;
+	  $this->message="Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
+	  $this->minutes="N/A";
+	  $this->heures="N/A";
+	  $this->heures2="N/A";
+	  return false;
+	}
+
+	// Sinon, on calcule les heures d'absence
+	$d=new datePl($current);
+	$semaine=$d->semaine3;
+	$jour=$d->position?$d->position:7;
+	$jour=$jour+(($semaine-1)*7)-1;
+	$temps=null;
+	if(array_key_exists($jour,$edt['temps'])){
+	  $temps=$edt['temps'][$jour];
 	}
       }
 
@@ -193,6 +351,9 @@ class absences{
       $filter.=" AND `{$dbprefix}personnel`.`id`='$agent' ";
       $agent=null;
     }
+
+    // Sort
+    $sort=$sort?$sort:"`debut`,`fin`,`nom`,`prenom`";
 
     //	Select All
     $req="SELECT `{$dbprefix}personnel`.`nom` AS `nom`, `{$dbprefix}personnel`.`prenom` AS `prenom`, "
@@ -408,6 +569,12 @@ class absences{
   function piecesJustif($id,$pj,$checked){
     $db=new db();
     $db->update2("absences",array($pj => $checked),array("id"=>$id));
+  }
+
+  public function update_time(){
+    $db=new db();
+    $db->query("show table status from {$GLOBALS['config']['dbname']} like '{$GLOBALS['dbprefix']}absences';");
+    return $db->result[0]['Update_time'];
   }
 
 }

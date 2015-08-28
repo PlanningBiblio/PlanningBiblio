@@ -74,6 +74,14 @@ $sql[]="CREATE TABLE `{$dbprefix}config` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
+$sql[]="CREATE TABLE `{$dbprefix}heures_Absences` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT, 
+  `semaine` DATE,
+  `update_time` INT(11),
+  `heures` TEXT,
+  PRIMARY KEY (`id`))
+  ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
 $sql[]="CREATE TABLE `{$dbprefix}heures_SP` (
   `id` INT(11) NOT NULL AUTO_INCREMENT, 
   `semaine` DATE,
