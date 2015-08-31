@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 31 août 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -20,7 +20,7 @@ require_once "class.statistiques.php";
 
 echo "<h3>Feuille de temps</h3>\n";
 
-include "include/horaires.php";
+require_once "include/horaires.php";
 
 //	Initialisation des variables
 if(isset($_GET['debut'])){
@@ -70,7 +70,31 @@ $db=new db();
 $db->select2("select_statuts");
 $couleurStatut=$db->result;
 
-// Recherche des élements dans pl_poste afin  de compter les heures et le nombre d'agents
+// Recherche des heures de SP à effectuer pour tous les agents pour toutes les semaines demandées
+$d=new datePl($debut);
+$d1=$d->dates[0];
+// Pour chaque semaine
+for($d=$d1;$d<=$fin;$d=date("Y-m-d",strtotime($d."+1 week"))){
+  $heuresSP[$d]=calculHeuresSP($d);
+}
+// Calcul des totaux d'heures de SP à effectuer sur la période
+$totalSP=array();
+foreach($heuresSP as $key => $value){		// $key=date, $value=array
+  foreach($value as $key2 => $value2){		// $key2=perso_id, $value2=heures
+    if(!array_key_exists($key2, $totalSP)){
+      $totalSP[$key2]=(float) $value2;
+    }else{
+      $totalSP[$key2]+=(float) $value2;
+    }
+  }
+}
+
+// Calcul des moyennes hebdomadaires de SP à effectuer
+$moyennesSP=array();
+foreach($totalSP as $key => $value){
+  $moyennesSP[$key]=$value/(count($heuresSP));
+}
+
 $db=new db();
 $debutREQ=$db->escapeString($debut);
 $finREQ=$db->escapeString($fin);
@@ -79,7 +103,7 @@ $req="SELECT `{$dbprefix}pl_poste`.`date` AS `date`, `{$dbprefix}pl_poste`.`debu
 $req.="`{$dbprefix}pl_poste`.`fin` AS `fin`, `{$dbprefix}personnel`.`id` AS `perso_id`, ";
 $req.="`{$dbprefix}pl_poste`.`site` AS `site`, ";
 $req.="`{$dbprefix}personnel`.`nom` AS `nom`,`{$dbprefix}personnel`.`prenom` AS `prenom`, ";
-$req.="`{$dbprefix}personnel`.`heuresHebdo` AS `heuresHebdo`,`{$dbprefix}personnel`.`statut` AS `statut` ";
+$req.="`{$dbprefix}personnel`.`statut` AS `statut` ";
 $req.="FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}personnel` ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id` ";
 $req.="INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}postes`.`id`=`{$dbprefix}pl_poste`.`poste` ";
 $req.="WHERE `date`>='$debutREQ' AND `date`<='$finREQ' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' ";
@@ -90,8 +114,8 @@ if($db->result){
   foreach($db->result as $elem){
     if(!array_key_exists($elem['perso_id'],$tab)){		// création d'un tableau de données par agent (id, nom, heures de chaque jour ...)
       $tab[$elem['perso_id']]=Array("perso_id"=>$elem['perso_id'],"nom"=>$elem['nom'],
-      "prenom"=>$elem['prenom'],"heuresHebdo"=>$elem['heuresHebdo'],"statut"=>$elem['statut'],"site1"=>0,"site2"=>0,"total"=>0,
-      "semaine"=>0,"max"=>$nbSemaines*$elem['heuresHebdo']);
+      "prenom"=>$elem['prenom'],"statut"=>$elem['statut'],"site1"=>0,"site2"=>0,"total"=>0,
+      "semaine"=>0);
       foreach($dates as $d){
 	$tab[$elem['perso_id']][$d[0]]=0;
       }
@@ -171,8 +195,23 @@ foreach($keys as $key){
   }
   $tab[$key]['total']=number_format($tab[$key]['total'],2,'.',' ');
   $tab[$key]['semaine']=number_format($tab[$key]['total']/$nbSemaines,2,'.',' ');		// ajout la moyenne par semaine
-  $tab[$key]['heuresHebdo']=$tab[$key]['max']!=0?number_format($tab[$key]['heuresHebdo'],2,'.',' '):"-";
-  $tab[$key]['max']=$tab[$key]['max']!=0?number_format($tab[$key]['max'],2,'.',' '):"-";
+
+  if(!array_key_exists($key,$moyennesSP) or !is_numeric($moyennesSP[$key])){
+    $tab[$key]['heuresHebdo']="Erreur";
+  }elseif($moyennesSP[$key]>0){
+    $tab[$key]['heuresHebdo']=number_format($moyennesSP[$key],2,'.',' ');
+  }else{
+    $tab[$key]['heuresHebdo']="-";
+  }
+  
+  if(!array_key_exists($key,$totalSP) or !is_numeric($totalSP[$key])){
+    $tab[$key]['max']="Erreur";
+  }elseif($totalSP[$key]>0){
+    $tab[$key]['max']=number_format($totalSP[$key],2,'.',' ');
+  }else{
+    $tab[$key]['max']="-";
+  }
+
   foreach($dates as $d){
     $tab[$key][$d[0]]=$tab[$key][$d[0]]!=0?number_format($tab[$key][$d[0]],2,'.',' '):"-";
   }
