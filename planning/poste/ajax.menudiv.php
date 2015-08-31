@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 23 juillet 2015
+Dernière modification : 31 août 2015
 Auteur : Jérôme Combes jerome@planningbilbio.fr, Christophe Le Guennec Christophe.Leguennec@u-pem.fr
 
 Description :
@@ -110,9 +110,9 @@ if($bloquant=='1'){
 
   $req="SELECT `{$dbprefix}pl_poste`.`perso_id` AS `perso_id` FROM `{$dbprefix}pl_poste` "
   	."INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` "
-  	."WHERE ((`{$dbprefix}pl_poste`.`debut`>='$debutSQL' AND `{$dbprefix}pl_poste`.`debut`<'$finSQL') "
-  	."OR (`{$dbprefix}pl_poste`.`fin`>'$debutSQL' AND `{$dbprefix}pl_poste`.`fin`<='$finSQL')) AND `{$dbprefix}pl_poste`.`date`='$dateSQL' AND `{$dbprefix}postes`.`bloquant`='1'";
-
+  	."WHERE `{$dbprefix}pl_poste`.`debut`<'$finSQL' AND `{$dbprefix}pl_poste`.`fin`>'$debutSQL' "
+        ."AND `{$dbprefix}pl_poste`.`date`='$dateSQL' AND `{$dbprefix}postes`.`bloquant`='1'";
+  	
   $db->query($req);
   if($db->result)
   foreach($db->result as $elem){

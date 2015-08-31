@@ -6,7 +6,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 30 juillet 2015
+Dernière modification : 31 août 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -224,6 +224,10 @@ $(function() {
     poste=$(this).attr("data-situation");
     perso_id=$(this).attr("data-perso-id");
     site=$("#site").val();
+    
+    // On supprime l'ancien menu (s'il existe) pour eviter les problemes de remanence
+    $("#menudiv1").remove();
+    $("#menudiv2").remove();
 
     $.ajax({
       url: "planning/poste/ajax.menudiv.php",
