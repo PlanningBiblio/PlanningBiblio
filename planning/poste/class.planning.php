@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 27 août 2015
+Dernière modification : 1er septembre 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -121,8 +121,16 @@ class planning{
       if($config["Planning-Absences-Heures-Hebdo"] and array_key_exists($elem['id'],$_SESSION['oups']['heuresAbsences'])){
 	$heuresAbsences=$_SESSION['oups']['heuresAbsences'][$elem['id']];
 	if(is_numeric($heuresAbsences)){
-	  $heuresHebdoTitle="Quota hebdomadaire = $heuresHebdo - $heuresAbsences (Absences)";
-	  $heuresHebdo=$heuresHebdo-$heuresAbsences;
+	  if($heuresAbsences>0){
+	    // On informe du pourcentage sur les heures d'absences
+	    $pourcent=null;
+	    if(strpos($elem["heuresHebdo"],"%") and $elem["heuresHebdo"]!="100%"){
+	      $pourcent=" {$elem["heuresHebdo"]}";
+	    }
+	    
+	    $heuresHebdoTitle="Quota hebdomadaire = $heuresHebdo - $heuresAbsences (Absences{$pourcent})";
+	    $heuresHebdo=$heuresHebdo-$heuresAbsences;
+	  }
 	}else{
 	  $heuresHebdoTitle="Quota hebdomadaire : Erreur de calcul des heures d&apos;absences";
 	  $heuresHebdo="Erreur";

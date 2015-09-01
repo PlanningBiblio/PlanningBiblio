@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.heuresAbsences.php
 Création : 3 août 2015
-Dernière modification : 26 août 2015
+Dernière modification : 1er septembre 2015
 Auteur : Jérôme Combes jerome@planningbilbio.fr
 
 Description :
@@ -91,6 +91,11 @@ if($aUpdate>$heuresAbsencesUpdate or $pHUpdate>$heuresAbsencesUpdate){
     $edt=$ph->elements;
   }
 
+  // Recherche des agents pour appliquer le pourcentage sur les heures d'absences en fonction du taux de SP
+  $p=new personnel();
+  $p->fetch();
+  $agents=$p->elements;
+  
   // Calcul des heures d'absences
   $heures=array();
   if(!empty($absences)){
@@ -121,6 +126,12 @@ if($aUpdate>$heuresAbsencesUpdate or $pHUpdate>$heuresAbsencesUpdate){
       }
 
       $heures[$perso_id]=$h;
+
+      // On applique le pourcentage
+      if(strpos($agents[$perso_id]["heuresHebdo"],"%")){
+	$pourcent=(float) str_replace("%",null,$agents[$perso_id]["heuresHebdo"]);
+	$heures[$perso_id]=$heures[$perso_id]*$pourcent/100;
+      }
     }
   }
 
