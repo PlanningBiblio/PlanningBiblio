@@ -6,7 +6,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 31 août 2015
+Dernière modification : 1er septembre 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -47,26 +47,6 @@ $(document).ready(function(){
       $(jtem).css("top",top);
     });
   });
-  
-  // Actions lancées lors de l'affichage du planning
-  if($("#planning").length){
-    // Calcul des heures hebdomaraires des agents pour le menudiv
-    $.ajax({
-      url: "planning/poste/ajax.heuresSP.php",
-      dataType: "json",
-      type: "post",
-      data: {date: $("#date").val()},
-    });
-
-    // Calcul des heures d'absences des agents pour le menudiv
-    $.ajax({
-      url: "planning/poste/ajax.heuresAbsences.php",
-      dataType: "json",
-      type: "post",
-      data: {date: $("#date").val()},
-    });
-  }
-  
 });
 
 // Evénements JQuery

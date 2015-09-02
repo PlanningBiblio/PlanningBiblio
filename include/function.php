@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 31 août 2015
+Dernière modification : 2 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -133,7 +133,10 @@ function authSQL($login,$password){
 * @param date string, date au format AAAA-MM-DD
 * Calcul le nombre d'heures de SP que les agents doivent effectuer pour la semaine définie par $date
 * Retourne le résultat sous forme d'un tableau array(perso_id1 => heures1, perso_id2 => heures2, ...)
-* Stock le résultat (json_encode) dans la BDD table heures_SP 
+* Stock le résultat (json_encode) dans la BDD table heures_SP
+* Récupère et retourne le résultat à partir de la BDD si les tables personnel et planningHebdo n'ont pas été modifiées
+* pour gagner du temps lors des appels suivants.
+* Fonction utilisée par planning::menudivAfficheAgents et dans le script statistiques/temps.php
 */
 function calculHeuresSP($date){
   $config=$GLOBALS['config'];
@@ -161,6 +164,7 @@ function calculHeuresSP($date){
   if($db->result){
     $heuresSPUpdate=$db->result[0]["update_time"];
     $heuresSP=json_decode((html_entity_decode($db->result[0]["heures"],ENT_QUOTES|ENT_IGNORE,"utf-8")));
+    $tmp=array();
     foreach($heuresSP as $key => $value){
       $tmp[(int) $key] = $value;
     }

@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 26 août 2015
+Dernière modification : 2 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -39,6 +39,127 @@ class absences{
   public function absences(){
   }
 
+
+  /**
+  * @function calculHeuresAbsences
+  * @param date string, date de début au format YYYY-MM-DD
+  * Calcule les heures d'absences des agents pour la semaine définie par $date ($date = une date de la semaine)
+  * Utilisée par planning::menudivAfficheAgent pour ajuster le nombre d'heure de SP à effectuer en fonction des absences
+  */
+  public function calculHeuresAbsences($date){
+    $path=strpos($_SERVER['SCRIPT_NAME'],"planning/poste/ajax")?"../../":null;
+    require_once "{$path}include/horaires.php";
+    require_once "{$path}personnel/class.personnel.php";
+    require_once "{$path}planningHebdo/class.planningHebdo.php";
+
+    $d=new datePl($date);
+    $dates=$d->dates;
+    $semaine3=$d->semaine3;
+    $j1=$dates[0];
+    $j7=$dates[6];
+
+    // Recherche des heures d'absences des agents pour cette semaine
+    // Recherche si le tableau contenant les heures d'absences existe
+    $db=new db();
+    $db->select2("heures_Absences","*",array("semaine"=>$j1));
+    $heuresAbsencesUpdate=0;
+    if($db->result){
+      $heuresAbsencesUpdate=$db->result[0]["update_time"];
+      $heures=json_decode((html_entity_decode($db->result[0]["heures"],ENT_QUOTES|ENT_IGNORE,"utf-8")));
+      $tmp=array();
+      foreach($heures as $key => $value){
+	$tmp[(int) $key] = $value;
+      }
+      $heures=$tmp;
+    }
+
+
+    // Vérifie si la table absences a été mise à jour depuis le dernier calcul
+    $aUpdate=strtotime($this->update_time());
+
+    // Vérifie si la table planningHebdo a été mise à jour depuis le dernier calcul
+    $p=new planningHebdo();
+    $pHUpdate=strtotime($p->update_time());
+
+    // Si la table absences ou la table planningHebdo a été modifiée depuis la création du tableaux des heures
+    // Ou si le tableau des heures n'a pas été créé ($heuresAbsencesUpdate=0), on le (re)fait.
+    if($aUpdate>$heuresAbsencesUpdate or $pHUpdate>$heuresAbsencesUpdate){
+      // Recherche de toutes les absences
+      $absences=array();
+      $a =new absences();
+      $a->valide=true;
+      $a->fetch(null,null,null,$j1,$j7,null);
+      if($a->elements and !empty($a->elements)){
+	$absences=$a->elements;
+      }
+
+      // Recherche de tous les plannings de présence
+      $edt=array();
+      $ph=new planningHebdo();
+      $ph->debut=$j1;
+      $ph->fin=$j7;
+      $ph->valide=true;
+      $ph->fetch();
+      if($ph->elements and !empty($ph->elements)){
+	$edt=$ph->elements;
+      }
+
+      // Recherche des agents pour appliquer le pourcentage sur les heures d'absences en fonction du taux de SP
+      $p=new personnel();
+      $p->fetch();
+      $agents=$p->elements;
+      
+      // Calcul des heures d'absences
+      $heures=array();
+      if(!empty($absences)){
+	// Pour chaque absence
+	foreach($absences as $key => $value){
+	  $perso_id=$value['perso_id'];
+	  $h1=array_key_exists($perso_id,$heures)?$heures[$perso_id]:0;
+	  
+	  // Si $h1 n'est pas un nombre ("N/A"), une erreur de calcul a été enregistrée. Donc on ne continue pas le calcul.
+	  // $heures[$perso_id] restera "N/A"
+	  if(!is_numeric($h1)){
+	    continue;
+	  }
+	  
+	  $a=new absences();
+	  $a->debut=$value['debut'];
+	  $a->fin=$value['fin'];
+	  $a->perso_id=$perso_id;
+	  $a->edt=$edt;
+	  $a->ignoreFermeture=true;
+	  $a->calculTemps2();
+
+	  $h=$a->heures;
+	  if(is_numeric($h)){
+	    $h=$h+$h1;
+	  }else{
+	    $h="N/A";
+	  }
+
+	  $heures[$perso_id]=$h;
+
+	  // On applique le pourcentage
+	  if(strpos($agents[$perso_id]["heuresHebdo"],"%")){
+	    $pourcent=(float) str_replace("%",null,$agents[$perso_id]["heuresHebdo"]);
+	    $heures[$perso_id]=$heures[$perso_id]*$pourcent/100;
+	  }
+	}
+      }
+
+      // Enregistrement des heures dans la base de données
+      $db=new db();
+      $db->delete2("heures_Absences",array("semaine"=>$j1));
+      $db=new db();
+      $db->insert2("heures_Absences",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heures)));
+    }
+
+    return (array) $heures;
+  }
+  
+  
+  
   /**
   * @function calculTemps
   * @param debut string, date de début au format YYYY-MM-DD [H:i:s]

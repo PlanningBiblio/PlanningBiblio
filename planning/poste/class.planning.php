@@ -110,16 +110,23 @@ class planning{
     }
 
     $menudiv=null;
+    
+    // Calcul des heures de SP à effectuer pour tous les agents
+    $heuresSP=calculHeuresSP($date);
+
+    // Calcul des heures d'absences afin d'ajuster les heures de SP
+    $a=new absences();
+    $heuresAbsencesTab=$a->calculHeuresAbsences($date);
 
     if(is_array($agents))
     foreach($agents as $elem){
       // Heures hebdomadaires (heures à faire en SP)
-      $heuresHebdo=intval($_SESSION['oups']['heuresSP'][$elem['id']]);
+      $heuresHebdo=intval($heuresSP[$elem['id']]);
       $heuresHebdoTitle="Quota hebdomadaire";
       
       // Heures hebdomadaires avec prise en compte des absences
-      if($config["Planning-Absences-Heures-Hebdo"] and array_key_exists($elem['id'],$_SESSION['oups']['heuresAbsences'])){
-	$heuresAbsences=$_SESSION['oups']['heuresAbsences'][$elem['id']];
+      if($config["Planning-Absences-Heures-Hebdo"] and array_key_exists($elem['id'],$heuresAbsencesTab)){
+	$heuresAbsences=$heuresAbsencesTab[$elem['id']];
 	if(is_numeric($heuresAbsences)){
 	  if($heuresAbsences>0){
 	    // On informe du pourcentage sur les heures d'absences
@@ -240,7 +247,7 @@ class planning{
       $nom.="&nbsp;<font title='Heures du jour'>$hres_jour</font> / ";
       $nom.="<font title='Heures de la semaine'>$hres_sem</font> / ";
 
-      $nom.="<font title='$heuresHebdoTitle'>$heuresHebdo</font>"; //  {$_SESSION['oups']['heuresAbsences'][$elem['id']]}
+      $nom.="<font title='$heuresHebdoTitle'>$heuresHebdo</font>";
       $nom.=$hres_4sem;
 
       if($hres_jour>7)			// plus de 7h:jour : rouge
