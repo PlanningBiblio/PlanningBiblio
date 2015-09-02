@@ -137,6 +137,9 @@ class planning{
 	    
 	    $heuresHebdoTitle="Quota hebdomadaire = $heuresHebdo - $heuresAbsences (Absences{$pourcent})";
 	    $heuresHebdo=$heuresHebdo-$heuresAbsences;
+	    if($heuresHebdo<0){
+	      $heuresHebdo=0;
+	    }
 	  }
 	}else{
 	  $heuresHebdoTitle="Quota hebdomadaire : Erreur de calcul des heures d&apos;absences";
@@ -256,8 +259,7 @@ class planning{
 	$nom="<font style='color:green'>$nom</font>\n";
       elseif($hres_sem>$heuresHebdo)			// plus du quota hebdo : rouge
 	$nom="<font style='color:red'>$nom</font>\n";
-      
-      
+
       // Classe en fonction du statut et du service
       $class_tmp=array();
       if($elem['statut']){

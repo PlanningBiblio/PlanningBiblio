@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 31 août 2015
+Dernière modification : 2 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbilbio.fr
 
 Description :
@@ -17,6 +17,7 @@ Page appelée par le fichier index.php, accessible par le menu statistiques / Fe
 */
 
 require_once "class.statistiques.php";
+require_once "absences/class.absences.php";
 
 echo "<h3>Feuille de temps</h3>\n";
 
@@ -76,6 +77,19 @@ $d1=$d->dates[0];
 // Pour chaque semaine
 for($d=$d1;$d<=$fin;$d=date("Y-m-d",strtotime($d."+1 week"))){
   $heuresSP[$d]=calculHeuresSP($d);
+  // déduction des absences
+  if($config['Planning-Absences-Heures-Hebdo']){
+    $a=new absences();
+    $heuresAbsences[$d]=$a->calculHeuresAbsences($d);
+    foreach($heuresAbsences[$d] as $key => $value){
+      if(array_key_exists($key,$heuresSP[$d])){
+	$heuresSP[$d][$key]=$heuresSP[$d][$key]-$value;
+	if($heuresSP[$d][$key]<0){
+	  $heuresSP[$d][$key]=0;
+	}
+      }
+    }
+  }
 }
 // Calcul des totaux d'heures de SP à effectuer sur la période
 $totalSP=array();
@@ -88,7 +102,6 @@ foreach($heuresSP as $key => $value){		// $key=date, $value=array
     }
   }
 }
-
 // Calcul des moyennes hebdomadaires de SP à effectuer
 $moyennesSP=array();
 foreach($totalSP as $key => $value){

@@ -47,6 +47,8 @@ class absences{
   * Utilisée par planning::menudivAfficheAgent pour ajuster le nombre d'heure de SP à effectuer en fonction des absences
   */
   public function calculHeuresAbsences($date){
+    $config=$GLOBALS['config'];
+    $version=$GLOBALS['version'];
     $path=strpos($_SERVER['SCRIPT_NAME'],"planning/poste/ajax")?"../../":null;
     require_once "{$path}include/horaires.php";
     require_once "{$path}personnel/class.personnel.php";
