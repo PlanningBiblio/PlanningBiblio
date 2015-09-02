@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : planning/poste/ajax.notes.php
 Création : 3 juin 2014
 Dernière modification : 6 juin 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Enregistre dans la base de donées les notes en bas des plannings

@@ -7,7 +7,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 Fichier : planningHebdo/js/script.planningHebdo.js
 Création : 26 août 2013
 Dernière modification : 1er juillet 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Fichier regroupant les fonctions JavaScript utiles à la gestion des plannings de présence

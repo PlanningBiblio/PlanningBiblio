@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : postes/modif.php
 Création : mai 2011
 Dernière modification : 7 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affiche le formulaire permettant d'ajouter ou de modifier un poste.

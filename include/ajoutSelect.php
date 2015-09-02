@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : include/ajoutSelect.php
 Création : mai 2011
 Dernière modification : 8 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Permet d'ajouter et de supprimer des éléments dans les menu déroulant (service de rattachement, étage (pour les postes) ...)

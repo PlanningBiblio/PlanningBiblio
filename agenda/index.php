@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : agenda/index.php
 Création : mai 2011
 Dernière modification : 2 juillet 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affiche l'agenda d'un agent entre 2 dates

@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : setup/createconfig.php
 Création : 31 octobre 2013
 Dernière modification : 8 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Permet de créer le fichier de configuration (include/config.php) lors de l'installation.
@@ -36,7 +36,7 @@ $file[]="\n";
 $file[]="Fichier : include/config.php\n";
 $file[]="Création : mai 2011\n";
 $file[]="Dernière modification : 8 avril 2015\n";
-$file[]="Auteur : Jérôme Combes, jerome@planningbilbio.fr\n";
+$file[]="Auteur : Jérôme Combes, jerome@planningbiblio.fr\n";
 $file[]="\n";
 $file[]="Description :\n";
 $file[]="Fichier de configuration. Contient les informations de connexion à la base de données MySQL.\n";

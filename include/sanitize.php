@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : include/sanitize.php
 Création : 7 avril 2015
 Dernière modification : 10 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Page contenant les fonctions PHP de nettoyages de variables

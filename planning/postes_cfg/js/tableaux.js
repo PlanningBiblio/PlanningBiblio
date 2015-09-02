@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : planning/postes_cfg/js/tableaux.js
 Création : 4 février 2015
 Dernière modification : 8 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Fichier regroupant les scripts JS nécessaires aux pages planning/postes_cfg/* (affichage et modification des tableaux)

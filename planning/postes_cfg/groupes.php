@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : planning/postes_cfg/groupes.php
 Création : 18 septembre 2012
 Dernière modification : 7 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Permet de créer et de modifier des groupes de tableaux. Permet de grouper différents tableaux par semaine 

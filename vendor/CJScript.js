@@ -4,7 +4,7 @@ Licence GNU/GPL (version 2 et au dela)
 Fichier : CJScript.js
 Création : mars 2015
 Dernière modification : 23 juillet 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 */
 
 function CJDataTableHideRow(selector){

@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : planning/poste/ajax.validation.php
 Création : 23 février 2015
 Dernière modification : 3 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Permet de verrouiller (et de déverrouiller) le planning du jour courant pour en interdire la modification et le rendre 

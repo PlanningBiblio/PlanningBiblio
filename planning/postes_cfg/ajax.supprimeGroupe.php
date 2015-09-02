@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : planning/postes_cfg/ajax.supprimeGroupe.php
 Création : 4 février 2015
 Dernière modification : 13 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Supprime un groupe de tableau.

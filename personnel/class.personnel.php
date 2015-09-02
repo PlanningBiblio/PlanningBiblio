@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
 Dernière modification : 30 juillet 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Classe personnel : contient la fonction personnel::fetch permettant de rechercher les agents. 

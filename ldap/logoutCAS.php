@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : ldap/logoutCAS.php
 Création : 2 juillet 2014
 Dernière modification : 2 juillet 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 La femeture de session CAS

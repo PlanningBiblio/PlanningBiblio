@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : include/maj.php
 Création : mai 2011
 Dernière modification : 27 août 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Ce fichier permet de mettre à jour la base de données lors de la mise à jour de l'application.

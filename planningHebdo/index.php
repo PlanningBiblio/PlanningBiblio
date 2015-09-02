@@ -8,7 +8,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 Fichier : planningHebdo/index.php
 Création : 23 juillet 2013
 Dernière modification : 1er juillet 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affiche la liste des plannings de présence pour l'administrateur

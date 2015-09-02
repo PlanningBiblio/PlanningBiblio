@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
 Dernière modification : 7 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Cette page affiche tous les plannings de la semaine choisie.

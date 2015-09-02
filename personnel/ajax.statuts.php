@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : personnel/ajax.statuts.php
 Création : 15 février 2014
 Dernière modification : 9 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Enregistre la liste des statuts dans la base de données

@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
 Dernière modification : 31 août 2015
-Auteur : Jérôme Combes jerome@planningbilbio.fr, Christophe Le Guennec Christophe.Leguennec@u-pem.fr
+Auteur : Jérôme Combes jerome@planningbiblio.fr, Christophe Le Guennec Christophe.Leguennec@u-pem.fr
 
 Description :
 Affiche le menu déroulant avec le nom des services et des agents dans la page planning/poste/index.php.

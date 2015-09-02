@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : absences/infos.php
 Création : mai 2011
 Dernière modification : 18 juin 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Permet d'ajouter une information relative à la gestion des absences : Formulaire, confirmation, validation

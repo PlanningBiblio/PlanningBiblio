@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : postes/class.postes.php
 Création : 29 novembre 2012
 Dernière modification : 8 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Classe postes contenant la fonction postes::fetch permettant de rechercher les postes dans la base de données

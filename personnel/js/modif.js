@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : personnel/js/modif.js
 Création : 3 mars 2014
 Dernière modification : 9 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Fichier regroupant les fonctions JavaScript utiles à l'ajout et la modification des agents (modif.php)

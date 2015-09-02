@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : planning/postes_cfg/ajax.supprimeLignes.php
 Création : 10 septembre 2012
 Dernière modification : 7 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Supprime une ligne de séparation d'un tableau. Appelée par la fonction JavaScript "supprimeLigne" lors du click sur une 

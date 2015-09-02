@@ -8,7 +8,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 Fichier : plugins/planningHebdo/cron.daily.php
 Création : 23 juillet 2013
 Dernière modification : 22 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Fichier executant des taches planifiées quotidiennement pour le plugin planningHebdo.

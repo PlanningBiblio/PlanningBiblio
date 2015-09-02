@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : agenda/js/agenda.js
 Création : 22 janvier 2015
 Dernière modification : 22 janvier 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Fichier regroupant les fonctions JavaScript utiles à l'affichage de l'agenda

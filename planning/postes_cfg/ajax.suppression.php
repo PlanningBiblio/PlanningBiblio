@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : planning/postes_cfg/ajax.suppression.php
 Création : 4 novembre 2014
 Dernière modification : 4 novembre 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Supprime une sélection de tableaux. Supprime les horaires, cellules grisées, lignes et l'identifiant du tableau (table pl_poste_tab).

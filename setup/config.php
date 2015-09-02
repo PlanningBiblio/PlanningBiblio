@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : setup/config.php
 Création : mai 2011
 Dernière modification : 8 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affiche le formulaire demandant le nom, prénom, adresse email et mot de passe du responsable du planning pour créer son 

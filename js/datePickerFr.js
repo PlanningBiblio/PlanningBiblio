@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : js/datepickerFr.js
 Création : 14 novembre 2013
 Dernière modification : 27 décembre 2013
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Initialise les variables du plugin JQuery UI DatePicker

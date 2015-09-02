@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : setup/db_data.php
 Création : mai 2011
 Dernière modification : 27 août 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Requêtes SQL insérant les données dans les tables lors de l'installation.

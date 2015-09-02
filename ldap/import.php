@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : ldap/import.php
 Création : 2 juillet 2014
 Dernière modification : 4 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Permet l'import des agents à partir d'un annuaire LDAP.

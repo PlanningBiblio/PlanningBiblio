@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : setup/index.php
 Création : mai 2011
 Dernière modification : 9 octobre 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Première page d'installation. Affiche le formulaire demandant les informations de connexion au serveur MySQL, le nom de la

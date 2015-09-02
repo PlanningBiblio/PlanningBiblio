@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : personnel/suppression.php
 Création : mai 2011
 Dernière modification : 10 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Supprime un agent à partir de la liste des agents en cliquant sur l'icône corbeille (fichier personnel/index.php).

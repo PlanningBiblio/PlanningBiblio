@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : planning/poste/ajax.refresh.php
 Création : mai 2011
 Dernière modification : 23 février 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Contrôle en arrière plan la date et l'heure de validation du planning actuellement affiché afin de rafraichir la page si une 

@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : statistiques/samedis.php
 Création : 15 novembre 2013
 Dernière modification : 17 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affiche les statistiques par agent sur les samedis travaillés : nombre de samedis travaillés, heures, prime ou récupération

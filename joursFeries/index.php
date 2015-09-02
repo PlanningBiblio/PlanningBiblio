@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : joursFeries/index.php
 Création : 25 juillet 2013
 Dernière modification : 19 mai 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Pages permettant la gestion des jours fériés et de fermeture.

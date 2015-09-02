@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : statistiques/postes_renfort.php
 Création : mai 2011
 Dernière modification : 17 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affiche les statistiques sur les postes de renfort : nombre d'heures d'ouverture, moyen par jour et par semaine, jours et 

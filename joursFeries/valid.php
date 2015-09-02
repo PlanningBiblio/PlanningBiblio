@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : joursFeries/valid.php
 Création : 25 juillet 2013
 Dernière modification : 25 juillet 2013
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Fichier permettant la validation des jours fériés et de fermeture.

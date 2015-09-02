@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : personnel/index.php
 Création : mai 2011
 Dernière modification : 7 avril 2015
-Auteurs : Jérôme Combes jerome@planningbilbio.fr, Chritophe Le Guennec christophe.leguennec@u-pem.fr
+Auteurs : Jérôme Combes jerome@planningbiblio.fr, Chritophe Le Guennec christophe.leguennec@u-pem.fr
 
 Description :
 Affiche le tableau des agents avec les filtres "service public - administratif - supprimé" et le filtre "Rechercher" du tableau

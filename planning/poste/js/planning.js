@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
 Dernière modification : 1er septembre 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Fichier regroupant les scripts JS nécessaires à la page planning/poste/index.php (affichage et modification des plannings)

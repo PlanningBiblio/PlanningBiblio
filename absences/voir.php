@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : absences/voir.php
 Création : mai 2011
 Dernière modification : 11 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affiche le tableau des absences avec formulaire permettant de recherche selon une date de début et de fin et selon

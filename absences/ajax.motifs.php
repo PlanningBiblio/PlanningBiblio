@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : absences/ajax.motifs.php
 Création : 28 février 2014
 Dernière modification : 9 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Enregistre la liste des motifs d'absences dans la base de données

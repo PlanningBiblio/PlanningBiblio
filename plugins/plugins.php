@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : plugins/plugins.php
 Création : 26 juin 2013
 Dernière modification : 18 juin 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Liste les plugins installés, vérifie s'ils sont à jour.

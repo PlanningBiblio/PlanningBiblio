@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : personnel/valid.php
 Création : mai 2011
 Dernière modification : 12 mai 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Valide l'ajout ou la modification des agents : enregistrement des infos dans la base de données

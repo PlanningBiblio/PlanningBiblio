@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : include/accessDenied.php
 Création : 8 avril 2015
 Dernière modification : 9 avril 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affiche un message "Accès refusé" si la page incluant ce fichier est appelée directement (sans index.php, donc sans contrôle)

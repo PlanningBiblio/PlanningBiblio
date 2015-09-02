@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : include/cron.php
 Création : 23 juillet 2013
 Dernière modification : 24 juillet 2013
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Script executant les taches planifiées enregistrées dans la table cron
