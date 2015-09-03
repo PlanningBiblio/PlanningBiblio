@@ -6,7 +6,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 1er septembre 2015
+Dernière modification : 2 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -128,8 +128,6 @@ $(function() {
   
   // Notes
   var text=$("#pl-notes-text"),
-    date=$("#date"),
-    site=$("#site");
   allFields=$([]).add(text);
 
   // Bouton Notes
@@ -152,19 +150,22 @@ $(function() {
 	if ( bValid ) {
 	  // Enregistre le commentaire
 	  text.val(text.val().trim());
-	  var text2=text.val().replace(/\n/g,"<br/>");
+	  var text2=text.val().replace(/\n/g,"#br#");
+	  var text3=text.val().replace(/\n/g,"<br/>");
 	  $.ajax({
+	    dataType: "json",
 	    url: "planning/poste/ajax.notes.php",
 	    type: "get",
-	    data: "date="+date.val()+"&site="+site.val()+"&text="+encodeURIComponent(text2),
-	    success: function(){
-	      if(text2){
+	    data: {date: $("#date").val(), site: $("#site").val(), text: encodeURIComponent(text2)},
+//	    data: "date="+date.val()+"&site="+site.val()+"&text="+encodeURIComponent(text2),
+	    success: function(result){
+	      if(result.notes){
 		$("#pl-notes-button").val("Modifier le commentaire");
 	      }else{
 		$("#pl-notes-button").val("Ajouter un commentaire");
 	      }	
 	      // Met à jour le texte affiché en bas du planning
-	      $("#pl-notes-div1").html(text2);
+	      $("#pl-notes-div1").html(result.notes);
 	      // Ferme le dialog
 	      $("#pl-notes-form").dialog( "close" );
 	    },

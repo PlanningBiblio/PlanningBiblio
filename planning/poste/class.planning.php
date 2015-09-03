@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 1er septembre 2015
+Dernière modification : 2 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -297,7 +297,7 @@ class planning{
     $db->select("pl_notes","text","date='{$this->date}' AND site='{$this->site}'");
     if($db->result){
       $notes=$db->result[0]['text'];
-      $notes=str_replace("&lt;br/&gt;","<br/>",$notes);
+      $notes=str_replace(array("&lt;br/&gt;","#br#"),"<br/>",$notes);
       $this->notes=$notes;
       $this->notesTextarea=str_replace("<br/>","\n",$notes);
     }
