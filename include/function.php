@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 2 septembre 2015
+Dernière modification : 3 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -671,12 +671,6 @@ function getJSFiles($page){
   }
 }
 
-function heure($heure){
-  $heure=str_replace("h",":",$heure);
-  $heure=$heure.":00";
-  return $heure;
-}
-	
 function heure2($heure){
   $heure=explode(":",$heure);
   if(!array_key_exists(1,$heure))

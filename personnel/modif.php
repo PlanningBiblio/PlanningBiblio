@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 23 juillet 2015
+Dernière modification : 3 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -59,6 +59,9 @@ if($config['Multisites-nombre']>1){
   }
   $groupes_sites[12]=$groupes[12];	// Modification des plannings
   unset($groupes[12]);
+
+  $groupes_sites[801]=$groupes[801];	// Modification des commentaires des plannings
+  unset($groupes[801]);
 }
 
 $db=new db();
@@ -614,7 +617,7 @@ for($j=0;$j<$config['nb_semaine'];$j++){
       echo "<td id='temps_".($i-1)."_3'>".heure2($temps[$i-1][3])."</td>\n";
       if($config['Multisites-nombre']>1){
 	$site=null;
-	if($temps[$i-1][4]){
+	if(array_key_exists(4,$temps[$i-1])){
 	  $site="Multisites-site".$temps[$i-1][4];
 	  $site=$config[$site];
 	}
@@ -779,6 +782,11 @@ if($config['Multisites-nombre']>1){
       // Modification des plannings si plusieurs sites
       elseif($elem['groupe_id']==12){
 	$groupe_id=300+$i;
+      }
+
+      // Modification des commentaires des plannings si plusieurs sites
+      elseif($elem['groupe_id']==801){
+	$groupe_id=800+$i;
       }
 
       $checked=null;

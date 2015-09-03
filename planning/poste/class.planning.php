@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 2 septembre 2015
+Dernière modification : 3 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -29,6 +29,7 @@ class planning{
   public $menudiv=null;
   public $notes=null;
   public $notesTextarea=null;
+  public $validation=null;
 
 
   // Recherche les agents de catégorie A en fin de service
@@ -293,13 +294,15 @@ class planning{
   // Notes
   // Récupère les notes (en bas des plannings)
   public function getNotes(){
+    $this->notes=null;
     $db=new db();
-    $db->select("pl_notes","text","date='{$this->date}' AND site='{$this->site}'");
+    $db->select2("pl_notes","*",array("date"=>$this->date, "site"=>$this->site),"ORDER BY `timestamp` DESC");
     if($db->result){
       $notes=$db->result[0]['text'];
       $notes=str_replace(array("&lt;br/&gt;","#br#"),"<br/>",$notes);
       $this->notes=$notes;
       $this->notesTextarea=str_replace("<br/>","\n",$notes);
+      $this->validation=nom($db->result[0]['perso_id']).", ".dateFr($db->result[0]['timestamp'],true);
     }
   }
 
@@ -308,12 +311,15 @@ class planning{
     $date=$this->date;
     $site=$this->site;
     $text=$this->notes;
-
-    $db=new db();
-    $db->delete2("pl_notes",array("date"=>$date,"site"=>$site));
-
-    $db=new db();
-    $db->insert2("pl_notes",array("date"=>$date,"site"=>$site,"text"=>$text));
+    
+    // Vérifie s'il y a eu des changements depuis le dernier enregistrement
+    $this->getNotes();
+    $previousNotes=str_replace("<br/>","#br#",$this->notes);
+    // Si non, on enregistre la nouvelle note
+    if(strcmp($previousNotes,$text)!=0){
+      $db=new db();
+      $db->insert2("pl_notes",array("date"=>$date,"site"=>$site,"text"=>$text,"perso_id"=>$_SESSION['login_id']));
+    }
   }
 
   /**

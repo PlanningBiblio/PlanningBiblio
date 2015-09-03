@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 23 juillet 2015
+Dernière modification : 3 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -561,11 +561,24 @@ class cellule = cellule par défaut
 /* Notes affichées en bas des plannings */
 #pl-notes-div1, .pl-notes-div1{
   margin: 20px 0 0 0;
+  border : 1px solid black;
+  border-radius: 5px;
+  padding: 10px;
 }
 
 #pl-notes-div2{
-  margin: 20px 0 0 0;
+  position: absolute;
+  left: 10px;
+  display: inline-block;
+  margin: 5px 0 0 0;
   text-align: left;
+}
+
+#pl-notes-div1-validation{
+  display: inline-block;
+  width: 100%;
+  text-align: right;
+  padding: 5px 0;
 }
 
 #pl-notes-text{

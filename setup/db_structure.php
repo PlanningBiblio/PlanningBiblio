@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 29 juillet 2015
+Dernière modification : 3 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -109,6 +109,8 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_notes` (
   `date` DATE,
   `site` INT(3) NOT NULL DEFAULT 1,
   `text` TEXT,
+  `perso_id` INT NOT NULL,
+  `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 

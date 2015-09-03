@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 20 mai 2015
+Dernière modification : 3 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -495,6 +495,7 @@ else{
   $p->getNotes();
   $notes=$p->notes;
   $notesTextarea=$p->notesTextarea;
+  $notesValidation=$p->validation;
 
   echo <<<EOD
   <div id='pl-notes-div1'>
@@ -503,7 +504,7 @@ else{
 EOD;
 
   // Notes : Modifications
-  if($autorisation){
+  if($autorisation or in_array((800+$site),$droits)){
     echo <<<EOD
     <div id='pl-notes-div2' class='noprint'>
     <input type='button' class='ui-button' id='pl-notes-button' value='Ajouter un commentaire' />
@@ -519,6 +520,12 @@ EOD;
     </div>
 EOD;
   }
+
+echo <<<EOD
+  <div id='pl-notes-div1-validation'>
+  $notesValidation
+  </div>  
+EOD;
 
   // Affichage des absences
   if($config['Absences-planning']){
