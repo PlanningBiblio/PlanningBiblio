@@ -1,3 +1,22 @@
+***	Version 2.0.1	(Jérôme Combes, 4 septembre 2015)		***
+- Améliorations :
+Calcul des heures hebdomadaires en fonction des plannings de présence dans le menu permettant de placer les agents et dans la feuille de temps
+Prise en compte des absences pour le calcul des heures hebdo à effectuer en SP dans le menu du planning et la feuille de temps
+Ajout d'un droit spécifique à la modification des commentaires des plannings
+
+- Correction :
+Correction d'un bug permettant de placer un agent sur plusieurs postes en même temps
+Correction d'un bug affichant par erreur que les agents sont placés dans des plannings lors de l'enregistrement d'absence
+Correction d'un problème de rémanence du pmenu du planning
+
+***	Version 2.0	(Jérôme Combes, 8 juillet 2015)			***
+- Améliorations :
+Intégration du plugin Planning Hebdo
+Planning Hedbo : 
+ les admins peuvent enregistrer les plannings des autres agents
+ permet la copie des plannings de présence
+ config permettant d'autoriser ou non la saisie/modification des planning de présence par les non-admin
+
 ***	Version 1.9.7	(Jérôme Combes, 20 mai 2015)			***
 - Correction :
 Agents : corrige l'enregistrement des heures de service public et des heures de travail dans la fiche des agents
