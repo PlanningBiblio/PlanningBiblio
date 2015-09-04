@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 31 août 2015
+Dernière modification : 4 septembre 2015
 Auteur : Jérôme Combes jerome@planningbiblio.fr, Christophe Le Guennec Christophe.Leguennec@u-pem.fr
 
 Description :
@@ -26,6 +26,7 @@ require_once "../../include/config.php";
 require_once "../../plugins/plugins.php";
 require_once "../../include/function.php";
 require_once "../../include/horaires.php";
+require_once "../../absences/class.absences.php";
 require_once "../../personnel/class.personnel.php";
 require_once "fonctions.php";
 require_once "class.planning.php";
@@ -342,6 +343,7 @@ if(is_array($autres_agents)){
 
 			// Creation des différentes listes (par service + liste des absents + liste des non qualifiés)
 // Affichage par service
+$newtab=array();
 if($agents_dispo){
   foreach($agents_dispo as $elem){
     if($elem['id']!=2){
@@ -373,7 +375,7 @@ if(is_array($services)){
   }
 }
 
-if(is_array($newtab['Autres'])){
+if(array_key_exists("Autres",$newtab)){
   $listparservices[]=join($newtab['Autres'],",");
 }
 else{
@@ -417,7 +419,7 @@ if(!$config['ClasseParService']){
 }
 
 //		-----------		Affichage des agents indisponibles		----------//
-if(count($newtab["Autres"]) and $config['agentsIndispo']){
+if(array_key_exists("Autres",$newtab) and $config['agentsIndispo']){
   $i=count($services);
   $groupe_tab_hide=$config['ClasseParService']?1:0;
   $tableaux[0].="<tr onmouseover='$(this).addClass(\"menudiv-gris\");' onmouseout='$(this).removeClass(\"menudiv-gris\");'>\n";

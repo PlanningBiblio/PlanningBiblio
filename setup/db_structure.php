@@ -360,6 +360,21 @@ $sql[]="CREATE TABLE `{$dbprefix}EDTSamedi` (
 
 
 // Module planningHebdo
-$sql[]="CREATE TABLE `{$dbprefix}planningHebdo` (`id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `perso_id` INT(11) NOT NULL, `debut` DATE NOT NULL, `fin` DATE NOT NULL, `temps` TEXT NOT NULL, `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, `modif` INT(11) NOT NULL DEFAULT '0',`modification` TIMESTAMP, `valide` INT(11) NOT NULL DEFAULT '0',`validation` TIMESTAMP, `actuel` INT(1) NOT NULL DEFAULT '0', `remplace` INT(11) NOT NULL DEFAULT '0');";
+$sql[]="CREATE TABLE `{$dbprefix}planningHebdo` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT, 
+  `perso_id` INT(11) NOT NULL, 
+  `debut` DATE NOT NULL, 
+  `fin` DATE NOT NULL, 
+  `temps` TEXT NOT NULL, 
+  `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+  `modif` INT(11) NOT NULL DEFAULT '0',
+  `modification` TIMESTAMP, 
+  `valide` INT(11) NOT NULL DEFAULT '0',
+  `validation` TIMESTAMP, 
+  `actuel` INT(1) NOT NULL DEFAULT '0', 
+  `remplace` INT(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
 $sql[]="CREATE TABLE `{$dbprefix}planningHebdoPeriodes` (`id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `annee` VARCHAR(9), `dates` TEXT);";
 ?>

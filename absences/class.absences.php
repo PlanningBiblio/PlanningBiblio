@@ -94,7 +94,6 @@ class absences{
       if($a->elements and !empty($a->elements)){
 	$absences=$a->elements;
       }
-
       // Recherche de tous les plannings de présence
       $edt=array();
       $ph=new planningHebdo();

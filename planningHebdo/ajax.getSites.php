@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/ajax.getSites.php
 Création : 5 juin 2015
-Dernière modification : 5 juin 2015
+Dernière modification : 4 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -24,8 +24,10 @@ $db=new db();
 $db->select2("personnel","sites",array("id"=>$id));
 if($db->result){
   $sites=unserialize($db->result[0]['sites']);
-  foreach($sites as $elem){
-    $options[]=array($elem,$config["Multisites-site".$elem]);
+  if(is_array($sites)){
+    foreach($sites as $elem){
+      $options[]=array($elem,$config["Multisites-site".$elem]);
+    }
   }
 }
 echo json_encode($options);

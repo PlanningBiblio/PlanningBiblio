@@ -766,8 +766,28 @@ if(strcmp("2.0",$config['Version'])>0){
     $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Planning Hebdo - suppression','24','Gestion des plannings de présences','planningHebdo/supprime.php');";
 
     // Création des tables
-    $sql[]="CREATE TABLE `{$dbprefix}planningHebdo` (`id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `perso_id` INT(11) NOT NULL, `debut` DATE NOT NULL, `fin` DATE NOT NULL, `temps` TEXT NOT NULL, `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, `modif` INT(11) NOT NULL DEFAULT '0',`modification` TIMESTAMP, `valide` INT(11) NOT NULL DEFAULT '0',`validation` TIMESTAMP, `actuel` INT(1) NOT NULL DEFAULT '0', `remplace` INT(11) NOT NULL DEFAULT '0');";
-    $sql[]="CREATE TABLE `{$dbprefix}planningHebdoPeriodes` (`id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `annee` VARCHAR(9), `dates` TEXT);";
+    $sql[]="CREATE TABLE `{$dbprefix}planningHebdo` (
+      `id` INT(11) NOT NULL AUTO_INCREMENT, 
+      `perso_id` INT(11) NOT NULL, 
+      `debut` DATE NOT NULL, 
+      `fin` DATE NOT NULL, 
+      `temps` TEXT NOT NULL, 
+      `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+      `modif` INT(11) NOT NULL DEFAULT '0',
+      `modification` TIMESTAMP, 
+      `valide` INT(11) NOT NULL DEFAULT '0',
+      `validation` TIMESTAMP, 
+      `actuel` INT(1) NOT NULL DEFAULT '0', 
+      `remplace` INT(11) NOT NULL DEFAULT '0',
+      PRIMARY KEY (`id`))
+      ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+    $sql[]="CREATE TABLE `{$dbprefix}planningHebdoPeriodes` (
+      `id` INT(11) NOT NULL AUTO_INCREMENT, 
+      `annee` VARCHAR(9), 
+      `dates` TEXT,
+      PRIMARY KEY (`id`))
+      ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
     // Menu administration
     $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES (50,75,'Plannings de présence','planningHebdo/index.php');";
@@ -858,12 +878,14 @@ if(strcmp("2.0.1",$config['Version'])>0){
   ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES 
-  ('Planning-Absences-Heures-Hebdo', 'boolean', '0', 'Planning','30', 'Prendre en compte les absences pour calculer le nombre d&apos;heures de SP &agrave; effectuer');";
+  ('Planning-Absences-Heures-Hebdo', 'boolean', '0', 'Planning','30', 'Prendre en compte les absences pour calculer le nombre d&apos;heures de SP &agrave; effectuer. (Module PlanningHebdo requis)');";
 
   $sql[]="ALTER TABLE `{$dbprefix}pl_notes` ADD `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ;";
   $sql[]="ALTER TABLE `{$dbprefix}pl_notes` ADD `perso_id` INT NOT NULL AFTER `text`;";
   $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`) VALUES 
     ('Modification des commentaires des plannings','801','Modification des commentaires des plannings');";
+
+  $sql[]="ALTER TABLE `{$dbprefix}planningHebdo` ENGINE=MyISAM;";
 
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.0.1' WHERE `nom`='Version';";
 }
