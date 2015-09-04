@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/ajax.control.php
 Création : mai 2011
-Dernière modification : 10 avril 2015
+Dernière modification : 4 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -42,8 +42,7 @@ if($config['Absences-apresValidation']==0){
   $datesValidees=array();
 
   $req="SELECT `date`,`site` FROM `{$dbprefix}pl_poste` WHERE `perso_id`='$perso_id' ";
-  $req.="AND ( CONCAT_WS(' ',`date`,`debut`)>='$debut' AND CONCAT_WS(' ',`date`,`debut`)<'$fin' ) ";
-  $req.="OR ( CONCAT_WS(' ',`date`,`fin`)>'$debut' AND CONCAT_WS(' ',`date`,`fin`)<='$fin' ) ";
+  $req.="AND CONCAT_WS(' ',`date`,`debut`)<'$fin' AND CONCAT_WS(' ',`date`,`fin`)>'$debut' ";
   $req.="GROUP BY `date`;";
 
   $db=new db();
