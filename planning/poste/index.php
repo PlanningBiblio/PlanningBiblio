@@ -496,9 +496,10 @@ else{
   $notes=$p->notes;
   $notesTextarea=$p->notesTextarea;
   $notesValidation=$p->validation;
+  $notesDisplay=trim($notes)?null:"style='display:none;'";
 
   echo <<<EOD
-  <div id='pl-notes-div1'>
+  <div id='pl-notes-div1' $notesDisplay >
   $notes
   </div>
 EOD;

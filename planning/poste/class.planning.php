@@ -302,7 +302,11 @@ class planning{
       $notes=str_replace(array("&lt;br/&gt;","#br#"),"<br/>",$notes);
       $this->notes=$notes;
       $this->notesTextarea=str_replace("<br/>","\n",$notes);
-      $this->validation=nom($db->result[0]['perso_id']).", ".dateFr($db->result[0]['timestamp'],true);
+      if($db->result[0]['perso_id'] and $db->result[0]['timestamp']){
+	$this->validation=nom($db->result[0]['perso_id']).", ".dateFr($db->result[0]['timestamp'],true);
+      }else{
+	$this->validation=null;
+      }
     }
   }
 

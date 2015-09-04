@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
-Dernière modification : 7 avril 2015
+Dernière modification : 4 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -331,9 +331,10 @@ for($j=0;$j<=$fin;$j++){
   $p->site=$site;
   $p->getNotes();
   $notes=$p->notes;
+  $notesDisplay=trim($notes)?null:"style='display:none;'";
 
   echo <<<EOD
-  <div class='pl-notes-div1'>
+  <div class='pl-notes-div1' $notesDisplay >
   $notes
   </div>
 EOD;

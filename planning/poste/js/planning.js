@@ -164,8 +164,10 @@ $(function() {
 	      else{
 		if(result.notes){
 		  $("#pl-notes-button").val("Modifier le commentaire");
+		  $("#pl-notes-div1").show();
 		}else{
 		  $("#pl-notes-button").val("Ajouter un commentaire");
+		  $("#pl-notes-div1").hide();
 		}	
 		// Met à jour le texte affiché en bas du planning
 		$("#pl-notes-div1").html(result.notes);
