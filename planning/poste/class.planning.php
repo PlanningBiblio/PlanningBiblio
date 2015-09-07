@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 3 septembre 2015
+Dernière modification : 7 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -122,7 +122,7 @@ class planning{
     if(is_array($agents))
     foreach($agents as $elem){
       // Heures hebdomadaires (heures à faire en SP)
-      $heuresHebdo=intval($heuresSP[$elem['id']]);
+      $heuresHebdo=$heuresSP[$elem['id']];
       $heuresHebdoTitle="Quota hebdomadaire";
       
       // Heures hebdomadaires avec prise en compte des absences
