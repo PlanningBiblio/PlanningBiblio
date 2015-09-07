@@ -6,7 +6,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 3 septembre 2015
+Dernière modification : 7 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -165,13 +165,15 @@ $(function() {
 		if(result.notes){
 		  $("#pl-notes-button").val("Modifier le commentaire");
 		  $("#pl-notes-div1").show();
+		  var suppression="";
 		}else{
 		  $("#pl-notes-button").val("Ajouter un commentaire");
 		  $("#pl-notes-div1").hide();
+		  var suppression="Suppression du commentaire : ";
 		}	
 		// Met à jour le texte affiché en bas du planning
 		$("#pl-notes-div1").html(result.notes);
-		$("#pl-notes-div1-validation").html(result.validation);
+		$("#pl-notes-div1-validation").html(suppression+result.validation);
 		CJInfo("Le commentaire a été modifié avec succès","success");
 		// Ferme le dialog
 	      }

@@ -497,6 +497,8 @@ else{
   $notesTextarea=$p->notesTextarea;
   $notesValidation=$p->validation;
   $notesDisplay=trim($notes)?null:"style='display:none;'";
+  $notesSuppression=($notesValidation and !trim($notes)) ? "Suppression du commentaire : ":null;
+
 
   echo <<<EOD
   <div id='pl-notes-div1' $notesDisplay >
@@ -524,7 +526,7 @@ EOD;
 
 echo <<<EOD
   <div id='pl-notes-div1-validation'>
-  $notesValidation
+  $notesSuppression$notesValidation
   </div>  
 EOD;
 
