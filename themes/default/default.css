@@ -561,7 +561,7 @@ class cellule = cellule par défaut
 /* Notes affichées en bas des plannings */
 #pl-notes-div1, .pl-notes-div1{
   margin: 20px 0 0 0;
-  border : 1px solid black;
+  border : 1px solid #7D3C25;
   border-radius: 5px;
   padding: 10px;
 }
