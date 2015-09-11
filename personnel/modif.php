@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 3 septembre 2015
+Dernière modification : 11 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -308,12 +308,14 @@ echo "<tr><td>";
 echo "Heures de service public par semaine:";
 echo "</td><td>";
 if(in_array(21,$droits)){
-  echo "<select name='heuresHebdo' style='width:405px'>\n";
+  echo "<select name='heuresHebdo' style='width:405px'  title='Choisissez un nombre d&apos;heures ou un pourcentage. Si vous Choisissez un pourcentage, le nombre d&apos;heures sera calculé à partir des plannings de pr&eacute;sence'>\n";
   echo "<option value='0'>&nbsp;</option>\n";
-  $select=$heuresHebdo=="50%"?"selected='selected'":null;
-  echo "<option $select value='50%'>50% du temps (voir Heures de pr&eacute;sence)</option>\n";
-  $select=$heuresHebdo=="100%"?"selected='selected'":null;
-  echo "<option $select value='100%'>100% du temps (voir Heures de pr&eacute;sence)</option>\n";
+
+  for($i=1;$i<101;$i++){
+    $select=$heuresHebdo=="$i%"?"selected='selected'":null;
+    echo "<option $select value='$i%'>$i%</option>\n";
+  }
+
   for($i=1;$i<40;$i++){
     $j=array();
     if($config['heuresPrecision']=="quart-heure"){
@@ -330,7 +332,10 @@ if(in_array(21,$droits)){
       $j[]=array($i,$i."h00");
     }
     foreach($j as $elem){
-      $select=$elem[0]==$heuresHebdo?"selected='selected'":null;
+      $select=null;
+      if(!strpos($heuresHebdo,"%") and $elem[0]==$heuresHebdo){
+	$select="selected='selected'";
+      }
       echo "<option $select value='{$elem[0]}'>{$elem[1]}</option>\n";
     }
   }
