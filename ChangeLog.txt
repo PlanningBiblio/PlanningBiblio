@@ -1,3 +1,7 @@
+***	Version 2.0.1	(Jérôme Combes, 27 septembre 2015)		***
+- Améliorations :
+Planning : envoie des notifications aux agents concernés par des plannings validés ou modifiés
+
 ***	Version 2.0.1	(Jérôme Combes, 4 septembre 2015)		***
 - Améliorations :
 Calcul des heures hebdomadaires en fonction des plannings de présence dans le menu permettant de placer les agents et dans la feuille de temps
