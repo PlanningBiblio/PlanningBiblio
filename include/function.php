@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0.1
+Planning Biblio, Version 2.0.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 3 septembre 2015
+Dernière modification : 27 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -739,8 +739,10 @@ function is_serialized($string){
 }
 
 function mail2($To,$Sujet,$Message){
-  require_once("vendor/PHPMailer/class.phpmailer.php");
-  require_once("vendor/PHPMailer/class.smtp.php");
+  $path=strpos($_SERVER["SCRIPT_NAME"],"planning/poste/ajax")?"../../":null;
+  require_once("{$path}vendor/PHPMailer/class.phpmailer.php");
+  require_once("{$path}vendor/PHPMailer/class.smtp.php");
+
   $mail = new PHPMailer();
   if($GLOBALS['config']['Mail-IsMail-IsSMTP']=="IsMail")
     $mail->IsMail();
@@ -805,7 +807,7 @@ function nom($id,$format="nom p"){
   }
   return $nom;
 }
-	
+
 function php2js( $php_array, $js_array_name ){
   // contrôle des parametres d'entrée
   if( !is_array( $php_array ) ) {

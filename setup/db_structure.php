@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0.1
+Planning Biblio, Version 2.0.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 3 septembre 2015
+Dernière modification : 15 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -113,6 +113,14 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_notes` (
   `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+$sql[]="CREATE TABLE `{$dbprefix}pl_notifications` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT, 
+  `date` VARCHAR(10),
+  `update_time` TIMESTAMP,
+  `data` TEXT,
+  PRIMARY KEY (`id`))
+  ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
 $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 2.0.1
+Planning Biblio, Version 2.0.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 7 septembre 2015
+Dernière modification : 24 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -104,6 +104,9 @@ $(function() {
 	  // refresh_poste : contrôle toute les 30 sec si le planning est validé depuis un autre poste
 	  setTimeout("refresh_poste()",30000);
 	}
+	
+	// Envoi des notifications
+	planningNotifications(date);
 
 	// Masque les lignes vides
 	hideEmptyLines();
@@ -111,7 +114,7 @@ $(function() {
 	information(result[0],result[1]);
       },
       error: function(result){
-	information("Erreur lors du dev&eacute;rrouillage du planning","error");
+	information("Erreur lors de la validation du planning","error");
       }
     });
   });
@@ -543,6 +546,25 @@ function hideEmptyLines(){
 function majPersoOrigine(perso_id){
   perso_id_origine=perso_id;
   perso_nom_origine=$(".agent_"+perso_id+":eq(0)").text();
+}
+
+
+/** @function planningNotifications
+ *  @param srting date
+ *  Envoie les notifications aux agents concernés par des plannings validés ou modifiés
+ */
+function planningNotifications(date){
+  $.ajax({
+    url: "planning/poste/ajax.notifications.php",
+    dataType: "json",
+    data: {date: date},
+    type: "get",
+    success: function(result){
+    },
+    error: function(result){
+      CJInfo(result.responseText,"error");
+    }
+  });
 }
 
 // refresh_poste : Actualise le planning en cas de modification

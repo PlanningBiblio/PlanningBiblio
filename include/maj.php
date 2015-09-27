@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0.1
+Planning Biblio, Version 2.0.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 7 septembre 2015
+Dernière modification : 15 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -892,6 +892,19 @@ if(strcmp("2.0.1",$config['Version'])>0){
   $sql[]="ALTER TABLE `{$dbprefix}planningHebdo` ENGINE=MyISAM;";
 
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.0.1' WHERE `nom`='Version';";
+}
+
+if(strcmp("2.0.2",$config['Version'])>0){
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES 
+    ('Planning-Notifications', 'boolean', '0', 'Planning','40', 'Envoyer une notification aux agents lors de la validation des plannings les concernant');";
+  $sql[]="CREATE TABLE `{$dbprefix}pl_notifications` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT, 
+  `date` VARCHAR(10),
+  `update_time` TIMESTAMP,
+  `data` TEXT,
+  PRIMARY KEY (`id`))
+  ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.0.2' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage

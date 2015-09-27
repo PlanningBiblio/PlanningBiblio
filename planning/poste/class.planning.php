@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0.1
+Planning Biblio, Version 2.0.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 7 septembre 2015
+Dernière modification : 27 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -26,12 +26,30 @@ class planning{
   public $date=null;
   public $site=1;
   public $categorieA=false;
+  public $elements=array();
   public $menudiv=null;
   public $notes=null;
   public $notesTextarea=null;
   public $validation=null;
 
 
+  public function fetch(){
+    if(!$this->date){
+      return;
+    }
+
+    $db=new db();
+    $db->select2("pl_poste","*",array("date"=>$this->date));
+    if($db->result){
+      $tab=array();
+      foreach($db->result as $elem){
+	$tab[$elem['id']]=$elem;
+      }
+      $this->elements=$tab;
+    }
+  }
+  
+  
   // Recherche les agents de catégorie A en fin de service
   public function finDeService(){
     $date=$this->date;
@@ -291,6 +309,226 @@ class planning{
 
   }
 
+
+  /**
+  * @function notifications
+  * @param string $this->date , date au format YYYY-MM-DD
+  * Envoie des notifications en cas de validation ou changement de planning aux agents concernés
+  */
+  public function notifications(){
+    $version="ajax";
+    require_once "../../personnel/class.personnel.php";
+    require_once "../../postes/class.postes.php";
+    
+    // Liste des agents actifs
+    $p=new personnel();
+    $p->fetch();
+    $agents=$p->elements;
+
+    // Listes des postes
+    $p=new postes();
+    $p->fetch();
+    $postes=$p->elements;
+    
+    // Recherche des informations dans la table pl_poste pour la date $this->date
+    $date=$this->date;
+    $this->fetch();
+    $tab=array();
+    foreach($this->elements as $elem){
+      // Si l'id concerne un agent qui a été supprimé, on l'ignore
+      $id=$elem['perso_id'];
+      if(!array_key_exists($id,$agents)){
+	continue;
+      }
+      // Création d'un tableau par agent, avec nom, prénom et email
+      if(!array_key_exists($id,$tab)){
+	$tab[$id]=array("nom"=>$agents[$id]["nom"], "prenom"=>$agents[$id]["prenom"], "mail"=>$agents[$id]["mail"], "planning"=>array());
+      }
+      // Complète le tableau avec les postes, les sites, horaires et marquage "absent"
+      $poste=$postes[$elem["poste"]]["nom"];
+      $site=null;
+      if($GLOBALS["config"]["Multisites-nombre"]>1){
+	$site="(".$GLOBALS["config"]["Multisites-site{$elem["site"]}"].")";
+      }
+      $tab[$id]["planning"][]=array("debut"=> $elem["debut"], "fin"=> $elem["fin"], "absent"=> $elem["absent"], "site"=> $site, "poste"=> $poste);
+    }
+    
+    // $perso_ids = agents qui recevront une notifications
+    $perso_ids=array();
+
+    // Recherche dans la table pl_notifications si des notifications ont déjà été envoyées (précédentes validations)
+    $db=new db();
+    $db->select2("pl_notifications","*",array("date"=>$date));
+    
+    // Si non, envoi d'un mail intitulé "planning validé" aux agents concernés par le planning
+    // et enregistre les infos dans la table pl_notifications
+    if(!$db->result){
+      $notificationType="nouveauPlanning";
+
+      // Enregistrement des infos dans la table BDD
+      $insert=array("date"=>$date, "data"=>json_encode((array)$tab));
+      $db=new db();
+      $db->insert2("pl_notifications",$insert);
+
+      // Enregistre les agents qui doivent être notifiés
+      $perso_ids=array_keys($tab);
+    }
+    // Si oui, envoi d'un mail intitulé "planning modifié" aux agents concernés par une modification 
+    // et met à jour les infos dans la table pl_notifications
+    else{
+      $notificationType="planningModifie";
+
+      // Lecture des infos de la base de données, comparaison avec les nouvelles données
+      // Lecture des infos de la base de données
+      $db=new db();
+      $db->select2("pl_notifications","*",array("date"=>$date));
+      $data=str_replace("&quot;",'"',$db->result[0]["data"]);
+      $data=(array) json_decode($data);
+      $oldData=array();
+      foreach($data as $key => $value){
+	$oldData[$key]=(array) $value;
+	foreach($oldData[$key]["planning"] as $k => $v){
+	  $oldData[$key]["planning"][$k]=(array) $v;
+	}
+      }
+
+      // Recherche des différences
+      // Ajouts, modifications
+      // Pour chaque agent présent dans le nouveau tableau
+      foreach($tab as $key => $value){
+	foreach($value["planning"] as $k => $v){
+	  if(!array_key_exists($key, $oldData)
+	    or (!array_key_exists($k, $oldData[$key]["planning"]))
+	    or ($v != $oldData[$key]["planning"][$k])){
+	    $perso_ids[]=$key;
+	    continue 2;
+	  }
+	}
+      }
+
+      // Suppressions
+      // Pour chaque agent présent dans l'ancien tableau
+      foreach($oldData as $key => $value){
+	foreach($value["planning"] as $k => $v){
+	  if(!array_key_exists($key, $tab)
+	    or (!array_key_exists($k, $tab[$key]["planning"]))
+	    or ($v != $tab[$key]["planning"][$k])){
+	      if(!in_array($key,$perso_ids)){
+		$perso_ids[]=$key;
+	      }
+	    continue 2;
+	  }
+	}
+      }
+
+      // Modification des infos dans la BDD
+      $update=array("data"=>json_encode((array)$tab));
+      $db=new db();
+      $db->update2("pl_notifications",$update,array("date"=>$date));
+    }
+
+    /*
+    $tab[$perso_id] = Array(nom, prenom, mail, planning => Array(
+	  [0] => Array(debut, fin, absent, site, poste), 
+	  [1] => Array(debut, fin, absent, site, poste), ...))
+    */
+
+    // Envoi du mail
+    $sujet=$notificationType=="nouveauPlanning"?"Validation du planning du ".dateFr($date):"Modification du planning du ".dateFr($date);
+    
+    // Tous les agents qui doivent être notifiés.
+    foreach($perso_ids as $elem){
+      // Création du message avec date et nom de l'agent
+      $message=$notificationType=="nouveauPlanning"?"Validation du planning":"Modification du planning";
+      $message.="<br/><br/>Date : <strong>".dateFr($date)."</strong>";
+      $message.="<br/>Agent : <strong>{$tab[$elem]['prenom']} {$tab[$elem]['nom']}</strong>";
+      
+      // S'il y a des éléments, on ajoute la liste des postes occupés avec les horaires
+      if(array_key_exists($elem,$tab)){
+	$lines=array();
+	$message.="<ul>";
+
+	foreach($tab[$elem]["planning"] as $e){
+	  // On marque en gras les modifications
+	  $exists=true;
+	  if($notificationType=="planningModifie"){
+	    $exists=false;
+	    foreach($oldData[$elem]["planning"] as $o){
+	      if($e==$o){
+		$exists=true;
+		continue;
+	      }
+	    }
+	  }
+	  $bold=$exists?null:"font-weight:bold;";
+	  $striped=$e['absent']?"text-decoration:line-through; color:red;":null;
+
+	  // Affichage de la ligne avec horaires et poste
+	  $line="<li><span style='$bold $striped'>".heure2($e['debut'])." - ".heure2($e['fin'])." : {$e['poste']} {$e['site']}";
+	  if($GLOBALS['config']['Multisites-nombre']>1){
+	    $line.=" ($site)";
+	  }
+	  $line.="</span>";
+
+	  // On ajoute "(supprimé)" et une étoile en cas de modif car certains webmail suppriment les balises et le style "bold", etc.
+	  if($striped){
+	    $line.=" (supprim&eacute;)";
+	  }
+	  if($bold){
+	    $line.="<sup style='font-weight:bold;'>*</sup>";
+	  }
+	  $line.="</li>";
+	  $lines[]=array($e['debut'],$line);
+	}
+
+	// On affiche les suppressions
+	foreach($oldData[$elem]["planning"] as $e){
+	  $exists=false;
+	  foreach($tab[$elem]["planning"] as $e2){
+	    if($e['debut']==$e2['debut']){
+	      $exists=true;
+	      continue;
+	    }
+	  }
+	  if(!$exists){
+	    // Affichage de l'ancienne ligne avec horaires et poste
+	    $line="<li><span style='font-weight:bold; text-decoration:line-through; color:red;'>".heure2($e['debut'])." - ".heure2($e['fin'])." : {$e['poste']} {$e['site']}";
+	    if($GLOBALS['config']['Multisites-nombre']>1){
+	      $line.=" ($site)";
+	    }
+	    $line.="</span>";
+	    $line.=" (supprim&eacute;)";
+	    $line.="<sup style='font-weight:bold;'>*</sup>";
+	    $lines[]=array($e['debut'],$line);
+	  }
+	}
+
+	sort($lines);
+	foreach($lines as $line){
+	  $message.=$line[1];
+	}
+	$message.="</ul>";
+
+	// On ajoute le lien vers le planning
+	$url=createURL("planning/poste/index.php&date=$date");
+	$message.="Lien vers le planning du ".dateFr($date)." : $url";
+
+	// Envoi du mail
+	sendmail($sujet,$message,$tab[$elem]['mail']);
+
+      // S'il n'y a pas d'éléments, on écrit "Vous n'êtes plus dans le planning ..."
+      }else{
+	// On ajoute le lien bers le planning
+	$url=createURL("planning/poste/index.php&date=$date");
+	$message.="Vous n&apos;&ecirc;tes plus dans le planning du ".dateFr($date);
+	$message.="<br/><br/>Lien vers le planning du ".dateFr($date)." : $url";
+
+	// Envoi du mail
+	sendmail($sujet,$message,$oldData[$elem]['mail']);
+      }
+    }
+  }
+  
   // Notes
   // Récupère les notes (en bas des plannings)
   public function getNotes(){

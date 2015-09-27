@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.0.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : postes/class.postes.php
 Création : 29 novembre 2012
-Dernière modification : 8 avril 2015
+Dernière modification : 15 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -36,17 +36,23 @@ class postes{
     //	Select All
     $db=new db();
     $db->select("postes",null,null,"ORDER BY $sort");
-    $all=$db->result;
+
+    $all=array();
+    if($db->result){
+      foreach($db->result as $elem){
+	$all[$elem['id']]=$elem;
+      }
+    }
 
     //	By default $result=$all
     $result=$all;
 
     //	If name, keep only matching results
-    if(is_array($all) and $name){
+    if(!empty($all) and $name){
       $result=array();
       foreach($all as $elem){
 	if(pl_stristr($elem['nom'],$name)){
-	  $result[]=$elem;
+	  $result[$elem['id']]=$elem;
 	}
       }
     }
