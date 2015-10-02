@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 2.0.2
+Planning Biblio, Version 2.0.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 24 septembre 2015
+Dernière modification : 2 octobre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -158,7 +158,7 @@ $(function() {
 	  $.ajax({
 	    dataType: "json",
 	    url: "planning/poste/ajax.notes.php",
-	    type: "get",
+	    type: "post",
 	    data: {date: $("#date").val(), site: $("#site").val(), text: encodeURIComponent(text2)},
 	    success: function(result){
 	      if(result.error){
