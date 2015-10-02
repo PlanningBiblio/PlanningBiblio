@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.0.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 10 avril 2015
+Dernière modification : 29 septembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -123,14 +123,14 @@ $valide1N1=$db->result[0]['valideN1'];
 $valide1N2=$db->result[0]['valide'];
 $perso_id=$db->result[0]['perso_id'];
 
-if(($debutSQL!=$debut1 or $finSQL!=$fin1) and $isValidate){			// mise à jour du champs 'absent' dans 'pl_poste'
+// Mise à jour du champs 'absent' dans 'pl_poste'
+if(($debutSQL!=$debut1 or $finSQL!=$fin1) and $isValidate){
   $db=new db();
   $debut1=$db->escapeString($debut1);
   $fin1=$db->escapeString($fin1);
   $perso_id=$db->escapeString($perso_id);
   $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='0' WHERE
-    ((CONCAT(`date`,' ',`debut`) < '$fin1' AND CONCAT(`date`,' ',`debut`) >= '$debut1')
-    OR (CONCAT(`date`,' ',`fin`) > '$debut1' AND CONCAT(`date`,' ',`fin`) <= '$fin1'))
+    CONCAT(`date`,' ',`debut`) < '$fin1' AND CONCAT(`date`,' ',`fin`) > '$debut1'
     AND `perso_id`='$perso_id'";
   $db->query($req);
 
@@ -139,8 +139,7 @@ if(($debutSQL!=$debut1 or $finSQL!=$fin1) and $isValidate){			// mise à jour du
   $fin1=$db->escapeString($fin1);
   $perso_id=$db->escapeString($perso_id);
   $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1' WHERE
-    ((CONCAT(`date`,' ',`debut`) < '$fin_sql' AND CONCAT(`date`,' ',`debut`) >= '$debut_sql')
-    OR (CONCAT(`date`,' ',`fin`) > '$debut_sql' AND CONCAT(`date`,' ',`fin`) <= '$fin_sql'))
+    CONCAT(`date`,' ',`debut`) < '$fin_sql' AND CONCAT(`date`,' ',`fin`) > '$debut_sql'
     AND `perso_id`='$perso_id'";
   $db->query($req);
 }
