@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0.2
+Planning Biblio, Version 2.0.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 15 septembre 2015
+Dernière modification : 1er octobre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -906,6 +906,38 @@ if(strcmp("2.0.2",$config['Version'])>0){
   ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.0.2' WHERE `nom`='Version';";
 }
+
+
+if(strcmp("2.0.3",$config['Version'])>0){
+  // Modification de la config pour les checkboxes Absences-notification
+/*  $db=new db();
+  $db->query("SELECT `{$dbprefix}config` WHERE `nom` IN ('Absences-notifications1','Absences-notifications2','Absences-notifications3','Absences-notifications4');");
+  if($db->result){
+    foreach($db->result as $elem){
+      $tab=array();
+      $valeurs=unserialize(stripslashes($elem['valeur']));
+      if(in_array(1,$valeurs)){
+	$tab[]=0;
+      }
+      if(in_array(2,$valeurs)){
+	$tab[]=1;
+      }
+      if(in_array(3,$valeurs)){
+	$tab[]=2;
+      }
+      if(in_array(5,$valeurs)){
+	$tab[]=3;
+      }
+      $valeurs=addslashes(serialize($tab));
+      $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$valeurs' WHERE `nom`='{$elem['nom']}';";
+    }
+  }
+
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeurs`='[[0,\"Aux agents ayant le droit de g&eacute;rer les absences\"],[1,\"Au responsable direct\"],[2,\"A la cellule planning\"],[3,\"A l&apos;agent concern&eacute;\"]]'
+    WHERE `nom` IN ('Absences-notifications1','Absences-notifications2','Absences-notifications3','Absences-notifications4');";
+*/  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.0.3' WHERE `nom`='Version';";
+}
+
 
 //	Execution des requetes et affichage
 foreach($sql as $elem){

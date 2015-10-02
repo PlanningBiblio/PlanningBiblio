@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 2.0.2
+Planning Biblio, Version 2.0.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
@@ -23,7 +23,7 @@ Inclut à la fin le fichier footer.php
 session_start();
 
 // Version
-$version="2.0.2";
+$version="2.0.3";
 
 // Redirection vers setup si le fichier config est absent
 if(!file_exists("include/config.php")){
