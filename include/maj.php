@@ -910,7 +910,7 @@ if(strcmp("2.0.2",$config['Version'])>0){
 
 if(strcmp("2.0.3",$config['Version'])>0){
   // Modification de la config pour les checkboxes Absences-notification
-/*  $db=new db();
+  $db=new db();
   $db->query("SELECT `{$dbprefix}config` WHERE `nom` IN ('Absences-notifications1','Absences-notifications2','Absences-notifications3','Absences-notifications4');");
   if($db->result){
     foreach($db->result as $elem){
@@ -935,7 +935,7 @@ if(strcmp("2.0.3",$config['Version'])>0){
 
   $sql[]="UPDATE `{$dbprefix}config` SET `valeurs`='[[0,\"Aux agents ayant le droit de g&eacute;rer les absences\"],[1,\"Au responsable direct\"],[2,\"A la cellule planning\"],[3,\"A l&apos;agent concern&eacute;\"]]'
     WHERE `nom` IN ('Absences-notifications1','Absences-notifications2','Absences-notifications3','Absences-notifications4');";
-*/  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.0.3' WHERE `nom`='Version';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.0.3' WHERE `nom`='Version';";
 }
 
 
