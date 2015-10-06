@@ -16,7 +16,7 @@ Ajout d'un droit spécifique à la modification des commentaires des plannings
 - Correction :
 Correction d'un bug permettant de placer un agent sur plusieurs postes en même temps
 Correction d'un bug affichant par erreur que les agents sont placés dans des plannings lors de l'enregistrement d'absence
-Correction d'un problème de rémanence du pmenu du planning
+Correction d'un problème de rémanence du menu du planning
 
 ***	Version 2.0	(Jérôme Combes, 8 juillet 2015)			***
 - Améliorations :
@@ -101,7 +101,7 @@ Planning : Ajoute les boutons "Supprimer tout" et "Barrer tout" dans le menu per
 Agenda : Amélioration de l'affichage de l'agenda
 
 - Corrections :
-Tableaux : Améliore l'affiche de la page de configuration les horaires
+Tableaux : Améliore l'affichage de la page de configuration les horaires
 Absences : Contrôle si l'absence posée ou modifiée concerne des plannings validés
 Agenda : Affiche toutes les absences dans les agendas
 

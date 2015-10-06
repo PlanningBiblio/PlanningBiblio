@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.0.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 15 avril 2015
+Dernière modification : 6 octobre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -63,7 +63,7 @@ if($theme!="default"){
 </head>
 
 <?php
-echo $page=="aide/index.php"?"<body onscroll='position_retour();'>\n":"<body>\n";
+echo "<body>\n";
 if(!isset($_GET['positionOff'])){
   echo <<<EOD
   <!--		Récupération de la position du pointeur		-->

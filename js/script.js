@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.0.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 2 juin 2015
+Dernière modification : 6 octobre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -553,12 +553,6 @@ function position(object,top,left){
     left=($("body").width()-object.width())/2;
     object.css("left",left);
   }
-}
-
-function position_retour(){
-  var height=$(window).height();
-  var scroll=$(window).scrollTop();
-  $("#a_retour").css("top",scroll+height-50);
 }
 //	--------------------------------	FIN Aide		---------------------------------	//
 //	---------------------------		Personnel		---------------------------------------		//

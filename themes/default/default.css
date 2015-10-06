@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 2.0.1
+Planning Biblio, Version 2.0.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 3 septembre 2015
+Dernière modification : 6 octobre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -738,12 +738,10 @@ a:hover.menuRed, a:hover.menu {
 	}
 
 #a_retour {
-	position:absolute;
-	bottom:32px;
-	right:20px;
-	background:#FFFFFF;
-	z-index:10;
-	}
+  position:fixed;
+  right:20px;
+  bottom:20px;
+}
 
 /*	Messages d'informations		*/
 #messages_infos {
