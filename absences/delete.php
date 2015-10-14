@@ -117,7 +117,7 @@ else{
   $db->query($req);
   $db=new db();
   $db->delete2("absences",array("id"=>$id));
-  echo "<h4>L'asbence a été supprimée</h4>\n";
+  echo "<h4>L'absence a été supprimée</h4>\n";
   echo "<a href='javascript:annuler(3);'>Retour</a>\n";
 }
 ?>
