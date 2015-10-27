@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.7.7
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/class.statistiques.php
 Création : 16 janvier 2013
-Dernière modification : 25 mars 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 8 avril 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Classe statistiques 
@@ -16,9 +16,9 @@ Classe statistiques
 Utilisée par les fichiers du dossier "statistiques"
 */
 
-// pas de $version=acces direct aux pages de ce dossier => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+// pas de $version=acces direct aux pages de ce dossier => Accès refusé
+if(!isset($version)){
+  include_once "../include/accessDenied.php";
 }
 
 // AJouter les html_entity_decode latin1

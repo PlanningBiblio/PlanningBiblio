@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.8.5
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : setup/createdb.php
 Création : mai 2011
-Dernière modification : 9 octobre 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 4 avril 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Créer la base de données. Vérifie si la base et l'utilisateur MySQL existent. Les supprimes si demandé. Créé l'utilisateur et 
@@ -20,7 +20,16 @@ Ce fichier valide le formulaire de la page setup/index.php
 */
 
 //	Variables
-$dbprefix=$_POST['dbprefix'];
+$dbhost=filter_input(INPUT_POST,"dbhost",FILTER_SANITIZE_STRING);
+$dbname=filter_input(INPUT_POST,"dbname",FILTER_SANITIZE_STRING);
+$dbAdminUser=filter_input(INPUT_POST,"adminuser",FILTER_SANITIZE_STRING);
+$dbAdminPass=filter_input(INPUT_POST,"adminpass",FILTER_UNSAFE_RAW);
+$dbuser=filter_input(INPUT_POST,"dbuser",FILTER_SANITIZE_STRING);
+$dbpass=filter_input(INPUT_POST,"dbpass",FILTER_UNSAFE_RAW);
+$dbprefix=filter_input(INPUT_POST,"dbprefix",FILTER_SANITIZE_STRING);
+$dropUser=filter_input(INPUT_POST,"dropuser",FILTER_SANITIZE_STRING);
+$dropDB=filter_input(INPUT_POST,"dropdb",FILTER_SANITIZE_STRING);
+
 $sql=Array();
 $erreur=false;
 $message="<p style='color:red'>Il y a eu des erreurs pendant la création de la base de données.<br/></p>\n";
@@ -28,41 +37,50 @@ $message="<p style='color:red'>Il y a eu des erreurs pendant la création de la 
 //	Entête
 include "header.php";
 
+// Initialisation de la connexion MySQL
+$dblink=mysqli_init();
+/*
+$dbhost=mysqli_real_escape_string($dblink,$dbhost);
+$dbAdminUser=mysqli_real_escape_string($dblink,$dbAdminUser);
+$dbAdminPass=mysqli_real_escape_string($dblink,$dbAdminPass);
+*/
 //	Vérifions si l'utilisateur existe
-$user_exist=false;
-$req="SELECT * FROM `mysql`.`user` WHERE `User`='{$_POST['dbuser']}' AND `Host`='{$_POST['dbhost']}';";
-$dbconn=mysqli_connect($_POST['dbhost'],$_POST['adminuser'],$_POST['adminpass'],'mysql');
-$query=mysqli_query($dbconn,$req);
+$user_exists=false;
+$req="SELECT * FROM `mysql`.`user` WHERE `User`='$dbuser' AND `Host`='$dbhost';";
+$dbconn=mysqli_real_connect($dblink,$dbhost,$dbAdminUser,$dbAdminPass,'mysql');
+
+$dbname=mysqli_real_escape_string($dblink,$dbname);
+$dbuser=mysqli_real_escape_string($dblink,$dbuser);
+$dbpass=mysqli_real_escape_string($dblink,$dbpass);
+
+$query=mysqli_query($dblink,$req);
 if(mysqli_fetch_array($query)){
-  $user_exist=true;
+  $user_exists=true;
 }
-mysqli_close($dbconn);
 
 //	Suppression de l'utilisateur si demandé
-if(isset($_POST['dropuser'])){
-  $dbconn=mysqli_connect($_POST['dbhost'],$_POST['adminuser'],$_POST['adminpass'],'mysql');
-  $query=mysqli_query($dbconn,$req);
-  if($user_exist){
-    $sql[]="DROP USER '{$_POST['dbuser']}'@'{$_POST['dbhost']}';";
-    $user_exist=false;
+if($dropUser){
+  if($user_exists){
+    $sql[]="DROP USER '$dbuser'@'$dbhost';";
+    $user_exists=false;
   }
 }
 //	Suppression de la base si demandé
-if(isset($_POST['dropdb'])){
-  $sql[]="DROP DATABASE IF EXISTS `{$_POST['dbname']}` ;";
+if($dropDB){
+  $sql[]="DROP DATABASE IF EXISTS `$dbname` ;";
 }
 
 //	Création de l'utilisateur 
-if(!$user_exist){
-  $sql[]="CREATE USER '{$_POST['dbuser']}'@'localhost' IDENTIFIED BY '{$_POST['dbpass']}';";
+if(!$user_exists){
+  $sql[]="CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$dbpass';";
 }
-$sql[]="GRANT USAGE ON `{$_POST['dbname']}` . * TO '{$_POST['dbuser']}'@'localhost' IDENTIFIED BY '{$_POST['dbpass']}' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0 ;";
+$sql[]="GRANT USAGE ON `$dbname` . * TO '$dbuser'@'localhost' IDENTIFIED BY '$dbpass' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0 ;";
 
 //	Création de la base
-$sql[]="CREATE DATABASE IF NOT EXISTS `{$_POST['dbname']}` ;";
-$sql[]="GRANT ALL PRIVILEGES ON `{$_POST['dbname']}` . * TO '{$_POST['dbuser']}'@'localhost';";
+$sql[]="CREATE DATABASE IF NOT EXISTS `$dbname` ;";
+$sql[]="GRANT ALL PRIVILEGES ON `$dbname` . * TO '$dbuser'@'localhost';";
 
-$sql[]="USE {$_POST['dbname']};";
+$sql[]="USE $dbname;";
 
 //	Création des tables
 include "db_structure.php";
@@ -70,23 +88,24 @@ include "db_structure.php";
 //	Insertion des données
 include "db_data.php";
 
-$dbconn=mysqli_connect($_POST['dbhost'],$_POST['adminuser'],$_POST['adminpass']);
+
 if($dbconn){
   foreach($sql as $elem){
     $message.=str_replace("\n","<br/>",$elem)."<br/>";
     if(trim($elem)){
-      if(!mysqli_query($dbconn,$elem)){
+      if(!mysqli_multi_query($dblink,$elem)){
 	$erreur=true;
 	$message.="<p style='color:red'>ERROR : ";
-	$message.=mysqli_error($dbconn);
+	$message.=mysqli_error($dblink);
 	$message.="</p>\n";
       }
     }
   }
-  mysqli_close($dbconn);
+  mysqli_close($dblink);
 }
 else{
   $erreur=true;
+  $message.="<p style='color:red'>ERROR : Impossible de se connecter au serveur MySQL</p>\n";
 }
 
 $message.="<p><a href='index.php'>Retour</a></p>\n";

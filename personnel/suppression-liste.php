@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/suppression-liste.php
 Création : mai 2011
-Dernière modification : 26 septembre 2013
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 13 avril 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Supprime les agents sélectionnés à partir de la liste des agents (fichier personnel/index.php).
@@ -19,20 +19,22 @@ Cette page est appelée par le fichier index.php
 
 require_once "class.personnel.php";
 
-$keys=array_keys($_POST);
-for($i=0;$i<count($keys);$i++){
-  if(substr($keys[$i],0,3)=="chk")
-    $liste[]=$_POST[$keys[$i]];
+$post=filter_input_array(INPUT_POST,FILTER_SANITIZE_NUMBER_INT);
+
+foreach($post as $key => $value){
+  if(substr($key,0,3)=="chk"){
+    $liste[]=$value;
+  }
 }
 $liste=join($liste,",");
 if($_SESSION['perso_actif']=="Supprimé"){
   $p=new personnel();
   $p->delete($liste);
-//   $req="UPDATE `{$dbprefix}personnel` SET `supprime`='2',`login`=CONCAT(`id`,'.',`login`) WHERE `id` IN ($liste);";
 }
 else{
-  $req="UPDATE `{$dbprefix}personnel` SET `supprime`='1', `actif`='Supprim&eacute;' WHERE `id` IN ($liste);";
   $db=new db();
+  $liste=$db->escapeString($liste);
+  $req="UPDATE `{$dbprefix}personnel` SET `supprime`='1', `actif`='Supprim&eacute;' WHERE `id` IN ($liste);";
   $db->query($req);
 }
 

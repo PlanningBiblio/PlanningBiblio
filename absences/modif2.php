@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.8.8
+Planning Biblio, Version 2.0.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 16 décembre 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 29 septembre 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Page validant la modification d'une absence : enregistrement dans la BDD des modifications
@@ -20,28 +20,37 @@ Page d'entrée : absences/modif.php
 require_once "class.absences.php";
 
 // Initialisation des variables
-$id=$_GET['id'];
-$debut=$_GET['debut'];
-$fin=$_GET['fin']?$_GET['fin']:$_GET['debut'];
+$commentaires=trim(filter_input(INPUT_GET,"commentaires",FILTER_SANITIZE_STRING));
+$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$hre_debut=filter_input(INPUT_GET,"hre_debut",FILTER_CALLBACK,array("options"=>"sanitize_time"));
+$hre_fin=filter_input(INPUT_GET,"hre_fin",FILTER_CALLBACK,array("options"=>"sanitize_time_end"));
+$id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
+$motif=filter_input(INPUT_GET,"motif",FILTER_SANITIZE_STRING);
+$motif_autre=trim(filter_input(INPUT_GET,"motif_autre",FILTER_SANITIZE_STRING));
+$nbjours=filter_input(INPUT_GET,"nbjours",FILTER_SANITIZE_NUMBER_INT);
+$valide=filter_input(INPUT_GET,"valide",FILTER_SANITIZE_NUMBER_INT);
+
+// Pièces justificatives
+$pj1=filter_input(INPUT_GET,"pj1",FILTER_CALLBACK,array("options"=>"sanitize_on01"));
+$pj2=filter_input(INPUT_GET,"pj2",FILTER_CALLBACK,array("options"=>"sanitize_on01"));
+$so=filter_input(INPUT_GET,"so",FILTER_CALLBACK,array("options"=>"sanitize_on01"));
+
 $debutSQL=dateSQL($debut);
 $finSQL=dateSQL($fin);
-$hre_debut=$_GET['hre_debut']?$_GET['hre_debut']:"00:00:00";
-$hre_fin=$_GET['hre_fin']?$_GET['hre_fin']:"23:59:59";
 $debut_sql=$debutSQL." ".$hre_debut;
 $fin_sql=$finSQL." ".$hre_fin;
+
 $isValidate=true;
 $valideN1=0;
 $valideN2=0;
 $validationN1=null;
 $validationN2=null;
 
-// Pièces justificatives
-$pj1=isset($_GET['pj1'])?1:0;
-$pj2=isset($_GET['pj2'])?1:0;
-$so=isset($_GET['so'])?1:0;
+$nbjours=$nbjours?$nbjours:0;
+$valide=$valide?$valide:0;
 
 if($config['Absences-validation']){
-  $valide=$_GET['valide'];
   if($valide==1 or $valide==-1){
     $valideN2=$valide*$_SESSION['login_id'];
     $validationN2=date("Y-m-d H:i:s");
@@ -53,16 +62,12 @@ if($config['Absences-validation']){
   $isValidate=$valideN2>0?true:false;
 }
 
-$motif=$_GET['motif'];
-$motif_autre=htmlentities($_GET['motif_autre'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
-$commentaires=htmlentities($_GET['commentaires'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
-$nbjours=isset($_GET['nbjours'])?$_GET['nbjours']:0;
-
 $db=new db();
-$db->query("select {$dbprefix}personnel.id as perso_id, {$dbprefix}personnel.nom as nom, {$dbprefix}personnel.prenom as prenom, 
-  {$dbprefix}personnel.mail as mail, {$dbprefix}personnel.mailsResponsables as mailsResponsables, {$dbprefix}personnel.sites as sites 
-  FROM {$dbprefix}absences INNER JOIN {$dbprefix}personnel ON {$dbprefix}absences.perso_id={$dbprefix}personnel.id 
-  WHERE {$dbprefix}absences.id='$id'");
+$db->selectInnerJoin(array("absences","perso_id"),array("personnel","id"),
+  array(),
+  array(array("name"=>"id","as"=>"perso_id"),"nom","prenom","mail","mailsResponsables","sites"),
+  array("id"=>$id));
+
 $perso_id=$db->result[0]['perso_id'];
 $nom=$db->result[0]['nom'];
 $prenom=$db->result[0]['prenom'];
@@ -111,30 +116,35 @@ if($config['Multisites-nombre']>1){
 
 // Pour mise à jour du champs 'absent' dans 'pl_poste'
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}absences` WHERE `id`='$id';");
+$db->select2("absences","*",array("id"=>$id));
 $debut1=$db->result[0]['debut'];
 $fin1=$db->result[0]['fin'];
 $valide1N1=$db->result[0]['valideN1'];
 $valide1N2=$db->result[0]['valide'];
 $perso_id=$db->result[0]['perso_id'];
 
-if(($debutSQL!=$debut1 or $finSQL!=$fin1) and $isValidate){			// mise à jour du champs 'absent' dans 'pl_poste'
+// Mise à jour du champs 'absent' dans 'pl_poste'
+if(($debutSQL!=$debut1 or $finSQL!=$fin1) and $isValidate){
+  $db=new db();
+  $debut1=$db->escapeString($debut1);
+  $fin1=$db->escapeString($fin1);
+  $perso_id=$db->escapeString($perso_id);
   $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='0' WHERE
-    ((CONCAT(`date`,' ',`debut`) < '$fin1' AND CONCAT(`date`,' ',`debut`) >= '$debut1')
-    OR (CONCAT(`date`,' ',`fin`) > '$debut1' AND CONCAT(`date`,' ',`fin`) <= '$fin1'))
+    CONCAT(`date`,' ',`debut`) < '$fin1' AND CONCAT(`date`,' ',`fin`) > '$debut1'
     AND `perso_id`='$perso_id'";
-  $db=new db();
   $db->query($req);
-  $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1' WHERE
-    ((CONCAT(`date`,' ',`debut`) < '$fin_sql' AND CONCAT(`date`,' ',`debut`) >= '$debut_sql')
-    OR (CONCAT(`date`,' ',`fin`) > '$debut_sql' AND CONCAT(`date`,' ',`fin`) <= '$fin_sql'))
-    AND `perso_id`='$perso_id'";
+
   $db=new db();
+  $debut1=$db->escapeString($debut1);
+  $fin1=$db->escapeString($fin1);
+  $perso_id=$db->escapeString($perso_id);
+  $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1' WHERE
+    CONCAT(`date`,' ',`debut`) < '$fin_sql' AND CONCAT(`date`,' ',`fin`) > '$debut_sql'
+    AND `perso_id`='$perso_id'";
   $db->query($req);
 }
 
 // Mise à jour de la table 'absences'
-$db=new db();
 $update=array("motif"=>$motif, "motif_autre"=>$motif_autre, "nbjours"=>$nbjours, "commentaires"=>$commentaires, 
   "debut"=>$debut_sql, "fin"=>$fin_sql);
 
@@ -162,6 +172,7 @@ if($config['Absences-validation']){
   }
 }
 $where=array("id"=>$id);
+$db=new db();
 $db->update2("absences",$update,$where);
 
 // Envoi d'un mail de notification
@@ -250,7 +261,6 @@ $message.="<br/><br/>Lien vers la demande d&apos;absence :<br/><a href='$url'>$u
 if(!empty($destinataires)){
   sendmail($sujet,$message,$destinataires);
 }
-
-echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&messageOK="
-  .urlencode("L'absence a été modifiée avec succés")."';</script>\n";
+$msg=urlencode("L'absence a été modifiée avec succés");
+echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success';</script>\n";
 ?>

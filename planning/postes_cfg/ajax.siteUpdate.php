@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : planning/postes_cfg/siteUpdate.php
 Création : 7 novembre 2013
 Dernière modification : 7 novembre 2013
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affecte un numéro de site à un tableau.

@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.9
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/horaires.php
 Création : mai 2011
-Dernière modification : 20 janvier 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 24 avril 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Permet de modifier les horaires d'un tableau. Affichage d'un formulaire avec des menus déroulant pour le choix des plages
@@ -49,9 +49,9 @@ if(isset($_POST['action'])){
   $db=new db();
   $db->insert2("pl_poste_horaires",$values);
   if(!$db->error){
-    echo "<script type='text/JavaScript'>information(\"Les horaires ont été modifiés avec succès\",\"highlight\");</script>\n";
+    echo "<script type='text/JavaScript'>CJInfo(\"Les horaires ont été modifiés avec succès\",\"success\");</script>\n";
   }else{
-    echo "<script type='text/JavaScript'>information(\"Une erreur est survenue lors de l'enregistrement des horaires\",\"error\");</script>\n";
+    echo "<script type='text/JavaScript'>CJInfo(\"Une erreur est survenue lors de l'enregistrement des horaires\",\"error\");</script>\n";
   }
 }
 
@@ -89,7 +89,7 @@ if($db->result){
 }
 
 //	Affichage des horaires
-$quart=$config['heuresPrecision']=="quart d&apos;heure"?true:false;
+$quart=$config['heuresPrecision']=="quart-heure"?true:false;
 
 echo "<form name='form2' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='planning/postes_cfg/modif.php' />\n";

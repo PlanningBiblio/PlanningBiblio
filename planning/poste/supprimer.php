@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.8.9
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/supprimer.php
 Création : mai 2011
-Dernière modification : 13 janvier 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 7 avril 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Permet de supprimer un planning. Demande si l'on veut supprimer le jour ou la semaine entière.
@@ -21,8 +21,11 @@ l'icône "Suppression" de la page planning/poste/index.php
 require_once "class.planning.php";
 
 // Initialisation des variables
-$date=$_GET['date'];
-$site=$_GET['site'];
+$confirm=filter_input(INPUT_GET,"confirm",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
+$semaineJour=filter_input(INPUT_GET,"semaineJour",FILTER_SANITIZE_STRING);
+$site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
+
 $dateFr=dateFr($date);
 $d=new datePl($date);
 $debut=$d->dates[0];
@@ -44,14 +47,14 @@ if(!in_array($droit,$droits)){
 echo "<div style='text-align:center'>\n";
 echo "<br/>\n";
 
-if(!isset($_GET['semaineJour'])){		// Etape 1 : Suppression du jour ou de la semaine ?
+if(!$semaineJour){		// Etape 1 : Suppression du jour ou de la semaine ?
   echo "Voulez vous supprimer le planning du jour ($dateFr)<br/>ou de la semaine (du $debutFr au $finFr) ?<br/><br/>\n";
   echo "<a href='index.php?page=planning/poste/supprimer.php&amp;menu=off&amp;date=$date&amp;site=$site&amp;semaineJour=jour'>Jour</a>&nbsp;&nbsp;&nbsp;\n";
   echo "<a href='index.php?page=planning/poste/supprimer.php&amp;menu=off&amp;date=$date&amp;site=$site&amp;semaineJour=semaine'>Semaine</a><br/><br/>\n";
   echo "<a href='javascript:popup_closed();'>Annuler</a>\n";
 }
-elseif(!isset($_GET['confirm'])){		// Etape 2 : Demande confirmation
-  if($_GET['semaineJour']=="semaine"){		// confirmation pour la semaine
+elseif(!$confirm){		// Etape 2 : Demande confirmation
+  if($semaineJour=="semaine"){		// confirmation pour la semaine
     echo "Etes vous sûr de vouloir supprimer le planning de la semaine<br/>(du $debutFr au $finFr) ?<br/><br/>\n";
     echo "<a href='index.php?page=planning/poste/supprimer.php&amp;menu=off&amp;date=$date&amp;site=$site&amp;semaineJour=semaine&amp;confirm=on'>Oui</a>&nbsp;&nbsp;&nbsp;\n";
     echo "<a href='javascript:popup_closed();'>Non</a>\n";
@@ -63,18 +66,26 @@ elseif(!isset($_GET['confirm'])){		// Etape 2 : Demande confirmation
   }
 }
 else{
-  if($_GET['semaineJour']=="semaine"){		// suppression de la semaine
-    $req[]="DELETE FROM `{$dbprefix}pl_poste` WHERE `site`='$site' AND `date` BETWEEN '$debut' AND '$fin';";
-    $req[]="DELETE FROM `{$dbprefix}pl_poste_tab_affect` WHERE `site`='$site' AND `date` BETWEEN '$debut' AND '$fin';";
+  // Suppression de la semaine
+  if($semaineJour=="semaine"){
+    // Table pl_poste (affectation des agents)
+    $db=new db();
+    $db->delete2("pl_poste",array("site"=>$site, "date"=>"BETWEEN{$debut}AND{$fin}"));
+
+    // Table pl_poste_tab_affect (affectation des tableaux)
+    $db=new db();
+    $db->delete2("pl_poste_tab_affect",array("site"=>$site, "date"=>"BETWEEN{$debut}AND{$fin}"));
   }
-  else{						// suppression du jour
-    $req[]="DELETE FROM `{$dbprefix}pl_poste` WHERE `site`='$site' AND `date`='$date';";
-    $req[]="DELETE FROM `{$dbprefix}pl_poste_tab_affect` WHERE `site`='$site' AND `date`='$date';";
+  // Suppression du jour
+  else{
+    // Table pl_poste (affectation des agents)
+    $db=new db();
+    $db->delete2("pl_poste",array("site"=>$site, "date"=>$date));
+
+    // Table pl_poste_tab_affect (affectation des tableaux)
+    $db=new db();
+    $db->delete2("pl_poste_tab_affect",array("site"=>$site, "date"=>$date));
   }
-  $db=new db();
-  $db->query($req[0]);
-  $db=new db();
-  $db->query($req[1]);
   echo "<script type='text/JavaScript'>top.document.location.href=\"index.php\";</script>\n";
 }
 ?>

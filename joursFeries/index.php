@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 1.9.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : joursFeries/index.php
 Création : 25 juillet 2013
-Dernière modification : 24 juin 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 19 mai 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Pages permettant la gestion des jours fériés et de fermeture.
@@ -45,11 +45,11 @@ $jours=$j->elements;
 // Notifications
 if(isset($_GET['message'])){
   switch($_GET['message']){
-    case "OK" : $message="La liste des jours fériés a été modifée avec succés."; $type="highlight"; break;
+    case "OK" : $message="La liste des jours fériés a été modifée avec succès."; $type="highlight"; break;
     case "Erreur" : $message="Une erreur est survenue lors de la modification de la liste des jours fériés."; $type="error"; break;
   }
   if($message){
-    echo "<script type='text/JavaScript'>information('$message','$type');</script>\n";
+    echo "<script type='text/JavaScript'>CJInfo('$message','$type');</script>\n";
   }
 }
 

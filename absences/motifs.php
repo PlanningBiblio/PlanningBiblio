@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : absences/motifs.php
 Création : 28 février 2014
 Dernière modification : 3 mars 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Permet d'afficher et de modifier la liste des motifs d'absences

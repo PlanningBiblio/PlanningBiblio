@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.9
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 21 janvier 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 27 avril 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Permet la mise à jour en arrière plan de la base de données (table pl_poste) lors de l'utilisation du menu contextuel de la 
@@ -17,28 +17,30 @@ page planning/poste/index.php pour placer les agents
 Cette page est appelée par la function JavaScript "bataille_navale" utilisé par le fichier planning/poste/menudiv.php
 */
 
+ini_set("display_errors",0);
+
 session_start();
+
 // Includes
 require_once "../../include/config.php";
 require_once "../../include/function.php";
 require_once "../../plugins/plugins.php";
-
-ini_set("display_errors",0);
-ini_set("error_reporting",E_ALL);
+require_once "class.planning.php";
 
 //	Initialisation des variables
-$site=$_POST['site'];
-$ajouter=$_POST['ajouter'];
-$perso_id=$_POST['perso_id'];
-$perso_id_origine=$_POST['perso_id_origine'];
-$date=$_POST['date'];
-$debut=$_POST['debut'];
-$fin=$_POST['fin'];
-$absent=isset($_POST['absent'])?$_POST['absent']:"0";
-$poste=$_POST['poste'];
-$barrer=$_POST['barrer'];
-$tout=$_POST['tout'];
+$ajouter=filter_input(INPUT_POST,"ajouter",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$barrer=filter_input(INPUT_POST,"barrer",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$date=filter_input(INPUT_POST,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
+$debut=filter_input(INPUT_POST,"debut",FILTER_CALLBACK,array("options"=>"sanitize_time"));
+$fin=filter_input(INPUT_POST,"fin",FILTER_CALLBACK,array("options"=>"sanitize_time"));
+$perso_id=filter_input(INPUT_POST,"perso_id",FILTER_SANITIZE_NUMBER_INT);
+$perso_id_origine=filter_input(INPUT_POST,"perso_id_origine",FILTER_SANITIZE_NUMBER_INT);
+$poste=filter_input(INPUT_POST,"poste",FILTER_SANITIZE_NUMBER_INT);
+$site=filter_input(INPUT_POST,"site",FILTER_SANITIZE_NUMBER_INT);
+$tout=filter_input(INPUT_POST,"tout",FILTER_CALLBACK,array("options"=>"sanitize_on"));
 
+$login_id=$_SESSION['login_id'];
+$now=date("Y-m-d H:i:s");
 
 // Pärtie 1 : Enregistrement des nouveaux éléments
 
@@ -46,51 +48,80 @@ $tout=$_POST['tout'];
 if($perso_id==0){
   // Tout barrer
   if($barrer and $tout){
-    $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1', `chgt_login`='{$_SESSION['login_id']}', `chgt_time`=SYSDATE() WHERE `date`='$date' AND `debut`='$debut' AND `fin`='$fin' AND `poste`='$poste' AND `site`='$site';";
+    $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
+    $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site);
+    $db=new db();
+    $db->update2("pl_poste",$set,$where);
+
   // Barrer l'agent sélectionné
   }elseif($barrer){
-    $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1', `chgt_login`='{$_SESSION['login_id']}', `chgt_time`=SYSDATE() WHERE `date`='$date' AND `debut`='$debut' AND `fin`='$fin' AND `poste`='$poste' AND `site`='$site' AND `perso_id`='$perso_id_origine';";
+    $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
+    $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
+    $db=new db();
+    $db->update2("pl_poste",$set,$where);
   }
   // Tout supprimer
   elseif($tout){
-    $req="DELETE FROM `{$dbprefix}pl_poste` WHERE `date`='$date' AND `debut`='$debut' AND `fin`='$fin' AND `poste`='$poste' AND `site`='$site';";
+    $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site);
+    $db=new db();
+    $db->delete2("pl_poste",$where);
   // Supprimer l'agent sélectionné
   }else{
-    $req="DELETE FROM `{$dbprefix}pl_poste` WHERE `date`='$date' AND `debut`='$debut' AND `fin`='$fin' AND `poste`='$poste' AND `site`='$site' AND `perso_id`='$perso_id_origine';";
+    $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
+    $db=new db();
+    $db->delete2("pl_poste",$where);
   }
 }
 // Remplacement
 else{
-  if(!$barrer and !$ajouter){		// on remplace
+  // si ni barrer, ni ajouter : on remplace
+  if(!$barrer and !$ajouter){
+    // Suppression des anciens éléments
+    $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=> $perso_id_origine);
     $db=new db();
-    $db->query("DELETE FROM `{$dbprefix}pl_poste` WHERE `date`='$date' AND `debut`='$debut' AND `fin`='$fin' AND `poste`='$poste' AND `site`='$site' AND `perso_id`='$perso_id_origine';");
-    $req="INSERT INTO `{$dbprefix}pl_poste` (`date`,`debut`,`fin`,`poste`,`site`,`perso_id`,`chgt_login`,`chgt_time`) VALUES ('$date','$debut','$fin','$poste','$site','$perso_id','{$_SESSION['login_id']}',SYSDATE());";
-  }
-  elseif($barrer){			// on barre l'ancien et ajoute le nouveau
+    $db->delete2("pl_poste",$where);
+
+    // Insertion des nouveaux éléments
+    $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id, 
+      "chgt_login"=>$login_id, "chgt_time"=>$now);
     $db=new db();
-    $db->query("UPDATE `{$dbprefix}pl_poste` SET `absent`='1', `chgt_login`='{$_SESSION['login_id']}' WHERE `date`='$date' AND `debut`='$debut' AND `fin`='$fin' AND `poste`='$poste' AND `site`='$site' AND `perso_id`='$perso_id_origine'");
-    $req="INSERT INTO `{$dbprefix}pl_poste` (`date`,`debut`,`fin`,`poste`,`site`,`perso_id`,`chgt_login`,`chgt_time`) VALUES ('$date','$debut','$fin','$poste','$site','$perso_id','{$_SESSION['login_id']}',SYSDATE());";
+    $db->insert2("pl_poste",$insert);
   }
-  elseif($ajouter){			// on ajoute
-    $req="INSERT INTO `{$dbprefix}pl_poste` (`date`,`debut`,`fin`,`poste`,`site`,`perso_id`,`chgt_login`,`chgt_time`) 
-      VALUES ('$date','$debut','$fin','$poste','$site','$perso_id','{$_SESSION['login_id']}',SYSDATE());";
+  // Si barrer : on barre l'ancien et ajoute le nouveau
+  elseif($barrer){
+    // On barre l'ancien
+    $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
+    $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
+    $db=new db();
+    $db->update2("pl_poste",$set,$where);
+    
+    // On ajoute le nouveau
+    $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id, 
+      "chgt_login"=>$login_id, "chgt_time"=>$now);
+    $db=new db();
+    $db->insert2("pl_poste",$insert);
+  }
+  // Si Ajouter, on garde l'ancien et ajoute le nouveau
+  elseif($ajouter){
+    $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id, 
+      "chgt_login"=>$login_id, "chgt_time"=>$now);
+    $db=new db();
+    $db->insert2("pl_poste",$insert);
     }
 }
-
-$db=new db();
-$db->query($req);
 
 
 // Partie 2 : Récupération de l'ensemble des éléments
 // Et transmission à la fonction JS bataille_navale pour mise à jour de l'affichage de la cellule
-$db=new db();
-$db->query("SELECT `{$dbprefix}personnel`.`nom` AS `nom`,`{$dbprefix}personnel`.`prenom` AS `prenom`, 
-  `{$dbprefix}personnel`.`statut` AS `statut`, `{$dbprefix}personnel`.`service` AS `service`, 
-  `{$dbprefix}pl_poste`.`perso_id` AS `perso_id`, `{$dbprefix}pl_poste`.`absent` AS `absent`, 
-  `{$dbprefix}pl_poste`.`supprime` AS `supprime` 
-  FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}personnel` ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id`
-  WHERE `{$dbprefix}pl_poste`.`date`='$date' AND `{$dbprefix}pl_poste`.`debut`='$debut' AND `{$dbprefix}pl_poste`.`fin`='$fin' 
-  AND `{$dbprefix}pl_poste`.`poste`='$poste' AND `{$dbprefix}pl_poste`.`site`='$site' ORDER BY `nom`,`prenom`");
+
+$db->selectInnerJoin(
+  array("pl_poste","perso_id"),
+  array("personnel","id"),
+  array("absent","supprime"),
+  array("nom","prenom","statut","service",array("name"=>"id","as"=>"perso_id")),
+  array("date"=>$date, "debut"=>$debut, "fin"=> $fin, "poste"=>$poste, "site"=>$site),
+  array(),
+  "ORDER BY nom,prenom");
 
 if(!$db->result){
   echo json_encode(array());
@@ -104,14 +135,8 @@ for($i=0;$i<count($tab);$i++){
   $tab[$i]["service"]=removeAccents($tab[$i]["service"]);
 
   // Ajout des Sans Repas (SR)
-  $tab[$i]["sr"]=0;
-  if($config['Planning-sansRepas'] and $debut>="11:30:00" and $fin<="14:30:00"){
-    $db=new db();
-    $db->select("pl_poste","*","`date`='$date' AND `perso_id`='{$tab[$i]['perso_id']}' AND `debut` >='11:30:00' AND `fin`<='14:30:00'");
-    if($db->nb>1){
-      $tab[$i]["sr"]=1;
-    }
-  }
+  $p=new planning();
+  $tab[$i]["sr"]=$p->sansRepas($date,$debut,$fin,$tab[$i]["perso_id"]);
 }
 
 // Marquage des congés

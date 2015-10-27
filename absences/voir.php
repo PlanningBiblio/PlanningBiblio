@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.9.3
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 26 mars 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 11 avril 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affiche le tableau des absences avec formulaire permettant de recherche selon une date de début et de fin et selon
@@ -20,9 +20,14 @@ Page appelée par la page index.php
 require_once "class.absences.php";
 require_once "personnel/class.personnel.php";
 
-if(isset($_GET['messageOK'])){
-  echo "<script type='text/JavaScript'>information('".urldecode(addslashes($_GET['messageOK']))."','highlight');</script>\n";
-}
+// Initialisation des variables
+$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$reset=filter_input(INPUT_GET,"reset",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+
+$debut=$debut?$debut:(isset($_SESSION['oups']['absences_debut'])?$_SESSION['oups']['absences_debut']:null);
+$fin=$fin?$fin:(isset($_SESSION['oups']['absences_fin'])?$_SESSION['oups']['absences_fin']:null);
+
 echo "<h3>Liste des absences</h3>\n";
 
 //	Initialisation des variables
@@ -33,23 +38,23 @@ if(!$admin){
 }
 
 if($admin){
-  $perso_id=isset($_GET['perso_id'])?$_GET['perso_id']:(isset($_SESSION['oups']['absences_perso_id'])?$_SESSION['oups']['absences_perso_id']:$_SESSION['login_id']);
+  $perso_id=filter_input(INPUT_GET,"perso_id",FILTER_SANITIZE_NUMBER_INT);
+  if($perso_id===null){
+    $perso_id=isset($_SESSION['oups']['absences_perso_id'])?$_SESSION['oups']['absences_perso_id']:$_SESSION['login_id'];
+  }
 }
 else{
   $perso_id=$_SESSION['login_id'];
 }
-if(isset($_GET['reset'])){
+if($reset){
   $perso_id=$_SESSION['login_id'];
 }
-$tri=isset($_GET['tri'])?$_GET['tri']:"`debut`,`fin`,`nom`,`prenom`";
-$debut=isset($_GET['debut'])?dateFr($_GET['debut']):(isset($_SESSION['oups']['absences_debut'])?$_SESSION['oups']['absences_debut']:null);
-$fin=isset($_GET['fin'])?dateFr($_GET['fin']):(isset($_SESSION['oups']['absences_fin'])?$_SESSION['oups']['absences_fin']:null);
 
 $agents_supprimes=isset($_SESSION['oups']['absences_agents_supprimes'])?$_SESSION['oups']['absences_agents_supprimes']:false;
 $agents_supprimes=(isset($_GET['debut']) and isset($_GET['supprimes']))?true:$agents_supprimes;
 $agents_supprimes=(isset($_GET['debut']) and !isset($_GET['supprimes']))?false:$agents_supprimes;
 
-if(isset($_GET['reset'])){
+if($reset){
   $debut=null;
   $fin=null;
   $agents_supprimes=false;
@@ -60,8 +65,8 @@ $_SESSION['oups']['absences_fin']=$fin;
 $_SESSION['oups']['absences_perso_id']=$perso_id;
 $_SESSION['oups']['absences_agents_supprimes']=$agents_supprimes;
 
-$debutFr=dateFr($debut);
-$finFr=dateFr($fin);
+$debutSQL=dateSQL($debut);
+$finSQL=dateSQL($fin);
 
 // Multisites : filtre pour n'afficher que les agents du site voulu
 $sites=null;
@@ -79,7 +84,8 @@ $a=new absences();
 if($agents_supprimes){
   $a->agents_supprimes=array(0,1);
 }
-$a->fetch($tri,$only_me,$perso_id,$debut,$fin,$sites);
+$tri="`debut`,`fin`,`nom`,`prenom`";
+$a->fetch($tri,$only_me,$perso_id,$debutSQL,$finSQL,$sites);
 $absences=$a->elements;
 
 // Recherche des agents
@@ -101,8 +107,8 @@ if($admin or (!$config['Absences-adminSeulement'] and in_array(6,$droits))){
 echo "<form name='form' method='get' action='index.php'>\n";
 echo "<input type='hidden' name='page' value='absences/voir.php' />\n";
 echo "<table class='tableauStandard'><tbody><tr>\n";
-echo "<td style='vertical-align:middle;'><label class='intitule'>Début :</label> <input type='text' name='debut' value='$debutFr' class='datepicker'/></td>\n";
-echo "<td style='vertical-align:middle;'><label class='intitule'>Fin :</label> <input type='text' name='fin' value='$finFr'  class='datepicker'/></td>\n";
+echo "<td style='vertical-align:middle;'><label class='intitule'>Début :</label> <input type='text' name='debut' value='$debut' class='datepicker'/></td>\n";
+echo "<td style='vertical-align:middle;'><label class='intitule'>Fin :</label> <input type='text' name='fin' value='$fin'  class='datepicker'/></td>\n";
 
 if($admin){
   echo "<td style='vertical-align:middle;text-align:left;'>\n";
@@ -128,7 +134,7 @@ if($admin){
 }
 
 echo "<td><input type='submit' value='OK' class='ui-button'/></td>\n";
-echo "<td><input type='button' value='Effacer' onclick='location.href=\"index.php?page=absences/voir.php&amp;reset\"'  class='ui-button' /></td>\n";
+echo "<td><input type='button' value='Effacer' onclick='location.href=\"index.php?page=absences/voir.php&amp;reset=1\"'  class='ui-button' /></td>\n";
 echo "</tr></tbody></table>\n";
 echo "</form>\n";
 

@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : planning/postes_cfg/index.php
 Création : mai 2011
 Dernière modification : 26 mars 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Page d'index de gestion des tableaux. Affiche la liste des tableaux, des groupes de tableaux et les lignes de séparation.

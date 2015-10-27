@@ -1,13 +1,13 @@
 /*
-Planning Biblio, Version 1.9.3
+Planning Biblio, Version 2.0.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 26 mars 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 2 octobre 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Fichier regroupant les scripts JS nécessaires à la page planning/poste/index.php (affichage et modification des plannings)
@@ -47,8 +47,6 @@ $(document).ready(function(){
       $(jtem).css("top",top);
     });
   });
-  
-  
 });
 
 // Evénements JQuery
@@ -72,6 +70,9 @@ $(function() {
 	  // data-verrou : pour activer le menudiv
 	  $("#planning-data").attr("data-verrou",0);
 	}
+	
+	// Affichage des lignes vides
+	$(".pl-line").show();
 	information(result[0],result[1]);
       },
       error: function(result){
@@ -103,10 +104,17 @@ $(function() {
 	  // refresh_poste : contrôle toute les 30 sec si le planning est validé depuis un autre poste
 	  setTimeout("refresh_poste()",30000);
 	}
+	
+	// Envoi des notifications
+	planningNotifications(date);
+
+	// Masque les lignes vides
+	hideEmptyLines();
+
 	information(result[0],result[1]);
       },
       error: function(result){
-	information("Erreur lors du dev&eacute;rrouillage du planning","error");
+	information("Erreur lors de la validation du planning","error");
       }
     });
   });
@@ -123,8 +131,6 @@ $(function() {
   
   // Notes
   var text=$("#pl-notes-text"),
-    date=$("#date"),
-    site=$("#site");
   allFields=$([]).add(text);
 
   // Bouton Notes
@@ -147,20 +153,33 @@ $(function() {
 	if ( bValid ) {
 	  // Enregistre le commentaire
 	  text.val(text.val().trim());
-	  var text2=text.val().replace(/\n/g,"<br/>");
+	  var text2=text.val().replace(/\n/g,"#br#");
+	  var text3=text.val().replace(/\n/g,"<br/>");
 	  $.ajax({
+	    dataType: "json",
 	    url: "planning/poste/ajax.notes.php",
-	    type: "get",
-	    data: "date="+date.val()+"&site="+site.val()+"&text="+encodeURIComponent(text2),
-	    success: function(){
-	      if(text2){
-		$("#pl-notes-button").val("Modifier le commentaire");
-	      }else{
-		$("#pl-notes-button").val("Ajouter un commentaire");
-	      }	
-	      // Met à jour le texte affiché en bas du planning
-	      $("#pl-notes-div1").html(text2);
-	      // Ferme le dialog
+	    type: "post",
+	    data: {date: $("#date").val(), site: $("#site").val(), text: encodeURIComponent(text2)},
+	    success: function(result){
+	      if(result.error){
+		CJInfo(result.error,"error");
+	      }
+	      else{
+		if(result.notes){
+		  $("#pl-notes-button").val("Modifier le commentaire");
+		  $("#pl-notes-div1").show();
+		  var suppression="";
+		}else{
+		  $("#pl-notes-button").val("Ajouter un commentaire");
+		  $("#pl-notes-div1").hide();
+		  var suppression="Suppression du commentaire : ";
+		}	
+		// Met à jour le texte affiché en bas du planning
+		$("#pl-notes-div1").html(result.notes);
+		$("#pl-notes-div1-validation").html(suppression+result.validation);
+		CJInfo("Le commentaire a été modifié avec succès","success");
+		// Ferme le dialog
+	      }
 	      $("#pl-notes-form").dialog( "close" );
 	    },
 	    error: function(){
@@ -199,6 +218,10 @@ $(function() {
     poste=$(this).attr("data-situation");
     perso_id=$(this).attr("data-perso-id");
     site=$("#site").val();
+    
+    // On supprime l'ancien menu (s'il existe) pour eviter les problemes de remanence
+    $("#menudiv1").remove();
+    $("#menudiv2").remove();
 
     $.ajax({
       url: "planning/poste/ajax.menudiv.php",
@@ -262,7 +285,7 @@ $(function() {
       },
 
       error: function(result){
-	information("Impossible d'afficher le menu des agents.","error");
+	CJInfo("Impossible d'afficher le menu des agents.#BR#"+result.responseText,"error");
       }
     });
     return false ;
@@ -304,6 +327,9 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
   if(tout==undefined){
     tout=0;
   }
+  
+  var sr_config_debut=$("#planning-data").attr("data-sr-debut");
+  var sr_config_fin=$("#planning-data").attr("data-sr-fin");
 
   $.ajax({
     url: "planning/poste/ajax.updateCell.php",
@@ -314,11 +340,11 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
       $("#td"+cellule).html("");
       
       // Suppression du sans repas sur les cellules ainsi marquée
-      if(debut>="11:30:00" && fin <="14:30:00"){
-	  $(".agent_"+perso_id_origine).each(function(){
+      if(fin > sr_config_debut && debut < sr_config_fin){
+	$(".agent_"+perso_id_origine).each(function(){
 	  var sr_debut=$(this).closest("td").data("start");
 	  var sr_fin=$(this).closest("td").data("end");
-	  if(sr_debut>="11:30:00" && sr_fin<="14:30:00"){
+	  if(sr_fin > sr_config_debut && sr_debut < sr_config_fin){
 	    $(this).find(".sansRepas").remove();
 	  }
 	});
@@ -362,7 +388,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
 	  $(".agent_"+perso_id).each(function(){
 	    var sr_debut=$(this).closest("td").data("start");
 	    var sr_fin=$(this).closest("td").data("end");
-	    if(sr_debut>="11:30:00" && sr_fin<="14:30:00"){
+	    if(sr_fin > sr_config_debut && sr_debut < sr_config_fin){
 	      if($(this).text().indexOf("(SR)")==-1){
 		$(this).append("<font class='sansRepas'> (SR)</font>");
 	      }
@@ -494,6 +520,25 @@ function groupe_tab_hide(){
   });
 }
 
+
+// Masque les lignes vides
+function hideEmptyLines(){
+  if($("#planning-data").attr("data-lignesVides")=="0" &&  $("#planning-data").attr("data-verrou")=="1"){
+    $(".pl-line").each(function(){
+      var hide=true;
+      $(this).find(".menuTrigger").each(function(){
+	if($(this).text()){
+	  hide=false;
+	}
+      });
+      if(hide==true){
+	$(this).hide();
+      }
+    });
+  }
+}
+
+
 /* majPersoOrigine : 
   Fonction permettant de mettre à jour les variables globales perso_xx_origine lors de la mise à jour d'une cellule
   C'est variables permette d'informer ajax.menudiv.php sur l'agent cliqué (id pour maj de la base de données, nom pour affichage)
@@ -501,6 +546,25 @@ function groupe_tab_hide(){
 function majPersoOrigine(perso_id){
   perso_id_origine=perso_id;
   perso_nom_origine=$(".agent_"+perso_id+":eq(0)").text();
+}
+
+
+/** @function planningNotifications
+ *  @param srting date
+ *  Envoie les notifications aux agents concernés par des plannings validés ou modifiés
+ */
+function planningNotifications(date){
+  $.ajax({
+    url: "planning/poste/ajax.notifications.php",
+    dataType: "json",
+    data: {date: date},
+    type: "get",
+    success: function(result){
+    },
+    error: function(result){
+      CJInfo(result.responseText,"error");
+    }
+  });
 }
 
 // refresh_poste : Actualise le planning en cas de modification

@@ -1,13 +1,13 @@
 /*
-Planning Biblio, Version 1.9.3
+Planning Biblio, Version 2.0.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 26 mars 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 6 octobre 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Feuille de style principale du programme.
@@ -52,7 +52,7 @@ h3{
 }
 
 #auth-logo{
-  margin:15px;
+  margin:15px auto 0 auto;
   width:200px;
   height:80px;
   background:url("images/logo200.png") no-repeat right top;
@@ -228,9 +228,29 @@ h3{
 } 
 
 /*		Menu JavaScript		*/
+.menu_table{
+  position: absolute;
+  min-width:200px;
+/*  border: 1px solid #7D3C25;*/
+}
+
+.menu_table td{
+  padding : 1px 10px;
+  border: 1px outset #7D3C25;
+  border-top: 0px;
+}
+
+.menu_table tr:first-child td{
+  border-top: 1px outset #7D3C25;
+}
+
+.ejsmenu2{
+  padding : 5px;
+}
+
 .navigation { position:relative;height:30px;}
 .popper { position: absolute; visibility: hidden; z-index:20; }
-a.ejsmenu, a:hover.ejsmenu {font-size:16px; text-decoration:none;}
+a.ejsmenu, a:hover.ejsmenu {font-size:16px; text-decoration:none; display:inline-block; width:100%;}
 a.ejsmenu2, a:hover.ejsmenu2 {font-size:16px; text-decoration:none;font-weight:bold;}
 
 td.menu_td:hover {		/* TD du menu top */
@@ -425,7 +445,7 @@ class cellule = cellule par défaut
 
 
 #tabsemaine1, .tabsemaine1 {
-  width:1260px;
+  width:100%;
   empty-cells:show;
 }
 
@@ -541,11 +561,24 @@ class cellule = cellule par défaut
 /* Notes affichées en bas des plannings */
 #pl-notes-div1, .pl-notes-div1{
   margin: 20px 0 0 0;
+  border : 1px solid #7D3C25;
+  border-radius: 5px;
+  padding: 10px;
 }
 
 #pl-notes-div2{
-  margin: 20px 0 0 0;
+  position: absolute;
+  left: 10px;
+  display: inline-block;
+  margin: 5px 0 0 0;
   text-align: left;
+}
+
+#pl-notes-div1-validation{
+  display: inline-block;
+  width: 100%;
+  text-align: right;
+  padding: 5px 0;
 }
 
 #pl-notes-text{
@@ -705,12 +738,10 @@ a:hover.menuRed, a:hover.menu {
 	}
 
 #a_retour {
-	position:absolute;
-	bottom:32px;
-	right:20px;
-	background:#FFFFFF;
-	z-index:10;
-	}
+  position:fixed;
+  right:20px;
+  bottom:20px;
+}
 
 /*	Messages d'informations		*/
 #messages_infos {
@@ -774,17 +805,6 @@ img{
 
 .intitule, label{
   font-weight: bold;
-  white-space: nowrap;
-}
-
-.infobulle{
-  position: absolute;
-  background: #7D3C25;
-  padding: 3px 7px;
-  border-radius: 3px;
-  -webkit-border-radius: 3px;
-  color: #D4D4D4;
-  text-align: center;
   white-space: nowrap;
 }
 

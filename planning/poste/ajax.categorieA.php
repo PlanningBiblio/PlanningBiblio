@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : planning/poste/validation.php
 Création : 28 octobre 2013
 Dernière modification : 13 janvier 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Contrôle en arrière plan si un agent de catégorie A est placé en fin de service.

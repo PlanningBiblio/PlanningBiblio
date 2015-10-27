@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : postes/ajax.delete.php
 Création : 4 novembre 2014
 Dernière modification : 4 novembre 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Supprime un poste

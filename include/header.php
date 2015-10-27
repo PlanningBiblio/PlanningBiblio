@@ -1,24 +1,25 @@
 <?php
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 2.0.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 23 février 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 6 octobre 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affcihe l'entête HTML
 Page notamment appelée par les fichiers index.php, admin/index.php
 */
 
-// pas de $version=acces direct  => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+// pas de $version=acces direct au fichier => Accès refusé
+if(!isset($version)){
+  include_once "accessDenied.php";
 }
+
 $theme=$config['Affichage-theme']?$config['Affichage-theme']:"default";
 $themeJQuery=$config['Affichage-theme']?$config['Affichage-theme']:"default";
 if(!file_exists("themes/$theme/jquery-ui.min.css")){
@@ -41,6 +42,7 @@ if(!file_exists("themes/$theme/$theme.css")){
 <script type='text/JavaScript' src='vendor/DataTables-1.10.4/extensions/FixedColumns/js/dataTables.fixedColumns.min.js'></script>
 <script type='text/JavaScript' src='vendor/DataTables-1.10.4/extensions/TableTools/js/dataTables.tableTools.min.js'></script>
 <script type='text/JavaScript' src='vendor/dataTables.jqueryui.js'></script>
+<script type='text/JavaScript' src='vendor/CJScript.js'></script>
 <script type='text/JavaScript' src='js/datePickerFr.js'></script>
 <script type='text/JavaScript' src='js/dataTables.sort.js'></script>
 <script type='text/JavaScript' src='js/script.js'></script>
@@ -48,17 +50,20 @@ if(!file_exists("themes/$theme/$theme.css")){
 getJSFiles($page);
 ?>
 
-<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link rel='StyleSheet' href='vendor/DataTables-1.10.4/media/css/jquery.dataTables_themeroller.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='vendor/DataTables-1.10.4/extensions/TableTools/css/dataTables.tableTools.min.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/<?php echo $themeJQuery; ?>/jquery-ui.min.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/default.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/print.css' type='text/css' media='print'/>
-<link rel='StyleSheet' href='themes/<?php echo "$theme/$theme"; ?>.css' type='text/css' media='all'/>
+<?php
+if($theme!="default"){
+  echo "<link rel='StyleSheet' href='themes/{$theme}/{$theme}.css' type='text/css' media='all'/>\n";
+}
+?>
 </head>
 
 <?php
-echo $page=="aide/index.php"?"<body onscroll='position_retour();'>\n":"<body>\n";
+echo "<body>\n";
 if(!isset($_GET['positionOff'])){
   echo <<<EOD
   <!--		Récupération de la position du pointeur		-->
@@ -67,6 +72,12 @@ if(!isset($_GET['positionOff'])){
   <input type='hidden' name='y' />
   </form>
 EOD;
+}
+
+if(isset($_GET['msg'])){
+  $msg=filter_input(INPUT_GET,"msg", FILTER_SANITIZE_STRING);
+  $msgType=filter_input(INPUT_GET,"msgType", FILTER_SANITIZE_STRING);
+  echo "<script type='text/JavaScript'>CJInfo('$msg','$msgType');</script>\n";
 }
 ?>
 

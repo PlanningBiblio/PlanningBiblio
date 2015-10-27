@@ -985,9 +985,11 @@ TableTools.prototype = {
 			}
 		}
 
-		for ( i=0, iLen=aColWidths.length ; i<iLen ; i++ )
-		{
+		if(iTotal!=0){
+		  for ( i=0, iLen=aColWidths.length ; i<iLen ; i++ )
+		  {
 			aColWidths[i] = aColWidths[i] / iTotal;
+		  }
 		}
 
 		return aColWidths.join('\t');

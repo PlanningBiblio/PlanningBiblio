@@ -1,6 +1,6 @@
 <?php
 /*
-Planning Biblio, Version 1.9.3
+Planning Biblio, Version 2.0.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : setup/index.php
 Création : mai 2011
 Dernière modification : 9 octobre 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Première page d'installation. Affiche le formulaire demandant les informations de connexion au serveur MySQL, le nom de la
@@ -19,7 +19,7 @@ Formulaire soumis au fichier setup/createdb.php
 
 session_start();
 session_destroy();
-$version="1.9.3";
+$version="2.0.3";
 
 include "header.php";
 include_once "../include/function.php";

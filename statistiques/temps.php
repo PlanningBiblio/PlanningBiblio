@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.9.3
+Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 28 mars 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 2 septembre 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affiche un tableau avec le nombre d'heures de service public effectué par agent par jour et par semaine
@@ -17,15 +17,18 @@ Page appelée par le fichier index.php, accessible par le menu statistiques / Fe
 */
 
 require_once "class.statistiques.php";
+require_once "absences/class.absences.php";
 
 echo "<h3>Feuille de temps</h3>\n";
 
-include "include/horaires.php";
+require_once "include/horaires.php";
 
 //	Initialisation des variables
 if(isset($_GET['debut'])){
-  $debut=dateFr($_GET['debut']);
-  $fin=$_GET['fin']?dateFr($_GET['fin']):$debut;
+  $debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+  $fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+  $debut=dateSQL($debut);
+  $fin=$fin?dateFr($fin):$debut;
 }
 elseif(array_key_exists("stat_temps_debut",$_SESSION['oups'])){
   $debut=$_SESSION['oups']['stat_temps_debut'];
@@ -65,28 +68,67 @@ $siteAgents=array(0,0);	// Agents par site
 
 // Récupération des couleur en fonction des statuts
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}select_statuts`;");
+$db->select2("select_statuts");
 $couleurStatut=$db->result;
+
+// Recherche des heures de SP à effectuer pour tous les agents pour toutes les semaines demandées
+$d=new datePl($debut);
+$d1=$d->dates[0];
+// Pour chaque semaine
+for($d=$d1;$d<=$fin;$d=date("Y-m-d",strtotime($d."+1 week"))){
+  $heuresSP[$d]=calculHeuresSP($d);
+  // déduction des absences
+  if($config['Planning-Absences-Heures-Hebdo']){
+    $a=new absences();
+    $heuresAbsences[$d]=$a->calculHeuresAbsences($d);
+    foreach($heuresAbsences[$d] as $key => $value){
+      if(array_key_exists($key,$heuresSP[$d])){
+	$heuresSP[$d][$key]=$heuresSP[$d][$key]-$value;
+	if($heuresSP[$d][$key]<0){
+	  $heuresSP[$d][$key]=0;
+	}
+      }
+    }
+  }
+}
+// Calcul des totaux d'heures de SP à effectuer sur la période
+$totalSP=array();
+foreach($heuresSP as $key => $value){		// $key=date, $value=array
+  foreach($value as $key2 => $value2){		// $key2=perso_id, $value2=heures
+    if(!array_key_exists($key2, $totalSP)){
+      $totalSP[$key2]=(float) $value2;
+    }else{
+      $totalSP[$key2]+=(float) $value2;
+    }
+  }
+}
+// Calcul des moyennes hebdomadaires de SP à effectuer
+$moyennesSP=array();
+foreach($totalSP as $key => $value){
+  $moyennesSP[$key]=$value/(count($heuresSP));
+}
+
+$db=new db();
+$debutREQ=$db->escapeString($debut);
+$finREQ=$db->escapeString($fin);
 
 $req="SELECT `{$dbprefix}pl_poste`.`date` AS `date`, `{$dbprefix}pl_poste`.`debut` AS `debut`, ";
 $req.="`{$dbprefix}pl_poste`.`fin` AS `fin`, `{$dbprefix}personnel`.`id` AS `perso_id`, ";
 $req.="`{$dbprefix}pl_poste`.`site` AS `site`, ";
 $req.="`{$dbprefix}personnel`.`nom` AS `nom`,`{$dbprefix}personnel`.`prenom` AS `prenom`, ";
-$req.="`{$dbprefix}personnel`.`heuresHebdo` AS `heuresHebdo`,`{$dbprefix}personnel`.`statut` AS `statut` ";
+$req.="`{$dbprefix}personnel`.`statut` AS `statut` ";
 $req.="FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}personnel` ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id` ";
 $req.="INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}postes`.`id`=`{$dbprefix}pl_poste`.`poste` ";
-$req.="WHERE `date`>='$debut' AND `date`<='$fin' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' ";
+$req.="WHERE `date`>='$debutREQ' AND `date`<='$finREQ' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' ";
 $req.="ORDER BY `nom`,`prenom`;";
 
-// Recherche des élements dans pl_poste afin  de compter les heures et le nombre d'agents
-$db=new db();
 $db->query($req);
 if($db->result){
   foreach($db->result as $elem){
     if(!array_key_exists($elem['perso_id'],$tab)){		// création d'un tableau de données par agent (id, nom, heures de chaque jour ...)
       $tab[$elem['perso_id']]=Array("perso_id"=>$elem['perso_id'],"nom"=>$elem['nom'],
-      "prenom"=>$elem['prenom'],"heuresHebdo"=>$elem['heuresHebdo'],"statut"=>$elem['statut'],"site1"=>0,"site2"=>0,"total"=>0,
-      "semaine"=>0,"max"=>$nbSemaines*$elem['heuresHebdo']);
+      "prenom"=>$elem['prenom'],"statut"=>$elem['statut'],"site1"=>0,"site2"=>0,"total"=>0,
+      "semaine"=>0);
       foreach($dates as $d){
 	$tab[$elem['perso_id']][$d[0]]=0;
       }
@@ -97,9 +139,15 @@ if($db->result){
     $tab[$elem['perso_id']][$elem['date']]+=diff_heures($elem['debut'],$elem['fin'],"decimal");	// ajout des heures par jour
     $tab[$elem['perso_id']]['total']+=diff_heures($elem['debut'],$elem['fin'],"decimal");	// ajout des heures sur toutes la période
     if($elem["site"]){
+      if(!array_key_exists("site{$elem['site']}",$tab[$elem['perso_id']])){
+	$tab[$elem['perso_id']]["site{$elem['site']}"]=0;
+      }
       $tab[$elem['perso_id']]["site{$elem['site']}"]+=diff_heures($elem['debut'],$elem['fin'],"decimal");	// ajout des heures sur toutes la période par site
     }
     $totalHeures+=diff_heures($elem['debut'],$elem['fin'],"decimal");		// compte la somme des heures sur la période
+    if(!array_key_exists($elem['site'],$siteHeures)){
+      $siteHeures[$elem['site']]=0;
+    }
     $siteHeures[$elem['site']]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
   }
 }
@@ -129,7 +177,10 @@ foreach($dates as $d){
 	$totalAgents++;
 
 	for($i=1;$i<=$config['Multisites-nombre'];$i++){
-	  if($elem["site$i"]){
+	  if(array_key_exists("site$i",$elem)){
+	    if(!array_key_exists($i,$siteAgents)){
+	      $siteAgents[$i]=0;
+	    }
 	    $siteAgents[$i]++;
 	  }
 	}
@@ -152,13 +203,28 @@ $_SESSION['oups']['stat_nbAgents']=$nbAgents;
 $keys=array_keys($tab);
 foreach($keys as $key){
   for($i=1;$i<=$config['Multisites-nombre'];$i++){
-    $tab[$key]["site{$i}Semaine"]=$tab[$key]["site{$i}"]?number_format($tab[$key]["site{$i}"]/$nbSemaines,2,'.',' '):"-";
-    $tab[$key]["site{$i}"]=$tab[$key]["site{$i}"]?number_format($tab[$key]["site{$i}"],2,'.',' '):"-";
+    $tab[$key]["site{$i}Semaine"]=array_key_exists("site{$i}",$tab[$key])?number_format($tab[$key]["site{$i}"]/$nbSemaines,2,'.',' '):"-";
+    $tab[$key]["site{$i}"]=array_key_exists("site{$i}",$tab[$key])?number_format($tab[$key]["site{$i}"],2,'.',' '):"-";
   }
   $tab[$key]['total']=number_format($tab[$key]['total'],2,'.',' ');
   $tab[$key]['semaine']=number_format($tab[$key]['total']/$nbSemaines,2,'.',' ');		// ajout la moyenne par semaine
-  $tab[$key]['heuresHebdo']=$tab[$key]['max']!=0?number_format($tab[$key]['heuresHebdo'],2,'.',' '):"-";
-  $tab[$key]['max']=$tab[$key]['max']!=0?number_format($tab[$key]['max'],2,'.',' '):"-";
+
+  if(!array_key_exists($key,$moyennesSP) or !is_numeric($moyennesSP[$key])){
+    $tab[$key]['heuresHebdo']="Erreur";
+  }elseif($moyennesSP[$key]>0){
+    $tab[$key]['heuresHebdo']=number_format($moyennesSP[$key],2,'.',' ');
+  }else{
+    $tab[$key]['heuresHebdo']="-";
+  }
+  
+  if(!array_key_exists($key,$totalSP) or !is_numeric($totalSP[$key])){
+    $tab[$key]['max']="Erreur";
+  }elseif($totalSP[$key]>0){
+    $tab[$key]['max']=number_format($totalSP[$key],2,'.',' ');
+  }else{
+    $tab[$key]['max']="-";
+  }
+
   foreach($dates as $d){
     $tab[$key][$d[0]]=$tab[$key][$d[0]]!=0?number_format($tab[$key][$d[0]],2,'.',' '):"-";
   }

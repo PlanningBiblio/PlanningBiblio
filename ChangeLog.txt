@@ -1,3 +1,72 @@
+***	Version 2.0.3	(Jérôme Combes, 2 octobre 2015)			***
+- Corrections :
+Corrige le marquage des absents dans le planning
+Corrige le choix des notifications d'absences dans la configuration
+
+***	Version 2.0.2	(Jérôme Combes, 27 septembre 2015)		***
+- Améliorations :
+Planning : envoie des notifications aux agents concernés par des plannings validés ou modifiés
+
+***	Version 2.0.1	(Jérôme Combes, 4 septembre 2015)		***
+- Améliorations :
+Calcul des heures hebdomadaires en fonction des plannings de présence dans le menu permettant de placer les agents et dans la feuille de temps
+Prise en compte des absences pour le calcul des heures hebdo à effectuer en SP dans le menu du planning et la feuille de temps
+Ajout d'un droit spécifique à la modification des commentaires des plannings
+
+- Correction :
+Correction d'un bug permettant de placer un agent sur plusieurs postes en même temps
+Correction d'un bug affichant par erreur que les agents sont placés dans des plannings lors de l'enregistrement d'absence
+Correction d'un problème de rémanence du menu du planning
+
+***	Version 2.0	(Jérôme Combes, 8 juillet 2015)			***
+- Améliorations :
+Intégration du plugin Planning Hebdo
+Planning Hedbo : 
+ les admins peuvent enregistrer les plannings des autres agents
+ permet la copie des plannings de présence
+ config permettant d'autoriser ou non la saisie/modification des planning de présence par les non-admin
+
+***	Version 1.9.7	(Jérôme Combes, 20 mai 2015)			***
+- Correction :
+Agents : corrige l'enregistrement des heures de service public et des heures de travail dans la fiche des agents
+
+***	Version 1.9.6	(Jérôme Combes, 27 avril 2015)			***
+- Corrections :
+Statistiques : Corrige les erreurs de sélection de dates dans les statistiques
+Configuration : Corrige l'erreur empêchant la sélection de "Quart d'heure" dans Heures précision
+
+- Améliorations :
+Planning - Sans repas : Améliore la recherche des Sans Repas : 
+  - n'affiche SR que si l'agent est placé en continu entre les heures de début et de fin de la période "sans repas"
+  - heures de début et de fin de la période sans repas paramétrables
+
+***	Version 1.9.5	(Jérôme Combes, 15 avril 2015)			***
+- Corrections :
+Corrige une erreur sur le contrôle des plannings validés lors de l'ajout ou modification d'une absences
+Corrige un problème de sélection des dates sur la page permettant de voir les absences
+Optimise la recherche des emplois du temps du plugin Planning Hebdo
+Supprime les fonctions error_reporting considérées comme des vulnérabilités Information Exposure Through an Error Message
+Correction des vulnérabilités XSHM
+Correction des vulnérabilités Client Potentiel XSS
+Correction des vulnérabilités Reflected XSS (absences/modif.php)
+Correction de la vulnérabilité LDAP Injection
+Correction des vulnérabilités Trust Boundary Violation (Sessions statistiques)
+Renforce l'authentification CAS
+Corrige les erreurs d'export PDF depuis les DataTables
+Masque les lignes vides (selon config) lors de la validation Ajax
+
+- Améliorations :
+Améliore l'affichage du menu
+
+***	Version 1.9.4	(Jérôme Combes, 7 avril 2015)			***
+- Corrections :
+Correction d'un bug empêchant la copie des tableaux en multisites
+Correction des vulnérabilités SQL Injection
+Correction des vulnérabilités LDAP Injection
+Correction des vulnérabilités Reflected XSS
+Correction des vulnérabilités Stored XSS
+Correction des vulnérabilités File Manipulation
+
 ***	Version 1.9.3	(Jérôme Combes, 31 mars 2015)			***
 - Améliorations :
 Accès direct aux pages souhaitées après authentification
@@ -32,7 +101,7 @@ Planning : Ajoute les boutons "Supprimer tout" et "Barrer tout" dans le menu per
 Agenda : Amélioration de l'affichage de l'agenda
 
 - Corrections :
-Tableaux : Améliore l'affiche de la page de configuration les horaires
+Tableaux : Améliore l'affichage de la page de configuration les horaires
 Absences : Contrôle si l'absence posée ou modifiée concerne des plannings validés
 Agenda : Affiche toutes les absences dans les agendas
 
@@ -154,7 +223,7 @@ Suppression des colonnes 19-20 et 20-22 dans les statistiques possible à partir
 Suppression des checkboxes grisées dans l'onglet "Droits d'accès" des fiches agents si l'agent logué n'a pas les droits de modification
 
 - Corrections :
-Corrige bug empechant l'affichage des heures d'ouverture dans les statistiques
+Corrige bug empêchant l'affichage des heures d'ouverture dans les statistiques
 Le login créé lors de l'ajout d'un agent n'est plus tronqué à 20 caractères
 Modification des variables $config['Absences-notificationsX'] pour éviter les problèmes d'encodage de caractères
 
@@ -229,7 +298,7 @@ Modification du logo
 
 - Correction de bugs :
 Correction du bug permettant les logins des utilisateurs supprimés
-Correction du bug empechant le changement de mois sur le calendrier de la page principale
+Correction du bug empêchant le changement de mois sur le calendrier de la page principale
 Correction du bug affichant le mauvais tableau lors de la modification des tableaux (menu admin/les tableaux)
 
 ***	Version 1.6.3	(Jérôme Combes, 10 Décembre 2013)		***

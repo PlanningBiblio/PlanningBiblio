@@ -1,23 +1,23 @@
 <?php
-/********************************************************************************************************************************
-* Planning Biblio, Version 1.7.2
-* Licence GNU/GPL (version 2 et au dela)											*
-* Voir les fichiers README.md et LICENSE											*
-* Copyright (C) 2011-2015 - Jérôme Combes											*
-*																*
-* Fichier : include/horaires.php												*
-* Création : mai 2011														*
-* Dernière modification : 17 janvier 2013											*
-* Auteur : Jérôme Combes, jerome@planningbilbio.fr										*
-*																*
-* Description :															*
-* Contient les fonctions permettant de travailler sur les horaires								*
-* Mise en forme des heures, soustraction d'horaires, 										*
-*********************************************************************************************************************************/
+/*
+Planning Biblio, Version 1.9.5
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.md et LICENSE
+Copyright (C) 2011-2015 - Jérôme Combes
 
-// pas de $version=acces direct  => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+Fichier : include/horaires.php
+Création : mai 2011
+Dernière modification : 8 avril 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
+
+Description :
+Contient les fonctions permettant de travailler sur les horaires
+Mise en forme des heures, soustraction d'horaires, 
+*/
+
+// pas de $version=acces direct au fichier => Accès refusé
+if(!isset($version)){
+  include_once "accessDenied.php";
 }
 
 function diff_heures($debut,$fin,$format){

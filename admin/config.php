@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.8.8
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
-Fichier : activites/config.php
+Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 16 décembre 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 7 juillet 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affiche et modifie les paramètres de configuration (Serveur Mail, autres options) : Formulaire et validation
@@ -16,57 +16,70 @@ Affiche et modifie les paramètres de configuration (Serveur Mail, autres option
 Page appelée par la page index.php
 */
 
-// pas de $version=acces direct  => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+// pas de $version=acces direct aux pages de ce dossier => Accès refusé
+if(!isset($version)){
+  include_once "../include/accessDenied.php";
 }
 
-echo "<h3>Configuration</h3>\n";
+$tmp_dir=sys_get_temp_dir();
 
 // Enregistrement des paramètres
 if($_POST){
+
+  // Initilisation des variables
+  $post=array();
+  foreach($_POST as $key => $value){
+    $key=filter_var($key,FILTER_SANITIZE_STRING);
+    if(is_array($value)){
+      foreach($value as $v2){
+	$post[$key][]=filter_var($v2,FILTER_SANITIZE_STRING);
+      }
+    }else{
+      $post[$key]=filter_var($value,FILTER_SANITIZE_STRING);
+    }
+  }
+
   // Si les checkboxes ne sont pas cochées, elles ne sont pas transmises donc pas réinitialisées. Donc on les réinitialise ici.
   $db=new db();
-  $db->select("config","nom","type='checkboxes'");
+  $db->select2("config","nom",array("type"=>"checkboxes"));
   if($db->result){
     foreach($db->result as $elem){
-      if(!array_key_exists($elem['nom'],$_POST)){
-	$_POST[$elem['nom']]=array();
+      if(!array_key_exists($elem['nom'],$post)){
+	$post[$elem['nom']]=array();
       }
     }
   }
 
-  $keys=array_keys($_POST);
   $erreur=false;
   $db=new dbh();
   $db->prepare("UPDATE `{$dbprefix}config` SET `valeur`=:valeur WHERE `nom`=:nom");
-  foreach($keys as $elem){
-    if(!in_array($elem,array("page","Valider","Annuler"))){
-      $_POST[$elem]=str_replace("'","&apos;",$_POST[$elem]);
-      if(substr($elem,-9)=="-Password"){
-	$_POST[$elem]=encrypt($_POST[$elem]);
+  foreach($post as $key => $value){
+    if(!in_array($key,array("page","Valider","Annuler"))){
+      $value=str_replace("'","&apos;",$value);
+      if(substr($key,-9)=="-Password"){
+	$value=encrypt($value);
       }
       
       // Checkboxes
-      if(is_array($_POST[$elem])){
-	$_POST[$elem]=serialize($_POST[$elem]);
+      if(is_array($value)){
+	$value=serialize($value);
       }
 	
-      $db->execute(array(":nom"=>$elem,":valeur"=>$_POST[$elem]));
+      $db->execute(array(":nom"=>$key,":valeur"=>$value));
     }
   }
 
   if($erreur){
     echo <<<EOD
       <script type='text/JavaScript'>
-      information('Il y a eu des erreurs pendant la modification.<br/>Veuillez vérifier la configuration.','error');
+      CJInfo('Il y a eu des erreurs pendant la modification.<br/>Veuillez vérifier la configuration.','error');
       </script>
 EOD;
   }
   else{
     echo <<<EOD
       <script type='text/JavaScript'>
-      information('Les modifications ont été enregistrées.','highlight');
+      CJInfo('Les modifications ont été enregistrées.','highlight');
       </script>
 EOD;
   }
@@ -78,6 +91,7 @@ $last_category=null;
 $db=new db();
 $db->query("SELECT * FROM `{$dbprefix}config` ORDER BY `categorie`,`ordre`,`id`;");
 
+echo "<h3>Configuration</h3>\n";
 echo "<form name='form' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='admin/config.php' />\n";
 echo "<div id='accordion' class='ui-accordion'>\n";
@@ -117,8 +131,9 @@ foreach($db->result as $elem){
     // Valeurs proposées (champ valeurs) = tableau PHP à 2 dimensions
     // Valeurs choisies (champ valeur) =  tableau PHP à 1 dimension
     case "checkboxes" :
-      $valeurs=unserialize($elem['valeurs']);
+      $valeurs=json_decode(str_replace("&#34;",'"',$elem['valeurs']));
       $choisies=unserialize($elem['valeur']);
+
       if(is_array($valeurs)){
 	foreach($valeurs as $val){
 	  $checked=in_array($val[0],$choisies)?"checked='checked'":null;
@@ -142,7 +157,7 @@ foreach($db->result as $elem){
     // Select avec valeurs dans un tableau PHP à 2 dimensions
     case "enum2" :
       echo "<select name='{$elem['nom']}' style='width:305px;'>\n";
-      $options=unserialize($elem['valeurs']);
+      $options=json_decode(str_replace("&#34;",'"',$elem['valeurs']));
       foreach($options as $option){
 	$selected=$option[0]==$elem['valeur']?"selected='selected'":null;
 	echo "<option value='{$option[0]}' $selected >{$option[1]}</option>\n";
@@ -172,7 +187,8 @@ foreach($db->result as $elem){
       break;
   }
 
-  echo "</td><td>{$elem['commentaires']}</td>\n";
+  $commentaires=str_replace("[TEMP]",$tmp_dir,$elem['commentaires']);
+  echo "</td><td>$commentaires</td>\n";
   echo "</tr>\n";
   
 }

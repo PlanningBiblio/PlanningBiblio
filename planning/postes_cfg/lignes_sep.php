@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/lignes_sep.php
 Création : 13 septembre 2012
-Dernière modification : 24 juin 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 7 avril 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Permet d'ajouter, modifier et supprimer les lignes de séparation. Affichage des formulaires d'ajout et de modification
@@ -19,27 +19,27 @@ Page appelée par le fichier index.php, accessible à partir de la page planning
 
 require_once "class.tableaux.php";
 
-$action=isset($_REQUEST['action'])?$_REQUEST['action']:null;
+// Initialisation des variables
+$action=filter_input(INPUT_GET,"action",FILTER_SANITIZE_STRING);
+$id=trim(filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT));
+$nom=trim(filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING));
 
 switch($action){		//	Operations de mise a jour
   case "modif2" :
-    $nom=trim($_GET['nom']);
     $db=new db();
-    $db->update2("lignes",array("nom"=>$nom),array("id"=>$_GET['id']));
+    $db->update2("lignes",array("nom"=>$nom),array("id"=>$id));
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=planning/postes_cfg/index.php'</script>\n";
     break;
 
   case "ajout2" :
-    $nom=trim($_GET['nom']);
     $db=new db();
     $db->insert2("lignes",array("nom"=>$nom));
-    unset($_REQUEST['action']);
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=planning/postes_cfg/index.php'</script>\n";
     break;
 
   case "suppr" :
     $db=new db();
-    $db->delete("lignes","id='{$_GET['id']}'");
+    $db->delete2("lignes",array("id"=>$id));
     break;
 }
 
@@ -47,7 +47,7 @@ switch($action){		//	Operations de mise a jour
 switch($action){		//	Affichages
   case "modif" :
     $db=new db();
-    $db->select("lignes","nom","id='{$_GET['id']}'");
+    $db->select2("lignes","nom",array("id"=>$id));
     
     echo <<<EOD
     <h3>Lignes de séparation</h3>
@@ -56,7 +56,7 @@ switch($action){		//	Affichages
     <input type='hidden' name='page' value='planning/postes_cfg/lignes_sep.php' />
     <input type='hidden' name='action' value='modif2' />
     <input type='hidden' name='cfg-type' value='lignes_sep' />
-    <input type='hidden' name='id' value='{$_GET['id']}' />
+    <input type='hidden' name='id' value='$id' />
     <table class='tableauFiches'>
     <tr><td class='intitule'>Nom</td>
       <td><input type='text' name='nom' value='{$db->result[0]['nom']}' class='ui-widget-content ui-corner-all'/></td></tr>

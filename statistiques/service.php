@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.7.9
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/service.php
 Création : 9 septembre 2013
-Dernière modification : 29 avril 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 17 avril 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affiche les statistiques par service
@@ -17,82 +17,96 @@ Page appelée par le fichier index.php, accessible par le menu statistiques / Pa
 */
 
 require_once "class.statistiques.php";
-
-echo "<h3>Statistiques par service</h3>\n";
+require_once "include/horaires.php";
 
 // Initialisation des variables :
+$debut=filter_input(INPUT_POST,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$fin=filter_input(INPUT_POST,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$post=filter_input_array(INPUT_POST,FILTER_SANITIZE_NUMBER_INT);
+$post_services=isset($post['services'])?$post['services']:null;
+$post_sites=isset($post['selectedSites'])?$post['selectedSites']:null;
+
 $joursParSemaine=$config['Dimanche']?7:6;
-$postes=null;
-$selected=null;
-$heure=null;
 $services_tab=null;
 $exists_h19=false;
 $exists_h20=false;
 $exists_JF=false;
 $exists_absences=false;
 
-include "include/horaires.php";
-//		--------------		Initialisation  des variables 'debut','fin' et 'service'		-------------------
-if(!array_key_exists('stat_service_services',$_SESSION)){
-  $_SESSION['stat_service_services']=null;
-}
-if(!array_key_exists('stat_debut',$_SESSION)){
-  $_SESSION['stat_debut']=null;
-  $_SESSION['stat_fin']=null;
-}
-$debut=isset($_GET['debut'])?$_GET['debut']:$_SESSION['stat_debut'];
-$fin=isset($_GET['fin'])?$_GET['fin']:$_SESSION['stat_fin'];
-$services=isset($_GET['services'])?$_GET['services']:$_SESSION['stat_service_services'];
+if(!$debut and array_key_exists('stat_debut',$_SESSION)){ $debut=$_SESSION['stat_debut']; }
+if(!$fin and array_key_exists('stat_fin',$_SESSION)){ $fin=$_SESSION['stat_fin']; }
+
+if(!$debut){ $debut="01/01/".date("Y"); }
+if(!$fin){ $fin=date("d/m/Y"); }
+
+$_SESSION['stat_debut']=$debut;
+$_SESSION['stat_fin']=$fin;
+
 $debutSQL=dateFr($debut);
 $finSQL=dateFr($fin);
 
-if(!$debut){
-  $debut="01/01/".date("Y");
+// Filtre les services
+if(!array_key_exists('stat_service_services',$_SESSION)){
+  $_SESSION['stat_service_services']=null;
 }
-$_SESSION['stat_debut']=$debut;
-if(!$fin){
-  $fin=date("d/m/Y");
+
+$services=array();
+if($post_services){
+  foreach($post_services as $elem){
+    $services[]=$elem;
+  }
+}else{
+  $services=$_SESSION['stat_service_services'];
 }
-$_SESSION['stat_fin']=$fin;
 $_SESSION['stat_service_services']=$services;
 
+
 // Filtre les sites
-if(!array_key_exists('stat_service_sites',$_SESSION)){
-  $_SESSION['stat_service_sites']=null;
+if(!array_key_exists('stat_services_sites',$_SESSION)){
+  $_SESSION['stat_services_sites']=array();
 }
-$selectedSites=isset($_GET['selectedSites'])?$_GET['selectedSites']:$_SESSION['stat_service_sites'];
-if($config['Multisites-nombre']>1 and !$selectedSites){
-  $selectedSites=array();
+
+$selectedSites=array();
+if($post_sites){
+  foreach($post_sites as $elem){
+    $selectedSites[]=$elem;
+  }
+}else{
+  $selectedSites=$_SESSION['stat_services_sites'];
+}
+
+if($config['Multisites-nombre']>1 and empty($selectedSites)){
   for($i=1;$i<=$config['Multisites-nombre'];$i++){
     $selectedSites[]=$i;
   }
 }
-$_SESSION['stat_service_sites']=$selectedSites;
+$_SESSION['stat_services_sites']=$selectedSites;
+
 
 // Filtre les sites dans les requêtes SQL
 if($config['Multisites-nombre']>1 and is_array($selectedSites)){
-  $reqSites="AND `{$dbprefix}pl_poste`.`site` IN (0,".join(",",$selectedSites).")";
+  $sitesSQL="0,".join(",",$selectedSites);
 }
 else{
-  $reqSites=null;
+  $sitesSQL="0,1";
 }
 
 $tab=array();
 
 //		--------------		Récupération de la liste des services pour le menu déroulant		------------------------
 $db=new db();
-$db->select("select_services");
+$db->select2("select_services");
 $services_list=$db->result;
 
-if(is_array($services) and $services[0]){
+if(!empty($services)){
   //	Recherche du nombre de jours concernés
   $db=new db();
-  $db->select("pl_poste","date","`date` BETWEEN '$debutSQL' AND '$finSQL' $reqSites","GROUP BY `date`");
+  $db->select2("pl_poste","date",array("date"=>"BETWEEN{$debutSQL}AND{$finSQL}", "site"=>"IN{$sitesSQL}"),"GROUP BY `date`;");
   $nbJours=$db->nb;
 
   // Recherche des services de chaque agent
   $db=new db();
-  $db->select("personnel","id,service");
+  $db->select2("personnel",array("id","service"));
   foreach($db->result as $elem){
     $servId=null;
     foreach($services_list as $serv){
@@ -108,6 +122,10 @@ if(is_array($services) and $services[0]){
   //	On stock le tout dans le tableau $resultat
 
   $db=new db();
+  $debutREQ=$db->escapeString($debutSQL);
+  $finREQ=$db->escapeString($finSQL);
+  $sitesREQ=$db->escapeString($sitesSQL);
+
   $req="SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
     `{$dbprefix}pl_poste`.`date` as `date`, `{$dbprefix}pl_poste`.`perso_id` as `perso_id`, 
     `{$dbprefix}pl_poste`.`poste` as `poste`, `{$dbprefix}pl_poste`.`absent` as `absent`, 
@@ -115,8 +133,9 @@ if(is_array($services) and $services[0]){
     `{$dbprefix}pl_poste`.`site` as `site` 
     FROM `{$dbprefix}pl_poste` 
     INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` 
-    WHERE `{$dbprefix}pl_poste`.`date`>='$debutSQL' AND `{$dbprefix}pl_poste`.`date`<='$finSQL' 
-    AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' $reqSites 
+    WHERE `{$dbprefix}pl_poste`.`date`>='$debutREQ' AND `{$dbprefix}pl_poste`.`date`<='$finREQ' 
+    AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' 
+    AND `{$dbprefix}pl_poste`.`site` IN ($sitesREQ)
     ORDER BY `poste_nom`,`etage`;";
   $db->query($req);
   $resultat=$db->result;
@@ -235,9 +254,10 @@ $ouverture=$s->ouvertureTexte;
 $_SESSION['stat_tab']=$tab;
 
 //		--------------		Affichage en 2 partie : formulaire à gauche, résultat à droite
+echo "<h3>Statistiques par service</h3>\n";
 echo "<table><tr style='vertical-align:top;'><td id='stat-col1'>\n";
 //		--------------		Affichage du formulaire permettant de sélectionner les dates et les agents		-------------
-echo "<form name='form' action='index.php' method='get'>\n";
+echo "<form name='form' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='statistiques/service.php' />\n";
 echo "<table>\n";
 echo "<tr><td><label class='intitule'>D&eacute;but</label></td>\n";
@@ -345,7 +365,7 @@ if($tab){
 	$site=$config["Multisites-site{$poste['site']}"]." ";
       }
       $etage=$poste[2]?$poste[2]:null;
-      $siteEtage=($site or $etage)?"($site{$etage})":null;
+      $siteEtage=($site or $etage)?"(".trim($site.$etage).")":null;
       echo "<tr style='vertical-align:top;'><td>\n";
       echo "<b>{$poste[1]}</b><br/><i>$siteEtage</i>";
       echo "</td><td class='statistiques-heures'>\n";

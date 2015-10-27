@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.9.2
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/enregistrer.php
 Création : mai 2011
-Dernière modification : 18 mars 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 7 avril 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Permet d'enregistrer un modèle de planning à partir de la page affichant le planning (planning/poste/index.php),
@@ -23,9 +23,12 @@ Cette page est appelée par la fonction JavaScript Popup qui l'affiche dans un c
 require_once "class.planning.php";
 
 // Initialisation des variables
-$semaine=isset($_GET['semaine'])?$_GET['semaine']:null;
-$date=$_GET['date'];
-$site=$_GET['site'];
+$confirm=filter_input(INPUT_GET,"confirm",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
+$nom=trim(filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING));
+$semaine=filter_input(INPUT_GET,"semaine",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
+
 $dateFr=dateFr($date);
 
 // Sécurité
@@ -43,7 +46,7 @@ echo "<br/>\n";
 echo "<b>Enregistrement du planning du $dateFr comme modèle.</b>\n";
 echo "<br/><br/>\n";
 
-if(!isset($_GET['nom'])){			// Etape 1 : Choix du nom du modèle
+if(!$nom){			// Etape 1 : Choix du nom du modèle
   echo <<<EOD
   <form method='get' name='form' action='index.php'>
   
@@ -62,10 +65,9 @@ if(!isset($_GET['nom'])){			// Etape 1 : Choix du nom du modèle
   <input type='submit' value='Enregistrer' />
 EOD;
 }
-elseif(!isset($_GET['confirm'])){		// Etape 2 : Vérifions si le nom n'est pas déjà utilisé
-  $nom=trim(htmlentities($_GET['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+elseif(!$confirm){		// Etape 2 : Vérifions si le nom n'est pas déjà utilisé
   $db=new db();
-  $db->select("pl_poste_modeles","*","`nom`='$nom' AND `site`='$site'");
+  $db->select2("pl_poste_modeles","*",array("nom"=>$nom, "site"=>$site));
   if($db->result){				// Si le nom existe, on propose de le remplacer
     echo "<b>Le modèle \"$nom\" existe<b><br/><br/>\n";
     echo "Voulez vous le remplacer ?<br/><br/>\n";
@@ -77,46 +79,58 @@ elseif(!isset($_GET['confirm'])){		// Etape 2 : Vérifions si le nom n'est pas d
   }
 else{		// Etape 3 : Si le nom existe et confirmation (=remplacement) : suppression des enregistements ecriture des nouveaux
   $select=new db();
-  $select->query("SELECT * FROM `{$dbprefix}pl_poste` WHERE `date`='$date' AND `site`='$site';");
+  $select->select2("pl_poste","*",array("date"=>$date, "site"=>$site));
   if($select->result){
     $delete=new db();
-    $delete->query("DELETE FROM `{$dbprefix}pl_poste_modeles` WHERE `nom`='{$_GET['nom']}' AND `site`='$site';");
+    $delete->delete2("pl_poste_modeles", array("nom"=>$nom, "site"=>$site));
     $delete=new db();
-    $delete->query("DELETE FROM `{$dbprefix}pl_poste_modeles_tab` WHERE `nom`='{$_GET['nom']}' AND `site`='$site';");
-    enregistre_modele($_GET['nom'],$date,$_GET['semaine'],$site);
+    $delete->delete2("pl_poste_modeles_tab", array("nom"=>$nom, "site"=>$site));
+    enregistre_modele($nom,$date,$semaine,$site);
   }
 }
 
 function enregistre_modele($nom,$date,$semaine,$site){
   $dbprefix=$GLOBALS['config']['dbprefix'];
   $d=new datePl($date);
-  if($semaine){			// Sélection des données entre le lundi et le dimanche de la semaine courante
-    $req="SELECT * FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '{$d->dates[0]}' AND '{$d->dates[6]}' AND `site`='$site';";
-    $req_tab="SELECT * FROM `{$dbprefix}pl_poste_tab_affect` WHERE `date` BETWEEN '{$d->dates[0]}' AND '{$d->dates[6]}' AND `site`='$site';";
+
+  // Sélection des données entre le lundi et le dimanche de la semaine courante
+  if($semaine){
+    // Sélection des tableaux (structures)
+    $tab_db=new db();
+    $tab_db->select2("pl_poste_tab_affect","*",array("date"=>"BETWEEN{$d->dates[0]}AND{$d->dates[6]}", "site"=>$site));
+
+    // Sélection des agents placés dans les cellules
+    $select=new db();
+    $select->select2("pl_poste","*",array("date"=>"BETWEEN{$d->dates[0]}AND{$d->dates[6]}", "site"=>$site));
   }
-  else{					// Sélection des données du jour courant
-    $req="SELECT * FROM `{$dbprefix}pl_poste` WHERE `date`='$date' AND `site`='$site';";
-    $req_tab="SELECT * FROM `{$dbprefix}pl_poste_tab_affect` WHERE `date`='$date' AND `site`='$site';";
+  // Sélection des données du jour courant
+  else{
+    // Sélection du tableau (structure)
+    $tab_db=new db();
+    $tab_db->select2("pl_poste_tab_affect","*",array("date"=>$date, "site"=>$site));
+    // Sélection des agents placés dans les cellules
+    $select=new db();
+    $select->select2("pl_poste","*",array("date"=>$date, "site"=>$site));
   }
   
-  $select=new db();
-  $select->query($req);
-  $tab_db=new db();
-  $tab_db->query($req_tab);
   if($select->result and $tab_db->result){
     $values=Array();
     foreach($select->result as $elem){
-      $jour=null;			// $jour reste nul si on n'importe pas une semaine
+      $jour="";			// $jour reste nul si on n'importe pas une semaine
       if($semaine){
 	$d=new datePl($elem['date']);
 	$jour=$d->position;		// position du jour de la semaine (1=lundi , 2=mardi ...)
       }
-      $values[]="('$nom','{$elem['perso_id']}','{$elem['poste']}','{$elem['debut']}','{$elem['fin']}','$jour','$site')";
+      $values[]=array(":nom"=>$nom, ":perso_id"=>$elem['perso_id'], ":poste"=>$elem['poste'], ":debut"=>$elem['debut'], 
+	":fin"=>$elem['fin'], ":jour"=>$jour, ":site"=>$site);
     }
-    $sql="INSERT INTO `{$dbprefix}pl_poste_modeles` (`nom`,`perso_id`,`poste`,`debut`,`fin`,`jour`,`site`) VALUES "; 
-    $sql.=join($values,",").";";
-    $insert=new db();
-    $insert->query($sql);
+
+    $dbh=new dbh();
+    $dbh->prepare("INSERT INTO `{$dbprefix}pl_poste_modeles` (`nom`,`perso_id`,`poste`,`debut`,`fin`,`jour`,`site`) 
+      VALUES (:nom, :perso_id, :poste, :debut, :fin, :jour, :site);");
+    foreach($values as $value){
+      $dbh->execute($value);
+    }
 
     foreach($tab_db->result as $elem){
       $jour=9;				// Si un seul jour, on met 9 pour ne pas fixer le jour de la semaine
@@ -124,9 +138,9 @@ function enregistre_modele($nom,$date,$semaine,$site){
 	$d=new datePl($elem['date']);
 	$jour=$d->position;		// position du jour de la semaine (1=lundi , 2=mardi ...)
       }
-      $req="INSERT INTO `{$dbprefix}pl_poste_modeles_tab` VALUES (NULL,'$nom','$jour','{$elem['tableau']}','$site');";
+      $insert=array("nom"=>$nom, "jour"=>$jour, "tableau"=>$elem['tableau'], "site"=>$site);
       $db=new db();
-      $db->query($req);
+      $db->insert2("pl_poste_modeles_tab",$insert);
     }
    }
   echo "Modèle \"$nom\" enregistré<br/><br/>\n";

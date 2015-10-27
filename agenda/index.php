@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.9
+Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 22 janvier 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 2 juillet 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affiche l'agenda d'un agent entre 2 dates
@@ -17,42 +17,43 @@ Par défaut, la semaine courante de l'agent connecté est affiché
 Page appelée par la page index.php
 */
 
-// pas de $version=acces direct aux pages de ce dossier => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+// pas de $version=acces direct au fichier => Accès refusé
+if(!isset($version)){
+  include_once "../include/accessDenied.php";
 }
 
 // Includes
 include "joursFeries/class.joursFeries.php";
 
 //	Initialisation des variables
+$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+
 if(!array_key_exists('agenda_debut',$_SESSION)){
   $_SESSION['agenda_debut']=null;
   $_SESSION['agenda_fin']=null;
-  $_SESSION['agenda_order']=null;
   $_SESSION['agenda_perso_id']=$_SESSION['login_id'];
 }
 
+$debut=$debut?$debut:$_SESSION['agenda_debut'];
+$fin=$fin?$fin:$_SESSION['agenda_fin'];
+
 $admin=in_array(3,$droits)?true:false;
 if($admin){
-  $perso_id=isset($_GET['perso_id'])?$_GET['perso_id']:$_SESSION['agenda_perso_id'];
+  $perso_id=filter_input(INPUT_GET,"perso_id",FILTER_SANITIZE_NUMBER_INT);
+  $perso_id=$perso_id?$perso_id:$_SESSION['agenda_perso_id'];
 }
 else{
   $perso_id=$_SESSION['agenda_perso_id'];
 }
 $d=new datePl(date("Y-m-d"));
-$order=isset($_GET['order'])?$_GET['order']:$_SESSION['agenda_order'];
-$debut=isset($_GET['debut'])?$_GET['debut']:$_SESSION['agenda_debut'];
-$fin=isset($_GET['fin'])?$_GET['fin']:$_SESSION['agenda_fin'];
 $debutSQL=$debut?dateSQL($debut):$d->dates[0];	// lundi de la semaine courante
 $debut=dateFr3($debutSQL);
 $finSQL=$fin?dateSQL($fin):$d->dates[6];	// dimance de la semaine courante
 $fin=dateFr3($finSQL);
-$order=$order?$order:"`date` desc";
 $_SESSION['agenda_debut']=$debut;
 $_SESSION['agenda_fin']=$fin;
 $_SESSION['agenda_perso_id']=$perso_id;
-$_SESSION['agenda_order']=$order;
 $class=null;
 
 //	Sélection du personnel pour le menu déroulant
@@ -114,7 +115,7 @@ if(!isset($agent)){
 
 //	Selection des horaires de travail
 $db=new db();
-$db->select("personnel","temps","id='$perso_id'");
+$db->select2("personnel","temps",array("id"=>$perso_id));
 $temps=unserialize($db->result[0]['temps']);		//	$temps = emploi du temps
 
 //	Selection des absences
@@ -125,9 +126,13 @@ $absences=$db->result;					//	$absences = tableau d'absences
 	
 //	Selection des postes occupés
 $db=new db();
+$perso_id=$db->escapeString($perso_id);
+$debutREQ=$db->escapeString($debutSQL);
+$finREQ=$db->escapeString($finSQL);
+
 $requete="SELECT pl_poste.`date` AS `date`, pl_poste.debut AS debut, pl_poste.fin AS fin, pl_poste.absent AS absent, 
   postes.nom as poste FROM pl_poste INNER JOIN postes on pl_poste.poste=postes.id WHERE pl_poste.perso_id='$perso_id' 
-  and `date`>='$debutSQL' and `date`<='$finSQL' order by $order,`debut`,`fin`;";
+  and `date`>='$debutREQ' and `date`<='$finREQ' order by `date`,`debut`,`fin`;";
 $requete=str_replace("pl_poste","`{$dbprefix}pl_poste`",$requete);
 $requete=str_replace("postes","`{$dbprefix}postes`",$requete);
 $db->query($requete);
@@ -174,13 +179,26 @@ EOD;
     if($config['nb_semaine']==2 and $semaine%2==0)
       $jour=$jour+7;
 
-    //	Horaires de traval si plugin PlanningHebdo
-    if(in_array("planningHebdo",$plugins)){
-      include "plugins/planningHebdo/agenda.php";
+    //	Horaires de traval si le module PlanningHebdo est activé
+    if($config['PlanningHebdo']){
+      include_once "planningHebdo/class.planningHebdo.php";
+      $p=new planningHebdo();
+      $p->perso_id=$perso_id;
+      $p->debut=$current;
+      $p->fin=$current;
+      $p->valide=true;
+      $p->fetch();
+
+      if(empty($p->elements)){
+	$temps=array();
+      }
+      else{  
+	$temps=$p->elements[0]['temps'];
+      }
     }
 
     $horaires=null;
-    if(array_key_exists($jour,$temps)){
+    if(is_array($temps) and array_key_exists($jour,$temps)){
       $horaires=$temps[$jour];
     }
 

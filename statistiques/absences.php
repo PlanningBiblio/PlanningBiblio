@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.8.1
+Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : statistiques/absences.php
 Création : 15 mai 2014
-Dernière modification : 13 juin 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 21 mai 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affiche des statistiques sur les absences
@@ -20,14 +20,17 @@ require_once "class.statistiques.php";
 require_once "absences/class.absences.php";
 
 //	Initialisation des variables
-$afficheHeures=in_array("planningHebdo",$plugins)?true:false;
+$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
+
+$afficheHeures=$config['PlanningHebdo']?true:false;
 $colspan=$afficheHeures?2:1;
 $rowspan=$afficheHeures?2:1;
 
-if(isset($_GET['debut'])){
-  $debut=$_GET['debut'];
-  $fin=$_GET['fin']?$_GET['fin']:$debut;
-  $site=isset($_GET['site'])?$_GET['site']:0;
+if($debut){
+  $fin=$fin?$fin:$debut;
+  $site=$site?$site:0;
 }
 elseif(array_key_exists("stat_absences_debut",$_SESSION['oups'])){
   $debut=$_SESSION['oups']['stat_absences_debut'];

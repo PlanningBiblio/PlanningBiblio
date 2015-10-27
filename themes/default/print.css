@@ -1,13 +1,13 @@
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : css/print.css
 Création : mai 2011
-Dernière modification : 4 novembre 2013
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 20 avril 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Feuille de style pour les impressions (media=print)
@@ -57,7 +57,7 @@ body{
 	white-space: nowrap;
 	}
 	
-a, img, .noprint, .popper, .footer, .navigation, .ui-widget-header{
+a, img, .noprint, .popper, .footer, .navigation, .ui-widget-header, div.ui-state-error, .menu_table, #planningTips{
 	display:none;
 	}
 

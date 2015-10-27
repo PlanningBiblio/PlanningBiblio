@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.8.3
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : ldap/auth.php
 Création : 2 juillet 2014
-Dernière modification : 2 juillet 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 14 avril 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Fichier permettant l'authentification LDAP
@@ -16,7 +16,10 @@ Fichier permettant l'authentification LDAP
 
 include_once "class.ldap.php";
 if(substr($config['Auth-Mode'],0,3)=="CAS"){
-  $authArgs=(array_key_exists("oups",$_SESSION) and $_SESSION['oups']['Auth-Mode']=="CAS")?null:"?noCAS";
+  $authArgs=null;
+  if(array_key_exists("oups",$_SESSION) and array_key_exists("Auth-Mode",$_SESSION['oups']) and $_SESSION['oups']['Auth-Mode']=="CAS"){
+    $authArgs="?noCAS";
+  }
 }
 
 if($login!="admin"){
@@ -33,13 +36,13 @@ if($login!="admin"){
       break;
 
     case "CAS" :			//	CAS
-      if($login and $_POST['auth']=="CAS"){
+      if($login and $_POST['auth']=="CAS" and array_key_exists("login_id",$_SESSION) and $login==$_SESSION['login_id']){
 	$auth=true;
       }
       break;
 
     case "CAS-SQL" :		//	CAS puis SQL en cas d'echec
-      if($login and $_POST['auth']=="CAS"){
+      if($login and $_POST['auth']=="CAS" and array_key_exists("login_id",$_SESSION) and $login==$_SESSION['login_id']){
 	$auth=true;
       }
       if(!$auth){

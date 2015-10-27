@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.validation.php
 Création : 23 février 2015
-Dernière modification : 23 février 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 3 avril 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Permet de verrouiller (et de déverrouiller) le planning du jour courant pour en interdire la modification et le rendre 
@@ -34,7 +34,7 @@ $perso_id=$_SESSION['login_id'];
 // Refuser l'accès aux agents n'ayant pas les droits de modifier le planning
 $droit=($config['Multisites-nombre']>1)?(300+$site):12;
 $db=new db();
-$db->select("personnel","droits","id='$perso_id'");
+$db->select2("personnel","droits",array("id"=>$perso_id));
 $droits_agent=unserialize($db->result[0]['droits']);
 if(!in_array($droit,$droits_agent)){
   echo json_encode(array("Accès refusé","error"));
@@ -45,18 +45,25 @@ if(!in_array($droit,$droits_agent)){
 $validation=date("Y-m-d H:i:s");
 
 $db=new db();
-$db->select("pl_poste_verrou",null,"`date`='$date' AND `site`='$site'");
+$db->select2("pl_poste_verrou","*",array("date"=>$date, "site"=>$site));
 if($db->result){
   if($verrou==1){
-    $req="UPDATE `{$dbprefix}pl_poste_verrou` set verrou2='1' , validation2='$validation' , `perso2`='$perso_id'  WHERE `date`='$date' AND `site`='$site';";
+    $set=array("verrou2"=>"1", "validation2"=>$validation, "perso2"=>$perso_id);
+    $where=array("date"=>$date, "site"=>$site);
+    $db=new db();
+    $db->update2("pl_poste_verrou",$set,$where);
   }else{
-    $req="UPDATE `{$dbprefix}pl_poste_verrou` set verrou2='0' , `perso2`='$perso_id'  WHERE `date`='$date' AND `site`='$site';";
+    $set=array("verrou2"=>"0", "perso2"=>$perso_id);
+    $where=array("date"=>$date, "site"=>$site);
+    $db=new db();
+    $db->update2("pl_poste_verrou",$set,$where);
   }
 }else{
-  $req="INSERT into `{$dbprefix}pl_poste_verrou` (`date`,`verrou2`,`validation2`,`perso2`,`site`) values ('$date','$verrou','$validation','$perso_id','$site' );";
+  $insert=array("date"=>$date, "verrou2"=>$verrou, "validation2"=>$validation, "perso2"=>$perso_id, "site"=>$site);
+  $db=new db();
+  $db->insert2("pl_poste_verrou",$insert);
 }
-$db=new db();
-$db->query($req);
+
 if(!$db->error and $verrou==1){
   // Affichage du message "..validé avec succès"
   $result=array("Le planning a &eacute;t&eacute; valid&eacute; avec succ&egrave;s","highlight");

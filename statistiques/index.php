@@ -8,7 +8,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : statistiques/index.php
 Création : mai 2011
 Dernière modification : 17 septembre 2013
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affiche les liens vers les différentes pages de statistiques.

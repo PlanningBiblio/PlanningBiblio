@@ -1,26 +1,29 @@
 <?php
 /*
-Planning Biblio, Version 1.8.5
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/postes_cfg/groupes.php
 Création : 18 septembre 2012
-Dernière modification : 22 septembre 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 7 avril 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Permet de créer et de modifier des groupes de tableaux. Permet de grouper différents tableaux par semaine 
 (du lundi au dimanche). Affiche un formulaire demandant le nom du groupe et un menu déroulant par jour demandant le tableau
 à affecter.
 
-Page appelée par le fichier index.php lors du click sur "Nouveau tableau" ou sur l'icône "modifier" de la page 
+Page appelée par le fichier index.php lors du click sur "Nouveau groupe" ou sur l'icône "modifier" de la page 
 planning/postes_cfg/index.php
 Validation assurée par le fichier planning/postes_cfg/groupes2.php
 */
 
 require_once "class.tableaux.php";
+
+// Initialisation des variables
+$id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 
 //	Recherche des tableaux
 $t=new tableau();
@@ -33,8 +36,7 @@ $t->fetchAllGroups();
 $groupes=$t->elements;
 
 //	Modification d'un groupe
-if(isset($_GET['id'])){
-  $id=$_GET['id'];
+if($id){
   //	Recherche du groupe
   $t=new tableau();
   $t->fetchGroup($id);
@@ -46,7 +48,6 @@ if(isset($_GET['id'])){
 }
 //	Ajout d'un groupe
 else{
-  $id=null;
   $titre="Nouveau groupe";
   $groupe=array("nom"=>null);
 }

@@ -1,18 +1,18 @@
 <?php
 /*
-Planning Biblio, Version 1.8.8
+Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 10 décembre 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 11 septembre 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affiche le formulaire permettant d'ajouter ou de modifier les agents.
-Page séparée en 4 <div> (Général, Activités, Emploi du temps, Droits d'accès. Ces <div> s'affichent lors des click sur
+Page séparée en 4 <div> (Général, Activités, Heures de présence, Droits d'accès. Ces <div> s'affichent lors des click sur
 les onglets.
 Ce formulaire est soumis au fichier personnel/valid.php
 
@@ -20,12 +20,18 @@ Cette page est appelée par le fichier index.php
 */
 
 require_once "class.personnel.php";
+
+// Initialisation des variables
+$id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
+
+$actif=null;
+
 $admin=in_array(21,$droits)?true:false;
 // NB : le champ poste et les fonctions postes_... sont utilisés pour l'attribution des activités (qualification)
 
 // Gestion des droits d'accés
 $db_groupes=new db();
-$db_groupes->query("select groupe_id,groupe from {$dbprefix}acces where groupe_id not in (99,100) group by groupe;");
+$db_groupes->select2("acces",array("groupe_id","groupe"),"groupe_id not in (99,100)","group by groupe");
 
 // Tous les droits d'accés
 $groupes=array();
@@ -53,33 +59,36 @@ if($config['Multisites-nombre']>1){
   }
   $groupes_sites[12]=$groupes[12];	// Modification des plannings
   unset($groupes[12]);
+
+  $groupes_sites[801]=$groupes[801];	// Modification des commentaires des plannings
+  unset($groupes[801]);
 }
 
 $db=new db();
-$db->select("select_statuts",null,null,"order by rang");
+$db->select2("select_statuts",null,null,"order by rang");
 $statuts=$db->result;
 $db=new db();
-$db->select("select_categories",null,null,"order by rang");
+$db->select2("select_categories",null,null,"order by rang");
 $categories=$db->result;
 $db=new db();
-$db->select("personnel","statut",null,"group by statut");
+$db->select2("personnel","statut",null,"group by statut");
 $statuts_utilises=array();
 if($db->result){
   foreach($db->result as $elem){
     $statuts_utilises[]=$elem['statut'];
   }
 }
+
 $db_services=new db();
-$db_services->query("SELECT * FROM `{$dbprefix}select_services` ORDER BY `rang`;");
+$db_services->select2("select_services",null,null,"ORDER BY `rang`");
 
 $acces=array();
 $postes_attribues=array();
 $recupAgents=array("Prime","Temps");
 
-if(isset($_GET['id'])){		//	récupération des infos de l'agent en cas de modif
-  $id=$_GET['id'];
+if($id){		//	récupération des infos de l'agent en cas de modif
   $db=new db();
-  $db->query("select * from {$dbprefix}personnel where id=$id");
+  $db->select2("personnel","*",array("id"=>$id));
   $actif=$db->result[0]['actif'];
   $nom=$db->result[0]['nom'];
   $prenom=$db->result[0]['prenom'];
@@ -140,7 +149,7 @@ $contrats=array("Titulaire","Contractuel");
 
 //		--------------		Début listes des activités		---------------------//	
 $db=new db();			//	toutes les activités
-$db->query("SELECT `id`,`nom` FROM `{$dbprefix}activites` ORDER BY `id`;");
+$db->select2("activites",array("id","nom"),null,"ORDER BY `id`");
 if($db->result)
 foreach($db->result as $elem){
   $postes_completNoms[]=array($elem['nom'],$elem['id']);
@@ -149,7 +158,7 @@ foreach($db->result as $elem){
 
 $postes_dispo=array();		// les activités non attribuées (disponibles)
 if($postes_attribues){
-  $postes=join($postes_attribues,",");	//	activités attribuées séparées par des virgules (valeur transmise à valid.php) 	
+  $postes=join(",",$postes_attribues);	//	activités attribuées séparées par des virgules (valeur transmise à valid.php) 	
   if(is_array($postes_complet))
   foreach($postes_complet as $elem){
     if(!in_array($elem,$postes_attribues))
@@ -193,7 +202,7 @@ $postes_dispo=postesNoms($postes_dispo,$postes_completNoms);
 <ul>		
 <li><a href='#main'>Infos générales</a></li>
 <li><a href='#qualif'>Activités</a></li>
-<li><a href='#temps' id='personnel-a-li3'>Emploi du temps</a></li>
+<li><a href='#temps' id='personnel-a-li3'>Heures de pr&eacute;sence</a></li>
 <?php
 if(in_array("conges",$plugins)){
   echo "<li><a href='#conges'>Cong&eacute;s</a></li>";
@@ -299,11 +308,17 @@ echo "<tr><td>";
 echo "Heures de service public par semaine:";
 echo "</td><td>";
 if(in_array(21,$droits)){
-  echo "<select name='heuresHebdo' style='width:405px'>\n";
+  echo "<select name='heuresHebdo' style='width:405px'  title='Choisissez un nombre d&apos;heures ou un pourcentage. Si vous Choisissez un pourcentage, le nombre d&apos;heures sera calculé à partir des plannings de pr&eacute;sence'>\n";
   echo "<option value='0'>&nbsp;</option>\n";
+
+  for($i=1;$i<101;$i++){
+    $select=$heuresHebdo=="$i%"?"selected='selected'":null;
+    echo "<option $select value='$i%'>$i%</option>\n";
+  }
+
   for($i=1;$i<40;$i++){
     $j=array();
-    if($config['heuresPrecision']=="quart d&apos;heure"){
+    if($config['heuresPrecision']=="quart-heure"){
       $j[]=array($i,$i."h00");
       $j[]=array($i.".25",$i."h15");
       $j[]=array($i.".5",$i."h30");
@@ -317,14 +332,21 @@ if(in_array(21,$droits)){
       $j[]=array($i,$i."h00");
     }
     foreach($j as $elem){
-      $select=$elem[0]==$heuresHebdo?"selected='selected'":"";
+      $select=null;
+      if(!strpos($heuresHebdo,"%") and $elem[0]==$heuresHebdo){
+	$select="selected='selected'";
+      }
       echo "<option $select value='{$elem[0]}'>{$elem[1]}</option>\n";
     }
   }
   echo "</select>\n";
 }
-else
-  echo $heuresHebdo." heures";
+else{
+  echo $heuresHebdo;
+  if(!stripos($heuresHebdo,"%")){
+    echo " heures";
+  }
+}
 echo "</td></tr>";
 
 
@@ -336,7 +358,7 @@ if(in_array(21,$droits)){
   echo "<option value='0'>&nbsp;</option>\n";
   for($i=1;$i<40;$i++){
     $j=array();
-    if($config['heuresPrecision']=="quart d&apos;heure"){
+    if($config['heuresPrecision']=="quart-heure"){
       $j[]=array($i,$i."h00");
       $j[]=array($i.".25",$i."h15");
       $j[]=array($i.".5",$i."h30");
@@ -367,6 +389,7 @@ switch($actif){
   case "Actif" :		$select1="selected='selected'"; $actif2="Service public";	$display="style='display:none;'";	break;
   case "Inactif" :		$select2="selected='selected'"; $actif2="Administratif";	$display="style='display:none;'";	break;
   case "Supprim&eacute;" :	$select3="selected='selected'";	$actif2="Supprim&eacute;";	break;
+  default :			$select1="selected='selected'"; $actif2="Service public";	$display="style='display:none;'";	break;
 }
 echo "<tr><td>";
 echo "Service public / Administratif :";
@@ -545,7 +568,7 @@ else{
 </div>
 <!--	FIN Qualif	-->
 
-<!--	Emploi du temps		-->
+<!--	Heures de présence		-->
 <div id='temps' style='margin-left:70px;display:none;padding-top:30px;'>
 <?php
 switch($config['nb_semaine']){
@@ -576,7 +599,7 @@ for($j=0;$j<$config['nb_semaine'];$j++){
     echo "</tr>\n";
   for($i=$debut[$j];$i<$fin[$j];$i++){
     $k=$i-($j*7)-1;
-    if(in_array(21,$droits) and !in_array("planningHebdo",$plugins)){
+    if(in_array(21,$droits) and !$config['PlanningHebdo']){
       echo "<tr><td>{$jours[$k]}</td><td>".selectTemps($i-1,0,null,"select$j")."</td><td>".selectTemps($i-1,1,null,"select$j")."</td>";
       echo "<td>".selectTemps($i-1,2,null,"select$j")."</td><td>".selectTemps($i-1,3,null,"select$j")."</td>";
       if($config['Multisites-nombre']>1){
@@ -599,7 +622,7 @@ for($j=0;$j<$config['nb_semaine'];$j++){
       echo "<td id='temps_".($i-1)."_3'>".heure2($temps[$i-1][3])."</td>\n";
       if($config['Multisites-nombre']>1){
 	$site=null;
-	if($temps[$i-1][4]){
+	if(array_key_exists(4,$temps[$i-1])){
 	  $site="Multisites-site".$temps[$i-1][4];
 	  $site=$config[$site];
 	}
@@ -688,7 +711,7 @@ if($config['EDTSamedi']){
 ?>
 
 </div>
-<!--	FIN Emploi du temps-->
+<!--	FIN Heures de présence-->
 
 <!--	Droits d'accès		-->
 <div id='access' style='margin-left:70px;display:none;padding-top:30px;'>
@@ -701,6 +724,11 @@ if(!$admin){
 foreach($groupes as $elem){
   // N'affiche pas les droits d'accès à la configuration (réservée au compte admin)
   if($elem['groupe_id']==20){
+    continue;
+  }
+
+  // N'affiche pas les droits de gérer les plannings de présence si le module n'est pas activé
+  if(!$config['PlanningHebdo'] and $elem['groupe_id']==24){
     continue;
   }
 
@@ -759,6 +787,11 @@ if($config['Multisites-nombre']>1){
       // Modification des plannings si plusieurs sites
       elseif($elem['groupe_id']==12){
 	$groupe_id=300+$i;
+      }
+
+      // Modification des commentaires des plannings si plusieurs sites
+      elseif($elem['groupe_id']==801){
+	$groupe_id=800+$i;
       }
 
       $checked=null;

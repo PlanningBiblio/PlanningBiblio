@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/modeles/modif.php
 Création : mai 2011
-Dernière modification : 24 juin 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 7 avril 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affiche le fomulaire permettant de renommer un modèle..
@@ -21,9 +21,8 @@ require_once "class.modeles.php";
 
 echo "<h3>Modification du modèle</h3>\n";
 
-$nom=$_GET['nom'];
-$nom_origine=$_GET['nom'];
-$db=new db();
+$nom=filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING);
+$nom_origine=$nom;
 ?>
 <form method='get' action='index.php' name='form'>
 <input type='hidden' name='page' value='planning/modeles/valid.php' />

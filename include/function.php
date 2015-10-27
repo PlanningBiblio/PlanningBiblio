@@ -1,23 +1,23 @@
 <?php
 /*
-Planning Biblio, Version 1.9.3
+Planning Biblio, Version 2.0.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 31 mars 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 27 septembre 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Page contenant les fonctions PHP communes
 Page appelée par les fichiers index.php, setup/index.php et planning/poste/menudiv.php
 */
 
-// pas de $version=acces direct  => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+// pas de $version=acces direct au fichier => Accès refusé
+if(!isset($version)){
+  include_once "accessDenied.php";
 }
 
 class datePl{
@@ -119,14 +119,220 @@ function absents($date,$tables){
 
 function authSQL($login,$password){
   $auth=false;
-  $db=new dbh();
-  $db->select("personnel",array("id","nom","prenom"),array("login"=>$login, "password"=>MD5($password), "supprime"=>0));
+  $db=new db();
+  $db->select2("personnel",array("id","nom","prenom"),array("password"=>MD5($password), "login"=>$login, "supprime"=>0));
   if($db->nb==1 and $login!=null){
     $auth=true;
     $_SESSION['oups']['Auth-Mode']="SQL";
   }
   return $auth;
 }
+
+/**
+* @function calculHeuresSP
+* @param date string, date au format AAAA-MM-DD
+* Calcul le nombre d'heures de SP que les agents doivent effectuer pour la semaine définie par $date
+* Retourne le résultat sous forme d'un tableau array(perso_id1 => heures1, perso_id2 => heures2, ...)
+* Stock le résultat (json_encode) dans la BDD table heures_SP
+* Récupère et retourne le résultat à partir de la BDD si les tables personnel et planningHebdo n'ont pas été modifiées
+* pour gagner du temps lors des appels suivants.
+* Fonction utilisée par planning::menudivAfficheAgents et dans le script statistiques/temps.php
+*/
+function calculHeuresSP($date){
+  $config=$GLOBALS['config'];
+  $version=$GLOBALS['version'];
+
+  // Securité : Traitement pour une reponse Ajax
+  if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
+    $version='ajax';
+  }
+  $path=strpos($_SERVER['SCRIPT_NAME'],"planning/poste/ajax")?"../../":null;
+  require_once "{$path}include/horaires.php";
+  require_once "{$path}personnel/class.personnel.php";
+
+  $d=new datePl($date);
+  $dates=$d->dates;
+  $semaine3=$d->semaine3;
+  $j1=$dates[0];
+  $j7=$dates[6];
+
+  // Recherche des heures de SP des agents pour cette semaine
+  // Recherche si les tableaux contenant les heures de SP existe
+  $db=new db();
+  $db->select2("heures_SP","*",array("semaine"=>$j1));
+  $heuresSPUpdate=0;
+  if($db->result){
+    $heuresSPUpdate=$db->result[0]["update_time"];
+    $heuresSP=json_decode((html_entity_decode($db->result[0]["heures"],ENT_QUOTES|ENT_IGNORE,"utf-8")));
+    $tmp=array();
+    foreach($heuresSP as $key => $value){
+      $tmp[(int) $key] = $value;
+    }
+    $heuresSP=$tmp;
+  }
+
+  // Recherche des heures de SP avec le module planningHebdo
+  if($config['PlanningHebdo']){
+    require_once("{$path}planningHebdo/class.planningHebdo.php");
+
+    // Vérifie si la table planningHebdo a été mise à jour depuis le dernier calcul
+    $p=new planningHebdo();
+    $pHUpdate=strtotime($p->update_time());
+    
+    // Vérifie si la table personnel a été mise à jour depuis le dernier calcul
+    $p=new personnel();
+    $pUpdate=strtotime($p->update_time());
+
+    // Si la table planningHebdo a été modifiée depuis la Création du tableaux des heures
+    // Ou si le tableau des heures n'a pas été créé ($heuresSPUpdate=0), on le (re)fait.
+    if($pHUpdate>$heuresSPUpdate or $pUpdate>$heuresSPUpdate){
+      $heuresSP=array();
+    
+      // Recherche de tous les agents pouvant faire du service public
+      $p=new personnel();
+      $p->supprime=array(0,1,2);
+      $p->fetch("nom","Actif");
+      
+      // Recherche de tous les plannings de présence
+      $ph=new planningHebdo();
+      $ph->debut=$j1;
+      $ph->fin=$j7;
+      $ph->valide=true;
+      $ph->fetch();
+
+      if(!empty($p->elements)){
+	// Pour chaque agents
+	foreach($p->elements as $key1 => $value1){
+	  $heuresSP[$key1]=$value1["heuresHebdo"];
+
+	  if(strpos($value1["heuresHebdo"],"%")){
+	    $minutesHebdo=0;
+	    if($ph->elements and !empty($ph->elements)){
+	      // Calcul des heures depuis les plannings de présence
+	      // Pour chaque jour de la semaine
+	      foreach($dates as $key2 => $jour){
+		// On cherche le planning de présence valable pour chaque journée
+		foreach($ph->elements as $edt){
+		  if($edt['perso_id']==$value1["id"]){
+		    // Planning de présence trouvé
+		    if($jour>=$edt['debut'] and $jour<=$edt['fin']){
+		      // $pause = true si pause détectée le midi
+		      $pause=false;
+		      // Offset : pour semaines 1,2,3 ...
+		      $offset=($semaine3*7)-7;
+		      $key3=$key2+$offset;
+		      // Si heure de début et de fin de matiné
+		      if(array_key_exists($key3,$edt['temps']) and $edt['temps'][$key3][0] and $edt['temps'][$key3][1]){
+			$minutesHebdo+=diff_heures($edt['temps'][$key3][0],$edt['temps'][$key3][1],"minutes");
+			$pause=true;
+		      }
+		      // Si heure de début et de fin d'après midi
+		      if(array_key_exists($key3,$edt['temps']) and $edt['temps'][$key3][2] and $edt['temps'][$key3][3]){
+			$minutesHebdo+=diff_heures($edt['temps'][$key3][2],$edt['temps'][$key3][3],"minutes");
+			$pause=true;
+		      }
+		      // Si pas de pause le midi
+		      if(!$pause){
+			// Et heure de début et de fin de journée
+			if(array_key_exists($key3,$edt['temps']) and $edt['temps'][$key3][0] and $edt['temps'][$key3][3]){
+			  $minutesHebdo+=diff_heures($edt['temps'][$key3][0],$edt['temps'][$key3][3],"minutes");
+			}
+		      }
+		    }
+		  }
+		}
+	      }
+	    }
+
+	    $heuresRelles=$minutesHebdo/60;
+	    // On applique le pourcentage
+	    $pourcent=(float) str_replace("%",null,$value1["heuresHebdo"]);
+	    $heuresRelles=$heuresRelles*$pourcent/100;
+	    $heuresSP[$key1]=$heuresRelles;
+	  }
+	}
+	// Utilisateur "Tout le monde"
+	$heuresSP[2]=0;
+      }
+      
+      // Enregistrement des horaires dans la base de données
+      $db=new db();
+      $db->delete2("heures_SP",array("semaine"=>$j1));
+      $db=new db();
+      $db->insert2("heures_SP",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heuresSP)));
+    }
+
+  // Recherche des heures de SP sans le module planningHebdo
+  }else{
+    // Vérifie si la table personnel a été mise à jour depuis le dernier calcul
+    $p=new personnel();
+    $pUpdate=strtotime($p->update_time());
+
+    // Si la table personnel a été modifiée depuis la Création du tableaux des heures
+    // Ou si le tableau des heures n'a pas été créé ($heuresSPUpdate=0), on le (re)fait.
+    if($pUpdate>$heuresSPUpdate){
+      $heuresSP=array();
+      $p=new personnel();
+      $p->fetch("nom","Actif");
+      if(!empty($p->elements)){
+	// Pour chaque agents
+	foreach($p->elements as $key1 => $value1){
+	  $heuresSP[$key1]=$value1["heuresHebdo"];
+
+	  if(strpos($value1["heuresHebdo"],"%")){
+	    $minutesHebdo=0;
+	    if($value1['temps'] and is_serialized($value1['temps'])){
+	      $temps=unserialize($value1['temps']);
+
+	      // Calcul des heures
+	      // Pour chaque jour de la semaine
+	      foreach($dates as $key2 => $jour){
+		// $pause = true si pause détectée le midi
+		$pause=false;
+		// Offset : pour semaines 1,2,3 ...
+		$offset=($semaine3*7)-7;
+		$key3=$key2+$offset;
+		// Si heure de début et de fin de matiné
+		if(array_key_exists($key3,$temps) and $temps[$key3][0] and $temps[$key3][1]){
+		  $minutesHebdo+=diff_heures($temps[$key3][0],$temps[$key3][1],"minutes");
+		  $pause=true;
+		}
+		// Si heure de début et de fin d'après midi
+		if(array_key_exists($key3,$temps) and $temps[$key3][2] and $temps[$key3][3]){
+		  $minutesHebdo+=diff_heures($temps[$key3][2],$temps[$key3][3],"minutes");
+		  $pause=true;
+		}
+		// Si pas de pause le midi
+		if(!$pause){
+		  // Et heure de début et de fin de journée
+		  if(array_key_exists($key3,$temps) and $temps[$key3][0] and $temps[$key3][3]){
+		    $minutesHebdo+=diff_heures($temps[$key3][0],$temps[$key3][3],"minutes");
+		  }
+		}
+	      }
+	    }
+
+	    $heuresRelles=$minutesHebdo/60;
+	    // On applique le pourcentage
+	    $pourcent=(float) str_replace("%",null,$value1["heuresHebdo"]);
+	    $heuresRelles=$heuresRelles*$pourcent/100;
+	    $heuresSP[$key1]=$heuresRelles;
+	  }
+	}
+	// Utilisateur "Tout le monde"
+	$heuresSP[2]=0;
+      }
+
+      // Enregistrement des horaires dans la base de données
+      $db=new db();
+      $db->delete2("heures_SP",array("semaine"=>$j1));
+      $db=new db();
+      $db->insert2("heures_SP",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heuresSP)));
+    }
+  }
+  return (array) $heuresSP;
+}
+
 
 function cmp_0($a,$b){
   $a[0] > $b[0];
@@ -200,6 +406,13 @@ function cmp_nom_prenom_debut_fin($a,$b){
   return strtolower($a['nom']) > strtolower($b['nom']);
 }
 
+function cmp_debut_fin($a,$b){
+  if($a['debut'] == $b['debut']){
+    return $a['fin'] > $b['fin'];
+  }
+  return $a['debut'] > $b['debut'];
+}
+
 function cmp_debut_fin_nom($a,$b){
   if($a['debut'] == $b['debut']){
     if($a['fin'] == $b['fin']){
@@ -241,8 +454,14 @@ function compte_jours($date1, $date2, $jours){
 
 function createURL($page){
   // Construction d'une URL
-  $port=strtolower(substr($_SERVER['SERVER_PROTOCOL'],0,strpos($_SERVER['SERVER_PROTOCOL'],"/",0)));
-  $url="$port://{$_SERVER['SERVER_NAME']}".substr($_SERVER['REQUEST_URI'],0,strpos($_SERVER['REQUEST_URI'],"/",1));
+  $protocol=strtolower(substr($_SERVER['SERVER_PROTOCOL'],0,strpos($_SERVER['SERVER_PROTOCOL'],"/",0)));
+  $port=$_SERVER['SERVER_PORT'];
+  if(($port==80 and $protocol=="http") or ($port==443 and $protocol=="https")){
+    $port=null;
+  }else{
+    $port=":".$port;
+  }
+  $url="$protocol://{$_SERVER['SERVER_NAME']}{$port}".substr($_SERVER['REQUEST_URI'],0,strpos($_SERVER['REQUEST_URI'],"/",1));
   $url.="/index.php?page=".$page;
   return $url;
 }
@@ -452,12 +671,6 @@ function getJSFiles($page){
   }
 }
 
-function heure($heure){
-  $heure=str_replace("h",":",$heure);
-  $heure=$heure.":00";
-  return $heure;
-}
-	
 function heure2($heure){
   $heure=explode(":",$heure);
   if(!array_key_exists(1,$heure))
@@ -526,8 +739,10 @@ function is_serialized($string){
 }
 
 function mail2($To,$Sujet,$Message){
-  require_once("vendor/PHPMailer/class.phpmailer.php");
-  require_once("vendor/PHPMailer/class.smtp.php");
+  $path=strpos($_SERVER["SCRIPT_NAME"],"planning/poste/ajax")?"../../":null;
+  require_once("{$path}vendor/PHPMailer/class.phpmailer.php");
+  require_once("{$path}vendor/PHPMailer/class.smtp.php");
+
   $mail = new PHPMailer();
   if($GLOBALS['config']['Mail-IsMail-IsSMTP']=="IsMail")
     $mail->IsMail();
@@ -592,7 +807,7 @@ function nom($id,$format="nom p"){
   }
   return $nom;
 }
-	
+
 function php2js( $php_array, $js_array_name ){
   // contrôle des parametres d'entrée
   if( !is_array( $php_array ) ) {
@@ -651,7 +866,7 @@ function removeAccents($string){
   $string=strtr($string,$pairs);
   return htmlentities($string,ENT_QUOTES|ENT_IGNORE,"UTF-8");
 }
-	
+
 function selectHeure($min,$max,$blank=false,$quart=false,$selectedValue=null){
   if($blank)
     echo "<option value=''>&nbsp;</option>\n";

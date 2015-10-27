@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 Fichier : js/dataTables/sort.js
 Création : 9 décembre 2013
 Dernière modification : 28 mars 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Fichier regroupant les fonctions de tris personnalisés pour les dataTables

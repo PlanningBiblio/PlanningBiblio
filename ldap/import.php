@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.9.3
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : ldap/import.php
 Création : 2 juillet 2014
-Dernière modification : 26 mars 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 4 avril 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Permet l'import des agents à partir d'un annuaire LDAP.
@@ -16,31 +16,18 @@ Affiche un formulaire de recherche et la liste des agents correspondants à la r
 
 Fichier appelé par la page personnel/import.php
 */
-
 include_once "class.ldap.php";
+
+$rechercheLdap=filter_input(INPUT_GET,"recherche-ldap",FILTER_SANITIZE_STRING);
 
 echo "<h3>Importation des agents à partir de l'annuaire LDAP</h3>\n";
 echo "<div id='import-div' style='position:relative; margin:30px 0 0 0;'>\n";
 echo "<div id='ldap' style='margin-left:80px;'>\n";
 echo "<form method='get' action='index.php'>\n";
 
-if(isset($_GET['message'])){	//		Affichage du résultat de l'importation
-  if($_GET['message']=="empty"){
-    echo "<b style='color:red'>Aucun agent n'est s&eacute;lectionn&eacute;.</b><br/><br/>\n";
-  }
-  elseif($_GET['message']=="erreurs"){
-    echo "<b style='color:red'>Il y a eu des erreurs pendant l'importation.<br/>\n";
-    echo "Veuillez v&eacute;rifier la liste des agents et recommencer si besoin.</b><br/><br/>\n";
-  }
-  else{
-    echo "<b style='color:green'>Importation r&eacute;ussie.</b><br/><br/>\n";
-  }
-}
-
 //		Formulaire de recherche
 echo "Importation de nouveaux agents &agrave; partir de l'annuaire LDAP<br/><br/>\n";
-$req=isset($_GET['recherche-ldap'])?$_GET['recherche-ldap']:null;
-echo "<input type='text' name='recherche-ldap' value='$req' />\n";
+echo "<input type='text' name='recherche-ldap' value='$rechercheLdap' />\n";
 ?>
 <input type='hidden' name='import-type' value='ldap' />
 <input type='hidden' name='page' value='personnel/import.php' />
@@ -50,7 +37,7 @@ echo "<input type='text' name='recherche-ldap' value='$req' />\n";
 
 <?php
 //		Recherche dans l'annuaire si le formulaire est validé
-if(isset($_GET['recherche-ldap'])){
+if($rechercheLdap){
   $infos=array();
   if(!$config['LDAP-Port']){
     $config['LDAP-Port']="389";	//	port par defaut
@@ -66,8 +53,8 @@ if(isset($_GET['recherche-ldap'])){
   }
 
   //	Ajout des infos de recherche dans le filtre
-  if($req){
-    $filter="(&{$filter}(|(uid=*$req*)(givenname=*$req*)(sn=*$req*)(mail=*$req*)))";
+  if($rechercheLdap){
+    $filter="(&{$filter}(|(uid=*$rechercheLdap*)(givenname=*$rechercheLdap*)(sn=*$rechercheLdap*)(mail=*$rechercheLdap*)))";
   }
 
   //	Connexion au serveur LDAP
@@ -113,7 +100,7 @@ if(isset($_GET['recherche-ldap'])){
     echo "<form name='form' method='post' action='index.php'>\n";
     echo "<input type='hidden' name='page' value='personnel/import.php' />\n";
     echo "<input type='hidden' name='import-type' value='ldap' />\n";
-    echo "<input type='hidden' name='recherche' value='$req' />\n";
+    echo "<input type='hidden' name='recherche' value='$rechercheLdap' />\n";
     echo "<table id='tableLdapImport' class='CJDataTable' data-sort='[[1,\"asc\"],[2,\"asc\"]]' data-length='50' >\n";
     echo "<thead>\n";
     echo "<tr>\n";
@@ -126,7 +113,7 @@ if(isset($_GET['recherche-ldap'])){
       $givenname=array_key_exists('givenname',$info)?$info['givenname'][0]:null;
       $mail=array_key_exists('mail',$info)?$info['mail'][0]:null;
       echo "<tr>\n";
-      echo "<td><input type='checkbox' name='chk$i' value='".utf8_decode($info['uid'][0])."' /></td>\n";
+      echo "<td><input type='checkbox' name='chk[]' value='".utf8_decode($info['uid'][0])."' /></td>\n";
       echo "<td>$sn</td>\n";
       echo "<td>$givenname</td>\n";
       echo "<td>$mail</td>\n";

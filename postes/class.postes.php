@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 2.0.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : postes/class.postes.php
 Création : 29 novembre 2012
-Dernière modification : 4 novembre 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 15 septembre 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Classe postes contenant la fonction postes::fetch permettant de rechercher les postes dans la base de données
@@ -16,9 +16,9 @@ Classe postes contenant la fonction postes::fetch permettant de rechercher les p
 Utilisée par les fichiers du dossier "postes"
 */
 
-// pas de $version=acces direct aux pages de ce dossier => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+// pas de $version=acces direct aux pages de ce dossier => Accès refusé
+if(!isset($version)){
+  include_once "../include/accessDenied.php";
 }
 
 class postes{
@@ -36,17 +36,23 @@ class postes{
     //	Select All
     $db=new db();
     $db->select("postes",null,null,"ORDER BY $sort");
-    $all=$db->result;
+
+    $all=array();
+    if($db->result){
+      foreach($db->result as $elem){
+	$all[$elem['id']]=$elem;
+      }
+    }
 
     //	By default $result=$all
     $result=$all;
 
     //	If name, keep only matching results
-    if(is_array($all) and $name){
+    if(!empty($all) and $name){
       $result=array();
       foreach($all as $elem){
 	if(pl_stristr($elem['nom'],$name)){
-	  $result[]=$elem;
+	  $result[$elem['id']]=$elem;
 	}
       }
     }

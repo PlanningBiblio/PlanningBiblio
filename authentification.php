@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.9.3
+Planning Biblio, Version 2.0.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 25 mars 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 13 avril 2015
+Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
 Affiche le formulaire d'authentification, vérifie le login et le mot de passe et créé la session 
@@ -17,54 +17,51 @@ Pages en entrée : inclus les fichiers config.php et header.php
 Page en sortie :inclus le fichier footer.php
 */
 
-session_start();
+// Cette page peut être chargée directment ou incluse dans la page index.php
+// La page index.php démarre déjà une session. On contrôle donc qu'aucune session n'existe avant de la démarrer
+// Si PHP version <5.4 et pas de session
+if(PHP_VERSION_ID<50400 and session_id()==''){
+  session_start();
+// Si PHP version >=5.4 et pas de session
+}elseif(PHP_VERSION_ID>=50400 and session_status() == PHP_SESSION_NONE){
+  session_start();
+}
 
 // Initialisation des variables
-$version="1.9.3";
+$version="2.0.3";
+
+// Redirection vers setup si le fichier config est absent
+if(!file_exists("include/config.php")){
+  include "include/noConfig.php";
+}
+
+require_once "include/config.php";
+require_once "include/sanitize.php";
+
+$newLogin=filter_input(INPUT_GET,"newlogin",FILTER_SANITIZE_STRING);
+if(!isset($redirURL)){
+  $redirURL=isset($_REQUEST['redirURL'])?stripslashes($_REQUEST['redirURL']):"index.php";
+}
+$redirURL=filter_var($redirURL,FILTER_SANITIZE_URL);
+
 $page=null;
-$login=isset($_GET['newlogin'])?$_GET['newlogin']:null;
 $auth=null;
 $authArgs=null;
-$redirURL=isset($_REQUEST['redirURL'])?stripslashes($_REQUEST['redirURL']):"index.php";
 
 if(!array_key_exists("oups",$_SESSION)){
   $_SESSION['oups']=array("week"=>false);
 }
-// Redirection vers setup si le fichier config est absent
-if(!file_exists("include/config.php")){
-  header("Location: setup/index.php");
-  exit;
-}
 
-include "include/config.php";
-
+// Error reporting
 ini_set('display_errors',$config['display_errors']);
-switch($config['error_reporting']){
-  case 0: error_reporting(0); break;
-  case 1: error_reporting(E_ERROR | E_WARNING | E_PARSE); break;
-  case 2: error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE); break;
-  case 3: error_reporting(E_ALL ^ (E_NOTICE | E_WARNING)); break;
-  case 4: error_reporting(E_ALL ^ E_NOTICE); break;
-  case 5: error_reporting(E_ALL); break;
-  default: error_reporting(E_ALL ^ E_NOTICE); break;
-}
 
 include "plugins/plugins.php";
 include "include/header.php";
 
-//	Login Anonyme
-if(isset($_GET['login']) and $_GET['login']=="anonyme" and $config['Auth-Anonyme']){
-  $_SESSION['login_id']=999999999;
-  $_SESSION['login_nom']="Anonyme";
-  $_SESSION['login_prenom']="";
-  $_SESSION['oups']["Auth-Mode"]="Anonyme";
-  header("Location: index.php");
-}
-
 //	Vérification du login et du mot de passe
-elseif(isset($_POST['login'])){
-  $login=$_POST['login'];
-  $password=$_POST['password'];
+if(isset($_POST['login'])){
+  $login=filter_input(INPUT_POST,"login",FILTER_SANITIZE_STRING);
+  $password=filter_input(INPUT_POST,"password",FILTER_UNSAFE_RAW);
 
   include "ldap/auth.php";
 
@@ -72,17 +69,22 @@ elseif(isset($_POST['login'])){
     $auth=authSQL($login,$password);
   }
 
-  $authArgs=$authArgs?$authArgs.="&redirURL=$redirURL":null;
+  if($authArgs and $redirURL){
+    $authArgs.="&redirURL=".urlencode($redirURL);
+  }elseif($redirURL){
+    $authArgs="?redirURL=".urlencode($redirURL);
+  }
+
 
   if($auth){
     $db=new db();
-    $db->query("select id,nom,prenom from {$dbprefix}personnel where login='$login';");
+    $db->select2("personnel","id,nom,prenom",array("login"=>$login));
     if($db->result){
       $_SESSION['login_id']=$db->result[0]['id'];
       $_SESSION['login_nom']=$db->result[0]['nom'];
       $_SESSION['login_prenom']=$db->result[0]['prenom'];
       $db=new db();
-      $db->query("update {$dbprefix}personnel set last_login=SYSDATE() where id='{$_SESSION['login_id']}';");
+      $db->update2("personnel",array("last_login"=>date("Y-m-d H:i:s")),array("id"=>$_SESSION['login_id']));
       echo "<script type='text/JavaScript'>document.location.href='$redirURL';</script>";
     }
     else{
@@ -93,10 +95,18 @@ elseif(isset($_POST['login'])){
     }
   }
   else{
-    echo "<div style='text-align:center'>\n";
-    echo "<br/><br/><h3 style='color:red'>Erreur lors de l'authentification</h3>\n";
-    echo "<br/><a href='authentification.php{$authArgs}'>Re-essayer</a>\n";
-    echo "</div>\n";
+    echo <<<EOD
+    <div id='auth'>
+    <center><div id='auth-logo'></div></center>
+    <h1 id='title'>{$config['Affichage-titre']}</h1>
+    <h2 id='h2-planning-authentification'>Planning - Authentification</h2>
+    <h2 id='h2-authentification'>Authentification</h2>
+    <div style='text-align:center'>
+    <h3 style='color:red'>Erreur lors de l'authentification</h3>
+    <br/><a href='authentification.php{$authArgs}'>Re-essayer</a>
+    </div>
+    </div>
+EOD;
   }
 }
 elseif(isset($_GET['acces'])){
@@ -123,13 +133,13 @@ else{		//		Formulaire d'authentification
     <input type='hidden' name='redirURL' value='$redirURL' />
     <table style='width:100%;'>
     <tr><td style='text-align:right;width:48%;'>Utilisateur : </td>
-    <td><input type='text' name='login' value='$login' /></td></tr>
+    <td><input type='text' name='login' value='$newLogin' /></td></tr>
     <tr><td align='right'>Mot de passe : </td>
     <td><input type='password' name='password' /></td></tr>
     <tr><td colspan='2' align='center'><br/><input type='submit' class='ui-button' value='Valider' /></td></tr>
 EOD;
     if($config['Auth-Anonyme']){
-      echo "<tr><td colspan='2' align='center'><br/><a href='authentification.php?login=anonyme'>Accès anonyme</a></td></tr>\n";
+      echo "<tr><td colspan='2' align='center'><br/><a href='index.php?login=anonyme'>Accès anonyme</a></td></tr>\n";
     }
     echo <<<EOD
     </table>
