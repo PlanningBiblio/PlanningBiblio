@@ -61,5 +61,15 @@ if($config['Absences-apresValidation']==0){
   }
 }
 
+// Contrôle si placé sur planning en cours d'élaboration;
+if($config['Absences-planningVide']==0){
+  $db=new db();	  
+  $req="SELECT COUNT(`id`) as `cnt` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debut' AND '$fin';";
+  $db->query($req);
+  if($db->result){
+	$result["planningVide"]=$db->result[0]['cnt'];
+  }
+  //for testing purpose $result["planningVide"]=1;
+}
 echo json_encode($result);
 ?>
