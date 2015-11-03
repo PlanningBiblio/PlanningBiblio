@@ -944,7 +944,7 @@ if(strcmp("2.0.3",$config['Version'])>0){
 
 if(strcmp("2.0.4",$config['Version'])>0){
   // Modification de la config pour l'ajout de l'option "Absences-planningVide"
-  $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Absences-planningVide','boolean','1','','Absences','Autoriser le d&eacute;p&ocirc;t d'absences sur des plannings en cours d'&eacute;laboration','10');";
+  $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Absences-planningVide','boolean','1','','Absences','Autoriser le d&eacute;p&ocirc;t d&apos;absences sur des plannings en cours d'&eacute;laboration','8');";
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.0.4' WHERE `nom`='Version';";
 }
