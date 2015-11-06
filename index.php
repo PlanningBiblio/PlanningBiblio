@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0.3
+Planning Biblio, Version 2.0.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 13 avril 2015
+Dernière modification : 5 novembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -23,7 +23,7 @@ Inclut à la fin le fichier footer.php
 session_start();
 
 // Version
-$version="2.0.3";
+$version="2.0.4";
 
 // Redirection vers setup si le fichier config est absent
 if(!file_exists("include/config.php")){
