@@ -942,6 +942,13 @@ if(strcmp("2.0.3",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.0.3' WHERE `nom`='Version';";
 }
 
+if(strcmp("2.0.4",$config['Version'])>0){
+  // Modification de la config pour l'ajout de l'option "Absences-planningVide"
+  $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Absences-planningVide','boolean','1','','Absences','Autoriser le d&eacute;p&ocirc;t d&apos;absences sur des plannings en cours d'&eacute;laboration','8');";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Utiliser ou non le module &ldquo;Planning Hebdo&rdquo;. Ce module permet d&apos;enregistrer plusieurs plannings de pr&eacute;sence par agent en d&eacute;finissant des p&eacute;riodes d&apos;utilisation. (Incompatible avec l&apos;option EDTSamedi)' WHERE `nom`='PlanningHebdo';";
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.0.4' WHERE `nom`='Version';";
+}
 
 //	Execution des requetes et affichage
 foreach($sql as $elem){
