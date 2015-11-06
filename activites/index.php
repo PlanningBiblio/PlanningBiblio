@@ -81,7 +81,7 @@ echo "<th class='dataTableNoSort'>&nbsp;</th>\n";
 if(in_array(13,$droits)){
   echo "<th>ID</th>\n";
 }
-echo "<th>Nom de l'activités</th>\n";
+echo "<th>Nom de l'activité</th>\n";
 echo "</tr></thead>\n";
 
 echo "<tbody>\n";
