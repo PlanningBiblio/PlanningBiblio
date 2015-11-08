@@ -1,4 +1,5 @@
 maj.sh
+*.swp
 *~
 *.kate-swp
 data/*.xls
