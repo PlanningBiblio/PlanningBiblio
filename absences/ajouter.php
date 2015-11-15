@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.6
+Planning Biblio, Version 2.0.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 24 avril 2015
+Dernière modification : 14 novembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -168,8 +168,7 @@ if($confirm){
     $fin_sql=$db->escapeString($fin_sql);
     $perso_id=$db->escapeString($perso_id);
     $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1' WHERE
-      ((CONCAT(`date`,' ',`debut`) < '$fin_sql' AND CONCAT(`date`,' ',`debut`) >= '$debut_sql')
-      OR (CONCAT(`date`,' ',`fin`) > '$debut_sql' AND CONCAT(`date`,' ',`fin`) <= '$fin_sql'))
+      CONCAT(`date`,' ',`debut`) < '$fin_sql' AND CONCAT(`date`,' ',`fin`) > '$debut_sql'
       AND `perso_id`='$perso_id'";
     $db->query($req);
   }

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 2.0.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/delete.php
 Création : mai 2011
-Dernière modification : 4 avril 2015
+Dernière modification : 14 novembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -109,8 +109,7 @@ else{
   // Mise à jour du champs 'absent' dans 'pl_poste'
   $db=new db();
   $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='0' WHERE
-    ((CONCAT(`date`,' ',`debut`) < '$fin' AND CONCAT(`date`,' ',`debut`) >= '$debut')
-    OR (CONCAT(`date`,' ',`fin`) > '$debut' AND CONCAT(`date`,' ',`fin`) <= '$fin'))
+    CONCAT(`date`,' ',`debut`) < '$fin' AND CONCAT(`date`,' ',`fin`) > '$debut'
     AND `perso_id`='$perso_id'";
 
   // suppression dans la table 'absences'
