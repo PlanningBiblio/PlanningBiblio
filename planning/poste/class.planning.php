@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0.2
+Planning Biblio, Version 2.0.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 27 septembre 2015
+Dernière modification : 14 novembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -175,9 +175,9 @@ class planning{
 	}
       }
 
-      $nom=$elem['nom'];
+      $nom=htmlentities($elem['nom'],ENT_QUOTES|ENT_IGNORE,"utf8");
       if($elem['prenom']){
-	$nom.=" ".substr($elem['prenom'],0,1).".";
+	$nom.=" ".substr(htmlentities($elem['prenom'],ENT_QUOTES|ENT_IGNORE,"utf8"),0,1).".";
       }
 
       //			----------------------		Sans repas		------------------------------------------//
