@@ -69,9 +69,9 @@ class datePl{
     }
     // Calcul du numéro de la semaine pour l'utilisation de 3 plannings hebdomadaires
     if($GLOBALS['config']['nb_semaine']==3){
-      $position=date("w", strtotime($GLOBALS['config']['dateDebutPlHebdo']))-1;
+      $position=date("w", strtotime(dateSQL($GLOBALS['config']['dateDebutPlHebdo'])))-1;
       $position=$position==-1?6:$position;
-      $dateFrom=new dateTime($GLOBALS['config']['dateDebutPlHebdo']);
+      $dateFrom=new dateTime(dateSQL($GLOBALS['config']['dateDebutPlHebdo']));
       $dateFrom->sub(new DateInterval("P{$position}D"));
 
       $position=date("w", strtotime($date))-1;
