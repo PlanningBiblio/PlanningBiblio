@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 14 novembre 2015
+Dernière modification : 1er décembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -175,9 +175,9 @@ class planning{
 	}
       }
 
-      $nom=htmlentities($elem['nom'],ENT_QUOTES|ENT_IGNORE,"utf8");
+      $nom=htmlentities($elem['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
       if($elem['prenom']){
-	$nom.=" ".substr(htmlentities($elem['prenom'],ENT_QUOTES|ENT_IGNORE,"utf8"),0,1).".";
+	$nom.=" ".substr(htmlentities($elem['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8"),0,1).".";
       }
 
       //			----------------------		Sans repas		------------------------------------------//
