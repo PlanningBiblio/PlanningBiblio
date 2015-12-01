@@ -1,3 +1,18 @@
+***	Version 2.0.4	(1er décembre 2015)		***
+Arthur Suzuki, Christophe LG, Etienne Cavalié, Guillaume R., Jérôme Combes
+
+- Améliorations
+Option permettant d'interdire le dépôt d'absence sur des plannings en cours d'élaboration
+
+- Corrections :
+Corrections de fautes de frappe
+Correction d'une erreur empêchant l'affichage de la liste des présents en bas du planning
+Encodage des caractères du le menu permettant de placer les agents
+Correction du marquage des absents dans le planning
+Correction d'une erreur empêchant l'affichage des plannings si rotation des emplois du temps sur 3 semaines
+Correction de la création des URL si serveur HTTPS (lien dans les notifications).
+
+
 ***	Version 2.0.3	(Jérôme Combes, 2 octobre 2015)			***
 - Corrections :
 Corrige le marquage des absents dans le planning
