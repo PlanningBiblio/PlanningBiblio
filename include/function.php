@@ -454,7 +454,7 @@ function compte_jours($date1, $date2, $jours){
 
 function createURL($page){
   // Construction d'une URL
-  $protocol=strtolower(substr($_SERVER['SERVER_PROTOCOL'],0,strpos($_SERVER['SERVER_PROTOCOL'],"/",0)));
+  $protocol = isset($_SERVER['HTTPS']) ? 'https' : 'http';
   $port=$_SERVER['SERVER_PORT'];
   if(($port==80 and $protocol=="http") or ($port==443 and $protocol=="https")){
     $port=null;
