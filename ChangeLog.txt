@@ -1,5 +1,5 @@
 ***	Version 2.0.4	(1er décembre 2015)		***
-Arthur Suzuki, Christophe LG, Etienne Cavalié, Guillaume R., Jérôme Combes
+Arthur Suzuki, Christophe Le Guennec, Etienne Cavalié, Guillaume Raimondeau, Jérôme Combes
 
 - Améliorations
 Option permettant d'interdire le dépôt d'absence sur des plannings en cours d'élaboration
