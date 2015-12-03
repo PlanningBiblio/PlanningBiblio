@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 2.0.1
+/**
+Planning Biblio, Version 2.0.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 11 septembre 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 3 décembre 2015
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affiche le formulaire permettant d'ajouter ou de modifier les agents.
@@ -39,6 +39,11 @@ if($db_groupes->result){
   foreach($db_groupes->result as $elem){
     $groupes[$elem['groupe_id']]=$elem;
   }
+}
+
+// PlanningHebdo et EDTSamedi étant incompatibles, EDTSamedi est désactivé si PlanningHebdo est activé
+if($config['PlanningHebdo']){
+  $config['EDTSamedi']=0;
 }
 
 // Si multisites, les droits de gestion des absences, congés et modification planning dépendent des sites : 

@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 2.0
+/**
+Planning Biblio, Version 2.0.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 2 juillet 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 3 décembre 2015
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affiche l'agenda d'un agent entre 2 dates
@@ -174,10 +174,13 @@ EOD;
     $date_aff=dateAlpha($current,false,false);
     $semaine=date("W",strtotime($current));
     $jour=date("w",strtotime($current))-1;
+    $d=new datePl($current);
     if($jour<0)
       $jour=6;
-    if($config['nb_semaine']==2 and $semaine%2==0)
+    if($d->semaine3==2)
       $jour=$jour+7;
+    if($d->semaine3==3)
+      $jour=$jour+14;
 
     //	Horaires de traval si le module PlanningHebdo est activé
     if($config['PlanningHebdo']){
@@ -202,7 +205,6 @@ EOD;
       $horaires=$temps[$jour];
     }
 
-    $d=new datePl($current);
     $current_date=ucfirst($d->jour_complet);
     if(is_array($postes))
     foreach($postes as $elem){

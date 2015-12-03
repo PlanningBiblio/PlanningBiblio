@@ -1,14 +1,15 @@
 <?php
-/*
-Planning Biblio, Version 2.0
+/**
+Planning Biblio, Version 2.0.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 4 septembre 2015
-Auteur : Jérôme Combes jerome@planningbiblio.fr, Christophe Le Guennec Christophe.Leguennec@u-pem.fr
+Dernière modification : 3 décembre 2015
+@author Jérôme Combes <jerome@planningbiblio.fr>
+@author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
 Description :
 Affiche le menu déroulant avec le nom des services et des agents dans la page planning/poste/index.php.
@@ -54,6 +55,11 @@ $j7=$d->dates[6];
 $semaine=$d->semaine;
 $semaine3=$d->semaine3;
 
+// PlanningHebdo et EDTSamedi étant incompatibles, EDTSamedi est désactivé si PlanningHebdo est activé
+if($config['PlanningHebdo']){
+  $config['EDTSamedi']=0;
+}
+  
 //			----------------		Vérification des droits d'accès		-----------------------------//
 $url=explode("?",$_SERVER['REQUEST_URI']);
 $url=$url[0];
