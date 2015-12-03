@@ -1,14 +1,15 @@
 <?php
-/*
-Planning Biblio, Version 2.0.4
+/**
+Planning Biblio, Version 2.0.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 14 novembre 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 3 décembre 2015
+@author : Jérôme Combes, <jerome@planningbiblio.fr>
+@author : Farid GOARA
 
 Description :
 Permet d'ajouter une absence. Formulaire, confirmation et validation.
@@ -281,7 +282,7 @@ else{					//	Formulaire
   echo "<tr id='hre_fin' style='display:none;'><td>\n";
   echo "<label class='intitule'>Heure de fin </label>\n";
   echo "</td><td>\n";
-  echo "<select name='hre_fin' class='center ui-widget-content ui-corner-all'>\n";
+  echo "<select name='hre_fin' class='center ui-widget-content ui-corner-all' onfocus='setEndHour();'>\n";
   selectHeure(7,23,true,$quartDHeure);
   echo "</select>\n";
   echo "</td></tr>\n";
