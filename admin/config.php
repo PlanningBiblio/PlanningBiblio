@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.6
+Planning Biblio, Version 2.0.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 7 juillet 2015
+Dernière modification : 4 décembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -179,7 +179,7 @@ foreach($db->result as $elem){
       break;
 
     case "date" :
-      echo "<input type='text' name='{$elem['nom']}' value='".dateFr($elem['valeur'])."' style='width:300px;' class='datepicker'/>\n";
+      echo "<input type='text' name='{$elem['nom']}' value='".dateFr3($elem['valeur'])."' style='width:300px;' class='datepicker'/>\n";
       break;
 
     default :

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0.2
+Planning Biblio, Version 2.0.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 27 septembre 2015
+Dernière modification : 4 décembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -570,35 +570,6 @@ function dateFr($date,$heure=null){
       $dateFr.=" ".substr($date,11,2)."h".substr($date,14,2);
     }
     return $dateFr;
-  }
-  else{
-    $dateEn=substr($date,6,4)."-".substr($date,3,2)."-".substr($date,0,2);
-    return $dateEn;
-  }
-}
-
-function dateFr2($date){
-  if($date=="0000-00-00" or $date=="00/00/0000" or $date=="" or !$date)
-    return null;
-  if(substr($date,4,1)=="-"){
-    $j=substr($date,8,2);
-    $m=substr($date,5,2);
-    $a=substr($date,0,4);
-    switch($m){
-      case "01" : $m=" janvier "; break;
-      case "02" : $m=" fevrier "; break;
-      case "03" : $m=" mars "; break;
-      case "04" : $m=" avril "; break;
-      case "05" : $m=" mai "; break;
-      case "06" : $m=" juin "; break;
-      case "07" : $m=" juillet "; break;
-      case "08" : $m=" août "; break;
-      case "09" : $m=" septembre "; break;
-      case "10" : $m=" octobre "; break;
-      case "11" : $m=" novembre "; break;
-      case "12" : $m=" décembre "; break;
-    }
-    return $j.$m.$a;
   }
   else{
     $dateEn=substr($date,6,4)."-".substr($date,3,2)."-".substr($date,0,2);
