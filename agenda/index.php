@@ -9,6 +9,7 @@ Fichier : agenda/index.php
 Création : mai 2011
 Dernière modification : 3 décembre 2015
 @author Jérôme Combes <jerome@planningbiblio.fr>
+@author Farid Goara <farid.goara@u-pem.fr>
 
 Description :
 Affiche l'agenda d'un agent entre 2 dates
@@ -24,6 +25,7 @@ if(!isset($version)){
 
 // Includes
 include "joursFeries/class.joursFeries.php";
+require_once "personnel/class.personnel.php";
 
 //	Initialisation des variables
 $debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
@@ -55,6 +57,11 @@ $_SESSION['agenda_debut']=$debut;
 $_SESSION['agenda_fin']=$fin;
 $_SESSION['agenda_perso_id']=$perso_id;
 $class=null;
+
+// PlanningHebdo et EDTSamedi étant incompatibles, EDTSamedi est désactivé si PlanningHebdo est activé
+if($config['PlanningHebdo']){
+  $config['EDTSamedi']=0;
+}
 
 //	Sélection du personnel pour le menu déroulant
 $toutlemonde=$config['toutlemonde']?null:" AND id<>2 ";
@@ -172,17 +179,35 @@ EOD;
     $current_postes=array();
     $date_tab=explode("-",$current);
     $date_aff=dateAlpha($current,false,false);
-    $semaine=date("W",strtotime($current));
     $jour=date("w",strtotime($current))-1;
     $d=new datePl($current);
+    $semaine=$d->semaine;
+    $j1=$d->dates[0];
+
     if($jour<0)
       $jour=6;
-    if($d->semaine3==2)
-      $jour=$jour+7;
-    if($d->semaine3==3)
-      $jour=$jour+14;
+      
+    // Si utilisation de 2 ou 3 plannings hebdo, hors EDTSamedi
+    if(!$config['EDTSamedi']){
+      if($d->semaine3==2){
+	$jour=$jour+7;
+      }elseif($d->semaine3==3){
+	$jour=$jour+14;
+      }
+    }
 
-    //	Horaires de traval si le module PlanningHebdo est activé
+    // Si utilisation d'un planning pour les semaines sans samedi et un planning pour les semaines avec samedi travaillé
+    if($config['EDTSamedi']){
+      // Pour chaque agent, recherche si la semaine courante est avec samedi travaillé ou non
+      $p=new personnel();
+      $p->fetchEDTSamedi($perso_id,$j1,$j1);
+      // Si oui, utilisation du 2ème emploi du temps ($jour+=7)
+      if(!empty($p->elements)){
+	$jour+=7;
+      }
+    }
+      
+    //	Horaires de travail si le module PlanningHebdo est activé
     if($config['PlanningHebdo']){
       include_once "planningHebdo/class.planningHebdo.php";
       $p=new planningHebdo();
