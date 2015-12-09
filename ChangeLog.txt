@@ -1,3 +1,14 @@
+***	Version 2.0.5	(4 décembre 2015)		***
+Farid Goara, Jérôme Combes
+
+- Améliorations
+Initialisation des heures de fin en fonction des heures de début dans les menus déroulant (absences/congés)
+
+- Corrections
+Corrections de l'affichage de l'agenda pour les rotations sur 3 semaines 
+et pour l'utilisation de plannings de présence différents les semaines avec samedi travaillé
+
+
 ***	Version 2.0.4	(1er décembre 2015)		***
 Arthur Suzuki, Christophe Le Guennec, Etienne Cavalié, Guillaume Raimondeau, Jérôme Combes
 

@@ -1,14 +1,15 @@
 <?php
-/*
-Planning Biblio, Version 2.0.1
+/**
+Planning Biblio, Version 2.0.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 3 septembre 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 3 décembre 2015
+@author : Jérôme Combes, <jerome@planningbiblio.fr>
+@author : Farid GOARA <farid.goara@u-pem.fr>
 
 Description :
 Cette page affiche le planning. Par défaut, le planning du jour courant est affiché. On peut choisir la date voulue avec le
@@ -152,7 +153,7 @@ if($db->result){
 echo "<div id='divcalendrier' class='text'>\n";
 
 echo "<form name='form' method='get' action='#'>\n";
-echo "<input type='hidden' id='date' name='date' value='$date' />\n";
+echo "<input type='hidden' id='date' name='date' value='$date' data-set-calendar='$date' />\n";
 echo "<input type='hidden' id='site' name='date' value='$site' />\n";
 echo "</form>\n";
 

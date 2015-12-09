@@ -8,7 +8,7 @@ Fichier : js/script.js
 Création : mai 2011
 Dernière modification : 3 décembre 2015
 @author : Jérôme Combes, <jerome@planningbiblio.fr>
-@author : Farid GOARA
+@author : Farid GOARA <farid.goara@u-pem.fr>
 
 Description :
 Fichier contenant les principales fonctions JavaScript
@@ -731,6 +731,48 @@ $(function(){
     $(".ui-button").button();
     $(".datepicker").datepicker();
     $(".datepicker").addClass("center ui-widget-content ui-corner-all");
+
+    /**
+    * Initialiser le calendrier avec la date choisie
+    * @author Farid Goara
+    */
+    if ($("#date").length > 0){
+      if ($("#date").attr("data-set-calendar") != 'undefined' && $("#date").attr("data-set-calendar")!= false  ){
+	var strSelectedDate=$("#date").attr("data-set-calendar");
+	if(strSelectedDate){
+	  var arrSelectedDate=strSelectedDate.split("-");
+	  var numYear = arrSelectedDate[0];
+	  var numMonth = parseInt(arrSelectedDate[1]) - 1;
+	  var numDay = arrSelectedDate[2];
+	  var objSelectedDate = new Date(numYear,numMonth,numDay);
+	  $(".datepicker").datepicker("setDate",objSelectedDate);
+	}
+      }
+    }
+
+    /**
+    * Initialiser le defaultDate du calendrier de fin avec eventuelle date choisie dans le calendrier debut
+    * @author Farid Goara
+    */
+    $(".datepicker").focusin(function(){
+      if($(this).attr("name") == "fin"){
+	var objDateDefaultFin = "";
+	var objDateCurrentDeb = "";
+	if($('input[name="debut"]').datepicker("getDate")){
+	  if(!$(this).datepicker("option","defaultDate" )){
+	    $(this).datepicker("option","defaultDate",$('input[name="debut"]').datepicker("getDate"));
+	  }
+	  else{
+	    objDateDefaultFin = new Date($(this).datepicker("option","defaultDate"));
+	    objDateCurrentDeb = new Date($('input[name="debut"]').datepicker("getDate"));
+	    if(objDateDefaultFin.getDate() != objDateCurrentDeb.getDate() || objDateDefaultFin.getMonth() != objDateCurrentDeb.getMonth() || objDateDefaultFin.getYear() != objDateCurrentDeb.getYear()){
+	      $(this).datepicker("option","defaultDate",$('input[name="debut"]').datepicker("getDate"));
+	    }
+	  }
+	}
+      }
+    });
+
     // Onglets
     $(".ui-tabs").tabs({
       // Fonctions personnalisées pour les tabs .ui-tab-cancel et .ui-tab-submit dans personnel/modif.php
@@ -761,3 +803,5 @@ $(function(){
   // Infobulles
   $(document).tooltip();
 });
+
+
