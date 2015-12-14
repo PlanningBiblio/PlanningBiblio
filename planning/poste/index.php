@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0.5
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 3 décembre 2015
+Dernière modification : 14 décembre 2015
 @author : Jérôme Combes, <jerome@planningbiblio.fr>
 @author : Farid GOARA <farid.goara@u-pem.fr>
 
@@ -418,13 +418,21 @@ else{
 
   // affichage du tableau :
   // affichage de la lignes des horaires
-  echo "<div id='tableau'>\n";
+  echo "<div id='tableau' data-tableId='$tab' >\n";
   echo "<table id='tabsemaine1' cellspacing='0' cellpadding='0' class='text tabsemaine1'>\n";
-  $k=0;
+
+  $j=0;
   foreach($tabs as $tab){
+
+    // Masquer les tableaux
+    $masqueTableaux=null;
+    if($config['Planning-TableauxMasques']){
+      $masqueTableaux="<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer' data-id='$j' ></span>";
+    }
+
     //		Lignes horaires
-    echo "<tr class='tr_horaires'>\n";
-    echo "<td class='td_postes'>{$tab['titre']}</td>\n";
+    echo "<tr class='tr_horaires tableau$j'>\n";
+    echo "<td class='td_postes' data-id='$j' data-title='{$tab['titre']}'>{$tab['titre']} $masqueTableaux </td>\n";
     $colspan=0;
     foreach($tab['horaires'] as $horaires){
       echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin'])."</td>";
@@ -457,7 +465,7 @@ else{
 	$classTR=join(" ",$classTR);
 
 	// Affichage de la ligne
-	echo "<tr class='pl-line $classTR' $displayTR >\n";
+	echo "<tr class='pl-line tableau$j $classTR' $displayTR >\n";
 	echo "<td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
 	// Affichage ou non des étages
 	if($config['Affichage-etages'] and $postes[$ligne['poste']]['etage']){
@@ -485,10 +493,10 @@ else{
 	echo "<td>{$lignes_sep[$ligne['poste']]}</td><td colspan='$colspan'>&nbsp;</td></tr>\n";
       }
     }
-    $k++;
+  $j++;
   }
   echo "</table>\n";
-
+  
   // Notes : Affichage
   $p=new planning();
   $p->date=$date;

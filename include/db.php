@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 10 avril 2015
+Dernière modification : 14 décembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -361,6 +361,10 @@ class db{
     $value=trim($value);
     // Par défaut, opérateur =
     $operator="=";
+    
+    if(!strstr($key,"`") and !strstr($key,".")){
+      $key="`$key`";
+    }
 
     // BETWEEN
     if(substr($value,0,7)=="BETWEEN"){

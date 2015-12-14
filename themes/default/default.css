@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 2.0.3
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 6 octobre 2015
+Dernière modification : 14 décembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -138,6 +138,10 @@ h3{
 
 .pl-icon-google-calendar {
   background:url("images/googlecalendar.png") no-repeat center;
+}
+
+.pl-icon-hide {
+  background:url("images/hide.png") no-repeat center;
 }
 
 .pl-icon-lock {
@@ -457,7 +461,7 @@ class cellule = cellule par défaut
   border-style : outset;
 }
 
-.tr_horaires, .tr_separation{
+.tr_horaires, .tr_separation, .tr_horaires a{
   background: #7D3C25;
   color:#FFFFFF;
   font-size:12pt;
@@ -468,7 +472,6 @@ class cellule = cellule par défaut
   width:192px;
   font-size:12pt;
   font-weight: bold;
-
 }
 
 .td_obligatoire{
@@ -486,6 +489,11 @@ class cellule = cellule par défaut
   display:block;
   padding:3px;
   white-space: nowrap;
+}
+
+#afficheTableaux{
+  text-align: left;
+  margin: 2px 0 10px 0;
 }
 
 .noteBasDePage{

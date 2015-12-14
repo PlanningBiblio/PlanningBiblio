@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 2.0.3
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 2 octobre 2015
+Dernière modification : 14 décembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -40,13 +40,39 @@ $(document).ready(function(){
       var divHeight=$(index).height()/nbDiv;
       $(index).find("div").css("height",divHeight);
     }
-    // Centrer verticalement les textes
-    $(index).find("span").each(function(j,jtem){
+    // Centrer verticalement les textes (span sauf .pl-icon-hide)
+    $(index).find("span:not(.pl-icon-hide)").each(function(j,jtem){
       var top=(($(jtem).closest("div").height()-$(jtem).height())/2)-4;
       $(jtem).css("position","relative");
       $(jtem).css("top",top);
     });
   });
+  
+  // Masque les tableaux selon l'information garder en session
+  var tableId=$("#tableau").attr("data-tableId");
+  if(tableId){
+    $.ajax({
+      url: "planning/poste/ajax.getHiddenTables.php",
+      type: "post",
+      dataType: "json",
+      data: {tableId: tableId},
+      success: function(result){
+	if(!result){
+	  return;
+	}
+
+	result=JSON.parse(result);
+	for(i in result){
+	  $(".tableau"+result[i]).hide();
+	}
+	afficheTableauxDiv();
+      },
+      error: function(result){
+	CJInfo(result.responseText,"error");
+      }
+    });
+  }
+
 });
 
 // Evénements JQuery
@@ -305,11 +331,64 @@ $(function() {
       $("#menudiv2").remove();
     }
   });
+  
+  $(".masqueTableau").click(function(){
+    var id=$(this).attr("data-id");
+    // Masque le tableau
+    $(".tableau"+id).hide();
+    
+    // Affiche les liens pour réafficher les tableaux masqués
+    afficheTableauxDiv();
+  });
 
 });
 
 
 // Fonctions JavaScript
+
+/**
+ * Affiche les tableaux masqués de la page planning
+ */
+function afficheTableau(id){
+  $(".tableau"+id).show();
+  afficheTableauxDiv();
+}
+
+/**
+ * Affiche les liens permettant d'afficher les tableaux masqués en bas du planning
+ * Enregistre la liste des tableaux cachés dans la base de données
+ */
+function afficheTableauxDiv(){
+  // Affichage des liens en bas du planning
+  $("#afficheTableaux").remove();
+  
+  var tab=new Array();
+  var hiddenTables=new Array();
+  $(".tr_horaires .td_postes:hidden").each(function(){
+    var tabId=$(this).attr("data-id");
+    var tabTitle=$(this).attr("data-title");
+    tab.push("<a href='JavaScript:afficheTableau("+tabId+");'>"+tabTitle+"</a>");
+    hiddenTables.push(tabId);
+  });
+  
+  if(tab.length>0){
+    $("#tabsemaine1").after("<div id='afficheTableaux'>Tableaux masqués : "+tab.join(" ; ")+"</div>");
+  }
+  
+  // Enregistre la liste des tableaux cachés dans la base de données
+  var tableId=$("#tableau").attr("data-tableId");
+  hiddenTables=JSON.stringify(hiddenTables);
+  $.ajax({
+    url: "planning/poste/ajax.hiddenTables.php",
+    type: "post",
+    dataType: "json",
+    data: {tableId: tableId, hiddenTables: hiddenTables},
+    success: function(result){
+    },
+    error: function(result){
+    }
+  });
+}
 
 function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout){
   /* 

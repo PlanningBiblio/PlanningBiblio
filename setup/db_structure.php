@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0.2
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 15 septembre 2015
+Dernière modification : 14 décembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -89,6 +89,14 @@ $sql[]="CREATE TABLE `{$dbprefix}heures_SP` (
   `heures` TEXT,
   PRIMARY KEY (`id`))
   ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+$sql[]="CREATE TABLE `{$dbprefix}hiddenTables` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `perso_id` int(11) NOT NULL DEFAULT '0',
+  `tableau` int(11) NOT NULL DEFAULT '0',
+  `hiddenTables` TEXT,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
 $sql[]="CREATE TABLE `{$dbprefix}lignes` (
   `id` int AUTO_INCREMENT,

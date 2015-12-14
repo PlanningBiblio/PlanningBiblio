@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0.5
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 10 décembre 2015
+Dernière modification : 14 décembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -956,6 +956,23 @@ if(strcmp("2.0.5",$config['Version'])>0){
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.0.5' WHERE `nom`='Version';";
 }
+
+if(strcmp("2.1",$config['Version'])>0){
+  // Masquer les tableaux du planning
+  $sql[]="CREATE TABLE `{$dbprefix}hiddenTables` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `perso_id` int(11) NOT NULL DEFAULT '0',
+    `tableau` int(11) NOT NULL DEFAULT '0',
+    `hiddenTables` TEXT,
+    PRIMARY KEY (`id`)
+  ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('Planning-TableauxMasques','boolean','1','Planning', 'Autoriser le masquage de certains tableaux du planning','50');";
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.1' WHERE `nom`='Version';";
+}
+
 
 //	Execution des requetes et affichage
 foreach($sql as $elem){
