@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.6
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 27 avril 2015
+Dernière modification : 14 décembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -136,7 +136,7 @@ function isAnEmptyLine($poste){
 function nb30($debut,$fin){
   $tmpFin=explode(":",$fin);
   $tmpDebut=explode(":",$debut);
-  $time=(($tmpFin[0]*60)+$tmpFin[1]-($tmpDebut[0]*60)-$tmpDebut[1])/30;
+  $time=(($tmpFin[0]*60)+$tmpFin[1]-($tmpDebut[0]*60)-$tmpDebut[1])/15;
   return $time;
 }
 //		-------------	FIN paramétrage de la largeur des colonnes		--------------//

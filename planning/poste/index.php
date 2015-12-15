@@ -416,6 +416,15 @@ else{
   $t->get();
   $tabs=$t->elements;
 
+  // Repère les heures de début et de fin de chaque tableau pour ajouter des colonnes si ces heures sont différentes
+  $debut="23:59";
+  $fin=null;
+  foreach($tabs as $elem){
+    $debut=$elem["horaires"][0]["debut"]<$debut?$elem["horaires"][0]["debut"]:$debut;
+    $nb=count($elem["horaires"])-1;
+    $fin=$elem["horaires"][$nb]["fin"]>$fin?$elem["horaires"][$nb]["fin"]:$fin;
+  }
+
   // affichage du tableau :
   // affichage de la lignes des horaires
   echo "<div id='tableau' data-tableId='$tab' >\n";
@@ -423,6 +432,38 @@ else{
 
   $j=0;
   foreach($tabs as $tab){
+    // Comble les horaires laissés vides : créé la colonne manquante, les cellules de cette colonne seront grisées
+    $cellules_grises=array();
+    $tmp=array();
+    
+    // Première colonne : si le début de ce tableau est supérieur au début d'un autre tableau
+    $k=0;
+    if($tab['horaires'][0]['debut']>$debut){
+      $tmp[]=array("debut"=>$debut, "fin"=>$tab['horaires'][0]['debut']);
+      $cellules_grises[]=$k++;
+    }
+
+    // Colonnes manquantes entre le début et la fin
+    foreach($tab['horaires'] as $key => $value){
+      if($key==0 or $value["debut"]==$tab['horaires'][$key-1]["fin"]){
+	$tmp[]=$value;
+      }elseif($value["debut"]>$tab['horaires'][$key-1]["fin"]){
+	$tmp[]=array("debut"=>$tab['horaires'][$key-1]["fin"], "fin"=>$value["debut"]);
+	$tmp[]=$value;
+	$cellules_grises[]=$k;
+      }
+      $k++;
+    }
+
+    // Dernière colonne : si la fin de ce tableau est inférieure à la fin d'un autre tableau
+    $nb=count($tab['horaires'])-1;
+    if($tab['horaires'][$nb]['fin']<$fin){
+      $tmp[]=array("debut"=>$tab['horaires'][$nb]['fin'], "fin"=>$fin);
+      $cellules_grises[]=$k+1;
+    }
+
+    
+    $tab['horaires']=$tmp;
 
     // Masquer les tableaux
     $masqueTableaux=null;
@@ -474,9 +515,9 @@ else{
 	echo "</td>\n";
 	$i=1;
 	foreach($tab['horaires'] as $horaires){
-	  // recherche des infos à afficher dans chaque cellule 
-	  // Cellules grisées
-	  if(in_array("{$ligne['ligne']}_{$i}",$tab['cellules_grises'])){
+	  // Recherche des infos à afficher dans chaque cellule 
+	  // Cellules grisées si définies dans la configuration du tableau et si la colonne a été ajoutée automatiquement
+	  if(in_array("{$ligne['ligne']}_{$i}",$tab['cellules_grises']) or in_array($i-1,$cellules_grises)){
 	    echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."' class='cellule_grise'>&nbsp;</td>";
 	  }
 	  // fonction cellule_poste(date,debut,fin,colspan,affichage,poste,site)
