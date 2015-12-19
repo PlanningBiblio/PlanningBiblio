@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0.1
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 2 septembre 2015
+Dernière modification : 19 décembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -686,6 +686,122 @@ class absences{
     }
 
     $this->recipients=$recipients;
+  }
+
+  
+  /**
+  * infoPlannings
+  * Retourne la liste des plannings concernés (dates, horaires sites et postes) (@param $this->message @string)
+  * @param $this->debut @string
+  * @param $this->fin @string
+  * @param $this->perso_id @int
+  * TODO : si besoin, cette fonction peut être complétée de façon à retourner les infos sous forme de tableaux
+  * (dates des plannings concernés, validés ou non, postes et sites concernés)
+  * TODO : voir s'il faut faire une synthèse pour alléger le mail si de nombreux plannings sont concernés
+  */
+  function infoPlannings(){
+    require_once "postes/class.postes.php";
+  
+    $debut=dateSQL($this->debut);
+    $fin=dateSQL($this->fin);
+    $perso_id=$this->perso_id;
+
+    $dateDebut=substr($debut,0,10);
+    $dateFin=substr($fin,0,10);
+    
+    $heureDebut=substr($debut,11);
+    $heureFin=substr($fin,11);
+
+    // Recherche des plages de SP concernées pour ajouter cette information dans le mail.
+    // Recherche des plannings validés
+    $plannings_valides=array();
+    $db=new db();
+    $db->select2("pl_poste_verrou","date",array("date"=>"BETWEEN $dateDebut AND $dateFin","verrou2"=>"1"));
+    if($db->result){
+      foreach($db->result as $elem){
+	$plannings_valides[]=$elem['date'];
+      }
+    }
+
+    sort($plannings_valides);
+    $dates=implode($plannings_valides,",");
+
+    // nom des postes
+    $p=new postes();
+    $p->fetch();
+    $postes=$p->elements;
+    
+    // Nom des sites
+    $sites=array(1=>null);
+    if($GLOBALS['config']['Multisites-nombre']>1){
+      for($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++){
+	$sites[$i]=$GLOBALS['config']["Multisites-site$i"];
+      }
+    }
+
+    // Recherche des plannings dans lequel apparaît l'agent
+    $plannings=array();
+    $db=new db();
+    $db->select2("pl_poste",null,array("date"=>"BETWEEN $dateDebut AND $dateFin","perso_id"=>$perso_id),"ORDER BY date,debut,fin");
+    if($db->result){
+      foreach($db->result as $elem){
+	// On exclu les créneaux horaires qui sont en dehors de l'absences
+	if($elem['date']==$dateDebut and $elem['fin']<=$heureDebut){
+	  continue;
+	}
+	if($elem['date']==$dateFin and $elem['debut']>=$heureFin){
+	  continue;
+	}
+
+	$elem['valide']=in_array($elem['date'],$plannings_valides)?" (Valid&eacute;)":null;
+	$elem['date']=dateFr($elem['date']);
+	$elem['debut']=heure2($elem['debut']);
+	$elem['fin']=heure2($elem['fin']);
+	$elem['site']=$sites[$elem['site']];
+	$elem['poste']=$postes[$elem['poste']]['nom'];
+	$plannings[]=$elem;
+      }
+    }
+    
+    // Création du message
+    // Par défaut, message = aucun planning n'est concerné
+    $message="<p>Aucun planning n&apos;est affect&eacute; par cette absence.</p>";
+    
+    // Si des plannings sont concernés
+    if(!empty($plannings)){
+      // Fusionne les plages horaires si sur le même poste sur des plages succésives
+      $tmp=array();
+      $j=0;
+      for($i=0; $i<count($plannings);$i++){
+	if($i==0){
+	  $tmp[$j]=$plannings[$i];
+	}elseif($plannings[$i]['site']==$tmp[$j]['site'] and $plannings[$i]['poste']==$tmp[$j]['poste']
+	    and $plannings[$i]['debut']==$tmp[$j]['fin']){
+	  $tmp[$j]['fin']=$plannings[$i]['fin'];
+	}else{
+	  $j++;
+	  $tmp[$j]=$plannings[$i];
+	}
+      }
+      $plannings=$tmp;
+      
+      // Rédaction du message
+      $message="<p><strong>Les plannings suivants sont affect&eacute;s par cette absence :</strong><ul>\n";
+      $lastDate=null;
+      foreach($plannings as $elem){
+	if($elem['date']!=$lastDate and $lastDate!=null){
+	  $message.="</ul></li>\n";
+	}
+	if($elem['date']!=$lastDate){
+	  $message.="<li><strong>{$elem['date']}{$elem['valide']}</strong><ul>\n";
+	}
+	$message.="<li>{$elem['debut']}-{$elem['fin']} {$elem['site']} {$elem['poste']}</li>\n";
+	$lastDate=$elem['date'];
+      }
+      $message.="</ul></li></ul></p>\n";
+    }
+    
+    $this->message=$message;
   }
 
   function piecesJustif($id,$pj,$checked){

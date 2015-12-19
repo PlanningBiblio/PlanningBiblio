@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0.4
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 14 novembre 2015
+Dernière modification : 19 décembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -217,18 +217,28 @@ $a=new absences();
 $a->getRecipients($notifications,$responsables,$mail,$mailsResponsables);
 $destinataires=$a->recipients;
 
+// Recherche des plages de SP concernées pour ajouter cette information dans le mail.
+$a=new absences();
+$a->debut=$debut_sql;
+$a->fin=$fin_sql;
+$a->perso_id=$perso_id;
+$a->infoPlannings();
+$infosPlanning=$a->message;
+
 // Message
-$message="<b><u>$sujet</u></b> : <br/><br/><b>$prenom $nom</b><br/><br/>Début : $debut";
+$message="<b><u>$sujet</u></b> :";
+$message.="<ul><li>Agent : <strong>$prenom $nom</strong></li>";
+$message.="<li>Début : <strong>$debut";
 if($hre_debut!="00:00:00")
   $message.=" ".heure3($hre_debut);
-$message.="<br/>Fin : $fin";
+$message.="</strong></li><li>Fin : <strong>$fin";
 if($hre_fin!="23:59:59")
   $message.=" ".heure3($hre_fin);
-$message.="<br/><br/>Motif : $motif";
+$message.="</strong></li><li>Motif : $motif";
 if($motif_autre){
   $message.=" / $motif_autre";
 }
-$message.="<br/>";
+$message.="</li>";
 
 if($config['Absences-validation']){
   $validationText="Demand&eacute;e";
@@ -245,14 +255,18 @@ if($config['Absences-validation']){
     $validationText="Refus&eacute;e (en attente de validation hi&eacute;rarchique)";
   }
 
-  $message.="<br/>Validation : <br/>\n";
+  $message.="<li>Validation : <br/>\n";
   $message.=$validationText;
-  $message.="<br/>\n";
+  $message.="</li>\n";
 }
 
 if($commentaires){
-  $message.="<br/>Commentaire:<br/>$commentaires<br/>";
+  $message.="<li>Commentaire:<br/>$commentaires</li>";
 }
+$message.="</ul>";
+
+// Ajout des informations sur les plannings
+$message.=$infosPlanning;
 
 // Ajout du lien permettant de rebondir sur l'absence
 $url=createURL("absences/modif.php&id=$id");
