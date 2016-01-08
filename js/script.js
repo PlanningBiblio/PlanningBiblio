@@ -230,6 +230,12 @@ function errorHighlight(e, type, icon) {
     });
 }
 
+function heureFr(heure){
+  heure=heure.toString();
+  heure=heure.replace(/([0-9]*):([0-9]*):([0-9]*)/,"$1h$2");
+  return heure;
+}
+
 function heure4(heure){
   heure=heure.toString();
   if(heure.indexOf("h")>0){

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0.5
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 4 décembre 2015
+Dernière modification : 8 janvier 2016
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -735,7 +735,7 @@ function mail2($To,$Sujet,$Message){
   $mail->Body = $Message;
   if(is_array($To)){
     foreach($To as $elem){
-      $mail->AddAddress($elem);
+      $mail->addBCC($elem);
     }
   }
   else{
@@ -743,7 +743,10 @@ function mail2($To,$Sujet,$Message){
   }
 
   $mail->Subject = $Sujet;
-  $mail->Send();
+
+  if(!$mail->Send()){
+    error_log("Planning Biblio Mailer Error: " . $mail->ErrorInfo);
+  }
 }
 
 function MinToHr($minutes){
@@ -894,7 +897,7 @@ function selectTemps($jour,$i,$periodes=null,$class=null){
   return $select;
 }
 
-function sendmail($Sujet,$Message,$destinataires,$alert=true){
+function sendmail($Sujet,$Message,$destinataires,$alert="popup"){
   if(!$GLOBALS['config']['Mail-IsEnabled'])
     return false;
   if(!is_array($destinataires)){
@@ -916,8 +919,12 @@ function sendmail($Sujet,$Message,$destinataires,$alert=true){
       if(verifmail(trim($destinataire))){
 	$to[]=trim($destinataire);
       }
-      elseif($alert){
-	echo "<script type='text/JavaScript'>information('Adresse mail invalide (\"$destinataire\")','error');</script>";
+      else{
+	if($alert=="popup"){
+	  echo "<script type='text/JavaScript'>CJInfo('Adresse mail invalide (\"$destinataire\")','error');</script>";
+	}elseif($alert=="log"){
+	  error_log("Planning Biblio : Adresse mail invalide $destinataire");
+	}
       }
     }
     if(!empty($to)){

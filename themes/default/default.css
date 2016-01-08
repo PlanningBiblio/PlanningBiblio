@@ -6,7 +6,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 14 décembre 2015
+Dernière modification : 21 décembre 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -541,7 +541,7 @@ class cellule = cellule par défaut
   padding-left: 10px;
 }
 
-.menudiv-gris{
+.menudiv-tr:hover{
   background:#CCCCCC;
 }
 
@@ -587,6 +587,15 @@ class cellule = cellule par défaut
   width: 100%;
   text-align: right;
   padding: 5px 0;
+}
+
+#pl-appelDispo-sujet{
+  width: 100%;
+}
+
+#pl-appelDispo-text{
+  width: 100%;
+  height: 200px;
 }
 
 #pl-notes-text{

@@ -6,7 +6,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 14 décembre 2015
+Dernière modification : 8 janvier 2016
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -226,6 +226,66 @@ $(function() {
   });
   
   
+  // Formulaire Appel à disponibilité
+  $( "#pl-appelDispo-form" ).dialog({
+    autoOpen: false,
+    height: 480,
+    width: 650,
+    modal: true,
+    buttons: {
+      "Envoyer": function() {
+	allFields.removeClass( "ui-state-error" );
+	var bValid = true;
+
+	if ( bValid ) {
+	  // Envoi le mail
+	  var sujet=$( "#pl-appelDispo-sujet" ).val();
+	  var message=$( "#pl-appelDispo-text" ).text();
+	  sujet=sujet.trim();
+	  message=message.trim();
+	  message=message.replace(/\n/g,"<br/>");
+	  
+	  // L'objet appelDispoData contient les infos site, poste, date, debut, fin et agents
+	  // Variable Globale définie lors du clic sur le lien "Appel à disponibilité", fonction appelDispo
+	  // On ajoute le sujet et le message à cet objet et on l'envoi au script PHP pour l'envoi du mail
+	  appelDispoData.sujet=sujet;
+	  appelDispoData.message=message;
+
+	  $( "#pl-appelDispo-form" ).dialog( "close" );
+	  
+	  $.ajax({
+	    dataType: "json",
+	    url: "planning/poste/ajax.appelDispoMail.php",
+	    type: "post",
+	    data: appelDispoData,
+	    success: function(result){
+
+	      if(result.error){
+		CJInfo(result.error,"error");
+	      }
+	      else{
+		CJInfo("L'appel à disponibilité a bien été envoyé","success");
+	      }
+	    },
+	    error: function(){
+	      updateTips("Une erreur est survenue lors de l'envoi de l'e-mail");
+	    }
+	  });
+	}
+      },
+
+      Annuler: function() {
+	$( this ).dialog( "close" );
+      }
+    },
+
+    close: function() {
+      updateTips("Envoyez un e-mail aux agents disponibles pour leur demander s&apos;ils sont volontaires pour occuper le poste choisi.");
+      allFields.removeClass( "ui-state-error" );
+    }
+  });
+
+
   $(".cellDiv").contextmenu(function(){
     $(this).closest("td").attr("data-perso-id",$(this).attr("data-perso-id"));
     majPersoOrigine($(this).attr("data-perso-id"));
@@ -390,15 +450,62 @@ function afficheTableauxDiv(){
   });
 }
 
+
+/**
+ * appelDispo : Ouvre une fenêtre permettant d'envoyer un mail aux agents disponibles pour un poste et créneau horaire choisis
+ * Appelée depuis le menu permettant de placer les agents dans le plannings (ajax.menudiv.php)
+ */
+function appelDispo(site,siteNom,poste,posteNom,date,debut,fin,agents){
+  // Variable globale à utiliser lors de l'envoi du mail
+  appelDispoData={site:site, poste:poste, date:date, debut:debut, fin:fin, agents:agents};
+  
+  // Récupération du message par défaut depuis la config.
+  $.ajax({
+    url: "planning/poste/ajax.appelDispoMsg.php",
+    type: "post",
+    dataType: "json",
+    data: {},
+    success: function(result){
+      // Récupération des infos de la base de données, table config
+      var sujet=result[0];
+      var message=result[1];
+      
+      // Remplacement des valeurs [poste] [date] [debut] [fin]
+      if(siteNom){
+	posteNom+=" ("+siteNom+")";
+      }
+
+      sujet=sujet.replace("[poste]",posteNom);
+      sujet=sujet.replace("[date]",dateFr(date));
+      sujet=sujet.replace("[debut]",heureFr(debut));
+      sujet=sujet.replace("[fin]",heureFr(fin));
+
+      message=message.replace("[poste]",posteNom);
+      message=message.replace("[date]",dateFr(date));
+      message=message.replace("[debut]",heureFr(debut));
+      message=message.replace("[fin]",heureFr(fin));
+
+      // Mise à jour du formulaire
+      $( "#pl-appelDispo-sujet" ).val(sujet);
+      $( "#pl-appelDispo-text" ).text(message);
+      $( "#pl-appelDispo-form" ).dialog( "open" );
+    },
+    error: function(result){
+      CJInfo(result.responseText,"error");
+    }
+  });
+}
+
+
+/**
+ * bataille_navale : menu contextuel : met à jour la base de données en arrière plan et affiche les modifs en JS dans le planning
+ * Récupére en Ajax les id, noms, prénom, service, statut dans agents placés
+ * Met à jour la base de données en arrière plan
+ * Refait ensuite l'affichage complet de la cellule. Efface est remplit la cellule avec les infos récupérées du fichier ajax.updateCell.php
+ * Les cellules sont identifiables, supprimables et modifiables indépendament des autres
+ * Les infos service et statut sont utilisées pour la mise en forme des cellules : utilisation des classes service_ et statut_
+ */
 function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout){
-  /* 
-  bataille_navale : menu contextuel : met à jour la base de données en arrière plan et affiche les modifs en JS dans le planning
-  Récupére en Ajax les id, noms, prénom, service, statut dans agents placés
-  Met à jour la base de données en arrière plan
-  Refait ensuite l'affichage complet de la cellule. Efface est remplit la cellule avec les infos récupérées du fichier ajax.updateCell.php
-  Les cellules sont identifiables, supprimables et modifiables indépendament des autres
-  Les infos service et statut sont utilisées pour la mise en forme des cellules : utilisation des classes service_ et statut_
-  */
   if(site==undefined || site==""){
     site=1;
   }

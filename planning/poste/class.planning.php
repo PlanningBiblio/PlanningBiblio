@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 2.0.4
+/**
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 1er décembre 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 21 décembre 2015
+@author : Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Classe planning 
@@ -290,7 +290,7 @@ class planning{
       $classe=empty($class_tmp)?null:join(" ",$class_tmp);
 
       //	Affichage des lignes
-      $menudiv.="<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$(this).removeClass();$(this).addClass(\"menudiv-gris\"); $groupe_hide' onmouseout='$(this).removeClass();$(this).addClass(\"$classe $classTrListe\");' class='$classe $classTrListe'>\n";
+      $menudiv.="<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$groupe_hide' class='$classe $classTrListe menudiv-tr'>\n";
       $menudiv.="<td style='width:200px;font-weight:normal;' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},0,0,\"$site\");'>";
       $menudiv.=$nom;
 

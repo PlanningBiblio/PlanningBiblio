@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 14 décembre 2015
+Dernière modification : 20 décembre 2015
 @author : Jérôme Combes, <jerome@planningbiblio.fr>
 @author : Farid GOARA <farid.goara@u-pem.fr>
 
@@ -563,12 +563,10 @@ EOD;
     <input type='button' class='ui-button' id='pl-notes-button' value='Ajouter un commentaire' />
     </div>
 
-    <div id="pl-notes-form" title="Notes" class='noprint' style='display:none;'>
-      <p class="validateTips">Vous pouvez écrire ici un commentaire qui sera affiché en bas du planning.</p>
+    <div id="pl-notes-form" title="Commentaire" class='noprint' style='display:none;'>
+      <p class="validateTips">Vous pouvez écrire ici un commentaire qui sera affich&eacute; en bas du planning.</p>
       <form>
-      <fieldset>
       <textarea id='pl-notes-text'>$notesTextarea</textarea>
-      </fieldset>
       </form>
     </div>
 EOD;
@@ -579,6 +577,21 @@ echo <<<EOD
   $notesSuppression$notesValidation
   </div>  
 EOD;
+
+// Appel à disponibilités : envoi d'un mail aux agents disponibles pour occuper le poste choisi depuis le menu des agents
+if($config['Planning-AppelDispo']){
+  echo <<<EOD
+    <div id="pl-appelDispo-form" title="Appel &agrave; disponibilit&eacute;" class='noprint' style='display:none;'>
+      <p class="validateTips">Envoyez un e-mail aux agents disponibles pour leur demander s&apos;ils sont volontaires pour occuper le poste choisi.</p>
+      <form>
+      <label for='pl-appelDispo-sujet'>Sujet</label><br/>
+      <input type='text' id='pl-appelDispo-sujet' name='pl-appelDispo-sujet' /><br/><br/>
+      <label for='pl-appelDispo-text'>Message</label><br/>
+      <textarea id='pl-appelDispo-text' name='pl-appelDispo-text'>&nbsp;</textarea>
+      </form>
+    </div>
+EOD;
+}
 
   // Affichage des absences
   if($config['Absences-planning']){
