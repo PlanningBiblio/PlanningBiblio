@@ -95,6 +95,114 @@ class datePl{
   }
 }
 
+class sendmail{
+
+  public $message=null;
+  public $to=null;
+  public $subject=null;
+  public $error="";
+
+  
+  public function sendmail(){
+    $path=strpos($_SERVER["SCRIPT_NAME"],"planning/poste/ajax")?"../../":null;
+    require_once("{$path}vendor/PHPMailer/class.phpmailer.php");
+    require_once("{$path}vendor/PHPMailer/class.smtp.php");
+  }
+  
+
+  private function prepare(){
+  
+    /* arrête la procédure d'envoi de mail si désactivé dans la config */
+    if(!$GLOBALS['config']['Mail-IsEnabled']){
+      $this->error.="L'envoi des e-mails est désactivé dans la configuration\n";
+      return false;
+    }
+
+    /* Met les destinataires dans un tableau s'ils sont dans une chaine de caractère séparée par des ; */
+    if(!is_array($this->to)){
+      $this->to=explode(";",$this->to);
+    }
+
+    /* Vérifie que les e-mails sont valides */
+    $to=array();
+    $incorrect=array();
+    foreach($this->to as $elem){
+      if(verifmail(trim($elem))){
+	$to[]=trim($elem);
+      }else{
+	$incorrect[]=trim($elem);
+      }
+    }
+    $this->to=$to;
+
+    if(!empty($incorrect)){
+      $this->error.="Les adresses suivantes sont incorrectes : ".join(" ; ",$incorrect)."\n";
+      $this->error.="Le mail sera envoyé aux autres destinataires\n";
+    }
+
+    /* Arrête la procédure si aucun destinaire valide */
+    if(empty($this->to)){
+      $this->error.="Aucun destinataire valide pour cet e-mail\n";
+      return false;
+    }
+
+    /* Préparation du sujet */
+    $this->subject = stripslashes($this->subject);
+    $this->subject = "Planning : " . $this->subject;
+
+    /* Préparation du message, html, doctype, signature */
+    $message="<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
+    $message.="<html><head><title>Planning</title></head><body>";
+    $message.= $this->message;
+    $message.="<br/><br/>{$GLOBALS['config']['Mail-Signature']}<br/><br/>";
+    $message.="</body></html>";
+    $message = stripslashes($message);
+    $message = str_replace(array("\n","\r\n\n","\r\n"), "<br/>", $message);
+
+    $this->message = $message;
+  }
+
+  
+  public function send(){
+    $this->prepare();
+    
+    $mail = new PHPMailer();
+    if($GLOBALS['config']['Mail-IsMail-IsSMTP']=="IsMail")
+      $mail->IsMail();
+    else
+      $mail->IsSMTP();
+    $mail->CharSet="utf-8";
+    $mail->WordWrap =$GLOBALS['config']['Mail-WordWrap'];
+    $mail->Hostname =$GLOBALS['config']['Mail-Hostname'];
+    $mail->Host =$GLOBALS['config']['Mail-Host'];
+    $mail->Port =$GLOBALS['config']['Mail-Port'];
+    $mail->SMTPSecure = $GLOBALS['config']['Mail-SMTPSecure'];
+    $mail->SMTPAuth =$GLOBALS['config']['Mail-SMTPAuth'];
+    $mail->Username =$GLOBALS['config']['Mail-Username'];
+    $mail->Password =decrypt($GLOBALS['config']['Mail-Password']);
+    $mail->From =$GLOBALS['config']['Mail-From'];
+    $mail->FromName =$GLOBALS['config']['Mail-FromName'];
+    $mail->IsHTML();
+    
+    $mail->Body = $this->message;
+    
+    if(is_array($this->to)){
+      foreach($this->to as $elem){
+	$mail->addBCC($elem);
+      }
+    }
+    else{
+      $mail->AddAddress($this->to);
+    }
+    $mail->Subject = $this->subject;
+
+    if(!$mail->Send()){
+      $this->error.="Mailer Error: " . $mail->ErrorInfo ."\n";
+    }
+  }
+}
+
+
 function absents($date,$tables){
   $tables=explode(",",$tables);
   $liste="";
@@ -709,46 +817,6 @@ function is_serialized($string){
   return false;
 }
 
-function mail2($To,$Sujet,$Message){
-  $path=strpos($_SERVER["SCRIPT_NAME"],"planning/poste/ajax")?"../../":null;
-  require_once("{$path}vendor/PHPMailer/class.phpmailer.php");
-  require_once("{$path}vendor/PHPMailer/class.smtp.php");
-
-  $mail = new PHPMailer();
-  if($GLOBALS['config']['Mail-IsMail-IsSMTP']=="IsMail")
-    $mail->IsMail();
-  else
-    $mail->IsSMTP();
-  $mail->CharSet="utf-8";
-  $mail->WordWrap =$GLOBALS['config']['Mail-WordWrap'];
-  $mail->Hostname =$GLOBALS['config']['Mail-Hostname'];
-  $mail->Host =$GLOBALS['config']['Mail-Host'];
-  $mail->Port =$GLOBALS['config']['Mail-Port'];
-  $mail->SMTPSecure = $GLOBALS['config']['Mail-SMTPSecure'];
-  $mail->SMTPAuth =$GLOBALS['config']['Mail-SMTPAuth'];
-  $mail->Username =$GLOBALS['config']['Mail-Username'];
-  $mail->Password =decrypt($GLOBALS['config']['Mail-Password']);
-  $mail->From =$GLOBALS['config']['Mail-From'];
-  $mail->FromName =$GLOBALS['config']['Mail-FromName'];
-
-  $mail->IsHTML();
-  $mail->Body = $Message;
-  if(is_array($To)){
-    foreach($To as $elem){
-      $mail->addBCC($elem);
-    }
-  }
-  else{
-    $mail->AddAddress($To);
-  }
-
-  $mail->Subject = $Sujet;
-
-  if(!$mail->Send()){
-    error_log("Planning Biblio Mailer Error: " . $mail->ErrorInfo);
-  }
-}
-
 function MinToHr($minutes){
   if($minutes!=0){
     $heure=$minutes/60;
@@ -895,6 +963,46 @@ function selectTemps($jour,$i,$periodes=null,$class=null){
   }
   $select.="</select>\n";
   return $select;
+}
+
+function mail2($To,$Sujet,$Message){
+  $path=strpos($_SERVER["SCRIPT_NAME"],"planning/poste/ajax")?"../../":null;
+  require_once("{$path}vendor/PHPMailer/class.phpmailer.php");
+  require_once("{$path}vendor/PHPMailer/class.smtp.php");
+
+  $mail = new PHPMailer();
+  if($GLOBALS['config']['Mail-IsMail-IsSMTP']=="IsMail")
+    $mail->IsMail();
+  else
+    $mail->IsSMTP();
+  $mail->CharSet="utf-8";
+  $mail->WordWrap =$GLOBALS['config']['Mail-WordWrap'];
+  $mail->Hostname =$GLOBALS['config']['Mail-Hostname'];
+  $mail->Host =$GLOBALS['config']['Mail-Host'];
+  $mail->Port =$GLOBALS['config']['Mail-Port'];
+  $mail->SMTPSecure = $GLOBALS['config']['Mail-SMTPSecure'];
+  $mail->SMTPAuth =$GLOBALS['config']['Mail-SMTPAuth'];
+  $mail->Username =$GLOBALS['config']['Mail-Username'];
+  $mail->Password =decrypt($GLOBALS['config']['Mail-Password']);
+  $mail->From =$GLOBALS['config']['Mail-From'];
+  $mail->FromName =$GLOBALS['config']['Mail-FromName'];
+
+  $mail->IsHTML();
+  $mail->Body = $Message;
+  if(is_array($To)){
+    foreach($To as $elem){
+      $mail->addBCC($elem);
+    }
+  }
+  else{
+    $mail->AddAddress($To);
+  }
+
+  $mail->Subject = $Sujet;
+
+  if(!$mail->Send()){
+    error_log("Planning Biblio Mailer Error: " . $mail->ErrorInfo);
+  }
 }
 
 function sendmail($Sujet,$Message,$destinataires,$alert="popup"){

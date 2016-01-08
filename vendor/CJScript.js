@@ -3,7 +3,7 @@ Licence GNU/GPL (version 2 et au dela)
 
 Fichier : CJScript.js
 Création : mars 2015
-Dernière modification : 23 juillet 2015
+Dernière modification : 8 janvier 2016
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 */
 
@@ -110,6 +110,7 @@ function CJInfo(message,type,top,time,myClass){
   });
   
   message=message.replace(/#BR#/g,"<br/>");
+  message=message.replace(/\n/g,"<br/>");
 
   $("body").append("<div class='CJInfo "+myClass+"' id='CJInfo"+id+"' data-id='"+id+"'>"+message+"</div>");
   CJErrorHighlight($("#CJInfo"+id),type);

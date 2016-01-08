@@ -46,6 +46,18 @@ foreach($agents as $elem){
   $destinataires[]=$elem['mail'];
 }
 
-sendmail($sujet,$message,$destinataires,$alert="log");
-echo json_encode("ok");
+$m=new sendmail();
+$m->subject=$sujet;
+$m->message=$message;
+$m->to=$destinataires;
+$m->send();
+
+if($m->error){
+  echo json_encode(array("error"=>$m->error));
+}else{
+  echo json_encode("ok");
+}
+
+//sendmail($sujet,$message,$destinataires,$alert="log");
+//echo json_encode("ok");
 ?>
