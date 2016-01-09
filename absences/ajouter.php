@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 19 décembre 2015
+Dernière modification : 8 janvier 2016
 @author : Jérôme Combes, <jerome@planningbiblio.fr>
 @author : Farid GOARA
 
@@ -230,19 +230,29 @@ if($confirm){
   $message.="<p>Lien vers la demande d&apos;absence :<br/><a href='$url'>$url</a></p>";
 
   // Envoi du mail
-  if(!empty($destinataires)){
-    sendmail($titre,$message,$destinataires);
+  $m=new sendmail();
+  $m->subject=$titre;
+  $m->message=$message;
+  $m->to=$destinataires;
+  $m->send();
+
+  // Si erreur d'envoi de mail, affichage de l'erreur
+  $msg2=null;
+  $msg2Type=null;
+  if($m->error){
+    $msg2=urlencode($m->error_CJInfo);
+    $msg2Type="error";
   }
 
-  if($menu=="off"){
-    echo "<script type='text/JavaScript'>parent.document.location.reload(false);</script>\n";
-    echo "<script type='text/JavaScript'>popup_closed();</script>\n";
+  // Confirmation de l'enregistrement
+  if($config['Absences-validation'] and !$admin){
+    $msg="La demande d&apos;absence a &eacute;t&eacute; enregistr&eacute;e";
+  }else{
+    $msg="L&apos;absence a &eacute;t&eacute; enregistr&eacute;e";
   }
-  else{
-    $msg=($config['Absences-validation'] and !$admin)?"La demande d&apos;absence a &eacute;t&eacute; enregistr&eacute;e":"L&apos;absence a &eacute;t&eacute; enregistr&eacute;e";
-    $msg=urlencode($msg);
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success';</script>\n";
-  }
+
+  $msg=urlencode($msg);
+  echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
 }
 else{					//	Formulaire
   echo "<form name='form' action='index.php' method='get' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");' >\n";

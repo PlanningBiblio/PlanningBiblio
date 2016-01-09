@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 19 décembre 2015
+Dernière modification : 8 janvier 2016
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -700,6 +700,7 @@ class absences{
   * TODO : voir s'il faut faire une synthèse pour alléger le mail si de nombreux plannings sont concernés
   */
   function infoPlannings(){
+    $version="absences";
     require_once "postes/class.postes.php";
   
     $debut=dateSQL($this->debut);

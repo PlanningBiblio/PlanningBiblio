@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 21 décembre 2015
+Dernière modification : 9 janvier 2016
 @author : Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -514,7 +514,11 @@ class planning{
 	$message.="Lien vers le planning du ".dateFr($date)." : $url";
 
 	// Envoi du mail
-	sendmail($sujet,$message,$tab[$elem]['mail']);
+	$m=new sendmail();
+	$m->subject=$sujet;
+	$m->message=$message;
+	$m->to=$tab[$elem]['mail'];
+	$m->send();
 
       // S'il n'y a pas d'éléments, on écrit "Vous n'êtes plus dans le planning ..."
       }else{
@@ -524,7 +528,11 @@ class planning{
 	$message.="<br/><br/>Lien vers le planning du ".dateFr($date)." : $url";
 
 	// Envoi du mail
-	sendmail($sujet,$message,$oldData[$elem]['mail']);
+	$m=new sendmail();
+	$m->subject=$sujet;
+	$m->message=$message;
+	$m->to=$oldData[$elem]['mail'];
+	$m->send();
       }
     }
   }

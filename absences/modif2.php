@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 19 décembre 2015
+Dernière modification : 9 janvier 2016
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -273,9 +273,21 @@ $url=createURL("absences/modif.php&id=$id");
 $message.="<br/><br/>Lien vers la demande d&apos;absence :<br/><a href='$url'>$url</a><br/><br/>";
 
 // Envoi du mail
-if(!empty($destinataires)){
-  sendmail($sujet,$message,$destinataires);
+$m=new sendmail();
+$m->subject=$sujet;
+$m->message=$message;
+$m->to=$destinataires;
+$m->send();
+
+// Si erreur d'envoi de mail, affichage de l'erreur
+$msg2=null;
+$msg2Type=null;
+if($m->error){
+  $msg2=urlencode($m->error_CJInfo);
+  $msg2Type="error";
 }
+
+  
 $msg=urlencode("L'absence a été modifiée avec succés");
-echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success';</script>\n";
+echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
 ?>

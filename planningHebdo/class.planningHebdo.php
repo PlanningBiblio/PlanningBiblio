@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0.1
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2013-2015 - Jérôme Combes
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 30 juillet 2015
+Dernière modification : 9 janvier 2016
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -120,12 +120,18 @@ class planningHebdo{
     }
 
     if(!empty($destinataires)){
-      $destinataires=join(";",$destinataires);
       $sujet="Nouveau planning de présence, ".html_entity_decode(nom($perso_id,"prenom nom"),ENT_QUOTES|ENT_IGNORE,"UTF-8");
       $message=nom($perso_id,"prenom nom");
       $message.=" a enregistré un nouveau planning de présence dans l'application Planning Biblio<br/>";
       $message.="Rendez-vous dans le menu administration / Plannings de présence de votre application Planning Biblio pour le valider.";
-      sendmail($sujet,$message,$destinataires);
+
+      // Envoi du mail
+      $m=new sendmail();
+      $m->subject=$sujet;
+      $m->message=$message;
+      $m->to=$destinataires;
+      $m->send();
+
     }
   }
 
@@ -383,8 +389,14 @@ class planningHebdo{
 	$message.=nom($data['perso_id'],"prenom nom");
 	$message.=" a été modifié dans l'application Planning Biblio<br/>";
       }
-      $destinataires=join(";",$destinataires);
-      sendmail($sujet,$message,$destinataires);
+
+      // Envoi du mail
+      $m=new sendmail();
+      $m->subject=$sujet;
+      $m->message=$message;
+      $m->to=$destinataires;
+      $m->send();
+
     }
   }
   

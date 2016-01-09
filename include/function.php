@@ -101,10 +101,12 @@ class sendmail{
   public $to=null;
   public $subject=null;
   public $error="";
+  public $error_encoded=null;
 
   
   public function sendmail(){
     $path=strpos($_SERVER["SCRIPT_NAME"],"planning/poste/ajax")?"../../":null;
+    $path=preg_match('/planning\/plugins\/.*\/ajax/', $_SERVER["SCRIPT_NAME"])?"../../":$path;
     require_once("{$path}vendor/PHPMailer/class.phpmailer.php");
     require_once("{$path}vendor/PHPMailer/class.smtp.php");
   }
@@ -137,7 +139,6 @@ class sendmail{
 
     if(!empty($incorrect)){
       $this->error.="Les adresses suivantes sont incorrectes : ".join(" ; ",$incorrect)."\n";
-      $this->error.="Le mail sera envoyé aux autres destinataires\n";
     }
 
     /* Arrête la procédure si aucun destinaire valide */
@@ -197,7 +198,10 @@ class sendmail{
     $mail->Subject = $this->subject;
 
     if(!$mail->Send()){
-      $this->error.="Mailer Error: " . $mail->ErrorInfo ."\n";
+      $this->error.=$mail->ErrorInfo ."\n";
+      
+      // error_CJInfo: pour affichage dans CJInfo (JS)
+      $this->error_CJInfo=str_replace("\n","#BR#",$this->error);
     }
   }
 }
@@ -963,82 +967,6 @@ function selectTemps($jour,$i,$periodes=null,$class=null){
   }
   $select.="</select>\n";
   return $select;
-}
-
-function mail2($To,$Sujet,$Message){
-  $path=strpos($_SERVER["SCRIPT_NAME"],"planning/poste/ajax")?"../../":null;
-  require_once("{$path}vendor/PHPMailer/class.phpmailer.php");
-  require_once("{$path}vendor/PHPMailer/class.smtp.php");
-
-  $mail = new PHPMailer();
-  if($GLOBALS['config']['Mail-IsMail-IsSMTP']=="IsMail")
-    $mail->IsMail();
-  else
-    $mail->IsSMTP();
-  $mail->CharSet="utf-8";
-  $mail->WordWrap =$GLOBALS['config']['Mail-WordWrap'];
-  $mail->Hostname =$GLOBALS['config']['Mail-Hostname'];
-  $mail->Host =$GLOBALS['config']['Mail-Host'];
-  $mail->Port =$GLOBALS['config']['Mail-Port'];
-  $mail->SMTPSecure = $GLOBALS['config']['Mail-SMTPSecure'];
-  $mail->SMTPAuth =$GLOBALS['config']['Mail-SMTPAuth'];
-  $mail->Username =$GLOBALS['config']['Mail-Username'];
-  $mail->Password =decrypt($GLOBALS['config']['Mail-Password']);
-  $mail->From =$GLOBALS['config']['Mail-From'];
-  $mail->FromName =$GLOBALS['config']['Mail-FromName'];
-
-  $mail->IsHTML();
-  $mail->Body = $Message;
-  if(is_array($To)){
-    foreach($To as $elem){
-      $mail->addBCC($elem);
-    }
-  }
-  else{
-    $mail->AddAddress($To);
-  }
-
-  $mail->Subject = $Sujet;
-
-  if(!$mail->Send()){
-    error_log("Planning Biblio Mailer Error: " . $mail->ErrorInfo);
-  }
-}
-
-function sendmail($Sujet,$Message,$destinataires,$alert="popup"){
-  if(!$GLOBALS['config']['Mail-IsEnabled'])
-    return false;
-  if(!is_array($destinataires)){
-    $destinataires=explode(";",$destinataires);
-  }
-  if(!empty($destinataires)){
-    $Entete="<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
-    $Entete.="<html><head><title>Planning</title></head><body>";
-    $Message=$Entete.$Message;
-    $Message.="<br/><br/>{$GLOBALS['config']['Mail-Signature']}<br/><br/>";
-    $Message.="</body></html>";
-
-    $Sujet = stripslashes($Sujet);
-    $Sujet = "Planning : $Sujet";
-    $Message = stripslashes($Message);
-    $Message= str_replace(array("\n","\r\n\n","\r\n"), "<br/>", $Message);
-    $to=array();
-    foreach($destinataires as $destinataire){
-      if(verifmail(trim($destinataire))){
-	$to[]=trim($destinataire);
-      }
-      else{
-	if($alert=="popup"){
-	  echo "<script type='text/JavaScript'>CJInfo('Adresse mail invalide (\"$destinataire\")','error');</script>";
-	}elseif($alert=="log"){
-	  error_log("Planning Biblio : Adresse mail invalide $destinataire");
-	}
-      }
-    }
-    if(!empty($to)){
-      mail2($to,$Sujet,$Message);
-    }
-  }
 }
 
 function soustrait_tab($tab1,$tab2){

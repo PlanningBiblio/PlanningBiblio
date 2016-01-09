@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0.5
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 3 décembre 2015
+Dernière modification : 9 janvier 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -509,7 +509,7 @@ if($id){
   echo $login;
   echo "</td></tr>";
   if(in_array(21,$droits)){
-    echo "<tr><td>\n";
+    echo "<tr><td colspan='2'>\n";
     echo "<a href='javascript:modif_mdp();'>Changer le mot de passe</a>";
     echo "</td></tr>";
   }

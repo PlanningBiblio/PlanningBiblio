@@ -1,3 +1,11 @@
+***	Version 2.1	(Jérôme Combes, 9 janvier 2016)			***
+- Amélioration :
+Planning : Possibilité de masquer les tableaux du plannings
+Planning : Les colonnes horaires oubliées lors de la création de la structure sont automatiquement comblées
+Planning : Envoi d'un mail demandant aux agents s'ils sont volontaires pour occuper le poste choisi depuis le menu du planning
+Absences : Ajout des informations sur les postes affectés par l'absence dans les notifications par e-mail
+Classe sendmail : permet la récupération et l'affichage des erreurs SMTP
+
 ***	Version 2.0.5	(4 décembre 2015)		***
 Farid Goara, Jérôme Combes
 

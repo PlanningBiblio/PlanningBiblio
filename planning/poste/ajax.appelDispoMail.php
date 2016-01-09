@@ -57,7 +57,4 @@ if($m->error){
 }else{
   echo json_encode("ok");
 }
-
-//sendmail($sujet,$message,$destinataires,$alert="log");
-//echo json_encode("ok");
 ?>

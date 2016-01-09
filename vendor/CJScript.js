@@ -106,7 +106,7 @@ function CJInfo(message,type,top,time,myClass){
   var id=1;
   $(".CJInfo").each(function(){
     id=$(this).attr("data-id")>=id?($(this).attr("data-id")+1):id;
-    top=$(this).position().top+$(this).height();
+    top=$(this).position().top+$(this).height()+5;
   });
   
   message=message.replace(/#BR#/g,"<br/>");

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.0.3
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 6 octobre 2015
+Dernière modification : 8 janvier 2016
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -74,10 +74,17 @@ if(!isset($_GET['positionOff'])){
 EOD;
 }
 
-if(isset($_GET['msg'])){
-  $msg=filter_input(INPUT_GET,"msg", FILTER_SANITIZE_STRING);
-  $msgType=filter_input(INPUT_GET,"msgType", FILTER_SANITIZE_STRING);
+// Affichage des messages d'erreur ou de confirmation venant de la page précedente
+$msg=filter_input(INPUT_GET,"msg", FILTER_SANITIZE_STRING);
+$msgType=filter_input(INPUT_GET,"msgType", FILTER_SANITIZE_STRING);
+if($msg){
   echo "<script type='text/JavaScript'>CJInfo('$msg','$msgType');</script>\n";
+}
+
+$msg2=filter_input(INPUT_GET,"msg2", FILTER_SANITIZE_STRING);
+$msg2Type=filter_input(INPUT_GET,"msg2Type", FILTER_SANITIZE_STRING);
+if($msg2){
+  echo "<script type='text/JavaScript'>CJInfo('$msg2','$msg2Type',82,15000);</script>\n";
 }
 ?>
 
