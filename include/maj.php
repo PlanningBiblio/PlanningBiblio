@@ -978,6 +978,20 @@ if(strcmp("2.1",$config['Version'])>0){
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
     ('Planning-AppelDispoMessage','textarea','Chers tous,\n\nLe poste [poste] est vacant le [date] de [debut] &agrave; [fin].\n\nSi vous souhaitez occuper ce poste, vous pouvez r&eacute;pondre &agrave; cet e-mail.\n\nCordialement,\nLa cellule planning','Planning', 'Corp du mail pour les appels &agrave; disponibilit&eacute;','80');";
 
+  $sql[]="CREATE TABLE `{$dbprefix}appelDispo` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `site` int(11) NOT NULL DEFAULT '1',
+    `poste` int(11) NOT NULL DEFAULT '0',
+    `date` VARCHAR(10), 
+    `debut` VARCHAR(8),
+    `fin` VARCHAR(8),
+    `destinataires` TEXT,
+    `sujet` TEXT,
+    `message` TEXT,
+    `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+  ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.1' WHERE `nom`='Version';";
 }

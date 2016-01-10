@@ -467,11 +467,31 @@ if($nbAgents>0){
   }
 }
 
+// Ajout du lien pour les appels à disponibilité
 if($config['Planning-AppelDispo']){
+  // Consulte la base de données pour savoir si un mail a déjà été envoyé
+  $db=new db();
+  $db->select2("appelDispo",null,array("site"=>$site,"poste"=>$poste,"date"=>$date,"debut"=>$debut,"fin"=>$fin),"ORDER BY `timestamp` desc");
+  $nbEnvoi=$db->nb;
+  if($db->result){
+    $dateEnvoi=dateFr($db->result[0]['timestamp']);
+    $heureEnvoi=heure2(substr($db->result[0]['timestamp'],11,5));
+    $destinataires=count(explode(";",$db->result[0]['destinataires']));
+    $s=$destinataires>1?"s":null;
+
+    $nbEnvoiInfo="L&apos;appel &agrave; disponibilit&eacute; a d&eacute;j&agrave; &eacute;t&eacute; envoy&eacute; $nbEnvoi fois&#013;";
+    $nbEnvoiInfo.="Dernier envoi le $dateEnvoi &agrave; $heureEnvoi&#013;";
+    $nbEnvoiInfo.="$destinataires personne{$s} contact&eacute;e{$s}";
+  }
+
   $agents=addslashes(json_encode($agents_dispo));
   $tableaux[0].="<tr onmouseover='groupe_tab_hide();' class='menudiv-tr'>";
   $tableaux[0].="<td colspan='2' onclick='appelDispo(\"$site\",\"$siteNom\",\"$poste\",\"$posteNom\",\"$date\",\"$debut\",\"$fin\",\"$agents\");'>";
-  $tableaux[0].="Appel &agrave; disponibilit&eacute;</td><tr>\n";
+  $tableaux[0].="Appel &agrave; disponibilit&eacute;\n";
+  if($nbEnvoi){
+    $tableaux[0].="<span title='$nbEnvoiInfo' style='position:absolute; right:5px;'><strong>$nbEnvoi</strong></span>\n";
+  }
+  $tableaux[0].="</td><tr>\n";
 }
 
 $tableaux[0].="</table>\n";

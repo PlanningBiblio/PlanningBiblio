@@ -102,6 +102,8 @@ class sendmail{
   public $subject=null;
   public $error="";
   public $error_encoded=null;
+  public $failedAddresses=array();
+  public $successAddresses=array();
 
   
   public function sendmail(){
@@ -117,6 +119,8 @@ class sendmail{
     /* arrête la procédure d'envoi de mail si désactivé dans la config */
     if(!$GLOBALS['config']['Mail-IsEnabled']){
       $this->error.="L'envoi des e-mails est désactivé dans la configuration\n";
+      $this->successAddresses=array();
+      $this->failedAddresses=$this->to;
       return false;
     }
 
@@ -133,6 +137,7 @@ class sendmail{
 	$to[]=trim($elem);
       }else{
 	$incorrect[]=trim($elem);
+	$this->failedAddresses[]=trim($elem);
       }
     }
     $this->to=$to;
@@ -165,7 +170,9 @@ class sendmail{
 
   
   public function send(){
-    $this->prepare();
+    if($this->prepare()===false){
+      return false;
+    }
     
     $mail = new PHPMailer();
     if($GLOBALS['config']['Mail-IsMail-IsSMTP']=="IsMail")
@@ -202,7 +209,30 @@ class sendmail{
       
       // error_CJInfo: pour affichage dans CJInfo (JS)
       $this->error_CJInfo=str_replace("\n","#BR#",$this->error);
+      
+      // Liste des destinataires pour qui l'envoi a fonctionné
+      $this->successAddresses=$this->to;
+
+      // Liste des destinataires pour qui l'envoi a échoué
+      $pos=stripos($this->error,"SMTP Error: The following recipients failed: ");
+
+      if($pos!==false){
+	$failedAddr=substr($this->error,$pos+45);
+	$end=strpos($failedAddr,"\n");
+	$failedAddr=substr($failedAddr,0,$end);
+	$failedAddr=explode(", ",$failedAddr);
+
+	$this->failedAddresses=array_merge($this->failedAddresses,$failedAddr);
+	
+	$this->successAddresses=array();
+	foreach($this->to as $elem){
+	  if(!in_array($elem,$failedAddr)){
+	    $this->successAddresses[]=$elem;
+	  }
+	}
+      }
     }
+  return true;
   }
 }
 

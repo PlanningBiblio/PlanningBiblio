@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 14 décembre 2015
+Dernière modification : 9 janvier 2016
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -59,6 +59,20 @@ $sql[]="CREATE TABLE `{$dbprefix}acces` (
 $sql[]="CREATE TABLE `{$dbprefix}activites` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nom` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+$sql[]="CREATE TABLE `{$dbprefix}appelDispo` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `site` int(11) NOT NULL DEFAULT '1',
+  `poste` int(11) NOT NULL DEFAULT '0',
+  `date` VARCHAR(10), 
+  `debut` VARCHAR(8),
+  `fin` VARCHAR(8),
+  `destinataires` TEXT,
+  `sujet` TEXT,
+  `message` TEXT,
+  `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 

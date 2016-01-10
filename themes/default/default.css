@@ -6,7 +6,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 21 décembre 2015
+Dernière modification : 9 janvier 2015
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -170,6 +170,12 @@ h3{
 
 .pl-icon-unlock {
   background:url("images/unlock.png") no-repeat center;
+}
+
+/* Info-bulles */
+.ui-tooltip{
+  /* Permet les sauts de lignes avec l'entité .&#013; */
+  white-space:pre-wrap;
 }
 
 /* Les agents */

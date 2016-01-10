@@ -266,11 +266,13 @@ class planning{
       }
 
       //	Mise en forme de la ligne avec le nom et les heures et la couleur en fonction des heures faites
+      $nom.="<span style='position:absolute; right:5px;'>\n";
       $nom.="&nbsp;<font title='Heures du jour'>$hres_jour</font> / ";
       $nom.="<font title='Heures de la semaine'>$hres_sem</font> / ";
 
       $nom.="<font title='$heuresHebdoTitle'>$heuresHebdo</font>";
       $nom.=$hres_4sem;
+      $nom.="</span>\n";
 
       if($hres_jour>7)			// plus de 7h:jour : rouge
 	$nom="<font style='color:red'>$nom</font>\n";
