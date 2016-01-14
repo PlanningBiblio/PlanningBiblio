@@ -439,6 +439,7 @@ class dbh{
     $this->dbuser=$GLOBALS['config']['dbuser'];
     $this->dbpass=$GLOBALS['config']['dbpass'];
     $this->dbprefix=$GLOBALS['config']['dbprefix'];
+    $this->result=array();
 
     $this->pdo=new PDO("mysql:host={$this->dbhost};dbname={$this->dbname}",$this->dbuser,$this->dbpass);
   }
