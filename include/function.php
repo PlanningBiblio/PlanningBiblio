@@ -194,14 +194,15 @@ class sendmail{
     
     $mail->Body = $this->message;
     
-    if(is_array($this->to)){
+   if(count($this->to)>1){
       foreach($this->to as $elem){
-	$mail->addBCC($elem);
+        $mail->addBCC($elem);
       }
     }
     else{
-      $mail->AddAddress($this->to);
+      $mail->AddAddress($this->to[0]);
     }
+    
     $mail->Subject = $this->subject;
 
     if(!$mail->Send()){
