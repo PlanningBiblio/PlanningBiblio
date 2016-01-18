@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 9 janvier 2016
+Dernière modification : 18 janvier 2016
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -115,6 +115,14 @@ $sql[]="CREATE TABLE `{$dbprefix}hiddenTables` (
 $sql[]="CREATE TABLE `{$dbprefix}lignes` (
   `id` int AUTO_INCREMENT,
   nom text,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+$sql[]="CREATE TABLE `{$dbprefix}log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `msg` TEXT NULL,
+  `program` VARCHAR(30) NULL,
+  `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 

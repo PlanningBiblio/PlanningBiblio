@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 8 janvier 2016
+Dernière modification : 18 janvier 2016
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -104,7 +104,6 @@ class sendmail{
   public $error_encoded=null;
   public $failedAddresses=array();
   public $successAddresses=array();
-
   
   public function sendmail(){
     $path=strpos($_SERVER["SCRIPT_NAME"],"planning/poste/ajax")?"../../":null;
@@ -850,6 +849,16 @@ function is_serialized($string){
     return true;
   }
   return false;
+}
+
+function logs($msg,$program=null,$type=array("db")){
+  if(in_array("db",$type)){
+    $db=new db();
+    $db->insert2("log",array("msg"=>$msg,"program"=>$program));
+  }
+  if(in_array("syslog",$type)){
+    error_log($program.": ".$msg);
+  }
 }
 
 function MinToHr($minutes){

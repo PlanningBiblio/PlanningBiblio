@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 9 janvier 2016
+Dernière modification : 18 janvier 2016
 @author : Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -266,7 +266,7 @@ class planning{
       }
 
       //	Mise en forme de la ligne avec le nom et les heures et la couleur en fonction des heures faites
-      $nom.="<span style='position:absolute; right:5px;'>\n";
+      $nom.="<span>\n";
       $nom.="&nbsp;<font title='Heures du jour'>$hres_jour</font> / ";
       $nom.="<font title='Heures de la semaine'>$hres_sem</font> / ";
 

@@ -1,16 +1,48 @@
 <?php
-$path="/planning";
+/**
+Planning Biblio, Version 2.1
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.md et LICENSE
+Copyright (C) 2011-2016 - Jérôme Combes
+
+Fichier : cron.ctrlPlannings.php
+Création : 18 janvier 2016
+Dernière modification : 18 janvier 2016
+@author : Jérôme Combes <jerome@planningbiblio.fr>
+
+Description :
+Envoie un mail à la cellule planning pour l'informer de l'état des plannings à venir.
+Nombre de jours ouvrés à contrôler paramétrable dans Administration / Configuration / Rappels
+Les samedis et dimanches (si bibliothèque ouverte le dimanche) sont contrôlés en plus : 
+ex : 3 jours ouvrés à contrôler, le test du mercredi controlera le mercredi, jeudi, le vendredi, le samedi 
+ET le lundi suivant (3 jours ouvrés + samedi + jour courant)
+Contrôle ou non des postes de renfort paramétrable dans Administration / Configuration / Rappels
+
+@note : déplacez ce fichier dans un dossier inaccessible depuis le réseau en HTTP (ex: /usr/local/planning)
+@note : Modifiez le crontab de l'utilisateur Apache (ex: #crontab -eu www-data) en ajoutant les 2 lignes suivantes :
+# Controle du planning chaque jour à 7h
+0 7 * * * /usr/bin/php -f /usr/local/planning/cron.ctrlPlannings.php
+Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à ce fichier
+@note : Modifiez la variable $path suivante en renseignant le chemin absolut vers votre dossier planningBiblio
+*/
+
+$path="/var/www/html/planning";
 $version="cron";
+
+// chdir($path) : important pour l'execution via le cront
+chdir($path);
 
 require_once "$path/include/config.php";
 require_once "$path/include/function.php";
+require_once "$path/plugins/plugins.php";
+require_once "$path/absences/class.absences.php";
 require_once "$path/planning/postes_cfg/class.tableaux.php";
 require_once "$path/postes/class.postes.php";
 
-
-// TODO : mettre ce qui suit dans la BDD/config (maj.php et db_data.php)
-$config['Planning-Rappel-Jours']=5;
-$config['Planning-Rappel-Renfort']=0;
+if(!$config['Rappels-Actifs']){
+  logs("Rappels désactivés","Rappels",array("db"));
+  exit;
+}
 
 // Gestion des sites
 $sites=array();
@@ -19,18 +51,18 @@ for($i=1;$i<=$config['Multisites-nombre'];$i++){
 }
 
 // Dates à controler
-$jours=$config['Planning-Rappel-Jours'];
+$jours=$config['Rappels-Jours'];
 
-// TEST
-$jours=3;
-// TEST
-
-// Recherche la date de jour et les $jours suivants
+// Recherche la date du jour et les $jours suivants
 $dates=array();
 for($i=0;$i<=$jours;$i++){
   $time=strtotime("+ $i days");
-  $dates[]=date("Y-m-d",$time);
   $jour_semaine=date("w", $time);
+
+  // Si le jour courant est un dimanche et que la bibliothèque n'ouvre pas les dimanches, on ne l'ajoute pas
+  if($jour_semaine!=0 or $config['Dimanche']){
+    $dates[]=date("Y-m-d",$time);
+  }
 
   // Si le jour courant est un samedi, nous recherchons 2 jours supplémentaires pour avoir le bon nombre de jours ouvrés.
   // Nous controlons également le samedi et le dimanche
@@ -53,20 +85,18 @@ $dbh=new dbh();
 $dbh->prepare("SELECT `id`,`perso_id`,`absent` FROM `{$dbprefix}pl_poste` 
   WHERE `date`=:date AND `site`=:site AND `poste`=:poste AND `debut`=:debut AND `fin`=:fin AND `absent`='0' AND `supprime`='0';");
 
-$lastId=null;
-
 // Pour chaque date et pour chaque site
 foreach($dates as $date){
   foreach($sites as $site){
     
     // on créé un tableau pour stocker les éléments par dates et sites
-    $data[$date][$site[0]]=array();
+    $data[$date][$site[0]]=array("date"=>dateFr($date), "site"=>$site[1]);
 
     // On recherche les plannings qui ne sont pas créés (aucune structure affectée)
     $db=new db();
     $db->select2("pl_poste_tab_affect",null,array("date"=>$date, "site"=>$site[0]));
     if(!$db->result){
-      $data[$date][$site[0]]["message"]="Le planning {$site[1]} du ".dateFr($date)." n'est pas cr&eacute;&eacute;<br/>\n";
+      $data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)." <span style='color:red;'>n'est pas cr&eacute;&eacute;</span></strong>\n";
       continue;
     }
 
@@ -78,8 +108,10 @@ foreach($dates as $date){
       // On recherche les plannings qui ne sont pas validés
       $db=new db();
       $db->select2("pl_poste_verrou",null,array("date"=>$date, "site"=>$site[0], "verrou2"=>1));
-      if(!$db->result){
-	$data[$date][$site[0]]["message"]="Le planning {$site[1]} du ".dateFr($date)." n'est pas valid&eacute;<br/>\n";
+      if($db->result){
+	$data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)."</strong> est valid&eacute;\n";
+      }else{
+	$data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)." <span style='color:red;'>n'est pas valid&eacute;</span></strong>\n";
       }
     }
 
@@ -93,11 +125,7 @@ foreach($dates as $date){
     foreach($tableau as $elem){
     
       // On stock dans notre tableau data les éléments date, site, tableau
-      $data[$date][$site[0]]['tableau'][$elem['nom']]["dateFr"]=dateFr($date);
-      $data[$date][$site[0]]['tableau'][$elem['nom']]["site"]=$site[0];
-      $data[$date][$site[0]]['tableau'][$elem['nom']]["siteNom"]=$site[1];
-      $data[$date][$site[0]]['tableau'][$elem['nom']]["tableau"]=$elem['nom'];
-      $data[$date][$site[0]]['tableau'][$elem['nom']]["tableauNom"]=$elem['titre'];
+      $data[$date][$site[0]]['tableau'][$elem['nom']]["tableau"]=$elem['titre'];
 
       // $tab = liste des postes/plages horaires non occupés, cellules grisées excluses, poste non obligatoires exclus selon config
       $tab=array();
@@ -114,37 +142,61 @@ foreach($dates as $date){
 	      continue;
 	    }
 	    // Si on ne veut pas des postes de renfort et si le poste n'est pas obligatoire, on l'exclus
-	    if(!$config['Planning-Rappel-Renfort'] and $postes[$l['poste']]['obligatoire']!="Obligatoire"){
+	    if(!$config['Rappels-Renfort'] and $postes[$l['poste']]['obligatoire']!="Obligatoire"){
 	      continue;
 	    }
 
 	    // On contrôle si le poste est occupé
 	    // Pour ceci, on execute la requête préparée plus haut avec PDO
 	    $sql=array(":date"=>$date, ":site"=>$site[0], ":poste"=>$l['poste'], ":debut"=>$h['debut'], ":fin"=>$h['fin']);
+	    $dbh->result=array();
 	    $dbh->execute($sql);
-	    $result=$dbh->result[count($dbh->result)-1];
+	    $result=$dbh->result;
 
-	    // TODO Compléter ce qui suit en contrôlant qu'il n'y ait pas d'absent / congés 
-	    // TODO Contrôler les tables absences / conges (le champ absent est déjà contrôlé)
-	    // TODO : Faire une méthode absences::check(perso_id,debut,fin,valide=true) return true/false;
-	    // TODO : Faire une méthode conges::check(perso_id,debut,fin,valide=true) return true/false;
-	    
-	    // Si la dernière execution de la requête ne donne pas de résultat ($lastId=$result['id'])
-	    if($lastId==$result['id']){
+	    // Contrôle des absences et des congés
+	    // Si la dernière execution de la requête donne un résultat
+	    // Vérifier qu'au moins un des agents issus de ce résultat n'est pas absent
+	    $tousAbsents=true;
+	    if(!empty($result)){
+	      foreach($result as $res){
+		// Contrôle des absences
+		$absent=false;
+		$a=new absences();
+		if($a->check($res['perso_id'],$date." ".$h['debut'],$date." ".$h['fin'])){
+		  $absent=true;
+		}
+		
+		// Contrôle des congés
+		$conges=false;
+		if(in_array("conges",$plugins)){
+		  require_once "$path/plugins/conges/class.conges.php";
+		  $c=new conges();
+		  if($c->check($res['perso_id'],$date." ".$h['debut'],$date." ".$h['fin'])){
+		    $conges=true;
+		  }
+		}
+		
+		// Si l'agent n'est ni absent, ni en congés : on a une présence
+		if(!$absent and !$conges){
+		  $tousAbsents=false;
+		  break;
+		}
+	      }
+	    }
+
+	    // Si la dernière execution de la requête ne donne pas de résultat ou que tous les agents issus du résultat sont absents
+	    if(empty($result) or $tousAbsents){
 	      // On enregistre dans le table les informations de la cellule
 
 	      // On regroupe les horaires qui se suivent sur un même poste
-	      if(!empty($tab) and $tab[$i]['fin']==$h['debut'] and $tab[$i]['poste']==$l['poste']){
+	      if(!empty($tab) and $tab[$i]['fin']==$h['debut'] and $tab[$i]['poste_id']==$l['poste']){
 		$tab[$i]["fin"]=$h['fin'];
 	      }
 	      else{
 		$i++;
-		$tab[$i]=array("ligne"=>$l['ligne'], "poste"=>$l['poste'], "posteNom"=>$postes[$l['poste']]['nom'], 
-		  "debut"=>$h['debut'], "fin"=>$h['fin']);
+		$tab[$i]=array("poste"=>$postes[$l['poste']]['nom'], "poste_id"=>$l['poste'], "debut"=>$h['debut'], "fin"=>$h['fin']);
 	      }
 	    }
-	    
-	    $lastId=$result['id'];
 	  }
 	}
       }
@@ -153,7 +205,41 @@ foreach($dates as $date){
   }
 }
 
-// TEST
-print_r($data);
+// Création du message
+$msg="Voici l&apos;&eacute;tat des plannings du ".dateFr($dates[0])." au ".dateFr($dates[count($dates)-1]);
+$msg.="<ul>\n";
+foreach($data as $date){
+  foreach($date as $site){
+    $msg.="<li style='margin-bottom:15px;'>\n";
+    if(array_key_exists("message",$site)){
+      $msg.=$site['message'];
+    }
+    if(array_key_exists("tableau",$site)){
+      $msg.="<br/>\nLes postes suivants ne sont pas occup&eacute;s :\n<ul>\n";
+      foreach($site['tableau'] as $tableau){
+	$msg.="<li>Tableau <strong>{$tableau['tableau']}</strong> :\n<ul>\n";
+	foreach($tableau['data'] as $poste){
+	  $msg.="<li>{$poste['poste']}, de ".heure2($poste['debut'])." &agrave; ".heure2($poste['fin'])."</li>\n";
+	}
+	$msg.="</ul>\n";
+      }
+      $msg.="</ul>\n";
+    }
+    $msg.="</li>\n";
+  }
+}
+$msg.="</ul>\n";
+
+$subject="Plannings du ".dateFr($dates[0])." au ".dateFr($dates[count($dates)-1]);
+$to=explode(";",$config['Mail-Planning']);
+
+$m=new sendmail();
+$m->to=$to;
+$m->subject=$subject;
+$m->message=$msg;
+$m->send();
+if($m->error){
+  logs($m->error,"Rappels",array("db"));
+}
 
 ?>

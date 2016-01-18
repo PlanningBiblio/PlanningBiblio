@@ -7,7 +7,7 @@ Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 8 janvier 2016
+Dernière modification : 18 janvier 2016
 Auteur : Jérôme Combes, jerome@planningbiblio.fr
 
 Description :
@@ -424,6 +424,41 @@ class absences{
     $this->minutes=$difference/60;
     $this->heures=$difference/3600;
     $this->heures2=str_replace(array(".00",".25",".50",".75"),array("h00","h15","h30","h45"),number_format($this->heures, 2, '.', ' '));
+  }
+
+  
+  /**
+  * @method check
+  * @param int $perso_id
+  * @param string $debut, format YYYY-MM-DD HH:ii:ss
+  * @param string $fin, format YYYY-MM-DD HH:ii:ss
+  * @param boolean $valide, default = true
+  * Contrôle si l'agent $perso_id est absent entre $debut et $fin
+  * Retourne true si absent, false sinon
+  * Si $valide==false, les absences non validées seront également prises en compte
+  */
+  public function check($perso_id,$debut,$fin,$valide=true){
+  
+    if(strlen($debut)==10){
+      $debut.=" 00:00:00";
+    }
+
+    if(strlen($fin)==10){
+      $fin.=" 23:59:59";
+    }
+
+    $filter=array("perso_id"=>$perso_id, "debut"=>"<$fin", "fin"=>">$debut");
+    
+    if($valide==true or $GLOBALS['config']['Absences-validation']==0){
+      $filter["valide"]=">0";
+    }
+    
+    $db=new db();
+    $db->select2("absences",null,$filter);
+    if($db->result){
+      return true;
+    }
+    return false;
   }
 
   public function fetch($sort="`debut`,`fin`,`nom`,`prenom`",$only_me=null,$agent=null,$debut=null,$fin=null,$sites=null){
