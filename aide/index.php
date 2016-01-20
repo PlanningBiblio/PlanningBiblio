@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 2.0.3
+/**
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2015 - Jérôme Combes
 
 Fichier : aide/index.php
 Création : mai 2011
-Dernière modification : 6 octobre 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 19 janvier 2016
+@author : Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affiche l'aide en ligne
@@ -44,6 +44,7 @@ if(!isset($version)){
 	<li><a href='#pl_efface'>Effacer un planning</a></li>
 	<li><a href='#pl_valid'>Validation</a></li>
 	<li><a href='#pl_imprime'>Impression</a></li>
+	<li><a href='#pl_rappels'>Rappels</a></li>
 	</ol>
 	</li>
 <li><a href="#config_planning">Configuration du planning</a>
@@ -150,13 +151,17 @@ Vous pouvez dans ce cas s&eacute;lectionnez le nom de  l'agent dans un menu dér
 <h3>3.) Planning</h3>
 <a name='pl_consul'></a>
 <h4>3.1) Consultation</h4>
-Permet à tous les agents de consulter le planning.<br/>
-Si votre biblioth&egrave;que a plusieurs sites, s&eacute;lectionnez le site voulu dans le sous menu "Planning".<br/>
+La page affichant le planning est accessible depuis le menu Planning.<br/>
+Elle permet à tous les agents de consulter le planning.<br/>
+Si votre biblioth&egrave;que a plusieurs sites, s&eacute;lectionnez le site voulu sous le menu "Planning".<br/>
 Sélectionnez la date voulue à l'aide du calendrier ou du jour de la semaine et le planning choisi s'affiche.<br/>
 Par défaut, le planning du jour courant du premier site est affiché.<br/>
 Si le planning n'est pas terminé, le message "Le planning du [date] n'est pas validé" s'affiche.<br/>
-Sinon, un tableau composé en lignes du nom des postes et en colonnes des horaires s'affiche.<br/>
-Dans les cellules apparaissent le nom des agents.<br/>
+Sinon, un tableau avec en lignes le nom des postes et en colonnes les horaires s'affiche.<br/>
+Le planning peut être composé de plusieurs tableaux. Vous pouvez choisir de masquer certains tableaux à l'aide de 
+l'icône representant un "oeil barré" situé à coté du nom du tableau à masquer. Pour afficher les tableaux masqués, 
+cliquez sur les liens composés du nom des tableaux en bas du planning.<br/>
+Dans les cellules des tableaux apparaissent le nom des agents.<br/>
 Selon la configuration de l'application, la liste des absents et/ou des présents est affiché en bas du planning.
 
 <a name='pl_modif'></a>
@@ -180,11 +185,10 @@ En fonction des heures faites et à faire, la couleur de la cellule change :
 <li>Rouge : soit l'agent fera plus de 7 heures par jours, soit l'agent dépassera son quota de plus de 30 minutes.</li>
 <li>Noir : Le quota ne sera pas atteint.</li>
 </ul>
-Si un agent a déjà effectué le poste choisi dans la journée, il apparaîtra en rouge dans le menu avec le message 
-"(DP)" (Déjà Placé).<br/>
+Si un agent a déjà effectué le poste choisi dans la journée, le message "(DP)" (Déjà Placé) apparaîtra en rouge à coté de son nom dans le menu.<br/>
 Si un agent est placé en continu entre midi et 14h (période paramétrable dans le menu administration / configuration), 
 le message "(SR)" (Sans Repas) apparaîtra à coté de son nom dans les cellules concernées par ces horaires. 
-Dans ce cas, il apparaîtra en rouge avec le message "(SR)" dans le menu.<br/>
+Le message "(SR)" apparaîtra également en rouge le menu.<br/>
 <br/>
 Si un agent est placé dans une cellule, vous pouvez :
 <ul style='margin-top:0px;'>
@@ -194,6 +198,18 @@ Si un agent est placé dans une cellule, vous pouvez :
 <li>le barrer ET le remplacer en cliquant sur la croix rouge <font style='color:red;font-weight:bold;'>x</font> face au nom du nouvel agent.</li>
 <li>ajouter d'autres agents en cliquant sur la croix bleue <font style='color:blue;font-weight:bold;'>+</font> face au nom des nouveaux agents.</li>
 </ul>
+En bas du menu, vous trouverez également les options suivantes :
+<ul style='margin-top:0px;'>
+<li>Tout supprimer</li>
+<li>Tout barrer</li>
+<li>Appel à disponibilités (selon configuration)</li>
+</ul>
+L'appel à disponibilités permet d'envoyer un e-mail à tous les agents disponibles aux heures choisies et qualifiés 
+pour le poste choisi afin de leur demander s'ils sont volontaires pour l'occuper.
+Les agents volontaires peuvent alors répondre par e-mail à la cellule planning qui complétera ensuite le tableau 
+en fonction des réponses.<br/>
+Si l'appel à disponibilités à déjà été envoyé, le nombre d'envois déjà effectués s'affiche à droite du lien.
+
 
 <a name='pl_modele'></a>
 <h4>3.3) Utilisation des modèles</h4>
@@ -227,6 +243,19 @@ ou en utilisant la commande d'impression de votre navigateur (Fichier / Imprimer
 Il est recommandé d'utiliser Firefox pour l'impression du planning.<br/>
 Avant la première impression, vous devez configurer votre navigateur pour que les couleurs d'arrière plan s'impriment.
 Pour ceci, dans Firefox, allez dans fichier, mise en page et cochez "Imprimer le fond de page (couleur et images)".<br/>
+
+
+
+<a name='pl_rappels'></a>
+<h4>3.7) Rappels</h4>
+Planning Biblio peut envoyer automatiquement des rappels par e-mails à la cellule planning pour l'informer de l'état des 
+plannings à venir.<br/>
+La cellule planning est ainsi prévenue quelques jours avant si des tableaux sont incomplets ou non validés.<br/>
+Le nombre de jours à contrôler est paramétrable (Administration / Configuration / Rappels). Vous devez renseigner le nombre de jours ouvrés. 
+Si la période à contrôler couvre un samedi et un dimanche, le samedi sera contrôlé, le dimanche également si votre établissement ouvre les 
+dimanches.<br/>
+Pour mettre en place ces rappels, l'intervention de l'administrateur du serveur est nécessaire. La procédure est donnée dans 
+le guide d'installation.
 
 <a name="config_planning"></a>
 <h3>4) Configuration du planning</h3>
