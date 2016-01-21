@@ -8,7 +8,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 Fichier : planningHebdo/ajax.delete.php
 Création : 17 septembre 2013
 Dernière modification : 29 mai 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Fichier permettant la suppression d'un planning de présence en arrière plan.

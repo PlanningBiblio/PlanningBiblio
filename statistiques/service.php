@@ -1,14 +1,14 @@
 <?php
-/*
+/**
 Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : statistiques/service.php
 Création : 9 septembre 2013
 Dernière modification : 17 avril 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affiche les statistiques par service

@@ -3,12 +3,12 @@
 Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
 Dernière modification : 18 janvier 2016
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Requêtes SQL créant les tables lors de l'installation.

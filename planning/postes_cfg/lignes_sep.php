@@ -3,12 +3,12 @@
 Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/lignes_sep.php
 Création : 13 septembre 2012
 Dernière modification : 7 avril 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Permet d'ajouter, modifier et supprimer les lignes de séparation. Affichage des formulaires d'ajout et de modification

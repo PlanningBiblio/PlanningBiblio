@@ -1,14 +1,14 @@
 <?php
-/*
+/**
 Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : activites/index.php
 Création : mai 2011
 Dernière modification : 8 avril 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affiche la liste des activités, avec filtre sur le nom de l'activité

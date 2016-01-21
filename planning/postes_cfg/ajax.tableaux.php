@@ -3,12 +3,12 @@
 Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/ajax.tableaux.php
 Création : 21 janvier 2014
 Dernière modification : 9 avril 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Met à jour le nombre de tableaux pour le modèle sélectionné

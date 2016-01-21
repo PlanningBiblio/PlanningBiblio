@@ -3,13 +3,13 @@
 Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
 Dernière modification : 8 janvier 2016
-@author : Jérôme Combes, <jerome@planningbiblio.fr>
-@author : Farid GOARA
+@author Jérôme Combes <jerome@planningbiblio.fr>
+@author Farid Goara <farid.goara@u-pem.fr>
 
 Description :
 Permet d'ajouter une absence. Formulaire, confirmation et validation.

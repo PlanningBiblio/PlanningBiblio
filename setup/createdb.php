@@ -1,14 +1,14 @@
 <?php
-/*
+/**
 Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : setup/createdb.php
 Création : mai 2011
 Dernière modification : 4 avril 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Créer la base de données. Vérifie si la base et l'utilisateur MySQL existent. Les supprimes si demandé. Créé l'utilisateur et 
@@ -39,7 +39,7 @@ include "header.php";
 
 // Initialisation de la connexion MySQL
 $dblink=mysqli_init();
-/*
+/**
 $dbhost=mysqli_real_escape_string($dblink,$dbhost);
 $dbAdminUser=mysqli_real_escape_string($dblink,$dbAdminUser);
 $dbAdminPass=mysqli_real_escape_string($dblink,$dbAdminPass);

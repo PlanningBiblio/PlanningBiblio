@@ -1,14 +1,14 @@
 <?php
-/*
+/**
 Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : plugins/plugins.php
 Création : 26 juin 2013
 Dernière modification : 18 juin 2014
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Liste les plugins installés, vérifie s'ils sont à jour.

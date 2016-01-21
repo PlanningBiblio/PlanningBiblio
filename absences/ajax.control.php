@@ -1,14 +1,15 @@
 <?php
-/*
+/**
 Planning Biblio, Version 2.0.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/ajax.control.php
 Création : mai 2011
 Dernière modification : 14 novembre 2015
-Auteurs : Jérôme Combes jerome@planningbiblio.fr, Etienne Cavalié etienne.cavalie@unice.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
+@author Etienne Cavalié <etienne.cavalie@unice.fr>
 
 Description :
 Permet de controler en arrière-plan si un agent est absent entre 2 dates et s'il n'est pas placé sur un planning validé

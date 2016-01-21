@@ -3,12 +3,12 @@
 Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
 Dernière modification : 18 janvier 2016
-@author : Jérôme Combes <jerome@planningbiblio.fr>
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Classe planning 

@@ -3,7 +3,7 @@
 Planning Biblio, Version 2.0.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013

@@ -1,14 +1,14 @@
 <?php
-/*
+/**
 Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : statistiques/absences.php
 Création : 15 mai 2014
 Dernière modification : 21 mai 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affiche des statistiques sur les absences

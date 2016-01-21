@@ -8,7 +8,7 @@ Copyright (C) 2013-2015 - Jérôme Combes
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
 Dernière modification : 9 janvier 2016
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Fichier regroupant le fonctions planningHebdo.

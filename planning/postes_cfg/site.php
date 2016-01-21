@@ -1,14 +1,14 @@
 <?php
-/*
+/**
 Planning Biblio, Version 1.7.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/horaires.php
 Création : 5 novembre 2013
 Dernière modification : 22 janvier 2014
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Permet de modifier le site d'un tableau.

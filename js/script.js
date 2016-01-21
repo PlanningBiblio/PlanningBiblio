@@ -2,13 +2,14 @@
 Planning Biblio, Version 2.0.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
 Dernière modification : 3 décembre 2015
-@author : Jérôme Combes, <jerome@planningbiblio.fr>
-@author : Farid GOARA <farid.goara@u-pem.fr>
+@author Jérôme Combes <jerome@planningbiblio.fr>
+@author Farid Goara <farid.goara@u-pem.fr>
+
 
 Description :
 Fichier contenant les principales fonctions JavaScript
@@ -335,7 +336,7 @@ function sanitize_string(a){
 }
 
 /** pre-remplissage de l'heure de fin avec l'heure de début
-* @author : Farid GOARA
+* @author Farid Goara <farid.goara@u-pem.fr>
 */
 function setEndHour(){
   if($("select[name=hre_debut]").val() != "" && $("select[name=hre_fin]").val() == ""){

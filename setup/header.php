@@ -1,14 +1,14 @@
 <?php
-/*
+/**
 Planning Biblio, Version 1.8.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : setup/header.php
 Création : mai 2011
 Dernière modification : 9 octobre 2014
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affiche l'entête du setup. Appelé par les fichiers index.php, createdb.php et fin.php du dossier setup

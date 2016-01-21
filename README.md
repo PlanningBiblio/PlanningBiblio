@@ -24,7 +24,7 @@ Prérequis :
   - LDAP (si utilisation avec un serveur LDAP)
 
 ===============
-Copyright (C) 2011-2015 - Jérôme Combes
+Copyright (C) 2011-2016 - Jérôme Combes
 
 Planning Biblio est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
 suivant les termes de la "GNU General Public License", telle que publiée par la 

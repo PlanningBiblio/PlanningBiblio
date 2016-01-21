@@ -3,12 +3,12 @@
 Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : include/sanitize.php
 Création : 7 avril 2015
 Dernière modification : 10 avril 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Page contenant les fonctions PHP de nettoyages de variables

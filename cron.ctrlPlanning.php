@@ -8,7 +8,7 @@ Copyright (C) 2011-2016 - Jérôme Combes
 Fichier : cron.ctrlPlannings.php
 Création : 18 janvier 2016
 Dernière modification : 18 janvier 2016
-@author : Jérôme Combes <jerome@planningbiblio.fr>
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Envoie un mail à la cellule planning pour l'informer de l'état des plannings à venir.
