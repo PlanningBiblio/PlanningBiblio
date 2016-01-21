@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 9 janvier 2015
+Dernière modification : 21 janvier 2015
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -236,6 +236,12 @@ h3{
   padding-top:20px;
   text-align:center;
 } 
+
+/* Menu Principal */
+/* .logo_td : permet de positionner le menu principal, 1ere cellule avant le 1er item du menu */
+.logo_td{
+  width:260px;
+}
 
 /*		Menu JavaScript		*/
 .menu_table{

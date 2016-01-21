@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/menu.php
 Création : mai 2011
-Dernière modification : 20 mai 2015
+Dernière modification : 21 janvier 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -74,7 +74,7 @@ $(document).click(function(){
 <?php
 echo "<div id='topgauche'>\n";
 echo "<table cellpadding='0' cellspacing='0' border='0' style='width:100%;'><tr>\n";
-echo "<td style='width:340px;text-align:left' rowspan='4'><font class='noprint'>\n";
+echo "<td class='logo_td' rowspan='4'><font class='noprint'>\n";
 echo "<a href='index.php'><div id='logo'></div></a>\n";
 echo "</font></td></tr>\n";
 echo "<tr><td>&nbsp;</td></tr>\n";
