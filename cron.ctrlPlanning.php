@@ -20,8 +20,8 @@ Contrôle ou non des postes de renfort paramétrable dans Administration / Confi
 
 @note : déplacez ce fichier dans un dossier inaccessible depuis le réseau en HTTP (ex: /usr/local/planning)
 @note : Modifiez le crontab de l'utilisateur Apache (ex: #crontab -eu www-data) en ajoutant les 2 lignes suivantes :
-# Controle du planning chaque jour à 7h
-0 7 * * * /usr/bin/php -f /usr/local/planning/cron.ctrlPlannings.php
+# Controle du planning du lundi au vendredi à 7h
+0 7 * * 1-5 /usr/bin/php -f /usr/local/planning/cron.ctrlPlannings.php
 Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à ce fichier
 @note : Modifiez la variable $path suivante en renseignant le chemin absolut vers votre dossier planningBiblio
 */
