@@ -1,14 +1,14 @@
 <?php
-/*
+/**
 Planning Biblio, Version 2.0.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2013-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planningHebdo/planning.php
 Création : 22 mars 2014
 Dernière modification : 7 novembre 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+@author Jérôme Combes <jerome@planningbilbio.fr>
 
 Description :
 Fichier permettant de trouver le bon emploi du temps et le bon site de chaque agent
