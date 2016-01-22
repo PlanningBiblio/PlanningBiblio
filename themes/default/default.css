@@ -282,6 +282,14 @@ td.menu_td2:hover{
 	background:#FF5E0E;
 }
 
+.myAccountLink{
+  font-size:9pt;
+}
+
+.myAccountLink:hover{
+  color: #FF5E0E;
+}
+
 input[type=text],input[type=password]
 	{
 	width:150px;

@@ -93,12 +93,12 @@ echo "<tr><td colspan='$colspan' style='text-align:right;'>\n";
 
 // Si le module PlanningHebdo est activé, remplace "Changer le mot de passe" par "Mon Compte"
 if($config['PlanningHebdo']){
-  echo "<a href='index.php?page=planningHebdo/monCompte.php' style='font-size:9pt;'>\n";
+  echo "<a href='index.php?page=planningHebdo/monCompte.php' class='myAccountLink'>\n";
   echo "Mon Compte</a>\n";
 }
 // Mot de passe modifiable seulement si authentification SQL
 elseif($_SESSION['oups']['Auth-Mode']=="SQL"){
-  echo "<a href='index.php?page=personnel/password.php' style='font-size:9pt;'>\n";
+  echo "<a href='index.php?page=personnel/password.php' class='myAccountLink'>\n";
   echo "Changer de mot de passe\n";
 }
 echo "<div id='logout_text'><a href='authentification.php' >Déconnexion</a></div>\n";

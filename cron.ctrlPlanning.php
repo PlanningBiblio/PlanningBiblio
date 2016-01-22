@@ -7,7 +7,7 @@ Copyright (C) 2011-2016 - Jérôme Combes
 
 Fichier : cron.ctrlPlannings.php
 Création : 18 janvier 2016
-Dernière modification : 18 janvier 2016
+Dernière modification : 22 janvier 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,13 +21,21 @@ Contrôle ou non des postes de renfort paramétrable dans Administration / Confi
 @note : déplacez ce fichier dans un dossier inaccessible depuis le réseau en HTTP (ex: /usr/local/planning)
 @note : Modifiez le crontab de l'utilisateur Apache (ex: #crontab -eu www-data) en ajoutant les 2 lignes suivantes :
 # Controle du planning du lundi au vendredi à 7h
-0 7 * * 1-5 /usr/bin/php -f /usr/local/planning/cron.ctrlPlannings.php
+0 7 * * 1-5 /usr/bin/php -f /usr/local/planning/cron.ctrlPlannings.php cron
 Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à ce fichier
+L'argument "cron" donné à la suite de la commande permet de renseigner la variable $version. Sa valeur n'a pas 
+d'importance, il faut juste que $version ne soit pas NULL. Ceci permet d'interdire l'execution du script s'ils 
+reste dans un dossier accessible depuis un navigateur.
 @note : Modifiez la variable $path suivante en renseignant le chemin absolut vers votre dossier planningBiblio
 */
 
 $path="/var/www/html/planning";
-$version="cron";
+
+/** $version=$argv[0]; permet d'interdire l'execution de ce script via un navigateur
+ *  Le fichier config.php affichera une page "accès interdit si la $version n'existe pas
+ *  $version prend la valeur de $argv[0] qui ne peut être fournie que en CLI
+ */
+$version=$argv[0];
 
 // chdir($path) : important pour l'execution via le cront
 chdir($path);
