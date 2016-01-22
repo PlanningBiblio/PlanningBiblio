@@ -1,5 +1,5 @@
 <?php
-/*
+/**
 Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE

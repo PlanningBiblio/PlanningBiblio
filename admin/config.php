@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0.5
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 4 décembre 2015
+Dernière modification : 22 janvier 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -16,9 +16,10 @@ Affiche et modifie les paramètres de configuration (Serveur Mail, autres option
 Page appelée par la page index.php
 */
 
-// pas de $version=acces direct aux pages de ce dossier => Accès refusé
-if(!isset($version)){
+// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
+if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
   include_once "../include/accessDenied.php";
+  exit;
 }
 
 $tmp_dir=sys_get_temp_dir();

@@ -1,5 +1,5 @@
 <?php
-/*
+/**
 Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 18 janvier 2016
+Dernière modification : 22 janvier 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -16,9 +16,10 @@ Cette page est appelée par la page index.php si la version du fichier index.php
 dans la base de données
 */
 
-// pas de $version=acces direct au fichier => Accès refusé
-if(!isset($version)){
+// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
+if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
   include_once "accessDenied.php";
+  exit;
 }
 
 echo "Mise &agrave; jour de la base de donn&eacute;es version {$config['Version']} --> $version<br/>\n";

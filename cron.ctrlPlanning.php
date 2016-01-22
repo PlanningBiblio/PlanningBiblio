@@ -35,7 +35,8 @@ $path="/var/www/html/planning";
  *  Le fichier config.php affichera une page "accès interdit si la $version n'existe pas
  *  $version prend la valeur de $argv[0] qui ne peut être fournie que en CLI
  */
-$version=$argv[0];
+
+$version=isset($argv[0])?$argv[0]:null;
 
 // chdir($path) : important pour l'execution via le cront
 chdir($path);

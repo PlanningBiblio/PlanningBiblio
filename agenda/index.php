@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0.5
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 3 décembre 2015
+Dernière modification : 22 janvier 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -18,9 +18,10 @@ Par défaut, la semaine courante de l'agent connecté est affiché
 Page appelée par la page index.php
 */
 
-// pas de $version=acces direct au fichier => Accès refusé
-if(!isset($version)){
+// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
+if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
   include_once "../include/accessDenied.php";
+  exit;
 }
 
 // Includes

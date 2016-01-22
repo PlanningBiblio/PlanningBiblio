@@ -17,9 +17,10 @@ YYYY-MM-DD et pour retourner le nom du jour ferié
 Code source de Olravet commenté en page de cette page
 */
 
-// pas de $version=acces direct au fichier => Accès refusé
-if(!isset($version)){
+// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
+if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
   include_once "accessDenied.php";
+  exit;
 }
 
 function jour_ferie($date){

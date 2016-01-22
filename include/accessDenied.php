@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/accessDenied.php
 Création : 8 avril 2015
-Dernière modification : 9 avril 2015
+Dernière modification : 22 janvier 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -53,16 +53,14 @@ $link="<a href='{$path}index.php'>Retour à l'application</a>";
 
 <body>
 <div id='auth-logo' style='margin:30px auto;'></div>
-<h2 id='h2-authentification'>Fichier de configuration manquant</h2>
+<h2 id='h2-authentification'>Accès refusé</h2>
 <center>
 <p style='font-weight:bold;'>
-Accès refusé
-<br/><br/>
 <?php echo $link; ?>
 </p>
 </center>
 <div class='footer'>
-PlanningBiblio - Copyright &copy; 2011-2015 - J&eacute;r&ocirc;me Combes - 
+PlanningBiblio - Copyright &copy; 2011-2016 - J&eacute;r&ocirc;me Combes - 
 <a href='http://www.planningbiblio.fr' target='_blank' style='font-size:9pt;'>www.planningbiblio.fr</a>
 </div>
 </body>

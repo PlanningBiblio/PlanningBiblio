@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 14 décembre 2015
+Dernière modification : 22 janvier 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -17,13 +17,14 @@ INSERT, UPDATE, DELETE et autres requetes avec la fonction db::query($requete);
 Page appelée par le fichier include/config.php
 */
 
+// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
+if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
+  echo "Acc&egrave;s refus&eacute;\n"; 
+  exit;
+}
+
 require_once "function.php";
 require_once "sanitize.php";
-
-// pas de $version=acces direct au fichier => Accès refusé
-if(!isset($version)){
-  include_once "accessDenied.php";
-}
 
 class db{
   var $host;

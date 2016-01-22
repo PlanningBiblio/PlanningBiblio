@@ -7,21 +7,17 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 14 décembre 2015
+Dernière modification : 22 janvier 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Fonctions utilisées par les pages des dossiers planning/poste et planning/postes_cgf
 */
 
-// Securité : Traitement pour une reponse Ajax
-if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
-  $version='ajax';
-}
-
-// pas de $version=acces direct au fichier => Accès refusé
-if(!isset($version)){
+// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
+if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
   include_once "../../include/accessDenied.php";
+  exit;
 }
 
 function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){

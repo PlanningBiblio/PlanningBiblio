@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : setup/createconfig.php
 Création : 31 octobre 2013
-Dernière modification : 8 avril 2015
+Dernière modification : 22 janvier 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -18,9 +18,10 @@ nom de la base de données à créer, identifiant de l'utilisateur de la base de
 Inclus ensuite le fichier setup/config.php affichant le formulaire demandant les informations sur le responsable du planning 
 */
 
-// pas de $version=acces direct au fichier => Accès refusé
-if(!isset($version)){
+// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
+if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
   include_once "accessDenied.php";
+  exit;
 }
 
 $Fnm = "include/config.php";

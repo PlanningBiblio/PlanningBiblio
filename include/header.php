@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 8 janvier 2016
+Dernière modification : 22 janvier 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -15,9 +15,10 @@ Affcihe l'entête HTML
 Page notamment appelée par les fichiers index.php, admin/index.php
 */
 
-// pas de $version=acces direct au fichier => Accès refusé
-if(!isset($version)){
+// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
+if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
   include_once "accessDenied.php";
+  exit;
 }
 
 $theme=$config['Affichage-theme']?$config['Affichage-theme']:"default";
