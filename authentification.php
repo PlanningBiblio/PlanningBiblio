@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 13 avril 2015
+Dernière modification : 4 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -37,6 +37,13 @@ if(!file_exists("include/config.php")){
 
 require_once "include/config.php";
 require_once "include/sanitize.php";
+
+// IP Blocker : Affiche accès refusé, IP bloquée si 5 tentatives infructueuses lors les 5 dernières minutes
+if(loginFailedNb(600)>=5){
+	$IPBlocker=true;
+	include "include/accessDenied.php";
+	exit;
+}
 
 $newLogin=filter_input(INPUT_GET,"newlogin",FILTER_SANITIZE_STRING);
 if(!isset($redirURL)){
@@ -77,6 +84,8 @@ if(isset($_POST['login'])){
 
 
   if($auth){
+		// Log le login et l'IP du client en cas de succès, pour information
+		loginSuccess($login);
     $db=new db();
     $db->select2("personnel","id,nom,prenom",array("login"=>$login));
     if($db->result){
@@ -95,6 +104,9 @@ if(isset($_POST['login'])){
     }
   }
   else{
+		// Log le login tenté et l'IP du client en cas d'echec, pour bloquer l'IP si trop de tentatives infructueuses
+		loginFailed($login);
+
     echo <<<EOD
     <div id='auth'>
     <center><div id='auth-logo'></div></center>

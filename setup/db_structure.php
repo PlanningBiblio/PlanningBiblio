@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Version 2.1
+/**
+Planning Biblio, Version 2.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 18 janvier 2016
+Dernière modification : 4 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -133,6 +133,18 @@ $sql[]="CREATE TABLE `{$dbprefix}infos` (
   texte TEXT,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+// IPBlocker
+$sql[]="CREATE TABLE `{$dbprefix}IPBlocker` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+	`ip` VARCHAR(20) NOT NULL,
+	`login` VARCHAR(100) NULL,
+	`status` VARCHAR(10) NOT NULL,
+  `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+$sql[]="ALTER TABLE `{$dbprefix}pl_IPBlocker` ADD INDEX ( `ip` , `status` , `timestamp` );";
 
 $sql[]="CREATE TABLE `{$dbprefix}pl_notes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

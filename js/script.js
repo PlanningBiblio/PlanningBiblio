@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.0.5
+Planning Biblio, Version 2.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 3 décembre 2015
+Dernière modification : 4 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -200,6 +200,26 @@ function dateFr(date){
   }
   return date;
 }
+
+function decompte(dcpt){
+  var affiche = '';
+	dcpt=parseInt(dcpt);
+     
+  if(dcpt > 1){
+    var affiche = 'Veuillez réessayer dans '+dcpt+' secondes';
+  }else{
+    var affiche = 'Veuillez réessayer dans '+dcpt+' seconde';
+  }
+	if(dcpt > 0){
+  	$("#chrono").text(affiche);
+		dcpt--;
+		setTimeout('decompte('+dcpt+')', 1000);
+	}else{
+		$("#chrono").hide();
+		$("#link").show();
+	}
+}
+ 
 
 function diffMinutes(debut,fin){		// Calcul la différence en minutes entre 2 heures (formats H:i:s)
   var d=new Date("Mon, 26 Aug 2013 "+debut);

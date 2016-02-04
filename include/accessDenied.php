@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Version 2.1
+/**
+Planning Biblio, Version 2.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/accessDenied.php
 Création : 8 avril 2015
-Dernière modification : 22 janvier 2016
+Dernière modification : 4 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -49,6 +49,8 @@ $link="<a href='{$path}index.php'>Retour à l'application</a>";
 <link rel='StyleSheet' href='<?php echo $path; ?>themes/default/default.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='<?php echo $path; ?>themes/default/print.css' type='text/css' media='print'/>
 <link rel='StyleSheet' href='<?php echo $path; ?>themes/<?php echo "$theme/$theme"; ?>.css' type='text/css' media='all'/>
+<script type='text/JavaScript' src='<?php echo $path; ?>vendor/jquery-1.11.1.min.js'></script>
+<script type='text/JavaScript' src='<?php echo $path; ?>js/script.js'></script>
 </head>
 
 <body>
@@ -56,7 +58,19 @@ $link="<a href='{$path}index.php'>Retour à l'application</a>";
 <h2 id='h2-authentification'>Accès refusé</h2>
 <center>
 <p style='font-weight:bold;'>
-<?php echo $link; ?>
+<?php
+// IP Blocker : Message affiché si l'IP a été bloquée
+if(isset($IPBlocker)){
+	$wait=loginFailedWait(5,600);
+	echo "L'adresse IP \"{$_SERVER['REMOTE_ADDR']}\" a &eacute;t&eacute; bloqu&eacute;e.\n";
+	echo "<p id='chrono'></p>\n";
+	echo "<p id='link' style='display:none;'>$link</p>\n";
+	echo "<script type='text/JavaScript'>decompte($wait);</script>\n";
+}else{
+// Affichage du lien Retour vers l'application si tentative d'accès à une page interdite
+	echo $link;
+}
+?>
 </p>
 </center>
 <div class='footer'>

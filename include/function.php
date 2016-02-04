@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 22 janvier 2016
+Dernière modification : 4 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -244,6 +244,7 @@ function absents($date,$tables){
   $tab=array();
   foreach($tables as $table){
     $etat=($table=="conges" ? "and etat='Accepté'" : "");
+
     $db=new db();
     $db->query("select perso_id from $table where debut<='$date' and fin >='$date' $etat;");
     if(is_array($db->result))
@@ -850,6 +851,57 @@ function is_serialized($string){
     return true;
   }
   return false;
+}
+
+/**
+ * Log le login tenté et l'adresse IP du client dans la table IPBlocker pour bloquer si trop d'échec
+ * @param string $login : login saisi par l'utilisateur
+ */
+function loginFailed($login){
+	$insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>"failed");
+	$db=new db();
+	$db->insert2("IPBlocker",$insert);
+}
+
+/**
+ * Retourne le nombre de tentatives de login infructeuses lors les $seconds dernières secondes
+ * @param int $seconds : nombre de secondes à rechercher dans la table IPBlocker
+ * @return int : nombre de tentatives infructeuses durant le $seconds dernières secondes
+ */
+function loginFailedNb($seconds){
+	$timestamp=date("Y-m-d H:i:s",strtotime(" -$seconds seconds"));	
+	$db=new db();
+	$db->select2("IPBlocker",null,array("ip"=>$_SERVER['REMOTE_ADDR'], "status"=>"failed", "timestamp"=> ">=$timestamp"));
+
+	return $db->nb;
+}
+
+/**
+ * Retourne le nombre de secondes restantes avant que l'IP bloquée soit de nouveau autorisée à se connecter
+ * @param int $attempts : nombre de tentatives avant blocage des IP
+ * @param int $seconds : temps de blocages des IP = période pendant laquelle on recherche les tentatives infructueuses
+ */
+function loginFailedWait($attempts,$seconds){
+	$wait=0;
+
+	$db=new db();
+	$db->select2("IPBlocker","timestamp",array("ip"=>$_SERVER['REMOTE_ADDR'], "status"=>"failed"),"ORDER BY `timestamp` DESC LIMIT 0,10");
+
+	if($db->nb>=$attempts){
+		$timestamp=$db->result[$attempts-1]['timestamp'];
+		$wait=strtotime($timestamp) + (int) $seconds - time();
+	}
+	return $wait;
+}
+
+/**
+ * Log le login et l'adresse IP du client dans la table IPBlocker pour informations
+ * @param string $login : login saisi par l'utilisateur
+ */
+function loginSuccess($login){
+	$insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>"success");
+	$db=new db();
+	$db->insert2("IPBlocker",$insert);
 }
 
 function logs($msg,$program=null,$type=array("db")){

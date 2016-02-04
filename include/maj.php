@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 22 janvier 2016
+Dernière modification : 4 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -1012,6 +1012,22 @@ if(strcmp("2.1",$config['Version'])>0){
 
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.1' WHERE `nom`='Version';";
+}
+
+if(strcmp("2.2",$config['Version'])>0){
+	// IPBlocker
+  $sql[]="CREATE TABLE `{$dbprefix}IPBlocker` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+		`ip` VARCHAR(20) NOT NULL,
+		`login` VARCHAR(100) NULL,
+		`status` VARCHAR(10) NOT NULL,
+    `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+  ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+  $sql[]="ALTER TABLE `{$dbprefix}pl_IPBlocker` ADD INDEX ( `ip` , `status` , `timestamp` );";
+
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.2' WHERE `nom`='Version';";
 }
 
 
