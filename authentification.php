@@ -38,9 +38,9 @@ if(!file_exists("include/config.php")){
 require_once "include/config.php";
 require_once "include/sanitize.php";
 
-// IP Blocker : Affiche accès refusé, IP bloquée si 5 tentatives infructueuses lors les 5 dernières minutes
-if(loginFailedNb(600)>=5){
-	$IPBlocker=true;
+// IP Blocker : Affiche accès refusé, IP bloquée si 5 tentatives infructueuses lors les 10 dernières minutes
+$IPBlocker=loginFailedWait();
+if($IPBlocker>0){
 	include "include/accessDenied.php";
 	exit;
 }
@@ -106,6 +106,12 @@ if(isset($_POST['login'])){
   else{
 		// Log le login tenté et l'IP du client en cas d'echec, pour bloquer l'IP si trop de tentatives infructueuses
 		loginFailed($login);
+
+		// Si la limite est atteinte, on affiche directement la page "Accès refusé"
+		if(loginFailedWait()>0){
+			echo "<script type='text/JavaScript'>document.location.reload();</script>\n";
+			exit;
+		}
 
     echo <<<EOD
     <div id='auth'>

@@ -61,11 +61,10 @@ $link="<a href='{$path}index.php'>Retour à l'application</a>";
 <?php
 // IP Blocker : Message affiché si l'IP a été bloquée
 if(isset($IPBlocker)){
-	$wait=loginFailedWait(5,600);
 	echo "L'adresse IP \"{$_SERVER['REMOTE_ADDR']}\" a &eacute;t&eacute; bloqu&eacute;e.\n";
 	echo "<p id='chrono'></p>\n";
 	echo "<p id='link' style='display:none;'>$link</p>\n";
-	echo "<script type='text/JavaScript'>decompte($wait);</script>\n";
+	echo "<script type='text/JavaScript'>decompte($IPBlocker);</script>\n";
 }else{
 // Affichage du lien Retour vers l'application si tentative d'accès à une page interdite
 	echo $link;

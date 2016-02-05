@@ -856,39 +856,39 @@ function is_serialized($string){
 /**
  * Log le login tenté et l'adresse IP du client dans la table IPBlocker pour bloquer si trop d'échec
  * @param string $login : login saisi par l'utilisateur
+ * @param int config IPBlocker-TimeChecked : période en minutes pendant laquelle on recherche les échecs
+ * @param int config IPBlocker-Attempts : nombre d'échecs autorisés
  */
 function loginFailed($login){
-	$insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>"failed");
+	// Recherche le nombre de login failed lors des $seconds dernières secondes
+	$seconds=$GLOBALS['config']['IPBlocker-TimeChecked']*60;
+	$attempts=$GLOBALS['config']['IPBlocker-Attempts'];
+
+	$timestamp=date("Y-m-d H:i:s",strtotime(" -$seconds seconds"));	
+	$db=new db();
+	$db->select2("IPBlocker",null,array("ip"=>$_SERVER['REMOTE_ADDR'], "status"=>"failed", "timestamp"=> ">=$timestamp"));
+	// S'il y a eu $attempts -1 echecs lors des $seconds dernières secondes, on block l'accès 
+	$status=$db->nb>=$attempts?"blocked":"failed";
+
+	// Insertion dans la base de données
+	$insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>$status);
 	$db=new db();
 	$db->insert2("IPBlocker",$insert);
 }
 
 /**
- * Retourne le nombre de tentatives de login infructeuses lors les $seconds dernières secondes
- * @param int $seconds : nombre de secondes à rechercher dans la table IPBlocker
- * @return int : nombre de tentatives infructeuses durant le $seconds dernières secondes
- */
-function loginFailedNb($seconds){
-	$timestamp=date("Y-m-d H:i:s",strtotime(" -$seconds seconds"));	
-	$db=new db();
-	$db->select2("IPBlocker",null,array("ip"=>$_SERVER['REMOTE_ADDR'], "status"=>"failed", "timestamp"=> ">=$timestamp"));
-
-	return $db->nb;
-}
-
-/**
  * Retourne le nombre de secondes restantes avant que l'IP bloquée soit de nouveau autorisée à se connecter
- * @param int $attempts : nombre de tentatives avant blocage des IP
- * @param int $seconds : temps de blocages des IP = période pendant laquelle on recherche les tentatives infructueuses
+ * @param int config IPBlocker-Wait : temps de blocages des IP en minutes
  */
-function loginFailedWait($attempts,$seconds){
+function loginFailedWait(){
+	$seconds=$GLOBALS['config']['IPBlocker-Wait']*60;
 	$wait=0;
 
 	$db=new db();
-	$db->select2("IPBlocker","timestamp",array("ip"=>$_SERVER['REMOTE_ADDR'], "status"=>"failed"),"ORDER BY `timestamp` DESC LIMIT 0,10");
+	$db->select2("IPBlocker","timestamp",array("ip"=>$_SERVER['REMOTE_ADDR'], "status"=>"blocked"),"ORDER BY `timestamp` DESC LIMIT 0,1");
 
-	if($db->nb>=$attempts){
-		$timestamp=$db->result[$attempts-1]['timestamp'];
+	if($db->result){
+		$timestamp=$db->result[0]['timestamp'];
 		$wait=strtotime($timestamp) + (int) $seconds - time();
 	}
 	return $wait;
