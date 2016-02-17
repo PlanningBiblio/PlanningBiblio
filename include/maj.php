@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 4 février 2016
+Dernière modification : 17 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -1022,9 +1022,11 @@ if(strcmp("2.2",$config['Version'])>0){
 		`login` VARCHAR(100) NULL,
 		`status` VARCHAR(10) NOT NULL,
     `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `ip` (`ip`),
+    KEY `status` (`status`),
+    KEY `timestamp` (`timestamp`)
   ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
-  $sql[]="ALTER TABLE `{$dbprefix}pl_IPBlocker` ADD INDEX ( `ip` , `status` , `timestamp` );";
 
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
     ('IPBlocker-TimeChecked','text','10','Authentification', 'Recherche les &eacute;checs d&apos;authentification lors des N derni&egrave;res minutes. ( 0 = IPBlocker d&eacute;sactiv&eacute; )','40');";

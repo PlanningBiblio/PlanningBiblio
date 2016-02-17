@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 4 février 2016
+Dernière modification : 17 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -141,10 +141,11 @@ $sql[]="CREATE TABLE `{$dbprefix}IPBlocker` (
 	`login` VARCHAR(100) NULL,
 	`status` VARCHAR(10) NOT NULL,
   `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `ip` (`ip`),
+  KEY `status` (`status`),
+  KEY `timestamp` (`timestamp`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
-
-$sql[]="ALTER TABLE `{$dbprefix}pl_IPBlocker` ADD INDEX ( `ip` , `status` , `timestamp` );";
 
 $sql[]="CREATE TABLE `{$dbprefix}pl_notes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
