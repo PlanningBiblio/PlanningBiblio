@@ -1,3 +1,7 @@
+***	Version 2.2	(Jérôme Combes, 17 février 2016)			***
+- Amélioration :
+Ajout du blocage d'adresses IP après échec d'authentification (paramètrable dans administration / configuration).
+
 ***	Version 2.1	(Jérôme Combes, 9 janvier 2016)			***
 - Amélioration :
 Planning : Possibilité de masquer les tableaux du plannings
