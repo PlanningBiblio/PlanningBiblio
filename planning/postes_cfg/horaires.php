@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.6
+Planning Biblio, Version 2.2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/horaires.php
 Création : mai 2011
-Dernière modification : 24 avril 2015
+Dernière modification : 19 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -116,15 +116,15 @@ if(!empty($tableaux)){
     $i=0;
     foreach($t['horaires'] as $elem){
       // Affichage des horaires existants
-      echo "<tr><td>\n";
+      echo "<tr id='tr_{$tableau}_$i' ><td>\n";
       echo "<select name='debut_{$tableau}_{$i}' style='width:75px;' >\n";
       selectHeure(6,23,true,$quart,$elem['debut']);
       echo "</select>\n";
-      echo "</td><td>\n";
+      echo "</td><td style='width:120px;'>\n";
       echo "<select name='fin_{$tableau}_{$i}' style='width:75px;' onchange='change_horaires(this);'>\n";
       selectHeure(6,23,true,$quart,$elem['fin']);
       echo "</select>\n";
-      echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$tableau}_{$i}.value=\"\";document.form2.fin_{$tableau}_{$i}.value=\"\";'></span>\n";
+      echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$tableau}_{$i}.value=\"\";document.form2.fin_{$tableau}_{$i}.value=\"\";$(\"#tr_{$tableau}_$i\").hide();''></span>\n";
       echo "</td>\n";
       echo "</tr>\n";
       $i++;
@@ -136,11 +136,11 @@ if(!empty($tableaux)){
       echo "<select name='debut_{$tableau}_{$i}' style='width:75px;'>\n";
       selectHeure(6,23,true,$quart);
       echo "</select>\n";
-      echo "</td><td>\n";
+      echo "</td><td style='width:120px;'>\n";
       echo "<select name='fin_{$tableau}_{$i}' style='width:75px;' onchange='change_horaires(this);'>\n";
       selectHeure(6,23,true,$quart);
       echo "</select>\n";
-      echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$tableau}_{$i}.value=\"\";document.form2.fin_{$tableau}_{$i}.value=\"\";'></span>\n";
+      echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$tableau}_{$i}.value=\"\";document.form2.fin_{$tableau}_{$i}.value=\"\";$(\"#tr_{$tableau}_$j\").hide();'></span>\n";
       echo "</td>\n";
       echo "</tr>\n";
       $i++;

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 20 décembre 2015
+Dernière modification : 19 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -443,7 +443,7 @@ else{
       $tmp[]=array("debut"=>$debut, "fin"=>$tab['horaires'][0]['debut']);
       $cellules_grises[]=$k++;
     }
-
+    
     // Colonnes manquantes entre le début et la fin
     foreach($tab['horaires'] as $key => $value){
       if($key==0 or $value["debut"]==$tab['horaires'][$key-1]["fin"]){
@@ -451,7 +451,7 @@ else{
       }elseif($value["debut"]>$tab['horaires'][$key-1]["fin"]){
 	$tmp[]=array("debut"=>$tab['horaires'][$key-1]["fin"], "fin"=>$value["debut"]);
 	$tmp[]=$value;
-	$cellules_grises[]=$k;
+	$cellules_grises[]=$k++;
       }
       $k++;
     }
@@ -460,7 +460,7 @@ else{
     $nb=count($tab['horaires'])-1;
     if($tab['horaires'][$nb]['fin']<$fin){
       $tmp[]=array("debut"=>$tab['horaires'][$nb]['fin'], "fin"=>$fin);
-      $cellules_grises[]=$k+1;
+      $cellules_grises[]=$k;
     }
 
     
@@ -515,17 +515,23 @@ else{
 	}
 	echo "</td>\n";
 	$i=1;
+	$j=1;
 	foreach($tab['horaires'] as $horaires){
 	  // Recherche des infos à afficher dans chaque cellule 
 	  // Cellules grisées si définies dans la configuration du tableau et si la colonne a été ajoutée automatiquement
-	  if(in_array("{$ligne['ligne']}_{$i}",$tab['cellules_grises']) or in_array($i-1,$cellules_grises)){
+	  if(in_array("{$ligne['ligne']}_{$j}",$tab['cellules_grises']) or in_array($i-1,$cellules_grises)){
 	    echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."' class='cellule_grise'>&nbsp;</td>";
+	    // Si colonne ajoutée, ça décale les cellules grises initialement prévues. On se décale d'un cran en arrière pour rétablir l'ordre 
+	    if(in_array($i-1,$cellules_grises)){
+	      $j--;
+	    }
 	  }
 	  // fonction cellule_poste(date,debut,fin,colspan,affichage,poste,site)
 	  else{
 	    echo cellule_poste($date,$horaires["debut"],$horaires["fin"],nb30($horaires['debut'],$horaires['fin']),"noms",$ligne['poste'],$site);
 	  }
 	$i++;
+	$j++;
 	}
 	echo "</tr>\n";
       }
