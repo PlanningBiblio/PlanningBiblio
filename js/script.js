@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.2
+Planning Biblio, Version 2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 4 février 2016
+Dernière modification : 20 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -802,6 +802,7 @@ $(function(){
 
     // Onglets
     $(".ui-tabs").tabs({
+      active: $(".ui-tabs").attr("data-active"),
       // Fonctions personnalisées pour les tabs .ui-tab-cancel et .ui-tab-submit dans personnel/modif.php
       beforeActivate: function(event,ui){
 	if($(ui.newTab).hasClass("ui-tab-cancel")){

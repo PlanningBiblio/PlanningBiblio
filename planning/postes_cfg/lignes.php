@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/lignes.php
 Création : mai 2011
-Dernière modification : 4 février 2015
+Dernière modification : 20 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -47,12 +47,8 @@ echo "<form name='form4' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='planning/postes_cfg/modif.php' />\n";
 echo "<input type='hidden' name='cfg-type' value='lignes' />\n";
 echo "<input type='hidden' name='numero' value='$tableauNumero' />\n";
-echo "<table><tr><td style='width:600px;'>";
+
 echo "<h3>Configuration des lignes</h3>\n";
-echo "</td><td style='text-align:right;'>\n";
-echo "<input type='button' value='Retour' class='ui-button retour'/>\n";
-echo "<input type='button' name='valid' value='Valider' class='ui-button' onclick='configLignes();'/>\n";
-echo "</td></tr></table>\n";
 
 if($tableauNumero){
   echo "<table style='width:1250px;' cellspacing='0' cellpadding='0' border='1' >\n";

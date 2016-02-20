@@ -1,12 +1,12 @@
-/*
-Planning Biblio, Version 1.9.4
+/**
+Planning Biblio, Version 2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/js/tableaux.js
 Création : 4 février 2015
-Dernière modification : 8 avril 2015
+Dernière modification : 20 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -216,35 +216,32 @@ function supprime_select(page,except){
   }
 }
 
-function tableauxNombre(){
+function tableauxInfos(){
   $.ajax({
-    url: "planning/postes_cfg/ajax.tableaux.php",
+    url: "planning/postes_cfg/ajax.infos.php",
     type: "get",
-    data: "id="+$("#id").val()+"&nombre="+$("#nombre").val(),
+    dataType: "json",
+    data: {id:$("#id").val(), nom:$("#nom").val(), nombre:$("#nombre").val(), site:$("#site").val()},
     success: function(){
-      var msg=encodeURIComponent("Le nombre de tableaux a été modifié avec succès");
-      location.href="index.php?page=planning/postes_cfg/modif.php&numero="+$("#id").val()+"&cfg-type=tableaux&msg="+msg+"&msgType=success";
+      var msg=encodeURIComponent("Les informations ont été modifiées avec succès");
+      location.href="index.php?page=planning/postes_cfg/modif.php&numero="+$("#id").val()+"&cfg-type=0&msg="+msg+"&msgType=success";
     },
     error: function(){
-      CJInfo("Une erreur est survenue lors de la modification du nombre de tableaux.","error");
+      CJInfo("Une erreur est survenue lors de la modification des informations","error");
     }
   });
 }
 
-function tabSiteUpdate(){
-  site=$("#selectSite").val();
-  numero=$("#numero").val();
-  $.ajax({
-    url: "planning/postes_cfg/ajax.siteUpdate.php",
-    type: "get",
-    data: "numero="+numero+"&site="+site,
-    success: function(){
-      // On recharge la page pour mettre à jour le tableau des lignes
-      var msg=encodeURIComponent("Le site a été modifié avec succès");
-      document.location.href="index.php?page=planning/postes_cfg/modif.php&numero="+site+"&msg="+msg+"&msgType=success";
-    },
-    error: function(){
-      CJInfo("Une erreur est survenue lors la modification du site.","error");
-    }
+$(function(){
+  $("#infos").click(function(){
+    $(".tableaux-valide").attr("href","javascript:tableauxInfos();");
   });
-}
+
+  $("#horaires").click(function(){
+    $(".tableaux-valide").attr("href","javascript:document.form2.submit();");
+  });
+
+  $("#lignes").click(function(){
+    $(".tableaux-valide").attr("href","javascript:configLignes();");
+  });
+});
