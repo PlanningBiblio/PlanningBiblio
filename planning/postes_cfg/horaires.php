@@ -91,6 +91,7 @@ if($db->result){
 //	Affichage des horaires
 $quart=$config['heuresPrecision']=="quart-heure"?true:false;
 
+echo "<div style='min-height:350px;'>\n";
 echo "<form name='form2' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='planning/postes_cfg/modif.php' />\n";
 echo "<input type='hidden' name='cfg-type' value='1' />\n";
@@ -152,3 +153,5 @@ if(!empty($tableaux)){
 
 echo "</form>\n";
 ?>
+</div>
+<p class='important'>Important : Vous devez cliquer sur "Valider" avant de changer d'onglet</p>

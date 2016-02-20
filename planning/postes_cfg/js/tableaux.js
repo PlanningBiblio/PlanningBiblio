@@ -207,12 +207,16 @@ function tableauxInfos(){
     type: "get",
     dataType: "json",
     data: {id:$("#id").val(), nom:$("#nom").val(), nombre:$("#nombre").val(), site:$("#site").val()},
-    success: function(){
+    success: function(result){
       var msg=encodeURIComponent("Les informations ont été modifiées avec succès");
-      location.href="index.php?page=planning/postes_cfg/modif.php&numero="+$("#id").val()+"&cfg-type=0&msg="+msg+"&msgType=success";
+      if($("#id").val()){
+	location.href="index.php?page=planning/postes_cfg/modif.php&numero="+$("#id").val()+"&cfg-type=0&msg="+msg+"&msgType=success";
+      }else{
+	location.href="index.php?page=planning/postes_cfg/modif.php&numero="+result+"&cfg-type=0&msg="+msg+"&msgType=success";
+      }
     },
-    error: function(){
-      CJInfo("Une erreur est survenue lors de la modification des informations","error");
+    error: function(result){
+      CJInfo("Une erreur est survenue lors de la modification des informations\n"+result.responseText,"error");
     }
   });
 }
@@ -255,4 +259,8 @@ $(function(){
       }
     }
   });
+});
+
+$(document).ready(function(){
+  errorHighlight($(".important"),"error");
 });

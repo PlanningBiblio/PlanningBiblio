@@ -83,6 +83,7 @@ EOD;
   }
   echo "</table></form>\n";
   echo "<br/><input type='button' value='Supprimer la s&eacute;lection' class='ui-button' onclick='supprime_select(\"planning/postes_cfg/ajax.suppression.php\");'>\n";
+  echo "<a href='index.php?page=planning/postes_cfg/modif.php' class='ui-button' style='margin-left:30px;'>Nouveau tableau</a>\n";
 }
 
 // Récupération de tableaux supprimés dans l'année

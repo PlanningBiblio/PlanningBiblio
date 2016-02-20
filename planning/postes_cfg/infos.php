@@ -32,6 +32,7 @@ if($config['Multisites-nombre']>1){
 }
 
 echo <<<EOD
+  <div style='min-height:350px;'>
   <form name='form' action='index.php' method='get'>
   <input type='hidden' name='id' id='id' value='$tableauNumero' />
 
@@ -70,3 +71,5 @@ echo "</select></td></tr>\n";
 echo "</table>\n";
 echo "</form>\n";
 ?>
+</div>
+<p class='important'>Important : Vous devez cliquer sur "Valider" avant de changer d'onglet</p>

@@ -30,13 +30,6 @@ $tableauGet=filter_input(INPUT_GET,"numero",FILTER_SANITIZE_NUMBER_INT);
 if($tableauGet){
   $tableauNumero=$tableauGet;
 }
-if(!$tableauNumero and in_array("cfg_num",$_SESSION)){
-  $tableauNumero=$_SESSION['cfg_num'];
-}
-if(!$tableauNumero and !in_array("cfg_num",$_SESSION)){
-  $tableauNumero="1";
-}
-$_SESSION['cfg_num']=$tableauNumero;
 
 // Choix de l'onglet (cfg-type)
 if($cfgTypeGet){
@@ -55,7 +48,12 @@ $db->select2("pl_poste_tab","*",array("tableau"=>$tableauNumero));
 $tableauNom=$db->result[0]['nom'];
 
 // Affichage
-echo "<h3>Configuration du tableau &quot;$tableauNom&quot;</h3>\n";
+if(!$tableauNumero){
+  echo "<h3>Nouveau tableau</h3>\n";
+}else{
+  echo "<h3>Configuration du tableau &quot;$tableauNom&quot;</h3>\n";
+}
+
 echo "<div id='tabs' class='ui-tabs' data-active='$cfgType'>\n";
 echo "<ul>\n";
 echo "<li><a href='#div_infos' id='infos'>Infos générales</a></li>\n";

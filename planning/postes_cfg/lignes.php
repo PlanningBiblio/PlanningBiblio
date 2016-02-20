@@ -43,6 +43,8 @@ $t->get();
 $tabs=$t->elements;
 
 // Affichage du tableau :
+
+echo "<div style='min-height:350px;'>\n";
 echo "<form name='form4' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='planning/postes_cfg/modif.php' />\n";
 echo "<input type='hidden' name='cfg-type' value='lignes' />\n";
@@ -114,6 +116,7 @@ if($tableauNumero){
   echo "</table>\n";
 }
 echo "</form>\n";
+echo "</div>\n";
 ?>
 
 <script type='text/JavaScript'>
@@ -170,11 +173,11 @@ function configLignes(){
     type: "post",
     data: data,
     success: function(){
-      information("Le tableau a été enregistré","highlight");
+      CJInfo("Le tableau a été enregistré","highlight");
       return true;
     },
     error: function(){
-      information("Une erreur est survenue lors de l'enregistrement du tableau.","error");
+      CJInfo("Une erreur est survenue lors de l'enregistrement du tableau.","error");
       return false;
     }
   });
