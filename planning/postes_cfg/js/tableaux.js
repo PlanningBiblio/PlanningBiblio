@@ -75,26 +75,18 @@ function supprimeLigne(id){
 // Suppression des tableaux en cliquant sur les croix rouges
 function supprimeTableau(tableau){
   var nom=$("#td-tableau-"+tableau+"-nom").text();
-  if(confirm("Etes vous sûr(e) de vouloir supprimer le tableau \""+nom+"\"?")){
+  if(confirm("Etes vous sûr(e) de vouloir supprimer le tableau \""+nom+"\"?\nLes groupes utilsant ce tableau seront également supprimés")){
     $.ajax({
       url: "planning/postes_cfg/ajax.supprimeTableau.php",
       type: "post",
       dataType: "json",
       data: {tableau: tableau},
       success: function(){
-	var tr=$("#tr-tableau-"+tableau).next("tr");
-	while(tr.length>0){
-	  var class1=tr.attr("class");
-	  var class2=class1=="tr1"?"tr2":"tr1";
-	  tr.removeClass();
-	  tr.addClass(class2);
-	  tr=tr.next("tr");
-	}
- 	$("#tr-tableau-"+tableau).remove();
-	CJInfo("Le tableau \""+nom+"\" a été supprimé avec succès","success");
+	msg=encodeURIComponent("Le tableau \""+nom+"\" a été supprimé avec succès");
+	window.location.href="index.php?page=planning/postes_cfg/index.php&msgType=success&msg="+msg;
       },
       error: function(result){
-	CJInfo("Une erreur est survenue lors de la suppression du tableau \""+nom+"\"","error");
+	CJInfo("Une erreur est survenue lors de la suppression du tableau \""+nom+"\"\n"+result.responseText,"error");
       }
     });
   }
@@ -179,35 +171,28 @@ function ctrl_nom(me){
   }
 }
 
-//	Suppression des élements sélectionnés (page de suppression, exception (séparés par virgules))
-function supprime_select(page,except){
-  except=except.split(",");
+//	Suppression des élements sélectionnés (page de suppression)
+function supprime_select(page){
   ids=new Array();
   i=0;
   while(document.form.elements["chk"+i]){
-    exception=false;
     elem=document.form.elements["chk"+i];
     if(elem.checked){
-      for(j=0;j<except.length;j++){
-	if(except[j]==elem.value)
-	  exception=true;
-      }
-      if(exception==false){
-	ids.push(elem.value);
-      }
+      ids.push(elem.value);
     }
     i++;
   }
   if(!ids[0]){
     alert("Les éléments sélectionnés ne peuvent être supprimés.");
   }
-  else if(confirm("Etes-vous sûr(e) de vouloir supprimer les éléments sélectionnés ?")){
+  else if(confirm("Etes-vous sûr(e) de vouloir supprimer les éléments sélectionnés ?\nLes groupes utilisant ces éléments seront également supprimés")){
     $.ajax({
       url: page,
       type: "get",
       data: "ids="+ids,
-      success: function(){
-	window.location.reload(false);
+      success: function(result){
+	msg=encodeURIComponent("Les éléments sélectionnés ont été supprimés avec succès");
+	window.location.href="index.php?page=planning/postes_cfg/index.php&msgType=success&msg="+msg;
       },
       error: function(){
 	CJInfo("Une erreur est survenue lors de la suppression.","error");

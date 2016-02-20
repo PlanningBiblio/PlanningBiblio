@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.2.1
+Planning Biblio, Version 2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 19 février 2016
+Dernière modification : 20 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -265,7 +265,7 @@ $db->select2("pl_poste_tab_affect","tableau",array("date"=>$date, "site"=>$site)
 
 if(!$db->result[0]['tableau'] and !$tableau and !$groupe and $autorisation){
   $db=new db();
-  $db->select2("pl_poste_tab","*","1","order by `nom` DESC");
+  $db->select2("pl_poste_tab","*",array("supprime"=>null),"order by `nom` DESC");
   if($db->result){
     echo <<<EOD
     <div id='choix_tableaux'>

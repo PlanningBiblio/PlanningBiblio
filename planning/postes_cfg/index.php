@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Version 1.9.3
+/**
+Planning Biblio, Version 2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/index.php
 Création : mai 2011
-Dernière modification : 26 mars 2015
+Dernière modification : 20 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,26 +21,8 @@ require_once "class.tableaux.php";
 echo "<h3>Gestion des tableaux</h3>\n";
 
 //	1. 	Tableaux
-//	1.1 	Liste des tableaux utilises
-$used=array();
 $db=new db();
-$db->select("pl_poste_tab_affect","tableau",null,"group by tableau");
-if($db->result){
-  foreach($db->result as $elem){
-    $used[]=$elem['tableau'];
-  }
-}
-$db=new db();
-$db->select("pl_poste_modeles_tab","tableau",null,"group by tableau");
-if($db->result){
-  foreach($db->result as $elem){
-    $used[]=$elem['tableau'];
-  }
-}
-
-$db=new db();
-$db->select("pl_poste_tab",null,null,"group by nom");
-
+$db->select2("pl_poste_tab",null,array("supprime"=>null),"group by nom");
 
 //	Affichage
 echo "<table style='width:1200px;' ><tr style='vertical-align:top;'><td style='width:600px;'>\n";
@@ -48,7 +30,7 @@ echo "<table style='width:1200px;' ><tr style='vertical-align:top;'><td style='w
 echo "<b>Liste des tableaux</b>\n";
 
 if(!$db->result){
-  echo "Aucun tableau";
+  echo "<p>Aucun tableau</p>";
 }
 else{
   echo <<<EOD
@@ -79,10 +61,8 @@ EOD;
     echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
     echo "<a href='javascript:popup(\"planning/postes_cfg/copie.php&amp;retour=index.php&amp;numero={$elem['tableau']}\",400,200);'>\n";
     echo "<span class='pl-icon pl-icon-copy' title='Copier'></span></a>\n";
-    if(!in_array($elem['tableau'],$used)){
-      echo "<a href='javascript:supprimeTableau({$elem['tableau']});'>\n";
-      echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
-    }
+    echo "<a href='javascript:supprimeTableau({$elem['tableau']});'>\n";
+    echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
     echo "</td>\n";
     if(in_array(13,$droits)){
       echo "<td>{$elem['tableau']}</td>\n";
@@ -95,8 +75,7 @@ EOD;
     $i++;
   }
   echo "</table></form>\n";
-  $used=join($used,",");
-  echo "<br/><input type='button' value='Supprimer la s&eacute;lection' class='ui-button' onclick='supprime_select(\"planning/postes_cfg/ajax.suppression.php\",\"$used\");'>\n";
+  echo "<br/><input type='button' value='Supprimer la s&eacute;lection' class='ui-button' onclick='supprime_select(\"planning/postes_cfg/ajax.suppression.php\");'>\n";
 }
 
 echo "</td><td>\n";
