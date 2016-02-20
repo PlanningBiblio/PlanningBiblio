@@ -245,14 +245,21 @@ class db{
     $tmp=array();
     $fields=array_keys($set);
     foreach($fields as $field){
-      if(!is_serialized($set[$field]))
-	$set[$field]=htmlentities($set[$field],ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
-      $set[$field]=mysqli_real_escape_string($this->conn,$set[$field]);
-      if(substr($set[$field],0,7)=="CONCAT("){
-	$tmp[]="`{$field}`={$set[$field]}";
+      // SET field = NULL
+      if($set[$field]===null){
+	$tmp[]="`{$field}`=NULL";
       }
+      
       else{
-	$tmp[]="`{$field}`='{$set[$field]}'";
+	if(!is_serialized($set[$field]))
+	  $set[$field]=htmlentities($set[$field],ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
+	$set[$field]=mysqli_real_escape_string($this->conn,$set[$field]);
+	if(substr($set[$field],0,7)=="CONCAT("){
+	  $tmp[]="`{$field}`={$set[$field]}";
+	}
+	else{
+	  $tmp[]="`{$field}`='{$set[$field]}'";
+	}
       }
     }
     $set=join(",",$tmp);

@@ -20,16 +20,23 @@ require_once "class.tableaux.php";
 
 echo "<h3>Gestion des tableaux</h3>\n";
 
-//	1. 	Tableaux
-$db=new db();
-$db->select2("pl_poste_tab",null,array("supprime"=>null),"group by nom");
+// Tableaux
+$t=new tableau();
+$t->fetchAll();
+$tableaux=$t->elements;
+
+// Tableaux supprimés
+$t=new tableau();
+$t->supprime=true;
+$t->fetchAll();
+$tableauxSupprimes=$t->elements;
 
 //	Affichage
 echo "<table style='width:1200px;' ><tr style='vertical-align:top;'><td style='width:600px;'>\n";
 //	1. 	Tableaux
 echo "<b>Liste des tableaux</b>\n";
 
-if(!$db->result){
+if(empty($tableaux)){
   echo "<p>Aucun tableau</p>";
 }
 else{
@@ -52,7 +59,7 @@ EOD;
 
   $class="tr1";
   $i=0;
-  foreach($db->result as $elem){
+  foreach($tableaux as $elem){
     $class=$class=="tr1"?"tr2":"tr1";
     $site="Multisites-site{$elem['site']}";
     echo "<tr id='tr-tableau-{$elem['tableau']}' class='$class'><td style='white-space:nowrap;'>\n";
@@ -76,6 +83,18 @@ EOD;
   }
   echo "</table></form>\n";
   echo "<br/><input type='button' value='Supprimer la s&eacute;lection' class='ui-button' onclick='supprime_select(\"planning/postes_cfg/ajax.suppression.php\");'>\n";
+}
+
+// Récupération de tableaux supprimés dans l'année
+if(!empty($tableauxSupprimes)){
+  echo "<p style='margin-top:30px;'>\n";
+  echo "R&eacute;cup&eacute;ration d&apos;un tableau supprim&eacute;\n";
+  echo "<select id='tableauxSupprimes'>\n";
+  echo "<option value=''>&nbsp;</option>\n";
+  foreach($tableauxSupprimes as $elem){
+    echo "<option value='{$elem['tableau']}'>{$elem['nom']}</option>\n";
+  }
+  echo "</p>\n";
 }
 
 echo "</td><td>\n";

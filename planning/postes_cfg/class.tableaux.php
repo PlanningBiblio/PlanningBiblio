@@ -59,11 +59,16 @@ class tableau{
     }
   }
 
+  /**
+   * fetchAll : retourne les tableaux enregistrés dans la base de données
+   * @param boolean $this->supprime : si true : affiche les tableaux supprimés lors de la dernière année, sinon, affiche les tableaux non-supprimés, default = false
+   * @return Array $this->elements
+   */
   public function fetchAll(){
     $db=new db();
     if($this->supprime){
       $date=date("Y-m-d H:i:s",strtotime("- 1 year"));
-      $db->select2("pl_poste_tab",array("supprime"=>"=>$date"));
+      $db->select2("pl_poste_tab",null,array("supprime"=>">=$date"));
     }else{
       $db->select2("pl_poste_tab",null,array("supprime"=>null));
     }

@@ -218,6 +218,7 @@ function tableauxInfos(){
 }
 
 $(function(){
+  // Adaptation du bouton de validation en fonction de l'onglet actif (page index.php)
   $("#infos").click(function(){
     $(".tableaux-valide").attr("href","javascript:tableauxInfos();");
   });
@@ -228,5 +229,30 @@ $(function(){
 
   $("#lignes").click(function(){
     $(".tableaux-valide").attr("href","javascript:configLignes();");
+  });
+  
+  // Récupération de tableaux supprimés (page index.php)
+  $("#tableauxSupprimes").change(function(){
+    if($(this).val()){
+      var id=$(this).val();
+      var name=$("#tableauxSupprimes option:selected").text();
+      
+      if(confirm("Etes vous sûr(e) de vouloir récupérer le tableau \""+name+"\" ?")){
+	$.ajax({
+	  url: "planning/postes_cfg/ajax.recupTableau.php",
+	  type: "get",
+	  dataType: "json",
+	  data: {id:id},
+	  success: function(){
+	    var msg=encodeURIComponent("Le tableau \""+name+"\" a été récupéré avec succès");
+	    location.href="index.php?page=planning/postes_cfg/index.php&cfg-type=0&msg="+msg+"&msgType=success";
+	  },
+	  error: function(){
+	    var msg=encodeURIComponent("Une erreur est survenue lors de la récupération du tableau \""+name+"\".");
+	    location.href="index.php?page=planning/postes_cfg/index.php&cfg-type=0&msg="+msg+"&msgType=error";
+	  }
+	});
+      }
+    }
   });
 });
