@@ -1039,12 +1039,18 @@ if(strcmp("2.2",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.2' WHERE `nom`='Version';";
 }
 
+if(strcmp("2.2.1",$config['Version'])>0){
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.2.1' WHERE `nom`='Version';";
+}
+
 if(strcmp("2.3",$config['Version'])>0){
   // Suppression des tableaux
   $sql[]="ALTER TABLE `{$dbprefix}pl_poste_tab` ADD `supprime` TIMESTAMP NULL DEFAULT NULL ;";
   $sql[]="ALTER TABLE `{$dbprefix}pl_poste_tab_grp` ADD `supprime` TIMESTAMP NULL DEFAULT NULL ;";
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.3' WHERE `nom`='Version';";
+
 }
 
 //	Execution des requetes et affichage
