@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.2
+Planning Biblio, Version 2.2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
@@ -1039,6 +1039,10 @@ if(strcmp("2.2",$config['Version'])>0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.2' WHERE `nom`='Version';";
 }
 
+if(strcmp("2.2.1",$config['Version'])>0){
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.2.1' WHERE `nom`='Version';";
+}
 
 //	Execution des requetes et affichage
 foreach($sql as $elem){
