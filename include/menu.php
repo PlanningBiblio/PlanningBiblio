@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 1.8.2
+/**
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : include/menu.php
 Création : mai 2011
-Dernière modification : 23 juin 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 21 janvier 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affiche le menu principal.
@@ -49,58 +49,32 @@ $colspan=count($keys)+1;
 
 ?>
 
-var nava = (document.layers);
-var dom = (document.getElementById);
-var iex = (document.all);
-if (nava) { skn = document.topdeck }
-else if (dom) { skn = document.getElementById("topdeck").style }
-else if (iex) { skn = topdeck.style }
-
 function pop(msg,td){
-  a=true;
-  skn.visibility = "hidden";
-
-  posLeft = td.offset().left+td.width()/2-100;
-  skn.left=posLeft+"px";
+  $(".menu_table").remove();
 
   posTop = td.offset().top+td.height()+2;
-  skn.top=posTop+"px";
+  posLeft = td.offset().left+td.width()/2-100;
 
-  var content ="<table border='0' cellpadding='0' cellspacing='0' style='background:#000000;width:200px:'><tr><td>";
-  content =content+"<table style='width:100%;min-width:200px;' border='0' cellpadding='0' cellspacing='1'>";
-  pass = 0
-  while (pass < msg.length){
-    content += "<tr><td class='menu_td2' ><font size='1' face=\"verdana\">&nbsp;&nbsp;"+msg[pass]+"<\/font><\/td><\/tr>";
-    pass++;
+  var content ="<table cellspacing='0' border='0' class='menu_table' style='top:"+posTop+"px; left:"+posLeft+"px;'>";
+
+  for(i in msg){
+    content += "<tr><td class='menu_td2' >"+msg[i]+"</td></tr>";
   }
-  content += "<\/table><\/td><\/tr><\/table>";
-  if (nava){
-    skn.document.write(content);
-    skn.document.close();
-    skn.visibility = "visible";
-  }
-    else if (dom){
-      document.getElementById("topdeck").innerHTML = content;
-      skn.visibility = "visible";
-  }
-    else if (iex){
-      document.all("topdeck").innerHTML = content;
-      skn.visibility = "visible";
-  }
+  content += "</td></tr></table>";
+
+  $("body").append(content);
 }
 
-function kill(){
-  skn.visibility = "hidden";
-}
-
-document.onclick = kill;
+$(document).click(function(){
+  $(".menu_table").remove();
+});
 -->
 </script>
 
 <?php
 echo "<div id='topgauche'>\n";
 echo "<table cellpadding='0' cellspacing='0' border='0' style='width:100%;'><tr>\n";
-echo "<td style='width:340px;text-align:left' rowspan='4'><font class='noprint'>\n";
+echo "<td class='logo_td' rowspan='4'><font class='noprint'>\n";
 echo "<a href='index.php'><div id='logo'></div></a>\n";
 echo "</font></td></tr>\n";
 echo "<tr><td>&nbsp;</td></tr>\n";
@@ -117,14 +91,14 @@ echo "<span class='pl-icon pl-icon-logout'></span></a></td>\n";
 echo "</tr>\n";
 echo "<tr><td colspan='$colspan' style='text-align:right;'>\n";
 
-// Si plugin PlanningHebdo, remplace "Changer le mot de passe" par "Mon Compte"
-if(in_array("planningHebdo",$plugins)){
-  echo "<a href='index.php?page=plugins/planningHebdo/monCompte.php' style='font-size:9pt;'>\n";
+// Si le module PlanningHebdo est activé, remplace "Changer le mot de passe" par "Mon Compte"
+if($config['PlanningHebdo']){
+  echo "<a href='index.php?page=planningHebdo/monCompte.php' class='myAccountLink'>\n";
   echo "Mon Compte</a>\n";
 }
 // Mot de passe modifiable seulement si authentification SQL
 elseif($_SESSION['oups']['Auth-Mode']=="SQL"){
-  echo "<a href='index.php?page=personnel/password.php' style='font-size:9pt;'>\n";
+  echo "<a href='index.php?page=personnel/password.php' class='myAccountLink'>\n";
   echo "Changer de mot de passe\n";
 }
 echo "<div id='logout_text'><a href='authentification.php' >Déconnexion</a></div>\n";

@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 1.9.3
+/**
+Planning Biblio, Version 2.0.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : postes/index.php
 Création : mai 2011
-Dernière modification : 26 mars 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 15 septembre 2015
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affiche la liste des postes dans un tableau avec un filtre sur le nom des postes.
@@ -20,8 +20,7 @@ require_once "class.postes.php";
 
 //			Affichage de la liste des postes
 $groupe="Tous";
-$nom=isset($_GET['nom'])?$_GET['nom']:null;
-$tri=isset($_GET['tri'])?$_GET['tri']:"etage,nom";
+$nom=filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING);
 
 // 		Contrôle si le poste est utilisé dans pl_poste pour interdire sa suppression si tel est le cas
 $postes_utilises=array();
@@ -65,7 +64,7 @@ if($db->result){
 <?php
 echo "<script type='text/JavaScript'>document.form.groupe.value='$groupe';</script>";
 $p=new postes();
-$p->fetch($tri,$nom,$groupe);
+$p->fetch("nom",$nom,$groupe);
 $postes=$p->elements;
 
 $sort=in_array(13,$droits)?"[[2],[3]]":"[[1],[2]]";
@@ -88,13 +87,11 @@ echo <<<EOD
   <tbody>
 EOD;
 
-for($i=0;$i<count($postes);$i++){
-  $id=$postes[$i]['id'];
-
+foreach($postes as $id => $value){
   // Affichage des 3 premières activités dans le tableau, toutes les activités dans l'infobulle
   $activites=array();
   $activitesAffichees=array();
-  $activitesPoste=unserialize($postes[$i]['activites']);
+  $activitesPoste=unserialize($value['activites']);
   if(is_array($activitesPoste)){
     foreach($activitesPoste as $act){
       if(array_key_exists($act,$activitesTab)){
@@ -117,18 +114,18 @@ for($i=0;$i<count($postes);$i++){
     echo "&nbsp;<a href='javascript:supprime(\"postes\",$id);'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>\n";
   }
   if(in_array(13,$droits)){
-    echo "<td>{$postes[$i]['id']}</td>\n";
+    echo "<td>$id</td>\n";
   }
-  echo "<td>{$postes[$i]['nom']}</td>\n";
+  echo "<td>{$value['nom']}</td>\n";
   if($config['Multisites-nombre']>1){
-    $site=array_key_exists("Multisites-site{$postes[$i]['site']}",$config)?$config["Multisites-site{$postes[$i]['site']}"]:"-";
+    $site=array_key_exists("Multisites-site{$value['site']}",$config)?$config["Multisites-site{$value['site']}"]:"-";
     echo "<td>$site</td>\n";
   }
-  echo "<td>{$postes[$i]['etage']}</td>\n";
+  echo "<td>{$value['etage']}</td>\n";
   echo "<td title='$activites' size='100'>$activitesAffichees</td>\n";
-  echo "<td>{$postes[$i]['obligatoire']}</td>\n";
-  echo "<td>".($postes[$i]['bloquant']?"Oui":"Non")."</td>\n";
-  echo "<td>".($postes[$i]['statistiques']?"Oui":"Non")."</td>\n";
+  echo "<td>{$value['obligatoire']}</td>\n";
+  echo "<td>".($value['bloquant']?"Oui":"Non")."</td>\n";
+  echo "<td>".($value['statistiques']?"Oui":"Non")."</td>\n";
   echo "</tr>\n";
 }
 

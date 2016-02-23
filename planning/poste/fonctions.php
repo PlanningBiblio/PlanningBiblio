@@ -1,27 +1,23 @@
 <?php
-/*
-Planning Biblio, Version 1.9.1
+/**
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 23 février 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 22 janvier 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Fonctions utilisées par les pages des dossiers planning/poste et planning/postes_cgf
 */
 
-// Securité : Traitement pour une reponse Ajax
-if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
-  $version='ajax';
-}
-
-// Si pas de $version ou pas de reponseAjax => acces direct aux pages de ce dossier => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
+if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
+  include_once "../../include/accessDenied.php";
+  exit;
 }
 
 function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
@@ -36,19 +32,11 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
 	$resultat=$elem['nom'];
 	if($elem['prenom'])
 	  $resultat.=" ".substr($elem['prenom'],0,1).".";
+
 	//		Affichage des sans repas
-	if($GLOBALS['config']['Planning-sansRepas']){
-	  if($debut>="11:30:00" and $fin<="14:30:00"){
-	    $sr=0;
-	    foreach($GLOBALS['cellules'] as $elem2){
-	      if($elem2['debut']>="11:30:00" and $elem2['fin']<="14:30:00" and $elem2['perso_id']==$elem['perso_id']){
-		$sr++;
-	      }
-	    }
-	    if($sr>1){
-	      $resultat.="<font class='sansRepas'> (SR)</font>";
-	    }
-	  }
+	$p=new planning();
+	if($p->sansRepas($date,$debut,$fin,$elem['perso_id'])){
+	  $resultat.="<font class='sansRepas'>&nbsp;(SR)</font>";
 	}
 
 	$class_tmp=array();
@@ -93,9 +81,8 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
 
 function deja_place($date,$poste){
   $deja=array(0);
-  $req="SELECT `perso_id` FROM `{$GLOBALS['config']['dbprefix']}pl_poste` WHERE `date`='$date' AND `absent`='0' AND `poste`='$poste' GROUP BY `perso_id`;";
   $db=new db();
-  $db->query($req);
+  $db->select2("pl_poste","perso_id",array("date"=>$date, "absent"=>"0", "poste"=>$poste),"GROUP BY `perso_id`");
   if($db->result){
     foreach($db->result as $elem){
       $deja[]=$elem['perso_id'];
@@ -145,7 +132,7 @@ function isAnEmptyLine($poste){
 function nb30($debut,$fin){
   $tmpFin=explode(":",$fin);
   $tmpDebut=explode(":",$debut);
-  $time=(($tmpFin[0]*60)+$tmpFin[1]-($tmpDebut[0]*60)-$tmpDebut[1])/30;
+  $time=(($tmpFin[0]*60)+$tmpFin[1]-($tmpDebut[0]*60)-$tmpDebut[1])/15;
   return $time;
 }
 //		-------------	FIN paramétrage de la largeur des colonnes		--------------//

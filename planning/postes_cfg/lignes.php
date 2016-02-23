@@ -1,14 +1,14 @@
 <?php
-/*
+/**
 Planning Biblio, Version 1.9.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/lignes.php
 Création : mai 2011
 Dernière modification : 4 février 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Permet de modifier les lignes d'un tableau. Affichage d'un tableau avec les horaires en colonnes, les postes dans des menus 

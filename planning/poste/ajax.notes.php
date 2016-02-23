@@ -1,26 +1,51 @@
 <?php
 /*
-Planning Biblio, Version 1.8
+Planning Biblio, Version 2.0.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/ajax.notes.php
 Création : 3 juin 2014
-Dernière modification : 6 juin 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 2 octobre 2015
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Enregistre dans la base de donées les notes en bas des plannings
 */
 
+session_start();
 ini_set('display_errors',0);
 include_once "../../include/config.php";
 include_once "class.planning.php";
 
+$date=filter_input(INPUT_POST,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
+$site=filter_input(INPUT_POST,"site",FILTER_SANITIZE_NUMBER_INT);
+$text=filter_input(INPUT_POST,"text",FILTER_SANITIZE_STRING);
+$text=urldecode($text);
+
+// Sécurité : droits d'accès à la page
+if($config['Multisites-nombre']>1){
+  $required1=300+$site;		// Droits de modifier les plannings du sites N° $site
+  $required2=800+$site;		// Droits de modifier les commentaires sites N° $site
+}else{
+  $required1=12;		// Droits de modifier les plannings en monosite
+  $required2=801;		// Droits de modifier les commentaires en monosite
+}
+
+if(!in_array($required1,$_SESSION['droits']) and !in_array($required2,$_SESSION['droits'])){
+  echo json_encode(array("error"=>"Vous n'avez pas le droit de modifier les commentaires"));
+  exit;
+}
 $p=new planning();
-$p->date=$_GET['date'];
-$p->site=$_GET['site'];
-$p->notes=$_GET['text'];
+$p->date=$date;
+$p->site=$site;
+$p->notes=$text;
 $p->updateNotes();
+
+$p->getNotes();
+$notes=$p->notes;
+$validation=$p->validation;
+
+echo json_encode(array("notes"=>$notes, "validation"=>$validation));
 ?>

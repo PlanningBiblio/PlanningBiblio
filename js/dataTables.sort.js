@@ -2,12 +2,12 @@
 Planning Biblio, Version 1.9.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : js/dataTables/sort.js
 Création : 9 décembre 2013
 Dernière modification : 28 mars 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Fichier regroupant les fonctions de tris personnalisés pour les dataTables

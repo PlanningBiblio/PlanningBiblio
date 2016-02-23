@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 1.9
+/**
+Planning Biblio, Version 2.2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/horaires.php
 Création : mai 2011
-Dernière modification : 20 janvier 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 19 février 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Permet de modifier les horaires d'un tableau. Affichage d'un formulaire avec des menus déroulant pour le choix des plages
@@ -49,9 +49,9 @@ if(isset($_POST['action'])){
   $db=new db();
   $db->insert2("pl_poste_horaires",$values);
   if(!$db->error){
-    echo "<script type='text/JavaScript'>information(\"Les horaires ont été modifiés avec succès\",\"highlight\");</script>\n";
+    echo "<script type='text/JavaScript'>CJInfo(\"Les horaires ont été modifiés avec succès\",\"success\");</script>\n";
   }else{
-    echo "<script type='text/JavaScript'>information(\"Une erreur est survenue lors de l'enregistrement des horaires\",\"error\");</script>\n";
+    echo "<script type='text/JavaScript'>CJInfo(\"Une erreur est survenue lors de l'enregistrement des horaires\",\"error\");</script>\n";
   }
 }
 
@@ -89,7 +89,7 @@ if($db->result){
 }
 
 //	Affichage des horaires
-$quart=$config['heuresPrecision']=="quart d&apos;heure"?true:false;
+$quart=$config['heuresPrecision']=="quart-heure"?true:false;
 
 echo "<form name='form2' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='planning/postes_cfg/modif.php' />\n";
@@ -116,15 +116,15 @@ if(!empty($tableaux)){
     $i=0;
     foreach($t['horaires'] as $elem){
       // Affichage des horaires existants
-      echo "<tr><td>\n";
+      echo "<tr id='tr_{$tableau}_$i' ><td>\n";
       echo "<select name='debut_{$tableau}_{$i}' style='width:75px;' >\n";
       selectHeure(6,23,true,$quart,$elem['debut']);
       echo "</select>\n";
-      echo "</td><td>\n";
+      echo "</td><td style='width:120px;'>\n";
       echo "<select name='fin_{$tableau}_{$i}' style='width:75px;' onchange='change_horaires(this);'>\n";
       selectHeure(6,23,true,$quart,$elem['fin']);
       echo "</select>\n";
-      echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$tableau}_{$i}.value=\"\";document.form2.fin_{$tableau}_{$i}.value=\"\";'></span>\n";
+      echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$tableau}_{$i}.value=\"\";document.form2.fin_{$tableau}_{$i}.value=\"\";$(\"#tr_{$tableau}_$i\").hide();''></span>\n";
       echo "</td>\n";
       echo "</tr>\n";
       $i++;
@@ -136,11 +136,11 @@ if(!empty($tableaux)){
       echo "<select name='debut_{$tableau}_{$i}' style='width:75px;'>\n";
       selectHeure(6,23,true,$quart);
       echo "</select>\n";
-      echo "</td><td>\n";
+      echo "</td><td style='width:120px;'>\n";
       echo "<select name='fin_{$tableau}_{$i}' style='width:75px;' onchange='change_horaires(this);'>\n";
       selectHeure(6,23,true,$quart);
       echo "</select>\n";
-      echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$tableau}_{$i}.value=\"\";document.form2.fin_{$tableau}_{$i}.value=\"\";'></span>\n";
+      echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$tableau}_{$i}.value=\"\";document.form2.fin_{$tableau}_{$i}.value=\"\";$(\"#tr_{$tableau}_$j\").hide();'></span>\n";
       echo "</td>\n";
       echo "</tr>\n";
       $i++;

@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 1.9.3
+/**
+Planning Biblio, Version 1.9.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : statistiques/samedis.php
 Création : 15 novembre 2013
-Dernière modification : 26 mars 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 17 avril 2015
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affiche les statistiques par agent sur les samedis travaillés : nombre de samedis travaillés, heures, prime ou récupération
@@ -17,13 +17,15 @@ Page appelée par le fichier index.php, accessible par le menu statistiques / Sa
 */
 
 require_once "class.statistiques.php";
-include "include/horaires.php";
-
-echo "<h3>Statistiques sur les samedis travaill&eacute;s</h3>\n";
+require_once "include/horaires.php";
 
 // Initialisation des variables :
-$selected=null;
-$heure=null;
+$debut=filter_input(INPUT_POST,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$fin=filter_input(INPUT_POST,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$post=filter_input_array(INPUT_POST,FILTER_SANITIZE_NUMBER_INT);
+$post_agents=isset($post['agents'])?$post['agents']:null;
+$post_sites=isset($post['selectedSites'])?$post['selectedSites']:null;
+
 $agent_tab=null;
 $exists_h19=false;
 $exists_h20=false;
@@ -32,28 +34,17 @@ $exists_absences=false;
 $exists_samedi=false;
 
 //		--------------		Initialisation  des variables 'debut','fin' et 'agents'		-------------------
-if(!array_key_exists('stat_samedis_agents',$_SESSION)){
-  $_SESSION['stat_samedis_agents']=null;
-}
-if(!array_key_exists('stat_debut',$_SESSION)){
-  $_SESSION['stat_debut']=null;
-  $_SESSION['stat_fin']=null;
-}
-$debut=isset($_GET['debut'])?$_GET['debut']:$_SESSION['stat_debut'];
-$fin=isset($_GET['fin'])?$_GET['fin']:$_SESSION['stat_fin'];
-$agents=isset($_GET['agents'])?$_GET['agents']:$_SESSION['stat_samedis_agents'];
+if(!$debut and array_key_exists('stat_debut',$_SESSION)) { $debut=$_SESSION['stat_debut']; }
+if(!$fin and array_key_exists('stat_fin',$_SESSION)) { $fin=$_SESSION['stat_fin']; }
+
+if(!$debut){ $debut="01/01/".date("Y"); }
+if(!$fin){ $fin=date("d/m/Y"); }
+
+$_SESSION['stat_debut']=$debut;
+$_SESSION['stat_fin']=$fin;
+
 $debutSQL=dateFr($debut);
 $finSQL=dateFr($fin);
-
-if(!$debut){
-  $debut="01/01/".date("Y");
-}
-$_SESSION['stat_debut']=$debut;
-if(!$fin){
-  $fin=date("d/m/Y");
-}
-$_SESSION['stat_fin']=$fin;
-$_SESSION['stat_samedis_agents']=$agents;
 
 // Sélection des samedis entre le début et la fin
 $dates=array();
@@ -63,55 +54,77 @@ while($current<=$finSQL){
   $dates[]=$current;
   $current=date("Y-m-d",strtotime("+1 week",strtotime($current)));
 }
-$dates=join("','",$dates);
+$dates=join(",",$dates);
+
+// Les agents
+if(!array_key_exists('stat_samedis_agents',$_SESSION)){
+  $_SESSION['stat_samedis_agents']=null;
+}
+
+$agents=array();
+if($post_agents){
+  foreach($post_agents as $elem){
+    $agents[]=$elem;
+  }
+}else{
+  $agents=$_SESSION['stat_samedis_agents'];
+}
+$_SESSION['stat_samedis_agents']=$agents;
 
 // Filtre les sites
 if(!array_key_exists('stat_samedis_sites',$_SESSION)){
-  $_SESSION['stat_samedis_sites']=null;
+  $_SESSION['stat_samedis_sites']=array();
 }
-$selectedSites=isset($_GET['selectedSites'])?$_GET['selectedSites']:$_SESSION['stat_samedis_sites'];
-if($config['Multisites-nombre']>1 and !$selectedSites){
-  $selectedSites=array();
+
+$selectedSites=array();
+if($post_sites){
+  foreach($post_sites as $elem){
+    $selectedSites[]=$elem;
+  }
+}else{
+  $selectedSites=$_SESSION['stat_samedis_sites'];
+}
+
+if($config['Multisites-nombre']>1 and empty($selectedSites)){
   for($i=1;$i<=$config['Multisites-nombre'];$i++){
     $selectedSites[]=$i;
   }
 }
+
 $_SESSION['stat_samedis_sites']=$selectedSites;
 
 // Filtre les sites dans les requêtes SQL
-$reqSites=null;
-if($config['Multisites-nombre']>1 and is_array($selectedSites)){
-  $reqSites="AND `{$dbprefix}pl_poste`.`site` IN (0,".join(",",$selectedSites).")";
+if($config['Multisites-nombre']>1){
+  $sitesSQL="0,".join(",",$selectedSites);
+}
+else{
+  $sitesSQL="0,1";
 }
 
 //		--------------		Récupération de la liste des agents pour le menu déroulant		------------------------
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif`='Actif' ORDER BY `nom`,`prenom`;");
+$db->select2("personnel","*",array("actif"=>"Actif"),"ORDER BY `nom`,`prenom`");
 $agents_list=$db->result;
 
 $tab=array();
-if(is_array($agents) and $agents[0] and $dates){
+if(!empty($agents) and $dates){
   //	Recherche du nombre de jours concernés
   $db=new db();
-  $db->query("SELECT `date` FROM `{$dbprefix}pl_poste` WHERE `date` IN ('$dates') $reqSites GROUP BY `date`;");
+  $db->select2("pl_poste","date",array("date"=>"IN{$dates}", "site"=>"IN{$sitesSQL}"),"GROUP BY `date`;");
   $nbJours=$db->nb;
 
   //	Recherche des infos dans pl_poste et postes pour tous les agents sélectionnés
   //	On stock le tout dans le tableau $resultat
-  $agents_select=join($agents,",");
+  $agents_select=join(",",$agents);
+
   $db=new db();
-  $req="SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
-    `{$dbprefix}pl_poste`.`date` as `date`, `{$dbprefix}pl_poste`.`perso_id` as `perso_id`, 
-    `{$dbprefix}pl_poste`.`poste` as `poste`, `{$dbprefix}pl_poste`.`absent` as `absent`, 
-    `{$dbprefix}postes`.`nom` as `poste_nom`, `{$dbprefix}postes`.`etage` as `etage`, 
-    `{$dbprefix}pl_poste`.`site` as `site` 
-    FROM `{$dbprefix}pl_poste` 
-    INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` 
-    WHERE `{$dbprefix}pl_poste`.`date` IN ('$dates') 
-    AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' 
-    AND `{$dbprefix}pl_poste`.`perso_id` IN ($agents_select) $reqSites 
-    ORDER BY `poste_nom`,`etage`;";
-  $db->query($req);
+  $db->selectInnerJoin(array("pl_poste","poste"),array("postes","id"),
+    array("debut","fin","date","perso_id","poste","absent"),
+    array(array("name"=>"nom","as"=>"poste_nom"),"etage","site"),
+    array("date"=>"IN{$dates}", "supprime"=>"<>1", "perso_id"=>"IN{$agents_select}", "site"=>"IN{$sitesSQL}"),
+    array("statistiques"=>"1"),
+    "ORDER BY `poste_nom`,`etage`");
+
   $resultat=$db->result;
   
   //	Recherche des infos dans le tableau $resultat (issu de pl_poste et postes) pour chaque agent sélectionné
@@ -198,9 +211,10 @@ if(is_array($agents) and $agents[0] and $dates){
 $_SESSION['stat_tab']=$tab;
 
 //		--------------		Affichage en 2 partie : formulaire à gauche, résultat à droite
+echo "<h3>Statistiques sur les samedis travaill&eacute;s</h3>\n";
 echo "<table><tr style='vertical-align:top;'><td id='stat-col1'>\n";
 //		--------------		Affichage du formulaire permettant de sélectionner les dates et les agents		-------------
-echo "<form name='form' action='index.php' method='get'>\n";
+echo "<form name='form' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='statistiques/samedis.php' />\n";
 echo "<table>\n";
 echo "<tr><td><label class='intitule'>Début</label></td>\n";

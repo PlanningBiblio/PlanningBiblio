@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 1.9.1
+/**
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/ajax.supprimeGroupe.php
 Création : 4 février 2015
-Dernière modification : 4 février 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 13 avril 2015
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Supprime un groupe de tableau.
@@ -19,8 +19,10 @@ lors du clique sur les croix rouges dans la liste des groupe (planning/postes_cf
 require_once "../../include/config.php";
 require_once "class.tableaux.php";
 
+$id=filter_input(INPUT_POST,"id",FILTER_SANITIZE_NUMBER_INT);
+
 $t=new tableau();
-$t->id=$_POST['id'];
+$t->id=$id;
 $t->deleteGroup();
 echo json_encode(null);
 ?>

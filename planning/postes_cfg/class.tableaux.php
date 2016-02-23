@@ -1,14 +1,14 @@
 <?php
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/class.tableaux.php
 Création : mai 2011
-Dernière modification : 4 février 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 8 avril 2015
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Classe tableau : classe permettant de manipuler les tableaux (recherche, insertion, modification, groupe)
@@ -16,9 +16,9 @@ Classe tableau : classe permettant de manipuler les tableaux (recherche, inserti
 Utilisée par les fichiers du dossier "planning/postes_cfg" et le fichier "planning/poste/index.php"
 */
 
-// pas de $version=acces direct aux pages de ce dossier => redirection vers la page index.php
-if(!$version){
-  header("Location: ../../index.php");
+// pas de $version=acces direct aux pages de ce dossier => Accès refusé
+if(!isset($version)){
+  include_once "../../include/accessDenied.php";
 }
 
 class tableau{
@@ -32,7 +32,7 @@ class tableau{
   public function deleteGroup(){
     if($this->id){
       $db=new db();
-      $db->delete("pl_poste_tab_grp","`id`='{$this->id}'");
+      $db->delete2("pl_poste_tab_grp",array("id"=>$this->id));
     }
   }
 
@@ -62,7 +62,7 @@ class tableau{
 
   public function fetchAll(){
     $db=new db();
-    $db->select("pl_poste_tab");
+    $db->select2("pl_poste_tab");
     $tab=$db->result;
     if(is_array($tab)){
       usort($tab,"cmp_nom");
@@ -72,7 +72,7 @@ class tableau{
 
   public function fetchAllGroups(){
     $db=new db();
-    $db->select("pl_poste_tab_grp");
+    $db->select2("pl_poste_tab_grp");
     $tab=$db->result;
     if(is_array($tab)){
       usort($tab,"cmp_nom");
@@ -82,7 +82,7 @@ class tableau{
 
   public function fetchGroup($id){
     $db=new db();
-    $db->select("pl_poste_tab_grp","*","`id`='$id'");
+    $db->select2("pl_poste_tab_grp","*","`id`='$id'");
     $this->elements=$db->result[0];
   }
 
@@ -93,7 +93,7 @@ class tableau{
     // Liste des tableaux
     $tableaux=array();
     $db=new db();
-    $db->select("pl_poste_horaires","tableau","numero=$tableauNumero","GROUP BY `tableau`");
+    $db->select2("pl_poste_horaires","tableau",array("numero"=>$tableauNumero),"GROUP BY `tableau`");
     if($db->result){
       foreach($db->result as $elem){
 	$tableaux[]=$elem['tableau'];
@@ -102,13 +102,13 @@ class tableau{
 
     // Liste des horaires
     $db=new db();
-    $db->select("pl_poste_horaires","*","numero=$tableauNumero","ORDER BY `tableau`,`debut`,`fin`");
+    $db->select2("pl_poste_horaires","*",array("numero"=>$tableauNumero),"ORDER BY `tableau`,`debut`,`fin`");
     $horaires=$db->result;
 
     // Liste des lignes enregistrées
     $lignes=array();
     $db=new db();
-    $db->select("pl_poste_lignes",null,"numero=$tableauNumero","ORDER BY tableau,ligne");
+    $db->select2("pl_poste_lignes","*",array("numero"=>$tableauNumero),"ORDER BY tableau,ligne");
     if($db->result){
       $lignes=$db->result;
     }
@@ -122,7 +122,7 @@ class tableau{
 
     // Liste des cellules grises
     $db=new db();
-    $db->select("pl_poste_cellules",null,"numero=$tableauNumero","ORDER BY tableau,ligne,colonne");
+    $db->select2("pl_poste_cellules","*",array("numero"=>$tableauNumero),"ORDER BY tableau,ligne,colonne");
     $cellules_grises=array();
     if($db->result){
       foreach($db->result as $elem){
@@ -166,7 +166,7 @@ class tableau{
 
   public  function getNumbers(){
     $db=new db();
-    $db->select("pl_poste_horaires","tableau","numero='{$this->id}'","group by tableau");
+    $db->select2("pl_poste_horaires","tableau",array("numero"=>$this->id),"group by tableau");
     if(!$db->result){
       return;
     }
@@ -208,9 +208,9 @@ class tableau{
       $i=$number;
       while($numbers[$i]){
 	$db=new db();
-	$db->delete("pl_poste_horaires","tableau='{$numbers[$i]}' AND numero=$id");
+	$db->delete2("pl_poste_horaires",array("tableau"=>$numbers[$i], "numero"=>$id));
 	$db=new db();
-	$db->delete("pl_poste_lignes","tableau='{$numbers[$i]}' AND numero=$id");
+	$db->delete2("pl_poste_lignes",array("tableau"=>$numbers[$i], "numero"=>$id));
 	$i++;
       }
     }

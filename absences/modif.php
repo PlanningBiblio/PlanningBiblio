@@ -1,14 +1,15 @@
 <?php
-/*
-Planning Biblio, Version 1.9.1
+/**
+Planning Biblio, Version 2.0.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 27 janvier 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 3 décembre 2015
+@author Jérôme Combes <jerome@planningbiblio.fr>
+@author Farid Goara <farid.goara@u-pem.fr>
 
 Description :
 Formulaire permettant de modifier
@@ -20,47 +21,52 @@ require_once "class.absences.php";
 require_once "motifs.php";
 
 //	Initialisation des variables
+$id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
+
 $display=null;
 $checked=null;
 $admin=in_array(1,$droits)?true:false;
 $adminN2=in_array(8,$droits)?true:false;
-$quartDHeure=$config['heuresPrecision']=="quart d&apos;heure"?true:false;
+$quartDHeure=$config['heuresPrecision']=="quart-heure"?true:false;
 
-$id=$_GET['id'];
-$db=new db();
-$req="SELECT `{$dbprefix}personnel`.`id` AS `perso_id`, `{$dbprefix}personnel`.`nom` AS `nom`, 	
-  `{$dbprefix}personnel`.`prenom` AS `prenom`, `{$dbprefix}absences`.`id` AS `id`, `{$dbprefix}personnel`.`sites` AS `sites`, 
-  `{$dbprefix}absences`.`debut` AS `debut`, `{$dbprefix}absences`.`fin` AS `fin`, 
-  `{$dbprefix}absences`.`nbjours` AS `nbjours`, `{$dbprefix}absences`.`motif` AS `motif`, `{$dbprefix}absences`.`motif_autre` AS `motif_autre`, 
-  `{$dbprefix}absences`.`valide` AS `valide`, `{$dbprefix}absences`.`validation` AS `validation`, 
-  `{$dbprefix}absences`.`valideN1` AS `valideN1`, `{$dbprefix}absences`.`validationN1` AS `validationN1`, 
-  `{$dbprefix}absences`.`pj1` AS `pj1`, `{$dbprefix}absences`.`pj2` AS `pj2`, `{$dbprefix}absences`.`so` AS `so`, 
-  `{$dbprefix}absences`.`commentaires` AS `commentaires`, `{$dbprefix}absences`.`demande` AS `demande`  
-  FROM `{$dbprefix}absences` INNER JOIN `{$dbprefix}personnel` 
-  ON `{$dbprefix}absences`.`perso_id`=`{$dbprefix}personnel`.`id` WHERE `{$dbprefix}absences`.`id`='$id';";
-$db->query($req);
-$perso_id=$db->result[0]['perso_id'];
-$motif=$db->result[0]['motif'];
-$motif_autre=$db->result[0]['motif_autre'];
-$commentaires=$db->result[0]['commentaires'];
-$demande=dateFr($db->result[0]['demande'],true);
-$debutSQL=$db->result[0]['debut'];
-$finSQL=$db->result[0]['fin'];
+$a=new absences();
+$a->fetchById($id);
+
+$perso_id=$a->elements['perso_id'];
+$nom=$a->elements['nom'];
+$prenom=$a->elements['prenom'];
+$motif=$a->elements['motif'];
+$motif_autre=$a->elements['motif_autre'];
+$commentaires=$a->elements['commentaires'];
+$demande=filter_var($a->elements['demande'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
+$debutSQL=filter_var($a->elements['debut'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
+$finSQL=filter_var($a->elements['fin'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
+$sitesAgent=unserialize($a->elements['sites']);
+$valide=filter_var($a->elements['valideN2'],FILTER_SANITIZE_NUMBER_INT);
+$validation=$a->elements['validationN2'];
+$valideN1=$a->elements['valideN1'];
+$validationN1=$a->elements['validationN1'];
+// Pièces justificatives
+$pj1Checked=$a->elements['pj1']?"checked='checked'":null;
+$pj2Checked=$a->elements['pj2']?"checked='checked'":null;
+$soChecked=$a->elements['so']?"checked='checked'":null;
+
+// Traitement des dates et des heures
+$demande=dateFr($demande,true);
 $debut=dateFr3($debutSQL);
 $fin=dateFr3($finSQL);
-$sitesAgent=unserialize($db->result[0]['sites']);
-$valide=$db->result[0]['valide'];
-$validation=$db->result[0]['validation'];
-$valideN1=$db->result[0]['valideN1'];
-$validationN1=$db->result[0]['validationN1'];
+
 $hre_debut=substr($debut,-8);
 $hre_fin=substr($fin,-8);
 $debut=substr($debut,0,10);
 $fin=substr($fin,0,10);
+
 if($hre_debut=="00:00:00" and $hre_fin=="23:59:59"){
   $checked="checked='checked'";
   $display="style='display:none;'";
 }
+
+// Initialisation des menus déroulants
 $select1=$valide==0?"selected='selected'":null;
 $select2=$valide>0?"selected='selected'":null;
 $select3=$valide<0?"selected='selected'":null;
@@ -79,12 +85,6 @@ if($valide==0 and $valideN1!=0){
 }
 
 $display_autre=in_array(strtolower($motif),array("autre","other"))?null:"style='display:none;'";
-
-// Pièces justificatives
-$pj1Checked=$db->result[0]['pj1']?"checked='checked'":null;
-$pj2Checked=$db->result[0]['pj2']?"checked='checked'":null;
-$soChecked=$db->result[0]['so']?"checked='checked'":null;
-
 
 // Sécurité
 // Droit 1 = modification de toutes les absences
@@ -115,9 +115,11 @@ if($config['Multisites-nombre']>1){
   }
 
   $admin=false;
-  foreach($sitesAgent as $site){
-    if(in_array($site,$sites)){
-      $admin=true;
+  if(is_array($sitesAgent)){
+    foreach($sitesAgent as $site){
+      if(in_array($site,$sites)){
+	$admin=true;
+      }
     }
   }
   if(!$admin){
@@ -136,9 +138,9 @@ echo "<input type='hidden' name='perso_id' value='$perso_id' />\n";		// nécessa
 echo "<input type='hidden' id='admin' value='".($admin?1:0)."' />\n";
 echo "<table class='tableauFiches'>\n";
 echo "<tr><td><label class='intitule'>Nom, Prénom</label></td><td>";
-echo $db->result[0]['nom'];
+echo $nom;
 echo "&nbsp;";
-echo $db->result[0]['prenom'];
+echo $prenom;
 echo "</td></tr>\n";
 echo "<tr><td>\n";
 echo "<label class='intitule'>Journée(s) entière(s)</label>\n";
@@ -164,7 +166,7 @@ echo "</td></tr>\n";
 echo "<tr id='hre_fin' $display ><td>\n";
 echo "<label class='intitule'>Heure de fin</label>\n";
 echo "</td><td>\n";
-echo "<select name='hre_fin' class='center ui-widget-content ui-corner-all'>\n";
+echo "<select name='hre_fin' class='center ui-widget-content ui-corner-all' onfocus='setEndHour();'>\n";
 selectHeure(7,23,true,$quartDHeure,$hre_fin);
 echo "</select>\n";
 echo "</td></tr>\n";
@@ -182,7 +184,6 @@ foreach($motifs as $elem){
 }
 echo "</select>\n";
 if($admin){
-  echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_abs&amp;terme=motif\",400,400);'>\n";
   echo "<span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer;' id='add-motif-button'/>\n";
 }
 echo "</td></tr>\n";

@@ -1,13 +1,13 @@
 /*
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/js/modif.js
 Création : 28 février 2014
-Dernière modification : 20 février 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 9 avril 2015
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Fichier regroupant les fonctions JavaScript utiles à l'ajout et la modification des agents (modif.php)
@@ -80,12 +80,21 @@ $(function() {
     var select_id=select.attr("id");
     var options="";
     $("#"+select_id+" option").each(function(){
-      options+="<option value='"+$(this).val()+"'>"+$(this).text()+"</option>";
+      var val=sanitize_string($(this).val());
+      var text=sanitize_string($(this).text());
+      options+="<option value='"+val+"'>"+text+"</option>";
     });
 
+    var text=sanitize_string($("#add-motif-text").val());
+    if(!text){
+      CJInfo("Donnée invalide","error");
+      $("#add-statut-text").val();
+      return;
+    }
+    
     var randomnumber=Math.floor((Math.random()*10000)+100)
     $("#motifs-sortable").append("<li id='li_"+randomnumber+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
-      +"<font id='valeur_"+randomnumber+"'>"+$("#add-motif-text").val()+"</font>"
+      +"<font id='valeur_"+randomnumber+"'>"+text+"</font>"
       +"<select id='type_"+randomnumber+"' style='position:absolute;left:330px;'>"
       +options
       +"</select>"
@@ -160,7 +169,11 @@ function verif_absences(ctrl_form){
     async: false,
     success: function(result){
       result=JSON.parse(result);
-      if(result["autreAbsence"]){
+      if(result["planningVide"]!=0){
+	information("Vous essayez de placer une absence sur un planning en cours d'élaboration","error");
+	retour=false;
+      }
+      else if(result["autreAbsence"]){
 	information("Une absence est déjà enregistrée pour cet agent entre le "+result["autreAbsence"]+"<br/>Veuillez modifier les dates et horaires.","error");
 	retour=false;
       }

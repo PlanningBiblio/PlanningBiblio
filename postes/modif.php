@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 1.8.6
+/**
+Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : postes/modif.php
 Création : mai 2011
-Dernière modification : 4 novembre 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 7 avril 2015
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affiche le formulaire permettant d'ajouter ou de modifier un poste.
@@ -20,15 +20,17 @@ Soumission des formulaires à la page postes/valid.php
 
 require_once "class.postes.php";
 
+// Initialisation des variables
+$id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
+
 $actList=new db();
-$actList->query("SELECT * FROM `{$dbprefix}activites` ORDER BY `nom`;");
+$actList->select2("activites","*","1","ORDER BY `nom`");
 
 //	Modification d'un poste
-if(isset($_GET['id'])){
-  $id=$_GET['id'];
+if($id){
   echo "<h3>Modification du poste</h3>\n";
   $db=new db();
-  $db->select("postes",null,"id='$id'");
+  $db->select2("postes","*",array("id"=>$id));
   $nom=$db->result[0]['nom'];
   $etage=$db->result[0]['etage'];
   $categories=is_serialized($db->result[0]['categories'])?unserialize($db->result[0]['categories']):array();
@@ -47,7 +49,6 @@ if(isset($_GET['id'])){
 else{
   echo "<h3>Ajout d'un poste</h3>\n";
   $action="ajout";
-  $id=null;
   $nom=null;
   $etage=null;
   $categories=array();
@@ -65,12 +66,12 @@ $checked=null;
 
 // Recherche des étages
 $db=new db();
-$db->select("select_etages",null,null,"order by rang");
+$db->select2("select_etages","*","1","order by rang");
 $etages=$db->result;
 
 // Recherche des catégories
 $db=new db();
-$db->select("select_categories",null,null,"order by rang");
+$db->select2("select_categories","*","1","order by rang");
 $categories_list=$db->result;
 
 echo "<form method='get' action='#' name='form'>";

@@ -2,12 +2,12 @@
 Planning Biblio, Version 1.7.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : js/datepickerFr.js
 Création : 14 novembre 2013
 Dernière modification : 27 décembre 2013
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Initialise les variables du plugin JQuery UI DatePicker

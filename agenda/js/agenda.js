@@ -2,12 +2,12 @@
 Planning Biblio, Version 1.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : agenda/js/agenda.js
 Création : 22 janvier 2015
 Dernière modification : 22 janvier 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Fichier regroupant les fonctions JavaScript utiles à l'affichage de l'agenda

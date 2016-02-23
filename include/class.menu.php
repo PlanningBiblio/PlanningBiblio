@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 1.7.2
+/**
+Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : include/class.menu.inc
 Création : 22 juillet 2013
-Dernière modification : 22 juillet 2013
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 25 mai 2015
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Fichier regroupant les fonctions permettant de construire le menu principal.
@@ -16,11 +16,10 @@ Fichier regroupant les fonctions permettant de construire le menu principal.
 Ce fichier est appelé par le fichier include/menu.php
 */
 
-// pas de $version=acces direct  => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+// pas de $version=acces direct au fichier => Accès refusé
+if(!isset($version)){
+  include_once "accessDenied.php";
 }
-
 
 class menu{
   public $elements=array();
@@ -33,6 +32,14 @@ class menu{
     $db=new db();
     $db->select("menu",null,null,"ORDER BY `niveau1`,`niveau2`");
     foreach($db->result as $elem){
+      if($elem['condition']){
+	if(substr($elem['condition'],0,7)=="config="){
+	  $value=substr($elem['condition'],7);
+	  if(!$GLOBALS['config'][$value]){
+	    continue;
+	  }
+	}
+      }
       $menu[$elem['niveau1']][$elem['niveau2']]['titre']=$elem['titre'];
       $menu[$elem['niveau1']][$elem['niveau2']]['url']=$elem['url'];
     }

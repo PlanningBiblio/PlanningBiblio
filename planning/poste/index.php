@@ -1,14 +1,16 @@
 <?php
-/*
-Planning Biblio, Version 1.9.3
+/**
+Planning Biblio, Version 2.2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 26 mars 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 19 février 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
+@author Farid Goara <farid.goara@u-pem.fr>
+
 
 Description :
 Cette page affiche le planning. Par défaut, le planning du jour courant est affiché. On peut choisir la date voulue avec le
@@ -26,9 +28,13 @@ echo "<div id='planning'>\n";
 include "fonctions.php";
 
 // Initialisation des variables
+$groupe=filter_input(INPUT_GET,"groupe",FILTER_SANITIZE_NUMBER_INT);
+$site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
+$tableau=filter_input(INPUT_GET,"tableau",FILTER_SANITIZE_NUMBER_INT);
 $verrou=false;
+
 //		------------------		DATE		-----------------------//
-$date=isset($_GET['date'])?$_GET['date']:null;
+$date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
 if(!$date and array_key_exists('PLdate',$_SESSION)){
   $date=$_SESSION['PLdate'];
 }
@@ -42,7 +48,7 @@ $semaine=$d->semaine;
 $semaine3=$d->semaine3;
 $jour=$d->jour;
 $dates=$d->dates;
-$datesSemaine=join("','",$dates);
+$datesSemaine=join(",",$dates);
 $j1=$dates[0];
 $j2=$dates[1];
 $j3=$dates[2];
@@ -62,7 +68,6 @@ $groupes=$t->elements;
 // Multisites : la variable $site est égale à 1 par défaut.
 // Elle prend la valeur GET['site'] si elle existe, sinon la valeur de la SESSION ['site']
 // En dernier lieu, la valeur du site renseignée dans la fiche de l'agent
-$site=isset($_GET['site'])?$_GET['site']:null;
 if(!$site and array_key_exists("site",$_SESSION['oups'])){
   $site=$_SESSION['oups']['site'];
 }
@@ -75,7 +80,7 @@ $site=$site?$site:1;
 $_SESSION['oups']['site']=$site;
 
 $db=new db();
-$db->select("pl_poste","*","`date` IN ('$datesSemaine') AND `site`='$site'");
+$db->select2("pl_poste","*",array("date"=>"IN$datesSemaine", "site"=>$site));
 $pasDeDonneesSemaine=$db->result?false:true;
 //		------------------		FIN TABLEAU		-----------------------//
 global $idCellule;
@@ -95,7 +100,7 @@ else{
 // Catégories
 $categories=array();
 $db=new db();
-$db->select("select_categories");
+$db->select2("select_categories");
 if($db->result){
   foreach($db->result as $elem){
     $categories[$elem['id']]=$elem['valeur'];
@@ -115,17 +120,17 @@ switch($jour){
 }
 	
 //-----------------------------			Verrouillage du planning			-----------------------//
-$db_verrou=new db();
-$db_verrou->query("SELECT * FROM `{$dbprefix}pl_poste_verrou` WHERE `date`='$date' AND `site`='$site';");
-if($db_verrou->result){
-  $verrou=$db_verrou->result[0]['verrou2'];
-  $perso=nom($db_verrou->result[0]['perso']);
-  $perso2=nom($db_verrou->result[0]['perso2']);
-  $date_validation=dateFr(substr($db_verrou->result[0]['validation'],0,10));
-  $heure_validation=substr($db_verrou->result[0]['validation'],11,5);
-  $date_validation2=dateFr(substr($db_verrou->result[0]['validation2'],0,10));
-  $heure_validation2=substr($db_verrou->result[0]['validation2'],11,5);
-  $validation2=$db_verrou->result[0]['validation2'];
+$db=new db();
+$db->select2("pl_poste_verrou","*", array("date"=>$date, "site"=>$site));
+if($db->result){
+  $verrou=$db->result[0]['verrou2'];
+  $perso=nom($db->result[0]['perso']);
+  $perso2=nom($db->result[0]['perso2']);
+  $date_validation=dateFr(substr($db->result[0]['validation'],0,10));
+  $heure_validation=substr($db->result[0]['validation'],11,5);
+  $date_validation2=dateFr(substr($db->result[0]['validation2'],0,10));
+  $heure_validation2=substr($db->result[0]['validation2'],11,5);
+  $validation2=$db->result[0]['validation2'];
 }else{
   $perso2=null;
   $date_validation2=null;
@@ -136,7 +141,7 @@ if($db_verrou->result){
 
 //	Selection des messages d'informations
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}infos` WHERE `debut`<='$date' AND `fin`>='$date' ORDER BY `debut`,`fin`;");
+$db->select2("infos","*",array("debut"=>"<={$date}", "fin"=>">={$date}"),"ORDER BY `debut`,`fin`");
 $messages_infos=null;
 if($db->result){
   foreach($db->result as $elem){
@@ -149,7 +154,7 @@ if($db->result){
 echo "<div id='divcalendrier' class='text'>\n";
 
 echo "<form name='form' method='get' action='#'>\n";
-echo "<input type='hidden' id='date' name='date' value='$date' />\n";
+echo "<input type='hidden' id='date' name='date' value='$date' data-set-calendar='$date' />\n";
 echo "<input type='hidden' id='site' name='date' value='$site' />\n";
 echo "</form>\n";
 
@@ -207,7 +212,7 @@ echo "</td><td id='td_boutons'>\n";
 //	----------------------------	Récupération des postes		-----------------------------//
 $postes=Array();
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}postes` ORDER BY `id`;");
+$db->select2("postes","*","1","ORDER BY `id`");
 if($db->result){
   foreach($db->result as $elem){
     $postes[$elem['id']]=Array("nom"=>$elem['nom'],"etage"=>$elem['etage'],"obligatoire"=>$elem['obligatoire'],"categories"=>is_serialized($elem['categories'])?unserialize($elem['categories']):array());
@@ -256,10 +261,11 @@ echo "</table></div>\n";
 //		---------------		FIN Affichage du titre et du calendrier		--------------------------//
 //		---------------		Choix du tableau	-----------------------------//	
 $db=new db();
-$db->query("SELECT `tableau` FROM `{$dbprefix}pl_poste_tab_affect` WHERE `date`='$date' AND `site`='$site';");
-if(!$db->result[0]['tableau'] and !isset($_GET['tableau']) and !isset($_GET['groupe']) and $autorisation){
+$db->select2("pl_poste_tab_affect","tableau",array("date"=>$date, "site"=>$site));
+
+if(!$db->result[0]['tableau'] and !$tableau and !$groupe and $autorisation){
   $db=new db();
-  $db->query("SELECT * FROM `{$dbprefix}pl_poste_tab` order by `nom` DESC;");
+  $db->select2("pl_poste_tab","*","1","order by `nom` DESC");
   if($db->result){
     echo <<<EOD
     <div id='choix_tableaux'>
@@ -312,33 +318,33 @@ EOD;
   include "include/footer.php";
   exit;
 }
-elseif(isset($_GET['groupe']) and $autorisation){	//	Si Groupe en argument
+elseif($groupe and $autorisation){	//	Si Groupe en argument
   $t=new tableau();
-  $t->fetchGroup($_GET['groupe']);
-  $groupe=$t->elements;
+  $t->fetchGroup($groupe);
+  $groupeTab=$t->elements;
   $tmp=array();
-  $tmp[$dates[0]]=array($dates[0],$groupe['Lundi']);
-  $tmp[$dates[1]]=array($dates[1],$groupe['Mardi']);
-  $tmp[$dates[2]]=array($dates[2],$groupe['Mercredi']);
-  $tmp[$dates[3]]=array($dates[3],$groupe['Jeudi']);
-  $tmp[$dates[4]]=array($dates[4],$groupe['Vendredi']);
-  $tmp[$dates[5]]=array($dates[5],$groupe['Samedi']);
-  if(array_key_exists("Dimanche",$groupe)){
-    $tmp[$dates[6]]=array($dates[6],$groupe['Dimanche']);
+  $tmp[$dates[0]]=array($dates[0],$groupeTab['Lundi']);
+  $tmp[$dates[1]]=array($dates[1],$groupeTab['Mardi']);
+  $tmp[$dates[2]]=array($dates[2],$groupeTab['Mercredi']);
+  $tmp[$dates[3]]=array($dates[3],$groupeTab['Jeudi']);
+  $tmp[$dates[4]]=array($dates[4],$groupeTab['Vendredi']);
+  $tmp[$dates[5]]=array($dates[5],$groupeTab['Samedi']);
+  if(array_key_exists("Dimanche",$groupeTab)){
+    $tmp[$dates[6]]=array($dates[6],$groupeTab['Dimanche']);
   }
   foreach($tmp as $elem){
     $db=new db();
-    $db->delete("pl_poste_tab_affect","date='{$elem[0]}' AND `site`='$site'");
+    $db->delete2("pl_poste_tab_affect",array("date"=>$elem[0], "site"=>$site));
     $db=new db();
     $db->insert2("pl_poste_tab_affect",array("date"=>$elem[0], "tableau"=>$elem[1], "site"=>$site));
   }
   $tab=$tmp[$date][1];
 
 }
-elseif(isset($_GET['tableau']) and $autorisation){	//	Si tableau en argument
-  $tab=$_GET['tableau'];
+elseif($tableau and $autorisation){	//	Si tableau en argument
+  $tab=$tableau;
   $db=new db();
-  $db->delete("pl_poste_tab_affect","`date`='$date' AND `site`='$site'");
+  $db->delete2("pl_poste_tab_affect", array("date"=>$date, "site"=>$site));
   $db=new db();
   $db->insert2("pl_poste_tab_affect",array("date"=>$date, "tableau"=>$tab, "site"=>$site));
 }
@@ -356,7 +362,13 @@ if(!$tab){
 
 // Div planning-data : permet de transmettre les valeurs $verrou et $autorisation à la fonction affichant le menudiv
 // data-validation pour les fonctions refresh_poste et verrouillage du planning
-echo "<div id='planning-data' data-verrou='$verrou' data-autorisation='$autorisation' data-validation='$validation2' style='display:none;'>&nbsp;</div>\n";
+// Lignes vides pour l'affichage ou non des lignes vides au chargement de la page et après validation (selon la config)
+
+$lignesVides=$config['Planning-lignesVides'];
+
+echo "<div id='planning-data' data-verrou='$verrou' data-autorisation='$autorisation' data-validation='$validation2' 
+  data-lignesVides='$lignesVides' data-sr-debut='{$config['Planning-SR-debut']}' data-sr-fin='{$config['Planning-SR-fin']}' 
+  style='display:none;'>&nbsp;</div>\n";
 
 // Actualisation du planning si validé et mis à jour depuis un autre poste
 if($verrou){
@@ -372,19 +384,16 @@ else{
   //--------------	Recherche des infos cellules	------------//
   // Toutes les infos seront stockées danx un tableau et utilisées par les fonctions cellules_postes
   $db=new db();
-  $db->query("SELECT `{$dbprefix}pl_poste`.`perso_id` AS `perso_id`,`{$dbprefix}pl_poste`.`debut` AS `debut`,
-  `{$dbprefix}pl_poste`.`fin` AS `fin`, `{$dbprefix}pl_poste`.`poste` AS `poste`, 
-  `{$dbprefix}pl_poste`.`absent` AS `absent`, `{$dbprefix}pl_poste`.`supprime` AS `supprime`, 
-  `{$dbprefix}pl_poste`.`poste` AS `poste`, `{$dbprefix}personnel`.`nom` AS `nom`, 
-  `{$dbprefix}personnel`.`prenom` AS `prenom`, `{$dbprefix}personnel`.`statut` AS `statut`, 
-  `{$dbprefix}personnel`.`service` AS `service` 
-  FROM `{$dbprefix}pl_poste` 
-  INNER JOIN `{$dbprefix}personnel` ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id` 
-  WHERE `date`='$date' AND `{$dbprefix}pl_poste`.`site`='$site' 
-  ORDER BY `{$dbprefix}personnel`.`nom`, `{$dbprefix}personnel`.`prenom` ;");
+  $db->selectInnerJoin(array("pl_poste","perso_id"),array("personnel","id"),
+    array("perso_id","debut","fin","poste","absent","supprime"),
+    array("nom","prenom","statut","service"),
+    array("date"=>$date, "site"=>$site),
+    array(),
+    "ORDER BY `{$dbprefix}personnel`.`nom`, `{$dbprefix}personnel`.`prenom`");
+
   global $cellules;
   $cellules=$db->result;
-  
+
   // Informations sur les congés
   if(in_array("conges",$plugins)){
     include "plugins/conges/planning_cellules.php";
@@ -395,7 +404,7 @@ else{
   //	------------		Affichage du tableau			--------------------//
   //	Lignes de separation
   $db=new db();
-  $db->select("lignes");
+  $db->select2("lignes");
   if($db->result){
     foreach($db->result as $elem){
       $lignes_sep[$elem['id']]=$elem['nom'];
@@ -408,15 +417,64 @@ else{
   $t->get();
   $tabs=$t->elements;
 
+  // Repère les heures de début et de fin de chaque tableau pour ajouter des colonnes si ces heures sont différentes
+  $debut="23:59";
+  $fin=null;
+  foreach($tabs as $elem){
+    $debut=$elem["horaires"][0]["debut"]<$debut?$elem["horaires"][0]["debut"]:$debut;
+    $nb=count($elem["horaires"])-1;
+    $fin=$elem["horaires"][$nb]["fin"]>$fin?$elem["horaires"][$nb]["fin"]:$fin;
+  }
+
   // affichage du tableau :
   // affichage de la lignes des horaires
-  echo "<div id='tableau'>\n";
+  echo "<div id='tableau' data-tableId='$tab' >\n";
   echo "<table id='tabsemaine1' cellspacing='0' cellpadding='0' class='text tabsemaine1'>\n";
-  $k=0;
+
+  $j=0;
   foreach($tabs as $tab){
+    // Comble les horaires laissés vides : créé la colonne manquante, les cellules de cette colonne seront grisées
+    $cellules_grises=array();
+    $tmp=array();
+    
+    // Première colonne : si le début de ce tableau est supérieur au début d'un autre tableau
+    $k=0;
+    if($tab['horaires'][0]['debut']>$debut){
+      $tmp[]=array("debut"=>$debut, "fin"=>$tab['horaires'][0]['debut']);
+      $cellules_grises[]=$k++;
+    }
+    
+    // Colonnes manquantes entre le début et la fin
+    foreach($tab['horaires'] as $key => $value){
+      if($key==0 or $value["debut"]==$tab['horaires'][$key-1]["fin"]){
+	$tmp[]=$value;
+      }elseif($value["debut"]>$tab['horaires'][$key-1]["fin"]){
+	$tmp[]=array("debut"=>$tab['horaires'][$key-1]["fin"], "fin"=>$value["debut"]);
+	$tmp[]=$value;
+	$cellules_grises[]=$k++;
+      }
+      $k++;
+    }
+
+    // Dernière colonne : si la fin de ce tableau est inférieure à la fin d'un autre tableau
+    $nb=count($tab['horaires'])-1;
+    if($tab['horaires'][$nb]['fin']<$fin){
+      $tmp[]=array("debut"=>$tab['horaires'][$nb]['fin'], "fin"=>$fin);
+      $cellules_grises[]=$k;
+    }
+
+    
+    $tab['horaires']=$tmp;
+
+    // Masquer les tableaux
+    $masqueTableaux=null;
+    if($config['Planning-TableauxMasques']){
+      $masqueTableaux="<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer' data-id='$j' ></span>";
+    }
+
     //		Lignes horaires
-    echo "<tr class='tr_horaires'>\n";
-    echo "<td class='td_postes'>{$tab['titre']}</td>\n";
+    echo "<tr class='tr_horaires tableau$j'>\n";
+    echo "<td class='td_postes' data-id='$j' data-title='{$tab['titre']}'>{$tab['titre']} $masqueTableaux </td>\n";
     $colspan=0;
     foreach($tab['horaires'] as $horaires){
       echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin'])."</td>";
@@ -427,8 +485,9 @@ else{
     //	Lignes postes et grandes lignes
     foreach($tab['lignes'] as $ligne){
       // Regardons si la ligne est vide afin de ne pas l'afficher si $config['Planning-lignes-vides']=0
+      $displayTR=null;
       if(!$config['Planning-lignesVides'] and $verrou and isAnEmptyLine($ligne['poste'])){
-	continue;
+	$displayTR="style='display:none;'";
       }
 
       // Lignes postes
@@ -448,24 +507,31 @@ else{
 	$classTR=join(" ",$classTR);
 
 	// Affichage de la ligne
-	echo "<tr class='$classTR'><td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
+	echo "<tr class='pl-line tableau$j $classTR' $displayTR >\n";
+	echo "<td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
 	// Affichage ou non des étages
 	if($config['Affichage-etages'] and $postes[$ligne['poste']]['etage']){
 	  echo " ({$postes[$ligne['poste']]['etage']})";
 	}
 	echo "</td>\n";
 	$i=1;
+	$j=1;
 	foreach($tab['horaires'] as $horaires){
-	  // recherche des infos à afficher dans chaque cellule 
-	  // Cellules grisées
-	  if(in_array("{$ligne['ligne']}_{$i}",$tab['cellules_grises'])){
+	  // Recherche des infos à afficher dans chaque cellule 
+	  // Cellules grisées si définies dans la configuration du tableau et si la colonne a été ajoutée automatiquement
+	  if(in_array("{$ligne['ligne']}_{$j}",$tab['cellules_grises']) or in_array($i-1,$cellules_grises)){
 	    echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."' class='cellule_grise'>&nbsp;</td>";
+	    // Si colonne ajoutée, ça décale les cellules grises initialement prévues. On se décale d'un cran en arrière pour rétablir l'ordre 
+	    if(in_array($i-1,$cellules_grises)){
+	      $j--;
+	    }
 	  }
 	  // fonction cellule_poste(date,debut,fin,colspan,affichage,poste,site)
 	  else{
 	    echo cellule_poste($date,$horaires["debut"],$horaires["fin"],nb30($horaires['debut'],$horaires['fin']),"noms",$ligne['poste'],$site);
 	  }
 	$i++;
+	$j++;
 	}
 	echo "</tr>\n";
       }
@@ -475,10 +541,10 @@ else{
 	echo "<td>{$lignes_sep[$ligne['poste']]}</td><td colspan='$colspan'>&nbsp;</td></tr>\n";
       }
     }
-    $k++;
+  $j++;
   }
   echo "</table>\n";
-
+  
   // Notes : Affichage
   $p=new planning();
   $p->date=$date;
@@ -486,30 +552,53 @@ else{
   $p->getNotes();
   $notes=$p->notes;
   $notesTextarea=$p->notesTextarea;
+  $notesValidation=$p->validation;
+  $notesDisplay=trim($notes)?null:"style='display:none;'";
+  $notesSuppression=($notesValidation and !trim($notes)) ? "Suppression du commentaire : ":null;
+
 
   echo <<<EOD
-  <div id='pl-notes-div1'>
+  <div id='pl-notes-div1' $notesDisplay >
   $notes
   </div>
 EOD;
 
   // Notes : Modifications
-  if($autorisation){
+  if($autorisation or in_array((800+$site),$droits)){
     echo <<<EOD
     <div id='pl-notes-div2' class='noprint'>
     <input type='button' class='ui-button' id='pl-notes-button' value='Ajouter un commentaire' />
     </div>
 
-    <div id="pl-notes-form" title="Notes" class='noprint' style='display:none;'>
-      <p class="validateTips">Vous pouvez écrire ici un commentaire qui sera affiché en bas du planning.</p>
+    <div id="pl-notes-form" title="Commentaire" class='noprint' style='display:none;'>
+      <p class="validateTips">Vous pouvez écrire ici un commentaire qui sera affich&eacute; en bas du planning.</p>
       <form>
-      <fieldset>
       <textarea id='pl-notes-text'>$notesTextarea</textarea>
-      </fieldset>
       </form>
     </div>
 EOD;
   }
+
+echo <<<EOD
+  <div id='pl-notes-div1-validation'>
+  $notesSuppression$notesValidation
+  </div>  
+EOD;
+
+// Appel à disponibilités : envoi d'un mail aux agents disponibles pour occuper le poste choisi depuis le menu des agents
+if($config['Planning-AppelDispo']){
+  echo <<<EOD
+    <div id="pl-appelDispo-form" title="Appel &agrave; disponibilit&eacute;" class='noprint' style='display:none;'>
+      <p class="validateTips">Envoyez un e-mail aux agents disponibles pour leur demander s&apos;ils sont volontaires pour occuper le poste choisi.</p>
+      <form>
+      <label for='pl-appelDispo-sujet'>Sujet</label><br/>
+      <input type='text' id='pl-appelDispo-sujet' name='pl-appelDispo-sujet' /><br/><br/>
+      <label for='pl-appelDispo-text'>Message</label><br/>
+      <textarea id='pl-appelDispo-text' name='pl-appelDispo-text'>&nbsp;</textarea>
+      </form>
+    </div>
+EOD;
+}
 
   // Affichage des absences
   if($config['Absences-planning']){
@@ -594,19 +683,37 @@ EOD;
 
 	// recherche des personnes à exclure (ne travaillant ce jour)
 	$db=new db();
-	$db->select("personnel","*","`actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00')","ORDER BY `nom`,`prenom`");
+	$dateSQL=$db->escapeString($date);
+	$db->select("personnel","*","`actif` LIKE 'Actif' AND (`depart` > $dateSQL OR `depart` = '0000-00-00')","ORDER BY `nom`,`prenom`");
 
 	$verif=true;	// verification des heures des agents
 	if(!$config['ctrlHresAgents'] and ($d->position==6 or $d->position==0)){
 	  $verif=false; // on ne verifie pas les heures des agents le samedi et le dimanche (Si ctrlHresAgents est desactivé)
 	}
-		
+
+	// Si il y a des agents et verification des heures de présences
 	if($db->result and $verif){
+
+	  // Si module PlanningHebdo : recherche des plannings correspondant à la date actuelle
+	  if($config['PlanningHebdo']){
+	    include "planningHebdo/planning.php";
+	  }
+
+	  // Pour chaque agent
 	  foreach($db->result as $elem){
 	    $heures=null;
-	    $temps=unserialize($elem['temps']);
-	    if(in_array("planningHebdo",$plugins)){
-	      include "plugins/planningHebdo/planning.php";
+
+	    // Récupération du planning de présence
+	    $temps=array();
+
+	    // Si module PlanningHebdo : emploi du temps récupéré à partir de planningHebdo
+	    if($config['PlanningHebdo']){
+	      if(array_key_exists($elem['id'],$tempsPlanningHebdo)){
+		$temps=$tempsPlanningHebdo[$elem['id']];
+	      }
+	    }else{
+	      // Emploi du temps récupéré à partir de la table personnel
+	      $temps=unserialize($elem['temps']);
 	    }
 
 	    $jour=$d->position-1;		// jour de la semaine lundi = 0 ,dimanche = 6

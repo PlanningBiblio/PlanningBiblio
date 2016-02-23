@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 1.9.2
+/**
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 18 mars 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 18 janvier 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Classe planning 
@@ -16,9 +16,9 @@ Classe planning
 Utilisée par les fichiers du dossier "planning/poste"
 */
 
-// Si pas de $version => acces direct aux pages de ce dossier => redirection vers la page index.php
-if(!$version){
-  header("Location: ../../index.php");
+// pas de $version=acces direct aux pages de ce dossier => Accès refusé
+if(!isset($version)){
+  include_once "../../include/accessDenied.php";
 }
 
 
@@ -26,11 +26,30 @@ class planning{
   public $date=null;
   public $site=1;
   public $categorieA=false;
+  public $elements=array();
   public $menudiv=null;
   public $notes=null;
   public $notesTextarea=null;
+  public $validation=null;
 
 
+  public function fetch(){
+    if(!$this->date){
+      return;
+    }
+
+    $db=new db();
+    $db->select2("pl_poste","*",array("date"=>$this->date));
+    if($db->result){
+      $tab=array();
+      foreach($db->result as $elem){
+	$tab[$elem['id']]=$elem;
+      }
+      $this->elements=$tab;
+    }
+  }
+  
+  
   // Recherche les agents de catégorie A en fin de service
   public function finDeService(){
     $date=$this->date;
@@ -110,10 +129,45 @@ class planning{
     }
 
     $menudiv=null;
+    
+    // Calcul des heures de SP à effectuer pour tous les agents
+    $heuresSP=calculHeuresSP($date);
+
+    // Calcul des heures d'absences afin d'ajuster les heures de SP
+    $a=new absences();
+    $heuresAbsencesTab=$a->calculHeuresAbsences($date);
+
+    if(is_array($agents))
     foreach($agents as $elem){
+      // Heures hebdomadaires (heures à faire en SP)
+      $heuresHebdo=$heuresSP[$elem['id']];
+      $heuresHebdoTitle="Quota hebdomadaire";
+      
+      // Heures hebdomadaires avec prise en compte des absences
+      if($config["Planning-Absences-Heures-Hebdo"] and array_key_exists($elem['id'],$heuresAbsencesTab)){
+	$heuresAbsences=$heuresAbsencesTab[$elem['id']];
+	if(is_numeric($heuresAbsences)){
+	  if($heuresAbsences>0){
+	    // On informe du pourcentage sur les heures d'absences
+	    $pourcent=null;
+	    if(strpos($elem["heuresHebdo"],"%") and $elem["heuresHebdo"]!="100%"){
+	      $pourcent=" {$elem["heuresHebdo"]}";
+	    }
+	    
+	    $heuresHebdoTitle="Quota hebdomadaire = $heuresHebdo - $heuresAbsences (Absences{$pourcent})";
+	    $heuresHebdo=$heuresHebdo-$heuresAbsences;
+	    if($heuresHebdo<0){
+	      $heuresHebdo=0;
+	    }
+	  }
+	}else{
+	  $heuresHebdoTitle="Quota hebdomadaire : Erreur de calcul des heures d&apos;absences";
+	  $heuresHebdo="Erreur";
+	}
+      }
+      
       $hres_jour=0;
       $hres_sem=0;
-      $sr=0;
 
       if(!$config['ClasseParService']){
 	if($elem['id']==2){		// on retire l'utilisateur "tout le monde"
@@ -121,24 +175,19 @@ class planning{
 	}
       }
 
-      $nom=$elem['nom'];
+      $nom=htmlentities($elem['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
       if($elem['prenom']){
-	$nom.=" ".substr($elem['prenom'],0,1).".";
+	$nom.=" ".substr(htmlentities($elem['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8"),0,1).".";
       }
 
-
       //			----------------------		Sans repas		------------------------------------------//
-      //			(Peut être amélioré : vérifie si l'agent est déjà placé entre 11h30 et 14h30 
-      //			mais ne vérfie pas la continuité. Ne marque pas la 2ème cellule en javascript (rafraichissement OK))
-      if($config['Planning-sansRepas']){
-	if($debut>="11:30:00" and $fin<="14:30:00"){
-	  $db_sr=new db();
-	  $db_sr->query("SELECT * FROM `{$dbprefix}pl_poste` WHERE `date`='$date' AND `perso_id`='{$elem['id']}' AND `debut` >='11:30:00' AND `fin`<='14:30:00';");
-	  if($db_sr->result){
-	    $sr=1;
-	    $nom.=$msg_SR;
-	  }
-	}
+      // $sr permet d'interdire l'ajout d'un agent sur une cellule déjà occupée si cela met l'agent en SR
+      $sr=0;
+
+      // Si sans repas, on ajoute (SR) à l'affichage
+      if($this->sansRepas($date,$debut,$fin,$elem['id'])){
+	$sr=1;
+	$nom.=$msg_SR;
       }
 	      
       //			----------------------		Déjà placés		-----------------------------------------------------//
@@ -163,7 +212,12 @@ class planning{
 
       // affihage des heures faites ce jour + les heures de la cellule
       $db_heures = new db();
-      $db_heures->query("SELECT `{$dbprefix}pl_poste`.`debut` AS `debut`,`{$dbprefix}pl_poste`.`fin` AS `fin` FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` WHERE `{$dbprefix}pl_poste`.`perso_id`='{$elem['id']}' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`date`='$date' AND `{$dbprefix}postes`.`statistiques`='1';");
+      $db_heures->selectInnerJoin(array("pl_poste","poste"),array("postes","id"),
+	array("debut","fin"),
+	array(),
+	array("perso_id"=>$elem['id'], "absent"=>"<>1", "date"=>$date),
+	array("statistiques"=>"1"));
+
       if($stat){ 	// vérifier si le poste est compté dans les stats
 	$hres_jour=diff_heures($debut,$fin,"decimal");
       }
@@ -175,7 +229,10 @@ class planning{
       
       // affihage des heures faites cette semaine + les heures de la cellule
       $db_heures = new db();
-      $db_heures->query("SELECT `{$dbprefix}pl_poste`.`debut` AS `debut`,`{$dbprefix}pl_poste`.`fin` AS `fin` FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` WHERE `{$dbprefix}pl_poste`.`perso_id`='{$elem['id']}' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`date` BETWEEN '$j1' AND '$j7' AND `{$dbprefix}postes`.`statistiques`='1';");
+      $db_heures->selectInnerJoin(array("pl_poste","poste"),array("postes","id"),
+	array("debut","fin"),array(),
+	array("perso_id"=>$elem['id'], "absent"=>"<>1", "date"=>"BETWEEN{$j1}AND{$j7}"),
+	array("statistiques"=>"1"));
 
       if($stat){ 	// vérifier si le poste est compté dans les stats
 	$hres_sem=diff_heures($debut,$fin,"decimal");
@@ -193,7 +250,10 @@ class planning{
 	$date1=date("Y-m-d",strtotime("-3 weeks",strtotime($j1)));
 	$date2=$j7;	// fin de semaine courante
 	$db_hres4 = new db();
-	$db_hres4->query("SELECT `{$dbprefix}pl_poste`.`debut` AS `debut`,`{$dbprefix}pl_poste`.`fin` AS `fin` FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` WHERE `{$dbprefix}pl_poste`.`perso_id`='{$elem['id']}' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`date` BETWEEN '$date1' AND '$date2' AND `{$dbprefix}postes`.`statistiques`='1';");
+	$db_hres4->selectInnerJoin(array("pl_poste","poste"), array("postes","id"), array("debut","fin"), array(),
+	  array("perso_id"=>$elem['id'], "absent"=>"<>1", "date"=>"BETWEEN{$date1}AND{$date2}"),
+	  array("statistiques"=>"1"));
+
 	if($stat){ 	// vérifier si le poste est compté dans les stats
 	  $hres_4sem=diff_heures($debut,$fin,"decimal");
 	}
@@ -206,19 +266,21 @@ class planning{
       }
 
       //	Mise en forme de la ligne avec le nom et les heures et la couleur en fonction des heures faites
+      $nom.="<span>\n";
       $nom.="&nbsp;<font title='Heures du jour'>$hres_jour</font> / ";
       $nom.="<font title='Heures de la semaine'>$hres_sem</font> / ";
-      $nom.="<font title='Quota hebdomadaire'>{$elem['heuresHebdo']}</font>";
+
+      $nom.="<font title='$heuresHebdoTitle'>$heuresHebdo</font>";
       $nom.=$hres_4sem;
+      $nom.="</span>\n";
 
       if($hres_jour>7)			// plus de 7h:jour : rouge
 	$nom="<font style='color:red'>$nom</font>\n";
-      elseif(($elem['heuresHebdo']-$hres_sem)<=0.5 and ($hres_sem-$elem['heuresHebdo'])<=0.5)		// 0,5 du quota hebdo : vert
+      elseif(($heuresHebdo-$hres_sem)<=0.5 and ($hres_sem-$heuresHebdo)<=0.5)		// 0,5 du quota hebdo : vert
 	$nom="<font style='color:green'>$nom</font>\n";
-      elseif($hres_sem>$elem['heuresHebdo'])			// plus du quota hebdo : rouge
+      elseif($hres_sem>$heuresHebdo)			// plus du quota hebdo : rouge
 	$nom="<font style='color:red'>$nom</font>\n";
-      
-      
+
       // Classe en fonction du statut et du service
       $class_tmp=array();
       if($elem['statut']){
@@ -230,7 +292,7 @@ class planning{
       $classe=empty($class_tmp)?null:join(" ",$class_tmp);
 
       //	Affichage des lignes
-      $menudiv.="<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$(this).removeClass();$(this).addClass(\"menudiv-gris\"); $groupe_hide' onmouseout='$(this).removeClass();$(this).addClass(\"$classe $classTrListe\");' class='$classe $classTrListe'>\n";
+      $menudiv.="<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$groupe_hide' class='$classe $classTrListe menudiv-tr'>\n";
       $menudiv.="<td style='width:200px;font-weight:normal;' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},0,0,\"$site\");'>";
       $menudiv.=$nom;
 
@@ -249,16 +311,250 @@ class planning{
 
   }
 
+
+  /**
+  * @function notifications
+  * @param string $this->date , date au format YYYY-MM-DD
+  * Envoie des notifications en cas de validation ou changement de planning aux agents concernés
+  */
+  public function notifications(){
+    $version="ajax";
+    require_once "../../personnel/class.personnel.php";
+    require_once "../../postes/class.postes.php";
+    
+    // Liste des agents actifs
+    $p=new personnel();
+    $p->fetch();
+    $agents=$p->elements;
+
+    // Listes des postes
+    $p=new postes();
+    $p->fetch();
+    $postes=$p->elements;
+    
+    // Recherche des informations dans la table pl_poste pour la date $this->date
+    $date=$this->date;
+    $this->fetch();
+    $tab=array();
+    foreach($this->elements as $elem){
+      // Si l'id concerne un agent qui a été supprimé, on l'ignore
+      $id=$elem['perso_id'];
+      if(!array_key_exists($id,$agents)){
+	continue;
+      }
+      // Création d'un tableau par agent, avec nom, prénom et email
+      if(!array_key_exists($id,$tab)){
+	$tab[$id]=array("nom"=>$agents[$id]["nom"], "prenom"=>$agents[$id]["prenom"], "mail"=>$agents[$id]["mail"], "planning"=>array());
+      }
+      // Complète le tableau avec les postes, les sites, horaires et marquage "absent"
+      $poste=$postes[$elem["poste"]]["nom"];
+      $site=null;
+      if($GLOBALS["config"]["Multisites-nombre"]>1){
+	$site="(".$GLOBALS["config"]["Multisites-site{$elem["site"]}"].")";
+      }
+      $tab[$id]["planning"][]=array("debut"=> $elem["debut"], "fin"=> $elem["fin"], "absent"=> $elem["absent"], "site"=> $site, "poste"=> $poste);
+    }
+    
+    // $perso_ids = agents qui recevront une notifications
+    $perso_ids=array();
+
+    // Recherche dans la table pl_notifications si des notifications ont déjà été envoyées (précédentes validations)
+    $db=new db();
+    $db->select2("pl_notifications","*",array("date"=>$date));
+    
+    // Si non, envoi d'un mail intitulé "planning validé" aux agents concernés par le planning
+    // et enregistre les infos dans la table pl_notifications
+    if(!$db->result){
+      $notificationType="nouveauPlanning";
+
+      // Enregistrement des infos dans la table BDD
+      $insert=array("date"=>$date, "data"=>json_encode((array)$tab));
+      $db=new db();
+      $db->insert2("pl_notifications",$insert);
+
+      // Enregistre les agents qui doivent être notifiés
+      $perso_ids=array_keys($tab);
+    }
+    // Si oui, envoi d'un mail intitulé "planning modifié" aux agents concernés par une modification 
+    // et met à jour les infos dans la table pl_notifications
+    else{
+      $notificationType="planningModifie";
+
+      // Lecture des infos de la base de données, comparaison avec les nouvelles données
+      // Lecture des infos de la base de données
+      $db=new db();
+      $db->select2("pl_notifications","*",array("date"=>$date));
+      $data=str_replace("&quot;",'"',$db->result[0]["data"]);
+      $data=(array) json_decode($data);
+      $oldData=array();
+      foreach($data as $key => $value){
+	$oldData[$key]=(array) $value;
+	foreach($oldData[$key]["planning"] as $k => $v){
+	  $oldData[$key]["planning"][$k]=(array) $v;
+	}
+      }
+
+      // Recherche des différences
+      // Ajouts, modifications
+      // Pour chaque agent présent dans le nouveau tableau
+      foreach($tab as $key => $value){
+	foreach($value["planning"] as $k => $v){
+	  if(!array_key_exists($key, $oldData)
+	    or (!array_key_exists($k, $oldData[$key]["planning"]))
+	    or ($v != $oldData[$key]["planning"][$k])){
+	    $perso_ids[]=$key;
+	    continue 2;
+	  }
+	}
+      }
+
+      // Suppressions
+      // Pour chaque agent présent dans l'ancien tableau
+      foreach($oldData as $key => $value){
+	foreach($value["planning"] as $k => $v){
+	  if(!array_key_exists($key, $tab)
+	    or (!array_key_exists($k, $tab[$key]["planning"]))
+	    or ($v != $tab[$key]["planning"][$k])){
+	      if(!in_array($key,$perso_ids)){
+		$perso_ids[]=$key;
+	      }
+	    continue 2;
+	  }
+	}
+      }
+
+      // Modification des infos dans la BDD
+      $update=array("data"=>json_encode((array)$tab));
+      $db=new db();
+      $db->update2("pl_notifications",$update,array("date"=>$date));
+    }
+
+    /*
+    $tab[$perso_id] = Array(nom, prenom, mail, planning => Array(
+	  [0] => Array(debut, fin, absent, site, poste), 
+	  [1] => Array(debut, fin, absent, site, poste), ...))
+    */
+
+    // Envoi du mail
+    $sujet=$notificationType=="nouveauPlanning"?"Validation du planning du ".dateFr($date):"Modification du planning du ".dateFr($date);
+    
+    // Tous les agents qui doivent être notifiés.
+    foreach($perso_ids as $elem){
+      // Création du message avec date et nom de l'agent
+      $message=$notificationType=="nouveauPlanning"?"Validation du planning":"Modification du planning";
+      $message.="<br/><br/>Date : <strong>".dateFr($date)."</strong>";
+      $message.="<br/>Agent : <strong>{$tab[$elem]['prenom']} {$tab[$elem]['nom']}</strong>";
+      
+      // S'il y a des éléments, on ajoute la liste des postes occupés avec les horaires
+      if(array_key_exists($elem,$tab)){
+	$lines=array();
+	$message.="<ul>";
+
+	foreach($tab[$elem]["planning"] as $e){
+	  // On marque en gras les modifications
+	  $exists=true;
+	  if($notificationType=="planningModifie"){
+	    $exists=false;
+	    foreach($oldData[$elem]["planning"] as $o){
+	      if($e==$o){
+		$exists=true;
+		continue;
+	      }
+	    }
+	  }
+	  $bold=$exists?null:"font-weight:bold;";
+	  $striped=$e['absent']?"text-decoration:line-through; color:red;":null;
+
+	  // Affichage de la ligne avec horaires et poste
+	  $line="<li><span style='$bold $striped'>".heure2($e['debut'])." - ".heure2($e['fin'])." : {$e['poste']} {$e['site']}";
+	  if($GLOBALS['config']['Multisites-nombre']>1){
+	    $line.=" ($site)";
+	  }
+	  $line.="</span>";
+
+	  // On ajoute "(supprimé)" et une étoile en cas de modif car certains webmail suppriment les balises et le style "bold", etc.
+	  if($striped){
+	    $line.=" (supprim&eacute;)";
+	  }
+	  if($bold){
+	    $line.="<sup style='font-weight:bold;'>*</sup>";
+	  }
+	  $line.="</li>";
+	  $lines[]=array($e['debut'],$line);
+	}
+
+	// On affiche les suppressions
+	foreach($oldData[$elem]["planning"] as $e){
+	  $exists=false;
+	  foreach($tab[$elem]["planning"] as $e2){
+	    if($e['debut']==$e2['debut']){
+	      $exists=true;
+	      continue;
+	    }
+	  }
+	  if(!$exists){
+	    // Affichage de l'ancienne ligne avec horaires et poste
+	    $line="<li><span style='font-weight:bold; text-decoration:line-through; color:red;'>".heure2($e['debut'])." - ".heure2($e['fin'])." : {$e['poste']} {$e['site']}";
+	    if($GLOBALS['config']['Multisites-nombre']>1){
+	      $line.=" ($site)";
+	    }
+	    $line.="</span>";
+	    $line.=" (supprim&eacute;)";
+	    $line.="<sup style='font-weight:bold;'>*</sup>";
+	    $lines[]=array($e['debut'],$line);
+	  }
+	}
+
+	sort($lines);
+	foreach($lines as $line){
+	  $message.=$line[1];
+	}
+	$message.="</ul>";
+
+	// On ajoute le lien vers le planning
+	$url=createURL("planning/poste/index.php&date=$date");
+	$message.="Lien vers le planning du ".dateFr($date)." : $url";
+
+	// Envoi du mail
+	$m=new sendmail();
+	$m->subject=$sujet;
+	$m->message=$message;
+	$m->to=$tab[$elem]['mail'];
+	$m->send();
+
+      // S'il n'y a pas d'éléments, on écrit "Vous n'êtes plus dans le planning ..."
+      }else{
+	// On ajoute le lien bers le planning
+	$url=createURL("planning/poste/index.php&date=$date");
+	$message.="Vous n&apos;&ecirc;tes plus dans le planning du ".dateFr($date);
+	$message.="<br/><br/>Lien vers le planning du ".dateFr($date)." : $url";
+
+	// Envoi du mail
+	$m=new sendmail();
+	$m->subject=$sujet;
+	$m->message=$message;
+	$m->to=$oldData[$elem]['mail'];
+	$m->send();
+      }
+    }
+  }
+  
   // Notes
   // Récupère les notes (en bas des plannings)
   public function getNotes(){
+    $this->notes=null;
     $db=new db();
-    $db->select("pl_notes","text","date='{$this->date}' AND site='{$this->site}'");
+    $db->select2("pl_notes","*",array("date"=>$this->date, "site"=>$this->site),"ORDER BY `timestamp` DESC");
     if($db->result){
       $notes=$db->result[0]['text'];
-      $notes=str_replace("&lt;br/&gt;","<br/>",$notes);
+      $notes=str_replace(array("&lt;br/&gt;","#br#"),"<br/>",$notes);
       $this->notes=$notes;
       $this->notesTextarea=str_replace("<br/>","\n",$notes);
+      if($db->result[0]['perso_id'] and $db->result[0]['timestamp']){
+	$this->validation=nom($db->result[0]['perso_id']).", ".dateFr($db->result[0]['timestamp'],true);
+      }else{
+	$this->validation=null;
+      }
     }
   }
 
@@ -267,12 +563,60 @@ class planning{
     $date=$this->date;
     $site=$this->site;
     $text=$this->notes;
+    
+    // Vérifie s'il y a eu des changements depuis le dernier enregistrement
+    $this->getNotes();
+    $previousNotes=str_replace("<br/>","#br#",$this->notes);
+    // Si non, on enregistre la nouvelle note
+    if(strcmp($previousNotes,$text)!=0){
+      $db=new db();
+      $db->insert2("pl_notes",array("date"=>$date,"site"=>$site,"text"=>$text,"perso_id"=>$_SESSION['login_id']));
+    }
+  }
 
-    $db=new db();
-    $db->delete2("pl_notes",array("date"=>$date,"site"=>$site));
+  /**
+  * Fonction sansRepas
+  * Retourne true si l'agent est placé en continu entre les heures de début et de fin définies dans la config. pour les sans repas
+  * @param string $date
+  * @param string $debut
+  * @param string $fin
+  * @return int $sr (0/1)
+  */
+  public function sansRepas($date,$debut,$fin,$perso_id){
+    if($GLOBALS['config']['Planning-sansRepas']==0){
+      return 0;
+    }
 
-    $db=new db();
-    $db->insert2("pl_notes",array("date"=>$date,"site"=>$site,"text"=>$text));
+    $sr_debut=$GLOBALS['config']['Planning-SR-debut'];
+    $sr_fin=$GLOBALS['config']['Planning-SR-fin'];
+    // Par défaut, SR = false (pas de sans Repas)
+    $sr=0;
+    // Si la plage interrogée est dans ou à cheval sur la période de sans repas
+    if($debut<$sr_fin and $fin>$sr_debut){
+      // Recherche dans la base de données des autres plages concernées
+      $db=new db();
+      $db->select2("pl_poste","*",array("date"=>$date, "perso_id"=>$perso_id, "debut"=>"<$sr_fin", "fin"=>">$sr_debut"), "ORDER BY debut,fin");
+      if($db->result){
+	// Tableau result contient les plages de la base de données + la plage interrogée
+	$result=array_merge($db->result,array(array("debut"=>$debut, "fin"=>$fin)));
+	usort($result,"cmp_debut_fin");
+	// Si le plus petit début et inférieur ou égal au début de la période SR et la plus grande fin supérieure ou égale à la fin de la période SR
+	// = Possibilité que la période soit complète, on met SR=1
+	if($result[0]["debut"]<=$sr_debut and $result[count($result)-1]["fin"]>=$sr_fin){
+	  $sr=1;
+	  // On consulte toutes les plages à la recherche d'une interruption. Si interruption, sr=0 et on quitte la boucle
+	  $last_end=$result[0]['fin'];
+	  for($i=1;$i<count($result);$i++){
+	    if($result[$i]['debut']>$last_end){
+	      $sr=0;
+	      continue;
+	    }
+	    $last_end=$result[$i]['fin'];
+	  }
+	}
+      }
+    }
+    return $sr;
   }
 
 }

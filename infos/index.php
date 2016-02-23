@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 1.8.2
+/**
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : infos/index.php
 Création : février 2012
-Dernière modification : 24 juin 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 22 janvier 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affcihe le pied de page
@@ -19,30 +19,42 @@ L'affichage des messages est géré par la page planning/postes/index.php
 Cette page est appelée par le fichier index.php
 */
 
-// pas de $version=acces direct aux pages de ce dossier => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
+if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
+  include_once "../include/accessDenied.php";
+  exit;
 }
 
 echo "<h3>Messages d'informations</h3>\n";
 
 //	Initialisation des variables
-$id=isset($_GET['id'])?$_GET['id']:null;
+$id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
+$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$texte=trim(filter_input(INPUT_GET,"texte",FILTER_SANITIZE_STRING));
+$suppression=filter_input(INPUT_GET,"suppression",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$validation=filter_input(INPUT_GET,"validation",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+
+$debutSQL=dateSQL($debut);
+$finSQL=dateSQL($fin);
+if($texte){
+  $texte=htmlentities($texte,ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
+}
 
 //			----------------	Suppression			-------------------------------//
-if(isset($_GET['suppression']) and isset($_GET['validation'])){
+if($suppression and $validation){
   $db=new db();
-  $db->query("delete from {$dbprefix}infos where id=".$_GET['id'].";");
+  $db->delete2("infos",array("id"=>$id));
   echo "<b>L'information a été supprimée</b>";
   echo "<br/><br/><a href='index.php?page=infos/index.php'>Retour</a>\n";
 }
-elseif(isset($_GET['suppression'])){
+elseif($suppression){
   echo "<h4>Etes vous sûr de vouloir supprimer cette information ?</h4>\n";
   echo "<form method='get' action='#' name='form'>\n";
   echo "<input type='hidden' name='page' value='infos/index.php'/>\n";
-  echo "<input type='hidden' name='suppression' value='oui'/>\n";
-  echo "<input type='hidden' name='validation' value='oui'/>\n";
-  echo "<input type='hidden' name='id' value='".$_GET['id']."'/>\n";
+  echo "<input type='hidden' name='suppression' value='1'/>\n";
+  echo "<input type='hidden' name='validation' value='1'/>\n";
+  echo "<input type='hidden' name='id' value='$id'/>\n";
   echo "<input type='button' value='Non' onclick='history.back();'  class='ui-button'/>\n";
   echo "&nbsp;&nbsp;&nbsp;";
   echo "<input type='submit' value='Oui' class='ui-button'/>\n";
@@ -50,31 +62,34 @@ elseif(isset($_GET['suppression'])){
 }
 //			----------------	FIN Suppression			-------------------------------//
 //			----------------	Validation du formulaire	-------------------------------//
-elseif(isset($_GET['validation'])){		//		Validation
+elseif($validation){		//		Validation
   echo "<b>Votre demande a été enregistrée</b>\n";
   echo "<br/><br/><a href='index.php?page=infos/index.php'>Retour</a>\n";
-  $db=new db();
-  if(isset($_GET['id']) and $_GET['id']!=null)
-    $db->update2("infos",array("debut"=>dateSQL($_GET['debut']),"fin"=>dateSQL($_GET['fin']),"texte"=>$_GET['texte']),array("id"=>$_GET['id']));
-  else
-    $db->insert2("infos",array("debut"=>dateSQL($_GET['debut']),"fin"=>dateSQL($_GET['fin']),"texte"=>$_GET['texte']));
+  if($id){
+    $db=new db();
+    $db->update2("infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte),array("id"=>$id));
+  }else{
+    $db=new db();
+    $db->insert2("infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte));
+  }
 }
 //			---------------		Vérification			------------------------------//
-elseif(isset($_GET['debut'])){
-  $texte=htmlentities($_GET['texte'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
-  $_GET['fin']=$_GET['fin']?$_GET['fin']:$_GET['debut'];
+elseif($debut){
+  if(!$fin){
+    $fin=$debut;
+  }
   echo "<h4>Confirmation</h4>";
-  echo "Du {$_GET['debut']} au {$_GET['fin']}";
+  echo "Du $debut au $fin";
   echo "<br/>";
   echo $texte;
   echo "<br/><br/>";
   echo "<form method='get' action='index.php' name='form'>";
   echo "<input type='hidden' name='page' value='infos/index.php'/>\n";
-  echo "<input type='hidden' name='debut' value='".$_GET['debut']."'/>\n";
-  echo "<input type='hidden' name='fin' value='".$_GET['fin']."'/>\n";
+  echo "<input type='hidden' name='debut' value='$debut'/>\n";
+  echo "<input type='hidden' name='fin' value='$fin'/>\n";
   echo "<input type='hidden' name='texte' value='$texte'/>\n";
-  echo "<input type='hidden' name='id' value='".$_GET['id']."'/>\n";
-  echo "<input type='hidden' name='validation' value='validation'/>\n";
+  echo "<input type='hidden' name='id' value='$id'/>\n";
+  echo "<input type='hidden' name='validation' value='1'/>\n";
   echo "<input type='button' value='Annuler' onclick='history.back();' class='ui-button' />";
   echo "&nbsp;&nbsp;&nbsp;\n";
   echo "<input type='submit' value='Valider' class='ui-button' />\n";
@@ -88,9 +103,9 @@ else{
   $db->query("SELECT * FROM `{$dbprefix}infos` WHERE `fin`>='$date' ORDER BY `debut`,`fin`;");
   $infos=$db->result;
 
-  if(isset($_GET['id'])){
+  if($id){
     $db=new db();
-    $db->query("select * from {$dbprefix}infos where id=".$_GET['id'].";");
+    $db->select2("infos","*",array("id"=>$id));
     $debut=dateFr($db->result[0]['debut']);
     $fin=dateFr($db->result[0]['fin']);
     $texte=$db->result[0]['texte'];
@@ -99,7 +114,6 @@ else{
   else{
     $debut=null;
     $fin=null;
-    $texte=null;
     $texte=null;
     $titre="Ajout d'une information\n";
   }
@@ -112,30 +126,30 @@ else{
   <table class='tableauFiches'>
   <tr><td style='padding-bottom:30px;' colspan='2'><b>$titre</b></td></tr>
   <tr><td><label class='intitule'>Date de d&eacute;but</label></td>
-  <td><input type='text' name='debut' value='".$debut."' class='datepicker' /></td></tr>
+  <td><input type='text' name='debut' value='$debut' class='datepicker' /></td></tr>
   <tr><td><label class='intitule'>Date de fin</label></td>
-  <td><input type='text' name='fin' value='".$fin."' class='datepicker'/></td></tr>
+  <td><input type='text' name='fin' value='$fin' class='datepicker'/></td></tr>
   <tr><td><label class='intitule'>Texte</label></td>
-  <td><textarea name='texte' rows='3' cols='16' class='ui-widget-content ui-corner-all'>".$texte."</textarea>
+  <td><textarea name='texte' rows='3' cols='16' class='ui-widget-content ui-corner-all'>$texte</textarea>
   </td></tr><tr><td>&nbsp;
   </td></tr>
   <tr><td colspan='2'>\n";
-  if(isset($_GET['id'])){
-    echo "<input type='button' value='Supprimer' onclick='document.location.href=\"index.php?page=infos/index.php&amp;id=".$_GET['id']."&amp;suppression=oui\";' class='ui-button'/>\n";
+  if($id){
+    echo "<input type='button' value='Supprimer' onclick='document.location.href=\"index.php?page=infos/index.php&amp;id={$id}&amp;suppression=1\";' class='ui-button'/>\n";
     echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
   }
   echo "<input type='button' value='Annuler' onclick='document.location.href=\"index.php?page=infos/index.php\";' class='ui-button' />
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <input type='submit' value='Valider' class='ui-button' />
   </td></tr></table>";
-  if(!empty($infos) and !isset($_GET['id'])){
+  if(!empty($infos) and !$id){
     echo "</td><td style='padding-left:100px;'>\n";
     echo "<table>\n";
     echo "<tr><td style='padding-bottom:30px;' colspan='4'><b>Informations en cours</b></td></tr>\n";
     foreach($infos as $elem){
       echo "<tr><td><a href='index.php?page=infos/index.php&amp;id={$elem['id']}'>\n";
       echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
-      echo "<a href='index.php?page=infos/index.php&amp;id={$elem['id']}&amp;suppression'>\n";
+      echo "<a href='index.php?page=infos/index.php&amp;id={$elem['id']}&amp;suppression=1'>\n";
       echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>\n";
       echo "<td>".dateFr($elem['debut'])."</td>\n";
       echo "<td>".dateFr($elem['fin'])."</td>\n";

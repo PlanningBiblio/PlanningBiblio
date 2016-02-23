@@ -1,13 +1,13 @@
 /*
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/js/modif.js
 Création : 3 mars 2014
-Dernière modification : 24 juin 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 9 avril 2015
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Fichier regroupant les fonctions JavaScript utiles à l'ajout et la modification des agents (modif.php)
@@ -109,12 +109,21 @@ $(function() {
     var select_id=select.attr("id");
     var options="";
     $("#"+select_id+" option").each(function(){
-      options+="<option value='"+$(this).val()+"'>"+$(this).text()+"</option>";
+      var val=sanitize_string($(this).val());
+      var text=sanitize_string($(this).text());
+      options+="<option value='"+val+"'>"+text+"</option>";
     });
+
+    var text=sanitize_string($("#add-statut-text").val());
+    if(!text){
+      CJInfo("Donnée invalide","error");
+      $("#add-statut-text").val();
+      return;
+    }
 
     var randomnumber=Math.floor((Math.random()*10000)+100)
     $("#statuts-sortable").append("<li id='li_"+randomnumber+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
-      +"<font id='valeur_"+randomnumber+"'>"+$("#add-statut-text").val()+"</font>"
+      +"<font id='valeur_"+randomnumber+"'>"+text+"</font>"
       +"<select id='categorie_"+randomnumber+"' style='position:absolute;left:330px;'>"
       +options
       +"</select>"

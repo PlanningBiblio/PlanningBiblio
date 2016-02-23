@@ -3,12 +3,12 @@
 Planning Biblio, Version 1.8.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/validation.php
 Création : 28 octobre 2013
 Dernière modification : 13 janvier 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Contrôle en arrière plan si un agent de catégorie A est placé en fin de service.

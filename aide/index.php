@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 1.8.2
+/**
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : aide/index.php
 Création : mai 2011
-Dernière modification : 24 juin 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 22 janvier 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affiche l'aide en ligne
@@ -16,15 +16,16 @@ Affiche l'aide en ligne
 Page appelée par la page index.php
 */
 
-// pas de $version=acces direct aux pages de ce dossier => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
+if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
+  include_once "../include/accessDenied.php";
+  exit;
 }
 ?>
 
 <h3>Aide en ligne</h3>
 
-<a id='a_retour' href='#'>Retour</a>
+<a id='a_retour' class='ui-button' href='#'>Retour</a>
 
 <div id='aide'>
 <ol>
@@ -44,6 +45,7 @@ if(!$version){
 	<li><a href='#pl_efface'>Effacer un planning</a></li>
 	<li><a href='#pl_valid'>Validation</a></li>
 	<li><a href='#pl_imprime'>Impression</a></li>
+	<li><a href='#pl_rappels'>Rappels</a></li>
 	</ol>
 	</li>
 <li><a href="#config_planning">Configuration du planning</a>
@@ -57,6 +59,12 @@ if(!$version){
 	<li><a href="#config_lignes_sep">Les lignes de séparation</a></li>
 	</ol>
 	</li>
+<li><a href='#presence'>Les heures de présence</a>
+	<ol>
+	<li><a href='#presence_module'>Heures de présence avec le module "Planning Hebdo"</a></li>
+	<li><a href='#presence_sans_module'>Heures de présence sans le module "Planning Hebdo"</a></li>
+	</ol>
+</li>
 <li><a href='#agents'>Les agents</a>
 	<ol>
 	<li><a href='#agent_ajout'>Ajout d'un agent</a></li>
@@ -144,13 +152,17 @@ Vous pouvez dans ce cas s&eacute;lectionnez le nom de  l'agent dans un menu dér
 <h3>3.) Planning</h3>
 <a name='pl_consul'></a>
 <h4>3.1) Consultation</h4>
-Permet à tous les agents de consulter le planning.<br/>
-Si votre biblioth&egrave;que a plusieurs sites, s&eacute;lectionnez le site voulu dans le sous menu "Planning".<br/>
+La page affichant le planning est accessible depuis le menu Planning.<br/>
+Elle permet à tous les agents de consulter le planning.<br/>
+Si votre biblioth&egrave;que a plusieurs sites, s&eacute;lectionnez le site voulu sous le menu "Planning".<br/>
 Sélectionnez la date voulue à l'aide du calendrier ou du jour de la semaine et le planning choisi s'affiche.<br/>
 Par défaut, le planning du jour courant du premier site est affiché.<br/>
 Si le planning n'est pas terminé, le message "Le planning du [date] n'est pas validé" s'affiche.<br/>
-Sinon, un tableau composé en lignes du nom des postes et en colonnes des horaires s'affiche.<br/>
-Dans les cellules apparaissent le nom des agents.<br/>
+Sinon, un tableau avec en lignes le nom des postes et en colonnes les horaires s'affiche.<br/>
+Le planning peut être composé de plusieurs tableaux. Vous pouvez choisir de masquer certains tableaux à l'aide de 
+l'icône representant un "oeil barré" situé à coté du nom du tableau à masquer. Pour afficher les tableaux masqués, 
+cliquez sur les liens composés du nom des tableaux en bas du planning.<br/>
+Dans les cellules des tableaux apparaissent le nom des agents.<br/>
 Selon la configuration de l'application, la liste des absents et/ou des présents est affiché en bas du planning.
 
 <a name='pl_modif'></a>
@@ -174,10 +186,10 @@ En fonction des heures faites et à faire, la couleur de la cellule change :
 <li>Rouge : soit l'agent fera plus de 7 heures par jours, soit l'agent dépassera son quota de plus de 30 minutes.</li>
 <li>Noir : Le quota ne sera pas atteint.</li>
 </ul>
-Si un agent a déjà effectué le poste choisi dans la journée, il apparaîtra en rouge dans le menu avec le message 
-"(DP)" (Déjà Placé).<br/>
-Si un agent est placé en continu entre 11h30 et 14h30, le message "(SR)" (Sans Repas) apparaîtra à coté de son nom 
-dans les cellules concernées par ces horaires. Dans ce cas, il apparaîtra en rouge avec le message "(SR)" dans le menu.<br/>
+Si un agent a déjà effectué le poste choisi dans la journée, le message "(DP)" (Déjà Placé) apparaîtra en rouge à coté de son nom dans le menu.<br/>
+Si un agent est placé en continu entre midi et 14h (période paramétrable dans le menu administration / configuration), 
+le message "(SR)" (Sans Repas) apparaîtra à coté de son nom dans les cellules concernées par ces horaires. 
+Le message "(SR)" apparaîtra également en rouge le menu.<br/>
 <br/>
 Si un agent est placé dans une cellule, vous pouvez :
 <ul style='margin-top:0px;'>
@@ -185,8 +197,20 @@ Si un agent est placé dans une cellule, vous pouvez :
 <li>le barrer en choisissant "Barrer", dans ce cas, il est considéré comme prévu à ce poste mais absent.</li>
 <li>le remplacer par un autre agent en choisissant un autre agent dans la liste.</li>
 <li>le barrer ET le remplacer en cliquant sur la croix rouge <font style='color:red;font-weight:bold;'>x</font> face au nom du nouvel agent.</li>
-<li>ajouter un 2<sup>ème</sup> agent en cliquant sur la croix bleue <font style='color:blue;font-weight:bold;'>+</font> face au nom du nouvel agent.</li>
+<li>ajouter d'autres agents en cliquant sur la croix bleue <font style='color:blue;font-weight:bold;'>+</font> face au nom des nouveaux agents.</li>
 </ul>
+En bas du menu, vous trouverez également les options suivantes :
+<ul style='margin-top:0px;'>
+<li>Tout supprimer</li>
+<li>Tout barrer</li>
+<li>Appel à disponibilités (selon configuration)</li>
+</ul>
+L'appel à disponibilités permet d'envoyer un e-mail à tous les agents disponibles aux heures choisies et qualifiés 
+pour le poste choisi afin de leur demander s'ils sont volontaires pour l'occuper.
+Les agents volontaires peuvent alors répondre par e-mail à la cellule planning qui complétera ensuite le tableau 
+en fonction des réponses.<br/>
+Si l'appel à disponibilités à déjà été envoyé, le nombre d'envois déjà effectués s'affiche à droite du lien.
+
 
 <a name='pl_modele'></a>
 <h4>3.3) Utilisation des modèles</h4>
@@ -220,6 +244,19 @@ ou en utilisant la commande d'impression de votre navigateur (Fichier / Imprimer
 Il est recommandé d'utiliser Firefox pour l'impression du planning.<br/>
 Avant la première impression, vous devez configurer votre navigateur pour que les couleurs d'arrière plan s'impriment.
 Pour ceci, dans Firefox, allez dans fichier, mise en page et cochez "Imprimer le fond de page (couleur et images)".<br/>
+
+
+
+<a name='pl_rappels'></a>
+<h4>3.7) Rappels</h4>
+Planning Biblio peut envoyer automatiquement des rappels par e-mails à la cellule planning pour l'informer de l'état des 
+plannings à venir.<br/>
+La cellule planning est ainsi prévenue quelques jours avant si des tableaux sont incomplets ou non validés.<br/>
+Le nombre de jours à contrôler est paramétrable (Administration / Configuration / Rappels). Vous devez renseigner le nombre de jours ouvrés. 
+Si la période à contrôler couvre un samedi et un dimanche, le samedi sera contrôlé, le dimanche également si votre établissement ouvre les 
+dimanches.<br/>
+Pour mettre en place ces rappels, l'intervention de l'administrateur du serveur est nécessaire. La procédure est donnée dans 
+le guide d'installation.
 
 <a name="config_planning"></a>
 <h3>4) Configuration du planning</h3>
@@ -280,27 +317,59 @@ groupe et les tableaux seront affectés du lundi au samedi (ou dimanche).
 Vous pouvez ajouter, modifier, supprimer des lignes de séparation dans le menu "Administration - Les tableaux".<br/>
 
 
+<a name='presence'></a>
+<h3>5.) Heures de présence</h3>
+<a name='presence_module'></a>
+<h4>5.1 ) Heures de présence avec le module "Planning Hebdo"</h4>
+<p>
+Le module "Planning Hebdo" permet de gérer différents plannings de présence dans le temps. Avec ce module, les agents peuvent avoir par exemple des horaires standards et des horaires différents  
+pour les périodes avec ouvertures réduites. Il permet également d'anticiper les changements d'horaires liés à la modification d'un contrat de travail.
+<br/>Ce module est à présent intégré à Planning Biblio. Vous pouvez l'activer depuis le menu "Administration / Configuration".<br/><br/>
+Si le module "Planning Hebdo" est activé, les heures de présence peuvent être saisies par les agents (selon la configuration choisie) et validées par les administrateurs.
+<br/>Si l'application est configurée de façon à autoriser la saisies des heures de présence par les agents, ceux-ci peuvent les saisir dans le menu "Mon compte", onglet "Mes heures de présence".
+Ils doivent choisir une date de début et une date de fin d'effet.
+<br/>Les administrateurs (agents ayant le droit de gérer les plannings de présence) doivent ensuite les valider dans le menu "Administration / Plannings de présence".
+<br/>Ils peuvent également apporter des modifications sans les valider directement avec le bouton "Enregistrer SANS valider".
+<br/>Les adminstrateurs peuvent copier les plannings de présence depuis la liste avec l'icône <span class='pl-icon pl-icon-copy' title='Copier'></span> ou 
+avec le bouton "Enregistrer une copie" depuis la fiche. Dans ce cas, ils doivent changer les dates de début et de fin d'effet de façon à ce qu'aucun planning ne se chevauche. 
+Ils peuvent également les copier pour les affecter à d'autres agents en utilisant l'icône <span class='pl-icon pl-icon-copy' title='Copier'></span> depuis la liste.
+<br/><br/>Si vous utilisez le plugin "congés", l'utilisation du module "Planning Hebdo" est obligatoire et vous devez veiller à ce qu'il n'y ait pas de manque entre deux plannings de présence 
+(ex: si un planning se termine le 31 août, le suivant devra débuter le 1er septembre) sinon le calcul des crédits ne fonctionnera pas.
+</p>
+
+<a name='presence_sans_module'></a>
+<h4>5.2 ) Heures de présence sans le module "Planning Hebdo"</h4>
+<p>
+Sans le module "Planning Hebdo", vous ne pourrez pas gérer les horaires de présence dans le temps. 
+La modification des plannings de présence se fera dans la fiche des agents (voir <a href='#agent_ajout'>6.1) Ajout d'un agent</a>) et les 
+modifications prendront effet immédiatement.
+</p>
 
 <a name="agents"></a>
-<h3>5) Les agents</h3>
+<h3>6.) Les agents</h3>
 Dans le menu "Administration/Les agents", vous pouvez voir la liste de tous les agents enregistrés dans l'application.<br/>
 Vous pouvez filtrer les agents de "service public" et les agents "administratifs" (ne faisant pas de service public).<br/>
 Vous pouvez également rechercher un agent en tapant son nom ou son prénom dans le cadre "Rechercher".<br/>
 
 <a name="agent_ajout"></a>
-<h4>5.1 ) Ajout d'un agent</h4>
+<h4>6.1 ) Ajout d'un agent</h4>
 Pour ajouter un agent, cliquez sur le bouton « Ajouter » puis remplissez le formulaire.<br/><br/>
 <b><u>1<sup>er</sup> onglet : Informations générales</u></b>
 <br/>Les champs nom, prénom et e-mail sont obligatoires.
 <br/>Choisissez le statut, le service de rattachement et le nombre d'heures hebdomadaires que l'agent doit faire en service public.
 <br/>Vous pouvez personnaliser la liste des statuts et des services en cliquant sur les signes <span class='pl-icon pl-icon-add' title='Ajouter'></span> 
 se trouvant à droite des menus déroulants. Vous devez attribuer une catégorie à chaque statut.
+<br/>Pour les heures de service public, vous pouvez choisir un nombre d'heures fixe (ex: 17 heures) ou un pourcentage (ex: 50%). 
+Si vous choisissez un pourcentage, le nombre d'heures sera calculé depuis le planning de présence de l'agent. 
+Les heures de service public à effectuer sont affichées et comparées aux heures faites pour chaque agent dans le menu qui permet de remplir le planning. 
+Les heures d'absences peuvent être déduites au même taux dans ce menu (si un pourcentage est choisi et selon la configuration de l'application).
 <br/>Dans le menu déroulant « Service public / Administratif » choisissez
 « Service public » pour toutes les personnes qui pourront apparaître dans les
 plannings, choisissez « administratif » pour les personnes qui doivent agir
 sur le planning (gestion du personnel, absences, ... ) mais qui n'apparaîtront pas dans les
 plannings.<br/>
-Complétez le champ "E-mail du responsable" si vous souhaitez qu'il soit notifié des absences de l'agent. (Selon la configuration de l'application).
+Complétez le champ "E-mails des responsables" si vous souhaitez qu'ils soient notifiés des absences de l'agent. (Selon la configuration de l'application). 
+Les adresses e-mails doivent être séparées par des ;
 <br/>
 Le champ "Récupération du samedi" est soit une zone de texte dans laquelle vous pouvez saisir des notes, soit un menu déroulant avec les 
 options "Prime" et "Temps" (selon la configuration de l'application). S'il s'agit d'un menu déroulant, choisissez l'option voulue par 
@@ -312,18 +381,20 @@ Sélectionnez dans la liste de gauche les activités que pourra effectuer l'agen
 Pour retirer une activité, sélectionnez-la dans la liste de droite puis cliquez sur "Supprimer".<br/>
 
 <br/>
-<b><u>3<sup>ème</sup> onglet : L'emploi du temps</u></b><br/>
-Dans le 3<sup>ème</sup> onglet, vous devez renseigner l'emploi du temps général de l'agent (heures de présence à la bibliothèque).<br/>
+<b><u>3<sup>ème</sup> onglet : Heures de présence</u></b><br/>
+Dans le 3<sup>ème</sup> onglet, vous devez renseigner les heures de présence de l'agent (présence dans l'établissement).<br/>
 Pour chaque journée (du lundi au samedi/dimanche), sélectionnez les heures d'arrivée et de départ ainsi que les heures de début et de fin de pause.<br/>
-Si votre configuration permet la saisie d'un emploi différent les semaines où le samedi est travaillé, renseignez-le dans le 2<sup>ème</sup> tableau 
-et cochez les semaines avec samedi travaillé.<br/>
+Si votre configuration permet la saisie d'un planning différent les semaines où le samedi est travaillé, renseignez-le dans le 2<sup>ème</sup> tableau 
+et cochez les semaines avec samedi travaillé.
+<br/>Si le module "Planning Hebdo" est activé, la saisie des plannings de présence se fait depuis le menu "Mon compte" pour les agents et depuis le menu 
+"Administration / Plannings de présence" pour les administrateurs. Dans ce cas, l'onget "Heures de présence" de la fiche agent permet seulement la consultation du planning en cours.<br/>
 
 <br/>
 <b><u>4<sup>ème</sup> onglet : Les droits d'accès</u></b><br/>
 Dans le 4<sup>ème</sup> onglet, vous devez renseigner les droits d'accès à l'application.<br/>
-Par défaut, un agent peut ajouter ses absences, voir son agenda et accéder au planning en lecture seule. 
-Dans ce cas, vous ne devez rien cocher. Vous pouvez ajouter l'accès à la modification de absences de l'agent, la gestion des absences 
-(de tous les agents), la gestion du personnel, des postes, la modification du planning et l'accès aux statistiques. 
+Par défaut, un agent peut ajouter ses absences, voir son agenda et accéder aux plannings en lecture seule. 
+Dans ce cas, vous ne devez rien cocher. Vous pouvez ajouter l'accès à la modification des absences de l'agent, la gestion des absences 
+de tous les agents, la gestion du personnel, des postes, la modification des plannings, la modification des commentaires des plannings et l'accès aux statistiques. 
 Le débogage permet d'afficher des informations supplémentaires lors de l'utilisation de l'application (ex : Numéro "ID" des agents ou 
 des postes dans les listes, nom des postes et horaires dans le menu déroulant du planning.)<br/>
 
@@ -332,13 +403,13 @@ des postes dans les listes, nom des postes et horaires dans le menu déroulant d
 Une fois les informations saisies, validez le formulaire (bouton "Valider" en haut à droite).
 
 <a name="agent_modif"></a>
-<h4>5.2 ) Modification de la fiche d'un agent</h4>
+<h4>6.2 ) Modification de la fiche d'un agent</h4>
 A partir de la liste des agents, cliquez sur l'icône <span class='pl-icon pl-icon-edit' title='Modifier'></span> devant le nom de l'agent choisi.<br/>
 Un formulaire s'ouvre avec les informations relatives à l'agent.<br/>
 Pour plus d'informations, référez-vous à l'article "Ajout d'un agent".
 
 <a name="agent_pass"></a>
-<h4>5.3 ) Modification du mot de passe d'un agent</h4>
+<h4>6.3 ) Modification du mot de passe d'un agent</h4>
 La fonction de modification du mot de passe ne doit être utilisée que si l'agent le
 demande (oubli ou non-réception).
 <br/>Ouvrez la fiche de l'agent (voir Modification de la fiche d'un agent)
@@ -350,18 +421,18 @@ généré et envoyé par email à l'agent.
 <br/>Vous pouvez ensuite fermer la fiche en cliquant sur Annuler ou Valider.
 
 <a name="agent_supp"></a>
-<h4>5.4 ) Suppression d'un agent</h4>
+<h4>6.4 ) Suppression d'un agent</h4>
 Trouvez l'agent dans la liste.
 <br/>Cliquez sur la corbeille.
 <br/>Remplissez le champ Date de départ puis validez.
 
 <a name="postes"></a>
-<h3>6) Les postes</h3>
+<h3>7) Les postes</h3>
 Dans le menu "Administration/Les postes", vous pouvez voir la liste des postes.<br/>
 Vous pouvez rechercher un poste en tapant son nom dans le cadre "Rechercher".<br/>
 
 <a name="poste_ajout"></a>
-<h4>6.1 ) Ajout d'un poste</h4>
+<h4>7.1 ) Ajout d'un poste</h4>
 Pour ajouter un poste, cliquez sur le bouton « Ajouter » puis complétez le formulaire.<br/><br/>
 Remplissez le nom du poste, choisissez son site (si configuration multisites), son étage.<br/>
 Cochez la case "Obligatoire" s'il est obligatoire ou "Renfort" s'il s'agit d'un poste de renfort.<br/>
@@ -372,25 +443,25 @@ Si aucune catégorie n'est cochée, les agents de toutes catégories pourront ê
 Validez.
 
 <a name="poste_modif"></a>
-<h4>6.2 ) Modification d'un poste</h4>
+<h4>7.2 ) Modification d'un poste</h4>
 Trouvez le poste dans la liste, cliquez sur l'icône <span class='pl-icon pl-icon-edit' title='Modifier'></span>
 devant le nom du poste à modifier.<br/>
 Modifier le formulaire (référez-vous à l'article "Ajout d'un poste" pour plus d'informations).
 
 <a name="poste_supp"></a>
-<h4>6.3 ) Suppression d'un poste</h4>
+<h4>7.3 ) Suppression d'un poste</h4>
 Pour supprimer un poste, cliquez sur l'icône représentant une corbeille devant le nom du poste dans la liste.<br/>
 Si un poste est utilisé dans un tableau, il n'est pas possible de le supprimer (la corbeille n'apparaît pas).
 
 <a name="activites"></a>
-<h3>7.) Les Activités</h3>
+<h3>8.) Les Activités</h3>
 Vous pouvez modifier la liste des activités dans le menu Administration/Les activités.<br/>
 Vous pouvez modifier les noms, ajouter des activités, en supprimer (si elles ne sont pas attribuées).
 
 <a name='statistiques'></a>
-<h3>8.) Statistiques</h3>
+<h3>9.) Statistiques</h3>
 <a name='stat_temps'></a>
-<h4>8.1) Feuille de temps</h4>
+<h4>9.1) Feuille de temps</h4>
 La feuille de temps est un tableau qui vous permet de voir le nombre d'heures effectuées par jour et par agent 
 entre deux dates. Par défaut, le tableau affiche les heures de la semaine courante.<br/>
 Les dernières colonnes affichent le total d'heures par agent sur la période, la moyenne hebdomadaire et les quotas d'heures 
@@ -399,7 +470,7 @@ Si vous avez plusieurs sites, le total et la moyenne par site sont également af
 Les deux dernières lignes affichent le total d'heures et le nombre d'agents par jour.
 
 <a name='stat_agent'></a>
-<h4>8.2) Statistiques par agent</h4>
+<h4>9.2) Statistiques par agent</h4>
 Les statistiques par agent affichent un tableau contenant par agent :
 <ul>
 <li>Le nombre d'heures faites entre les dates choisies</li>
@@ -416,15 +487,15 @@ Vous pouvez sélectionner plusieurs agents à l'aide des touches du clavier CTRL
 Cliquez ensuite sur le bouton "OK".
 
 <a name='stat_service'></a>
-<h4>8.3) Statistiques par service</h4>
+<h4>9.3) Statistiques par service</h4>
 Affiche les mêmes informations que les statistiques par agents en les groupant par service.
 
 <a name='stat_statut'></a>
-<h4>8.4) Statistiques par statut</h4>
+<h4>9.4) Statistiques par statut</h4>
 Affiche les mêmes informations que les statistiques par agents en les groupant par statut.
 
 <a name='stat_poste'></a>
-<h4>8.5) Statistiques par poste</h4>
+<h4>9.5) Statistiques par poste</h4>
 Les statistiques par poste affichent un tableau contenant par poste :
 <ul>
 <li>Le nombre d'heures faites entre les dates choisies</li>
@@ -439,7 +510,7 @@ Choisissez les postes dans le menu déroulant. Vous pouvez sélectionner plusieu
 Cliquez ensuite sur le bouton "OK".
 
 <a name='stat_renfort'></a>
-<h4>8.6) Statistiques par poste de renfort</h4>
+<h4>9.6) Statistiques par poste de renfort</h4>
 Les statistiques par poste de renfort affichent un tableau contenant par poste de renfort uniquement :
 <ul>
 <li>Le nombre d'heures faites entre les dates choisies</li>
@@ -454,7 +525,7 @@ Choisissez les postes dans le menu déroulant. Vous pouvez sélectionner plusieu
 Cliquez ensuite sur le bouton "OK".
 
 <a name='stat_synthese'></a>
-<h4>8.7) Statistiques par poste (Synthèse)</h4>
+<h4>9.7) Statistiques par poste (Synthèse)</h4>
 Les statistiques par poste (Synthèse) affichent un tableau contenant par poste :
 <ul>
 <li>Le nombre d'heures faites entre les dates choisies</li>
@@ -468,7 +539,7 @@ Choisissez les postes dans le menu déroulant. Vous pouvez sélectionner plusieu
 Cliquez ensuite sur le bouton "OK".
 
 <a name='stat_samedi'></a>
-<h4>8.8) Statistiques par samedi</h4>
+<h4>9.8) Statistiques par samedi</h4>
 Les statistiques par samedi affichent pour chaque agent, le nombre de samedis travaillés, le nombre d'heures de service public correspondant, 
 ainsi que les dates et le nombre d'heures de service pour chacune des dates.<br/>
 Une colonne affiche pour chaque agent son choix de recevoir une prime ou de récupérer ses heures (temps). Cette information est renseignée 
@@ -476,11 +547,11 @@ dans la fiche de l'agent.<br/>
 Vous pouvez effectuer un tri sur chaque colonne et filtrer à l'aide du champ "Rechercher" (recherche dans toutes les colonnes).
 
 <a name="informations"></a>
-<h3>9) Les informations</h3>
+<h3>10) Les informations</h3>
 Dans le menu "Administration / Informations", vous pouvez ajouter, modifier et supprimer des messages d'informations qui seront affichés aux dates voulues en haut des plannings. 
 
 <a name="fermeture"></a>
-<h3>10) Jours de fermeture</h3>
+<h3>11) Jours de fermeture</h3>
 Dans le menu "Administration / Jours de fermeture", vous pouvez renseigner, pour chaque année universitaire, les jours fériés et les jours de fermeture de la bibliothèque.<br/>
 Les jours fériés apparaissent automatiquement, vous pouvez y ajouter vos jours de fermeture en renseignant les dates, un nom et un commentaire. 
 Cochez également si le jour est férié et/ou fermé.<br/>

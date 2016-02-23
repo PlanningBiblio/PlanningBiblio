@@ -1,5 +1,7 @@
 maj.sh
+*.swp
 *~
+*.kate-swp
 data/*.xls
 data/*.csv
 data/*.txt
@@ -10,9 +12,11 @@ plugins/conges*
 plugins/ldap*
 plugins/pla*
 plugins/echanges*
+test-*
 themes/bua*
 themes/bis*
 themes/bsb*
-themes/grey*
+themes/gre*
 themes/lyon*
+themes/sciencesPo*
 

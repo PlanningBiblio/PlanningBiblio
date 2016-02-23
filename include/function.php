@@ -1,23 +1,24 @@
 <?php
-/*
-Planning Biblio, Version 1.9.3
+/**
+Planning Biblio, Version 2.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 31 mars 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 4 février 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Page contenant les fonctions PHP communes
 Page appelée par les fichiers index.php, setup/index.php et planning/poste/menudiv.php
 */
 
-// pas de $version=acces direct  => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
+if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
+  include_once "accessDenied.php";
+  exit;
 }
 
 class datePl{
@@ -69,9 +70,9 @@ class datePl{
     }
     // Calcul du numéro de la semaine pour l'utilisation de 3 plannings hebdomadaires
     if($GLOBALS['config']['nb_semaine']==3){
-      $position=date("w", strtotime($GLOBALS['config']['dateDebutPlHebdo']))-1;
+      $position=date("w", strtotime(dateSQL($GLOBALS['config']['dateDebutPlHebdo'])))-1;
       $position=$position==-1?6:$position;
-      $dateFrom=new dateTime($GLOBALS['config']['dateDebutPlHebdo']);
+      $dateFrom=new dateTime(dateSQL($GLOBALS['config']['dateDebutPlHebdo']));
       $dateFrom->sub(new DateInterval("P{$position}D"));
 
       $position=date("w", strtotime($date))-1;
@@ -95,12 +96,155 @@ class datePl{
   }
 }
 
+class sendmail{
+
+  public $message=null;
+  public $to=null;
+  public $subject=null;
+  public $error="";
+  public $error_encoded=null;
+  public $failedAddresses=array();
+  public $successAddresses=array();
+  
+  public function sendmail(){
+    $path=strpos($_SERVER["SCRIPT_NAME"],"planning/poste/ajax")?"../../":null;
+    $path=preg_match('/planning\/plugins\/.*\/ajax/', $_SERVER["SCRIPT_NAME"])?"../../":$path;
+    require_once("{$path}vendor/PHPMailer/class.phpmailer.php");
+    require_once("{$path}vendor/PHPMailer/class.smtp.php");
+  }
+  
+
+  private function prepare(){
+  
+    /* arrête la procédure d'envoi de mail si désactivé dans la config */
+    if(!$GLOBALS['config']['Mail-IsEnabled']){
+      $this->error.="L'envoi des e-mails est désactivé dans la configuration\n";
+      $this->successAddresses=array();
+      $this->failedAddresses=$this->to;
+      return false;
+    }
+
+    /* Met les destinataires dans un tableau s'ils sont dans une chaine de caractère séparée par des ; */
+    if(!is_array($this->to)){
+      $this->to=explode(";",$this->to);
+    }
+
+    /* Vérifie que les e-mails sont valides */
+    $to=array();
+    $incorrect=array();
+    foreach($this->to as $elem){
+      if(verifmail(trim($elem))){
+	$to[]=trim($elem);
+      }else{
+	$incorrect[]=trim($elem);
+	$this->failedAddresses[]=trim($elem);
+      }
+    }
+    $this->to=$to;
+
+    if(!empty($incorrect)){
+      $this->error.="Les adresses suivantes sont incorrectes : ".join(" ; ",$incorrect)."\n";
+    }
+
+    /* Arrête la procédure si aucun destinaire valide */
+    if(empty($this->to)){
+      $this->error.="Aucun destinataire valide pour cet e-mail\n";
+      return false;
+    }
+
+    /* Préparation du sujet */
+    $this->subject = stripslashes($this->subject);
+    $this->subject = "Planning : " . $this->subject;
+
+    /* Préparation du message, html, doctype, signature */
+    $message="<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
+    $message.="<html><head><title>Planning</title></head><body>";
+    $message.= $this->message;
+    $message.="<br/><br/>{$GLOBALS['config']['Mail-Signature']}<br/><br/>";
+    $message.="</body></html>";
+    $message = stripslashes($message);
+    $message = str_replace(array("\n","\r\n\n","\r\n"), "<br/>", $message);
+
+    $this->message = $message;
+  }
+
+  
+  public function send(){
+    if($this->prepare()===false){
+      return false;
+    }
+    
+    $mail = new PHPMailer();
+    if($GLOBALS['config']['Mail-IsMail-IsSMTP']=="IsMail")
+      $mail->IsMail();
+    else
+      $mail->IsSMTP();
+    $mail->CharSet="utf-8";
+    $mail->WordWrap =$GLOBALS['config']['Mail-WordWrap'];
+    $mail->Hostname =$GLOBALS['config']['Mail-Hostname'];
+    $mail->Host =$GLOBALS['config']['Mail-Host'];
+    $mail->Port =$GLOBALS['config']['Mail-Port'];
+    $mail->SMTPSecure = $GLOBALS['config']['Mail-SMTPSecure'];
+    $mail->SMTPAuth =$GLOBALS['config']['Mail-SMTPAuth'];
+    $mail->Username =$GLOBALS['config']['Mail-Username'];
+    $mail->Password =decrypt($GLOBALS['config']['Mail-Password']);
+    $mail->From =$GLOBALS['config']['Mail-From'];
+    $mail->FromName =$GLOBALS['config']['Mail-FromName'];
+    $mail->IsHTML();
+    
+    $mail->Body = $this->message;
+    
+   if(count($this->to)>1){
+      foreach($this->to as $elem){
+        $mail->addBCC($elem);
+      }
+    }
+    else{
+      $mail->AddAddress($this->to[0]);
+    }
+    
+    $mail->Subject = $this->subject;
+
+    if(!$mail->Send()){
+      $this->error.=$mail->ErrorInfo ."\n";
+      
+      // error_CJInfo: pour affichage dans CJInfo (JS)
+      $this->error_CJInfo=str_replace("\n","#BR#",$this->error);
+      
+      // Liste des destinataires pour qui l'envoi a fonctionné
+      $this->successAddresses=$this->to;
+
+      // Liste des destinataires pour qui l'envoi a échoué
+      $pos=stripos($this->error,"SMTP Error: The following recipients failed: ");
+
+      if($pos!==false){
+	$failedAddr=substr($this->error,$pos+45);
+	$end=strpos($failedAddr,"\n");
+	$failedAddr=substr($failedAddr,0,$end);
+	$failedAddr=explode(", ",$failedAddr);
+
+	$this->failedAddresses=array_merge($this->failedAddresses,$failedAddr);
+	
+	$this->successAddresses=array();
+	foreach($this->to as $elem){
+	  if(!in_array($elem,$failedAddr)){
+	    $this->successAddresses[]=$elem;
+	  }
+	}
+      }
+    }
+  return true;
+  }
+}
+
+
 function absents($date,$tables){
   $tables=explode(",",$tables);
   $liste="";
   $tab=array();
   foreach($tables as $table){
     $etat=($table=="conges" ? "and etat='Accepté'" : "");
+
     $db=new db();
     $db->query("select perso_id from $table where debut<='$date' and fin >='$date' $etat;");
     if(is_array($db->result))
@@ -119,14 +263,220 @@ function absents($date,$tables){
 
 function authSQL($login,$password){
   $auth=false;
-  $db=new dbh();
-  $db->select("personnel",array("id","nom","prenom"),array("login"=>$login, "password"=>MD5($password), "supprime"=>0));
+  $db=new db();
+  $db->select2("personnel",array("id","nom","prenom"),array("password"=>MD5($password), "login"=>$login, "supprime"=>0));
   if($db->nb==1 and $login!=null){
     $auth=true;
     $_SESSION['oups']['Auth-Mode']="SQL";
   }
   return $auth;
 }
+
+/**
+* @function calculHeuresSP
+* @param date string, date au format AAAA-MM-DD
+* Calcul le nombre d'heures de SP que les agents doivent effectuer pour la semaine définie par $date
+* Retourne le résultat sous forme d'un tableau array(perso_id1 => heures1, perso_id2 => heures2, ...)
+* Stock le résultat (json_encode) dans la BDD table heures_SP
+* Récupère et retourne le résultat à partir de la BDD si les tables personnel et planningHebdo n'ont pas été modifiées
+* pour gagner du temps lors des appels suivants.
+* Fonction utilisée par planning::menudivAfficheAgents et dans le script statistiques/temps.php
+*/
+function calculHeuresSP($date){
+  $config=$GLOBALS['config'];
+  $version=$GLOBALS['version'];
+
+  // Securité : Traitement pour une reponse Ajax
+  if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
+    $version='ajax';
+  }
+  $path=strpos($_SERVER['SCRIPT_NAME'],"planning/poste/ajax")?"../../":null;
+  require_once "{$path}include/horaires.php";
+  require_once "{$path}personnel/class.personnel.php";
+
+  $d=new datePl($date);
+  $dates=$d->dates;
+  $semaine3=$d->semaine3;
+  $j1=$dates[0];
+  $j7=$dates[6];
+
+  // Recherche des heures de SP des agents pour cette semaine
+  // Recherche si les tableaux contenant les heures de SP existe
+  $db=new db();
+  $db->select2("heures_SP","*",array("semaine"=>$j1));
+  $heuresSPUpdate=0;
+  if($db->result){
+    $heuresSPUpdate=$db->result[0]["update_time"];
+    $heuresSP=json_decode((html_entity_decode($db->result[0]["heures"],ENT_QUOTES|ENT_IGNORE,"utf-8")));
+    $tmp=array();
+    foreach($heuresSP as $key => $value){
+      $tmp[(int) $key] = $value;
+    }
+    $heuresSP=$tmp;
+  }
+
+  // Recherche des heures de SP avec le module planningHebdo
+  if($config['PlanningHebdo']){
+    require_once("{$path}planningHebdo/class.planningHebdo.php");
+
+    // Vérifie si la table planningHebdo a été mise à jour depuis le dernier calcul
+    $p=new planningHebdo();
+    $pHUpdate=strtotime($p->update_time());
+    
+    // Vérifie si la table personnel a été mise à jour depuis le dernier calcul
+    $p=new personnel();
+    $pUpdate=strtotime($p->update_time());
+
+    // Si la table planningHebdo a été modifiée depuis la Création du tableaux des heures
+    // Ou si le tableau des heures n'a pas été créé ($heuresSPUpdate=0), on le (re)fait.
+    if($pHUpdate>$heuresSPUpdate or $pUpdate>$heuresSPUpdate){
+      $heuresSP=array();
+    
+      // Recherche de tous les agents pouvant faire du service public
+      $p=new personnel();
+      $p->supprime=array(0,1,2);
+      $p->fetch("nom","Actif");
+      
+      // Recherche de tous les plannings de présence
+      $ph=new planningHebdo();
+      $ph->debut=$j1;
+      $ph->fin=$j7;
+      $ph->valide=true;
+      $ph->fetch();
+
+      if(!empty($p->elements)){
+	// Pour chaque agents
+	foreach($p->elements as $key1 => $value1){
+	  $heuresSP[$key1]=$value1["heuresHebdo"];
+
+	  if(strpos($value1["heuresHebdo"],"%")){
+	    $minutesHebdo=0;
+	    if($ph->elements and !empty($ph->elements)){
+	      // Calcul des heures depuis les plannings de présence
+	      // Pour chaque jour de la semaine
+	      foreach($dates as $key2 => $jour){
+		// On cherche le planning de présence valable pour chaque journée
+		foreach($ph->elements as $edt){
+		  if($edt['perso_id']==$value1["id"]){
+		    // Planning de présence trouvé
+		    if($jour>=$edt['debut'] and $jour<=$edt['fin']){
+		      // $pause = true si pause détectée le midi
+		      $pause=false;
+		      // Offset : pour semaines 1,2,3 ...
+		      $offset=($semaine3*7)-7;
+		      $key3=$key2+$offset;
+		      // Si heure de début et de fin de matiné
+		      if(array_key_exists($key3,$edt['temps']) and $edt['temps'][$key3][0] and $edt['temps'][$key3][1]){
+			$minutesHebdo+=diff_heures($edt['temps'][$key3][0],$edt['temps'][$key3][1],"minutes");
+			$pause=true;
+		      }
+		      // Si heure de début et de fin d'après midi
+		      if(array_key_exists($key3,$edt['temps']) and $edt['temps'][$key3][2] and $edt['temps'][$key3][3]){
+			$minutesHebdo+=diff_heures($edt['temps'][$key3][2],$edt['temps'][$key3][3],"minutes");
+			$pause=true;
+		      }
+		      // Si pas de pause le midi
+		      if(!$pause){
+			// Et heure de début et de fin de journée
+			if(array_key_exists($key3,$edt['temps']) and $edt['temps'][$key3][0] and $edt['temps'][$key3][3]){
+			  $minutesHebdo+=diff_heures($edt['temps'][$key3][0],$edt['temps'][$key3][3],"minutes");
+			}
+		      }
+		    }
+		  }
+		}
+	      }
+	    }
+
+	    $heuresRelles=$minutesHebdo/60;
+	    // On applique le pourcentage
+	    $pourcent=(float) str_replace("%",null,$value1["heuresHebdo"]);
+	    $heuresRelles=$heuresRelles*$pourcent/100;
+	    $heuresSP[$key1]=$heuresRelles;
+	  }
+	}
+	// Utilisateur "Tout le monde"
+	$heuresSP[2]=0;
+      }
+      
+      // Enregistrement des horaires dans la base de données
+      $db=new db();
+      $db->delete2("heures_SP",array("semaine"=>$j1));
+      $db=new db();
+      $db->insert2("heures_SP",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heuresSP)));
+    }
+
+  // Recherche des heures de SP sans le module planningHebdo
+  }else{
+    // Vérifie si la table personnel a été mise à jour depuis le dernier calcul
+    $p=new personnel();
+    $pUpdate=strtotime($p->update_time());
+
+    // Si la table personnel a été modifiée depuis la Création du tableaux des heures
+    // Ou si le tableau des heures n'a pas été créé ($heuresSPUpdate=0), on le (re)fait.
+    if($pUpdate>$heuresSPUpdate){
+      $heuresSP=array();
+      $p=new personnel();
+      $p->fetch("nom","Actif");
+      if(!empty($p->elements)){
+	// Pour chaque agents
+	foreach($p->elements as $key1 => $value1){
+	  $heuresSP[$key1]=$value1["heuresHebdo"];
+
+	  if(strpos($value1["heuresHebdo"],"%")){
+	    $minutesHebdo=0;
+	    if($value1['temps'] and is_serialized($value1['temps'])){
+	      $temps=unserialize($value1['temps']);
+
+	      // Calcul des heures
+	      // Pour chaque jour de la semaine
+	      foreach($dates as $key2 => $jour){
+		// $pause = true si pause détectée le midi
+		$pause=false;
+		// Offset : pour semaines 1,2,3 ...
+		$offset=($semaine3*7)-7;
+		$key3=$key2+$offset;
+		// Si heure de début et de fin de matiné
+		if(array_key_exists($key3,$temps) and $temps[$key3][0] and $temps[$key3][1]){
+		  $minutesHebdo+=diff_heures($temps[$key3][0],$temps[$key3][1],"minutes");
+		  $pause=true;
+		}
+		// Si heure de début et de fin d'après midi
+		if(array_key_exists($key3,$temps) and $temps[$key3][2] and $temps[$key3][3]){
+		  $minutesHebdo+=diff_heures($temps[$key3][2],$temps[$key3][3],"minutes");
+		  $pause=true;
+		}
+		// Si pas de pause le midi
+		if(!$pause){
+		  // Et heure de début et de fin de journée
+		  if(array_key_exists($key3,$temps) and $temps[$key3][0] and $temps[$key3][3]){
+		    $minutesHebdo+=diff_heures($temps[$key3][0],$temps[$key3][3],"minutes");
+		  }
+		}
+	      }
+	    }
+
+	    $heuresRelles=$minutesHebdo/60;
+	    // On applique le pourcentage
+	    $pourcent=(float) str_replace("%",null,$value1["heuresHebdo"]);
+	    $heuresRelles=$heuresRelles*$pourcent/100;
+	    $heuresSP[$key1]=$heuresRelles;
+	  }
+	}
+	// Utilisateur "Tout le monde"
+	$heuresSP[2]=0;
+      }
+
+      // Enregistrement des horaires dans la base de données
+      $db=new db();
+      $db->delete2("heures_SP",array("semaine"=>$j1));
+      $db=new db();
+      $db->insert2("heures_SP",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heuresSP)));
+    }
+  }
+  return (array) $heuresSP;
+}
+
 
 function cmp_0($a,$b){
   $a[0] > $b[0];
@@ -200,6 +550,13 @@ function cmp_nom_prenom_debut_fin($a,$b){
   return strtolower($a['nom']) > strtolower($b['nom']);
 }
 
+function cmp_debut_fin($a,$b){
+  if($a['debut'] == $b['debut']){
+    return $a['fin'] > $b['fin'];
+  }
+  return $a['debut'] > $b['debut'];
+}
+
 function cmp_debut_fin_nom($a,$b){
   if($a['debut'] == $b['debut']){
     if($a['fin'] == $b['fin']){
@@ -241,8 +598,14 @@ function compte_jours($date1, $date2, $jours){
 
 function createURL($page){
   // Construction d'une URL
-  $port=strtolower(substr($_SERVER['SERVER_PROTOCOL'],0,strpos($_SERVER['SERVER_PROTOCOL'],"/",0)));
-  $url="$port://{$_SERVER['SERVER_NAME']}".substr($_SERVER['REQUEST_URI'],0,strpos($_SERVER['REQUEST_URI'],"/",1));
+  $protocol = isset($_SERVER['HTTPS']) ? 'https' : 'http';
+  $port=$_SERVER['SERVER_PORT'];
+  if(($port==80 and $protocol=="http") or ($port==443 and $protocol=="https")){
+    $port=null;
+  }else{
+    $port=":".$port;
+  }
+  $url="$protocol://{$_SERVER['SERVER_NAME']}{$port}".substr($_SERVER['REQUEST_URI'],0,strpos($_SERVER['REQUEST_URI'],"/",1));
   $url.="/index.php?page=".$page;
   return $url;
 }
@@ -358,35 +721,6 @@ function dateFr($date,$heure=null){
   }
 }
 
-function dateFr2($date){
-  if($date=="0000-00-00" or $date=="00/00/0000" or $date=="" or !$date)
-    return null;
-  if(substr($date,4,1)=="-"){
-    $j=substr($date,8,2);
-    $m=substr($date,5,2);
-    $a=substr($date,0,4);
-    switch($m){
-      case "01" : $m=" janvier "; break;
-      case "02" : $m=" fevrier "; break;
-      case "03" : $m=" mars "; break;
-      case "04" : $m=" avril "; break;
-      case "05" : $m=" mai "; break;
-      case "06" : $m=" juin "; break;
-      case "07" : $m=" juillet "; break;
-      case "08" : $m=" août "; break;
-      case "09" : $m=" septembre "; break;
-      case "10" : $m=" octobre "; break;
-      case "11" : $m=" novembre "; break;
-      case "12" : $m=" décembre "; break;
-    }
-    return $j.$m.$a;
-  }
-  else{
-    $dateEn=substr($date,6,4)."-".substr($date,3,2)."-".substr($date,0,2);
-    return $dateEn;
-  }
-}
-
 function dateFr3($date){
   return preg_replace("/([0-9]{4})-([0-9]{2})-([0-9]{2})/","$3/$2/$1",$date);
 }
@@ -452,12 +786,6 @@ function getJSFiles($page){
   }
 }
 
-function heure($heure){
-  $heure=str_replace("h",":",$heure);
-  $heure=$heure.":00";
-  return $heure;
-}
-	
 function heure2($heure){
   $heure=explode(":",$heure);
   if(!array_key_exists(1,$heure))
@@ -525,39 +853,65 @@ function is_serialized($string){
   return false;
 }
 
-function mail2($To,$Sujet,$Message){
-  require_once("vendor/PHPMailer/class.phpmailer.php");
-  require_once("vendor/PHPMailer/class.smtp.php");
-  $mail = new PHPMailer();
-  if($GLOBALS['config']['Mail-IsMail-IsSMTP']=="IsMail")
-    $mail->IsMail();
-  else
-    $mail->IsSMTP();
-  $mail->CharSet="utf-8";
-  $mail->WordWrap =$GLOBALS['config']['Mail-WordWrap'];
-  $mail->Hostname =$GLOBALS['config']['Mail-Hostname'];
-  $mail->Host =$GLOBALS['config']['Mail-Host'];
-  $mail->Port =$GLOBALS['config']['Mail-Port'];
-  $mail->SMTPSecure = $GLOBALS['config']['Mail-SMTPSecure'];
-  $mail->SMTPAuth =$GLOBALS['config']['Mail-SMTPAuth'];
-  $mail->Username =$GLOBALS['config']['Mail-Username'];
-  $mail->Password =decrypt($GLOBALS['config']['Mail-Password']);
-  $mail->From =$GLOBALS['config']['Mail-From'];
-  $mail->FromName =$GLOBALS['config']['Mail-FromName'];
+/**
+ * Log le login tenté et l'adresse IP du client dans la table IPBlocker pour bloquer si trop d'échec
+ * @param string $login : login saisi par l'utilisateur
+ * @param int config IPBlocker-TimeChecked : période en minutes pendant laquelle on recherche les échecs
+ * @param int config IPBlocker-Attempts : nombre d'échecs autorisés
+ */
+function loginFailed($login){
+	// Recherche le nombre de login failed lors des $seconds dernières secondes
+	$seconds=$GLOBALS['config']['IPBlocker-TimeChecked']*60;
+	$attempts=$GLOBALS['config']['IPBlocker-Attempts'];
 
-  $mail->IsHTML();
-  $mail->Body = $Message;
-  if(is_array($To)){
-    foreach($To as $elem){
-      $mail->AddAddress($elem);
-    }
-  }
-  else{
-    $mail->AddAddress($To);
-  }
+	$timestamp=date("Y-m-d H:i:s",strtotime(" -$seconds seconds"));	
+	$db=new db();
+	$db->select2("IPBlocker",null,array("ip"=>$_SERVER['REMOTE_ADDR'], "status"=>"failed", "timestamp"=> ">=$timestamp"));
+	// S'il y a eu $attempts -1 echecs lors des $seconds dernières secondes, on block l'accès 
+	$status=$db->nb>=$attempts?"blocked":"failed";
 
-  $mail->Subject = $Sujet;
-  $mail->Send();
+	// Insertion dans la base de données
+	$insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>$status);
+	$db=new db();
+	$db->insert2("IPBlocker",$insert);
+}
+
+/**
+ * Retourne le nombre de secondes restantes avant que l'IP bloquée soit de nouveau autorisée à se connecter
+ * @param int config IPBlocker-Wait : temps de blocages des IP en minutes
+ */
+function loginFailedWait(){
+	$seconds=$GLOBALS['config']['IPBlocker-Wait']*60;
+	$wait=0;
+
+	$db=new db();
+	$db->select2("IPBlocker","timestamp",array("ip"=>$_SERVER['REMOTE_ADDR'], "status"=>"blocked"),"ORDER BY `timestamp` DESC LIMIT 0,1");
+
+	if($db->result){
+		$timestamp=$db->result[0]['timestamp'];
+		$wait=strtotime($timestamp) + (int) $seconds - time();
+	}
+	return $wait;
+}
+
+/**
+ * Log le login et l'adresse IP du client dans la table IPBlocker pour informations
+ * @param string $login : login saisi par l'utilisateur
+ */
+function loginSuccess($login){
+	$insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>"success");
+	$db=new db();
+	$db->insert2("IPBlocker",$insert);
+}
+
+function logs($msg,$program=null,$type=array("db")){
+  if(in_array("db",$type)){
+    $db=new db();
+    $db->insert2("log",array("msg"=>$msg,"program"=>$program));
+  }
+  if(in_array("syslog",$type)){
+    error_log($program.": ".$msg);
+  }
 }
 
 function MinToHr($minutes){
@@ -592,7 +946,7 @@ function nom($id,$format="nom p"){
   }
   return $nom;
 }
-	
+
 function php2js( $php_array, $js_array_name ){
   // contrôle des parametres d'entrée
   if( !is_array( $php_array ) ) {
@@ -651,7 +1005,7 @@ function removeAccents($string){
   $string=strtr($string,$pairs);
   return htmlentities($string,ENT_QUOTES|ENT_IGNORE,"UTF-8");
 }
-	
+
 function selectHeure($min,$max,$blank=false,$quart=false,$selectedValue=null){
   if($blank)
     echo "<option value=''>&nbsp;</option>\n";
@@ -706,38 +1060,6 @@ function selectTemps($jour,$i,$periodes=null,$class=null){
   }
   $select.="</select>\n";
   return $select;
-}
-
-function sendmail($Sujet,$Message,$destinataires,$alert=true){
-  if(!$GLOBALS['config']['Mail-IsEnabled'])
-    return false;
-  if(!is_array($destinataires)){
-    $destinataires=explode(";",$destinataires);
-  }
-  if(!empty($destinataires)){
-    $Entete="<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
-    $Entete.="<html><head><title>Planning</title></head><body>";
-    $Message=$Entete.$Message;
-    $Message.="<br/><br/>{$GLOBALS['config']['Mail-Signature']}<br/><br/>";
-    $Message.="</body></html>";
-
-    $Sujet = stripslashes($Sujet);
-    $Sujet = "Planning : $Sujet";
-    $Message = stripslashes($Message);
-    $Message= str_replace(array("\n","\r\n\n","\r\n"), "<br/>", $Message);
-    $to=array();
-    foreach($destinataires as $destinataire){
-      if(verifmail(trim($destinataire))){
-	$to[]=trim($destinataire);
-      }
-      elseif($alert){
-	echo "<script type='text/JavaScript'>information('Adresse mail invalide (\"$destinataire\")','error');</script>";
-      }
-    }
-    if(!empty($to)){
-      mail2($to,$Sujet,$Message);
-    }
-  }
 }
 
 function soustrait_tab($tab1,$tab2){

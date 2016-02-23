@@ -1,14 +1,16 @@
 <?php
-/*
-Planning Biblio, Version 1.8.9
+/**
+Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
-Dernière modification : 12 janvier 2015
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 3 décembre 2015
+@author Jérôme Combes <jerome@planningbiblio.fr>
+@author Farid Goara <farid.goara@u-pem.fr>
+
 
 Description :
 Cette page affiche tous les plannings de la semaine choisie.
@@ -22,9 +24,13 @@ include_once "personnel/class.personnel.php";
 include "fonctions.php";
 
 // Initialisation des variables
+$groupe=filter_input(INPUT_GET,"groupe",FILTER_SANITIZE_NUMBER_INT);
+$site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
+$tableau=filter_input(INPUT_GET,"tableau",FILTER_SANITIZE_NUMBER_INT);
 $verrou=false;
+
 //		------------------		DATE		-----------------------//
-$date=isset($_GET['date'])?$_GET['date']:null;
+$date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
 if(!$date and array_key_exists('PLdate',$_SESSION)){
   $date=$_SESSION['PLdate'];
 }
@@ -52,7 +58,6 @@ $_SESSION['oups']['week']=true;
 // Multisites : la variable $site est égale à 1 par défaut.
 // Elle prend la valeur GET['site'] si elle existe, sinon la valeur de la SESSION ['site']
 // En dernier lieu, la valeur du site renseignée dans la fiche de l'agent
-$site=isset($_GET['site'])?$_GET['site']:null;
 if(!$site and array_key_exists("site",$_SESSION['oups'])){
   $site=$_SESSION['oups']['site'];
 }
@@ -80,7 +85,7 @@ else{
 // Catégories
 $categories=array();
 $db=new db();
-$db->select("select_categories");
+$db->select2("select_categories");
 if($db->result){
   foreach($db->result as $elem){
     $categories[$elem['id']]=$elem['valeur'];
@@ -91,7 +96,9 @@ $fin=$config['Dimanche']?6:5;
 
 //	Selection des messages d'informations
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}infos` WHERE `debut`<='{$dates[$fin]}' AND `fin`>='{$dates[0]}' ORDER BY `debut`,`fin`;");
+$dateDebut=$db->escapeString($dates[0]);
+$dateFin=$db->escapeString($dates[$fin]);
+$db->query("SELECT * FROM `{$dbprefix}infos` WHERE `debut`<='$dateFin' AND `fin`>='$dateDebut' ORDER BY `debut`,`fin`;");
 $messages_infos=null;
 if($db->result){
   foreach($db->result as $elem){
@@ -106,7 +113,7 @@ echo "<div id='planning-semaine'>\n";
 echo "<div id='divcalendrier' class='text'>\n";
 
 echo "<form name='form' method='get' action='#'>\n";
-echo "<input type='hidden' id='date' name='date' />\n";
+echo "<input type='hidden' id='date' name='date' data-set-calendar='$date' />\n";
 echo "</form>\n";
 
 echo "<table id='tab_titre'>\n";
@@ -158,7 +165,7 @@ echo "</td><td id='td_boutons'>\n";
 //	----------------------------	Récupération des postes		-----------------------------//
 $postes=Array();
 $db=new db();
-$db->query("SELECT * FROM `{$dbprefix}postes` ORDER BY `id`;");
+$db->select2("postes","*","1","ORDER BY `id`");
 if($db->result){
   foreach($db->result as $elem){
     $postes[$elem['id']]=Array("nom"=>$elem['nom'],"etage"=>$elem['etage'],"obligatoire"=>$elem['obligatoire'],"categories"=>is_serialized($elem['categories'])?unserialize($elem['categories']):array());
@@ -178,7 +185,7 @@ echo "</table></div>\n";
 
 // Lignes de separation
 $db=new db();
-$db->select("lignes");
+$db->select2("lignes");
 if($db->result){
   foreach($db->result as $elem){
     $lignes_sep[$elem['id']]=$elem['nom'];
@@ -194,22 +201,22 @@ for($j=0;$j<=$fin;$j++){
   $date_validation2=null;
   $heure_validation2=null;
 
-  $db_verrou=new db();
-  $db_verrou->query("SELECT * FROM `{$dbprefix}pl_poste_verrou` WHERE `date`='$date' AND `site`='$site';");
-  if($db_verrou->result){
-    $verrou=$db_verrou->result[0]['verrou2'];
-    $perso=nom($db_verrou->result[0]['perso']);
-    $perso2=nom($db_verrou->result[0]['perso2']);
-    $date_validation=dateFr(substr($db_verrou->result[0]['validation'],0,10));
-    $heure_validation=substr($db_verrou->result[0]['validation'],11,5);
-    $date_validation2=dateFr(substr($db_verrou->result[0]['validation2'],0,10));
-    $heure_validation2=substr($db_verrou->result[0]['validation2'],11,5);
-    $validation2=$db_verrou->result[0]['validation2'];
+  $db=new db();
+  $db->select2("pl_poste_verrou","*",array("date"=>$date, "site"=>$site));
+  if($db->result){
+    $verrou=$db->result[0]['verrou2'];
+    $perso=nom($db->result[0]['perso']);
+    $perso2=nom($db->result[0]['perso2']);
+    $date_validation=dateFr(substr($db->result[0]['validation'],0,10));
+    $heure_validation=substr($db->result[0]['validation'],11,5);
+    $date_validation2=dateFr(substr($db->result[0]['validation2'],0,10));
+    $heure_validation2=substr($db->result[0]['validation2'],11,5);
+    $validation2=$db->result[0]['validation2'];
   }
 
   //		---------------		Choix du tableau	-----------------------------//	
   $db=new db();
-  $db->query("SELECT `tableau` FROM `{$dbprefix}pl_poste_tab_affect` WHERE `date`='$date' AND `site`='$site';");
+  $db->select2("pl_poste_tab_affect","tableau",array("date"=>$date, "site"=>$site));
   $tab=$db->result[0]['tableau'];
 
   if(!$tab){
@@ -237,16 +244,13 @@ for($j=0;$j<=$fin;$j++){
     //--------------	Recherche des infos cellules	------------//
     // Toutes les infos seront stockées danx un tableau et utilisées par les fonctions cellules_postes
     $db=new db();
-    $db->query("SELECT `{$dbprefix}pl_poste`.`perso_id` AS `perso_id`,`{$dbprefix}pl_poste`.`debut` AS `debut`,
-    `{$dbprefix}pl_poste`.`fin` AS `fin`, `{$dbprefix}pl_poste`.`poste` AS `poste`, 
-    `{$dbprefix}pl_poste`.`absent` AS `absent`, `{$dbprefix}pl_poste`.`supprime` AS `supprime`, 
-    `{$dbprefix}pl_poste`.`poste` AS `poste`, `{$dbprefix}personnel`.`nom` AS `nom`, 
-    `{$dbprefix}personnel`.`prenom` AS `prenom`, `{$dbprefix}personnel`.`statut` AS `statut`, 
-    `{$dbprefix}personnel`.`service` AS `service` 
-    FROM `{$dbprefix}pl_poste` 
-    INNER JOIN `{$dbprefix}personnel` ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id` 
-    WHERE `date`='$date' AND `{$dbprefix}pl_poste`.`site`='$site' 
-    ORDER BY `{$dbprefix}pl_poste`.`absent` desc,`{$dbprefix}personnel`.`nom`, `{$dbprefix}personnel`.`prenom` ;");
+    $db->selectInnerJoin(array("pl_poste","perso_id"),array("personnel","id"),
+      array("perso_id","debut","fin","poste","absent","supprime"),
+      array("nom","prenom","statut","service"),
+      array("date"=>$date, "site"=>$site),
+      array(),
+      "ORDER BY `{$dbprefix}pl_poste`.`absent` desc,`{$dbprefix}personnel`.`nom`, `{$dbprefix}personnel`.`prenom`"); 
+
     global $cellules;
     $cellules=$db->result;
     
@@ -329,9 +333,10 @@ for($j=0;$j<=$fin;$j++){
   $p->site=$site;
   $p->getNotes();
   $notes=$p->notes;
+  $notesDisplay=trim($notes)?null:"style='display:none;'";
 
   echo <<<EOD
-  <div class='pl-notes-div1'>
+  <div class='pl-notes-div1' $notesDisplay >
   $notes
   </div>
 EOD;

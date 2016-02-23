@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 1.8.8
+/**
+Planning Biblio, Version 2.0.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 10 décembre 2014
-Auteur : Jérôme Combes, jerome@planningbilbio.fr
+Dernière modification : 3 décembre 2015
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Classe personnel : contient la fonction personnel::fetch permettant de rechercher les agents. 
@@ -17,9 +17,9 @@ personnel::fetch prend en paramètres $tri (nom de la colonne), $actif (string),
 Page appelée par les autres fichiers du dossier personnel
 */
 
-// pas de $version=acces direct aux pages de ce dossier => redirection vers la page index.php
-if(!$version){
-  header("Location: ../index.php");
+// pas de $version=acces direct aux pages de ce dossier => Accès refusé
+if(!isset($version)){
+  include_once "../include/accessDenied.php";
 }
 
 class personnel{
@@ -52,10 +52,13 @@ class personnel{
     if(in_array("conges",$plugins)){
       include "plugins/conges/suppression_agents.php";
     }
-    if(in_array("planningHebdo",$plugins)){
-      include "plugins/planningHebdo/suppression_agents.php";
-    }
+    if($config['PlanningHebdo']){
+      require_once "planningHebdo/class.planningHebdo.php";
 
+      // recherche des personnes à exclure (congés)
+      $p=new planningHebdo();
+      $p->suppression_agents($liste);
+    }
   }
 
   public function fetch($tri="nom",$actif=null,$name=null){
@@ -116,7 +119,7 @@ class personnel{
 
 
   public function fetchEDTSamedi($perso_id,$debut,$fin){
-    if(!$GLOBALS['config']['EDTSamedi']){
+    if(!$GLOBALS['config']['EDTSamedi'] or $GLOBALS['config']['PlanningHebdo']){
       return false;
     }
     $db=new db();
@@ -128,8 +131,14 @@ class personnel{
     }
   }
 
+  public function update_time(){
+    $db=new db();
+    $db->query("show table status from {$GLOBALS['config']['dbname']} like '{$GLOBALS['dbprefix']}personnel';");
+    return $db->result[0]['Update_time'];
+  }
+  
   public function updateEDTSamedi($eDTSamedi,$debut,$fin,$perso_id){
-    if(!$GLOBALS['config']['EDTSamedi']){
+    if(!$GLOBALS['config']['EDTSamedi'] or $GLOBALS['config']['PlanningHebdo']){
       return false;
     }
 
