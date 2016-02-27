@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.2.1
+Planning Biblio, Version 2.2.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 19 février 2016
+Dernière modification : 27 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -515,15 +515,15 @@ else{
 	}
 	echo "</td>\n";
 	$i=1;
-	$j=1;
+	$k=1;
 	foreach($tab['horaires'] as $horaires){
 	  // Recherche des infos à afficher dans chaque cellule 
 	  // Cellules grisées si définies dans la configuration du tableau et si la colonne a été ajoutée automatiquement
-	  if(in_array("{$ligne['ligne']}_{$j}",$tab['cellules_grises']) or in_array($i-1,$cellules_grises)){
+	  if(in_array("{$ligne['ligne']}_{$k}",$tab['cellules_grises']) or in_array($i-1,$cellules_grises)){
 	    echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."' class='cellule_grise'>&nbsp;</td>";
 	    // Si colonne ajoutée, ça décale les cellules grises initialement prévues. On se décale d'un cran en arrière pour rétablir l'ordre 
 	    if(in_array($i-1,$cellules_grises)){
-	      $j--;
+	      $k--;
 	    }
 	  }
 	  // fonction cellule_poste(date,debut,fin,colspan,affichage,poste,site)
@@ -531,7 +531,7 @@ else{
 	    echo cellule_poste($date,$horaires["debut"],$horaires["fin"],nb30($horaires['debut'],$horaires['fin']),"noms",$ligne['poste'],$site);
 	  }
 	$i++;
-	$j++;
+	$k++;
 	}
 	echo "</tr>\n";
       }

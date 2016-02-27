@@ -1,3 +1,11 @@
+***	Version 2.2.2	(Jérôme Combes, 27 février 2016)			***
+- Correction
+Corrige une erreur sur le masquage des tableaux
+
+***	Version 2.2.1	(Jérôme Combes, 23 février 2016)			***
+- Correction
+Corrige une erreur sur le positionnement des cellules grisées
+
 ***	Version 2.2	(Jérôme Combes, 17 février 2016)			***
 - Amélioration :
 Ajout du blocage d'adresses IP après échec d'authentification (paramètrable dans administration / configuration).
