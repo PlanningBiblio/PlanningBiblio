@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 9 janvier 2016
+Dernière modification : 27 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -324,7 +324,7 @@ class planningHebdo{
     $data['debut']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/","$3-$2-$1",$data['debut']);
     $data['fin']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/","$3-$2-$1",$data['fin']);
 
-    $perso_id=array_key_exists("perso_id",$data)?$data["perso_id"]:$_SESSION['login_id'];
+    $perso_id=array_key_exists("valide",$data)?$data["valide"]:$_SESSION['login_id'];
 
     $temps=serialize($data['temps']);
     $update=array("debut"=>$data['debut'],"fin"=>$data['fin'],"temps"=>$temps,"modif"=>$perso_id,"modification"=>date("Y-m-d H:i:s"));
@@ -332,6 +332,7 @@ class planningHebdo{
       $update['valide']=$perso_id;
       $update['validation']=date("Y-m-d H:i:s");
     }
+    
     $db=new db();
     $db->update2("planningHebdo",$update,array("id"=>$data['id']));
     $this->error=$db->error;

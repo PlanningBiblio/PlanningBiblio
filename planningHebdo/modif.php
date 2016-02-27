@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0.1
+Planning Biblio, Version 2.2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planningHebdo/modif.php
 Création : 23 juillet 2013
-Dernière modification : 30 juillet 2015
+Dernière modification : 27 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -172,7 +172,7 @@ echo "</div> <!-- id=periode -->\n";
 <input type='hidden' name='validation' value='0' />
 <input type='hidden' name='retour' value='<?php echo $retour; ?>' />
 <input type='hidden' name='id' value='<?php echo $id; ?>' />
-<input type='hidden' name='valide' value='<?php echo $valide; ?>' />
+<input type='hidden' name='valide' value='<?php echo $_SESSION['login_id']; ?>' />
 <input type='hidden' name='remplace' value='<?php echo $remplace; ?>' />
 
 <!-- Affichage des tableaux avec la sélection des horaires -->
