@@ -537,7 +537,7 @@ else{
       }
       // Lignes de séparation
       if($ligne['type']=="ligne"){
-	echo "<tr class='tr_separation'>\n";
+	echo "<tr class='tr_separation tableau$j'>\n";
 	echo "<td>{$lignes_sep[$ligne['poste']]}</td><td colspan='$colspan'>&nbsp;</td></tr>\n";
       }
     }
