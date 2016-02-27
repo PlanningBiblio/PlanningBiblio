@@ -1040,13 +1040,13 @@ if(strcmp("2.2",$config['Version'])>0){
 }
 
 $v="2.2.1";
-if(strcmp$v,$config['Version'])>0 and strcmp($v,$version)<=0){
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="2.2.2";
-if(strcmp$v,$config['Version'])>0 and strcmp($v,$version)<=0){
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
