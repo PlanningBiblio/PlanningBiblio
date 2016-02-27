@@ -393,6 +393,7 @@ else{
 
   global $cellules;
   $cellules=$db->result;
+  usort($cellules,"cmp_nom_prenom");
 
   // Informations sur les congés
   if(in_array("conges",$plugins)){

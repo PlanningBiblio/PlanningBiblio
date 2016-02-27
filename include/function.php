@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.2.2
+Planning Biblio, Version 2.2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
@@ -527,10 +527,16 @@ function cmp_jour($a,$b){
 }
 
 function cmp_nom($a,$b){
+  $a['nom']=html_entity_decode($a['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $b['nom']=html_entity_decode($b['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
   return strtolower($a['nom']) > strtolower($b['nom']);
 }
 
 function cmp_nom_prenom($a,$b){
+  $a['nom']=html_entity_decode($a['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $b['nom']=html_entity_decode($b['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $a['prenom']=html_entity_decode($a['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $b['prenom']=html_entity_decode($b['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
   if(strtolower($a['nom']) == strtolower($b['nom'])){
     return strtolower($a['prenom']) > strtolower($b['prenom']);
   }
@@ -538,6 +544,10 @@ function cmp_nom_prenom($a,$b){
 }
 
 function cmp_nom_prenom_debut_fin($a,$b){
+  $a['nom']=html_entity_decode($a['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $b['nom']=html_entity_decode($b['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $a['prenom']=html_entity_decode($a['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $b['prenom']=html_entity_decode($b['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
   if(strtolower($a['nom']) == strtolower($b['nom'])){
     if(strtolower($a['prenom']) == strtolower($b['prenom'])){
       if(strtolower($a['debut']) == strtolower($b['debut'])){
