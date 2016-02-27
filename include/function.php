@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.2
+Planning Biblio, Version 2.2.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 4 février 2016
+Dernière modification : 27 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -770,7 +770,7 @@ function gen_trivial_password($len = 6){
 }
 
 // getJSFiles : permet de rechercher les scripts liés à la page courante (fichiers .js dans sous dossier js)
-function getJSFiles($page){
+function getJSFiles($page,$version){
   if(!$page){
     return false;
   }
@@ -780,7 +780,7 @@ function getJSFiles($page){
   if(is_dir("{$folder}js")){
     foreach(scandir("{$folder}js") as $elem){
       if(substr($elem,-3)==".js"){
-	echo "<script type='text/JavaScript' src='{$folder}js/$elem'></script>\n";
+	echo "<script type='text/JavaScript' src='{$folder}js/{$elem}?version=$version'></script>\n";
       }
     }
   }
