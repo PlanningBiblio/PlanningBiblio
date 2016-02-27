@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.2.2
+Planning Biblio, Version 2.2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
@@ -393,6 +393,7 @@ else{
 
   global $cellules;
   $cellules=$db->result;
+  usort($cellules,"cmp_nom_prenom");
 
   // Informations sur les congés
   if(in_array("conges",$plugins)){

@@ -1,3 +1,8 @@
+***	Version 2.2.3	(Jérôme Combes, 27 février 2016)			***
+- Correction
+Planning : Corrige le classement par ordre alphabétique dans le menu du planning, même si accents
+PlanningHebdo : Corrige l'enregistrement du nom de l'agent qui valide les plannings de présence
+
 ***	Version 2.2.2	(Jérôme Combes, 27 février 2016)			***
 - Correction
 Corrige une erreur sur le masquage des tableaux
