@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.2.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 22 janvier 2016
+Dernière modification : 27 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -43,22 +43,22 @@ if(!file_exists("themes/$theme/$theme.css")){
 <script type='text/JavaScript' src='vendor/DataTables-1.10.4/extensions/FixedColumns/js/dataTables.fixedColumns.min.js'></script>
 <script type='text/JavaScript' src='vendor/DataTables-1.10.4/extensions/TableTools/js/dataTables.tableTools.min.js'></script>
 <script type='text/JavaScript' src='vendor/dataTables.jqueryui.js'></script>
-<script type='text/JavaScript' src='vendor/CJScript.js'></script>
-<script type='text/JavaScript' src='js/datePickerFr.js'></script>
-<script type='text/JavaScript' src='js/dataTables.sort.js'></script>
-<script type='text/JavaScript' src='js/script.js'></script>
+<script type='text/JavaScript' src='vendor/CJScript.js?version=<?php echo $version; ?>'></script>
+<script type='text/JavaScript' src='js/datePickerFr.js?version=<?php echo $version; ?>'></script>
+<script type='text/JavaScript' src='js/dataTables.sort.js?version=<?php echo $version; ?>'></script>
+<script type='text/JavaScript' src='js/script.js?version=<?php echo $version; ?>'></script>
 <?php
-getJSFiles($page);
+getJSFiles($page,$version);
 ?>
 
 <link rel='StyleSheet' href='vendor/DataTables-1.10.4/media/css/jquery.dataTables_themeroller.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='vendor/DataTables-1.10.4/extensions/TableTools/css/dataTables.tableTools.min.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/<?php echo $themeJQuery; ?>/jquery-ui.min.css' type='text/css' media='all'/>
-<link rel='StyleSheet' href='themes/default/default.css' type='text/css' media='all'/>
-<link rel='StyleSheet' href='themes/default/print.css' type='text/css' media='print'/>
+<link rel='StyleSheet' href='themes/default/default.css?version=<?php echo $version; ?>' type='text/css' media='all'/>
+<link rel='StyleSheet' href='themes/default/print.css?version=<?php echo $version; ?>' type='text/css' media='print'/>
 <?php
 if($theme!="default"){
-  echo "<link rel='StyleSheet' href='themes/{$theme}/{$theme}.css' type='text/css' media='all'/>\n";
+  echo "<link rel='StyleSheet' href='themes/{$theme}/{$theme}.css?version=$version' type='text/css' media='all'/>\n";
 }
 ?>
 </head>
