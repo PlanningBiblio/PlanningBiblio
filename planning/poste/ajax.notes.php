@@ -3,12 +3,12 @@
 Planning Biblio, Version 2.0.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/ajax.notes.php
 Création : 3 juin 2014
 Dernière modification : 2 octobre 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Enregistre dans la base de donées les notes en bas des plannings

@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 1.9.5
+/**
+Planning Biblio, Version 2.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : include/accessDenied.php
 Création : 8 avril 2015
-Dernière modification : 9 avril 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 4 février 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affiche un message "Accès refusé" si la page incluant ce fichier est appelée directement (sans index.php, donc sans contrôle)
@@ -49,20 +49,31 @@ $link="<a href='{$path}index.php'>Retour à l'application</a>";
 <link rel='StyleSheet' href='<?php echo $path; ?>themes/default/default.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='<?php echo $path; ?>themes/default/print.css' type='text/css' media='print'/>
 <link rel='StyleSheet' href='<?php echo $path; ?>themes/<?php echo "$theme/$theme"; ?>.css' type='text/css' media='all'/>
+<script type='text/JavaScript' src='<?php echo $path; ?>vendor/jquery-1.11.1.min.js'></script>
+<script type='text/JavaScript' src='<?php echo $path; ?>js/script.js'></script>
 </head>
 
 <body>
 <div id='auth-logo' style='margin:30px auto;'></div>
-<h2 id='h2-authentification'>Fichier de configuration manquant</h2>
+<h2 id='h2-authentification'>Accès refusé</h2>
 <center>
 <p style='font-weight:bold;'>
-Accès refusé
-<br/><br/>
-<?php echo $link; ?>
+<?php
+// IP Blocker : Message affiché si l'IP a été bloquée
+if(isset($IPBlocker)){
+	echo "L'adresse IP \"{$_SERVER['REMOTE_ADDR']}\" a &eacute;t&eacute; bloqu&eacute;e.\n";
+	echo "<p id='chrono'></p>\n";
+	echo "<p id='link' style='display:none;'>$link</p>\n";
+	echo "<script type='text/JavaScript'>decompte($IPBlocker);</script>\n";
+}else{
+// Affichage du lien Retour vers l'application si tentative d'accès à une page interdite
+	echo $link;
+}
+?>
 </p>
 </center>
 <div class='footer'>
-PlanningBiblio - Copyright &copy; 2011-2015 - J&eacute;r&ocirc;me Combes - 
+PlanningBiblio - Copyright &copy; 2011-2016 - J&eacute;r&ocirc;me Combes - 
 <a href='http://www.planningbiblio.fr' target='_blank' style='font-size:9pt;'>www.planningbiblio.fr</a>
 </div>
 </body>

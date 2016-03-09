@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 2.0.3
+/**
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 29 septembre 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 9 janvier 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Page validant la modification d'une absence : enregistrement dans la BDD des modifications
@@ -123,17 +123,18 @@ $valide1N1=$db->result[0]['valideN1'];
 $valide1N2=$db->result[0]['valide'];
 $perso_id=$db->result[0]['perso_id'];
 
-// Mise à jour du champs 'absent' dans 'pl_poste'
-if(($debutSQL!=$debut1 or $finSQL!=$fin1) and $isValidate){
-  $db=new db();
-  $debut1=$db->escapeString($debut1);
-  $fin1=$db->escapeString($fin1);
-  $perso_id=$db->escapeString($perso_id);
-  $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='0' WHERE
-    CONCAT(`date`,' ',`debut`) < '$fin1' AND CONCAT(`date`,' ',`fin`) > '$debut1'
-    AND `perso_id`='$perso_id'";
-  $db->query($req);
 
+// Mise à jour du champs 'absent' dans 'pl_poste'
+$db=new db();
+$debut1=$db->escapeString($debut1);
+$fin1=$db->escapeString($fin1);
+$perso_id=$db->escapeString($perso_id);
+$req="UPDATE `{$dbprefix}pl_poste` SET `absent`='0' WHERE
+  CONCAT(`date`,' ',`debut`) < '$fin1' AND CONCAT(`date`,' ',`fin`) > '$debut1'
+  AND `perso_id`='$perso_id'";
+$db->query($req);
+
+if(($debutSQL!=$debut1 or $finSQL!=$fin1) and $isValidate){
   $db=new db();
   $debut1=$db->escapeString($debut1);
   $fin1=$db->escapeString($fin1);
@@ -216,18 +217,28 @@ $a=new absences();
 $a->getRecipients($notifications,$responsables,$mail,$mailsResponsables);
 $destinataires=$a->recipients;
 
+// Recherche des plages de SP concernées pour ajouter cette information dans le mail.
+$a=new absences();
+$a->debut=$debut_sql;
+$a->fin=$fin_sql;
+$a->perso_id=$perso_id;
+$a->infoPlannings();
+$infosPlanning=$a->message;
+
 // Message
-$message="<b><u>$sujet</u></b> : <br/><br/><b>$prenom $nom</b><br/><br/>Début : $debut";
+$message="<b><u>$sujet</u></b> :";
+$message.="<ul><li>Agent : <strong>$prenom $nom</strong></li>";
+$message.="<li>Début : <strong>$debut";
 if($hre_debut!="00:00:00")
   $message.=" ".heure3($hre_debut);
-$message.="<br/>Fin : $fin";
+$message.="</strong></li><li>Fin : <strong>$fin";
 if($hre_fin!="23:59:59")
   $message.=" ".heure3($hre_fin);
-$message.="<br/><br/>Motif : $motif";
+$message.="</strong></li><li>Motif : $motif";
 if($motif_autre){
   $message.=" / $motif_autre";
 }
-$message.="<br/>";
+$message.="</li>";
 
 if($config['Absences-validation']){
   $validationText="Demand&eacute;e";
@@ -244,23 +255,39 @@ if($config['Absences-validation']){
     $validationText="Refus&eacute;e (en attente de validation hi&eacute;rarchique)";
   }
 
-  $message.="<br/>Validation : <br/>\n";
+  $message.="<li>Validation : <br/>\n";
   $message.=$validationText;
-  $message.="<br/>\n";
+  $message.="</li>\n";
 }
 
 if($commentaires){
-  $message.="<br/>Commentaire:<br/>$commentaires<br/>";
+  $message.="<li>Commentaire:<br/>$commentaires</li>";
 }
+$message.="</ul>";
+
+// Ajout des informations sur les plannings
+$message.=$infosPlanning;
 
 // Ajout du lien permettant de rebondir sur l'absence
 $url=createURL("absences/modif.php&id=$id");
 $message.="<br/><br/>Lien vers la demande d&apos;absence :<br/><a href='$url'>$url</a><br/><br/>";
 
 // Envoi du mail
-if(!empty($destinataires)){
-  sendmail($sujet,$message,$destinataires);
+$m=new sendmail();
+$m->subject=$sujet;
+$m->message=$message;
+$m->to=$destinataires;
+$m->send();
+
+// Si erreur d'envoi de mail, affichage de l'erreur
+$msg2=null;
+$msg2Type=null;
+if($m->error){
+  $msg2=urlencode($m->error_CJInfo);
+  $msg2Type="error";
 }
+
+  
 $msg=urlencode("L'absence a été modifiée avec succés");
-echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success';</script>\n";
+echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
 ?>

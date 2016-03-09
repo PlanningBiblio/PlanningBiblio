@@ -1,14 +1,16 @@
 <?php
-/*
-Planning Biblio, Version 2.0.1
+/**
+Planning Biblio, Version 2.2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 3 septembre 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 27 février 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
+@author Farid Goara <farid.goara@u-pem.fr>
+
 
 Description :
 Cette page affiche le planning. Par défaut, le planning du jour courant est affiché. On peut choisir la date voulue avec le
@@ -152,7 +154,7 @@ if($db->result){
 echo "<div id='divcalendrier' class='text'>\n";
 
 echo "<form name='form' method='get' action='#'>\n";
-echo "<input type='hidden' id='date' name='date' value='$date' />\n";
+echo "<input type='hidden' id='date' name='date' value='$date' data-set-calendar='$date' />\n";
 echo "<input type='hidden' id='site' name='date' value='$site' />\n";
 echo "</form>\n";
 
@@ -391,6 +393,7 @@ else{
 
   global $cellules;
   $cellules=$db->result;
+  usort($cellules,"cmp_nom_prenom");
 
   // Informations sur les congés
   if(in_array("conges",$plugins)){
@@ -415,15 +418,64 @@ else{
   $t->get();
   $tabs=$t->elements;
 
+  // Repère les heures de début et de fin de chaque tableau pour ajouter des colonnes si ces heures sont différentes
+  $debut="23:59";
+  $fin=null;
+  foreach($tabs as $elem){
+    $debut=$elem["horaires"][0]["debut"]<$debut?$elem["horaires"][0]["debut"]:$debut;
+    $nb=count($elem["horaires"])-1;
+    $fin=$elem["horaires"][$nb]["fin"]>$fin?$elem["horaires"][$nb]["fin"]:$fin;
+  }
+
   // affichage du tableau :
   // affichage de la lignes des horaires
-  echo "<div id='tableau'>\n";
+  echo "<div id='tableau' data-tableId='$tab' >\n";
   echo "<table id='tabsemaine1' cellspacing='0' cellpadding='0' class='text tabsemaine1'>\n";
-  $k=0;
+
+  $j=0;
   foreach($tabs as $tab){
+    // Comble les horaires laissés vides : créé la colonne manquante, les cellules de cette colonne seront grisées
+    $cellules_grises=array();
+    $tmp=array();
+    
+    // Première colonne : si le début de ce tableau est supérieur au début d'un autre tableau
+    $k=0;
+    if($tab['horaires'][0]['debut']>$debut){
+      $tmp[]=array("debut"=>$debut, "fin"=>$tab['horaires'][0]['debut']);
+      $cellules_grises[]=$k++;
+    }
+    
+    // Colonnes manquantes entre le début et la fin
+    foreach($tab['horaires'] as $key => $value){
+      if($key==0 or $value["debut"]==$tab['horaires'][$key-1]["fin"]){
+	$tmp[]=$value;
+      }elseif($value["debut"]>$tab['horaires'][$key-1]["fin"]){
+	$tmp[]=array("debut"=>$tab['horaires'][$key-1]["fin"], "fin"=>$value["debut"]);
+	$tmp[]=$value;
+	$cellules_grises[]=$k++;
+      }
+      $k++;
+    }
+
+    // Dernière colonne : si la fin de ce tableau est inférieure à la fin d'un autre tableau
+    $nb=count($tab['horaires'])-1;
+    if($tab['horaires'][$nb]['fin']<$fin){
+      $tmp[]=array("debut"=>$tab['horaires'][$nb]['fin'], "fin"=>$fin);
+      $cellules_grises[]=$k;
+    }
+
+    
+    $tab['horaires']=$tmp;
+
+    // Masquer les tableaux
+    $masqueTableaux=null;
+    if($config['Planning-TableauxMasques']){
+      $masqueTableaux="<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer' data-id='$j' ></span>";
+    }
+
     //		Lignes horaires
-    echo "<tr class='tr_horaires'>\n";
-    echo "<td class='td_postes'>{$tab['titre']}</td>\n";
+    echo "<tr class='tr_horaires tableau$j'>\n";
+    echo "<td class='td_postes' data-id='$j' data-title='{$tab['titre']}'>{$tab['titre']} $masqueTableaux </td>\n";
     $colspan=0;
     foreach($tab['horaires'] as $horaires){
       echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin'])."</td>";
@@ -456,7 +508,7 @@ else{
 	$classTR=join(" ",$classTR);
 
 	// Affichage de la ligne
-	echo "<tr class='pl-line $classTR' $displayTR >\n";
+	echo "<tr class='pl-line tableau$j $classTR' $displayTR >\n";
 	echo "<td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
 	// Affichage ou non des étages
 	if($config['Affichage-etages'] and $postes[$ligne['poste']]['etage']){
@@ -464,30 +516,36 @@ else{
 	}
 	echo "</td>\n";
 	$i=1;
+	$k=1;
 	foreach($tab['horaires'] as $horaires){
-	  // recherche des infos à afficher dans chaque cellule 
-	  // Cellules grisées
-	  if(in_array("{$ligne['ligne']}_{$i}",$tab['cellules_grises'])){
+	  // Recherche des infos à afficher dans chaque cellule 
+	  // Cellules grisées si définies dans la configuration du tableau et si la colonne a été ajoutée automatiquement
+	  if(in_array("{$ligne['ligne']}_{$k}",$tab['cellules_grises']) or in_array($i-1,$cellules_grises)){
 	    echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."' class='cellule_grise'>&nbsp;</td>";
+	    // Si colonne ajoutée, ça décale les cellules grises initialement prévues. On se décale d'un cran en arrière pour rétablir l'ordre 
+	    if(in_array($i-1,$cellules_grises)){
+	      $k--;
+	    }
 	  }
 	  // fonction cellule_poste(date,debut,fin,colspan,affichage,poste,site)
 	  else{
 	    echo cellule_poste($date,$horaires["debut"],$horaires["fin"],nb30($horaires['debut'],$horaires['fin']),"noms",$ligne['poste'],$site);
 	  }
 	$i++;
+	$k++;
 	}
 	echo "</tr>\n";
       }
       // Lignes de séparation
       if($ligne['type']=="ligne"){
-	echo "<tr class='tr_separation'>\n";
+	echo "<tr class='tr_separation tableau$j'>\n";
 	echo "<td>{$lignes_sep[$ligne['poste']]}</td><td colspan='$colspan'>&nbsp;</td></tr>\n";
       }
     }
-    $k++;
+  $j++;
   }
   echo "</table>\n";
-
+  
   // Notes : Affichage
   $p=new planning();
   $p->date=$date;
@@ -513,12 +571,10 @@ EOD;
     <input type='button' class='ui-button' id='pl-notes-button' value='Ajouter un commentaire' />
     </div>
 
-    <div id="pl-notes-form" title="Notes" class='noprint' style='display:none;'>
-      <p class="validateTips">Vous pouvez écrire ici un commentaire qui sera affiché en bas du planning.</p>
+    <div id="pl-notes-form" title="Commentaire" class='noprint' style='display:none;'>
+      <p class="validateTips">Vous pouvez écrire ici un commentaire qui sera affich&eacute; en bas du planning.</p>
       <form>
-      <fieldset>
       <textarea id='pl-notes-text'>$notesTextarea</textarea>
-      </fieldset>
       </form>
     </div>
 EOD;
@@ -529,6 +585,21 @@ echo <<<EOD
   $notesSuppression$notesValidation
   </div>  
 EOD;
+
+// Appel à disponibilités : envoi d'un mail aux agents disponibles pour occuper le poste choisi depuis le menu des agents
+if($config['Planning-AppelDispo']){
+  echo <<<EOD
+    <div id="pl-appelDispo-form" title="Appel &agrave; disponibilit&eacute;" class='noprint' style='display:none;'>
+      <p class="validateTips">Envoyez un e-mail aux agents disponibles pour leur demander s&apos;ils sont volontaires pour occuper le poste choisi.</p>
+      <form>
+      <label for='pl-appelDispo-sujet'>Sujet</label><br/>
+      <input type='text' id='pl-appelDispo-sujet' name='pl-appelDispo-sujet' /><br/><br/>
+      <label for='pl-appelDispo-text'>Message</label><br/>
+      <textarea id='pl-appelDispo-text' name='pl-appelDispo-text'>&nbsp;</textarea>
+      </form>
+    </div>
+EOD;
+}
 
   // Affichage des absences
   if($config['Absences-planning']){

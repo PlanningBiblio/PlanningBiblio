@@ -2,12 +2,12 @@
 Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/js/modif.js
 Création : 28 février 2014
 Dernière modification : 9 avril 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Fichier regroupant les fonctions JavaScript utiles à l'ajout et la modification des agents (modif.php)

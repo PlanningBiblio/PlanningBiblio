@@ -3,8 +3,8 @@ Licence GNU/GPL (version 2 et au dela)
 
 Fichier : CJScript.js
 Création : mars 2015
-Dernière modification : 23 juillet 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 8 janvier 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
 */
 
 function CJDataTableHideRow(selector){
@@ -106,10 +106,11 @@ function CJInfo(message,type,top,time,myClass){
   var id=1;
   $(".CJInfo").each(function(){
     id=$(this).attr("data-id")>=id?($(this).attr("data-id")+1):id;
-    top=$(this).position().top+$(this).height();
+    top=$(this).position().top+$(this).height()+5;
   });
   
   message=message.replace(/#BR#/g,"<br/>");
+  message=message.replace(/\n/g,"<br/>");
 
   $("body").append("<div class='CJInfo "+myClass+"' id='CJInfo"+id+"' data-id='"+id+"'>"+message+"</div>");
   CJErrorHighlight($("#CJInfo"+id),type);

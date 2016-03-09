@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 2.0.3
+/**
+Planning Biblio, Version 2.2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 13 avril 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 4 février 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affiche le formulaire d'authentification, vérifie le login et le mot de passe et créé la session 
@@ -28,7 +28,7 @@ if(PHP_VERSION_ID<50400 and session_id()==''){
 }
 
 // Initialisation des variables
-$version="2.0.3";
+$version="2.2.3";
 
 // Redirection vers setup si le fichier config est absent
 if(!file_exists("include/config.php")){
@@ -37,6 +37,13 @@ if(!file_exists("include/config.php")){
 
 require_once "include/config.php";
 require_once "include/sanitize.php";
+
+// IP Blocker : Affiche accès refusé, IP bloquée si 5 tentatives infructueuses lors les 10 dernières minutes
+$IPBlocker=loginFailedWait();
+if($IPBlocker>0){
+	include "include/accessDenied.php";
+	exit;
+}
 
 $newLogin=filter_input(INPUT_GET,"newlogin",FILTER_SANITIZE_STRING);
 if(!isset($redirURL)){
@@ -77,6 +84,8 @@ if(isset($_POST['login'])){
 
 
   if($auth){
+		// Log le login et l'IP du client en cas de succès, pour information
+		loginSuccess($login);
     $db=new db();
     $db->select2("personnel","id,nom,prenom",array("login"=>$login));
     if($db->result){
@@ -95,6 +104,15 @@ if(isset($_POST['login'])){
     }
   }
   else{
+		// Log le login tenté et l'IP du client en cas d'echec, pour bloquer l'IP si trop de tentatives infructueuses
+		loginFailed($login);
+
+		// Si la limite est atteinte, on affiche directement la page "Accès refusé"
+		if(loginFailedWait()>0){
+			echo "<script type='text/JavaScript'>document.location.reload();</script>\n";
+			exit;
+		}
+
     echo <<<EOD
     <div id='auth'>
     <center><div id='auth-logo'></div></center>

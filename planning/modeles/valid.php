@@ -1,14 +1,14 @@
 <?php
-/*
+/**
 Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/modeles/valid.php
 Création : mai 2011
 Dernière modification : 4 novembre 2014
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Valide la modification d'un modèles de planning 

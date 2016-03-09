@@ -1,14 +1,15 @@
 <?php
-/*
-Planning Biblio, Version 1.9.6
+/**
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 24 avril 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 8 janvier 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
+@author Farid Goara <farid.goara@u-pem.fr>
 
 Description :
 Permet d'ajouter une absence. Formulaire, confirmation et validation.
@@ -187,12 +188,19 @@ if($confirm){
     $fin_sql=$db->escapeString($fin_sql);
     $perso_id=$db->escapeString($perso_id);
     $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1' WHERE
-      ((CONCAT(`date`,' ',`debut`) < '$fin_sql' AND CONCAT(`date`,' ',`debut`) >= '$debut_sql')
-      OR (CONCAT(`date`,' ',`fin`) > '$debut_sql' AND CONCAT(`date`,' ',`fin`) <= '$fin_sql'))
+      CONCAT(`date`,' ',`debut`) < '$fin_sql' AND CONCAT(`date`,' ',`fin`) > '$debut_sql'
       AND `perso_id`='$perso_id'";
     $db->query($req);
   }
   
+  // Recherche des plages de SP concernées pour ajouter cette information dans le mail.
+  $a=new absences();
+  $a->debut=$debut_sql;
+  $a->fin=$fin_sql;
+  $a->perso_id=$perso_id;
+  $a->infoPlannings();
+  $infosPlanning=$a->message;
+
   // Titre différent si titre personnalisé (config) ou si validation ou non des absences (config)
   if($config['Absences-notifications-titre']){
     $titre=$config['Absences-notifications-titre'];
@@ -208,46 +216,62 @@ if($confirm){
   }
 
   // On complète le message avec les informations de l'absence
-  $message.="<br/><br/><b>$prenom $nom</b><br/><br/>Début : $debut";
+  $message.="<ul><li>Agent : <strong>$prenom $nom</strong></li>";
+  $message.="<li>Début : <strong>$debut";
   if($hre_debut!="00:00:00")
     $message.=" ".heure3($hre_debut);
-  $message.="<br/>Fin : $fin";
+  $message.="</strong></li><li>Fin : <strong>$fin";
   if($hre_fin!="23:59:59")
     $message.=" ".heure3($hre_fin);
-  $message.="<br/><br/>Motif : $motif";
+  $message.="</strong></li><li>Motif : $motif";
   if($motif_autre){
     $message.=" / $motif_autre";
   }
-  $message.="<br/>";
+  $message.="</li>";
 
   if($config['Absences-validation']){
-    $message.="<br/>Validation : <br/>\n";
+    $message.="<li>Validation : <br/>\n";
     $message.=$validationText;
-    $message.="<br/>\n";
+    $message.="</li>\n";
   }
 
   if($commentaires){
-    $message.="<br/>Commentaire:<br/>$commentaires<br/>";
+    $message.="<li>Commentaire: <br/>$commentaires</li>";
   }
 
+  $message.="</ul>";
+
+  // Ajout des informations sur les plannings
+  $message.=$infosPlanning;
+  
   // Ajout du lien permettant de rebondir sur l'absence
   $url=createURL("absences/modif.php&id=$id");
-  $message.="<br/><br/>Lien vers la demande d&apos;absence :<br/><a href='$url'>$url</a><br/><br/>";
+  $message.="<p>Lien vers la demande d&apos;absence :<br/><a href='$url'>$url</a></p>";
 
   // Envoi du mail
-  if(!empty($destinataires)){
-    sendmail($titre,$message,$destinataires);
+  $m=new sendmail();
+  $m->subject=$titre;
+  $m->message=$message;
+  $m->to=$destinataires;
+  $m->send();
+
+  // Si erreur d'envoi de mail, affichage de l'erreur
+  $msg2=null;
+  $msg2Type=null;
+  if($m->error){
+    $msg2=urlencode($m->error_CJInfo);
+    $msg2Type="error";
   }
 
-  if($menu=="off"){
-    echo "<script type='text/JavaScript'>parent.document.location.reload(false);</script>\n";
-    echo "<script type='text/JavaScript'>popup_closed();</script>\n";
+  // Confirmation de l'enregistrement
+  if($config['Absences-validation'] and !$admin){
+    $msg="La demande d&apos;absence a &eacute;t&eacute; enregistr&eacute;e";
+  }else{
+    $msg="L&apos;absence a &eacute;t&eacute; enregistr&eacute;e";
   }
-  else{
-    $msg=($config['Absences-validation'] and !$admin)?"La demande d&apos;absence a &eacute;t&eacute; enregistr&eacute;e":"L&apos;absence a &eacute;t&eacute; enregistr&eacute;e";
-    $msg=urlencode($msg);
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success';</script>\n";
-  }
+
+  $msg=urlencode($msg);
+  echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
 }
 else{					//	Formulaire
   echo "<form name='form' action='index.php' method='get' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");' >\n";
@@ -301,7 +325,7 @@ else{					//	Formulaire
   echo "<tr id='hre_fin' style='display:none;'><td>\n";
   echo "<label class='intitule'>Heure de fin </label>\n";
   echo "</td><td>\n";
-  echo "<select name='hre_fin' class='center ui-widget-content ui-corner-all'>\n";
+  echo "<select name='hre_fin' class='center ui-widget-content ui-corner-all' onfocus='setEndHour();'>\n";
   selectHeure(7,23,true,$quartDHeure);
   echo "</select>\n";
   echo "</td></tr>\n";

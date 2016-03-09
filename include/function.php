@@ -1,23 +1,24 @@
 <?php
-/*
-Planning Biblio, Version 2.0.2
+/**
+Planning Biblio, Version 2.2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 27 septembre 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 27 février 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Page contenant les fonctions PHP communes
 Page appelée par les fichiers index.php, setup/index.php et planning/poste/menudiv.php
 */
 
-// pas de $version=acces direct au fichier => Accès refusé
-if(!isset($version)){
+// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
+if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
   include_once "accessDenied.php";
+  exit;
 }
 
 class datePl{
@@ -69,9 +70,9 @@ class datePl{
     }
     // Calcul du numéro de la semaine pour l'utilisation de 3 plannings hebdomadaires
     if($GLOBALS['config']['nb_semaine']==3){
-      $position=date("w", strtotime($GLOBALS['config']['dateDebutPlHebdo']))-1;
+      $position=date("w", strtotime(dateSQL($GLOBALS['config']['dateDebutPlHebdo'])))-1;
       $position=$position==-1?6:$position;
-      $dateFrom=new dateTime($GLOBALS['config']['dateDebutPlHebdo']);
+      $dateFrom=new dateTime(dateSQL($GLOBALS['config']['dateDebutPlHebdo']));
       $dateFrom->sub(new DateInterval("P{$position}D"));
 
       $position=date("w", strtotime($date))-1;
@@ -95,12 +96,155 @@ class datePl{
   }
 }
 
+class sendmail{
+
+  public $message=null;
+  public $to=null;
+  public $subject=null;
+  public $error="";
+  public $error_encoded=null;
+  public $failedAddresses=array();
+  public $successAddresses=array();
+  
+  public function sendmail(){
+    $path=strpos($_SERVER["SCRIPT_NAME"],"planning/poste/ajax")?"../../":null;
+    $path=preg_match('/planning\/plugins\/.*\/ajax/', $_SERVER["SCRIPT_NAME"])?"../../":$path;
+    require_once("{$path}vendor/PHPMailer/class.phpmailer.php");
+    require_once("{$path}vendor/PHPMailer/class.smtp.php");
+  }
+  
+
+  private function prepare(){
+  
+    /* arrête la procédure d'envoi de mail si désactivé dans la config */
+    if(!$GLOBALS['config']['Mail-IsEnabled']){
+      $this->error.="L'envoi des e-mails est désactivé dans la configuration\n";
+      $this->successAddresses=array();
+      $this->failedAddresses=$this->to;
+      return false;
+    }
+
+    /* Met les destinataires dans un tableau s'ils sont dans une chaine de caractère séparée par des ; */
+    if(!is_array($this->to)){
+      $this->to=explode(";",$this->to);
+    }
+
+    /* Vérifie que les e-mails sont valides */
+    $to=array();
+    $incorrect=array();
+    foreach($this->to as $elem){
+      if(verifmail(trim($elem))){
+	$to[]=trim($elem);
+      }else{
+	$incorrect[]=trim($elem);
+	$this->failedAddresses[]=trim($elem);
+      }
+    }
+    $this->to=$to;
+
+    if(!empty($incorrect)){
+      $this->error.="Les adresses suivantes sont incorrectes : ".join(" ; ",$incorrect)."\n";
+    }
+
+    /* Arrête la procédure si aucun destinaire valide */
+    if(empty($this->to)){
+      $this->error.="Aucun destinataire valide pour cet e-mail\n";
+      return false;
+    }
+
+    /* Préparation du sujet */
+    $this->subject = stripslashes($this->subject);
+    $this->subject = "Planning : " . $this->subject;
+
+    /* Préparation du message, html, doctype, signature */
+    $message="<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
+    $message.="<html><head><title>Planning</title></head><body>";
+    $message.= $this->message;
+    $message.="<br/><br/>{$GLOBALS['config']['Mail-Signature']}<br/><br/>";
+    $message.="</body></html>";
+    $message = stripslashes($message);
+    $message = str_replace(array("\n","\r\n\n","\r\n"), "<br/>", $message);
+
+    $this->message = $message;
+  }
+
+  
+  public function send(){
+    if($this->prepare()===false){
+      return false;
+    }
+    
+    $mail = new PHPMailer();
+    if($GLOBALS['config']['Mail-IsMail-IsSMTP']=="IsMail")
+      $mail->IsMail();
+    else
+      $mail->IsSMTP();
+    $mail->CharSet="utf-8";
+    $mail->WordWrap =$GLOBALS['config']['Mail-WordWrap'];
+    $mail->Hostname =$GLOBALS['config']['Mail-Hostname'];
+    $mail->Host =$GLOBALS['config']['Mail-Host'];
+    $mail->Port =$GLOBALS['config']['Mail-Port'];
+    $mail->SMTPSecure = $GLOBALS['config']['Mail-SMTPSecure'];
+    $mail->SMTPAuth =$GLOBALS['config']['Mail-SMTPAuth'];
+    $mail->Username =$GLOBALS['config']['Mail-Username'];
+    $mail->Password =decrypt($GLOBALS['config']['Mail-Password']);
+    $mail->From =$GLOBALS['config']['Mail-From'];
+    $mail->FromName =$GLOBALS['config']['Mail-FromName'];
+    $mail->IsHTML();
+    
+    $mail->Body = $this->message;
+    
+   if(count($this->to)>1){
+      foreach($this->to as $elem){
+        $mail->addBCC($elem);
+      }
+    }
+    else{
+      $mail->AddAddress($this->to[0]);
+    }
+    
+    $mail->Subject = $this->subject;
+
+    if(!$mail->Send()){
+      $this->error.=$mail->ErrorInfo ."\n";
+      
+      // error_CJInfo: pour affichage dans CJInfo (JS)
+      $this->error_CJInfo=str_replace("\n","#BR#",$this->error);
+      
+      // Liste des destinataires pour qui l'envoi a fonctionné
+      $this->successAddresses=$this->to;
+
+      // Liste des destinataires pour qui l'envoi a échoué
+      $pos=stripos($this->error,"SMTP Error: The following recipients failed: ");
+
+      if($pos!==false){
+	$failedAddr=substr($this->error,$pos+45);
+	$end=strpos($failedAddr,"\n");
+	$failedAddr=substr($failedAddr,0,$end);
+	$failedAddr=explode(", ",$failedAddr);
+
+	$this->failedAddresses=array_merge($this->failedAddresses,$failedAddr);
+	
+	$this->successAddresses=array();
+	foreach($this->to as $elem){
+	  if(!in_array($elem,$failedAddr)){
+	    $this->successAddresses[]=$elem;
+	  }
+	}
+      }
+    }
+  return true;
+  }
+}
+
+
 function absents($date,$tables){
   $tables=explode(",",$tables);
   $liste="";
   $tab=array();
   foreach($tables as $table){
     $etat=($table=="conges" ? "and etat='Accepté'" : "");
+
     $db=new db();
     $db->query("select perso_id from $table where debut<='$date' and fin >='$date' $etat;");
     if(is_array($db->result))
@@ -383,10 +527,16 @@ function cmp_jour($a,$b){
 }
 
 function cmp_nom($a,$b){
+  $a['nom']=html_entity_decode($a['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $b['nom']=html_entity_decode($b['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
   return strtolower($a['nom']) > strtolower($b['nom']);
 }
 
 function cmp_nom_prenom($a,$b){
+  $a['nom']=html_entity_decode($a['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $b['nom']=html_entity_decode($b['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $a['prenom']=html_entity_decode($a['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $b['prenom']=html_entity_decode($b['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
   if(strtolower($a['nom']) == strtolower($b['nom'])){
     return strtolower($a['prenom']) > strtolower($b['prenom']);
   }
@@ -394,6 +544,10 @@ function cmp_nom_prenom($a,$b){
 }
 
 function cmp_nom_prenom_debut_fin($a,$b){
+  $a['nom']=html_entity_decode($a['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $b['nom']=html_entity_decode($b['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $a['prenom']=html_entity_decode($a['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $b['prenom']=html_entity_decode($b['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
   if(strtolower($a['nom']) == strtolower($b['nom'])){
     if(strtolower($a['prenom']) == strtolower($b['prenom'])){
       if(strtolower($a['debut']) == strtolower($b['debut'])){
@@ -454,7 +608,7 @@ function compte_jours($date1, $date2, $jours){
 
 function createURL($page){
   // Construction d'une URL
-  $protocol=strtolower(substr($_SERVER['SERVER_PROTOCOL'],0,strpos($_SERVER['SERVER_PROTOCOL'],"/",0)));
+  $protocol = isset($_SERVER['HTTPS']) ? 'https' : 'http';
   $port=$_SERVER['SERVER_PORT'];
   if(($port==80 and $protocol=="http") or ($port==443 and $protocol=="https")){
     $port=null;
@@ -577,35 +731,6 @@ function dateFr($date,$heure=null){
   }
 }
 
-function dateFr2($date){
-  if($date=="0000-00-00" or $date=="00/00/0000" or $date=="" or !$date)
-    return null;
-  if(substr($date,4,1)=="-"){
-    $j=substr($date,8,2);
-    $m=substr($date,5,2);
-    $a=substr($date,0,4);
-    switch($m){
-      case "01" : $m=" janvier "; break;
-      case "02" : $m=" fevrier "; break;
-      case "03" : $m=" mars "; break;
-      case "04" : $m=" avril "; break;
-      case "05" : $m=" mai "; break;
-      case "06" : $m=" juin "; break;
-      case "07" : $m=" juillet "; break;
-      case "08" : $m=" août "; break;
-      case "09" : $m=" septembre "; break;
-      case "10" : $m=" octobre "; break;
-      case "11" : $m=" novembre "; break;
-      case "12" : $m=" décembre "; break;
-    }
-    return $j.$m.$a;
-  }
-  else{
-    $dateEn=substr($date,6,4)."-".substr($date,3,2)."-".substr($date,0,2);
-    return $dateEn;
-  }
-}
-
 function dateFr3($date){
   return preg_replace("/([0-9]{4})-([0-9]{2})-([0-9]{2})/","$3/$2/$1",$date);
 }
@@ -655,7 +780,7 @@ function gen_trivial_password($len = 6){
 }
 
 // getJSFiles : permet de rechercher les scripts liés à la page courante (fichiers .js dans sous dossier js)
-function getJSFiles($page){
+function getJSFiles($page,$version){
   if(!$page){
     return false;
   }
@@ -665,7 +790,7 @@ function getJSFiles($page){
   if(is_dir("{$folder}js")){
     foreach(scandir("{$folder}js") as $elem){
       if(substr($elem,-3)==".js"){
-	echo "<script type='text/JavaScript' src='{$folder}js/$elem'></script>\n";
+	echo "<script type='text/JavaScript' src='{$folder}js/{$elem}?version=$version'></script>\n";
       }
     }
   }
@@ -738,41 +863,65 @@ function is_serialized($string){
   return false;
 }
 
-function mail2($To,$Sujet,$Message){
-  $path=strpos($_SERVER["SCRIPT_NAME"],"planning/poste/ajax")?"../../":null;
-  require_once("{$path}vendor/PHPMailer/class.phpmailer.php");
-  require_once("{$path}vendor/PHPMailer/class.smtp.php");
+/**
+ * Log le login tenté et l'adresse IP du client dans la table IPBlocker pour bloquer si trop d'échec
+ * @param string $login : login saisi par l'utilisateur
+ * @param int config IPBlocker-TimeChecked : période en minutes pendant laquelle on recherche les échecs
+ * @param int config IPBlocker-Attempts : nombre d'échecs autorisés
+ */
+function loginFailed($login){
+	// Recherche le nombre de login failed lors des $seconds dernières secondes
+	$seconds=$GLOBALS['config']['IPBlocker-TimeChecked']*60;
+	$attempts=$GLOBALS['config']['IPBlocker-Attempts'];
 
-  $mail = new PHPMailer();
-  if($GLOBALS['config']['Mail-IsMail-IsSMTP']=="IsMail")
-    $mail->IsMail();
-  else
-    $mail->IsSMTP();
-  $mail->CharSet="utf-8";
-  $mail->WordWrap =$GLOBALS['config']['Mail-WordWrap'];
-  $mail->Hostname =$GLOBALS['config']['Mail-Hostname'];
-  $mail->Host =$GLOBALS['config']['Mail-Host'];
-  $mail->Port =$GLOBALS['config']['Mail-Port'];
-  $mail->SMTPSecure = $GLOBALS['config']['Mail-SMTPSecure'];
-  $mail->SMTPAuth =$GLOBALS['config']['Mail-SMTPAuth'];
-  $mail->Username =$GLOBALS['config']['Mail-Username'];
-  $mail->Password =decrypt($GLOBALS['config']['Mail-Password']);
-  $mail->From =$GLOBALS['config']['Mail-From'];
-  $mail->FromName =$GLOBALS['config']['Mail-FromName'];
+	$timestamp=date("Y-m-d H:i:s",strtotime(" -$seconds seconds"));	
+	$db=new db();
+	$db->select2("IPBlocker",null,array("ip"=>$_SERVER['REMOTE_ADDR'], "status"=>"failed", "timestamp"=> ">=$timestamp"));
+	// S'il y a eu $attempts -1 echecs lors des $seconds dernières secondes, on block l'accès 
+	$status=$db->nb>=$attempts?"blocked":"failed";
 
-  $mail->IsHTML();
-  $mail->Body = $Message;
-  if(is_array($To)){
-    foreach($To as $elem){
-      $mail->AddAddress($elem);
-    }
+	// Insertion dans la base de données
+	$insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>$status);
+	$db=new db();
+	$db->insert2("IPBlocker",$insert);
+}
+
+/**
+ * Retourne le nombre de secondes restantes avant que l'IP bloquée soit de nouveau autorisée à se connecter
+ * @param int config IPBlocker-Wait : temps de blocages des IP en minutes
+ */
+function loginFailedWait(){
+	$seconds=$GLOBALS['config']['IPBlocker-Wait']*60;
+	$wait=0;
+
+	$db=new db();
+	$db->select2("IPBlocker","timestamp",array("ip"=>$_SERVER['REMOTE_ADDR'], "status"=>"blocked"),"ORDER BY `timestamp` DESC LIMIT 0,1");
+
+	if($db->result){
+		$timestamp=$db->result[0]['timestamp'];
+		$wait=strtotime($timestamp) + (int) $seconds - time();
+	}
+	return $wait;
+}
+
+/**
+ * Log le login et l'adresse IP du client dans la table IPBlocker pour informations
+ * @param string $login : login saisi par l'utilisateur
+ */
+function loginSuccess($login){
+	$insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>"success");
+	$db=new db();
+	$db->insert2("IPBlocker",$insert);
+}
+
+function logs($msg,$program=null,$type=array("db")){
+  if(in_array("db",$type)){
+    $db=new db();
+    $db->insert2("log",array("msg"=>$msg,"program"=>$program));
   }
-  else{
-    $mail->AddAddress($To);
+  if(in_array("syslog",$type)){
+    error_log($program.": ".$msg);
   }
-
-  $mail->Subject = $Sujet;
-  $mail->Send();
 }
 
 function MinToHr($minutes){
@@ -921,38 +1070,6 @@ function selectTemps($jour,$i,$periodes=null,$class=null){
   }
   $select.="</select>\n";
   return $select;
-}
-
-function sendmail($Sujet,$Message,$destinataires,$alert=true){
-  if(!$GLOBALS['config']['Mail-IsEnabled'])
-    return false;
-  if(!is_array($destinataires)){
-    $destinataires=explode(";",$destinataires);
-  }
-  if(!empty($destinataires)){
-    $Entete="<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
-    $Entete.="<html><head><title>Planning</title></head><body>";
-    $Message=$Entete.$Message;
-    $Message.="<br/><br/>{$GLOBALS['config']['Mail-Signature']}<br/><br/>";
-    $Message.="</body></html>";
-
-    $Sujet = stripslashes($Sujet);
-    $Sujet = "Planning : $Sujet";
-    $Message = stripslashes($Message);
-    $Message= str_replace(array("\n","\r\n\n","\r\n"), "<br/>", $Message);
-    $to=array();
-    foreach($destinataires as $destinataire){
-      if(verifmail(trim($destinataire))){
-	$to[]=trim($destinataire);
-      }
-      elseif($alert){
-	echo "<script type='text/JavaScript'>information('Adresse mail invalide (\"$destinataire\")','error');</script>";
-      }
-    }
-    if(!empty($to)){
-      mail2($to,$Sujet,$Message);
-    }
-  }
 }
 
 function soustrait_tab($tab1,$tab2){

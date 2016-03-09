@@ -1,14 +1,14 @@
 <?php
-/*
+/**
 Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2013-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/ajax.updateAgentsList.php
 Création : 30 octobre 2014
 Dernière modification : 9 avril 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Met à jour la liste des agents dans les select des pages absences/voir.php et plugins/conges/voir.php

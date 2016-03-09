@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 1.9.6
+/**
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 7 juillet 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 22 janvier 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affiche et modifie les paramètres de configuration (Serveur Mail, autres options) : Formulaire et validation
@@ -16,9 +16,10 @@ Affiche et modifie les paramètres de configuration (Serveur Mail, autres option
 Page appelée par la page index.php
 */
 
-// pas de $version=acces direct aux pages de ce dossier => Accès refusé
-if(!isset($version)){
+// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
+if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
   include_once "../include/accessDenied.php";
+  exit;
 }
 
 $tmp_dir=sys_get_temp_dir();
@@ -179,7 +180,7 @@ foreach($db->result as $elem){
       break;
 
     case "date" :
-      echo "<input type='text' name='{$elem['nom']}' value='".dateFr($elem['valeur'])."' style='width:300px;' class='datepicker'/>\n";
+      echo "<input type='text' name='{$elem['nom']}' value='".dateFr3($elem['valeur'])."' style='width:300px;' class='datepicker'/>\n";
       break;
 
     default :
