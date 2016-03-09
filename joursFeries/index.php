@@ -3,12 +3,12 @@
 Planning Biblio, Version 1.9.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : joursFeries/index.php
 Création : 25 juillet 2013
 Dernière modification : 19 mai 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Pages permettant la gestion des jours fériés et de fermeture.

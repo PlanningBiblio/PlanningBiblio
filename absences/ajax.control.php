@@ -1,14 +1,15 @@
 <?php
-/*
-Planning Biblio, Version 2.0.1
+/**
+Planning Biblio, Version 2.0.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/ajax.control.php
 Création : mai 2011
-Dernière modification : 4 septembre 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 14 novembre 2015
+@author Jérôme Combes <jerome@planningbiblio.fr>
+@author Etienne Cavalié <etienne.cavalie@unice.fr>
 
 Description :
 Permet de controler en arrière-plan si un agent est absent entre 2 dates et s'il n'est pas placé sur un planning validé
@@ -62,12 +63,15 @@ if($config['Absences-apresValidation']==0){
 }
 
 // Contrôle si placé sur planning en cours d'élaboration;
+$result["planningVide"]=0;
 if($config['Absences-planningVide']==0){
+  $debut=substr($debut,0,10);
+  $fin=substr($fin,0,10);
   $db=new db();	  
   $req="SELECT COUNT(`id`) as `cnt` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debut' AND '$fin';";
   $db->query($req);
   if($db->result){
-	$result["planningVide"]=$db->result[0]['cnt'];
+    $result["planningVide"]=$db->result[0]['cnt'];
   }
   //for testing purpose $result["planningVide"]=1;
 }

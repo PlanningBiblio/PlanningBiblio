@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 2.0.2
+/**
+Planning Biblio, Version 2.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 15 septembre 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 17 février 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Requêtes SQL créant les tables lors de l'installation.
@@ -62,6 +62,20 @@ $sql[]="CREATE TABLE `{$dbprefix}activites` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
+$sql[]="CREATE TABLE `{$dbprefix}appelDispo` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `site` int(11) NOT NULL DEFAULT '1',
+  `poste` int(11) NOT NULL DEFAULT '0',
+  `date` VARCHAR(10), 
+  `debut` VARCHAR(8),
+  `fin` VARCHAR(8),
+  `destinataires` TEXT,
+  `sujet` TEXT,
+  `message` TEXT,
+  `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
 $sql[]="CREATE TABLE `{$dbprefix}config` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nom` varchar(30) NOT NULL,
@@ -90,9 +104,25 @@ $sql[]="CREATE TABLE `{$dbprefix}heures_SP` (
   PRIMARY KEY (`id`))
   ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
+$sql[]="CREATE TABLE `{$dbprefix}hiddenTables` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `perso_id` int(11) NOT NULL DEFAULT '0',
+  `tableau` int(11) NOT NULL DEFAULT '0',
+  `hiddenTables` TEXT,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
 $sql[]="CREATE TABLE `{$dbprefix}lignes` (
   `id` int AUTO_INCREMENT,
   nom text,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+$sql[]="CREATE TABLE `{$dbprefix}log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `msg` TEXT NULL,
+  `program` VARCHAR(30) NULL,
+  `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
@@ -102,6 +132,19 @@ $sql[]="CREATE TABLE `{$dbprefix}infos` (
   `fin` DATE,
   texte TEXT,
   PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+// IPBlocker
+$sql[]="CREATE TABLE `{$dbprefix}IPBlocker` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+	`ip` VARCHAR(20) NOT NULL,
+	`login` VARCHAR(100) NULL,
+	`status` VARCHAR(10) NOT NULL,
+  `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `ip` (`ip`),
+  KEY `status` (`status`),
+  KEY `timestamp` (`timestamp`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
 $sql[]="CREATE TABLE `{$dbprefix}pl_notes` (

@@ -1,14 +1,15 @@
 <?php
-/*
-Planning Biblio, Version 2.0
+/**
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 4 septembre 2015
-Auteur : Jérôme Combes jerome@planningbiblio.fr, Christophe Le Guennec Christophe.Leguennec@u-pem.fr
+Dernière modification : 8 janvier 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
+@author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
 Description :
 Affiche le menu déroulant avec le nom des services et des agents dans la page planning/poste/index.php.
@@ -54,6 +55,11 @@ $j7=$d->dates[6];
 $semaine=$d->semaine;
 $semaine3=$d->semaine3;
 
+// PlanningHebdo et EDTSamedi étant incompatibles, EDTSamedi est désactivé si PlanningHebdo est activé
+if($config['PlanningHebdo']){
+  $config['EDTSamedi']=0;
+}
+  
 //			----------------		Vérification des droits d'accès		-----------------------------//
 $url=explode("?",$_SERVER['REQUEST_URI']);
 $url=$url[0];
@@ -75,11 +81,17 @@ else{
 // nom et activités du poste
 $db=new db;
 $db->select2("postes",null,array("id"=>$poste));
-$aff_poste=$db->result[0]['nom'];
+$posteNom=$db->result[0]['nom'];
 $activites=unserialize($db->result[0]['activites']);
 $stat=$db->result[0]['statistiques'];
 $bloquant=$db->result[0]['bloquant'];
 $categories=is_serialized($db->result[0]['categories'])?unserialize($db->result[0]['categories']):array();
+
+// Nom du site
+$siteNom=null;
+if($config['Multisites-nombre']>1){
+  $siteNom=$config["Multisites-site$site"];
+}
 
 // Liste des statuts correspondant aux catégories nécessaires pour être placé sur le poste
 $statuts=array();
@@ -387,7 +399,7 @@ $tab_agent=join($listparservices,";");
 $tableaux[0]="<table frame='box' cellspacing='0' cellpadding='0' id='menudivtab1' rules='rows' border='1'>\n";
 
 	//		Affichage du nom du poste et des heures
-$tableaux[0].="<tr class='menudiv-titre'><td colspan='2'>$aff_poste";
+$tableaux[0].="<tr class='menudiv-titre'><td colspan='2'>$posteNom";
 if(in_array(13,$droits)){
   $tableaux[0].=" ($poste)";
 }
@@ -400,7 +412,7 @@ if($services and $config['ClasseParService']){
   foreach($services as $elem){
     $class="service_".strtolower(removeAccents(str_replace(" ","_",$elem['service'])));
     if(array_key_exists($elem['service'],$newtab)){
-      $tableaux[0].="<tr onmouseover='$(this).removeClass();$(this).addClass(\"menudiv-gris\");' onmouseout='$(this).removeClass();$(this).addClass(\"$class\");' class='$class'>\n";
+      $tableaux[0].="<tr class='$class menudiv-tr'>\n";
       $tableaux[0].="<td colspan='2' style='width:200px;' onmouseover='groupe_tab($i,\"$tab_agent\",1,$(this));'>";
       $tableaux[0].=$elem['service'];
       $tableaux[0].="</td></tr>\n";
@@ -422,7 +434,7 @@ if(!$config['ClasseParService']){
 if(array_key_exists("Autres",$newtab) and $config['agentsIndispo']){
   $i=count($services);
   $groupe_tab_hide=$config['ClasseParService']?1:0;
-  $tableaux[0].="<tr onmouseover='$(this).addClass(\"menudiv-gris\");' onmouseout='$(this).removeClass(\"menudiv-gris\");'>\n";
+  $tableaux[0].="<tr class='menudiv-tr'>\n";
   $tableaux[0].="<td colspan='2' style='width:200px;' onmouseover='groupe_tab($i,\"$tab_agent\",$groupe_tab_hide,$(this));' >";
   $tableaux[0].="Agents indisponibles";
   $tableaux[0].="</td></tr>\n";
@@ -430,30 +442,58 @@ if(array_key_exists("Autres",$newtab) and $config['agentsIndispo']){
 
 //		-----------		Affichage de l'utilisateur "tout le monde"		----------//
 if($config['toutlemonde']){
-  $tableaux[0].="<tr onmouseover='$(this).addClass(\"menudiv-gris\");groupe_tab_hide();' onmouseout='$(this).removeClass(\"menudiv-gris\",this);'>\n";
+  $tableaux[0].="<tr onmouseover='groupe_tab_hide();' class='menudiv-tr' >\n";
   $tableaux[0].="<td colspan='3' style='width:200px;color:black;' ";
   $tableaux[0].="onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",2,0,0,\"$site\");'>Tout le monde</td></tr>\n";
 }
 //~ -----				Affiche de la "Case vide"  (suppression)	--------------------------//
 if($nbAgents>0){
   $groupe_tab=$config['ClasseParService']?"groupe_tab(\"vide\",\"$tab_agent\",1,$(this));":null;
-  $tableaux[0].="<tr onmouseover='$groupe_tab $(this).addClass(\"menudiv-gris\");groupe_tab_hide();' onmouseout='$(this).removeClass(\"menudiv-gris\");'>";
+  $tableaux[0].="<tr onmouseover='$groupe_tab groupe_tab_hide();' class='menudiv-tr'>";
   $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,0,0,\"$site\");'>";
   $tableaux[0].="Supprimer $perso_nom</td><tr>\n";
-  $tableaux[0].="<tr onmouseover='$groupe_tab $(this).addClass(\"menudiv-gris\");groupe_tab_hide();' onmouseout='$(this).removeClass(\"menudiv-gris\");'>";
+  $tableaux[0].="<tr onmouseover='$groupe_tab groupe_tab_hide();' class='menudiv-tr'>";
   $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,1,0,\"$site\");' class='red'>";
   $tableaux[0].="Barrer $perso_nom</td></tr>";
 
   // Ne pas afficher les lignes suivantes si un seul agent dans la cellule
   if($nbAgents>1){
-    $tableaux[0].="<tr onmouseover='$groupe_tab $(this).addClass(\"menudiv-gris\");groupe_tab_hide();' onmouseout='$(this).removeClass(\"menudiv-gris\");'>";
+    $tableaux[0].="<tr onmouseover='$groupe_tab groupe_tab_hide();' class='menudiv-tr'>";
     $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,0,0,\"$site\",1);'>";
     $tableaux[0].="Tout supprimer</td><tr>\n";
-    $tableaux[0].="<tr onmouseover='$groupe_tab $(this).addClass(\"menudiv-gris\");groupe_tab_hide();' onmouseout='$(this).removeClass(\"menudiv-gris\");'>";
+    $tableaux[0].="<tr onmouseover='$groupe_tab groupe_tab_hide();' class='menudiv-tr'>";
     $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,1,0,\"$site\",1);' class='red'>";
     $tableaux[0].="Tout barrer</td></tr>";
   }
 }
+
+// Ajout du lien pour les appels à disponibilité
+if($config['Planning-AppelDispo']){
+  // Consulte la base de données pour savoir si un mail a déjà été envoyé
+  $db=new db();
+  $db->select2("appelDispo",null,array("site"=>$site,"poste"=>$poste,"date"=>$date,"debut"=>$debut,"fin"=>$fin),"ORDER BY `timestamp` desc");
+  $nbEnvoi=$db->nb;
+  if($db->result){
+    $dateEnvoi=dateFr($db->result[0]['timestamp']);
+    $heureEnvoi=heure2(substr($db->result[0]['timestamp'],11,5));
+    $destinataires=count(explode(";",$db->result[0]['destinataires']));
+    $s=$destinataires>1?"s":null;
+
+    $nbEnvoiInfo="L&apos;appel &agrave; disponibilit&eacute; a d&eacute;j&agrave; &eacute;t&eacute; envoy&eacute; $nbEnvoi fois&#013;";
+    $nbEnvoiInfo.="Dernier envoi le $dateEnvoi &agrave; $heureEnvoi&#013;";
+    $nbEnvoiInfo.="$destinataires personne{$s} contact&eacute;e{$s}";
+  }
+
+  $agents=addslashes(json_encode($agents_dispo));
+  $tableaux[0].="<tr onmouseover='groupe_tab_hide();' class='menudiv-tr'>";
+  $tableaux[0].="<td colspan='2' onclick='appelDispo(\"$site\",\"$siteNom\",\"$poste\",\"$posteNom\",\"$date\",\"$debut\",\"$fin\",\"$agents\");'>";
+  $tableaux[0].="Appel &agrave; disponibilit&eacute;\n";
+  if($nbEnvoi){
+    $tableaux[0].="<span title='$nbEnvoiInfo' style='position:absolute; right:5px;'><strong>$nbEnvoi</strong></span>\n";
+  }
+  $tableaux[0].="</td><tr>\n";
+}
+
 $tableaux[0].="</table>\n";
 
 //	--------------		Affichage des agents			----------------//

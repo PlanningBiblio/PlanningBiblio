@@ -1,3 +1,54 @@
+***	Version 2.2.3	(Jérôme Combes, 27 février 2016)			***
+- Correction
+Planning : Corrige le classement par ordre alphabétique dans le menu du planning, même si accents
+PlanningHebdo : Corrige l'enregistrement du nom de l'agent qui valide les plannings de présence
+
+***	Version 2.2.2	(Jérôme Combes, 27 février 2016)			***
+- Correction
+Corrige une erreur sur le masquage des tableaux
+
+***	Version 2.2.1	(Jérôme Combes, 23 février 2016)			***
+- Correction
+Corrige une erreur sur le positionnement des cellules grisées
+
+***	Version 2.2	(Jérôme Combes, 17 février 2016)			***
+- Amélioration :
+Ajout du blocage d'adresses IP après échec d'authentification (paramètrable dans administration / configuration).
+
+***	Version 2.1	(Jérôme Combes, 9 janvier 2016)			***
+- Amélioration :
+Planning : Possibilité de masquer les tableaux du plannings
+Planning : Les colonnes horaires oubliées lors de la création de la structure sont automatiquement comblées
+Planning : Envoi d'un mail demandant aux agents s'ils sont volontaires pour occuper le poste choisi depuis le menu du planning
+Absences : Ajout des informations sur les postes affectés par l'absence dans les notifications par e-mail
+Classe sendmail : permet la récupération et l'affichage des erreurs SMTP
+
+***	Version 2.0.5	(4 décembre 2015)		***
+Farid Goara, Jérôme Combes
+
+- Améliorations
+Initialisation des heures de fin en fonction des heures de début dans les menus déroulant (absences/congés)
+
+- Corrections
+Corrections de l'affichage de l'agenda pour les rotations sur 3 semaines 
+et pour l'utilisation de plannings de présence différents les semaines avec samedi travaillé
+
+
+***	Version 2.0.4	(1er décembre 2015)		***
+Arthur Suzuki, Christophe Le Guennec, Etienne Cavalié, Guillaume Raimondeau, Jérôme Combes
+
+- Améliorations
+Option permettant d'interdire le dépôt d'absence sur des plannings en cours d'élaboration
+
+- Corrections :
+Corrections de fautes de frappe
+Correction d'une erreur empêchant l'affichage de la liste des présents en bas du planning
+Encodage des caractères du le menu permettant de placer les agents
+Correction du marquage des absents dans le planning
+Correction d'une erreur empêchant l'affichage des plannings si rotation des emplois du temps sur 3 semaines
+Correction de la création des URL si serveur HTTPS (lien dans les notifications).
+
+
 ***	Version 2.0.3	(Jérôme Combes, 2 octobre 2015)			***
 - Corrections :
 Corrige le marquage des absents dans le planning

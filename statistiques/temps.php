@@ -1,14 +1,14 @@
 <?php
-/*
+/**
 Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
 Dernière modification : 2 septembre 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affiche un tableau avec le nombre d'heures de service public effectué par agent par jour et par semaine

@@ -1,13 +1,13 @@
 /*
-Planning Biblio, Version 2.0.3
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 6 octobre 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 21 janvier 2015
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Feuille de style principale du programme.
@@ -140,6 +140,10 @@ h3{
   background:url("images/googlecalendar.png") no-repeat center;
 }
 
+.pl-icon-hide {
+  background:url("images/hide.png") no-repeat center;
+}
+
 .pl-icon-lock {
   background:url("images/lock.png") no-repeat center;
 }
@@ -166,6 +170,12 @@ h3{
 
 .pl-icon-unlock {
   background:url("images/unlock.png") no-repeat center;
+}
+
+/* Info-bulles */
+.ui-tooltip{
+  /* Permet les sauts de lignes avec l'entité .&#013; */
+  white-space:pre-wrap;
 }
 
 /* Les agents */
@@ -227,6 +237,12 @@ h3{
   text-align:center;
 } 
 
+/* Menu Principal */
+/* .logo_td : permet de positionner le menu principal, 1ere cellule avant le 1er item du menu */
+.logo_td{
+  width:260px;
+}
+
 /*		Menu JavaScript		*/
 .menu_table{
   position: absolute;
@@ -264,6 +280,14 @@ td.menu_td2{				/* TD des sous menu top */
 }
 td.menu_td2:hover{
 	background:#FF5E0E;
+}
+
+.myAccountLink{
+  font-size:9pt;
+}
+
+.myAccountLink:hover{
+  color: #FF5E0E;
 }
 
 input[type=text],input[type=password]
@@ -457,7 +481,7 @@ class cellule = cellule par défaut
   border-style : outset;
 }
 
-.tr_horaires, .tr_separation{
+.tr_horaires, .tr_separation, .tr_horaires a{
   background: #7D3C25;
   color:#FFFFFF;
   font-size:12pt;
@@ -468,7 +492,6 @@ class cellule = cellule par défaut
   width:192px;
   font-size:12pt;
   font-weight: bold;
-
 }
 
 .td_obligatoire{
@@ -486,6 +509,11 @@ class cellule = cellule par défaut
   display:block;
   padding:3px;
   white-space: nowrap;
+}
+
+#afficheTableaux{
+  text-align: left;
+  margin: 2px 0 10px 0;
 }
 
 .noteBasDePage{
@@ -533,7 +561,7 @@ class cellule = cellule par défaut
   padding-left: 10px;
 }
 
-.menudiv-gris{
+.menudiv-tr:hover{
   background:#CCCCCC;
 }
 
@@ -579,6 +607,15 @@ class cellule = cellule par défaut
   width: 100%;
   text-align: right;
   padding: 5px 0;
+}
+
+#pl-appelDispo-sujet{
+  width: 100%;
+}
+
+#pl-appelDispo-text{
+  width: 100%;
+  height: 200px;
 }
 
 #pl-notes-text{

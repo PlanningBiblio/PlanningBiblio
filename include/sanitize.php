@@ -1,23 +1,24 @@
 <?php
-/*
-Planning Biblio, Version 1.9.5
+/**
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : include/sanitize.php
 Création : 7 avril 2015
-Dernière modification : 10 avril 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 22 janvier 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Page contenant les fonctions PHP de nettoyages de variables
 Page appelée par les fichiers index.php, et authentification.php
 */
 
-// pas de $version=acces direct au fichier => Accès refusé
-if(!isset($version)){
+// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès direct et quitte
+if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
   include_once "accessDenied.php";
+  exit;
 }
 
 function sanitize_array_string($n){

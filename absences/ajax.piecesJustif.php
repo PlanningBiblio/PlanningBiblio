@@ -3,12 +3,12 @@
 Planning Biblio, Version 1.8.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/ajax.piecesJustif.php
 Création : 5 novembre 2014
 Dernière modification : 5 novembre 2014
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Enregistre les modifications apportées sur les cases à cacher "Pièces justificatives" dans la liste des absences (voir.php)

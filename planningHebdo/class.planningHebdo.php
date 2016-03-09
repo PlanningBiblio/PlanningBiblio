@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 2.0.1
+/**
+Planning Biblio, Version 2.2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2013-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 30 juillet 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 27 février 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Fichier regroupant le fonctions planningHebdo.
@@ -120,12 +120,18 @@ class planningHebdo{
     }
 
     if(!empty($destinataires)){
-      $destinataires=join(";",$destinataires);
       $sujet="Nouveau planning de présence, ".html_entity_decode(nom($perso_id,"prenom nom"),ENT_QUOTES|ENT_IGNORE,"UTF-8");
       $message=nom($perso_id,"prenom nom");
       $message.=" a enregistré un nouveau planning de présence dans l'application Planning Biblio<br/>";
       $message.="Rendez-vous dans le menu administration / Plannings de présence de votre application Planning Biblio pour le valider.";
-      sendmail($sujet,$message,$destinataires);
+
+      // Envoi du mail
+      $m=new sendmail();
+      $m->subject=$sujet;
+      $m->message=$message;
+      $m->to=$destinataires;
+      $m->send();
+
     }
   }
 
@@ -318,7 +324,7 @@ class planningHebdo{
     $data['debut']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/","$3-$2-$1",$data['debut']);
     $data['fin']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/","$3-$2-$1",$data['fin']);
 
-    $perso_id=array_key_exists("perso_id",$data)?$data["perso_id"]:$_SESSION['login_id'];
+    $perso_id=array_key_exists("valide",$data)?$data["valide"]:$_SESSION['login_id'];
 
     $temps=serialize($data['temps']);
     $update=array("debut"=>$data['debut'],"fin"=>$data['fin'],"temps"=>$temps,"modif"=>$perso_id,"modification"=>date("Y-m-d H:i:s"));
@@ -326,6 +332,7 @@ class planningHebdo{
       $update['valide']=$perso_id;
       $update['validation']=date("Y-m-d H:i:s");
     }
+    
     $db=new db();
     $db->update2("planningHebdo",$update,array("id"=>$data['id']));
     $this->error=$db->error;
@@ -383,8 +390,14 @@ class planningHebdo{
 	$message.=nom($data['perso_id'],"prenom nom");
 	$message.=" a été modifié dans l'application Planning Biblio<br/>";
       }
-      $destinataires=join(";",$destinataires);
-      sendmail($sujet,$message,$destinataires);
+
+      // Envoi du mail
+      $m=new sendmail();
+      $m->subject=$sujet;
+      $m->message=$message;
+      $m->to=$destinataires;
+      $m->send();
+
     }
   }
   

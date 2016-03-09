@@ -1,13 +1,15 @@
-/*
-Planning Biblio, Version 2.0.3
+/**
+Planning Biblio, Version 2.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 6 octobre 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 4 février 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
+@author Farid Goara <farid.goara@u-pem.fr>
+
 
 Description :
 Fichier contenant les principales fonctions JavaScript
@@ -199,6 +201,26 @@ function dateFr(date){
   return date;
 }
 
+function decompte(dcpt){
+  var affiche = '';
+	dcpt=parseInt(dcpt);
+     
+  if(dcpt > 1){
+    var affiche = 'Veuillez réessayer dans '+dcpt+' secondes';
+  }else{
+    var affiche = 'Veuillez réessayer dans '+dcpt+' seconde';
+  }
+	if(dcpt > 0){
+  	$("#chrono").text(affiche);
+		dcpt--;
+		setTimeout('decompte('+dcpt+')', 1000);
+	}else{
+		$("#chrono").hide();
+		$("#link").show();
+	}
+}
+ 
+
 function diffMinutes(debut,fin){		// Calcul la différence en minutes entre 2 heures (formats H:i:s)
   var d=new Date("Mon, 26 Aug 2013 "+debut);
   d=d.getTime()/60000;				// Nombre de milisecondes, converti en minutes
@@ -227,6 +249,12 @@ function errorHighlight(e, type, icon) {
 
         $(this).html(alertHtml);
     });
+}
+
+function heureFr(heure){
+  heure=heure.toString();
+  heure=heure.replace(/([0-9]*):([0-9]*):([0-9]*)/,"$1h$2");
+  return heure;
 }
 
 function heure4(heure){
@@ -325,6 +353,15 @@ function sanitize_string(a){
   reg=new RegExp("<.[^<>]*>", "gi" );
   a=a.replace(reg,"").trim();
   return a;
+}
+
+/** pre-remplissage de l'heure de fin avec l'heure de début
+* @author Farid Goara <farid.goara@u-pem.fr>
+*/
+function setEndHour(){
+  if($("select[name=hre_debut]").val() != "" && $("select[name=hre_fin]").val() == ""){
+    $("select[name=hre_fin]").prop("selectedIndex",$("select[name=hre_debut]").prop("selectedIndex"));
+  }
 }
 
 // supprime(page,id)	Utilisée par postes et modeles
@@ -721,6 +758,48 @@ $(function(){
     $(".ui-button").button();
     $(".datepicker").datepicker();
     $(".datepicker").addClass("center ui-widget-content ui-corner-all");
+
+    /**
+    * Initialiser le calendrier avec la date choisie
+    * @author Farid Goara
+    */
+    if ($("#date").length > 0){
+      if ($("#date").attr("data-set-calendar") != 'undefined' && $("#date").attr("data-set-calendar")!= false  ){
+	var strSelectedDate=$("#date").attr("data-set-calendar");
+	if(strSelectedDate){
+	  var arrSelectedDate=strSelectedDate.split("-");
+	  var numYear = arrSelectedDate[0];
+	  var numMonth = parseInt(arrSelectedDate[1]) - 1;
+	  var numDay = arrSelectedDate[2];
+	  var objSelectedDate = new Date(numYear,numMonth,numDay);
+	  $(".datepicker").datepicker("setDate",objSelectedDate);
+	}
+      }
+    }
+
+    /**
+    * Initialiser le defaultDate du calendrier de fin avec eventuelle date choisie dans le calendrier debut
+    * @author Farid Goara
+    */
+    $(".datepicker").focusin(function(){
+      if($(this).attr("name") == "fin"){
+	var objDateDefaultFin = "";
+	var objDateCurrentDeb = "";
+	if($('input[name="debut"]').datepicker("getDate")){
+	  if(!$(this).datepicker("option","defaultDate" )){
+	    $(this).datepicker("option","defaultDate",$('input[name="debut"]').datepicker("getDate"));
+	  }
+	  else{
+	    objDateDefaultFin = new Date($(this).datepicker("option","defaultDate"));
+	    objDateCurrentDeb = new Date($('input[name="debut"]').datepicker("getDate"));
+	    if(objDateDefaultFin.getDate() != objDateCurrentDeb.getDate() || objDateDefaultFin.getMonth() != objDateCurrentDeb.getMonth() || objDateDefaultFin.getYear() != objDateCurrentDeb.getYear()){
+	      $(this).datepicker("option","defaultDate",$('input[name="debut"]').datepicker("getDate"));
+	    }
+	  }
+	}
+      }
+    });
+
     // Onglets
     $(".ui-tabs").tabs({
       // Fonctions personnalisées pour les tabs .ui-tab-cancel et .ui-tab-submit dans personnel/modif.php
@@ -751,3 +830,5 @@ $(function(){
   // Infobulles
   $(document).tooltip();
 });
+
+

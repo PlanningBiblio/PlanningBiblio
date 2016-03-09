@@ -1,14 +1,14 @@
 <?php
-/*
+/**
 Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2013-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : plugins/planningHebdo/ajax.verifPlannings.php
 Création : 2 octobre 2013
 Dernière modification : 1er juillet 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Recherche les plannings enregistrés afin d'éviter les conflits lors de l'enregistrement d'un nouveau planning.

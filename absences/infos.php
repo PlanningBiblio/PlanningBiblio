@@ -1,14 +1,14 @@
 <?php
-/*
+/**
 Planning Biblio, Version 2.0
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/infos.php
 Création : mai 2011
 Dernière modification : 18 juin 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Permet d'ajouter une information relative à la gestion des absences : Formulaire, confirmation, validation

@@ -3,12 +3,12 @@
 Planning Biblio, Version 1.7.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : joursFeries/valid.php
 Création : 25 juillet 2013
 Dernière modification : 25 juillet 2013
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Fichier permettant la validation des jours fériés et de fermeture.

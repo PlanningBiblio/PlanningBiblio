@@ -1,14 +1,14 @@
 <?php
-/*
+/**
 Planning Biblio, Plugin planningHebdo Version 1.4.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2013-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : plugins/planningHebdo/cron.daily.php
 Création : 23 juillet 2013
 Dernière modification : 22 avril 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Fichier executant des taches planifiées quotidiennement pour le plugin planningHebdo.

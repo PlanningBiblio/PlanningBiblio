@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 1.9.7
+/**
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 12 mai 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 9 janvier 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Valide l'ajout ou la modification des agents : enregistrement des infos dans la base de données
@@ -90,7 +90,25 @@ switch($action){
     $mdp=gen_trivial_password();
     $mdp_crypt=md5($mdp);
 
-    sendmail("Création de compte","Login : $login <br>Mot de passe : $mdp","$mail");
+    // Envoi du mail
+    $message="Votre compte Planning Biblio a &eacute;t&eacute; cr&eacute;&eacute; :";
+    $message.="<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
+    
+    $m=new sendmail();
+    $m->subject="Création de compte";
+    $m->message=$message;
+    $m->to=$mail;
+    $m->send();
+
+    // Si erreur d'envoi de mail, affichage de l'erreur
+    $msg=null;
+    $msgType=null;
+    if($m->error){
+      $msg=urlencode($m->error_CJInfo);
+      $msgType="error";
+    }
+
+    // Enregistrement des infos dans la base de données
     $insert=array("nom"=>$nom,"prenom"=>$prenom,"mail"=>$mail,"statut"=>$statut,"categorie"=>$categorie,"service"=>$service,"heuresHebdo"=>$heuresHebdo,
       "heuresTravail"=>$heuresTravail,"arrivee"=>$arrivee,"depart"=>$depart,"login"=>$login,"password"=>$mdp_crypt,"actif"=>$actif,
       "droits"=>$droits,"postes"=>$postes,"temps"=>$temps,"informations"=>$informations,"recup"=>$recup,"sites"=>$sites,
@@ -106,7 +124,7 @@ switch($action){
     $p->updateEDTSamedi($eDTSamedi,$premierLundi,$dernierLundi,$id);
     
 	    
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/index.php';</script>";
+    echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/index.php&msg=$msg&msgType=$msgType';</script>";
     break;
   
   case "mdp" :
@@ -115,12 +133,31 @@ switch($action){
     $db=new db();
     $db->select2("personnel","login",array("id"=>$id));
     $login=$db->result[0]['login'];
-    sendmail("Modification du mot de passe","Login : $login <br>Mot de passe : $mdp","$mail");
+
+    // Envoi du mail
+    $message="Votre mot de passe Planning Biblio a &eacute;t&eacute; modifi&eacute;";
+    $message.="<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
+    
+    $m=new sendmail();
+    $m->subject="Modification du mot de passe";
+    $m->message=$message;
+    $m->to=$mail;
+    $m->send();
+
+    // Si erreur d'envoi de mail, affichage de l'erreur
+    $msg=null;
+    $msgType=null;
+    if($m->error){
+      $msg=urlencode($m->error_CJInfo);
+      $msgType="error";
+    }else{
+      $msg=urlencode("Le mot de passe a été modifié et envoyé par e-mail à l'agent");
+      $msgType="success";
+    }
 
     $db=new db();
     $db->update2("personnel",array("password"=>$mdp_crypt),array("id"=>$id));
-    $msg=urlencode("Le mot de passe a été modifié et envoyé par e-mail à l'agent");
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/index.php&msg={$msg}&msgType=success';</script>";
+    echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/index.php&msg=$msg&msgType=$msgType';</script>";
     break;
 
   case "modif" :

@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 1.9.5
+/**
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/password.php
 Création : mai 2011
-Dernière modification : 13 avril 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 9 janvier 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Cette page permet le changement de mot de passe. Formulaire, vérification et validation
@@ -73,7 +73,21 @@ else{
     echo "Le mot de passe a été changé";
     echo "<br/><br/>\n";
     echo "<a href='javascript:history.go(-2);'>Retour</a>\n";
-    sendmail("Modification du mot de passe","Login : $login <br/>Mot de passe : $mdp","$mail");
+
+    $message="Votre mot de passe Planning Biblio a &eacute;t&eacute; modifi&eacute;";
+    $message.="<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
+    
+    // Envoi du mail
+    $m=new sendmail();
+    $m->subject="Modification du mot de passe";
+    $m->message=$message;
+    $m->to=$mail;
+    $m->send();
+
+    // Si erreur d'envoi de mail, affichage de l'erreur
+    if($m->error){
+      echo "<script type='text/javascript'>CJInfo(\"{$m->error_CJInfo}\",\"error\");</script>\n";
+    }
   }
 }
 ?>

@@ -3,12 +3,12 @@
 Planning Biblio, Version 1.7.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/motifs.php
 Création : 28 février 2014
 Dernière modification : 3 mars 2014
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Permet d'afficher et de modifier la liste des motifs d'absences

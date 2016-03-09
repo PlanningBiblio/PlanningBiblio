@@ -1,14 +1,14 @@
 <?php
-/*
+/**
 Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : setup/createconfig.php
 Création : mai 2011
 Dernière modification : 8 avril 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Permet de créer le fichier de configuration (include/config.php) lors de l'installation.
@@ -24,16 +24,16 @@ $Fnm = "../include/config.php";
 
 $file=Array();
 $file[]="<?php\n";
-$file[]="/*\n";
+$file[]="/**\n";
 $file[]="Planning Biblio, Version $version\n";
 $file[]="Licence GNU/GPL (version 2 et au dela)\n";
 $file[]="Voir les fichiers README.md et LICENSE\n";
-$file[]="Copyright (C) 2011-2015 - Jérôme Combes\n";
+$file[]="@copyright 2011-2016 Jérôme Combes\n";
 $file[]="\n";
 $file[]="Fichier : include/config.php\n";
 $file[]="Création : mai 2011\n";
 $file[]="Dernière modification : 8 avril 2015\n";
-$file[]="Auteur : Jérôme Combes, jerome@planningbiblio.fr\n";
+$file[]="@author Jérôme Combes <jerome@planningbiblio.fr>\n";
 $file[]="\n";
 $file[]="Description :\n";
 $file[]="Fichier de configuration. Contient les informations de connexion à la base de données MySQL.\n";

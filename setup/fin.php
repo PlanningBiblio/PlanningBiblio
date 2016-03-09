@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 2.0.3
+/**
+Planning Biblio, Version 2.2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : setup/fin.php
 Création : mai 2011
 Dernière modification : 13 avril 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Dernière page d'installation. Reçoit les informations du formualire de la page setup/config.php (informations sur le 
@@ -17,7 +17,7 @@ du responsable.
 Affiche le message "configuration terminée" et invite l'utilisateur à se connecter au planning
 */
 
-$version="2.0.3";
+$version="2.2.3";
 include "../include/config.php";
 include "header.php";
 

@@ -1,14 +1,16 @@
 <?php
-/*
+/**
 Planning Biblio, Version 2.0.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
-Dernière modification : 4 septembre 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 3 décembre 2015
+@author Jérôme Combes <jerome@planningbiblio.fr>
+@author Farid Goara <farid.goara@u-pem.fr>
+
 
 Description :
 Cette page affiche tous les plannings de la semaine choisie.
@@ -111,7 +113,7 @@ echo "<div id='planning-semaine'>\n";
 echo "<div id='divcalendrier' class='text'>\n";
 
 echo "<form name='form' method='get' action='#'>\n";
-echo "<input type='hidden' id='date' name='date' />\n";
+echo "<input type='hidden' id='date' name='date' data-set-calendar='$date' />\n";
 echo "</form>\n";
 
 echo "<table id='tab_titre'>\n";

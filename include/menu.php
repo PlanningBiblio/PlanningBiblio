@@ -1,14 +1,14 @@
 <?php
-/*
-Planning Biblio, Version 2.0
+/**
+Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2015 - Jérôme Combes
+@copyright 2011-2016 Jérôme Combes
 
 Fichier : include/menu.php
 Création : mai 2011
-Dernière modification : 20 mai 2015
-Auteur : Jérôme Combes, jerome@planningbiblio.fr
+Dernière modification : 21 janvier 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affiche le menu principal.
@@ -74,7 +74,7 @@ $(document).click(function(){
 <?php
 echo "<div id='topgauche'>\n";
 echo "<table cellpadding='0' cellspacing='0' border='0' style='width:100%;'><tr>\n";
-echo "<td style='width:340px;text-align:left' rowspan='4'><font class='noprint'>\n";
+echo "<td class='logo_td' rowspan='4'><font class='noprint'>\n";
 echo "<a href='index.php'><div id='logo'></div></a>\n";
 echo "</font></td></tr>\n";
 echo "<tr><td>&nbsp;</td></tr>\n";
@@ -93,12 +93,12 @@ echo "<tr><td colspan='$colspan' style='text-align:right;'>\n";
 
 // Si le module PlanningHebdo est activé, remplace "Changer le mot de passe" par "Mon Compte"
 if($config['PlanningHebdo']){
-  echo "<a href='index.php?page=planningHebdo/monCompte.php' style='font-size:9pt;'>\n";
+  echo "<a href='index.php?page=planningHebdo/monCompte.php' class='myAccountLink'>\n";
   echo "Mon Compte</a>\n";
 }
 // Mot de passe modifiable seulement si authentification SQL
 elseif($_SESSION['oups']['Auth-Mode']=="SQL"){
-  echo "<a href='index.php?page=personnel/password.php' style='font-size:9pt;'>\n";
+  echo "<a href='index.php?page=personnel/password.php' class='myAccountLink'>\n";
   echo "Changer de mot de passe\n";
 }
 echo "<div id='logout_text'><a href='authentification.php' >Déconnexion</a></div>\n";
