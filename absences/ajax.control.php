@@ -61,6 +61,7 @@ if($config['Absences-apresValidation']==0){
   }
 }
 
+<<<<<<< Updated upstream
 // Contrôle si placé sur planning en cours d'élaboration;
 if($config['Absences-planningVide']==0){
   $db=new db();	  
@@ -71,5 +72,7 @@ if($config['Absences-planningVide']==0){
   }
   //for testing purpose $result["planningVide"]=1;
 }
+=======
+>>>>>>> Stashed changes
 echo json_encode($result);
 ?>

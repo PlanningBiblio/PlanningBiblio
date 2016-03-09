@@ -51,6 +51,25 @@ $quartDHeure=$config['heuresPrecision']=="quart-heure"?true:false;
 $debutSQL=dateSQL($debut);
 $finSQL=dateSQL($fin);
 
+/*
+// Contrôle si placé sur planning en cours d'élaboration;
+if($config['Absences-planningVide']==0 and !$admin){
+  $debut=substr($debut,0,10);
+  $fin=substr($fin,0,10);
+  $db=new db();   
+  $req="SELECT COUNT(`id`) as `cnt` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debut' AND '$fin';";
+  $db->query($req);
+  if($db->result){
+	$result["planningVide"]=$db->result[0]['cnt'];
+	/*
+	echo "<div id='acces_refuse'>Accès refusé</div>\n";
+  	include "include/footer.php";
+  	exit;
+	*/
+  }
+}
+*/
+
 if($config['Absences-adminSeulement'] and !$admin){
   echo "<div id='acces_refuse'>Accès refusé</div>\n";
   include "include/footer.php";

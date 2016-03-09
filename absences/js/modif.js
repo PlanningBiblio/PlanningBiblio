@@ -170,8 +170,10 @@ function verif_absences(ctrl_form){
     success: function(result){
       result=JSON.parse(result);
       if(result["planningVide"]!=0){
-	information("Vous essayez de placer une absence sur un planning en cours d'élaboration","error");
-	retour=false;
+	if(admin==1){
+		information("Vous essayez de placer une absence sur un planning en cours d'élaboration","error");
+		retour=false;
+	}
       }
       else if(result["autreAbsence"]){
 	information("Une absence est déjà enregistrée pour cet agent entre le "+result["autreAbsence"]+"<br/>Veuillez modifier les dates et horaires.","error");
