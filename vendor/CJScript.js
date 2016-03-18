@@ -3,7 +3,7 @@ Licence GNU/GPL (version 2 et au dela)
 
 Fichier : CJScript.js
 Création : mars 2015
-Dernière modification : 8 janvier 2016
+Dernière modification : 18 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 */
 
@@ -239,6 +239,12 @@ $(function(){
     // Colonnes fixes
     var scollX=$(this).attr("data-fixedColumns")?"100%":"";
     
+    // Liens pour exporter les informations
+    var sDom='<"H"lfr>t<"F"ip>T';
+    if($(this).attr("data-noExport")){
+      sDom='<"H"lfr>t<"F"ip>';
+    }
+    
     // On applique le DataTable
     var CJDataTable=$(this).DataTable({
       "bJQueryUI": true,
@@ -250,7 +256,7 @@ $(function(){
       "aoColumns" : aoCol,
       "oLanguage" : {"sUrl" : "vendor/dataTables.french.lang"},
       "sScrollX": scollX,
-      "sDom": '<"H"lfr>t<"F"ip>T',
+      "sDom": sDom,
       "oTableTools": {
 	"sSwfPath" : "vendor/DataTables-1.10.4/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
 	"aButtons": [

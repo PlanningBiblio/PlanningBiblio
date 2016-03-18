@@ -1,12 +1,12 @@
-/*
-Planning Biblio, Version 2.1
+/**
+Planning Biblio, Version 2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 21 janvier 2015
+Dernière modification : 18 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -96,6 +96,14 @@ h3{
 
 #title{
   text-align:center;
+}
+
+#content{
+  margin: 70px 5px 5px 5px;
+}
+
+#content-planning{
+  margin: 30px 0 0 0;
 }
 
 #ferie,.ferie,.important {
@@ -564,6 +572,16 @@ class cellule = cellule par défaut
 .menudiv-tr:hover{
   background:#CCCCCC;
 }
+
+/* Configuration des tableaux */
+.tableaux-cfg {
+  display: inline-block;
+  min-width:500px;
+  width: 30%;
+  vertical-align:top;
+  padding: 0 15px;
+}
+
 
 #tab_titre{	/* planning/poste/index.php */
   width:100%;
