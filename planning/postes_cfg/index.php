@@ -31,8 +31,18 @@ $t->supprime=true;
 $t->fetchAll();
 $tableauxSupprimes=$t->elements;
 
-//	Affichage
+// Dernières utilisations des tableaux
+$tabAffect=array();
+$db=new db();
+$db->select2("pl_poste_tab_affect",null,null,"order by `date` asc");
+if($db->result){
+  foreach($db->result as $elem){
+    $tabAffect[$elem['tableau']]=$elem['date'];
+  }
+}
 
+
+//	Affichage
 
 //	1. 	Tableaux
 echo "<div id='tableaux-listes' class='tableaux-cfg'>\n";
@@ -41,10 +51,10 @@ echo "<p><a href='index.php?page=planning/postes_cfg/modif.php' class='ui-button
 
 echo <<<EOD
 <form name='form' method='get' action='index.php'>
-<table class='CJDataTable' id='table-list' data-noExport='1'>
+<table class='CJDataTable' id='table-list' data-noExport='1' data-sort='[[1,"asc"]]'>
 <thead>
 <tr>
-<th><input type='checkbox' class='CJCheckAll' /></th>
+<th class='dataTableNoSort'><input type='checkbox' class='CJCheckAll' /></th>
 EOD;
 if(in_array(13,$droits)){
   echo "<th>ID</th>\n";
@@ -53,6 +63,7 @@ echo "<th>Nom</th>\n";
 if($config['Multisites-nombre']>1){
   echo "<th>Site</th>\n";
 }
+echo "<th class='dataTableDateFR'>Derni&egrave;re utilisation</th>\n";
 echo "</tr>\n";
 echo "</thead>\n";
 
@@ -61,8 +72,15 @@ echo "<tbody>\n";
 $i=0;
 foreach($tableaux as $elem){
   $site="Multisites-site{$elem['site']}";
+  
+  if(array_key_exists($elem['tableau'],$tabAffect)){
+    $utilisation=dateFr($tabAffect[$elem['tableau']]);
+  }else{
+    $utilisation="Jamais";
+  }
+  
   echo "<tr id='tr-tableau-{$elem['tableau']}' ><td style='white-space:nowrap;'>\n";
-  echo "<input type='checkbox' name='chk$i' value='{$elem['tableau']}' />\n";
+  echo "<input type='checkbox' name='chk$i' value='{$elem['tableau']}' class='chk1'/>\n";
   echo "<a href='index.php?page=planning/postes_cfg/modif.php&amp;numero={$elem['tableau']}'>\n";
   echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
   echo "<a href='javascript:popup(\"planning/postes_cfg/copie.php&amp;retour=index.php&amp;numero={$elem['tableau']}\",400,200);'>\n";
@@ -77,12 +95,13 @@ foreach($tableaux as $elem){
   if($config['Multisites-nombre']>1){
     echo "<td>{$config[$site]}</td>\n";
   }
+  echo "<td>$utilisation</td>\n";
   echo "</tr>\n";
   $i++;
 }
 echo "</tbody>\n";
 echo "</table></form>\n";
-echo "<p><input type='button' value='Supprimer la s&eacute;lection' class='ui-button' onclick='supprime_select(\"planning/postes_cfg/ajax.suppression.php\");'></p>\n";
+echo "<p><input type='button' value='Supprimer la s&eacute;lection' class='ui-button' onclick='supprime_select(\"chk1\",\"planning/postes_cfg/ajax.suppression.php\");'></p>\n";
 
 // Récupération de tableaux supprimés dans l'année
 if(!empty($tableauxSupprimes)){
@@ -91,7 +110,13 @@ if(!empty($tableauxSupprimes)){
   echo "<select id='tableauxSupprimes'>\n";
   echo "<option value=''>&nbsp;</option>\n";
   foreach($tableauxSupprimes as $elem){
-    echo "<option value='{$elem['tableau']}'>{$elem['nom']}</option>\n";
+    if(array_key_exists($elem['tableau'],$tabAffect)){
+      $utilisation=dateFr($tabAffect[$elem['tableau']]);
+    }else{
+      $utilisation="Jamais";
+    }
+
+    echo "<option value='{$elem['tableau']}'>{$elem['nom']}&nbsp;(utilisation : $utilisation)</option>\n";
   }
   echo "</select>\n";
   echo "</p>\n";
@@ -110,9 +135,9 @@ echo <<<EOD
 
 <p><input type='button' value='Nouveau groupe' class='ui-button' onclick='location.href="index.php?page=planning/postes_cfg/groupes.php";' /></p>
 
-<table class='CJDataTable' id='table-groups' data-noExport='1' >
+<table class='CJDataTable' id='table-groups' data-noExport='1'  data-sort='[[1,"asc"]]'>
 <thead>
-<tr><th>&nbsp;</th>
+<tr><th class='dataTableNoSort'>&nbsp;</th>
 EOD;
 if(in_array(13,$droits)){
   echo "<th>ID</th>\n";
@@ -159,9 +184,9 @@ echo "<h3>Lignes de s&eacute;paration</h3>\n";
 
 echo "<p><input type='submit' value='Nouvelle ligne' class='ui-button'/></p>\n";
 
-echo "<table class='CJDataTable' id='table-separations' data-noExport='1' >\n";
+echo "<table class='CJDataTable' id='table-separations' data-noExport='1'  data-sort='[[1,\"asc\"]]'>\n";
 echo "<thead>\n";
-echo "<tr><th>&nbsp;</th>\n";
+echo "<tr><th class='dataTableNoSort'>&nbsp;</th>\n";
 if(in_array(13,$droits)){
   echo "<th>ID</th>\n";
 }

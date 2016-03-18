@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/postes_cfg/js/tableaux.js
 Création : 4 février 2015
-Dernière modification : 20 février 2016
+Dernière modification : 18 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -172,16 +172,13 @@ function ctrl_nom(me){
 }
 
 //	Suppression des élements sélectionnés (page de suppression)
-function supprime_select(page){
+function supprime_select(classe,page){
   ids=new Array();
-  i=0;
-  while(document.form.elements["chk"+i]){
-    elem=document.form.elements["chk"+i];
-    if(elem.checked){
-      ids.push(elem.value);
-    }
-    i++;
-  }
+
+  $("."+classe+":visible:checked").each(function(){
+    ids.push($(this).val());
+  });
+
   if(!ids[0]){
     alert("Les éléments sélectionnés ne peuvent être supprimés.");
   }
