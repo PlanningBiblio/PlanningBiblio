@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : activites/index.php
 Création : mai 2011
-Dernière modification : 8 avril 2015
+Dernière modification : 21 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -19,13 +19,10 @@ Page appelée par la page index.php
 require_once "class.activites.php";
 
 //		Initialisation des variables
-$nom=isset($_GET['nom'])?$_GET['nom']:null;
-$tri=isset($_GET['tri'])?$_GET['tri']:"nom";
-$class=null;
 
 //		Recherche des activités
 $a=new activites();
-$a->fetch($tri,$nom);
+$a->fetch();
 $activites=$a->elements;
 
 // 		Contrôle si l'activité est attribuée à un poste pour en interdire la suppression
@@ -73,7 +70,7 @@ if($tab[0]){
 
 <?php
 // Tri par défaut du tableau
-$sort=in_array(13,$droits)?"[[2]]":"[[1]]";
+$sort=in_array(13,$droits)?'[[2,"asc"]]':'[[1,"asc"]]';
 
 echo "<table id='tableActivites' class='CJDataTable' data-sort='$sort'>\n";
 echo "<thead><tr>\n";
@@ -82,6 +79,8 @@ if(in_array(13,$droits)){
   echo "<th>ID</th>\n";
 }
 echo "<th>Nom de l'activité</th>\n";
+echo "<th>Classe Agent</th>\n";
+echo "<th>Classe Poste</th>\n";
 echo "</tr></thead>\n";
 
 echo "<tbody>\n";
@@ -98,6 +97,8 @@ foreach($activites as $elem){
   if(in_array(13,$droits))
     echo "<td>{$elem['id']}</td>\n";
   echo "<td>{$elem['nom']}</td>\n";
+  echo "<td>{$elem['classeAgent']}</td>\n";
+  echo "<td>{$elem['classePoste']}</td>\n";
   echo "</tr>\n";
 }
 echo "</tbody></table>\n";
