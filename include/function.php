@@ -102,6 +102,7 @@ class sendmail{
   public $to=null;
   public $subject=null;
   public $error="";
+  public $error_CJInfo=null;
   public $error_encoded=null;
   public $failedAddresses=array();
   public $successAddresses=array();
