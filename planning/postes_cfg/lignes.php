@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/postes_cfg/lignes.php
 Création : mai 2011
-Dernière modification : 20 février 2016
+Dernière modification : 22 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -57,8 +57,9 @@ if($tableauNumero){
   foreach($tabs as $tab){
     // Lignes Titre et Horaires
     echo "<tr class='tr_horaires' style='text-align:center;'>\n";
-    echo "<td style='white-space:nowrap;'>\n";
-    echo "<input type='text' name='select_{$tab['nom']}Titre_0' class='tr_horaires select_titre' style='text-align:center;width:220px;' value='{$tab['titre']}'/>\n";
+    echo "<td style='white-space:nowrap;text-align:left;'>\n";
+    echo "Titre <input type='text' name='select_{$tab['nom']}Titre_0' class='tr_horaires select_titre' style='text-align:center;width:220px;' value='{$tab['titre']}'/>&nbsp;\n";
+    echo "Classe<sup>*</sup> <input type='text' name='select_{$tab['nom']}Classe_0' class='tr_horaires select_titre' style='text-align:center;width:120px;' value='{$tab['classe']}'/>\n";
     echo "<a href='javascript:ajout(\"select_{$tab["nom"]}_\",-1);'><span class='pl-icon pl-icon-add' title='Ajouter'></span></a></td>\n";
     $colspan=0;
     foreach($tab['horaires'] as $horaire){

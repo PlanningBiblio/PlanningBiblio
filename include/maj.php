@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 21 mars 2016
+Dernière modification : 22 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -1065,6 +1065,9 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   
   // Activités : classes
   $sql[]="ALTER TABLE `{$dbprefix}activites` ADD `classeAgent` VARCHAR(100) NULL DEFAULT NULL, ADD `classePoste` VARCHAR(100) NULL DEFAULT NULL;";
+  
+  // Tableaux : classes
+  $sql[]="ALTER TABLE `{$dbprefix}pl_poste_lignes` CHANGE `type` `type` ENUM('poste','ligne','titre','classe') NOT NULL;"; 
 
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";

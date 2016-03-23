@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 21 mars 2016
+Dernière modification : 22 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -237,7 +237,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_lignes` (
   `tableau` int(11) NOT NULL,
   `ligne` int(11) NOT NULL,
   `poste` varchar(30) NOT NULL,
-  `type` enum('poste','ligne','titre') NOT NULL,
+  `type` enum('poste','ligne','titre','classe') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 

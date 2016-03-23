@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/postes_cfg/class.tableaux.php
 Création : mai 2011
-Dernière modification : 20 février 2016
+Dernière modification : 22 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -143,14 +143,17 @@ class tableau{
     $tabs=array();
     foreach($tableaux as $elem){
       // Initilisation des sous-tableaux et noms des sous-tableaux
-      $tabs[$elem]=array("nom"=>$elem,"titre"=>null,"horaires"=>array(),"lignes"=>array(),"cellules_grises"=>array());
+      $tabs[$elem]=array("nom"=>$elem,"titre"=>null,"classe"=>null,"horaires"=>array(),"lignes"=>array(),"cellules_grises"=>array());
 
       // Titres et lignes des sous-tableaux
       foreach($lignes as $ligne){
 	// Titres
 	if($ligne['tableau']==$elem and $ligne['type']=="titre"){
 	  $tabs[$elem]['titre']=$ligne['poste'];
-	// Lignes (postes et lignes de séparation
+	// Classes
+	}elseif($ligne['tableau']==$elem and $ligne['type']=="classe"){
+	  $tabs[$elem]['classe']=$ligne['poste'];
+	// Postes
 	}elseif($ligne['tableau']==$elem){
 	  $tabs[$elem]['lignes'][]=$ligne;
 	}

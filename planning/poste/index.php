@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 21 mars 2016
+Dernière modification : 23 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -509,7 +509,7 @@ else{
     }
 
     //		Lignes horaires
-    echo "<tr class='tr_horaires tableau$j'>\n";
+    echo "<tr class='tr_horaires tableau$j {$tab['classe']}'>\n";
     echo "<td class='td_postes' data-id='$j' data-title='{$tab['titre']}'>{$tab['titre']} $masqueTableaux </td>\n";
     $colspan=0;
     foreach($tab['horaires'] as $horaires){
@@ -535,7 +535,7 @@ else{
 	$classTR=$postes[$ligne['poste']]['classes'];
 
 	// Affichage de la ligne
-	echo "<tr class='pl-line tableau$j $classTR' $displayTR >\n";
+	echo "<tr class='pl-line tableau$j $classTR {$tab['classe']}' $displayTR >\n";
 	echo "<td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
 	// Affichage ou non des étages
 	if($config['Affichage-etages'] and $postes[$ligne['poste']]['etage']){
@@ -565,10 +565,11 @@ else{
       }
       // Lignes de séparation
       if($ligne['type']=="ligne"){
-	echo "<tr class='tr_separation tableau$j'>\n";
+	echo "<tr class='tr_separation tableau$j {$tab['classe']}'>\n";
 	echo "<td>{$lignes_sep[$ligne['poste']]}</td><td colspan='$colspan'>&nbsp;</td></tr>\n";
       }
     }
+  echo "<tr class='tr_espace'><td>&nbsp;</td></tr>\n";
   $j++;
   }
   echo "</table>\n";

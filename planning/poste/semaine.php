@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
-Dernière modification : 21 mars 2016
+Dernière modification : 23 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -310,7 +310,7 @@ for($j=0;$j<=$fin;$j++){
     $k=0;
     foreach($tabs as $tab){
       //		Lignes horaires
-      echo "<tr class='tr_horaires'>\n";
+      echo "<tr class='tr_horaires {$tab['classe']}'>\n";
       echo "<td class='td_postes'>{$tab['titre']}</td>\n";
       $colspan=0;
       foreach($tab['horaires'] as $horaires){
@@ -327,7 +327,8 @@ for($j=0;$j<=$fin;$j++){
 	  // Classe de la ligne en fonction des activités et des catégories
 	  $classTR=$postes[$ligne['poste']]['classes'];
 
-	  echo "<tr class='$classTR'><td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
+	  echo "<tr class='pl-line tableau$k $classTR {$tab['classe']}'>\n";
+	  echo "<td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
 	  if($config['Affichage-etages'] and $postes[$ligne['poste']]['etage']){
 	    echo " ({$postes[$ligne['poste']]['etage']})";
 	  }
@@ -347,10 +348,11 @@ for($j=0;$j<=$fin;$j++){
 	  echo "</tr>\n";
 	}
 	if($ligne['type']=="ligne"){
-	  echo "<tr class='tr_separation'>\n";
+	  echo "<tr class='tr_separation tableau$k {$tab['classe']}'>\n";
 	  echo "<td>{$lignes_sep[$ligne['poste']]}</td><td colspan='$colspan'>&nbsp;</td></tr>\n";
 	}
       }
+      echo "<tr class='tr_espace'><td>&nbsp;</td></tr>\n";
       $k++;
     }
     echo "</table>\n";

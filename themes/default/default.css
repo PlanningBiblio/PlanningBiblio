@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 18 mars 2016
+Dernière modification : 23 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -438,6 +438,7 @@ tr  | td .td_postes	|   td >				|   td >				|
     | [.td_renfort]	|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
     |			|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
     -----------------------------------------------------------------------------------------------------
+tr .tr_espace
 */
 
 /*	Catégories, lignes du planning, en fonction de la catégorie requise par le poste	*/
@@ -494,6 +495,17 @@ class cellule = cellule par défaut
   color:#FFFFFF;
   font-size:12pt;
   font-weight:bold;
+}
+
+/* tr_espace : permet d'ajouter un espace entre les tableaux : ex: display:block; height:20px; */
+.tr_espace{
+  display: none;
+  height:20px; 
+}
+
+#tabsemaine1 tr.tr_espace td,
+.tabsemaine1 tr.tr_espace td{
+  border: none;
 }
 
 .td_postes {
