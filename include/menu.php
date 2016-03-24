@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/menu.php
 Création : mai 2011
-Dernière modification : 21 janvier 2016
+Dernière modification : 24 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -45,15 +45,14 @@ foreach($keys as $key){
     $i++;
   }
 }
-$colspan=count($keys)+1;
 
 ?>
 
-function pop(msg,td){
+function pop(msg,li){
   $(".menu_table").remove();
 
-  posTop = td.offset().top+td.height()+2;
-  posLeft = td.offset().left+td.width()/2-100;
+  posTop = li.offset().top+li.height()+2;
+  posLeft = li.offset().left+li.width()/2-85;
 
   var content ="<table cellspacing='0' border='0' class='menu_table' style='top:"+posTop+"px; left:"+posLeft+"px;'>";
 
@@ -79,9 +78,14 @@ echo "<a href='index.php'><div id='logo'></div></a>\n";
 echo "</font></td></tr>\n";
 echo "<tr><td>&nbsp;</td></tr>\n";
 echo "<tr id='topmenu'>\n";
+
+echo "<td style='text-align:center;' class='menu_td'>\n";
+echo "<ul class='menu_ul'>\n";
 foreach($keys as $key){
-  echo "<td style='text-align:center;' onmousemove='pop(zlien[$key],$(this))' class='menu_td'><a href='index.php?page={$menu[$key][0]['url']}' class='ejsmenu2'>{$menu[$key][0]['titre']}</a></td>\n";
+  echo "<li onmousemove='pop(zlien[$key],$(this))' class='menu_li'><a href='index.php?page={$menu[$key][0]['url']}' class='ejsmenu2'>{$menu[$key][0]['titre']}</a></li>\n";
 }
+echo "</ul>\n";
+
 echo "<td align='right'  ><font  class='noprint' style='font-size:19px'>\n";
 echo $_SESSION['login_prenom']." ".$_SESSION['login_nom'];
 echo "</font></td>\n";
@@ -89,7 +93,7 @@ echo "<td id='logout_img'>\n";
 echo "<a href='authentification.php' title='Déconnexion' >\n";
 echo "<span class='pl-icon pl-icon-logout'></span></a></td>\n";
 echo "</tr>\n";
-echo "<tr><td colspan='$colspan' style='text-align:right;'>\n";
+echo "<tr><td colspan='2' style='text-align:right;'>\n";
 
 // Si le module PlanningHebdo est activé, remplace "Changer le mot de passe" par "Mon Compte"
 if($config['PlanningHebdo']){
@@ -108,9 +112,5 @@ echo "<div id='logout_text'><a href='authentification.php' >Déconnexion</a></di
 </table>
 </div>
 </div>
-<div class='noprint'>
-<br/>
-<br/>
-</div> <!-- noprint -->
 <iframe id='popup' style='display:none;' ></iframe>
 <!--				Fin du menu			-->

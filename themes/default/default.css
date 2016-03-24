@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 23 mars 2016
+Dernière modification : 24 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -99,11 +99,13 @@ h3{
 }
 
 #content{
-  margin: 70px 5px 5px 5px;
+  margin-top: 10px;
+  padding: 80px 5px 5px 5px;
 }
 
 #content-planning{
-  margin: 30px 0 0 0;
+  margin-top: 10px;
+  padding: 40px 0 0 0;
 }
 
 #ferie,.ferie,.important {
@@ -277,11 +279,35 @@ h3{
 a.ejsmenu, a:hover.ejsmenu {font-size:16px; text-decoration:none; display:inline-block; width:100%;}
 a.ejsmenu2, a:hover.ejsmenu2 {font-size:16px; text-decoration:none;font-weight:bold;}
 
-td.menu_td:hover {		/* TD du menu top */
-	background:#FF5E0E;
+
+
+/* Menu top */
+.menu_ul{
+  margin:0px;
+  white-space: nowrap;
+  list-style: none;
 }
 
-td.menu_td2{				/* TD des sous menu top */
+.menu_li{
+  display: inline;
+  padding: 5px 15px;
+}
+
+.menu_li a, .menu_li a:hover{
+  font-size:13pt;
+}
+
+/* TD du menu top */
+li.menu_li:hover {
+  background:#FF5E0E;
+}
+
+/* TD des sous menu top */
+.menu_table{
+  margin-top: 15px;
+}
+
+td.menu_td2{
 	background:#FFFFFF;
 	height:20px;
 	text-align:center;
