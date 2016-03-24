@@ -102,6 +102,7 @@ class sendmail{
   public $to=null;
   public $subject=null;
   public $error="";
+  public $error_CJInfo=null;
   public $error_encoded=null;
   public $failedAddresses=array();
   public $successAddresses=array();
@@ -608,6 +609,7 @@ function compte_jours($date1, $date2, $jours){
 
 function createURL($page){
   // Construction d'une URL
+  // Protocol et port
   $protocol = isset($_SERVER['HTTPS']) ? 'https' : 'http';
   $port=$_SERVER['SERVER_PORT'];
   if(($port==80 and $protocol=="http") or ($port==443 and $protocol=="https")){
@@ -615,8 +617,20 @@ function createURL($page){
   }else{
     $port=":".$port;
   }
-  $url="$protocol://{$_SERVER['SERVER_NAME']}{$port}".substr($_SERVER['REQUEST_URI'],0,strpos($_SERVER['REQUEST_URI'],"/",1));
-  $url.="/index.php?page=".$page;
+
+  // protocol + port + server_name
+  $url="$protocol://{$_SERVER['SERVER_NAME']}{$port}";
+
+  // folder
+  $dir=__DIR__;
+  $root=$_SERVER['DOCUMENT_ROOT'];
+
+  $folder=substr($dir,strlen($root));
+  $pos=strpos($folder,"/",1);
+  $folder=substr($folder,0,$pos);
+
+  // url complete
+  $url.=$folder."/index.php?page=".$page;
   return $url;
 }
 
