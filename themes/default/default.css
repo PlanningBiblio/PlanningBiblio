@@ -933,3 +933,7 @@ option.bold{
 #tableConges td{
   white-space: nowrap;
 }
+
+.repas_pref{
+    color:orange;
+}
