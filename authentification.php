@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.2.3
+Planning Biblio, Version 2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 4 février 2016
+Dernière modification : 25 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -64,6 +64,8 @@ ini_set('display_errors',$config['display_errors']);
 
 include "plugins/plugins.php";
 include "include/header.php";
+
+echo "<div id='content-auth'>\n";
 
 //	Vérification du login et du mot de passe
 if(isset($_POST['login'])){

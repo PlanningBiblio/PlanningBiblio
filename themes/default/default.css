@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 24 mars 2016
+Dernière modification : 25 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -49,6 +49,8 @@ h3{
 
 #auth, #auth input {
   color:#7D3C25;
+  text-align: left;
+
 }
 
 #auth-logo{
@@ -101,6 +103,12 @@ h3{
 #content{
   margin-top: 10px;
   padding: 80px 5px 5px 5px;
+}
+
+#content-auth{
+  margin-top: 10px;
+  padding: 40px 0 0 0;
+  text-align: center;
 }
 
 #content-planning{
@@ -1020,6 +1028,7 @@ option.bold{
   margin:50px 30px 0 0;
   opacity:0.7;
   font-size:9pt;
+  width:100%;
 }
 
 /*	Congés	*/
