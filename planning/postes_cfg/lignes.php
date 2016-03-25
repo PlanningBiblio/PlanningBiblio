@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/postes_cfg/lignes.php
 Création : mai 2011
-Dernière modification : 22 mars 2016
+Dernière modification : 25 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -53,12 +53,12 @@ echo "<input type='hidden' name='numero' value='$tableauNumero' />\n";
 echo "<h3>Configuration des lignes</h3>\n";
 
 if($tableauNumero){
-  echo "<table style='width:1250px;' cellspacing='0' cellpadding='0' border='1' >\n";
+  echo "<table style='min-width:1250px; width:100%;' cellspacing='0' cellpadding='0' border='1' >\n";
   foreach($tabs as $tab){
     // Lignes Titre et Horaires
     echo "<tr class='tr_horaires' style='text-align:center;'>\n";
     echo "<td style='white-space:nowrap;text-align:left;'>\n";
-    echo "Titre <input type='text' name='select_{$tab['nom']}Titre_0' class='tr_horaires select_titre' style='text-align:center;width:220px;' value='{$tab['titre']}'/>&nbsp;\n";
+    echo "Titre <input type='text' name='select_{$tab['nom']}Titre_0' class='tr_horaires select_titre' style='text-align:center;white-space:nowrap;' value='{$tab['titre']}'/>&nbsp;\n";
     echo "Classe<sup>*</sup> <input type='text' name='select_{$tab['nom']}Classe_0' class='tr_horaires select_titre' style='text-align:center;width:120px;' value='{$tab['classe']}'/>\n";
     echo "<a href='javascript:ajout(\"select_{$tab["nom"]}_\",-1);'><span class='pl-icon pl-icon-add' title='Ajouter'></span></a></td>\n";
     $colspan=0;
@@ -113,12 +113,19 @@ if($tableauNumero){
       echo "<td id='td_select_{$tab['nom']}_$i' colspan='$colspan' style='display:none;'>\n";
       echo "</tr>\n"; 
     }
+    echo "<tr class='tr_espace'><td></td></tr>\n";
   }
   echo "</table>\n";
 }
 echo "</form>\n";
 echo "</div>\n";
 ?>
+
+<div class='highlight' style='margin-top:40px;'>
+<p style='margin-left:30px;'>
+<sup>* Classe CSS appliqu&eacute;e sur le tableau. Permet d'en personnaliser l&apos;affichage.</sup><br/>
+</p>
+</div>
 
 <script type='text/JavaScript'>
 // Applique la même class que l'option selectionnée au select et au td pour chaque select poste lors du chargement

@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/postes_cfg/js/tableaux.js
 Création : 4 février 2015
-Dernière modification : 18 mars 2016
+Dernière modification : 25 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -260,4 +260,5 @@ $(function(){
 
 $(document).ready(function(){
   errorHighlight($(".important"),"error");
+  errorHighlight($(".highlight"),"highlight");
 });
