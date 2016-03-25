@@ -61,18 +61,13 @@ if($config['Absences-apresValidation']==0){
   }
 }
 
-<<<<<<< Updated upstream
-// Contrôle si placé sur planning en cours d'élaboration;
-if($config['Absences-planningVide']==0){
-  $db=new db();	  
-  $req="SELECT COUNT(`id`) as `cnt` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debut' AND '$fin';";
-  $db->query($req);
-  if($db->result){
-	$result["planningVide"]=$db->result[0]['cnt'];
-  }
-  //for testing purpose $result["planningVide"]=1;
-}
-=======
->>>>>>> Stashed changes
+// Controle blocage du depot d'absence
+$debut=substr($debut,0,10);
+$fin=substr($fin,0,10);
+$db=new db();
+$req="SELECT `id` FROM `{$dbprefix}pl_poste_verrou` WHERE `blocage_dep_abs`=1";
+$db->query($req);
+$result['planning_en_cours']= $db->result;
+
 echo json_encode($result);
 ?>

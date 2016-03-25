@@ -116,10 +116,15 @@ elseif(isset($_GET['acces'])){
   }
 }
 elseif(array_key_exists("login_id",$_SESSION)){		//		logout
-  include "ldap/logoutCAS.php";
-
-  session_destroy();
-  echo "<script type='text/JavaScript'>location.href='authentification.php{$authArgs}';</script>";
+    // si c'est un admin qui se déconnecte, on supprime un éventuel blocage du dépot d'absence
+    if ( in_array(1,$_SESSION['droits']) ) {
+        $db=new db();
+        $perso_id=$_SESSION['login_id'];
+        $db->delete("pl_poste_verrou","`blocage_dep_abs`= 1 and `perso2`= '$perso_id'");
+    }
+    include "ldap/logoutCAS.php";
+    session_destroy();
+    echo "<script type='text/JavaScript'>location.href='authentification.php{$authArgs}';</script>";
 }
 else{		//		Formulaire d'authentification
   echo <<<EOD

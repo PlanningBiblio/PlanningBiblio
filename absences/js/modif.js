@@ -169,28 +169,26 @@ function verif_absences(ctrl_form){
     async: false,
     success: function(result){
       result=JSON.parse(result);
-      if(result["planningVide"]!=0){
-	if(admin==1){
-		information("Vous essayez de placer une absence sur un planning en cours d'élaboration","error");
-		retour=false;
-	}
-      }
-      else if(result["autreAbsence"]){
-	information("Une absence est déjà enregistrée pour cet agent entre le "+result["autreAbsence"]+"<br/>Veuillez modifier les dates et horaires.","error");
-	retour=false;
+
+      if(result["autreAbsence"]){
+          information("Une absence est déjà enregistrée pour cet agent entre le "+result["autreAbsence"]+"<br/>Veuillez modifier les dates et horaires.","error");
+          retour=false;
       }
       else if(result["planning"]){
-	if(admin==1){
-	  if(!confirm("Attention, l'agent sélectionné apparaît dans des plannings validés : "+result["planning"]+"\nVoulez vous continuer ?")){
-	    retour=false;
-	  }
-	}
-	else{
-	  information("Vous ne pouvez pas ajouter d'absences pour les dates suivantes<br/>car les plannings sont validés : "+result["planning"]+"<br/>Veuillez modifier vos dates ou contacter le responsable du planning","error");
-	  retour=false;
-	}
+          if(admin==1){
+              if(!confirm("Attention, l'agent sélectionné apparaît dans des plannings validés : "+result["planning"]+"\nVoulez vous continuer ?")){
+                  retour=false;
+              }
+          }
+      else {
+              information("Vous ne pouvez pas ajouter d'absences pour les dates suivantes<br/>car les plannings sont validés : "+result["planning"]+"<br/>Veuillez modifier vos dates ou contacter le responsable du planning","error");
+              retour=false;
+          }
       }
-    },
+      else if (result["planning_en_cours"] && admin != 1){
+       information("Le dépôt d'absence n'est pas possible pour l'instant.<br/>Veuillez faire votre demande par mail à spmanu@univ-lyon3.fr ou spquai@univ-lyon3.fr","error");
+        retour=false;
+      },
     error: function(result){
       information("Une erreur est survenue.","error");
       retour=false;
