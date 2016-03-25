@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 23 mars 2016
+Dernière modification : 25 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -311,7 +311,7 @@ if(!$db->result[0]['tableau'] and !$tableau and !$groupe and $autorisation){
     <table>
     <tr><td>Choix d'un tableau : </td>
       <td>
-      <select name='tableau'>
+      <select name='tableau' class='ui-widget-content ui-corner-all'>
       <option value=''>&nbsp;</option>
 EOD;
       foreach($db->result as $elem){
@@ -321,7 +321,7 @@ EOD;
       }
       echo <<<EOD
       </select></td>
-      <td><input type='submit' value='Valider' /></td></tr>
+      <td><input type='submit' value='Valider' class='ui-button' /></td></tr>
     </table>
     </form>
 EOD;
@@ -333,7 +333,7 @@ EOD;
       <input type='hidden' name='site' value='$site' />
       <table>
       <tr><td>Choix d'un groupe : </td>
-	<td><select name='groupe'>
+	<td><select name='groupe' class='ui-widget-content ui-corner-all'>
 	<option value=''>&nbsp;</option>
 EOD;
 	foreach($groupes as $elem){
@@ -343,7 +343,7 @@ EOD;
 	}
 	echo <<<EOD
 	</select></td>
-	<td><input type='submit' value='Valider' /></td></tr>
+	<td><input type='submit' value='Valider' class='ui-button' /></td></tr>
       </table>
       </form>
 EOD;

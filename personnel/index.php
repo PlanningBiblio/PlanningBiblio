@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 25 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Chritophe Le Guennec <christophe.leguennec@u-pem.fr>
 
@@ -30,15 +30,13 @@ $_SESSION['perso_actif']=$actif;
 
 <form name='form2' action='index.php' method='get'>
 <input type='hidden' name='page' value='personnel/index.php' />
-<table><tr valign='top'>
+<table style='margin-bottom:10px;'><tr style='vertical-align:center;'>
 <td style='width:270px;'>
-<h3>Liste des agents</h3>
+<h3 style='margin:0;'>Liste des agents</h3>
 </td><td>
-<br/>
 Voir les agents
 </td><td style='width:150px;'>
-<br/>
-<select name='actif' onchange='document.form2.submit();'>
+<select name='actif' onchange='document.form2.submit();'  class='ui-widget-content ui-corner-all'>
 <option value='Actif'>Service public</option>
 <option value='Inactif'>Administratif</option>
 <?php
@@ -49,12 +47,11 @@ if(in_array(13,$droits)){
 </select>
 </td><td style='width:80px;'>
 </td><td>
-<br/>
 <?php
 if(in_array(21,$droits)){
-  echo "<input type='button' value='Ajouter' onclick='location.href=\"index.php?page=personnel/modif.php\";'/>\n";
+  echo "<input type='button' value='Ajouter' onclick='location.href=\"index.php?page=personnel/modif.php\";' class='ui-button'/>\n";
   if($config['LDAP-Host'] and $config['LDAP-Suffix']){
-    echo "<input type='button' value='Import LDAP' onclick='location.href=\"index.php?page=personnel/import.php\";'/>\n";
+    echo "<input type='button' value='Import LDAP' onclick='location.href=\"index.php?page=personnel/import.php\";' class='ui-button' style='margin-left:20px;'/>\n";
   }
 }
 ?>
