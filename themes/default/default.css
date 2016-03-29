@@ -148,6 +148,13 @@ h3{
   background:url("images/lock.png") no-repeat center;
 }
 
+.pl-icon-tmplock {
+  background:url("images/tmplock.png") no-repeat center;
+}
+.pl-icon-tmpunlock {
+  background:url("images/tmpunlock.png") no-repeat center;
+}
+
 .pl-icon-logout {
   background:url("images/logout.png") no-repeat center;
 }
@@ -969,4 +976,8 @@ option.bold{
 /*	Congés	*/
 #tableConges td{
   white-space: nowrap;
+}
+
+.repas_pref{
+    color:orange;
 }

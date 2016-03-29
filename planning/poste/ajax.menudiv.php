@@ -48,7 +48,7 @@ $tab_deja_place=array(0);
 $sr_init=null;
 $motifExclusion=array();
 $tableaux=array();
-
+$pref_repas=array();
 $d=new datePl($date);
 $j1=$d->dates[0];
 $j7=$d->dates[6];
@@ -141,8 +141,15 @@ $db=new db();
 $dateSQL=$db->escapeString($date);
 $debutSQL=$db->escapeString($debut);
 $finSQL=$db->escapeString($fin);
-
-$db->select("absences","perso_id","`debut`<'$dateSQL $finSQL' AND `fin` >'$dateSQL $debutSQL' $filter ");
+$sr_debut=$GLOBALS['config']['Planning-SR-debut'];
+$sr_fin=$GLOBALS['config']['Planning-SR-fin'];
+// si la plage interrogée tombe à l'intérieur de la plage "Sans repas"
+if ($debutSQL >= $sr_debut and $finSQL <= $sr_fin) {
+    // on modifie la requete de manière à inclure toute personne dont l'absence est à cheval ou incluse dans cette plage
+    $db->select("absences","perso_id","`debut`<'$dateSQL $sr_fin' AND `fin` >'$dateSQL $sr_debut' $filter ");
+} else {
+    $db->select("absences","perso_id","`debut`<'$dateSQL $finSQL' AND `fin` >'$dateSQL $debutSQL' $filter ");
+}
 
 if($db->result){
   foreach($db->result as $elem){
@@ -246,8 +253,8 @@ foreach($db->result as $elem){
       $aExclure=true;
     if($heures[3]<$fin)				// Si l'agent fini le travail avant l'heure de fin du poste
       $aExclure=true;
-    if($heures[1]<$fin and $heures[2]>$debut) 	// Pdt la pause déjeuner : Si le debut de sa pause est avant l'heure de fin du poste et la fin de sa pause après le début du poste
-      $aExclure=true;
+    if($heures[1]<$fin and $heures[2]>$debut)	// Pdt la pause déjeuner : Si le debut de sa pause est avant l'heure de fin du poste et la fin de sa pause après le début du poste
+      $pref_repas[] = $elem['id'];
   }
   else{
     $aExclure=true;
@@ -504,7 +511,7 @@ if($agents_tous and $config['ClasseParService']){
   $hide=true;
   $p=new planning();
   $p->site=$site;
-  $p->menudivAfficheAgents($poste,$agents_tous,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion);
+  $p->menudivAfficheAgents($poste,$agents_tous,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion,$pref_repas);
   $tableaux[1].=$p->menudiv;
 }
 
@@ -513,7 +520,7 @@ if($autres_agents and !$config['ClasseParService'] and $config['agentsIndispo'])
   $hide=true;
   $p=new planning();
   $p->site=$site;
-  $p->menudivAfficheAgents($poste,$autres_agents,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion);
+  $p->menudivAfficheAgents($poste,$autres_agents,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion,$pref_repas);
   $tableaux[1].=$p->menudiv;
 }
 

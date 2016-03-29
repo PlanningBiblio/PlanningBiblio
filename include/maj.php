@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.2.3
+Planning Biblio, Version 2.2.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 17 février 2016
+Dernière modification : 29 Mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -1057,6 +1057,14 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="2.2.4";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  //Blocage depots d'absences
+  $sql[]="ALTER TABLE `{$dbprefix}pl_poste_verrou` ADD `blocage_dep_abs` INT(1) NOT NULL DEFAULT '0' AFTER `perso`;";
+
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 
 
 //	Execution des requetes et affichage
