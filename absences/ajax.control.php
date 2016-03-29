@@ -75,5 +75,14 @@ if($config['Absences-planningVide']==0){
   }
   //for testing purpose $result["planningVide"]=1;
 }
+
+// Controle blocage du depot d'absence
+$debut=substr($debut,0,10);
+$fin=substr($fin,0,10);
+$db=new db();
+$req="SELECT `id` FROM `{$dbprefix}pl_poste_verrou` WHERE `blocage_dep_abs`=1";
+$db->query($req);
+$result['planning_en_cours']= $db->result;
+
 echo json_encode($result);
 ?>
