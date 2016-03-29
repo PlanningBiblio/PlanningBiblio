@@ -105,7 +105,7 @@ class planning{
   }
 
   // Affiche la liste des agents dans le menudiv
-  public function menudivAfficheAgents($poste,$agents,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion){
+  public function menudivAfficheAgents($poste,$agents,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion,$pref_repas){
     $msg_deja_place="&nbsp;<font class='red bold'>(DP)</font>";
     $msg_deuxSP="&nbsp;<font class='red bold'>(2 SP)</font>";
     $msg_SR="&nbsp;<font class='red bold'>(SR)</font>";
@@ -181,9 +181,14 @@ class planning{
 	  $nom.=" ".substr(htmlentities($elem['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8",false),0,1).".";
 	}
 
-	//			----------------------		Sans repas		------------------------------------------//
-	// $sr permet d'interdire l'ajout d'un agent sur une cellule déjà occupée si cela met l'agent en SR
-	$sr=0;
+        // Si ce créneau correspond à la pause repas préférée par l'agent, on la marque d'une couleur différente
+        if (in_array($elem['id'],$pref_repas)) {
+	      $nom = "<span class=\"repas_pref\">$nom</span>";
+        }
+
+        //			----------------------		Sans repas		------------------------------------------//
+        // $sr permet d'interdire l'ajout d'un agent sur une cellule déjà occupée si cela met l'agent en SR
+        $sr=0;
 
 	// Si sans repas, on ajoute (SR) à l'affichage
 	if($this->sansRepas($date,$debut,$fin,$elem['id'])){
@@ -598,9 +603,16 @@ class planning{
       // Recherche dans la base de données des autres plages concernées
       $db=new db();
       $db->select2("pl_poste","*",array("date"=>$date, "perso_id"=>$perso_id, "debut"=>"<$sr_fin", "fin"=>">$sr_debut"), "ORDER BY debut,fin");
-      if($db->result){
+     $dbplages = $db->result;
+     if($dbplages){
+         // pour le marquage d'absence mordant sur la plage "Sans Repas" et déposée après attribution de la plage horaire 
+         $db=new db();
+         $db->select("absences","perso_id","`debut`<'$date $sr_fin' AND `fin` >'$date $sr_debut' and `perso_id` = \"$perso_id\"");
+         if($db->result){
+             return 1;
+         } 
 	// Tableau result contient les plages de la base de données + la plage interrogée
-	$result=array_merge($db->result,array(array("debut"=>$debut, "fin"=>$fin)));
+	$result=array_merge($dbplages,array(array("debut"=>$debut, "fin"=>$fin)));
 	usort($result,"cmp_debut_fin");
 	// Si le plus petit début et inférieur ou égal au début de la période SR et la plus grande fin supérieure ou égale à la fin de la période SR
 	// = Possibilité que la période soit complète, on met SR=1
