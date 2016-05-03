@@ -141,7 +141,15 @@ $dateSQL=$db->escapeString($date);
 $debutSQL=$db->escapeString($debut);
 $finSQL=$db->escapeString($fin);
 
-$db->select('absences', 'perso_id,valide',"`debut`<'$dateSQL $finSQL' AND `fin` >'$dateSQL $debutSQL'");
+$sr_debut=$GLOBALS['config']['Planning-SR-debut'];
+$sr_fin=$GLOBALS['config']['Planning-SR-fin'];
+// si la plage interrogée tombe à l'intérieur de la plage "Sans repas"
+if ($debutSQL >= $sr_debut and $finSQL <= $sr_fin) {
+    // on modifie la requete de manière à inclure toute personne dont l'absence est à cheval ou incluse dans cette plage
+    $db->select("absences","perso_id","`debut`<'$dateSQL $sr_fin' AND `fin` >'$dateSQL $sr_debut' $filter ");
+} else {
+    $db->select("absences","perso_id","`debut`<'$dateSQL $finSQL' AND `fin` >'$dateSQL $debutSQL' $filter ");
+}
 
 if($db->result){
   foreach($db->result as $elem){
