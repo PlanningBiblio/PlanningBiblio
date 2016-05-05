@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.3
+Planning Biblio, Version 2.3.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 20 février 2016
+Dernière modification : 6 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -496,14 +496,14 @@ function verif_form(champs,form){
       valeur=valeur1;
 
     if(valeur=="")
-      erreurs=erreurs+"\n - "+objet;
+      erreurs=erreurs+"<li>"+objet+"</li>";
     else if(type){
       if(type.substr(0,4)=="date"){
 	// Converti les dates JJ/MM/AAAA en AAAA-MM-JJ
         valeur=valeur.replace(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/g,"$3-$2-$1");
       }
       if(type.substr(0,4)=="date" && verif_date(valeur)==0)
-	erreurs=erreurs+"\n - "+objet+" doit être au format AAAA-MM-JJ";
+	erreurs=erreurs+"<li>"+objet+" doit être au format JJ/MM/AAAA</li>";
       if(type=="date1"){
 	objet1=objet;
 	valeur1=valeur;
@@ -517,7 +517,7 @@ function verif_form(champs,form){
 	valeur2=valeur;
       }
       if(type.substr(0,5)=="heure" && verif_heure(valeur)==0)
-	erreurs=erreurs+"\n - "+objet+" doit être au format HH:MM:SS";
+	erreurs=erreurs+"<li>"+objet+" doit être au format HH:MM:SS</li>";
       if(type=="heure1"){
 	objet1=objet;
 	valeur1=valeur;
@@ -530,12 +530,12 @@ function verif_form(champs,form){
   }
   
   if(erreurs){
-    alert("Les champs suivants sont obligatoires :"+erreurs);
+    CJInfo("Les champs suivants sont obligatoires :<ul>"+erreurs+"</ul>","error");
     return false;
   }
   else{
     if(valeur1 && valeur2 && valeur2<valeur1){
-      alert("Le champ "+objet2+" doit être supérieur au champ "+objet1);
+      CJInfo("Le champ "+objet2+" doit être supérieur au champ "+objet1,"error");
       return false;
     }
     else{

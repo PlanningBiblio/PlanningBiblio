@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.3.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 9 janvier 2016
+Dernière modification : 6 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -16,6 +16,29 @@ Page validant la modification d'une absence : enregistrement dans la BDD des mod
 Page appelée par la page index.php
 Page d'entrée : absences/modif.php
 */
+
+
+// TODO : vérifier si paramètre groupe
+// Si paramètre groupe : appliquer les modifications à toute les lignes appartenant au groupe
+// Si agents supprimés du groupe : supprimer les lignes correspondantes
+// Si agents ajoutés : les inserer avec toutes les données et le groupe
+// => comparer les agents avant / après . Pour avant : utiliser fetchById : donne la liste des agents dans le param agents
+// Si le paramètre groupe n'est pas fourni mais qu'il y a plusieurs perso_ids : créer un groupe (il s'agit dans ce cas d'une absence simple transformée en multiple).
+//  Création du groupe : 
+/**
+  // ID du groupe (permet de regrouper les informations pour affichage en une seule ligne et modification du groupe)
+  if(count($perso_ids)>1){
+    $groupe=time()."-".rand(100,999);
+  }else{
+    $groupe=null;
+  }
+*/
+
+// TODO : boucle pour les notifications, getRecipients, etc. voir ajouter.php : voir ce qui a été fait pour absences/delete.php
+
+
+
+
 
 require_once "class.absences.php";
 
@@ -30,6 +53,25 @@ $motif=filter_input(INPUT_GET,"motif",FILTER_SANITIZE_STRING);
 $motif_autre=trim(filter_input(INPUT_GET,"motif_autre",FILTER_SANITIZE_STRING));
 $nbjours=filter_input(INPUT_GET,"nbjours",FILTER_SANITIZE_NUMBER_INT);
 $valide=filter_input(INPUT_GET,"valide",FILTER_SANITIZE_NUMBER_INT);
+$groupe=filter_input(INPUT_GET,"groupe",FILTER_SANITIZE_NUMBER_INT);
+$perso_ids=$_GET['perso_ids'];
+$perso_ids=filter_var_array($perso_ids,FILTER_SANITIZE_NUMBER_INT);
+
+// TEST du paramètre perso_ids si absence multiple dès le départ
+// array(2) { [0]=> string(2) "27" [1]=> string(2) "25" } le tableau perso_ids s'adapte bien
+// TEST du paramètre perso_ids si absence simple
+// array(1) { [0]=> string(2) "27" }
+// TEST du paramètre perso_ids si absence simple transformée en multiple
+// array(2) { [0]=> string(2) "27" [1]=> string(2) "25" }
+// TEST du paramètre perso_ids si absence multiple transformée en simple
+// array(1) { [0]=> string(2) "27" }
+// TEST du paramètre perso_ids si pas admin
+// Mêmes choses
+
+// Conclusion : on a toujours un tableau cohérent, avec 1 ou plusieurs id(s)
+
+var_dump($perso_ids);
+exit;
 
 // Pièces justificatives
 $pj1=filter_input(INPUT_GET,"pj1",FILTER_CALLBACK,array("options"=>"sanitize_on01"));
@@ -80,7 +122,7 @@ $mailsResponsables=explode(";",html_entity_decode($db->result[0]['mailsResponsab
 // Droit 6 = modification de ses propres absences
 $acces=in_array(1,$droits)?true:false;
 if(!$acces){
-  $acces=(in_array(6,$droits) and $perso_id==$_SESSION['login_id'])?true:false;
+  $acces=(in_array(6,$droits) and $perso_id==$_SESSION['login_id'] and !$groupe)?true:false;
 }
 if(!$acces){
   echo "<div id='acces_refuse'>Accès refusé</div>\n";
