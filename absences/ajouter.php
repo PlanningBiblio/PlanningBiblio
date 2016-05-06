@@ -212,7 +212,7 @@ if($confirm and !empty($perso_ids)){
     $a=new absences();
     $a->debut=$debut_sql;
     $a->fin=$fin_sql;
-    $a->perso_id=$perso_id;
+    $a->perso_ids=$perso_ids;
     $a->infoPlannings();
     $infosPlanning=$a->message;
 
@@ -290,16 +290,11 @@ if($confirm and !empty($perso_ids)){
     $msg2=urlencode("<ul>".$msg2."</ul>");
   }
   
-  //TEST 
-  echo "<script type='text/JavaScript'>CJInfo(\"".urldecode($msg)."\",\"success\");</script>\n";
-  echo "<script type='text/JavaScript'>CJInfo(\"".urldecode($msg2)."\",\"$msg2Type\");</script>\n";
-  
-  //TEST 
-  //echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
+  echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
 
 }
-else{					//	Formulaire
-
+// Formulaire
+else{
   // Liste des agents
   if($admin){
     $db_perso=new db();
@@ -326,14 +321,7 @@ else{					//	Formulaire
     foreach($agents as $elem){
       echo "<option value='".$elem['id']."' id='option{$elem['id']}'>".$elem['nom']." ".$elem['prenom']."</option>\n";
     }
-    echo "</select>\n";
-    
-    // TODO : initialiser les input type='hidden perso_ids[] et perso_ul
-    // TODO Garder les menus déroulant mais afficher le résultat dans un div au dessus du menu déroulant, rendant ainsi ce dernier accessible pour d'autres ajouts.
-    // TODO Ajouter des croix pour la suppression des agents déjà ajouté (<div>)
-    // TODO Mettre à jour dynamiquement (JS) les menus déroulant
-    // TODO Tri alphabétique des agents déjà ajouté (attention encodage, voir function.php)
-    
+    echo "</select>\n";    
   }
   else{
     echo "<input type='hidden' name='perso_id' value='{$_SESSION['login_id']}' class='perso_ids_hidden' />\n";

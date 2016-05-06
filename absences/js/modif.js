@@ -209,19 +209,6 @@ function verif_absences(ctrl_form){
     perso_ids.push($(this).val());
   });
 
-  // Si enregistrement par un agent (un seul id)
-//   perso_id=document.form.perso_id.value;
-//   if(perso_id && perso_id>0){
-//     perso_ids.push(perso_id);
-//   }
-  // Si enregistrement par un admin : plusieurs ID possibles
-//   $(".perso_ids_hidden").each(function(){
-//     perso_ids.push($(this).val());
-//   });
-  //TEST
-//   for(i in perso_ids){
-//     CJInfo(perso_ids[i]);
-//   }
   // Si aucun agent n'est sélectionné, on quitte en affichant "Veuillez sélectionner ..."
   if(perso_ids.length<1){
     CJInfo("Veuillez sélectionner un ou plusieurs agents","error");
@@ -247,12 +234,6 @@ function verif_absences(ctrl_form){
   var retour=true;
 
   $.ajax({
-    // TODO : Adapter à plusieurs ID
-    // TODO : Adapter à plusieurs ID
-    // TODO : Adapter à plusieurs ID
-    // TODO : Adapter à plusieurs ID
-    // TODO : Adapter à plusieurs ID
-    
     url: "absences/ajax.control.php",
     type: "get",
     datatype: "json",
@@ -260,12 +241,11 @@ function verif_absences(ctrl_form){
     async: false,
     success: function(result){
       result=JSON.parse(result);
+      
+      // Pour chaque agent
       for(i in result){
-	if(result[i]["planningVide"]!=0){
-	  CJInfo("Vous essayez de placer une absence sur un planning en cours d'élaboration","error");
-	  retour=false;
-	}
-	else if(result[i]["autreAbsence"]){
+	// Contrôle s'il y a une autre absence enregistrée
+	if(result[i]["autreAbsence"]){
 	  if(perso_ids.length>1){
 	    var message="Une absence est déjà enregistrée pour l'agent "+result[i]["nom"]+" entre le "+result[i]["autreAbsence"]+"<br/>Veuillez modifier la liste des agents, les dates ou les horaires.";
 	  }else{
@@ -274,9 +254,11 @@ function verif_absences(ctrl_form){
 	  CJInfo(message,"error");
 	  retour=false;
 	}
+	
+	// Contrôle s'il apparaît dans des plannings validés
 	else if(result[i]["planning"]){
 	  if(admin==1){
-	    if(!confirm("Attention, l'agent "+result["nom"]+" apparaît dans des plannings validés : "+result[i]["planning"]+"\nVoulez vous continuer ?")){
+	    if(!confirm("L'agent "+result[i]["nom"]+" apparaît dans des plannings validés : "+result[i]["planning"]+"\nVoulez-vous continuer ?")){
 	      retour=false;
 	    }
 	  }
@@ -286,6 +268,20 @@ function verif_absences(ctrl_form){
 	  }
 	}
       }
+
+      // Contrôle si des plannings sont en cours d'élaboration
+      if(result["planningsEnElaboration"]){
+	if(admin==1){
+	  if(!confirm("Vous essayer de placer une absence sur des plannings en cours d'élaboration : "+result["planningsEnElaboration"]+"\nVoulez-vous continuer ?")){
+	    retour=false;
+	  }
+	}
+	else{
+	  CJInfo("Vous essayez de placer une absence sur des plannings en cours d'élaboration : "+result["planningsEnElaboration"],"error");
+	  retour=false;
+	}
+      }
+      
     },
     error: function(result){
       information("Une erreur est survenue.","error");
@@ -319,7 +315,4 @@ function supprimeAgent(id){
   $("#li"+id).remove();
   $("#hidden"+id).remove();
   absencesAligneSuppression();
-  // TODO : supprimer le champ input hidden correspondant
-  // TODO : supprimer le champ input hidden correspondant
-  // TODO : supprimer le champ input hidden correspondant
 }

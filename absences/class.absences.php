@@ -34,6 +34,7 @@ class absences{
   public $ignoreFermeture=false;
   public $minutes=0;
   public $perso_id=null;
+  public $perso_ids=array();
   public $recipients=array();
   public $valide=false;
 
@@ -806,7 +807,7 @@ class absences{
   
     $debut=dateSQL($this->debut);
     $fin=dateSQL($this->fin);
-    $perso_id=$this->perso_id;
+    $perso_ids=implode(",",$this->perso_ids);
 
     $dateDebut=substr($debut,0,10);
     $dateFin=substr($fin,0,10);
@@ -844,7 +845,7 @@ class absences{
     // Recherche des plannings dans lequel apparaît l'agent
     $plannings=array();
     $db=new db();
-    $db->select2("pl_poste",null,array("date"=>"BETWEEN $dateDebut AND $dateFin","perso_id"=>$perso_id),"ORDER BY date,debut,fin");
+    $db->select2("pl_poste",null,array("date"=>"BETWEEN $dateDebut AND $dateFin","perso_id"=>"IN $perso_ids"),"ORDER BY date,debut,fin");
     if($db->result){
       foreach($db->result as $elem){
 	// On exclu les créneaux horaires qui sont en dehors de l'absences

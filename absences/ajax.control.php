@@ -76,23 +76,45 @@ foreach($perso_ids as $perso_id){
       $result[$perso_id]["planning"]=join(" ; ",$datesValidees);
     }
   }
-
-  // Contrôle si placé sur planning en cours d'élaboration;
-  $result[$perso_id]["planningVide"]=0;
-  if($config['Absences-planningVide']==0){
-    $debut=substr($debut,0,10);
-    $fin=substr($fin,0,10);
-    $db=new db();	  
-    $req="SELECT COUNT(`id`) as `cnt` FROM `{$dbprefix}pl_poste` WHERE `date` BETWEEN '$debut' AND '$fin';";
-    $db->query($req);
-    if($db->result){
-      $result[$perso_id]["planningVide"]=$db->result[0]['cnt'];
-    }
-    //for testing purpose $result[$perso_id]["planningVide"]=1;
-  }
   
   // Ajoute le nom de l'agent
   $result[$perso_id]['nom']=nom($perso_id);  
 }
+
+// Contrôle si placé sur des plannings en cours d'élaboration;
+if($config['Absences-planningVide']==0){
+  // Dates à contrôler
+  $date_debut=substr($debut,0,10);
+  $date_fin=substr($fin,0,10);
+  
+  // Tableau des plannings en cours d'élaboration
+  $planningsEnElaboration=array();
+  
+  // Pour chaque dates
+  $date=$date_debut;
+  while($date<=$date_fin){
+    // Vérifie si les plannings de tous les sites sont validés
+    $db=new db();
+    $db->select2("pl_poste_verrou","*",array("date"=>$date, "verrou2"=>"1"));
+    // S'ils ne sont pas tous validés, vérifie si certains d'entre eux sont commencés
+    if($db->nb < $config['Multisites-nombre']){
+      // TODO : ceci peut être amélioré en cherchant en particulier si les sites non validés sont commencés, car les sites non validés et non commencés ne nous interressent pas.
+      // for($i=1;$i<=$config['Multisites-nombre'];$i++){} // Attention, faire une première requête si $db->nb=0 pour éviter les erreurs foreach not array
+      // Le nom des sites pourrait également être retourné
+      
+      $db2=new db();	  
+      $db2->select2("pl_poste","id",array("date"=>$date));
+      // Si tous les sites ne sont pas validés et si certains sont commencés, on affichera la date correspondante
+      if($db2->result){
+	$planningsEnElaboration[]=date("d/m/Y",strtotime($date));
+      }
+    }
+    $date=date("Y-m-d",strtotime($date." +1 day"));
+  }
+  
+  // Affichage des dates correspondantes aux plannings en cours d'élaboration
+  $result["planningsEnElaboration"]=implode(" ; ",$planningsEnElaboration);
+}
+
 echo json_encode($result);
 ?>

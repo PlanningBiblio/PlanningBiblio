@@ -18,25 +18,6 @@ Page d'entrée : absences/modif.php
 */
 
 
-// TODO : vérifier si paramètre groupe
-// Si paramètre groupe : appliquer les modifications à toute les lignes appartenant au groupe
-// Si agents supprimés du groupe : supprimer les lignes correspondantes
-// Si agents ajoutés : les inserer avec toutes les données et le groupe
-// => comparer les agents avant / après . Pour avant : utiliser fetchById : donne la liste des agents dans le param agents
-// Si le paramètre groupe n'est pas fourni mais qu'il y a plusieurs perso_ids : créer un groupe (il s'agit dans ce cas d'une absence simple transformée en multiple).
-//  Création du groupe : 
-/**
-  // ID du groupe (permet de regrouper les informations pour affichage en une seule ligne et modification du groupe)
-  if(count($perso_ids)>1){
-    $groupe=time()."-".rand(100,999);
-  }else{
-    $groupe=null;
-  }
-*/
-
-// TODO : boucle pour les notifications, getRecipients, etc. voir ajouter.php : voir ce qui a été fait pour absences/delete.php
-
-
 require_once "class.absences.php";
 require_once "personnel/class.personnel.php";
 
@@ -213,11 +194,7 @@ $db->query($req);
 // Ajout du marquage absent pour les agents sélectionnés
 // Comprend les agents qui restent et ceux ajoutés
 if($isValidate){
-  $ids=array();
-  foreach($agents_selectionnes as $agent){
-    $ids[]=$agent['id'];
-  }
-  $ids=implode(",",$ids);
+  $ids=implode(",",$perso_ids);
 
   $db=new db();
   $debut_sql=$db->escapeString($debut_sql);
@@ -294,21 +271,12 @@ $db=new db();
 $db->delete2("absences",array("id"=>"IN $ids", "perso_id"=>"IN $agents_supprimes_ids"));
 
 
-// TODO : ajouter les absences pour les nouveaux agents : OK, à tester
-
-// TODO : supprimer les absences des agents supprimés de la sélection : OK, à tester
-
-// TODO : Travailler sur les notifications, voir ce qui a été fait dans delete.php pour éviter d'envoyer plusieurs fois le même mail
-// TODO : Notification : marquer les agents retirés (les afficher barrés + entre parenthèses "supprimé")
-// TODO : Notifier pour tous les agents concernés : utiliser $agents_tous
-
-
 // Envoi d'un mail de notification
 $sujet="Modification d'une absence";
 
 // Choix des destinataires des notifications selon le degré de validation
-// Si l'agent lui même modifie son absence ou si pas de validation, la notification est envoyée au 1er groupe
-if($_SESSION['login_id']==$perso_id or $config['Absences-validation']=='0'){
+// Si pas de validation, la notification est envoyée au 1er groupe
+if($config['Absences-validation']=='0'){
   $notifications=2;
 }
 else{
@@ -360,24 +328,34 @@ foreach($destinataires as $elem){
 }
 $destinataires=$tmp;
 
-// TODO : continuer à travailler sur les notifications
-// TODO : Travailler sur les notifications, voir ce qui a été fait dans delete.php pour éviter d'envoyer plusieurs fois le même mail
-// TODO : Notification : marquer les agents retirés (les afficher barrés + entre parenthèses "supprimé")
-// TODO : Notifier pour tous les agents concernés : utiliser $agents_tous
-// TODO : voir comment les absences multiples peuvent impacter les informations sur les plages de SP
-
-
 // Recherche des plages de SP concernées pour ajouter cette information dans le mail.
 $a=new absences();
 $a->debut=$debut_sql;
 $a->fin=$fin_sql;
-$a->perso_id=$perso_id;
+$a->perso_ids=$perso_ids;
 $a->infoPlannings();
 $infosPlanning=$a->message;
 
 // Message
+usort($agents_selectionnes,"cmp_prenom_nom");
+usort($agents_supprimes,"cmp_prenom_nom");
+
 $message="<b><u>$sujet</u></b> :";
-$message.="<ul><li>Agent : <strong>$prenom $nom</strong></li>";
+$message.="<ul><li>\n";
+if((count($agents_selectionnes) + count($agents_supprimes)) >1){
+  $message.="Agents :<ul>\n";
+  foreach($agents_selectionnes as $agent){
+    $message.="<li><strong>{$agent['prenom']} {$agent['nom']}</strong></li>\n";
+  }
+  foreach($agents_supprimes as $agent){
+    $message.="<li><span class='striped'>{$agent['prenom']} {$agent['nom']}</span></li>\n";
+  }
+  $message.="</ul>\n";
+}else{
+  $message.="Agent : <strong>{$agents_selectionnes[0]['prenom']} {$agents_selectionnes[0]['nom']}</strong>\n";
+}
+$message.="</li>\n";
+
 $message.="<li>Début : <strong>$debut";
 if($hre_debut!="00:00:00")
   $message.=" ".heure3($hre_debut);

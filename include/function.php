@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.2.3
+Planning Biblio, Version 2.3.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 27 février 2016
+Dernière modification : 6 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -559,6 +559,17 @@ function cmp_nom_prenom_debut_fin($a,$b){
     return strtolower($a['prenom']) > strtolower($b['prenom']);
   }
   return strtolower($a['nom']) > strtolower($b['nom']);
+}
+
+function cmp_prenom_nom($a,$b){
+  $a['nom']=html_entity_decode($a['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $b['nom']=html_entity_decode($b['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $a['prenom']=html_entity_decode($a['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $b['prenom']=html_entity_decode($b['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  if(strtolower($a['prenom']) == strtolower($b['prenom'])){
+    return strtolower($a['nom']) > strtolower($b['nom']);
+  }
+  return strtolower($a['prenom']) > strtolower($b['prenom']);
 }
 
 function cmp_debut_fin($a,$b){
