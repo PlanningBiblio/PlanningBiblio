@@ -37,10 +37,8 @@ Page d'entrée : absences/modif.php
 // TODO : boucle pour les notifications, getRecipients, etc. voir ajouter.php : voir ce qui a été fait pour absences/delete.php
 
 
-
-
-
 require_once "class.absences.php";
+require_once "personnel/class.personnel.php";
 
 // Initialisation des variables
 $commentaires=trim(filter_input(INPUT_GET,"commentaires",FILTER_SANITIZE_STRING));
@@ -53,25 +51,17 @@ $motif=filter_input(INPUT_GET,"motif",FILTER_SANITIZE_STRING);
 $motif_autre=trim(filter_input(INPUT_GET,"motif_autre",FILTER_SANITIZE_STRING));
 $nbjours=filter_input(INPUT_GET,"nbjours",FILTER_SANITIZE_NUMBER_INT);
 $valide=filter_input(INPUT_GET,"valide",FILTER_SANITIZE_NUMBER_INT);
-$groupe=filter_input(INPUT_GET,"groupe",FILTER_SANITIZE_NUMBER_INT);
+$groupe=filter_input(INPUT_GET,"groupe",FILTER_SANITIZE_STRING);
+
+// perso_ids est un tableau de 1 ou plusieurs ID d'agent. Complété même si l'absence ne concerne qu'une personne
 $perso_ids=$_GET['perso_ids'];
 $perso_ids=filter_var_array($perso_ids,FILTER_SANITIZE_NUMBER_INT);
 
-// TEST du paramètre perso_ids si absence multiple dès le départ
-// array(2) { [0]=> string(2) "27" [1]=> string(2) "25" } le tableau perso_ids s'adapte bien
-// TEST du paramètre perso_ids si absence simple
-// array(1) { [0]=> string(2) "27" }
-// TEST du paramètre perso_ids si absence simple transformée en multiple
-// array(2) { [0]=> string(2) "27" [1]=> string(2) "25" }
-// TEST du paramètre perso_ids si absence multiple transformée en simple
-// array(1) { [0]=> string(2) "27" }
-// TEST du paramètre perso_ids si pas admin
-// Mêmes choses
-
-// Conclusion : on a toujours un tableau cohérent, avec 1 ou plusieurs id(s)
-
-var_dump($perso_ids);
-exit;
+// Création du groupe si plusieurs agents et que le groupe n'est pas encore créé
+if(count($perso_ids)>1 and !$groupe){
+  // ID du groupe (permet de regrouper les informations pour affichage en une seule ligne et modification du groupe)
+  $groupe=time()."-".rand(100,999);
+}
 
 // Pièces justificatives
 $pj1=filter_input(INPUT_GET,"pj1",FILTER_CALLBACK,array("options"=>"sanitize_on01"));
@@ -104,22 +94,58 @@ if($config['Absences-validation']){
   $isValidate=$valideN2>0?true:false;
 }
 
-$db=new db();
-$db->selectInnerJoin(array("absences","perso_id"),array("personnel","id"),
-  array(),
-  array(array("name"=>"id","as"=>"perso_id"),"nom","prenom","mail","mailsResponsables","sites"),
-  array("id"=>$id));
 
-$perso_id=$db->result[0]['perso_id'];
-$nom=$db->result[0]['nom'];
-$prenom=$db->result[0]['prenom'];
-$mail=$db->result[0]['mail'];
-$sites_agent=unserialize($db->result[0]['sites']);
-$mailsResponsables=explode(";",html_entity_decode($db->result[0]['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+// Récupération des informations des agents concernés par l'absence avant sa modification
+// ET autres informations concernant l'absence avant modification
+$a=new absences();
+$a->fetchById($id);
+$agents=$a->elements['agents'];
+$debut1=$a->elements['debut'];
+$fin1=$a->elements['fin'];
+$perso_ids1=$a->elements['perso_ids'];
+$valide1N1=$a->elements['valideN1'];
+$valide1N2=$a->elements['valideN2'];
+
+// Récuperation des informations des agents concernés par l'absence après sa modification (agents sélectionnés)
+$p=new personnel();
+$p->fetchById($perso_ids);
+$agents_selectionnes=$p->elements;
+
+// Tous les agents concernés (ajoutés, supprimés, restants)
+$agents_tous=array();
+foreach($agents as $elem){
+  if(!array_key_exists($elem['perso_id'],$agents_tous)){
+    $agents_tous[$elem['perso_id']]=$elem;
+  }
+}
+foreach($agents_selectionnes as $elem){
+  if(!array_key_exists($elem['id'],$agents_tous)){
+    $elem['perso_id']=$elem['id'];
+    $agents_tous[$elem['id']]=$elem;
+  }
+}
+
+// Les agents supprimés de l'absence
+$agents_supprimes=array();
+foreach($agents as $elem){
+  if(!array_key_exists($elem['perso_id'],$agents_selectionnes)){
+    $agents_supprimes[$elem['perso_id']]=$elem;
+  }
+}
+
+// Les agents ajoutés
+$agents_ajoutes=array();
+foreach($agents_selectionnes as $elem){
+  if(!in_array($elem['id'],$perso_ids1)){
+    $agents_ajoutes[]=$elem;
+  }
+}
 
 // Sécurité
-// Droit 1 = modification de toutes les absences
+// Droit 1 = modification de toutes les absences (admin seulement)
 // Droit 6 = modification de ses propres absences
+// Droits 20x = modification de toutes les absences en multisites (admin seulement)
+
 $acces=in_array(1,$droits)?true:false;
 if(!$acces){
   $acces=(in_array(6,$droits) and $perso_id==$_SESSION['login_id'] and !$groupe)?true:false;
@@ -130,8 +156,21 @@ if(!$acces){
   exit;
 }
 
-// Multisites, ne pas modifier les absences des agents d'un site non géré
+// Définition des droits d'accès pour les administrateurs en multisites
+// Multisites, ne pas modifier les absences si aucun agent n'appartient à un site géré
 if($config['Multisites-nombre']>1){
+  // $sites_agents comprend l'ensemble des sites en lien avec les agents concernés par cette modification d'absence
+  $sites_agents=array();
+  foreach($agents_tous as $elem){
+    if(is_array($elem['sites'])){
+      foreach($elem['sites'] as $site){
+	if(!in_array($s,$sites_agents)){
+	  $sites_agents[]=$site;
+	}
+      }
+    }
+  }
+
   $sites=array();
   for($i=1;$i<=$config['Multisites-nombre'];$i++){
     if(in_array((200+$i),$droits)){
@@ -140,7 +179,7 @@ if($config['Multisites-nombre']>1){
   }
 
   $admin=false;
-  foreach($sites_agent as $site){
+  foreach($sites_agents as $site){
     if(in_array($site,$sites)){
       $admin=true;
     }
@@ -156,75 +195,116 @@ if($config['Multisites-nombre']>1){
   $admin=in_array(1,$droits)?true:false;
 }
 
-// Pour mise à jour du champs 'absent' dans 'pl_poste'
-$db=new db();
-$db->select2("absences","*",array("id"=>$id));
-$debut1=$db->result[0]['debut'];
-$fin1=$db->result[0]['fin'];
-$valide1N1=$db->result[0]['valideN1'];
-$valide1N2=$db->result[0]['valide'];
-$perso_id=$db->result[0]['perso_id'];
-
-
 // Mise à jour du champs 'absent' dans 'pl_poste'
+// Suppression du marquage absent pour tous les agents qui étaient concernés par l'absence avant sa modification
+// Comprend les agents supprimés et ceux qui restent
+$ids=implode(",",$perso_ids1);
 $db=new db();
 $debut1=$db->escapeString($debut1);
 $fin1=$db->escapeString($fin1);
-$perso_id=$db->escapeString($perso_id);
+$ids=$db->escapeString($ids);
 $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='0' WHERE
   CONCAT(`date`,' ',`debut`) < '$fin1' AND CONCAT(`date`,' ',`fin`) > '$debut1'
-  AND `perso_id`='$perso_id'";
+  AND `perso_id` IN ($ids)";
 $db->query($req);
 
-if(($debutSQL!=$debut1 or $finSQL!=$fin1) and $isValidate){
+
+// Mise à jour du champs 'absent' dans 'pl_poste'
+// Ajout du marquage absent pour les agents sélectionnés
+// Comprend les agents qui restent et ceux ajoutés
+if($isValidate){
+  $ids=array();
+  foreach($agents_selectionnes as $agent){
+    $ids[]=$agent['id'];
+  }
+  $ids=implode(",",$ids);
+
   $db=new db();
-  $debut1=$db->escapeString($debut1);
-  $fin1=$db->escapeString($fin1);
-  $perso_id=$db->escapeString($perso_id);
+  $debut_sql=$db->escapeString($debut_sql);
+  $fin_sql=$db->escapeString($fin_sql);
+  $ids=$db->escapeString($ids);
   $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1' WHERE
     CONCAT(`date`,' ',`debut`) < '$fin_sql' AND CONCAT(`date`,' ',`fin`) > '$debut_sql'
-    AND `perso_id`='$perso_id'";
+    AND `perso_id` IN ($ids)";
   $db->query($req);
 }
 
-// Mise à jour de la table 'absences'
-$update=array("motif"=>$motif, "motif_autre"=>$motif_autre, "nbjours"=>$nbjours, "commentaires"=>$commentaires, 
-  "debut"=>$debut_sql, "fin"=>$fin_sql);
+
+// Préparation des données pour mise à jour de la table absence et insertion pour les agents ajoutés
+$data=array("motif"=>$motif, "motif_autre"=>$motif_autre, "nbjours"=>$nbjours, "commentaires"=>$commentaires, "debut"=>$debut_sql, "fin"=>$fin_sql, "groupe"=>$groupe);
 
 if($admin){
-  $update=array_merge($update,array("pj1"=>$pj1, "pj2"=>$pj2, "so"=>$so));
+  $data=array_merge($data,array("pj1"=>$pj1, "pj2"=>$pj2, "so"=>$so));
 }
 
 if($config['Absences-validation']){
   // Validation N1
   if($valideN1){
-    $update["valideN1"]=$valideN1;
-    $update["validationN1"]=$validationN1;
+    $data["valideN1"]=$valideN1;
+    $data["validationN1"]=$validationN1;
   }
   // Validation N2
   if($valideN2){
-    $update["valide"]=$valideN2;
-    $update["validation"]=$validationN2;
+    $data["valide"]=$valideN2;
+    $data["validation"]=$validationN2;
   }
   // Retour à l'état demandé
   if($valide==0){
-    $update["valide"]=0;
-    $update["valideN1"]=0;
-    $update["validation"]="0000-00-00 00:00:00";
-    $update["validationN1"]="0000-00-00 00:00:00";
+    $data["valide"]=0;
+    $data["valideN1"]=0;
+    $data["validation"]="0000-00-00 00:00:00";
+    $data["validationN1"]="0000-00-00 00:00:00";
   }
 }
-$where=array("id"=>$id);
+
+// Mise à jour de la table 'absences'
+// Sélection des lignes à modifier dans la base à l'aide du champ id car fonctionne également si le groupe n'existait pas au départ contrairement au champ groupe
+// (dans le cas d'une absence simple ou absence simple transformée en absence multiple).
+// Récupération de tous les ids de l'absence avant modification
+$ids=array();
+foreach($agents as $agent){
+  $ids[]=$agent['absence_id'];
+}
+$ids=implode(",",$ids);
+$where=array("id"=>"IN $ids");
+
 $db=new db();
-$db->update2("absences",$update,$where);
+$db->update2("absences",$data,$where);
+
+
+// Ajout de nouvelles lignes dans la table absences si des agents ont été ajoutés
+$insert=array();
+foreach($agents_ajoutes as $agent){
+  $insert[]=array_merge($data, array('perso_id'=>$agent['id']));
+}
+if(!empty($insert)){
+  $db=new db();
+  $db->insert2("absences",$insert);
+}
+
+
+// Suppresion des lignes de la table absences concernant les agents supprimés
+$agents_supprimes_ids=array();
+foreach($agents_supprimes as $agent){
+  $agents_supprimes_ids[]=$agent['perso_id'];
+}
+$agents_supprimes_ids=implode(",",$agents_supprimes_ids);
+
+$db=new db();
+$db->delete2("absences",array("id"=>"IN $ids", "perso_id"=>"IN $agents_supprimes_ids"));
+
+
+// TODO : ajouter les absences pour les nouveaux agents : OK, à tester
+
+// TODO : supprimer les absences des agents supprimés de la sélection : OK, à tester
+
+// TODO : Travailler sur les notifications, voir ce qui a été fait dans delete.php pour éviter d'envoyer plusieurs fois le même mail
+// TODO : Notification : marquer les agents retirés (les afficher barrés + entre parenthèses "supprimé")
+// TODO : Notifier pour tous les agents concernés : utiliser $agents_tous
+
 
 // Envoi d'un mail de notification
 $sujet="Modification d'une absence";
-
-// Liste des responsables
-$a=new absences();
-$a->getResponsables($debutSQL,$finSQL,$perso_id);
-$responsables=$a->responsables;
 
 // Choix des destinataires des notifications selon le degré de validation
 // Si l'agent lui même modifie son absence ou si pas de validation, la notification est envoyée au 1er groupe
@@ -254,10 +334,38 @@ else{
   }
 }
 
-// Choix des destinataires en fonction de la configuration
-$a=new absences();
-$a->getRecipients($notifications,$responsables,$mail,$mailsResponsables);
-$destinataires=$a->recipients;
+// Liste des responsables
+// Pour chaque agent, recherche des responsables absences 
+$responsables=array();
+foreach($agents_tous as $agent){
+  $a=new absences();
+  $a->getResponsables($debutSQL,$finSQL,$agent['perso_id']);
+  $responsables=array_merge($responsables,$a->responsables);
+}
+
+// Pour chaque agent, recherche des destinataires de notification en fonction de la config. (responsables absences, responsables directs, agent).
+$destinataires=array();
+foreach($agents_tous as $agent){
+  $a=new absences();
+  $a->getRecipients($notifications,$responsables,$agent['mail'],$agent['mailsResponsables']);
+  $destinataires=array_merge($destinataires,$a->recipients);
+}
+
+// Suppresion des doublons dans les destinataires
+$tmp=array();
+foreach($destinataires as $elem){
+  if(!in_array($elem,$tmp)){
+    $tmp[]=$elem;
+  }
+}
+$destinataires=$tmp;
+
+// TODO : continuer à travailler sur les notifications
+// TODO : Travailler sur les notifications, voir ce qui a été fait dans delete.php pour éviter d'envoyer plusieurs fois le même mail
+// TODO : Notification : marquer les agents retirés (les afficher barrés + entre parenthèses "supprimé")
+// TODO : Notifier pour tous les agents concernés : utiliser $agents_tous
+// TODO : voir comment les absences multiples peuvent impacter les informations sur les plages de SP
+
 
 // Recherche des plages de SP concernées pour ajouter cette information dans le mail.
 $a=new absences();

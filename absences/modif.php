@@ -147,7 +147,7 @@ echo "<form name='form' method='get' action='index.php' onsubmit='return verif_a
 echo "<input type='hidden' name='page' value='absences/modif2.php' />\n";
 echo "<input type='hidden' name='perso_id' value='$perso_id' />\n";		// nécessaire pour verif_absences
 echo "<input type='hidden' id='admin' value='".($admin?1:0)."' />\n";
-echo "<input type='hidden' id='groupe' value='$groupe' />\n";
+echo "<input type='hidden' name='groupe' id='groupe' value='$groupe' />\n";
 echo "<table class='tableauFiches'>\n";
 
 
