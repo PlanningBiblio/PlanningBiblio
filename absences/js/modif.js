@@ -286,6 +286,10 @@ function verif_absences(ctrl_form){
 	}
       }
       
+      else if (result["planning_en_cours"] && admin != 1){
+        information("Le dépôt d'absence n'est pas possible pour l'instant.<br/>Veuillez faire votre demande par mail aux gestionnaires du planning","error");
+        retour=false;
+      }
     },
     error: function(result){
       information("Une erreur est survenue.","error");

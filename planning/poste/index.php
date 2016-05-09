@@ -119,6 +119,7 @@ switch($jour){
 //-----------------------------			Verrouillage du planning			-----------------------//
 $db=new db();
 $db->select2("pl_poste_verrou","*", array("date"=>$date, "site"=>$site));
+$blocage_dep_abs = 0;
 if($db->result){
   $verrou=$db->result[0]['verrou2'];
   $perso=nom($db->result[0]['perso']);
@@ -128,11 +129,15 @@ if($db->result){
   $date_validation2=dateFr(substr($db->result[0]['validation2'],0,10));
   $heure_validation2=substr($db->result[0]['validation2'],11,5);
   $validation2=$db->result[0]['validation2'];
+  $blocage_dep_abs=$db->result[0]['blocage_dep_abs'];
 }else{
   $perso2=null;
   $date_validation2=null;
   $heure_validation2=null;
   $validation2=null;
+  $db=new db();
+  $db->select2("pl_poste_verrou","*", array("site"=>$site,"date"=>$date,"blocage_dep_abs"=>1));
+  if ($db->result) $blocage_dep_abs = 1;
 }
 //	---------------		FIN changement de couleur du menu et de la periode en fonction du jour sélectionné	--------------------------//
 
@@ -266,13 +271,18 @@ if($autorisation and $config['CatAFinDeService']){
 }
 
 echo "<div id='validation'>\n";
+
 if($autorisation){
   $display1=$verrou?null:"display:none";
   $display2=$verrou?"display:none":null;
+  $displaytmp1=$blocage_dep_abs?"display:none":null;
+  $displaytmp2=$blocage_dep_abs? null:"display:none";
 
   echo "<div class='pl-validation' style='$display1'><u>Validation</u><br/>$perso2 $date_validation2 $heure_validation2</div>\n";
-  echo "<span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' data-date='$date' data-site='$site' title='Déverrouiller le planning' style='$display1'></span></a>\n";
-  echo "<span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' data-date='$date' data-site='$site' title='Verrouiller le planning' style='$display2'></span></a>\n";
+  echo "<span id='icon-tmplock' class='pl-icon pl-icon-tmplock pointer' data-date='$date' data-site='$site' title=\"Bloquer temporairement le dépôt d'absence\" style='$displaytmp1'></span></a>\n";
+  echo "<span id='icon-tmpunlock' class='pl-icon pl-icon-tmpunlock pointer' data-date='$date' data-site='$site' title=\"Débloquer le dépôt d'absence\" style='$displaytmp2'></span></a>\n";
+  echo "<span id='icon-lock' class='pl-icon pl-icon-lock pointer' data-date='$date' data-site='$site' title='Déverrouiller le planning' style='$display1'></span></a>\n";
+  echo "<span id='icon-unlock' class='pl-icon pl-icon-unlock pointer' data-date='$date' data-site='$site' title='Verrouiller le planning' style='$display2'></span></a>\n";
 }
 
 if($autorisation){

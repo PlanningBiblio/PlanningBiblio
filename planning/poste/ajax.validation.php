@@ -50,10 +50,9 @@ $db=new db();
 $db->select2("pl_poste_verrou","*",array("date"=>$date, "site"=>$site));
 if($db->result){
   if($verrou==1){
-    $set=array("verrou2"=>"1", "validation2"=>$validation, "perso2"=>$perso_id);
+    $set=array("blocage_dep_abs"=>"0", "verrou2"=>"1", "validation2"=>$validation, "perso2"=>$perso_id);
     $where=array("date"=>$date, "site"=>$site);
     $db=new db();
-    $db->CSRFToken = $CSRFToken;
     $db->update2("pl_poste_verrou",$set,$where);
   }else{
     $set=array("verrou2"=>"0", "perso2"=>$perso_id);
@@ -80,5 +79,5 @@ if(!$db->error and $verrou==1){
 }elseif(!$db->error and $verrou==0){
   echo json_encode(array("Le planning a &eacute;t&eacute; d&eacute;verrouill&eacute; avec succ&egrave;s","highlight"));
   exit;
-}	
+}
 ?>
