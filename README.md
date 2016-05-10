@@ -41,6 +41,30 @@ si ce n'est pas le cas, consultez : http://www.gnu.org/licenses
 ===============
 Ressources :
  
+Dossier vendor/CAS-1.3.4
+- phpCAS
+- version 1.3.4
+
+phpCAS is an authentication library that allows PHP applications to easily authenticate
+users via a Central Authentication Service (CAS) server.
+Please see the phpCAS website for more information:
+https://wiki.jasig.org/display/CASC/phpCAS
+
+phpCAS license :
+Copyright 2007-2015, JA-SIG, Inc.
+This project includes software developed by Jasig.
+http://www.jasig.org/
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this software except in compliance with the License.
+You may obtain a copy of the License at:
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
 Dossier vendor/PHPMailer
  - Software: PHPMailer - The PHPMailer GitHub project
  - Version: 5.2.9

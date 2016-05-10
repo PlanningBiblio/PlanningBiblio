@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Version 1.9.5
+/**
+Planning Biblio, Version 2.3.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : ldap/class.ldap.php
 Création : 2 juillet 2014
-Dernière modification : 7 juillet 2015
+Dernière modification : 10 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,7 +21,7 @@ if(!isset($version)){
 }
 
 function authCAS(){
-  include "vendor/CAS-1.3.3/CAS.php";
+  include "vendor/CAS-1.3.4/CAS.php";
   if($GLOBALS['config']['CAS-Debug']){
     $tmp_dir=sys_get_temp_dir();
     phpCAS::setDebug("$tmp_dir/cas_debug.txt");
