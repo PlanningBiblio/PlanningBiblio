@@ -1,3 +1,10 @@
+***	Version 2.3.1	(10 mai 2016)		***
+Jérôme Combes
+
+- Améliorations
+Permet la saisie et la modification d'absences de plusieurs agents
+Mise à jour de la bibliothèque phpCAS (version 1.3.4)
+
 ***	Version 2.3	(12 avril 2016)		***
 Jérôme Combes
 
