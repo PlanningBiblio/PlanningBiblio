@@ -243,7 +243,7 @@ echo "<td style='white-space:nowrap;'>";
 echo "<select name='motif' style='width:100%;' class='ui-widget-content ui-corner-all'>\n";
 echo "<option value=''></option>\n";
 foreach($motifs as $elem){
-  $selected=$elem['valeur']==$motif?"selected='selected'":null;
+  $selected=html_entity_decode($elem['valeur'],ENT_QUOTES|ENT_IGNORE,"utf-8")==html_entity_decode($motif,ENT_QUOTES|ENT_IGNORE,"utf-8")?"selected='selected'":null;
   $class=$elem['type']==2?"padding20":"bold";
   $disabled=$elem['type']==1?"disabled='disabled'":null;
   echo "<option value='".$elem['valeur']."' $selected class='$class' $disabled >".$elem['valeur']."</option>\n";
