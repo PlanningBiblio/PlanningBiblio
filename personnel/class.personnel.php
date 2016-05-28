@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0.5
+Planning Biblio, Version 2.3.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 3 décembre 2015
+Dernière modification : 6 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -109,12 +109,31 @@ class personnel{
   }
 
 
+  /**
+   * @function fetchById
+   * @param mixed int, array $id : id de l'agent ou tableau d'ID
+   * @result array : si $id est un chiffre : $this->elements[0] contient les informations de l'agent
+   * @result array : si $id est un tableau : $this->elements contient les informations des agents avec l'id des agents comme clé
+   */
   public function fetchById($id){
-    $db=new db();
-    $db->select("personnel",null,"id='$id'");
-    $this->elements=$db->result;
-    $this->elements[0]['sites']=unserialize($db->result[0]['sites']);
-    $this->elements[0]['mailsResponsables']=explode(";",html_entity_decode($db->result[0]['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+    if(is_numeric($id)){
+      $db=new db();
+      $db->select("personnel",null,"id='$id'");
+      $this->elements=$db->result;
+      $this->elements[0]['sites']=unserialize($db->result[0]['sites']);
+      $this->elements[0]['mailsResponsables']=explode(";",html_entity_decode($db->result[0]['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+    }elseif(is_array($id)){
+      $ids=join(",",$id);
+      $db=new db();
+      $db->select2("personnel",null,array("id"=>"IN $ids"));
+      if($db->result){
+	foreach($db->result as $elem){
+	  $this->elements[$elem['id']]=$elem;
+	  $this->elements[$elem['id']]['sites']=unserialize($elem['sites']);
+	  $this->elements[$elem['id']]['mailsResponsables']=explode(";",html_entity_decode($elem['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+	}
+      }
+    }
   }
 
 

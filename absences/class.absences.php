@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.3.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 18 janvier 2016
+Dernière modification : 6 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -28,11 +28,13 @@ class absences{
   public $elements=array();
   public $error=false;
   public $fin=null;
+  public $groupe=null;
   public $heures=0;
   public $heures2=null;
   public $ignoreFermeture=false;
   public $minutes=0;
   public $perso_id=null;
+  public $perso_ids=array();
   public $recipients=array();
   public $valide=false;
 
@@ -521,7 +523,7 @@ class absences{
       ."`{$dbprefix}absences`.`valide` AS `valide`, `{$dbprefix}absences`.`validation` AS `validation`, "
       ."`{$dbprefix}absences`.`valideN1` AS `valideN1`, `{$dbprefix}absences`.`validationN1` AS `validationN1`, "
       ."`{$dbprefix}absences`.`pj1` AS `pj1`, `{$dbprefix}absences`.`pj2` AS `pj2`, `{$dbprefix}absences`.`so` AS `so`, "
-      ."`{$dbprefix}absences`.`demande` AS `demande` "
+      ."`{$dbprefix}absences`.`demande` AS `demande`, `{$dbprefix}absences`.`groupe` AS `groupe` "
       ."FROM `{$dbprefix}absences` INNER JOIN `{$dbprefix}personnel` "
       ."ON `{$dbprefix}absences`.`perso_id`=`{$dbprefix}personnel`.`id` "
       ."WHERE $dates $only_me $sites_req $filter ORDER BY $sort;";
@@ -529,8 +531,37 @@ class absences{
     $db->query($req);
 
     $all=array();
+    $groupes=array();
     if($db->result){
       foreach($db->result as $elem){
+      
+	// N'ajoute qu'une ligne pour les membres d'un groupe
+	if($this->groupe and $elem['groupe'] and in_array($elem['groupe'],$groupes)){
+	  continue;
+	}
+	if($elem['groupe']){
+	  // Pour ne plus afficher les membres du groupe pr la suite
+	  $groupes[]=$elem['groupe'];
+	  
+	  // Ajoute les ID des autres agents appartenant à ce groupe
+	  $perso_ids=array();
+	  $agents=array();
+	  foreach($db->result as $elem2){
+	    if($elem2['groupe']==$elem['groupe']){
+	      $perso_ids[]=$elem2['perso_id'];
+	      $agents[]=$elem2['nom']." ".$elem2['prenom'];
+	    }
+	  }
+	  $elem['perso_ids']=$perso_ids;
+	  sort($agents);
+	  $elem['agents']=$agents;
+	}else{
+	  $elem['perso_ids'][]=$elem['perso_id'];
+	  $elem['agents'][]=$elem['nom']." ".$elem['prenom'];
+	}
+
+	// TODO : ajouter les autres membres du groupe (si groupe)
+	
 	$tmp=$elem;
 	$debut=dateFr(substr($elem['debut'],0,10));
 	$fin=dateFr(substr($elem['fin'],0,10));
@@ -569,15 +600,51 @@ class absences{
   public function fetchById($id){
     $db=new db();
     $db->selectInnerJoin(array("absences","perso_id"),array("personnel","id"),
-      array("id","debut","fin","nbjours","motif","motif_autre","commentaires","valideN1","validationN1","pj1","pj2","so","demande",
+      array("id","debut","fin","nbjours","motif","motif_autre","commentaires","valideN1","validationN1","pj1","pj2","so","demande","groupe",
       array("name"=>"valide","as"=>"valideN2"),array("name"=>"validation","as"=>"validationN2")),
       array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mailsResponsables"),
       array("id"=>$id));
 
     if($db->result){
-      $elem=$db->result[0];
-      $elem['mailsResponsables']=explode(";",html_entity_decode($elem['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
-      $this->elements=$elem;
+      $result=$db->result[0];
+      $result['mailsResponsables']=explode(";",html_entity_decode($result['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+      
+      // Créé un tableau $agents qui sera placé dans $this->elements['agents']
+      // Ce tableau contient un tableau par agent avec les informations le concernant (nom, prenom, mail, etc.)
+      // En cas d'absence enregistrée pour plusieurs agents, il sera complété avec les informations des autres agents
+      $agents=array(array("perso_id"=>$result['perso_id'], "nom"=>$result['nom'], "prenom"=>$result['prenom'], "sites"=>$result['sites'], "mail"=>$result['mail'], "mailsResponsables"=>$result['mailsResponsables'], "absence_id"=>$id));
+      $perso_ids=array($result['perso_id']);
+
+      // Absence concernant plusieurs agents
+      // Complète le tableau $agents
+      if($result['groupe']){
+	$groupe=$result['groupe'];
+	$agents=array();
+	// Recherche les absences enregistrées sous le même groupe et les infos des agents concernés
+	$db=new db();
+	$db->selectInnerJoin(array("absences","perso_id"),array("personnel","id"),
+	  array("id"),
+	  array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mailsResponsables"),
+	  array("groupe"=>$groupe),
+	  array(),
+	  "order by nom, prenom");
+	
+	// Complète le tableau $agents
+	if($db->result){
+	  foreach($db->result as $elem){
+	    $elem['mailsResponsables']=explode(";",html_entity_decode($elem['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+	    $agent=array("perso_id"=>$elem['perso_id'], "nom"=>$elem['nom'], "prenom"=>$elem['prenom'], "sites"=>$elem['sites'], "mail"=>$elem['mail'], "mailsResponsables"=>$elem['mailsResponsables'], "absence_id"=>$elem['id']);
+	    if(!in_array($agent,$agents)){
+	      $agents[]=$agent;
+	      $perso_ids[]=$elem['perso_id'];
+	    }
+	  }
+	}
+      }
+
+      $result['agents']=$agents;
+      $result['perso_ids']=$perso_ids;
+      $this->elements=$result;
     }
   }
 
@@ -740,7 +807,7 @@ class absences{
   
     $debut=dateSQL($this->debut);
     $fin=dateSQL($this->fin);
-    $perso_id=$this->perso_id;
+    $perso_ids=implode(",",$this->perso_ids);
 
     $dateDebut=substr($debut,0,10);
     $dateFin=substr($fin,0,10);
@@ -778,7 +845,7 @@ class absences{
     // Recherche des plannings dans lequel apparaît l'agent
     $plannings=array();
     $db=new db();
-    $db->select2("pl_poste",null,array("date"=>"BETWEEN $dateDebut AND $dateFin","perso_id"=>$perso_id),"ORDER BY date,debut,fin");
+    $db->select2("pl_poste",null,array("date"=>"BETWEEN $dateDebut AND $dateFin","perso_id"=>"IN $perso_ids"),"ORDER BY date,debut,fin");
     if($db->result){
       foreach($db->result as $elem){
 	// On exclu les créneaux horaires qui sont en dehors de l'absences

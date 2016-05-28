@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.3.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/js/modif.js
 Création : 28 février 2014
-Dernière modification : 9 avril 2015
+Dernière modification : 6 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -14,6 +14,11 @@ Fichier regroupant les fonctions JavaScript utiles à l'ajout et la modification
 */
 
 $(function() {
+  
+  $(document).ready(function(){
+    absencesAligneSuppression();
+  });
+
   // Paramétrage de la boite de dialogue permettant la modification des motifs
   $("#add-motif-form").dialog({
     autoOpen: false,
@@ -125,6 +130,60 @@ $(function() {
       $("input[name=motif_autre]").val("");
     }
   });
+  
+  /**
+   * Agents multiples
+   * Permet d'ajouter plusieurs agents sur une même absence (réunion, formation)
+   * Lors du changement du <select perso_ids>, ajout du nom des agents dans <ul perso_ul> et leurs id dans <input perso_ids[]>
+   */
+  $("#perso_ids").change(function(){
+    // Variables
+    var id=$(this).val();
+
+    // Ajout des champs hidden permettant la validation des agents
+    $(this).before("<input type='hidden' name='perso_ids[]' value='"+id+"' id='hidden"+id+"' class='perso_ids_hidden'/>\n");
+
+    // Création de la liste : balises <ul>
+    if(!$("#perso_ul").length){
+      $(this).before("<ul id='perso_ul'></ul>\n");
+    }
+    
+    // Affichage des agents sélectionnés avec tri alphabétique
+    var tab=[];
+    $(".perso_ids_hidden").each(function(){
+      var id=$(this).val();
+      var name=$("#perso_ids option[value='"+id+"']").text();
+      tab.push([name,id]);
+    });
+
+    tab.sort();
+    
+    $(".perso_ids_li").remove();
+    for(i in tab){
+      var li="<li id='li"+tab[i][1]+"' class='perso_ids_li'>"+tab[i][0]+"<span class='perso-drop' style='margin-left:5px;' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-drop'></span></span></li>\n";
+      $("#perso_ul").append(li);
+    }
+    
+
+    absencesAligneSuppression();
+    
+    $("#perso_ids :selected").hide();
+
+    
+    $(this).val(0);
+
+    
+  });
+
+  
+  $("#absence-bouton-supprimer").click(function(){
+    if(confirm("Etes vous sûr de vouloir supprimer cette absence ?")){
+      var id=$(this).attr("data-id");
+      document.location.href="index.php?page=absences/delete.php&id="+id;
+    }
+  });
+  
+  
 });
 
 // Vérification des formulaires (ajouter et modifier)
@@ -133,19 +192,31 @@ function verif_absences(ctrl_form){
     return false;
 
   if($("select[name=motif] option:selected").attr("disabled")=="disabled"){
-    alert("Le motif sélectionné n'est pas valide.\nVeuillez le modifier s'il vous plaît.");
+    CJInfo("Le motif sélectionné n'est pas valide.\nVeuillez le modifier s'il vous plaît.","error");
     return false;
   }
   
   if($("select[name=motif]").val().toLowerCase()=="autre" || $("select[name=motif]").val().toLowerCase()=="other"){
     if($("input[name=motif_autre]").val()==""){
-      alert("Veuillez choisir un motif.");
+      CJInfo("Veuillez choisir un motif.","error");
       return false;
     }
   }
  
-  perso_id=document.form.perso_id.value;
+  // ID des agents
+  perso_ids=[];
+  $(".perso_ids_hidden").each(function(){
+    perso_ids.push($(this).val());
+  });
+
+  // Si aucun agent n'est sélectionné, on quitte en affichant "Veuillez sélectionner ..."
+  if(perso_ids.length<1){
+    CJInfo("Veuillez sélectionner un ou plusieurs agents","error");
+    return false;
+  }
+
   id=document.form.id.value;
+  var groupe = $("#groupe").val();
   debut=document.form.debut.value;
   fin=document.form.fin.value;
   fin=fin?fin:debut;
@@ -161,33 +232,56 @@ function verif_absences(ctrl_form){
 
   var admin=$("#admin").val();
   var retour=true;
+
   $.ajax({
     url: "absences/ajax.control.php",
     type: "get",
     datatype: "json",
-    data: {perso_id: perso_id, id: id, debut: debut, fin: fin},
+    data: {perso_ids: JSON.stringify(perso_ids), id: id, groupe: groupe, debut: debut, fin: fin},
     async: false,
     success: function(result){
       result=JSON.parse(result);
-      if(result["planningVide"]!=0){
-	information("Vous essayez de placer une absence sur un planning en cours d'élaboration","error");
-	retour=false;
+      
+      // Pour chaque agent
+      for(i in result){
+	// Contrôle s'il y a une autre absence enregistrée
+	if(result[i]["autreAbsence"]){
+	  if(perso_ids.length>1){
+	    var message="Une absence est déjà enregistrée pour l'agent "+result[i]["nom"]+" entre le "+result[i]["autreAbsence"]+"<br/>Veuillez modifier la liste des agents, les dates ou les horaires.";
+	  }else{
+	    var message="Une absence est déjà enregistrée pour l'agent "+result[i]["nom"]+" entre le "+result[i]["autreAbsence"]+"<br/>Veuillez modifier les dates ou les horaires.";
+	  }
+	  CJInfo(message,"error");
+	  retour=false;
+	}
+	
+	// Contrôle s'il apparaît dans des plannings validés
+	else if(result[i]["planning"]){
+	  if(admin==1){
+	    if(!confirm("L'agent "+result[i]["nom"]+" apparaît dans des plannings validés : "+result[i]["planning"]+"\nVoulez-vous continuer ?")){
+	      retour=false;
+	    }
+	  }
+	  else{
+	    CJInfo("Vous ne pouvez pas ajouter d'absences pour les dates suivantes<br/>car les plannings sont validés : "+result[i]["planning"]+"<br/>Veuillez modifier vos dates ou contacter le responsable du planning","error");
+	    retour=false;
+	  }
+	}
       }
-      else if(result["autreAbsence"]){
-	information("Une absence est déjà enregistrée pour cet agent entre le "+result["autreAbsence"]+"<br/>Veuillez modifier les dates et horaires.","error");
-	retour=false;
-      }
-      else if(result["planning"]){
+
+      // Contrôle si des plannings sont en cours d'élaboration
+      if(result["planningsEnElaboration"]){
 	if(admin==1){
-	  if(!confirm("Attention, l'agent sélectionné apparaît dans des plannings validés : "+result["planning"]+"\nVoulez vous continuer ?")){
+	  if(!confirm("Vous essayer de placer une absence sur des plannings en cours d'élaboration : "+result["planningsEnElaboration"]+"\nVoulez-vous continuer ?")){
 	    retour=false;
 	  }
 	}
 	else{
-	  information("Vous ne pouvez pas ajouter d'absences pour les dates suivantes<br/>car les plannings sont validés : "+result["planning"]+"<br/>Veuillez modifier vos dates ou contacter le responsable du planning","error");
+	  CJInfo("Vous essayez de placer une absence sur des plannings en cours d'élaboration : "+result["planningsEnElaboration"],"error");
 	  retour=false;
 	}
       }
+      
     },
     error: function(result){
       information("Une erreur est survenue.","error");
@@ -195,4 +289,30 @@ function verif_absences(ctrl_form){
     }
   });
   return retour;
+}
+
+
+// Alignement des icônes de suppression
+function absencesAligneSuppression(){
+  if($(".perso-drop").length){
+    var left=0;
+    $(".perso-drop").each(function(){
+      if($(this).position().left>left){
+	left=$(this).position().left;
+      }
+    });
+    
+    $(".perso-drop").css("position","absolute");
+    $(".perso-drop").css("left",left);
+  }
+}
+/**
+ * supprimeAgent
+ * supprime les agents de la sélection lors de l'ajout ou modification d'une absence
+ */
+function supprimeAgent(id){
+  $("#option"+id).show();
+  $("#li"+id).remove();
+  $("#hidden"+id).remove();
+  absencesAligneSuppression();
 }

@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Version 1.9.5
+/**
+Planning Biblio, Version 2.3.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/class.tableaux.php
 Création : mai 2011
-Dernière modification : 8 avril 2015
+Dernière modification : 28 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -28,6 +28,7 @@ class tableau{
   public $next=null;
   public $number=null;
   public $numbers=null;
+  public $supprime=null;
 
   public function deleteGroup(){
     if($this->id){
@@ -45,24 +46,32 @@ class tableau{
 
   public function deleteTab(){
     if($this->number){
-      $where=array("numero"=>$this->number);
+      $id=$this->number;
+      $where=array("tableau"=>$id);
+      $today=date("Y-m-d H:i:s");
+      $set=array("supprime"=>$today);
+      
+      $db=new db();
+      $db->query("UPDATE `{$GLOBALS['dbprefix']}pl_poste_tab_grp` SET `supprime`='$today' WHERE `Lundi`='$id' OR `Mardi`='$id' OR `Mercredi`='$id' OR `Jeudi`='$id' OR `Vendredi`='$id' OR `Samedi`='$id' OR `Dimanche`='$id';");
 
       $db=new db();
-      $db->delete2("pl_poste_horaires",$where);
-      $db=new db();
-      $db->delete2("pl_poste_cellules",$where);
-      $db=new db();
-      $db->delete2("pl_poste_lignes",$where);
-
-      $where=array("tableau"=>$this->number);
-      $db=new db();
-      $db->delete2("pl_poste_tab",$where);
+      $db->update2("pl_poste_tab",$set,$where);
     }
   }
 
+  /**
+   * fetchAll : retourne les tableaux enregistrés dans la base de données
+   * @param boolean $this->supprime : si true : affiche les tableaux supprimés lors de la dernière année, sinon, affiche les tableaux non-supprimés, default = false
+   * @return Array $this->elements
+   */
   public function fetchAll(){
     $db=new db();
-    $db->select2("pl_poste_tab");
+    if($this->supprime){
+      $date=date("Y-m-d H:i:s",strtotime("- 1 year"));
+      $db->select2("pl_poste_tab",null,array("supprime"=>">=$date"));
+    }else{
+      $db->select2("pl_poste_tab",null,array("supprime"=>null));
+    }
     $tab=$db->result;
     if(is_array($tab)){
       usort($tab,"cmp_nom");
@@ -72,7 +81,7 @@ class tableau{
 
   public function fetchAllGroups(){
     $db=new db();
-    $db->select2("pl_poste_tab_grp");
+    $db->select2("pl_poste_tab_grp",null,array("supprime"=>null));
     $tab=$db->result;
     if(is_array($tab)){
       usort($tab,"cmp_nom");
@@ -134,14 +143,17 @@ class tableau{
     $tabs=array();
     foreach($tableaux as $elem){
       // Initilisation des sous-tableaux et noms des sous-tableaux
-      $tabs[$elem]=array("nom"=>$elem,"titre"=>null,"horaires"=>array(),"lignes"=>array(),"cellules_grises"=>array());
+      $tabs[$elem]=array("nom"=>$elem,"titre"=>null,"classe"=>null,"horaires"=>array(),"lignes"=>array(),"cellules_grises"=>array());
 
       // Titres et lignes des sous-tableaux
       foreach($lignes as $ligne){
 	// Titres
 	if($ligne['tableau']==$elem and $ligne['type']=="titre"){
 	  $tabs[$elem]['titre']=$ligne['poste'];
-	// Lignes (postes et lignes de séparation
+	// Classes
+	}elseif($ligne['tableau']==$elem and $ligne['type']=="classe"){
+	  $tabs[$elem]['classe']=$ligne['poste'];
+	// Postes
 	}elseif($ligne['tableau']==$elem){
 	  $tabs[$elem]['lignes'][]=$ligne;
 	}

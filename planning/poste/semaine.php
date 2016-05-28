@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0.1
+Planning Biblio, Version 2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
-Dernière modification : 3 décembre 2015
+Dernière modification : 23 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -20,6 +20,7 @@ Cette page est appelée par la page index.php
 
 require_once "class.planning.php";
 require_once "planning/postes_cfg/class.tableaux.php";
+include_once "activites/class.activites.php";
 include_once "personnel/class.personnel.php";
 include "fonctions.php";
 
@@ -82,15 +83,6 @@ else{
   $autorisation=in_array(12,$droits)?true:false;
 }
 //		-----------------		FIN Vérification des droits de modification (Autorisation)	----------//
-// Catégories
-$categories=array();
-$db=new db();
-$db->select2("select_categories");
-if($db->result){
-  foreach($db->result as $elem){
-    $categories[$elem['id']]=$elem['valeur'];
-  }
-}
 
 $fin=$config['Dimanche']?6:5;
 
@@ -164,13 +156,55 @@ echo "</td><td id='td_boutons'>\n";
 
 //	----------------------------	Récupération des postes		-----------------------------//
 $postes=Array();
+
+// Récupération des activités pour appliquer les classes aux lignes postes en fonction de celles-ci
+$a=new activites();
+$a->fetch();
+$activites=$a->elements;
+
+// Récupération des catégories pour appliquer les classes aux lignes postes en fonction de celles-ci
+$categories=array();
 $db=new db();
-$db->select2("postes","*","1","ORDER BY `id`");
+$db->select2("select_categories");
 if($db->result){
   foreach($db->result as $elem){
-    $postes[$elem['id']]=Array("nom"=>$elem['nom'],"etage"=>$elem['etage'],"obligatoire"=>$elem['obligatoire'],"categories"=>is_serialized($elem['categories'])?unserialize($elem['categories']):array());
+    $categories[$elem['id']]=$elem['valeur'];
   }
 }
+
+// Récupération des postes
+$db=new db();
+$db->select2("postes","*","1","ORDER BY `id`");
+
+if($db->result){
+  foreach($db->result as $elem){
+    
+    // Classes CSS du poste
+    $classesPoste=array();
+
+    // Ajout des classes en fonction des activités
+    $activitesPoste=is_serialized($elem['activites'])?unserialize($elem['activites']):array();
+    foreach($activitesPoste as $a){
+      if($activites[$a]['classePoste']){
+	$classesPoste[]=$activites[$a]['classePoste'];
+      }
+    }
+    
+    // Ajout des classes de la ligne en fonction des catégories requises par le poste (A,B ou C)
+    $categoriesPoste=is_serialized($elem['categories'])?unserialize($elem['categories']):array();
+    foreach($categoriesPoste as $cat){
+      if(array_key_exists($cat,$categories)){
+	$classesPoste[]="tr_".str_replace(" ","",removeAccents(html_entity_decode($categories[$cat],ENT_QUOTES|ENT_IGNORE,"UTF-8")));
+      }
+    }
+    
+
+    // Tableau $postes
+    $postes[$elem['id']]=Array("nom"=>$elem['nom'], "etage"=>$elem['etage'], "obligatoire"=>$elem['obligatoire'], "classes"=>join(" ",$classesPoste));
+    
+  }
+}
+
 //	-----------------------		FIN Récupération des postes	-----------------------------//
 
 echo "<a href='javascript:print();' title='Imprimer le planning'><span class='pl-icon pl-icon-printer'></span></a>\n";
@@ -252,8 +286,9 @@ for($j=0;$j<=$fin;$j++){
       "ORDER BY `{$dbprefix}pl_poste`.`absent` desc,`{$dbprefix}personnel`.`nom`, `{$dbprefix}personnel`.`prenom`"); 
 
     global $cellules;
-    $cellules=$db->result;
-    
+    $cellules=$db->result?$db->result:array();
+    usort($cellules,"cmp_nom_prenom");
+  
     // Informations sur les congés
     if(in_array("conges",$plugins)){
       include "plugins/conges/planning_cellules.php";
@@ -275,7 +310,7 @@ for($j=0;$j<=$fin;$j++){
     $k=0;
     foreach($tabs as $tab){
       //		Lignes horaires
-      echo "<tr class='tr_horaires'>\n";
+      echo "<tr class='tr_horaires {$tab['classe']}'>\n";
       echo "<td class='td_postes'>{$tab['titre']}</td>\n";
       $colspan=0;
       foreach($tab['horaires'] as $horaires){
@@ -288,17 +323,12 @@ for($j=0;$j<=$fin;$j++){
       foreach($tab['lignes'] as $ligne){
 	if($ligne['type']=="poste" and $ligne['poste']){
 	  $classTD=$postes[$ligne['poste']]['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
-	  $classTR=array();
-	  if(!empty($postes[$ligne['poste']]['categories'])){
-	    foreach($postes[$ligne['poste']]['categories'] as $cat){
-	      if(array_key_exists($cat,$categories)){
-		$classTR[]="tr_".str_replace(" ","",removeAccents(html_entity_decode($categories[$cat],ENT_QUOTES|ENT_IGNORE,"UTF-8")));
-	      }
-	    }
-	  }
-	  $classTR=join(" ",$classTR);
 
-	  echo "<tr class='$classTR'><td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
+	  // Classe de la ligne en fonction des activités et des catégories
+	  $classTR=$postes[$ligne['poste']]['classes'];
+
+	  echo "<tr class='pl-line tableau$k $classTR {$tab['classe']}'>\n";
+	  echo "<td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
 	  if($config['Affichage-etages'] and $postes[$ligne['poste']]['etage']){
 	    echo " ({$postes[$ligne['poste']]['etage']})";
 	  }
@@ -318,10 +348,11 @@ for($j=0;$j<=$fin;$j++){
 	  echo "</tr>\n";
 	}
 	if($ligne['type']=="ligne"){
-	  echo "<tr class='tr_separation'>\n";
+	  echo "<tr class='tr_separation tableau$k {$tab['classe']}'>\n";
 	  echo "<td>{$lignes_sep[$ligne['poste']]}</td><td colspan='$colspan'>&nbsp;</td></tr>\n";
 	}
       }
+      echo "<tr class='tr_espace'><td>&nbsp;</td></tr>\n";
       $k++;
     }
     echo "</table>\n";

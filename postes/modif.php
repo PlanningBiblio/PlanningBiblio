@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 2.3.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : postes/modif.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 28 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -19,12 +19,14 @@ Soumission des formulaires à la page postes/valid.php
 */
 
 require_once "class.postes.php";
+require_once "activites/class.activites.php";
 
 // Initialisation des variables
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 
-$actList=new db();
-$actList->select2("activites","*","1","ORDER BY `nom`");
+$a=new activites();
+$a->fetch();
+$actList=$a->elements;
 
 //	Modification d'un poste
 if($id){
@@ -139,9 +141,9 @@ echo "<table>\n";
 echo "<tr style='vertical-align:top;'><td>";
 echo "Activités :";
 echo "</td><td>";
-if(is_array($actList->result)){
-  foreach($actList->result as $elem){
-    if($activites){
+if(!empty($actList)){
+  foreach($actList as $elem){
+    if(is_array($activites)){
       $checked=in_array($elem['id'],$activites)?"checked='checked'":"";
     }
     echo "<input type='checkbox' name='activites[]' value='{$elem['id']}' $checked/> {$elem['nom']}<br/>\n";

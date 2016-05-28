@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.2.3
+Planning Biblio, Version 2.3.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 5 novembre 2015
+Dernière modification : 18 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -23,7 +23,7 @@ Inclut à la fin le fichier footer.php
 session_start();
 
 // Version
-$version="2.2.3";
+$version="2.3.2";
 
 // Redirection vers setup si le fichier config est absent
 if(!file_exists("include/config.php")){
@@ -121,7 +121,12 @@ $_SESSION['droits']=$droits;
 $db=new db();
 $db->select2("acces","*",array("page"=>$page));
 
-echo "<div id='content'>\n";
+if($page=="planning/poste/index.php" or $page=="planning/poste/semaine.php"){
+  echo "<div id='content-planning'>\n";
+}else{
+  echo "<div id='content'>\n";
+}
+
 if(in_array($db->result[0]['groupe_id'],$droits)){
   include $page;
 }

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0.5
+Planning Biblio, Version 2.3.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 3 décembre 2015
+Dernière modification : 6 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -32,7 +32,10 @@ $quartDHeure=$config['heuresPrecision']=="quart-heure"?true:false;
 $a=new absences();
 $a->fetchById($id);
 
+$agents=$a->elements['agents'];
+$groupe=$a->elements['groupe'];
 $perso_id=$a->elements['perso_id'];
+$perso_ids=$a->elements['perso_ids'];
 $nom=$a->elements['nom'];
 $prenom=$a->elements['prenom'];
 $motif=$a->elements['motif'];
@@ -46,6 +49,7 @@ $valide=filter_var($a->elements['valideN2'],FILTER_SANITIZE_NUMBER_INT);
 $validation=$a->elements['validationN2'];
 $valideN1=$a->elements['valideN1'];
 $validationN1=$a->elements['validationN1'];
+
 // Pièces justificatives
 $pj1Checked=$a->elements['pj1']?"checked='checked'":null;
 $pj2Checked=$a->elements['pj2']?"checked='checked'":null;
@@ -131,17 +135,79 @@ if($config['Multisites-nombre']>1){
   }
 }
 
+// Liste des agents
+if($admin){
+  $db_perso=new db();
+  $db_perso->select2("personnel","*",array("supprime"=>0,"id"=>"<>2"),"order by nom,prenom");
+  $agents_tous=$db_perso->result?$db_perso->result:array();
+}
+
 echo "<h3>Modification de l'absence</h3>\n";
 echo "<form name='form' method='get' action='index.php' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");'>\n";
 echo "<input type='hidden' name='page' value='absences/modif2.php' />\n";
 echo "<input type='hidden' name='perso_id' value='$perso_id' />\n";		// nécessaire pour verif_absences
 echo "<input type='hidden' id='admin' value='".($admin?1:0)."' />\n";
+echo "<input type='hidden' name='groupe' id='groupe' value='$groupe' />\n";
 echo "<table class='tableauFiches'>\n";
-echo "<tr><td><label class='intitule'>Nom, Prénom</label></td><td>";
-echo $nom;
-echo "&nbsp;";
-echo $prenom;
-echo "</td></tr>\n";
+
+
+// Liste des agents absents (champs input[hidden])
+// Utile qu'on soit admin ou non, qu'il y est un absent ou plusieurs
+foreach($agents as $elem){
+  echo "<input type='hidden' name='perso_ids[]' value='{$elem['perso_id']}' id='hidden{$elem['perso_id']}' class='perso_ids_hidden'/>\n";
+}
+
+
+// Si admin, affiche les agents de l'absence et offre la possibilité d'en ajouter
+if($admin){
+  echo "<tr><td><label class='intitule'>Agent(s)</label></td><td>";
+  // TODO : afficher les agents de l'absences avec les croix de suppression : DONE
+  // TODO : cacher (.hide() pour pouvoir les remettre dans le menu si supprimés) les agents de l'abences dans le menu suivant : DONE
+  // TODO : tester ajout/suppression JS : DONE
+  // TODO : Aligner les croix de suppression : affichage en JS : DONE
+  // TODO : validation du formulaire avant envoi, contrôle des données
+  // TODO : validation des données (envoi formulaire) si admin/pas admin, absence unique/multiple
+  
+  // Liste des agents absents (Affichage de la liste)
+  echo "<ul id='perso_ul'>\n";
+  foreach($agents as $elem){
+    echo "<li id='li{$elem['perso_id']}' class='perso_ids_li' style='white-space: nowrap;'>{$elem['nom']} {$elem['prenom']}\n";
+    echo "<span class='perso-drop' style='margin-left:10px;' onclick='supprimeAgent({$elem['perso_id']});' >\n";
+    echo "<span class='pl-icon pl-icon-drop'></span></span></li>\n";
+  }
+  echo "</ul>\n";
+
+  // Menu déroulant
+  echo "<select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>\n";
+  echo "<option value='0' selected='selected'>-- Ajoutez un agent --</option>\n";
+  foreach($agents_tous as $elem){
+    $hidden=in_array($elem['id'],$perso_ids)?"style='display:none;'":null;
+    echo "<option value='".$elem['id']."' id='option{$elem['id']}' $hidden>".$elem['nom']." ".$elem['prenom']."</option>\n";
+  }
+  echo "</select>\n";
+
+  echo "</td></tr>\n";
+
+// Si pas admin : affiche l'agent ou la liste des agents de l'absences sans possibilité d'ajouter / supprimer
+}else{
+  if(count($agents)>1){
+    echo "<tr><td><label class='intitule'>Agents</label></td><td>";
+
+    // Liste des agents affichés
+    echo "<ul>\n";
+    foreach($agents as $elem){
+      echo "<li>{$elem['nom']}&nbsp;{$elem['prenom']}</li>\n";
+    }
+    echo "</ul>\n";
+    echo "</td></tr>\n";
+  }else{
+    echo "<tr><td><label class='intitule'>Agent</label></td><td>";
+    echo $nom;
+    echo "&nbsp;";
+    echo $prenom;
+    echo "</td></tr>\n";
+  }
+}
 echo "<tr><td>\n";
 echo "<label class='intitule'>Journée(s) entière(s)</label>\n";
 echo "</td><td>\n";
@@ -177,7 +243,7 @@ echo "<td style='white-space:nowrap;'>";
 echo "<select name='motif' style='width:100%;' class='ui-widget-content ui-corner-all'>\n";
 echo "<option value=''></option>\n";
 foreach($motifs as $elem){
-  $selected=$elem['valeur']==$motif?"selected='selected'":null;
+  $selected=html_entity_decode($elem['valeur'],ENT_QUOTES|ENT_IGNORE,"utf-8")==html_entity_decode($motif,ENT_QUOTES|ENT_IGNORE,"utf-8")?"selected='selected'":null;
   $class=$elem['type']==2?"padding20":"bold";
   $disabled=$elem['type']==1?"disabled='disabled'":null;
   echo "<option value='".$elem['valeur']."' $selected class='$class' $disabled >".$elem['valeur']."</option>\n";
@@ -233,7 +299,8 @@ EOD;
 
 echo "<tr><td colspan='2'><br/>\n";
 if($admin or ($valide==0 and $valideN1==0) or $config['Absences-validation']==0){
-  echo "<input type='button' class='ui-button' value='Supprimer' onclick='document.location.href=\"index.php?page=absences/delete.php&amp;id=$id\";'/>";
+//  echo "<input type='button' class='ui-button' value='Supprimer' onclick='document.location.href=\"index.php?page=absences/delete.php&amp;id=$id\";'/>";
+  echo "<input type='button' class='ui-button' value='Supprimer' id='absence-bouton-supprimer' data-id='$id'/>";
   echo "&nbsp;&nbsp;\n";
   echo "<input type='button' class='ui-button' value='Annuler' onclick='annuler(1);'/>\n";
   echo "&nbsp;&nbsp;\n";

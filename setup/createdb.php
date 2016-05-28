@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
@@ -72,13 +72,13 @@ if($dropDB){
 
 //	Création de l'utilisateur 
 if(!$user_exists){
-  $sql[]="CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$dbpass';";
+  $sql[]="CREATE USER '$dbuser'@'$dbhost' IDENTIFIED BY '$dbpass';";
 }
-$sql[]="GRANT USAGE ON `$dbname` . * TO '$dbuser'@'localhost' IDENTIFIED BY '$dbpass' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0 ;";
+$sql[]="GRANT USAGE ON `$dbname` . * TO '$dbuser'@'$dbhost' IDENTIFIED BY '$dbpass' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0 ;";
 
 //	Création de la base
 $sql[]="CREATE DATABASE IF NOT EXISTS `$dbname` ;";
-$sql[]="GRANT ALL PRIVILEGES ON `$dbname` . * TO '$dbuser'@'localhost';";
+$sql[]="GRANT ALL PRIVILEGES ON `$dbname` . * TO '$dbuser'@'$dbhost';";
 
 $sql[]="USE $dbname;";
 

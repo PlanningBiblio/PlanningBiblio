@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Version 1.9.5
+/**
+Planning Biblio, Version 2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/ajax.lignes.php
 Création : 3 février 2014
-Dernière modification : 9 avril 2015
+Dernière modification : 22 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -42,6 +42,10 @@ foreach($post as $key => $value){
     if(substr($tab[1],-5)=="Titre"){
       $type="titre";
       $tab[1]=substr($tab[1],0,-5);
+    }
+    elseif(substr($tab[1],-6)=="Classe"){
+      $type="classe";
+      $tab[1]=substr($tab[1],0,-6);
     }
     elseif(substr($value,-5)=="Ligne"){
       $type="ligne";

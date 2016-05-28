@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.3.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 11 avril 2015
+Dernière modification : 6 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -33,6 +33,7 @@ echo "<h3>Liste des absences</h3>\n";
 //	Initialisation des variables
 $only_me=null;
 $admin=in_array(1,$droits)?true:false;
+
 if(!$admin){
   $only_me=" AND `{$dbprefix}personnel`.`id`='{$_SESSION['login_id']}' ";
 }
@@ -81,6 +82,7 @@ if($config['Multisites-nombre']>1){
 }
 
 $a=new absences();
+$a->groupe=true;
 if($agents_supprimes){
   $a->agents_supprimes=array(0,1);
 }
@@ -147,7 +149,7 @@ if($admin or (!$config['Absences-adminSeulement'] and in_array(6,$droits))){
 echo "<th class='dataTableDateFR' >Début</th>\n";
 echo "<th class='dataTableDateFR-fin' >Fin</th>\n";
 if($admin){
-  echo "<th id='thNom'>Nom</th>\n";
+  echo "<th id='thNom'>Agents</th>\n";
 }
 if($config['Absences-validation']){
   echo "<th id='thValidation'>&Eacute;tat</th>\n";
@@ -190,7 +192,9 @@ if($absences){
     echo "<td>".dateFr($elem['debut'],true)."</td>";
     echo "<td>".datefr($elem['fin'],true)."</td>";
     if($admin){
-      echo "<td>{$elem['nom']} {$elem['prenom']}</td>";
+      echo "<td>";
+      echo implode($elem['agents'],", ");
+      echo "</td>\n";
     }
     if($config['Absences-validation']){
       echo "<td style='$etatStyle'>$etat</td>\n";

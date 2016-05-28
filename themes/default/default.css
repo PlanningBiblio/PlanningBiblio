@@ -1,12 +1,12 @@
-/*
-Planning Biblio, Version 2.1
+/**
+Planning Biblio, Version 2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 21 janvier 2015
+Dernière modification : 25 mars 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -49,6 +49,8 @@ h3{
 
 #auth, #auth input {
   color:#7D3C25;
+  text-align: left;
+
 }
 
 #auth-logo{
@@ -96,6 +98,22 @@ h3{
 
 #title{
   text-align:center;
+}
+
+#content{
+  margin-top: 10px;
+  padding: 80px 5px 5px 5px;
+}
+
+#content-auth{
+  margin-top: 10px;
+  padding: 40px 0 0 0;
+  text-align: center;
+}
+
+#content-planning{
+  margin-top: 10px;
+  padding: 40px 0 0 0;
 }
 
 #ferie,.ferie,.important {
@@ -269,11 +287,35 @@ h3{
 a.ejsmenu, a:hover.ejsmenu {font-size:16px; text-decoration:none; display:inline-block; width:100%;}
 a.ejsmenu2, a:hover.ejsmenu2 {font-size:16px; text-decoration:none;font-weight:bold;}
 
-td.menu_td:hover {		/* TD du menu top */
-	background:#FF5E0E;
+
+
+/* Menu top */
+.menu_ul{
+  margin:0px;
+  white-space: nowrap;
+  list-style: none;
 }
 
-td.menu_td2{				/* TD des sous menu top */
+.menu_li{
+  display: inline;
+  padding: 5px 15px;
+}
+
+.menu_li a, .menu_li a:hover{
+  font-size:13pt;
+}
+
+/* TD du menu top */
+li.menu_li:hover {
+  background:#FF5E0E;
+}
+
+/* TD des sous menu top */
+.menu_table{
+  margin-top: 15px;
+}
+
+td.menu_td2{
 	background:#FFFFFF;
 	height:20px;
 	text-align:center;
@@ -430,6 +472,7 @@ tr  | td .td_postes	|   td >				|   td >				|
     | [.td_renfort]	|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
     |			|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
     -----------------------------------------------------------------------------------------------------
+tr .tr_espace
 */
 
 /*	Catégories, lignes du planning, en fonction de la catégorie requise par le poste	*/
@@ -486,6 +529,17 @@ class cellule = cellule par défaut
   color:#FFFFFF;
   font-size:12pt;
   font-weight:bold;
+}
+
+/* tr_espace : permet d'ajouter un espace entre les tableaux : ex: display:block; height:20px; */
+.tr_espace{
+  display: none;
+  height:20px; 
+}
+
+#tabsemaine1 tr.tr_espace td,
+.tabsemaine1 tr.tr_espace td{
+  border: none;
 }
 
 .td_postes {
@@ -564,6 +618,16 @@ class cellule = cellule par défaut
 .menudiv-tr:hover{
   background:#CCCCCC;
 }
+
+/* Configuration des tableaux */
+.tableaux-cfg {
+  display: inline-block;
+  min-width:500px;
+  width: 30%;
+  vertical-align:top;
+  padding: 0 15px;
+}
+
 
 #tab_titre{	/* planning/poste/index.php */
   width:100%;
@@ -814,8 +878,13 @@ img{
   cursor:pointer;
 }
 
+#choix_tableaux{
+  margin: 20px 15px;
+}
+
 #choix_tableaux td{
   width:200px;
+  padding: 10px 0;
 }
 
 #choix_tableaux select{
@@ -964,6 +1033,7 @@ option.bold{
   margin:50px 30px 0 0;
   opacity:0.7;
   font-size:9pt;
+  width:100%;
 }
 
 /*	Congés	*/

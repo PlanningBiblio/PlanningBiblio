@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.2.3
+Planning Biblio, Version 2.3.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 27 février 2016
+Dernière modification : 28 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -102,6 +102,7 @@ class sendmail{
   public $to=null;
   public $subject=null;
   public $error="";
+  public $error_CJInfo=null;
   public $error_encoded=null;
   public $failedAddresses=array();
   public $successAddresses=array();
@@ -503,7 +504,9 @@ function cmp_03desc($a,$b){
 }
 
 function cmp_1($a,$b){
-  return $a[1] > $b[1];
+  $a[1]=html_entity_decode($a[1],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $b[1]=html_entity_decode($b[1],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  return strtolower($a[1]) > strtolower($b[1]);
 }
 
 function cmp_1desc($a,$b){
@@ -560,6 +563,17 @@ function cmp_nom_prenom_debut_fin($a,$b){
   return strtolower($a['nom']) > strtolower($b['nom']);
 }
 
+function cmp_prenom_nom($a,$b){
+  $a['nom']=html_entity_decode($a['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $b['nom']=html_entity_decode($b['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $a['prenom']=html_entity_decode($a['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $b['prenom']=html_entity_decode($b['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  if(strtolower($a['prenom']) == strtolower($b['prenom'])){
+    return strtolower($a['nom']) > strtolower($b['nom']);
+  }
+  return strtolower($a['prenom']) > strtolower($b['prenom']);
+}
+
 function cmp_debut_fin($a,$b){
   if($a['debut'] == $b['debut']){
     return $a['fin'] > $b['fin'];
@@ -608,6 +622,7 @@ function compte_jours($date1, $date2, $jours){
 
 function createURL($page){
   // Construction d'une URL
+  // Protocol et port
   $protocol = isset($_SERVER['HTTPS']) ? 'https' : 'http';
   $port=$_SERVER['SERVER_PORT'];
   if(($port==80 and $protocol=="http") or ($port==443 and $protocol=="https")){
@@ -615,8 +630,20 @@ function createURL($page){
   }else{
     $port=":".$port;
   }
-  $url="$protocol://{$_SERVER['SERVER_NAME']}{$port}".substr($_SERVER['REQUEST_URI'],0,strpos($_SERVER['REQUEST_URI'],"/",1));
-  $url.="/index.php?page=".$page;
+
+  // protocol + port + server_name
+  $url="$protocol://{$_SERVER['SERVER_NAME']}{$port}";
+
+  // folder
+  $dir=__DIR__;
+  $root=$_SERVER['DOCUMENT_ROOT'];
+
+  $folder=substr($dir,strlen($root));
+  $pos=strpos($folder,"/",1);
+  $folder=substr($folder,0,$pos);
+
+  // url complete
+  $url.=$folder."/index.php?page=".$page;
   return $url;
 }
 

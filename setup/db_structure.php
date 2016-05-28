@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.2
+Planning Biblio, Version 2.3.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 17 février 2016
+Dernière modification : 28 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -36,6 +36,7 @@ $sql[]="CREATE TABLE `{$dbprefix}absences` (
   `pj1` INT(1) DEFAULT 0,
   `pj2` INT(1) DEFAULT 0,
   `so` INT(1) DEFAULT 0,
+  `groupe` VARCHAR(14) NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
@@ -59,6 +60,9 @@ $sql[]="CREATE TABLE `{$dbprefix}acces` (
 $sql[]="CREATE TABLE `{$dbprefix}activites` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nom` text NOT NULL,
+  `classeAgent` VARCHAR(100) NULL DEFAULT NULL,
+  `classePoste` VARCHAR(100) NULL DEFAULT NULL,
+  `supprime` DATETIME NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
@@ -235,7 +239,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_lignes` (
   `tableau` int(11) NOT NULL,
   `ligne` int(11) NOT NULL,
   `poste` varchar(30) NOT NULL,
-  `type` enum('poste','ligne','titre') NOT NULL,
+  `type` enum('poste','ligne','titre','classe') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
@@ -267,6 +271,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_tab` (
   `tableau` int(20) NOT NULL,
   `nom` text NOT NULL,
   `site` INT(2) NOT NULL DEFAULT 1,
+  `supprime` TIMESTAMP NULL DEFAULT NULL ,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
@@ -289,6 +294,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_tab_grp` (
   `Samedi` INT,
   `Dimanche` INT,
   `site` INT(2) NOT NULL DEFAULT 1,
+  `supprime` TIMESTAMP NULL DEFAULT NULL ,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
@@ -319,6 +325,7 @@ $sql[]="CREATE TABLE `{$dbprefix}postes` (
   `bloquant` enum('0','1') DEFAULT '1',
   `site` INT(1) DEFAULT '1',
   `categories` TEXT NOT NULL DEFAULT '',
+  `supprime` DATETIME NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 

@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Version 2.0.2
+/**
+Planning Biblio, Version 2.3.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : postes/class.postes.php
 Création : 29 novembre 2012
-Dernière modification : 15 septembre 2015
+Dernière modification : 28 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -23,19 +23,27 @@ if(!isset($version)){
 
 class postes{
   public $id=null;
+  public $site=null;
 
   public function postes(){
   }
 
   public function delete(){
     $db=new db();
-    $db->delete2("postes",array("id"=>$this->id));
+    $db->update2("postes",array("supprime"=>"SYSDATE"),array("id"=>$this->id));
   }
 
   public function fetch($sort="nom",$name=null,$group=null){
+    $where=array("supprime"=>null);
+    
+    if($this->site){
+      $where["site"]=$this->site;
+    }
+
     //	Select All
     $db=new db();
-    $db->select("postes",null,null,"ORDER BY $sort");
+    $db->select2("postes",null,$where,"ORDER BY $sort");
+    
 
     $all=array();
     if($db->result){

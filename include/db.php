@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.3.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 22 janvier 2016
+Dernière modification : 28 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -245,23 +245,31 @@ class db{
     $tmp=array();
     $fields=array_keys($set);
     foreach($fields as $field){
-      if(!is_serialized($set[$field]))
-	$set[$field]=htmlentities($set[$field],ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
-      $set[$field]=mysqli_real_escape_string($this->conn,$set[$field]);
-      if(substr($set[$field],0,7)=="CONCAT("){
-	$tmp[]="`{$field}`={$set[$field]}";
+      // SET field = NULL
+      if($set[$field]===null){
+	$tmp[]="`{$field}`=NULL";
+      }
+      // SET field = SYSDATE()
+      elseif($set[$field]=="SYSDATE"){
+	$tmp[]="`{$field}`=SYSDATE()";
       }
       else{
-	$tmp[]="`{$field}`='{$set[$field]}'";
+	if(!is_serialized($set[$field]))
+	  $set[$field]=htmlentities($set[$field],ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
+	$set[$field]=mysqli_real_escape_string($this->conn,$set[$field]);
+	if(substr($set[$field],0,7)=="CONCAT("){
+	  $tmp[]="`{$field}`={$set[$field]}";
+	}
+	else{
+	  $tmp[]="`{$field}`='{$set[$field]}'";
+	}
       }
     }
     $set=join(",",$tmp);
     if(is_array($where)){
       $tmp=array();
       foreach($where as $key => $value){
-	$escapedValue=htmlentities($value,ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
-	$escapedValue=mysqli_real_escape_string($this->conn,$escapedValue);
-	$tmp[]="`$key`='$escapedValue'";
+	$tmp[]=$this->makeSearch($key,$value);
       }
       $where=join(" AND ",$tmp);
     }
@@ -359,7 +367,9 @@ class db{
 
   function makeSearch($key,$value){
     // Trim des valeurs et opérateurs
-    $value=trim($value);
+    if($value!==null){
+      $value=trim($value);
+    }
     // Par défaut, opérateur =
     $operator="=";
     
@@ -391,6 +401,11 @@ class db{
 
       return "{$key} IN ('$values')";
     }
+    
+    // NULL
+    elseif($value===null){
+      $operator=" IS NULL";
+    }
 
     // Opérateurs =, >, <, >=, <=, <>
     elseif(substr($value,0,2)==">="){
@@ -413,9 +428,14 @@ class db{
       $value=trim(substr($value,1));
     }
 
-    $value=htmlentities($value,ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
-    $value=$this->escapeString($value);
-    return "{$key}{$operator}'$value'";
+    if($value===null){
+      return "{$key}{$operator}";
+    }
+    else{
+      $value=htmlentities($value,ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
+      $value=$this->escapeString($value);
+      return "{$key}{$operator}'$value'";
+    }
   }
 
 

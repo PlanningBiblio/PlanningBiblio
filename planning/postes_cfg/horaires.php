@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.2.1
+Planning Biblio, Version 2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/horaires.php
 Création : mai 2011
-Dernière modification : 19 février 2016
+Dernière modification : 20 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -91,17 +91,14 @@ if($db->result){
 //	Affichage des horaires
 $quart=$config['heuresPrecision']=="quart-heure"?true:false;
 
+echo "<div style='min-height:350px;'>\n";
 echo "<form name='form2' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='planning/postes_cfg/modif.php' />\n";
-echo "<input type='hidden' name='cfg-type' value='horaires' />\n";
+echo "<input type='hidden' name='cfg-type' value='1' />\n";
 echo "<input type='hidden' name='numero' value='$tableauNumero' />\n";
 echo "<input type='hidden' name='action' value='modif' />\n";
-echo "<table><tr><td style='width:600px;'>";
+
 echo "<h3>Configuration des horaires</h3>\n";
-echo "</td><td style='text-align:right;'>\n";
-echo "<input type='button' value='Retour' class='ui-button retour'/>\n";
-echo "<input type='submit' value='Valider' class='ui-button'/>\n";
-echo "</td></tr></table>\n";
 
 $numero=0;	// Numéro du tableau (numéro affiché)
 if(!empty($tableaux)){
@@ -156,3 +153,5 @@ if(!empty($tableaux)){
 
 echo "</form>\n";
 ?>
+</div>
+<p class='important'>Important : Vous devez cliquer sur "Valider" avant de changer d'onglet</p>

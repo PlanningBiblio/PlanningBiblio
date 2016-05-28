@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 2.3.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 28 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Chritophe Le Guennec <christophe.leguennec@u-pem.fr>
 
@@ -30,31 +30,28 @@ $_SESSION['perso_actif']=$actif;
 
 <form name='form2' action='index.php' method='get'>
 <input type='hidden' name='page' value='personnel/index.php' />
-<table><tr valign='top'>
+<table style='margin-bottom:10px;'><tr style='vertical-align:center;'>
 <td style='width:270px;'>
-<h3>Liste des agents</h3>
+<h3 style='margin:0;'>Liste des agents</h3>
 </td><td>
-<br/>
 Voir les agents
 </td><td style='width:150px;'>
-<br/>
-<select name='actif' onchange='document.form2.submit();'>
+<select name='actif' onchange='document.form2.submit();'  class='ui-widget-content ui-corner-all'>
 <option value='Actif'>Service public</option>
 <option value='Inactif'>Administratif</option>
 <?php
-if(in_array(13,$droits)){
+if(in_array(21,$droits)){
   echo "<option value='Supprim&eacute;'>Supprim&eacute;</option>\n";
 }
 ?>
 </select>
 </td><td style='width:80px;'>
 </td><td>
-<br/>
 <?php
 if(in_array(21,$droits)){
-  echo "<input type='button' value='Ajouter' onclick='location.href=\"index.php?page=personnel/modif.php\";'/>\n";
+  echo "<input type='button' value='Ajouter' onclick='location.href=\"index.php?page=personnel/modif.php\";' class='ui-button'/>\n";
   if($config['LDAP-Host'] and $config['LDAP-Suffix']){
-    echo "<input type='button' value='Import LDAP' onclick='location.href=\"index.php?page=personnel/import.php\";'/>\n";
+    echo "<input type='button' value='Import LDAP' onclick='location.href=\"index.php?page=personnel/import.php\";' class='ui-button' style='margin-left:20px;'/>\n";
   }
 }
 ?>
@@ -75,17 +72,11 @@ $p->supprime=strstr($actif,"Supprim")?array(1):array(0);
 $p->fetch("nom,prenom",$actif);
 $agents=$p->elements;
 
-// tri par défaut du tableau
-$sort=in_array(13,$droits)?'[[2,"asc"],[3,"asc"]]':'[[1,"asc"],[2,"asc"]]';
-
 echo "<form name='form' method='post' action='index.php' onsubmit='return confirm(\"Etes vous sûr de vouloir supprimer les agents sélectionnés ?\");'>\n";
-echo "<table id='tableAgents' class='CJDataTable' data-sort='$sort' >\n";
+echo "<table id='tableAgents' class='CJDataTable' data-sort='[[1,\"asc\"],[2,\"asc\"]]' >\n";
 echo "<thead>\n";
 echo "<tr><th class='dataTableNoSort aLeft' ><input type='checkbox' class='CJCheckAll'/></th>\n";
 
-if(in_array(13,$droits)){
-  echo "<th>ID</th>";
-}
 echo "<th>Nom</th>";
 echo "<th>Pr&#233;nom</th>";
 echo "<th class='dataTableHeureFR'>Heures</th>";
@@ -121,9 +112,6 @@ foreach($agents as $agent){
     echo "<a href='javascript:popup(\"personnel/suppression.php&amp;id=".$id."\",450,250);'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>";
   }
   echo "</td>";
-  if(in_array(13,$droits)){
-    echo "<td>$id</td>";
-  }
   echo "<td>{$agent['nom']}</td>";
   echo "<td>{$agent['prenom']}</td>";
   echo "<td>$heures</td>";

@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Version 1.9.4
+/**
+Planning Biblio, Version 2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/modif.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 20 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -30,13 +30,6 @@ $tableauGet=filter_input(INPUT_GET,"numero",FILTER_SANITIZE_NUMBER_INT);
 if($tableauGet){
   $tableauNumero=$tableauGet;
 }
-if(!$tableauNumero and in_array("cfg_num",$_SESSION)){
-  $tableauNumero=$_SESSION['cfg_num'];
-}
-if(!$tableauNumero and !in_array("cfg_num",$_SESSION)){
-  $tableauNumero="1";
-}
-$_SESSION['cfg_num']=$tableauNumero;
 
 // Choix de l'onglet (cfg-type)
 if($cfgTypeGet){
@@ -46,7 +39,7 @@ if(!$cfgType and in_array("cfg_type",$_SESSION)){
   $cfgType=$_SESSION['cfg_type'];
 }
 if(!$cfgType and !in_array("cfg_type",$_SESSION)){
-  $cfgType="tableaux";
+  $cfgType="infos";
 }
 $_SESSION['cfg_type']=$cfgType;
 
@@ -55,28 +48,25 @@ $db->select2("pl_poste_tab","*",array("tableau"=>$tableauNumero));
 $tableauNom=$db->result[0]['nom'];
 
 // Affichage
-echo "<h3>Configuration du tableau &quot;$tableauNom&quot;</h3>\n";
-echo "<div id='tabs' class='ui-tabs'>\n";
-echo "<ul>\n";
-if($config['Multisites-nombre']>1){
-  echo "<li><a href='#div_site' id='site'>Site</a></li>\n";
+if(!$tableauNumero){
+  echo "<h3>Nouveau tableau</h3>\n";
+}else{
+  echo "<h3>Configuration du tableau &quot;$tableauNom&quot;</h3>\n";
 }
-echo "<li><a href='#div_tableaux' id='tableaux'>Nombre de tableaux</a></li>\n";
+
+echo "<div id='tabs' class='ui-tabs' data-active='$cfgType'>\n";
+echo "<ul>\n";
+echo "<li><a href='#div_infos' id='infos'>Infos générales</a></li>\n";
 echo "<li><a href='#div_horaires' id='horaires'>Horaires</a></li>\n";
 echo "<li><a href='#div_lignes' id='lignes'>Lignes</a></li>\n";
+echo "<li class='ui-tab-cancel'><a href='index.php?page=planning/postes_cfg/index.php' >Retour</a></li>\n";
+echo "<li class='ui-tab-submit'><a href='javascript:tableauxInfos();' class='tableaux-valide'>Valider</a></li>\n";
+
 echo "</ul>\n";
 
-// Onglet Site
-if($config['Multisites-nombre']>1){
-  echo "<div id='div_site'>\n";
-  include "site.php";
-  echo "</div>\n";
-}
-
-// Onglet Tableaux
-$displayTableaux=$config['Multisites-nombre']>1?"style='display:none;'":null;
-echo "<div id='div_tableaux' $displayTableaux >\n";
-include "tableaux.php";
+// Onglet Infos générales
+echo "<div id='div_infos'>\n";
+include "infos.php";
 echo "</div>\n";
 
 // Onglet Horaires
@@ -91,20 +81,3 @@ echo "</div>\n";
 
 echo "</div>\n";
 ?>
-
-<!-- Initialisation des onglets, lien retour et affichage d'informations -->
-<script type='text/JavaScript'>
-$(".retour").click(function(){
-  document.location.href="index.php?page=planning/postes_cfg/index.php";
-});
-
-<?php
-if($cfgType){
-  echo <<<EOD
-    $(document).ready(function(){
-      $("#div_{$cfgType}").click();
-    });
-EOD;
-}
-?>
-</script>

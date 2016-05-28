@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.1
+Planning Biblio, Version 2.3.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/lignes.php
 Création : mai 2011
-Dernière modification : 4 février 2015
+Dernière modification : 27 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -19,16 +19,15 @@ Page incluse dans le fichier "planning/postes_cfg/modif.php"
 */
 
 require_once "class.tableaux.php";
+require_once "postes/class.postes.php";
 
 // Liste des postes
-$reqSite=null;
+$p=new postes();
 if($config['Multisites-nombre']>1){
-  $reqSite="`site`='$site'";
+  $p->sites=$site;
 }
-
-$db=new db();
-$db->select("postes",null,$reqSite,"ORDER BY nom");
-$postes=$db->result;
+$p->fetch("nom");
+$postes=$p->elements;
 
 // Liste des lignes de séparation
 $db=new db();
@@ -43,24 +42,23 @@ $t->get();
 $tabs=$t->elements;
 
 // Affichage du tableau :
+
+echo "<div style='min-height:350px;'>\n";
 echo "<form name='form4' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='planning/postes_cfg/modif.php' />\n";
 echo "<input type='hidden' name='cfg-type' value='lignes' />\n";
 echo "<input type='hidden' name='numero' value='$tableauNumero' />\n";
-echo "<table><tr><td style='width:600px;'>";
+
 echo "<h3>Configuration des lignes</h3>\n";
-echo "</td><td style='text-align:right;'>\n";
-echo "<input type='button' value='Retour' class='ui-button retour'/>\n";
-echo "<input type='button' name='valid' value='Valider' class='ui-button' onclick='configLignes();'/>\n";
-echo "</td></tr></table>\n";
 
 if($tableauNumero){
-  echo "<table style='width:1250px;' cellspacing='0' cellpadding='0' border='1' >\n";
+  echo "<table style='min-width:1250px; width:100%;' cellspacing='0' cellpadding='0' border='1' >\n";
   foreach($tabs as $tab){
     // Lignes Titre et Horaires
     echo "<tr class='tr_horaires' style='text-align:center;'>\n";
-    echo "<td style='white-space:nowrap;'>\n";
-    echo "<input type='text' name='select_{$tab['nom']}Titre_0' class='tr_horaires select_titre' style='text-align:center;width:220px;' value='{$tab['titre']}'/>\n";
+    echo "<td style='white-space:nowrap;text-align:left;'>\n";
+    echo "Titre <input type='text' name='select_{$tab['nom']}Titre_0' class='tr_horaires select_titre' style='text-align:center;white-space:nowrap;' value='{$tab['titre']}'/>&nbsp;\n";
+    echo "Classe<sup>*</sup> <input type='text' name='select_{$tab['nom']}Classe_0' class='tr_horaires select_titre' style='text-align:center;width:120px;' value='{$tab['classe']}'/>\n";
     echo "<a href='javascript:ajout(\"select_{$tab["nom"]}_\",-1);'><span class='pl-icon pl-icon-add' title='Ajouter'></span></a></td>\n";
     $colspan=0;
     foreach($tab['horaires'] as $horaire){
@@ -82,13 +80,19 @@ if($tableauNumero){
       if(is_array($postes)){
 	foreach($postes as $poste){
 	  $class=$poste['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
-	  $selected=($tab['lignes'][$i] and $tab['lignes'][$i]['type']=="poste" and $poste['id']==$tab['lignes'][$i]['poste'])?"selected='selected'":null;
+	  $selected=null;
+	  if(array_key_exists($i,$tab['lignes'])){
+	    $selected=($tab['lignes'][$i] and $tab['lignes'][$i]['type']=="poste" and $poste['id']==$tab['lignes'][$i]['poste'])?"selected='selected'":null;
+	  }
 	  echo "<option value='{$poste['id']}' $selected class='$class'>{$poste['nom']} ({$poste['etage']})</option>\n";
 	}
       }
       // Les lignes de séparation
       foreach($lignes_sep as $ligne_sep){
-	$selected=($tab['lignes'][$i]['type']=="ligne" and $ligne_sep['id']==$tab['lignes'][$i]['poste'])?"selected='selected'":null;
+	$selected=null;
+	if(array_key_exists($i,$tab['lignes'])){
+	  $selected=($tab['lignes'][$i]['type']=="ligne" and $ligne_sep['id']==$tab['lignes'][$i]['poste'])?"selected='selected'":null;
+	}
 	echo "<option value='{$ligne_sep['id']}Ligne' class='tr_horaires' $selected style='font-weight:normal;'>{$ligne_sep['nom']}</option>\n";
       }
       echo "</select>&nbsp;&nbsp;\n";
@@ -114,11 +118,19 @@ if($tableauNumero){
       echo "<td id='td_select_{$tab['nom']}_$i' colspan='$colspan' style='display:none;'>\n";
       echo "</tr>\n"; 
     }
+    echo "<tr class='tr_espace'><td></td></tr>\n";
   }
   echo "</table>\n";
 }
 echo "</form>\n";
+echo "</div>\n";
 ?>
+
+<div class='highlight' style='margin-top:40px;'>
+<p style='margin-left:30px;'>
+<sup>* Classe CSS appliqu&eacute;e sur le tableau. Permet d'en personnaliser l&apos;affichage.</sup><br/>
+</p>
+</div>
 
 <script type='text/JavaScript'>
 // Applique la même class que l'option selectionnée au select et au td pour chaque select poste lors du chargement
@@ -174,11 +186,11 @@ function configLignes(){
     type: "post",
     data: data,
     success: function(){
-      information("Le tableau a été enregistré","highlight");
+      CJInfo("Le tableau a été enregistré","highlight");
       return true;
     },
     error: function(){
-      information("Une erreur est survenue lors de l'enregistrement du tableau.","error");
+      CJInfo("Une erreur est survenue lors de l'enregistrement du tableau.","error");
       return false;
     }
   });

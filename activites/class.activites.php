@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.3.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : activites/class.activites.php
 Création : mai 2011
-Dernière modification : 8 avril 2015
+Dernière modification : 28 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -22,34 +22,38 @@ if(!isset($version)){
 
 class activites{
   public $id=null;
+  public $elements=array();
+  public $deleted=null;
 
   public function activites(){
   }
 
   public function delete(){
     $db=new db();
-    $db->delete2("activites",array("id"=>$this->id));
+    $db->update2("activites",array("supprime"=>"SYSDATE"),array("id"=>$this->id));
   }
 
-  public function fetch($sort="nom",$name=null){
-    //	Select All Activities
+  public function fetch(){
+    $activites=array();
     $db=new db();
-    $db->select("activites",null,null,"ORDER BY $sort");
-    $all=$db->result;
-
-    //	By default $result=$all
-    $result=$all;
-
-    //	If name, keep only matching results
-    if(is_array($all) and $name){
-      $result=array();
-      foreach($all as $elem){
-	if(pl_stristr($elem['nom'],$name)){
-	  $result[]=$elem;
-	}
-      }
+    if($this->deleted){
+      $db->select2("activites");
+    }else{
+      $db->select2("activites",null,array("supprime"=>null));
     }
-    $this->elements=$result;
+      
+    if($db->result){
+      $activites=$db->result;
+    }
+    
+    usort($activites,"cmp_nom");
+    
+    $tmp=array();
+    foreach($activites as $elem){
+      $tmp[$elem['id']]=$elem;
+    }
+    $activites=$tmp;
+    $this->elements=$activites;
   }
 
 }

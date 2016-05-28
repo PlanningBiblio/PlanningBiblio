@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.3.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 8 janvier 2016
+Dernière modification : 6 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -36,6 +36,25 @@ $motif_autre=trim(filter_input(INPUT_GET,"motif_autre",FILTER_SANITIZE_STRING));
 $nbjours=filter_input(INPUT_GET,"nbjours",FILTER_SANITIZE_NUMBER_INT);
 $perso_id=filter_input(INPUT_GET,"perso_id",FILTER_SANITIZE_NUMBER_INT);
 $valide=filter_input(INPUT_GET,"valide",FILTER_SANITIZE_NUMBER_INT);
+
+$perso_ids=array();
+// Absence unique
+if($perso_id and $perso_id>0){
+  $perso_ids[]=$perso_id;
+}
+
+// Absences multiples
+if(isset($_GET["perso_ids"])){
+  $perso_ids_get=filter_var_array($_GET["perso_ids"],FILTER_SANITIZE_NUMBER_INT);
+  if(is_array($perso_ids_get)){
+    $tmp=array();
+    foreach($perso_ids_get as $elem){
+      if($elem){
+	$perso_ids[]=(int) $elem;
+      }
+    }
+  }
+}
 
 // Pièces justificatives
 $pj1=filter_input(INPUT_GET,"pj1",FILTER_CALLBACK,array("options"=>"sanitize_on01"));
@@ -66,7 +85,7 @@ echo <<<EOD
 EOD;
 
 // Enregitrement de l'absence
-if($confirm){
+if($confirm and !empty($perso_ids)){
   $fin=$fin?$fin:$debut;
   $finSQL=dateSQL($fin);
   $valideN1=0;
@@ -108,18 +127,6 @@ if($confirm){
     }
   }
 
-  $a=new absences();
-  $a->getResponsables($debutSQL,$finSQL,$perso_id);
-  $responsables=$a->responsables;
-
-  // Informations sur l'agent
-  $p=new personnel();
-  $p->fetchById($perso_id);
-  $nom=$p->elements[0]['nom'];
-  $prenom=$p->elements[0]['prenom'];
-  $mail=$p->elements[0]['mail'];
-  $mailsResponsables=$p->elements[0]['mailsResponsables'];
-
   // Choix des destinataires des notifications selon le degré de validation
   $notifications=1;
   if($config['Absences-validation'] and $valideN1!=0){
@@ -129,119 +136,145 @@ if($confirm){
     $notifications=4;
   }
 
-  // Choix des destinataires des notifications selon la configuration
-  $a=new absences();
-  $a->getRecipients($notifications,$responsables,$mail,$mailsResponsables);
-  $destinataires=$a->recipients;
-
+  // Formatage des dates/heures de début/fin pour les requêtes SQL
   $debut_sql=$debutSQL." ".$hre_debut;
   $fin_sql=$finSQL." ".$hre_fin;
 
-  // Ajout de l'absence dans la table 'absence'
-  $insert=array("perso_id"=>$perso_id, "debut"=>$debut_sql, "fin"=>$fin_sql, "nbjours"=>$nbjours, "motif"=>$motif, 
-    "motif_autre"=>$motif_autre, "commentaires"=>$commentaires, "demande"=>date("Y-m-d H:i:s"), "pj1"=>$pj1, "pj2"=>$pj2, "so"=>$so );
-
-  if($valideN1!=0){
-    $insert["valideN1"]=$valideN1;
-    $insert["validationN1"]=$validationN1;
-  }
-  else{
-    $insert["valide"]=$valideN2;
-    $insert["validation"]=$validation;
-  }
-
-  $db=new db();
-  $db->insert2("absences", $insert);
-
-  // Récupération de l'ID de l'absence enregistrée pour la création du lien dans le mail
-  $info=array(array("name"=>"MAX(id)","as"=>"id"));
-  $where=array("debut"=>$debut_sql, "fin"=>$fin_sql, "perso_id"=>$perso_id);
-  $db=new db();
-  $db->select2("absences",$info,$where);
-  if($db->result){
-    $id=$db->result[0]['id'];
-  }
-
-  // Mise à jour du champs 'absents' dans 'pl_poste'
-  if($valideN2>0){
-    $db=new db();
-    $debut_sql=$db->escapeString($debut_sql);
-    $fin_sql=$db->escapeString($fin_sql);
-    $perso_id=$db->escapeString($perso_id);
-    $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1' WHERE
-      CONCAT(`date`,' ',`debut`) < '$fin_sql' AND CONCAT(`date`,' ',`fin`) > '$debut_sql'
-      AND `perso_id`='$perso_id'";
-    $db->query($req);
-  }
-  
-  // Recherche des plages de SP concernées pour ajouter cette information dans le mail.
-  $a=new absences();
-  $a->debut=$debut_sql;
-  $a->fin=$fin_sql;
-  $a->perso_id=$perso_id;
-  $a->infoPlannings();
-  $infosPlanning=$a->message;
-
-  // Titre différent si titre personnalisé (config) ou si validation ou non des absences (config)
-  if($config['Absences-notifications-titre']){
-    $titre=$config['Absences-notifications-titre'];
-  }else{
-    $titre=$config['Absences-validation']?"Nouvelle demande d absence":"Nouvelle absence";
-  }
-
-  // Si message personnalisé (config), celui-ci est inséré
-  if($config['Absences-notifications-message']){
-    $message="<b><u>{$config['Absences-notifications-message']}</u></b><br/>";
-  }else{
-    $message="<b><u>$titre</u></b> : ";
-  }
-
-  // On complète le message avec les informations de l'absence
-  $message.="<ul><li>Agent : <strong>$prenom $nom</strong></li>";
-  $message.="<li>Début : <strong>$debut";
-  if($hre_debut!="00:00:00")
-    $message.=" ".heure3($hre_debut);
-  $message.="</strong></li><li>Fin : <strong>$fin";
-  if($hre_fin!="23:59:59")
-    $message.=" ".heure3($hre_fin);
-  $message.="</strong></li><li>Motif : $motif";
-  if($motif_autre){
-    $message.=" / $motif_autre";
-  }
-  $message.="</li>";
-
-  if($config['Absences-validation']){
-    $message.="<li>Validation : <br/>\n";
-    $message.=$validationText;
-    $message.="</li>\n";
-  }
-
-  if($commentaires){
-    $message.="<li>Commentaire: <br/>$commentaires</li>";
-  }
-
-  $message.="</ul>";
-
-  // Ajout des informations sur les plannings
-  $message.=$infosPlanning;
-  
-  // Ajout du lien permettant de rebondir sur l'absence
-  $url=createURL("absences/modif.php&id=$id");
-  $message.="<p>Lien vers la demande d&apos;absence :<br/><a href='$url'>$url</a></p>";
-
-  // Envoi du mail
-  $m=new sendmail();
-  $m->subject=$titre;
-  $m->message=$message;
-  $m->to=$destinataires;
-  $m->send();
-
-  // Si erreur d'envoi de mail, affichage de l'erreur
+  // Si erreur d'envoi de mail, affichage de l'erreur (Initialisation des variables)
   $msg2=null;
   $msg2Type=null;
-  if($m->error){
-    $msg2=urlencode($m->error_CJInfo);
-    $msg2Type="error";
+
+  // ID du groupe (permet de regrouper les informations pour affichage en une seule ligne et modification du groupe)
+  if(count($perso_ids)>1){
+    $groupe=time()."-".rand(100,999);
+  }else{
+    $groupe=null;
+  }
+
+  // Pour chaque agents
+  foreach($perso_ids as $perso_id){
+    // Recherche du responsables pour l'envoi de notifications
+    $a=new absences();
+    $a->getResponsables($debutSQL,$finSQL,$perso_id);
+    $responsables=$a->responsables;
+
+    // Informations sur l'agent
+    $p=new personnel();
+    $p->fetchById($perso_id);
+    $nom=$p->elements[0]['nom'];
+    $prenom=$p->elements[0]['prenom'];
+    $mail=$p->elements[0]['mail'];
+    $mailsResponsables=$p->elements[0]['mailsResponsables'];
+
+    // Choix des destinataires des notifications selon la configuration
+    $a=new absences();
+    $a->getRecipients($notifications,$responsables,$mail,$mailsResponsables);
+    $destinataires=$a->recipients;
+
+    // Ajout de l'absence dans la table 'absence'
+    $insert=array("perso_id"=>$perso_id, "debut"=>$debut_sql, "fin"=>$fin_sql, "nbjours"=>$nbjours, "motif"=>$motif, "motif_autre"=>$motif_autre, "commentaires"=>$commentaires, 
+    "demande"=>date("Y-m-d H:i:s"), "pj1"=>$pj1, "pj2"=>$pj2, "so"=>$so, "groupe"=>$groupe);
+
+    if($valideN1!=0){
+      $insert["valideN1"]=$valideN1;
+      $insert["validationN1"]=$validationN1;
+    }
+    else{
+      $insert["valide"]=$valideN2;
+      $insert["validation"]=$validation;
+    }
+
+    $db=new db();
+    $db->insert2("absences", $insert);
+
+    // Récupération de l'ID de l'absence enregistrée pour la création du lien dans le mail
+    $info=array(array("name"=>"MAX(id)","as"=>"id"));
+    $where=array("debut"=>$debut_sql, "fin"=>$fin_sql, "perso_id"=>$perso_id);
+    $db=new db();
+    $db->select2("absences",$info,$where);
+    if($db->result){
+      $id=$db->result[0]['id'];
+    }
+
+    // Mise à jour du champs 'absents' dans 'pl_poste'
+    if($valideN2>0){
+      $db=new db();
+      $debut_sql=$db->escapeString($debut_sql);
+      $fin_sql=$db->escapeString($fin_sql);
+      $perso_id=$db->escapeString($perso_id);
+      $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1' WHERE
+	CONCAT(`date`,' ',`debut`) < '$fin_sql' AND CONCAT(`date`,' ',`fin`) > '$debut_sql'
+	AND `perso_id`='$perso_id'";
+      $db->query($req);
+    }
+    
+    // Recherche des plages de SP concernées pour ajouter cette information dans le mail.
+    $a=new absences();
+    $a->debut=$debut_sql;
+    $a->fin=$fin_sql;
+    $a->perso_ids=$perso_ids;
+    $a->infoPlannings();
+    $infosPlanning=$a->message;
+
+    // Titre différent si titre personnalisé (config) ou si validation ou non des absences (config)
+    if($config['Absences-notifications-titre']){
+      $titre=$config['Absences-notifications-titre'];
+    }else{
+      $titre=$config['Absences-validation']?"Nouvelle demande d absence":"Nouvelle absence";
+    }
+
+    // Si message personnalisé (config), celui-ci est inséré
+    if($config['Absences-notifications-message']){
+      $message="<b><u>{$config['Absences-notifications-message']}</u></b><br/>";
+    }else{
+      $message="<b><u>$titre</u></b> : ";
+    }
+
+    // On complète le message avec les informations de l'absence
+    $message.="<ul><li>Agent : <strong>$prenom $nom</strong></li>";
+    $message.="<li>Début : <strong>$debut";
+    if($hre_debut!="00:00:00")
+      $message.=" ".heure3($hre_debut);
+    $message.="</strong></li><li>Fin : <strong>$fin";
+    if($hre_fin!="23:59:59")
+      $message.=" ".heure3($hre_fin);
+    $message.="</strong></li><li>Motif : $motif";
+    if($motif_autre){
+      $message.=" / $motif_autre";
+    }
+    $message.="</li>";
+
+    if($config['Absences-validation']){
+      $message.="<li>Validation : <br/>\n";
+      $message.=$validationText;
+      $message.="</li>\n";
+    }
+
+    if($commentaires){
+      $message.="<li>Commentaire: <br/>$commentaires</li>";
+    }
+
+    $message.="</ul>";
+
+    // Ajout des informations sur les plannings
+    $message.=$infosPlanning;
+    
+    // Ajout du lien permettant de rebondir sur l'absence
+    $url=createURL("absences/modif.php&id=$id");
+    $message.="<p>Lien vers la demande d&apos;absence :<br/><a href='$url'>$url</a></p>";
+
+    // Envoi du mail
+    $m=new sendmail();
+    $m->subject=$titre;
+    $m->message=$message;
+    $m->to=$destinataires;
+    $m->send();
+
+    // Si erreur d'envoi de mail
+    if($m->error){
+      $msg2.="<li>".$m->error_CJInfo."</li>";
+      $msg2Type="error";
+    }
   }
 
   // Confirmation de l'enregistrement
@@ -250,11 +283,25 @@ if($confirm){
   }else{
     $msg="L&apos;absence a &eacute;t&eacute; enregistr&eacute;e";
   }
-
   $msg=urlencode($msg);
+
+  // Si erreur d'envoi de mail
+  if($msg2Type){
+    $msg2=urlencode("<ul>".$msg2."</ul>");
+  }
+  
   echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
+
 }
-else{					//	Formulaire
+// Formulaire
+else{
+  // Liste des agents
+  if($admin){
+    $db_perso=new db();
+    $db_perso->select2("personnel","*",array("supprime"=>0,"id"=>"<>2"),"order by nom,prenom");
+    $agents=$db_perso->result?$db_perso->result:array();
+  }
+  
   echo "<form name='form' action='index.php' method='get' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");' >\n";
   echo "<input type='hidden' name='page' value='absences/ajouter.php' />\n";
   echo "<input type='hidden' name='menu' value='$menu' />\n";
@@ -262,22 +309,22 @@ else{					//	Formulaire
   echo "<input type='hidden' id='admin' value='".($admin?1:0)."' />\n";
   echo "<table class='tableauFiches'>\n";
   echo "<tr><td>\n";
-  echo "<label class='intitule'>Nom, prénom </label></td>\n";
+  if($admin){
+    echo "<label class='intitule'>Agent(s)</label></td>\n";
+  }else{
+    echo "<label class='intitule'>Agent</label></td>\n";
+  }
   echo "<td>\n";
   if($admin){
-    $db_perso=new db();
-    $db_perso->select2("personnel","*",array("supprime"=>0),"order by nom,prenom");
-    echo "<select name='perso_id' class='ui-widget-content ui-corner-all'>\n";
-    foreach($db_perso->result as $elem){
-      if($perso_id==$elem['id'])
-	echo "<option value='".$elem['id']."' selected='selected'>".$elem['nom']." ".$elem['prenom']."</option>\n";
-      else
-	echo "<option value='".$elem['id']."'>".$elem['nom']." ".$elem['prenom']."</option>\n";
+    echo "<select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>\n";
+    echo "<option value='0' selected='selected'>-- Ajoutez un agent --</option>\n";
+    foreach($agents as $elem){
+      echo "<option value='".$elem['id']."' id='option{$elem['id']}'>".$elem['nom']." ".$elem['prenom']."</option>\n";
     }
-    echo "</select>\n";
+    echo "</select>\n";    
   }
   else{
-    echo "<input type='hidden' name='perso_id' value='{$_SESSION['login_id']}' />\n";
+    echo "<input type='hidden' name='perso_id' value='{$_SESSION['login_id']}' class='perso_ids_hidden' />\n";
     echo $_SESSION['login_nom']." ".$_SESSION['login_prenom'];
   }
   echo "</td></tr>\n";
