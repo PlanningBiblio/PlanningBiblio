@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.1
+Planning Biblio, Version 2.3.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 6 mai 2016
+Dernière modification : 28 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -504,7 +504,9 @@ function cmp_03desc($a,$b){
 }
 
 function cmp_1($a,$b){
-  return $a[1] > $b[1];
+  $a[1]=html_entity_decode($a[1],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  $b[1]=html_entity_decode($b[1],ENT_QUOTES|ENT_IGNORE,"utf-8");
+  return strtolower($a[1]) > strtolower($b[1]);
 }
 
 function cmp_1desc($a,$b){

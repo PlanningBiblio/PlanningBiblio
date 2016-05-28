@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3
+Planning Biblio, Version 2.3.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/lignes.php
 Création : mai 2011
-Dernière modification : 25 mars 2016
+Dernière modification : 27 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -19,16 +19,15 @@ Page incluse dans le fichier "planning/postes_cfg/modif.php"
 */
 
 require_once "class.tableaux.php";
+require_once "postes/class.postes.php";
 
 // Liste des postes
-$reqSite=null;
+$p=new postes();
 if($config['Multisites-nombre']>1){
-  $reqSite="`site`='$site'";
+  $p->sites=$site;
 }
-
-$db=new db();
-$db->select("postes",null,$reqSite,"ORDER BY nom");
-$postes=$db->result;
+$p->fetch("nom");
+$postes=$p->elements;
 
 // Liste des lignes de séparation
 $db=new db();
@@ -81,13 +80,19 @@ if($tableauNumero){
       if(is_array($postes)){
 	foreach($postes as $poste){
 	  $class=$poste['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
-	  $selected=($tab['lignes'][$i] and $tab['lignes'][$i]['type']=="poste" and $poste['id']==$tab['lignes'][$i]['poste'])?"selected='selected'":null;
+	  $selected=null;
+	  if(array_key_exists($i,$tab['lignes'])){
+	    $selected=($tab['lignes'][$i] and $tab['lignes'][$i]['type']=="poste" and $poste['id']==$tab['lignes'][$i]['poste'])?"selected='selected'":null;
+	  }
 	  echo "<option value='{$poste['id']}' $selected class='$class'>{$poste['nom']} ({$poste['etage']})</option>\n";
 	}
       }
       // Les lignes de séparation
       foreach($lignes_sep as $ligne_sep){
-	$selected=($tab['lignes'][$i]['type']=="ligne" and $ligne_sep['id']==$tab['lignes'][$i]['poste'])?"selected='selected'":null;
+	$selected=null;
+	if(array_key_exists($i,$tab['lignes'])){
+	  $selected=($tab['lignes'][$i]['type']=="ligne" and $ligne_sep['id']==$tab['lignes'][$i]['poste'])?"selected='selected'":null;
+	}
 	echo "<option value='{$ligne_sep['id']}Ligne' class='tr_horaires' $selected style='font-weight:normal;'>{$ligne_sep['nom']}</option>\n";
       }
       echo "</select>&nbsp;&nbsp;\n";
