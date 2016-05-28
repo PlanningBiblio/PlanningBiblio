@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0.2
+Planning Biblio, Version 2.3.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : postes/index.php
 Création : mai 2011
-Dernière modification : 15 septembre 2015
+Dernière modification : 27 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -22,19 +22,11 @@ require_once "class.postes.php";
 $groupe="Tous";
 $nom=filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING);
 
-// 		Contrôle si le poste est utilisé dans pl_poste pour interdire sa suppression si tel est le cas
+// Contrôle si le poste est utilisé dans un tableau non-supprimé (tables pl_poste_lignes et pl_poste_tab)
 $postes_utilises=array();
-$db=new db();
-$db->query("SELECT `poste` FROM `{$dbprefix}pl_poste` GROUP BY `poste`;");
-if($db->result){
-  foreach($db->result as $elem){
-    $postes_utilises[]=$elem['poste'];
-  }
-}
 
-// 		Contrôle si le poste est utilisé dans pl_poste_lignes pour interdire sa suppression si tel est le cas
 $db=new db();
-$db->query("SELECT `poste` FROM `{$dbprefix}pl_poste_lignes` WHERE `type`='poste' GROUP BY `poste`;");
+$db->selectInnerJoin(array("pl_poste_lignes","numero"), array("pl_poste_tab","tableau"), array(array("name"=>"poste", "as"=>"poste")), array(), array(), array("supprime"=>null));
 if($db->result){
   foreach($db->result as $elem){
     $postes_utilises[]=$elem['poste'];

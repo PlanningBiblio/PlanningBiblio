@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.3.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 9 janvier 2016
+Dernière modification : 28 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -20,6 +20,8 @@ Cette page est appelée par le fichier index.php
 */
 
 require_once "class.personnel.php";
+require_once "activites/class.activites.php";
+
 
 // Initialisation des variables
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
@@ -153,10 +155,12 @@ global $temps;
 $contrats=array("Titulaire","Contractuel");
 
 //		--------------		Début listes des activités		---------------------//	
-$db=new db();			//	toutes les activités
-$db->select2("activites",array("id","nom"),null,"ORDER BY `id`");
-if($db->result)
-foreach($db->result as $elem){
+// Toutes les activités
+$a=new activites();
+$a->fetch();
+$activites=$a->elements;
+
+foreach($activites as $elem){
   $postes_completNoms[]=array($elem['nom'],$elem['id']);
   $postes_complet[]=$elem['id'];
 }

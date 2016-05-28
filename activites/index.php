@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3
+Planning Biblio, Version 2.3.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : activites/index.php
 Création : mai 2011
-Dernière modification : 21 mars 2016
+Dernière modification : 28 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -29,7 +29,7 @@ $activites=$a->elements;
 $activites_utilisees=array();
 $tab=array();
 $db=new db();
-$db->select2("postes","activites","1","GROUP BY `activites");
+$db->select2("postes","activites",array("supprime"=>null),"GROUP BY `activites`");
 if($db->result){
   foreach($db->result as $elem){
     $tab[]=unserialize($elem['activites']);
@@ -44,7 +44,7 @@ if($db->result){
     $tab[]=unserialize($elem['postes']);
   }
 }
-if($tab[0]){
+if(!empty($tab)){
   foreach($tab as $elem){
     if(is_array($elem)){
       foreach($elem as $act){

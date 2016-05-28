@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3
+Planning Biblio, Version 2.3.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : activites/class.activites.php
 Création : mai 2011
-Dernière modification : 21 mars 2016
+Dernière modification : 28 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -23,24 +23,36 @@ if(!isset($version)){
 class activites{
   public $id=null;
   public $elements=array();
+  public $deleted=null;
 
   public function activites(){
   }
 
   public function delete(){
     $db=new db();
-    $db->delete2("activites",array("id"=>$this->id));
+    $db->update2("activites",array("supprime"=>"SYSDATE"),array("id"=>$this->id));
   }
 
   public function fetch(){
     $activites=array();
     $db=new db();
-    $db->select2("activites");
-    if($db->result){
-      foreach($db->result as $elem){
-	$activites[$elem['id']]=$elem;
-      }
+    if($this->deleted){
+      $db->select2("activites");
+    }else{
+      $db->select2("activites",null,array("supprime"=>null));
     }
+      
+    if($db->result){
+      $activites=$db->result;
+    }
+    
+    usort($activites,"cmp_nom");
+    
+    $tmp=array();
+    foreach($activites as $elem){
+      $tmp[$elem['id']]=$elem;
+    }
+    $activites=$tmp;
     $this->elements=$activites;
   }
 

@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.3.1
+Planning Biblio, Version 2.3.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 6 mai 2016
+Dernière modification : 27 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -375,7 +375,7 @@ function supprime(page,id){
 	window.location.reload(false);
       },
       error: function(){
-	information("Une erreur est survenue lors de la suppression","error");
+	CJInfo("Une erreur est survenue lors de la suppression","error");
       }
     });
   }

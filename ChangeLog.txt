@@ -1,3 +1,10 @@
+***	Version 2.3.2	(28 mai 2016)		***
+Jérôme Combes
+
+- Améliorations
+Permet la suppression des postes et activités s'ils sont liés uniquement à des tableaux supprimés
+Les postes et activités supprimés sont restaurés si les tableaux sont restaurés
+
 ***	Version 2.3.1	(10 mai 2016)		***
 Jérôme Combes
 

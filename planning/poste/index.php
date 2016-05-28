@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3
+Planning Biblio, Version 2.3.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 25 mars 2016
+Dernière modification : 28 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -207,6 +207,7 @@ $postes=Array();
 
 // Récupération des activités pour appliquer les classes aux lignes postes en fonction de celles-ci
 $a=new activites();
+$a->deleted=true;
 $a->fetch();
 $activites=$a->elements;
 
@@ -233,7 +234,7 @@ if($db->result){
     // Ajout des classes en fonction des activités
     $activitesPoste=is_serialized($elem['activites'])?unserialize($elem['activites']):array();
     foreach($activitesPoste as $a){
-      if($activites[$a]['classePoste']){
+      if(array_key_exists($a,$activites)){
 	$classesPoste[]=$activites[$a]['classePoste'];
       }
     }
