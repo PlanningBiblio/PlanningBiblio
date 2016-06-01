@@ -31,6 +31,9 @@ Classe permettant le traitement des fichiers ICS
   include_once "../include/accessDenied.php";
 }
 */
+
+// TODO : voir pourquoi UPDATE prend 45 secondes à chaque fois
+
 // TEST
 $version="test";
 
@@ -265,6 +268,11 @@ class CJICS{
 	    $events[$id]["ATTENDEE"][$k]=$value;
 	  }
 	}
+	
+	// Création d'un tableaux contenant les jours concernés par la récurrence
+	if(array_key_exists("RRULE",$events[$id]) and !empty($events[$id]["RRULE"])){
+	  $events[$ids]["DAYS"]=ICSRecurrence($events[$id]);
+	}
       
       
 	// On remplace l'id temporairement ($id) de l'événement par son UID
@@ -304,6 +312,10 @@ class CJICS{
    * @note : utilise la method $this->parse pour la lecture des fichiers ICS
    */
   public function updateDB(){
+  
+    // TEST
+//     $time0=time();
+  
     if(!$this->src){
       $this->error="Fichier ICS absent";
       return false;
@@ -311,8 +323,20 @@ class CJICS{
     
     // Lit le fichier ICS et le parse
     $this->parse();
+    if($this->error){
+      return false;
+    }
+    
     $calendar=$this->calendar;
     $events=$this->events;
+    
+    
+    // TEST
+    /*
+    $time=time() - $time0;
+    $time=date("i:s",$time);
+    echo "<br>ICS Parser : $time";
+    */
     
     $calName=$calendar['X-WR-CALNAME'];
 
@@ -322,10 +346,11 @@ class CJICS{
     $insert=array();
     $update=array();
     $uidsDB=array();
+    $keep=array();
     
     
-    // TODO : A continuer : Ajouter les autres champs dans la base de données
-    // TODO : Ajouter des index sur les champs CALNAME et UID
+    // TODO : A continuer : Ajouter les autres champs dans la base de données (si besoin)
+    // TODO : Créer la table via script PHP dans maj et setup/db_structure. Penser aux index
     $keys=array("UID","DESCRIPTION","LOCATION","SUMMARY","SEQUENCES","STATUS","DTSTART","DTEND","DTSTAMP","CREATED","LAST-MODIFIED","RRULE");
     
     // Recherche des événements enregistrés dans la base de données
@@ -348,10 +373,18 @@ class CJICS{
 	continue;
       }
 
-      // Si l'événement n'est pas dans la base de données ou s'il a été modifié
-      // On copie les données dans les tableaux $insert ou $update
+      // Marque les événements à la fois présents dans la base de données et dans le fichier ICS
+      // Afin de supprimer les événements qui ne sont plus dans le fichier ICS
+      if(in_array($event['UID'],$uidsDB)){
+	$keep[]=$event['UID'];
+      }
+
+      // Si l'événement n'est pas dans la base de données ou s'il a été modifié : on copie les données dans les tableaux $insert ou $update
+      // Comparaison des dates : on utilise != au lieu de > car permet de restaurer un événement marqué comme supprimé
+      // Voir ligne : $req="UPDATE `{$GLOBALS['dbprefix']}ics` SET `STATUS`='DELETED', LASTMODIFIED=SYSDATE() WHERE `CALNAME`='$calName' AND `UID`=:UID;";
+    
       if(!in_array($event["UID"],$uidsDB)
-	or $event['LAST-MODIFIED']>$calDB[$event['UID']]['LASTMODIFIED']){
+	or ( in_array($event["UID"],$uidsDB) and $event['LAST-MODIFIED']['YMDTime'] != $calDB[$event['UID']]['LASTMODIFIED'] )){
 
 	$tmp=array(":CALNAME"=>$calName);
 	foreach($keys as $k){
@@ -367,26 +400,28 @@ class CJICS{
 	    $tmp[":$k1"]="";
 	  }
 	}
-
+	
 	// Si l'événement n'est pas dans la base de données, on l'insère
-	if(!in_array($event["UID"],$uidsDB)){
+	if(!in_array($event["UID"],$uidsDB)){ // and $event['LAST-MODIFIED']>$calDB[$event['UID']]['LASTMODIFIED']){
 	  $insert[]=$tmp;
 
 	// Si l'événement est dans la base de données et qu'il a été modifié, on le met à jour
-	}else{
+	}elseif( in_array($event["UID"],$uidsDB) and $event['LAST-MODIFIED']['YMDTime'] != $calDB[$event['UID']]['LASTMODIFIED'] ){
+// 	  echo $event['LAST-MODIFIED']['YMDTime']." - ".$calDB[$event['UID']]['LASTMODIFIED']."<br/>\n";
 	  $update[]=$tmp;
 	}
       }
     }
     
+    // TEST
+    /*
+    $time=time() - $time0;
+    $time=date("i:s",$time);
+    echo "<br>Tableaux PHP : $time";
+    */
     
     // Insertion des nouveaux événments
     if(!empty($insert)){
-    
-      // TODO : A TESTER
-      // TODO : A TESTER
-      // TODO : A TESTER
-
       $k=array_keys($insert[0]);
       $fields="`".implode("`, `",$k)."`";
       $fields=str_replace(":",null,$fields);
@@ -400,13 +435,15 @@ class CJICS{
       }
     }
     
+    // TEST
+    /*
+    $time=time() - $time0;
+    $time=date("i:s",$time);
+    echo "<br>INSERT DB : $time";
+    */
+
     // Mise à jour des événements modifiés
     if(!empty($update)){
-
-      // TODO : A TESTER
-      // TODO : A TESTER
-      // TODO : A TESTER
-
       $set=array();
       $k=array_keys($update[0]);
       foreach($k as $value){
@@ -425,14 +462,36 @@ class CJICS{
 	$db->execute($elem);
       }
     }
-    
-    
-    
-    // Lecture de la base de données à la recherche d'événements supprimés (qui ne sont plus dans le fichier ICS)
 
-  
-  
-  
+    // TEST
+    /*
+    $time=time() - $time0;
+    $time=date("i:s",$time);
+    echo "<br>UPDATE DB :$time";
+    */
+    
+    
+    // Recherche des événements supprimés (qui ne sont plus dans le fichier ICS) ou qui n'ont plus le status "CONFIMED"
+    // Et marque ces événements comme supprimés dans la base de données
+    $req="UPDATE `{$GLOBALS['dbprefix']}ics` SET `STATUS`='DELETED', LASTMODIFIED=SYSDATE() WHERE `CALNAME`='$calName' AND `UID`=:UID;";
+    $db=new dbh();
+    $db->prepare($req);
+    foreach($uidsDB as $elem){
+      if(!in_array($elem,$keep) and $calDB[$elem]['STATUS']!="DELETED") {
+	$db->execute(array(":UID"=>$elem));
+	echo "<br/>";
+	echo $elem;
+      }
+    }
+    
+    
+    // TEST
+    /*
+    $time=time() - $time0;
+    $time=date("i:s",$time);
+    echo "<br>DELETE DB :$time";
+    */
+
   }
 }
 
@@ -461,4 +520,71 @@ function ICSDateConversion($value){
     $value=array("TZID"=>null, "DTime"=>$value, "Time"=>$time, "YMDTime"=> date("Y-m-d H:i:s",$time));
   }
   return $value;
+}
+
+
+/**
+ * @function ICSRecurrence
+ * Créé un tableau contenant les jours concernés par la récurrence avec pour chaque jour la date de début et de fin de l'événement
+ * @param Array $event : un événement ICS parsé (tableau PHP)
+ */
+function ICSRecurrence($event){
+  
+  $rrule=$event['RRULE'];
+  $exdate=array_key_exists("EXDATE",$event)?$event['EXDATE']:null;
+  $start=$event["DTSTART"]['Time'];
+  $end=$event['DTEND']['Time'];
+  $duration=$end-$start;
+  
+  $freq=$rrule['FREQ'];
+  $until=array_key_exists("UNTIL",$rrule)?$rrule['UNTIL']["Time"]:null;
+  $count=array_key_exists("COUNT",$rrule)?$rrule['COUNT']:null;
+  $interval=array_key_exists("INTERVAL",$rrule)?$rrule['INTERVAL']:null;
+  
+  $days=array();
+  
+  switch($freq){
+    case "DAILY":	$add="+ 1 day";		break;
+    case "WEEKLY":	$add="+ 1 week";	break;
+    case "MONTHLY":	$add="+ 1 month";	break;
+    case "YEARLY":	$add="+ 1 year";	break;
+  }
+  
+  $d=$start;
+  if($until){
+    while($d<=$until){
+      $start1=date("Y-m-d H:i:s",$d);
+      $end1=date("Y-m-d H:i:s", $d+$duration );
+      $days[]=array($start1,$end1);
+      $d=strtotime(date("Y-m-d H:i:s",$d)." ".$add);
+    }
+
+  }elseif($count){
+    for($i=0;$i<$count;$i++){
+      $start1=date("Y-m-d H:i:s",$d);
+      $end1=date("Y-m-d H:i:s", $d+$duration );
+      $days[]=array($start1,$end1);
+      $d=strtotime(date("Y-m-d H:i:s",$d)." ".$add);
+    }
+  }
+  
+  // TODO : traiter les BYDAY
+  // TODO : traiter les EXDATE
+
+      // TEST
+  echo "<br/>\n";
+  echo "Start : ".date("Y-m-d H:i:s",$start);
+  echo "<br/>\n";
+  echo "End : ".date("Y-m-d H:i:s",$end);
+  echo "<br/>\n";
+  print_r($rrule);
+  echo "<br/>\n";
+  print_r($exdate);
+  echo "<br/>\n";
+  print_r($days);
+  echo "<br/>\n";
+  
+  return $days;
+  // TODO : A continuer
+  // TODO : Enregistrer les jours dans un champ de la base de données, les regrouper dans un tableau PHP puis json_encode
 }
