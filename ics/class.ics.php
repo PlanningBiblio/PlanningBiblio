@@ -540,49 +540,128 @@ function ICSRecurrence($event){
   $until=array_key_exists("UNTIL",$rrule)?$rrule['UNTIL']["Time"]:null;
   $count=array_key_exists("COUNT",$rrule)?$rrule['COUNT']:null;
   $interval=array_key_exists("INTERVAL",$rrule)?$rrule['INTERVAL']:null;
+  $byday=array_key_exists("BYDAY",$rrule)?explode(",",$rrule['BYDAY']):null;
+  
+  // Pour EXDATE (dates à exclure), on ne garde que le champ Time pour vérification ultérieure
+  $tmp=array();
+  if(is_array($exdate)){
+    foreach($exdate as $elem){
+      $tmp[]=$elem['Time'];
+    }
+  }
+  $exdate=$tmp;
   
   $days=array();
-  
-  switch($freq){
-    case "DAILY":	$add="+ 1 day";		break;
-    case "WEEKLY":	$add="+ 1 week";	break;
-    case "MONTHLY":	$add="+ 1 month";	break;
-    case "YEARLY":	$add="+ 1 year";	break;
-  }
-  
+    
   $d=$start;
+  
+  // Recherche des occurences avec si le paramètre UNTIL est présent
   if($until){
-    while($d<=$until){
-      $start1=date("Y-m-d H:i:s",$d);
-      $end1=date("Y-m-d H:i:s", $d+$duration );
-      $days[]=array($start1,$end1);
-      $d=strtotime(date("Y-m-d H:i:s",$d)." ".$add);
+    while($d<$until){
+      
+      // En fonction de la fréquence
+      switch($freq){
+	// Daily
+	case "DAILY": $d=strtotime(date("Y-m-d H:i:s",$d)." + 1 day");	break;
+	
+	// Weekly
+	case "WEEKLY": 
+	  // Si BYDAY est présent, recherche tous les jours de la semaine. Les jours non désirés seront exclus ensuite (+ 1 day)
+	  if(is_array($byday)){
+	    $d=strtotime(date("Y-m-d H:i:s",$d)." + 1 day");
+	  // SI BYDAY est absent, on passe au même jour de la semaine suivante (+ 1 week)
+	  }else{
+	    $d=strtotime(date("Y-m-d H:i:s",$d)." + 1 week");
+	  }
+	  break;
+      }
+
+      // On re-vérifie qu'on est bien inférieur à UNTIL car les sauts de semaines ou mois peuvent nous faire aller trop loin.
+      if($d<=$until){
+
+	// Exclusion des dates ne correspondant pas au paramètre byday (MO,TU,WE, etc)
+	$day=strtoupper(substr(date("D",$d),0,2));
+	if(is_array($byday) and !in_array($day,$byday)){
+	  continue;
+	}
+	// Exclusion des dates EXDATE
+	if(is_array($exdate) and in_array($d,$exdate)){
+	  continue;
+	}
+	
+	// On ajoute au tableau les jours concernés avec les heures de début et de fin d'événement
+	$start1=date("D Y-m-d H:i:s",$d);
+	$end1=date("D Y-m-d H:i:s", $d+$duration );
+	$days[]=array($start1,$end1);
+      }
+
     }
 
+  // Recherche des occurences avec si le paramètre COUNT est présent
   }elseif($count){
-    for($i=0;$i<$count;$i++){
-      $start1=date("Y-m-d H:i:s",$d);
-      $end1=date("Y-m-d H:i:s", $d+$duration );
+    for($i=0;$i<$count-1;$i++){
+
+      // En fonction de la fréquence
+      switch($freq){
+	// Daily
+	case "DAILY": $d=strtotime(date("Y-m-d H:i:s",$d)." + 1 day");	break;
+	
+	// Weekly
+	case "WEEKLY": 
+	  // Si BYDAY est présent, recherche tous les jours de la semaine. Les jours non désirés seront exclus ensuite (+ 1 day)
+	  if(is_array($byday)){
+	    $d=strtotime(date("Y-m-d H:i:s",$d)." + 1 day");
+	  // SI BYDAY est absent, on passe au même jour de la semaine suivante (+ 1 week)
+	  }else{
+	    $d=strtotime(date("Y-m-d H:i:s",$d)." + 1 week");
+	  }
+	  break;
+      }
+
+
+      // Exclusion des dates ne correspondant pas au paramètre byday (MO,TU,WE, etc)
+      $day=strtoupper(substr(date("D",$d),0,2));
+      if(is_array($byday) and !in_array($day,$byday)){
+	// Dans ce cas, le tour ne doit pas être compté : $i ne devrait pas être incrémenté, donc on le décrémente
+	$i--;
+	continue;
+      }
+      // Exclusion des dates EXDATE
+      if(is_array($exdate) and in_array($d,$exdate)){
+	continue;
+      }
+      
+      // On ajoute au tableau les jours concernés avec les heures de début et de fin d'événement
+      $start1=date("D Y-m-d H:i:s",$d);
+      $end1=date("D Y-m-d H:i:s", $d+$duration );
       $days[]=array($start1,$end1);
-      $d=strtotime(date("Y-m-d H:i:s",$d)." ".$add);
     }
   }
   
-  // TODO : traiter les BYDAY
-  // TODO : traiter les EXDATE
+  // TODO : traiter les BYDAY : OK  pour weekly
+  // TODO : traiter les EXDATE : OK pour weekly
+  // TODO : INTERVAL
 
       // TEST
+  if($freq=="WEEKLY"){
+    echo "<strong>\n";
+  }
   echo "<br/>\n";
-  echo "Start : ".date("Y-m-d H:i:s",$start);
+  echo "Start : ".date("D Y-m-d H:i:s",$start);
   echo "<br/>\n";
-  echo "End : ".date("Y-m-d H:i:s",$end);
+  echo "End : ".date("D Y-m-d H:i:s",$end);
   echo "<br/>\n";
   print_r($rrule);
   echo "<br/>\n";
   print_r($exdate);
   echo "<br/>\n";
-  print_r($days);
-  echo "<br/>\n";
+  foreach($days as $elem){
+    echo $elem[0]." - ".$elem[1]."<br/>";
+  }
+  echo "<hr/>\n";
+  if($freq=="WEEKLY"){
+    echo "</strong>\n";
+  }
   
   return $days;
   // TODO : A continuer
