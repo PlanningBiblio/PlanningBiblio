@@ -32,12 +32,20 @@ Classe permettant le traitement des fichiers ICS
 }
 */
 
-// TODO : voir pourquoi UPDATE prend 45 secondes à chaque fois
+// TODO : loguer les imports / Modifs dans la table logs
+// TODO : récurrences : interval weekly : vérifier s'il faut compter 1 semaine depuis le premier jour (soit 7 jours, option actuellement choisie) ou s'il faut compter une semaine depuis le lundi (ou dimanche)
+// NOTE : interval monthly : Interval calculé sur des mois complets
 
 // TEST
 $version="test";
 
 require_once "include/config.php";
+
+// TODO : $defaultTimeZone dans la config
+$defaultTimeZone="Europe/Paris";
+global $defaultTimeZone;
+
+date_default_timezone_set($defaultTimeZone);
 
 class CJICS{
 
@@ -48,7 +56,7 @@ class CJICS{
 
   
   /**
-   * @function parse
+   * parse
    * Parse les événements d'un fichier ICS : créé un tableaux PHP contenant les événements
    * @param string $this->src : fichier ICS : chemin relatif ou absolu ou URL
    * @result array $this->calendar : informations sur le calendrier ICS parsé
@@ -271,7 +279,10 @@ class CJICS{
 	
 	// Création d'un tableaux contenant les jours concernés par la récurrence
 	if(array_key_exists("RRULE",$events[$id]) and !empty($events[$id]["RRULE"])){
-	  $events[$ids]["DAYS"]=ICSRecurrence($events[$id]);
+	  $this->currentEvent=$events[$id];
+	  $this->recurrences();
+	  $events[$id]["DAYS"]=$this->days;
+	  $events[$id]["INFINITE"]=$this->infinite;
 	}
       
       
@@ -303,8 +314,301 @@ class CJICS{
     
   }
   
+  
+  
   /**
-   * @function updateDB
+  * recurrences
+  * Créé un tableau contenant les jours concernés par la récurrence avec pour chaque jour la date de début et de fin de l'événement
+  * @param Array $event : un événement ICS parsé (tableau PHP)
+  */
+  private function recurrences(){
+    $event=$this->currentEvent;
+    
+    $rrule=$event['RRULE'];
+    $exdate=array_key_exists("EXDATE",$event)?$event['EXDATE']:null;
+    $start=$event["DTSTART"]['Time'];
+    $end=$event['DTEND']['Time'];
+    $duration=$end-$start;
+    
+    $freq=$rrule['FREQ'];
+    $until=array_key_exists("UNTIL",$rrule)?$rrule['UNTIL']["Time"]:null;
+    $count=array_key_exists("COUNT",$rrule)?$rrule['COUNT']:null;
+    $interval=array_key_exists("INTERVAL",$rrule)?$rrule['INTERVAL']:1;
+    $byday=array_key_exists("BYDAY",$rrule)?explode(",",$rrule['BYDAY']):null;
+    $bymonthday=array_key_exists("BYMONTHDAY",$rrule)?explode(",",$rrule['BYMONTHDAY']):null;
+    
+    // Pour EXDATE (dates à exclure), on ne garde que le champ Time pour vérification ultérieure
+    $tmp=array();
+    if(is_array($exdate)){
+      foreach($exdate as $elem){
+	$tmp[]=$elem['Time'];
+      }
+    }
+    $exdate=$tmp;
+    
+    // Si l'événément se répète à l'infini : on défini une date de fin ( J + 1 an ) et marque l'événement comme infini pour compléter régulièrement les dates
+    $this->infinite="0";
+    if(!$count and !$until){
+      $until=strtotime(date("Y-m-d H:i:s")." + 1 year");
+      $this->infinite="1";
+    }
+    
+    
+    $days=array();
+      
+    $d=$start;
+    
+    // Recherche des occurences avec si le paramètre UNTIL est présent
+    if($until){
+      while($d<$until){
+	
+	// En fonction de la fréquence
+	switch($freq){
+	  // Daily
+	  case "DAILY": $d=strtotime(date("Y-m-d H:i:s",$d)." + $interval day");	break;
+	  
+	  // Weekly
+	  case "WEEKLY": 
+	    // Si BYDAY est présent, recherche tous les jours de la semaine. Les jours non désirés seront exclus ensuite (+ 1 day)
+	    if(is_array($byday)){
+	      $d=strtotime(date("Y-m-d H:i:s",$d)." + 1 day");
+	      
+	      // Si un interval est défini, on passe les semaines qui ne nous intérressent pas
+	      if($interval){
+		$diff = $d - $start;
+		$oneWeek = strtotime("01/01/1970 + 1 week");
+		$weekNumber = (int) ($diff / $oneWeek);
+		$modulo = $weekNumber % $interval;
+		if($modulo){
+		  continue 2;
+		}
+	      }
+	      
+
+	    // SI BYDAY est absent, on passe au même jour de la semaine suivante (+ 1 week)
+	    }else{
+	      $d=strtotime(date("Y-m-d H:i:s",$d)." + $interval week");
+	    }
+	    break;
+	    
+	    // Monthly
+	    case "MONTHLY":
+	    // BYDAY : 1FR, -1SU, 2TH, etc.
+	    // BYMONTHDAY : 1, 15, -1
+	    if(is_array($byday) or is_array($bymonthday)){
+	      $d=strtotime(date("Y-m-d H:i:s",$d)." + 1 day");
+
+	      // Si un interval est défini, on passe les semaines qui ne nous intérressent pas
+	      if($interval){
+		$month0=date("n",$start);
+		$month1=date("n",$d);
+		$diff=$month1-$month0;
+		$modulo = $diff % $interval;
+		if($modulo){
+		  continue 2;
+		}
+	      }
+
+	    }else{
+	      $d=strtotime(date("Y-m-d H:i:s",$d)." + $interval month");
+	    }
+	    
+	
+	    break;
+	    
+	    
+	    
+	}
+
+	// On re-vérifie qu'on est bien inférieur à UNTIL car les sauts de semaines ou mois peuvent nous faire aller trop loin.
+	if($d<=$until){
+
+	  // Exclusion des dates ne correspondant pas au paramètre byday (MO,TU,WE, etc)
+	  if(!byDay($d,$byday)){
+	    continue;
+	  }
+/*
+	  $day=strtoupper(substr(date("D",$d),0,2));
+	  if(is_array($byday) and !in_array($day,$byday)){
+	    continue;
+	  }
+*/
+	  
+	  // Exclusion des dates EXDATE
+	  if(is_array($exdate) and in_array($d,$exdate)){
+	    continue;
+	  }
+	  
+	  // On ajoute au tableau les jours concernés avec les heures de début et de fin d'événement
+	  $start1=date("Y-m-d H:i:s",$d);
+	  $end1=date("Y-m-d H:i:s", $d+$duration );
+	  $days[]=array($start1,$end1,date("D",$d));
+	}
+
+      }
+
+    // Recherche des occurences avec si le paramètre COUNT est présent
+    }elseif($count){
+      for($i=0;$i<$count-1;$i++){
+
+	// En fonction de la fréquence
+	switch($freq){
+	  // Daily
+	  case "DAILY": $d=strtotime(date("Y-m-d H:i:s",$d)." + $interval day");	break;
+	  
+	  // Weekly
+	  case "WEEKLY": 
+	    // Si BYDAY est présent, recherche tous les jours de la semaine. Les jours non désirés seront exclus ensuite (+ 1 day)
+	    if(is_array($byday)){
+	      $d=strtotime(date("Y-m-d H:i:s",$d)." + 1 day");
+	      
+	      // Si un interval est défini, on passe les semaines qui ne nous intérressent pas
+	      if($interval){
+		$diff = $d - $start;
+		$oneWeek = strtotime("01/01/1970 + 1 week");
+		$weekNumber = (int) ($diff / $oneWeek);
+		$modulo = $weekNumber % $interval;
+		if($modulo){
+		  $i--;
+		  continue 2;
+		}
+	      }
+	      
+	    // Si BYDAY est absent, on passe au même jour de la semaine suivante (+ 1 week)
+	    }else{
+	      $d=strtotime(date("Y-m-d H:i:s",$d)." + $interval week");
+	    }
+	    break;
+	    
+	    // Monthly
+	    case "MONTHLY":
+	    // BYDAY : 1FR, -1SU, 2TH, etc.
+	    // BYMONTHDAY : 1, 15, -1
+/*
+	    if(is_array($byday) and is_array($bymonthday)){
+	    
+	    }elseif(is_array($byday)){
+	    
+	    }elseif(is_array($bymonthday)){
+	    
+*/
+	    if(is_array($byday) or is_array($bymonthday)){
+	      $d=strtotime(date("Y-m-d H:i:s",$d)." + 1 day");
+	      
+	      // Si un interval est défini, on passe les semaines qui ne nous intérressent pas
+	      if($interval){
+		$month0=date("n",$start);
+		$month1=date("n",$d);
+		$diff=$month1-$month0;
+		$modulo = $diff % $interval;
+		if($modulo){
+		  $i--;
+		  continue 2;
+		}
+	      }
+
+	    }else{
+	      $d=strtotime(date("Y-m-d H:i:s",$d)." + $interval month");
+	    }
+	    
+	
+	    break;
+	}
+
+/*
+	// $day : MO,TU,WE, TH, FR, SA, SU
+	// $day2 : ex : 1MO (first monday), 2WE (2nd Wednesday), 3TH (3rd Thursday), etc.
+	// $day3 : ex : -1SU (Last Sunday), 
+	$day=strtoupper(substr(date("D",$d),0,2));
+	$dayOfMonth=date("j",$d);
+
+	if($dayOfMonth<8){		// de 1 à 7
+	  $day2="1$day";
+	}elseif($dayOfMonth<15){	// de 8 à 14
+	  $day2="2$day";
+	}elseif($dayOfMonth<22){	// de 15 à 21
+	  $day2="3$day";
+	}elseif($dayOfMonth<29){	// de 22 à 28
+	  $day2="4$day";
+	}else{				// de 29 à 31
+	  $day2="5$day";
+	}
+	
+	$daysInMonth = date("t",$d);
+	if( $daysInMonth - $dayOfMonth < 7 ){		// Pour un mois de 31 jours : du 25 au 31
+	  $day3="-1$day";
+	}elseif( $daysInMonth - $dayOfMonth < 14 ){	// Pour un mois de 31 jours : du 18 au 24
+	  $day3="-2$day";
+	}elseif( $daysInMonth - $dayOfMonth < 21 ){	// Pour un mois de 31 jours : du 11 au 17
+	  $day3="-3$day";
+	}elseif( $daysInMonth - $dayOfMonth < 28 ){	// Pour un mois de 31 jours : du 4 au 10
+	  $day3="-4$day";
+	}else{						// Pour un mois de 31 jours : du 1 au 3
+	  $day3="-5$day";
+	}
+
+	
+	if(is_array($byday)){
+	  $keep=false;
+	  if(in_array($day,$byday) or in_array($day2,$byday) or in_array($day3,$byday)){
+	    $keep=true;
+	  }
+	   
+	  if(!$keep){
+	    // Dans ce cas, le tour ne doit pas être compté : $i ne devrait pas être incrémenté, donc on le décrémente
+	    $i--;
+	    continue;
+	  }
+	}
+	*/
+	
+	// Exclusion des dates ne correspondant pas au paramètre byday (MO,TU,WE, etc)
+	if(!byDay($d,$byday)){
+	  // Dans ce cas, le tour ne doit pas être compté : $i ne devrait pas être incrémenté, donc on le décrémente
+	  $i--;
+	  continue;
+	}
+	
+	// Exclusion des dates EXDATE
+	if(is_array($exdate) and in_array($d,$exdate)){
+	  continue;
+	}
+	
+	// On ajoute au tableau les jours concernés avec les heures de début et de fin d'événement
+	$start1=date("Y-m-d H:i:s",$d);
+	$end1=date("Y-m-d H:i:s", $d+$duration );
+	$days[]=array($start1,$end1,date("D",$d));
+      }
+    }
+    
+    $this->days=$days;
+    
+    
+    // TODO : traiter les BYDAY : OK  pour weekly
+    // TODO : traiter les EXDATE : OK pour weekly
+    // TODO : INTERVAL : OK pour DAILY et WEEKLY
+    // TODO : INTERVAL
+    // TODO : BYMONTH : january=1, peut être utilisé avec BYDAY et FREQ=YEARLY ou avec FREQ=DAILY (ex: DAILY BYMONTH=1 : tous les jours de janvier)
+    // NOTE : WKST=SU; avec WEEKLY, Week start 
+    // NOTE : BYDAY=1FR : first friday, with monthly
+    // NOTE : BYDAY=-1SU : last sunday
+    // NOTE : BYMONTHDAY=-2 (2 jours avant la fin du mois), BYMONTHDAY=2,15 : 2ème et 15ème jour
+    // NOTE : BYYEARDAY, BYWEEKNO, BYSETPOS
+    // TODO : FREQ=MONTHLY, YEARLY
+    // TODO : FREQ=HOURLY,INTERVAL
+    // TODO : FREQ=MINUTELY; INTERVAL;
+    // TODO : FREQ=DAILY; BYHOUR=9,10,11; BYMINUTE=0,20,40
+    // TODO : pas de fin : si ni COUNT ni UNTIL : définir une date de fin est préciser qq part que l'événement se répète indéfiniement : pour traitement ultérieur des dates à venir via cron : Fait : UNTIL = now + 1 year et champ INFINITE = 1
+    // NOTE : événéments infinis : sont calculés les jours de maintenant à + 1 an, et champs INFINITE = 1 (0 par défaut)
+    // TODO : événements infinis : recalculer 1 fois par jours les événemts infinis pour ajouter les nouvelles dates
+    // REF  : http://www.kanzaki.com/docs/ical/rrule.html
+    
+    // TODO : A continuer
+  }
+  
+  
+  /**
+   * updateDB
    * Enregistre les nouveaux événements d'un fichier ICS dans la base de données
    * Met à jour les événements modifiés
    * Marque les événements supprimés
@@ -351,7 +655,7 @@ class CJICS{
     
     // TODO : A continuer : Ajouter les autres champs dans la base de données (si besoin)
     // TODO : Créer la table via script PHP dans maj et setup/db_structure. Penser aux index
-    $keys=array("UID","DESCRIPTION","LOCATION","SUMMARY","SEQUENCES","STATUS","DTSTART","DTEND","DTSTAMP","CREATED","LAST-MODIFIED","RRULE");
+    $keys=array("UID","DESCRIPTION","LOCATION","SUMMARY","SEQUENCES","STATUS","DTSTART","DTEND","DTSTAMP","CREATED","LAST-MODIFIED","RRULE","DAYS","INFINITE");
     
     // Recherche des événements enregistrés dans la base de données
     $calDB=array();
@@ -495,6 +799,65 @@ class CJICS{
   }
 }
 
+
+/** byDay
+ * @param time $d : date courante, format time
+ * @param array $byday : liste des jours à conserver : tableau contenant les éléments suivants : MO, TU, WE, TH, FR, SA, SU, 1MO, 2WE, 3FR, -1SU, -2SA, etc
+ * La fonction retourne true si $byday n'est pas un tableau ou si $d correspond à un élément contenant dans $byday
+ */
+function byDay($d,$byday){
+
+  // Si byday n'est pas un tableau (null), pas de filtre byday, donc retroune true
+  if(!is_array($byday)){
+    return true;
+  }
+
+  // $day1 : MO,TU,WE, TH, FR, SA, SU
+  $day1=strtoupper(substr(date("D",$d),0,2));
+
+  // day of month and days in month pour calculer les positions du jour $d dans le mois
+  $dayOfMonth=date("j",$d);
+  $daysInMonth = date("t",$d);
+
+  // $day2 : ex : 1MO (first monday), 2WE (2nd Wednesday), 3TH (3rd Thursday), etc.
+  if($dayOfMonth<8){		// de 1 à 7
+    $day2="1$day1";
+  }elseif($dayOfMonth<15){	// de 8 à 14
+    $day2="2$day1";
+  }elseif($dayOfMonth<22){	// de 15 à 21
+    $day2="3$day1";
+  }elseif($dayOfMonth<29){	// de 22 à 28
+    $day2="4$day1";
+  }else{			// de 29 à 31
+    $day2="5$day1";
+  }
+    
+  // $day3 : ex : -1SU (Last Sunday), etc.
+  if( $daysInMonth - $dayOfMonth < 7 ){		// Pour un mois de 31 jours : du 25 au 31
+    $day3="-1$day1";
+  }elseif( $daysInMonth - $dayOfMonth < 14 ){	// Pour un mois de 31 jours : du 18 au 24
+    $day3="-2$day1";
+  }elseif( $daysInMonth - $dayOfMonth < 21 ){	// Pour un mois de 31 jours : du 11 au 17
+    $day3="-3$day1";
+  }elseif( $daysInMonth - $dayOfMonth < 28 ){	// Pour un mois de 31 jours : du 4 au 10
+    $day3="-4$day1";
+  }else{					// Pour un mois de 31 jours : du 1 au 3
+    $day3="-5$day1";
+  }
+
+  
+  $return=false;
+  if(in_array($day1,$byday) or in_array($day2,$byday) or in_array($day3,$byday)){
+    $return=true;
+  }
+  
+  return $return;
+}
+
+
+
+
+
 function cmp_DTStart_Desc($a,$b){
   if(!array_key_exists("DTSTART",$a) or !array_key_exists("DTSTART",$b)){
     return 0;
@@ -505,165 +868,38 @@ function cmp_DTStart_Desc($a,$b){
   return (int) strcmp($b["DTSTART"]["Time"],$a["DTSTART"]["Time"]);
 }
 
+
+/**
+ * ICSDateConversion
+ * @param string $value
+ * @return Array("TZID"=> timezone, "DTime"=> Date_format_ICS", "Time"=> timestamp, "YMDTime"=> Date_format_Y-m-d H:i:s) 
+ * Convertie une date au format ICS en "date PHP"
+ * Retourne un tableau contenant le TimeZone, la date au format ICS, la date au format "time" (timestamp), la date au format Y-m-d H:i:s 
+ * Prend en compte les time zones, @param global string $defaultTimeZone précisé en début de script
+ */
 function ICSDateConversion($value){
   // Avec Zimbra, le TimeZone est renseigné dans ce champ. On créé donc un tableau array(TZID, time)
   // Avec Google, le timeZone n'est pas spécifié
+
+  
   $value=str_replace(array('VALUE=DATE:','"'),null,$value);
   
   if(substr($value,0,5)=="TZID="){
     $tmp=explode(":",$value);
     $tz=str_replace(array('TZID=','"'),null,$tmp[0]);
+    
+    // Gestion des time zones : date_default_timezone_set doit être utilisée pour utiliser le bon time zone si précisé
+    date_default_timezone_set($tz);
     $time=strtotime($tmp[1]);
     $value=array("TZID"=>$tz, "DTime"=>$tmp[1], "Time"=>$time, "YMDTime"=> date("Y-m-d H:i:s",$time));
+
   }else{
+
+    // Gestion des time zones : date_default_timezone_set doit être utilisée pour utiliser remettre le timezone par défaut si rien n'est précisé
+    date_default_timezone_set($GLOBALS['defaultTimeZone']);
     $time=strtotime($value);
     $value=array("TZID"=>null, "DTime"=>$value, "Time"=>$time, "YMDTime"=> date("Y-m-d H:i:s",$time));
+    
   }
   return $value;
-}
-
-
-/**
- * @function ICSRecurrence
- * Créé un tableau contenant les jours concernés par la récurrence avec pour chaque jour la date de début et de fin de l'événement
- * @param Array $event : un événement ICS parsé (tableau PHP)
- */
-function ICSRecurrence($event){
-  
-  $rrule=$event['RRULE'];
-  $exdate=array_key_exists("EXDATE",$event)?$event['EXDATE']:null;
-  $start=$event["DTSTART"]['Time'];
-  $end=$event['DTEND']['Time'];
-  $duration=$end-$start;
-  
-  $freq=$rrule['FREQ'];
-  $until=array_key_exists("UNTIL",$rrule)?$rrule['UNTIL']["Time"]:null;
-  $count=array_key_exists("COUNT",$rrule)?$rrule['COUNT']:null;
-  $interval=array_key_exists("INTERVAL",$rrule)?$rrule['INTERVAL']:null;
-  $byday=array_key_exists("BYDAY",$rrule)?explode(",",$rrule['BYDAY']):null;
-  
-  // Pour EXDATE (dates à exclure), on ne garde que le champ Time pour vérification ultérieure
-  $tmp=array();
-  if(is_array($exdate)){
-    foreach($exdate as $elem){
-      $tmp[]=$elem['Time'];
-    }
-  }
-  $exdate=$tmp;
-  
-  $days=array();
-    
-  $d=$start;
-  
-  // Recherche des occurences avec si le paramètre UNTIL est présent
-  if($until){
-    while($d<$until){
-      
-      // En fonction de la fréquence
-      switch($freq){
-	// Daily
-	case "DAILY": $d=strtotime(date("Y-m-d H:i:s",$d)." + 1 day");	break;
-	
-	// Weekly
-	case "WEEKLY": 
-	  // Si BYDAY est présent, recherche tous les jours de la semaine. Les jours non désirés seront exclus ensuite (+ 1 day)
-	  if(is_array($byday)){
-	    $d=strtotime(date("Y-m-d H:i:s",$d)." + 1 day");
-	  // SI BYDAY est absent, on passe au même jour de la semaine suivante (+ 1 week)
-	  }else{
-	    $d=strtotime(date("Y-m-d H:i:s",$d)." + 1 week");
-	  }
-	  break;
-      }
-
-      // On re-vérifie qu'on est bien inférieur à UNTIL car les sauts de semaines ou mois peuvent nous faire aller trop loin.
-      if($d<=$until){
-
-	// Exclusion des dates ne correspondant pas au paramètre byday (MO,TU,WE, etc)
-	$day=strtoupper(substr(date("D",$d),0,2));
-	if(is_array($byday) and !in_array($day,$byday)){
-	  continue;
-	}
-	// Exclusion des dates EXDATE
-	if(is_array($exdate) and in_array($d,$exdate)){
-	  continue;
-	}
-	
-	// On ajoute au tableau les jours concernés avec les heures de début et de fin d'événement
-	$start1=date("D Y-m-d H:i:s",$d);
-	$end1=date("D Y-m-d H:i:s", $d+$duration );
-	$days[]=array($start1,$end1);
-      }
-
-    }
-
-  // Recherche des occurences avec si le paramètre COUNT est présent
-  }elseif($count){
-    for($i=0;$i<$count-1;$i++){
-
-      // En fonction de la fréquence
-      switch($freq){
-	// Daily
-	case "DAILY": $d=strtotime(date("Y-m-d H:i:s",$d)." + 1 day");	break;
-	
-	// Weekly
-	case "WEEKLY": 
-	  // Si BYDAY est présent, recherche tous les jours de la semaine. Les jours non désirés seront exclus ensuite (+ 1 day)
-	  if(is_array($byday)){
-	    $d=strtotime(date("Y-m-d H:i:s",$d)." + 1 day");
-	  // SI BYDAY est absent, on passe au même jour de la semaine suivante (+ 1 week)
-	  }else{
-	    $d=strtotime(date("Y-m-d H:i:s",$d)." + 1 week");
-	  }
-	  break;
-      }
-
-
-      // Exclusion des dates ne correspondant pas au paramètre byday (MO,TU,WE, etc)
-      $day=strtoupper(substr(date("D",$d),0,2));
-      if(is_array($byday) and !in_array($day,$byday)){
-	// Dans ce cas, le tour ne doit pas être compté : $i ne devrait pas être incrémenté, donc on le décrémente
-	$i--;
-	continue;
-      }
-      // Exclusion des dates EXDATE
-      if(is_array($exdate) and in_array($d,$exdate)){
-	continue;
-      }
-      
-      // On ajoute au tableau les jours concernés avec les heures de début et de fin d'événement
-      $start1=date("D Y-m-d H:i:s",$d);
-      $end1=date("D Y-m-d H:i:s", $d+$duration );
-      $days[]=array($start1,$end1);
-    }
-  }
-  
-  // TODO : traiter les BYDAY : OK  pour weekly
-  // TODO : traiter les EXDATE : OK pour weekly
-  // TODO : INTERVAL
-
-      // TEST
-  if($freq=="WEEKLY"){
-    echo "<strong>\n";
-  }
-  echo "<br/>\n";
-  echo "Start : ".date("D Y-m-d H:i:s",$start);
-  echo "<br/>\n";
-  echo "End : ".date("D Y-m-d H:i:s",$end);
-  echo "<br/>\n";
-  print_r($rrule);
-  echo "<br/>\n";
-  print_r($exdate);
-  echo "<br/>\n";
-  foreach($days as $elem){
-    echo $elem[0]." - ".$elem[1]."<br/>";
-  }
-  echo "<hr/>\n";
-  if($freq=="WEEKLY"){
-    echo "</strong>\n";
-  }
-  
-  return $days;
-  // TODO : A continuer
-  // TODO : Enregistrer les jours dans un champ de la base de données, les regrouper dans un tableau PHP puis json_encode
 }
