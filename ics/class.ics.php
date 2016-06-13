@@ -33,7 +33,10 @@ Classe permettant le traitement des fichiers ICS
 */
 
 // TODO : loguer les imports / Modifs dans la table logs
-// TODO : récurrences : interval weekly : vérifier s'il faut compter 1 semaine depuis le premier jour (soit 7 jours, option actuellement choisie) ou s'il faut compter une semaine depuis le lundi (ou dimanche)
+// TODO : récurrences : interval weekly : Les semaines commencent le lundi ou le dimanche avant le jour défini par DTSTART. 
+// Le paramètre WKST (WeeKSTart), peut être défini. S'il n'est pas défini, je l'ai fixé à SU (sunday) par défaut. Voir si ceci est correct, ou si doit être à MO par défaut, ou si dépend d'un autre paramètre (paramètres régionaux)
+
+
 // NOTE : interval monthly : Interval calculé sur des mois complets
 
 // TEST
@@ -333,6 +336,7 @@ class CJICS{
     $freq=$rrule['FREQ'];
     $until=array_key_exists("UNTIL",$rrule)?$rrule['UNTIL']["Time"]:null;
     $count=array_key_exists("COUNT",$rrule)?$rrule['COUNT']:null;
+    $wkst=array_key_exists("WKST",$rrule)?$rrule['WKST']:"SU";
     $interval=array_key_exists("INTERVAL",$rrule)?$rrule['INTERVAL']:1;
     $byday=array_key_exists("BYDAY",$rrule)?explode(",",$rrule['BYDAY']):null;
     $bymonthday=array_key_exists("BYMONTHDAY",$rrule)?explode(",",$rrule['BYMONTHDAY']):null;
@@ -374,14 +378,8 @@ class CJICS{
 	      $d=strtotime(date("Y-m-d H:i:s",$d)." + 1 day");
 	      
 	      // Si un interval est défini, on passe les semaines qui ne nous intérressent pas
-	      if($interval){
-		$diff = $d - $start;
-		$oneWeek = strtotime("01/01/1970 + 1 week");
-		$weekNumber = (int) ($diff / $oneWeek);
-		$modulo = $weekNumber % $interval;
-		if($modulo){
-		  continue 2;
-		}
+	      if(skipWeek($d,$start,$interval,$wkst)){
+		continue 2;
 	      }
 	      
 
@@ -427,12 +425,11 @@ class CJICS{
 	  if(!byDay($d,$byday)){
 	    continue;
 	  }
-/*
-	  $day=strtoupper(substr(date("D",$d),0,2));
-	  if(is_array($byday) and !in_array($day,$byday)){
+
+	  // Exclusion des dates ne correspondant pas au paramètre bymonthday (1, 2, 15, -1, etc)
+	  if(!byMonthDay($d,$bymonthday)){
 	    continue;
 	  }
-*/
 	  
 	  // Exclusion des dates EXDATE
 	  if(is_array($exdate) and in_array($d,$exdate)){
@@ -463,17 +460,11 @@ class CJICS{
 	      $d=strtotime(date("Y-m-d H:i:s",$d)." + 1 day");
 	      
 	      // Si un interval est défini, on passe les semaines qui ne nous intérressent pas
-	      if($interval){
-		$diff = $d - $start;
-		$oneWeek = strtotime("01/01/1970 + 1 week");
-		$weekNumber = (int) ($diff / $oneWeek);
-		$modulo = $weekNumber % $interval;
-		if($modulo){
-		  $i--;
-		  continue 2;
-		}
+	      if(skipWeek($d,$start,$interval,$wkst)){
+		$i--;
+		continue 2;
 	      }
-	      
+
 	    // Si BYDAY est absent, on passe au même jour de la semaine suivante (+ 1 week)
 	    }else{
 	      $d=strtotime(date("Y-m-d H:i:s",$d)." + $interval week");
@@ -515,55 +506,15 @@ class CJICS{
 	    break;
 	}
 
-/*
-	// $day : MO,TU,WE, TH, FR, SA, SU
-	// $day2 : ex : 1MO (first monday), 2WE (2nd Wednesday), 3TH (3rd Thursday), etc.
-	// $day3 : ex : -1SU (Last Sunday), 
-	$day=strtoupper(substr(date("D",$d),0,2));
-	$dayOfMonth=date("j",$d);
-
-	if($dayOfMonth<8){		// de 1 à 7
-	  $day2="1$day";
-	}elseif($dayOfMonth<15){	// de 8 à 14
-	  $day2="2$day";
-	}elseif($dayOfMonth<22){	// de 15 à 21
-	  $day2="3$day";
-	}elseif($dayOfMonth<29){	// de 22 à 28
-	  $day2="4$day";
-	}else{				// de 29 à 31
-	  $day2="5$day";
-	}
-	
-	$daysInMonth = date("t",$d);
-	if( $daysInMonth - $dayOfMonth < 7 ){		// Pour un mois de 31 jours : du 25 au 31
-	  $day3="-1$day";
-	}elseif( $daysInMonth - $dayOfMonth < 14 ){	// Pour un mois de 31 jours : du 18 au 24
-	  $day3="-2$day";
-	}elseif( $daysInMonth - $dayOfMonth < 21 ){	// Pour un mois de 31 jours : du 11 au 17
-	  $day3="-3$day";
-	}elseif( $daysInMonth - $dayOfMonth < 28 ){	// Pour un mois de 31 jours : du 4 au 10
-	  $day3="-4$day";
-	}else{						// Pour un mois de 31 jours : du 1 au 3
-	  $day3="-5$day";
-	}
-
-	
-	if(is_array($byday)){
-	  $keep=false;
-	  if(in_array($day,$byday) or in_array($day2,$byday) or in_array($day3,$byday)){
-	    $keep=true;
-	  }
-	   
-	  if(!$keep){
-	    // Dans ce cas, le tour ne doit pas être compté : $i ne devrait pas être incrémenté, donc on le décrémente
-	    $i--;
-	    continue;
-	  }
-	}
-	*/
-	
 	// Exclusion des dates ne correspondant pas au paramètre byday (MO,TU,WE, etc)
 	if(!byDay($d,$byday)){
+	  // Dans ce cas, le tour ne doit pas être compté : $i ne devrait pas être incrémenté, donc on le décrémente
+	  $i--;
+	  continue;
+	}
+	
+	// Exclusion des dates ne correspondant pas au paramètre bymonthday (1, 2, 15, -1, etc)
+	if(!byMonthDay($d,$bymonthday)){
 	  // Dans ce cas, le tour ne doit pas être compté : $i ne devrait pas être incrémenté, donc on le décrémente
 	  $i--;
 	  continue;
@@ -584,23 +535,24 @@ class CJICS{
     $this->days=$days;
     
     
-    // TODO : traiter les BYDAY : OK  pour weekly
-    // TODO : traiter les EXDATE : OK pour weekly
-    // TODO : INTERVAL : OK pour DAILY et WEEKLY
+    // TODO : traiter les BYDAY : OK  pour weekly et monthly
+    // TODO : traiter les EXDATE : OK
+    // TODO : INTERVAL : OK pour DAILY, WEEKLY, MONTHLY
     // TODO : INTERVAL
+    // TODO : WKST=SU; avec WEEKLY, Week start OK
+    // TODO : FREQ=MONTHLY : OK (voir si c'est complet )
     // TODO : BYMONTH : january=1, peut être utilisé avec BYDAY et FREQ=YEARLY ou avec FREQ=DAILY (ex: DAILY BYMONTH=1 : tous les jours de janvier)
-    // NOTE : WKST=SU; avec WEEKLY, Week start 
-    // NOTE : BYDAY=1FR : first friday, with monthly
-    // NOTE : BYDAY=-1SU : last sunday
-    // NOTE : BYMONTHDAY=-2 (2 jours avant la fin du mois), BYMONTHDAY=2,15 : 2ème et 15ème jour
+    // NOTE : BYDAY=1FR : first friday, with monthly : OK
+    // NOTE : BYDAY=-1SU : last sunday : OK
+    // NOTE : BYMONTHDAY=-2 (2 jours avant la fin du mois), BYMONTHDAY=2,15 : 2ème et 15ème jour OK
     // NOTE : BYYEARDAY, BYWEEKNO, BYSETPOS
-    // TODO : FREQ=MONTHLY, YEARLY
+    // TODO : YEARLY
     // TODO : FREQ=HOURLY,INTERVAL
     // TODO : FREQ=MINUTELY; INTERVAL;
     // TODO : FREQ=DAILY; BYHOUR=9,10,11; BYMINUTE=0,20,40
     // TODO : pas de fin : si ni COUNT ni UNTIL : définir une date de fin est préciser qq part que l'événement se répète indéfiniement : pour traitement ultérieur des dates à venir via cron : Fait : UNTIL = now + 1 year et champ INFINITE = 1
     // NOTE : événéments infinis : sont calculés les jours de maintenant à + 1 an, et champs INFINITE = 1 (0 par défaut)
-    // TODO : événements infinis : recalculer 1 fois par jours les événemts infinis pour ajouter les nouvelles dates
+    // TODO : événements infinis : recalculer 1 fois par jours les événemts infinis pour ajouter les nouvelles dates, à faire si champ INFINITE == 1 (BDD) 
     // REF  : http://www.kanzaki.com/docs/ical/rrule.html
     
     // TODO : A continuer
@@ -803,7 +755,7 @@ class CJICS{
 /** byDay
  * @param time $d : date courante, format time
  * @param array $byday : liste des jours à conserver : tableau contenant les éléments suivants : MO, TU, WE, TH, FR, SA, SU, 1MO, 2WE, 3FR, -1SU, -2SA, etc
- * La fonction retourne true si $byday n'est pas un tableau ou si $d correspond à un élément contenant dans $byday
+ * La fonction retourne true si $byday n'est pas un tableau ou si $d correspond à un élément de $byday
  */
 function byDay($d,$byday){
 
@@ -848,6 +800,40 @@ function byDay($d,$byday){
   
   $return=false;
   if(in_array($day1,$byday) or in_array($day2,$byday) or in_array($day3,$byday)){
+    $return=true;
+  }
+  
+  return $return;
+}
+
+
+/** byMonthDay
+ * @param time $d : date courante, format time
+ * @param array $bymonthday : liste des jours à conserver : tableau contenant les éléments suivants : 1, 2, 3, 15, 16, -2, -1, etc
+ * La fonction retourne true si $bymonthday n'est pas un tableau ou si $d correspond à un élément de $bymonthday
+ */
+function byMonthDay($d,$bymonthday){
+
+  // Si bymonthday n'est pas un tableau (null), pas de filtre bymonthday, donc retroune true
+  if(!is_array($bymonthday)){
+    return true;
+  }
+
+  // $day1 : 1, 2, 3, 16, 31
+  $day1=date("j",$d);
+
+  // days in month pour calculer les positions du jour $d dans le mois en partant de la fin (-1, -2, etc.)
+  $daysInMonth = date("t",$d);
+
+  // $day2 : ex : -1 (Last Day), etc.
+  $day2 = $day1 - $daysInMonth - 1;
+  
+  // dernier jour : 31 - 31 - 1 = -1
+  // avant dernier jour : 30 - 31 - 1 = -2
+
+  
+  $return=false;
+  if(in_array($day1,$bymonthday) or in_array($day2,$bymonthday)){
     $return=true;
   }
   
@@ -902,4 +888,50 @@ function ICSDateConversion($value){
     
   }
   return $value;
+}
+
+
+/**
+ * skipWeek
+ * @param time $d : date du jour courant
+ * @param time $start : date du début de l'événement
+ * @param int $interval : intervalle entre 2 semaines
+ * @param string $wkst : WeeK STart : défini le jour de début de semaine (SU ou MO)
+ * Fonction utilisée si FREQ=WEEKLY et BYDAY et INTERVAL sont définis
+ * Calcule le début de chaque semaine en fonction du @param $wkst et vérifie si les semaines entrent dans les intervalles, @return false sinon
+ */
+  // 
+function skipWeek($d,$start,$interval,$wkst){
+  if(!$interval){
+    return false;
+  }
+  
+  // Si un interval est défini, on passe les semaines qui ne nous intérressent pas
+  if($interval){
+  
+    // Calcul du premier jour de la semaine en fonction du paramètre $wkst (week start = SU, MO)
+    // $start1 est le premier jour de la semaine correspondant à $start
+    // $d1 est le premier jour de la semaine correspondant à $d
+    $wkst1 = str_replace(array("SU","MO","TU","WE","TH","FR","SA"),array(0,1,2,3,4,5,6),$wkst);
+    $rel = $wkst1 - date("w", $start);
+    if($rel==1){
+      $rel=-6;
+    }
+    $start1 = strtotime(date("Y-m-d", $start)." $rel days");
+    $rel = $wkst1 - date("w", $d);
+    if($rel==1){
+      $rel=-6;
+    }
+    $d1 = strtotime(date("Y-m-d", $d)." $rel days");
+
+    $diff = $d1 - $start1;
+    $weekNumber = (int) date("W",$diff) -1;
+    $modulo = $weekNumber % $interval;
+    
+    if($modulo){
+      return true;
+    }
+
+    return false;
+  }
 }
