@@ -16,6 +16,15 @@ Classe permettant le traitement des fichiers ICS
 
 
 /**
+ * Utilisation : 
+ * foreach($tab as $elem){
+ *   $i=new CJICS();
+ *   $i->src=$elem[1];		// source ICS
+ *   $i->perso_id=$elem[0];	// ID de l'agent
+ *   $i->table="absences";	// Table à mettre à jour
+ *   $i->updateTable();
+ * }
+ *
  * @note : 
  * Clés pour la MAJ de la base de données : UID + LAST-MODIFIED
  * - Si UID n'existe pas dans la base : INSERT (voir fonctionnement de UPDATE INTO)
@@ -34,10 +43,48 @@ Classe permettant le traitement des fichiers ICS
 
 // TODO : loguer les imports / Modifs dans la table logs
 // TODO : récurrences : interval weekly : Les semaines commencent le lundi ou le dimanche avant le jour défini par DTSTART. 
-// Le paramètre WKST (WeeKSTart), peut être défini. S'il n'est pas défini, je l'ai fixé à SU (sunday) par défaut. Voir si ceci est correct, ou si doit être à MO par défaut, ou si dépend d'un autre paramètre (paramètres régionaux)
+// Le paramètre WKST (WeeKSTart), peut être défini. S'il n'est pas défini, je l'ai fixé à MO (monday) par défaut. Voir si ceci est correct, ou si doit être à SU par défaut, ou si dépend d'un autre paramètre (paramètres régionaux)
 
+// TODO : Modification d'une récurrence : si l'option "les éléments suivants" est choisie lors de la modification d'un événément récurrent, un nouvel élément ICS est créé avec 
+// un UID du type uid_origine_rev_date ... PB l'événement initial reste tel quel et ça créé des doublons erronés :
+// TODO : comparrer les éléments ayant la même base (UID avant _R), supprimer de l'élément d'origine les dates traités par la révision 
+// 4l0hmqags1s23hqgomago8vi74_R20160708T073000@google.com
+// 4l0hmqags1s23hqgomago8vi74@google.com
+// TODO : Modification d'un" récurrence : si l'option "uniquement cet élément" est chosie lors de la modifcation d'un événement récurrent, un nouvel élément ICS est créé avec le même UID est une date de modifcation différente
+// PB : l'un des 2 éléments est ignoré
+/*
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20160708T093000
+DTEND;TZID=Europe/Paris:20160708T120000
+DTSTAMP:20160617T225529Z
+UID:6pah8kq546frnqrtce857jf9n4@google.com
+RECURRENCE-ID;TZID=Europe/Paris:20160708T093000
+CREATED:20160617T225057Z
+DESCRIPTION:
+LAST-MODIFIED:20160617T225211Z
+LOCATION:
+SEQUENCE:0
+STATUS:CONFIRMED
+SUMMARY:Mailman ordi petit salon test test
+TRANSP:OPAQUE
+END:VEVENT
 
-// NOTE : interval monthly : Interval calculé sur des mois complets
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20160701T093000
+DTEND;TZID=Europe/Paris:20160701T120000
+RRULE:FREQ=WEEKLY;COUNT=3;BYDAY=FR
+DTSTAMP:20160617T225529Z
+UID:6pah8kq546frnqrtce857jf9n4@google.com
+CREATED:20160617T225057Z
+DESCRIPTION:
+LAST-MODIFIED:20160617T225057Z
+LOCATION:
+SEQUENCE:0
+STATUS:CONFIRMED
+SUMMARY:Mailman ordi petit salon test
+TRANSP:OPAQUE
+END:VEVENT
+*/
 
 // TEST
 $version="test";
@@ -55,7 +102,9 @@ class CJICS{
   public $calendar=null;
   public $events=null;
   public $error=null;
+  public $perso_id=0;
   public $src=null;
+  public $table="absences";
 
   
   /**
@@ -186,7 +235,7 @@ class CJICS{
 			$tmp3=array();
 			foreach($tmp as $elem){
 			  $tmp2=explode("=",$elem);
-			  $tmp3[$tmp2[0]]=trim($tmp2[1]);
+			  $tmp3[$tmp2[0]]=trim(stripslashes($tmp2[1]));
 			}
 			if(array_key_exists("UNTIL",$tmp3)){
 			  $tmp3["UNTIL"]=ICSDateConversion($tmp3["UNTIL"]);
@@ -199,7 +248,7 @@ class CJICS{
 	}
 	
 	if(!is_array($value)){
-	  $value=trim($value);
+	  $value=trim(stripslashes($value));
 	}
 	
 	// Les informations sont ajoutés dans le tableau $events et liés à l'événement auquel elles appartiennent grace à la clé $id
@@ -336,7 +385,7 @@ class CJICS{
     $freq=$rrule['FREQ'];
     $until=array_key_exists("UNTIL",$rrule)?$rrule['UNTIL']["Time"]:null;
     $count=array_key_exists("COUNT",$rrule)?$rrule['COUNT']:null;
-    $wkst=array_key_exists("WKST",$rrule)?$rrule['WKST']:"SU";
+    $wkst=array_key_exists("WKST",$rrule)?$rrule['WKST']:"MO";
     $interval=array_key_exists("INTERVAL",$rrule)?$rrule['INTERVAL']:1;
     $byday=array_key_exists("BYDAY",$rrule)?explode(",",$rrule['BYDAY']):null;
     $bymonthday=array_key_exists("BYMONTHDAY",$rrule)?explode(",",$rrule['BYMONTHDAY']):null;
@@ -561,7 +610,7 @@ class CJICS{
   
   /**
    * updateDB
-   * Enregistre les nouveaux événements d'un fichier ICS dans la base de données
+   * Enregistre les nouveaux événements d'un fichier ICS dans la base de données, table ics
    * Met à jour les événements modifiés
    * Marque les événements supprimés
    * @param string @this->src
@@ -595,6 +644,8 @@ class CJICS{
     */
     
     $calName=$calendar['X-WR-CALNAME'];
+    $perso_id=$this->perso_id;
+    $table=$this->table;
 
     // Pour chaque événement
     // Si l'événement n'existe pas dans la base de données, on l'insère
@@ -607,12 +658,12 @@ class CJICS{
     
     // TODO : A continuer : Ajouter les autres champs dans la base de données (si besoin)
     // TODO : Créer la table via script PHP dans maj et setup/db_structure. Penser aux index
-    $keys=array("UID","DESCRIPTION","LOCATION","SUMMARY","SEQUENCES","STATUS","DTSTART","DTEND","DTSTAMP","CREATED","LAST-MODIFIED","RRULE","DAYS","INFINITE");
+    $keys=array("UID","DESCRIPTION","LOCATION","SUMMARY","SEQUENCES","STATUS","TRANSP","DTSTART","DTEND","DTSTAMP","CREATED","LAST-MODIFIED","RRULE","DAYS","INFINITE");
     
     // Recherche des événements enregistrés dans la base de données
     $calDB=array();
     $db=new db();
-    $db->select2("ics",null,array("CALNAME"=>$calName));
+    $db->select2("ics",null,array("perso_id"=>$perso_id, "table"=>$table, "CALNAME"=>$calName));
     if($db->result){
       foreach($db->result as $elem){
 	// Evénéments de la base de données
@@ -679,6 +730,11 @@ class CJICS{
     // Insertion des nouveaux événments
     if(!empty($insert)){
       $k=array_keys($insert[0]);
+      
+      // Ajout des paramétres perso_id et table
+      $k[]=":perso_id";
+      $k[]=":table";
+      
       $fields="`".implode("`, `",$k)."`";
       $fields=str_replace(":",null,$fields);
       $values=implode(", ",$k);
@@ -687,6 +743,9 @@ class CJICS{
       $db=new dbh();
       $db->prepare($req);
       foreach($insert as $elem){
+	// Ajout des paramétres perso_id et table
+	$elem[":perso_id"]=$perso_id;
+	$elem[":table"]=$table;
 	$db->execute($elem);
       }
     }
@@ -711,7 +770,7 @@ class CJICS{
       }
       $set=implode(", ",$set);
       
-      $req="UPDATE `{$GLOBALS['dbprefix']}ics` set $set WHERE `CALNAME`=:CALNAME AND `UID`=:UID ;";
+      $req="UPDATE `{$GLOBALS['dbprefix']}ics` set $set WHERE `CALNAME`=:CALNAME AND `UID`=:UID AND `perso_id`='$perso_id' AND `table`='$table';";
       $db=new dbh();
       $db->prepare($req);
       foreach($update as $elem){
@@ -729,14 +788,15 @@ class CJICS{
     
     // Recherche des événements supprimés (qui ne sont plus dans le fichier ICS) ou qui n'ont plus le status "CONFIMED"
     // Et marque ces événements comme supprimés dans la base de données
-    $req="UPDATE `{$GLOBALS['dbprefix']}ics` SET `STATUS`='DELETED', LASTMODIFIED=SYSDATE() WHERE `CALNAME`='$calName' AND `UID`=:UID;";
+    $req="UPDATE `{$GLOBALS['dbprefix']}ics` SET `STATUS`='DELETED', LASTMODIFIED=SYSDATE() WHERE `CALNAME`='$calName' AND `UID`=:UID AND `perso_id`='$perso_id' AND `table`='$table';";
     $db=new dbh();
     $db->prepare($req);
     foreach($uidsDB as $elem){
       if(!in_array($elem,$keep) and $calDB[$elem]['STATUS']!="DELETED") {
 	$db->execute(array(":UID"=>$elem));
-	echo "<br/>";
-	echo $elem;
+	// TEST
+// 	echo "<br/>";
+// 	echo $elem;
       }
     }
     
@@ -749,6 +809,142 @@ class CJICS{
     */
 
   }
+  
+  
+  /**
+   * updateTable
+   * @param string $this->table
+   * @param int $this->perso_id (optionnel)
+   * Met à jour la table définie par $this->table
+   * Si $this->perso_id n'est pas défini, les absences de tous les agents seront actualisées, sinon seules les absences de l'agent précisé seront mise à jour.
+   * Recherche des événements enregistrés dans la table ICS
+   */
+  public function updateTable(){
+
+    $this->updateDB();
+  
+    // Table à mettre à jour
+    $table=$this->table;
+    
+    // Initialisation des variables
+    $absences=array();	// Evénements de la table absences (ou autre table définie par $table)
+    $cals=array();	// Nom des calendriers issus de la table ics
+    $ics=array();	// Evénements confirmés issus de la table ics
+    $deleted=array();	// Evénements supprimés de la table ics (STATUS=DELETED, ou modifiés (LASTMODIFIED différent))
+    $insert=array();	// Evénements à insérer (nouveaux ou événements modifiés (suppression + réinsertion))
+    
+    // Recherche des éléments dans la table ICS
+    $where=array("table"=>$table);
+    if($this->perso_id){
+      $where["perso_id"]=$this->perso_id;
+    }
+    $db=new db();
+    $db->select2("ics",null,$where);
+
+    // Pour chaque élément de la table ics
+    if($db->result){
+      foreach($db->result as $elem){
+	// Noms des calendriers (pour les rechercher dans la table $table)
+	if(!in_array($elem['CALNAME'],$cals)){
+	  $cals[]=$elem['CALNAME'];
+	}
+	
+	// Tous les événements ayant le status CONFIRMED
+	if( $elem['STATUS'] == "CONFIRMED" and $elem['TRANSP'] == "OPAQUE" ){
+	  $ics["{$elem['CALNAME']}_{$elem['UID']}_{$elem['perso_id']}"]=$elem;
+	}
+	
+	// Evénements supprimés
+	if( $elem['STATUS'] != "CONFIRMED" or $elem['TRANSP'] != "OPAQUE" ){
+	  $deleted[]=array(":CALNAME"=>$elem["CALNAME"], ":UID"=>$elem["UID"], ":perso_id"=>$elem["perso_id"]);
+	}
+      }
+    }
+
+    // Recherche des événements déjà reportés dans la table $table
+    // S'il y a des événements confirmés dans la table ics
+    if(!empty($cals) and !empty($ics)){
+      
+      // Recherches des événements correspondants enregistrés dans la table $table
+      $cals=implode(",",$cals);
+      $db=new db();
+      $db->select2($table,null,array("CALNAME"=> "IN $cals","perso_id"=>$elem["perso_id"]));
+      if($db->result){
+	foreach($db->result as $elem){
+	  $absences["{$elem['CALNAME']}_{$elem['UID']}_{$elem['perso_id']}"]=$elem;
+	}
+      }
+      
+
+      // Pour chaque absences déjà importée, vérifie si l'événement doit être mis à jour
+      if(!empty($ics)){
+	// Pour chaque absence (DB)
+	foreach($absences as $elem){
+	  // récupération de l'événement ICS ayant le même CALNAME et même UID
+	  $event=$ics["{$elem['CALNAME']}_{$elem['UID']}_{$elem['perso_id']}"];
+	  // Si le champ LASTMODIFIED à changé 
+	  if($event['LASTMODIFIED'] != $elem['LASTMODIFIED']){
+	    // On supprime l'événement de la table $table, il sera réinséré avec les nouveaux paramètres ensuite
+	    $deleted[]=array(":CALNAME"=>$event["CALNAME"], ":UID"=>$event["UID"], ":perso_id"=>$elem["perso_id"]);
+
+	    // On insère les nouveaux éléments de l'événement
+	    $insert[]=$event;
+	  }
+	}
+      }
+    }
+
+
+    // Insertion des nouveaux événements dans la table $table
+    if(!empty($ics)){
+      foreach($ics as $elem){
+	if(!array_key_exists("{$elem['CALNAME']}_{$elem['UID']}_{$elem['perso_id']}",$absences)){
+	  $insert[]=$elem;
+	}
+      }
+    }
+
+
+    // Suppression des événements déjà importés dans la table $table et supprimés ou modifiés depuis
+    if(!empty($deleted)){
+      $db=new dbh();
+      $db->prepare("DELETE FROM `{$GLOBALS['dbprefix']}$table` WHERE `CALNAME`=:CALNAME AND `UID`=:UID AND `perso_id`=:perso_id ;");
+      foreach($deleted as $elem){
+	$db->execute($elem);
+      }
+    }
+
+    // Insertion des nouveux éléments ou des éléments modifiés dans la table $table
+    if(!empty($insert)){
+      $db=new dbh();
+      $db->prepare("INSERT INTO `{$GLOBALS['dbprefix']}$table` (`perso_id`, `debut`, `fin`, `demande`, `valide`, `validation`, `valideN1`, `validationN1`, `motif`, `motif_autre`, `commentaires`, `CALNAME`, `UID`, `LASTMODIFIED`) 
+	VALUES (:perso_id, :debut, :fin, :demande, :valide, :validation, :valideN1, :validationN1, :motif, :motif_autre, :commentaires, :CALNAME, :UID, :LASTMODIFIED);");
+
+      foreach($insert as $elem){
+	$created=$elem['CREATED']!="0000-00-00 00:00:00"?$elem['CREATED']:$elem['LASTMODIFIED'];
+	$tab=array(":perso_id" => $elem["perso_id"], ":debut" => $elem['DTSTART'], ":fin" => $elem['DTEND'], ":demande" => $created, ":valide"=> "99999", ":validation" => $elem['LASTMODIFIED'], ":valideN1"=> "99999", 
+	  ":validationN1" => $elem['LASTMODIFIED'], ":motif" => "Import ICS", ":motif_autre" => "Import ICS", ":commentaires" => $elem['SUMMARY'], 
+	  ":CALNAME" => $elem['CALNAME'], ":UID" => $elem['UID'], ":LASTMODIFIED" => $elem['LASTMODIFIED']);
+	  
+	$db->execute($tab);
+	
+	if($elem['DAYS']){
+	
+	  $days=html_entity_decode($elem['DAYS'],ENT_QUOTES|ENT_IGNORE,"UTF-8");
+	  $days=json_decode($days);
+
+	  foreach($days as $day){
+	    $tab[":debut"]=$day[0];
+	    $tab[":fin"]=$day[1];
+	    
+	    $db->execute($tab);
+	  }
+	}
+      }
+    }
+
+  }
+
 }
 
 
