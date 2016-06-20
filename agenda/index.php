@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.3.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 22 janvier 2016
+Dernière modification : 20 juin 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -131,20 +131,23 @@ $filter=$config['Absences-validation']?"AND `valide`>0":null;
 $db=new db();
 $db->select("absences",null,"`perso_id`='$perso_id' $filter ");
 $absences=$db->result;					//	$absences = tableau d'absences
-	
+
+// Plannings verrouillés
+$verrou=array();
+$db=new db();
+$db->select2("pl_poste_verrou",array("site","date"),array("verrou2"=>"1", "date"=>"BETWEEN $debutSQL AND $finSQL"));
+if($db->result){
+  foreach($db->result as $elem){
+    $verrou[$elem['site']][]=$elem['date'];
+  }
+}
+
 //	Selection des postes occupés
 $db=new db();
-$perso_id=$db->escapeString($perso_id);
-$debutREQ=$db->escapeString($debutSQL);
-$finREQ=$db->escapeString($finSQL);
-
-$requete="SELECT pl_poste.`date` AS `date`, pl_poste.debut AS debut, pl_poste.fin AS fin, pl_poste.absent AS absent, 
-  postes.nom as poste FROM pl_poste INNER JOIN postes on pl_poste.poste=postes.id WHERE pl_poste.perso_id='$perso_id' 
-  and `date`>='$debutREQ' and `date`<='$finREQ' order by `date`,`debut`,`fin`;";
-$requete=str_replace("pl_poste","`{$dbprefix}pl_poste`",$requete);
-$requete=str_replace("postes","`{$dbprefix}postes`",$requete);
-$db->query($requete);
+$db->selectInnerJoin(array("pl_poste","poste"), array("postes","id"), array("date","debut","fin","absent","site"), array(array("name"=>"nom", "as"=>"poste")), 
+  array("perso_id"=>$perso_id, "date"=>"BETWEEN $debutSQL AND $finSQL"), array(), "ORDER BY date,debut,fin,site,poste");
 $postes=$db->result;
+
 
 if($debutSQL>$finSQL){
   echo "<p class='information'>La date de fin doit &ecirc;tre sup&eacute;rieure &agrave; la date de d&eacute;but.</p>\n";
@@ -234,7 +237,7 @@ EOD;
     $current_date=ucfirst($d->jour_complet);
     if(is_array($postes))
     foreach($postes as $elem){
-      if($elem['date']==$current){
+      if($elem['date']==$current and in_array($current,$verrou[$elem['site']])){
 	$current_postes[]=$elem;
       }
     }
@@ -335,12 +338,33 @@ EOD;
 
     if(!empty($current_postes)){
       echo "<div class='postes'>Postes occup&eacute;s :<ul>\n";
+
+      
+      // Regroupe les horaires des mêmes postes
+      $tmp=array();
+      $j=0;
+      for($i=0; $i<count($current_postes);$i++){
+	if($i==0){
+	  $tmp[$j]=$current_postes[$i];
+	}elseif($current_postes[$i]['site']==$tmp[$j]['site'] and $current_postes[$i]['poste']==$tmp[$j]['poste']
+	     and $current_postes[$i]['absent']==$tmp[$j]['absent']and $current_postes[$i]['debut']==$tmp[$j]['fin']){
+	  $tmp[$j]['fin']=$current_postes[$i]['fin'];
+	}else{
+	  $j++;
+	  $tmp[$j]=$current_postes[$i];
+	}
+      }
+      $current_postes=$tmp;
+      
       foreach($current_postes as $elem){
 	$heure=heure2($elem['debut'])." - ".heure2($elem['fin']);
 	$barre=$elem['absent']?"text-decoration:line-through;":null;
 	$class=$elem['absent']?"important":null;
 	echo "<li style='$barre' class='$class'>$heure {$elem['poste']}</li>\n";
       }
+
+      
+      
     echo "</ul></div>\n";
     }
 	    
