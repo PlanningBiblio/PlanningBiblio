@@ -23,7 +23,10 @@ if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
 }
 
 echo "Mise &agrave; jour de la base de donn&eacute;es version {$config['Version']} --> $version<br/>\n";
-
+if($config['Version']<"2.0"){
+  echo "<br/>Vous devez d'abord installer la version 2.0<br/>\n";
+  exit;
+}
 $sql=array();
 
 
