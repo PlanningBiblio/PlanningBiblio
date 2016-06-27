@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.3
+Planning Biblio, Version 2.3.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : setup/db_data.php
 Création : mai 2011
-Dernière modification : 5 février 2016
+Dernière modification : 27 juin 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -94,21 +94,21 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUE
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`) VALUES ('Modification des commentaires des plannings','801','Modification des commentaires des plannings');";
 
 //	Insertion des activités
-$sql[]="INSERT INTO `{$dbprefix}activites` VALUES(1, 'Assistance audiovisuel');";
-$sql[]="INSERT INTO `{$dbprefix}activites` VALUES(2, 'Assistance autoformation');";
-$sql[]="INSERT INTO `{$dbprefix}activites` VALUES(3, 'Communication');";
-$sql[]="INSERT INTO `{$dbprefix}activites` VALUES(4, 'Communication r&eacute;serve');";
-$sql[]="INSERT INTO `{$dbprefix}activites` VALUES(5, 'Inscription');";
-$sql[]="INSERT INTO `{$dbprefix}activites` VALUES(6, 'Pr&ecirc;t/retour de document');";
-$sql[]="INSERT INTO `{$dbprefix}activites` VALUES(7, 'Pr&ecirc;t de mat&eacute;riel');";
-$sql[]="INSERT INTO `{$dbprefix}activites` VALUES(8, 'Rangement');";
-$sql[]="INSERT INTO `{$dbprefix}activites` VALUES(9, 'Renseignement');";
-$sql[]="INSERT INTO `{$dbprefix}activites` VALUES(10, 'Renseignement bibliographique');";
-$sql[]="INSERT INTO `{$dbprefix}activites` VALUES(11, 'Renseignement r&eacute;serve');";
-$sql[]="INSERT INTO `{$dbprefix}activites` VALUES(12, 'Renseignement sp&eacute;cialis&eacute;');";
+$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('1', 'Assistance audiovisuel');";
+$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('2', 'Assistance autoformation');";
+$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('3', 'Communication');";
+$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('4', 'Communication r&eacute;serve');";
+$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('5', 'Inscription');";
+$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('6', 'Pr&ecirc;t/retour de document');";
+$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('7', 'Pr&ecirc;t de mat&eacute;riel');";
+$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('8', 'Rangement');";
+$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('9', 'Renseignement');";
+$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('10', 'Renseignement bibliographique');";
+$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('11', 'Renseignement r&eacute;serve');";
+$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('12', 'Renseignement sp&eacute;cialis&eacute;');";
 
 // Insertion de la config
-$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Version', 'info', '2.3.3', 'Version de l&apos;application',' Divers','','0');";
+$sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Version', 'info', '2.3.4', 'Version de l&apos;application',' Divers','','0');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Mail-IsEnabled', 'boolean', '0', 'Active ou d&eacute;sactive l&apos;envoi des mails','Messagerie','','10');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'toutlemonde', 'boolean', '0', 'Affiche ou non l&apos;utilisateur \"tout le monde\" dans le menu.','Planning','','5');";
 $sql[]="INSERT INTO `{$dbprefix}config` VALUES (NULL, 'Mail-IsMail-IsSMTP', 'enum', 'IsSMTP', 'Classe &agrave; utiliser : SMTP, fonction PHP IsMail','Messagerie','IsSMTP,IsMail','10');";

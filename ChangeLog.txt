@@ -1,3 +1,7 @@
+***	Version 2.3.4	(27 juin 2016)		***
+- Correction
+Corrige le script d'instllation (db_data) : insertion dans la table activités
+
 ***	Version 2.3.3	(20 juin 2016)		***
 - Améliorations
 Agenda : Regroupe les horaires des mêmes postes qui se suivent
