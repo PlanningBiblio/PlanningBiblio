@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 28 mai 2016
+Dernière modification : 27 juin 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -37,7 +37,10 @@ $sql[]="CREATE TABLE `{$dbprefix}absences` (
   `pj2` INT(1) DEFAULT 0,
   `so` INT(1) DEFAULT 0,
   `groupe` VARCHAR(14) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `CALNAME` VARCHAR(300) NOT NULL,
+  `iCalKey` TEXT NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `CALNAME`(`CALNAME`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
 $sql[]="CREATE TABLE `{$dbprefix}absences_infos` (
@@ -89,7 +92,8 @@ $sql[]="CREATE TABLE `{$dbprefix}config` (
   `categorie` VARCHAR( 100 ) NOT NULL,
   `valeurs` TEXT NOT NULL,
   `ordre` INT(2) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nom` (`nom`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
 $sql[]="CREATE TABLE `{$dbprefix}heures_Absences` (

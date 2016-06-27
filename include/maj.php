@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.3
+Planning Biblio, Version 2.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 20 juin 2016
+Dernière modification : 27 juin 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -391,6 +391,29 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
+
+$v="2.4";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Absences
+  $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `CALNAME` VARCHAR(300) NOT NULL;";
+  $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `iCalKey` TEXT NOT NULL;";
+  $sql[]="ALTER TABLE `{$dbprefix}absences` ADD INDEX `CALNAME` (`CALNAME`);";
+
+  // Config
+  $sql[]="ALTER TABLE `config` ADD UNIQUE `nom` (`nom`);";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('ICS-Server1','text','ICS', 'URL du 1<sup>er</sup> serveur ICS avec la variable OpenURL entre crochets. Ex: http://server.domain.com/calendars/[email].ics','10');";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('ICS-Pattern1','text','ICS', 'Motif d&apos;absence pour les &eacute;v&eacute;nements import&eacute;s du 1<sup>er</sup> serveur. Ex: Agenda Personnel','20');";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('ICS-Server2','text','ICS', 'URL du 2<sup>&egrave;me</sup> serveur ICS avec la variable OpenURL entre crochets. Ex: http://server2.domain.com/holiday/[login].ics','30');";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('ICS-Pattern2','text','ICS', 'Motif d&apos;absence pour les &eacute;v&eacute;nements import&eacute;s du 2<sup>&egrave;me</sup> serveur. Ex: Cong&eacute;s','40');";
+
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 
 
 //	Execution des requetes et affichage
