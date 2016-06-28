@@ -88,6 +88,7 @@ require_once "$path/vendor/ics-parser/class.iCalReader.php";
 class CJICS{
 
   public $error=null;
+  public $pattern=null;
   public $perso_id=0;
   public $src=null;
   public $table="absences";
@@ -215,7 +216,7 @@ class CJICS{
 	
 	// Insertion dans la base de données
 	$tab=array(":perso_id" => $perso_id, ":debut" => $debut, ":fin" => $fin, ":demande" => $demande, ":valide"=> "99999", ":validation" => $lastmodified, ":valideN1"=> "99999", 
-	  ":validationN1" => $lastmodified, ":motif" => "Import ICS", ":motif_autre" => "Import ICS", ":commentaires" => $commentaires, ":CALNAME" => $calName, ":iCalKey" => $elem['key']);
+	  ":validationN1" => $lastmodified, ":motif" => $this->pattern, ":motif_autre" => $this->pattern, ":commentaires" => $commentaires, ":CALNAME" => $calName, ":iCalKey" => $elem['key']);
 	  
 	$db->execute($tab);
 	$i++;
