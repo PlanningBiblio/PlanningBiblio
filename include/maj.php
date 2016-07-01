@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 27 juin 2016
+Dernière modification : 1er juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -398,6 +398,9 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `CALNAME` VARCHAR(300) NOT NULL;";
   $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `iCalKey` TEXT NOT NULL;";
   $sql[]="ALTER TABLE `{$dbprefix}absences` ADD INDEX `CALNAME` (`CALNAME`);";
+
+  // PlanningHebdo
+  $sql[]="ALTER TABLE  `{$dbprefix}planningHebdo` ADD  `key` VARCHAR( 100 ) NOT NULL , ADD UNIQUE (`key`);";
 
   // Config
   $sql[]="ALTER TABLE `config` ADD UNIQUE `nom` (`nom`);";

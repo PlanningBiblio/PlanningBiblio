@@ -27,9 +27,9 @@ require_once "$path/ics/class.ics.php";
 require_once "$path/personnel/class.personnel.php";
 
 
-// Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est en cours d'execution
+// Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
 $tmp_dir=sys_get_temp_dir();
-$lockFile=$tmp_dir."/planningBiblioIcs.lock";déjà 
+$lockFile=$tmp_dir."/planningBiblioIcs.lock"; 
 
 if(file_exists($lockFile)){
   $fileTime = filemtime($lockFile);
@@ -119,7 +119,7 @@ foreach($agents as $agent){
   }
 }
 
-// TODO : lock
+// Unlock
 unlink($lockFile);
 
 ?>
