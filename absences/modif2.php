@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.1
+Planning Biblio, Version 2.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 6 mai 2016
+Dernière modification : 5 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -86,6 +86,12 @@ $fin1=$a->elements['fin'];
 $perso_ids1=$a->elements['perso_ids'];
 $valide1N1=$a->elements['valideN1'];
 $valide1N2=$a->elements['valideN2'];
+
+// Si l'absence est importée depuis un agenda extérieur, on interdit la modification
+$iCalKey=$a->elements['iCalKey'];
+if($iCalKey){
+  include "include/accessDenied.php";
+}
 
 // Récuperation des informations des agents concernés par l'absence après sa modification (agents sélectionnés)
 $p=new personnel();

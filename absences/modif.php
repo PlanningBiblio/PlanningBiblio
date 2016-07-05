@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.1
+Planning Biblio, Version 2.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 6 mai 2016
+Dernière modification : 5 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -49,6 +49,7 @@ $valide=filter_var($a->elements['valideN2'],FILTER_SANITIZE_NUMBER_INT);
 $validation=$a->elements['validationN2'];
 $valideN1=$a->elements['valideN1'];
 $validationN1=$a->elements['validationN1'];
+$iCalKey=$a->elements['iCalKey'];
 
 // Pièces justificatives
 $pj1Checked=$a->elements['pj1']?"checked='checked'":null;
@@ -89,6 +90,19 @@ if($valide==0 and $valideN1!=0){
 }
 
 $display_autre=in_array(strtolower($motif),array("autre","other"))?null:"style='display:none;'";
+
+
+// Si le motif enregistré pour l'absence n'existe pas dans la liste des motifs, on l'ajoute à cette liste pour l'affichage du select
+$patternExists=false;
+foreach($motifs as $elem){
+  if($elem['valeur'] == $motif){
+    $patternExists=true;
+    break;
+  }
+}
+if(!$patternExists){
+  $motifs[]=array("id"=>"99999", "valeur"=>$motif);
+}
 
 // Sécurité
 // Droit 1 = modification de toutes les absences
@@ -135,6 +149,11 @@ if($config['Multisites-nombre']>1){
   }
 }
 
+// Si l'absence est importée depuis un agenda extérieur, on interdit la modification
+if($iCalKey){
+  $admin=false;
+}
+
 // Liste des agents
 if($admin){
   $db_perso=new db();
@@ -161,12 +180,6 @@ foreach($agents as $elem){
 // Si admin, affiche les agents de l'absence et offre la possibilité d'en ajouter
 if($admin){
   echo "<tr><td><label class='intitule'>Agent(s)</label></td><td>";
-  // TODO : afficher les agents de l'absences avec les croix de suppression : DONE
-  // TODO : cacher (.hide() pour pouvoir les remettre dans le menu si supprimés) les agents de l'abences dans le menu suivant : DONE
-  // TODO : tester ajout/suppression JS : DONE
-  // TODO : Aligner les croix de suppression : affichage en JS : DONE
-  // TODO : validation du formulaire avant envoi, contrôle des données
-  // TODO : validation des données (envoi formulaire) si admin/pas admin, absence unique/multiple
   
   // Liste des agents absents (Affichage de la liste)
   echo "<ul id='perso_ul'>\n";
@@ -296,10 +309,10 @@ echo <<<EOD
   <tr><td><label>Demande</label></td>
   <td>$demande</td></tr>
 EOD;
-
 echo "<tr><td colspan='2'><br/>\n";
-if($admin or ($valide==0 and $valideN1==0) or $config['Absences-validation']==0){
-//  echo "<input type='button' class='ui-button' value='Supprimer' onclick='document.location.href=\"index.php?page=absences/delete.php&amp;id=$id\";'/>";
+
+// Si l'absence est importée depuis un agenda extérieur, on interdit la modification
+if(($admin or ($valide==0 and $valideN1==0) or $config['Absences-validation']==0) and !$iCalKey){
   echo "<input type='button' class='ui-button' value='Supprimer' id='absence-bouton-supprimer' data-id='$id'/>";
   echo "&nbsp;&nbsp;\n";
   echo "<input type='button' class='ui-button' value='Annuler' onclick='annuler(1);'/>\n";

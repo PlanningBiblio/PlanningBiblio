@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.1
+Planning Biblio, Version 2.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 6 mai 2016
+Dernière modification : 5 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -600,7 +600,7 @@ class absences{
   public function fetchById($id){
     $db=new db();
     $db->selectInnerJoin(array("absences","perso_id"),array("personnel","id"),
-      array("id","debut","fin","nbjours","motif","motif_autre","commentaires","valideN1","validationN1","pj1","pj2","so","demande","groupe",
+      array("id","debut","fin","nbjours","motif","motif_autre","commentaires","valideN1","validationN1","pj1","pj2","so","demande","groupe","iCalKey",
       array("name"=>"valide","as"=>"valideN2"),array("name"=>"validation","as"=>"validationN2")),
       array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mailsResponsables"),
       array("id"=>$id));
