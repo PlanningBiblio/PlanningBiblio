@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.1
+Planning Biblio, Version 2.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/delete.php
 Création : mai 2011
-Dernière modification : 5 mai 2016
+Dernière modification : 6 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -133,6 +133,11 @@ if($m->error){
 }
 
 // Mise à jour du champs 'absent' dans 'pl_poste'
+/**
+ * @note : le champ pl_poste.absent n'est plus mis à 1 lors de la validation des absences depuis la version 2.4
+ * mais nous devons garder la mise à 0 pour la suppresion des absences enregistrées avant cette version
+ * NB : le champ pl_poste.absent est également utilisé pour barrer les agents depuis le planning, donc on ne supprime pas toutes ses valeurs
+ */
 foreach($agents as $agent){
   $db=new db();
   $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='0' WHERE

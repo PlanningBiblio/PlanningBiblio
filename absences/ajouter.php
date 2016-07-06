@@ -1,20 +1,19 @@
 <?php
 /**
-Planning Biblio, Version 2.3.1
+Planning Biblio, Version 2.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 6 mai 2016
+Dernière modification : 6 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
 Description :
 Permet d'ajouter une absence. Formulaire, confirmation et validation.
-la table absence est complétée, la table pl_poste est mise à jour afin de barrer 
-les agents absents déjà placés
+la table absence est complétée.
 
 Page appelée par la page index.php
 */
@@ -196,18 +195,6 @@ if($confirm and !empty($perso_ids)){
       $id=$db->result[0]['id'];
     }
 
-    // Mise à jour du champs 'absents' dans 'pl_poste'
-    if($valideN2>0){
-      $db=new db();
-      $debut_sql=$db->escapeString($debut_sql);
-      $fin_sql=$db->escapeString($fin_sql);
-      $perso_id=$db->escapeString($perso_id);
-      $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1' WHERE
-	CONCAT(`date`,' ',`debut`) < '$fin_sql' AND CONCAT(`date`,' ',`fin`) > '$debut_sql'
-	AND `perso_id`='$perso_id'";
-      $db->query($req);
-    }
-    
     // Recherche des plages de SP concernées pour ajouter cette information dans le mail.
     $a=new absences();
     $a->debut=$debut_sql;
