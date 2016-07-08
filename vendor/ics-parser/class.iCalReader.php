@@ -40,7 +40,8 @@ class ICal
     public /** @type {int} */ $default_span = 2;
 
     /* The default first day of weeks */
-    public /** @type {string} */ $default_weekStart = "SU";
+    public /** @type {string} */ $default_weekStart = 'SU';
+
     /**
      * Creates the iCal Object
      *
@@ -59,11 +60,11 @@ class ICal
         } else {
             $lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         }
-
+        
         if ($weekStart) {
-	    $this->default_weekStart = $weekStart;
-	}
-	
+            $this->default_weekStart = $weekStart;
+        }
+
         return $this->initLines($lines);
     }
 
@@ -354,44 +355,42 @@ class ICal
      */
     public function iCalDateWithTimezone ($event, $key)
     {
-	$defaultTimeZone = $this->calendarTimeZone();
-	if (!$defaultTimeZone) 
-	    {
-	    return false;
-	    }
-	$date_array=$event[$key."_array"];
-	$date=$event[$key];
-	
-	if (isset($date_array[0]['TZID']) and preg_match("/[a-z]*\/[a-z_]*/i",$date_array[0]['TZID'])) {
-	    $timeZone = $date_array[0]['TZID'];
-	} else {
-	    $timeZone = $defaultTimeZone;
-	}
+        $defaultTimeZone = $this->calendarTimeZone();
+        if (!$defaultTimeZone) {
+            return false;
+        }
+        $date_array=$event[$key."_array"];
+        $date=$event[$key];
+    
+        if (isset($date_array[0]['TZID']) and preg_match("/[a-z]*\/[a-z_]*/i",$date_array[0]['TZID'])) {
+            $timeZone = $date_array[0]['TZID'];
+        } else {
+            $timeZone = $defaultTimeZone;
+        }
 
-	$dateTime = new dateTime($event[$key]);
-	
-	if (substr($date,-1) == "Z") {
-	  $date=substr($date,0,-1);
-	  $tz = new dateTimeZone($defaultTimeZone);
-	  $offset = timezone_offset_get($tz, $dateTime);
-	} else {
-	  $tz = new dateTimeZone($defaultTimeZone);
-	  $offset1 = timezone_offset_get($tz, $dateTime);
-	  $tz = new dateTimeZone($timeZone);
-	  $offset2 = timezone_offset_get($tz, $dateTime);
-	  $offset=$offset1-$offset2;
-	}
+        $dateTime = new dateTime($event[$key]);
+    
+        if (substr($date,-1) == 'Z') {
+            $date=substr($date,0,-1);
+            $tz = new dateTimeZone($defaultTimeZone);
+            $offset = timezone_offset_get($tz, $dateTime);
+        } else {
+            $tz = new dateTimeZone($defaultTimeZone);
+            $offset1 = timezone_offset_get($tz, $dateTime);
+            $tz = new dateTimeZone($timeZone);
+            $offset2 = timezone_offset_get($tz, $dateTime);
+            $offset=$offset1-$offset2;
+        }
 
-	if ($offset >= 0) {
-	  $offset = "+".$offset;
-	}
-	
-	$time = strtotime($date." $offset seconds");
-	
-	return date("Ymd\THis",$time);
+        if ($offset >= 0) {
+            $offset = '+'.$offset;
+        }
+    
+        $time = strtotime($date." $offset seconds");
+    
+        return date('Ymd\THis',$time);
     }
-
-
+    
     
     /**
      * Processes recurrences
@@ -453,7 +452,6 @@ class ICal
                     $count = ($count_orig - 1); // Remove one to exclude the occurrence that initialises the rule
                     $count += ($count > 0) ? $count * ($interval - 1) : 0;
                     $count_nb = 1;
-
                     $offset = "+$count " . $frequency_conversion[$frequency];
                     $until = strtotime($offset, $start_timestamp);
 
@@ -499,12 +497,14 @@ class ICal
 
                             if (!$is_excluded) {
                                 $events[] = $anEvent;
-                                if ($count_orig > 0) {
-				    $count_nb ++;
-				    if ($count_nb >= $count_orig){
-					break 2;
-				    }
-				}
+                                
+                                // If RRULE[COUNT] is reached : break
+                                if (isset($rrules['COUNT'])) {
+                                    $count_nb ++;
+                                    if ($count_nb >= $count_orig){
+                                        break 2;
+                                    }
+                                }
                             }
 
                             // Move forwards
@@ -517,27 +517,27 @@ class ICal
                         
                         // Use RRULE['WKST'] setting or a default week start (USA = SU, Europe = MO)
                         $weeks = array(
-			    'SA' => array('SA', 'SU', 'MO', 'TU', 'WE', 'TH', 'FR'),
-			    'SU' => array('SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'),
-			    'MO' => array('MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'));
+                            'SA' => array('SA', 'SU', 'MO', 'TU', 'WE', 'TH', 'FR'),
+                            'SU' => array('SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'),
+                            'MO' => array('MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'));
 
-			$wkst = (isset($rrules['WKST']) and in_array($rrules['WKST'], array("SA","SU","MO"))) ? $rrules['WKST'] : $this->default_weekStart;
+                        $wkst = (isset($rrules['WKST']) and in_array($rrules['WKST'], array('SA','SU','MO'))) ? $rrules['WKST'] : $this->default_weekStart;
                         $aWeek = $weeks[$wkst];
-                        $days = array("SA"=>"Saturday", "SU"=>"Sunday", "MO"=> "Monday");
-                        
+                        $days = array('SA'=>'Saturday', 'SU'=>'Sunday', 'MO'=> 'Monday');
+
                         // Build list of days of week to add events
-			$weekdays = $aWeek;
+                        $weekdays = $aWeek;
 
                         if (isset($rrules['BYDAY']) && $rrules['BYDAY'] != '') {
                             $bydays = explode(',', $rrules['BYDAY']);
                         } else {
-			    $weekTemp = $aWeek;
+                            $weekTemp = $aWeek;
                             $findDay = $weekTemp[date('w', $start_timestamp)];
                             $bydays = array($findDay);
                         }
 
                         // Get timestamp of first day of start week
-			$week_recurring_timestamp = (date('w', $start_timestamp) == 0) ? $start_timestamp : strtotime("last {$days[$wkst]} " . date('H:i:s', $start_timestamp), $start_timestamp);
+                        $week_recurring_timestamp = (date('w', $start_timestamp) == 0) ? $start_timestamp : strtotime("last {$days[$wkst]} " . date('H:i:s', $start_timestamp), $start_timestamp);
 
                         // Step through weeks
                         while ($week_recurring_timestamp <= $until) {
@@ -557,12 +557,14 @@ class ICal
 
                                     if (!$is_excluded) {
                                         $events[] = $anEvent;
-					if ($count_orig > 0) {
-					    $count_nb ++;
-					    if ($count_nb >= $count_orig){
-						break 2;
-					    }
-					}
+
+                                        // If RRULE[COUNT] is reached : break
+                                        if (isset($rrules['COUNT'])) {
+                                            $count_nb ++;
+                                            if ($count_nb >= $count_orig){
+                                                break 2;
+                                            }
+                                        }
                                     }
                                 }
 
@@ -572,7 +574,6 @@ class ICal
 
                             // Move forwards $interval weeks
                             $week_recurring_timestamp = strtotime($offset, $week_recurring_timestamp);
-                            
                         }
                         break;
                     case 'MONTHLY':
@@ -595,12 +596,14 @@ class ICal
 
                                     if (!$is_excluded) {
                                         $events[] = $anEvent;
-					if ($count_orig > 0) {
-					    $count_nb ++;
-					    if ($count_nb >= $count_orig){
-						break 2;
-					    }
-					}
+
+                                        // If RRULE[COUNT] is reached : break
+                                        if (isset($rrules['COUNT'])) {
+                                            $count_nb ++;
+                                            if ($count_nb >= $count_orig){
+                                                break 2;
+                                            }
+                                        }
                                     }
                                 }
 
@@ -623,12 +626,14 @@ class ICal
 
                                     if (!$is_excluded) {
                                         $events[] = $anEvent;
-					if ($count_orig > 0) {
-					    $count_nb ++;
-					    if ($count_nb >= $count_orig){
-						break 2;
-					    }
-					}
+
+                                        // If RRULE[COUNT] is reached : break
+                                        if (isset($rrules['COUNT'])) {
+                                            $count_nb ++;
+                                            if ($count_nb >= $count_orig){
+                                                break 2;
+                                            }
+                                        }
                                     }
                                 }
 
@@ -660,12 +665,14 @@ class ICal
 
                                     if (!$is_excluded) {
                                         $events[] = $anEvent;
-					if ($count_orig > 0) {
-					    $count_nb ++;
-					    if ($count_nb >= $count_orig){
-						break 2;
-					    }
-					}
+
+                                        // If RRULE[COUNT] is reached : break
+                                        if (isset($rrules['COUNT'])) {
+                                            $count_nb ++;
+                                            if ($count_nb >= $count_orig){
+                                                break 2;
+                                            }
+                                        }
                                     }
                                 }
 
@@ -696,12 +703,14 @@ class ICal
 
                                     if (!$is_excluded) {
                                         $events[] = $anEvent;
-					if ($count_orig > 0) {
-					    $count_nb ++;
-					    if ($count_nb >= $count_orig){
-						break 2;
-					    }
-					}
+
+                                        // If RRULE[COUNT] is reached : break
+                                        if (isset($rrules['COUNT'])) {
+                                            $count_nb ++;
+                                            if ($count_nb >= $count_orig){
+                                                break 2;
+                                            }
+                                        }
                                     }
                                 }
 
@@ -728,20 +737,18 @@ class ICal
      */
     public function process_dates_conversion()
     {
-	$array = $this->cal;
+        $array = $this->cal;
         $events = $array['VEVENT'];
-        
-        if (empty($events))
-        {
+
+        if (empty($events)) {
             return false;
-	}
-	
-        foreach ($events as $key => $anEvent)
-        {
-	    $events[$key]['DTSTART_tz'] = $this->iCalDateWithTimezone($anEvent, "DTSTART");
-	    $events[$key]['DTEND_tz'] = $this->iCalDateWithTimezone($anEvent, "DTEND");
         }
-        
+    
+        foreach ($events as $key => $anEvent) {
+            $events[$key]['DTSTART_tz'] = $this->iCalDateWithTimezone($anEvent, "DTSTART");
+            $events[$key]['DTEND_tz'] = $this->iCalDateWithTimezone($anEvent, "DTEND");
+        }
+
         $this->cal['VEVENT'] = $events;
     }
 
@@ -784,11 +791,13 @@ class ICal
      */
     public function calendarTimeZone()
     {
-	if (isset($this->cal['VCALENDAR']['X-WR-TIMEZONE']))
-	{
-	    return $this->cal['VCALENDAR']['X-WR-TIMEZONE'];
-	}
-	return $this->cal['VTIMEZONE']['TZID'];
+        if (isset($this->cal['VCALENDAR']['X-WR-TIMEZONE'])) {
+            return $this->cal['VCALENDAR']['X-WR-TIMEZONE'];
+        } elseif(isset($this->cal['VTIMEZONE']['TZID'])) {
+            return $this->cal['VTIMEZONE']['TZID'];
+        } else {
+            return "UTC";
+        }
     }
 
     /**
