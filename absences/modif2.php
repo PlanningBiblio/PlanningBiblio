@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.1
+Planning Biblio, Version 2.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 6 mai 2016
+Dernière modification : 6 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -86,6 +86,12 @@ $fin1=$a->elements['fin'];
 $perso_ids1=$a->elements['perso_ids'];
 $valide1N1=$a->elements['valideN1'];
 $valide1N2=$a->elements['valideN2'];
+
+// Si l'absence est importée depuis un agenda extérieur, on interdit la modification
+$iCalKey=$a->elements['iCalKey'];
+if($iCalKey){
+  include "include/accessDenied.php";
+}
 
 // Récuperation des informations des agents concernés par l'absence après sa modification (agents sélectionnés)
 $p=new personnel();
@@ -179,6 +185,11 @@ if($config['Multisites-nombre']>1){
 // Mise à jour du champs 'absent' dans 'pl_poste'
 // Suppression du marquage absent pour tous les agents qui étaient concernés par l'absence avant sa modification
 // Comprend les agents supprimés et ceux qui restent
+/**
+ * @note : le champ pl_poste.absent n'est plus mis à 1 lors de la validation des absences depuis la version 2.4
+ * mais nous devons garder la mise à 0 pour la suppresion ou modifications des absences enregistrées avant cette version.
+ * NB : le champ pl_poste.absent est également utilisé pour barrer les agents depuis le planning, donc on ne supprime pas toutes ses valeurs
+ */
 $ids=implode(",",$perso_ids1);
 $db=new db();
 $debut1=$db->escapeString($debut1);
@@ -188,23 +199,6 @@ $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='0' WHERE
   CONCAT(`date`,' ',`debut`) < '$fin1' AND CONCAT(`date`,' ',`fin`) > '$debut1'
   AND `perso_id` IN ($ids)";
 $db->query($req);
-
-
-// Mise à jour du champs 'absent' dans 'pl_poste'
-// Ajout du marquage absent pour les agents sélectionnés
-// Comprend les agents qui restent et ceux ajoutés
-if($isValidate){
-  $ids=implode(",",$perso_ids);
-
-  $db=new db();
-  $debut_sql=$db->escapeString($debut_sql);
-  $fin_sql=$db->escapeString($fin_sql);
-  $ids=$db->escapeString($ids);
-  $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1' WHERE
-    CONCAT(`date`,' ',`debut`) < '$fin_sql' AND CONCAT(`date`,' ',`fin`) > '$debut_sql'
-    AND `perso_id` IN ($ids)";
-  $db->query($req);
-}
 
 
 // Préparation des données pour mise à jour de la table absence et insertion pour les agents ajoutés

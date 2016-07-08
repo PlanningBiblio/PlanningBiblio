@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.6
+Planning Biblio, Version 2.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : statistiques/service.php
 Création : 9 septembre 2013
-Dernière modification : 17 avril 2015
+Dernière modification : 7 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -18,6 +18,7 @@ Page appelée par le fichier index.php, accessible par le menu statistiques / Pa
 
 require_once "class.statistiques.php";
 require_once "include/horaires.php";
+require_once "absences/class.absences.php";
 
 // Initialisation des variables :
 $debut=filter_input(INPUT_POST,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
@@ -97,6 +98,12 @@ $tab=array();
 $db=new db();
 $db->select2("select_services");
 $services_list=$db->result;
+
+// Recherche des absences dans la table absences
+$a=new absences();
+$a->valide=true;
+$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$debutSQL." 00:00:00",$finSQL." 23:59:59");
+$absencesDB=$a->elements;
 
 if(!empty($services)){
   //	Recherche du nombre de jours concernés
@@ -178,6 +185,16 @@ if(!empty($services)){
     if(is_array($resultat)){
       foreach($resultat as $elem){
 	if($service==$elem['service_id']){
+
+	  // Vérifie à partir de la table absences si l'agent est absent
+	  // S'il est absent, on met à 1 la variable $elem['absent']
+	  foreach($absencesDB as $a){
+	    if($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']){
+	      $elem['absent']="1";
+	      break;
+	    }
+	  }
+
 	  if($elem['absent']!="1"){		// on compte les heures et les samedis pour lesquels l'agent n'est pas absent
 	    // on créé un tableau par poste avec son nom, étage et la somme des heures faites par service
 	    if(!array_key_exists($elem['poste'],$postes)){

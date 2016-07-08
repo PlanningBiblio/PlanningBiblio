@@ -5,7 +5,7 @@ Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2016 - Jérôme Combes
 
-Fichier : cron.ctrlPlannings.php
+Fichier : cron.ctrlPlanning.php
 Création : 18 janvier 2016
 Dernière modification : 22 janvier 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
@@ -26,7 +26,7 @@ Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à
 L'argument "cron" donné à la suite de la commande permet de renseigner la variable $version. Sa valeur n'a pas 
 d'importance, il faut juste que $version ne soit pas NULL. Ceci permet d'interdire l'execution du script s'ils 
 reste dans un dossier accessible depuis un navigateur.
-@note : Modifiez la variable $path suivante en renseignant le chemin absolut vers votre dossier planningBiblio
+@note : Modifiez la variable $path suivante en renseignant le chemin absolu vers votre dossier planningBiblio
 */
 
 $path="/var/www/html/planning";

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3
+Planning Biblio, Version 2.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
-Dernière modification : 23 mars 2016
+Dernière modification : 6 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -20,6 +20,7 @@ Cette page est appelée par la page index.php
 
 require_once "class.planning.php";
 require_once "planning/postes_cfg/class.tableaux.php";
+include_once "absences/class.absences.php";
 include_once "activites/class.activites.php";
 include_once "personnel/class.personnel.php";
 include "fonctions.php";
@@ -185,7 +186,7 @@ if($db->result){
     // Ajout des classes en fonction des activités
     $activitesPoste=is_serialized($elem['activites'])?unserialize($elem['activites']):array();
     foreach($activitesPoste as $a){
-      if($activites[$a]['classePoste']){
+      if(isset($activites[$a]['classePoste'])){
 	$classesPoste[]=$activites[$a]['classePoste'];
       }
     }
@@ -288,7 +289,18 @@ for($j=0;$j<=$fin;$j++){
     global $cellules;
     $cellules=$db->result?$db->result:array();
     usort($cellules,"cmp_nom_prenom");
-  
+
+    // Recherche des absences
+    // Le tableau $absences sera utilisé par la fonction cellule_poste pour barrer les absents dans le plannings et pour afficher les absents en bas du planning
+    $a=new absences();
+    $a->valide=true;
+    $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date,$date);
+    $absences=$a->elements;
+    global $absences;
+
+    // Tri des absences par nom
+    usort($absences,"cmp_nom_prenom_debut_fin");
+
     // Informations sur les congés
     if(in_array("conges",$plugins)){
       include "plugins/conges/planning_cellules.php";

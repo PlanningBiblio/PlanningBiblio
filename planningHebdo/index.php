@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planningHebdo/index.php
 Création : 23 juillet 2013
-Dernière modification : 1er juillet 2015
+Dernière modification : 1er juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -90,7 +90,10 @@ foreach($p->elements as $elem){
   if($elem['valide']){
     $validation="<font style='display:none;'>Valid {$elem['validation']}</font>";
     $validation.=dateFr($elem['validation'],true);
-    $validation.=", ".nom($elem['valide']);
+    // 99999 : ID cron : donc pas de nom a afficher
+    if($elem['valide'] != 99999){
+      $validation.=", ".nom($elem['valide']);
+    }
   }
   $planningRemplace=$elem['remplace']==0?dateFr($elem['saisie'],true):$planningRemplace;
   $commentaires=$elem['remplace']?"Remplace le planning <br/>du $planningRemplace":null;
@@ -100,10 +103,15 @@ foreach($p->elements as $elem){
   echo "<td style='white-space:nowrap;'>$arrow \n";
     echo "<a href='index.php?page=planningHebdo/modif.php&amp;id={$elem['id']}&amp;retour=index.php'/>";
     echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a>";
-    echo "<a href='index.php?page=planningHebdo/modif.php&amp;copy={$elem['id']}&amp;retour=index.php'/>";
-    echo "<span class='pl-icon pl-icon-copy' title='Copier'></span></a>";
-    echo "<a href='javascript:plHebdoSupprime({$elem['id']});' style='margin-left:6px;'/>";
-    echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>";
+    
+    // Si le champ "key" est renseigné : importation automatique, donc on n'affiche pas les icônes copie et suppression
+    if(!$elem['key']){
+      echo "<a href='index.php?page=planningHebdo/modif.php&amp;copy={$elem['id']}&amp;retour=index.php'/>";
+      echo "<span class='pl-icon pl-icon-copy' title='Copier'></span></a>";
+      echo "<a href='javascript:plHebdoSupprime({$elem['id']});' style='margin-left:6px;'/>";
+      echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>";
+    }
+    
   echo "<td>{$elem['nom']}</td>";
   echo "<td>{$elem['service']}</td>";
   echo "<td>".dateFr($elem['debut'])."</td>";

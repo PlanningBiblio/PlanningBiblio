@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.3
+Planning Biblio, Version 2.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 20 juin 2016
+Dernière modification : 1er juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -134,6 +134,9 @@ $absences=$db->result;					//	$absences = tableau d'absences
 
 // Plannings verrouillés
 $verrou=array();
+for($i=1; $i<=$config['Multisites-nombre']; $i++){
+  $verrou[$i]=array();
+}
 $db=new db();
 $db->select2("pl_poste_verrou",array("site","date"),array("verrou2"=>"1", "date"=>"BETWEEN $debutSQL AND $finSQL"));
 if($db->result){

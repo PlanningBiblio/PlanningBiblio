@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 22 janvier 2016
+Dernière modification : 6 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -40,11 +40,23 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
 	}
 
 	$class_tmp=array();
-	//		On barre les absents
+
+	//		On barre les absents (agents barrés directement dans le plannings, table pl_poste)
 	if($elem['absent'] or $elem['supprime']){
 	  $class_tmp[]="red";
 	  $class_tmp[]="striped";
 	}
+
+	//		On barre les absents (absences enregistrées dans la table absences)
+	foreach($GLOBALS['absences'] as $absence){
+	  if($absence["perso_id"] == $elem['perso_id'] and $absence['debut'] < $date." ".$fin and $absence['fin'] > $date." ".$debut){
+	    $class_tmp[]="red";
+	    $class_tmp[]="striped";
+	    break;
+	  }
+	}
+	
+	
 	//		On barre les congés
 	if(in_array("conges",$GLOBALS['plugins'])){
 	  include "plugins/conges/planning_cellule_poste.php";
