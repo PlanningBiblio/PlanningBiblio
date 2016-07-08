@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.6
+Planning Biblio, Version 2.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : statistiques/postes_renfort.php
 Création : mai 2011
-Dernière modification : 17 avril 2015
+Dernière modification : 8 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -18,6 +18,7 @@ Page appelée par le fichier index.php, accessible par le menu statistiques / Po
 */
 
 require_once "class.statistiques.php";
+require_once "absences/class.absences.php";
 require_once "include/horaires.php";
 
 //	Variables :
@@ -100,6 +101,12 @@ else{
 $tab=array();
 $selected=null;
 
+// Recherche des absences dans la table absences
+$a=new absences();
+$a->valide=true;
+$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$debutSQL." 00:00:00",$finSQL." 23:59:59");
+$absencesDB=$a->elements;
+
 //		--------------		Récupération de la liste des postes pour le menu déroulant		------------------------
 $db=new db();
 $db->select2("postes","*",array("obligatoire"=>"Renfort", "statistiques"=>"1"),"ORDER BY `etage`,`nom`");
@@ -156,6 +163,14 @@ if(!empty($postes)){
     $dates=Array();
     if(is_array($resultat)){
       foreach($resultat as $elem){
+		// Vérifie à partir de la table absences si l'agent est absent
+		// S'il est absent : continue
+		foreach($absencesDB as $a){
+		  if($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']){
+			continue 2;
+		  }
+		}
+
 	if($poste==$elem['poste']){
 	  // on créé un tableau par date
 	  if(!array_key_exists($elem['date'],$dates)){

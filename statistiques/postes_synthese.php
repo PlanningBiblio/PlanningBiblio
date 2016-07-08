@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.6
+Planning Biblio, Version 2.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : statistiques/postes_synthese.php
 Création : mai 2011
-Dernière modification : 17 avril 2015
+Dernière modification : 8 juillet 2015
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -17,6 +17,7 @@ Page appelée par le fichier index.php, accessible par le menu statistiques / Pa
 */
 
 require_once "class.statistiques.php";
+require_once "absences/class.absences.php";
 require_once "include/horaires.php";
 
 //	Variables :
@@ -101,6 +102,12 @@ $total_jour=0;
 $total_hebdo=0;
 $selected=null;
 
+// Recherche des absences dans la table absences
+$a=new absences();
+$a->valide=true;
+$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$debutSQL." 00:00:00",$finSQL." 23:59:59");
+$absencesDB=$a->elements;
+
 //		--------------		Récupération de la liste des postes pour le menu déroulant		------------------------
 $db=new db();
 $db->query("SELECT * FROM `{$dbprefix}postes` WHERE `statistiques`='1' ORDER BY `etage`,`nom`;");
@@ -144,6 +151,14 @@ if(!empty($postes)){
     $agents=array();
     if(is_array($resultat)){
       foreach($resultat as $elem){
+		// Vérifie à partir de la table absences si l'agent est absent
+		// S'il est absent : continue
+		foreach($absencesDB as $a){
+		  if($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']){
+			continue 2;
+		  }
+		}
+
 	if($poste==$elem['poste']){
 	  //	On créé un tableau par agent avec son nom, prénom et la somme des heures faites par poste
 	  if(!array_key_exists($elem['perso_id'],$agents)){
