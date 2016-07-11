@@ -62,14 +62,8 @@ if( !$CSVFile or !file_exists($CSVFile)){
 
 $lines = file($CSVFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
-// On place les éléments du fichiers dans le tableau $tab
-// $tab : tableau contenant les éléments à importer
-$tab = array();
-// $perso_ids = array();
-$debut = null;
-$fin = null;
-$keys = array();
-$keys_db = array();
+// On place les éléments du fichiers dans le tableau $temps
+$temps = array();
 
 // Pour chaque ligne
 foreach($lines as $line){
@@ -98,38 +92,60 @@ foreach($lines as $line){
   // Récupération de l'ID de l'agent
   $perso_id = $agents[$cells[0]];
   
-  // Mise en forme du champ "temps"
-  $jour=date("N", strtotime($cells[1])) -1;
-  $temps = serialize(array($jour => array($cells[2],$cells[3],$cells[4],$cells[5])));
+  // Identification de la semaine, premier jour et dernier jour (regroupement pasr semaine)
+  $lundi = date('N', strtotime($cells[1])) == 1 ? $cells[1] : date("Y-m-d", strtotime(date("Y-m-d",strtotime($cells[1]))." last Monday"));
+  $dimanche = date('N', strtotime($cells[1])) == 7 ? $cells[1] : date("Y-m-d", strtotime(date("Y-m-d",strtotime($cells[1]))." next Sunday"));
 
-  /*
-  // Liste des ID pour la requête SQL (pour la comparaison)
-  if(!in_array($perso_id, $perso_ids)){
-    $perso_ids[]=$perso_id;
+  // Création d'un tableau par agent
+  if(!array_key_exists($perso_id,$temps)){
+	$temps[$perso_id]=array("perso_id"=> $perso_id);
   }
-
-  // Date de début (première date) et date de fin (dernière date) pour la requête SQL (pour la comparaison)
-  if(!$debut or $debut > $cells[1]){
-    $debut = $cells[1];
-  }
-
-  if(!$fin or $fin < $cells[1]){
-    $fin = $cells[1];
-  }
-  */
-  // Clé identifiant les infos de la ligne (pour comparaison avec la DB)
-  $key = "{$perso_id}_{$cells[1]}_{$cells[2]}_{$cells[3]}_{$cells[4]}_{$cells[5]}";
-  $keys[] = $key;
   
-  $tab[] = array(":perso_id"=>$perso_id, ":debut"=>$cells[1], ":fin"=>$cells[1], ":temps"=>$temps,":key"=>$key);
+  // Chaque tableau "agent" contient un tableau par semaine
+  // Création des tableaux "semaines" avec date de début (lundi), date de fin (dimanche) et emploi du temps
+  if(!array_key_exists($lundi,$temps[$perso_id])){
+	$temps[$perso_id][$lundi]['debut']=$lundi;
+	$temps[$perso_id][$lundi]['fin']=$dimanche;
+	$temps[$perso_id][$lundi]['temps']=array();
+  }
+  
+  // Mise en forme du champ "temps"
+  // Le champ "temps" contient un tableau contenant les emplois du temps de chaque jour : index ($jour) de 0 à 6 (du lundi au dimanche)
+  $jour=date("N", strtotime($cells[1])) -1;
+  $temps[$perso_id][$lundi]['temps'][$jour] = array($cells[2],$cells[3],$cells[4],$cells[5]);
+
+  // Clé identifiant les infos de la ligne (pour comparaison avec la DB)
+  // La clé est composée de l'id de l'agent et du md5 du tableau de sa semaine, tableau comprenant le debut, la fin et l'emploi du temps.
+  $key = $perso_id.'-'.md5(json_encode($temps[$perso_id][$lundi]));
+  $temps[$perso_id][$lundi]["key"] = $key;
+
 }
 
-// $perso_ids = implode(",", $perso_ids);
+// $key : tableau contenant les clé des éléments du fichiers pour comparaison avec la base de données
+$keys = array();
+
+// On reprend tous les éléments du tableau $temps finalisé et on prépare les données pour l'insertion dans la base de données (tableau $tab);
+// $tab : tableau contenant les éléments à importer
+$tab = array();
+
+foreach($temps as $perso){
+  foreach($perso as $semaine){
+	if(is_array($semaine)){
+	  $keys[] = $semaine['key'];
+	  $temps = serialize($semaine['temps']);
+	  $tab[] =  array(":perso_id"=>$perso['perso_id'], ":debut"=>$semaine['debut'], ":fin"=>$semaine['fin'], ":temps"=>$temps,":key"=>$semaine['key']);
+	}
+  }
+}
+
+
+// $key_db : tableau contenant les clé des éléments de la base de données pour comparaison avec le fichier
+$keys_db = array();
 
 // Recherche des éléments déjà importés
 $tab_db=array();
 $db = new db();
-$db->select2("planningHebdo"); //, null, array("perso_id"=>"IN $perso_ids", "debut"=>"BETWEEN $debut AND $fin"));
+$db->select2("planningHebdo");
 if($db->result){
   foreach($db->result as $elem){
     $tab_db[$elem['key']] = $elem;
