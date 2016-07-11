@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.3.2
+Planning Biblio, Version 2.4.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 27 mai 2016
+Dernière modification : 11 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -275,17 +275,6 @@ function heure4(heure){
     if(heure.indexOf("h")<0){
       heure+="h00";
     }
-  }
-  return heure;
-}
-
-function heure5(heure){
-  heure=heure.toString();
-  if(heure.indexOf("h")>0){
-    heure=heure.replace("h00",":00");
-    heure=heure.replace("h15",":25");
-    heure=heure.replace("h30",":50");
-    heure=heure.replace("h45",":75");
   }
   return heure;
 }
