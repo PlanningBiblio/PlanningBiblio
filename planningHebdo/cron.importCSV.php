@@ -7,17 +7,13 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : ics/cron.ics.php
 Création : 1er juillet 2016
-Dernière modification : 1er juillet 2016
+Dernière modification : 11 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Import les heures de présences depuis un fichier CSV
 @note : modifier la variable $path
 */
-
-// TEST
-ini_set("display_errors","on");
-error_reporting(999);
 
 $version="cron";
 $path="/planning";
@@ -56,11 +52,11 @@ if (!empty($p->elements)) {
 }
 
 // On ouvre le fichier CSV
-// TODO : mettre ceci dans la config
-$config['PlanningHebdo-CSV'] = "/home/jerome/Documents/Planning/BUA/exportChronotime.csv";
 $CSVFile = trim($config['PlanningHebdo-CSV']);
+logs("Importation du fichier $CSVFile","PlanningHebdo");
 
 if( !$CSVFile or !file_exists($CSVFile)){
+  logs("Fichier $CSVFile non trouvé","PlanningHebdo");
   exit;
 }
 
@@ -146,16 +142,33 @@ if($db->result){
 $insert = array();
 foreach($tab as $elem){
   if(!in_array($elem[":key"],$keys_db)){
+	if($elem[':debut'] <= date('Y-m-d') and $elem[':fin'] >= date('Y-m-d')){
+	  $elem[':actuel'] = "1";
+	} else {
+	  $elem[':actuel'] = "0";
+	}
     $insert[]=$elem;
   }
 }
 
-$db=new dbh();
-$db->prepare("INSERT INTO `{$dbprefix}planningHebdo` (`perso_id`, `debut`, `fin`, `temps`, `saisie`, `valide`, `validation`, `key`) VALUES (:perso_id, :debut, :fin, :temps, SYSDATE(), '99999', SYSDATE(), :key);");
-foreach($insert as $elem){
-  $db->execute($elem);
-}
+// Nombre d'éléments à importer
+$nb = count($insert);
 
+if($nb > 0){
+  $db=new dbh();
+  $db->prepare("INSERT INTO `{$dbprefix}planningHebdo` (`perso_id`, `debut`, `fin`, `temps`, `saisie`, `valide`, `validation`, `actuel`, `key`) VALUES (:perso_id, :debut, :fin, :temps, SYSDATE(), '99999', SYSDATE(), :actuel, :key);");
+  foreach($insert as $elem){
+	$db->execute($elem);
+  }
+
+  if(!$db->error){
+	logs("$nb éléments importés","PlanningHebdo");
+  }else{
+	logs("Une erreur est survenue pendant l'importation","PlanningHebdo");
+  }
+}else{
+  logs("Rien à importer","PlanningHebdo");
+}
 
 // Suppression des valeurs supprimées ou modifiées
 $delete = array();
@@ -165,10 +178,23 @@ foreach($keys_db as $elem){
   }
 }
 
-$db=new dbh();
-$db->prepare("DELETE FROM `{$dbprefix}planningHebdo` WHERE `key`=:key;");
-foreach($delete as $elem){
-  $db->execute($elem);
+// Nombre d'éléments à supprimer
+$nb = count($delete);
+
+if($nb >0){
+  $db=new dbh();
+  $db->prepare("DELETE FROM `{$dbprefix}planningHebdo` WHERE `key`=:key;");
+  foreach($delete as $elem){
+	$db->execute($elem);
+  }
+  
+  if(!$db->error){
+	logs("$nb éléments supprimés","PlanningHebdo");
+  }else{
+	logs("Une erreur est survenue lors de la suppression d'éléments","PlanningHebdo");
+  }
+}else{
+  logs("Aucun élément à supprimer","PlanningHebdo");
 }
 
 // Unlock
