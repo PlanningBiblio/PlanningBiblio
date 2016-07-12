@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4
+Planning Biblio, Version 2.4.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planningHebdo/modif.php
 Création : 23 juillet 2013
-Dernière modification : 1er juillet 2016
+Dernière modification : 12 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -16,6 +16,11 @@ Page accessible à partir du menu administration/planning de présence
 */
 
 require_once "class.planningHebdo.php";
+
+// TODO : import et multisites
+// TODO : import et multisites
+// TODO : import et multisites
+// TODO : import et multisites
 
 // Recherche de la config
 $p=new planningHebdo();
@@ -41,6 +46,13 @@ if($id){
   $p=new planningHebdo();
   $p->id=$id;
   $p->fetch();
+  if(empty($p->elements)){
+	echo "<h3>Planning de présence</h3>\n";
+	echo "<p>Le planning demand&eacute; n'est plus accessible &agrave; cette adresse.<br/>\n";
+	echo "Veuillez le rechercher dans le menu menu <a href='index.php?page=planningHebdo/index.php'>Administration / Plannings de pr&eacute;sence</a></p>\n";
+	include "include/footer.php";
+	exit;
+  }
   $debut1=$p->elements[0]['debut'];
   $fin1=$p->elements[0]['fin'];
   $debut1Fr=dateFr($debut1);
@@ -247,9 +259,9 @@ for($j=0;$j<$config['nb_semaine'];$j++){
 	}
 	echo "</select></td>";
       }else{
-	$site=$temps[$i-1][4];
-	$site=$site?$config["Multisites-site{$site}"]:"&nbsp;";
-	echo "<td class='td_heures'>$site</td>\n";
+		$site = isset($temps[$i-1][4]) ? $temps[$i-1][4] : null;
+		$site=$site?$config["Multisites-site{$site}"]:"&nbsp;";
+		echo "<td class='td_heures'>$site</td>\n";
       }
     }
     echo "<td id='heures_{$j}_$i'></td>\n";

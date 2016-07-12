@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.2
+Planning Biblio, Version 2.4.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 28 mai 2016
+Dernière modification : 11 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,6 +21,7 @@ Cette page est appelée par le fichier index.php
 
 require_once "class.personnel.php";
 require_once "activites/class.activites.php";
+require_once "planningHebdo/class.planningHebdo.php";
 
 
 // Initialisation des variables
@@ -108,7 +109,21 @@ if($id){		//	récupération des infos de l'agent en cas de modif
   $arrivee=dateFr($db->result[0]['arrivee']);
   $depart=dateFr($db->result[0]['depart']);
   $login=$db->result[0]['login'];
-  $temps=unserialize($db->result[0]['temps']);
+  if($config['PlanningHebdo']){
+	$p = new planningHebdo();
+	$p->perso_id = $id;
+	$p->debut = date("Y-m-d");
+	$p->fin = date("Y-m-d");
+	$p->valide = true;
+	$p->fetch();
+	if(!empty($p->elements)){
+	  $temps = $p->elements[0]['temps'];
+	} else {
+	  $temps = array();
+	}
+  }else{
+	$temps=unserialize($db->result[0]['temps']);
+  }
   $postes_attribues=unserialize($db->result[0]['postes']);
   if(is_array($postes_attribues))
     sort($postes_attribues);
@@ -625,17 +640,19 @@ for($j=0;$j<$config['nb_semaine'];$j++){
     }
     else{
       echo "<tr><td>{$jours[$k]}</td>\n";
-      echo "<td id='temps_".($i-1)."_0'>".heure2($temps[$i-1][0])."</td>\n";
-      echo "<td id='temps_".($i-1)."_1'>".heure2($temps[$i-1][1])."</td>\n";
-      echo "<td id='temps_".($i-1)."_2'>".heure2($temps[$i-1][2])."</td>\n";
-      echo "<td id='temps_".($i-1)."_3'>".heure2($temps[$i-1][3])."</td>\n";
+      
+	  for($l=0; $l<4; $l++){
+		$heure = isset($temps[$i-1][0]) ? heure2($temps[$i-1][$l]) : null;
+		echo "<td id='temps_".($i-1)."_$l'>$heure</td>\n";
+	  }
+      
       if($config['Multisites-nombre']>1){
-	$site=null;
-	if(array_key_exists(4,$temps[$i-1])){
-	  $site="Multisites-site".$temps[$i-1][4];
-	  $site=$config[$site];
-	}
-	echo "<td>$site</td>";
+		$site=null;
+		if(isset($temps[$i-1][4])){
+		  $site="Multisites-site".$temps[$i-1][4];
+		  $site=$config[$site];
+		}
+		echo "<td>$site</td>";
       }
       echo "<td id='heures_{$j}_$i'></td>\n";
       echo "</tr>\n";

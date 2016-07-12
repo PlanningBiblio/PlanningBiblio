@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4
+Planning Biblio, Version 2.4.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : ics/cron.ics.php
 Création : 1er juillet 2016
-Dernière modification : 11 juillet 2016
+Dernière modification : 12 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -47,7 +47,7 @@ $p->fetch();
 $agents = array();
 if (!empty($p->elements)) {
   foreach($p->elements as $elem){
-    $agents[$elem['login']] = $elem['id'];
+    $agents[$elem['login']] = $elem;
   }
 }
 
@@ -77,21 +77,43 @@ foreach($lines as $line){
       $cells[$i] = date("Y-m-d", strtotime($cells[$i]));
     }
     
-    // Mise e,n forme des heures
+    // Mise en forme des heures
     if($i>1){
       if(isset($cells[$i]) and $cells[$i]){
-	$min = substr($cells[$i],-2);
-	$hre = sprintf("%02s",substr($cells[$i],0,-2));
-	$cells[$i] = $hre.":$min:00";
+		// supprime les h et les : de façon à traiter tous les formats de de la même façon (formats accéptés : 0000, 00h00, 00:00, 000, 0h00, 0:00)
+		$cells[$i] = str_replace(array("h",":"), null, $cells[$i]);
+		$min = substr($cells[$i],-2);
+		$hre = sprintf("%02s",substr($cells[$i],0,-2));
+		$cells[$i] = $hre.":$min:00";
       }else{
-	$cells[$i] = "00:00:00";
+		$cells[$i] = "00:00:00";
       }
     }
   }
   
   // Récupération de l'ID de l'agent
-  $perso_id = $agents[$cells[0]];
+  $perso_id = $agents[$cells[0]]['id'];
   
+  // Récupération du site de l'agent
+  // Récupération depuis la table personnel, donc ne fonctionne que si l'agent ne travaille que sur un site
+  
+  // Config. monosite : $site = 1
+  if($config['Multisites-nombre'] == 1){
+	$site = 1;
+  // Config. Multisites
+  }else{
+	// tous les sites sur lesquels l'agent peut travailler
+	$sites = $agents[$cells[0]]['sites']; 
+	
+	// Si au moins un site est renseigné, on affecte l'agent au premier site trouvé
+	if( is_array($sites) ){
+	  $site = $sites[0];
+	// Sinon, on l'affecte au site N°1
+	}else{
+	  $site = 1;
+	}
+  }
+
   // Identification de la semaine, premier jour et dernier jour (regroupement pasr semaine)
   $lundi = date('N', strtotime($cells[1])) == 1 ? $cells[1] : date("Y-m-d", strtotime(date("Y-m-d",strtotime($cells[1]))." last Monday"));
   $dimanche = date('N', strtotime($cells[1])) == 7 ? $cells[1] : date("Y-m-d", strtotime(date("Y-m-d",strtotime($cells[1]))." next Sunday"));
@@ -112,7 +134,7 @@ foreach($lines as $line){
   // Mise en forme du champ "temps"
   // Le champ "temps" contient un tableau contenant les emplois du temps de chaque jour : index ($jour) de 0 à 6 (du lundi au dimanche)
   $jour=date("N", strtotime($cells[1])) -1;
-  $temps[$perso_id][$lundi]['temps'][$jour] = array($cells[2],$cells[3],$cells[4],$cells[5]);
+  $temps[$perso_id][$lundi]['temps'][$jour] = array($cells[2],$cells[3],$cells[4],$cells[5],$site);
 
   // Clé identifiant les infos de la ligne (pour comparaison avec la DB)
   // La clé est composée de l'id de l'agent et du md5 du tableau de sa semaine, tableau comprenant le debut, la fin et l'emploi du temps.

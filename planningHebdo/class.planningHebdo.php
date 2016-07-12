@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.2.3
+Planning Biblio, Version 2.4.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
@@ -339,8 +339,6 @@ class planningHebdo{
 
     // Remplacement du planning de la fiche agent si validation et date courante entre debut et fin
     if($data['validation'] and $data['debut']<=date("Y-m-d") and $data['fin']>=date("Y-m-d")){
-      $db=new db();
-      $db->update("personnel","`temps`='$temps'","`id`='{$data['perso_id']}'");
       $db=new db();
       $db->update("planningHebdo","`actuel`='0'","`perso_id`='{$data['perso_id']}'");
       $db=new db();
