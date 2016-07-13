@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4
+Planning Biblio, Version 2.4.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : ics/class.ics.php
 Création : 29 mai 2016
-Dernière modification : 23 juin 2016
+Dernière modification : 13 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -153,11 +153,14 @@ class CJICS{
     foreach($tmp as $elem){
       // permet de supprimer les exceptions ajoutées sur les récurrences
       if(in_array($elem['UID']."_".$elem['DTSTART'],$uid_dtstart2) and array_key_exists("RRULE",$elem)){
-	continue;
+		continue;
       }
+	  if(isset($elem['X-MICROSOFT-CDO-INTENDEDSTATUS']) and $elem['X-MICROSOFT-CDO-INTENDEDSTATUS'] != "BUSY"){
+		continue;
+	  }
       if($elem['STATUS']=="CONFIRMED" and $elem['TRANSP']=="OPAQUE"){
-	$events[]=$elem;
-   	$iCalKeys[]=$elem['key'];
+		$events[]=$elem;
+		$iCalKeys[]=$elem['key'];
       }
     }
 
@@ -207,7 +210,11 @@ class CJICS{
 	$demande= array_key_exists("CREATED",$elem) ? date("Y-m-d H:i:s",strtotime($elem['CREATED'])) : $lastmodified;
 
 	$debut = date("Y-m-d H:i:s", strtotime($elem["DTSTART_tz"]));
-	$fin = date("Y-m-d H:i:s", strtotime($elem["DTEND_tz"]));
+
+	// Les événements ICS sur des journées complètes ont comme date de fin J+1 à 0h00
+	// Donc si la date de fin est à 0h00, on retire une seconde pour la rammener à J
+	$offset = date("H:i:s", strtotime($elem["DTEND_tz"])) == "00:00:00" ? "-1 second" : null;
+	$fin = date("Y-m-d H:i:s", strtotime($elem["DTEND_tz"]." $offset"));
 
 	$commentaires = $elem['SUMMARY'];
 	if(array_key_exists("DESCRIPTION",$elem)){
