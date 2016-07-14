@@ -106,6 +106,19 @@ class CJICS{
 		continue;
 	  }
 	  
+	  // Exclusion des dates EXDATE (ics-parser ne le gère pas correctement)
+	  if(isset($elem['EXDATE'])){
+		$exdate_array = explode(",", $elem['EXDATE']);
+		if($exdate_array and !empty($exdate_array)){
+		  foreach ($exdate_array as $exdate){
+			$exdate = date("Ymd\THis", strtotime($exdate));
+			if($exdate == $elem['DTSTART_tz']){
+			  continue 2;
+			}
+		  }
+		}
+	  }
+
 	  // Traite seulement les événéments ayant le STATUS CONFIRMED et TRANSP OPAQUE (TRANSP OPAQUE défini un status BUSY)
       if($elem['STATUS']=="CONFIRMED" and $elem['TRANSP']=="OPAQUE"){
 		$events[]=$elem;
