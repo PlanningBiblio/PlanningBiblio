@@ -22,72 +22,30 @@ Classe permettant le traitement des fichiers ICS
  *   $i->src=$elem[1];		// source ICS
  *   $i->perso_id=$elem[0];	// ID de l'agent
  *   $i->table="absences";	// Table à mettre à jour
+ *   $ics->logs=array("db");
  *   $i->updateTable();
  * }
  *
  * @note : 
- * Clés pour la MAJ de la base de données : UID + LAST-MODIFIED
- * - Si UID n'existe pas dans la base : INSERT (voir fonctionnement de UPDATE INTO)
- * - Si UID existe et LAST-MODIFIED ICS > LAST-MODIFIED BDD => UPDATE
- * à tester : récurrences : voir EXDATE et RECURRENCE-ID, RRUle
+ * Clés pour la MAJ de la base de données : UID + + DTSTART + LAST-MODIFIED
+ * - Si la clé n'existe que dans la base de données, l'événement correspondant sera supprimé
+ * - Si la clé n'existe que dans le fichier ICS, l'évenement sera ajouté
+ * les 2 actions précédentes permettent également de gérer les modifications et les récurrences car 
+ * - la clé est modifiée si l'événement est modifié (la clé contient LAST-MODIFIED)
+ * - il existe une clé par date d'un événement récurrent (la clé contient DTSTART qui est le début de chaque occurence)
+ *
  * RRULE => FREQ=WEEKLY;COUNT=6;BYDAY=TU,TH
  * RRULE => FREQ=WEEKLY;UNTIL=20150709T073000Z;BYDAY=MO,TU,WE,TH
  * EXDATE : exception dates
  */
  
-
-// TODO : loguer les imports / Modifs dans la table logs
-
-// TODO : Modification d'une récurrence : si l'option "les éléments suivants" est choisie lors de la modification d'un événément récurrent, un nouvel élément ICS est créé avec 
-// un UID du type uid_origine_rev_date ... PB l'événement initial reste tel quel et ça créé des doublons erronés :  A Vérifier : les noveaux index iCalKey ont peut être réglé ce problème
-// TODO : comparrer les éléments ayant la même base (UID avant _R), supprimer de l'élément d'origine les dates traités par la révision :  A Vérifier : les noveaux index iCalKey ont peut être réglé ce problème
-// 4l0hmqags1s23hqgomago8vi74_R20160708T073000@google.com
-// 4l0hmqags1s23hqgomago8vi74@google.com
-// TODO : Modification d'un" récurrence : si l'option "uniquement cet élément" est chosie lors de la modifcation d'un événement récurrent, un nouvel élément ICS est créé avec le même UID est une date de modifcation différente
-// PB : l'un des 2 éléments est ignoré :  A Vérifier : les noveaux index iCalKey ont peut être réglé ce problème
-/*
-BEGIN:VEVENT
-DTSTART;TZID=Europe/Paris:20160708T093000
-DTEND;TZID=Europe/Paris:20160708T120000
-DTSTAMP:20160617T225529Z
-UID:6pah8kq546frnqrtce857jf9n4@google.com
-RECURRENCE-ID;TZID=Europe/Paris:20160708T093000
-CREATED:20160617T225057Z
-DESCRIPTION:
-LAST-MODIFIED:20160617T225211Z
-LOCATION:
-SEQUENCE:0
-STATUS:CONFIRMED
-SUMMARY:Mailman ordi petit salon test test
-TRANSP:OPAQUE
-END:VEVENT
-
-BEGIN:VEVENT
-DTSTART;TZID=Europe/Paris:20160701T093000
-DTEND;TZID=Europe/Paris:20160701T120000
-RRULE:FREQ=WEEKLY;COUNT=3;BYDAY=FR
-DTSTAMP:20160617T225529Z
-UID:6pah8kq546frnqrtce857jf9n4@google.com
-CREATED:20160617T225057Z
-DESCRIPTION:
-LAST-MODIFIED:20160617T225057Z
-LOCATION:
-SEQUENCE:0
-STATUS:CONFIRMED
-SUMMARY:Mailman ordi petit salon test
-TRANSP:OPAQUE
-END:VEVENT
-*/
-
-// TEST
-$version="test";
-
 require_once "$path/include/config.php";
 require_once "$path/vendor/ics-parser/class.iCalReader.php";
 
 class CJICS{
 
   public $error=null;
+  public $logs=null;
   public $pattern=null;
   public $perso_id=0;
   public $src=null;
@@ -111,53 +69,44 @@ class CJICS{
     $deleted=array();		// Evénements supprimés du fichier ICS ou événements modifiés
     $insert=array();		// Evénements à insérer (nouveaux ou événements modifiés (suppression + réinsertion))
 
-    // TEST
-    echo "CJICS::UpdateTable Start \nTable :$table \nPerso : $perso_id\nURL : $src\n";
+	if($this->logs){
+	  logs("Table: $table, Perso: $perso_id, src: $src","ICS",$this->logs);
+	}
 
-    // TEST
-    // Parse le fichier ICS, le tableaux $events contient les événements du fichier ICS
+    // Parse le fichier ICS, le tableau $events contient les événements du fichier ICS
     $ical   = new ICal($src, "MO");
     $events = $ical->events();
-    
-    if(!is_array($events)){
-      exit;
-    }
-    
-    // TEST
     
     // Récupération du nom du calendrier
     $calName=$ical->calendarName();
     $calTimeZone = $ical->calendarTimezone();
-    echo "Calendar : $calName \n";
-    echo "Timezone : $calTimeZone \n\n";
+	if($this->logs){
+	  logs("Calendrier: $calName, Fuseau horaire: $calTimeZone","ICS",$this->logs);
+	}
     
+    if(!is_array($events) or empty($events)){
+	  if($this->logs){
+		logs("Aucun élément trouvé dans le fichier $src","ICS",$this->logs);
+		$events = array();
+	  }
+    }
     
     // Ne garde que les événements confirmés et occupés et rempli le tableau $iCalKeys
     $tmp=array();
     
-    // $uid_dtstart et $uid_dtstart2 : permet de supprimer les exceptions ajoutées sur les récurrences
-    $uid_dtstart=array();
-    $uid_dtstart2=array();
-    
     foreach($events as $elem){
       $key=$elem['UID']."_".$elem['DTSTART']."_".$elem['LAST-MODIFIED'];
       $tmp[]=array_merge($elem,array("key"=>$key));
-      
-      if(in_array($elem['UID']."_".$elem['DTSTART'],$uid_dtstart)){
-	$uid_dtstart2[]=$elem['UID']."_".$elem['DTSTART'];
-      }
-      $uid_dtstart[]=$elem['UID']."_".$elem['DTSTART'];
     }
     
     $events=array();
     foreach($tmp as $elem){
-      // permet de supprimer les exceptions ajoutées sur les récurrences
-      if(in_array($elem['UID']."_".$elem['DTSTART'],$uid_dtstart2) and array_key_exists("RRULE",$elem)){
-		continue;
-      }
+	  // Ne traite pas les événéments ayant le status X-MICROSOFT-CDO-INTENDEDSTATUS différent de BUSY (si le paramètre X-MICROSOFT-CDO-INTENDEDSTATUS existe)
 	  if(isset($elem['X-MICROSOFT-CDO-INTENDEDSTATUS']) and $elem['X-MICROSOFT-CDO-INTENDEDSTATUS'] != "BUSY"){
 		continue;
 	  }
+	  
+	  // Traite seulement les événéments ayant le STATUS CONFIRMED et TRANSP OPAQUE (TRANSP OPAQUE défini un status BUSY)
       if($elem['STATUS']=="CONFIRMED" and $elem['TRANSP']=="OPAQUE"){
 		$events[]=$elem;
 		$iCalKeys[]=$elem['key'];
@@ -170,70 +119,75 @@ class CJICS{
     if($db->result){
       // Pour chaque événement
       foreach($db->result as $elem){
-	// Si l'évenement n'est plus dans le fichier ICS ou s'il a été modifié dans le fichier ICS, on le supprime : complète le tableau $delete
-	if(!in_array($elem['iCalKey'],$iCalKeys)){
-	  $deleted[]=array(":id"=>$elem['id']);
-	}else{
-	  // Sinon, on complète le table $tableKeys avec la clé de l'évenement pour ne pas le réinsérer dans la table
-	  $tableKeys[]=$elem['iCalKey'];
-	}
+		// Si l'évenement n'est plus dans le fichier ICS ou s'il a été modifié dans le fichier ICS, on le supprime : complète le tableau $delete
+		if(!in_array($elem['iCalKey'],$iCalKeys)){
+		  $deleted[]=array(":id"=>$elem['id']);
+		}else{
+		  // Sinon, on complète le table $tableKeys avec la clé de l'évenement pour ne pas le réinsérer dans la table
+		  $tableKeys[]=$elem['iCalKey'];
+		}
       }
     }
     
     // Suppression des événements supprimés ou modifiés de la base de données
+	$nb = count($deleted);
     if(!empty($deleted)){
       $db=new dbh();
       $db->prepare("DELETE FROM `{$GLOBALS['dbprefix']}$table` WHERE `id`=:id;");
       foreach($deleted as $elem){
-	$db->execute($elem);
+		$db->execute($elem);
       }
     }
-    
+
+    if($this->logs){
+	  logs("$nb événement(s) supprimé(s)","ICS",$this->logs);
+	}
+
     // Insertion des nouveux éléments ou des éléments modifiés dans la table $table : complète le tableau $insert
     foreach($events as $elem){
       if(!in_array($elem['key'],$tableKeys)){
-	$insert[]=$elem;
+		$insert[]=$elem;
       }
     }
       
     // Insertion des nouveux éléments ou des éléments modifiés dans la table $table : insertion dans la base de données
+	$nb=0;
     if(!empty($insert)){
       $db=new dbh();
       $req="INSERT INTO `{$GLOBALS['dbprefix']}$table` (`perso_id`, `debut`, `fin`, `demande`, `valide`, `validation`, `valideN1`, `validationN1`, `motif`, `motif_autre`, `commentaires`, `CALNAME`, `iCalKey`) 
-	VALUES (:perso_id, :debut, :fin, :demande, :valide, :validation, :valideN1, :validationN1, :motif, :motif_autre, :commentaires, :CALNAME, :iCalKey);";
+		VALUES (:perso_id, :debut, :fin, :demande, :valide, :validation, :valideN1, :validationN1, :motif, :motif_autre, :commentaires, :CALNAME, :iCalKey);";
       $db->prepare($req);
 
-      $i=0;
       foreach($insert as $elem){
-	// Adaptation des valeurs pour la base de données
-	$lastmodified = date("Y-m-d H:i:s",strtotime($elem['LAST-MODIFIED']));
-	$demande= array_key_exists("CREATED",$elem) ? date("Y-m-d H:i:s",strtotime($elem['CREATED'])) : $lastmodified;
+		// Adaptation des valeurs pour la base de données
+		$lastmodified = date("Y-m-d H:i:s",strtotime($elem['LAST-MODIFIED']));
+		$demande= array_key_exists("CREATED",$elem) ? date("Y-m-d H:i:s",strtotime($elem['CREATED'])) : $lastmodified;
 
-	$debut = date("Y-m-d H:i:s", strtotime($elem["DTSTART_tz"]));
+		$debut = date("Y-m-d H:i:s", strtotime($elem["DTSTART_tz"]));
 
-	// Les événements ICS sur des journées complètes ont comme date de fin J+1 à 0h00
-	// Donc si la date de fin est à 0h00, on retire une seconde pour la rammener à J
-	$offset = date("H:i:s", strtotime($elem["DTEND_tz"])) == "00:00:00" ? "-1 second" : null;
-	$fin = date("Y-m-d H:i:s", strtotime($elem["DTEND_tz"]." $offset"));
+		// Les événements ICS sur des journées complètes ont comme date de fin J+1 à 0h00
+		// Donc si la date de fin est à 0h00, on retire une seconde pour la rammener à J
+		$offset = date("H:i:s", strtotime($elem["DTEND_tz"])) == "00:00:00" ? "-1 second" : null;
+		$fin = date("Y-m-d H:i:s", strtotime($elem["DTEND_tz"]." $offset"));
 
-	$commentaires = $elem['SUMMARY'];
-	if(array_key_exists("DESCRIPTION",$elem)){
-	  $commentaires.="<br/>\n".$elem['DESCRIPTION'];
-	}
-	
-	// Insertion dans la base de données
-	$tab=array(":perso_id" => $perso_id, ":debut" => $debut, ":fin" => $fin, ":demande" => $demande, ":valide"=> "99999", ":validation" => $lastmodified, ":valideN1"=> "99999", 
-	  ":validationN1" => $lastmodified, ":motif" => $this->pattern, ":motif_autre" => $this->pattern, ":commentaires" => $commentaires, ":CALNAME" => $calName, ":iCalKey" => $elem['key']);
-	  
-	$db->execute($tab);
-	$i++;
+		$commentaires = $elem['SUMMARY'];
+		if(array_key_exists("DESCRIPTION",$elem)){
+		  $commentaires.="<br/>\n".$elem['DESCRIPTION'];
+		}
+		
+		// Insertion dans la base de données
+		$tab=array(":perso_id" => $perso_id, ":debut" => $debut, ":fin" => $fin, ":demande" => $demande, ":valide"=> "99999", ":validation" => $lastmodified, ":valideN1"=> "99999", 
+		  ":validationN1" => $lastmodified, ":motif" => $this->pattern, ":motif_autre" => $this->pattern, ":commentaires" => $commentaires, ":CALNAME" => $calName, ":iCalKey" => $elem['key']);
+		  
+		$db->execute($tab);
+		$nb++;
       }
-      
-      // TEST
-      echo "Events inserted : $i\n";
     }
+
+    if($this->logs){
+	  logs("$nb événement(s) importé(s)","ICS",$this->logs);
+	}
 
   }
 
 }
-
