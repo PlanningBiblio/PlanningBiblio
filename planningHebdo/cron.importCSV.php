@@ -12,11 +12,25 @@ Dernière modification : 12 juillet 2016
 
 Description :
 Import les heures de présences depuis un fichier CSV
-@note : modifier la variable $path
+
+@note : Modifiez le crontab de l'utilisateur Apache (ex: #crontab -eu www-data) en ajoutant les 2 lignes suivantes :
+# Planning Biblio : Importation des heures de présence tous les jours à minuit
+0 0 * * * /usr/bin/php5 -f /var/www/html/planning/cron.ics.php
+Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à ce fichier
+@note : Modifiez la variable $path suivante en renseignant le chemin absolu vers votre dossier planningBiblio
 */
 
-$version="cron";
 $path="/planning";
+
+/** $version=$argv[0]; permet d'interdire l'execution de ce script via un navigateur
+ *  Le fichier config.php affichera une page "accès interdit si la $version n'existe pas
+ *  $version prend la valeur de $argv[0] qui ne peut être fournie que en CLI ($argv[0] = chemin du script appelé en CLI)
+ */
+$version=$argv[0];
+
+// chdir($path) : important pour l'execution via le cron
+chdir($path);
+
 require_once "$path/include/config.php";
 require_once "$path/personnel/class.personnel.php";
 
