@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0.1
+Planning Biblio, Version 2.4.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 2 septembre 2015
+Dernière modification : 16 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -108,6 +108,13 @@ foreach($totalSP as $key => $value){
   $moyennesSP[$key]=$value/(count($heuresSP));
 }
 
+
+// Recherche des absences dans la table absences
+$a=new absences();
+$a->valide=true;
+$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$debut." 00:00:00",$fin." 23:59:59");
+$absencesDB=$a->elements;
+
 $db=new db();
 $debutREQ=$db->escapeString($debut);
 $finREQ=$db->escapeString($fin);
@@ -125,6 +132,15 @@ $req.="ORDER BY `nom`,`prenom`;";
 $db->query($req);
 if($db->result){
   foreach($db->result as $elem){
+  
+	// Vérifie à partir de la table absences si l'agent est absent
+	// S'il est absent, on met à 1 la variable $elem['absent']
+	foreach($absencesDB as $a){
+	  if($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']){
+		continue 2;
+	  }
+	}
+  
     if(!array_key_exists($elem['perso_id'],$tab)){		// création d'un tableau de données par agent (id, nom, heures de chaque jour ...)
       $tab[$elem['perso_id']]=Array("perso_id"=>$elem['perso_id'],"nom"=>$elem['nom'],
       "prenom"=>$elem['prenom'],"statut"=>$elem['statut'],"site1"=>0,"site2"=>0,"total"=>0,
