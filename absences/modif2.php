@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4
+Planning Biblio, Version 2.4.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 6 juillet 2016
+Dernière modification : 16 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -149,11 +149,12 @@ if($config['Multisites-nombre']>1){
   // $sites_agents comprend l'ensemble des sites en lien avec les agents concernés par cette modification d'absence
   $sites_agents=array();
   foreach($agents_tous as $elem){
-    if(is_array($elem['sites'])){
-      foreach($elem['sites'] as $site){
-	if(!in_array($s,$sites_agents)){
-	  $sites_agents[]=$site;
-	}
+	$tab = unserialize($elem['sites']);
+    if(is_array($tab)){
+      foreach($tab as $site){
+		if(!in_array($site,$sites_agents)){
+		  $sites_agents[]=$site;
+		}
       }
     }
   }
