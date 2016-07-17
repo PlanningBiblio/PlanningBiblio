@@ -133,12 +133,62 @@ class planning{
     // Calcul des heures de SP à effectuer pour tous les agents
     $heuresSP=calculHeuresSP($date);
 
+    // Nombre d'heures de la cellule choisie
+    $hres_cellule = 0;
+    if($stat){    // vérifier si le poste est compté dans les stats
+      $hres_cellule = diff_heures($debut,$fin,"decimal");
+    }
+    
     // Calcul des heures d'absences afin d'ajuster les heures de SP
     $a=new absences();
     $heuresAbsencesTab=$a->calculHeuresAbsences($date);
 
     if(is_array($agents)){
       usort($agents,"cmp_nom_prenom");
+    
+      // Calcul des heures faites ce jour, cette seamine et sur les 4 dernières semaines pour tous les agents
+      // Liste des ID des agents pour la requête des heures faites
+      $ids = array();
+      foreach($agents as $elem){
+        $ids[]=$elem['id'];
+      }
+      $agents_liste = implode(",",$ids);
+      
+      // Intervalle de dates par défaut : la semaine en cours
+      $date1 = $j1;
+      $date2 = $j7;
+      
+      // Si l'option hres4semaines est cochée, l'intervalle est de 4 semaines
+      if($config['hres4semaines']){
+        $date1=date("Y-m-d",strtotime("-3 weeks",strtotime($j1)));
+      }
+
+      // Recherche des postes occupés dans la base avec le plus grand intervalle pour limiter les requêtes
+      $db_heures = new db();
+      $db_heures->selectInnerJoin(array("pl_poste","poste"),array("postes","id"),
+        array("date","debut","fin","perso_id"),
+        array(),
+        array("perso_id"=> "IN $agents_liste", "absent"=>"<>1", "date"=> "BETWEEN {$date1} AND {$date2}"),
+        array("statistiques"=>"1"));
+      
+      if($db_heures->result){
+        // Pour chaqe résultat, on ajoute le nombre d'heures correspondant à l'agent concerné, pour le jour, la semaine et/ou les 4 semaines
+        foreach($db_heures->result as $elem){
+          $h = diff_heures($elem['debut'],$elem['fin'],"decimal");
+          $hres_jour = $elem['date'] == $date ? $h : 0;
+          $hres_semaine = ($elem['date'] >= $j1 and $elem['date'] <= $j7) ? $h : 0;
+          $hres_4sem = $h;
+          
+          if(!isset($heures[$elem['perso_id']])){
+            $heures[$elem['perso_id']] = array("jour"=>$hres_jour, "semaine"=>$hres_semaine, "4semaines"=>$hres_4sem);
+          }else{
+            $heures[$elem['perso_id']]["jour"] += $hres_jour;
+            $heures[$elem['perso_id']]["semaine"] += $hres_semaine;
+            $heures[$elem['perso_id']]["4semaines"] += $hres_4sem;
+          }
+        }
+      }
+
       foreach($agents as $elem){
         // Heures hebdomadaires (heures à faire en SP)
         $heuresHebdo=$heuresSP[$elem['id']];
@@ -151,24 +201,21 @@ class planning{
             if($heuresAbsences>0){
               // On informe du pourcentage sur les heures d'absences
               $pourcent=null;
-                if(strpos($elem["heuresHebdo"],"%") and $elem["heuresHebdo"]!="100%"){
-                  $pourcent=" {$elem["heuresHebdo"]}";
-                }
-                
-                $heuresHebdoTitle="Quota hebdomadaire = $heuresHebdo - $heuresAbsences (Absences{$pourcent})";
-                $heuresHebdo=$heuresHebdo-$heuresAbsences;
-                if($heuresHebdo<0){
-                  $heuresHebdo=0;
-                }
+              if(strpos($elem["heuresHebdo"],"%") and $elem["heuresHebdo"]!="100%"){
+                $pourcent=" {$elem["heuresHebdo"]}";
               }
-            }else{
-              $heuresHebdoTitle="Quota hebdomadaire : Erreur de calcul des heures d&apos;absences";
-              $heuresHebdo="Erreur";
+              
+              $heuresHebdoTitle="Quota hebdomadaire = $heuresHebdo - $heuresAbsences (Absences{$pourcent})";
+              $heuresHebdo=$heuresHebdo-$heuresAbsences;
+              if($heuresHebdo<0){
+                $heuresHebdo=0;
+              }
             }
+          }else{
+            $heuresHebdoTitle="Quota hebdomadaire : Erreur de calcul des heures d&apos;absences";
+            $heuresHebdo="Erreur";
           }
-        
-        $hres_jour=0;
-        $hres_sem=0;
+        }
         
         if(!$config['ClasseParService']){
           if($elem['id']==2){		// on retire l'utilisateur "tout le monde"
@@ -211,58 +258,17 @@ class planning{
           $nom.=" (".join(", ",$motifExclusion[$elem['id']]).")";
         }
 
-        // affihage des heures faites ce jour + les heures de la cellule
-        $db_heures = new db();
-        $db_heures->selectInnerJoin(array("pl_poste","poste"),array("postes","id"),
-          array("debut","fin"),
-          array(),
-          array("perso_id"=>$elem['id'], "absent"=>"<>1", "date"=>$date),
-          array("statistiques"=>"1"));
-
-        if($stat){ 	// vérifier si le poste est compté dans les stats
-          $hres_jour=diff_heures($debut,$fin,"decimal");
-        }
-        if($db_heures->result){
-          foreach($db_heures->result as $hres){
-            $hres_jour=$hres_jour+diff_heures($hres['debut'],$hres['fin'],"decimal");
-          }
-        }
+        // affihage des heures faites ce jour et cette semaine + les heures de la cellule
+        $hres_jour = isset($heures[$elem['id']]['jour']) ? $heures[$elem['id']]['jour'] : 0;
+        $hres_jour += $hres_cellule;
+        $hres_sem = isset($heures[$elem['id']]['semaine']) ? $heures[$elem['id']]['semaine'] : 0;
+        $hres_sem += $hres_cellule;
         
-        // affihage des heures faites cette semaine + les heures de la cellule
-        $db_heures = new db();
-        $db_heures->selectInnerJoin(array("pl_poste","poste"),array("postes","id"),
-          array("debut","fin"),array(),
-          array("perso_id"=>$elem['id'], "absent"=>"<>1", "date"=>"BETWEEN{$j1}AND{$j7}"),
-          array("statistiques"=>"1"));
-
-        if($stat){ 	// vérifier si le poste est compté dans les stats
-          $hres_sem=diff_heures($debut,$fin,"decimal");
-        }
-        if($db_heures->result){
-          foreach($db_heures->result as $hres){
-            $hres_sem=$hres_sem+diff_heures($hres['debut'],$hres['fin'],"decimal");
-          }
-        }
-
         // affihage des heures faites les 4 dernières semaines + les heures de la cellule
         $hres_4sem=null;
         if($config['hres4semaines']){
-          $hres_4sem=0;
-          $date1=date("Y-m-d",strtotime("-3 weeks",strtotime($j1)));
-          $date2=$j7;	// fin de semaine courante
-          $db_hres4 = new db();
-          $db_hres4->selectInnerJoin(array("pl_poste","poste"), array("postes","id"), array("debut","fin"), array(),
-            array("perso_id"=>$elem['id'], "absent"=>"<>1", "date"=>"BETWEEN{$date1}AND{$date2}"),
-            array("statistiques"=>"1"));
-
-          if($stat){ 	// vérifier si le poste est compté dans les stats
-            $hres_4sem=diff_heures($debut,$fin,"decimal");
-          }
-          if($db_hres4->result){
-            foreach($db_hres4->result as $hres){
-              $hres_4sem=$hres_4sem+diff_heures($hres['debut'],$hres['fin'],"decimal");
-            }
-          }
+          $hres_4sem = isset($heures[$elem['id']]['4semaines']) ? $heures[$elem['id']]['4semaines'] : 0;
+          $hres_4sem += $hres_cellule;
           $hres_4sem=" / <font title='Heures des 4 derni&egrave;res semaines'>$hres_4sem</font>";
         }
 
