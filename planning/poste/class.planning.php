@@ -163,6 +163,12 @@ class planning{
         $date1=date("Y-m-d",strtotime("-3 weeks",strtotime($j1)));
       }
 
+      // Recherche des absences dans la table absences pour les déduire des heures faites
+      $a=new absences();
+      $a->valide=true;
+      $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date1." 00:00:00",$date2." 23:59:59");
+      $absencesDB=$a->elements;
+
       // Recherche des postes occupés dans la base avec le plus grand intervalle pour limiter les requêtes
       $db_heures = new db();
       $db_heures->selectInnerJoin(array("pl_poste","poste"),array("postes","id"),
@@ -174,6 +180,15 @@ class planning{
       if($db_heures->result){
         // Pour chaqe résultat, on ajoute le nombre d'heures correspondant à l'agent concerné, pour le jour, la semaine et/ou les 4 semaines
         foreach($db_heures->result as $elem){
+
+          // Vérifie à partir de la table absences si l'agent est absent
+          // S'il est absent, on met passe (continue 2)
+          foreach($absencesDB as $a){
+            if($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']){
+              continue 2;
+            }
+          }
+        
           $h = diff_heures($elem['debut'],$elem['fin'],"decimal");
           $hres_jour = $elem['date'] == $date ? $h : 0;
           $hres_semaine = ($elem['date'] >= $j1 and $elem['date'] <= $j7) ? $h : 0;
