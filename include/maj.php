@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 8 juillet 2016
+Dernière modification : 18 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -406,10 +406,10 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="ALTER TABLE `{$dbprefix}absences` ADD INDEX `CALNAME` (`CALNAME`);";
 
   // PlanningHebdo
-  $sql[]="ALTER TABLE  `{$dbprefix}planningHebdo` ADD  `key` VARCHAR( 100 ) NOT NULL , ADD UNIQUE (`key`);";
+  $sql[]="ALTER TABLE `{$dbprefix}planningHebdo` ADD `key` VARCHAR( 100 ) NULL DEFAULT NULL;";
+  $sql[]="ALTER TABLE `{$dbprefix}planningHebdo` ADD UNIQUE `key` (`key`);";
 
-  // Config
-  $sql[]="ALTER TABLE `config` ADD UNIQUE `nom` (`nom`);";
+  // ICS
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `commentaires`, `ordre` ) VALUES 
     ('ICS-Server1','text','ICS', 'URL du 1<sup>er</sup> serveur ICS avec la variable OpenURL entre crochets. Ex: http://server.domain.com/calendars/[email].ics','10');";
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `commentaires`, `ordre` ) VALUES 
@@ -425,6 +425,25 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
 
 $v="2.4.1";
 if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Config
+  // Supprime les éventuels doublons
+  $db=new db();
+  $db->select2("config");
+  $tmp = array();
+  foreach($db->result as $elem){
+    if(in_array($elem['nom'], $tmp)){
+      $sql[] = "DELETE FROM `{$dbprefix}config` WHERE `id` = '{$elem['id']}';";
+    } else {
+      $tmp[] = $elem['nom'];
+    }
+  }
+  // Rend le champ `nom` UNIQUE
+  $sql[]="ALTER TABLE `{$dbprefix}config` ADD UNIQUE `nom` (`nom`);";
+
+  // PlanningHebdo
+  $sql[]="ALTER TABLE `{$dbprefix}planningHebdo` CHANGE `key` `key` VARCHAR( 100 ) NULL DEFAULT NULL;";
+  $sql[]="ALTER TABLE `{$dbprefix}planningHebdo` ADD UNIQUE `key` (`key`);";
+
   // Importation CSV des heures de présences
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `commentaires`, `ordre` ) VALUES 
     ('PlanningHebdo-CSV','text','Heures de pr&eacute;sence', 'Emplacement du fichier CSV &agrave; importer (importation automatis&eacute;e) Ex: /dossier/fichier.csv','90');";
