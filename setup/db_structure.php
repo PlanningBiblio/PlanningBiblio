@@ -199,6 +199,7 @@ $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `supprime` ENUM('0','1','2') NOT NULL DEFAULT '0',
   `mailsResponsables` TEXT NOT NULL DEFAULT '',
   `matricule` VARCHAR(100) NOT NULL DEFAULT '',
+  `codeICS` VARCHAR(100) NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `login` (`login`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
