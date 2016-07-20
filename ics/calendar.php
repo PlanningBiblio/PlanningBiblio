@@ -14,15 +14,11 @@
 * TODO
 * @file maj.php, @file setup/db_structure : personnel/codeICS
 * @file maj.php, @file setup/db_structure : config/codeICS pour postes, un code par site
-* TODO
-* Ajouter champ location (site, étage)
 */
 
 // TODO :Ne pas importer les absents (voir requete $absencesDB des stats)
 // TODO :Ne pas importer ceux en congés (plugin) (faire comme pour les absences)
-// TODO : Ajouter le TimeZone issue de la config
 // TODO : recherche par login et par email, en plus de perso_id (accepte paramètres en entrée id, login, email)
-// TODO : Nom du Calendrier, UID, PRODID, déclaration du timezone, etc.
 
 
 function icsdate($date){
@@ -32,6 +28,8 @@ function icsdate($date){
 
 $version="ics";
 require_once "../include/config.php";
+require_once "../include/function.php";
+require_once "../personnel/class.personnel.php";
 require_once "../postes/class.postes.php";
 
 $url=$_SERVER['SERVER_NAME'];
@@ -59,22 +57,49 @@ if($config['Multisites-nombre'] > 1){
   }
 }
 
-
 // Recherche des plannings verrouillés pour exclure les plages concernant des plannings en attente
 $verrou = array();
 $db = new db();
 $db->select2("pl_poste_verrou",null,array('verrou2'=>'1'));
 if($db->result){
   foreach($db->result as $elem){
-    $verrou[$elem['date'].'_'.$elem['site']]=$elem['validation2'];
+    $verrou[$elem['date'].'_'.$elem['site']] = array('date'=>$elem['validation2'], 'agent'=>$elem['perso2']);
   }
 }
+
+// Nom de l'agent pour X-WR-CALNAME
+$agent = nom($id);
+
+// Tableaux contenant les noms et emails de tous les agents, permet de renseigner le champ ORGANIZER avec le nom de l'agent ayant vérrouillé le planning
+$p = new personnel();
+$p->supprime = array(0,1,2);
+$p->fetch();
+$agents=$p->elements;
 
 // Tableau $ical
 $ical=array();
 $ical[]="BEGIN:VCALENDAR";
+$ical[]="X-WR-CALNAME:Service Public $agent";
+$ical[]="PRODID:Planning-Biblio-Calendar";
 $ical[]="VERSION:2.0";
-$ical[]="PRODID:-//hacksw/handcal//NONSGML v1.0//EN";
+$ical[]="METHOD:PUBLISH";
+$ical[]="BEGIN:VTIMEZONE";
+$ical[]="TZID:Europe/Paris";
+$ical[]="BEGIN:STANDARD";
+$ical[]="DTSTART:16010101T030000";
+$ical[]="TZOFFSETTO:+0100";
+$ical[]="TZOFFSETFROM:+0200";
+$ical[]="RRULE:FREQ=YEARLY;WKST=MO;INTERVAL=1;BYMONTH=10;BYDAY=-1SU";
+$ical[]="TZNAME:CET";
+$ical[]="END:STANDARD";
+$ical[]="BEGIN:DAYLIGHT";
+$ical[]="DTSTART:16010101T020000";
+$ical[]="TZOFFSETTO:+0200";
+$ical[]="TZOFFSETFROM:+0100";
+$ical[]="RRULE:FREQ=YEARLY;WKST=MO;INTERVAL=1;BYMONTH=3;BYDAY=-1SU";
+$ical[]="TZNAME:CEST";
+$ical[]="END:DAYLIGHT";
+$ical[]="END:VTIMEZONE";
 
 $tab = array();
 $i=0;
@@ -106,7 +131,14 @@ if(isset($planning)){
     $site = isset($sites) ? $sites[$elem['site']] : null;
     $etage = $postes[$elem['poste']]['etage'] ? ' '.html_entity_decode($postes[$elem['poste']]['etage'],ENT_QUOTES|ENT_IGNORE,'UTF-8') : null;
     // Validation pour LAST-MODIFIED et DSTAMP
-    $validation = gmdate("Ymd\THis\Z", strtotime($verrou[$elem['date'].'_'.$elem['site']]));
+    $validation = gmdate("Ymd\THis\Z", strtotime($verrou[$elem['date'].'_'.$elem['site']]['date']));
+    // ORGANIZER
+    $organizer = null;
+    if(isset($agents[$verrou[$elem['date'].'_'.$elem['site']]['agent']])){
+      $tmp = $agents[$verrou[$elem['date'].'_'.$elem['site']]['agent']];
+      $organizer = $tmp['prenom'].' '.$tmp['nom'];
+      $organizer .= ':mailto:'.$tmp['mail'];
+    }
     
     $ical[]="BEGIN:VEVENT";
     $ical[]="UID:" . md5(uniqid(mt_rand(), true)) . "@$url";
@@ -114,6 +146,9 @@ if(isset($planning)){
     $ical[]="DTSTART;TZID=Europe/Paris:$debut";
     $ical[]="DTEND;TZID=Europe/Paris:$fin";
     $ical[]="SUMMARY:$poste";
+    if($organizer){
+      $ical[]="ORGANIZER;CN=$organizer";
+    }
     $ical[]="LOCATION:{$site}{$etage}";
     $ical[]="STATUS:CONFIRMED";
     $ical[]="CLASS:PUBLIC";
