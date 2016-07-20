@@ -30,7 +30,7 @@ $fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dat
 $perso_ids=filter_input(INPUT_GET,"perso_ids",FILTER_SANITIZE_STRING);
 $perso_ids=json_decode(html_entity_decode($perso_ids,ENT_QUOTES|ENT_IGNORE,"UTF-8"));
 
-$resul=array();
+$result=array();
 
 // Pour chaque agent, contrôle si autre absence, si placé sur planning validé, si placé sur planning en cours d'élaboration 
 foreach($perso_ids as $perso_id){

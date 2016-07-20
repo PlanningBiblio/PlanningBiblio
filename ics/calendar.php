@@ -1,8 +1,10 @@
 <?php
 /**
-* @param id : perso_id required
-* @param code : codeICS optional
-*
+* @param int id : ID de l'agent
+* @param string login : login de l'agent
+* @param string mail : e-mail de l'agent
+* @param code : codeICS (option) : Code permettant de rendre privé le fichier ICS
+* ou moins l'un des paramètres id, login et mail est requis.
 * TODO
 * tester avec google, zimbra
 *
@@ -18,7 +20,6 @@
 
 // TODO :Ne pas importer les absents (voir requete $absencesDB des stats)
 // TODO :Ne pas importer ceux en congés (plugin) (faire comme pour les absences)
-// TODO : recherche par login et par email, en plus de perso_id (accepte paramètres en entrée id, login, email)
 
 
 function icsdate($date){
@@ -33,8 +34,41 @@ require_once "../personnel/class.personnel.php";
 require_once "../postes/class.postes.php";
 
 $url=$_SERVER['SERVER_NAME'];
-$id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 $code=filter_input(INPUT_GET,"code",FILTER_SANITIZE_STRING);
+$id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
+$login=filter_input(INPUT_GET,"login",FILTER_SANITIZE_STRING);
+$mail=filter_input(INPUT_GET,"mail",FILTER_SANITIZE_EMAIL);
+
+// Définission de l'id de l'agent si l'argument login est donné
+if(!$id and $login){
+  $db = new db();
+  $db->select2('personnel','id',array('login'=>$login));
+  if($db->result){
+    $id = $db->result[0]['id'];
+  }
+  else{
+    logs("Impossible de trouver l'id associé au login $login","ICS Export");
+    exit;
+  }
+}
+
+// Définission de l'id de l'agent si l'argument mail est donné
+if(!$id and $mail){
+  $db = new db();
+  $db->select2('personnel','id',array('mail'=>$mail));
+  if($db->result){
+    $id = $db->result[0]['id'];
+  }
+  else{
+    logs("Impossible de trouver l'id associé au mail $mail","ICS Export");
+    exit;
+  }
+}
+
+if(!$id){
+  logs("L'id de l'agent n'est pas fourni","ICS Export");
+  exit;
+}
 
 // Recherche des plages de service public de l'agent
 $db=new db();
