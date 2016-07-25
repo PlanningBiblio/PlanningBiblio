@@ -1,37 +1,53 @@
 <?php
 /**
+Planning Biblio, Version 2.4.1
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.md et LICENSE
+@copyright 2011-2016 Jérôme Combes
+
+Fichier : ics/calendar.php
+Création : juillet 2016
+Dernière modification : 25 juillet 2016
+@author Jérôme Combes <jerome@planningbiblio.fr>
+
+Description :
+Ce fichier génère un calendrier ICS par agent.
+Utilisation : renseigner l'adresse http(s)://votre_serveur/votre_planning/ics/calendar.php&login=login_de_l_agent dans le champ URL de votre client ICS (Thunderbird, Outlook, Google Calendar, etc.)
+Vous pouvez également utiliser les paramètres 'mail' et 'id' pour identifier l'agent (http(s)://votre_serveur/votre_planning/ics/calendar.php&mail=e-mail_de_l_agent et http(s)://votre_serveur/votre_planning/ics/calendar.php&id=id_de_l_agent)
+Le calendrier contenant les plages de service public validées sera retourné.
+Vous devez activier le paramètre ICS-Export dans le menu Administration / Configuration / ICS
+*
 * @param int id : ID de l'agent
 * @param string login : login de l'agent
 * @param string mail : e-mail de l'agent
 * @param code : codeICS (option) : Code permettant de rendre privé le fichier ICS
-* ou moins l'un des paramètres id, login et mail est requis.
-* TODO
-* tester avec google, zimbra
-*
+* au moins l'un des paramètres id, login et mail est requis.
+*/
+
+/*
 * TODO
 * Faire une autre requete pour afficher par poste, dans ce cas les noms et prénoms seront affichés dans summary
-*  cette autre requete sera utilisée si le @param id n'existe pas et si @param poste à la place
+*  cette autre requete sera utilisée si les @param id, login et mail n'existent pas et si @param poste à la place
 * TODO
-* @file class.ics.php : @class ics, @function icsdate, @function $begin, @function end, @function event
-* TODO
-* @file maj.php, @file setup/db_structure : personnel/codeICS
 * @file maj.php, @file setup/db_structure : config/codeICS pour postes, un code par site
 */
 
-// TODO :Ne pas importer les absents (voir requete $absencesDB des stats)
-// TODO :Ne pas importer ceux en congés (plugin) (faire comme pour les absences)
-
-
-function icsdate($date){
-  $date = date("Ymd\THis", strtotime($date));
-  return $date;
-}
+// TODO : Protection par code, générer des codes pour les agents existants, générer des codes à chaque ajout/importation, afficher ces codes des les fichiers agents.
+// TODO : config : activer/désactiver la génération des fichiers ICS: désactivé par défaut
 
 $version="ics";
 require_once "../include/config.php";
 require_once "../include/function.php";
+require_once "../plugins/plugins.php";
+require_once "../absences/class.absences.php";
 require_once "../personnel/class.personnel.php";
 require_once "../postes/class.postes.php";
+
+
+if(!$config['ICS-Export']){
+  logs("L'exportation ICS est désactivée","ICS Export");
+  exit;
+}
 
 $url=$_SERVER['SERVER_NAME'];
 $code=filter_input(INPUT_GET,"code",FILTER_SANITIZE_STRING);
@@ -70,6 +86,9 @@ if(!$id){
   exit;
 }
 
+logs("Exportation des plages de SP pour l'agent #$id","ICS Export");
+
+  
 // Recherche des plages de service public de l'agent
 $db=new db();
 $db->selectInnerJoin(array("pl_poste","perso_id"), array("personnel","id"), array("date", "debut", "fin", "poste", 'site', 'absent', 'supprime'), array(), 
@@ -99,6 +118,24 @@ if($db->result){
   foreach($db->result as $elem){
     $verrou[$elem['date'].'_'.$elem['site']] = array('date'=>$elem['validation2'], 'agent'=>$elem['perso2']);
   }
+}
+
+// Recherche des absences
+$a=new absences();
+$a->valide=true;
+$a->fetch("`debut`,`fin`",null,$id,'0000-00-00 00:00:00', date('Y-m-d', strtotime(date('Y-m-d').' + 2 years')));
+$absences=$a->elements;
+
+// Recherche des congés (si le plugin est installé)
+if(in_array('conges', $plugins)){
+  require_once "../plugins/conges/class.conges.php";
+  $c = new conges();
+  $c->perso_id = $id;
+  $c->debut = '0000-00-00 00:00:00';
+  $c->fin = date('Y-m-d', strtotime(date('Y-m-d').' + 2 years'));
+  $c->valide = true;
+  $c->fetch();
+  $absences = array_merge($absences, $c->elements);
 }
 
 // Nom de l'agent pour X-WR-CALNAME
@@ -138,12 +175,20 @@ $ical[]="END:VTIMEZONE";
 $tab = array();
 $i=0;
 if(isset($planning)){
-  // Exclusion des planning non validés : A testet
+  // Exclusion des planning non validés
   foreach($planning as $elem){
     if(!array_key_exists($elem['date'].'_'.$elem['site'], $verrou)){
       continue;
     }
     
+    // Exclusion des absences
+    foreach($absences as $a){
+      if($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date'].' '.$elem['debut']){
+        continue 2;
+      }
+    }
+    
+    // Regroupe les plages de SP qui se suivent sur le même poste
     if(isset($tab[$i-1])
       and $tab[$i-1]['debut'] == $elem['fin'] 
       and $tab[$i-1]['poste'] == $elem['poste'] 
@@ -156,9 +201,10 @@ if(isset($planning)){
     }
   }
 
+  // Complète le tableau $ical
   foreach($tab as $elem){
-    $debut = icsdate($elem['date']." ".$elem['debut']);
-    $fin = icsdate($elem['date']." ".$elem['fin']);
+    $debut = date("Ymd\THis", strtotime($elem['date']." ".$elem['debut']));
+    $fin = date("Ymd\THis", strtotime($elem['date']." ".$elem['fin']));
     // Nom du poste pour SUMMARY
     $poste = html_entity_decode($postes[$elem['poste']]['nom'],ENT_QUOTES|ENT_IGNORE,'UTF-8');
     // Site et étage pour LOCATION
@@ -175,7 +221,7 @@ if(isset($planning)){
     }
     
     $ical[]="BEGIN:VEVENT";
-    $ical[]="UID:" . md5(uniqid(mt_rand(), true)) . "@$url";
+    $ical[]="UID: $id-{$elem['site']}-{$elem['poste']}-$debut-$fin@$url";
     $ical[]="DTSTAMP:" . gmdate('Ymd').'T'. gmdate('His') . "Z";
     $ical[]="DTSTART;TZID=Europe/Paris:$debut";
     $ical[]="DTEND;TZID=Europe/Paris:$fin";
