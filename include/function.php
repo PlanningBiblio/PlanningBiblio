@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.2
+Planning Biblio, Version 2.4.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 28 mai 2016
+Dernière modification : 27 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -620,7 +620,7 @@ function compte_jours($date1, $date2, $jours){
   return $count;
 }
 
-function createURL($page){
+function createURL($page=null){
   // Construction d'une URL
   // Protocol et port
   $protocol = isset($_SERVER['HTTPS']) ? 'https' : 'http';

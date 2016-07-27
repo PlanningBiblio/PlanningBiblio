@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.4.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/password.php
 Création : mai 2011
-Dernière modification : 9 janvier 2016
+Dernière modification : 27 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -45,7 +45,7 @@ if(!$nouveau){
   echo "<input type='password' name='confirm' class='ui-widget-content ui-corner-all'/>\n";
   echo "</td></tr>\n";
   echo "<tr><td colspan='2' style='text-align:center;'>\n";
-  echo "<br/><input type='button' value='Annuler' onclick='history.back();' class='ui-button'/>";
+  echo "<br/><input type='button' value='Annuler' onclick='location.href=\"index.php\";' class='ui-button'/>";
   echo "<input type='submit' value='Modifier' class='ui-button' style='margin-left:30px;'/>\n";
   echo "</td></tr>\n";
   echo "</table></form>\n";
@@ -72,7 +72,7 @@ else{
     $db->query("update {$dbprefix}personnel set password='".$mdp_crypt."' where id=".$_SESSION['login_id'].";");
     echo "Le mot de passe a été changé";
     echo "<br/><br/>\n";
-    echo "<a href='javascript:history.go(-2);'>Retour</a>\n";
+    echo "<a href='index.php'>Retour au planning</a>\n";
 
     $message="Votre mot de passe Planning Biblio a &eacute;t&eacute; modifi&eacute;";
     $message.="<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
@@ -85,7 +85,7 @@ else{
     $m->send();
 
     // Si erreur d'envoi de mail, affichage de l'erreur
-    if($m->error){
+    if($m->error_CJInfo){
       echo "<script type='text/javascript'>CJInfo(\"{$m->error_CJInfo}\",\"error\");</script>\n";
     }
   }

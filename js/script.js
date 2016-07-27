@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 11 juillet 2016
+Dernière modification : 27 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -335,6 +335,36 @@ function removeAccents(strAccents){
   }
   strAccentsOut = strAccentsOut.join('');
   return strAccentsOut;
+}
+
+
+/**
+ * Réninitialise l'URL du calendrier ICS de l'agent
+ * @param int id : ID de l'agent
+ * @param string nom : Prénom et Nom de l'agent (pour affichage de la confirmation
+ */
+function resetICSURL(id, nom){
+  if(nom == undefined){
+    var res = confirm("Etes vous sûr(e) de vouloir réinitialiser l'URL de votre calendrier ICS ?");
+  } else {
+    var res = confirm("Etes vous sûr(e) de vouloir réinitialiser l'URL du calendrier de "+nom+" ?");
+  }
+  
+  if(res){
+    $.ajax({
+      url: "ics/ajax.resetURL.php",
+      type: "post",
+      dataType: "json",
+      data: {id: id},
+      success: function(result){
+        $("#url-ics").text(result.url);
+        CJInfo("L'URL du calendrier a été réinitialisée avec succès","success");
+      },
+      error: function(result){
+        CJInfo("Une erreur est survenue lors de la réinitialisation de l'URL<br/>"+result.responseText,"error");
+      }
+    });
+  }
 }
 
 // Supprime les balises HTML

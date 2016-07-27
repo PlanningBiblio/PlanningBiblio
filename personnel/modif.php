@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 11 juillet 2016
+Dernière modification : 26 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -137,6 +137,14 @@ if($id){		//	récupération des infos de l'agent en cas de modif
   $sites=is_serialized($sites)?unserialize($sites):array();
   $action="modif";
   $titre=$nom." ".$prenom;
+  
+  // URL ICS
+  if($config['ICS-Export']){
+    $p = new personnel();
+    $ics = $p->getICSURL($id);
+  }
+
+
 }
 else{		// pas d'id, donc ajout d'un agent
   $id=null;
@@ -531,6 +539,16 @@ if($id){
     echo "<tr><td colspan='2'>\n";
     echo "<a href='javascript:modif_mdp();'>Changer le mot de passe</a>";
     echo "</td></tr>";
+  }
+
+  // URL du fichier ICS
+  if(isset($ics)){
+    echo "<tr><td style='padding-top: 10px;'>Calendrier ICS</td>\n";
+    echo "<td style='padding-top: 10px;' id='url-ics'>$ics</td></tr>\n";
+    if($config['ICS-Code']){
+      echo "<tr><td>&nbsp;</td>\n";
+      echo "<td><a href='javascript:resetICSURL($id, \"$prenom $nom\");'>R&eacute;initialiser l'URL</a></td></tr>\n";
+    }
   }
 }
 ?>

@@ -1,20 +1,21 @@
 <?php
 /**
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.4.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
-Fichier : planningHebdo/monCompte.php
+Fichier : monCompte.php
 Création : 23 juillet 2013
-Dernière modification : 22 juin 2015
+Dernière modification : 27 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Fichier permettant de modifier son mot de passe et son planning de présence hebdomadaire
 */
 
-require_once "class.planningHebdo.php";
+require_once "personnel/class.personnel.php";
+require_once "planningHebdo/class.planningHebdo.php";
 
 // Recherche de la config
 $p=new planningHebdo();
@@ -59,101 +60,108 @@ if(in_array("conges",$plugins)){
   $credits['joursRecuperation']=number_format($credits['recuperation']/7,2,","," ");
 }
 
+// URL ICS
+if($config['ICS-Export']){
+  $p = new personnel();
+  $ics = $p->getICSURL($_SESSION['login_id']);
+}
 ?>
+
 <!--	Menu	-->
 <h3>Mon Compte</h3>
 
 <div class='ui-tabs'>
 <ul>
 <?php
+if($config['PlanningHebdo']){
+  echo "<li><a href='#planningPresence'>Mes plannings de présence</a></li>\n";
+}
 if(in_array("conges",$plugins)){
-  echo <<<EOD
-    <li><a href='#planningPresence'>Mes plannings de présence</a></li>
-    <li><a href='#credits'>Mes crédits</a></li>
-    <li><a href='#motDePasse'>Mon mot de passe</a></li>
-EOD;
+  echo "<li><a href='#credits'>Mes crédits</a></li>\n";
 }
-else{
-  echo <<<EOD
-    <li><a href='#planningPresence'>Mes plannings de présence</a></li>
-    <li><a href='#motDePasse'>Mon mot de passe</a></li>
-EOD;
+if(isset($ics)){
+  echo "<li><a href='#ics'>Calendrier ICS</a></li>\n";
 }
-?>
-</ul>
+echo "<li><a href='#motDePasse'>Mon mot de passe</a></li>\n";
 
-<!-- Planning de présence -->
-<div id='planningPresence'>
+echo "</ul>\n";
 
-<div style='display: inline-block; width:300px;'>
-<h3>Planning de présence</h3>
-</div>
-
-<?php
-if($config['PlanningHebdo-Agents']){
+// Planning de présence
+if($config['PlanningHebdo']){
+  echo "<!-- Planning de présence -->\n";
   echo <<<EOD
-  <div style='display: inline-block; width:300px; position: absolute; right: 22px; text-align: right; margin-top:22px;'>
-  <a href='index.php?page=planningHebdo/modif.php&retour=monCompte.php' class='ui-button'>
-    Entrer un nouveau planning</a>
+  <div id='planningPresence'>
+
+  <div style='display: inline-block; width:300px;'>
+  <h3>Planning de présence</h3>
   </div>
 EOD;
-}
-?>
 
-<!-- Historique des plannings de présence -->
-<div id='historique'>
-Mes plannings de présence
-<br/>
-<table id='tablePresenceMonCompte' class='CJDataTable' data-sort='[[1],[2],[3]]'>
-<thead>
-  <tr>
-    <th class='dataTableNoSort'>&nbsp;</th>
-    <th class='dataTableDateFR'>Début</th>
-    <th class='dataTableDateFR'>Fin</th>
-    <th class='dataTableDateFR'>Saisie</th>
-    <th>Validation</th>
-    <th>Actuel</th>
-    <th>Commentaires</th>
-  </tr>
-</thead>
-<tbody>
-<?php
-$p=new planningHebdo();
-$p->perso_id=$_SESSION['login_id'];
-$p->fetch();
-foreach($p->elements as $elem){
-  $actuel=$elem['actuel']?"Oui":null;
-  $validation="N'est pas validé";
-  if($elem['valide']){
-    $validation=nom($elem['valide']).", ".dateFr($elem['validation'],true);
+  if($config['PlanningHebdo-Agents']){
+    echo <<<EOD
+    <div style='display: inline-block; width:300px; position: absolute; right: 22px; text-align: right; margin-top:22px;'>
+    <a href='index.php?page=planningHebdo/modif.php&retour=monCompte.php' class='ui-button'>
+      Entrer un nouveau planning</a>
+    </div>
+EOD;
   }
-  $planningRemplace=$elem['remplace']==0?dateFr($elem['saisie'],true):$planningRemplace;
-  $commentaires=$elem['remplace']?"Remplace le planning <br/>du $planningRemplace":null;
-  $arrow=$elem['remplace']?"<font style='font-size:20pt;'>&rdsh;</font>":null;
 
-  echo "<tr>";
-  echo "<td style='white-space:nowrap;'>$arrow <a href='index.php?page=planningHebdo/modif.php&amp;id={$elem['id']}&amp;retour=monCompte.php'/>";
-    echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a></td>";
-  echo "<td>".dateFr($elem['debut'])."</td>";
-  echo "<td>".dateFr($elem['fin'])."</td>";
-  echo "<td>".dateFr($elem['saisie'],true)."</td>";
-  echo "<td>$validation</td>";
-  echo "<td>$actuel</td>";
-  echo "<td>$commentaires</td>";
-  echo "</tr>\n";
+  echo <<<EOD
+  <!-- Historique des plannings de présence -->
+  <div id='historique'>
+  Mes plannings de présence
+  <br/>
+  <table id='tablePresenceMonCompte' class='CJDataTable' data-sort='[[1],[2],[3]]'>
+  <thead>
+    <tr>
+      <th class='dataTableNoSort'>&nbsp;</th>
+      <th class='dataTableDateFR'>Début</th>
+      <th class='dataTableDateFR'>Fin</th>
+      <th class='dataTableDateFR'>Saisie</th>
+      <th>Validation</th>
+      <th>Actuel</th>
+      <th>Commentaires</th>
+    </tr>
+  </thead>
+  <tbody>
+EOD;
+
+  $p=new planningHebdo();
+  $p->perso_id=$_SESSION['login_id'];
+  $p->fetch();
+  foreach($p->elements as $elem){
+    $actuel=$elem['actuel']?"Oui":null;
+    $validation="N'est pas validé";
+    if($elem['valide']){
+      $validation=nom($elem['valide']).", ".dateFr($elem['validation'],true);
+    }
+    $planningRemplace=$elem['remplace']==0?dateFr($elem['saisie'],true):$planningRemplace;
+    $commentaires=$elem['remplace']?"Remplace le planning <br/>du $planningRemplace":null;
+    $arrow=$elem['remplace']?"<font style='font-size:20pt;'>&rdsh;</font>":null;
+
+    echo "<tr>";
+    echo "<td style='white-space:nowrap;'>$arrow <a href='index.php?page=planningHebdo/modif.php&amp;id={$elem['id']}&amp;retour=monCompte.php'/>";
+      echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a></td>";
+    echo "<td>".dateFr($elem['debut'])."</td>";
+    echo "<td>".dateFr($elem['fin'])."</td>";
+    echo "<td>".dateFr($elem['saisie'],true)."</td>";
+    echo "<td>$validation</td>";
+    echo "<td>$actuel</td>";
+    echo "<td>$commentaires</td>";
+    echo "</tr>\n";
+  }
+
+  echo "</tbody>\n";
+  echo "</table>\n";
+  echo "</div> <!-- Historique' -->\n";
+  echo "</div> <!-- PlanningPresence -->\n";
 }
 
-?>
-</tbody>
-</table>
-</div> <!-- Historique' -->
 
-</div> <!-- PlanningPresence -->
-
-<!-- Crédits -->
-<?php
+// Crédits de congés
 if(in_array("conges",$plugins)){
   echo <<<EOD
+  <!-- Crédits -->
   <div id='credits' style='margin-left:80px;display:none;'>
   <h3>Crédits</h3>
   <table class='tableauFiches'>
@@ -168,9 +176,9 @@ EOD;
   echo "</table>\n";
   echo "<p style='font-style:italic;margin:30px 0 0 10px;'>Le nombre de jours est calculé sur la base de 7 heures par jour.</p>\n";
   echo "</div>\n";
+  echo "<!-- Crédits-->\n";
 }
 ?>
-<!-- Crédits-->
 
 <!-- Mot de Passe -->
 <div id='motDePasse' style='margin-left:80px;display:none;'>
@@ -186,4 +194,17 @@ else{
 }
 ?>
 </div> <!-- motDePasse -->
+
+<!-- Calendrier ICS -->
+<div id='ics' style='margin-left:80px;display:none;'>
+<h3>URL de votre calendrier ICS</h3>
+<p>
+<?php
+echo "<span id='url-ics'>$ics</span>\n";
+if($config['ICS-Code']){
+  echo "<br/><a href='javascript:resetICSURL({$_SESSION['login_id']});'>R&eacute;initialiser l'URL</a>\n";
+}
+?>
+</p>
+</div> <!-- Calendrier ICS -->
 </div> <!-- ui-tabs -->

@@ -90,9 +90,12 @@ logs("Exportation des plages de SP pour l'agent #$id","ICS Export");
 
   
 // Recherche des plages de service public de l'agent
+// Si les exports ICS sont protégés par des codes
+$codeICS = $config['ICS-Code'] ? array("codeICS"=>$code) : array();
+
 $db=new db();
 $db->selectInnerJoin(array("pl_poste","perso_id"), array("personnel","id"), array("date", "debut", "fin", "poste", 'site', 'absent', 'supprime'), array(), 
-  array("perso_id"=>$id), array("codeICS"=>$code), "ORDER BY `date` DESC, `debut` DESC, `fin` DESC");
+  array("perso_id"=>$id), $codeICS, "ORDER BY `date` DESC, `debut` DESC, `fin` DESC");
 if($db->result){
   $planning = $db->result;
 }
