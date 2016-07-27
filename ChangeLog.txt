@@ -1,3 +1,20 @@
+*** Version 2.4.1   (27 juillet 2016)   ***
+- Améliorations
+Importation de fichiers ICS via une tache planifiée. Les fichiers ICS doivent être accessibles en openURL
+Importation des heures de présences en CSV via une tache planifiée. Les fichiers CSV doivent être accessibles en openURL
+Exportation des plages de service public des agents sous forme de calendriers ICS
+Optimisation du menu permettant de placer les agents dans le planning = moins de latence
+
+- Corrections
+Corrige une erreur concernant le masquage des tableaux
+Corrige le script d'installation (enregistrement des informations dans la base de données)
+Corrige l'affichage des heures faites dans les tableaux des heures de présences (module planningHebdo)
+Corrige l'affichage des heures de présences dans les fiches agents (l'erreur existait avec le module planningHebdo)
+Corrige la validation des absences (l'erreur existait en configuration multisites)
+Feuille de temps : ne compte plus les absences
+Supprime les éventuels doublons de la table config.
+
+
 ***	Version 2.3.4	(27 juin 2016)		***
 - Correction
 Corrige le script d'instllation (db_data) : insertion dans la table activités
