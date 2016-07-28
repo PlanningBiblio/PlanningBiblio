@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4
+Planning Biblio, Version 2.4.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 6 juillet 2016
+Dernière modification : 28 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -26,6 +26,11 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
   $i=0;
   
   if($GLOBALS['cellules']){
+  
+    // Recherche des sans repas en dehors de la boucle pour optimiser les performances (juillet 2016)
+    $p = new planning();
+    $sansRepas = $p->sansRepas($date,$debut,$fin);
+
     foreach($GLOBALS['cellules'] as $elem){
       if($elem['poste']==$poste and $elem['debut']==$debut and $elem['fin']==$fin){
 	//		Affichage du nom et du prénom
@@ -34,8 +39,7 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
 	  $resultat.=" ".substr($elem['prenom'],0,1).".";
 
 	//		Affichage des sans repas
-	$p=new planning();
-	if($p->sansRepas($date,$debut,$fin,$elem['perso_id'])){
+    if( $sansRepas === true or in_array($elem['perso_id'], $sansRepas) ){
 	  $resultat.="<font class='sansRepas'>&nbsp;(SR)</font>";
 	}
 

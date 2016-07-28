@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 16 juillet 2016
+Dernière modification : 28 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -203,6 +203,10 @@ class planning{
           }
         }
       }
+      
+      // Recherche des sans repas en dehors de la boucle pour optimiser les performances (juillet 2016)
+      $p = new planning();
+      $sansRepas = $p->sansRepas($date,$debut,$fin);
 
       foreach($agents as $elem){
         // Heures hebdomadaires (heures à faire en SP)
@@ -244,15 +248,11 @@ class planning{
         }
 
         //			----------------------		Sans repas		------------------------------------------//
-        // $sr permet d'interdire l'ajout d'un agent sur une cellule déjà occupée si cela met l'agent en SR
-        $sr=0;
-        
         // Si sans repas, on ajoute (SR) à l'affichage
-        if($this->sansRepas($date,$debut,$fin,$elem['id'])){
-          $sr=1;
+        if( $sansRepas === true or in_array($elem['id'], $sansRepas) ){
           $nom.=$msg_SR;
         }
-        
+
         //			----------------------		Déjà placés		-----------------------------------------------------//
         if($config['Planning-dejaPlace']){
           if(in_array($elem['id'],$deja)){	// Déjà placé pour ce poste
@@ -323,10 +323,10 @@ class planning{
         
         //	Affichage des liens d'ajout et de remplacement
         $max_perso=$nbAgents>=$GLOBALS['config']['Planning-NbAgentsCellule']?true:false;
-        if($nbAgents>0 and !$max_perso and !$sr and !$sr_init)
+        if($nbAgents>0 and !$max_perso){
           $menudiv.="<a href='javascript:bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},0,1,\"$site\");'>+</a>";
-        if($nbAgents>0 and !$max_perso)
           $menudiv.="&nbsp;<a style='color:red' href='javascript:bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},1,1,\"$site\");'>x</a>&nbsp;";
+        }
         $menudiv.="</td></tr>\n";
       }
     }
@@ -598,48 +598,77 @@ class planning{
 
   /**
   * Fonction sansRepas
-  * Retourne true si l'agent est placé en continu entre les heures de début et de fin définies dans la config. pour les sans repas
+  * Retourne une tableau contenant les agents placés en continu entre les heures de début et de fin définies dans la config. pour les sans repas
+  * Ou retourne true si la plage intérrogée couvre complétement la préiode définie dans la config.
   * @param string $date
   * @param string $debut
   * @param string $fin
-  * @return int $sr (0/1)
+  * @return array / true
   */
-  public function sansRepas($date,$debut,$fin,$perso_id){
+  public function sansRepas($date,$debut,$fin){
     if($GLOBALS['config']['Planning-sansRepas']==0){
-      return 0;
+      return array();
     }
 
     $sr_debut=$GLOBALS['config']['Planning-SR-debut'];
     $sr_fin=$GLOBALS['config']['Planning-SR-fin'];
-    // Par défaut, SR = false (pas de sans Repas)
-    $sr=0;
+    
+    // Si la plage couvre complétement la période de sans repas, on retourne true, tous les agents seront marqués en sans repas
+    if( $debut <= $sr_debut and $fin >= $sr_fin ){
+      return true;
+    }
+    
+    // Par défaut, personne en sans repas => $sr = tableau vide
+    $sr=array();
+    
     // Si la plage interrogée est dans ou à cheval sur la période de sans repas
     if($debut<$sr_fin and $fin>$sr_debut){
+
       // Recherche dans la base de données des autres plages concernées
       $db=new db();
-      $db->select2("pl_poste","*",array("date"=>$date, "perso_id"=>$perso_id, "debut"=>"<$sr_fin", "fin"=>">$sr_debut"), "ORDER BY debut,fin");
+      $db->select2("pl_poste","*",array("date"=>$date, "debut"=>"<$sr_fin", "fin"=>">$sr_debut"), "ORDER BY debut,fin");
       if($db->result){
-	// Tableau result contient les plages de la base de données + la plage interrogée
-	$result=array_merge($db->result,array(array("debut"=>$debut, "fin"=>$fin)));
-	usort($result,"cmp_debut_fin");
-	// Si le plus petit début et inférieur ou égal au début de la période SR et la plus grande fin supérieure ou égale à la fin de la période SR
-	// = Possibilité que la période soit complète, on met SR=1
-	if($result[0]["debut"]<=$sr_debut and $result[count($result)-1]["fin"]>=$sr_fin){
-	  $sr=1;
-	  // On consulte toutes les plages à la recherche d'une interruption. Si interruption, sr=0 et on quitte la boucle
-	  $last_end=$result[0]['fin'];
-	  for($i=1;$i<count($result);$i++){
-	    if($result[$i]['debut']>$last_end){
-	      $sr=0;
-	      continue;
-	    }
-	    $last_end=$result[$i]['fin'];
-	  }
-	}
+        $result = array();
+        // On classe les résultats par agent
+        foreach($db->result as $elem){
+          // On commence par ajouter la plage interrogée à chaque agent
+          if(!array_key_exists($elem['perso_id'], $result)){
+            $result[$elem['perso_id']] = array(array('debut'=>$debut, 'fin'=>$fin));
+          }
+          // Et on ajoute les plages déjà renseignées pour chaque agent
+          $result[$elem['perso_id']][]=array('debut'=>$elem['debut'], 'fin'=>$elem['fin']);
+        }
+        
+        // Tableau result contient pour chaque agent les plages de la base de données + la plage interrogée
+        // Tri du tableau de chaque agents
+        foreach($result as $key => $value){
+          usort($result[$key],"cmp_debut_fin");
+        }
+        
+        // Si le plus petit début et inférieur ou égal au début de la période SR et la plus grande fin supérieure ou égale à la fin de la période SR
+        // = Possibilité que la période soit complète, on met SR=1
+        foreach($result as $key => $value){
+          $sansRepas=false;
+          if($value[0]["debut"]<=$sr_debut and $value[count($value)-1]["fin"]>=$sr_fin){
+            $sansRepas=true;
+            // On consulte toutes les plages à la recherche d'une interruption. Si interruption, sr=0 et on quitte la boucle
+            $last_end=$value[0]['fin'];
+            for($i=1;$i<count($value);$i++){
+              if($value[$i]['debut']>$last_end){
+                $sansRepas=false;
+                continue 2;
+              }
+              $last_end=$value[$i]['fin'];
+            }
+          }
+          if($sansRepas){
+            $sr[]=$key;
+          }
+        }
       }
     }
     return $sr;
   }
-
+  
 }
 ?>

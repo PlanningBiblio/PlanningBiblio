@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.2.3
+Planning Biblio, Version 2.4.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 27 février 2016
+Dernière modification : 28 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -131,14 +131,21 @@ if(!$db->result){
 $tab=$db->result;
 usort($tab,"cmp_nom_prenom");
 
+// Recherche des sans repas en dehors de la boucle pour optimiser les performances (juillet 2016)
+$p = new planning();
+$sansRepas = $p->sansRepas($date,$debut,$fin);
+
 for($i=0;$i<count($tab);$i++){
   // Mise en forme des statut et service pour affectation des classes css
   $tab[$i]["statut"]=removeAccents($tab[$i]["statut"]);
   $tab[$i]["service"]=removeAccents($tab[$i]["service"]);
 
   // Ajout des Sans Repas (SR)
-  $p=new planning();
-  $tab[$i]["sr"]=$p->sansRepas($date,$debut,$fin,$tab[$i]["perso_id"]);
+  if( $sansRepas === true or in_array($tab[$i]['perso_id'], $sansRepas) ){
+    $tab[$i]["sr"] = 1;
+  } else {
+    $tab[$i]["sr"] = 0;
+  }
 }
 
 // Marquage des congés

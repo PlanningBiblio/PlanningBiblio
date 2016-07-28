@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.4.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 8 janvier 2016
+Dernière modification : 28 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -527,98 +527,103 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
       
       // Suppression du sans repas sur les cellules ainsi marquée
       if(fin > sr_config_debut && debut < sr_config_fin){
-	$(".agent_"+perso_id_origine).each(function(){
-	  var sr_debut=$(this).closest("td").data("start");
-	  var sr_fin=$(this).closest("td").data("end");
-	  if(sr_fin > sr_config_debut && sr_debut < sr_config_fin){
-	    $(this).find(".sansRepas").remove();
-	  }
-	});
+        $(".agent_"+perso_id_origine).each(function(){
+          var sr_debut=$(this).closest("td").data("start");
+          var sr_fin=$(this).closest("td").data("end");
+          if(sr_fin > sr_config_debut && sr_debut < sr_config_fin){
+            $(this).find(".sansRepas").remove();
+          }
+        });
       }
       
       // Si pas de résultat (rien n'est affiché dans la cellule modifiée), 
       // on réinitialise perso_id_origine pour ne pas avoir de rémanence pour la gestion de SR et suppression
       if(!result){
-	majPersoOrigine(0);
+        majPersoOrigine(0);
       }
 
       for(i in result){
-	// Exemple de cellule
-	// <div id='cellule11_0' class='cellule statut_bibas service_permanent' >Christophe C.</div>
+        // Exemple de cellule
+        // <div id='cellule11_0' class='cellule statut_bibas service_permanent' >Christophe C.</div>
 
-	// classes : A définir en fonction du statut, du service et des absences
-	var classes="cellDiv";
-	// Absences, suppression
-	if(result[i]["absent"]=="1" || result[i]["supprime"]=="1"){
-	  classes+=" red striped";
-	}
+        // classes : A définir en fonction du statut, du service et des absences
+        var classes="cellDiv";
+        // Absences, suppression
+        if(result[i]["absent"]=="1" || result[i]["supprime"]=="1"){
+          classes+=" red striped";
+        }
 
-	// Congés
-	if(result[i]["conges"]){
-	  classes+=" orange striped";
-	}
+        // Congés
+        if(result[i]["conges"]){
+          classes+=" orange striped";
+        }
 
-	// Service et Statut
-	classes+=" service_"+result[i]["service"].toLowerCase().replace(" ","_");
-	classes+=" statut_"+result[i]["statut"].toLowerCase().replace(" ","_");
-	
-	var agent=result[i]["nom"]+" "+result[i]["prenom"].substr(0,1)+".";
-	var perso_id=result[i]["perso_id"];
+        // Service et Statut
+        classes+=" service_"+result[i]["service"].toLowerCase().replace(" ","_");
+        classes+=" statut_"+result[i]["statut"].toLowerCase().replace(" ","_");
 
-	// Sans Repas
-	if(result[i]["sr"]){
-	  // Ajout du sans repas sur la cellule modifiée
-	  agent+="<font class='sansRepas'> (SR)</font>";
-	  
-	  // Ajout du sans repas sur les autres cellules concernées
-	  $(".agent_"+perso_id).each(function(){
-	    var sr_debut=$(this).closest("td").data("start");
-	    var sr_fin=$(this).closest("td").data("end");
-	    if(sr_fin > sr_config_debut && sr_debut < sr_config_fin){
-	      if($(this).text().indexOf("(SR)")==-1){
-		$(this).append("<font class='sansRepas'> (SR)</font>");
-	      }
-	    }
-	  });
-	}
+        var agent=result[i]["nom"]+" "+result[i]["prenom"].substr(0,1)+".";
+        var perso_id=result[i]["perso_id"];
 
-	// Création d'une balise span avec les classes cellSpan et agent_ de façon à les repérer et agir dessus 
-	debut=debut.replace(":","");
-	fin=fin.replace(":","");
-	var span="<span class='cellSpan agent_"+perso_id+"'>"+agent+"</span>";
-	var div="<div id='cellule"+cellule+"_"+i+"' class='"+classes+"' data-perso-id='"+perso_id+"' oncontextmenu='majPersoOrigine("+perso_id+");'>"+span+"</div>"
-	// oncontextmenu='majPersoOrigine("+perso_id+");' : necessaire car l'événement JQuery contextmenu sur .cellDiv ne marche pas sur les cellules modifiées
-	$("#td"+cellule).append(div);
+        // Sans Repas
+        if(result[i]["sr"]){
+          // Ajout du sans repas sur la cellule modifiée
+          agent+="<font class='sansRepas'> (SR)</font>";
+
+          // Ajout du sans repas sur les autres cellules concernées
+          $(".agent_"+perso_id).each(function(){
+            var sr_debut=$(this).closest("td").data("start");
+            var sr_fin=$(this).closest("td").data("end");
+            if(sr_fin > sr_config_debut && sr_debut < sr_config_fin){
+              if($(this).text().indexOf("(SR)")==-1){
+                $(this).append("<font class='sansRepas'> (SR)</font>");
+              }
+            }
+          });
+        }
+
+        // Création d'une balise span avec les classes cellSpan et agent_ de façon à les repérer et agir dessus 
+        debut=debut.replace(":","");
+        fin=fin.replace(":","");
+        var span="<span class='cellSpan agent_"+perso_id+"'>"+agent+"</span>";
+        var div="<div id='cellule"+cellule+"_"+i+"' class='"+classes+"' data-perso-id='"+perso_id+"' oncontextmenu='majPersoOrigine("+perso_id+");'>"+span+"</div>"
+        // oncontextmenu='majPersoOrigine("+perso_id+");' : necessaire car l'événement JQuery contextmenu sur .cellDiv ne marche pas sur les cellules modifiées
+        $("#td"+cellule).append(div);
       }
 
       // Mise en forme de toute la ligne
       // Pour chaque TD
       $("#td"+cellule).closest("tr").find("td").each (function(i, index) {
-	// Occuper toute la hauteur
-	var nbDiv=$(index).find("div").length;
-	if(nbDiv>0){
-	  var divHeight=$(index).height()/nbDiv;
-	  $(index).find("div").css("height",divHeight);
-	}
-	// Centrer verticalement les textes
-	$(index).find("span").each(function(j,jtem){
-	  var top=(($(jtem).closest("div").height()-$(jtem).height())/2)-4;
-	  $(jtem).css("position","relative");
-	  $(jtem).css("top",top);
-	});
+
+        // Occuper toute la hauteur
+        var nbDiv=$(index).find("div").length;
+        if(nbDiv>0){
+          var divHeight=$(index).height()/nbDiv;
+          $(index).find("div").css("height",divHeight);
+        }
+        // Centrer verticalement les textes
+        $(index).find("span").each(function(j,jtem){
+          var top=(($(jtem).closest("div").height()-$(jtem).height())/2)-4;
+          $(jtem).css("position","relative");
+          $(jtem).css("top",top);
+        });
       });
 
-      $("#menudiv1").remove();				// cacher le menudiv
+      // cacher le menudiv
+      $("#menudiv1").remove();
       $("#menudiv2").remove();
 
-    },
-    error: function(result){
-      information("Une erreur est survenue lors de l'enregistrement du planning.","error");
-    }
-  });
+      },
+      error: function(result){
+        CJInfo("Une erreur est survenue lors de l'enregistrement du planning.","error");
+      }
+    });
 
-/*
-Exemple de valeur pour la variable result :
+  // Affiche un message en haut du planning si pas de catégorie A en fin de service 
+  verif_categorieA();
+
+  /*
+  Exemple de valeur pour la variable result :
 
   [0] => Array (
     [nom] => Nom
@@ -632,9 +637,7 @@ Exemple de valeur pour la variable result :
     )
   [1] => Array (
     ...
-*/
-  // Affiche un message en haut du planning si pas de catégorie A en fin de service 
-  verif_categorieA();
+  */
 }
 
 //	groupe_tab : utiliser pour menudiv
