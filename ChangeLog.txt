@@ -4,6 +4,7 @@ Importation de fichiers ICS via une tache planifiée. Les fichiers ICS doivent �
 Importation des heures de présences en CSV via une tache planifiée. Les fichiers CSV doivent être accessibles en openURL
 Exportation des plages de service public des agents sous forme de calendriers ICS
 Optimisation du menu permettant de placer les agents dans le planning = moins de latence
+Optimisation de la recherche des sans repas
 
 - Corrections
 Corrige une erreur concernant le masquage des tableaux
