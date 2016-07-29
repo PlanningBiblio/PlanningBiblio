@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.4.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : plugins/class.plugins.php
 Création : 18 juin 2014
-Dernière modification : 8 avril 2015
+Dernière modification : 29 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -38,6 +38,10 @@ class plugins{
   }
 
   public function checkUpdateDB(){
+    if(!isset($_SESSION['login_id'])){
+      return;
+    }
+    
     $plugins=$this->tab;
     foreach($plugins as $plugin){
       $pluginVersion=null;
