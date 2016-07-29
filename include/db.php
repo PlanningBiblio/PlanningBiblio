@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.2
+Planning Biblio, Version 2.4.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 28 mai 2016
+Dernière modification : 29 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -50,6 +50,7 @@ class db{
 
   function connect(){
     $this->conn=mysqli_connect($this->host,$this->user,$this->password,$this->dbname);
+	mysqli_query($this->conn, "SET SESSION sql_mode = ''");
     if(mysqli_connect_errno($this->conn)){
       $this->error=true;
       $this->msg=mysqli_connect_error();
@@ -462,7 +463,8 @@ class dbh{
     $this->dbprefix=$GLOBALS['config']['dbprefix'];
     $this->result=array();
 
-    $this->pdo=new PDO("mysql:host={$this->dbhost};dbname={$this->dbname}",$this->dbuser,$this->dbpass);
+    $this->pdo=new PDO("mysql:host={$this->dbhost};dbname={$this->dbname}",$this->dbuser,$this->dbpass, 
+			array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET sql_mode=''"));
   }
 
   function exec($sql){
