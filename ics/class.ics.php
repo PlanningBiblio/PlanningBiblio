@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.1
+Planning Biblio, Version 2.4.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : ics/class.ics.php
 Création : 29 mai 2016
-Dernière modification : 13 juillet 2016
+Dernière modification : 7 septembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -74,7 +74,7 @@ class CJICS{
 	}
 
     // Parse le fichier ICS, le tableau $events contient les événements du fichier ICS
-    $ical   = new ICal($src, "MO");
+    $ical   = new ICal($src, "MO", "Europe/Paris");
     $events = $ical->events();
     
     // Récupération du nom du calendrier

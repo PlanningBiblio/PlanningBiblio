@@ -42,14 +42,19 @@ class ICal
     /* The default first day of weeks */
     public /** @type {string} */ $default_weekStart = 'SU';
 
+    /* The default Time Zone*/
+    public /** @type {string} */ $default_timeZone = 'UTC';
+
     /**
      * Creates the iCal Object
      *
      * @param {mixed} $filename The path to the iCal-file or an array of lines from an iCal file
+     * @param {mixed} $weekStart The default first day of weeks (SA, SU or MO)
+     * @param {mixed} $timeZone The default Time Zone
      *
      * @return Object The iCal Object
      */
-    public function __construct($filename=false, $weekStart=false)
+    public function __construct($filename=false, $weekStart=false, $timeZone=false)
     {
         if (!$filename) {
             return false;
@@ -63,6 +68,10 @@ class ICal
         
         if ($weekStart) {
             $this->default_weekStart = $weekStart;
+        }
+        
+        if ($timeZone) {
+            $this->default_timeZone = $timeZone;
         }
 
         return $this->initLines($lines);
@@ -364,7 +373,10 @@ class ICal
     
         if (isset($date_array[0]['TZID']) and preg_match("/[a-z]*\/[a-z_]*/i",$date_array[0]['TZID'])) {
             $timeZone = $date_array[0]['TZID'];
-        } else {
+        }
+        
+        // Check if the Time Zone is valid
+        if ( !isset($timeZone) or !in_array( $timeZone, timezone_identifiers_list() )) {
             $timeZone = $defaultTimeZone;
         }
 
@@ -792,12 +804,17 @@ class ICal
     public function calendarTimeZone()
     {
         if (isset($this->cal['VCALENDAR']['X-WR-TIMEZONE'])) {
-            return $this->cal['VCALENDAR']['X-WR-TIMEZONE'];
+            $timezone = $this->cal['VCALENDAR']['X-WR-TIMEZONE'];
         } elseif(isset($this->cal['VTIMEZONE']['TZID'])) {
-            return $this->cal['VTIMEZONE']['TZID'];
-        } else {
-            return "UTC";
+            $timezone = $this->cal['VTIMEZONE']['TZID'];
         }
+
+        // Check if the timezone is valid
+        if ( !in_array($timezone, timezone_identifiers_list() )) {
+            $timezone = $this->default_timeZone;
+        }
+
+        return $timezone;
     }
 
     /**
