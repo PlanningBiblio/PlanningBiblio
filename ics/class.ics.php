@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : ics/class.ics.php
 Création : 29 mai 2016
-Dernière modification : 7 septembre 2016
+Dernière modification : 8 septembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -74,7 +74,7 @@ class CJICS{
 	}
 
     // Parse le fichier ICS, le tableau $events contient les événements du fichier ICS
-    $ical   = new ICal($src, "MO", "Europe/Paris");
+    $ical   = new ICal($src, "MO");
     $events = $ical->events();
     
     // Récupération du nom du calendrier

@@ -42,19 +42,15 @@ class ICal
     /* The default first day of weeks */
     public /** @type {string} */ $default_weekStart = 'SU';
 
-    /* The default Time Zone*/
-    public /** @type {string} */ $default_timeZone = 'UTC';
-
     /**
      * Creates the iCal Object
      *
      * @param {mixed} $filename The path to the iCal-file or an array of lines from an iCal file
      * @param {mixed} $weekStart The default first day of weeks (SA, SU or MO)
-     * @param {mixed} $timeZone The default Time Zone
      *
      * @return Object The iCal Object
      */
-    public function __construct($filename=false, $weekStart=false, $timeZone=false)
+    public function __construct($filename=false, $weekStart=false)
     {
         if (!$filename) {
             return false;
@@ -70,10 +66,6 @@ class ICal
             $this->default_weekStart = $weekStart;
         }
         
-        if ($timeZone) {
-            $this->default_timeZone = $timeZone;
-        }
-
         return $this->initLines($lines);
     }
 
@@ -811,7 +803,7 @@ class ICal
 
         // Check if the timezone is valid
         if ( !in_array($timezone, timezone_identifiers_list() )) {
-            $timezone = $this->default_timeZone;
+            $timezone = date_default_timezone_get();
         }
 
         return $timezone;
