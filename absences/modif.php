@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4
+Planning Biblio, Version 2.4.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 5 juillet 2016
+Dernière modification : 8 septembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -44,7 +44,6 @@ $commentaires=$a->elements['commentaires'];
 $demande=filter_var($a->elements['demande'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
 $debutSQL=filter_var($a->elements['debut'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
 $finSQL=filter_var($a->elements['fin'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
-$sitesAgent=unserialize($a->elements['sites']);
 $valide=filter_var($a->elements['valideN2'],FILTER_SANITIZE_NUMBER_INT);
 $validation=$a->elements['validationN2'];
 $valideN1=$a->elements['valideN1'];
@@ -125,6 +124,18 @@ if(!$acces){
 
 // Multisites, ne pas afficher les absences des agents d'un site non géré
 if($config['Multisites-nombre']>1){
+  // $sites_agents comprend l'ensemble des sites en lien avec les agents concernés par cette modification d'absence
+  $sites_agents=array();
+  foreach($agents as $elem){
+    if(is_array($elem['sites'])){
+      foreach($elem['sites'] as $site){
+        if(!in_array($site,$sites_agents)){
+          $sites_agents[]=$site;
+        }
+      }
+    }
+  }
+
   $sites=array();
   for($i=1;$i<=$config['Multisites-nombre'];$i++){
     if(in_array((200+$i),$droits)){
@@ -133,11 +144,10 @@ if($config['Multisites-nombre']>1){
   }
 
   $admin=false;
-  if(is_array($sitesAgent)){
-    foreach($sitesAgent as $site){
-      if(in_array($site,$sites)){
-	$admin=true;
-      }
+  foreach($sites_agents as $site){
+    if(in_array($site,$sites)){
+      $admin=true;
+      break;
     }
   }
   if(!$admin){
