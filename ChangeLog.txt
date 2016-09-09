@@ -1,3 +1,11 @@
+*** Version 2.4.2   (8 septembre 2016)   ***
+- Améliorations
+Compatibilité MySQL 5.7, définie sql-mode=''
+Vérifie les fuseau horaires des fichiers ICS importés
+
+- Correction
+Corrige les erreurs de modifications et validations d'absences
+
 *** Version 2.4.1   (27 juillet 2016)   ***
 - Améliorations
 Importation de fichiers ICS via une tache planifiée. Les fichiers ICS doivent être accessibles en openURL
@@ -14,7 +22,6 @@ Corrige l'affichage des heures de présences dans les fiches agents (l'erreur ex
 Corrige la validation des absences (l'erreur existait en configuration multisites)
 Feuille de temps : ne compte plus les absences
 Supprime les éventuels doublons de la table config.
-
 
 ***	Version 2.3.4	(27 juin 2016)		***
 - Correction
