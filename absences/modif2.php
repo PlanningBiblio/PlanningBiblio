@@ -135,7 +135,9 @@ foreach($agents_selectionnes as $elem){
 
 $acces=in_array(1,$droits)?true:false;
 if(!$acces){
-  $acces=(in_array(6,$droits) and $perso_id==$_SESSION['login_id'] and !$groupe)?true:false;
+  if(is_array($perso_ids) and count($perso_ids) == 1){
+    $acces=(in_array(6,$droits) and $perso_ids[0] == $_SESSION['login_id'] and !$groupe)?true:false;
+  }
 }
 if(!$acces){
   echo "<div id='acces_refuse'>Accès refusé</div>\n";
@@ -172,7 +174,7 @@ if($config['Multisites-nombre']>1){
       break;
     }
   }
-  if(!$admin){
+  if(!$admin and !$acces){
     echo "<h3>Modification de l'absence</h3>\n";
     echo "Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>\n";
     echo "<a href='index.php?page=absences/voir.php'>Retour à la liste des absences</a><br/><br/>\n";

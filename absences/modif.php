@@ -150,7 +150,7 @@ if($config['Multisites-nombre']>1){
       break;
     }
   }
-  if(!$admin){
+  if(!$admin and !$acces){
     echo "<h3>Modification de l'absence</h3>\n";
     echo "Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>\n";
     echo "<a href='index.php?page=absences/voir.php'>Retour à la liste des absences</a><br/><br/>\n";

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.1
+Planning Biblio, Version 2.4.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 27 juillet 2016
+Dernière modification : 8 septembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -32,7 +32,7 @@ class personnel{
   }
 
   public function delete($liste){
-    $update=array("supprime"=>"2","login"=>"CONCAT(id,".time().")","mail"=>null,"arrivee"=>null,"depart"=>null,"postes"=>null,"droits"=>null,
+    $update=array("supprime"=>"2","login"=>"CONCAT(login,SYSDATE())","mail"=>null,"arrivee"=>null,"depart"=>null,"postes"=>null,"droits"=>null,
       "password"=>null,"commentaires"=>"Suppression définitive le ".date("d/m/Y"), "last_login"=>null, "temps"=>null, 
       "informations"=>null, "recup"=>null, "heuresTravail"=>null, "heuresHebdo"=>null, "sites"=>null);
     
@@ -52,7 +52,7 @@ class personnel{
     if(in_array("conges",$plugins)){
       include "plugins/conges/suppression_agents.php";
     }
-    if($config['PlanningHebdo']){
+    if($GLOBALS['config']['PlanningHebdo']){
       require_once "planningHebdo/class.planningHebdo.php";
 
       // recherche des personnes à exclure (congés)

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.1
+Planning Biblio, Version 2.4.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 29 juillet 2016
+Dernière modification : 8 septembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -251,14 +251,14 @@ class db{
 	$tmp[]="`{$field}`=NULL";
       }
       // SET field = SYSDATE()
-      elseif($set[$field]=="SYSDATE"){
+      elseif($set[$field]==="SYSDATE"){
 	$tmp[]="`{$field}`=SYSDATE()";
       }
       else{
 	if(!is_serialized($set[$field]))
 	  $set[$field]=htmlentities($set[$field],ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
 	$set[$field]=mysqli_real_escape_string($this->conn,$set[$field]);
-	if(substr($set[$field],0,7)=="CONCAT("){
+	if(substr($set[$field],0,7)==="CONCAT("){
 	  $tmp[]="`{$field}`={$set[$field]}";
 	}
 	else{
