@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.4.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : aide/index.php
 Création : mai 2011
-Dernière modification : 22 janvier 2016
+Dernière modification : 17 septembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -51,10 +51,12 @@ if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
 <li><a href="#config_planning">Configuration du planning</a>
 	<ol>
 	<li><a href="#config_avertissement">Avertissement</a></li>
-	<li><a href="#config_copie">Création d'un nouveau tableau (Copie)</a></li>
+	<li><a href="#config_nouveau">Création d'un nouveau tableau</a></li>
+	<li><a href="#config_copie">Copie d'un tableau</a></li>
 	<li><a href="#config_modif">Modification d'un tableau</a></li>
 	<li><a href="#config_horaires">Configuration des horaires</a></li>
 	<li><a href="#config_lignes">Configuration des lignes</a></li>
+	<li><a href="#config_suppression">Suppression d'un tableau</a></li>
 	<li><a href="#config_groupes">Les groupes</a></li>
 	<li><a href="#config_lignes_sep">Les lignes de séparation</a></li>
 	</ol>
@@ -111,42 +113,47 @@ Si vous avez le droit de modifier vos absences, vous pouvez cliquer sur l'icône
 sur la ligne de l'absence que vous souhaitez modifier, vous verrez alors apparaître le détail de l'absence et vous pourrez la modifier.<br/>
 <br/>
 <u><b>Si vous avez le droit de gérer les absences :</b></u><br/>
-Vous pouvez voir la liste des absents entre 2 dates.<br/>
+Vous pouvez voir la liste des absences entre 2 dates.<br/>
 Sélectionnez la date de début et la date de fin à l'aide des calendriers puis validez en cliquant sur "OK".<br/>
-La liste des absents durant cette période s'affiche avec les dates de début, de fin, le nom de l'agent, le motif de l'absence et un commentaire éventuel.<br/>
-Vous pouvez afficher les absences d'une personne en particulier en tapant son nom (ou prénom) dans le champ "agent" puis en cliquant sur "OK".<br/>
+La liste des absences durant cette période s'affiche avec les dates de début, de fin, le nom des agents, le motif de l'absence et un commentaire éventuel.<br/>
+Vous pouvez afficher les absences d'une personne en particulier en choisissant son nom dans le menu "agent" puis en cliquant sur "OK".<br/>
 Vous pouvez modifier les informations relatives à une absence en cliquant sur l'icône <span class='pl-icon pl-icon-edit' title='Modifier'></span> en début de ligne.<br/>
 
 
 <a name='abs_ajouter'></a>
 <h4>1.2) Ajouter une absence</h4>
 <u><b>Si vous avez le droit d'enregistrer vos propres absences</b></u><br/>
-Vous permet d'enregistrer une absence à l'avance si elle est prévue.<br/>
+Le menu "Absences / Ajouter une absence" vous permet d'enregistrer une absence à l'avance si elle est prévue.<br/>
 Choisissez les dates de début et de fin à l'aide des calendriers, si besoin : les heures de début et de fin, 
 le motif de l'absence (ex: Formation) et un commentaire éventuel.<br/>
-Cliquez sur "Valider", une page de confirmation s'affiche, si tout est correct, cliquez de nouveau sur "Valider".<br/>
+Cliquez sur "Valider"<br/>
 
 <br/>
 <u><b>Si vous avez le droit de gérer les absences :</b></u><br/>
-Vous permet d'enregistrer les absences des agents.<br/> 
-Choisissez le nom de l'agent dans le menu déroulant, les dates de début et de fin à l'aide des calendriers, si besoin : les heures 
+Le menu "Absences / Ajouter une absence" vous permet d'enregistrer les absences des agents.<br/> 
+Choisissez les agents concernés par l'absence dans le menu déroulant nommé "Ajoutez un agent".<br/>
+Choisissez les dates de début et de fin à l'aide des calendriers, si besoin : les heures 
 de début et de fin, le motif de l'absence (ex: Formation) et un commentaire éventuel.<br/>
-Cliquez sur "Valider", une page de confirmation s'affiche, si tout est correct, cliquez de nouveau sur "Valider".<br/>
+Cliquez sur "Valider".<br/>
 
 <a name='abs_infos'></a>
 <h4>1.3) Informations</h4>
-Permet aux agents ayant le droit de gérer les absences de diffuser des messages aux personnes voulant prendre des congés pendant une période définie.<br/>
+Le menu "Absences / Informations" permet aux agents ayant le droit de gérer les absences de diffuser des messages aux personnes voulant prendre des congés pendant une période définie.<br/>
 Sélectionnez la date de début et de fin et le message à communiquer dans le champ "texte".<br/>
 Validez puis confirmez.<br/>
 Le message sera affiché pendant la période choisie dans le cadre permettant d'ajouter une absence.<br/>
 
 <a name='agenda'></a>
 <h3>2.) Agenda</h3>
-Permet d'afficher votre agenda entre 2 dates.<br/>
-Sélectionnez la date de début et de fin à l'aide des calendriers puis validez en cliquant sur "OK".<br/>
-Vos heures de pr&eacute;sence, vos absences et la liste des postes occupés s'affichent avec les heures de début et de fin.<br/>
-<u>Si vous en avez le droits</u>, vous pouvez voir les agendas des autres agents. 
-Vous pouvez dans ce cas s&eacute;lectionnez le nom de  l'agent dans un menu déroulant.
+Le menu agenda permet d'afficher votre agenda entre 2 dates.<br/>
+Sélectionnez les dates de début et de fin à l'aide des calendriers puis validez en cliquant sur "OK".<br/>
+Vos heures de pr&eacute;sence, vos absences et la liste des postes occupés s'affichent avec les heures de début et de fin.<br/><br/>
+<u>Si vous en avez le droit</u>, vous pouvez voir les agendas des autres agents. 
+Vous pouvez dans ce cas s&eacute;lectionner le nom des agents dans un menu déroulant.<br/><br/>
+Si l'exportation des plages de service public au format ICS est activée dans la configuration, vous pouvez ajouter votre calendrier "Planning Biblio" à votre agenda personnel (Google Calendar, Zimbra, Outlook, Thunderbird, etc.)<br/>
+Vous trouverez l'URL de votre agenda dans le menu "Mon Compte" / "Calendrier ICS"<br/>
+Si l'URL est protégée par un code aléatoire, vous pouvez la réinitialiser en cliquant sur le lien "Réinitialiser l'URL".<br/>
+L'affichage et la réinitialisation des URLs sont également possibles depuis le menu "Les agents" pour les personnes ayant le droit "Gestion du personnel".
 
 <a name='planning'></a>
 <h3>3.) Planning</h3>
@@ -268,24 +275,30 @@ un tableau en cours d'utilisation car vous risqueriez de perdre les informations
 Soyez donc très prudent.<br/>
 Vous pouvez copier un tableau existant et modifier le nouveau tableau de façon à ne pas affecter les plannings en cours d'utilisation.<br/>
 
-<a name="config_copie"></a>
-<h4>4.2) Création d'un nouveau tableau (Copie)</h4>
+<a name="config_nouveau"></a>
+<h4>4.2) Création d'un nouveau tableau</h4>
 Pour créer un nouveau tableau, rendez-vous dans le menu Administration - Les tableaux.<br/>
+Cliquez sur le bouton "Nouveau tableau".<br/>
+Saisissez le nom du tableau, le nombre de sous-tableaux et le site pour lequel vous créez ce tableaux (en configuration multi-sites).<br/>
+Cliquez sur "Valider" et passer à l'onglet "Horaires".<br/>
+Pour obtenir de l'aide sur la configuration des horaires, consultez le paragraphe <a href='#config_horaires'>4.5) Configuration des horaires</a><br/>
+
+<a name="config_copie"></a>
+<h4>4.3) Copie d'un tableau</h4>
+Pour copier un tableau, rendez-vous dans le menu Administration - Les tableaux.<br/>
 Choisissez un tableau dans la liste et cliquez sur l'icône <span class='pl-icon pl-icon-copy' title='Copier'></span>.<br/>
 Saisissez le nom du nouveau tableau et cliquez sur "Copier".<br/>
-Votre nouveau tableau apparaît dans la liste.<br/>
+Le tableau copié apparaît dans la liste.<br/>
 
 <a name="config_modif"></a>
-<h4>4.3) Modification d'un tableau</h4>
-Repérez le tableau à modifier dans la liste et cliquez sur l'icône <span class='pl-icon pl-icon-edit' title='Modifier'></span> le précédent.<br/>
-Une page avec 3 onglets s'affiche (4 onglets en configuration multisites).<br/>
-Choisissez le nombre de tableaux dans le premier onglet et validez.<br/>
-Si vous avez plusieurs sites, choisissez le nom du site auquel ce tableau sera affecté dans le deuxième onglet et validez.<br/>
+<h4>4.4) Modification d'un tableau</h4>
+Repérez le tableau à modifier dans la liste et cliquez sur l'icône <span class='pl-icon pl-icon-edit' title='Modifier'></span> le précédent. Une page avec 3 onglets s'affiche.<br/>
+Dans le premier onglet, choisissez le nom du tableau, le nombre de sous-tableaux et le nom du site auquel sera affecté ce tableau (en configuration multi-sites) et validez.<br/>
 Attention, vous devez valider vos changements avant de changer d'onglet.<br/>
 Pour la configuration des horaires et des lignes, veuillez consulter les paragraphes suivants.
 
 <a name="config_horaires"></a>
-<h4>4.4) Configuration des horaires</h4>
+<h4>4.5) Configuration des horaires</h4>
 Après avoir choisi le nombre de tableaux dans le premier onglet, cliquez sur l'onglet "Horaires".<br/>
 Modifiez les horaires à l'aide des menus déroulant. Vous devez respecter les règles suivantes :
 <ul>
@@ -296,24 +309,33 @@ Vous pouvez ajouter des menus déroulant en cliquant sur les signes <span class=
 Lorsque vous avez terminé, cliquez sur "<b>Valider</b>" et passez à la configuration des lignes (Onglet lignes).
 
 <a name="config_lignes"></a>
-<h4>4.5) Configuration des lignes</h4>
-Marquez les noms voulus dans la première colonne des lignes marrons (devant les horaires).<br/>
+<h4>4.6) Configuration des lignes</h4>
+Marquez les noms voulus dans la première colonne des lignes contenant les horaires.<br/>
+Vous pouvez définir une classe CSS qui sera appliquée au tableau (Nécessite la modification du thème).<br/>
 Ajoutez des lignes en cliquant sur les signes <span class='pl-icon pl-icon-add' title='Ajouter'></span>.<br/>
 Choisissez le nom du poste ou une ligne de séparation dans les menus déroulant pour chaque ligne.<br/>
-Vous pouvez "griser" des cellules en cochant les cases "G". Ceci permet de marquer la cellule pour que personne n'y soit placé.<br/>
+Vous pouvez "griser" des cellules en cochant les cases "G". Ceci permet de marquer la cellule pour que personne n'y soit placée.<br/>
 Vous pouvez supprimer des lignes en cliquant sur le signe <span class='pl-icon pl-icon-drop' title='Supprimer'></span>. 
 Ne supprimer pas de ligne dans un tableau en cours d'utilisation ou qui a été utilisé car si des agents y sont placés, vous ne les verrez plus dans les plannings concernés.<br/>
 Une fois terminé, cliquez sur "<b>Valider</b>".<br/>
 
+<a name='config_suppression'></a>
+<h4>4.7) Suppression d'un tableau</h4>
+Vous pouvez supprimer les tableaux soit en cliquant sur les icônes <span class='pl-icon pl-icon-drop' title='Supprimer'></span> dans la liste des tableaux, soit en cochant les tableaux et en cliquant sur le bouton 
+"Supprimer la sélection" en bas de la liste. Dans les deux cas, une confirmation sera demandée.<br/>
+Les groupes associés à ces tableaux seront automatiquement supprimés.<br/>
+Vous pouvez supprimer les tableaux même s'ils sont utilisés par des plannings. Ces plannings ne seront pas affectés.<br/>
+Vous pourrez récupérer les tableaux supprimés pendant 1 an suite à la suppression en choisissant le nom des tableaux dans le menu "Récupération d'un tableau supprimé" en bas de la liste.
+
 <a name="config_groupes"></a>
-<h4>4.6) Les groupes</h4>
+<h4>4.8) Les groupes</h4>
 Vous pouvez créer un groupe de tableaux de façon à affecter tel ou tel tableau à chacun des jours de 
 la semaine.<br/>
 De cette façon, lors de la création du planning du premier jour de la semaine, vous choisirez un 
 groupe et les tableaux seront affectés du lundi au samedi (ou dimanche).
 
 <a name="config_lignes_sep"></a>
-<h4>4.7) Les lignes de séparation</h4>
+<h4>4.9) Les lignes de séparation</h4>
 Vous pouvez ajouter, modifier, supprimer des lignes de séparation dans le menu "Administration - Les tableaux".<br/>
 
 
@@ -330,7 +352,7 @@ Si le module "Planning Hebdo" est activé, les heures de présence peuvent être
 Ils doivent choisir une date de début et une date de fin d'effet.
 <br/>Les administrateurs (agents ayant le droit de gérer les plannings de présence) doivent ensuite les valider dans le menu "Administration / Plannings de présence".
 <br/>Ils peuvent également apporter des modifications sans les valider directement avec le bouton "Enregistrer SANS valider".
-<br/>Les adminstrateurs peuvent copier les plannings de présence depuis la liste avec l'icône <span class='pl-icon pl-icon-copy' title='Copier'></span> ou 
+<br/>Les administrateurs peuvent copier les plannings de présence depuis la liste avec l'icône <span class='pl-icon pl-icon-copy' title='Copier'></span> ou 
 avec le bouton "Enregistrer une copie" depuis la fiche. Dans ce cas, ils doivent changer les dates de début et de fin d'effet de façon à ce qu'aucun planning ne se chevauche. 
 Ils peuvent également les copier pour les affecter à d'autres agents en utilisant l'icône <span class='pl-icon pl-icon-copy' title='Copier'></span> depuis la liste.
 <br/><br/>Si vous utilisez le plugin "congés", l'utilisation du module "Planning Hebdo" est obligatoire et vous devez veiller à ce qu'il n'y ait pas de manque entre deux plannings de présence 
@@ -434,7 +456,7 @@ Vous pouvez rechercher un poste en tapant son nom dans le cadre "Rechercher".<br
 <a name="poste_ajout"></a>
 <h4>7.1 ) Ajout d'un poste</h4>
 Pour ajouter un poste, cliquez sur le bouton « Ajouter » puis complétez le formulaire.<br/><br/>
-Remplissez le nom du poste, choisissez son site (si configuration multisites), son étage.<br/>
+Remplissez le nom du poste, choisissez son site (si configuration multi-sites), son étage.<br/>
 Cochez la case "Obligatoire" s'il est obligatoire ou "Renfort" s'il s'agit d'un poste de renfort.<br/>
 Cochez la case "Non" face à "Bloquant" si vous souhaitez pouvoir placer un agent sur ce poste et sur un autre en même temps.<br/> 
 Cochez la case "Non" face à "Statistiques" si vous ne souhaitez pas voir apparaître ce poste dans les statistiques.<br/><br/>
@@ -456,7 +478,9 @@ Si un poste est utilisé dans un tableau, il n'est pas possible de le supprimer 
 <a name="activites"></a>
 <h3>8.) Les Activités</h3>
 Vous pouvez modifier la liste des activités dans le menu Administration/Les activités.<br/>
-Vous pouvez modifier les noms, ajouter des activités, en supprimer (si elles ne sont pas attribuées).
+Vous pouvez modifier les noms, ajouter des activités, les supprimer si elles ne sont pas attribuées.<br/>
+Vous pouvez définir une classe CSS qui sera appliquée aux postes concernés par ces activités dans le planning. 
+Ceci permet de personnaliser l'affichage des postes associés à ces activités (Nécessite la modification du thème).
 
 <a name='statistiques'></a>
 <h3>9.) Statistiques</h3>
