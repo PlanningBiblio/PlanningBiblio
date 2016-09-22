@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 8 septembre 2016
+Dernière modification : 17 septembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -161,7 +161,7 @@ class personnel{
     $this->fetchById($id);
     $code = $this->elements[0]['codeICS'];
     if(!$code){
-      $code = md5(time().rand(100-999));
+      $code = md5(time().rand(100,999));
       $db = new db();
       $db->update2('personnel', array('codeICS'=>$code), array('id'=>$id));
     }
