@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 2.4.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/importer.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 3 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -20,10 +20,14 @@ Cette page est appelée par la fonction JavaScript Popup qui l'affiche dans un c
 require_once "class.planning.php";
 
 // Initialisation des variables
-$date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
-$get_absents=filter_input(INPUT_GET,"absents",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$date=filter_input(INPUT_GET,"date",FILTER_SANITIZE_STRING);
+$get_absents=filter_input(INPUT_GET,"absents",FILTER_SANITIZE_STRING);
 $get_nom=filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING);
 $site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
+
+// Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
+$date=filter_var($date,FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
+$get_absents=filter_var($get_absents,FILTER_CALLBACK,array("options"=>"sanitize_on"));
 
 $attention="<span style='color:red;'>Attention, le planning actuel sera remplacé par le modèle<br/><br/></span>\n";
 

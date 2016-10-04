@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4
+Planning Biblio, Version 2.4.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 6 juillet 2016
+Dernière modification : 3 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -25,16 +25,22 @@ require_once "motifs.php";
 //	Initialisation des variables
 $commentaires=trim(filter_input(INPUT_GET,"commentaires",FILTER_SANITIZE_STRING));
 $confirm=filter_input(INPUT_GET,"confirm",FILTER_SANITIZE_NUMBER_INT);
-$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
-$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
-$hre_debut=filter_input(INPUT_GET,"hre_debut",FILTER_CALLBACK,array("options"=>"sanitize_time"));
-$hre_fin=filter_input(INPUT_GET,"hre_fin",FILTER_CALLBACK,array("options"=>"sanitize_time_end"));
+$debut=filter_input(INPUT_GET,"debut",FILTER_SANITIZE_STRING);
+$fin=filter_input(INPUT_GET,"fin",FILTER_SANITIZE_STRING);
+$hre_debut=filter_input(INPUT_GET,"hre_debut",FILTER_SANITIZE_STRING);
+$hre_fin=filter_input(INPUT_GET,"hre_fin",FILTER_SANITIZE_STRING);
 $menu=filter_input(INPUT_GET,"menu",FILTER_SANITIZE_STRING);
 $motif=filter_input(INPUT_GET,"motif",FILTER_SANITIZE_STRING);
 $motif_autre=trim(filter_input(INPUT_GET,"motif_autre",FILTER_SANITIZE_STRING));
 $nbjours=filter_input(INPUT_GET,"nbjours",FILTER_SANITIZE_NUMBER_INT);
 $perso_id=filter_input(INPUT_GET,"perso_id",FILTER_SANITIZE_NUMBER_INT);
 $valide=filter_input(INPUT_GET,"valide",FILTER_SANITIZE_NUMBER_INT);
+
+// Contrôle sanitize_dateFr en 2 temps pour éviter les erreurs CheckMarx
+$debut=filter_var($debut,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$fin=filter_var($fin,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$hre_debut=filter_var($hre_debut,FILTER_CALLBACK,array("options"=>"sanitize_time"));
+$hre_fin=filter_var($hre_fin,FILTER_CALLBACK,array("options"=>"sanitize_time_end"));
 
 $perso_ids=array();
 // Absence unique
@@ -56,9 +62,12 @@ if(isset($_GET["perso_ids"])){
 }
 
 // Pièces justificatives
-$pj1=filter_input(INPUT_GET,"pj1",FILTER_CALLBACK,array("options"=>"sanitize_on01"));
-$pj2=filter_input(INPUT_GET,"pj2",FILTER_CALLBACK,array("options"=>"sanitize_on01"));
-$so=filter_input(INPUT_GET,"so",FILTER_CALLBACK,array("options"=>"sanitize_on01"));
+$pj1=filter_input(INPUT_GET,"pj1",FILTER_SANITIZE_STRING);
+$pj2=filter_input(INPUT_GET,"pj2",FILTER_SANITIZE_STRING);
+$so=filter_input(INPUT_GET,"so",FILTER_SANITIZE_STRING);
+$pj1=filter_var($pj1,FILTER_CALLBACK,array('options'=>'sanitize_on01'));
+$pj2=filter_var($pj2,FILTER_CALLBACK,array('options'=>'sanitize_on01'));
+$so=filter_var($so,FILTER_CALLBACK,array('options'=>'sanitize_on01'));
 
 $nbjours=$nbjours?$nbjours:0;
 $valide=$valide?$valide:0;

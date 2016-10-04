@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.4.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : infos/index.php
 Création : février 2012
-Dernière modification : 22 janvier 2016
+Dernière modification : 1er octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -29,11 +29,15 @@ echo "<h3>Messages d'informations</h3>\n";
 
 //	Initialisation des variables
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
-$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
-$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$debut=filter_input(INPUT_GET,"debut",FILTER_SANITIZE_STRING);
+$fin=filter_input(INPUT_GET,"fin",FILTER_SANITIZE_STRING);
 $texte=trim(filter_input(INPUT_GET,"texte",FILTER_SANITIZE_STRING));
-$suppression=filter_input(INPUT_GET,"suppression",FILTER_CALLBACK,array("options"=>"sanitize_on"));
-$validation=filter_input(INPUT_GET,"validation",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$suppression=filter_input(INPUT_GET,"suppression",FILTER_SANITIZE_STRING);
+$validation=filter_input(INPUT_GET,"validation",FILTER_SANITIZE_NUMBER_INT);
+
+// Contrôle sanitize_dateFr en 2 temps pour éviter les erreurs CheckMarx
+$debut=filter_var($debut,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$fin=filter_var($fin,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
 
 $debutSQL=dateSQL($debut);
 $finSQL=dateSQL($fin);

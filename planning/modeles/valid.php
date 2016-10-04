@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.8.6
+Planning Biblio, Version 2.4.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/modeles/valid.php
 Création : mai 2011
-Dernière modification : 4 novembre 2014
+Dernière modification : 3 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -16,8 +16,11 @@ Valide la modification d'un modèles de planning
 
 require_once "class.modeles.php";
 
-$nom=trim($_GET['nom']);
-$origine=htmlentities($_GET['nom_origine'],ENT_QUOTES|ENT_IGNORE,"UTF-8");
+$nom = filter_input(INPUT_GET, 'nom', FILTER_SANITIZE_STRING);
+$origine = filter_input(INPUT_GET, 'nom_origine', FILTER_SANITIZE_STRING);
+
+$nom=trim($nom);
+$origine=htmlentities($origine,ENT_QUOTES|ENT_IGNORE,"UTF-8");
 
 $db=new db();
 $db->update2("pl_poste_modeles",array("nom"=>$nom),array("nom"=>$origine));

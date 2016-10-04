@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4
+Planning Biblio, Version 2.4.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : statistiques/statut.php
 Création : 13 septembre 2013
-Dernière modification : 7 juillet 2016
+Dernière modification : 3 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,9 +21,13 @@ require_once "include/horaires.php";
 require_once "absences/class.absences.php";
 
 // Initialisation des variables :
-$debut=filter_input(INPUT_POST,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
-$fin=filter_input(INPUT_POST,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$debut=filter_input(INPUT_POST,"debut",FILTER_SANITIZE_STRING);
+$fin=filter_input(INPUT_POST,"fin",FILTER_SANITIZE_STRING);
 $post=filter_input_array(INPUT_POST,FILTER_SANITIZE_NUMBER_INT);
+
+$debut=filter_var($debut,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$fin=filter_var($fin,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+
 $post_statuts=isset($post['statuts'])?$post['statuts']:null;
 $post_sites=isset($post['selectedSites'])?$post['selectedSites']:null;
 

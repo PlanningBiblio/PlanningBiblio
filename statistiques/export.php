@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 2.4.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : statistiques/export.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 3 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -25,8 +25,11 @@ require_once "class.statistiques.php";
 
 
 // Initialisation des variables
-$nom=filter_input(INPUT_GET,"nom",FILTER_SANITIZE_URL);
-$type=filter_input(INPUT_GET,"type",FILTER_CALLBACK,array("options"=>"sanitize_file_extension"));
+$nom=filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING);
+$type=filter_input(INPUT_GET,"type",FILTER_SANITIZE_STRING);
+
+$nom=filter_var($nom,FILTER_SANITIZE_URL);
+$type=filter_var($type,FILTER_CALLBACK,array("options"=>"sanitize_file_extension"));
 
  // Compter les jours ouvrables (ou ouvrés) entre début et fin
 $debut=$_SESSION['stat_debut'];

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4
+Planning Biblio, Version 2.4.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planningHebdo/index.php
 Création : 23 juillet 2013
-Dernière modification : 1er juillet 2016
+Dernière modification : 3 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -18,9 +18,13 @@ Page accessible à partir du menu administration/planning de présence
 require_once "class.planningHebdo.php";
 
 // Initialisation des variables
-$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
-$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
-$reset=filter_input(INPUT_GET,"reset",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$debut=filter_input(INPUT_GET,"debut",FILTER_SANITIZE_STRING);
+$fin=filter_input(INPUT_GET,"fin",FILTER_SANITIZE_STRING);
+$reset=filter_input(INPUT_GET,"reset",FILTER_SANITIZE_STRING);
+
+$debut=filter_var($debut,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$fin=filter_var($fin,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$reset=filter_var($reset,FILTER_CALLBACK,array("options"=>"sanitize_on"));
 
 if(!$debut){
   $debut=array_key_exists("planningHebdoDebut",$_SESSION['oups'])?$_SESSION['oups']['planningHebdoDebut']:null;

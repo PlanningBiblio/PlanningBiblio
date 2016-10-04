@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.1
+Planning Biblio, Version 2.4.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 16 juillet 2016
+Dernière modification : 3 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -25,8 +25,12 @@ require_once "include/horaires.php";
 
 //	Initialisation des variables
 if(isset($_GET['debut'])){
-  $debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
-  $fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+  $debut=filter_input(INPUT_GET,"debut",FILTER_SANITIZE_STRING);
+  $fin=filter_input(INPUT_GET,"fin",FILTER_SANITIZE_STRING);
+  
+  $debut=filter_var($debut,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+  $fin=filter_var($fin,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+
   $debut=dateSQL($debut);
   $fin=$fin?dateFr($fin):$debut;
 }

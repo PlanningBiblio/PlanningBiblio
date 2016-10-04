@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 2.4.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/copie.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 3 ocotobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,10 +21,12 @@ de la page "planning/postes_cfg/index.php"
 require_once "class.tableaux.php";
 
 // Initilisation des variables
-$confirm=filter_input(INPUT_GET,"confirm",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$confirm=filter_input(INPUT_GET,"confirm",FILTER_SANITIZE_STRING);
 $nom=trim(filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING));
 $numero1=filter_input(INPUT_GET,"numero",FILTER_SANITIZE_NUMBER_INT);
 $retour=filter_input(INPUT_GET,"retour",FILTER_SANITIZE_URL);
+
+$confirm=filter_var($confirm,FILTER_CALLBACK,array("options"=>"sanitize_on"));
 
 $retour=$retour?$retour:"modif.php";
 

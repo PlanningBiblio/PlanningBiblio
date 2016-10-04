@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3
+Planning Biblio, Version 2.4.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/horaires.php
 Création : mai 2011
-Dernière modification : 20 février 2016
+Dernière modification : 3 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -19,12 +19,14 @@ Page incluse dans le fichier "planning/postes_cfg/modif.php"
 
 require_once "class.tableaux.php";
 
+$post = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+
 //	Mise à jour du tableau (après validation)
-if(isset($_POST['action'])){
+if(isset($post['action'])){
   $db=new db();
   $db->delete2("pl_poste_horaires",array("numero"=>$tableauNumero));
 
-  $keys=array_keys($_POST);
+  $keys=array_keys($post);
 
   foreach($keys as $key){
     if($key!="page" and $key!="action" and $key!="numero"){
@@ -33,9 +35,9 @@ if(isset($_POST['action'])){
 	if(empty($tab[$tmp[1]."_".$tmp[2]]))
 	    $tab[$tmp[1]."_".$tmp[2]]=array($tmp[1]);	// tab[0]=tableau
 	if($tmp[0]=="debut")				// tab[1]=debut
-	    $tab[$tmp[1]."_".$tmp[2]][1]=$_POST[$key];
+	    $tab[$tmp[1]."_".$tmp[2]][1]=$post[$key];
 	if($tmp[0]=="fin")				// tab[2]=fin
-	    $tab[$tmp[1]."_".$tmp[2]][2]=$_POST[$key];
+	    $tab[$tmp[1]."_".$tmp[2]][2]=$post[$key];
       }
     }
   }

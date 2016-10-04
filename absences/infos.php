@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.4.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/infos.php
 Création : mai 2011
-Dernière modification : 18 juin 2015
+Dernière modification : 1er octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -20,11 +20,15 @@ require_once "class.absences.php";
 
 //	Initialisation des variables
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
-$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
-$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$debut=filter_input(INPUT_GET,"debut",FILTER_SANITIZE_STRING);
+$fin=filter_input(INPUT_GET,"fin",FILTER_SANITIZE_STRING);
 $suppression=filter_input(INPUT_GET,"suppression",FILTER_SANITIZE_NUMBER_INT);
-$validation=filter_input(INPUT_GET,"validation",FILTER_CALLBACK,array("options"=>"sanitize_on01"));
+$validation=filter_input(INPUT_GET,"validation",FILTER_SANITIZE_NUMBER_INT);
 $texte=trim(filter_input(INPUT_GET,"texte",FILTER_SANITIZE_STRING));
+
+// Contrôle sanitize_dateFr en 2 temps pour éviter les erreurs CheckMarx
+$debut=filter_var($debut,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$fin=filter_var($fin,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
 
 $debutSQL=dateSQL($debut);
 $finSQL=dateSQL($fin);

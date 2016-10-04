@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4
+Planning Biblio, Version 2.4.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
-Dernière modification : 6 juillet 2016
+Dernière modification : 3 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -29,10 +29,14 @@ include "fonctions.php";
 $groupe=filter_input(INPUT_GET,"groupe",FILTER_SANITIZE_NUMBER_INT);
 $site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
 $tableau=filter_input(INPUT_GET,"tableau",FILTER_SANITIZE_NUMBER_INT);
+$date=filter_input(INPUT_GET,"date",FILTER_SANITIZE_STRING);
+
+// Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
+$date=filter_var($date,FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
+
 $verrou=false;
 
 //		------------------		DATE		-----------------------//
-$date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
 if(!$date and array_key_exists('PLdate',$_SESSION)){
   $date=$_SESSION['PLdate'];
 }

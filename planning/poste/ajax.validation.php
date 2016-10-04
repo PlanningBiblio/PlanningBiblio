@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 2.4.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/ajax.validation.php
 Création : 23 février 2015
-Dernière modification : 3 avril 2015
+Dernière modification : 3 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -23,9 +23,10 @@ require_once "../../include/config.php";
 require_once "class.planning.php";
 
 // Initialisation des variables
-$date=$_GET['date'];
-$site=$_GET['site'];
-$verrou=$_GET['verrou'];
+$date=filter_input(INPUT_GET,'date',FILTER_SANITIZE_STRING);
+$site=filter_input(INPUT_GET,'site',FILTER_SANITIZE_NUMBER_INT);
+$verrou=filter_input(INPUT_GET,'verrou',FILTER_SANITIZE_NUMBER_INT);
+// 
 $d=new datePl($date);
 $d1=$d->dates[0];
 $perso_id=$_SESSION['login_id'];
