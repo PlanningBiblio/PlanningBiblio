@@ -239,6 +239,11 @@ if(isset($planning)){
     $ical[]="TRANSP:OPAQUE";
     $ical[]="LAST-MODIFIED:$validation";
     $ical[]="DTSTAMP:$validation";
+    $ical[]="BEGIN:VALARM";
+    $ical[]="ACTION:DISPLAY";
+    $ical[]="DESCRIPTION:This is an event reminder";
+    $ical[]="TRIGGER:-P0DT0H10M0S";
+    $ical[]="END:VALARM";
     $ical[]="END:VEVENT";
   }
 }
