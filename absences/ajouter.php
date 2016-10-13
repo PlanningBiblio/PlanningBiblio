@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.3
+Planning Biblio, Version 2.4.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 3 octobre 2016
+Dernière modification : 12 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -74,7 +74,6 @@ $valide=$valide?$valide:0;
 
 $admin=in_array(1,$droits)?true:false;
 $adminN2=in_array(8,$droits)?true:false;
-$quartDHeure=$config['heuresPrecision']=="quart-heure"?true:false;
 
 $debutSQL=dateSQL($debut);
 $finSQL=dateSQL($fin);
@@ -338,7 +337,7 @@ else{
   echo "<label class='intitule'>Heure de début </label>\n";
   echo "</td><td>\n";
   echo "<select name='hre_debut' class='center ui-widget-content ui-corner-all'>\n";
-  selectHeure(7,23,true,$quartDHeure);
+  selectHeure(7,23,true);
   echo "</select>\n";
   echo "</td></tr>\n";
   echo "<tr><td>\n";
@@ -350,7 +349,7 @@ else{
   echo "<label class='intitule'>Heure de fin </label>\n";
   echo "</td><td>\n";
   echo "<select name='hre_fin' class='center ui-widget-content ui-corner-all' onfocus='setEndHour();'>\n";
-  selectHeure(7,23,true,$quartDHeure);
+  selectHeure(7,23,true);
   echo "</select>\n";
   echo "</td></tr>\n";
   

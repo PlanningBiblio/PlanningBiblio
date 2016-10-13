@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.2
+Planning Biblio, Version 2.4.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 8 septembre 2016
+Dernière modification : 12 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -27,7 +27,6 @@ $display=null;
 $checked=null;
 $admin=in_array(1,$droits)?true:false;
 $adminN2=in_array(8,$droits)?true:false;
-$quartDHeure=$config['heuresPrecision']=="quart-heure"?true:false;
 
 $a=new absences();
 $a->fetchById($id);
@@ -244,7 +243,7 @@ echo "<tr id='hre_debut' $display ><td>\n";
 echo "<label class='intitule'>Heure de début</label>\n";
 echo "</td><td>\n";
 echo "<select name='hre_debut' class='center ui-widget-content ui-corner-all'>\n";
-selectHeure(7,23,true,$quartDHeure,$hre_debut);
+selectHeure(7,23,true,$hre_debut);
 echo "</select>\n";
 echo "</td></tr>\n";
 
@@ -256,7 +255,7 @@ echo "<tr id='hre_fin' $display ><td>\n";
 echo "<label class='intitule'>Heure de fin</label>\n";
 echo "</td><td>\n";
 echo "<select name='hre_fin' class='center ui-widget-content ui-corner-all' onfocus='setEndHour();'>\n";
-selectHeure(7,23,true,$quartDHeure,$hre_fin);
+selectHeure(7,23,true,$hre_fin);
 echo "</select>\n";
 echo "</td></tr>\n";
 

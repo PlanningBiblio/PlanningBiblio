@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.3
+Planning Biblio, Version 2.4.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/horaires.php
 Création : mai 2011
-Dernière modification : 3 octobre 2016
+Dernière modification : 12 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -91,8 +91,6 @@ if($db->result){
 }
 
 //	Affichage des horaires
-$quart=$config['heuresPrecision']=="quart-heure"?true:false;
-
 echo "<div style='min-height:350px;'>\n";
 echo "<form name='form2' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='planning/postes_cfg/modif.php' />\n";
@@ -117,11 +115,11 @@ if(!empty($tableaux)){
       // Affichage des horaires existants
       echo "<tr id='tr_{$tableau}_$i' ><td>\n";
       echo "<select name='debut_{$tableau}_{$i}' style='width:75px;' >\n";
-      selectHeure(6,23,true,$quart,$elem['debut']);
+      selectHeure(6,23,true,$elem['debut']);
       echo "</select>\n";
       echo "</td><td style='width:120px;'>\n";
       echo "<select name='fin_{$tableau}_{$i}' style='width:75px;' onchange='change_horaires(this);'>\n";
-      selectHeure(6,23,true,$quart,$elem['fin']);
+      selectHeure(6,23,true,$elem['fin']);
       echo "</select>\n";
       echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$tableau}_{$i}.value=\"\";document.form2.fin_{$tableau}_{$i}.value=\"\";$(\"#tr_{$tableau}_$i\").hide();''></span>\n";
       echo "</td>\n";
@@ -133,11 +131,11 @@ if(!empty($tableaux)){
     for($j=0;$j<25;$j++){				
       echo "<tr id='tr_{$tableau}_$j' style='display:none;'><td>\n";
       echo "<select name='debut_{$tableau}_{$i}' style='width:75px;'>\n";
-      selectHeure(6,23,true,$quart);
+      selectHeure(6,23,true);
       echo "</select>\n";
       echo "</td><td style='width:120px;'>\n";
       echo "<select name='fin_{$tableau}_{$i}' style='width:75px;' onchange='change_horaires(this);'>\n";
-      selectHeure(6,23,true,$quart);
+      selectHeure(6,23,true);
       echo "</select>\n";
       echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$tableau}_{$i}.value=\"\";document.form2.fin_{$tableau}_{$i}.value=\"\";$(\"#tr_{$tableau}_$j\").hide();'></span>\n";
       echo "</td>\n";

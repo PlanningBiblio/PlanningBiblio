@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.1
+Planning Biblio, Version 2.4.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 26 juillet 2016
+Dernière modification : 12 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -350,13 +350,32 @@ if(in_array(21,$droits)){
 
   for($i=1;$i<40;$i++){
     $j=array();
-    if($config['heuresPrecision']=="quart-heure"){
+    
+    /**
+     * @author Etienne Cavalié
+     * Granularité = 5 minutes
+     */
+    if($config['Granularite']==5){
+      $j[]=array($i,$i."h00");
+      $j[]=array($i.".08",$i."h05");
+      $j[]=array($i.".17",$i."h10");
+      $j[]=array($i.".25",$i."h15");
+      $j[]=array($i.".33",$i."h20");
+      $j[]=array($i.".42",$i."h25");
+      $j[]=array($i.".5",$i."h30");
+      $j[]=array($i.".58",$i."h35");
+      $j[]=array($i.".67",$i."h40");
+      $j[]=array($i.".75",$i."h45");
+      $j[]=array($i.".83",$i."h50");
+      $j[]=array($i.".92",$i."h55");
+    }
+    elseif($config['Granularite']==15){
       $j[]=array($i,$i."h00");
       $j[]=array($i.".25",$i."h15");
       $j[]=array($i.".5",$i."h30");
       $j[]=array($i.".75",$i."h45");
     }
-    elseif($config['heuresPrecision']=="demi-heure"){
+    elseif($config['Granularite']==30){
       $j[]=array($i,$i."h00");
       $j[]=array($i.".5",$i."h30");
     }
@@ -390,13 +409,27 @@ if(in_array(21,$droits)){
   echo "<option value='0'>&nbsp;</option>\n";
   for($i=1;$i<40;$i++){
     $j=array();
-    if($config['heuresPrecision']=="quart-heure"){
+    if($config['Granularite']==5){
+      $j[]=array($i,$i."h00");
+      $j[]=array($i.".08",$i."h05");
+      $j[]=array($i.".17",$i."h10");
+      $j[]=array($i.".25",$i."h15");
+      $j[]=array($i.".33",$i."h20");
+      $j[]=array($i.".42",$i."h25");
+      $j[]=array($i.".5",$i."h30");
+      $j[]=array($i.".58",$i."h35");
+      $j[]=array($i.".67",$i."h40");
+      $j[]=array($i.".75",$i."h45");
+      $j[]=array($i.".83",$i."h50");
+      $j[]=array($i.".92",$i."h55");
+    }
+    elseif($config['Granularite']==15){
       $j[]=array($i,$i."h00");
       $j[]=array($i.".25",$i."h15");
       $j[]=array($i.".5",$i."h30");
       $j[]=array($i.".75",$i."h45");
     }
-    elseif($config['heuresPrecision']=="demi-heure"){
+    elseif($config['Granularite']==30){
       $j[]=array($i,$i."h00");
       $j[]=array($i.".5",$i."h30");
     }
