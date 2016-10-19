@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.4
+Planning Biblio, Version 2.4.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 12 octobre 2016
+Dernière modification : 19 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -878,14 +878,9 @@ function loginSuccess($login){
 	$db->insert2("IPBlocker",$insert);
 }
 
-function logs($msg,$program=null,$type=array("db")){
-  if(in_array("db",$type)){
-    $db=new db();
-    $db->insert2("log",array("msg"=>$msg,"program"=>$program));
-  }
-  if(in_array("syslog",$type)){
-    error_log($program.": ".$msg);
-  }
+function logs($msg,$program=null){
+  $db=new db();
+  $db->insert2("log",array("msg"=>$msg,"program"=>$program));
 }
 
 function nom($id,$format="nom p"){

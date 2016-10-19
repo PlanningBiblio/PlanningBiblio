@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.2
+Planning Biblio, Version 2.4.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/index.php
 Création : mai 2011
-Dernière modification : 13 septembre 2016
+Dernière modification : 19 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -83,7 +83,7 @@ foreach($tableaux as $elem){
   echo "<input type='checkbox' name='chk$i' value='{$elem['tableau']}' class='chk1'/>\n";
   echo "<a href='index.php?page=planning/postes_cfg/modif.php&amp;numero={$elem['tableau']}'>\n";
   echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
-  echo "<a href='javascript:popup(\"planning/postes_cfg/copie.php&amp;retour=index.php&amp;numero={$elem['tableau']}\",400,200);'>\n";
+  echo "<a href='javascript:popup(\"planning/postes_cfg/copie.php&amp;numero={$elem['tableau']}\",400,300);'>\n";
   echo "<span class='pl-icon pl-icon-copy' title='Copier'></span></a>\n";
   echo "<a href='javascript:supprimeTableau({$elem['tableau']});'>\n";
   echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";

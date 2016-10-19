@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.4.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2016 - Jérôme Combes
 
 Fichier : cron.ctrlPlanning.php
 Création : 18 janvier 2016
-Dernière modification : 22 janvier 2016
+Dernière modification : 19 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -45,7 +45,7 @@ require_once "$path/planning/postes_cfg/class.tableaux.php";
 require_once "$path/postes/class.postes.php";
 
 if(!$config['Rappels-Actifs']){
-  logs("Rappels désactivés","Rappels",array("db"));
+  logs("Rappels désactivés","Rappels");
   exit;
 }
 
@@ -244,7 +244,7 @@ $m->subject=$subject;
 $m->message=$msg;
 $m->send();
 if($m->error){
-  logs($m->error,"Rappels",array("db"));
+  logs($m->error,"Rappels");
 }
 
 ?>

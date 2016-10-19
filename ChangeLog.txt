@@ -1,7 +1,26 @@
+*** Version 2.4.5   (19 octobre 2016)   ***
+- Améliorations
+Agenda : Possibilité de choisir dans la config si on affiche ou non les plages de service public des plannings non-validés dans les agendas.
+
+*** Version 2.4.4   (13 octobre 2016)   ***
+- Améliorations
+Granularité à 5 minutes (expérimental)
+
+*** Version 2.4.3   (4 octobre 2016)   ***
+- Améliorations
+Mise à jour de l'aide
+Ajout d'une alarme sur les événements ICS exportés (10 minutes avant le début de SP)
+
+- Corrections
+Correction d'un problème empêchant la création de lignes de séparation
+
+- Sécurité
+Correction de vulnérabilités XSS, suppression des fichiers d'exemple de phpCAS
+
 *** Version 2.4.2   (8 septembre 2016)   ***
 - Améliorations
 Compatibilité MySQL 5.7, définie sql-mode=''
-Vérifie les fuseau horaires des fichiers ICS importés
+Vérifie les fuseaux horaires des fichiers ICS importés
 
 - Correction
 Corrige les erreurs de modifications et validations d'absences

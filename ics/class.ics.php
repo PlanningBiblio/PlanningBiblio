@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.2
+Planning Biblio, Version 2.4.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : ics/class.ics.php
 Création : 29 mai 2016
-Dernière modification : 8 septembre 2016
+Dernière modification : 19 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -22,7 +22,7 @@ Classe permettant le traitement des fichiers ICS
  *   $i->src=$elem[1];		// source ICS
  *   $i->perso_id=$elem[0];	// ID de l'agent
  *   $i->table="absences";	// Table à mettre à jour
- *   $ics->logs=array("db");
+ *   $ics->logs=true            // Loguer les opérations dans la base de données (table logs)
  *   $i->updateTable();
  * }
  *
@@ -70,7 +70,7 @@ class CJICS{
     $insert=array();		// Evénements à insérer (nouveaux ou événements modifiés (suppression + réinsertion))
 
 	if($this->logs){
-	  logs("Table: $table, Perso: $perso_id, src: $src","ICS",$this->logs);
+	  logs("Table: $table, Perso: $perso_id, src: $src","ICS");
 	}
 
     // Parse le fichier ICS, le tableau $events contient les événements du fichier ICS
@@ -81,12 +81,12 @@ class CJICS{
     $calName=$ical->calendarName();
     $calTimeZone = $ical->calendarTimezone();
 	if($this->logs){
-	  logs("Calendrier: $calName, Fuseau horaire: $calTimeZone","ICS",$this->logs);
+	  logs("Calendrier: $calName, Fuseau horaire: $calTimeZone","ICS");
 	}
     
     if(!is_array($events) or empty($events)){
 	  if($this->logs){
-		logs("Aucun élément trouvé dans le fichier $src","ICS",$this->logs);
+		logs("Aucun élément trouvé dans le fichier $src","ICS");
 		$events = array();
 	  }
     }
@@ -153,7 +153,7 @@ class CJICS{
     }
 
     if($this->logs){
-	  logs("$nb événement(s) supprimé(s)","ICS",$this->logs);
+	  logs("$nb événement(s) supprimé(s)","ICS");
 	}
 
     // Insertion des nouveux éléments ou des éléments modifiés dans la table $table : complète le tableau $insert
@@ -198,7 +198,7 @@ class CJICS{
     }
 
     if($this->logs){
-	  logs("$nb événement(s) importé(s)","ICS",$this->logs);
+	  logs("$nb événement(s) importé(s)","ICS");
 	}
 
   }

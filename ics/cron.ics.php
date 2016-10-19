@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.1
+Planning Biblio, Version 2.4.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : ics/cron.ics.php
 Création : 28 juin 2016
-Dernière modification : 13 juillet 2016
+Dernière modification : 19 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -120,7 +120,7 @@ foreach($agents as $agent){
     $ics->perso_id=$agent["id"];
     $ics->pattern=$config["ICS-Pattern$i"];
     $ics->table="absences";
-    $ics->logs=array("db");
+    $ics->logs=true;
     $ics->updateTable();
   }
 }

@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.2
+Planning Biblio, Version 2.4.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : joursFeries/valid.php
 Création : 25 juillet 2013
-Dernière modification : 25 juillet 2013
+Dernière modification : 19 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -19,7 +19,13 @@ include "class.joursFeries.php";
 
 $j=new joursFeries();
 $j->update($_POST);
-$message=$j->error?"Erreur":"OK";
+if($j->error){
+  $msg = "Une erreur est survenue lors de la modification de la liste des jours fériés.";
+  $msgType="error";
+}else{
+  $msg = "La liste des jours fériés a été modifée avec succès.";
+  $msgType="highlight";
+}
 
-echo "<script type='text/JavaScript'>document.location.href='index.php?page=joursFeries/index.php&message=$message';</script>\n";
+echo "<script type='text/JavaScript'>document.location.href='index.php?page=joursFeries/index.php&msg=$msg&msgType=$msgType';</script>\n";
 ?>

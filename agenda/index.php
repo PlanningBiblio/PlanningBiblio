@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4
+Planning Biblio, Version 2.4.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 1er juillet 2016
+Dernière modification : 19 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -29,8 +29,11 @@ include "joursFeries/class.joursFeries.php";
 require_once "personnel/class.personnel.php";
 
 //	Initialisation des variables
-$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
-$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$debut=filter_input(INPUT_GET,"debut",FILTER_SANITIZE_STRING);
+$fin=filter_input(INPUT_GET,"fin",FILTER_SANITIZE_STRING);
+
+$debut=filter_var($debut,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$fin=filter_var($fin,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
 
 if(!array_key_exists('agenda_debut',$_SESSION)){
   $_SESSION['agenda_debut']=null;
@@ -58,6 +61,8 @@ $_SESSION['agenda_debut']=$debut;
 $_SESSION['agenda_fin']=$fin;
 $_SESSION['agenda_perso_id']=$perso_id;
 $class=null;
+
+$nonValides = $config['Agenda-Plannings-Non-Valides'];
 
 // PlanningHebdo et EDTSamedi étant incompatibles, EDTSamedi est désactivé si PlanningHebdo est activé
 if($config['PlanningHebdo']){
@@ -240,7 +245,7 @@ EOD;
     $current_date=ucfirst($d->jour_complet);
     if(is_array($postes))
     foreach($postes as $elem){
-      if($elem['date']==$current and in_array($current,$verrou[$elem['site']])){
+      if($elem['date']==$current and (in_array($current,$verrou[$elem['site']]) or $nonValides)){
 	$current_postes[]=$elem;
       }
     }
