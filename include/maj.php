@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.4.5
+Planning Biblio, Version 2.4.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
@@ -407,7 +407,6 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
 
   // PlanningHebdo
   $sql[]="ALTER TABLE `{$dbprefix}planningHebdo` ADD `key` VARCHAR( 100 ) NULL DEFAULT NULL;";
-  $sql[]="ALTER TABLE `{$dbprefix}planningHebdo` ADD UNIQUE `key` (`key`);";
 
   // ICS
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `commentaires`, `ordre` ) VALUES 
@@ -439,10 +438,6 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   }
   // Rend le champ `nom` UNIQUE
   $sql[]="ALTER TABLE `{$dbprefix}config` ADD UNIQUE `nom` (`nom`);";
-
-  // PlanningHebdo
-  $sql[]="ALTER TABLE `{$dbprefix}planningHebdo` CHANGE `key` `key` VARCHAR( 100 ) NULL DEFAULT NULL;";
-  $sql[]="ALTER TABLE `{$dbprefix}planningHebdo` ADD UNIQUE `key` (`key`);";
 
   // Importation CSV des heures de présences
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `commentaires`, `ordre` ) VALUES 
@@ -491,6 +486,16 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   // Agenda
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
     ('Agenda-Plannings-Non-Valides', 'boolean', '1', 'Agenda', 'Afficher ou non les plages de service public des plannings non valid&eacute;s dans les agendas.', '10');";
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.4.6";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // PlanningHebdo
+  $sql[]="ALTER TABLE `{$dbprefix}planningHebdo` CHANGE `key` `cle` VARCHAR( 100 ) NULL DEFAULT NULL;";
+  $sql[]="ALTER TABLE `{$dbprefix}planningHebdo` ADD UNIQUE `cle` (`cle`);";
+
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }

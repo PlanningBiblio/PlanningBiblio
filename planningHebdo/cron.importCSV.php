@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.1
+Planning Biblio, Version 2.4.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : ics/cron.ics.php
 Création : 1er juillet 2016
-Dernière modification : 12 juillet 2016
+Dernière modification : 19 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -104,6 +104,12 @@ foreach($lines as $line){
       }
     }
   }
+
+  // Si les horaires de l'après midi ne sont pas renseignés, on initialise les variables pour éviter les erreurs PHP
+  if(!isset($cells[4])){
+    $cells[4]=null;
+    $cells[5]=null;
+  }
   
   // Récupération de l'ID de l'agent
   $perso_id = $agents[$cells[0]]['id'];
@@ -152,13 +158,13 @@ foreach($lines as $line){
 
   // Clé identifiant les infos de la ligne (pour comparaison avec la DB)
   // La clé est composée de l'id de l'agent et du md5 du tableau de sa semaine, tableau comprenant le debut, la fin et l'emploi du temps.
-  $key = $perso_id.'-'.md5(json_encode($temps[$perso_id][$lundi]));
-  $temps[$perso_id][$lundi]["key"] = $key;
+  $cle = $perso_id.'-'.md5(json_encode($temps[$perso_id][$lundi]));
+  $temps[$perso_id][$lundi]['cle'] = $cle;
 
 }
 
-// $key : tableau contenant les clé des éléments du fichiers pour comparaison avec la base de données
-$keys = array();
+// $cles : tableau contenant les clés des éléments du fichiers pour comparaison avec la base de données
+$cles = array();
 
 // On reprend tous les éléments du tableau $temps finalisé et on prépare les données pour l'insertion dans la base de données (tableau $tab);
 // $tab : tableau contenant les éléments à importer
@@ -167,25 +173,25 @@ $tab = array();
 foreach($temps as $perso){
   foreach($perso as $semaine){
 	if(is_array($semaine)){
-	  $keys[] = $semaine['key'];
+	  $cles[] = $semaine['cle'];
 	  $temps = serialize($semaine['temps']);
-	  $tab[] =  array(":perso_id"=>$perso['perso_id'], ":debut"=>$semaine['debut'], ":fin"=>$semaine['fin'], ":temps"=>$temps,":key"=>$semaine['key']);
+	  $tab[] =  array(":perso_id"=>$perso['perso_id'], ":debut"=>$semaine['debut'], ":fin"=>$semaine['fin'], ":temps"=>$temps,":cle"=>$semaine['cle']);
 	}
   }
 }
 
 
-// $key_db : tableau contenant les clé des éléments de la base de données pour comparaison avec le fichier
-$keys_db = array();
+// $cles_db : tableau contenant les clé des éléments de la base de données pour comparaison avec le fichier
+$cles_db = array();
 
 // Recherche des éléments déjà importés
 $tab_db=array();
 $db = new db();
-$db->select2("planningHebdo");
+$db->select2("planningHebdo",null,array('cle'=>'>0'));
 if($db->result){
   foreach($db->result as $elem){
-    $tab_db[$elem['key']] = $elem;
-    $keys_db[] = $elem['key'];
+    $tab_db[$elem['cle']] = $elem;
+    $cles_db[] = $elem['cle'];
   }
 }
 
@@ -193,7 +199,7 @@ if($db->result){
 // Insertion des nouvelles valeurs ou valeurs modifiées
 $insert = array();
 foreach($tab as $elem){
-  if(!in_array($elem[":key"],$keys_db)){
+  if(!in_array($elem[":cle"],$cles_db)){
 	if($elem[':debut'] <= date('Y-m-d') and $elem[':fin'] >= date('Y-m-d')){
 	  $elem[':actuel'] = "1";
 	} else {
@@ -208,7 +214,7 @@ $nb = count($insert);
 
 if($nb > 0){
   $db=new dbh();
-  $db->prepare("INSERT INTO `{$dbprefix}planningHebdo` (`perso_id`, `debut`, `fin`, `temps`, `saisie`, `valide`, `validation`, `actuel`, `key`) VALUES (:perso_id, :debut, :fin, :temps, SYSDATE(), '99999', SYSDATE(), :actuel, :key);");
+  $db->prepare("INSERT INTO `{$dbprefix}planningHebdo` (`perso_id`, `debut`, `fin`, `temps`, `saisie`, `valide`, `validation`, `actuel`, `cle`) VALUES (:perso_id, :debut, :fin, :temps, SYSDATE(), '99999', SYSDATE(), :actuel, :cle);");
   foreach($insert as $elem){
 	$db->execute($elem);
   }
@@ -224,9 +230,9 @@ if($nb > 0){
 
 // Suppression des valeurs supprimées ou modifiées
 $delete = array();
-foreach($keys_db as $elem){
-  if(!in_array($elem,$keys)){
-    $delete[]=array(":key"=>$elem);
+foreach($cles_db as $elem){
+  if(!in_array($elem,$cles)){
+    $delete[]=array(":cle"=>$elem);
   }
 }
 
@@ -235,7 +241,7 @@ $nb = count($delete);
 
 if($nb >0){
   $db=new dbh();
-  $db->prepare("DELETE FROM `{$dbprefix}planningHebdo` WHERE `key`=:key;");
+  $db->prepare("DELETE FROM `{$dbprefix}planningHebdo` WHERE `cle`=:cle;");
   foreach($delete as $elem){
 	$db->execute($elem);
   }

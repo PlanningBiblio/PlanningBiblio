@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.1
+Planning Biblio, Version 2.4.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 28 juillet 2016
+Dernière modification : 19 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -236,6 +236,10 @@ class planning{
           }
         }
         
+        if(is_numeric($heuresHebdo)){
+          $heuresHebdo = round($heuresHebdo, 2);
+        }
+
         if(!$config['ClasseParService']){
           if($elem['id']==2){		// on retire l'utilisateur "tout le monde"
             continue;
@@ -276,14 +280,17 @@ class planning{
         // affihage des heures faites ce jour et cette semaine + les heures de la cellule
         $hres_jour = isset($heures[$elem['id']]['jour']) ? $heures[$elem['id']]['jour'] : 0;
         $hres_jour += $hres_cellule;
+        $hres_jour = round($hres_jour, 2);
         $hres_sem = isset($heures[$elem['id']]['semaine']) ? $heures[$elem['id']]['semaine'] : 0;
         $hres_sem += $hres_cellule;
+        $hres_sem = round($hres_sem, 2);
         
         // affihage des heures faites les 4 dernières semaines + les heures de la cellule
         $hres_4sem=null;
         if($config['hres4semaines']){
           $hres_4sem = isset($heures[$elem['id']]['4semaines']) ? $heures[$elem['id']]['4semaines'] : 0;
           $hres_4sem += $hres_cellule;
+          $hres_4sem = round($hres_4sem, 2);
           $hres_4sem=" / <font title='Heures des 4 derni&egrave;res semaines'>$hres_4sem</font>";
         }
 

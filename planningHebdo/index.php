@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.3
+Planning Biblio, Version 2.4.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planningHebdo/index.php
 Création : 23 juillet 2013
-Dernière modification : 3 octobre 2016
+Dernière modification : 19 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -108,8 +108,8 @@ foreach($p->elements as $elem){
     echo "<a href='index.php?page=planningHebdo/modif.php&amp;id={$elem['id']}&amp;retour=index.php'/>";
     echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a>";
     
-    // Si le champ "key" est renseigné : importation automatique, donc on n'affiche pas les icônes copie et suppression
-    if(!$elem['key']){
+    // Si le champ "clé" est renseigné : importation automatique, donc on n'affiche pas les icônes copie et suppression
+    if(!$elem['cle']){
       echo "<a href='index.php?page=planningHebdo/modif.php&amp;copy={$elem['id']}&amp;retour=index.php'/>";
       echo "<span class='pl-icon pl-icon-copy' title='Copier'></span></a>";
       echo "<a href='javascript:plHebdoSupprime({$elem['id']});' style='margin-left:6px;'/>";

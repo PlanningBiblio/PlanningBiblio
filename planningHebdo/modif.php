@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.1
+Planning Biblio, Version 2.4.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planningHebdo/modif.php
 Création : 23 juillet 2013
-Dernière modification : 12 juillet 2016
+Dernière modification : 19 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -16,11 +16,6 @@ Page accessible à partir du menu administration/planning de présence
 */
 
 require_once "class.planningHebdo.php";
-
-// TODO : import et multisites
-// TODO : import et multisites
-// TODO : import et multisites
-// TODO : import et multisites
 
 // Recherche de la config
 $p=new planningHebdo();
@@ -62,7 +57,7 @@ if($id){
   $temps=$p->elements[0]['temps'];
   $valide=$p->elements[0]['valide'];
   $remplace=$p->elements[0]['remplace'];
-  $key=$p->elements[0]['key'];
+  $cle=$p->elements[0]['cle'];
 
   // Informations sur l'agents
   $p=new personnel();
@@ -80,8 +75,8 @@ if($id){
     $modifAutorisee=false;
   }
   
-  // Si le champ key est renseigné, les heures de présences ont été importées automatiquement depuis une source externe. Donc pas de modif
-  if($key){
+  // Si le champ clé est renseigné, les heures de présences ont été importées automatiquement depuis une source externe. Donc pas de modif
+  if($cle){
     $modifAutorisee = false;
   }
 
@@ -274,8 +269,8 @@ for($j=0;$j<$config['nb_semaine'];$j++){
 
 echo "<div id='informations' style='margin-top:30px;' >\n";
 
-// Si le champ key est renseigné, les heures de présences ont été importées automatiquement depuis une source externe. Donc pas de modif
-if($key){
+// Si le champ clé est renseigné, les heures de présences ont été importées automatiquement depuis une source externe. Donc pas de modif
+if($cle){
   echo "<p><b class='important'>Les horaires ont été importés depuis une source externe.</b></p>\n";
 }
 elseif(!$modifAutorisee){
@@ -311,8 +306,8 @@ echo "</div> <!-- id=informations -->\n";
 echo "<div id='boutons' style='padding-top:20px;'>\n";
 echo "<input type='button' value='Retour' onclick='location.href=\"index.php?page=planningHebdo/$retour\";' class='ui-button' />\n";
 
-// Si le champ key est renseigné, les heures de présences ont été importées automatiquement depuis une source externe. Donc pas de modif
-if($admin and !$key){
+// Si le champ clé est renseigné, les heures de présences ont été importées automatiquement depuis une source externe. Donc pas de modif
+if($admin and !$cle){
   echo "<input type='submit' value='Enregistrer SANS valider' style='margin-left:30px;' class='ui-button' />\n";
   if(!$config['PlanningHebdo-PeriodesDefinies']){
     echo "<input type='button' value='Enregistrer et VALIDER'  style='margin-left:30px;' onclick='document.forms[\"form1\"].validation.value=1;if(plHebdoVerifForm()){document.forms[\"form1\"].submit();}' class='ui-button' />";
