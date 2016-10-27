@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.4
+Planning Biblio, Version 2.4.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 12 octobre 2016
+Dernière modification : 27 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -259,7 +259,7 @@ if($confirm and !empty($perso_ids)){
     $message.="<p>Lien vers la demande d&apos;absence :<br/><a href='$url'>$url</a></p>";
 
     // Envoi du mail
-    $m=new sendmail();
+    $m=new CJMail();
     $m->subject=$titre;
     $m->message=$message;
     $m->to=$destinataires;

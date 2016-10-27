@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.2
+Planning Biblio, Version 2.4.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 8 septembre 2016
+Dernière modification : 27 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -398,7 +398,7 @@ $url=createURL("absences/modif.php&id=$id");
 $message.="<br/><br/>Lien vers la demande d&apos;absence :<br/><a href='$url'>$url</a><br/><br/>";
 
 // Envoi du mail
-$m=new sendmail();
+$m=new CJMail();
 $m->subject=$sujet;
 $m->message=$message;
 $m->to=$destinataires;

@@ -7,7 +7,7 @@ Copyright (C) 2011-2016 - Jérôme Combes
 
 Fichier : cron.ctrlPlanning.php
 Création : 18 janvier 2016
-Dernière modification : 19 octobre 2016
+Dernière modification : 27 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -238,7 +238,7 @@ $msg.="</ul>\n";
 $subject="Plannings du ".dateFr($dates[0])." au ".dateFr($dates[count($dates)-1]);
 $to=explode(";",$config['Mail-Planning']);
 
-$m=new sendmail();
+$m=new CJMail();
 $m->to=$to;
 $m->subject=$subject;
 $m->message=$msg;

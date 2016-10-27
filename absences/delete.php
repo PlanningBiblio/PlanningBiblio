@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4
+Planning Biblio, Version 2.4.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/delete.php
 Création : mai 2011
-Dernière modification : 6 juillet 2016
+Dernière modification : 27 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -121,7 +121,7 @@ foreach($destinataires as $elem){
 $destinataires=$tmp;
 
 // Envoi du mail
-$m=new sendmail();
+$m=new CJMail();
 $m->subject="Suppression d'une absence";
 $m->message=$message;
 $m->to=$destinataires;

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.1
+Planning Biblio, Version 2.4.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 27 février 2016
+Dernière modification : 27 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -126,7 +126,7 @@ class planningHebdo{
       $message.="Rendez-vous dans le menu administration / Plannings de présence de votre application Planning Biblio pour le valider.";
 
       // Envoi du mail
-      $m=new sendmail();
+      $m=new CJMail();
       $m->subject=$sujet;
       $m->message=$message;
       $m->to=$destinataires;
@@ -390,7 +390,7 @@ class planningHebdo{
       }
 
       // Envoi du mail
-      $m=new sendmail();
+      $m=new CJMail();
       $m->subject=$sujet;
       $m->message=$message;
       $m->to=$destinataires;

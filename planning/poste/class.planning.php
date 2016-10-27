@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 19 octobre 2016
+Dernière modification : 27 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -545,7 +545,7 @@ class planning{
 	$message.="Lien vers le planning du ".dateFr($date)." : $url";
 
 	// Envoi du mail
-	$m=new sendmail();
+	$m=new CJMail();
 	$m->subject=$sujet;
 	$m->message=$message;
 	$m->to=$tab[$elem]['mail'];
@@ -559,7 +559,7 @@ class planning{
 	$message.="<br/><br/>Lien vers le planning du ".dateFr($date)." : $url";
 
 	// Envoi du mail
-	$m=new sendmail();
+	$m=new CJMail();
 	$m->subject=$sujet;
 	$m->message=$message;
 	$m->to=$oldData[$elem]['mail'];

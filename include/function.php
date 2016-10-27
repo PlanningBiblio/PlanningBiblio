@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.5
+Planning Biblio, Version 2.4.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 19 octobre 2016
+Dernière modification : 27 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -97,7 +97,7 @@ class datePl{
   }
 }
 
-class sendmail{
+class CJMail{
 
   public $message=null;
   public $to=null;
@@ -108,7 +108,7 @@ class sendmail{
   public $failedAddresses=array();
   public $successAddresses=array();
   
-  public function sendmail(){
+  public function CJMail(){
     $path=strpos($_SERVER["SCRIPT_NAME"],"planning/poste/ajax")?"../../":null;
     $path=preg_match('/planning\/plugins\/.*\/ajax/', $_SERVER["SCRIPT_NAME"])?"../../":$path;
     require_once("{$path}vendor/PHPMailer/class.phpmailer.php");
