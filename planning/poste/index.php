@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.3
+Planning Biblio, Version 2.4.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 3 octobre 2016
+Dernière modification : 27 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -438,7 +438,7 @@ else{
   // Recherche des absences
   // Le tableau $absences sera utilisé par la fonction cellule_poste pour barrer les absents dans le plannings et pour afficher les absents en bas du planning
   $a=new absences();
-  $a->valide=true;
+  $a->valide=false;
   $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date,$date);
   $absences=$a->elements;
   global $absences;

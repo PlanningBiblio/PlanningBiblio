@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.4.1
+Planning Biblio, Version 2.4.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 28 juillet 2016
+Dernière modification : 27 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -546,11 +546,21 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
         // Exemple de cellule
         // <div id='cellule11_0' class='cellule statut_bibas service_permanent' >Christophe C.</div>
 
+        var title = '';
+        
+        var agent=result[i]["nom"]+" "+result[i]["prenom"].substr(0,1)+".";
+        var perso_id=result[i]["perso_id"];
+
         // classes : A définir en fonction du statut, du service et des absences
         var classes="cellDiv";
         // Absences, suppression
+        // absent == 1 : Absence validée ou absence sans gestion des validations
         if(result[i]["absent"]=="1" || result[i]["supprime"]=="1"){
           classes+=" red striped";
+        // absent == 2 : Absence non validée
+        }else if(result[i]['absent'] == '2'){
+          classes+=" red";
+          title = agent+=' : Absence non validée';
         }
 
         // Congés
@@ -585,7 +595,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
         // Création d'une balise span avec les classes cellSpan et agent_ de façon à les repérer et agir dessus 
         debut=debut.replace(":","");
         fin=fin.replace(":","");
-        var span="<span class='cellSpan agent_"+perso_id+"'>"+agent+"</span>";
+        var span="<span class='cellSpan agent_"+perso_id+"' title='"+title+"'>"+agent+"</span>";
         var div="<div id='cellule"+cellule+"_"+i+"' class='"+classes+"' data-perso-id='"+perso_id+"' oncontextmenu='majPersoOrigine("+perso_id+");'>"+span+"</div>"
         // oncontextmenu='majPersoOrigine("+perso_id+");' : necessaire car l'événement JQuery contextmenu sur .cellDiv ne marche pas sur les cellules modifiées
         $("#td"+cellule).append(div);

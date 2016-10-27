@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.1
+Planning Biblio, Version 2.4.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 28 juillet 2016
+Dernière modification : 27 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -32,14 +32,19 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
     $sansRepas = $p->sansRepas($date,$debut,$fin);
 
     foreach($GLOBALS['cellules'] as $elem){
+      $title=null;
+
       if($elem['poste']==$poste and $elem['debut']==$debut and $elem['fin']==$fin){
 	//		Affichage du nom et du prénom
-	$resultat=$elem['nom'];
-	if($elem['prenom'])
-	  $resultat.=" ".substr($elem['prenom'],0,1).".";
+	$nom_affiche=$elem['nom'];
+	if($elem['prenom']){
+	  $nom_affiche.=" ".substr($elem['prenom'],0,1).".";
+        }
 
+        $resultat = $nom_affiche;
+        
 	//		Affichage des sans repas
-    if( $sansRepas === true or in_array($elem['perso_id'], $sansRepas) ){
+        if( $sansRepas === true or in_array($elem['perso_id'], $sansRepas) ){
 	  $resultat.="<font class='sansRepas'>&nbsp;(SR)</font>";
 	}
 
@@ -54,8 +59,14 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
 	//		On barre les absents (absences enregistrées dans la table absences)
 	foreach($GLOBALS['absences'] as $absence){
 	  if($absence["perso_id"] == $elem['perso_id'] and $absence['debut'] < $date." ".$fin and $absence['fin'] > $date." ".$debut){
-	    $class_tmp[]="red";
-	    $class_tmp[]="striped";
+	    if($absence['valide']>0 or $GLOBALS['config']['Absences-validation'] == 0){
+              $class_tmp[]="red";
+              $class_tmp[]="striped";
+            }
+            elseif($GLOBALS['config']['Absences-non-validees']){
+              $class_tmp[]="red";
+              $title = $nom_affiche.' : Absence non-valid&eacute;e';
+            }
 	    break;
 	  }
 	}
@@ -76,7 +87,7 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
 	$classe[$i]=join(" ",$class_tmp);
 
 	// Création d'une balise span avec les classes cellSpan, et agent_ de façon à les repérer et agir dessus à partir de la fonction JS bataille_navale.
-	$span="<span class='cellSpan agent_{$elem['perso_id']}'>$resultat</span>";
+	$span="<span class='cellSpan agent_{$elem['perso_id']}' title='$title' >$resultat</span>";
 
 	$resultats[$i]=array("text"=>$span, "perso_id"=>$elem['perso_id']);
 	$i++;

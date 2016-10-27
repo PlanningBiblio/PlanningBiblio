@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.4.6
+Planning Biblio, Version 2.4.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
@@ -105,7 +105,7 @@ class planning{
   }
 
   // Affiche la liste des agents dans le menudiv
-  public function menudivAfficheAgents($poste,$agents,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion){
+  public function menudivAfficheAgents($poste,$agents,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion,$absences_non_validees){
     $msg_deja_place="&nbsp;<font class='red bold'>(DP)</font>";
     $msg_deuxSP="&nbsp;<font class='red bold'>(2 SP)</font>";
     $msg_SR="&nbsp;<font class='red bold'>(SR)</font>";
@@ -245,11 +245,14 @@ class planning{
             continue;
           }
         }
-
-        $nom=htmlentities($elem['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8",false);
+        
+        $title = in_array($elem['id'],$absences_non_validees) ? 'Absence non valid&eacute;e' : null;
+        $nom = "<span title='$title'>";
+        $nom .= htmlentities($elem['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8",false);
         if($elem['prenom']){
           $nom.=" ".substr(htmlentities($elem['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8",false),0,1).".";
         }
+        $nom .='</span>';
 
         //			----------------------		Sans repas		------------------------------------------//
         // Si sans repas, on ajoute (SR) à l'affichage
@@ -303,7 +306,10 @@ class planning{
         $nom.=$hres_4sem;
         $nom.="</span>\n";
 
-        if($hres_jour>7)			// plus de 7h:jour : rouge
+        // Si absence non validée : affichage en rouge
+        if(in_array($elem['id'], $absences_non_validees)){
+          $nom="<font style='color:red'>$nom</font>\n";
+        }elseif($hres_jour>7)			// plus de 7h:jour : rouge
           $nom="<font style='color:red'>$nom</font>\n";
         elseif(($heuresHebdo-$hres_sem)<=0.5 and ($hres_sem-$heuresHebdo)<=0.5)		// 0,5 du quota hebdo : vert
           $nom="<font style='color:green'>$nom</font>\n";

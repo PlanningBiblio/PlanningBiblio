@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.4.6
+Planning Biblio, Version 2.4.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
@@ -19,7 +19,7 @@ Formulaire soumis au fichier setup/createdb.php
 
 session_start();
 session_destroy();
-$version="2.4.6";
+$version="2.4.7";
 
 include "header.php";
 include_once "../include/function.php";

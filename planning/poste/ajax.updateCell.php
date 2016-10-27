@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.1
+Planning Biblio, Version 2.4.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 28 juillet 2016
+Dernière modification : 27 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -25,6 +25,7 @@ session_start();
 require_once "../../include/config.php";
 require_once "../../include/function.php";
 require_once "../../plugins/plugins.php";
+require_once "../../absences/class.absences.php";
 require_once "class.planning.php";
 
 //	Initialisation des variables
@@ -135,6 +136,13 @@ usort($tab,"cmp_nom_prenom");
 $p = new planning();
 $sansRepas = $p->sansRepas($date,$debut,$fin);
 
+// Recherche des absences
+$a=new absences();
+$a->valide=false;
+$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date.' '.$debut,$date.' '.$fin);
+$absences=$a->elements;
+
+
 for($i=0;$i<count($tab);$i++){
   // Mise en forme des statut et service pour affectation des classes css
   $tab[$i]["statut"]=removeAccents($tab[$i]["statut"]);
@@ -145,6 +153,18 @@ for($i=0;$i<count($tab);$i++){
     $tab[$i]["sr"] = 1;
   } else {
     $tab[$i]["sr"] = 0;
+  }
+  
+  // Marquage des absences de la table absences
+  foreach($absences as $absence){
+    if($absence["perso_id"] == $tab[$i]['perso_id'] and $absence['debut'] < $date." ".$fin and $absence['fin'] > $date." ".$debut){
+      if($absence['valide']>0 or $config['Absences-validation'] == 0){
+        $tab[$i]['absent']=1;
+      }elseif($config['Absences-non-validees']){
+        $tab[$i]['absent']=2;
+      }
+      break;
+    }
   }
 }
 
@@ -163,7 +183,7 @@ Résultat :
     [statut] => Statut
     [service] => Service
     [perso_id] => 86
-    [absent] => 0/1
+    [absent] => 0/1/2 ( 0 = pas d'absence ; 1 = absence validée ; 2 = absence non validée )
     [supprime] => 0/1
     [sr] =>0/1
     )
