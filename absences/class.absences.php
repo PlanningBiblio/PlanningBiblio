@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.2
+Planning Biblio, Version 2.4.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 8 septembre 2016
+Dernière modification : 29 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -282,9 +282,10 @@ class absences{
       $current=date("Y-m-d",strtotime("+1 day",strtotime($current)));
     }
 
-    $this->minutes=$difference/60;
-    $this->heures=$difference/3600;
-    $this->heures2=str_replace(array(".00",".25",".50",".75"),array("h00","h15","h30","h45"),number_format($this->heures, 2, '.', ' '));
+    $this->minutes=$difference/60;                                      // nombre de minutes (ex 2h30 => 150)
+    $this->heures=$difference/3600;                                     // heures et centièmes (ex 2h30 => 2.50)
+    $this->heures2=heure4(number_format($this->heures, 2, '.', ''));    // heures et minutes (ex: 2h30 => 2h30)
+
   }
 
   /**
@@ -425,9 +426,9 @@ class absences{
       $current=date("Y-m-d",strtotime("+1 day",strtotime($current)));
     }
 
-    $this->minutes=$difference/60;
-    $this->heures=$difference/3600;
-    $this->heures2=str_replace(array(".00",".25",".50",".75"),array("h00","h15","h30","h45"),number_format($this->heures, 2, '.', ' '));
+    $this->minutes=$difference/60;                                      // nombre de minutes (ex 2h30 => 150)
+    $this->heures=$difference/3600;                                     // heures et centièmes (ex 2h30 => 2.50)
+    $this->heures2=heure4(number_format($this->heures, 2, '.', ''));    // heures et minutes (ex: 2h30 => 2h30)
   }
 
   

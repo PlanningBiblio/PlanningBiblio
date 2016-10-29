@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.6
+Planning Biblio, Version 2.4.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 27 octobre 2016
+Dernière modification : 29 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -801,20 +801,21 @@ function heure4($heure,$return0=false){
     return "0h00";
   }
   
-  /**
-   * @author Etienne Cavalié
-   * Granularité = 5 minutes
-   * TODO : remplacer les str_replace par des calculs time pour plus de précision
-   */
-
   if(stripos($heure,"h")){
-    $heure=str_replace(array("h00","h05","h10","h15","h20","h25","h30","h35","h40","h45","h50","h55"),array(".00", ".08", ".17",".25",".33",".42",".50",".58",".67",".75",".83",".92"),$heure);
+    $tmp = explode('h', $heure);
+    $hre = $tmp[0];
+    $min = $tmp[1];
+    $centiemes = $min / 60 ;
+    $hre += $centiemes;
+    $heure = number_format($hre, 2, '.', '');
   }
   else{
     if(is_numeric($heure)){
-      $heure=number_format($heure, 2, '.', ' ');
-      $heure=str_replace(array(".00",".08",".15",".16",".17",".25",".32",".33",".42",".48",".49",".50",".57",".58",".66",".67",".74",".75",".82",".83",".92"),
-        array("h00","h05","h10","h10","h10","h15","h20","h20","h25","h30","h30","h30","h35","h35","h40","h40","h45","h45","h50","h50","h55"),$heure);
+      $hre = floor($heure);
+      $centiemes = $heure - $hre;
+      $minutes = $centiemes * 0.6;
+      $hre += $minutes;
+      $heure = number_format($hre, 2, 'h', ' ');
     }
   }
   return $heure;

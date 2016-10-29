@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.4.4
+Planning Biblio, Version 2.4.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 11 octobre 2016
+Dernière modification :29 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 @author Etienne Cavalié
@@ -258,157 +258,26 @@ function heureFr(heure){
   return heure;
 }
 
-/*
 function heure4(heure){
   heure=heure.toString();
   if(heure.indexOf("h")>0){
-    heure=heure.replace("h00",".00");
-    heure=heure.replace("h15",".25");
-    heure=heure.replace("h30",".50");
-    heure=heure.replace("h45",".75");
+    tmp = heure.split('h');
+    centiemes = parseFloat(tmp[1]) / 60;
+    heure = parseFloat(tmp[0]) + parseFloat(centiemes);
+    heure = heure.toFixed(2);
+  }
+  else if(heure.indexOf('.')>0){
+    tmp = heure.split('.');
+    centieme = parseFloat(heure) - parseFloat(tmp[0]);
+    minutes = centieme * 0.6;
+    heure = parseFloat(tmp[0]) + parseFloat(minutes);
+    heure = heure.toFixed(2);
+    heure = heure.toString().replace('.','h');
   }
   else{
-    heure=heure.replace(".00","h00");
-    heure=heure.replace(".25","h15");
-    heure=heure.replace(".50","h30");
-    heure=heure.replace(".75","h45");
-    heure=heure.replace(".00","h00");
-    heure=heure.replace(".5","h30");
-    if(heure.indexOf("h")<0){
-      heure+="h00";
-    }
+    heure += 'h00';
   }
   return heure;
-}
-*/
-
-/**
- * @author Etienne Cavalié
- * Granularité = 5 minutes
- * fonction nnumber_format utilisée par la nouvelle fonction heure4
- */
-
-function number_format(number, decimals, dec_point, thousands_sep) {
-  //  discuss at: http://phpjs.org/functions/number_format/
-  // original by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
-  // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-  // improved by: davook
-  // improved by: Brett Zamir (http://brett-zamir.me)
-  // improved by: Brett Zamir (http://brett-zamir.me)
-  // improved by: Theriault
-  // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-  // bugfixed by: Michael White (http://getsprink.com)
-  // bugfixed by: Benjamin Lupton
-  // bugfixed by: Allan Jensen (http://www.winternet.no)
-  // bugfixed by: Howard Yeend
-  // bugfixed by: Diogo Resende
-  // bugfixed by: Rival
-  // bugfixed by: Brett Zamir (http://brett-zamir.me)
-  //  revised by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
-  //  revised by: Luke Smith (http://lucassmith.name)
-  //    input by: Kheang Hok Chin (http://www.distantia.ca/)
-  //    input by: Jay Klehr
-  //    input by: Amir Habibi (http://www.residence-mixte.com/)
-  //    input by: Amirouche
-  //   example 1: number_format(1234.56);
-  //   returns 1: '1,235'
-  //   example 2: number_format(1234.56, 2, ',', ' ');
-  //   returns 2: '1 234,56'
-  //   example 3: number_format(1234.5678, 2, '.', '');
-  //   returns 3: '1234.57'
-  //   example 4: number_format(67, 2, ',', '.');
-  //   returns 4: '67,00'
-  //   example 5: number_format(1000);
-  //   returns 5: '1,000'
-  //   example 6: number_format(67.311, 2);
-  //   returns 6: '67.31'
-  //   example 7: number_format(1000.55, 1);
-  //   returns 7: '1,000.6'
-  //   example 8: number_format(67000, 5, ',', '.');
-  //   returns 8: '67.000,00000'
-  //   example 9: number_format(0.9, 0);
-  //   returns 9: '1'
-  //  example 10: number_format('1.20', 2);
-  //  returns 10: '1.20'
-  //  example 11: number_format('1.20', 4);
-  //  returns 11: '1.2000'
-  //  example 12: number_format('1.2000', 3);
-  //  returns 12: '1.200'
-  //  example 13: number_format('1 000,50', 2, '.', ' ');
-  //  returns 13: '100 050.00'
-  //  example 14: number_format(1e-8, 8, '.', '');
-  //  returns 14: '0.00000001'
-
-  number = (number + '')
-    .replace(/[^0-9+\-Ee.]/g, '');
-  var n = !isFinite(+number) ? 0 : +number,
-    prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
-    sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
-    dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
-    s = '',
-    toFixedFix = function(n, prec) {
-      var k = Math.pow(10, prec);
-      return '' + (Math.round(n * k) / k)
-        .toFixed(prec);
-    };
-  // Fix for IE parseFloat(0.55).toFixed(0) = 0;
-  s = (prec ? toFixedFix(n, prec) : '' + Math.round(n))
-    .split('.');
-  if (s[0].length > 3) {
-    s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
-  }
-  if ((s[1] || '')
-    .length < prec) {
-    s[1] = s[1] || '';
-    s[1] += new Array(prec - s[1].length + 1)
-      .join('0');
-  }
-  return s.join(dec);
-}
-
-/**
- * @author Etienne Cavalié
- * Granularité = 5 minutes
- * TODO : remplacer les replace par des calculs time pour plus de précision
- */
-function heure4(heure){
-  heure=number_format(heure,2,'.','');
-  heure=heure.toString();
-  /*var reg=new RegExp("(h[0-9][0-9])[0-9]*", "g");*/
-  if(heure.indexOf("h")>0){
-    heure=heure.replace("h00",".00");
-    heure=heure.replace("h05",".08");
-    heure=heure.replace("h10",".17");
-    heure=heure.replace("h15",".25");
-    heure=heure.replace("h20",".33");
-    heure=heure.replace("h25",".42");
-    heure=heure.replace("h30",".50");
-    heure=heure.replace("h35",".58");
-    heure=heure.replace("h40",".67");
-    heure=heure.replace("h45",".75");
-    heure=heure.replace("h50",".83");
-    heure=heure.replace("h55",".92");
-  }
-  else{
-    heure=heure.replace(".00","h00");
-    heure=heure.replace(".08","h05");
-    heure=heure.replace(".17","h10");
-    heure=heure.replace(".25","h15");
-    heure=heure.replace(".33","h20");
-    heure=heure.replace(".42","h25");
-    heure=heure.replace(".50","h30");
-    heure=heure.replace(".58","h35");
-    heure=heure.replace(".67","h40");
-    heure=heure.replace(".75","h45");
-    heure=heure.replace(".83","h50");
-    heure=heure.replace(".92","h55");
-    heure=heure.replace(".5","h30");
-    if(heure.indexOf("h")<0){
-      heure+="h00";
-    }
-  }
-  return heure;
-  /*return heure.replace(reg,"$1");*/
 }
 
 
