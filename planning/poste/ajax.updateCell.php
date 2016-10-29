@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.7
+Planning Biblio, Version 2.4.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 27 octobre 2016
+Dernière modification : 29 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -160,10 +160,10 @@ for($i=0;$i<count($tab);$i++){
     if($absence["perso_id"] == $tab[$i]['perso_id'] and $absence['debut'] < $date." ".$fin and $absence['fin'] > $date." ".$debut){
       if($absence['valide']>0 or $config['Absences-validation'] == 0){
         $tab[$i]['absent']=1;
+        break;  // Garder le break à cet endroit pour que les absences validées prennent le dessus sur les non-validées
       }elseif($config['Absences-non-validees']){
         $tab[$i]['absent']=2;
       }
-      break;
     }
   }
 }

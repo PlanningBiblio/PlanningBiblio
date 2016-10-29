@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.7
+Planning Biblio, Version 2.4.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 27 octobre 2016
+Dernière modification : 29 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -56,20 +56,29 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
 	  $class_tmp[]="striped";
 	}
 
-	//		On barre les absents (absences enregistrées dans la table absences)
+	// On marque les absents (absences enregistrées dans la table absences)
+        $absence_valide = false;
 	foreach($GLOBALS['absences'] as $absence){
 	  if($absence["perso_id"] == $elem['perso_id'] and $absence['debut'] < $date." ".$fin and $absence['fin'] > $date." ".$debut){
+            // Absence validée : rouge barré
 	    if($absence['valide']>0 or $GLOBALS['config']['Absences-validation'] == 0){
               $class_tmp[]="red";
               $class_tmp[]="striped";
+              $absence_valide = true;
+              break;  // Garder le break à cet endroit pour que les absences validées prennent le dessus sur les non-validées
             }
+            // Absence non-validée : rouge
             elseif($GLOBALS['config']['Absences-non-validees']){
               $class_tmp[]="red";
               $title = $nom_affiche.' : Absence non-valid&eacute;e';
             }
-	    break;
 	  }
 	}
+	
+	// Il peut y avoir des absences validées et non validées. Si ce cas ce produit, la cellule sera barrée et on n'affichera pas "Absence non-validée"
+	if($absence_valide){
+          $title=null;
+        }
 	
 	
 	//		On barre les congés

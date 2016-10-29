@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.7
+Planning Biblio, Version 2.4.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 27 octobre 2016
+Dernière modification : 29 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -246,7 +246,7 @@ class planning{
           }
         }
         
-        $title = in_array($elem['id'],$absences_non_validees) ? 'Absence non valid&eacute;e' : null;
+        $title = in_array($elem['id'],$absences_non_validees) ? 'Absence ou congé non valid&eacute;' : null;
         $nom = "<span title='$title'>";
         $nom .= htmlentities($elem['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8",false);
         if($elem['prenom']){

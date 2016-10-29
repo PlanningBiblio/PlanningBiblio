@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.4.7
+Planning Biblio, Version 2.4.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 27 octobre 2016
+Dernière modification : 29 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -555,17 +555,29 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
         var classes="cellDiv";
         // Absences, suppression
         // absent == 1 : Absence validée ou absence sans gestion des validations
+        var absence_valide = false;
         if(result[i]["absent"]=="1" || result[i]["supprime"]=="1"){
           classes+=" red striped";
+          absence_valide = true;
         // absent == 2 : Absence non validée
         }else if(result[i]['absent'] == '2'){
           classes+=" red";
           title = agent+=' : Absence non validée';
         }
 
-        // Congés
-        if(result[i]["conges"]){
+        // congés == 1 : Congé validé
+        if(result[i]["conges"] == '1'){
           classes+=" orange striped";
+          absence_valide = true;
+        // congés == 2 : Congé non validé. Mais on ne le marque pas si une absence validée est déjà marquée
+        }else if(result[i]['conges'] == '2' && absence_valide==false){
+          classes+=" orange";
+          title = agent+=' : Congé non validé';
+        }
+
+        // Si une absence ou un congé est validé, on efface title pour ne pas afficher XXX non validé(e)
+        if(absence_valide){
+          title = null;
         }
 
         // Service et Statut

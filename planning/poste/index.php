@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.7
+Planning Biblio, Version 2.4.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 27 octobre 2016
+Dernière modification : 29 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -446,6 +446,14 @@ else{
   // Tri des absences par nom
   usort($absences,"cmp_nom_prenom_debut_fin");
   
+  // Affichage des absences en bas du planning : seulement les absences validées
+  $absences_planning = array();
+  foreach($absences as $a){
+    if($a['valide']>0){
+      $absences_planning[] = $a;
+    }
+  }
+
   // Informations sur les congés
   if(in_array("conges",$plugins)){
     include "plugins/conges/planning_cellules.php";
@@ -655,11 +663,11 @@ EOD;
 
     switch($config['Absences-planning']){
       case "simple" :
-	if(!empty($absences)){
+	if(!empty($absences_planning)){
 	  echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
 	  echo "<table class='tableauStandard'>\n";
 	  $class="tr1";
-	  foreach($absences as $elem){
+	  foreach($absences_planning as $elem){
 	    $heures=null;
 	    $debut=null;
 	    $fin=null;
@@ -687,7 +695,7 @@ EOD;
 	break;
 
       case "détaillé" :
-	if(!empty($absences)){
+	if(!empty($absences_planning)){
 	  echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
 	  echo "<table id='tablePlanningAbsences' class='CJDataTable' data-sort='[[0],[1]]'><thead>\n";
 	  echo "<tr><th>Nom</th><th>Pr&eacute;nom</th>\n";
@@ -695,7 +703,7 @@ EOD;
 	  echo "<th class='dataTableDateFR'>Fin</th>\n";
 	  echo "<th>Motif</th></tr></thead>\n";
 	  echo "<tbody>\n";
-	  foreach($absences as $elem){
+	  foreach($absences_planning as $elem){
 	    echo "<tr><td>{$elem['nom']}</td><td>{$elem['prenom']}</td>";
 	    echo "<td>{$elem['debutAff']}</td><td>{$elem['finAff']}</td>";
 	    echo "<td>{$elem['motif']}</td></tr>\n";
@@ -711,8 +719,8 @@ EOD;
 	$absents=array(2);	// 2 = Utilisateur "Tout le monde", on le supprime
 
 	// On exclus ceux qui sont absents toute la journée
-	if(!empty($absences)){
-	  foreach($absences as $elem){
+	if(!empty($absences_planning)){
+	  foreach($absences_planning as $elem){
 	    if($elem['debut']<=$date." 00:00:00" and $elem['fin']>=$date." 23:59:59"){
 	      $absents[]=$elem['perso_id'];
 	    }
@@ -812,7 +820,7 @@ EOD;
 
 	echo "<table class='tableauStandard'>\n";
 	echo "<tr><td><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des présents</h3></td>\n";
-	if(!empty($absences)){
+	if(!empty($absences_planning)){
 	  echo "<td><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3></td>";
 	}
 	echo "</tr>\n";
@@ -832,7 +840,7 @@ EOD;
 	echo "<td>";
 	echo "<table cellspacing='0'>";
 	$class="tr1";
-	foreach($absences as $elem){
+	foreach($absences_planning as $elem){
 	  $heures=null;
 	  $debut=null;
 	  $fin=null;
