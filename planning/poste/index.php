@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 29 octobre 2016
+Dernière modification : 2 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -593,7 +593,7 @@ else{
 	echo "<td>{$lignes_sep[$ligne['poste']]}</td><td colspan='$colspan'>&nbsp;</td></tr>\n";
       }
     }
-  echo "<tr class='tr_espace'><td>&nbsp;</td></tr>\n";
+  echo "<tr class='tr_espace tableau$j {$tab['classe']}'><td>&nbsp;</td></tr>\n";
   $j++;
   }
   echo "</table>\n";
