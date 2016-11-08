@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.6
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 19 octobre 2016
+Dernière modification : 2 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -321,7 +321,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_verrou` (
 $sql[]="CREATE TABLE `{$dbprefix}postes` (
   `id` int(8) NOT NULL AUTO_INCREMENT,
   `nom` text NOT NULL DEFAULT '',
-  `groupe` varchar(30) NOT NULL DEFAULT '',
+  `groupe` TEXT NOT NULL DEFAULT '',
   `groupe_id` int(11) NOT NULL DEFAULT '0',
   `obligatoire` varchar(15) NOT NULL,
   `etage` TEXT NOT NULL,
@@ -350,6 +350,13 @@ $sql[]="CREATE TABLE `{$dbprefix}select_categories` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
 $sql[]="CREATE TABLE `{$dbprefix}select_etages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `valeur` text NOT NULL DEFAULT '',
+  `rang` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+$sql[]="CREATE TABLE `{$dbprefix}select_groupes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `valeur` text NOT NULL DEFAULT '',
   `rang` int(11) NOT NULL DEFAULT '0',

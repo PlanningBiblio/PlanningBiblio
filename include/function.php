@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.8
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 29 octobre 2016
+Dernière modification : 4 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -820,6 +820,19 @@ function heure4($heure,$return0=false){
   }
   return $heure;
 }
+
+/**
+ * html_entity_decode_latin1
+ * Utiliée pour l'export des statistiques (statistiques/export.php)
+ * Conversion des caractères HTML en iso-8859-1
+ */
+function html_entity_decode_latin1($n){
+  if(is_array($n)){
+    return array_map("html_entity_decode_latin1",$n);
+  }
+  return html_entity_decode($n,ENT_QUOTES|ENT_IGNORE,"ISO-8859-1");
+}
+
 
 function is_serialized($string){
   if(is_array(@unserialize($string))){

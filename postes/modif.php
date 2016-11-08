@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.2
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : postes/modif.php
 Création : mai 2011
-Dernière modification : 28 mai 2016
+Dernière modification : 2 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -35,6 +35,7 @@ if($id){
   $db->select2("postes","*",array("id"=>$id));
   $nom=$db->result[0]['nom'];
   $etage=$db->result[0]['etage'];
+  $groupe=$db->result[0]['groupe'];
   $categories=is_serialized($db->result[0]['categories'])?unserialize($db->result[0]['categories']):array();
   $site=$db->result[0]['site'];
   $activites=unserialize($db->result[0]['activites']);
@@ -53,6 +54,7 @@ else{
   $action="ajout";
   $nom=null;
   $etage=null;
+  $groupe=null;
   $categories=array();
   $obligatoire="checked='checked'";
   $renfort=null;
@@ -70,6 +72,11 @@ $checked=null;
 $db=new db();
 $db->select2("select_etages","*","1","order by rang");
 $etages=$db->result;
+
+// Recherche des groupes
+$db=new db();
+$db->select2("select_groupes","*","1","order by rang");
+$groupes=$db->result;
 
 // Recherche des catégories
 $db=new db();
@@ -101,7 +108,7 @@ if($config['Multisites-nombre']>1){
 
 echo "<tr><td>";
 echo "Etage :";
-echo "</td><td>";
+echo "</td><td style='white-space: nowrap;'>";
 echo "<select name='etage' style='width:255px' class='ui-widget-content ui-corner-all'>";
 echo "<option value=''>&nbsp;</option>\n";
 foreach($etages as $elem){
@@ -109,7 +116,21 @@ foreach($etages as $elem){
   echo "<option value='{$elem['valeur']}' $selected >{$elem['valeur']}</option>\n";
 }
 echo "</select>\n";
-echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_etages&amp;terme=&eacute;tage\",400,400);'>\n";
+echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_etages&amp;terme=&eacute;tage\",400,500);'>\n";
+echo "<span class='pl-icon pl-icon-add' title='Ajouter'></span></a>\n";
+echo "</td></tr>";
+
+echo "<tr><td>";
+echo "Groupe:";
+echo "</td><td style='white-space: nowrap;'>";
+echo "<select name='groupe' style='width:255px' class='ui-widget-content ui-corner-all'>";
+echo "<option value=''>&nbsp;</option>\n";
+foreach($groupes as $elem){
+  $selected=$groupe==$elem['valeur']?"selected='selected'":null;
+  echo "<option value='{$elem['valeur']}' $selected >{$elem['valeur']}</option>\n";
+}
+echo "</select>\n";
+echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_groupes&amp;terme=groupe\",400,500);'>\n";
 echo "<span class='pl-icon pl-icon-add' title='Ajouter'></span></a>\n";
 echo "</td></tr>";
 
@@ -169,7 +190,7 @@ echo "<tr><td colspan='2' style='text-align:center;'>\n";
 echo "<br/><br/>";
 echo "<input type='hidden' value='$action' name='action'/>";
 echo "<input type='hidden' value='$id' name='id'/>\n";
-echo "<input type='button' value='Annuler' onclick='history.go(-1);' class='ui-button'/>\n";
+echo "<a href='index.php?page=postes/index.php'class='ui-button'>Annuler</a>\n";
 echo "&nbsp;&nbsp;&nbsp;\n";
 echo "<input type='submit' value='Valider' class='ui-button'/>\n";
 echo "</td></tr>\n";

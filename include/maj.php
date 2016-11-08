@@ -524,6 +524,22 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="2.5";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Select groupe (pour les postes)
+  $sql[]="CREATE TABLE `{$dbprefix}select_groupes` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `valeur` text NOT NULL DEFAULT '',
+    `rang` int(11) NOT NULL DEFAULT '0',
+    PRIMARY KEY (`id`)
+  ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+  
+  $sql[] = "ALTER TABLE `{$dbprefix}postes` CHANGE `groupe` `groupe` TEXT NOT NULL DEFAULT '';";
+
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach($sql as $elem){
   $db=new db();

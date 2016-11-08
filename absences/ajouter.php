@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.6
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 27 octobre 2016
+Dernière modification : 2 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -362,7 +362,8 @@ else{
   foreach($motifs as $elem){
     $class=$elem['type']==2?"padding20":"bold";
     $disabled=$elem['type']==1?"disabled='disabled'":null;
-    echo "<option value='".$elem['valeur']."' class='$class' $disabled >".$elem['valeur']."</option>\n";
+    $padding = $class == 'padding20' ? "&nbsp;&nbsp;&nbsp;" : null ;
+    echo "<option value='".$elem['valeur']."' class='$class' $disabled >$padding".$elem['valeur']."</option>\n";
   }
   echo "</select>\n";
   if($admin){

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.2.2
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 27 février 2016
+Dernière modification : 2 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -63,18 +63,9 @@ if($theme!="default"){
 ?>
 </head>
 
-<?php
-echo "<body>\n";
-if(!isset($_GET['positionOff'])){
-  echo <<<EOD
-  <!--		Récupération de la position du pointeur		-->
-  <form name='position' action='#'>
-  <input type='hidden' name='x' />
-  <input type='hidden' name='y' />
-  </form>
-EOD;
-}
+<body>
 
+<?php
 // Affichage des messages d'erreur ou de confirmation venant de la page précedente
 $msg=filter_input(INPUT_GET,"msg", FILTER_SANITIZE_STRING);
 $msgType=filter_input(INPUT_GET,"msgType", FILTER_SANITIZE_STRING);

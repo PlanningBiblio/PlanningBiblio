@@ -1,6 +1,6 @@
 *** Version 2.4.8   (29 octobre 2016)   ***
 - Améliorations
-Planning : Affichage en rouge des agents pour lesquels il existe desabsences non-validées
+Planning : Affichage en rouge des agents pour lesquels il existe des absences non-validées
 Amélioration de la conversion des heures (suite à la granularité à 5 minutes)
 
 *** Version 2.4.6   (27 octobre 2016)   ***

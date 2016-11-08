@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.4
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 12 octobre 2016
+Dernière modification : 2 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -268,7 +268,8 @@ foreach($motifs as $elem){
   $selected=html_entity_decode($elem['valeur'],ENT_QUOTES|ENT_IGNORE,"utf-8")==html_entity_decode($motif,ENT_QUOTES|ENT_IGNORE,"utf-8")?"selected='selected'":null;
   $class=$elem['type']==2?"padding20":"bold";
   $disabled=$elem['type']==1?"disabled='disabled'":null;
-  echo "<option value='".$elem['valeur']."' $selected class='$class' $disabled >".$elem['valeur']."</option>\n";
+  $padding = $class == 'padding20' ? "&nbsp;&nbsp;&nbsp;" : null ;
+  echo "<option value='".$elem['valeur']."' $selected class='$class' $disabled >$padding".$elem['valeur']."</option>\n";
 }
 echo "</select>\n";
 if($admin){
