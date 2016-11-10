@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.3
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
-Dernière modification : 3 octobre 2016
+Dernière modification : 10 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -190,8 +190,8 @@ if($db->result){
     // Ajout des classes en fonction des activités
     $activitesPoste=is_serialized($elem['activites'])?unserialize($elem['activites']):array();
     foreach($activitesPoste as $a){
-      if(isset($activites[$a]['classePoste'])){
-	$classesPoste[]=$activites[$a]['classePoste'];
+      if(isset($activites[$a]['nom'])){
+        $classesPoste[] = 'tr_activite_'.strtolower(removeAccents(str_replace(array(' ','/'), '_', $activites[$a]['nom'])));
       }
     }
     
@@ -285,7 +285,7 @@ for($j=0;$j<=$fin;$j++){
     $db=new db();
     $db->selectInnerJoin(array("pl_poste","perso_id"),array("personnel","id"),
       array("perso_id","debut","fin","poste","absent","supprime"),
-      array("nom","prenom","statut","service"),
+      array("nom","prenom","statut","service","postes"),
       array("date"=>$date, "site"=>$site),
       array(),
       "ORDER BY `{$dbprefix}pl_poste`.`absent` desc,`{$dbprefix}personnel`.`nom`, `{$dbprefix}personnel`.`prenom`"); 
@@ -301,6 +301,19 @@ for($j=0;$j<=$fin;$j++){
     $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date,$date);
     $absences=$a->elements;
     global $absences;
+
+    // Ajoute les qualifications de chaque agent (activités) dans le tableaux $cellules pour personnaliser l'affichage des cellules en fonction des qualifications
+    foreach($cellules as $k => $v){
+      if(is_serialized($v['postes'])){
+        $p = unserialize($v['postes']);
+        $cellules[$k]['activites'] = array();
+        foreach($activites as $elem){
+          if(in_array($elem['id'], $p)){
+            $cellules[$k]['activites'][] = $elem['nom'];
+          }
+        }
+      }
+    }
 
     // Tri des absences par nom
     usort($absences,"cmp_nom_prenom_debut_fin");

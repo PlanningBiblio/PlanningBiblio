@@ -20,7 +20,6 @@ require_once "class.activites.php";
 
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 $action=filter_input(INPUT_GET,"action",FILTER_SANITIZE_STRING);
-$classePoste=trim(filter_input(INPUT_GET,"classePoste",FILTER_SANITIZE_STRING));
 $nom=trim(filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING));
 
 if(!$nom or !$action){
@@ -33,7 +32,7 @@ if(!$nom or !$action){
 switch($action){
   case "ajout" :	
     $db=new db();
-    $db->insert2("activites",array("nom"=>$nom, "classePoste"=>$classePoste));
+    $db->insert2("activites",array("nom"=>$nom));
     if($db->error){
       $msg=urlencode("L'activité n'a pas pu être ajoutée");
       $msgType="error";
@@ -45,7 +44,7 @@ switch($action){
   
   case "modif" :
     $db=new db();
-    $db->update2("activites",array("nom"=>$nom, "classePoste"=>$classePoste),array("id"=>$id));
+    $db->update2("activites",array("nom"=>$nom),array("id"=>$id));
     if($db->error){
       $msg=urlencode("L'activité n'a pas pu être modifiée");
       $msgType="error";

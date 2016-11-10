@@ -25,13 +25,11 @@ if($id){
   $db=new db();
   $db->select2("activites","*",array("id"=>$id));
   $action="modif";
-  $classePoste=$db->result[0]['classePoste'];
   $nom=$db->result[0]['nom'];
 }
 else{
   echo "<h3>Ajout d'une activité</h3>\n";
   $action="ajout";
-  $classePoste=null;
   $nom=null;
 }
 
@@ -42,12 +40,6 @@ echo "<tr><td>";
 echo "Nom :";
 echo "</td><td>";
 echo "<input type='text' value='$nom' name='nom' style='width:250px' class='ui-widget-content ui-corner-all'/>";
-echo "</td></tr>";
-
-echo "<tr><td>";
-echo "Classe pour les postes associ&eacute;s &agrave; cette activit&eacute;<sup>*</sup> :";
-echo "</td><td>";
-echo "<input type='text' value='$classePoste' name='classePoste' style='width:250px' class='ui-widget-content ui-corner-all'/>";
 echo "</td></tr>";
 
 echo "<tr><td colspan='2' style='text-align:center; padding-top:40px;'>\n";
@@ -62,8 +54,3 @@ echo "</table>\n";
 echo "</form>\n";
 
 ?>
-<div class='important' style='margin-top:40px;'>
-<p style='margin-left:30px;'>
-<sup>* Classe CSS appliqu&eacute;e sur les lignes des postes associ&eacute;s &agrave; cette activit&eacute; dans les plannings. Permet de personnaliser l&apos;affichage de ces lignes.</sup><br/>
-</p>
-</div>

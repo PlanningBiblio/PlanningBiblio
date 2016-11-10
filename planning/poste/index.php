@@ -238,8 +238,8 @@ if($db->result){
     // Ajout des classes en fonction des activités
     $activitesPoste=is_serialized($elem['activites'])?unserialize($elem['activites']):array();
     foreach($activitesPoste as $a){
-      if(isset($activites[$a]['classePoste'])){
-	$classesPoste[]=$activites[$a]['classePoste'];
+      if(isset($activites[$a]['nom'])){
+        $classesPoste[] = 'tr_activite_'.strtolower(removeAccents(str_replace(array(' ','/'), '_', $activites[$a]['nom'])));
       }
     }
     

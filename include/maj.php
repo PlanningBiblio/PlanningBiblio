@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.9
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 2 novembre 2016
+Dernière modification : 10 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -535,6 +535,9 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
   
   $sql[] = "ALTER TABLE `{$dbprefix}postes` CHANGE `groupe` `groupe` TEXT NOT NULL DEFAULT '';";
+  
+  // Activités
+  $sql[] = "ALTER TABLE `{$dbprefix}activites` DROP `classeAgent`, DROP `classePoste`;";
 
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";

@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 2 novembre 2016
+Dernière modification : 10 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -63,8 +63,6 @@ $sql[]="CREATE TABLE `{$dbprefix}acces` (
 $sql[]="CREATE TABLE `{$dbprefix}activites` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nom` text NOT NULL,
-  `classeAgent` VARCHAR(100) NULL DEFAULT NULL,
-  `classePoste` VARCHAR(100) NULL DEFAULT NULL,
   `supprime` DATETIME NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";

@@ -18,8 +18,6 @@ Page appelée par la page index.php
 
 require_once "class.activites.php";
 
-//		Initialisation des variables
-
 //		Recherche des activités
 $a=new activites();
 $a->fetch();
@@ -79,7 +77,6 @@ if(in_array(13,$droits)){
   echo "<th>ID</th>\n";
 }
 echo "<th>Nom de l'activité</th>\n";
-echo "<th>Classe Poste</th>\n";
 echo "</tr></thead>\n";
 
 echo "<tbody>\n";
@@ -96,7 +93,6 @@ foreach($activites as $elem){
   if(in_array(13,$droits))
     echo "<td>{$elem['id']}</td>\n";
   echo "<td>{$elem['nom']}</td>\n";
-  echo "<td>{$elem['classePoste']}</td>\n";
   echo "</tr>\n";
 }
 echo "</tbody></table>\n";
