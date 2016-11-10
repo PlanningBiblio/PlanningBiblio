@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.2
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : activites/index.php
 Création : mai 2011
-Dernière modification : 28 mai 2016
+Dernière modification : 10 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -79,7 +79,6 @@ if(in_array(13,$droits)){
   echo "<th>ID</th>\n";
 }
 echo "<th>Nom de l'activité</th>\n";
-echo "<th>Classe Agent</th>\n";
 echo "<th>Classe Poste</th>\n";
 echo "</tr></thead>\n";
 
@@ -97,7 +96,6 @@ foreach($activites as $elem){
   if(in_array(13,$droits))
     echo "<td>{$elem['id']}</td>\n";
   echo "<td>{$elem['nom']}</td>\n";
-  echo "<td>{$elem['classeAgent']}</td>\n";
   echo "<td>{$elem['classePoste']}</td>\n";
   echo "</tr>\n";
 }

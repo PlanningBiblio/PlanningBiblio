@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.8
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 29 octobre 2016
+Dernière modification : 10 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -93,6 +93,11 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
 	if($elem['service']){
 	  $class_tmp[]="service_".strtolower(removeAccents(str_replace(" ","_",$elem['service'])));
 	}
+        if(isset($elem['activites']) and is_array($elem['activites'])){
+          foreach($elem['activites'] as $a){
+            $class_tmp[]='activite_'.strtolower(removeAccents(str_replace(array('/',' ',),'_',$a)));
+          }
+        }
 	$classe[$i]=join(" ",$class_tmp);
 
 	// Création d'une balise span avec les classes cellSpan, et agent_ de façon à les repérer et agir dessus à partir de la fonction JS bataille_navale.

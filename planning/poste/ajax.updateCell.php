@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.8
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 29 octobre 2016
+Dernière modification : 10 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -26,6 +26,7 @@ require_once "../../include/config.php";
 require_once "../../include/function.php";
 require_once "../../plugins/plugins.php";
 require_once "../../absences/class.absences.php";
+require_once "../../activites/class.activites.php";
 require_once "class.planning.php";
 
 //	Initialisation des variables
@@ -119,7 +120,7 @@ $db->selectInnerJoin(
   array("pl_poste","perso_id"),
   array("personnel","id"),
   array("absent","supprime"),
-  array("nom","prenom","statut","service",array("name"=>"id","as"=>"perso_id")),
+  array("nom","prenom","statut","service","postes",array("name"=>"id","as"=>"perso_id")),
   array("date"=>$date, "debut"=>$debut, "fin"=> $fin, "poste"=>$poste, "site"=>$site),
   array(),
   "ORDER BY nom,prenom");
@@ -131,6 +132,26 @@ if(!$db->result){
 
 $tab=$db->result;
 usort($tab,"cmp_nom_prenom");
+
+// Ajoute les qualifications de chaque agent (activités) dans le tableaux $cellules pour personnaliser l'affichage des cellules en fonction des qualifications
+$a=new activites();
+$a->deleted=true;
+$a->fetch();
+$activites=$a->elements;
+
+foreach($tab as $k => $v){
+  if(is_serialized($v['postes'])){
+    $p = unserialize($v['postes']);
+    $tab[$k]['activites'] = array();
+    foreach($activites as $elem){
+      if(in_array($elem['id'], $p)){
+        $tab[$k]['activites'][] = 'activite_'.strtolower(removeAccents(str_replace(array('/',' ',),'_',$elem['nom'])));
+      }
+    }
+    $tab[$k]['activites'] = implode($tab[$k]['activites'], ' ');
+  }
+}
+
 
 // Recherche des sans repas en dehors de la boucle pour optimiser les performances (juillet 2016)
 $p = new planning();
@@ -182,6 +203,7 @@ Résultat :
     [prenom] => Prénom
     [statut] => Statut
     [service] => Service
+    [activites] => activite_activite1 activite_activite2 (activités de l'agents précédées de activite_ et séparées par des espaces, pour appliquer les classes .activite_xxx)
     [perso_id] => 86
     [absent] => 0/1/2 ( 0 = pas d'absence ; 1 = absence validée ; 2 = absence non validée )
     [supprime] => 0/1

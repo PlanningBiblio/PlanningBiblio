@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : activites/valid.php
 Création : mai 2011
-Dernière modification : 21 mars 2016
+Dernière modification : 10 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -20,7 +20,6 @@ require_once "class.activites.php";
 
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 $action=filter_input(INPUT_GET,"action",FILTER_SANITIZE_STRING);
-$classeAgent=trim(filter_input(INPUT_GET,"classAgent",FILTER_SANITIZE_STRING));
 $classePoste=trim(filter_input(INPUT_GET,"classePoste",FILTER_SANITIZE_STRING));
 $nom=trim(filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING));
 
@@ -34,7 +33,7 @@ if(!$nom or !$action){
 switch($action){
   case "ajout" :	
     $db=new db();
-    $db->insert2("activites",array("nom"=>$nom, "classeAgent"=>$classeAgent, "classePoste"=>$classePoste));
+    $db->insert2("activites",array("nom"=>$nom, "classePoste"=>$classePoste));
     if($db->error){
       $msg=urlencode("L'activité n'a pas pu être ajoutée");
       $msgType="error";
@@ -46,7 +45,7 @@ switch($action){
   
   case "modif" :
     $db=new db();
-    $db->update2("activites",array("nom"=>$nom, "classeAgent"=>$classeAgent, "classePoste"=>$classePoste),array("id"=>$id));
+    $db->update2("activites",array("nom"=>$nom, "classePoste"=>$classePoste),array("id"=>$id));
     if($db->error){
       $msg=urlencode("L'activité n'a pas pu être modifiée");
       $msgType="error";
