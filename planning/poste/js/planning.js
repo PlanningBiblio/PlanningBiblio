@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 10 novembre 2016
+Dernière modification : 17 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -99,10 +99,10 @@ $(function() {
 	
 	// Affichage des lignes vides
 	$(".pl-line").show();
-	information(result[0],result[1]);
+	CJInfo(result[0],result[1]);
       },
       error: function(result){
-	information("Erreur lors du dev&eacute;rrouillage du planning","error");
+	CJInfo("Erreur lors du dev&eacute;rrouillage du planning","error");
       }
     });
   });
@@ -137,10 +137,10 @@ $(function() {
 	// Masque les lignes vides
 	hideEmptyLines();
 
-	information(result[0],result[1]);
+	CJInfo(result[0],result[1]);
       },
       error: function(result){
-	information("Erreur lors de la validation du planning","error");
+	CJInfo("Erreur lors de la validation du planning","error");
       }
     });
   });
@@ -427,12 +427,20 @@ function afficheTableauxDiv(){
   $(".tr_horaires .td_postes:hidden").each(function(){
     var tabId=$(this).attr("data-id");
     var tabTitle=$(this).attr("data-title");
-    tab.push("<a href='JavaScript:afficheTableau("+tabId+");'>"+tabTitle+"</a>");
-    hiddenTables.push(tabId);
+    var exist = false;
+    for(i in hiddenTables){
+      if(hiddenTables[i] == tabId){
+        exist = true;
+      }
+    }
+    if(!exist){
+      tab.push("<a href='JavaScript:afficheTableau("+tabId+");'>"+tabTitle+"</a>");
+      hiddenTables.push(tabId);
+    }
   });
   
   if(tab.length>0){
-    $("#tabsemaine1").after("<div id='afficheTableaux'>Tableaux masqués : "+tab.join(" ; ")+"</div>");
+    $("#tabsemaine1").after("<div id='afficheTableaux' class='noprint'>Tableaux masqués : "+tab.join(" ; ")+"</div>");
   }
   
   // Enregistre la liste des tableaux cachés dans la base de données
@@ -800,7 +808,7 @@ function refresh_poste(){
       }
     },
     error: function(result){
-      information(result.responseText,"error");
+      CJInfo(result.responseText,"error");
       setTimeout("refresh_poste()",30000);
     }
   });

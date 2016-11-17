@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
-Dernière modification : 10 novembre 2016
+Dernière modification : 17 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -220,6 +220,9 @@ echo "</td></tr>\n";
 //----------------------	FIN Verrouillage du planning		-----------------------//
 echo "</table></div>\n";
 
+// div id='tabsemaine1' : permet d'afficher les tableaux masqués. La fonction JS afficheTableauxDiv utilise $('#tabsemaine1').after() pour afficher les liens de récupération des tableaux
+echo "<div id='tabsemaine1'>&nbsp;</div>\n";
+
 //		---------------		FIN Affichage du titre et du calendrier		--------------------------//
 
 // Lignes de separation
@@ -332,15 +335,66 @@ for($j=0;$j<=$fin;$j++){
     $t->get();
     $tabs=$t->elements;
 
-    // affichage du tableau :
-    // affichage de la lignes des horaires
+    
+    // Repère les heures de début et de fin de chaque tableau pour ajouter des colonnes si ces heures sont différentes
+    $hre_debut="23:59";
+    $hre_fin=null;
+    foreach($tabs as $elem){
+      $hre_debut=$elem["horaires"][0]["debut"]<$hre_debut?$elem["horaires"][0]["debut"]:$hre_debut;
+      $nb=count($elem["horaires"])-1;
+      $hre_fin=$elem["horaires"][$nb]["fin"]>$hre_fin?$elem["horaires"][$nb]["fin"]:$hre_fin;
+    }
 
+    // affichage du tableau :
+    echo "<div id='tableau' data-tableId='$tab' >\n";
+    // affichage de la lignes des horaires
     echo "<table class='tabsemaine1' cellspacing='0' cellpadding='0' class='text'>\n";
-    $k=0;
+
+    $l=0;
     foreach($tabs as $tab){
+      // Comble les horaires laissés vides : créé la colonne manquante, les cellules de cette colonne seront grisées
+      $cellules_grises=array();
+      $tmp=array();
+      
+      // Première colonne : si le début de ce tableau est supérieur au début d'un autre tableau
+      $k=0;
+      if($tab['horaires'][0]['debut']>$hre_debut){
+        $tmp[]=array("debut"=>$hre_debut, "fin"=>$tab['horaires'][0]['debut']);
+        $cellules_grises[]=$k++;
+      }
+      
+      // Colonnes manquantes entre le début et la fin
+      foreach($tab['horaires'] as $key => $value){
+        if($key==0 or $value["debut"]==$tab['horaires'][$key-1]["fin"]){
+          $tmp[]=$value;
+        }elseif($value["debut"]>$tab['horaires'][$key-1]["fin"]){
+          $tmp[]=array("debut"=>$tab['horaires'][$key-1]["fin"], "fin"=>$value["debut"]);
+          $tmp[]=$value;
+          $cellules_grises[]=$k++;
+        }
+        $k++;
+      }
+
+      // Dernière colonne : si la fin de ce tableau est inférieure à la fin d'un autre tableau
+      $nb=count($tab['horaires'])-1;
+      if($tab['horaires'][$nb]['fin']<$hre_fin){
+        $tmp[]=array("debut"=>$tab['horaires'][$nb]['fin'], "fin"=>$hre_fin);
+        $cellules_grises[]=$k;
+      }
+
+      
+      $tab['horaires']=$tmp;
+
+      // Masquer les tableaux
+      $masqueTableaux=null;
+      if($config['Planning-TableauxMasques']){
+        $masqueTableaux="<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer' data-id='$l' ></span>";
+      }
+
       //		Lignes horaires
-      echo "<tr class='tr_horaires {$tab['classe']}'>\n";
-      echo "<td class='td_postes'>{$tab['titre']}</td>\n";
+      echo "<tr class='tr_horaires tableau$l {$tab['classe']}'>\n";
+      echo "<td class='td_postes' data-id='$l' data-title='{$tab['titre']}'>{$tab['titre']} $masqueTableaux </td>\n";
+    
       $colspan=0;
       foreach($tab['horaires'] as $horaires){
 	echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin'])."</td>";
@@ -356,7 +410,7 @@ for($j=0;$j<=$fin;$j++){
 	  // Classe de la ligne en fonction des activités et des catégories
 	  $classTR=$postes[$ligne['poste']]['classes'];
 
-	  echo "<tr class='pl-line tableau$k $classTR {$tab['classe']}'>\n";
+	  echo "<tr class='pl-line tableau$l $classTR {$tab['classe']}'>\n";
 	  echo "<td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
 	  if($config['Affichage-etages'] and $postes[$ligne['poste']]['etage']){
 	    echo " ({$postes[$ligne['poste']]['etage']})";
@@ -377,14 +431,15 @@ for($j=0;$j<=$fin;$j++){
 	  echo "</tr>\n";
 	}
 	if($ligne['type']=="ligne"){
-	  echo "<tr class='tr_separation tableau$k {$tab['classe']}'>\n";
+	  echo "<tr class='tr_separation tableau$l {$tab['classe']}'>\n";
 	  echo "<td>{$lignes_sep[$ligne['poste']]}</td><td colspan='$colspan'>&nbsp;</td></tr>\n";
 	}
       }
-      echo "<tr class='tr_espace'><td>&nbsp;</td></tr>\n";
-      $k++;
+      echo "<tr class='tr_espace tableau$l {$tab['classe']}'><td>&nbsp;</td></tr>\n";
+      $l++;
     }
     echo "</table>\n";
+    echo "</div>\n";
   }
 
   // Notes : Affichage

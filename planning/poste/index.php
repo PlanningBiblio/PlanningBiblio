@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 10 novembre 2016
+Dernière modification : 15 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -271,8 +271,8 @@ if($autorisation){
   $display2=$verrou?"display:none":null;
 
   echo "<div class='pl-validation' style='$display1'><u>Validation</u><br/>$perso2 $date_validation2 $heure_validation2</div>\n";
-  echo "<span id='icon-lock' class='pl-icon pl-icon-lock pointer' data-date='$date' data-site='$site' title='Déverrouiller le planning' style='$display1'></span></a>\n";
-  echo "<span id='icon-unlock' class='pl-icon pl-icon-unlock pointer' data-date='$date' data-site='$site' title='Verrouiller le planning' style='$display2'></span></a>\n";
+  echo "<span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' data-date='$date' data-site='$site' title='Déverrouiller le planning' style='$display1'></span></a>\n";
+  echo "<span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' data-date='$date' data-site='$site' title='Verrouiller le planning' style='$display2'></span></a>\n";
 }
 
 if($autorisation){
@@ -500,8 +500,8 @@ else{
   }
 
   // affichage du tableau :
-  // affichage de la lignes des horaires
   echo "<div id='tableau' data-tableId='$tab' >\n";
+  // affichage de la lignes des horaires
   echo "<table id='tabsemaine1' cellspacing='0' cellpadding='0' class='text tabsemaine1'>\n";
 
   $j=0;
@@ -542,7 +542,7 @@ else{
     // Masquer les tableaux
     $masqueTableaux=null;
     if($config['Planning-TableauxMasques']){
-      $masqueTableaux="<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer' data-id='$j' ></span>";
+      $masqueTableaux="<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer noprint' data-id='$j' ></span>";
     }
 
     //		Lignes horaires
@@ -610,6 +610,7 @@ else{
   $j++;
   }
   echo "</table>\n";
+  echo "</div>\n";
   
   // Notes : Affichage
   $p=new planning();
@@ -633,7 +634,7 @@ EOD;
   if($autorisation or in_array((800+$site),$droits)){
     echo <<<EOD
     <div id='pl-notes-div2' class='noprint'>
-    <input type='button' class='ui-button' id='pl-notes-button' value='Ajouter un commentaire' />
+    <input type='button' class='ui-button noprint' id='pl-notes-button' value='Ajouter un commentaire' />
     </div>
 
     <div id="pl-notes-form" title="Commentaire" class='noprint' style='display:none;'>

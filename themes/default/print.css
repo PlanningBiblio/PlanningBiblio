@@ -1,12 +1,12 @@
-/*
-Planning Biblio, Version 1.9.6
+/**
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : css/print.css
 Création : mai 2011
-Dernière modification : 20 avril 2015
+Dernière modification : 15 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -17,6 +17,10 @@ Incluse dans les fichiers include/header.php et setup/header.php
 
 body{
   font-size:10pt;
+}
+
+body{
+  background:none;
 }
 
 #planning{
@@ -42,7 +46,6 @@ body{
 #date_planning {
 	font-weight:bold;
 	font-size:18pt;
-	color:#7D3C25;
 	margin-bottom:5mm;
 	}
 

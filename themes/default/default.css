@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 8 novembre 2016
+Dernière modification : 17 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -523,6 +523,11 @@ class cellule = cellule par défaut
 #tabsemaine1 td, .tabsemaine1 td{
   border-width : 1px;
   border-style : outset;
+}
+
+/* tabsemaine1 est un div sur la page semaine.php : permet l'affichage des tableaux masqués */
+div#tabsemaine1{
+  margin: 20px 0 0 0;
 }
 
 .tr_horaires, .tr_separation, .tr_horaires a{
