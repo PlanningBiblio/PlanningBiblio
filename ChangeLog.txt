@@ -1,3 +1,14 @@
+*** Version 2.5   (17 novembre 2016)   ***
+- Améliorations
+Statistiques : affichage des heures par groupe de postes dans la feuille de temps
+Personnalisation de l'affichage des cellules en fonction des qualifications des agents (activités) : classes .activite_nom_de_l_activite
+Personnalisation de l'affichage des postes en fonction des activités requises : Utilisation des classes .tr_activite_nom_de_l_activite
+Planning: améliore l'affichage des semaines et autorise le masquage des tableaux sur la page semaine
+
+- Corrections
+Planning : correction d'une erreur sur le marquage des absents dans le menu permettant de placer les agents
+
+
 *** Version 2.4.8   (29 octobre 2016)   ***
 - Améliorations
 Planning : Affichage en rouge des agents pour lesquels il existe des absences non-validées
