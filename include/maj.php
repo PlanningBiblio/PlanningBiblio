@@ -543,6 +543,32 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+
+$v="2.5.1";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Transformation serialized  -> json 
+  $dbh = new dbh();
+  $dbh->prepare("UPDATE `{$dbprefix}personnel` SET `sites`=:sites WHERE `id`=:id;");
+
+  $db = new db();
+  $db->select2('personnel',array('id','sites'));
+
+  if($db->result){
+    foreach($db->result as $elem){
+      $id = $elem['id'];
+      $sites = $elem['sites'];
+      if($sites){
+        $sites = unserialize($sites);
+        $sites = json_encode($sites);
+        $dbh->execute(array(':id'=>$id, ':sites'=>$sites));
+      }
+    }
+  }
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+
 //	Execution des requetes et affichage
 foreach($sql as $elem){
   $db=new db();

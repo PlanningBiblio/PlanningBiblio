@@ -24,6 +24,7 @@ $db=new db();
 $db->select2("personnel","sites",array("id"=>$id));
 if($db->result){
   $sites=unserialize($db->result[0]['sites']);
+  $sites = json_decode(html_entity_decode($db->result[0]['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
   if(is_array($sites)){
     foreach($sites as $elem){
       $options[]=array($elem,$config["Multisites-site".$elem]);

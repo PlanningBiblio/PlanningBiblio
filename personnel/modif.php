@@ -133,8 +133,8 @@ if($id){		//	récupération des infos de l'agent en cas de modif
   // $mailsResponsables : html_entity_decode necéssaire sinon ajoute des espaces après les accents ($mailsResponsables=join("; ",$mailsResponsables);)
   $informations=stripslashes($db->result[0]['informations']);
   $recup=stripslashes($db->result[0]['recup']);
-  $sites=$db->result[0]['sites'];
-  $sites=is_serialized($sites)?unserialize($sites):array();
+  $sites=html_entity_decode($db->result[0]['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8');
+  $sites=$sites?json_decode($sites):array();
   $action="modif";
   $titre=$nom." ".$prenom;
   

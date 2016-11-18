@@ -86,7 +86,7 @@ class personnel{
     $result=array();
     foreach($all as $elem){
       $result[$elem['id']]=$elem;
-      $result[$elem['id']]['sites']=unserialize($elem['sites']);
+      $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
     }
 
     //	If name, keep only matching results
@@ -95,7 +95,7 @@ class personnel{
       foreach($all as $elem){
 	if(pl_stristr($elem['nom'],$name) or pl_stristr($elem['prenom'],$name)){
 	  $result[$elem['id']]=$elem;
-	  $result[$elem['id']]['sites']=unserialize($elem['sites']);
+	  $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
 	}
       }
     }
@@ -120,7 +120,7 @@ class personnel{
       $db=new db();
       $db->select("personnel",null,"id='$id'");
       $this->elements=$db->result;
-      $this->elements[0]['sites']=unserialize($db->result[0]['sites']);
+      $this->elements[0]['sites']=json_decode(html_entity_decode($db->result[0]['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
       $this->elements[0]['mailsResponsables']=explode(";",html_entity_decode($db->result[0]['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
     }elseif(is_array($id)){
       $ids=join(",",$id);
@@ -129,7 +129,7 @@ class personnel{
       if($db->result){
 	foreach($db->result as $elem){
 	  $this->elements[$elem['id']]=$elem;
-	  $this->elements[$elem['id']]['sites']=unserialize($elem['sites']);
+	  $this->elements[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
 	  $this->elements[$elem['id']]['mailsResponsables']=explode(";",html_entity_decode($elem['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
 	}
       }

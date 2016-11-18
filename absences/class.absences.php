@@ -615,7 +615,8 @@ class absences{
       // Créé un tableau $agents qui sera placé dans $this->elements['agents']
       // Ce tableau contient un tableau par agent avec les informations le concernant (nom, prenom, mail, etc.)
       // En cas d'absence enregistrée pour plusieurs agents, il sera complété avec les informations des autres agents
-      $agents=array(array("perso_id"=>$result['perso_id'], "nom"=>$result['nom'], "prenom"=>$result['prenom'], "sites"=>unserialize($result['sites']), "mail"=>$result['mail'], "mailsResponsables"=>$result['mailsResponsables'], "absence_id"=>$id));
+      $sites = json_decode(html_entity_decode($result['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+      $agents=array(array("perso_id"=>$result['perso_id'], "nom"=>$result['nom'], "prenom"=>$result['prenom'], "sites"=>$sites, "mail"=>$result['mail'], "mailsResponsables"=>$result['mailsResponsables'], "absence_id"=>$id));
       $perso_ids=array($result['perso_id']);
 
       // Absence concernant plusieurs agents
@@ -636,7 +637,8 @@ class absences{
 	if($db->result){
 	  foreach($db->result as $elem){
 	    $elem['mailsResponsables']=explode(";",html_entity_decode($elem['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
-	    $agent=array("perso_id"=>$elem['perso_id'], "nom"=>$elem['nom'], "prenom"=>$elem['prenom'], "sites"=>unserialize($elem['sites']), "mail"=>$elem['mail'], "mailsResponsables"=>$elem['mailsResponsables'], "absence_id"=>$elem['id']);
+	    $sites = json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+	    $agent=array("perso_id"=>$elem['perso_id'], "nom"=>$elem['nom'], "prenom"=>$elem['prenom'], "sites"=>$sites, "mail"=>$elem['mail'], "mailsResponsables"=>$elem['mailsResponsables'], "absence_id"=>$elem['id']);
 	    if(!in_array($agent,$agents)){
 	      $agents[]=$agent;
 	      $perso_ids[]=$elem['perso_id'];
