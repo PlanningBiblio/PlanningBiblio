@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.2
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : aide/index.php
 Création : mai 2011
-Dernière modification : 17 septembre 2016
+Dernière modification : 18 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -456,7 +456,9 @@ Vous pouvez rechercher un poste en tapant son nom dans le cadre "Rechercher".<br
 <a name="poste_ajout"></a>
 <h4>7.1 ) Ajout d'un poste</h4>
 Pour ajouter un poste, cliquez sur le bouton « Ajouter » puis complétez le formulaire.<br/><br/>
-Remplissez le nom du poste, choisissez son site (si configuration multi-sites), son étage.<br/>
+Remplissez le nom du poste, choisissez son site (si configuration multi-sites), son étage, son groupe
+(les groupes permettent d’afficher des statistiques par groupe de postes dans la feuille de temps
+(voir chapitre 0.1)).<br/>
 Cochez la case "Obligatoire" s'il est obligatoire ou "Renfort" s'il s'agit d'un poste de renfort.<br/>
 Cochez la case "Non" face à "Bloquant" si vous souhaitez pouvoir placer un agent sur ce poste et sur un autre en même temps.<br/> 
 Cochez la case "Non" face à "Statistiques" si vous ne souhaitez pas voir apparaître ce poste dans les statistiques.<br/><br/>
@@ -479,8 +481,6 @@ Si un poste est utilisé dans un tableau, il n'est pas possible de le supprimer 
 <h3>8.) Les Activités</h3>
 Vous pouvez modifier la liste des activités dans le menu Administration/Les activités.<br/>
 Vous pouvez modifier les noms, ajouter des activités, les supprimer si elles ne sont pas attribuées.<br/>
-Vous pouvez définir une classe CSS qui sera appliquée aux postes concernés par ces activités dans le planning. 
-Ceci permet de personnaliser l'affichage des postes associés à ces activités (Nécessite la modification du thème).
 
 <a name='statistiques'></a>
 <h3>9.) Statistiques</h3>
@@ -492,6 +492,9 @@ Les dernières colonnes affichent le total d'heures par agent sur la période, l
 sur la période et par semaine. 
 Si vous avez plusieurs sites, le total et la moyenne par site sont également affichés dans les dernières colonnes.<br/>
 Les deux dernières lignes affichent le total d'heures et le nombre d'agents par jour.
+Dans ce tableau, vous pouvez également afficher le nombre d’heures que les agents ont effectuées
+par groupe de postes. Pour ceci, affectez les postes à des groupes (voir chapitre 7) puis cochez la
+case « Afficher les heures par groupe de postes » en haut du tableau feuille de temps.<br/>
 
 <a name='stat_agent'></a>
 <h4>9.2) Statistiques par agent</h4>
