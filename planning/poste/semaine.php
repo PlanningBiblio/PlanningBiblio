@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
-Dernière modification : 17 novembre 2016
+Dernière modification : 18 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -405,10 +405,12 @@ for($j=0;$j<=$fin;$j++){
       //	Lignes postes et grandes lignes
       foreach($tab['lignes'] as $ligne){
 	if($ligne['type']=="poste" and $ligne['poste']){
-	  $classTD=$postes[$ligne['poste']]['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
+          $classTD = $postes[$ligne['poste']]['obligatoire'] == "Obligatoire" ? "td_obligatoire" : "td_renfort";
+          // Classe de la ligne en fonction du type de poste (obligatoire ou de renfort)
+          $classTR = $postes[$ligne['poste']]['obligatoire'] == "Obligatoire" ? "tr_obligatoire" : "tr_renfort";
 
-	  // Classe de la ligne en fonction des activités et des catégories
-	  $classTR=$postes[$ligne['poste']]['classes'];
+          // Classe de la ligne en fonction des activités et des catégories
+          $classTR .= ' ' . $postes[$ligne['poste']]['classes'];
 
 	  echo "<tr class='pl-line tableau$l $classTR {$tab['classe']}'>\n";
 	  echo "<td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";

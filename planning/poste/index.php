@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 15 novembre 2016
+Dernière modification : 18 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -566,10 +566,12 @@ else{
       // Lignes postes
       if($ligne['type']=="poste" and $ligne['poste']){
 	// Classe de la première cellule en fonction du type de poste (obligatoire ou de renfort)
-	$classTD=$postes[$ligne['poste']]['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
+        $classTD = $postes[$ligne['poste']]['obligatoire'] == "Obligatoire" ? "td_obligatoire" : "td_renfort";
+        // Classe de la ligne en fonction du type de poste (obligatoire ou de renfort)
+        $classTR = $postes[$ligne['poste']]['obligatoire'] == "Obligatoire" ? "tr_obligatoire" : "tr_renfort";
 
 	// Classe de la ligne en fonction des activités et des catégories
-	$classTR=$postes[$ligne['poste']]['classes'];
+        $classTR .= ' ' . $postes[$ligne['poste']]['classes'];
 
 	// Affichage de la ligne
 	echo "<tr class='pl-line tableau$j $classTR {$tab['classe']}' $displayTR >\n";
