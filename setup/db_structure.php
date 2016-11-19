@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.5.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 10 novembre 2016
+Dernière modification : 19 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -327,7 +327,7 @@ $sql[]="CREATE TABLE `{$dbprefix}postes` (
   `statistiques` ENUM('0','1') DEFAULT '1',
   `bloquant` enum('0','1') DEFAULT '1',
   `site` INT(1) DEFAULT '1',
-  `categories` TEXT NOT NULL DEFAULT '',
+  `categories` TEXT NULL DEFAULT NULL,
   `supprime` DATETIME NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";

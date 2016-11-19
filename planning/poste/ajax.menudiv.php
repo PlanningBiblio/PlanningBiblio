@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.9
+Planning Biblio, Version 2.5.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 2 novembre 2016
+Dernière modification : 19 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
@@ -83,10 +83,10 @@ else{
 $db=new db;
 $db->select2("postes",null,array("id"=>$poste));
 $posteNom=$db->result[0]['nom'];
-$activites=unserialize($db->result[0]['activites']);
+$activites = json_decode(html_entity_decode($db->result[0]['activites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
 $stat=$db->result[0]['statistiques'];
 $bloquant=$db->result[0]['bloquant'];
-$categories=is_serialized($db->result[0]['categories'])?unserialize($db->result[0]['categories']):array();
+$categories = $db->result[0]['categories'] ? json_decode(html_entity_decode($db->result[0]['categories'],ENT_QUOTES|ENT_IGNORE,'UTF-8')) : array();
 
 // Nom du site
 $siteNom=null;
@@ -275,8 +275,6 @@ foreach($db->result as $elem){
   }
 }
 
-$exclus=join($tab_exclus,",");
-
 // Contrôle du personnel déjà placé dans la ligne
 $deja=deja_place($date,$poste);
 
@@ -294,45 +292,66 @@ $siteSQL=$db->escapeString($site);
 $db->select("pl_poste",null,"`poste`='$posteSQL' AND `debut`='$debutSQL' AND `fin`='$finSQL' AND `date`='$dateSQL' AND `site`='$siteSQL' AND `perso_id`>0");
 
 $nbAgents=$db->nb;
+if($db->result){
+  // On exclus les agents qui sont déjà dans cette cellule (important s'il s'agit d'un poste non-bloquant)
+  foreach($db->result as $elem){
+    $tab_exclus[] = $elem['perso_id'];
+  }
+}
+$exclus=join($tab_exclus,",");
+
 
 //--------------		Liste du personnel disponible			---------------//
 
-		// construction de la requete de sélection du personnel formé pour les activités demandées
+
+// Recherche des agents disponibles
+$agents_dispo=array();
+
 $db=new db();
 $dateSQL=$db->escapeString($date);
 
-$req_poste=null;
 $req_statut=null;
-
-if($poste!=0){		//	repas
-  if(is_array($activites)){
-    foreach($activites as $elem){
-      $tab[]="`postes` LIKE '%\"$elem\"%'";
-    }
-    $req_poste="(".join($tab," AND ").") AND ";
-  }
-  if(!empty($statuts)){
-    $req_statut="`statut` IN ('".join("','",$statuts)."') AND ";
-  }
+if(!empty($statuts)){
+  $req_statut="`statut` IN ('".join("','",$statuts)."') AND ";
 }
-// Requete final sélection tous les agents formés aux activités demandées et disponible (non exclus)
-// Multisites : Si les agents ne sont pas autorisés à travailler sur le site sélectionné, on les retire
-$req_site=null;
-if($config['Multisites-nombre']>1){
-  $siteSQL=$db->escapeString($site);
-  $req_site=" AND `sites` LIKE '%\"$siteSQL\"%' ";
-}
-
 
 $req="SELECT * FROM `{$dbprefix}personnel` "
-  ."WHERE $req_poste $req_statut `actif` LIKE 'Actif' AND `arrivee` <= '$dateSQL' AND (`depart` > '$dateSQL' OR `depart` = '0000-00-00') "
-  ."AND `id` NOT IN ($exclus) $req_site ORDER BY `nom`,`prenom`;";
+  ."WHERE `actif` LIKE 'Actif' AND `arrivee` <= '$dateSQL' AND (`depart` > '$dateSQL' OR `depart` = '0000-00-00') "
+  ."AND `id` NOT IN ($exclus) ORDER BY `nom`,`prenom`;";
 
 $db->query($req);
-$agents_dispo=$db->result;
+$agents_tmp=$db->result;
 
-	// requete "Agents indisponibles"
-if(is_array($agents_dispo))
+if($agents_tmp){
+  foreach($agents_tmp as $elem){
+    // Elimine les agents non qualifiés
+    if(is_array($activites)){
+      $postes = json_decode(html_entity_decode($elem['postes'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+      foreach($activites as $a){
+        if(!in_array($a, $postes)){
+          continue 2;
+        }
+      }
+    }
+    
+    // Elimine les agents qui ne travaille pas sur ce site (en multi-sites)
+    if($config['Multisites-nombre']>1){
+      $sites = json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+      if(!is_array($sites) or !in_array($site, $sites)){
+        continue;
+      }
+    }
+    
+    // Complète le tableau agents dispo avec les agents qualifiés et prévus sur ce site
+    $agents_dispo[] = $elem;
+  }
+}
+
+// Tableau agents tous = agents dispo. Sera complété ensuite
+$agents_tous=$agents_dispo;
+
+
+// Recherche des agents indisponibles
 foreach($agents_dispo as $elem){
   $agents_qualif[]=$elem['id'];
 }
@@ -345,19 +364,30 @@ $dateSQL=$db->escapeString($date);
 
 $req="SELECT * FROM `{$dbprefix}personnel` "
   ."WHERE `actif` LIKE 'Actif' AND `arrivee` <= '$dateSQL' AND (`depart` > $dateSQL OR `depart` = '0000-00-00') AND `id` NOT IN ($agents_qualif) "
-  ."AND `id` NOT IN ($tab_deja_place) AND `id` NOT IN ($absents)  $req_site ORDER BY `nom`,`prenom`;";
+  ."AND `id` NOT IN ($tab_deja_place) AND `id` NOT IN ($absents)  ORDER BY `nom`,`prenom`;";
+
 
 $db->query($req);
-$autres_agents=$db->result;
+$autres_agents_tmp = $db->result;
 
-$agents_tous=$agents_dispo;
-if(is_array($autres_agents)){
-  foreach($autres_agents as $elem){
+$autres_agents=array();
+if($autres_agents_tmp){
+  foreach($autres_agents_tmp as $elem){
+    // Elimine les agents qui ne travaille pas sur ce site (en multi-sites)
+    if($config['Multisites-nombre']>1){
+      $sites = json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+      if(!is_array($sites) or !in_array($site, $sites)){
+        continue;
+      }
+    }
+    
+    // Complète la liste des indisponibles et la liste de tous les agents
+    $autres_agents[] = $elem;
     $agents_tous[]=$elem;
   }
 }
 
-			// Creation des différentes listes (par service + liste des absents + liste des non qualifiés)
+// Creation des différentes listes (par service + liste des absents + liste des non qualifiés)
 // Affichage par service
 $newtab=array();
 if($agents_dispo){

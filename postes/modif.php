@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.5.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : postes/modif.php
 Création : mai 2011
-Dernière modification : 2 novembre 2016
+Dernière modification : 19 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -36,9 +36,9 @@ if($id){
   $nom=$db->result[0]['nom'];
   $etage=$db->result[0]['etage'];
   $groupe=$db->result[0]['groupe'];
-  $categories=is_serialized($db->result[0]['categories'])?unserialize($db->result[0]['categories']):array();
+  $categories = $db->result[0]['categories'] ? json_decode(html_entity_decode($db->result[0]['categories'],ENT_QUOTES|ENT_IGNORE,'UTF-8')) : array();
   $site=$db->result[0]['site'];
-  $activites=unserialize($db->result[0]['activites']);
+  $activites=json_decode(html_entity_decode($db->result[0]['activites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
   $obligatoire=$db->result[0]['obligatoire']=="Obligatoire"?"checked='checked'":"";
   $renfort=$db->result[0]['obligatoire']=="Renfort"?"checked='checked'":"";
   $stat1=$db->result[0]['statistiques']?"checked='checked'":"";

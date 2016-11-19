@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.5.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 10 novembre 2016
+Dernière modification : 19 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -546,44 +546,15 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
 
 $v="2.5.1";
 if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
-  // Transformation serialized  -> json : personnel.sites
-  $dbh = new dbh();
-  $dbh->prepare("UPDATE `{$dbprefix}personnel` SET `sites`=:sites WHERE `id`=:id;");
 
-  $db = new db();
-  $db->select2('personnel',array('id','sites'));
+  // Transformation serialized -> JSON
+  serializeToJson('personnel','droits');
+  serializeToJson('personnel','postes');
+  serializeToJson('personnel','sites');
+  serializeToJson('postes','activites');
+  serializeToJson('postes','categories');
 
-  if($db->result){
-    foreach($db->result as $elem){
-      $id = $elem['id'];
-      $value = $elem['sites'];
-      if($value){
-        $value = unserialize($value);
-        $value = json_encode($value);
-        $dbh->execute(array(':id'=>$id, ':sites'=>$value));
-      }
-    }
-  }
-  
-  // Transformation serialized  -> json : personnel.droits
-  $dbh = new dbh();
-  $dbh->prepare("UPDATE `{$dbprefix}personnel` SET `droits`=:droits WHERE `id`=:id;");
-
-  $db = new db();
-  $db->select2('personnel',array('id','droits'));
-
-  if($db->result){
-    foreach($db->result as $elem){
-      $id = $elem['id'];
-      $value = $elem['droits'];
-      if($value){
-        $value = unserialize($value);
-        $value = json_encode($value);
-        $dbh->execute(array(':id'=>$id, ':droits'=>$value));
-      }
-    }
-  }
-
+  $sql[] = "ALTER TABLE `{$dbprefix}postes` CHANGE `categories` `categories` TEXT NULL DEFAULT NULL;";
 
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
@@ -602,6 +573,34 @@ foreach($sql as $elem){
 
 echo "<br/><br/><a href='index.php'>Continuer</a>\n";
 include "include/footer.php";
+
+/**
+ * serializeToJson
+ * Convertit les données seriali en json dans la base de données
+ * @param string $table : nom de la table
+ * @param string $field : nom du champ à modifier
+ * @param string $id : nom du champ ID (clé)
+ */
+function serializeToJson($table,$field,$id='id'){
+  // Transformation serialized  -> json
+  $dbh = new dbh();
+  $dbh->prepare("UPDATE `{$GLOBALS['config']['dbprefix']}$table` SET `$field`=:value WHERE `$id`=:key;");
+
+  $db = new db();
+  $db->select2($table,array($id,$field));
+
+  if($db->result){
+    foreach($db->result as $elem){
+      $value = $elem[$field];
+      if($value){
+        $value = unserialize($value);
+        $value = json_encode($value);
+        $dbh->execute(array(":key"=>$elem[$id], ':value'=>$value));
+      }
+    }
+  }
+}
+
 
 exit;
 ?>

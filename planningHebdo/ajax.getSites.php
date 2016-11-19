@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0.1
+Planning Biblio, Version 2.5.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planningHebdo/ajax.getSites.php
 Création : 5 juin 2015
-Dernière modification : 4 septembre 2015
+Dernière modification : 19 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :

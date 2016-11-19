@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.5.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : postes/index.php
 Création : mai 2011
-Dernière modification : 2 novembre 2016
+Dernière modification : 19 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -84,7 +84,7 @@ foreach($postes as $id => $value){
   // Affichage des 3 premières activités dans le tableau, toutes les activités dans l'infobulle
   $activites=array();
   $activitesAffichees=array();
-  $activitesPoste=unserialize($value['activites']);
+  $activitesPoste=json_decode(html_entity_decode($value['activites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
   if(is_array($activitesPoste)){
     foreach($activitesPoste as $act){
       if(array_key_exists($act,$activitesTab)){

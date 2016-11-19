@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.5.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : setup/db_data.php
 Création : mai 2011
-Dernière modification : 29 octobre 2016
+Dernière modification : 19 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -334,9 +334,9 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('60','0','Aide','aide/index.php',NULL);";
 
 //	Personnel
-$sql[]="INSERT INTO `{$dbprefix}personnel` (`id`,`nom`,`postes`,`actif`,`droits`,`login`,`password`,`commentaires`) VALUES (1, 'Administrateur', 'a:11:{i:0;s:2:\"20\";i:1;s:2:\"22\";i:2;s:2:\"13\";i:3;s:1:\"1\";i:4;s:1:\"5\";i:5;s:2:\"21\";i:6;s:2:\"12\";i:7;s:2:\"17\";i:8;s:1:\"4\";i:9;i:99;i:10;i:100;}', 'Inactif', '[1,2,3,4,5,6,7,8,12,13,17,20,21,22,23,24,25,99,100,201,202,301,302,501,502,701,801,802]','admin', 
+$sql[]="INSERT INTO `{$dbprefix}personnel` (`id`,`nom`,`postes`,`actif`,`droits`,`login`,`password`,`commentaires`) VALUES (1, 'Administrateur', '', 'Inactif', '[1,2,3,4,5,6,7,8,12,13,17,20,21,22,23,24,25,99,100,201,202,301,302,501,502,701,801,802]','admin', 
 '5f4dcc3b5aa765d61d8327deb882cf99', 'Compte cr&eacute;&eacute; lors de l&apos;installation du planning');";
-$sql[]="INSERT INTO `{$dbprefix}personnel` (`id`,`nom`,`postes`,`actif`,`droits`,`commentaires`,`temps`) VALUES (2, 'Tout le monde', 'a:1:{i:0;s:0:\"\";}', 'Actif', '[99,100]','Compte cr&eacute;&eacute; lors de l&apos;installation du planning', 'a:6:{i:0;a:4:{i:0;s:8:\"09:00:00\";i:1;s:8:\"12:00:00\";i:2;s:8:\"13:00:00\";i:3;s:8:\"17:00:00\";}i:1;a:4:{i:0;s:8:\"09:00:00\";i:1;s:8:\"12:00:00\";i:2;s:8:\"13:00:00\";i:3;s:8:\"17:00:00\";}i:2;a:4:{i:0;s:8:\"09:00:00\";i:1;s:8:\"12:00:00\";i:2;s:8:\"13:00:00\";i:3;s:8:\"17:00:00\";}i:3;a:4:{i:0;s:8:\"09:00:00\";i:1;s:8:\"12:00:00\";i:2;s:8:\"13:00:00\";i:3;s:8:\"17:00:00\";}i:4;a:4:{i:0;s:8:\"09:00:00\";i:1;s:8:\"12:00:00\";i:2;s:8:\"13:00:00\";i:3;s:8:\"17:00:00\";}i:5;a:4:{i:0;s:0:\"\";i:1;s:0:\"\";i:2;s:0:\"\";i:3;s:0:\"\";}}');";
+$sql[]="INSERT INTO `{$dbprefix}personnel` (`id`,`nom`,`postes`,`actif`,`droits`,`commentaires`,`temps`) VALUES (2, 'Tout le monde', '', 'Actif', '[99,100]','Compte cr&eacute;&eacute; lors de l&apos;installation du planning', 'a:6:{i:0;a:4:{i:0;s:8:\"09:00:00\";i:1;s:8:\"12:00:00\";i:2;s:8:\"13:00:00\";i:3;s:8:\"17:00:00\";}i:1;a:4:{i:0;s:8:\"09:00:00\";i:1;s:8:\"12:00:00\";i:2;s:8:\"13:00:00\";i:3;s:8:\"17:00:00\";}i:2;a:4:{i:0;s:8:\"09:00:00\";i:1;s:8:\"12:00:00\";i:2;s:8:\"13:00:00\";i:3;s:8:\"17:00:00\";}i:3;a:4:{i:0;s:8:\"09:00:00\";i:1;s:8:\"12:00:00\";i:2;s:8:\"13:00:00\";i:3;s:8:\"17:00:00\";}i:4;a:4:{i:0;s:8:\"09:00:00\";i:1;s:8:\"12:00:00\";i:2;s:8:\"13:00:00\";i:3;s:8:\"17:00:00\";}i:5;a:4:{i:0;s:0:\"\";i:1;s:0:\"\";i:2;s:0:\"\";i:3;s:0:\"\";}}');";
 
 //	Insertion des horaires
 $sql[]="INSERT INTO `{$dbprefix}pl_poste_horaires` (`debut`, `fin`, `tableau`, `numero`) VALUES ('09:00:00', '10:00:00', '1', 1);";
@@ -460,38 +460,38 @@ $sql[]="INSERT INTO `{$dbprefix}pl_poste_cellules` (`numero`, `tableau`, `ligne`
 $sql[]="INSERT INTO `{$dbprefix}pl_poste_tab` (`tableau`,`nom`) VALUES(1, 'Tableau 1');";
 
 //	Insertion des postes
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('4', 'Inscription 1', '', '0', 'Obligatoire', 'RDC', 'a:2:{i:0;s:1:\"5\";i:1;s:1:\"9\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('5', 'Retour', '', '0', 'Obligatoire', 'RDC', 'a:2:{i:0;s:1:\"6\";i:1;s:1:\"9\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('6', 'Pr&ecirc;t / retour 1', '', '0', 'Obligatoire', 'RDC', 'a:3:{i:0;s:1:\"7\";i:1;s:1:\"6\";i:2;s:1:\"9\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('7', 'Pr&ecirc;t / retour 2', '', '0', 'Renfort', 'RDC', 'a:3:{i:0;s:1:\"7\";i:1;s:1:\"6\";i:2;s:1:\"9\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('8', 'Pr&ecirc;t / retour 3', '', '0', 'Renfort', 'RDC', 'a:4:{i:0;s:1:\"5\";i:1;s:1:\"7\";i:2;s:1:\"6\";i:3;s:1:\"9\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('9', 'Pr&ecirc;t / retour 4', '', '0', 'Renfort', 'RDC', 'a:3:{i:0;s:1:\"7\";i:1;s:1:\"6\";i:2;s:1:\"9\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('10', 'Inscription 2', '', '0', 'Renfort', 'RDC', 'a:1:{i:0;s:1:\"5\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('11', 'Communication RDC', '', '0', 'Renfort', 'RDC', 'a:3:{i:0;s:1:\"3\";i:1;s:1:\"7\";i:2;s:1:\"9\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('12', 'Renseignement RDC', '', '0', 'Obligatoire', 'RDC', 'a:2:{i:0;s:1:\"9\";i:1;s:2:\"10\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('13', 'Renseignement sp&eacute;cialis&eacute; 1', '', '0', 'Obligatoire', 'RDJ', 'a:3:{i:0;s:1:\"9\";i:1;s:2:\"10\";i:2;s:2:\"12\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('14', 'Renseignement sp&eacute;cialis&eacute; 2', '', '0', 'Renfort', 'RDJ', 'a:3:{i:0;s:1:\"9\";i:1;s:2:\"10\";i:2;s:2:\"12\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('15', 'Renseignement sp&eacute;cialis&eacute; 3', '', '0', 'Renfort', 'RDJ', 'a:3:{i:0;s:1:\"9\";i:1;s:2:\"10\";i:2;s:2:\"12\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('16', 'Communication (banque 1)', '', '0', 'Obligatoire', 'RDJ', 'a:4:{i:0;s:1:\"3\";i:1;s:1:\"7\";i:2;s:1:\"6\";i:3;s:1:\"9\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('17', 'Communication (banque 2)', '', '0', 'Renfort', 'RDJ', 'a:3:{i:0;s:1:\"3\";i:1;s:1:\"9\";i:2;s:2:\"10\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('19', 'Communication (coordination)', '', '0', 'Obligatoire', 'RDJ', 'a:1:{i:0;s:1:\"3\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('20', 'Communication (magasin 1)', '', '0', 'Obligatoire', 'RDJ', 'a:1:{i:0;s:1:\"3\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('21', 'Communication (magasin 2)', '', '0', 'Obligatoire', 'RDJ', 'a:1:{i:0;s:2:\"11\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('22', 'Communication (magasin 3)', '', '0', 'Renfort', 'RDJ', 'a:1:{i:0;s:1:\"3\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('23', 'Consultation de la r&eacute;serve', '', '0', 'Obligatoire', 'RDJ', 'a:2:{i:0;s:1:\"4\";i:1;s:1:\"9\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('24', 'Audiovisuel et autoformation', '', '0', 'Obligatoire', 'Mezzanine', 'a:4:{i:0;s:1:\"1\";i:1;s:1:\"2\";i:2;s:1:\"7\";i:3;s:1:\"9\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('25', 'Rangement 2', '', '0', 'Obligatoire', 'RDC', 'a:1:{i:0;s:1:\"8\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('26', 'Rangement 3', '', '0', 'Obligatoire', 'RDC', 'a:1:{i:0;s:1:\"8\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('27', 'Rangement 4', '', '0', 'Renfort', 'RDC', 'a:1:{i:0;s:1:\"8\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('28', 'Rangement 1', '', '0', 'Obligatoire', 'Mezzanine', 'a:1:{i:0;s:1:\"8\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('29', 'Rangement 5', '', '0', 'Obligatoire', 'RDJ', 'a:1:{i:0;s:1:\"8\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('30', 'Rangement 6', '', '0', 'Obligatoire', 'RDJ', 'a:1:{i:0;s:1:\"8\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('31', 'Rangement 7', '', '0', 'Renfort', 'RDJ', 'a:1:{i:0;s:1:\"8\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('32', 'Rangement 8', '', '0', 'Renfort', 'RDJ', 'a:1:{i:0;s:1:\"8\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('33', 'Rangement 9', '', '0', 'Renfort', 'RDJ', 'a:1:{i:0;s:1:\"8\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('34', 'Rangement 10', '', '0', 'Obligatoire', 'Magasins', 'a:1:{i:0;s:1:\"8\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('35', 'Rangement 11', '', '0', 'Obligatoire', 'Magasins', 'a:1:{i:0;s:1:\"8\";}','1','1');";
-$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('36', 'Renseignement kiosque', '', '0', 'Renfort', 'Mezzanine', 'a:2:{i:0;s:1:\"9\";i:1;s:2:\"10\";}','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('4', 'Inscription 1', '', '0', 'Obligatoire', 'RDC', '[5,9]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('5', 'Retour', '', '0', 'Obligatoire', 'RDC', '[6,9]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('6', 'Pr&ecirc;t / retour 1', '', '0', 'Obligatoire', 'RDC', '[7,6,9]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('7', 'Pr&ecirc;t / retour 2', '', '0', 'Renfort', 'RDC', '[7,6,9]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('8', 'Pr&ecirc;t / retour 3', '', '0', 'Renfort', 'RDC', '[5,7,6,9]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('9', 'Pr&ecirc;t / retour 4', '', '0', 'Renfort', 'RDC', '[7,6,9]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('10', 'Inscription 2', '', '0', 'Renfort', 'RDC', '[5]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('11', 'Communication RDC', '', '0', 'Renfort', 'RDC', '[3,7,9]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('12', 'Renseignement RDC', '', '0', 'Obligatoire', 'RDC', '[9,10]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('13', 'Renseignement sp&eacute;cialis&eacute; 1', '', '0', 'Obligatoire', 'RDJ', '[9,10,12]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('14', 'Renseignement sp&eacute;cialis&eacute; 2', '', '0', 'Renfort', 'RDJ', '[9,10,12]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('15', 'Renseignement sp&eacute;cialis&eacute; 3', '', '0', 'Renfort', 'RDJ', '[9,10,12]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('16', 'Communication (banque 1)', '', '0', 'Obligatoire', 'RDJ', '[3,7,6,9]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('17', 'Communication (banque 2)', '', '0', 'Renfort', 'RDJ', '[3,9,10]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('19', 'Communication (coordination)', '', '0', 'Obligatoire', 'RDJ', '[3]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('20', 'Communication (magasin 1)', '', '0', 'Obligatoire', 'RDJ', '[3]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('21', 'Communication (magasin 2)', '', '0', 'Obligatoire', 'RDJ', '[11]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('22', 'Communication (magasin 3)', '', '0', 'Renfort', 'RDJ', '[3]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('23', 'Consultation de la r&eacute;serve', '', '0', 'Obligatoire', 'RDJ', '[4,9]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('24', 'Audiovisuel et autoformation', '', '0', 'Obligatoire', 'Mezzanine', '[1,2,7,9]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('25', 'Rangement 2', '', '0', 'Obligatoire', 'RDC', '[8]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('26', 'Rangement 3', '', '0', 'Obligatoire', 'RDC', '[8]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('27', 'Rangement 4', '', '0', 'Renfort', 'RDC', '[8]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('28', 'Rangement 1', '', '0', 'Obligatoire', 'Mezzanine', '[8]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('29', 'Rangement 5', '', '0', 'Obligatoire', 'RDJ', '[8]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('30', 'Rangement 6', '', '0', 'Obligatoire', 'RDJ', '[8]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('31', 'Rangement 7', '', '0', 'Renfort', 'RDJ', '[8]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('32', 'Rangement 8', '', '0', 'Renfort', 'RDJ', '[8]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('33', 'Rangement 9', '', '0', 'Renfort', 'RDJ', '[8]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('34', 'Rangement 10', '', '0', 'Obligatoire', 'Magasins', '[8]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('35', 'Rangement 11', '', '0', 'Obligatoire', 'Magasins', '[8]','1','1');";
+$sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('36', 'Renseignement kiosque', '', '0', 'Renfort', 'Mezzanine', '[9,10]','1','1');";
 
 //	Insertion des motif d'absences
 $sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Non justifi&eacute;e', '1');";

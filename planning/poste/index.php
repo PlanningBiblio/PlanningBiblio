@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.5.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 18 novembre 2016
+Dernière modification : 19 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -236,7 +236,7 @@ if($db->result){
     $classesPoste=array();
 
     // Ajout des classes en fonction des activités
-    $activitesPoste=is_serialized($elem['activites'])?unserialize($elem['activites']):array();
+    $activitesPoste = $elem['activites'] ? json_decode(html_entity_decode($elem['activites'],ENT_QUOTES|ENT_IGNORE,'UTF-8')) : array();
     foreach($activitesPoste as $a){
       if(isset($activites[$a]['nom'])){
         $classesPoste[] = 'tr_activite_'.strtolower(removeAccents(str_replace(array(' ','/'), '_', $activites[$a]['nom'])));
@@ -244,7 +244,7 @@ if($db->result){
     }
     
     // Ajout des classes de la ligne en fonction des catégories requises par le poste (A,B ou C)
-    $categoriesPoste=is_serialized($elem['categories'])?unserialize($elem['categories']):array();
+    $categoriesPoste = $elem['categories'] ? json_decode(html_entity_decode($elem['categories'],ENT_QUOTES|ENT_IGNORE,'UTF-8')) : array();
     foreach($categoriesPoste as $cat){
       if(array_key_exists($cat,$categories)){
 	$classesPoste[]="tr_".str_replace(" ","",removeAccents(html_entity_decode($categories[$cat],ENT_QUOTES|ENT_IGNORE,"UTF-8")));
@@ -445,8 +445,8 @@ else{
   
   // Ajoute les qualifications de chaque agent (activités) dans le tableaux $cellules pour personnaliser l'affichage des cellules en fonction des qualifications
   foreach($cellules as $k => $v){
-    if(is_serialized($v['postes'])){
-      $p = unserialize($v['postes']);
+    if($v['postes']){
+      $p = json_decode(html_entity_decode($v['postes'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
       $cellules[$k]['activites'] = array();
       foreach($activites as $elem){
         if(in_array($elem['id'], $p)){

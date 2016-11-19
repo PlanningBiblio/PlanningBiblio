@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.5.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : postes/valid.php
 Création : mai 2011
-Dernière modification : 2 novembre 2016
+Dernière modification : 19 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -28,8 +28,8 @@ if(!$nom){
 
 if($nom){
   $get=filter_input_array(INPUT_GET,FILTER_SANITIZE_STRING);
-  $activites=array_key_exists("activites",$get)?serialize($get['activites']):serialize(array());
-  $categories=array_key_exists("categories",$get)?serialize($get['categories']):serialize(array());
+  $activites = array_key_exists("activites",$get) ? json_encode($get['activites']) : json_encode(array());
+  $categories = array_key_exists("categories",$get) ? json_encode($get['categories']) : json_encode(array());
 
   $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
   $site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.4
+Planning Biblio, Version 2.5.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 12 octobre 2016
+Dernière modification : 19 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -124,7 +124,7 @@ if($id){		//	récupération des infos de l'agent en cas de modif
   }else{
 	$temps=unserialize($db->result[0]['temps']);
   }
-  $postes_attribues=unserialize($db->result[0]['postes']);
+  $postes_attribues = json_decode(html_entity_decode($db->result[0]['postes'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
   if(is_array($postes_attribues))
     sort($postes_attribues);
   $acces=json_decode(html_entity_decode($db->result[0]['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));

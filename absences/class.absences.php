@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.8
+Planning Biblio, Version 2.5.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 29 octobre 2016
+Dernière modification : 19 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -739,7 +739,7 @@ class absences{
     */
 
     $categories=$GLOBALS['config']["Absences-notifications{$validation}"];
-    $categories=unserialize(stripslashes($categories));
+    $categories=json_decode(html_entity_decode(stripslashes($categories),ENT_QUOTES|ENT_IGNORE,'UTF-8'));
     /*
     $categories : Catégories de personnes à qui les notifications doivent être envoyées
       tableau sérialisé issu de la config. : champ Absences-notifications, Absences-notifications2, 

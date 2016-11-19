@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.6
+Planning Biblio, Version 2.5.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 27 octobre 2016
+Dernière modification : 19 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -49,7 +49,7 @@ $premierLundi=array_key_exists("premierLundi",$post)?$post['premierLundi']:null;
 $dernierLundi=array_key_exists("dernierLundi",$post)?$post['dernierLundi']:null;
 
 $droits=$droits?$droits:array();
-$postes=$postes?serialize(explode(",",$postes)):null;
+$postes = $postes ? json_encode(explode(",",$postes)) : null;
 $sites=$sites?json_encode($sites):null;
 $temps=$temps?serialize($temps):null;
 
