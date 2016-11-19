@@ -546,7 +546,7 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
 
 $v="2.5.1";
 if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
-  // Transformation serialized  -> json 
+  // Transformation serialized  -> json : personnel.sites
   $dbh = new dbh();
   $dbh->prepare("UPDATE `{$dbprefix}personnel` SET `sites`=:sites WHERE `id`=:id;");
 
@@ -556,14 +556,35 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   if($db->result){
     foreach($db->result as $elem){
       $id = $elem['id'];
-      $sites = $elem['sites'];
-      if($sites){
-        $sites = unserialize($sites);
-        $sites = json_encode($sites);
-        $dbh->execute(array(':id'=>$id, ':sites'=>$sites));
+      $value = $elem['sites'];
+      if($value){
+        $value = unserialize($value);
+        $value = json_encode($value);
+        $dbh->execute(array(':id'=>$id, ':sites'=>$value));
       }
     }
   }
+  
+  // Transformation serialized  -> json : personnel.droits
+  $dbh = new dbh();
+  $dbh->prepare("UPDATE `{$dbprefix}personnel` SET `droits`=:droits WHERE `id`=:id;");
+
+  $db = new db();
+  $db->select2('personnel',array('id','droits'));
+
+  if($db->result){
+    foreach($db->result as $elem){
+      $id = $elem['id'];
+      $value = $elem['droits'];
+      if($value){
+        $value = unserialize($value);
+        $value = json_encode($value);
+        $dbh->execute(array(':id'=>$id, ':droits'=>$value));
+      }
+    }
+  }
+
+
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }

@@ -115,7 +115,7 @@ if($menu){
 //		Recupération des droits d'accès de l'agent
 $db=new db();
 $db->select2("personnel","droits",array("id"=>$_SESSION['login_id']));
-$droits=unserialize($db->result[0]['droits']);
+$droits=json_decode(html_entity_decode($db->result[0]['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
 $droits[]=99;	// Ajout du droit de consultation pour les connexions anonymes
 $_SESSION['droits']=$droits;
 

@@ -71,7 +71,7 @@ else{
   $autorisation=false;
   $db_admin=new db();			// Vérifions si l'utilisateur à les droits de modifier les plannings
   $db_admin->select2("personnel","droits",array("id"=>$login_id));
-  $droits=unserialize($db_admin->result[0]['droits']);
+  $droits=json_decode(html_entity_decode($db_admin->result[0]['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
   if(!in_array(12,$droits)){
     exit;
   }

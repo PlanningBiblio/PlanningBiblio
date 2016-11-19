@@ -109,7 +109,7 @@ class planningHebdo{
       $p=new personnel();
       $p->fetch("nom");
       foreach($p->elements as $elem){
-	$tmp=unserialize($elem['droits']);
+	$tmp=json_decode(html_entity_decode($elem['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
 	if(in_array(24,$tmp)){
 	  $destinataires[]=$elem['mail'];
 	}
@@ -361,7 +361,7 @@ class planningHebdo{
       $p=new personnel();
       $p->fetch("nom");
       foreach($p->elements as $elem){
-	$tmp=unserialize($elem['droits']);
+	$tmp=json_decode(html_entity_decode($elem['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
 	if(in_array(24,$tmp)){
 	  $destinataires[]=$elem['mail'];
 	}

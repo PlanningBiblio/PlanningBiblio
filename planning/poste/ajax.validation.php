@@ -36,7 +36,7 @@ $perso_id=$_SESSION['login_id'];
 $droit=($config['Multisites-nombre']>1)?(300+$site):12;
 $db=new db();
 $db->select2("personnel","droits",array("id"=>$perso_id));
-$droits_agent=unserialize($db->result[0]['droits']);
+$droits_agent=json_decode(html_entity_decode($db->result[0]['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
 if(!in_array($droit,$droits_agent)){
   echo json_encode(array("Accès refusé","error"));
   exit;

@@ -715,7 +715,7 @@ class absences{
     $db=new db();
     $db->select("personnel",null,"supprime='0'");
     foreach($db->result as $elem){
-      $d=unserialize($elem['droits']);
+      $d=json_decode(html_entity_decode($elem['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
       foreach($droitsAbsences as $elem2){
 	if(is_array($d) and in_array($elem2,$d) and !in_array($elem,$responsables)){
 	  $responsables[]=$elem;

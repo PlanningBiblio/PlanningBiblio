@@ -78,7 +78,7 @@ $droits[]=99;
 $droits[]=100;
 if($id==1)		// Ajoute config. avancée à l'utilisateur admin.
   $droits[]=20;
-$droits=serialize($droits);
+$droits=json_encode($droits);
 
 switch($action){
   case "ajout" :

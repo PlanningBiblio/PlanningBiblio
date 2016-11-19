@@ -127,7 +127,7 @@ if($id){		//	récupération des infos de l'agent en cas de modif
   $postes_attribues=unserialize($db->result[0]['postes']);
   if(is_array($postes_attribues))
     sort($postes_attribues);
-  $acces=unserialize($db->result[0]['droits']);
+  $acces=json_decode(html_entity_decode($db->result[0]['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
   $matricule=$db->result[0]['matricule'];
   $mailsResponsables=explode(";",html_entity_decode($db->result[0]['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
   // $mailsResponsables : html_entity_decode necéssaire sinon ajoute des espaces après les accents ($mailsResponsables=join("; ",$mailsResponsables);)
