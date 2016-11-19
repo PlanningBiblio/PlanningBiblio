@@ -75,14 +75,14 @@ class planningHebdo{
       $dates=$this->periodes;
 
       // 1er tableau
-      $insert=array("perso_id"=>$perso_id,"debut"=>$dates[0][0],"fin"=>$dates[0][1],"temps"=>serialize($data['temps']), 
+      $insert=array("perso_id"=>$perso_id,"debut"=>$dates[0][0],"fin"=>$dates[0][1],"temps"=>json_encode($data['temps']), 
 	"valide"=>$valide, "validation"=>$validation);
 
       $db=new db();
       $db->insert2("planningHebdo",$insert);
       $this->error=$db->error;
       // 2ème tableau
-      $insert=array("perso_id"=>$perso_id,"debut"=>$dates[0][2],"fin"=>$dates[0][3],"temps"=>serialize($data['temps2']),
+      $insert=array("perso_id"=>$perso_id,"debut"=>$dates[0][2],"fin"=>$dates[0][3],"temps"=>json_encode($data['temps2']),
 	"valide"=>$valide, "validation"=>$validation);
 
       $db=new db();
@@ -91,7 +91,7 @@ class planningHebdo{
     }
     // Sinon, insertion d'un seul tableau
     else{
-      $insert=array("perso_id"=>$perso_id,"debut"=>$data['debut'],"fin"=>$data['fin'],"temps"=>serialize($data['temps']), 
+      $insert=array("perso_id"=>$perso_id,"debut"=>$data['debut'],"fin"=>$data['fin'],"temps"=>json_encode($data['temps']), 
 	"valide"=>$valide, "validation"=>$validation);
 
       // Dans le cas d'une copie (voir fonction copy)
@@ -248,7 +248,7 @@ class planningHebdo{
     $db->select("planningHebdo","*",$filter,"ORDER BY debut,fin,saisie");
     if($db->result){
       foreach($db->result as $elem){
-	$elem['temps']=unserialize($elem['temps']);
+	$elem['temps'] = json_decode(html_entity_decode($elem['temps'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
 	$elem['nom']=nom($elem['perso_id']);
 	$elem['service']=$services[$elem['perso_id']];
 	$this->elements[]=$elem;
@@ -299,7 +299,7 @@ class planningHebdo{
 	$db=new db();
 	$db->select("planningHebdoPeriodes","*","`annee`='$annee'","ORDER BY `annee`");
 	if($db->result){
-	  $dates[$i]=unserialize($db->result[0]['dates']);
+	  $dates[$i]=json_decode(html_entity_decode($db->result[0]['dates'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
 	  $datesFr[$i]=array_map("dateFr",$dates[$i]);
 	  $i++;
 	}
@@ -326,7 +326,7 @@ class planningHebdo{
 
     $perso_id=array_key_exists("valide",$data)?$data["valide"]:$_SESSION['login_id'];
 
-    $temps=serialize($data['temps']);
+    $temps=json_encode($data['temps']);
     $update=array("debut"=>$data['debut'],"fin"=>$data['fin'],"temps"=>$temps,"modif"=>$perso_id,"modification"=>date("Y-m-d H:i:s"));
     if($data['validation']){
       $update['valide']=$perso_id;
@@ -410,7 +410,7 @@ class planningHebdo{
     // Convertion des dates JJ/MM/AAAA => AAAA-MM-JJ
     $data['dates'][0]=array_map("dateFr",$data['dates'][0]);
     $data['dates'][1]=array_map("dateFr",$data['dates'][1]);
-    $dates=array(serialize($data['dates'][0]),serialize($data['dates'][1]));
+    $dates=array(json_encode($data['dates'][0]),json_encode($data['dates'][1]));
 
     for($i=0;$i<count($annee);$i++){
       $db=new db();

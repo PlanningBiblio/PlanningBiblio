@@ -170,13 +170,13 @@ $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`
 
   
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications1','checkboxes','a:4:{i:0;i:0;i:1;i:1;i:2;i:2;i:3;i:3;}','[[0,\"Aux agents ayant le droit de g&eacute;rer les absences\"],[1,\"Au responsable direct\"],[2,\"A la cellule planning\"],[3,\"A l&apos;agent concern&eacute;\"]]','Destinataires des notifications de nouvelles absences','Absences','40');";
+  VALUES ('Absences-notifications1','checkboxes','[0,1,2,3]','[[0,\"Aux agents ayant le droit de g&eacute;rer les absences\"],[1,\"Au responsable direct\"],[2,\"A la cellule planning\"],[3,\"A l&apos;agent concern&eacute;\"]]','Destinataires des notifications de nouvelles absences','Absences','40');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications2','checkboxes','a:4:{i:0;i:0;i:1;i:1;i:2;i:2;i:3;i:3;}','[[0,\"Aux agents ayant le droit de g&eacute;rer les absences\"],[1,\"Au responsable direct\"],[2,\"A la cellule planning\"],[3,\"A l&apos;agent concern&eacute;\"]]','Destinataires des notifications de modification d&apos;absences','Absences','50');";
+  VALUES ('Absences-notifications2','checkboxes','[0,1,2,3]','[[0,\"Aux agents ayant le droit de g&eacute;rer les absences\"],[1,\"Au responsable direct\"],[2,\"A la cellule planning\"],[3,\"A l&apos;agent concern&eacute;\"]]','Destinataires des notifications de modification d&apos;absences','Absences','50');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications3','checkboxes','a:1:{i:0;i:1;}','[[0,\"Aux agents ayant le droit de g&eacute;rer les absences\"],[1,\"Au responsable direct\"],[2,\"A la cellule planning\"],[3,\"A l&apos;agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 1','Absences','60');";
+  VALUES ('Absences-notifications3','checkboxes','[1]','[[0,\"Aux agents ayant le droit de g&eacute;rer les absences\"],[1,\"Au responsable direct\"],[2,\"A la cellule planning\"],[3,\"A l&apos;agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 1','Absences','60');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications4','checkboxes','a:1:{i:0;i:3;}','[[0,\"Aux agents ayant le droit de g&eacute;rer les absences\"],[1,\"Au responsable direct\"],[2,\"A la cellule planning\"],[3,\"A l&apos;agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 2','Absences','65');";
+  VALUES ('Absences-notifications4','checkboxes','[3]','[[0,\"Aux agents ayant le droit de g&eacute;rer les absences\"],[1,\"Au responsable direct\"],[2,\"A la cellule planning\"],[3,\"A l&apos;agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 2','Absences','65');";
 
 /*$sql[]="UPDATE `{$dbprefix}config` SET `valeurs`='[[0,\"Aux agents ayant le droit de g&eacute;rer les absences\"],[1,\"Au responsable direct\"],[2,\"A la cellule planning\"],[3,\"A l&apos;agent concern&eacute;\"]]'
     WHERE `nom` IN ('Absences-notifications1','Absences-notifications2','Absences-notifications3','Absences-notifications4');";

@@ -661,7 +661,7 @@ class absences{
     if($GLOBALS['config']['Multisites-nombre']>1){
       $db=new db();
       $db->select("personnel","temps","id='$perso_id'");
-      $temps=unserialize($db->result[0]['temps']);
+      $temps=json_decode(html_entity_decode($db->result[0]['temps'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
       $date=$debut;
       while($date<=$fin){
 	// Emploi du temps si module planningHebdo activé

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.5.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 4 novembre 2016
+Dernière modification : 19 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -403,8 +403,11 @@ function calculHeuresSP($date){
 
 	  if(strpos($value1["heuresHebdo"],"%")){
 	    $minutesHebdo=0;
-	    if($value1['temps'] and is_serialized($value1['temps'])){
-	      $temps=unserialize($value1['temps']);
+	    if($value1['temps']){
+              $temps=json_decode(html_entity_decode($value1['temps'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+              if(!is_array($temps)){
+                $temps = array();
+              }
 
 	      // Calcul des heures
 	      // Pour chaque jour de la semaine
@@ -833,13 +836,6 @@ function html_entity_decode_latin1($n){
   return html_entity_decode($n,ENT_QUOTES|ENT_IGNORE,"ISO-8859-1");
 }
 
-
-function is_serialized($string){
-  if(is_array(@unserialize($string))){
-    return true;
-  }
-  return false;
-}
 
 /**
  * Log le login tenté et l'adresse IP du client dans la table IPBlocker pour bloquer si trop d'échec

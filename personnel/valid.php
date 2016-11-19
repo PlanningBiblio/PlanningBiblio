@@ -51,7 +51,7 @@ $dernierLundi=array_key_exists("dernierLundi",$post)?$post['dernierLundi']:null;
 $droits=$droits?$droits:array();
 $postes = $postes ? json_encode(explode(",",$postes)) : null;
 $sites=$sites?json_encode($sites):null;
-$temps=$temps?serialize($temps):null;
+$temps = $temps ? json_encode($temps) : null;
 
 $arrivee=dateSQL($arrivee);
 $depart=dateSQL($depart);

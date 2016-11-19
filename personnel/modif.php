@@ -122,7 +122,10 @@ if($id){		//	récupération des infos de l'agent en cas de modif
 	  $temps = array();
 	}
   }else{
-	$temps=unserialize($db->result[0]['temps']);
+    $temps=json_decode(html_entity_decode($db->result[0]['temps'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+    if(!is_array($temps)){
+      $temps = array();
+    }
   }
   $postes_attribues = json_decode(html_entity_decode($db->result[0]['postes'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
   if(is_array($postes_attribues))

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.6
+Planning Biblio, Version 2.5.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : ics/cron.ics.php
 Création : 1er juillet 2016
-Dernière modification : 19 octobre 2016
+Dernière modification : 19 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -174,7 +174,7 @@ foreach($temps as $perso){
   foreach($perso as $semaine){
 	if(is_array($semaine)){
 	  $cles[] = $semaine['cle'];
-	  $temps = serialize($semaine['temps']);
+	  $temps = json_encode($semaine['temps']);
 	  $tab[] =  array(":perso_id"=>$perso['perso_id'], ":debut"=>$semaine['debut'], ":fin"=>$semaine['fin'], ":temps"=>$temps,":cle"=>$semaine['cle']);
 	}
   }

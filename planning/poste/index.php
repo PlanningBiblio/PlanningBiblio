@@ -775,7 +775,7 @@ EOD;
 	      }
 	    }else{
 	      // Emploi du temps récupéré à partir de la table personnel
-	      $temps=unserialize($elem['temps']);
+	      $temps = json_decode(html_entity_decode($elem['temps'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
 	    }
 
 	    $jour=$d->position-1;		// jour de la semaine lundi = 0 ,dimanche = 6

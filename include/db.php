@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.2
+Planning Biblio, Version 2.5.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 8 septembre 2016
+Dernière modification : 19 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -87,8 +87,6 @@ class db{
 	$tab=mysqli_fetch_assoc($req);
 	foreach($tab as $key => $value){
 	  if(isset($isCryptedPassword) and $isCryptedPassword===true){
-	    $result[$key]=filter_var($value,FILTER_UNSAFE_RAW);
-	 }elseif(is_serialized($value)){
 	    $result[$key]=filter_var($value,FILTER_UNSAFE_RAW);
 	  }else{
 	    $result[$key]=filter_var($value,FILTER_SANITIZE_STRING);
@@ -255,8 +253,6 @@ class db{
 	$tmp[]="`{$field}`=SYSDATE()";
       }
       else{
-	if(!is_serialized($set[$field]))
-	  $set[$field]=htmlentities($set[$field],ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
 	$set[$field]=mysqli_real_escape_string($this->conn,$set[$field]);
 	if(substr($set[$field],0,7)==="CONCAT("){
 	  $tmp[]="`{$field}`={$set[$field]}";
@@ -275,23 +271,6 @@ class db{
       $where=join(" AND ",$tmp);
     }
     $requete="UPDATE `{$dbprefix}$table` SET $set WHERE $where;";
-    $this->query($requete);
-  }
-
-  function update2latin1($table,$set,$where){
-    $this->connect();
-    $tmp=array();
-    $fields=array_keys($set);
-    foreach($fields as $field){
-      if(!is_serialized($set[$field]))
-	$set[$field]=htmlentities($set[$field],ENT_QUOTES | ENT_IGNORE,"ISO-8859-1",false);
-      $set[$field]=mysqli_real_escape_string($this->conn,$set[$field]);
-      $tmp[]="`{$field}`='{$set[$field]}'";
-    }
-    $set=join(",",$tmp);
-    $key=array_keys($where);
-    $where="`".$key[0]."`='".$where[$key[0]]."'";
-    $requete="UPDATE `{$this->dbprefix}$table` SET $set WHERE $where;";
     $this->query($requete);
   }
 
@@ -337,9 +316,6 @@ class db{
       $fields=array_keys($values[0]);
       for($i=0;$i<count($values);$i++){
 	foreach($fields as $elem){
-	  if(!is_serialized($values[$i][$elem])){
-	    $values[$i][$elem]=htmlentities($values[$i][$elem],ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
-	    }
 	  $values[$i][$elem]=mysqli_real_escape_string($this->conn,$values[$i][$elem]);
 	}
       }
@@ -352,9 +328,6 @@ class db{
     else{
       $fields=array_keys($values);
       foreach($fields as $elem){
-	if(!is_serialized($values[$elem])){
-	  $values[$elem]=htmlentities($values[$elem],ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
-	}
 	$values[$elem]=mysqli_real_escape_string($this->conn,$values[$elem]);
       }
       $fields=join("`,`",$fields);
@@ -483,11 +456,7 @@ class dbh{
     for($i=0;$i<$this->nb;$i++){
       $result=array();
       foreach($tmp[$i] as $key => $value){
-	if(is_serialized($value)){
-	  $result[$key]=filter_var($value,FILTER_UNSAFE_RAW);
-	}else{
-	  $result[$key]=filter_var($value,FILTER_SANITIZE_STRING);
-	}
+        $result[$key]=filter_var($value,FILTER_SANITIZE_STRING);
       }
       $this->result[]=$result;
     }

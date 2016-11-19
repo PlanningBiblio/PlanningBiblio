@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.1
+Planning Biblio, Version 2.5.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : plugins/planningHebdo/cron.daily.php
 Création : 23 juillet 2013
-Dernière modification : 11 juillet 2016
+Dernière modification : 19 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -25,7 +25,6 @@ $p->fetch();
 foreach($p->elements as $elem){
   $id=$elem['id'];
   $perso_id=$elem['perso_id'];
-  $temps=serialize($elem['temps']);
   $db=new db();
   $db->update("planningHebdo","`actuel`='0'","`perso_id`='$perso_id'");
   $db=new db();

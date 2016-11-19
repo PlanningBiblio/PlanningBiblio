@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.1
+Planning Biblio, Version 2.5.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 25 juillet 2016
+Dernière modification : 19 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -66,7 +66,7 @@ if($_POST){
       
       // Checkboxes
       if(is_array($value)){
-	$value=serialize($value);
+	$value=json_encode($value);
       }
 	
       $db->execute(array(":nom"=>$key,":valeur"=>$value));
@@ -136,7 +136,7 @@ foreach($db->result as $elem){
     // Valeurs choisies (champ valeur) =  tableau PHP à 1 dimension
     case "checkboxes" :
       $valeurs=json_decode(str_replace("&#34;",'"',$elem['valeurs']));
-      $choisies=unserialize($elem['valeur']);
+      $choisies=json_decode(html_entity_decode($elem['valeur'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
 
       if(is_array($valeurs)){
 	foreach($valeurs as $val){

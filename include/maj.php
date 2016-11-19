@@ -553,6 +553,10 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   serializeToJson('personnel','sites');
   serializeToJson('postes','activites');
   serializeToJson('postes','categories');
+  serializeToJson('config','valeur','id', array('type'=>'checkboxes'));
+  serializeToJson('planningHebdoPeriodes','dates');
+  serializeToJson('personnel','temps');
+  serializeToJson('planningHebdo','temps');
 
   $sql[] = "ALTER TABLE `{$dbprefix}postes` CHANGE `categories` `categories` TEXT NULL DEFAULT NULL;";
 
@@ -580,14 +584,15 @@ include "include/footer.php";
  * @param string $table : nom de la table
  * @param string $field : nom du champ à modifier
  * @param string $id : nom du champ ID (clé)
+ * @param array $where : condition sql where : ex: array('type'=>'checkboxes')
  */
-function serializeToJson($table,$field,$id='id'){
+function serializeToJson($table,$field,$id='id',$where=null){
   // Transformation serialized  -> json
   $dbh = new dbh();
   $dbh->prepare("UPDATE `{$GLOBALS['config']['dbprefix']}$table` SET `$field`=:value WHERE `$id`=:key;");
 
   $db = new db();
-  $db->select2($table,array($id,$field));
+  $db->select2($table,array($id,$field),$where);
 
   if($db->result){
     foreach($db->result as $elem){
