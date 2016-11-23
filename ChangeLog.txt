@@ -1,3 +1,8 @@
+*** Version 2.5.1   (23 novembre 2016)   ***
+- Sécurité
+Correction de vulnérabilités (Object Injection)
+
+
 *** Version 2.5   (17 novembre 2016)   ***
 - Améliorations
 Statistiques : affichage des heures par groupe de postes dans la feuille de temps
