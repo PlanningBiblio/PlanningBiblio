@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 19 novembre 2016
+Dernière modification : 25 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -483,18 +483,6 @@ class absences{
       $dates="`fin`>='$date'";
     }
 
-    // Multisites, filtre pour n'afficher que les agents des sites choisis
-    $sites_req=null;
-    if(!empty($sites)){
-      $tmp=array();
-      foreach($sites as $site){
-	$tmp[]="`{$dbprefix}personnel`.`sites` LIKE '%\"$site\"%'";
-      }
-      if(!empty($tmp)){
-	$sites_req.=" AND (".join(" OR ",$tmp).") ";
-      }
-    }
-
     if($this->valide and $GLOBALS['config']['Absences-validation']){
       $filter.=" AND `{$dbprefix}absences`.`valide`>0 ";
     }
@@ -519,7 +507,7 @@ class absences{
 
     //	Select All
     $req="SELECT `{$dbprefix}personnel`.`nom` AS `nom`, `{$dbprefix}personnel`.`prenom` AS `prenom`, "
-      ."`{$dbprefix}personnel`.`id` AS `perso_id`, "
+      ."`{$dbprefix}personnel`.`id` AS `perso_id`, `{$dbprefix}personnel`.`sites` AS `sites`, "
       ."`{$dbprefix}absences`.`id` AS `id`, `{$dbprefix}absences`.`debut` AS `debut`, "
       ."`{$dbprefix}absences`.`fin` AS `fin`, `{$dbprefix}absences`.`nbjours` AS `nbjours`, "
       ."`{$dbprefix}absences`.`motif` AS `motif`, `{$dbprefix}absences`.`commentaires` AS `commentaires`, "
@@ -529,7 +517,7 @@ class absences{
       ."`{$dbprefix}absences`.`demande` AS `demande`, `{$dbprefix}absences`.`groupe` AS `groupe` "
       ."FROM `{$dbprefix}absences` INNER JOIN `{$dbprefix}personnel` "
       ."ON `{$dbprefix}absences`.`perso_id`=`{$dbprefix}personnel`.`id` "
-      ."WHERE $dates $only_me $sites_req $filter ORDER BY $sort;";
+      ."WHERE $dates $only_me $filter ORDER BY $sort;";
     $db=new db();
     $db->query($req);
 
@@ -538,7 +526,23 @@ class absences{
     if($db->result){
       foreach($db->result as $elem){
       
-	// N'ajoute qu'une ligne pour les membres d'un groupe
+        // Multisites, n'affiche que les agents des sites choisis
+        if(!empty($sites)){
+          $sitesAgent = json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+          $keep = false;
+
+          foreach($sites as $site){
+            if(in_array($site, $sitesAgent)){
+              $keep = true;
+              break;
+            }
+          }
+          if($keep === false){
+            continue;
+          }
+        }
+
+        // N'ajoute qu'une ligne pour les membres d'un groupe
 	if($this->groupe and $elem['groupe'] and in_array($elem['groupe'],$groupes)){
 	  continue;
 	}

@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 19 novembre 2016
+Dernière modification : 25 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -590,6 +590,7 @@ function serializeToJson($table,$field,$id='id',$where=null){
   // Transformation serialized  -> json
   $dbh = new dbh();
   $dbh->prepare("UPDATE `{$GLOBALS['config']['dbprefix']}$table` SET `$field`=:value WHERE `$id`=:key;");
+  echo "UPDATE `{$GLOBALS['config']['dbprefix']}$table` SET `$field`=:value WHERE `$id`=:key;<br/>";
 
   $db = new db();
   $db->select2($table,array($id,$field),$where);
@@ -598,9 +599,16 @@ function serializeToJson($table,$field,$id='id',$where=null){
     foreach($db->result as $elem){
       $value = $elem[$field];
       if($value){
-        $value = unserialize($value);
-        $value = json_encode($value);
-        $dbh->execute(array(":key"=>$elem[$id], ':value'=>$value));
+        $value = unserialize(html_entity_decode($value,ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+        if(is_array($value)){
+          $value = json_encode($value);
+          $dbh->execute(array(':key'=>$elem[$id], ':value'=>$value));
+          echo ":key => {$elem[$id]}, :value' => {$value}";
+          if(!$dbh->error)
+            echo " : <font style='color:green;'>OK</font><br/>\n";
+          else
+            echo " : <font style='color:red;'>Erreur</font><br/>\n";
+        }
       }
     }
   }

@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 19 novembre 2016
+Dernière modification : 25 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -459,13 +459,11 @@ else{
   // Tri des absences par nom
   usort($absences,"cmp_nom_prenom_debut_fin");
   
-  // Affichage des absences en bas du planning : seulement les absences validées
-  $absences_planning = array();
-  foreach($absences as $a){
-    if($a['valide']>0){
-      $absences_planning[] = $a;
-    }
-  }
+  // Affichage des absences en bas du planning : seulement les absences validées et concernant le site choisi
+  $a=new absences();
+  $a->valide=true;
+  $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date,$date,array($site));
+  $absences_planning = $a->elements;
 
   // Informations sur les congés
   if(in_array("conges",$plugins)){
