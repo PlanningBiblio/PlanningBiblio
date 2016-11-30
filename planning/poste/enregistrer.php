@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.3
+Planning Biblio, Version 2.5.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/enregistrer.php
 Création : mai 2011
-Dernière modification : 3 octobre 2016
+Dernière modification : 30 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -124,6 +124,9 @@ function enregistre_modele($nom,$date,$semaine,$site){
       if($semaine){
 	$d=new datePl($elem['date']);
 	$jour=$d->position;		// position du jour de la semaine (1=lundi , 2=mardi ...)
+	if($jour == 0){
+          $jour = 7;
+        }
       }
       $values[]=array(":nom"=>$nom, ":perso_id"=>$elem['perso_id'], ":poste"=>$elem['poste'], ":debut"=>$elem['debut'], 
 	":fin"=>$elem['fin'], ":jour"=>$jour, ":site"=>$site);
@@ -141,6 +144,9 @@ function enregistre_modele($nom,$date,$semaine,$site){
       if($semaine){
 	$d=new datePl($elem['date']);
 	$jour=$d->position;		// position du jour de la semaine (1=lundi , 2=mardi ...)
+	if($jour == 0){
+          $jour = 7;
+        }
       }
       $insert=array("nom"=>$nom, "jour"=>$jour, "tableau"=>$elem['tableau'], "site"=>$site);
       $db=new db();
