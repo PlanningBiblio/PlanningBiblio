@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.1
+Planning Biblio, Version 2.5.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 25 novembre 2016
+Dernière modification : 30 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -531,12 +531,15 @@ class absences{
           $sitesAgent = json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
           $keep = false;
 
-          foreach($sites as $site){
-            if(in_array($site, $sitesAgent)){
-              $keep = true;
-              break;
+          if(is_array($sitesAgent)){
+            foreach($sites as $site){
+              if(in_array($site, $sitesAgent)){
+                $keep = true;
+                break;
+              }
             }
           }
+
           if($keep === false){
             continue;
           }
