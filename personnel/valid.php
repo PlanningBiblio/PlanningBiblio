@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.1
+Planning Biblio, Version 2.5.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 19 novembre 2016
+Dernière modification : 29 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -34,6 +34,7 @@ $categorie=trim($post['categorie']);
 $informations=trim($post['informations']);
 $mailsResponsables=trim(str_replace(array("\n"," "),null,$post['mailsResponsables']));
 $matricule=trim($post['matricule']);
+$url_ics=trim($post['url_ics']);
 $nom=trim($post['nom']);
 $postes=$post['postes'];
 $prenom=trim($post['prenom']);
@@ -112,7 +113,7 @@ switch($action){
     $insert=array("nom"=>$nom,"prenom"=>$prenom,"mail"=>$mail,"statut"=>$statut,"categorie"=>$categorie,"service"=>$service,"heuresHebdo"=>$heuresHebdo,
       "heuresTravail"=>$heuresTravail,"arrivee"=>$arrivee,"depart"=>$depart,"login"=>$login,"password"=>$mdp_crypt,"actif"=>$actif,
       "droits"=>$droits,"postes"=>$postes,"temps"=>$temps,"informations"=>$informations,"recup"=>$recup,"sites"=>$sites,
-      "mailsResponsables"=>$mailsResponsables,"matricule"=>$matricule);
+      "mailsResponsables"=>$mailsResponsables,"matricule"=>$matricule,"url_ics"=>$url_ics);
     if(in_array("conges",$plugins)){
       include "plugins/conges/ficheAgentValid.php";
     }
@@ -164,7 +165,7 @@ switch($action){
     $update=array("nom"=>$nom, "prenom"=>$prenom, "mail"=>$mail, "statut"=>$statut, "categorie"=>$categorie, "service"=>$service, 
       "heuresHebdo"=>$heuresHebdo, "heuresTravail"=>$heuresTravail, "actif"=>$actif, "droits"=>$droits, "arrivee"=>$arrivee, 
       "depart"=>$depart, "postes"=>$postes, "informations"=>$informations, "recup"=>$recup, "sites"=>$sites, 
-      "mailsResponsables"=>$mailsResponsables, "matricule"=>$matricule);
+      "mailsResponsables"=>$mailsResponsables, "matricule"=>$matricule, "url_ics"=>$url_ics);
     // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
     if(!strstr($actif,"Supprim")){
       $update["supprime"]="0";

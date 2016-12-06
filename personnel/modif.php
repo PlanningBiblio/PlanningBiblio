@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.1
+Planning Biblio, Version 2.5.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 19 novembre 2016
+Dernière modification : 29 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -132,6 +132,7 @@ if($id){		//	récupération des infos de l'agent en cas de modif
     sort($postes_attribues);
   $acces=json_decode(html_entity_decode($db->result[0]['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
   $matricule=$db->result[0]['matricule'];
+  $url_ics = $db->result[0]['url_ics'];
   $mailsResponsables=explode(";",html_entity_decode($db->result[0]['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
   // $mailsResponsables : html_entity_decode necéssaire sinon ajoute des espaces après les accents ($mailsResponsables=join("; ",$mailsResponsables);)
   $informations=stripslashes($db->result[0]['informations']);
@@ -166,6 +167,7 @@ else{		// pas d'id, donc ajout d'un agent
   $postes_attribues=array();
   $access=array();
   $matricule=null;
+  $url_ics=null;
   $mailsResponsables=array();
   $informations=null;
   $recup=null;
@@ -516,6 +518,14 @@ echo "Matricule : ";
 echo "</td><td>";
 echo in_array(21,$droits)?"<input type='text' value='$matricule' name='matricule' style='width:400px' />":"$matricule</a>";
 echo "</td></tr>";
+
+if($config['ICS-Server3']){
+  echo "<tr><td>";
+  echo "URL ICS : ";
+  echo "</td><td>";
+  echo in_array(21,$droits)?"<input type='text' value='$url_ics' name='url_ics' style='width:400px' />":"$url_ics</a>";
+  echo "</td></tr>";
+}
 
 echo "<tr><td>";
 echo "E-mails des responsables : ";

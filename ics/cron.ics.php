@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.5
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : ics/cron.ics.php
 Création : 28 juin 2016
-Dernière modification : 19 octobre 2016
+Dernière modification : 29 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -15,7 +15,7 @@ Intègre les absences et congés des fichiers ICS dans la table absences
 
 @note : Modifiez le crontab de l'utilisateur Apache (ex: #crontab -eu www-data) en ajoutant les 2 lignes suivantes :
 # Planning Biblio : Importation des fichiers ICS toutes les 5 minutes
-* /5 * /usr/bin/php5 -f /var/www/html/planning/cron.ics.php
+* /5 * /usr/bin/php5 -f /var/www/html/planning/ics/cron.ics.php
 Pour la ligne précédente, ne mettez pas d'espace entre l'étoile et le /5
 Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à ce fichier
 @note : Modifiez la variable $path suivante en renseignant le chemin absolu vers votre dossier planningBiblio
@@ -67,13 +67,13 @@ for($i=1; $i<3; $i++){
       $pos1=strpos($servers[$i],"[");
 
       if($pos1){
-		$var[$i] = substr($servers[$i],$pos1 +1);
-		
-		$pos2=strpos($var[$i],"]");
-		
-		if($pos2){
-		  $var[$i] = substr($var[$i], 0, $pos2);
-		}
+        $var[$i] = substr($servers[$i],$pos1 +1);
+        
+        $pos2=strpos($var[$i],"]");
+        
+        if($pos2){
+          $var[$i] = substr($var[$i], 0, $pos2);
+        }
       }
     }
   }
@@ -89,31 +89,43 @@ $agents = $p->elements;
 // Pour chaque agent, on créé les URL des fichiers ICS et on importe les événements
 foreach($agents as $agent){
 
-  // Pour les URL N°1 et N°2 
-  for($i=1; $i<3; $i++){
-    if(!$servers[$i] or !$var[$i]){
-      continue;
+  // Pour les URL N°1, N°2 et url de la fiche agent (N°3) 
+  // Si le paramètre ICS-Server3 est activé, on recherche également une URL personnalisée dans la fiche des agents (champ url_ics).
+  
+  $fin = $config['ICS-Server3'] ? 3 : 2;
+  for($i=1; $i <= $fin; $i++){
+    if($i<3){
+      if(!$servers[$i] or !$var[$i]){
+        continue;
+      }
+      
+      // Selon le paramètre openURL (mail ou login)
+      switch($var[$i]){
+        case "login" : $url=str_replace("[{$var[$i]}]",$agent["login"],$servers[$i]); break;
+        case "email" :
+        case "mail" : $url=str_replace("[{$var[$i]}]",$agent["mail"],$servers[$i]); break;
+        default : $url=false; break;
+      }
     }
     
-    // Selon le paramètre openURL (mail ou login)
-    switch($var[$i]){
-      case "login" : $url=str_replace("[{$var[$i]}]",$agent["login"],$servers[$i]); break;
-      case "email" :
-      case "mail" : $url=str_replace("[{$var[$i]}]",$agent["mail"],$servers[$i]); break;
-      default : $url=false; break;
+    if($i == 3){
+      $url = $agent['url_ics'];
     }
   
     if(!$url){
-	  logs("Impossible de constituer une URL valide pour l'agent #{$agent['id']}","ICS");
+      logs("Impossible de constituer une URL valide pour l'agent #{$agent['id']}","ICS");
       continue;
     }
     
     logs("Importation du fichier $url pour l'agent #{$agent['id']}","ICS");
 
-    if(!file_exists($url)){
-	  logs("Fichier $url non trouvé pour l'agent #{$agent['id']}","ICS");
-      continue;
-    }
+    // TODO : tester si l'url existe 
+    // TODO : voir https://openclassrooms.com/forum/sujet/verifier-si-un-url-existe-70382
+    
+//     if(!file_exists($url)){
+//       logs("Fichier $url non trouvé pour l'agent #{$agent['id']}","ICS");
+//       continue;
+//     }
 
     $ics=new CJICS();
     $ics->src=$url;
@@ -122,6 +134,7 @@ foreach($agents as $agent){
     $ics->table="absences";
     $ics->logs=true;
     $ics->updateTable();
+    
   }
 }
 
