@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.7
+Planning Biblio, Version 2.4.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : joursFeries/index.php
 Création : 25 juillet 2013
-Dernière modification : 19 mai 2015
+Dernière modification : 19 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -19,7 +19,10 @@ include "class.joursFeries.php";
 // Initalisation des variables
 $annee_courante=date("n")<9?(date("Y")-1)."-".(date("Y")):(date("Y"))."-".(date("Y")+1);
 $annee_suivante=date("n")<9?(date("Y"))."-".(date("Y")+1):(date("Y")+1)."-".(date("Y")+2);
-$annee_select=isset($_GET['annee'])?$_GET['annee']:(isset($_SESSION['oups']['anneeFeries'])?$_SESSION['oups']['anneeFeries']:$annee_courante);
+
+$annee_select = filter_input(INPUT_GET,'annee',FILTER_SANITIZE_STRING);
+$annee_select=$annee_select?$annee_select:(isset($_SESSION['oups']['anneeFeries'])?$_SESSION['oups']['anneeFeries']:$annee_courante);
+
 $_SESSION['oups']['anneeFeries']=$annee_select;
 
 $j=new joursFeries();
@@ -41,17 +44,6 @@ $j->annee=$annee_select;
 $j->auto=false;;
 $j->fetch();
 $jours=$j->elements;
-
-// Notifications
-if(isset($_GET['message'])){
-  switch($_GET['message']){
-    case "OK" : $message="La liste des jours fériés a été modifée avec succès."; $type="highlight"; break;
-    case "Erreur" : $message="Une erreur est survenue lors de la modification de la liste des jours fériés."; $type="error"; break;
-  }
-  if($message){
-    echo "<script type='text/JavaScript'>CJInfo('$message','$type');</script>\n";
-  }
-}
 
 // Affichage
 echo <<<EOD

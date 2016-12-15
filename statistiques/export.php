@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : statistiques/export.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 4 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -25,12 +25,15 @@ require_once "class.statistiques.php";
 
 
 // Initialisation des variables
-$nom=filter_input(INPUT_GET,"nom",FILTER_SANITIZE_URL);
-$type=filter_input(INPUT_GET,"type",FILTER_CALLBACK,array("options"=>"sanitize_file_extension"));
+$nom=filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING);
+$type=filter_input(INPUT_GET,"type",FILTER_SANITIZE_STRING);
+
+$nom=filter_var($nom,FILTER_SANITIZE_URL);
+$type=filter_var($type,FILTER_CALLBACK,array("options"=>"sanitize_file_extension"));
 
  // Compter les jours ouvrables (ou ouvrés) entre début et fin
-$debut=$_SESSION['stat_debut'];
-$fin=$_SESSION['stat_fin'];
+$debut = isset($_SESSION['stat_debut']) ? $_SESSION['stat_debut'] : null;
+$fin = isset($_SESSION['stat_fin']) ? $_SESSION['stat_fin'] : null;
 $debutSQL=dateFr($debut);
 $finSQL=dateFr($fin);
 
@@ -211,12 +214,30 @@ switch($nom){
   $dates=$_SESSION['stat_dates'];
   $heures=$_SESSION['stat_heures'];
   $agents=$_SESSION['stat_agents'];
+  $totauxGroupesHeures = $_SESSION['oups']['stat_groupesHeures'];
+  $totauxGroupesPerso = $_SESSION['oups']['stat_groupesPerso'];
+  $groupes_keys = $_SESSION['oups']['stat_groupes'];
+
+
   $lignes[]="Du $debutFr au $finFr";		// Affichage du nom des colonnes
   $tmp=array("Nom","Prénom","Statut");
 
   foreach($dates as $d){
     $tmp[]=str_replace("<br/>"," ",$d[1]);
   }
+
+  // Totaux par groupe de postes
+  if(!empty($groupes_keys)){
+    foreach($groupes_keys as $g){
+      if($g != '' and $totauxGroupesPerso[$g]){
+        $tmp[] = $g;
+      }
+    }
+    if(in_array('', $groupes_keys) and $totauxGroupesPerso['']){
+      $tmp[] = 'Autres';
+    }
+  }
+
   $tmp[]="Total";
   $tmp[]="Max";
   $tmp[]="Moyenne Hebdo.";
@@ -228,18 +249,46 @@ switch($nom){
     $cellules[]=html_entity_decode($elem['prenom'],ENT_QUOTES|ENT_IGNORE,"UTF-8");
     $cellules[]=html_entity_decode($elem['statut'],ENT_QUOTES|ENT_IGNORE,"UTF-8");	// Statut
     foreach($dates as $d){								// Heures de chaque jour
-      $cellules[]=number_format($elem[$d[0]],2,',',' ');
+      $cellules[] = is_numeric($elem[$d[0]]) ? number_format($elem[$d[0]],2,',','') : $elem[$d[0]];
     }
-    $cellules[]=number_format($elem['total'],2,',',' ');				// Total d'heures sur la période
-    $cellules[]=number_format($elem['max'],2,',',' ');					// Nombre d'heures maximum sur la période
-    $cellules[]=number_format($elem['semaine'],2,',',' ');				// Moyenne d'heures par semaine
-    $cellules[]=number_format($elem['heuresHebdo'],2,',',' ');				// Quota
+
+    // Totaux par groupe de postes
+    if(!empty($groupes_keys)){
+      foreach($groupes_keys as $g){
+        if($g != '' and $totauxGroupesPerso[$g]){
+          $cellules[] = number_format($elem["group_$g"],2,',','');
+        }
+      }
+      if(in_array('', $groupes_keys) and $totauxGroupesPerso['']){
+        $cellules[] = number_format($elem["group_"],2,',','');
+      }
+    }
+
+    $cellules[] = is_numeric($elem['total']) ? number_format($elem['total'],2,',','') : $elem['total'];                         // Total d'heures sur la période
+    $cellules[] = is_numeric($elem['max']) ? number_format($elem['max'],2,',','') : $elem['max'];                               // Nombre d'heures maximum sur la période
+    $cellules[] = is_numeric($elem['semaine']) ? number_format($elem['semaine'],2,',','') : $elem['semaine'];                   // Moyenne d'heures par semaine
+    $cellules[] = is_numeric($elem['heuresHebdo']) ? number_format($elem['heuresHebdo'],2,',','') : $elem['heuresHebdo'];       // Quota
     $lignes[]=join($cellules,$separateur);
   }
-  $cellules=Array("Nombre d'heures","","");						// ligne "Nombre d'heures"
+  
+  // ligne "Nombre d'heures"
+  $cellules = array("Nombre d'heures","","");
   foreach($dates as $d){
-    $cellules[]=number_format($heures[$d[0]],2,',',' ');
+    $cellules[] = is_numeric($heures[$d[0]]) ? number_format($heures[$d[0]],2,',','') : $heures[$d[0]];
   }
+
+  // Totaux par groupe de postes
+  if(!empty($groupes_keys)){
+    foreach($groupes_keys as $g){
+      if($g != '' and $totauxGroupesPerso[$g]){
+        $cellules[] = number_format($totauxGroupesHeures[$g],2,',','');
+      }
+    }
+    if(in_array('', $groupes_keys) and $totauxGroupesPerso['']){
+      $cellules[] = number_format($totauxGroupesHeures[''],2,',','');
+    }
+  }
+
   $cellules[]=$_SESSION['oups']['stat_totalHeures'];
   $lignes[]=join($cellules,$separateur);
   $cellules=Array("Nombre d'agents","","");						// Lignes "Nombres d'agents
@@ -250,6 +299,19 @@ switch($nom){
   foreach($_SESSION['oups']['stat_nbAgents'] as $elem){
     $total+=$elem;
   }
+  
+  // Totaux par groupe de postes
+  if(!empty($groupes_keys)){
+    foreach($groupes_keys as $g){
+      if($g != '' and $totauxGroupesPerso[$g]){
+        $cellules[] = $totauxGroupesPerso[$g];
+      }
+    }
+    if(in_array('', $groupes_keys) and $totauxGroupesPerso['']){
+      $cellules[] = $totauxGroupesPerso[''];
+    }
+  }
+
   $cellules[]=$total; //$agents[7];
   $lignes[]=join($cellules,$separateur);
   break;

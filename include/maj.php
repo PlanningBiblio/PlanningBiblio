@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.3
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 20 juin 2016
+Dernière modification : 10 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -392,6 +392,156 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="2.3.4";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.4";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Absences
+  $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `CALNAME` VARCHAR(300) NOT NULL;";
+  $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `iCalKey` TEXT NOT NULL;";
+  $sql[]="ALTER TABLE `{$dbprefix}absences` ADD INDEX `CALNAME` (`CALNAME`);";
+
+  // PlanningHebdo
+  $sql[]="ALTER TABLE `{$dbprefix}planningHebdo` ADD `key` VARCHAR( 100 ) NULL DEFAULT NULL;";
+
+  // ICS
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('ICS-Server1','text','ICS', 'URL du 1<sup>er</sup> serveur ICS avec la variable OpenURL entre crochets. Ex: http://server.domain.com/calendars/[email].ics','10');";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('ICS-Pattern1','text','ICS', 'Motif d&apos;absence pour les &eacute;v&eacute;nements import&eacute;s du 1<sup>er</sup> serveur. Ex: Agenda Personnel','20');";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('ICS-Server2','text','ICS', 'URL du 2<sup>&egrave;me</sup> serveur ICS avec la variable OpenURL entre crochets. Ex: http://server2.domain.com/holiday/[login].ics','30');";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('ICS-Pattern2','text','ICS', 'Motif d&apos;absence pour les &eacute;v&eacute;nements import&eacute;s du 2<sup>&egrave;me</sup> serveur. Ex: Cong&eacute;s','40');";
+
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.4.1";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Config
+  // Supprime les éventuels doublons
+  $db=new db();
+  $db->select2("config");
+  $tmp = array();
+  foreach($db->result as $elem){
+    if(in_array($elem['nom'], $tmp)){
+      $sql[] = "DELETE FROM `{$dbprefix}config` WHERE `id` = '{$elem['id']}';";
+    } else {
+      $tmp[] = $elem['nom'];
+    }
+  }
+  // Rend le champ `nom` UNIQUE
+  $sql[]="ALTER TABLE `{$dbprefix}config` ADD UNIQUE `nom` (`nom`);";
+
+  // Importation CSV des heures de présences
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('PlanningHebdo-CSV','text','Heures de pr&eacute;sence', 'Emplacement du fichier CSV &agrave; importer (importation automatis&eacute;e) Ex: /dossier/fichier.csv','90');";
+  
+  // Exportation ICS
+  $sql[] = "ALTER TABLE `{$dbprefix}personnel` ADD `codeICS` VARCHAR(100) NULL DEFAULT NULL;";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('ICS-Export', 'boolean', '0', 'ICS', 'Autoriser l&apos;exportation des plages de service public sous forme de calendriers ICS. Un calendrier par agent, accessible &agrave; l&apos;adresse [SERVER]/ics/calendar.php?login=[login_de_l_agent]', '60');";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('ICS-Code', 'boolean', '1', 'ICS', 'Prot&eacute;ger les calendriers ICS par des codes de façon &agrave; ce qu&apos;on ne puisse pas deviner les URLs. Si l&apos;option est activ&eacute;e, les URL seront du type : [SERVER]/ics/calendar.php?login=[login_de_l_agent]&amp;code=[code_al&eacute;atoire]', '70');";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `page`='monCompte.php' WHERE `page`='PlanningHebdo/monCompte.php';";
+  
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.4.2";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.4.3";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires` = 'Corps du mail pour les appels &agrave; disponibilit&eacute;' WHERE `nom` = 'Planning-AppelDispoMessage';";
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.4.4";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  $sql[] = "UPDATE `{$dbprefix}config` SET `nom`='Granularite', `commentaires`='Granularit&eacute; des champs horaires. ATTENTION : le choix \"5 minutes\" est exp&eacute;rimental. Certains calculs peuvent manquer de pr&eacute;cision si la valeur \"5 minutes\" est choisie.', `valeurs`='[[60,\"Heure\"],[30,\"Demi-heure\"],[15,\"Quart d&apos;heure\"],[5,\"5 minutes\"]]' WHERE `nom`='heuresPrecision'";
+  $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='60' WHERE `nom` = 'Granularite' and `valeur`='heure'";
+  $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='30' WHERE `nom` = 'Granularite' and `valeur`='demi-heure'";
+  $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='15' WHERE `nom` = 'Granularite' and `valeur`='quart-heure'";
+  $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='5' WHERE `nom` = 'Granularite' and `valeur`='5-min'";
+
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+
+$v="2.4.5";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Agenda
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('Agenda-Plannings-Non-Valides', 'boolean', '1', 'Agenda', 'Afficher ou non les plages de service public des plannings non valid&eacute;s dans les agendas.', '10');";
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.4.6";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // PlanningHebdo
+  $sql[]="ALTER TABLE `{$dbprefix}planningHebdo` CHANGE `key` `cle` VARCHAR( 100 ) NULL DEFAULT NULL;";
+  $sql[]="ALTER TABLE `{$dbprefix}planningHebdo` ADD UNIQUE `cle` (`cle`);";
+
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+
+$v="2.4.7";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Affichage absences non validées
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('Absences-non-validees','boolean','1','Absences', 'Dans les plannings, afficher en rouge les agents pour lesquels une absence non-valid&eacute;e est enregistr&eacute;e','35');";
+
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.4.8";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires`='Granularit&eacute; des champs horaires.' WHERE `nom`='Granularite';";
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.4.9";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.5";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Select groupe (pour les postes)
+  $sql[]="CREATE TABLE `{$dbprefix}select_groupes` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `valeur` text NOT NULL DEFAULT '',
+    `rang` int(11) NOT NULL DEFAULT '0',
+    PRIMARY KEY (`id`)
+  ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+  
+  $sql[] = "ALTER TABLE `{$dbprefix}postes` CHANGE `groupe` `groupe` TEXT NOT NULL DEFAULT '';";
+  
+  // Activités
+  $sql[] = "ALTER TABLE `{$dbprefix}activites` DROP `classeAgent`, DROP `classePoste`;";
+
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 
 //	Execution des requetes et affichage
 foreach($sql as $elem){

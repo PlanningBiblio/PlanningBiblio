@@ -64,6 +64,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+Dossier vendor/ics-parser
+ - Licence MIT : http://www.datatables.net/license/mit
+ - https://github.com/johngrogg/ics-parser
+ - Martin Thoma (programming, bug fixing, project management)
+ - Frank Gregor (programming, feedback, testing)
+ - John Grogg (programming, addition of event recurrence handling)
+ - [Jonathan Goode](https://github.com/u01jmg3) (programming, bug fixing, enhancement, coding standard)
 
 Dossier vendor/PHPMailer
  - Software: PHPMailer - The PHPMailer GitHub project

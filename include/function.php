@@ -1,14 +1,15 @@
 <?php
 /**
-Planning Biblio, Version 2.3.2
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 28 mai 2016
+Dernière modification : 4 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
+@author Etienne Cavalié
 
 Description :
 Page contenant les fonctions PHP communes
@@ -96,7 +97,7 @@ class datePl{
   }
 }
 
-class sendmail{
+class CJMail{
 
   public $message=null;
   public $to=null;
@@ -107,7 +108,7 @@ class sendmail{
   public $failedAddresses=array();
   public $successAddresses=array();
   
-  public function sendmail(){
+  public function CJMail(){
     $path=strpos($_SERVER["SCRIPT_NAME"],"planning/poste/ajax")?"../../":null;
     $path=preg_match('/planning\/plugins\/.*\/ajax/', $_SERVER["SCRIPT_NAME"])?"../../":$path;
     require_once("{$path}vendor/PHPMailer/class.phpmailer.php");
@@ -236,30 +237,6 @@ class sendmail{
     }
   return true;
   }
-}
-
-
-function absents($date,$tables){
-  $tables=explode(",",$tables);
-  $liste="";
-  $tab=array();
-  foreach($tables as $table){
-    $etat=($table=="conges" ? "and etat='Accepté'" : "");
-
-    $db=new db();
-    $db->query("select perso_id from $table where debut<='$date' and fin >='$date' $etat;");
-    if(is_array($db->result))
-    foreach($db->result as $elem){
-      $tab[]=$elem['perso_id'];
-    }
-  }
-  $liste=join($tab,",");
-  
-  if(!$liste){
-    $liste=0;
-  }
-  
-  return $liste;
 }
 
 function authSQL($login,$password){
@@ -599,28 +576,7 @@ function cmp_semainedesc($a,$b){
   $a['semaine'] < $b['semaine'];
 }
 
-function compte_jours($date1, $date2, $jours){
-  $current = $date1;
-  $datetime2 = date_create($date2);
-  $count = 0;
-  while(date_create($current) <= $datetime2){
-    $count++;
-    $tab=explode("-",$current);
-    if(in_array("{$tab[2]}/{$tab[1]}",$GLOBALS['config']['joursFeries']) and ($jours=="ouvrés" or $jours=="ouvrables")){
-      $count--;
-    }
-    elseif(date("w", mktime(0, 0, 0, $tab[1], $tab[2], $tab[0]))==0 and ($jours=="ouvrés" or $jours=="ouvrables")){
-      $count--;
-    }
-    elseif(date("w", mktime(0, 0, 0, $tab[1], $tab[2], $tab[0]))==6 and $jours=="ouvrés"){
-      $count--;
-    }    
-    $current=date("Y-m-d", mktime(0, 0, 0, $tab[1], $tab[2]+1, $tab[0]));
-  }
-  return $count;
-}
-
-function createURL($page){
+function createURL($page=null){
   // Construction d'une URL
   // Protocol et port
   $protocol = isset($_SERVER['HTTPS']) ? 'https' : 'http';
@@ -766,13 +722,6 @@ function dateSQL($date){
   return preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/","$3-$2-$1",$date);
 }
 
-function dateTimeFr($date){
-  $tmp=explode(" ",$date);
-  $date=dateFr($tmp[0]);
-  $time=substr($tmp[1],0,5);
-  return $date." ".$time;
-}
-
 function decode($n){
   if(is_array($n)){
     return array_map("decode",$n);
@@ -851,30 +800,32 @@ function heure4($heure,$return0=false){
   if(!$heure and $return0){
     return "0h00";
   }
+  
   if(stripos($heure,"h")){
-    $heure=str_replace(array("h00","h15","h30","h45"),array(".00",".25",".50",".75"),$heure);
+    $tmp = explode('h', $heure);
+    $hre = $tmp[0];
+    $min = $tmp[1];
+    $centiemes = $min / 60 ;
+    $hre += $centiemes;
+    $heure = number_format($hre, 2, '.', '');
   }
   else{
     if(is_numeric($heure)){
-      $heure=number_format($heure, 2, '.', ' ');
-      $heure=str_replace(array(".00",".25",".50",".75"),array("h00","h15","h30","h45"),$heure);
+      $hre = floor($heure);
+      $centiemes = $heure - $hre;
+      $minutes = $centiemes * 0.6;
+      $hre += $minutes;
+      $heure = number_format($hre, 2, 'h', ' ');
     }
   }
   return $heure;
 }
 
-function HrToMin($heure){
-  if(!$heure)
-    $minutes=0;
-  else{
-    $heure=explode(":",$heure);
-    $h=intval($heure[0]);
-    $m=intval($heure[1]);
-    $minutes=($h*60)+$m;
-  }
-  return $minutes;
-}
-
+/**
+ * html_entity_decode_latin1
+ * Utiliée pour l'export des statistiques (statistiques/export.php)
+ * Conversion des caractères HTML en iso-8859-1
+ */
 function html_entity_decode_latin1($n){
   if(is_array($n)){
     return array_map("html_entity_decode_latin1",$n);
@@ -941,34 +892,9 @@ function loginSuccess($login){
 	$db->insert2("IPBlocker",$insert);
 }
 
-function logs($msg,$program=null,$type=array("db")){
-  if(in_array("db",$type)){
-    $db=new db();
-    $db->insert2("log",array("msg"=>$msg,"program"=>$program));
-  }
-  if(in_array("syslog",$type)){
-    error_log($program.": ".$msg);
-  }
-}
-
-function MinToHr($minutes){
-  if($minutes!=0){
-    $heure=$minutes/60;
-    $h=intval($heure);
-    if(strlen($h)==1){
-      $h="0".$h;
-    }
-    $m=$heure-$h;
-    $m=$m*60;
-    if(strlen($m)==1){
-      $m="0".$m;
-    }
-    $heure=$h.":".$m.":00";
-  }
-  else{
-    $heure="00:00:00";
-  }
-  return $heure;
+function logs($msg,$program=null){
+  $db=new db();
+  $db->insert2("log",array("msg"=>$msg,"program"=>$program));
 }
 
 function nom($id,$format="nom p"){
@@ -1043,34 +969,47 @@ function removeAccents($string){
   return htmlentities($string,ENT_QUOTES|ENT_IGNORE,"UTF-8");
 }
 
-function selectHeure($min,$max,$blank=false,$quart=false,$selectedValue=null){
-  if($blank)
-    echo "<option value=''>&nbsp;</option>\n";
-  for($i=$min;$i<$max+1;$i++){
-    if($i<10)
-      $i="0".$i;
+/**
+ * Fonction selectHeure
+ * Utilisée pour afficher les menus déroulants des heures pour les absences, congés, éditions des tableaux.
+ * @param int $min : heure de début (de 0 à 22)
+ * @param int $max : heure de fin (de 1 à 23)
+ * @param boolean $blank : afficher ou non une première option vide
+ * @param string $selectedValue : valeur du champ si renseignée
+ */
+function selectHeure($min,$max,$blank=false,$selectedValue=null){
 
-    $selected=$selectedValue==$i.":00:00"?"selected='selected'":null;
-    echo "<option value='".$i.":00:00' $selected>".$i."h00</option>\n";
-    if($quart){
-      $selected=$selectedValue==$i.":15:00"?"selected='selected'":null;
-      echo "<option value='".$i.":15:00' $selected>".$i."h15</option>\n";
-    }
-    $selected=$selectedValue==$i.":30:00"?"selected='selected'":null;
-    echo "<option value='".$i.":30:00' $selected>".$i."h30</option>\n";
-    if($quart){
-      $selected=$selectedValue==$i.":45:00"?"selected='selected'":null;
-      echo "<option value='".$i.":45:00' $selected>".$i."h45</option>\n";
+  $granularite = $GLOBALS['config']['Granularite'];
+
+  if($blank){
+    echo "<option value=''>&nbsp;</option>\n";
+  }
+
+  for($i=$min;$i<$max+1;$i++){
+    $hre = sprintf("%'.02d", $i);
+
+    for($j=0; $j<60; $j=$j+$granularite){
+      $min = sprintf("%'.02d", $j);
+      $selected=$selectedValue == "$hre:$min:00"?"selected='selected'":null;
+      echo "<option value='$hre:$min:00' $selected>{$hre}h$min</option>\n";
     }
   }
 }
 
+/**
+ * Fonction selectTemps
+ * Utilisée pour afficher les menus déroulants des heures pour remplir les plannings de présences
+ * dans les fiches agents et dans le module Planning Hebdo
+ * @param int $jour : jour de la semaine sur 1 à 3 semaines (de 0 à 21)
+ * @param int $i : position du menu déroulant sur la ligne et période de la journée (Arrivée, début pause, fin pause, Départ), de 0 à 3
+ * @param boolean $periodes : précise si on utilise ou pas les période prédéfinies. Plus supporté ($periodes = false ou null).
+ * @param string $class : permet d'attribuer une class CSS au menu pour personnaliser l'affichage ou permettre des sélections JQuery
+ */
 function selectTemps($jour,$i,$periodes=null,$class=null){
+
+  $granularite = $GLOBALS['config']['Granularite'];
   $temps=null;
-  $select1=null;
-  $select2=null;
-  $select3=null;
-  $select4=null;
+  
   $class=$class?"class='$class'":null;
   if(array_key_exists("temps",$GLOBALS)){
     $temps=$GLOBALS['temps'];
@@ -1082,97 +1021,26 @@ function selectTemps($jour,$i,$periodes=null,$class=null){
     $select="<select name='temps[$jour][$i]' $class>\n";
   }
   $select.="<option value=''>&nbsp;</option>\n";
+
   for($j=7;$j<23;$j++){
-    $z=$j<10?"0":"";
-    if($temps and array_key_exists($jour,$temps)){
-      $select1=$temps[$jour][$i]==$z.$j.":00:00"?"selected='selected'":"";
-      $select2=$temps[$jour][$i]==$z.$j.":15:00"?"selected='selected'":"";
-      $select3=$temps[$jour][$i]==$z.$j.":30:00"?"selected='selected'":"";
-      $select4=$temps[$jour][$i]==$z.$j.":45:00"?"selected='selected'":"";
+    $hre = sprintf("%'.02d", $j);
+    
+    for($k=0; $k<60; $k=$k+$granularite){
+      $min = sprintf("%'.02d", $k);
+      
+      $selected = null;
+      if($temps and array_key_exists($jour,$temps)){
+        $selected = $temps[$jour][$i] == "$hre:$min:00" ? "selected='selected'" : null;
+      }
+      
+      $select.="<option value='$hre:$min:00' $selected >"."{$hre}h{$min}</option>\n";
     }
-    $select.="<option value='$z$j:00:00' $select1 >".$z.$j."h00</option>\n";
-    $select.="<option value='$z$j:15:00' $select2 >".$z.$j."h15</option>\n";
-    $select.="<option value='$z$j:30:00' $select3 >".$z.$j."h30</option>\n";
-    $select.="<option value='$z$j:45:00' $select4 >".$z.$j."h45</option>\n";
   }
+  
   $select.="</select>\n";
   return $select;
 }
 
-function soustrait_tab($tab1,$tab2){
-  $tab=array();
-  foreach($tab1 as $elem1){
-    $exist=false;
-    foreach($tab2 as $elem2)
-      if($elem1==$elem2)
-	$exist=true;
-    if(!$exist)
-      $tab[]=$elem1;
-  }
-  return $tab;
-}
-
-function tabAjoutLigne($tableau,$ligne,$contenu){
-	 // REMPLISSAGE PREMIER TABLEAU TEMP1
-  $temp1=array();
-  $temp2=array();
-  
-  $limit = $ligne + 1;
-  for($i=0;$i<$limit;$i++)
-    $temp1[] = $tableau[$i];
-
-  // REMPLISSAGE SECOND TABLEAU TEMP2
-  for($i=$limit;$i<count($tableau);$i++)
-    $temp2[] = $tableau[$i];
-
-  //DESTRUCTION DU TABLEAU D'ORIGINE
-  unset($tableau);
-
-  // RECREATION DU TABLEAU D'ORIGINE AVEC LES VALEURS DE TEMP1
-  for($i=0;$i<count($temp1);$i++)
-    $tableau[] = $temp1[$i];
-
-  //ajout d'une ligne vide
-  $tableau[]= $contenu;
-  // RECREATION DU TABLEAU D'ORIGINE AVEC LES VALEURS DE TEMP2
-  for($i=0;$i<count($temp2);$i++)
-    $tableau[] = $temp2[$i];
-  
-  return $tableau;
-}
-
-function tableau($liste){
-  $tab=explode(",",$liste);
-  $tableau=array();
-
-  foreach($tab as $elem){
-    $tab2=explode("=",$elem);
-    $tab3=array("heure" => $tab2[0],"nom" => $tab2[1]);
-    array_push($tableau,$tab3);
-  }
-  
-  usort($tableau, "cmp_heure");
-  
-  for($i=0;$i<10;$i++){
-    if($tableau[$i]['heure']==""){
-      $tableau[$i]['heure']="&nbsp;";
-    }
-    if($tableau[$i]['nom']==""){
-      $tableau[$i]['nom']="&nbsp;";
-    }
-  }
-  return $tableau;
-}
-
-function tri($tab){
-  sort($tab);
-  for($i=0;$i<21;$i++){
-    if($tab[$i]=="")
-	    $tab[$i]="&nbsp;";
-  }
-  return $tab;
-}
-	
 function verifmail($texte){
   return preg_match("/^[^@ ]+@[^@ ]+\.[^@ \.]+$/", $texte);
 }

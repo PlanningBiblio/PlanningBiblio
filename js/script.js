@@ -1,14 +1,15 @@
 /**
-Planning Biblio, Version 2.3.2
+Planning Biblio, Version 2.4.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 27 mai 2016
+Dernière modification :29 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
+@author Etienne Cavalié
 
 
 Description :
@@ -260,35 +261,25 @@ function heureFr(heure){
 function heure4(heure){
   heure=heure.toString();
   if(heure.indexOf("h")>0){
-    heure=heure.replace("h00",".00");
-    heure=heure.replace("h15",".25");
-    heure=heure.replace("h30",".50");
-    heure=heure.replace("h45",".75");
+    tmp = heure.split('h');
+    centiemes = parseFloat(tmp[1]) / 60;
+    heure = parseFloat(tmp[0]) + parseFloat(centiemes);
+    heure = heure.toFixed(2);
+  }
+  else if(heure.indexOf('.')>0){
+    tmp = heure.split('.');
+    centieme = parseFloat(heure) - parseFloat(tmp[0]);
+    minutes = centieme * 0.6;
+    heure = parseFloat(tmp[0]) + parseFloat(minutes);
+    heure = heure.toFixed(2);
+    heure = heure.toString().replace('.','h');
   }
   else{
-    heure=heure.replace(".00","h00");
-    heure=heure.replace(".25","h15");
-    heure=heure.replace(".50","h30");
-    heure=heure.replace(".75","h45");
-    heure=heure.replace(".00","h00");
-    heure=heure.replace(".5","h30");
-    if(heure.indexOf("h")<0){
-      heure+="h00";
-    }
+    heure += 'h00';
   }
   return heure;
 }
 
-function heure5(heure){
-  heure=heure.toString();
-  if(heure.indexOf("h")>0){
-    heure=heure.replace("h00",":00");
-    heure=heure.replace("h15",":25");
-    heure=heure.replace("h30",":50");
-    heure=heure.replace("h45",":75");
-  }
-  return heure;
-}
 
 function information(message,type,top,time){
   if(top==undefined){
@@ -346,6 +337,36 @@ function removeAccents(strAccents){
   }
   strAccentsOut = strAccentsOut.join('');
   return strAccentsOut;
+}
+
+
+/**
+ * Réninitialise l'URL du calendrier ICS de l'agent
+ * @param int id : ID de l'agent
+ * @param string nom : Prénom et Nom de l'agent (pour affichage de la confirmation
+ */
+function resetICSURL(id, nom){
+  if(nom == undefined){
+    var res = confirm("Etes vous sûr(e) de vouloir réinitialiser l'URL de votre calendrier ICS ?");
+  } else {
+    var res = confirm("Etes vous sûr(e) de vouloir réinitialiser l'URL du calendrier de "+nom+" ?");
+  }
+  
+  if(res){
+    $.ajax({
+      url: "ics/ajax.resetURL.php",
+      type: "post",
+      dataType: "json",
+      data: {id: id},
+      success: function(result){
+        $("#url-ics").text(result.url);
+        CJInfo("L'URL du calendrier a été réinitialisée avec succès","success");
+      },
+      error: function(result){
+        CJInfo("Une erreur est survenue lors de la réinitialisation de l'URL<br/>"+result.responseText,"error");
+      }
+    });
+  }
 }
 
 // Supprime les balises HTML

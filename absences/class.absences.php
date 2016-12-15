@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.1
+Planning Biblio, Version 2.4.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 6 mai 2016
+Dernière modification : 29 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -213,7 +213,8 @@ class absences{
 
       // On consulte le planning de présence de l'agent
       if($GLOBALS['config']['PlanningHebdo']){
-	require_once "{$path}planningHebdo/class.planningHebdo.php";
+        $version=$GLOBALS['version'];
+        require_once "{$path}planningHebdo/class.planningHebdo.php";
 
 	$p=new planningHebdo();
 	$p->perso_id=$perso_id;
@@ -281,9 +282,10 @@ class absences{
       $current=date("Y-m-d",strtotime("+1 day",strtotime($current)));
     }
 
-    $this->minutes=$difference/60;
-    $this->heures=$difference/3600;
-    $this->heures2=str_replace(array(".00",".25",".50",".75"),array("h00","h15","h30","h45"),number_format($this->heures, 2, '.', ' '));
+    $this->minutes=$difference/60;                                      // nombre de minutes (ex 2h30 => 150)
+    $this->heures=$difference/3600;                                     // heures et centièmes (ex 2h30 => 2.50)
+    $this->heures2=heure4(number_format($this->heures, 2, '.', ''));    // heures et minutes (ex: 2h30 => 2h30)
+
   }
 
   /**
@@ -348,7 +350,8 @@ class absences{
 
       // On consulte le planning de présence de l'agent
       if($GLOBALS['config']['PlanningHebdo']){
-	require_once "{$path}planningHebdo/class.planningHebdo.php";
+        $version = $GLOBALS['version'];
+        require_once "{$path}planningHebdo/class.planningHebdo.php";
 
 	$edt=array();
 	if($this->edt and !empty($this->edt)){
@@ -423,9 +426,9 @@ class absences{
       $current=date("Y-m-d",strtotime("+1 day",strtotime($current)));
     }
 
-    $this->minutes=$difference/60;
-    $this->heures=$difference/3600;
-    $this->heures2=str_replace(array(".00",".25",".50",".75"),array("h00","h15","h30","h45"),number_format($this->heures, 2, '.', ' '));
+    $this->minutes=$difference/60;                                      // nombre de minutes (ex 2h30 => 150)
+    $this->heures=$difference/3600;                                     // heures et centièmes (ex 2h30 => 2.50)
+    $this->heures2=heure4(number_format($this->heures, 2, '.', ''));    // heures et minutes (ex: 2h30 => 2h30)
   }
 
   
@@ -600,7 +603,7 @@ class absences{
   public function fetchById($id){
     $db=new db();
     $db->selectInnerJoin(array("absences","perso_id"),array("personnel","id"),
-      array("id","debut","fin","nbjours","motif","motif_autre","commentaires","valideN1","validationN1","pj1","pj2","so","demande","groupe",
+      array("id","debut","fin","nbjours","motif","motif_autre","commentaires","valideN1","validationN1","pj1","pj2","so","demande","groupe","iCalKey",
       array("name"=>"valide","as"=>"valideN2"),array("name"=>"validation","as"=>"validationN2")),
       array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mailsResponsables"),
       array("id"=>$id));
@@ -612,7 +615,7 @@ class absences{
       // Créé un tableau $agents qui sera placé dans $this->elements['agents']
       // Ce tableau contient un tableau par agent avec les informations le concernant (nom, prenom, mail, etc.)
       // En cas d'absence enregistrée pour plusieurs agents, il sera complété avec les informations des autres agents
-      $agents=array(array("perso_id"=>$result['perso_id'], "nom"=>$result['nom'], "prenom"=>$result['prenom'], "sites"=>$result['sites'], "mail"=>$result['mail'], "mailsResponsables"=>$result['mailsResponsables'], "absence_id"=>$id));
+      $agents=array(array("perso_id"=>$result['perso_id'], "nom"=>$result['nom'], "prenom"=>$result['prenom'], "sites"=>unserialize($result['sites']), "mail"=>$result['mail'], "mailsResponsables"=>$result['mailsResponsables'], "absence_id"=>$id));
       $perso_ids=array($result['perso_id']);
 
       // Absence concernant plusieurs agents
@@ -633,7 +636,7 @@ class absences{
 	if($db->result){
 	  foreach($db->result as $elem){
 	    $elem['mailsResponsables']=explode(";",html_entity_decode($elem['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
-	    $agent=array("perso_id"=>$elem['perso_id'], "nom"=>$elem['nom'], "prenom"=>$elem['prenom'], "sites"=>$elem['sites'], "mail"=>$elem['mail'], "mailsResponsables"=>$elem['mailsResponsables'], "absence_id"=>$elem['id']);
+	    $agent=array("perso_id"=>$elem['perso_id'], "nom"=>$elem['nom'], "prenom"=>$elem['prenom'], "sites"=>unserialize($elem['sites']), "mail"=>$elem['mail'], "mailsResponsables"=>$elem['mailsResponsables'], "absence_id"=>$elem['id']);
 	    if(!in_array($agent,$agents)){
 	      $agents[]=$agent;
 	      $perso_ids[]=$elem['perso_id'];
@@ -660,7 +663,8 @@ class absences{
       $date=$debut;
       while($date<=$fin){
 	// Emploi du temps si module planningHebdo activé
-	if($config['PlanningHebdo']){
+	if($GLOBALS['config']['PlanningHebdo']){
+      $version = $GLOBALS['version'];
 	  include_once "planningHebdo/class.planningHebdo.php";
 	  $p=new planningHebdo();
 	  $p->perso_id=$perso_id;

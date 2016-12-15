@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.4.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 22 janvier 2016
+Dernière modification : 25 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -23,6 +23,9 @@ if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
 }
 
 $tmp_dir=sys_get_temp_dir();
+// $server = $_SERVER['SERVER_NAME'];
+$url = createURL();
+$url = str_replace('/index.php?page=', null, $url);
 
 // Enregistrement des paramètres
 if($_POST){
@@ -189,6 +192,7 @@ foreach($db->result as $elem){
   }
 
   $commentaires=str_replace("[TEMP]",$tmp_dir,$elem['commentaires']);
+  $commentaires=str_replace("[SERVER]",$url,$commentaires);
   echo "</td><td>$commentaires</td>\n";
   echo "</tr>\n";
   

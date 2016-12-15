@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : activites/modif.php
 Création : mai 2011
-Dernière modification : 21 mars 2016
+Dernière modification : 10 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -25,15 +25,11 @@ if($id){
   $db=new db();
   $db->select2("activites","*",array("id"=>$id));
   $action="modif";
-  $classeAgent=$db->result[0]['classeAgent'];
-  $classePoste=$db->result[0]['classePoste'];
   $nom=$db->result[0]['nom'];
 }
 else{
   echo "<h3>Ajout d'une activité</h3>\n";
   $action="ajout";
-  $classeAgent=null;
-  $classePoste=null;
   $nom=null;
 }
 
@@ -44,18 +40,6 @@ echo "<tr><td>";
 echo "Nom :";
 echo "</td><td>";
 echo "<input type='text' value='$nom' name='nom' style='width:250px' class='ui-widget-content ui-corner-all'/>";
-echo "</td></tr>";
-
-echo "<tr><td>";
-echo "Classe pour les postes associ&eacute;s &agrave; cette activit&eacute;<sup>*</sup> :";
-echo "</td><td>";
-echo "<input type='text' value='$classePoste' name='classePoste' style='width:250px' class='ui-widget-content ui-corner-all'/>";
-echo "</td></tr>";
-
-echo "<tr><td>";
-echo "Classe pour les agents associ&eacute;s &agrave; cette activi&eacute;s<sup>**</sup> :";
-echo "</td><td>";
-echo "<input type='text' value='$classeAgent' name='classeAgent' style='width:250px' class='ui-widget-content ui-corner-all'/>";
 echo "</td></tr>";
 
 echo "<tr><td colspan='2' style='text-align:center; padding-top:40px;'>\n";
@@ -70,9 +54,3 @@ echo "</table>\n";
 echo "</form>\n";
 
 ?>
-<div class='important' style='margin-top:40px;'>
-<p style='margin-left:30px;'>
-<sup>* Classe CSS appliqu&eacute;e sur les lignes des postes associ&eacute;s &agrave; cette activit&eacute; dans les plannings. Permet de personnaliser l&apos;affichage de ces lignes.</sup><br/>
-<sup>** Classe CSS appliqu&eacute;e sur les cellules des agents associ&eacute;s &agrave; cette activit&eacute; dans les plannings. Permet de personnaliser l&apos;affichage de ces cellules.</sup>
-</p>
-</div>

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0.1
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 2 septembre 2015
+Dernière modification : 8 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -18,30 +18,41 @@ Page appelée par le fichier index.php, accessible par le menu statistiques / Fe
 
 require_once "class.statistiques.php";
 require_once "absences/class.absences.php";
+require_once "postes/class.postes.php";
 
 echo "<h3>Feuille de temps</h3>\n";
 
 require_once "include/horaires.php";
 
 //	Initialisation des variables
-if(isset($_GET['debut'])){
-  $debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
-  $fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$debut=filter_input(INPUT_GET,"debut",FILTER_SANITIZE_STRING);
+if($debut){
+  $fin=filter_input(INPUT_GET,"fin",FILTER_SANITIZE_STRING);
+  $selection_groupe = filter_input(INPUT_GET,'selection_groupe',FILTER_SANITIZE_STRING);
+  
+  $debut=filter_var($debut,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+  $fin=filter_var($fin,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+  $selection_groupe=filter_var($selection_groupe,FILTER_CALLBACK,array("options"=>"sanitize_on"));
+
   $debut=dateSQL($debut);
   $fin=$fin?dateFr($fin):$debut;
 }
 elseif(array_key_exists("stat_temps_debut",$_SESSION['oups'])){
   $debut=$_SESSION['oups']['stat_temps_debut'];
   $fin=$_SESSION['oups']['stat_temps_fin'];
+  $selection_groupe=$_SESSION['oups']['stat_temps_selection_groupe'];
 }
 else{
   $date=$_SESSION['PLdate'];
   $d=new datePl($date);
   $debut=$d->dates[0];
   $fin=$config['Dimanche']?$d->dates[6]:$d->dates[5];
+  $selection_groupe = false;
 }
 $_SESSION['oups']['stat_temps_debut']=$debut;
 $_SESSION['oups']['stat_temps_fin']=$fin;
+$_SESSION['oups']['stat_temps_selection_groupe']=$selection_groupe;
+
 
 $current=$debut;
 while($current<=$fin){
@@ -70,6 +81,38 @@ $siteAgents=array(0,0);	// Agents par site
 $db=new db();
 $db->select2("select_statuts");
 $couleurStatut=$db->result;
+
+
+// Affichage des statistiques par groupe de postes
+$groupes = array();
+$groupes_keys = array();
+$affichage_groupe = null;
+$totauxGroupesHeures = null;
+$totauxGroupesPerso = null;
+
+$p = new postes();
+$p->fetch();
+// Rassemble les postes dans un tableau en fonction de leur groupe (ex: $groupe['pret'] = array(1,2,3))
+foreach($p->elements as $poste){
+  $groupes[$poste['groupe']][]=$poste['id'];
+}
+
+if(!empty($groupes) and count($groupes)>1){
+  $checked = $selection_groupe ? "checked='checked'" : null;
+  $affichage_groupe = "<span id='stat-temps-aff-grp'><input type='checkbox' value='on' id='selection_groupe' name='selection_groupe' $checked /><label for='selection_groupe'>Afficher les heures par groupe de postes</label></span>";
+}
+
+if($affichage_groupe and $selection_groupe){
+  // $groupes_keys : nom des groupes
+  $groupes_keys = array_keys($groupes);
+  sort($groupes_keys);
+  
+  // Initialisation des totaux (footer)
+  foreach($groupes_keys as $g){
+    $totauxGroupesHeures[$g] = 0;
+    $totauxGroupesPerso[$g] = array();
+  }
+}
 
 // Recherche des heures de SP à effectuer pour tous les agents pour toutes les semaines demandées
 $d=new datePl($debut);
@@ -108,13 +151,20 @@ foreach($totalSP as $key => $value){
   $moyennesSP[$key]=$value/(count($heuresSP));
 }
 
+
+// Recherche des absences dans la table absences
+$a=new absences();
+$a->valide=true;
+$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$debut." 00:00:00",$fin." 23:59:59");
+$absencesDB=$a->elements;
+
 $db=new db();
 $debutREQ=$db->escapeString($debut);
 $finREQ=$db->escapeString($fin);
 
 $req="SELECT `{$dbprefix}pl_poste`.`date` AS `date`, `{$dbprefix}pl_poste`.`debut` AS `debut`, ";
 $req.="`{$dbprefix}pl_poste`.`fin` AS `fin`, `{$dbprefix}personnel`.`id` AS `perso_id`, ";
-$req.="`{$dbprefix}pl_poste`.`site` AS `site`, ";
+$req.="`{$dbprefix}pl_poste`.`site` AS `site`, `{$dbprefix}pl_poste`.`poste` AS `poste`, ";
 $req.="`{$dbprefix}personnel`.`nom` AS `nom`,`{$dbprefix}personnel`.`prenom` AS `prenom`, ";
 $req.="`{$dbprefix}personnel`.`statut` AS `statut` ";
 $req.="FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}personnel` ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id` ";
@@ -125,12 +175,26 @@ $req.="ORDER BY `nom`,`prenom`;";
 $db->query($req);
 if($db->result){
   foreach($db->result as $elem){
+  
+	// Vérifie à partir de la table absences si l'agent est absent
+	// S'il est absent, on met à 1 la variable $elem['absent']
+	foreach($absencesDB as $a){
+	  if($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']){
+		continue 2;
+	  }
+	}
+  
     if(!array_key_exists($elem['perso_id'],$tab)){		// création d'un tableau de données par agent (id, nom, heures de chaque jour ...)
       $tab[$elem['perso_id']]=Array("perso_id"=>$elem['perso_id'],"nom"=>$elem['nom'],
       "prenom"=>$elem['prenom'],"statut"=>$elem['statut'],"site1"=>0,"site2"=>0,"total"=>0,
       "semaine"=>0);
       foreach($dates as $d){
 	$tab[$elem['perso_id']][$d[0]]=0;
+      }
+      
+      // Totaux par groupe de postes
+      foreach($groupes_keys as $g){
+        $tab[$elem['perso_id']]['group_'.$g] = 0;
       }
     }
 	  
@@ -149,7 +213,23 @@ if($db->result){
       $siteHeures[$elem['site']]=0;
     }
     $siteHeures[$elem['site']]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
+    
+    // Totaux par groupe de postes
+    foreach($groupes_keys as $g){
+      if(in_array($elem['poste'], $groupes[$g])){
+        $tab[$elem['perso_id']]['group_'.$g] +=diff_heures($elem['debut'],$elem['fin'],"decimal");
+        $totauxGroupesHeures[$g] +=diff_heures($elem['debut'],$elem['fin'],"decimal");
+        if(!in_array($elem['perso_id'], $totauxGroupesPerso[$g])){
+          $totauxGroupesPerso[$g][] = $elem['perso_id'];
+        }
+      }
+    }
   }
+}
+
+// Totaux par groupe de postes
+foreach($groupes_keys as $g){
+  $totauxGroupesPerso[$g] = count($totauxGroupesPerso[$g]);
 }
 
 // pour chaque jour, on compte les heures et les agents
@@ -190,14 +270,6 @@ foreach($dates as $d){
   // on compte les agents par jours (2ème partie)
   $nbAgents[$d[0]]=count($agents_id);
 }
-
-// passage en session du tableau pour le fichier export.php
-$_SESSION['stat_tab']=$tab;
-$_SESSION['stat_heures']=$heures;
-$_SESSION['stat_agents']=$agents;
-$_SESSION['stat_dates']=$dates;
-$_SESSION['oups']['stat_totalHeures']=$totalHeures;
-$_SESSION['oups']['stat_nbAgents']=$nbAgents;
 
 // Formatage des données pour affichage
 $keys=array_keys($tab);
@@ -258,6 +330,18 @@ for($i=1;$i<=$config['Multisites-nombre'];$i++){
 }
 
 
+// passage en session du tableau pour le fichier export.php
+$_SESSION['stat_tab']=$tab;
+$_SESSION['stat_heures']=$heures;
+$_SESSION['stat_agents']=$agents;
+$_SESSION['stat_dates']=$dates;
+$_SESSION['oups']['stat_totalHeures']=$totalHeures;
+$_SESSION['oups']['stat_nbAgents']=$nbAgents;
+$_SESSION['oups']['stat_groupes'] = $groupes_keys;
+$_SESSION['oups']['stat_groupesHeures'] = $totauxGroupesHeures;
+$_SESSION['oups']['stat_groupesPerso'] = $totauxGroupesPerso;
+
+
 //			-------------		Affichage du tableau		---------------------//
 echo <<<EOD
 <table>
@@ -265,9 +349,10 @@ echo <<<EOD
 <td>
 <form name='form' method='get' action='index.php'>
 <input type='hidden' name='page' value='statistiques/temps.php' />
-Début : <input type='text' name='debut' class='datepicker' value='$debutFr' />&nbsp;
-Fin : <input type='text' name='fin' class='datepicker' value='$finFr' />&nbsp;
-<input type='submit' value='OK' id='submit' class='ui-button'/></form>
+<label for='debut'>Début</label><input type='text' name='debut' class='datepicker' value='$debutFr' style='margin:0 20px 0 5px;' />
+<label for='fin'>Fin</label><input type='text' name='fin' class='datepicker' value='$finFr' style='margin:0 0 0 5px;' />
+$affichage_groupe
+<input type='submit' value='OK' id='submit' class='ui-button' style='margin-left:30px;'/></form>
 </td></tr></table>
 <br/>
 EOD;
@@ -292,6 +377,18 @@ EOD;
       if($nbSemaines!=1){
 	echo "<th>Moyenne Hebdo.</th>\n";
       }
+    }
+  }
+
+  // Totaux par groupe de postes
+  if(!empty($groupes_keys)){
+    foreach($groupes_keys as $g){
+      if($g != '' and $totauxGroupesPerso[$g]){
+        echo "<th>$g</th>\n";
+      }
+    }
+    if(in_array('', $groupes_keys) and $totauxGroupesPerso['']){
+      echo "<th>Autres</th>\n";
     }
   }
 
@@ -323,9 +420,9 @@ EOD;
     }
 
     // Couleurs en fonction de la moyenne hebdo et des heures prévues
-    $color=$elem['semaine']>$elem['heuresHebdo']?"style='background:red;font-weight:bold;'":"";
+    $color=$elem['semaine']>$elem['heuresHebdo']?"background:red; font-weight:bold;":null;
     if(($elem['heuresHebdo']-$elem['semaine'])<=0.5 and ($elem['semaine']-$elem['heuresHebdo'])<=0.5){		// 0,5 du quota hebdo : vert
-      $color="style='background:lightgreen;font-weight:bold;'";
+      $color="background:lightgreen; font-weight:bold;";
     }
     
     // Affichage des lignes : Nom, heures par jour, par semaine, heures prévues
@@ -334,24 +431,36 @@ EOD;
     echo "<td style='background:$couleur;'>{$elem['statut']}</td>\n";
     foreach($dates as $d){
       $class=$elem[$d[0]]!="-"?"bg-yellow":null;
-      echo "<td class='$class'>{$elem[$d[0]]}</td>\n";
+      echo "<td class='$class' style='text-align:center;'>{$elem[$d[0]]}</td>\n";
     }
 
     if($config['Multisites-nombre']>1){
       for($i=1;$i<=$config['Multisites-nombre'];$i++){
-	echo "<td>{$elem["site$i"]}</td>\n";
+	echo "<td style='text-align:center;'>{$elem["site$i"]}</td>\n";
 	if($nbSemaines!=1){
-	  echo "<td>{$elem["site{$i}Semaine"]}</td>\n";
+	  echo "<td style='text-align:center;'>{$elem["site{$i}Semaine"]}</td>\n";
 	}
+      }
+    }
+    
+    // Totaux par groupe de postes
+    if(!empty($groupes_keys)){
+      foreach($groupes_keys as $g){
+        if($g != '' and $totauxGroupesPerso[$g]){
+          echo "<td style='text-align:center;'>".number_format($elem["group_$g"],2,',','')."</td>\n";
+        }
+      }
+      if(in_array('', $groupes_keys) and $totauxGroupesPerso['']){
+        echo "<td style='text-align:center;'>".number_format($elem["group_"],2,',','')."</td>\n";
       }
     }
 
     if($nbSemaines!=1){
-      echo "<td $color>{$elem['total']}</td>\n";
-      echo "<td>{$elem['max']}</td>\n";
+      echo "<td style='text-align:center; $color'>{$elem['total']}</td>\n";
+      echo "<td style='text-align:center;'>{$elem['max']}</td>\n";
     }
-    echo "<td $color>{$elem['semaine']}</td>\n";
-    echo "<td>{$elem['heuresHebdo']}</td>\n";
+    echo "<td style='text-align:center; $color'>{$elem['semaine']}</td>\n";
+    echo "<td style='text-align:center;'>{$elem['heuresHebdo']}</td>\n";
     echo "</tr>\n";
   }
   echo "</tbody>\n";
@@ -372,6 +481,18 @@ EOD;
     }
   }
 
+  // Totaux par groupe de postes
+  if(!empty($groupes_keys)){
+    foreach($groupes_keys as $g){
+      if($g != '' and $totauxGroupesPerso[$g]){
+        echo "<th>".number_format($totauxGroupesHeures[$g],2,',','')."</th>\n";
+      }
+    }
+    if(in_array('', $groupes_keys) and $totauxGroupesPerso['']){
+      echo "<th>".number_format($totauxGroupesHeures[''],2,',','')."</th>\n";
+    }
+  }
+
   echo "<th>$totalHeures</th><th colspan='$colspan'>&nbsp;</th>\n";
   echo "</tr>\n";
 
@@ -388,6 +509,18 @@ EOD;
       if($nbSemaines!=1){
 	echo "<th>&nbsp;</th>\n";
       }
+    }
+  }
+
+  // Totaux par groupe de postes
+  if(!empty($groupes_keys)){
+    foreach($groupes_keys as $g){
+      if($g != '' and $totauxGroupesPerso[$g]){
+        echo "<th>{$totauxGroupesPerso[$g]}</th>\n";
+      }
+    }
+    if(in_array('', $groupes_keys) and $totauxGroupesPerso['']){
+      echo "<th>{$totauxGroupesPerso['']}</th>\n";
     }
   }
 

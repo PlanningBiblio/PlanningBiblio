@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.1
+Planning Biblio, Version 2.4.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 6 mai 2016
+Dernière modification : 1er octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,9 +21,14 @@ require_once "class.absences.php";
 require_once "personnel/class.personnel.php";
 
 // Initialisation des variables
-$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
-$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
-$reset=filter_input(INPUT_GET,"reset",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$debut=filter_input(INPUT_GET,"debut",FILTER_SANITIZE_STRING);
+$fin=filter_input(INPUT_GET,"fin",FILTER_SANITIZE_STRING);
+$reset=filter_input(INPUT_GET,"reset",FILTER_SANITIZE_STRING);
+
+// Contrôle sanitize_dateFr en 2 temps pour éviter les erreurs CheckMarx
+$debut=filter_var($debut,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$fin=filter_var($fin,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+
 
 $debut=$debut?$debut:(isset($_SESSION['oups']['absences_debut'])?$_SESSION['oups']['absences_debut']:null);
 $fin=$fin?$fin:(isset($_SESSION['oups']['absences_fin'])?$_SESSION['oups']['absences_fin']:null);

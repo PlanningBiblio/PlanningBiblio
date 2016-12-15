@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.1
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 6 mai 2016
+Dernière modification : 2 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -27,7 +27,6 @@ $display=null;
 $checked=null;
 $admin=in_array(1,$droits)?true:false;
 $adminN2=in_array(8,$droits)?true:false;
-$quartDHeure=$config['heuresPrecision']=="quart-heure"?true:false;
 
 $a=new absences();
 $a->fetchById($id);
@@ -44,11 +43,11 @@ $commentaires=$a->elements['commentaires'];
 $demande=filter_var($a->elements['demande'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
 $debutSQL=filter_var($a->elements['debut'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
 $finSQL=filter_var($a->elements['fin'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
-$sitesAgent=unserialize($a->elements['sites']);
 $valide=filter_var($a->elements['valideN2'],FILTER_SANITIZE_NUMBER_INT);
 $validation=$a->elements['validationN2'];
 $valideN1=$a->elements['valideN1'];
 $validationN1=$a->elements['validationN1'];
+$iCalKey=$a->elements['iCalKey'];
 
 // Pièces justificatives
 $pj1Checked=$a->elements['pj1']?"checked='checked'":null;
@@ -90,6 +89,19 @@ if($valide==0 and $valideN1!=0){
 
 $display_autre=in_array(strtolower($motif),array("autre","other"))?null:"style='display:none;'";
 
+
+// Si le motif enregistré pour l'absence n'existe pas dans la liste des motifs, on l'ajoute à cette liste pour l'affichage du select
+$patternExists=false;
+foreach($motifs as $elem){
+  if($elem['valeur'] == $motif){
+    $patternExists=true;
+    break;
+  }
+}
+if(!$patternExists){
+  $motifs[]=array("id"=>"99999", "valeur"=>$motif);
+}
+
 // Sécurité
 // Droit 1 = modification de toutes les absences
 // Droit 6 = modification de ses propres absences
@@ -111,6 +123,18 @@ if(!$acces){
 
 // Multisites, ne pas afficher les absences des agents d'un site non géré
 if($config['Multisites-nombre']>1){
+  // $sites_agents comprend l'ensemble des sites en lien avec les agents concernés par cette modification d'absence
+  $sites_agents=array();
+  foreach($agents as $elem){
+    if(is_array($elem['sites'])){
+      foreach($elem['sites'] as $site){
+        if(!in_array($site,$sites_agents)){
+          $sites_agents[]=$site;
+        }
+      }
+    }
+  }
+
   $sites=array();
   for($i=1;$i<=$config['Multisites-nombre'];$i++){
     if(in_array((200+$i),$droits)){
@@ -119,20 +143,24 @@ if($config['Multisites-nombre']>1){
   }
 
   $admin=false;
-  if(is_array($sitesAgent)){
-    foreach($sitesAgent as $site){
-      if(in_array($site,$sites)){
-	$admin=true;
-      }
+  foreach($sites_agents as $site){
+    if(in_array($site,$sites)){
+      $admin=true;
+      break;
     }
   }
-  if(!$admin){
+  if(!$admin and !$acces){
     echo "<h3>Modification de l'absence</h3>\n";
     echo "Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>\n";
     echo "<a href='index.php?page=absences/voir.php'>Retour à la liste des absences</a><br/><br/>\n";
     include "include/footer.php";
     exit;
   }
+}
+
+// Si l'absence est importée depuis un agenda extérieur, on interdit la modification
+if($iCalKey){
+  $admin=false;
 }
 
 // Liste des agents
@@ -161,12 +189,6 @@ foreach($agents as $elem){
 // Si admin, affiche les agents de l'absence et offre la possibilité d'en ajouter
 if($admin){
   echo "<tr><td><label class='intitule'>Agent(s)</label></td><td>";
-  // TODO : afficher les agents de l'absences avec les croix de suppression : DONE
-  // TODO : cacher (.hide() pour pouvoir les remettre dans le menu si supprimés) les agents de l'abences dans le menu suivant : DONE
-  // TODO : tester ajout/suppression JS : DONE
-  // TODO : Aligner les croix de suppression : affichage en JS : DONE
-  // TODO : validation du formulaire avant envoi, contrôle des données
-  // TODO : validation des données (envoi formulaire) si admin/pas admin, absence unique/multiple
   
   // Liste des agents absents (Affichage de la liste)
   echo "<ul id='perso_ul'>\n";
@@ -221,7 +243,7 @@ echo "<tr id='hre_debut' $display ><td>\n";
 echo "<label class='intitule'>Heure de début</label>\n";
 echo "</td><td>\n";
 echo "<select name='hre_debut' class='center ui-widget-content ui-corner-all'>\n";
-selectHeure(7,23,true,$quartDHeure,$hre_debut);
+selectHeure(7,23,true,$hre_debut);
 echo "</select>\n";
 echo "</td></tr>\n";
 
@@ -233,7 +255,7 @@ echo "<tr id='hre_fin' $display ><td>\n";
 echo "<label class='intitule'>Heure de fin</label>\n";
 echo "</td><td>\n";
 echo "<select name='hre_fin' class='center ui-widget-content ui-corner-all' onfocus='setEndHour();'>\n";
-selectHeure(7,23,true,$quartDHeure,$hre_fin);
+selectHeure(7,23,true,$hre_fin);
 echo "</select>\n";
 echo "</td></tr>\n";
 
@@ -246,7 +268,8 @@ foreach($motifs as $elem){
   $selected=html_entity_decode($elem['valeur'],ENT_QUOTES|ENT_IGNORE,"utf-8")==html_entity_decode($motif,ENT_QUOTES|ENT_IGNORE,"utf-8")?"selected='selected'":null;
   $class=$elem['type']==2?"padding20":"bold";
   $disabled=$elem['type']==1?"disabled='disabled'":null;
-  echo "<option value='".$elem['valeur']."' $selected class='$class' $disabled >".$elem['valeur']."</option>\n";
+  $padding = $class == 'padding20' ? "&nbsp;&nbsp;&nbsp;" : null ;
+  echo "<option value='".$elem['valeur']."' $selected class='$class' $disabled >$padding".$elem['valeur']."</option>\n";
 }
 echo "</select>\n";
 if($admin){
@@ -296,10 +319,10 @@ echo <<<EOD
   <tr><td><label>Demande</label></td>
   <td>$demande</td></tr>
 EOD;
-
 echo "<tr><td colspan='2'><br/>\n";
-if($admin or ($valide==0 and $valideN1==0) or $config['Absences-validation']==0){
-//  echo "<input type='button' class='ui-button' value='Supprimer' onclick='document.location.href=\"index.php?page=absences/delete.php&amp;id=$id\";'/>";
+
+// Si l'absence est importée depuis un agenda extérieur, on interdit la modification
+if(($admin or ($valide==0 and $valideN1==0) or $config['Absences-validation']==0) and !$iCalKey){
   echo "<input type='button' class='ui-button' value='Supprimer' id='absence-bouton-supprimer' data-id='$id'/>";
   echo "&nbsp;&nbsp;\n";
   echo "<input type='button' class='ui-button' value='Annuler' onclick='annuler(1);'/>\n";

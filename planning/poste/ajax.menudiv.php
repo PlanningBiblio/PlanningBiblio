@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.4.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 8 janvier 2016
+Dernière modification : 2 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
@@ -43,6 +43,7 @@ $poste=filter_input(INPUT_GET,"poste",FILTER_SANITIZE_NUMBER_INT);
 $login_id=$_SESSION['login_id'];
 $tab_exclus=array(0);
 $absents=array(0);
+$absences_non_validees = array(0);
 $agents_qualif=array(0);
 $tab_deja_place=array(0);
 $sr_init=null;
@@ -135,19 +136,22 @@ if($bloquant=='1'){
 }
 
 // recherche des personnes à exclure (absents)
-$filter=$config['Absences-validation']?"AND `valide`>0":null;
-
 $db=new db();
 $dateSQL=$db->escapeString($date);
 $debutSQL=$db->escapeString($debut);
 $finSQL=$db->escapeString($fin);
 
-$db->select("absences","perso_id","`debut`<'$dateSQL $finSQL' AND `fin` >'$dateSQL $debutSQL' $filter ");
+$db->select('absences', 'perso_id,valide',"`debut`<'$dateSQL $finSQL' AND `fin` >'$dateSQL $debutSQL'");
 
 if($db->result){
   foreach($db->result as $elem){
-    $tab_exclus[]=$elem['perso_id'];
-    $absents[]=$elem['perso_id'];
+    if($elem['valide'] > 0 or $config['Absences-validation'] == '0'){
+      $tab_exclus[]=$elem['perso_id'];
+      $absents[]=$elem['perso_id'];
+      continue; // Garder le continue ici pour que les absences validés prennent le dessus sur les absences non validées
+    }elseif($config['Absences-non-validees']){
+      $absences_non_validees[] = $elem['perso_id'];
+    }
   }
 }
 
@@ -426,7 +430,7 @@ if(!$config['ClasseParService']){
   $hide=false;
   $p=new planning();
   $p->site=$site;
-  $p->menudivAfficheAgents($poste,$agents_dispo,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion);
+  $p->menudivAfficheAgents($poste,$agents_dispo,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion,$absences_non_validees);
   $tableaux[0].=$p->menudiv;
 }
 
@@ -504,7 +508,7 @@ if($agents_tous and $config['ClasseParService']){
   $hide=true;
   $p=new planning();
   $p->site=$site;
-  $p->menudivAfficheAgents($poste,$agents_tous,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion);
+  $p->menudivAfficheAgents($poste,$agents_tous,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion,$absences_non_validees);
   $tableaux[1].=$p->menudiv;
 }
 
@@ -513,7 +517,7 @@ if($autres_agents and !$config['ClasseParService'] and $config['agentsIndispo'])
   $hide=true;
   $p=new planning();
   $p->site=$site;
-  $p->menudivAfficheAgents($poste,$autres_agents,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion);
+  $p->menudivAfficheAgents($poste,$autres_agents,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion,$absences_non_validees);
   $tableaux[1].=$p->menudiv;
 }
 

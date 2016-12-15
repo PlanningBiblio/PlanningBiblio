@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.2
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 28 mai 2016
+Dernière modification : 18 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -32,10 +32,14 @@ include "fonctions.php";
 $groupe=filter_input(INPUT_GET,"groupe",FILTER_SANITIZE_NUMBER_INT);
 $site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
 $tableau=filter_input(INPUT_GET,"tableau",FILTER_SANITIZE_NUMBER_INT);
+$date=filter_input(INPUT_GET,"date",FILTER_SANITIZE_STRING);
+
+// Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
+$date=filter_var($date,FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
+
 $verrou=false;
 
 //		------------------		DATE		-----------------------//
-$date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
 if(!$date and array_key_exists('PLdate',$_SESSION)){
   $date=$_SESSION['PLdate'];
 }
@@ -234,8 +238,8 @@ if($db->result){
     // Ajout des classes en fonction des activités
     $activitesPoste=is_serialized($elem['activites'])?unserialize($elem['activites']):array();
     foreach($activitesPoste as $a){
-      if(array_key_exists($a,$activites)){
-	$classesPoste[]=$activites[$a]['classePoste'];
+      if(isset($activites[$a]['nom'])){
+        $classesPoste[] = 'tr_activite_'.strtolower(removeAccents(str_replace(array(' ','/'), '_', $activites[$a]['nom'])));
       }
     }
     
@@ -267,8 +271,8 @@ if($autorisation){
   $display2=$verrou?"display:none":null;
 
   echo "<div class='pl-validation' style='$display1'><u>Validation</u><br/>$perso2 $date_validation2 $heure_validation2</div>\n";
-  echo "<span id='icon-lock' class='pl-icon pl-icon-lock pointer' data-date='$date' data-site='$site' title='Déverrouiller le planning' style='$display1'></span></a>\n";
-  echo "<span id='icon-unlock' class='pl-icon pl-icon-unlock pointer' data-date='$date' data-site='$site' title='Verrouiller le planning' style='$display2'></span></a>\n";
+  echo "<span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' data-date='$date' data-site='$site' title='Déverrouiller le planning' style='$display1'></span></a>\n";
+  echo "<span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' data-date='$date' data-site='$site' title='Verrouiller le planning' style='$display2'></span></a>\n";
 }
 
 if($autorisation){
@@ -422,7 +426,7 @@ else{
   $db=new db();
   $db->selectInnerJoin(array("pl_poste","perso_id"),array("personnel","id"),
     array("perso_id","debut","fin","poste","absent","supprime"),
-    array("nom","prenom","statut","service"),
+    array("nom","prenom","statut","service","postes"),
     array("date"=>$date, "site"=>$site),
     array(),
     "ORDER BY `{$dbprefix}personnel`.`nom`, `{$dbprefix}personnel`.`prenom`");
@@ -430,6 +434,38 @@ else{
   global $cellules;
   $cellules=$db->result?$db->result:array();
   usort($cellules,"cmp_nom_prenom");
+  
+  // Recherche des absences
+  // Le tableau $absences sera utilisé par la fonction cellule_poste pour barrer les absents dans le plannings et pour afficher les absents en bas du planning
+  $a=new absences();
+  $a->valide=false;
+  $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date,$date);
+  $absences=$a->elements;
+  global $absences;
+  
+  // Ajoute les qualifications de chaque agent (activités) dans le tableaux $cellules pour personnaliser l'affichage des cellules en fonction des qualifications
+  foreach($cellules as $k => $v){
+    if(is_serialized($v['postes'])){
+      $p = unserialize($v['postes']);
+      $cellules[$k]['activites'] = array();
+      foreach($activites as $elem){
+        if(in_array($elem['id'], $p)){
+          $cellules[$k]['activites'][] = $elem['nom'];
+        }
+      }
+    }
+  }
+
+  // Tri des absences par nom
+  usort($absences,"cmp_nom_prenom_debut_fin");
+  
+  // Affichage des absences en bas du planning : seulement les absences validées
+  $absences_planning = array();
+  foreach($absences as $a){
+    if($a['valide']>0){
+      $absences_planning[] = $a;
+    }
+  }
 
   // Informations sur les congés
   if(in_array("conges",$plugins)){
@@ -464,8 +500,8 @@ else{
   }
 
   // affichage du tableau :
-  // affichage de la lignes des horaires
   echo "<div id='tableau' data-tableId='$tab' >\n";
+  // affichage de la lignes des horaires
   echo "<table id='tabsemaine1' cellspacing='0' cellpadding='0' class='text tabsemaine1'>\n";
 
   $j=0;
@@ -506,7 +542,7 @@ else{
     // Masquer les tableaux
     $masqueTableaux=null;
     if($config['Planning-TableauxMasques']){
-      $masqueTableaux="<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer' data-id='$j' ></span>";
+      $masqueTableaux="<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer noprint' data-id='$j' ></span>";
     }
 
     //		Lignes horaires
@@ -530,10 +566,12 @@ else{
       // Lignes postes
       if($ligne['type']=="poste" and $ligne['poste']){
 	// Classe de la première cellule en fonction du type de poste (obligatoire ou de renfort)
-	$classTD=$postes[$ligne['poste']]['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
+        $classTD = $postes[$ligne['poste']]['obligatoire'] == "Obligatoire" ? "td_obligatoire" : "td_renfort";
+        // Classe de la ligne en fonction du type de poste (obligatoire ou de renfort)
+        $classTR = $postes[$ligne['poste']]['obligatoire'] == "Obligatoire" ? "tr_obligatoire" : "tr_renfort";
 
 	// Classe de la ligne en fonction des activités et des catégories
-	$classTR=$postes[$ligne['poste']]['classes'];
+        $classTR .= ' ' . $postes[$ligne['poste']]['classes'];
 
 	// Affichage de la ligne
 	echo "<tr class='pl-line tableau$j $classTR {$tab['classe']}' $displayTR >\n";
@@ -570,10 +608,11 @@ else{
 	echo "<td>{$lignes_sep[$ligne['poste']]}</td><td colspan='$colspan'>&nbsp;</td></tr>\n";
       }
     }
-  echo "<tr class='tr_espace'><td>&nbsp;</td></tr>\n";
+  echo "<tr class='tr_espace tableau$j {$tab['classe']}'><td>&nbsp;</td></tr>\n";
   $j++;
   }
   echo "</table>\n";
+  echo "</div>\n";
   
   // Notes : Affichage
   $p=new planning();
@@ -597,7 +636,7 @@ EOD;
   if($autorisation or in_array((800+$site),$droits)){
     echo <<<EOD
     <div id='pl-notes-div2' class='noprint'>
-    <input type='button' class='ui-button' id='pl-notes-button' value='Ajouter un commentaire' />
+    <input type='button' class='ui-button noprint' id='pl-notes-button' value='Ajouter un commentaire' />
     </div>
 
     <div id="pl-notes-form" title="Commentaire" class='noprint' style='display:none;'>
@@ -632,26 +671,19 @@ EOD;
 
   // Affichage des absences
   if($config['Absences-planning']){
-    $a=new absences();
-    $a->valide=true;
-    $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date,$date);
-    $absences=$a->elements;
 
     // Ajout des congés
     if(in_array("conges",$plugins)){
       include "plugins/conges/planning.php";
     }
 
-    // Tri des absences par nom
-    usort($absences,"cmp_nom_prenom_debut_fin");
-
     switch($config['Absences-planning']){
       case "simple" :
-	if(!empty($absences)){
+	if(!empty($absences_planning)){
 	  echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
 	  echo "<table class='tableauStandard'>\n";
 	  $class="tr1";
-	  foreach($absences as $elem){
+	  foreach($absences_planning as $elem){
 	    $heures=null;
 	    $debut=null;
 	    $fin=null;
@@ -679,7 +711,7 @@ EOD;
 	break;
 
       case "détaillé" :
-	if(!empty($absences)){
+	if(!empty($absences_planning)){
 	  echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
 	  echo "<table id='tablePlanningAbsences' class='CJDataTable' data-sort='[[0],[1]]'><thead>\n";
 	  echo "<tr><th>Nom</th><th>Pr&eacute;nom</th>\n";
@@ -687,7 +719,7 @@ EOD;
 	  echo "<th class='dataTableDateFR'>Fin</th>\n";
 	  echo "<th>Motif</th></tr></thead>\n";
 	  echo "<tbody>\n";
-	  foreach($absences as $elem){
+	  foreach($absences_planning as $elem){
 	    echo "<tr><td>{$elem['nom']}</td><td>{$elem['prenom']}</td>";
 	    echo "<td>{$elem['debutAff']}</td><td>{$elem['finAff']}</td>";
 	    echo "<td>{$elem['motif']}</td></tr>\n";
@@ -703,8 +735,8 @@ EOD;
 	$absents=array(2);	// 2 = Utilisateur "Tout le monde", on le supprime
 
 	// On exclus ceux qui sont absents toute la journée
-	if(!empty($absences)){
-	  foreach($absences as $elem){
+	if(!empty($absences_planning)){
+	  foreach($absences_planning as $elem){
 	    if($elem['debut']<=$date." 00:00:00" and $elem['fin']>=$date." 23:59:59"){
 	      $absents[]=$elem['perso_id'];
 	    }
@@ -804,7 +836,7 @@ EOD;
 
 	echo "<table class='tableauStandard'>\n";
 	echo "<tr><td><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des présents</h3></td>\n";
-	if(!empty($absences)){
+	if(!empty($absences_planning)){
 	  echo "<td><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3></td>";
 	}
 	echo "</tr>\n";
@@ -824,7 +856,7 @@ EOD;
 	echo "<td>";
 	echo "<table cellspacing='0'>";
 	$class="tr1";
-	foreach($absences as $elem){
+	foreach($absences_planning as $elem){
 	  $heures=null;
 	  $debut=null;
 	  $fin=null;

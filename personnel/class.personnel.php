@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.1
+Planning Biblio, Version 2.4.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 6 mai 2016
+Dernière modification : 17 septembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -32,7 +32,7 @@ class personnel{
   }
 
   public function delete($liste){
-    $update=array("supprime"=>"2","login"=>"CONCAT(id,".time().")","mail"=>null,"arrivee"=>null,"depart"=>null,"postes"=>null,"droits"=>null,
+    $update=array("supprime"=>"2","login"=>"CONCAT(login,SYSDATE())","mail"=>null,"arrivee"=>null,"depart"=>null,"postes"=>null,"droits"=>null,
       "password"=>null,"commentaires"=>"Suppression définitive le ".date("d/m/Y"), "last_login"=>null, "temps"=>null, 
       "informations"=>null, "recup"=>null, "heuresTravail"=>null, "heuresHebdo"=>null, "sites"=>null);
     
@@ -52,7 +52,7 @@ class personnel{
     if(in_array("conges",$plugins)){
       include "plugins/conges/suppression_agents.php";
     }
-    if($config['PlanningHebdo']){
+    if($GLOBALS['config']['PlanningHebdo']){
       require_once "planningHebdo/class.planningHebdo.php";
 
       // recherche des personnes à exclure (congés)
@@ -148,6 +148,40 @@ class personnel{
 	$this->elements[]=$elem['semaine'];
       }
     }
+  }
+  
+  /**
+   * getICSCode
+   * Retourne le code ICS de l'agent. Créé le code s'il n'existe pas
+   * Le code ICS est requis pour accéder au calendriers si ceux-ci sont protégés
+   * @param int $id : id de l'agent
+   * @return string $code : retourne le code ICS de l'agent
+   */
+  public function getICSCode($id){
+    $this->fetchById($id);
+    $code = $this->elements[0]['codeICS'];
+    if(!$code){
+      $code = md5(time().rand(100,999));
+      $db = new db();
+      $db->update2('personnel', array('codeICS'=>$code), array('id'=>$id));
+    }
+    return $code;
+  }
+  
+  /**
+   * getICSURL
+   * Retourne l'URL ICS de l'agent.
+   * @param int $id : id de l'agent
+   * @return string $url
+   */
+  public function getICSURL($id){
+    $url = createURL();
+    $url = str_replace('/index.php?page=', "/ics/calendar.php?id=$id", $url);
+    if($GLOBALS['config']['ICS-Code']){
+      $code = $this->getICSCode($id);
+      $url .= "&amp;code=$code";
+    }
+    return $url;
   }
 
   public function update_time(){

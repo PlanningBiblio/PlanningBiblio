@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.6
+Planning Biblio, Version 2.4.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : statistiques/agents.php
 Création : mai 2011
-Dernière modification : 17 avril 2015
+Dernière modification : 3 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -19,11 +19,16 @@ Page appelée par le fichier index.php, accessible par le menu statistiques / Pa
 
 require_once "class.statistiques.php";
 require_once "include/horaires.php";
+require_once "absences/class.absences.php";
 
 // Initialisation des variables :
-$debut=filter_input(INPUT_POST,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
-$fin=filter_input(INPUT_POST,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFR"));
+$debut=filter_input(INPUT_POST,"debut",FILTER_SANITIZE_STRING);
+$fin=filter_input(INPUT_POST,"fin",FILTER_SANITIZE_STRING);
 $post=filter_input_array(INPUT_POST,FILTER_SANITIZE_NUMBER_INT);
+
+$debut=filter_var($debut,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$fin=filter_var($fin,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+
 $post_agents=isset($post['agents'])?$post['agents']:null;
 $post_sites=isset($post['selectedSites'])?$post['selectedSites']:null;
 
@@ -99,6 +104,12 @@ $db=new db();
 $db->select2("personnel","*",array("actif"=>"Actif"),"ORDER BY `nom`,`prenom`");
 $agents_list=$db->result;
 
+// Recherche des absences dans la table absences
+$a=new absences();
+$a->valide=true;
+$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$debutSQL." 00:00:00",$finSQL." 23:59:59");
+$absencesDB=$a->elements;
+
 if(!empty($agents)){
   //	Recherche du nombre de jours concernés
   $db=new db();
@@ -163,6 +174,16 @@ if(!empty($agents)){
     if(is_array($resultat)){
       foreach($resultat as $elem){
 	if($agent==$elem['perso_id']){
+	
+	  // Vérifie à partir de la table absences si l'agent est absent
+	  // S'il est absent, on met à 1 la variable $elem['absent']
+	  foreach($absencesDB as $a){
+	    if($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']){
+	      $elem['absent']="1";
+	      break;
+	    }
+	  }
+	
 	  if($elem['absent']!="1"){		// on compte les heures et les samedis pour lesquels l'agent n'est pas absent
 	    // on créé un tableau par poste avec son nom, étage et la somme des heures faites par agent
 	    if(!array_key_exists($elem['poste'],$postes)){

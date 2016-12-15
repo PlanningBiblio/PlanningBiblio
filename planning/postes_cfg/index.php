@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3
+Planning Biblio, Version 2.4.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/index.php
 Création : mai 2011
-Dernière modification : 18 mars 2016
+Dernière modification : 19 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -83,7 +83,7 @@ foreach($tableaux as $elem){
   echo "<input type='checkbox' name='chk$i' value='{$elem['tableau']}' class='chk1'/>\n";
   echo "<a href='index.php?page=planning/postes_cfg/modif.php&amp;numero={$elem['tableau']}'>\n";
   echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
-  echo "<a href='javascript:popup(\"planning/postes_cfg/copie.php&amp;retour=index.php&amp;numero={$elem['tableau']}\",400,200);'>\n";
+  echo "<a href='javascript:popup(\"planning/postes_cfg/copie.php&amp;numero={$elem['tableau']}\",400,300);'>\n";
   echo "<span class='pl-icon pl-icon-copy' title='Copier'></span></a>\n";
   echo "<a href='javascript:supprimeTableau({$elem['tableau']});'>\n";
   echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
@@ -180,9 +180,16 @@ EOD;
 $db=new db();
 $db->select("lignes",null,null,"order by nom");
 
-echo "<h3>Lignes de s&eacute;paration</h3>\n";
+echo <<<EOD
+<h3>Lignes de s&eacute;paration</h3>
 
-echo "<p><input type='submit' value='Nouvelle ligne' class='ui-button'/></p>\n";
+<form method='get' action='index.php'>
+<input type='hidden' name='page' value='planning/postes_cfg/lignes_sep.php' />
+<input type='hidden' name='action' value='ajout' />
+<input type='hidden' name='cfg-type' value='lignes_sep' />
+<p><input type='submit' value='Nouvelle ligne' class='ui-button'/></p>
+</form>
+EOD;
 
 echo "<table class='CJDataTable' id='table-separations' data-noExport='1'  data-sort='[[1,\"asc\"]]'>\n";
 echo "<thead>\n";
@@ -194,34 +201,31 @@ echo "<th>Nom</th></tr>\n";
 echo "</thead>\n";
 
 echo "<tbody>\n";
-foreach($db->result as $elem){
-  $db2=new db();
-  $db2->select("pl_poste_lignes","*","poste='{$elem['id']}' AND type='ligne'");
-  $delete=$db2->result?false:true;
+if($db->result){
+  foreach($db->result as $elem){
+    $db2=new db();
+    $db2->select("pl_poste_lignes","*","poste='{$elem['id']}' AND type='ligne'");
+    $delete=$db2->result?false:true;
 
-  echo "<tr id='tr-ligne-{$elem['id']}' >\n";
-  echo "<td><a href='index.php?page=planning/postes_cfg/lignes_sep.php&amp;action=modif&amp;id={$elem['id']}'>\n";
-  echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
-  if($delete){
-    echo "<a href='javascript:supprimeLigne({$elem['id']});'>\n";
-    echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
+    echo "<tr id='tr-ligne-{$elem['id']}' >\n";
+    echo "<td><a href='index.php?page=planning/postes_cfg/lignes_sep.php&amp;action=modif&amp;id={$elem['id']}'>\n";
+    echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
+    if($delete){
+      echo "<a href='javascript:supprimeLigne({$elem['id']});'>\n";
+      echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
+    }
+    echo "</td>\n";
+    if(in_array(13,$droits)){
+      echo "<td>{$elem['id']}</td>\n";
+    }
+    echo "<td id='td-ligne-{$elem['id']}-nom' >{$elem['nom']}</td></tr>\n";
   }
-  echo "</td>\n";
-  if(in_array(13,$droits)){
-    echo "<td>{$elem['id']}</td>\n";
-  }
-  echo "<td id='td-ligne-{$elem['id']}-nom' >{$elem['nom']}</td></tr>\n";
 }
 
 echo <<<EOD
 </tbody>
 </table>
 
-<form method='get' action='index.php'>
-<input type='hidden' name='page' value='planning/postes_cfg/lignes_sep.php' />
-<input type='hidden' name='action' value='ajout' />
-<input type='hidden' name='cfg-type' value='lignes_sep' />
-</form>
 </div> <!-- tableaux-separations -->
 
 EOD;

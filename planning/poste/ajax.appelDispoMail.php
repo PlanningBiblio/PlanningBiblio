@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.4.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/ajax.appelDispoMail.php
 Création : 22 décembre 2015
-Dernière modification : 8 janvier 2016
+Dernière modification : 27 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -49,7 +49,7 @@ foreach($agents as $elem){
 }
 
 // Envoi du mail
-$m=new sendmail();
+$m=new CJMail();
 $m->subject=$sujet;
 $m->message=$message;
 $m->to=$destinataires;

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.4.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 Copyright (C) 2011-2016 - Jérôme Combes
 
-Fichier : cron.ctrlPlannings.php
+Fichier : cron.ctrlPlanning.php
 Création : 18 janvier 2016
-Dernière modification : 22 janvier 2016
+Dernière modification : 27 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -18,27 +18,23 @@ ex : 3 jours ouvrés à contrôler, le test du mercredi controlera le mercredi, 
 ET le lundi suivant (3 jours ouvrés + samedi + jour courant)
 Contrôle ou non des postes de renfort paramétrable dans Administration / Configuration / Rappels
 
-@note : déplacez ce fichier dans un dossier inaccessible depuis le réseau en HTTP (ex: /usr/local/planning)
 @note : Modifiez le crontab de l'utilisateur Apache (ex: #crontab -eu www-data) en ajoutant les 2 lignes suivantes :
 # Controle du planning du lundi au vendredi à 7h
-0 7 * * 1-5 /usr/bin/php -f /usr/local/planning/cron.ctrlPlannings.php cron
+0 7 * * 1-5 /usr/bin/php5 -f /var/www/html/planning/cron.ctrlPlannings.php
 Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à ce fichier
-L'argument "cron" donné à la suite de la commande permet de renseigner la variable $version. Sa valeur n'a pas 
-d'importance, il faut juste que $version ne soit pas NULL. Ceci permet d'interdire l'execution du script s'ils 
-reste dans un dossier accessible depuis un navigateur.
-@note : Modifiez la variable $path suivante en renseignant le chemin absolut vers votre dossier planningBiblio
+@note : Modifiez la variable $path suivante en renseignant le chemin absolu vers votre dossier planningBiblio
 */
 
 $path="/var/www/html/planning";
 
 /** $version=$argv[0]; permet d'interdire l'execution de ce script via un navigateur
  *  Le fichier config.php affichera une page "accès interdit si la $version n'existe pas
- *  $version prend la valeur de $argv[0] qui ne peut être fournie que en CLI
+ *  $version prend la valeur de $argv[0] qui ne peut être fournie que en CLI ($argv[0] = chemin du script appelé en CLI)
  */
 
-$version=isset($argv[0])?$argv[0]:null;
+$version=$argv[0];
 
-// chdir($path) : important pour l'execution via le cront
+// chdir($path) : important pour l'execution via le cron
 chdir($path);
 
 require_once "$path/include/config.php";
@@ -49,7 +45,7 @@ require_once "$path/planning/postes_cfg/class.tableaux.php";
 require_once "$path/postes/class.postes.php";
 
 if(!$config['Rappels-Actifs']){
-  logs("Rappels désactivés","Rappels",array("db"));
+  logs("Rappels désactivés","Rappels");
   exit;
 }
 
@@ -242,13 +238,13 @@ $msg.="</ul>\n";
 $subject="Plannings du ".dateFr($dates[0])." au ".dateFr($dates[count($dates)-1]);
 $to=explode(";",$config['Mail-Planning']);
 
-$m=new sendmail();
+$m=new CJMail();
 $m->to=$to;
 $m->subject=$subject;
 $m->message=$msg;
 $m->send();
 if($m->error){
-  logs($m->error,"Rappels",array("db"));
+  logs($m->error,"Rappels");
 }
 
 ?>

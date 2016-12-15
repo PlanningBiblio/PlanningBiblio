@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.4.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : statistiques/absences.php
 Création : 15 mai 2014
-Dernière modification : 21 mai 2015
+Dernière modification : 3 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -20,9 +20,12 @@ require_once "class.statistiques.php";
 require_once "absences/class.absences.php";
 
 //	Initialisation des variables
-$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
-$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$debut=filter_input(INPUT_GET,"debut",FILTER_SANITIZE_STRING);
+$fin=filter_input(INPUT_GET,"fin",FILTER_SANITIZE_STRING);
 $site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
+
+$debut=filter_var($debut,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$fin=filter_var($fin,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
 
 $afficheHeures=$config['PlanningHebdo']?true:false;
 $colspan=$afficheHeures?2:1;

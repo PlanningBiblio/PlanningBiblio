@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.2.3
+Planning Biblio, Version 2.4.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planningHebdo/modif.php
 Création : 23 juillet 2013
-Dernière modification : 27 février 2016
+Dernière modification : 19 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -41,6 +41,13 @@ if($id){
   $p=new planningHebdo();
   $p->id=$id;
   $p->fetch();
+  if(empty($p->elements)){
+	echo "<h3>Planning de présence</h3>\n";
+	echo "<p>Le planning demand&eacute; n'est plus accessible &agrave; cette adresse.<br/>\n";
+	echo "Veuillez le rechercher dans le menu menu <a href='index.php?page=planningHebdo/index.php'>Administration / Plannings de pr&eacute;sence</a></p>\n";
+	include "include/footer.php";
+	exit;
+  }
   $debut1=$p->elements[0]['debut'];
   $fin1=$p->elements[0]['fin'];
   $debut1Fr=dateFr($debut1);
@@ -50,6 +57,7 @@ if($id){
   $temps=$p->elements[0]['temps'];
   $valide=$p->elements[0]['valide'];
   $remplace=$p->elements[0]['remplace'];
+  $cle=$p->elements[0]['cle'];
 
   // Informations sur l'agents
   $p=new personnel();
@@ -65,6 +73,11 @@ if($id){
   }
   if(!$admin and !$config['PlanningHebdo-Agents']){
     $modifAutorisee=false;
+  }
+  
+  // Si le champ clé est renseigné, les heures de présences ont été importées automatiquement depuis une source externe. Donc pas de modif
+  if($cle){
+    $modifAutorisee = false;
   }
 
   if(!$admin and $valide){
@@ -220,8 +233,14 @@ for($j=0;$j<$config['nb_semaine'];$j++){
       echo "<td>".selectTemps($i-1,2,null,"select")."</td><td>".selectTemps($i-1,3,null,"select")."</td>";
     }
     else{
-      echo "<td id='temps_".($i-1)."_0' class='td_heures'>".heure2($temps[$i-1][0])."</td><td id='temps_".($i-1)."_1' class='td_heures'>".heure2($temps[$i-1][1])."</td>";
-      echo "<td id='temps_".($i-1)."_2' class='td_heures'>".heure2($temps[$i-1][2])."</td><td id='temps_".($i-1)."_3' class='td_heures'>".heure2($temps[$i-1][3])."</td>";
+      $h1 = isset($temps[$i-1])?heure2($temps[$i-1][0]):null;
+      $h2 = isset($temps[$i-1])?heure2($temps[$i-1][1]):null;
+      $h3 = isset($temps[$i-1])?heure2($temps[$i-1][2]):null;
+      $h4 = isset($temps[$i-1])?heure2($temps[$i-1][3]):null;
+      echo "<td id='temps_".($i-1)."_0' class='td_heures'>$h1</td>\n";
+      echo "<td id='temps_".($i-1)."_1' class='td_heures'>$h2</td>\n";
+      echo "<td id='temps_".($i-1)."_2' class='td_heures'>$h3</td>\n";
+      echo "<td id='temps_".($i-1)."_3' class='td_heures'>$h4</td>\n";
     }
     if($config['Multisites-nombre']>1){
       if($modifAutorisee){
@@ -235,9 +254,9 @@ for($j=0;$j<$config['nb_semaine'];$j++){
 	}
 	echo "</select></td>";
       }else{
-	$site=$temps[$i-1][4];
-	$site=$site?$config["Multisites-site{$site}"]:"&nbsp;";
-	echo "<td class='td_heures'>$site</td>\n";
+		$site = isset($temps[$i-1][4]) ? $temps[$i-1][4] : null;
+		$site=$site?$config["Multisites-site{$site}"]:"&nbsp;";
+		echo "<td class='td_heures'>$site</td>\n";
       }
     }
     echo "<td id='heures_{$j}_$i'></td>\n";
@@ -250,7 +269,11 @@ for($j=0;$j<$config['nb_semaine'];$j++){
 
 echo "<div id='informations' style='margin-top:30px;' >\n";
 
-if(!$modifAutorisee){
+// Si le champ clé est renseigné, les heures de présences ont été importées automatiquement depuis une source externe. Donc pas de modif
+if($cle){
+  echo "<p><b class='important'>Les horaires ont été importés depuis une source externe.</b></p>\n";
+}
+elseif(!$modifAutorisee){
   echo "<p><b class='important'>Vos horaires ont été validés.</b><br/>Pour les modifier, contactez votre chef de service.</p>\n";
 }
 elseif($valide and !$admin){
@@ -283,7 +306,8 @@ echo "</div> <!-- id=informations -->\n";
 echo "<div id='boutons' style='padding-top:20px;'>\n";
 echo "<input type='button' value='Retour' onclick='location.href=\"index.php?page=planningHebdo/$retour\";' class='ui-button' />\n";
 
-if($admin){
+// Si le champ clé est renseigné, les heures de présences ont été importées automatiquement depuis une source externe. Donc pas de modif
+if($admin and !$cle){
   echo "<input type='submit' value='Enregistrer SANS valider' style='margin-left:30px;' class='ui-button' />\n";
   if(!$config['PlanningHebdo-PeriodesDefinies']){
     echo "<input type='button' value='Enregistrer et VALIDER'  style='margin-left:30px;' onclick='document.forms[\"form1\"].validation.value=1;if(plHebdoVerifForm()){document.forms[\"form1\"].submit();}' class='ui-button' />";

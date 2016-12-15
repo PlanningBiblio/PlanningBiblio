@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.2.3
+Planning Biblio, Version 2.4.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 27 février 2016
+Dernière modification : 29 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -105,7 +105,7 @@ class planning{
   }
 
   // Affiche la liste des agents dans le menudiv
-  public function menudivAfficheAgents($poste,$agents,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion){
+  public function menudivAfficheAgents($poste,$agents,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion,$absences_non_validees){
     $msg_deja_place="&nbsp;<font class='red bold'>(DP)</font>";
     $msg_deuxSP="&nbsp;<font class='red bold'>(2 SP)</font>";
     $msg_SR="&nbsp;<font class='red bold'>(SR)</font>";
@@ -133,184 +133,217 @@ class planning{
     // Calcul des heures de SP à effectuer pour tous les agents
     $heuresSP=calculHeuresSP($date);
 
+    // Nombre d'heures de la cellule choisie
+    $hres_cellule = 0;
+    if($stat){    // vérifier si le poste est compté dans les stats
+      $hres_cellule = diff_heures($debut,$fin,"decimal");
+    }
+    
     // Calcul des heures d'absences afin d'ajuster les heures de SP
     $a=new absences();
     $heuresAbsencesTab=$a->calculHeuresAbsences($date);
 
     if(is_array($agents)){
       usort($agents,"cmp_nom_prenom");
+    
+      // Calcul des heures faites ce jour, cette seamine et sur les 4 dernières semaines pour tous les agents
+      // Liste des ID des agents pour la requête des heures faites
+      $ids = array();
       foreach($agents as $elem){
-	// Heures hebdomadaires (heures à faire en SP)
-	$heuresHebdo=$heuresSP[$elem['id']];
-	$heuresHebdoTitle="Quota hebdomadaire";
-	
-	// Heures hebdomadaires avec prise en compte des absences
-	if($config["Planning-Absences-Heures-Hebdo"] and array_key_exists($elem['id'],$heuresAbsencesTab)){
-	  $heuresAbsences=$heuresAbsencesTab[$elem['id']];
-	  if(is_numeric($heuresAbsences)){
-	    if($heuresAbsences>0){
-	      // On informe du pourcentage sur les heures d'absences
-	      $pourcent=null;
-	      if(strpos($elem["heuresHebdo"],"%") and $elem["heuresHebdo"]!="100%"){
-		$pourcent=" {$elem["heuresHebdo"]}";
-	      }
-	      
-	      $heuresHebdoTitle="Quota hebdomadaire = $heuresHebdo - $heuresAbsences (Absences{$pourcent})";
-	      $heuresHebdo=$heuresHebdo-$heuresAbsences;
-	      if($heuresHebdo<0){
-		$heuresHebdo=0;
-	      }
-	    }
-	  }else{
-	    $heuresHebdoTitle="Quota hebdomadaire : Erreur de calcul des heures d&apos;absences";
-	    $heuresHebdo="Erreur";
-	  }
-	}
-	
-	$hres_jour=0;
-	$hres_sem=0;
+        $ids[]=$elem['id'];
+      }
+      $agents_liste = implode(",",$ids);
+      
+      // Intervalle de dates par défaut : la semaine en cours
+      $date1 = $j1;
+      $date2 = $j7;
+      
+      // Si l'option hres4semaines est cochée, l'intervalle est de 4 semaines
+      if($config['hres4semaines']){
+        $date1=date("Y-m-d",strtotime("-3 weeks",strtotime($j1)));
+      }
 
-	if(!$config['ClasseParService']){
-	  if($elem['id']==2){		// on retire l'utilisateur "tout le monde"
-	    continue;
-	  }
-	}
+      // Recherche des absences dans la table absences pour les déduire des heures faites
+      $a=new absences();
+      $a->valide=true;
+      $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date1." 00:00:00",$date2." 23:59:59");
+      $absencesDB=$a->elements;
 
-	$nom=htmlentities($elem['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8",false);
-	if($elem['prenom']){
-	  $nom.=" ".substr(htmlentities($elem['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8",false),0,1).".";
-	}
+      // Recherche des postes occupés dans la base avec le plus grand intervalle pour limiter les requêtes
+      $db_heures = new db();
+      $db_heures->selectInnerJoin(array("pl_poste","poste"),array("postes","id"),
+        array("date","debut","fin","perso_id"),
+        array(),
+        array("perso_id"=> "IN $agents_liste", "absent"=>"<>1", "date"=> "BETWEEN {$date1} AND {$date2}"),
+        array("statistiques"=>"1"));
+      
+      if($db_heures->result){
+        // Pour chaqe résultat, on ajoute le nombre d'heures correspondant à l'agent concerné, pour le jour, la semaine et/ou les 4 semaines
+        foreach($db_heures->result as $elem){
 
-	//			----------------------		Sans repas		------------------------------------------//
-	// $sr permet d'interdire l'ajout d'un agent sur une cellule déjà occupée si cela met l'agent en SR
-	$sr=0;
+          // Vérifie à partir de la table absences si l'agent est absent
+          // S'il est absent, on met passe (continue 2)
+          foreach($absencesDB as $a){
+            if($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']){
+              continue 2;
+            }
+          }
+        
+          $h = diff_heures($elem['debut'],$elem['fin'],"decimal");
+          $hres_jour = $elem['date'] == $date ? $h : 0;
+          $hres_semaine = ($elem['date'] >= $j1 and $elem['date'] <= $j7) ? $h : 0;
+          $hres_4sem = $h;
+          
+          if(!isset($heures[$elem['perso_id']])){
+            $heures[$elem['perso_id']] = array("jour"=>$hres_jour, "semaine"=>$hres_semaine, "4semaines"=>$hres_4sem);
+          }else{
+            $heures[$elem['perso_id']]["jour"] += $hres_jour;
+            $heures[$elem['perso_id']]["semaine"] += $hres_semaine;
+            $heures[$elem['perso_id']]["4semaines"] += $hres_4sem;
+          }
+        }
+      }
+      
+      // Recherche des sans repas en dehors de la boucle pour optimiser les performances (juillet 2016)
+      $p = new planning();
+      $sansRepas = $p->sansRepas($date,$debut,$fin);
 
-	// Si sans repas, on ajoute (SR) à l'affichage
-	if($this->sansRepas($date,$debut,$fin,$elem['id'])){
-	  $sr=1;
-	  $nom.=$msg_SR;
-	}
-		
-	//			----------------------		Déjà placés		-----------------------------------------------------//
-	if($config['Planning-dejaPlace']){
-	  if(in_array($elem['id'],$deja)){	// Déjà placé pour ce poste
-	    $nom.=$msg_deja_place;
-	  }
-	}
-	//			----------------------		FIN Déjà placés		-----------------------------------------------------//
+      foreach($agents as $elem){
+        // Heures hebdomadaires (heures à faire en SP)
+        $heuresHebdo=$heuresSP[$elem['id']];
+        $heuresHebdoTitle="Quota hebdomadaire";
+        
+        // Heures hebdomadaires avec prise en compte des absences
+        if($config["Planning-Absences-Heures-Hebdo"] and array_key_exists($elem['id'],$heuresAbsencesTab)){
+          $heuresAbsences=$heuresAbsencesTab[$elem['id']];
+          if(is_numeric($heuresAbsences)){
+            if($heuresAbsences>0){
+              // On informe du pourcentage sur les heures d'absences
+              $pourcent=null;
+              if(strpos($elem["heuresHebdo"],"%") and $elem["heuresHebdo"]!="100%"){
+                $pourcent=" {$elem["heuresHebdo"]}";
+              }
+              
+              $heuresHebdoTitle="Quota hebdomadaire = $heuresHebdo - $heuresAbsences (Absences{$pourcent})";
+              $heuresHebdo=$heuresHebdo-$heuresAbsences;
+              if($heuresHebdo<0){
+                $heuresHebdo=0;
+              }
+            }
+          }else{
+            $heuresHebdoTitle="Quota hebdomadaire : Erreur de calcul des heures d&apos;absences";
+            $heuresHebdo="Erreur";
+          }
+        }
+        
+        if(is_numeric($heuresHebdo)){
+          $heuresHebdo = round($heuresHebdo, 2);
+        }
 
-	// Vérifie si l'agent fera 2 plages de service public de suite
-	if($config['Alerte2SP']){
-	  if(in_array($elem['id'],$deuxSP)){
-	    $nom.=$msg_deuxSP;
-	  }
-	}
+        if(!$config['ClasseParService']){
+          if($elem['id']==2){		// on retire l'utilisateur "tout le monde"
+            continue;
+          }
+        }
+        
+        $title = in_array($elem['id'],$absences_non_validees) ? 'Absence ou congé non valid&eacute;' : null;
+        $nom = "<span title='$title'>";
+        $nom .= htmlentities($elem['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8",false);
+        if($elem['prenom']){
+          $nom.=" ".substr(htmlentities($elem['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8",false),0,1).".";
+        }
+        $nom .='</span>';
 
-	// Motifs d'indisponibilité
-	if(array_key_exists($elem['id'],$motifExclusion)){
-	  $nom.=" (".join(", ",$motifExclusion[$elem['id']]).")";
-	}
+        //			----------------------		Sans repas		------------------------------------------//
+        // Si sans repas, on ajoute (SR) à l'affichage
+        if( $sansRepas === true or in_array($elem['id'], $sansRepas) ){
+          $nom.=$msg_SR;
+        }
 
-	// affihage des heures faites ce jour + les heures de la cellule
-	$db_heures = new db();
-	$db_heures->selectInnerJoin(array("pl_poste","poste"),array("postes","id"),
-	  array("debut","fin"),
-	  array(),
-	  array("perso_id"=>$elem['id'], "absent"=>"<>1", "date"=>$date),
-	  array("statistiques"=>"1"));
+        //			----------------------		Déjà placés		-----------------------------------------------------//
+        if($config['Planning-dejaPlace']){
+          if(in_array($elem['id'],$deja)){	// Déjà placé pour ce poste
+            $nom.=$msg_deja_place;
+          }
+        }
+        //			----------------------		FIN Déjà placés		-----------------------------------------------------//
+        
+        // Vérifie si l'agent fera 2 plages de service public de suite
+        if($config['Alerte2SP']){
+          if(in_array($elem['id'],$deuxSP)){
+            $nom.=$msg_deuxSP;
+          }
+        }
 
-	if($stat){ 	// vérifier si le poste est compté dans les stats
-	  $hres_jour=diff_heures($debut,$fin,"decimal");
-	}
-	if($db_heures->result){
-	  foreach($db_heures->result as $hres){
-	    $hres_jour=$hres_jour+diff_heures($hres['debut'],$hres['fin'],"decimal");
-	  }
-	}
-	
-	// affihage des heures faites cette semaine + les heures de la cellule
-	$db_heures = new db();
-	$db_heures->selectInnerJoin(array("pl_poste","poste"),array("postes","id"),
-	  array("debut","fin"),array(),
-	  array("perso_id"=>$elem['id'], "absent"=>"<>1", "date"=>"BETWEEN{$j1}AND{$j7}"),
-	  array("statistiques"=>"1"));
+        // Motifs d'indisponibilité
+        if(array_key_exists($elem['id'],$motifExclusion)){
+          $nom.=" (".join(", ",$motifExclusion[$elem['id']]).")";
+        }
 
-	if($stat){ 	// vérifier si le poste est compté dans les stats
-	  $hres_sem=diff_heures($debut,$fin,"decimal");
-	}
-	if($db_heures->result){
-	  foreach($db_heures->result as $hres){
-	    $hres_sem=$hres_sem+diff_heures($hres['debut'],$hres['fin'],"decimal");
-	  }
-	}
+        // affihage des heures faites ce jour et cette semaine + les heures de la cellule
+        $hres_jour = isset($heures[$elem['id']]['jour']) ? $heures[$elem['id']]['jour'] : 0;
+        $hres_jour += $hres_cellule;
+        $hres_jour = round($hres_jour, 2);
+        $hres_sem = isset($heures[$elem['id']]['semaine']) ? $heures[$elem['id']]['semaine'] : 0;
+        $hres_sem += $hres_cellule;
+        $hres_sem = round($hres_sem, 2);
+        
+        // affihage des heures faites les 4 dernières semaines + les heures de la cellule
+        $hres_4sem=null;
+        if($config['hres4semaines']){
+          $hres_4sem = isset($heures[$elem['id']]['4semaines']) ? $heures[$elem['id']]['4semaines'] : 0;
+          $hres_4sem += $hres_cellule;
+          $hres_4sem = round($hres_4sem, 2);
+          $hres_4sem=" / <font title='Heures des 4 derni&egrave;res semaines'>$hres_4sem</font>";
+        }
 
-	// affihage des heures faites les 4 dernières semaines + les heures de la cellule
-	$hres_4sem=null;
-	if($config['hres4semaines']){
-	  $hres_4sem=0;
-	  $date1=date("Y-m-d",strtotime("-3 weeks",strtotime($j1)));
-	  $date2=$j7;	// fin de semaine courante
-	  $db_hres4 = new db();
-	  $db_hres4->selectInnerJoin(array("pl_poste","poste"), array("postes","id"), array("debut","fin"), array(),
-	    array("perso_id"=>$elem['id'], "absent"=>"<>1", "date"=>"BETWEEN{$date1}AND{$date2}"),
-	    array("statistiques"=>"1"));
+        //	Mise en forme de la ligne avec le nom et les heures et la couleur en fonction des heures faites
+        $nom.="<span>\n";
+        $nom.="&nbsp;<font title='Heures du jour'>$hres_jour</font> / ";
+        $nom.="<font title='Heures de la semaine'>$hres_sem</font> / ";
 
-	  if($stat){ 	// vérifier si le poste est compté dans les stats
-	    $hres_4sem=diff_heures($debut,$fin,"decimal");
-	  }
-	  if($db_hres4->result){
-	    foreach($db_hres4->result as $hres){
-	      $hres_4sem=$hres_4sem+diff_heures($hres['debut'],$hres['fin'],"decimal");
-	    }
-	  }
-	  $hres_4sem=" / <font title='Heures des 4 derni&egrave;res semaines'>$hres_4sem</font>";
-	}
+        $nom.="<font title='$heuresHebdoTitle'>$heuresHebdo</font>";
+        $nom.=$hres_4sem;
+        $nom.="</span>\n";
 
-	//	Mise en forme de la ligne avec le nom et les heures et la couleur en fonction des heures faites
-	$nom.="<span>\n";
-	$nom.="&nbsp;<font title='Heures du jour'>$hres_jour</font> / ";
-	$nom.="<font title='Heures de la semaine'>$hres_sem</font> / ";
+        // Si absence non validée : affichage en rouge
+        if(in_array($elem['id'], $absences_non_validees)){
+          $nom="<font style='color:red'>$nom</font>\n";
+        }elseif($hres_jour>7)			// plus de 7h:jour : rouge
+          $nom="<font style='color:red'>$nom</font>\n";
+        elseif(($heuresHebdo-$hres_sem)<=0.5 and ($hres_sem-$heuresHebdo)<=0.5)		// 0,5 du quota hebdo : vert
+          $nom="<font style='color:green'>$nom</font>\n";
+        elseif($hres_sem>$heuresHebdo)			// plus du quota hebdo : rouge
+          $nom="<font style='color:red'>$nom</font>\n";
 
-	$nom.="<font title='$heuresHebdoTitle'>$heuresHebdo</font>";
-	$nom.=$hres_4sem;
-	$nom.="</span>\n";
+        // Classe en fonction du statut et du service
+        $class_tmp=array();
+        if($elem['statut']){
+          $class_tmp[]="statut_".strtolower(removeAccents(str_replace(" ","_",$elem['statut'])));
+        }
+        if($elem['service']){
+          $class_tmp[]="service_".strtolower(removeAccents(str_replace(" ","_",$elem['service'])));
+        }
+        $classe=empty($class_tmp)?null:join(" ",$class_tmp);
 
-	if($hres_jour>7)			// plus de 7h:jour : rouge
-	  $nom="<font style='color:red'>$nom</font>\n";
-	elseif(($heuresHebdo-$hres_sem)<=0.5 and ($hres_sem-$heuresHebdo)<=0.5)		// 0,5 du quota hebdo : vert
-	  $nom="<font style='color:green'>$nom</font>\n";
-	elseif($hres_sem>$heuresHebdo)			// plus du quota hebdo : rouge
-	  $nom="<font style='color:red'>$nom</font>\n";
+        //	Affichage des lignes
+        $menudiv.="<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$groupe_hide' class='$classe $classTrListe menudiv-tr'>\n";
+        $menudiv.="<td style='width:200px;font-weight:normal;' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},0,0,\"$site\");'>";
+        $menudiv.=$nom;
 
-	// Classe en fonction du statut et du service
-	$class_tmp=array();
-	if($elem['statut']){
-	  $class_tmp[]="statut_".strtolower(removeAccents(str_replace(" ","_",$elem['statut'])));
-	}
-	if($elem['service']){
-	  $class_tmp[]="service_".strtolower(removeAccents(str_replace(" ","_",$elem['service'])));
-	}
-	$classe=empty($class_tmp)?null:join(" ",$class_tmp);
-
-	//	Affichage des lignes
-	$menudiv.="<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$groupe_hide' class='$classe $classTrListe menudiv-tr'>\n";
-	$menudiv.="<td style='width:200px;font-weight:normal;' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},0,0,\"$site\");'>";
-	$menudiv.=$nom;
-
-	//	Afficher ici les horaires si besoin
-	$menudiv.="</td><td style='text-align:right;width:20px'>";
-	
-	//	Affichage des liens d'ajout et de remplacement
-	$max_perso=$nbAgents>=$GLOBALS['config']['Planning-NbAgentsCellule']?true:false;
-	if($nbAgents>0 and !$max_perso and !$sr and !$sr_init)
-	  $menudiv.="<a href='javascript:bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},0,1,\"$site\");'>+</a>";
-	if($nbAgents>0 and !$max_perso)
-	  $menudiv.="&nbsp;<a style='color:red' href='javascript:bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},1,1,\"$site\");'>x</a>&nbsp;";
-	$menudiv.="</td></tr>\n";
+        //	Afficher ici les horaires si besoin
+        $menudiv.="</td><td style='text-align:right;width:20px'>";
+        
+        //	Affichage des liens d'ajout et de remplacement
+        $max_perso=$nbAgents>=$GLOBALS['config']['Planning-NbAgentsCellule']?true:false;
+        if($nbAgents>0 and !$max_perso){
+          $menudiv.="<a href='javascript:bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},0,1,\"$site\");'>+</a>";
+          $menudiv.="&nbsp;<a style='color:red' href='javascript:bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},1,1,\"$site\");'>x</a>&nbsp;";
+        }
+        $menudiv.="</td></tr>\n";
       }
     }
-  $this->menudiv=$menudiv;
-
+    $this->menudiv=$menudiv;
   }
 
 
@@ -518,7 +551,7 @@ class planning{
 	$message.="Lien vers le planning du ".dateFr($date)." : $url";
 
 	// Envoi du mail
-	$m=new sendmail();
+	$m=new CJMail();
 	$m->subject=$sujet;
 	$m->message=$message;
 	$m->to=$tab[$elem]['mail'];
@@ -532,7 +565,7 @@ class planning{
 	$message.="<br/><br/>Lien vers le planning du ".dateFr($date)." : $url";
 
 	// Envoi du mail
-	$m=new sendmail();
+	$m=new CJMail();
 	$m->subject=$sujet;
 	$m->message=$message;
 	$m->to=$oldData[$elem]['mail'];
@@ -578,48 +611,77 @@ class planning{
 
   /**
   * Fonction sansRepas
-  * Retourne true si l'agent est placé en continu entre les heures de début et de fin définies dans la config. pour les sans repas
+  * Retourne une tableau contenant les agents placés en continu entre les heures de début et de fin définies dans la config. pour les sans repas
+  * Ou retourne true si la plage intérrogée couvre complétement la préiode définie dans la config.
   * @param string $date
   * @param string $debut
   * @param string $fin
-  * @return int $sr (0/1)
+  * @return array / true
   */
-  public function sansRepas($date,$debut,$fin,$perso_id){
+  public function sansRepas($date,$debut,$fin){
     if($GLOBALS['config']['Planning-sansRepas']==0){
-      return 0;
+      return array();
     }
 
     $sr_debut=$GLOBALS['config']['Planning-SR-debut'];
     $sr_fin=$GLOBALS['config']['Planning-SR-fin'];
-    // Par défaut, SR = false (pas de sans Repas)
-    $sr=0;
+    
+    // Si la plage couvre complétement la période de sans repas, on retourne true, tous les agents seront marqués en sans repas
+    if( $debut <= $sr_debut and $fin >= $sr_fin ){
+      return true;
+    }
+    
+    // Par défaut, personne en sans repas => $sr = tableau vide
+    $sr=array();
+    
     // Si la plage interrogée est dans ou à cheval sur la période de sans repas
     if($debut<$sr_fin and $fin>$sr_debut){
+
       // Recherche dans la base de données des autres plages concernées
       $db=new db();
-      $db->select2("pl_poste","*",array("date"=>$date, "perso_id"=>$perso_id, "debut"=>"<$sr_fin", "fin"=>">$sr_debut"), "ORDER BY debut,fin");
+      $db->select2("pl_poste","*",array("date"=>$date, "debut"=>"<$sr_fin", "fin"=>">$sr_debut"), "ORDER BY debut,fin");
       if($db->result){
-	// Tableau result contient les plages de la base de données + la plage interrogée
-	$result=array_merge($db->result,array(array("debut"=>$debut, "fin"=>$fin)));
-	usort($result,"cmp_debut_fin");
-	// Si le plus petit début et inférieur ou égal au début de la période SR et la plus grande fin supérieure ou égale à la fin de la période SR
-	// = Possibilité que la période soit complète, on met SR=1
-	if($result[0]["debut"]<=$sr_debut and $result[count($result)-1]["fin"]>=$sr_fin){
-	  $sr=1;
-	  // On consulte toutes les plages à la recherche d'une interruption. Si interruption, sr=0 et on quitte la boucle
-	  $last_end=$result[0]['fin'];
-	  for($i=1;$i<count($result);$i++){
-	    if($result[$i]['debut']>$last_end){
-	      $sr=0;
-	      continue;
-	    }
-	    $last_end=$result[$i]['fin'];
-	  }
-	}
+        $result = array();
+        // On classe les résultats par agent
+        foreach($db->result as $elem){
+          // On commence par ajouter la plage interrogée à chaque agent
+          if(!array_key_exists($elem['perso_id'], $result)){
+            $result[$elem['perso_id']] = array(array('debut'=>$debut, 'fin'=>$fin));
+          }
+          // Et on ajoute les plages déjà renseignées pour chaque agent
+          $result[$elem['perso_id']][]=array('debut'=>$elem['debut'], 'fin'=>$elem['fin']);
+        }
+        
+        // Tableau result contient pour chaque agent les plages de la base de données + la plage interrogée
+        // Tri du tableau de chaque agents
+        foreach($result as $key => $value){
+          usort($result[$key],"cmp_debut_fin");
+        }
+        
+        // Si le plus petit début et inférieur ou égal au début de la période SR et la plus grande fin supérieure ou égale à la fin de la période SR
+        // = Possibilité que la période soit complète, on met SR=1
+        foreach($result as $key => $value){
+          $sansRepas=false;
+          if($value[0]["debut"]<=$sr_debut and $value[count($value)-1]["fin"]>=$sr_fin){
+            $sansRepas=true;
+            // On consulte toutes les plages à la recherche d'une interruption. Si interruption, sr=0 et on quitte la boucle
+            $last_end=$value[0]['fin'];
+            for($i=1;$i<count($value);$i++){
+              if($value[$i]['debut']>$last_end){
+                $sansRepas=false;
+                continue 2;
+              }
+              $last_end=$value[$i]['fin'];
+            }
+          }
+          if($sansRepas){
+            $sr[]=$key;
+          }
+        }
       }
     }
     return $sr;
   }
-
+  
 }
 ?>

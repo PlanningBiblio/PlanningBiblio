@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
-Dernière modification : 23 mars 2016
+Dernière modification : 18 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -20,6 +20,7 @@ Cette page est appelée par la page index.php
 
 require_once "class.planning.php";
 require_once "planning/postes_cfg/class.tableaux.php";
+include_once "absences/class.absences.php";
 include_once "activites/class.activites.php";
 include_once "personnel/class.personnel.php";
 include "fonctions.php";
@@ -28,10 +29,14 @@ include "fonctions.php";
 $groupe=filter_input(INPUT_GET,"groupe",FILTER_SANITIZE_NUMBER_INT);
 $site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
 $tableau=filter_input(INPUT_GET,"tableau",FILTER_SANITIZE_NUMBER_INT);
+$date=filter_input(INPUT_GET,"date",FILTER_SANITIZE_STRING);
+
+// Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
+$date=filter_var($date,FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
+
 $verrou=false;
 
 //		------------------		DATE		-----------------------//
-$date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
 if(!$date and array_key_exists('PLdate',$_SESSION)){
   $date=$_SESSION['PLdate'];
 }
@@ -185,8 +190,8 @@ if($db->result){
     // Ajout des classes en fonction des activités
     $activitesPoste=is_serialized($elem['activites'])?unserialize($elem['activites']):array();
     foreach($activitesPoste as $a){
-      if($activites[$a]['classePoste']){
-	$classesPoste[]=$activites[$a]['classePoste'];
+      if(isset($activites[$a]['nom'])){
+        $classesPoste[] = 'tr_activite_'.strtolower(removeAccents(str_replace(array(' ','/'), '_', $activites[$a]['nom'])));
       }
     }
     
@@ -214,6 +219,9 @@ echo "</td></tr>\n";
 
 //----------------------	FIN Verrouillage du planning		-----------------------//
 echo "</table></div>\n";
+
+// div id='tabsemaine1' : permet d'afficher les tableaux masqués. La fonction JS afficheTableauxDiv utilise $('#tabsemaine1').after() pour afficher les liens de récupération des tableaux
+echo "<div id='tabsemaine1'>&nbsp;</div>\n";
 
 //		---------------		FIN Affichage du titre et du calendrier		--------------------------//
 
@@ -280,7 +288,7 @@ for($j=0;$j<=$fin;$j++){
     $db=new db();
     $db->selectInnerJoin(array("pl_poste","perso_id"),array("personnel","id"),
       array("perso_id","debut","fin","poste","absent","supprime"),
-      array("nom","prenom","statut","service"),
+      array("nom","prenom","statut","service","postes"),
       array("date"=>$date, "site"=>$site),
       array(),
       "ORDER BY `{$dbprefix}pl_poste`.`absent` desc,`{$dbprefix}personnel`.`nom`, `{$dbprefix}personnel`.`prenom`"); 
@@ -288,7 +296,31 @@ for($j=0;$j<=$fin;$j++){
     global $cellules;
     $cellules=$db->result?$db->result:array();
     usort($cellules,"cmp_nom_prenom");
-  
+
+    // Recherche des absences
+    // Le tableau $absences sera utilisé par la fonction cellule_poste pour barrer les absents dans le plannings et pour afficher les absents en bas du planning
+    $a=new absences();
+    $a->valide=true;
+    $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date,$date);
+    $absences=$a->elements;
+    global $absences;
+
+    // Ajoute les qualifications de chaque agent (activités) dans le tableaux $cellules pour personnaliser l'affichage des cellules en fonction des qualifications
+    foreach($cellules as $k => $v){
+      if(is_serialized($v['postes'])){
+        $p = unserialize($v['postes']);
+        $cellules[$k]['activites'] = array();
+        foreach($activites as $elem){
+          if(in_array($elem['id'], $p)){
+            $cellules[$k]['activites'][] = $elem['nom'];
+          }
+        }
+      }
+    }
+
+    // Tri des absences par nom
+    usort($absences,"cmp_nom_prenom_debut_fin");
+
     // Informations sur les congés
     if(in_array("conges",$plugins)){
       include "plugins/conges/planning_cellules.php";
@@ -303,15 +335,66 @@ for($j=0;$j<=$fin;$j++){
     $t->get();
     $tabs=$t->elements;
 
-    // affichage du tableau :
-    // affichage de la lignes des horaires
+    
+    // Repère les heures de début et de fin de chaque tableau pour ajouter des colonnes si ces heures sont différentes
+    $hre_debut="23:59";
+    $hre_fin=null;
+    foreach($tabs as $elem){
+      $hre_debut=$elem["horaires"][0]["debut"]<$hre_debut?$elem["horaires"][0]["debut"]:$hre_debut;
+      $nb=count($elem["horaires"])-1;
+      $hre_fin=$elem["horaires"][$nb]["fin"]>$hre_fin?$elem["horaires"][$nb]["fin"]:$hre_fin;
+    }
 
+    // affichage du tableau :
+    echo "<div id='tableau' data-tableId='$tab' >\n";
+    // affichage de la lignes des horaires
     echo "<table class='tabsemaine1' cellspacing='0' cellpadding='0' class='text'>\n";
-    $k=0;
+
+    $l=0;
     foreach($tabs as $tab){
+      // Comble les horaires laissés vides : créé la colonne manquante, les cellules de cette colonne seront grisées
+      $cellules_grises=array();
+      $tmp=array();
+      
+      // Première colonne : si le début de ce tableau est supérieur au début d'un autre tableau
+      $k=0;
+      if($tab['horaires'][0]['debut']>$hre_debut){
+        $tmp[]=array("debut"=>$hre_debut, "fin"=>$tab['horaires'][0]['debut']);
+        $cellules_grises[]=$k++;
+      }
+      
+      // Colonnes manquantes entre le début et la fin
+      foreach($tab['horaires'] as $key => $value){
+        if($key==0 or $value["debut"]==$tab['horaires'][$key-1]["fin"]){
+          $tmp[]=$value;
+        }elseif($value["debut"]>$tab['horaires'][$key-1]["fin"]){
+          $tmp[]=array("debut"=>$tab['horaires'][$key-1]["fin"], "fin"=>$value["debut"]);
+          $tmp[]=$value;
+          $cellules_grises[]=$k++;
+        }
+        $k++;
+      }
+
+      // Dernière colonne : si la fin de ce tableau est inférieure à la fin d'un autre tableau
+      $nb=count($tab['horaires'])-1;
+      if($tab['horaires'][$nb]['fin']<$hre_fin){
+        $tmp[]=array("debut"=>$tab['horaires'][$nb]['fin'], "fin"=>$hre_fin);
+        $cellules_grises[]=$k;
+      }
+
+      
+      $tab['horaires']=$tmp;
+
+      // Masquer les tableaux
+      $masqueTableaux=null;
+      if($config['Planning-TableauxMasques']){
+        $masqueTableaux="<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer' data-id='$l' ></span>";
+      }
+
       //		Lignes horaires
-      echo "<tr class='tr_horaires {$tab['classe']}'>\n";
-      echo "<td class='td_postes'>{$tab['titre']}</td>\n";
+      echo "<tr class='tr_horaires tableau$l {$tab['classe']}'>\n";
+      echo "<td class='td_postes' data-id='$l' data-title='{$tab['titre']}'>{$tab['titre']} $masqueTableaux </td>\n";
+    
       $colspan=0;
       foreach($tab['horaires'] as $horaires){
 	echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin'])."</td>";
@@ -322,12 +405,14 @@ for($j=0;$j<=$fin;$j++){
       //	Lignes postes et grandes lignes
       foreach($tab['lignes'] as $ligne){
 	if($ligne['type']=="poste" and $ligne['poste']){
-	  $classTD=$postes[$ligne['poste']]['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
+          $classTD = $postes[$ligne['poste']]['obligatoire'] == "Obligatoire" ? "td_obligatoire" : "td_renfort";
+          // Classe de la ligne en fonction du type de poste (obligatoire ou de renfort)
+          $classTR = $postes[$ligne['poste']]['obligatoire'] == "Obligatoire" ? "tr_obligatoire" : "tr_renfort";
 
-	  // Classe de la ligne en fonction des activités et des catégories
-	  $classTR=$postes[$ligne['poste']]['classes'];
+          // Classe de la ligne en fonction des activités et des catégories
+          $classTR .= ' ' . $postes[$ligne['poste']]['classes'];
 
-	  echo "<tr class='pl-line tableau$k $classTR {$tab['classe']}'>\n";
+	  echo "<tr class='pl-line tableau$l $classTR {$tab['classe']}'>\n";
 	  echo "<td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
 	  if($config['Affichage-etages'] and $postes[$ligne['poste']]['etage']){
 	    echo " ({$postes[$ligne['poste']]['etage']})";
@@ -348,14 +433,15 @@ for($j=0;$j<=$fin;$j++){
 	  echo "</tr>\n";
 	}
 	if($ligne['type']=="ligne"){
-	  echo "<tr class='tr_separation tableau$k {$tab['classe']}'>\n";
+	  echo "<tr class='tr_separation tableau$l {$tab['classe']}'>\n";
 	  echo "<td>{$lignes_sep[$ligne['poste']]}</td><td colspan='$colspan'>&nbsp;</td></tr>\n";
 	}
       }
-      echo "<tr class='tr_espace'><td>&nbsp;</td></tr>\n";
-      $k++;
+      echo "<tr class='tr_espace tableau$l {$tab['classe']}'><td>&nbsp;</td></tr>\n";
+      $l++;
     }
     echo "</table>\n";
+    echo "</div>\n";
   }
 
   // Notes : Affichage

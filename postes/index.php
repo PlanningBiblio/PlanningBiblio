@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.2
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : postes/index.php
 Création : mai 2011
-Dernière modification : 27 mai 2016
+Dernière modification : 2 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -72,6 +72,7 @@ if($config['Multisites-nombre']>1){
 echo <<<EOD
   <th>Etage</th>
   <th>Activités</th>
+  <th>Groupe</th>
   <th>Obligatoire/renfort</th>
   <th>Bloquant</th>
   <th>Statistiques</th>
@@ -115,6 +116,7 @@ foreach($postes as $id => $value){
   }
   echo "<td>{$value['etage']}</td>\n";
   echo "<td title='$activites' size='100'>$activitesAffichees</td>\n";
+  echo "<td>{$value['groupe']}</td>\n";
   echo "<td>{$value['obligatoire']}</td>\n";
   echo "<td>".($value['bloquant']?"Oui":"Non")."</td>\n";
   echo "<td>".($value['statistiques']?"Oui":"Non")."</td>\n";

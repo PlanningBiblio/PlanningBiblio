@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/ajoutSelect.php
 Création : mai 2011
-Dernière modification : 22 janvier 2016
+Dernière modification : 2 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -54,6 +54,9 @@ elseif($action=="suppression"){
   }elseif($table=="select_etages"){
     $db=new db();
     $db->select2("postes","*",array("etage"=>$valeur));
+  }elseif($table=="select_groupes"){
+    $db=new db();
+    $db->select2("postes","*",array("groupe"=>$valeur));
   }
 
   if($db->result){		//		---------------		si la valeur à supprimer et urilisée		----------------//
@@ -111,7 +114,11 @@ echo "<h3>Ajout d'un $terme</h3>";
 <table>
 <tr><td>
 <?php
-echo "Nouveau $terme :";
+if(strtolower($terme) == 'étage'){
+  echo "Nouvel $terme :";
+}else{
+  echo "Nouveau $terme :";
+}
 ?>
 </td><td>
 <input type='text' name='nouveau' onkeyup='verif("ajout");' onblur='verif("ajout");' />
@@ -155,7 +162,10 @@ echo "<h3>Suppression d'un $terme</h3>";
 <table>
 <tr><td>
 <?php
-echo "$terme à supprimer : ";
+if($terme == 'étage'){
+  $terme = '&Eacute;tage';
+}
+echo ucfirst($terme).' à supprimer : ';
 ?>
 </td><td>
 

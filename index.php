@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.3
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 18 mars 2016
+Dernière modification : 3 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -23,7 +23,7 @@ Inclut à la fin le fichier footer.php
 session_start();
 
 // Version
-$version="2.3.3";
+$version="2.5";
 
 // Redirection vers setup si le fichier config est absent
 if(!file_exists("include/config.php")){
@@ -37,13 +37,15 @@ require_once "include/sanitize.php";
 ini_set('display_errors',$config['display_errors']);
 
 // Initialisation des variables
-$date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
+$date=filter_input(INPUT_GET,"date",FILTER_SANITIZE_STRING);
+$date=filter_var($date,FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
 $menu_get=filter_input(INPUT_GET,"menu",FILTER_SANITIZE_STRING);
 $menu_post=filter_input(INPUT_POST,"menu",FILTER_SANITIZE_STRING);
 $menu=($menu_get=="off" or $menu_post=="off")?false:true;
 
 $page_get=filter_input(INPUT_GET,"page",FILTER_CALLBACK,array("options"=>"sanitize_page"));
 $page_post=filter_input(INPUT_POST,"page",FILTER_CALLBACK,array("options"=>"sanitize_page"));
+
 if($page_post){
   $page=$page_post;
 }elseif($page_get){

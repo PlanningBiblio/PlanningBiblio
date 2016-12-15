@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.3
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 25 mars 2016
+Dernière modification : 17 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -390,12 +390,13 @@ select
   color:green;
 }
 
-.orange{
-  color:#FFA500;
-}
-
+/* .red avant .orange dans le CSS : permet de donner la priorité au orange (congés) par rapport au red (absences) dans le marquage des absences et congés dans le planning */
 .red{
   color:red;
+}
+
+.orange{
+  color:#FFA500;
 }
 
 .pointer{
@@ -522,6 +523,11 @@ class cellule = cellule par défaut
 #tabsemaine1 td, .tabsemaine1 td{
   border-width : 1px;
   border-style : outset;
+}
+
+/* tabsemaine1 est un div sur la page semaine.php : permet l'affichage des tableaux masqués */
+div#tabsemaine1{
+  margin: 20px 0 0 0;
 }
 
 .tr_horaires, .tr_separation, .tr_horaires a{
@@ -950,6 +956,10 @@ option.bold{
 
 #stat-col1 select,#stat-col1 input[type=text]{
   width:250px;
+}
+
+#stat-temps-aff-grp{
+  margin: 0 0 0 30px;
 }
 
 .statistiques-heures{

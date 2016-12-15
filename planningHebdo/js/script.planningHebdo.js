@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.4.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planningHebdo/js/script.planningHebdo.js
 Création : 26 août 2013
-Dernière modification : 1er juillet 2015
+Dernière modification : 11 juillet 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -43,10 +43,10 @@ function plHebdoCalculHeures(object,num){
       fin2=elements["temps"+num+"["+i+"][3]"].value;
     }
     else{
-      debut1=heure5($("#temps"+num+"_"+i+"_0").text());
-      fin1=heure5($("#temps"+num+"_"+i+"_1").text());
-      debut2=heure5($("#temps"+num+"_"+i+"_2").text());
-      fin2=heure5($("#temps"+num+"_"+i+"_3").text());
+      debut1=$("#temps"+num+"_"+i+"_0").text().replace("h",":");
+      fin1=$("#temps"+num+"_"+i+"_1").text().replace("h",":");
+      debut2=$("#temps"+num+"_"+i+"_2").text().replace("h",":");
+      fin2=$("#temps"+num+"_"+i+"_3").text().replace("h",":");
     }
     if(debut1){
       diff=0;

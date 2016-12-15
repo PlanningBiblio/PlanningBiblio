@@ -1,3 +1,73 @@
+*** Version 2.5   (17 novembre 2016)   ***
+- Améliorations
+Statistiques : affichage des heures par groupe de postes dans la feuille de temps
+Personnalisation de l'affichage des cellules en fonction des qualifications des agents (activités) : classes .activite_nom_de_l_activite
+Personnalisation de l'affichage des postes en fonction des activités requises : Utilisation des classes .tr_activite_nom_de_l_activite
+Planning: améliore l'affichage des semaines et autorise le masquage des tableaux sur la page semaine
+
+- Corrections
+Planning : correction d'une erreur sur le marquage des absents dans le menu permettant de placer les agents
+
+
+*** Version 2.4.8   (29 octobre 2016)   ***
+- Améliorations
+Planning : Affichage en rouge des agents pour lesquels il existe des absences non-validées
+Amélioration de la conversion des heures (suite à la granularité à 5 minutes)
+
+*** Version 2.4.6   (27 octobre 2016)   ***
+- Corrections
+Remplace la fonction sendmail par CJMail (compatibilité Wamp).
+PlanningHebdo : Remplace le champ DB key par cle
+Arrondi les heures du menudiv
+
+*** Version 2.4.5   (19 octobre 2016)   ***
+- Améliorations
+Agenda : Possibilité de choisir dans la config si on affiche ou non les plages de service public des plannings non-validés dans les agendas.
+
+*** Version 2.4.4   (13 octobre 2016)   ***
+- Améliorations
+Granularité à 5 minutes (expérimental)
+
+*** Version 2.4.3   (4 octobre 2016)   ***
+- Améliorations
+Mise à jour de l'aide
+Ajout d'une alarme sur les événements ICS exportés (10 minutes avant le début de SP)
+
+- Corrections
+Correction d'un problème empêchant la création de lignes de séparation
+
+- Sécurité
+Correction de vulnérabilités XSS, suppression des fichiers d'exemple de phpCAS
+
+*** Version 2.4.2   (8 septembre 2016)   ***
+- Améliorations
+Compatibilité MySQL 5.7, définie sql-mode=''
+Vérifie les fuseaux horaires des fichiers ICS importés
+
+- Correction
+Corrige les erreurs de modifications et validations d'absences
+
+*** Version 2.4.1   (27 juillet 2016)   ***
+- Améliorations
+Importation de fichiers ICS via une tache planifiée. Les fichiers ICS doivent être accessibles en openURL
+Importation des heures de présences en CSV via une tache planifiée. Les fichiers CSV doivent être accessibles en openURL
+Exportation des plages de service public des agents sous forme de calendriers ICS
+Optimisation du menu permettant de placer les agents dans le planning = moins de latence
+Optimisation de la recherche des sans repas
+
+- Corrections
+Corrige une erreur concernant le masquage des tableaux
+Corrige le script d'installation (enregistrement des informations dans la base de données)
+Corrige l'affichage des heures faites dans les tableaux des heures de présences (module planningHebdo)
+Corrige l'affichage des heures de présences dans les fiches agents (l'erreur existait avec le module planningHebdo)
+Corrige la validation des absences (l'erreur existait en configuration multisites)
+Feuille de temps : ne compte plus les absences
+Supprime les éventuels doublons de la table config.
+
+***	Version 2.3.4	(27 juin 2016)		***
+- Correction
+Corrige le script d'instllation (db_data) : insertion dans la table activités
+
 ***	Version 2.3.3	(20 juin 2016)		***
 - Améliorations
 Agenda : Regroupe les horaires des mêmes postes qui se suivent

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 2.4.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/postes_cfg/copie.php
 Création : mai 2011
-Dernière modification : 7 avril 2015
+Dernière modification : 19 ocotobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,12 +21,11 @@ de la page "planning/postes_cfg/index.php"
 require_once "class.tableaux.php";
 
 // Initilisation des variables
-$confirm=filter_input(INPUT_GET,"confirm",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$confirm=filter_input(INPUT_GET,"confirm",FILTER_SANITIZE_STRING);
 $nom=trim(filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING));
 $numero1=filter_input(INPUT_GET,"numero",FILTER_SANITIZE_NUMBER_INT);
-$retour=filter_input(INPUT_GET,"retour",FILTER_SANITIZE_URL);
 
-$retour=$retour?$retour:"modif.php";
+$confirm=filter_var($confirm,FILTER_CALLBACK,array("options"=>"sanitize_on"));
 
 if($confirm){
 	  //		Copie des horaires
@@ -100,8 +99,8 @@ if($confirm){
     }
   }
 
-	  //		Retour à  la page principale
-  echo "<script type='text/javaScript'>parent.location.href='index.php?page=planning/postes_cfg/$retour&cfg-type=horaires&numero=$numero2';</script>\n";
+  // Retour à  la page principale
+  echo "<script type='text/javaScript'>parent.location.href='index.php?page=planning/postes_cfg/index.php&cfg-type=horaires&numero=$numero2';</script>\n";
 }
 else{
   echo "<h3>Copie du tableau</h3>\n";
@@ -110,7 +109,6 @@ else{
   echo "<input type='hidden' name='menu' value='off' />\n";
   echo "<input type='hidden' name='confirm' value='on' />\n";
   echo "<input type='hidden' name='numero' value='$numero1' />\n";
-  echo "<input type='hidden' name='retour' value='$retour' />\n";
   echo "Nom du nouveau tableau<br/>\n";
   echo "<input type='text' name='nom' />\n";
   echo "<br/><br/><br/>\n";

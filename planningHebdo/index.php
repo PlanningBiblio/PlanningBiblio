@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.4.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planningHebdo/index.php
 Création : 23 juillet 2013
-Dernière modification : 1er juillet 2015
+Dernière modification : 19 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -18,9 +18,13 @@ Page accessible à partir du menu administration/planning de présence
 require_once "class.planningHebdo.php";
 
 // Initialisation des variables
-$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
-$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
-$reset=filter_input(INPUT_GET,"reset",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$debut=filter_input(INPUT_GET,"debut",FILTER_SANITIZE_STRING);
+$fin=filter_input(INPUT_GET,"fin",FILTER_SANITIZE_STRING);
+$reset=filter_input(INPUT_GET,"reset",FILTER_SANITIZE_STRING);
+
+$debut=filter_var($debut,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$fin=filter_var($fin,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$reset=filter_var($reset,FILTER_CALLBACK,array("options"=>"sanitize_on"));
 
 if(!$debut){
   $debut=array_key_exists("planningHebdoDebut",$_SESSION['oups'])?$_SESSION['oups']['planningHebdoDebut']:null;
@@ -90,7 +94,10 @@ foreach($p->elements as $elem){
   if($elem['valide']){
     $validation="<font style='display:none;'>Valid {$elem['validation']}</font>";
     $validation.=dateFr($elem['validation'],true);
-    $validation.=", ".nom($elem['valide']);
+    // 99999 : ID cron : donc pas de nom a afficher
+    if($elem['valide'] != 99999){
+      $validation.=", ".nom($elem['valide']);
+    }
   }
   $planningRemplace=$elem['remplace']==0?dateFr($elem['saisie'],true):$planningRemplace;
   $commentaires=$elem['remplace']?"Remplace le planning <br/>du $planningRemplace":null;
@@ -100,10 +107,15 @@ foreach($p->elements as $elem){
   echo "<td style='white-space:nowrap;'>$arrow \n";
     echo "<a href='index.php?page=planningHebdo/modif.php&amp;id={$elem['id']}&amp;retour=index.php'/>";
     echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a>";
-    echo "<a href='index.php?page=planningHebdo/modif.php&amp;copy={$elem['id']}&amp;retour=index.php'/>";
-    echo "<span class='pl-icon pl-icon-copy' title='Copier'></span></a>";
-    echo "<a href='javascript:plHebdoSupprime({$elem['id']});' style='margin-left:6px;'/>";
-    echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>";
+    
+    // Si le champ "clé" est renseigné : importation automatique, donc on n'affiche pas les icônes copie et suppression
+    if(!$elem['cle']){
+      echo "<a href='index.php?page=planningHebdo/modif.php&amp;copy={$elem['id']}&amp;retour=index.php'/>";
+      echo "<span class='pl-icon pl-icon-copy' title='Copier'></span></a>";
+      echo "<a href='javascript:plHebdoSupprime({$elem['id']});' style='margin-left:6px;'/>";
+      echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>";
+    }
+    
   echo "<td>{$elem['nom']}</td>";
   echo "<td>{$elem['service']}</td>";
   echo "<td>".dateFr($elem['debut'])."</td>";

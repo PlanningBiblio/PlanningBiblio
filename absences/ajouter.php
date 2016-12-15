@@ -1,20 +1,19 @@
 <?php
 /**
-Planning Biblio, Version 2.3.1
+Planning Biblio, Version 2.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 6 mai 2016
+Dernière modification : 2 novembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
 Description :
 Permet d'ajouter une absence. Formulaire, confirmation et validation.
-la table absence est complétée, la table pl_poste est mise à jour afin de barrer 
-les agents absents déjà placés
+la table absence est complétée.
 
 Page appelée par la page index.php
 */
@@ -26,16 +25,22 @@ require_once "motifs.php";
 //	Initialisation des variables
 $commentaires=trim(filter_input(INPUT_GET,"commentaires",FILTER_SANITIZE_STRING));
 $confirm=filter_input(INPUT_GET,"confirm",FILTER_SANITIZE_NUMBER_INT);
-$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
-$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
-$hre_debut=filter_input(INPUT_GET,"hre_debut",FILTER_CALLBACK,array("options"=>"sanitize_time"));
-$hre_fin=filter_input(INPUT_GET,"hre_fin",FILTER_CALLBACK,array("options"=>"sanitize_time_end"));
+$debut=filter_input(INPUT_GET,"debut",FILTER_SANITIZE_STRING);
+$fin=filter_input(INPUT_GET,"fin",FILTER_SANITIZE_STRING);
+$hre_debut=filter_input(INPUT_GET,"hre_debut",FILTER_SANITIZE_STRING);
+$hre_fin=filter_input(INPUT_GET,"hre_fin",FILTER_SANITIZE_STRING);
 $menu=filter_input(INPUT_GET,"menu",FILTER_SANITIZE_STRING);
 $motif=filter_input(INPUT_GET,"motif",FILTER_SANITIZE_STRING);
 $motif_autre=trim(filter_input(INPUT_GET,"motif_autre",FILTER_SANITIZE_STRING));
 $nbjours=filter_input(INPUT_GET,"nbjours",FILTER_SANITIZE_NUMBER_INT);
 $perso_id=filter_input(INPUT_GET,"perso_id",FILTER_SANITIZE_NUMBER_INT);
 $valide=filter_input(INPUT_GET,"valide",FILTER_SANITIZE_NUMBER_INT);
+
+// Contrôle sanitize_dateFr en 2 temps pour éviter les erreurs CheckMarx
+$debut=filter_var($debut,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$fin=filter_var($fin,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$hre_debut=filter_var($hre_debut,FILTER_CALLBACK,array("options"=>"sanitize_time"));
+$hre_fin=filter_var($hre_fin,FILTER_CALLBACK,array("options"=>"sanitize_time_end"));
 
 $perso_ids=array();
 // Absence unique
@@ -57,16 +62,18 @@ if(isset($_GET["perso_ids"])){
 }
 
 // Pièces justificatives
-$pj1=filter_input(INPUT_GET,"pj1",FILTER_CALLBACK,array("options"=>"sanitize_on01"));
-$pj2=filter_input(INPUT_GET,"pj2",FILTER_CALLBACK,array("options"=>"sanitize_on01"));
-$so=filter_input(INPUT_GET,"so",FILTER_CALLBACK,array("options"=>"sanitize_on01"));
+$pj1=filter_input(INPUT_GET,"pj1",FILTER_SANITIZE_STRING);
+$pj2=filter_input(INPUT_GET,"pj2",FILTER_SANITIZE_STRING);
+$so=filter_input(INPUT_GET,"so",FILTER_SANITIZE_STRING);
+$pj1=filter_var($pj1,FILTER_CALLBACK,array('options'=>'sanitize_on01'));
+$pj2=filter_var($pj2,FILTER_CALLBACK,array('options'=>'sanitize_on01'));
+$so=filter_var($so,FILTER_CALLBACK,array('options'=>'sanitize_on01'));
 
 $nbjours=$nbjours?$nbjours:0;
 $valide=$valide?$valide:0;
 
 $admin=in_array(1,$droits)?true:false;
 $adminN2=in_array(8,$droits)?true:false;
-$quartDHeure=$config['heuresPrecision']=="quart-heure"?true:false;
 
 $debutSQL=dateSQL($debut);
 $finSQL=dateSQL($fin);
@@ -196,18 +203,6 @@ if($confirm and !empty($perso_ids)){
       $id=$db->result[0]['id'];
     }
 
-    // Mise à jour du champs 'absents' dans 'pl_poste'
-    if($valideN2>0){
-      $db=new db();
-      $debut_sql=$db->escapeString($debut_sql);
-      $fin_sql=$db->escapeString($fin_sql);
-      $perso_id=$db->escapeString($perso_id);
-      $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='1' WHERE
-	CONCAT(`date`,' ',`debut`) < '$fin_sql' AND CONCAT(`date`,' ',`fin`) > '$debut_sql'
-	AND `perso_id`='$perso_id'";
-      $db->query($req);
-    }
-    
     // Recherche des plages de SP concernées pour ajouter cette information dans le mail.
     $a=new absences();
     $a->debut=$debut_sql;
@@ -264,7 +259,7 @@ if($confirm and !empty($perso_ids)){
     $message.="<p>Lien vers la demande d&apos;absence :<br/><a href='$url'>$url</a></p>";
 
     // Envoi du mail
-    $m=new sendmail();
+    $m=new CJMail();
     $m->subject=$titre;
     $m->message=$message;
     $m->to=$destinataires;
@@ -342,7 +337,7 @@ else{
   echo "<label class='intitule'>Heure de début </label>\n";
   echo "</td><td>\n";
   echo "<select name='hre_debut' class='center ui-widget-content ui-corner-all'>\n";
-  selectHeure(7,23,true,$quartDHeure);
+  selectHeure(7,23,true);
   echo "</select>\n";
   echo "</td></tr>\n";
   echo "<tr><td>\n";
@@ -354,7 +349,7 @@ else{
   echo "<label class='intitule'>Heure de fin </label>\n";
   echo "</td><td>\n";
   echo "<select name='hre_fin' class='center ui-widget-content ui-corner-all' onfocus='setEndHour();'>\n";
-  selectHeure(7,23,true,$quartDHeure);
+  selectHeure(7,23,true);
   echo "</select>\n";
   echo "</td></tr>\n";
   
@@ -367,7 +362,8 @@ else{
   foreach($motifs as $elem){
     $class=$elem['type']==2?"padding20":"bold";
     $disabled=$elem['type']==1?"disabled='disabled'":null;
-    echo "<option value='".$elem['valeur']."' class='$class' $disabled >".$elem['valeur']."</option>\n";
+    $padding = $class == 'padding20' ? "&nbsp;&nbsp;&nbsp;" : null ;
+    echo "<option value='".$elem['valeur']."' class='$class' $disabled >$padding".$elem['valeur']."</option>\n";
   }
   echo "</select>\n";
   if($admin){

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.2
+Planning Biblio, Version 2.4.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 28 mai 2016
+Dernière modification : 12 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,6 +21,7 @@ Cette page est appelée par le fichier index.php
 
 require_once "class.personnel.php";
 require_once "activites/class.activites.php";
+require_once "planningHebdo/class.planningHebdo.php";
 
 
 // Initialisation des variables
@@ -108,7 +109,21 @@ if($id){		//	récupération des infos de l'agent en cas de modif
   $arrivee=dateFr($db->result[0]['arrivee']);
   $depart=dateFr($db->result[0]['depart']);
   $login=$db->result[0]['login'];
-  $temps=unserialize($db->result[0]['temps']);
+  if($config['PlanningHebdo']){
+	$p = new planningHebdo();
+	$p->perso_id = $id;
+	$p->debut = date("Y-m-d");
+	$p->fin = date("Y-m-d");
+	$p->valide = true;
+	$p->fetch();
+	if(!empty($p->elements)){
+	  $temps = $p->elements[0]['temps'];
+	} else {
+	  $temps = array();
+	}
+  }else{
+	$temps=unserialize($db->result[0]['temps']);
+  }
   $postes_attribues=unserialize($db->result[0]['postes']);
   if(is_array($postes_attribues))
     sort($postes_attribues);
@@ -122,6 +137,14 @@ if($id){		//	récupération des infos de l'agent en cas de modif
   $sites=is_serialized($sites)?unserialize($sites):array();
   $action="modif";
   $titre=$nom." ".$prenom;
+  
+  // URL ICS
+  if($config['ICS-Export']){
+    $p = new personnel();
+    $ics = $p->getICSURL($id);
+  }
+
+
 }
 else{		// pas d'id, donc ajout d'un agent
   $id=null;
@@ -327,13 +350,32 @@ if(in_array(21,$droits)){
 
   for($i=1;$i<40;$i++){
     $j=array();
-    if($config['heuresPrecision']=="quart-heure"){
+    
+    /**
+     * @author Etienne Cavalié
+     * Granularité = 5 minutes
+     */
+    if($config['Granularite']==5){
+      $j[]=array($i,$i."h00");
+      $j[]=array($i.".08",$i."h05");
+      $j[]=array($i.".17",$i."h10");
+      $j[]=array($i.".25",$i."h15");
+      $j[]=array($i.".33",$i."h20");
+      $j[]=array($i.".42",$i."h25");
+      $j[]=array($i.".5",$i."h30");
+      $j[]=array($i.".58",$i."h35");
+      $j[]=array($i.".67",$i."h40");
+      $j[]=array($i.".75",$i."h45");
+      $j[]=array($i.".83",$i."h50");
+      $j[]=array($i.".92",$i."h55");
+    }
+    elseif($config['Granularite']==15){
       $j[]=array($i,$i."h00");
       $j[]=array($i.".25",$i."h15");
       $j[]=array($i.".5",$i."h30");
       $j[]=array($i.".75",$i."h45");
     }
-    elseif($config['heuresPrecision']=="demi-heure"){
+    elseif($config['Granularite']==30){
       $j[]=array($i,$i."h00");
       $j[]=array($i.".5",$i."h30");
     }
@@ -367,13 +409,27 @@ if(in_array(21,$droits)){
   echo "<option value='0'>&nbsp;</option>\n";
   for($i=1;$i<40;$i++){
     $j=array();
-    if($config['heuresPrecision']=="quart-heure"){
+    if($config['Granularite']==5){
+      $j[]=array($i,$i."h00");
+      $j[]=array($i.".08",$i."h05");
+      $j[]=array($i.".17",$i."h10");
+      $j[]=array($i.".25",$i."h15");
+      $j[]=array($i.".33",$i."h20");
+      $j[]=array($i.".42",$i."h25");
+      $j[]=array($i.".5",$i."h30");
+      $j[]=array($i.".58",$i."h35");
+      $j[]=array($i.".67",$i."h40");
+      $j[]=array($i.".75",$i."h45");
+      $j[]=array($i.".83",$i."h50");
+      $j[]=array($i.".92",$i."h55");
+    }
+    elseif($config['Granularite']==15){
       $j[]=array($i,$i."h00");
       $j[]=array($i.".25",$i."h15");
       $j[]=array($i.".5",$i."h30");
       $j[]=array($i.".75",$i."h45");
     }
-    elseif($config['heuresPrecision']=="demi-heure"){
+    elseif($config['Granularite']==30){
       $j[]=array($i,$i."h00");
       $j[]=array($i.".5",$i."h30");
     }
@@ -517,6 +573,16 @@ if($id){
     echo "<a href='javascript:modif_mdp();'>Changer le mot de passe</a>";
     echo "</td></tr>";
   }
+
+  // URL du fichier ICS
+  if(isset($ics)){
+    echo "<tr><td style='padding-top: 10px;'>Calendrier ICS</td>\n";
+    echo "<td style='padding-top: 10px;' id='url-ics'>$ics</td></tr>\n";
+    if($config['ICS-Code']){
+      echo "<tr><td>&nbsp;</td>\n";
+      echo "<td><a href='javascript:resetICSURL($id, \"$prenom $nom\");'>R&eacute;initialiser l'URL</a></td></tr>\n";
+    }
+  }
 }
 ?>
 </table>
@@ -625,17 +691,19 @@ for($j=0;$j<$config['nb_semaine'];$j++){
     }
     else{
       echo "<tr><td>{$jours[$k]}</td>\n";
-      echo "<td id='temps_".($i-1)."_0'>".heure2($temps[$i-1][0])."</td>\n";
-      echo "<td id='temps_".($i-1)."_1'>".heure2($temps[$i-1][1])."</td>\n";
-      echo "<td id='temps_".($i-1)."_2'>".heure2($temps[$i-1][2])."</td>\n";
-      echo "<td id='temps_".($i-1)."_3'>".heure2($temps[$i-1][3])."</td>\n";
+      
+	  for($l=0; $l<4; $l++){
+		$heure = isset($temps[$i-1][0]) ? heure2($temps[$i-1][$l]) : null;
+		echo "<td id='temps_".($i-1)."_$l'>$heure</td>\n";
+	  }
+      
       if($config['Multisites-nombre']>1){
-	$site=null;
-	if(array_key_exists(4,$temps[$i-1])){
-	  $site="Multisites-site".$temps[$i-1][4];
-	  $site=$config[$site];
-	}
-	echo "<td>$site</td>";
+		$site=null;
+		if(isset($temps[$i-1][4])){
+		  $site="Multisites-site".$temps[$i-1][4];
+		  $site=$config[$site];
+		}
+		echo "<td>$site</td>";
       }
       echo "<td id='heures_{$j}_$i'></td>\n";
       echo "</tr>\n";
