@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.1
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : monCompte.php
 Création : 23 juillet 2013
-Dernière modification : 27 juillet 2016
+Dernière modification : 19 décembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -46,6 +46,12 @@ $p=new personnel();
 $p->fetchById($_SESSION['login_id']);
 $sites=$p->elements[0]['sites'];
 
+// URL ICS
+$ics = null;
+if($config['ICS-Export']){
+  $ics = $p->getICSURL($_SESSION['login_id']);
+}
+
 // Crédits (congés, récupérations)
 if(in_array("conges",$plugins)){
   $credits['annuel']=$p->elements[0]['congesAnnuel'];
@@ -60,11 +66,6 @@ if(in_array("conges",$plugins)){
   $credits['joursRecuperation']=number_format($credits['recuperation']/7,2,","," ");
 }
 
-// URL ICS
-if($config['ICS-Export']){
-  $p = new personnel();
-  $ics = $p->getICSURL($_SESSION['login_id']);
-}
 ?>
 
 <!--	Menu	-->
@@ -79,7 +80,7 @@ if($config['PlanningHebdo']){
 if(in_array("conges",$plugins)){
   echo "<li><a href='#credits'>Mes crédits</a></li>\n";
 }
-if(isset($ics)){
+if($ics){
   echo "<li><a href='#ics'>Calendrier ICS</a></li>\n";
 }
 echo "<li><a href='#motDePasse'>Mon mot de passe</a></li>\n";
@@ -126,6 +127,12 @@ EOD;
   <tbody>
 EOD;
 
+  // Liste de tous les agents (pour la fonction nom()
+  $a=new personnel();
+  $a->supprime=array(0,1,2);
+  $a->fetch();
+  $agents=$a->elements;
+
   $p=new planningHebdo();
   $p->perso_id=$_SESSION['login_id'];
   $p->fetch();
@@ -133,7 +140,7 @@ EOD;
     $actuel=$elem['actuel']?"Oui":null;
     $validation="N'est pas validé";
     if($elem['valide']){
-      $validation=nom($elem['valide']).", ".dateFr($elem['validation'],true);
+      $validation=nom($elem['valide'],"nom p",$agents).", ".dateFr($elem['validation'],true);
     }
     $planningRemplace=$elem['remplace']==0?dateFr($elem['saisie'],true):$planningRemplace;
     $commentaires=$elem['remplace']?"Remplace le planning <br/>du $planningRemplace":null;

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.3
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 1er octobre 2016
+Dernière modification : 19 décembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -32,6 +32,11 @@ $fin=filter_var($fin,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
 
 $debut=$debut?$debut:(isset($_SESSION['oups']['absences_debut'])?$_SESSION['oups']['absences_debut']:null);
 $fin=$fin?$fin:(isset($_SESSION['oups']['absences_fin'])?$_SESSION['oups']['absences_fin']:null);
+
+$p = new personnel();
+$p->supprime=array(0,1,2);
+$p->fetch();
+$agents = $p->elements;
 
 echo "<h3>Liste des absences</h3>\n";
 
@@ -95,16 +100,6 @@ $tri="`debut`,`fin`,`nom`,`prenom`";
 $a->fetch($tri,$only_me,$perso_id,$debutSQL,$finSQL,$sites);
 $absences=$a->elements;
 
-// Recherche des agents
-if($admin){
-  $p=new personnel();
-  if($agents_supprimes){
-    $p->supprime=array(0,1);
-  }
-  $p->fetch();
-  $agents=$p->elements;
-}
-
 // Tri par défaut du tableau
 $sort="[[0],[1]]";
 if($admin or (!$config['Absences-adminSeulement'] and in_array(6,$droits))){
@@ -124,7 +119,15 @@ if($admin){
   echo "<select name='perso_id' id='perso_id' class='ui-widget-content ui-corner-all'>";
   $selected=$perso_id==0?"selected='selected'":null;
   echo "<option value='0' $selected >Tous</option>";
-  foreach($agents as $agent){
+  
+  $p = new personnel();
+  if($agents_supprimes){
+    $p->supprime = array(0,1);
+  }
+  $p->fetch();
+  $agents_menu = $p->elements;
+  
+  foreach($agents_menu as $agent){
     $selected=$agent['id']==$perso_id?"selected='selected'":null;
     echo "<option value='{$agent['id']}' $selected >{$agent['nom']} {$agent['prenom']}</option>";
   }
@@ -174,14 +177,15 @@ echo "<tbody>\n";
 
 $i=0;
 if($absences){
+
   foreach($absences as $elem){
     $id=$elem['id'];
 
     $etat="Demand&eacute;e";
-    $etat=$elem['valideN1']>0?"En attente de validation hierarchique, ".nom($elem['valideN1']).", ".dateFr($elem['validationN1'],true):$etat;
-    $etat=$elem['valideN1']<0?"En attente de validation hierarchique, ".nom(-$elem['valideN1']).", ".dateFr($elem['validationN1'],true):$etat;
-    $etat=$elem['valide']>0?"Valid&eacute;e, ".nom($elem['valide']).", ".dateFr($elem['validation'],true):$etat;
-    $etat=$elem['valide']<0?"Refus&eacute;e, ".nom(-$elem['valide']).", ".dateFr($elem['validation'],true):$etat;
+    $etat=$elem['valideN1']>0?"En attente de validation hierarchique, ".nom($elem['valideN1'],'nom p',$agents).", ".dateFr($elem['validationN1'],true):$etat;
+    $etat=$elem['valideN1']<0?"En attente de validation hierarchique, ".nom(-$elem['valideN1'],'nom p',$agents).", ".dateFr($elem['validationN1'],true):$etat;
+    $etat=$elem['valide']>0?"Valid&eacute;e, ".nom($elem['valide'],'nom p',$agents).", ".dateFr($elem['validation'],true):$etat;
+    $etat=$elem['valide']<0?"Refus&eacute;e, ".nom(-$elem['valide'],'nom p',$agents).", ".dateFr($elem['validation'],true):$etat;
     $etatStyle=$elem['valide']==0?"font-weight:bold;":null;
     $etatStyle=$elem['valide']<0?"color:red;":$etatStyle;
 

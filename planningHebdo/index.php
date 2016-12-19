@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.6
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planningHebdo/index.php
 Création : 23 juillet 2013
-Dernière modification : 19 octobre 2016
+Dernière modification : 19 décembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -16,6 +16,7 @@ Page accessible à partir du menu administration/planning de présence
 */
 
 require_once "class.planningHebdo.php";
+require_once "personnel/class.personnel.php";
 
 // Initialisation des variables
 $debut=filter_input(INPUT_GET,"debut",FILTER_SANITIZE_STRING);
@@ -48,7 +49,12 @@ $p->debut=dateFr($debut);
 $p->fin=dateFr($fin);
 $p->fetch();
 
-echo"<h3>Plannings de présence</h3>\n";
+$a = new personnel();
+$a->supprime = array(0,1,2);
+$a->fetch();
+$agents = $a->elements;
+
+echo "<h3>Plannings de présence</h3>\n";
 
 /*
 // Période définies = 0 pour le moment. Option sans doute plus utilisée. Développements complexes.
@@ -96,7 +102,7 @@ foreach($p->elements as $elem){
     $validation.=dateFr($elem['validation'],true);
     // 99999 : ID cron : donc pas de nom a afficher
     if($elem['valide'] != 99999){
-      $validation.=", ".nom($elem['valide']);
+      $validation.=", ".nom($elem['valide'],'nom p',$agents);
     }
   }
   $planningRemplace=$elem['remplace']==0?dateFr($elem['saisie'],true):$planningRemplace;

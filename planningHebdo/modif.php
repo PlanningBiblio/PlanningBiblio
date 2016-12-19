@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.6
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planningHebdo/modif.php
 Création : 23 juillet 2013
-Dernière modification : 19 octobre 2016
+Dernière modification : 19 décembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -36,6 +36,8 @@ if($copy){
 
 // Sécurité
 $admin=in_array(24,$droits)?true:false;
+
+$cle = null;
 
 if($id){
   $p=new planningHebdo();
@@ -111,13 +113,17 @@ if(!$admin and $id and $perso_id!=$_SESSION['login_id']){
   include "include/footer.php";
   exit;
 }
+
+$nomAgent = nom($perso_id,"prenom nom");
+
 ?>
+
 
 <!-- Formulaire Planning-->
 <h3>Planning de présence</h3>
 <?php
 if($id and !$copy){
-  echo "<h3>Planning de ".nom($perso_id,"prenom nom")." du $debut1Fr au $fin1Fr</h3>";
+  echo "<h3>Planning de $nomAgent du $debut1Fr au $fin1Fr</h3>";
 }
 ?>
 <div id='planning'>
@@ -138,11 +144,11 @@ if($id and !$copy){
 
   // Non admin
   if(!$admin){
-    echo "<h3>Nouveau planning pour ".nom($perso_id,"prenom nom")."</h3>\n";
+    echo "<h3>Nouveau planning pour $nomAgent</h3>\n";
   }
   // Copie
   elseif($copy){
-    echo "<h3>Copie du planning de ".nom($perso_id,"prenom nom")." du $debut1Fr au $fin1Fr</h3>\n";
+    echo "<h3>Copie du planning de $nomAgent du $debut1Fr au $fin1Fr</h3>\n";
   // Ajout par un admin
   } else {
     echo "<h3>Nouveau planning</h3>\n";

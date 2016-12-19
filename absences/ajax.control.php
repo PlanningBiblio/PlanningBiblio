@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.1
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/ajax.control.php
 Création : mai 2011
-Dernière modification : 6 mai 2016
+Dernière modification : 19 décembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié <etienne.cavalie@unice.fr>
 
@@ -22,6 +22,7 @@ ini_set('display_errors',0);
 require_once "../include/config.php";
 require_once "../include/function.php";
 require_once "class.absences.php";
+require_once "../personnel/class.personnel.php";
 
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 $groupe=filter_input(INPUT_GET,"groupe",FILTER_SANITIZE_STRING);
@@ -31,6 +32,11 @@ $perso_ids=filter_input(INPUT_GET,"perso_ids",FILTER_SANITIZE_STRING);
 $perso_ids=json_decode(html_entity_decode($perso_ids,ENT_QUOTES|ENT_IGNORE,"UTF-8"));
 
 $result=array();
+
+$p = new personnel();
+$p->supprime=array(0,1,2);
+$p->fetch();
+$agents = $p->elements;
 
 // Pour chaque agent, contrôle si autre absence, si placé sur planning validé, si placé sur planning en cours d'élaboration 
 foreach($perso_ids as $perso_id){
@@ -78,7 +84,7 @@ foreach($perso_ids as $perso_id){
   }
   
   // Ajoute le nom de l'agent
-  $result[$perso_id]['nom']=nom($perso_id);  
+  $result[$perso_id]['nom']=nom($perso_id,'nom p',$agents);
 }
 
 // Contrôle si placé sur des plannings en cours d'élaboration;

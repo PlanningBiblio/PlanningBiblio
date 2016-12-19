@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.1
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 19 novembre 2016
+Dernière modification : 19 décembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -404,6 +404,10 @@ class db{
 
     if($value===null){
       return "{$key}{$operator}";
+    }
+    
+    elseif(in_array($value, array('CURDATE','SYSDATE'))){
+      return "{$key}{$operator}{$value}()";
     }
     else{
       $value=htmlentities($value,ENT_QUOTES | ENT_IGNORE,"UTF-8",false);

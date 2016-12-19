@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.1
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 19 novembre 2016
+Dernière modification : 19 décembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -120,8 +120,9 @@ class planningHebdo{
     }
 
     if(!empty($destinataires)){
-      $sujet="Nouveau planning de présence, ".html_entity_decode(nom($perso_id,"prenom nom"),ENT_QUOTES|ENT_IGNORE,"UTF-8");
-      $message=nom($perso_id,"prenom nom");
+      $nomAgent = nom($perso_id,"prenom nom");
+      $sujet="Nouveau planning de présence, ".html_entity_decode($nomAgent,ENT_QUOTES|ENT_IGNORE,"UTF-8");
+      $message=$nomAgent;
       $message.=" a enregistré un nouveau planning de présence dans l'application Planning Biblio<br/>";
       $message.="Rendez-vous dans le menu administration / Plannings de présence de votre application Planning Biblio pour le valider.";
 
@@ -246,10 +247,17 @@ class planningHebdo{
 
     $db=new db();
     $db->select("planningHebdo","*",$filter,"ORDER BY debut,fin,saisie");
+    
+    $p=new personnel();
+    $p->supprime = array(0,1,2);
+    $p->fetch();
+    $agents = $p->elements;
+    
+
     if($db->result){
       foreach($db->result as $elem){
 	$elem['temps'] = json_decode(html_entity_decode($elem['temps'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
-	$elem['nom']=nom($elem['perso_id']);
+	$elem['nom'] = nom($elem['perso_id'],'nom p',$agents);
 	$elem['service']=$services[$elem['perso_id']];
 	$this->elements[]=$elem;
       }
@@ -375,17 +383,19 @@ class planningHebdo{
     $p->fetchById($data['perso_id']);
     $destinataires[]=$p->elements[0]['mail'];
 
+    $nomAgent = nom($data['perso_id'],"prenom nom");
+
     if(!empty($destinataires)){
       if($data['validation']){
-	$sujet="Validation d'un planning de présence, ".html_entity_decode(nom($data['perso_id'],"prenom nom"),ENT_QUOTES|ENT_IGNORE,"UTF-8");
+	$sujet="Validation d'un planning de présence, ".html_entity_decode($nomAgent,ENT_QUOTES|ENT_IGNORE,"UTF-8");
 	$message="Un planning de présence de ";
-	$message.=nom($data['perso_id'],"prenom nom");
+	$message.=$nomAgent;
 	$message.=" a été validé dans l'application Planning Biblio<br/>";
       }
       else{
-	$sujet="Modification d'un planning de présence, ".html_entity_decode(nom($data['perso_id'],"prenom nom"),ENT_QUOTES|ENT_IGNORE,"UTF-8");
+	$sujet="Modification d'un planning de présence, ".html_entity_decode($nomAgent,ENT_QUOTES|ENT_IGNORE,"UTF-8");
 	$message="Un planning de présence de ";
-	$message.=nom($data['perso_id'],"prenom nom");
+	$message.=$nomAgent;
 	$message.=" a été modifié dans l'application Planning Biblio<br/>";
       }
 

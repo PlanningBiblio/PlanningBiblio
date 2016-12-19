@@ -893,11 +893,28 @@ function logs($msg,$program=null){
   $db->insert2("log",array("msg"=>$msg,"program"=>$program));
 }
 
-function nom($id,$format="nom p"){
-  $db=new db();
-  $db->query("select nom,prenom from {$GLOBALS['config']['dbprefix']}personnel where id=$id;");
-  $nom=$db->result[0]['nom'];
-  $prenom=$db->result[0]['prenom'];
+
+/**
+ * Fonction nom
+ * Retourne le nom de l'agent dont l'id est donné en argument
+ * @param  int $id : id de l'agent
+ * @param string $format: format de la chaîne retournée (ex: nom p)
+ * @param array $agents : liste de tous les agents (permet de réduire le nombre de requêtes SQL et la latence si la fonction nom est utilisée dans une boucle
+ */
+function nom($id,$format="nom p", $agents=array()){
+  if(empty($agents)){
+    $db=new db();
+    $db->query("select nom,prenom from {$GLOBALS['config']['dbprefix']}personnel where id=$id;");
+    $nom=$db->result[0]['nom'];
+    $prenom=$db->result[0]['prenom'];
+  }else{
+    if(!isset($agents[$id])){
+      return 'error';
+    }
+    $nom=$agents[$id]['nom'];
+    $prenom=$agents[$id]['prenom'];
+  }
+  
   switch($format){
     case "nom prenom": $nom="$nom $prenom";	break;
     case "prenom nom": $nom="$prenom $nom";	break;
