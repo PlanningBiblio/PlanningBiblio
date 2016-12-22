@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.2
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 29 novembre 2016
+Dernière modification : 22 décembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -206,10 +206,12 @@ else{
   $postes="";	//	activités attribuées séparées par des virgules (valeur transmise à valid.php) 	
   $postes_dispo=$postes_complet;
 }
-echo "<script type='text/JavaScript'>\n<!--\n";		// traduction en JavaScript du tableau postes_completNoms
-echo php2js($postes_completNoms,"complet");
-echo "\n-->\n</script>\n";
 
+// traduction en JavaScript du tableau postes_completNoms pour les fonctions seltect_add* et select_drop
+$postes_completNoms_json = json_encode($postes_completNoms);
+echo "<script type='text/JavaScript'>\n<!--\n";
+echo "complet = JSON.parse('$postes_completNoms_json');\n";
+echo "\n-->\n</script>\n";
 
 	//	Ajout des noms dans les tableaux postes attribués et dispo
 function postesNoms($postes,$tab_noms){

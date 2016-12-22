@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.4.8
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification :29 octobre 2016
+Dernière modification : 22 décembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 @author Etienne Cavalié
@@ -613,137 +613,6 @@ function position(object,top,left){
   }
 }
 //	--------------------------------	FIN Aide		---------------------------------	//
-//	---------------------------		Personnel		---------------------------------------		//
-function createlogin(){
-  login=document.form.prenom.value+"."+document.form.nom.value;
-  login=login.trim();
-  login=login.toLowerCase();
-  login=removeAccents(login);
-  login=login.replace(new RegExp(" ", "g"),"");
-  document.form.login.value=login;
-}
-
-//	Select multiples
-function select_add(select_dispo,select_attrib,hidden_attrib,width){	// Attribution des postes / modification du personnel
-  complet.sort();
-  attrib_new=new Array();
-  dispo_new=new Array();
-  tab_attrib=new Array();
-  dispo=document.getElementById(select_dispo).options;
-  attribues=document.getElementById(select_attrib).options;
-  for(i=0;i<attribues.length;i++)
-    attrib_new.push(attribues[i].value);
-  for(i=0;i<dispo.length;i++)
-    if(dispo[i].selected)
-	attrib_new.push(dispo[i].value);
-  for(i=0;i<complet.length;i++){
-    var inArray=false;
-    for(j=0;j<attrib_new.length;j++){
-      if(complet[i][1]==attrib_new[j]){
-	attrib_new[j]=complet[i];
-	tab_attrib.push(complet[i][1]);
-	inArray=true;
-      }
-    }
-    if(!inArray){
-      dispo_new.push(complet[i]);
-    }
-  }
-  dispo_new.sort();
-  attrib_new.sort();
-  
-  var attrib_aff="<select id='"+select_attrib+"' name='"+select_attrib+"' style='width:"+width+"px;' size='20' multiple='multiple'>";
-  for(i=0;i<attrib_new.length;i++)
-    attrib_aff=attrib_aff+"<option value='"+attrib_new[i][1]+"'>"+attrib_new[i][0]+"</option>";
-  attrib_aff=attrib_aff+"</select>";
-  
-  var dispo_aff="<select id='"+select_dispo+"' name='"+select_dispo+"' style='width:"+width+"px;' size='20' multiple='multiple'>";
-  for(i=0;i<dispo_new.length;i++)
-    dispo_aff=dispo_aff+"<option value='"+dispo_new[i][1]+"'>"+dispo_new[i][0]+"</option>";
-  dispo_aff=dispo_aff+"</select>";
-  
-  document.getElementById("attrib_div").innerHTML=attrib_aff;
-  document.getElementById("dispo_div").innerHTML=dispo_aff;
-  document.getElementById(hidden_attrib).value=tab_attrib.toString();
-}
-
-function select_drop(select_dispo,select_attrib,hidden_attrib,width){	// Attribution des postes / modification du personnel
-  complet.sort();
-  dispo_new=new Array();
-  attrib_new=new Array();
-  tab_attrib=new Array();
-  dispo=document.getElementById(select_dispo).options;
-  attribues=document.getElementById(select_attrib).options;
-  for(i=0;i<dispo.length;i++)
-    dispo_new.push(dispo[i].value);
-  for(i=0;i<attribues.length;i++)
-    if(attribues[i].selected)
-      dispo_new.push(attribues[i].value);
-  for(i=0;i<complet.length;i++){
-    var inArray=false;
-    for(j=0;j<dispo_new.length;j++){
-      if(complet[i][1]==dispo_new[j]){
-	dispo_new[j]=complet[i];
-	inArray=true;
-      }
-    }
-    if(!inArray){
-      attrib_new.push(complet[i]);
-      tab_attrib.push(complet[i][1]);
-    }
-  }
-  dispo_new.sort();
-  attrib_new.sort();
-  
-  var attrib_aff="<select id='"+select_attrib+"' name='"+select_attrib+"' style='width:"+width+"px;' size='20' multiple='multiple'>";
-  for(i=0;i<attrib_new.length;i++)
-    attrib_aff=attrib_aff+"<option value='"+attrib_new[i][1]+"'>"+attrib_new[i][0]+"</option>";
-  attrib_aff=attrib_aff+"</select>";
-  
-  var dispo_aff="<select id='"+select_dispo+"' name='"+select_dispo+"' style='width:"+width+"px;' size='20' multiple='multiple'>";
-  for(i=0;i<dispo_new.length;i++)
-    dispo_aff=dispo_aff+"<option value='"+dispo_new[i][1]+"'>"+dispo_new[i][0]+"</option>";
-  dispo_aff=dispo_aff+"</select>";
-  
-  document.getElementById("attrib_div").innerHTML=attrib_aff;
-  document.getElementById("dispo_div").innerHTML=dispo_aff;
-  document.getElementById(hidden_attrib).value=tab_attrib.toString();
-}
-
-function select_add_all(select_dispo,select_attrib,hidden_attrib,width){	// Attribution des postes / modification du personnel
-  complet.sort();
-  tab_attrib=new Array();
-  var attrib_aff="<select id='"+select_attrib+"' name='"+select_attrib+"' style='width:"+width+"px;' size='20' multiple='multiple'>";
-  for(i=0;i<complet.length;i++){
-    attrib_aff=attrib_aff+"<option value='"+complet[i][1]+"'>"+complet[i][0]+"</option>";
-    tab_attrib.push(complet[i][1]);
-  }
-  attrib_aff=attrib_aff+"</select>";
-  
-  var dispo_aff="<select id='"+select_dispo+"' name='"+select_dispo+"' style='width:"+width+"px;' size='20' multiple='multiple'>";
-  dispo_aff=dispo_aff+"</select>";
-  
-  document.getElementById("attrib_div").innerHTML=attrib_aff;
-  document.getElementById("dispo_div").innerHTML=dispo_aff;
-  document.getElementById(hidden_attrib).value=tab_attrib.toString();
-}
-
-function select_drop_all(select_dispo,select_attrib,hidden_attrib,width){	// Attribution des postes / modification du personnel
-  complet.sort();
-  var dispo_aff="<select id='"+select_dispo+"' name='"+select_dispo+"' style='width:"+width+"px;' size='20' multiple='multiple'>";
-  for(i=0;i<complet.length;i++)
-    dispo_aff=dispo_aff+"<option value='"+complet[i][1]+"'>"+complet[i][0]+"</option>";
-  dispo_aff=dispo_aff+"</select>";
-  
-  var attrib_aff="<select id='"+select_attrib+"' name='"+select_attrib+"' style='width:"+width+"px;' size='20' multiple='multiple'>";
-  attrib_aff=attrib_aff+"</select>";
-  
-  document.getElementById("attrib_div").innerHTML=attrib_aff;
-  document.getElementById("dispo_div").innerHTML=dispo_aff;
-  document.getElementById(hidden_attrib).value='';
-}
-//	Fin Select Multpiles
-//	---------------------------		FIN Personnel 		--------------------------------	//
 //	--------------------------------	Statistiques		---------------------------------	//
 function export_stat(nom,type){
   $.ajax({

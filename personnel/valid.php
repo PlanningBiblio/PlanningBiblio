@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.2
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 29 novembre 2016
+Dernière modification : 22 décembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -34,7 +34,7 @@ $categorie=trim($post['categorie']);
 $informations=trim($post['informations']);
 $mailsResponsables=trim(str_replace(array("\n"," "),null,$post['mailsResponsables']));
 $matricule=trim($post['matricule']);
-$url_ics=trim($post['url_ics']);
+$url_ics=isset($post['url_ics']) ? trim($post['url_ics']) : null;
 $nom=trim($post['nom']);
 $postes=$post['postes'];
 $prenom=trim($post['prenom']);

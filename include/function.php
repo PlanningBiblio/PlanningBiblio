@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.1
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 19 novembre 2016
+Dernière modification : 22 décembre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -922,43 +922,6 @@ function nom($id,$format="nom p", $agents=array()){
   }
   return $nom;
 }
-
-function php2js( $php_array, $js_array_name ){
-  // contrôle des parametres d'entrée
-  if( !is_array( $php_array ) ) {
-    trigger_error( "php2js() => 'array' attendu en parametre 1, '".gettype($array)."' fourni !?!");
-    return false;
-  }
-  if( !is_string( $js_array_name ) ) {
-    trigger_error( "php2js() => 'string' attendu en parametre 2, '".gettype($array)."' fourni !?!");
-    return false;
-  }
-
-  // Création du tableau en JS
-  $script_js = "var $js_array_name = new Array();\n";
-  // on rempli le tableau JS à partir des valeurs de son homologue PHP
-  foreach( $php_array as $key => $value ) {
-    // pouf, on tombe sur une dimension supplementaire
-    if( is_array($value) ) {
-      // On va demander la création d'un tableau JS temporaire
-      $temp = uniqid('temp_'); // on lui choisi un nom bien barbare
-      $t = php2js( $value, $temp ); // et on creer le script JS
-      // En cas d'erreur, remonter l'info aux récursions supérieures
-      if( $t===false ) return false;
-
-      // Ajout du script de création du tableau JS temporaire
-      $script_js.= $t;
-      // puis on applique ce tableau temporaire à celui en cours de construction
-      $script_js.= "{$js_array_name}['{$key}'] = {$temp};\n";
-    }
-    // Si la clef est un entier, pas de guillemets
-    elseif( is_int($key) ) $script_js.= "{$js_array_name}[{$key}] = '{$value}';\n";
-    // sinon avec les guillemets
-    else $script_js.= "{$js_array_name}['{$key}'] = '{$value}';\n";
-  }
-  // Et retourn le script JS
-  return $script_js;
-} 
 
 function pl_stristr($haystack,$needle){
   if(stristr(removeAccents($haystack),removeAccents(trim($needle))))
