@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 22 décembre 2016
+Dernière modification : 12 janvier 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -591,7 +591,7 @@ function createURL($page=null){
   }
 
   // protocol + port + server_name
-  $url="$protocol://{$_SERVER['SERVER_NAME']}{$port}";
+  $url="$protocol://{$_SERVER['SERVER_NAME']}{$port}/";
 
   // folder
   $dir=__DIR__;
