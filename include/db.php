@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 19 décembre 2016
+Dernière modification : 20 janvier 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -161,7 +161,7 @@ class db{
 
 
   /**
-  Fonction permettant de rechercher des infos dans la base de données en utilisant une jointure avec MySQLi
+  Fonction permettant de rechercher des infos dans la base de données en utilisant une jointure INNER JOIN avec MySQLi
   @param array table1 : tableau contenant le nom de la première table et son index à utiliser pour la jointure
   @param array table2 : tableau contenant le nom de la seconde table et son index à utiliser pour la jointure
   @param array table1Fields : champs de la première table à afficher.
@@ -226,6 +226,78 @@ class db{
     // Construction de la requête
     // Assemblage
     $query="SELECT $info FROM `$table1Name` INNER JOIN `$table2Name` ON `$table1Name`.`$table1Index`=`$table2Name`.`$table2Index` ";
+    $query.="WHERE $where $options";
+
+    // Execution de la requête
+    $this->query($query);
+  }
+
+  /**
+  Fonction permettant de rechercher des infos dans la base de données en utilisant une jointure LEFT JOIN avec MySQLi
+  @param array table1 : tableau contenant le nom de la première table et son index à utiliser pour la jointure
+  @param array table2 : tableau contenant le nom de la seconde table et son index à utiliser pour la jointure
+  @param array table1Fields : champs de la première table à afficher.
+    Les valeurs peuvent être des chaînes de caractères (nom des champs)
+    Ou des tableaux ayant pour index "name" => le nom du champ et "as" => l'alias voulu
+  @param array table2Fields : champs de la seconde table à afficher.
+    Les valeurs peuvent être des chaînes de caractères (nom des champs)
+    Ou des tableaux ayant pour index "name" => le nom du champ et "as" => l'alias voulu
+  @param array table1Where : Filtre à appliquer sur la première table
+  @param array table2Where : Filtre à appliquer sur la première table
+  @param string options : permet d'ajouter des options de recherche après where, ex : order by 
+  */
+  public function selectLeftJoin($table1=array(), $table2=array(), $table1Fields=array(), 
+    $table2Fields=array(), $table1Where=array(), $table2Where=array(), $options=null){
+
+    if(empty($table1) or empty($table2)){
+      $this->error=true;
+      return false;
+    }
+
+    // Connection à la base de données
+    $this->connect();
+
+    // Initilisation des variables
+    $table1Name="{$this->dbprefix}".$table1[0];
+    $table2Name="{$this->dbprefix}".$table2[0];
+    $table1Index=$table1[1];
+    $table2Index=$table2[1];
+
+    // Construction de la requête
+    // Valeurs à retourner
+    $info=array();
+    foreach($table1Fields as $elem){
+      if(is_string($elem)){
+	$info[]="`$table1Name`.`$elem` AS `$elem`";
+      }elseif(is_array($elem)){
+	$info[]="`$table1Name`.`{$elem['name']}` AS `{$elem['as']}`";
+      }
+    }
+    foreach($table2Fields as $elem){
+      if(is_string($elem)){
+	$info[]="`$table2Name`.`$elem` AS `$elem`";
+      }elseif(is_array($elem)){
+	$info[]="`$table2Name`.`{$elem['name']}` AS `{$elem['as']}`";
+      }
+    }
+    $info=join(", ",$info);
+
+    // Construction de la requête
+    // Filtre "Where" et options
+    $where=array();
+    foreach($table1Where as $key => $value){
+      $key="`$table1Name`.`$key`";
+      $where[]=$this->makeSearch($key,$value);
+    }
+    foreach($table2Where as $key => $value){
+      $key="`$table2Name`.`$key`";
+      $where[]=$this->makeSearch($key,$value);
+    }
+    $where=join(" AND ",$where);
+  
+    // Construction de la requête
+    // Assemblage
+    $query="SELECT $info FROM `$table1Name` LEFT JOIN `$table2Name` ON `$table1Name`.`$table1Index`=`$table2Name`.`$table2Index` ";
     $query.="WHERE $where $options";
 
     // Execution de la requête
