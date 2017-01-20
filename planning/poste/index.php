@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.1
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 25 novembre 2016
+Dernière modification : 12 janvier 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -459,9 +459,9 @@ else{
   // Tri des absences par nom
   usort($absences,"cmp_nom_prenom_debut_fin");
   
-  // Affichage des absences en bas du planning : seulement les absences validées et concernant le site choisi
+  // Affichage des absences en bas du planning : absences concernant le site choisi
   $a=new absences();
-  $a->valide=true;
+  $a->valide=false;
   $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date,$date,array($site));
   $absences_planning = $a->elements;
 
@@ -682,6 +682,10 @@ EOD;
 	  echo "<table class='tableauStandard'>\n";
 	  $class="tr1";
 	  foreach($absences_planning as $elem){
+            if($elem['valide'] <= 0 and $config['Absences-non-validees'] == 0){
+              continue;
+            }
+
 	    $heures=null;
 	    $debut=null;
 	    $fin=null;
@@ -692,17 +696,27 @@ EOD;
 	      $fin=substr($elem['fin'],-8);
 	    }
 	    if($debut and $fin){
-	      $heures="de ".heure2($debut)." à ".heure2($fin);
+	      $heures=" de ".heure2($debut)." à ".heure2($fin);
 	    }
 	    elseif($debut){
-	      $heures="à partir de ".heure2($debut);
+	      $heures=" à partir de ".heure2($debut);
 	    }
 	    elseif($fin){
-	      $heures="jusqu'à ".heure2($fin);
+	      $heures=" jusqu'à ".heure2($fin);
 	    }
+	    
+	    $bold = null;
+	    $nonValidee = null;
+            if($config['Absences-non-validees'] == 1){
+              if($elem['valide'] > 0){
+                $bold = 'bold';
+              }else{
+                $nonValidee = " (non valid&eacute;e)";
+              }
+            }
 
 	    $class=$class=="tr1"?"tr2":"tr1";
-	    echo "<tr class='$class'><td style='text-align:left;'>{$elem['nom']} {$elem['prenom']} $heures</td></tr>\n";
+	    echo "<tr class='$class $bold'><td style='text-align:left;'>{$elem['nom']} {$elem['prenom']}{$heures}{$nonValidee}</td></tr>\n";
 	  }
 	  echo "</table>\n";
 	}
@@ -718,9 +732,23 @@ EOD;
 	  echo "<th>Motif</th></tr></thead>\n";
 	  echo "<tbody>\n";
 	  foreach($absences_planning as $elem){
-	    echo "<tr><td>{$elem['nom']}</td><td>{$elem['prenom']}</td>";
+            if($elem['valide'] <= 0 and $config['Absences-non-validees'] == 0){
+              continue;
+            }
+
+	    $bold = null;
+	    $nonValidee = null;
+            if($config['Absences-non-validees'] == 1){
+              if($elem['valide'] > 0){
+                $bold = 'bold';
+              }else{
+                $nonValidee = " (non valid&eacute;e)";
+              }
+            }
+            
+	    echo "<tr class='$bold'><td>{$elem['nom']}</td><td>{$elem['prenom']}</td>";
 	    echo "<td>{$elem['debutAff']}</td><td>{$elem['finAff']}</td>";
-	    echo "<td>{$elem['motif']}</td></tr>\n";
+	    echo "<td>{$elem['motif']}{$nonValidee}</td></tr>\n";
 	  }
 	  echo "</tbody></table>\n";
 	}
@@ -735,7 +763,7 @@ EOD;
 	// On exclus ceux qui sont absents toute la journée
 	if(!empty($absences_planning)){
 	  foreach($absences_planning as $elem){
-	    if($elem['debut']<=$date." 00:00:00" and $elem['fin']>=$date." 23:59:59"){
+	    if($elem['debut']<=$date." 00:00:00" and $elem['fin']>=$date." 23:59:59" and $elem['valide']>0 ){
 	      $absents[]=$elem['perso_id'];
 	    }
 	  }
@@ -855,6 +883,10 @@ EOD;
 	echo "<table cellspacing='0'>";
 	$class="tr1";
 	foreach($absences_planning as $elem){
+          if($elem['valide'] <= 0 and $config['Absences-non-validees'] == 0){
+            continue;
+          }
+          
 	  $heures=null;
 	  $debut=null;
 	  $fin=null;
@@ -875,7 +907,19 @@ EOD;
 	  }
 
 	  $class=$class=="tr1"?"tr2":"tr1";
-	  echo "<tr class='$class'><td>{$elem['nom']} {$elem['prenom']}</td><td style='padding-left:15px;'>{$elem['motif']}{$heures}</td></tr>\n";
+	  
+	  $bold = null;
+          $nonValidee = null;
+          
+          if($config['Absences-non-validees'] == 1){
+            if($elem['valide'] > 0){
+              $bold = 'bold';
+            }else{
+              $nonValidee = " (non valid&eacute;e)";
+            }
+          }
+
+	  echo "<tr class='$class $bold'><td>{$elem['nom']} {$elem['prenom']}</td><td style='padding-left:15px;'>{$elem['motif']}{$heures}{$nonValidee}</td></tr>\n";
 	}
 	echo "</table>\n";
 	echo "</td></tr>\n";
