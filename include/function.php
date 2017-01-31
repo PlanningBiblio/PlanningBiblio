@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 12 janvier 2017
+Dernière modification : 3 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -817,6 +817,10 @@ function heure4($heure,$return0=false){
       $hre = floor($heure);
       $centiemes = $heure - $hre;
       $minutes = $centiemes * 0.6;
+      if($minutes >=0.595){
+        $hre++;
+        $minutes = 0;
+      }
       $hre += $minutes;
       $heure = number_format($hre, 2, 'h', ' ');
     }

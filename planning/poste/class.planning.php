@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.8
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 29 octobre 2016
+Dernière modification : 31 janvier 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -224,7 +224,7 @@ class planning{
                 $pourcent=" {$elem["heuresHebdo"]}";
               }
               
-              $heuresHebdoTitle="Quota hebdomadaire = $heuresHebdo - $heuresAbsences (Absences{$pourcent})";
+              $heuresHebdoTitle="Quota hebdomadaire = ".heure4($heuresHebdo)." - ".heure4($heuresAbsences)." (Absences{$pourcent})";
               $heuresHebdo=$heuresHebdo-$heuresAbsences;
               if($heuresHebdo<0){
                 $heuresHebdo=0;
@@ -247,7 +247,7 @@ class planning{
         }
         
         $title = in_array($elem['id'],$absences_non_validees) ? 'Absence ou congé non valid&eacute;' : null;
-        $nom = "<span title='$title'>";
+        $nom = "<span class='menudiv-nom' title='$title'>";
         $nom .= htmlentities($elem['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8",false);
         if($elem['prenom']){
           $nom.=" ".substr(htmlentities($elem['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8",false),0,1).".";
@@ -294,17 +294,17 @@ class planning{
           $hres_4sem = isset($heures[$elem['id']]['4semaines']) ? $heures[$elem['id']]['4semaines'] : 0;
           $hres_4sem += $hres_cellule;
           $hres_4sem = round($hres_4sem, 2);
-          $hres_4sem=" / <font title='Heures des 4 derni&egrave;res semaines'>$hres_4sem</font>";
+          $hres_4sem=" / <font title='Heures des 4 derni&egrave;res semaines'>".heure4($hres_4sem)."</font>";
         }
 
         //	Mise en forme de la ligne avec le nom et les heures et la couleur en fonction des heures faites
-        $nom.="<span>\n";
-        $nom.="&nbsp;<font title='Heures du jour'>$hres_jour</font> / ";
-        $nom.="<font title='Heures de la semaine'>$hres_sem</font> / ";
+        $nom.="<div class='menudiv-heures'>\n";
+        $nom.="&nbsp;<font title='Heures du jour'>".heure4($hres_jour)."</font> / ";
+        $nom.="<font title='Heures de la semaine'>".heure4($hres_sem)."</font> / ";
 
-        $nom.="<font title='$heuresHebdoTitle'>$heuresHebdo</font>";
+        $nom.="<font title='$heuresHebdoTitle'>".heure4($heuresHebdo)."</font>";
         $nom.=$hres_4sem;
-        $nom.="</span>\n";
+        $nom.="</div>\n";
 
         // Si absence non validée : affichage en rouge
         if(in_array($elem['id'], $absences_non_validees)){
@@ -328,7 +328,7 @@ class planning{
 
         //	Affichage des lignes
         $menudiv.="<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$groupe_hide' class='$classe $classTrListe menudiv-tr'>\n";
-        $menudiv.="<td style='width:200px;font-weight:normal;' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},0,0,\"$site\");'>";
+        $menudiv.="<td onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},0,0,\"$site\");'>";
         $menudiv.=$nom;
 
         //	Afficher ici les horaires si besoin

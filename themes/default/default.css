@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 17 novembre 2016
+Dernière modification : 31 janvier 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -225,6 +225,7 @@ h3{
   text-align: left;
   vertical-align:top;
   padding: 0 60px 10px 10px;
+  white-space: nowrap;
 }
 
 .tableauFiches .td_validation{
@@ -596,14 +597,14 @@ div#tabsemaine1{
 #menudiv1{
   position:absolute;
   z-index:10;
-  width:230px;
+  width:250px;
   overflow:auto;
 }
 
 #menudiv2{
   position:absolute;
   z-index:20;
-  width:240px;
+  width:250px;
   overflow:auto;
 }
 
@@ -611,6 +612,7 @@ div#tabsemaine1{
   position:absolute;
   cursor:pointer;
   background: #FFFFFF;
+  width: 100%;
 }
 
 #menudivtab1 td{
@@ -623,6 +625,33 @@ div#tabsemaine1{
 
 .menudiv-tr:hover{
   background:#CCCCCC;
+}
+
+.menudiv-tr td{
+  height: 25px;
+}
+
+.menudiv-tr td:first-child{
+  width: 220px;
+  font-weight:normal;
+}
+
+.menudiv-tr a{
+  text-decoration: none;
+  font-size: 1.2em;
+}
+
+.menudiv-nom{
+  font-weight: bold;
+  white-space:nowrap;
+}
+
+.menudiv-heures{
+  width:100%;
+  text-align:right;
+  white-space:nowrap;
+  font-style: italic;
+  font-size: 0.95em;
 }
 
 /* Configuration des tableaux */

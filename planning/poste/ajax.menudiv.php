@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 19 novembre 2016
+Dernière modification : 31 janvier 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
@@ -433,12 +433,8 @@ $tab_agent=join($listparservices,";");
 $tableaux[0]="<table frame='box' cellspacing='0' cellpadding='0' id='menudivtab1' rules='rows' border='1'>\n";
 
 	//		Affichage du nom du poste et des heures
-$tableaux[0].="<tr class='menudiv-titre'><td colspan='2'>$posteNom";
-if(in_array(13,$droits)){
-  $tableaux[0].=" ($poste)";
-}
-$tableaux[0].="</td></tr>\n";
-$tableaux[0].="<tr class='menudiv-titre'><td colspan='2'>".heure2($debut)." - ".heure2($fin)."</td></tr>\n";
+$tableaux[0].="<tr class='menudiv-titre'><td colspan='2'><div>$posteNom</div>";
+$tableaux[0].="<div>".heure2($debut)." - ".heure2($fin)."</div></td></tr>\n";
 
 //		-----------		Affichage de la liste des services		----------//
 if($services and $config['ClasseParService']){
@@ -447,7 +443,7 @@ if($services and $config['ClasseParService']){
     $class="service_".strtolower(removeAccents(str_replace(" ","_",$elem['service'])));
     if(array_key_exists($elem['service'],$newtab)){
       $tableaux[0].="<tr class='$class menudiv-tr'>\n";
-      $tableaux[0].="<td colspan='2' style='width:200px;' onmouseover='groupe_tab($i,\"$tab_agent\",1,$(this));'>";
+      $tableaux[0].="<td colspan='2' onmouseover='groupe_tab($i,\"$tab_agent\",1,$(this));'>";
       $tableaux[0].=$elem['service'];
       $tableaux[0].="</td></tr>\n";
     }
@@ -469,7 +465,7 @@ if(array_key_exists("Autres",$newtab) and $config['agentsIndispo']){
   $i=count($services);
   $groupe_tab_hide=$config['ClasseParService']?1:0;
   $tableaux[0].="<tr class='menudiv-tr'>\n";
-  $tableaux[0].="<td colspan='2' style='width:200px;' onmouseover='groupe_tab($i,\"$tab_agent\",$groupe_tab_hide,$(this));' >";
+  $tableaux[0].="<td colspan='2' onmouseover='groupe_tab($i,\"$tab_agent\",$groupe_tab_hide,$(this));' >";
   $tableaux[0].="Agents indisponibles";
   $tableaux[0].="</td></tr>\n";
 }
@@ -477,7 +473,7 @@ if(array_key_exists("Autres",$newtab) and $config['agentsIndispo']){
 //		-----------		Affichage de l'utilisateur "tout le monde"		----------//
 if($config['toutlemonde']){
   $tableaux[0].="<tr onmouseover='groupe_tab_hide();' class='menudiv-tr' >\n";
-  $tableaux[0].="<td colspan='3' style='width:200px;color:black;' ";
+  $tableaux[0].="<td colspan='2' style='color:black;' ";
   $tableaux[0].="onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",2,0,0,\"$site\");'>Tout le monde</td></tr>\n";
 }
 //~ -----				Affiche de la "Case vide"  (suppression)	--------------------------//

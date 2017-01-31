@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 8 novembre 2016
+Dernière modification : 30 janvier 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -431,14 +431,14 @@ EOD;
     echo "<td style='background:$couleur;'>{$elem['statut']}</td>\n";
     foreach($dates as $d){
       $class=$elem[$d[0]]!="-"?"bg-yellow":null;
-      echo "<td class='$class' style='text-align:center;'>{$elem[$d[0]]}</td>\n";
+      echo "<td class='$class' style='text-align:center;'>".heure4($elem[$d[0]])."</td>\n";
     }
 
     if($config['Multisites-nombre']>1){
       for($i=1;$i<=$config['Multisites-nombre'];$i++){
-	echo "<td style='text-align:center;'>{$elem["site$i"]}</td>\n";
+	echo "<td style='text-align:center;'>".heure4($elem["site$i"])."</td>\n";
 	if($nbSemaines!=1){
-	  echo "<td style='text-align:center;'>{$elem["site{$i}Semaine"]}</td>\n";
+	  echo "<td style='text-align:center;'>".heure4($elem["site{$i}Semaine"])."</td>\n";
 	}
       }
     }
@@ -447,20 +447,20 @@ EOD;
     if(!empty($groupes_keys)){
       foreach($groupes_keys as $g){
         if($g != '' and $totauxGroupesPerso[$g]){
-          echo "<td style='text-align:center;'>".number_format($elem["group_$g"],2,',','')."</td>\n";
+          echo "<td style='text-align:center;'>".heure4($elem["group_$g"])."</td>\n";
         }
       }
       if(in_array('', $groupes_keys) and $totauxGroupesPerso['']){
-        echo "<td style='text-align:center;'>".number_format($elem["group_"],2,',','')."</td>\n";
+        echo "<td style='text-align:center;'>".heure4($elem["group_"])."</td>\n";
       }
     }
 
     if($nbSemaines!=1){
-      echo "<td style='text-align:center; $color'>{$elem['total']}</td>\n";
-      echo "<td style='text-align:center;'>{$elem['max']}</td>\n";
+      echo "<td style='text-align:center; $color'>".heure4($elem['total'])."</td>\n";
+      echo "<td style='text-align:center;'>".heure4($elem['max'])."</td>\n";
     }
-    echo "<td style='text-align:center; $color'>{$elem['semaine']}</td>\n";
-    echo "<td style='text-align:center;'>{$elem['heuresHebdo']}</td>\n";
+    echo "<td style='text-align:center; $color'>".heure4($elem['semaine'])."</td>\n";
+    echo "<td style='text-align:center;'>".heure4($elem['heuresHebdo'])."</td>\n";
     echo "</tr>\n";
   }
   echo "</tbody>\n";
@@ -469,12 +469,12 @@ EOD;
   echo "<tfoot><tr style='background:#DDDDDD;'><th colspan='2'>Nombre d'heures</th>\n";
 
   foreach($dates as $d){
-    echo "<th>{$heures[$d[0]]}</th>\n";
+    echo "<th>".heure4($heures[$d[0]])."</th>\n";
   }
 
   if($config['Multisites-nombre']>1){
     for($i=1;$i<=$config['Multisites-nombre'];$i++){
-      echo "<th>{$siteHeures[$i]}</th>\n";
+      echo "<th>".heure4($siteHeures[$i])."</th>\n";
       if($nbSemaines!=1){
 	echo "<th>&nbsp;</th>\n";
       }
@@ -485,15 +485,15 @@ EOD;
   if(!empty($groupes_keys)){
     foreach($groupes_keys as $g){
       if($g != '' and $totauxGroupesPerso[$g]){
-        echo "<th>".number_format($totauxGroupesHeures[$g],2,',','')."</th>\n";
+        echo "<th>".heure4($totauxGroupesHeures[$g])."</th>\n";
       }
     }
     if(in_array('', $groupes_keys) and $totauxGroupesPerso['']){
-      echo "<th>".number_format($totauxGroupesHeures[''],2,',','')."</th>\n";
+      echo "<th>".heure4($totauxGroupesHeures[''])."</th>\n";
     }
   }
 
-  echo "<th>$totalHeures</th><th colspan='$colspan'>&nbsp;</th>\n";
+  echo "<th>".heure4($totalHeures)."</th><th colspan='$colspan'>&nbsp;</th>\n";
   echo "</tr>\n";
 
 
