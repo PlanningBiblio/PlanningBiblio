@@ -3,7 +3,7 @@
 Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2016 Jérôme Combes
+@copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/ajax.appelDispoMsg.php
 Création : 21 décembre 2015

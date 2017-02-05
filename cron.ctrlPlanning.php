@@ -3,7 +3,7 @@
 Planning Biblio, Version 2.4.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-Copyright (C) 2011-2016 - Jérôme Combes
+@copyright 2011-2017 Jérôme Combes
 
 Fichier : cron.ctrlPlanning.php
 Création : 18 janvier 2016

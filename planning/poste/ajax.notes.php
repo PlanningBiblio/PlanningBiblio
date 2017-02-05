@@ -3,7 +3,7 @@
 Planning Biblio, Version 2.0.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2016 Jérôme Combes
+@copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/ajax.notes.php
 Création : 3 juin 2014

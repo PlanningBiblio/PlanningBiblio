@@ -3,7 +3,7 @@
 Planning Biblio, Version 1.9.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2016 Jérôme Combes
+@copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/postes_cfg/lignes_sep.php
 Création : 13 septembre 2012

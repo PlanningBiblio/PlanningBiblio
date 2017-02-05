@@ -3,7 +3,7 @@
 Planning Biblio, Version 2.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2016 Jérôme Combes
+@copyright 2011-2017 Jérôme Combes
 
 Fichier : include/footer.php
 Création : mai 2011
@@ -23,7 +23,7 @@ if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
 ?>
 </div> <!-- content or planningPoste -->
 <div class='footer'>
-PlanningBiblio (<?php echo $version; ?>) - Copyright &copy; 2011-2016 - J&eacute;r&ocirc;me Combes - 
+PlanningBiblio (<?php echo $version; ?>) - Copyright &copy; 2011-2017 - J&eacute;r&ocirc;me Combes - 
 <a href='http://www.planningbiblio.fr' target='_blank' style='font-size:9pt;'>www.planningbiblio.fr</a>
 </div>
 </body>
