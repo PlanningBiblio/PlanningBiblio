@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 30 janvier 2017
+Dernière modification : 3 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -104,8 +104,23 @@ if(!empty($groupes) and count($groupes)>1){
 
 if($affichage_groupe and $selection_groupe){
   // $groupes_keys : nom des groupes
-  $groupes_keys = array_keys($groupes);
-  sort($groupes_keys);
+  $keys = array_keys($groupes);
+  
+  // Affichage des groupes selon l'ordre du menu déroulant
+  $db=new db();
+  $db->select2('select_groupes','valeur',null,'order by rang');
+  if($db->result){
+    foreach($db->result as $elem){
+      if(in_array($elem['valeur'],$keys)){
+        $groupes_keys[]=$elem['valeur'];
+      }
+    }
+  }
+  // Autres (les postes qui ne sont pas affectés à des groupes)
+  if(in_array('',$keys)){
+    $groupes_keys[]='';
+  }
+
   
   // Initialisation des totaux (footer)
   foreach($groupes_keys as $g){

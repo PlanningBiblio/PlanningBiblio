@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.1
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : postes/modif.php
 Création : mai 2011
-Dernière modification : 19 novembre 2016
+Dernière modification : 5 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -78,6 +78,16 @@ $db=new db();
 $db->select2("select_groupes","*","1","order by rang");
 $groupes=$db->result;
 
+// Recherche des groupes groupes utilisés
+$groupes_utilises = array();
+$db=new db();
+$db->select2('postes','groupe',null,'group by groupe');
+if($db->result){
+  foreach($db->result as $elem){
+    $groupes_utilises[] = $elem['groupe'];
+  }
+}
+
 // Recherche des catégories
 $db=new db();
 $db->select2("select_categories","*","1","order by rang");
@@ -130,8 +140,7 @@ foreach($groupes as $elem){
   echo "<option value='{$elem['valeur']}' $selected >{$elem['valeur']}</option>\n";
 }
 echo "</select>\n";
-echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_groupes&amp;terme=groupe\",400,500);'>\n";
-echo "<span class='pl-icon pl-icon-add' title='Ajouter'></span></a>\n";
+echo "<span class='pl-icon pl-icon-add' title='Ajouter'id='add-group-button' style='cursor:pointer; margin-left:4px;'></span>\n";
 echo "</td></tr>";
 
 echo "<tr><td style='padding-top:20px;'>";
@@ -200,3 +209,30 @@ echo "* Si aucune cat&eacute;gorie n&apos;est s&eacute;lectionn&eacute;e, les ag
 echo "</td></tr>\n";
 echo "</table>\n";
 echo "</form>\n";
+?>
+
+<!--	Modification de la liste des groupes (Dialog Box) -->  
+<div id="add-group-form" title="Liste des groupes de postes" class='noprint' style='display:none;' >
+  <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des groupes dans les menus déroulants.</p>
+  <form>
+  <p><input type='text' id='add-group-text' style='width:300px;'/>
+    <input type='button' id='add-group-button2' class='ui-button' value='Ajouter' style='margin-left:15px;'/></p>
+  <fieldset>
+    <ul id="groups-sortable">
+<?php
+    if(is_array($groupes)){
+      foreach($groupes as $elem){
+        echo "<li class='ui-state-default' id='li_{$elem['id']}'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>\n";
+        echo "<font id='valeur_{$elem['id']}'>{$elem['valeur']}</font>\n";
+
+        if(!in_array($elem['valeur'],$groupes_utilises)){
+          echo "<span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>\n";
+        }
+        echo "</li>\n";
+      }
+    }
+?>
+    </ul>
+  </fieldset>
+  </form>
+</div>

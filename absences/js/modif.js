@@ -1,12 +1,12 @@
 /*
-Planning Biblio, Version 2.3.1
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/js/modif.js
 Création : 28 février 2014
-Dernière modification : 6 mai 2016
+Dernière modification : 5 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -93,7 +93,7 @@ $(function() {
     var text=sanitize_string($("#add-motif-text").val());
     if(!text){
       CJInfo("Donnée invalide","error");
-      $("#add-statut-text").val();
+      $("#add-motif-text").val();
       return;
     }
     

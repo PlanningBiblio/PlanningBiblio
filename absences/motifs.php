@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.7.4
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
 Fichier : absences/motifs.php
 Création : 28 février 2014
-Dernière modification : 3 mars 2014
+Dernière modification : 5 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -39,7 +39,7 @@ $motifs_types=array(array("id"=>0,"valeur"=>"N1 cliquable"),array("id"=>1,"valeu
 
 <!--	Modification de la liste des motifs (Dialog Box) -->  
 <div id="add-motif-form" title="Liste des motifs d'absences" class='noprint' style='display:none;'>
-  <p class="validateTips">Ajoutez, supprimez et modifier l'ordre des motifs dans les menus déroulant.</p>
+  <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des motifs dans les menus déroulants.</p>
   <form>
   <p><input type='text' id='add-motif-text' style='width:300px;'/>
     <input type='button' id='add-motif-button2' class='ui-button' value='Ajouter' style='margin-left:15px;'/></p>
