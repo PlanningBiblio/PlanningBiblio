@@ -5,7 +5,7 @@ Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2016 Jérôme Combes
 
-Fichier : postes/ajax.menus.php
+Fichier : include/ajax.menus.php
 Création : 5 février 2017
 Dernière modification : 5 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
@@ -19,15 +19,24 @@ ini_set('display_errors',0);
 
 session_start();
 
-include "../include/config.php";
+include "config.php";
 $menu = FILTER_INPUT(INPUT_POST, 'menu', FILTER_SANITIZE_STRING);
+$option = FILTER_INPUT(INPUT_POST, 'option', FILTER_SANITIZE_STRING);
 $tab = $_POST['tab'];
 
 $db=new db();
 $db->delete("select_$menu");
 foreach($tab as $elem){
+  $elements = array("valeur"=>$elem[0],"rang"=>$elem[1]);
+  if($option == 'type'){
+    $elements['type'] = $elem[2];
+  }
+  if($option == 'categorie'){
+    $elements['categorie'] = $elem[2];
+  }
+  
   $db=new db();
-  $db->insert2("select_$menu",array("valeur"=>$elem[0],"rang"=>$elem[2]));
+  $db->insert2("select_$menu", $elements);
 }
 echo json_encode('ok');
 ?>

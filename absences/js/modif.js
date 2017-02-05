@@ -38,15 +38,15 @@ $(function() {
 	tab=new Array();
 	$("#motifs-sortable li").each(function(){
 	  var id=$(this).attr("id").replace("li_","");
- 	  tab.push(new Array($("#valeur_"+id).text(), $("#type_"+id+" option:selected").val(),$(this).index()));
+ 	  tab.push(new Array($("#valeur_"+id).text(), $(this).index(), $("#type_"+id+" option:selected").val()));
 	});
 
 	// Transmet le tableau à la page de validation ajax
-	var jsonString = encodeURIComponent(JSON.stringify(tab));
 	$.ajax({
-	  url: "absences/ajax.motifs.php",
+	  url: "include/ajax.menus.php",
 	  type: "post",
-	  data: "tab="+jsonString,
+          dataType: "json",
+	  data: {tab: tab, menu:"abs", option: "type"},
 	  success: function(){
 	    location.reload(false);
 	  },
@@ -97,10 +97,14 @@ $(function() {
       return;
     }
     
-    var randomnumber=Math.floor((Math.random()*10000)+100)
-    $("#motifs-sortable").append("<li id='li_"+randomnumber+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
-      +"<font id='valeur_"+randomnumber+"'>"+text+"</font>"
-      +"<select id='type_"+randomnumber+"' style='position:absolute;left:330px;'>"
+    var number = 1;
+    while($('#li_'+number).length){
+      number++;
+    }
+
+    $("#motifs-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
+      +"<font id='valeur_"+number+"'>"+text+"</font>"
+      +"<select id='type_"+number+"' style='position:absolute;left:330px;'>"
       +options
       +"</select>"
       +"<span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"

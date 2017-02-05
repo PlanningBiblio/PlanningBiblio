@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : personnel/js/modif.js
 Création : 3 mars 2014
-Dernière modification : 22 décembre 2016
+Dernière modification : 5 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -195,8 +195,8 @@ function verif_form_agent(){
   }
 }
 
-// Paramétrage de la boite de dialogue permettant la modification des statuts
 $(function() {
+  // Paramétrage de la boite de dialogue permettant la modification des statuts
   $("#add-statut-form").dialog({
     autoOpen: false,
     height: 480,
@@ -215,15 +215,15 @@ $(function() {
 	tab=new Array();
 	$("#statuts-sortable li").each(function(){
 	  var id=$(this).attr("id").replace("li_","");
-	  tab.push(new Array($("#valeur_"+id).text(), $("#categorie_"+id+" option:selected").val(),$(this).index()));
+	  tab.push(new Array($("#valeur_"+id).text(), $(this).index(), $("#categorie_"+id+" option:selected").val()));
 	});
 
 	// Transmet le tableau à la page de validation ajax
-	var jsonString = encodeURIComponent(JSON.stringify(tab));
 	$.ajax({
-	  url: "personnel/ajax.statuts.php",
+          url: "include/ajax.menus.php",
 	  type: "post",
-	  data: "tab="+jsonString,
+          dataType: "json",
+	  data: {tab: tab, menu: "statuts" , option: "categorie"},
 	  success: function(){
 	    location.reload(false);
 	  },
@@ -274,10 +274,14 @@ $(function() {
       return;
     }
 
-    var randomnumber=Math.floor((Math.random()*10000)+100)
-    $("#statuts-sortable").append("<li id='li_"+randomnumber+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
-      +"<font id='valeur_"+randomnumber+"'>"+text+"</font>"
-      +"<select id='categorie_"+randomnumber+"' style='position:absolute;left:330px;'>"
+    var number = 1;
+    while($('#li_'+number).length){
+      number++;
+    }
+
+    $("#statuts-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
+      +"<font id='valeur_"+number+"'>"+text+"</font>"
+      +"<select id='categorie_"+number+"' style='position:absolute;left:330px;'>"
       +options
       +"</select>"
       +"<span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
@@ -286,6 +290,103 @@ $(function() {
     // Reset du champ texte une fois l'ajout effectué
     $("#add-statut-text").val(null);
   });
+  
+  // Paramétrage de la boite de dialogue permettant la modification des services
+  $("#add-service-form").dialog({
+    autoOpen: false,
+    height: 480,
+    width: 560,
+    modal: true,
+    resizable: false,
+    draggable: false,
+    buttons: {
+      Enregistrer: function() {
+	// Supprime les lignes cachées lors du clic sur la corbeille
+	$("#services-sortable li:hidden").each(function(){
+	  $(this).remove();
+	});
+	
+	// Enregistre les éléments du formulaire dans un tableau
+	tab=new Array();
+	$("#services-sortable li").each(function(){
+	  var id=$(this).attr("id").replace("li_","");
+ 	  tab.push(new Array($("#valeur_"+id).text(), $(this).index()));
+	});
+
+	// Transmet le tableau à la page de validation ajax
+	$.ajax({
+	  url: "include/ajax.menus.php",
+	  type: "post",
+          dataType: "json",
+	  data: {tab: tab, menu: "services"},
+	  success: function(){
+	    location.reload(false);
+	  },
+	  error: function(){
+	    alert("Erreur lors de l'enregistrement des modifications");
+	  }
+	});
+      },
+      Annuler: function() {
+	$(this).dialog( "close" );
+      },
+    },
+    close: function() {
+      $("#services-sortable li:hidden").each(function(){
+	$(this).show();
+      });
+    }
+  });
+
+  // Affiche la boite de dialogue permettant la modification des services
+  $("#add-service-button").click(function() {
+      $("#add-service-form").dialog( "open" );
+      return false;
+    });
+
+  // Permet de rendre la liste des services triable
+  $("#services-sortable" ).sortable({
+    placeholder: "ui-state-highlight",
+  });
+
+  // Permet d'ajouter de nouveaux services (clic sur le bouton ajouter)
+  $("#add-service-button2").click(function(){
+    var text=sanitize_string($("#add-service-text").val());
+    if(!text){
+      CJInfo("Donnée invalide","error");
+      $("#add-service-text").val();
+      return;
+    }
+    
+    // Vérifie si l'étage existe déjà
+    var exist = false;
+    $('#services-sortable > li > font').each(function(){
+      if($(this).text().toLowerCase() == text.toLowerCase()){
+        CJInfo("Cette valeur existe déjà.","error");
+        exist = true;
+        return;
+      }
+    });
+    
+    if(exist){
+      return;
+    }
+    
+    var number = 1;
+    while($('#li_'+number).length){
+      number++;
+    }
+    $("#services-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
+      +"<font id='valeur_"+number+"'>"+text+"</font>"
+      +"<span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
+      +"</li>");
+
+    // Reset du champ texte une fois l'ajout effectué
+    $("#add-service-text").val(null);
+  });
+  
+
+
 });
 
 $(document).ready(function(){

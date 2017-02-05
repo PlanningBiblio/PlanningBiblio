@@ -34,12 +34,12 @@ $(function() {
 	tab=new Array();
 	$("#etages-sortable li").each(function(){
 	  var id=$(this).attr("id").replace("li_","");
- 	  tab.push(new Array($("#valeur_"+id).text(), $("#type_"+id+" option:selected").val(),$(this).index()));
+ 	  tab.push(new Array($("#valeur_"+id).text(), $(this).index()));
 	});
 
 	// Transmet le tableau à la page de validation ajax
 	$.ajax({
-	  url: "postes/ajax.menus.php",
+	  url: "include/ajax.menus.php",
 	  type: "post",
           dataType: "json",
 	  data: {tab: tab, menu: "etages"},
@@ -129,12 +129,12 @@ $(function() {
 	tab=new Array();
 	$("#groups-sortable li").each(function(){
 	  var id=$(this).attr("id").replace("li_","");
- 	  tab.push(new Array($("#valeur_"+id).text(), $("#type_"+id+" option:selected").val(),$(this).index()));
+ 	  tab.push(new Array($("#valeur_"+id).text(), $(this).index()));
 	});
 
 	// Transmet le tableau à la page de validation ajax
 	$.ajax({
-	  url: "postes/ajax.menus.php",
+	  url: "include/ajax.menus.php",
 	  type: "post",
           dataType: "json",
 	  data: {tab: tab, menu: "groupes"},

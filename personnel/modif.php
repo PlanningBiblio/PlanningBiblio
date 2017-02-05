@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 22 décembre 2016
+Dernière modification : 5 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -87,8 +87,25 @@ if($db->result){
   }
 }
 
-$db_services=new db();
-$db_services->select2("select_services",null,null,"ORDER BY `rang`");
+// Liste des services
+$services = array();
+$db=new db();
+$db->select2("select_services",null,null,"ORDER BY `rang`");
+if($db->result){
+  foreach($db->result as $elem){
+    $services[]=$elem;
+  }
+}
+
+// Liste des services utilisés
+$services_utilises = array();
+$db=new db();
+$db->select2('personnel','service',null,"GROUP BY `service`");
+if($db->result){
+  foreach($db->result as $elem){
+    $services_utilises[]=$elem['service'];
+  }
+}
 
 $acces=array();
 $postes_attribues=array();
@@ -299,7 +316,7 @@ if(in_array(21,$droits)){
     echo "<option $select1 value='".$elem['valeur']."'>".$elem['valeur']."</option>\n";
   }
   echo "</select>\n";
-  echo "<span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer;' id='add-statut-button'></span>\n";
+  echo "<span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer; margin-left:4px;' id='add-statut-button'></span>\n";
 }
 else{
   echo $statut;
@@ -307,11 +324,11 @@ else{
 echo "</td></tr>";
 
 echo "<tr><td>";
-echo "Catégorie :";
+echo "Contrat :";
 echo "</td><td>";
 if(in_array(21,$droits)){
   echo "<select name='categorie' id='categorie' style='width:405px'>\n";
-  echo "<option value=''>Aucune</option>\n";
+  echo "<option value=''>Aucun</option>\n";
   foreach($contrats as $elem){
     $select1=$elem==$categorie?"selected='selected'":null;
     echo "<option $select1 value='{$elem}'>{$elem}</option>\n";
@@ -329,13 +346,12 @@ echo "</td><td style='white-space:nowrap'>";
 if(in_array(21,$droits)){
   echo "<select name='service' id='service' style='width:405px'>\n";
   echo "<option value=''>Aucun</option>\n";
-  foreach($db_services->result as $elem){
+  foreach($services as $elem){
     $select1=$elem['valeur']==$service?"selected='selected'":null;
-    echo "<option $select1 value='".$elem['valeur']."'>".$elem['valeur']."</option>\n";
+    echo "<option $select1 value='{$elem['valeur']}'>{$elem['valeur']}</option>\n";
   }
   echo "</select>\n";
-  echo "<a href='javascript:popup(\"include/ajoutSelect.php&amp;table=select_services&amp;terme=service\",400,400);'>\n";
-  echo "<span class='pl-icon pl-icon-add' title='Ajouter' ></span></a>\n";
+  echo "<span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer; margin-left:4px;' id='add-service-button'></span>\n";
 }
 else{
   echo $service;
@@ -951,6 +967,31 @@ if(in_array("conges",$plugins)){
   </form>
 </div>
 
+<!--	Modification de la liste des services (Dialog Box) -->  
+<div id="add-service-form" title="Liste des services" class='noprint' style='display:none;' >
+  <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des services dans le menu déroulant.</p>
+  <form>
+  <p><input type='text' id='add-service-text' style='width:300px;'/>
+    <input type='button' id='add-service-button2' class='ui-button' value='Ajouter' style='margin-left:15px;'/></p>
+  <fieldset>
+    <ul id="services-sortable">
+<?php
+    if(is_array($services)){
+      foreach($services as $elem){
+        echo "<li class='ui-state-default' id='li_{$elem['id']}'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>\n";
+        echo "<font id='valeur_{$elem['id']}'>{$elem['valeur']}</font>\n";
+
+        if(!in_array($elem['valeur'],$services_utilises)){
+          echo "<span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>\n";
+        }
+        echo "</li>\n";
+      }
+    }
+?>
+    </ul>
+  </fieldset>
+  </form>
+</div>
 
 <script type='text/JavaScript'>
 <!--
