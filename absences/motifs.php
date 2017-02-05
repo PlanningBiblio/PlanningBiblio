@@ -39,7 +39,7 @@ $motifs_types=array(array("id"=>0,"valeur"=>"N1 cliquable"),array("id"=>1,"valeu
 
 <!--	Modification de la liste des motifs (Dialog Box) -->  
 <div id="add-motif-form" title="Liste des motifs d'absences" class='noprint' style='display:none;'>
-  <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des motifs dans les menus déroulants.</p>
+  <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des motifs dans le menu déroulant.</p>
   <form>
   <p><input type='text' id='add-motif-text' style='width:300px;'/>
     <input type='button' id='add-motif-button2' class='ui-button' value='Ajouter' style='margin-left:15px;'/></p>
