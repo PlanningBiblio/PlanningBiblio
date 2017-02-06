@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.5.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : statistiques/export.php
 Création : mai 2011
-Dernière modification : 4 novembre 2016
+Dernière modification : 6 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -249,7 +249,7 @@ switch($nom){
     $cellules[]=html_entity_decode($elem['prenom'],ENT_QUOTES|ENT_IGNORE,"UTF-8");
     $cellules[]=html_entity_decode($elem['statut'],ENT_QUOTES|ENT_IGNORE,"UTF-8");	// Statut
     foreach($dates as $d){								// Heures de chaque jour
-      $cellules[] = is_numeric($elem[$d[0]]) ? number_format($elem[$d[0]],2,',','') : $elem[$d[0]];
+      $cellules[] = is_numeric($elem[$d[0]]['total']) ? number_format($elem[$d[0]]['total'],2,',','') : null;
     }
 
     // Totaux par groupe de postes
@@ -264,17 +264,17 @@ switch($nom){
       }
     }
 
-    $cellules[] = is_numeric($elem['total']) ? number_format($elem['total'],2,',','') : $elem['total'];                         // Total d'heures sur la période
-    $cellules[] = is_numeric($elem['max']) ? number_format($elem['max'],2,',','') : $elem['max'];                               // Nombre d'heures maximum sur la période
-    $cellules[] = is_numeric($elem['semaine']) ? number_format($elem['semaine'],2,',','') : $elem['semaine'];                   // Moyenne d'heures par semaine
-    $cellules[] = is_numeric($elem['heuresHebdo']) ? number_format($elem['heuresHebdo'],2,',','') : $elem['heuresHebdo'];       // Quota
+    $cellules[] = is_numeric($elem['total']) ? number_format($elem['total'],2,',','') : null;               // Total d'heures sur la période
+    $cellules[] = is_numeric($elem['max']) ? number_format($elem['max'],2,',','') : null;                   // Nombre d'heures maximum sur la période
+    $cellules[] = is_numeric($elem['semaine']) ? number_format($elem['semaine'],2,',','') : null;           // Moyenne d'heures par semaine
+    $cellules[] = is_numeric($elem['heuresHebdo']) ? number_format($elem['heuresHebdo'],2,',','') : null;   // Quota
     $lignes[]=join($cellules,$separateur);
   }
   
   // ligne "Nombre d'heures"
   $cellules = array("Nombre d'heures","","");
   foreach($dates as $d){
-    $cellules[] = is_numeric($heures[$d[0]]) ? number_format($heures[$d[0]],2,',','') : $heures[$d[0]];
+    $cellules[] = is_numeric($heures[$d[0]]) ? number_format($heures[$d[0]],2,',','') : null;
   }
 
   // Totaux par groupe de postes
@@ -289,11 +289,11 @@ switch($nom){
     }
   }
 
-  $cellules[]=$_SESSION['oups']['stat_totalHeures'];
+  $cellules[] = is_numeric($_SESSION['oups']['stat_totalHeures']) ? number_format($_SESSION['oups']['stat_totalHeures'], 2, ',', '') : null; 
   $lignes[]=join($cellules,$separateur);
   $cellules=Array("Nombre d'agents","","");						// Lignes "Nombres d'agents
   foreach($dates as $d){
-    $cellules[]=$_SESSION['oups']['stat_nbAgents'][$d[0]];
+    $cellules[] = is_numeric($_SESSION['oups']['stat_nbAgents'][$d[0]]) ? $_SESSION['oups']['stat_nbAgents'][$d[0]] : null;
   }
   $total=0;
   foreach($_SESSION['oups']['stat_nbAgents'] as $elem){

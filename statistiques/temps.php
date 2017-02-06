@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 3 février 2017
+Dernière modification : 6 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -76,12 +76,6 @@ $totalAgents=0;		// Les totaux
 $totalHeures=0;
 $siteHeures=array(0,0);	// Heures par site
 $siteAgents=array(0,0);	// Agents par site
-
-// Récupération des couleur en fonction des statuts
-$db=new db();
-$db->select2("select_statuts");
-$couleurStatut=$db->result;
-
 
 // Affichage des statistiques par groupe de postes
 $groupes = array();
@@ -200,11 +194,16 @@ if($db->result){
 	}
   
     if(!array_key_exists($elem['perso_id'],$tab)){		// création d'un tableau de données par agent (id, nom, heures de chaque jour ...)
-      $tab[$elem['perso_id']]=Array("perso_id"=>$elem['perso_id'],"nom"=>$elem['nom'],
+      $tab[$elem['perso_id']] = array("perso_id"=>$elem['perso_id'],"nom"=>$elem['nom'],
       "prenom"=>$elem['prenom'],"statut"=>$elem['statut'],"site1"=>0,"site2"=>0,"total"=>0,
       "semaine"=>0);
       foreach($dates as $d){
-	$tab[$elem['perso_id']][$d[0]]=0;
+	$tab[$elem['perso_id']][$d[0]] = array('total'=>0);
+	if(!empty($groupes_keys)){
+          foreach($groupes_keys as $g){
+            $tab[$elem['perso_id']][$d[0]]["group_$g"] = 0;
+          }
+        }
       }
       
       // Totaux par groupe de postes
@@ -215,7 +214,7 @@ if($db->result){
 	  
     $d=new datePl($elem['date']);
     $position=$d->position!=0?$d->position-1:6;
-    $tab[$elem['perso_id']][$elem['date']]+=diff_heures($elem['debut'],$elem['fin'],"decimal");	// ajout des heures par jour
+    $tab[$elem['perso_id']][$elem['date']]['total']+=diff_heures($elem['debut'],$elem['fin'],"decimal");	// ajout des heures par jour
     $tab[$elem['perso_id']]['total']+=diff_heures($elem['debut'],$elem['fin'],"decimal");	// ajout des heures sur toutes la période
     if($elem["site"]){
       if(!array_key_exists("site{$elem['site']}",$tab[$elem['perso_id']])){
@@ -233,6 +232,7 @@ if($db->result){
     foreach($groupes_keys as $g){
       if(in_array($elem['poste'], $groupes[$g])){
         $tab[$elem['perso_id']]['group_'.$g] +=diff_heures($elem['debut'],$elem['fin'],"decimal");
+        $tab[$elem['perso_id']][$elem['date']]['group_'.$g] +=diff_heures($elem['debut'],$elem['fin'],"decimal");
         $totauxGroupesHeures[$g] +=diff_heures($elem['debut'],$elem['fin'],"decimal");
         if(!in_array($elem['perso_id'], $totauxGroupesPerso[$g])){
           $totauxGroupesPerso[$g][] = $elem['perso_id'];
@@ -264,10 +264,10 @@ foreach($dates as $d){
 	$heures[$d[0]]=0;
       }
       if(array_key_exists($d[0],$elem)){
-	$heures[$d[0]]+=$elem[$d[0]];
+	$heures[$d[0]]+=$elem[$d[0]]['total'];
       }
       // on compte les agents par jours	+ le total sur la période
-      if(!in_array($elem['perso_id'],$agents_id) and $elem[$d[0]]){
+      if(!in_array($elem['perso_id'],$agents_id) and $elem[$d[0]]['total']){
 	$agents_id[]=$elem['perso_id'];
 	$totalAgents++;
 
@@ -313,7 +313,7 @@ foreach($keys as $key){
   }
 
   foreach($dates as $d){
-    $tab[$key][$d[0]]=$tab[$key][$d[0]]!=0?number_format($tab[$key][$d[0]],2,'.',' '):"-";
+    $tab[$key][$d[0]]['total'] = $tab[$key][$d[0]]['total'] != 0 ? number_format($tab[$key][$d[0]]['total'],2,'.',' ') : '-';
   }
 }
 
@@ -425,15 +425,6 @@ EOD;
 
   foreach($tab as $elem){
 
-    // On change de couleur en fonction du statut
-    $couleur="#CCDDEE";		
-    foreach($couleurStatut as $elem2){
-      if($elem2['valeur']==$elem['statut']){
-	$couleur=$elem2['couleur'];
-	break;
-      }
-    }
-
     // Couleurs en fonction de la moyenne hebdo et des heures prévues
     $color=$elem['semaine']>$elem['heuresHebdo']?"background:red; font-weight:bold;":null;
     if(($elem['heuresHebdo']-$elem['semaine'])<=0.5 and ($elem['semaine']-$elem['heuresHebdo'])<=0.5){		// 0,5 du quota hebdo : vert
@@ -441,12 +432,26 @@ EOD;
     }
     
     // Affichage des lignes : Nom, heures par jour, par semaine, heures prévues
-    echo "<tr><td style='background:$couleur;'>{$elem['nom']} {$elem['prenom']}</td>\n";
+    echo "<tr style='vertical-align:top;'><td>{$elem['nom']} {$elem['prenom']}</td>\n";
     $elem['statut']=$elem['statut']?$elem['statut']:"&nbsp;";
-    echo "<td style='background:$couleur;'>{$elem['statut']}</td>\n";
+    echo "<td>{$elem['statut']}</td>\n";
     foreach($dates as $d){
-      $class=$elem[$d[0]]!="-"?"bg-yellow":null;
-      echo "<td class='$class' style='text-align:center;'>".heure4($elem[$d[0]])."</td>\n";
+      $class=$elem[$d[0]]['total']!="-"?"bg-yellow":null;
+      echo "<td class='$class' style='text-align:center;'>\n";
+      echo "<strong>".heure4($elem[$d[0]]['total'])."</strong>\n";
+      if(!empty($groupes_keys)){
+        echo "<br/>";
+        foreach($groupes_keys as $g){
+          if($elem[$d[0]]["group_$g"]){
+            echo "<br/>";
+            echo $g ? $g : 'Autres';
+            echo " : ";
+            echo heure4($elem[$d[0]]["group_$g"]);
+          }
+        }
+      }
+      
+      echo "</td>\n";
     }
 
     if($config['Multisites-nombre']>1){
@@ -462,11 +467,13 @@ EOD;
     if(!empty($groupes_keys)){
       foreach($groupes_keys as $g){
         if($g != '' and $totauxGroupesPerso[$g]){
-          echo "<td style='text-align:center;'>".heure4($elem["group_$g"])."</td>\n";
+          $h = $elem["group_$g"] ? heure4($elem["group_$g"]) : '-';
+          echo "<td style='text-align:center;'>$h</td>\n";
         }
       }
       if(in_array('', $groupes_keys) and $totauxGroupesPerso['']){
-        echo "<td style='text-align:center;'>".heure4($elem["group_"])."</td>\n";
+          $h = $elem["group_"] ? heure4($elem["group_"]) : '-';
+        echo "<td style='text-align:center;'>$h</td>\n";
       }
     }
 
