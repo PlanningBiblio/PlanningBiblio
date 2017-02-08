@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : statistiques/postes_synthese.php
 Création : mai 2011
-Dernière modification : 3 octobre 2016
+Dernière modification : 8 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -287,9 +287,9 @@ if($tab){
   <table id='tableStatSynthese' class='CJDataTable'>
   <thead><tr>
     <th>Postes</th>
-    <th>Total d'heures</th>
-    <th>Moyenne jour</th>
-    <th>Moyenne hebdomadaire</th>
+    <th class='dataTableHeureFR'>Total d'heures</th>
+    <th class='dataTableHeureFR'>Moyenne jour</th>
+    <th class='dataTableHeureFR'>Moyenne hebdomadaire</th>
   </tr></thead>
   <tbody>
 EOD;
@@ -325,17 +325,17 @@ EOD;
     echo "<tr style='vertical-align:top;' class='$class'>\n";
     echo "<td><strong>{$elem[0][1]}</strong>\n";
     echo "<br/><i>$siteEtage</i></td>\n";
-    echo "<td>".number_format(round($elem[2],2),2,',',' ')."</td>\n";
-    echo "<td>".number_format(round($jour,2),2,',',' ')."</td>\n";
-    echo "<td>".number_format(round($hebdo,2),2,',',' ')."</td></tr>\n";
+    echo "<td>".heure4($elem[2])."</td>\n";
+    echo "<td>".heure4($jour)."</td>\n";
+    echo "<td>".heure4($hebdo)."</td></tr>\n";
   }
 
   echo "</tbody>\n";
   echo "<tfooter><tr>\n";
   echo "<th><strong>Total</strong></th>\n";
-  echo "<th>".number_format(round($total_heures,2),2,',',' ')."</th>\n";
-  echo "<th>".number_format(round($total_jour,2),2,',',' ')."</th>\n";
-  echo "<th>".number_format(round($total_hebdo,2),2,',',' ')."</th></tr>\n";
+  echo "<th>".heure4($total_heures)."</th>\n";
+  echo "<th>".heure4($total_jour)."</th>\n";
+  echo "<th>".heure4($total_hebdo)."</th></tr>\n";
   echo "</tfooter>\n";
   echo "</table>\n";
 }

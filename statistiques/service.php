@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : statistiques/service.php
 Création : 9 septembre 2013
-Dernière modification : 3 octobre 2016
+Dernière modification : 8 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -358,9 +358,9 @@ if($tab){
     echo "<td style='padding-left:8px;'>";
     echo "<table><tr><td colspan='2'><b>{$elem[0]}</b></td></tr>\n";
     echo "<tr><td>Total</td>\n";
-    echo "<td class='statistiques-heures'>".number_format($elem[2],2,',',' ')."</td></tr>\n";
+    echo "<td class='statistiques-heures'>".heure4($elem[2])."</td></tr>\n";
     echo "<tr><td>Moyenne hebdo</td>\n";
-    echo "<td class='statistiques-heures'>".number_format(round($hebdo,2),2,',',' ')."</td></tr>\n";
+    echo "<td class='statistiques-heures'>".heure4($hebdo)."</td></tr>\n";
     if($config['Multisites-nombre']>1){
       for($i=1;$i<=$config['Multisites-nombre'];$i++){
 	if($elem["sites"][$i]){
@@ -369,9 +369,9 @@ if($tab){
 	  $hebdo=$jour*$joursParSemaine;
 	  echo "<tr><td colspan='2' style='padding-top:20px;'><u>".$config["Multisites-site{$i}"]."</u></td></tr>";
 	  echo "<tr><td>Total</td>";
-	  echo "<td class='statistiques-heures'>".number_format($elem["sites"][$i],2,',',' ')."</td></tr>";;
+	  echo "<td class='statistiques-heures'>".heure4($elem["sites"][$i])."</td></tr>";;
 	  echo "<tr><td>Moyenne</td>";
-	  echo "<td class='statistiques-heures'>".number_format($hebdo,2,',',' ')."</td></tr>";
+	  echo "<td class='statistiques-heures'>".heure4($hebdo)."</td></tr>";
 	}
       }
     }
@@ -390,7 +390,7 @@ if($tab){
       echo "<tr style='vertical-align:top;'><td>\n";
       echo "<b>{$poste[1]}</b><br/><i>$siteEtage</i>";
       echo "</td><td class='statistiques-heures'>\n";
-      echo number_format($poste[3],2,',',' ');
+      echo heure4($poste[3]);
       echo "</td></tr>\n";
     }
     echo "</table>\n";
@@ -403,7 +403,7 @@ if($tab){
     sort($elem[3]);				//	tri les samedis par dates croissantes
     foreach($elem[3] as $samedi){			//	Affiche les dates et heures des samedis
       echo dateFr($samedi[0]);			//	date
-      echo "&nbsp;:&nbsp;".number_format($samedi[1],2,',',' ')."<br/>";	// heures
+      echo "&nbsp;:&nbsp;".heure4($samedi[1])."<br/>";	// heures
     }
     echo "</td>\n";
     if($config['Dimanche']){
@@ -414,7 +414,7 @@ if($tab){
       sort($elem[6]);				//	tri les dimanches par dates croissantes
       foreach($elem[6] as $dimanche){		//	Affiche les dates et heures des dimanches
 	echo dateFr($dimanche[0]);		//	date
-	echo "&nbsp;:&nbsp;".number_format($dimanche[1],2,',',' ')."<br/>";	//	heures
+	echo "&nbsp;:&nbsp;".heure4($dimanche[1])."<br/>";	//	heures
       }
       echo "</td>\n";
     }
@@ -427,7 +427,7 @@ if($tab){
       sort($elem[9]);				//	tri les jours fériés par dates croissantes
       foreach($elem[9] as $ferie){		// 	Affiche les dates et heures des jours fériés
 	echo dateFr($ferie[0]);			//	date
-	echo "&nbsp;:&nbsp;".number_format($ferie[1],2,',',' ')."<br/>";	//	heures
+	echo "&nbsp;:&nbsp;".heure4($ferie[1])."<br/>";	//	heures
       }
       echo "</td>";	
     }
@@ -461,12 +461,12 @@ if($tab){
     if($exists_absences){
       echo "<td>\n";
       if($elem[5]){				//	Affichage du total d'heures d'absences
-	echo "Total : ".number_format($elem[5],2,',',' ')."<br/>";
+	echo "Total : ".heure4($elem[5])."<br/>";
       }
       sort($elem[4]);				//	tri les absences par dates croissantes
       foreach($elem[4] as $absences){		//	Affiche les dates et heures des absences
 	echo dateFr($absences[0]);		//	date
-	echo "&nbsp;:&nbsp;".number_format($absences[1],2,',',' ')."<br/>";	// heures
+	echo "&nbsp;:&nbsp;".heure4($absences[1])."<br/>";	// heures
       }
       echo "</td>\n";
     }

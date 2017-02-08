@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : statistiques/postes.php
 Création : mai 2011
-Dernière modification : 3 octobre 2016
+Dernière modification : 8 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -328,13 +328,13 @@ if($tab){
     echo "<table><tr><td colspan='2'><b>{$elem[0][1]}</b></td></tr>";
     echo "<tr><td colspan='2'><i>$siteEtage</i></td></tr>\n";
     echo "<tr><td>Total</td>";
-    echo "<td class='statistiques-heures'>".number_format($elem[2],2,',',' ')."</td></tr>\n";
+    echo "<td class='statistiques-heures'>".heure4($elem[2])."</td></tr>\n";
     $jour=$elem[2]/$nbJours;
     $hebdo=$jour*$joursParSemaine;
     echo "<tr><td>Moyenne jour</td>";
-    echo "<td class='statistiques-heures'>".number_format(round($jour,2),2,',',' ')."</td></tr>\n";
+    echo "<td class='statistiques-heures'>".heure4($jour)."</td></tr>\n";
     echo "<tr><td>Moyenne hebdo.</td>";
-    echo "<td class='statistiques-heures'>".number_format(round($hebdo,2),2,',',' ')."</td></tr>\n";
+    echo "<td class='statistiques-heures'>".heure4($hebdo)."</td></tr>\n";
     if($config['Multisites-nombre']>1){
       for($i=1;$i<=$config['Multisites-nombre'];$i++){
 	if($elem["sites"][$i] and $elem["sites"][$i]!=$elem[2]){
@@ -343,9 +343,9 @@ if($tab){
 	  $hebdo=$jour*$joursParSemaine;
 	  echo "<tr><td colspan='2' style='padding-top:20px;'><u>".$config["Multisites-site{$i}"]."</u></td></tr>";
 	  echo "<tr><td>Total</td>";
-	  echo "<td class='statistiques-heures'>".number_format($elem["sites"][$i],2,',',' ')."</td></tr>";;
+	  echo "<td class='statistiques-heures'>".heure4($elem["sites"][$i])."</td></tr>";;
 	  echo "<tr><td>Moyenne</td>";
-	  echo "<td class='statistiques-heures'>".number_format($hebdo,2,',',' ')."</td></tr>";
+	  echo "<td class='statistiques-heures'>".heure4($hebdo)."</td></tr>";
 	}
       }
     }
@@ -356,7 +356,7 @@ if($tab){
     echo "<table style='width:100%;'>";
     foreach($elem[1] as $agent){
       echo "<tr><td>{$agent[1]} {$agent[2]}</td>";
-      echo "<td class='statistiques-heures'>".number_format($agent[3],2,',',' ')."</td></tr>\n";
+      echo "<td class='statistiques-heures'>".heure4($agent[3])."</td></tr>\n";
     }
     echo "</table>\n";
     echo "</td>\n";
@@ -366,7 +366,7 @@ if($tab){
     echo "<table style='width:100%;'>\n";
     foreach($elem['services'] as $service){
       echo "<tr><td>".str_replace("ZZZ_","",$service['nom'])."</td>";
-      echo "<td class='statistiques-heures'>".number_format($service['heures'],2,',',' ')."</td></tr>";
+      echo "<td class='statistiques-heures'>".heure4($service['heures'])."</td></tr>";
     }
     echo "</table>\n";
     echo "</td>\n";
@@ -376,7 +376,7 @@ if($tab){
     echo "<table style='width:100%;'>\n";
     foreach($elem['statuts'] as $statut){
       echo "<tr><td>".str_replace("ZZZ_","",$statut['nom'])."</td>";
-      echo "<td class='statistiques-heures'>".number_format($statut['heures'],2,',',' ')."</td></tr>";
+      echo "<td class='statistiques-heures'>".heure4($statut['heures'])."</td></tr>";
     }
     echo "</table>\n";
     echo "</td></tr>\n";

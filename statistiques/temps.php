@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 6 février 2017
+Dernière modification : 8 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -382,15 +382,15 @@ if(is_array($tab)){
   <th>Statut</th>
 EOD;
   foreach($dates as $d){
-    echo "<th>{$d[1]}</th>\n";
+    echo "<th class='dataTableHeureFR'>{$d[1]}</th>\n";
   }
 
   // Total par site
   if($config['Multisites-nombre']>1){
     for($i=1;$i<=$config['Multisites-nombre'];$i++){
-      echo "<th>".$config["Multisites-site$i"]."</th>\n";
+      echo "<th class='dataTableHeureFR'>".$config["Multisites-site$i"]."</th>\n";
       if($nbSemaines!=1){
-	echo "<th>Moyenne Hebdo.</th>\n";
+	echo "<th class='dataTableHeureFR'>Moyenne Hebdo.</th>\n";
       }
     }
   }
@@ -399,24 +399,24 @@ EOD;
   if(!empty($groupes_keys)){
     foreach($groupes_keys as $g){
       if($g != '' and $totauxGroupesPerso[$g]){
-        echo "<th>$g</th>\n";
+        echo "<th class='dataTableHeureFR'>$g</th>\n";
       }
     }
     if(in_array('', $groupes_keys) and $totauxGroupesPerso['']){
-      echo "<th>Autres</th>\n";
+      echo "<th class='dataTableHeureFR'>Autres</th>\n";
     }
   }
 
   // Total, moyenne, max
-  echo "<th>Total</th>\n";
-  echo "<th>Max.</th>\n";
+  echo "<th class='dataTableHeureFR'>Total</th>\n";
+  echo "<th class='dataTableHeureFR'>Max.</th>\n";
 
   //Si nbSemaine == 1, le total=moyenne : on ne l'affiche pas
   $colspan=1;
   if($nbSemaines!=1){
     $colspan=3;
-    echo "<th>Moyenne<br/>Hebdo.</th>\n";
-    echo "<th>Max. Hebdo.</th>\n";
+    echo "<th class='dataTableHeureFR'>Moyenne<br/>Hebdo.</th>\n";
+    echo "<th class='dataTableHeureFR'>Max. Hebdo.</th>\n";
   }
 
   echo "</tr>\n";

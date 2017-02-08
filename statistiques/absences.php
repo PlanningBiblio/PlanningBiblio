@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : statistiques/absences.php
 Création : 15 mai 2014
-Dernière modification : 3 octobre 2016
+Dernière modification : 8 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -115,14 +115,14 @@ foreach($absences as $elem){
 
     // heures agent pour le motif courant
     if($a->error){
-      $tab[$elem['perso_id']][$elem['motif']]['heures']="N/A";
+      $tab[$elem['perso_id']][$elem['motif']]['heures']="Erreur";
     }
     elseif(is_numeric($tab[$elem['perso_id']][$elem['motif']]['heures'])){
       $tab[$elem['perso_id']][$elem['motif']]['heures']+=$heures;
     }
     // Total heures pour ce motif
     if($a->error){
-      $totaux[$elem['motif']]['heures']="N/A";
+      $totaux[$elem['motif']]['heures']="Erreur";
     }
     elseif(is_numeric($totaux[$elem['motif']]['heures'])){
       $totaux[$elem['motif']]['heures']+=$heures;
@@ -130,9 +130,9 @@ foreach($absences as $elem){
 
     if($a->error){
       // Total heures agent
-      $tab[$elem['perso_id']]['totalHeures']="N/A";
+      $tab[$elem['perso_id']]['totalHeures']="Erreur";
       // Totaux heures généraux
-      $totaux['_generalHeures']="N/A";
+      $totaux['_generalHeures']="Erreur";
     }
     else{
       // Total heures agent
@@ -210,7 +210,8 @@ foreach($tab as $elem){
   echo "<tr><td>{$elem['nom']} {$elem['prenom']}</td>\n";
   echo "<td class='center nowrap'>{$elem['total']}</td>\n";
   if($afficheHeures){
-    echo "<td class='center nowrap'>".heure4($elem['totalHeures'])."</td>\n";
+    $title = $elem['totalHeures'] == 'Erreur' ? "Erreur de calcul. V&eacute;rifiez les heures de pr&eacute;sence de l&apos;agent (Emploi du temps).": null;
+    echo "<td class='center nowrap' title='$title'>".heure4($elem['totalHeures'])."</td>\n";
   }
   foreach($motifs as $motif){
     $nb=array_key_exists($motif,$elem)?$elem[$motif]['total']:"-";
@@ -219,13 +220,14 @@ foreach($tab as $elem){
       if(is_numeric($elem[$motif]['heures'])){
 	$heures=heure4($elem[$motif]['heures']);
       }else{
-	$heures="N/A";
+	$heures="Erreur";
       }
     }
     $class=array_key_exists($motif,$elem)?"bg-yellow":null;
+    $title = $heures == 'Erreur' ? "Erreur de calcul. V&eacute;rifiez les heures de pr&eacute;sence de l&apos;agent (Emploi du temps).": null;
     echo "<td class='center nowrap $class'>$nb</td>\n";
     if($afficheHeures){
-      echo "<td class='center nowrap $class'>$heures</td>\n";
+      echo "<td class='center nowrap $class' title='$title'>$heures</td>\n";
     }
   }
   echo "</tr>\n";
@@ -236,14 +238,17 @@ echo "</tbody>\n";
 echo "<tfoot><tr style='background:#DDDDDD;'><th>Totaux</th>\n";
 echo "<th class='nowrap'>{$totaux['_general']}</th>\n";
 if($afficheHeures){
-  $heures=is_numeric($totaux['_generalHeures'])?heure4($totaux['_generalHeures']):"N/A";
-  echo "<th class='nowrap'>$heures</th>\n";
+  $heures=is_numeric($totaux['_generalHeures'])?heure4($totaux['_generalHeures']):"Erreur";
+  $title = $heures == 'Erreur' ? "Erreur de calcul. V&eacute;rifiez les heures de pr&eacute;sence des agents (Emploi du temps).": null;
+  
+  echo "<th class='nowrap' title='$title'>$heures</th>\n";
 }
 foreach($motifs as $motif){
   echo "<th class='nowrap'>{$totaux[$motif]['frequence']}</th>\n";
   if($afficheHeures){
-    $heures=is_numeric($totaux[$motif]['heures'])?heure4($totaux[$motif]['heures']):"N/A";
-    echo "<th class='nowrap'>$heures</th>\n";
+    $heures=is_numeric($totaux[$motif]['heures'])?heure4($totaux[$motif]['heures']):"Erreur";
+    $title = $heures == 'Erreur' ? "Erreur de calcul. V&eacute;rifiez les heures de pr&eacute;sence des agents (Emploi du temps).": null;
+    echo "<th class='nowrap' title='$title'>$heures</th>\n";
   }
 }
 echo "</tr></tfoot>\n";

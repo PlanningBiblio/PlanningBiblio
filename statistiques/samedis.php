@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : statistiques/samedis.php
 Création : 15 novembre 2013
-Dernière modification : 3 octobre 2016
+Dernière modification : 8 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -291,7 +291,7 @@ if($tab){
   echo "<th>Agents</th>\n";
   echo "<th>Prime / Temps</th>\n";
   echo "<th>Nombre</th>\n";
-  echo "<th>Heures</th>\n";
+  echo "<th class='dataTableHeureFR'>Heures</th>\n";
   echo "<th class='dataTableDateFR'>Dates</th>\n";
 
   if($exists_JF){
@@ -328,12 +328,12 @@ if($tab){
     //	Nombre de samedis travaillés
     echo "<td>".count($elem[3])."</td>\n";
     //	Nombre d'heures
-    echo "<td>".number_format($heures,2,'.',' ')."</td>\n";
+    echo "<td>".heure4($heures)."</td>\n";
     //	Affichage du nombre de samedis travaillés et les heures faites par samedi
     echo "<td>";
     foreach($elem[3] as $samedi){			//	Affiche les dates et heures des samedis
       echo dateFr($samedi[0]);			//	date
-      echo "&nbsp;:&nbsp;".number_format($samedi[1],2,',',' ')."<br/>";	// heures
+      echo "&nbsp;:&nbsp;".heure4($samedi[1])."<br/>";	// heures
     }
     echo "</td>\n";
 
@@ -345,7 +345,7 @@ if($tab){
       sort($elem[9]);				//	tri les dimanches par dates croissantes
       foreach($elem[9] as $ferie){		// 	Affiche les dates et heures des dimanches
 	echo dateFr($ferie[0]);			//	date
-	echo "&nbsp;:&nbsp;".number_format($ferie[1],2,',',' ')."<br/>";	//	heures
+	echo "&nbsp;:&nbsp;".heure4($ferie[1])."<br/>";	//	heures
       }
       echo "</td>";	
     }
@@ -379,12 +379,12 @@ if($tab){
     if($exists_absences){
       echo "<td>\n";
       if($elem[5]){				//	Affichage du total d'heures d'absences
-	echo "Total : ".number_format($elem[5],2,',',' ')."<br/>";
+	echo "Total : ".heure4($elem[5])."<br/>";
       }
       sort($elem[4]);				//	tri les absences par dates croissantes
       foreach($elem[4] as $absences){		//	Affiche les dates et heures des absences
 	echo dateFr($absences[0]);		//	date
-	echo "&nbsp;:&nbsp;".number_format($absences[1],2,',',' ')."<br/>";	// heures
+	echo "&nbsp;:&nbsp;".heure4($absences[1])."<br/>";	// heures
       }
       echo "</td>\n";
     }
