@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 2.4.5
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : joursFeries/index.php
 Création : 25 juillet 2013
-Dernière modification : 19 octobre 2016
+Dernière modification : 9 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -49,12 +49,12 @@ $jours=$j->elements;
 echo <<<EOD
   <div id='joursFeries'>
   <h3>Jours fériés et jours de fermeture</h3>
-  <form name='form' method='post' action='index.php'>
-  <input type='hidden' name='page' value='joursFeries/valid.php' />
+  <form name='form1' method='get' action='index.php'>
+  <input type='hidden' name='page' value='joursFeries/index.php' />
 
   <!-- Choix de l'année -->
   Sélectionnez l'année à paramétrer 
-  <select name='annee' onchange='document.location.href="index.php?page=joursFeries/index.php&annee="+document.form.annee.value;'>
+  <select name='annee' onchange='document.form1.submit();'>
     <option value=''>&nbsp;</option>
 EOD;
 foreach($annees as $elem){
@@ -63,8 +63,12 @@ foreach($annees as $elem){
 }
 echo <<<EOD
   </select>
+  </form>
 
   <!-- Tableau des jours fériés -->
+  <form name='form' method='post' action='index.php'>
+  <input type='hidden' name='page' value='joursFeries/valid.php' />
+  <input type='hidden' name='annee' value='$annee_select' />
   <table cellspacing='0'>
   <tr class='th'><td>&nbsp;</td><td>Jour</td><td>Férié</td><td>Fermeture</td><td>Nom</td><td>Commentaire</td></tr>
 EOD;
