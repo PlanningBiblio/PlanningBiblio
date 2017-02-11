@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.1
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 19 novembre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -32,6 +32,7 @@ require_once "class.planning.php";
 //	Initialisation des variables
 $ajouter=filter_input(INPUT_POST,"ajouter",FILTER_CALLBACK,array("options"=>"sanitize_on"));
 $barrer=filter_input(INPUT_POST,"barrer",FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$CSRFToken=filter_input(INPUT_POST,"CSRFToken",FILTER_SANITIZE_STRING);
 $date=filter_input(INPUT_POST,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
 $debut=filter_input(INPUT_POST,"debut",FILTER_CALLBACK,array("options"=>"sanitize_time"));
 $fin=filter_input(INPUT_POST,"fin",FILTER_CALLBACK,array("options"=>"sanitize_time"));
@@ -53,6 +54,7 @@ if($perso_id==0){
     $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
     $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site);
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->update2("pl_poste",$set,$where);
 
   // Barrer l'agent sélectionné
@@ -60,6 +62,7 @@ if($perso_id==0){
     $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
     $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->update2("pl_poste",$set,$where);
   }
   // Tout supprimer
@@ -95,6 +98,7 @@ else{
     $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
     $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->update2("pl_poste",$set,$where);
     
     // On ajoute le nouveau

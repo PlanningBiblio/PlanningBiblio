@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.6
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 27 octobre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -23,6 +23,7 @@ require_once "personnel/class.personnel.php";
 
 // Initialisation des variables
 $commentaires=trim(filter_input(INPUT_GET,"commentaires",FILTER_SANITIZE_STRING));
+$CSRFToken=trim(filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING));
 $debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
 $fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
 $hre_debut=filter_input(INPUT_GET,"hre_debut",FILTER_CALLBACK,array("options"=>"sanitize_time"));
@@ -243,6 +244,7 @@ $ids=implode(",",$ids);
 $where=array("id"=>"IN $ids");
 
 $db=new db();
+$db->CSRFToken = $CSRFToken;
 $db->update2("absences",$data,$where);
 
 

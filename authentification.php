@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 25 mars 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -86,15 +86,38 @@ if(isset($_POST['login'])){
 
 
   if($auth){
-		// Log le login et l'IP du client en cas de succès, pour information
-		loginSuccess($login);
+    // Log le login et l'IP du client en cas de succès, pour information
+    loginSuccess($login);
     $db=new db();
     $db->select2("personnel","id,nom,prenom",array("login"=>$login));
     if($db->result){
       $_SESSION['login_id']=$db->result[0]['id'];
       $_SESSION['login_nom']=$db->result[0]['nom'];
       $_SESSION['login_prenom']=$db->result[0]['prenom'];
+      
+      // Génération d'un CSRF Token
+      // PHP 7
+      if(phpversion() >= 7){
+        if (empty($_SESSION['oups']['CSRFToken'])) {
+          $_SESSION['oups']['CSRFToken'] = bin2hex(random_bytes(32));
+        }
+      }
+
+      // PHP 5.3+
+      else{
+        if (empty($_SESSION['oups']['CSRFToken'])) {
+          if (function_exists('mcrypt_create_iv')) {
+            $_SESSION['oups']['CSRFToken'] = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
+          } else {
+            $_SESSION['oups']['CSRFToken'] = bin2hex(openssl_random_pseudo_bytes(32));
+          }
+        }
+      }
+      
+      $CSRFToken = $_SESSION['oups']['CSRFToken'];
+      
       $db=new db();
+      $db->CSRFToken = $CSRFToken;
       $db->update2("personnel",array("last_login"=>date("Y-m-d H:i:s")),array("id"=>$_SESSION['login_id']));
       echo "<script type='text/JavaScript'>document.location.href='$redirURL';</script>";
     }

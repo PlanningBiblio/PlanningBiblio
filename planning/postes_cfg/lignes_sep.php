@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Version 1.9.4
+/**
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/postes_cfg/lignes_sep.php
 Création : 13 septembre 2012
-Dernière modification : 7 avril 2015
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,12 +21,14 @@ require_once "class.tableaux.php";
 
 // Initialisation des variables
 $action=filter_input(INPUT_GET,"action",FILTER_SANITIZE_STRING);
+$CSRFToken = filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING);
 $id=trim(filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT));
 $nom=trim(filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING));
 
 switch($action){		//	Operations de mise a jour
   case "modif2" :
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->update2("lignes",array("nom"=>$nom),array("id"=>$id));
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=planning/postes_cfg/index.php'</script>\n";
     break;
@@ -54,13 +56,14 @@ switch($action){		//	Affichages
     <b>Modification du nom</b><br/><br/>
     <form action='index.php' method='get' >
     <input type='hidden' name='page' value='planning/postes_cfg/lignes_sep.php' />
+    <input type='hidden' name='CSRFToken' value='$CSRFSession' />
     <input type='hidden' name='action' value='modif2' />
     <input type='hidden' name='cfg-type' value='lignes_sep' />
     <input type='hidden' name='id' value='$id' />
-    <table class='tableauFiches'>
-    <tr><td class='intitule'>Nom</td>
+    <table class='tableauFiches' style='width:700px;'>
+    <tr><td style='width:150px;'><label for='nom'>Nom</label></td>
       <td><input type='text' name='nom' value='{$db->result[0]['nom']}' class='ui-widget-content ui-corner-all'/></td></tr>
-    <tr><td colspan='2' style=text-align:center;padding-top:20px;'>
+    <tr><td colspan='2' style=text-align:center;padding-top:20px; width:550px;'>
       <input type='button' value='Annuler' onclick='history.back();' class='ui-button'/>
       <input type='submit' value='Valider' class='ui-button'/></td></tr>
     </table>
@@ -76,9 +79,9 @@ EOD;
     <input type='hidden' name='page' value='planning/postes_cfg/lignes_sep.php' />
     <input type='hidden' name='action' value='ajout2' />
     <input type='hidden' name='cfg-type' value='lignes_sep' />
-    <table class='tableauFiches'>
-    <tr><td class='intitule'>Nom</td>
-      <td><input type='text' name='nom' class='ui-widget-content ui-corner-all'/></td></tr>
+    <table class='tableauFiches' style='width:700px;'>
+    <tr><td style='width:150px;'><label for='nom'>Nom</label></td>
+      <td style='width:550px;'><input type='text' name='nom' class='ui-widget-content ui-corner-all'/></td></tr>
     <tr><td colspan='2' style=text-align:center;padding-top:20px;'>
       <input type='button' value='Annuler' onclick='history.back();' class='ui-button' />
       <input type='submit' value='Valider' class='ui-button' /></td></tr>

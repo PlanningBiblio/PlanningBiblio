@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 20 janvier 2017
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -27,16 +27,17 @@ require_once "function.php";
 require_once "sanitize.php";
 
 class db{
-  var $host;
-  var $dbname;
-  var $dbprefix;
-  var $user;
-  var $password;
-  var $conn;
-  var $result;
-  var $nb;
-  var $error;
-  var $msg;
+  public $host = null;
+  public $dbname = null;
+  public $dbprefix = null;
+  public $user = null;
+  public $password = null;
+  public $conn = null;
+  public $result = null;
+  public $nb = null;
+  public $error = null;
+  public $msg = null;
+  public $CSRFToken = false;
   
   function db(){
     $this->host=$GLOBALS['config']['dbhost'];
@@ -310,6 +311,12 @@ class db{
   }
 
   function update2($table,$set,$where="1"){
+    if(!$this->CSRFToken or !isset($_SESSION['oups']['CSRFToken']) or $this->CSRFToken !== $_SESSION['oups']['CSRFToken']){
+      $this->error = "CSRF Token Exception";
+      error_log($this->error);
+      return false;
+    }
+  
     $this->connect();
     $dbprefix=$this->dbprefix;
 
@@ -492,16 +499,16 @@ class db{
 }
 
 class dbh{
-  var $dbhost;
-  var $dbname;
-  var $dbuser;
-  var $dbpass;
-  var $dbprefix;
-  var $error;
-  var $msg;
-  var $pdo;
-  var $stmt;
-  var $result;
+  public $dbhost = null;
+  public $dbname = null;
+  public $dbuser = null;
+  public $dbpass = null;
+  public $dbprefix = null;
+  public $error = null;
+  public $msg = null;
+  public $pdo = null;
+  public $stmt = null;
+  public $result = null;
 
 
   function dbh(){

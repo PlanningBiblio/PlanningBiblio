@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.1
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : postes/index.php
 Création : mai 2011
-Dernière modification : 19 novembre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -104,7 +104,7 @@ foreach($postes as $id => $value){
   echo "<tr><td style='white-space:nowrap;'>\n";
   echo "<a href='index.php?page=postes/modif.php&amp;id=$id'><span class='pl-icon pl-icon-edit' title='Modifier' ></span></a>\n";
   if(!in_array($id,$postes_utilises)){
-    echo "&nbsp;<a href='javascript:supprime(\"postes\",$id);'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>\n";
+    echo "&nbsp;<a href='javascript:supprime(\"postes\",$id,\"$CSRFSession\");'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>\n";
   }
   if(in_array(13,$droits)){
     echo "<td>$id</td>\n";

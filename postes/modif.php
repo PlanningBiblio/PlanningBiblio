@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : postes/modif.php
 Création : mai 2011
-Dernière modification : 5 février 2017
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -105,6 +105,7 @@ $categories_list=$db->result;
 
 echo "<form method='get' action='#' name='form'>";
 echo "<input type='hidden' name='page' value='postes/valid.php' />\n";
+echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
 echo "<table style='width:100%'>";
 echo "<tr style='vertical-align:top;'><td style='width:50%'>\n";
 echo "<table>\n";

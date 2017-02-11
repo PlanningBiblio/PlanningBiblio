@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/infos.php
 Création : mai 2011
-Dernière modification : 1er octobre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -25,6 +25,7 @@ $fin=filter_input(INPUT_GET,"fin",FILTER_SANITIZE_STRING);
 $suppression=filter_input(INPUT_GET,"suppression",FILTER_SANITIZE_NUMBER_INT);
 $validation=filter_input(INPUT_GET,"validation",FILTER_SANITIZE_NUMBER_INT);
 $texte=trim(filter_input(INPUT_GET,"texte",FILTER_SANITIZE_STRING));
+$CSRFToken=trim(filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING));
 
 // Contrôle sanitize_dateFr en 2 temps pour éviter les erreurs CheckMarx
 $debut=filter_var($debut,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
@@ -59,6 +60,7 @@ elseif($validation){		//		Validation
   echo "<br/><br/><a href='index.php?page=absences/index.php'>Retour</a>\n";
   if($id){
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->update2("absences_infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte),array("id"=>$id));
   }else{
     $db=new db();
@@ -78,6 +80,7 @@ elseif($debut){		//		Vérification
   echo "<input type='hidden' name='fin' value='$fin'/>\n";
   echo "<input type='hidden' name='texte' value='$texte'/>\n";
   echo "<input type='hidden' name='id' value='$id'/>\n";
+  echo "<input type='hidden' name='CSRFToken' value='$CSRFSession'/>\n";
   echo "<input type='hidden' name='validation' value='1'/>\n";
   echo "<input type='button' value='Annuler' onclick='history.back();' class='ui-button'/>";
   echo "<input type='submit' value='Valider' class='ui-button' style='margin-left:30px;'/>\n";

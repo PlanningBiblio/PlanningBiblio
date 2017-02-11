@@ -1,12 +1,12 @@
-/*
-Planning Biblio, Version 1.9.3
+/**
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/js/voir.js
 Création : 5 novembre 2014
-Dernière modification : 26 mars 2015
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -19,10 +19,11 @@ $(function(){
     var pj=tmp[0];
     var id=tmp[1];
     var checked=$(this).prop("checked")?1:0;
+    var CSRFToken=$('#CSRFSession').val();
 
     $.ajax({
       url: "absences/ajax.piecesJustif.php",
-      data: "id="+id+"&pj="+pj+"&checked="+checked,
+      data: "id="+id+"&pj="+pj+"&checked="+checked+"&CSRFToken="+CSRFToken,
       success: function(){
 	information("Modification enregistr&eacute;e","highlight");
       },

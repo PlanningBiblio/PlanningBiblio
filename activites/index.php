@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.1
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : activites/index.php
 Création : mai 2011
-Dernière modification : 19 novembre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -86,7 +86,7 @@ foreach($activites as $elem){
   echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
   if(!in_array($elem['id'],$activites_utilisees)){
     echo "&nbsp;&nbsp;";
-    echo "<a href='javascript:supprime(\"activites\",{$elem['id']});'>";
+    echo "<a href='javascript:supprime(\"activites\",{$elem['id']}, \"$CSRFSession\");'>";
     echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
   }
   echo "</td>\n";

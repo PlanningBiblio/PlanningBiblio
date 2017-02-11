@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planningHebdo/modif.php
 Création : 23 juillet 2013
-Dernière modification : 19 décembre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -187,6 +187,7 @@ echo "</div> <!-- id=periode -->\n";
 
 ?>
 <input type='hidden' name='page' value='planningHebdo/valid.php' />
+<input type='hidden' name='CSRFToken' value='<?php echo $CSRFSession; ?>' />
 <input type='hidden' name='action' value='<?php echo $action; ?>' />
 <input type='hidden' name='validation' value='0' />
 <input type='hidden' name='retour' value='<?php echo $retour; ?>' />

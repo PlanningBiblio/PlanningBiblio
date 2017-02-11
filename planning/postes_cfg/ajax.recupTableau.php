@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.1
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/postes_cfg/ajax.recupTableau.php
 Création : 20 février 2016
-Dernière modification : 19 novembre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -20,6 +20,7 @@ session_start();
 include "../../include/config.php";
 include "class.tableaux.php";
 
+$CSRFToken=filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING);
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 
 // Récupération des lignes du tableaux (postes) et des activités associées à ces lignes
@@ -38,6 +39,7 @@ if(!empty($postes)){
   // Récupération des postes
   $postes=implode(",",$postes);
   $db=new db();
+  $db->CSRFToken = $CSRFToken;
   $db->update2("postes",array("supprime"=>null),array("id"=>"IN $postes"));
 
   // Récupération des activités
@@ -60,12 +62,14 @@ if(!empty($postes)){
   if(!empty($activites)){
     $activites=implode(",",$activites);
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->update2("activites",array("supprime"=>null),array("id"=>"IN $activites"));
   }
 }
 
 // Recupération du tableau
 $db=new db();
+$db->CSRFToken = $CSRFToken;
 $db->update2("pl_poste_tab",array("supprime"=>null),array("tableau"=>$id));
 
 echo json_encode("OK");

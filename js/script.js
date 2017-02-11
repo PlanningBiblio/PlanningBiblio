@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 22 décembre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 @author Etienne Cavalié
@@ -345,7 +345,7 @@ function removeAccents(strAccents){
  * @param int id : ID de l'agent
  * @param string nom : Prénom et Nom de l'agent (pour affichage de la confirmation
  */
-function resetICSURL(id, nom){
+function resetICSURL(id, CSRFToken, nom){
   if(nom == undefined){
     var res = confirm("Etes vous sûr(e) de vouloir réinitialiser l'URL de votre calendrier ICS ?");
   } else {
@@ -357,7 +357,7 @@ function resetICSURL(id, nom){
       url: "ics/ajax.resetURL.php",
       type: "post",
       dataType: "json",
-      data: {id: id},
+      data: {id: id, CSRFToken: CSRFToken},
       success: function(result){
         $("#url-ics").text(result.url);
         CJInfo("L'URL du calendrier a été réinitialisée avec succès","success");
@@ -385,13 +385,13 @@ function setEndHour(){
   }
 }
 
-// supprime(page,id)	Utilisée par postes et modeles
-function supprime(page,id){
+// supprime(page,id, CSRFToken)	Utilisée par postes et modeles
+function supprime(page, id, CSRFToken){
   if(confirm("Etes vous sûr de vouloir supprimer cet élément ?")){
     $.ajax({
       url: page+"/ajax.delete.php",
       type: "get",
-      data: "id="+id,
+      data: "id="+id+"&CSRFToken="+CSRFToken,
       success: function(){
 	window.location.reload(false);
       },

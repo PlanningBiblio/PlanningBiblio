@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 17 novembre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -82,11 +82,12 @@ $(function() {
   $("#icon-lock").click(function(){
     var date=$(this).attr("data-date");
     var site=$(this).attr("data-site");
+    var CSRFToken = $("#planning-data").attr("data-CSRFToken");
     
     $.ajax({
       url: "planning/poste/ajax.validation.php",
       dataType: "json",
-      data: {date: date, site: site, verrou: 0 },
+      data: {date: date, site: site, verrou: 0, CSRFToken: CSRFToken },
       type: "get",
       success: function(result){
 	if(result[1]=="highlight"){
@@ -111,11 +112,12 @@ $(function() {
   $("#icon-unlock").click(function(){
     var date=$(this).attr("data-date");
     var site=$(this).attr("data-site");
+    var CSRFToken = $("#planning-data").attr("data-CSRFToken");
 
     $.ajax({
       url: "planning/poste/ajax.validation.php",
       dataType: "json",
-      data: {date: date, site: site, verrou: 1 },
+      data: {date: date, site: site, verrou: 1, CSRFToken: CSRFToken },
       type: "get",
       success: function(result){
 	if(result[1]=="highlight"){
@@ -132,7 +134,7 @@ $(function() {
 	}
 	
 	// Envoi des notifications
-	planningNotifications(date);
+	planningNotifications(date, CSRFToken);
 
 	// Masque les lignes vides
 	hideEmptyLines();
@@ -524,12 +526,13 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
   
   var sr_config_debut=$("#planning-data").attr("data-sr-debut");
   var sr_config_fin=$("#planning-data").attr("data-sr-fin");
+  var CSRFToken = $("#planning-data").attr("data-CSRFToken");
 
   $.ajax({
     url: "planning/poste/ajax.updateCell.php",
     type: "post",
     dataType: "json",
-    data: {poste: poste, date: date, debut: debut, fin: fin, perso_id: perso_id, perso_id_origine: perso_id_origine, barrer: barrer, ajouter: ajouter, site: site, tout: tout},
+    data: {poste: poste, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, perso_id: perso_id, perso_id_origine: perso_id_origine, barrer: barrer, ajouter: ajouter, site: site, tout: tout},
     success: function(result){
       $("#td"+cellule).html("");
       
@@ -775,11 +778,11 @@ function majPersoOrigine(perso_id){
  *  @param srting date
  *  Envoie les notifications aux agents concernés par des plannings validés ou modifiés
  */
-function planningNotifications(date){
+function planningNotifications(date, CSRFToken){
   $.ajax({
     url: "planning/poste/ajax.notifications.php",
     dataType: "json",
-    data: {date: date},
+    data: {date: date, CSRFToken: CSRFToken},
     type: "get",
     success: function(result){
     },

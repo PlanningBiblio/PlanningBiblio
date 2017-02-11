@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.4
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/postes_cfg/groupes.php
 Création : 18 septembre 2012
-Dernière modification : 7 avril 2015
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -71,6 +71,7 @@ echo <<<EOD
 <form name='form' method='post' action='index.php' onsubmit='return ctrl_form($champs);'>
 <input type='hidden' name='page' value='planning/postes_cfg/groupes2.php' />
 <input type='hidden' name='id' value='$id' />
+<input type='hidden' name='CSRFToken' value='$CSRFSession' />
 <table class='tableauFiches'>
 <tr><td class='intitule'>Nom du groupe</td>
   <td><input type='text' name='nom' id='Nom' value='{$groupe['nom']}'  class='ui-widget-content ui-corner-all' onkeyup='ctrl_nom(this);'/></td>

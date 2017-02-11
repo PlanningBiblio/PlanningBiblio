@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Version 1.9.5
+/**
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/modeles/class.modeles.php
 Création : 16 janvier 2013
-Dernière modification : 8 avril 2015
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,6 +21,8 @@ if(!isset($version)){
 }
 
 class modeles{
+
+  public $CSRFToken = null;
   public $id=null;
   public $nom=null;
 

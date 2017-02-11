@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.1
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 19 novembre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -27,6 +27,8 @@ class personnel{
   // supprime : permet de sélectionner les agents selon leur état de suppression
   // Tableau, valeur 0=pas supprimé, 1=1ère suppression (corbeille), 2=suppression définitive
   public $supprime=array(0);
+  
+  public $CSRFToken = null;
 
   public function personnel(){
   }
@@ -37,6 +39,7 @@ class personnel{
       "informations"=>null, "recup"=>null, "heuresTravail"=>null, "heuresHebdo"=>null, "sites"=>null);
     
     $db=new db();
+    $db->CSRFToken = $this->CSRFToken;
     $db->update2("personnel",$update,"`id` IN ($liste)");
 
     $db=new db();
@@ -163,6 +166,7 @@ class personnel{
     if(!$code){
       $code = md5(time().rand(100,999));
       $db = new db();
+      $db->CSRFToken = $this->CSRFToken;
       $db->update2('personnel', array('codeICS'=>$code), array('id'=>$id));
     }
     return $code;

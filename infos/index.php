@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : infos/index.php
 Création : février 2012
-Dernière modification : 1er octobre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -34,6 +34,7 @@ $fin=filter_input(INPUT_GET,"fin",FILTER_SANITIZE_STRING);
 $texte=trim(filter_input(INPUT_GET,"texte",FILTER_SANITIZE_STRING));
 $suppression=filter_input(INPUT_GET,"suppression",FILTER_SANITIZE_STRING);
 $validation=filter_input(INPUT_GET,"validation",FILTER_SANITIZE_NUMBER_INT);
+$CSRFToken = filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING);
 
 // Contrôle sanitize_dateFr en 2 temps pour éviter les erreurs CheckMarx
 $debut=filter_var($debut,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
@@ -58,6 +59,7 @@ elseif($suppression){
   echo "<input type='hidden' name='page' value='infos/index.php'/>\n";
   echo "<input type='hidden' name='suppression' value='1'/>\n";
   echo "<input type='hidden' name='validation' value='1'/>\n";
+  echo "<input type='hidden' name='CSRFToken' value='$CSRFSession'/>\n";
   echo "<input type='hidden' name='id' value='$id'/>\n";
   echo "<input type='button' value='Non' onclick='history.back();'  class='ui-button'/>\n";
   echo "&nbsp;&nbsp;&nbsp;";
@@ -71,6 +73,7 @@ elseif($validation){		//		Validation
   echo "<br/><br/><a href='index.php?page=infos/index.php'>Retour</a>\n";
   if($id){
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->update2("infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte),array("id"=>$id));
   }else{
     $db=new db();
@@ -94,6 +97,7 @@ elseif($debut){
   echo "<input type='hidden' name='texte' value='$texte'/>\n";
   echo "<input type='hidden' name='id' value='$id'/>\n";
   echo "<input type='hidden' name='validation' value='1'/>\n";
+  echo "<input type='hidden' name='CSRFToken' value='$CSRFSession'/>\n";
   echo "<input type='button' value='Annuler' onclick='history.back();' class='ui-button' />";
   echo "&nbsp;&nbsp;&nbsp;\n";
   echo "<input type='submit' value='Valider' class='ui-button' />\n";

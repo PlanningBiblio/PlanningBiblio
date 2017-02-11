@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 19 décembre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -65,6 +65,8 @@ class planningHebdo{
       $validation=date("Y-m-d H:i:s");
     }
 
+    $CSRFToken=$data['CSRFToken'];
+    unset($data['CSRFToken']);
 
     // Si $data['annee'] : il y a 2 périodes distinctes avec des horaires définis 
     // (horaires normaux et horaires réduits) soit 2 tableaux à insérer
@@ -140,6 +142,9 @@ class planningHebdo{
     // Modification du format des dates de début et de fin si elles sont en français
     $data['debut']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/","$3-$2-$1",$data['debut']);
     $data['fin']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/","$3-$2-$1",$data['fin']);
+
+    $CSRFToken=$data['CSRFToken'];
+    unset($data['CSRFToken']);
 
     $this->id=$data['id'];
     $this->fetch();
@@ -256,7 +261,7 @@ class planningHebdo{
 
     if($db->result){
       foreach($db->result as $elem){
-	$elem['temps'] = json_decode(html_entity_decode($elem['temps'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+	$elem['temps'] = json_decode(html_entity_decode($elem['temps'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
 	$elem['nom'] = nom($elem['perso_id'],'nom p',$agents);
 	$elem['service']=$services[$elem['perso_id']];
 	$this->elements[]=$elem;
@@ -341,7 +346,11 @@ class planningHebdo{
       $update['validation']=date("Y-m-d H:i:s");
     }
     
+    $CSRFToken=$data['CSRFToken'];
+    unset($data['CSRFToken']);
+
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->update2("planningHebdo",$update,array("id"=>$data['id']));
     $this->error=$db->error;
 

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 22 décembre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,6 +21,7 @@ require_once "class.personnel.php";
 $post=filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
 
 $arrivee=filter_input(INPUT_POST,"arrivee",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$CSRFToken = filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
 $depart=filter_input(INPUT_POST,"depart",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
 $heuresHebdo=filter_input(INPUT_POST,"heuresHebdo",FILTER_SANITIZE_STRING);
 $heuresTravail=filter_input(INPUT_POST,"heuresTravail",FILTER_SANITIZE_STRING);
@@ -157,6 +158,7 @@ switch($action){
     }
 
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->update2("personnel",array("password"=>$mdp_crypt),array("id"=>$id));
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/index.php&msg=$msg&msgType=$msgType';</script>";
     break;
@@ -187,10 +189,12 @@ switch($action){
     }
 
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->update2("personnel",$update,array("id"=>$id));
 
 	    //	Mise à jour de la table pl_poste en cas de modification de la date de départ
     $db=new db();		// On met supprime=0 partout pour cet agent
+    $db->CSRFToken = $CSRFToken;
     $db->update2("pl_poste",array("supprime"=>"0"),array("perso_id"=>$id));
     if($depart!="0000-00-00" and $depart!=""){
 	    // Si une date de départ est précisée, on met supprime=1 au dela de cette date

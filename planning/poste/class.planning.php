@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 31 janvier 2017
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -23,6 +23,7 @@ if(!isset($version)){
 
 
 class planning{
+  public $CSRFToken = null;
   public $date=null;
   public $site=1;
   public $categorieA=false;
@@ -461,6 +462,7 @@ class planning{
       // Modification des infos dans la BDD
       $update=array("data"=>json_encode((array)$tab));
       $db=new db();
+      $db->CSRFToken = $this->CSRFToken;
       $db->update2("pl_notifications",$update,array("date"=>$date));
     }
 

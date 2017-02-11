@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : setup/index.php
 Création : mai 2011
-Dernière modification : 9 octobre 2014
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -19,12 +19,34 @@ Formulaire soumis au fichier setup/createdb.php
 
 session_start();
 session_destroy();
+session_start();
+
 $version="2.5.3";
 
 include "header.php";
 include_once "../include/function.php";
 $password=gen_trivial_password(16);
 
+// Génération d'un CSRF Token
+// PHP 7
+if(phpversion() >= 7){
+  if (empty($_SESSION['oups']['CSRFToken'])) {
+    $_SESSION['oups']['CSRFToken'] = bin2hex(random_bytes(32));
+  }
+}
+
+// PHP 5.3+
+else{
+  if (empty($_SESSION['oups']['CSRFToken'])) {
+    if (function_exists('mcrypt_create_iv')) {
+      $_SESSION['oups']['CSRFToken'] = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
+    } else {
+      $_SESSION['oups']['CSRFToken'] = bin2hex(openssl_random_pseudo_bytes(32));
+    }
+  }
+}
+
+$msg = null;
 $Fnm = "../include/config.php";
 if(!$inF=fopen("../include/test.php","w\n")){
   $msg="<br/>Important : Avant de continuer,<br/> Veuillez donner les droits d'&eacute;criture/modification <br/>aux dossiers \"include\" et \"data\".\n";

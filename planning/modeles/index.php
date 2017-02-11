@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/modeles/index.php
 Création : mai 2011
-Dernière modification : 26 mars 2015
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -40,7 +40,7 @@ foreach($modeles as $elem){
   echo "<tr>\n";
   echo "<td>\n";
   echo "<a href='index.php?page=planning/modeles/modif.php&amp;nom={$elem['nom']}'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>";
-  echo "<a href='javascript:supprime(\"planning/modeles\",\"{$elem['nom']}\");'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>";
+  echo "<a href='javascript:supprime(\"planning/modeles\",\"{$elem['nom']}\",\"$CSRFSession\");'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>";
   echo "</td>\n";
   echo "<td>{$elem['nom']}</td>\n";
   echo "</tr>\n";

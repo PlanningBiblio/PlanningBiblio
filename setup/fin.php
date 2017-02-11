@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : setup/fin.php
 Création : mai 2011
-Dernière modification : 13 avril 2015
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -17,10 +17,13 @@ du responsable.
 Affiche le message "configuration terminée" et invite l'utilisateur à se connecter au planning
 */
 
+session_start();
+
 $version="2.5.3";
 include "../include/config.php";
 include "header.php";
 
+$CSRFToken = filter_input(INPUT_POST,"CSRFToken",FILTER_SANITIZE_STRING);
 $nom=filter_input(INPUT_POST,"nom",FILTER_SANITIZE_STRING);
 $prenom=filter_input(INPUT_POST,"prenom",FILTER_SANITIZE_STRING);
 $password=filter_input(INPUT_POST,"password",FILTER_UNSAFE_RAW);
@@ -44,6 +47,7 @@ if($password!=$password2){
 	
 $password=md5($password);
 $db=new db();
+$db->CSRFToken = $CSRFToken;
 $db->update2("personnel",array("nom"=>$nom, "prenom"=>$prenom, "password"=>$password, "mail"=>$email), array("id"=>"1"));
 if($db->error){
   $erreur=true;

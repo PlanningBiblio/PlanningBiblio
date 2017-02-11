@@ -1,13 +1,13 @@
 <?php
 /*
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/postes_cfg/groupes2.php
 Création : 18 septembre 2012
-Dernière modification : 13 avril 2015
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -19,9 +19,13 @@ Page appelée suite à la validation du formulaire "planning/postes_cfg/groupes.
 require_once "class.tableaux.php";
 
 $post=filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
+$CSRFToken = $post['CSRFToken'];
+unset($post['CSRFToken']);
+
 unset ($post['page']);
 
 $t=new tableau();
+$t->CSRFToken = $CSRFToken;
 $t->update($post);
 
 echo "<script type='text/JavaScript'>location.href='index.php?page=planning/postes_cfg/index.php';</script>\n";

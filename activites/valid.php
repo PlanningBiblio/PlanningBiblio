@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : activites/valid.php
 Création : mai 2011
-Dernière modification : 10 novembre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,6 +21,7 @@ require_once "class.activites.php";
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 $action=filter_input(INPUT_GET,"action",FILTER_SANITIZE_STRING);
 $nom=trim(filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING));
+$CSRFToken=filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING);
 
 if(!$nom or !$action){
   $msg=urlencode("Le nom ne peut pas être vide");
@@ -44,6 +45,7 @@ switch($action){
   
   case "modif" :
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->update2("activites",array("nom"=>$nom),array("id"=>$id));
     if($db->error){
       $msg=urlencode("L'activité n'a pas pu être modifiée");

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 19 novembre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -63,7 +63,8 @@ if($login and $login==="anonyme" and $config['Auth-Anonyme'] and !array_key_exis
   $_SESSION['oups']["Auth-Mode"]="Anonyme";
 }
 
-
+// Sécurité CSRFToken
+$CSRFSession = isset($_SESSION['oups']['CSRFToken']) ? $_SESSION['oups']['CSRFToken'] : null;
 $_SESSION['PLdate']=array_key_exists("PLdate",$_SESSION)?$_SESSION['PLdate']:date("Y-m-d");
 
 if(!array_key_exists("oups",$_SESSION)){
@@ -104,6 +105,7 @@ if(!array_key_exists("login_id",$_SESSION)){
     // Session perdue, on affiche la page d'authentification
     $redirURL="index.php?".$_SERVER['QUERY_STRING'];
     include_once "authentification.php";
+    exit;
   }
 }
 
@@ -111,6 +113,13 @@ include "include/header.php";
 if($menu){
   include "include/menu.php";
 }
+
+// Sécurité CSRFToken
+echo <<<EOD
+<form name='CSRFForm' action='#' method='get'>
+<input type='hidden' name='CSRFSession' id='CSRFSession' value='$CSRFSession' />
+</form>
+EOD;
 
 //		Recupération des droits d'accès de l'agent
 $db=new db();

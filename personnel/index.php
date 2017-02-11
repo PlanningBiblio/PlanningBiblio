@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.8
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 29 octobre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Chritophe Le Guennec <christophe.leguennec@u-pem.fr>
 
@@ -139,6 +139,7 @@ foreach($agents as $agent){
 echo "</tbody>";
 echo "</table>";
 echo "<input type='hidden' name='page' value='personnel/suppression-liste.php' />\n";
+echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
 echo "<input type='submit' value='Supprimer la sélection' />\n";
 echo "</form>\n";
 

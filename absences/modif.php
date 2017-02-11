@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 2 novembre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -172,6 +172,7 @@ if($admin){
 
 echo "<h3>Modification de l'absence</h3>\n";
 echo "<form name='form' method='get' action='index.php' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");'>\n";
+echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
 echo "<input type='hidden' name='page' value='absences/modif2.php' />\n";
 echo "<input type='hidden' name='perso_id' value='$perso_id' />\n";		// nécessaire pour verif_absences
 echo "<input type='hidden' id='admin' value='".($admin?1:0)."' />\n";

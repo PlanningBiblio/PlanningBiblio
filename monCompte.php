@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : monCompte.php
 Création : 23 juillet 2013
-Dernière modification : 19 décembre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -43,6 +43,7 @@ foreach($tmp as $elem){
 
 // Informations sur l'agent
 $p=new personnel();
+$p->CSRFToken = $CSRFSession;
 $p->fetchById($_SESSION['login_id']);
 $sites=$p->elements[0]['sites'];
 
@@ -209,7 +210,7 @@ else{
 <?php
 echo "<span id='url-ics'>$ics</span>\n";
 if($config['ICS-Code']){
-  echo "<br/><a href='javascript:resetICSURL({$_SESSION['login_id']});'>R&eacute;initialiser l'URL</a>\n";
+  echo "<br/><a href='javascript:resetICSURL({$_SESSION['login_id']}, \"$CSRFSession\");'>R&eacute;initialiser l'URL</a>\n";
 }
 ?>
 </p>

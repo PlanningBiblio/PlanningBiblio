@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.2
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 30 novembre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -23,6 +23,7 @@ if(!isset($version)){
 
 class absences{
   public $agents_supprimes=array(0);
+  public $CSRFToken=null;
   public $debut=null;
   public $edt=array();
   public $elements=array();
@@ -920,8 +921,9 @@ class absences{
     $this->message=$message;
   }
 
-  function piecesJustif($id,$pj,$checked){
+  function piecesJustif($id,$pj, $checked){
     $db=new db();
+    $db->CSRFToken = $this->CSRFToken;
     $db->update2("absences",array($pj => $checked),array("id"=>$id));
   }
 

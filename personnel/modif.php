@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 5 février 2017
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -22,7 +22,6 @@ Cette page est appelée par le fichier index.php
 require_once "class.personnel.php";
 require_once "activites/class.activites.php";
 require_once "planningHebdo/class.planningHebdo.php";
-
 
 // Initialisation des variables
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
@@ -162,6 +161,7 @@ if($id){		//	récupération des infos de l'agent en cas de modif
   // URL ICS
   if($config['ICS-Export']){
     $p = new personnel();
+    $p->CSRFToken = $CSRFSession;
     $ics = $p->getICSURL($id);
   }
 
@@ -279,6 +279,7 @@ else{
 <?php
 echo "<form method='post' action='index.php' name='form'>\n";
 echo "<input type='hidden' name='page' value='personnel/valid.php' />\n";
+echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
 //			Début Infos générales	
 echo "<div id='main' style='margin-left:70px;padding-top:30px;'>\n";
 echo "<input type='hidden' value='$action' name='action' />";
@@ -473,6 +474,8 @@ echo "</td></tr>";
 $select1=null;
 $select2=null;
 $select3=null;
+$display=null;
+
 switch($actif){
   case "Actif" :		$select1="selected='selected'"; $actif2="Service public";	$display="style='display:none;'";	break;
   case "Inactif" :		$select2="selected='selected'"; $actif2="Administratif";	$display="style='display:none;'";	break;
@@ -611,7 +614,7 @@ if($id){
     echo "<td style='padding-top: 10px;' id='url-ics'>$ics</td></tr>\n";
     if($config['ICS-Code']){
       echo "<tr><td>&nbsp;</td>\n";
-      echo "<td><a href='javascript:resetICSURL($id, \"$prenom $nom\");'>R&eacute;initialiser l'URL</a></td></tr>\n";
+      echo "<td><a href='javascript:resetICSURL($id, \"$CSRFSession\", \"$prenom $nom\");'>R&eacute;initialiser l'URL</a></td></tr>\n";
     }
   }
 }

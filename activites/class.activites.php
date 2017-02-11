@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.2
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : activites/class.activites.php
 Création : mai 2011
-Dernière modification : 28 mai 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -24,12 +24,14 @@ class activites{
   public $id=null;
   public $elements=array();
   public $deleted=null;
+  public $CSRFToken = null;
 
   public function activites(){
   }
 
   public function delete(){
     $db=new db();
+    $db->CSRFToken = $this->CSRFToken;
     $db->update2("activites",array("supprime"=>"SYSDATE"),array("id"=>$this->id));
   }
 

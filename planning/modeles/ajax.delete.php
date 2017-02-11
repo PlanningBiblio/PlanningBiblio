@@ -15,12 +15,16 @@ Supprime un modèle
 Page appelée par la fonction JS supprime() lors du clique sur l'icône suppression de la page planning/modeles/index.php
 */
 
+session_start();
+
 require_once "../../include/config.php";
 require_once "class.modeles.php";
 
+$CSRFToken = filter_input(INPUT_GET,'CSRFToken',FILTER_SANITIZE_STRING);
 $id=filter_input(INPUT_GET,'id',FILTER_SANITIZE_STRING);
 
 $m=new modeles();
 $m->nom=$id;
+$m->CSRFToken=$CSRFToken;
 $m->delete();
 ?>

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.1
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : postes/valid.php
 Création : mai 2011
-Dernière modification : 19 novembre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -18,6 +18,7 @@ Page appelée par le fichier index.php.
 
 require_once "class.postes.php";
 
+$CSRFToken = filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING);
 $nom=trim(filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING));
 
 if(!$nom){
@@ -60,6 +61,7 @@ if($nom){
 
     case "modif" :
       $db=new db();
+      $db->CSRFToken = $CSRFToken;
       $db->update2("postes",$data,array("id"=>$id));
       if($db->error){
 	$msgType="error";

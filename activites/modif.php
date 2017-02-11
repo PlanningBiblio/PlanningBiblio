@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : activites/modif.php
 Création : mai 2011
-Dernière modification : 10 novembre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -35,6 +35,7 @@ else{
 
 echo "<form method='get' action='index.php' name='form'>";
 echo "<input type='hidden' name='page' value='activites/valid.php' />\n";
+echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
 echo "<table class='tableauFiches'>";
 echo "<tr><td>";
 echo "Nom :";

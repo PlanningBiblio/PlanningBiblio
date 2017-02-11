@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.1
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/ajax.validation.php
 Création : 23 février 2015
-Dernière modification : 19 novembre 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -24,6 +24,7 @@ require_once "class.planning.php";
 
 // Initialisation des variables
 $date=filter_input(INPUT_GET,'date',FILTER_SANITIZE_STRING);
+$CSRFToken = filter_input(INPUT_GET, 'CSRFToken', FILTER_SANITIZE_STRING);
 $site=filter_input(INPUT_GET,'site',FILTER_SANITIZE_NUMBER_INT);
 $verrou=filter_input(INPUT_GET,'verrou',FILTER_SANITIZE_NUMBER_INT);
 // 
@@ -52,11 +53,13 @@ if($db->result){
     $set=array("verrou2"=>"1", "validation2"=>$validation, "perso2"=>$perso_id);
     $where=array("date"=>$date, "site"=>$site);
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->update2("pl_poste_verrou",$set,$where);
   }else{
     $set=array("verrou2"=>"0", "perso2"=>$perso_id);
     $where=array("date"=>$date, "site"=>$site);
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->update2("pl_poste_verrou",$set,$where);
   }
 }else{

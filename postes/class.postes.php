@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.2
+Planning Biblio, Version 2.5.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : postes/class.postes.php
 Création : 29 novembre 2012
-Dernière modification : 28 mai 2016
+Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -22,6 +22,8 @@ if(!isset($version)){
 }
 
 class postes{
+
+  public $CSRFToken = null;
   public $id=null;
   public $site=null;
 
@@ -30,6 +32,7 @@ class postes{
 
   public function delete(){
     $db=new db();
+    $db->CSRFToken = $this->CSRFToken;
     $db->update2("postes",array("supprime"=>"SYSDATE"),array("id"=>$this->id));
   }
 
