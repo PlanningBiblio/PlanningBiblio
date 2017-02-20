@@ -53,7 +53,7 @@ elseif($action=="suppression"){
     $db->select2("personnel","*",array("service"=>$valeur));
   }elseif($table=="select_etages"){
     $db=new db();
-    $db->select2("postes","*",array("etage"=>$valeur));
+    $db->select2("postes","*",array("etage"=>$valeur, "supprime"=>null));
   }elseif($table=="select_groupes"){
     $db=new db();
     $db->select2("postes","*",array("groupe"=>$valeur));
