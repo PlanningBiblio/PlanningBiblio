@@ -19,7 +19,7 @@ Affiche le message "configuration terminée" et invite l'utilisateur à se conne
 
 session_start();
 
-$version="2.5.3";
+$version="2.5.4";
 include "../include/config.php";
 include "header.php";
 

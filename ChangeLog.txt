@@ -1,3 +1,30 @@
+*** Version 2.5.4   (1er mars 2017)   ***
+- Améliorations
+Affichage des heures au format 12h34 (Heure, lettre h, minutes) dans toutes les pages de statistiques
+
+- Sécurité
+Correction des vulnérabilités Potential DOM Open Redirect
+Correction de vulnérabilités XSRF (celles liées à la fonction db::update2)
+
+*** Version 2.5.3   (6 février 2017)   ***
+- Améliorations
+Optimisation de la fonction nom() : moins de latence dans de nombreux modules, notamemnt dans le menu permettant de placer les agents dans le planning
+Affichage des absences non validées dans les plannings : les absences non validées apparaîssent en rouge mais ne sont pas barrées. Paramétrable
+Affichage des heures au format 12h34 (Heure, lettre h, minutes) dans le menu du planning et dans la feuille de temps
+Amélioration de la modification des menus (groupes de postes, étages des postes, services de rattachement)
+Feuille de temps : affichage jour par jour des heures par groupe.
+
+- Corrections
+Correction de la fonction createURL : ajout d'un / manquant dans certaines URL
+
+*** Version 2.5.2   (15 décembre 2016)   ***
+- Améliorations
+Absence en bas du planning : n'affiche que les absences qui concernent le site choisi
+ICS : Enregistrement d'une URL personnalisée dans la fiche des agents (pour importer les réunions de Google Calendar (par exemple))
+
+- Corrections
+Corrige une erreur empêchant l'enregistrement des dimanches dans les modèles
+
 *** Version 2.5.1   (23 novembre 2016)   ***
 - Sécurité
 Correction de vulnérabilités (Object Injection)
@@ -101,7 +128,7 @@ Configuration des tableaux : possibilité de récupérer des tableaux supprimés
 Configuration des tableaux : amélioration de l'affichage des listes de tableaux, groupes et lignes de séparation
 Configuration des tableaux : possibilité d'ajouter des classes CSS sur les tableaux. Permet de personnaliser l'affichage des tableaux sur la page planning
 Affichage du planning : possibilité d'ajouter des classes CSS sur les activités. Permet de personnaliser l'affichage des postes correspondants dans le planning
-Affichage du menu : Utilisation d'une liste <ul> à la place d'un tableau <table> pour positionner les éléments du menu. ATTENTION : les thèmes personnaliser doivent être mis à jour.
+Affichage du menu : Utilisation d'une liste <ul> à la place d'un tableau <table> pour positionner les éléments du menu. ATTENTION : les thèmes personnalisés doivent être mis à jour.
 Style : Boutons JQuery-UI dans le planning et gestion des agents
 
 - Corrections

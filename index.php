@@ -23,7 +23,7 @@ Inclut à la fin le fichier footer.php
 session_start();
 
 // Version
-$version="2.5.3";
+$version="2.5.4";
 
 // Redirection vers setup si le fichier config est absent
 if(!file_exists("include/config.php")){

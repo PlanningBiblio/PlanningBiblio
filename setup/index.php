@@ -21,7 +21,7 @@ session_start();
 session_destroy();
 session_start();
 
-$version="2.5.3";
+$version="2.5.4";
 
 include "header.php";
 include_once "../include/function.php";
