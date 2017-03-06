@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.1
+Planning Biblio, Version 2.5.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 19 novembre 2016
+Dernière modification : 6 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -243,12 +243,25 @@ EOD;
     }
 
     $current_date=ucfirst($d->jour_complet);
-    if(is_array($postes))
-    foreach($postes as $elem){
-      if($elem['date']==$current and (in_array($current,$verrou[$elem['site']]) or $nonValides)){
-	$current_postes[]=$elem;
+    if(is_array($postes)){
+      foreach($postes as $elem){
+        if($elem['date']==$current and (in_array($current,$verrou[$elem['site']]) or $nonValides)){
+        
+          // Contrôle des absences depuis la table absence
+          if(is_array($absences)){
+            foreach($absences as $a){
+              if($a['debut'] < $elem['date'].' '.$elem['fin'] and $a['fin'] > $elem['date'].' '.$elem['debut']){
+                $elem['absent']=1;
+                break;
+              }
+            }
+          }
+        
+          $current_postes[]=$elem;
+        }
       }
     }
+
     $current_abs=array();
     if(is_array($absences))
     foreach($absences as $elem){
@@ -307,7 +320,6 @@ EOD;
     if(in_array("conges",$plugins)){
       include "plugins/conges/agenda.php";
     }
-
 
     // Si l'agent n'est pas absent toute la journée : affiche ses heures de présences
     if(!$absent){

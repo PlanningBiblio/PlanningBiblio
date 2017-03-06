@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.5.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 31 janvier 2017
+Dernière modification : 6 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -629,6 +629,7 @@ div#tabsemaine1{
 
 .menudiv-tr td{
   height: 25px;
+  white-space: nowrap;
 }
 
 .menudiv-tr td:first-child{
