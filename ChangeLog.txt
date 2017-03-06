@@ -1,3 +1,12 @@
+*** Version 2.5.6   (6 mars 2017)   ***
+- Corrections
+Corrige l'agenda : barre les postes pour lesquels l'agent est absent
+
+*** Version 2.5.5   (6 mars 2017)   ***
+- Améliorations
+Ajoute un index sur le champ site de la table pl_poste de façon à accélérer les requêtes SQL sur cette table (page planning)
+Améliore l'affichage du menu permettant de placer les agents dans le planning (Optimisation de la largeur du 2nd tableau)
+
 *** Version 2.5.4   (1er mars 2017)   ***
 - Améliorations
 Affichage des heures au format 12h34 (Heure, lettre h, minutes) dans toutes les pages de statistiques

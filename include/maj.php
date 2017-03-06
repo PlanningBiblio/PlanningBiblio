@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.5.5
+Planning Biblio, Version 2.5.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
@@ -594,6 +594,12 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
 $v="2.5.5";
 if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $SQL[]="ALTER TABLE `{$dbprefix}pl_poste` ADD INDEX `site` (`site`);";
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.5.6";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
