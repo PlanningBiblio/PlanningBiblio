@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.5.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 10 février 2017
+Dernière modification : 6 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -363,13 +363,6 @@ $(function() {
 	
 	$("#menudiv1").css("top",top1);
 
-	// Position horizontale du tableau 2
-	if($(window).width()-e.clientX<($("#menudiv1").width()+$("#menudiv2").width())){
-	  var left2=left1-$("#menudiv2").width();
-	}else{
-	  var left2=left1+$("#menudiv1").width();
-	}
-	$("#menudiv2").css("left",left2);
       },
 
       error: function(result){
@@ -588,7 +581,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
 
         // Si une absence ou un congé est validé, on efface title pour ne pas afficher XXX non validé(e)
         if(absence_valide){
-          title = null;
+          title = '';
         }
 
         // Service et Statut
@@ -717,6 +710,21 @@ function groupe_tab(id,tab,hide,me){			// améliorer les variables (tableaux) po
   // Hauteur
   $("#menudiv2").css("height",h_tab+5);    
   $("#menudiv2").css("max-height",h_win-20);
+
+  // Largeur du tableau 2 (on s'adapte à la longueur des lignes)
+  $("#menudiv2").css("width",250);
+  var width = $('#menudiv2 > table').width() +20;
+  $("#menudiv2").css("width",width);
+
+  // Position horizontale du tableau 2
+  var left1 = $("#menudiv1").position();
+  left1 = left1.left;
+  if((left1 + $('#menudiv1').width() + width) > $(window).width()){
+    var left2=left1-$("#menudiv2").width();
+  }else{
+    var left2=left1+$("#menudiv1").width();
+  }
+  $("#menudiv2").css("left",left2);
 
   // Position
   // Si tableau plus grand que l'écran

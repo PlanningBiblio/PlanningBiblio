@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.5.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 29 novembre 2016
+Dernière modification : 6 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -587,6 +587,13 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
 
 $v="2.5.4";
 if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.5.5";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  $SQL[]="ALTER TABLE `{$dbprefix}pl_poste` ADD INDEX `site` (`site`);";
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
