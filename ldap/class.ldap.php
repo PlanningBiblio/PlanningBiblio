@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.1
+Planning Biblio, Version 2.5.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ldap/class.ldap.php
 Création : 2 juillet 2014
-Dernière modification : 10 mai 2016
+Dernière modification : 6 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -76,14 +76,15 @@ function authLDAP($login,$password){
   //	Connexion au serveur LDAP
   // Recheche du DN de l'utilisateur
   $dn=null;
-  $ldapconn = ldap_connect($GLOBALS['config']['LDAP-Host'],$GLOBALS['config']['LDAP-Port'])
+  $url = $GLOBALS['config']['LDAP-Protocol'].'://'.$GLOBALS['config']['LDAP-Host'].':'.$GLOBALS['config']['LDAP-Port'];
+  $ldapconn = ldap_connect($url)
     or die ("Impossible de se connecter au serveur LDAP");
   ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
   ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
   if($ldapconn){
     $ldapbind=ldap_bind($ldapconn,$GLOBALS['config']['LDAP-RDN'],decrypt($GLOBALS['config']['LDAP-Password']));
     if($ldapbind){
-      $sr=ldap_search($ldapconn,$GLOBALS['config']['LDAP-Suffix'],"(uid=$login)",array("dn"));
+      $sr=ldap_search($ldapconn,$GLOBALS['config']['LDAP-Suffix'],"({$GLOBALS['config']['LDAP-ID-Attribute']}=$login)",array("dn"));
       $infos=ldap_get_entries($ldapconn,$sr);
       if($infos[0]['dn']){
 	$dn=$infos[0]['dn'];
@@ -93,7 +94,8 @@ function authLDAP($login,$password){
 
   // Connexion au serveur LDAP avec le DN de l'utilisateur
   if($dn){
-    $ldapconn = @ldap_connect($GLOBALS['config']['LDAP-Host'],$GLOBALS['config']['LDAP-Port'])
+    $url = $GLOBALS['config']['LDAP-Protocol'].'://'.$GLOBALS['config']['LDAP-Host'].':'.$GLOBALS['config']['LDAP-Port'];
+    $ldapconn = @ldap_connect($url)
       or die ("Impossible de se connecter au serveur LDAP");
     ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
     ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);

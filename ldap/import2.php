@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Version 1.9.6
+/**
+Planning Biblio, Version 2.5.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ldap/import2.php
 Création : 2 juillet 2014
-Dernière modification : 23 avril 2015
+Dernière modification : 6 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -47,7 +47,9 @@ if(array_key_exists("chk",$post)){
 if(!$config['LDAP-Port']){
   $config['LDAP-Port']="389";
 }
-$ldapconn = ldap_connect($config['LDAP-Host'],$config['LDAP-Port'])
+
+$url = $GLOBALS['config']['LDAP-Protocol'].'://'.$GLOBALS['config']['LDAP-Host'].':'.$GLOBALS['config']['LDAP-Port'];
+$ldapconn = ldap_connect($url)
   or die ("Impossible de se connecter au serveur LDAP");
 ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
 ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
@@ -64,12 +66,12 @@ $db->prepare($req);
 // Recuperation des infos LDAP et insertion dans la base de données
 if($ldapbind){
   foreach($uids as $uid){
-    $filter="(uid=$uid)";
-    $justthese=array("dn","uid","sn","givenname","userpassword","mail");
+    $filter="({$config['LDAP-ID-Attribute']}=$uid)";
+    $justthese=array("dn",$config['LDAP-ID-Attribute'],"sn","givenname","userpassword","mail");
     $sr=ldap_search($ldapconn,$config['LDAP-Suffix'],$filter,$justthese);
     $infos=ldap_get_entries($ldapconn,$sr);
-    if($infos[0]['uid']){
-      $login=$infos[0]['uid'][0];
+    if($infos[0][$config['LDAP-ID-Attribute']]){
+      $login=$infos[0][$config['LDAP-ID-Attribute']][0];
       $nom=array_key_exists("sn",$infos[0])?htmlentities($infos[0]['sn'][0],ENT_QUOTES|ENT_IGNORE,"UTF-8",false):"";
       $prenom=array_key_exists("givenname",$infos[0])?htmlentities($infos[0]['givenname'][0],ENT_QUOTES|ENT_IGNORE,"UTF-8",false):"";
       $mail=array_key_exists("mail",$infos[0])?$infos[0]['mail'][0]:"";

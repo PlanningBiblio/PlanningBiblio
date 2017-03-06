@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Version 1.9.4
+/**
+Planning Biblio, Version 2.5.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ldap/import.php
 Création : 2 juillet 2014
-Dernière modification : 4 avril 2015
+Dernière modification : 6 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -54,11 +54,12 @@ if($rechercheLdap){
 
   //	Ajout des infos de recherche dans le filtre
   if($rechercheLdap){
-    $filter="(&{$filter}(|(uid=*$rechercheLdap*)(givenname=*$rechercheLdap*)(sn=*$rechercheLdap*)(mail=*$rechercheLdap*)))";
+    $filter="(&{$filter}(|({$config['LDAP-ID-Attribute']}=*$rechercheLdap*)(givenname=*$rechercheLdap*)(sn=*$rechercheLdap*)(mail=*$rechercheLdap*)))";
   }
 
   //	Connexion au serveur LDAP
-  $ldapconn = ldap_connect($config['LDAP-Host'],$config['LDAP-Port'])
+  $url = $GLOBALS['config']['LDAP-Protocol'].'://'.$GLOBALS['config']['LDAP-Host'].':'.$GLOBALS['config']['LDAP-Port'];
+  $ldapconn = ldap_connect($url)
     or die ("Impossible de joindre le serveur LDAP");
   ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
   ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
@@ -67,7 +68,7 @@ if($rechercheLdap){
       or die ("Impossible de se connecter au serveur LDAP");
   }
   if($ldapbind){
-    $justthese=array("dn","uid","sn","givenname","userpassword","mail");
+    $justthese=array("dn",$config['LDAP-ID-Attribute'],"sn","givenname","userpassword","mail");
     $sr=ldap_search($ldapconn,$config['LDAP-Suffix'],$filter,$justthese);
     $infos=ldap_get_entries($ldapconn,$sr);
   }
@@ -86,7 +87,7 @@ if($rechercheLdap){
   $tab=array();
   if(!empty($infos)){
     foreach($infos as $info){
-      if(!in_array($info['uid'][0],$agents_existants) and !empty($info)){
+      if(!in_array($info[$config['LDAP-ID-Attribute']][0],$agents_existants) and !empty($info)){
 	$tab[]=$info;
       }
     }
@@ -113,11 +114,11 @@ if($rechercheLdap){
       $givenname=array_key_exists('givenname',$info)?$info['givenname'][0]:null;
       $mail=array_key_exists('mail',$info)?$info['mail'][0]:null;
       echo "<tr>\n";
-      echo "<td><input type='checkbox' name='chk[]' value='".utf8_decode($info['uid'][0])."' /></td>\n";
+      echo "<td><input type='checkbox' name='chk[]' value='".utf8_decode($info[$config['LDAP-ID-Attribute']][0])."' /></td>\n";
       echo "<td>$sn</td>\n";
       echo "<td>$givenname</td>\n";
       echo "<td>$mail</td>\n";
-      echo "<td>{$info['uid'][0]}</td>\n";
+      echo "<td>{$info[$config['LDAP-ID-Attribute']][0]}</td>\n";
       echo "</tr>\n";
       $i++;
     }

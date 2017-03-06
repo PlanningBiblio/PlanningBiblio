@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.1
+Planning Biblio, Version 2.5.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 19 novembre 2016
+Dernière modification : 6 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -125,7 +125,7 @@ foreach($db->result as $elem){
   switch($elem['type']){
     case "boolean" :
       $selected=$elem['valeur']?"selected='selected'":null;
-      echo "<select name='{$elem['nom']}' style='width:305px;'>\n";
+      echo "<select name='{$elem['nom']}' id='{$elem['nom']}' style='width:305px;'>\n";
       echo "<option value='0'>0</option>\n";
       echo "<option value='1' $selected>1</option>\n";
       echo "</select>\n";
@@ -141,14 +141,14 @@ foreach($db->result as $elem){
       if(is_array($valeurs)){
 	foreach($valeurs as $val){
 	  $checked=in_array($val[0],$choisies)?"checked='checked'":null;
-	  echo "<input type='checkbox' name='{$elem['nom']}[]' value='{$val[0]}' $checked /> {$val[1]}<br/>\n";
+	  echo "<input type='checkbox' name='{$elem['nom']}[]' id='{$elem['nom']}[]' value='{$val[0]}' $checked /> {$val[1]}<br/>\n";
 	}
       }
       break;
 
     // Select avec valeurs séparées par des virgules
     case "enum" :
-      echo "<select name='{$elem['nom']}' style='width:305px;'>\n";
+      echo "<select name='{$elem['nom']}' id='{$elem['nom']}' style='width:305px;'>\n";
       $options=explode(",",$elem['valeurs']);
       foreach($options as $option){
 	$selected=$option==$elem['valeur']?"selected='selected'":null;
@@ -160,7 +160,7 @@ foreach($db->result as $elem){
 
     // Select avec valeurs dans un tableau PHP à 2 dimensions
     case "enum2" :
-      echo "<select name='{$elem['nom']}' style='width:305px;'>\n";
+      echo "<select name='{$elem['nom']}' id='{$elem['nom']}' style='width:305px;'>\n";
       $options=json_decode(str_replace("&#34;",'"',$elem['valeurs']));
       foreach($options as $option){
 	$selected=$option[0]==$elem['valeur']?"selected='selected'":null;
@@ -170,7 +170,7 @@ foreach($db->result as $elem){
       break;
 
     case "password" :
-      echo "<input type='password' name='{$elem['nom']}' value='{$elem['valeur']}' style='width:300px;'/>\n";
+      echo "<input type='password' name='{$elem['nom']}' id='{$elem['nom']}' value='{$elem['valeur']}' style='width:300px;'/>\n";
       break;
 
     case "info" :
@@ -179,15 +179,15 @@ foreach($db->result as $elem){
 
     case "textarea" :
       $valeur=str_replace("<br/>","\n",$elem['valeur']);
-      echo "<textarea name='{$elem['nom']}' style='width:300px;height:100px;' rows='1' cols='1'>$valeur</textarea>\n";
+      echo "<textarea name='{$elem['nom']}' id='{$elem['nom']}' style='width:300px;height:100px;' rows='1' cols='1'>$valeur</textarea>\n";
       break;
 
     case "date" :
-      echo "<input type='text' name='{$elem['nom']}' value='".dateFr3($elem['valeur'])."' style='width:300px;' class='datepicker'/>\n";
+      echo "<input type='text' name='{$elem['nom']}' id='{$elem['nom']}' value='".dateFr3($elem['valeur'])."' style='width:300px;' class='datepicker'/>\n";
       break;
 
     default :
-      echo "<input type='text' name='{$elem['nom']}' value='{$elem['valeur']}' style='width:300px;'/>\n";
+      echo "<input type='text' name='{$elem['nom']}' id='{$elem['nom']}' value='{$elem['valeur']}' style='width:300px;'/>\n";
       break;
   }
 
@@ -195,6 +195,13 @@ foreach($db->result as $elem){
   $commentaires=str_replace("[SERVER]",$url,$commentaires);
   echo "</td><td>$commentaires</td>\n";
   echo "</tr>\n";
+  
+  if($elem['nom'] == 'LDAP-ID-Attribute'){
+    echo "<tr><td>Tester</td>\n";
+    echo "<td><input type='button' value='Tester' onclick='ldaptest();' id='LDAP-Test' /></td>\n";
+    echo "<td>Tester les paramètres LDAP (Host, Port, Protocol, RDN et Password)</td></tr>\n";
+  }
+
   
 }
 echo "</table>\n";

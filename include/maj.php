@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.5.6
+Planning Biblio, Version 2.5.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
@@ -604,6 +604,12 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="2.5.7";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('LDAP-ID-Attribute', 'enum', 'uid', 'uid,samAccountName', 'Attribut d&apos;authentification (OpenLDAP : uid, ActiveDirectory : samAccountName)', 'LDAP', 80);";
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 
 //	Execution des requetes et affichage
 foreach($sql as $elem){
