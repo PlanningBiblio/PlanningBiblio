@@ -64,7 +64,9 @@ class db{
     * @access public
     */
   public function escapeString($str){
-    $this->connect();
+    if(!$this->conn){
+      $this->connect();
+    }
     $str=mysqli_real_escape_string($this->conn,$str);
     return $str;
   }
