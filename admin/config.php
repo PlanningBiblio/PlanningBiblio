@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 6 mars 2017
+Dernière modification : 7 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -199,7 +199,13 @@ foreach($db->result as $elem){
   if($elem['nom'] == 'LDAP-ID-Attribute'){
     echo "<tr><td>Tester</td>\n";
     echo "<td><input type='button' value='Tester' onclick='ldaptest();' id='LDAP-Test' /></td>\n";
-    echo "<td>Tester les paramètres LDAP (Host, Port, Protocol, RDN et Password)</td></tr>\n";
+    echo "<td>Tester les paramètres LDAP</td></tr>\n";
+  }
+
+  if($elem['nom'] == 'Mail-Planning'){
+    echo "<tr><td>Tester</td>\n";
+    echo "<td><input type='button' value='Tester' onclick='mailtest();' id='Mail-Test' /></td>\n";
+    echo "<td>Tester les paramètres de messagerie. Un e-mail sera envoy&eacute; aux adresses mention&eacute;es dans le champ Mail-Planning.</td></tr>\n";
   }
 
   

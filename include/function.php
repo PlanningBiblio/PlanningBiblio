@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.5.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 3 février 2017
+Dernière modification : 6 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -111,6 +111,7 @@ class CJMail{
   public function CJMail(){
     $path=strpos($_SERVER["SCRIPT_NAME"],"planning/poste/ajax")?"../../":null;
     $path=preg_match('/planning\/plugins\/.*\/ajax/', $_SERVER["SCRIPT_NAME"])?"../../":$path;
+    $path=preg_match('/planning\/admin\/ajax/', $_SERVER["SCRIPT_NAME"])?"../":$path;
     require_once("{$path}vendor/PHPMailer/class.phpmailer.php");
     require_once("{$path}vendor/PHPMailer/class.smtp.php");
   }
@@ -177,6 +178,7 @@ class CJMail{
     }
     
     $mail = new PHPMailer();
+    $mail->setLanguage('fr');
     if($GLOBALS['config']['Mail-IsMail-IsSMTP']=="IsMail")
       $mail->IsMail();
     else

@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : admin/js/config.js
 Création : 6 mars 2017
-Dernière modification : 6 mars 2017
+Dernière modification : 7 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -57,4 +57,54 @@ function ldaptest(){
       CJInfo('Impossible de vérifier les paramètres LDAP','error',top1);
     }
   });
+}
+
+function mailtest(){
+ 
+  var enabled = $('#Mail-IsEnabled').val();
+  var mailSmtp = $('#Mail-IsMail-IsSMTP').val();
+  var wordwrap = $('#Mail-WordWrap').val();
+  var hostname = $('#Mail-Hostname').val();
+  var host = $('#Mail-Host').val();
+  var port = $('#Mail-Port').val();
+  var secure = $('#Mail-SMTPSecure').val();
+  var auth = $('#Mail-SMTPAuth').val();
+  var auth = $('#Mail-SMTPAuth').val();
+  var user = $('#Mail-Username').val();
+  var password = $('#Mail-Password').val();
+  var fromMail = $('#Mail-From').val();
+  var fromName = $('#Mail-FromName').val();
+  var signature = $('#Mail-Signature').val();
+  var planning = $('#Mail-Planning').val();
+  
+  
+  var pos = $('#Mail-Test').position();
+  top1 = pos.top - 10;
+  
+  $(".CJInfo").remove();
+  
+  if(enabled == 0){
+    CJInfo("Le paramètre \"Mail-IsEnabled\" est d&eacute;sactiv&eacute;","error",top1,8000);
+    return false;
+  }
+
+  $.ajax({
+    url: 'admin/ajax.mailtest.php',
+    type: 'post',
+    dataType: 'json',
+    data: {mailSmtp: mailSmtp, wordwrap: wordwrap, hostanme: hostname, host: host, port: port, secure: secure, auth: auth, user: user, password: password, fromMail: fromMail, fromName: fromName, signature: signature, planning: planning},
+    success: function(result){
+      if(result == 'ok'){
+        CJInfo('Le mail de test a été envoyé avec succès. Vérifiez votre messagerie.','success',top1,8000);
+      }else if(result == 'socket'){
+        CJInfo('Impossible de joindre le serveur de messagerie.','error',top1,8000);
+      }else{
+        CJInfo("Une erreur est survenue lors de l'envoi du mail.#BR#"+result,'error',top1,8000);
+      }
+    },
+    error: function(result){
+        CJInfo("Une erreur est survenue lors de l'envoi du mail.#BR#"+result.responseText,'error',top1,8000);
+    }
+  });
+
 }
