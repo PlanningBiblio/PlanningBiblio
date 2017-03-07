@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 6 mars 2017
+Dernière modification : 7 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -736,6 +736,9 @@ function decode($n){
 
 function decrypt($str){  
   $key="AB0972FA445DDE66178ADF76";
+  if(isset($GLOBALS['config']['secret']) and $GLOBALS['config']['secret']){
+    $key = $GLOBALS['config']['secret'];
+  }
   $str = mcrypt_decrypt(MCRYPT_3DES, $key, $str, MCRYPT_MODE_ECB);
 
   $block = mcrypt_get_block_size('tripledes', 'ecb');
@@ -745,6 +748,9 @@ function decrypt($str){
 
 function encrypt($str){
   $key="AB0972FA445DDE66178ADF76";
+  if(isset($GLOBALS['config']['secret']) and $GLOBALS['config']['secret']){
+    $key = $GLOBALS['config']['secret'];
+  }
   $block = mcrypt_get_block_size('tripledes', 'ecb');
   $pad = $block - (strlen($str) % $block);
   $str .= str_repeat(chr($pad), $pad);

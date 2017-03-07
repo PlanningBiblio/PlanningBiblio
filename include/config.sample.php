@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Version 1.9.5
+/**
+Planning Biblio, Version 2.5.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : include/config.sample.php
 Création : 2 avril 2015
-Dernière modification : 8 avril 2015
+Dernière modification : 7 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -35,7 +35,10 @@ $config['dbname']="your_db_name";
 $config['dbuser']="your_db_user";
 $config['dbpass']="your_db_pass";
 $config['dbprefix']="your_db_prefix";
+
 $dbprefix=$config['dbprefix'];
+
+$config['secret']="0449770b2bd5046b6dcb1697";     // Pour votre sécurité, veuillez modifier cette valeur. La clé doit comporter 24 caractères.
 
 include_once "db.php";
 

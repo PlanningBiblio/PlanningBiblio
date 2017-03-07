@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.9.5
+Planning Biblio, Version 2.5.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : setup/createconfig.php
 Création : mai 2011
-Dernière modification : 8 avril 2015
+Dernière modification : 7 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -19,7 +19,7 @@ Inclus ensuite le fichier setup/config.php affichant le formulaire demandant les
 */
 
 $version=filter_input(INPUT_POST,"version",FILTER_SANITIZE_STRING);
-
+$secret = bin2hex(random_bytes(12));
 $Fnm = "../include/config.php";
 
 $file=Array();
@@ -55,6 +55,7 @@ $file[]="\$config['dbuser']=\"{$_POST['dbuser']}\";\n";
 $file[]="\$config['dbpass']=\"{$_POST['dbpass']}\";\n";
 $file[]="\$config['dbprefix']=\"{$_POST['dbprefix']}\";\n";
 $file[]="\$dbprefix=\$config['dbprefix'];\n\n";
+$file[]="\$config['secret']=\"$secret\";\n\n";
 $file[]="include 'db.php';\n\n";
 $file[]="// Récuperation des paramètres stockés dans la base de données\n";
 $file[]="\$db=new db();\n";
