@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.5.5
+Planning Biblio, Version 2.5.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 6 mars 2017
+Dernière modification : 7 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -327,6 +327,12 @@ $(function() {
 	// Affichage des tableaux
 	$("body").append("<div id='menudiv1'>"+result[0]+"</div>");
 	$("body").append("<div id='menudiv2'>"+result[1]+"</div>");
+
+        
+        // Largeur du tableau 1 (on s'adapte à la longueur des lignes)
+        $("#menudiv1").css("width",250);
+        var width = $('#menudiv1 > table').width() +20;
+        $("#menudiv1").css("width",width);
 
 	// Position horizontale du tableau 1
 	if($(window).width()-e.clientX<$("#menudiv1").width()){
