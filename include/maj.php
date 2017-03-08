@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/maj.php
 Création : mai 2011
-Dernière modification : 6 mars 2017
+Dernière modification : 8 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -609,6 +609,26 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('LDAP-ID-Attribute', 'enum', 'uid', 'uid,samAccountName', 'Attribut d&apos;authentification (OpenLDAP : uid, ActiveDirectory : samAccountName)', 'LDAP', 80);";
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+  
+  // Génération d'un CSRF Token
+  // PHP 7
+  if(phpversion() >= 7){
+    if (empty($_SESSION['oups']['CSRFToken'])) {
+      $_SESSION['oups']['CSRFToken'] = bin2hex(random_bytes(32));
+    }
+  }
+
+  // PHP 5.3+
+  else{
+    if (empty($_SESSION['oups']['CSRFToken'])) {
+      if (function_exists('mcrypt_create_iv')) {
+        $_SESSION['oups']['CSRFToken'] = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
+      } else {
+        $_SESSION['oups']['CSRFToken'] = bin2hex(openssl_random_pseudo_bytes(32));
+      }
+    }
+  }
+  
 }
 
 //	Execution des requetes et affichage

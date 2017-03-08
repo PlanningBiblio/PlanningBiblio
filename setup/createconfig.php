@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/createconfig.php
 Création : mai 2011
-Dernière modification : 7 mars 2017
+Dernière modification : 8 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -19,8 +19,22 @@ Inclus ensuite le fichier setup/config.php affichant le formulaire demandant les
 */
 
 $version=filter_input(INPUT_POST,"version",FILTER_SANITIZE_STRING);
-$secret = bin2hex(random_bytes(12));
 $Fnm = "../include/config.php";
+
+// Génération d'une clé pour crypter les mots de passe LDAP-Password et Mail-Password
+// PHP 7
+if(phpversion() >= 7){
+  $secret = bin2hex(random_bytes(12));
+}
+
+// PHP 5.3+
+else{
+  if (function_exists('mcrypt_create_iv')) {
+    $secret = bin2hex(mcrypt_create_iv(12, MCRYPT_DEV_URANDOM));
+  } else {
+    $secret = bin2hex(openssl_random_pseudo_bytes(12));
+  }
+}
 
 $file=Array();
 $file[]="<?php\n";
