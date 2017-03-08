@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 10 février 2017
+Dernière modification : 8 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -82,7 +82,7 @@ date_default_timezone_set("Europe/Paris");
 // Vérification de la version de la base de données
 // Si la version est différente, mise à jour de la base de données 
 if($version!=$config['Version']){
-  include "include/maj.php";
+  include "setup/maj.php";
 }
 // Sinon, on continue
 else{

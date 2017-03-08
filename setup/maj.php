@@ -5,7 +5,7 @@ Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
-Fichier : include/maj.php
+Fichier : setup/maj.php
 Création : mai 2011
 Dernière modification : 8 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
@@ -18,7 +18,7 @@ dans la base de données
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
 if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
-  include_once "accessDenied.php";
+  include_once "../include/accessDenied.php";
   exit;
 }
 
