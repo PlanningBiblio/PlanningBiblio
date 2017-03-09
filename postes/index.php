@@ -26,7 +26,7 @@ $nom=filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING);
 $postes_utilises=array();
 
 $db=new db();
-$db->selectInnerJoin(array("pl_poste_lignes","numero"), array("pl_poste_tab","tableau"), array(array("name"=>"poste", "as"=>"poste")), array(), array(), array("supprime"=>null));
+$db->selectInnerJoin(array("pl_poste_lignes","numero"), array("pl_poste_tab","tableau"), array(array("name"=>"poste", "as"=>"poste")), array(), array("type"=>"poste"), array("supprime"=>null));
 if($db->result){
   foreach($db->result as $elem){
     $postes_utilises[]=$elem['poste'];
