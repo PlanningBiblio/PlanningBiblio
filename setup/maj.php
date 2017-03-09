@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.7
+Planning Biblio, Version 2.5.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 8 mars 2017
+Dernière modification : 9 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -607,8 +607,6 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
 $v="2.5.7";
 if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('LDAP-ID-Attribute', 'enum', 'uid', 'uid,samAccountName', 'Attribut d&apos;authentification (OpenLDAP : uid, ActiveDirectory : samAccountName)', 'LDAP', 80);";
-  // Version
-  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
   
   // Génération d'un CSRF Token
   // PHP 7
@@ -628,8 +626,25 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
       }
     }
   }
-  
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
+
+
+$v="2.5.8";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  $db = new db();
+  $db->select2('pl_poste_modeles');
+  if($db->result){
+    foreach($db->result as $elem){
+      $nom = htmlentities($elem['nom'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+      $sql[] = "UPDATE `{$dbprefix}pl_poste_modeles` SET `nom` = '$nom' WHERE `id`='{$elem['id']}';";
+    }
+  }
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 
 //	Execution des requetes et affichage
 foreach($sql as $elem){

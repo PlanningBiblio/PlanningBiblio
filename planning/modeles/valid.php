@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.5.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/modeles/valid.php
 Création : mai 2011
-Dernière modification : 10 février 2017
+Dernière modification : 9 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -20,8 +20,8 @@ $nom = filter_input(INPUT_GET, 'nom', FILTER_SANITIZE_STRING);
 $origine = filter_input(INPUT_GET, 'nom_origine', FILTER_SANITIZE_STRING);
 $CSRFToken = filter_input(INPUT_GET, 'CSRFToken', FILTER_SANITIZE_STRING);
 
-$nom=trim($nom);
-$origine=htmlentities($origine,ENT_QUOTES|ENT_IGNORE,"UTF-8");
+$nom=htmlentities(trim($nom),ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
+$origine=htmlentities($origine,ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;

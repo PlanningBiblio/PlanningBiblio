@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.2
+Planning Biblio, Version 2.5.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/enregistrer.php
 Création : mai 2011
-Dernière modification : 30 novembre 2016
+Dernière modification : 9 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -96,6 +96,8 @@ else{		// Etape 3 : Si le nom existe et confirmation (=remplacement) : suppressi
 function enregistre_modele($nom,$date,$semaine,$site){
   $dbprefix=$GLOBALS['config']['dbprefix'];
   $d=new datePl($date);
+
+  $nom = htmlentities($nom, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
 
   // Sélection des données entre le lundi et le dimanche de la semaine courante
   if($semaine){

@@ -1,4 +1,8 @@
-*** Version 2.5.7   (6 mars 2017)   ***
+*** Version 2.5.8   (9 mars 2017)   ***
+- Correction
+Corrige les problèmes de modification et de suppression des modèles
+
+*** Version 2.5.7   (8 mars 2017)   ***
 - Améliorations
 LDAP : Compatibilité Active Directory
 LDAP : Test des paramètres depuis la page de configuration
@@ -7,6 +11,9 @@ Mail : Test des paramètres depuis la page de configuration
 - Securité
 Mise à jour de PHPMailer (version 2.5.22)
 Clé personnelle pour le cryptage des mots de passe LDAP et SMTP (include/config.php à modifier manuellement si mise à jour)
+
+- Correction
+Affichage des absents en bas du planning en configuration mono-site
 
 *** Version 2.5.6   (6 mars 2017)   ***
 - Corrections
