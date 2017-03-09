@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.7
+Planning Biblio, Version 2.5.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ldap/import2.php
 Création : 2 juillet 2014
-Dernière modification : 6 mars 2017
+Dernière modification : 9 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -48,7 +48,8 @@ if(!$config['LDAP-Port']){
   $config['LDAP-Port']="389";
 }
 
-$url = $GLOBALS['config']['LDAP-Protocol'].'://'.$GLOBALS['config']['LDAP-Host'].':'.$GLOBALS['config']['LDAP-Port'];
+$url = "{$config['LDAP-Protocol']}://{$config['LDAP-Host']}:{$config['LDAP-Port']}";
+
 $ldapconn = ldap_connect($url)
   or die ("Impossible de se connecter au serveur LDAP");
 ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
