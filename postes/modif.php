@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.5.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : postes/modif.php
 Création : mai 2011
-Dernière modification : 10 février 2017
+Dernière modification : 9 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -73,10 +73,10 @@ $db=new db();
 $db->select2("select_etages","*","1","order by rang");
 $etages=$db->result;
 
-// Recherche des groupes étages utilisés
+// Recherche des étages utilisés
 $etages_utilises = array();
 $db=new db();
-$db->select2('postes','etage',null,'group by etage');
+$db->select2('postes','etage',array('supprime'=>null),'group by etage');
 if($db->result){
   foreach($db->result as $elem){
     $etages_utilises[] = $elem['etage'];
@@ -91,7 +91,8 @@ $groupes=$db->result;
 // Recherche des groupes groupes utilisés
 $groupes_utilises = array();
 $db=new db();
-$db->select2('postes','groupe',null,'group by groupe');
+$db->select2('postes','groupe',array('supprime'=>null),'group by groupe');
+
 if($db->result){
   foreach($db->result as $elem){
     $groupes_utilises[] = $elem['groupe'];
