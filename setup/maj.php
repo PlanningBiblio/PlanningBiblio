@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 9 mars 2017
+Dernière modification : 10 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -633,12 +633,23 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
 
 $v="2.5.8";
 if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Encodage HTML de la table pl_poste_modeles
   $db = new db();
   $db->select2('pl_poste_modeles');
   if($db->result){
     foreach($db->result as $elem){
       $nom = htmlentities($elem['nom'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
       $sql[] = "UPDATE `{$dbprefix}pl_poste_modeles` SET `nom` = '$nom' WHERE `id`='{$elem['id']}';";
+    }
+  }
+
+  // Encodage HTML de la table personnel, champ service
+  $db = new db();
+  $db->select2('personnel',array('id','service'));
+  if($db->result){
+    foreach($db->result as $elem){
+      $service = htmlentities($elem['service'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+      $sql[] = "UPDATE `{$dbprefix}personnel` SET `service` = '$service' WHERE `id`='{$elem['id']}';";
     }
   }
   // Version

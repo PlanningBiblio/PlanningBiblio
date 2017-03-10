@@ -1,6 +1,7 @@
-*** Version 2.5.8   (9 mars 2017)   ***
+*** Version 2.5.8   (10 mars 2017)   ***
 - Correction
 Corrige les problèmes de modification et de suppression des modèles
+Corrige le problème des agents non-trouvés dans le menu dû à un mauvais encodage de caractères du champ personnel/service
 
 *** Version 2.5.7   (8 mars 2017)   ***
 - Améliorations

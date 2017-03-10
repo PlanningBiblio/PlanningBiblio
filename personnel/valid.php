@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.5.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 10 février 2017
+Dernière modification : 10 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -40,7 +40,7 @@ $nom=trim($post['nom']);
 $postes=$post['postes'];
 $prenom=trim($post['prenom']);
 $recup=trim($post['recup']);
-$service=$post['service'];
+$service = htmlentities($post['service'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
 $sites=array_key_exists("sites",$post)?$post['sites']:null;
 $statut=trim($post['statut']);
 $temps=array_key_exists("temps",$post)?$post['temps']:null;
