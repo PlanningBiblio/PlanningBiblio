@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.3
+Planning Biblio, Version 2.5.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/importer.php
 Création : mai 2011
-Dernière modification : 3 octobre 2016
+Dernière modification : 13 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -136,6 +136,27 @@ else{					// Etape 2 : Insertion des données
     $db=new db();
     $db->insert2("pl_poste_tab_affect", array("date"=>$elem ,"tableau"=>$tableau ,"site"=>$site ));
 
+
+    // N'importe pas les agents placés sur des postes supprimés (si tableau modifié)
+    $postes = array();
+    $db = new db();
+    $db->select2('pl_poste_lignes', 'poste', array('type'=>'poste', 'numero'=>$tableau));
+    if($db->result){
+      foreach($db->result as $elem2){
+        $postes[] = $elem2['poste'];
+      }
+    }
+
+    // N'importe pas les agents placés sur des horaires supprimés (si tableau modifié)
+    $horaires = array();
+    $db = new db();
+    $db->select2('pl_poste_horaires', array('debut','fin'), array('numero'=>$tableau));
+    if($db->result){
+      foreach($db->result as $elem2){
+        $horaires[] = array('debut'=>$elem2['debut'], 'fin'=>$elem2['fin']);
+      }
+    }
+
     // Importation des agents
     // S'il s'agit d'un modèle pour une semaine
     if($semaine){
@@ -147,6 +168,8 @@ else{					// Etape 2 : Insertion des données
       $db->select2("pl_poste_modeles","*", array("nom"=>$nom, "site"=>$site));
     }
 
+    
+    
     $filter=$config['Absences-validation']?"AND `valide`>0":null;
     if($db->result){
       if($get_absents){	// on marque les absents
@@ -156,8 +179,19 @@ else{					// Etape 2 : Insertion des données
 	  $db2=new db();
 	  $db2->select("absences","*","`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
 	  $absent=$db2->result?"1":"0";
-	  $values[]=array(":date"=>$elem, ":perso_id"=>$elem2['perso_id'], ":poste"=>$elem2['poste'], 
-	    ":debut"=>$elem2['debut'], ":fin"=>$elem2['fin'], ":absent"=>$absent, ":site"=>$site);
+	  if(in_array($elem2['poste'], $postes)){
+            $exist = false;
+            foreach($horaires as $h){
+              if($h['debut'] == $elem2['debut'] and $h['fin'] == $elem2['fin']){
+                $exist = true;
+                break;
+              }
+            }
+            if($exist){
+              $values[]=array(":date"=>$elem, ":perso_id"=>$elem2['perso_id'], ":poste"=>$elem2['poste'], 
+                ":debut"=>$elem2['debut'], ":fin"=>$elem2['fin'], ":absent"=>$absent, ":site"=>$site);
+            }
+          }
 	}
       }
       else{
@@ -166,9 +200,18 @@ else{					// Etape 2 : Insertion des données
 	  $fin=$elem." ".$elem2['fin'];
 	  $db2=new db();
 	  $db2->select("absences","*","`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
-	  if($db2->nb==0){
-	    $values[]=array(":date"=>$elem, ":perso_id"=>$elem2['perso_id'], ":poste"=>$elem2['poste'], 
-	      ":debut"=>$elem2['debut'], ":fin"=>$elem2['fin'], ":absent"=>"0", ":site"=>$site);
+	  if($db2->nb==0 and in_array($elem2['poste'], $postes)){
+            $exist = false;
+            foreach($horaires as $h){
+              if($h['debut'] == $elem2['debut'] and $h['fin'] == $elem2['fin']){
+                $exist = true;
+                break;
+              }
+            }
+            if($exist){
+              $values[]=array(":date"=>$elem, ":perso_id"=>$elem2['perso_id'], ":poste"=>$elem2['poste'], 
+                ":debut"=>$elem2['debut'], ":fin"=>$elem2['fin'], ":absent"=>"0", ":site"=>$site);
+            }
 	  }
 	}
       }
