@@ -1,3 +1,7 @@
+*** Version 2.5.9   (14 mars 2017)   ***
+- Correction
+LDAP - Active Directory : renomme l'attribut samAccountName en samaccountname
+
 *** Version 2.5.8   (10 mars 2017)   ***
 - Correction
 Corrige les problèmes de modification et de suppression des modèles
