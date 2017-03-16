@@ -1,6 +1,11 @@
+*** Version 2.6   (16 mars 2017)   ***
+- Correction
+LDAP - Active Directory : Corrige ke script de mise à jour
+
 *** Version 2.5.9   (14 mars 2017)   ***
 - Correction
 LDAP - Active Directory : renomme l'attribut samAccountName en samaccountname
+Planning - importation : n'importe pas les agents s'ils sont sur des postes ou horaires supprimés
 
 *** Version 2.5.8   (10 mars 2017)   ***
 - Correction
