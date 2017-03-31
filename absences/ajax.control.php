@@ -122,5 +122,16 @@ if($config['Absences-planningVide']==0){
   $result["planningsEnElaboration"]=implode(" ; ",$planningsEnElaboration);
 }
 
+require_once("../plugins/class.plugins.php");
+$plugins=new plugins;
+$plugins->fetch();
+foreach($plugins->liste as $p){
+    if(method_exists($p,"controleAbsences")){
+        require_once "../plugins/$p/class.$p.php";
+        $instance = new $p;
+        $instance->controleAbsences($result);
+    }
+}
+
 echo json_encode($result);
 ?>
