@@ -122,5 +122,14 @@ if($config['Absences-planningVide']==0){
   $result["planningsEnElaboration"]=implode(" ; ",$planningsEnElaboration);
 }
 
+
+// Controle blocage du depot d'absence
+$debut=substr($debut,0,10);
+$fin=substr($fin,0,10);
+$db=new db();
+$req="SELECT `id` FROM `{$dbprefix}pl_poste_verrou` WHERE `date` BETWEEN '$debut' AND '$fin' AND `blocage_dep_abs`=1";
+$db->query($req);
+$result['planning_en_cours']=$db->result;
+
 echo json_encode($result);
 ?>

@@ -516,6 +516,7 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires`='Granularit&eacute; des champs horaires.' WHERE `nom`='Granularite';";
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+  $sql[]="ALTER TABLE `{$dbprefix}pl_poste_verrou` ADD `blocage_dep_abs` INT(1) NOT NULL DEFAULT '0' AFTER `perso`;";
 }
 
 $v="2.4.9";

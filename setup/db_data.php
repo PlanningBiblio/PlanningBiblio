@@ -534,4 +534,8 @@ $sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VA
 $sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VALUES ('Etudiant', '6', '3');";
 $sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VALUES ('Garde de nuit', '7', '0');";
 $sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VALUES ('Autre', '8', '0');";
+
+//   Ajout d'un champ dans la table pl_poste_verrou
+$sql[]="ALTER TABLE `{$dbprefix}pl_poste_verrou` ADD `blocage_dep_abs` INT(1) NOT NULL DEFAULT '0' AFTER `perso`;";
+
 ?>

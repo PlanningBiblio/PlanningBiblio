@@ -680,10 +680,37 @@ class planning{
             $sr[]=$key;
           }
         }
+
+      $db->select2("pl_poste","*",array("date"=>$date, "perso_id"=>$perso_id, "debut"=>"<$sr_fin", "fin"=>">$sr_debut"), "ORDER BY debut,fin");
+      $dbplages = $db->result;
+      if($dbplages){
+          // pour le marquage d'absence mordant sur la plage "Sans Repas" et déposée après attribution de la plage horaire
+          $db=new db();
+          $db->select("absences","perso_id","`debut`<'$date $sr_fin' AND `fin` >'$date $sr_debut' and `perso_id` = \"$perso_id\"");
+          if($db->result){
+              return 1;
+          }
+	    // Tableau result contient les plages de la base de données + la plage interrogée
+	    $result=array_merge($dbplages,array(array("debut"=>$debut, "fin"=>$fin)));
+	    usort($result,"cmp_debut_fin");
+	    // Si le plus petit début et inférieur ou égal au début de la période SR et la plus grande fin supérieure ou égale à la fin de la période SR
+	    // = Possibilité que la période soit complète, on met SR=1
+	    if($result[0]["debut"]<=$sr_debut and $result[count($result)-1]["fin"]>=$sr_fin){
+	        $sr=1;
+	        // On consulte toutes les plages à la recherche d'une interruption. Si interruption, sr=0 et on quitte la boucle
+	        $last_end=$result[0]['fin'];
+	        for($i=1;$i<count($result);$i++){
+	            if($result[$i]['debut']>$last_end){
+	                $sr=0;
+	                continue;
+	            }
+	            $last_end=$result[$i]['fin'];
+	        }
+	    }
       }
     }
     return $sr;
   }
-  
+ }
 }
 ?>

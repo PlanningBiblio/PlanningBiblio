@@ -147,6 +147,46 @@ $(function() {
     });
   });
 
+  // Blocage du dépot d'absence
+  $("#icon-tmplock").click(function(){
+    var date=$(this).attr("data-date");
+    var site=$(this).attr("data-site");
+
+    $.ajax({
+      url: "planning/poste/ajax.tmplock.php",
+      dataType: "json",
+      data: {date: date, site: site, blocage_dep_abs: 1 },
+      type: "get",
+      success: function(result){
+	  $("#icon-tmplock").hide();
+	  $("#icon-tmpunlock").show();
+	},
+      error: function(result){
+	information("Erreur lors du blocage du depot d'absence","error");
+      }
+    });
+  });
+
+  // Déblocage du dépot d'absence
+  $("#icon-tmpunlock").click(function(){
+    var date=$(this).attr("data-date");
+    var site=$(this).attr("data-site");
+
+    $.ajax({
+      url: "planning/poste/ajax.tmplock.php",
+      dataType: "json",
+      data: {date: date, site: site, blocage_dep_abs: 0 },
+      type: "get",
+      success: function(result){
+	  $("#icon-tmpunlock").hide();
+	  $("#icon-tmplock").show();
+	},
+      error: function(result){
+	information("Erreur lors du déblocage du depot d'absence","error");
+      }
+    });
+  });
+
   // Calendar
   $("#pl-calendar").change(function(){
     var date=dateFr($(this).val());
