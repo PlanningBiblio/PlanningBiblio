@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.6.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 10 février 2017
+Dernière modification : 13 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -421,7 +421,9 @@ class planningHebdo{
   public function update_time(){
     $db=new db();
     $db->query("show table status from {$GLOBALS['config']['dbname']} like '{$GLOBALS['dbprefix']}planningHebdo';");
-    return $db->result[0]['Update_time'];
+    $result = isset($db->result[0]['Update_time']) ? $db->result[0]['Update_time'] : null;
+    return $result;
+
   }
   
   public function updatePeriodes($data){

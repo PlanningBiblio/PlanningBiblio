@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.6
+Planning Biblio, Version 2.6.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
@@ -663,6 +663,13 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[] = "UPDATE `{$dbprefix}config` SET `valeur` = 'samaccountname' WHERE `valeur` = 'samAccountName';";
   $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Filtre LDAP. OpenLDAP essayez \"(objectclass=inetorgperson)\" , Active Directory essayez \"(&(objectCategory=person)(objectClass=user))\". Vous pouvez bien-s&ucirc;r personnaliser votre filtre.' WHERE `nom` = 'LDAP-Filter';";
 
+   // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.6.1";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  $sql[]="ALTER TABLE `{$dbprefix}personnel` ENGINE=MyISAM;";
    // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }

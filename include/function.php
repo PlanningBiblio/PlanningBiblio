@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.7
+Planning Biblio, Version 2.6.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 7 mars 2017
+Dernière modification : 13 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -308,8 +308,9 @@ function calculHeuresSP($date){
     $pUpdate=strtotime($p->update_time());
 
     // Si la table planningHebdo a été modifiée depuis la Création du tableaux des heures
+    // Ou si les informations update_time n'existent pas ($phUpdate == null / $pUpdate == null)
     // Ou si le tableau des heures n'a pas été créé ($heuresSPUpdate=0), on le (re)fait.
-    if($pHUpdate>$heuresSPUpdate or $pUpdate>$heuresSPUpdate){
+    if($pHUpdate>=$heuresSPUpdate or $pUpdate>=$heuresSPUpdate or $pHUpdate == null or $pUpdate == null){
       $heuresSP=array();
     
       // Recherche de tous les agents pouvant faire du service public
@@ -393,11 +394,12 @@ function calculHeuresSP($date){
     $pUpdate=strtotime($p->update_time());
 
     // Si la table personnel a été modifiée depuis la Création du tableaux des heures
+    // Ou si l'information update_time n'existe pas ($pUpdate == null)
     // Ou si le tableau des heures n'a pas été créé ($heuresSPUpdate=0), on le (re)fait.
-    if($pUpdate>$heuresSPUpdate){
+    if($pUpdate>=$heuresSPUpdate or $pUpdate == null){
       $heuresSP=array();
       $p=new personnel();
-      $p->fetch("nom","Actif");
+      $p->fetch("nom");
       if(!empty($p->elements)){
 	// Pour chaque agents
 	foreach($p->elements as $key1 => $value1){
