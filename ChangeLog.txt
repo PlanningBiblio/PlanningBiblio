@@ -1,6 +1,10 @@
+*** Version 2.6.2   (19 avril 2017)   ***
+- Correction
+Corrige la recherche des quotas hebdomadaires (menu du planning et feuille de temps)
+
 *** Version 2.6   (16 mars 2017)   ***
 - Correction
-LDAP - Active Directory : Corrige ke script de mise à jour
+LDAP - Active Directory : Corrige le script de mise à jour
 
 *** Version 2.5.9   (14 mars 2017)   ***
 - Correction
