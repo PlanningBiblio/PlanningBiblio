@@ -1,3 +1,7 @@
+*** Version 2.6.3   (20 avril 2017)   ***
+- Correction
+Corrige les notifications lors de la modification des plannings (n'envoie que les différences et seulement aux agents pour qui des différences existent)
+
 *** Version 2.6.2   (19 avril 2017)   ***
 - Correction
 Corrige la recherche des quotas hebdomadaires (menu du planning et feuille de temps)

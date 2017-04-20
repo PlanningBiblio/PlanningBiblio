@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.6.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 10 février 2017
+Dernière modification : 20 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -420,8 +420,11 @@ class planning{
       // Lecture des infos de la base de données
       $db=new db();
       $db->select2("pl_notifications","*",array("date"=>$date));
-      $data=str_replace("&quot;",'"',$db->result[0]["data"]);
+
+      $data=$db->result[0]["data"];
+      $data=html_entity_decode($data,ENT_QUOTES|ENT_IGNORE,'UTF-8');
       $data=(array) json_decode($data);
+
       $oldData=array();
       foreach($data as $key => $value){
 	$oldData[$key]=(array) $value;
@@ -468,8 +471,8 @@ class planning{
 
     /*
     $tab[$perso_id] = Array(nom, prenom, mail, planning => Array(
-	  [0] => Array(debut, fin, absent, site, poste), 
-	  [1] => Array(debut, fin, absent, site, poste), ...))
+      [0] => Array(debut, fin, absent, site, poste), 
+      [1] => Array(debut, fin, absent, site, poste), ...))
     */
 
     // Envoi du mail
@@ -478,69 +481,78 @@ class planning{
     // Tous les agents qui doivent être notifiés.
     foreach($perso_ids as $elem){
       // Création du message avec date et nom de l'agent
+      $agent = isset($tab[$elem]) ? $tab[$elem]['prenom'].' '.$tab[$elem]['nom'] : $oldData[$elem]['prenom'].' '.$oldData[$elem]['nom'];
       $message=$notificationType=="nouveauPlanning"?"Validation du planning":"Modification du planning";
       $message.="<br/><br/>Date : <strong>".dateFr($date)."</strong>";
-      $message.="<br/>Agent : <strong>{$tab[$elem]['prenom']} {$tab[$elem]['nom']}</strong>";
+      $message.="<br/>Agent : <strong>$agent</strong>";
       
       // S'il y a des éléments, on ajoute la liste des postes occupés avec les horaires
       if(array_key_exists($elem,$tab)){
 	$lines=array();
 	$message.="<ul>";
 
-	foreach($tab[$elem]["planning"] as $e){
-	  // On marque en gras les modifications
-	  $exists=true;
-	  if($notificationType=="planningModifie"){
-	    $exists=false;
-	    foreach($oldData[$elem]["planning"] as $o){
-	      if($e==$o){
-		$exists=true;
-		continue;
-	      }
-	    }
-	  }
-	  $bold=$exists?null:"font-weight:bold;";
-	  $striped=$e['absent']?"text-decoration:line-through; color:red;":null;
+        if(isset($tab[$elem])){
+          foreach($tab[$elem]["planning"] as $e){
+            // On marque en gras les modifications
+            $exists=true;
+            if($notificationType=="planningModifie"){
+              $exists=false;
+              if(isset($oldData[$elem])){
+                foreach($oldData[$elem]["planning"] as $o){
+                  if($e==$o){
+                    $exists=true;
+                    continue;
+                  }
+                }
+              }
+            }
+            $bold=$exists?null:"font-weight:bold;";
+            $striped=$e['absent']?"text-decoration:line-through; color:red;":null;
 
-	  // Affichage de la ligne avec horaires et poste
-	  $line="<li><span style='$bold $striped'>".heure2($e['debut'])." - ".heure2($e['fin'])." : {$e['poste']} {$e['site']}";
-	  if($GLOBALS['config']['Multisites-nombre']>1){
-	    $line.=" ($site)";
-	  }
-	  $line.="</span>";
+            // Affichage de la ligne avec horaires et poste
+            $line="<li><span style='$bold $striped'>".heure2($e['debut'])." - ".heure2($e['fin'])." : {$e['poste']} {$e['site']}";
+            if($GLOBALS['config']['Multisites-nombre']>1){
+              $line.=" ($site)";
+            }
+            $line.="</span>";
 
-	  // On ajoute "(supprimé)" et une étoile en cas de modif car certains webmail suppriment les balises et le style "bold", etc.
-	  if($striped){
-	    $line.=" (supprim&eacute;)";
-	  }
-	  if($bold){
-	    $line.="<sup style='font-weight:bold;'>*</sup>";
-	  }
-	  $line.="</li>";
-	  $lines[]=array($e['debut'],$line);
+            // On ajoute "(supprimé)" et une étoile en cas de modif car certains webmail suppriment les balises et le style "bold", etc.
+            if($striped){
+              $line.=" (supprim&eacute;)";
+            }
+            if($bold){
+              $line.="<sup style='font-weight:bold;'>*</sup>";
+            }
+            $line.="</li>";
+            $lines[]=array($e['debut'],$line);
+          }
 	}
 
 	// On affiche les suppressions
-	foreach($oldData[$elem]["planning"] as $e){
-	  $exists=false;
-	  foreach($tab[$elem]["planning"] as $e2){
-	    if($e['debut']==$e2['debut']){
-	      $exists=true;
-	      continue;
-	    }
-	  }
-	  if(!$exists){
-	    // Affichage de l'ancienne ligne avec horaires et poste
-	    $line="<li><span style='font-weight:bold; text-decoration:line-through; color:red;'>".heure2($e['debut'])." - ".heure2($e['fin'])." : {$e['poste']} {$e['site']}";
-	    if($GLOBALS['config']['Multisites-nombre']>1){
-	      $line.=" ($site)";
-	    }
-	    $line.="</span>";
-	    $line.=" (supprim&eacute;)";
-	    $line.="<sup style='font-weight:bold;'>*</sup>";
-	    $lines[]=array($e['debut'],$line);
-	  }
-	}
+	if(isset($oldData[$elem])){
+          foreach($oldData[$elem]["planning"] as $e){
+            $exists=false;
+            if(isset($tab[$elem])){
+              foreach($tab[$elem]["planning"] as $e2){
+                if($e['debut']==$e2['debut']){
+                  $exists=true;
+                  continue;
+                }
+              }
+            }
+            if(!$exists){
+              // Affichage de l'ancienne ligne avec horaires et poste
+              $line="<li><span style='font-weight:bold; text-decoration:line-through; color:red;'>".heure2($e['debut'])." - ".heure2($e['fin'])." : {$e['poste']} {$e['site']}";
+              if($GLOBALS['config']['Multisites-nombre']>1){
+                $line.=" ($site)";
+              }
+              $line.="</span>";
+              $line.=" (supprim&eacute;)";
+              $line.="<sup style='font-weight:bold;'>*</sup>";
+              $lines[]=array($e['debut'],$line);
+            }
+          }
+        }
 
 	sort($lines);
 	foreach($lines as $line){
