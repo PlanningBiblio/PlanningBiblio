@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : plugins/planningHebdo/ajax.verifPlannings.php
 Création : 2 octobre 2013
-Dernière modification : 1er juillet 2015
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -37,14 +37,14 @@ $id=$id?" AND `id`<>'$id' AND `remplace`<>'$id' ":null;
 $remplace=null;
 if($id){
   $db=new db();
-  $db->select("planningHebdo","remplace","`id`='$id'");
+  $db->select("planning_hebdo","remplace","`id`='$id'");
   if($db->result[0]['remplace']){
     $remplace=" AND `id`<>'{$db->result[0]['remplace']}' AND `remplace`<>'{$db->result[0]['remplace']}' ";
   }
 }
 
 $db=new db();
-$db->select("planningHebdo","*","perso_id='$perso_id' AND `debut`<='$fin' AND `fin`>='$debut' $id $remplace ");
+$db->select("planning_hebdo","*","perso_id='$perso_id' AND `debut`<='$fin' AND `fin`>='$debut' $id $remplace ");
 
 $result=array();
 if(!$db->result){

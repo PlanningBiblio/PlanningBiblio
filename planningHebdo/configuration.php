@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : plugins/planningHebdo/index.php
 Création : 25 juillet 2013
-Dernière modification : 1er juillet 2015
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -37,11 +37,6 @@ if($post){
     echo "<script type='text/JavaScript'>CJInfo('$message','$type');</script>\n";
   }
 }
-
-// Recherche de la config
-$p=new planningHebdo();
-$p->getConfig();
-$configHebdo=$p->config;
 
 // Initialisation des variables
 $annee_courante=date("n")<9?(date("Y")-1)."-".(date("Y")):(date("Y"))."-".(date("Y")+1);

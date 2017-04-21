@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.2
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 19 mars 2017
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -201,7 +201,7 @@ class personnel{
     }
 
     $db=new db();
-    $db->delete("EDTSamedi","`semaine`>='$debut' AND `semaine`<='$fin' AND `perso_id`='$perso_id'");
+    $db->delete("edt_samedi","`semaine`>='$debut' AND `semaine`<='$fin' AND `perso_id`='$perso_id'");
 
     if($eDTSamedi and !empty($eDTSamedi)){
       $insert=array();
@@ -209,7 +209,7 @@ class personnel{
 	$insert[]=array("perso_id"=>$perso_id, "semaine"=>$elem);
       }
       $db=new db();
-      $db->insert2("EDTSamedi",$insert);
+      $db->insert2("edt_samedi",$insert);
     }
  }
 

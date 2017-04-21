@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.5
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 6 mars 2017
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -67,7 +67,7 @@ $sql[]="CREATE TABLE `{$dbprefix}activites` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
-$sql[]="CREATE TABLE `{$dbprefix}appelDispo` (
+$sql[]="CREATE TABLE `{$dbprefix}appel_dispo` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `site` int(11) NOT NULL DEFAULT '1',
   `poste` int(11) NOT NULL DEFAULT '0',
@@ -94,7 +94,7 @@ $sql[]="CREATE TABLE `{$dbprefix}config` (
   UNIQUE KEY `nom` (`nom`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
-$sql[]="CREATE TABLE `{$dbprefix}heures_Absences` (
+$sql[]="CREATE TABLE `{$dbprefix}heures_absences` (
   `id` INT(11) NOT NULL AUTO_INCREMENT, 
   `semaine` DATE,
   `update_time` INT(11),
@@ -102,7 +102,7 @@ $sql[]="CREATE TABLE `{$dbprefix}heures_Absences` (
   PRIMARY KEY (`id`))
   ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
-$sql[]="CREATE TABLE `{$dbprefix}heures_SP` (
+$sql[]="CREATE TABLE `{$dbprefix}heures_sp` (
   `id` INT(11) NOT NULL AUTO_INCREMENT, 
   `semaine` DATE,
   `update_time` INT(11),
@@ -110,11 +110,11 @@ $sql[]="CREATE TABLE `{$dbprefix}heures_SP` (
   PRIMARY KEY (`id`))
   ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
-$sql[]="CREATE TABLE `{$dbprefix}hiddenTables` (
+$sql[]="CREATE TABLE `{$dbprefix}hidden_tables` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `perso_id` int(11) NOT NULL DEFAULT '0',
   `tableau` int(11) NOT NULL DEFAULT '0',
-  `hiddenTables` TEXT,
+  `hidden_tables` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
@@ -140,8 +140,8 @@ $sql[]="CREATE TABLE `{$dbprefix}infos` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
-// IPBlocker
-$sql[]="CREATE TABLE `{$dbprefix}IPBlocker` (
+// ip_blocker
+$sql[]="CREATE TABLE `{$dbprefix}ip_blocker` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
 	`ip` VARCHAR(20) NOT NULL,
 	`login` VARCHAR(100) NULL,
@@ -410,7 +410,7 @@ $sql[]="CREATE TABLE `{$dbprefix}cron` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
-$sql[]="CREATE TABLE `{$dbprefix}joursFeries` (
+$sql[]="CREATE TABLE `{$dbprefix}jours_feries` (
   `id` INT NOT NULL AUTO_INCREMENT, 
   `annee` VARCHAR(10), 
   `jour` DATE, 
@@ -421,7 +421,7 @@ $sql[]="CREATE TABLE `{$dbprefix}joursFeries` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
-$sql[]="CREATE TABLE `{$dbprefix}EDTSamedi` (
+$sql[]="CREATE TABLE `{$dbprefix}edt_samedi` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `perso_id` INT(11) NOT NULL,
   `semaine` DATE,
@@ -430,7 +430,7 @@ $sql[]="CREATE TABLE `{$dbprefix}EDTSamedi` (
 
 
 // Module planningHebdo
-$sql[]="CREATE TABLE `{$dbprefix}planningHebdo` (
+$sql[]="CREATE TABLE `{$dbprefix}planning_hebdo` (
   `id` INT(11) NOT NULL AUTO_INCREMENT, 
   `perso_id` INT(11) NOT NULL, 
   `debut` DATE NOT NULL, 
@@ -448,5 +448,5 @@ $sql[]="CREATE TABLE `{$dbprefix}planningHebdo` (
   UNIQUE KEY `cle` (`cle`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
-$sql[]="CREATE TABLE `{$dbprefix}planningHebdoPeriodes` (`id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `annee` VARCHAR(9), `dates` TEXT);";
+$sql[]="CREATE TABLE `{$dbprefix}planning_hebdo_periodes` (`id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `annee` VARCHAR(9), `dates` TEXT);";
 ?>

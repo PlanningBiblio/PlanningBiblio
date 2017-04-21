@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/ajax.hiddenTables.php
 Création : 14 décembre 2015
-Dernière modification : 14 décembre 2015
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -28,9 +28,9 @@ $tableId=filter_input(INPUT_POST,"tableId",FILTER_SANITIZE_NUMBER_INT);
 $hiddenTables=filter_input(INPUT_POST,"hiddenTables",FILTER_SANITIZE_STRING);
 
 $db=new db();
-$db->delete2("hiddenTables",array("perso_id"=>$perso_id,"tableau"=>$tableId));
+$db->delete2("hidden_tables",array("perso_id"=>$perso_id,"tableau"=>$tableId));
 
 $db=new db();
-$db->insert2("hiddenTables",array("perso_id"=>$perso_id,"tableau"=>$tableId,"hiddenTables"=>$hiddenTables));
+$db->insert2("hidden_tables",array("perso_id"=>$perso_id,"tableau"=>$tableId,"hidden_tables"=>$hiddenTables));
 echo json_encode("");
 ?>

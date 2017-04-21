@@ -680,6 +680,26 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="2.6.4";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Renomme les tables en minuscules
+  $sql[] = "RENAME TABLE `{$dbprefix}scappelDispo`  TO `{$dbprefix}appel_dispo`;";
+  $sql[] = "RENAME TABLE `{$dbprefix}EDTSamedi`  TO `{$dbprefix}edt_samedi`;";
+  $sql[] = "RENAME TABLE `{$dbprefix}heures_Absences`  TO `{$dbprefix}heures_absences`;";
+  $sql[] = "RENAME TABLE `{$dbprefix}heures_Absences`  TO `{$dbprefix}heures_absences`;";
+  $sql[] = "RENAME TABLE `{$dbprefix}hiddenTables`  TO `{$dbprefix}hidden_tables`;";
+  $sql[] = "RENAME TABLE `{$dbprefix}IPBlocker`  TO `{$dbprefix}ip_blocker`;";
+  $sql[] = "RENAME TABLE `{$dbprefix}joursFeries`  TO `{$dbprefix}jours_feries`;";
+  $sql[] = "RENAME TABLE `{$dbprefix}planningHebdo`  TO `{$dbprefix}planning_hebdo`;";
+  $sql[] = "RENAME TABLE `{$dbprefix}planningHebdoPeriodes`  TO `{$dbprefix}planning_hebdo_periodes`;";
+
+  // Renomme les champs en minuscules
+  $sql[] = "ALTER TABLE `{$dbprefix}hidden_tables` CHANGE `hiddenTables` `hidden_tables` TEXT NULL DEFAULT NULL;";
+
+   // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach($sql as $elem){
   $db=new db();

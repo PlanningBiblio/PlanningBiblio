@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.6
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/ajax.appelDispoMail.php
 Création : 22 décembre 2015
-Dernière modification : 27 octobre 2016
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -33,7 +33,7 @@ $agents=filter_input(INPUT_POST,"agents",FILTER_SANITIZE_STRING);
 $sujet=filter_input(INPUT_POST,"sujet",FILTER_SANITIZE_STRING);
 $message=filter_input(INPUT_POST,"message",FILTER_SANITIZE_STRING);
 
-$agents=html_entity_decode($agents,ENT_QUOTES|ENT_IGNORE,"utf-8");
+$agents=html_entity_decode($agents,ENT_QUOTES|ENT_IGNORE,"UTF-8");
 $agents=json_decode($agents,true);
 
 $message=str_replace(array("\n","\r"),"<br/>",$message);
@@ -59,7 +59,7 @@ $isSent=$m->send();
 if($isSent){
   $successAddresses=join(";",$m->successAddresses);
   $db=new db();
-  $db->insert2("appelDispo",array( "site"=>$site, "poste"=>$poste, "date"=>$date, "debut"=>$debut, "fin"=>$fin, 
+  $db->insert2("appel_dispo",array( "site"=>$site, "poste"=>$poste, "date"=>$date, "debut"=>$debut, "fin"=>$fin, 
     "destinataires"=>$successAddresses, "sujet"=>$sujet, "message"=>$message));
 }
 

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.7
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 8 mars 2017
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -66,7 +66,7 @@ class absences{
     // Recherche des heures d'absences des agents pour cette semaine
     // Recherche si le tableau contenant les heures d'absences existe
     $db=new db();
-    $db->select2("heures_Absences","*",array("semaine"=>$j1));
+    $db->select2("heures_absences","*",array("semaine"=>$j1));
     $heuresAbsencesUpdate=0;
     if($db->result){
       $heuresAbsencesUpdate=$db->result[0]["update_time"];
@@ -82,11 +82,11 @@ class absences{
     // Vérifie si la table absences a été mise à jour depuis le dernier calcul
     $aUpdate=strtotime($this->update_time());
 
-    // Vérifie si la table planningHebdo a été mise à jour depuis le dernier calcul
+    // Vérifie si la table planning_hebdo a été mise à jour depuis le dernier calcul
     $p=new planningHebdo();
     $pHUpdate=strtotime($p->update_time());
 
-    // Si la table absences ou la table planningHebdo a été modifiée depuis la création du tableaux des heures
+    // Si la table absences ou la table planning_hebdo a été modifiée depuis la création du tableaux des heures
     // Ou si le tableau des heures n'a pas été créé ($heuresAbsencesUpdate=0), on le (re)fait.
     if($aUpdate>$heuresAbsencesUpdate or $pHUpdate>$heuresAbsencesUpdate){
       // Recherche de toutes les absences
@@ -154,9 +154,9 @@ class absences{
 
       // Enregistrement des heures dans la base de données
       $db=new db();
-      $db->delete2("heures_Absences",array("semaine"=>$j1));
+      $db->delete2("heures_absences",array("semaine"=>$j1));
       $db=new db();
-      $db->insert2("heures_Absences",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heures)));
+      $db->insert2("heures_absences",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heures)));
     }
 
     return (array) $heures;

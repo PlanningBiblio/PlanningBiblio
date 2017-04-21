@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.1
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 31 janvier 2017
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
@@ -501,7 +501,7 @@ if($nbAgents>0){
 if($config['Planning-AppelDispo']){
   // Consulte la base de données pour savoir si un mail a déjà été envoyé
   $db=new db();
-  $db->select2("appelDispo",null,array("site"=>$site,"poste"=>$poste,"date"=>$date,"debut"=>$debut,"fin"=>$fin),"ORDER BY `timestamp` desc");
+  $db->select2("appel_dispo",null,array("site"=>$site,"poste"=>$poste,"date"=>$date,"debut"=>$debut,"fin"=>$fin),"ORDER BY `timestamp` desc");
   $nbEnvoi=$db->nb;
   if($db->result){
     $dateEnvoi=dateFr($db->result[0]['timestamp']);
@@ -514,9 +514,15 @@ if($config['Planning-AppelDispo']){
     $nbEnvoiInfo.="$destinataires personne{$s} contact&eacute;e{$s}";
   }
 
-  $agents=addslashes(json_encode($agents_dispo));
+  $agents_appel_dispo = array();
+  foreach($agents_dispo as $a){
+    $agents_appel_dispo[]=array('id'=> $a['id'], 'nom'=> $a['nom'], 'prenom'=> $a['prenom'], 'mail' => $a['mail']);
+  }
+  $agents_appel_dispo=json_encode($agents_appel_dispo);
+  $agents_appel_dispo=htmlentities($agents_appel_dispo,ENT_QUOTES|ENT_IGNORE,'UTF-8',false);
+
   $tableaux[0].="<tr onmouseover='groupe_tab_hide();' class='menudiv-tr'>";
-  $tableaux[0].="<td colspan='2' onclick='appelDispo(\"$site\",\"$siteNom\",\"$poste\",\"$posteNom\",\"$date\",\"$debut\",\"$fin\",\"$agents\");'>";
+  $tableaux[0].="<td colspan='2' data-agents='$agents_appel_dispo' id='td-appelDispo' onclick='appelDispo(\"$site\",\"$siteNom\",\"$poste\",\"$posteNom\",\"$date\",\"$debut\",\"$fin\");'>";
   $tableaux[0].="Appel &agrave; disponibilit&eacute;\n";
   if($nbEnvoi){
     $tableaux[0].="<span title='$nbEnvoiInfo' style='position:absolute; right:5px;'><strong>$nbEnvoi</strong></span>\n";

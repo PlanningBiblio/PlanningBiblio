@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Version 1.9.5
+/**
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : joursFeries/class.joursFeries.php
 Création : 25 juillet 2013
-Dernière modification : 8 avril 2015
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -34,7 +34,7 @@ class joursFeries{
 
   public function delete($id){
     $db=new db();
-    $db->delete("joursFeries","`id`='$id'");
+    $db->delete("jours_feries","`id`='$id'");
   }
 
   public function fetch(){
@@ -58,7 +58,7 @@ class joursFeries{
     // Recherche des jours fériés enregistrés dans la base de données
     $annees=join("','",$annees);
     $db=new db();
-    $db->select("joursFeries","*","annee in ('$annees')","ORDER BY `jour`");
+    $db->select("jours_feries","*","annee in ('$annees')","ORDER BY `jour`");
     if($db->result){
       foreach($db->result as $elem){
 	$tab[$elem['jour']]=$elem;
@@ -95,7 +95,7 @@ class joursFeries{
     // Recherche du jour férié correspondant à la date $date
     $tab=array();
     $db=new db();
-    $db->select("joursFeries","*","jour='$date'");
+    $db->select("jours_feries","*","jour='$date'");
     if($db->result){
       $tab=$db->result;
     }
@@ -104,7 +104,7 @@ class joursFeries{
 
   public function fetchYears(){
     $db=new db();
-    $db->select("joursFeries","annee",null,"GROUP BY `annee` desc");
+    $db->select("jours_feries","annee",null,"GROUP BY `annee` desc");
     if($db->result){
       foreach($db->result as $elem){
 	$this->elements[]=$elem['annee'];
@@ -124,12 +124,12 @@ class joursFeries{
       }
     }
     $db=new db();
-    $db->delete("joursFeries","annee='{$p['annee']}'");
+    $db->delete("jours_feries","annee='{$p['annee']}'");
     $error=$db->error?true:$error;
 
     if(!empty($data)){
       $db=new db();
-      $db->insert2("joursFeries",$data);
+      $db->insert2("jours_feries",$data);
       $error=$db->error?true:$error;
     }
   $this->error=$error;

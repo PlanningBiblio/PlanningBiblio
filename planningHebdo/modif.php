@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planningHebdo/modif.php
 Création : 23 juillet 2013
-Dernière modification : 10 février 2017
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -16,11 +16,6 @@ Page accessible à partir du menu administration/planning de présence
 */
 
 require_once "class.planningHebdo.php";
-
-// Recherche de la config
-$p=new planningHebdo();
-$p->getConfig();
-$configHebdo=$p->config;
 
 // Initialisation des variables
 $copy=filter_input(INPUT_GET,"copy",FILTER_SANITIZE_NUMBER_INT);

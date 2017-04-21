@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.3
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 20 avril 2017
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -575,7 +575,7 @@ class planning{
       }else{
 	// On ajoute le lien bers le planning
 	$url=createURL("planning/poste/index.php&date=$date");
-	$message.="Vous n&apos;&ecirc;tes plus dans le planning du ".dateFr($date);
+	$message.="<br/><br/>Vous n&apos;&ecirc;tes plus dans le planning du ".dateFr($date);
 	$message.="<br/><br/>Lien vers le planning du ".dateFr($date)." : $url";
 
 	// Envoi du mail

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.2
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 19 mars 2017
+Dernière modification : 21 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -81,14 +81,14 @@ class planningHebdo{
 	"valide"=>$valide, "validation"=>$validation);
 
       $db=new db();
-      $db->insert2("planningHebdo",$insert);
+      $db->insert2("planning_hebdo",$insert);
       $this->error=$db->error;
       // 2ème tableau
       $insert=array("perso_id"=>$perso_id,"debut"=>$dates[0][2],"fin"=>$dates[0][3],"temps"=>json_encode($data['temps2']),
 	"valide"=>$valide, "validation"=>$validation);
 
       $db=new db();
-      $db->insert2("planningHebdo",$insert);
+      $db->insert2("planning_hebdo",$insert);
       $this->error=$db->error?$db->error:$this->error;
     }
     // Sinon, insertion d'un seul tableau
@@ -101,7 +101,7 @@ class planningHebdo{
 	$insert['remplace']=$data['remplace'];
       }
       $db=new db();
-      $db->insert2("planningHebdo",$insert);
+      $db->insert2("planning_hebdo",$insert);
       $this->error=$db->error;
     }
 
@@ -251,7 +251,7 @@ class planningHebdo{
     }
 
     $db=new db();
-    $db->select("planningHebdo","*",$filter,"ORDER BY debut,fin,saisie");
+    $db->select("planning_hebdo","*",$filter,"ORDER BY debut,fin,saisie");
     
     $p=new personnel();
     $p->supprime = array(0,1,2);
@@ -292,16 +292,6 @@ class planningHebdo{
 
   }
 
-  public function getConfig(){
-    $db=new db();
-    $db->select("planningHebdoConfig");
-    if($db->result){
-      foreach($db->result as $elem){
-	$this->config[$elem['nom']]=$elem['valeur'];
-      }
-    }
-  }
-
   public function getPeriodes(){
     if(!empty($this->dates)){
       $dates=array();
@@ -310,7 +300,7 @@ class planningHebdo{
       $i=0;
       foreach($annees as $annee){
 	$db=new db();
-	$db->select("planningHebdoPeriodes","*","`annee`='$annee'","ORDER BY `annee`");
+	$db->select("planning_hebdo_periodes","*","`annee`='$annee'","ORDER BY `annee`");
 	if($db->result){
 	  $dates[$i]=json_decode(html_entity_decode($db->result[0]['dates'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
 	  $datesFr[$i]=array_map("dateFr",$dates[$i]);
@@ -329,7 +319,7 @@ class planningHebdo{
 
   public function suppression_agents($liste){
     $db=new db();
-    $db->delete("planningHebdo","perso_id IN ($liste)");
+    $db->delete("planning_hebdo","perso_id IN ($liste)");
   }
 
   public function update($data){
@@ -351,23 +341,23 @@ class planningHebdo{
 
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("planningHebdo",$update,array("id"=>$data['id']));
+    $db->update2("planning_hebdo",$update,array("id"=>$data['id']));
     $this->error=$db->error;
 
     // Remplacement du planning de la fiche agent si validation et date courante entre debut et fin
     if($data['validation'] and $data['debut']<=date("Y-m-d") and $data['fin']>=date("Y-m-d")){
       $db=new db();
-      $db->update("planningHebdo","`actuel`='0'","`perso_id`='{$data['perso_id']}'");
+      $db->update("planning_hebdo","`actuel`='0'","`perso_id`='{$data['perso_id']}'");
       $db=new db();
-      $db->update("planningHebdo","`actuel`='1'","`id`='{$data['id']}'");
+      $db->update("planning_hebdo","`actuel`='1'","`id`='{$data['id']}'");
     }
 
     // Si validation d'un planning de remplacement, suppression du planning d'origine
     if($data['validation'] and $data['remplace']){
       $db=new db();
-      $db->delete("planningHebdo","id='{$data['remplace']}'");
+      $db->delete("planning_hebdo","id='{$data['remplace']}'");
       $db=new db();
-      $db->update("planningHebdo","remplace='0'","remplace='{$data['remplace']}'");
+      $db->update("planning_hebdo","remplace='0'","remplace='{$data['remplace']}'");
     }
 
     // Envoi d'un mail aux responsables et à l'agent concerné
@@ -420,7 +410,7 @@ class planningHebdo{
   
   public function update_time(){
     $db=new db();
-    $db->query("show table status from {$GLOBALS['config']['dbname']} like '{$GLOBALS['config']['dbprefix']}planningHebdo';");
+    $db->query("show table status from {$GLOBALS['config']['dbname']} like '{$GLOBALS['config']['dbprefix']}planning_hebdo';");
     $result = isset($db->result[0]['Update_time']) ? $db->result[0]['Update_time'] : null;
     return $result;
 
@@ -435,11 +425,11 @@ class planningHebdo{
 
     for($i=0;$i<count($annee);$i++){
       $db=new db();
-      $db->delete("planningHebdoPeriodes","`annee`='{$annee[$i]}'");
+      $db->delete("planning_hebdo_periodes","`annee`='{$annee[$i]}'");
       $this->error=$db->error?true:false;
       $insert=array("annee"=>$annee[$i],"dates"=>$dates[$i]);
       $db=new db();
-      $db->insert2("planningHebdoPeriodes",$insert);
+      $db->insert2("planning_hebdo_periodes",$insert);
       $this->error=$db->error?true:$this->error;
     }
   }

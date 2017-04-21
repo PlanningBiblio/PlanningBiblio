@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.1
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 13 mars 2017
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -215,7 +215,7 @@ class CJMail{
       // error_CJInfo: pour affichage dans CJInfo (JS)
       $this->error_CJInfo=str_replace("\n","#BR#",$this->error);
       
-      // Liste des destinataires pour qui l'envoi a fonctionné
+      // Liste des destinataires pour qui l'envoi a fonctionné (en cas de succès partiel)
       $this->successAddresses=$this->to;
 
       // Liste des destinataires pour qui l'envoi a échoué
@@ -236,7 +236,11 @@ class CJMail{
 	  }
 	}
       }
+    } else {
+      // Liste des destinataires pour qui l'envoi a fonctionné (en cas de succès total)
+      $this->successAddresses=$this->to;
     }
+    
   return true;
   }
 }
@@ -257,8 +261,8 @@ function authSQL($login,$password){
 * @param date string, date au format AAAA-MM-DD
 * Calcul le nombre d'heures de SP que les agents doivent effectuer pour la semaine définie par $date
 * Retourne le résultat sous forme d'un tableau array(perso_id1 => heures1, perso_id2 => heures2, ...)
-* Stock le résultat (json_encode) dans la BDD table heures_SP
-* Récupère et retourne le résultat à partir de la BDD si les tables personnel et planningHebdo n'ont pas été modifiées
+* Stock le résultat (json_encode) dans la BDD table heures_sp
+* Récupère et retourne le résultat à partir de la BDD si les tables personnel et planning_hebdo n'ont pas été modifiées
 * pour gagner du temps lors des appels suivants.
 * Fonction utilisée par planning::menudivAfficheAgents et dans le script statistiques/temps.php
 */
@@ -283,7 +287,7 @@ function calculHeuresSP($date){
   // Recherche des heures de SP des agents pour cette semaine
   // Recherche si les tableaux contenant les heures de SP existe
   $db=new db();
-  $db->select2("heures_SP","*",array("semaine"=>$j1));
+  $db->select2("heures_sp","*",array("semaine"=>$j1));
   $heuresSPUpdate=0;
   if($db->result){
     $heuresSPUpdate=$db->result[0]["update_time"];
@@ -299,7 +303,7 @@ function calculHeuresSP($date){
   if($config['PlanningHebdo']){
     require_once("{$path}planningHebdo/class.planningHebdo.php");
 
-    // Vérifie si la table planningHebdo a été mise à jour depuis le dernier calcul
+    // Vérifie si la table planning_hebdo a été mise à jour depuis le dernier calcul
     $p=new planningHebdo();
     $pHUpdate=strtotime($p->update_time());
     
@@ -307,7 +311,7 @@ function calculHeuresSP($date){
     $p=new personnel();
     $pUpdate=strtotime($p->update_time());
 
-    // Si la table planningHebdo a été modifiée depuis la Création du tableaux des heures
+    // Si la table planning_hebdo a été modifiée depuis la création du tableaux des heures
     // Ou si les informations update_time n'existent pas ($phUpdate == null / $pUpdate == null)
     // Ou si le tableau des heures n'a pas été créé ($heuresSPUpdate=0), on le (re)fait.
     if($pHUpdate>=$heuresSPUpdate or $pUpdate>=$heuresSPUpdate or $pHUpdate == null or $pUpdate == null){
@@ -382,9 +386,9 @@ function calculHeuresSP($date){
       
       // Enregistrement des horaires dans la base de données
       $db=new db();
-      $db->delete2("heures_SP",array("semaine"=>$j1));
+      $db->delete2("heures_sp",array("semaine"=>$j1));
       $db=new db();
-      $db->insert2("heures_SP",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heuresSP)));
+      $db->insert2("heures_sp",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heuresSP)));
     }
 
   // Recherche des heures de SP sans le module planningHebdo
@@ -454,9 +458,9 @@ function calculHeuresSP($date){
 
       // Enregistrement des horaires dans la base de données
       $db=new db();
-      $db->delete2("heures_SP",array("semaine"=>$j1));
+      $db->delete2("heures_sp",array("semaine"=>$j1));
       $db=new db();
-      $db->insert2("heures_SP",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heuresSP)));
+      $db->insert2("heures_sp",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heuresSP)));
     }
   }
   return (array) $heuresSP;
@@ -852,7 +856,7 @@ function html_entity_decode_latin1($n){
 
 
 /**
- * Log le login tenté et l'adresse IP du client dans la table IPBlocker pour bloquer si trop d'échec
+ * Log le login tenté et l'adresse IP du client dans la table ip_blocker pour bloquer si trop d'échec
  * @param string $login : login saisi par l'utilisateur
  * @param int config IPBlocker-TimeChecked : période en minutes pendant laquelle on recherche les échecs
  * @param int config IPBlocker-Attempts : nombre d'échecs autorisés
@@ -864,14 +868,14 @@ function loginFailed($login){
 
 	$timestamp=date("Y-m-d H:i:s",strtotime(" -$seconds seconds"));	
 	$db=new db();
-	$db->select2("IPBlocker",null,array("ip"=>$_SERVER['REMOTE_ADDR'], "status"=>"failed", "timestamp"=> ">=$timestamp"));
+	$db->select2("ip_blocker",null,array("ip"=>$_SERVER['REMOTE_ADDR'], "status"=>"failed", "timestamp"=> ">=$timestamp"));
 	// S'il y a eu $attempts -1 echecs lors des $seconds dernières secondes, on block l'accès 
 	$status=$db->nb>=$attempts?"blocked":"failed";
 
 	// Insertion dans la base de données
 	$insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>$status);
 	$db=new db();
-	$db->insert2("IPBlocker",$insert);
+	$db->insert2("ip_blocker",$insert);
 }
 
 /**
@@ -883,7 +887,7 @@ function loginFailedWait(){
 	$wait=0;
 
 	$db=new db();
-	$db->select2("IPBlocker","timestamp",array("ip"=>$_SERVER['REMOTE_ADDR'], "status"=>"blocked"),"ORDER BY `timestamp` DESC LIMIT 0,1");
+	$db->select2("ip_blocker","timestamp",array("ip"=>$_SERVER['REMOTE_ADDR'], "status"=>"blocked"),"ORDER BY `timestamp` DESC LIMIT 0,1");
 
 	if($db->result){
 		$timestamp=$db->result[0]['timestamp'];
@@ -893,13 +897,13 @@ function loginFailedWait(){
 }
 
 /**
- * Log le login et l'adresse IP du client dans la table IPBlocker pour informations
+ * Log le login et l'adresse IP du client dans la table ip_blocker pour informations
  * @param string $login : login saisi par l'utilisateur
  */
 function loginSuccess($login){
 	$insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>"success");
 	$db=new db();
-	$db->insert2("IPBlocker",$insert);
+	$db->insert2("ip_blocker",$insert);
 }
 
 function logs($msg,$program=null){

@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.5.7
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 7 mars 2017
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -464,7 +464,9 @@ function afficheTableauxDiv(){
  * appelDispo : Ouvre une fenêtre permettant d'envoyer un mail aux agents disponibles pour un poste et créneau horaire choisis
  * Appelée depuis le menu permettant de placer les agents dans le plannings (ajax.menudiv.php)
  */
-function appelDispo(site,siteNom,poste,posteNom,date,debut,fin,agents){
+function appelDispo(site,siteNom,poste,posteNom,date,debut,fin){
+  var agents = $('#td-appelDispo').attr('data-agents');
+  
   // Variable globale à utiliser lors de l'envoi du mail
   appelDispoData={site:site, poste:poste, date:date, debut:debut, fin:fin, agents:agents};
   

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.1
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/cron.ics.php
 Création : 1er juillet 2016
-Dernière modification : 19 novembre 2016
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -187,7 +187,7 @@ $cles_db = array();
 // Recherche des éléments déjà importés
 $tab_db=array();
 $db = new db();
-$db->select2("planningHebdo",null,array('cle'=>'>0'));
+$db->select2("planning_hebdo",null,array('cle'=>'>0'));
 if($db->result){
   foreach($db->result as $elem){
     $tab_db[$elem['cle']] = $elem;
@@ -214,7 +214,7 @@ $nb = count($insert);
 
 if($nb > 0){
   $db=new dbh();
-  $db->prepare("INSERT INTO `{$dbprefix}planningHebdo` (`perso_id`, `debut`, `fin`, `temps`, `saisie`, `valide`, `validation`, `actuel`, `cle`) VALUES (:perso_id, :debut, :fin, :temps, SYSDATE(), '99999', SYSDATE(), :actuel, :cle);");
+  $db->prepare("INSERT INTO `{$dbprefix}planning_hebdo` (`perso_id`, `debut`, `fin`, `temps`, `saisie`, `valide`, `validation`, `actuel`, `cle`) VALUES (:perso_id, :debut, :fin, :temps, SYSDATE(), '99999', SYSDATE(), :actuel, :cle);");
   foreach($insert as $elem){
 	$db->execute($elem);
   }
@@ -241,7 +241,7 @@ $nb = count($delete);
 
 if($nb >0){
   $db=new dbh();
-  $db->prepare("DELETE FROM `{$dbprefix}planningHebdo` WHERE `cle`=:cle;");
+  $db->prepare("DELETE FROM `{$dbprefix}planning_hebdo` WHERE `cle`=:cle;");
   foreach($delete as $elem){
 	$db->execute($elem);
   }
