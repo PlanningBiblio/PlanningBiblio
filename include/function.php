@@ -332,9 +332,9 @@ function calculHeuresSP($date){
       if(!empty($p->elements)){
 	// Pour chaque agents
 	foreach($p->elements as $key1 => $value1){
-	  $heuresSP[$key1]=$value1["heuresHebdo"];
+	  $heuresSP[$key1]=$value1["heures_hebdo"];
 
-	  if(strpos($value1["heuresHebdo"],"%")){
+	  if(strpos($value1["heures_hebdo"],"%")){
 	    $minutesHebdo=0;
 	    if($ph->elements and !empty($ph->elements)){
 	      // Calcul des heures depuis les plannings de présence
@@ -375,7 +375,7 @@ function calculHeuresSP($date){
 
 	    $heuresRelles=$minutesHebdo/60;
 	    // On applique le pourcentage
-	    $pourcent=(float) str_replace("%",null,$value1["heuresHebdo"]);
+	    $pourcent=(float) str_replace("%",null,$value1["heures_hebdo"]);
 	    $heuresRelles=$heuresRelles*$pourcent/100;
 	    $heuresSP[$key1]=$heuresRelles;
 	  }
@@ -407,9 +407,9 @@ function calculHeuresSP($date){
       if(!empty($p->elements)){
 	// Pour chaque agents
 	foreach($p->elements as $key1 => $value1){
-	  $heuresSP[$key1]=$value1["heuresHebdo"];
+	  $heuresSP[$key1]=$value1["heures_hebdo"];
 
-	  if(strpos($value1["heuresHebdo"],"%")){
+	  if(strpos($value1["heures_hebdo"],"%")){
 	    $minutesHebdo=0;
 	    if($value1['temps']){
               $temps=json_decode(html_entity_decode($value1['temps'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
@@ -447,7 +447,7 @@ function calculHeuresSP($date){
 
 	    $heuresRelles=$minutesHebdo/60;
 	    // On applique le pourcentage
-	    $pourcent=(float) str_replace("%",null,$value1["heuresHebdo"]);
+	    $pourcent=(float) str_replace("%",null,$value1["heures_hebdo"]);
 	    $heuresRelles=$heuresRelles*$pourcent/100;
 	    $heuresSP[$key1]=$heuresRelles;
 	  }
@@ -920,6 +920,12 @@ function logs($msg,$program=null){
  * @param array $agents : liste de tous les agents (permet de réduire le nombre de requêtes SQL et la latence si la fonction nom est utilisée dans une boucle
  */
 function nom($id,$format="nom p", $agents=array()){
+
+  // id 99999 == cron (tâche planifiée)
+  if($id == 99999){
+    return null;
+  }
+  
   if(empty($agents)){
     $db=new db();
     $db->query("select nom,prenom from {$GLOBALS['config']['dbprefix']}personnel where id=$id;");

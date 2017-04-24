@@ -221,11 +221,11 @@ class planning{
             if($heuresAbsences>0){
               // On informe du pourcentage sur les heures d'absences
               $pourcent=null;
-              if(strpos($elem["heuresHebdo"],"%") and $elem["heuresHebdo"]!="100%"){
-                $pourcent=" {$elem["heuresHebdo"]}";
+              if(strpos($elem["heures_hebdo"],"%") and $elem["heures_hebdo"]!="100%"){
+                $pourcent=" {$elem["heures_hebdo"]}";
               }
               
-              $heuresHebdoTitle="Quota hebdomadaire = ".heure4($heuresHebdo)." - ".heure4($heuresAbsences)." (Absences{$pourcent})";
+              $heuresHebdoTitle="Quota hebdomadaire = ".heure4($heuresHebdo,true)." - ".heure4($heuresAbsences,true)." (Absences{$pourcent})";
               $heuresHebdo=$heuresHebdo-$heuresAbsences;
               if($heuresHebdo<0){
                 $heuresHebdo=0;
@@ -295,15 +295,15 @@ class planning{
           $hres_4sem = isset($heures[$elem['id']]['4semaines']) ? $heures[$elem['id']]['4semaines'] : 0;
           $hres_4sem += $hres_cellule;
           $hres_4sem = round($hres_4sem, 2);
-          $hres_4sem=" / <font title='Heures des 4 derni&egrave;res semaines'>".heure4($hres_4sem)."</font>";
+          $hres_4sem=" / <font title='Heures des 4 derni&egrave;res semaines'>".heure4($hres_4sem,true)."</font>";
         }
 
         //	Mise en forme de la ligne avec le nom et les heures et la couleur en fonction des heures faites
         $nom.="<div class='menudiv-heures'>\n";
-        $nom.="&nbsp;<font title='Heures du jour'>".heure4($hres_jour)."</font> / ";
-        $nom.="<font title='Heures de la semaine'>".heure4($hres_sem)."</font> / ";
+        $nom.="&nbsp;<font title='Heures du jour'>".heure4($hres_jour,true)."</font> / ";
+        $nom.="<font title='Heures de la semaine'>".heure4($hres_sem,true)."</font> / ";
 
-        $nom.="<font title='$heuresHebdoTitle'>".heure4($heuresHebdo)."</font>";
+        $nom.="<font title='$heuresHebdoTitle'>".heure4($heuresHebdo,true)."</font>";
         $nom.=$hres_4sem;
         $nom.="</div>\n";
 

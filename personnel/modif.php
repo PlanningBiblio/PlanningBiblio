@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 10 février 2017
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -120,8 +120,8 @@ if($id){		//	récupération des infos de l'agent en cas de modif
   $statut=$db->result[0]['statut'];
   $categorie=$db->result[0]['categorie'];
   $service=$db->result[0]['service'];
-  $heuresHebdo=$db->result[0]['heuresHebdo'];
-  $heuresTravail=$db->result[0]['heuresTravail'];
+  $heuresHebdo=$db->result[0]['heures_hebdo'];
+  $heuresTravail=$db->result[0]['heures_travail'];
   $arrivee=dateFr($db->result[0]['arrivee']);
   $depart=dateFr($db->result[0]['depart']);
   $login=$db->result[0]['login'];
@@ -149,7 +149,7 @@ if($id){		//	récupération des infos de l'agent en cas de modif
   $acces=json_decode(html_entity_decode($db->result[0]['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
   $matricule=$db->result[0]['matricule'];
   $url_ics = $db->result[0]['url_ics'];
-  $mailsResponsables=explode(";",html_entity_decode($db->result[0]['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+  $mailsResponsables=explode(";",html_entity_decode($db->result[0]['mails_responsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
   // $mailsResponsables : html_entity_decode necéssaire sinon ajoute des espaces après les accents ($mailsResponsables=join("; ",$mailsResponsables);)
   $informations=stripslashes($db->result[0]['informations']);
   $recup=stripslashes($db->result[0]['recup']);

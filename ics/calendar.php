@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.1
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/calendar.php
 Création : juillet 2016
-Dernière modification : 25 juillet 2016
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -88,14 +88,19 @@ if(!$id){
 
 logs("Exportation des plages de SP pour l'agent #$id","ICS Export");
 
-  
+
+// N'affiche pas les calendriers des agents supprimés
+$requete_personnel = array('supprime'=>0);
+
 // Recherche des plages de service public de l'agent
 // Si les exports ICS sont protégés par des codes
-$codeICS = $config['ICS-Code'] ? array("codeICS"=>$code) : array();
+if($config['ICS-Code']){
+  $requete_personnel["code_ics"] = $code;
+}
 
 $db=new db();
 $db->selectInnerJoin(array("pl_poste","perso_id"), array("personnel","id"), array("date", "debut", "fin", "poste", 'site', 'absent', 'supprime'), array(), 
-  array("perso_id"=>$id), $codeICS, "ORDER BY `date` DESC, `debut` DESC, `fin` DESC");
+  array("perso_id"=>$id), $requete_personnel, "ORDER BY `date` DESC, `debut` DESC, `fin` DESC");
 if($db->result){
   $planning = $db->result;
 }

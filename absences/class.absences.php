@@ -70,7 +70,7 @@ class absences{
     $heuresAbsencesUpdate=0;
     if($db->result){
       $heuresAbsencesUpdate=$db->result[0]["update_time"];
-      $heures=json_decode((html_entity_decode($db->result[0]["heures"],ENT_QUOTES|ENT_IGNORE,"utf-8")));
+      $heures=json_decode((html_entity_decode($db->result[0]["heures"],ENT_QUOTES|ENT_IGNORE,"UTF-8")));
       $tmp=array();
       foreach($heures as $key => $value){
 	$tmp[(int) $key] = $value;
@@ -119,7 +119,7 @@ class absences{
 	// Pour chaque absence
 	foreach($absences as $key => $value){
 	  $perso_id=$value['perso_id'];
-	  $h1=array_key_exists($perso_id,$heures)?$heures[$perso_id]:0;
+          $h1=array_key_exists($perso_id,$heures)?$heures[$perso_id]:0;
 	  
 	  // Si $h1 n'est pas un nombre ("N/A"), une erreur de calcul a été enregistrée. Donc on ne continue pas le calcul.
 	  // $heures[$perso_id] restera "N/A"
@@ -145,8 +145,8 @@ class absences{
 	  $heures[$perso_id]=$h;
 
 	  // On applique le pourcentage
-	  if(strpos($agents[$perso_id]["heuresHebdo"],"%")){
-	    $pourcent=(float) str_replace("%",null,$agents[$perso_id]["heuresHebdo"]);
+	  if(strpos($agents[$perso_id]["heures_hebdo"],"%")){
+	    $pourcent=(float) str_replace("%",null,$agents[$perso_id]["heures_hebdo"]);
 	    $heures[$perso_id]=$heures[$perso_id]*$pourcent/100;
 	  }
 	}
@@ -513,7 +513,7 @@ class absences{
       ."`{$dbprefix}absences`.`fin` AS `fin`, `{$dbprefix}absences`.`nbjours` AS `nbjours`, "
       ."`{$dbprefix}absences`.`motif` AS `motif`, `{$dbprefix}absences`.`commentaires` AS `commentaires`, "
       ."`{$dbprefix}absences`.`valide` AS `valide`, `{$dbprefix}absences`.`validation` AS `validation`, "
-      ."`{$dbprefix}absences`.`valideN1` AS `valideN1`, `{$dbprefix}absences`.`validationN1` AS `validationN1`, "
+      ."`{$dbprefix}absences`.`valide_n1` AS `valide_n1`, `{$dbprefix}absences`.`validation_n1` AS `validation_n1`, "
       ."`{$dbprefix}absences`.`pj1` AS `pj1`, `{$dbprefix}absences`.`pj2` AS `pj2`, `{$dbprefix}absences`.`so` AS `so`, "
       ."`{$dbprefix}absences`.`demande` AS `demande`, `{$dbprefix}absences`.`groupe` AS `groupe` "
       ."FROM `{$dbprefix}absences` INNER JOIN `{$dbprefix}personnel` "
@@ -616,20 +616,20 @@ class absences{
   public function fetchById($id){
     $db=new db();
     $db->selectInnerJoin(array("absences","perso_id"),array("personnel","id"),
-      array("id","debut","fin","nbjours","motif","motif_autre","commentaires","valideN1","validationN1","pj1","pj2","so","demande","groupe","iCalKey",
-      array("name"=>"valide","as"=>"valideN2"),array("name"=>"validation","as"=>"validationN2")),
-      array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mailsResponsables"),
+      array("id","debut","fin","nbjours","motif","motif_autre","commentaires","valide_n1","validation_n1","pj1","pj2","so","demande","groupe","ical_key",
+      array("name"=>"valide","as"=>"valide_n2"),array("name"=>"validation","as"=>"validation_n2")),
+      array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mails_responsables"),
       array("id"=>$id));
 
     if($db->result){
       $result=$db->result[0];
-      $result['mailsResponsables']=explode(";",html_entity_decode($result['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+      $result['mails_responsables']=explode(";",html_entity_decode($result['mails_responsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
       
       // Créé un tableau $agents qui sera placé dans $this->elements['agents']
       // Ce tableau contient un tableau par agent avec les informations le concernant (nom, prenom, mail, etc.)
       // En cas d'absence enregistrée pour plusieurs agents, il sera complété avec les informations des autres agents
       $sites = json_decode(html_entity_decode($result['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
-      $agents=array(array("perso_id"=>$result['perso_id'], "nom"=>$result['nom'], "prenom"=>$result['prenom'], "sites"=>$sites, "mail"=>$result['mail'], "mailsResponsables"=>$result['mailsResponsables'], "absence_id"=>$id));
+      $agents=array(array("perso_id"=>$result['perso_id'], "nom"=>$result['nom'], "prenom"=>$result['prenom'], "sites"=>$sites, "mail"=>$result['mail'], "mails_responsables"=>$result['mails_responsables'], "absence_id"=>$id));
       $perso_ids=array($result['perso_id']);
 
       // Absence concernant plusieurs agents
@@ -641,7 +641,7 @@ class absences{
 	$db=new db();
 	$db->selectInnerJoin(array("absences","perso_id"),array("personnel","id"),
 	  array("id"),
-	  array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mailsResponsables"),
+	  array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mails_responsables"),
 	  array("groupe"=>$groupe),
 	  array(),
 	  "order by nom, prenom");
@@ -649,9 +649,9 @@ class absences{
 	// Complète le tableau $agents
 	if($db->result){
 	  foreach($db->result as $elem){
-	    $elem['mailsResponsables']=explode(";",html_entity_decode($elem['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+	    $elem['mails_responsables']=explode(";",html_entity_decode($elem['mails_responsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
 	    $sites = json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
-	    $agent=array("perso_id"=>$elem['perso_id'], "nom"=>$elem['nom'], "prenom"=>$elem['prenom'], "sites"=>$sites, "mail"=>$elem['mail'], "mailsResponsables"=>$elem['mailsResponsables'], "absence_id"=>$elem['id']);
+	    $agent=array("perso_id"=>$elem['perso_id'], "nom"=>$elem['nom'], "prenom"=>$elem['prenom'], "sites"=>$sites, "mail"=>$elem['mail'], "mails_responsables"=>$elem['mails_responsables'], "absence_id"=>$elem['id']);
 	    if(!in_array($agent,$agents)){
 	      $agents[]=$agent;
 	      $perso_ids[]=$elem['perso_id'];
@@ -738,7 +738,7 @@ class absences{
     $this->responsables=$responsables;
   }
 
-  public function getRecipients($validation,$responsables,$mail,$mailsResponsables){
+  public function getRecipients($validation,$responsables,$mail,$mails_responsables){
     /*
     Retourne la liste des destinataires des notifications en fonction du niveau de validation.
     $validation = niveau de validation (int) :
@@ -748,7 +748,7 @@ class absences{
       4 : validation N2
     $responsables : listes des agents (array) ayant le droit de gérer les absences
     $mail : mail de l'agent concerné par l'absence
-    $mailsResponsables : mails de ses responsables (tableau)
+    $mails_responsables : mails de ses responsables (tableau)
     */
 
     $categories=$GLOBALS['config']["Absences-notifications{$validation}"];
@@ -778,8 +778,8 @@ class absences{
 
     // Responsables directs
     if(in_array(1,$categories)){
-      if(is_array($mailsResponsables)){
-	foreach($mailsResponsables as $elem){
+      if(is_array($mails_responsables)){
+	foreach($mails_responsables as $elem){
 	  if(!in_array(trim(html_entity_decode($elem,ENT_QUOTES|ENT_IGNORE,"UTF-8")),$recipients)){
 	    $recipients[]=trim(html_entity_decode($elem,ENT_QUOTES|ENT_IGNORE,"UTF-8"));
 	  }

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.8
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 10 mars 2017
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -111,10 +111,10 @@ switch($action){
     }
 
     // Enregistrement des infos dans la base de données
-    $insert=array("nom"=>$nom,"prenom"=>$prenom,"mail"=>$mail,"statut"=>$statut,"categorie"=>$categorie,"service"=>$service,"heuresHebdo"=>$heuresHebdo,
-      "heuresTravail"=>$heuresTravail,"arrivee"=>$arrivee,"depart"=>$depart,"login"=>$login,"password"=>$mdp_crypt,"actif"=>$actif,
+    $insert=array("nom"=>$nom,"prenom"=>$prenom,"mail"=>$mail,"statut"=>$statut,"categorie"=>$categorie,"service"=>$service,"heures_hebdo"=>$heuresHebdo,
+      "heures_travail"=>$heuresTravail,"arrivee"=>$arrivee,"depart"=>$depart,"login"=>$login,"password"=>$mdp_crypt,"actif"=>$actif,
       "droits"=>$droits,"postes"=>$postes,"temps"=>$temps,"informations"=>$informations,"recup"=>$recup,"sites"=>$sites,
-      "mailsResponsables"=>$mailsResponsables,"matricule"=>$matricule,"url_ics"=>$url_ics);
+      "mails_responsables"=>$mailsResponsables,"matricule"=>$matricule,"url_ics"=>$url_ics);
     if(in_array("conges",$plugins)){
       include "plugins/conges/ficheAgentValid.php";
     }
@@ -165,9 +165,9 @@ switch($action){
 
   case "modif" :
     $update=array("nom"=>$nom, "prenom"=>$prenom, "mail"=>$mail, "statut"=>$statut, "categorie"=>$categorie, "service"=>$service, 
-      "heuresHebdo"=>$heuresHebdo, "heuresTravail"=>$heuresTravail, "actif"=>$actif, "droits"=>$droits, "arrivee"=>$arrivee, 
+      "heures_hebdo"=>$heuresHebdo, "heures_travail"=>$heuresTravail, "actif"=>$actif, "droits"=>$droits, "arrivee"=>$arrivee, 
       "depart"=>$depart, "postes"=>$postes, "informations"=>$informations, "recup"=>$recup, "sites"=>$sites, 
-      "mailsResponsables"=>$mailsResponsables, "matricule"=>$matricule, "url_ics"=>$url_ics);
+      "mails_responsables"=>$mailsResponsables, "matricule"=>$matricule, "url_ics"=>$url_ics);
     // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
     if(!strstr($actif,"Supprim")){
       $update["supprime"]="0";

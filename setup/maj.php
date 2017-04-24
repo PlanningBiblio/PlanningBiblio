@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.6.3
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
@@ -683,20 +683,36 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
 $v="2.6.4";
 if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   // Renomme les tables en minuscules
-  $sql[] = "RENAME TABLE `{$dbprefix}scappelDispo`  TO `{$dbprefix}appel_dispo`;";
-  $sql[] = "RENAME TABLE `{$dbprefix}EDTSamedi`  TO `{$dbprefix}edt_samedi`;";
-  $sql[] = "RENAME TABLE `{$dbprefix}heures_Absences`  TO `{$dbprefix}heures_absences`;";
-  $sql[] = "RENAME TABLE `{$dbprefix}heures_Absences`  TO `{$dbprefix}heures_absences`;";
-  $sql[] = "RENAME TABLE `{$dbprefix}hiddenTables`  TO `{$dbprefix}hidden_tables`;";
-  $sql[] = "RENAME TABLE `{$dbprefix}IPBlocker`  TO `{$dbprefix}ip_blocker`;";
-  $sql[] = "RENAME TABLE `{$dbprefix}joursFeries`  TO `{$dbprefix}jours_feries`;";
-  $sql[] = "RENAME TABLE `{$dbprefix}planningHebdo`  TO `{$dbprefix}planning_hebdo`;";
-  $sql[] = "RENAME TABLE `{$dbprefix}planningHebdoPeriodes`  TO `{$dbprefix}planning_hebdo_periodes`;";
+  $sql[] = "RENAME TABLE `{$dbprefix}scappelDispo` TO `{$dbprefix}appel_dispo`;";
+  $sql[] = "RENAME TABLE `{$dbprefix}EDTSamedi` TO `{$dbprefix}edt_samedi`;";
+  $sql[] = "RENAME TABLE `{$dbprefix}heures_Absences` TO `{$dbprefix}heures_absences`;";
+  $sql[] = "RENAME TABLE `{$dbprefix}heures_SP` TO `{$dbprefix}heures_sp`;";
+  $sql[] = "RENAME TABLE `{$dbprefix}hiddenTables` TO `{$dbprefix}hidden_tables`;";
+  $sql[] = "RENAME TABLE `{$dbprefix}IPBlocker` TO `{$dbprefix}ip_blocker`;";
+  $sql[] = "RENAME TABLE `{$dbprefix}joursFeries` TO `{$dbprefix}jours_feries`;";
+  $sql[] = "RENAME TABLE `{$dbprefix}planningHebdo` TO `{$dbprefix}planning_hebdo`;";
+  $sql[] = "RENAME TABLE `{$dbprefix}planningHebdoPeriodes` TO `{$dbprefix}planning_hebdo_periodes`;";
 
   // Renomme les champs en minuscules
   $sql[] = "ALTER TABLE `{$dbprefix}hidden_tables` CHANGE `hiddenTables` `hidden_tables` TEXT NULL DEFAULT NULL;";
-
-   // Version
+  $sql[] = "ALTER TABLE `{$dbprefix}absences` CHANGE `CALNAME` `cal_name` VARCHAR(300) NOT NULL;";
+  $sql[] = "ALTER TABLE `{$dbprefix}absences` DROP INDEX `CALNAME`, ADD INDEX `cal_name` (`cal_name`) USING BTREE;";
+  $sql[] = "ALTER TABLE `{$dbprefix}absences` CHANGE `iCalKey` `ical_key` TEXT NOT NULL;";
+  $sql[] = "ALTER TABLE `{$dbprefix}absences` CHANGE `valideN1` `valide_n1` INT(11) NOT NULL DEFAULT 0;";
+  $sql[] = "ALTER TABLE `{$dbprefix}absences` CHANGE `validationN1` `validation_n1` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00';";
+  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Lundi` `lundi` INT;";
+  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Mardi` `mardi` INT;";
+  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Mercredi` `mercredi` INT;";
+  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Jeudi` `jeudi` INT;";
+  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Vendredi` `vendredi` INT;";
+  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Samedi` `samedi` INT;";
+  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Dimanche` `dimanche` INT;";
+  $sql[] = "ALTER TABLE `{$dbprefix}personnel` CHANGE `heuresHebdo` `heures_hebdo` VARCHAR(6) NOT NULL;";
+  $sql[] = "ALTER TABLE `{$dbprefix}personnel` CHANGE `heuresTravail` `heures_travail` FLOAT(5) NOT NULL;";
+  $sql[] = "ALTER TABLE `{$dbprefix}personnel` CHANGE `mailsResponsables` `mails_responsables` TEXT NOT NULL DEFAULT '';";
+  $sql[] = "ALTER TABLE `{$dbprefix}personnel` CHANGE `codeICS` `code_ics` VARCHAR(100) NULL DEFAULT NULL;";
+  
+  // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 

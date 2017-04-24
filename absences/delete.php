@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.6
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/delete.php
 Création : mai 2011
-Dernière modification : 27 octobre 2016
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -29,8 +29,8 @@ $fin=$a->elements['fin'];
 $perso_id=$a->elements['perso_id'];
 $motif=$a->elements['motif'];
 $commentaires=$a->elements['commentaires'];
-$valideN1=$a->elements['valideN1'];
-$valideN2=$a->elements['valideN2'];
+$valideN1=$a->elements['valide_n1'];
+$valideN2=$a->elements['valide_n2'];
 $groupe=$a->elements['groupe'];
 $agents=$a->elements['agents'];
 
@@ -107,7 +107,7 @@ foreach($agents as $agent){
 $destinataires=array();
 foreach($agents as $agent){
   $a=new absences();
-  $a->getRecipients(2,$responsables,$agent['mail'],$agent['mailsResponsables']);
+  $a->getRecipients(2,$responsables,$agent['mail'],$agent['mails_responsables']);
   $destinataires=array_merge($destinataires,$a->recipients);
 }
 

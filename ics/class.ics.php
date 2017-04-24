@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/class.ics.php
 Création : 29 mai 2016
-Dernière modification : 29 octobre 2016
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -129,16 +129,16 @@ class CJICS{
 
     // Recherche les événements correspondant au calendrier $calName et à l'agent $perso_id dans la table $table
     $db=new db();
-    $db->select2($table,null,array("CALNAME"=> "$calName","perso_id"=>$perso_id));
+    $db->select2($table,null,array("cal_name"=> "$calName","perso_id"=>$perso_id));
     if($db->result){
       // Pour chaque événement
       foreach($db->result as $elem){
 		// Si l'évenement n'est plus dans le fichier ICS ou s'il a été modifié dans le fichier ICS, on le supprime : complète le tableau $delete
-		if(!in_array($elem['iCalKey'],$iCalKeys)){
+		if(!in_array($elem['ical_key'],$iCalKeys)){
 		  $deleted[]=array(":id"=>$elem['id']);
 		}else{
 		  // Sinon, on complète le table $tableKeys avec la clé de l'évenement pour ne pas le réinsérer dans la table
-		  $tableKeys[]=$elem['iCalKey'];
+		  $tableKeys[]=$elem['ical_key'];
 		}
       }
     }
@@ -168,8 +168,8 @@ class CJICS{
 	$nb=0;
     if(!empty($insert)){
       $db=new dbh();
-      $req="INSERT INTO `{$GLOBALS['dbprefix']}$table` (`perso_id`, `debut`, `fin`, `demande`, `valide`, `validation`, `valideN1`, `validationN1`, `motif`, `motif_autre`, `commentaires`, `CALNAME`, `iCalKey`) 
-		VALUES (:perso_id, :debut, :fin, :demande, :valide, :validation, :valideN1, :validationN1, :motif, :motif_autre, :commentaires, :CALNAME, :iCalKey);";
+      $req="INSERT INTO `{$GLOBALS['dbprefix']}$table` (`perso_id`, `debut`, `fin`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `motif`, `motif_autre`, `commentaires`, `cal_name`, `ical_key`) 
+		VALUES (:perso_id, :debut, :fin, :demande, :valide, :validation, :valide_n1, :validation_n1, :motif, :motif_autre, :commentaires, :cal_name, :ical_key);";
       $db->prepare($req);
 
       foreach($insert as $elem){
@@ -184,14 +184,14 @@ class CJICS{
 		$offset = date("H:i:s", strtotime($elem["DTEND_tz"])) == "00:00:00" ? "-1 second" : null;
 		$fin = date("Y-m-d H:i:s", strtotime($elem["DTEND_tz"]." $offset"));
 
-		$commentaires = $elem['SUMMARY'];
+		$commentaires = isset($elem['SUMMARY']) ? $elem['SUMMARY'] : null;
 		if(array_key_exists("DESCRIPTION",$elem)){
 		  $commentaires.="<br/>\n".$elem['DESCRIPTION'];
 		}
 		
 		// Insertion dans la base de données
-		$tab=array(":perso_id" => $perso_id, ":debut" => $debut, ":fin" => $fin, ":demande" => $demande, ":valide"=> "99999", ":validation" => $lastmodified, ":valideN1"=> "99999", 
-		  ":validationN1" => $lastmodified, ":motif" => $this->pattern, ":motif_autre" => $this->pattern, ":commentaires" => $commentaires, ":CALNAME" => $calName, ":iCalKey" => $elem['key']);
+		$tab=array(":perso_id" => $perso_id, ":debut" => $debut, ":fin" => $fin, ":demande" => $demande, ":valide"=> "99999", ":validation" => $lastmodified, ":valide_n1"=> "99999", 
+		  ":validation_n1" => $lastmodified, ":motif" => $this->pattern, ":motif_autre" => $this->pattern, ":commentaires" => $commentaires, ":cal_name" => $calName, ":ical_key" => $elem['key']);
 		  
 		$db->execute($tab);
 		$nb++;

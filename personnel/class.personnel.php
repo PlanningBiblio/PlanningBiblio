@@ -36,7 +36,7 @@ class personnel{
   public function delete($liste){
     $update=array("supprime"=>"2","login"=>"CONCAT(login,SYSDATE())","mail"=>null,"arrivee"=>null,"depart"=>null,"postes"=>null,"droits"=>null,
       "password"=>null,"commentaires"=>"Suppression définitive le ".date("d/m/Y"), "last_login"=>null, "temps"=>null, 
-      "informations"=>null, "recup"=>null, "heuresTravail"=>null, "heuresHebdo"=>null, "sites"=>null);
+      "informations"=>null, "recup"=>null, "heures_travail"=>null, "heures_hebdo"=>null, "sites"=>null, "mails_responsables"=>null, "matricule"=>null, "code_ics"=>null, "url_ics"=>null);
     
     $db=new db();
     $db->CSRFToken = $this->CSRFToken;
@@ -124,7 +124,7 @@ class personnel{
       $db->select("personnel",null,"id='$id'");
       $this->elements=$db->result;
       $this->elements[0]['sites']=json_decode(html_entity_decode($db->result[0]['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
-      $this->elements[0]['mailsResponsables']=explode(";",html_entity_decode($db->result[0]['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+      $this->elements[0]['mails_responsables']=explode(";",html_entity_decode($db->result[0]['mails_responsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
     }elseif(is_array($id)){
       $ids=join(",",$id);
       $db=new db();
@@ -133,7 +133,7 @@ class personnel{
 	foreach($db->result as $elem){
 	  $this->elements[$elem['id']]=$elem;
 	  $this->elements[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
-	  $this->elements[$elem['id']]['mailsResponsables']=explode(";",html_entity_decode($elem['mailsResponsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+	  $this->elements[$elem['id']]['mails_responsables']=explode(";",html_entity_decode($elem['mails_responsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
 	}
       }
     }
@@ -162,12 +162,12 @@ class personnel{
    */
   public function getICSCode($id){
     $this->fetchById($id);
-    $code = $this->elements[0]['codeICS'];
+    $code = $this->elements[0]['code_ics'];
     if(!$code){
       $code = md5(time().rand(100,999));
       $db = new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->update2('personnel', array('codeICS'=>$code), array('id'=>$id));
+      $db->update2('personnel', array('code_ics'=>$code), array('id'=>$id));
     }
     return $code;
   }

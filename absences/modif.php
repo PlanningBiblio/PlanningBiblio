@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 10 février 2017
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -43,11 +43,11 @@ $commentaires=$a->elements['commentaires'];
 $demande=filter_var($a->elements['demande'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
 $debutSQL=filter_var($a->elements['debut'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
 $finSQL=filter_var($a->elements['fin'],FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
-$valide=filter_var($a->elements['valideN2'],FILTER_SANITIZE_NUMBER_INT);
-$validation=$a->elements['validationN2'];
-$valideN1=$a->elements['valideN1'];
-$validationN1=$a->elements['validationN1'];
-$iCalKey=$a->elements['iCalKey'];
+$valide=filter_var($a->elements['valide_n2'],FILTER_SANITIZE_NUMBER_INT);
+$validation=$a->elements['validation_n2'];
+$valideN1=$a->elements['valide_n1'];
+$validationN1=$a->elements['validation_n1'];
+$iCalKey=$a->elements['ical_key'];
 
 // Pièces justificatives
 $pj1Checked=$a->elements['pj1']?"checked='checked'":null;

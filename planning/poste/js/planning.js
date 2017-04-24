@@ -411,7 +411,12 @@ $(function() {
  * Affiche les tableaux masqués de la page planning
  */
 function afficheTableau(id){
-  $(".tableau"+id).show();
+  $(".tableau"+id).each(function(){
+    if($(this).hasClass('empty-line')){}
+    else{
+      $(this).show();
+    }
+  });
   afficheTableauxDiv();
 }
 

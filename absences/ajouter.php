@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 2 novembre 2016
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -171,11 +171,11 @@ if($confirm and !empty($perso_ids)){
     $nom=$p->elements[0]['nom'];
     $prenom=$p->elements[0]['prenom'];
     $mail=$p->elements[0]['mail'];
-    $mailsResponsables=$p->elements[0]['mailsResponsables'];
+    $mails_responsables=$p->elements[0]['mails_responsables'];
 
     // Choix des destinataires des notifications selon la configuration
     $a=new absences();
-    $a->getRecipients($notifications,$responsables,$mail,$mailsResponsables);
+    $a->getRecipients($notifications,$responsables,$mail,$mails_responsables);
     $destinataires=$a->recipients;
 
     // Ajout de l'absence dans la table 'absence'
@@ -183,8 +183,8 @@ if($confirm and !empty($perso_ids)){
     "demande"=>date("Y-m-d H:i:s"), "pj1"=>$pj1, "pj2"=>$pj2, "so"=>$so, "groupe"=>$groupe);
 
     if($valideN1!=0){
-      $insert["valideN1"]=$valideN1;
-      $insert["validationN1"]=$validationN1;
+      $insert["valide_n1"]=$valideN1;
+      $insert["validation_n1"]=$validationN1;
     }
     else{
       $insert["valide"]=$valideN2;

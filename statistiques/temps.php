@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 8 février 2017
+Dernière modification : 23 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -301,7 +301,7 @@ foreach($keys as $key){
   }elseif($moyennesSP[$key]>0){
     $tab[$key]['heuresHebdo']=number_format($moyennesSP[$key],2,'.',' ');
   }else{
-    $tab[$key]['heuresHebdo']="-";
+    $tab[$key]['heuresHebdo']=0;
   }
   
   if(!array_key_exists($key,$totalSP) or !is_numeric($totalSP[$key])){
@@ -309,7 +309,7 @@ foreach($keys as $key){
   }elseif($totalSP[$key]>0){
     $tab[$key]['max']=number_format($totalSP[$key],2,'.',' ');
   }else{
-    $tab[$key]['max']="-";
+    $tab[$key]['max']=0;
   }
 
   foreach($dates as $d){
@@ -479,10 +479,10 @@ EOD;
 
     if($nbSemaines!=1){
       echo "<td style='text-align:center; $color'>".heure4($elem['total'])."</td>\n";
-      echo "<td style='text-align:center;'>".heure4($elem['max'])."</td>\n";
+      echo "<td style='text-align:center;'>".heure4($elem['max'],true)."</td>\n";
     }
     echo "<td style='text-align:center; $color'>".heure4($elem['semaine'])."</td>\n";
-    echo "<td style='text-align:center;'>".heure4($elem['heuresHebdo'])."</td>\n";
+    echo "<td style='text-align:center;'>".heure4($elem['heuresHebdo'],true)."</td>\n";
     echo "</tr>\n";
   }
   echo "</tbody>\n";

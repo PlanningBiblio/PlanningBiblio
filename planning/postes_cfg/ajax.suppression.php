@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/postes_cfg/ajax.suppression.php
 Création : 4 novembre 2014
-Dernière modification : 10 février 2017
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -29,7 +29,7 @@ $set=array("supprime"=>$today);
 $where=array("tableau"=>"IN $ids");
 
 $db=new db();
-$db->query("UPDATE `{$dbprefix}pl_poste_tab_grp` SET `supprime`='$today' WHERE `Lundi` IN ($ids) OR `Mardi` IN ($ids) OR `Mercredi` IN ($ids) OR `Jeudi` IN ($ids) OR `Vendredi` IN ($ids) OR `Samedi` IN ($ids) OR `Dimanche` IN ($ids);");
+$db->query("UPDATE `{$dbprefix}pl_poste_tab_grp` SET `supprime`='$today' WHERE `lundi` IN ($ids) OR `mardi` IN ($ids) OR `mercredi` IN ($ids) OR `jeudi` IN ($ids) OR `vendredi` IN ($ids) OR `samedi` IN ($ids) OR `dimanche` IN ($ids);");
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;

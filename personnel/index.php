@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 10 février 2017
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Chritophe Le Guennec <christophe.leguennec@u-pem.fr>
 
@@ -98,7 +98,7 @@ foreach($agents as $agent){
   $depart=date1($agent['depart']);
   $last_login=date_time($agent['last_login']);
   
-  $heures=$agent['heuresHebdo']?$agent['heuresHebdo']:null;
+  $heures=$agent['heures_hebdo']?$agent['heures_hebdo']:null;
   $heures=heure4($heures);
   if(is_numeric($heures)){
     $heures.="h00";

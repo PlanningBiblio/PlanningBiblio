@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 10 février 2017
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -363,14 +363,14 @@ elseif($groupe and $autorisation){	//	Si Groupe en argument
   $t->fetchGroup($groupe);
   $groupeTab=$t->elements;
   $tmp=array();
-  $tmp[$dates[0]]=array($dates[0],$groupeTab['Lundi']);
-  $tmp[$dates[1]]=array($dates[1],$groupeTab['Mardi']);
-  $tmp[$dates[2]]=array($dates[2],$groupeTab['Mercredi']);
-  $tmp[$dates[3]]=array($dates[3],$groupeTab['Jeudi']);
-  $tmp[$dates[4]]=array($dates[4],$groupeTab['Vendredi']);
-  $tmp[$dates[5]]=array($dates[5],$groupeTab['Samedi']);
-  if(array_key_exists("Dimanche",$groupeTab)){
-    $tmp[$dates[6]]=array($dates[6],$groupeTab['Dimanche']);
+  $tmp[$dates[0]]=array($dates[0],$groupeTab['lundi']);
+  $tmp[$dates[1]]=array($dates[1],$groupeTab['mardi']);
+  $tmp[$dates[2]]=array($dates[2],$groupeTab['mercredi']);
+  $tmp[$dates[3]]=array($dates[3],$groupeTab['jeudi']);
+  $tmp[$dates[4]]=array($dates[4],$groupeTab['vendredi']);
+  $tmp[$dates[5]]=array($dates[5],$groupeTab['samedi']);
+  if(array_key_exists("dimanche",$groupeTab)){
+    $tmp[$dates[6]]=array($dates[6],$groupeTab['dimanche']);
   }
   foreach($tmp as $elem){
     $db=new db();
@@ -502,8 +502,23 @@ else{
   // affichage de la lignes des horaires
   echo "<table id='tabsemaine1' cellspacing='0' cellpadding='0' class='text tabsemaine1'>\n";
 
+
+  // Tableaux masqués
+  $hiddenTables = array();
+  $db=new db();
+  $db->select2("hidden_tables","*",array("perso_id"=>$_SESSION['login_id'],"tableau"=>$tab));
+  if($db->result){
+    $hiddenTables = (array) json_decode(html_entity_decode($db->result[0]['hidden_tables'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+  }
+
+  // $sn : index des tableaux Sans nom pour l'affichage des tableaux masqués
+  $sn=1;
+  
   $j=0;
   foreach($tabs as $tab){
+  
+    $hiddenTable = in_array($j, $hiddenTables) ? 'hidden-table' :null;
+    
     // Comble les horaires laissés vides : créé la colonne manquante, les cellules de cette colonne seront grisées
     $cellules_grises=array();
     $tmp=array();
@@ -536,6 +551,13 @@ else{
 
     
     $tab['horaires']=$tmp;
+    
+    // Titre des tableaux, ajoute les intutulés "Sans nom x" pour les tableaux qui ne sont pas nommés afin de pouvoir les afficher s'ils sont cachés
+    $tab['titre2'] = $tab['titre'];
+    if(!$tab['titre']){
+      $tab['titre2'] = "Sans nom $sn";
+      $sn++;
+    }
 
     // Masquer les tableaux
     $masqueTableaux=null;
@@ -544,8 +566,8 @@ else{
     }
 
     //		Lignes horaires
-    echo "<tr class='tr_horaires tableau$j {$tab['classe']}'>\n";
-    echo "<td class='td_postes' data-id='$j' data-title='{$tab['titre']}'>{$tab['titre']} $masqueTableaux </td>\n";
+    echo "<tr class='tr_horaires tableau$j {$tab['classe']} $hiddenTable'>\n";
+    echo "<td class='td_postes' data-id='$j' data-title='{$tab['titre2']}'>{$tab['titre']} $masqueTableaux </td>\n";
     $colspan=0;
     foreach($tab['horaires'] as $horaires){
       echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin'])."</td>";
@@ -556,9 +578,9 @@ else{
     //	Lignes postes et grandes lignes
     foreach($tab['lignes'] as $ligne){
       // Regardons si la ligne est vide afin de ne pas l'afficher si $config['Planning-lignes-vides']=0
-      $displayTR=null;
+      $emptyLine=null;
       if(!$config['Planning-lignesVides'] and $verrou and isAnEmptyLine($ligne['poste'])){
-	$displayTR="style='display:none;'";
+	$emptyLine="empty-line";
       }
 
       // Lignes postes
@@ -572,7 +594,7 @@ else{
         $classTR .= ' ' . $postes[$ligne['poste']]['classes'];
 
 	// Affichage de la ligne
-	echo "<tr class='pl-line tableau$j $classTR {$tab['classe']}' $displayTR >\n";
+	echo "<tr class='pl-line tableau$j $classTR {$tab['classe']} $hiddenTable $emptyLine'>\n";
 	echo "<td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
 	// Affichage ou non des étages
 	if($config['Affichage-etages'] and $postes[$ligne['poste']]['etage']){
@@ -602,11 +624,11 @@ else{
       }
       // Lignes de séparation
       if($ligne['type']=="ligne"){
-	echo "<tr class='tr_separation tableau$j {$tab['classe']}'>\n";
+	echo "<tr class='tr_separation tableau$j {$tab['classe']} $hiddenTable'>\n";
 	echo "<td>{$lignes_sep[$ligne['poste']]}</td><td colspan='$colspan'>&nbsp;</td></tr>\n";
       }
     }
-  echo "<tr class='tr_espace tableau$j {$tab['classe']}'><td>&nbsp;</td></tr>\n";
+  echo "<tr class='tr_espace tableau$j {$tab['classe']} $hiddenTable'><td>&nbsp;</td></tr>\n";
   $j++;
   }
   echo "</table>\n";

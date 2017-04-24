@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Version 2.5.4
+/**
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/postes_cfg/groupes.php
 Création : 18 septembre 2012
-Dernière modification : 10 février 2017
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -52,9 +52,9 @@ else{
   $groupe=array("nom"=>null);
 }
 
-$semaine=array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi");
+$semaine=array("lundi","mardi","mercredi","jeudi","vendredi","samedi");
 if($config['Dimanche'])
-  $semaine[]="Dimanche";
+  $semaine[]="dimanche";
 $champs='"Nom,'.join(',',$semaine).'"';		//	Pour ctrl_form
 
 //	Control du nom (verifie s'il n'est pas utilise en JavaScript

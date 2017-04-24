@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 10 février 2017
+Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -85,11 +85,11 @@ $agents=$a->elements['agents'];
 $debut1=$a->elements['debut'];
 $fin1=$a->elements['fin'];
 $perso_ids1=$a->elements['perso_ids'];
-$valide1N1=$a->elements['valideN1'];
-$valide1N2=$a->elements['valideN2'];
+$valide1N1=$a->elements['valide_n1'];
+$valide1N2=$a->elements['valide_n2'];
 
 // Si l'absence est importée depuis un agenda extérieur, on interdit la modification
-$iCalKey=$a->elements['iCalKey'];
+$iCalKey=$a->elements['ical_key'];
 if($iCalKey){
   include "include/accessDenied.php";
 }
@@ -215,8 +215,8 @@ if($admin){
 if($config['Absences-validation']){
   // Validation N1
   if($valideN1){
-    $data["valideN1"]=$valideN1;
-    $data["validationN1"]=$validationN1;
+    $data["valide_n1"]=$valideN1;
+    $data["validation_n1"]=$validationN1;
   }
   // Validation N2
   if($valideN2){
@@ -226,9 +226,9 @@ if($config['Absences-validation']){
   // Retour à l'état demandé
   if($valide==0){
     $data["valide"]=0;
-    $data["valideN1"]=0;
+    $data["valide_n1"]=0;
     $data["validation"]="0000-00-00 00:00:00";
-    $data["validationN1"]="0000-00-00 00:00:00";
+    $data["validation_n1"]="0000-00-00 00:00:00";
   }
 }
 
@@ -314,7 +314,7 @@ foreach($agents_tous as $agent){
 $destinataires=array();
 foreach($agents_tous as $agent){
   $a=new absences();
-  $a->getRecipients($notifications,$responsables,$agent['mail'],$agent['mailsResponsables']);
+  $a->getRecipients($notifications,$responsables,$agent['mail'],$agent['mails_responsables']);
   $destinataires=array_merge($destinataires,$a->recipients);
 }
 
@@ -340,7 +340,7 @@ usort($agents_selectionnes,"cmp_prenom_nom");
 usort($agents_supprimes,"cmp_prenom_nom");
 
 $message="<b><u>$sujet</u></b> :";
-$message.="<ul><li>\n";
+$message.="<ul><li>";
 if((count($agents_selectionnes) + count($agents_supprimes)) >1){
   $message.="Agents :<ul>\n";
   foreach($agents_selectionnes as $agent){
