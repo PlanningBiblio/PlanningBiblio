@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 21 avril 2017
+Dernière modification : 25 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Chritophe Le Guennec <christophe.leguennec@u-pem.fr>
 
@@ -109,7 +109,7 @@ foreach($agents as $agent){
   echo "<input type='checkbox' name='chk$i' value='$id' />\n";
   echo "<a href='index.php?page=personnel/modif.php&amp;id=$id'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>";
   if(in_array(21,$droits) and $id!=$_SESSION['login_id']){
-    echo "<a href='javascript:popup(\"personnel/suppression.php&amp;id=".$id."\",450,250);'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>";
+    echo "<a href='javascript:popup(\"personnel/suppression.php&amp;id=".$id."\",450,240);'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>";
   }
   echo "</td>";
   echo "<td>{$agent['nom']}</td>";

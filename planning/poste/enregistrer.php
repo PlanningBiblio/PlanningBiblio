@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.8
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/enregistrer.php
 Création : mai 2011
-Dernière modification : 9 mars 2017
+Dernière modification : 25 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -46,7 +46,6 @@ if(!in_array($droit,$droits)){
 }
 
 echo "<div style='text-align:center'>\n";
-echo "<br/>\n";
 echo "<b>Enregistrement du planning du $dateFr comme modèle.</b>\n";
 echo "<br/><br/>\n";
 

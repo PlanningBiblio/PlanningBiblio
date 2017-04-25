@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 21 avril 2017
+Dernière modification : 25 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -276,7 +276,7 @@ if($autorisation){
 }
 
 if($autorisation){
-  echo "<a href='javascript:popup(\"planning/poste/enregistrer.php&date=$date&site=$site\",500,270);' title='Enregistrer comme modèle'><span class='pl-icon pl-icon-save'></span></a>";
+  echo "<a href='javascript:popup(\"planning/poste/enregistrer.php&date=$date&site=$site\",500,240);' title='Enregistrer comme modèle'><span class='pl-icon pl-icon-save'></span></a>";
   if(!$verrou){
     echo "<a href='javascript:popup(\"planning/poste/importer.php&date=$date&site=$site\",500,270);' title='Importer un modèle'><span class='pl-icon pl-icon-open'></span></a>";
     echo "<a href='javascript:popup(\"planning/poste/supprimer.php&date=$date&site=$site\",500,200);' title='Supprimer le planning'><span class='pl-icon pl-icon-drop'></span></a>";

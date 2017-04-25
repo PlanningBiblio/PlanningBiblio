@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 8 mars 2017
+Dernière modification : 25 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -132,7 +132,7 @@ $_SESSION['droits']=$droits;
 $db=new db();
 $db->select2("acces","*",array("page"=>$page));
 
-if($page=="planning/poste/index.php" or $page=="planning/poste/semaine.php"){
+if($page=="planning/poste/index.php" or $page=="planning/poste/semaine.php" or !$menu){
   echo "<div id='content-planning'>\n";
 }else{
   echo "<div id='content'>\n";

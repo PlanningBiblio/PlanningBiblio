@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.9
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/importer.php
 Création : mai 2011
-Dernière modification : 13 mars 2017
+Dernière modification : 25 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -43,7 +43,6 @@ if(!in_array($droit,$droits)){
 
 echo <<<EOD
   <div style='text-align:center'>
-  <br/>
   <b>Importation d'un modèle</b>
   <br/><br/>
 EOD;

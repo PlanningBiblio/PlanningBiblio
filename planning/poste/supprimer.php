@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.3
+Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/supprimer.php
 Création : mai 2011
-Dernière modification : 3 octobre 2016
+Dernière modification : 25 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -48,7 +48,6 @@ if(!in_array($droit,$droits)){
 
 
 echo "<div style='text-align:center'>\n";
-echo "<br/>\n";
 
 if(!$semaineJour){		// Etape 1 : Suppression du jour ou de la semaine ?
   echo "Voulez vous supprimer le planning du jour ($dateFr)<br/>ou de la semaine (du $debutFr au $finFr) ?<br/><br/>\n";
