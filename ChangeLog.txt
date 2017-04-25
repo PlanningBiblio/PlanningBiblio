@@ -1,3 +1,7 @@
+*** Version 2.6.4   (25 avril 2017)   ***
+- Amélioration
+Les tables et les champs de la base de données sont renommés en minuscules (compatibilité avec le paramètre mysql lower_case_table_names toutes valeurs et compatibilité Windows)
+
 *** Version 2.6.3   (20 avril 2017)   ***
 - Correction
 Corrige les notifications lors de la modification des plannings (n'envoie que les différences et seulement aux agents pour qui des différences existent)

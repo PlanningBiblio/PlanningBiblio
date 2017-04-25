@@ -683,7 +683,7 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
 $v="2.6.4";
 if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   // Renomme les tables en minuscules
-  $sql[] = "RENAME TABLE `{$dbprefix}scappelDispo` TO `{$dbprefix}appel_dispo`;";
+  $sql[] = "RENAME TABLE `{$dbprefix}appelDispo` TO `{$dbprefix}appel_dispo`;";
   $sql[] = "RENAME TABLE `{$dbprefix}EDTSamedi` TO `{$dbprefix}edt_samedi`;";
   $sql[] = "RENAME TABLE `{$dbprefix}heures_Absences` TO `{$dbprefix}heures_absences`;";
   $sql[] = "RENAME TABLE `{$dbprefix}heures_SP` TO `{$dbprefix}heures_sp`;";
