@@ -1,3 +1,11 @@
+*** Version 2.6.5   (6 mai 2017)   ***
+- Améliorations
+Affiche pourquoi les agents sont indisponibles dans le menu permettant de placer les agents dans le plannings
+Ajout d'infobulles dans le menu permettant de placer les agents dans le planning
+
+- Correction
+Exportation ICS : html_entity_decode dans ics/calendar.php sur le nom des agents et les sites
+
 *** Version 2.6.4   (25 avril 2017)   ***
 - Amélioration
 Les tables et les champs de la base de données sont renommés en minuscules (compatibilité avec le paramètre mysql lower_case_table_names toutes valeurs et compatibilité Windows)
