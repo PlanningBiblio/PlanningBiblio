@@ -750,7 +750,9 @@ class ICal
     
         foreach ($events as $key => $anEvent) {
             $events[$key]['DTSTART_tz'] = $this->iCalDateWithTimezone($anEvent, "DTSTART");
-            $events[$key]['DTEND_tz'] = $this->iCalDateWithTimezone($anEvent, "DTEND");
+            if(isset($anEvent['DTEND'])){
+              $events[$key]['DTEND_tz'] = $this->iCalDateWithTimezone($anEvent, "DTEND");
+            }
         }
 
         $this->cal['VEVENT'] = $events;

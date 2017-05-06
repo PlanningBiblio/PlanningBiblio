@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.6.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/calendar.php
 Création : juillet 2016
-Dernière modification : 21 avril 2017
+Dernière modification : 28 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -216,7 +216,7 @@ if(isset($planning)){
     // Nom du poste pour SUMMARY
     $poste = html_entity_decode($postes[$elem['poste']]['nom'],ENT_QUOTES|ENT_IGNORE,'UTF-8');
     // Site et étage pour LOCATION
-    $site = isset($sites) ? $sites[$elem['site']] : null;
+    $site = isset($sites) ? html_entity_decode($sites[$elem['site']], ENT_QUOTES|ENT_IGNORE, 'UTF-8') : null;
     $etage = $postes[$elem['poste']]['etage'] ? ' '.html_entity_decode($postes[$elem['poste']]['etage'],ENT_QUOTES|ENT_IGNORE,'UTF-8') : null;
     // Validation pour LAST-MODIFIED et DSTAMP
     $validation = gmdate("Ymd\THis\Z", strtotime($verrou[$elem['date'].'_'.$elem['site']]['date']));
@@ -224,7 +224,7 @@ if(isset($planning)){
     $organizer = null;
     if(isset($agents[$verrou[$elem['date'].'_'.$elem['site']]['agent']])){
       $tmp = $agents[$verrou[$elem['date'].'_'.$elem['site']]['agent']];
-      $organizer = $tmp['prenom'].' '.$tmp['nom'];
+      $organizer = html_entity_decode($tmp['prenom'].' '.$tmp['nom'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
       $organizer .= ':mailto:'.$tmp['mail'];
     }
     
