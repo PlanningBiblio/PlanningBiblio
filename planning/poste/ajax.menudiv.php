@@ -42,6 +42,7 @@ $poste=filter_input(INPUT_GET,"poste",FILTER_SANITIZE_NUMBER_INT);
 
 $login_id=$_SESSION['login_id'];
 $tab_exclus=array(0);
+$tab_indispo=array(0);
 $absents=array(0);
 $absences_non_validees = array(0);
 $agents_qualif=array(0);
@@ -115,7 +116,9 @@ $db->query("SELECT `{$dbprefix}personnel`.`service` AS `service`, `{$dbprefix}se
 $services=$db->result;
 $services[]=array("service"=>"Sans service");
 
-//	Ne pas regarder les postes non-bloquant et ne pas regarder si le poste est non-bloquant
+
+// Recherche des agents déjà postés à l'horaire choisi
+// Ne pas regarder les postes non-bloquant et ne pas regarder si le poste est non-bloquant
 if($bloquant=='1'){
   $db=new db();
   $dateSQL=$db->escapeString($date);
@@ -164,7 +167,7 @@ if(in_array("conges",$plugins)){
 $db=new db();
 $dateSQL=$db->escapeString($date);
 
-$db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` > $dateSQL OR `depart` = '0000-00-00');");
+$db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` >= $dateSQL OR `depart` = '0000-00-00');");
 
 $verif=true;	// verification des heures des agents
 if(!$config['ctrlHresAgents'] and ($d->position==6 or $d->position==0)){
@@ -192,7 +195,7 @@ if($config['PlanningHebdo']){
 
 if($db->result and $verif)
 foreach($db->result as $elem){
-  $aExclure=false;
+  $indispo=false;
 
   // Récupération du planning de présence
   $temps=array();
@@ -247,35 +250,35 @@ foreach($db->result as $elem){
       $heures[0]=$heures[2];				// Début de journée = début d'après midi
     }
     if($heures[0]>$debut)			// Si l'agent commence le travail après l'heure de début du poste
-      $aExclure=true;
+      $indispo=true;
     if($heures[3]<$fin)				// Si l'agent fini le travail avant l'heure de fin du poste
-      $aExclure=true;
+      $indispo=true;
     if($heures[1]<$fin and $heures[2]>$debut) 	// Pdt la pause déjeuner : Si le debut de sa pause est avant l'heure de fin du poste et la fin de sa pause après le début du poste
-      $aExclure=true;
+      $indispo=true;
   }
   else{
-    $aExclure=true;
+    $indispo=true;
   }
 
-  if($aExclure){
-    $motifExclusion[$elem['id']][]="Horaires";
+  if($indispo){
+    $motifExclusion[$elem['id']][]="<span title='Les horaires de l&apos;agent ne lui permettent pas d&apos;occuper ce poste'>Horaires</span>";
   }
 
   // Multisites : Contrôle si l'agent est prévu sur ce site si les agents sont autorisés à travailler sur plusieurs sites
   if($config['Multisites-nombre']>1){
     if(!isset($heures)){
-      $aExclure=true;
+      $indispo=true;
     }
     elseif(!array_key_exists(4,$heures)){
-      $aExclure=true;
+      $indispo=true;
     }
     elseif($heures[4]!=$site){
-      $aExclure=true;
-      $motifExclusion[$elem['id']][]="Autre site";
+      $indispo=true;
+      $motifExclusion[$elem['id']][]="<span title='L&apos;agent est pr&eacute;vu sur un autre site'>Autre site</span>";
     }
   }
-  if($aExclure){
-    $tab_exclus[]=$elem['id'];
+  if($indispo){
+    $tab_indispo[]=$elem['id'];
   }
 }
 
@@ -320,7 +323,7 @@ if(!empty($statuts)){
 }
 
 $req="SELECT * FROM `{$dbprefix}personnel` "
-  ."WHERE `actif` LIKE 'Actif' AND `arrivee` <= '$dateSQL' AND (`depart` > '$dateSQL' OR `depart` = '0000-00-00') "
+  ."WHERE `actif` LIKE 'Actif' AND `arrivee` <= '$dateSQL' AND (`depart` >= '$dateSQL' OR `depart` = '0000-00-00') "
   ."AND `id` NOT IN ($exclus) ORDER BY `nom`,`prenom`;";
 
 $db->query($req);
@@ -332,8 +335,8 @@ if($agents_tmp){
     if(is_array($activites)){
       $postes = json_decode(html_entity_decode($elem['postes'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
       foreach($activites as $a){
-        if(!in_array($a, $postes)){
-          $motifExclusion[$elem['id']][]="Activit&eacute;";
+        if(!is_array($postes) or !in_array($a, $postes)){
+          $motifExclusion[$elem['id']][]="<span title='L&apos;agent n&apos;a pas toutes les qualifications requises pour occuper ce poste'>Activit&eacute;s</span>";
           continue 2;
         }
       }
@@ -348,7 +351,9 @@ if($agents_tmp){
     }
     
     // Complète le tableau agents dispo avec les agents qualifiés et prévus sur ce site
-    $agents_dispo[] = $elem;
+    if(!in_array($elem['id'],$tab_indispo)){
+      $agents_dispo[] = $elem;
+    }
   }
 }
 
@@ -368,7 +373,7 @@ $db=new db();
 $dateSQL=$db->escapeString($date);
 
 $req="SELECT * FROM `{$dbprefix}personnel` "
-  ."WHERE `actif` LIKE 'Actif' AND `arrivee` <= '$dateSQL' AND (`depart` > $dateSQL OR `depart` = '0000-00-00') AND `id` NOT IN ($agents_qualif) "
+  ."WHERE `actif` LIKE 'Actif' AND `arrivee` <= '$dateSQL' AND (`depart` >= $dateSQL OR `depart` = '0000-00-00') AND `id` NOT IN ($agents_qualif) "
   ."AND `id` NOT IN ($tab_deja_place) AND `id` NOT IN ($absents)  ORDER BY `nom`,`prenom`;";
 
 

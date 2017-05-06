@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.6.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 21 avril 2017
+Dernière modification : 6 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -107,9 +107,9 @@ class planning{
 
   // Affiche la liste des agents dans le menudiv
   public function menudivAfficheAgents($poste,$agents,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion,$absences_non_validees){
-    $msg_deja_place="&nbsp;<font class='red bold'>(DP)</font>";
-    $msg_deuxSP="&nbsp;<font class='red bold'>(2 SP)</font>";
-    $msg_SR="&nbsp;<font class='red bold'>(SR)</font>";
+    $msg_deja_place="&nbsp;<span class='red bold' title='L&apos;agent est d&eacute;j&agrave; plac&eacute; sur ce poste dans la journ&eacute;e'>(DP)</span>";
+    $msg_deuxSP="&nbsp;<span class='red bold' title='2 plages de service public cons&eacute;cutives'>(2 SP)</span>";
+    $msg_SR="&nbsp;<span class='red bold' title='Sans Repas, l&apos;agent n&apos; aucun cr&eacute;neau horaire pour prendre son repas'>(SR)</span>";
     $config=$GLOBALS['config'];
     $dbprefix=$config['dbprefix'];
     $d=new datePl($date);
@@ -247,11 +247,14 @@ class planning{
           }
         }
         
-        $title = in_array($elem['id'],$absences_non_validees) ? 'Absence ou congé non valid&eacute;' : null;
+        $title = htmlentities($elem['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
+        $title.= ' '.htmlentities($elem['prenom'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
+        $title = in_array($elem['id'],$absences_non_validees) ? ' Absence ou congé non valid&eacute;' : $title;
+        
         $nom = "<span class='menudiv-nom' title='$title'>";
-        $nom .= htmlentities($elem['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8",false);
+        $nom .= htmlentities($elem['nom'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
         if($elem['prenom']){
-          $nom.=" ".substr(htmlentities($elem['prenom'],ENT_QUOTES|ENT_IGNORE,"utf-8",false),0,1).".";
+          $nom.=" ".substr(htmlentities($elem['prenom'],ENT_QUOTES|ENT_IGNORE,"UTF-8",false),0,1).".";
         }
         $nom .='</span>';
 
