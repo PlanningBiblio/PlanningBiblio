@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.6.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 21 avril 2017
+Dernière modification : 6 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
@@ -257,6 +257,10 @@ foreach($db->result as $elem){
     $aExclure=true;
   }
 
+  if($aExclure){
+    $motifExclusion[$elem['id']][]="Horaires";
+  }
+
   // Multisites : Contrôle si l'agent est prévu sur ce site si les agents sont autorisés à travailler sur plusieurs sites
   if($config['Multisites-nombre']>1){
     if(!isset($heures)){
@@ -329,6 +333,7 @@ if($agents_tmp){
       $postes = json_decode(html_entity_decode($elem['postes'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
       foreach($activites as $a){
         if(!in_array($a, $postes)){
+          $motifExclusion[$elem['id']][]="Activit&eacute;";
           continue 2;
         }
       }
