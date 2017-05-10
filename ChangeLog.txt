@@ -1,3 +1,8 @@
+*** Version 2.6.6   (10 mai 2017)   ***
+- Correction
+Importation des plannings : n'importe pas les agents s'ils sont placés sur un autre site
+Importation des emplois du temps : corrige l'importation pour les agents ne travaillant que le matin
+
 *** Version 2.6.5   (6 mai 2017)   ***
 - Améliorations
 Affiche pourquoi les agents sont indisponibles dans le menu permettant de placer les agents dans le plannings
