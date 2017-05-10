@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.5
+Planning Biblio, Version 2.6.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 6 mai 2017
+Dernière modification : 10 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
@@ -272,7 +272,7 @@ foreach($db->result as $elem){
     elseif(!array_key_exists(4,$heures)){
       $indispo=true;
     }
-    elseif($heures[4]!=$site){
+    elseif($heures[4] and $heures[4]!=$site){
       $indispo=true;
       $motifExclusion[$elem['id']][]="<span title='L&apos;agent est pr&eacute;vu sur un autre site'>Autre site</span>";
     }

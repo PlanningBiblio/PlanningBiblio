@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.6.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/importer.php
 Création : mai 2011
-Dernière modification : 25 avril 2017
+Dernière modification : 10 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -111,6 +111,19 @@ else{					// Etape 2 : Insertion des données
   $nom=str_replace("###semaine","",$get_nom);
   $nom=htmlentities($nom,ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
   
+  
+  // Recherche des agents placés sur d'autres sites
+  $autres_sites = array();
+  if($config['Multisites-nombre']>1){
+    $db = new db();
+    $db->select2('pl_poste', array('perso_id','date','debut','fin'), array('date' => "BETWEEN {$dates[0]} AND ".end($dates), 'site' => "<>$site"));
+    if($db->result){
+      foreach($db->result as $as){
+        $autres_sites[$as['perso_id'].'_'.$as['date']][] = array('debut' => $as['debut'], 'fin' => $as['fin']);
+      }
+    }
+  }
+  
   $i=0;
   foreach($dates as $elem){
     $i++;				// utilisé pour la colone jour du modèle (1=lundi, 2=mardi ...) : on commence à 1
@@ -173,6 +186,17 @@ else{					// Etape 2 : Insertion des données
     if($db->result){
       if($get_absents){	// on marque les absents
 	foreach($db->result as $elem2){
+
+          // On n'importe pas les agents s'ils sont placés sur un autre site
+          if(isset($autres_sites[$elem2['perso_id'].'_'.$elem])){
+            foreach($autres_sites[$elem2['perso_id'].'_'.$elem] as $as){
+              if( $as['debut'] < $elem2['fin'] and $as['fin'] > $elem2['debut']){
+                continue 2;
+              }
+            }
+          }
+	
+
 	  $debut=$elem." ".$elem2['debut'];
 	  $fin=$elem." ".$elem2['fin'];
 	  $db2=new db();
@@ -195,6 +219,16 @@ else{					// Etape 2 : Insertion des données
       }
       else{
 	foreach($db->result as $elem2){
+	
+          // On n'importe pas les agents s'ils sont placés sur un autre site
+          if(isset($autres_sites[$elem2['perso_id'].'_'.$elem])){
+            foreach($autres_sites[$elem2['perso_id'].'_'.$elem] as $as){
+              if( $as['debut'] < $elem2['fin'] and $as['fin'] > $elem2['debut']){
+                continue 2;
+              }
+            }
+          }
+	
 	  $debut=$elem." ".$elem2['debut'];
 	  $fin=$elem." ".$elem2['fin'];
 	  $db2=new db();
