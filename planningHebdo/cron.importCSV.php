@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.6.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/cron.ics.php
 Création : 1er juillet 2016
-Dernière modification : 21 avril 2017
+Dernière modification : 9 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -107,6 +107,13 @@ foreach($lines as $line){
 
   // Si les horaires de l'après midi ne sont pas renseignés, on initialise les variables pour éviter les erreurs PHP
   if(!isset($cells[4])){
+    $cells[4]=null;
+    $cells[5]=null;
+  }
+  
+  // Si les heures de l'après-midi sont nulles (mises à 00:00:00 en lignes 103), on leurs affecte la valeur "null".
+  // (Attention, l'affectation systèmatique de la valeur null en ligne 103 est problèmatique)
+  if($cells[4] == "00:00:00" and $cells[5] == "00:00:00"){
     $cells[4]=null;
     $cells[5]=null;
   }
