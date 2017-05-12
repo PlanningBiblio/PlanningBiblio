@@ -271,21 +271,19 @@ function verif_absences(ctrl_form){
 	    retour=false;
 	  }
 	}
+
+	// Contrôle des options Absences-PlanningVide et des plugins éventuels
+	else if(result[i]["info"] && result[i]["admin"]){
+	    if(admin==1) {
+		if(!confirm(result[i]["admin"])) retour=false;
+	    }
+	    else{
+		CJInfo(result[i]["info"]);
+		retour=false;
+	    }
+	}
       }
 
-      // Contrôle si des plannings sont en cours d'élaboration
-      if(result["planningsEnElaboration"]){
-	if(admin==1){
-	  if(!confirm("Vous essayer de placer une absence sur des plannings en cours d'élaboration : "+result["planningsEnElaboration"]+"\nVoulez-vous continuer ?")){
-	    retour=false;
-	  }
-	}
-	else{
-	  CJInfo("Vous essayez de placer une absence sur des plannings en cours d'élaboration : "+result["planningsEnElaboration"],"error");
-	  retour=false;
-	}
-      }
-      
     },
     error: function(result){
       information("Une erreur est survenue.","error");
