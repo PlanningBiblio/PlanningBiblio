@@ -128,7 +128,7 @@ while($date<=$date_fin){
     require_once "../plugins/$p/class.$p.php";
     $instance = new $p;
     if(method_exists($instance,"controleAbsences")){
-      $result[$p]=array("date"=>$date,"admin"=>"1","info"=>"0");
+      $result[$p]=array("date"=>$date,"admin"=>"","info"=>"");
       $instance->controleAbsences($result[$p]);
     }
   }
