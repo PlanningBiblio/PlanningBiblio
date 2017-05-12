@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.7
+Planning Biblio, Version 2.6.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 7 mars 2017
+Dernière modification : 12 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -135,8 +135,8 @@ foreach($db->result as $elem){
     // Valeurs proposées (champ valeurs) = tableau PHP à 2 dimensions
     // Valeurs choisies (champ valeur) =  tableau PHP à 1 dimension
     case "checkboxes" :
-      $valeurs=json_decode(str_replace("&#34;",'"',$elem['valeurs']));
-      $choisies=json_decode(html_entity_decode($elem['valeur'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+      $valeurs=json_decode(str_replace("&#34;",'"',$elem['valeurs']),true);
+      $choisies=json_decode(html_entity_decode($elem['valeur'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
 
       if(is_array($valeurs)){
 	foreach($valeurs as $val){
@@ -161,7 +161,7 @@ foreach($db->result as $elem){
     // Select avec valeurs dans un tableau PHP à 2 dimensions
     case "enum2" :
       echo "<select name='{$elem['nom']}' id='{$elem['nom']}' style='width:305px;'>\n";
-      $options=json_decode(str_replace("&#34;",'"',$elem['valeurs']));
+      $options=json_decode(str_replace("&#34;",'"',$elem['valeurs']),true);
       foreach($options as $option){
 	$selected=$option[0]==$elem['valeur']?"selected='selected'":null;
 	echo "<option value='{$option[0]}' $selected >{$option[1]}</option>\n";

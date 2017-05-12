@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.6.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 21 avril 2017
+Dernière modification : 12 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -89,7 +89,7 @@ class personnel{
     $result=array();
     foreach($all as $elem){
       $result[$elem['id']]=$elem;
-      $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+      $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
     }
 
     //	If name, keep only matching results
@@ -98,7 +98,7 @@ class personnel{
       foreach($all as $elem){
 	if(pl_stristr($elem['nom'],$name) or pl_stristr($elem['prenom'],$name)){
 	  $result[$elem['id']]=$elem;
-	  $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+	  $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
 	}
       }
     }
@@ -123,7 +123,8 @@ class personnel{
       $db=new db();
       $db->select("personnel",null,"id='$id'");
       $this->elements=$db->result;
-      $this->elements[0]['sites']=json_decode(html_entity_decode($db->result[0]['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+      $sites = json_decode(html_entity_decode($db->result[0]['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
+      $this->elements[0]['sites'] = $sites ? $sites : array();
       $this->elements[0]['mails_responsables']=explode(";",html_entity_decode($db->result[0]['mails_responsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
     }elseif(is_array($id)){
       $ids=join(",",$id);
@@ -132,7 +133,8 @@ class personnel{
       if($db->result){
 	foreach($db->result as $elem){
 	  $this->elements[$elem['id']]=$elem;
-	  $this->elements[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+	  $sites = json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
+	  $this->elements[$elem['id']]['sites'] = $sites ? $sites : array();
 	  $this->elements[$elem['id']]['mails_responsables']=explode(";",html_entity_decode($elem['mails_responsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
 	}
       }

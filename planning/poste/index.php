@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.6.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 25 avril 2017
+Dernière modification : 12 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -236,7 +236,7 @@ if($db->result){
     $classesPoste=array();
 
     // Ajout des classes en fonction des activités
-    $activitesPoste = $elem['activites'] ? json_decode(html_entity_decode($elem['activites'],ENT_QUOTES|ENT_IGNORE,'UTF-8')) : array();
+    $activitesPoste = $elem['activites'] ? json_decode(html_entity_decode($elem['activites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true) : array();
     foreach($activitesPoste as $a){
       if(isset($activites[$a]['nom'])){
         $classesPoste[] = 'tr_activite_'.strtolower(removeAccents(str_replace(array(' ','/'), '_', $activites[$a]['nom'])));
@@ -244,7 +244,7 @@ if($db->result){
     }
     
     // Ajout des classes de la ligne en fonction des catégories requises par le poste (A,B ou C)
-    $categoriesPoste = $elem['categories'] ? json_decode(html_entity_decode($elem['categories'],ENT_QUOTES|ENT_IGNORE,'UTF-8')) : array();
+    $categoriesPoste = $elem['categories'] ? json_decode(html_entity_decode($elem['categories'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true) : array();
     foreach($categoriesPoste as $cat){
       if(array_key_exists($cat,$categories)){
 	$classesPoste[]="tr_".str_replace(" ","",removeAccents(html_entity_decode($categories[$cat],ENT_QUOTES|ENT_IGNORE,"UTF-8")));
@@ -446,7 +446,7 @@ else{
   // Ajoute les qualifications de chaque agent (activités) dans le tableaux $cellules pour personnaliser l'affichage des cellules en fonction des qualifications
   foreach($cellules as $k => $v){
     if($v['postes']){
-      $p = json_decode(html_entity_decode($v['postes'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+      $p = json_decode(html_entity_decode($v['postes'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
       $cellules[$k]['activites'] = array();
       foreach($activites as $elem){
         if(in_array($elem['id'], $p)){
@@ -508,7 +508,7 @@ else{
   $db=new db();
   $db->select2("hidden_tables","*",array("perso_id"=>$_SESSION['login_id'],"tableau"=>$tab));
   if($db->result){
-    $hiddenTables = (array) json_decode(html_entity_decode($db->result[0]['hidden_tables'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+    $hiddenTables = json_decode(html_entity_decode($db->result[0]['hidden_tables'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
   }
 
   // $sn : index des tableaux Sans nom pour l'affichage des tableaux masqués
@@ -823,7 +823,7 @@ EOD;
 	      }
 	    }else{
 	      // Emploi du temps récupéré à partir de la table personnel
-	      $temps = json_decode(html_entity_decode($elem['temps'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+	      $temps = json_decode(html_entity_decode($elem['temps'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
 	    }
 
 	    $jour=$d->position-1;		// jour de la semaine lundi = 0 ,dimanche = 6

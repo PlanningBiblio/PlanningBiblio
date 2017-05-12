@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.5
+Planning Biblio, Version 2.6.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 6 mai 2017
+Dernière modification : 12 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -426,7 +426,7 @@ class planning{
 
       $data=$db->result[0]["data"];
       $data=html_entity_decode($data,ENT_QUOTES|ENT_IGNORE,'UTF-8');
-      $data=(array) json_decode($data);
+      $data=json_decode($data, true);
 
       $oldData=array();
       foreach($data as $key => $value){
@@ -514,9 +514,6 @@ class planning{
 
             // Affichage de la ligne avec horaires et poste
             $line="<li><span style='$bold $striped'>".heure2($e['debut'])." - ".heure2($e['fin'])." : {$e['poste']} {$e['site']}";
-            if($GLOBALS['config']['Multisites-nombre']>1){
-              $line.=" ($site)";
-            }
             $line.="</span>";
 
             // On ajoute "(supprimé)" et une étoile en cas de modif car certains webmail suppriment les balises et le style "bold", etc.
@@ -546,9 +543,6 @@ class planning{
             if(!$exists){
               // Affichage de l'ancienne ligne avec horaires et poste
               $line="<li><span style='font-weight:bold; text-decoration:line-through; color:red;'>".heure2($e['debut'])." - ".heure2($e['fin'])." : {$e['poste']} {$e['site']}";
-              if($GLOBALS['config']['Multisites-nombre']>1){
-                $line.=" ($site)";
-              }
               $line.="</span>";
               $line.=" (supprim&eacute;)";
               $line.="<sup style='font-weight:bold;'>*</sup>";

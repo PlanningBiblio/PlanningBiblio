@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.6.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/ajax.control.php
 Création : mai 2011
-Dernière modification : 19 décembre 2016
+Dernière modification : 12 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié <etienne.cavalie@unice.fr>
 
@@ -29,7 +29,7 @@ $groupe=filter_input(INPUT_GET,"groupe",FILTER_SANITIZE_STRING);
 $debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
 $fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateTimeSQL"));
 $perso_ids=filter_input(INPUT_GET,"perso_ids",FILTER_SANITIZE_STRING);
-$perso_ids=json_decode(html_entity_decode($perso_ids,ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+$perso_ids=json_decode(html_entity_decode($perso_ids,ENT_QUOTES|ENT_IGNORE,"UTF-8"),true);
 
 $result=array();
 

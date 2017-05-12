@@ -1,3 +1,11 @@
+*** Version 2.6.7   (12 mai 2017)   ***
+- Corrections
+Corrige une erreur intégrée en version 2.5.1 lors du remplacement des fonctions unserialize par json_decode
+Cette erreur affectait notamment l'enregistrement des heures de présences
+Correction apportée : ajout du 2ème paramètre (true) aux fonctions json_decode de façon à forcer la création d'un tableau au lieu d'un objet
+
+Correction du calcul des heures d'absences dans le menu du planning. L'erreur existait lorsque les heures de service public étaient enregistrées en pourcentage
+
 *** Version 2.6.6   (10 mai 2017)   ***
 - Correction
 Importation des plannings : n'importe pas les agents s'ils sont placés sur un autre site
@@ -46,7 +54,7 @@ LDAP : Compatibilité Active Directory
 LDAP : Test des paramètres depuis la page de configuration
 Mail : Test des paramètres depuis la page de configuration
 
-- Securité
+- Sécurité
 Mise à jour de PHPMailer (version 2.5.22)
 Clé personnelle pour le cryptage des mots de passe LDAP et SMTP (include/config.php à modifier manuellement si mise à jour)
 
@@ -72,7 +80,7 @@ Correction de vulnérabilités XSRF (celles liées à la fonction db::update2)
 
 *** Version 2.5.3   (6 février 2017)   ***
 - Améliorations
-Optimisation de la fonction nom() : moins de latence dans de nombreux modules, notamemnt dans le menu permettant de placer les agents dans le planning
+Optimisation de la fonction nom() : moins de latence dans de nombreux modules, notamment dans le menu permettant de placer les agents dans le planning
 Affichage des absences non validées dans les plannings : les absences non validées apparaîssent en rouge mais ne sont pas barrées. Paramétrable
 Affichage des heures au format 12h34 (Heure, lettre h, minutes) dans le menu du planning et dans la feuille de temps
 Amélioration de la modification des menus (groupes de postes, étages des postes, services de rattachement)
@@ -156,13 +164,13 @@ Corrige une erreur concernant le masquage des tableaux
 Corrige le script d'installation (enregistrement des informations dans la base de données)
 Corrige l'affichage des heures faites dans les tableaux des heures de présences (module planningHebdo)
 Corrige l'affichage des heures de présences dans les fiches agents (l'erreur existait avec le module planningHebdo)
-Corrige la validation des absences (l'erreur existait en configuration multisites)
+Corrige la validation des absences (l'erreur existait en configuration multi-sites)
 Feuille de temps : ne compte plus les absences
 Supprime les éventuels doublons de la table config.
 
 ***	Version 2.3.4	(27 juin 2016)		***
 - Correction
-Corrige le script d'instllation (db_data) : insertion dans la table activités
+Corrige le script d'installation (db_data) : insertion dans la table activités
 
 ***	Version 2.3.3	(20 juin 2016)		***
 - Améliorations
@@ -313,7 +321,7 @@ Améliore l'affichage du menu
 
 ***	Version 1.9.4	(Jérôme Combes, 7 avril 2015)			***
 - Corrections :
-Correction d'un bug empêchant la copie des tableaux en multisites
+Correction d'un bug empêchant la copie des tableaux en multi-sites
 Correction des vulnérabilités SQL Injection
 Correction des vulnérabilités LDAP Injection
 Correction des vulnérabilités Reflected XSS
@@ -333,19 +341,19 @@ Corrige la vulnérabilité permettant de se connecter sans mot de passe (chaîne
 Mise à jour de la bibliothèque PHPMailer
 Corrige un bug empêchant l'enregistrement des modèles
 Corrige un bug empêchant l'enregistrement des agents dans les plannings en multisite
-Initilisations de variables
+Initialisations de variables
 
 ***	Version 1.9.1	(Jérôme Combes, 5 mars 2015)			***
 - Améliorations :
 Planning : Améliore le positionnement du menu permettant de placer les agents
-Planning : Validation des plannings en Ajax (pas de raffraichissement de la page)
+Planning : Validation des plannings en Ajax (pas de rafraîchissement de la page)
 Planning : Ajoute un groupe "Sans service" dans le menu permettant de placer les agents
 Absences : Affiche les dates de demandes dans la liste et dans les fiches
 Tableaux : Améliore les scripts de suppression des tableaux, groupes et lignes
 
 - Corrections :
-Tableaux : Corrige l'erreur empêchant la suppresion des tableaux
-Agents : Corrige une erreur de gestion des droits d'accès en multisites
+Tableaux : Corrige l'erreur empêchant la suppression des tableaux
+Agents : Corrige une erreur de gestion des droits d'accès en multi-sites
 
 
 ***	Version 1.9	(Jérôme Combes, 21 janvier 2015)		***
@@ -426,14 +434,14 @@ Affichage :
 . utilisation des onglets JQuery-ui tabs
 . Intégration du thème default si celui renseigné dans la config n'existe pas
 Nettoyage du fichier js/script.js
-Planning semaine : ajout des icônes Rafraichir et imprimer
+Planning semaine : ajout des icônes Rafraîchir et imprimer
 Gestion des versions des plugins pour simplifier les mises à jour de la base de données
 
 
 ***	Version 1.8.1	(Jérôme Combes, 17 juin 2014)		***
 - Améliorations :
-Remplace les anciens calendiers par des datepickers
-Absences : Améliore l'affichage des emails de notifications d'absences
+Remplace les anciens calendriers par des datepickers
+Absences : Améliore l'affichage des e-mails de notifications d'absences
 Statistiques absences : n'affiche pas les heures si le plugins planningHebdo n'est pas installé
 
 - Corrections :
@@ -449,8 +457,8 @@ Permet l'ajout de commentaires en bas des plannings
 
 - Corrections :
 Correction de la fonction PHP decrypt (des -> tripledes)
-Initilisations de variables dans statistiques/temps.php
-Initilisations de variables dans planning/poste/menudiv.php (menu déroulant du planning) : réinitialise correctement les couleurs et les heures des agents
+Initialisations de variables dans statistiques/temps.php
+Initialisations de variables dans planning/poste/menudiv.php (menu déroulant du planning) : réinitialise correctement les couleurs et les heures des agents
 
 
 ***	Version 1.7.9	(Jérôme Combes, 30 avril 2014)		***
@@ -462,7 +470,7 @@ Amélioration du style des datepickers (style JQuery-UI)
 ***	Version 1.7.8	(Jérôme Combes, 2 avril 2014)		***
 - Améliorations :
 Utilisation d'une nouvelle fonction (absences::getRecipients) pour envoyer les notifications d'absences
-Permet l'ajout de themes (dans le dossier "themes") et leur sélection à partir de la page administration/Configuration (variable $config['Affichage-theme'])
+Permet l'ajout de thèmes (dans le dossier "themes") et leur sélection à partir de la page administration/Configuration (variable $config['Affichage-theme'])
 
 - Corrections :
 Corrige l'affichage des totaux d'heures par jour et par semaine dans les emplois du temps
@@ -565,12 +573,12 @@ Correction du tri des dates dans les dataTables
 
 ***	Version 1.6.2	(Jérôme Combes, 3 Décembre 2013)		***
 - Améliorations :
-Ajout des champs matricule et email du responsable dans la fiche des agents
+Ajout des champs matricule et e-mail du responsable dans la fiche des agents
 Statistiques sur les samedis travaillés
 Affichage du nombre d'heures d'ouverture au public dans les statistiques
 Absences avec validation (selon configuration)
 Choix des destinataires des notifications lors de la saisie/validation des absences parmis : 
-  tous les gestionnaires d'absences, le responsable hierarchique de l'agent, l'agent lui-même
+  tous les gestionnaires d'absences, le responsable hiérarchique de l'agent, l'agent lui-même
 Permet la saisie des absences aux administrateurs seulement (selon configuration).
 Mise à jour de l'aide en ligne
 
@@ -602,18 +610,18 @@ La date de départ n'est plus efface lors de la validation de la fiche des agent
 
 ***	Version 1.5.9	(Jérôme Combes, 11 octobre 2013)		***
 - Améliorations :
-N'affiche plus les agents des autres sites dans la liste des agents indisponibles (avec l'option multisites)
+N'affiche plus les agents des autres sites dans la liste des agents indisponibles (avec l'option multi-sites)
 Ajout du champ "catégorie" dans la fiche des agents avec les choix "titulaire" et "contractuel"
 
 ***	Version 1.5.8	(Jérôme Combes, 4 octobre 2013)			***
 - Améliorations :
-Style différent dans le planning en fonction du service et/ou du statut de l'agents
+Style différent dans le planning en fonction du service et/ou du statut de l'agent
 Style personnalisé dans une feuille de style dédiée (css/custom.css)
 
 ***	Version 1.5.7	(Jérôme Combes, 26 septembre 2013)		***
 - Améliorations :
 Modification du champ "supprime" de la table "personnel", facilite l'utilisation de la fonction personnel::fetch()
-Suppression des informations personnel des agents lors de la suppression definitive (garde nom, prenom, statut, service pour les stats et l'historique des plannings)
+Suppression des informations personnel des agents lors de la suppression définitive (garde nom, prenom, statut, service pour les stats et l'historique des plannings)
 Affiche les jours de fermeture dans les agendas
 
 ***	Version 1.5.6	(Jérôme Combes, 24 septembre 2013)		***

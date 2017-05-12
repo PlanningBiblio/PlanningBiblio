@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.6
+Planning Biblio, Version 2.6.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 25 avril 2017
+Dernière modification : 12 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -23,7 +23,7 @@ Inclut à la fin le fichier footer.php
 session_start();
 
 // Version
-$version="2.6.6";
+$version="2.6.7";
 
 // Redirection vers setup si le fichier config est absent
 if(!file_exists("include/config.php")){
@@ -124,7 +124,7 @@ EOD;
 //		Recupération des droits d'accès de l'agent
 $db=new db();
 $db->select2("personnel","droits",array("id"=>$_SESSION['login_id']));
-$droits=json_decode(html_entity_decode($db->result[0]['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+$droits=json_decode(html_entity_decode($db->result[0]['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
 $droits[]=99;	// Ajout du droit de consultation pour les connexions anonymes
 $_SESSION['droits']=$droits;
 

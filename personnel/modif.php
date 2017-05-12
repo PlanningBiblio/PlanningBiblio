@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.6.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 21 avril 2017
+Dernière modification : 12 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -138,15 +138,15 @@ if($id){		//	récupération des infos de l'agent en cas de modif
 	  $temps = array();
 	}
   }else{
-    $temps=json_decode(html_entity_decode($db->result[0]['temps'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+    $temps=json_decode(html_entity_decode($db->result[0]['temps'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
     if(!is_array($temps)){
       $temps = array();
     }
   }
-  $postes_attribues = json_decode(html_entity_decode($db->result[0]['postes'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+  $postes_attribues = json_decode(html_entity_decode($db->result[0]['postes'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
   if(is_array($postes_attribues))
     sort($postes_attribues);
-  $acces=json_decode(html_entity_decode($db->result[0]['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+  $acces=json_decode(html_entity_decode($db->result[0]['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
   $matricule=$db->result[0]['matricule'];
   $url_ics = $db->result[0]['url_ics'];
   $mailsResponsables=explode(";",html_entity_decode($db->result[0]['mails_responsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
@@ -154,7 +154,7 @@ if($id){		//	récupération des infos de l'agent en cas de modif
   $informations=stripslashes($db->result[0]['informations']);
   $recup=stripslashes($db->result[0]['recup']);
   $sites=html_entity_decode($db->result[0]['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8');
-  $sites=$sites?json_decode($sites):array();
+  $sites=$sites?json_decode($sites,true):array();
   $action="modif";
   $titre=$nom." ".$prenom;
   
@@ -715,7 +715,7 @@ for($j=0;$j<$config['nb_semaine'];$j++){
 	echo "<td><select name='temps[".($i-1)."][4]' class='edt-site'>\n";
 	echo "<option value='' class='edt-site-0'>&nbsp;</option>\n";
 	for($l=1;$l<=$config['Multisites-nombre'];$l++){
-	  $selected=$temps[$i-1][4]==$l?"selected='selected'":null;
+	  $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4]==$l) ? "selected='selected'" : null;
 	  echo "<option value='$l' $selected class='edt-site-$l'>{$config["Multisites-site{$l}"]}</option>\n";
 	}
 	echo "</select></td>";
@@ -735,7 +735,7 @@ for($j=0;$j<$config['nb_semaine'];$j++){
 		$site=null;
 		if(isset($temps[$i-1][4])){
 		  $site="Multisites-site".$temps[$i-1][4];
-		  $site=$config[$site];
+		  $site = isset($config[$site]) ? $config[$site] : null;
 		}
 		echo "<td>$site</td>";
       }

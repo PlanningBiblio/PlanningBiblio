@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.6.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 21 avril 2017
+Dernière modification : 12 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -291,12 +291,7 @@ function calculHeuresSP($date){
   $heuresSPUpdate=0;
   if($db->result){
     $heuresSPUpdate=$db->result[0]["update_time"];
-    $heuresSP=json_decode((html_entity_decode($db->result[0]["heures"],ENT_QUOTES|ENT_IGNORE,"utf-8")));
-    $tmp=array();
-    foreach($heuresSP as $key => $value){
-      $tmp[(int) $key] = $value;
-    }
-    $heuresSP=$tmp;
+    $heuresSP=json_decode(html_entity_decode($db->result[0]["heures"],ENT_QUOTES|ENT_IGNORE,"utf-8"),true);
   }
 
   // Recherche des heures de SP avec le module planningHebdo
@@ -412,7 +407,7 @@ function calculHeuresSP($date){
 	  if(strpos($value1["heures_hebdo"],"%")){
 	    $minutesHebdo=0;
 	    if($value1['temps']){
-              $temps=json_decode(html_entity_decode($value1['temps'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+              $temps=json_decode(html_entity_decode($value1['temps'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
               if(!is_array($temps)){
                 $temps = array();
               }

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.6.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/ajax.validation.php
 Création : 23 février 2015
-Dernière modification : 10 février 2017
+Dernière modification : 12 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -37,7 +37,7 @@ $perso_id=$_SESSION['login_id'];
 $droit=($config['Multisites-nombre']>1)?(300+$site):12;
 $db=new db();
 $db->select2("personnel","droits",array("id"=>$perso_id));
-$droits_agent=json_decode(html_entity_decode($db->result[0]['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+$droits_agent=json_decode(html_entity_decode($db->result[0]['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
 if(!in_array($droit,$droits_agent)){
   echo json_encode(array("Accès refusé","error"));
   exit;

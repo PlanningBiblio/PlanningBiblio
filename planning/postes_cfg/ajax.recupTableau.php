@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.6.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/postes_cfg/ajax.recupTableau.php
 Création : 20 février 2016
-Dernière modification : 10 février 2017
+Dernière modification : 12 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -50,7 +50,7 @@ if(!empty($postes)){
   
   if($db->result){
     foreach($db->result as $elem){
-      $tmp=json_decode(html_entity_decode($elem['activites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+      $tmp=json_decode(html_entity_decode($elem['activites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
       foreach($tmp as $e){
 	if(!in_array($e,$activites)){
 	  $activites[]=$e;

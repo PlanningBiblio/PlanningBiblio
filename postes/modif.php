@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.8
+Planning Biblio, Version 2.6.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : postes/modif.php
 Création : mai 2011
-Dernière modification : 9 mars 2017
+Dernière modification : 12 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -36,9 +36,9 @@ if($id){
   $nom=$db->result[0]['nom'];
   $etage=$db->result[0]['etage'];
   $groupe=$db->result[0]['groupe'];
-  $categories = $db->result[0]['categories'] ? json_decode(html_entity_decode($db->result[0]['categories'],ENT_QUOTES|ENT_IGNORE,'UTF-8')) : array();
+  $categories = $db->result[0]['categories'] ? json_decode(html_entity_decode($db->result[0]['categories'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true) : array();
   $site=$db->result[0]['site'];
-  $activites=json_decode(html_entity_decode($db->result[0]['activites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+  $activites=json_decode(html_entity_decode($db->result[0]['activites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
   $obligatoire=$db->result[0]['obligatoire']=="Obligatoire"?"checked='checked'":"";
   $renfort=$db->result[0]['obligatoire']=="Renfort"?"checked='checked'":"";
   $stat1=$db->result[0]['statistiques']?"checked='checked'":"";

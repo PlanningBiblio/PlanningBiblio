@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.6.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 21 mars 2017
+Dernière modification : 12 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -111,7 +111,7 @@ class planningHebdo{
       $p=new personnel();
       $p->fetch("nom");
       foreach($p->elements as $elem){
-	$tmp=json_decode(html_entity_decode($elem['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+	$tmp=json_decode(html_entity_decode($elem['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
 	if(in_array(24,$tmp)){
 	  $destinataires[]=$elem['mail'];
 	}
@@ -302,7 +302,7 @@ class planningHebdo{
 	$db=new db();
 	$db->select("planning_hebdo_periodes","*","`annee`='$annee'","ORDER BY `annee`");
 	if($db->result){
-	  $dates[$i]=json_decode(html_entity_decode($db->result[0]['dates'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+	  $dates[$i]=json_decode(html_entity_decode($db->result[0]['dates'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
 	  $datesFr[$i]=array_map("dateFr",$dates[$i]);
 	  $i++;
 	}
@@ -368,7 +368,7 @@ class planningHebdo{
       $p=new personnel();
       $p->fetch("nom");
       foreach($p->elements as $elem){
-	$tmp=json_decode(html_entity_decode($elem['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+	$tmp=json_decode(html_entity_decode($elem['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
 	if(in_array(24,$tmp)){
 	  $destinataires[]=$elem['mail'];
 	}

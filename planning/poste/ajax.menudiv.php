@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.6
+Planning Biblio, Version 2.6.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 10 mai 2017
+Dernière modification : 12 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
@@ -72,7 +72,7 @@ else{
   $autorisation=false;
   $db_admin=new db();			// Vérifions si l'utilisateur à les droits de modifier les plannings
   $db_admin->select2("personnel","droits",array("id"=>$login_id));
-  $droits=json_decode(html_entity_decode($db_admin->result[0]['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+  $droits=json_decode(html_entity_decode($db_admin->result[0]['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
   if(!in_array(12,$droits)){
     exit;
   }
@@ -84,10 +84,10 @@ else{
 $db=new db;
 $db->select2("postes",null,array("id"=>$poste));
 $posteNom=$db->result[0]['nom'];
-$activites = json_decode(html_entity_decode($db->result[0]['activites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+$activites = json_decode(html_entity_decode($db->result[0]['activites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
 $stat=$db->result[0]['statistiques'];
 $bloquant=$db->result[0]['bloquant'];
-$categories = $db->result[0]['categories'] ? json_decode(html_entity_decode($db->result[0]['categories'],ENT_QUOTES|ENT_IGNORE,'UTF-8')) : array();
+$categories = $db->result[0]['categories'] ? json_decode(html_entity_decode($db->result[0]['categories'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true) : array();
 
 // Nom du site
 $siteNom=null;
@@ -207,7 +207,7 @@ foreach($db->result as $elem){
     }
   }else{
     // Emploi du temps récupéré à partir de la table personnel
-    $temps=json_decode(html_entity_decode($elem['temps'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+    $temps=json_decode(html_entity_decode($elem['temps'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
   }
 
   $jour=$d->position-1;		// jour de la semaine lundi = 0 ,dimanche = 6
@@ -333,7 +333,7 @@ if($agents_tmp){
   foreach($agents_tmp as $elem){
     // Elimine les agents non qualifiés
     if(is_array($activites)){
-      $postes = json_decode(html_entity_decode($elem['postes'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+      $postes = json_decode(html_entity_decode($elem['postes'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
       foreach($activites as $a){
         if(!is_array($postes) or !in_array($a, $postes)){
           $motifExclusion[$elem['id']][]="<span title='L&apos;agent n&apos;a pas toutes les qualifications requises pour occuper ce poste'>Activit&eacute;s</span>";
@@ -344,7 +344,7 @@ if($agents_tmp){
     
     // Elimine les agents qui ne travaille pas sur ce site (en multi-sites)
     if($config['Multisites-nombre']>1){
-      $sites = json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+      $sites = json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
       if(!is_array($sites) or !in_array($site, $sites)){
         continue;
       }
@@ -385,7 +385,7 @@ if($autres_agents_tmp){
   foreach($autres_agents_tmp as $elem){
     // Elimine les agents qui ne travaille pas sur ce site (en multi-sites)
     if($config['Multisites-nombre']>1){
-      $sites = json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+      $sites = json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
       if(!is_array($sites) or !in_array($site, $sites)){
         continue;
       }

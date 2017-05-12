@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.6.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 21 avril 2017
+Dernière modification : 12 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -70,25 +70,24 @@ class absences{
     $heuresAbsencesUpdate=0;
     if($db->result){
       $heuresAbsencesUpdate=$db->result[0]["update_time"];
-      $heures=json_decode((html_entity_decode($db->result[0]["heures"],ENT_QUOTES|ENT_IGNORE,"UTF-8")));
-      $tmp=array();
-      foreach($heures as $key => $value){
-	$tmp[(int) $key] = $value;
-      }
-      $heures=$tmp;
+      $heures=json_decode(html_entity_decode($db->result[0]["heures"],ENT_QUOTES|ENT_IGNORE,"UTF-8"),true);
     }
 
 
     // Vérifie si la table absences a été mise à jour depuis le dernier calcul
     $aUpdate=strtotime($this->update_time());
 
+    // Vérifie si la table personnel a été mise à jour depuis le dernier calcul
+    $p=new personnel();
+    $pUpdate=strtotime($p->update_time());
+
     // Vérifie si la table planning_hebdo a été mise à jour depuis le dernier calcul
     $p=new planningHebdo();
     $pHUpdate=strtotime($p->update_time());
 
-    // Si la table absences ou la table planning_hebdo a été modifiée depuis la création du tableaux des heures
+    // Si la table absences ou la table personnel ou la table planning_hebdo a été modifiée depuis la création du tableaux des heures
     // Ou si le tableau des heures n'a pas été créé ($heuresAbsencesUpdate=0), on le (re)fait.
-    if($aUpdate>$heuresAbsencesUpdate or $pHUpdate>$heuresAbsencesUpdate){
+    if($aUpdate>$heuresAbsencesUpdate or $pUpdate>$heuresAbsencesUpdate or $pHUpdate>$heuresAbsencesUpdate){
       // Recherche de toutes les absences
       $absences=array();
       $a =new absences();
@@ -144,12 +143,13 @@ class absences{
 
 	  $heures[$perso_id]=$h;
 
-	  // On applique le pourcentage
-	  if(strpos($agents[$perso_id]["heures_hebdo"],"%")){
-	    $pourcent=(float) str_replace("%",null,$agents[$perso_id]["heures_hebdo"]);
-	    $heures[$perso_id]=$heures[$perso_id]*$pourcent/100;
-	  }
 	}
+
+        // On applique le pourcentage
+        if(strpos($agents[$perso_id]["heures_hebdo"],"%")){
+          $pourcent=(float) str_replace("%",null,$agents[$perso_id]["heures_hebdo"]);
+          $heures[$perso_id]=$heures[$perso_id]*$pourcent/100;
+        }
       }
 
       // Enregistrement des heures dans la base de données
@@ -530,7 +530,7 @@ class absences{
         // Multisites, n'affiche que les agents des sites choisis
         if(!empty($sites)){
           if($GLOBALS['config']['Multisites-nombre'] > 1){
-            $sitesAgent = json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+            $sitesAgent = json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
           }else{
             $sitesAgent = array(1);
           }
@@ -628,7 +628,7 @@ class absences{
       // Créé un tableau $agents qui sera placé dans $this->elements['agents']
       // Ce tableau contient un tableau par agent avec les informations le concernant (nom, prenom, mail, etc.)
       // En cas d'absence enregistrée pour plusieurs agents, il sera complété avec les informations des autres agents
-      $sites = json_decode(html_entity_decode($result['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+      $sites = json_decode(html_entity_decode($result['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
       $agents=array(array("perso_id"=>$result['perso_id'], "nom"=>$result['nom'], "prenom"=>$result['prenom'], "sites"=>$sites, "mail"=>$result['mail'], "mails_responsables"=>$result['mails_responsables'], "absence_id"=>$id));
       $perso_ids=array($result['perso_id']);
 
@@ -650,7 +650,7 @@ class absences{
 	if($db->result){
 	  foreach($db->result as $elem){
 	    $elem['mails_responsables']=explode(";",html_entity_decode($elem['mails_responsables'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
-	    $sites = json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+	    $sites = json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
 	    $agent=array("perso_id"=>$elem['perso_id'], "nom"=>$elem['nom'], "prenom"=>$elem['prenom'], "sites"=>$sites, "mail"=>$elem['mail'], "mails_responsables"=>$elem['mails_responsables'], "absence_id"=>$elem['id']);
 	    if(!in_array($agent,$agents)){
 	      $agents[]=$agent;
@@ -674,7 +674,7 @@ class absences{
     if($GLOBALS['config']['Multisites-nombre']>1){
       $db=new db();
       $db->select("personnel","temps","id='$perso_id'");
-      $temps=json_decode(html_entity_decode($db->result[0]['temps'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+      $temps=json_decode(html_entity_decode($db->result[0]['temps'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
       $date=$debut;
       while($date<=$fin){
 	// Emploi du temps si module planningHebdo activé
@@ -728,7 +728,7 @@ class absences{
     $db=new db();
     $db->select("personnel",null,"supprime='0'");
     foreach($db->result as $elem){
-      $d=json_decode(html_entity_decode($elem['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+      $d=json_decode(html_entity_decode($elem['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
       foreach($droitsAbsences as $elem2){
 	if(is_array($d) and in_array($elem2,$d) and !in_array($elem,$responsables)){
 	  $responsables[]=$elem;
@@ -752,7 +752,7 @@ class absences{
     */
 
     $categories=$GLOBALS['config']["Absences-notifications{$validation}"];
-    $categories=json_decode(html_entity_decode(stripslashes($categories),ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+    $categories=json_decode(html_entity_decode(stripslashes($categories),ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
     /*
     $categories : Catégories de personnes à qui les notifications doivent être envoyées
       tableau sérialisé issu de la config. : champ Absences-notifications, Absences-notifications2, 

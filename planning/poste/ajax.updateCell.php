@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.6.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 10 février 2017
+Dernière modification : 12 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -145,7 +145,7 @@ $activites=$a->elements;
 
 foreach($tab as $k => $v){
   if($v['postes']){
-    $p = json_decode(html_entity_decode($v['postes'],ENT_QUOTES|ENT_IGNORE,'UTF-8'));
+    $p = json_decode(html_entity_decode($v['postes'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
     $tab[$k]['activites'] = array();
     foreach($activites as $elem){
       if(in_array($elem['id'], $p)){

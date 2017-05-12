@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.6.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 21 avril 2017
+Dernière modification : 12 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -99,7 +99,7 @@ foreach($motifs as $elem){
   }
 }
 if(!$patternExists){
-  $motifs[]=array("id"=>"99999", "valeur"=>$motif);
+  $motifs[]=array("id"=>"99999", "valeur"=>$motif, "type"=> "0");
 }
 
 // Sécurité
