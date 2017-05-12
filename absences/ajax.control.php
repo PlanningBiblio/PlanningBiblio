@@ -87,18 +87,16 @@ foreach($perso_ids as $perso_id){
   $result[$perso_id]['nom']=nom($perso_id,'nom p',$agents);
 }
 
-// Contrôle si placé sur des plannings en cours d'élaboration;
-if($config['Absences-planningVide']==0){
-  // Dates à contrôler
-  $date_debut=substr($debut,0,10);
-  $date_fin=substr($fin,0,10);
+// Dates à contrôler
+$date_debut=substr($debut,0,10);
+$date_fin=substr($fin,0,10);
   
-  // Tableau des plannings en cours d'élaboration
-  $planningsEnElaboration=array();
-  
-  // Pour chaque dates
-  $date=$date_debut;
-  while($date<=$date_fin){
+// Pour chaque dates
+$date=$date_debut;
+while($date<=$date_fin){
+
+  // Contrôle si placé sur des plannings en cours d'élaboration;
+  if($config['Absences-planningVide']==0){
     // Vérifie si les plannings de tous les sites sont validés
     $db=new db();
     $db->select2("pl_poste_verrou","*",array("date"=>$date, "verrou2"=>"1"));
@@ -112,25 +110,30 @@ if($config['Absences-planningVide']==0){
       $db2->select2("pl_poste","id",array("date"=>$date));
       // Si tous les sites ne sont pas validés et si certains sont commencés, on affichera la date correspondante
       if($db2->result){
-	$planningsEnElaboration[]=date("d/m/Y",strtotime($date));
+  	// Affichage des dates correspondantes aux plannings en cours d'élaboration
+  	$result["planningsEnElaboration"]=array(
+		"date"=>date("d/m/Y",strtotime($date)),
+		"admin"=>"Vous essayer de placer une absence sur des plannings en cours d'élaboration : $date\nConfirmer?",
+		"info"=>"Vous essayer de placer une absence sur des plannings en cours d'élaboration : $date\nOpération interdite."
+		);
       }
     }
-    $date=date("Y-m-d",strtotime($date." +1 day"));
   }
-  
-  // Affichage des dates correspondantes aux plannings en cours d'élaboration
-  $result["planningsEnElaboration"]=implode(" ; ",$planningsEnElaboration);
-}
 
-require_once("../plugins/class.plugins.php");
-$plugins=new plugins;
-$plugins->fetch();
-foreach($plugins->liste as $p){
-    if(method_exists($p,"controleAbsences")){
-        require_once "../plugins/$p/class.$p.php";
-        $instance = new $p;
-        $instance->controleAbsences($result);
+  // Controle si des plugins implementent une fonction de controle des absences
+  require_once("../plugins/class.plugins.php");
+  $plugins=new plugins;
+  $plugins->fetch();
+  foreach($plugins->liste as $p){
+    require_once "../plugins/$p/class.$p.php";
+    $instance = new $p;
+    if(method_exists($instance,"controleAbsences")){
+      $result[$p]=array("date"=>$date,"admin"=>"1","info"=>"0");
+      $instance->controleAbsences($result[$p]);
     }
+  }
+
+  $date=date("Y-m-d",strtotime($date." +1 day"));
 }
 
 echo json_encode($result);
