@@ -1,3 +1,11 @@
+*** Version 2.6.8   (13 mai 2017)   ***
+- Correction Windows
+Modifie le script de mise à jour pour les serveurs Windows afin qu'il renomme correctement les tables en minuscules avec l'ajout d'underscores.
+Pas de modification pour les serveurs Linux/Unix
+
+- Amérlioration
+Contrôle des tables modifiées entre la version 2.6.4 et 2.6.8 lors de l'éxecution du script de mise à jour
+
 *** Version 2.6.7   (12 mai 2017)   ***
 - Corrections
 Corrige une erreur intégrée en version 2.5.1 lors du remplacement des fonctions unserialize par json_decode

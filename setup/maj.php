@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.7
+Planning Biblio, Version 2.6.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 12 mai 2017
+Dernière modification : 13 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -683,41 +683,115 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
 $v="2.6.4";
 if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   // Renomme les tables en minuscules
-  $sql[] = "RENAME TABLE `{$dbprefix}appelDispo` TO `{$dbprefix}appel_dispo`;";
-  $sql[] = "RENAME TABLE `{$dbprefix}EDTSamedi` TO `{$dbprefix}edt_samedi`;";
-  $sql[] = "RENAME TABLE `{$dbprefix}heures_Absences` TO `{$dbprefix}heures_absences`;";
-  $sql[] = "RENAME TABLE `{$dbprefix}heures_SP` TO `{$dbprefix}heures_sp`;";
-  $sql[] = "RENAME TABLE `{$dbprefix}hiddenTables` TO `{$dbprefix}hidden_tables`;";
-  $sql[] = "RENAME TABLE `{$dbprefix}IPBlocker` TO `{$dbprefix}ip_blocker`;";
-  $sql[] = "RENAME TABLE `{$dbprefix}joursFeries` TO `{$dbprefix}jours_feries`;";
-  $sql[] = "RENAME TABLE `{$dbprefix}planningHebdo` TO `{$dbprefix}planning_hebdo`;";
-  $sql[] = "RENAME TABLE `{$dbprefix}planningHebdoPeriodes` TO `{$dbprefix}planning_hebdo_periodes`;";
+  $db=new db();
+  $db->query("SELECT count(*) FROM `{$dbprefix}appelDispo` WHERE 1;");
+  if($db->result){
+    $sql[] = "RENAME TABLE `{$dbprefix}appelDispo` TO `{$dbprefix}appel_dispo`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  }
+  $db=new db();
+  $db->query("SELECT count(*) FROM `{$dbprefix}EDTSamedi` WHERE 1;");
+  if($db->result){
+    $sql[] = "RENAME TABLE `{$dbprefix}EDTSamedi` TO `{$dbprefix}edt_samedi`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  }
+  $db=new db();
+  $db->query("SELECT count(*) FROM `{$dbprefix}heures_Absences` WHERE 1;");
+  if($db->result){
+    $sql[] = "RENAME TABLE `{$dbprefix}heures_Absences` TO `{$dbprefix}heures_absences`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  }
+  $db=new db();
+  $db->query("SELECT count(*) FROM `{$dbprefix}heures_SP` WHERE 1;");
+  if($db->result){
+    $sql[] = "RENAME TABLE `{$dbprefix}heures_SP` TO `{$dbprefix}heures_sp`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  }
+  $db=new db();
+  $db->query("SELECT count(*) FROM `{$dbprefix}hiddenTables` WHERE 1;");
+  if($db->result){
+    $sql[] = "RENAME TABLE `{$dbprefix}hiddenTables` TO `{$dbprefix}hidden_tables`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+    $sql[] = "ALTER TABLE `{$dbprefix}hidden_tables` CHANGE `hiddenTables` `hidden_tables` TEXT NULL DEFAULT NULL; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  }
+  $db=new db();
+  $db->query("SELECT count(*) FROM `{$dbprefix}IPBlocker` WHERE 1;");
+  if($db->result){
+    $sql[] = "RENAME TABLE `{$dbprefix}IPBlocker` TO `{$dbprefix}ip_blocker`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  }
+  $db=new db();
+  $db->query("SELECT count(*) FROM `{$dbprefix}joursFeries` WHERE 1;");
+  if($db->result){
+    $sql[] = "RENAME TABLE `{$dbprefix}joursFeries` TO `{$dbprefix}jours_feries`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  }
+  $db=new db();
+  $db->query("SELECT count(*) FROM `{$dbprefix}planningHebdo` WHERE 1;");
+  if($db->result){
+    $sql[] = "RENAME TABLE `{$dbprefix}planningHebdo` TO `{$dbprefix}planning_hebdo`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  }
+  $db=new db();
+  $db->query("SELECT count(*) FROM `{$dbprefix}planningHebdoPeriodes` WHERE 1; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e");
+  if($db->result){
+    $sql[] = "RENAME TABLE `{$dbprefix}planningHebdoPeriodes` TO `{$dbprefix}planning_hebdo_periodes`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  }
 
   // Renomme les champs en minuscules
-  $sql[] = "ALTER TABLE `{$dbprefix}hidden_tables` CHANGE `hiddenTables` `hidden_tables` TEXT NULL DEFAULT NULL;";
-  $sql[] = "ALTER TABLE `{$dbprefix}absences` CHANGE `CALNAME` `cal_name` VARCHAR(300) NOT NULL;";
-  $sql[] = "ALTER TABLE `{$dbprefix}absences` DROP INDEX `CALNAME`, ADD INDEX `cal_name` (`cal_name`) USING BTREE;";
-  $sql[] = "ALTER TABLE `{$dbprefix}absences` CHANGE `iCalKey` `ical_key` TEXT NOT NULL;";
-  $sql[] = "ALTER TABLE `{$dbprefix}absences` CHANGE `valideN1` `valide_n1` INT(11) NOT NULL DEFAULT 0;";
-  $sql[] = "ALTER TABLE `{$dbprefix}absences` CHANGE `validationN1` `validation_n1` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00';";
-  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Lundi` `lundi` INT;";
-  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Mardi` `mardi` INT;";
-  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Mercredi` `mercredi` INT;";
-  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Jeudi` `jeudi` INT;";
-  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Vendredi` `vendredi` INT;";
-  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Samedi` `samedi` INT;";
-  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Dimanche` `dimanche` INT;";
-  $sql[] = "ALTER TABLE `{$dbprefix}personnel` CHANGE `heuresHebdo` `heures_hebdo` VARCHAR(6) NOT NULL;";
-  $sql[] = "ALTER TABLE `{$dbprefix}personnel` CHANGE `heuresTravail` `heures_travail` FLOAT(5) NOT NULL;";
-  $sql[] = "ALTER TABLE `{$dbprefix}personnel` CHANGE `mailsResponsables` `mails_responsables` TEXT NOT NULL DEFAULT '';";
-  $sql[] = "ALTER TABLE `{$dbprefix}personnel` CHANGE `codeICS` `code_ics` VARCHAR(100) NULL DEFAULT NULL;";
+  $sql[] = "ALTER TABLE `{$dbprefix}absences` CHANGE `CALNAME` `cal_name` VARCHAR(300) NOT NULL; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  $sql[] = "ALTER TABLE `{$dbprefix}absences` DROP INDEX `CALNAME`, ADD INDEX `cal_name` (`cal_name`) USING BTREE; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  $sql[] = "ALTER TABLE `{$dbprefix}absences` CHANGE `iCalKey` `ical_key` TEXT NOT NULL; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  $sql[] = "ALTER TABLE `{$dbprefix}absences` CHANGE `valideN1` `valide_n1` INT(11) NOT NULL DEFAULT 0; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  $sql[] = "ALTER TABLE `{$dbprefix}absences` CHANGE `validationN1` `validation_n1` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00'; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Lundi` `lundi` INT; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Mardi` `mardi` INT; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Mercredi` `mercredi` INT; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Jeudi` `jeudi` INT; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Vendredi` `vendredi` INT; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Samedi` `samedi` INT; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CHANGE `Dimanche` `dimanche` INT; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  $sql[] = "ALTER TABLE `{$dbprefix}personnel` CHANGE `heuresHebdo` `heures_hebdo` VARCHAR(6) NOT NULL; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  $sql[] = "ALTER TABLE `{$dbprefix}personnel` CHANGE `heuresTravail` `heures_travail` FLOAT(5) NOT NULL; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  $sql[] = "ALTER TABLE `{$dbprefix}personnel` CHANGE `mailsResponsables` `mails_responsables` TEXT NOT NULL DEFAULT ''; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  $sql[] = "ALTER TABLE `{$dbprefix}personnel` CHANGE `codeICS` `code_ics` VARCHAR(100) NULL DEFAULT NULL; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
   
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
-$v="2.6.7";
+$v="2.6.8";
 if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Renomme les tables en minuscules si elles étaient déjà en minuscules (ajout d'undercores)
+  $db=new db();
+  $db->query("SELECT count(*) FROM `{$dbprefix}appeldispo` WHERE 1;");
+  if($db->result){
+    $sql[] = "RENAME TABLE `{$dbprefix}appeldispo` TO `{$dbprefix}appel_dispo`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  }
+  $db=new db();
+  $db->query("SELECT count(*) FROM `{$dbprefix}edtsamedi` WHERE 1;");
+  if($db->result){
+    $sql[] = "RENAME TABLE `{$dbprefix}edtsamedi` TO `{$dbprefix}edt_samedi`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  }
+  $db=new db();
+  $db->query("SELECT count(*) FROM `{$dbprefix}hiddentables` WHERE 1;");
+  if($db->result){
+    $sql[] = "RENAME TABLE `{$dbprefix}hiddentables` TO `{$dbprefix}hidden_tables`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+    $sql[] = "ALTER TABLE `{$dbprefix}hidden_tables` CHANGE `hiddentables` `hidden_tables` TEXT NULL DEFAULT NULL; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  }
+  $db=new db();
+  $db->query("SELECT count(*) FROM `{$dbprefix}ipblocker` WHERE 1;");
+  if($db->result){
+    $sql[] = "RENAME TABLE `{$dbprefix}ipblocker` TO `{$dbprefix}ip_blocker`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  }
+  $db=new db();
+  $db->query("SELECT count(*) FROM `{$dbprefix}joursferies` WHERE 1; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e");
+  if($db->result){
+    $sql[] = "RENAME TABLE `{$dbprefix}joursferies` TO `{$dbprefix}jours_feries`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  }
+  $db=new db();
+  $db->query("SELECT count(*) FROM `{$dbprefix}planninghebdo` WHERE 1; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e");
+  if($db->result){
+    $sql[] = "RENAME TABLE `{$dbprefix}planninghebdo` TO `{$dbprefix}planning_hebdo`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  }
+  $db=new db();
+  $db->query("SELECT count(*) FROM `{$dbprefix}planninghebdoperiodes` WHERE 1; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e");
+  if($db->result){
+    $sql[] = "RENAME TABLE `{$dbprefix}planninghebdoperiodes` TO `{$dbprefix}planning_hebdo_periodes`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
+  }
+
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
@@ -730,6 +804,40 @@ foreach($sql as $elem){
     echo "$elem : <font style='color:green;'>OK</font><br/>\n";
   else
     echo "$elem : <font style='color:red;'>Erreur</font><br/>\n";
+}
+
+if($v == "2.6.8"){
+  echo "<p><h3>V&eacute;rification des tables</h3>\n";
+  $tables = array('appel_dispo', 'edt_samedi', 'heures_absences', 'heures_sp', 'hidden_tables', 'ip_blocker', 'jours_feries', 'planning_hebdo', 'planning_hebdo_periodes');
+  foreach($tables as $elem){
+    $db=new db();
+    $db->query("SELECT count(*) FROM `{$dbprefix}{$elem}` WHERE 1;");
+    if($db->result){
+      echo "$elem : <font style='color:green;'>OK</font><br/>\n";
+    }else{
+      echo "$elem : <font style='color:red;'>Erreur</font><br/>\n";
+    }
+  }
+  echo "</p>\n";
+
+
+  echo "<p><h3>V&eacute;rification des champs</h3>\n";
+  $champs = array(
+    array('absences', array('cal_name','ical_key','valide_n1','validation_n1')),
+    array('pl_poste_tab_grp', array('lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche')),
+    array('personnel', array('heures_hebdo','heures_travail','mails_responsables','code_ics')));
+  foreach($champs as $elem){
+    foreach($elem[1] as $field){
+      $db=new db();
+      $db->query("SELECT `$field` FROM `{$dbprefix}{$elem[0]}` WHERE 1");
+      if($db->error){
+        echo "Table {$elem[0]}, champs $field : <font style='color:red;'>Erreur</font><br/>\n";
+      }else{
+        echo "Table {$elem[0]}, champs $field : <font style='color:green;'>OK</font><br/>\n";
+      }
+    }
+  }
+  echo "</p>\n";
 }
 
 echo "<br/><br/><a href='index.php'>Continuer</a>\n";
