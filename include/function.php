@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.7
+Planning Biblio, Version 2.6.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 12 mai 2017
+Dernière modification : 21 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -109,11 +109,8 @@ class CJMail{
   public $successAddresses=array();
   
   public function CJMail(){
-    $path=strpos($_SERVER["SCRIPT_NAME"],"planning/poste/ajax")?"../../":null;
-    $path=preg_match('/planning\/plugins\/.*\/ajax/', $_SERVER["SCRIPT_NAME"])?"../../":$path;
-    $path=preg_match('/planning\/admin\/ajax/', $_SERVER["SCRIPT_NAME"])?"../":$path;
-    require_once("{$path}vendor/PHPMailer/class.phpmailer.php");
-    require_once("{$path}vendor/PHPMailer/class.smtp.php");
+    require_once(__DIR__."/../vendor/PHPMailer/class.phpmailer.php");
+    require_once(__DIR__."/../vendor/PHPMailer/class.smtp.php");
   }
   
 
@@ -274,9 +271,8 @@ function calculHeuresSP($date){
   if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
     $version='ajax';
   }
-  $path=strpos($_SERVER['SCRIPT_NAME'],"planning/poste/ajax")?"../../":null;
-  require_once "{$path}include/horaires.php";
-  require_once "{$path}personnel/class.personnel.php";
+  require_once "horaires.php";
+  require_once __DIR__."/../personnel/class.personnel.php";
 
   $d=new datePl($date);
   $dates=$d->dates;
@@ -296,7 +292,7 @@ function calculHeuresSP($date){
 
   // Recherche des heures de SP avec le module planningHebdo
   if($config['PlanningHebdo']){
-    require_once("{$path}planningHebdo/class.planningHebdo.php");
+    require_once(__DIR__."/../planningHebdo/class.planningHebdo.php");
 
     // Vérifie si la table planning_hebdo a été mise à jour depuis le dernier calcul
     $p=new planningHebdo();
@@ -597,10 +593,7 @@ function createURL($page=null){
   $url="$protocol://{$_SERVER['SERVER_NAME']}{$port}/";
 
   // folder
-  $dir=__DIR__;
-  $root=$_SERVER['DOCUMENT_ROOT'];
-
-  $folder=substr($dir,strlen($root));
+  $folder=substr( __DIR__ , strlen($_SERVER['DOCUMENT_ROOT']));
   $pos=strpos($folder,"/",1);
   $folder=substr($folder,0,$pos);
 

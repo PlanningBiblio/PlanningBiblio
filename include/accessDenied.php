@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.2
+Planning Biblio, Version 2.6.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : include/accessDenied.php
 Création : 8 avril 2015
-Dernière modification : 4 février 2016
+Dernière modification : 21 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -33,8 +33,8 @@ for($i=0;$i<$nb;$i++){
 
 // Besoin de config pour récupérer le thème
 // Utilise le chemin absolut plutôt que relatif sinon pb avec le dossier admin qui contient également un config.php
-require_once $dir1."/include/sanitize.php";
-require_once $dir1."/include/config.php";
+require_once "sanitize.php";
+require_once "config.php";
 $theme=$config['Affichage-theme'];
 
 // Lien proposé pour le retour à l'application

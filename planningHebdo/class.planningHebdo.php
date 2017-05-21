@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.7
+Planning Biblio, Version 2.6.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 12 mai 2017
+Dernière modification : 21 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -17,15 +17,10 @@ Appelé par les autres fichiers du dossier planningHebdo
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 if(!isset($version)){
-  include_once "../include/accessDenied.php";
+  include_once __DIR__."/../include/accessDenied.php";
 }
 
-if(!isset($path)){
-  $path=substr($_SERVER['SCRIPT_NAME'],-9)=="index.php"?null:"../";
-  $path=strpos($_SERVER['SCRIPT_NAME'],"plugins")?"../../":$path;
-  $path=strpos($_SERVER['SCRIPT_NAME'],"planning/poste/ajax")?"../../":$path;
-  require_once "{$path}personnel/class.personnel.php";
-}
+require_once __DIR__."/../personnel/class.personnel.php";
 
 class planningHebdo{
   public $agent=null;

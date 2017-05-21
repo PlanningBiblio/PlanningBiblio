@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.7
+Planning Biblio, Version 2.6.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 12 mai 2017
+Dernière modification : 21 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -52,10 +52,9 @@ class absences{
   public function calculHeuresAbsences($date){
     $config=$GLOBALS['config'];
     $version=$GLOBALS['version'];
-    $path=strpos($_SERVER['SCRIPT_NAME'],"planning/poste/ajax")?"../../":null;
-    require_once "{$path}include/horaires.php";
-    require_once "{$path}personnel/class.personnel.php";
-    require_once "{$path}planningHebdo/class.planningHebdo.php";
+    require_once __DIR__."/../include/horaires.php";
+    require_once __DIR__."/../personnel/class.personnel.php";
+    require_once __DIR__."/../planningHebdo/class.planningHebdo.php";
 
     $d=new datePl($date);
     $dates=$d->dates;
@@ -176,8 +175,7 @@ class absences{
   public function calculTemps($debut,$fin,$perso_id){
     $version=$GLOBALS['config']['Version'];
 
-    $path=strpos($_SERVER['SCRIPT_NAME'],"planning/poste/ajax")?"../../":null;
-    require_once "{$path}joursFeries/class.joursFeries.php";
+    require_once __DIR__."/../joursFeries/class.joursFeries.php";
 
     $hre_debut=substr($debut,-8);
     $hre_fin=substr($fin,-8);
@@ -215,7 +213,7 @@ class absences{
       // On consulte le planning de présence de l'agent
       if($GLOBALS['config']['PlanningHebdo']){
         $version=$GLOBALS['version'];
-        require_once "{$path}planningHebdo/class.planningHebdo.php";
+        require_once __DIR__."/../planningHebdo/class.planningHebdo.php";
 
 	$p=new planningHebdo();
 	$p->perso_id=$perso_id;
@@ -304,8 +302,7 @@ class absences{
   public function calculTemps2(){
     $version=$GLOBALS['config']['Version'];
 
-    $path=strpos($_SERVER['SCRIPT_NAME'],"planning/poste/ajax")?"../../":null;
-    require_once "{$path}joursFeries/class.joursFeries.php";
+    require_once __DIR__."/../joursFeries/class.joursFeries.php";
 
     $debut=$this->debut;
     $edt=$this->edt;
@@ -352,7 +349,7 @@ class absences{
       // On consulte le planning de présence de l'agent
       if($GLOBALS['config']['PlanningHebdo']){
         $version = $GLOBALS['version'];
-        require_once "{$path}planningHebdo/class.planningHebdo.php";
+        require_once __DIR__."/../planningHebdo/class.planningHebdo.php";
 
 	$edt=array();
 	if($this->edt and !empty($this->edt)){

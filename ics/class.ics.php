@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.6.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/class.ics.php
 Création : 29 mai 2016
-Dernière modification : 21 avril 2017
+Dernière modification : 21 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -39,8 +39,8 @@ Classe permettant le traitement des fichiers ICS
  * EXDATE : exception dates
  */
  
-require_once "$path/include/config.php";
-require_once "$path/vendor/ics-parser/class.iCalReader.php";
+require_once __DIR__."/../include/config.php";
+require_once __DIR__."/../vendor/ics-parser/class.iCalReader.php";
 
 class CJICS{
 
