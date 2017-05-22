@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.8
+Planning Biblio, Version 2.6.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 13 mai 2017
+Dernière modification : 21 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -792,6 +792,15 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
     $sql[] = "RENAME TABLE `{$dbprefix}planninghebdoperiodes` TO `{$dbprefix}planning_hebdo_periodes`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
   }
 
+  // Contrôle des tables
+  $check_tables = true;
+  
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.6.9";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
@@ -806,7 +815,7 @@ foreach($sql as $elem){
     echo "$elem : <font style='color:red;'>Erreur</font><br/>\n";
 }
 
-if($v == "2.6.8"){
+if(isset($check_tables) and $check_tables === true){
   echo "<p><h3>V&eacute;rification des tables</h3>\n";
   $tables = array('appel_dispo', 'edt_samedi', 'heures_absences', 'heures_sp', 'hidden_tables', 'ip_blocker', 'jours_feries', 'planning_hebdo', 'planning_hebdo_periodes');
   foreach($tables as $elem){

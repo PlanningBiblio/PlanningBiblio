@@ -1,3 +1,7 @@
+*** Version 2.6.9   (21 mai 2017)   ***
+- Correction Windows
+Utilise la la constante __DIR__ pour l'inclusion des fichiers (corrige les erreurs d'envoi de mail et de calcul des heures d'absences sous Windows)
+
 *** Version 2.6.8   (13 mai 2017)   ***
 - Correction Windows
 Modifie le script de mise à jour pour les serveurs Windows afin qu'il renomme correctement les tables en minuscules avec l'ajout d'underscores.
