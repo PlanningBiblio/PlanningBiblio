@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.7
+Planning Biblio, Version 2.6.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 12 mai 2017
+Dernière modification : 24 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -147,7 +147,7 @@ class personnel{
       return false;
     }
     $db=new db();
-    $db->select("EDTSamedi","*","semaine>='$debut' AND semaine<='$fin' AND perso_id='$perso_id'");
+    $db->select("edt_samedi","*","semaine>='$debut' AND semaine<='$fin' AND perso_id='$perso_id'");
     if($db->result){
       foreach($db->result as $elem){
 	$this->elements[]=$elem['semaine'];

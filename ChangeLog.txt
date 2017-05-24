@@ -1,6 +1,9 @@
-*** Version 2.6.9   (21 mai 2017)   ***
+*** Version 2.6.9   (24 mai 2017)   ***
+- Correction
+Corrige la recherche des semaines avec samedi travaillé (personnel::fetchEDTSamedi). Erreur intégrée suite au renommage des tables en version 2.6.4
+
 - Correction Windows
-Utilise la la constante __DIR__ pour l'inclusion des fichiers (corrige les erreurs d'envoi de mail et de calcul des heures d'absences sous Windows)
+Utilise la constante __DIR__ pour l'inclusion des fichiers (corrige les erreurs d'envoi de mail et de calcul des heures d'absences sous Windows)
 
 *** Version 2.6.8   (13 mai 2017)   ***
 - Correction Windows
