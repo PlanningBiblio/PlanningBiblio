@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planningHebdo/modif.php
 Création : 23 juillet 2013
-Dernière modification : 21 avril 2017
+Dernière modification : 30 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -65,6 +65,7 @@ if($id){
   // Dans le 2eme cas copie du planning avec modification des dates
   $action="modif";
   $modifAutorisee=true;
+
   if(!$admin and $valide and $config['PlanningHebdo-PeriodesDefinies']){
     $modifAutorisee=false;
   }
@@ -220,7 +221,14 @@ for($j=0;$j<$config['nb_semaine'];$j++){
   echo "<div id='div$j'>\n";
   echo "<table border='1' cellspacing='0' id='tableau{$j}' class='tableau' data-id='$j' >\n";
   echo "<tr style='text-align:center;'><td style='width:135px;'>{$cellule[$j]}</td><td style='width:135px;'>Heure d'arrivée</td>";
-  echo "<td style='width:135px;'>Début de pause</td><td style='width:135px;'>Fin de pause</td>";
+  
+  if($config['PlanningHebdo-Pause2']){
+    echo "<td style='width:135px;'>Début de pause 1</td><td style='width:135px;'>Fin de pause 1</td>";
+    echo "<td style='width:135px;'>Début de pause 2</td><td style='width:135px;'>Fin de pause 2</td>";
+  }else{
+    echo "<td style='width:135px;'>Début de pause</td><td style='width:135px;'>Fin de pause</td>";
+  }
+  
   echo "<td style='width:135px;'>Heure de départ</td>";
   if($config['Multisites-nombre']>1){
     echo "<td style='width:135px;'>Site</td>";
@@ -231,17 +239,31 @@ for($j=0;$j<$config['nb_semaine'];$j++){
     $k=$i-($j*7)-1;
     echo "<tr style='text-align:center;'><td>{$jours[$k]}</td>";
     if($modifAutorisee){
-      echo "<td>".selectTemps($i-1,0,null,"select")."</td><td>".selectTemps($i-1,1,null,"select")."</td>";
-      echo "<td>".selectTemps($i-1,2,null,"select")."</td><td>".selectTemps($i-1,3,null,"select")."</td>";
+      echo "<td>".selectTemps($i-1,0,null,"select")."</td>";
+      echo "<td>".selectTemps($i-1,1,null,"select")."</td>";
+      echo "<td>".selectTemps($i-1,2,null,"select")."</td>";
+      if($config['PlanningHebdo-Pause2']){
+        echo "<td>".selectTemps($i-1,5,null,"select")."</td><td>".selectTemps($i-1,6,null,"select")."</td>";
+      }
+      echo "<td>".selectTemps($i-1,3,null,"select")."</td>";
     }
     else{
       $h1 = isset($temps[$i-1])?heure2($temps[$i-1][0]):null;
       $h2 = isset($temps[$i-1])?heure2($temps[$i-1][1]):null;
       $h3 = isset($temps[$i-1])?heure2($temps[$i-1][2]):null;
+      if($config['PlanningHebdo-Pause2']){
+        $h5 = isset($temps[$i-1])?heure2($temps[$i-1][5]):null;
+        $h6 = isset($temps[$i-1])?heure2($temps[$i-1][6]):null;
+      }
       $h4 = isset($temps[$i-1])?heure2($temps[$i-1][3]):null;
+
       echo "<td id='temps_".($i-1)."_0' class='td_heures'>$h1</td>\n";
       echo "<td id='temps_".($i-1)."_1' class='td_heures'>$h2</td>\n";
       echo "<td id='temps_".($i-1)."_2' class='td_heures'>$h3</td>\n";
+      if($config['PlanningHebdo-Pause2']){
+        echo "<td id='temps_".($i-1)."_5' class='td_heures'>$h5</td>\n";
+        echo "<td id='temps_".($i-1)."_6' class='td_heures'>$h6</td>\n";
+      }
       echo "<td id='temps_".($i-1)."_3' class='td_heures'>$h4</td>\n";
     }
     if($config['Multisites-nombre']>1){

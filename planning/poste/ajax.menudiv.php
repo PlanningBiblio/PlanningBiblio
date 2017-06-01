@@ -249,12 +249,24 @@ foreach($db->result as $elem){
     if($heures[2] and $heures[3] and !$heures[0]){ 	// Pour les agents ne travaillant que l'après midi
       $heures[0]=$heures[2];				// Début de journée = début d'après midi
     }
+    
+    // TODO : modification des heures 0 et 3 comme si dessus si les index 5 et 6 sont présents (planningHebdo-Pause2)
+    // TODO : revoir les conditions ci-dessus, voir si elles fonctionnent toujours avec les 2 config et voir s'il ne manque rien
+    
+    
+    
     if($heures[0]>$debut)			// Si l'agent commence le travail après l'heure de début du poste
       $indispo=true;
     if($heures[3]<$fin)				// Si l'agent fini le travail avant l'heure de fin du poste
       $indispo=true;
     if($heures[1]<$fin and $heures[2]>$debut) 	// Pdt la pause déjeuner : Si le debut de sa pause est avant l'heure de fin du poste et la fin de sa pause après le début du poste
       $indispo=true;
+
+    // Pdt la pause N°2: Si le debut de sa pause est avant l'heure de fin du poste et la fin de sa pause après le début du poste
+    if($config['PlanningHebdo-Pause2'] and isset($heures[5]) and isset($heures[6]) and $heures[5]<$fin and $heures[6]>$debut){
+      $indispo=true;
+    }
+
   }
   else{
     $indispo=true;
