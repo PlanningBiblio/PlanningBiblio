@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.6.91
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 21 avril 2017
+Dernière modification : 1er juin 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -40,9 +40,9 @@ $nom=trim($post['nom']);
 $postes=$post['postes'];
 $prenom=trim($post['prenom']);
 $recup=trim($post['recup']);
-$service = htmlentities($post['service'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+$service = htmlentities($post['service'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
 $sites=array_key_exists("sites",$post)?$post['sites']:null;
-$statut=trim($post['statut']);
+$statut = htmlentities($post['statut'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
 $temps=array_key_exists("temps",$post)?$post['temps']:null;
 
 // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)

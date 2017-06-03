@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.6.91
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : postes/js/modif.js
 Création : 5 février 2017
-Dernière modification : 5 février 2017
+Dernière modification : 2 juin 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -44,7 +44,19 @@ $(function() {
           dataType: "json",
 	  data: {tab: tab, menu: "etages"},
 	  success: function(){
-	    location.reload(false);
+            var current_val = $('#etage').val();
+            $('#etage').empty();
+            $('#etage').append("<option value=''>&nbsp;</option>");
+
+            $("#etages-sortable li").each(function(){
+              var id=$(this).attr("id").replace("li_","");
+              var val = $("#valeur_"+id).text();
+              var selected = (val == current_val) ? "selected='selected'" : "";
+              var option = "<option value='"+val+"' "+selected+">"+val+"</option>";
+              $('#etage').append(option);
+            });
+            $("#add-etage-form").dialog( "close" );
+            $('#etage').effect("highlight",null,2000);
 	  },
 	  error: function(){
 	    alert("Erreur lors de l'enregistrement des modifications");
@@ -139,7 +151,20 @@ $(function() {
           dataType: "json",
 	  data: {tab: tab, menu: "groupes"},
 	  success: function(){
-	    location.reload(false);
+            var current_val = $('#groupe').val();
+            $('#groupe').empty();
+            $('#groupe').append("<option value=''>&nbsp;</option>");
+
+            $("#groups-sortable li").each(function(){
+              var id=$(this).attr("id").replace("li_","");
+              var val = $("#valeur_"+id).text();
+              var selected = (val == current_val) ? "selected='selected'" : "";
+              var option = "<option value='"+val+"' "+selected+">"+val+"</option>";
+              $('#groupe').append(option);
+            });
+            $("#add-group-form").dialog( "close" );
+            $('#groupe').effect("highlight",null,2000);
+
 	  },
 	  error: function(){
 	    alert("Erreur lors de l'enregistrement des modifications");

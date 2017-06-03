@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.7
+Planning Biblio, Version 2.6.91
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 12 mai 2017
+Dernière modification : 2 juin 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -263,7 +263,7 @@ echo "</td></tr>\n";
 echo "<tr><td><label class='intitule'>Motif</label></td>\n";
 echo "<td style='white-space:nowrap;'>";
 
-echo "<select name='motif' style='width:100%;' class='ui-widget-content ui-corner-all'>\n";
+echo "<select name='motif' id='motif' style='width:100%;' class='ui-widget-content ui-corner-all'>\n";
 echo "<option value=''></option>\n";
 foreach($motifs as $elem){
   $selected=html_entity_decode($elem['valeur'],ENT_QUOTES|ENT_IGNORE,"utf-8")==html_entity_decode($motif,ENT_QUOTES|ENT_IGNORE,"utf-8")?"selected='selected'":null;

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.9
+Planning Biblio, Version 2.6.91
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 21 mai 2017
+Dernière modification : 1er juin 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -801,6 +801,25 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
 
 $v="2.6.9";
 if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.6.91";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Mise à jour des menus déroulants (select_) : encodage html des valeurs
+  $menus = array('abs', 'categories', 'etages', 'groupes', 'services', 'statuts');
+  foreach($menus as $m){
+    $db = new db();
+    $db->query("SELECT `id`, `valeur` FROM `{$dbprefix}select_$m`;");
+    if($db->result){
+      foreach($db->result as $r){
+        $val = htmlentities($r['valeur'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+        $sql[] = "UPDATE `{$dbprefix}select_$m` SET `valeur`='$val' WHERE `id`='{$r['id']}';";
+      }
+    }
+  }
+  
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }

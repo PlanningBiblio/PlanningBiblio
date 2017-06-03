@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.6.91
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 21 avril 2017
+Dernière modification : 6 juin 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -34,6 +34,8 @@ $motif_autre=trim(filter_input(INPUT_GET,"motif_autre",FILTER_SANITIZE_STRING));
 $nbjours=filter_input(INPUT_GET,"nbjours",FILTER_SANITIZE_NUMBER_INT);
 $valide=filter_input(INPUT_GET,"valide",FILTER_SANITIZE_NUMBER_INT);
 $groupe=filter_input(INPUT_GET,"groupe",FILTER_SANITIZE_STRING);
+
+$motif = htmlentities($motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
 
 // perso_ids est un tableau de 1 ou plusieurs ID d'agent. Complété même si l'absence ne concerne qu'une personne
 $perso_ids=$_GET['perso_ids'];

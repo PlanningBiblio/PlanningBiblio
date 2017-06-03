@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.6.91
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : postes/valid.php
 Création : mai 2011
-Dernière modification : 10 février 2017
+Dernière modification : 1er juin 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -38,8 +38,8 @@ if($nom){
   $statistiques=filter_input(INPUT_GET,"statistiques",FILTER_CALLBACK,array("options"=>"sanitize_on01"));
 
   $action=$get["action"];
-  $etage=$get["etage"];
-  $groupe=$get["groupe"];
+  $etage = htmlentities($get["etage"], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+  $groupe = htmlentities($get["groupe"], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
   $obligatoire=$get["obligatoire"];
   $site=$site?$site:1;
 
