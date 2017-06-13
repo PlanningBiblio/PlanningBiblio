@@ -1,12 +1,12 @@
-/*
-Planning Biblio, Version 2.5.3
+/**
+Planning Biblio, Version 2.6.91
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/js/modif.js
 Création : 28 février 2014
-Dernière modification : 5 février 2017
+Dernière modification : 2 juin 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -48,7 +48,25 @@ $(function() {
           dataType: "json",
 	  data: {tab: tab, menu:"abs", option: "type"},
 	  success: function(){
-	    location.reload(false);
+            var current_val = $('#motif').val();
+            $('#motif').empty();
+            $('#motif').append("<option value=''>&nbsp;</option>");
+            
+            $("#motifs-sortable li").each(function(){
+              var id=$(this).attr("id").replace("li_","");
+              var val = $("#valeur_"+id).text();
+              var type = $("#type_"+id+" option:selected").val();
+
+              var disabled = (type == 1) ? "disabled='disabled'" : "";
+              var padding = (type == 2) ? "&nbsp;&nbsp;&nbsp;" : "" ;
+              var selected = (val == current_val) ? "selected='selected'" : "";
+
+              var option = "<option value='"+val+"' "+selected+" "+disabled+">"+padding+""+val+"</option>";
+              
+              $('#motif').append(option);
+            });
+            $("#add-motif-form").dialog( "close" );
+            $('#motif').effect("highlight",null,2000);
 	  },
 	  error: function(){
 	    alert("Erreur lors de l'enregistrement des modifications");

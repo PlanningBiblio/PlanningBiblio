@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.6.91
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 21 avril 2017
+Dernière modification : 2 juin 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -41,6 +41,8 @@ $debut=filter_var($debut,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
 $fin=filter_var($fin,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
 $hre_debut=filter_var($hre_debut,FILTER_CALLBACK,array("options"=>"sanitize_time"));
 $hre_fin=filter_var($hre_fin,FILTER_CALLBACK,array("options"=>"sanitize_time_end"));
+
+$motif = htmlentities($motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
 
 $perso_ids=array();
 // Absence unique
@@ -357,7 +359,7 @@ else{
   echo "<label class='intitule'>Motif </label>\n";
   echo "</td><td style='white-space:nowrap;'>\n";
 
-  echo "<select name='motif' style='width:100%;' class='ui-widget-content ui-corner-all'>\n";
+  echo "<select name='motif' id='motif' style='width:100%;' class='ui-widget-content ui-corner-all'>\n";
   echo "<option value=''></option>\n";
   foreach($motifs as $elem){
     $class=$elem['type']==2?"padding20":"bold";

@@ -1,3 +1,10 @@
+*** Version 2.6.91   (2 juin 2017)   ***
+- Amélioration
+Ne recharge plus la page après la modification des menus déroulants paramètrables
+
+- Correction
+Corrige l'encodage des caractères des menus déroulants paramétrables (htmlentities des valeurs des tables select_xxx)
+
 *** Version 2.6.9   (24 mai 2017)   ***
 - Correction
 Corrige la recherche des semaines avec samedi travaillé (personnel::fetchEDTSamedi). Erreur intégrée suite au renommage des tables en version 2.6.4

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.6.91
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : include/ajax.menus.php
 Création : 5 février 2017
-Dernière modification : 5 février 2017
+Dernière modification : 1er juin 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -30,6 +30,7 @@ $tab = $_POST['tab'];
 $db=new db();
 $db->delete("select_$menu");
 foreach($tab as $elem){
+  $elem[0] = htmlentities($elem[0], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
   $elements = array("valeur"=>$elem[0],"rang"=>$elem[1]);
   if($option == 'type'){
     $elements['type'] = $elem[2];

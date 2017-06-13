@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.6.91
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/js/modif.js
 Création : 3 mars 2014
-Dernière modification : 5 février 2017
+Dernière modification : 2 juin 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -225,7 +225,22 @@ $(function() {
           dataType: "json",
 	  data: {tab: tab, menu: "statuts" , option: "categorie"},
 	  success: function(){
-	    location.reload(false);
+            var current_val = $('#statut').val();
+            $('#statut').empty();
+            $('#statut').append("<option value=''>Aucun</option>");
+
+            $("#statuts-sortable li").each(function(){
+              var id=$(this).attr("id").replace("li_","");
+              var val = $("#valeur_"+id).text();
+              if( val == current_val){
+                var option = "<option value='"+val+"' selected='selected'>"+val+"</option>";
+              } else {
+                var option = "<option value='"+val+"'>"+val+"</option>";
+              }
+              $('#statut').append(option);
+            });
+            $("#add-statut-form").dialog( "close" );
+            $('#statut').effect("highlight",null,2000);
 	  },
 	  error: function(){
 	    alert("Erreur lors de l'enregistrement des modifications");
@@ -320,7 +335,22 @@ $(function() {
           dataType: "json",
 	  data: {tab: tab, menu: "services"},
 	  success: function(){
-	    location.reload(false);
+            var current_val = $('#service').val();
+            $('#service').empty();
+            $('#service').append("<option value=''>Aucun</option>");
+
+            $("#services-sortable li").each(function(){
+              var id=$(this).attr("id").replace("li_","");
+              var val = $("#valeur_"+id).text();
+              if( val == current_val){
+                var option = "<option value='"+val+"' selected='selected'>"+val+"</option>";
+              } else {
+                var option = "<option value='"+val+"'>"+val+"</option>";
+              }
+              $('#service').append(option);
+            });
+            $("#add-service-form").dialog( "close" );
+            $('#service').effect("highlight",null,2000);
 	  },
 	  error: function(){
 	    alert("Erreur lors de l'enregistrement des modifications");

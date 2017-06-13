@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.7
+Planning Biblio, Version 2.6.91
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : postes/modif.php
 Création : mai 2011
-Dernière modification : 12 mai 2017
+Dernière modification : 2 juin 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -131,7 +131,7 @@ if($config['Multisites-nombre']>1){
 echo "<tr><td>";
 echo "Etage :";
 echo "</td><td style='white-space: nowrap;'>";
-echo "<select name='etage' style='width:255px' class='ui-widget-content ui-corner-all'>";
+echo "<select name='etage' id='etage' style='width:255px' class='ui-widget-content ui-corner-all'>";
 echo "<option value=''>&nbsp;</option>\n";
 foreach($etages as $elem){
   $selected=$etage==$elem['valeur']?"selected='selected'":null;
@@ -144,7 +144,7 @@ echo "</td></tr>";
 echo "<tr><td>";
 echo "Groupe:";
 echo "</td><td style='white-space: nowrap;'>";
-echo "<select name='groupe' style='width:255px' class='ui-widget-content ui-corner-all'>";
+echo "<select name='groupe' id='groupe' style='width:255px' class='ui-widget-content ui-corner-all'>";
 echo "<option value=''>&nbsp;</option>\n";
 foreach($groupes as $elem){
   $selected=$groupe==$elem['valeur']?"selected='selected'":null;
