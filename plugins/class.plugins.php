@@ -23,7 +23,7 @@ class plugins{
   public $liste=array();	// Liste des plugins (array("ldap","conges"))
   public $tab=array();		// Tableau contenant les noms et versions des plugins (array("ldap"=>array("nom"=>"ldap","version"=>"1.0")))
 
-  public function plugins(){
+  public function __construct(){
   }
 
   public function fetch(){

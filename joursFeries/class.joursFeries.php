@@ -29,7 +29,7 @@ class joursFeries{
   public $error=false;
   public $index=null;
 
-  public function joursFeries(){
+  public function __construct(){
   }
 
   public function delete($id){

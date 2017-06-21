@@ -27,7 +27,7 @@ class postes{
   public $id=null;
   public $site=null;
 
-  public function postes(){
+  public function __construct(){
   }
 
   public function delete(){
