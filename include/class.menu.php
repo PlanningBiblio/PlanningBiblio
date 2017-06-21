@@ -24,7 +24,7 @@ if(!isset($version)){
 class menu{
   public $elements=array();
 
-  public function menu(){
+  public function __construct(){
   }
 
   public function fetch(){

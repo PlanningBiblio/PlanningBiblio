@@ -30,7 +30,7 @@ class personnel{
   
   public $CSRFToken = null;
 
-  public function personnel(){
+  public function __construct(){
   }
 
   public function delete($liste){

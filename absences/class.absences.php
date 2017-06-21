@@ -39,7 +39,7 @@ class absences{
   public $recipients=array();
   public $valide=false;
 
-  public function absences(){
+  public function __construct(){
   }
 
 

@@ -23,15 +23,15 @@ if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
 }
 
 class datePl{
-  var $dates;
-  var $jour;
-  var $jour_complet;
-  var $sam;
-  var $sem;
-  var $semaine;
-  var $position;
+  public $dates = null;
+  public $jour = null;
+  public $jour_complet = null;
+  public $sam = null;
+  public $sem = null;
+  public $semaine = null;
+  public $position = null;
   
-  function datePl($date){
+  function __construct($date){
     $yyyy=substr($date,0,4);
     $mm=substr($date,5,2);
     $dd=substr($date,8,2);
@@ -108,7 +108,7 @@ class CJMail{
   public $failedAddresses=array();
   public $successAddresses=array();
   
-  public function CJMail(){
+  public function __construct(){
     require_once(__DIR__."/../vendor/PHPMailer/class.phpmailer.php");
     require_once(__DIR__."/../vendor/PHPMailer/class.smtp.php");
   }

@@ -38,7 +38,7 @@ class planningHebdo{
   public $valide=null;
 
 
-  public function planningHebdo(){
+  public function __construct(){
   }
 
   public function add($data){

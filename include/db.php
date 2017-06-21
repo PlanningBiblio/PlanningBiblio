@@ -39,7 +39,7 @@ class db{
   public $msg = null;
   public $CSRFToken = false;
   
-  function db(){
+  function __construct(){
     $this->host=$GLOBALS['config']['dbhost'];
     $this->dbname=$GLOBALS['config']['dbname'];
     $this->user=$GLOBALS['config']['dbuser'];
@@ -513,7 +513,7 @@ class dbh{
   public $result = null;
 
 
-  function dbh(){
+  function __construct(){
     $this->dbhost=$GLOBALS['config']['dbhost'];
     $this->dbname=$GLOBALS['config']['dbname'];
     $this->dbuser=$GLOBALS['config']['dbuser'];

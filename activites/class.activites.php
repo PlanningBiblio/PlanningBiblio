@@ -26,7 +26,7 @@ class activites{
   public $deleted=null;
   public $CSRFToken = null;
 
-  public function activites(){
+  public function __construct(){
   }
 
   public function delete(){
