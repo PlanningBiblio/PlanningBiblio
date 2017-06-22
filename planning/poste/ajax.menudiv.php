@@ -195,7 +195,6 @@ if($config['PlanningHebdo']){
 
 if($db->result and $verif)
 foreach($db->result as $elem){
-  $indispo=false;
 
   // Récupération du planning de présence
   $temps=array();
@@ -241,55 +240,27 @@ foreach($db->result as $elem){
     }
   }
 
-  if(!empty($temps) and array_key_exists($jour,$temps)){
-    $heures=$temps[$jour];
-    if($heures[0] and $heures[1] and !$heures[3]){ 	// Pour les agents ne travaillant que le matin
-      $heures[3]=$heures[1];				// Fin de journée = fin de matinée
-    }
-    if($heures[2] and $heures[3] and !$heures[0]){ 	// Pour les agents ne travaillant que l'après midi
-      $heures[0]=$heures[2];				// Début de journée = début d'après midi
-    }
-    
-    // TODO : modification des heures 0 et 3 comme si dessus si les index 5 et 6 sont présents (planningHebdo-Pause2)
-    // TODO : revoir les conditions ci-dessus, voir si elles fonctionnent toujours avec les 2 config et voir s'il ne manque rien
-    
-    
-    
-    if($heures[0]>$debut)			// Si l'agent commence le travail après l'heure de début du poste
-      $indispo=true;
-    if($heures[3]<$fin)				// Si l'agent fini le travail avant l'heure de fin du poste
-      $indispo=true;
-    if($heures[1]<$fin and $heures[2]>$debut) 	// Pdt la pause déjeuner : Si le debut de sa pause est avant l'heure de fin du poste et la fin de sa pause après le début du poste
-      $indispo=true;
+  $dispo = calculPresence($debut, $fin, $temps, $jour);
 
-    // Pdt la pause N°2: Si le debut de sa pause est avant l'heure de fin du poste et la fin de sa pause après le début du poste
-    if($config['PlanningHebdo-Pause2'] and isset($heures[5]) and isset($heures[6]) and $heures[5]<$fin and $heures[6]>$debut){
-      $indispo=true;
-    }
-
-  }
-  else{
-    $indispo=true;
-  }
-
-  if($indispo){
+  if(!$dispo){
     $motifExclusion[$elem['id']][]="<span title='Les horaires de l&apos;agent ne lui permettent pas d&apos;occuper ce poste'>Horaires</span>";
   }
 
   // Multisites : Contrôle si l'agent est prévu sur ce site si les agents sont autorisés à travailler sur plusieurs sites
+  $heures=$temps[$jour];
+
   if($config['Multisites-nombre']>1){
-    if(!isset($heures)){
-      $indispo=true;
+    if(!is_array($heures) or !array_key_exists(4,$heures)){
+      $dispo = false;
     }
-    elseif(!array_key_exists(4,$heures)){
-      $indispo=true;
-    }
+
     elseif($heures[4] and $heures[4]!=$site){
-      $indispo=true;
+      $dispo = false;
       $motifExclusion[$elem['id']][]="<span title='L&apos;agent est pr&eacute;vu sur un autre site'>Autre site</span>";
     }
   }
-  if($indispo){
+  
+  if(!$dispo){
     $tab_indispo[]=$elem['id'];
   }
 }

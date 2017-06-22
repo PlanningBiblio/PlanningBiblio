@@ -457,6 +457,89 @@ function calculHeuresSP($date){
   return (array) $heuresSP;
 }
 
+/** @function calculPresence
+ *  @param string $debut : heure de début, format 00:00:00
+ *  @param string $fin : heure de fin, format 00:00:00
+ *  @param array $temps : tableau emploi du temps de l'agent
+ *  @param int $jour : jour de la semaine de 0 à 6 puis de 7 à 13 en semaines paires/impaires, etc.
+ *  La fonction retourne true si l'agent est disponible pendant toute, false s'il la plage est en dehors de ses horaires de travail ou s'il est en pause
+ TODO : A continuer : 2 pauses dans une journée / BULAC
+ */
+function calculPresence($debut, $fin, $temps, $jour){
+
+  // $pause2 = 1 si la gestion de la 2ème pause est activée, 0 sinon
+  $pause2 = $GLOBALS['config']['PlanningHebdo-Pause2'];
+  
+  
+  /**
+   * Tableau affichant les différentes possibilités
+   * NB : le paramètre heures[4] est utilisé pour l'affectation du site. Il n'est pas utile ici
+   * NB : la 2ème pause n'est pas implémentée depuis le début, c'est pourquoi les paramètres heures[5] et heures[6] viennent s'intercaler avant $heure[3]
+   *
+   *    Heure 0     Heure 1     Heure 2     Heure 5     Heure 6     Heure 3
+   * 1                           [ tableau vide]
+   * 2    |-----------|           |-----------|           |-----------|   
+   * 3    |-----------|           |-----------------------------------|   
+   * 4    |-----------|                                   |-----------|
+   * 5    |-----------|
+   * 6    |-----------------------------------|           |-----------|   
+   * 7    |-----------------------------------|
+   * 8    |-----------------------------------------------------------|
+   * 9                            |-----------|
+   * 10                           |-----------------------------------|
+   */
+  
+
+  // Cas N°1
+  // Si le tableau $temps est vide ou invalide ou si le jour recherché n'est pas dans le tableau, on retourne false
+  if(!is_array($temps) or empty($temps) or !array_key_exists($jour,$temps)) {
+    return false;
+  }
+  
+  // Constitution des groupes de plages horaires
+  $tab = array();
+  $heures=$temps[$jour];
+  
+  // 1er créneau : cas N° 2; 3; 4; 5
+  if ($heures[0] and $heures[1]) {
+    $tab[] = array($heures[0], $heures[1]);
+  
+  // 1er créneau fusionné avec le 2nd : cas N° 6 et 7
+  } elseif ($pause2 and $heures[0] and $heures[5]) {
+    $tab[] = array($heures[0], $heures[5]);
+  
+  // Journée complète : cas N° 8
+  } elseif ($heures[0] and $heures[3]) {
+    $tab[] = array($heures[0], $heures[3]);
+  }
+  
+  // 2ème créneau : cas N° 1 et 9
+  if ($pause2 and $heures[2] and $heures[5]) {
+    $tab[] = array($heures[2], $heures[5]);
+    
+  // 2ème créneau fusionné au 3ème : cas N° 3 et 10
+  } elseif ($heures[2] and $heures[3]) {
+    $tab[] = array($heures[2], $heures[3]);
+  }
+  
+  // 3ème créneau : cas N° 2; 4; 6
+  if ($pause2 and $heures[6] and $heures[3]) {
+    $tab[] = array($heures[6], $heures[3]);
+  }
+  
+  // Confrontation du créneau de service public aux tableaux
+  foreach($tab as $elem){
+    if (($elem[0] <= $debut) and ($elem[1] >= $fin)) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+
+/** @fonctions de comparaison
+ */
 
 function cmp_0($a,$b){
   $a[0] > $b[0];
