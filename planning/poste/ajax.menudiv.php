@@ -240,7 +240,7 @@ foreach($db->result as $elem){
     }
   }
 
-  $dispo = calculPresence($debut, $fin, $temps, $jour);
+  $dispo = calculSiPresent($debut, $fin, $temps, $jour);
 
   if(!$dispo){
     $motifExclusion[$elem['id']][]="<span title='Les horaires de l&apos;agent ne lui permettent pas d&apos;occuper ce poste'>Horaires</span>";

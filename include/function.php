@@ -465,7 +465,7 @@ function calculHeuresSP($date){
  *  La fonction retourne true si l'agent est disponible pendant toute, false s'il la plage est en dehors de ses horaires de travail ou s'il est en pause
  TODO : A continuer : 2 pauses dans une journée / BULAC
  */
-function calculPresence($debut, $fin, $temps, $jour){
+function calculPresence($temps, $jour){
 
   // $pause2 = 1 si la gestion de la 2ème pause est activée, 0 sinon
   $pause2 = $GLOBALS['config']['PlanningHebdo-Pause2'];
@@ -493,7 +493,7 @@ function calculPresence($debut, $fin, $temps, $jour){
   // Cas N°1
   // Si le tableau $temps est vide ou invalide ou si le jour recherché n'est pas dans le tableau, on retourne false
   if(!is_array($temps) or empty($temps) or !array_key_exists($jour,$temps)) {
-    return false;
+    return array();
   }
   
   // Constitution des groupes de plages horaires
@@ -526,6 +526,14 @@ function calculPresence($debut, $fin, $temps, $jour){
   if ($pause2 and $heures[6] and $heures[3]) {
     $tab[] = array($heures[6], $heures[3]);
   }
+  
+  return $tab;
+}
+
+
+function calculSiPresent($debut, $fin, $temps, $jour){
+
+  $tab = calculPresence($temps, $jour);
   
   // Confrontation du créneau de service public aux tableaux
   foreach($tab as $elem){

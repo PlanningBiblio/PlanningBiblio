@@ -202,6 +202,11 @@ class absences{
 	}
       }
 
+      $debutAbsence=$current==$debut?$hre_debut:"00:00:00";
+      $finAbsence=$current==$fin?$hre_fin:"23:59:59";
+      $debutAbsence=strtotime($debutAbsence);
+      $finAbsence=strtotime($finAbsence);
+      
       // On consulte le planning de présence de l'agent
       // On ne calcule pas les heures si le module planningHebdo n'est pas activé, le calcul serait faux si les emplois du temps avaient changé
       if(!$GLOBALS['config']['PlanningHebdo']){
@@ -211,71 +216,39 @@ class absences{
       }
 
       // On consulte le planning de présence de l'agent
-      if($GLOBALS['config']['PlanningHebdo']){
-        $version=$GLOBALS['version'];
-        require_once __DIR__."/../planningHebdo/class.planningHebdo.php";
+      $version=$GLOBALS['version'];
+      require_once __DIR__."/../planningHebdo/class.planningHebdo.php";
 
-	$p=new planningHebdo();
-	$p->perso_id=$perso_id;
-	$p->debut=$current;
-	$p->fin=$current;
-	$p->valide=true;
-	$p->fetch();
-	// Si le planning n'est pas validé pour l'une des dates, on retourne un message d'erreur et on arrête le calcul
-	if(empty($p->elements)){
-	  $this->error=true;
-	  $this->message="Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
-	  return false;
-	}
-
-	// Sinon, on calcule les heures d'absence
-	$d=new datePl($current);
-	$semaine=$d->semaine3;
-	$jour=$d->position?$d->position:7;
-	$jour=$jour+(($semaine-1)*7)-1;
-	$temps=null;
-	if(array_key_exists($jour,$p->elements[0]['temps'])){
-	  $temps=$p->elements[0]['temps'][$jour];
-	}
+      $p=new planningHebdo();
+      $p->perso_id=$perso_id;
+      $p->debut=$current;
+      $p->fin=$current;
+      $p->valide=true;
+      $p->fetch();
+      // Si le planning n'est pas validé pour l'une des dates, on retourne un message d'erreur et on arrête le calcul
+      if(empty($p->elements)){
+        $this->error=true;
+        $this->message="Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
+        return false;
       }
 
-      if($temps){
-	$temps[0]=strtotime($temps[0]);
-	$temps[1]=strtotime($temps[1]);
-	$temps[2]=strtotime($temps[2]);
-	$temps[3]=strtotime($temps[3]);
-	$debutAbsence=$current==$debut?$hre_debut:"00:00:00";
-	$finAbsence=$current==$fin?$hre_fin:"23:59:59";
-	$debutAbsence=strtotime($debutAbsence);
-	$finAbsence=strtotime($finAbsence);
+      // Sinon, on calcule les heures d'absence
+      $d=new datePl($current);
+      $semaine=$d->semaine3;
+      $jour=$d->position?$d->position:7;
+      $jour=$jour+(($semaine-1)*7)-1;
 
+      $temps = calculPresence($p->elements[0]['temps'], $jour);
 
-	// Calcul du temps du matin
-	if($temps[0] and $temps[1]){
-	  $debutAbsence1=$debutAbsence>$temps[0]?$debutAbsence:$temps[0];
-	  $finAbsence1=$finAbsence<$temps[1]?$finAbsence:$temps[1];
-	  if($finAbsence1>$debutAbsence1){
-	    $difference+=$finAbsence1-$debutAbsence1;
-	  }
-	}
-
-	// Calcul du temps de l'après-midi
-	if($temps[2] and $temps[3]){
-	  $debutAbsence2=$debutAbsence>$temps[2]?$debutAbsence:$temps[2];
-	  $finAbsence2=$finAbsence<$temps[3]?$finAbsence:$temps[3];
-	  if($finAbsence2>$debutAbsence2){
-	    $difference+=$finAbsence2-$debutAbsence2;
-	  }
-	}
-
-	// Calcul du temps de la journée s'il n'y a pas de pause le midi
-	if($temps[0] and $temps[3] and !$temps[1] and !$temps[2]){
-	  $debutAbsence=$debutAbsence>$temps[0]?$debutAbsence:$temps[0];
-	  $finAbsence=$finAbsence<$temps[3]?$finAbsence:$temps[3];
-	  if($finAbsence>$debutAbsence){
-	    $difference+=$finAbsence-$debutAbsence;
-	  }
-	}
+      foreach($temps as $t){
+        $t0 = strtotime($t[0]);
+        $t1 = strtotime($t[1]);
+        
+        $debutAbsence1 = $debutAbsence > $t[0] ? $debutAbsence : $t[0];
+        $finAbsence1 = $finAbsence < $t[1] ? $finAbsence : $[1];
+        if( $finAbsence1 > $debutAbsence1 ) {
+          $difference += $finAbsence1 - $debutAbsence1;
+        }
       }
 
       $current=date("Y-m-d",strtotime("+1 day",strtotime($current)));
@@ -335,6 +308,11 @@ class absences{
 	}
       }
 
+      $debutAbsence=$current==$debut?$hre_debut:"00:00:00";
+      $finAbsence=$current==$fin?$hre_fin:"23:59:59";
+      $debutAbsence=strtotime($debutAbsence);
+      $finAbsence=strtotime($finAbsence);
+
       // On consulte le planning de présence de l'agent
       // On ne calcule pas les heures si le module planningHebdo n'est pas activé, le calcul serait faux si les emplois du temps avaient changé
       if(!$GLOBALS['config']['PlanningHebdo']){
@@ -376,49 +354,19 @@ class absences{
 	$semaine=$d->semaine3;
 	$jour=$d->position?$d->position:7;
 	$jour=$jour+(($semaine-1)*7)-1;
-	$temps=null;
-	if(array_key_exists($jour,$edt['temps'])){
-	  $temps=$edt['temps'][$jour];
-	}
       }
+      
+      $temps = calculPresence($edt['temps'], $jour);
 
-      if($temps){
-	$temps[0]=strtotime($temps[0]);
-	$temps[1]=strtotime($temps[1]);
-	$temps[2]=strtotime($temps[2]);
-	$temps[3]=strtotime($temps[3]);
-	$debutAbsence=$current==$debut?$hre_debut:"00:00:00";
-	$finAbsence=$current==$fin?$hre_fin:"23:59:59";
-	$debutAbsence=strtotime($debutAbsence);
-	$finAbsence=strtotime($finAbsence);
-
-
-	// Calcul du temps du matin
-	if($temps[0] and $temps[1]){
-	  $debutAbsence1=$debutAbsence>$temps[0]?$debutAbsence:$temps[0];
-	  $finAbsence1=$finAbsence<$temps[1]?$finAbsence:$temps[1];
-	  if($finAbsence1>$debutAbsence1){
-	    $difference+=$finAbsence1-$debutAbsence1;
-	  }
-	}
-
-	// Calcul du temps de l'après-midi
-	if($temps[2] and $temps[3]){
-	  $debutAbsence2=$debutAbsence>$temps[2]?$debutAbsence:$temps[2];
-	  $finAbsence2=$finAbsence<$temps[3]?$finAbsence:$temps[3];
-	  if($finAbsence2>$debutAbsence2){
-	    $difference+=$finAbsence2-$debutAbsence2;
-	  }
-	}
-
-	// Calcul du temps de la journée s'il n'y a pas de pause le midi
-	if($temps[0] and $temps[3] and !$temps[1] and !$temps[2]){
-	  $debutAbsence=$debutAbsence>$temps[0]?$debutAbsence:$temps[0];
-	  $finAbsence=$finAbsence<$temps[3]?$finAbsence:$temps[3];
-	  if($finAbsence>$debutAbsence){
-	    $difference+=$finAbsence-$debutAbsence;
-	  }
-	}
+      foreach($temps as $t){
+        $t0 = strtotime($t[0]);
+        $t1 = strtotime($t[1]);
+        
+        $debutAbsence1 = $debutAbsence > $t[0] ? $debutAbsence : $t[0];
+        $finAbsence1 = $finAbsence < $t[1] ? $finAbsence : $[1];
+        if( $finAbsence1 > $debutAbsence1 ) {
+          $difference += $finAbsence1 - $debutAbsence1;
+        }
       }
 
       $current=date("Y-m-d",strtotime("+1 day",strtotime($current)));
@@ -676,7 +624,7 @@ class absences{
       while($date<=$fin){
 	// Emploi du temps si module planningHebdo activé
 	if($GLOBALS['config']['PlanningHebdo']){
-      $version = $GLOBALS['version'];
+          $version = $GLOBALS['version'];
 	  include_once "planningHebdo/class.planningHebdo.php";
 	  $p=new planningHebdo();
 	  $p->perso_id=$perso_id;
@@ -888,7 +836,7 @@ class absences{
     
     // Si des plannings sont concernés
     if(!empty($plannings)){
-      // Fusionne les plages horaires si sur le même poste sur des plages succésives
+      // Fusionne les plages horaires si sur le même poste sur des plages successives
       $tmp=array();
       $j=0;
       for($i=0; $i<count($plannings);$i++){
