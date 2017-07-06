@@ -28,7 +28,7 @@ $heuresTravail=filter_input(INPUT_POST,"heuresTravail",FILTER_SANITIZE_STRING);
 $id=filter_input(INPUT_POST,"id",FILTER_SANITIZE_NUMBER_INT);
 $mail=trim(filter_input(INPUT_POST,"mail",FILTER_SANITIZE_EMAIL));
 
-$actif=$post['actif'];
+$actif = htmlentities( $post['actif'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
 $action=$post['action'];
 $droits=array_key_exists("droits",$post)?$post['droits']:null;
 $categorie=trim($post['categorie']);
