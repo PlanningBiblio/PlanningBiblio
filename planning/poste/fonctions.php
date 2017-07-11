@@ -135,7 +135,7 @@ function deja_place($date,$poste){
 function deuxSP($date,$debut,$fin){
   $tab=array(0);
   $db=new db();
-  $db->select("pl_poste","perso_id","date='$date' AND (debut='$fin' OR fin='$debut')","group by perso_id");
+  $db->select("pl_poste","perso_id","absent = '0' AND date='$date' AND (debut='$fin' OR fin='$debut')","group by perso_id");
   if($db->result){
     foreach($db->result as $elem){
       $tab[]=$elem['perso_id'];
