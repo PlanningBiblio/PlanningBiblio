@@ -458,12 +458,9 @@ function calculHeuresSP($date){
 }
 
 /** @function calculPresence
- *  @param string $debut : heure de début, format 00:00:00
- *  @param string $fin : heure de fin, format 00:00:00
  *  @param array $temps : tableau emploi du temps de l'agent
  *  @param int $jour : jour de la semaine de 0 à 6 puis de 7 à 13 en semaines paires/impaires, etc.
- *  La fonction retourne true si l'agent est disponible pendant toute, false s'il la plage est en dehors de ses horaires de travail ou s'il est en pause
- TODO : A continuer : 2 pauses dans une journée / BULAC
+ *  La fonction retourne un tableau contenant les créneaux horaires de présence
  */
 function calculPresence($temps, $jour){
 
@@ -530,7 +527,13 @@ function calculPresence($temps, $jour){
   return $tab;
 }
 
-
+/** @function calculSiPresent
+ *  @param string $debut : heure de début, format 00:00:00
+ *  @param string $fin : heure de fin, format 00:00:00
+ *  @param array $temps : tableau emploi du temps de l'agent
+ *  @param int $jour : jour de la semaine de 0 à 6 puis de 7 à 13 en semaines paires/impaires, etc.
+ *  La fonction retourne true si l'agent est disponible pendant toute, false s'il la plage est en dehors de ses horaires de travail ou s'il est en pause
+ */
 function calculSiPresent($debut, $fin, $temps, $jour){
 
   $tab = calculPresence($temps, $jour);
@@ -1101,14 +1104,14 @@ function selectTemps($jour,$i,$periodes=null,$class=null){
   }
   $select.="<option value=''>&nbsp;</option>\n";
 
-  for($j=7;$j<23;$j++){
+  for($j=7;$j<=23;$j++){
     $hre = sprintf("%'.02d", $j);
     
     for($k=0; $k<60; $k=$k+$granularite){
       $min = sprintf("%'.02d", $k);
       
       $selected = null;
-      if($temps and array_key_exists($jour,$temps)){
+      if( isset($temps[$jour][$i]) ){
         $selected = $temps[$jour][$i] == "$hre:$min:00" ? "selected='selected'" : null;
       }
       

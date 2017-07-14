@@ -79,7 +79,7 @@ if(!$site and array_key_exists("site",$_SESSION['oups'])){
 if(!$site){
   $p=new personnel();
   $p->fetchById($_SESSION['login_id']);
-  $site=$p->elements[0]['sites'][0];
+  $site = isset($p->elements[0]['sites'][0]) ? $p->elements[0]['sites'][0] : null;
 }
 $site=$site?$site:1;
 $_SESSION['oups']['site']=$site;

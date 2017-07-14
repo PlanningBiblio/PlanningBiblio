@@ -111,11 +111,24 @@ foreach($lines as $line){
     $cells[5]=null;
   }
   
+  // Si les horaires de la 2eme pause ne sont pas renseignés, on initialise les variables pour éviter les erreurs PHP
+  if(!isset($cells[6])){
+    $cells[6]=null;
+    $cells[7]=null;
+  }
+  
   // Si les heures de l'après-midi sont nulles (mises à 00:00:00 en lignes 103), on leurs affecte la valeur "null".
   // (Attention, l'affectation systèmatique de la valeur null en ligne 103 est problèmatique)
   if($cells[4] == "00:00:00" and $cells[5] == "00:00:00"){
     $cells[4]=null;
     $cells[5]=null;
+  }
+  
+  // Si les heures de la 2eme pause sont nulles (mises à 00:00:00 en lignes 103), on leurs affecte la valeur "null".
+  // (Attention, l'affectation systèmatique de la valeur null en ligne 103 est problèmatique)
+  if($cells[6] == "00:00:00" and $cells[7] == "00:00:00"){
+    $cells[6]=null;
+    $cells[7]=null;
   }
   
   // Récupération de l'ID de l'agent

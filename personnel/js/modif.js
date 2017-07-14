@@ -165,7 +165,6 @@ function select_drop_all(select_dispo,select_attrib,hidden_attrib,width){	// Att
 }
 // Fin Select Multpiles
 
-
 // Contrôle des champs lors de la validation
 function verif_form_agent(){
   erreur=false;

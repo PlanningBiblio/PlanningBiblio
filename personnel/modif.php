@@ -698,19 +698,32 @@ for($j=0;$j<$config['nb_semaine'];$j++){
     echo $j==0?"<br/><b>Emploi du temps standard</b>":"<br/><b>Emploi du temps des semaines avec samedi travaillé</b>";
   }
   echo "<table border='1' cellspacing='0'>\n";
-  echo "<tr style='text-align:center;'><td style='width:150px;'>{$cellule[$j]}</td><td style='width:150px;'>Heure d'arrivée</td>";
-  echo "<td style='width:150px;'>Début de pause</td><td style='width:150px;'>Fin de pause</td>";
-  echo "<td style='width:150px;'>Heure de départ</td>";
+  echo "<tr style='text-align:center;'><td style='width:135px;'>{$cellule[$j]}</td><td style='width:135px;'>Heure d'arrivée</td>";
+  if($config['PlanningHebdo-Pause2']){
+    echo "<td style='width:135px;'>Début de pause 1</td><td style='width:135px;'>Fin de pause 1</td>";
+    echo "<td style='width:135px;'>Début de pause 2</td><td style='width:135px;'>Fin de pause 2</td>";
+  }else{
+    echo "<td style='width:135px;'>Début de pause</td><td style='width:135px;'>Fin de pause</td>";
+  }
+  echo "<td style='width:135px;'>Heure de départ</td>";
   if($config['Multisites-nombre']>1){
     echo "<td>Site</td>";
   }
-  echo "<td style='width:150px;'>Temps</td>";
+  
+  echo "<td style='width:135px;'>Temps</td>";
     echo "</tr>\n";
   for($i=$debut[$j];$i<$fin[$j];$i++){
     $k=$i-($j*7)-1;
     if(in_array(21,$droits) and !$config['PlanningHebdo']){
-      echo "<tr><td>{$jours[$k]}</td><td>".selectTemps($i-1,0,null,"select$j")."</td><td>".selectTemps($i-1,1,null,"select$j")."</td>";
-      echo "<td>".selectTemps($i-1,2,null,"select$j")."</td><td>".selectTemps($i-1,3,null,"select$j")."</td>";
+      echo "<tr><td>{$jours[$k]}</td>\n";
+      echo "<td>".selectTemps($i-1,0,null,"select$j")."</td>\n";
+      echo "<td>".selectTemps($i-1,1,null,"select$j")."</td>\n";
+      echo "<td>".selectTemps($i-1,2,null,"select$j")."</td>\n";
+      if($config['PlanningHebdo-Pause2']){
+        echo "<td>".selectTemps($i-1,5,null,"select$j")."</td>\n";
+        echo "<td>".selectTemps($i-1,6,null,"select$j")."</td>\n";
+      }
+      echo "<td>".selectTemps($i-1,3,null,"select$j")."</td>\n";
       if($config['Multisites-nombre']>1){
 	echo "<td><select name='temps[".($i-1)."][4]' class='edt-site'>\n";
 	echo "<option value='' class='edt-site-0'>&nbsp;</option>\n";
@@ -726,18 +739,26 @@ for($j=0;$j<$config['nb_semaine'];$j++){
     else{
       echo "<tr><td>{$jours[$k]}</td>\n";
       
-	  for($l=0; $l<4; $l++){
-		$heure = isset($temps[$i-1][0]) ? heure2($temps[$i-1][$l]) : null;
-		echo "<td id='temps_".($i-1)."_$l'>$heure</td>\n";
-	  }
+      for($l=0; $l<4; $l++){
+        $heure = isset($temps[$i-1][0]) ? heure2($temps[$i-1][$l]) : null;
+        echo "<td id='temps_".($i-1)."_$l'>$heure</td>\n";
+      }
+
+      if($config['PlanningHebdo-Pause2']){
+        for($l=5; $l<7; $l++){
+          $heure = isset($temps[$i-1][$l]) ? heure2($temps[$i-1][$l]) : null;
+          echo "<td id='temps_".($i-1)."_$l'>$heure</td>\n";
+        }
+      }
+
       
       if($config['Multisites-nombre']>1){
-		$site=null;
-		if(isset($temps[$i-1][4])){
-		  $site="Multisites-site".$temps[$i-1][4];
-		  $site = isset($config[$site]) ? $config[$site] : null;
-		}
-		echo "<td>$site</td>";
+        $site=null;
+        if(isset($temps[$i-1][4])){
+          $site="Multisites-site".$temps[$i-1][4];
+          $site = isset($config[$site]) ? $config[$site] : null;
+        }
+        echo "<td>$site</td>";
       }
       echo "<td id='heures_{$j}_$i'></td>\n";
       echo "</tr>\n";

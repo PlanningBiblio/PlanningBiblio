@@ -243,7 +243,8 @@ for($j=0;$j<$config['nb_semaine'];$j++){
       echo "<td>".selectTemps($i-1,1,null,"select")."</td>";
       echo "<td>".selectTemps($i-1,2,null,"select")."</td>";
       if($config['PlanningHebdo-Pause2']){
-        echo "<td>".selectTemps($i-1,5,null,"select")."</td><td>".selectTemps($i-1,6,null,"select")."</td>";
+        echo "<td>".selectTemps($i-1,5,null,"select")."</td>\n";
+        echo "<td>".selectTemps($i-1,6,null,"select")."</td>\n";
       }
       echo "<td>".selectTemps($i-1,3,null,"select")."</td>";
     }

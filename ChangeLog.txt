@@ -1,3 +1,7 @@
+*** Version 2.7      (2 juin 2017)   ***
+- Amélioration
+Heures de présence : Gestion de 2 pauses par jour
+
 *** Version 2.6.91   (2 juin 2017)   ***
 - Amélioration
 Ne recharge plus la page après la modification des menus déroulants paramètrables
