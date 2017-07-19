@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : include/header.php
 Création : mai 2011
-Dernière modification : 2 novembre 2016
+Dernière modification : 19 juillet 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -29,6 +29,12 @@ if(!file_exists("themes/$theme/jquery-ui.min.css")){
 if(!file_exists("themes/$theme/$theme.css")){
   $theme="default";
 }
+
+$favicon = null;
+if(!file_exists("themes/$theme/favicon.png")){
+  $favicon = "<link rel='icon' type='image/png' href='themes/$theme/images/favicon.png' />\n";
+}
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -60,6 +66,7 @@ getJSFiles($page,$version);
 if($theme!="default"){
   echo "<link rel='StyleSheet' href='themes/{$theme}/{$theme}.css?version=$version' type='text/css' media='all'/>\n";
 }
+echo $favicon;
 ?>
 </head>
 
