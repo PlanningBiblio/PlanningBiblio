@@ -174,7 +174,7 @@ foreach($lines as $line){
   // Mise en forme du champ "temps"
   // Le champ "temps" contient un tableau contenant les emplois du temps de chaque jour : index ($jour) de 0 à 6 (du lundi au dimanche)
   $jour=date("N", strtotime($cells[1])) -1;
-  $temps[$perso_id][$lundi]['temps'][$jour] = array($cells[2],$cells[3],$cells[4],$cells[5],$site);
+  $temps[$perso_id][$lundi]['temps'][$jour] = array($cells[2],$cells[3],$cells[4],$cells[5],$site,$cells[6],$cells[7]);
 
   // Clé identifiant les infos de la ligne (pour comparaison avec la DB)
   // La clé est composée de l'id de l'agent et du md5 du tableau de sa semaine, tableau comprenant le debut, la fin et l'emploi du temps.
