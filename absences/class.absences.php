@@ -244,8 +244,8 @@ class absences{
         $t0 = strtotime($t[0]);
         $t1 = strtotime($t[1]);
         
-        $debutAbsence1 = $debutAbsence > $t[0] ? $debutAbsence : $t[0];
-        $finAbsence1 = $finAbsence < $t[1] ? $finAbsence : $t[1];
+        $debutAbsence1 = $debutAbsence > $t0 ? $debutAbsence : $t0;
+        $finAbsence1 = $finAbsence < $t1 ? $finAbsence : $t1;
         if( $finAbsence1 > $debutAbsence1 ) {
           $difference += $finAbsence1 - $debutAbsence1;
         }
@@ -362,8 +362,8 @@ class absences{
         $t0 = strtotime($t[0]);
         $t1 = strtotime($t[1]);
         
-        $debutAbsence1 = $debutAbsence > $t[0] ? $debutAbsence : $t[0];
-        $finAbsence1 = $finAbsence < $t[1] ? $finAbsence : $t[1];
+        $debutAbsence1 = $debutAbsence > $t0 ? $debutAbsence : $t0;
+        $finAbsence1 = $finAbsence < $t1 ? $finAbsence : $t1;
         if( $finAbsence1 > $debutAbsence1 ) {
           $difference += $finAbsence1 - $debutAbsence1;
         }
