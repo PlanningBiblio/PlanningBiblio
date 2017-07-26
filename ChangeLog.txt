@@ -1,6 +1,8 @@
-*** Version 2.7      (2 juin 2017)   ***
-- Amélioration
+*** Version 2.7      (26 juillet 2017)   ***
+- Améliorations
 Heures de présence : Gestion de 2 pauses par jour
+Permet de personnaliser la favicon depuis les thèmes perso. Positionner un fichier nommé favicon.png dans le dossier images du thème
+Enregistre l'URL de l'application dans la config ($config['URL']), permet de l'utiliser en CLI
 
 *** Version 2.6.91   (2 juin 2017)   ***
 - Amélioration

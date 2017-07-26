@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.6.91
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/js/modif.js
 Création : 3 mars 2014
-Dernière modification : 2 juin 2017
+Dernière modification : 14 juillet 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :

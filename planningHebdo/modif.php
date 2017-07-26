@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planningHebdo/modif.php
 Création : 23 juillet 2013
-Dernière modification : 30 mai 2017
+Dernière modification : 14 juillet 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :

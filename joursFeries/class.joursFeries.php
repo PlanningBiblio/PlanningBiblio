@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : joursFeries/class.joursFeries.php
 Création : 25 juillet 2013
-Dernière modification : 21 avril 2017
+Dernière modification : 22 juin 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :

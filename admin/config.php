@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.7
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 12 mai 2017
+Dernière modification : 26 juillet 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :

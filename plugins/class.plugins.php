@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Version 2.4.1
+/**
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : plugins/class.plugins.php
 Création : 18 juin 2014
-Dernière modification : 29 juillet 2016
+Dernière modification : 22 juin 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.6
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/cron.ics.php
 Création : 1er juillet 2016
-Dernière modification : 9 mai 2017
+Dernière modification : 20 juillet 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
