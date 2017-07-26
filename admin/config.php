@@ -54,6 +54,8 @@ if($_POST){
     }
   }
 
+  $post['URL'] = $url;
+  
   $erreur=false;
   $db=new dbh();
   $db->prepare("UPDATE `{$dbprefix}config` SET `valeur`=:valeur WHERE `nom`=:nom");

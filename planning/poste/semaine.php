@@ -221,7 +221,7 @@ echo "</td></tr>\n";
 echo "</table></div>\n";
 
 // div id='tabsemaine1' : permet d'afficher les tableaux masqués. La fonction JS afficheTableauxDiv utilise $('#tabsemaine1').after() pour afficher les liens de récupération des tableaux
-echo "<div id='tabsemaine1'>&nbsp;</div>\n";
+echo "<div id='tabsemaine1' style='display:none;'>&nbsp;</div>\n";
 
 //		---------------		FIN Affichage du titre et du calendrier		--------------------------//
 
