@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 10 novembre 2016
+Dernière modification : 31 juillet 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -33,7 +33,7 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
 
     foreach($GLOBALS['cellules'] as $elem){
       $title=null;
-
+      
       if($elem['poste']==$poste and $elem['debut']==$debut and $elem['fin']==$fin){
 	//		Affichage du nom et du prénom
 	$nom_affiche=$elem['nom'];
@@ -49,6 +49,11 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
 	}
 
 	$class_tmp=array();
+	
+        // Cellule grisée depuis le menudiv
+        if($elem['grise'] == 1){
+          $class_tmp[]= 'cellule_grise';
+        }
 
 	//		On barre les absents (agents barrés directement dans le plannings, table pl_poste)
 	if($elem['absent'] or $elem['supprime']){

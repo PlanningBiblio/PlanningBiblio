@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 23 juin 2017
+Dernière modification : 31 juillet 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
@@ -279,17 +279,23 @@ $finSQL=$db->escapeString($fin);
 $posteSQL=$db->escapeString($poste);
 $siteSQL=$db->escapeString($site);
 
-$db->select("pl_poste",null,"`poste`='$posteSQL' AND `debut`='$debutSQL' AND `fin`='$finSQL' AND `date`='$dateSQL' AND `site`='$siteSQL' AND `perso_id`>0");
+// Cellule grisée par depuis le menudiv
+$cellule_grise = false;
 
-$nbAgents=$db->nb;
+$db->select("pl_poste",null,"`poste`='$posteSQL' AND `debut`='$debutSQL' AND `fin`='$finSQL' AND `date`='$dateSQL' AND `site`='$siteSQL'");
+
+$nbAgents=0;
 if($db->result){
   // On exclus les agents qui sont déjà dans cette cellule (important s'il s'agit d'un poste non-bloquant)
   foreach($db->result as $elem){
-    $tab_exclus[] = $elem['perso_id'];
+    if($elem['perso_id'] > 0){
+      $tab_exclus[] = $elem['perso_id'];
+      $nbAgents ++;
+    }
+    $cellule_grise = $elem['grise'] == 1 ? true : $cellule_grise;
   }
 }
 $exclus=join($tab_exclus,",");
-
 
 //--------------		Liste du personnel disponible			---------------//
 
@@ -434,7 +440,7 @@ if($services and $config['ClasseParService']){
   $i=0;
   foreach($services as $elem){
     $class="service_".strtolower(removeAccents(str_replace(" ","_",$elem['service'])));
-    if(array_key_exists($elem['service'],$newtab)){
+    if(array_key_exists($elem['service'],$newtab) and !$cellule_grise){
       $tableaux[0].="<tr class='$class menudiv-tr'>\n";
       $tableaux[0].="<td colspan='2' onmouseover='groupe_tab($i,\"$tab_agent\",1,$(this));'>";
       $tableaux[0].=$elem['service'];
@@ -445,7 +451,7 @@ if($services and $config['ClasseParService']){
 }
 
 //		-----------		Affichage de la liste des agents s'ils ne sont pas classés par services		----------//
-if(!$config['ClasseParService']){
+if(!$config['ClasseParService'] and !$cellule_grise){
   $hide=false;
   $p=new planning();
   $p->site=$site;
@@ -454,7 +460,7 @@ if(!$config['ClasseParService']){
 }
 
 //		-----------		Affichage des agents indisponibles		----------//
-if(array_key_exists("Autres",$newtab) and $config['agentsIndispo']){
+if(array_key_exists("Autres",$newtab) and $config['agentsIndispo'] and !$cellule_grise){
   $i=count($services);
   $groupe_tab_hide=$config['ClasseParService']?1:0;
   $tableaux[0].="<tr class='menudiv-tr'>\n";
@@ -464,13 +470,13 @@ if(array_key_exists("Autres",$newtab) and $config['agentsIndispo']){
 }
 
 //		-----------		Affichage de l'utilisateur "tout le monde"		----------//
-if($config['toutlemonde']){
+if($config['toutlemonde'] and !$cellule_grise){
   $tableaux[0].="<tr onmouseover='groupe_tab_hide();' class='menudiv-tr' >\n";
   $tableaux[0].="<td colspan='2' style='color:black;' ";
   $tableaux[0].="onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",2,0,0,\"$site\");'>Tout le monde</td></tr>\n";
 }
 //~ -----				Affiche de la "Case vide"  (suppression)	--------------------------//
-if($nbAgents>0){
+if($nbAgents>0 and !$cellule_grise){
   $groupe_tab=$config['ClasseParService']?"groupe_tab(\"vide\",\"$tab_agent\",1,$(this));":null;
   $tableaux[0].="<tr onmouseover='$groupe_tab groupe_tab_hide();' class='menudiv-tr'>";
   $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,0,0,\"$site\");'>";
@@ -491,7 +497,7 @@ if($nbAgents>0){
 }
 
 // Ajout du lien pour les appels à disponibilité
-if($config['Planning-AppelDispo']){
+if($config['Planning-AppelDispo'] and !$cellule_grise){
   // Consulte la base de données pour savoir si un mail a déjà été envoyé
   $db=new db();
   $db->select2("appel_dispo",null,array("site"=>$site,"poste"=>$poste,"date"=>$date,"debut"=>$debut,"fin"=>$fin),"ORDER BY `timestamp` desc");
@@ -520,6 +526,21 @@ if($config['Planning-AppelDispo']){
   if($nbEnvoi){
     $tableaux[0].="<span title='$nbEnvoiInfo' style='position:absolute; right:5px;'><strong>$nbEnvoi</strong></span>\n";
   }
+  $tableaux[0].="</td><tr>\n";
+}
+
+// Griser la cellule
+$droit_griser_cellule = 900 + $site;
+if(in_array($droit_griser_cellule, $droits)){
+  $tableaux[0].="<tr onmouseover='groupe_tab_hide();' class='menudiv-tr'>";
+  if($cellule_grise == false){
+    $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,0,0,\"$site\",1,1);'>\n";
+    $tableaux[0].="Griser la cellule\n";
+  }else{
+    $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,0,0,\"$site\",1,-1);'>\n";
+    $tableaux[0].="D&eacute;griser la cellule\n";
+  }
+
   $tableaux[0].="</td><tr>\n";
 }
 

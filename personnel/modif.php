@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 14 juillet 2017
+Dernière modification : 31 juillet 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -69,6 +69,9 @@ if($config['Multisites-nombre']>1){
 
   $groupes_sites[801]=$groupes[801];	// Modification des commentaires des plannings
   unset($groupes[801]);
+
+  $groupes_sites[901]=$groupes[901];	// Griser les cellules des plannings
+  unset($groupes[901]);
 }
 
 $db=new db();
@@ -924,6 +927,11 @@ if($config['Multisites-nombre']>1){
       // Modification des commentaires des plannings si plusieurs sites
       elseif($elem['groupe_id']==801){
 	$groupe_id=800+$i;
+      }
+
+      // Griser les cellules des plannings si plusieurs sites
+      elseif($elem['groupe_id']==901){
+	$groupe_id=900+$i;
       }
 
       $checked=null;

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.7
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 12 mai 2017
+Dernière modification : 31 juillet 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -36,6 +36,7 @@ $CSRFToken=filter_input(INPUT_POST,"CSRFToken",FILTER_SANITIZE_STRING);
 $date=filter_input(INPUT_POST,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
 $debut=filter_input(INPUT_POST,"debut",FILTER_CALLBACK,array("options"=>"sanitize_time"));
 $fin=filter_input(INPUT_POST,"fin",FILTER_CALLBACK,array("options"=>"sanitize_time"));
+$griser=filter_input(INPUT_POST,"griser",FILTER_SANITIZE_NUMBER_INT);
 $perso_id=filter_input(INPUT_POST,"perso_id",FILTER_SANITIZE_NUMBER_INT);
 $perso_id_origine=filter_input(INPUT_POST,"perso_id_origine",FILTER_SANITIZE_NUMBER_INT);
 $poste=filter_input(INPUT_POST,"poste",FILTER_SANITIZE_NUMBER_INT);
@@ -116,14 +117,25 @@ else{
     }
 }
 
+// Griser les cellule
+if($griser == 1){
+  $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>'0', "grise"=>'1', "chgt_login"=>$login_id, "chgt_time"=>$now);
+  $db=new db();
+  $db->insert2("pl_poste",$insert);
+} elseif($griser == -1){
+  $delete=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>'0', "grise"=>'1');
+  $db=new db();
+  $db->delete("pl_poste",$delete);
+}
+
 
 // Partie 2 : Récupération de l'ensemble des éléments
 // Et transmission à la fonction JS bataille_navale pour mise à jour de l'affichage de la cellule
 
-$db->selectInnerJoin(
+$db->selectLeftJoin(
   array("pl_poste","perso_id"),
   array("personnel","id"),
-  array("absent","supprime"),
+  array("absent","supprime","grise"),
   array("nom","prenom","statut","service","postes",array("name"=>"id","as"=>"perso_id")),
   array("date"=>$date, "debut"=>$debut, "fin"=> $fin, "poste"=>$poste, "site"=>$site),
   array(),
@@ -131,6 +143,11 @@ $db->selectInnerJoin(
 
 if(!$db->result){
   echo json_encode(array());
+  return;
+}
+
+if($db->result[0]['grise'] == 1){
+  echo json_encode("grise");
   return;
 }
 

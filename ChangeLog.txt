@@ -1,8 +1,13 @@
-*** Version 2.7      (26 juillet 2017)   ***
+*** Version 2.7      (31 juillet 2017)   ***
 - Améliorations
 Heures de présence : Gestion de 2 pauses par jour
 Permet de personnaliser la favicon depuis les thèmes perso. Positionner un fichier nommé favicon.png dans le dossier images du thème
 Enregistre l'URL de l'application dans la config ($config['URL']), permet de l'utiliser en CLI
+Permet de griser ponctuellement des cellules depuis le menu du planning
+
+- Corrections
+Décale le menu du planning par rapport au curseur : évite de cliquer trop vite sur le nom d'un agent
+Corrige l'importation des heures de présence : tout était importé en semaine 1, problèmatique lorsque la rotation des semaines était activée
 
 *** Version 2.6.91   (2 juin 2017)   ***
 - Amélioration

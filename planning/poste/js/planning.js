@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 21 avril 2017
+Dernière modification : 31 juillet 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -335,10 +335,10 @@ $(function() {
         $("#menudiv1").css("width",width);
 
 	// Position horizontale du tableau 1
-	if($(window).width()-e.clientX<$("#menudiv1").width()){
-	  var left1=e.pageX-$("#menudiv1").width();
+	if( $(window).width() +5 -e.clientX < $("#menudiv1").width() ){
+	  var left1 = e.pageX -5 -$("#menudiv1").width();
 	}else{
-	  var left1=e.pageX;
+	  var left1 = e.pageX +5;
 	}
 	$("#menudiv1").css("left",left1);
 	
@@ -520,8 +520,15 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin){
  * Refait ensuite l'affichage complet de la cellule. Efface est remplit la cellule avec les infos récupérées du fichier ajax.updateCell.php
  * Les cellules sont identifiables, supprimables et modifiables indépendament des autres
  * Les infos service et statut sont utilisées pour la mise en forme des cellules : utilisation des classes service_ et statut_
+ * 
+ * @param int perso_id : Si 0 = griser la cellule, si 2 = Tout le monde
  */
-function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout){
+function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,griser){
+
+  if(griser==undefined){
+    griser=0;
+  }
+  
   if(site==undefined || site==""){
     site=1;
   }
@@ -538,7 +545,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
     url: "planning/poste/ajax.updateCell.php",
     type: "post",
     dataType: "json",
-    data: {poste: poste, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, perso_id: perso_id, perso_id_origine: perso_id_origine, barrer: barrer, ajouter: ajouter, site: site, tout: tout},
+    data: {poste: poste, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, perso_id: perso_id, perso_id_origine: perso_id_origine, barrer: barrer, ajouter: ajouter, site: site, tout: tout, griser: griser},
     success: function(result){
       $("#td"+cellule).html("");
       
@@ -559,6 +566,16 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
         majPersoOrigine(0);
       }
 
+      // Cellule grisée depuis le menudiv
+      if(result != 'grise'){
+        $("#td"+cellule).removeClass('cellule_grise');
+      }
+
+      if(result == 'grise'){
+        $("#td"+cellule).addClass('cellule_grise');
+        result = new Array();
+      }
+      
       for(i in result){
         // Exemple de cellule
         // <div id='cellule11_0' class='cellule statut_bibas service_permanent' >Christophe C.</div>

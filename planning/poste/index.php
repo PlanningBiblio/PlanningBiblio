@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 14 juillet 2017
+Dernière modification : 31 juillet 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -424,8 +424,8 @@ else{
   //--------------	Recherche des infos cellules	------------//
   // Toutes les infos seront stockées danx un tableau et utilisées par les fonctions cellules_postes
   $db=new db();
-  $db->selectInnerJoin(array("pl_poste","perso_id"),array("personnel","id"),
-    array("perso_id","debut","fin","poste","absent","supprime"),
+  $db->selectLeftJoin(array("pl_poste","perso_id"),array("personnel","id"),
+    array("perso_id","debut","fin","poste","absent","supprime","grise"),
     array("nom","prenom","statut","service","postes"),
     array("date"=>$date, "site"=>$site),
     array(),

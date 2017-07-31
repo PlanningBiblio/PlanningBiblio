@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 21 avril 2017
+Dernière modification : 31 juillet 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -215,6 +215,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste` (
   `fin` time NOT NULL,
   `supprime` ENUM('0','1') DEFAULT '0',
   `site` INT(3) DEFAULT '1',
+  `grise` ENUM('0','1') DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `date` (`date`),
   KEY `site` (`site`)

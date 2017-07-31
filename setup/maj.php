@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 26 juillet 2017
+Dernière modification : 31 juillet 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -834,6 +834,10 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('URL', 'info', '', 'URL de l&apos;application',' Divers','','10');";
   $sql[]="UPDATE `{$dbprefix}config` SET `ordre`='20' WHERE `nom`='Dimanche';";
   $sql[]="UPDATE `{$dbprefix}config` SET `ordre`='30' WHERE `nom`='Granularite';";
+
+  // Griser les cellules des plannings
+  $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`) VALUES ('Griser les cellules des plannings','901','Griser les cellules des plannings');";
+  $sql[]="ALTER TABLE `{$dbprefix}pl_poste` ADD `grise` ENUM ('0','1') DEFAULT '0';";
 
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
