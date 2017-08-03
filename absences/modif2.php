@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.91
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 6 juin 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -257,6 +257,7 @@ foreach($agents_ajoutes as $agent){
 }
 if(!empty($insert)){
   $db=new db();
+  $db->CSRFToken = $CSRFToken;
   $db->insert2("absences",$insert);
 }
 

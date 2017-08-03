@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.7
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 12 mai 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -132,7 +132,7 @@ class planning{
     $menudiv=null;
     
     // Calcul des heures de SP à effectuer pour tous les agents
-    $heuresSP=calculHeuresSP($date);
+    $heuresSP=calculHeuresSP($date, $this->CSRFToken);
 
     // Nombre d'heures de la cellule choisie
     $hres_cellule = 0;
@@ -142,6 +142,7 @@ class planning{
     
     // Calcul des heures d'absences afin d'ajuster les heures de SP
     $a=new absences();
+    $a->CSRFToken = $this->CSRFToken;
     $heuresAbsencesTab=$a->calculHeuresAbsences($date);
 
     if(is_array($agents)){
@@ -386,7 +387,7 @@ class planning{
 	$tab[$id]=array("nom"=>$agents[$id]["nom"], "prenom"=>$agents[$id]["prenom"], "mail"=>$agents[$id]["mail"], "planning"=>array());
       }
       // Complète le tableau avec les postes, les sites, horaires et marquage "absent"
-      $poste=$postes[$elem["poste"]]["nom"];
+      $poste = html_entity_decode($postes[$elem["poste"]]["nom"],ENT_QUOTES|ENT_IGNORE,'UTF-8');
       $site=null;
       if($GLOBALS["config"]["Multisites-nombre"]>1){
 	$site="(".$GLOBALS["config"]["Multisites-site{$elem["site"]}"].")";
@@ -409,6 +410,7 @@ class planning{
       // Enregistrement des infos dans la table BDD
       $insert=array("date"=>$date, "data"=>json_encode((array)$tab));
       $db=new db();
+      $db->CSRFToken = $this->CSRFToken;
       $db->insert2("pl_notifications",$insert);
 
       // Enregistre les agents qui doivent être notifiés
@@ -421,8 +423,6 @@ class planning{
 
       // Lecture des infos de la base de données, comparaison avec les nouvelles données
       // Lecture des infos de la base de données
-      $db=new db();
-      $db->select2("pl_notifications","*",array("date"=>$date));
 
       $data=$db->result[0]["data"];
       $data=html_entity_decode($data,ENT_QUOTES|ENT_IGNORE,'UTF-8');
@@ -616,6 +616,7 @@ class planning{
     // Si non, on enregistre la nouvelle note
     if(strcmp($previousNotes,$text)!=0){
       $db=new db();
+      $db->CSRFToken = $this->CSRFToken;
       $db->insert2("pl_notes",array("date"=>$date,"site"=>$site,"text"=>$text,"perso_id"=>$_SESSION['login_id']));
     }
   }

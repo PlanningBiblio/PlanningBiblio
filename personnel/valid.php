@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 6 juillet 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -119,10 +119,12 @@ switch($action){
       include "plugins/conges/ficheAgentValid.php";
     }
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->insert2("personnel",$insert);
 
     // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
     $p=new personnel();
+    $p->CSRFToken = $CSRFToken;
     $p->updateEDTSamedi($eDTSamedi,$premierLundi,$dernierLundi,$id);
     
 	    
@@ -206,6 +208,7 @@ switch($action){
 
     // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
     $p=new personnel();
+    $p->CSRFToken = $CSRFToken;
     $p->updateEDTSamedi($eDTSamedi,$premierLundi,$dernierLundi,$id);
 
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/index.php';</script>";

@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 31 juillet 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -91,6 +91,7 @@ else{
     $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id, 
       "chgt_login"=>$login_id, "chgt_time"=>$now);
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->insert2("pl_poste",$insert);
   }
   // Si barrer : on barre l'ancien et ajoute le nouveau
@@ -106,6 +107,7 @@ else{
     $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id, 
       "chgt_login"=>$login_id, "chgt_time"=>$now);
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->insert2("pl_poste",$insert);
   }
   // Si Ajouter, on garde l'ancien et ajoute le nouveau
@@ -113,6 +115,7 @@ else{
     $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id, 
       "chgt_login"=>$login_id, "chgt_time"=>$now);
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->insert2("pl_poste",$insert);
     }
 }
@@ -121,6 +124,7 @@ else{
 if($griser == 1){
   $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>'0', "grise"=>'1', "chgt_login"=>$login_id, "chgt_time"=>$now);
   $db=new db();
+  $db->CSRFToken = $CSRFToken;
   $db->insert2("pl_poste",$insert);
 } elseif($griser == -1){
   $delete=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>'0', "grise"=>'1');

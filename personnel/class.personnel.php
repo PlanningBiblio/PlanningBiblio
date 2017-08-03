@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 22 juin 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -211,6 +211,7 @@ class personnel{
 	$insert[]=array("perso_id"=>$perso_id, "semaine"=>$elem);
       }
       $db=new db();
+      $db->CSRFToken = $this->CSRFToken;
       $db->insert2("edt_samedi",$insert);
     }
  }

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.91
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : include/ajax.menus.php
 Création : 5 février 2017
-Dernière modification : 1er juin 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -23,6 +23,7 @@ ini_set('display_errors',0);
 session_start();
 
 include "config.php";
+$CSRFToken=trim(filter_input(INPUT_POST,"CSRFToken",FILTER_SANITIZE_STRING));
 $menu = FILTER_INPUT(INPUT_POST, 'menu', FILTER_SANITIZE_STRING);
 $option = FILTER_INPUT(INPUT_POST, 'option', FILTER_SANITIZE_STRING);
 $tab = $_POST['tab'];
@@ -40,6 +41,7 @@ foreach($tab as $elem){
   }
   
   $db=new db();
+  $db->CSRFToken = $CSRFToken;
   $db->insert2("select_$menu", $elements);
 }
 echo json_encode('ok');

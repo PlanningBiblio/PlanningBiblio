@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.6.91
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/js/modif.js
 Création : 28 février 2014
-Dernière modification : 2 juin 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -40,13 +40,13 @@ $(function() {
 	  var id=$(this).attr("id").replace("li_","");
  	  tab.push(new Array($("#valeur_"+id).text(), $(this).index(), $("#type_"+id+" option:selected").val()));
 	});
-
-	// Transmet le tableau à la page de validation ajax
+        
+        // Transmet le tableau à la page de validation ajax
 	$.ajax({
 	  url: "include/ajax.menus.php",
 	  type: "post",
           dataType: "json",
-	  data: {tab: tab, menu:"abs", option: "type"},
+	  data: {tab: tab, menu:"abs", option: "type", CSRFToken: $('#CSRFSession').val()},
 	  success: function(){
             var current_val = $('#motif').val();
             $('#motif').empty();

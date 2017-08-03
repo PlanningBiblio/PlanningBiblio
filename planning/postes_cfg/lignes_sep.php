@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/postes_cfg/lignes_sep.php
 Création : 13 septembre 2012
-Dernière modification : 10 février 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -35,6 +35,7 @@ switch($action){		//	Operations de mise a jour
 
   case "ajout2" :
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->insert2("lignes",array("nom"=>$nom));
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=planning/postes_cfg/index.php'</script>\n";
     break;
@@ -77,6 +78,7 @@ EOD;
     <b>Ajout d'une nouvelle ligne</b><br/><br/>
     <form action='index.php' method='get' >
     <input type='hidden' name='page' value='planning/postes_cfg/lignes_sep.php' />
+    <input type='hidden' name='CSRFToken' value='$CSRFSession' />
     <input type='hidden' name='action' value='ajout2' />
     <input type='hidden' name='cfg-type' value='lignes_sep' />
     <table class='tableauFiches' style='width:700px;'>

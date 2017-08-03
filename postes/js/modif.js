@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.6.91
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : postes/js/modif.js
 Création : 5 février 2017
-Dernière modification : 2 juin 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -42,7 +42,7 @@ $(function() {
 	  url: "include/ajax.menus.php",
 	  type: "post",
           dataType: "json",
-	  data: {tab: tab, menu: "etages"},
+	  data: {tab: tab, menu: "etages", CSRFToken: $('#CSRFSession').val()},
 	  success: function(){
             var current_val = $('#etage').val();
             $('#etage').empty();
@@ -149,7 +149,7 @@ $(function() {
 	  url: "include/ajax.menus.php",
 	  type: "post",
           dataType: "json",
-	  data: {tab: tab, menu: "groupes"},
+	  data: {tab: tab, menu: "groupes", CSRFToken: $('#CSRFSession').val()},
 	  success: function(){
             var current_val = $('#groupe').val();
             $('#groupe').empty();

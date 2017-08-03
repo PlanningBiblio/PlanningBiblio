@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 31 juillet 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -187,7 +187,7 @@ $(function() {
 	    dataType: "json",
 	    url: "planning/poste/ajax.notes.php",
 	    type: "post",
-	    data: {date: $("#date").val(), site: $("#site").val(), text: encodeURIComponent(text2)},
+	    data: {date: $("#date").val(), site: $("#site").val(), text: encodeURIComponent(text2), CSRFToken: $('#CSRFSession').val()},
 	    success: function(result){
 	      if(result.error){
 		CJInfo(result.error,"error");
@@ -252,6 +252,7 @@ $(function() {
 	  // On ajoute le sujet et le message à cet objet et on l'envoi au script PHP pour l'envoi du mail
 	  appelDispoData.sujet=sujet;
 	  appelDispoData.message=message;
+	  appelDispoData.CSRFToken = $('#CSRFSession').val();
 
 	  $( "#pl-appelDispo-form" ).dialog( "close" );
 	  
@@ -300,6 +301,7 @@ $(function() {
       return false;
     }
     cellule=$(this).attr("data-cell");
+    CSRFToken=$("#CSRFSession").val();
     date=$("#date").val();
     debut=$(this).attr("data-start");
     fin=$(this).attr("data-end");
@@ -314,7 +316,7 @@ $(function() {
     $.ajax({
       url: "planning/poste/ajax.menudiv.php",
       datatype: "json",
-      data: {cellule: cellule, date: date, debut: debut, fin: fin, poste: poste, site: site, perso_nom: perso_nom_origine},
+      data: {cellule: cellule, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, poste: poste, site: site, perso_nom: perso_nom_origine},
       type: "get",
       success: function(result){
 	// si pas de result : on quitte (pas de droit admin)
@@ -456,7 +458,7 @@ function afficheTableauxDiv(){
     url: "planning/poste/ajax.hiddenTables.php",
     type: "post",
     dataType: "json",
-    data: {tableId: tableId, hiddenTables: hiddenTables},
+    data: {tableId: tableId, hiddenTables: hiddenTables, CSRFToken: $('#CSRFSession').val()},
     success: function(result){
     },
     error: function(result){

@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 22 juin 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -76,6 +76,7 @@ class planningHebdo{
 	"valide"=>$valide, "validation"=>$validation);
 
       $db=new db();
+      $db->CSRFToken = $CSRFToken;
       $db->insert2("planning_hebdo",$insert);
       $this->error=$db->error;
       // 2ème tableau
@@ -83,6 +84,7 @@ class planningHebdo{
 	"valide"=>$valide, "validation"=>$validation);
 
       $db=new db();
+      $db->CSRFToken = $CSRFToken;
       $db->insert2("planning_hebdo",$insert);
       $this->error=$db->error?$db->error:$this->error;
     }
@@ -96,6 +98,7 @@ class planningHebdo{
 	$insert['remplace']=$data['remplace'];
       }
       $db=new db();
+      $db->CSRFToken = $CSRFToken;
       $db->insert2("planning_hebdo",$insert);
       $this->error=$db->error;
     }
@@ -417,13 +420,16 @@ class planningHebdo{
     $data['dates'][0]=array_map("dateFr",$data['dates'][0]);
     $data['dates'][1]=array_map("dateFr",$data['dates'][1]);
     $dates=array(json_encode($data['dates'][0]),json_encode($data['dates'][1]));
-
+    
+    $CSRFToken=$data['CSRFToken'];
+    
     for($i=0;$i<count($annee);$i++){
       $db=new db();
       $db->delete("planning_hebdo_periodes","`annee`='{$annee[$i]}'");
       $this->error=$db->error?true:false;
       $insert=array("annee"=>$annee[$i],"dates"=>$dates[$i]);
       $db=new db();
+      $db->CSRFToken = $CSRFToken;
       $db->insert2("planning_hebdo_periodes",$insert);
       $this->error=$db->error?true:$this->error;
     }

@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 14 juillet 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -263,7 +263,7 @@ function authSQL($login,$password){
 * pour gagner du temps lors des appels suivants.
 * Fonction utilisée par planning::menudivAfficheAgents et dans le script statistiques/temps.php
 */
-function calculHeuresSP($date){
+function calculHeuresSP($date,$CSRFToken){
   $config=$GLOBALS['config'];
   $version=$GLOBALS['version'];
 
@@ -379,6 +379,7 @@ function calculHeuresSP($date){
       $db=new db();
       $db->delete2("heures_sp",array("semaine"=>$j1));
       $db=new db();
+      $db->CSRFToken = $CSRFToken;
       $db->insert2("heures_sp",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heuresSP)));
     }
 
@@ -451,6 +452,7 @@ function calculHeuresSP($date){
       $db=new db();
       $db->delete2("heures_sp",array("semaine"=>$j1));
       $db=new db();
+      $db->CSRFToken = $CSRFToken;
       $db->insert2("heures_sp",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heuresSP)));
     }
   }
@@ -498,29 +500,29 @@ function calculPresence($temps, $jour){
   $heures=$temps[$jour];
   
   // 1er créneau : cas N° 2; 3; 4; 5
-  if ($heures[0] and $heures[1]) {
+  if (!empty($heures[0]) and !empty($heures[1])) {
     $tab[] = array($heures[0], $heures[1]);
   
   // 1er créneau fusionné avec le 2nd : cas N° 6 et 7
-  } elseif ($pause2 and $heures[0] and $heures[5]) {
+  } elseif ($pause2 and !empty($heures[0]) and !empty($heures[5])) {
     $tab[] = array($heures[0], $heures[5]);
   
   // Journée complète : cas N° 8
-  } elseif ($heures[0] and $heures[3]) {
+  } elseif (!empty($heures[0]) and !empty($heures[3])) {
     $tab[] = array($heures[0], $heures[3]);
   }
   
   // 2ème créneau : cas N° 1 et 9
-  if ($pause2 and $heures[2] and $heures[5]) {
+  if ($pause2 and !empty($heures[2]) and !empty($heures[5])) {
     $tab[] = array($heures[2], $heures[5]);
     
   // 2ème créneau fusionné au 3ème : cas N° 3 et 10
-  } elseif ($heures[2] and $heures[3]) {
+  } elseif (!empty($heures[2]) and !empty($heures[3])) {
     $tab[] = array($heures[2], $heures[3]);
   }
   
   // 3ème créneau : cas N° 2; 4; 6
-  if ($pause2 and $heures[6] and $heures[3]) {
+  if ($pause2 and !empty($heures[6]) and !empty($heures[3])) {
     $tab[] = array($heures[6], $heures[3]);
   }
   
@@ -694,6 +696,26 @@ function createURL($page=null){
   // url complete
   $url.=$folder."/index.php?page=".$page;
   return $url;
+}
+
+
+// Génération d'un CSRF Token
+function CSRFToken(){
+  // PHP 7
+  if(phpversion() >= 7){
+    $CSRFToken = bin2hex(random_bytes(32));
+  }
+
+  // PHP 5.3+
+  else{
+    if (function_exists('mcrypt_create_iv')) {
+      $CSRFToken = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
+    } else {
+      $CSRFToken = bin2hex(openssl_random_pseudo_bytes(32));
+    }
+  }
+
+  return $CSRFToken;
 }
 
 function date_time($date){
@@ -943,7 +965,7 @@ function html_entity_decode_latin1($n){
  * @param int config IPBlocker-TimeChecked : période en minutes pendant laquelle on recherche les échecs
  * @param int config IPBlocker-Attempts : nombre d'échecs autorisés
  */
-function loginFailed($login){
+function loginFailed($login, $CSRFToken){
 	// Recherche le nombre de login failed lors des $seconds dernières secondes
 	$seconds=$GLOBALS['config']['IPBlocker-TimeChecked']*60;
 	$attempts=$GLOBALS['config']['IPBlocker-Attempts'];
@@ -957,6 +979,7 @@ function loginFailed($login){
 	// Insertion dans la base de données
 	$insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>$status);
 	$db=new db();
+	$db->CSRFToken = $CSRFToken;
 	$db->insert2("ip_blocker",$insert);
 }
 
@@ -983,13 +1006,15 @@ function loginFailedWait(){
  * @param string $login : login saisi par l'utilisateur
  */
 function loginSuccess($login){
-	$insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>"success");
-	$db=new db();
-	$db->insert2("ip_blocker",$insert);
+  $insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>"success");
+  $db=new db();
+  $db->CSRFToken = $CSRFToken;
+  $db->insert2("ip_blocker",$insert);
 }
 
-function logs($msg,$program=null){
+function logs($msg, $program=null, $CSRFToken){
   $db=new db();
+  $db->CSRFToken = $CSRFToken;
   $db->insert2("log",array("msg"=>$msg,"program"=>$program));
 }
 

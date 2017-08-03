@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.4
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/postes_cfg/horaires.php
 Création : mai 2011
-Dernière modification : 12 octobre 2016
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -20,6 +20,8 @@ Page incluse dans le fichier "planning/postes_cfg/modif.php"
 require_once "class.tableaux.php";
 
 $post = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+$CSRFToken = $post['CSRFToken'];
+unset($post['CSRFToken']);
 
 //	Mise à jour du tableau (après validation)
 if(isset($post['action'])){
@@ -49,6 +51,7 @@ if(isset($post['action'])){
     }
   }
   $db=new db();
+  $db->CSRFToken = $CSRFToken;
   $db->insert2("pl_poste_horaires",$values);
   if(!$db->error){
     echo "<script type='text/JavaScript'>CJInfo(\"Les horaires ont été modifiés avec succès\",\"success\");</script>\n";
@@ -93,6 +96,7 @@ if($db->result){
 //	Affichage des horaires
 echo "<div style='min-height:350px;'>\n";
 echo "<form name='form2' action='index.php' method='post'>\n";
+echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
 echo "<input type='hidden' name='page' value='planning/postes_cfg/modif.php' />\n";
 echo "<input type='hidden' name='cfg-type' value='1' />\n";
 echo "<input type='hidden' name='numero' value='$tableauNumero' />\n";

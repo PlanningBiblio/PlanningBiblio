@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 31 juillet 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
@@ -39,6 +39,7 @@ $debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize
 $fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_time"));
 $perso_nom=filter_input(INPUT_GET,"perso_nom", FILTER_SANITIZE_STRING);
 $poste=filter_input(INPUT_GET,"poste",FILTER_SANITIZE_NUMBER_INT);
+$CSRFToken=trim(filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING));
 
 $login_id=$_SESSION['login_id'];
 $tab_exclus=array(0);
@@ -455,6 +456,7 @@ if(!$config['ClasseParService'] and !$cellule_grise){
   $hide=false;
   $p=new planning();
   $p->site=$site;
+  $p->CSRFToken = $CSRFToken;
   $p->menudivAfficheAgents($poste,$agents_dispo,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion,$absences_non_validees);
   $tableaux[0].=$p->menudiv;
 }
@@ -554,6 +556,7 @@ if($agents_tous and $config['ClasseParService']){
   $hide=true;
   $p=new planning();
   $p->site=$site;
+  $p->CSRFToken = $CSRFToken;
   $p->menudivAfficheAgents($poste,$agents_tous,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion,$absences_non_validees);
   $tableaux[1].=$p->menudiv;
 }
@@ -563,6 +566,7 @@ if($autres_agents and !$config['ClasseParService'] and $config['agentsIndispo'])
   $hide=true;
   $p=new planning();
   $p->site=$site;
+  $p->CSRFToken = $CSRFToken;
   $p->menudivAfficheAgents($poste,$autres_agents,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion,$absences_non_validees);
   $tableaux[1].=$p->menudiv;
 }

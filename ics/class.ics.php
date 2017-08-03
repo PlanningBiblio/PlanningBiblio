@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.9
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/class.ics.php
 Création : 29 mai 2016
-Dernière modification : 21 mai 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -44,6 +44,7 @@ require_once __DIR__."/../vendor/ics-parser/class.iCalReader.php";
 
 class CJICS{
 
+  public $CSRFToken = null;
   public $error=null;
   public $logs=null;
   public $pattern=null;
@@ -60,6 +61,7 @@ class CJICS{
   public function updateTable(){
 
     // Initialisation des variables
+    $CSRFToken = $this->CSRFToken;
     $perso_id=$this->perso_id;	// perso_id
     $table=$this->table;	// Table à mettre à jour
     $src=$this->src;		// Fichier ICS
@@ -69,9 +71,9 @@ class CJICS{
     $deleted=array();		// Evénements supprimés du fichier ICS ou événements modifiés
     $insert=array();		// Evénements à insérer (nouveaux ou événements modifiés (suppression + réinsertion))
 
-	if($this->logs){
-	  logs("Table: $table, Perso: $perso_id, src: $src","ICS");
-	}
+    if($this->logs){
+      logs("Table: $table, Perso: $perso_id, src: $src", "ICS", $CSRFToken);
+    }
 
     // Parse le fichier ICS, le tableau $events contient les événements du fichier ICS
     $ical   = new ICal($src, "MO");
@@ -81,15 +83,15 @@ class CJICS{
     $calName=$ical->calendarName();
     $calName = removeAccents($calName);
     $calTimeZone = $ical->calendarTimezone();
-	if($this->logs){
-	  logs("Calendrier: $calName, Fuseau horaire: $calTimeZone","ICS");
-	}
+    if($this->logs){
+      logs("Calendrier: $calName, Fuseau horaire: $calTimeZone", "ICS", $CSRFToken);
+    }
     
     if(!is_array($events) or empty($events)){
-	  if($this->logs){
-		logs("Aucun élément trouvé dans le fichier $src","ICS");
-		$events = array();
-	  }
+      if($this->logs){
+        logs("Aucun élément trouvé dans le fichier $src", "ICS", $CSRFToken);
+        $events = array();
+      }
     }
     
     // Ne garde que les événements confirmés et occupés et rempli le tableau $iCalKeys
@@ -154,8 +156,8 @@ class CJICS{
     }
 
     if($this->logs){
-	  logs("$nb événement(s) supprimé(s)","ICS");
-	}
+      logs("$nb événement(s) supprimé(s)", "ICS", $CSRFToken);
+    }
 
     // Insertion des nouveux éléments ou des éléments modifiés dans la table $table : complète le tableau $insert
     foreach($events as $elem){
@@ -199,8 +201,8 @@ class CJICS{
     }
 
     if($this->logs){
-	  logs("$nb événement(s) importé(s)","ICS");
-	}
+      logs("$nb événement(s) importé(s)", "ICS", $CSRFToken);
+    }
 
   }
 

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.5
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : cron.ctrlPlanning.php
 Création : 18 janvier 2016
-Dernière modification : 27 octobre 2016
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -44,8 +44,12 @@ require_once "$path/absences/class.absences.php";
 require_once "$path/planning/postes_cfg/class.tableaux.php";
 require_once "$path/postes/class.postes.php";
 
+
+// Génération d'un CSRF Token
+$CSRFToken = CSRFToken();
+
 if(!$config['Rappels-Actifs']){
-  logs("Rappels désactivés","Rappels");
+  logs("Rappels désactivés","Rappels",$CSRFToken);
   exit;
 }
 
@@ -244,7 +248,7 @@ $m->subject=$subject;
 $m->message=$msg;
 $m->send();
 if($m->error){
-  logs($m->error,"Rappels");
+  logs($m->error,"Rappels",$CSRFToken);
 }
 
 ?>

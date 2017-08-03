@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 23 avril 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -25,6 +25,11 @@ echo "<h3>Feuille de temps</h3>\n";
 require_once "include/horaires.php";
 
 //	Initialisation des variables
+$CSRFToken=trim(filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING));
+if(!$CSRFToken){
+  $CSRFToken = $_SESSION['oups']['CSRFToken'];
+}
+
 $debut=filter_input(INPUT_GET,"debut",FILTER_SANITIZE_STRING);
 if($debut){
   $fin=filter_input(INPUT_GET,"fin",FILTER_SANITIZE_STRING);
@@ -128,10 +133,11 @@ $d=new datePl($debut);
 $d1=$d->dates[0];
 // Pour chaque semaine
 for($d=$d1;$d<=$fin;$d=date("Y-m-d",strtotime($d."+1 week"))){
-  $heuresSP[$d]=calculHeuresSP($d);
+  $heuresSP[$d]=calculHeuresSP($d, $CSRFToken);
   // déduction des absences
   if($config['Planning-Absences-Heures-Hebdo']){
     $a=new absences();
+    $a->CSRFToken = $CSRFToken;
     $heuresAbsences[$d]=$a->calculHeuresAbsences($d);
     foreach($heuresAbsences[$d] as $key => $value){
       if(array_key_exists($key,$heuresSP[$d])){
@@ -364,6 +370,7 @@ echo <<<EOD
 <td>
 <form name='form' method='get' action='index.php'>
 <input type='hidden' name='page' value='statistiques/temps.php' />
+<input type='hidden' name='CSRFToken' value='$CSRFToken' />
 <label for='debut'>Début</label><input type='text' name='debut' class='datepicker' value='$debutFr' style='margin:0 20px 0 5px;' />
 <label for='fin'>Fin</label><input type='text' name='fin' class='datepicker' value='$finFr' style='margin:0 0 0 5px;' />
 $affichage_groupe

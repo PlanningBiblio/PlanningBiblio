@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Version 2.5.4
+/**
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : joursFeries/index.php
 Création : 25 juillet 2013
-Dernière modification : 9 février 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -68,6 +68,7 @@ echo <<<EOD
   <!-- Tableau des jours fériés -->
   <form name='form' method='post' action='index.php'>
   <input type='hidden' name='page' value='joursFeries/valid.php' />
+  <input type='hidden' name='CSRFToken' value='$CSRFSession' />
   <input type='hidden' name='annee' value='$annee_select' />
   <table cellspacing='0'>
   <tr class='th'><td>&nbsp;</td><td>Jour</td><td>Férié</td><td>Fermeture</td><td>Nom</td><td>Commentaire</td></tr>

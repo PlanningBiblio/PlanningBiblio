@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 31 juillet 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -29,6 +29,7 @@ echo "<div id='planning'>\n";
 include "fonctions.php";
 
 // Initialisation des variables
+$CSRFToken=filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING);
 $groupe=filter_input(INPUT_GET,"groupe",FILTER_SANITIZE_NUMBER_INT);
 $site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
 $tableau=filter_input(INPUT_GET,"tableau",FILTER_SANITIZE_NUMBER_INT);
@@ -276,7 +277,7 @@ if($autorisation){
 }
 
 if($autorisation){
-  echo "<a href='javascript:popup(\"planning/poste/enregistrer.php&date=$date&site=$site\",500,240);' title='Enregistrer comme modèle'><span class='pl-icon pl-icon-save'></span></a>";
+  echo "<a href='javascript:popup(\"planning/poste/enregistrer.php&date=$date&site=$site&CSRFToken=$CSRFSession\",500,240);' title='Enregistrer comme modèle'><span class='pl-icon pl-icon-save'></span></a>";
   if(!$verrou){
     echo "<a href='javascript:popup(\"planning/poste/importer.php&date=$date&site=$site\",500,270);' title='Importer un modèle'><span class='pl-icon pl-icon-open'></span></a>";
     echo "<a href='javascript:popup(\"planning/poste/supprimer.php&date=$date&site=$site\",500,200);' title='Supprimer le planning'><span class='pl-icon pl-icon-drop'></span></a>";
@@ -311,6 +312,7 @@ if(!$db->result[0]['tableau'] and !$tableau and !$groupe and $autorisation){
     <div id='choix_tableaux'>
     <b>Choisissez un tableau pour le $dateAlpha</b><br/>
     <form name='form' action='index.php' method='get'>
+    <input type='hidden' name='CSRFToken' value='$CSRFSession' />
     <input type='hidden' name='page' value='planning/poste/index.php' />
     <input type='hidden' name='site' value='$site' />
     <table>
@@ -334,6 +336,7 @@ EOD;
       echo <<<EOD
       <br/><br/><b>OU un groupe de tableaux pour la semaine $semaine</b><br/>
       <form name='form' action='index.php' method='get'>
+      <input type='hidden' name='CSRFToken' value='$CSRFSession' />
       <input type='hidden' name='page' value='planning/poste/index.php' />
       <input type='hidden' name='site' value='$site' />
       <table>
@@ -376,6 +379,7 @@ elseif($groupe and $autorisation){	//	Si Groupe en argument
     $db=new db();
     $db->delete2("pl_poste_tab_affect",array("date"=>$elem[0], "site"=>$site));
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->insert2("pl_poste_tab_affect",array("date"=>$elem[0], "tableau"=>$elem[1], "site"=>$site));
   }
   $tab=$tmp[$date][1];
@@ -386,6 +390,7 @@ elseif($tableau and $autorisation){	//	Si tableau en argument
   $db=new db();
   $db->delete2("pl_poste_tab_affect", array("date"=>$date, "site"=>$site));
   $db=new db();
+  $db->CSRFToken = $CSRFToken;
   $db->insert2("pl_poste_tab_affect",array("date"=>$date, "tableau"=>$tab, "site"=>$site));
 }
 else{

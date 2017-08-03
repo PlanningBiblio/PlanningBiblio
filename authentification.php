@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 10 février 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -84,10 +84,13 @@ if(isset($_POST['login'])){
     $authArgs="?redirURL=".urlencode($redirURL);
   }
 
+  // Génération d'un CSRF Token
+  $CSRFToken = CSRFToken();
+  $_SESSION['oups']['CSRFToken'] = $CSRFToken;
 
   if($auth){
     // Log le login et l'IP du client en cas de succès, pour information
-    loginSuccess($login);
+    loginSuccess($login, $CSRFToken);
     $db=new db();
     $db->select2("personnel","id,nom,prenom",array("login"=>$login));
     if($db->result){
@@ -95,26 +98,7 @@ if(isset($_POST['login'])){
       $_SESSION['login_nom']=$db->result[0]['nom'];
       $_SESSION['login_prenom']=$db->result[0]['prenom'];
       
-      // Génération d'un CSRF Token
-      // PHP 7
-      if(phpversion() >= 7){
-        if (empty($_SESSION['oups']['CSRFToken'])) {
-          $_SESSION['oups']['CSRFToken'] = bin2hex(random_bytes(32));
-        }
-      }
-
-      // PHP 5.3+
-      else{
-        if (empty($_SESSION['oups']['CSRFToken'])) {
-          if (function_exists('mcrypt_create_iv')) {
-            $_SESSION['oups']['CSRFToken'] = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
-          } else {
-            $_SESSION['oups']['CSRFToken'] = bin2hex(openssl_random_pseudo_bytes(32));
-          }
-        }
-      }
       
-      $CSRFToken = $_SESSION['oups']['CSRFToken'];
       
       $db=new db();
       $db->CSRFToken = $CSRFToken;
@@ -129,14 +113,14 @@ if(isset($_POST['login'])){
     }
   }
   else{
-		// Log le login tenté et l'IP du client en cas d'echec, pour bloquer l'IP si trop de tentatives infructueuses
-		loginFailed($login);
+    // Log le login tenté et l'IP du client en cas d'echec, pour bloquer l'IP si trop de tentatives infructueuses
+    loginFailed($login, $CSRFToken);
 
-		// Si la limite est atteinte, on affiche directement la page "Accès refusé"
-		if(loginFailedWait()>0){
-			echo "<script type='text/JavaScript'>document.location.reload();</script>\n";
-			exit;
-		}
+    // Si la limite est atteinte, on affiche directement la page "Accès refusé"
+    if(loginFailedWait()>0){
+      echo "<script type='text/JavaScript'>document.location.reload();</script>\n";
+      exit;
+    }
 
     echo <<<EOD
     <div id='auth'>

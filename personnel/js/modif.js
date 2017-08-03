@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : personnel/js/modif.js
 Création : 3 mars 2014
-Dernière modification : 14 juillet 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -222,7 +222,7 @@ $(function() {
           url: "include/ajax.menus.php",
 	  type: "post",
           dataType: "json",
-	  data: {tab: tab, menu: "statuts" , option: "categorie"},
+	  data: {tab: tab, menu: "statuts" , option: "categorie", CSRFToken: $('#CSRFSession').val()},
 	  success: function(){
             var current_val = $('#statut').val();
             $('#statut').empty();
@@ -332,7 +332,7 @@ $(function() {
 	  url: "include/ajax.menus.php",
 	  type: "post",
           dataType: "json",
-	  data: {tab: tab, menu: "services"},
+	  data: {tab: tab, menu: "services", CSRFToken: $('#CSRFSession').val()},
 	  success: function(){
             var current_val = $('#service').val();
             $('#service').empty();

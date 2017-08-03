@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/postes_cfg/class.tableaux.php
 Création : mai 2011
-Dernière modification : 21 avril 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -212,9 +212,10 @@ class tableau{
 
     if($diff>0){
       for($i=$next;$i<($diff+$next);$i++){
-	$horaires=array("debut"=>"09:00:00","fin"=>"10:00:00","tableau"=>$i,"numero"=>$id);
-	$db=new db();
-	$db->insert2("pl_poste_horaires",$horaires);
+        $horaires=array("debut"=>"09:00:00","fin"=>"10:00:00","tableau"=>$i,"numero"=>$id);
+        $db=new db();
+        $db->CSRFToken = $this->CSRFToken;
+        $db->insert2("pl_poste_horaires",$horaires);
       }
     }
 
@@ -241,6 +242,7 @@ class tableau{
     //		Insert
     else{
       $db=new db();
+      $db->CSRFToken = $this->CSRFToken;
       $db->insert2("pl_poste_tab_grp",$post);
     }
   }

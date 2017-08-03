@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 22 juin 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -314,7 +314,7 @@ class db{
 
   function update2($table,$set,$where="1"){
     if(!$this->CSRFToken or !isset($_SESSION['oups']['CSRFToken']) or $this->CSRFToken !== $_SESSION['oups']['CSRFToken']){
-      $this->error = "CSRF Token Exception";
+      $this->error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
       error_log($this->error);
       return false;
     }
@@ -388,6 +388,13 @@ class db{
   }
 
   function insert2($table,$values,$options=null){
+    if(!$this->CSRFToken or !isset($_SESSION['oups']['CSRFToken']) or $this->CSRFToken !== $_SESSION['oups']['CSRFToken']){
+      $this->error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
+      error_log($this->error);
+      return false;
+    }
+  
+
     $this->connect();
     $dbprefix=$this->dbprefix;
     $table=$dbprefix.$table;

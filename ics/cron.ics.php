@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/cron.ics.php
 Création : 28 juin 2016
-Dernière modification : 29 octobre 2016
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -36,7 +36,9 @@ require_once "$path/include/config.php";
 require_once "$path/ics/class.ics.php";
 require_once "$path/personnel/class.personnel.php";
 
-logs("Début d'importation des fichiers ICS","ICS");
+$CSRFToken = CSRFToken();
+
+logs("Début d'importation des fichiers ICS", "ICS", $CSRFToken);
 
 // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
 $tmp_dir=sys_get_temp_dir();
@@ -113,17 +115,17 @@ foreach($agents as $agent){
     }
   
     if(!$url){
-      logs("Impossible de constituer une URL valide pour l'agent #{$agent['id']}","ICS");
+      logs("Impossible de constituer une URL valide pour l'agent #{$agent['id']}", "ICS", $CSRFToken);
       continue;
     }
     
-    logs("Importation du fichier $url pour l'agent #{$agent['id']}","ICS");
+    logs("Importation du fichier $url pour l'agent #{$agent['id']}", "ICS", $CSRFToken);
 
     // TODO : tester si l'url existe 
     // TODO : voir https://openclassrooms.com/forum/sujet/verifier-si-un-url-existe-70382
     
 //     if(!file_exists($url)){
-//       logs("Fichier $url non trouvé pour l'agent #{$agent['id']}","ICS");
+//       logs("Fichier $url non trouvé pour l'agent #{$agent['id']}", "ICS", $CSRFToken);
 //       continue;
 //     }
 
@@ -133,6 +135,7 @@ foreach($agents as $agent){
     $ics->pattern=$config["ICS-Pattern$i"];
     $ics->table="absences";
     $ics->logs=true;
+    $ics->CSRFToken = $CSRFToken;
     $ics->updateTable();
     
   }

@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 20 juillet 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -155,6 +155,7 @@ class absences{
       $db=new db();
       $db->delete2("heures_absences",array("semaine"=>$j1));
       $db=new db();
+      $db->CSRFToken = $this->CSRFToken;
       $db->insert2("heures_absences",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heures)));
     }
 

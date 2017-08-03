@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : ics/cron.ics.php
 Création : 1er juillet 2016
-Dernière modification : 28 juillet 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -34,6 +34,7 @@ chdir($path);
 require_once "$path/include/config.php";
 require_once "$path/personnel/class.personnel.php";
 
+$CSRFToken = CSRFToken();
 
 // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
 $tmp_dir=sys_get_temp_dir();
@@ -67,10 +68,10 @@ if (!empty($p->elements)) {
 
 // On ouvre le fichier CSV
 $CSVFile = trim($config['PlanningHebdo-CSV']);
-logs("Importation du fichier $CSVFile","PlanningHebdo");
+logs("Importation du fichier $CSVFile", "PlanningHebdo", $CSRFToken);
 
 if( !$CSVFile or !file_exists($CSVFile)){
-  logs("Fichier $CSVFile non trouvé","PlanningHebdo");
+  logs("Fichier $CSVFile non trouvé", "PlanningHebdo", $CSRFToken);
   exit;
 }
 
@@ -242,12 +243,12 @@ if($nb > 0){
   }
 
   if(!$db->error){
-    logs("$nb éléments importés","PlanningHebdo");
+    logs("$nb éléments importés", "PlanningHebdo", $CSRFToken);
   }else{
-    logs("Une erreur est survenue pendant l'importation","PlanningHebdo");
+    logs("Une erreur est survenue pendant l'importation", "PlanningHebdo", $CSRFToken);
   }
 }else{
-  logs("Rien à importer","PlanningHebdo");
+  logs("Rien à importer", "PlanningHebdo", $CSRFToken);
 }
 
 // Suppression des valeurs supprimées ou modifiées
@@ -269,12 +270,12 @@ if($nb >0){
   }
   
   if(!$db->error){
-    logs("$nb éléments supprimés","PlanningHebdo");
+    logs("$nb éléments supprimés", "PlanningHebdo", $CSRFToken);
   }else{
-    logs("Une erreur est survenue lors de la suppression d'éléments","PlanningHebdo");
+    logs("Une erreur est survenue lors de la suppression d'éléments", "PlanningHebdo", $CSRFToken);
   }
 }else{
-  logs("Aucun élément à supprimer","PlanningHebdo");
+  logs("Aucun élément à supprimer", "PlanningHebdo", $CSRFToken);
 }
 
 // Unlock

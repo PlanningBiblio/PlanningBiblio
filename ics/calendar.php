@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.5
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/calendar.php
 Création : juillet 2016
-Dernière modification : 28 avril 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -43,9 +43,10 @@ require_once "../absences/class.absences.php";
 require_once "../personnel/class.personnel.php";
 require_once "../postes/class.postes.php";
 
+$CSRFToken = CSRFToken();
 
 if(!$config['ICS-Export']){
-  logs("L'exportation ICS est désactivée","ICS Export");
+  logs("L'exportation ICS est désactivée", "ICS Export", $CSRFToken);
   exit;
 }
 
@@ -63,7 +64,7 @@ if(!$id and $login){
     $id = $db->result[0]['id'];
   }
   else{
-    logs("Impossible de trouver l'id associé au login $login","ICS Export");
+    logs("Impossible de trouver l'id associé au login $login", "ICS Export", $CSRFToken);
     exit;
   }
 }
@@ -76,17 +77,17 @@ if(!$id and $mail){
     $id = $db->result[0]['id'];
   }
   else{
-    logs("Impossible de trouver l'id associé au mail $mail","ICS Export");
+    logs("Impossible de trouver l'id associé au mail $mail", "ICS Export", $CSRFToken);
     exit;
   }
 }
 
 if(!$id){
-  logs("L'id de l'agent n'est pas fourni","ICS Export");
+  logs("L'id de l'agent n'est pas fourni", "ICS Export", $CSRFToken);
   exit;
 }
 
-logs("Exportation des plages de SP pour l'agent #$id","ICS Export");
+logs("Exportation des plages de SP pour l'agent #$id", "ICS Export", $CSRFToken);
 
 
 // N'affiche pas les calendriers des agents supprimés

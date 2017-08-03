@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.91
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 2 juin 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -25,6 +25,7 @@ require_once "motifs.php";
 //	Initialisation des variables
 $commentaires=trim(filter_input(INPUT_GET,"commentaires",FILTER_SANITIZE_STRING));
 $confirm=filter_input(INPUT_GET,"confirm",FILTER_SANITIZE_NUMBER_INT);
+$CSRFToken=trim(filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING));
 $debut=filter_input(INPUT_GET,"debut",FILTER_SANITIZE_STRING);
 $fin=filter_input(INPUT_GET,"fin",FILTER_SANITIZE_STRING);
 $hre_debut=filter_input(INPUT_GET,"hre_debut",FILTER_SANITIZE_STRING);
@@ -194,6 +195,7 @@ if($confirm and !empty($perso_ids)){
     }
 
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->insert2("absences", $insert);
 
     // Récupération de l'ID de l'absence enregistrée pour la création du lien dans le mail
@@ -303,6 +305,7 @@ else{
   echo "<input type='hidden' name='page' value='absences/ajouter.php' />\n";
   echo "<input type='hidden' name='menu' value='$menu' />\n";
   echo "<input type='hidden' name='confirm' value='1' />\n";
+  echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
   echo "<input type='hidden' id='admin' value='".($admin?1:0)."' />\n";
   echo "<table class='tableauFiches'>\n";
   echo "<tr><td>\n";
