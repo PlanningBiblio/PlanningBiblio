@@ -38,6 +38,7 @@ echo "<h3>Informations sur les absences</h3>\n";
 //			----------------		Suppression							-------------------------------//
 if($suppression and $validation){
   $db=new db();
+  $db->CSRFToken = $CSRFToken;
   $db->delete2("absences_infos",array("id"=>$id));
   echo "<b>L'information a été supprimée</b>";
   echo "<br/><br/><a href='index.php?page=absences/index.php'>Retour</a>\n";
@@ -46,6 +47,7 @@ elseif($suppression){
   echo "<h4>Etes vous sûr de vouloir supprimer cette information ?</h4>\n";
   echo "<form method='get' action='#' name='form'>\n";
   echo "<input type='hidden' name='page' value='absences/infos.php'/>\n";
+  echo "<input type='hidden' name='CSRFToken' value='$CSRFSession'/>\n";
   echo "<input type='hidden' name='suppression' value='1'/>\n";
   echo "<input type='hidden' name='validation' value='1'/>\n";
   echo "<input type='hidden' name='id' value='$id'/>\n";
@@ -77,11 +79,11 @@ elseif($debut){		//		Vérification
   echo "<br/><br/>";
   echo "<form method='get' action='index.php' name='form'>";
   echo "<input type='hidden' name='page' value='absences/infos.php'/>\n";
+  echo "<input type='hidden' name='CSRFToken' value='$CSRFSession'/>\n";
   echo "<input type='hidden' name='debut' value='$debut'/>\n";
   echo "<input type='hidden' name='fin' value='$fin'/>\n";
   echo "<input type='hidden' name='texte' value='$texte'/>\n";
   echo "<input type='hidden' name='id' value='$id'/>\n";
-  echo "<input type='hidden' name='CSRFToken' value='$CSRFSession'/>\n";
   echo "<input type='hidden' name='validation' value='1'/>\n";
   echo "<input type='button' value='Annuler' onclick='history.back();' class='ui-button'/>";
   echo "<input type='submit' value='Valider' class='ui-button' style='margin-left:30px;'/>\n";

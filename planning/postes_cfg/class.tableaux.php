@@ -34,6 +34,7 @@ class tableau{
   public function deleteGroup(){
     if($this->id){
       $db=new db();
+      $db->CSRFToken = $this->CSRFToken;
       $db->delete2("pl_poste_tab_grp",array("id"=>$this->id));
     }
   }
@@ -41,6 +42,7 @@ class tableau{
   public function deleteLine(){
     if($this->id){
       $db=new db();
+      $db->CSRFToken = $this->CSRFToken;
       $db->delete2("lignes",array("id"=>$this->id));
     }
   }
@@ -223,8 +225,10 @@ class tableau{
       $i=$number;
       while($numbers[$i]){
 	$db=new db();
+        $db->CSRFToken = $this->CSRFToken;
 	$db->delete2("pl_poste_horaires",array("tableau"=>$numbers[$i], "numero"=>$id));
 	$db=new db();
+        $db->CSRFToken = $this->CSRFToken;
 	$db->delete2("pl_poste_lignes",array("tableau"=>$numbers[$i], "numero"=>$id));
 	$i++;
       }

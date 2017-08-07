@@ -26,6 +26,7 @@ unset($post['CSRFToken']);
 //	Mise à jour du tableau (après validation)
 if(isset($post['action'])){
   $db=new db();
+  $db->CSRFToken = $CSRFToken;
   $db->delete2("pl_poste_horaires",array("numero"=>$tableauNumero));
 
   $keys=array_keys($post);

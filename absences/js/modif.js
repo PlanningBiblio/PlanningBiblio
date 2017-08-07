@@ -200,8 +200,9 @@ $(function() {
   
   $("#absence-bouton-supprimer").click(function(){
     if(confirm("Etes vous sûr de vouloir supprimer cette absence ?")){
+      var CSRFToken = $('#CSRFSession').val();
       var id=$(this).attr("data-id");
-      document.location.href="index.php?page=absences/delete.php&id="+id;
+      document.location.href="index.php?page=absences/delete.php&id="+id+"&CSRFToken="+CSRFToken;
     }
   });
   

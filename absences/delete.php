@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/delete.php
 Création : mai 2011
-Dernière modification : 21 avril 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -19,6 +19,7 @@ Page appelée par la page index.php après avoir cliqué sur l'icône supprimer 
 require_once "class.absences.php";
 
 // Initialisation des variables
+$CSRFToken = filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING);
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 $errors=array();
 // 
@@ -149,9 +150,11 @@ foreach($agents as $agent){
 // suppression dans la table 'absences'
 if($groupe){
   $db=new db();
+  $db->CSRFToken = $CSRFToken;
   $db->delete2("absences",array("groupe"=>$groupe));
 }else{
   $db=new db();
+  $db->CSRFToken = $CSRFToken;
   $db->delete2("absences",array("id"=>$id));
 }
 

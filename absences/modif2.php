@@ -270,6 +270,7 @@ foreach($agents_supprimes as $agent){
 $agents_supprimes_ids=implode(",",$agents_supprimes_ids);
 
 $db=new db();
+$db->CSRFToken = $CSRFToken;
 $db->delete2("absences",array("id"=>"IN $ids", "perso_id"=>"IN $agents_supprimes_ids"));
 
 

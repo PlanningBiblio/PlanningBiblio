@@ -42,6 +42,7 @@ switch($action){		//	Operations de mise a jour
 
   case "suppr" :
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->delete2("lignes",array("id"=>$id));
     break;
 }

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/postes_cfg/ajax.lignes.php
 Création : 3 février 2014
-Dernière modification : 22 mars 2016
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -22,6 +22,7 @@ session_start();
 include "../../include/config.php";
 include "class.tableaux.php";
 
+$CSRFToken = filter_input(INPUT_POST,"CSRFToken",FILTER_SANITIZE_STRING);
 $tableauNumero=filter_input(INPUT_POST,"id",FILTER_SANITIZE_NUMBER_INT);
 
 $post=array();
@@ -32,6 +33,7 @@ foreach($_POST as $key => $value){
 
 // Suppression des infos concernant ce tableau dans la table pl_poste_lignes
 $db=new db();
+$db->CSRFToken = $CSRFToken;
 $db->delete2("pl_poste_lignes",array("numero"=>$tableauNumero));
 
 // Insertion des données dans la table pl_poste_lignes
@@ -70,6 +72,7 @@ if($values[0]){
 
 // Suppression des infos concernant ce tableau dans la table pl_poste_cellules
 $db=new db();
+$db->CSRFToken = $CSRFToken;
 $db->delete2("pl_poste_cellules",array("numero"=>$tableauNumero));
 
 // Insertion des données dans la table pl_poste_cellules

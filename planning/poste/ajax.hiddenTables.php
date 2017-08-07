@@ -29,6 +29,7 @@ $tableId=filter_input(INPUT_POST,"tableId",FILTER_SANITIZE_NUMBER_INT);
 $hiddenTables=filter_input(INPUT_POST,"hiddenTables",FILTER_SANITIZE_STRING);
 
 $db=new db();
+$db->CSRFToken = $CSRFToken;
 $db->delete2("hidden_tables",array("perso_id"=>$perso_id,"tableau"=>$tableId));
 
 $db=new db();

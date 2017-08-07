@@ -377,6 +377,7 @@ function calculHeuresSP($date,$CSRFToken){
       
       // Enregistrement des horaires dans la base de données
       $db=new db();
+      $db->CSRFToken = $CSRFToken;
       $db->delete2("heures_sp",array("semaine"=>$j1));
       $db=new db();
       $db->CSRFToken = $CSRFToken;
@@ -450,6 +451,7 @@ function calculHeuresSP($date,$CSRFToken){
 
       // Enregistrement des horaires dans la base de données
       $db=new db();
+      $db->CSRFToken = $CSRFToken;
       $db->delete2("heures_sp",array("semaine"=>$j1));
       $db=new db();
       $db->CSRFToken = $CSRFToken;

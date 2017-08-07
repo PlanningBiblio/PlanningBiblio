@@ -377,6 +377,7 @@ elseif($groupe and $autorisation){	//	Si Groupe en argument
   }
   foreach($tmp as $elem){
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->delete2("pl_poste_tab_affect",array("date"=>$elem[0], "site"=>$site));
     $db=new db();
     $db->CSRFToken = $CSRFToken;
@@ -388,6 +389,7 @@ elseif($groupe and $autorisation){	//	Si Groupe en argument
 elseif($tableau and $autorisation){	//	Si tableau en argument
   $tab=$tableau;
   $db=new db();
+  $db->CSRFToken = $CSRFToken;
   $db->delete2("pl_poste_tab_affect", array("date"=>$date, "site"=>$site));
   $db=new db();
   $db->CSRFToken = $CSRFToken;

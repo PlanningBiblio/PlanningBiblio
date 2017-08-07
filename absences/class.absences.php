@@ -153,6 +153,7 @@ class absences{
 
       // Enregistrement des heures dans la base de données
       $db=new db();
+      $db->CSRFToken = $this->CSRFToken;
       $db->delete2("heures_absences",array("semaine"=>$j1));
       $db=new db();
       $db->CSRFToken = $this->CSRFToken;

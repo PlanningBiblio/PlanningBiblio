@@ -49,6 +49,7 @@ if($texte){
 //			----------------	Suppression			-------------------------------//
 if($suppression and $validation){
   $db=new db();
+  $db->CSRFToken = $CSRFToken;
   $db->delete2("infos",array("id"=>$id));
   echo "<b>L'information a été supprimée</b>";
   echo "<br/><br/><a href='index.php?page=infos/index.php'>Retour</a>\n";

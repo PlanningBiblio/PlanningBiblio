@@ -92,8 +92,10 @@ else{
   $select->select2("pl_poste","*",array("date"=>$date, "site"=>$site));
   if($select->result){
     $delete=new db();
+    $delete->CSRFToken = $CSRFToken;
     $delete->delete2("pl_poste_modeles", array("nom"=>$nom, "site"=>$site));
     $delete=new db();
+    $delete->CSRFToken = $CSRFToken;
     $delete->delete2("pl_poste_modeles_tab", array("nom"=>$nom, "site"=>$site));
     enregistre_modele($nom, $date, $semaine, $site, $CSRFToken);
   }

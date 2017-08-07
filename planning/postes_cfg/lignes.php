@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3.2
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/postes_cfg/lignes.php
 Création : mai 2011
-Dernière modification : 27 mai 2016
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -176,6 +176,7 @@ function configLignes(){
 
   // La variable data contient tous les éléments à enregistrer
   var data="id="+$("#id").val();
+  data+="&CSRFToken="+$('#CSRFSession').val();
   for(elem in tab){
     data+="&"+tab[elem];
   }

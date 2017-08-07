@@ -70,11 +70,13 @@ if($perso_id==0){
   elseif($tout){
     $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site);
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->delete2("pl_poste",$where);
   // Supprimer l'agent sélectionné
   }else{
     $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->delete2("pl_poste",$where);
   }
 }
@@ -85,6 +87,7 @@ else{
     // Suppression des anciens éléments
     $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=> $perso_id_origine);
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->delete2("pl_poste",$where);
 
     // Insertion des nouveaux éléments

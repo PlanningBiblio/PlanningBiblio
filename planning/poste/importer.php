@@ -147,6 +147,7 @@ else{					// Etape 2 : Insertion des données
 
     $tableau=$db->result[0]['tableau'];
     $db=new db();
+    $db->CSRFToken = $CSRFToken;
     $db->delete2("pl_poste_tab_affect",array("date"=>$elem, "site"=>$site));
     $db=new db();
     $db->CSRFToken = $CSRFToken;
@@ -257,6 +258,7 @@ else{					// Etape 2 : Insertion des données
       if(!empty($values)){
 	// Suppression des anciennes données
 	$db=new db();
+        $db->CSRFToken = $CSRFToken;
 	$db->delete2("pl_poste", array("date"=>$elem, "site"=>$site));
 
 	// Insertion des nouvelles données

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/modeles/class.modeles.php
 Création : 16 janvier 2013
-Dernière modification : 10 février 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -29,8 +29,10 @@ class modeles{
   public function delete(){
     $nom=htmlentities($this->nom,ENT_QUOTES|ENT_IGNORE,"UTF-8");
     $db=new db();
+    $db->CSRFToken = $this->CSRFToken;
     $db->delete2("pl_poste_modeles",array("nom"=>$nom));
     $db=new db();
+    $db->CSRFToken = $this->CSRFToken;
     $db->delete2("pl_poste_modeles_tab",array("nom"=>$nom));
   }
 }
