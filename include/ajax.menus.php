@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/ajax.menus.php
 Création : 5 février 2017
-Dernière modification : 3 août 2017
+Dernière modification : 7 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -29,7 +29,8 @@ $option = FILTER_INPUT(INPUT_POST, 'option', FILTER_SANITIZE_STRING);
 $tab = $_POST['tab'];
 
 $db=new db();
-$db->delete("select_$menu");
+$db->CSRFToken = $CSRFToken;
+$db->delete2("select_$menu");
 foreach($tab as $elem){
   $elem[0] = htmlentities($elem[0], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
   $elements = array("valeur"=>$elem[0],"rang"=>$elem[1]);

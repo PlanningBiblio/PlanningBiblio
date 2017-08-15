@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 3 août 2017
+Dernière modification : 7 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -129,10 +129,11 @@ if($griser == 1){
   $db=new db();
   $db->CSRFToken = $CSRFToken;
   $db->insert2("pl_poste",$insert);
-} elseif($griser == -1){
+}elseif($griser == -1){
   $delete=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>'0', "grise"=>'1');
   $db=new db();
-  $db->delete("pl_poste",$delete);
+  $db->CSRFToken = $CSRFToken;
+  $db->delete2("pl_poste",$delete);
 }
 
 

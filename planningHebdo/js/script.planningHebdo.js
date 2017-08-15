@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planningHebdo/js/script.planningHebdo.js
 Création : 26 août 2013
-Dernière modification : 30 mai 2017
+Dernière modification : 7 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -233,11 +233,16 @@ function plHebdoMemePlanning(){
 
 function plHebdoSupprime(id){
   if(confirm("Etes vous sûr(e) de vouloir supprimer ce planning de présence ?")){
+    
+    var CSRFToken = $('#CSRFSession').val();
     // Suppression du planning en arrière plan
+    
     $.ajax({
       url: "planningHebdo/ajax.delete.php",
-      data: "id="+id,
+      dataType: "json",
+      data: {id: id, CSRFToken: CSRFToken},
       type: "get",
+    
       success: function(){
 	// On cache la ligne du planning supprimée dans le tableau
 	CJDataTableHideRow("#tr_"+id);

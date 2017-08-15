@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : joursFeries/class.joursFeries.php
 Création : 25 juillet 2013
-Dernière modification : 3 août 2017
+Dernière modification : 7 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -31,11 +31,6 @@ class joursFeries{
   public $CSRFToken = null;
 
   public function __construct(){
-  }
-
-  public function delete($id){
-    $db=new db();
-    $db->delete("jours_feries","`id`='$id'");
   }
 
   public function fetch(){
@@ -125,7 +120,8 @@ class joursFeries{
       }
     }
     $db=new db();
-    $db->delete("jours_feries","annee='{$p['annee']}'");
+    $db->CSRFToken = $this->CSRFToken;
+    $db->delete2("jours_feries", array('annee' => $p['annee']));
     $error=$db->error?true:$error;
 
     if(!empty($data)){

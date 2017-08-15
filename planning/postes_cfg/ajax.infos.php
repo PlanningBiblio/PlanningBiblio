@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/postes_cfg/ajax.infos.php
 Création : 20 février 2016
-Dernière modification : 3 août 2017
+Dernière modification : 15 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -68,7 +68,8 @@ else{
 
   if($site){
     $db=new db();
-    $db->update("pl_poste_tab","site='$site'","tableau='$id'");
+    $db->CSRFToken = $CSRFToken;
+    $db->update2('pl_poste_tab', array('site'=>$site), array('tableau'=>$id));
   }
 
   echo json_encode("OK");

@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 3 août 2017
+Dernière modification : 7 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -60,6 +60,7 @@ class personnel{
 
       // recherche des personnes à exclure (congés)
       $p=new planningHebdo();
+      $p->CSRFToken = $this->CSRFToken;
       $p->suppression_agents($liste);
     }
   }
@@ -203,7 +204,8 @@ class personnel{
     }
 
     $db=new db();
-    $db->delete("edt_samedi","`semaine`>='$debut' AND `semaine`<='$fin' AND `perso_id`='$perso_id'");
+    $db->CSRFToken = $this->CSRFToken;
+    $db->delete2("edt_samedi", array('semaine' => ">=$debut", 'semaine' => "<=$fin", 'perso_id' => $perso_id));
 
     if($eDTSamedi and !empty($eDTSamedi)){
       $insert=array();

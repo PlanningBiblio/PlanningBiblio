@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Version 1.7.2
+/**
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : include/cron.php
 Création : 23 juillet 2013
-Dernière modification : 24 juillet 2013
+Dernière modification : 15 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -30,7 +30,8 @@ if($dbCron->result){
   foreach($dbCron->result as $elemCron){
     include $elemCron['command'];
     $dbCron2=new db();
-    $dbCron2->update("cron","`last`=SYSDATE()","`id`='{$elemCron['id']}'");
+    $dbCron2->CSRFToken = $CSRFSession;
+    $dbCron2->update2('cron', array('last'=>'SYSDATE'), array('id'=>$elemCron['id']));
   }
 }
 
@@ -41,7 +42,8 @@ if($dbCron->result){
   foreach($dbCron->result as $elemCron){
     include $elemCron['command'];
     $dbCron2=new db();
-    $dbCron2->update("cron","`last`=SYSDATE()","`id`='{$elemCron['id']}'");
+    $dbCron2->CSRFToken = $CSRFSession;
+    $dbCron2->update2('cron', array('last'=>'SYSDATE'), array('id'=>$elemCron['id']));
   }
 }
 

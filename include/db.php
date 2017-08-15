@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 3 août 2017
+Dernière modification : 15 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -307,11 +307,6 @@ class db{
     $this->query($query);
   }
 
-  function update($table,$set,$where=1){
-    $requete="UPDATE `{$this->dbprefix}$table` SET $set WHERE $where";
-    $this->query($requete);
-  }
-
   function update2($table,$set,$where="1"){
     if(!$this->CSRFToken or !isset($_SESSION['oups']['CSRFToken']) or $this->CSRFToken !== $_SESSION['oups']['CSRFToken']){
       $this->error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
@@ -322,28 +317,32 @@ class db{
     $this->connect();
     $dbprefix=$this->dbprefix;
 
-    $tmp=array();
-    $fields=array_keys($set);
-    foreach($fields as $field){
-      // SET field = NULL
-      if($set[$field]===null){
-	$tmp[]="`{$field}`=NULL";
+    
+    if(is_array($set)){
+      $tmp=array();
+      $fields=array_keys($set);
+      foreach($fields as $field){
+        // SET field = NULL
+        if($set[$field]===null){
+          $tmp[]="`{$field}`=NULL";
+        }
+        // SET field = SYSDATE()
+        elseif($set[$field]==="SYSDATE"){
+          $tmp[]="`{$field}`=SYSDATE()";
+        }
+        else{
+          $set[$field]=mysqli_real_escape_string($this->conn,$set[$field]);
+          if(substr($set[$field],0,7)==="CONCAT("){
+            $tmp[]="`{$field}`={$set[$field]}";
+          }
+          else{
+            $tmp[]="`{$field}`='{$set[$field]}'";
+          }
+        }
       }
-      // SET field = SYSDATE()
-      elseif($set[$field]==="SYSDATE"){
-	$tmp[]="`{$field}`=SYSDATE()";
-      }
-      else{
-	$set[$field]=mysqli_real_escape_string($this->conn,$set[$field]);
-	if(substr($set[$field],0,7)==="CONCAT("){
-	  $tmp[]="`{$field}`={$set[$field]}";
-	}
-	else{
-	  $tmp[]="`{$field}`='{$set[$field]}'";
-	}
-      }
+      $set=join(",",$tmp);
     }
-    $set=join(",",$tmp);
+
     if(is_array($where)){
       $tmp=array();
       foreach($where as $key => $value){
@@ -352,11 +351,6 @@ class db{
       $where=join(" AND ",$tmp);
     }
     $requete="UPDATE `{$dbprefix}$table` SET $set WHERE $where;";
-    $this->query($requete);
-  }
-
-  function delete($table,$where=1){
-    $requete="DELETE FROM `{$this->dbprefix}$table` WHERE $where";
     $this->query($requete);
   }
 
@@ -381,15 +375,6 @@ class db{
     }
 
     $requete="DELETE FROM `{$dbprefix}$table` WHERE $where";
-    $this->query($requete);
-  }
-
-  function insert($table,$values,$fields=null){
-    $fields=$fields?"($fields)":null;
-    if(is_array($values)){
-      $values=join("),(",$values);
-    }
-    $requete="INSERT INTO `{$this->dbprefix}$table` $fields VALUES ($values);";
     $this->query($requete);
   }
 
