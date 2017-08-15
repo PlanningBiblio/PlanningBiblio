@@ -32,7 +32,7 @@ class activites{
   public function delete(){
     $db=new db();
     $db->CSRFToken = $this->CSRFToken;
-    $db->update2("activites",array("supprime"=>"SYSDATE"),array("id"=>$this->id));
+    $db->update("activites",array("supprime"=>"SYSDATE"),array("id"=>$this->id));
   }
 
   public function fetch(){

@@ -40,7 +40,7 @@ class personnel{
     
     $db=new db();
     $db->CSRFToken = $this->CSRFToken;
-    $db->update2("personnel",$update,"`id` IN ($liste)");
+    $db->update("personnel",$update,"`id` IN ($liste)");
 
     $db=new db();
     $db->select("plugins");
@@ -170,7 +170,7 @@ class personnel{
       $code = md5(time().rand(100,999));
       $db = new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->update2('personnel', array('code_ics'=>$code), array('id'=>$id));
+      $db->update('personnel', array('code_ics'=>$code), array('id'=>$id));
     }
     return $code;
   }
@@ -205,7 +205,7 @@ class personnel{
 
     $db=new db();
     $db->CSRFToken = $this->CSRFToken;
-    $db->delete2("edt_samedi", array('semaine' => ">=$debut", 'semaine' => "<=$fin", 'perso_id' => $perso_id));
+    $db->delete("edt_samedi", array('semaine' => ">=$debut", 'semaine' => "<=$fin", 'perso_id' => $perso_id));
 
     if($eDTSamedi and !empty($eDTSamedi)){
       $insert=array();
@@ -214,7 +214,7 @@ class personnel{
       }
       $db=new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->insert2("edt_samedi",$insert);
+      $db->insert("edt_samedi",$insert);
     }
  }
 

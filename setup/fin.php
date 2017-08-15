@@ -48,7 +48,7 @@ if($password!=$password2){
 $password=md5($password);
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->update2("personnel",array("nom"=>$nom, "prenom"=>$prenom, "password"=>$password, "mail"=>$email), array("id"=>"1"));
+$db->update("personnel",array("nom"=>$nom, "prenom"=>$prenom, "password"=>$password, "mail"=>$email), array("id"=>"1"));
 if($db->error){
   $erreur=true;
 }

@@ -30,10 +30,10 @@ class modeles{
     $nom=htmlentities($this->nom,ENT_QUOTES|ENT_IGNORE,"UTF-8");
     $db=new db();
     $db->CSRFToken = $this->CSRFToken;
-    $db->delete2("pl_poste_modeles",array("nom"=>$nom));
+    $db->delete("pl_poste_modeles",array("nom"=>$nom));
     $db=new db();
     $db->CSRFToken = $this->CSRFToken;
-    $db->delete2("pl_poste_modeles_tab",array("nom"=>$nom));
+    $db->delete("pl_poste_modeles_tab",array("nom"=>$nom));
   }
 }
 ?>

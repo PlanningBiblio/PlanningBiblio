@@ -27,7 +27,7 @@ unset($post['CSRFToken']);
 if(isset($post['action'])){
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->delete2("pl_poste_horaires",array("numero"=>$tableauNumero));
+  $db->delete("pl_poste_horaires",array("numero"=>$tableauNumero));
 
   $keys=array_keys($post);
 
@@ -53,7 +53,7 @@ if(isset($post['action'])){
   }
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->insert2("pl_poste_horaires",$values);
+  $db->insert("pl_poste_horaires",$values);
   if(!$db->error){
     echo "<script type='text/JavaScript'>CJInfo(\"Les horaires ont été modifiés avec succès\",\"success\");</script>\n";
   }else{

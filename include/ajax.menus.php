@@ -30,7 +30,7 @@ $tab = $_POST['tab'];
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->delete2("select_$menu");
+$db->delete("select_$menu");
 foreach($tab as $elem){
   $elem[0] = htmlentities($elem[0], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
   $elements = array("valeur"=>$elem[0],"rang"=>$elem[1]);
@@ -43,7 +43,7 @@ foreach($tab as $elem){
   
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->insert2("select_$menu", $elements);
+  $db->insert("select_$menu", $elements);
 }
 echo json_encode('ok');
 ?>

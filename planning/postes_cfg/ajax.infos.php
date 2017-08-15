@@ -44,13 +44,13 @@ if(!$id){
   
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->insert2("pl_poste_tab",$insert);
+  $db->insert("pl_poste_tab",$insert);
 
   // Insertion d'une ligne dans la table pl_poste_tab_horaires
   $insert=array("debut"=>"09:00:00", "fin"=>"10:00:00", "tableau"=>"1", "numero"=>$numero); 
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->insert2("pl_poste_horaires",$insert);
+  $db->insert("pl_poste_horaires",$insert);
 
   echo json_encode((int) $numero);
 }
@@ -64,12 +64,12 @@ else{
 
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->update2("pl_poste_tab",array("nom"=>trim($nom)),array("tableau"=>$id));
+  $db->update("pl_poste_tab",array("nom"=>trim($nom)),array("tableau"=>$id));
 
   if($site){
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2('pl_poste_tab', array('site'=>$site), array('tableau'=>$id));
+    $db->update('pl_poste_tab', array('site'=>$site), array('tableau'=>$id));
   }
 
   echo json_encode("OK");

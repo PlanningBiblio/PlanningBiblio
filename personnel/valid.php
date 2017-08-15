@@ -120,7 +120,7 @@ switch($action){
     }
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->insert2("personnel",$insert);
+    $db->insert("personnel",$insert);
 
     // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
     $p=new personnel();
@@ -161,7 +161,7 @@ switch($action){
 
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("personnel",array("password"=>$mdp_crypt),array("id"=>$id));
+    $db->update("personnel",array("password"=>$mdp_crypt),array("id"=>$id));
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/index.php&msg=$msg&msgType=$msgType';</script>";
     break;
 
@@ -192,12 +192,12 @@ switch($action){
 
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("personnel",$update,array("id"=>$id));
+    $db->update("personnel",$update,array("id"=>$id));
 
 	    //	Mise à jour de la table pl_poste en cas de modification de la date de départ
     $db=new db();		// On met supprime=0 partout pour cet agent
     $db->CSRFToken = $CSRFToken;
-    $db->update2("pl_poste",array("supprime"=>"0"),array("perso_id"=>$id));
+    $db->update("pl_poste",array("supprime"=>"0"),array("perso_id"=>$id));
     if($depart!="0000-00-00" and $depart!=""){
 	    // Si une date de départ est précisée, on met supprime=1 au dela de cette date
       $db=new db();

@@ -50,7 +50,7 @@ if($nom){
     case "ajout" :	
       $db=new db();
       $db->CSRFToken = $CSRFToken;
-      $db->insert2("postes",$data);
+      $db->insert("postes",$data);
       if($db->error){
 	$msgType="error";
 	$msg=urlencode("Une erreur est survenue lors de l'ajout du poste");
@@ -63,7 +63,7 @@ if($nom){
     case "modif" :
       $db=new db();
       $db->CSRFToken = $CSRFToken;
-      $db->update2("postes",$data,array("id"=>$id));
+      $db->update("postes",$data,array("id"=>$id));
       if($db->error){
 	$msgType="error";
 	$msg=urlencode("Une erreur est survenue lors de la modification du poste");

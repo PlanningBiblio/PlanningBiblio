@@ -40,7 +40,7 @@ if(!empty($postes)){
   $postes=implode(",",$postes);
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->update2("postes",array("supprime"=>null),array("id"=>"IN $postes"));
+  $db->update("postes",array("supprime"=>null),array("id"=>"IN $postes"));
 
   // Récupération des activités
   $activites=array();
@@ -63,14 +63,14 @@ if(!empty($postes)){
     $activites=implode(",",$activites);
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("activites",array("supprime"=>null),array("id"=>"IN $activites"));
+    $db->update("activites",array("supprime"=>null),array("id"=>"IN $activites"));
   }
 }
 
 // Recupération du tableau
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->update2("pl_poste_tab",array("supprime"=>null),array("tableau"=>$id));
+$db->update("pl_poste_tab",array("supprime"=>null),array("tableau"=>$id));
 
 echo json_encode("OK");
 ?>

@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 3 août 2017
+Dernière modification : 15 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -378,10 +378,10 @@ function calculHeuresSP($date,$CSRFToken){
       // Enregistrement des horaires dans la base de données
       $db=new db();
       $db->CSRFToken = $CSRFToken;
-      $db->delete2("heures_sp",array("semaine"=>$j1));
+      $db->delete("heures_sp",array("semaine"=>$j1));
       $db=new db();
       $db->CSRFToken = $CSRFToken;
-      $db->insert2("heures_sp",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heuresSP)));
+      $db->insert("heures_sp",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heuresSP)));
     }
 
   // Recherche des heures de SP sans le module planningHebdo
@@ -452,10 +452,10 @@ function calculHeuresSP($date,$CSRFToken){
       // Enregistrement des horaires dans la base de données
       $db=new db();
       $db->CSRFToken = $CSRFToken;
-      $db->delete2("heures_sp",array("semaine"=>$j1));
+      $db->delete("heures_sp",array("semaine"=>$j1));
       $db=new db();
       $db->CSRFToken = $CSRFToken;
-      $db->insert2("heures_sp",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heuresSP)));
+      $db->insert("heures_sp",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heuresSP)));
     }
   }
   return (array) $heuresSP;
@@ -982,7 +982,7 @@ function loginFailed($login, $CSRFToken){
 	$insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>$status);
 	$db=new db();
 	$db->CSRFToken = $CSRFToken;
-	$db->insert2("ip_blocker",$insert);
+	$db->insert("ip_blocker",$insert);
 }
 
 /**
@@ -1007,17 +1007,17 @@ function loginFailedWait(){
  * Log le login et l'adresse IP du client dans la table ip_blocker pour informations
  * @param string $login : login saisi par l'utilisateur
  */
-function loginSuccess($login){
+function loginSuccess($login, $CSRFToken){
   $insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>"success");
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->insert2("ip_blocker",$insert);
+  $db->insert("ip_blocker",$insert);
 }
 
 function logs($msg, $program=null, $CSRFToken){
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->insert2("log",array("msg"=>$msg,"program"=>$program));
+  $db->insert("log",array("msg"=>$msg,"program"=>$program));
 }
 
 

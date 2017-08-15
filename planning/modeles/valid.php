@@ -25,10 +25,10 @@ $origine=htmlentities($origine,ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->update2("pl_poste_modeles",array("nom"=>$nom),array("nom"=>$origine));
+$db->update("pl_poste_modeles",array("nom"=>$nom),array("nom"=>$origine));
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->update2("pl_poste_modeles_tab",array("nom"=>$nom),array("nom"=>$origine));
+$db->update("pl_poste_modeles_tab",array("nom"=>$nom),array("nom"=>$origine));
 echo "<script type='text/JavaScript'>document.location.href='index.php?page=planning/modeles/index.php';</script>\n";
 ?>

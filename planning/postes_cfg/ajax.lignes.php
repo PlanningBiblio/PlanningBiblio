@@ -34,7 +34,7 @@ foreach($_POST as $key => $value){
 // Suppression des infos concernant ce tableau dans la table pl_poste_lignes
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->delete2("pl_poste_lignes",array("numero"=>$tableauNumero));
+$db->delete("pl_poste_lignes",array("numero"=>$tableauNumero));
 
 // Insertion des données dans la table pl_poste_lignes
 $values=array();
@@ -73,7 +73,7 @@ if($values[0]){
 // Suppression des infos concernant ce tableau dans la table pl_poste_cellules
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->delete2("pl_poste_cellules",array("numero"=>$tableauNumero));
+$db->delete("pl_poste_cellules",array("numero"=>$tableauNumero));
 
 // Insertion des données dans la table pl_poste_cellules
 $values=array();

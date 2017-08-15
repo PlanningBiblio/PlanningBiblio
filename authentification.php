@@ -102,7 +102,7 @@ if(isset($_POST['login'])){
       
       $db=new db();
       $db->CSRFToken = $CSRFToken;
-      $db->update2("personnel",array("last_login"=>date("Y-m-d H:i:s")),array("id"=>$_SESSION['login_id']));
+      $db->update("personnel",array("last_login"=>date("Y-m-d H:i:s")),array("id"=>$_SESSION['login_id']));
       echo "<script type='text/JavaScript'>document.location.href='$redirURL';</script>";
     }
     else{

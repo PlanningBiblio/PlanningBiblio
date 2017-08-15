@@ -74,24 +74,24 @@ else{
     // Table pl_poste (affectation des agents)
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->delete2("pl_poste",array("site"=>$site, "date"=>"BETWEEN{$debut}AND{$fin}"));
+    $db->delete("pl_poste",array("site"=>$site, "date"=>"BETWEEN{$debut}AND{$fin}"));
 
     // Table pl_poste_tab_affect (affectation des tableaux)
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->delete2("pl_poste_tab_affect",array("site"=>$site, "date"=>"BETWEEN{$debut}AND{$fin}"));
+    $db->delete("pl_poste_tab_affect",array("site"=>$site, "date"=>"BETWEEN{$debut}AND{$fin}"));
   }
   // Suppression du jour
   else{
     // Table pl_poste (affectation des agents)
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->delete2("pl_poste",array("site"=>$site, "date"=>$date));
+    $db->delete("pl_poste",array("site"=>$site, "date"=>$date));
 
     // Table pl_poste_tab_affect (affectation des tableaux)
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->delete2("pl_poste_tab_affect",array("site"=>$site, "date"=>$date));
+    $db->delete("pl_poste_tab_affect",array("site"=>$site, "date"=>$date));
   }
   echo "<script type='text/JavaScript'>top.document.location.href=\"index.php\";</script>\n";
 }

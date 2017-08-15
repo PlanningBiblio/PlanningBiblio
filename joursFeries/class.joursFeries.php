@@ -121,13 +121,13 @@ class joursFeries{
     }
     $db=new db();
     $db->CSRFToken = $this->CSRFToken;
-    $db->delete2("jours_feries", array('annee' => $p['annee']));
+    $db->delete("jours_feries", array('annee' => $p['annee']));
     $error=$db->error?true:$error;
 
     if(!empty($data)){
       $db=new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->insert2("jours_feries",$data);
+      $db->insert("jours_feries",$data);
       $error=$db->error?true:$error;
     }
   $this->error=$error;

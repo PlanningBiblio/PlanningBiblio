@@ -54,19 +54,19 @@ if($db->result){
     $where=array("date"=>$date, "site"=>$site);
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("pl_poste_verrou",$set,$where);
+    $db->update("pl_poste_verrou",$set,$where);
   }else{
     $set=array("verrou2"=>"0", "perso2"=>$perso_id);
     $where=array("date"=>$date, "site"=>$site);
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("pl_poste_verrou",$set,$where);
+    $db->update("pl_poste_verrou",$set,$where);
   }
 }else{
   $insert=array("date"=>$date, "verrou2"=>$verrou, "validation2"=>$validation, "perso2"=>$perso_id, "site"=>$site);
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->insert2("pl_poste_verrou",$insert);
+  $db->insert("pl_poste_verrou",$insert);
 }
 
 if(!$db->error and $verrou==1){

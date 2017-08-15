@@ -29,21 +29,21 @@ switch($action){		//	Operations de mise a jour
   case "modif2" :
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("lignes",array("nom"=>$nom),array("id"=>$id));
+    $db->update("lignes",array("nom"=>$nom),array("id"=>$id));
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=planning/postes_cfg/index.php'</script>\n";
     break;
 
   case "ajout2" :
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->insert2("lignes",array("nom"=>$nom));
+    $db->insert("lignes",array("nom"=>$nom));
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=planning/postes_cfg/index.php'</script>\n";
     break;
 
   case "suppr" :
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->delete2("lignes",array("id"=>$id));
+    $db->delete("lignes",array("id"=>$id));
     break;
 }
 

@@ -33,5 +33,5 @@ $db->query("UPDATE `{$dbprefix}pl_poste_tab_grp` SET `supprime`='$today' WHERE `
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->update2("pl_poste_tab",$set,$where);
+$db->update("pl_poste_tab",$set,$where);
 ?>

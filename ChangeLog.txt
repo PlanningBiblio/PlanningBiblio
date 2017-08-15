@@ -1,4 +1,4 @@
-*** Version 2.7      (3 août 2017)   ***
+*** Version 2.7      (15 août 2017)   ***
 - Améliorations
 Heures de présence : Gestion de 2 pauses par jour
 Permet de personnaliser la favicon depuis les thèmes perso. Positionner un fichier nommé favicon.png dans le dossier images du thème
@@ -10,7 +10,7 @@ Décale le menu du planning par rapport au curseur : évite de cliquer trop vite
 Corrige l'importation des heures de présence : tout était importé en semaine 1, problèmatique lorsque la rotation des semaines était activée
 
 - Sécurité
-Correction des vulnérabilités XSRF liées aux fonctions db::insert2 et db::delete2
+Correction des vulnérabilités XSRF liées aux fonctions db::insert(2), db::update et db::delete(2)
 
 *** Version 2.6.91   (2 juin 2017)   ***
 - Amélioration

@@ -64,7 +64,7 @@ if(in_array(21,$droits)){
 $tab=array(0);
 $db=new db();
 $db->CSRFToken = $CSRFSession;
-$db->update2('personnel', array('supprime'=>'1', 'actif'=>'Supprim&eacute;'), "`depart`<CURDATE() AND `depart`<>'0000-00-00' and `actif` NOT LIKE 'Supprim%'");
+$db->update('personnel', array('supprime'=>'1', 'actif'=>'Supprim&eacute;'), "`depart`<CURDATE() AND `depart`<>'0000-00-00' and `actif` NOT LIKE 'Supprim%'");
 
 echo "<script type='text/JavaScript'>document.form2.actif.value='$actif';</script>";
 

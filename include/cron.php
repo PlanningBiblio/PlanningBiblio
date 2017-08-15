@@ -31,7 +31,7 @@ if($dbCron->result){
     include $elemCron['command'];
     $dbCron2=new db();
     $dbCron2->CSRFToken = $CSRFSession;
-    $dbCron2->update2('cron', array('last'=>'SYSDATE'), array('id'=>$elemCron['id']));
+    $dbCron2->update('cron', array('last'=>'SYSDATE'), array('id'=>$elemCron['id']));
   }
 }
 
@@ -43,7 +43,7 @@ if($dbCron->result){
     include $elemCron['command'];
     $dbCron2=new db();
     $dbCron2->CSRFToken = $CSRFSession;
-    $dbCron2->update2('cron', array('last'=>'SYSDATE'), array('id'=>$elemCron['id']));
+    $dbCron2->update('cron', array('last'=>'SYSDATE'), array('id'=>$elemCron['id']));
   }
 }
 

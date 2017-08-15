@@ -80,7 +80,7 @@ function etape3(){
   //	Mise à jour de la table personnel
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->update2("personnel",array("supprime"=>"1","actif"=>"Supprim&eacute;","depart"=>$date),array("id"=>$id));
+  $db->update("personnel",array("supprime"=>"1","actif"=>"Supprim&eacute;","depart"=>$date),array("id"=>$id));
       //	Mise à jour de la table pl_poste
   $db=new db();
   $id=$db->escapeString($id);

@@ -34,7 +34,7 @@ switch($action){
   case "ajout" :	
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->insert2("activites",array("nom"=>$nom));
+    $db->insert("activites",array("nom"=>$nom));
     if($db->error){
       $msg=urlencode("L'activité n'a pas pu être ajoutée");
       $msgType="error";
@@ -47,7 +47,7 @@ switch($action){
   case "modif" :
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("activites",array("nom"=>$nom),array("id"=>$id));
+    $db->update("activites",array("nom"=>$nom),array("id"=>$id));
     if($db->error){
       $msg=urlencode("L'activité n'a pas pu être modifiée");
       $msgType="error";

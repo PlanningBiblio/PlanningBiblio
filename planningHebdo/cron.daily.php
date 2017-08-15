@@ -27,10 +27,10 @@ foreach($p->elements as $elem){
   $perso_id=$elem['perso_id'];
   $db=new db();
   $db->CSRFToken = $CSRFSession;
-  $db->update2('planning_hebdo', array('actuel'=>0), array('perso_id'=>$perso_id));
+  $db->update('planning_hebdo', array('actuel'=>0), array('perso_id'=>$perso_id));
   $db=new db();
   $db->CSRFToken = $CSRFSession;
-  $db->update2('planning_hebdo', array('actuel'=>1), array('id'=>$id));
+  $db->update('planning_hebdo', array('actuel'=>1), array('id'=>$id));
 }
 
 ?>

@@ -30,10 +30,10 @@ $hiddenTables=filter_input(INPUT_POST,"hiddenTables",FILTER_SANITIZE_STRING);
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->delete2("hidden_tables",array("perso_id"=>$perso_id,"tableau"=>$tableId));
+$db->delete("hidden_tables",array("perso_id"=>$perso_id,"tableau"=>$tableId));
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->insert2("hidden_tables",array("perso_id"=>$perso_id,"tableau"=>$tableId,"hidden_tables"=>$hiddenTables));
+$db->insert("hidden_tables",array("perso_id"=>$perso_id,"tableau"=>$tableId,"hidden_tables"=>$hiddenTables));
 echo json_encode("");
 ?>

@@ -50,7 +50,7 @@ if($texte){
 if($suppression and $validation){
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->delete2("infos",array("id"=>$id));
+  $db->delete("infos",array("id"=>$id));
   echo "<b>L'information a été supprimée</b>";
   echo "<br/><br/><a href='index.php?page=infos/index.php'>Retour</a>\n";
 }
@@ -75,11 +75,11 @@ elseif($validation){		//		Validation
   if($id){
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte),array("id"=>$id));
+    $db->update("infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte),array("id"=>$id));
   }else{
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->insert2("infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte));
+    $db->insert("infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte));
   }
 }
 //			---------------		Vérification			------------------------------//

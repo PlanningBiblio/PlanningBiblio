@@ -148,10 +148,10 @@ else{					// Etape 2 : Insertion des données
     $tableau=$db->result[0]['tableau'];
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->delete2("pl_poste_tab_affect",array("date"=>$elem, "site"=>$site));
+    $db->delete("pl_poste_tab_affect",array("date"=>$elem, "site"=>$site));
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->insert2("pl_poste_tab_affect", array("date"=>$elem ,"tableau"=>$tableau ,"site"=>$site ));
+    $db->insert("pl_poste_tab_affect", array("date"=>$elem ,"tableau"=>$tableau ,"site"=>$site ));
 
 
     // N'importe pas les agents placés sur des postes supprimés (si tableau modifié)
@@ -259,7 +259,7 @@ else{					// Etape 2 : Insertion des données
 	// Suppression des anciennes données
 	$db=new db();
         $db->CSRFToken = $CSRFToken;
-	$db->delete2("pl_poste", array("date"=>$elem, "site"=>$site));
+	$db->delete("pl_poste", array("date"=>$elem, "site"=>$site));
 
 	// Insertion des nouvelles données
 	$req="INSERT INTO `{$dbprefix}pl_poste` (`date`,`perso_id`,`poste`,`debut`,`fin`,`absent`,`site`) ";

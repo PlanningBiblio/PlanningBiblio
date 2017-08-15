@@ -196,7 +196,7 @@ if($confirm and !empty($perso_ids)){
 
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->insert2("absences", $insert);
+    $db->insert("absences", $insert);
 
     // Récupération de l'ID de l'absence enregistrée pour la création du lien dans le mail
     $info=array(array("name"=>"MAX(id)","as"=>"id"));

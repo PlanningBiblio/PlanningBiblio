@@ -25,7 +25,7 @@ $CSRFToken = filter_input(INPUT_POST, 'CSRFToken', FILTER_SANITIZE_STRING);
 
 $db = new db();
 $db->CSRFToken = $CSRFToken;
-$db->update2("personnel",array("code_ics"=>null), array("id"=>$id));
+$db->update("personnel",array("code_ics"=>null), array("id"=>$id));
 
 $p = new personnel();
 $p->CSRFToken = $CSRFToken;

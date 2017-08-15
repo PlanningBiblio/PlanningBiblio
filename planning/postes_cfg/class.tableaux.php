@@ -35,7 +35,7 @@ class tableau{
     if($this->id){
       $db=new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->delete2("pl_poste_tab_grp",array("id"=>$this->id));
+      $db->delete("pl_poste_tab_grp",array("id"=>$this->id));
     }
   }
 
@@ -43,7 +43,7 @@ class tableau{
     if($this->id){
       $db=new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->delete2("lignes",array("id"=>$this->id));
+      $db->delete("lignes",array("id"=>$this->id));
     }
   }
 
@@ -59,7 +59,7 @@ class tableau{
 
       $db=new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->update2("pl_poste_tab",$set,$where);
+      $db->update("pl_poste_tab",$set,$where);
     }
   }
 
@@ -217,7 +217,7 @@ class tableau{
         $horaires=array("debut"=>"09:00:00","fin"=>"10:00:00","tableau"=>$i,"numero"=>$id);
         $db=new db();
         $db->CSRFToken = $this->CSRFToken;
-        $db->insert2("pl_poste_horaires",$horaires);
+        $db->insert("pl_poste_horaires",$horaires);
       }
     }
 
@@ -226,10 +226,10 @@ class tableau{
       while($numbers[$i]){
 	$db=new db();
         $db->CSRFToken = $this->CSRFToken;
-	$db->delete2("pl_poste_horaires",array("tableau"=>$numbers[$i], "numero"=>$id));
+	$db->delete("pl_poste_horaires",array("tableau"=>$numbers[$i], "numero"=>$id));
 	$db=new db();
         $db->CSRFToken = $this->CSRFToken;
-	$db->delete2("pl_poste_lignes",array("tableau"=>$numbers[$i], "numero"=>$id));
+	$db->delete("pl_poste_lignes",array("tableau"=>$numbers[$i], "numero"=>$id));
 	$i++;
       }
     }
@@ -241,13 +241,13 @@ class tableau{
     if($post["id"]){
       $db=new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->update2("pl_poste_tab_grp",$post,array("id"=>$post['id']));
+      $db->update("pl_poste_tab_grp",$post,array("id"=>$post['id']));
     }
     //		Insert
     else{
       $db=new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->insert2("pl_poste_tab_grp",$post);
+      $db->insert("pl_poste_tab_grp",$post);
     }
   }
 }

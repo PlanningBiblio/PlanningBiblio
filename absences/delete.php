@@ -151,11 +151,11 @@ foreach($agents as $agent){
 if($groupe){
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->delete2("absences",array("groupe"=>$groupe));
+  $db->delete("absences",array("groupe"=>$groupe));
 }else{
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->delete2("absences",array("id"=>$id));
+  $db->delete("absences",array("id"=>$id));
 }
 
 $msg=urlencode("L'absence a été supprimée avec succès");

@@ -247,7 +247,7 @@ $where=array("id"=>"IN $ids");
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->update2("absences",$data,$where);
+$db->update("absences",$data,$where);
 
 
 // Ajout de nouvelles lignes dans la table absences si des agents ont été ajoutés
@@ -258,7 +258,7 @@ foreach($agents_ajoutes as $agent){
 if(!empty($insert)){
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->insert2("absences",$insert);
+  $db->insert("absences",$insert);
 }
 
 
@@ -271,7 +271,7 @@ $agents_supprimes_ids=implode(",",$agents_supprimes_ids);
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->delete2("absences",array("id"=>"IN $ids", "perso_id"=>"IN $agents_supprimes_ids"));
+$db->delete("absences",array("id"=>"IN $ids", "perso_id"=>"IN $agents_supprimes_ids"));
 
 
 // Envoi d'un mail de notification

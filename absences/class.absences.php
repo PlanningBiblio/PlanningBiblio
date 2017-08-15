@@ -154,10 +154,10 @@ class absences{
       // Enregistrement des heures dans la base de données
       $db=new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->delete2("heures_absences",array("semaine"=>$j1));
+      $db->delete("heures_absences",array("semaine"=>$j1));
       $db=new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->insert2("heures_absences",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heures)));
+      $db->insert("heures_absences",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heures)));
     }
 
     return (array) $heures;
@@ -876,7 +876,7 @@ class absences{
   function piecesJustif($id,$pj, $checked){
     $db=new db();
     $db->CSRFToken = $this->CSRFToken;
-    $db->update2("absences",array($pj => $checked),array("id"=>$id));
+    $db->update("absences",array($pj => $checked),array("id"=>$id));
   }
 
   public function update_time(){

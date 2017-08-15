@@ -93,10 +93,10 @@ else{
   if($select->result){
     $delete=new db();
     $delete->CSRFToken = $CSRFToken;
-    $delete->delete2("pl_poste_modeles", array("nom"=>$nom, "site"=>$site));
+    $delete->delete("pl_poste_modeles", array("nom"=>$nom, "site"=>$site));
     $delete=new db();
     $delete->CSRFToken = $CSRFToken;
-    $delete->delete2("pl_poste_modeles_tab", array("nom"=>$nom, "site"=>$site));
+    $delete->delete("pl_poste_modeles_tab", array("nom"=>$nom, "site"=>$site));
     enregistre_modele($nom, $date, $semaine, $site, $CSRFToken);
   }
 }
@@ -161,7 +161,7 @@ function enregistre_modele($nom, $date, $semaine, $site, $CSRFToken){
       $insert=array("nom"=>$nom, "jour"=>$jour, "tableau"=>$elem['tableau'], "site"=>$site);
       $db=new db();
       $db->CSRFToken = $CSRFToken;
-      $db->insert2("pl_poste_modeles_tab",$insert);
+      $db->insert("pl_poste_modeles_tab",$insert);
     }
    }
   echo "Modèle \"$nom\" enregistré<br/><br/>\n";

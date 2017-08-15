@@ -411,7 +411,7 @@ class planning{
       $insert=array("date"=>$date, "data"=>json_encode((array)$tab));
       $db=new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->insert2("pl_notifications",$insert);
+      $db->insert("pl_notifications",$insert);
 
       // Enregistre les agents qui doivent être notifiés
       $perso_ids=array_keys($tab);
@@ -469,7 +469,7 @@ class planning{
       $update=array("data"=>json_encode((array)$tab));
       $db=new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->update2("pl_notifications",$update,array("date"=>$date));
+      $db->update("pl_notifications",$update,array("date"=>$date));
     }
 
     /*
@@ -617,7 +617,7 @@ class planning{
     if(strcmp($previousNotes,$text)!=0){
       $db=new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->insert2("pl_notes",array("date"=>$date,"site"=>$site,"text"=>$text,"perso_id"=>$_SESSION['login_id']));
+      $db->insert("pl_notes",array("date"=>$date,"site"=>$site,"text"=>$text,"perso_id"=>$_SESSION['login_id']));
     }
   }
 

@@ -61,7 +61,7 @@ if($isSent){
   $successAddresses=join(";",$m->successAddresses);
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->insert2("appel_dispo",array( "site"=>$site, "poste"=>$poste, "date"=>$date, "debut"=>$debut, "fin"=>$fin, 
+  $db->insert("appel_dispo",array( "site"=>$site, "poste"=>$poste, "date"=>$date, "debut"=>$debut, "fin"=>$fin, 
     "destinataires"=>$successAddresses, "sujet"=>$sujet, "message"=>$message));
 }
 

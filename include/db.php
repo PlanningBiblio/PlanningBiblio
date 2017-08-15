@@ -307,7 +307,7 @@ class db{
     $this->query($query);
   }
 
-  function update2($table,$set,$where="1"){
+  function update($table,$set,$where="1"){
     if(!$this->CSRFToken or !isset($_SESSION['oups']['CSRFToken']) or $this->CSRFToken !== $_SESSION['oups']['CSRFToken']){
       $this->error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
       error_log($this->error);
@@ -354,7 +354,7 @@ class db{
     $this->query($requete);
   }
 
-  function delete2($table,$where="1"){
+  function delete($table,$where="1"){
     if(!$this->CSRFToken or !isset($_SESSION['oups']['CSRFToken']) or $this->CSRFToken !== $_SESSION['oups']['CSRFToken']){
       $this->error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
       error_log($this->error);
@@ -378,7 +378,7 @@ class db{
     $this->query($requete);
   }
 
-  function insert2($table,$values,$options=null){
+  function insert($table,$values,$options=null){
     if(!$this->CSRFToken or !isset($_SESSION['oups']['CSRFToken']) or $this->CSRFToken !== $_SESSION['oups']['CSRFToken']){
       $this->error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
       error_log($this->error);

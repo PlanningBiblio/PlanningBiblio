@@ -57,7 +57,7 @@ if($confirm){
     // Enregistrement du nouveau tableau
     $db2=new db();
     $db2->CSRFToken = $CSRFToken;
-    $db2->insert2("pl_poste_tab", array("nom"=>$nom ,"tableau"=>$numero2, "site"=>$site));
+    $db2->insert("pl_poste_tab", array("nom"=>$nom ,"tableau"=>$numero2, "site"=>$site));
   }
   else{		// par sécurité, si pas d'horaires à  copier, on stop le script pour éviter d'avoir une incohérence dans les numéros de tableaux
     echo "<script type='text/javaScript'>parent.location.href='index.php?page=planning/postes_cfg/modif.php&cfg-type=horaires&numero=$numero';</script>\n";

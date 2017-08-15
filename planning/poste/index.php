@@ -378,10 +378,10 @@ elseif($groupe and $autorisation){	//	Si Groupe en argument
   foreach($tmp as $elem){
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->delete2("pl_poste_tab_affect",array("date"=>$elem[0], "site"=>$site));
+    $db->delete("pl_poste_tab_affect",array("date"=>$elem[0], "site"=>$site));
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->insert2("pl_poste_tab_affect",array("date"=>$elem[0], "tableau"=>$elem[1], "site"=>$site));
+    $db->insert("pl_poste_tab_affect",array("date"=>$elem[0], "tableau"=>$elem[1], "site"=>$site));
   }
   $tab=$tmp[$date][1];
 
@@ -390,10 +390,10 @@ elseif($tableau and $autorisation){	//	Si tableau en argument
   $tab=$tableau;
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->delete2("pl_poste_tab_affect", array("date"=>$date, "site"=>$site));
+  $db->delete("pl_poste_tab_affect", array("date"=>$date, "site"=>$site));
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->insert2("pl_poste_tab_affect",array("date"=>$date, "tableau"=>$tab, "site"=>$site));
+  $db->insert("pl_poste_tab_affect",array("date"=>$date, "tableau"=>$tab, "site"=>$site));
 }
 else{
   $tab=$db->result[0]['tableau'];

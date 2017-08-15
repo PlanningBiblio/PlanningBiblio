@@ -56,7 +56,7 @@ if($perso_id==0){
     $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site);
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("pl_poste",$set,$where);
+    $db->update("pl_poste",$set,$where);
 
   // Barrer l'agent sélectionné
   }elseif($barrer){
@@ -64,20 +64,20 @@ if($perso_id==0){
     $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("pl_poste",$set,$where);
+    $db->update("pl_poste",$set,$where);
   }
   // Tout supprimer
   elseif($tout){
     $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site);
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->delete2("pl_poste",$where);
+    $db->delete("pl_poste",$where);
   // Supprimer l'agent sélectionné
   }else{
     $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->delete2("pl_poste",$where);
+    $db->delete("pl_poste",$where);
   }
 }
 // Remplacement
@@ -88,14 +88,14 @@ else{
     $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=> $perso_id_origine);
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->delete2("pl_poste",$where);
+    $db->delete("pl_poste",$where);
 
     // Insertion des nouveaux éléments
     $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id, 
       "chgt_login"=>$login_id, "chgt_time"=>$now);
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->insert2("pl_poste",$insert);
+    $db->insert("pl_poste",$insert);
   }
   // Si barrer : on barre l'ancien et ajoute le nouveau
   elseif($barrer){
@@ -104,14 +104,14 @@ else{
     $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("pl_poste",$set,$where);
+    $db->update("pl_poste",$set,$where);
     
     // On ajoute le nouveau
     $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id, 
       "chgt_login"=>$login_id, "chgt_time"=>$now);
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->insert2("pl_poste",$insert);
+    $db->insert("pl_poste",$insert);
   }
   // Si Ajouter, on garde l'ancien et ajoute le nouveau
   elseif($ajouter){
@@ -119,7 +119,7 @@ else{
       "chgt_login"=>$login_id, "chgt_time"=>$now);
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->insert2("pl_poste",$insert);
+    $db->insert("pl_poste",$insert);
     }
 }
 
@@ -128,12 +128,12 @@ if($griser == 1){
   $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>'0', "grise"=>'1', "chgt_login"=>$login_id, "chgt_time"=>$now);
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->insert2("pl_poste",$insert);
+  $db->insert("pl_poste",$insert);
 }elseif($griser == -1){
   $delete=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>'0', "grise"=>'1');
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->delete2("pl_poste",$delete);
+  $db->delete("pl_poste",$delete);
 }
 
 

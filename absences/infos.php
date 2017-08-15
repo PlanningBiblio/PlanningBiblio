@@ -39,7 +39,7 @@ echo "<h3>Informations sur les absences</h3>\n";
 if($suppression and $validation){
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->delete2("absences_infos",array("id"=>$id));
+  $db->delete("absences_infos",array("id"=>$id));
   echo "<b>L'information a été supprimée</b>";
   echo "<br/><br/><a href='index.php?page=absences/index.php'>Retour</a>\n";
 }
@@ -63,11 +63,11 @@ elseif($validation){		//		Validation
   if($id){
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("absences_infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte),array("id"=>$id));
+    $db->update("absences_infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte),array("id"=>$id));
   }else{
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->insert2("absences_infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte));
+    $db->insert("absences_infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte));
   }
 }
 elseif($debut){		//		Vérification

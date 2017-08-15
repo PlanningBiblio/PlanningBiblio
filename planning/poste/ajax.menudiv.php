@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 3 août 2017
+Dernière modification : 15 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
@@ -248,7 +248,7 @@ foreach($db->result as $elem){
   }
 
   // Multisites : Contrôle si l'agent est prévu sur ce site si les agents sont autorisés à travailler sur plusieurs sites
-  $heures=$temps[$jour];
+  $heures = isset($temps[$jour]) ? $temps[$jour] : false;
 
   if($config['Multisites-nombre']>1){
     if(!is_array($heures) or !array_key_exists(4,$heures)){

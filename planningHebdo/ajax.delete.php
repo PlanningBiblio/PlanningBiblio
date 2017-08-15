@@ -23,10 +23,10 @@ $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->delete2("planning_hebdo","id=$id");
+$db->delete("planning_hebdo","id=$id");
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->update2('planning_hebdo', array('remplace'=>'0') , array('remplace'=>$id));
+$db->update('planning_hebdo', array('remplace'=>'0') , array('remplace'=>$id));
 
 echo json_encode('ok');
 ?>

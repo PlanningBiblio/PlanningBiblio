@@ -78,7 +78,7 @@ class planningHebdo{
 
       $db=new db();
       $db->CSRFToken = $CSRFToken;
-      $db->insert2("planning_hebdo",$insert);
+      $db->insert("planning_hebdo",$insert);
       $this->error=$db->error;
       // 2ème tableau
       $insert=array("perso_id"=>$perso_id,"debut"=>$dates[0][2],"fin"=>$dates[0][3],"temps"=>json_encode($data['temps2']),
@@ -86,7 +86,7 @@ class planningHebdo{
 
       $db=new db();
       $db->CSRFToken = $CSRFToken;
-      $db->insert2("planning_hebdo",$insert);
+      $db->insert("planning_hebdo",$insert);
       $this->error=$db->error?$db->error:$this->error;
     }
     // Sinon, insertion d'un seul tableau
@@ -100,7 +100,7 @@ class planningHebdo{
       }
       $db=new db();
       $db->CSRFToken = $CSRFToken;
-      $db->insert2("planning_hebdo",$insert);
+      $db->insert("planning_hebdo",$insert);
       $this->error=$db->error;
     }
 
@@ -318,7 +318,7 @@ class planningHebdo{
   public function suppression_agents($liste){
     $db=new db();
     $db->CSRFToken = $this->CSRFToken;
-    $db->delete2("planning_hebdo", array('perso_id' => "IN$liste"));
+    $db->delete("planning_hebdo", array('perso_id' => "IN$liste"));
   }
 
   public function update($data){
@@ -340,27 +340,27 @@ class planningHebdo{
 
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("planning_hebdo",$update,array("id"=>$data['id']));
+    $db->update("planning_hebdo",$update,array("id"=>$data['id']));
     $this->error=$db->error;
 
     // Remplacement du planning de la fiche agent si validation et date courante entre debut et fin
     if($data['validation'] and $data['debut']<=date("Y-m-d") and $data['fin']>=date("Y-m-d")){
       $db=new db();
       $db->CSRFToken = $CSRFToken;
-      $db->update2('planning_hebdo', array('actuel'=>0), array('perso_id'=>$data['perso_id']));
+      $db->update('planning_hebdo', array('actuel'=>0), array('perso_id'=>$data['perso_id']));
       $db=new db();
       $db->CSRFToken = $CSRFToken;
-      $db->update2('planning_hebdo', array('actuel'=>1), array('id'=>$data['id']));
+      $db->update('planning_hebdo', array('actuel'=>1), array('id'=>$data['id']));
     }
 
     // Si validation d'un planning de remplacement, suppression du planning d'origine
     if($data['validation'] and $data['remplace']){
       $db=new db();
       $db->CSRFToken = $CSRFToken;
-      $db->delete2('planning_hebdo', array('id' =>$data['remplace']));
+      $db->delete('planning_hebdo', array('id' =>$data['remplace']));
       $db=new db();
       $db->CSRFToken = $CSRFToken;
-      $db->update2('planning_hebdo', array('remplace'=>0), array('remplace'=>$data['remplace']));
+      $db->update('planning_hebdo', array('remplace'=>0), array('remplace'=>$data['remplace']));
     }
 
     // Envoi d'un mail aux responsables et à l'agent concerné
@@ -431,12 +431,12 @@ class planningHebdo{
     for($i=0;$i<count($annee);$i++){
       $db=new db();
       $db->CSRFToken = $CSRFToken;
-      $db->delete2('planning_hebdo_periodes', array('annee'=>$annee[$i]));
+      $db->delete('planning_hebdo_periodes', array('annee'=>$annee[$i]));
       $this->error=$db->error?true:false;
       $insert=array("annee"=>$annee[$i],"dates"=>$dates[$i]);
       $db=new db();
       $db->CSRFToken = $CSRFToken;
-      $db->insert2("planning_hebdo_periodes",$insert);
+      $db->insert("planning_hebdo_periodes",$insert);
       $this->error=$db->error?true:$this->error;
     }
   }
