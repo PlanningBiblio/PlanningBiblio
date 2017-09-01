@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 31 juillet 2017
+Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -15,6 +15,8 @@ Ce fichier permet de mettre à jour la base de données lors de la mise à jour 
 Cette page est appelée par la page index.php si la version du fichier index.php et différente de la version enregistrée
 dans la base de données
 */
+
+$CSRFToken = CSRFToken();
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
 if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
@@ -548,15 +550,15 @@ $v="2.5.1";
 if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
 
   // Transformation serialized -> JSON
-  serializeToJson('personnel','droits');
-  serializeToJson('personnel','postes');
-  serializeToJson('personnel','sites');
-  serializeToJson('postes','activites');
-  serializeToJson('postes','categories');
-  serializeToJson('config','valeur','id', array('type'=>'checkboxes'));
-  serializeToJson('planningHebdoPeriodes','dates');
-  serializeToJson('personnel','temps');
-  serializeToJson('planningHebdo','temps');
+  serializeToJson('personnel','droits', 'id', null, $CSRFToken);
+  serializeToJson('personnel','postes', 'id', null, $CSRFToken);
+  serializeToJson('personnel','sites', 'id', null, $CSRFToken);
+  serializeToJson('postes','activites', 'id', null, $CSRFToken);
+  serializeToJson('postes','categories', 'id', null, $CSRFToken);
+  serializeToJson('config','valeur','id', array('type'=>'checkboxes'), $CSRFToken);
+  serializeToJson('planningHebdoPeriodes','dates', 'id', null, $CSRFToken);
+  serializeToJson('personnel','temps', 'id', null, $CSRFToken);
+  serializeToJson('planningHebdo','temps', 'id', null, $CSRFToken);
 
   $sql[] = "ALTER TABLE `{$dbprefix}postes` CHANGE `categories` `categories` TEXT NULL DEFAULT NULL;";
 
@@ -898,9 +900,10 @@ include "include/footer.php";
  * @param string $id : nom du champ ID (clé)
  * @param array $where : condition sql where : ex: array('type'=>'checkboxes')
  */
-function serializeToJson($table,$field,$id='id',$where=null){
+function serializeToJson($table,$field,$id='id',$where=null, $CSRFToken){
   // Transformation serialized  -> json
   $dbh = new dbh();
+  $dbh->CSRFToken = $CSRFToken;
   $dbh->prepare("UPDATE `{$GLOBALS['config']['dbprefix']}$table` SET `$field`=:value WHERE `$id`=:key;");
   echo "UPDATE `{$GLOBALS['config']['dbprefix']}$table` SET `$field`=:value WHERE `$id`=:key;<br/>";
 

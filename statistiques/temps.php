@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 3 août 2017
+Dernière modification : 30 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -27,7 +27,7 @@ require_once "include/horaires.php";
 //	Initialisation des variables
 $CSRFToken=trim(filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING));
 if(!$CSRFToken){
-  $CSRFToken = $_SESSION['oups']['CSRFToken'];
+  $CSRFToken = $CSRFSession;
 }
 
 $debut=filter_input(INPUT_GET,"debut",FILTER_SANITIZE_STRING);

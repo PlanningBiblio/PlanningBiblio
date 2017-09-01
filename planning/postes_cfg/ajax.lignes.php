@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/postes_cfg/ajax.lignes.php
 Création : 3 février 2014
-Dernière modification : 3 août 2017
+Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -64,6 +64,7 @@ if($values[0]){
   $sql.="VALUES (:numero, :tableau, :ligne, :poste, :type);";
 
   $db=new dbh();
+  $db->CSRFToken = $CSRFToken;
   $db->prepare($sql);
   foreach($values as $elem){
     $db->execute($elem);
@@ -88,6 +89,7 @@ if(!empty($values)){
   $sql.="VALUES (:numero, :tableau, :ligne, :colonne)";
 
   $db=new dbh();
+  $db->CSRFToken = $CSRFToken;
   $db->prepare($sql);
   foreach($values as $elem){
     $db->execute($elem);

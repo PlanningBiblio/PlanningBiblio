@@ -5,9 +5,9 @@ Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
-Fichier : ics/cron.ics.php
+Fichier : planningHebdo/cron.importCSV.php
 Création : 1er juillet 2016
-Dernière modification : 3 août 2017
+Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,6 +21,8 @@ Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à
 */
 
 $path="/planning";
+
+session_start();
 
 /** $version=$argv[0]; permet d'interdire l'execution de ce script via un navigateur
  *  Le fichier config.php affichera une page "accès interdit si la $version n'existe pas
@@ -131,7 +133,12 @@ foreach($lines as $line){
     $cells[6]=null;
     $cells[7]=null;
   }
-  
+
+  // Si l'agent mentionné dans le fichier n'existe pas dans le tableau $agents, on passe
+  if(empty($agents[$cells[0]]['id'])){
+    continue;
+  }
+
   // Récupération de l'ID de l'agent
   $perso_id = $agents[$cells[0]]['id'];
   
@@ -237,9 +244,10 @@ $nb = count($insert);
 
 if($nb > 0){
   $db=new dbh();
+  $db->CSRFToken = $CSRFToken;
   $db->prepare("INSERT INTO `{$dbprefix}planning_hebdo` (`perso_id`, `debut`, `fin`, `temps`, `saisie`, `valide`, `validation`, `actuel`, `cle`) VALUES (:perso_id, :debut, :fin, :temps, SYSDATE(), '99999', SYSDATE(), :actuel, :cle);");
   foreach($insert as $elem){
-  $db->execute($elem);  
+    $db->execute($elem);  
   }
 
   if(!$db->error){
@@ -264,6 +272,7 @@ $nb = count($delete);
 
 if($nb >0){
   $db=new dbh();
+  $db->CSRFToken = $CSRFToken;
   $db->prepare("DELETE FROM `{$dbprefix}planning_hebdo` WHERE `cle`=:cle;");
   foreach($delete as $elem){
     $db->execute($elem);

@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 15 août 2017
+Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -703,6 +703,11 @@ function createURL($page=null){
 
 // Génération d'un CSRF Token
 function CSRFToken(){
+
+  if(!empty($_SESSION['oups']['CSRFToken'])){
+    return $_SESSION['oups']['CSRFToken'];
+  }
+  
   // PHP 7
   if(phpversion() >= 7){
     $CSRFToken = bin2hex(random_bytes(32));
@@ -716,6 +721,8 @@ function CSRFToken(){
       $CSRFToken = bin2hex(openssl_random_pseudo_bytes(32));
     }
   }
+
+  $_SESSION['oups']['CSRFToken'] = $CSRFToken;
 
   return $CSRFToken;
 }

@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : ics/calendar.php
 Création : juillet 2016
-Dernière modification : 3 août 2017
+Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -35,7 +35,10 @@ Vous devez activier le paramètre ICS-Export dans le menu Administration / Confi
 // TODO : Protection par code, générer des codes pour les agents existants, générer des codes à chaque ajout/importation, afficher ces codes des les fichiers agents.
 // TODO : config : activer/désactiver la génération des fichiers ICS: désactivé par défaut
 
+session_start();
+
 $version="ics";
+
 require_once "../include/config.php";
 require_once "../include/function.php";
 require_once "../plugins/plugins.php";

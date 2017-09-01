@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/importer.php
 Création : mai 2011
-Dernière modification : 3 août 2017
+Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -265,6 +265,7 @@ else{					// Etape 2 : Insertion des données
 	$req="INSERT INTO `{$dbprefix}pl_poste` (`date`,`perso_id`,`poste`,`debut`,`fin`,`absent`,`site`) ";
 	$req.="VALUES (:date, :perso_id, :poste, :debut, :fin, :absent, :site);";
 	$dbh=new dbh();
+	$dbh->CSRFToken = $CSRFToken;
 	$dbh->prepare($req);
 	foreach($values as $value){
 	  $dbh->execute($value);

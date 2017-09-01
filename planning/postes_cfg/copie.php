@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/postes_cfg/copie.php
 Création : mai 2011
-Dernière modification : 3 août 2017
+Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -44,6 +44,7 @@ if($confirm){
     }
     $req="INSERT INTO `{$dbprefix}pl_poste_horaires` (`debut`,`fin`,`tableau`,`numero`) VALUES (:debut, :fin, :tableau, :numero);";
     $db2=new dbh();
+    $db2->CSRFToken = $CSRFToken;
     $db2->prepare($req);
     foreach($values as $elem){
       $db2->execute($elem);
@@ -77,6 +78,7 @@ if($confirm){
     $req="INSERT INTO `{$dbprefix}pl_poste_lignes` (`tableau`,`ligne`,`poste`,`type`,`numero`) ";
     $req.="VALUES (:tableau, :ligne, :poste, :type, :numero)";
     $db2=new dbh();
+    $db2->CSRFToken = $CSRFToken;
     $db2->prepare($req);
     foreach($values as $elem){
       $db2->execute($elem);
@@ -95,6 +97,7 @@ if($confirm){
     $req="INSERT INTO `{$dbprefix}pl_poste_cellules` (`ligne`,`colonne`,`tableau`,`numero`) ";
     $req.="VALUES (:ligne, :colonne, :tableau, :numero)";
     $db2=new dbh();
+    $db2->CSRFToken = $CSRFToken;
     $db2->prepare($req);
     foreach($values as $elem){
       $db2->execute($elem);

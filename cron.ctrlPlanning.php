@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : cron.ctrlPlanning.php
 Création : 18 janvier 2016
-Dernière modification : 3 août 2017
+Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -46,6 +46,7 @@ require_once "$path/postes/class.postes.php";
 
 
 // Génération d'un CSRF Token
+session_start();
 $CSRFToken = CSRFToken();
 
 if(!$config['Rappels-Actifs']){
@@ -91,6 +92,7 @@ $data=array();
 // Prépare la requête permettant de vérifier si les postes sont occupés
 // On utilide PDO pour de meilleurs performances car la même requête sera executée de nombreuses fois avec des valeurs différentes
 $dbh=new dbh();
+$dbh->CSRFToken = $CSRFToken;
 $dbh->prepare("SELECT `id`,`perso_id`,`absent` FROM `{$dbprefix}pl_poste` 
   WHERE `date`=:date AND `site`=:site AND `poste`=:poste AND `debut`=:debut AND `fin`=:fin AND `absent`='0' AND `supprime`='0';");
 

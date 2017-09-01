@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/suppression.php
 Création : mai 2011
-Dernière modification : 10 février 2017
+Dernière modification : 30 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -47,9 +47,9 @@ function etape1(){
   echo "<a href='javascript:popup_closed();'>Non</a>\n";
   echo "&nbsp;&nbsp;\n";
   if($db->result[0]['supprime']==1)		// Suppression définitive
-    echo "<a href='index.php?page=personnel/suppression.php&amp;menu=off&amp;id=$id&amp;etape=etape4&amp;CSRFToken={$_SESSION['oups']['CSRFToken']}'>Oui</a>\n";
+    echo "<a href='index.php?page=personnel/suppression.php&amp;menu=off&amp;id=$id&amp;etape=etape4&amp;CSRFToken=$CSRFSession'>Oui</a>\n";
   else								// Marqué comme supprimé
-    echo "<a href='index.php?page=personnel/suppression.php&amp;menu=off&amp;id=$id&amp;etape=etape2&amp;CSRFToken={$_SESSION['oups']['CSRFToken']}'>Oui</a>\n";
+    echo "<a href='index.php?page=personnel/suppression.php&amp;menu=off&amp;id=$id&amp;etape=etape2&amp;CSRFToken=$CSRFSession'>Oui</a>\n";
 }
 
 function etape2(){

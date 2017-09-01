@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : ics/cron.ics.php
 Création : 28 juin 2016
-Dernière modification : 3 août 2017
+Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -22,6 +22,8 @@ Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à
 */
 
 $path="/var/www/html/planning";
+
+session_start();
 
 /** $version=$argv[0]; permet d'interdire l'execution de ce script via un navigateur
  *  Le fichier config.php affichera une page "accès interdit si la $version n'existe pas

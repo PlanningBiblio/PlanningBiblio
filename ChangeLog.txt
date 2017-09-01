@@ -1,4 +1,4 @@
-*** Version 2.7      (15 août 2017)   ***
+*** Version 2.7      (30 août 2017)   ***
 - Améliorations
 Heures de présence : Gestion de 2 pauses par jour
 Permet de personnaliser la favicon depuis les thèmes perso. Positionner un fichier nommé favicon.png dans le dossier images du thème
@@ -11,6 +11,7 @@ Corrige l'importation des heures de présence : tout était importé en semaine 
 
 - Sécurité
 Correction des vulnérabilités XSRF liées aux fonctions db::insert(2), db::update et db::delete(2)
+Correction des vulnérabilités XSRF liées à la classe dbh
 
 *** Version 2.6.91   (2 juin 2017)   ***
 - Amélioration

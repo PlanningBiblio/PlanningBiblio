@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/enregistrer.php
 Création : mai 2011
-Dernière modification : 3 août 2017
+Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -143,6 +143,7 @@ function enregistre_modele($nom, $date, $semaine, $site, $CSRFToken){
     }
 
     $dbh=new dbh();
+    $dbh->CSRFToken = $CSRFToken;
     $dbh->prepare("INSERT INTO `{$dbprefix}pl_poste_modeles` (`nom`,`perso_id`,`poste`,`debut`,`fin`,`jour`,`site`) 
       VALUES (:nom, :perso_id, :poste, :debut, :fin, :jour, :site);");
     foreach($values as $value){

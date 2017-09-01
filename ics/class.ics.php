@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : ics/class.ics.php
 Création : 29 mai 2016
-Dernière modification : 3 août 2017
+Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -18,12 +18,13 @@ Classe permettant le traitement des fichiers ICS
 /**
  * Utilisation : 
  * foreach($tab as $elem){
- *   $i=new CJICS();
- *   $i->src=$elem[1];		// source ICS
- *   $i->perso_id=$elem[0];	// ID de l'agent
- *   $i->table="absences";	// Table à mettre à jour
+ *   $ics=new CJICS();
+ *   $ics->CSRFToken;		// Jeton XSRF
+ *   $ics->src=$elem[1];	// source ICS
+ *   $ics->perso_id=$elem[0];	// ID de l'agent
+ *   $ics->table="absences";	// Table à mettre à jour
  *   $ics->logs=true            // Loguer les opérations dans la base de données (table logs)
- *   $i->updateTable();
+ *   $ics->updateTable();
  * }
  *
  * @note : 
@@ -149,6 +150,7 @@ class CJICS{
 	$nb = count($deleted);
     if(!empty($deleted)){
       $db=new dbh();
+      $db->CSRFToken = $CSRFToken;
       $db->prepare("DELETE FROM `{$GLOBALS['dbprefix']}$table` WHERE `id`=:id;");
       foreach($deleted as $elem){
 		$db->execute($elem);
@@ -172,6 +174,7 @@ class CJICS{
       $db=new dbh();
       $req="INSERT INTO `{$GLOBALS['dbprefix']}$table` (`perso_id`, `debut`, `fin`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `motif`, `motif_autre`, `commentaires`, `cal_name`, `ical_key`) 
 		VALUES (:perso_id, :debut, :fin, :demande, :valide, :validation, :valide_n1, :validation_n1, :motif, :motif_autre, :commentaires, :cal_name, :ical_key);";
+      $db->CSRFToken = $CSRFToken;
       $db->prepare($req);
 
       foreach($insert as $elem){

@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 15 août 2017
+Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -499,6 +499,7 @@ class db{
 }
 
 class dbh{
+  public $CSRFToken = false;
   public $dbhost = null;
   public $dbname = null;
   public $dbuser = null;
@@ -532,6 +533,13 @@ class dbh{
   }
 
   function execute($data=array()){
+    if(!$this->CSRFToken or !isset($_SESSION['oups']['CSRFToken']) or $this->CSRFToken !== $_SESSION['oups']['CSRFToken']){
+      $this->error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
+      $this->msg = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
+      error_log($this->error);
+      return false;
+    }
+
     $this->stmt->execute($data);
     $tmp=$this->stmt->fetchAll();
     $this->nb=count($tmp);

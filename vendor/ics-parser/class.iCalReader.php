@@ -801,6 +801,8 @@ class ICal
             $timezone = $this->cal['VCALENDAR']['X-WR-TIMEZONE'];
         } elseif(isset($this->cal['VTIMEZONE']['TZID'])) {
             $timezone = $this->cal['VTIMEZONE']['TZID'];
+        } else {
+            $timezone = date_default_timezone_get();
         }
 
         // Check if the timezone is valid
