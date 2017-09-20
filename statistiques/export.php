@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : statistiques/export.php
 Création : mai 2011
-Dernière modification : 6 février 2017
+Dernière modification : 20 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -60,6 +60,11 @@ $tab=$_SESSION['stat_tab'];
 
 $debut=dateAlpha($debutSQL);
 $fin=dateAlpha($finSQL);
+
+// Suppression des <sup></sup> dans les dates
+$debut = preg_replace('/<.[^>]*>/','',$debut);
+$fin = preg_replace('/<.[^>]*>/','',$fin);
+
 
 $lignes=Array();
 
@@ -317,11 +322,11 @@ switch($nom){
   break;
 
   case "samedis" : // Samedis
-    $lignes=statistiquesSamedis($tab,$debut,$fin,$separateur,$nbJours,$jour,$joursParSemaine);
+    $lignes=statistiquesSamedis($tab,$debut,$fin,$separateur,$nbJours,$joursParSemaine);
     break;
 
   default :
-    $lignes=statistiques1($nom,$tab,$debut,$fin,$separateur,$nbJours,$jour,$joursParSemaine);
+    $lignes=statistiques1($nom,$tab,$debut,$fin,$separateur,$nbJours,$joursParSemaine);
     break;
 }
 

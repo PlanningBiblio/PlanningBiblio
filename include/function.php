@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 29 août 2017
+Dernière modification : 18 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -953,6 +953,29 @@ function heure4($heure,$return0=false){
     }
   }
   return $heure;
+}
+
+/** function heures
+ * Reçoit une chaine contenant 2 heures au format 0h00, 00h00, 0h, 00h, séparées par un - et retourne un tableau contenant 2 chaines au format 00:00:00
+ * Ex : 8h30-10h --> array('08:30:00','10:00:00')
+ * @param string $h, 2 heures séparées par un -
+ * @return array $tmp, tableau contenant les 2 heures formatées, retourne false si $h est vide après nettoyage
+ */
+function heures($h){
+  $h = preg_replace('/[^0123456789hH-]/', '', $h);
+  $h = str_replace(array('h','H'), ':', $h);
+  if(empty($h)){
+    return false;
+  }
+
+  $tmp = explode('-', $h);
+  $tmp0 = explode(':', $tmp[0]);
+  $tmp1 = explode(':', $tmp[1]);
+  
+  $tmp[0] = sprintf("%02d:%02d:00", $tmp0[0], $tmp0[1]);
+  $tmp[1] = sprintf("%02d:%02d:00", $tmp1[0], $tmp1[1]);
+  
+  return $tmp;
 }
 
 /**

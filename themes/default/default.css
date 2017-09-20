@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 23 avril  2017
+Dernière modification : 18 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -989,8 +989,12 @@ option.bold{
   width:350px;
 }
 
-#stat-col1 select,#stat-col1 input[type=text]{
+#stat-col1 select,#stat-col1 input[type=text] {
   width:250px;
+}
+
+#stat-col1 textarea {
+  width:244px;
 }
 
 #stat-temps-aff-grp{
