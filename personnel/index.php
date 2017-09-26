@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 15 août 2017
+Dernière modification : 21 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Chritophe Le Guennec <christophe.leguennec@u-pem.fr>
 
@@ -21,9 +21,10 @@ require_once "class.personnel.php";
 // Initialisation des variables
 $actif=filter_input(INPUT_GET,"actif",FILTER_SANITIZE_STRING);
 
-if(!$actif and array_key_exists('perso_actif',$_SESSION)){
-  $actif=$_SESSION['perso_actif'];
+if(!$actif){
+  $actif = isset($_SESSION['perso_actif']) ? $_SESSION['perso_actif'] : 'Actif';
 }
+
 $_SESSION['perso_actif']=$actif;
 
 ?>
