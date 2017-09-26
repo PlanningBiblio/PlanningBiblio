@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 7 août 2017
+Dernière modification : 26 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -91,6 +91,12 @@ class personnel{
     foreach($all as $elem){
       $result[$elem['id']]=$elem;
       $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
+
+      // Contrôle des calendriers ICS distants : Oui/Non ?
+      $check_ics = json_decode($result[$elem['id']]['check_ics']);
+      $result[$elem['id']]['ics_1'] = !empty($check_ics[0]);
+      $result[$elem['id']]['ics_2'] = !empty($check_ics[1]);
+      $result[$elem['id']]['ics_3'] = !empty($check_ics[2]);
     }
 
     //	If name, keep only matching results
@@ -100,6 +106,12 @@ class personnel{
 	if(pl_stristr($elem['nom'],$name) or pl_stristr($elem['prenom'],$name)){
 	  $result[$elem['id']]=$elem;
 	  $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
+
+          // Contrôle des calendriers ICS distants : Oui/Non ?
+          $check_ics = json_decode($result[$elem['id']]['check_ics']);
+          $result[$elem['id']]['ics_1'] = !empty($check_ics[0]);
+          $result[$elem['id']]['ics_2'] = !empty($check_ics[1]);
+          $result[$elem['id']]['ics_3'] = !empty($check_ics[2]);
 	}
       }
     }

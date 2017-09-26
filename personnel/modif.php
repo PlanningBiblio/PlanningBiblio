@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 31 juillet 2017
+Dernière modification : 26 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -122,6 +122,7 @@ if($id){		//	récupération des infos de l'agent en cas de modif
   $mail=$db->result[0]['mail'];
   $statut=$db->result[0]['statut'];
   $categorie=$db->result[0]['categorie'];
+  $check_ics = json_decode($db->result[0]['check_ics'],true);
   $service=$db->result[0]['service'];
   $heuresHebdo=$db->result[0]['heures_hebdo'];
   $heuresTravail=$db->result[0]['heures_travail'];
@@ -177,6 +178,7 @@ else{		// pas d'id, donc ajout d'un agent
   $mail=null;
   $statut=null;
   $categorie=null;
+  $check_ics = array(1,1,1);
   $service=null;
   $heuresHebdo=null;
   $heuresTravail=null;
@@ -263,6 +265,9 @@ $postes_dispo=postesNoms($postes_dispo,$postes_completNoms);
 <li><a href='#qualif'>Activités</a></li>
 <li><a href='#temps' id='personnel-a-li3'>Heures de pr&eacute;sence</a></li>
 <?php
+if($config['ICS-Server1'] or $config['ICS-Server2'] or $config['ICS-Server3'] or $config['ICS-Export']){
+  echo "<li><a href='#agendas'>Agendas</a></li>";
+}
 if(in_array("conges",$plugins)){
   echo "<li><a href='#conges'>Cong&eacute;s</a></li>";
 }
@@ -543,14 +548,6 @@ echo "</td><td>";
 echo in_array(21,$droits)?"<input type='text' value='$matricule' name='matricule' style='width:400px' />":"$matricule</a>";
 echo "</td></tr>";
 
-if($config['ICS-Server3']){
-  echo "<tr><td>";
-  echo "URL ICS : ";
-  echo "</td><td>";
-  echo in_array(21,$droits)?"<input type='text' value='$url_ics' name='url_ics' style='width:400px' />":"$url_ics</a>";
-  echo "</td></tr>";
-}
-
 echo "<tr><td>";
 echo "E-mails des responsables : ";
 if(in_array(21,$droits)){
@@ -609,16 +606,6 @@ if($id){
     echo "<tr><td colspan='2'>\n";
     echo "<a href='javascript:modif_mdp();'>Changer le mot de passe</a>";
     echo "</td></tr>";
-  }
-
-  // URL du fichier ICS
-  if(isset($ics)){
-    echo "<tr><td style='padding-top: 10px;'>Calendrier ICS</td>\n";
-    echo "<td style='padding-top: 10px;' id='url-ics'>$ics</td></tr>\n";
-    if($config['ICS-Code']){
-      echo "<tr><td>&nbsp;</td>\n";
-      echo "<td><a href='javascript:resetICSURL($id, \"$CSRFSession\", \"$prenom $nom\");'>R&eacute;initialiser l'URL</a></td></tr>\n";
-    }
   }
 }
 ?>
@@ -847,6 +834,68 @@ if($config['EDTSamedi']){
 
 </div>
 <!--	FIN Heures de présence-->
+
+<!--	Agendas		-->
+<div id='agendas' style='margin-left:70px;display:none;padding-top:30px;'>
+<?php
+echo "<table style='width:90%;'>";
+
+//
+if($config['ICS-Server1']){
+  $ics_pattern = !empty($config['ICS-Pattern1']) ? $config['ICS-Pattern1'] : 'Serveur ICS N&deg;1';
+  $checked = !empty($check_ics[0]) ? "checked='checked'" : null;
+  $checked2 = $checked ? "Oui" : "Non";
+  $class = $checked ? "green bold" : "red";
+
+  echo "<tr><td style='width:350px'>";
+  echo "Agenda ICS $ics_pattern : ";
+  echo "</td><td>";
+  echo in_array(21,$droits)?"<input type='checkbox' value='1' name='check_ics1' $checked />":"<span class='agent-acces-checked2 $class'>$checked2</span>\n";
+ 
+  echo "</td></tr>";
+}
+
+if($config['ICS-Server2']){
+  $ics_pattern = !empty($config['ICS-Pattern2']) ? $config['ICS-Pattern2'] : 'Serveur ICS N&deg;2';
+  $checked = !empty($check_ics[1]) ? "checked='checked'" : null;
+  $checked2 = $checked ? "Oui" : "Non";
+  $class = $checked ? "green bold" : "red";
+
+  echo "<tr><td style='width:350px'>";
+  echo "Agenda ICS $ics_pattern : ";
+  echo "</td><td>";
+  echo in_array(21,$droits)?"<input type='checkbox' value='1' name='check_ics2' $checked />":"<span class='agent-acces-checked2 $class'>$checked2</span>\n";
+ 
+  echo "</td></tr>";
+}
+
+// URL du flux ICS à importer
+if($config['ICS-Server3']){
+  $checked = !empty($check_ics[2]) ? "checked='checked'" : null;
+  $checked2 = $checked ? "Oui" : "Non";
+  $class = $checked ? "green bold" : "red";
+
+  echo "<tr><td style='width:350px'>";
+  echo "Agenda ICS distant : ";
+  echo "</td><td>";
+  echo in_array(21,$droits)?"<input type='checkbox' value='1' name='check_ics3' $checked />":"<span class='agent-acces-checked2 $class'>$checked2</span>\n";
+  echo in_array(21,$droits)?"<input type='text' value='$url_ics' name='url_ics' style='width:400px; margin-left:20px;' />":"<span style='margin-left:20px;'>$url_ics</span>\n";
+  echo "</td></tr>";
+}
+
+// URL du fichier ICS Planning Biblio
+if($id and isset($ics)){
+  echo "<tr><td style='padding-top: 10px;'>Agenda ICS Planning Biblio</td>\n";
+  echo "<td style='padding-top: 10px;' id='url-ics'>$ics</td></tr>\n";
+  if($config['ICS-Code']){
+    echo "<tr><td>&nbsp;</td>\n";
+    echo "<td><a href='javascript:resetICSURL($id, \"$CSRFSession\", \"$prenom $nom\");'>R&eacute;initialiser l'URL</a></td></tr>\n";
+  }
+}
+echo "</table>\n";
+?>
+</div>
+<!--	FIN Agendas		-->
 
 <!--	Droits d'accès		-->
 <div id='access' style='margin-left:70px;display:none;padding-top:30px;'>

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/class.ics.php
 Création : 29 mai 2016
-Dernière modification : 29 août 2017
+Dernière modification : 26 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -53,6 +53,45 @@ class CJICS{
   public $src=null;
   public $table="absences";
 
+  
+  /**
+   * purge
+   * @param string $this->table
+   * @param int $this->perso_id (optionnel)
+   * Supprime de la table $this->table tous les événements du calendrier $this->src pour l'agent défini par $this->perso_id
+   */
+  function purge(){
+    // Initialisation des variables
+    $CSRFToken = $this->CSRFToken;
+    $perso_id=$this->perso_id;	// perso_id
+    $table=$this->table;	// Table à mettre à jour
+    $src=$this->src;		// Fichier ICS
+    $calName=null;		// Nom du calendrier
+
+    // Parse le fichier ICS, le tableau $events contient les événements du fichier ICS
+    $ical   = new ICal($src, "MO");
+
+    // Récupération du nom du calendrier
+    $calName=$ical->calendarName();
+    $calName = removeAccents($calName);
+
+    if($this->logs){
+      logs("Purge $calName, Table: $table, Perso: $perso_id, src: $src", "ICS", $CSRFToken);
+    }
+    
+    if($this->logs){
+      $db = new db();
+      $db->select2($table, 'id', array('cal_name' => $calName, 'perso_id' => $perso_id));
+      $nb = $db->nb;
+      logs("Purge $calName, Table: $table, Perso: $perso_id, $nb éléments à supprimer", "ICS", $CSRFToken);
+    }
+
+    $db = new db();
+    $db->CSRFToken = $CSRFToken;
+    $db->delete($table, array('cal_name' => $calName, 'perso_id' => $perso_id));
+  }
+  
+  
   /**
    * updateTable
    * @param string $this->table

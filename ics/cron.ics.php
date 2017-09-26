@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/cron.ics.php
 Création : 28 juin 2016
-Dernière modification : 29 août 2017
+Dernière modification : 26 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -118,6 +118,18 @@ foreach($agents as $agent){
   
     if(!$url){
       logs("Impossible de constituer une URL valide pour l'agent #{$agent['id']}", "ICS", $CSRFToken);
+      continue;
+    }
+    
+    // Si la case importation correspondant à ce calendrier est décochée, on ne l'importe pas et on purge les éventuels événements déjà importés.
+    if(!$agent["ics_$i"]){
+      $ics=new CJICS();
+      $ics->src=$url;
+      $ics->perso_id=$agent["id"];
+      $ics->table="absences";
+      $ics->logs=true;
+      $ics->CSRFToken = $CSRFToken;
+      $ics->purge();
       continue;
     }
     

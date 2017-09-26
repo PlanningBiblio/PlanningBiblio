@@ -39,7 +39,6 @@ $date=filter_input(INPUT_GET,"date",FILTER_SANITIZE_STRING);
 $date=filter_var($date,FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
 
 $verrou=false;
-
 //		------------------		DATE		-----------------------//
 if(!$date and array_key_exists('PLdate',$_SESSION)){
   $date=$_SESSION['PLdate'];

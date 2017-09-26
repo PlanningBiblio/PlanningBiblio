@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 31 juillet 2017
+Dernière modification : 26 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -199,6 +199,7 @@ $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `matricule` VARCHAR(100) NOT NULL DEFAULT '',
   `code_ics` VARCHAR(100) NULL DEFAULT NULL,
   `url_ics` TEXT NULL DEFAULT NULL,
+  `check_ics` VARCHAR(10) NULL DEFAULT '[1,1,1]',
   PRIMARY KEY (`id`),
   UNIQUE KEY `login` (`login`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
