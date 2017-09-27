@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 26 septembre 2017
+Dernière modification : 27 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -854,6 +854,35 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
 
   // Check ICS
   $sql[]="ALTER TABLE `{$dbprefix}personnel` ADD `check_ics` VARCHAR(10) NULL DEFAULT '[1,1,1]' AFTER `url_ics`;";
+
+  // Encodage des caractères
+  $sql[]="UPDATE `{$dbprefix}acces` SET `nom`='Jours f&eacute;ri&eacute;s', `groupe`='Gestion des jours f&eacute;ri&eacute;s' WHERE `groupe_id`='25';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe`='Gestion des plannings de pr&eacute;sences' WHERE `groupe_id`='24';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='Ce message a &eacute;t&eacute; envoy&eacute; par Planning Biblio.\nMerci de ne pas y r&eacute;pondre.' WHERE `nom`='Mail-Signature';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Contr&ocirc;le des heures des agents le samedi et le dimanche' WHERE `nom`='ctrlHresAgents';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeurs`='[[0,\"\"],[1,\"simple\"],[2,\"d&eacute;taill&eacute;\"],[3,\"absents et pr&eacute;sents\"]]', `type`='enum2' WHERE `nom`='Absences-planning';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='0' WHERE `valeur` = '' AND `nom`='Absences-planning';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1' WHERE `valeur` = 'simple' AND `nom`='Absences-planning';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2' WHERE `valeur` LIKE 'd%taill%' AND `nom`='Absences-planning';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='3' WHERE `valeur` LIKE 'absents et pr%sents' AND `nom`='Absences-planning';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;1' WHERE `nom`='Multisites-site1';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;2' WHERE `nom`='Multisites-site2';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;3' WHERE `nom`='Multisites-site3';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;4' WHERE `nom`='Multisites-site4';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;5' WHERE `nom`='Multisites-site5';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;6' WHERE `nom`='Multisites-site6';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;7' WHERE `nom`='Multisites-site7';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;8' WHERE `nom`='Multisites-site8';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;9' WHERE `nom`='Multisites-site9';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;10' WHERE `nom`='Multisites-site10';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `categorie`='Cong&eacute;s' WHERE `categorie` LIKE 'Cong%s';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Heure de d&eacute;but pour la v&eacute;rification des sans repas' WHERE `nom`='Planning-SR-debut';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Heure de fin pour la v&eacute;rification des sans repas' WHERE `nom`='Planning-SR-fin';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='Appel &agrave; disponibilit&eacute; [poste] [date] [debut]-[fin]' WHERE `nom`='Planning-AppelDispoSujet';";
+  $sql[]="UPDATE `{$dbprefix}menu` SET `titre`='Par poste (Synth&egrave;se)' WHERE `url`='statistiques/postes_synthese.php';";
+  $sql[]="UPDATE `{$dbprefix}menu` SET `titre`='Les activit&eacute;s' WHERE `url`='activites/index.php';";
+  $sql[]="UPDATE `{$dbprefix}menu` SET `titre`='Les mod&egrave;les' WHERE `url`='planning/modeles/index.php';";
+  $sql[]="UPDATE `{$dbprefix}menu` SET `titre`='Plannings de pr&eacute;sence' WHERE `url`='planningHebdo/index.php';";
 
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";

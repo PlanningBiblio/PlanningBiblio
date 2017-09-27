@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 3 août 2017
+Dernière modification : 27 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -704,7 +704,7 @@ EOD;
     }
 
     switch($config['Absences-planning']){
-      case "simple" :
+      case "1" :
 	if(!empty($absences_planning)){
 	  echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
 	  echo "<table class='tableauStandard'>\n";
@@ -750,7 +750,7 @@ EOD;
 	}
 	break;
 
-      case "détaillé" :
+      case "2" :
 	if(!empty($absences_planning)){
 	  echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
 	  echo "<table id='tablePlanningAbsences' class='CJDataTable' data-sort='[[0],[1]]'><thead>\n";
@@ -782,7 +782,7 @@ EOD;
 	}
 	break;
 
-      case "absents et présents" :
+      case "3" :
 	// Sélection des agents présents
 	$heures=null;
 	$presents=array();
