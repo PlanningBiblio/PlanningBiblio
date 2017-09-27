@@ -733,6 +733,13 @@ function decrypt($str){
   if(isset($GLOBALS['config']['secret']) and $GLOBALS['config']['secret']){
     $key = $GLOBALS['config']['secret'];
   }
+
+  // Vérifie si la chaîne est encodée en base64
+  if ( base64_encode(base64_decode($str, true)) === $str){
+    // si oui, base64_decode
+    $str = base64_decode($str);
+  }
+  
   $str = mcrypt_decrypt(MCRYPT_3DES, $key, $str, MCRYPT_MODE_ECB);
 
   $block = mcrypt_get_block_size('tripledes', 'ecb');
@@ -749,7 +756,8 @@ function encrypt($str){
   $pad = $block - (strlen($str) % $block);
   $str .= str_repeat(chr($pad), $pad);
 
-  return mcrypt_encrypt(MCRYPT_3DES, $key, $str, MCRYPT_MODE_ECB);
+  $str = mcrypt_encrypt(MCRYPT_3DES, $key, $str, MCRYPT_MODE_ECB);
+  return base64_encode($str);
 }
 
 function gen_trivial_password($len = 6){
