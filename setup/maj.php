@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.6.91
+Planning Biblio, Version 2.6.92
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
@@ -820,6 +820,12 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
     }
   }
   
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.6.92";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }

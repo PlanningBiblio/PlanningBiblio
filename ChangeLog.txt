@@ -1,3 +1,7 @@
+*** Version 2.6.92   (26 septembre 2017)   ***
+- Correction
+Ajoute base64_encode / base64_decode au fonctions encrypt / decrypt (cryptage des mots de passe de la config. Mail-Password et LDAP-Password
+
 *** Version 2.6.91   (2 juin 2017)   ***
 - Amélioration
 Ne recharge plus la page après la modification des menus déroulants paramètrables
