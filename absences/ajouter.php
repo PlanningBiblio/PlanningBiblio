@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 3 août 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -316,10 +316,18 @@ else{
   }
   echo "<td>\n";
   if($admin){
+  
+    // Par défaut, ajoute l'agent logué comme abesnt
+    echo "<input type='hidden' name='perso_ids[]' value='{$_SESSION['login_id']}' id='hidden{$_SESSION['login_id']}' class='perso_ids_hidden'/>\n";
+    echo "<ul id='perso_ul'>\n";
+    echo "<li id='li{$_SESSION['login_id']}' class='perso_ids_li'>{$_SESSION['login_nom']} {$_SESSION['login_prenom']}<span class='perso-drop' style='margin-left:5px;' onclick='supprimeAgent({$_SESSION['login_id']});' ><span class='pl-icon pl-icon-drop'></span></span></li>\n";
+    echo "</ul>\n";
+    
     echo "<select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>\n";
     echo "<option value='0' selected='selected'>-- Ajoutez un agent --</option>\n";
     foreach($agents as $elem){
-      echo "<option value='".$elem['id']."' id='option{$elem['id']}'>".$elem['nom']." ".$elem['prenom']."</option>\n";
+      $hide = $elem['id'] == $_SESSION['login_id'] ? "style='display:none;'" :null;
+      echo "<option value='".$elem['id']."' id='option{$elem['id']}' $hide >".$elem['nom']." ".$elem['prenom']."</option>\n";
     }
     echo "</select>\n";    
   }
