@@ -265,8 +265,8 @@ if($autorisationN1){
   $display2=$verrou?"display:none":null;
 
   echo "<div class='pl-validation' style='$display1'><u>Validation</u><br/>$perso2 $date_validation2 $heure_validation2</div>\n";
-  echo "<span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' data-date='$date' data-site='$site' title='Déverrouiller le planning' style='$display1'></span></a>\n";
-  echo "<span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' data-date='$date' data-site='$site' title='Verrouiller le planning' style='$display2'></span></a>\n";
+  echo "<span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning' style='$display1'></span></a>\n";
+  echo "<span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning' style='$display2'></span></a>\n";
 }
 
 if($autorisationN2){

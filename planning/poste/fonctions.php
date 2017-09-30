@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 31 juillet 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -51,7 +51,7 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
 	$class_tmp=array();
 	
         // Cellule grisée depuis le menudiv
-        if($elem['grise'] == 1){
+        if(isset($elem['grise']) and $elem['grise'] == 1){
           $class_tmp[]= 'cellule_grise';
         }
 

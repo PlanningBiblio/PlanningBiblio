@@ -168,10 +168,13 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_notes` (
 $sql[]="CREATE TABLE `{$dbprefix}pl_notifications` (
   `id` INT(11) NOT NULL AUTO_INCREMENT, 
   `date` VARCHAR(10),
+  `site` INT(2) NOT NULL DEFAULT '1',
   `update_time` TIMESTAMP,
   `data` TEXT,
   PRIMARY KEY (`id`))
   ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+  
+$sql[]="ALTER TABLE `{$dbprefix}pl_notifications` ADD KEY `date` (`date`), ADD KEY `site` (`site`);";
 
 $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

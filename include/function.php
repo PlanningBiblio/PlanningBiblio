@@ -32,9 +32,9 @@ class datePl{
   public $position = null;
   
   function __construct($date){
-    $yyyy=substr($date,0,4);
-    $mm=substr($date,5,2);
-    $dd=substr($date,8,2);
+    $yyyy = (int) substr($date,0,4);
+    $mm = (int) substr($date,5,2);
+    $dd = (int) substr($date,8,2);
     $this->semaine=date("W", mktime(0, 0, 0, $mm, $dd, $yyyy));
     $this->sem=($this->semaine%2);
     $this->sam="semaine";

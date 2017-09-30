@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 3 août 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -80,8 +80,8 @@ $(function() {
   
   // Déverrouillage du planning
   $("#icon-lock").click(function(){
-    var date=$(this).attr("data-date");
-    var site=$(this).attr("data-site");
+    var date=$('#date').val();
+    var site=$('#site').val();
     var CSRFToken = $("#planning-data").attr("data-CSRFToken");
     
     $.ajax({
@@ -110,8 +110,8 @@ $(function() {
 
   // Validation du planning
   $("#icon-unlock").click(function(){
-    var date=$(this).attr("data-date");
-    var site=$(this).attr("data-site");
+    var date=$('#date').val();
+    var site=$('#site').val();
     var CSRFToken = $("#planning-data").attr("data-CSRFToken");
 
     $.ajax({
@@ -134,7 +134,7 @@ $(function() {
 	}
 	
 	// Envoi des notifications
-	planningNotifications(date, CSRFToken);
+	planningNotifications(date, site, CSRFToken);
 
 	// Masque les lignes vides
 	hideEmptyLines();
@@ -818,11 +818,11 @@ function majPersoOrigine(perso_id){
  *  @param srting date
  *  Envoie les notifications aux agents concernés par des plannings validés ou modifiés
  */
-function planningNotifications(date, CSRFToken){
+function planningNotifications(date, site, CSRFToken){
   $.ajax({
     url: "planning/poste/ajax.notifications.php",
     dataType: "json",
-    data: {date: date, CSRFToken: CSRFToken},
+    data: {date: date, site: site, CSRFToken: CSRFToken},
     type: "get",
     success: function(result){
     },

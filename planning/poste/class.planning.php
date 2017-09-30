@@ -40,7 +40,7 @@ class planning{
     }
 
     $db=new db();
-    $db->select2("pl_poste","*",array("date"=>$this->date));
+    $db->select2("pl_poste","*",array("date"=>$this->date, "site"=>$this->site));
     if($db->result){
       $tab=array();
       foreach($db->result as $elem){
@@ -374,8 +374,12 @@ class planning{
     
     // Recherche des informations dans la table pl_poste pour la date $this->date
     $date=$this->date;
+    $site=$this->site;
+    
     $this->fetch();
+    
     $tab=array();
+    
     foreach($this->elements as $elem){
       // Si l'id concerne un agent qui a été supprimé, on l'ignore
       $id=$elem['perso_id'];
@@ -383,16 +387,11 @@ class planning{
 	continue;
       }
       // Création d'un tableau par agent, avec nom, prénom et email
-      if(!array_key_exists($id,$tab)){
+      if(!isset($tab[$id])){
 	$tab[$id]=array("nom"=>$agents[$id]["nom"], "prenom"=>$agents[$id]["prenom"], "mail"=>$agents[$id]["mail"], "planning"=>array());
       }
       // Complète le tableau avec les postes, les sites, horaires et marquage "absent"
-      $poste = html_entity_decode($postes[$elem["poste"]]["nom"],ENT_QUOTES|ENT_IGNORE,'UTF-8');
-      $site=null;
-      if($GLOBALS["config"]["Multisites-nombre"]>1){
-	$site="(".$GLOBALS["config"]["Multisites-site{$elem["site"]}"].")";
-      }
-      $tab[$id]["planning"][]=array("debut"=> $elem["debut"], "fin"=> $elem["fin"], "absent"=> $elem["absent"], "site"=> $site, "poste"=> $poste);
+      $tab[$id]["planning"][]=array("debut"=> $elem["debut"], "fin"=> $elem["fin"], "absent"=> $elem["absent"], "site"=> $site, "poste"=> $elem['poste']);
     }
     
     // $perso_ids = agents qui recevront une notifications
@@ -400,7 +399,7 @@ class planning{
 
     // Recherche dans la table pl_notifications si des notifications ont déjà été envoyées (précédentes validations)
     $db=new db();
-    $db->select2("pl_notifications","*",array("date"=>$date));
+    $db->select2("pl_notifications","*",array("date"=>$date, "site"=>$site));
     
     // Si non, envoi d'un mail intitulé "planning validé" aux agents concernés par le planning
     // et enregistre les infos dans la table pl_notifications
@@ -408,10 +407,10 @@ class planning{
       $notificationType="nouveauPlanning";
 
       // Enregistrement des infos dans la table BDD
-      $insert=array("date"=>$date, "data"=>json_encode((array)$tab));
-      $db=new db();
-      $db->CSRFToken = $this->CSRFToken;
-      $db->insert("pl_notifications",$insert);
+      $insert=array("date"=>$date, "site"=>$site, "data"=>json_encode((array)$tab));
+      $db2=new db();
+      $db2->CSRFToken = $this->CSRFToken;
+      $db2->insert("pl_notifications",$insert);
 
       // Enregistre les agents qui doivent être notifiés
       $perso_ids=array_keys($tab);
@@ -440,36 +439,36 @@ class planning{
       // Ajouts, modifications
       // Pour chaque agent présent dans le nouveau tableau
       foreach($tab as $key => $value){
-	foreach($value["planning"] as $k => $v){
-	  if(!array_key_exists($key, $oldData)
-	    or (!array_key_exists($k, $oldData[$key]["planning"]))
-	    or ($v != $oldData[$key]["planning"][$k])){
-	    $perso_ids[]=$key;
-	    continue 2;
-	  }
-	}
+        foreach($value["planning"] as $k => $v){
+          if(!isset($oldData[$key])
+            or (!isset($oldData[$key]["planning"][$k]))
+            or ($v != $oldData[$key]["planning"][$k])){
+            $perso_ids[]=$key;
+            continue 2;
+          }
+        }
       }
 
       // Suppressions
       // Pour chaque agent présent dans l'ancien tableau
       foreach($oldData as $key => $value){
-	foreach($value["planning"] as $k => $v){
-	  if(!array_key_exists($key, $tab)
-	    or (!array_key_exists($k, $tab[$key]["planning"]))
-	    or ($v != $tab[$key]["planning"][$k])){
-	      if(!in_array($key,$perso_ids)){
-		$perso_ids[]=$key;
-	      }
-	    continue 2;
-	  }
-	}
+        foreach($value["planning"] as $k => $v){
+          if(!isset($tab[$key])
+            or (!isset($tab[$key]["planning"][$k]))
+            or ($v != $tab[$key]["planning"][$k])){
+              if(!in_array($key,$perso_ids)){
+                $perso_ids[]=$key;
+              }
+            continue 2;
+          }
+        }
       }
 
       // Modification des infos dans la BDD
       $update=array("data"=>json_encode((array)$tab));
       $db=new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->update("pl_notifications",$update,array("date"=>$date));
+      $db->update("pl_notifications",$update,array("date"=>$date, "site"=>$site));
     }
 
     /*
@@ -480,7 +479,7 @@ class planning{
 
     // Envoi du mail
     $sujet=$notificationType=="nouveauPlanning"?"Validation du planning du ".dateFr($date):"Modification du planning du ".dateFr($date);
-    
+
     // Tous les agents qui doivent être notifiés.
     foreach($perso_ids as $elem){
       // Création du message avec date et nom de l'agent
@@ -490,45 +489,44 @@ class planning{
       $message.="<br/>Agent : <strong>$agent</strong>";
       
       // S'il y a des éléments, on ajoute la liste des postes occupés avec les horaires
-      if(array_key_exists($elem,$tab)){
+      if(isset($tab[$elem])){
 	$lines=array();
 	$message.="<ul>";
 
-        if(isset($tab[$elem])){
-          foreach($tab[$elem]["planning"] as $e){
-            // On marque en gras les modifications
-            $exists=true;
-            if($notificationType=="planningModifie"){
-              $exists=false;
-              if(isset($oldData[$elem])){
-                foreach($oldData[$elem]["planning"] as $o){
-                  if($e==$o){
-                    $exists=true;
-                    continue;
-                  }
+        foreach($tab[$elem]["planning"] as $e){
+          // On marque en gras les modifications
+          $exists=true;
+          if($notificationType=="planningModifie"){
+            $exists=false;
+            if(isset($oldData[$elem])){
+              foreach($oldData[$elem]["planning"] as $o){
+                if($e==$o){
+                  $exists=true;
+                  continue;
                 }
               }
             }
-            $bold=$exists?null:"font-weight:bold;";
-            $striped=$e['absent']?"text-decoration:line-through; color:red;":null;
-
-            // Affichage de la ligne avec horaires et poste
-            $line="<li><span style='$bold $striped'>".heure2($e['debut'])." - ".heure2($e['fin'])." : {$e['poste']} {$e['site']}";
-            $line.="</span>";
-
-            // On ajoute "(supprimé)" et une étoile en cas de modif car certains webmail suppriment les balises et le style "bold", etc.
-            if($striped){
-              $line.=" (supprim&eacute;)";
-            }
-            if($bold){
-              $line.="<sup style='font-weight:bold;'>*</sup>";
-            }
-            $line.="</li>";
-            $lines[]=array($e['debut'],$line);
           }
-	}
+          $bold=$exists?null:"font-weight:bold;";
+          $striped=$e['absent']?"text-decoration:line-through; color:red;":null;
 
-	// On affiche les suppressions
+          // Affichage de la ligne avec horaires et poste
+          $poste = html_entity_decode($postes[$e['poste']]['nom'],ENT_QUOTES|ENT_IGNORE,'UTF-8');
+          $line="<li><span style='$bold $striped'>".heure2($e['debut'])." - ".heure2($e['fin'])." : $poste {$e['site']}";
+          $line.="</span>";
+
+          // On ajoute "(supprimé)" et une étoile en cas de modif car certains webmail suppriment les balises et le style "bold", etc.
+          if($striped){
+            $line.=" (supprim&eacute;)";
+          }
+          if($bold){
+            $line.="<sup style='font-weight:bold;'>*</sup>";
+          }
+          $line.="</li>";
+          $lines[]=array($e['debut'],$line);
+        }
+
+        // On affiche les suppressions
 	if(isset($oldData[$elem])){
           foreach($oldData[$elem]["planning"] as $e){
             $exists=false;
@@ -542,7 +540,8 @@ class planning{
             }
             if(!$exists){
               // Affichage de l'ancienne ligne avec horaires et poste
-              $line="<li><span style='font-weight:bold; text-decoration:line-through; color:red;'>".heure2($e['debut'])." - ".heure2($e['fin'])." : {$e['poste']} {$e['site']}";
+              $poste = html_entity_decode($postes[$e['poste']]['nom'],ENT_QUOTES|ENT_IGNORE,'UTF-8');
+              $line="<li><span style='font-weight:bold; text-decoration:line-through; color:red;'>".heure2($e['debut'])." - ".heure2($e['fin'])." : $poste {$e['site']}";
               $line.="</span>";
               $line.=" (supprim&eacute;)";
               $line.="<sup style='font-weight:bold;'>*</sup>";
