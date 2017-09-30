@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
-Dernière modification : 26 juillet 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -77,16 +77,10 @@ $_SESSION['oups']['site']=$site;
 //		------------------		FIN TABLEAU		-----------------------//
 global $idCellule;
 $idCellule=0;
+
 //		------------------		Vérification des droits de modification (Autorisation)	------------------//
-$autorisation=false;
-if($config['Multisites-nombre']>1){
-  if(in_array((300+$site),$droits)){
-    $autorisation=true;
-  }
-}
-else{
-  $autorisation=in_array(12,$droits)?true:false;
-}
+$autorisationN1 = (in_array((300+$site),$droits) or in_array((1000+$site),$droits));
+
 //		-----------------		FIN Vérification des droits de modification (Autorisation)	----------//
 
 $fin=$config['Dimanche']?6:5;
@@ -270,7 +264,7 @@ for($j=0;$j<=$fin;$j++){
     $validationMessage="<u>Validation</u> : $perso2 $date_validation2 $heure_validation2";
   }
   if(!$verrou or !$tab){
-    $attention=$autorisation?"Attention ! ":null;
+    $attention=$autorisationN1?"Attention ! ":null;
     $validationMessage="<font class='important bold'>$attention Le planning du ".dateFr($date)." n'est pas validé !</font>";
   }
 
@@ -282,7 +276,7 @@ for($j=0;$j<=$fin;$j++){
 
 //-------------------------------	FIN Choix du tableau	-----------------------------//	
 //-------------------------------	Vérification si le planning est validé	------------------//
-  if($verrou or $autorisation){
+  if($verrou or $autorisationN1){
     //--------------	Recherche des infos cellules	------------//
     // Toutes les infos seront stockées danx un tableau et utilisées par les fonctions cellules_postes
     $db=new db();

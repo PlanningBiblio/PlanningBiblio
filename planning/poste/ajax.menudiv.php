@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 15 août 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
@@ -74,7 +74,7 @@ else{
   $db_admin=new db();			// Vérifions si l'utilisateur à les droits de modifier les plannings
   $db_admin->select2("personnel","droits",array("id"=>$login_id));
   $droits=json_decode(html_entity_decode($db_admin->result[0]['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
-  if(!in_array(12,$droits)){
+  if(!in_array((300+$site),$droits) and !in_array((1000+$site),$droits)){
     exit;
   }
 }

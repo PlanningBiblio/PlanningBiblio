@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 26 septembre 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -71,9 +71,9 @@ for($i=1;$i<=$config['Multisites-nombre'];$i++){
   if(in_array((500+$i),$droits) and !in_array(8,$droits)){
     $droits[]=8;
   }
-  // Multisites, Modification des plannings : si droits de modifier les plannings de l'un dessites (301,302, ...), ajoute le droit 12 pour débloquer les champs administrateur
-  if(in_array((300+$i),$droits) and !in_array(12,$droits)){
-    $droits[]=12;
+  // Modification des plannings Niveau 2 donne les droits Modification des plannings Niveau 1
+  if(in_array((300+$i),$droits) and !in_array((1000+$i),$droits)){
+    $droits[]=1000+$i;
   }
   // Multisites, Gestion des congés : si droits de gérer les congés de l'un des sites (401,402, ...), ajoute le droit 2 pour débloquer les champs administrateur
   if(in_array((400+$i),$droits) and !in_array(2,$droits)){

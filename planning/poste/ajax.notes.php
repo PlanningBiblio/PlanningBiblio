@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/ajax.notes.php
 Création : 3 juin 2014
-Dernière modification : 3 août 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -26,11 +26,11 @@ $text=filter_input(INPUT_POST,"text",FILTER_SANITIZE_STRING);
 $text=urldecode($text);
 
 // Sécurité : droits d'accès à la page
+$required1=300+$site;		// Droits de modifier les plannings du sites N° $site
+
 if($config['Multisites-nombre']>1){
-  $required1=300+$site;		// Droits de modifier les plannings du sites N° $site
   $required2=800+$site;		// Droits de modifier les commentaires sites N° $site
 }else{
-  $required1=12;		// Droits de modifier les plannings en monosite
   $required2=801;		// Droits de modifier les commentaires en monosite
 }
 

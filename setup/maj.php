@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 27 septembre 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -883,6 +883,33 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="UPDATE `{$dbprefix}menu` SET `titre`='Les activit&eacute;s' WHERE `url`='activites/index.php';";
   $sql[]="UPDATE `{$dbprefix}menu` SET `titre`='Les mod&egrave;les' WHERE `url`='planning/modeles/index.php';";
   $sql[]="UPDATE `{$dbprefix}menu` SET `titre`='Plannings de pr&eacute;sence' WHERE `url`='planningHebdo/index.php';";
+
+  // Séparation des droits Modification de planning, niveau 1 et niveau 2
+  $sql[]="UPDATE `{$dbprefix}personnel` SET `droits`= REPLACE(`droits`,'12','301');";
+  $sql[]="ALTER TABLE `{$dbprefix}acces` ADD `ordre` INT(2) NOT NULL DEFAULT 0;";
+  $sql[]="ALTER TABLE `{$dbprefix}acces` ADD `categorie` VARCHAR(30) NOT NULL DEFAULT '';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe_id`=301, `groupe`='Cr&eacute;ation / modification des plannings, utilisation et gestion des mod&egrave;les', `categorie`='Planning', `ordre`=110 WHERE `page`='planning/poste/supprimer.php';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe_id`=301, `groupe`='Cr&eacute;ation / modification des plannings, utilisation et gestion des mod&egrave;les', `categorie`='Planning', `ordre`=110 WHERE `page`='planning/poste/importer.php';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe_id`=301, `groupe`='Cr&eacute;ation / modification des plannings, utilisation et gestion des mod&egrave;les', `categorie`='Planning', `ordre`=110 WHERE `page`='planning/poste/enregistrer.php';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe_id`=301, `groupe`='Cr&eacute;ation / modification des plannings, utilisation et gestion des mod&egrave;les', `categorie`='Planning', `ordre`=110 WHERE `page`='planning/modeles/index.php';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe_id`=301, `groupe`='Cr&eacute;ation / modification des plannings, utilisation et gestion des mod&egrave;les', `categorie`='Planning', `ordre`=110 WHERE `page`='planning/modeles/modif.php';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe_id`=301, `groupe`='Cr&eacute;ation / modification des plannings, utilisation et gestion des mod&egrave;les', `categorie`='Planning', `ordre`=110 WHERE `page`='planning/modeles/valid.php';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe_id`=1001, `groupe`='Modification des plannings', `categorie`='Planning', `ordre`=120 WHERE `page`='planning/poste/menudiv.php';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe_id`=1001, `groupe`='Modification des plannings', `categorie`='Planning', `ordre`=120 WHERE `page`='planning/poste/majdb.php';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Planning', `ordre`=140 WHERE `groupe_id`='22';";
+  $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='planning/poste/horaires.php';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Planning', `ordre`=130 WHERE `groupe_id`='801';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Absences', `ordre`=20 WHERE `groupe_id`='6';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Absences', `ordre`=30 WHERE `groupe_id`='1';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Absences', `ordre`=40 WHERE `groupe_id`='8';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Absences', `ordre`=50 WHERE `groupe_id`='701';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Agendas', `ordre`=55 WHERE `groupe_id`='3';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe`='Voir les fiches des agents', `categorie`='Agents', `ordre`=60 WHERE `groupe_id`='4';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe`='Gestion des agents', `categorie`='Agents', `ordre`=70 WHERE `groupe_id`='21';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Postes', `ordre`=160 WHERE `groupe_id`='5';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe`='Acc&egrave;s au statistiques', `categorie`='Statistiques', `ordre`=170 WHERE `groupe_id`='17';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe`='Gestion des heures de pr&eacute;sence', `categorie`='Heures de pr&eacute;sence', `ordre`=80 WHERE `groupe_id`='24';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Planning', `ordre`=125 WHERE `groupe_id`='901';";
 
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";

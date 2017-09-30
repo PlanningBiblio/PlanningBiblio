@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 18 septembre 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -638,6 +638,10 @@ function cmp_nom_prenom_debut_fin($a,$b){
     return strtolower($a['prenom']) > strtolower($b['prenom']);
   }
   return strtolower($a['nom']) > strtolower($b['nom']);
+}
+
+function cmp_ordre($a, $b){
+  return $a['ordre'] > $b['ordre'];
 }
 
 function cmp_prenom_nom($a,$b){

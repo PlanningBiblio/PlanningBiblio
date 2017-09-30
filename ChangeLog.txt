@@ -1,12 +1,14 @@
-*** Version 2.7.01      (27 septembre 2017)   ***
+*** Version 2.7.01      (30 septembre 2017)   ***
 - Améliorations
 Importation ICS : cases à cocher pour autoriser ou refuser l'importation des calendriers ICS agent par agent.
 Statistiques : Choix des créneaux horaires à afficher dans les statistiques
+Dissociation des droits de modification des plannings : un droit permet de créer, modifier, enregistrer et utiliser les modèles, un autre permet uniquement la modification des plannings
 
 - Corrections
 Encodage HTML des caractères dans la base de données, tables acces, config et menu
 Conversion en base64 des mot de passes cryptés (fonctions encrypt / descrypt)
 Affichage des agents, initialisation du filtre Service Public / Administratif
+Affichage des agents, corrige une erreur de script empêchant l'affichage des fiches agents
 
 *** Version 2.7      (30 août 2017)   ***
 - Améliorations

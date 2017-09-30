@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 26 septembre 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -33,15 +33,21 @@ $admin=in_array(21,$droits)?true:false;
 
 // Gestion des droits d'accés
 $db_groupes=new db();
-$db_groupes->select2("acces",array("groupe_id","groupe"),"groupe_id not in (99,100)","group by groupe");
+$db_groupes->select2("acces",array("groupe_id", "groupe", "categorie", "ordre"),"groupe_id not in (99,100)","group by groupe");
 
 // Tous les droits d'accés
 $groupes=array();
 if($db_groupes->result){
   foreach($db_groupes->result as $elem){
+    if(empty($elem['categorie'])){
+      $elem['categorie'] = 'Divers';
+      $elem['ordre'] = '200';
+    }
     $groupes[$elem['groupe_id']]=$elem;
   }
 }
+
+uasort($groupes, 'cmp_ordre');
 
 // PlanningHebdo et EDTSamedi étant incompatibles, EDTSamedi est désactivé si PlanningHebdo est activé
 if($config['PlanningHebdo']){
@@ -64,8 +70,11 @@ if($config['Multisites-nombre']>1){
     $groupes_sites[2]=$groupes[2];
     unset($groupes[2]);
   }
-  $groupes_sites[12]=$groupes[12];	// Modification des plannings
-  unset($groupes[12]);
+  $groupes_sites[301]=$groupes[301];	// Modification des plannings, niveau 1 et 2
+  unset($groupes[301]);
+
+  $groupes_sites[1001]=$groupes[1001];	// Modification des plannings, niveau 1
+  unset($groupes[1001]);
 
   $groupes_sites[801]=$groupes[801];	// Modification des commentaires des plannings
   unset($groupes[801]);
@@ -73,6 +82,9 @@ if($config['Multisites-nombre']>1){
   $groupes_sites[901]=$groupes[901];	// Griser les cellules des plannings
   unset($groupes[901]);
 }
+
+uasort($groupes_sites, 'cmp_ordre');
+
 
 $db=new db();
 $db->select2("select_statuts",null,null,"order by rang");
@@ -905,6 +917,8 @@ if(!$admin){
 }
 
 // Affichage de tous les droits d'accès si un seul site ou des droits d'accès ne dépendant pas des sites
+$last_category = null;
+
 foreach($groupes as $elem){
   // N'affiche pas les droits d'accès à la configuration (réservée au compte admin)
   if($elem['groupe_id']==20){
@@ -916,6 +930,12 @@ foreach($groupes as $elem){
     continue;
   }
 
+  // Affichage des catégories
+  if($elem['categorie'] != $last_category){
+    echo "<h3 style='margin:10px 0 5px 0;'>{$elem['categorie']}</h3>\n";
+  }
+  $last_category = $elem['categorie'];
+  
   //	Affichage des lignes avec checkboxes
   if(is_array($acces)){
     $checked=in_array($elem['groupe_id'],$acces)?"checked='checked'":null;
@@ -923,7 +943,7 @@ foreach($groupes as $elem){
     $class=$checked?"green bold":"red";
   }
   if($admin){
-    echo "<input type='checkbox' name='droits[]' $checked value='{$elem['groupe_id']}' style='margin-right:10px;'/>{$elem['groupe']}<br/>\n";
+    echo "<input type='checkbox' name='droits[]' $checked value='{$elem['groupe_id']}' style='margin:0 10px 0 20px;'/>{$elem['groupe']}<br/>\n";
   }else{
     echo "<li>{$elem['groupe']} <label class='agent-acces-checked2 $class'>$checked2</label></li>\n";
   }
@@ -941,7 +961,14 @@ if($config['Multisites-nombre']>1){
   echo "</tr></thead>\n";
   echo "<tbody>\n";
 
+  $last_category = null;
   foreach($groupes_sites as $elem){
+    // Affichage des catégories
+    if($elem['categorie'] != $last_category){
+      echo "<tr><td><h3 style='margin:10px 0 5px 0;'>{$elem['categorie']}</h3></td>\n";
+    }
+    $last_category = $elem['categorie'];
+
     $groupe=ucfirst(str_replace("Gestion des ","",$elem['groupe']));
     echo "<tr><td>$groupe</td>\n";
 
@@ -968,9 +995,13 @@ if($config['Multisites-nombre']>1){
 	$groupe_id=500+$i;
       }
 
-      // Modification des plannings si plusieurs sites
-      elseif($elem['groupe_id']==12){
+      // Modification des plannings si plusieurs sites (niveau 1 et 2)
+      elseif($elem['groupe_id']==301){
 	$groupe_id=300+$i;
+      }
+      // Modification des plannings si plusieurs sites (niveau 1)
+      elseif($elem['groupe_id']==1001){
+	$groupe_id=1000+$i;
       }
 
       // Modification des commentaires des plannings si plusieurs sites

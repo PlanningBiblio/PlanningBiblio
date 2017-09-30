@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/importer.php
 Création : mai 2011
-Dernière modification : 29 août 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -34,9 +34,7 @@ $attention="<span style='color:red;'>Attention, le planning actuel sera remplac�
 
 // Sécurité
 // Refuser l'accès aux agents n'ayant pas les droits de modifier le planning
-$access=true;
-$droit=($config['Multisites-nombre']>1)?(300+$site):12;
-if(!in_array($droit,$droits)){
+if(!in_array((300+$site),$droits)){
   echo "<div id='acces_refuse'>Accès refusé</div>";
   echo "<a href='javascript:popup_closed();'>Fermer</a>\n";
   exit;

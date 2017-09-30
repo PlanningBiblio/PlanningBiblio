@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 14 juillet 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 @author Etienne Cavalié
@@ -46,9 +46,14 @@ function calculHeures(object,num,form,tip,numero){
       heure0=elements["temps"+num+"["+i+"][0]"].value;
       heure1=elements["temps"+num+"["+i+"][1]"].value;
       heure2=elements["temps"+num+"["+i+"][2]"].value;
-      heure5=elements["temps"+num+"["+i+"][5]"].value;
-      heure6=elements["temps"+num+"["+i+"][6]"].value;
       heure3=elements["temps"+num+"["+i+"][3]"].value;
+      
+      heure5 = null;
+      heure6 = null;
+      if(elements["temps"+num+"["+i+"][5]"] != undefined){
+        heure5=elements["temps"+num+"["+i+"][5]"].value;
+        heure6=elements["temps"+num+"["+i+"][6]"].value;
+      }
     }
     else{
       heure0=$("#temps"+num+"_"+i+"_0").text().replace("h",":");

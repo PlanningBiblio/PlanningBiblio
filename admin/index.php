@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.1
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : admin/index.php
 Création : mai 2011
-Dernière modification : 22 janvier 2016
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -32,8 +32,19 @@ if(in_array(4,$droits))
   echo "<li><a href='index.php?page=personnel/index.php'>Les agents</a></li>\n";
 if(in_array(5,$droits))
   echo "<li><a href='index.php?page=postes/index.php'>Les postes</a></li>\n";
-if(in_array(12,$droits))
+
+// Gestion des modèles
+$access = false;
+for($i=1; $i<=$config['Multisites-nombre']; $i++){
+  if(in_array((300+$i),$droits)){
+    $access = true;
+    break;
+  }
+}
+if($access){
   echo "<li><a href='index.php?page=planning/modeles/index.php'>Les modèles</a></li>\n";
+}
+
 if(in_array(22,$droits))
   echo "<li><a href='index.php?page=planning/postes_cfg/index.php'>Les tableaux</a></li>\n";
 if(in_array(24,$droits))
