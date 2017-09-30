@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 21 avril 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -41,12 +41,7 @@ $agents = $p->elements;
 echo "<h3>Liste des absences</h3>\n";
 
 //	Initialisation des variables
-$only_me=null;
-$admin=in_array(1,$droits)?true:false;
-
-if(!$admin){
-  $only_me=" AND `{$dbprefix}personnel`.`id`='{$_SESSION['login_id']}' ";
-}
+$admin = in_array(1, $droits);
 
 if($admin){
   $perso_id=filter_input(INPUT_GET,"perso_id",FILTER_SANITIZE_NUMBER_INT);
@@ -97,7 +92,7 @@ if($agents_supprimes){
   $a->agents_supprimes=array(0,1);
 }
 $tri="`debut`,`fin`,`nom`,`prenom`";
-$a->fetch($tri,$only_me,$perso_id,$debutSQL,$finSQL,$sites);
+$a->fetch($tri,$perso_id,$debutSQL,$finSQL,$sites);
 $absences=$a->elements;
 
 // Tri par défaut du tableau
@@ -156,9 +151,7 @@ if($admin or (!$config['Absences-adminSeulement'] and in_array(6,$droits))){
 }
 echo "<th class='dataTableDateFR' >Début</th>\n";
 echo "<th class='dataTableDateFR-fin' >Fin</th>\n";
-if($admin){
-  echo "<th id='thNom'>Agents</th>\n";
-}
+echo "<th id='thNom'>Agents</th>\n";
 if($config['Absences-validation']){
   echo "<th id='thValidation'>&Eacute;tat</th>\n";
 }
@@ -204,11 +197,10 @@ if($absences){
     }
     echo "<td>".dateFr($elem['debut'],true)."</td>";
     echo "<td>".datefr($elem['fin'],true)."</td>";
-    if($admin){
-      echo "<td>";
-      echo implode($elem['agents'],", ");
-      echo "</td>\n";
-    }
+    echo "<td>";
+    echo implode($elem['agents'],", ");
+    echo "</td>\n";
+    
     if($config['Absences-validation']){
       echo "<td style='$etatStyle'>$etat</td>\n";
     }

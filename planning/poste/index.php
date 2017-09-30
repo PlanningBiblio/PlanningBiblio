@@ -439,7 +439,7 @@ else{
   // Le tableau $absences sera utilisé par la fonction cellule_poste pour barrer les absents dans le plannings et pour afficher les absents en bas du planning
   $a=new absences();
   $a->valide=false;
-  $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date,$date);
+  $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,$date,$date);
   $absences=$a->elements;
   global $absences;
   
@@ -462,7 +462,7 @@ else{
   // Affichage des absences en bas du planning : absences concernant le site choisi
   $a=new absences();
   $a->valide=false;
-  $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date,$date,array($site));
+  $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,$date,$date,array($site));
   $absences_planning = $a->elements;
 
   // Informations sur les congés

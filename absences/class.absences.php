@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 3 août 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -91,7 +91,7 @@ class absences{
       $absences=array();
       $a =new absences();
       $a->valide=true;
-      $a->fetch(null,null,null,$j1,$j7,null);
+      $a->fetch(null,null,$j1,$j7,null);
       if($a->elements and !empty($a->elements)){
 	$absences=$a->elements;
       }
@@ -414,7 +414,8 @@ class absences{
     return false;
   }
 
-  public function fetch($sort="`debut`,`fin`,`nom`,`prenom`",$only_me=null,$agent=null,$debut=null,$fin=null,$sites=null){
+  public function fetch($sort="`debut`,`fin`,`nom`,`prenom`",$agent=null,$debut=null,$fin=null,$sites=null){
+  
     $filter="";
     //	DB prefix
     $dbprefix=$GLOBALS['config']['dbprefix'];
@@ -441,15 +442,6 @@ class absences{
     $deletedAgents=join("','",$this->agents_supprimes);
     $filter.=" AND `{$dbprefix}personnel`.`supprime` IN ('$deletedAgents') ";
 
-    if($agent==0){
-      $agent=null;
-    }
-
-    if(is_numeric($agent)){
-      $filter.=" AND `{$dbprefix}personnel`.`id`='$agent' ";
-      $agent=null;
-    }
-
     // Sort
     $sort=$sort?$sort:"`debut`,`fin`,`nom`,`prenom`";
 
@@ -465,7 +457,7 @@ class absences{
       ."`{$dbprefix}absences`.`demande` AS `demande`, `{$dbprefix}absences`.`groupe` AS `groupe` "
       ."FROM `{$dbprefix}absences` INNER JOIN `{$dbprefix}personnel` "
       ."ON `{$dbprefix}absences`.`perso_id`=`{$dbprefix}personnel`.`id` "
-      ."WHERE $dates $only_me $filter ORDER BY $sort;";
+      ."WHERE $dates $filter ORDER BY $sort;";
     $db=new db();
     $db->query($req);
 
@@ -523,8 +515,6 @@ class absences{
 	  $elem['agents'][]=$elem['nom']." ".$elem['prenom'];
 	}
 
-	// TODO : ajouter les autres membres du groupe (si groupe)
-	
 	$tmp=$elem;
 	$debut=dateFr(substr($elem['debut'],0,10));
 	$fin=dateFr(substr($elem['fin'],0,10));
@@ -549,10 +539,19 @@ class absences{
     //	If name, keep only matching results
     if(is_array($all) and $agent){
       $result=array();
+
       foreach($all as $elem){
-	if(pl_stristr($elem['nom'],$agent) or pl_stristr($elem['prenom'],$agent)){
-	  $result[]=$elem;
-	}
+        if(is_numeric($agent)){
+          if(in_array($agent, $elem['perso_ids'])){
+            $result[]=$elem;
+          }
+        } else {
+          foreach($elem['agents'] as $a){
+            if(pl_stristr($a,$agent)){
+              $result[]=$elem;
+            }
+          }
+        }
       }
     }
     if($result){

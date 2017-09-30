@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : statistiques/temps.php
 Création : mai 2011
-Dernière modification : 30 août 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -170,7 +170,7 @@ foreach($totalSP as $key => $value){
 // Recherche des absences dans la table absences
 $a=new absences();
 $a->valide=true;
-$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$debut." 00:00:00",$fin." 23:59:59");
+$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,$debut." 00:00:00",$fin." 23:59:59");
 $absencesDB=$a->elements;
 
 $db=new db();

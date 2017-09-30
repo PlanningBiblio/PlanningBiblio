@@ -295,7 +295,7 @@ for($j=0;$j<=$fin;$j++){
     // Le tableau $absences sera utilisé par la fonction cellule_poste pour barrer les absents dans le plannings et pour afficher les absents en bas du planning
     $a=new absences();
     $a->valide=true;
-    $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date,$date);
+    $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,$date,$date);
     $absences=$a->elements;
     global $absences;
 

@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : statistiques/agents.php
 Création : mai 2011
-Dernière modification : 20 septembre 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -121,7 +121,7 @@ $agents_list=$db->result;
 // Recherche des absences dans la table absences
 $a=new absences();
 $a->valide=true;
-$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$debutSQL." 00:00:00",$finSQL." 23:59:59");
+$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,$debutSQL." 00:00:00",$finSQL." 23:59:59");
 $absencesDB=$a->elements;
 
 if(!empty($agents)){

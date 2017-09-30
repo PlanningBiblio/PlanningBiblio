@@ -336,9 +336,9 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('60','0','Aide','aide/index.php',NULL);";
 
 //	Personnel
-$sql[]="INSERT INTO `{$dbprefix}personnel` (`id`,`nom`,`postes`,`actif`,`droits`,`login`,`password`,`commentaires`) VALUES (1, 'Administrateur', '', 'Inactif', '[1,2,3,4,5,6,7,8,13,17,20,21,22,23,24,25,99,100,201,202,301,302,501,502,701,801,802,1001,1002]','admin', 
+$sql[]="INSERT INTO `{$dbprefix}personnel` (`id`,`nom`,`postes`,`actif`,`droits`,`login`,`password`,`commentaires`) VALUES (1, 'Administrateur', '', 'Inactif', '[1,2,3,4,5,6,7,8,9,13,17,20,21,22,23,24,25,99,100,201,202,301,302,501,502,701,801,802,1001,1002]','admin', 
 '5f4dcc3b5aa765d61d8327deb882cf99', 'Compte cr&eacute;&eacute; lors de l&apos;installation du planning');";
-$sql[]="INSERT INTO `{$dbprefix}personnel` (`id`,`nom`,`postes`,`actif`,`droits`,`commentaires`,`temps`) VALUES (2, 'Tout le monde', '', 'Actif', '[99,100]','Compte cr&eacute;&eacute; lors de l&apos;installation du planning', 'a:6:{i:0;a:4:{i:0;s:8:\"09:00:00\";i:1;s:8:\"12:00:00\";i:2;s:8:\"13:00:00\";i:3;s:8:\"17:00:00\";}i:1;a:4:{i:0;s:8:\"09:00:00\";i:1;s:8:\"12:00:00\";i:2;s:8:\"13:00:00\";i:3;s:8:\"17:00:00\";}i:2;a:4:{i:0;s:8:\"09:00:00\";i:1;s:8:\"12:00:00\";i:2;s:8:\"13:00:00\";i:3;s:8:\"17:00:00\";}i:3;a:4:{i:0;s:8:\"09:00:00\";i:1;s:8:\"12:00:00\";i:2;s:8:\"13:00:00\";i:3;s:8:\"17:00:00\";}i:4;a:4:{i:0;s:8:\"09:00:00\";i:1;s:8:\"12:00:00\";i:2;s:8:\"13:00:00\";i:3;s:8:\"17:00:00\";}i:5;a:4:{i:0;s:0:\"\";i:1;s:0:\"\";i:2;s:0:\"\";i:3;s:0:\"\";}}');";
+$sql[]="INSERT INTO `{$dbprefix}personnel` (`id`,`nom`,`postes`,`actif`,`droits`,`commentaires`,`temps`) VALUES (2, 'Tout le monde', '', 'Actif', '[99,100]','Compte cr&eacute;&eacute; lors de l&apos;installation du planning', '[[\"09:00:00\",\"12:00:00\",\"13:00:00\",\"17:00:00\"],[\"09:00:00\",\"12:00:00\",\"13:00:00\",\"17:00:00\"],[\"09:00:00\",\"12:00:00\",\"13:00:00\",\"17:00:00\"],[\"09:00:00\",\"12:00:00\",\"13:00:00\",\"17:00:00\"],[\"09:00:00\",\"12:00:00\",\"13:00:00\",\"17:00:00\"],[\"\",\"\",\"\",\"\"]]');";
 
 //	Insertion des horaires
 $sql[]="INSERT INTO `{$dbprefix}pl_poste_horaires` (`debut`, `fin`, `tableau`, `numero`) VALUES ('09:00:00', '10:00:00', '1', 1);";

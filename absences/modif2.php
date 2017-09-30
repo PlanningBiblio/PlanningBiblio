@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 3 août 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -134,14 +134,13 @@ foreach($agents_selectionnes as $elem){
 // Sécurité
 // Droit 1 = modification de toutes les absences (admin seulement)
 // Droit 6 = modification de ses propres absences
+// Droit 9 = Droit d'enregistrer des absences pour d'autres agents
 // Droits 20x = modification de toutes les absences en multisites (admin seulement)
 
-$acces=in_array(1,$droits)?true:false;
-if(!$acces){
-  if(is_array($perso_ids) and count($perso_ids) == 1){
-    $acces=(in_array(6,$droits) and $perso_ids[0] == $_SESSION['login_id'] and !$groupe)?true:false;
-  }
-}
+$acces = (in_array(1,$droits) 
+  or (in_array(6,$droits) and count($perso_ids) == 1 and in_array($_SESSION['login_id'], $perso_ids))
+  or (in_array(9,$droits) and in_array(6,$droits) and in_array($_SESSION['login_id'], $perso_ids)));
+
 if(!$acces){
   echo "<div id='acces_refuse'>Accès refusé</div>\n";
   include "include/footer.php";

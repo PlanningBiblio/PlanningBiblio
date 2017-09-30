@@ -11,7 +11,7 @@ Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
-Description :
+Description : 
 Permet d'ajouter une absence. Formulaire, confirmation et validation.
 la table absence est complétée.
 
@@ -47,7 +47,7 @@ $motif = htmlentities($motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
 
 $perso_ids=array();
 // Absence unique
-if($perso_id and $perso_id>0){
+if(!empty($perso_id)){
   $perso_ids[]=$perso_id;
 }
 
@@ -75,8 +75,9 @@ $so=filter_var($so,FILTER_CALLBACK,array('options'=>'sanitize_on01'));
 $nbjours=$nbjours?$nbjours:0;
 $valide=$valide?$valide:0;
 
-$admin=in_array(1,$droits)?true:false;
-$adminN2=in_array(8,$droits)?true:false;
+$admin = in_array(1, $droits);
+$adminN2 = in_array(8, $droits);
+$agents_multiples = ($admin or in_array(9, $droits));
 
 $debutSQL=dateSQL($debut);
 $finSQL=dateSQL($fin);
@@ -96,6 +97,24 @@ EOD;
 
 // Enregitrement de l'absence
 if($confirm and !empty($perso_ids)){
+
+  // Sécurité : Si l'agent enregistrant l'absence n'est pas admin et n'est pas dans la liste des absents ou pas autorisé à enregistrer des absences pour plusieurs agents, l'accès est refusé.
+  $access = false;
+  if($admin){
+    $access = true;
+  } elseif( count($perso_ids) == 1 and in_array($_SESSION['login_id'], $perso_ids)){
+    $access = true;
+  } elseif($agents_multiples and in_array($_SESSION['login_id'], $perso_ids)){
+    $access = true;
+  }
+    
+  if(!$access){
+    echo "</td></tr></table>\n";
+    echo "<div id='acces_refuse'>Acc&egrave;s refus&eacute;</div>\n";
+    echo "<a href='javascript:history.back();'>Retour</a>\n";
+    include __DIR__."/../include/footer.php";
+  }
+  
   $fin=$fin?$fin:$debut;
   $finSQL=dateSQL($fin);
   $valideN1=0;
@@ -295,7 +314,7 @@ if($confirm and !empty($perso_ids)){
 // Formulaire
 else{
   // Liste des agents
-  if($admin){
+  if($agents_multiples){
     $db_perso=new db();
     $db_perso->select2("personnel","*",array("supprime"=>0,"id"=>"<>2"),"order by nom,prenom");
     $agents=$db_perso->result?$db_perso->result:array();
@@ -307,20 +326,25 @@ else{
   echo "<input type='hidden' name='confirm' value='1' />\n";
   echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
   echo "<input type='hidden' id='admin' value='".($admin?1:0)."' />\n";
+  echo "<input type='hidden' id='login_id' value='{$_SESSION['login_id']}' />\n";
   echo "<table class='tableauFiches'>\n";
   echo "<tr><td>\n";
-  if($admin){
+  if($agents_multiples){
     echo "<label class='intitule'>Agent(s)</label></td>\n";
   }else{
     echo "<label class='intitule'>Agent</label></td>\n";
   }
   echo "<td>\n";
-  if($admin){
+  if($agents_multiples){
   
     // Par défaut, ajoute l'agent logué comme abesnt
     echo "<input type='hidden' name='perso_ids[]' value='{$_SESSION['login_id']}' id='hidden{$_SESSION['login_id']}' class='perso_ids_hidden'/>\n";
     echo "<ul id='perso_ul'>\n";
-    echo "<li id='li{$_SESSION['login_id']}' class='perso_ids_li'>{$_SESSION['login_nom']} {$_SESSION['login_prenom']}<span class='perso-drop' style='margin-left:5px;' onclick='supprimeAgent({$_SESSION['login_id']});' ><span class='pl-icon pl-icon-drop'></span></span></li>\n";
+    echo "<li id='li{$_SESSION['login_id']}' class='perso_ids_li'>{$_SESSION['login_nom']} {$_SESSION['login_prenom']}\n";
+    if($admin){
+      echo "<span class='perso-drop' style='margin-left:5px;' onclick='supprimeAgent({$_SESSION['login_id']});' ><span class='pl-icon pl-icon-drop'></span></span>\n";
+    }
+    echo "</li>\n";
     echo "</ul>\n";
     
     echo "<select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>\n";

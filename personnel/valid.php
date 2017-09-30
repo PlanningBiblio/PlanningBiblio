@@ -80,6 +80,16 @@ for($i=1;$i<=$config['Multisites-nombre'];$i++){
     $droits[]=2;
   }
 }
+
+// Le droit de gestion des absences (1) donne le droit modifier ses propres absences (6)
+if(in_array(1,$droits) and !in_array(6,$droits)){
+  $droits[]=6;
+}
+// Le droit de gestion des absences (1) donne le droit d'ajouter des absences pour plusieurs personnes (9)
+if(in_array(1,$droits) and !in_array(9,$droits)){
+  $droits[]=9;
+}
+
 $droits[]=99;
 $droits[]=100;
 if($id==1)		// Ajoute config. avancée à l'utilisateur admin.

@@ -884,7 +884,7 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="UPDATE `{$dbprefix}menu` SET `titre`='Les mod&egrave;les' WHERE `url`='planning/modeles/index.php';";
   $sql[]="UPDATE `{$dbprefix}menu` SET `titre`='Plannings de pr&eacute;sence' WHERE `url`='planningHebdo/index.php';";
 
-  // Séparation des droits Modification de planning, niveau 1 et niveau 2
+  // Séparation des droits Modification de planning, niveau 1 et niveau 2 et classement des droits d'accès
   $sql[]="UPDATE `{$dbprefix}personnel` SET `droits`= REPLACE(`droits`,'12','301');";
   $sql[]="ALTER TABLE `{$dbprefix}acces` ADD `ordre` INT(2) NOT NULL DEFAULT 0;";
   $sql[]="ALTER TABLE `{$dbprefix}acces` ADD `categorie` VARCHAR(30) NOT NULL DEFAULT '';";
@@ -910,6 +910,16 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="UPDATE `{$dbprefix}acces` SET `groupe`='Acc&egrave;s au statistiques', `categorie`='Statistiques', `ordre`=170 WHERE `groupe_id`='17';";
   $sql[]="UPDATE `{$dbprefix}acces` SET `groupe`='Gestion des heures de pr&eacute;sence', `categorie`='Heures de pr&eacute;sence', `ordre`=80 WHERE `groupe_id`='24';";
   $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Planning', `ordre`=125 WHERE `groupe_id`='901';";
+  
+  // Dissociation des droits de valider les absences et d'enregistrer des absences pour plusieurs agents
+  $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`categorie`,`ordre`) VALUES ('Enregistrement d&apos;absences pour plusieurs agents','9','Enregistrement d&apos;absences pour plusieurs agents', 'Absences', '25');";
+  
+  $sql[]="UPDATE `{$dbprefix}personnel` SET `droits` = REPLACE (`droits`, ',1,', ',1,9,');";
+  $sql[]="UPDATE `{$dbprefix}personnel` SET `droits` = REPLACE (`droits`, '[1,', '[1,9,');";
+  $sql[]="UPDATE `{$dbprefix}personnel` SET `droits` = REPLACE (`droits`, ',1]', ',1,9]');";
+  $sql[]="UPDATE `{$dbprefix}personnel` SET `droits` = REPLACE (`droits`, '[1]', '[1,9]');";
+  $sql[]="UPDATE `{$dbprefix}personnel` SET `droits` = REPLACE (`droits`, '\"1\"', '1,9');";
+
 
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";

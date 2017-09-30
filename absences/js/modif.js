@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/js/modif.js
 Création : 28 février 2014
-Dernière modification : 3 août 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -182,10 +182,16 @@ $(function() {
     
     $(".perso_ids_li").remove();
     for(i in tab){
-      var li="<li id='li"+tab[i][1]+"' class='perso_ids_li'>"+tab[i][0]+"<span class='perso-drop' style='margin-left:5px;' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-drop'></span></span></li>\n";
+      var li="<li id='li"+tab[i][1]+"' class='perso_ids_li'>"+tab[i][0];
+
+      if( $('#admin').val() == 1 || tab[i][1] != $('#login_id').val() ){
+
+        li+="<span class='perso-drop' style='margin-left:5px;' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-drop'></span></span>";
+      }
+
+      li+="</li>\n";
       $("#perso_ul").append(li);
     }
-    
 
     absencesAligneSuppression();
     

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 3 août 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -168,7 +168,7 @@ class planning{
       // Recherche des absences dans la table absences pour les déduire des heures faites
       $a=new absences();
       $a->valide=true;
-      $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date1." 00:00:00",$date2." 23:59:59");
+      $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,$date1." 00:00:00",$date2." 23:59:59");
       $absencesDB=$a->elements;
 
       // Recherche des postes occupés dans la base avec le plus grand intervalle pour limiter les requêtes

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : statistiques/postes_synthese.php
 Création : mai 2011
-Dernière modification : 8 février 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -109,7 +109,7 @@ $selected=null;
 // Recherche des absences dans la table absences
 $a=new absences();
 $a->valide=true;
-$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$debutSQL." 00:00:00",$finSQL." 23:59:59");
+$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,$debutSQL." 00:00:00",$finSQL." 23:59:59");
 $absencesDB=$a->elements;
 
 //		--------------		Récupération de la liste des postes pour le menu déroulant		------------------------

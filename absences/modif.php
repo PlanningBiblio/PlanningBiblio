@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.91
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 2 juin 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -25,8 +25,10 @@ $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 
 $display=null;
 $checked=null;
-$admin=in_array(1,$droits)?true:false;
-$adminN2=in_array(8,$droits)?true:false;
+
+$admin = in_array(1, $droits);
+$adminN2 = in_array(8, $droits);
+$agents_multiples = ($admin or in_array(9, $droits));
 
 $a=new absences();
 $a->fetchById($id);
@@ -164,7 +166,7 @@ if($iCalKey){
 }
 
 // Liste des agents
-if($admin){
+if($agents_multiples){
   $db_perso=new db();
   $db_perso->select2("personnel","*",array("supprime"=>0,"id"=>"<>2"),"order by nom,prenom");
   $agents_tous=$db_perso->result?$db_perso->result:array();
@@ -176,6 +178,7 @@ echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
 echo "<input type='hidden' name='page' value='absences/modif2.php' />\n";
 echo "<input type='hidden' name='perso_id' value='$perso_id' />\n";		// nécessaire pour verif_absences
 echo "<input type='hidden' id='admin' value='".($admin?1:0)."' />\n";
+echo "<input type='hidden' id='login_id' value='{$_SESSION['login_id']}' />\n";
 echo "<input type='hidden' name='groupe' id='groupe' value='$groupe' />\n";
 echo "<table class='tableauFiches'>\n";
 
@@ -188,15 +191,18 @@ foreach($agents as $elem){
 
 
 // Si admin, affiche les agents de l'absence et offre la possibilité d'en ajouter
-if($admin){
+if($agents_multiples){
   echo "<tr><td><label class='intitule'>Agent(s)</label></td><td>";
   
   // Liste des agents absents (Affichage de la liste)
   echo "<ul id='perso_ul'>\n";
   foreach($agents as $elem){
     echo "<li id='li{$elem['perso_id']}' class='perso_ids_li' style='white-space: nowrap;'>{$elem['nom']} {$elem['prenom']}\n";
-    echo "<span class='perso-drop' style='margin-left:10px;' onclick='supprimeAgent({$elem['perso_id']});' >\n";
-    echo "<span class='pl-icon pl-icon-drop'></span></span></li>\n";
+    if($admin or $elem['perso_id'] != $_SESSION['login_id']){
+      echo "<span class='perso-drop' style='margin-left:10px;' onclick='supprimeAgent({$elem['perso_id']});' >\n";
+      echo "<span class='pl-icon pl-icon-drop'></span></span>\n";
+    }
+    echo "</li>\n";
   }
   echo "</ul>\n";
 

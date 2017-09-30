@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 7 août 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -189,7 +189,7 @@ $sansRepas = $p->sansRepas($date,$debut,$fin);
 // Recherche des absences
 $a=new absences();
 $a->valide=false;
-$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date.' '.$debut,$date.' '.$fin);
+$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,$date.' '.$debut,$date.' '.$fin);
 $absences=$a->elements;
 
 

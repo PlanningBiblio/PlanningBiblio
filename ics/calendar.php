@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/calendar.php
 Création : juillet 2016
-Dernière modification : 29 août 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -135,7 +135,7 @@ if($db->result){
 // Recherche des absences
 $a=new absences();
 $a->valide=true;
-$a->fetch("`debut`,`fin`",null,$id,'0000-00-00 00:00:00', date('Y-m-d', strtotime(date('Y-m-d').' + 2 years')));
+$a->fetch("`debut`,`fin`",$id,'0000-00-00 00:00:00', date('Y-m-d', strtotime(date('Y-m-d').' + 2 years')));
 $absences=$a->elements;
 
 // Recherche des congés (si le plugin est installé)

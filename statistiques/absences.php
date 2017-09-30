@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : statistiques/absences.php
 Création : 15 mai 2014
-Dernière modification : 8 février 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -69,7 +69,7 @@ if($config['Multisites-nombre']>1){
 // Recherche des absences
 $a=new absences();
 $a->valide=true;
-$a->fetch("`debut`,`fin`,`nom`,`prenom`",null,null,$debutSQL,$finSQL,$sites);
+$a->fetch("`debut`,`fin`,`nom`,`prenom`",null,$debutSQL,$finSQL,$sites);
 $absences=$a->elements;
 
 // Recherche des motifs d'absences

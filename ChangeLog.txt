@@ -2,7 +2,8 @@
 - Améliorations
 Importation ICS : cases à cocher pour autoriser ou refuser l'importation des calendriers ICS agent par agent.
 Statistiques : Choix des créneaux horaires à afficher dans les statistiques
-Dissociation des droits de modification des plannings : un droit permet de créer, modifier, enregistrer et utiliser les modèles, un autre permet uniquement la modification des plannings
+Planning : Dissociation des droits de modification des plannings : un droit permet de créer, modifier, enregistrer et utiliser les modèles, un autre permet uniquement la modification des plannings
+Absences : Ajoute un droit permettant aux non-admin d'ajouter des absences pour plusieurs agents
 
 - Corrections
 Encodage HTML des caractères dans la base de données, tables acces, config et menu
