@@ -1,8 +1,9 @@
-*** Version 2.7.01      (30 septembre 2017)   ***
+*** Version 2.7.01      (2 octobre 2017)   ***
 - Améliorations
+Planning : Met en surbillance les agents survolés dans le menu
+Planning : Dissociation des droits de modification des plannings : un droit permet de créer, modifier, enregistrer et utiliser les modèles, un autre permet uniquement la modification des plannings
 Importation ICS : cases à cocher pour autoriser ou refuser l'importation des calendriers ICS agent par agent.
 Statistiques : Choix des créneaux horaires à afficher dans les statistiques
-Planning : Dissociation des droits de modification des plannings : un droit permet de créer, modifier, enregistrer et utiliser les modèles, un autre permet uniquement la modification des plannings
 Absences : Ajoute un droit permettant aux non-admin d'ajouter des absences pour plusieurs agents
 
 - Corrections
@@ -10,6 +11,7 @@ Encodage HTML des caractères dans la base de données, tables acces, config et 
 Conversion en base64 des mot de passes cryptés (fonctions encrypt / descrypt)
 Affichage des agents, initialisation du filtre Service Public / Administratif
 Affichage des agents, corrige une erreur de script empêchant l'affichage des fiches agents
+Correction de l'envoi des notifications lors la validation des plannings
 
 *** Version 2.7      (30 août 2017)   ***
 - Améliorations

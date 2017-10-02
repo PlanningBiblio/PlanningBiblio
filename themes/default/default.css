@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 30 septembre 2017
+Dernière modification : 2 octobre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -685,6 +685,10 @@ div#tabsemaine1{
 
 #pl-calendar .ui-datepicker a{
   font-size:110%;
+}
+
+.pl-highlight {
+  background: #f0e68c;
 }
 
 /* Notes affichées en bas des plannings */

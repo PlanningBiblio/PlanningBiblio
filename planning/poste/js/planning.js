@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 30 septembre 2017
+Dernière modification : 2 octobre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -403,7 +403,7 @@ $(function() {
     // Affiche les liens pour réafficher les tableaux masqués
     afficheTableauxDiv();
   });
-
+  
 });
 
 
@@ -813,6 +813,25 @@ function majPersoOrigine(perso_id){
   perso_nom_origine=$(".agent_"+perso_id+":eq(0)").text();
 }
 
+/**
+ * @function plMouseOut
+ * @param int id
+ * Actions executées lors que les lignes du menudiv ne sont plus survolées
+ * Retire la surbrillance des agents dans le planning
+ */
+function plMouseOut(id){
+  $('.cellule-perso-'+id).removeClass('pl-highlight');
+}
+
+/**
+ * @function plMouseOver
+ * @param int id
+ * Actions executées lors que les lignes du menudiv sont survolées
+ * Met en surbrillance l'agent survolé dans le planning
+ */
+function plMouseOver(id){
+  $('.cellule-perso-'+id).addClass('pl-highlight');
+}
 
 /** @function planningNotifications
  *  @param srting date

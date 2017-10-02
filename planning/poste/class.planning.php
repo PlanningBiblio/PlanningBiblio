@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 30 septembre 2017
+Dernière modification : 2 octobre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -332,7 +332,7 @@ class planning{
         $classe=empty($class_tmp)?null:join(" ",$class_tmp);
 
         //	Affichage des lignes
-        $menudiv.="<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$groupe_hide' class='$classe $classTrListe menudiv-tr'>\n";
+        $menudiv.="<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$groupe_hide plMouseOver({$elem['id']});' onmouseout='plMouseOut({$elem['id']});' class='$classe $classTrListe menudiv-tr'>\n";
         $menudiv.="<td onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},0,0,\"$site\");'>";
         $menudiv.=$nom;
 
