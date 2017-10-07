@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 2 octobre 2017
+Dernière modification : 7 octobre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -140,7 +140,7 @@ function deja_place($date,$poste){
 function deuxSP($date,$debut,$fin){
   $tab=array(0);
   $db=new db();
-  $db->select("pl_poste","perso_id","date='$date' AND (debut='$fin' OR fin='$debut')","group by perso_id");
+  $db->select("pl_poste","perso_id","absent = '0' AND date='$date' AND (debut='$fin' OR fin='$debut')","group by perso_id");
   if($db->result){
     foreach($db->result as $elem){
       $tab[]=$elem['perso_id'];
