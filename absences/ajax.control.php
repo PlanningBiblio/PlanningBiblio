@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/ajax.control.php
 Création : mai 2011
-Dernière modification : 12 mai 2017
+Dernière modification : 7 octobre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié <etienne.cavalie@unice.fr>
 
@@ -41,21 +41,46 @@ $agents = $p->elements;
 // Pour chaque agent, contrôle si autre absence, si placé sur planning validé, si placé sur planning en cours d'élaboration 
 foreach($perso_ids as $perso_id){
 
-  $result[$perso_id]=array("perso_id"=>$perso_id, "autreAbsence"=>null, "planning"=>null);
+  $result[$perso_id]=array("perso_id"=>$perso_id, "autresAbsences"=>array(), "planning"=>null);
 
   // Contrôle des autres absences
   if($groupe){
     // S'il s'agit de la modification d'un groupe, contrôle s'il y a d'autres absences en dehors du groupe
     $db=new db();
-    $db->select("absences",null,"`perso_id`='$perso_id' AND `groupe`<>'$groupe' AND ((debut<='$debut' AND fin>'$debut') OR (debut<'$fin' AND fin>='$fin') OR (debut>='$debut' AND fin <='$fin'))");
+    $db->select("absences",null,"`perso_id`='$perso_id' AND `groupe`<>'$groupe' AND ((debut<='$debut' AND fin>'$debut') OR (debut<'$fin' AND fin>='$fin') OR (debut>='$debut' AND fin <='$fin'))", "ORDER BY `debut`, `fin`");
   }else{
     // S'il ne s'agit pas d'un groupe, contrôle s'il y a d'autre absences en dehors de celle sélectionnée
     $db=new db();
-    $db->select("absences",null,"`perso_id`='$perso_id' AND `id`<>'$id' AND ((debut<='$debut' AND fin>'$debut') OR (debut<'$fin' AND fin>='$fin') OR (debut>='$debut' AND fin <='$fin'))");
+    $db->select("absences",null,"`perso_id`='$perso_id' AND `id`<>'$id' AND ((debut<='$debut' AND fin>'$debut') OR (debut<'$fin' AND fin>='$fin') OR (debut>='$debut' AND fin <='$fin'))", "ORDER BY `debut`, `fin`");
   }
   
   if($db->result){
-    $result[$perso_id]["autreAbsence"]=dateFr($db->result[0]['debut'])." ".heure2(substr($db->result[0]['debut'],-8))." et le ".dateFr($db->result[0]['fin'])." ".heure2(substr($db->result[0]['fin'],-8));
+    foreach($db->result as $elem){
+      $motif = html_entity_decode($elem['motif'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+    
+      // Si absence sur une seule journée
+      if(substr($elem['debut'],0, 10) == substr($elem['fin'],0, 10)){
+        // Si journée complète
+        if(substr($elem['debut'],-8) == '00:00:00' and substr($elem['fin'],-8) == '23:59:59'){
+          $absence = "le ".dateFr($elem['debut']). " ($motif)";
+        // Si journée incomplète
+        } else {
+          $absence = "le ".dateFr($elem['debut'])." entre ".heure2(substr($elem['debut'],-8))." et ".heure2(substr($elem['fin'],-8)). " ($motif)";
+        }
+      }
+      // Si absence sur plusieurs journées
+      else {
+        // Si journées complètes
+        if(substr($elem['debut'],-8) == '00:00:00' and substr($elem['fin'],-8) == '23:59:59'){
+          $absence = "entre le ".dateFr($elem['debut'])." et le ".dateFr($elem['fin']). " ($motif)";
+        // Si journées incomplètes
+        } else {
+          $absence = "entre le ".dateFr($elem['debut'])." ".heure2(substr($elem['debut'],-8))." et le ".dateFr($elem['fin'])." ".heure2(substr($elem['fin'],-8)). " ($motif)";
+        }
+      }
+      
+      $result[$perso_id]["autresAbsences"][] = $absence;
+    }
   }
 
 
@@ -84,7 +109,7 @@ foreach($perso_ids as $perso_id){
   }
   
   // Ajoute le nom de l'agent
-  $result[$perso_id]['nom']=nom($perso_id,'nom p',$agents);
+  $result[$perso_id]['nom']=nom($perso_id,'nom prenom',$agents);
 }
 
 // Contrôle si placé sur des plannings en cours d'élaboration;

@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 30 septembre 2017
+Dernière modification : 7 octobre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -78,11 +78,10 @@ $finSQL=dateSQL($fin);
 $sites=null;
 if($config['Multisites-nombre']>1){
   $sites=array();
-  if(in_array(201,$droits)){
-    $sites[]=1;
-  }
-  if(in_array(202,$droits)){
-    $sites[]=2;
+  for($i=1; $i<11; $i++){
+    if(in_array((200 + $i), $droits)){
+      $sites[]=$i;
+    }
   }
 }
 
@@ -91,8 +90,7 @@ $a->groupe=true;
 if($agents_supprimes){
   $a->agents_supprimes=array(0,1);
 }
-$tri="`debut`,`fin`,`nom`,`prenom`";
-$a->fetch($tri,$perso_id,$debutSQL,$finSQL,$sites);
+$a->fetch(null,$perso_id,$debutSQL,$finSQL,$sites);
 $absences=$a->elements;
 
 // Tri par défaut du tableau

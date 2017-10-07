@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 30 septembre 2017
+Dernière modification : 7 octobre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -15,6 +15,21 @@ Classe absences : contient les fonctions de recherches des absences
 
 Page appelée par les autres pages du dossier absences
 */
+
+/*
+TODO : Absences d'une journée supplante les absences de qq heures et enregistrement d'absences pour tous les agents :
+TODO : modifier la fonction fetch : si le param $this->unique est true, ne pas sortir les absences supplantées. Si ne supplante pas complétement, sortir l'absence suplantante + la différence* : OK
+TODO : modifier la fonction calculTemps : rien à faire
+TODO : modifier la fonction calculTemps2 : rien à faire
+TODO : modifier la fonction calculHeuresAbsences : appliquer le paramètre ->unique lors de l'appel de la fonction fetch : OK
+
+TODO : * Pas nécessaire pour statistiques/agents.php /statut.php /service.php /samedis.php /postes*.php /class.statistiques.php
+TODO : * Pas nécessaire pour statistiques/temps.php mais contrôler les résultats des heures de SP adaptés en fonction des heures d'absences (fonction calculHeuresAbsences)
+
+
+
+*/
+
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 if(!isset($version)){
@@ -38,6 +53,7 @@ class absences{
   public $perso_ids=array();
   public $recipients=array();
   public $valide=false;
+  public $unique=false;
 
   public function __construct(){
   }
@@ -91,6 +107,7 @@ class absences{
       $absences=array();
       $a =new absences();
       $a->valide=true;
+      $a->unique=true;
       $a->fetch(null,null,$j1,$j7,null);
       if($a->elements and !empty($a->elements)){
 	$absences=$a->elements;
@@ -534,8 +551,10 @@ class absences{
       }
     }
 
+    
     //	By default $result=$all
     $result=$all;
+    
     //	If name, keep only matching results
     if(is_array($all) and $agent){
       $result=array();
@@ -554,6 +573,54 @@ class absences{
         }
       }
     }
+    
+    // Filtre Unique : supprime les absences qui se chevauchent pour ne pas les compter plusieurs fois dans les calculs.
+    // Ce filtre ne doit être utilisé que pour le calcul des heures et avec le filtre valide=true
+
+    if($this->unique){
+      usort($result, 'cmp_perso_debut_fin');
+      $cles_a_supprimer = array();
+      
+      $last = 0;
+      for($i=1; $i<count($result); $i++){
+      
+        // Comparaisons : différents cas de figures
+        //   |-----------------------------|      $last
+        //   |-----------------------------|      $i    debut[$i] = debut[$last] and fin[$i] = fin[$last]  --> debut[$i] >= debut[$last] and fin[$i] <= fin[$last]*  --> supprime $i
+        //   |----------------------------------| $i    debut[$i] = debut[$last] and fin[$i] > fin[$last]  --> supprime $last
+        //      |---------------------|           $i    debut[$i] > debut[$last] and fin[$i] < fin[$last]  --> debut[$i] >= debut[$last] and fin[$i] <= fin[$last]*  --> supprime $i
+        //      |--------------------------|      $i    debut[$i] > debut[$last] and fin[$i] = fin[$last]  --> debut[$i] >= debut[$last] and fin[$i] <= fin[$last]*  --> supprime $i
+        //      |-------------------------------| $i    debut[$i] > debut[$last] and fin[$i] > fin[$last]  --> fin[$last] = debut[$i], $i ne change pas
+        
+        
+        // *Condition : debut[$i] >= debut[$last] and fin[$i] <= fin[$last]
+        // |-------------------------------|    $last
+        // |-------------------------------|    $i
+        // |--------------------------|         $i
+        //      |--------------------------|    $i
+        //      |---------------------|         $i
+        
+        if($result[$i]['perso_id'] == $result[$last]['perso_id'] and $result[$i]['debut'] < $result[$last]['fin']){
+          if($result[$i]['debut'] >= $result[$last]['debut'] and $result[$i]['fin'] <= $result[$last]['fin']){
+            $cles_a_supprimer[] = $i;
+          } elseif($result[$i]['debut'] == $result[$last]['debut'] and $result[$i]['fin'] > $result[$last]['fin']){
+            $cles_a_supprimer[] = $last;
+            $last = $i;
+          } elseif($result[$i]['debut'] > $result[$last]['debut'] and $result[$i]['fin'] > $result[$last]['fin']){
+            $result[$last]['fin']=$result[$i]['debut'];
+            $last = $i;
+          } else {
+            $last = $i;
+          }
+        } else {
+          $last = $i;
+        }
+      }
+      foreach($cles_a_supprimer as $elem){
+        unset($result[$elem]);
+      }
+    }
+    
     if($result){
       $this->elements=$result;
     }

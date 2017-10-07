@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 30 septembre 2017
+Dernière modification : 7 octobre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -642,6 +642,16 @@ function cmp_nom_prenom_debut_fin($a,$b){
 
 function cmp_ordre($a, $b){
   return $a['ordre'] > $b['ordre'];
+}
+
+function cmp_perso_debut_fin($a, $b){
+  if($a['perso_id'] == $b['perso_id']){
+    if($a['debut'] == $b['debut']){
+      return $a['fin'] > $b['fin'];
+    }
+    return $a['debut'] > $b['debut'];
+  }
+  return $a['perso_id'] > $b['perso_id'];
 }
 
 function cmp_prenom_nom($a,$b){

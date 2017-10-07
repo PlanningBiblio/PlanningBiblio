@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/js/modif.js
 Création : 28 février 2014
-Dernière modification : 30 septembre 2017
+Dernière modification : 7 octobre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -270,22 +270,52 @@ function verif_absences(ctrl_form){
     async: false,
     success: function(result){
       result=JSON.parse(result);
-      
+
+      // Contrôle si d'autres absences sont enregistrées
+      autresAbsences = new Array();
+
       // Pour chaque agent
       for(i in result){
-	// Contrôle s'il y a une autre absence enregistrée
-	if(result[i]["autreAbsence"]){
-	  if(perso_ids.length>1){
-	    var message="Une absence est déjà enregistrée pour l'agent "+result[i]["nom"]+" entre le "+result[i]["autreAbsence"]+"<br/>Veuillez modifier la liste des agents, les dates ou les horaires.";
-	  }else{
-	    var message="Une absence est déjà enregistrée pour l'agent "+result[i]["nom"]+" entre le "+result[i]["autreAbsence"]+"<br/>Veuillez modifier les dates ou les horaires.";
-	  }
-	  CJInfo(message,"error");
-	  retour=false;
-	}
-	
-	// Contrôle s'il apparaît dans des plannings validés
-	else if(result[i]["planning"]){
+        // Contrôle si d'autres absences sont enregistrées
+        if(result[i]["autresAbsences"].length){
+          autresAbsences.push(result[i]);
+        }
+      }
+      
+      if(autresAbsences.length == 1){
+        if(autresAbsences[0]["autresAbsences"].length == 1){
+          var message = "Une absence est déjà enregistrée pour l'agent "+autresAbsences[0]["nom"]+" "+autresAbsences[0]["autresAbsences"][0]+"\nVoulez-vous continuer ?";
+        } else {
+          var message = "Des absences sont déjà enregistrées pour l'agent "+autresAbsences[0]["nom"]+" :\n";
+          for(i in autresAbsences[0]["autresAbsences"]){
+            message += "- "+autresAbsences[0]["autresAbsences"][i]+"\n";
+          }
+          message += "Voulez-vous continuer ?";
+        }
+      } else if(autresAbsences.length > 1){
+        var message = "Des absences sont déjà enregistrées pour les agents suivants :\n";
+        for(i in autresAbsences){
+          if(autresAbsences[i]["autresAbsences"].length == 1){
+            message += "- "+autresAbsences[i]["nom"]+" "+autresAbsences[i]["autresAbsences"][0]+"\n";
+          } else {
+            message += "- "+autresAbsences[i]["nom"]+"\n";
+            for(j in autresAbsences[i]["autresAbsences"]){
+               message += "-- "+autresAbsences[i]["autresAbsences"][j]+"\n";
+            }
+          }
+        }
+        message += "Voulez-vous continuer ?";
+      }
+      if(autresAbsences.length > 0){
+        if(!confirm(message)){
+          retour=false;
+        }
+      }
+
+      // Contrôle si les agents apparaissent dans des plannings validés
+      // Pour chaque agent
+      for(i in result){
+	if(result[i]["planning"]){
 	  if(admin==1){
 	    if(!confirm("L'agent "+result[i]["nom"]+" apparaît dans des plannings validés : "+result[i]["planning"]+"\nVoulez-vous continuer ?")){
 	      retour=false;
