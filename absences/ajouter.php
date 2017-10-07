@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 30 septembre 2017
+Dernière modification : 7 octobre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -327,6 +327,7 @@ else{
   echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
   echo "<input type='hidden' id='admin' value='".($admin?1:0)."' />\n";
   echo "<input type='hidden' id='login_id' value='{$_SESSION['login_id']}' />\n";
+
   echo "<table class='tableauFiches'>\n";
   echo "<tr><td>\n";
   if($agents_multiples){
@@ -334,21 +335,31 @@ else{
   }else{
     echo "<label class='intitule'>Agent</label></td>\n";
   }
-  echo "<td>\n";
+  echo "<td colspan='2'>\n";
   if($agents_multiples){
   
-    // Par défaut, ajoute l'agent logué comme abesnt
+    // Par défaut, ajoute l'agent logué comme absent
     echo "<input type='hidden' name='perso_ids[]' value='{$_SESSION['login_id']}' id='hidden{$_SESSION['login_id']}' class='perso_ids_hidden'/>\n";
-    echo "<ul id='perso_ul'>\n";
+    echo "<ul id='perso_ul1' class='perso_ul'>\n";
     echo "<li id='li{$_SESSION['login_id']}' class='perso_ids_li'>{$_SESSION['login_nom']} {$_SESSION['login_prenom']}\n";
     if($admin){
-      echo "<span class='perso-drop' style='margin-left:5px;' onclick='supprimeAgent({$_SESSION['login_id']});' ><span class='pl-icon pl-icon-drop'></span></span>\n";
+      echo "<span class='perso-drop' onclick='supprimeAgent({$_SESSION['login_id']});' ><span class='pl-icon pl-icon-drop'></span></span>\n";
     }
     echo "</li>\n";
     echo "</ul>\n";
+    echo "<ul id='perso_ul2' class='perso_ul'></ul>\n";
+    echo "<ul id='perso_ul3' class='perso_ul'></ul>\n";
+    echo "<ul id='perso_ul4' class='perso_ul'></ul>\n";
+    echo "<ul id='perso_ul5' class='perso_ul'></ul>\n";
+    
+    echo "</td></tr>\n";
+    echo "<tr><td>&nbsp;</td><td>\n";
     
     echo "<select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>\n";
     echo "<option value='0' selected='selected'>-- Ajoutez un agent --</option>\n";
+    if($config['Absences-tous']){
+      echo "<option value='tous'>Tous les agents</option>\n";
+    }
     foreach($agents as $elem){
       $hide = $elem['id'] == $_SESSION['login_id'] ? "style='display:none;'" :null;
       echo "<option value='".$elem['id']."' id='option{$elem['id']}' $hide >".$elem['nom']." ".$elem['prenom']."</option>\n";

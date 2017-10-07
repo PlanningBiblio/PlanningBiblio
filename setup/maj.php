@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 30 septembre 2017
+Dernière modification : 7 octobre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -924,6 +924,8 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="ALTER TABLE `{$dbprefix}pl_notifications` ADD `site` INT(2) NOT NULL DEFAULT '1';";
   $sql[]="ALTER TABLE `{$dbprefix}pl_notifications` ADD KEY `date` (`date`), ADD KEY `site` (`site`);";
 
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) 
+    VALUES ('Absences-tous', 'boolean', '0', 'Autoriser l&apos;enregistrement d&apos;absences pour tous les agents en une fois','Absences','37');";
 
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";

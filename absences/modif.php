@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 30 septembre 2017
+Dernière modification : 7 ocotbre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -192,23 +192,25 @@ foreach($agents as $elem){
 
 // Si admin, affiche les agents de l'absence et offre la possibilité d'en ajouter
 if($agents_multiples){
-  echo "<tr><td><label class='intitule'>Agent(s)</label></td><td>";
+  echo "<tr><td><label class='intitule'>Agent(s)</label></td><td colspan='2'>";
   
-  // Liste des agents absents (Affichage de la liste)
-  echo "<ul id='perso_ul'>\n";
-  foreach($agents as $elem){
-    echo "<li id='li{$elem['perso_id']}' class='perso_ids_li' style='white-space: nowrap;'>{$elem['nom']} {$elem['prenom']}\n";
-    if($admin or $elem['perso_id'] != $_SESSION['login_id']){
-      echo "<span class='perso-drop' style='margin-left:10px;' onclick='supprimeAgent({$elem['perso_id']});' >\n";
-      echo "<span class='pl-icon pl-icon-drop'></span></span>\n";
-    }
-    echo "</li>\n";
-  }
-  echo "</ul>\n";
+  // Liste des agents absents / Affichage de la liste (chargée en JQuery)
+  echo "<ul id='perso_ul1' class='perso_ul'></ul>\n";
+  echo "<ul id='perso_ul2' class='perso_ul'></ul>\n";
+  echo "<ul id='perso_ul3' class='perso_ul'></ul>\n";
+  echo "<ul id='perso_ul4' class='perso_ul'></ul>\n";
+  echo "<ul id='perso_ul5' class='perso_ul'></ul>\n";
+
+  echo "</td></tr>\n";
+  echo "<tr><td>&nbsp;</td><td>\n";
 
   // Menu déroulant
   echo "<select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>\n";
   echo "<option value='0' selected='selected'>-- Ajoutez un agent --</option>\n";
+  if($config['Absences-tous']){
+    echo "<option value='tous'>Tous les agents</option>\n";
+  }
+
   foreach($agents_tous as $elem){
     $hidden=in_array($elem['id'],$perso_ids)?"style='display:none;'":null;
     echo "<option value='".$elem['id']."' id='option{$elem['id']}' $hidden>".$elem['nom']." ".$elem['prenom']."</option>\n";

@@ -1,10 +1,12 @@
-*** Version 2.7.01      (2 octobre 2017)   ***
+*** Version 2.7.01      (7 octobre 2017)   ***
 - Améliorations
 Planning : Met en surbillance les agents survolés dans le menu
 Planning : Dissociation des droits de modification des plannings : un droit permet de créer, modifier, enregistrer et utiliser les modèles, un autre permet uniquement la modification des plannings
 Importation ICS : cases à cocher pour autoriser ou refuser l'importation des calendriers ICS agent par agent.
 Statistiques : Choix des créneaux horaires à afficher dans les statistiques
 Absences : Ajoute un droit permettant aux non-admin d'ajouter des absences pour plusieurs agents
+Absences : Permet l'enregistrement d'absences qui se chevauchent, avec avertissement
+Absences : Permet la sélection de tous les agents lors de l'enregistrement des absences (paramètre Absences / Absences-tous)
 
 - Corrections
 Encodage HTML des caractères dans la base de données, tables acces, config et menu

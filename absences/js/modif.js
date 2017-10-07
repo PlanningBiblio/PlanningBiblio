@@ -16,7 +16,11 @@ Fichier regroupant les fonctions JavaScript utiles à l'ajout et la modification
 $(function() {
   
   $(document).ready(function(){
-    absencesAligneSuppression();
+    
+    // Affichage de la liste des agents sélectionnés lors du chargement de la page modif.php
+    if($('.perso_ul').length){
+      affiche_perso_ul();
+    }
   });
 
   // Paramétrage de la boite de dialogue permettant la modification des motifs
@@ -153,6 +157,7 @@ $(function() {
     }
   });
   
+  
   /**
    * Agents multiples
    * Permet d'ajouter plusieurs agents sur une même absence (réunion, formation)
@@ -161,45 +166,23 @@ $(function() {
   $("#perso_ids").change(function(){
     // Variables
     var id=$(this).val();
-
-    // Ajout des champs hidden permettant la validation des agents
-    $(this).before("<input type='hidden' name='perso_ids[]' value='"+id+"' id='hidden"+id+"' class='perso_ids_hidden'/>\n");
-
-    // Création de la liste : balises <ul>
-    if(!$("#perso_ul").length){
-      $(this).before("<ul id='perso_ul'></ul>\n");
-    }
     
-    // Affichage des agents sélectionnés avec tri alphabétique
-    var tab=[];
-    $(".perso_ids_hidden").each(function(){
-      var id=$(this).val();
-      var name=$("#perso_ids option[value='"+id+"']").text();
-      tab.push([name,id]);
-    });
-
-    tab.sort();
-    
-    $(".perso_ids_li").remove();
-    for(i in tab){
-      var li="<li id='li"+tab[i][1]+"' class='perso_ids_li'>"+tab[i][0];
-
-      if( $('#admin').val() == 1 || tab[i][1] != $('#login_id').val() ){
-
-        li+="<span class='perso-drop' style='margin-left:5px;' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-drop'></span></span>";
-      }
-
-      li+="</li>\n";
-      $("#perso_ul").append(li);
+    // Si sélection de "tous" dans le menu déroulant des agents, ajoute tous les id non-sélectionnés
+    if(id == 'tous'){
+      $("#perso_ids > option").each(function(){
+        var id = $(this).val();
+        if(id != 'tous' && id != 0 && $('#hidden'+id).length == 0){
+          change_select_perso_ids(id);
+        }
+      });
+      
+    } else {
+      // Ajoute l'agent choisi dans la liste
+      change_select_perso_ids(id);
     }
 
-    absencesAligneSuppression();
-    
-    $("#perso_ids :selected").hide();
-
-    
-    $(this).val(0);
-
+    // Réinitialise le menu déroulant
+    $("#perso_ids").val(0);
     
   });
 
@@ -214,6 +197,69 @@ $(function() {
   
   
 });
+
+
+/**
+  * Agents multiples
+  * Permet d'ajouter plusieurs agents sur une même absence (réunion, formation)
+  * Lors du changement du <select perso_ids>, ajout du nom des agents dans <ul perso_ul> et leurs id dans <input perso_ids[]>
+  */
+function change_select_perso_ids(id){
+  // Ajout des champs hidden permettant la validation des agents
+  $('#perso_ids').before("<input type='hidden' name='perso_ids[]' value='"+id+"' id='hidden"+id+"' class='perso_ids_hidden'/>\n");
+
+  $("#option"+id).hide();
+  
+  // Affichage des agents sélectionnés avec tri alphabétique
+  affiche_perso_ul();
+}
+
+/**
+ * Affichage des agents sélectionnés avec tri alphabétique
+ */
+function affiche_perso_ul(){
+  var tab=[];
+  $(".perso_ids_hidden").each(function(){
+    var id=$(this).val();
+    var name=$("#perso_ids option[value='"+id+"']").text();
+    tab.push([name,id]);
+  });
+
+  tab.sort(function (a, b) {
+    return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
+  });
+  
+  $(".perso_ids_li").remove();
+  
+  // Réparti l'affichage des agents sélectionnés sur 5 colonnes de 10 (ou plus)
+  var nb = Math.ceil(tab.length / 5);
+  if(nb<10){
+    nb=10;
+  }
+  
+  for(i in tab){
+    var li="<li id='li"+tab[i][1]+"' class='perso_ids_li' data-id='"+tab[i][1]+"'>"+tab[i][0];
+
+    if( $('#admin').val() == 1 || tab[i][1] != $('#login_id').val() ){
+      li+="<span class='perso-drop' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-drop'></span></span>";
+    }
+
+    li+="</li>\n";
+    
+    if(i < nb){
+      $("#perso_ul1").append(li);
+    } else if(i < (2*nb)){
+      $("#perso_ul2").append(li);
+    } else if(i < (3*nb)){
+      $("#perso_ul3").append(li);
+    } else if(i < (4*nb)){
+      $("#perso_ul4").append(li);
+    } else{
+      $("#perso_ul5").append(li);
+    }
+  }
+}
+
 
 // Vérification des formulaires (ajouter et modifier)
 function verif_absences(ctrl_form){
@@ -351,20 +397,6 @@ function verif_absences(ctrl_form){
 }
 
 
-// Alignement des icônes de suppression
-function absencesAligneSuppression(){
-  if($(".perso-drop").length){
-    var left=0;
-    $(".perso-drop").each(function(){
-      if($(this).position().left>left){
-	left=$(this).position().left;
-      }
-    });
-    
-    $(".perso-drop").css("position","absolute");
-    $(".perso-drop").css("left",left);
-  }
-}
 /**
  * supprimeAgent
  * supprime les agents de la sélection lors de l'ajout ou modification d'une absence
@@ -373,5 +405,5 @@ function supprimeAgent(id){
   $("#option"+id).show();
   $("#li"+id).remove();
   $("#hidden"+id).remove();
-  absencesAligneSuppression();
+  affiche_perso_ul();
 }

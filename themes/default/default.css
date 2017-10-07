@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 2 octobre 2017
+Dernière modification : 7 octobre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -132,6 +132,18 @@ h3{
   margin-right:40px;
 }
 
+/* .perso_ul : sélection des agents dans les pages absences/* */
+.perso_ul{
+  display: inline-block;
+  vertical-align: top;
+}
+
+/* .perso-drop : suppression des agents sélectionés dans les pages absences/* */
+.perso-drop{
+  float: right;
+  margin-left: 10px;
+}
+
 /*	Icônes		*/
 .pl-icon{
   padding: 5px 13px 5px 13px;
@@ -226,6 +238,14 @@ li .agent-acces-checked2{
   vertical-align:top;
   padding: 0 60px 10px 10px;
   white-space: nowrap;
+}
+
+.tableauFiches td:first-child{
+  width: 160px;
+}
+
+.tableauFiches td:nth-child(2){
+  width: 300px;
 }
 
 .tableauFiches .td_validation{
