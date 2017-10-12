@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio, Version 2.7.02
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 2 octobre 2017
+Dernière modification : 12 octobre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -72,6 +72,11 @@ $(document).ready(function(){
       }
     });
   }
+
+  // Supprime la surbrillance sur les cellules modifiées
+  $('.menuTrigger').bind("DOMSubtreeModified", function(){
+    $('.pl-highlight').removeClass('pl-highlight', {duration:2500});
+  });
 
 });
 
@@ -316,7 +321,7 @@ $(function() {
     $.ajax({
       url: "planning/poste/ajax.menudiv.php",
       datatype: "json",
-      data: {cellule: cellule, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, poste: poste, site: site, perso_nom: perso_nom_origine},
+      data: {cellule: cellule, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, poste: poste, site: site, perso_nom: perso_nom_origine, perso_id:perso_id},
       type: "get",
       success: function(result){
 	// si pas de result : on quitte (pas de droit admin)
@@ -588,7 +593,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
         var perso_id=result[i]["perso_id"];
 
         // classes : A définir en fonction du statut, du service et des absences
-        var classes="cellDiv";
+        var classes="cellDiv pl-highlight cellule-perso-"+perso_id;
         // Absences, suppression
         // absent == 1 : Absence validée ou absence sans gestion des validations
         var absence_valide = false;
@@ -682,7 +687,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
 
   // Affiche un message en haut du planning si pas de catégorie A en fin de service 
   verif_categorieA();
-
+  
   /*
   Exemple de valeur pour la variable result :
 
@@ -820,7 +825,7 @@ function majPersoOrigine(perso_id){
  * Retire la surbrillance des agents dans le planning
  */
 function plMouseOut(id){
-  $('.cellule-perso-'+id).removeClass('pl-highlight');
+  $('.pl-highlight').removeClass('pl-highlight');
 }
 
 /**

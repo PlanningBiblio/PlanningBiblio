@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio, Version 2.7.02
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 30 septembre 2017
+Dernière modification : 12 octobre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
@@ -37,6 +37,7 @@ $site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
 $date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
 $debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_time"));
 $fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_time"));
+$perso_id=filter_input(INPUT_GET,"perso_id", FILTER_SANITIZE_NUMBER_INT);
 $perso_nom=filter_input(INPUT_GET,"perso_nom", FILTER_SANITIZE_STRING);
 $poste=filter_input(INPUT_GET,"poste",FILTER_SANITIZE_NUMBER_INT);
 $CSRFToken=trim(filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING));
@@ -481,10 +482,10 @@ if($config['toutlemonde'] and !$cellule_grise){
 if($nbAgents>0 and !$cellule_grise){
   $groupe_tab=$config['ClasseParService']?"groupe_tab(\"vide\",\"$tab_agent\",1,$(this));":null;
   $tableaux[0].="<tr onmouseover='$groupe_tab groupe_tab_hide();' class='menudiv-tr'>";
-  $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,0,0,\"$site\");'>";
+  $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,0,0,\"$site\");' onmouseover='plMouseOver($perso_id);' onmouseout='plMouseOut($perso_id);'>";
   $tableaux[0].="Supprimer $perso_nom</td><tr>\n";
   $tableaux[0].="<tr onmouseover='$groupe_tab groupe_tab_hide();' class='menudiv-tr'>";
-  $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,1,0,\"$site\");' class='red'>";
+  $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,1,0,\"$site\");' onmouseover='plMouseOver($perso_id);' onmouseout='plMouseOut($perso_id);' class='red'>";
   $tableaux[0].="Barrer $perso_nom</td></tr>";
 
   // Ne pas afficher les lignes suivantes si un seul agent dans la cellule
