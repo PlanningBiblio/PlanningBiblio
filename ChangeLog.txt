@@ -1,6 +1,15 @@
+*** Version 2.7.03      (25 octobre 2017)   ***
+- Améliorations
+ICS : permet l'importation des événements non-confirmés. Ceux-ci sont importés comme des absences non-validées.
+ICS : permet l'utilisation du champ "matricule" dans les openURL d'importation. Peut être utilisé pour importer des fichiers ICS nommés avec l'identifiants Harpege par exemple.
+
+*** Version 2.7.02      (12 octobre 2017)   ***
+- Améliorations
+Planning : Amélioration de la mise en surbrillance des agents dans le planning
+
 *** Version 2.7.01      (7 octobre 2017)   ***
 - Améliorations
-Planning : Met en surbillance les agents survolés dans le menu
+Planning : Met en surbrillance les agents survolés dans le menu
 Planning : Dissociation des droits de modification des plannings : un droit permet de créer, modifier, enregistrer et utiliser les modèles, un autre permet uniquement la modification des plannings
 Importation ICS : cases à cocher pour autoriser ou refuser l'importation des calendriers ICS agent par agent.
 Statistiques : Choix des créneaux horaires à afficher dans les statistiques

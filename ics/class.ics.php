@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio, Version 2.7.03
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/class.ics.php
 Création : 29 mai 2016
-Dernière modification : 26 septembre 2017
+Dernière modification : 25 octobre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -50,6 +50,7 @@ class CJICS{
   public $logs=null;
   public $pattern=null;
   public $perso_id=0;
+  public $status = 'CONFIRMED';
   public $src=null;
   public $table="absences";
 
@@ -74,6 +75,10 @@ class CJICS{
     // Récupération du nom du calendrier
     $calName=$ical->calendarName();
     $calName = removeAccents($calName);
+    
+    if(empty($calName)){
+      return false;
+    }
 
     if($this->logs){
       logs("Purge $calName, Table: $table, Perso: $perso_id, src: $src", "ICS", $CSRFToken);
@@ -162,10 +167,13 @@ class CJICS{
 		}
 	  }
 
-	  // Traite seulement les événéments ayant le STATUS CONFIRMED et TRANSP OPAQUE (TRANSP OPAQUE défini un status BUSY)
-      if($elem['STATUS']=="CONFIRMED" and $elem['TRANSP']=="OPAQUE"){
-		$events[]=$elem;
-		$iCalKeys[]=$elem['key'];
+      // Traite seulement les événéments ayant un status occupés TRANSP OPAQUE (TRANSP OPAQUE défini un status BUSY)
+      if($elem['TRANSP']=="OPAQUE"){
+        // Traite seulement les événéments ayant le STATUS CONFIRMED si la configuration demande seulement les status CONFIRMED
+        if($elem['STATUS']=="CONFIRMED" or $this->status != 'CONFIRMED'){
+          $events[]=$elem;
+          $iCalKeys[]=$elem['key'];
+        }
       }
     }
 
@@ -233,9 +241,12 @@ class CJICS{
 		  $commentaires.="<br/>\n".$elem['DESCRIPTION'];
 		}
 		
+		$valide = $elem['STATUS'] == 'CONFIRMED' ? 99999 : 0 ;
+		$validation = $elem['STATUS'] == 'CONFIRMED' ? $lastmodified : null ;
+		
 		// Insertion dans la base de données
-		$tab=array(":perso_id" => $perso_id, ":debut" => $debut, ":fin" => $fin, ":demande" => $demande, ":valide"=> "99999", ":validation" => $lastmodified, ":valide_n1"=> "99999", 
-		  ":validation_n1" => $lastmodified, ":motif" => $this->pattern, ":motif_autre" => $this->pattern, ":commentaires" => $commentaires, ":cal_name" => $calName, ":ical_key" => $elem['key']);
+		$tab=array(":perso_id" => $perso_id, ":debut" => $debut, ":fin" => $fin, ":demande" => $demande, ":valide"=> $valide, ":validation" => $validation, ":valide_n1"=> $valide, 
+		  ":validation_n1" => $validation, ":motif" => $this->pattern, ":motif_autre" => $this->pattern, ":commentaires" => $commentaires, ":cal_name" => $calName, ":ical_key" => $elem['key']);
 		  
 		$db->execute($tab);
 		$nb++;

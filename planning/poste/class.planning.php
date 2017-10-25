@@ -184,7 +184,7 @@ class planning{
         foreach($db_heures->result as $elem){
 
           // Vérifie à partir de la table absences si l'agent est absent
-          // S'il est absent, on met passe (continue 2)
+          // S'il est absent, on passe (continue 2)
           foreach($absencesDB as $a){
             if($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']){
               continue 2;

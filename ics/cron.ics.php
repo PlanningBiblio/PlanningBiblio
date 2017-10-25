@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio, Version 2.7.03
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/cron.ics.php
 Création : 28 juin 2016
-Dernière modification : 26 septembre 2017
+Dernière modification : 25 octobre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -103,11 +103,26 @@ foreach($agents as $agent){
         continue;
       }
       
+      $url=false; 
+
       // Selon le paramètre openURL (mail ou login)
       switch($var[$i]){
-        case "login" : $url=str_replace("[{$var[$i]}]",$agent["login"],$servers[$i]); break;
+        case "login" :
+          if(!empty($agent["login"])){
+            $url=str_replace("[{$var[$i]}]",$agent["login"],$servers[$i]);
+          }
+          break;
         case "email" :
-        case "mail" : $url=str_replace("[{$var[$i]}]",$agent["mail"],$servers[$i]); break;
+        case "mail" :
+          if(!empty($agent["mail"])){
+            $url=str_replace("[{$var[$i]}]",$agent["mail"],$servers[$i]);
+          }
+          break;
+        case "matricule" : 
+          if(!empty($agent["matricule"])){
+            $url=str_replace("[{$var[$i]}]",$agent["matricule"],$servers[$i]);
+          }
+          break;
         default : $url=false; break;
       }
     }
@@ -145,6 +160,7 @@ foreach($agents as $agent){
 
     $ics=new CJICS();
     $ics->src=$url;
+    $ics->status = $config["ICS-Status$i"];
     $ics->perso_id=$agent["id"];
     $ics->pattern=$config["ICS-Pattern$i"];
     $ics->table="absences";
