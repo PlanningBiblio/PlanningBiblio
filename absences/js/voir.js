@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.7.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/js/voir.js
 Création : 5 novembre 2014
-Dernière modification : 10 février 2017
+Dernière modification : 1er novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -32,4 +32,11 @@ $(function(){
       }
     });
   });
+
 });
+
+function absences_reinit(){
+  // TODO : réinitialiser le filtre du tableau
+//   $('#tableAbsencesVoir_filter > label > input[type="search"]').val(null);
+  location.href="index.php?page=absences/voir.php&amp;reset=1";
+}

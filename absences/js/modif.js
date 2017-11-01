@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio, Version 2.7.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/js/modif.js
 Création : 28 février 2014
-Dernière modification : 7 octobre 2017
+Dernière modification : 1er novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -194,7 +194,216 @@ $(function() {
       document.location.href="index.php?page=absences/delete.php&id="+id+"&CSRFToken="+CSRFToken;
     }
   });
+
+
+
+  /* Récurence */
+
+  // checkbox récurrence
+  $('#recurrence-link').click(function(){
+    $("#recurrence-form").dialog( "open" );
+  });
+
+  $("#recurrence-checkbox").change(function() {
+    if($("#recurrence-checkbox").prop('checked')){
+      if($('#recurrence-hidden').val()){
+        $('#recurrence-info').show();
+      } else {
+        $("#recurrence-form").dialog( "open" );
+      }
+    } else {
+      $('#recurrence-info').hide();
+    }
+  });
+
+  /* Si champ date de début modifiable */
+  $('.recurrence-start').change(function(){
+    var date = $(this).val();
+    date = date.replace(/(\d*)\/(\d*)\/(\d*)/,"$2/$1/$3");
+    var d = new Date(date);
+    var n = d.getDay();
+    $('.recurrence-by-day').prop('checked',false);
+    $('.recurrence-by-day'+n).prop('checked',true);
+  });
+
+  // Formulaire récurrence
+  $("#recurrence-form").dialog({
+    autoOpen: false,
+    height: 480,
+    width: 650,
+    modal: true,
+    buttons: {
+      "Enregistrer": function() {
+
+        $('.recurrence').removeClass( "ui-state-error" );
+
+        rrule = recurrenceRRule();
+
+        $('#recurrence-summary').text(rrule);
+        $('#recurrence-hidden').val(rrule);
+        $('#recurrence-info').show();
+
+        $( this ).dialog( "close" );
+      },
+
+      Annuler: function() {
+        if(!$('#recurrence-hidden').val()){
+          $('#recurrence-checkbox').prop('checked', false);
+        }
+	$( this ).dialog( "close" );
+      }
+    },
+
+    close: function() {
+
+      /** Réinitialise les champs du formulaire de façon à se qu'ils soient cohérents avec les derniers choix validés.
+       *  Utile si le formulaire est modifié sans être validé puis ouvert de nouveau
+       */
+
+      $('.recurrence').removeClass( "ui-state-error" );
+
+      var rrule = $('#recurrence-hidden').val();
+      if(!rrule){
+        return false;
+      }
+
+      var freq = rrule.replace(/.*FREQ=(\w*).*/,"$1");
+      var interval = rrule.indexOf('INTERVAL') > 0 ? rrule.replace(/.*INTERVAL=(\d*).*/,"$1") : 1;
+      var count = rrule.indexOf('COUNT') > 0 ? rrule.replace(/.*COUNT=(\d*).*/,"$1") : null;
+      var until = rrule.indexOf('UNTIL') > 0 ? rrule.replace(/.*UNTIL=(\w*).*/,"$1") : null;
+      var byday = rrule.indexOf('BYDAY') > 0 ;
+
+      if(freq){
+        $('#recurrence-freq').val(freq);
+        $('#recurrence-freq').change();
+      }
+
+      if(freq == 'MONTHLY' && byday){
+        $('#recurrence-repet-mois2').click();
+      }
+
+      if(interval){
+        $('#recurrence-interval').val(interval);
+      }
+
+      $('#recurrence-end1').click();
+
+      if(count){
+        $('#recurrence-end2').click();
+        $('#recurrence-count').val(count);
+      }
+
+      if(until){
+        until = dateICSGMTToFr(until);
+        until = until.substr(0,10);
+
+        $('#recurrence-end3').click();
+        $('#recurrence-until').val(until);
+      }
+    }
+  });
+
+  $('#recurrence-form').on('dialogclose', function(){
+    if(!$('#recurrence-hidden').val()){
+      $('#recurrence-checkbox').prop('checked', false);
+    }
+  });
+
+  $('#recurrence-form').on('dialogopen', function(){
+    rrule = recurrenceRRule();
+    $('#recurrence-summary-form').text(rrule);
+  });
+
+  $('#recurrence-freq').change(function(){
+    switch($(this).val()){
+      case 'DAILY' : $('#recurrence-repet-freq').text('jours'); break;
+      case 'WEEKLY' : $('#recurrence-repet-freq').text('semaines'); break;
+      case 'MONTHLY' : $('#recurrence-repet-freq').text('mois'); break;
+    }
+
+    if($(this).val() == 'WEEKLY'){
+      $('#recurrence-tr-semaine').show();
+    } else {
+      $('#recurrence-tr-semaine').hide();
+    }
+
+    if($(this).val() == 'MONTHLY'){
+      $('#recurrence-tr-mois').show();
+    } else {
+      $('#recurrence-tr-mois').hide();
+    }
+
+  });
+
+  $('#absence-start').change(function(){
+    var date = $(this).val();
+
+    // Affichage de la date de début dans le formulaire "récurrence"
+//     $('#recurrence-start').val(date);   /* Si champ date de début modifiable */
+    $('#recurrence-start').text(date);
+
+    // Modification de la récurrence si la date de début a changé
+    var rrule = $('#recurrence-hidden').val();
+
+    // S'il s'agit d'une récurrence hebdomadaire avec le paramètre BYDAY
+    if(rrule.indexOf('WEEKLY') > 0 ){
+      byday = recurrenceWeeklyByDay(date);
+      rrule = rrule.replace(/BYDAY=([A-Z, ]*)/,'BYDAY='+byday);
+      if(rrule.indexOf('BYDAY') < 0 ){
+        rrule += ';BYDAY='+byday;
+      }
+    }
+
+    // S'il s'agit d'une récurrence mensuel avec le paramètre BYMONTHDAY
+    if(rrule.indexOf('MONTHLY') > 0 && rrule.indexOf('BYDAY') < 0 ){
+      var bymonthday = parseInt(date.substr(0,2));
+      rrule = rrule.replace(/BYMONTHDAY=(\d*)/,'BYMONTHDAY='+bymonthday);
+      if(rrule.indexOf('BYMONTHDAY') < 0 ){
+        rrule += ';BYMONTHDAY='+bymonthday;
+      }
+    }
+
+    // S'il s'agit d'une récurrence mensuel avec le paramètre BYDAY
+    if(rrule.indexOf('MONTHLY') > 0 && rrule.indexOf('BYDAY') > 0 ){
+      byday = recurrenceMonthlyByDay(date);
+      rrule = rrule.replace(/BYDAY=([0-9A-Z-, ]*)/,'BYDAY='+byday);
+    }
+
+    $('#recurrence-hidden').val(rrule);
+    $('#recurrence-summary').text(rrule);
+
+  });
+
+  $('.recurrence-end').change(function(){
+    if($('#recurrence-end2').is(':checked')){
+      $('#recurrence-count').val(30);
+    } else {
+      $('#recurrence-count').val(null);
+    }
+    if($('#recurrence-end3').is(':checked')){
+    } else {
+      $('#recurrence-until').val(null);
+    }
+  });
   
+  $('#recurrence-count').click(function(){
+    $('#recurrence-end2').click();
+  });
+
+  $('#recurrence-until').click(function(){
+    $('#recurrence-end3').click();
+  });
+
+  // Détecte les modifications du formulaire pour adapter la règle ICS
+  $('.recurrence').change(function(){
+    rrule = recurrenceRRule();
+    $('#recurrence-summary-form').text(rrule);
+  });
+  $('input[type=text].recurrence').keyup(function(){
+    rrule = recurrenceRRule();
+    $('#recurrence-summary-form').text(rrule);
+  });
+
   
 });
 
@@ -260,6 +469,117 @@ function affiche_perso_ul(){
   }
 }
 
+
+function recurrenceMonthlyByDay(date){
+  if(!date){
+    return false;
+  }
+
+  // Day of Week
+  var tab = ['SU','MO','TU','WE','TH','FR','SA'];
+  date = date.replace(/(\d*)\/(\d*)\/(\d*)/,'$2/$1/$3');
+  d = new Date(date);
+  var n = d.getDay();
+  var day = tab[n];
+
+  // Week of month
+  var wom=0;
+  var date = d.getDate();
+  if(date<8){
+    wom = 1;
+  } else if(date<15){
+    wom = 2;
+  } else if (date<22){
+    wom = 3;
+  } else if (date<29){
+    wom = 4;
+  } else {
+    wom = -1;
+  }
+
+  // NOTE : Variante dernière semaine prioritaire sur la 4ème semaine (ex : -1SA au lieu de 4SA)
+  //     var lastDay = daysInMonth(d.getMonth()+1,d.getFullYear());
+  //     if(date > (lastDay - 7)){
+  //       wom = -1;
+  //     }
+
+  byday = wom.toString()+day.toString();
+
+  return byday;
+}
+
+function recurrenceWeeklyByDay(date){
+  var tab = ['SU','MO','TU','WE','TH','FR','SA'];
+  date = date.replace(/(\d*)\/(\d*)\/(\d*)/, '$2/$1/$3');
+  d = new Date(date);
+  var byday = tab[d.getDay()];
+
+  return byday;
+}
+
+
+
+/** function recurrenceRRule
+ * Fabrique la règle de récurrence rrule en fonction des informations saisie dans le formulaire recurrence-form (dialog box)
+ * rrule permettra d'écrire un événement au format ICS
+ */
+function recurrenceRRule(){
+  var byday = null;
+  var bymonthday = null;
+  var end = null;
+  var rrule = null;
+
+  // FREQ
+  freq = $('#recurrence-freq').val();
+
+  // BYDAY / WEEKLY
+  $('.recurrence-by-day:visible:checked').each(function(){
+    byday = (byday == null) ? $(this).val() : byday+=','+$(this).val();
+  });
+
+  // BYMONTHDAY
+  if($('#recurrence-repet-mois1:visible:checked').length > 0){
+    bymonthday = parseInt($('#absence-start').val().substr(0,2));
+  }
+
+  // BYDAY / MONTHLY
+  if($('#recurrence-repet-mois2:visible:checked').length > 0){
+    var date = $('#absence-start').val();
+    byday = recurrenceMonthlyByDay(date);
+  }
+
+  // COUNT && UNTIL
+  switch($('.recurrence-end:checked').val()){
+    // COUNT
+    case 'count' :
+      var count = $('#recurrence-count').val();
+      end = 'COUNT='+count;
+      break;
+
+    // UNTIL
+    case 'until' :
+      var until = $('#recurrence-until').val();
+
+      if(until){
+        // Conversion date ICS sur fuseau GMT
+        until = dateFrToICSGMT(until+" 23:59:59");
+        end = 'UNTIL='+until;
+      }
+      break;
+  }
+
+  // INTERVAL
+  interval = $('#recurrence-interval').val() == 1 ? null : $('#recurrence-interval').val();
+
+  // RRULE
+  rrule='FREQ='+freq+';WKST=MO';
+  if(interval){ rrule += ';INTERVAL='+interval; }
+  if(byday){ rrule += ';BYDAY='+byday; }
+  if(bymonthday){ rrule += ';BYMONTHDAY='+bymonthday; }
+  if(end){ rrule += ';'+end; }
+
+  return rrule;
+}
 
 // Vérification des formulaires (ajouter et modifier)
 function verif_absences(ctrl_form){

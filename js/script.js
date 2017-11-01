@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio, Version 2.7.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 30 septembre 2017
+Dernière modification : 1er novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 @author Etienne Cavalié
@@ -248,6 +248,55 @@ function dateFr(date){
     date=tab[2]+"-"+tab[1]+"-"+tab[0];
   }
   return date;
+}
+
+/** @function dateFrToICSGMT
+ * @param string date : date au format DD/MM/YYYY HH:mm:ss
+ * @return string date au format YYYYMMDDTHHmmssZ
+ * Convertit une date au format FR sur le fuseau horaire local (navigateur) en date au format ICS sur le fuseau horaire GMT
+ */
+function dateFrToICSGMT(date){
+
+  var d = new Date(date.replace(/(\d*)\/(\d*)\/(\d*)(.*)/,"$2/$1/$3$4"));
+  var offset = d.getTimezoneOffset();
+  d.setMinutes(d.getMinutes() + offset);
+
+  date = d.getFullYear().toString()
+    +('0' + (d.getMonth()+1)).slice(-2)
+    +('0' + d.getDate()).slice(-2)
+    +'T'
+    +('0' + d.getHours()).slice(-2)
+    +('0' + d.getMinutes()).slice(-2)
+    +('0' + d.getSeconds()).slice(-2)
+    +'Z';
+
+  return date;
+}
+
+/** @function dateICSGMTToFr
+ * @param string date : date au format YYYYMMDDTHHmmssZ
+ * @return string date au format DD/MM/YYYY HH:mm:ss
+ * Convertit une date au format ICS sur le fuseau horaire GMT en date au format FR sur le fuseau horaire local (navigateur)
+ */
+function dateICSGMTToFr(date){
+
+  var d = new Date(date.replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/,"$2/$3/$1 $4:$5:$6"));
+  var offset = d.getTimezoneOffset();
+
+  d.setMinutes(d.getMinutes() - offset);
+
+  date = ('0' + d.getDate()).slice(-2)+'/'
+    +('0' + (d.getMonth()+1)).slice(-2)+'/'
+    +d.getFullYear()+' '
+    +('0' + d.getHours()).slice(-2)+':'
+    +('0' + d.getMinutes()).slice(-2)+':'
+    +('0' + d.getSeconds()).slice(-2);
+
+  return date;
+}
+
+function daysInMonth(month,year) {
+  return new Date(year, month, 0).getDate();
 }
 
 function decompte(dcpt){

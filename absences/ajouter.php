@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio, Version 2.7.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 7 octobre 2017
+Dernière modification : 1er novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -30,7 +30,6 @@ $debut=filter_input(INPUT_GET,"debut",FILTER_SANITIZE_STRING);
 $fin=filter_input(INPUT_GET,"fin",FILTER_SANITIZE_STRING);
 $hre_debut=filter_input(INPUT_GET,"hre_debut",FILTER_SANITIZE_STRING);
 $hre_fin=filter_input(INPUT_GET,"hre_fin",FILTER_SANITIZE_STRING);
-$menu=filter_input(INPUT_GET,"menu",FILTER_SANITIZE_STRING);
 $motif=filter_input(INPUT_GET,"motif",FILTER_SANITIZE_STRING);
 $motif_autre=trim(filter_input(INPUT_GET,"motif_autre",FILTER_SANITIZE_STRING));
 $nbjours=filter_input(INPUT_GET,"nbjours",FILTER_SANITIZE_NUMBER_INT);
@@ -322,7 +321,6 @@ else{
   
   echo "<form name='form' action='index.php' method='get' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");' >\n";
   echo "<input type='hidden' name='page' value='absences/ajouter.php' />\n";
-  echo "<input type='hidden' name='menu' value='$menu' />\n";
   echo "<input type='hidden' name='confirm' value='1' />\n";
   echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
   echo "<input type='hidden' id='admin' value='".($admin?1:0)."' />\n";
@@ -379,7 +377,7 @@ else{
   echo "<tr><td>\n";
   echo "<label class='intitule'>Date de début </label>\n";
   echo "</td><td style='white-space:nowrap;'>";
-  echo "<input type='text' name='debut' value='$debut' style='width:100%;' class='datepicker'/>\n";
+  echo "<input type='text' name='debut' value='$debut' style='width:100%;' class='recurrence-start datepicker' id='absence-start'/>\n";
   echo "</td></tr>\n";
   echo "<tr id='hre_debut' style='display:none;'><td>\n";
   echo "<label class='intitule'>Heure de début </label>\n";
@@ -399,6 +397,14 @@ else{
   echo "<select name='hre_fin' class='center ui-widget-content ui-corner-all' onfocus='setEndHour();'>\n";
   selectHeure(7,23,true);
   echo "</select>\n";
+  echo "</td></tr>\n";
+  
+  echo "<tr><td style='padding-bottom:30px;'>\n";
+  echo "<label class='intitule'>Récurrence</label>\n";
+  echo "</td><td style='padding-bottom:30px;'>\n";
+  echo "<input type='checkbox' name='recurrence' id='recurrence-checkbox' />\n";
+  echo "<span id='recurrence-info' style='display:none;'><span id='recurrence-summary'>&nbsp;</span><a href='#' id='recurrence-link' style='margin-left:10px;'>Modifier</a></span>\n";
+  echo "<input type='hidden' name='recurrence-hidden' id='recurrence-hidden' />\n";
   echo "</td></tr>\n";
   
   echo "<tr><td>\n";
@@ -459,10 +465,7 @@ else{
 
   echo "<tr><td>&nbsp;\n";
   echo "</td></tr><tr><td colspan='2' style='text-align:center;'>\n";
-  if($menu=="off")
-    echo "<input type='button' class='ui-button' value='Annuler' onclick='popup_closed();' />";
-  else
-    echo "<input type='button' class='ui-button' value='Annuler' onclick='document.location.href=\"index.php?page=absences/index.php\";' />";
+  echo "<input type='button' class='ui-button' value='Annuler' onclick='document.location.href=\"index.php?page=absences/voir.php\";' />";
   echo "&nbsp;&nbsp;\n";
   echo "<input type='submit' class='ui-button' value='Valider' />\n";
 
@@ -482,3 +485,85 @@ if($db->result){
 }
 ?>
 </td></tr></table>
+
+<div id="recurrence-form" title="Récurrence" class='noprint' style='display:none;'>
+  <p class="validateTips">&nbsp;</p>
+  <form>
+  <table class='tableauFiches'>
+  <tr><td>
+    <label for='recurrence-freq' >R&eacute;current : 
+  </td><td>
+    <select name='recurrence-freq' id='recurrence-freq' class='recurrence'>
+      <option value='DAILY'>Tous les jours</option>
+      <option value='WEEKLY' selected='selected'>Toutes les semaines</option>
+      <option value='MONTHLY'>Tous les mois</option>
+    </select>
+  </td></tr>
+  <tr><td>
+    <label for='recurrence-interval' >R&eacute;p&eacute;ter tous les : </label>
+  </td><td>
+    <select name='recurrence-interval' id='recurrence-interval' style='width:50%;' class='recurrence'>
+<?php
+  for($i=1; $i<31; $i++){
+    echo "<option value='$i'>$i</option>\n";
+  }
+?>
+    </select>
+    <span id='recurrence-repet-freq'>semaines</span>
+  </td></tr>
+  <tr id='recurrence-tr-semaine'><td>
+    <label>R&eacute;p&eacute;ter le : </label>
+  </td><td>
+    <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day1' value='MO' class='recurrence recurrence-by-day recurrence-by-day1' /><label for='recurrence-by-day1'>L</label> 
+    <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day2' value='TU' class='recurrence recurrence-by-day recurrence-by-day2' /><label for='recurrence-by-day2'>Ma</label>  
+    <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day3' value='WE' class='recurrence recurrence-by-day recurrence-by-day3' /><label for='recurrence-by-day3'>Me</label>  
+    <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day4' value='TH' class='recurrence recurrence-by-day recurrence-by-day4' /><label for='recurrence-by-day4'>J</label>  
+    <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day5' value='FR' class='recurrence recurrence-by-day recurrence-by-day5' /><label for='recurrence-by-day5'>V</label>  
+    <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day6' value='SA' class='recurrence recurrence-by-day recurrence-by-day6' /><label for='recurrence-by-day6'>S</label>  
+    <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day0' value='SU' class='recurrence recurrence-by-day recurrence-by-day0' /><label for='recurrence-by-day0'>D</label>  
+  </td></tr>
+  <tr id='recurrence-tr-mois' style='display:none;'><td>
+    <label>R&eacute;p&eacute;ter chaque : </label>
+  </td><td>
+    <input type='radio' name='recurrence-repet-mois' id='recurrence-repet-mois1' class='recurrence' value='BYMONTHDAY' checked='cheched' /><label for='recurrence-repet-mois1'>jour du mois</label> 
+    <input type='radio' name='recurrence-repet-mois' id='recurrence-repet-mois2' class='recurrence' value='BYDAY' /><label for='recurrence-repet-mois2'>jour de la semaine</label>  
+  </td></tr>
+  <tr><td>
+    <label for='recurrence-debut'>Date de d&eacute;but : </label>
+  </td><td>
+<!--    <input type='text' value='<?php echo $debut; ?>' id='recurrence-start' class='recurrence recurrence-start datepicker' /> -->
+    <span id='recurrence-start'><?php echo $debut; ?></span>
+  </td></tr>
+  <tr><td>
+    <label for='recurrence-end'>Fin : </label>
+  </td><td>
+    <ul style='margin:0; padding:0; list-style:none;'>
+      <li style='margin:5px 0;' id='recurrence-end1-li'>
+        <input type='radio' name='recurrence-end' class='recurrence recurrence-end' id='recurrence-end1' value='never' checked='checked' />
+        <label for='recurrence-end1'> Jamais</label>
+      </li>
+      <li style='margin:5px 0;' id='recurrence-end2-li'>
+        <input type='radio' name='recurrence-end' class='recurrence recurrence-end' id='recurrence-end2' value='count'/>
+        <label for='recurrence-end2'>  Apr&egrave;s 
+          <input type='text' name='recurrence-count' id='recurrence-count' style='width:30px;' class='recurrence ui-widget ui-corner-all ui-widget-content'/> r&eacute;p&eacute;titions
+        </label>
+      </li>
+      <li style='margin:5px 0;' id='recurrence-end3-li'>
+        <input type='radio' name='recurrence-end' class='recurrence recurrence-end' id='recurrence-end3' value='until'/>
+        <label for='recurrence-end3'> Le 
+          <input type='text' name='recurrence-until' id='recurrence-until' style='width:130px;' class='recurrence datepicker'/>
+        </label>
+      </li>
+    </ul>
+  </td></tr>
+  <tr><td>
+    <label>R&eacute;sum&eacute; : </label>
+  </td><td>
+    <span id='recurrence-summary-form' style='max-width:200px; word-wrap:break-word;'>&nbsp;</span>
+  </td></tr>
+    
+  </table>
+    
+    
+  </form>
+</div>
