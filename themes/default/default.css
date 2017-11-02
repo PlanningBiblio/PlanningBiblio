@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio, Version 2.7.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 7 octobre 2017
+Dernière modification : 2 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -188,6 +188,10 @@ h3{
 
 .pl-icon-printer {
   background:url("images/printer.png") no-repeat center;
+}
+
+.pl-icon-recurring {
+  background:url("images/recurring.png") no-repeat center;
 }
 
 .pl-icon-refresh {

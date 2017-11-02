@@ -34,6 +34,8 @@ $motif=filter_input(INPUT_GET,"motif",FILTER_SANITIZE_STRING);
 $motif_autre=trim(filter_input(INPUT_GET,"motif_autre",FILTER_SANITIZE_STRING));
 $nbjours=filter_input(INPUT_GET,"nbjours",FILTER_SANITIZE_NUMBER_INT);
 $perso_id=filter_input(INPUT_GET,"perso_id",FILTER_SANITIZE_NUMBER_INT);
+$rrule=filter_input(INPUT_GET,"recurrence-hidden",FILTER_SANITIZE_STRING);
+$rcheckbox=filter_input(INPUT_GET,"recurrence-checkbox",FILTER_SANITIZE_NUMBER_INT);
 $valide=filter_input(INPUT_GET,"valide",FILTER_SANITIZE_NUMBER_INT);
 
 // Contrôle sanitize_dateFr en 2 temps pour éviter les erreurs CheckMarx
@@ -85,6 +87,14 @@ if($config['Absences-adminSeulement'] and !$admin){
   echo "<div id='acces_refuse'>Accès refusé</div>\n";
   include "include/footer.php";
   exit;
+}
+
+// Récurrence
+//TEST
+// TODO : créer un paramètre pour désigner un dossier data
+$ics_folder = "/tmp";
+if(!$rcheckbox){
+  $rrule = null;
 }
 
 echo <<<EOD
@@ -198,10 +208,25 @@ if($confirm and !empty($perso_ids)){
     $a=new absences();
     $a->getRecipients($notifications,$responsables,$mail,$mails_responsables);
     $destinataires=$a->recipients;
+    
+    // Récurrences
+    if($rrule){
+      $file = "$ics_folder/$perso_id.ics";
+      $tzid = date_default_timezone_get();
+      $dtstart = preg_replace('/(\d+)\/(\d+)\/(\d+)/','$3$2$1',$debut).'T';
+      $dtstart .= preg_replace('/(\d+):(\d+):(\d+)/','$1$2$3',$hre_debut);
+      $dtend = preg_replace('/(\d+)\/(\d+)\/(\d+)/','$3$2$1',$fin).'T';
+      $dtend .= preg_replace('/(\d+):(\d+):(\d+)/','$1$2$3',$hre_fin);
+      $dtstamp = gmdate('Ymd').'T'.gmdate('His').'Z';
+      $summary = $motif_autre ? html_entity_decode($motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8') : html_entity_decode($motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+      $cal_name = "PlanningBiblio-$perso_id";
+      $uid = $dtstart."_".$dtstamp."_".$perso_id;
+      $status = $valideN2 > 0 ? 'CONFIRMED' : 'TENTATIVE';
+    }
 
     // Ajout de l'absence dans la table 'absence'
     $insert=array("perso_id"=>$perso_id, "debut"=>$debut_sql, "fin"=>$fin_sql, "nbjours"=>$nbjours, "motif"=>$motif, "motif_autre"=>$motif_autre, "commentaires"=>$commentaires, 
-    "demande"=>date("Y-m-d H:i:s"), "pj1"=>$pj1, "pj2"=>$pj2, "so"=>$so, "groupe"=>$groupe);
+    "demande"=>date("Y-m-d H:i:s"), "pj1"=>$pj1, "pj2"=>$pj2, "so"=>$so, "groupe"=>$groupe, "cal_name" => $cal_name, "ical_key" => $uid, "rrule"=>$rrule);
 
     if($valideN1!=0){
       $insert["valide_n1"]=$valideN1;
@@ -215,6 +240,54 @@ if($confirm and !empty($perso_ids)){
     $db=new db();
     $db->CSRFToken = $CSRFToken;
     $db->insert("absences", $insert);
+    
+    // Enregistrement des récurrences
+    // Si une règle de récurrence existe
+    if($rrule){
+      // On créé un événement ICS
+      $ics_event = "BEGIN:VEVENT\n";
+      $ics_event .= "UID:$uid\n";
+      $ics_event .= "DTSTART;TZID=$tzid:$dtstart\n";
+      $ics_event .= "DTEND;TZID=$tzid:$dtend\n";
+      $ics_event .= "DTSTAMP:$dtstamp\n";
+      $ics_event .= "CREATED:$dtstamp\n";
+      $ics_event .= "LAST-MODIFIED:$dtstamp\n";
+      $ics_event .= "LOCATION:\n";
+      $ics_event .= "STATUS:$status\n";
+      $ics_event .= "SUMMARY:$summary\n";
+      $ics_event .= "DESCRIPTION:".html_entity_decode($commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8')."\n";
+      $ics_event .= "TRANSP:OPAQUE\n";
+      $ics_event .= "RRULE:$rrule\n";
+      $ics_event .= "END:VEVENT\n";
+
+      // Si le fichier ICS existe déjà pour l'agent courant
+      if(file_exists($file)){
+        // On récupère le contenu du fichier et supprime la dernière ligne (END:VCALENDAR)
+        $ics_content = str_replace("END:VCALENDAR\n", "", file_get_contents($file));
+
+      // Si le fichier ICS n'existe pas pour l'agent courant
+      } else {
+        // On créé l'entête du fichier ICS
+        $ics_content = "BEGIN:VCALENDAR\n";
+        $ics_content .= "PRODID:-//Planning Biblio//Planning Biblio 2.7.04//FR\n";
+        $ics_content .= "VERSION:2.7.04\n";
+        $ics_content .= "CALSCALE:GREGORIAN\n";
+        $ics_content .= "METHOD:PUBLISH\n";
+        $ics_content .= "X-WR-CALNAME:Absences Planning Biblio ".nom($perso_id)."\n";
+        $ics_content .= "X-WR-TIMEZONE:$tzid\n";
+        $ics_content .= "BEGIN:VTIMEZONE\n";
+        $ics_content .= "TZID:$tzid\n";
+        $ics_content .= "X-LIC-LOCATION:$tzid\n";
+        $ics_content .= "END:VTIMEZONE\n";
+      }
+
+      // Ensuite, on ajoute l'événement et la dernière ligne du fichier ICS
+      $ics_content .= $ics_event;
+      $ics_content .= "END:VCALENDAR\n";
+
+      // on ecrit le fichier
+      file_put_contents($file, $ics_content);
+      }
 
     // Récupération de l'ID de l'absence enregistrée pour la création du lien dans le mail
     $info=array(array("name"=>"MAX(id)","as"=>"id"));
@@ -402,7 +475,7 @@ else{
   echo "<tr><td style='padding-bottom:30px;'>\n";
   echo "<label class='intitule'>Récurrence</label>\n";
   echo "</td><td style='padding-bottom:30px;'>\n";
-  echo "<input type='checkbox' name='recurrence' id='recurrence-checkbox' />\n";
+  echo "<input type='checkbox' name='recurrence-checkbox' id='recurrence-checkbox' value='1'/>\n";
   echo "<span id='recurrence-info' style='display:none;'><span id='recurrence-summary'>&nbsp;</span><a href='#' id='recurrence-link' style='margin-left:10px;'>Modifier</a></span>\n";
   echo "<input type='hidden' name='recurrence-hidden' id='recurrence-hidden' />\n";
   echo "</td></tr>\n";

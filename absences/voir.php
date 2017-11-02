@@ -148,9 +148,7 @@ echo "</form>\n";
 
 echo "<table id='tableAbsencesVoir' class='CJDataTable' data-sort='$sort' >\n";
 echo "<thead><tr>\n";
-if($admin or (!$config['Absences-adminSeulement'] and in_array(6,$droits))){
-  echo "<th class='dataTableNoSort' >&nbsp;</th>\n";
-}
+echo "<th class='dataTableNoSort' >&nbsp;</th>\n";
 echo "<th class='dataTableDateFR' >Début</th>\n";
 echo "<th class='dataTableDateFR-fin' >Fin</th>\n";
 echo "<th id='thNom'>Agents</th>\n";
@@ -193,10 +191,16 @@ if($absences){
     $soChecked=$elem['so']?"checked='checked'":null;
 
     echo "<tr>\n";
+    echo "<td style='white-space: nowrap;'>\n";
     if($admin or (!$config['Absences-adminSeulement'] and in_array(6,$droits))){
-      echo "<td><a href='index.php?page=absences/modif.php&amp;id=$id'>\n";
-      echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a></td>\n";
+      echo "<a href='index.php?page=absences/modif.php&amp;id=$id'>\n";
+      echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a>\n";
     }
+    if($elem['rrule']){
+      echo "<span class='pl-icon pl-icon-recurring' title='R&eacute;currence'></span>\n";
+    }
+    echo "</td>\n";
+
     echo "<td>".dateFr($elem['debut'],true)."</td>";
     echo "<td>".datefr($elem['fin'],true)."</td>";
     echo "<td>";

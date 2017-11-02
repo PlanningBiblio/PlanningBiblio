@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio, Version 2.7.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 7 ocotbre 2017
+Dernière modification : 2 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -49,7 +49,8 @@ $valide=filter_var($a->elements['valide_n2'],FILTER_SANITIZE_NUMBER_INT);
 $validation=$a->elements['validation_n2'];
 $valideN1=$a->elements['valide_n1'];
 $validationN1=$a->elements['validation_n1'];
-$iCalKey=$a->elements['ical_key'];
+$ical_key=$a->elements['ical_key'];
+$cal_name=$a->elements['cal_name'];
 
 // Pièces justificatives
 $pj1Checked=$a->elements['pj1']?"checked='checked'":null;
@@ -161,7 +162,9 @@ if($config['Multisites-nombre']>1){
 }
 
 // Si l'absence est importée depuis un agenda extérieur, on interdit la modification
-if($iCalKey){
+$agenda_externe = false;
+if($ical_key and substr($cal_name,0,14) != 'PlanningBiblio'){
+  $agenda_externe = true;
   $admin=false;
 }
 
@@ -331,7 +334,7 @@ EOD;
 echo "<tr><td colspan='2'><br/>\n";
 
 // Si l'absence est importée depuis un agenda extérieur, on interdit la modification
-if(($admin or ($valide==0 and $valideN1==0) or $config['Absences-validation']==0) and !$iCalKey){
+if(($admin or ($valide==0 and $valideN1==0) or $config['Absences-validation']==0) and !$agenda_externe){
   echo "<input type='button' class='ui-button' value='Supprimer' id='absence-bouton-supprimer' data-id='$id'/>";
   echo "&nbsp;&nbsp;\n";
   echo "<input type='button' class='ui-button' value='Annuler' onclick='annuler(1);'/>\n";
