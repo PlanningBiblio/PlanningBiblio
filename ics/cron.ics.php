@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.03
+Planning Biblio, Version 2.7.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/cron.ics.php
 Création : 28 juin 2016
-Dernière modification : 25 octobre 2017
+Dernière modification : 4 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -61,8 +61,14 @@ if(file_exists($lockFile)){
 $inF=fopen($lockFile,"w");
 
 // Recherche les serveurs ICS et les variables openURL
-$servers=array(1=>null, 2=>null);
-$var=array(1=>null, 2=>null);
+// Index des tableaux $servers et $var :
+// 0 : Fichiers ICS "Planning Biblio", créés lors de l'enregistrement d'événements récurrents
+// 1 : Fichiers ICS provenant d'une source externe, renseignés dans la config. : ICS / ICS-Servers1
+// 2 : Fichiers ICS provenant d'une source externe, renseignés dans la config. : ICS / ICS-Servers2
+// 3 : Fichiers ICS provenant d'une source externe, renseignés dans la fiche des agents (url_ics)
+
+$servers=array(0 => $config['Data-Folder']."/PBCalendar-[perso_id].ics", 1=>null, 2=>null);
+$var=array(0 => "perso_id", 1=>null, 2=>null);
 
 for($i=1; $i<3; $i++){
   if(trim($config["ICS-Server$i"])){
@@ -97,7 +103,7 @@ foreach($agents as $agent){
   // Si le paramètre ICS-Server3 est activé, on recherche également une URL personnalisée dans la fiche des agents (champ url_ics).
   
   $fin = $config['ICS-Server3'] ? 3 : 2;
-  for($i=1; $i <= $fin; $i++){
+  for($i=0; $i <= $fin; $i++){
     if($i<3){
       if(!$servers[$i] or !$var[$i]){
         continue;
@@ -123,6 +129,11 @@ foreach($agents as $agent){
             $url=str_replace("[{$var[$i]}]",$agent["matricule"],$servers[$i]);
           }
           break;
+        case "perso_id" :
+          if(!empty($agent["id"])){
+            $url=str_replace("[{$var[$i]}]",$agent["id"],$servers[$i]);
+          }
+          break;
         default : $url=false; break;
       }
     }
@@ -132,12 +143,28 @@ foreach($agents as $agent){
     }
   
     if(!$url){
-      logs("Impossible de constituer une URL valide pour l'agent #{$agent['id']}", "ICS", $CSRFToken);
+      logs("Agent #{$agent['id']} : Impossible de constituer une URL valide", "ICS", $CSRFToken);
       continue;
     }
     
+    // Test si le fichier existe
+    if(substr($url,0,1) == '/' and !file_exists($url)){
+      logs("Agent #{$agent['id']} : Le fichier $url n'existe pas", "ICS", $CSRFToken);
+      continue;
+    }
+    
+    // Test si l'URL existe
+    if(substr($url,0,4) == 'http'){
+      $test = get_headers($url, 1);
+      if(strstr($test[0],'404')){
+        logs("Agent #{$agent['id']} : $url 404 Not Found", "ICS", $CSRFToken);
+        continue;
+      }
+    }
+    
+
     // Si la case importation correspondant à ce calendrier est décochée, on ne l'importe pas et on purge les éventuels événements déjà importés.
-    if(!$agent["ics_$i"]){
+    if(($i > 0) and !$agent["ics_$i"]){
       $ics=new CJICS();
       $ics->src=$url;
       $ics->perso_id=$agent["id"];
@@ -148,21 +175,21 @@ foreach($agents as $agent){
       continue;
     }
     
-    logs("Importation du fichier $url pour l'agent #{$agent['id']}", "ICS", $CSRFToken);
+    logs("Agent #{$agent['id']} : Importation du fichier $url", "ICS", $CSRFToken);
 
-    // TODO : tester si l'url existe 
-    // TODO : voir https://openclassrooms.com/forum/sujet/verifier-si-un-url-existe-70382
+    if($i == 0){
+      $pattern = "[SUMMARY]";
+      $status = "All";
+    } else {
+      $pattern = $config["ICS-Pattern$i"];
+      $status = $config["ICS-Status$i"];
+    }
     
-//     if(!file_exists($url)){
-//       logs("Fichier $url non trouvé pour l'agent #{$agent['id']}", "ICS", $CSRFToken);
-//       continue;
-//     }
-
     $ics=new CJICS();
     $ics->src=$url;
-    $ics->status = $config["ICS-Status$i"];
     $ics->perso_id=$agent["id"];
-    $ics->pattern=$config["ICS-Pattern$i"];
+    $ics->pattern= $pattern;
+    $ics->status = $status;
     $ics->table="absences";
     $ics->logs=true;
     $ics->CSRFToken = $CSRFToken;

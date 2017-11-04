@@ -26,19 +26,20 @@ TODO : modifier la fonction calculHeuresAbsences : appliquer le paramètre ->uni
 TODO : * Pas nécessaire pour statistiques/agents.php /statut.php /service.php /samedis.php /postes*.php /class.statistiques.php
 TODO : * Pas nécessaire pour statistiques/temps.php mais contrôler les résultats des heures de SP adaptés en fonction des heures d'absences (fonction calculHeuresAbsences)
 
-
-
 */
 
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 if(!isset($version)){
-  include_once "../include/accessDenied.php";
+  require_once __DIR__."/../include/accessDenied.php";
 }
+
+require_once __DIR__."/../ics/class.ics.php";
 
 class absences{
   public $agents_supprimes=array(0);
   public $CSRFToken=null;
+  public $commentaires=null;
   public $debut=null;
   public $edt=array();
   public $elements=array();
@@ -47,12 +48,19 @@ class absences{
   public $groupe=null;
   public $heures=0;
   public $heures2=null;
+  public $hre_debut = null;
+  public $hre_fin = null;
   public $ignoreFermeture=false;
   public $minutes=0;
+  public $motif = null;
+  public $motif_autre = null;
   public $perso_id=null;
   public $perso_ids=array();
   public $recipients=array();
+  public $rrule = null;
   public $valide=false;
+  public $valideN1 = null;
+  public $valideN2 = null;
   public $unique=false;
 
   public function __construct(){
@@ -508,19 +516,29 @@ class absences{
           }
         }
 
-        // N'ajoute qu'une ligne pour les membres d'un groupe
-	if($this->groupe and $elem['groupe'] and in_array($elem['groupe'],$groupes)){
-	  continue;
-	}
-	if($elem['groupe']){
-	  // Pour ne plus afficher les membres du groupe pr la suite
-	  $groupes[]=$elem['groupe'];
+        // Gestion des groupes : ajout des infos sur les autres agents et affichage d'une seule ligne si $this->groupe=true
+        $groupe = null;
+        if(!empty($elem['groupe'])){
+          // Le groupe est complété de la date et heure de début et de fin pour qu'il soit unique pour chaque occurence (si récurrence)
+          $groupe = $elem['groupe'].$elem['debut'].$elem['fin'];
+        }
+        
+        // N'ajoute qu'une ligne pour les membres d'un groupe si $this->true
+        if($this->groupe and $groupe and in_array($groupe,$groupes)){
+          continue;
+        }
+
+        // Ajoute des infos sur les autres agents
+        if($groupe){
+	  // Pour ne plus afficher les membres du groupe par la suite
+	  $groupes[]=$groupe;
 	  
 	  // Ajoute les ID des autres agents appartenant à ce groupe
 	  $perso_ids=array();
 	  $agents=array();
 	  foreach($db->result as $elem2){
-	    if($elem2['groupe']==$elem['groupe']){
+            $groupe2 = $elem2['groupe'].$elem2['debut'].$elem2['fin'];
+            if($groupe2 == $groupe){
 	      $perso_ids[]=$elem2['perso_id'];
 	      $agents[]=$elem2['nom']." ".$elem2['prenom'];
 	    }
@@ -650,13 +668,15 @@ class absences{
       // Complète le tableau $agents
       if($result['groupe']){
 	$groupe=$result['groupe'];
+        $debut=$result['debut'];
+        $fin=$result['fin'];
 	$agents=array();
 	// Recherche les absences enregistrées sous le même groupe et les infos des agents concernés
 	$db=new db();
 	$db->selectInnerJoin(array("absences","perso_id"),array("personnel","id"),
 	  array("id"),
 	  array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mails_responsables"),
-	  array("groupe"=>$groupe),
+          array("groupe"=>$groupe, "debut"=>$debut, "fin"=>$fin),
 	  array(),
 	  "order by nom, prenom");
 	
@@ -944,6 +964,87 @@ class absences{
     $db=new db();
     $db->CSRFToken = $this->CSRFToken;
     $db->update("absences",array($pj => $checked),array("id"=>$id));
+  }
+
+  /**
+   * @function update_ics
+   * Enregistre un événement dans le fichier ICS "Planning Biblio" de l'agent sélectionné
+   * @params : tous les éléments d'une absence : date et heure de début et de fin, motif, commentaires, validation, ID de l'agent, règle de récurrence (rrule)
+   */
+  public function update_ics(){
+
+    // Initilisation des variables, adaptation des valeurs
+    $perso_id = $this->perso_id;
+    $file = $GLOBALS['config']['Data-Folder']."/PBCalendar-$perso_id.ics";
+    $tzid = date_default_timezone_get();
+    $dtstart = preg_replace('/(\d+)\/(\d+)\/(\d+)/','$3$2$1',$this->debut).'T';
+    $dtstart .= preg_replace('/(\d+):(\d+):(\d+)/','$1$2$3',$this->hre_debut);
+    $dtend = preg_replace('/(\d+)\/(\d+)\/(\d+)/','$3$2$1',$this->fin).'T';
+    $dtend .= preg_replace('/(\d+):(\d+):(\d+)/','$1$2$3',$this->hre_fin);
+    $dtstamp = gmdate('Ymd').'T'.gmdate('His').'Z';
+    $summary = $this->motif_autre ? html_entity_decode($this->motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8') : html_entity_decode($this->motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+    $cal_name = "PlanningBiblio-Absences-$perso_id-".nom($perso_id);
+    $uid = $dtstart."_".$dtstamp."_".$perso_id;
+    $status = $this->valideN2 > 0 ? 'CONFIRMED' : 'TENTATIVE';
+
+    // On créé un événement ICS
+    $ics_event = "BEGIN:VEVENT\n";
+    $ics_event .= "UID:$uid\n";
+    $ics_event .= "DTSTART;TZID=$tzid:$dtstart\n";
+    $ics_event .= "DTEND;TZID=$tzid:$dtend\n";
+    $ics_event .= "DTSTAMP:$dtstamp\n";
+    $ics_event .= "CREATED:$dtstamp\n";
+    $ics_event .= "LAST-MODIFIED:$dtstamp\n";
+    $ics_event .= "LOCATION:\n";
+    $ics_event .= "STATUS:$status\n";
+    $ics_event .= "SUMMARY:$summary\n";
+    $ics_event .= "DESCRIPTION:".html_entity_decode($this->commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8')."\n";
+    if($this->groupe){ $ics_event .= "CATEGORIES:PBGroup=".$this->groupe."\n"; }
+    $ics_event .= "TRANSP:OPAQUE\n";
+    $ics_event .= "RRULE:{$this->rrule}\n";
+    $ics_event .= "END:VEVENT\n";
+
+    // Si le fichier ICS existe déjà pour l'agent courant
+    if(file_exists($file)){
+      // On récupère le contenu du fichier et supprime la dernière ligne (END:VCALENDAR)
+      $ics_content = str_replace("END:VCALENDAR\n", "", file_get_contents($file));
+
+    // Si le fichier ICS n'existe pas pour l'agent courant
+    } else {
+      // On créé l'entête du fichier ICS
+      $ics_content = "BEGIN:VCALENDAR\n";
+      $ics_content .= "PRODID:-//Planning Biblio//Planning Biblio 2.7.04//FR\n";
+      $ics_content .= "VERSION:2.7.04\n";
+      $ics_content .= "CALSCALE:GREGORIAN\n";
+      $ics_content .= "METHOD:PUBLISH\n";
+      $ics_content .= "X-WR-CALNAME:$cal_name\n";
+      $ics_content .= "X-WR-TIMEZONE:$tzid\n";
+      $ics_content .= "BEGIN:VTIMEZONE\n";
+      $ics_content .= "TZID:$tzid\n";
+      $ics_content .= "X-LIC-LOCATION:$tzid\n";
+      $ics_content .= "END:VTIMEZONE\n";
+    }
+
+    // Ensuite, on ajoute l'événement et la dernière ligne du fichier ICS
+    $ics_content .= $ics_event;
+    $ics_content .= "END:VCALENDAR\n";
+
+    // On ecrit le fichier
+    file_put_contents($file, $ics_content);
+
+    // On enregistre les infos dans la base de données
+    $src = $GLOBALS['config']['Data-Folder']."/PBCalendar-$perso_id.ics";
+    logs("Agent #$perso_id : Importation du fichier $src", "ICS", $this->CSRFToken);
+    
+    $ics=new CJICS();
+    $ics->src = $src;
+    $ics->perso_id = $perso_id;
+    $ics->pattern = '[SUMMARY]';
+    $ics->status = 'All';
+    $ics->table ="absences";
+    $ics->logs = true;
+    $ics->CSRFToken = $this->CSRFToken;
+    $ics->updateTable();
   }
 
   public function update_time(){

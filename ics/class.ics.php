@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.03
+Planning Biblio, Version 2.7.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/class.ics.php
 Création : 29 mai 2016
-Dernière modification : 25 octobre 2017
+Dernière modification : 4 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -81,14 +81,14 @@ class CJICS{
     }
 
     if($this->logs){
-      logs("Purge $calName, Table: $table, Perso: $perso_id, src: $src", "ICS", $CSRFToken);
+      logs("Agent #$perso_id : Purge $calName, Table: $table, src: $src", "ICS", $CSRFToken);
     }
     
     if($this->logs){
       $db = new db();
       $db->select2($table, 'id', array('cal_name' => $calName, 'perso_id' => $perso_id));
       $nb = $db->nb;
-      logs("Purge $calName, Table: $table, Perso: $perso_id, $nb éléments à supprimer", "ICS", $CSRFToken);
+      logs("Agent #$perso_id : Purge $calName, Table: $table, $nb éléments à supprimer", "ICS", $CSRFToken);
     }
 
     $db = new db();
@@ -117,7 +117,7 @@ class CJICS{
     $insert=array();		// Evénements à insérer (nouveaux ou événements modifiés (suppression + réinsertion))
 
     if($this->logs){
-      logs("Table: $table, Perso: $perso_id, src: $src", "ICS", $CSRFToken);
+      logs("Agent #$perso_id : Table: $table, src: $src", "ICS", $CSRFToken);
     }
 
     // Parse le fichier ICS, le tableau $events contient les événements du fichier ICS
@@ -129,12 +129,12 @@ class CJICS{
     $calName = removeAccents($calName);
     $calTimeZone = $ical->calendarTimezone();
     if($this->logs){
-      logs("Calendrier: $calName, Fuseau horaire: $calTimeZone", "ICS", $CSRFToken);
+      logs("Agent #$perso_id : Calendrier: $calName, Fuseau horaire: $calTimeZone", "ICS", $CSRFToken);
     }
     
     if(!is_array($events) or empty($events)){
       if($this->logs){
-        logs("Aucun élément trouvé dans le fichier $src", "ICS", $CSRFToken);
+        logs("Agent #$perso_id : Aucun élément trouvé dans le fichier $src", "ICS", $CSRFToken);
         $events = array();
       }
     }
@@ -149,23 +149,23 @@ class CJICS{
     
     $events=array();
     foreach($tmp as $elem){
-	  // Ne traite pas les événéments ayant le status X-MICROSOFT-CDO-INTENDEDSTATUS différent de BUSY (si le paramètre X-MICROSOFT-CDO-INTENDEDSTATUS existe)
-	  if(isset($elem['X-MICROSOFT-CDO-INTENDEDSTATUS']) and $elem['X-MICROSOFT-CDO-INTENDEDSTATUS'] != "BUSY"){
-		continue;
-	  }
-	  
-	  // Exclusion des dates EXDATE (ics-parser ne le gère pas correctement)
-	  if(isset($elem['EXDATE'])){
-		$exdate_array = explode(",", $elem['EXDATE']);
-		if($exdate_array and !empty($exdate_array)){
-		  foreach ($exdate_array as $exdate){
-			$exdate = date("Ymd\THis", strtotime($exdate));
-			if($exdate == $elem['DTSTART_tz']){
-			  continue 2;
-			}
-		  }
-		}
-	  }
+      // Ne traite pas les événéments ayant le status X-MICROSOFT-CDO-INTENDEDSTATUS différent de BUSY (si le paramètre X-MICROSOFT-CDO-INTENDEDSTATUS existe)
+      if(isset($elem['X-MICROSOFT-CDO-INTENDEDSTATUS']) and $elem['X-MICROSOFT-CDO-INTENDEDSTATUS'] != "BUSY"){
+        continue;
+      }
+      
+      // Exclusion des dates EXDATE (ics-parser ne le gère pas correctement)
+      if(isset($elem['EXDATE'])){
+        $exdate_array = explode(",", $elem['EXDATE']);
+        if($exdate_array and !empty($exdate_array)){
+          foreach ($exdate_array as $exdate){
+            $exdate = date("Ymd\THis", strtotime($exdate));
+            if($exdate == $elem['DTSTART_tz']){
+              continue 2;
+            }
+          }
+        }
+      }
 
       // Traite seulement les événéments ayant un status occupés TRANSP OPAQUE (TRANSP OPAQUE défini un status BUSY)
       if($elem['TRANSP']=="OPAQUE"){
@@ -183,78 +183,91 @@ class CJICS{
     if($db->result){
       // Pour chaque événement
       foreach($db->result as $elem){
-		// Si l'évenement n'est plus dans le fichier ICS ou s'il a été modifié dans le fichier ICS, on le supprime : complète le tableau $delete
-		if(!in_array($elem['ical_key'],$iCalKeys)){
-		  $deleted[]=array(":id"=>$elem['id']);
-		}else{
-		  // Sinon, on complète le table $tableKeys avec la clé de l'évenement pour ne pas le réinsérer dans la table
-		  $tableKeys[]=$elem['ical_key'];
-		}
+        // Si l'évenement n'est plus dans le fichier ICS ou s'il a été modifié dans le fichier ICS, on le supprime : complète le tableau $delete
+        if(!in_array($elem['ical_key'],$iCalKeys)){
+          $deleted[]=array(":id"=>$elem['id']);
+        }else{
+          // Sinon, on complète le table $tableKeys avec la clé de l'évenement pour ne pas le réinsérer dans la table
+          $tableKeys[]=$elem['ical_key'];
+        }
       }
     }
     
     // Suppression des événements supprimés ou modifiés de la base de données
-	$nb = count($deleted);
+    $nb = count($deleted);
     if(!empty($deleted)){
       $db=new dbh();
       $db->CSRFToken = $CSRFToken;
       $db->prepare("DELETE FROM `{$GLOBALS['dbprefix']}$table` WHERE `id`=:id;");
       foreach($deleted as $elem){
-		$db->execute($elem);
+        $db->execute($elem);
       }
     }
 
     if($this->logs){
-      logs("$nb événement(s) supprimé(s)", "ICS", $CSRFToken);
+      logs("Agent #$perso_id : $nb événement(s) supprimé(s)", "ICS", $CSRFToken);
     }
 
     // Insertion des nouveux éléments ou des éléments modifiés dans la table $table : complète le tableau $insert
     foreach($events as $elem){
       if(!in_array($elem['key'],$tableKeys)){
-		$insert[]=$elem;
+        $insert[]=$elem;
       }
     }
       
     // Insertion des nouveux éléments ou des éléments modifiés dans la table $table : insertion dans la base de données
-	$nb=0;
+    $nb=0;
     if(!empty($insert)){
       $db=new dbh();
-      $req="INSERT INTO `{$GLOBALS['dbprefix']}$table` (`perso_id`, `debut`, `fin`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `motif`, `motif_autre`, `commentaires`, `cal_name`, `ical_key`) 
-		VALUES (:perso_id, :debut, :fin, :demande, :valide, :validation, :valide_n1, :validation_n1, :motif, :motif_autre, :commentaires, :cal_name, :ical_key);";
+      $req="INSERT INTO `{$GLOBALS['dbprefix']}$table` (`perso_id`, `debut`, `fin`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `motif`, `motif_autre`, `commentaires`, `groupe`, `cal_name`, `ical_key`, `uid`, `rrule`) 
+        VALUES (:perso_id, :debut, :fin, :demande, :valide, :validation, :valide_n1, :validation_n1, :motif, :motif_autre, :commentaires, :groupe, :cal_name, :ical_key, :uid, :rrule);";
       $db->CSRFToken = $CSRFToken;
       $db->prepare($req);
 
       foreach($insert as $elem){
-		// Adaptation des valeurs pour la base de données
-		$lastmodified = date("Y-m-d H:i:s",strtotime($elem['LAST-MODIFIED']));
-		$demande= array_key_exists("CREATED",$elem) ? date("Y-m-d H:i:s",strtotime($elem['CREATED'])) : $lastmodified;
+        // Adaptation des valeurs pour la base de données
+        $lastmodified = date("Y-m-d H:i:s",strtotime($elem['LAST-MODIFIED']));
+        $demande= array_key_exists("CREATED",$elem) ? date("Y-m-d H:i:s",strtotime($elem['CREATED'])) : $lastmodified;
 
-		$debut = date("Y-m-d H:i:s", strtotime($elem["DTSTART_tz"]));
+        $debut = date("Y-m-d H:i:s", strtotime($elem["DTSTART_tz"]));
 
-		// Les événements ICS sur des journées complètes ont comme date de fin J+1 à 0h00
-		// Donc si la date de fin est à 0h00, on retire une seconde pour la rammener à J
-		$offset = date("H:i:s", strtotime($elem["DTEND_tz"])) == "00:00:00" ? "-1 second" : null;
-		$fin = date("Y-m-d H:i:s", strtotime($elem["DTEND_tz"]." $offset"));
+        // Les événements ICS sur des journées complètes ont comme date de fin J+1 à 0h00
+        // Donc si la date de fin est à 0h00, on retire une seconde pour la rammener à J
+        $offset = date("H:i:s", strtotime($elem["DTEND_tz"])) == "00:00:00" ? "-1 second" : null;
+        $fin = date("Y-m-d H:i:s", strtotime($elem["DTEND_tz"]." $offset"));
 
-		$commentaires = isset($elem['SUMMARY']) ? $elem['SUMMARY'] : null;
-		if(array_key_exists("DESCRIPTION",$elem)){
-		  $commentaires.="<br/>\n".$elem['DESCRIPTION'];
-		}
-		
-		$valide = $elem['STATUS'] == 'CONFIRMED' ? 99999 : 0 ;
-		$validation = $elem['STATUS'] == 'CONFIRMED' ? $lastmodified : null ;
-		
-		// Insertion dans la base de données
-		$tab=array(":perso_id" => $perso_id, ":debut" => $debut, ":fin" => $fin, ":demande" => $demande, ":valide"=> $valide, ":validation" => $validation, ":valide_n1"=> $valide, 
-		  ":validation_n1" => $validation, ":motif" => $this->pattern, ":motif_autre" => $this->pattern, ":commentaires" => $commentaires, ":cal_name" => $calName, ":ical_key" => $elem['key']);
-		  
-		$db->execute($tab);
-		$nb++;
+        $valide = $elem['STATUS'] == 'CONFIRMED' ? 99999 : 0 ;
+        $validation = $elem['STATUS'] == 'CONFIRMED' ? $lastmodified : null ;
+        
+        $motif = $this->pattern == '[SUMMARY]' ? $elem['SUMMARY'] : $this->pattern;
+        $motif_autre = $this->pattern == '[SUMMARY]' ? $elem['SUMMARY'] : $this->pattern;
+        
+        if($this->pattern == '[SUMMARY]'){
+          $commentaires =$elem['DESCRIPTION'];
+        } else {
+          $commentaires = isset($elem['SUMMARY']) ? $elem['SUMMARY'] : null;
+          if(array_key_exists("DESCRIPTION",$elem)){
+            $commentaires.="<br/>\n".$elem['DESCRIPTION'];
+          }
+        }
+        
+        $groupe = null;
+        if(!empty($elem['CATEGORIES']) and substr($elem['CATEGORIES'],0,8) == 'PBGroup='){
+          $groupe = substr($elem['CATEGORIES'],8);
+        }
+
+        // Insertion dans la base de données
+        $tab=array(":perso_id" => $perso_id, ":debut" => $debut, ":fin" => $fin, ":demande" => $demande, ":valide"=> $valide, ":validation" => $validation, ":valide_n1"=> $valide, 
+          ":validation_n1" => $validation, ":motif" => $motif, ":motif_autre" => $motif_autre, ":commentaires" => $commentaires, ":groupe" => $groupe, ":cal_name" => $calName, ":ical_key" => $elem['key'], ":uid" => $elem['UID'], ":rrule" => $elem['RRULE']);
+          
+          
+        $db->execute($tab);
+        $nb++;
       }
     }
 
     if($this->logs){
-      logs("$nb événement(s) importé(s)", "ICS", $CSRFToken);
+      logs("Agent #$perso_id : $nb événement(s) importé(s)", "ICS", $CSRFToken);
     }
 
   }
