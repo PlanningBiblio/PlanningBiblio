@@ -58,25 +58,6 @@ $finSQL=dateSQL($fin);
 $debut_sql=$debutSQL." ".$hre_debut;
 $fin_sql=$finSQL." ".$hre_fin;
 
-$isValidate=true;
-$valideN1=0;
-$valideN2=0;
-$validationN1=null;
-$validationN2=null;
-
-if($config['Absences-validation']){
-  if($valide==1 or $valide==-1){
-    $valideN2=$valide*$_SESSION['login_id'];
-    $validationN2=date("Y-m-d H:i:s");
-  }
-  elseif($valide==2 or $valide==-2){
-    $valideN1=($valide/2)*$_SESSION['login_id'];
-    $validationN1=date("Y-m-d H:i:s");
-  }
-  $isValidate=$valideN2>0?true:false;
-}
-
-
 // Récupération des informations des agents concernés par l'absence avant sa modification
 // ET autres informations concernant l'absence avant modification
 $a=new absences();
@@ -95,6 +76,18 @@ $rrule1 = $a->elements['rrule'];
 $global_uid = $a->elements['uid'];
 $valide1N1=$a->elements['valide_n1'];
 $valide1N2=$a->elements['valide_n2'];
+
+if( $valide1N2 > 0 ){
+  $valide1 = 1;
+} elseif( $valide1N2 < 0 ){
+  $valide1 = -1;
+} elseif( $valide1N1 > 0 ){
+  $valide1 = 2;
+} elseif( $valide1N1 < 0 ){
+  $valide1 = -2;
+} else {
+  $valide1 = 0;
+}
 
 // Si l'absence est importée depuis un agenda extérieur, on interdit la modification
 $iCalKey=$a->elements['ical_key'];
@@ -147,8 +140,7 @@ $modification = (
   or htmlentities($motif1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
   or htmlentities($motif_autre1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
   or htmlentities($commentaires1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
-  or $valide1N1 != $valideN1
-  or $valide1N2 != $valideN2
+  or $valide1 != $valide
   or $rrule1 != $rrule
   or empty($pj1_1) != empty($pj1)
   or empty($pj2_1) != empty($pj2)
@@ -159,52 +151,6 @@ $modification = (
 if(!$modification){
   $msg=urlencode("L'absence a été modifiée avec succès");
   echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success';</script>\n";
-}
-
-// Modification d'une absence récurrente
-if($rrule){
-  switch($recurrenceModif){
-    case 'current' :
-    
-      foreach($agents_tous as $elem){
-      
-        // On ajoute une exception à l'événement ICS
-        $exdate = preg_replace('/(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/',"$1$2$3T$4$5$6", $debut1);
-        
-        $a = new absences();
-        $a->CSRFToken = $CSRFToken;
-        $a->perso_id = $elem['perso_id'];
-        $a->uid = $global_uid;
-        $a->ics_add_exdate($exdate);
-      }
-
-      // On enregistre l'événement modifié dans la base de données
-      $a = new absences();
-      $a->debut = $debut;
-      $a->fin = $fin;
-      $a->hre_debut = $hre_debut;
-      $a->hre_fin = $hre_fin;
-      $a->perso_ids = $perso_ids;
-      $a->commentaires = $commentaires;
-      $a->motif = $motif;
-      $a->motif_autre = $motif_autre;
-      $a->CSRFToken = $CSRFToken;
-      $a->rrule = null;
-      $a->valide = $valide;
-      $a->pj1 = $pj1;
-      $a->pj2 = $pj2;
-      $a->so = $so;
-      $a->add();
-      $msg2 = $a->msg2;
-      $msg2_type = $a->msg2_type;
-      break;
-    
-  }
-
-  // TODO : continuer
-  
-
-  
 }
 
 // Sécurité
@@ -263,12 +209,144 @@ if($config['Multisites-nombre']>1){
   $admin=in_array(1,$droits)?true:false;
 }
 
+
+// Modification d'une absence récurrente
+if($rrule){
+
+  // $nouvel_enregistrement permet de définir s'il y aura besoin d'un nouvel enregistrement dans le cas de l'ajout d'une exception ou de la modification des événements à venir
+  $nouvel_enregistrement = false;
+
+  switch($recurrenceModif){
+    case 'current' :
+
+      // On ajoute une exception à l'événement ICS
+      $exdate = preg_replace('/(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/',"$1$2$3T$4$5$6", $debut1);
+
+      foreach($agents_tous as $elem){
+        $a = new absences();
+        $a->CSRFToken = $CSRFToken;
+        $a->perso_id = $elem['perso_id'];
+        $a->uid = $global_uid;
+        $a->ics_add_exdate($exdate);
+      }
+
+      // Un nouvel enregistrement sera créé pour l'occurence modifiée
+      $nouvel_enregistrement = true;
+      $rrule = false;
+
+      break;
+
+    case 'next' :
+
+      // On sépare les événemnts précédents des suivants
+
+      // On définie la date de fin de la première série. Cette date doit être sur le fuseau GMT
+      // On commence par retirer une seconde de façon à ce que la première série s'arrête bien avant la deuxième
+      $serie1_end = date('Ymd\THis', strtotime($debut1.' -1 second'));
+
+      // Puis on récupère la date du fuseau GMT
+      $datetime = new DateTime($serie1_end, new DateTimeZone(date_default_timezone_get()));
+      $datetime->setTimezone(new DateTimeZone('GMT'));
+      $serie1_end = $datetime->format('Ymd\THis\Z');
+
+      // On met à jour a première série : modification de RRULE en mettant UNTIL à la date de fin
+      foreach($agents_tous as $elem){
+        $a = new absences();
+        $a->CSRFToken = $CSRFToken;
+        $a->perso_id = $elem['perso_id'];
+        $a->uid = $global_uid;
+        $a->ics_update_until($serie1_end);
+      }
+
+      // Un nouvel événement sera créé pour les occurences à venir
+      $nouvel_enregistrement = true;
+
+      break;
+
+    case 'all' :
+
+      // On modifie toutes les occurences de l'événement.
+      // Donc simple édition de l'événement ICS pour les agents qui en faisaient déjà partie ($agents_tous, la modification sera ignorée pour les agents qui ne faisaient pas partie de l'événement car l'UID ne sera pas trouvé)
+      // Et ajout de l'événement pour les agents qui n'en faisaient pas partie ($agents_ajoutes)
+
+      // Modification de l'événement pour les agents qui en faisaient déjà partie
+      $a = new absences();
+      $a->debut = $debut;
+      $a->fin = $fin;
+      $a->hre_debut = $hre_debut;
+      $a->hre_fin = $hre_fin;
+      $a->perso_ids = array_keys($agents_tous);
+      $a->commentaires = $commentaires;
+      $a->motif = $motif;
+      $a->motif_autre = $motif_autre;
+      $a->CSRFToken = $CSRFToken;
+      $a->rrule = $rrule;
+      $a->valide = $valide;
+      $a->pj1 = $pj1;
+      $a->pj2 = $pj2;
+      $a->so = $so;
+      $a->uid = $global_uid;
+      $a->ics_update_event();
+//       $msg2 = $a->msg2;
+//       $msg2_type = $a->msg2_type;
+
+      break;
+
+      // TODO : continuer
+      // TODO : Tester / Ajuster les notifications
+      // TODO : Si la modification est traitée ICI (rrule), éviter d'executer les scripts en bas de cette page : à étudier
+
+  }
+
+  if($nouvel_enregistrement){
+
+    // On enregistre l'événement modifié dans la base de données, et dans les fichiers ICS si $rrule
+    $a = new absences();
+    $a->debut = $debut;
+    $a->fin = $fin;
+    $a->hre_debut = $hre_debut;
+    $a->hre_fin = $hre_fin;
+    $a->perso_ids = $perso_ids;
+    $a->commentaires = $commentaires;
+    $a->motif = $motif;
+    $a->motif_autre = $motif_autre;
+    $a->CSRFToken = $CSRFToken;
+    $a->rrule = $rrule;
+    $a->valide = $valide;
+    $a->pj1 = $pj1;
+    $a->pj2 = $pj2;
+    $a->so = $so;
+    $a->add();
+    $msg2 = $a->msg2;
+    $msg2_type = $a->msg2_type;
+  }
+}
+
+// Etats de validation
+$isValidate=true;
+$valideN1=0;
+$valideN2=0;
+$validationN1=null;
+$validationN2=null;
+
+if($config['Absences-validation']){
+  if($valide==1 or $valide==-1){
+    $valideN2=$valide*$_SESSION['login_id'];
+    $validationN2=date("Y-m-d H:i:s");
+  }
+  elseif($valide==2 or $valide==-2){
+    $valideN1=($valide/2)*$_SESSION['login_id'];
+    $validationN1=date("Y-m-d H:i:s");
+  }
+  $isValidate=$valideN2>0?true:false;
+}
+
 // Mise à jour du champs 'absent' dans 'pl_poste'
 // Suppression du marquage absent pour tous les agents qui étaient concernés par l'absence avant sa modification
 // Comprend les agents supprimés et ceux qui restent
 /**
  * @note : le champ pl_poste.absent n'est plus mis à 1 lors de la validation des absences depuis la version 2.4
- * mais nous devons garder la mise à 0 pour la suppresion ou modifications des absences enregistrées avant cette version.
+ * mais nous devons garder la mise à 0 pour la suppression ou modifications des absences enregistrées avant cette version.
  * NB : le champ pl_poste.absent est également utilisé pour barrer les agents depuis le planning, donc on ne supprime pas toutes ses valeurs
  */
 $ids=implode(",",$perso_ids1);

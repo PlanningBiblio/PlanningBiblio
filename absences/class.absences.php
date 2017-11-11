@@ -768,6 +768,9 @@ class absences{
 	  $elem['agents'][]=$elem['nom']." ".$elem['prenom'];
 	}
 
+        // Le champ commentaires peut comporter des <br/> ou équivalents HTML lorsqu'il est importé depuis un fichier ICS. On les remplace par \n
+        $elem['commentaires'] = str_replace(array('<br/>','&lt;br/&gt;'), "\n", $elem['commentaires']);
+
 	$tmp=$elem;
 	$debut=dateFr(substr($elem['debut'],0,10));
 	$fin=dateFr(substr($elem['fin'],0,10));
@@ -917,6 +920,8 @@ class absences{
         $result['uid'] = preg_replace('/(\w+)_(\w+)_(\d+)/',"$1_$2_", $result['uid']);
       }
 
+      // Le champ commentaires peut comporter des <br/> ou équivalents HTML lorsqu'il est importé depuis un fichier ICS. On les remplace par \n
+      $result['commentaires'] = str_replace(array('<br/>','&lt;br/&gt;'), "\n", $result['commentaires']);
       $result['agents']=$agents;
       $result['perso_ids']=$perso_ids;
       $this->elements=$result;
@@ -1083,11 +1088,15 @@ class absences{
     $dtstart .= preg_replace('/(\d+):(\d+):(\d+)/','$1$2$3',$this->hre_debut);
     $dtend = preg_replace('/(\d+)\/(\d+)\/(\d+)/','$3$2$1',$this->fin).'T';
     $dtend .= preg_replace('/(\d+):(\d+):(\d+)/','$1$2$3',$this->hre_fin);
-    $dtstamp = gmdate('Ymd').'T'.gmdate('His').'Z';
+    $dtstamp = gmdate('Ymd\THis\Z');
     $summary = $this->motif_autre ? html_entity_decode($this->motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8') : html_entity_decode($this->motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
     $cal_name = "PlanningBiblio-Absences-$perso_id-".nom($perso_id);
     $uid = $dtstart."_".$dtstamp."_".$perso_id;
     $status = $this->valideN2 > 0 ? 'CONFIRMED' : 'TENTATIVE';
+
+    // Description : en supprime les entités HTML et remplace les saut de lignes par des <br/> pour facilité le traitement des saut de lignes à l'affichage et lors des remplacements
+    $description = html_entity_decode($this->commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+    $description = str_replace("\n", "<br/>", $description);
 
     // On créé un événement ICS
     $ics_event = "BEGIN:VEVENT\n";
@@ -1100,7 +1109,7 @@ class absences{
     $ics_event .= "LOCATION:\n";
     $ics_event .= "STATUS:$status\n";
     $ics_event .= "SUMMARY:$summary\n";
-    $ics_event .= "DESCRIPTION:".html_entity_decode($this->commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8')."\n";
+    $ics_event .= "DESCRIPTION:$description\n";
     if($this->groupe){ $ics_event .= "CATEGORIES:PBGroup=".$this->groupe."\n"; }
     $ics_event .= "TRANSP:OPAQUE\n";
     $ics_event .= "RRULE:{$this->rrule}\n";
@@ -1150,11 +1159,11 @@ class absences{
   }
 
 
-  /** @funcion ics_add_exdate($date);
+  /** @function ics_add_exdate($date);
    * @param string $this->uid : UID d'un événement ICS "Planning Biblio" sans le suffix perso_id (ex: 20171110120000_20171110115523Z_)
    * @param int $this->perso_id : ID de l'agent
    * @param string $date : date et heure de l'exception au format ICS (ex: 20171110T120000)
-   * @desc : supprime un événement ICS "Planning Biblio"
+   * @desc : ajoute une exception sur un événement ICS "Planning Biblio"
    */
   public function ics_add_exdate($date){
 
@@ -1171,7 +1180,7 @@ class absences{
       for($i = 0; $i < count($ics_event); $i++){
         // Mise à jour de LAST-MODIFIED
         if(substr($ics_event[$i], 0, 13) == 'LAST-MODIFIED'){
-          $ics_event[$i] = "LAST-MODIFIED:".gmdate('Ymd').'T'.gmdate('His')."Z\n";
+          $ics_event[$i] = "LAST-MODIFIED:".gmdate('Ymd\THis\Z')."\n";
         }
         // Ajout d'une exception si EXDATE existe
         if(substr($ics_event[$i], 0, 6) == 'EXDATE'){
@@ -1194,7 +1203,7 @@ class absences{
       $calendar = implode(null, $calendar);
       $file = $GLOBALS['config']['Data-Folder']."/PBCalendar-$perso_id.ics";
       file_put_contents($file, $calendar);
-      
+
       // On actualise la base de données à partir du fichier ICS modifié
       $ics=new CJICS();
       $ics->src = $file;
@@ -1289,6 +1298,170 @@ class absences{
     $this->elements = $ics_content;
   }
 
+  /** @function ics_update_event();
+   * @param string $this->uid : UID d'un événement ICS "Planning Biblio" sans le suffix perso_id (ex: 20171110120000_20171110115523Z_)
+   * @param int $this->perso_ids : IDs des agents
+   * @params : tous les éléments d'une absence : date et heure de début et de fin (format FR JJ/MM/YYYY et hh:mm:ss), motif, commentaires, validation, ID de l'agent, règle de récurrence (rrule)
+   * @desc : modifie un événement ICS "Planning Biblio"
+   */
+  public function ics_update_event(){
+
+    foreach($this->perso_ids as $perso_id){
+      $this->perso_id = $perso_id;
+      $this->ics_get_event();
+      $ics_event = $this->elements;
+      $without_this = $this->without_this;
+      $perso_id = $this->perso_id;
+
+      if($ics_event){
+        // On actualise les infos
+
+        // TODO : pour le moment, on ne touche pas aux dates et aux RRULEs : A voir ensuite
+        // $dtstart = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $this->debut);  // faux car la date de début de la série serait remplacée par la date de début de l'occurence choisie
+
+        // Heure de début et de fin
+        $start = str_replace(':', null, $this->hre_debut);
+        $end = str_replace(':', null, $this->hre_fin);
+
+        // Recherche des éléments LAST-MODIFIED et RRULE pour les mettre à jour
+        for($i = 0; $i < count($ics_event); $i++){
+
+          // Mise à jour des heures de début
+          if(substr($ics_event[$i], 0, 7) == 'DTSTART'){
+            $ics_event[$i] = preg_replace("/(\d+)\n/", "$start\n", $ics_event[$i]);
+          }
+
+          // Mise à jour des heures de fin
+          if(substr($ics_event[$i], 0, 5) == 'DTEND'){
+            $ics_event[$i] = preg_replace("/(\d+)\n/", "$end\n", $ics_event[$i]);
+          }
+
+          // Mise à jour de LAST-MODIFIED
+          if(substr($ics_event[$i], 0, 13) == 'LAST-MODIFIED'){
+            $ics_event[$i] = "LAST-MODIFIED:".gmdate('Ymd\THis\Z')."\n";
+          }
+
+          // Mise à jour de STATUS
+          // TODO : A améliorer car ne prend pas toutes les infos (validation N1, id de la personne ayant validé et date de validation
+          // TODO : Utiliser un autre champ (ex: CATEGORIES) pour ajouter les autres infos
+          if(substr($ics_event[$i], 0, 6) == 'STATUS'){
+            $status = $this->valide == 1 ? 'CONFIRMED' : 'TENTATIVE';
+            $ics_event[$i] = "STATUS:$status\n";
+          }
+
+          // Mise à jour de SUMMARY
+          if(substr($ics_event[$i], 0, 7) == 'SUMMARY'){
+            $summary = $this->motif == 'Autre' ? $this->motif_autre : $this->motif;
+            $summary = html_entity_decode($summary, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $ics_event[$i] = "SUMMARY:$summary\n";
+          }
+
+          // Mise à jour de DESCRIPTION
+          if(substr($ics_event[$i], 0, 11) == 'DESCRIPTION'){
+            // Description : en supprime les entités HTML et remplace les saut de lignes par des <br/> pour facilité le traitement des saut de lignes à l'affichage et lors des remplacements
+            $description = html_entity_decode($this->commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $description = str_replace("\n", "<br/>", $description);
+            $ics_event[$i] = "DESCRIPTION:$description\n";
+          }
+
+          // Modification de RRULE
+          // TODO : Adapter la modification du RRULE si la date de début change
+          if(substr($ics_event[$i], 0, 5) == 'RRULE'){
+            $ics_event[$i] = "RRULE:{$this->rrule}\n";
+          }
+
+          // Nettoyage des lignes qui pourraient rester sans être attachées à un champ ICS.
+          // Exemple : valeur d'un champ DESCRIPTION sur plusieurs lignes. Plus haut, on a fait en sorte de regrouper toutes ces lignes sur une seule en les collant avec des <br/>.
+          // Ce qui facilite la gestion dans l'application pour l'affichage et pour la modification de ce champ dans la fonction ics_update_event
+          if(!in_array(substr($ics_event[$i], 0, 3), array('BEG', 'CAT', 'CRE', 'DES', 'DTE', 'DTS', 'END', 'EXD', 'LAS', 'LOC', 'RRU', 'STA', 'SUM', 'TRA', 'UID'))){
+            unset($ics_event[$i]);
+          }
+        }
+
+        $ics_event = array_values($ics_event);
+
+        // On le réécrit dans le fichier ICS
+        // Suppression de la dernière ligne (END:VCALENDAR)
+        unset($without_this[count($without_this)-1]);
+
+        // Fustionne les infos
+        $calendar = array_merge($without_this, $ics_event, array("END:VCALENDAR\n"));
+        // Ecriture dans le fichier
+        $calendar = implode(null, $calendar);
+        $file = $GLOBALS['config']['Data-Folder']."/PBCalendar-$perso_id.ics";
+        file_put_contents($file, $calendar);
+
+        // On actualise la base de données à partir du fichier ICS modifié
+        $ics=new CJICS();
+        $ics->src = $file;
+        $ics->perso_id = $perso_id;
+        $ics->pattern = '[SUMMARY]';
+        $ics->status = 'All';
+        $ics->table ="absences";
+        $ics->logs = true;
+        $ics->CSRFToken = $this->CSRFToken;
+        $ics->updateTable();
+      }
+    }
+  }
+
+  /** @function ics_update_until($datetime);
+   * @param string $this->uid : UID d'un événement ICS "Planning Biblio" sans le suffix perso_id (ex: 20171110120000_20171110115523Z_)
+   * @param int $this->perso_id : ID de l'agent
+   * @param string $datetime : date et heure de fin de série, format ICS, timezone GMT (20171110T120000Z)
+   * @desc : modifie la date de fin de série d'un événement ICS "Planning Biblio"
+   */
+  public function ics_update_until($datetime){
+
+    $this->ics_get_event();
+    $ics_event = $this->elements;
+    $without_this = $this->without_this;
+    $perso_id = $this->perso_id;
+
+    if($ics_event){
+      // On modifie ou ajoute une date de fin à RRULE
+
+      // Recherche des éléments LAST-MODIFIED et RRULE pour les mettre à jour
+      for($i = 0; $i < count($ics_event); $i++){
+        // Mise à jour de LAST-MODIFIED
+        if(substr($ics_event[$i], 0, 13) == 'LAST-MODIFIED'){
+          $ics_event[$i] = "LAST-MODIFIED:".gmdate('Ymd\THis\Z')."\n";
+        }
+        // Modification de RRULE
+        if(substr($ics_event[$i], 0, 5) == 'RRULE'){
+          if(strstr($ics_event[$i], 'UNTIL')) {
+            $ics_event[$i] = preg_replace('/UNTIL=\d+T\d+Z/', "UNTIL=$datetime", $ics_event[$i]);
+          } elseif(strstr($ics_event[$i], 'COUNT')) {
+            $ics_event[$i] = preg_replace('/COUNT=\d+/', "UNTIL=$datetime", $ics_event[$i]);
+          } else {
+            $ics_event[$i] = str_replace("\n", ";UNTIL=$datetime\n", $ics_event[$i]);
+          }
+        }
+      }
+
+      // On le réécrit dans le fichier ICS
+      // Suppression de la dernière ligne (END:VCALENDAR)
+      unset($without_this[count($without_this)-1]);
+
+      // Fustionne les infos
+      $calendar = array_merge($without_this, $ics_event, array("END:VCALENDAR\n"));
+      // Ecriture dans le fichier
+      $calendar = implode(null, $calendar);
+      $file = $GLOBALS['config']['Data-Folder']."/PBCalendar-$perso_id.ics";
+      file_put_contents($file, $calendar);
+
+      // On actualise la base de données à partir du fichier ICS modifié
+      $ics=new CJICS();
+      $ics->src = $file;
+      $ics->perso_id = $perso_id;
+      $ics->pattern = '[SUMMARY]';
+      $ics->status = 'All';
+      $ics->table ="absences";
+      $ics->logs = true;
+      $ics->CSRFToken = $this->CSRFToken;
+      $ics->updateTable();
+    }
+  }
 
   /**
   * infoPlannings
