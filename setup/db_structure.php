@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 2 novembre 2017
+Dernière modification : 11 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -23,7 +23,6 @@ $sql[]="CREATE TABLE `{$dbprefix}absences` (
   `perso_id` int(11) NOT NULL DEFAULT '0',
   `debut` datetime NOT NULL,
   `fin` datetime NOT NULL,
-  `nbjours` int(11) NOT NULL DEFAULT '0',
   `motif` text NOT NULL DEFAULT '',
   `motif_autre` text NOT NULL DEFAULT '',
   `commentaires` text NOT NULL,

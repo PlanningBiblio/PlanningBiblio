@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 1er novembre 2017
+Dernière modification : 11 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -19,7 +19,6 @@ Page appelée par la page index.php
 */
 
 require_once "class.absences.php";
-require_once "personnel/class.personnel.php";
 require_once "motifs.php";
 
 //	Initialisation des variables
@@ -32,7 +31,6 @@ $hre_debut=filter_input(INPUT_GET,"hre_debut",FILTER_SANITIZE_STRING);
 $hre_fin=filter_input(INPUT_GET,"hre_fin",FILTER_SANITIZE_STRING);
 $motif=filter_input(INPUT_GET,"motif",FILTER_SANITIZE_STRING);
 $motif_autre=trim(filter_input(INPUT_GET,"motif_autre",FILTER_SANITIZE_STRING));
-$nbjours=filter_input(INPUT_GET,"nbjours",FILTER_SANITIZE_NUMBER_INT);
 $perso_id=filter_input(INPUT_GET,"perso_id",FILTER_SANITIZE_NUMBER_INT);
 $rrule=filter_input(INPUT_GET,"recurrence-hidden",FILTER_SANITIZE_STRING);
 $rcheckbox=filter_input(INPUT_GET,"recurrence-checkbox",FILTER_SANITIZE_NUMBER_INT);
@@ -73,15 +71,14 @@ $pj1=filter_var($pj1,FILTER_CALLBACK,array('options'=>'sanitize_on01'));
 $pj2=filter_var($pj2,FILTER_CALLBACK,array('options'=>'sanitize_on01'));
 $so=filter_var($so,FILTER_CALLBACK,array('options'=>'sanitize_on01'));
 
-$nbjours=$nbjours?$nbjours:0;
-$valide=$valide?$valide:0;
-
 $admin = in_array(1, $droits);
 $adminN2 = in_array(8, $droits);
 $agents_multiples = ($admin or in_array(9, $droits));
 
-$debutSQL=dateSQL($debut);
-$finSQL=dateSQL($fin);
+// Force $valide = 0 si login non admin
+if(!$admin){
+  $valide = 0;
+}
 
 if($config['Absences-adminSeulement'] and !$admin){
   echo "<div id='acces_refuse'>Accès refusé</div>\n";
@@ -121,210 +118,25 @@ if($confirm and !empty($perso_ids)){
     include __DIR__."/../include/footer.php";
   }
   
-  $fin=$fin?$fin:$debut;
-  $finSQL=dateSQL($fin);
-  $valideN1=0;
-  $valideN2=0;
-  if($config['Absences-validation']=='0'){
-    $valideN2=1;
-    $validation=date("Y-m-d H:i:s");
-    $validationText=null;
-  }
-  elseif(!$admin){
-    $valideN2=0;
-    $validationText="Demand&eacute;e";
-    $validation="0000-00-00 00:00:00";
-  }
-  elseif($admin){
-    $validationText="Demand&eacute;e";
-    $validation="0000-00-00 00:00:00";
-    if($valide==1){
-      $valideN2=$_SESSION['login_id'];
-      $validationText="Valid&eacute;e";
-      $validation=date("Y-m-d H:i:s");
-    }
-    elseif($valide==-1){
-      $valideN2=$_SESSION['login_id']*-1;
-      $validationText="Refus&eacute;e";
-      $validation=date("Y-m-d H:i:s");
-    }
-    elseif($valide==2){
-      $valideN2=0;
-      $valideN1=$_SESSION['login_id'];
-      $validationText="Accept&eacute;e (en attente de validation hi&eacute;rarchique)";
-      $validationN1=date("Y-m-d H:i:s");
-    }
-    elseif($valide==-2){
-      $valideN2=0;
-      $valideN1=$_SESSION['login_id']*-1;
-      $validationText="Refus&eacute;e (en attente de validation hi&eacute;rarchique)";
-      $validationN1=date("Y-m-d H:i:s");
-    }
-  }
+  $a = new absences();
+  $a->debut = $debut;
+  $a->fin = $fin;
+  $a->hre_debut = $hre_debut;
+  $a->hre_fin = $hre_fin;
+  $a->perso_ids = $perso_ids;
+  $a->commentaires = $commentaires;
+  $a->motif = $motif;
+  $a->motif_autre = $motif_autre;
+  $a->CSRFToken = $CSRFToken;
+  $a->rrule = $rrule;
+  $a->valide = $valide;
+  $a->pj1 = $pj1;
+  $a->pj2 = $pj2;
+  $a->so = $so;
+  $a->add();
+  $msg2 = $a->msg2;
+  $msg2_type = $a->msg2_type;
 
-  // Choix des destinataires des notifications selon le degré de validation
-  $notifications=1;
-  if($config['Absences-validation'] and $valideN1!=0){
-    $notifications=3;
-  }
-  elseif($config['Absences-validation'] and $valideN2!=0){
-    $notifications=4;
-  }
-
-  // Formatage des dates/heures de début/fin pour les requêtes SQL
-  $debut_sql=$debutSQL." ".$hre_debut;
-  $fin_sql=$finSQL." ".$hre_fin;
-
-  // Si erreur d'envoi de mail, affichage de l'erreur (Initialisation des variables)
-  $msg2=null;
-  $msg2Type=null;
-
-  // ID du groupe (permet de regrouper les informations pour affichage en une seule ligne et modification du groupe)
-  if(count($perso_ids)>1){
-    $groupe=time()."-".rand(100,999);
-  }else{
-    $groupe=null;
-  }
-
-  // Pour chaque agents
-  foreach($perso_ids as $perso_id){
-    // Recherche du responsables pour l'envoi de notifications
-    $a=new absences();
-    $a->getResponsables($debutSQL,$finSQL,$perso_id);
-    $responsables=$a->responsables;
-
-    // Informations sur l'agent
-    $p=new personnel();
-    $p->fetchById($perso_id);
-    $nom=$p->elements[0]['nom'];
-    $prenom=$p->elements[0]['prenom'];
-    $mail=$p->elements[0]['mail'];
-    $mails_responsables=$p->elements[0]['mails_responsables'];
-
-    // Choix des destinataires des notifications selon la configuration
-    $a=new absences();
-    $a->getRecipients($notifications,$responsables,$mail,$mails_responsables);
-    $destinataires=$a->recipients;
-    
-    // Enregistrement des récurrences
-    // Les événements récurrents sont enregistrés dans un fichier ICS puis importés dans la base de données
-    // La méthode absences::update_ics se charge de créer le fichier et d'enregistrer les infos dans la base de données
-    if($rrule){
-      // Création du fichier ICS
-      $a = new absences();
-      $a->CSRFToken = $CSRFToken;
-      $a->perso_id = $perso_id;
-      $a->commentaires = $commentaires;
-      $a->debut = $debut;
-      $a->fin = $fin;
-      $a->hre_debut = $hre_debut;
-      $a->hre_fin = $hre_fin;
-      $a->groupe = $groupe;
-      $a->motif = $motif;
-      $a->motif_autre = $motif_autre;
-      $a->rrule = $rrule;
-      $a->valideN1 = $valideN1;
-      $a->valideN2 = $valideN2;
-      $a->update_ics();
-
-    // Les événements sans récurrence sont enregistrés directement dans la base de données
-    } else {
-      // Ajout de l'absence dans la table 'absence'
-      $insert=array("perso_id"=>$perso_id, "debut"=>$debut_sql, "fin"=>$fin_sql, "nbjours"=>$nbjours, "motif"=>$motif, "motif_autre"=>$motif_autre, "commentaires"=>$commentaires, 
-      "demande"=>date("Y-m-d H:i:s"), "pj1"=>$pj1, "pj2"=>$pj2, "so"=>$so, "groupe"=>$groupe);
-    }
-
-    if($valideN1!=0){
-      $insert["valide_n1"]=$valideN1;
-      $insert["validation_n1"]=$validationN1;
-    }
-    else{
-      $insert["valide"]=$valideN2;
-      $insert["validation"]=$validation;
-    }
-
-    $db=new db();
-    $db->CSRFToken = $CSRFToken;
-    $db->insert("absences", $insert);
-    
-
-    // Récupération de l'ID de l'absence enregistrée pour la création du lien dans le mail
-    $info=array(array("name"=>"MAX(id)","as"=>"id"));
-    $where=array("debut"=>$debut_sql, "fin"=>$fin_sql, "perso_id"=>$perso_id);
-    $db=new db();
-    $db->select2("absences",$info,$where);
-    if($db->result){
-      $id=$db->result[0]['id'];
-    }
-
-    // Recherche des plages de SP concernées pour ajouter cette information dans le mail.
-    $a=new absences();
-    $a->debut=$debut_sql;
-    $a->fin=$fin_sql;
-    $a->perso_ids=$perso_ids;
-    $a->infoPlannings();
-    $infosPlanning=$a->message;
-
-    // Titre différent si titre personnalisé (config) ou si validation ou non des absences (config)
-    if($config['Absences-notifications-titre']){
-      $titre=$config['Absences-notifications-titre'];
-    }else{
-      $titre=$config['Absences-validation']?"Nouvelle demande d absence":"Nouvelle absence";
-    }
-
-    // Si message personnalisé (config), celui-ci est inséré
-    if($config['Absences-notifications-message']){
-      $message="<b><u>{$config['Absences-notifications-message']}</u></b><br/>";
-    }else{
-      $message="<b><u>$titre</u></b> : ";
-    }
-
-    // On complète le message avec les informations de l'absence
-    $message.="<ul><li>Agent : <strong>$prenom $nom</strong></li>";
-    $message.="<li>Début : <strong>$debut";
-    if($hre_debut!="00:00:00")
-      $message.=" ".heure3($hre_debut);
-    $message.="</strong></li><li>Fin : <strong>$fin";
-    if($hre_fin!="23:59:59")
-      $message.=" ".heure3($hre_fin);
-    $message.="</strong></li><li>Motif : $motif";
-    if($motif_autre){
-      $message.=" / $motif_autre";
-    }
-    $message.="</li>";
-
-    if($config['Absences-validation']){
-      $message.="<li>Validation : <br/>\n";
-      $message.=$validationText;
-      $message.="</li>\n";
-    }
-
-    if($commentaires){
-      $message.="<li>Commentaire: <br/>$commentaires</li>";
-    }
-
-    $message.="</ul>";
-
-    // Ajout des informations sur les plannings
-    $message.=$infosPlanning;
-    
-    // Ajout du lien permettant de rebondir sur l'absence
-    $url=createURL("absences/modif.php&id=$id");
-    $message.="<p>Lien vers la demande d&apos;absence :<br/><a href='$url'>$url</a></p>";
-
-    // Envoi du mail
-    $m=new CJMail();
-    $m->subject=$titre;
-    $m->message=$message;
-    $m->to=$destinataires;
-    $m->send();
-
-    // Si erreur d'envoi de mail
-    if($m->error){
-      $msg2.="<li>".$m->error_CJInfo."</li>";
-      $msg2Type="error";
-    }
-  }
 
   // Confirmation de l'enregistrement
   if($config['Absences-validation'] and !$admin){
@@ -335,11 +147,11 @@ if($confirm and !empty($perso_ids)){
   $msg=urlencode($msg);
 
   // Si erreur d'envoi de mail
-  if($msg2Type){
+  if($msg2_type){
     $msg2=urlencode("<ul>".$msg2."</ul>");
   }
   
-  echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
+  echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2_type';</script>\n";
 
 }
 // Formulaire

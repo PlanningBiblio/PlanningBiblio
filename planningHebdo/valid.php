@@ -33,9 +33,9 @@ switch($post["action"]){
       $msgType="error";    	
 
     }else{
-      $msg=urlencode("Le planning a été ajouté avec succés.");
+      $msg=urlencode("Le planning a été ajouté avec succès.");
       if($post['id']){
-	$msg=urlencode("Le planning a été copié avec succés.");
+	$msg=urlencode("Le planning a été copié avec succès.");
       }
       $msgType="success";    	
     }
@@ -49,7 +49,7 @@ switch($post["action"]){
     	$msg=urlencode("Une erreur est survenue lors de la modification du planning.");
     	$msgType="error";    	
     }else{
-    	$msg=urlencode("Le planning a été modifié avec succés.");
+    	$msg=urlencode("Le planning a été modifié avec succès.");
     	$msgType="success";    	
     }
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=planningHebdo/{$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";
@@ -62,7 +62,7 @@ switch($post["action"]){
     	$msg=urlencode("Une erreur est survenue lors de la modification du planning.");
     	$msgType="error";    	
     }else{
-    	$msg=urlencode("Le planning a été modifié avec succés.");
+    	$msg=urlencode("Le planning a été modifié avec succès.");
     	$msgType="success";    	
     }
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=planningHebdo/{$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";

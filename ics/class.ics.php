@@ -239,18 +239,25 @@ class CJICS{
         $valide = $elem['STATUS'] == 'CONFIRMED' ? 99999 : 0 ;
         $validation = $elem['STATUS'] == 'CONFIRMED' ? $lastmodified : null ;
         
+        // Par défaut, nous mettons dans le champ motif l'information enregistrée dans la config, paramètre ICS-PatternX (ex: Agenda personnel)
+        // Mais nous pouvons mettre l'information présente dans le champ SUMMARY de l'événements. Dans ce cas, il faut préciser $this->pattern = "[SUMMARY]"; (exemple d'utilisation : enregistrement d'absences récurrentes dans Planning Biblio)
         $motif = $this->pattern == '[SUMMARY]' ? $elem['SUMMARY'] : $this->pattern;
         $motif_autre = $this->pattern == '[SUMMARY]' ? $elem['SUMMARY'] : $this->pattern;
-        
+
+        // Si SUMMARY est enregistré dans le champ motif, on ne le met pas dans le champ description
         if($this->pattern == '[SUMMARY]'){
-          $commentaires =$elem['DESCRIPTION'];
+          $commentaires = $elem['DESCRIPTION'];
         } else {
-          $commentaires = isset($elem['SUMMARY']) ? $elem['SUMMARY'] : null;
-          if(array_key_exists("DESCRIPTION",$elem)){
-            $commentaires.="<br/>\n".$elem['DESCRIPTION'];
+          $commentaires = !empty($elem['SUMMARY']) ? $elem['SUMMARY'] : null;
+          if($commentaires and !empty($elem['DESCRIPTION'])){
+            $commentaires .= "<br/>\n";
+          }
+          if(!empty($elem["DESCRIPTION"])){
+            $commentaires .= $elem['DESCRIPTION'];
           }
         }
         
+        // Utilisation du champ CATEGORIES pour la gestion des absences groupées (plusieurs agents)
         $groupe = null;
         if(!empty($elem['CATEGORIES']) and substr($elem['CATEGORIES'],0,8) == 'PBGroup='){
           $groupe = substr($elem['CATEGORIES'],8);

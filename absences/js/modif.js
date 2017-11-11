@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/js/modif.js
 Création : 28 février 2014
-Dernière modification : 1er novembre 2017
+Dernière modification : 11 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -226,6 +226,7 @@ $(function() {
     $('.recurrence-by-day'+n).prop('checked',true);
   });
 
+
   // Formulaire récurrence
   $("#recurrence-form").dialog({
     autoOpen: false,
@@ -404,7 +405,43 @@ $(function() {
     $('#recurrence-summary-form').text(rrule);
   });
 
-  
+  // Récurrences : alerte lors de la modification d'une absence récurrente
+  // TODO : Ensuite : faire pareil pour les suppressions
+  $("#recurrence-alert").dialog({
+    autoOpen: false,
+    height: 220,
+    width: 1000,
+    modal: true,
+    buttons: {
+
+      "Uniquement cet événement": function() {
+        $('#recurrence-modif').val('current');
+        $('#form').submit();
+        $( this ).dialog( "close" );
+      },
+
+      "Cet événement et les suivants": function() {
+        $('#recurrence-modif').val('next');
+        $('#form').submit();
+        $( this ).dialog( "close" );
+      },
+
+      "Tous les événements": function() {
+        $('#recurrence-modif').val('all');
+        $('#form').submit();
+        $( this ).dialog( "close" );
+      },
+
+      Annuler: function() {
+	$( this ).dialog( "close" );
+      }
+    },
+    close: function() {
+      $('.recurrence').removeClass( "ui-state-error" );
+    },
+
+  });
+
 });
 
 
@@ -713,7 +750,14 @@ function verif_absences(ctrl_form){
       retour=false;
     }
   });
-  return retour;
+  
+  // Modification d'une absence récurrente
+  if($('#rrule').val() && !$('#recurrence-modif').val() && retour){
+    $("#recurrence-alert").dialog('open');
+    return false;
+  } else {
+    return retour;
+  }
 }
 
 

@@ -31,7 +31,7 @@ if($post){
     $message="Une erreur est survenue lors des p&eacute;riodes."; $type="error";
   }
   else{
-    $message="Les p&eacute;riodes ont été modifiées avec succés."; $type="highlight";
+    $message="Les p&eacute;riodes ont été modifiées avec succès."; $type="highlight";
   }
   if($message){
     echo "<script type='text/JavaScript'>CJInfo('$message','$type');</script>\n";

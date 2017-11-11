@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 1er novembre 2017
+Dernière modification : 11 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -956,6 +956,7 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="UPDATE `{$dbprefix}menu` SET `url`='absences/voir.php' WHERE `url`='absences/index.php';";
   $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `uid` TEXT NULL DEFAULT NULL;";
   $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `rrule` TEXT NULL DEFAULT NULL;";
+  $sql[]="ALTER TABLE `{$dbprefix}absences` DROP `nbjours`;";
   
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `commentaires`, `ordre` ) VALUES 
     ('Data-Folder', 'text', ' Divers', 'Emplacement du dossier \"data\". Dans ce dossier seront stock&eacute;s des fichiers permettant &agrave; l&apos;application de fonctionner. Ce dossier ne doit pas &ecirc;tre accessible en HTTP(S)','12');";

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio, Version 2.7.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 30 septembre 2017
+Dernière modification : 11 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -31,9 +31,10 @@ $hre_fin=filter_input(INPUT_GET,"hre_fin",FILTER_CALLBACK,array("options"=>"sani
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 $motif=filter_input(INPUT_GET,"motif",FILTER_SANITIZE_STRING);
 $motif_autre=trim(filter_input(INPUT_GET,"motif_autre",FILTER_SANITIZE_STRING));
-$nbjours=filter_input(INPUT_GET,"nbjours",FILTER_SANITIZE_NUMBER_INT);
 $valide=filter_input(INPUT_GET,"valide",FILTER_SANITIZE_NUMBER_INT);
 $groupe=filter_input(INPUT_GET,"groupe",FILTER_SANITIZE_STRING);
+$rrule=filter_input(INPUT_GET,"rrule",FILTER_SANITIZE_STRING);
+$recurrenceModif=filter_input(INPUT_GET,"recurrence-modif",FILTER_SANITIZE_STRING);
 
 $motif = htmlentities($motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
 
@@ -63,9 +64,6 @@ $valideN2=0;
 $validationN1=null;
 $validationN2=null;
 
-$nbjours=$nbjours?$nbjours:0;
-$valide=$valide?$valide:0;
-
 if($config['Absences-validation']){
   if($valide==1 or $valide==-1){
     $valideN2=$valide*$_SESSION['login_id'];
@@ -84,15 +82,24 @@ if($config['Absences-validation']){
 $a=new absences();
 $a->fetchById($id);
 $agents=$a->elements['agents'];
+$commentaires1 = $a->elements['commentaires'];
 $debut1=$a->elements['debut'];
 $fin1=$a->elements['fin'];
+$motif1 = $a->elements['motif'];
+$motif_autre1 = $a->elements['motif_autre'];
 $perso_ids1=$a->elements['perso_ids'];
+$pj1_1=$a->elements['pj1'];
+$pj2_1=$a->elements['pj2'];
+$so_1=$a->elements['so'];
+$rrule1 = $a->elements['rrule'];
+$global_uid = $a->elements['uid'];
 $valide1N1=$a->elements['valide_n1'];
 $valide1N2=$a->elements['valide_n2'];
 
 // Si l'absence est importée depuis un agenda extérieur, on interdit la modification
 $iCalKey=$a->elements['ical_key'];
-if($iCalKey){
+$cal_name=$a->elements['cal_name'];
+if($iCalKey and substr($cal_name, 0, 23) != 'PlanningBiblio-Absences'){
   include "include/accessDenied.php";
 }
 
@@ -129,6 +136,75 @@ foreach($agents_selectionnes as $elem){
   if(!in_array($elem['id'],$perso_ids1)){
     $agents_ajoutes[]=$elem;
   }
+}
+
+// Comparaison des anciennes données et des nouvelles
+$modification = (
+  !empty($agents_ajoutes)
+  or !empty($agents_supprimes)
+  or $debut1 != $debut_sql
+  or $fin1 != $fin_sql
+  or htmlentities($motif1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
+  or htmlentities($motif_autre1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
+  or htmlentities($commentaires1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
+  or $valide1N1 != $valideN1
+  or $valide1N2 != $valideN2
+  or $rrule1 != $rrule
+  or empty($pj1_1) != empty($pj1)
+  or empty($pj2_1) != empty($pj2)
+  or empty($so_1) != empty($so)
+  );
+
+// Si aucune modification, on retourne directement à la liste des absences
+if(!$modification){
+  $msg=urlencode("L'absence a été modifiée avec succès");
+  echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success';</script>\n";
+}
+
+// Modification d'une absence récurrente
+if($rrule){
+  switch($recurrenceModif){
+    case 'current' :
+    
+      foreach($agents_tous as $elem){
+      
+        // On ajoute une exception à l'événement ICS
+        $exdate = preg_replace('/(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/',"$1$2$3T$4$5$6", $debut1);
+        
+        $a = new absences();
+        $a->CSRFToken = $CSRFToken;
+        $a->perso_id = $elem['perso_id'];
+        $a->uid = $global_uid;
+        $a->ics_add_exdate($exdate);
+      }
+
+      // On enregistre l'événement modifié dans la base de données
+      $a = new absences();
+      $a->debut = $debut;
+      $a->fin = $fin;
+      $a->hre_debut = $hre_debut;
+      $a->hre_fin = $hre_fin;
+      $a->perso_ids = $perso_ids;
+      $a->commentaires = $commentaires;
+      $a->motif = $motif;
+      $a->motif_autre = $motif_autre;
+      $a->CSRFToken = $CSRFToken;
+      $a->rrule = null;
+      $a->valide = $valide;
+      $a->pj1 = $pj1;
+      $a->pj2 = $pj2;
+      $a->so = $so;
+      $a->add();
+      $msg2 = $a->msg2;
+      $msg2_type = $a->msg2_type;
+      break;
+    
+  }
+
+  // TODO : continuer
+  
+
+  
 }
 
 // Sécurité
@@ -207,7 +283,7 @@ $db->query($req);
 
 
 // Préparation des données pour mise à jour de la table absence et insertion pour les agents ajoutés
-$data=array("motif"=>$motif, "motif_autre"=>$motif_autre, "nbjours"=>$nbjours, "commentaires"=>$commentaires, "debut"=>$debut_sql, "fin"=>$fin_sql, "groupe"=>$groupe);
+$data=array("motif"=>$motif, "motif_autre"=>$motif_autre, "commentaires"=>$commentaires, "debut"=>$debut_sql, "fin"=>$fin_sql, "groupe"=>$groupe);
 
 if($admin){
   $data=array_merge($data,array("pj1"=>$pj1, "pj2"=>$pj2, "so"=>$so));
@@ -418,6 +494,6 @@ if($m->error){
 }
 
   
-$msg=urlencode("L'absence a été modifiée avec succés");
+$msg=urlencode("L'absence a été modifiée avec succès");
 echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
 ?>

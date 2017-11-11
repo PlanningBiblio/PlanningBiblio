@@ -56,7 +56,7 @@ if($nom){
 	$msg=urlencode("Une erreur est survenue lors de l'ajout du poste");
       }else{
 	$msgType="success";
-	$msg=urlencode("Le poste a été ajouté avec succés");
+	$msg=urlencode("Le poste a été ajouté avec succès");
       }
       break;
 
@@ -69,7 +69,7 @@ if($nom){
 	$msg=urlencode("Une erreur est survenue lors de la modification du poste");
       }else{
 	$msgType="success";
-	$msg=urlencode("Le poste a été modifié avec succés");
+	$msg=urlencode("Le poste a été modifié avec succès");
       }
       break;
   }

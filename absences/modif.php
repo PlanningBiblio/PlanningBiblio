@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 2 novembre 2017
+Dernière modification : 11 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -51,6 +51,7 @@ $valideN1=$a->elements['valide_n1'];
 $validationN1=$a->elements['validation_n1'];
 $ical_key=$a->elements['ical_key'];
 $cal_name=$a->elements['cal_name'];
+$rrule=$a->elements['rrule'];
 
 // Pièces justificatives
 $pj1Checked=$a->elements['pj1']?"checked='checked'":null;
@@ -176,13 +177,15 @@ if($agents_multiples){
 }
 
 echo "<h3>Modification de l'absence</h3>\n";
-echo "<form name='form' method='get' action='index.php' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");'>\n";
+echo "<form name='form' id='form' method='get' action='index.php' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");'>\n";
 echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
 echo "<input type='hidden' name='page' value='absences/modif2.php' />\n";
 echo "<input type='hidden' name='perso_id' value='$perso_id' />\n";		// nécessaire pour verif_absences
 echo "<input type='hidden' id='admin' value='".($admin?1:0)."' />\n";
 echo "<input type='hidden' id='login_id' value='{$_SESSION['login_id']}' />\n";
 echo "<input type='hidden' name='groupe' id='groupe' value='$groupe' />\n";
+echo "<input type='hidden' name='rrule' id='rrule' value='$rrule' />\n";
+echo "<input type='hidden' name='recurrence-modif' id='recurrence-modif' value='' />\n";
 echo "<table class='tableauFiches'>\n";
 
 
@@ -349,3 +352,8 @@ echo "</table>\n";
 echo "<input type='hidden' name='id' value='$id'/>";
 echo "</form>\n";
 ?>
+
+<!-- Popup modification d'une récurrence -->
+<div id="recurrence-alert" title="Modification d'une absence récurrente" class='noprint' style='display:none;'>
+  <p>Souhaitez-vous modifier uniquement cet événement, tous les événements de la série, ou cet événement et ceux qui le suivent dans la série ?</p>
+</div>
