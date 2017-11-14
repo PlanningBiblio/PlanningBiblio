@@ -30,6 +30,7 @@ class absences{
   public $CSRFToken=null;
   public $commentaires=null;
   public $debut=null;
+  public $dtstamp=null;
   public $edt=array();
   public $elements=array();
   public $error=false;
@@ -139,6 +140,9 @@ class absences{
     // ID du groupe (permet de regrouper les informations pour affichage en une seule ligne et modification du groupe)
     $groupe = (count($perso_ids) > 1) ? time().'-'.rand(100,999) : null;
 
+    // On définie le dtstamp avant la boucle, sinon il différe selon les agents, ce qui est problématique pour retrouver les événéments des membres d'un groupe pour les modifications car le DTSTAMP est intégré dans l'UID
+    $dtstamp = gmdate('Ymd\THis\Z');
+
     // Pour chaque agents
     foreach($perso_ids as $perso_id){
       // Recherche du responsables pour l'envoi de notifications
@@ -166,6 +170,7 @@ class absences{
         // Création du fichier ICS
         $a = new absences();
         $a->CSRFToken = $this->CSRFToken;
+        $a->dtstamp = $dtstamp;
         $a->perso_id = $perso_id;
         $a->commentaires = $commentaires;
         $a->debut = $debut;
@@ -178,6 +183,7 @@ class absences{
         $a->rrule = $this->rrule;
         $a->valideN1 = $valideN1;
         $a->valideN2 = $valideN2;
+        $a->uid = $this->uid;
         $a->ics_add_event();
 
       // Les événements sans récurrence sont enregistrés directement dans la base de données
@@ -915,11 +921,6 @@ class absences{
 	}
       }
 
-      // UID pour les absences récurrentes, sans l'id de l'agent
-      if(!empty($result['uid'])){
-        $result['uid'] = preg_replace('/(\w+)_(\w+)_(\d+)/',"$1_$2_", $result['uid']);
-      }
-
       // Le champ commentaires peut comporter des <br/> ou équivalents HTML lorsqu'il est importé depuis un fichier ICS. On les remplace par \n
       $result['commentaires'] = str_replace(array('<br/>','&lt;br/&gt;'), "\n", $result['commentaires']);
       $result['agents']=$agents;
@@ -1088,10 +1089,10 @@ class absences{
     $dtstart .= preg_replace('/(\d+):(\d+):(\d+)/','$1$2$3',$this->hre_debut);
     $dtend = preg_replace('/(\d+)\/(\d+)\/(\d+)/','$3$2$1',$this->fin).'T';
     $dtend .= preg_replace('/(\d+):(\d+):(\d+)/','$1$2$3',$this->hre_fin);
-    $dtstamp = gmdate('Ymd\THis\Z');
+    $dtstamp = !empty($this->dtstamp) ? $this->dtstamp : gmdate('Ymd\THis\Z');
     $summary = $this->motif_autre ? html_entity_decode($this->motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8') : html_entity_decode($this->motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
     $cal_name = "PlanningBiblio-Absences-$perso_id-".nom($perso_id);
-    $uid = $dtstart."_".$dtstamp."_".$perso_id;
+    $uid = !empty($this->uid) ? $this->uid : $dtstart."_".$dtstamp;
     $status = $this->valideN2 > 0 ? 'CONFIRMED' : 'TENTATIVE';
 
     // Description : en supprime les entités HTML et remplace les saut de lignes par des <br/> pour facilité le traitement des saut de lignes à l'affichage et lors des remplacements
@@ -1160,7 +1161,7 @@ class absences{
 
 
   /** @function ics_add_exdate($date);
-   * @param string $this->uid : UID d'un événement ICS "Planning Biblio" sans le suffix perso_id (ex: 20171110120000_20171110115523Z_)
+   * @param string $this->uid : UID d'un événement ICS "Planning Biblio" (ex: 20171110120000_20171110115523Z)
    * @param int $this->perso_id : ID de l'agent
    * @param string $date : date et heure de l'exception au format ICS (ex: 20171110T120000)
    * @desc : ajoute une exception sur un événement ICS "Planning Biblio"
@@ -1220,7 +1221,7 @@ class absences{
 
 
   /** @function ics_delete_event
-   * @param string $this->uid : UID d'un événement ICS "Planning Biblio" sans le suffix perso_id (ex: 20171110120000_20171110115523Z_)
+   * @param string $this->uid : UID d'un événement ICS "Planning Biblio" (ex: 20171110120000_20171110115523Z)
    * @param int $this->perso_id : ID de l'agent
    * @desc : supprime un événement ICS "Planning Biblio"
    * @note : Les lignes UID des fichiers ICS doivent directement suivre les lignes BEGIN:VEVENT
@@ -1228,7 +1229,7 @@ class absences{
   public function ics_delete_event(){
   
     $ics_src = $GLOBALS['config']['Data-Folder']."/PBCalendar-[perso_id].ics";
-    $uid = $this->uid.$this->perso_id;
+    $uid = $this->uid;
     $file = str_replace('[perso_id]', $this->perso_id, $ics_src);
 
     if(file_exists($file)){
@@ -1258,7 +1259,7 @@ class absences{
 
 
   /** @function ics_get_event
-   * @param string $this->uid : UID d'un événement ICS "Planning Biblio" sans le suffix perso_id (ex: 20171110120000_20171110115523Z_)
+   * @param string $this->uid : UID d'un événement ICS "Planning Biblio" (ex: 20171110120000_20171110115523Z)
    * @param int $this->perso_id : ID de l'agent
    * @return array $this->elements : tableau PHP contenant l'événement, un élément par ligne du fichier ICS
    * @return $this->elements = null si le fichier ICS n'a pas été trouvé
@@ -1267,7 +1268,7 @@ class absences{
   public function ics_get_event(){
   
     $ics_src = $GLOBALS['config']['Data-Folder']."/PBCalendar-[perso_id].ics";
-    $uid = $this->uid.$this->perso_id;
+    $uid = $this->uid;
     $file = str_replace('[perso_id]', $this->perso_id, $ics_src);
     $ics_content = null;
 
@@ -1299,7 +1300,7 @@ class absences{
   }
 
   /** @function ics_update_event();
-   * @param string $this->uid : UID d'un événement ICS "Planning Biblio" sans le suffix perso_id (ex: 20171110120000_20171110115523Z_)
+   * @param string $this->uid : UID d'un événement ICS "Planning Biblio" (ex: 20171110120000_20171110115523Z)
    * @param int $this->perso_ids : IDs des agents
    * @params : tous les éléments d'une absence : date et heure de début et de fin (format FR JJ/MM/YYYY et hh:mm:ss), motif, commentaires, validation, ID de l'agent, règle de récurrence (rrule)
    * @desc : modifie un événement ICS "Planning Biblio"
@@ -1406,7 +1407,7 @@ class absences{
   }
 
   /** @function ics_update_until($datetime);
-   * @param string $this->uid : UID d'un événement ICS "Planning Biblio" sans le suffix perso_id (ex: 20171110120000_20171110115523Z_)
+   * @param string $this->uid : UID d'un événement ICS "Planning Biblio" (ex: 20171110120000_20171110115523Z)
    * @param int $this->perso_id : ID de l'agent
    * @param string $datetime : date et heure de fin de série, format ICS, timezone GMT (20171110T120000Z)
    * @desc : modifie la date de fin de série d'un événement ICS "Planning Biblio"

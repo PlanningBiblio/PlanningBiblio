@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : ics/class.ics.php
 Création : 29 mai 2016
-Dernière modification : 4 novembre 2017
+Dernière modification : 14 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -246,7 +246,7 @@ class CJICS{
 
         // Si SUMMARY est enregistré dans le champ motif, on ne le met pas dans le champ description
         if($this->pattern == '[SUMMARY]'){
-          $commentaires = $elem['DESCRIPTION'];
+          $commentaires = !empty($elem['DESCRIPTION']) ? $elem['DESCRIPTION'] : null;
         } else {
           $commentaires = !empty($elem['SUMMARY']) ? $elem['SUMMARY'] : null;
           if($commentaires and !empty($elem['DESCRIPTION'])){

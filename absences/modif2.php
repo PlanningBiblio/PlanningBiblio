@@ -73,7 +73,7 @@ $pj1_1=$a->elements['pj1'];
 $pj2_1=$a->elements['pj2'];
 $so_1=$a->elements['so'];
 $rrule1 = $a->elements['rrule'];
-$global_uid = $a->elements['uid'];
+$uid = $a->elements['uid'];
 $valide1N1=$a->elements['valide_n1'];
 $valide1N2=$a->elements['valide_n2'];
 
@@ -226,7 +226,7 @@ if($rrule){
         $a = new absences();
         $a->CSRFToken = $CSRFToken;
         $a->perso_id = $elem['perso_id'];
-        $a->uid = $global_uid;
+        $a->uid = $uid;
         $a->ics_add_exdate($exdate);
       }
 
@@ -254,7 +254,7 @@ if($rrule){
         $a = new absences();
         $a->CSRFToken = $CSRFToken;
         $a->perso_id = $elem['perso_id'];
-        $a->uid = $global_uid;
+        $a->uid = $uid;
         $a->ics_update_until($serie1_end);
       }
 
@@ -285,7 +285,7 @@ if($rrule){
       $a->pj1 = $pj1;
       $a->pj2 = $pj2;
       $a->so = $so;
-      $a->uid = $global_uid;
+      $a->uid = $uid;
       $a->ics_update_event();
 //       $msg2 = $a->msg2;
 //       $msg2_type = $a->msg2_type;
@@ -316,6 +316,7 @@ if($rrule){
     $a->pj1 = $pj1;
     $a->pj2 = $pj2;
     $a->so = $so;
+    $a->uid = $uid;
     $a->add();
     $msg2 = $a->msg2;
     $msg2_type = $a->msg2_type;
