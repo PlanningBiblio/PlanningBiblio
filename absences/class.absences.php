@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 11 novembre 2017
+Dernière modification : 15 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -53,6 +53,7 @@ class absences{
   public $valideN2 = null;
   public $uid=null;
   public $unique=false;
+  public $update_db = false;
 
   public function __construct(){
   }
@@ -1091,7 +1092,7 @@ class absences{
     $dtend .= preg_replace('/(\d+):(\d+):(\d+)/','$1$2$3',$this->hre_fin);
     $dtstamp = !empty($this->dtstamp) ? $this->dtstamp : gmdate('Ymd\THis\Z');
     $summary = $this->motif_autre ? html_entity_decode($this->motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8') : html_entity_decode($this->motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-    $cal_name = "PlanningBiblio-Absences-$perso_id-".nom($perso_id);
+    $cal_name = "PlanningBiblio-Absences-$perso_id";
     $uid = !empty($this->uid) ? $this->uid : $dtstart."_".$dtstamp;
     $status = $this->valideN2 > 0 ? 'CONFIRMED' : 'TENTATIVE';
 
@@ -1229,8 +1230,9 @@ class absences{
   public function ics_delete_event(){
   
     $ics_src = $GLOBALS['config']['Data-Folder']."/PBCalendar-[perso_id].ics";
+    $perso_id = $this->perso_id;
     $uid = $this->uid;
-    $file = str_replace('[perso_id]', $this->perso_id, $ics_src);
+    $file = str_replace('[perso_id]', $perso_id, $ics_src);
 
     if(file_exists($file)){
       $content = file($file);
@@ -1244,7 +1246,7 @@ class absences{
       }
 
       // On supprime l'événement du tableau
-      if(isset($end)){
+      if($start > 0 and isset($end)){
         for($i = $start; $i <= $end; $i++){
           unset($content[$i]);
         }
@@ -1255,6 +1257,14 @@ class absences{
       // On réecrit le fichier sans l'événement supprimé
       file_put_contents($file, $content);
     }
+
+    // Suppression de l'événement dans la base de données
+    if($this->update_db){
+      $db = new db();
+      $db->CSRFToken = $this->CSRFToken;
+      $db->delete('absences', array('perso_id'=> $perso_id, 'uid'=> $uid, 'cal_name' => "PlanningBiblio-Absences-$perso_id"));
+    }
+
   }
 
 
@@ -1284,7 +1294,7 @@ class absences{
       }
 
       // On stock l'événement dans un nouveau tableau
-      if($start >= 0 and isset($end)){
+      if($start > 0 and isset($end)){
         $ics_content = array();
         for($i = $start; $i <= $end; $i++){
           $ics_content[] = $content[$i];

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/delete.php
 Création : mai 2011
-Dernière modification : 3 août 2017
+Dernière modification : 15 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,6 +21,7 @@ require_once "class.absences.php";
 // Initialisation des variables
 $CSRFToken = filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING);
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
+$rec=filter_input(INPUT_GET,"rec",FILTER_SANITIZE_STRING);
 $errors=array();
 // 
 $a=new absences();
@@ -34,6 +35,8 @@ $valideN1=$a->elements['valide_n1'];
 $valideN2=$a->elements['valide_n2'];
 $groupe=$a->elements['groupe'];
 $agents=$a->elements['agents'];
+$perso_ids=$a->elements['perso_ids'];
+$uid=$a->elements['uid'];
 
 // Sécurité
 // Droit 1 = modification de toutes les absences
@@ -147,15 +150,74 @@ foreach($agents as $agent){
   $db->query($req);
 }
 
-// suppression dans la table 'absences'
-if($groupe){
-  $db=new db();
-  $db->CSRFToken = $CSRFToken;
-  $db->delete("absences",array("groupe"=>$groupe));
-}else{
-  $db=new db();
-  $db->CSRFToken = $CSRFToken;
-  $db->delete("absences",array("id"=>$id));
+// Si récurrence, suppression ou modification de l'événememnt ICS, puis suppression des occurences dans la table absences
+if($rec){
+
+  switch($rec){
+    case 'all' : 
+
+      // On supprime toute la série
+
+      foreach($perso_ids as $elem){
+        $a = new absences();
+        $a->CSRFToken = $CSRFToken;
+        $a->perso_id = $elem;
+        $a->uid = $uid;
+        $a->update_db = true;
+        $a->ics_delete_event();
+      }
+
+      break;
+
+    case 'current' :
+
+      // On ajoute une exception à l'événement ICS, ce qui aura pour effet de supprimer l'occurence sélectionnée
+      $exdate = preg_replace('/(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/',"$1$2$3T$4$5$6", $debut);
+
+      foreach($perso_ids as $elem){
+        $a = new absences();
+        $a->CSRFToken = $CSRFToken;
+        $a->perso_id = $elem;
+        $a->uid = $uid;
+        $a->ics_add_exdate($exdate);
+      }
+
+      break;
+
+    case 'next' :
+
+      // On modifie la date de fin de la récurrence. Elle s'arrêtera juste avant l'occurence sélectionnée
+
+      $serie1_end = date('Ymd\THis', strtotime($debut.' -1 second'));
+
+      // Puis on récupère la date du fuseau GMT
+      $datetime = new DateTime($serie1_end, new DateTimeZone(date_default_timezone_get()));
+      $datetime->setTimezone(new DateTimeZone('GMT'));
+      $serie1_end = $datetime->format('Ymd\THis\Z');
+
+      // On met à jour la série : modification de RRULE en mettant UNTIL à la date de fin
+      foreach($perso_ids as $elem){
+        $a = new absences();
+        $a->CSRFToken = $CSRFToken;
+        $a->perso_id = $elem;
+        $a->uid = $uid;
+        $a->ics_update_until($serie1_end);
+      }
+
+      break;
+  }
+
+// Si pas de récurrence, suppression dans la table 'absences'
+} else {
+  if($groupe){
+    $db=new db();
+    $db->CSRFToken = $CSRFToken;
+    $db->delete("absences",array("groupe"=>$groupe));
+  }else{
+    $db=new db();
+    $db->CSRFToken = $CSRFToken;
+    $db->delete("absences",array("id"=>$id));
+  }
 }
 
 $msg=urlencode("L'absence a été supprimée avec succès");

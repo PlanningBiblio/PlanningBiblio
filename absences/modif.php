@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 11 novembre 2017
+Dernière modification : 15 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -356,4 +356,8 @@ echo "</form>\n";
 <!-- Popup modification d'une récurrence -->
 <div id="recurrence-alert" title="Modification d'une absence récurrente" class='noprint' style='display:none;'>
   <p>Souhaitez-vous modifier uniquement cet événement, tous les événements de la série, ou cet événement et ceux qui le suivent dans la série ?</p>
+</div>
+<!-- Popup suppression d'une récurrence -->
+<div id="recurrence-alert-suppression" title="Suppression d'une absence récurrente" class='noprint' style='display:none;'>
+  <p>Souhaitez-vous supprimer uniquement cet événement, tous les événements de la série, ou cet événement et ceux qui le suivent dans la série ?</p>
 </div>

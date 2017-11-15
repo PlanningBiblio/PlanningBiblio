@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/js/modif.js
 Création : 28 février 2014
-Dernière modification : 11 novembre 2017
+Dernière modification : 15 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -188,9 +188,16 @@ $(function() {
 
   
   $("#absence-bouton-supprimer").click(function(){
+
+    // Suppression d'une absence récurrente
+    if($('#rrule').val() && !$('#recurrence-modif').val()){
+      $("#recurrence-alert-suppression").dialog('open');
+      return false;
+    }
+    
     if(confirm("Etes vous sûr de vouloir supprimer cette absence ?")){
       var CSRFToken = $('#CSRFSession').val();
-      var id=$(this).attr("data-id");
+      var id=$("#absence-bouton-supprimer").attr("data-id");
       document.location.href="index.php?page=absences/delete.php&id="+id+"&CSRFToken="+CSRFToken;
     }
   });
@@ -406,7 +413,6 @@ $(function() {
   });
 
   // Récurrences : alerte lors de la modification d'une absence récurrente
-  // TODO : Ensuite : faire pareil pour les suppressions
   $("#recurrence-alert").dialog({
     autoOpen: false,
     height: 220,
@@ -429,6 +435,45 @@ $(function() {
       "Tous les événements": function() {
         $('#recurrence-modif').val('all');
         $('#form').submit();
+        $( this ).dialog( "close" );
+      },
+
+      Annuler: function() {
+	$( this ).dialog( "close" );
+      }
+    },
+    close: function() {
+      $('.recurrence').removeClass( "ui-state-error" );
+    },
+
+  });
+  
+  // Récurrences : alerte lors de la suppression d'une absence récurrente
+  $("#recurrence-alert-suppression").dialog({
+    autoOpen: false,
+    height: 220,
+    width: 1000,
+    modal: true,
+    buttons: {
+
+      "Uniquement cet événement": function() {
+        var CSRFToken = $('#CSRFSession').val();
+        var id=$("#absence-bouton-supprimer").attr("data-id");
+        document.location.href="index.php?page=absences/delete.php&id="+id+"&rec=current&CSRFToken="+CSRFToken;
+        $( this ).dialog( "close" );
+      },
+
+      "Cet événement et les suivants": function() {
+        var CSRFToken = $('#CSRFSession').val();
+        var id=$("#absence-bouton-supprimer").attr("data-id");
+        document.location.href="index.php?page=absences/delete.php&id="+id+"&rec=next&CSRFToken="+CSRFToken;
+        $( this ).dialog( "close" );
+      },
+
+      "Tous les événements": function() {
+        var CSRFToken = $('#CSRFSession').val();
+        var id=$("#absence-bouton-supprimer").attr("data-id");
+        document.location.href="index.php?page=absences/delete.php&id="+id+"&rec=all&CSRFToken="+CSRFToken;
         $( this ).dialog( "close" );
       },
 

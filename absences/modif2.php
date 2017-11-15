@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 11 novembre 2017
+Dernière modification : 15 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -249,7 +249,7 @@ if($rrule){
       $datetime->setTimezone(new DateTimeZone('GMT'));
       $serie1_end = $datetime->format('Ymd\THis\Z');
 
-      // On met à jour a première série : modification de RRULE en mettant UNTIL à la date de fin
+      // On met à jour la première série : modification de RRULE en mettant UNTIL à la date de fin
       foreach($agents_tous as $elem){
         $a = new absences();
         $a->CSRFToken = $CSRFToken;
