@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : ics/class.ics.php
 Création : 29 mai 2016
-Dernière modification : 14 novembre 2017
+Dernière modification : 16 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -168,7 +168,7 @@ class CJICS{
       }
 
       // Traite seulement les événéments ayant un status occupés TRANSP OPAQUE (TRANSP OPAQUE défini un status BUSY)
-      if($elem['TRANSP']=="OPAQUE"){
+      if(isset($elem['TRANSP']) && $elem['TRANSP']=="OPAQUE"){
         // Traite seulement les événéments ayant le STATUS CONFIRMED si la configuration demande seulement les status CONFIRMED
         if($elem['STATUS']=="CONFIRMED" or $this->status != 'CONFIRMED'){
           $events[]=$elem;
@@ -236,9 +236,6 @@ class CJICS{
         $offset = date("H:i:s", strtotime($elem["DTEND_tz"])) == "00:00:00" ? "-1 second" : null;
         $fin = date("Y-m-d H:i:s", strtotime($elem["DTEND_tz"]." $offset"));
 
-        $valide = $elem['STATUS'] == 'CONFIRMED' ? 99999 : 0 ;
-        $validation = $elem['STATUS'] == 'CONFIRMED' ? $lastmodified : null ;
-        
         // Par défaut, nous mettons dans le champ motif l'information enregistrée dans la config, paramètre ICS-PatternX (ex: Agenda personnel)
         // Mais nous pouvons mettre l'information présente dans le champ SUMMARY de l'événements. Dans ce cas, il faut préciser $this->pattern = "[SUMMARY]"; (exemple d'utilisation : enregistrement d'absences récurrentes dans Planning Biblio)
         $motif = $this->pattern == '[SUMMARY]' ? $elem['SUMMARY'] : $this->pattern;
@@ -257,17 +254,44 @@ class CJICS{
           }
         }
         
-        // Utilisation du champ CATEGORIES pour la gestion des absences groupées (plusieurs agents)
+        // Utilisation du champ CATEGORIES pour la gestion des absences groupées (plusieurs agents), et des validations
         $groupe = null;
-        if(!empty($elem['CATEGORIES']) and substr($elem['CATEGORIES'],0,8) == 'PBGroup='){
-          $groupe = substr($elem['CATEGORIES'],8);
+        $valide_n1 = 0;
+        $validation_n1 = '0000-00-00 00:00:00';
+        $valide_n2 = 0;
+        $validation_n2 = '0000-00-00 00:00:00';
+
+        if(!empty($elem['CATEGORIES'])){
+          $categories = $elem['CATEGORIES'];
+
+          // Groupe
+          if(strstr($categories, 'PBGroup=')){
+            $groupe = preg_replace('/.*PBGroup=(\d+-\d+).*/', "$1", $categories);
+          }
+
+          // Validation N1
+          if(strstr($categories, 'PBValideN1=')){
+            $valide_n1 = preg_replace('/.*PBValideN1=(-{0,1}\d+).*/', "$1", $categories);
+          }
+
+          if(strstr($categories, 'PBValidationN1=')){
+            $validation_n1 = preg_replace('/.*PBValidationN1=(\d+-\d+-\d+ \d+:\d+:\d+).*/', "$1", $categories);
+          }
+
+          // Validation N2
+          if(strstr($categories, 'PBValideN2=')){
+            $valide_n2 = preg_replace('/.*PBValideN2=(-{0,1}\d+).*/', "$1", $categories);
+          }
+
+          if(strstr($categories, 'PBValidationN2=')){
+            $validation_n2 = preg_replace('/.*PBValidationN2=(\d+-\d+-\d+ \d+:\d+:\d+).*/', "$1", $categories);
+          }
         }
 
         // Insertion dans la base de données
-        $tab=array(":perso_id" => $perso_id, ":debut" => $debut, ":fin" => $fin, ":demande" => $demande, ":valide"=> $valide, ":validation" => $validation, ":valide_n1"=> $valide, 
-          ":validation_n1" => $validation, ":motif" => $motif, ":motif_autre" => $motif_autre, ":commentaires" => $commentaires, ":groupe" => $groupe, ":cal_name" => $calName, ":ical_key" => $elem['key'], ":uid" => $elem['UID'], ":rrule" => $elem['RRULE']);
-          
-          
+        $tab=array(":perso_id" => $perso_id, ":debut" => $debut, ":fin" => $fin, ":demande" => $demande, ":valide"=> $valide_n2, ":validation" => $validation_n2, ":valide_n1"=> $valide_n1, ":validation_n1" => $validation_n1, 
+          ":motif" => $motif, ":motif_autre" => $motif_autre, ":commentaires" => $commentaires, ":groupe" => $groupe, ":cal_name" => $calName, ":ical_key" => $elem['key'], ":uid" => $elem['UID'], ":rrule" => $elem['RRULE']);
+
         $db->execute($tab);
         $nb++;
       }

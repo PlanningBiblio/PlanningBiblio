@@ -74,16 +74,18 @@ $pj2_1=$a->elements['pj2'];
 $so_1=$a->elements['so'];
 $rrule1 = $a->elements['rrule'];
 $uid = $a->elements['uid'];
-$valide1N1=$a->elements['valide_n1'];
-$valide1N2=$a->elements['valide_n2'];
+$valide1_n1=$a->elements['valide_n1'];
+$valide1_n2=$a->elements['valide_n2'];
+$validation1_n1=$a->elements['validation_n1'];
+$validation1_n2=$a->elements['validation_n2'];
 
-if( $valide1N2 > 0 ){
+if( $valide1_n2 > 0 ){
   $valide1 = 1;
-} elseif( $valide1N2 < 0 ){
+} elseif( $valide1_n2 < 0 ){
   $valide1 = -1;
-} elseif( $valide1N1 > 0 ){
+} elseif( $valide1_n1 > 0 ){
   $valide1 = 2;
-} elseif( $valide1N1 < 0 ){
+} elseif( $valide1_n1 < 0 ){
   $valide1 = -2;
 } else {
   $valide1 = 0;
@@ -210,6 +212,35 @@ if($config['Multisites-nombre']>1){
 }
 
 
+// Etats de validation. Par défaut, on met les états  initiaux (avant modification) pour conserver ces informations si aucun changement n'apparaît sur le champ "validation"
+$valide_n1 = $valide1_n1;
+$valide_n2 = $valide1_n2;
+$validation_n1 = $validation1_n1;
+$validation_n2 = $validation1_n2;
+
+// On met à jour les infos seulement si une modification apparaît sur le champ "validation"de façon à garder l'horodatage initial ($valide != $valide1)
+if($config['Absences-validation'] and $valide != $valide1){
+
+  // Initialisation et retour à l'état demandé
+  $valide_n1 = 0;
+  $validation_n1 = '0000-00-00 00:00:00';
+  $valide_n2 = 0;
+  $validation_n2 = '0000-00-00 00:00:00';
+
+  // Validation ou refus niveau 2
+  if($valide == 1 or $valide == -1){
+    $valide_n1 = $valide1_n1;
+    $validation_n1 = $validation1_n1;
+    $valide_n2 = $valide * $_SESSION['login_id'];
+    $validation_n2 = date("Y-m-d H:i:s");
+  }
+  // Validation ou refus niveau 1
+  elseif($valide == 2 or $valide == -2){
+    $valide_n1 = ($valide/2) * $_SESSION['login_id'];
+    $validation_n1 = date("Y-m-d H:i:s");
+  }
+}
+
 // Modification d'une absence récurrente
 if($rrule){
 
@@ -268,8 +299,8 @@ if($rrule){
       // On modifie toutes les occurences de l'événement.
       // Donc simple édition de l'événement ICS pour les agents qui en faisaient déjà partie ($agents_tous, la modification sera ignorée pour les agents qui ne faisaient pas partie de l'événement car l'UID ne sera pas trouvé)
       // Et ajout de l'événement pour les agents qui n'en faisaient pas partie ($agents_ajoutes)
-
       // Modification de l'événement pour les agents qui en faisaient déjà partie
+
       $a = new absences();
       $a->debut = $debut;
       $a->fin = $fin;
@@ -281,7 +312,10 @@ if($rrule){
       $a->motif_autre = $motif_autre;
       $a->CSRFToken = $CSRFToken;
       $a->rrule = $rrule;
-      $a->valide = $valide;
+      $a->valide_n1 = $valide_n1;
+      $a->valide_n2 = $valide_n2;
+      $a->validation_n1 = $validation_n1;
+      $a->validation_n2 = $validation_n2;
       $a->pj1 = $pj1;
       $a->pj2 = $pj2;
       $a->so = $so;
@@ -316,31 +350,16 @@ if($rrule){
     $a->pj1 = $pj1;
     $a->pj2 = $pj2;
     $a->so = $so;
-    $a->uid = $uid;
+    // TODO : TEST : Ne comprend pas pourquoi ceci a été ajouté au commit 9155023 (correction création de l'UID).
+    // Problématique car en cas lors de la création d'exceptions sur les événements à venir, le nouvel événement comporte le même UID
+    // A vérifier
+    // $a->uid = $uid;
     $a->add();
     $msg2 = $a->msg2;
     $msg2_type = $a->msg2_type;
   }
 }
 
-// Etats de validation
-$isValidate=true;
-$valideN1=0;
-$valideN2=0;
-$validationN1=null;
-$validationN2=null;
-
-if($config['Absences-validation']){
-  if($valide==1 or $valide==-1){
-    $valideN2=$valide*$_SESSION['login_id'];
-    $validationN2=date("Y-m-d H:i:s");
-  }
-  elseif($valide==2 or $valide==-2){
-    $valideN1=($valide/2)*$_SESSION['login_id'];
-    $validationN1=date("Y-m-d H:i:s");
-  }
-  $isValidate=$valideN2>0?true:false;
-}
 
 // Mise à jour du champs 'absent' dans 'pl_poste'
 // Suppression du marquage absent pour tous les agents qui étaient concernés par l'absence avant sa modification
@@ -362,31 +381,13 @@ $db->query($req);
 
 
 // Préparation des données pour mise à jour de la table absence et insertion pour les agents ajoutés
-$data=array("motif"=>$motif, "motif_autre"=>$motif_autre, "commentaires"=>$commentaires, "debut"=>$debut_sql, "fin"=>$fin_sql, "groupe"=>$groupe);
+$data = array('motif' => $motif, 'motif_autre' => $motif_autre, 'commentaires' => $commentaires, 'debut' => $debut_sql, 'fin' => $fin_sql, 'groupe' => $groupe, 
+  'valide' => $valide_n2, 'validation' => $validation_n2, 'valide_n1' => $valide_n1, 'validation_n1' => $validation_n1);
 
 if($admin){
   $data=array_merge($data,array("pj1"=>$pj1, "pj2"=>$pj2, "so"=>$so));
 }
 
-if($config['Absences-validation']){
-  // Validation N1
-  if($valideN1){
-    $data["valide_n1"]=$valideN1;
-    $data["validation_n1"]=$validationN1;
-  }
-  // Validation N2
-  if($valideN2){
-    $data["valide"]=$valideN2;
-    $data["validation"]=$validationN2;
-  }
-  // Retour à l'état demandé
-  if($valide==0){
-    $data["valide"]=0;
-    $data["valide_n1"]=0;
-    $data["validation"]="0000-00-00 00:00:00";
-    $data["validation_n1"]="0000-00-00 00:00:00";
-  }
-}
 
 // Mise à jour de la table 'absences'
 // Sélection des lignes à modifier dans la base à l'aide du champ id car fonctionne également si le groupe n'existait pas au départ contrairement au champ groupe
@@ -437,19 +438,19 @@ if($config['Absences-validation']=='0'){
   $notifications=2;
 }
 else{
-  if($valide1N2<=0 and $valideN2>0){
+  if($valide1_n2<=0 and $valide_n2>0){
     $sujet="Validation d'une absence";
     $notifications=4;
   }
-  elseif($valide1N2>=0 and $valideN2<0){
+  elseif($valide1_n2>=0 and $valide_n2<0){
     $sujet="Refus d'une absence";
     $notifications=4;
   }
-  elseif($valide1N1<=0 and $valideN1>0){
+  elseif($valide1_n1<=0 and $valide_n1>0){
     $sujet="Acceptation d'une absence (en attente de validation hiérarchique)";
     $notifications=3;
   }
-  elseif($valide1N1>=0 and $valideN1<0){
+  elseif($valide1_n1>=0 and $valide_n1<0){
     $sujet="Refus d'une absence (en attente de validation hiérarchique)";
     $notifications=3;
   }
@@ -527,16 +528,16 @@ $message.="</li>";
 
 if($config['Absences-validation']){
   $validationText="Demand&eacute;e";
-  if($valideN2>0){
+  if($valide_n2>0){
     $validationText="Valid&eacute;e";
   }
-  elseif($valideN2<0){
+  elseif($valide_n2<0){
     $validationText="Refus&eacute;e";
   }
-  elseif($valideN1>0){
+  elseif($valide_n1>0){
     $validationText="Accept&eacute;e (en attente de validation hi&eacute;rarchique)";
   }
-  elseif($valideN1<0){
+  elseif($valide_n1<0){
     $validationText="Refus&eacute;e (en attente de validation hi&eacute;rarchique)";
   }
 

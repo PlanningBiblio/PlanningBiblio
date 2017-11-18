@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 15 novembre 2017
+Dernière modification : 16 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -48,9 +48,11 @@ class absences{
   public $perso_ids=array();
   public $recipients=array();
   public $rrule = null;
+  public $validation_n1 = null;
+  public $validation_n2 = null;
   public $valide=false;
-  public $valideN1 = null;
-  public $valideN2 = null;
+  public $valide_n1 = null;
+  public $valide_n2 = null;
   public $uid=null;
   public $unique=false;
   public $update_db = false;
@@ -78,44 +80,45 @@ class absences{
 
     $debutSQL = dateSQL($debut);
     $finSQL = dateSQL($fin);
-    
+
     // Validation
     // Validation, valeurs par défaut
-    $valideN1 = 0;
-    $valideN2 = 0;
-    $validation = "0000-00-00 00:00:00";
+    $valide_n1 = 0;
+    $valide_n2 = 0;
+    $validation_n1 = "0000-00-00 00:00:00";
+    $validation_n2 = "0000-00-00 00:00:00";
     $validationText = "Demand&eacute;e";
 
     // Si le workflow est désactivé, absence directement validée
     if(!$GLOBALS['config']['Absences-validation']){
-      $valideN2 = 1;
-      $validation = date("Y-m-d H:i:s");
+      $valide_n2 = 1;
+      $validation_n2 = date("Y-m-d H:i:s");
       $validationText = null;
     }
     // Si workflow, validation en fonction de $this->valide
     else{
       switch($this->valide){
         case 1 :
-          $valideN2 = $_SESSION['login_id'];
-          $validation = date("Y-m-d H:i:s");
+          $valide_n2 = $_SESSION['login_id'];
+          $validation_n2 = date("Y-m-d H:i:s");
           $validationText = "Valid&eacute;e";
           break;
           
         case -1 :
-          $valideN2 = $_SESSION['login_id']*-1;
-          $validation = date("Y-m-d H:i:s");
+          $valide_n2 = $_SESSION['login_id']*-1;
+          $validation_n2 = date("Y-m-d H:i:s");
           $validationText = "Refus&eacute;e";
           break;
           
         case 2 :
-          $valideN1 = $_SESSION['login_id'];
-          $validationN1 = date("Y-m-d H:i:s");
+          $valide_n1 = $_SESSION['login_id'];
+          $validation_n1 = date("Y-m-d H:i:s");
           $validationText = "Accept&eacute;e (en attente de validation hi&eacute;rarchique)";
           break;
           
         case -2 :
-          $valideN1 = $_SESSION['login_id']*-1;
-          $validationN1 = date("Y-m-d H:i:s");
+          $valide_n1 = $_SESSION['login_id']*-1;
+          $validation_n1 = date("Y-m-d H:i:s");
           $validationText = "Refus&eacute;e (en attente de validation hi&eacute;rarchique)";
           break;
       }
@@ -123,10 +126,10 @@ class absences{
 
     // Choix des destinataires des notifications selon le degré de validation
     $notifications = 1;
-    if($GLOBALS['config']['Absences-validation'] and $valideN1 != 0){
+    if($GLOBALS['config']['Absences-validation'] and $valide_n1 != 0){
       $notifications = 3;
     }
-    elseif($GLOBALS['config']['Absences-validation'] and $valideN2 != 0){
+    elseif($GLOBALS['config']['Absences-validation'] and $valide_n2 != 0){
       $notifications=4;
     }
 
@@ -182,9 +185,14 @@ class absences{
         $a->motif = $motif;
         $a->motif_autre = $motif_autre;
         $a->rrule = $this->rrule;
-        $a->valideN1 = $valideN1;
-        $a->valideN2 = $valideN2;
-        $a->uid = $this->uid;
+        $a->valide_n1 = $valide_n1;
+        $a->valide_n2 = $valide_n2;
+        $a->validation_n1 = $validation_n1;
+        $a->validation_n2 = $validation_n2;
+        // TODO : TEST : Ne comprend pas pourquoi ceci a été ajouté au commit 9155023 (correction création de l'UID).
+        // Problématique car en cas lors de la création d'exceptions sur les événements à venir, le nouvel événement comporte le même UID
+        // A vérifier
+        // $a->uid = $this->uid;    
         $a->ics_add_event();
 
       // Les événements sans récurrence sont enregistrés directement dans la base de données
@@ -192,21 +200,20 @@ class absences{
         // Ajout de l'absence dans la table 'absence'
         $insert = array("perso_id"=>$perso_id, "debut"=>$debut_sql, "fin"=>$fin_sql, "motif"=>$motif, "motif_autre"=>$motif_autre, "commentaires"=>$commentaires, 
         "demande"=>date("Y-m-d H:i:s"), "pj1"=>$this->pj1, "pj2"=>$this->pj2, "so"=>$this->so, "groupe"=>$groupe);
-      }
 
-      if($valideN1 != 0){
-        $insert["valide_n1"] = $valideN1;
-        $insert["validation_n1"] = $validationN1;
-      }
-      else{
-        $insert["valide"]=$valideN2;
-        $insert["validation"]=$validation;
-      }
+        if($valide_n1 != 0){
+          $insert["valide_n1"] = $valide_n1;
+          $insert["validation_n1"] = $validation_n1;
+        }
+        else{
+          $insert["valide"]=$valide_n2;
+          $insert["validation"]=$validation_n2;
+        }
 
-      $db = new db();
-      $db->CSRFToken = $this->CSRFToken;
-      $db->insert("absences", $insert);
-      
+        $db = new db();
+        $db->CSRFToken = $this->CSRFToken;
+        $db->insert("absences", $insert);
+      }
 
       // Récupération de l'ID de l'absence enregistrée pour la création du lien dans le mail
       $info = array(array("name"=>"MAX(id)", "as"=>"id"));
@@ -1094,11 +1101,32 @@ class absences{
     $summary = $this->motif_autre ? html_entity_decode($this->motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8') : html_entity_decode($this->motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
     $cal_name = "PlanningBiblio-Absences-$perso_id";
     $uid = !empty($this->uid) ? $this->uid : $dtstart."_".$dtstamp;
-    $status = $this->valideN2 > 0 ? 'CONFIRMED' : 'TENTATIVE';
+    $status = $this->valide_n2 > 0 ? 'CONFIRMED' : 'TENTATIVE';
 
     // Description : en supprime les entités HTML et remplace les saut de lignes par des <br/> pour facilité le traitement des saut de lignes à l'affichage et lors des remplacements
     $description = html_entity_decode($this->commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
     $description = str_replace("\n", "<br/>", $description);
+
+
+    // Gestion des groupes et des validations, utilisation du champ CATEGORIES
+    $categories = array();
+    if($this->groupe){
+      $categories[] = "PBGroup=".$this->groupe;
+    }
+    if($this->valide_n1){
+      $categories[] = "PBValideN1=".$this->valide_n1;
+    }
+    if($this->validation_n1){
+      $categories[] = "PBValidationN1=".$this->validation_n1;
+    }
+    if($this->valide_n2){
+      $categories[] = "PBValideN2=".$this->valide_n2;
+    }
+    if($this->validation_n2){
+      $categories[] = "PBValidationN2=".$this->validation_n2;
+    }
+    $categories = implode(';', $categories);
+
 
     // On créé un événement ICS
     $ics_event = "BEGIN:VEVENT\n";
@@ -1112,7 +1140,7 @@ class absences{
     $ics_event .= "STATUS:$status\n";
     $ics_event .= "SUMMARY:$summary\n";
     $ics_event .= "DESCRIPTION:$description\n";
-    if($this->groupe){ $ics_event .= "CATEGORIES:PBGroup=".$this->groupe."\n"; }
+    $ics_event .= "CATEGORIES:$categories\n";
     $ics_event .= "TRANSP:OPAQUE\n";
     $ics_event .= "RRULE:{$this->rrule}\n";
     $ics_event .= "END:VEVENT\n";
@@ -1353,11 +1381,31 @@ class absences{
           }
 
           // Mise à jour de STATUS
-          // TODO : A améliorer car ne prend pas toutes les infos (validation N1, id de la personne ayant validé et date de validation
-          // TODO : Utiliser un autre champ (ex: CATEGORIES) pour ajouter les autres infos
           if(substr($ics_event[$i], 0, 6) == 'STATUS'){
-            $status = $this->valide == 1 ? 'CONFIRMED' : 'TENTATIVE';
+            $status = $this->valide_n2 > 0 ? 'CONFIRMED' : 'TENTATIVE';
             $ics_event[$i] = "STATUS:$status\n";
+          }
+          
+          // Mise à jour de CATEGORIES (validation et groupe
+          // Exemple : PBGroup=1510848337-470;PBValideN1=1;PBValidationN1=2017-11-16 17:05:37;PBValidationN2=0000-00-00 00:00:00
+          if(substr($ics_event[$i], 0, 10) == 'CATEGORIES'){
+          
+            // On récupère le groupe (Si existe. Ne change pas.)
+            $categories = substr($ics_event[$i], 11);
+            $groupe = strstr($categories, "PBGroup") ? preg_replace('/.*PBGroup=(\d+-\d+).*/', "$1", $categories) : null;
+            
+            // On reconstitue la chaîne
+            $tmp = array();
+            if($groupe){              $tmp[] = "PBGroup=$groupe"; }
+            if($this->valide_n1){     $tmp[] = "PBValideN1={$this->valide_n1}"; }
+            if($this->validation_n1){ $tmp[] = "PBValidationN1={$this->validation_n1}"; }
+            if($this->valide_n2){     $tmp[] = "PBValideN2={$this->valide_n2}"; }
+            if($this->validation_n2){ $tmp[] = "PBValidationN2={$this->validation_n2}"; }
+
+            if(!empty($tmp)){
+              $ics_event[$i] = 'CATEGORIES:'.implode(';', $tmp);
+              $ics_event[$i] = str_replace("\n", null, $ics_event[$i])."\n";
+            }
           }
 
           // Mise à jour de SUMMARY
