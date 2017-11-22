@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 11 novembre 2017
+Dernière modification : 22 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -403,7 +403,7 @@ if($db->result){
   <tr><td>
     <label>R&eacute;sum&eacute; : </label>
   </td><td>
-    <span id='recurrence-summary-form' style='max-width:200px; word-wrap:break-word;'>&nbsp;</span>
+    <span id='recurrence-summary-form'>&nbsp;</span>
   </td></tr>
     
   </table>

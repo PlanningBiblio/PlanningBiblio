@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 1er novembre 2017
+Dernière modification : 22 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 @author Etienne Cavalié
@@ -257,6 +257,10 @@ function dateFr(date){
  */
 function dateFrToICSGMT(date){
 
+  if(date == null){
+    return null;
+  }
+
   var d = new Date(date.replace(/(\d*)\/(\d*)\/(\d*)(.*)/,"$2/$1/$3$4"));
   var offset = d.getTimezoneOffset();
   d.setMinutes(d.getMinutes() + offset);
@@ -279,6 +283,10 @@ function dateFrToICSGMT(date){
  * Convertit une date au format ICS sur le fuseau horaire GMT en date au format FR sur le fuseau horaire local (navigateur)
  */
 function dateICSGMTToFr(date){
+
+  if(date == null){
+    return null;
+  }
 
   var d = new Date(date.replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/,"$2/$3/$1 $4:$5:$6"));
   var offset = d.getTimezoneOffset();

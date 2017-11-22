@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/js/modif.js
 Création : 28 février 2014
-Dernière modification : 15 novembre 2017
+Dernière modification : 22 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -20,6 +20,14 @@ $(function() {
     // Affichage de la liste des agents sélectionnés lors du chargement de la page modif.php
     if($('.perso_ul').length){
       affiche_perso_ul();
+    }
+
+    // Affichage des récurrences lors de la modification d'une absence
+    if($('#rrule').val()){
+      var text = recurrenceRRuleText2($('#rrule').val());
+      $('#recurrence-summary').html(text);
+      $('#recurrence-info').show();
+      $('#recurrence-checkbox').attr('checked','checked');
     }
   });
 
@@ -208,7 +216,11 @@ $(function() {
 
   // checkbox récurrence
   $('#recurrence-link').click(function(){
-    $("#recurrence-form").dialog( "open" );
+    if($("#recurrence-form").length){
+      $("#recurrence-form").dialog( "open" );
+    } else if($("#recurrence-form-tmp").length){
+      $("#recurrence-form-tmp").dialog( "open" );
+    }
   });
 
   $("#recurrence-checkbox").change(function() {
@@ -247,8 +259,8 @@ $(function() {
 
         rrule = recurrenceRRule();
 
-        $('#recurrence-summary').text(rrule);
-        $('#recurrence-hidden').val(rrule);
+        $('#recurrence-summary').html(rrule[1]);
+        $('#recurrence-hidden').val(rrule[0]);
         $('#recurrence-info').show();
 
         $( this ).dialog( "close" );
@@ -319,7 +331,21 @@ $(function() {
 
   $('#recurrence-form').on('dialogopen', function(){
     rrule = recurrenceRRule();
-    $('#recurrence-summary-form').text(rrule);
+    $('#recurrence-summary-form').html(rrule[1]);
+  });
+
+  // Formulaire récurrence pour la modification (temporaire, lorsque sera terminé, utiliser #recurrence-form)
+  // TODO : A continuer
+  $("#recurrence-form-tmp").dialog({
+    autoOpen: false,
+    height: 250,
+    width: 650,
+    modal: true,
+    buttons: {
+      "Fermer": function() {
+        $( this ).dialog( "close" );
+      }
+    }
   });
 
   $('#recurrence-freq').change(function(){
@@ -377,8 +403,10 @@ $(function() {
       rrule = rrule.replace(/BYDAY=([0-9A-Z-, ]*)/,'BYDAY='+byday);
     }
 
+    var text = recurrenceRRuleText2(rrule);
+
     $('#recurrence-hidden').val(rrule);
-    $('#recurrence-summary').text(rrule);
+    $('#recurrence-summary').html(text);
 
   });
 
@@ -405,11 +433,11 @@ $(function() {
   // Détecte les modifications du formulaire pour adapter la règle ICS
   $('.recurrence').change(function(){
     rrule = recurrenceRRule();
-    $('#recurrence-summary-form').text(rrule);
+    $('#recurrence-summary-form').html(rrule[1]);
   });
   $('input[type=text].recurrence').keyup(function(){
     rrule = recurrenceRRule();
-    $('#recurrence-summary-form').text(rrule);
+    $('#recurrence-summary-form').html(rrule[1]);
   });
 
   // Récurrences : alerte lors de la modification d'une absence récurrente
@@ -644,8 +672,8 @@ function recurrenceRRule(){
 
       if(until){
         // Conversion date ICS sur fuseau GMT
-        until = dateFrToICSGMT(until+" 23:59:59");
-        end = 'UNTIL='+until;
+        untilGMT = dateFrToICSGMT(until+" 23:59:59");
+        end = 'UNTIL='+untilGMT;
       }
       break;
   }
@@ -660,7 +688,111 @@ function recurrenceRRule(){
   if(bymonthday){ rrule += ';BYMONTHDAY='+bymonthday; }
   if(end){ rrule += ';'+end; }
 
-  return rrule;
+
+  // Affichage de la règle, format humain
+  var text = recurrenceRRuleText(freq, interval, byday, bymonthday, until, count);
+
+  return [rrule,text];
+}
+
+/**
+ * @function recurrenceRRuleText
+ * @param string freq : fréquence de la récurrence (DAILY, WEEKLY, MONTHLY)
+ * @param int interval : intervalle
+ * @param string byday : jours pour les récurrences WEEKLY et MONTHLY : MO, TU, 1WE, -1TH, etc.
+ * @param int bymonthday : jour du mois pour les récurrences MONTHLY : 1,2,3, etc.
+ * @param string until : date de fin au format DD/MM/YYYY, fuseau horaire local
+ * @param int count : nombre d'occurences
+ * @return string text : règle de récurrence au format humain (FR)
+ * @description : Ecrit la règle de récurrence au format humain (FR) en fonction des paramètres freq, interval, byday, etc.)
+ */
+function recurrenceRRuleText(freq, interval, byday, bymonthday, until, count){
+  switch(freq){
+    case 'DAILY' :
+      if(interval == 1 || interval == null){
+        var text = 'Tous les jours';
+      } else {
+        var text = 'Tous les '+interval+' jours';
+      }
+
+      break;
+
+    case 'WEEKLY' :
+      if(interval == 1 || interval == null){
+        var text = 'Chaque semaine';
+      } else {
+        var text = 'Toutes les '+interval+' semaines';
+      }
+
+      if(byday){
+        days = byday.replace('MO', ' lundis').replace('TU', ' mardis').replace('WE', ' mercredis').replace('TH', ' jeudis').replace('FR', ' vendredis').replace('SA', ' samedis').replace('SU', ' dimanches');
+        days = days.replace(/(.*),(.[^,]*)$/, "$1 et $2");
+        text += ', les'+days;
+      }
+
+      break;
+
+    case 'MONTHLY' :
+      if(interval == 1 || interval == null){
+        var text = 'Tous les mois';
+      } else {
+        var text = 'Tous les '+interval+' mois';
+      }
+
+      if(byday){
+        if(byday.substring(0,2) == '-1'){
+          var n = 'Le dernier ';
+          var d = byday.substring(2);
+        } else {
+          var n = byday.substring(0,1);
+          var d = byday.substring(1);
+          n = n == 1 ? 'Le 1<sup>er</sup> ' : 'Le '+n+'<sup>&egrave;me</sup> ';
+        }
+        day = d.replace('MO', ' lundi').replace('TU', ' mardi').replace('WE', ' mercredi').replace('TH', ' jeudi').replace('FR', ' vendredi').replace('SA', ' samedi').replace('SU', ' dimanche');
+
+        text = text == 'Tous les mois' ? n+day+' de chaque mois' : n+day+', '+'tous les '+interval+' mois';
+      }
+
+      if(bymonthday){
+        var n = bymonthday;
+        n = n == 1 ? 'Le 1<sup>er</sup>' : 'Le '+n;
+        text = text == 'Tous les mois' ? n+' de chaque mois' : n+', '+'tous les '+interval+' mois';
+      }
+
+      break;
+  }
+
+  if(until){
+    text += " jusqu'au "+until;
+  } else if(count){
+    text += ', '+count+' fois';
+  }
+  return text;
+
+}
+
+/**
+ * @function recurrenceRRuleText2
+ * @param string rrule : règle de récurrence au format ICS
+ * @return string text : règle de récurrence au format humain (FR)
+ * @description : Ecrit la règle de récurrence au format humain (FR) en fonction du paramètre rrule (règle au format ICS).
+ */
+function recurrenceRRuleText2(rrule){
+  var freq = rrule.replace(/.*FREQ=(\w*).*/,"$1");
+  var interval = rrule.indexOf('INTERVAL') > 0 ? rrule.replace(/.*INTERVAL=(\d*).*/,"$1") : 1;
+  var count = rrule.indexOf('COUNT') > 0 ? rrule.replace(/.*COUNT=(\d*).*/,"$1") : null;
+  var until = rrule.indexOf('UNTIL') > 0 ? rrule.replace(/.*UNTIL=(\w*).*/,"$1") : null;
+  var byday = rrule.indexOf('BYDAY') > 0  ? rrule.replace(/.*BYDAY=([0-9A-Z-,]*).*/,"$1") : null;
+  var bymonthday = rrule.indexOf('BYMONTHDAY') > 0 ? rrule.replace(/.*BYMONTHDAY=(\d*).*/,"$1") : null;
+
+  console.log(byday);
+  if(until){
+    until = dateICSGMTToFr(until);
+    until = until.substr(0,10);
+  }
+
+  var text = recurrenceRRuleText(freq, interval, byday, bymonthday, until, count);
+  return text;
 }
 
 // Vérification des formulaires (ajouter et modifier)

@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 15 novembre 2017
+Dernière modification : 22 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -274,6 +274,14 @@ selectHeure(7,23,true,$hre_fin);
 echo "</select>\n";
 echo "</td></tr>\n";
 
+echo "<tr><td style='padding-bottom:30px;'>\n";
+echo "<label class='intitule'>Récurrence</label>\n";
+echo "</td><td style='padding-bottom:30px;'>\n";
+echo "<input type='checkbox' name='recurrence-checkbox' id='recurrence-checkbox' value='1'/>\n";
+echo "<span id='recurrence-info' style='display:none;'><span id='recurrence-summary'>&nbsp;</span><a href='#' id='recurrence-link' style='margin-left:10px;'>Modifier</a></span>\n";
+echo "<input type='hidden' name='recurrence-hidden' id='recurrence-hidden' />\n";
+echo "</td></tr>\n";
+
 echo "<tr><td><label class='intitule'>Motif</label></td>\n";
 echo "<td style='white-space:nowrap;'>";
 
@@ -353,6 +361,10 @@ echo "<input type='hidden' name='id' value='$id'/>";
 echo "</form>\n";
 ?>
 
+<!-- Dialog Box pour la modification de la récurrence -->
+<div id="recurrence-form-tmp" title="Récurrence" class='noprint' style='display:none;'>
+  <p>La modification des règles de récurrence n'est pas possible pour le moment.<br/>Cette fonctionnalité sera disponible dans les prochaines versions de Planning Biblio.</p>
+</div>
 <!-- Popup modification d'une récurrence -->
 <div id="recurrence-alert" title="Modification d'une absence récurrente" class='noprint' style='display:none;'>
   <p>Souhaitez-vous modifier uniquement cet événement, tous les événements de la série, ou cet événement et ceux qui le suivent dans la série ?</p>
