@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio, Version 2.7.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : statistiques/statut.php
 Création : 13 septembre 2013
-Dernière modification : 30 septembre 2017
+Dernière modification : 22 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -306,7 +306,10 @@ echo "<td><select name='statuts[]' multiple='multiple' size='20' onchange='verif
 if(is_array($statuts_list)){
   echo "<option value='Tous'>Tous</option>\n";
   foreach($statuts_list as $elem){
-    $selected=in_array($elem['id'],$statuts)?"selected='selected'":null;
+    $selected = null;
+    if(!empty($statuts)){
+      $selected=in_array($elem['id'],$statuts)?"selected='selected'":null;
+    }
     echo "<option value='{$elem['id']}' $selected>{$elem['valeur']}</option>\n";
   }
 }
