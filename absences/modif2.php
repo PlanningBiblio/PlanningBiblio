@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 15 novembre 2017
+Dernière modification : 22 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -321,15 +321,8 @@ if($rrule){
       $a->so = $so;
       $a->uid = $uid;
       $a->ics_update_event();
-//       $msg2 = $a->msg2;
-//       $msg2_type = $a->msg2_type;
 
       break;
-
-      // TODO : continuer
-      // TODO : Tester / Ajuster les notifications
-      // TODO : Si la modification est traitée ICI (rrule), éviter d'executer les scripts en bas de cette page : à étudier
-
   }
 
   if($nouvel_enregistrement){
@@ -350,83 +343,83 @@ if($rrule){
     $a->pj1 = $pj1;
     $a->pj2 = $pj2;
     $a->so = $so;
-    // TODO : TEST : Ne comprend pas pourquoi ceci a été ajouté au commit 9155023 (correction création de l'UID).
-    // Problématique car en cas lors de la création d'exceptions sur les événements à venir, le nouvel événement comporte le même UID
-    // A vérifier
-    // $a->uid = $uid;
+    $a->uid = $uid;
     $a->add();
     $msg2 = $a->msg2;
     $msg2_type = $a->msg2_type;
   }
 }
 
+// Si pas de récurrence, modifiation des informations directement dan la base de données
+else {
 
-// Mise à jour du champs 'absent' dans 'pl_poste'
-// Suppression du marquage absent pour tous les agents qui étaient concernés par l'absence avant sa modification
-// Comprend les agents supprimés et ceux qui restent
-/**
- * @note : le champ pl_poste.absent n'est plus mis à 1 lors de la validation des absences depuis la version 2.4
- * mais nous devons garder la mise à 0 pour la suppression ou modifications des absences enregistrées avant cette version.
- * NB : le champ pl_poste.absent est également utilisé pour barrer les agents depuis le planning, donc on ne supprime pas toutes ses valeurs
- */
-$ids=implode(",",$perso_ids1);
-$db=new db();
-$debut1=$db->escapeString($debut1);
-$fin1=$db->escapeString($fin1);
-$ids=$db->escapeString($ids);
-$req="UPDATE `{$dbprefix}pl_poste` SET `absent`='0' WHERE
-  CONCAT(`date`,' ',`debut`) < '$fin1' AND CONCAT(`date`,' ',`fin`) > '$debut1'
-  AND `perso_id` IN ($ids)";
-$db->query($req);
-
-
-// Préparation des données pour mise à jour de la table absence et insertion pour les agents ajoutés
-$data = array('motif' => $motif, 'motif_autre' => $motif_autre, 'commentaires' => $commentaires, 'debut' => $debut_sql, 'fin' => $fin_sql, 'groupe' => $groupe, 
-  'valide' => $valide_n2, 'validation' => $validation_n2, 'valide_n1' => $valide_n1, 'validation_n1' => $validation_n1);
-
-if($admin){
-  $data=array_merge($data,array("pj1"=>$pj1, "pj2"=>$pj2, "so"=>$so));
-}
+  // Mise à jour du champs 'absent' dans 'pl_poste'
+  // Suppression du marquage absent pour tous les agents qui étaient concernés par l'absence avant sa modification
+  // Comprend les agents supprimés et ceux qui restent
+  /**
+  * @note : le champ pl_poste.absent n'est plus mis à 1 lors de la validation des absences depuis la version 2.4
+  * mais nous devons garder la mise à 0 pour la suppression ou modifications des absences enregistrées avant cette version.
+  * NB : le champ pl_poste.absent est également utilisé pour barrer les agents depuis le planning, donc on ne supprime pas toutes ses valeurs
+  */
+  $ids=implode(",",$perso_ids1);
+  $db=new db();
+  $debut1=$db->escapeString($debut1);
+  $fin1=$db->escapeString($fin1);
+  $ids=$db->escapeString($ids);
+  $req="UPDATE `{$dbprefix}pl_poste` SET `absent`='0' WHERE
+    CONCAT(`date`,' ',`debut`) < '$fin1' AND CONCAT(`date`,' ',`fin`) > '$debut1'
+    AND `perso_id` IN ($ids)";
+  $db->query($req);
 
 
-// Mise à jour de la table 'absences'
-// Sélection des lignes à modifier dans la base à l'aide du champ id car fonctionne également si le groupe n'existait pas au départ contrairement au champ groupe
-// (dans le cas d'une absence simple ou absence simple transformée en absence multiple).
-// Récupération de tous les ids de l'absence avant modification
-$ids=array();
-foreach($agents as $agent){
-  $ids[]=$agent['absence_id'];
-}
-$ids=implode(",",$ids);
-$where=array("id"=>"IN $ids");
+  // Préparation des données pour mise à jour de la table absence et insertion pour les agents ajoutés
+  $data = array('motif' => $motif, 'motif_autre' => $motif_autre, 'commentaires' => $commentaires, 'debut' => $debut_sql, 'fin' => $fin_sql, 'groupe' => $groupe, 
+    'valide' => $valide_n2, 'validation' => $validation_n2, 'valide_n1' => $valide_n1, 'validation_n1' => $validation_n1);
 
-$db=new db();
-$db->CSRFToken = $CSRFToken;
-$db->update("absences",$data,$where);
+  if($admin){
+    $data=array_merge($data,array("pj1"=>$pj1, "pj2"=>$pj2, "so"=>$so));
+  }
 
 
-// Ajout de nouvelles lignes dans la table absences si des agents ont été ajoutés
-$insert=array();
-foreach($agents_ajoutes as $agent){
-  $insert[]=array_merge($data, array('perso_id'=>$agent['id']));
-}
-if(!empty($insert)){
+  // Mise à jour de la table 'absences'
+  // Sélection des lignes à modifier dans la base à l'aide du champ id car fonctionne également si le groupe n'existait pas au départ contrairement au champ groupe
+  // (dans le cas d'une absence simple ou absence simple transformée en absence multiple).
+  // Récupération de tous les ids de l'absence avant modification
+  $ids=array();
+  foreach($agents as $agent){
+    $ids[]=$agent['absence_id'];
+  }
+  $ids=implode(",",$ids);
+  $where=array("id"=>"IN $ids");
+
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->insert("absences",$insert);
+  $db->update("absences",$data,$where);
+
+
+  // Ajout de nouvelles lignes dans la table absences si des agents ont été ajoutés
+  $insert=array();
+  foreach($agents_ajoutes as $agent){
+    $insert[]=array_merge($data, array('perso_id'=>$agent['id']));
+  }
+  if(!empty($insert)){
+    $db=new db();
+    $db->CSRFToken = $CSRFToken;
+    $db->insert("absences",$insert);
+  }
+
+
+  // Suppresion des lignes de la table absences concernant les agents supprimés
+  $agents_supprimes_ids=array();
+  foreach($agents_supprimes as $agent){
+    $agents_supprimes_ids[]=$agent['perso_id'];
+  }
+  $agents_supprimes_ids=implode(",",$agents_supprimes_ids);
+
+  $db=new db();
+  $db->CSRFToken = $CSRFToken;
+  $db->delete("absences",array("id"=>"IN $ids", "perso_id"=>"IN $agents_supprimes_ids"));
 }
-
-
-// Suppresion des lignes de la table absences concernant les agents supprimés
-$agents_supprimes_ids=array();
-foreach($agents_supprimes as $agent){
-  $agents_supprimes_ids[]=$agent['perso_id'];
-}
-$agents_supprimes_ids=implode(",",$agents_supprimes_ids);
-
-$db=new db();
-$db->CSRFToken = $CSRFToken;
-$db->delete("absences",array("id"=>"IN $ids", "perso_id"=>"IN $agents_supprimes_ids"));
 
 
 // Envoi d'un mail de notification
@@ -520,7 +513,14 @@ if($hre_debut!="00:00:00")
 $message.="</strong></li><li>Fin : <strong>$fin";
 if($hre_fin!="23:59:59")
   $message.=" ".heure3($hre_fin);
-$message.="</strong></li><li>Motif : $motif";
+$message.="</strong></li>";
+
+if($rrule){
+  $rruleText = recurrenceRRuleText($rrule);
+  $message .= "<li>Récurrence : $rruleText</li>";
+}
+
+$message.="<li>Motif : $motif";
 if($motif_autre){
   $message.=" / $motif_autre";
 }
@@ -541,9 +541,7 @@ if($config['Absences-validation']){
     $validationText="Refus&eacute;e (en attente de validation hi&eacute;rarchique)";
   }
 
-  $message.="<li>Validation : <br/>\n";
-  $message.=$validationText;
-  $message.="</li>\n";
+  $message.="<li>Validation : $validationText</li>\n";
 }
 
 if($commentaires){

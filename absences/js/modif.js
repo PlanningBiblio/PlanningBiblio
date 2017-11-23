@@ -750,13 +750,13 @@ function recurrenceRRuleText(freq, interval, byday, bymonthday, until, count){
         }
         day = d.replace('MO', ' lundi').replace('TU', ' mardi').replace('WE', ' mercredi').replace('TH', ' jeudi').replace('FR', ' vendredi').replace('SA', ' samedi').replace('SU', ' dimanche');
 
-        text = text == 'Tous les mois' ? n+day+' de chaque mois' : n+day+', '+'tous les '+interval+' mois';
+        text = text == 'Tous les mois' ? n+day+' de chaque mois' : n+day+', tous les '+interval+' mois';
       }
 
       if(bymonthday){
         var n = bymonthday;
         n = n == 1 ? 'Le 1<sup>er</sup>' : 'Le '+n;
-        text = text == 'Tous les mois' ? n+' de chaque mois' : n+', '+'tous les '+interval+' mois';
+        text = text == 'Tous les mois' ? n+' de chaque mois' : n+', tous les '+interval+' mois';
       }
 
       break;

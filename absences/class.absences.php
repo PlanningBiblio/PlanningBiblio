@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 16 novembre 2017
+Dernière modification : 22 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -149,24 +149,6 @@ class absences{
 
     // Pour chaque agents
     foreach($perso_ids as $perso_id){
-      // Recherche du responsables pour l'envoi de notifications
-      $a = new absences();
-      $a->getResponsables($debutSQL,$finSQL,$perso_id);
-      $responsables = $a->responsables;
-
-      // Informations sur l'agent
-      $p = new personnel();
-      $p->fetchById($perso_id);
-      $nom = $p->elements[0]['nom'];
-      $prenom = $p->elements[0]['prenom'];
-      $mail = $p->elements[0]['mail'];
-      $mails_responsables = $p->elements[0]['mails_responsables'];
-
-      // Choix des destinataires des notifications selon la configuration
-      $a = new absences();
-      $a->getRecipients($notifications,$responsables,$mail,$mails_responsables);
-      $destinataires = $a->recipients;
-      
       // Enregistrement des récurrences
       // Les événements récurrents sont enregistrés dans un fichier ICS puis importés dans la base de données
       // La méthode absences::ics_add_event se charge de créer le fichier et d'enregistrer les infos dans la base de données
@@ -215,6 +197,25 @@ class absences{
         $db->insert("absences", $insert);
       }
 
+      // Recherche du responsables pour l'envoi de notifications
+      $a = new absences();
+      $a->getResponsables($debutSQL,$finSQL,$perso_id);
+      $responsables = $a->responsables;
+
+      // Informations sur l'agent
+      $p = new personnel();
+      $p->fetchById($perso_id);
+      $nom = $p->elements[0]['nom'];
+      $prenom = $p->elements[0]['prenom'];
+      $mail = $p->elements[0]['mail'];
+      $mails_responsables = $p->elements[0]['mails_responsables'];
+
+      // Choix des destinataires des notifications selon la configuration
+      $a = new absences();
+      $a->getRecipients($notifications,$responsables,$mail,$mails_responsables);
+      $destinataires = $a->recipients;
+      
+
       // Récupération de l'ID de l'absence enregistrée pour la création du lien dans le mail
       $info = array(array("name"=>"MAX(id)", "as"=>"id"));
       $where = array("debut"=>$debut_sql, "fin"=>$fin_sql, "perso_id"=>$perso_id);
@@ -232,68 +233,76 @@ class absences{
       $a->infoPlannings();
       $infosPlanning = $a->message;
 
-      // TODO : Adapter le message en fonction de s'il s'agit d'un réel ajout ou s'il s'agit d'une absence récurrente modifiée
-      // Titre différent si titre personnalisé (config) ou si validation ou non des absences (config)
-      if($GLOBALS['config']['Absences-notifications-titre']){
-        $titre = $GLOBALS['config']['Absences-notifications-titre'];
-      }else{
-        $titre = $GLOBALS['config']['Absences-validation'] ? "Nouvelle demande d absence" : "Nouvelle absence";
+      // N'envoie la notification que s'il s'agit d'un ajout simple, et non s'il s'agit d'un ajout qui suit la modification d'une récurrrence (exception ou modification des événements suivants sans modifier les précédents)
+      // Si $this->uid : Ajout simple. Si !$this->uid : Modification, donc pas d'envoi de notification à ce niveau (envoyée via modif2.php)
+      if(!$this->uid){
+        // Titre différent si titre personnalisé (config) ou si validation ou non des absences (config)
+        if($GLOBALS['config']['Absences-notifications-titre']){
+          $titre = $GLOBALS['config']['Absences-notifications-titre'];
+        }else{
+          $titre = $GLOBALS['config']['Absences-validation'] ? "Nouvelle demande d absence" : "Nouvelle absence";
+        }
+
+        // Si message personnalisé (config), celui-ci est inséré
+        if($GLOBALS['config']['Absences-notifications-message']){
+          $message = "<b><u>{$GLOBALS['config']['Absences-notifications-message']}</u></b><br/>";
+        }else{
+          $message = "<b><u>$titre</u></b> : ";
+        }
+
+        // On complète le message avec les informations de l'absence
+        $message .= "<ul><li>Agent : <strong>$prenom $nom</strong></li>";
+        $message .= "<li>Début : <strong>$debut";
+        if($hre_debut != "00:00:00")
+          $message .= " ".heure3($hre_debut);
+        $message .= "</strong></li><li>Fin : <strong>$fin";
+        if($hre_fin != "23:59:59")
+          $message .= " ".heure3($hre_fin);
+        $message .= "</strong></li>";
+
+        if($this->rrule){
+          $rrule = recurrenceRRuleText($this->rrule);
+          $message .= "<li>Récurrence : $rrule</li>";
+        }
+
+        $message .= "<li>Motif : $motif";
+        if($motif_autre){
+          $message .= " / $motif_autre";
+        }
+        $message .= "</li>";
+
+        if($GLOBALS['config']['Absences-validation']){
+          $message .= "<li>Validation : $validationText</li>\n";
+        }
+
+        if($commentaires){
+          $message .= "<li>Commentaire: <br/>$commentaires</li>";
+        }
+
+        $message .= "</ul>";
+
+        // Ajout des informations sur les plannings
+        $message .= $infosPlanning;
+        
+        // Ajout du lien permettant de rebondir sur l'absence
+        $url = createURL("absences/modif.php&id=$id");
+        $message .= "<p>Lien vers la demande d&apos;absence :<br/><a href='$url'>$url</a></p>";
+
+        // Envoi du mail
+        $m = new CJMail();
+        $m->subject = $titre;
+        $m->message = $message;
+        $m->to = $destinataires;
+        $m->send();
+
+        // Si erreur d'envoi de mail
+        if($m->error){
+          $msg2 .= "<li>".$m->error_CJInfo."</li>";
+          $msg2_type = "error";
+        }
       }
-
-      // Si message personnalisé (config), celui-ci est inséré
-      if($GLOBALS['config']['Absences-notifications-message']){
-        $message = "<b><u>{$GLOBALS['config']['Absences-notifications-message']}</u></b><br/>";
-      }else{
-        $message = "<b><u>$titre</u></b> : ";
-      }
-
-      // On complète le message avec les informations de l'absence
-      $message .= "<ul><li>Agent : <strong>$prenom $nom</strong></li>";
-      $message .= "<li>Début : <strong>$debut";
-      if($hre_debut != "00:00:00")
-        $message .= " ".heure3($hre_debut);
-      $message .= "</strong></li><li>Fin : <strong>$fin";
-      if($hre_fin != "23:59:59")
-        $message .= " ".heure3($hre_fin);
-      $message .= "</strong></li><li>Motif : $motif";
-      if($motif_autre){
-        $message .= " / $motif_autre";
-      }
-      $message .= "</li>";
-
-      if($GLOBALS['config']['Absences-validation']){
-        $message .= "<li>Validation : <br/>\n";
-        $message .= $validationText;
-        $message .= "</li>\n";
-      }
-
-      if($commentaires){
-        $message .= "<li>Commentaire: <br/>$commentaires</li>";
-      }
-
-      $message .= "</ul>";
-
-      // Ajout des informations sur les plannings
-      $message .= $infosPlanning;
       
-      // Ajout du lien permettant de rebondir sur l'absence
-      $url = createURL("absences/modif.php&id=$id");
-      $message .= "<p>Lien vers la demande d&apos;absence :<br/><a href='$url'>$url</a></p>";
-
-      // Envoi du mail
-      $m = new CJMail();
-      $m->subject = $titre;
-      $m->message = $message;
-      $m->to = $destinataires;
-      $m->send();
-
-      // Si erreur d'envoi de mail
-      if($m->error){
-        $msg2 .= "<li>".$m->error_CJInfo."</li>";
-        $msg2_type = "error";
-      }
     }
-    
     $this->msg2 = $msg2;
     $this->msg2_type = $msg2_type;
   }
@@ -1085,7 +1094,6 @@ class absences{
    * @function ics_add_event
    * Enregistre un événement dans le fichier ICS "Planning Biblio" de l'agent sélectionné
    * @params : tous les éléments d'une absence : date et heure de début et de fin, motif, commentaires, validation, ID de l'agent, règle de récurrence (rrule)
-   * TODO : gestion des validation N1/N2, enregistrement et récupération des ids des valideurs ainsi que des date et heures (champs valide_n1/2 et validation_n1/2) : utiliser CATEGORIES ou autre champ
    */
   public function ics_add_event(){
 

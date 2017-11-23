@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio, Version 2.7.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 7 octobre 2017
+Dernière modification : 22 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -1128,6 +1128,81 @@ function removeAccents($string){
     "Ÿ"=>"Y","Ỳ"=>"Y","Ŷ"=>"Y","'"=>"_");
   $string=strtr($string,$pairs);
   return htmlentities($string,ENT_QUOTES|ENT_IGNORE,"UTF-8");
+}
+
+function recurrenceRRuleText($rrule){
+  $freq       = preg_replace('/.*FREQ=(\w*).*/', "$1", $rrule);
+  $interval   = strpos($rrule, 'INTERVAL')      ? preg_replace('/.*INTERVAL=(\d*).*/', "$1", $rrule)      : 1;
+  $count      = strpos($rrule, 'COUNT')         ? preg_replace('/.*COUNT=(\d*).*/', "$1", $rrule)         : null;
+  $until      = strpos($rrule, 'UNTIL')         ? preg_replace('/.*UNTIL=(\w*).*/', "$1", $rrule)         : null;
+  $byday      = strpos($rrule, 'BYDAY')         ? preg_replace('/.*BYDAY=([0-9A-Z-,]*).*/', "$1", $rrule) : null;
+  $bymonthday = strpos($rrule, 'BYMONTHDAY')    ? preg_replace('/.*BYMONTHDAY=(\d*).*/', "$1", $rrule)    : null;
+
+  // UNTIL : Conversion au format d/m/Y sur le fuseau horaire local
+  if($until){
+    $date = new DateTime($until, new DateTimeZone('GMT'));
+    $date->setTimezone(new DateTimeZone(date_default_timezone_get()));
+    $until = $date->format('d/m/Y');
+  }
+
+  switch($freq){
+    case 'DAILY' :
+      if($interval == 1 or $interval == null){
+        $text = 'Tous les jours';
+      } else {
+        $text = "Tous les $interval jours";
+      }
+      break;
+
+    case 'WEEKLY' :
+      if($interval == 1 or $interval == null){
+        $text = 'Chaque semaine';
+      } else {
+        $text = "Toutes les $interval semaines";
+      }
+
+      if($byday){
+        $days = str_replace(array('MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'), array(' lundis', ' mardis', ' mercredis', ' jeudis', ' vendredis', ' samedis', ' dimanches'), $byday);
+        $days = preg_replace('/(.*),(.[^,]*)$/', "$1 et $2", $days);
+        $text .= ", les$days";
+      }
+      break;
+
+    case 'MONTHLY' :
+      if($interval == 1 or $interval == null){
+        $text = 'Tous les mois';
+      } else {
+        $text = "Tous les $interval mois";
+      }
+
+      if($byday){
+        if(substr($byday, 0, 2) == '-1'){
+          $n = 'Le dernier ';
+          $d = substr($byday, 2);
+        } else {
+          $n = substr($byday, 0, 1);
+          $d = substr($byday, 1);
+          $n = $n == 1 ? 'Le 1<sup>er</sup> ' : "Le $n<sup>&egrave;me</sup> ";
+        }
+        $day = str_replace(array('MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'), array(' lundi', ' mardi', ' mercredi', ' jeudi', ' vendredi', ' samedi', ' dimanche'), $d);
+
+        $text = $text == 'Tous les mois' ? $n.$day.' de chaque mois' : $n.$day.', tous les '.$interval.' mois';
+      }
+
+      if($bymonthday){
+        $n = $bymonthday;
+        $n = $n == 1 ? 'Le 1<sup>er</sup>' : 'Le '+$n;
+        $text = $text == 'Tous les mois' ? "$n de chaque mois" : "$n, tous les $interval mois";
+      }
+      break;
+  }
+
+  if($until){
+    $text .= " jusqu'au $until";
+  } else if($count){
+    $text .= ", $count fois";
+  }
+  return $text;
 }
 
 /**
