@@ -1,4 +1,4 @@
-*** Version 2.7.04      (22 octobre 2017)   ***
+*** Version 2.7.04      (22 novembre 2017)   ***
 - Améliorations
 Absences : Enregistrement d'absences récurrentes
 
