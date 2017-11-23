@@ -1,7 +1,11 @@
+*** Version 2.7.04      (22 octobre 2017)   ***
+- Améliorations
+Absences : Enregistrement d'absences récurrentes
+
 *** Version 2.7.03      (25 octobre 2017)   ***
 - Améliorations
 ICS : permet l'importation des événements non-confirmés. Ceux-ci sont importés comme des absences non-validées.
-ICS : permet l'utilisation du champ "matricule" dans les openURL d'importation. Peut être utilisé pour importer des fichiers ICS nommés avec l'identifiants Harpege par exemple.
+ICS : permet l'utilisation du champ "matricule" dans les openURL d'importation. Peut être utilisé pour importer des fichiers ICS nommés avec l'identifiant Harpege par exemple.
 
 *** Version 2.7.02      (12 octobre 2017)   ***
 - Améliorations
@@ -41,7 +45,7 @@ Correction des vulnérabilités XSRF liées à la classe dbh
 
 *** Version 2.6.91   (2 juin 2017)   ***
 - Amélioration
-Ne recharge plus la page après la modification des menus déroulants paramètrables
+Ne recharge plus la page après la modification des menus déroulants paramétrables
 
 - Correction
 Corrige l'encodage des caractères des menus déroulants paramétrables (htmlentities des valeurs des tables select_xxx)
@@ -58,8 +62,8 @@ Utilise la constante __DIR__ pour l'inclusion des fichiers (corrige les erreurs 
 Modifie le script de mise à jour pour les serveurs Windows afin qu'il renomme correctement les tables en minuscules avec l'ajout d'underscores.
 Pas de modification pour les serveurs Linux/Unix
 
-- Amérlioration
-Contrôle des tables modifiées entre la version 2.6.4 et 2.6.8 lors de l'éxecution du script de mise à jour
+- Amélioration
+Contrôle des tables modifiées entre la version 2.6.4 et 2.6.8 lors de l'exécution du script de mise à jour
 
 *** Version 2.6.7   (12 mai 2017)   ***
 - Corrections
@@ -144,7 +148,7 @@ Correction de vulnérabilités XSRF (celles liées à la fonction db::update2)
 *** Version 2.5.3   (6 février 2017)   ***
 - Améliorations
 Optimisation de la fonction nom() : moins de latence dans de nombreux modules, notamment dans le menu permettant de placer les agents dans le planning
-Affichage des absences non validées dans les plannings : les absences non validées apparaîssent en rouge mais ne sont pas barrées. Paramétrable
+Affichage des absences non validées dans les plannings : les absences non validées apparaissent en rouge mais ne sont pas barrées. Paramétrable
 Affichage des heures au format 12h34 (Heure, lettre h, minutes) dans le menu du planning et dans la feuille de temps
 Amélioration de la modification des menus (groupes de postes, étages des postes, services de rattachement)
 Feuille de temps : affichage jour par jour des heures par groupe.
@@ -286,7 +290,7 @@ Corrige une erreur sur le positionnement des cellules grisées
 
 ***	Version 2.2	(Jérôme Combes, 17 février 2016)			***
 - Amélioration :
-Ajout du blocage d'adresses IP après échec d'authentification (paramètrable dans administration / configuration).
+Ajout du blocage d'adresses IP après échec d'authentification (paramétrable dans administration / configuration).
 
 ***	Version 2.1	(Jérôme Combes, 9 janvier 2016)			***
 - Amélioration :
@@ -576,7 +580,7 @@ Permet d'attribuer les catégories (A,B,C) aux statuts (et aux agents)
 Et de définir quelle catégorie est requise pour occuper chaque poste.
 Les lignes des postes peuvent être affichées différemment dans les plannings en fonction de leur catégorie (classe tr_CategorieA, ...)
 Les agents n'ayant pas la catégorie requise sont placés en agents indisponibles
-Possibilité de personnaliser l'email de notification de nouvelle absences
+Possibilité de personnaliser l'e-mail de notification de nouvelle absences
 Possibilité de choisir une liste de destinataires différente pour les notifications d'ajout et de modification d'absence
 
 ***	Version 1.7.1	(Jérôme Combes, 14 février 2014)		***
@@ -610,7 +614,7 @@ Amélioration de l'affichage des notifications (JQuery-UI highlight et error)
 Amélioration des champs date (utilisation de JQuery-UI DatePicker, format JJ/MM/AAAA)
 Gestion du report des erreurs PHP à partir de la page de configuration
 Menu déroulant pour sélectionner les agents sur la page affichant la liste des absents
-Personalisation des destinataires des notifications d'absences en fonction du degré de validation (admin/config)
+Personnalisation des destinataires des notifications d'absences en fonction du degré de validation (admin/config)
 
 - Corrections
 Faute de frappe dans la fiche des agents, onglet activités
@@ -640,7 +644,7 @@ Ajout des champs matricule et e-mail du responsable dans la fiche des agents
 Statistiques sur les samedis travaillés
 Affichage du nombre d'heures d'ouverture au public dans les statistiques
 Absences avec validation (selon configuration)
-Choix des destinataires des notifications lors de la saisie/validation des absences parmis : 
+Choix des destinataires des notifications lors de la saisie/validation des absences parmi : 
   tous les gestionnaires d'absences, le responsable hiérarchique de l'agent, l'agent lui-même
 Permet la saisie des absences aux administrateurs seulement (selon configuration).
 Mise à jour de l'aide en ligne
@@ -748,7 +752,7 @@ Fichier personnel/suppression-liste.php : correction du contrôle de la session 
 Fichier personnel/class.personnel.php : ajout du filtre supprime<>'1' pour ne plus afficher les agents supprimés
 DB : table acces, ajout du droit permettant l'accès à la page planning/postes_cfg/groupes2.php
 Fichier planning/postes_cfg/horaires.php : correction de l'erreur qui supprimait les premiers horaires du premier tableau lors de la validation de la modification des horaires
-Fichier planning/poste/importer.php : correction de l'importation d'un modèle lorsqu'un seul modèle est créé (les imports étaient incohérents dans ce cas car tous les paramétres n'étaient pas transmis lors du clique sur le lien de confirmation ("Oui"))
+Fichier planning/poste/importer.php : correction de l'importation d'un modèle lorsqu'un seul modèle est créé (les imports étaient incohérents dans ce cas car tous les paramètres n'étaient pas transmis lors du clique sur le lien de confirmation ("Oui"))
 Fichier planning/poste/importer.php : le contrôle des absences prend à présent en compte les absences de quelques heures
 
 ***	Version 1.4	(Jérôme Combes, Juin 2013)		***
@@ -826,10 +830,10 @@ Modification des fonctions PHP utilisant htmlentities dans le fichiers db.php (I
 Modification des fonctions PHP utilisant html_entity_decode dans le fichier planning/postes_cfg/index.php (ISO-8859-1 remplacé par UTF-8)
 Fichier planning/poste/menudiv.php :Suppression des fonctions utf8_encode
 Fichier include/function.php : 
-  Ajout du paramétre $mail->CharSet="utf-8"; dans la fonction mail2 utilisant la class PHPMailer (PHPMailer utilisant ISO-8859-1 par défaut)
+  Ajout du paramètre $mail->CharSet="utf-8"; dans la fonction mail2 utilisant la class PHPMailer (PHPMailer utilisant ISO-8859-1 par défaut)
   Ajout de la fonction PHP "decode" permettant de faire utf8_decode sur tous les éléments d'un tableau via array_map
-  Creation des fonctions is_serialized, removeAccents, pl_stristr
-  Fonction selectHeures prend le paramétre $quart (default=false) pour afficher les quarts d'heures dans les menus déroulant
+  Création des fonctions is_serialized, removeAccents, pl_stristr
+  Fonction selectHeures prend le paramètre $quart (default=false) pour afficher les quarts d'heures dans les menus déroulant
 Fichier statistiques/export.php : Ajout de $lignes=array_map("utf8_decode",$lignes); de façon à encoder l'ensemble du tableau en iso-8859-1 dans le fichiers csv/xls
 Fichier personnel/valid.php : Ajout des html_entities : de cette façon les ajout et, modification sont codés en entités html dans la base de données
 Fichier personnel/valid.php : La fonction locale supprime_accents est remplacée par la fonction removeAccents du fichier include/function.php
@@ -894,7 +898,7 @@ Le fichier include/calendrier.php appelle le fichier calendrier/calendar.php et 
 Création du fichier js/calendrier.js qui contient les fonctions JavaScript de sortie, setPlDate (met à jour la page planning) et 
   SetDate (met à jour les champs date des autres pages)
 Le fichier include/calendrier.php inclus dans un premier temps la feuille de style par défaut (include/calendrier/calendar.css) 
-  puis la feuille de style personalisée css/calendrier.css
+  puis la feuille de style personnalisée css/calendrier.css
 
 
 Détail Coloration des cellules du planning en fonction du statut de l'agent :
