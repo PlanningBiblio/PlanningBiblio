@@ -86,7 +86,10 @@ if($config['Absences-adminSeulement'] and !$admin){
   exit;
 }
 
-// Récurrence
+// Récurrence : vérifie si le dossier Data-Folder existe et s'il est modifiable (indispensable pour la gestion des récurrence)
+$dataForlderWritable = (!empty($config['Data-Folder']) and is_writable($config['Data-Folder']));
+
+// Récurrence : supprime la règle rrule si la case à cocher "Récurrence" n'est pas cochée
 if(!$rcheckbox){
   $rrule = null;
 }
@@ -242,15 +245,17 @@ else{
   selectHeure(7,23,true);
   echo "</select>\n";
   echo "</td></tr>\n";
-  
-  echo "<tr><td style='padding-bottom:30px;'>\n";
-  echo "<label class='intitule'>Récurrence</label>\n";
-  echo "</td><td style='padding-bottom:30px;'>\n";
-  echo "<input type='checkbox' name='recurrence-checkbox' id='recurrence-checkbox' value='1'/>\n";
-  echo "<span id='recurrence-info' style='display:none;'><span id='recurrence-summary'>&nbsp;</span><a href='#' id='recurrence-link' style='margin-left:10px;'>Modifier</a></span>\n";
-  echo "<input type='hidden' name='recurrence-hidden' id='recurrence-hidden' />\n";
-  echo "</td></tr>\n";
-  
+
+  if($dataForlderWritable){
+    echo "<tr><td style='padding-bottom:30px;'>\n";
+    echo "<label class='intitule'>Récurrence</label>\n";
+    echo "</td><td style='padding-bottom:30px;'>\n";
+    echo "<input type='checkbox' name='recurrence-checkbox' id='recurrence-checkbox' value='1'/>\n";
+    echo "<span id='recurrence-info' style='display:none;'><span id='recurrence-summary'>&nbsp;</span><a href='#' id='recurrence-link' style='margin-left:10px;'>Modifier</a></span>\n";
+    echo "<input type='hidden' name='recurrence-hidden' id='recurrence-hidden' />\n";
+    echo "</td></tr>\n";
+  }
+
   echo "<tr><td>\n";
   echo "<label class='intitule'>Motif </label>\n";
   echo "</td><td style='white-space:nowrap;'>\n";

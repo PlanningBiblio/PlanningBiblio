@@ -106,6 +106,9 @@ if(!$patternExists){
   $motifs[]=array("id"=>"99999", "valeur"=>$motif, "type"=> "0");
 }
 
+// Récurrence : vérifie si le dossier Data-Folder existe et s'il est modifiable (indispensable pour la gestion des récurrence)
+$dataForlderWritable = (!empty($config['Data-Folder']) and is_writable($config['Data-Folder']));
+
 // Sécurité
 // Droit 1 = modification de toutes les absences
 // Droit 6 = modification de ses propres absences
@@ -274,13 +277,15 @@ selectHeure(7,23,true,$hre_fin);
 echo "</select>\n";
 echo "</td></tr>\n";
 
-echo "<tr><td style='padding-bottom:30px;'>\n";
-echo "<label class='intitule'>Récurrence</label>\n";
-echo "</td><td style='padding-bottom:30px;'>\n";
-echo "<input type='checkbox' name='recurrence-checkbox' id='recurrence-checkbox' value='1' disabled='disabled' />\n";
-echo "<span id='recurrence-info' style='display:none;'><span id='recurrence-summary'>&nbsp;</span><a href='#' id='recurrence-link' style='margin-left:10px; display:none;'>Modifier</a></span>\n";
-echo "<input type='hidden' name='recurrence-hidden' id='recurrence-hidden' />\n";
-echo "</td></tr>\n";
+if($dataForlderWritable){
+  echo "<tr><td style='padding-bottom:30px;'>\n";
+  echo "<label class='intitule'>Récurrence</label>\n";
+  echo "</td><td style='padding-bottom:30px;'>\n";
+  echo "<input type='checkbox' name='recurrence-checkbox' id='recurrence-checkbox' value='1' disabled='disabled' />\n";
+  echo "<span id='recurrence-info' style='display:none;'><span id='recurrence-summary'>&nbsp;</span><a href='#' id='recurrence-link' style='margin-left:10px; display:none;'>Modifier</a></span>\n";
+  echo "<input type='hidden' name='recurrence-hidden' id='recurrence-hidden' />\n";
+  echo "</td></tr>\n";
+}
 
 echo "<tr><td><label class='intitule'>Motif</label></td>\n";
 echo "<td style='white-space:nowrap;'>";
