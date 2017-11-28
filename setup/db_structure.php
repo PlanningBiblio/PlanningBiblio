@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.04
+Planning Biblio, Version 2.7.05
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 11 novembre 2017
+Dernière modification : 28 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -51,6 +51,17 @@ $sql[]="CREATE TABLE `{$dbprefix}absences_infos` (
   `texte` text NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+$sql[]="CREATE TABLE `{$dbprefix}absences_recurrentes` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT, 
+  `uid` VARCHAR(50), 
+  `perso_id` INT,
+  `event` TEXT,
+  `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `uid`(`uid`),
+  KEY `perso_id`(`perso_id`)) 
+  ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
 $sql[]="CREATE TABLE `{$dbprefix}acces` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

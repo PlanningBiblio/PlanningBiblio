@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.04
+Planning Biblio, Version 2.7.05
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 11 novembre 2017
+Dernière modification : 28 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -960,6 +960,23 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `commentaires`, `ordre` ) VALUES 
     ('Data-Folder', 'text', ' Divers', 'Emplacement du dossier \"data\". Dans ce dossier seront stock&eacute;s des fichiers permettant &agrave; l&apos;application de fonctionner. Ce dossier ne doit pas &ecirc;tre accessible en HTTP(S)','12');";
+
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.7.05";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  $sql[]="CREATE TABLE `{$dbprefix}absences_recurrentes` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT, 
+    `uid` VARCHAR(50), 
+    `perso_id` INT,
+    `event` TEXT,
+    `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `uid`(`uid`),
+    KEY `perso_id`(`perso_id`)) 
+    ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";

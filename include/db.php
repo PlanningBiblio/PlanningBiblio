@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.05
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 29 août 2017
+Dernière modification : 28 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -479,6 +479,9 @@ class db{
     }elseif(substr($value,0,1)=="<"){
       $operator="<";
       $value=trim(substr($value,1));
+    }elseif(substr($value,0,4)=="LIKE"){
+      $operator="LIKE";
+      $value=trim(substr($value,4));
     }
 
     if($value===null){

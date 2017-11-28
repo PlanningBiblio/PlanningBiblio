@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.04
+Planning Biblio, Version 2.7.05
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/cron.ics.php
 Création : 28 juin 2016
-Dernière modification : 4 novembre 2017
+Dernière modification : 28 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -62,13 +62,12 @@ $inF=fopen($lockFile,"w");
 
 // Recherche les serveurs ICS et les variables openURL
 // Index des tableaux $servers et $var :
-// 0 : Fichiers ICS "Planning Biblio", créés lors de l'enregistrement d'événements récurrents
 // 1 : Fichiers ICS provenant d'une source externe, renseignés dans la config. : ICS / ICS-Servers1
 // 2 : Fichiers ICS provenant d'une source externe, renseignés dans la config. : ICS / ICS-Servers2
 // 3 : Fichiers ICS provenant d'une source externe, renseignés dans la fiche des agents (url_ics)
 
-$servers=array(0 => $config['Data-Folder']."/PBCalendar-[perso_id].ics", 1=>null, 2=>null);
-$var=array(0 => "perso_id", 1=>null, 2=>null);
+$servers=array(1=>null, 2=>null);
+$var=array(1=>null, 2=>null);
 
 for($i=1; $i<3; $i++){
   if(trim($config["ICS-Server$i"])){
@@ -103,7 +102,7 @@ foreach($agents as $agent){
   // Si le paramètre ICS-Server3 est activé, on recherche également une URL personnalisée dans la fiche des agents (champ url_ics).
   
   $fin = $config['ICS-Server3'] ? 3 : 2;
-  for($i=0; $i <= $fin; $i++){
+  for($i=1; $i <= $fin; $i++){
     if($i<3){
       if(!$servers[$i] or !$var[$i]){
         continue;
@@ -164,7 +163,7 @@ foreach($agents as $agent){
     
 
     // Si la case importation correspondant à ce calendrier est décochée, on ne l'importe pas et on purge les éventuels événements déjà importés.
-    if(($i > 0) and !$agent["ics_$i"]){
+    if(!$agent["ics_$i"]){
       $ics=new CJICS();
       $ics->src=$url;
       $ics->perso_id=$agent["id"];
@@ -177,19 +176,11 @@ foreach($agents as $agent){
     
     logs("Agent #{$agent['id']} : Importation du fichier $url", "ICS", $CSRFToken);
 
-    if($i == 0){
-      $pattern = "[SUMMARY]";
-      $status = "All";
-    } else {
-      $pattern = $config["ICS-Pattern$i"];
-      $status = $config["ICS-Status$i"];
-    }
-    
     $ics=new CJICS();
     $ics->src=$url;
     $ics->perso_id=$agent["id"];
-    $ics->pattern= $pattern;
-    $ics->status = $status;
+    $ics->pattern = $config["ICS-Pattern$i"];
+    $ics->status = $config["ICS-Status$i"];
     $ics->table="absences";
     $ics->logs=true;
     $ics->CSRFToken = $CSRFToken;
