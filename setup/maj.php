@@ -976,7 +976,8 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
     PRIMARY KEY (`id`),
     KEY `uid`(`uid`),
     KEY `perso_id`(`perso_id`), 
-    KEY `end`(`end`)) 
+    KEY `end`(`end`),
+    KEY `last_check`(`last_check`)) 
     ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
     
   $sql[]="ALTER TABLE `{$dbprefix}absences` ADD KEY `perso_id` (`perso_id`),  ADD KEY `debut` (`debut`), ADD KEY `fin` (`fin`), ADD KEY `groupe` (`groupe`);";

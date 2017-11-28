@@ -23,8 +23,8 @@ $sql[]="CREATE TABLE `{$dbprefix}absences` (
   `perso_id` int(11) NOT NULL DEFAULT '0',
   `debut` datetime NOT NULL,
   `fin` datetime NOT NULL,
-  `motif` text NOT NULL DEFAULT '',
-  `motif_autre` text NOT NULL DEFAULT '',
+  `motif` text NOT NULL,
+  `motif_autre` text NOT NULL,
   `commentaires` text NOT NULL,
   `etat` text NOT NULL,
   `demande` datetime NOT NULL,
@@ -45,7 +45,7 @@ $sql[]="CREATE TABLE `{$dbprefix}absences` (
   KEY `perso_id`(`perso_id`),
   KEY `debut`(`debut`),
   KEY `fin`(`fin`),
-  KEY `groupe`(`groupe`),
+  KEY `groupe`(`groupe`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
 $sql[]="CREATE TABLE `{$dbprefix}absences_infos` (
@@ -68,7 +68,8 @@ $sql[]="CREATE TABLE `{$dbprefix}absences_recurrentes` (
   PRIMARY KEY (`id`),
   KEY `uid`(`uid`),
   KEY `perso_id`(`perso_id`), 
-  KEY `end`(`end`)) 
+  KEY `end`(`end`),
+  KEY `last_check`(`last_check`)) 
   ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
 $sql[]="CREATE TABLE `{$dbprefix}acces` (
