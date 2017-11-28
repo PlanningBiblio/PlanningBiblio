@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.04
+Planning Biblio, Version 2.7.05
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/class.ics.php
 Création : 29 mai 2016
-Dernière modification : 16 novembre 2017
+Dernière modification : 28 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -233,6 +233,11 @@ class CJICS{
 
         $debut = date("Y-m-d H:i:s", strtotime($elem["DTSTART_tz"]));
 
+        // Si pas de date de fin, la fin est égale au début
+        if(empty($elem["DTEND_tz"])){
+          $elem["DTEND_tz"] = $elem["DTSTART_tz"];
+        }
+
         // Les événements ICS sur des journées complètes ont comme date de fin J+1 à 0h00
         // Donc si la date de fin est à 0h00, on retire une seconde pour la rammener à J
         $offset = date("H:i:s", strtotime($elem["DTEND_tz"])) == "00:00:00" ? "-1 second" : null;
@@ -290,9 +295,11 @@ class CJICS{
           }
         }
 
+        $rrule = !empty($elem['RRULE']) ? $elem['RRULE'] : null;
+
         // Insertion dans la base de données
         $tab=array(":perso_id" => $perso_id, ":debut" => $debut, ":fin" => $fin, ":demande" => $demande, ":valide"=> $valide_n2, ":validation" => $validation_n2, ":valide_n1"=> $valide_n1, ":validation_n1" => $validation_n1, 
-          ":motif" => $motif, ":motif_autre" => $motif_autre, ":commentaires" => $commentaires, ":groupe" => $groupe, ":cal_name" => $calName, ":ical_key" => $elem['key'], ":uid" => $elem['UID'], ":rrule" => $elem['RRULE']);
+          ":motif" => $motif, ":motif_autre" => $motif_autre, ":commentaires" => $commentaires, ":groupe" => $groupe, ":cal_name" => $calName, ":ical_key" => $elem['key'], ":uid" => $elem['UID'], ":rrule" => $rrule);
 
         $db->execute($tab);
         $nb++;
