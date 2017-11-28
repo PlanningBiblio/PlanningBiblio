@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.05
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : include/cron.php
 Création : 23 juillet 2013
-Dernière modification : 15 août 2017
+Dernière modification : 28 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -34,6 +34,14 @@ if($dbCron->result){
     $dbCron2->update('cron', array('last'=>'SYSDATE'), array('id'=>$elemCron['id']));
   }
 }
+
+// Absences : Met à jour la table absences avec les événements récurrents sans date de fin (J + 2ans)
+// 1 fois par jour
+require_once __DIR__."/../absences/class.absences.php";
+$a = new absences();
+$a->CSRFToken = $CSRFSession;
+$a->ics_update_table();
+
 
 // Yearly Cron
 $dbCron=new db();

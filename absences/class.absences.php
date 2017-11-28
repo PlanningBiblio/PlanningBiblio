@@ -1099,7 +1099,7 @@ class absences{
 
     // Initilisation des variables, adaptation des valeurs
     $perso_id = $this->perso_id;
-    $folder = (!empty($GLOBALS['config']['Data-Folder']) and is_writable($GLOBALS['config']['Data-Folder'])) ? $GLOBALS['config']['Data-Folder'] : sys_get_temp_dir();
+    $folder = sys_get_temp_dir();
     $file = "$folder/PBCalendar-$perso_id.ics";
     $tzid = date_default_timezone_get();
     $dtstart = preg_replace('/(\d+)\/(\d+)\/(\d+)/','$3$2$1',$this->debut).'T';
@@ -1166,10 +1166,13 @@ class absences{
     $ics_content .= "END:VEVENT\n";
     $ics_content .= "END:VCALENDAR\n";
 
+    // Précise si la fin de la récurrence existe pour continuer à la traiter à l'avenir si elle n'est pas renseignée
+    $end = (strpos($this->rrule, 'UNTIL=') or strpos($this->rrule, 'COUNT=')) ? 1 : 0;
+
     // On enregistre les infos dans la base de données
     $db = new db();
     $db->CSRFToken = $this->CSRFToken;
-    $db->insert('absences_recurrentes', array('uid' => $uid, 'perso_id' => $perso_id, 'event' => $ics_content));
+    $db->insert('absences_recurrentes', array('uid' => $uid, 'perso_id' => $perso_id, 'event' => $ics_content, 'end' => $end));
 
     logs("Agent #$perso_id : Importation du fichier $file", "ICS", $this->CSRFToken);
 
@@ -1215,17 +1218,17 @@ class absences{
         $ics_event = str_replace("END:VEVENT", "$exdate\nEND:VEVENT", $ics_event);
       }
 
-      $folder = (!empty($GLOBALS['config']['Data-Folder']) and is_writable($GLOBALS['config']['Data-Folder'])) ? $GLOBALS['config']['Data-Folder'] : sys_get_temp_dir();
+      $folder = sys_get_temp_dir();
       $file = "$folder/PBCalendar-$perso_id.ics";
 
       file_put_contents($file, $ics_event);
 
-      // On met à jour l'événement dans la base de données
+      // On met à jour l'événement dans la table absences_recurrentes
       $db = new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->update('absences_recurrentes', array('event' => $ics_event), array('uid' => $this->uid, 'perso_id' => $perso_id));
+      $db->update('absences_recurrentes', array('event' => $ics_event, 'last_update' => 'SYSDATE'), array('uid' => $this->uid, 'perso_id' => $perso_id));
 
-      // On actualise la base de données à partir du fichier ICS modifié
+      // On actualise la base de données à partir de l'événement ICS modifié
       $ics=new CJICS();
       $ics->src = $file;
       $ics->perso_id = $perso_id;
@@ -1361,18 +1364,21 @@ class absences{
         // TODO : Adapter la modification du RRULE si la date de début change
         $ics_event = preg_replace("/RRULE:.*\n/", "RRULE:{$this->rrule}\n", $ics_event);
 
+        // Précise si la fin de la récurrence existe pour continuer à la traiter à l'avenir si elle n'est pas renseignée
+        $end = (strpos($this->rrule, 'UNTIL=') or strpos($this->rrule, 'COUNT=')) ? 1 : 0;
+
+        // On met à jour l'événement dans la table absences_recurrentes
+        $db = new db();
+        $db->CSRFToken = $this->CSRFToken;
+        $db->update('absences_recurrentes', array('event' => $ics_event, 'end' => $end, 'last_update' => 'SYSDATE'), array('uid' => $this->uid, 'perso_id' => $perso_id ));
+
         // Ecriture dans le fichier
-        $folder = (!empty($GLOBALS['config']['Data-Folder']) and is_writable($GLOBALS['config']['Data-Folder'])) ? $GLOBALS['config']['Data-Folder'] : sys_get_temp_dir();
+        $folder = sys_get_temp_dir();
         $file = "$folder/PBCalendar-$perso_id.ics";
 
         file_put_contents($file, $ics_event);
 
-        // Mise à jour de la base de données
-        $db = new db();
-        $db->CSRFToken = $this->CSRFToken;
-        $db->update('absences_recurrentes', array('event' => $ics_event), array('uid' => $this->uid, 'perso_id' => $perso_id ));
-
-        // On actualise la base de données à partir du fichier ICS modifié
+        // On actualise la base de données à partir de l'événement ICS modifié
         $ics=new CJICS();
         $ics->src = $file;
         $ics->perso_id = $perso_id;
@@ -1385,6 +1391,47 @@ class absences{
 
         unlink($file);
       }
+    }
+  }
+
+
+  /** @function ics_update_table
+   * @desc : Recherche une fois par jour si des occurences liées à des absences récurrentes sans date de fin doivent être ajoutées dans la table absences
+   * @note : la méthode CJICS::updateTable utilisée pour alimenter la table absence n'ajoute que les événements des 2 prochaines année, c'est pourquoi nous devons la réexecuter régulièrement
+   */
+  function ics_update_table(){
+    $db = new db();
+    $db->select2('absences_recurrentes', null, array('end' => '0' , 'last_check' => "< CURDATE"));
+    if($db->result){
+      foreach($db->result as $elem){
+        $perso_id = $elem['perso_id'];
+        $uid = $elem['uid'];
+        $event = $elem['event'];
+
+        $folder = sys_get_temp_dir();
+        $file = "$folder/PBCalendar-$perso_id.ics";
+
+        file_put_contents($file, $event);
+
+        // On actualise la base de données à partir du fichier ICS modifié
+        $ics=new CJICS();
+        $ics->src = $file;
+        $ics->perso_id = $perso_id;
+        $ics->pattern = '[SUMMARY]';
+        $ics->status = 'All';
+        $ics->table ="absences";
+        $ics->logs = true;
+        $ics->CSRFToken = $this->CSRFToken;
+        $ics->updateTable();
+
+        // On supprime le fichier
+        unlink($file);
+      }
+
+      // On met à jour le champ last_check de façon à ne pas relancer l'opération dans la journée
+      $db = new db();
+      $db->CSRFToken = $this->CSRFToken;
+      $db->update('absences_recurrentes', array('last_check' => "SYSDATE"), array('end' => '0'));
     }
   }
 
@@ -1421,14 +1468,14 @@ class absences{
       $ics_event = preg_replace("/\nRRULE:.*\n/", "\nRRULE:$rrule\n", $ics_event);
 
       // Ecriture dans le fichier
-      $folder = (!empty($GLOBALS['config']['Data-Folder']) and is_writable($GLOBALS['config']['Data-Folder'])) ? $GLOBALS['config']['Data-Folder'] : sys_get_temp_dir();
+      $folder = sys_get_temp_dir();
       $file = "$folder/PBCalendar-$perso_id.ics";
 
       file_put_contents($file, $ics_event);
       
       $db = new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->update('absences_recurrentes', array('event' => $ics_event), array('uid' => $this->uid, 'perso_id' => $perso_id));
+      $db->update('absences_recurrentes', array('event' => $ics_event, 'end' => '1', 'last_update' => 'SYSDATE'), array('uid' => $this->uid, 'perso_id' => $perso_id));
 
       // On actualise la base de données à partir du fichier ICS modifié
       $ics=new CJICS();

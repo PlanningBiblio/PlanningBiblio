@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.04
+Planning Biblio, Version 2.7.05
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 1er novembre 2017
+Dernière modification : 28 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -18,7 +18,6 @@ Page appelée par la page index.php
 */
 
 require_once "class.absences.php";
-require_once "personnel/class.personnel.php";
 
 // Initialisation des variables
 $debut=filter_input(INPUT_GET,"debut",FILTER_SANITIZE_STRING);

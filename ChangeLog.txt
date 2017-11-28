@@ -1,6 +1,7 @@
 *** Version 2.7.05      (28 novembre 2017)   ***
 - Améliorations
 Absences récurrentes : Les règles de récurrences sont stockées dans la base de données 
+Absences récurrentes : Recherche perpétuelle des occurences liées à des absences récurrentes sans date de fin
 
 *** Version 2.7.04      (22 novembre 2017)   ***
 - Améliorations

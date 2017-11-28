@@ -98,9 +98,11 @@ class CJICS{
   
   
   /**
-   * updateTable
-   * @param string $this->table
-   * @param int $this->perso_id (optionnel)
+   * @function updateTable
+   * @param string $this->table : table à mettre à jour (ex: absences)
+   * @param int $this->perso_id : ID de l'agent
+   * @param string $this->src : chemin vers le fichier ICS
+   * @param string $this->CSRFToken : Jeton XSRF
    * Met à jour la table définie par $this->table pour l'agent défini par $this->perso_id depuis le fichier ICS $this->src
    */
   public function updateTable(){

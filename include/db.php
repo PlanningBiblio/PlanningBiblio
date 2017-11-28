@@ -479,6 +479,11 @@ class db{
     }elseif(substr($value,0,1)=="<"){
       $operator="<";
       $value=trim(substr($value,1));
+    // Losrsqu'une chaîne contient < directement suivi d'un caractère alpha, la chaîne est supprimée.
+    // On permet donc l'utilisation du signe < suivi d'un espace
+    }elseif(substr($value,0,2)=="< "){
+      $operator="<";
+      $value=trim(substr($value,2));
     }elseif(substr($value,0,4)=="LIKE"){
       $operator="LIKE";
       $value=trim(substr($value,4));
@@ -487,9 +492,11 @@ class db{
     if($value===null){
       return "{$key}{$operator}";
     }
-    
+
     elseif(in_array($value, array('CURDATE','SYSDATE'))){
-      return "{$key}{$operator}{$value}()";
+      // Losrsqu'une chaîne contient < directement suivi d'un caractère alpha, la chaîne est supprimée.
+      // On permet donc l'utilisation du signe < suivi d'un espace
+      return "{$key}{$operator} {$value}()";
     }
     else{
       $value=htmlentities($value,ENT_QUOTES | ENT_IGNORE,"UTF-8",false);

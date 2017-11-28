@@ -958,9 +958,6 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `rrule` TEXT NULL DEFAULT NULL;";
   $sql[]="ALTER TABLE `{$dbprefix}absences` DROP `nbjours`;";
   
-  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `commentaires`, `ordre` ) VALUES 
-    ('Data-Folder', 'text', ' Divers', 'Emplacement du dossier \"data\". Dans ce dossier seront stock&eacute;s des fichiers permettant &agrave; l&apos;application de fonctionner. Ce dossier ne doit pas &ecirc;tre accessible en HTTP(S)','12');";
-
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
@@ -972,12 +969,20 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
     `uid` VARCHAR(50), 
     `perso_id` INT,
     `event` TEXT,
+    `end` ENUM ('0','1') NOT NULL DEFAULT '0',
     `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `last_check` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     KEY `uid`(`uid`),
-    KEY `perso_id`(`perso_id`)) 
+    KEY `perso_id`(`perso_id`), 
+    KEY `end`(`end`)) 
     ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+    
+  $sql[]="ALTER TABLE `{$dbprefix}absences` ADD KEY `perso_id` (`perso_id`),  ADD KEY `debut` (`debut`), ADD KEY `fin` (`fin`), ADD KEY `groupe` (`groupe`);";
 
+  $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom` = 'Data-Folder';";
+    
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
