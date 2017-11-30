@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.02
+Planning Biblio, Version 2.7.06
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 12 octobre 2017
+Dernière modification : 30 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
@@ -153,7 +153,6 @@ if($db->result){
     if($elem['valide'] > 0 or $config['Absences-validation'] == '0'){
       $tab_exclus[]=$elem['perso_id'];
       $absents[]=$elem['perso_id'];
-      continue; // Garder le continue ici pour que les absences validés prennent le dessus sur les absences non validées
     }elseif($config['Absences-non-validees']){
       $absences_non_validees[] = $elem['perso_id'];
     }
