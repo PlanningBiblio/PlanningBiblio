@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.05
+Planning Biblio, Version 2.7.06
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 28 novembre 2017
+Dernière modification : 30 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -1618,7 +1618,7 @@ class absences{
 
   public function update_time(){
     $db=new db();
-    $db->query("show table status from {$GLOBALS['config']['dbname']} like '{$GLOBALS['dbprefix']}absences';");
+    $db->query("show table status from {$GLOBALS['config']['dbname']} like '{$GLOBALS['config']['dbprefix']}absences';");
     return $db->result[0]['Update_time'];
   }
 

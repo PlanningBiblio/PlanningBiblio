@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.05
+Planning Biblio, Version 2.7.06
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 28 novembre 2017
+Dernière modification : 30 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -980,10 +980,38 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
     KEY `last_check`(`last_check`)) 
     ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
     
+  $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom` = 'Data-Folder';";
+    
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.7.06";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Si la création de la table absences_recurrentes a échoué en 2.7.05 à cause des multiples champs TIMESTAMP, on la créé ici
+  $sql[]="CREATE TABLE IF NOT EXISTS `{$dbprefix}absences_recurrentes` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `uid` VARCHAR(50),
+    `perso_id` INT,
+    `event` TEXT,
+    `end` ENUM ('0','1') NOT NULL DEFAULT '0',
+    `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `last_update` VARCHAR(20) NOT NULL DEFAULT '',
+    `last_check` VARCHAR(20) NOT NULL DEFAULT '',
+    PRIMARY KEY (`id`),
+    KEY `uid`(`uid`),
+    KEY `perso_id`(`perso_id`),
+    KEY `end`(`end`),
+    KEY `last_check`(`last_check`))
+    ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+  // Si la table absences_recurrentes a bien été créée en 2.7.05 mais avec différents champs TIMESTAMP, on la  modifie ici.
+  $sql[]="ALTER TABLE `{$dbprefix}absences_recurrentes` CHANGE `last_update` `last_update` VARCHAR(20) NOT NULL DEFAULT '', CHANGE `last_check` `last_check` VARCHAR(20) NOT NULL DEFAULT '';";
+
   $sql[]="ALTER TABLE `{$dbprefix}absences` ADD KEY `perso_id` (`perso_id`),  ADD KEY `debut` (`debut`), ADD KEY `fin` (`fin`), ADD KEY `groupe` (`groupe`);";
 
   $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom` = 'Data-Folder';";
-    
+
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }

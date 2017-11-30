@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.05
+Planning Biblio, Version 2.7.06
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/class.ics.php
 Création : 29 mai 2016
-Dernière modification : 28 novembre 2017
+Dernière modification : 30 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -200,7 +200,7 @@ class CJICS{
     if(!empty($deleted)){
       $db=new dbh();
       $db->CSRFToken = $CSRFToken;
-      $db->prepare("DELETE FROM `{$GLOBALS['dbprefix']}$table` WHERE `id`=:id;");
+      $db->prepare("DELETE FROM `{$GLOBALS['config']['dbprefix']}$table` WHERE `id`=:id;");
       foreach($deleted as $elem){
         $db->execute($elem);
       }
@@ -221,7 +221,7 @@ class CJICS{
     $nb=0;
     if(!empty($insert)){
       $db=new dbh();
-      $req="INSERT INTO `{$GLOBALS['dbprefix']}$table` (`perso_id`, `debut`, `fin`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `motif`, `motif_autre`, `commentaires`, `groupe`, `cal_name`, `ical_key`, `uid`, `rrule`) 
+      $req="INSERT INTO `{$GLOBALS['config']['dbprefix']}$table` (`perso_id`, `debut`, `fin`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `motif`, `motif_autre`, `commentaires`, `groupe`, `cal_name`, `ical_key`, `uid`, `rrule`) 
         VALUES (:perso_id, :debut, :fin, :demande, :valide, :validation, :valide_n1, :validation_n1, :motif, :motif_autre, :commentaires, :groupe, :cal_name, :ical_key, :uid, :rrule);";
       $db->CSRFToken = $CSRFToken;
       $db->prepare($req);

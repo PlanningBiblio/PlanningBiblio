@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.06
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : personnel/suppression.php
 Création : mai 2011
-Dernière modification : 30 août 2017
+Dernière modification : 30 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -85,7 +85,7 @@ function etape3(){
   $db=new db();
   $id=$db->escapeString($id);
   $date=$db->escapeString($date);
-  $db->query("UPDATE `{$GLOBALS['dbprefix']}pl_poste` SET `supprime`='1' WHERE `perso_id`='$id' AND `date`>'$date';");
+  $db->query("UPDATE `{$GLOBALS['config']['dbprefix']}pl_poste` SET `supprime`='1' WHERE `perso_id`='$id' AND `date`>'$date';");
   echo "<script type='text/JavaScript'>parent.window.location.reload(false);</script>";
   echo "<script type='text/JavaScript'>popup_closed();</script>";
 }

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.06
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : planning/postes_cfg/class.tableaux.php
 Création : mai 2011
-Dernière modification : 3 août 2017
+Dernière modification : 30 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -55,7 +55,7 @@ class tableau{
       $set=array("supprime"=>$today);
       
       $db=new db();
-      $db->query("UPDATE `{$GLOBALS['dbprefix']}pl_poste_tab_grp` SET `supprime`='$today' WHERE `lundi`='$id' OR `mardi`='$id' OR `mercredi`='$id' OR `jeudi`='$id' OR `vendredi`='$id' OR `samedi`='$id' OR `dimanche`='$id';");
+      $db->query("UPDATE `{$GLOBALS['config']['dbprefix']}pl_poste_tab_grp` SET `supprime`='$today' WHERE `lundi`='$id' OR `mardi`='$id' OR `mercredi`='$id' OR `jeudi`='$id' OR `vendredi`='$id' OR `samedi`='$id' OR `dimanche`='$id';");
 
       $db=new db();
       $db->CSRFToken = $this->CSRFToken;
