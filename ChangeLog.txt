@@ -1,3 +1,10 @@
+*** Version 2.7.07      (11 décembre 2017)   ***
+- Corrections
+Correction de l'importation des fichiers ICS lorsque le champ DESCRIPTION est inexistant ou vide
+Correction de l'enregistrement des absences récurrentes lorsque le champ commentaires est vide
+Correction du filtre sur les absences dans le menudiv
+
+
 *** Version 2.7.05      (28 novembre 2017)   ***
 - Améliorations
 Absences récurrentes : Les règles de récurrences sont stockées dans la base de données 

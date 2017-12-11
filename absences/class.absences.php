@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.06
+Planning Biblio, Version 2.7.07
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 30 novembre 2017
+Dernière modification : 11 décembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -960,7 +960,7 @@ class absences{
 	// Emploi du temps si module planningHebdo activé
 	if($GLOBALS['config']['PlanningHebdo']){
           $version = $GLOBALS['version'];
-	  include_once "planningHebdo/class.planningHebdo.php";
+          include_once __DIR__."/../planningHebdo/class.planningHebdo.php";
 	  $p=new planningHebdo();
 	  $p->perso_id=$perso_id;
 	  $p->debut=$date;

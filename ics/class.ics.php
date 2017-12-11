@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.06
+Planning Biblio, Version 2.7.07
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/class.ics.php
 Création : 29 mai 2016
-Dernière modification : 30 novembre 2017
+Dernière modification : 11 décembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -250,9 +250,9 @@ class CJICS{
 
         // Si SUMMARY est enregistré dans le champ motif, on ne le met pas dans le champ description
         if($this->pattern == '[SUMMARY]'){
-          $commentaires = !empty($elem['DESCRIPTION']) ? $elem['DESCRIPTION'] : null;
+          $commentaires = !empty($elem['DESCRIPTION']) ? $elem['DESCRIPTION'] : '';
         } else {
-          $commentaires = !empty($elem['SUMMARY']) ? $elem['SUMMARY'] : null;
+          $commentaires = !empty($elem['SUMMARY']) ? $elem['SUMMARY'] : '';
           if($commentaires and !empty($elem['DESCRIPTION'])){
             $commentaires .= "<br/>\n";
           }
@@ -262,7 +262,7 @@ class CJICS{
         }
         
         // Utilisation du champ CATEGORIES pour la gestion des absences groupées (plusieurs agents), et des validations
-        $groupe = null;
+        $groupe = '';
         $valide_n1 = 0;
         $validation_n1 = '0000-00-00 00:00:00';
         $valide_n2 = 0;
@@ -295,7 +295,7 @@ class CJICS{
           }
         }
 
-        $rrule = !empty($elem['RRULE']) ? $elem['RRULE'] : null;
+        $rrule = !empty($elem['RRULE']) ? $elem['RRULE'] : '';
 
         // Insertion dans la base de données
         $tab=array(":perso_id" => $perso_id, ":debut" => $debut, ":fin" => $fin, ":demande" => $demande, ":valide"=> $valide_n2, ":validation" => $validation_n2, ":valide_n1"=> $valide_n1, ":validation_n1" => $validation_n1, 
