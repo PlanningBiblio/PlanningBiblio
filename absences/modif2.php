@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.04
+Planning Biblio, Version 2.7.08
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 22 novembre 2017
+Dernière modification : 14 décembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -304,6 +304,7 @@ if($rrule){
       $a = new absences();
       $a->debut = $debut;
       $a->fin = $fin;
+      $a->groupe = $groupe;
       $a->hre_debut = $hre_debut;
       $a->hre_fin = $hre_fin;
       $a->perso_ids = array_keys($agents_tous);

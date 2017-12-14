@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.7.04
+Planning Biblio, Version 2.7.08
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/js/modif.js
 Création : 28 février 2014
-Dernière modification : 22 novembre 2017
+Dernière modification : 14 décembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -797,6 +797,12 @@ function recurrenceRRuleText2(rrule){
 
 // Vérification des formulaires (ajouter et modifier)
 function verif_absences(ctrl_form){
+  
+  // Ceci évite d'avoir 2 fois les popup de vérification lors de la modification d'absences récurrentes. Le popup n'est affiché qu'une seule fois, avant le choix des occurrences à modifier
+  if($('#recurrence-modif').val()){
+    return true;
+  }
+  
   if(!verif_form(ctrl_form))
     return false;
 

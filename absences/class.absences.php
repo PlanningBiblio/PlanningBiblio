@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.07
+Planning Biblio, Version 2.7.08
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 11 décembre 2017
+Dernière modification : 14 décembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -171,10 +171,6 @@ class absences{
         $a->valide_n2 = $valide_n2;
         $a->validation_n1 = $validation_n1;
         $a->validation_n2 = $validation_n2;
-        // TODO : TEST : Ne comprend pas pourquoi ceci a été ajouté au commit 9155023 (correction création de l'UID).
-        // Problématique car en cas lors de la création d'exceptions sur les événements à venir, le nouvel événement comporte le même UID
-        // A vérifier
-        // $a->uid = $this->uid;    
         $a->ics_add_event();
 
       // Les événements sans récurrence sont enregistrés directement dans la base de données
@@ -1277,8 +1273,13 @@ class absences{
   public function ics_get_event(){
   
     // Récupère l'événement depuis la base de données
+    $where = array('uid' => $this->uid);
+    if(!empty($this->perso_id)){
+      $where['perso_id'] = $this->perso_id;
+    }
+
     $db = new db();
-    $db->select2('absences_recurrentes', 'event', array('uid' => $this->uid, 'perso_id' =>$this->perso_id));
+    $db->select2('absences_recurrentes', 'event', $where);
     
     if($db->result){
       $this->elements = $db->result[0]['event'];
@@ -1294,11 +1295,33 @@ class absences{
    */
   public function ics_update_event(){
 
-    foreach($this->perso_ids as $perso_id){
-      $this->perso_id = $perso_id;
-      $this->ics_get_event();
-      $ics_event = $this->elements;
+    // TODO : gérer la suppression des agents
 
+    // Recherche de l'événement pour récupèrer la date de départ pour la création des événements des agents ajoutés.
+    $a = new absences();
+    $a->uid = $this->uid;
+    $a->ics_get_event();
+    $event = $a->elements;
+
+    if(empty($event)){
+      return false;
+    }
+
+    // récupération de la date de début de la série
+    preg_match('/DTSTART.*:(\d*)T\d*\n/', $event, $matches);
+    $debut = date('d/m/Y', strtotime($matches[1]));
+    preg_match('/DTEND.*:(\d*)T\d*\n/', $event, $matches);
+    $fin = date('d/m/Y', strtotime($matches[1]));
+
+    // Pour chaque agent
+    foreach($this->perso_ids as $perso_id){
+      $a = new absences();
+      $a->perso_id = $perso_id;
+      $a->uid = $this->uid;
+      $a->ics_get_event();
+      $ics_event = $a->elements;
+
+      // Pour chaque agent, si l'agent faisait déjà partie de l'événement, on modifie les infos
       if($ics_event){
         // On actualise les infos
 
@@ -1322,17 +1345,8 @@ class absences{
 
         // Mise à jour de CATEGORIES (validation et groupe)
         // Exemple : PBGroup=1510848337-470;PBValideN1=1;PBValidationN1=2017-11-16 17:05:37;PBValidationN2=0000-00-00 00:00:00
-
-        // On récupère le groupe (Si existe. Ne change pas.)
-        $groupe = null;
-        $groupe_pos = strpos($ics_event, 'PBGroup=');
-        if($groupe_pos){
-          $groupe = substr($ics_event, $groupe_pos +8, 14);
-        }
-
-        // On reconstitue la chaîne
         $tmp = array();
-        if($groupe){              $tmp[] = "PBGroup=$groupe"; }
+        if($this->groupe){        $tmp[] = "PBGroup={$this->groupe}"; }
         if($this->valide_n1){     $tmp[] = "PBValideN1={$this->valide_n1}"; }
         if($this->validation_n1){ $tmp[] = "PBValidationN1={$this->validation_n1}"; }
         if($this->valide_n2){     $tmp[] = "PBValideN2={$this->valide_n2}"; }
@@ -1391,6 +1405,30 @@ class absences{
 
         unlink($file);
       }
+
+      // Pour chaque agent ajouté (ne faisant pas partie de l'événement avant la modification), on créé l'événement
+      else {
+        // Création du fichier ICS
+        $a = new absences();
+        $a->CSRFToken = $this->CSRFToken;
+        $a->perso_id = $perso_id;
+        $a->commentaires = $this->commentaires;
+        $a->debut = $debut;
+        $a->fin = $fin;
+        $a->hre_debut = $this->hre_debut;
+        $a->hre_fin = $this->hre_fin;
+        $a->groupe = $this->groupe;
+        $a->motif = $this->motif;
+        $a->motif_autre = $this->motif_autre;
+        $a->rrule = $this->rrule;
+        $a->valide_n1 = $this->valide_n1;
+        $a->valide_n2 = $this->valide_n2;
+        $a->validation_n1 = $this->validation_n1;
+        $a->validation_n2 = $this->validation_n2;
+        $a->uid = $this->uid;
+        $a->ics_add_event();
+      }
+
     }
   }
 
