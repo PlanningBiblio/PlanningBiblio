@@ -297,9 +297,7 @@ if($rrule){
     case 'all' :
 
       // On modifie toutes les occurences de l'événement.
-      // Donc simple édition de l'événement ICS pour les agents qui en faisaient déjà partie ($agents_tous, la modification sera ignorée pour les agents qui ne faisaient pas partie de l'événement car l'UID ne sera pas trouvé)
-      // Et ajout de l'événement pour les agents qui n'en faisaient pas partie ($agents_ajoutes)
-      // Modification de l'événement pour les agents qui en faisaient déjà partie
+      // Modification de l'événement ICS pour les agents qui en faisaient déjà partie, ajout pour les nouveaux, suppression pour les agents retirés
 
       $a = new absences();
       $a->debut = $debut;
@@ -307,7 +305,7 @@ if($rrule){
       $a->groupe = $groupe;
       $a->hre_debut = $hre_debut;
       $a->hre_fin = $hre_fin;
-      $a->perso_ids = array_keys($agents_tous);
+      $a->perso_ids = $perso_ids;
       $a->commentaires = $commentaires;
       $a->motif = $motif;
       $a->motif_autre = $motif_autre;

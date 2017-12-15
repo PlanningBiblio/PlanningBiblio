@@ -1,3 +1,7 @@
+*** Version 2.7.08      (14 décembre 2017)   ***
+- Corrections
+Absences récurrentes : correction des erreurs d'ajout et suppression d'agents lors de la modification d'absences récurrentes toutes occurences.
+
 *** Version 2.7.07      (11 décembre 2017)   ***
 - Corrections
 Correction de l'importation des fichiers ICS lorsque le champ DESCRIPTION est inexistant ou vide

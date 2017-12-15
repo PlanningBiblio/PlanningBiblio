@@ -1295,25 +1295,46 @@ class absences{
    */
   public function ics_update_event(){
 
-    // TODO : gérer la suppression des agents
-
-    // Recherche de l'événement pour récupèrer la date de départ pour la création des événements des agents ajoutés.
-    $a = new absences();
-    $a->uid = $this->uid;
-    $a->ics_get_event();
-    $event = $a->elements;
+    // Recherche de l'événement pour récupèrer la date de départ pour la création des événements des agents ajoutés
+    // le tableau $event servira aussi à la suppression des agents retirés de l'événement
+    $db = new db();
+    $db->select2('absences_recurrentes', 'event,perso_id', array('uid' => $this->uid));
+    $event = $db->result;
 
     if(empty($event)){
       return false;
     }
 
-    // récupération de la date de début de la série
-    preg_match('/DTSTART.*:(\d*)T\d*\n/', $event, $matches);
+    // Récupération de la date de début de la série
+    preg_match('/DTSTART.*:(\d*)T\d*\n/', $event[0]['event'], $matches);
     $debut = date('d/m/Y', strtotime($matches[1]));
-    preg_match('/DTEND.*:(\d*)T\d*\n/', $event, $matches);
+    preg_match('/DTEND.*:(\d*)T\d*\n/', $event[0]['event'], $matches);
     $fin = date('d/m/Y', strtotime($matches[1]));
 
-    // Pour chaque agent
+    // Suppression des agents retirés de l'événement
+    $to_delete = array();
+    foreach($event as $e){
+      if(!in_array($e['perso_id'], $this->perso_ids)){
+        $to_delete[]=$e['perso_id'];
+      }
+    }
+
+    if(!empty($to_delete)){
+      $to_delete = implode(',', $to_delete);
+
+      // Suppression des événements dans la table absences_recurrentes
+      $db = new db();
+      $db->CSRFToken = $this->CSRFToken;
+      $db->delete('absences_recurrentes', array('uid' => $this->uid, 'perso_id' => "IN$to_delete"));
+
+      // Suppression des événements dans la table absences
+      $db = new db();
+      $db->CSRFToken = $this->CSRFToken;
+      $db->delete('absences', array('perso_id'=> "IN$to_delete", 'uid'=> $this->uid, 'cal_name' => "LIKEPlanningBiblio-Absences-%"));
+    }
+
+
+    // Pour chaque agent, mise à jour ou ajout de l'événement
     foreach($this->perso_ids as $perso_id){
       $a = new absences();
       $a->perso_id = $perso_id;
@@ -1567,7 +1588,6 @@ class absences{
     }
 
     sort($plannings_valides);
-    $dates=implode($plannings_valides,",");
 
     // nom des postes
     $p=new postes();
