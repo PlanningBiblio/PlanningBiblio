@@ -1310,6 +1310,8 @@ class absences{
     $debut = date('d/m/Y', strtotime($matches[1]));
     preg_match('/DTEND.*:(\d*)T\d*\n/', $event[0]['event'], $matches);
     $fin = date('d/m/Y', strtotime($matches[1]));
+    preg_match('/CREATED.*:(\d*T\d*Z)\n/', $event[0]['event'], $matches);
+    $dtstamp = $matches[1];
 
     // Suppression des agents retirés de l'événement
     $to_delete = array();
@@ -1432,12 +1434,14 @@ class absences{
         // Création du fichier ICS
         $a = new absences();
         $a->CSRFToken = $this->CSRFToken;
+        $a->dtstamp = $dtstamp;
         $a->perso_id = $perso_id;
         $a->commentaires = $this->commentaires;
         $a->debut = $debut;
         $a->fin = $fin;
         $a->hre_debut = $this->hre_debut;
         $a->hre_fin = $this->hre_fin;
+        $a->demande = $demande;
         $a->groupe = $this->groupe;
         $a->motif = $this->motif;
         $a->motif_autre = $this->motif_autre;
