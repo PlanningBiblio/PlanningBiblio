@@ -1,6 +1,7 @@
 *** Version 2.7.08      (14 décembre 2017)   ***
 - Corrections
 Absences récurrentes : correction des erreurs d'ajout et suppression d'agents lors de la modification d'absences récurrentes toutes occurences.
+Absences récurrentes : correction de l'attribut COUNT lors de la modification des événements courant et suivants
 
 *** Version 2.7.07      (11 décembre 2017)   ***
 - Corrections

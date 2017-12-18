@@ -292,6 +292,23 @@ if($rrule){
       // Un nouvel événement sera créé pour les occurences à venir
       $nouvel_enregistrement = true;
 
+      // Si la fin de récurrence est définie par l'attribut COUNT, il doit être adapté. Les occurences antérieures à $serie1_end doivent être déduites.
+      if(strpos($rrule, 'COUNT')){
+        // Récupération du nombre d'occurences antérieures à la date de l'événement choisi
+        $db = new db();
+        $db->select2('absences', 'debut', array('cal_name' => 'LIKEPlanningBiblio-Absences%', 'uid' => $uid, 'debut' => "<$debut1"), 'GROUP BY `debut`');
+        $nb = $db->nb;
+
+        // Récupération de la valeur initiale de COUNT
+        preg_match('/COUNT=(\d*)/', $rrule, $matches);
+
+        // Soustraction
+        $count = $matches[1] - $nb;
+
+        // Réécriture de la règle
+        $rrule = preg_replace('/COUNT=(\d*)/', "COUNT=$count", $rrule);
+      }
+
       break;
 
     case 'all' :
