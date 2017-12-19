@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.07
+Planning Biblio, Version 2.7.09
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : ics/class.ics.php
 Création : 29 mai 2016
-Dernière modification : 11 décembre 2017
+Dernière modification : 19 décembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -172,7 +172,7 @@ class CJICS{
       // Traite seulement les événéments ayant un status occupés TRANSP OPAQUE (TRANSP OPAQUE défini un status BUSY)
       if(isset($elem['TRANSP']) && $elem['TRANSP']=="OPAQUE"){
         // Traite seulement les événéments ayant le STATUS CONFIRMED si la configuration demande seulement les status CONFIRMED
-        if($elem['STATUS']=="CONFIRMED" or $this->status != 'CONFIRMED'){
+        if(($elem['STATUS']=="CONFIRMED" or $this->status != 'CONFIRMED') and $elem['STATUS'] != 'CANCELLED'){
           $events[]=$elem;
           $iCalKeys[]=$elem['key'];
         }
@@ -225,6 +225,8 @@ class CJICS{
         VALUES (:perso_id, :debut, :fin, :demande, :valide, :validation, :valide_n1, :validation_n1, :motif, :motif_autre, :commentaires, :groupe, :cal_name, :ical_key, :uid, :rrule);";
       $db->CSRFToken = $CSRFToken;
       $db->prepare($req);
+
+      $tab = array();
 
       foreach($insert as $elem){
         // Adaptation des valeurs pour la base de données
@@ -297,13 +299,23 @@ class CJICS{
 
         $rrule = !empty($elem['RRULE']) ? $elem['RRULE'] : '';
 
-        // Insertion dans la base de données
-        $tab=array(":perso_id" => $perso_id, ":debut" => $debut, ":fin" => $fin, ":demande" => $demande, ":valide"=> $valide_n2, ":validation" => $validation_n2, ":valide_n1"=> $valide_n1, ":validation_n1" => $validation_n1, 
+        // Préparation de l'insertion dans la base de données
+        $tab[] = array(":perso_id" => $perso_id, ":debut" => $debut, ":fin" => $fin, ":demande" => $demande, ":valide"=> $valide_n2, ":validation" => $validation_n2, ":valide_n1"=> $valide_n1, ":validation_n1" => $validation_n1, 
           ":motif" => $motif, ":motif_autre" => $motif_autre, ":commentaires" => $commentaires, ":groupe" => $groupe, ":cal_name" => $calName, ":ical_key" => $elem['key'], ":uid" => $elem['UID'], ":rrule" => $rrule);
 
-        $db->execute($tab);
         $nb++;
       }
+
+      // Enregistrement des infos dans la base de données
+      foreach($tab as $elem){
+        // Si l'événement ne contient qu'une seule occurrence, on supprime la règle de récurrence. Ce qui aura pour effet de ne pas afficher l'icône et le popup de modification de récurrence
+        if($nb < 2){
+          $elem[':rrule'] = '';
+        }
+
+        $db->execute($elem);
+      }
+
     }
 
     if($this->logs){
