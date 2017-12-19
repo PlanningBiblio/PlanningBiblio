@@ -1,3 +1,9 @@
+*** Version 2.7.09      (19 décembre 2017)   ***
+- Corrections
+Absences récurrentes : conserve les exceptions lors de la modification des absences récurrentes
+Absences récurrentes : Ne double plus la première occurence lors de la modification des absence récurrentes
+Absences récurrentes : N'affiche plus l'icône "récurrences" sur les événements ne contenant plus qu'une seule occurence
+
 *** Version 2.7.08      (14 décembre 2017)   ***
 - Corrections
 Absences récurrentes : correction des erreurs d'ajout et suppression d'agents lors de la modification d'absences récurrentes toutes occurences.
