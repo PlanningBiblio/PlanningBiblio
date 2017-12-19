@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.08
+Planning Biblio, Version 2.7.09
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 14 décembre 2017
+Dernière modification : 19 décembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -271,6 +271,43 @@ if($rrule){
 
       // On sépare les événemnts précédents des suivants
 
+      // Récupère l'événement préalablement enregistré pour récupérer la date de début DTSTART et les dates d'exceptions EXDATE
+      $a = new absences();
+      $a->uid = $uid;
+      $a->ics_get_event();
+      $event = $a->elements;
+
+      // Si la date de début correspond au premier événement de la série ($debut1 == DTSTART), la modification de l'occurence et des suivantes signifie la modification de toutes les occurrences
+      // On modifie donc toutes les occurences comme si "all" avait été choisi et on quitte sans ajouter de nouvel enregistrement
+      preg_match("/DTSTART.*:(\d*)/", $event, $matches);
+      if(date('Ymd', strtotime($debut1)) == $matches[1]){
+        $a = new absences();
+        $a->debut = $debut;
+        $a->fin = $fin;
+        $a->groupe = $groupe;
+        $a->hre_debut = $hre_debut;
+        $a->hre_fin = $hre_fin;
+        $a->perso_ids = $perso_ids;
+        $a->commentaires = $commentaires;
+        $a->motif = $motif;
+        $a->motif_autre = $motif_autre;
+        $a->CSRFToken = $CSRFToken;
+        $a->rrule = $rrule;
+        $a->valide_n1 = $valide_n1;
+        $a->valide_n2 = $valide_n2;
+        $a->validation_n1 = $validation_n1;
+        $a->validation_n2 = $validation_n2;
+        $a->pj1 = $pj1;
+        $a->pj2 = $pj2;
+        $a->so = $so;
+        $a->uid = $uid;
+        $a->ics_update_event();
+
+        $nouvel_enregistrement = false;
+
+        break;
+      }
+
       // On définie la date de fin de la première série. Cette date doit être sur le fuseau GMT
       // On commence par retirer une seconde de façon à ce que la première série s'arrête bien avant la deuxième
       $serie1_end = date('Ymd\THis', strtotime($debut1.' -1 second'));
@@ -289,8 +326,15 @@ if($rrule){
         $a->ics_update_until($serie1_end);
       }
 
+
       // Un nouvel événement sera créé pour les occurences à venir
       $nouvel_enregistrement = true;
+
+      // Si des exceptions existaient, on les réécrit dans le nouvel enregistrement 
+      if(strpos($event, 'EXDATE')){
+        preg_match("/(EXDATE.*\n)/", $event, $matches);
+        $add_exdate = $matches[1];
+      }
 
       // Si la fin de récurrence est définie par l'attribut COUNT, il doit être adapté. Les occurences antérieures à $serie1_end doivent être déduites.
       if(strpos($rrule, 'COUNT')){
@@ -355,6 +399,9 @@ if($rrule){
     $a->motif_autre = $motif_autre;
     $a->CSRFToken = $CSRFToken;
     $a->rrule = $rrule;
+    if(!empty($add_exdate)){
+      $a->exdate = $add_exdate;
+    }
     $a->valide = $valide;
     $a->pj1 = $pj1;
     $a->pj2 = $pj2;

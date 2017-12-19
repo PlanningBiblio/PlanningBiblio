@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.08
+Planning Biblio, Version 2.7.09
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2017 Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 14 décembre 2017
+Dernière modification : 19 décembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -34,6 +34,7 @@ class absences{
   public $edt=array();
   public $elements=array();
   public $error=false;
+  public $exdate = null;
   public $fin=null;
   public $groupe=null;
   public $heures=0;
@@ -157,6 +158,7 @@ class absences{
         $a = new absences();
         $a->CSRFToken = $this->CSRFToken;
         $a->dtstamp = $dtstamp;
+        $a->exdate = $this->exdate;
         $a->perso_id = $perso_id;
         $a->commentaires = $commentaires;
         $a->debut = $debut;
@@ -1090,6 +1092,7 @@ class absences{
    * @function ics_add_event
    * Enregistre un événement dans le fichier ICS "Planning Biblio" de l'agent sélectionné
    * @params : tous les éléments d'une absence : date et heure de début et de fin, motif, commentaires, validation, ID de l'agent, règle de récurrence (rrule)
+   * @param string $this->exdate : doit être la ligne complète commençant par EXDATE et finissant par \n
    */
   public function ics_add_event(){
 
@@ -1159,6 +1162,9 @@ class absences{
     $ics_content .= "CATEGORIES:$categories\n";
     $ics_content .= "TRANSP:OPAQUE\n";
     $ics_content .= "RRULE:{$this->rrule}\n";
+    if($this->exdate){
+      $ics_content .= $this->exdate;
+    }
     $ics_content .= "END:VEVENT\n";
     $ics_content .= "END:VCALENDAR\n";
 
