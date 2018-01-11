@@ -3,7 +3,7 @@
 Planning Biblio, Version 2.5.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : setup/createconfig.php
 Création : mai 2011
@@ -42,7 +42,7 @@ $file[]="/**\n";
 $file[]="Planning Biblio, Version $version\n";
 $file[]="Licence GNU/GPL (version 2 et au dela)\n";
 $file[]="Voir les fichiers README.md et LICENSE\n";
-$file[]="@copyright 2011-2017 Jérôme Combes\n";
+$file[]="@copyright 2011-2018 Jérôme Combes\n";
 $file[]="\n";
 $file[]="Fichier : include/config.php\n";
 $file[]="Création : mai 2011\n";

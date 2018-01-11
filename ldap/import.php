@@ -3,7 +3,7 @@
 Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : ldap/import.php
 Création : 2 juillet 2014

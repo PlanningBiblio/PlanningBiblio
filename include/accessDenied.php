@@ -3,7 +3,7 @@
 Planning Biblio, Version 2.6.9
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : include/accessDenied.php
 Création : 8 avril 2015
@@ -73,7 +73,7 @@ if(isset($IPBlocker)){
 </p>
 </center>
 <div class='footer'>
-PlanningBiblio - Copyright &copy; 2011-2017 - J&eacute;r&ocirc;me Combes - 
+PlanningBiblio - Copyright &copy; 2011-2018 - J&eacute;r&ocirc;me Combes - 
 <a href='http://www.planningbiblio.fr' target='_blank' style='font-size:9pt;'>www.planningbiblio.fr</a>
 </div>
 </body>

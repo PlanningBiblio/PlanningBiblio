@@ -3,7 +3,7 @@
 Planning Biblio, Version 2.7.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : statistiques/service.php
 Création : 9 septembre 2013

@@ -3,7 +3,7 @@
 Planning Biblio, Version 2.7.09
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011

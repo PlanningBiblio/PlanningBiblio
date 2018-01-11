@@ -3,7 +3,7 @@
 Planning Biblio, Version 1.8.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : plugins/plugins.php
 Création : 26 juin 2013
