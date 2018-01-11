@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.6
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
-Fichier : ics/cron.ics.php
+Fichier : planningHebdo/cron.importCSV.php
 Création : 1er juillet 2016
-Dernière modification : 9 mai 2017
+Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -22,6 +22,8 @@ Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à
 
 $path="/planning";
 
+session_start();
+
 /** $version=$argv[0]; permet d'interdire l'execution de ce script via un navigateur
  *  Le fichier config.php affichera une page "accès interdit si la $version n'existe pas
  *  $version prend la valeur de $argv[0] qui ne peut être fournie que en CLI ($argv[0] = chemin du script appelé en CLI)
@@ -34,6 +36,7 @@ chdir($path);
 require_once "$path/include/config.php";
 require_once "$path/personnel/class.personnel.php";
 
+$CSRFToken = CSRFToken();
 
 // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
 $tmp_dir=sys_get_temp_dir();
@@ -67,10 +70,10 @@ if (!empty($p->elements)) {
 
 // On ouvre le fichier CSV
 $CSVFile = trim($config['PlanningHebdo-CSV']);
-logs("Importation du fichier $CSVFile","PlanningHebdo");
+logs("Importation du fichier $CSVFile", "PlanningHebdo", $CSRFToken);
 
 if( !$CSVFile or !file_exists($CSVFile)){
-  logs("Fichier $CSVFile non trouvé","PlanningHebdo");
+  logs("Fichier $CSVFile non trouvé", "PlanningHebdo", $CSRFToken);
   exit;
 }
 
@@ -94,13 +97,13 @@ foreach($lines as $line){
     // Mise en forme des heures
     if($i>1){
       if(isset($cells[$i]) and $cells[$i]){
-		// supprime les h et les : de façon à traiter tous les formats de de la même façon (formats acceptés : 0000, 00h00, 00:00, 000, 0h00, 0:00)
-		$cells[$i] = str_replace(array("h",":"), null, $cells[$i]);
-		$min = substr($cells[$i],-2);
-		$hre = sprintf("%02s",substr($cells[$i],0,-2));
-		$cells[$i] = $hre.":$min:00";
+        // supprime les h et les : de façon à traiter tous les formats de de la même façon (formats acceptés : 0000, 00h00, 00:00, 000, 0h00, 0:00)
+        $cells[$i] = str_replace(array("h",":"), null, $cells[$i]);
+        $min = substr($cells[$i],-2);
+        $hre = sprintf("%02s",substr($cells[$i],0,-2));
+        $cells[$i] = $hre.":$min:00";
       }else{
-		$cells[$i] = "00:00:00";
+        $cells[$i] = "00:00:00";
       }
     }
   }
@@ -111,6 +114,12 @@ foreach($lines as $line){
     $cells[5]=null;
   }
   
+  // Si les horaires de la 2eme pause ne sont pas renseignés, on initialise les variables pour éviter les erreurs PHP
+  if(!isset($cells[6])){
+    $cells[6]=null;
+    $cells[7]=null;
+  }
+  
   // Si les heures de l'après-midi sont nulles (mises à 00:00:00 en lignes 103), on leurs affecte la valeur "null".
   // (Attention, l'affectation systèmatique de la valeur null en ligne 103 est problèmatique)
   if($cells[4] == "00:00:00" and $cells[5] == "00:00:00"){
@@ -118,6 +127,18 @@ foreach($lines as $line){
     $cells[5]=null;
   }
   
+  // Si les heures de la 2eme pause sont nulles (mises à 00:00:00 en lignes 103), on leurs affecte la valeur "null".
+  // (Attention, l'affectation systèmatique de la valeur null en ligne 103 est problèmatique)
+  if($cells[6] == "00:00:00" and $cells[7] == "00:00:00"){
+    $cells[6]=null;
+    $cells[7]=null;
+  }
+
+  // Si l'agent mentionné dans le fichier n'existe pas dans le tableau $agents, on passe
+  if(empty($agents[$cells[0]]['id'])){
+    continue;
+  }
+
   // Récupération de l'ID de l'agent
   $perso_id = $agents[$cells[0]]['id'];
   
@@ -129,16 +150,16 @@ foreach($lines as $line){
 	$site = 1;
   // Config. Multisites
   }else{
-	// tous les sites sur lesquels l'agent peut travailler
-	$sites = $agents[$cells[0]]['sites']; 
-	
-	// Si au moins un site est renseigné, on affecte l'agent au premier site trouvé
-	if( is_array($sites) ){
-	  $site = $sites[0];
-	// Sinon, on l'affecte au site N°1
-	}else{
-	  $site = 1;
-	}
+    // tous les sites sur lesquels l'agent peut travailler
+    $sites = $agents[$cells[0]]['sites']; 
+    
+    // Si au moins un site est renseigné, on affecte l'agent au premier site trouvé
+    if( is_array($sites) ){
+      $site = $sites[0];
+    // Sinon, on l'affecte au site N°1
+    }else{
+      $site = 1;
+    }
   }
 
   // Identification de la semaine, premier jour et dernier jour (regroupement pasr semaine)
@@ -147,21 +168,23 @@ foreach($lines as $line){
 
   // Création d'un tableau par agent
   if(!array_key_exists($perso_id,$temps)){
-	$temps[$perso_id]=array("perso_id"=> $perso_id);
+    $temps[$perso_id]=array("perso_id"=> $perso_id);
   }
   
   // Chaque tableau "agent" contient un tableau par semaine
   // Création des tableaux "semaines" avec date de début (lundi), date de fin (dimanche) et emploi du temps
   if(!array_key_exists($lundi,$temps[$perso_id])){
-	$temps[$perso_id][$lundi]['debut']=$lundi;
-	$temps[$perso_id][$lundi]['fin']=$dimanche;
-	$temps[$perso_id][$lundi]['temps']=array();
+    $temps[$perso_id][$lundi]['debut']=$lundi;
+    $temps[$perso_id][$lundi]['fin']=$dimanche;
+    $temps[$perso_id][$lundi]['temps']=array();
   }
   
   // Mise en forme du champ "temps"
   // Le champ "temps" contient un tableau contenant les emplois du temps de chaque jour : index ($jour) de 0 à 6 (du lundi au dimanche)
   $jour=date("N", strtotime($cells[1])) -1;
-  $temps[$perso_id][$lundi]['temps'][$jour] = array($cells[2],$cells[3],$cells[4],$cells[5],$site);
+  $p = new datePl($lundi);
+  $jour = $jour +  7 * ($p->semaine3 - 1);
+  $temps[$perso_id][$lundi]['temps'][$jour] = array($cells[2],$cells[3],$cells[4],$cells[5],$site,$cells[6],$cells[7]);
 
   // Clé identifiant les infos de la ligne (pour comparaison avec la DB)
   // La clé est composée de l'id de l'agent et du md5 du tableau de sa semaine, tableau comprenant le debut, la fin et l'emploi du temps.
@@ -179,11 +202,11 @@ $tab = array();
 
 foreach($temps as $perso){
   foreach($perso as $semaine){
-	if(is_array($semaine)){
-	  $cles[] = $semaine['cle'];
-	  $temps = json_encode($semaine['temps']);
-	  $tab[] =  array(":perso_id"=>$perso['perso_id'], ":debut"=>$semaine['debut'], ":fin"=>$semaine['fin'], ":temps"=>$temps,":cle"=>$semaine['cle']);
-	}
+    if(is_array($semaine)){
+      $cles[] = $semaine['cle'];
+      $temps = json_encode($semaine['temps']);
+      $tab[] =  array(":perso_id"=>$perso['perso_id'], ":debut"=>$semaine['debut'], ":fin"=>$semaine['fin'], ":temps"=>$temps,":cle"=>$semaine['cle']);
+    }
   }
 }
 
@@ -207,11 +230,11 @@ if($db->result){
 $insert = array();
 foreach($tab as $elem){
   if(!in_array($elem[":cle"],$cles_db)){
-	if($elem[':debut'] <= date('Y-m-d') and $elem[':fin'] >= date('Y-m-d')){
-	  $elem[':actuel'] = "1";
-	} else {
-	  $elem[':actuel'] = "0";
-	}
+    if($elem[':debut'] <= date('Y-m-d') and $elem[':fin'] >= date('Y-m-d')){
+      $elem[':actuel'] = "1";
+    } else {
+      $elem[':actuel'] = "0";
+    }
     $insert[]=$elem;
   }
 }
@@ -221,18 +244,19 @@ $nb = count($insert);
 
 if($nb > 0){
   $db=new dbh();
+  $db->CSRFToken = $CSRFToken;
   $db->prepare("INSERT INTO `{$dbprefix}planning_hebdo` (`perso_id`, `debut`, `fin`, `temps`, `saisie`, `valide`, `validation`, `actuel`, `cle`) VALUES (:perso_id, :debut, :fin, :temps, SYSDATE(), '99999', SYSDATE(), :actuel, :cle);");
   foreach($insert as $elem){
-	$db->execute($elem);
+    $db->execute($elem);  
   }
 
   if(!$db->error){
-	logs("$nb éléments importés","PlanningHebdo");
+    logs("$nb éléments importés", "PlanningHebdo", $CSRFToken);
   }else{
-	logs("Une erreur est survenue pendant l'importation","PlanningHebdo");
+    logs("Une erreur est survenue pendant l'importation", "PlanningHebdo", $CSRFToken);
   }
 }else{
-  logs("Rien à importer","PlanningHebdo");
+  logs("Rien à importer", "PlanningHebdo", $CSRFToken);
 }
 
 // Suppression des valeurs supprimées ou modifiées
@@ -248,18 +272,19 @@ $nb = count($delete);
 
 if($nb >0){
   $db=new dbh();
+  $db->CSRFToken = $CSRFToken;
   $db->prepare("DELETE FROM `{$dbprefix}planning_hebdo` WHERE `cle`=:cle;");
   foreach($delete as $elem){
-	$db->execute($elem);
+    $db->execute($elem);
   }
   
   if(!$db->error){
-	logs("$nb éléments supprimés","PlanningHebdo");
+    logs("$nb éléments supprimés", "PlanningHebdo", $CSRFToken);
   }else{
-	logs("Une erreur est survenue lors de la suppression d'éléments","PlanningHebdo");
+    logs("Une erreur est survenue lors de la suppression d'éléments", "PlanningHebdo", $CSRFToken);
   }
 }else{
-  logs("Aucun élément à supprimer","PlanningHebdo");
+  logs("Aucun élément à supprimer", "PlanningHebdo", $CSRFToken);
 }
 
 // Unlock

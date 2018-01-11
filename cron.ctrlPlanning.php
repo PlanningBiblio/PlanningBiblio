@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.5
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : cron.ctrlPlanning.php
 Création : 18 janvier 2016
-Dernière modification : 27 octobre 2016
+Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -44,8 +44,13 @@ require_once "$path/absences/class.absences.php";
 require_once "$path/planning/postes_cfg/class.tableaux.php";
 require_once "$path/postes/class.postes.php";
 
+
+// Génération d'un CSRF Token
+session_start();
+$CSRFToken = CSRFToken();
+
 if(!$config['Rappels-Actifs']){
-  logs("Rappels désactivés","Rappels");
+  logs("Rappels désactivés","Rappels",$CSRFToken);
   exit;
 }
 
@@ -87,6 +92,7 @@ $data=array();
 // Prépare la requête permettant de vérifier si les postes sont occupés
 // On utilide PDO pour de meilleurs performances car la même requête sera executée de nombreuses fois avec des valeurs différentes
 $dbh=new dbh();
+$dbh->CSRFToken = $CSRFToken;
 $dbh->prepare("SELECT `id`,`perso_id`,`absent` FROM `{$dbprefix}pl_poste` 
   WHERE `date`=:date AND `site`=:site AND `poste`=:poste AND `debut`=:debut AND `fin`=:fin AND `absent`='0' AND `supprime`='0';");
 
@@ -244,7 +250,7 @@ $m->subject=$subject;
 $m->message=$msg;
 $m->send();
 if($m->error){
-  logs($m->error,"Rappels");
+  logs($m->error,"Rappels",$CSRFToken);
 }
 
 ?>

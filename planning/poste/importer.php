@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.6
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/importer.php
 Création : mai 2011
-Dernière modification : 10 mai 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -20,6 +20,7 @@ Cette page est appelée par la fonction JavaScript Popup qui l'affiche dans un c
 require_once "class.planning.php";
 
 // Initialisation des variables
+$CSRFToken=filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING);
 $date=filter_input(INPUT_GET,"date",FILTER_SANITIZE_STRING);
 $get_absents=filter_input(INPUT_GET,"absents",FILTER_SANITIZE_STRING);
 $get_nom=filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING);
@@ -33,9 +34,7 @@ $attention="<span style='color:red;'>Attention, le planning actuel sera remplac�
 
 // Sécurité
 // Refuser l'accès aux agents n'ayant pas les droits de modifier le planning
-$access=true;
-$droit=($config['Multisites-nombre']>1)?(300+$site):12;
-if(!in_array($droit,$droits)){
+if(!in_array((300+$site),$droits)){
   echo "<div id='acces_refuse'>Accès refusé</div>";
   echo "<a href='javascript:popup_closed();'>Fermer</a>\n";
   exit;
@@ -58,6 +57,7 @@ if(!$get_nom){		// Etape 1 : Choix du modèle à importer
     $sem=$db->result[0]['jour']?"###semaine":null;
     $nom=$db->result[0]['nom'].$sem;
     echo "<form name='form' method='get' action='index.php' onsubmit='return ctrl_form(\"nom\");'>\n";
+    echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
     echo "<input type='hidden' name='page' value='planning/poste/importer.php' />\n";
     echo "<input type='hidden' name='menu' value='off' />\n";
     echo "<input type='hidden' name='nom' value='$nom' />\n";
@@ -75,6 +75,7 @@ if(!$get_nom){		// Etape 1 : Choix du modèle à importer
     echo $attention;
     echo "Sélectionnez le modèle à importer<br/><br/>\n";
     echo "<form name='form' method='get' action='index.php' onsubmit='return ctrl_form(\"nom\");'>\n";
+    echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
     echo "<input type='hidden' name='page' value='planning/poste/importer.php' />\n";
     echo "<input type='hidden' name='menu' value='off' />\n";
     echo "<input type='hidden' name='date' value='$date' />\n";
@@ -144,9 +145,11 @@ else{					// Etape 2 : Insertion des données
 
     $tableau=$db->result[0]['tableau'];
     $db=new db();
-    $db->delete2("pl_poste_tab_affect",array("date"=>$elem, "site"=>$site));
+    $db->CSRFToken = $CSRFToken;
+    $db->delete("pl_poste_tab_affect",array("date"=>$elem, "site"=>$site));
     $db=new db();
-    $db->insert2("pl_poste_tab_affect", array("date"=>$elem ,"tableau"=>$tableau ,"site"=>$site ));
+    $db->CSRFToken = $CSRFToken;
+    $db->insert("pl_poste_tab_affect", array("date"=>$elem ,"tableau"=>$tableau ,"site"=>$site ));
 
 
     // N'importe pas les agents placés sur des postes supprimés (si tableau modifié)
@@ -253,12 +256,14 @@ else{					// Etape 2 : Insertion des données
       if(!empty($values)){
 	// Suppression des anciennes données
 	$db=new db();
-	$db->delete2("pl_poste", array("date"=>$elem, "site"=>$site));
+        $db->CSRFToken = $CSRFToken;
+	$db->delete("pl_poste", array("date"=>$elem, "site"=>$site));
 
 	// Insertion des nouvelles données
 	$req="INSERT INTO `{$dbprefix}pl_poste` (`date`,`perso_id`,`poste`,`debut`,`fin`,`absent`,`site`) ";
 	$req.="VALUES (:date, :perso_id, :poste, :debut, :fin, :absent, :site);";
 	$dbh=new dbh();
+	$dbh->CSRFToken = $CSRFToken;
 	$dbh->prepare($req);
 	foreach($values as $value){
 	  $dbh->execute($value);

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.7
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 12 mai 2017
+Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -43,6 +43,9 @@ if($_POST){
     }
   }
 
+  $CSRFToken = $post['CSRFToken'];
+  unset($post['CSRFToken']);
+  
   // Si les checkboxes ne sont pas cochées, elles ne sont pas transmises donc pas réinitialisées. Donc on les réinitialise ici.
   $db=new db();
   $db->select2("config","nom",array("type"=>"checkboxes"));
@@ -54,8 +57,11 @@ if($_POST){
     }
   }
 
+  $post['URL'] = $url;
+  
   $erreur=false;
   $db=new dbh();
+  $db->CSRFToken = $CSRFToken;
   $db->prepare("UPDATE `{$dbprefix}config` SET `valeur`=:valeur WHERE `nom`=:nom");
   foreach($post as $key => $value){
     if(!in_array($key,array("page","Valider","Annuler"))){
@@ -68,7 +74,7 @@ if($_POST){
       if(is_array($value)){
 	$value=json_encode($value);
       }
-	
+
       $db->execute(array(":nom"=>$key,":valeur"=>$value));
     }
   }
@@ -98,6 +104,7 @@ $db->query("SELECT * FROM `{$dbprefix}config` ORDER BY `categorie`,`ordre`,`id`;
 echo "<h3>Configuration</h3>\n";
 echo "<form name='form' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='admin/config.php' />\n";
+echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
 echo "<div id='accordion' class='ui-accordion'>\n";
 
 foreach($db->result as $elem){

@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Version 2.0.3
+/**
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/ajax.notes.php
 Création : 3 juin 2014
-Dernière modification : 2 octobre 2015
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -19,17 +19,18 @@ ini_set('display_errors',0);
 include_once "../../include/config.php";
 include_once "class.planning.php";
 
+$CSRFToken=filter_input(INPUT_POST,"CSRFToken",FILTER_SANITIZE_STRING);
 $date=filter_input(INPUT_POST,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
 $site=filter_input(INPUT_POST,"site",FILTER_SANITIZE_NUMBER_INT);
 $text=filter_input(INPUT_POST,"text",FILTER_SANITIZE_STRING);
 $text=urldecode($text);
 
 // Sécurité : droits d'accès à la page
+$required1=300+$site;		// Droits de modifier les plannings du sites N° $site
+
 if($config['Multisites-nombre']>1){
-  $required1=300+$site;		// Droits de modifier les plannings du sites N° $site
   $required2=800+$site;		// Droits de modifier les commentaires sites N° $site
 }else{
-  $required1=12;		// Droits de modifier les plannings en monosite
   $required2=801;		// Droits de modifier les commentaires en monosite
 }
 
@@ -41,6 +42,7 @@ $p=new planning();
 $p->date=$date;
 $p->site=$site;
 $p->notes=$text;
+$p->CSRFToken = $CSRFToken;
 $p->updateNotes();
 
 $p->getNotes();

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.7.05
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : include/db.php
 Création : mai 2011
-Dernière modification : 10 février 2017
+Dernière modification : 28 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -307,14 +307,9 @@ class db{
     $this->query($query);
   }
 
-  function update($table,$set,$where=1){
-    $requete="UPDATE `{$this->dbprefix}$table` SET $set WHERE $where";
-    $this->query($requete);
-  }
-
-  function update2($table,$set,$where="1"){
+  function update($table,$set,$where="1"){
     if(!$this->CSRFToken or !isset($_SESSION['oups']['CSRFToken']) or $this->CSRFToken !== $_SESSION['oups']['CSRFToken']){
-      $this->error = "CSRF Token Exception";
+      $this->error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
       error_log($this->error);
       return false;
     }
@@ -322,28 +317,32 @@ class db{
     $this->connect();
     $dbprefix=$this->dbprefix;
 
-    $tmp=array();
-    $fields=array_keys($set);
-    foreach($fields as $field){
-      // SET field = NULL
-      if($set[$field]===null){
-	$tmp[]="`{$field}`=NULL";
+    
+    if(is_array($set)){
+      $tmp=array();
+      $fields=array_keys($set);
+      foreach($fields as $field){
+        // SET field = NULL
+        if($set[$field]===null){
+          $tmp[]="`{$field}`=NULL";
+        }
+        // SET field = SYSDATE()
+        elseif($set[$field]==="SYSDATE"){
+          $tmp[]="`{$field}`=SYSDATE()";
+        }
+        else{
+          $set[$field]=mysqli_real_escape_string($this->conn,$set[$field]);
+          if(substr($set[$field],0,7)==="CONCAT("){
+            $tmp[]="`{$field}`={$set[$field]}";
+          }
+          else{
+            $tmp[]="`{$field}`='{$set[$field]}'";
+          }
+        }
       }
-      // SET field = SYSDATE()
-      elseif($set[$field]==="SYSDATE"){
-	$tmp[]="`{$field}`=SYSDATE()";
-      }
-      else{
-	$set[$field]=mysqli_real_escape_string($this->conn,$set[$field]);
-	if(substr($set[$field],0,7)==="CONCAT("){
-	  $tmp[]="`{$field}`={$set[$field]}";
-	}
-	else{
-	  $tmp[]="`{$field}`='{$set[$field]}'";
-	}
-      }
+      $set=join(",",$tmp);
     }
-    $set=join(",",$tmp);
+
     if(is_array($where)){
       $tmp=array();
       foreach($where as $key => $value){
@@ -355,12 +354,13 @@ class db{
     $this->query($requete);
   }
 
-  function delete($table,$where=1){
-    $requete="DELETE FROM `{$this->dbprefix}$table` WHERE $where";
-    $this->query($requete);
-  }
+  function delete($table,$where="1"){
+    if(!$this->CSRFToken or !isset($_SESSION['oups']['CSRFToken']) or $this->CSRFToken !== $_SESSION['oups']['CSRFToken']){
+      $this->error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
+      error_log($this->error);
+      return false;
+    }
 
-  function delete2($table,$where="1"){
     $this->connect();
     $dbprefix=$this->dbprefix;
 
@@ -378,16 +378,14 @@ class db{
     $this->query($requete);
   }
 
-  function insert($table,$values,$fields=null){
-    $fields=$fields?"($fields)":null;
-    if(is_array($values)){
-      $values=join("),(",$values);
+  function insert($table,$values,$options=null){
+    if(!$this->CSRFToken or !isset($_SESSION['oups']['CSRFToken']) or $this->CSRFToken !== $_SESSION['oups']['CSRFToken']){
+      $this->error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
+      error_log($this->error);
+      return false;
     }
-    $requete="INSERT INTO `{$this->dbprefix}$table` $fields VALUES ($values);";
-    $this->query($requete);
-  }
+  
 
-  function insert2($table,$values,$options=null){
     $this->connect();
     $dbprefix=$this->dbprefix;
     $table=$dbprefix.$table;
@@ -481,14 +479,24 @@ class db{
     }elseif(substr($value,0,1)=="<"){
       $operator="<";
       $value=trim(substr($value,1));
+    // Losrsqu'une chaîne contient < directement suivi d'un caractère alpha, la chaîne est supprimée.
+    // On permet donc l'utilisation du signe < suivi d'un espace
+    }elseif(substr($value,0,2)=="< "){
+      $operator="<";
+      $value=trim(substr($value,2));
+    }elseif(substr($value,0,4)=="LIKE"){
+      $operator="LIKE";
+      $value=trim(substr($value,4));
     }
 
     if($value===null){
       return "{$key}{$operator}";
     }
-    
+
     elseif(in_array($value, array('CURDATE','SYSDATE'))){
-      return "{$key}{$operator}{$value}()";
+      // Losrsqu'une chaîne contient < directement suivi d'un caractère alpha, la chaîne est supprimée.
+      // On permet donc l'utilisation du signe < suivi d'un espace
+      return "{$key}{$operator} {$value}()";
     }
     else{
       $value=htmlentities($value,ENT_QUOTES | ENT_IGNORE,"UTF-8",false);
@@ -501,6 +509,7 @@ class db{
 }
 
 class dbh{
+  public $CSRFToken = false;
   public $dbhost = null;
   public $dbname = null;
   public $dbuser = null;
@@ -534,6 +543,13 @@ class dbh{
   }
 
   function execute($data=array()){
+    if(!$this->CSRFToken or !isset($_SESSION['oups']['CSRFToken']) or $this->CSRFToken !== $_SESSION['oups']['CSRFToken']){
+      $this->error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
+      $this->msg = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
+      error_log($this->error);
+      return false;
+    }
+
     $this->stmt->execute($data);
     $tmp=$this->stmt->fetchAll();
     $this->nb=count($tmp);

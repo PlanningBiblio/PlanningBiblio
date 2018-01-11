@@ -3,7 +3,7 @@
 Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : plugins/planningHebdo/index.php
 Création : 25 juillet 2013
@@ -31,7 +31,7 @@ if($post){
     $message="Une erreur est survenue lors des p&eacute;riodes."; $type="error";
   }
   else{
-    $message="Les p&eacute;riodes ont été modifiées avec succés."; $type="highlight";
+    $message="Les p&eacute;riodes ont été modifiées avec succès."; $type="highlight";
   }
   if($message){
     echo "<script type='text/JavaScript'>CJInfo('$message','$type');</script>\n";

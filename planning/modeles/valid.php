@@ -3,7 +3,7 @@
 Planning Biblio, Version 2.5.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/modeles/valid.php
 Création : mai 2011
@@ -25,10 +25,10 @@ $origine=htmlentities($origine,ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->update2("pl_poste_modeles",array("nom"=>$nom),array("nom"=>$origine));
+$db->update("pl_poste_modeles",array("nom"=>$nom),array("nom"=>$origine));
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->update2("pl_poste_modeles_tab",array("nom"=>$nom),array("nom"=>$origine));
+$db->update("pl_poste_modeles_tab",array("nom"=>$nom),array("nom"=>$origine));
 echo "<script type='text/JavaScript'>document.location.href='index.php?page=planning/modeles/index.php';</script>\n";
 ?>

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.7.05
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 21 avril 2017
+Dernière modification : 28 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -18,7 +18,6 @@ Page appelée par la page index.php
 */
 
 require_once "class.absences.php";
-require_once "personnel/class.personnel.php";
 
 // Initialisation des variables
 $debut=filter_input(INPUT_GET,"debut",FILTER_SANITIZE_STRING);
@@ -41,12 +40,7 @@ $agents = $p->elements;
 echo "<h3>Liste des absences</h3>\n";
 
 //	Initialisation des variables
-$only_me=null;
-$admin=in_array(1,$droits)?true:false;
-
-if(!$admin){
-  $only_me=" AND `{$dbprefix}personnel`.`id`='{$_SESSION['login_id']}' ";
-}
+$admin = in_array(1, $droits);
 
 if($admin){
   $perso_id=filter_input(INPUT_GET,"perso_id",FILTER_SANITIZE_NUMBER_INT);
@@ -83,11 +77,10 @@ $finSQL=dateSQL($fin);
 $sites=null;
 if($config['Multisites-nombre']>1){
   $sites=array();
-  if(in_array(201,$droits)){
-    $sites[]=1;
-  }
-  if(in_array(202,$droits)){
-    $sites[]=2;
+  for($i=1; $i<11; $i++){
+    if(in_array((200 + $i), $droits)){
+      $sites[]=$i;
+    }
   }
 }
 
@@ -96,8 +89,7 @@ $a->groupe=true;
 if($agents_supprimes){
   $a->agents_supprimes=array(0,1);
 }
-$tri="`debut`,`fin`,`nom`,`prenom`";
-$a->fetch($tri,$only_me,$perso_id,$debutSQL,$finSQL,$sites);
+$a->fetch(null,$perso_id,$debutSQL,$finSQL,$sites);
 $absences=$a->elements;
 
 // Tri par défaut du tableau
@@ -108,6 +100,7 @@ if($admin or (!$config['Absences-adminSeulement'] and in_array(6,$droits))){
 
 echo "<form name='form' method='get' action='index.php'>\n";
 echo "<input type='hidden' name='page' value='absences/voir.php' />\n";
+echo "<span style='float:left; vertical-align:top; margin-bottom:20px;'>\n";
 echo "<table class='tableauStandard'><tbody><tr>\n";
 echo "<td style='vertical-align:middle;'><label class='intitule'>Début :</label> <input type='text' name='debut' value='$debut' class='datepicker'/></td>\n";
 echo "<td style='vertical-align:middle;'><label class='intitule'>Fin :</label> <input type='text' name='fin' value='$fin'  class='datepicker'/></td>\n";
@@ -143,22 +136,21 @@ if($admin){
   echo "</td>\n";
 }
 
-echo "<td><input type='submit' value='OK' class='ui-button'/></td>\n";
-echo "<td><input type='button' value='Effacer' onclick='location.href=\"index.php?page=absences/voir.php&amp;reset=1\"'  class='ui-button' /></td>\n";
+echo "<td><input type='submit' value='Rechercher' class='ui-button' style='margin-right:20px;' />\n";
+echo "<input type='button' value='Réinitialiser' onclick='absences_reinit();'  class='ui-button' /></td>\n";
 echo "</tr></tbody></table>\n";
+echo "</span>\n";
+echo "<span style='float:right; vertical-align:top; margin:10px 5px;'>\n";
+echo "<a href='index.php?page=absences/ajouter.php' class='ui-button'>Ajouter</a>\n";
+echo "</span>\n";
 echo "</form>\n";
 
-echo "<br/>\n";
 echo "<table id='tableAbsencesVoir' class='CJDataTable' data-sort='$sort' >\n";
 echo "<thead><tr>\n";
-if($admin or (!$config['Absences-adminSeulement'] and in_array(6,$droits))){
-  echo "<th class='dataTableNoSort' >&nbsp;</th>\n";
-}
+echo "<th class='dataTableNoSort' >&nbsp;</th>\n";
 echo "<th class='dataTableDateFR' >Début</th>\n";
 echo "<th class='dataTableDateFR-fin' >Fin</th>\n";
-if($admin){
-  echo "<th id='thNom'>Agents</th>\n";
-}
+echo "<th id='thNom'>Agents</th>\n";
 if($config['Absences-validation']){
   echo "<th id='thValidation'>&Eacute;tat</th>\n";
 }
@@ -198,17 +190,22 @@ if($absences){
     $soChecked=$elem['so']?"checked='checked'":null;
 
     echo "<tr>\n";
+    echo "<td style='white-space: nowrap;'>\n";
     if($admin or (!$config['Absences-adminSeulement'] and in_array(6,$droits))){
-      echo "<td><a href='index.php?page=absences/modif.php&amp;id=$id'>\n";
-      echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a></td>\n";
+      echo "<a href='index.php?page=absences/modif.php&amp;id=$id'>\n";
+      echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a>\n";
     }
+    if($elem['rrule']){
+      echo "<span class='pl-icon pl-icon-recurring' title='R&eacute;currence'></span>\n";
+    }
+    echo "</td>\n";
+
     echo "<td>".dateFr($elem['debut'],true)."</td>";
     echo "<td>".datefr($elem['fin'],true)."</td>";
-    if($admin){
-      echo "<td>";
-      echo implode($elem['agents'],", ");
-      echo "</td>\n";
-    }
+    echo "<td>";
+    echo implode($elem['agents'],", ");
+    echo "</td>\n";
+    
     if($config['Absences-validation']){
       echo "<td style='$etatStyle'>$etat</td>\n";
     }

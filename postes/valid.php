@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.91
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : postes/valid.php
 Création : mai 2011
-Dernière modification : 1er juin 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -49,26 +49,27 @@ if($nom){
   switch($action){
     case "ajout" :	
       $db=new db();
-      $db->insert2("postes",$data);
+      $db->CSRFToken = $CSRFToken;
+      $db->insert("postes",$data);
       if($db->error){
 	$msgType="error";
 	$msg=urlencode("Une erreur est survenue lors de l'ajout du poste");
       }else{
 	$msgType="success";
-	$msg=urlencode("Le poste a été ajouté avec succés");
+	$msg=urlencode("Le poste a été ajouté avec succès");
       }
       break;
 
     case "modif" :
       $db=new db();
       $db->CSRFToken = $CSRFToken;
-      $db->update2("postes",$data,array("id"=>$id));
+      $db->update("postes",$data,array("id"=>$id));
       if($db->error){
 	$msgType="error";
 	$msg=urlencode("Une erreur est survenue lors de la modification du poste");
       }else{
 	$msgType="success";
-	$msg=urlencode("Le poste a été modifié avec succés");
+	$msg=urlencode("Le poste a été modifié avec succès");
       }
       break;
   }

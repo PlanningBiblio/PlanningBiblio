@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.9
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 21 mai 2017
+Dernière modification : 15 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -25,6 +25,7 @@ require_once __DIR__."/../personnel/class.personnel.php";
 class planningHebdo{
   public $agent=null;
   public $config=array();
+  public $CSRFToken=null;
   public $dates=array();
   public $debut=null;
   public $elements=array();
@@ -76,14 +77,16 @@ class planningHebdo{
 	"valide"=>$valide, "validation"=>$validation);
 
       $db=new db();
-      $db->insert2("planning_hebdo",$insert);
+      $db->CSRFToken = $CSRFToken;
+      $db->insert("planning_hebdo",$insert);
       $this->error=$db->error;
       // 2ème tableau
       $insert=array("perso_id"=>$perso_id,"debut"=>$dates[0][2],"fin"=>$dates[0][3],"temps"=>json_encode($data['temps2']),
 	"valide"=>$valide, "validation"=>$validation);
 
       $db=new db();
-      $db->insert2("planning_hebdo",$insert);
+      $db->CSRFToken = $CSRFToken;
+      $db->insert("planning_hebdo",$insert);
       $this->error=$db->error?$db->error:$this->error;
     }
     // Sinon, insertion d'un seul tableau
@@ -96,7 +99,8 @@ class planningHebdo{
 	$insert['remplace']=$data['remplace'];
       }
       $db=new db();
-      $db->insert2("planning_hebdo",$insert);
+      $db->CSRFToken = $CSRFToken;
+      $db->insert("planning_hebdo",$insert);
       $this->error=$db->error;
     }
 
@@ -138,9 +142,6 @@ class planningHebdo{
     $data['debut']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/","$3-$2-$1",$data['debut']);
     $data['fin']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/","$3-$2-$1",$data['fin']);
 
-    $CSRFToken=$data['CSRFToken'];
-    unset($data['CSRFToken']);
-
     $this->id=$data['id'];
     $this->fetch();
     $actuel=$this->elements[0];
@@ -169,7 +170,9 @@ class planningHebdo{
 
     // Enregistrement des copies
     foreach($pl as $elem){
+      $elem['CSRFToken'] = $data['CSRFToken'];
       $p=new planningHebdo();
+      
       $p->add($elem);
     }
     
@@ -314,7 +317,8 @@ class planningHebdo{
 
   public function suppression_agents($liste){
     $db=new db();
-    $db->delete("planning_hebdo","perso_id IN ($liste)");
+    $db->CSRFToken = $this->CSRFToken;
+    $db->delete("planning_hebdo", array('perso_id' => "IN$liste"));
   }
 
   public function update($data){
@@ -336,23 +340,27 @@ class planningHebdo{
 
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("planning_hebdo",$update,array("id"=>$data['id']));
+    $db->update("planning_hebdo",$update,array("id"=>$data['id']));
     $this->error=$db->error;
 
     // Remplacement du planning de la fiche agent si validation et date courante entre debut et fin
     if($data['validation'] and $data['debut']<=date("Y-m-d") and $data['fin']>=date("Y-m-d")){
       $db=new db();
-      $db->update("planning_hebdo","`actuel`='0'","`perso_id`='{$data['perso_id']}'");
+      $db->CSRFToken = $CSRFToken;
+      $db->update('planning_hebdo', array('actuel'=>0), array('perso_id'=>$data['perso_id']));
       $db=new db();
-      $db->update("planning_hebdo","`actuel`='1'","`id`='{$data['id']}'");
+      $db->CSRFToken = $CSRFToken;
+      $db->update('planning_hebdo', array('actuel'=>1), array('id'=>$data['id']));
     }
 
     // Si validation d'un planning de remplacement, suppression du planning d'origine
     if($data['validation'] and $data['remplace']){
       $db=new db();
-      $db->delete("planning_hebdo","id='{$data['remplace']}'");
+      $db->CSRFToken = $CSRFToken;
+      $db->delete('planning_hebdo', array('id' =>$data['remplace']));
       $db=new db();
-      $db->update("planning_hebdo","remplace='0'","remplace='{$data['remplace']}'");
+      $db->CSRFToken = $CSRFToken;
+      $db->update('planning_hebdo', array('remplace'=>0), array('remplace'=>$data['remplace']));
     }
 
     // Envoi d'un mail aux responsables et à l'agent concerné
@@ -417,14 +425,18 @@ class planningHebdo{
     $data['dates'][0]=array_map("dateFr",$data['dates'][0]);
     $data['dates'][1]=array_map("dateFr",$data['dates'][1]);
     $dates=array(json_encode($data['dates'][0]),json_encode($data['dates'][1]));
-
+    
+    $CSRFToken=$data['CSRFToken'];
+    
     for($i=0;$i<count($annee);$i++){
       $db=new db();
-      $db->delete("planning_hebdo_periodes","`annee`='{$annee[$i]}'");
+      $db->CSRFToken = $CSRFToken;
+      $db->delete('planning_hebdo_periodes', array('annee'=>$annee[$i]));
       $this->error=$db->error?true:false;
       $insert=array("annee"=>$annee[$i],"dates"=>$dates[$i]);
       $db=new db();
-      $db->insert2("planning_hebdo_periodes",$insert);
+      $db->CSRFToken = $CSRFToken;
+      $db->insert("planning_hebdo_periodes",$insert);
       $this->error=$db->error?true:$this->error;
     }
   }

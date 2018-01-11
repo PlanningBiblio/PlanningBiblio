@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.91
+Planning Biblio, Version 2.7.06
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 1er juin 2017
+Dernière modification : 30 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -28,8 +28,12 @@ $heuresTravail=filter_input(INPUT_POST,"heuresTravail",FILTER_SANITIZE_STRING);
 $id=filter_input(INPUT_POST,"id",FILTER_SANITIZE_NUMBER_INT);
 $mail=trim(filter_input(INPUT_POST,"mail",FILTER_SANITIZE_EMAIL));
 
-$actif=$post['actif'];
+$actif = htmlentities( $post['actif'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
 $action=$post['action'];
+$check_ics1 = !empty($post['check_ics1']) ? 1 : 0;
+$check_ics2 = !empty($post['check_ics2']) ? 1 : 0;
+$check_ics3 = !empty($post['check_ics3']) ? 1 : 0;
+$check_ics = "[$check_ics1,$check_ics2,$check_ics3]";
 $droits=array_key_exists("droits",$post)?$post['droits']:null;
 $categorie=trim($post['categorie']);
 $informations=trim($post['informations']);
@@ -67,15 +71,25 @@ for($i=1;$i<=$config['Multisites-nombre'];$i++){
   if(in_array((500+$i),$droits) and !in_array(8,$droits)){
     $droits[]=8;
   }
-  // Multisites, Modification des plannings : si droits de modifier les plannings de l'un dessites (301,302, ...), ajoute le droit 12 pour débloquer les champs administrateur
-  if(in_array((300+$i),$droits) and !in_array(12,$droits)){
-    $droits[]=12;
+  // Modification des plannings Niveau 2 donne les droits Modification des plannings Niveau 1
+  if(in_array((300+$i),$droits) and !in_array((1000+$i),$droits)){
+    $droits[]=1000+$i;
   }
   // Multisites, Gestion des congés : si droits de gérer les congés de l'un des sites (401,402, ...), ajoute le droit 2 pour débloquer les champs administrateur
   if(in_array((400+$i),$droits) and !in_array(2,$droits)){
     $droits[]=2;
   }
 }
+
+// Le droit de gestion des absences (1) donne le droit modifier ses propres absences (6)
+if(in_array(1,$droits) and !in_array(6,$droits)){
+  $droits[]=6;
+}
+// Le droit de gestion des absences (1) donne le droit d'ajouter des absences pour plusieurs personnes (9)
+if(in_array(1,$droits) and !in_array(9,$droits)){
+  $droits[]=9;
+}
+
 $droits[]=99;
 $droits[]=100;
 if($id==1)		// Ajoute config. avancée à l'utilisateur admin.
@@ -114,15 +128,17 @@ switch($action){
     $insert=array("nom"=>$nom,"prenom"=>$prenom,"mail"=>$mail,"statut"=>$statut,"categorie"=>$categorie,"service"=>$service,"heures_hebdo"=>$heuresHebdo,
       "heures_travail"=>$heuresTravail,"arrivee"=>$arrivee,"depart"=>$depart,"login"=>$login,"password"=>$mdp_crypt,"actif"=>$actif,
       "droits"=>$droits,"postes"=>$postes,"temps"=>$temps,"informations"=>$informations,"recup"=>$recup,"sites"=>$sites,
-      "mails_responsables"=>$mailsResponsables,"matricule"=>$matricule,"url_ics"=>$url_ics);
+      "mails_responsables"=>$mailsResponsables,"matricule"=>$matricule,"url_ics"=>$url_ics,"check_ics"=>$check_ics);
     if(in_array("conges",$plugins)){
       include "plugins/conges/ficheAgentValid.php";
     }
     $db=new db();
-    $db->insert2("personnel",$insert);
+    $db->CSRFToken = $CSRFToken;
+    $db->insert("personnel",$insert);
 
     // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
     $p=new personnel();
+    $p->CSRFToken = $CSRFToken;
     $p->updateEDTSamedi($eDTSamedi,$premierLundi,$dernierLundi,$id);
     
 	    
@@ -159,7 +175,7 @@ switch($action){
 
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("personnel",array("password"=>$mdp_crypt),array("id"=>$id));
+    $db->update("personnel",array("password"=>$mdp_crypt),array("id"=>$id));
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/index.php&msg=$msg&msgType=$msgType';</script>";
     break;
 
@@ -167,7 +183,7 @@ switch($action){
     $update=array("nom"=>$nom, "prenom"=>$prenom, "mail"=>$mail, "statut"=>$statut, "categorie"=>$categorie, "service"=>$service, 
       "heures_hebdo"=>$heuresHebdo, "heures_travail"=>$heuresTravail, "actif"=>$actif, "droits"=>$droits, "arrivee"=>$arrivee, 
       "depart"=>$depart, "postes"=>$postes, "informations"=>$informations, "recup"=>$recup, "sites"=>$sites, 
-      "mails_responsables"=>$mailsResponsables, "matricule"=>$matricule, "url_ics"=>$url_ics);
+      "mails_responsables"=>$mailsResponsables, "matricule"=>$matricule, "url_ics"=>$url_ics, "check_ics"=>$check_ics);
     // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
     if(!strstr($actif,"Supprim")){
       $update["supprime"]="0";
@@ -190,22 +206,23 @@ switch($action){
 
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("personnel",$update,array("id"=>$id));
+    $db->update("personnel",$update,array("id"=>$id));
 
 	    //	Mise à jour de la table pl_poste en cas de modification de la date de départ
     $db=new db();		// On met supprime=0 partout pour cet agent
     $db->CSRFToken = $CSRFToken;
-    $db->update2("pl_poste",array("supprime"=>"0"),array("perso_id"=>$id));
+    $db->update("pl_poste",array("supprime"=>"0"),array("perso_id"=>$id));
     if($depart!="0000-00-00" and $depart!=""){
 	    // Si une date de départ est précisée, on met supprime=1 au dela de cette date
       $db=new db();
       $id=$db->escapeString($id);
       $depart=$db->escapeString($depart);
-      $db->query("UPDATE `{$GLOBALS['dbprefix']}pl_poste` SET `supprime`='1' WHERE `perso_id`='$id' AND `date`>'$depart';");
+      $db->query("UPDATE `{$GLOBALS['config']['dbprefix']}pl_poste` SET `supprime`='1' WHERE `perso_id`='$id' AND `date`>'$depart';");
     }
 
     // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
     $p=new personnel();
+    $p->CSRFToken = $CSRFToken;
     $p->updateEDTSamedi($eDTSamedi,$premierLundi,$dernierLundi,$id);
 
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/index.php';</script>";

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.7.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : statistiques/postes.php
 Création : mai 2011
-Dernière modification : 8 février 2017
+Dernière modification : 22 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -106,7 +106,7 @@ $agents_infos=$p->elements;
 // Recherche des absences dans la table absences
 $a=new absences();
 $a->valide=true;
-$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$debutSQL." 00:00:00",$finSQL." 23:59:59");
+$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,$debutSQL." 00:00:00",$finSQL." 23:59:59");
 $absencesDB=$a->elements;
 
 //		--------------		Récupération de la liste des postes pour le menu déroulant		------------------------
@@ -255,6 +255,7 @@ echo "<td><select name='postes[]' multiple='multiple' size='20' onchange='verif_
 if(is_array($postes_list)){
   echo "<option value='Tous'>Tous</option>\n";
   foreach($postes_list as $elem){
+    $selected = null;
     if($postes){
       $selected=in_array($elem['id'],$postes)?"selected='selected'":null;
     }

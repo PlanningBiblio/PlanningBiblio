@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.7.02
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 21 avril 2017
+Dernière modification : 12 octobre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -73,6 +73,11 @@ $(document).ready(function(){
     });
   }
 
+  // Supprime la surbrillance sur les cellules modifiées
+  $('.menuTrigger').bind("DOMSubtreeModified", function(){
+    $('.pl-highlight').removeClass('pl-highlight', {duration:2500});
+  });
+
 });
 
 // Evénements JQuery
@@ -80,8 +85,8 @@ $(function() {
   
   // Déverrouillage du planning
   $("#icon-lock").click(function(){
-    var date=$(this).attr("data-date");
-    var site=$(this).attr("data-site");
+    var date=$('#date').val();
+    var site=$('#site').val();
     var CSRFToken = $("#planning-data").attr("data-CSRFToken");
     
     $.ajax({
@@ -110,8 +115,8 @@ $(function() {
 
   // Validation du planning
   $("#icon-unlock").click(function(){
-    var date=$(this).attr("data-date");
-    var site=$(this).attr("data-site");
+    var date=$('#date').val();
+    var site=$('#site').val();
     var CSRFToken = $("#planning-data").attr("data-CSRFToken");
 
     $.ajax({
@@ -134,7 +139,7 @@ $(function() {
 	}
 	
 	// Envoi des notifications
-	planningNotifications(date, CSRFToken);
+	planningNotifications(date, site, CSRFToken);
 
 	// Masque les lignes vides
 	hideEmptyLines();
@@ -187,7 +192,7 @@ $(function() {
 	    dataType: "json",
 	    url: "planning/poste/ajax.notes.php",
 	    type: "post",
-	    data: {date: $("#date").val(), site: $("#site").val(), text: encodeURIComponent(text2)},
+	    data: {date: $("#date").val(), site: $("#site").val(), text: encodeURIComponent(text2), CSRFToken: $('#CSRFSession').val()},
 	    success: function(result){
 	      if(result.error){
 		CJInfo(result.error,"error");
@@ -252,6 +257,7 @@ $(function() {
 	  // On ajoute le sujet et le message à cet objet et on l'envoi au script PHP pour l'envoi du mail
 	  appelDispoData.sujet=sujet;
 	  appelDispoData.message=message;
+	  appelDispoData.CSRFToken = $('#CSRFSession').val();
 
 	  $( "#pl-appelDispo-form" ).dialog( "close" );
 	  
@@ -300,6 +306,7 @@ $(function() {
       return false;
     }
     cellule=$(this).attr("data-cell");
+    CSRFToken=$("#CSRFSession").val();
     date=$("#date").val();
     debut=$(this).attr("data-start");
     fin=$(this).attr("data-end");
@@ -314,7 +321,7 @@ $(function() {
     $.ajax({
       url: "planning/poste/ajax.menudiv.php",
       datatype: "json",
-      data: {cellule: cellule, date: date, debut: debut, fin: fin, poste: poste, site: site, perso_nom: perso_nom_origine},
+      data: {cellule: cellule, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, poste: poste, site: site, perso_nom: perso_nom_origine, perso_id:perso_id},
       type: "get",
       success: function(result){
 	// si pas de result : on quitte (pas de droit admin)
@@ -335,10 +342,10 @@ $(function() {
         $("#menudiv1").css("width",width);
 
 	// Position horizontale du tableau 1
-	if($(window).width()-e.clientX<$("#menudiv1").width()){
-	  var left1=e.pageX-$("#menudiv1").width();
+	if( $(window).width() +5 -e.clientX < $("#menudiv1").width() ){
+	  var left1 = e.pageX -5 -$("#menudiv1").width();
 	}else{
-	  var left1=e.pageX;
+	  var left1 = e.pageX +5;
 	}
 	$("#menudiv1").css("left",left1);
 	
@@ -401,7 +408,7 @@ $(function() {
     // Affiche les liens pour réafficher les tableaux masqués
     afficheTableauxDiv();
   });
-
+  
 });
 
 
@@ -456,7 +463,7 @@ function afficheTableauxDiv(){
     url: "planning/poste/ajax.hiddenTables.php",
     type: "post",
     dataType: "json",
-    data: {tableId: tableId, hiddenTables: hiddenTables},
+    data: {tableId: tableId, hiddenTables: hiddenTables, CSRFToken: $('#CSRFSession').val()},
     success: function(result){
     },
     error: function(result){
@@ -520,8 +527,15 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin){
  * Refait ensuite l'affichage complet de la cellule. Efface est remplit la cellule avec les infos récupérées du fichier ajax.updateCell.php
  * Les cellules sont identifiables, supprimables et modifiables indépendament des autres
  * Les infos service et statut sont utilisées pour la mise en forme des cellules : utilisation des classes service_ et statut_
+ * 
+ * @param int perso_id : Si 0 = griser la cellule, si 2 = Tout le monde
  */
-function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout){
+function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,griser){
+
+  if(griser==undefined){
+    griser=0;
+  }
+  
   if(site==undefined || site==""){
     site=1;
   }
@@ -538,7 +552,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
     url: "planning/poste/ajax.updateCell.php",
     type: "post",
     dataType: "json",
-    data: {poste: poste, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, perso_id: perso_id, perso_id_origine: perso_id_origine, barrer: barrer, ajouter: ajouter, site: site, tout: tout},
+    data: {poste: poste, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, perso_id: perso_id, perso_id_origine: perso_id_origine, barrer: barrer, ajouter: ajouter, site: site, tout: tout, griser: griser},
     success: function(result){
       $("#td"+cellule).html("");
       
@@ -559,6 +573,16 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
         majPersoOrigine(0);
       }
 
+      // Cellule grisée depuis le menudiv
+      if(result != 'grise'){
+        $("#td"+cellule).removeClass('cellule_grise');
+      }
+
+      if(result == 'grise'){
+        $("#td"+cellule).addClass('cellule_grise');
+        result = new Array();
+      }
+      
       for(i in result){
         // Exemple de cellule
         // <div id='cellule11_0' class='cellule statut_bibas service_permanent' >Christophe C.</div>
@@ -569,7 +593,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
         var perso_id=result[i]["perso_id"];
 
         // classes : A définir en fonction du statut, du service et des absences
-        var classes="cellDiv";
+        var classes="cellDiv pl-highlight cellule-perso-"+perso_id;
         // Absences, suppression
         // absent == 1 : Absence validée ou absence sans gestion des validations
         var absence_valide = false;
@@ -663,7 +687,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout)
 
   // Affiche un message en haut du planning si pas de catégorie A en fin de service 
   verif_categorieA();
-
+  
   /*
   Exemple de valeur pour la variable result :
 
@@ -794,16 +818,35 @@ function majPersoOrigine(perso_id){
   perso_nom_origine=$(".agent_"+perso_id+":eq(0)").text();
 }
 
+/**
+ * @function plMouseOut
+ * @param int id
+ * Actions executées lors que les lignes du menudiv ne sont plus survolées
+ * Retire la surbrillance des agents dans le planning
+ */
+function plMouseOut(id){
+  $('.pl-highlight').removeClass('pl-highlight');
+}
+
+/**
+ * @function plMouseOver
+ * @param int id
+ * Actions executées lors que les lignes du menudiv sont survolées
+ * Met en surbrillance l'agent survolé dans le planning
+ */
+function plMouseOver(id){
+  $('.cellule-perso-'+id).addClass('pl-highlight');
+}
 
 /** @function planningNotifications
  *  @param srting date
  *  Envoie les notifications aux agents concernés par des plannings validés ou modifiés
  */
-function planningNotifications(date, CSRFToken){
+function planningNotifications(date, site, CSRFToken){
   $.ajax({
     url: "planning/poste/ajax.notifications.php",
     dataType: "json",
-    data: {date: date, CSRFToken: CSRFToken},
+    data: {date: date, site: site, CSRFToken: CSRFToken},
     type: "get",
     success: function(result){
     },

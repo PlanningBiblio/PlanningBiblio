@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 10 novembre 2016
+Dernière modification : 7 octobre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -33,7 +33,7 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
 
     foreach($GLOBALS['cellules'] as $elem){
       $title=null;
-
+      
       if($elem['poste']==$poste and $elem['debut']==$debut and $elem['fin']==$fin){
 	//		Affichage du nom et du prénom
 	$nom_affiche=$elem['nom'];
@@ -49,6 +49,11 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
 	}
 
 	$class_tmp=array();
+	
+        // Cellule grisée depuis le menudiv
+        if(isset($elem['grise']) and $elem['grise'] == 1){
+          $class_tmp[]= 'cellule_grise';
+        }
 
 	//		On barre les absents (agents barrés directement dans le plannings, table pl_poste)
 	if($elem['absent'] or $elem['supprime']){
@@ -113,7 +118,7 @@ function cellule_poste($date,$debut,$fin,$colspan,$output,$poste,$site){
     oncontextmenu='cellule={$GLOBALS['idCellule']}'
     data-start='$debut' data-end='$fin' data-situation='$poste' data-cell='{$GLOBALS['idCellule']}' data-perso-id='0'>";
   for($i=0;$i<count($resultats);$i++){
-    $cellule.="<div id='cellule{$GLOBALS['idCellule']}_$i' class='cellDiv {$classe[$i]}' data-perso-id='{$resultats[$i]['perso_id']}'>{$resultats[$i]['text']}</div>";
+    $cellule.="<div id='cellule{$GLOBALS['idCellule']}_$i' class='cellDiv {$classe[$i]} cellule-perso-{$resultats[$i]['perso_id']}' data-perso-id='{$resultats[$i]['perso_id']}'>{$resultats[$i]['text']}</div>";
   }
 
   $cellule.="</td>\n";
@@ -135,7 +140,7 @@ function deja_place($date,$poste){
 function deuxSP($date,$debut,$fin){
   $tab=array(0);
   $db=new db();
-  $db->select("pl_poste","perso_id","date='$date' AND (debut='$fin' OR fin='$debut')","group by perso_id");
+  $db->select("pl_poste","perso_id","absent = '0' AND date='$date' AND (debut='$fin' OR fin='$debut')","group by perso_id");
   if($db->result){
     foreach($db->result as $elem){
       $tab[]=$elem['perso_id'];

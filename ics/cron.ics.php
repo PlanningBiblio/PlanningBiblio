@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.7.05
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : ics/cron.ics.php
 Création : 28 juin 2016
-Dernière modification : 29 octobre 2016
+Dernière modification : 28 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -23,6 +23,8 @@ Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à
 
 $path="/var/www/html/planning";
 
+session_start();
+
 /** $version=$argv[0]; permet d'interdire l'execution de ce script via un navigateur
  *  Le fichier config.php affichera une page "accès interdit si la $version n'existe pas
  *  $version prend la valeur de $argv[0] qui ne peut être fournie que en CLI ($argv[0] = chemin du script appelé en CLI)
@@ -36,7 +38,9 @@ require_once "$path/include/config.php";
 require_once "$path/ics/class.ics.php";
 require_once "$path/personnel/class.personnel.php";
 
-logs("Début d'importation des fichiers ICS","ICS");
+$CSRFToken = CSRFToken();
+
+logs("Début d'importation des fichiers ICS", "ICS", $CSRFToken);
 
 // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
 $tmp_dir=sys_get_temp_dir();
@@ -57,6 +61,11 @@ if(file_exists($lockFile)){
 $inF=fopen($lockFile,"w");
 
 // Recherche les serveurs ICS et les variables openURL
+// Index des tableaux $servers et $var :
+// 1 : Fichiers ICS provenant d'une source externe, renseignés dans la config. : ICS / ICS-Servers1
+// 2 : Fichiers ICS provenant d'une source externe, renseignés dans la config. : ICS / ICS-Servers2
+// 3 : Fichiers ICS provenant d'une source externe, renseignés dans la fiche des agents (url_ics)
+
 $servers=array(1=>null, 2=>null);
 $var=array(1=>null, 2=>null);
 
@@ -99,11 +108,31 @@ foreach($agents as $agent){
         continue;
       }
       
+      $url=false; 
+
       // Selon le paramètre openURL (mail ou login)
       switch($var[$i]){
-        case "login" : $url=str_replace("[{$var[$i]}]",$agent["login"],$servers[$i]); break;
+        case "login" :
+          if(!empty($agent["login"])){
+            $url=str_replace("[{$var[$i]}]",$agent["login"],$servers[$i]);
+          }
+          break;
         case "email" :
-        case "mail" : $url=str_replace("[{$var[$i]}]",$agent["mail"],$servers[$i]); break;
+        case "mail" :
+          if(!empty($agent["mail"])){
+            $url=str_replace("[{$var[$i]}]",$agent["mail"],$servers[$i]);
+          }
+          break;
+        case "matricule" : 
+          if(!empty($agent["matricule"])){
+            $url=str_replace("[{$var[$i]}]",$agent["matricule"],$servers[$i]);
+          }
+          break;
+        case "perso_id" :
+          if(!empty($agent["id"])){
+            $url=str_replace("[{$var[$i]}]",$agent["id"],$servers[$i]);
+          }
+          break;
         default : $url=false; break;
       }
     }
@@ -113,26 +142,48 @@ foreach($agents as $agent){
     }
   
     if(!$url){
-      logs("Impossible de constituer une URL valide pour l'agent #{$agent['id']}","ICS");
+      logs("Agent #{$agent['id']} : Impossible de constituer une URL valide", "ICS", $CSRFToken);
       continue;
     }
     
-    logs("Importation du fichier $url pour l'agent #{$agent['id']}","ICS");
-
-    // TODO : tester si l'url existe 
-    // TODO : voir https://openclassrooms.com/forum/sujet/verifier-si-un-url-existe-70382
+    // Test si le fichier existe
+    if(substr($url,0,1) == '/' and !file_exists($url)){
+      logs("Agent #{$agent['id']} : Le fichier $url n'existe pas", "ICS", $CSRFToken);
+      continue;
+    }
     
-//     if(!file_exists($url)){
-//       logs("Fichier $url non trouvé pour l'agent #{$agent['id']}","ICS");
-//       continue;
-//     }
+    // Test si l'URL existe
+    if(substr($url,0,4) == 'http'){
+      $test = get_headers($url, 1);
+      if(strstr($test[0],'404')){
+        logs("Agent #{$agent['id']} : $url 404 Not Found", "ICS", $CSRFToken);
+        continue;
+      }
+    }
+    
+
+    // Si la case importation correspondant à ce calendrier est décochée, on ne l'importe pas et on purge les éventuels événements déjà importés.
+    if(!$agent["ics_$i"]){
+      $ics=new CJICS();
+      $ics->src=$url;
+      $ics->perso_id=$agent["id"];
+      $ics->table="absences";
+      $ics->logs=true;
+      $ics->CSRFToken = $CSRFToken;
+      $ics->purge();
+      continue;
+    }
+    
+    logs("Agent #{$agent['id']} : Importation du fichier $url", "ICS", $CSRFToken);
 
     $ics=new CJICS();
     $ics->src=$url;
     $ics->perso_id=$agent["id"];
-    $ics->pattern=$config["ICS-Pattern$i"];
+    $ics->pattern = $config["ICS-Pattern$i"];
+    $ics->status = $config["ICS-Status$i"];
     $ics->table="absences";
     $ics->logs=true;
+    $ics->CSRFToken = $CSRFToken;
     $ics->updateTable();
     
   }

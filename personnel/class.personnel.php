@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.9
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 24 mai 2017
+Dernière modification : 26 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -40,7 +40,7 @@ class personnel{
     
     $db=new db();
     $db->CSRFToken = $this->CSRFToken;
-    $db->update2("personnel",$update,"`id` IN ($liste)");
+    $db->update("personnel",$update,"`id` IN ($liste)");
 
     $db=new db();
     $db->select("plugins");
@@ -60,6 +60,7 @@ class personnel{
 
       // recherche des personnes à exclure (congés)
       $p=new planningHebdo();
+      $p->CSRFToken = $this->CSRFToken;
       $p->suppression_agents($liste);
     }
   }
@@ -90,6 +91,12 @@ class personnel{
     foreach($all as $elem){
       $result[$elem['id']]=$elem;
       $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
+
+      // Contrôle des calendriers ICS distants : Oui/Non ?
+      $check_ics = json_decode($result[$elem['id']]['check_ics']);
+      $result[$elem['id']]['ics_1'] = !empty($check_ics[0]);
+      $result[$elem['id']]['ics_2'] = !empty($check_ics[1]);
+      $result[$elem['id']]['ics_3'] = !empty($check_ics[2]);
     }
 
     //	If name, keep only matching results
@@ -99,6 +106,12 @@ class personnel{
 	if(pl_stristr($elem['nom'],$name) or pl_stristr($elem['prenom'],$name)){
 	  $result[$elem['id']]=$elem;
 	  $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
+
+          // Contrôle des calendriers ICS distants : Oui/Non ?
+          $check_ics = json_decode($result[$elem['id']]['check_ics']);
+          $result[$elem['id']]['ics_1'] = !empty($check_ics[0]);
+          $result[$elem['id']]['ics_2'] = !empty($check_ics[1]);
+          $result[$elem['id']]['ics_3'] = !empty($check_ics[2]);
 	}
       }
     }
@@ -169,7 +182,7 @@ class personnel{
       $code = md5(time().rand(100,999));
       $db = new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->update2('personnel', array('code_ics'=>$code), array('id'=>$id));
+      $db->update('personnel', array('code_ics'=>$code), array('id'=>$id));
     }
     return $code;
   }
@@ -203,7 +216,8 @@ class personnel{
     }
 
     $db=new db();
-    $db->delete("edt_samedi","`semaine`>='$debut' AND `semaine`<='$fin' AND `perso_id`='$perso_id'");
+    $db->CSRFToken = $this->CSRFToken;
+    $db->delete("edt_samedi", array('semaine' => ">=$debut", 'semaine' => "<=$fin", 'perso_id' => $perso_id));
 
     if($eDTSamedi and !empty($eDTSamedi)){
       $insert=array();
@@ -211,7 +225,8 @@ class personnel{
 	$insert[]=array("perso_id"=>$perso_id, "semaine"=>$elem);
       }
       $db=new db();
-      $db->insert2("edt_samedi",$insert);
+      $db->CSRFToken = $this->CSRFToken;
+      $db->insert("edt_samedi",$insert);
     }
  }
 

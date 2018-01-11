@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : infos/index.php
 Création : février 2012
-Dernière modification : 10 février 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -49,7 +49,8 @@ if($texte){
 //			----------------	Suppression			-------------------------------//
 if($suppression and $validation){
   $db=new db();
-  $db->delete2("infos",array("id"=>$id));
+  $db->CSRFToken = $CSRFToken;
+  $db->delete("infos",array("id"=>$id));
   echo "<b>L'information a été supprimée</b>";
   echo "<br/><br/><a href='index.php?page=infos/index.php'>Retour</a>\n";
 }
@@ -74,10 +75,11 @@ elseif($validation){		//		Validation
   if($id){
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte),array("id"=>$id));
+    $db->update("infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte),array("id"=>$id));
   }else{
     $db=new db();
-    $db->insert2("infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte));
+    $db->CSRFToken = $CSRFToken;
+    $db->insert("infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte));
   }
 }
 //			---------------		Vérification			------------------------------//

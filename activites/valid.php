@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : activites/valid.php
 Création : mai 2011
-Dernière modification : 10 février 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -33,7 +33,8 @@ if(!$nom or !$action){
 switch($action){
   case "ajout" :	
     $db=new db();
-    $db->insert2("activites",array("nom"=>$nom));
+    $db->CSRFToken = $CSRFToken;
+    $db->insert("activites",array("nom"=>$nom));
     if($db->error){
       $msg=urlencode("L'activité n'a pas pu être ajoutée");
       $msgType="error";
@@ -46,7 +47,7 @@ switch($action){
   case "modif" :
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("activites",array("nom"=>$nom),array("id"=>$id));
+    $db->update("activites",array("nom"=>$nom),array("id"=>$id));
     if($db->error){
       $msg=urlencode("L'activité n'a pas pu être modifiée");
       $msgType="error";

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/postes_cfg/ajax.infos.php
 Création : 20 février 2016
-Dernière modification : 10 février 2017
+Dernière modification : 15 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -43,12 +43,14 @@ if(!$id){
   }
   
   $db=new db();
-  $db->insert2("pl_poste_tab",$insert);
+  $db->CSRFToken = $CSRFToken;
+  $db->insert("pl_poste_tab",$insert);
 
-  // Insertion d'une ligne dans la tablea pl_poste_tab_horaires
+  // Insertion d'une ligne dans la table pl_poste_tab_horaires
   $insert=array("debut"=>"09:00:00", "fin"=>"10:00:00", "tableau"=>"1", "numero"=>$numero); 
   $db=new db();
-  $db->insert2("pl_poste_horaires",$insert);
+  $db->CSRFToken = $CSRFToken;
+  $db->insert("pl_poste_horaires",$insert);
 
   echo json_encode((int) $numero);
 }
@@ -57,15 +59,17 @@ if(!$id){
 else{
   $t=new tableau();
   $t->id=$id;
+  $t->CSRFToken = $CSRFToken;
   $t->setNumbers($nombre);
 
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->update2("pl_poste_tab",array("nom"=>trim($nom)),array("tableau"=>$id));
+  $db->update("pl_poste_tab",array("nom"=>trim($nom)),array("tableau"=>$id));
 
   if($site){
     $db=new db();
-    $db->update("pl_poste_tab","site='$site'","tableau='$id'");
+    $db->CSRFToken = $CSRFToken;
+    $db->update('pl_poste_tab', array('site'=>$site), array('tableau'=>$id));
   }
 
   echo json_encode("OK");

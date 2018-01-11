@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.6.91
+Planning Biblio, Version 2.7.08
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : absences/js/modif.js
 Création : 28 février 2014
-Dernière modification : 2 juin 2017
+Dernière modification : 14 décembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -16,7 +16,19 @@ Fichier regroupant les fonctions JavaScript utiles à l'ajout et la modification
 $(function() {
   
   $(document).ready(function(){
-    absencesAligneSuppression();
+    
+    // Affichage de la liste des agents sélectionnés lors du chargement de la page modif.php
+    if($('.perso_ul').length){
+      affiche_perso_ul();
+    }
+
+    // Affichage des récurrences lors de la modification d'une absence
+    if($('#rrule').val()){
+      var text = recurrenceRRuleText2($('#rrule').val());
+      $('#recurrence-summary').html(text);
+      $('#recurrence-info').show();
+      $('#recurrence-checkbox').attr('checked','checked');
+    }
   });
 
   // Paramétrage de la boite de dialogue permettant la modification des motifs
@@ -40,13 +52,13 @@ $(function() {
 	  var id=$(this).attr("id").replace("li_","");
  	  tab.push(new Array($("#valeur_"+id).text(), $(this).index(), $("#type_"+id+" option:selected").val()));
 	});
-
-	// Transmet le tableau à la page de validation ajax
+        
+        // Transmet le tableau à la page de validation ajax
 	$.ajax({
 	  url: "include/ajax.menus.php",
 	  type: "post",
           dataType: "json",
-	  data: {tab: tab, menu:"abs", option: "type"},
+	  data: {tab: tab, menu:"abs", option: "type", CSRFToken: $('#CSRFSession').val()},
 	  success: function(){
             var current_val = $('#motif').val();
             $('#motif').empty();
@@ -153,6 +165,7 @@ $(function() {
     }
   });
   
+  
   /**
    * Agents multiples
    * Permet d'ajouter plusieurs agents sur une même absence (réunion, formation)
@@ -161,55 +174,635 @@ $(function() {
   $("#perso_ids").change(function(){
     // Variables
     var id=$(this).val();
-
-    // Ajout des champs hidden permettant la validation des agents
-    $(this).before("<input type='hidden' name='perso_ids[]' value='"+id+"' id='hidden"+id+"' class='perso_ids_hidden'/>\n");
-
-    // Création de la liste : balises <ul>
-    if(!$("#perso_ul").length){
-      $(this).before("<ul id='perso_ul'></ul>\n");
+    
+    // Si sélection de "tous" dans le menu déroulant des agents, ajoute tous les id non-sélectionnés
+    if(id == 'tous'){
+      $("#perso_ids > option").each(function(){
+        var id = $(this).val();
+        if(id != 'tous' && id != 0 && $('#hidden'+id).length == 0){
+          change_select_perso_ids(id);
+        }
+      });
+      
+    } else {
+      // Ajoute l'agent choisi dans la liste
+      change_select_perso_ids(id);
     }
-    
-    // Affichage des agents sélectionnés avec tri alphabétique
-    var tab=[];
-    $(".perso_ids_hidden").each(function(){
-      var id=$(this).val();
-      var name=$("#perso_ids option[value='"+id+"']").text();
-      tab.push([name,id]);
-    });
 
-    tab.sort();
-    
-    $(".perso_ids_li").remove();
-    for(i in tab){
-      var li="<li id='li"+tab[i][1]+"' class='perso_ids_li'>"+tab[i][0]+"<span class='perso-drop' style='margin-left:5px;' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-drop'></span></span></li>\n";
-      $("#perso_ul").append(li);
-    }
-    
-
-    absencesAligneSuppression();
-    
-    $("#perso_ids :selected").hide();
-
-    
-    $(this).val(0);
-
+    // Réinitialise le menu déroulant
+    $("#perso_ids").val(0);
     
   });
 
   
   $("#absence-bouton-supprimer").click(function(){
+
+    // Suppression d'une absence récurrente
+    if($('#rrule').val() && !$('#recurrence-modif').val()){
+      $("#recurrence-alert-suppression").dialog('open');
+      return false;
+    }
+    
     if(confirm("Etes vous sûr de vouloir supprimer cette absence ?")){
-      var id=$(this).attr("data-id");
-      document.location.href="index.php?page=absences/delete.php&id="+id;
+      var CSRFToken = $('#CSRFSession').val();
+      var id=$("#absence-bouton-supprimer").attr("data-id");
+      document.location.href="index.php?page=absences/delete.php&id="+id+"&CSRFToken="+CSRFToken;
+    }
+  });
+
+
+
+  /* Récurence */
+
+  // checkbox récurrence
+  $('#recurrence-link').click(function(){
+    if($("#recurrence-form").length){
+      $("#recurrence-form").dialog( "open" );
+    } else if($("#recurrence-form-tmp").length){
+      $("#recurrence-form-tmp").dialog( "open" );
+    }
+  });
+
+  $("#recurrence-checkbox").change(function() {
+    if($("#recurrence-checkbox").prop('checked')){
+      if($('#recurrence-hidden').val()){
+        $('#recurrence-info').show();
+      } else {
+        $("#recurrence-form").dialog( "open" );
+      }
+    } else {
+      $('#recurrence-info').hide();
+    }
+  });
+
+  /* Si champ date de début modifiable */
+  $('.recurrence-start').change(function(){
+    var date = $(this).val();
+    date = date.replace(/(\d*)\/(\d*)\/(\d*)/,"$2/$1/$3");
+    var d = new Date(date);
+    var n = d.getDay();
+    $('.recurrence-by-day').prop('checked',false);
+    $('.recurrence-by-day'+n).prop('checked',true);
+  });
+
+
+  // Formulaire récurrence
+  $("#recurrence-form").dialog({
+    autoOpen: false,
+    height: 480,
+    width: 650,
+    modal: true,
+    buttons: {
+      "Enregistrer": function() {
+
+        $('.recurrence').removeClass( "ui-state-error" );
+
+        rrule = recurrenceRRule();
+
+        $('#recurrence-summary').html(rrule[1]);
+        $('#recurrence-hidden').val(rrule[0]);
+        $('#recurrence-info').show();
+
+        $( this ).dialog( "close" );
+      },
+
+      Annuler: function() {
+        if(!$('#recurrence-hidden').val()){
+          $('#recurrence-checkbox').prop('checked', false);
+        }
+	$( this ).dialog( "close" );
+      }
+    },
+
+    close: function() {
+
+      /** Réinitialise les champs du formulaire de façon à se qu'ils soient cohérents avec les derniers choix validés.
+       *  Utile si le formulaire est modifié sans être validé puis ouvert de nouveau
+       */
+
+      $('.recurrence').removeClass( "ui-state-error" );
+
+      var rrule = $('#recurrence-hidden').val();
+      if(!rrule){
+        return false;
+      }
+
+      var freq = rrule.replace(/.*FREQ=(\w*).*/,"$1");
+      var interval = rrule.indexOf('INTERVAL') > 0 ? rrule.replace(/.*INTERVAL=(\d*).*/,"$1") : 1;
+      var count = rrule.indexOf('COUNT') > 0 ? rrule.replace(/.*COUNT=(\d*).*/,"$1") : null;
+      var until = rrule.indexOf('UNTIL') > 0 ? rrule.replace(/.*UNTIL=(\w*).*/,"$1") : null;
+      var byday = rrule.indexOf('BYDAY') > 0 ;
+
+      if(freq){
+        $('#recurrence-freq').val(freq);
+        $('#recurrence-freq').change();
+      }
+
+      if(freq == 'MONTHLY' && byday){
+        $('#recurrence-repet-mois2').click();
+      }
+
+      if(interval){
+        $('#recurrence-interval').val(interval);
+      }
+
+      $('#recurrence-end1').click();
+
+      if(count){
+        $('#recurrence-end2').click();
+        $('#recurrence-count').val(count);
+      }
+
+      if(until){
+        until = dateICSGMTToFr(until);
+        until = until.substr(0,10);
+
+        $('#recurrence-end3').click();
+        $('#recurrence-until').val(until);
+      }
+    }
+  });
+
+  $('#recurrence-form').on('dialogclose', function(){
+    if(!$('#recurrence-hidden').val()){
+      $('#recurrence-checkbox').prop('checked', false);
+    }
+  });
+
+  $('#recurrence-form').on('dialogopen', function(){
+    rrule = recurrenceRRule();
+    $('#recurrence-summary-form').html(rrule[1]);
+  });
+
+  // Formulaire récurrence pour la modification (temporaire, lorsque sera terminé, utiliser #recurrence-form)
+  // TODO : A continuer
+  $("#recurrence-form-tmp").dialog({
+    autoOpen: false,
+    height: 250,
+    width: 650,
+    modal: true,
+    buttons: {
+      "Fermer": function() {
+        $( this ).dialog( "close" );
+      }
+    }
+  });
+
+  $('#recurrence-freq').change(function(){
+    switch($(this).val()){
+      case 'DAILY' : $('#recurrence-repet-freq').text('jours'); break;
+      case 'WEEKLY' : $('#recurrence-repet-freq').text('semaines'); break;
+      case 'MONTHLY' : $('#recurrence-repet-freq').text('mois'); break;
+    }
+
+    if($(this).val() == 'WEEKLY'){
+      $('#recurrence-tr-semaine').show();
+    } else {
+      $('#recurrence-tr-semaine').hide();
+    }
+
+    if($(this).val() == 'MONTHLY'){
+      $('#recurrence-tr-mois').show();
+    } else {
+      $('#recurrence-tr-mois').hide();
+    }
+
+  });
+
+  $('#absence-start').change(function(){
+    var date = $(this).val();
+
+    // Affichage de la date de début dans le formulaire "récurrence"
+//     $('#recurrence-start').val(date);   /* Si champ date de début modifiable */
+    $('#recurrence-start').text(date);
+
+    // Modification de la récurrence si la date de début a changé
+    var rrule = $('#recurrence-hidden').val();
+
+    // S'il s'agit d'une récurrence hebdomadaire avec le paramètre BYDAY
+    if(rrule.indexOf('WEEKLY') > 0 ){
+      byday = recurrenceWeeklyByDay(date);
+      rrule = rrule.replace(/BYDAY=([A-Z, ]*)/,'BYDAY='+byday);
+      if(rrule.indexOf('BYDAY') < 0 ){
+        rrule += ';BYDAY='+byday;
+      }
+    }
+
+    // S'il s'agit d'une récurrence mensuel avec le paramètre BYMONTHDAY
+    if(rrule.indexOf('MONTHLY') > 0 && rrule.indexOf('BYDAY') < 0 ){
+      var bymonthday = parseInt(date.substr(0,2));
+      rrule = rrule.replace(/BYMONTHDAY=(\d*)/,'BYMONTHDAY='+bymonthday);
+      if(rrule.indexOf('BYMONTHDAY') < 0 ){
+        rrule += ';BYMONTHDAY='+bymonthday;
+      }
+    }
+
+    // S'il s'agit d'une récurrence mensuel avec le paramètre BYDAY
+    if(rrule.indexOf('MONTHLY') > 0 && rrule.indexOf('BYDAY') > 0 ){
+      byday = recurrenceMonthlyByDay(date);
+      rrule = rrule.replace(/BYDAY=([0-9A-Z-, ]*)/,'BYDAY='+byday);
+    }
+
+    var text = recurrenceRRuleText2(rrule);
+
+    $('#recurrence-hidden').val(rrule);
+    $('#recurrence-summary').html(text);
+
+  });
+
+  $('.recurrence-end').change(function(){
+    if($('#recurrence-end2').is(':checked')){
+      $('#recurrence-count').val(30);
+    } else {
+      $('#recurrence-count').val(null);
+    }
+    if($('#recurrence-end3').is(':checked')){
+    } else {
+      $('#recurrence-until').val(null);
     }
   });
   
+  $('#recurrence-count').click(function(){
+    $('#recurrence-end2').click();
+  });
+
+  $('#recurrence-until').click(function(){
+    $('#recurrence-end3').click();
+  });
+
+  // Détecte les modifications du formulaire pour adapter la règle ICS
+  $('.recurrence').change(function(){
+    rrule = recurrenceRRule();
+    $('#recurrence-summary-form').html(rrule[1]);
+  });
+  $('input[type=text].recurrence').keyup(function(){
+    rrule = recurrenceRRule();
+    $('#recurrence-summary-form').html(rrule[1]);
+  });
+
+  // Récurrences : alerte lors de la modification d'une absence récurrente
+  $("#recurrence-alert").dialog({
+    autoOpen: false,
+    height: 220,
+    width: 1000,
+    modal: true,
+    buttons: {
+
+      "Uniquement cet événement": function() {
+        $('#recurrence-modif').val('current');
+        $('#form').submit();
+        $( this ).dialog( "close" );
+      },
+
+      "Cet événement et les suivants": function() {
+        $('#recurrence-modif').val('next');
+        $('#form').submit();
+        $( this ).dialog( "close" );
+      },
+
+      "Tous les événements": function() {
+        $('#recurrence-modif').val('all');
+        $('#form').submit();
+        $( this ).dialog( "close" );
+      },
+
+      Annuler: function() {
+	$( this ).dialog( "close" );
+      }
+    },
+    close: function() {
+      $('.recurrence').removeClass( "ui-state-error" );
+    },
+
+  });
   
+  // Récurrences : alerte lors de la suppression d'une absence récurrente
+  $("#recurrence-alert-suppression").dialog({
+    autoOpen: false,
+    height: 220,
+    width: 1000,
+    modal: true,
+    buttons: {
+
+      "Uniquement cet événement": function() {
+        var CSRFToken = $('#CSRFSession').val();
+        var id=$("#absence-bouton-supprimer").attr("data-id");
+        document.location.href="index.php?page=absences/delete.php&id="+id+"&rec=current&CSRFToken="+CSRFToken;
+        $( this ).dialog( "close" );
+      },
+
+      "Cet événement et les suivants": function() {
+        var CSRFToken = $('#CSRFSession').val();
+        var id=$("#absence-bouton-supprimer").attr("data-id");
+        document.location.href="index.php?page=absences/delete.php&id="+id+"&rec=next&CSRFToken="+CSRFToken;
+        $( this ).dialog( "close" );
+      },
+
+      "Tous les événements": function() {
+        var CSRFToken = $('#CSRFSession').val();
+        var id=$("#absence-bouton-supprimer").attr("data-id");
+        document.location.href="index.php?page=absences/delete.php&id="+id+"&rec=all&CSRFToken="+CSRFToken;
+        $( this ).dialog( "close" );
+      },
+
+      Annuler: function() {
+	$( this ).dialog( "close" );
+      }
+    },
+    close: function() {
+      $('.recurrence').removeClass( "ui-state-error" );
+    },
+
+  });
+
 });
+
+
+/**
+  * Agents multiples
+  * Permet d'ajouter plusieurs agents sur une même absence (réunion, formation)
+  * Lors du changement du <select perso_ids>, ajout du nom des agents dans <ul perso_ul> et leurs id dans <input perso_ids[]>
+  */
+function change_select_perso_ids(id){
+  // Ajout des champs hidden permettant la validation des agents
+  $('#perso_ids').before("<input type='hidden' name='perso_ids[]' value='"+id+"' id='hidden"+id+"' class='perso_ids_hidden'/>\n");
+
+  $("#option"+id).hide();
+  
+  // Affichage des agents sélectionnés avec tri alphabétique
+  affiche_perso_ul();
+}
+
+/**
+ * Affichage des agents sélectionnés avec tri alphabétique
+ */
+function affiche_perso_ul(){
+  var tab=[];
+  $(".perso_ids_hidden").each(function(){
+    var id=$(this).val();
+    var name=$("#perso_ids option[value='"+id+"']").text();
+    tab.push([name,id]);
+  });
+
+  tab.sort(function (a, b) {
+    return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
+  });
+  
+  $(".perso_ids_li").remove();
+  
+  // Réparti l'affichage des agents sélectionnés sur 5 colonnes de 10 (ou plus)
+  var nb = Math.ceil(tab.length / 5);
+  if(nb<10){
+    nb=10;
+  }
+  
+  for(i in tab){
+    var li="<li id='li"+tab[i][1]+"' class='perso_ids_li' data-id='"+tab[i][1]+"'>"+tab[i][0];
+
+    if( $('#admin').val() == 1 || tab[i][1] != $('#login_id').val() ){
+      li+="<span class='perso-drop' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-drop'></span></span>";
+    }
+
+    li+="</li>\n";
+    
+    if(i < nb){
+      $("#perso_ul1").append(li);
+    } else if(i < (2*nb)){
+      $("#perso_ul2").append(li);
+    } else if(i < (3*nb)){
+      $("#perso_ul3").append(li);
+    } else if(i < (4*nb)){
+      $("#perso_ul4").append(li);
+    } else{
+      $("#perso_ul5").append(li);
+    }
+  }
+}
+
+
+function recurrenceMonthlyByDay(date){
+  if(!date){
+    return false;
+  }
+
+  // Day of Week
+  var tab = ['SU','MO','TU','WE','TH','FR','SA'];
+  date = date.replace(/(\d*)\/(\d*)\/(\d*)/,'$2/$1/$3');
+  d = new Date(date);
+  var n = d.getDay();
+  var day = tab[n];
+
+  // Week of month
+  var wom=0;
+  var date = d.getDate();
+  if(date<8){
+    wom = 1;
+  } else if(date<15){
+    wom = 2;
+  } else if (date<22){
+    wom = 3;
+  } else if (date<29){
+    wom = 4;
+  } else {
+    wom = -1;
+  }
+
+  // NOTE : Variante dernière semaine prioritaire sur la 4ème semaine (ex : -1SA au lieu de 4SA)
+  //     var lastDay = daysInMonth(d.getMonth()+1,d.getFullYear());
+  //     if(date > (lastDay - 7)){
+  //       wom = -1;
+  //     }
+
+  byday = wom.toString()+day.toString();
+
+  return byday;
+}
+
+function recurrenceWeeklyByDay(date){
+  var tab = ['SU','MO','TU','WE','TH','FR','SA'];
+  date = date.replace(/(\d*)\/(\d*)\/(\d*)/, '$2/$1/$3');
+  d = new Date(date);
+  var byday = tab[d.getDay()];
+
+  return byday;
+}
+
+
+
+/** function recurrenceRRule
+ * Fabrique la règle de récurrence rrule en fonction des informations saisie dans le formulaire recurrence-form (dialog box)
+ * rrule permettra d'écrire un événement au format ICS
+ */
+function recurrenceRRule(){
+  var byday = null;
+  var bymonthday = null;
+  var end = null;
+  var rrule = null;
+
+  // FREQ
+  freq = $('#recurrence-freq').val();
+
+  // BYDAY / WEEKLY
+  $('.recurrence-by-day:visible:checked').each(function(){
+    byday = (byday == null) ? $(this).val() : byday+=','+$(this).val();
+  });
+
+  // BYMONTHDAY
+  if($('#recurrence-repet-mois1:visible:checked').length > 0){
+    bymonthday = parseInt($('#absence-start').val().substr(0,2));
+  }
+
+  // BYDAY / MONTHLY
+  if($('#recurrence-repet-mois2:visible:checked').length > 0){
+    var date = $('#absence-start').val();
+    byday = recurrenceMonthlyByDay(date);
+  }
+
+  // COUNT && UNTIL
+  switch($('.recurrence-end:checked').val()){
+    // COUNT
+    case 'count' :
+      var count = $('#recurrence-count').val();
+      end = 'COUNT='+count;
+      break;
+
+    // UNTIL
+    case 'until' :
+      var until = $('#recurrence-until').val();
+
+      if(until){
+        // Conversion date ICS sur fuseau GMT
+        untilGMT = dateFrToICSGMT(until+" 23:59:59");
+        end = 'UNTIL='+untilGMT;
+      }
+      break;
+  }
+
+  // INTERVAL
+  interval = $('#recurrence-interval').val() == 1 ? null : $('#recurrence-interval').val();
+
+  // RRULE
+  rrule='FREQ='+freq+';WKST=MO';
+  if(interval){ rrule += ';INTERVAL='+interval; }
+  if(byday){ rrule += ';BYDAY='+byday; }
+  if(bymonthday){ rrule += ';BYMONTHDAY='+bymonthday; }
+  if(end){ rrule += ';'+end; }
+
+
+  // Affichage de la règle, format humain
+  var text = recurrenceRRuleText(freq, interval, byday, bymonthday, until, count);
+
+  return [rrule,text];
+}
+
+/**
+ * @function recurrenceRRuleText
+ * @param string freq : fréquence de la récurrence (DAILY, WEEKLY, MONTHLY)
+ * @param int interval : intervalle
+ * @param string byday : jours pour les récurrences WEEKLY et MONTHLY : MO, TU, 1WE, -1TH, etc.
+ * @param int bymonthday : jour du mois pour les récurrences MONTHLY : 1,2,3, etc.
+ * @param string until : date de fin au format DD/MM/YYYY, fuseau horaire local
+ * @param int count : nombre d'occurences
+ * @return string text : règle de récurrence au format humain (FR)
+ * @description : Ecrit la règle de récurrence au format humain (FR) en fonction des paramètres freq, interval, byday, etc.)
+ */
+function recurrenceRRuleText(freq, interval, byday, bymonthday, until, count){
+  switch(freq){
+    case 'DAILY' :
+      if(interval == 1 || interval == null){
+        var text = 'Tous les jours';
+      } else {
+        var text = 'Tous les '+interval+' jours';
+      }
+
+      break;
+
+    case 'WEEKLY' :
+      if(interval == 1 || interval == null){
+        var text = 'Chaque semaine';
+      } else {
+        var text = 'Toutes les '+interval+' semaines';
+      }
+
+      if(byday){
+        days = byday.replace('MO', ' lundis').replace('TU', ' mardis').replace('WE', ' mercredis').replace('TH', ' jeudis').replace('FR', ' vendredis').replace('SA', ' samedis').replace('SU', ' dimanches');
+        days = days.replace(/(.*),(.[^,]*)$/, "$1 et $2");
+        text += ', les'+days;
+      }
+
+      break;
+
+    case 'MONTHLY' :
+      if(interval == 1 || interval == null){
+        var text = 'Tous les mois';
+      } else {
+        var text = 'Tous les '+interval+' mois';
+      }
+
+      if(byday){
+        if(byday.substring(0,2) == '-1'){
+          var n = 'Le dernier ';
+          var d = byday.substring(2);
+        } else {
+          var n = byday.substring(0,1);
+          var d = byday.substring(1);
+          n = n == 1 ? 'Le 1<sup>er</sup> ' : 'Le '+n+'<sup>&egrave;me</sup> ';
+        }
+        day = d.replace('MO', ' lundi').replace('TU', ' mardi').replace('WE', ' mercredi').replace('TH', ' jeudi').replace('FR', ' vendredi').replace('SA', ' samedi').replace('SU', ' dimanche');
+
+        text = text == 'Tous les mois' ? n+day+' de chaque mois' : n+day+', tous les '+interval+' mois';
+      }
+
+      if(bymonthday){
+        var n = bymonthday;
+        n = n == 1 ? 'Le 1<sup>er</sup>' : 'Le '+n;
+        text = text == 'Tous les mois' ? n+' de chaque mois' : n+', tous les '+interval+' mois';
+      }
+
+      break;
+  }
+
+  if(until){
+    text += " jusqu'au "+until;
+  } else if(count){
+    text += ', '+count+' fois';
+  }
+  return text;
+
+}
+
+/**
+ * @function recurrenceRRuleText2
+ * @param string rrule : règle de récurrence au format ICS
+ * @return string text : règle de récurrence au format humain (FR)
+ * @description : Ecrit la règle de récurrence au format humain (FR) en fonction du paramètre rrule (règle au format ICS).
+ */
+function recurrenceRRuleText2(rrule){
+  var freq = rrule.replace(/.*FREQ=(\w*).*/,"$1");
+  var interval = rrule.indexOf('INTERVAL') > 0 ? rrule.replace(/.*INTERVAL=(\d*).*/,"$1") : 1;
+  var count = rrule.indexOf('COUNT') > 0 ? rrule.replace(/.*COUNT=(\d*).*/,"$1") : null;
+  var until = rrule.indexOf('UNTIL') > 0 ? rrule.replace(/.*UNTIL=(\w*).*/,"$1") : null;
+  var byday = rrule.indexOf('BYDAY') > 0  ? rrule.replace(/.*BYDAY=([0-9A-Z-,]*).*/,"$1") : null;
+  var bymonthday = rrule.indexOf('BYMONTHDAY') > 0 ? rrule.replace(/.*BYMONTHDAY=(\d*).*/,"$1") : null;
+
+  console.log(byday);
+  if(until){
+    until = dateICSGMTToFr(until);
+    until = until.substr(0,10);
+  }
+
+  var text = recurrenceRRuleText(freq, interval, byday, bymonthday, until, count);
+  return text;
+}
 
 // Vérification des formulaires (ajouter et modifier)
 function verif_absences(ctrl_form){
+  
+  // Ceci évite d'avoir 2 fois les popup de vérification lors de la modification d'absences récurrentes. Le popup n'est affiché qu'une seule fois, avant le choix des occurrences à modifier
+  if($('#recurrence-modif').val()){
+    return true;
+  }
+  
   if(!verif_form(ctrl_form))
     return false;
 
@@ -263,22 +856,52 @@ function verif_absences(ctrl_form){
     async: false,
     success: function(result){
       result=JSON.parse(result);
-      
+
+      // Contrôle si d'autres absences sont enregistrées
+      autresAbsences = new Array();
+
       // Pour chaque agent
       for(i in result){
-	// Contrôle s'il y a une autre absence enregistrée
-	if(result[i]["autreAbsence"]){
-	  if(perso_ids.length>1){
-	    var message="Une absence est déjà enregistrée pour l'agent "+result[i]["nom"]+" entre le "+result[i]["autreAbsence"]+"<br/>Veuillez modifier la liste des agents, les dates ou les horaires.";
-	  }else{
-	    var message="Une absence est déjà enregistrée pour l'agent "+result[i]["nom"]+" entre le "+result[i]["autreAbsence"]+"<br/>Veuillez modifier les dates ou les horaires.";
-	  }
-	  CJInfo(message,"error");
-	  retour=false;
-	}
-	
-	// Contrôle s'il apparaît dans des plannings validés
-	else if(result[i]["planning"]){
+        // Contrôle si d'autres absences sont enregistrées
+        if(result[i]["autresAbsences"].length){
+          autresAbsences.push(result[i]);
+        }
+      }
+      
+      if(autresAbsences.length == 1){
+        if(autresAbsences[0]["autresAbsences"].length == 1){
+          var message = "Une absence est déjà enregistrée pour l'agent "+autresAbsences[0]["nom"]+" "+autresAbsences[0]["autresAbsences"][0]+"\nVoulez-vous continuer ?";
+        } else {
+          var message = "Des absences sont déjà enregistrées pour l'agent "+autresAbsences[0]["nom"]+" :\n";
+          for(i in autresAbsences[0]["autresAbsences"]){
+            message += "- "+autresAbsences[0]["autresAbsences"][i]+"\n";
+          }
+          message += "Voulez-vous continuer ?";
+        }
+      } else if(autresAbsences.length > 1){
+        var message = "Des absences sont déjà enregistrées pour les agents suivants :\n";
+        for(i in autresAbsences){
+          if(autresAbsences[i]["autresAbsences"].length == 1){
+            message += "- "+autresAbsences[i]["nom"]+" "+autresAbsences[i]["autresAbsences"][0]+"\n";
+          } else {
+            message += "- "+autresAbsences[i]["nom"]+"\n";
+            for(j in autresAbsences[i]["autresAbsences"]){
+               message += "-- "+autresAbsences[i]["autresAbsences"][j]+"\n";
+            }
+          }
+        }
+        message += "Voulez-vous continuer ?";
+      }
+      if(autresAbsences.length > 0){
+        if(!confirm(message)){
+          retour=false;
+        }
+      }
+
+      // Contrôle si les agents apparaissent dans des plannings validés
+      // Pour chaque agent
+      for(i in result){
+	if(result[i]["planning"]){
 	  if(admin==1){
 	    if(!confirm("L'agent "+result[i]["nom"]+" apparaît dans des plannings validés : "+result[i]["planning"]+"\nVoulez-vous continuer ?")){
 	      retour=false;
@@ -310,24 +933,17 @@ function verif_absences(ctrl_form){
       retour=false;
     }
   });
-  return retour;
-}
-
-
-// Alignement des icônes de suppression
-function absencesAligneSuppression(){
-  if($(".perso-drop").length){
-    var left=0;
-    $(".perso-drop").each(function(){
-      if($(this).position().left>left){
-	left=$(this).position().left;
-      }
-    });
-    
-    $(".perso-drop").css("position","absolute");
-    $(".perso-drop").css("left",left);
+  
+  // Modification d'une absence récurrente
+  if($('#rrule').val() && !$('#recurrence-modif').val() && retour){
+    $("#recurrence-alert").dialog('open');
+    return false;
+  } else {
+    return retour;
   }
 }
+
+
 /**
  * supprimeAgent
  * supprime les agents de la sélection lors de l'ajout ou modification d'une absence
@@ -336,5 +952,5 @@ function supprimeAgent(id){
   $("#option"+id).show();
   $("#li"+id).remove();
   $("#hidden"+id).remove();
-  absencesAligneSuppression();
+  affiche_perso_ul();
 }

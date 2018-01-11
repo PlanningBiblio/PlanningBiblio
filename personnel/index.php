@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 25 avril 2017
+Dernière modification : 21 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Chritophe Le Guennec <christophe.leguennec@u-pem.fr>
 
@@ -21,9 +21,10 @@ require_once "class.personnel.php";
 // Initialisation des variables
 $actif=filter_input(INPUT_GET,"actif",FILTER_SANITIZE_STRING);
 
-if(!$actif and array_key_exists('perso_actif',$_SESSION)){
-  $actif=$_SESSION['perso_actif'];
+if(!$actif){
+  $actif = isset($_SESSION['perso_actif']) ? $_SESSION['perso_actif'] : 'Actif';
 }
+
 $_SESSION['perso_actif']=$actif;
 
 ?>
@@ -63,7 +64,8 @@ if(in_array(21,$droits)){
 //		Suppression des agents dont la date de départ est passée		//
 $tab=array(0);
 $db=new db();
-$db->update("personnel","`supprime`='1', `actif`='Supprim&eacute;'","`depart`<CURDATE() AND `depart`<>'0000-00-00' and `actif` NOT LIKE 'Supprim%'");
+$db->CSRFToken = $CSRFSession;
+$db->update('personnel', array('supprime'=>'1', 'actif'=>'Supprim&eacute;'), "`depart`<CURDATE() AND `depart`<>'0000-00-00' and `actif` NOT LIKE 'Supprim%'");
 
 echo "<script type='text/JavaScript'>document.form2.actif.value='$actif';</script>";
 

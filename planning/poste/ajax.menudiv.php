@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.7
+Planning Biblio, Version 2.7.06
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 12 mai 2017
+Dernière modification : 30 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
@@ -37,8 +37,10 @@ $site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
 $date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
 $debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_time"));
 $fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_time"));
+$perso_id=filter_input(INPUT_GET,"perso_id", FILTER_SANITIZE_NUMBER_INT);
 $perso_nom=filter_input(INPUT_GET,"perso_nom", FILTER_SANITIZE_STRING);
 $poste=filter_input(INPUT_GET,"poste",FILTER_SANITIZE_NUMBER_INT);
+$CSRFToken=trim(filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING));
 
 $login_id=$_SESSION['login_id'];
 $tab_exclus=array(0);
@@ -73,7 +75,7 @@ else{
   $db_admin=new db();			// Vérifions si l'utilisateur à les droits de modifier les plannings
   $db_admin->select2("personnel","droits",array("id"=>$login_id));
   $droits=json_decode(html_entity_decode($db_admin->result[0]['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
-  if(!in_array(12,$droits)){
+  if(!in_array((300+$site),$droits) and !in_array((1000+$site),$droits)){
     exit;
   }
 }
@@ -151,7 +153,6 @@ if($db->result){
     if($elem['valide'] > 0 or $config['Absences-validation'] == '0'){
       $tab_exclus[]=$elem['perso_id'];
       $absents[]=$elem['perso_id'];
-      continue; // Garder le continue ici pour que les absences validés prennent le dessus sur les absences non validées
     }elseif($config['Absences-non-validees']){
       $absences_non_validees[] = $elem['perso_id'];
     }
@@ -195,7 +196,6 @@ if($config['PlanningHebdo']){
 
 if($db->result and $verif)
 foreach($db->result as $elem){
-  $indispo=false;
 
   // Récupération du planning de présence
   $temps=array();
@@ -241,43 +241,27 @@ foreach($db->result as $elem){
     }
   }
 
-  if(!empty($temps) and array_key_exists($jour,$temps)){
-    $heures=$temps[$jour];
-    if($heures[0] and $heures[1] and !$heures[3]){ 	// Pour les agents ne travaillant que le matin
-      $heures[3]=$heures[1];				// Fin de journée = fin de matinée
-    }
-    if($heures[2] and $heures[3] and !$heures[0]){ 	// Pour les agents ne travaillant que l'après midi
-      $heures[0]=$heures[2];				// Début de journée = début d'après midi
-    }
-    if($heures[0]>$debut)			// Si l'agent commence le travail après l'heure de début du poste
-      $indispo=true;
-    if($heures[3]<$fin)				// Si l'agent fini le travail avant l'heure de fin du poste
-      $indispo=true;
-    if($heures[1]<$fin and $heures[2]>$debut) 	// Pdt la pause déjeuner : Si le debut de sa pause est avant l'heure de fin du poste et la fin de sa pause après le début du poste
-      $indispo=true;
-  }
-  else{
-    $indispo=true;
-  }
+  $dispo = calculSiPresent($debut, $fin, $temps, $jour);
 
-  if($indispo){
+  if(!$dispo){
     $motifExclusion[$elem['id']][]="<span title='Les horaires de l&apos;agent ne lui permettent pas d&apos;occuper ce poste'>Horaires</span>";
   }
 
   // Multisites : Contrôle si l'agent est prévu sur ce site si les agents sont autorisés à travailler sur plusieurs sites
+  $heures = isset($temps[$jour]) ? $temps[$jour] : false;
+
   if($config['Multisites-nombre']>1){
-    if(!isset($heures)){
-      $indispo=true;
+    if(!is_array($heures) or !array_key_exists(4,$heures)){
+      $dispo = false;
     }
-    elseif(!array_key_exists(4,$heures)){
-      $indispo=true;
-    }
+
     elseif($heures[4] and $heures[4]!=$site){
-      $indispo=true;
+      $dispo = false;
       $motifExclusion[$elem['id']][]="<span title='L&apos;agent est pr&eacute;vu sur un autre site'>Autre site</span>";
     }
   }
-  if($indispo){
+  
+  if(!$dispo){
     $tab_indispo[]=$elem['id'];
   }
 }
@@ -296,17 +280,23 @@ $finSQL=$db->escapeString($fin);
 $posteSQL=$db->escapeString($poste);
 $siteSQL=$db->escapeString($site);
 
-$db->select("pl_poste",null,"`poste`='$posteSQL' AND `debut`='$debutSQL' AND `fin`='$finSQL' AND `date`='$dateSQL' AND `site`='$siteSQL' AND `perso_id`>0");
+// Cellule grisée par depuis le menudiv
+$cellule_grise = false;
 
-$nbAgents=$db->nb;
+$db->select("pl_poste",null,"`poste`='$posteSQL' AND `debut`='$debutSQL' AND `fin`='$finSQL' AND `date`='$dateSQL' AND `site`='$siteSQL'");
+
+$nbAgents=0;
 if($db->result){
   // On exclus les agents qui sont déjà dans cette cellule (important s'il s'agit d'un poste non-bloquant)
   foreach($db->result as $elem){
-    $tab_exclus[] = $elem['perso_id'];
+    if($elem['perso_id'] > 0){
+      $tab_exclus[] = $elem['perso_id'];
+      $nbAgents ++;
+    }
+    $cellule_grise = $elem['grise'] == 1 ? true : $cellule_grise;
   }
 }
 $exclus=join($tab_exclus,",");
-
 
 //--------------		Liste du personnel disponible			---------------//
 
@@ -451,7 +441,7 @@ if($services and $config['ClasseParService']){
   $i=0;
   foreach($services as $elem){
     $class="service_".strtolower(removeAccents(str_replace(" ","_",$elem['service'])));
-    if(array_key_exists($elem['service'],$newtab)){
+    if(array_key_exists($elem['service'],$newtab) and !$cellule_grise){
       $tableaux[0].="<tr class='$class menudiv-tr'>\n";
       $tableaux[0].="<td colspan='2' onmouseover='groupe_tab($i,\"$tab_agent\",1,$(this));'>";
       $tableaux[0].=$elem['service'];
@@ -462,16 +452,17 @@ if($services and $config['ClasseParService']){
 }
 
 //		-----------		Affichage de la liste des agents s'ils ne sont pas classés par services		----------//
-if(!$config['ClasseParService']){
+if(!$config['ClasseParService'] and !$cellule_grise){
   $hide=false;
   $p=new planning();
   $p->site=$site;
+  $p->CSRFToken = $CSRFToken;
   $p->menudivAfficheAgents($poste,$agents_dispo,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion,$absences_non_validees);
   $tableaux[0].=$p->menudiv;
 }
 
 //		-----------		Affichage des agents indisponibles		----------//
-if(array_key_exists("Autres",$newtab) and $config['agentsIndispo']){
+if(array_key_exists("Autres",$newtab) and $config['agentsIndispo'] and !$cellule_grise){
   $i=count($services);
   $groupe_tab_hide=$config['ClasseParService']?1:0;
   $tableaux[0].="<tr class='menudiv-tr'>\n";
@@ -481,19 +472,19 @@ if(array_key_exists("Autres",$newtab) and $config['agentsIndispo']){
 }
 
 //		-----------		Affichage de l'utilisateur "tout le monde"		----------//
-if($config['toutlemonde']){
+if($config['toutlemonde'] and !$cellule_grise){
   $tableaux[0].="<tr onmouseover='groupe_tab_hide();' class='menudiv-tr' >\n";
   $tableaux[0].="<td colspan='2' style='color:black;' ";
   $tableaux[0].="onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",2,0,0,\"$site\");'>Tout le monde</td></tr>\n";
 }
 //~ -----				Affiche de la "Case vide"  (suppression)	--------------------------//
-if($nbAgents>0){
+if($nbAgents>0 and !$cellule_grise){
   $groupe_tab=$config['ClasseParService']?"groupe_tab(\"vide\",\"$tab_agent\",1,$(this));":null;
   $tableaux[0].="<tr onmouseover='$groupe_tab groupe_tab_hide();' class='menudiv-tr'>";
-  $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,0,0,\"$site\");'>";
+  $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,0,0,\"$site\");' onmouseover='plMouseOver($perso_id);' onmouseout='plMouseOut($perso_id);'>";
   $tableaux[0].="Supprimer $perso_nom</td><tr>\n";
   $tableaux[0].="<tr onmouseover='$groupe_tab groupe_tab_hide();' class='menudiv-tr'>";
-  $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,1,0,\"$site\");' class='red'>";
+  $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,1,0,\"$site\");' onmouseover='plMouseOver($perso_id);' onmouseout='plMouseOut($perso_id);' class='red'>";
   $tableaux[0].="Barrer $perso_nom</td></tr>";
 
   // Ne pas afficher les lignes suivantes si un seul agent dans la cellule
@@ -508,7 +499,7 @@ if($nbAgents>0){
 }
 
 // Ajout du lien pour les appels à disponibilité
-if($config['Planning-AppelDispo']){
+if($config['Planning-AppelDispo'] and !$cellule_grise){
   // Consulte la base de données pour savoir si un mail a déjà été envoyé
   $db=new db();
   $db->select2("appel_dispo",null,array("site"=>$site,"poste"=>$poste,"date"=>$date,"debut"=>$debut,"fin"=>$fin),"ORDER BY `timestamp` desc");
@@ -540,6 +531,21 @@ if($config['Planning-AppelDispo']){
   $tableaux[0].="</td><tr>\n";
 }
 
+// Griser la cellule
+$droit_griser_cellule = 900 + $site;
+if(in_array($droit_griser_cellule, $droits)){
+  $tableaux[0].="<tr onmouseover='groupe_tab_hide();' class='menudiv-tr'>";
+  if($cellule_grise == false){
+    $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,0,0,\"$site\",1,1);'>\n";
+    $tableaux[0].="Griser la cellule\n";
+  }else{
+    $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,0,0,\"$site\",1,-1);'>\n";
+    $tableaux[0].="D&eacute;griser la cellule\n";
+  }
+
+  $tableaux[0].="</td><tr>\n";
+}
+
 $tableaux[0].="</table>\n";
 
 //	--------------		Affichage des agents			----------------//
@@ -550,6 +556,7 @@ if($agents_tous and $config['ClasseParService']){
   $hide=true;
   $p=new planning();
   $p->site=$site;
+  $p->CSRFToken = $CSRFToken;
   $p->menudivAfficheAgents($poste,$agents_tous,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion,$absences_non_validees);
   $tableaux[1].=$p->menudiv;
 }
@@ -559,6 +566,7 @@ if($autres_agents and !$config['ClasseParService'] and $config['agentsIndispo'])
   $hide=true;
   $p=new planning();
   $p->site=$site;
+  $p->CSRFToken = $CSRFToken;
   $p->menudivAfficheAgents($poste,$autres_agents,$date,$debut,$fin,$deja,$stat,$nbAgents,$sr_init,$hide,$deuxSP,$motifExclusion,$absences_non_validees);
   $tableaux[1].=$p->menudiv;
 }

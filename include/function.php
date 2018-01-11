@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.9
+Planning Biblio, Version 2.7.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 21 mai 2017
+Dernière modification : 22 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -32,9 +32,9 @@ class datePl{
   public $position = null;
   
   function __construct($date){
-    $yyyy=substr($date,0,4);
-    $mm=substr($date,5,2);
-    $dd=substr($date,8,2);
+    $yyyy = (int) substr($date,0,4);
+    $mm = (int) substr($date,5,2);
+    $dd = (int) substr($date,8,2);
     $this->semaine=date("W", mktime(0, 0, 0, $mm, $dd, $yyyy));
     $this->sem=($this->semaine%2);
     $this->sam="semaine";
@@ -263,7 +263,7 @@ function authSQL($login,$password){
 * pour gagner du temps lors des appels suivants.
 * Fonction utilisée par planning::menudivAfficheAgents et dans le script statistiques/temps.php
 */
-function calculHeuresSP($date){
+function calculHeuresSP($date,$CSRFToken){
   $config=$GLOBALS['config'];
   $version=$GLOBALS['version'];
 
@@ -377,9 +377,11 @@ function calculHeuresSP($date){
       
       // Enregistrement des horaires dans la base de données
       $db=new db();
-      $db->delete2("heures_sp",array("semaine"=>$j1));
+      $db->CSRFToken = $CSRFToken;
+      $db->delete("heures_sp",array("semaine"=>$j1));
       $db=new db();
-      $db->insert2("heures_sp",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heuresSP)));
+      $db->CSRFToken = $CSRFToken;
+      $db->insert("heures_sp",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heuresSP)));
     }
 
   // Recherche des heures de SP sans le module planningHebdo
@@ -449,14 +451,110 @@ function calculHeuresSP($date){
 
       // Enregistrement des horaires dans la base de données
       $db=new db();
-      $db->delete2("heures_sp",array("semaine"=>$j1));
+      $db->CSRFToken = $CSRFToken;
+      $db->delete("heures_sp",array("semaine"=>$j1));
       $db=new db();
-      $db->insert2("heures_sp",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heuresSP)));
+      $db->CSRFToken = $CSRFToken;
+      $db->insert("heures_sp",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heuresSP)));
     }
   }
   return (array) $heuresSP;
 }
 
+/** @function calculPresence
+ *  @param array $temps : tableau emploi du temps de l'agent
+ *  @param int $jour : jour de la semaine de 0 à 6 puis de 7 à 13 en semaines paires/impaires, etc.
+ *  La fonction retourne un tableau contenant les créneaux horaires de présence
+ */
+function calculPresence($temps, $jour){
+
+  // $pause2 = 1 si la gestion de la 2ème pause est activée, 0 sinon
+  $pause2 = $GLOBALS['config']['PlanningHebdo-Pause2'];
+  
+  
+  /**
+   * Tableau affichant les différentes possibilités
+   * NB : le paramètre heures[4] est utilisé pour l'affectation du site. Il n'est pas utile ici
+   * NB : la 2ème pause n'est pas implémentée depuis le début, c'est pourquoi les paramètres heures[5] et heures[6] viennent s'intercaler avant $heure[3]
+   *
+   *    Heure 0     Heure 1     Heure 2     Heure 5     Heure 6     Heure 3
+   * 1                           [ tableau vide]
+   * 2    |-----------|           |-----------|           |-----------|   
+   * 3    |-----------|           |-----------------------------------|   
+   * 4    |-----------|                                   |-----------|
+   * 5    |-----------|
+   * 6    |-----------------------------------|           |-----------|   
+   * 7    |-----------------------------------|
+   * 8    |-----------------------------------------------------------|
+   * 9                            |-----------|
+   * 10                           |-----------------------------------|
+   */
+  
+
+  // Cas N°1
+  // Si le tableau $temps est vide ou invalide ou si le jour recherché n'est pas dans le tableau, on retourne false
+  if(!is_array($temps) or empty($temps) or !array_key_exists($jour,$temps)) {
+    return array();
+  }
+  
+  // Constitution des groupes de plages horaires
+  $tab = array();
+  $heures=$temps[$jour];
+  
+  // 1er créneau : cas N° 2; 3; 4; 5
+  if (!empty($heures[0]) and !empty($heures[1])) {
+    $tab[] = array($heures[0], $heures[1]);
+  
+  // 1er créneau fusionné avec le 2nd : cas N° 6 et 7
+  } elseif ($pause2 and !empty($heures[0]) and !empty($heures[5])) {
+    $tab[] = array($heures[0], $heures[5]);
+  
+  // Journée complète : cas N° 8
+  } elseif (!empty($heures[0]) and !empty($heures[3])) {
+    $tab[] = array($heures[0], $heures[3]);
+  }
+  
+  // 2ème créneau : cas N° 1 et 9
+  if ($pause2 and !empty($heures[2]) and !empty($heures[5])) {
+    $tab[] = array($heures[2], $heures[5]);
+    
+  // 2ème créneau fusionné au 3ème : cas N° 3 et 10
+  } elseif (!empty($heures[2]) and !empty($heures[3])) {
+    $tab[] = array($heures[2], $heures[3]);
+  }
+  
+  // 3ème créneau : cas N° 2; 4; 6
+  if ($pause2 and !empty($heures[6]) and !empty($heures[3])) {
+    $tab[] = array($heures[6], $heures[3]);
+  }
+  
+  return $tab;
+}
+
+/** @function calculSiPresent
+ *  @param string $debut : heure de début, format 00:00:00
+ *  @param string $fin : heure de fin, format 00:00:00
+ *  @param array $temps : tableau emploi du temps de l'agent
+ *  @param int $jour : jour de la semaine de 0 à 6 puis de 7 à 13 en semaines paires/impaires, etc.
+ *  La fonction retourne true si l'agent est disponible pendant toute, false s'il la plage est en dehors de ses horaires de travail ou s'il est en pause
+ */
+function calculSiPresent($debut, $fin, $temps, $jour){
+
+  $tab = calculPresence($temps, $jour);
+  
+  // Confrontation du créneau de service public aux tableaux
+  foreach($tab as $elem){
+    if (($elem[0] <= $debut) and ($elem[1] >= $fin)) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+
+/** @fonctions de comparaison
+ */
 
 function cmp_0($a,$b){
   $a[0] > $b[0];
@@ -542,6 +640,20 @@ function cmp_nom_prenom_debut_fin($a,$b){
   return strtolower($a['nom']) > strtolower($b['nom']);
 }
 
+function cmp_ordre($a, $b){
+  return $a['ordre'] > $b['ordre'];
+}
+
+function cmp_perso_debut_fin($a, $b){
+  if($a['perso_id'] == $b['perso_id']){
+    if($a['debut'] == $b['debut']){
+      return $a['fin'] > $b['fin'];
+    }
+    return $a['debut'] > $b['debut'];
+  }
+  return $a['perso_id'] > $b['perso_id'];
+}
+
 function cmp_prenom_nom($a,$b){
   $a['nom']=html_entity_decode($a['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
   $b['nom']=html_entity_decode($b['nom'],ENT_QUOTES|ENT_IGNORE,"utf-8");
@@ -600,6 +712,33 @@ function createURL($page=null){
   // url complete
   $url.=$folder."/index.php?page=".$page;
   return $url;
+}
+
+
+// Génération d'un CSRF Token
+function CSRFToken(){
+
+  if(!empty($_SESSION['oups']['CSRFToken'])){
+    return $_SESSION['oups']['CSRFToken'];
+  }
+  
+  // PHP 7
+  if(phpversion() >= 7){
+    $CSRFToken = bin2hex(random_bytes(32));
+  }
+
+  // PHP 5.3+
+  else{
+    if (function_exists('mcrypt_create_iv')) {
+      $CSRFToken = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
+    } else {
+      $CSRFToken = bin2hex(openssl_random_pseudo_bytes(32));
+    }
+  }
+
+  $_SESSION['oups']['CSRFToken'] = $CSRFToken;
+
+  return $CSRFToken;
 }
 
 function date_time($date){
@@ -733,6 +872,13 @@ function decrypt($str){
   if(isset($GLOBALS['config']['secret']) and $GLOBALS['config']['secret']){
     $key = $GLOBALS['config']['secret'];
   }
+
+  // Vérifie si la chaîne est encodée en base64
+  if ( base64_encode(base64_decode($str, true)) === $str){
+    // si oui, base64_decode
+    $str = base64_decode($str);
+  }
+  
   $str = mcrypt_decrypt(MCRYPT_3DES, $key, $str, MCRYPT_MODE_ECB);
 
   $block = mcrypt_get_block_size('tripledes', 'ecb');
@@ -749,7 +895,8 @@ function encrypt($str){
   $pad = $block - (strlen($str) % $block);
   $str .= str_repeat(chr($pad), $pad);
 
-  return mcrypt_encrypt(MCRYPT_3DES, $key, $str, MCRYPT_MODE_ECB);
+  $str = mcrypt_encrypt(MCRYPT_3DES, $key, $str, MCRYPT_MODE_ECB);
+  return base64_encode($str);
 }
 
 function gen_trivial_password($len = 6){
@@ -830,6 +977,29 @@ function heure4($heure,$return0=false){
   return $heure;
 }
 
+/** function heures
+ * Reçoit une chaine contenant 2 heures au format 0h00, 00h00, 0h, 00h, séparées par un - et retourne un tableau contenant 2 chaines au format 00:00:00
+ * Ex : 8h30-10h --> array('08:30:00','10:00:00')
+ * @param string $h, 2 heures séparées par un -
+ * @return array $tmp, tableau contenant les 2 heures formatées, retourne false si $h est vide après nettoyage
+ */
+function heures($h){
+  $h = preg_replace('/[^0123456789hH-]/', '', $h);
+  $h = str_replace(array('h','H'), ':', $h);
+  if(empty($h)){
+    return false;
+  }
+
+  $tmp = explode('-', $h);
+  $tmp0 = explode(':', $tmp[0]);
+  $tmp1 = explode(':', $tmp[1]);
+  
+  $tmp[0] = sprintf("%02d:%02d:00", $tmp0[0], $tmp0[1]);
+  $tmp[1] = sprintf("%02d:%02d:00", $tmp1[0], $tmp1[1]);
+  
+  return $tmp;
+}
+
 /**
  * html_entity_decode_latin1
  * Utiliée pour l'export des statistiques (statistiques/export.php)
@@ -849,7 +1019,7 @@ function html_entity_decode_latin1($n){
  * @param int config IPBlocker-TimeChecked : période en minutes pendant laquelle on recherche les échecs
  * @param int config IPBlocker-Attempts : nombre d'échecs autorisés
  */
-function loginFailed($login){
+function loginFailed($login, $CSRFToken){
 	// Recherche le nombre de login failed lors des $seconds dernières secondes
 	$seconds=$GLOBALS['config']['IPBlocker-TimeChecked']*60;
 	$attempts=$GLOBALS['config']['IPBlocker-Attempts'];
@@ -863,7 +1033,8 @@ function loginFailed($login){
 	// Insertion dans la base de données
 	$insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>$status);
 	$db=new db();
-	$db->insert2("ip_blocker",$insert);
+	$db->CSRFToken = $CSRFToken;
+	$db->insert("ip_blocker",$insert);
 }
 
 /**
@@ -888,15 +1059,17 @@ function loginFailedWait(){
  * Log le login et l'adresse IP du client dans la table ip_blocker pour informations
  * @param string $login : login saisi par l'utilisateur
  */
-function loginSuccess($login){
-	$insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>"success");
-	$db=new db();
-	$db->insert2("ip_blocker",$insert);
+function loginSuccess($login, $CSRFToken){
+  $insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>"success");
+  $db=new db();
+  $db->CSRFToken = $CSRFToken;
+  $db->insert("ip_blocker",$insert);
 }
 
-function logs($msg,$program=null){
+function logs($msg, $program=null, $CSRFToken){
   $db=new db();
-  $db->insert2("log",array("msg"=>$msg,"program"=>$program));
+  $db->CSRFToken = $CSRFToken;
+  $db->insert("log",array("msg"=>$msg,"program"=>$program));
 }
 
 
@@ -957,6 +1130,81 @@ function removeAccents($string){
   return htmlentities($string,ENT_QUOTES|ENT_IGNORE,"UTF-8");
 }
 
+function recurrenceRRuleText($rrule){
+  $freq       = preg_replace('/.*FREQ=(\w*).*/', "$1", $rrule);
+  $interval   = strpos($rrule, 'INTERVAL')      ? preg_replace('/.*INTERVAL=(\d*).*/', "$1", $rrule)      : 1;
+  $count      = strpos($rrule, 'COUNT')         ? preg_replace('/.*COUNT=(\d*).*/', "$1", $rrule)         : null;
+  $until      = strpos($rrule, 'UNTIL')         ? preg_replace('/.*UNTIL=(\w*).*/', "$1", $rrule)         : null;
+  $byday      = strpos($rrule, 'BYDAY')         ? preg_replace('/.*BYDAY=([0-9A-Z-,]*).*/', "$1", $rrule) : null;
+  $bymonthday = strpos($rrule, 'BYMONTHDAY')    ? preg_replace('/.*BYMONTHDAY=(\d*).*/', "$1", $rrule)    : null;
+
+  // UNTIL : Conversion au format d/m/Y sur le fuseau horaire local
+  if($until){
+    $date = new DateTime($until, new DateTimeZone('GMT'));
+    $date->setTimezone(new DateTimeZone(date_default_timezone_get()));
+    $until = $date->format('d/m/Y');
+  }
+
+  switch($freq){
+    case 'DAILY' :
+      if($interval == 1 or $interval == null){
+        $text = 'Tous les jours';
+      } else {
+        $text = "Tous les $interval jours";
+      }
+      break;
+
+    case 'WEEKLY' :
+      if($interval == 1 or $interval == null){
+        $text = 'Chaque semaine';
+      } else {
+        $text = "Toutes les $interval semaines";
+      }
+
+      if($byday){
+        $days = str_replace(array('MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'), array(' lundis', ' mardis', ' mercredis', ' jeudis', ' vendredis', ' samedis', ' dimanches'), $byday);
+        $days = preg_replace('/(.*),(.[^,]*)$/', "$1 et $2", $days);
+        $text .= ", les$days";
+      }
+      break;
+
+    case 'MONTHLY' :
+      if($interval == 1 or $interval == null){
+        $text = 'Tous les mois';
+      } else {
+        $text = "Tous les $interval mois";
+      }
+
+      if($byday){
+        if(substr($byday, 0, 2) == '-1'){
+          $n = 'Le dernier ';
+          $d = substr($byday, 2);
+        } else {
+          $n = substr($byday, 0, 1);
+          $d = substr($byday, 1);
+          $n = $n == 1 ? 'Le 1<sup>er</sup> ' : "Le $n<sup>&egrave;me</sup> ";
+        }
+        $day = str_replace(array('MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'), array(' lundi', ' mardi', ' mercredi', ' jeudi', ' vendredi', ' samedi', ' dimanche'), $d);
+
+        $text = $text == 'Tous les mois' ? $n.$day.' de chaque mois' : $n.$day.', tous les '.$interval.' mois';
+      }
+
+      if($bymonthday){
+        $n = $bymonthday;
+        $n = $n == 1 ? 'Le 1<sup>er</sup>' : 'Le '+$n;
+        $text = $text == 'Tous les mois' ? "$n de chaque mois" : "$n, tous les $interval mois";
+      }
+      break;
+  }
+
+  if($until){
+    $text .= " jusqu'au $until";
+  } else if($count){
+    $text .= ", $count fois";
+  }
+  return $text;
+}
+
 /**
  * Fonction selectHeure
  * Utilisée pour afficher les menus déroulants des heures pour les absences, congés, éditions des tableaux.
@@ -1010,14 +1258,14 @@ function selectTemps($jour,$i,$periodes=null,$class=null){
   }
   $select.="<option value=''>&nbsp;</option>\n";
 
-  for($j=7;$j<23;$j++){
+  for($j=7;$j<=23;$j++){
     $hre = sprintf("%'.02d", $j);
     
     for($k=0; $k<60; $k=$k+$granularite){
       $min = sprintf("%'.02d", $k);
       
       $selected = null;
-      if($temps and array_key_exists($jour,$temps)){
+      if( isset($temps[$jour][$i]) ){
         $selected = $temps[$jour][$i] == "$hre:$min:00" ? "selected='selected'" : null;
       }
       

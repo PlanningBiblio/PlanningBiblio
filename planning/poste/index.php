@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 12 mai 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -29,6 +29,7 @@ echo "<div id='planning'>\n";
 include "fonctions.php";
 
 // Initialisation des variables
+$CSRFToken=filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING);
 $groupe=filter_input(INPUT_GET,"groupe",FILTER_SANITIZE_NUMBER_INT);
 $site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
 $tableau=filter_input(INPUT_GET,"tableau",FILTER_SANITIZE_NUMBER_INT);
@@ -38,7 +39,6 @@ $date=filter_input(INPUT_GET,"date",FILTER_SANITIZE_STRING);
 $date=filter_var($date,FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
 
 $verrou=false;
-
 //		------------------		DATE		-----------------------//
 if(!$date and array_key_exists('PLdate',$_SESSION)){
   $date=$_SESSION['PLdate'];
@@ -79,7 +79,7 @@ if(!$site and array_key_exists("site",$_SESSION['oups'])){
 if(!$site){
   $p=new personnel();
   $p->fetchById($_SESSION['login_id']);
-  $site=$p->elements[0]['sites'][0];
+  $site = isset($p->elements[0]['sites'][0]) ? $p->elements[0]['sites'][0] : null;
 }
 $site=$site?$site:1;
 $_SESSION['oups']['site']=$site;
@@ -91,15 +91,9 @@ $pasDeDonneesSemaine=$db->result?false:true;
 global $idCellule;
 $idCellule=0;
 //		------------------		Vérification des droits de modification (Autorisation)	------------------//
-$autorisation=false;
-if($config['Multisites-nombre']>1){
-  if(in_array((300+$site),$droits)){
-    $autorisation=true;
-  }
-}
-else{
-  $autorisation=in_array(12,$droits)?true:false;
-}
+$autorisationN1 = (in_array((300+$site),$droits) or in_array((1000+$site),$droits));
+$autorisationN2 = in_array((300+$site),$droits);
+$autorisationNotes = (in_array((300+$site),$droits) or in_array((800+$site),$droits));
 
 //		-----------------		FIN Vérification des droits de modification (Autorisation)	----------//
 
@@ -261,29 +255,29 @@ if($db->result){
 //	-----------------------		FIN Récupération des postes	-----------------------------//
 
 // Vérifie si Catégorie A en fin de service si admin et config CatAFinDeService
-if($autorisation and $config['CatAFinDeService']){
+if($autorisationN1 and $config['CatAFinDeService']){
   echo "<div id='pl-verif-categorie-A'></div>\n";
 }
 
 echo "<div id='validation'>\n";
-if($autorisation){
+if($autorisationN1){
   $display1=$verrou?null:"display:none";
   $display2=$verrou?"display:none":null;
 
   echo "<div class='pl-validation' style='$display1'><u>Validation</u><br/>$perso2 $date_validation2 $heure_validation2</div>\n";
-  echo "<span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' data-date='$date' data-site='$site' title='Déverrouiller le planning' style='$display1'></span></a>\n";
-  echo "<span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' data-date='$date' data-site='$site' title='Verrouiller le planning' style='$display2'></span></a>\n";
+  echo "<span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning' style='$display1'></span></a>\n";
+  echo "<span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning' style='$display2'></span></a>\n";
 }
 
-if($autorisation){
-  echo "<a href='javascript:popup(\"planning/poste/enregistrer.php&date=$date&site=$site\",500,240);' title='Enregistrer comme modèle'><span class='pl-icon pl-icon-save'></span></a>";
+if($autorisationN2){
+  echo "<a href='javascript:popup(\"planning/poste/enregistrer.php&date=$date&site=$site&CSRFToken=$CSRFSession\",500,240);' title='Enregistrer comme modèle'><span class='pl-icon pl-icon-save'></span></a>";
   if(!$verrou){
     echo "<a href='javascript:popup(\"planning/poste/importer.php&date=$date&site=$site\",500,270);' title='Importer un modèle'><span class='pl-icon pl-icon-open'></span></a>";
     echo "<a href='javascript:popup(\"planning/poste/supprimer.php&date=$date&site=$site\",500,200);' title='Supprimer le planning'><span class='pl-icon pl-icon-drop'></span></a>";
   }
 }
 if($verrou){
-  if(!$autorisation){
+  if(!$autorisationN1){
     echo "<div class='pl-validation'><u>Validation</u><br/>$perso2 $date_validation2 $heure_validation2</div>\n";
   }
   echo "<a href='javascript:print();' title='Imprimer le planning'><span class='pl-icon pl-icon-printer'></span></a>\n";
@@ -303,7 +297,7 @@ echo "</table></div>\n";
 $db=new db();
 $db->select2("pl_poste_tab_affect","tableau",array("date"=>$date, "site"=>$site));
 
-if(!$db->result[0]['tableau'] and !$tableau and !$groupe and $autorisation){
+if(!$db->result[0]['tableau'] and !$tableau and !$groupe and $autorisationN2){
   $db=new db();
   $db->select2("pl_poste_tab","*",array("supprime"=>null),"order by `nom` DESC");
   if($db->result){
@@ -311,6 +305,7 @@ if(!$db->result[0]['tableau'] and !$tableau and !$groupe and $autorisation){
     <div id='choix_tableaux'>
     <b>Choisissez un tableau pour le $dateAlpha</b><br/>
     <form name='form' action='index.php' method='get'>
+    <input type='hidden' name='CSRFToken' value='$CSRFSession' />
     <input type='hidden' name='page' value='planning/poste/index.php' />
     <input type='hidden' name='site' value='$site' />
     <table>
@@ -334,6 +329,7 @@ EOD;
       echo <<<EOD
       <br/><br/><b>OU un groupe de tableaux pour la semaine $semaine</b><br/>
       <form name='form' action='index.php' method='get'>
+      <input type='hidden' name='CSRFToken' value='$CSRFSession' />
       <input type='hidden' name='page' value='planning/poste/index.php' />
       <input type='hidden' name='site' value='$site' />
       <table>
@@ -358,7 +354,7 @@ EOD;
   include "include/footer.php";
   exit;
 }
-elseif($groupe and $autorisation){	//	Si Groupe en argument
+elseif($groupe and $autorisationN2){	//	Si Groupe en argument
   $t=new tableau();
   $t->fetchGroup($groupe);
   $groupeTab=$t->elements;
@@ -374,25 +370,29 @@ elseif($groupe and $autorisation){	//	Si Groupe en argument
   }
   foreach($tmp as $elem){
     $db=new db();
-    $db->delete2("pl_poste_tab_affect",array("date"=>$elem[0], "site"=>$site));
+    $db->CSRFToken = $CSRFToken;
+    $db->delete("pl_poste_tab_affect",array("date"=>$elem[0], "site"=>$site));
     $db=new db();
-    $db->insert2("pl_poste_tab_affect",array("date"=>$elem[0], "tableau"=>$elem[1], "site"=>$site));
+    $db->CSRFToken = $CSRFToken;
+    $db->insert("pl_poste_tab_affect",array("date"=>$elem[0], "tableau"=>$elem[1], "site"=>$site));
   }
   $tab=$tmp[$date][1];
 
 }
-elseif($tableau and $autorisation){	//	Si tableau en argument
+elseif($tableau and $autorisationN2){	//	Si tableau en argument
   $tab=$tableau;
   $db=new db();
-  $db->delete2("pl_poste_tab_affect", array("date"=>$date, "site"=>$site));
+  $db->CSRFToken = $CSRFToken;
+  $db->delete("pl_poste_tab_affect", array("date"=>$date, "site"=>$site));
   $db=new db();
-  $db->insert2("pl_poste_tab_affect",array("date"=>$date, "tableau"=>$tab, "site"=>$site));
+  $db->CSRFToken = $CSRFToken;
+  $db->insert("pl_poste_tab_affect",array("date"=>$date, "tableau"=>$tab, "site"=>$site));
 }
 else{
   $tab=$db->result[0]['tableau'];
 }
 if(!$tab){
-  echo "Le planning n'est pas validé.\n";
+  echo "Le planning n'est pas pr&ecirc;t.\n";
   include "include/footer.php";
   exit;
 }
@@ -400,13 +400,13 @@ if(!$tab){
 //-------------------------------	FIN Choix du tableau	-----------------------------//	
 //-------------------------------	Vérification si le planning semaine fixe est validé	------------------//
 
-// Div planning-data : permet de transmettre les valeurs $verrou et $autorisation à la fonction affichant le menudiv
+// Div planning-data : permet de transmettre les valeurs $verrou et $autorisationN1 à la fonction affichant le menudiv
 // data-validation pour les fonctions refresh_poste et verrouillage du planning
 // Lignes vides pour l'affichage ou non des lignes vides au chargement de la page et après validation (selon la config)
 
 $lignesVides=$config['Planning-lignesVides'];
 
-echo "<div id='planning-data' data-verrou='$verrou' data-autorisation='$autorisation' data-validation='$validation2' 
+echo "<div id='planning-data' data-verrou='$verrou' data-autorisation='$autorisationN1' data-validation='$validation2' 
   data-lignesVides='$lignesVides' data-sr-debut='{$config['Planning-SR-debut']}' data-sr-fin='{$config['Planning-SR-fin']}'
   data-CSRFToken='$CSRFSession' style='display:none;'>&nbsp;</div>\n";
 
@@ -415,7 +415,7 @@ if($verrou){
   echo "<script type='text/JavaScript'>refresh_poste();</script>";
 }
 
-if(!$verrou and !$autorisation){
+if(!$verrou and !$autorisationN1){
   echo "<br/><br/><font color='red'>Le planning du $dateFr n'est pas validé !</font><br/>\n";
   include "include/footer.php";
   exit;
@@ -424,8 +424,8 @@ else{
   //--------------	Recherche des infos cellules	------------//
   // Toutes les infos seront stockées danx un tableau et utilisées par les fonctions cellules_postes
   $db=new db();
-  $db->selectInnerJoin(array("pl_poste","perso_id"),array("personnel","id"),
-    array("perso_id","debut","fin","poste","absent","supprime"),
+  $db->selectLeftJoin(array("pl_poste","perso_id"),array("personnel","id"),
+    array("perso_id","debut","fin","poste","absent","supprime","grise"),
     array("nom","prenom","statut","service","postes"),
     array("date"=>$date, "site"=>$site),
     array(),
@@ -439,7 +439,7 @@ else{
   // Le tableau $absences sera utilisé par la fonction cellule_poste pour barrer les absents dans le plannings et pour afficher les absents en bas du planning
   $a=new absences();
   $a->valide=false;
-  $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date,$date);
+  $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,$date,$date);
   $absences=$a->elements;
   global $absences;
   
@@ -462,7 +462,7 @@ else{
   // Affichage des absences en bas du planning : absences concernant le site choisi
   $a=new absences();
   $a->valide=false;
-  $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date,$date,array($site));
+  $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,$date,$date,array($site));
   $absences_planning = $a->elements;
 
   // Informations sur les congés
@@ -653,7 +653,7 @@ else{
 EOD;
 
   // Notes : Modifications
-  if($autorisation or in_array((800+$site),$droits)){
+  if($autorisationNotes){
     echo <<<EOD
     <div id='pl-notes-div2' class='noprint'>
     <input type='button' class='ui-button noprint' id='pl-notes-button' value='Ajouter un commentaire' />
@@ -698,7 +698,7 @@ EOD;
     }
 
     switch($config['Absences-planning']){
-      case "simple" :
+      case "1" :
 	if(!empty($absences_planning)){
 	  echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
 	  echo "<table class='tableauStandard'>\n";
@@ -744,7 +744,7 @@ EOD;
 	}
 	break;
 
-      case "détaillé" :
+      case "2" :
 	if(!empty($absences_planning)){
 	  echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
 	  echo "<table id='tablePlanningAbsences' class='CJDataTable' data-sort='[[0],[1]]'><thead>\n";
@@ -776,7 +776,7 @@ EOD;
 	}
 	break;
 
-      case "absents et présents" :
+      case "3" :
 	// Sélection des agents présents
 	$heures=null;
 	$presents=array();

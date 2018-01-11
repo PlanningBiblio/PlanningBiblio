@@ -3,7 +3,7 @@
 Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/postes_cfg/ajax.suppression.php
 Création : 4 novembre 2014
@@ -33,5 +33,5 @@ $db->query("UPDATE `{$dbprefix}pl_poste_tab_grp` SET `supprime`='$today' WHERE `
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->update2("pl_poste_tab",$set,$where);
+$db->update("pl_poste_tab",$set,$where);
 ?>

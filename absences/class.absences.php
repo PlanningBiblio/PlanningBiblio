@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.9
+Planning Biblio, Version 2.7.09
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 21 mai 2017
+Dernière modification : 19 décembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -18,30 +18,292 @@ Page appelée par les autres pages du dossier absences
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 if(!isset($version)){
-  include_once "../include/accessDenied.php";
+  require_once __DIR__."/../include/accessDenied.php";
 }
+
+require_once __DIR__."/../ics/class.ics.php";
+require_once __DIR__."/../personnel/class.personnel.php";
+
 
 class absences{
   public $agents_supprimes=array(0);
   public $CSRFToken=null;
+  public $commentaires=null;
   public $debut=null;
+  public $dtstamp=null;
   public $edt=array();
   public $elements=array();
   public $error=false;
+  public $exdate = null;
   public $fin=null;
   public $groupe=null;
   public $heures=0;
   public $heures2=null;
+  public $hre_debut = null;
+  public $hre_fin = null;
   public $ignoreFermeture=false;
   public $minutes=0;
+  public $motif = null;
+  public $motif_autre = null;
   public $perso_id=null;
   public $perso_ids=array();
   public $recipients=array();
+  public $rrule = null;
+  public $validation_n1 = null;
+  public $validation_n2 = null;
   public $valide=false;
+  public $valide_n1 = null;
+  public $valide_n2 = null;
+  public $uid=null;
+  public $unique=false;
+  public $update_db = false;
 
   public function __construct(){
   }
 
+  
+  /** @function add()
+   * Enregistre une nouvelle absence dans la base de données, créé les fichiers ICS pour les absences récurrentes (appel de la methode ics_add_event), envoie les notifications
+   * @params : tous les éléments nécessaires à la création d'une absence
+   * @return : message d'erreur ou de succès de l'enregistrement et de l'envoi des notifications
+   */
+  public function add(){
+    $debut = $this->debut;
+    $fin = $this->fin;
+    $hre_debut = $this->hre_debut;
+    $hre_fin = $this->hre_fin;
+    $perso_ids = $this->perso_ids;
+    $commentaires = $this->commentaires;
+    $motif = $this->motif;
+    $motif_autre = $this->motif_autre;
+
+    $fin = $fin ? $fin : $debut;
+
+    $debutSQL = dateSQL($debut);
+    $finSQL = dateSQL($fin);
+
+    // Validation
+    // Validation, valeurs par défaut
+    $valide_n1 = 0;
+    $valide_n2 = 0;
+    $validation_n1 = "0000-00-00 00:00:00";
+    $validation_n2 = "0000-00-00 00:00:00";
+    $validationText = "Demand&eacute;e";
+
+    // Si le workflow est désactivé, absence directement validée
+    if(!$GLOBALS['config']['Absences-validation']){
+      $valide_n2 = 1;
+      $validation_n2 = date("Y-m-d H:i:s");
+      $validationText = null;
+    }
+    // Si workflow, validation en fonction de $this->valide
+    else{
+      switch($this->valide){
+        case 1 :
+          $valide_n2 = $_SESSION['login_id'];
+          $validation_n2 = date("Y-m-d H:i:s");
+          $validationText = "Valid&eacute;e";
+          break;
+          
+        case -1 :
+          $valide_n2 = $_SESSION['login_id']*-1;
+          $validation_n2 = date("Y-m-d H:i:s");
+          $validationText = "Refus&eacute;e";
+          break;
+          
+        case 2 :
+          $valide_n1 = $_SESSION['login_id'];
+          $validation_n1 = date("Y-m-d H:i:s");
+          $validationText = "Accept&eacute;e (en attente de validation hi&eacute;rarchique)";
+          break;
+          
+        case -2 :
+          $valide_n1 = $_SESSION['login_id']*-1;
+          $validation_n1 = date("Y-m-d H:i:s");
+          $validationText = "Refus&eacute;e (en attente de validation hi&eacute;rarchique)";
+          break;
+      }
+    }
+
+    // Choix des destinataires des notifications selon le degré de validation
+    $notifications = 1;
+    if($GLOBALS['config']['Absences-validation'] and $valide_n1 != 0){
+      $notifications = 3;
+    }
+    elseif($GLOBALS['config']['Absences-validation'] and $valide_n2 != 0){
+      $notifications=4;
+    }
+
+    // Formatage des dates/heures de début/fin pour les requêtes SQL
+    $debut_sql = $debutSQL.' '.$hre_debut;
+    $fin_sql = $finSQL.' '.$hre_fin;
+
+    // Si erreur d'envoi de mail, affichage de l'erreur (Initialisation des variables)
+    $msg2=null;
+    $msg2_type=null;
+
+    // ID du groupe (permet de regrouper les informations pour affichage en une seule ligne et modification du groupe)
+    $groupe = (count($perso_ids) > 1) ? time().'-'.rand(100,999) : null;
+
+    // On définie le dtstamp avant la boucle, sinon il différe selon les agents, ce qui est problématique pour retrouver les événéments des membres d'un groupe pour les modifications car le DTSTAMP est intégré dans l'UID
+    $dtstamp = gmdate('Ymd\THis\Z');
+
+    // Pour chaque agents
+    foreach($perso_ids as $perso_id){
+      // Enregistrement des récurrences
+      // Les événements récurrents sont enregistrés dans un fichier ICS puis importés dans la base de données
+      // La méthode absences::ics_add_event se charge de créer le fichier et d'enregistrer les infos dans la base de données
+      if($this->rrule){
+        // Création du fichier ICS
+        $a = new absences();
+        $a->CSRFToken = $this->CSRFToken;
+        $a->dtstamp = $dtstamp;
+        $a->exdate = $this->exdate;
+        $a->perso_id = $perso_id;
+        $a->commentaires = $commentaires;
+        $a->debut = $debut;
+        $a->fin = $fin;
+        $a->hre_debut = $hre_debut;
+        $a->hre_fin = $hre_fin;
+        $a->groupe = $groupe;
+        $a->motif = $motif;
+        $a->motif_autre = $motif_autre;
+        $a->rrule = $this->rrule;
+        $a->valide_n1 = $valide_n1;
+        $a->valide_n2 = $valide_n2;
+        $a->validation_n1 = $validation_n1;
+        $a->validation_n2 = $validation_n2;
+        $a->ics_add_event();
+
+      // Les événements sans récurrence sont enregistrés directement dans la base de données
+      } else {
+        // Ajout de l'absence dans la table 'absence'
+        $insert = array("perso_id"=>$perso_id, "debut"=>$debut_sql, "fin"=>$fin_sql, "motif"=>$motif, "motif_autre"=>$motif_autre, "commentaires"=>$commentaires, 
+        "demande"=>date("Y-m-d H:i:s"), "pj1"=>$this->pj1, "pj2"=>$this->pj2, "so"=>$this->so, "groupe"=>$groupe);
+
+        if($valide_n1 != 0){
+          $insert["valide_n1"] = $valide_n1;
+          $insert["validation_n1"] = $validation_n1;
+        }
+        else{
+          $insert["valide"]=$valide_n2;
+          $insert["validation"]=$validation_n2;
+        }
+
+        $db = new db();
+        $db->CSRFToken = $this->CSRFToken;
+        $db->insert("absences", $insert);
+      }
+
+      // Recherche du responsables pour l'envoi de notifications
+      $a = new absences();
+      $a->getResponsables($debutSQL,$finSQL,$perso_id);
+      $responsables = $a->responsables;
+
+      // Informations sur l'agent
+      $p = new personnel();
+      $p->fetchById($perso_id);
+      $nom = $p->elements[0]['nom'];
+      $prenom = $p->elements[0]['prenom'];
+      $mail = $p->elements[0]['mail'];
+      $mails_responsables = $p->elements[0]['mails_responsables'];
+
+      // Choix des destinataires des notifications selon la configuration
+      $a = new absences();
+      $a->getRecipients($notifications,$responsables,$mail,$mails_responsables);
+      $destinataires = $a->recipients;
+      
+
+      // Récupération de l'ID de l'absence enregistrée pour la création du lien dans le mail
+      $info = array(array("name"=>"MAX(id)", "as"=>"id"));
+      $where = array("debut"=>$debut_sql, "fin"=>$fin_sql, "perso_id"=>$perso_id);
+      $db = new db();
+      $db->select2("absences", $info, $where);
+      if($db->result){
+        $id = $db->result[0]['id'];
+      }
+
+      // Recherche des plages de SP concernées pour ajouter cette information dans le mail.
+      $a = new absences();
+      $a->debut = $debut_sql;
+      $a->fin = $fin_sql;
+      $a->perso_ids = $perso_ids;
+      $a->infoPlannings();
+      $infosPlanning = $a->message;
+
+      // N'envoie la notification que s'il s'agit d'un ajout simple, et non s'il s'agit d'un ajout qui suit la modification d'une récurrrence (exception ou modification des événements suivants sans modifier les précédents)
+      // Si $this->uid : Ajout simple. Si !$this->uid : Modification, donc pas d'envoi de notification à ce niveau (envoyée via modif2.php)
+      if(!$this->uid){
+        // Titre différent si titre personnalisé (config) ou si validation ou non des absences (config)
+        if($GLOBALS['config']['Absences-notifications-titre']){
+          $titre = $GLOBALS['config']['Absences-notifications-titre'];
+        }else{
+          $titre = $GLOBALS['config']['Absences-validation'] ? "Nouvelle demande d absence" : "Nouvelle absence";
+        }
+
+        // Si message personnalisé (config), celui-ci est inséré
+        if($GLOBALS['config']['Absences-notifications-message']){
+          $message = "<b><u>{$GLOBALS['config']['Absences-notifications-message']}</u></b><br/>";
+        }else{
+          $message = "<b><u>$titre</u></b> : ";
+        }
+
+        // On complète le message avec les informations de l'absence
+        $message .= "<ul><li>Agent : <strong>$prenom $nom</strong></li>";
+        $message .= "<li>Début : <strong>$debut";
+        if($hre_debut != "00:00:00")
+          $message .= " ".heure3($hre_debut);
+        $message .= "</strong></li><li>Fin : <strong>$fin";
+        if($hre_fin != "23:59:59")
+          $message .= " ".heure3($hre_fin);
+        $message .= "</strong></li>";
+
+        if($this->rrule){
+          $rrule = recurrenceRRuleText($this->rrule);
+          $message .= "<li>Récurrence : $rrule</li>";
+        }
+
+        $message .= "<li>Motif : $motif";
+        if($motif_autre){
+          $message .= " / $motif_autre";
+        }
+        $message .= "</li>";
+
+        if($GLOBALS['config']['Absences-validation']){
+          $message .= "<li>Validation : $validationText</li>\n";
+        }
+
+        if($commentaires){
+          $message .= "<li>Commentaire: <br/>$commentaires</li>";
+        }
+
+        $message .= "</ul>";
+
+        // Ajout des informations sur les plannings
+        $message .= $infosPlanning;
+        
+        // Ajout du lien permettant de rebondir sur l'absence
+        $url = createURL("absences/modif.php&id=$id");
+        $message .= "<p>Lien vers la demande d&apos;absence :<br/><a href='$url'>$url</a></p>";
+
+        // Envoi du mail
+        $m = new CJMail();
+        $m->subject = $titre;
+        $m->message = $message;
+        $m->to = $destinataires;
+        $m->send();
+
+        // Si erreur d'envoi de mail
+        if($m->error){
+          $msg2 .= "<li>".$m->error_CJInfo."</li>";
+          $msg2_type = "error";
+        }
+      }
+      
+    }
+    $this->msg2 = $msg2;
+    $this->msg2_type = $msg2_type;
+  }
 
   /**
   * @function calculHeuresAbsences
@@ -53,7 +315,6 @@ class absences{
     $config=$GLOBALS['config'];
     $version=$GLOBALS['version'];
     require_once __DIR__."/../include/horaires.php";
-    require_once __DIR__."/../personnel/class.personnel.php";
     require_once __DIR__."/../planningHebdo/class.planningHebdo.php";
 
     $d=new datePl($date);
@@ -91,7 +352,8 @@ class absences{
       $absences=array();
       $a =new absences();
       $a->valide=true;
-      $a->fetch(null,null,null,$j1,$j7,null);
+      $a->unique=true;
+      $a->fetch(null,null,$j1,$j7,null);
       if($a->elements and !empty($a->elements)){
 	$absences=$a->elements;
       }
@@ -153,9 +415,11 @@ class absences{
 
       // Enregistrement des heures dans la base de données
       $db=new db();
-      $db->delete2("heures_absences",array("semaine"=>$j1));
+      $db->CSRFToken = $this->CSRFToken;
+      $db->delete("heures_absences",array("semaine"=>$j1));
       $db=new db();
-      $db->insert2("heures_absences",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heures)));
+      $db->CSRFToken = $this->CSRFToken;
+      $db->insert("heures_absences",array("semaine"=>$j1,"update_time"=>time(),"heures"=>json_encode($heures)));
     }
 
     return (array) $heures;
@@ -202,6 +466,11 @@ class absences{
 	}
       }
 
+      $debutAbsence=$current==$debut?$hre_debut:"00:00:00";
+      $finAbsence=$current==$fin?$hre_fin:"23:59:59";
+      $debutAbsence=strtotime($debutAbsence);
+      $finAbsence=strtotime($finAbsence);
+      
       // On consulte le planning de présence de l'agent
       // On ne calcule pas les heures si le module planningHebdo n'est pas activé, le calcul serait faux si les emplois du temps avaient changé
       if(!$GLOBALS['config']['PlanningHebdo']){
@@ -211,71 +480,39 @@ class absences{
       }
 
       // On consulte le planning de présence de l'agent
-      if($GLOBALS['config']['PlanningHebdo']){
-        $version=$GLOBALS['version'];
-        require_once __DIR__."/../planningHebdo/class.planningHebdo.php";
+      $version=$GLOBALS['version'];
+      require_once __DIR__."/../planningHebdo/class.planningHebdo.php";
 
-	$p=new planningHebdo();
-	$p->perso_id=$perso_id;
-	$p->debut=$current;
-	$p->fin=$current;
-	$p->valide=true;
-	$p->fetch();
-	// Si le planning n'est pas validé pour l'une des dates, on retourne un message d'erreur et on arrête le calcul
-	if(empty($p->elements)){
-	  $this->error=true;
-	  $this->message="Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
-	  return false;
-	}
-
-	// Sinon, on calcule les heures d'absence
-	$d=new datePl($current);
-	$semaine=$d->semaine3;
-	$jour=$d->position?$d->position:7;
-	$jour=$jour+(($semaine-1)*7)-1;
-	$temps=null;
-	if(array_key_exists($jour,$p->elements[0]['temps'])){
-	  $temps=$p->elements[0]['temps'][$jour];
-	}
+      $p=new planningHebdo();
+      $p->perso_id=$perso_id;
+      $p->debut=$current;
+      $p->fin=$current;
+      $p->valide=true;
+      $p->fetch();
+      // Si le planning n'est pas validé pour l'une des dates, on retourne un message d'erreur et on arrête le calcul
+      if(empty($p->elements)){
+        $this->error=true;
+        $this->message="Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
+        return false;
       }
 
-      if($temps){
-	$temps[0]=strtotime($temps[0]);
-	$temps[1]=strtotime($temps[1]);
-	$temps[2]=strtotime($temps[2]);
-	$temps[3]=strtotime($temps[3]);
-	$debutAbsence=$current==$debut?$hre_debut:"00:00:00";
-	$finAbsence=$current==$fin?$hre_fin:"23:59:59";
-	$debutAbsence=strtotime($debutAbsence);
-	$finAbsence=strtotime($finAbsence);
+      // Sinon, on calcule les heures d'absence
+      $d=new datePl($current);
+      $semaine=$d->semaine3;
+      $jour=$d->position?$d->position:7;
+      $jour=$jour+(($semaine-1)*7)-1;
 
+      $temps = calculPresence($p->elements[0]['temps'], $jour);
 
-	// Calcul du temps du matin
-	if($temps[0] and $temps[1]){
-	  $debutAbsence1=$debutAbsence>$temps[0]?$debutAbsence:$temps[0];
-	  $finAbsence1=$finAbsence<$temps[1]?$finAbsence:$temps[1];
-	  if($finAbsence1>$debutAbsence1){
-	    $difference+=$finAbsence1-$debutAbsence1;
-	  }
-	}
-
-	// Calcul du temps de l'après-midi
-	if($temps[2] and $temps[3]){
-	  $debutAbsence2=$debutAbsence>$temps[2]?$debutAbsence:$temps[2];
-	  $finAbsence2=$finAbsence<$temps[3]?$finAbsence:$temps[3];
-	  if($finAbsence2>$debutAbsence2){
-	    $difference+=$finAbsence2-$debutAbsence2;
-	  }
-	}
-
-	// Calcul du temps de la journée s'il n'y a pas de pause le midi
-	if($temps[0] and $temps[3] and !$temps[1] and !$temps[2]){
-	  $debutAbsence=$debutAbsence>$temps[0]?$debutAbsence:$temps[0];
-	  $finAbsence=$finAbsence<$temps[3]?$finAbsence:$temps[3];
-	  if($finAbsence>$debutAbsence){
-	    $difference+=$finAbsence-$debutAbsence;
-	  }
-	}
+      foreach($temps as $t){
+        $t0 = strtotime($t[0]);
+        $t1 = strtotime($t[1]);
+        
+        $debutAbsence1 = $debutAbsence > $t0 ? $debutAbsence : $t0;
+        $finAbsence1 = $finAbsence < $t1 ? $finAbsence : $t1;
+        if( $finAbsence1 > $debutAbsence1 ) {
+          $difference += $finAbsence1 - $debutAbsence1;
+        }
       }
 
       $current=date("Y-m-d",strtotime("+1 day",strtotime($current)));
@@ -335,6 +572,11 @@ class absences{
 	}
       }
 
+      $debutAbsence=$current==$debut?$hre_debut:"00:00:00";
+      $finAbsence=$current==$fin?$hre_fin:"23:59:59";
+      $debutAbsence=strtotime($debutAbsence);
+      $finAbsence=strtotime($finAbsence);
+
       // On consulte le planning de présence de l'agent
       // On ne calcule pas les heures si le module planningHebdo n'est pas activé, le calcul serait faux si les emplois du temps avaient changé
       if(!$GLOBALS['config']['PlanningHebdo']){
@@ -376,49 +618,19 @@ class absences{
 	$semaine=$d->semaine3;
 	$jour=$d->position?$d->position:7;
 	$jour=$jour+(($semaine-1)*7)-1;
-	$temps=null;
-	if(array_key_exists($jour,$edt['temps'])){
-	  $temps=$edt['temps'][$jour];
-	}
       }
+      
+      $temps = calculPresence($edt['temps'], $jour);
 
-      if($temps){
-	$temps[0]=strtotime($temps[0]);
-	$temps[1]=strtotime($temps[1]);
-	$temps[2]=strtotime($temps[2]);
-	$temps[3]=strtotime($temps[3]);
-	$debutAbsence=$current==$debut?$hre_debut:"00:00:00";
-	$finAbsence=$current==$fin?$hre_fin:"23:59:59";
-	$debutAbsence=strtotime($debutAbsence);
-	$finAbsence=strtotime($finAbsence);
-
-
-	// Calcul du temps du matin
-	if($temps[0] and $temps[1]){
-	  $debutAbsence1=$debutAbsence>$temps[0]?$debutAbsence:$temps[0];
-	  $finAbsence1=$finAbsence<$temps[1]?$finAbsence:$temps[1];
-	  if($finAbsence1>$debutAbsence1){
-	    $difference+=$finAbsence1-$debutAbsence1;
-	  }
-	}
-
-	// Calcul du temps de l'après-midi
-	if($temps[2] and $temps[3]){
-	  $debutAbsence2=$debutAbsence>$temps[2]?$debutAbsence:$temps[2];
-	  $finAbsence2=$finAbsence<$temps[3]?$finAbsence:$temps[3];
-	  if($finAbsence2>$debutAbsence2){
-	    $difference+=$finAbsence2-$debutAbsence2;
-	  }
-	}
-
-	// Calcul du temps de la journée s'il n'y a pas de pause le midi
-	if($temps[0] and $temps[3] and !$temps[1] and !$temps[2]){
-	  $debutAbsence=$debutAbsence>$temps[0]?$debutAbsence:$temps[0];
-	  $finAbsence=$finAbsence<$temps[3]?$finAbsence:$temps[3];
-	  if($finAbsence>$debutAbsence){
-	    $difference+=$finAbsence-$debutAbsence;
-	  }
-	}
+      foreach($temps as $t){
+        $t0 = strtotime($t[0]);
+        $t1 = strtotime($t[1]);
+        
+        $debutAbsence1 = $debutAbsence > $t0 ? $debutAbsence : $t0;
+        $finAbsence1 = $finAbsence < $t1 ? $finAbsence : $t1;
+        if( $finAbsence1 > $debutAbsence1 ) {
+          $difference += $finAbsence1 - $debutAbsence1;
+        }
       }
 
       $current=date("Y-m-d",strtotime("+1 day",strtotime($current)));
@@ -464,7 +676,9 @@ class absences{
     return false;
   }
 
-  public function fetch($sort="`debut`,`fin`,`nom`,`prenom`",$only_me=null,$agent=null,$debut=null,$fin=null,$sites=null){
+
+  public function fetch($sort="`debut`,`fin`,`nom`,`prenom`",$agent=null,$debut=null,$fin=null,$sites=null){
+  
     $filter="";
     //	DB prefix
     $dbprefix=$GLOBALS['config']['dbprefix'];
@@ -491,15 +705,6 @@ class absences{
     $deletedAgents=join("','",$this->agents_supprimes);
     $filter.=" AND `{$dbprefix}personnel`.`supprime` IN ('$deletedAgents') ";
 
-    if($agent==0){
-      $agent=null;
-    }
-
-    if(is_numeric($agent)){
-      $filter.=" AND `{$dbprefix}personnel`.`id`='$agent' ";
-      $agent=null;
-    }
-
     // Sort
     $sort=$sort?$sort:"`debut`,`fin`,`nom`,`prenom`";
 
@@ -507,15 +712,16 @@ class absences{
     $req="SELECT `{$dbprefix}personnel`.`nom` AS `nom`, `{$dbprefix}personnel`.`prenom` AS `prenom`, "
       ."`{$dbprefix}personnel`.`id` AS `perso_id`, `{$dbprefix}personnel`.`sites` AS `sites`, "
       ."`{$dbprefix}absences`.`id` AS `id`, `{$dbprefix}absences`.`debut` AS `debut`, "
-      ."`{$dbprefix}absences`.`fin` AS `fin`, `{$dbprefix}absences`.`nbjours` AS `nbjours`, "
+      ."`{$dbprefix}absences`.`fin` AS `fin`, "
       ."`{$dbprefix}absences`.`motif` AS `motif`, `{$dbprefix}absences`.`commentaires` AS `commentaires`, "
       ."`{$dbprefix}absences`.`valide` AS `valide`, `{$dbprefix}absences`.`validation` AS `validation`, "
       ."`{$dbprefix}absences`.`valide_n1` AS `valide_n1`, `{$dbprefix}absences`.`validation_n1` AS `validation_n1`, "
       ."`{$dbprefix}absences`.`pj1` AS `pj1`, `{$dbprefix}absences`.`pj2` AS `pj2`, `{$dbprefix}absences`.`so` AS `so`, "
-      ."`{$dbprefix}absences`.`demande` AS `demande`, `{$dbprefix}absences`.`groupe` AS `groupe` "
+      ."`{$dbprefix}absences`.`demande` AS `demande`, `{$dbprefix}absences`.`groupe` AS `groupe`, "
+      ."`{$dbprefix}absences`.`cal_name` AS `cal_name`, `{$dbprefix}absences`.`ical_key` AS `ical_key`, `{$dbprefix}absences`.`rrule` AS `rrule` "
       ."FROM `{$dbprefix}absences` INNER JOIN `{$dbprefix}personnel` "
       ."ON `{$dbprefix}absences`.`perso_id`=`{$dbprefix}personnel`.`id` "
-      ."WHERE $dates $only_me $filter ORDER BY $sort;";
+      ."WHERE $dates $filter ORDER BY $sort;";
     $db=new db();
     $db->query($req);
 
@@ -548,19 +754,29 @@ class absences{
           }
         }
 
-        // N'ajoute qu'une ligne pour les membres d'un groupe
-	if($this->groupe and $elem['groupe'] and in_array($elem['groupe'],$groupes)){
-	  continue;
-	}
-	if($elem['groupe']){
-	  // Pour ne plus afficher les membres du groupe pr la suite
-	  $groupes[]=$elem['groupe'];
+        // Gestion des groupes : ajout des infos sur les autres agents et affichage d'une seule ligne si $this->groupe=true
+        $groupe = null;
+        if(!empty($elem['groupe'])){
+          // Le groupe est complété de la date et heure de début et de fin pour qu'il soit unique pour chaque occurence (si récurrence)
+          $groupe = $elem['groupe'].$elem['debut'].$elem['fin'];
+        }
+        
+        // N'ajoute qu'une ligne pour les membres d'un groupe si $this->true
+        if($this->groupe and $groupe and in_array($groupe,$groupes)){
+          continue;
+        }
+
+        // Ajoute des infos sur les autres agents
+        if($groupe){
+	  // Pour ne plus afficher les membres du groupe par la suite
+	  $groupes[]=$groupe;
 	  
 	  // Ajoute les ID des autres agents appartenant à ce groupe
 	  $perso_ids=array();
 	  $agents=array();
 	  foreach($db->result as $elem2){
-	    if($elem2['groupe']==$elem['groupe']){
+            $groupe2 = $elem2['groupe'].$elem2['debut'].$elem2['fin'];
+            if($groupe2 == $groupe){
 	      $perso_ids[]=$elem2['perso_id'];
 	      $agents[]=$elem2['nom']." ".$elem2['prenom'];
 	    }
@@ -573,8 +789,9 @@ class absences{
 	  $elem['agents'][]=$elem['nom']." ".$elem['prenom'];
 	}
 
-	// TODO : ajouter les autres membres du groupe (si groupe)
-	
+        // Le champ commentaires peut comporter des <br/> ou équivalents HTML lorsqu'il est importé depuis un fichier ICS. On les remplace par \n
+        $elem['commentaires'] = str_replace(array('<br/>','&lt;br/&gt;'), "\n", $elem['commentaires']);
+
 	$tmp=$elem;
 	$debut=dateFr(substr($elem['debut'],0,10));
 	$fin=dateFr(substr($elem['fin'],0,10));
@@ -594,17 +811,76 @@ class absences{
       }
     }
 
+    
     //	By default $result=$all
     $result=$all;
+    
     //	If name, keep only matching results
     if(is_array($all) and $agent){
       $result=array();
+
       foreach($all as $elem){
-	if(pl_stristr($elem['nom'],$agent) or pl_stristr($elem['prenom'],$agent)){
-	  $result[]=$elem;
-	}
+        if(is_numeric($agent)){
+          if(in_array($agent, $elem['perso_ids'])){
+            $result[]=$elem;
+          }
+        } else {
+          foreach($elem['agents'] as $a){
+            if(pl_stristr($a,$agent)){
+              $result[]=$elem;
+            }
+          }
+        }
       }
     }
+    
+    // Filtre Unique : supprime les absences qui se chevauchent pour ne pas les compter plusieurs fois dans les calculs.
+    // Ce filtre ne doit être utilisé que pour le calcul des heures et avec le filtre valide=true
+
+    if($this->unique){
+      usort($result, 'cmp_perso_debut_fin');
+      $cles_a_supprimer = array();
+      
+      $last = 0;
+      for($i=1; $i<count($result); $i++){
+      
+        // Comparaisons : différents cas de figures
+        //   |-----------------------------|      $last
+        //   |-----------------------------|      $i    debut[$i] = debut[$last] and fin[$i] = fin[$last]  --> debut[$i] >= debut[$last] and fin[$i] <= fin[$last]*  --> supprime $i
+        //   |----------------------------------| $i    debut[$i] = debut[$last] and fin[$i] > fin[$last]  --> supprime $last
+        //      |---------------------|           $i    debut[$i] > debut[$last] and fin[$i] < fin[$last]  --> debut[$i] >= debut[$last] and fin[$i] <= fin[$last]*  --> supprime $i
+        //      |--------------------------|      $i    debut[$i] > debut[$last] and fin[$i] = fin[$last]  --> debut[$i] >= debut[$last] and fin[$i] <= fin[$last]*  --> supprime $i
+        //      |-------------------------------| $i    debut[$i] > debut[$last] and fin[$i] > fin[$last]  --> fin[$last] = debut[$i], $i ne change pas
+        
+        
+        // *Condition : debut[$i] >= debut[$last] and fin[$i] <= fin[$last]
+        // |-------------------------------|    $last
+        // |-------------------------------|    $i
+        // |--------------------------|         $i
+        //      |--------------------------|    $i
+        //      |---------------------|         $i
+        
+        if($result[$i]['perso_id'] == $result[$last]['perso_id'] and $result[$i]['debut'] < $result[$last]['fin']){
+          if($result[$i]['debut'] >= $result[$last]['debut'] and $result[$i]['fin'] <= $result[$last]['fin']){
+            $cles_a_supprimer[] = $i;
+          } elseif($result[$i]['debut'] == $result[$last]['debut'] and $result[$i]['fin'] > $result[$last]['fin']){
+            $cles_a_supprimer[] = $last;
+            $last = $i;
+          } elseif($result[$i]['debut'] > $result[$last]['debut'] and $result[$i]['fin'] > $result[$last]['fin']){
+            $result[$last]['fin']=$result[$i]['debut'];
+            $last = $i;
+          } else {
+            $last = $i;
+          }
+        } else {
+          $last = $i;
+        }
+      }
+      foreach($cles_a_supprimer as $elem){
+        unset($result[$elem]);
+      }
+    }
+    
     if($result){
       $this->elements=$result;
     }
@@ -613,7 +889,7 @@ class absences{
   public function fetchById($id){
     $db=new db();
     $db->selectInnerJoin(array("absences","perso_id"),array("personnel","id"),
-      array("id","debut","fin","nbjours","motif","motif_autre","commentaires","valide_n1","validation_n1","pj1","pj2","so","demande","groupe","ical_key",
+      array("id","debut","fin","motif","motif_autre","commentaires","valide_n1","validation_n1","pj1","pj2","so","demande","groupe","ical_key","cal_name","rrule","uid",
       array("name"=>"valide","as"=>"valide_n2"),array("name"=>"validation","as"=>"validation_n2")),
       array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mails_responsables"),
       array("id"=>$id));
@@ -633,13 +909,16 @@ class absences{
       // Complète le tableau $agents
       if($result['groupe']){
 	$groupe=$result['groupe'];
+        $debut=$result['debut'];
+        $fin=$result['fin'];
 	$agents=array();
+
 	// Recherche les absences enregistrées sous le même groupe et les infos des agents concernés
 	$db=new db();
 	$db->selectInnerJoin(array("absences","perso_id"),array("personnel","id"),
 	  array("id"),
 	  array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mails_responsables"),
-	  array("groupe"=>$groupe),
+          array("groupe"=>$groupe, "debut"=>$debut, "fin"=>$fin),
 	  array(),
 	  "order by nom, prenom");
 	
@@ -657,6 +936,8 @@ class absences{
 	}
       }
 
+      // Le champ commentaires peut comporter des <br/> ou équivalents HTML lorsqu'il est importé depuis un fichier ICS. On les remplace par \n
+      $result['commentaires'] = str_replace(array('<br/>','&lt;br/&gt;'), "\n", $result['commentaires']);
       $result['agents']=$agents;
       $result['perso_ids']=$perso_ids;
       $this->elements=$result;
@@ -676,8 +957,8 @@ class absences{
       while($date<=$fin){
 	// Emploi du temps si module planningHebdo activé
 	if($GLOBALS['config']['PlanningHebdo']){
-      $version = $GLOBALS['version'];
-	  include_once "planningHebdo/class.planningHebdo.php";
+          $version = $GLOBALS['version'];
+          include_once __DIR__."/../planningHebdo/class.planningHebdo.php";
 	  $p=new planningHebdo();
 	  $p->perso_id=$perso_id;
 	  $p->debut=$date;
@@ -806,7 +1087,481 @@ class absences{
     $this->recipients=$recipients;
   }
 
+
+  /**
+   * @function ics_add_event
+   * Enregistre un événement dans le fichier ICS "Planning Biblio" de l'agent sélectionné
+   * @params : tous les éléments d'une absence : date et heure de début et de fin, motif, commentaires, validation, ID de l'agent, règle de récurrence (rrule)
+   * @param string $this->exdate : doit être la ligne complète commençant par EXDATE et finissant par \n
+   */
+  public function ics_add_event(){
+
+    // Initilisation des variables, adaptation des valeurs
+    $perso_id = $this->perso_id;
+    $folder = sys_get_temp_dir();
+    $file = "$folder/PBCalendar-$perso_id.ics";
+    $tzid = date_default_timezone_get();
+    $dtstart = preg_replace('/(\d+)\/(\d+)\/(\d+)/','$3$2$1',$this->debut).'T';
+    $dtstart .= preg_replace('/(\d+):(\d+):(\d+)/','$1$2$3',$this->hre_debut);
+    $dtend = preg_replace('/(\d+)\/(\d+)\/(\d+)/','$3$2$1',$this->fin).'T';
+    $dtend .= preg_replace('/(\d+):(\d+):(\d+)/','$1$2$3',$this->hre_fin);
+    $dtstamp = !empty($this->dtstamp) ? $this->dtstamp : gmdate('Ymd\THis\Z');
+    $summary = $this->motif_autre ? html_entity_decode($this->motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8') : html_entity_decode($this->motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+    $cal_name = "PlanningBiblio-Absences-$perso_id-$dtstamp";
+    $uid = !empty($this->uid) ? $this->uid : $dtstart."_".$dtstamp;
+    $status = $this->valide_n2 > 0 ? 'CONFIRMED' : 'TENTATIVE';
+
+    // Description : en supprime les entités HTML et remplace les saut de lignes par des <br/> pour facilité le traitement des saut de lignes à l'affichage et lors des remplacements
+    $description = html_entity_decode($this->commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+    $description = str_replace("\n", "<br/>", $description);
+
+    // Gestion des groupes et des validations, utilisation du champ CATEGORIES
+    $categories = array();
+    if($this->groupe){
+      $categories[] = "PBGroup=".$this->groupe;
+    }
+    if($this->valide_n1){
+      $categories[] = "PBValideN1=".$this->valide_n1;
+    }
+    if($this->validation_n1){
+      $categories[] = "PBValidationN1=".$this->validation_n1;
+    }
+    if($this->valide_n2){
+      $categories[] = "PBValideN2=".$this->valide_n2;
+    }
+    if($this->validation_n2){
+      $categories[] = "PBValidationN2=".$this->validation_n2;
+    }
+    $categories = implode(';', $categories);
+
+    // On créé l'entête du fichier ICS
+    $ics_content = "BEGIN:VCALENDAR\n";
+    $ics_content .= "PRODID:-//Planning Biblio//Planning Biblio 2.7.04//FR\n";
+    $ics_content .= "VERSION:2.7.04\n";
+    $ics_content .= "CALSCALE:GREGORIAN\n";
+    $ics_content .= "METHOD:PUBLISH\n";
+    $ics_content .= "X-WR-CALNAME:$cal_name\n";
+    $ics_content .= "X-WR-TIMEZONE:$tzid\n";
+    $ics_content .= "BEGIN:VTIMEZONE\n";
+    $ics_content .= "TZID:$tzid\n";
+    $ics_content .= "X-LIC-LOCATION:$tzid\n";
+    $ics_content .= "END:VTIMEZONE\n";
+
+    // On créé un événement ICS
+    $ics_content .= "BEGIN:VEVENT\n";
+    $ics_content .= "UID:$uid\n";
+    $ics_content .= "DTSTART;TZID=$tzid:$dtstart\n";
+    $ics_content .= "DTEND;TZID=$tzid:$dtend\n";
+    $ics_content .= "DTSTAMP:$dtstamp\n";
+    $ics_content .= "CREATED:$dtstamp\n";
+    $ics_content .= "LAST-MODIFIED:$dtstamp\n";
+    $ics_content .= "LOCATION:\n";
+    $ics_content .= "STATUS:$status\n";
+    $ics_content .= "SUMMARY:$summary\n";
+    $ics_content .= "DESCRIPTION:$description\n";
+    $ics_content .= "CATEGORIES:$categories\n";
+    $ics_content .= "TRANSP:OPAQUE\n";
+    $ics_content .= "RRULE:{$this->rrule}\n";
+    if($this->exdate){
+      $ics_content .= $this->exdate;
+    }
+    $ics_content .= "END:VEVENT\n";
+    $ics_content .= "END:VCALENDAR\n";
+
+    // Précise si la fin de la récurrence existe pour continuer à la traiter à l'avenir si elle n'est pas renseignée
+    $end = (strpos($this->rrule, 'UNTIL=') or strpos($this->rrule, 'COUNT=')) ? 1 : 0;
+
+    // On enregistre les infos dans la base de données
+    $db = new db();
+    $db->CSRFToken = $this->CSRFToken;
+    $db->insert('absences_recurrentes', array('uid' => $uid, 'perso_id' => $perso_id, 'event' => $ics_content, 'end' => $end));
+
+    logs("Agent #$perso_id : Importation du fichier $file", "ICS", $this->CSRFToken);
+
+    // On ecrit le fichier
+    file_put_contents($file, $ics_content);
+
+    $ics=new CJICS();
+    $ics->src = $file;
+    $ics->perso_id = $perso_id;
+    $ics->pattern = '[SUMMARY]';
+    $ics->status = 'All';
+    $ics->table ="absences";
+    $ics->logs = true;
+    $ics->CSRFToken = $this->CSRFToken;
+    $ics->updateTable();
+
+    // On supprime le fichier
+    unlink($file);
+  }
+
+
+  /** @function ics_add_exdate($date);
+   * @param string $this->uid : UID d'un événement ICS "Planning Biblio" (ex: 20171110120000_20171110115523Z)
+   * @param int $this->perso_id : ID de l'agent
+   * @param string $date : date et heure de l'exception au format ICS (ex: 20171110T120000)
+   * @desc : ajoute une exception sur un événement ICS "Planning Biblio"
+   */
+  public function ics_add_exdate($date){
+
+    $this->ics_get_event();
+    $ics_event = $this->elements;
+    $perso_id = $this->perso_id;
+    
+    if($ics_event){
+      // On modifie la date LAST-MODIFIED
+      $ics_event = preg_replace("/LAST-MODIFIED:.[^\n]*\n/", "LAST-MODIFIED:".gmdate('Ymd\THis\Z')."\n", $ics_event);
+
+      // On modifie l'événement en ajoutant une exception
+      if(strpos($ics_event, 'EXDATE')){
+        $ics_event = preg_replace("/(EXDATE.[^\n]*)\n/", "$1,$date\n", $ics_event);
+      } else {
+        $exdate = "EXDATE;TZID=".date_default_timezone_get().":$date";
+        $ics_event = str_replace("END:VEVENT", "$exdate\nEND:VEVENT", $ics_event);
+      }
+
+      $folder = sys_get_temp_dir();
+      $file = "$folder/PBCalendar-$perso_id.ics";
+
+      file_put_contents($file, $ics_event);
+
+      // On met à jour l'événement dans la table absences_recurrentes
+      $db = new db();
+      $db->CSRFToken = $this->CSRFToken;
+      $db->update('absences_recurrentes', array('event' => $ics_event, 'last_update' => 'SYSDATE'), array('uid' => $this->uid, 'perso_id' => $perso_id));
+
+      // On actualise la base de données à partir de l'événement ICS modifié
+      $ics=new CJICS();
+      $ics->src = $file;
+      $ics->perso_id = $perso_id;
+      $ics->pattern = '[SUMMARY]';
+      $ics->status = 'All';
+      $ics->table ="absences";
+      $ics->logs = true;
+      $ics->CSRFToken = $this->CSRFToken;
+      $ics->updateTable();
+
+      // On supprime le fichier
+      unlink($file);
+    }
+  }
+
+
+  /** @function ics_delete_event
+   * @param string $this->uid : UID d'un événement ICS "Planning Biblio" (ex: 20171110120000_20171110115523Z)
+   * @param int $this->perso_id : ID de l'agent
+   * @desc : supprime un événement ICS "Planning Biblio"
+   * @note : Les lignes UID des fichiers ICS doivent directement suivre les lignes BEGIN:VEVENT
+   */
+  public function ics_delete_event(){
+    $perso_id = $this->perso_id;
+    $uid = $this->uid;
+
+    // Suppression de l'événement dans la base de données (table absences)
+    $db = new db();
+    $db->CSRFToken = $this->CSRFToken;
+    $db->delete('absences', array('perso_id'=> $perso_id, 'uid'=> $uid, 'cal_name' => "LIKEPlanningBiblio-Absences-$perso_id%"));
+
+    // Suppression de l'événement dans la base de données (table absences_recurrentes)
+    $db = new db();
+    $db->CSRFToken = $this->CSRFToken;
+    $db->delete('absences_recurrentes', array('perso_id'=> $perso_id, 'uid'=> $uid));
+  }
+
+
+  /** @function ics_get_event
+   * @param string $this->uid : UID d'un événement ICS "Planning Biblio" (ex: 20171110120000_20171110115523Z)
+   * @param int $this->perso_id : ID de l'agent
+   * @return array $this->elements : tableau PHP contenant l'événement, un élément par ligne du fichier ICS
+   * @return $this->elements = null si le fichier ICS n'a pas été trouvé
+   * @note : Les lignes UID des fichiers ICS doivent directement suivre les lignes BEGIN:VEVENT
+   */
+  public function ics_get_event(){
   
+    // Récupère l'événement depuis la base de données
+    $where = array('uid' => $this->uid);
+    if(!empty($this->perso_id)){
+      $where['perso_id'] = $this->perso_id;
+    }
+
+    $db = new db();
+    $db->select2('absences_recurrentes', 'event', $where);
+    
+    if($db->result){
+      $this->elements = $db->result[0]['event'];
+    }
+  }
+
+
+  /** @function ics_update_event();
+   * @param string $this->uid : UID d'un événement ICS "Planning Biblio" (ex: 20171110120000_20171110115523Z)
+   * @param int $this->perso_ids : IDs des agents
+   * @params : tous les éléments d'une absence : date et heure de début et de fin (format FR JJ/MM/YYYY et hh:mm:ss), motif, commentaires, validation, ID de l'agent, règle de récurrence (rrule)
+   * @desc : modifie un événement ICS "Planning Biblio"
+   */
+  public function ics_update_event(){
+
+    // Recherche de l'événement pour récupèrer la date de départ pour la création des événements des agents ajoutés
+    // le tableau $event servira aussi à la suppression des agents retirés de l'événement
+    $db = new db();
+    $db->select2('absences_recurrentes', 'event,perso_id', array('uid' => $this->uid));
+    $event = $db->result;
+
+    if(empty($event)){
+      return false;
+    }
+
+    // Récupération de la date de début de la série
+    preg_match('/DTSTART.*:(\d*)T\d*\n/', $event[0]['event'], $matches);
+    $debut = date('d/m/Y', strtotime($matches[1]));
+    preg_match('/DTEND.*:(\d*)T\d*\n/', $event[0]['event'], $matches);
+    $fin = date('d/m/Y', strtotime($matches[1]));
+    preg_match('/CREATED.*:(\d*T\d*Z)\n/', $event[0]['event'], $matches);
+    $dtstamp = $matches[1];
+
+    // Suppression des agents retirés de l'événement
+    $to_delete = array();
+    foreach($event as $e){
+      if(!in_array($e['perso_id'], $this->perso_ids)){
+        $to_delete[]=$e['perso_id'];
+      }
+    }
+
+    if(!empty($to_delete)){
+      $to_delete = implode(',', $to_delete);
+
+      // Suppression des événements dans la table absences_recurrentes
+      $db = new db();
+      $db->CSRFToken = $this->CSRFToken;
+      $db->delete('absences_recurrentes', array('uid' => $this->uid, 'perso_id' => "IN$to_delete"));
+
+      // Suppression des événements dans la table absences
+      $db = new db();
+      $db->CSRFToken = $this->CSRFToken;
+      $db->delete('absences', array('perso_id'=> "IN$to_delete", 'uid'=> $this->uid, 'cal_name' => "LIKEPlanningBiblio-Absences-%"));
+    }
+
+
+    // Pour chaque agent, mise à jour ou ajout de l'événement
+    foreach($this->perso_ids as $perso_id){
+      $a = new absences();
+      $a->perso_id = $perso_id;
+      $a->uid = $this->uid;
+      $a->ics_get_event();
+      $ics_event = $a->elements;
+
+      // Pour chaque agent, si l'agent faisait déjà partie de l'événement, on modifie les infos
+      if($ics_event){
+        // On actualise les infos
+
+        // TODO : pour le moment, on ne touche pas aux dates et aux RRULEs : A voir ensuite
+        // $dtstart = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $this->debut);  // faux car la date de début de la série serait remplacée par la date de début de l'occurence choisie
+
+        // Mise à jour des heures de début
+        $start = str_replace(':', null, $this->hre_debut);
+        $ics_event = preg_replace("/(DTSTART.[^:]*):(\d+)T\d+\n/", "$1:$2T$start\n", $ics_event);
+
+        // Mise à jour des heures de fin
+        $end = str_replace(':', null, $this->hre_fin);
+        $ics_event = preg_replace("/(DTEND.[^:]*):(\d+)T\d+\n/", "$1:$2T$end\n", $ics_event);
+
+        // Mise à jour de LAST-MODIFIED
+        $ics_event = preg_replace("/LAST-MODIFIED:.*\n/", "LAST-MODIFIED:".gmdate('Ymd\THis\Z')."\n", $ics_event);
+
+        // Mise à jour de STATUS
+        $status = $this->valide_n2 > 0 ? 'CONFIRMED' : 'TENTATIVE';
+        $ics_event = preg_replace("/STATUS:.*\n/", "STATUS:$status\n", $ics_event);
+
+        // Mise à jour de CATEGORIES (validation et groupe)
+        // Exemple : PBGroup=1510848337-470;PBValideN1=1;PBValidationN1=2017-11-16 17:05:37;PBValidationN2=0000-00-00 00:00:00
+        $tmp = array();
+        if($this->groupe){        $tmp[] = "PBGroup={$this->groupe}"; }
+        if($this->valide_n1){     $tmp[] = "PBValideN1={$this->valide_n1}"; }
+        if($this->validation_n1){ $tmp[] = "PBValidationN1={$this->validation_n1}"; }
+        if($this->valide_n2){     $tmp[] = "PBValideN2={$this->valide_n2}"; }
+        if($this->validation_n2){ $tmp[] = "PBValidationN2={$this->validation_n2}"; }
+
+        if(!empty($tmp)){
+          $categories = 'CATEGORIES:'.implode(';', $tmp);
+          $categories = str_replace("\n", null, $categories)."\n";
+        }
+
+        if(strpos($ics_event, 'CATEGORIES:')){
+          $ics_event = preg_replace("/CATEGORIES:.*\n/", "CATEGORIES:$categories\n", $ics_event);
+        } else {
+          $ics_event = str_replace('END:VEVENT',"CATEGORIES:$categories\nEND:VEVENT", $ics_event);
+        }
+
+        // Mise à jour de SUMMARY
+        $summary = $this->motif == 'Autre' ? $this->motif_autre : $this->motif;
+        $summary = html_entity_decode($summary, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+        $ics_event = preg_replace("/SUMMARY:.*\n/", "SUMMARY:$summary\n", $ics_event);
+
+        // Mise à jour de DESCRIPTION
+        // Description : on supprime les entités HTML et remplace les sauts de ligne par des <br/> pour faciliter le traitement des sauts de ligne à l'affichage et lors des remplacements
+        $description = html_entity_decode($this->commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+        $description = str_replace("\n", "<br/>", $description);
+        $ics_event = preg_replace("/DESCRIPTION:.*\n/", "DESCRIPTION:$description\n", $ics_event);
+
+        // Modification de RRULE
+        // TODO : Adapter la modification du RRULE si la date de début change
+        $ics_event = preg_replace("/RRULE:.*\n/", "RRULE:{$this->rrule}\n", $ics_event);
+
+        // Précise si la fin de la récurrence existe pour continuer à la traiter à l'avenir si elle n'est pas renseignée
+        $end = (strpos($this->rrule, 'UNTIL=') or strpos($this->rrule, 'COUNT=')) ? 1 : 0;
+
+        // On met à jour l'événement dans la table absences_recurrentes
+        $db = new db();
+        $db->CSRFToken = $this->CSRFToken;
+        $db->update('absences_recurrentes', array('event' => $ics_event, 'end' => $end, 'last_update' => 'SYSDATE'), array('uid' => $this->uid, 'perso_id' => $perso_id ));
+
+        // Ecriture dans le fichier
+        $folder = sys_get_temp_dir();
+        $file = "$folder/PBCalendar-$perso_id.ics";
+
+        file_put_contents($file, $ics_event);
+
+        // On actualise la base de données à partir de l'événement ICS modifié
+        $ics=new CJICS();
+        $ics->src = $file;
+        $ics->perso_id = $perso_id;
+        $ics->pattern = '[SUMMARY]';
+        $ics->status = 'All';
+        $ics->table ="absences";
+        $ics->logs = true;
+        $ics->CSRFToken = $this->CSRFToken;
+        $ics->updateTable();
+
+        unlink($file);
+      }
+
+      // Pour chaque agent ajouté (ne faisant pas partie de l'événement avant la modification), on créé l'événement
+      else {
+        // Création du fichier ICS
+        $a = new absences();
+        $a->CSRFToken = $this->CSRFToken;
+        $a->dtstamp = $dtstamp;
+        $a->perso_id = $perso_id;
+        $a->commentaires = $this->commentaires;
+        $a->debut = $debut;
+        $a->fin = $fin;
+        $a->hre_debut = $this->hre_debut;
+        $a->hre_fin = $this->hre_fin;
+        $a->demande = $demande;
+        $a->groupe = $this->groupe;
+        $a->motif = $this->motif;
+        $a->motif_autre = $this->motif_autre;
+        $a->rrule = $this->rrule;
+        $a->valide_n1 = $this->valide_n1;
+        $a->valide_n2 = $this->valide_n2;
+        $a->validation_n1 = $this->validation_n1;
+        $a->validation_n2 = $this->validation_n2;
+        $a->uid = $this->uid;
+        $a->ics_add_event();
+      }
+
+    }
+  }
+
+
+  /** @function ics_update_table
+   * @desc : Recherche une fois par jour si des occurences liées à des absences récurrentes sans date de fin doivent être ajoutées dans la table absences
+   * @note : la méthode CJICS::updateTable utilisée pour alimenter la table absence n'ajoute que les événements des 2 prochaines année, c'est pourquoi nous devons la réexecuter régulièrement
+   */
+  function ics_update_table(){
+    $db = new db();
+    $db->select2('absences_recurrentes', null, array('end' => '0' , 'last_check' => "< CURDATE"));
+    if($db->result){
+      foreach($db->result as $elem){
+        $perso_id = $elem['perso_id'];
+        $uid = $elem['uid'];
+        $event = $elem['event'];
+
+        $folder = sys_get_temp_dir();
+        $file = "$folder/PBCalendar-$perso_id.ics";
+
+        file_put_contents($file, $event);
+
+        // On actualise la base de données à partir du fichier ICS modifié
+        $ics=new CJICS();
+        $ics->src = $file;
+        $ics->perso_id = $perso_id;
+        $ics->pattern = '[SUMMARY]';
+        $ics->status = 'All';
+        $ics->table ="absences";
+        $ics->logs = true;
+        $ics->CSRFToken = $this->CSRFToken;
+        $ics->updateTable();
+
+        // On supprime le fichier
+        unlink($file);
+      }
+
+      // On met à jour le champ last_check de façon à ne pas relancer l'opération dans la journée
+      $db = new db();
+      $db->CSRFToken = $this->CSRFToken;
+      $db->update('absences_recurrentes', array('last_check' => "SYSDATE"), array('end' => '0'));
+    }
+  }
+
+
+  /** @function ics_update_until($datetime);
+   * @param string $this->uid : UID d'un événement ICS "Planning Biblio" (ex: 20171110120000_20171110115523Z)
+   * @param int $this->perso_id : ID de l'agent
+   * @param string $datetime : date et heure de fin de série, format ICS, timezone GMT (20171110T120000Z)
+   * @desc : modifie la date de fin de série d'un événement ICS "Planning Biblio"
+   */
+  public function ics_update_until($datetime){
+
+    $this->ics_get_event();
+    $ics_event = $this->elements;
+    $perso_id = $this->perso_id;
+
+    if($ics_event){
+
+      // Mise à jour de LAST-MODIFIED
+      $ics_event = preg_replace("/LAST-MODIFIED:.*\n/", "LAST-MODIFIED:".gmdate('Ymd\THis\Z')."\n", $ics_event);
+
+      // On modifie ou ajoute une date de fin à RRULE
+      preg_match("/\nRRULE:(.*)\n/", $ics_event, $matches);
+      $rrule = substr($matches[0],7);
+      $rrule = str_replace("\n", null, $rrule);
+
+      if(strpos($rrule, 'UNTIL')) {
+        $rrule = preg_replace("/UNTIL=\d+T\d+Z/", "UNTIL=$datetime", $rrule);
+      } elseif(strpos($rrule, 'COUNT')) {
+        $rrule = preg_replace('/COUNT=\d+/', "UNTIL=$datetime", $rrule);
+      } else {
+        $rrule = preg_replace("/$/", ";UNTIL=$datetime", $rrule);
+      }
+      $ics_event = preg_replace("/\nRRULE:.*\n/", "\nRRULE:$rrule\n", $ics_event);
+
+      // Ecriture dans le fichier
+      $folder = sys_get_temp_dir();
+      $file = "$folder/PBCalendar-$perso_id.ics";
+
+      file_put_contents($file, $ics_event);
+      
+      $db = new db();
+      $db->CSRFToken = $this->CSRFToken;
+      $db->update('absences_recurrentes', array('event' => $ics_event, 'end' => '1', 'last_update' => 'SYSDATE'), array('uid' => $this->uid, 'perso_id' => $perso_id));
+
+      // On actualise la base de données à partir du fichier ICS modifié
+      $ics=new CJICS();
+      $ics->src = $file;
+      $ics->perso_id = $perso_id;
+      $ics->pattern = '[SUMMARY]';
+      $ics->status = 'All';
+      $ics->table ="absences";
+      $ics->logs = true;
+      $ics->CSRFToken = $this->CSRFToken;
+      $ics->updateTable();
+      
+      // On supprime le fichier
+      unlink($file);
+    }
+  }
+
   /**
   * infoPlannings
   * Retourne la liste des plannings concernés (dates, horaires sites et postes) (@param $this->message @string)
@@ -843,7 +1598,6 @@ class absences{
     }
 
     sort($plannings_valides);
-    $dates=implode($plannings_valides,",");
 
     // nom des postes
     $p=new postes();
@@ -888,7 +1642,7 @@ class absences{
     
     // Si des plannings sont concernés
     if(!empty($plannings)){
-      // Fusionne les plages horaires si sur le même poste sur des plages succésives
+      // Fusionne les plages horaires si sur le même poste sur des plages successives
       $tmp=array();
       $j=0;
       for($i=0; $i<count($plannings);$i++){
@@ -926,12 +1680,13 @@ class absences{
   function piecesJustif($id,$pj, $checked){
     $db=new db();
     $db->CSRFToken = $this->CSRFToken;
-    $db->update2("absences",array($pj => $checked),array("id"=>$id));
+    $db->update("absences",array($pj => $checked),array("id"=>$id));
   }
+
 
   public function update_time(){
     $db=new db();
-    $db->query("show table status from {$GLOBALS['config']['dbname']} like '{$GLOBALS['dbprefix']}absences';");
+    $db->query("show table status from {$GLOBALS['config']['dbname']} like '{$GLOBALS['config']['dbprefix']}absences';");
     return $db->result[0]['Update_time'];
   }
 

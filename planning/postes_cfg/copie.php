@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.4.5
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/postes_cfg/copie.php
 Création : mai 2011
-Dernière modification : 19 ocotobre 2016
+Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -22,6 +22,7 @@ require_once "class.tableaux.php";
 
 // Initilisation des variables
 $confirm=filter_input(INPUT_GET,"confirm",FILTER_SANITIZE_STRING);
+$CSRFToken=filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING);
 $nom=trim(filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING));
 $numero1=filter_input(INPUT_GET,"numero",FILTER_SANITIZE_NUMBER_INT);
 
@@ -43,6 +44,7 @@ if($confirm){
     }
     $req="INSERT INTO `{$dbprefix}pl_poste_horaires` (`debut`,`fin`,`tableau`,`numero`) VALUES (:debut, :fin, :tableau, :numero);";
     $db2=new dbh();
+    $db2->CSRFToken = $CSRFToken;
     $db2->prepare($req);
     foreach($values as $elem){
       $db2->execute($elem);
@@ -54,8 +56,9 @@ if($confirm){
     $site=$db2->result[0]["site"];
 
     // Enregistrement du nouveau tableau
-    $db2=new db();		
-    $db2->insert2("pl_poste_tab", array("nom"=>$nom ,"tableau"=>$numero2, "site"=>$site));
+    $db2=new db();
+    $db2->CSRFToken = $CSRFToken;
+    $db2->insert("pl_poste_tab", array("nom"=>$nom ,"tableau"=>$numero2, "site"=>$site));
   }
   else{		// par sécurité, si pas d'horaires à  copier, on stop le script pour éviter d'avoir une incohérence dans les numéros de tableaux
     echo "<script type='text/javaScript'>parent.location.href='index.php?page=planning/postes_cfg/modif.php&cfg-type=horaires&numero=$numero';</script>\n";
@@ -75,6 +78,7 @@ if($confirm){
     $req="INSERT INTO `{$dbprefix}pl_poste_lignes` (`tableau`,`ligne`,`poste`,`type`,`numero`) ";
     $req.="VALUES (:tableau, :ligne, :poste, :type, :numero)";
     $db2=new dbh();
+    $db2->CSRFToken = $CSRFToken;
     $db2->prepare($req);
     foreach($values as $elem){
       $db2->execute($elem);
@@ -93,6 +97,7 @@ if($confirm){
     $req="INSERT INTO `{$dbprefix}pl_poste_cellules` (`ligne`,`colonne`,`tableau`,`numero`) ";
     $req.="VALUES (:ligne, :colonne, :tableau, :numero)";
     $db2=new dbh();
+    $db2->CSRFToken = $CSRFToken;
     $db2->prepare($req);
     foreach($values as $elem){
       $db2->execute($elem);
@@ -105,6 +110,7 @@ if($confirm){
 else{
   echo "<h3>Copie du tableau</h3>\n";
   echo "<form name='form' action='index.php' method='get'>\n";
+  echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
   echo "<input type='hidden' name='page' value='planning/postes_cfg/copie.php' />\n";
   echo "<input type='hidden' name='menu' value='off' />\n";
   echo "<input type='hidden' name='confirm' value='on' />\n";

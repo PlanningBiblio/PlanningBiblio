@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.3
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/postes_cfg/modif.php
 Création : mai 2011
-Dernière modification : 20 février 2016
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,6 +21,7 @@ require_once "class.tableaux.php";
 include "planning/poste/fonctions.php";
 
 // Initialisation des variables
+$CSRFToken = filter_input(INPUT_POST,"CSRFToken",FILTER_SANITIZE_STRING);
 $cfgType=filter_input(INPUT_POST,"cfg-type",FILTER_SANITIZE_STRING);
 $cfgTypeGet=filter_input(INPUT_GET,"cfg-type",FILTER_SANITIZE_STRING);
 $tableauNumero=filter_input(INPUT_POST,"numero",FILTER_SANITIZE_NUMBER_INT);

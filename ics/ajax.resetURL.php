@@ -3,7 +3,7 @@
 Planning Biblio, Version 2.6.4
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : ics/ajax.resetURL.php
 Création : 26 juillet 2016
@@ -25,7 +25,7 @@ $CSRFToken = filter_input(INPUT_POST, 'CSRFToken', FILTER_SANITIZE_STRING);
 
 $db = new db();
 $db->CSRFToken = $CSRFToken;
-$db->update2("personnel",array("code_ics"=>null), array("id"=>$id));
+$db->update("personnel",array("code_ics"=>null), array("id"=>$id));
 
 $p = new personnel();
 $p->CSRFToken = $CSRFToken;

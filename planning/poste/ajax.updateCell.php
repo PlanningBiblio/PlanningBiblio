@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.7
+Planning Biblio, Version 2.7.10
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 12 mai 2017
+Dernière modification : 20 décembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -36,6 +36,7 @@ $CSRFToken=filter_input(INPUT_POST,"CSRFToken",FILTER_SANITIZE_STRING);
 $date=filter_input(INPUT_POST,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
 $debut=filter_input(INPUT_POST,"debut",FILTER_CALLBACK,array("options"=>"sanitize_time"));
 $fin=filter_input(INPUT_POST,"fin",FILTER_CALLBACK,array("options"=>"sanitize_time"));
+$griser=filter_input(INPUT_POST,"griser",FILTER_SANITIZE_NUMBER_INT);
 $perso_id=filter_input(INPUT_POST,"perso_id",FILTER_SANITIZE_NUMBER_INT);
 $perso_id_origine=filter_input(INPUT_POST,"perso_id_origine",FILTER_SANITIZE_NUMBER_INT);
 $poste=filter_input(INPUT_POST,"poste",FILTER_SANITIZE_NUMBER_INT);
@@ -55,7 +56,7 @@ if($perso_id==0){
     $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site);
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("pl_poste",$set,$where);
+    $db->update("pl_poste",$set,$where);
 
   // Barrer l'agent sélectionné
   }elseif($barrer){
@@ -63,18 +64,20 @@ if($perso_id==0){
     $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("pl_poste",$set,$where);
+    $db->update("pl_poste",$set,$where);
   }
   // Tout supprimer
   elseif($tout){
     $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site);
     $db=new db();
-    $db->delete2("pl_poste",$where);
+    $db->CSRFToken = $CSRFToken;
+    $db->delete("pl_poste",$where);
   // Supprimer l'agent sélectionné
   }else{
     $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
     $db=new db();
-    $db->delete2("pl_poste",$where);
+    $db->CSRFToken = $CSRFToken;
+    $db->delete("pl_poste",$where);
   }
 }
 // Remplacement
@@ -84,13 +87,15 @@ else{
     // Suppression des anciens éléments
     $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=> $perso_id_origine);
     $db=new db();
-    $db->delete2("pl_poste",$where);
+    $db->CSRFToken = $CSRFToken;
+    $db->delete("pl_poste",$where);
 
     // Insertion des nouveaux éléments
     $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id, 
       "chgt_login"=>$login_id, "chgt_time"=>$now);
     $db=new db();
-    $db->insert2("pl_poste",$insert);
+    $db->CSRFToken = $CSRFToken;
+    $db->insert("pl_poste",$insert);
   }
   // Si barrer : on barre l'ancien et ajoute le nouveau
   elseif($barrer){
@@ -99,31 +104,46 @@ else{
     $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("pl_poste",$set,$where);
+    $db->update("pl_poste",$set,$where);
     
     // On ajoute le nouveau
     $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id, 
       "chgt_login"=>$login_id, "chgt_time"=>$now);
     $db=new db();
-    $db->insert2("pl_poste",$insert);
+    $db->CSRFToken = $CSRFToken;
+    $db->insert("pl_poste",$insert);
   }
   // Si Ajouter, on garde l'ancien et ajoute le nouveau
   elseif($ajouter){
     $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id, 
       "chgt_login"=>$login_id, "chgt_time"=>$now);
     $db=new db();
-    $db->insert2("pl_poste",$insert);
+    $db->CSRFToken = $CSRFToken;
+    $db->insert("pl_poste",$insert);
     }
+}
+
+// Griser les cellule
+if($griser == 1){
+  $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>'0', "grise"=>'1', "chgt_login"=>$login_id, "chgt_time"=>$now);
+  $db=new db();
+  $db->CSRFToken = $CSRFToken;
+  $db->insert("pl_poste",$insert);
+}elseif($griser == -1){
+  $delete=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>'0', "grise"=>'1');
+  $db=new db();
+  $db->CSRFToken = $CSRFToken;
+  $db->delete("pl_poste",$delete);
 }
 
 
 // Partie 2 : Récupération de l'ensemble des éléments
 // Et transmission à la fonction JS bataille_navale pour mise à jour de l'affichage de la cellule
 
-$db->selectInnerJoin(
+$db->selectLeftJoin(
   array("pl_poste","perso_id"),
   array("personnel","id"),
-  array("absent","supprime"),
+  array("absent","supprime","grise"),
   array("nom","prenom","statut","service","postes",array("name"=>"id","as"=>"perso_id")),
   array("date"=>$date, "debut"=>$debut, "fin"=> $fin, "poste"=>$poste, "site"=>$site),
   array(),
@@ -131,6 +151,11 @@ $db->selectInnerJoin(
 
 if(!$db->result){
   echo json_encode(array());
+  return;
+}
+
+if($db->result[0]['grise'] == 1){
+  echo json_encode("grise");
   return;
 }
 
@@ -164,7 +189,7 @@ $sansRepas = $p->sansRepas($date,$debut,$fin);
 // Recherche des absences
 $a=new absences();
 $a->valide=false;
-$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$date.' '.$debut,$date.' '.$fin);
+$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,$date.' '.$debut,$date.' '.$fin);
 $absences=$a->elements;
 
 
@@ -186,7 +211,7 @@ for($i=0;$i<count($tab);$i++){
       if($absence['valide']>0 or $config['Absences-validation'] == 0){
         $tab[$i]['absent']=1;
         break;  // Garder le break à cet endroit pour que les absences validées prennent le dessus sur les non-validées
-      }elseif($config['Absences-non-validees']){
+      }elseif($config['Absences-non-validees'] and $tab[$i]['absent'] != 1){
         $tab[$i]['absent']=2;
       }
     }

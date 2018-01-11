@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.8
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : ldap/import.php
 Création : 2 juillet 2014
-Dernière modification : 9 mars 2017
+Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -99,6 +99,7 @@ if($rechercheLdap){
     usort($infos,"cmp_ldap");
     $i=0;
     echo "<form name='form' method='post' action='index.php'>\n";
+    echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
     echo "<input type='hidden' name='page' value='personnel/import.php' />\n";
     echo "<input type='hidden' name='import-type' value='ldap' />\n";
     echo "<input type='hidden' name='recherche' value='$rechercheLdap' />\n";

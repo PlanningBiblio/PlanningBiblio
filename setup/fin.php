@@ -1,9 +1,9 @@
 <?php
 /**
-Planning Biblio, Version 2.6.91
+Planning Biblio, Version 2.7.10
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : setup/fin.php
 Création : mai 2011
@@ -19,7 +19,7 @@ Affiche le message "configuration terminée" et invite l'utilisateur à se conne
 
 session_start();
 
-$version="2.6.91";
+$version="2.7.10";
 include "../include/config.php";
 include "header.php";
 
@@ -48,7 +48,7 @@ if($password!=$password2){
 $password=md5($password);
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->update2("personnel",array("nom"=>$nom, "prenom"=>$prenom, "password"=>$password, "mail"=>$email), array("id"=>"1"));
+$db->update("personnel",array("nom"=>$nom, "prenom"=>$prenom, "password"=>$password, "mail"=>$email), array("id"=>"1"));
 if($db->error){
   $erreur=true;
 }

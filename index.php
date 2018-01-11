@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.91
+Planning Biblio, Version 2.7.10
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 12 mai 2017
+Dernière modification : 11 décembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -23,7 +23,7 @@ Inclut à la fin le fichier footer.php
 session_start();
 
 // Version
-$version="2.6.91";
+$version="2.7.10";
 
 // Redirection vers setup si le fichier config est absent
 if(!file_exists("include/config.php")){
@@ -88,7 +88,9 @@ if($version!=$config['Version']){
 else{
   include "include/feries.php";
   include "plugins/plugins.php";
-  include "include/cron.php";
+  if(isset($_SESSION['login_id'])){
+    include "include/cron.php";
+  }
 }
 
 // Si pas de session, redirection vers la page d'authentification

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.91
+Planning Biblio, Version 2.7.05
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 2 juin 2017
+Dernière modification : 28 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -25,8 +25,10 @@ $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 
 $display=null;
 $checked=null;
-$admin=in_array(1,$droits)?true:false;
-$adminN2=in_array(8,$droits)?true:false;
+
+$admin = in_array(1, $droits);
+$adminN2 = in_array(8, $droits);
+$agents_multiples = ($admin or in_array(9, $droits));
 
 $a=new absences();
 $a->fetchById($id);
@@ -47,7 +49,9 @@ $valide=filter_var($a->elements['valide_n2'],FILTER_SANITIZE_NUMBER_INT);
 $validation=$a->elements['validation_n2'];
 $valideN1=$a->elements['valide_n1'];
 $validationN1=$a->elements['validation_n1'];
-$iCalKey=$a->elements['ical_key'];
+$ical_key=$a->elements['ical_key'];
+$cal_name=$a->elements['cal_name'];
+$rrule=$a->elements['rrule'];
 
 // Pièces justificatives
 $pj1Checked=$a->elements['pj1']?"checked='checked'":null;
@@ -159,24 +163,29 @@ if($config['Multisites-nombre']>1){
 }
 
 // Si l'absence est importée depuis un agenda extérieur, on interdit la modification
-if($iCalKey){
+$agenda_externe = false;
+if($ical_key and substr($cal_name,0,14) != 'PlanningBiblio'){
+  $agenda_externe = true;
   $admin=false;
 }
 
 // Liste des agents
-if($admin){
+if($agents_multiples){
   $db_perso=new db();
   $db_perso->select2("personnel","*",array("supprime"=>0,"id"=>"<>2"),"order by nom,prenom");
   $agents_tous=$db_perso->result?$db_perso->result:array();
 }
 
 echo "<h3>Modification de l'absence</h3>\n";
-echo "<form name='form' method='get' action='index.php' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");'>\n";
+echo "<form name='form' id='form' method='get' action='index.php' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");'>\n";
 echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
 echo "<input type='hidden' name='page' value='absences/modif2.php' />\n";
 echo "<input type='hidden' name='perso_id' value='$perso_id' />\n";		// nécessaire pour verif_absences
 echo "<input type='hidden' id='admin' value='".($admin?1:0)."' />\n";
+echo "<input type='hidden' id='login_id' value='{$_SESSION['login_id']}' />\n";
 echo "<input type='hidden' name='groupe' id='groupe' value='$groupe' />\n";
+echo "<input type='hidden' name='rrule' id='rrule' value='$rrule' />\n";
+echo "<input type='hidden' name='recurrence-modif' id='recurrence-modif' value='' />\n";
 echo "<table class='tableauFiches'>\n";
 
 
@@ -188,21 +197,26 @@ foreach($agents as $elem){
 
 
 // Si admin, affiche les agents de l'absence et offre la possibilité d'en ajouter
-if($admin){
-  echo "<tr><td><label class='intitule'>Agent(s)</label></td><td>";
+if($agents_multiples){
+  echo "<tr><td><label class='intitule'>Agent(s)</label></td><td colspan='2'>";
   
-  // Liste des agents absents (Affichage de la liste)
-  echo "<ul id='perso_ul'>\n";
-  foreach($agents as $elem){
-    echo "<li id='li{$elem['perso_id']}' class='perso_ids_li' style='white-space: nowrap;'>{$elem['nom']} {$elem['prenom']}\n";
-    echo "<span class='perso-drop' style='margin-left:10px;' onclick='supprimeAgent({$elem['perso_id']});' >\n";
-    echo "<span class='pl-icon pl-icon-drop'></span></span></li>\n";
-  }
-  echo "</ul>\n";
+  // Liste des agents absents / Affichage de la liste (chargée en JQuery)
+  echo "<ul id='perso_ul1' class='perso_ul'></ul>\n";
+  echo "<ul id='perso_ul2' class='perso_ul'></ul>\n";
+  echo "<ul id='perso_ul3' class='perso_ul'></ul>\n";
+  echo "<ul id='perso_ul4' class='perso_ul'></ul>\n";
+  echo "<ul id='perso_ul5' class='perso_ul'></ul>\n";
+
+  echo "</td></tr>\n";
+  echo "<tr><td>&nbsp;</td><td>\n";
 
   // Menu déroulant
   echo "<select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>\n";
   echo "<option value='0' selected='selected'>-- Ajoutez un agent --</option>\n";
+  if($config['Absences-tous']){
+    echo "<option value='tous'>Tous les agents</option>\n";
+  }
+
   foreach($agents_tous as $elem){
     $hidden=in_array($elem['id'],$perso_ids)?"style='display:none;'":null;
     echo "<option value='".$elem['id']."' id='option{$elem['id']}' $hidden>".$elem['nom']." ".$elem['prenom']."</option>\n";
@@ -258,6 +272,14 @@ echo "</td><td>\n";
 echo "<select name='hre_fin' class='center ui-widget-content ui-corner-all' onfocus='setEndHour();'>\n";
 selectHeure(7,23,true,$hre_fin);
 echo "</select>\n";
+echo "</td></tr>\n";
+
+echo "<tr><td style='padding-bottom:30px;'>\n";
+echo "<label class='intitule'>Récurrence</label>\n";
+echo "</td><td style='padding-bottom:30px;'>\n";
+echo "<input type='checkbox' name='recurrence-checkbox' id='recurrence-checkbox' value='1' disabled='disabled' />\n";
+echo "<span id='recurrence-info' style='display:none;'><span id='recurrence-summary'>&nbsp;</span><a href='#' id='recurrence-link' style='margin-left:10px; display:none;'>Modifier</a></span>\n";
+echo "<input type='hidden' name='recurrence-hidden' id='recurrence-hidden' />\n";
 echo "</td></tr>\n";
 
 echo "<tr><td><label class='intitule'>Motif</label></td>\n";
@@ -323,7 +345,7 @@ EOD;
 echo "<tr><td colspan='2'><br/>\n";
 
 // Si l'absence est importée depuis un agenda extérieur, on interdit la modification
-if(($admin or ($valide==0 and $valideN1==0) or $config['Absences-validation']==0) and !$iCalKey){
+if(($admin or ($valide==0 and $valideN1==0) or $config['Absences-validation']==0) and !$agenda_externe){
   echo "<input type='button' class='ui-button' value='Supprimer' id='absence-bouton-supprimer' data-id='$id'/>";
   echo "&nbsp;&nbsp;\n";
   echo "<input type='button' class='ui-button' value='Annuler' onclick='annuler(1);'/>\n";
@@ -338,3 +360,16 @@ echo "</table>\n";
 echo "<input type='hidden' name='id' value='$id'/>";
 echo "</form>\n";
 ?>
+
+<!-- Dialog Box pour la modification de la récurrence -->
+<div id="recurrence-form-tmp" title="Récurrence" class='noprint' style='display:none;'>
+  <p>La modification des règles de récurrence n'est pas possible pour le moment.<br/>Cette fonctionnalité sera disponible dans les prochaines versions de Planning Biblio.</p>
+</div>
+<!-- Popup modification d'une récurrence -->
+<div id="recurrence-alert" title="Modification d'une absence récurrente" class='noprint' style='display:none;'>
+  <p>Souhaitez-vous modifier uniquement cet événement, tous les événements de la série, ou cet événement et ceux qui le suivent dans la série ?</p>
+</div>
+<!-- Popup suppression d'une récurrence -->
+<div id="recurrence-alert-suppression" title="Suppression d'une absence récurrente" class='noprint' style='display:none;'>
+  <p>Souhaitez-vous supprimer uniquement cet événement, tous les événements de la série, ou cet événement et ceux qui le suivent dans la série ?</p>
+</div>

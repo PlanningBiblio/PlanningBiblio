@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.7.06
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/suppression.php
 Création : mai 2011
-Dernière modification : 10 février 2017
+Dernière modification : 30 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -47,9 +47,9 @@ function etape1(){
   echo "<a href='javascript:popup_closed();'>Non</a>\n";
   echo "&nbsp;&nbsp;\n";
   if($db->result[0]['supprime']==1)		// Suppression définitive
-    echo "<a href='index.php?page=personnel/suppression.php&amp;menu=off&amp;id=$id&amp;etape=etape4&amp;CSRFToken={$_SESSION['oups']['CSRFToken']}'>Oui</a>\n";
+    echo "<a href='index.php?page=personnel/suppression.php&amp;menu=off&amp;id=$id&amp;etape=etape4&amp;CSRFToken=$CSRFSession'>Oui</a>\n";
   else								// Marqué comme supprimé
-    echo "<a href='index.php?page=personnel/suppression.php&amp;menu=off&amp;id=$id&amp;etape=etape2&amp;CSRFToken={$_SESSION['oups']['CSRFToken']}'>Oui</a>\n";
+    echo "<a href='index.php?page=personnel/suppression.php&amp;menu=off&amp;id=$id&amp;etape=etape2&amp;CSRFToken=$CSRFSession'>Oui</a>\n";
 }
 
 function etape2(){
@@ -80,12 +80,12 @@ function etape3(){
   //	Mise à jour de la table personnel
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->update2("personnel",array("supprime"=>"1","actif"=>"Supprim&eacute;","depart"=>$date),array("id"=>$id));
+  $db->update("personnel",array("supprime"=>"1","actif"=>"Supprim&eacute;","depart"=>$date),array("id"=>$id));
       //	Mise à jour de la table pl_poste
   $db=new db();
   $id=$db->escapeString($id);
   $date=$db->escapeString($date);
-  $db->query("UPDATE `{$GLOBALS['dbprefix']}pl_poste` SET `supprime`='1' WHERE `perso_id`='$id' AND `date`>'$date';");
+  $db->query("UPDATE `{$GLOBALS['config']['dbprefix']}pl_poste` SET `supprime`='1' WHERE `perso_id`='$id' AND `date`>'$date';");
   echo "<script type='text/JavaScript'>parent.window.location.reload(false);</script>";
   echo "<script type='text/JavaScript'>popup_closed();</script>";
 }

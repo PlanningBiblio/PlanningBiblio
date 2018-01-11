@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/enregistrer.php
 Création : mai 2011
-Dernière modification : 25 avril 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -24,6 +24,7 @@ require_once "class.planning.php";
 
 // Initialisation des variables
 $confirm=filter_input(INPUT_GET,"confirm",FILTER_SANITIZE_STRING);
+$CSRFToken=filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING);
 $date=filter_input(INPUT_GET,"date",FILTER_SANITIZE_STRING);
 $nom=trim(filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING));
 $semaine=filter_input(INPUT_GET,"semaine",FILTER_SANITIZE_STRING);
@@ -37,9 +38,7 @@ $dateFr=dateFr($date);
 
 // Sécurité
 // Refuser l'accès aux agents n'ayant pas les droits de modifier le planning
-$access=true;
-$droit=($config['Multisites-nombre']>1)?(300+$site):12;
-if(!in_array($droit,$droits)){
+if(!in_array((300+$site),$droits)){
   echo "<div id='acces_refuse'>Accès refusé</div>";
   echo "<a href='javascript:popup_closed();'>Fermer</a>\n";
   exit;
@@ -49,11 +48,13 @@ echo "<div style='text-align:center'>\n";
 echo "<b>Enregistrement du planning du $dateFr comme modèle.</b>\n";
 echo "<br/><br/>\n";
 
-if(!$nom){			// Etape 1 : Choix du nom du modèle
+// Etape 1 : Choix du nom du modèle
+if(!$nom){
   echo <<<EOD
   <form method='get' name='form' action='index.php'>
   
   <input type='hidden' name='page' value='planning/poste/enregistrer.php' />
+  <input type='hidden' name='CSRFToken' value='$CSRFToken' />
   <input type='hidden' name='date' value='$date' />
   <input type='hidden' name='site' value='$site' />
   <input type='hidden' name='menu' value='off' />
@@ -68,31 +69,37 @@ if(!$nom){			// Etape 1 : Choix du nom du modèle
   <input type='submit' value='Enregistrer' />
 EOD;
 }
-elseif(!$confirm){		// Etape 2 : Vérifions si le nom n'est pas déjà utilisé
+// Etape 2 : Vérifions si le nom n'est pas déjà utilisé
+elseif(!$confirm){
   $db=new db();
   $db->select2("pl_poste_modeles","*",array("nom"=>$nom, "site"=>$site));
   if($db->result){				// Si le nom existe, on propose de le remplacer
     echo "<b>Le modèle \"$nom\" existe<b><br/><br/>\n";
     echo "Voulez vous le remplacer ?<br/><br/>\n";
     echo "<a href='javascript:popup_closed();'>Non</a>&nbsp;&nbsp;\n";
-    echo "<a href='index.php?page=planning/poste/enregistrer.php&amp;confirm=oui&amp;menu=off&amp;nom=$nom&amp;semaine=$semaine&amp;date=$date&amp;site=$site'>Oui</a>\n";
+    echo "<a href='index.php?page=planning/poste/enregistrer.php&amp;confirm=oui&amp;menu=off&amp;nom=$nom&amp;semaine=$semaine&amp;date=$date&amp;site=$site&amp;CSRFToken=$CSRFToken'>Oui</a>\n";
   }
-  else					// Etape 2b : si le nom n'existe pas, on enregistre le planning du jour
-    enregistre_modele($nom,$date,$semaine,$site);
+  // Etape 2b : si le nom n'existe pas, on enregistre le planning du jour
+  else{
+    enregistre_modele($nom, $date, $semaine, $site, $CSRFToken);
   }
-else{		// Etape 3 : Si le nom existe et confirmation (=remplacement) : suppression des enregistements ecriture des nouveaux
+}
+// Etape 3 : Si le nom existe et confirmation (=remplacement) : suppression des enregistements ecriture des nouveaux
+else{
   $select=new db();
   $select->select2("pl_poste","*",array("date"=>$date, "site"=>$site));
   if($select->result){
     $delete=new db();
-    $delete->delete2("pl_poste_modeles", array("nom"=>$nom, "site"=>$site));
+    $delete->CSRFToken = $CSRFToken;
+    $delete->delete("pl_poste_modeles", array("nom"=>$nom, "site"=>$site));
     $delete=new db();
-    $delete->delete2("pl_poste_modeles_tab", array("nom"=>$nom, "site"=>$site));
-    enregistre_modele($nom,$date,$semaine,$site);
+    $delete->CSRFToken = $CSRFToken;
+    $delete->delete("pl_poste_modeles_tab", array("nom"=>$nom, "site"=>$site));
+    enregistre_modele($nom, $date, $semaine, $site, $CSRFToken);
   }
 }
 
-function enregistre_modele($nom,$date,$semaine,$site){
+function enregistre_modele($nom, $date, $semaine, $site, $CSRFToken){
   $dbprefix=$GLOBALS['config']['dbprefix'];
   $d=new datePl($date);
 
@@ -134,6 +141,7 @@ function enregistre_modele($nom,$date,$semaine,$site){
     }
 
     $dbh=new dbh();
+    $dbh->CSRFToken = $CSRFToken;
     $dbh->prepare("INSERT INTO `{$dbprefix}pl_poste_modeles` (`nom`,`perso_id`,`poste`,`debut`,`fin`,`jour`,`site`) 
       VALUES (:nom, :perso_id, :poste, :debut, :fin, :jour, :site);");
     foreach($values as $value){
@@ -151,7 +159,8 @@ function enregistre_modele($nom,$date,$semaine,$site){
       }
       $insert=array("nom"=>$nom, "jour"=>$jour, "tableau"=>$elem['tableau'], "site"=>$site);
       $db=new db();
-      $db->insert2("pl_poste_modeles_tab",$insert);
+      $db->CSRFToken = $CSRFToken;
+      $db->insert("pl_poste_modeles_tab",$insert);
     }
    }
   echo "Modèle \"$nom\" enregistré<br/><br/>\n";

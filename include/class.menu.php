@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : include/class.menu.inc
 Création : 22 juillet 2013
-Dernière modification : 25 mai 2015
+Dernière modification : 22 juin 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :

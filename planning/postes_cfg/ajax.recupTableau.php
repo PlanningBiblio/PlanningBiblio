@@ -3,7 +3,7 @@
 Planning Biblio, Version 2.6.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/postes_cfg/ajax.recupTableau.php
 Création : 20 février 2016
@@ -40,7 +40,7 @@ if(!empty($postes)){
   $postes=implode(",",$postes);
   $db=new db();
   $db->CSRFToken = $CSRFToken;
-  $db->update2("postes",array("supprime"=>null),array("id"=>"IN $postes"));
+  $db->update("postes",array("supprime"=>null),array("id"=>"IN $postes"));
 
   // Récupération des activités
   $activites=array();
@@ -63,14 +63,14 @@ if(!empty($postes)){
     $activites=implode(",",$activites);
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update2("activites",array("supprime"=>null),array("id"=>"IN $activites"));
+    $db->update("activites",array("supprime"=>null),array("id"=>"IN $activites"));
   }
 }
 
 // Recupération du tableau
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->update2("pl_poste_tab",array("supprime"=>null),array("tableau"=>$id));
+$db->update("pl_poste_tab",array("supprime"=>null),array("tableau"=>$id));
 
 echo json_encode("OK");
 ?>

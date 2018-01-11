@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.7.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : statistiques/statut.php
 Création : 13 septembre 2013
-Dernière modification : 8 février 2017
+Dernière modification : 22 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -23,6 +23,8 @@ require_once "absences/class.absences.php";
 // Initialisation des variables :
 $debut=filter_input(INPUT_POST,"debut",FILTER_SANITIZE_STRING);
 $fin=filter_input(INPUT_POST,"fin",FILTER_SANITIZE_STRING);
+$statistiques_heures = filter_input(INPUT_POST,"statistiques_heures",FILTER_SANITIZE_STRING);
+$statistiques_heures_defaut = filter_input(INPUT_POST,"statistiques_heures_defaut",FILTER_SANITIZE_NUMBER_INT);
 $post=filter_input_array(INPUT_POST,FILTER_SANITIZE_NUMBER_INT);
 
 $debut=filter_var($debut,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
@@ -33,10 +35,22 @@ $post_sites=isset($post['selectedSites'])?$post['selectedSites']:null;
 
 $joursParSemaine=$config['Dimanche']?7:6;
 $statuts_tab=null;
-$exists_h19=false;
-$exists_h20=false;
 $exists_JF=false;
 $exists_absences=false;
+
+// Statistiques-Heures
+$heures_tab_global = array();
+if($statistiques_heures_defaut){
+  $statistiques_heures = $config['Statistiques-Heures'];
+} else {
+  if(!$statistiques_heures and !empty($_SESSION['oups']['statistiques_heures'])){
+    $statistiques_heures = $_SESSION['oups']['statistiques_heures'];
+  }elseif(!$statistiques_heures and !empty($config['Statistiques-Heures'])){
+    $statistiques_heures = $config['Statistiques-Heures'];
+  }
+}
+
+$_SESSION['oups']['statistiques_heures'] = $statistiques_heures;
 
 if(!$debut and array_key_exists('stat_debut',$_SESSION)){ $debut=$_SESSION['stat_debut']; }
 if(!$fin and array_key_exists('stat_fin',$_SESSION)){ $fin=$_SESSION['stat_fin']; }
@@ -105,7 +119,7 @@ $statuts_list=$db->result;
 // Recherche des absences dans la table absences
 $a=new absences();
 $a->valide=true;
-$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,null,$debutSQL." 00:00:00",$finSQL." 23:59:59");
+$a->fetch("`nom`,`prenom`,`debut`,`fin`",null,$debutSQL." 00:00:00",$finSQL." 23:59:59");
 $absencesDB=$a->elements;
 
 if(!empty($statuts)){
@@ -155,10 +169,9 @@ if(!empty($statuts)){
       $total_absences=$tab[$statut][5];
       $samedi=$tab[$statut][3];
       $dimanche=$tab[$statut][6];
-      $h19=$tab[$statut][7];
-      $h20=$tab[$statut][8];
       $absences=$tab[$statut][4];
-      $feries=$tab[$statut][9];
+      $heures_tab = $tab[$statut][7];
+      $feries=$tab[$statut][8];
       $sites=$tab[$service]["sites"];
     }
     else{
@@ -167,8 +180,7 @@ if(!empty($statuts)){
       $samedi=array();
       $dimanche=array();
       $absences=array();
-      $h19=array();
-      $h20=array();
+      $heures_tab = array();
       $feries=array();
       for($i=1;$i<=$config['Multisites-nombre'];$i++){
 	$sites[$i]=0;
@@ -223,17 +235,24 @@ if(!empty($statuts)){
 	      $feries[$elem['date']][1]+=diff_heures($elem['debut'],$elem['fin'],"decimal");
 	      $exists_JF=true;
 	    }
-
-	    //	On compte les 19-20
-	    if($config['Statistiques-19-20'] and $elem['debut']=="19:00:00"){
-	      $h19[]=$elem['date'];
-	      $exists_h19=true;
-	    }
-	    //	On compte les 20-22
-	    if($config['Statistiques-20-22'] and $elem['debut']=="20:00:00"){
-	      $h20[]=$elem['date'];
-	      $exists_h20=true;;
-	    }
+            // Statistiques-Heures
+            if($statistiques_heures){
+              $statistiques_heures_tab = explode(';', $statistiques_heures);
+              foreach($statistiques_heures_tab as $h){
+              
+                $tmp = heures($h);
+                if(!$tmp){
+                  continue;
+                }
+                
+                if($elem['debut'] == $tmp[0] and $elem['fin'] == $tmp[1]){
+                  $heures_tab[$tmp[0].'-'.$tmp[1]][] = $elem['date'];
+                  if(!in_array($tmp, $heures_tab_global)){
+                    $heures_tab_global[] = $tmp;
+                  }
+                }
+              }
+            }
 	  }
 	  else{				// On compte les absences
 	    if(!array_key_exists($elem['date'],$absences)){
@@ -245,7 +264,7 @@ if(!empty($statuts)){
 	    $exists_absences=true;
 	  }
 	  // On met dans tab tous les éléments (infos postes + statuts + heures)
-	  $tab[$statut]=array($elem['statut'],$postes,$heures,$samedi,$absences,$total_absences,$dimanche,$h19,$h20,$feries,"sites"=>$sites);
+	  $tab[$statut]=array($elem['statut'],$postes,$heures,$samedi,$absences,$total_absences,$dimanche,$heures_tab,$feries,"sites"=>$sites);
 	}
       }
     }
@@ -261,6 +280,8 @@ $s->selectedSites=$selectedSites;
 $s->ouverture();
 $ouverture=$s->ouvertureTexte;
 
+sort($heures_tab_global);
+
 // passage en session du tableau pour le fichier export.php
 $_SESSION['stat_tab']=$tab;
 
@@ -268,8 +289,9 @@ $_SESSION['stat_tab']=$tab;
 echo "<h3>Statistiques par statut</h3>\n";
 echo "<table><tr style='vertical-align:top;'><td id='stat-col1'>\n";
 //		--------------		Affichage du formulaire permettant de sélectionner les dates et les agents		-------------
-echo "<form name='form' action='index.php' method='post'>\n";
+echo "<form name='form' id='form' action='index.php' method='post'>\n";
 echo "<input type='hidden' name='page' value='statistiques/statut.php' />\n";
+echo "<input type='hidden' name='statistiques_heures_defaut' id='statistiques_heures_defaut_hidden' value='0' />\n";
 echo "<table>\n";
 echo "<tr><td><label class='intitule'>D&eacute;but</label></td>\n";
 echo "<td><input type='text' name='debut' value='$debut' class='datepicker' />\n";
@@ -284,11 +306,18 @@ echo "<td><select name='statuts[]' multiple='multiple' size='20' onchange='verif
 if(is_array($statuts_list)){
   echo "<option value='Tous'>Tous</option>\n";
   foreach($statuts_list as $elem){
-    $selected=in_array($elem['id'],$statuts)?"selected='selected'":null;
+    $selected = null;
+    if(!empty($statuts)){
+      $selected=in_array($elem['id'],$statuts)?"selected='selected'":null;
+    }
     echo "<option value='{$elem['id']}' $selected>{$elem['valeur']}</option>\n";
   }
 }
 echo "</select></td></tr>\n";
+
+echo "<tr style='vertical-align:top;'><td><label for='statistiques_heures' class='intitule'>Heures<sup>*</sup></label></td>\n";
+echo "<td><textarea name='statistiques_heures' rows='7' class='ui-widget-content ui-corner-all'>$statistiques_heures</textarea><br/>\n";
+echo "<a href='#' id='statistiques_heures_defaut_lien'>Charger les heures par d&eacute;faut</a></td></tr>\n";
 
 if($config['Multisites-nombre']>1){
   $nbSites=$config['Multisites-nombre'];
@@ -310,6 +339,10 @@ echo "<tr><td colspan='2'><hr/></td></tr>\n";
 echo "<tr><td>Exporter </td>\n";
 echo "<td><a href='javascript:export_stat(\"statut\",\"csv\");'>CSV</a>&nbsp;&nbsp;\n";
 echo "<a href='javascript:export_stat(\"statut\",\"xsl\");'>XLS</a></td></tr>\n";
+echo "<tr><td colspan='2'><hr/></td></tr>\n";
+echo "<tr><td colspan='2'><p><sup>*</sup>Afficher des statistiques sur les cr&eacute;neaux horaires voulus.<br/>\n";
+echo "Les créneaux doivent être au format 00h00-00h00 et séparés par des ;<br/>\n";
+echo "Exemple : 19h00-20h00; 20h00-21h00; 21h00-22h00</p></td></tr>\n";
 echo "</table>\n";
 echo "</form>\n";
 
@@ -331,15 +364,16 @@ if($tab){
   if($exists_JF){
     echo "<td style='width:120px; padding-left:8px;'>J. F&eacute;ri&eacute;s</td>\n";
   }
-  if($exists_h19){
-    echo "<td style='width:120px; padding-left:8px;'>19-20</td>\n";
-  }
-  if($exists_h20){
-    echo "<td style='width:120px; padding-left:8px;'>20-22</td>\n";
-  }
   if($exists_absences){
-    echo "<td style='width:120px; padding-left:8px;'>Absences</td></tr>\n";
+    echo "<td style='width:120px; padding-left:8px;'>Absences</td>\n";
   }
+ 
+  foreach($heures_tab_global as $v){
+    echo "<td style='width:120px; padding-left:8px;'>".heure3($v[0]).'-'.heure3($v[1])."</td>\n";
+  }
+  
+  echo "</tr>\n";
+  
   foreach($tab as $elem){
     $jour=$elem[2]/$nbJours;
     $hebdo=$jour*$joursParSemaine;
@@ -411,42 +445,18 @@ if($tab){
 
     if($exists_JF){
       echo "<td style='padding-left:8px;'>";					//	Jours feries
-      $ferie=count($elem[9])>1?"J. f&eacute;ri&eacute;s":"J. f&eacute;ri&eacute;";
-      echo count($elem[9])." $ferie";		//	nombre de dimanche
+      $ferie=count($elem[8])>1?"J. f&eacute;ri&eacute;s":"J. f&eacute;ri&eacute;";
+      echo count($elem[8])." $ferie";		//	nombre de dimanche
       echo "<br/>\n";
-      sort($elem[9]);				//	tri les jours fériés par dates croissantes
-      foreach($elem[9] as $ferie){		// 	Affiche les dates et heures des jours fériés
+      sort($elem[8]);				//	tri les jours fériés par dates croissantes
+      foreach($elem[8] as $ferie){		// 	Affiche les dates et heures des jours fériés
 	echo dateFr($ferie[0]);			//	date
 	echo "&nbsp;:&nbsp;".heure4($ferie[1])."<br/>";	//	heures
       }
       echo "</td>";	
     }
 
-    if($exists_h19){
-      echo "<td>\n";				//	Affichage des 19-20
-      if(array_key_exists(0,$elem[7])){
-	sort($elem[7]);
-	echo "Nb 19-20 : ";
-	echo count($elem[7]);
-	foreach($elem[7] as $h19){
-	  echo "<br/>".dateFr($h19);
-	}
-      }
-    echo "</td>\n";
-    }
-    if($exists_h20){
-      echo "<td>\n";				//	Affichage des 20-22
-      if(array_key_exists(0,$elem[8])){
-	sort($elem[8]);
-	echo "Nb 20-22 : ";
-	echo count($elem[8]);
-	foreach($elem[8] as $h20){
-	  echo "<br/>".dateFr($h20);
-	}
-      }
-      echo "</td>\n";
-    }
-	    
+    // Absences
     if($exists_absences){
       echo "<td>\n";
       if($elem[5]){				//	Affichage du total d'heures d'absences
@@ -459,6 +469,37 @@ if($tab){
       }
       echo "</td>\n";
     }
+
+    // Statistiques-Heures
+    foreach($heures_tab_global as $v){
+      $h1 = heure3($v[0]);
+      $h2 = heure3($v[1]);
+      $v = $v[0].'-'.$v[1];
+
+      echo "<td>\n";
+      if(!empty($elem[7][$v])){
+	sort($elem[7][$v]);
+	echo "Nb $h1-$h2 : ";
+	echo count($elem[7][$v]);
+
+	$count = array();
+
+	foreach($elem[7][$v] as $h){
+          if(empty($count[$h])){
+            $count[$h] = 1;
+          } else {
+            $count[$h]++;
+          }
+        }
+        
+        foreach($count as $k => $v){
+          echo "<br/>".dateFr($k);
+            echo " ($v)";
+	}
+      }
+      echo "</td>\n";
+    }
+
     echo "</tr>\n";
   }
   echo "</table>\n";

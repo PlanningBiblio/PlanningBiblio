@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/ajax.appelDispoMail.php
 Création : 22 décembre 2015
-Dernière modification : 21 avril 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -24,6 +24,7 @@ session_start();
 require_once "../../include/config.php";
 require_once "../../include/function.php";
 
+$CSRFToken=filter_input(INPUT_POST,"CSRFToken",FILTER_SANITIZE_STRING);
 $site=filter_input(INPUT_POST,"site",FILTER_SANITIZE_STRING);
 $poste=filter_input(INPUT_POST,"poste",FILTER_SANITIZE_STRING);
 $date=filter_input(INPUT_POST,"date",FILTER_SANITIZE_STRING);
@@ -59,7 +60,8 @@ $isSent=$m->send();
 if($isSent){
   $successAddresses=join(";",$m->successAddresses);
   $db=new db();
-  $db->insert2("appel_dispo",array( "site"=>$site, "poste"=>$poste, "date"=>$date, "debut"=>$debut, "fin"=>$fin, 
+  $db->CSRFToken = $CSRFToken;
+  $db->insert("appel_dispo",array( "site"=>$site, "poste"=>$poste, "date"=>$date, "debut"=>$debut, "fin"=>$fin, 
     "destinataires"=>$successAddresses, "sujet"=>$sujet, "message"=>$message));
 }
 

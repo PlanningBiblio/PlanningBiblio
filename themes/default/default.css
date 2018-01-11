@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.7.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 23 avril  2017
+Dernière modification : 22 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -132,6 +132,24 @@ h3{
   margin-right:40px;
 }
 
+/* Absences récurrentes */
+#recurrence-summary, #recurrence-summary-form {
+  max-width:300px;
+  white-space: normal;
+}
+
+/* .perso_ul : sélection des agents dans les pages absences/* */
+.perso_ul{
+  display: inline-block;
+  vertical-align: top;
+}
+
+/* .perso-drop : suppression des agents sélectionés dans les pages absences/* */
+.perso-drop{
+  float: right;
+  margin-left: 10px;
+}
+
 /*	Icônes		*/
 .pl-icon{
   padding: 5px 13px 5px 13px;
@@ -178,6 +196,10 @@ h3{
   background:url("images/printer.png") no-repeat center;
 }
 
+.pl-icon-recurring {
+  background:url("images/recurring.png") no-repeat center;
+}
+
 .pl-icon-refresh {
   background:url("images/refresh.png") no-repeat center;
 }
@@ -197,7 +219,7 @@ h3{
 }
 
 /* Les agents */
-.agent-acces-checked2{
+li .agent-acces-checked2{
   position:absolute;
   left:500px;
 }
@@ -226,6 +248,14 @@ h3{
   vertical-align:top;
   padding: 0 60px 10px 10px;
   white-space: nowrap;
+}
+
+.tableauFiches td:first-child{
+  width: 160px;
+}
+
+.tableauFiches td:nth-child(2){
+  width: 300px;
 }
 
 .tableauFiches .td_validation{
@@ -314,6 +344,7 @@ li.menu_li:hover {
 /* TD des sous menu top */
 .menu_table{
   margin-top: 15px;
+  z-index: 20;
 }
 
 td.menu_td2{
@@ -686,6 +717,10 @@ div#tabsemaine1{
   font-size:110%;
 }
 
+.pl-highlight {
+  background: #f0e68c;
+}
+
 /* Notes affichées en bas des plannings */
 #pl-notes-div1, .pl-notes-div1{
   margin: 20px 0 0 0;
@@ -989,8 +1024,12 @@ option.bold{
   width:350px;
 }
 
-#stat-col1 select,#stat-col1 input[type=text]{
+#stat-col1 select,#stat-col1 input[type=text] {
   width:250px;
+}
+
+#stat-col1 textarea {
+  width:244px;
 }
 
 #stat-temps-aff-grp{

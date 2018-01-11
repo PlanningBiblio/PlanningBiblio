@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.4.1
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planningHebdo/js/script.planningHebdo.js
 Création : 26 août 2013
-Dernière modification : 11 juillet 2016
+Dernière modification : 7 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -36,47 +36,102 @@ function plHebdoCalculHeures(object,num){
   elements=document.forms["form1"].elements;
   
   for(i=debut;i<fin;i++){
+    debut1 = 0;
+    debut2 = 0;
+    debut3 = 0;
+    fin1 = 0;
+    fin2 = 0;
+    fin3 = 0;
+    
+    
+    // Si modification possible (select)
     if(elements["temps"+num+"["+i+"][0]"]){
-      debut1=elements["temps"+num+"["+i+"][0]"].value;
-      fin1=elements["temps"+num+"["+i+"][1]"].value;
-      debut2=elements["temps"+num+"["+i+"][2]"].value;
-      fin2=elements["temps"+num+"["+i+"][3]"].value;
-    }
-    else{
-      debut1=$("#temps"+num+"_"+i+"_0").text().replace("h",":");
-      fin1=$("#temps"+num+"_"+i+"_1").text().replace("h",":");
-      debut2=$("#temps"+num+"_"+i+"_2").text().replace("h",":");
-      fin2=$("#temps"+num+"_"+i+"_3").text().replace("h",":");
-    }
-    if(debut1){
-      diff=0;
-      // Journée avec pause le midi
-      if(debut1 && fin1 && debut2 && fin2){
-	diff=diffMinutes(debut1,fin1);
-	diff+=diffMinutes(debut2,fin2);
-      }
-      // Matin uniquement
-      else if(debut1 && fin1){
-	diff=diffMinutes(debut1,fin1);
-      }
-      // Après midi seulement
-      else if(debut2 && fin2){
-	diff=diffMinutes(debut2,fin2);
-      }
-      // Journée complète sans pause
-      else if(debut1 && fin2){
-	diff=diffMinutes(debut1,fin2);
-      }
-      heures+=diff;
       
-      // Affichage du nombre d'heure pour chaque ligne
-      if(diff){
-	$("#heures"+num+"_"+numero+"_"+(i+1)).html(heure4(diff/60));
+      debut1 = $("select[name*='temps"+num+"["+i+"][0]']").val();
+      fin1 = $("select[name*='temps"+num+"["+i+"][1]']").val();
+      debut2 = $("select[name*='temps"+num+"["+i+"][2]']").val();
+      fin3 = $("select[name*='temps"+num+"["+i+"][3]']").val();              // Passe à fin3 pour pouvoir intércaler une 2nde pause
+
+      // Si 2 pauses (PlanningHebdo-Pause2)
+      if($("select[name*='temps"+num+"["+i+"][5]']")){
+        fin2 = $("select[name*='temps"+num+"["+i+"][5]']").val();
+        debut3 = $("select[name*='temps"+num+"["+i+"][6]']").val();
+      }
+    
+    // Si lecture seule
+    }else{
+      debut1 = $("#temps"+num+"_"+i+"_0").text().replace("h",":");
+      fin1 = $("#temps"+num+"_"+i+"_1").text().replace("h",":");
+      debut2 = $("#temps"+num+"_"+i+"_2").text().replace("h",":");
+      fin3 = $("#temps"+num+"_"+i+"_3").text().replace("h",":");    // Passe à fin3 pour pouvoir intércaler une 2nde pause
+
+      // Si 2 pauses (PlanningHebdo-Pause2)
+      if($("#temps"+num+"_"+i+"_5")){
+        fin2 = $("#temps"+num+"_"+i+"_5").text().replace("h",":");
+        debut3 = $("#temps"+num+"_"+i+"_6").text().replace("h",":");
       }
     }
+
+    diff=0;
+    
+    // Journée avec 2 pauses
+    if(debut1 && fin1 && debut2 && fin2 && debut3 && fin3){
+      diff=diffMinutes(debut1,fin1);
+      diff+=diffMinutes(debut2,fin2);
+      diff+=diffMinutes(debut3,fin3);
+    }
+    // Journée avec pause le midi (pause 1)
+    else if(debut1 && fin1 && debut2 && fin3){
+      diff=diffMinutes(debut1,fin1);
+      diff+=diffMinutes(debut2,fin3);
+    }
+    // Journée avec pause le midi (pause 2)
+    else if(debut1 && fin2 && debut3 && fin3){
+      diff=diffMinutes(debut1,fin2);
+      diff+=diffMinutes(debut3,fin3);
+    }
+    // Matin uniquement (pause 1)
+    else if(debut1 && fin1){
+      diff=diffMinutes(debut1,fin1);
+    }
+    // Matin uniquement (pause 2)
+    else if(debut1 && fin2){
+      diff=diffMinutes(debut1,fin2);
+    }
+    // Journée complète sans pause
+    else if(debut1 && fin3){
+      diff=diffMinutes(debut1,fin3);
+    }
+    // Journée commençant en fin de pause 1 avec pause 2
+    else if(debut2 && fin2 && debut3 && fin3){
+      diff=diffMinutes(debut2,fin2);
+      diff+=diffMinutes(debut3,fin3);
+    }
+    // Après midi seulement (pause 1)
+    else if(debut2 && fin3){
+      diff=diffMinutes(debut2,fin3);
+    }
+    // Après midi seulement (pause 2)
+    else if(debut3 && fin3){
+      diff=diffMinutes(debut3,fin3);
+    }
+    heures+=diff;
+    
+    // Affichage du nombre d'heure pour chaque ligne
+    $("#heures"+num+"_"+numero+"_"+(i+1)).html(heure4(diff/60));
+
+    // Affichage en rouge si valeur négative
+    $("#heures"+num+"_"+numero+"_"+(i+1)).removeClass('red');
+    if(diff<0){
+      $("#heures"+num+"_"+numero+"_"+(i+1)).addClass('red');
+    }
+
   }
+
   heures=heure4(heures/60);
   $("#heures"+num+"_"+numero).text(heures);
+  
+  // TODO : alerter si les heures ne sont pas cohérentes (ex: fin inférieure au début)
 }
 
 // Fonction permettant d'afficher les heures correspondantes à chaque tableau
@@ -178,11 +233,16 @@ function plHebdoMemePlanning(){
 
 function plHebdoSupprime(id){
   if(confirm("Etes vous sûr(e) de vouloir supprimer ce planning de présence ?")){
+    
+    var CSRFToken = $('#CSRFSession').val();
     // Suppression du planning en arrière plan
+    
     $.ajax({
       url: "planningHebdo/ajax.delete.php",
-      data: "id="+id,
+      dataType: "json",
+      data: {id: id, CSRFToken: CSRFToken},
       type: "get",
+    
       success: function(){
 	// On cache la ligne du planning supprimée dans le tableau
 	CJDataTableHideRow("#tr_"+id);

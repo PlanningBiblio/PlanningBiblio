@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.6.91
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/js/modif.js
 Création : 3 mars 2014
-Dernière modification : 2 juin 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -165,7 +165,6 @@ function select_drop_all(select_dispo,select_attrib,hidden_attrib,width){	// Att
 }
 // Fin Select Multpiles
 
-
 // Contrôle des champs lors de la validation
 function verif_form_agent(){
   erreur=false;
@@ -223,7 +222,7 @@ $(function() {
           url: "include/ajax.menus.php",
 	  type: "post",
           dataType: "json",
-	  data: {tab: tab, menu: "statuts" , option: "categorie"},
+	  data: {tab: tab, menu: "statuts" , option: "categorie", CSRFToken: $('#CSRFSession').val()},
 	  success: function(){
             var current_val = $('#statut').val();
             $('#statut').empty();
@@ -333,7 +332,7 @@ $(function() {
 	  url: "include/ajax.menus.php",
 	  type: "post",
           dataType: "json",
-	  data: {tab: tab, menu: "services"},
+	  data: {tab: tab, menu: "services", CSRFToken: $('#CSRFSession').val()},
 	  success: function(){
             var current_val = $('#service').val();
             $('#service').empty();

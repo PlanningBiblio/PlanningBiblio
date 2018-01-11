@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.7.06
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/postes_cfg/class.tableaux.php
 Création : mai 2011
-Dernière modification : 21 avril 2017
+Dernière modification : 30 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -34,14 +34,16 @@ class tableau{
   public function deleteGroup(){
     if($this->id){
       $db=new db();
-      $db->delete2("pl_poste_tab_grp",array("id"=>$this->id));
+      $db->CSRFToken = $this->CSRFToken;
+      $db->delete("pl_poste_tab_grp",array("id"=>$this->id));
     }
   }
 
   public function deleteLine(){
     if($this->id){
       $db=new db();
-      $db->delete2("lignes",array("id"=>$this->id));
+      $db->CSRFToken = $this->CSRFToken;
+      $db->delete("lignes",array("id"=>$this->id));
     }
   }
 
@@ -53,11 +55,11 @@ class tableau{
       $set=array("supprime"=>$today);
       
       $db=new db();
-      $db->query("UPDATE `{$GLOBALS['dbprefix']}pl_poste_tab_grp` SET `supprime`='$today' WHERE `lundi`='$id' OR `mardi`='$id' OR `mercredi`='$id' OR `jeudi`='$id' OR `vendredi`='$id' OR `samedi`='$id' OR `dimanche`='$id';");
+      $db->query("UPDATE `{$GLOBALS['config']['dbprefix']}pl_poste_tab_grp` SET `supprime`='$today' WHERE `lundi`='$id' OR `mardi`='$id' OR `mercredi`='$id' OR `jeudi`='$id' OR `vendredi`='$id' OR `samedi`='$id' OR `dimanche`='$id';");
 
       $db=new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->update2("pl_poste_tab",$set,$where);
+      $db->update("pl_poste_tab",$set,$where);
     }
   }
 
@@ -212,9 +214,10 @@ class tableau{
 
     if($diff>0){
       for($i=$next;$i<($diff+$next);$i++){
-	$horaires=array("debut"=>"09:00:00","fin"=>"10:00:00","tableau"=>$i,"numero"=>$id);
-	$db=new db();
-	$db->insert2("pl_poste_horaires",$horaires);
+        $horaires=array("debut"=>"09:00:00","fin"=>"10:00:00","tableau"=>$i,"numero"=>$id);
+        $db=new db();
+        $db->CSRFToken = $this->CSRFToken;
+        $db->insert("pl_poste_horaires",$horaires);
       }
     }
 
@@ -222,9 +225,11 @@ class tableau{
       $i=$number;
       while($numbers[$i]){
 	$db=new db();
-	$db->delete2("pl_poste_horaires",array("tableau"=>$numbers[$i], "numero"=>$id));
+        $db->CSRFToken = $this->CSRFToken;
+	$db->delete("pl_poste_horaires",array("tableau"=>$numbers[$i], "numero"=>$id));
 	$db=new db();
-	$db->delete2("pl_poste_lignes",array("tableau"=>$numbers[$i], "numero"=>$id));
+        $db->CSRFToken = $this->CSRFToken;
+	$db->delete("pl_poste_lignes",array("tableau"=>$numbers[$i], "numero"=>$id));
 	$i++;
       }
     }
@@ -236,12 +241,13 @@ class tableau{
     if($post["id"]){
       $db=new db();
       $db->CSRFToken = $this->CSRFToken;
-      $db->update2("pl_poste_tab_grp",$post,array("id"=>$post['id']));
+      $db->update("pl_poste_tab_grp",$post,array("id"=>$post['id']));
     }
     //		Insert
     else{
       $db=new db();
-      $db->insert2("pl_poste_tab_grp",$post);
+      $db->CSRFToken = $this->CSRFToken;
+      $db->insert("pl_poste_tab_grp",$post);
     }
   }
 }

@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/postes_cfg/js/tableaux.js
 Création : 4 février 2015
-Dernière modification : 10 février 2017
+Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -17,13 +17,15 @@ Fichier intégré par le fichier include/header.php avec la fonction getJSFiles.
 
 // Supprime des groupes de tableaux en cliquant sur les croix rouges
 function supprimeGroupe(id){
+  var CSRFToken = $('#CSRFSession').val();
   var nom=$("#td-groupe-"+id+"-nom").text();
+  
   if(confirm("Etes vous sûr(e) de vouloir supprimer le groupe \""+nom+"\"?")){
     $.ajax({
       url: "planning/postes_cfg/ajax.supprimeGroupe.php",
       type: "post",
       dataType: "json",
-      data: {id: id},
+      data: {id: id, CSRFToken: CSRFToken},
       success: function(){
 	var tr=$("#tr-groupe-"+id).next("tr");
 	while(tr.length>0){
@@ -46,13 +48,14 @@ function supprimeGroupe(id){
 
 // Suppression des lignes en cliquant sur les croix rouges
 function supprimeLigne(id){
+  var CSRFToken = $('#CSRFSession').val();
   var nom=$("#td-ligne-"+id+"-nom").text();
   if(confirm("Etes-vous sûr(e) de vouloir supprimer la ligne \""+nom+"\" ?")){
     $.ajax({
       url: "planning/postes_cfg/ajax.supprimeLigne.php",
       type: "post",
       dataType: "json",
-      data: {id: id},
+      data: {id: id, CSRFToken: CSRFToken},
       success: function(){
 	var tr=$("#tr-ligne-"+id).next("tr");
 	while(tr.length>0){

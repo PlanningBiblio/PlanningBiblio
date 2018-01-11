@@ -2,7 +2,7 @@
 Planning Biblio, Version 2.3
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/activites/js/activites.js
 Création : 21 mars 2016

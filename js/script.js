@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.7.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 10 février 2017
+Dernière modification : 22 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 @author Etienne Cavalié
@@ -43,45 +43,93 @@ function calculHeures(object,num,form,tip,numero){
   
   for(i=debut;i<fin;i++){
     if(elements["temps"+num+"["+i+"][0]"]){
-      debut1=elements["temps"+num+"["+i+"][0]"].value;
-      fin1=elements["temps"+num+"["+i+"][1]"].value;
-      debut2=elements["temps"+num+"["+i+"][2]"].value;
-      fin2=elements["temps"+num+"["+i+"][3]"].value;
+      heure0=elements["temps"+num+"["+i+"][0]"].value;
+      heure1=elements["temps"+num+"["+i+"][1]"].value;
+      heure2=elements["temps"+num+"["+i+"][2]"].value;
+      heure3=elements["temps"+num+"["+i+"][3]"].value;
+      
+      heure5 = null;
+      heure6 = null;
+      if(elements["temps"+num+"["+i+"][5]"] != undefined){
+        heure5=elements["temps"+num+"["+i+"][5]"].value;
+        heure6=elements["temps"+num+"["+i+"][6]"].value;
+      }
     }
     else{
-      debut1=$("#temps"+num+"_"+i+"_0").text().replace("h",":");
-      fin1=$("#temps"+num+"_"+i+"_1").text().replace("h",":");
-      debut2=$("#temps"+num+"_"+i+"_2").text().replace("h",":");
-      fin2=$("#temps"+num+"_"+i+"_3").text().replace("h",":");
+      heure0=$("#temps"+num+"_"+i+"_0").text().replace("h",":");
+      heure1=$("#temps"+num+"_"+i+"_1").text().replace("h",":");
+      heure2=$("#temps"+num+"_"+i+"_2").text().replace("h",":");
+      heure5=$("#temps"+num+"_"+i+"_5").text().replace("h",":");
+      heure6=$("#temps"+num+"_"+i+"_6").text().replace("h",":");
+      heure3=$("#temps"+num+"_"+i+"_3").text().replace("h",":");
     }
-    if(debut1){
-      diff=0;
-      // Journée avec pause le midi
-      if(debut1 && fin1 && debut2 && fin2){
-	diff=diffMinutes(debut1,fin1);
-	diff+=diffMinutes(debut2,fin2);
-      }
-      // Matin uniquement
-      else if(debut1 && fin1){
-	diff=diffMinutes(debut1,fin1);
-      }
-      // Après midi seulement
-      else if(debut2 && fin2){
-	diff=diffMinutes(debut2,fin2);
-      }
-      // Journée complète sans pause
-      else if(debut1 && fin2){
-	diff=diffMinutes(debut1,fin2);
-      }
-      heures+=diff;
-      // Affichage du nombre d'heure pour chaque ligne
-      if(diff){
-	$("#heures"+num+"_"+numero+"_"+(i+1)).html(heure4(diff/60));
-      }
+    
+    
+  /**
+   * Tableau affichant les différentes possibilités
+   * NB : le paramètre heures[4] est utilisé pour l'affectation du site. Il n'est pas utile ici
+   * NB : la 2ème pause n'est pas implémentée depuis le début, c'est pourquoi les paramètres heures[5] et heures[6] viennent s'intercaler avant $heure[3]
+   *
+   *    Heure 0     Heure 1     Heure 2     Heure 5     Heure 6     Heure 3
+   * 1                           [ tableau vide]
+   * 2    |-----------|           |-----------|           |-----------|   
+   * 3    |-----------|           |-----------------------------------|   
+   * 4    |-----------|                                   |-----------|
+   * 5    |-----------|
+   * 6    |-----------------------------------|           |-----------|   
+   * 7    |-----------------------------------|
+   * 8    |-----------------------------------------------------------|
+   * 9                            |-----------|
+   * 10                           |-----------------------------------|
+   */
+
+    // Constitution des groupes de plages horaires
+    var diff=0;
+    var tab = new Array();
+    
+    // 1er créneau : cas N° 2; 3; 4; 5
+    if (heure0 && heure1) {
+      tab.push(new Array(heure0, heure1));
+    
+    // 1er créneau fusionné avec le 2nd : cas N° 6 et 7
+    } else if (heure0 && heure5) {
+      tab.push(new Array(heure0, heure5));
+    
+    // Journée complète : cas N° 8
+    } else if (heure0 && heure3) {
+      tab.push(new Array(heure0, heure3));
     }
+    
+    // 2ème créneau : cas N° 1 et 9
+    if (heure2 &&  heure5) {
+      tab.push(new Array(heure2, heure5));
+      
+    // 2ème créneau fusionné au 3ème : cas N° 3 et 10
+    } else if (heure2 && heure3) {
+      tab.push(new Array(heure2, heure3));
+    }
+    
+    // 3ème créneau : cas N° 2; 4; 6
+    if (heure6 && heure3) {
+      tab.push(new Array(heure6, heure3));
+    }
+
+    
+    for(j in tab){
+      diff += diffMinutes(tab[j][0],tab[j][1]);
+    }
+    
+    heures+=diff;
+    
+    // Affichage du nombre d'heure pour chaque ligne
+    if(diff){
+      $("#heures"+num+"_"+numero+"_"+(i+1)).html(heure4(diff/60));
+    }
+      
   }
   heures=heure4(heures/60);
   $("#"+tip).text(heures);
+  
 }
 
 function ctrl_form(champs){
@@ -200,6 +248,63 @@ function dateFr(date){
     date=tab[2]+"-"+tab[1]+"-"+tab[0];
   }
   return date;
+}
+
+/** @function dateFrToICSGMT
+ * @param string date : date au format DD/MM/YYYY HH:mm:ss
+ * @return string date au format YYYYMMDDTHHmmssZ
+ * Convertit une date au format FR sur le fuseau horaire local (navigateur) en date au format ICS sur le fuseau horaire GMT
+ */
+function dateFrToICSGMT(date){
+
+  if(date == null){
+    return null;
+  }
+
+  var d = new Date(date.replace(/(\d*)\/(\d*)\/(\d*)(.*)/,"$2/$1/$3$4"));
+  var offset = d.getTimezoneOffset();
+  d.setMinutes(d.getMinutes() + offset);
+
+  date = d.getFullYear().toString()
+    +('0' + (d.getMonth()+1)).slice(-2)
+    +('0' + d.getDate()).slice(-2)
+    +'T'
+    +('0' + d.getHours()).slice(-2)
+    +('0' + d.getMinutes()).slice(-2)
+    +('0' + d.getSeconds()).slice(-2)
+    +'Z';
+
+  return date;
+}
+
+/** @function dateICSGMTToFr
+ * @param string date : date au format YYYYMMDDTHHmmssZ
+ * @return string date au format DD/MM/YYYY HH:mm:ss
+ * Convertit une date au format ICS sur le fuseau horaire GMT en date au format FR sur le fuseau horaire local (navigateur)
+ */
+function dateICSGMTToFr(date){
+
+  if(date == null){
+    return null;
+  }
+
+  var d = new Date(date.replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/,"$2/$3/$1 $4:$5:$6"));
+  var offset = d.getTimezoneOffset();
+
+  d.setMinutes(d.getMinutes() - offset);
+
+  date = ('0' + d.getDate()).slice(-2)+'/'
+    +('0' + (d.getMonth()+1)).slice(-2)+'/'
+    +d.getFullYear()+' '
+    +('0' + d.getHours()).slice(-2)+':'
+    +('0' + d.getMinutes()).slice(-2)+':'
+    +('0' + d.getSeconds()).slice(-2);
+
+  return date;
+}
+
+function daysInMonth(month,year) {
+  return new Date(year, month, 0).getDate();
 }
 
 function decompte(dcpt){

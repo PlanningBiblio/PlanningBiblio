@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.91
+Planning Biblio, Version 2.7.10
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 1er juin 2017
+Dernière modification : 19 décembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -15,6 +15,8 @@ Ce fichier permet de mettre à jour la base de données lors de la mise à jour 
 Cette page est appelée par la page index.php si la version du fichier index.php et différente de la version enregistrée
 dans la base de données
 */
+
+$CSRFToken = CSRFToken();
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
 if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
@@ -548,15 +550,15 @@ $v="2.5.1";
 if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
 
   // Transformation serialized -> JSON
-  serializeToJson('personnel','droits');
-  serializeToJson('personnel','postes');
-  serializeToJson('personnel','sites');
-  serializeToJson('postes','activites');
-  serializeToJson('postes','categories');
-  serializeToJson('config','valeur','id', array('type'=>'checkboxes'));
-  serializeToJson('planningHebdoPeriodes','dates');
-  serializeToJson('personnel','temps');
-  serializeToJson('planningHebdo','temps');
+  serializeToJson('personnel','droits', 'id', null, $CSRFToken);
+  serializeToJson('personnel','postes', 'id', null, $CSRFToken);
+  serializeToJson('personnel','sites', 'id', null, $CSRFToken);
+  serializeToJson('postes','activites', 'id', null, $CSRFToken);
+  serializeToJson('postes','categories', 'id', null, $CSRFToken);
+  serializeToJson('config','valeur','id', array('type'=>'checkboxes'), $CSRFToken);
+  serializeToJson('planningHebdoPeriodes','dates', 'id', null, $CSRFToken);
+  serializeToJson('personnel','temps', 'id', null, $CSRFToken);
+  serializeToJson('planningHebdo','temps', 'id', null, $CSRFToken);
 
   $sql[] = "ALTER TABLE `{$dbprefix}postes` CHANGE `categories` `categories` TEXT NULL DEFAULT NULL;";
 
@@ -824,6 +826,202 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="2.7";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // 2 pauses par jour
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('PlanningHebdo-Pause2', 'boolean', '0', '2 pauses dans une journ&eacute;e', 'Heures de pr&eacute;sence', 60);";
+
+  $sql[] = "UPDATE `{$dbprefix}personnel` SET `actif`='Supprim&eacute;' WHERE `actif` LIKE 'Supprim%';";
+  
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('URL', 'info', '', 'URL de l&apos;application',' Divers','','10');";
+  $sql[]="UPDATE `{$dbprefix}config` SET `ordre`='20' WHERE `nom`='Dimanche';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `ordre`='30' WHERE `nom`='Granularite';";
+
+  // Griser les cellules des plannings
+  $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`) VALUES ('Griser les cellules des plannings','901','Griser les cellules des plannings');";
+  $sql[]="ALTER TABLE `{$dbprefix}pl_poste` ADD `grise` ENUM ('0','1') DEFAULT '0';";
+
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.7.01";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Statistiques
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `commentaires`, `categorie`, `ordre`) 
+    VALUES ('Statistiques-Heures', 'textarea', 'Afficher des statistiques sur les cr&eacute;neaux horaires voulus. Les cr&eacute;neaux doivent &ecirc;tre au format 00h00-00h00 et s&eacute;par&eacute;s par des ; Exemple : 19h00-20h00; 20h00-21h00; 21h00-22h00','Statistiques','10');";
+  $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom` IN ('Statistiques-19-20','Statistiques-20-22');";
+
+  // Check ICS
+  $sql[]="ALTER TABLE `{$dbprefix}personnel` ADD `check_ics` VARCHAR(10) NULL DEFAULT '[1,1,1]' AFTER `url_ics`;";
+
+  // Encodage des caractères
+  $sql[]="UPDATE `{$dbprefix}acces` SET `nom`='Jours f&eacute;ri&eacute;s', `groupe`='Gestion des jours f&eacute;ri&eacute;s' WHERE `groupe_id`='25';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe`='Gestion des plannings de pr&eacute;sences' WHERE `groupe_id`='24';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='Ce message a &eacute;t&eacute; envoy&eacute; par Planning Biblio.\nMerci de ne pas y r&eacute;pondre.' WHERE `nom`='Mail-Signature';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Contr&ocirc;le des heures des agents le samedi et le dimanche' WHERE `nom`='ctrlHresAgents';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeurs`='[[0,\"\"],[1,\"simple\"],[2,\"d&eacute;taill&eacute;\"],[3,\"absents et pr&eacute;sents\"]]', `type`='enum2' WHERE `nom`='Absences-planning';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='0' WHERE `valeur` = '' AND `nom`='Absences-planning';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='1' WHERE `valeur` = 'simple' AND `nom`='Absences-planning';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2' WHERE `valeur` LIKE 'd%taill%' AND `nom`='Absences-planning';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='3' WHERE `valeur` LIKE 'absents et pr%sents' AND `nom`='Absences-planning';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;1' WHERE `nom`='Multisites-site1';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;2' WHERE `nom`='Multisites-site2';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;3' WHERE `nom`='Multisites-site3';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;4' WHERE `nom`='Multisites-site4';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;5' WHERE `nom`='Multisites-site5';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;6' WHERE `nom`='Multisites-site6';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;7' WHERE `nom`='Multisites-site7';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;8' WHERE `nom`='Multisites-site8';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;9' WHERE `nom`='Multisites-site9';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Nom du site N&deg;10' WHERE `nom`='Multisites-site10';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `categorie`='Cong&eacute;s' WHERE `categorie` LIKE 'Cong%s';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Heure de d&eacute;but pour la v&eacute;rification des sans repas' WHERE `nom`='Planning-SR-debut';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `commentaires`='Heure de fin pour la v&eacute;rification des sans repas' WHERE `nom`='Planning-SR-fin';";
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='Appel &agrave; disponibilit&eacute; [poste] [date] [debut]-[fin]' WHERE `nom`='Planning-AppelDispoSujet';";
+  $sql[]="UPDATE `{$dbprefix}menu` SET `titre`='Par poste (Synth&egrave;se)' WHERE `url`='statistiques/postes_synthese.php';";
+  $sql[]="UPDATE `{$dbprefix}menu` SET `titre`='Les activit&eacute;s' WHERE `url`='activites/index.php';";
+  $sql[]="UPDATE `{$dbprefix}menu` SET `titre`='Les mod&egrave;les' WHERE `url`='planning/modeles/index.php';";
+  $sql[]="UPDATE `{$dbprefix}menu` SET `titre`='Plannings de pr&eacute;sence' WHERE `url`='planningHebdo/index.php';";
+
+  // Séparation des droits Modification de planning, niveau 1 et niveau 2 et classement des droits d'accès
+  $sql[]="UPDATE `{$dbprefix}personnel` SET `droits`= REPLACE(`droits`,'12','301');";
+  $sql[]="ALTER TABLE `{$dbprefix}acces` ADD `ordre` INT(2) NOT NULL DEFAULT 0;";
+  $sql[]="ALTER TABLE `{$dbprefix}acces` ADD `categorie` VARCHAR(30) NOT NULL DEFAULT '';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe_id`=301, `groupe`='Cr&eacute;ation / modification des plannings, utilisation et gestion des mod&egrave;les', `categorie`='Planning', `ordre`=110 WHERE `page`='planning/poste/supprimer.php';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe_id`=301, `groupe`='Cr&eacute;ation / modification des plannings, utilisation et gestion des mod&egrave;les', `categorie`='Planning', `ordre`=110 WHERE `page`='planning/poste/importer.php';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe_id`=301, `groupe`='Cr&eacute;ation / modification des plannings, utilisation et gestion des mod&egrave;les', `categorie`='Planning', `ordre`=110 WHERE `page`='planning/poste/enregistrer.php';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe_id`=301, `groupe`='Cr&eacute;ation / modification des plannings, utilisation et gestion des mod&egrave;les', `categorie`='Planning', `ordre`=110 WHERE `page`='planning/modeles/index.php';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe_id`=301, `groupe`='Cr&eacute;ation / modification des plannings, utilisation et gestion des mod&egrave;les', `categorie`='Planning', `ordre`=110 WHERE `page`='planning/modeles/modif.php';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe_id`=301, `groupe`='Cr&eacute;ation / modification des plannings, utilisation et gestion des mod&egrave;les', `categorie`='Planning', `ordre`=110 WHERE `page`='planning/modeles/valid.php';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe_id`=1001, `groupe`='Modification des plannings', `categorie`='Planning', `ordre`=120 WHERE `page`='planning/poste/menudiv.php';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe_id`=1001, `groupe`='Modification des plannings', `categorie`='Planning', `ordre`=120 WHERE `page`='planning/poste/majdb.php';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Planning', `ordre`=140 WHERE `groupe_id`='22';";
+  $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='planning/poste/horaires.php';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Planning', `ordre`=130 WHERE `groupe_id`='801';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Absences', `ordre`=20 WHERE `groupe_id`='6';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Absences', `ordre`=30 WHERE `groupe_id`='1';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Absences', `ordre`=40 WHERE `groupe_id`='8';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Absences', `ordre`=50 WHERE `groupe_id`='701';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Agendas', `ordre`=55 WHERE `groupe_id`='3';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe`='Voir les fiches des agents', `categorie`='Agents', `ordre`=60 WHERE `groupe_id`='4';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe`='Gestion des agents', `categorie`='Agents', `ordre`=70 WHERE `groupe_id`='21';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Postes', `ordre`=160 WHERE `groupe_id`='5';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe`='Acc&egrave;s au statistiques', `categorie`='Statistiques', `ordre`=170 WHERE `groupe_id`='17';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `groupe`='Gestion des heures de pr&eacute;sence', `categorie`='Heures de pr&eacute;sence', `ordre`=80 WHERE `groupe_id`='24';";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Planning', `ordre`=125 WHERE `groupe_id`='901';";
+  
+  // Dissociation des droits de valider les absences et d'enregistrer des absences pour plusieurs agents
+  $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`categorie`,`ordre`) VALUES ('Enregistrement d&apos;absences pour plusieurs agents','9','Enregistrement d&apos;absences pour plusieurs agents', 'Absences', '25');";
+  
+  $sql[]="UPDATE `{$dbprefix}personnel` SET `droits` = REPLACE (`droits`, ',1,', ',1,9,');";
+  $sql[]="UPDATE `{$dbprefix}personnel` SET `droits` = REPLACE (`droits`, '[1,', '[1,9,');";
+  $sql[]="UPDATE `{$dbprefix}personnel` SET `droits` = REPLACE (`droits`, ',1]', ',1,9]');";
+  $sql[]="UPDATE `{$dbprefix}personnel` SET `droits` = REPLACE (`droits`, '[1]', '[1,9]');";
+  $sql[]="UPDATE `{$dbprefix}personnel` SET `droits` = REPLACE (`droits`, '\"1\"', '1,9');";
+
+  // Notification lors de la validation des plannings
+  $sql[]="ALTER TABLE `{$dbprefix}pl_notifications` ADD `site` INT(2) NOT NULL DEFAULT '1';";
+  $sql[]="ALTER TABLE `{$dbprefix}pl_notifications` ADD KEY `date` (`date`), ADD KEY `site` (`site`);";
+
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) 
+    VALUES ('Absences-tous', 'boolean', '0', 'Autoriser l&apos;enregistrement d&apos;absences pour tous les agents en une fois','Absences','37');";
+
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.7.02";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.7.03";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('ICS-Status1','enum2', 'CONFIRMED', '[[\"CONFIRMED\",\"Confirm&eacute;s\"],[\"ALL\",\"Tous\"]]', 'ICS', 'Importer tous les &eacute;v&eacute;nements ou seulement les &eacute;v&eacute;nements confirm&eacute;s (attribut STATUS = CONFIRMED). Si \"tous\" est choisi, les &eacute;v&eacute;nements non-confirm&eacute;s seront enregistr&eacute;s comme des absences en attente de validation','22');";
+
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('ICS-Status2','enum2', 'CONFIRMED', '[[\"CONFIRMED\",\"Confirm&eacute;s\"],[\"ALL\",\"Tous\"]]', 'ICS', 'Importer tous les &eacute;v&eacute;nements ou seulement les &eacute;v&eacute;nements confirm&eacute;s (attribut STATUS = CONFIRMED). Si \"tous\" est choisi, les &eacute;v&eacute;nements non-confirm&eacute;s seront enregistr&eacute;s comme des absences en attente de validation','42');";
+
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('ICS-Status3','enum2', 'CONFIRMED', '[[\"CONFIRMED\",\"Confirm&eacute;s\"],[\"ALL\",\"Tous\"]]', 'ICS', 'Importer tous les &eacute;v&eacute;nements ou seulement les &eacute;v&eacute;nements confirm&eacute;s (attribut STATUS = CONFIRMED). Si \"tous\" est choisi, les &eacute;v&eacute;nements non-confirm&eacute;s seront enregistr&eacute;s comme des absences en attente de validation','47');";
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.7.04";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  $sql[]="UPDATE `{$dbprefix}menu` SET `url`='absences/voir.php' WHERE `url`='absences/index.php';";
+  $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `uid` TEXT NULL DEFAULT NULL;";
+  $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `rrule` TEXT NULL DEFAULT NULL;";
+  $sql[]="ALTER TABLE `{$dbprefix}absences` DROP `nbjours`;";
+  
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.7.05";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  $sql[]="CREATE TABLE `{$dbprefix}absences_recurrentes` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT, 
+    `uid` VARCHAR(50), 
+    `perso_id` INT,
+    `event` TEXT,
+    `end` ENUM ('0','1') NOT NULL DEFAULT '0',
+    `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `last_update` VARCHAR(20) NOT NULL DEFAULT '',
+    `last_check` VARCHAR(20) NOT NULL DEFAULT '',
+    PRIMARY KEY (`id`),
+    KEY `uid`(`uid`),
+    KEY `perso_id`(`perso_id`), 
+    KEY `end`(`end`),
+    KEY `last_check`(`last_check`)) 
+    ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+    
+  $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom` = 'Data-Folder';";
+    
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.7.06";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Si la création de la table absences_recurrentes a échoué en 2.7.05 à cause des multiples champs TIMESTAMP, on la créé ici
+  $sql[]="CREATE TABLE IF NOT EXISTS `{$dbprefix}absences_recurrentes` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `uid` VARCHAR(50),
+    `perso_id` INT,
+    `event` TEXT,
+    `end` ENUM ('0','1') NOT NULL DEFAULT '0',
+    `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `last_update` VARCHAR(20) NOT NULL DEFAULT '',
+    `last_check` VARCHAR(20) NOT NULL DEFAULT '',
+    PRIMARY KEY (`id`),
+    KEY `uid`(`uid`),
+    KEY `perso_id`(`perso_id`),
+    KEY `end`(`end`),
+    KEY `last_check`(`last_check`))
+    ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+  // Si la table absences_recurrentes a bien été créée en 2.7.05 mais avec différents champs TIMESTAMP, on la  modifie ici.
+  $sql[]="ALTER TABLE `{$dbprefix}absences_recurrentes` CHANGE `last_update` `last_update` VARCHAR(20) NOT NULL DEFAULT '', CHANGE `last_check` `last_check` VARCHAR(20) NOT NULL DEFAULT '';";
+
+  $sql[]="ALTER TABLE `{$dbprefix}absences` ADD KEY `perso_id` (`perso_id`),  ADD KEY `debut` (`debut`), ADD KEY `fin` (`fin`), ADD KEY `groupe` (`groupe`);";
+
+  $sql[]="DELETE FROM `{$dbprefix}config` WHERE `nom` = 'Data-Folder';";
+
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.7.10";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach($sql as $elem){
   $db=new db();
@@ -879,9 +1077,10 @@ include "include/footer.php";
  * @param string $id : nom du champ ID (clé)
  * @param array $where : condition sql where : ex: array('type'=>'checkboxes')
  */
-function serializeToJson($table,$field,$id='id',$where=null){
+function serializeToJson($table,$field,$id='id',$where=null, $CSRFToken){
   // Transformation serialized  -> json
   $dbh = new dbh();
+  $dbh->CSRFToken = $CSRFToken;
   $dbh->prepare("UPDATE `{$GLOBALS['config']['dbprefix']}$table` SET `$field`=:value WHERE `$id`=:key;");
   echo "UPDATE `{$GLOBALS['config']['dbprefix']}$table` SET `$field`=:value WHERE `$id`=:key;<br/>";
 

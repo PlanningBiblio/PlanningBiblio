@@ -14,6 +14,7 @@ plugins/ldap*
 plugins/pla*
 plugins/echanges*
 test-*
+themes/bcu*
 themes/bua*
 themes/bcu*
 themes/bis*
@@ -23,5 +24,5 @@ themes/gre*
 themes/lyon*
 themes/sciencesPo*
 themes/tlse*
-themes/ut1*
+themes/ut*
 

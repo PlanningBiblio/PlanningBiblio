@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.5
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : ics/calendar.php
 Création : juillet 2016
-Dernière modification : 28 avril 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -35,7 +35,10 @@ Vous devez activier le paramètre ICS-Export dans le menu Administration / Confi
 // TODO : Protection par code, générer des codes pour les agents existants, générer des codes à chaque ajout/importation, afficher ces codes des les fichiers agents.
 // TODO : config : activer/désactiver la génération des fichiers ICS: désactivé par défaut
 
+session_start();
+
 $version="ics";
+
 require_once "../include/config.php";
 require_once "../include/function.php";
 require_once "../plugins/plugins.php";
@@ -43,9 +46,10 @@ require_once "../absences/class.absences.php";
 require_once "../personnel/class.personnel.php";
 require_once "../postes/class.postes.php";
 
+$CSRFToken = CSRFToken();
 
 if(!$config['ICS-Export']){
-  logs("L'exportation ICS est désactivée","ICS Export");
+  logs("L'exportation ICS est désactivée", "ICS Export", $CSRFToken);
   exit;
 }
 
@@ -63,7 +67,7 @@ if(!$id and $login){
     $id = $db->result[0]['id'];
   }
   else{
-    logs("Impossible de trouver l'id associé au login $login","ICS Export");
+    logs("Impossible de trouver l'id associé au login $login", "ICS Export", $CSRFToken);
     exit;
   }
 }
@@ -76,17 +80,17 @@ if(!$id and $mail){
     $id = $db->result[0]['id'];
   }
   else{
-    logs("Impossible de trouver l'id associé au mail $mail","ICS Export");
+    logs("Impossible de trouver l'id associé au mail $mail", "ICS Export", $CSRFToken);
     exit;
   }
 }
 
 if(!$id){
-  logs("L'id de l'agent n'est pas fourni","ICS Export");
+  logs("L'id de l'agent n'est pas fourni", "ICS Export", $CSRFToken);
   exit;
 }
 
-logs("Exportation des plages de SP pour l'agent #$id","ICS Export");
+logs("Exportation des plages de SP pour l'agent #$id", "ICS Export", $CSRFToken);
 
 
 // N'affiche pas les calendriers des agents supprimés
@@ -131,7 +135,7 @@ if($db->result){
 // Recherche des absences
 $a=new absences();
 $a->valide=true;
-$a->fetch("`debut`,`fin`",null,$id,'0000-00-00 00:00:00', date('Y-m-d', strtotime(date('Y-m-d').' + 2 years')));
+$a->fetch("`debut`,`fin`",$id,'0000-00-00 00:00:00', date('Y-m-d', strtotime(date('Y-m-d').' + 2 years')));
 $absences=$a->elements;
 
 // Recherche des congés (si le plugin est installé)

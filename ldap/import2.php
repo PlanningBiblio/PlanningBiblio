@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.8
+Planning Biblio, Version 2.7
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : ldap/import2.php
 Création : 2 juillet 2014
-Dernière modification : 9 mars 2017
+Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -20,6 +20,7 @@ Fichier appelé par la page personnel/import.php
 require_once "class.ldap.php";
 
 // Initialisation des variables
+$CSRFToken = filter_input(INPUT_POST, 'CSRFToken', FILTER_SANITIZE_STRING);
 $actif="Actif";
 $date=date("Y-m-d H:i:s");
 $commentaires= "Importation LDAP $date";
@@ -62,6 +63,7 @@ if($ldapconn){
 $req="INSERT INTO `{$dbprefix}personnel` (`login`,`nom`,`prenom`,`mail`,`password`,`droits`,`arrivee`,`postes`,`actif`,`commentaires`) ";
 $req.="VALUES (:login, :nom, :prenom, :mail, :password, :droits, :arrivee, :postes, :actif, :commentaires);";
 $db=new dbh();
+$db->CSRFToken = $CSRFToken;
 $db->prepare($req);
 
 // Recuperation des infos LDAP et insertion dans la base de données

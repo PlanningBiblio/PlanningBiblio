@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.7
+Planning Biblio, Version 2.7.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2017 Jérôme Combes
+@copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 12 mai 2017
+Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -33,15 +33,21 @@ $admin=in_array(21,$droits)?true:false;
 
 // Gestion des droits d'accés
 $db_groupes=new db();
-$db_groupes->select2("acces",array("groupe_id","groupe"),"groupe_id not in (99,100)","group by groupe");
+$db_groupes->select2("acces",array("groupe_id", "groupe", "categorie", "ordre"),"groupe_id not in (99,100)","group by groupe");
 
 // Tous les droits d'accés
 $groupes=array();
 if($db_groupes->result){
   foreach($db_groupes->result as $elem){
+    if(empty($elem['categorie'])){
+      $elem['categorie'] = 'Divers';
+      $elem['ordre'] = '200';
+    }
     $groupes[$elem['groupe_id']]=$elem;
   }
 }
+
+uasort($groupes, 'cmp_ordre');
 
 // PlanningHebdo et EDTSamedi étant incompatibles, EDTSamedi est désactivé si PlanningHebdo est activé
 if($config['PlanningHebdo']){
@@ -64,12 +70,21 @@ if($config['Multisites-nombre']>1){
     $groupes_sites[2]=$groupes[2];
     unset($groupes[2]);
   }
-  $groupes_sites[12]=$groupes[12];	// Modification des plannings
-  unset($groupes[12]);
+  $groupes_sites[301]=$groupes[301];	// Modification des plannings, niveau 1 et 2
+  unset($groupes[301]);
+
+  $groupes_sites[1001]=$groupes[1001];	// Modification des plannings, niveau 1
+  unset($groupes[1001]);
 
   $groupes_sites[801]=$groupes[801];	// Modification des commentaires des plannings
   unset($groupes[801]);
+
+  $groupes_sites[901]=$groupes[901];	// Griser les cellules des plannings
+  unset($groupes[901]);
 }
+
+uasort($groupes_sites, 'cmp_ordre');
+
 
 $db=new db();
 $db->select2("select_statuts",null,null,"order by rang");
@@ -119,6 +134,7 @@ if($id){		//	récupération des infos de l'agent en cas de modif
   $mail=$db->result[0]['mail'];
   $statut=$db->result[0]['statut'];
   $categorie=$db->result[0]['categorie'];
+  $check_ics = json_decode($db->result[0]['check_ics'],true);
   $service=$db->result[0]['service'];
   $heuresHebdo=$db->result[0]['heures_hebdo'];
   $heuresTravail=$db->result[0]['heures_travail'];
@@ -174,6 +190,7 @@ else{		// pas d'id, donc ajout d'un agent
   $mail=null;
   $statut=null;
   $categorie=null;
+  $check_ics = array(1,1,1);
   $service=null;
   $heuresHebdo=null;
   $heuresTravail=null;
@@ -260,6 +277,9 @@ $postes_dispo=postesNoms($postes_dispo,$postes_completNoms);
 <li><a href='#qualif'>Activités</a></li>
 <li><a href='#temps' id='personnel-a-li3'>Heures de pr&eacute;sence</a></li>
 <?php
+if($config['ICS-Server1'] or $config['ICS-Server2'] or $config['ICS-Server3'] or $config['ICS-Export']){
+  echo "<li><a href='#agendas'>Agendas</a></li>";
+}
 if(in_array("conges",$plugins)){
   echo "<li><a href='#conges'>Cong&eacute;s</a></li>";
 }
@@ -540,14 +560,6 @@ echo "</td><td>";
 echo in_array(21,$droits)?"<input type='text' value='$matricule' name='matricule' style='width:400px' />":"$matricule</a>";
 echo "</td></tr>";
 
-if($config['ICS-Server3']){
-  echo "<tr><td>";
-  echo "URL ICS : ";
-  echo "</td><td>";
-  echo in_array(21,$droits)?"<input type='text' value='$url_ics' name='url_ics' style='width:400px' />":"$url_ics</a>";
-  echo "</td></tr>";
-}
-
 echo "<tr><td>";
 echo "E-mails des responsables : ";
 if(in_array(21,$droits)){
@@ -606,16 +618,6 @@ if($id){
     echo "<tr><td colspan='2'>\n";
     echo "<a href='javascript:modif_mdp();'>Changer le mot de passe</a>";
     echo "</td></tr>";
-  }
-
-  // URL du fichier ICS
-  if(isset($ics)){
-    echo "<tr><td style='padding-top: 10px;'>Calendrier ICS</td>\n";
-    echo "<td style='padding-top: 10px;' id='url-ics'>$ics</td></tr>\n";
-    if($config['ICS-Code']){
-      echo "<tr><td>&nbsp;</td>\n";
-      echo "<td><a href='javascript:resetICSURL($id, \"$CSRFSession\", \"$prenom $nom\");'>R&eacute;initialiser l'URL</a></td></tr>\n";
-    }
   }
 }
 ?>
@@ -698,19 +700,32 @@ for($j=0;$j<$config['nb_semaine'];$j++){
     echo $j==0?"<br/><b>Emploi du temps standard</b>":"<br/><b>Emploi du temps des semaines avec samedi travaillé</b>";
   }
   echo "<table border='1' cellspacing='0'>\n";
-  echo "<tr style='text-align:center;'><td style='width:150px;'>{$cellule[$j]}</td><td style='width:150px;'>Heure d'arrivée</td>";
-  echo "<td style='width:150px;'>Début de pause</td><td style='width:150px;'>Fin de pause</td>";
-  echo "<td style='width:150px;'>Heure de départ</td>";
+  echo "<tr style='text-align:center;'><td style='width:135px;'>{$cellule[$j]}</td><td style='width:135px;'>Heure d'arrivée</td>";
+  if($config['PlanningHebdo-Pause2']){
+    echo "<td style='width:135px;'>Début de pause 1</td><td style='width:135px;'>Fin de pause 1</td>";
+    echo "<td style='width:135px;'>Début de pause 2</td><td style='width:135px;'>Fin de pause 2</td>";
+  }else{
+    echo "<td style='width:135px;'>Début de pause</td><td style='width:135px;'>Fin de pause</td>";
+  }
+  echo "<td style='width:135px;'>Heure de départ</td>";
   if($config['Multisites-nombre']>1){
     echo "<td>Site</td>";
   }
-  echo "<td style='width:150px;'>Temps</td>";
+  
+  echo "<td style='width:135px;'>Temps</td>";
     echo "</tr>\n";
   for($i=$debut[$j];$i<$fin[$j];$i++){
     $k=$i-($j*7)-1;
     if(in_array(21,$droits) and !$config['PlanningHebdo']){
-      echo "<tr><td>{$jours[$k]}</td><td>".selectTemps($i-1,0,null,"select$j")."</td><td>".selectTemps($i-1,1,null,"select$j")."</td>";
-      echo "<td>".selectTemps($i-1,2,null,"select$j")."</td><td>".selectTemps($i-1,3,null,"select$j")."</td>";
+      echo "<tr><td>{$jours[$k]}</td>\n";
+      echo "<td>".selectTemps($i-1,0,null,"select$j")."</td>\n";
+      echo "<td>".selectTemps($i-1,1,null,"select$j")."</td>\n";
+      echo "<td>".selectTemps($i-1,2,null,"select$j")."</td>\n";
+      if($config['PlanningHebdo-Pause2']){
+        echo "<td>".selectTemps($i-1,5,null,"select$j")."</td>\n";
+        echo "<td>".selectTemps($i-1,6,null,"select$j")."</td>\n";
+      }
+      echo "<td>".selectTemps($i-1,3,null,"select$j")."</td>\n";
       if($config['Multisites-nombre']>1){
 	echo "<td><select name='temps[".($i-1)."][4]' class='edt-site'>\n";
 	echo "<option value='' class='edt-site-0'>&nbsp;</option>\n";
@@ -726,18 +741,26 @@ for($j=0;$j<$config['nb_semaine'];$j++){
     else{
       echo "<tr><td>{$jours[$k]}</td>\n";
       
-	  for($l=0; $l<4; $l++){
-		$heure = isset($temps[$i-1][0]) ? heure2($temps[$i-1][$l]) : null;
-		echo "<td id='temps_".($i-1)."_$l'>$heure</td>\n";
-	  }
+      for($l=0; $l<4; $l++){
+        $heure = isset($temps[$i-1][0]) ? heure2($temps[$i-1][$l]) : null;
+        echo "<td id='temps_".($i-1)."_$l'>$heure</td>\n";
+      }
+
+      if($config['PlanningHebdo-Pause2']){
+        for($l=5; $l<7; $l++){
+          $heure = isset($temps[$i-1][$l]) ? heure2($temps[$i-1][$l]) : null;
+          echo "<td id='temps_".($i-1)."_$l'>$heure</td>\n";
+        }
+      }
+
       
       if($config['Multisites-nombre']>1){
-		$site=null;
-		if(isset($temps[$i-1][4])){
-		  $site="Multisites-site".$temps[$i-1][4];
-		  $site = isset($config[$site]) ? $config[$site] : null;
-		}
-		echo "<td>$site</td>";
+        $site=null;
+        if(isset($temps[$i-1][4])){
+          $site="Multisites-site".$temps[$i-1][4];
+          $site = isset($config[$site]) ? $config[$site] : null;
+        }
+        echo "<td>$site</td>";
       }
       echo "<td id='heures_{$j}_$i'></td>\n";
       echo "</tr>\n";
@@ -824,6 +847,68 @@ if($config['EDTSamedi']){
 </div>
 <!--	FIN Heures de présence-->
 
+<!--	Agendas		-->
+<div id='agendas' style='margin-left:70px;display:none;padding-top:30px;'>
+<?php
+echo "<table style='width:90%;'>";
+
+//
+if($config['ICS-Server1']){
+  $ics_pattern = !empty($config['ICS-Pattern1']) ? $config['ICS-Pattern1'] : 'Serveur ICS N&deg;1';
+  $checked = !empty($check_ics[0]) ? "checked='checked'" : null;
+  $checked2 = $checked ? "Oui" : "Non";
+  $class = $checked ? "green bold" : "red";
+
+  echo "<tr><td style='width:350px'>";
+  echo "Agenda ICS $ics_pattern : ";
+  echo "</td><td>";
+  echo in_array(21,$droits)?"<input type='checkbox' value='1' name='check_ics1' $checked />":"<span class='agent-acces-checked2 $class'>$checked2</span>\n";
+ 
+  echo "</td></tr>";
+}
+
+if($config['ICS-Server2']){
+  $ics_pattern = !empty($config['ICS-Pattern2']) ? $config['ICS-Pattern2'] : 'Serveur ICS N&deg;2';
+  $checked = !empty($check_ics[1]) ? "checked='checked'" : null;
+  $checked2 = $checked ? "Oui" : "Non";
+  $class = $checked ? "green bold" : "red";
+
+  echo "<tr><td style='width:350px'>";
+  echo "Agenda ICS $ics_pattern : ";
+  echo "</td><td>";
+  echo in_array(21,$droits)?"<input type='checkbox' value='1' name='check_ics2' $checked />":"<span class='agent-acces-checked2 $class'>$checked2</span>\n";
+ 
+  echo "</td></tr>";
+}
+
+// URL du flux ICS à importer
+if($config['ICS-Server3']){
+  $checked = !empty($check_ics[2]) ? "checked='checked'" : null;
+  $checked2 = $checked ? "Oui" : "Non";
+  $class = $checked ? "green bold" : "red";
+
+  echo "<tr><td style='width:350px'>";
+  echo "Agenda ICS distant : ";
+  echo "</td><td>";
+  echo in_array(21,$droits)?"<input type='checkbox' value='1' name='check_ics3' $checked />":"<span class='agent-acces-checked2 $class'>$checked2</span>\n";
+  echo in_array(21,$droits)?"<input type='text' value='$url_ics' name='url_ics' style='width:400px; margin-left:20px;' />":"<span style='margin-left:20px;'>$url_ics</span>\n";
+  echo "</td></tr>";
+}
+
+// URL du fichier ICS Planning Biblio
+if($id and isset($ics)){
+  echo "<tr><td style='padding-top: 10px;'>Agenda ICS Planning Biblio</td>\n";
+  echo "<td style='padding-top: 10px;' id='url-ics'>$ics</td></tr>\n";
+  if($config['ICS-Code']){
+    echo "<tr><td>&nbsp;</td>\n";
+    echo "<td><a href='javascript:resetICSURL($id, \"$CSRFSession\", \"$prenom $nom\");'>R&eacute;initialiser l'URL</a></td></tr>\n";
+  }
+}
+echo "</table>\n";
+?>
+</div>
+<!--	FIN Agendas		-->
+
 <!--	Droits d'accès		-->
 <div id='access' style='margin-left:70px;display:none;padding-top:30px;'>
 <?php
@@ -832,6 +917,8 @@ if(!$admin){
 }
 
 // Affichage de tous les droits d'accès si un seul site ou des droits d'accès ne dépendant pas des sites
+$last_category = null;
+
 foreach($groupes as $elem){
   // N'affiche pas les droits d'accès à la configuration (réservée au compte admin)
   if($elem['groupe_id']==20){
@@ -843,6 +930,12 @@ foreach($groupes as $elem){
     continue;
   }
 
+  // Affichage des catégories
+  if($elem['categorie'] != $last_category){
+    echo "<h3 style='margin:10px 0 5px 0;'>{$elem['categorie']}</h3>\n";
+  }
+  $last_category = $elem['categorie'];
+  
   //	Affichage des lignes avec checkboxes
   if(is_array($acces)){
     $checked=in_array($elem['groupe_id'],$acces)?"checked='checked'":null;
@@ -850,7 +943,7 @@ foreach($groupes as $elem){
     $class=$checked?"green bold":"red";
   }
   if($admin){
-    echo "<input type='checkbox' name='droits[]' $checked value='{$elem['groupe_id']}' style='margin-right:10px;'/>{$elem['groupe']}<br/>\n";
+    echo "<input type='checkbox' name='droits[]' $checked value='{$elem['groupe_id']}' style='margin:0 10px 0 20px;'/>{$elem['groupe']}<br/>\n";
   }else{
     echo "<li>{$elem['groupe']} <label class='agent-acces-checked2 $class'>$checked2</label></li>\n";
   }
@@ -868,7 +961,14 @@ if($config['Multisites-nombre']>1){
   echo "</tr></thead>\n";
   echo "<tbody>\n";
 
+  $last_category = null;
   foreach($groupes_sites as $elem){
+    // Affichage des catégories
+    if($elem['categorie'] != $last_category){
+      echo "<tr><td><h3 style='margin:10px 0 5px 0;'>{$elem['categorie']}</h3></td>\n";
+    }
+    $last_category = $elem['categorie'];
+
     $groupe=ucfirst(str_replace("Gestion des ","",$elem['groupe']));
     echo "<tr><td>$groupe</td>\n";
 
@@ -895,14 +995,23 @@ if($config['Multisites-nombre']>1){
 	$groupe_id=500+$i;
       }
 
-      // Modification des plannings si plusieurs sites
-      elseif($elem['groupe_id']==12){
+      // Modification des plannings si plusieurs sites (niveau 1 et 2)
+      elseif($elem['groupe_id']==301){
 	$groupe_id=300+$i;
+      }
+      // Modification des plannings si plusieurs sites (niveau 1)
+      elseif($elem['groupe_id']==1001){
+	$groupe_id=1000+$i;
       }
 
       // Modification des commentaires des plannings si plusieurs sites
       elseif($elem['groupe_id']==801){
 	$groupe_id=800+$i;
+      }
+
+      // Griser les cellules des plannings si plusieurs sites
+      elseif($elem['groupe_id']==901){
+	$groupe_id=900+$i;
       }
 
       $checked=null;
