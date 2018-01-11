@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.09
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 19 décembre 2017
+Dernière modification : 11 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -52,6 +52,8 @@ if(count($perso_ids)>1 and !$groupe){
 $pj1=filter_input(INPUT_GET,"pj1",FILTER_CALLBACK,array("options"=>"sanitize_on01"));
 $pj2=filter_input(INPUT_GET,"pj2",FILTER_CALLBACK,array("options"=>"sanitize_on01"));
 $so=filter_input(INPUT_GET,"so",FILTER_CALLBACK,array("options"=>"sanitize_on01"));
+
+$fin = $fin ? $fin : $debut;
 
 $debutSQL=dateSQL($debut);
 $finSQL=dateSQL($fin);
