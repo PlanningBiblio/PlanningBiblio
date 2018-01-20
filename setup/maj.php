@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.10
+Planning Biblio, Version 2.7.11
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 19 décembre 2017
+Dernière modification : 20 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -1016,8 +1016,11 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
-$v="2.7.10";
+$v="2.7.11";
 if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Nettoyage de la table absences
+  $sql[]="DELETE FROM `{$dbprefix}absences` WHERE `fin`='0000-00-00 00:00:00';";
+
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }

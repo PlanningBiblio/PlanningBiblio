@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio, Version 2.7.11
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 2 octobre 2017
+Dernière modification : 20 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -224,6 +224,8 @@ class planning{
               $pourcent=null;
               if(strpos($elem["heures_hebdo"],"%") and $elem["heures_hebdo"]!="100%"){
                 $pourcent=" {$elem["heures_hebdo"]}";
+                $calcul_pourcentage = (float) str_replace('%', null, $elem["heures_hebdo"]);
+                $heuresAbsences = $heuresAbsences * $calcul_pourcentage / 100;
               }
               
               $heuresHebdoTitle="Quota hebdomadaire = ".heure4($heuresHebdo,true)." - ".heure4($heuresAbsences,true)." (Absences{$pourcent})";
