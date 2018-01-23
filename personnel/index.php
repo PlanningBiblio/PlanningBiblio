@@ -142,7 +142,7 @@ echo "</tbody>";
 echo "</table>";
 echo "<input type='hidden' name='page' value='personnel/suppression-liste.php' />\n";
 echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
-echo "<input type='submit' value='Supprimer la sélection' />\n";
+echo "<input type='submit' value='Supprimer la sélection' class='ui-button'/>\n";
 echo "</form>\n";
 
 function date1($date){

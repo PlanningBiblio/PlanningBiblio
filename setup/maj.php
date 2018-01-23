@@ -1025,6 +1025,29 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+
+$v="2.8";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+
+  // Responsables et notifications
+  $sql[]="ALTER TABLE `{$dbprefix}config` CHANGE `nom` `nom` VARCHAR(50);";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('Absences-notifications-agent-par-agent','boolean', '0', 'Absences', 'Gestion des notifications et des droits de validations agent par agent. Si cette option est activée, les paramètres Absences-notifications1, 2, 3 et 4 seront écrasés par les choix fait dans la page de configuration des notifications du menu Administration - Notifications','67');";
+  $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES 
+    ('50','77','Validations / Notifications','notifications/index.php','config=Absences-notifications-agent-par-agent');";
+  $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Validations / Notifications', 21, 'Gestion des agents', 'notifications/index.php', 'Agents', 70);";
+  $sql[]="CREATE TABLE `{$dbprefix}responsables` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT, 
+    `perso_id` INT(11) NOT NULL DEFAULT '0', 
+    `responsable` INT(11) NOT NULL DEFAULT '0', 
+    `notification` INT(1) NOT NULL DEFAULT '0', 
+    PRIMARY KEY (`id`))
+    ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach($sql as $elem){
   $db=new db();

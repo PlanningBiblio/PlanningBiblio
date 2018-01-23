@@ -106,7 +106,7 @@ $sql[]="CREATE TABLE `{$dbprefix}appel_dispo` (
 
 $sql[]="CREATE TABLE `{$dbprefix}config` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nom` varchar(30) NOT NULL,
+  `nom` varchar(50) NOT NULL,
   `type` varchar(20) NOT NULL,
   `valeur` text NOT NULL,
   `commentaires` text NOT NULL,
@@ -361,6 +361,14 @@ $sql[]="CREATE TABLE `{$dbprefix}postes` (
   `supprime` DATETIME NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+$sql[]="CREATE TABLE `{$dbprefix}responsables` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT, 
+  `perso_id` INT(11) NOT NULL DEFAULT '0', 
+  `responsable` INT(11) NOT NULL DEFAULT '0', 
+  `notification` INT(1) NOT NULL DEFAULT '0', 
+  PRIMARY KEY (`id`))
+  ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
 $sql[]="CREATE TABLE `{$dbprefix}select_abs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

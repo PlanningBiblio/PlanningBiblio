@@ -690,6 +690,12 @@ function cmp_semainedesc($a,$b){
   $a['semaine'] < $b['semaine'];
 }
 
+function cmp_strip_tags($a,$b){
+  $a = html_entity_decode( strip_tags( $a ), ENT_QUOTES|ENT_IGNORE, "utf-8" );
+  $b = html_entity_decode( strip_tags( $b ), ENT_QUOTES|ENT_IGNORE, "utf-8" );
+  return strtolower( $a ) > strtolower( $b );
+}
+
 function createURL($page=null){
   // Construction d'une URL
   // Protocol et port
