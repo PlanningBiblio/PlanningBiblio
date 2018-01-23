@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.06
+Planning Biblio, Version 2.7.12
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/suppression.php
 Création : mai 2011
-Dernière modification : 30 novembre 2017
+Dernière modification : 23 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -35,6 +35,9 @@ switch($etape){
 function etape1(){
   global $id;
   global $nom;
+
+  $CSRFSession = isset($_SESSION['oups']['CSRFToken']) ? $_SESSION['oups']['CSRFToken'] : null;
+
   $db=new db();
   $db->select2("personnel",array("nom","prenom","actif","supprime"),array("id"=>$id));
   $nom=$db->result[0]['prenom']." ".$db->result[0]['nom'];
