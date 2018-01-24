@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.11
+Planning Biblio, Version 2.7.12
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 3 août 2017
+Dernière modification : 24 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -41,8 +41,8 @@ require_once "include/sanitize.php";
 // IP Blocker : Affiche accès refusé, IP bloquée si 5 tentatives infructueuses lors les 10 dernières minutes
 $IPBlocker=loginFailedWait();
 if($IPBlocker>0){
-	include "include/accessDenied.php";
-	exit;
+  include "include/accessDenied.php";
+  exit;
 }
 
 $newLogin=filter_input(INPUT_GET,"newlogin",FILTER_SANITIZE_STRING);
@@ -62,6 +62,10 @@ if(!array_key_exists("oups",$_SESSION)){
 // Error reporting
 ini_set('display_errors',$config['display_errors']);
 
+
+// Authentification CAS
+include_once "ldap/authCAS.php";
+
 include "plugins/plugins.php";
 include "include/header.php";
 
@@ -79,7 +83,7 @@ if(isset($_POST['login'])){
   }
 
   if($authArgs and $redirURL){
-    $authArgs.="&redirURL=".urlencode($redirURL);
+    $authArgs.="&amp;redirURL=".urlencode($redirURL);
   }elseif($redirURL){
     $authArgs="?redirURL=".urlencode($redirURL);
   }
@@ -173,8 +177,6 @@ EOD;
     <input type='hidden' name='width' />
     </form></div>
 EOD;
-
-  include "ldap/authCAS.php";
 }
 
 include "include/footer.php";
