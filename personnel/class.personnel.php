@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 16 janvier 2018
+Dernière modification : 24 janvier 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -225,7 +225,7 @@ class personnel{
    */
   public function getICSURL($id){
     $url = createURL();
-    $url = str_replace('/index.php?page=', "/ics/calendar.php?id=$id", $url);
+    $url .= "/ics/calendar.php?id=$id";
     if($GLOBALS['config']['ICS-Code']){
       $code = $this->getICSCode($id);
       $url .= "&amp;code=$code";
