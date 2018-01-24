@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.7
+Planning Biblio, Version 2.7.12
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : ldap/class.ldap.php
 Création : 2 juillet 2014
-Dernière modification : 6 mars 2017
+Dernière modification : 24 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -34,6 +34,11 @@ function authCAS(){
   else{
     phpCAS::setNoCasServerValidation();
   }
+
+  if(!empty($GLOBALS['config']['CAS-ServiceURL'])){
+    phpCAS::setFixedServiceURL($GLOBALS['config']['CAS-ServiceURL']);
+  }
+
   phpCAS::forceAuthentication();
 
   $login=phpCAS::getUser();
