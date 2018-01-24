@@ -28,7 +28,7 @@ if(PHP_VERSION_ID<50400 and session_id()==''){
 }
 
 // Initialisation des variables
-$version="2.7.11";
+$version="2.7.12";
 
 // Redirection vers setup si le fichier config est absent
 if(!file_exists("include/config.php")){
