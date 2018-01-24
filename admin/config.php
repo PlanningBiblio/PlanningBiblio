@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.12
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 29 août 2017
+Dernière modification : 24 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -22,10 +22,10 @@ if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
   exit;
 }
 
+// Dossier temporaire
 $tmp_dir=sys_get_temp_dir();
-// $server = $_SERVER['SERVER_NAME'];
+
 $url = createURL();
-$url = str_replace('/index.php?page=', null, $url);
 
 // Enregistrement des paramètres
 if($_POST){
