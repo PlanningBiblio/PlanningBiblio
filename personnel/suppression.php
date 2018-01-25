@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.12
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/suppression.php
 Création : mai 2011
-Dernière modification : 23 janvier 2018
+Dernière modification : 25 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -80,15 +80,24 @@ function etape3(){
   $date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
   $date=dateSQL($date);
   
-  //	Mise à jour de la table personnel
+  // Mise à jour de la table personnel
   $db=new db();
   $db->CSRFToken = $CSRFToken;
   $db->update("personnel",array("supprime"=>"1","actif"=>"Supprim&eacute;","depart"=>$date),array("id"=>$id));
-      //	Mise à jour de la table pl_poste
+
+  // Mise à jour de la table pl_poste
   $db=new db();
-  $id=$db->escapeString($id);
-  $date=$db->escapeString($date);
-  $db->query("UPDATE `{$GLOBALS['config']['dbprefix']}pl_poste` SET `supprime`='1' WHERE `perso_id`='$id' AND `date`>'$date';");
+  $db->CSRFToken = $CSRFToken;
+  $db->update('pl_poste', array('supprime'=>1), array('perso_id' => "$id", 'date' =>">$date"));
+
+  // Mise à jour de la table responsables
+  $db=new db();
+  $db->CSRFToken = $CSRFToken;
+  $db->delete("responsables", array('responsable' => $id));
+  $db=new db();
+  $db->CSRFToken = $CSRFToken;
+  $db->delete("responsables", array('perso_id' => $id));
+
   echo "<script type='text/JavaScript'>parent.window.location.reload(false);</script>";
   echo "<script type='text/JavaScript'>popup_closed();</script>";
 }
