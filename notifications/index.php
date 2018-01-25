@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : notifications/index.php
 Création : 16 janvier 2018
-Dernière modification : 16 janvier 2018
+Dernière modification : 25 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -79,7 +79,7 @@ foreach($agents as $agent){
 
   echo "<tr><td style='white-space:nowrap;'>\n";
   echo "<input type='checkbox' name='chk$i' value='$id' class='checkboxes'/>\n";
-  echo "<a href='index.php?page=personnel/modif.php&amp;id=$id'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>";
+  echo "<a href='#' data-id='$id' class='edit-icon' ><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>";
   echo "</td>";
   echo "<td>{$agent['nom']}</td>";
   echo "<td>{$agent['prenom']}</td>";
@@ -100,7 +100,7 @@ foreach($agents as $agent){
 
   $responsables = array();
   foreach($agent['responsables'] as $resp){
-    if(!empty($resp['responsable'])){
+    if(!empty($resp['responsable']) and array_key_exists($resp['responsable'], $agents)){
       $notification = $resp['notification'] ? 1 : 0 ;
       $tmp = "<span class='resp_$id' data-resp='{$resp['responsable']}' data-notif='$notification' >";
       $tmp .= nom($resp['responsable'],$format="nom p", $agents);

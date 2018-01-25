@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : notifications/js/notifications.js
 Création : 15 janvier 2018
-Dernière modification : 15 janvier 2018
+Dernière modification : 25 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -25,46 +25,14 @@ $(function() {
         tab.push($(this).val());
       });
 
-      agents = JSON.stringify(tab);
+      updateFormOpen(tab);
+    });
 
-      // Recherche des responsables cochés avant modification pour réinitialiser les champs
-      var data = [];
-      var diff = false;
+  $(".edit-icon")
+    .click(function() {
 
-      for(i in tab){
-        data[i] = [];
-
-        $('.resp_'+tab[i]).each(function(){
-          var resp = $(this).attr('data-resp');
-          var notif = $(this).attr('data-notif');
-          data[i].push([resp,notif]);
-
-        });
-        // Si tous les agents n'ont pas les mêmes valeurs, les champs ne seront pas remplis
-        if(i>0 && JSON.stringify(data[i]) != JSON.stringify(data[i-1])){
-          diff = true;
-        }
-      }
-
-      // Réinitialise à zéro les tous les champs du formulaire
-      for(i=0; i<5; i++){
-        $('#responsable-'+i).val('');
-        $('#notification-'+i).prop('checked', false);
-      }
-
-      // S'il n'y a pas de différence, initialise les champs avec les valeurs avant modification
-      if(!diff){
-        for(i in data[0]){
-          $('#responsable-'+i).val(data[0][i][0]);
-          if(data[0][i][1] == 1){
-            $('#notification-'+i).prop('checked', true);
-          }
-        }
-      }
-
-      // Ouvre le formulaire
-      $("#update-form").dialog( "open" );
-      return false;
+      var id = $(this).attr('data-id');
+      updateFormOpen([id]);
     });
 
   // Formulaire récurrence
@@ -128,3 +96,48 @@ $(function() {
   });
 
 });
+
+function updateFormOpen(tab){
+
+  agents = JSON.stringify(tab);
+
+  // Recherche des responsables cochés avant modification pour réinitialiser les champs
+  var data = [];
+  var diff = false;
+
+  for(i in tab){
+    data[i] = [];
+
+    $('.resp_'+tab[i]).each(function(){
+      var resp = $(this).attr('data-resp');
+      var notif = $(this).attr('data-notif');
+      data[i].push([resp,notif]);
+
+    });
+    // Si tous les agents n'ont pas les mêmes valeurs, les champs ne seront pas remplis
+    if(i>0 && JSON.stringify(data[i]) != JSON.stringify(data[i-1])){
+      diff = true;
+    }
+  }
+
+  // Réinitialise à zéro les tous les champs du formulaire
+  for(i=0; i<5; i++){
+    $('#responsable-'+i).val('');
+    $('#notification-'+i).prop('checked', false);
+  }
+
+  // S'il n'y a pas de différence, initialise les champs avec les valeurs avant modification
+  if(!diff){
+    for(i in data[0]){
+      $('#responsable-'+i).val(data[0][i][0]);
+      if(data[0][i][1] == 1){
+        $('#notification-'+i).prop('checked', true);
+      }
+    }
+  }
+
+  // Ouvre le formulaire
+  $("#update-form").dialog( "open" );
+  return false;
+
+}
