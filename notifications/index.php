@@ -56,6 +56,16 @@ $p->responsablesParAgent = true;
 $p->fetch("nom,prenom",$actif);
 $agents=$p->elements;
 
+// Agents ayant les droits de validation d'absence N1
+$agents_responsables = array();
+foreach($agents as $elem){
+  for($i = 1; $i <= $config['Multisites-nombre']; $i++){
+    if(in_array((200+$i), json_decode(html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8')))){
+      $agents_responsables[$elem['id']] = $elem;
+    }
+  }
+}
+
 echo "<form name='form' method='post' action='index.php' onsubmit='return confirm(\"Etes vous sûr de vouloir supprimer les agents sélectionnés ?\");'>\n";
 echo "<table id='tableAgents' class='CJDataTable' data-sort='[[1,\"asc\"],[2,\"asc\"]]' >\n";
 echo "<thead>\n";
@@ -79,7 +89,7 @@ foreach($agents as $agent){
 
   echo "<tr><td style='white-space:nowrap;'>\n";
   echo "<input type='checkbox' name='chk$i' value='$id' class='checkboxes'/>\n";
-  echo "<a href='#' data-id='$id' class='edit-icon' ><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>";
+  echo "<span class='pl-icon pl-icon-edit pointer' title='Modifier' data-id='$id'></span>";
   echo "</td>";
   echo "<td>{$agent['nom']}</td>";
   echo "<td>{$agent['prenom']}</td>";
@@ -151,7 +161,7 @@ echo "</form>\n";
     echo "<tr><td>\n";
     echo "<select name='responsable-$i' id='responsable-$i' class='responsables' data-id='$i'>\n";
     echo "<option value=''>&nbsp;</option>\n";
-    foreach($agents as $agent){
+    foreach($agents_responsables as $agent){
       echo "<option value='{$agent['id']}'>{$agent['nom']} {$agent['prenom']}</option>\n";
     }
     echo "</select>\n";

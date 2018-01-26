@@ -28,7 +28,7 @@ $(function() {
       updateFormOpen(tab);
     });
 
-  $(".edit-icon")
+  $(".pl-icon-edit")
     .click(function() {
 
       var id = $(this).attr('data-id');

@@ -85,7 +85,7 @@ class personnel{
       $db->selectLeftJoin(
         array('personnel', 'id'),
         array('responsables', 'perso_id'),
-        array('id', 'nom', 'prenom', 'mail', 'statut', 'categorie', 'service', 'actif', 'sites', 'check_ics'),
+        array('id', 'nom', 'prenom', 'mail', 'statut', 'categorie', 'service', 'actif', 'droits', 'sites', 'check_ics'),
         array('responsable', 'notification'),
         $filter,
         array(),
