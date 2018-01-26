@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.05
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 28 novembre 2017
+Dernière modification : 25 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -40,7 +40,13 @@ $agents = $p->elements;
 echo "<h3>Liste des absences</h3>\n";
 
 //	Initialisation des variables
-$admin = in_array(1, $droits);
+$admin = false;
+for($i = 1; $i <= $config['Multisites-nombre']; $i++){
+  if(in_array((200+$i), $droits) or in_array((500+$i), $droits)){
+    $admin = true;
+    break;
+  }
+}
 
 if($admin){
   $perso_id=filter_input(INPUT_GET,"perso_id",FILTER_SANITIZE_NUMBER_INT);

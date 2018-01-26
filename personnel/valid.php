@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.06
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 30 novembre 2017
+Dernière modification : 25 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -63,14 +63,6 @@ $arrivee=dateSQL($arrivee);
 $depart=dateSQL($depart);
 
 for($i=1;$i<=$config['Multisites-nombre'];$i++){
-  // Multisites, Gestion des absences : si droits de gérer les absences de l'un des sites (201,202, ...), ajoute le droit 1 pour débloquer les champs administrateur
-  if(in_array((200+$i),$droits) and !in_array(1,$droits)){
-    $droits[]=1;
-  }
-  // Multisites, Gestion des absences validation N2 : si droits de gérer les absences N2 de l'un des sites (501,502, ...), ajoute le droit 8 pour débloquer les champs administrateur N2
-  if(in_array((500+$i),$droits) and !in_array(8,$droits)){
-    $droits[]=8;
-  }
   // Modification des plannings Niveau 2 donne les droits Modification des plannings Niveau 1
   if(in_array((300+$i),$droits) and !in_array((1000+$i),$droits)){
     $droits[]=1000+$i;
@@ -81,13 +73,13 @@ for($i=1;$i<=$config['Multisites-nombre'];$i++){
   }
 }
 
-// Le droit de gestion des absences (1) donne le droit modifier ses propres absences (6)
-if(in_array(1,$droits) and !in_array(6,$droits)){
-  $droits[]=6;
-}
-// Le droit de gestion des absences (1) donne le droit d'ajouter des absences pour plusieurs personnes (9)
-if(in_array(1,$droits) and !in_array(9,$droits)){
-  $droits[]=9;
+// Le droit de gestion des absences (20x) donne le droit modifier ses propres absences (6) et le droit d'ajouter des absences pour plusieurs personnes (9)
+for($i = 1; $i <= $config['Multisites-nombre']; $i++){
+  if(in_array((200+$i), $droits) or in_array((500+$i), $droits)){
+    $droits[]=6;
+    $droits[]=9;
+    break;
+  }
 }
 
 $droits[]=99;

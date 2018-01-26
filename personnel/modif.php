@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 30 septembre 2017
+Dernière modification : 25 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -58,10 +58,13 @@ if($config['PlanningHebdo']){
 // on les places dans un autre tableau pour simplifier l'affichage
 $groupes_sites=array();
 if($config['Multisites-nombre']>1){  
-  $groupes_sites[1]=$groupes[1];	// Absences, validation N1
-  unset($groupes[1]);
-  $groupes_sites[8]=$groupes[8];	// Absences, validation N2
-  unset($groupes[8]);
+
+  $groupes_sites[201]=$groupes[201];	// Absences, validation N1
+  unset($groupes[201]);
+
+  $groupes_sites[501]=$groupes[501];	// Absences, validation N2
+  unset($groupes[501]);
+
   if(array_key_exists(7,$groupes)){	// Congés, validation N1
     $groupes_sites[7]=$groupes[7];
     unset($groupes[7]);
@@ -976,7 +979,7 @@ if($config['Multisites-nombre']>1){
       $site=$config['Multisites-site'.$i];
 
       // Gestion des absences N1
-      if($elem['groupe_id']==1){
+      if($elem['groupe_id']==201){
 	$groupe_id=200+$i;
       }
 
@@ -991,7 +994,7 @@ if($config['Multisites-nombre']>1){
       }
 
       // Gestion des absences validation N2
-      elseif($elem['groupe_id']==8){
+      elseif($elem['groupe_id']==501){
 	$groupe_id=500+$i;
       }
 

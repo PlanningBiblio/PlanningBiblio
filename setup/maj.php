@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.12
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 24 janvier 2018
+Dernière modification : 25 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -1052,6 +1052,34 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
     `notification` INT(1) NOT NULL DEFAULT '0', 
     PRIMARY KEY (`id`))
     ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+  // Modification des IDs des droits Absences
+  $db = new db();
+  $db->select('personnel');
+  if($db->result){
+    foreach($db->result as $elem){
+      $update = false;
+      $droits = html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+      $droits = (array) json_decode($droits, true);
+      foreach($droits as $k => $v){
+        if($v == 1){
+          $droits[$k] = 201;
+          $update = true;
+        }
+        if($v == 8){
+          $droits[$k] = 501;
+          $update = true;
+        }
+      }
+      if($update){
+        $droits = json_encode($droits);
+        $sql[] = "UPDATE `{$dbprefix}personnel` SET `droits` = '$droits' WHERE `id` = '{$elem['id']}';";
+      }
+    }
+  }
+
+  $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe_id` = '201' WHERE `groupe_id` = '1';";
+  $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe_id` = '501' WHERE `groupe_id` = '8';";
 
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";

@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 11 janvier 2018
+Dernière modification : 25 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -158,14 +158,24 @@ if(!$modification){
 }
 
 // Sécurité
-// Droit 1 = modification de toutes les absences (admin seulement)
 // Droit 6 = modification de ses propres absences
 // Droit 9 = Droit d'enregistrer des absences pour d'autres agents
-// Droits 20x = modification de toutes les absences en multisites (admin seulement)
+// Droits 20x = modification de toutes les absences (admin seulement)
+// Droits 50x = validation N2
 
-$acces = (in_array(1,$droits) 
-  or (in_array(6,$droits) and count($perso_ids) == 1 and in_array($_SESSION['login_id'], $perso_ids))
-  or (in_array(9,$droits) and in_array(6,$droits) and in_array($_SESSION['login_id'], $perso_ids)));
+for($i = 1; $i <= $config['Multisites-nombre']; $i++){
+  if(in_array((200+$i), $droits) or in_array((500+$i), $droits)){
+    $acces = true;
+  }
+}
+
+if(!$acces){
+  if((in_array(6,$droits) and count($perso_ids) == 1 and in_array($_SESSION['login_id'], $perso_ids))
+    or (in_array(9,$droits) and in_array(6,$droits) and in_array($_SESSION['login_id'], $perso_ids)))
+  {
+    $acces = true;
+  }
+}
 
 if(!$acces){
   echo "<div id='acces_refuse'>Accès refusé</div>\n";
@@ -188,20 +198,14 @@ if($config['Multisites-nombre']>1){
     }
   }
 
-  $sites=array();
-  for($i=1;$i<=$config['Multisites-nombre'];$i++){
-    if(in_array((200+$i),$droits)){
-      $sites[]=$i;
-    }
-  }
-
-  $admin=false;
+  $admin = false;
   foreach($sites_agents as $site){
-    if(in_array($site,$sites)){
-      $admin=true;
+    if(in_array((200+$i), $droits) or in_array((500+$i), $droits)){
+      $admin = true;
       break;
     }
   }
+
   if(!$admin and !$acces){
     echo "<h3>Modification de l'absence</h3>\n";
     echo "Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>\n";
@@ -210,7 +214,7 @@ if($config['Multisites-nombre']>1){
     exit;
   }
 }else{
-  $admin=in_array(1,$droits)?true:false;
+  $admin = in_array(201, $droits);
 }
 
 
