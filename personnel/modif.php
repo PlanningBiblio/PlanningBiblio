@@ -57,33 +57,22 @@ if($config['PlanningHebdo']){
 // Si multisites, les droits de gestion des absences, congés et modification planning dépendent des sites : 
 // on les places dans un autre tableau pour simplifier l'affichage
 $groupes_sites=array();
-if($config['Multisites-nombre']>1){  
 
-  $groupes_sites[201]=$groupes[201];	// Absences, validation N1
-  unset($groupes[201]);
+if($config['Multisites-nombre']>1){
+  for($i = 2; $i <= 10; $i++){
 
-  $groupes_sites[501]=$groupes[501];	// Absences, validation N2
-  unset($groupes[501]);
+    // Exception, groupe 701 = pas de gestion multisites (pour le moment)
+    if($i == 7){
+      continue;
+    }
 
-  if(array_key_exists(7,$groupes)){	// Congés, validation N1
-    $groupes_sites[7]=$groupes[7];
-    unset($groupes[7]);
+    $groupe = ( $i * 100 ) + 1 ;
+    if(array_key_exists($groupe, $groupes)){
+      $groupes_sites[]=$groupes[$groupe];
+      unset($groupes[$groupe]);
+    }
   }
-  if(array_key_exists(7,$groupes)){	// Congés, validation N2
-    $groupes_sites[2]=$groupes[2];
-    unset($groupes[2]);
-  }
-  $groupes_sites[301]=$groupes[301];	// Modification des plannings, niveau 1 et 2
-  unset($groupes[301]);
 
-  $groupes_sites[1001]=$groupes[1001];	// Modification des plannings, niveau 1
-  unset($groupes[1001]);
-
-  $groupes_sites[801]=$groupes[801];	// Modification des commentaires des plannings
-  unset($groupes[801]);
-
-  $groupes_sites[901]=$groupes[901];	// Griser les cellules des plannings
-  unset($groupes[901]);
 }
 
 uasort($groupes_sites, 'cmp_ordre');
@@ -972,50 +961,12 @@ if($config['Multisites-nombre']>1){
     }
     $last_category = $elem['categorie'];
 
-    $groupe=ucfirst(str_replace("Gestion des ","",$elem['groupe']));
-    echo "<tr><td>$groupe</td>\n";
+    echo "<tr><td>{$elem['groupe']}</td>\n";
 
     for($i=1;$i<$config['Multisites-nombre']+1;$i++){
       $site=$config['Multisites-site'.$i];
 
-      // Gestion des absences N1
-      if($elem['groupe_id']==201){
-	$groupe_id=200+$i;
-      }
-
-      // Gestion des congés validation N2
-      elseif($elem['groupe_id']==2){
-	$groupe_id=600+$i;
-      }
-
-      // Gestion des congés N1
-      elseif($elem['groupe_id']==7){
-	$groupe_id=400+$i;
-      }
-
-      // Gestion des absences validation N2
-      elseif($elem['groupe_id']==501){
-	$groupe_id=500+$i;
-      }
-
-      // Modification des plannings si plusieurs sites (niveau 1 et 2)
-      elseif($elem['groupe_id']==301){
-	$groupe_id=300+$i;
-      }
-      // Modification des plannings si plusieurs sites (niveau 1)
-      elseif($elem['groupe_id']==1001){
-	$groupe_id=1000+$i;
-      }
-
-      // Modification des commentaires des plannings si plusieurs sites
-      elseif($elem['groupe_id']==801){
-	$groupe_id=800+$i;
-      }
-
-      // Griser les cellules des plannings si plusieurs sites
-      elseif($elem['groupe_id']==901){
-	$groupe_id=900+$i;
-      }
+      $groupe_id = $elem['groupe_id'] - 1 + $i;
 
       $checked=null;
       $checked="Non";

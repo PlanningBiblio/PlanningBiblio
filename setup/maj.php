@@ -1078,8 +1078,8 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
     }
   }
 
-  $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe_id` = '201' WHERE `groupe_id` = '1';";
-  $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe_id` = '501' WHERE `groupe_id` = '8';";
+  $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe_id` = '201', `groupe` = 'Gestion des absences, validation niveau 1' WHERE `groupe_id` = '1';";
+  $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe_id` = '501', `groupe` = 'Gestion des absences, validation niveau 2' WHERE `groupe_id` = '8';";
 
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";

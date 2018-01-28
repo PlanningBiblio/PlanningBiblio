@@ -67,10 +67,6 @@ for($i=1;$i<=$config['Multisites-nombre'];$i++){
   if(in_array((300+$i),$droits) and !in_array((1000+$i),$droits)){
     $droits[]=1000+$i;
   }
-  // Multisites, Gestion des congés : si droits de gérer les congés de l'un des sites (401,402, ...), ajoute le droit 2 pour débloquer les champs administrateur
-  if(in_array((400+$i),$droits) and !in_array(2,$droits)){
-    $droits[]=2;
-  }
 }
 
 // Le droit de gestion des absences (20x) donne le droit modifier ses propres absences (6) et le droit d'ajouter des absences pour plusieurs personnes (9)
