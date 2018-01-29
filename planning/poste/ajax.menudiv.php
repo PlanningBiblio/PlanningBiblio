@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.06
+Planning Biblio, Version 2.7.12
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 30 novembre 2017
+Dernière modification : 29 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
@@ -98,7 +98,10 @@ if($config['Multisites-nombre']>1){
 }
 
 // Liste des statuts correspondant aux catégories nécessaires pour être placé sur le poste
+$categorie = null;
+$categories_nb = 0;
 $statuts=array();
+
 if(!empty($categories)){
   $categories=join(",",$categories);
   $db=new db();
@@ -108,6 +111,18 @@ if(!empty($categories)){
     foreach($db->result as $elem){
      $statuts[]=$elem['valeur'];
     }
+  }
+  $db=new db();
+  $db->select2('select_categories', 'valeur', array('id' => "IN$categories"));
+
+  $tmp = array();
+  if($db->result){
+    foreach($db->result as $elem){
+      $tmp[] = str_replace('Cat&eacute;gorie ', null, $elem['valeur']);
+    }
+    $categorie = ' ('.implode(', ', $tmp).')';
+
+    $categories_nb = $db->nb;
   }
 }
 
@@ -307,11 +322,6 @@ $agents_dispo=array();
 $db=new db();
 $dateSQL=$db->escapeString($date);
 
-$req_statut=null;
-if(!empty($statuts)){
-  $req_statut="`statut` IN ('".join("','",$statuts)."') AND ";
-}
-
 $req="SELECT * FROM `{$dbprefix}personnel` "
   ."WHERE `actif` LIKE 'Actif' AND `arrivee` <= '$dateSQL' AND (`depart` >= '$dateSQL' OR `depart` = '0000-00-00') "
   ."AND `id` NOT IN ($exclus) ORDER BY `nom`,`prenom`;";
@@ -332,6 +342,19 @@ if($agents_tmp){
       }
     }
     
+    // Elimine les agents qui ne sont pas dans la catégorie requise
+    if(!empty($statuts)){
+      if( !in_array($elem['statut'], $statuts) ){
+        if($categories_nb > 1 ){
+          $title = "L&apos;agent n&apos;appartient &agrave; aucune des cat&eacute;gories requises{$categorie} pour occuper ce poste";
+        } else {
+          $title = "L&apos;agent n&apos;appartient pas &agrave; la cat&eacute;gorie requise{$categorie} pour occuper ce poste";
+        }
+        $motifExclusion[$elem['id']][]="<span title='$title'>Cat&eacute;gorie</span>";
+        continue;
+      }
+    }
+
     // Elimine les agents qui ne travaille pas sur ce site (en multi-sites)
     if($config['Multisites-nombre']>1){
       $sites = json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
