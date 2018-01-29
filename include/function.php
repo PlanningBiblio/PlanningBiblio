@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.04
+Planning Biblio, Version 2.7.12
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 22 novembre 2017
+Dernière modification : 24 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -692,25 +692,24 @@ function cmp_semainedesc($a,$b){
 
 function createURL($page=null){
   // Construction d'une URL
-  // Protocol et port
+
   $protocol = isset($_SERVER['HTTPS']) ? 'https' : 'http';
-  $port=$_SERVER['SERVER_PORT'];
-  if(($port==80 and $protocol=="http") or ($port==443 and $protocol=="https")){
-    $port=null;
-  }else{
-    $port=":".$port;
+  $url="$protocol://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
+
+  if(strstr($url, '/index.php')){
+    $pos = strpos($url, '/index.php');
+    $url = substr($url, 0, $pos);
   }
 
-  // protocol + port + server_name
-  $url="$protocol://{$_SERVER['SERVER_NAME']}{$port}/";
+  if(strstr($url, '/authentification.php')){
+    $pos = strpos($url, '/authentification.php');
+    $url = substr($url, 0, $pos);
+  }
 
-  // folder
-  $folder=substr( __DIR__ , strlen($_SERVER['DOCUMENT_ROOT']));
-  $pos=strpos($folder,"/",1);
-  $folder=substr($folder,0,$pos);
+  if($page){
+    $url .= "/index.php?page=".$page;
+  }
 
-  // url complete
-  $url.=$folder."/index.php?page=".$page;
   return $url;
 }
 

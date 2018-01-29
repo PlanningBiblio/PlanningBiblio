@@ -1,3 +1,17 @@
+*** Version 2.7.12      (29 janvier 2018)   ***
+- Améliorations
+CAS : Ajout du paramètre CAS-ServiceURL pour permettre de forcer l'URL de redirection vers l'application
+CAS : Amélioration du processus d'authentification CAS et suppression des redirections JavaScript
+
+- Corrections
+Correction de la suppression des agents (CSRFToken)
+Correction du filtre sur les catégories dans le menu du planning
+
+*** Version 2.7.11      (20 janvier 2018)   ***
+- Corrections
+Planning : Correction du calcul des heures de SP lorsque les absences sont déduites
+Absences : Contrôle empêchant l'enregistrement d'une absence sans date de fin
+
 *** Version 2.7.10      (20 décembre 2017)   ***
 - Corrections
 Planning : corrige une erreur empêchant de barrer les agents dans le planning s'ils étaient sur des absences non-validées
@@ -18,7 +32,6 @@ Absences récurrentes : correction de l'attribut COUNT lors de la modification d
 Correction de l'importation des fichiers ICS lorsque le champ DESCRIPTION est inexistant ou vide
 Correction de l'enregistrement des absences récurrentes lorsque le champ commentaires est vide
 Correction du filtre sur les absences dans le menudiv
-
 
 *** Version 2.7.05      (28 novembre 2017)   ***
 - Améliorations
