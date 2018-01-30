@@ -44,13 +44,13 @@ $CSRFToken=trim(filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING));
 
 $login_id=$_SESSION['login_id'];
 $tab_exclus=array(0);
-$tab_indispo=array(0);
 $absents=array(0);
 $absences_non_validees = array(0);
 $agents_qualif=array(0);
 $tab_deja_place=array(0);
 $sr_init=null;
-$motifExclusion=array();
+$exclusion = array();
+$motifExclusion = array();
 $tableaux=array();
 
 $d=new datePl($date);
@@ -256,28 +256,31 @@ foreach($db->result as $elem){
     }
   }
 
-  $dispo = calculSiPresent($debut, $fin, $temps, $jour);
+  // Gestion des exclusions
+  $exclusion[$elem['id']] = array();
 
-  if(!$dispo){
-    $motifExclusion[$elem['id']][]="<span title='Les horaires de l&apos;agent ne lui permettent pas d&apos;occuper ce poste'>Horaires</span>";
+  // Contrôle des heures de présence. Si l'agent n'est pas présent sur toute la plage horaire, type d'exclusion = horaires
+  if(!calculSiPresent($debut, $fin, $temps, $jour)){
+    $exclusion[$elem['id']][]="horaires";
   }
 
-  // Multisites : Contrôle si l'agent est prévu sur ce site si les agents sont autorisés à travailler sur plusieurs sites
-  $heures = isset($temps[$jour]) ? $temps[$jour] : false;
-
+  // Multisites : Contrôle si l'agent est prévu sur ce site.
+  // Ce filtre concerne tous les agents, qu'ils soient amenés ou non à travailler sur ce site.
+  // Un autre filtre éliminera complétement les agents pour lesquels le courant site n'est pas cochés dans leur onglet "infos générales".
   if($config['Multisites-nombre']>1){
-    if(!is_array($heures) or !array_key_exists(4,$heures)){
-      $dispo = false;
+
+    // Le champs correspondant à l'affectation du site est heures[4]
+    $site_agent = !empty( $temps[$jour][4] ) ? $temps[$jour][4] : null;
+
+    // Si le champ "site_agent" est vide et que l'agent n'a pas déjà été exclus pour un problème d'horaires, type d'exclusion = sites
+    if( empty($site_agent) and !in_array('horaires', $exclusion[$elem['id']])) {
+      $exclusion[$elem['id']][]="sites";
     }
 
-    elseif($heures[4] and $heures[4]!=$site){
-      $dispo = false;
-      $motifExclusion[$elem['id']][]="<span title='L&apos;agent est pr&eacute;vu sur un autre site'>Autre site</span>";
+    // Si le champs "site_agent" est renseigné mais qu'il ne correspond pas au site choisi, type d'exclusion = autre_site
+    if( !empty($site_agent) and $site_agent != $site ){
+      $exclusion[$elem['id']][]="autre_site";
     }
-  }
-  
-  if(!$dispo){
-    $tab_indispo[]=$elem['id'];
   }
 }
 
@@ -331,13 +334,19 @@ $agents_tmp=$db->result;
 
 if($agents_tmp){
   foreach($agents_tmp as $elem){
-    // Elimine les agents non qualifiés
+
+  // Elimine les agents non qualifiés
     if(is_array($activites)){
       $postes = json_decode(html_entity_decode($elem['postes'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
-      foreach($activites as $a){
-        if(!is_array($postes) or !in_array($a, $postes)){
-          $motifExclusion[$elem['id']][]="<span title='L&apos;agent n&apos;a pas toutes les qualifications requises pour occuper ce poste'>Activit&eacute;s</span>";
-          continue 2;
+      if(!is_array($postes)){
+        $exclusion[$elem['id']][] = 'activites';
+      }
+      else {
+        foreach($activites as $a){
+          if(!in_array($a, $postes)){
+            $exclusion[$elem['id']][] = 'activites';
+            break;
+          }
         }
       }
     }
@@ -345,27 +354,49 @@ if($agents_tmp){
     // Elimine les agents qui ne sont pas dans la catégorie requise
     if(!empty($statuts)){
       if( !in_array($elem['statut'], $statuts) ){
+        $exclusion[$elem['id']][] = 'categories';
+      }
+    }
+
+    // Elimine les agents qui ne travaille pas sur ce site (en multi-sites)
+    // Contrôle du champ "sites" de l'onglet "infos générales"
+    // NOTE : Ce contrôle est réalisé plus bas pour une exclusion complète des agents mais nous devons le garder ici afin de les éliminer des agents disponibles 
+    if($config['Multisites-nombre']>1){
+      $sites = json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
+      if(!is_array($sites) or !in_array($site, $sites)){
+        $exclusion[$elem['id']][] = 'sites';
+      }
+    }
+
+    // Si aucune exclusion n'est enregistrée, on met l'agent dans la liste des agents disponibles
+    if( empty($exclusion[$elem['id']]) ){
+      $agents_dispo[] = $elem;
+    }
+
+    // Si au moins une exclusion est enregistrée, l'agent ne sera pas placé dans les agents disponibles.
+    // On renseigne les motifs d'exclusions
+    else {
+      if( in_array( 'horaires', $exclusion[$elem['id']]) ){
+        $motifExclusion[$elem['id']][]="<span title='Les horaires de l&apos;agent ne lui permettent pas d&apos;occuper ce poste'>Horaires</span>";
+      }
+      if( in_array( 'autre_site', $exclusion[$elem['id']]) ){
+        $motifExclusion[$elem['id']][]="<span title='L&apos;agent est pr&eacute;vu sur un autre site'>Autre site</span>";
+      }
+      if( in_array( 'sites', $exclusion[$elem['id']]) ){
+        $motifExclusion[$elem['id']][]="<span title='L&apos;agent n&apos;est pas pr&eacute;vu sur ce site'>Site</span>";
+      }
+      if( in_array( 'activites', $exclusion[$elem['id']]) ){
+        $motifExclusion[$elem['id']][]="<span title='L&apos;agent n&apos;a pas toutes les qualifications requises pour occuper ce poste'>Activit&eacute;s</span>";
+      }
+      if( in_array( 'categories', $exclusion[$elem['id']]) ){
         if($categories_nb > 1 ){
           $title = "L&apos;agent n&apos;appartient &agrave; aucune des cat&eacute;gories requises{$categorie} pour occuper ce poste";
         } else {
           $title = "L&apos;agent n&apos;appartient pas &agrave; la cat&eacute;gorie requise{$categorie} pour occuper ce poste";
         }
-        $motifExclusion[$elem['id']][]="<span title='$title'>Cat&eacute;gorie</span>";
-        continue;
-      }
-    }
 
-    // Elimine les agents qui ne travaille pas sur ce site (en multi-sites)
-    if($config['Multisites-nombre']>1){
-      $sites = json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
-      if(!is_array($sites) or !in_array($site, $sites)){
-        continue;
+        $motifExclusion[$elem['id']][]="<span title='$title'>Cat&eacute;gorie</span>";
       }
-    }
-    
-    // Complète le tableau agents dispo avec les agents qualifiés et prévus sur ce site
-    if(!in_array($elem['id'],$tab_indispo)){
-      $agents_dispo[] = $elem;
     }
   }
 }
@@ -396,7 +427,9 @@ $autres_agents_tmp = $db->result;
 $autres_agents=array();
 if($autres_agents_tmp){
   foreach($autres_agents_tmp as $elem){
-    // Elimine les agents qui ne travaille pas sur ce site (en multi-sites)
+    // Elimine complétement les agents qui ne travaillent pas sur ce site (en multi-sites) (ne seront pas dans les indisponibles)
+    // Contrôle du champ "sites" de l'onglet "infos générales"
+    // NOTE Le même contrôle est réalisé plus haut afin d'éliminer les agents de la liste des agents disponibles. Ce 2ème contrôle élimine complétement les agents (pas dans les indisponibles)
     if($config['Multisites-nombre']>1){
       $sites = json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
       if(!is_array($sites) or !in_array($site, $sites)){
