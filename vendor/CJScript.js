@@ -1,9 +1,10 @@
-/* Divers scripts JS
+/**
+Divers scripts JS
 Licence GNU/GPL (version 2 et au dela)
 
 Fichier : CJScript.js
 Création : mars 2015
-Dernière modification : 15 novembre 2016
+Dernière modification : 06 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 */
 
@@ -99,7 +100,7 @@ function CJInfo(message,type,top,time,myClass){
     myClass=null;
   }
 
-  if(typeof(timeoutJSInfo)!== "undefined"){
+  if(typeof(timeoutJSInfo)!== "undefined" && time != 'permanent'){
     window.clearTimeout(timeoutCJInfo);
   }
 
@@ -115,14 +116,17 @@ function CJInfo(message,type,top,time,myClass){
   $("body").append("<div class='CJInfo noprint "+myClass+"' id='CJInfo"+id+"' data-id='"+id+"'>"+message+"</div>");
   CJErrorHighlight($("#CJInfo"+id),type);
   CJPosition($("#CJInfo"+id),top,"center");
-  timeoutCJInfo=window.setTimeout(function(){
-  		var height=$("#CJInfo"+id).height();
-  		$("#CJInfo"+id).remove();
-  		$(".CJInfo").each(function(){
-  			var top=$(this).position().top-height;
-  			$(this).css("top",top);
-  		});
-  	},time);
+
+  if( time != 'permanent' ){
+    timeoutCJInfo=window.setTimeout(function(){
+      var height=$("#CJInfo"+id).height();
+      $("#CJInfo"+id).remove();
+      $(".CJInfo").each(function(){
+              var top=$(this).position().top-height;
+              $(this).css("top",top);
+      });
+    },time);
+  }
 }
 
 function CJPosition(object,top,left){

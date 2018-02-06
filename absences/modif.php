@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 25 janvier 2018
+Dernière modification : 7 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -131,7 +131,7 @@ if(!$acces){
   $acces=(in_array(6,$droits) and $perso_id==$_SESSION['login_id'])?true:false;
 }
 // Si config Absences-adminSeulement, seuls les admins ont accès à cette page
-if($config['Absences-adminSeulement'] and !$admin)){
+if($config['Absences-adminSeulement'] and !$admin){
   $acces=false;
 }
 if(!$acces){
