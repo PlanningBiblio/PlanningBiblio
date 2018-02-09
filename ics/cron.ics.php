@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.05
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : ics/cron.ics.php
 Création : 28 juin 2016
-Dernière modification : 28 novembre 2017
+Dernière modification : 7 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -59,6 +59,7 @@ if(file_exists($lockFile)){
 }
 // On créé le fichier .lock
 $inF=fopen($lockFile,"w");
+fclose($inF);
 
 // Recherche les serveurs ICS et les variables openURL
 // Index des tableaux $servers et $var :

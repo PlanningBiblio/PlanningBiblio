@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 24 janvier 2017
+Dernière modification : 7 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -85,7 +85,7 @@ class personnel{
       $db->selectLeftJoin(
         array('personnel', 'id'),
         array('responsables', 'perso_id'),
-        array('id', 'nom', 'prenom', 'mail', 'statut', 'categorie', 'service', 'actif', 'droits', 'sites', 'check_ics'),
+        array('id', 'nom', 'prenom', 'mail', 'statut', 'categorie', 'service', 'actif', 'droits', 'sites', 'check_ics', 'check_hamac'),
         array('responsable', 'notification'),
         $filter,
         array(),
@@ -279,11 +279,6 @@ class personnel{
       $db->execute(array(':perso_id' => $agent, ':responsable' => $responsable, ':notification' => $notification));
     }
   }
-  
-  // TODO :  créer la base de données et tester
-  
-  
-  
  }
 
 }

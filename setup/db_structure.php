@@ -226,6 +226,7 @@ $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `code_ics` VARCHAR(100) NULL DEFAULT NULL,
   `url_ics` TEXT NULL DEFAULT NULL,
   `check_ics` VARCHAR(10) NULL DEFAULT '[1,1,1]',
+  `check_hamac` INT(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `login` (`login`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";

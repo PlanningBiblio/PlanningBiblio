@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 25 janvier 2018
+Dernière modification : 7 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -126,6 +126,7 @@ if($id){		//	récupération des infos de l'agent en cas de modif
   $mail=$db->result[0]['mail'];
   $statut=$db->result[0]['statut'];
   $categorie=$db->result[0]['categorie'];
+  $check_hamac = $db->result[0]['check_hamac'];
   $check_ics = json_decode($db->result[0]['check_ics'],true);
   $service=$db->result[0]['service'];
   $heuresHebdo=$db->result[0]['heures_hebdo'];
@@ -182,6 +183,7 @@ else{		// pas d'id, donc ajout d'un agent
   $mail=null;
   $statut=null;
   $categorie=null;
+  $check_hamac = 1;
   $check_ics = array(1,1,1);
   $service=null;
   $heuresHebdo=null;
@@ -270,7 +272,7 @@ $postes_dispo=postesNoms($postes_dispo,$postes_completNoms);
 <li><a href='#temps' id='personnel-a-li3'>Heures de pr&eacute;sence</a></li>
 <?php
 if($config['ICS-Server1'] or $config['ICS-Server2'] or $config['ICS-Server3'] or $config['ICS-Export']){
-  echo "<li><a href='#agendas'>Agendas</a></li>";
+  echo "<li><a href='#agendas'>Agendas et Synchronisation</a></li>";
 }
 if(in_array("conges",$plugins)){
   echo "<li><a href='#conges'>Cong&eacute;s</a></li>";
@@ -298,7 +300,7 @@ echo "<input type='hidden' value='$action' name='action' />";
 echo "<input type='hidden' value='$id' name='id' />";
 
 echo "<table style='width:90%;'>";
-echo "<tr valign='top'><td style='width:350px'>";
+echo "<tr valign='top'><td style='width:400px'>";
 echo "Nom :";
 echo "</td><td>";
 echo in_array(21,$droits)?"<input type='text' value='$nom' name='nom' style='width:400px' />":$nom;
@@ -845,14 +847,28 @@ if($config['EDTSamedi']){
 echo "<table style='width:90%;'>";
 
 //
+if($config['Hamac-csv']){
+  $hamac_pattern = !empty($config['Hamac-motif']) ? $config['Hamac-motif'] : 'Hamac';
+  $checked = !empty($check_hamac) ? "checked='checked'" : null;
+  $checked2 = $checked ? "Oui" : "Non";
+  $class = $checked ? "green bold" : "red";
+
+  echo "<tr><td style='width:400px'>";
+  echo "Synchronisation $hamac_pattern : ";
+  echo "</td><td>";
+  echo in_array(21,$droits)?"<input type='checkbox' value='1' name='check_hamac' $checked />":"<span class='agent-acces-checked2 $class'>$checked2</span>\n";
+
+  echo "</td></tr>";
+}
+
 if($config['ICS-Server1']){
   $ics_pattern = !empty($config['ICS-Pattern1']) ? $config['ICS-Pattern1'] : 'Serveur ICS N&deg;1';
   $checked = !empty($check_ics[0]) ? "checked='checked'" : null;
   $checked2 = $checked ? "Oui" : "Non";
   $class = $checked ? "green bold" : "red";
 
-  echo "<tr><td style='width:350px'>";
-  echo "Agenda ICS $ics_pattern : ";
+  echo "<tr><td style='width:400px'>";
+  echo "Synchronisation de l'agenda ICS $ics_pattern : ";
   echo "</td><td>";
   echo in_array(21,$droits)?"<input type='checkbox' value='1' name='check_ics1' $checked />":"<span class='agent-acces-checked2 $class'>$checked2</span>\n";
  
@@ -865,7 +881,7 @@ if($config['ICS-Server2']){
   $checked2 = $checked ? "Oui" : "Non";
   $class = $checked ? "green bold" : "red";
 
-  echo "<tr><td style='width:350px'>";
+  echo "<tr><td style='width:400px'>";
   echo "Agenda ICS $ics_pattern : ";
   echo "</td><td>";
   echo in_array(21,$droits)?"<input type='checkbox' value='1' name='check_ics2' $checked />":"<span class='agent-acces-checked2 $class'>$checked2</span>\n";
@@ -879,7 +895,7 @@ if($config['ICS-Server3']){
   $checked2 = $checked ? "Oui" : "Non";
   $class = $checked ? "green bold" : "red";
 
-  echo "<tr><td style='width:350px'>";
+  echo "<tr><td style='width:400px'>";
   echo "Agenda ICS distant : ";
   echo "</td><td>";
   echo in_array(21,$droits)?"<input type='checkbox' value='1' name='check_ics3' $checked />":"<span class='agent-acces-checked2 $class'>$checked2</span>\n";
