@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : monCompte.php
 Création : 23 juillet 2013
-Dernière modification : 21 avril 2017
+Dernière modification : 10 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -50,11 +50,11 @@ if($config['ICS-Export']){
 
 // Crédits (congés, récupérations)
 if(in_array("conges",$plugins)){
-  $credits['annuel']=$p->elements[0]['congesAnnuel'];
-  $credits['conges']=$p->elements[0]['congesCredit'];
-  $credits['reliquat']=$p->elements[0]['congesReliquat'];
-  $credits['anticipation']=$p->elements[0]['congesAnticipation'];
-  $credits['recuperation']=$p->elements[0]['recupSamedi'];
+  $credits['annuel'] = $p->elements[0]['conges_annuel'];
+  $credits['conges'] = $p->elements[0]['conges_credit'];
+  $credits['reliquat'] = $p->elements[0]['conges_reliquat'];
+  $credits['anticipation'] = $p->elements[0]['conges_anticipation'];
+  $credits['recuperation'] = $p->elements[0]['recup'];
   $credits['joursAnnuel']=number_format($credits['annuel']/7,2,","," ");
   $credits['joursConges']=number_format($credits['conges']/7,2,","," ");
   $credits['joursReliquat']=number_format($credits['reliquat']/7,2,","," ");
