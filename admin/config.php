@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.12
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 24 janvier 2018
+Dernière modification : 12 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -146,9 +146,11 @@ foreach($db->result as $elem){
       $choisies=json_decode(html_entity_decode($elem['valeur'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
 
       if(is_array($valeurs)){
+        $i = 1;
 	foreach($valeurs as $val){
 	  $checked=in_array($val[0],$choisies)?"checked='checked'":null;
-	  echo "<input type='checkbox' name='{$elem['nom']}[]' id='{$elem['nom']}[]' value='{$val[0]}' $checked /> {$val[1]}<br/>\n";
+	  echo "<input type='checkbox' name='{$elem['nom']}[]' id='{$elem['nom']}_$i' value='{$val[0]}' $checked /> {$val[1]}<br/>\n";
+          $i++;
 	}
       }
       break;
