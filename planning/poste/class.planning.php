@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.11
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 20 janvier 2018
+Dernière modification : 21 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -486,9 +486,12 @@ class planning{
     foreach($perso_ids as $elem){
       // Création du message avec date et nom de l'agent
       $agent = isset($tab[$elem]) ? $tab[$elem]['prenom'].' '.$tab[$elem]['nom'] : $oldData[$elem]['prenom'].' '.$oldData[$elem]['nom'];
+      $location = $GLOBALS['config']['Multisites-nombre'] > 1 ? '<br/>Site : <strong>' . $GLOBALS['config']["Multisites-site{$site}"] . '</strong>' : null;
+
       $message=$notificationType=="nouveauPlanning"?"Validation du planning":"Modification du planning";
-      $message.="<br/><br/>Date : <strong>".dateFr($date)."</strong>";
-      $message.="<br/>Agent : <strong>$agent</strong>";
+      $message .= "<br/><br/>Agent : <strong>$agent</strong>";
+      $message .= "<br/>Date : <strong>".dateFr($date)."</strong>";
+      $message .= $location;
       
       // S'il y a des éléments, on ajoute la liste des postes occupés avec les horaires
       if(isset($tab[$elem])){
@@ -514,7 +517,7 @@ class planning{
 
           // Affichage de la ligne avec horaires et poste
           $poste = html_entity_decode($postes[$e['poste']]['nom'],ENT_QUOTES|ENT_IGNORE,'UTF-8');
-          $line="<li><span style='$bold $striped'>".heure2($e['debut'])." - ".heure2($e['fin'])." : $poste {$e['site']}";
+          $line="<li><span style='$bold $striped'>".heure2($e['debut'])." - ".heure2($e['fin'])." : $poste";
           $line.="</span>";
 
           // On ajoute "(supprimé)" et une étoile en cas de modif car certains webmail suppriment les balises et le style "bold", etc.
@@ -543,7 +546,7 @@ class planning{
             if(!$exists){
               // Affichage de l'ancienne ligne avec horaires et poste
               $poste = html_entity_decode($postes[$e['poste']]['nom'],ENT_QUOTES|ENT_IGNORE,'UTF-8');
-              $line="<li><span style='font-weight:bold; text-decoration:line-through; color:red;'>".heure2($e['debut'])." - ".heure2($e['fin'])." : $poste {$e['site']}";
+              $line="<li><span style='font-weight:bold; text-decoration:line-through; color:red;'>".heure2($e['debut'])." - ".heure2($e['fin'])." : $poste";
               $line.="</span>";
               $line.=" (supprim&eacute;)";
               $line.="<sup style='font-weight:bold;'>*</sup>";
