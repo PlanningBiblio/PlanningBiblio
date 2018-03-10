@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 25 janvier 2018
+Dernière modification : 10 mars 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -191,13 +191,21 @@ else{
   if($agents_multiples){
   
     // Par défaut, ajoute l'agent logué comme absent
-    echo "<input type='hidden' name='perso_ids[]' value='{$_SESSION['login_id']}' id='hidden{$_SESSION['login_id']}' class='perso_ids_hidden'/>\n";
-    echo "<ul id='perso_ul1' class='perso_ul'>\n";
-    echo "<li id='li{$_SESSION['login_id']}' class='perso_ids_li'>{$_SESSION['login_nom']} {$_SESSION['login_prenom']}\n";
-    if($admin){
-      echo "<span class='perso-drop' onclick='supprimeAgent({$_SESSION['login_id']});' ><span class='pl-icon pl-icon-drop'></span></span>\n";
+    if($config['Absences-agent-preselection']) {
+      echo "<input type='hidden' name='perso_ids[]' value='{$_SESSION['login_id']}' id='hidden{$_SESSION['login_id']}' class='perso_ids_hidden'/>\n";
     }
-    echo "</li>\n";
+
+    echo "<ul id='perso_ul1' class='perso_ul'>\n";
+
+    if($config['Absences-agent-preselection']) {
+      echo "<li id='li{$_SESSION['login_id']}' class='perso_ids_li'>{$_SESSION['login_nom']} {$_SESSION['login_prenom']}\n";
+
+      if($admin){
+        echo "<span class='perso-drop' onclick='supprimeAgent({$_SESSION['login_id']});' ><span class='pl-icon pl-icon-drop'></span></span>\n";
+      }
+      echo "</li>\n";
+    }
+
     echo "</ul>\n";
     echo "<ul id='perso_ul2' class='perso_ul'></ul>\n";
     echo "<ul id='perso_ul3' class='perso_ul'></ul>\n";
@@ -213,7 +221,7 @@ else{
       echo "<option value='tous'>Tous les agents</option>\n";
     }
     foreach($agents as $elem){
-      $hide = $elem['id'] == $_SESSION['login_id'] ? "style='display:none;'" :null;
+      $hide = ( $elem['id'] == $_SESSION['login_id'] and $config['Absences-agent-preselection'] ) ? "style='display:none;'" :null;
       echo "<option value='".$elem['id']."' id='option{$elem['id']}' $hide >".$elem['nom']." ".$elem['prenom']."</option>\n";
     }
     echo "</select>\n";    
