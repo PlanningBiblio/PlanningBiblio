@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
-Dernière modification : 23 février 2018
+Dernière modification : 10 mars 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -34,7 +34,6 @@ $date=filter_input(INPUT_GET,"date",FILTER_SANITIZE_STRING);
 // Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
 $date=filter_var($date,FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
 
-$verrou=false;
 
 //		------------------		DATE		-----------------------//
 if(!$date and array_key_exists('PLdate',$_SESSION)){
@@ -236,6 +235,7 @@ for($j=0;$j<=$fin;$j++){
   $perso2=null;
   $date_validation2=null;
   $heure_validation2=null;
+  $verrou=false;
 
   $db=new db();
   $db->select2("pl_poste_verrou","*",array("date"=>$date, "site"=>$site));
