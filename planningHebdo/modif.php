@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planningHebdo/modif.php
 Création : 23 juillet 2013
-Dernière modification : 14 juillet 2017
+Dernière modification : 19 mars 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -30,7 +30,7 @@ if($copy){
 }
 
 // Sécurité
-$admin=in_array(24,$droits)?true:false;
+$admin = in_array(1101, $droits);
 
 $cle = null;
 

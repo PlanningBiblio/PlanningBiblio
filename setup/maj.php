@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 10 mars 2018
+Dernière modification : 19 mars 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -1053,7 +1053,7 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
     PRIMARY KEY (`id`))
     ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
-  // Modification des IDs des droits Absences
+  // Modification des IDs des droits Absences et gestion des heures de présences
   $db = new db();
   $db->select('personnel');
   if($db->result){
@@ -1070,6 +1070,10 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
           $droits[$k] = 501;
           $update = true;
         }
+        if($v == 24){
+          $droits[$k] = 1101;
+          $update = true;
+        }
       }
       if($update){
         $droits = json_encode($droits);
@@ -1080,6 +1084,7 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
 
   $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe_id` = '201', `groupe` = 'Gestion des absences, validation niveau 1' WHERE `groupe_id` = '1';";
   $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe_id` = '501', `groupe` = 'Gestion des absences, validation niveau 2' WHERE `groupe_id` = '8';";
+  $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe_id` = '1101' WHERE `groupe_id` = '24';";
 
   // Absences agent logué chargé automatiquement ou non
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) 
