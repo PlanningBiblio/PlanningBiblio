@@ -1118,6 +1118,8 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   // Affichage ou non des heures de SP et des couleurs dans le menu du planning
   $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES 
     ('Planning-Heures','boolean', '1', 'Planning', '', 'Afficher les heures &agrave; c&ocirc;t&eacute; du nom des agents dans le menu du planning','25');";
+
+  $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = 'uid,samaccountname,supannAliasLogin' WHERE `nom` =  'LDAP-ID-Attribute';";
   
   // Version
   $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
