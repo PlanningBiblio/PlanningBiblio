@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 25 janvier 2018
+Dernière modification : 4 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -27,7 +27,6 @@ require_once "planningHebdo/class.planningHebdo.php";
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 
 $actif=null;
-
 $admin=in_array(21,$droits)?true:false;
 // NB : le champ poste et les fonctions postes_... sont utilisés pour l'attribution des activités (qualification)
 
@@ -301,13 +300,13 @@ echo "<table style='width:90%;'>";
 echo "<tr valign='top'><td style='width:350px'>";
 echo "Nom :";
 echo "</td><td>";
-echo in_array(21,$droits)?"<input type='text' value='$nom' name='nom' style='width:400px' />":$nom;
+echo in_array(21,$droits) ? "<input type='text' value='$nom' name='nom' id='nom' style='width:400px' />" : "<span id='nom'>$nom</span>" ;
 echo "</td></tr>";
 
 echo "<tr><td>";
 echo "Prénom :";
 echo "</td><td>";
-echo in_array(21,$droits)?"<input type='text' value='$prenom' name='prenom' style='width:400px' />":$prenom;
+echo in_array(21,$droits) ? "<input type='text' value='$prenom' name='prenom' id='prenom' style='width:400px' />" : "<span id='prenom'>$prenom</span>";
 echo "</td></tr>";
 
 echo "<tr><td>";
@@ -315,7 +314,7 @@ echo "E-mail : ";
 if(in_array(21,$droits))
 	echo "<a href='mailto:$mail'>$mail</a>";
 echo "</td><td>";
-echo in_array(21,$droits)?"<input type='text' value='$mail' name='mail' style='width:400px' />":"<a href='mailto:$mail'>$mail</a>";
+echo in_array(21,$droits) ? "<input type='text' value='$mail' name='mail' id='mail' style='width:400px' />" : "<a href='mailto:$mail'><span id='mail'>$mail</span></a>";
 echo "</td></tr>";
 
 echo "<tr><td>";
@@ -889,12 +888,15 @@ if($config['ICS-Server3']){
 
 // URL du fichier ICS Planning Biblio
 if($id and isset($ics)){
-  echo "<tr><td style='padding-top: 10px;'>Agenda ICS Planning Biblio</td>\n";
-  echo "<td style='padding-top: 10px;' id='url-ics'>$ics</td></tr>\n";
+  echo "<tr><td style='padding-top: 20px;'>Agenda ICS Planning Biblio</td>\n";
+  echo "<td style='padding-top: 20px;' id='url-ics'>$ics</td></tr>\n";
   if($config['ICS-Code']){
     echo "<tr><td>&nbsp;</td>\n";
     echo "<td><a href='javascript:resetICSURL($id, \"$CSRFSession\", \"$prenom $nom\");'>R&eacute;initialiser l'URL</a></td></tr>\n";
   }
+  echo "<tr><td>&nbsp;</td>\n";
+  echo "<td><a href='javascript:sendICSURL();'>Envoyer l'URL &agrave; l&apos;agent par e-mail ($mail)</a></td></tr>\n";
+
 }
 echo "</table>\n";
 ?>
@@ -1056,6 +1058,19 @@ if(in_array("conges",$plugins)){
 ?>
     </ul>
   </fieldset>
+  </form>
+</div>
+
+<!-- Envoi de l'URL ICS par mail -->
+<div id="ics-url-form" title="Envoi de l'URL de l'agenda Planning Biblio" class='noprint' style='display:none;'>
+  <p class="validateTips">Envoyez à l'agent l'URL de son agenda Planning Biblio.</p>
+  <form>
+  <strong>Destinataire</strong><br/>
+  <span id='ics-url-recipient'>&nbsp;</span><br/><br/>
+  <label for='ics-url-subject'>Sujet</label><br/>
+  <input type='text' id='ics-url-subject' name='ics-url-subject' value='<?php echo $lang['send_ics_url_subject']; ?>'/><br/><br/>
+  <label for='ics-url-text'>Message</label><br/>
+  <textarea id='ics-url-text' name='ics-url-text'><?php echo $lang['send_ics_url_message']; ?></textarea>
   </form>
 </div>
 

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 30 septembre 2017
+Dernière modification : 4 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -660,7 +660,7 @@ EOD;
     </div>
 
     <div id="pl-notes-form" title="Commentaire" class='noprint' style='display:none;'>
-      <p class="validateTips">Vous pouvez écrire ici un commentaire qui sera affich&eacute; en bas du planning.</p>
+      <p class="validateTips" id='pl-notes-tips'>Vous pouvez écrire ici un commentaire qui sera affich&eacute; en bas du planning.</p>
       <form>
       <textarea id='pl-notes-text'>$notesTextarea</textarea>
       </form>
@@ -678,7 +678,7 @@ EOD;
 if($config['Planning-AppelDispo']){
   echo <<<EOD
     <div id="pl-appelDispo-form" title="Appel &agrave; disponibilit&eacute;" class='noprint' style='display:none;'>
-      <p class="validateTips">Envoyez un e-mail aux agents disponibles pour leur demander s&apos;ils sont volontaires pour occuper le poste choisi.</p>
+      <p class="validateTips" id='pl-appelDispo-tips' >Envoyez un e-mail aux agents disponibles pour leur demander s&apos;ils sont volontaires pour occuper le poste choisi.</p>
       <form>
       <label for='pl-appelDispo-sujet'>Sujet</label><br/>
       <input type='text' id='pl-appelDispo-sujet' name='pl-appelDispo-sujet' /><br/><br/>

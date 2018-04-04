@@ -168,6 +168,7 @@ $(function() {
 
   // Bouton Notes
   $("#pl-notes-button").click(function() {
+    $( '#pl-notes-tips' ).text("Vous pouvez écrire ici un commentaire qui sera affiché en bas du planning.");
     $( "#pl-notes-form" ).dialog( "open" );
     return false;
   });
@@ -216,7 +217,7 @@ $(function() {
 	      $("#pl-notes-form").dialog( "close" );
 	    },
 	    error: function(){
-	      updateTips("Une erreur est survenue lors de l'enregistrement du commentaire");
+	      updateTips("Une erreur est survenue lors de l'enregistrement du commentaire", "error");
 	    }
 	  });
 	}
@@ -276,7 +277,7 @@ $(function() {
 	      }
 	    },
 	    error: function(){
-	      updateTips("Une erreur est survenue lors de l'envoi de l'e-mail");
+	      updateTips("Une erreur est survenue lors de l'envoi de l'e-mail", "error");
 	    }
 	  });
 	}
@@ -288,7 +289,6 @@ $(function() {
     },
 
     close: function() {
-      updateTips("Envoyez un e-mail aux agents disponibles pour leur demander s&apos;ils sont volontaires pour occuper le poste choisi.");
       allFields.removeClass( "ui-state-error" );
     }
   });
@@ -517,6 +517,7 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin){
       // Mise à jour du formulaire
       $( "#pl-appelDispo-sujet" ).val(sujet);
       $( "#pl-appelDispo-text" ).text(message);
+      $( '#pl-appelDispo-tips' ).text("Envoyez un e-mail aux agents disponibles pour leur demander s'ils sont volontaires pour occuper le poste choisi.");
       $( "#pl-appelDispo-form" ).dialog( "open" );
     },
     error: function(result){
