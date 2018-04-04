@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 21 février 2018
+Dernière modification : 4 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -190,18 +190,21 @@ class planning{
               continue 2;
             }
           }
-        
-          $h = diff_heures($elem['debut'],$elem['fin'],"decimal");
-          $hres_jour = $elem['date'] == $date ? $h : 0;
-          $hres_semaine = ($elem['date'] >= $j1 and $elem['date'] <= $j7) ? $h : 0;
-          $hres_4sem = $h;
-          
-          if(!isset($heures[$elem['perso_id']])){
-            $heures[$elem['perso_id']] = array("jour"=>$hres_jour, "semaine"=>$hres_semaine, "4semaines"=>$hres_4sem);
-          }else{
-            $heures[$elem['perso_id']]["jour"] += $hres_jour;
-            $heures[$elem['perso_id']]["semaine"] += $hres_semaine;
-            $heures[$elem['perso_id']]["4semaines"] += $hres_4sem;
+
+          // Calcul des heures de service public pour affichage à côté du nom des agents
+          if($GLOBALS['config']['Planning-Heures']){
+            $h = diff_heures($elem['debut'],$elem['fin'],"decimal");
+            $hres_jour = $elem['date'] == $date ? $h : 0;
+            $hres_semaine = ($elem['date'] >= $j1 and $elem['date'] <= $j7) ? $h : 0;
+            $hres_4sem = $h;
+            
+            if(!isset($heures[$elem['perso_id']])){
+              $heures[$elem['perso_id']] = array("jour"=>$hres_jour, "semaine"=>$hres_semaine, "4semaines"=>$hres_4sem);
+            }else{
+              $heures[$elem['perso_id']]["jour"] += $hres_jour;
+              $heures[$elem['perso_id']]["semaine"] += $hres_semaine;
+              $heures[$elem['perso_id']]["4semaines"] += $hres_4sem;
+            }
           }
         }
       }
@@ -287,41 +290,43 @@ class planning{
           $nom.=" (".join(", ",$motifExclusion[$elem['id']]).")";
         }
 
-        // affihage des heures faites ce jour et cette semaine + les heures de la cellule
-        $hres_jour = isset($heures[$elem['id']]['jour']) ? $heures[$elem['id']]['jour'] : 0;
-        $hres_jour += $hres_cellule;
-        $hres_jour = round($hres_jour, 2);
-        $hres_sem = isset($heures[$elem['id']]['semaine']) ? $heures[$elem['id']]['semaine'] : 0;
-        $hres_sem += $hres_cellule;
-        $hres_sem = round($hres_sem, 2);
-        
-        // affihage des heures faites les 4 dernières semaines + les heures de la cellule
-        $hres_4sem=null;
-        if($config['hres4semaines']){
-          $hres_4sem = isset($heures[$elem['id']]['4semaines']) ? $heures[$elem['id']]['4semaines'] : 0;
-          $hres_4sem += $hres_cellule;
-          $hres_4sem = round($hres_4sem, 2);
-          $hres_4sem=" / <font title='Heures des 4 derni&egrave;res semaines'>".heure4($hres_4sem,true)."</font>";
+        // Affihage des heures faites ce jour et cette semaine + les heures de la cellule
+        if($GLOBALS['config']['Planning-Heures']){
+          $hres_jour = isset($heures[$elem['id']]['jour']) ? $heures[$elem['id']]['jour'] : 0;
+          $hres_jour += $hres_cellule;
+          $hres_jour = round($hres_jour, 2);
+          $hres_sem = isset($heures[$elem['id']]['semaine']) ? $heures[$elem['id']]['semaine'] : 0;
+          $hres_sem += $hres_cellule;
+          $hres_sem = round($hres_sem, 2);
+          
+          // affihage des heures faites les 4 dernières semaines + les heures de la cellule
+          $hres_4sem=null;
+          if($config['hres4semaines']){
+            $hres_4sem = isset($heures[$elem['id']]['4semaines']) ? $heures[$elem['id']]['4semaines'] : 0;
+            $hres_4sem += $hres_cellule;
+            $hres_4sem = round($hres_4sem, 2);
+            $hres_4sem=" / <font title='Heures des 4 derni&egrave;res semaines'>".heure4($hres_4sem,true)."</font>";
+          }
+
+          //	Mise en forme de la ligne avec le nom et les heures et la couleur en fonction des heures faites
+          $nom.="<div class='menudiv-heures'>\n";
+          $nom.="&nbsp;<font title='Heures du jour'>".heure4($hres_jour,true)."</font> / ";
+          $nom.="<font title='Heures de la semaine'>".heure4($hres_sem,true)."</font> / ";
+
+          $nom.="<font title='$heuresHebdoTitle'>".heure4($heuresHebdo,true)."</font>";
+          $nom.=$hres_4sem;
+          $nom.="</div>\n";
+
+          // Si absence non validée : affichage en rouge
+          if(in_array($elem['id'], $absences_non_validees)){
+            $nom="<font style='color:red'>$nom</font>\n";
+          }elseif($hres_jour>7)			// plus de 7h:jour : rouge
+            $nom="<font style='color:red'>$nom</font>\n";
+          elseif(($heuresHebdo-$hres_sem)<=0.5 and ($hres_sem-$heuresHebdo)<=0.5)		// 0,5 du quota hebdo : vert
+            $nom="<font style='color:green'>$nom</font>\n";
+          elseif($hres_sem>$heuresHebdo)			// plus du quota hebdo : rouge
+            $nom="<font style='color:red'>$nom</font>\n";
         }
-
-        //	Mise en forme de la ligne avec le nom et les heures et la couleur en fonction des heures faites
-        $nom.="<div class='menudiv-heures'>\n";
-        $nom.="&nbsp;<font title='Heures du jour'>".heure4($hres_jour,true)."</font> / ";
-        $nom.="<font title='Heures de la semaine'>".heure4($hres_sem,true)."</font> / ";
-
-        $nom.="<font title='$heuresHebdoTitle'>".heure4($heuresHebdo,true)."</font>";
-        $nom.=$hres_4sem;
-        $nom.="</div>\n";
-
-        // Si absence non validée : affichage en rouge
-        if(in_array($elem['id'], $absences_non_validees)){
-          $nom="<font style='color:red'>$nom</font>\n";
-        }elseif($hres_jour>7)			// plus de 7h:jour : rouge
-          $nom="<font style='color:red'>$nom</font>\n";
-        elseif(($heuresHebdo-$hres_sem)<=0.5 and ($hres_sem-$heuresHebdo)<=0.5)		// 0,5 du quota hebdo : vert
-          $nom="<font style='color:green'>$nom</font>\n";
-        elseif($hres_sem>$heuresHebdo)			// plus du quota hebdo : rouge
-          $nom="<font style='color:red'>$nom</font>\n";
 
         // Classe en fonction du statut et du service
         $class_tmp=array();
