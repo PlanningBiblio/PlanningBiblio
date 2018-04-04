@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 15 août 2017
+Dernière modification : 24 mars 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -54,11 +54,34 @@ class planningHebdo{
     // Validation
     // Par défaut = 0, si $data['validation'] valide = login de l'agent logué, validation = date courante
 
-    $valide=0;
-    $validation="0000-00-00 00:00:00";
-    if(array_key_exists("validation",$data) and $data['validation']){
-      $valide=$_SESSION['login_id'];
-      $validation=date("Y-m-d H:i:s");
+    $valide_n1 = 0;
+    $validation_n1 = "0000-00-00 00:00:00";
+    $valide_n2 = 0;
+    $validation_n2 = "0000-00-00 00:00:00";
+
+    if(array_key_exists("validation",$data)){
+      switch( $data['validation'] ){
+        case -1 :
+          $valide_n1 = -1 * $_SESSION['login_id'];
+          $validation_n1 = date("Y-m-d H:i:s");
+          $valide_n2 = 0;
+          $validation_n2 = "0000-00-00 00:00:00";
+          break;
+        case 1 :
+          $valide_n1 = $_SESSION['login_id'];
+          $validation_n1 = date("Y-m-d H:i:s");
+          $valide_n2 = 0;
+          $validation_n2 = "0000-00-00 00:00:00";
+          break;
+        case -2 :
+          $valide_n2 = -1 * $_SESSION['login_id'];
+          $validation_n2 = date("Y-m-d H:i:s");
+          break;
+        case 2 :
+          $valide_n2 = $_SESSION['login_id'];
+          $validation_n2 = date("Y-m-d H:i:s");
+          break;
+      }
     }
 
     $CSRFToken=$data['CSRFToken'];
@@ -74,51 +97,41 @@ class planningHebdo{
 
       // 1er tableau
       $insert=array("perso_id"=>$perso_id,"debut"=>$dates[0][0],"fin"=>$dates[0][1],"temps"=>json_encode($data['temps']), 
-	"valide"=>$valide, "validation"=>$validation);
+        "valide_n1" => $valide_n1, "validation_n1" => $validation_n1, "valide" => $valide_n2, "validation" => $validation_n2 );
 
       $db=new db();
       $db->CSRFToken = $CSRFToken;
       $db->insert("planning_hebdo",$insert);
       $this->error=$db->error;
+
       // 2ème tableau
       $insert=array("perso_id"=>$perso_id,"debut"=>$dates[0][2],"fin"=>$dates[0][3],"temps"=>json_encode($data['temps2']),
-	"valide"=>$valide, "validation"=>$validation);
+        "valide_n1" => $valide_n1, "validation_n1" => $validation_n1, "valide" => $valide_n2, "validation" => $validation_n2 );
 
       $db=new db();
       $db->CSRFToken = $CSRFToken;
       $db->insert("planning_hebdo",$insert);
       $this->error=$db->error?$db->error:$this->error;
     }
+
     // Sinon, insertion d'un seul tableau
     else{
       $insert=array("perso_id"=>$perso_id,"debut"=>$data['debut'],"fin"=>$data['fin'],"temps"=>json_encode($data['temps']), 
-	"valide"=>$valide, "validation"=>$validation);
+        "valide_n1" => $valide_n1, "validation_n1" => $validation_n1, "valide" => $valide_n2, "validation" => $validation_n2 );
 
       // Dans le cas d'une copie (voir fonction copy)
       if(isset($data['remplace'])){
 	$insert['remplace']=$data['remplace'];
       }
+
       $db=new db();
       $db->CSRFToken = $CSRFToken;
       $db->insert("planning_hebdo",$insert);
       $this->error=$db->error;
     }
 
-    // Envoi d'un mail aux responsables
-    $destinataires=array();
-    if($GLOBALS['config']['PlanningHebdo-Notifications']=="droit"){
-      $p=new personnel();
-      $p->fetch("nom");
-      foreach($p->elements as $elem){
-	$tmp=json_decode(html_entity_decode($elem['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
-	if(in_array(24,$tmp)){
-	  $destinataires[]=$elem['mail'];
-	}
-      }
-    }
-    elseif($GLOBALS['config']['PlanningHebdo-Notifications']=="Mail-Planning"){
-      $destinataires=explode(";",$GLOBALS['config']['Mail-Planning']);
-    }
+    $this->getRecipients(1, $perso_id);
+    $destinataires = $ph->recipients;
 
     if(!empty($destinataires)){
       $nomAgent = nom($perso_id,"prenom nom");
@@ -315,6 +328,112 @@ class planningHebdo{
   $this->periodesFr=$datesFr;
   }
 
+  /**
+   * @function getRecipients
+   * Retourne la liste des destinataires des notifications en fonction du niveau de validation.
+   * @param int $validation = niveau de validation (int) :
+   * - 1 : enregistrement d'une nouvelle absences
+   * - 2 : modification d'une absence sans validation ou suppression
+   * - 3 : validation N1
+   * - 4 : validation N2
+   * @param int $perso_id = ID de l'agent concerné par le planning de présence
+   */
+  public function getRecipients($validation,$perso_id){
+
+    $categories=$GLOBALS['config']["PlanningHebdo-notifications{$validation}"];
+    $categories=json_decode(html_entity_decode(stripslashes($categories),ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
+    /*
+    $categories : Catégories de personnes à qui les notifications doivent être envoyées
+      tableau json issu de la config. : champ PlanningHebdo-notifications, PlanningHebdo-notifications2, 
+      PlanningHebdo-notifications3, PlanningHebdo-notifications4, en fonction du niveau de validation ($validation)
+      Valeurs du tableau : 
+        0 : agents ayant le droits de validation les planning de présence au niveau 1
+        1 : agents ayant le droits de validation les planning de présence au niveau 2
+        2 : responsables directs (mails enregistrés dans la fiche des agents)
+        3 : cellule planning (mails enregistrés dans la config.)
+        4 : l'agent
+    */
+
+    // Informations relatives à l'agent : son mail, le mail de ses responsables
+    $p = new personnel();
+    $p->fetchById($perso_id);
+    if(!empty($p->elements)){
+      $mail = $p->elements[0]['mail'];
+      $mails_responsables = $p->elements[0]['mails_responsables'];
+    }
+
+    // recipients : liste des mails qui sera retournée
+    $recipients=array();
+
+    // Agents ayant le droits de gérer les plannings de présence au niveau 1
+    if(in_array(0,$categories)){
+
+      $responsablesN1 = array();
+      $db = new db();
+      $db->select2('personnel', array('id', 'mail'), array('droits' => 'LIKE%1101%'));
+      if($db->result){
+        $responsablesN1 = $db->result;
+      }
+
+      foreach($responsablesN1 as $elem){
+        if(!in_array(trim(html_entity_decode($elem['mail'],ENT_QUOTES|ENT_IGNORE,"UTF-8")),$recipients)){
+          $recipients[]=trim(html_entity_decode($elem['mail'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+        }
+      }
+    }
+
+    // Agents ayant le droits de gérer les plannings de présence au niveau 1
+    if(in_array(1,$categories)){
+
+      $responsablesN2 = array();
+      $db = new db();
+      $db->select2('personnel', array('id', 'mail'), array('droits' => 'LIKE%1201%'));
+      if($db->result){
+        $responsablesN2 = $db->result;
+      }
+
+      foreach($responsablesN2 as $elem){
+        if(!in_array(trim(html_entity_decode($elem['mail'],ENT_QUOTES|ENT_IGNORE,"UTF-8")),$recipients)){
+          $recipients[]=trim(html_entity_decode($elem['mail'],ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+        }
+      }
+    }
+
+    // Responsables directs
+    if(in_array(2,$categories)){
+      if(is_array($mails_responsables)){
+        foreach($mails_responsables as $elem){
+          if(!in_array(trim(html_entity_decode($elem,ENT_QUOTES|ENT_IGNORE,"UTF-8")),$recipients)){
+            $recipients[]=trim(html_entity_decode($elem,ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+          }
+        }
+      }
+    }
+
+    // Cellule planning
+    if(in_array(3,$categories)){
+      $mailsCellule=explode(";",trim($GLOBALS['config']['Mail-Planning']));
+      if(is_array($mailsCellule)){
+        foreach($mailsCellule as $elem){
+          if(!in_array(trim(html_entity_decode($elem,ENT_QUOTES|ENT_IGNORE,"UTF-8")),$recipients)){
+            $recipients[]=trim(html_entity_decode($elem,ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+          }
+        }
+      }
+    }
+
+    // L'agent
+    if(in_array(4,$categories)){
+      if(!in_array(trim(html_entity_decode($mail,ENT_QUOTES|ENT_IGNORE,"UTF-8")),$recipients)){
+        $recipients[]=trim(html_entity_decode($mail,ENT_QUOTES|ENT_IGNORE,"UTF-8"));
+      }
+    }
+
+    $this->recipients=$recipients;
+  }
+
+  
+  
   public function suppression_agents($liste){
     $db=new db();
     $db->CSRFToken = $this->CSRFToken;
@@ -328,12 +447,45 @@ class planningHebdo{
 
     $perso_id=array_key_exists("valide",$data)?$data["valide"]:$_SESSION['login_id'];
 
-    $temps=json_encode($data['temps']);
-    $update=array("debut"=>$data['debut'],"fin"=>$data['fin'],"temps"=>$temps,"modif"=>$perso_id,"modification"=>date("Y-m-d H:i:s"));
-    if($data['validation']){
-      $update['valide']=$perso_id;
-      $update['validation']=date("Y-m-d H:i:s");
+    // Validation 
+    $valide_n1 = 0;
+    $validation_n1 = "0000-00-00 00:00:00";
+    $valide_n2 = 0;
+    $validation_n2 = "0000-00-00 00:00:00";
+    $notification = 2;
+
+    if(array_key_exists("validation",$data)){
+      switch( $data['validation'] ){
+        case -1 :
+          $valide_n1 = -1 * $_SESSION['login_id'];
+          $validation_n1 = date("Y-m-d H:i:s");
+          $valide_n2 = 0;
+          $validation_n2 = "0000-00-00 00:00:00";
+          $notification = 3;
+          break;
+        case 1 :
+          $valide_n1 = $_SESSION['login_id'];
+          $validation_n1 = date("Y-m-d H:i:s");
+          $valide_n2 = 0;
+          $validation_n2 = "0000-00-00 00:00:00";
+          $notification = 3;
+          break;
+        case -2 :
+          $valide_n2 = -1 * $_SESSION['login_id'];
+          $validation_n2 = date("Y-m-d H:i:s");
+          $notification = 4;
+          break;
+        case 2 :
+          $valide_n2 = $_SESSION['login_id'];
+          $validation_n2 = date("Y-m-d H:i:s");
+          $notification = 4;
+          break;
+      }
     }
+
+    $temps = json_encode($data['temps']);
+    $update = array("debut" => $data['debut'], "fin" => $data['fin'], "temps" => $temps, "modif" => $perso_id, "modification" => date("Y-m-d H:i:s"),
+      "valide_n1" => $valide_n1, "validation_n1" => $validation_n1, "valide" => $valide_n2, "validation" => $validation_n2 );
     
     $CSRFToken=$data['CSRFToken'];
     unset($data['CSRFToken']);
@@ -344,7 +496,7 @@ class planningHebdo{
     $this->error=$db->error;
 
     // Remplacement du planning de la fiche agent si validation et date courante entre debut et fin
-    if($data['validation'] and $data['debut']<=date("Y-m-d") and $data['fin']>=date("Y-m-d")){
+    if($data['validation'] == 2 and $data['debut']<=date("Y-m-d") and $data['fin']>=date("Y-m-d")){
       $db=new db();
       $db->CSRFToken = $CSRFToken;
       $db->update('planning_hebdo', array('actuel'=>0), array('perso_id'=>$data['perso_id']));
@@ -354,7 +506,7 @@ class planningHebdo{
     }
 
     // Si validation d'un planning de remplacement, suppression du planning d'origine
-    if($data['validation'] and $data['remplace']){
+    if($data['validation'] == 2 and $data['remplace']){
       $db=new db();
       $db->CSRFToken = $CSRFToken;
       $db->delete('planning_hebdo', array('id' =>$data['remplace']));
@@ -363,42 +515,25 @@ class planningHebdo{
       $db->update('planning_hebdo', array('remplace'=>0), array('remplace'=>$data['remplace']));
     }
 
-    // Envoi d'un mail aux responsables et à l'agent concerné
-    $destinataires=array();
+    // Envoi de la notification
 
-    // Les admins
-    if($GLOBALS['config']['PlanningHebdo-Notifications']=="droit"){
-      $p=new personnel();
-      $p->fetch("nom");
-      foreach($p->elements as $elem){
-	$tmp=json_decode(html_entity_decode($elem['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
-	if(in_array(24,$tmp)){
-	  $destinataires[]=$elem['mail'];
-	}
-      }
-    }
-    elseif($GLOBALS['config']['PlanningHebdo-Notifications']=="Mail-Planning"){
-      $destinataires=explode(";",$GLOBALS['config']['Mail-Planning']);
-    }
-    // L'agent
-    $p=new personnel();
-    $p->fetchById($data['perso_id']);
-    $destinataires[]=$p->elements[0]['mail'];
+    $this->getRecipients($notification, $data['perso_id']);
+    $destinataires = $ph->recipients;
 
     $nomAgent = nom($data['perso_id'],"prenom nom");
 
     if(!empty($destinataires)){
-      if($data['validation']){
-	$sujet="Validation d'un planning de présence, ".html_entity_decode($nomAgent,ENT_QUOTES|ENT_IGNORE,"UTF-8");
-	$message="Un planning de présence de ";
-	$message.=$nomAgent;
-	$message.=" a été validé dans l'application Planning Biblio<br/>";
+      if($data['validation'] == 2){
+        $sujet="Validation d'un planning de présence, ".html_entity_decode($nomAgent,ENT_QUOTES|ENT_IGNORE,"UTF-8");
+        $message="Un planning de présence de ";
+        $message.=$nomAgent;
+        $message.=" a été validé dans l'application Planning Biblio<br/>";
       }
       else{
-	$sujet="Modification d'un planning de présence, ".html_entity_decode($nomAgent,ENT_QUOTES|ENT_IGNORE,"UTF-8");
-	$message="Un planning de présence de ";
-	$message.=$nomAgent;
-	$message.=" a été modifié dans l'application Planning Biblio<br/>";
+        $sujet="Modification d'un planning de présence, ".html_entity_decode($nomAgent,ENT_QUOTES|ENT_IGNORE,"UTF-8");
+        $message="Un planning de présence de ";
+        $message.=$nomAgent;
+        $message.=" a été modifié dans l'application Planning Biblio<br/>";
       }
 
       // Envoi du mail
@@ -407,7 +542,6 @@ class planningHebdo{
       $m->message=$message;
       $m->to=$destinataires;
       $m->send();
-
     }
   }
   

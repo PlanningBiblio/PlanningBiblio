@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 12 février 2018
+Dernière modification : 24 mars 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -116,7 +116,7 @@ foreach($db->result as $elem){
     echo "<h3>{$elem['categorie']}</h3>\n";
     echo "<div>";
     echo "<table cellspacing='0' cellpadding='5' style='width:100%;'>\n";
-    echo "<tr><td class='ui-widget-header ui-corner-left' style='width:200px;border-right:0px;'>Nom</td><td style='width:400px;border-left:0px;border-right:0px;' class='ui-widget-header'>Valeur</td><td class='ui-widget-header ui-corner-right' style='border-left:0px;'>Commentaires</td></tr>\n";
+    echo "<tr><td class='ui-widget-header ui-corner-left' style='width:350px;border-right:0px;'>Nom</td><td style='width:600px;border-left:0px;border-right:0px;' class='ui-widget-header'>Valeur</td><td class='ui-widget-header ui-corner-right' style='border-left:0px;'>Commentaires</td></tr>\n";
   }
   elseif($elem['categorie']!=$last_category){
     echo "</table>\n";
@@ -124,7 +124,7 @@ foreach($db->result as $elem){
     echo "<h3>{$elem['categorie']}</h3>\n";
     echo "<div>";
     echo "<table cellspacing='0' cellpadding='5' style='width:100%;'>\n";
-    echo "<tr><td class='ui-widget-header ui-corner-left' style='width:200px;border-right:0px;'>Nom</td><td style='width:400px;border-left:0px;border-right:0px;' class='ui-widget-header'>Valeur</td><td class='ui-widget-header ui-corner-right' style='border-left:0px;'>Commentaires</td></tr>\n";
+    echo "<tr><td class='ui-widget-header ui-corner-left' style='width:350px;border-right:0px;'>Nom</td><td style='width:600px;border-left:0px;border-right:0px;' class='ui-widget-header'>Valeur</td><td class='ui-widget-header ui-corner-right' style='border-left:0px;'>Commentaires</td></tr>\n";
   }
 
   $last_category=$elem['categorie'];

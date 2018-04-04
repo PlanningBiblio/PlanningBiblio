@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.12
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 11 décembre 2017
+Dernière modification : 24 mars 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -32,6 +32,7 @@ if(!file_exists("include/config.php")){
 
 require_once "include/config.php";
 require_once "include/sanitize.php";
+require_once __DIR__."/lang/fr_FR.php";
 
 // Error reporting
 ini_set('display_errors',$config['display_errors']);
