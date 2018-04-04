@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.7.02
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 12 octobre 2017
+Dernière modification : 4 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -479,6 +479,10 @@ function afficheTableauxDiv(){
 function appelDispo(site,siteNom,poste,posteNom,date,debut,fin){
   var agents = $('#td-appelDispo').attr('data-agents');
   
+  var weekday = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+  var d = new Date(date);
+  var jour = weekday[d.getDay()];
+
   // Variable globale à utiliser lors de l'envoi du mail
   appelDispoData={site:site, poste:poste, date:date, debut:debut, fin:fin, agents:agents};
   
@@ -499,11 +503,13 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin){
       }
 
       sujet=sujet.replace("[poste]",posteNom);
+      sujet=sujet.replace("[jour]",jour);
       sujet=sujet.replace("[date]",dateFr(date));
       sujet=sujet.replace("[debut]",heureFr(debut));
       sujet=sujet.replace("[fin]",heureFr(fin));
 
       message=message.replace("[poste]",posteNom);
+      message=message.replace("[jour]",jour);
       message=message.replace("[date]",dateFr(date));
       message=message.replace("[debut]",heureFr(debut));
       message=message.replace("[fin]",heureFr(fin));
