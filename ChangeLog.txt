@@ -1,3 +1,7 @@
+*** Version 2.8         (11 avril 2018)   ***
+- Améliorations
+Agents volants : Permet de distinguer une liste d'agents dans les plannings (attribution d'une couleur). Les agents sont choisi semaine par semaine dans le sous-menu Planning / Agents-volants
+
 *** Version 2.7.12      (29 janvier 2018)   ***
 - Améliorations
 CAS : Ajout du paramètre CAS-ServiceURL pour permettre de forcer l'URL de redirection vers l'application

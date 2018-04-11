@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 4 avril 2018
+Dernière modification : 11 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -600,7 +600,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
         var perso_id=result[i]["perso_id"];
 
         // classes : A définir en fonction du statut, du service et des absences
-        var classes="cellDiv pl-highlight cellule-perso-"+perso_id;
+        var classes="cellDiv pl-highlight pl-cellule-perso-"+perso_id;
         // Absences, suppression
         // absent == 1 : Absence validée ou absence sans gestion des validations
         var absence_valide = false;
@@ -658,7 +658,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
         // Création d'une balise span avec les classes cellSpan et agent_ de façon à les repérer et agir dessus 
         debut=debut.replace(":","");
         fin=fin.replace(":","");
-        var span="<span class='cellSpan agent_"+perso_id+"' title='"+title+"'>"+agent+"</span>";
+        var span="<span class='cellSpan pl-highlight agent_"+perso_id+"' title='"+title+"'>"+agent+"</span>";
         var div="<div id='cellule"+cellule+"_"+i+"' class='"+classes+"' data-perso-id='"+perso_id+"' oncontextmenu='majPersoOrigine("+perso_id+");'>"+span+"</div>"
         // oncontextmenu='majPersoOrigine("+perso_id+");' : necessaire car l'événement JQuery contextmenu sur .cellDiv ne marche pas sur les cellules modifiées
         $("#td"+cellule).append(div);
@@ -828,7 +828,7 @@ function majPersoOrigine(perso_id){
 /**
  * @function plMouseOut
  * @param int id
- * Actions executées lors que les lignes du menudiv ne sont plus survolées
+ * Actions executées lorsque les lignes du menudiv ne sont plus survolées
  * Retire la surbrillance des agents dans le planning
  */
 function plMouseOut(id){
@@ -838,7 +838,7 @@ function plMouseOut(id){
 /**
  * @function plMouseOver
  * @param int id
- * Actions executées lors que les lignes du menudiv sont survolées
+ * Actions executées lorsque les lignes du menudiv sont survolées
  * Met en surbrillance l'agent survolé dans le planning
  */
 function plMouseOver(id){

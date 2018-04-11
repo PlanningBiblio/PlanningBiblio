@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 4 avril 2018
+Dernière modification : 7 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -1117,9 +1117,23 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
 
   // Affichage ou non des heures de SP et des couleurs dans le menu du planning
   $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES 
-    ('Planning-Heures','boolean', '1', 'Planning', '', 'Afficher les heures &agrave; c&ocirc;t&eacute; du nom des agents dans le menu du planning','25');";
+    ('Planning-Heures','boolean', '1', '', 'Planning', 'Afficher les heures &agrave; c&ocirc;t&eacute; du nom des agents dans le menu du planning','25');";
 
   $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = 'uid,samaccountname,supannAliasLogin' WHERE `nom` =  'LDAP-ID-Attribute';";
+  
+  // Agents volants (SciencesPo)
+  $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`) VALUES ('30','90','Agents volants','planning/volants/index.php','config=Planning-agents-volants');";
+  $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('Planning-agents-volants','boolean', '0', '', 'Planning', 'Utiliser le module \"Agents volants\" permettant de diff&eacute;rencier un groupe d&apos;agents dans le planning','90');";
+  $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Agents volants', 301, 'Cr&eacute;ation / modification des plannings, utilisation et gestion des mod&egrave;les', 'planning/volants/index.php', 'Planning', 110);";
+
+  $sql[] = "CREATE TABLE `{$dbprefix}volants` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT, 
+    `date` DATE NULL DEFAULT NULL, 
+    `perso_id` INT(11) NOT NULL DEFAULT '0', 
+    PRIMARY KEY (`id`))
+    ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
   
   // Version
   $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";

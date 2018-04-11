@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : aide/index.php
 Création : mai 2011
-Dernière modification : 18 novembre 2016
+Dernière modification : 11 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -44,6 +44,7 @@ if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
 	<li><a href='#pl_modele'>Utilisation des modèles</a></li>
 	<li><a href='#pl_efface'>Effacer un planning</a></li>
 	<li><a href='#pl_valid'>Validation</a></li>
+	<li><a href='#pl_volants'>Agents volants</a></li>
 	<li><a href='#pl_imprime'>Impression</a></li>
 	<li><a href='#pl_rappels'>Rappels</a></li>
 	</ol>
@@ -244,18 +245,24 @@ Une fois validé, le planning n'est plus modifiable. Votre nom ainsi que la date
 Si vous devez modifier votre planning, cliquez sur l'icône représentant un cadenas ouvert.
 Modifiez le planning et validez-le de nouveau afin de le rendre accessible. Le nom, la date et l'heure de validation sont mis à jour.<br/>
 
+<a name='pl_volants'></a>
+<h4>3.6) Agents volants</h4>
+<p>
+Si la gestion des agents volants est activée dans la configuration (Menu Administration / Configuration / Plannings / Agents-volants)<br/>
+Vous pouvez, chaque semaine, sélectionner une liste d'agents dans le sous-menu "Planning" / "Agents volants".<br/>
+Les agents sélectionnés seront affichés d'une couleur différente dans les plannings. Vous pourrez ainsi les distinguer facilement.
+</p>
+
 <a name='pl_imprime'></a>
-<h4>3.6) Impression</h4>
+<h4>3.7) Impression</h4>
 Vous pouvez imprimer le planning en cliquant sur l'icône représentant une imprimante (en haut à droite) 
 ou en utilisant la commande d'impression de votre navigateur (Fichier / Imprimer ou Ctrl+P).<br/>
 Il est recommandé d'utiliser Firefox pour l'impression du planning.<br/>
 Avant la première impression, vous devez configurer votre navigateur pour que les couleurs d'arrière plan s'impriment.
 Pour ceci, dans Firefox, allez dans fichier, mise en page et cochez "Imprimer le fond de page (couleur et images)".<br/>
 
-
-
 <a name='pl_rappels'></a>
-<h4>3.7) Rappels</h4>
+<h4>3.8) Rappels</h4>
 Planning Biblio peut envoyer automatiquement des rappels par e-mails à la cellule planning pour l'informer de l'état des 
 plannings à venir.<br/>
 La cellule planning est ainsi prévenue quelques jours avant si des tableaux sont incomplets ou non validés.<br/>

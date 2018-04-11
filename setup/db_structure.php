@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 23 mars 2018
+Dernière modification : 7 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -487,4 +487,13 @@ $sql[]="CREATE TABLE `{$dbprefix}planning_hebdo` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
 $sql[]="CREATE TABLE `{$dbprefix}planning_hebdo_periodes` (`id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `annee` VARCHAR(9), `dates` TEXT);";
+
+// Agents volants
+$sql[] = "CREATE TABLE `{$dbprefix}volants` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT, 
+  `date` DATE NULL DEFAULT NULL, 
+  `perso_id` INT(11) NOT NULL DEFAULT '0', 
+  PRIMARY KEY (`id`))
+  ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
 ?>

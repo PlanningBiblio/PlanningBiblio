@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 4 avril 2018
+Dernière modification : 7 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -1115,6 +1115,67 @@ option.bold{
 
 #div_agenda .postes{
   margin-top: 10px;
+}
+
+/* Agents volants */
+#date_planning.volants-title{
+  width: 600px;
+  margin: 0 auto 80px;
+  text-align: center;
+}
+
+.volants-calendar{
+  z-index: 10;
+  position: absolute;
+  top: 100px;
+}
+
+#volants-content{
+  margin: 100px auto;
+  width: 1080px;
+}
+
+#volants-dispo-div,
+#volants-buttons-div,
+#volants-selectionnes-div,
+#volants-validation{
+  display: inline-block;
+  vertical-align: top;
+  width: 300px;
+  float: both;
+}
+
+#volants-buttons-div,
+#volants-calendar{
+  margin-top : 45px;
+}
+
+#volants-buttons-div{
+  padding-top: 90px;
+  text-align: center;
+  width: 240px;
+}
+
+#volants-validation{
+  padding-top: 45px;
+  text-align: right;
+  width: 220px;
+}
+
+#volants-buttons-div input,
+#volants-validation input{
+  width: 180px;
+}
+
+#volants-dispo-div select,
+#volants-selectionnes-div select{
+  height: 400px; 
+  width: 300px; 
+  font-size: 1em;
+}
+
+.statut_volants{
+   background: #D5F5E3;
 }
 
 /*	Footer	*/

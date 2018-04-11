@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 4 avril 2018
+Dernière modification : 7 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -21,6 +21,7 @@ Cette page est appelée par la page index.php
 
 require_once "class.planning.php";
 require_once "planning/postes_cfg/class.tableaux.php";
+require_once __DIR__."/../volants/class.volants.php";
 include_once "absences/class.absences.php";
 include_once "activites/class.activites.php";
 include_once "personnel/class.personnel.php";
@@ -434,6 +435,20 @@ else{
   global $cellules;
   $cellules=$db->result?$db->result:array();
   usort($cellules,"cmp_nom_prenom");
+  
+  // Recherche des agents volants
+  if($config['Planning-agents-volants']){
+    $v = new volants($date);
+    $v->fetch($date);
+    $agents_volants = $v->selected;
+    
+    // Modification du statut pour les agents volants afin de personnaliser l'affichage
+    foreach($cellules as $k => $v){
+      if( in_array($v['perso_id'], $agents_volants )){
+        $cellules[$k]['statut'] = 'volants';
+      }
+    }
+  }
   
   // Recherche des absences
   // Le tableau $absences sera utilisé par la fonction cellule_poste pour barrer les absents dans le plannings et pour afficher les absents en bas du planning
