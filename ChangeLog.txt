@@ -1,6 +1,17 @@
 *** Version 2.8         (11 avril 2018)   ***
 - Améliorations
 Agents volants : Permet de distinguer une liste d'agents dans les plannings (attribution d'une couleur). Les agents sont choisi semaine par semaine dans le sous-menu Planning / Agents-volants
+Planning : Choix d'afficher ou non les heures de SP et les couleurs dans le menu du planning
+Planning notification : Affichage du nom du site dans les notifications de plannings validés / modifiés
+ICS : Fonction permettant d'envoyer aux agents l'URL de leur calendrier Planning Biblio
+Absences : Paramètre permettant d'activer ou non la préselection des agents logués
+Planning Hebdo : 2 niveaux de validation et circuit de notifications semblable à celui des absences
+LDAP : Ajout de l'attribut supannAliasLogin
+
+- Corrections
+Cron : Correction de la recherche des commandes à exécuter une fois par an (pseudo-cron)
+Plannings semaine : Correction de la position des cellules grisées dans les plannings semaine
+Plannings semaine : Correction de l'initialisation de la variable $verrou sur l'affichage des plannings semaine
 
 *** Version 2.7.12      (29 janvier 2018)   ***
 - Améliorations

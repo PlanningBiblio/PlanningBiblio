@@ -1061,16 +1061,16 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
       $update = false;
       $droits = html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
       $droits = (array) json_decode($droits, true);
-      foreach($droits as $k => $v){
-        if($v == 1){
+      foreach($droits as $k => $val){
+        if($val == 1){
           $droits[$k] = 201;
           $update = true;
         }
-        if($v == 8){
+        if($val == 8){
           $droits[$k] = 501;
           $update = true;
         }
-        if($v == 24){
+        if($val == 24){
           $droits[$k] = 1101;
           $update = true;
         }
