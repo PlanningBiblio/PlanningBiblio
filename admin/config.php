@@ -48,7 +48,7 @@ if($_POST){
   
   // Si les checkboxes ne sont pas cochées, elles ne sont pas transmises donc pas réinitialisées. Donc on les réinitialise ici.
   $db=new db();
-  $db->select2("config","nom",array("type"=>"INboolean,checkboxes"));
+  $db->select2("config", array('nom', 'type') ,array("type"=>"IN boolean,checkboxes"));
   if($db->result){
     foreach($db->result as $elem){
       if(!array_key_exists($elem['nom'],$post)){
