@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 24 mars 2018
+Dernière modification : 12 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -48,11 +48,15 @@ if($_POST){
   
   // Si les checkboxes ne sont pas cochées, elles ne sont pas transmises donc pas réinitialisées. Donc on les réinitialise ici.
   $db=new db();
-  $db->select2("config","nom",array("type"=>"checkboxes"));
+  $db->select2("config","nom",array("type"=>"INboolean,checkboxes"));
   if($db->result){
     foreach($db->result as $elem){
       if(!array_key_exists($elem['nom'],$post)){
-	$post[$elem['nom']]=array();
+        if( $elem['type'] == 'boolean' ){
+          $post[$elem['nom']] = '0';
+        } else {
+          $post[$elem['nom']] = array();
+        }
       }
     }
   }
@@ -131,11 +135,8 @@ foreach($db->result as $elem){
   echo "<tr style='vertical-align:top;'><td style='width:180px;'>{$elem['nom']}</td><td>\n";
   switch($elem['type']){
     case "boolean" :
-      $selected=$elem['valeur']?"selected='selected'":null;
-      echo "<select name='{$elem['nom']}' id='{$elem['nom']}' style='width:305px;'>\n";
-      echo "<option value='0'>0</option>\n";
-      echo "<option value='1' $selected>1</option>\n";
-      echo "</select>\n";
+      $checked = $elem['valeur'] == '1' ? "checked='checked'" : null;
+      echo "<input type='checkbox' name='{$elem['nom']}' id='{$elem['nom']}' value='1' $checked />\n";
       break;
 
     // Checkboxes
