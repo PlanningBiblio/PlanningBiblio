@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.7
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : postes/index.php
 Création : mai 2011
-Dernière modification : 12 mai 2017
+Dernière modification : 12 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -59,12 +59,8 @@ $p=new postes();
 $p->fetch("nom",$nom,$groupe);
 $postes=$p->elements;
 
-$sort=in_array(13,$droits)?"[[2],[3]]":"[[1],[2]]";
-echo "<table id='tablePostes' class='CJDataTable' data-sort='$sort'>\n";
+echo "<table id='tablePostes' class='CJDataTable' data-sort='[[1],[2]]'>\n";
 echo "<thead><tr><th class='dataTableNoSort'>&nbsp;</th>\n";
-if(in_array(13,$droits)){
-  echo "<th>ID</th>";
-}
 echo "<th>Nom du poste</th>\n";
 if($config['Multisites-nombre']>1){
   echo "<th>Site</th>\n";
@@ -105,9 +101,6 @@ foreach($postes as $id => $value){
   echo "<a href='index.php?page=postes/modif.php&amp;id=$id'><span class='pl-icon pl-icon-edit' title='Modifier' ></span></a>\n";
   if(!in_array($id,$postes_utilises)){
     echo "&nbsp;<a href='javascript:supprime(\"postes\",$id,\"$CSRFSession\");'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>\n";
-  }
-  if(in_array(13,$droits)){
-    echo "<td>$id</td>\n";
   }
   echo "<td>{$value['nom']}</td>\n";
   if($config['Multisites-nombre']>1){

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : authentification.php
 Création : mai 2011
-Dernière modification : 24 janvier 2018
+Dernière modification : 12 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -58,10 +58,6 @@ $authArgs=null;
 if(!array_key_exists("oups",$_SESSION)){
   $_SESSION['oups']=array("week"=>false);
 }
-
-// Error reporting
-ini_set('display_errors',$config['display_errors']);
-
 
 // Authentification CAS
 include_once "ldap/authCAS.php";

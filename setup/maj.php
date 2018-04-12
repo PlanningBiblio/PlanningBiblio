@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 7 avril 2018
+Dernière modification : 12 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -1135,6 +1135,17 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
     ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
   
+  // Version
+  $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.8.1";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+
+  // Suppression des options de débogage
+  $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `groupe_id` = '13';";
+  $sql[] = "DELETE FROM `{$dbprefix}config` WHERE `nom` = 'display_errors';";
+
   // Version
   $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }

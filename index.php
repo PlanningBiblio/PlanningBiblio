@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 24 mars 2018
+Dernière modification : 12 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -33,9 +33,6 @@ if(!file_exists("include/config.php")){
 require_once "include/config.php";
 require_once "include/sanitize.php";
 require_once __DIR__."/lang/fr_FR.php";
-
-// Error reporting
-ini_set('display_errors',$config['display_errors']);
 
 // Initialisation des variables
 $date=filter_input(INPUT_GET,"date",FILTER_SANITIZE_STRING);

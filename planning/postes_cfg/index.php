@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.4
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/postes_cfg/index.php
 Création : mai 2011
-Dernière modification : 25 avril 2017
+Dernière modification : 12 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -56,9 +56,6 @@ echo <<<EOD
 <tr>
 <th class='dataTableNoSort'><input type='checkbox' class='CJCheckAll' /></th>
 EOD;
-if(in_array(13,$droits)){
-  echo "<th>ID</th>\n";
-}
 echo "<th>Nom</th>\n";
 if($config['Multisites-nombre']>1){
   echo "<th>Site</th>\n";
@@ -88,9 +85,6 @@ foreach($tableaux as $elem){
   echo "<a href='javascript:supprimeTableau({$elem['tableau']});'>\n";
   echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
   echo "</td>\n";
-  if(in_array(13,$droits)){
-    echo "<td>{$elem['tableau']}</td>\n";
-  }
   echo "<td id='td-tableau-{$elem['tableau']}-nom'>{$elem['nom']}</td>\n";
   if($config['Multisites-nombre']>1){
     echo "<td>{$config[$site]}</td>\n";
@@ -139,9 +133,6 @@ echo <<<EOD
 <thead>
 <tr><th class='dataTableNoSort'>&nbsp;</th>
 EOD;
-if(in_array(13,$droits)){
-  echo "<th>ID</th>\n";
-}
 echo "<th>Nom</th>\n";
 if($config['Multisites-nombre']>1){
   echo "<th>Site</th>\n";
@@ -153,13 +144,12 @@ echo "<tbody>\n";
 
 if(is_array($groupes)){
   foreach($groupes as $elem){
-    $id=in_array(13,$droits)?"<td>{$elem['id']}</td>":null;
     echo "<tr id='tr-groupe-{$elem['id']}'><td><a href='index.php?page=planning/postes_cfg/groupes.php&amp;id={$elem['id']}'>\n";
     echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
     echo "<a href='javascript:supprimeGroupe({$elem['id']});'>\n";
     echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
     echo "</td>\n";
-    echo "$id<td id='td-groupe-{$elem['id']}-nom'>{$elem['nom']}</td>\n";
+    echo "<td id='td-groupe-{$elem['id']}-nom'>{$elem['nom']}</td>\n";
     if($config['Multisites-nombre']>1){
       echo "<td>".$config["Multisites-site{$elem['site']}"]."</td>\n";
     }
@@ -194,9 +184,6 @@ EOD;
 echo "<table class='CJDataTable' id='table-separations' data-noExport='1'  data-sort='[[1,\"asc\"]]'>\n";
 echo "<thead>\n";
 echo "<tr><th class='dataTableNoSort'>&nbsp;</th>\n";
-if(in_array(13,$droits)){
-  echo "<th>ID</th>\n";
-}
 echo "<th>Nom</th></tr>\n";
 echo "</thead>\n";
 
@@ -215,9 +202,6 @@ if($db->result){
       echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
     }
     echo "</td>\n";
-    if(in_array(13,$droits)){
-      echo "<td>{$elem['id']}</td>\n";
-    }
     echo "<td id='td-ligne-{$elem['id']}-nom' >{$elem['nom']}</td></tr>\n";
   }
 }
