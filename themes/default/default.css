@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : themes/default/default.css
 Création : mai 2011
-Dernière modification : 7 avril 2018
+Dernière modification : 19 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -142,6 +142,7 @@ h3{
 .perso_ul{
   display: inline-block;
   vertical-align: top;
+  white-space: normal;
 }
 
 /* .perso-drop : suppression des agents sélectionés dans les pages absences/* */
