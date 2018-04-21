@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/delete.php
 Création : mai 2011
-Dernière modification : 25 janvier 2018
+Dernière modification : 21 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -107,30 +107,38 @@ if($commentaires){
   $message.="<br/>Commentaire:<br/>$commentaires<br/>";
 }
 
-// Pour chaque agent, recherche des responsables absences 
-$responsables=array();
-foreach($agents as $agent){
+if($config['Absences-notifications-agent-par-agent']){
   $a=new absences();
-  $a->getResponsables($debut,$fin,$agent['perso_id']);
-  $responsables=array_merge($responsables,$a->responsables);
-}
+  $a->getRecipients2(null, $agents, 2, 500, $debut, $fin);
+  $destinataires = $a->recipients;
 
-// Pour chaque agent, recherche des destinataires de notification en fonction de la config. (responsables absences, responsables directs, agent).
-$destinataires=array();
-foreach($agents as $agent){
-  $a=new absences();
-  $a->getRecipients(2,$responsables,$agent['mail'],$agent['mails_responsables']);
-  $destinataires=array_merge($destinataires,$a->recipients);
-}
+} else {
 
-// Suppresion des doublons dans les destinataires
-$tmp=array();
-foreach($destinataires as $elem){
-  if(!in_array($elem,$tmp)){
-    $tmp[]=$elem;
+  // Pour chaque agent, recherche des responsables absences 
+  $responsables=array();
+  foreach($agents as $agent){
+    $a=new absences();
+    $a->getResponsables($debut,$fin,$agent['perso_id']);
+    $responsables=array_merge($responsables,$a->responsables);
   }
+
+  // Pour chaque agent, recherche des destinataires de notification en fonction de la config. (responsables absences, responsables directs, agent).
+  $destinataires=array();
+  foreach($agents as $agent){
+    $a=new absences();
+    $a->getRecipients(2,$responsables,$agent['mail'],$agent['mails_responsables']);
+    $destinataires=array_merge($destinataires,$a->recipients);
+  }
+
+  // Suppresion des doublons dans les destinataires
+  $tmp=array();
+  foreach($destinataires as $elem){
+    if(!in_array($elem,$tmp)){
+      $tmp[]=$elem;
+    }
+  }
+  $destinataires=$tmp;
 }
-$destinataires=$tmp;
 
 // Envoi du mail
 $m=new CJMail();

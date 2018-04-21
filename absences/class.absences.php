@@ -7,13 +7,16 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 25 janvier 2018
+Dernière modification : 21 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Classe absences : contient les fonctions de recherches des absences
 
 Page appelée par les autres pages du dossier absences
+
+TODO : Il serait intéressant de sortir de la boucle la gestion des notifications de la méthode add() comme ce qui a été fait pour les modifications (modif2.php).
+TODO : Si modification des notifications : adapter le message (lister tous les agents), adapter les variables fournies à getRecipients2, refaire une boucle pour getRecipients ou adapter getRecipients
 */
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
@@ -209,10 +212,16 @@ class absences{
       $mails_responsables = $p->elements[0]['mails_responsables'];
 
       // Choix des destinataires des notifications selon la configuration
-      $a = new absences();
-      $a->getRecipients($notifications,$responsables,$mail,$mails_responsables);
-      $destinataires = $a->recipients;
-      
+      if($GLOBALS['config']['Absences-notifications-agent-par-agent']){
+        $a=new absences();
+        $a->getRecipients2(null, $perso_id, $notifications, 500, $debutSQL, $finSQL);
+        $destinataires = $a->recipients;
+
+      } else {
+        $a = new absences();
+        $a->getRecipients($notifications,$responsables,$mail,$mails_responsables);
+        $destinataires = $a->recipients;
+      }
 
       // Récupération de l'ID de l'absence enregistrée pour la création du lien dans le mail
       $info = array(array("name"=>"MAX(id)", "as"=>"id"));
@@ -945,7 +954,7 @@ class absences{
   }
 
 
-  function getResponsables($debut=null,$fin=null,$perso_id){
+  function getResponsables($debut=null,$fin=null,$perso_id, $droit = 200){
     $responsables=array();
     $droitsAbsences=array();
     //	Si plusieurs sites et agents autorisés à travailler sur plusieurs sites, vérifions dans l'emploi du temps quels sont les sites concernés par l'absence
@@ -982,25 +991,26 @@ class absences{
 	$site=null;
 	if(is_array($temps)){
 	  if(array_key_exists($j,$temps) and array_key_exists(4,$temps[$j])){
-	    $site=$temps[$j][4];
+            $site = intval($temps[$j][4]);
 	  }
 	}
 	// Ajout du numéro du droit correspondant à la gestion des absences de ce site
-	if(!in_array("20".$site,$droitsAbsences) and $site){
-	  $droitsAbsences[]="20".$site;
+	if( $site and !in_array( ($droit + $site), $droitsAbsences) ){
+          $droitsAbsences[] = $droit + $site;
 	}
 	$date=date("Y-m-d",strtotime("+1 day",strtotime($date)));
       }
-      // Si les jours d'absences ne concernent aucun site, on ajoute les responsables des 2 sites par sécurité
+
+      // Si les jours d'absences ne concernent aucun site, on ajoute les responsables de tous les sites par sécurité
       if(empty($droitsAbsences)){
 	for($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++){
-	  $droitsAbsences[]=200+$i;
+	  $droitsAbsences[] = $droit + $i;
 	}
       }
     }
     // Si un seul site, le droit de gestion des absences est 201
     else{
-      $droitsAbsences[]=201;
+      $droitsAbsences[] = $droit + 1;
     }
 
     $db=new db();
@@ -1085,6 +1095,107 @@ class absences{
     }
 
     $this->recipients=$recipients;
+  }
+
+
+  
+/** @function getRecipients2 
+ * Si le paramètre "Absences-notifications-agent-par-agent" est coché, 
+ * les notifications de modification d'absence sans validation sont envoyés aux responsables enregistrés dans dans la page Validations / Notifications
+ * Les absences validées au niveau 1 sont envoyés aux agents ayant le droit de validation niveau 2
+ * Les absences validées au niveau 2 sont envoyés aux agents concernés par l'absence
+ * @param array agents_tous, tableau indéxé contenant le mail des agents
+ * @param array $agents, tableau contenant les infos sur les agents concernés par l'absence
+ * @param int $notifications, niveau de notification (1,2,3,4)
+ * @param int $droit, droit à contrôler pour l'envoi de notification numéro 3 (exemple : 500 pour notifier les agents ayant le droit de validation d'absence niveau 2)
+ * @param string debut, date de début d'absence au format YYYY-MM-DD HH:ii:ss
+ * @param string fin, date de fin d'absence au format YYYY-MM-DD HH:ii:ss
+ * @return array $recipients, tableau contenant les mails des agents à notifier
+ */
+  public function getRecipients2($agents_tous, $agents, $notifications, $droit, $debut, $fin){
+
+    // Si le tableau contenant les informations sur les agents n'est pas fourni, on le créé
+    if( ! is_array( $agents_tous )){
+      $p=new personnel();
+      $p->supprime = array(0,1,2);
+      $p->responsablesParAgent = true;
+      $p->fetch();
+      $agents_tous = $p->elements;
+    }
+
+    // Adaptation du tableau $agents s'il n'est pas conforme aux attentes
+    if( is_array( $agents )){
+      $keys = array_keys($agents);
+
+      // Si le tableau fourni pour les agents ne contient que les IDs, on le complète
+      if( ! array_key_exists( 'mail', $agents[$keys[0]] )){
+        $tmp = array();
+        foreach( $agents as $elem ){
+          $tmp[$elem] = $agents_tous[$elem];
+        }
+        $agents = $tmp;
+      }
+
+      // Si le tableau des agents n'est pas indexé
+      if( isset($agents[$keys[0]]['perso_id']) and $keys[0] != $agents[$keys[0]]['perso_id'] ){
+        $tmp = array();
+        foreach( $agents as $elem ){
+          $tmp[$elem['perso_id']] = $agents_tous[$elem['perso_id']];
+        }
+        $agents = $tmp;
+      }
+    }
+
+    // Si agents n'est pas un tableau, mais un seul ID
+    if( ! is_array( $agents )){
+      $agents = array($agents => $agents_tous[$agents]);
+    }
+
+    $destinataires = array();
+
+    switch($notifications) {
+
+      // Si l'absence est ajoutée ou modifiée sans validation, envoi de la notification aux responsables enregistrés dans la page Validations / Notifications
+      case 1 :
+      case 2 :
+
+        foreach($agents as $agent){
+          foreach($agent['responsables'] as $elem){
+            if($elem['notification'] and !in_array( $agents_tous[$elem['responsable']]['mail'], $destinataires)){
+              $destinataires[] = $agents_tous[$elem['responsable']]['mail'];
+            }
+          }
+        }
+        break;
+
+      // Si l'absence est validée au niveau 1, envoi de la notification aux agents ayant le droit de validation niveau 2
+      // Droits de gestion des absences niveau 2 : 50x
+      case 3 :
+
+        foreach($agents as $agent){
+          $a = new absences();
+          $a->getResponsables($debut, $fin, $agent['id'], $droit);
+
+          foreach($a->responsables as $elem){
+            if(!in_array($elem['mail'], $destinataires)){
+              $destinataires[] = $elem['mail'];
+            }
+          }
+        }
+        break;
+
+      // Si l'absence est validée au niveau 2, envoi de la notification aux agents concernés par l'absence
+      case 4 :
+
+        foreach($agents as $agent){
+          if(!in_array($agent['mail'], $destinataires)){
+            $destinataires[] = $agent['mail'];
+          }
+        }
+        break;
+    }
+
+    $this->recipients = $destinataires;
   }
 
 

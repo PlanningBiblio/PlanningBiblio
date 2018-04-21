@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 24 janvier 2017
+Dernière modification : 19 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -80,12 +80,16 @@ class personnel{
     $supprime=join(',',$this->supprime);
     $filter['supprime'] = "IN{$supprime}";
 
+    if(!$GLOBALS['config']['Absences-notifications-agent-par-agent']){
+      $this->responsablesParAgent = false;
+    }
+
     if($this->responsablesParAgent){
       $db=new db();
       $db->selectLeftJoin(
         array('personnel', 'id'),
         array('responsables', 'perso_id'),
-        array('id', 'nom', 'prenom', 'mail', 'statut', 'categorie', 'service', 'actif', 'droits', 'sites', 'check_ics'),
+        array('id', 'nom', 'prenom', 'mail', 'mails_responsables', 'statut', 'categorie', 'service', 'actif', 'droits', 'sites', 'check_ics'),
         array('responsable', 'notification'),
         $filter,
         array(),
@@ -108,6 +112,7 @@ class personnel{
       if(empty($result[$elem['id']])){
         $result[$elem['id']]=$elem;
         $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
+        $result[$elem['id']]['mails_responsables'] = explode(";", html_entity_decode($elem['mails_responsables'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
 
         // Contrôle des calendriers ICS distants : Oui/Non ?
         $check_ics = json_decode($result[$elem['id']]['check_ics']);
@@ -136,6 +141,7 @@ class personnel{
 	if(pl_stristr($elem['nom'],$name) or pl_stristr($elem['prenom'],$name)){
 	  $result[$elem['id']]=$elem;
 	  $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
+          $result[$elem['id']]['mails_responsables'] = explode(";", html_entity_decode($elem['mails_responsables'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
 
           // Contrôle des calendriers ICS distants : Oui/Non ?
           $check_ics = json_decode($result[$elem['id']]['check_ics']);
