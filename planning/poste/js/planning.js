@@ -6,7 +6,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 11 avril 2018
+Dernière modification : 25 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -20,6 +20,10 @@ Fichier intégré par le fichier include/header.php avec la fonction getJSFiles.
 */
 perso_id_origine=0;
 perso_nom_origine=null;
+
+// La variable globale "cellules" est un tableau contenant les <div> ajoutés en JQuery avec la fonction bataille_navale
+// Enregistrer ces éléments dans une variable globale permet t'intéragir avec eux lors de la modification du planning, notamment pour ajouter et supprimer la class pl-highlight (surbrillance au survol)
+cellules = new Array();
 
 // Chargement de la page
 $(document).ready(function(){
@@ -72,11 +76,6 @@ $(document).ready(function(){
       }
     });
   }
-
-  // Supprime la surbrillance sur les cellules modifiées
-  $('.menuTrigger').bind("DOMSubtreeModified", function(){
-    $('.pl-highlight').removeClass('pl-highlight', {duration:2500});
-  });
 
 });
 
@@ -313,7 +312,7 @@ $(function() {
     poste=$(this).attr("data-situation");
     perso_id=$(this).attr("data-perso-id");
     site=$("#site").val();
-    
+
     // On supprime l'ancien menu (s'il existe) pour eviter les problemes de remanence
     $("#menudiv1").remove();
     $("#menudiv2").remove();
@@ -321,7 +320,7 @@ $(function() {
     $.ajax({
       url: "planning/poste/ajax.menudiv.php",
       datatype: "json",
-      data: {cellule: cellule, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, poste: poste, site: site, perso_nom: perso_nom_origine, perso_id:perso_id},
+      data: {cellule: cellule, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, poste: poste, site: site, perso_nom: perso_nom_origine, perso_id:perso_id_origine},
       type: "get",
       success: function(result){
 	// si pas de result : on quitte (pas de droit admin)
@@ -408,7 +407,7 @@ $(function() {
     // Affiche les liens pour réafficher les tableaux masqués
     afficheTableauxDiv();
   });
-  
+
 });
 
 
@@ -538,7 +537,6 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin){
  * @param int perso_id : Si 0 = griser la cellule, si 2 = Tout le monde
  */
 function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,griser){
-
   if(griser==undefined){
     griser=0;
   }
@@ -662,7 +660,13 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
         var div="<div id='cellule"+cellule+"_"+i+"' class='"+classes+"' data-perso-id='"+perso_id+"' oncontextmenu='majPersoOrigine("+perso_id+");'>"+span+"</div>"
         // oncontextmenu='majPersoOrigine("+perso_id+");' : necessaire car l'événement JQuery contextmenu sur .cellDiv ne marche pas sur les cellules modifiées
         $("#td"+cellule).append(div);
+        
+        // Complète le tableau cellules initialisé au chargement de la page et contenant toutes les cellules ajoutées par la fonction bataille_navale
+        cellules.push($('#cellule'+cellule+'_'+i));
       }
+
+      // Suppresion de la surbrillance sur toutes les cellules une fois l'agent posté ou supprimé
+      $('.pl-highlight').removeClass('pl-highlight', {duration:2500});
 
       // Mise en forme de toute la ligne
       // Pour chaque TD
@@ -842,7 +846,17 @@ function plMouseOut(id){
  * Met en surbrillance l'agent survolé dans le planning
  */
 function plMouseOver(id){
-  $('.cellule-perso-'+id).addClass('pl-highlight');
+  
+  // Ajoute la classe pl-highlight aux éléments existants au chargment de la page
+  $('.pl-cellule-perso-'+id).addClass('pl-highlight');
+
+  // Ajoute la classe pl-highlight aux éléments ajoutés en Jquery (append, fonction bataille_navale)
+  // cellules est un tableau initialisé au chargment de la page (début de ce script), et complété par la fonction bataille_navale
+  for(i in cellules){
+    if(cellules[i].hasClass('pl-cellule-perso-'+id)){
+      cellules[i].addClass('pl-highlight');
+    }
+  }
 }
 
 /** @function planningNotifications
