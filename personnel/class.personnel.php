@@ -89,7 +89,7 @@ class personnel{
       $db->selectLeftJoin(
         array('personnel', 'id'),
         array('responsables', 'perso_id'),
-        array('id', 'nom', 'prenom', 'mail', 'mails_responsables', 'statut', 'categorie', 'service', 'actif', 'droits', 'sites', 'check_ics'),
+        array('id', 'nom', 'prenom', 'mail', 'mails_responsables', 'statut', 'categorie', 'service', 'actif', 'droits', 'sites', 'check_ics', 'check_hamac'),
         array('responsable', 'notification'),
         $filter,
         array(),
@@ -285,11 +285,6 @@ class personnel{
       $db->execute(array(':perso_id' => $agent, ':responsable' => $responsable, ':notification' => $notification));
     }
   }
-  
-  // TODO :  créer la base de données et tester
-  
-  
-  
  }
 
 }

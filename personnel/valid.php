@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 25 janvier 2018
+Dernière modification : 7 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -30,6 +30,7 @@ $mail=trim(filter_input(INPUT_POST,"mail",FILTER_SANITIZE_EMAIL));
 
 $actif = htmlentities( $post['actif'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
 $action=$post['action'];
+$check_hamac = !empty($post['check_hamac']) ? 1 : 0;
 $check_ics1 = !empty($post['check_ics1']) ? 1 : 0;
 $check_ics2 = !empty($post['check_ics2']) ? 1 : 0;
 $check_ics3 = !empty($post['check_ics3']) ? 1 : 0;
@@ -116,7 +117,7 @@ switch($action){
     $insert=array("nom"=>$nom,"prenom"=>$prenom,"mail"=>$mail,"statut"=>$statut,"categorie"=>$categorie,"service"=>$service,"heures_hebdo"=>$heuresHebdo,
       "heures_travail"=>$heuresTravail,"arrivee"=>$arrivee,"depart"=>$depart,"login"=>$login,"password"=>$mdp_crypt,"actif"=>$actif,
       "droits"=>$droits,"postes"=>$postes,"temps"=>$temps,"informations"=>$informations,"recup"=>$recup,"sites"=>$sites,
-      "mails_responsables"=>$mailsResponsables,"matricule"=>$matricule,"url_ics"=>$url_ics,"check_ics"=>$check_ics);
+      "mails_responsables"=>$mailsResponsables,"matricule"=>$matricule,"url_ics"=>$url_ics, "check_ics"=>$check_ics, "check_hamac"=>$check_hamac);
     if(in_array("conges",$plugins)){
       include "plugins/conges/ficheAgentValid.php";
     }
@@ -171,7 +172,7 @@ switch($action){
     $update=array("nom"=>$nom, "prenom"=>$prenom, "mail"=>$mail, "statut"=>$statut, "categorie"=>$categorie, "service"=>$service, 
       "heures_hebdo"=>$heuresHebdo, "heures_travail"=>$heuresTravail, "actif"=>$actif, "droits"=>$droits, "arrivee"=>$arrivee, 
       "depart"=>$depart, "postes"=>$postes, "informations"=>$informations, "recup"=>$recup, "sites"=>$sites, 
-      "mails_responsables"=>$mailsResponsables, "matricule"=>$matricule, "url_ics"=>$url_ics, "check_ics"=>$check_ics);
+      "mails_responsables"=>$mailsResponsables, "matricule"=>$matricule, "url_ics"=>$url_ics, "check_ics"=>$check_ics, "check_hamac"=>$check_hamac);
     // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
     if(!strstr($actif,"Supprim")){
       $update["supprime"]="0";

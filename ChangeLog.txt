@@ -13,6 +13,10 @@ Cron : Correction de la recherche des commandes à exécuter une fois par an (ps
 Plannings semaine : Correction de la position des cellules grisées dans les plannings semaine
 Plannings semaine : Correction de l'initialisation de la variable $verrou sur l'affichage des plannings semaine
 
+*** Version 2.7.13      (25 avril 2018)   ***
+- Améliorations
+Importation Hamac (à continuer : gestion des demi-journées)
+
 *** Version 2.7.12      (29 janvier 2018)   ***
 - Améliorations
 CAS : Ajout du paramètre CAS-ServiceURL pour permettre de forcer l'URL de redirection vers l'application

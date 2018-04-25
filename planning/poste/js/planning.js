@@ -660,7 +660,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
         var div="<div id='cellule"+cellule+"_"+i+"' class='"+classes+"' data-perso-id='"+perso_id+"' oncontextmenu='majPersoOrigine("+perso_id+");'>"+span+"</div>"
         // oncontextmenu='majPersoOrigine("+perso_id+");' : necessaire car l'événement JQuery contextmenu sur .cellDiv ne marche pas sur les cellules modifiées
         $("#td"+cellule).append(div);
-        
+
         // Complète le tableau cellules initialisé au chargement de la page et contenant toutes les cellules ajoutées par la fonction bataille_navale
         cellules.push($('#cellule'+cellule+'_'+i));
       }
@@ -846,7 +846,7 @@ function plMouseOut(id){
  * Met en surbrillance l'agent survolé dans le planning
  */
 function plMouseOver(id){
-  
+
   // Ajoute la classe pl-highlight aux éléments existants au chargment de la page
   $('.pl-cellule-perso-'+id).addClass('pl-highlight');
 
