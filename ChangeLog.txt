@@ -1,3 +1,7 @@
+*** Version 2.7.14      (26 avril 2018)   ***
+- Corrections
+Modification des ID de gestion des absences dans la base de données (ceci était fait sur la version 2.7.12 mais supprimé par erreur sur la 2.7.13)
+
 *** Version 2.7.13      (25 avril 2018)   ***
 - Améliorations
 Importation Hamac (à continuer : gestion des demi-journées)
