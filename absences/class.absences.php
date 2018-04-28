@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 21 avril 2018
+Dernière modification : 30 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -1112,7 +1112,7 @@ class absences{
  * @param string fin, date de fin d'absence au format YYYY-MM-DD HH:ii:ss
  * @return array $recipients, tableau contenant les mails des agents à notifier
  */
-  public function getRecipients2($agents_tous, $agents, $notifications, $droit, $debut, $fin){
+  public function getRecipients2($agents_tous, $agents, $notifications, $droit = 500, $debut = null, $fin = null){
 
     // Si le tableau contenant les informations sur les agents n'est pas fourni, on le créé
     if( ! is_array( $agents_tous )){
@@ -1172,16 +1172,32 @@ class absences{
       // Droits de gestion des absences niveau 2 : 50x
       case 3 :
 
-        foreach($agents as $agent){
-          $a = new absences();
-          $a->getResponsables($debut, $fin, $agent['id'], $droit);
+        // Si $droit == 1200, on recherche les responsables niveau 2 des planning de présence
+        if( $droit == 1200){
 
-          foreach($a->responsables as $elem){
-            if(!in_array($elem['mail'], $destinataires)){
+          $db = new db();
+          $db->select2('personnel', 'mail', array('droits' => 'LIKE%1201%'));
+          if($db->result){
+            foreach($db->result as $elem){
               $destinataires[] = $elem['mail'];
             }
           }
+
+        } else {
+        // Si $droit != 1200, on recherche les responsables des absences (niveau 2)
+          foreach($agents as $agent){
+            $a = new absences();
+            $a->getResponsables($debut, $fin, $agent['id'], $droit);
+
+            foreach($a->responsables as $elem){
+              if(!in_array($elem['mail'], $destinataires)){
+                $destinataires[] = $elem['mail'];
+              }
+            }
+          }
         }
+
+
         break;
 
       // Si l'absence est validée au niveau 2, envoi de la notification aux agents concernés par l'absence

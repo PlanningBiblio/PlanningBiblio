@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : notifications/index.php
 Création : 16 janvier 2018
-Dernière modification : 25 janvier 2018
+Dernière modification : 30 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -53,7 +53,7 @@ Voir les agents
 $p=new personnel();
 $p->supprime=array(0);
 $p->responsablesParAgent = true;
-$p->fetch("nom,prenom",$actif);
+$p->fetch("nom,prenom");
 $agents=$p->elements;
 
 // Agents ayant les droits de validation d'absence N1
@@ -83,6 +83,12 @@ echo "</thead>\n";
 echo "<tbody>\n";
 $i=0;
 foreach($agents as $agent){
+
+  // Filtre des agents service public / administratif
+  if($agent['actif'] != $actif){
+    continue;
+  }
+
   $id=$agent['id'];
   
   $agent['service']=str_replace("`","'",$agent['service']);

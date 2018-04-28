@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 24 mars 2018
+Dernière modification : 21 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -20,7 +20,7 @@ if(!isset($version)){
   include_once __DIR__."/../include/accessDenied.php";
 }
 
-require_once __DIR__."/../personnel/class.personnel.php";
+require_once __DIR__."/../absences/class.absences.php";
 
 class planningHebdo{
   public $agent=null;
@@ -130,8 +130,15 @@ class planningHebdo{
       $this->error=$db->error;
     }
 
-    $this->getRecipients(1, $perso_id);
-    $destinataires = $ph->recipients;
+    if($GLOBALS['config']['PlanningHebdo-notifications-agent-par-agent']){
+      $a = new absences();
+      $a->getRecipients2(null, $perso_id, 1, 1200);
+      $destinataires = $a->recipients;
+
+    } else {
+      $this->getRecipients(1, $perso_id);
+      $destinataires = $ph->recipients;
+    }
 
     if(!empty($destinataires)){
       $nomAgent = nom($perso_id,"prenom nom");
@@ -446,7 +453,7 @@ class planningHebdo{
     $data['fin']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/","$3-$2-$1",$data['fin']);
 
     $perso_id=array_key_exists("valide",$data)?$data["valide"]:$_SESSION['login_id'];
-
+    
     // Validation 
     $valide_n1 = 0;
     $validation_n1 = "0000-00-00 00:00:00";
@@ -517,8 +524,15 @@ class planningHebdo{
 
     // Envoi de la notification
 
-    $this->getRecipients($notification, $data['perso_id']);
-    $destinataires = $ph->recipients;
+    if($GLOBALS['config']['PlanningHebdo-notifications-agent-par-agent']){
+      $a = new absences();
+      $a->getRecipients2(null, $data['perso_id'], $notification, 1200);
+      $destinataires = $a->recipients;
+
+    } else {
+      $this->getRecipients($notification, $data['perso_id']);
+      $destinataires = $ph->recipients;
+    }
 
     $nomAgent = nom($data['perso_id'],"prenom nom");
 
