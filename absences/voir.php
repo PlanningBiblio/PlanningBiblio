@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 25 janvier 2018
+Dernière modification : 30 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -41,9 +41,15 @@ echo "<h3>Liste des absences</h3>\n";
 
 //	Initialisation des variables
 $admin = false;
+$adminN2 = false;
+
 for($i = 1; $i <= $config['Multisites-nombre']; $i++){
-  if(in_array((200+$i), $droits) or in_array((500+$i), $droits)){
+  if(in_array((200+$i), $droits)){
     $admin = true;
+  }
+  if(in_array((500+$i), $droits)){
+    $admin = true;
+    $adminN2 = true;
     break;
   }
 }
@@ -123,9 +129,35 @@ if($admin){
   if($agents_supprimes){
     $p->supprime = array(0,1);
   }
+  $p->responsablesParAgent = true;
   $p->fetch();
   $agents_menu = $p->elements;
-  
+
+  // Filtre pour n'afficher que les agents gérés si l'option "Absences-notifications-agent-par-agent" est cochée
+  if($config['Absences-notifications-agent-par-agent'] and !$adminN2){
+    $tmp = array();
+
+    foreach($agents_menu as $elem){
+      if($elem['id'] == $_SESSION['login_id']){
+        $tmp[$elem['id']] = $elem;
+      }
+      
+      else {
+        foreach($elem['responsables'] as $resp){
+          if($resp['responsable'] == $_SESSION['login_id']){
+            $tmp[$elem['id']] = $elem;
+            break;
+          }
+        }
+      }
+    }
+
+    $agents_menu = $tmp;
+  }
+
+  // Liste des agents à conserver :
+  $perso_ids = array_keys($agents_menu);
+
   foreach($agents_menu as $agent){
     $selected=$agent['id']==$perso_id?"selected='selected'":null;
     echo "<option value='{$agent['id']}' $selected >{$agent['nom']} {$agent['prenom']}</option>";
@@ -177,6 +209,20 @@ $i=0;
 if($absences){
 
   foreach($absences as $elem){
+
+    // Filtre les agents non-gérés (notamment avec l'option Absences-notifications-agent-par-agent)
+    $continue = true;
+    foreach($elem['perso_ids'] as $perso){
+      if( in_array($perso, $perso_ids) ){
+        $continue = false;
+        break;
+      }
+    }
+    
+    if($continue){
+      continue;
+    }
+
     $id=$elem['id'];
 
     $nom_n1a = $elem['valide_n1'] != 99999 ? nom($elem['valide_n1'],'nom p',$agents).", " : null;

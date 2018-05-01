@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 10 mars 2018
+Dernière modification : 30 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -52,11 +52,28 @@ if(!empty($perso_id)){
 
 // Absences multiples
 if(isset($_GET["perso_ids"])){
+
   $perso_ids_get=filter_var_array($_GET["perso_ids"],FILTER_SANITIZE_NUMBER_INT);
+
   if(is_array($perso_ids_get)){
+
     $tmp=array();
+
+    // Si l'option "Absences-notifications-agent-par-agent" est cochée, supprime (contrôle) les agents non-gérés
+    if($config['Absences-notifications-agent-par-agent'] and !$adminN2){
+      $perso_ids_verif = array($_SESSION['login_id']);
+
+      $db = new db();
+      $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']) );
+      if($db->result){
+        foreach($db->result as $elem){
+          $perso_ids_verif[] = $elem['perso_id'];
+        }
+      }
+    }
+
     foreach($perso_ids_get as $elem){
-      if($elem){
+      if(!empty($elem) and in_array($elem, $perso_ids_verif)){
 	$perso_ids[]=(int) $elem;
       }
     }
@@ -168,8 +185,31 @@ if($confirm and !empty($perso_ids)){
 else{
   // Liste des agents
   if($agents_multiples){
-    $db_perso=new db();
-    $db_perso->select2("personnel","*",array("supprime"=>0,"id"=>"<>2"),"order by nom,prenom");
+  
+    // Si l'option "Absences-notifications-agent-par-agent" est cochée, filtrer les agents à afficher dans le menu déroulant pour permettre la sélection des seuls agents gérés
+    if($config['Absences-notifications-agent-par-agent'] and !$adminN2){
+      $perso_ids = array($_SESSION['login_id']);
+
+      $db = new db();
+      $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']) );
+      if($db->result){
+        foreach($db->result as $elem){
+          $perso_ids[] = $elem['perso_id'];
+        }
+      }
+
+      $perso_ids = implode(',', $perso_ids);
+
+      $db_perso=new db();
+      $db_perso->select2('personnel', null, array('supprime' => '0', 'id' => "IN$perso_ids"), 'ORDER BY nom,prenom');
+    }
+
+    // Si l'option "Absences-notifications-agent-par-agent" n'est pas cochée, on affiche tous les agents dans le menu déroulant
+    else {
+      $db_perso=new db();
+      $db_perso->select2('personnel', null, array('supprime' => '0', 'id' => '<>2'), 'ORDER BY nom,prenom');
+    }
+
     $agents=$db_perso->result?$db_perso->result:array();
   }
   

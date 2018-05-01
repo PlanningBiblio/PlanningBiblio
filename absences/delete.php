@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/delete.php
 Création : mai 2011
-Dernière modification : 21 avril 2018
+Dernière modification : 30 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -39,15 +39,43 @@ $perso_ids=$a->elements['perso_ids'];
 $uid=$a->elements['uid'];
 
 // Sécurité
-// Droit 1 = modification de toutes les absences
+// Droit 20x = modification de toutes les absences
 // Droit 6 = modification de ses propres absences
 $acces = false;
 
+$adminN1 = false;
+$adminN2 = false;
 for($i = 1; $i <= $config['Multisites-nombre']; $i++){
-  if(in_array((200+$i), $droits) or in_array((500+$i), $droits)){
-    $acces = true;
-    break;
+  if(in_array((200+$i), $droits)){
+    $adminN1 = true;
   }
+  if(in_array((500+$i), $droits)){
+    $adminN2 = true;
+  }
+}
+
+// Si l'option "Absences-notifications-agent-par-agent" est cochée, vérifie si l'agent logué à le droit d'administrer tous les agents de l'absence. Si non, adminN1 = false
+if($config['Absences-notifications-agent-par-agent'] and $adminN1){
+  $perso_ids_verif = array($_SESSION['login_id']);
+
+  $db = new db();
+  $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']) );
+  if($db->result){
+    foreach($db->result as $elem){
+      $perso_ids_verif[] = $elem['perso_id'];
+    }
+  }
+
+  foreach($perso_ids as $elem){
+    if( !in_array($elem, $perso_ids_verif) ){
+      $adminN1 = false;
+      break;
+    }
+  }
+}
+
+if($adminN1 or $adminN2){
+  $acces = true;
 }
 
 if(!$acces){
