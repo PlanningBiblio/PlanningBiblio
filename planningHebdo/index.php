@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.3
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planningHebdo/index.php
 Création : 23 juillet 2013
-Dernière modification : 19 décembre 2016
+Dernière modification : 4 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -56,14 +56,6 @@ $agents = $a->elements;
 
 echo "<h3>Plannings de présence</h3>\n";
 
-/*
-// Période définies = 0 pour le moment. Option sans doute plus utilisée. Développements complexes.
-if($config['PlanningHebdo-PeriodesDefinies']){
-  echo "<div id='config' style='padding:10px; text-align:right;'>\n";
-  echo "<a href='index.php?page=planningHebdo/configuration.php'>Configurer les p&eacute;riodes</a>\n";
-  echo "</div>\n";
-}
-*/
 echo <<<EOD
 <div id='buttons'>
 <form name='form' method='get' action='index.php'>

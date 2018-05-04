@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 12 avril 2018
+Dernière modification : 4 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -73,21 +73,12 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
       PRIMARY KEY (`id`))
       ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
-    $sql[]="CREATE TABLE `{$dbprefix}planningHebdoPeriodes` (
-      `id` INT(11) NOT NULL AUTO_INCREMENT, 
-      `annee` VARCHAR(9), 
-      `dates` TEXT,
-      PRIMARY KEY (`id`))
-      ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
-
     // Menu administration
     $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES (50,75,'Plannings de présence','planningHebdo/index.php');";
 
     // Cron
     $sql[]="INSERT INTO `{$dbprefix}cron` (`h`,`m`,`dom`,`mon`,`dow`,`command`,`comments`) VALUES ('0','0','*','*','*','planningHebdo/cron.daily.php','Daily Cron for planningHebdo module');";
 
-    // Périodes définies
-    $periodesDefinies=0;
     $notifications="droit";
   }
   // Si le plugin était installé, on met à jour les liens
@@ -110,11 +101,6 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
     // Suppression de la table plugins
     $sql[]="DELETE FROM `{$dbprefix}plugins` WHERE `nom`='planningHebdo';";
 
-    // Configuration : Périodes définies
-    $db=new db();
-    $db->query("SELECT `valeur` FROM `{$dbprefix}planningHebdoConfig` WHERE `nom`='periodesDefinies';");
-    $periodesDefinies=$db->result[0]['valeur'];
-
     // Configuration : Notifications
     $db=new db();
     $db->query("SELECT `valeur` FROM `{$dbprefix}planningHebdoConfig` WHERE `nom`='notifications';");
@@ -130,12 +116,6 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES 
     ('PlanningHebdo-Agents', 'boolean', '1', 'Heures de pr&eacute;sence','50', 'Autoriser les agents &agrave; saisir leurs plannings de pr&eacute;sence (avec le module Planning Hebdo). Les plannings saisis devront &ecirc;tre valid&eacute;s par un administrateur.');";
 
-  // Configuration : périodes définies
-  // Période définies = 0 pour le moment. Option plus utilisée par la BUA. Développements complexes.
-/*
-  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES 
-    ('PlanningHebdo-PeriodesDefinies', 'hidden', '$periodesDefinies', 'Heures de pr&eacute;sence','60', 'Utiliser des périodes définies pour les plannings hebdomadaires (Module Planning Hebdo)');";
-*/
   // Configuration : notifications
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `ordre`, `commentaires`) VALUES 
     ('PlanningHebdo-Notifications', 'enum2', '$notifications', '[[\"droit\",\"Agents ayant le droit de g&eacute;rer les plannings de pr&eacute;sence\"],[\"Mail-Planning\",\"Cellule planning\"]]', 'Heures de pr&eacute;sence','70', 'A qui envoyer les notifications de nouveaux plannings de pr&eacute;sence (Module Planning Hebdo)');";
@@ -556,7 +536,6 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   serializeToJson('postes','activites', 'id', null, $CSRFToken);
   serializeToJson('postes','categories', 'id', null, $CSRFToken);
   serializeToJson('config','valeur','id', array('type'=>'checkboxes'), $CSRFToken);
-  serializeToJson('planningHebdoPeriodes','dates', 'id', null, $CSRFToken);
   serializeToJson('personnel','temps', 'id', null, $CSRFToken);
   serializeToJson('planningHebdo','temps', 'id', null, $CSRFToken);
 
@@ -726,11 +705,6 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   if($db->result){
     $sql[] = "RENAME TABLE `{$dbprefix}planningHebdo` TO `{$dbprefix}planning_hebdo`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
   }
-  $db=new db();
-  $db->query("SELECT count(*) FROM `{$dbprefix}planningHebdoPeriodes` WHERE 1; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e");
-  if($db->result){
-    $sql[] = "RENAME TABLE `{$dbprefix}planningHebdoPeriodes` TO `{$dbprefix}planning_hebdo_periodes`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
-  }
 
   // Renomme les champs en minuscules
   $sql[] = "ALTER TABLE `{$dbprefix}absences` CHANGE `CALNAME` `cal_name` VARCHAR(300) NOT NULL; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
@@ -787,11 +761,6 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $db->query("SELECT count(*) FROM `{$dbprefix}planninghebdo` WHERE 1; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e");
   if($db->result){
     $sql[] = "RENAME TABLE `{$dbprefix}planninghebdo` TO `{$dbprefix}planning_hebdo`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
-  }
-  $db=new db();
-  $db->query("SELECT count(*) FROM `{$dbprefix}planninghebdoperiodes` WHERE 1; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e");
-  if($db->result){
-    $sql[] = "RENAME TABLE `{$dbprefix}planninghebdoperiodes` TO `{$dbprefix}planning_hebdo_periodes`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
   }
 
   // Contrôle des tables
@@ -1190,6 +1159,10 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `groupe_id` = '13';";
   $sql[] = "DELETE FROM `{$dbprefix}config` WHERE `nom` = 'display_errors';";
 
+  // Suppression de la table planning_hebdo_periodes
+  $sql[]="DROP TABLE IF EXISTS `{$dbprefix}planningHebdoPeriodes`;";
+  $sql[]="DROP TABLE IF EXISTS `{$dbprefix}planning_hebdo_periodes`;";
+
   // Version
   $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
@@ -1207,7 +1180,7 @@ foreach($sql as $elem){
 
 if(isset($check_tables) and $check_tables === true){
   echo "<p><h3>V&eacute;rification des tables</h3>\n";
-  $tables = array('appel_dispo', 'edt_samedi', 'heures_absences', 'heures_sp', 'hidden_tables', 'ip_blocker', 'jours_feries', 'planning_hebdo', 'planning_hebdo_periodes');
+  $tables = array('appel_dispo', 'edt_samedi', 'heures_absences', 'heures_sp', 'hidden_tables', 'ip_blocker', 'jours_feries', 'planning_hebdo');
   foreach($tables as $elem){
     $db=new db();
     $db->query("SELECT count(*) FROM `{$dbprefix}{$elem}` WHERE 1;");

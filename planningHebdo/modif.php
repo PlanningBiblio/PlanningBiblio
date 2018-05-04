@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planningHebdo/modif.php
 Création : 23 juillet 2013
-Dernière modification : 19 mars 2018
+Dernière modification : 4 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,9 +21,6 @@ require_once "class.planningHebdo.php";
 $copy=filter_input(INPUT_GET,"copy",FILTER_SANITIZE_NUMBER_INT);
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 $retour=filter_input(INPUT_GET,"retour",FILTER_SANITIZE_STRING);
-
-// Période définies = 0 pour le moment. Option plus utilisée par la BUA. Développements complexes.
-$config['PlanningHebdo-PeriodesDefinies']=0;
 
 if($copy){
   $id=$copy;
@@ -68,9 +65,6 @@ if($id){
   $action="modif";
   $modifAutorisee=true;
 
-  if(!$adminN1 and $valide_n2 > 0 and $config['PlanningHebdo-PeriodesDefinies']){
-    $modifAutorisee=false;
-  }
   if(!$adminN1 and !$config['PlanningHebdo-Agents']){
     $modifAutorisee=false;
   }
@@ -126,11 +120,7 @@ if($id and !$copy){
 ?>
 <div id='planning'>
 <?php
-if(!$config['PlanningHebdo-PeriodesDefinies']){
-  echo "<form name='form1' method='post' action='index.php' onsubmit='return plHebdoVerifForm();'>\n";
-}else{
-  echo "<form name='form1' method='post' action='index.php' onsubmit='return verif_form(\"debut=date1;fin=date2Obligatoire\",\"form1\");'>\n";
-}
+echo "<form name='form1' method='post' action='index.php' onsubmit='return plHebdoVerifForm();'>\n";
 
 // Modification
 if($id and !$copy){
@@ -169,18 +159,13 @@ if($id and !$copy){
 
 // Choix de la période d'utilisation et validation
 echo "<div id='periode'>\n";
-if(!$config['PlanningHebdo-PeriodesDefinies']){
-  echo <<<EOD
-    <p><label for='debut'>Début d'utilisation</label>
-    <input type='text' name='debut' value='$debut1Fr' class='datepicker' style='position:absolute; left:200px; width:200px;' /></p>
-    <p><label for='fin'>Fin d'utilisation</label>
-    <input type='text' name='fin' value='$fin1Fr' class='datepicker' style='position:absolute; left:200px; width:200px;' /></p>
+echo <<<EOD
+  <p><label for='debut'>Début d'utilisation</label>
+  <input type='text' name='debut' value='$debut1Fr' class='datepicker' style='position:absolute; left:200px; width:200px;' /></p>
+  <p><label for='fin'>Fin d'utilisation</label>
+  <input type='text' name='fin' value='$fin1Fr' class='datepicker' style='position:absolute; left:200px; width:200px;' /></p>
 EOD;
-}
-else{
-  echo "<input type='hidden' name='debut' value='$debut1'/>\n";
-  echo "<input type='hidden' name='fin' value='$fin1'/>\n";
-}
+
 echo "</div> <!-- id=periode -->\n";
 
 ?>
@@ -307,17 +292,13 @@ elseif($valide_n2 > 0 and !$adminN1){
   echo "Vos nouveaux horaires seront enregistrés et devront être validés par un administrateur.<br/>";
   echo "Les anciens horaires seront conservés en attendant la validation des nouveaux.</p>\n";
 }
-elseif($valide_n2 > 0 and $adminN1 and !$config['PlanningHebdo-PeriodesDefinies'] and !$copy){
+elseif($valide_n2 > 0 and $adminN1 and !$copy){
   echo "<p style='width:850px;text-align:justify;margin-top:30px;'><b class='important'>Ces horaires ont été validés.</b><br/>";
   echo "En tant qu'administrateur, vous pouvez les modifier et les enregistrer en tant que copie.<br/>";
   echo "Dans ce cas, modifiez la date de début et/ou de fin d'effet. ";
   echo "Les nouveaux horaires seront enregistrés et devront ensuite être validés. ";
   echo "Les anciens horaires seront conservés en attendant la validation des nouveaux.<br/>";
   echo "Vous pouvez également les enregistrer directement mais dans ce cas, vous ne conserverez pas les anciens horaires.</p>\n";
-}
-elseif($valide_n2 > 0 and $adminN1 and $config['PlanningHebdo-PeriodesDefinies'] and !$copy){
-  echo "<p style='width:850px;text-align:justify;'><b class='important'>Ces horaires ont été validés.</b><br/>";
-  echo "En tant qu'administrateur, vous avez toujours la possibilité de les modifier et de les valider.</p>\n";
 }
 
 if($copy and $config['Multisites-nombre']>1){
@@ -383,7 +364,7 @@ if( ( $adminN1 or $adminN2 ) and !$cle ){
   // TODO : Modifier les notifications => TEST à tester
 
   echo "<input type='submit' value='Enregistrer' style='margin-left:30px;' class='ui-button' />\n";
-  if($valide_n2 > 0 and !$config['PlanningHebdo-PeriodesDefinies'] and !$copy){
+  if($valide_n2 > 0 and !$copy){
     echo "<input type='button' value='Enregistrer une copie' style='margin-left:30px;' onclick='$(\"input[name=action]\").val(\"copie\");$(\"form[name=form1]\").submit();' class='ui-button' />\n";
   }
 }
