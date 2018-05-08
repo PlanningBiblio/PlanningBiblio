@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
@@ -43,10 +43,34 @@ $_SESSION['oups']['planningHebdoDebut']=$debut;
 $_SESSION['oups']['planningHebdoFin']=$fin;
 $message=null;
 
+// Droits d'administration
+// Seront utilisés pour n'afficher que les agents gérés si l'option "PlanningHebdo-notifications-agent-par-agent" est cochée
+$adminN1 = in_array(1101, $droits);
+$adminN2 = in_array(1201, $droits);
+
+// Droits de gestion des plannings de présence agent par agent
+if($adminN1 and $config['PlanningHebdo-notifications-agent-par-agent']){
+  $db = new db();
+  $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']) );
+
+  if(!$adminN2){
+    $perso_ids = array($_SESSION['login_id']);
+    
+    if($db->result){
+      foreach($db->result as $elem){
+        $perso_ids[] = $elem['perso_id'];
+      }
+    }
+  }
+}
+
 // Recherche des plannings
 $p=new planningHebdo();
 $p->debut=dateFr($debut);
 $p->fin=dateFr($fin);
+if(!empty($perso_ids)){
+  $p->perso_ids = $perso_ids;
+}
 $p->fetch();
 
 $a = new personnel();
@@ -73,30 +97,70 @@ Début : <input type='text' name='debut' class='datepicker' value='$debut' />
 <table id='tablePlanningHebdo' class='CJDataTable' data-sort='[[3],[4],[1]]'>
 <thead>
   <tr>
-    <th class='dataTableNoSort'>&nbsp;</th>
-    <th>Agent</th>
-    <th>Service</th>
-    <th class='dataTableDateFR'>Début</th>
-    <th class='dataTableDateFR'>Fin</th>
-    <th class='dataTableDateFR'>Saisie</th>
-    <th>Validation</th>
-    <th>Actuel</th>
-    <th>Commentaires</th>
+    <th rowspan='2' class='dataTableNoSort'>&nbsp;</th>
+    <th rowspan='2' >Agent</th>
+    <th rowspan='2' >Service</th>
+    <th rowspan='2' class='dataTableDateFR'>Début</th>
+    <th rowspan='2' class='dataTableDateFR'>Fin</th>
+    <th rowspan='2' class='dataTableDateFR'>Saisie</th>
+    <th colspan='2' >Validation</th>
+    <th rowspan='2' >Actuel</th>
+    <th rowspan='2' >Commentaires</th>
+  </tr>
+  <tr>
+    <th>&Eacute;tat</th>
+    <th class='dataTableDateFR'>Date</th>
   </tr>
 </thead>
 <tbody>
 EOD;
 foreach($p->elements as $elem){
   $actuel=$elem['actuel']?"Oui":null;
-  $validation="<font style='display:none;'>En attente</font><b>En attente</b>";
-  if($elem['valide']){
-    $validation="<font style='display:none;'>Valid {$elem['validation']}</font>";
-    $validation.=dateFr($elem['validation'],true);
+
+  // Validation
+  $validation_class = 'bold';
+  $validation_date = dateFr($elem['saisie'], true);
+  $validation = 'Demand&eacute;';
+
+  if( $elem['valide_n1'] > 0 ){
+    $validation_class = 'bold';
+    $validation_date = dateFr($elem['validation_n1'], true);
+    $validation = $lang['work_hours_dropdown_accepted_pending'];
     // 99999 : ID cron : donc pas de nom a afficher
-    if($elem['valide'] != 99999){
-      $validation.=", ".nom($elem['valide'],'nom p',$agents);
+    if($elem['valide_n1'] != 99999){
+      $validation.=", ".nom( $elem['valide'], 'nom p', $agents);
     }
   }
+  elseif( $elem['valide_n1'] < 0 ){
+    $validation_class = 'bold';
+    $validation_date = dateFr($elem['validation_n1'], true);
+    $validation = $lang['work_hours_dropdown_refused_pending'];
+    // 99999 : ID cron : donc pas de nom a afficher
+    if($elem['valide_n1'] != 99999){
+      $validation.=", ".nom( -$elem['valide'], 'nom p', $agents);
+    }
+  }
+
+  if( $elem['valide'] > 0 ){
+    $validation_class = null;
+    $validation_date = dateFr($elem['validation'], true);
+    $validation = $lang['work_hours_dropdown_accepted'];
+    // 99999 : ID cron : donc pas de nom a afficher
+    if($elem['valide'] != 99999){
+      $validation.=", ".nom( $elem['valide'], 'nom p', $agents);
+    }
+  }
+  elseif( $elem['valide'] < 0 ){
+    $validation_class = 'red';
+    $validation_date = dateFr($elem['validation'], true);
+    $validation = $lang['work_hours_dropdown_refused'];
+    // 99999 : ID cron : donc pas de nom a afficher
+    if($elem['valide'] != 99999){
+      $validation.=", ".nom( -$elem['valide'], 'nom p', $agents);
+    }
+  }
+ 
+
   $planningRemplace=$elem['remplace']==0?dateFr($elem['saisie'],true):$planningRemplace;
   $commentaires=$elem['remplace']?"Remplace le planning <br/>du $planningRemplace":null;
   $arrow=$elem['remplace']?"<font style='font-size:20pt;'>&rdsh;</font>":null;
@@ -119,7 +183,8 @@ foreach($p->elements as $elem){
   echo "<td>".dateFr($elem['debut'])."</td>";
   echo "<td>".dateFr($elem['fin'])."</td>";
   echo "<td>".dateFr($elem['saisie'],true)."</td>";
-  echo "<td>$validation</td>";
+  echo "<td class='$validation_class' >$validation</td>";
+  echo "<td class='$validation_class' >$validation_date</td>";
   echo "<td>$actuel</td>";
   echo "<td>$commentaires</td>";
   echo "</tr>\n";

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 21 avril 2018
+Dernière modification : 4 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -35,6 +35,7 @@ class planningHebdo{
   public $ignoreActuels=null;
   public $periodes=null;
   public $perso_id=null;
+  public $perso_ids=null;
   public $tri=null;
   public $valide=null;
 
@@ -198,6 +199,7 @@ class planningHebdo{
     
     // Enregistrement du nouveau planning
     $data['remplace']=$actuel['id'];
+    $data['validation'] = 0;
     $p=new planningHebdo();
     $p->add($data);
   }
@@ -247,6 +249,10 @@ class planningHebdo{
       foreach($p->elements as $elem){
 	$perso_ids[]=$elem['id'];
       }
+    }
+
+    if( !empty($this->perso_ids) ){
+      $perso_ids = $this->perso_ids;
     }
 
     // Filtre pour agents actifs seulement et recherche avec nom de l'agent
@@ -455,14 +461,15 @@ class planningHebdo{
     $perso_id=array_key_exists("valide",$data)?$data["valide"]:$_SESSION['login_id'];
     
     // Validation 
-    $valide_n1 = 0;
-    $validation_n1 = "0000-00-00 00:00:00";
-    $valide_n2 = 0;
-    $validation_n2 = "0000-00-00 00:00:00";
-    $notification = 2;
-
     if(array_key_exists("validation",$data)){
       switch( $data['validation'] ){
+        case 0 :
+          $valide_n1 = 0;
+          $validation_n1 = "0000-00-00 00:00:00";
+          $valide_n2 = 0;
+          $validation_n2 = "0000-00-00 00:00:00";
+          $notification = 2;
+          break;
         case -1 :
           $valide_n1 = -1 * $_SESSION['login_id'];
           $validation_n1 = date("Y-m-d H:i:s");
@@ -491,8 +498,12 @@ class planningHebdo{
     }
 
     $temps = json_encode($data['temps']);
-    $update = array("debut" => $data['debut'], "fin" => $data['fin'], "temps" => $temps, "modif" => $perso_id, "modification" => date("Y-m-d H:i:s"),
-      "valide_n1" => $valide_n1, "validation_n1" => $validation_n1, "valide" => $valide_n2, "validation" => $validation_n2 );
+    $update = array("debut" => $data['debut'], "fin" => $data['fin'], "temps" => $temps, "modif" => $perso_id, "modification" => date("Y-m-d H:i:s"), "valide" => $valide_n2, "validation" => $validation_n2 );
+    
+    if( isset($valide_n1) ){
+      $update['valide_n1'] = $valide_n1;
+      $update['validation_n1'] = $validation_n1;
+    }
     
     $CSRFToken=$data['CSRFToken'];
     unset($data['CSRFToken']);

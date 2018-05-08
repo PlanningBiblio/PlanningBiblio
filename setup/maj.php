@@ -1163,6 +1163,12 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="DROP TABLE IF EXISTS `{$dbprefix}planningHebdoPeriodes`;";
   $sql[]="DROP TABLE IF EXISTS `{$dbprefix}planning_hebdo_periodes`;";
 
+  // PlanningHebdo : Attente de la validation niveau 1 avant d'autoriser la validation niveau 2
+  $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('PlanningHebdo-Validation-N2', 'enum2', '0', '[[0,\"Validation directe autoris&eacute;e\"],[1,\"Le planning doit &ecirc;tre valid&eacute; au niveau 1\"]]', 'Heures de pr&eacute;sence', 'La validation niveau 2 des plannings de pr&eacute;sence peut se faire directement ou doit attendre la validation niveau 1', '85');";
+  
+  $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `groupe`, `page`, `ordre`, `categorie`) VALUES ('Planning Hebdo - Index', '1201', 'Gestion des heures de pr&eacute;sences, validation niveau 2', 'planningHebdo/index.php', '90', 'Heures de pr&eacute;sence');";
+
+
   // Version
   $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }

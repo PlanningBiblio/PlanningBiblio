@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 12 avril 2018
+Dernière modification : 4 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -128,17 +128,27 @@ $droits=json_decode(html_entity_decode($db->result[0]['droits'],ENT_QUOTES|ENT_I
 $droits[]=99;	// Ajout du droit de consultation pour les connexions anonymes
 $_SESSION['droits']=$droits;
 
-//		Droits necessaires pour consulter la page en cours
-$db=new db();
-$db->select2("acces","*",array("page"=>$page));
-
 if($page=="planning/poste/index.php" or $page=="planning/poste/semaine.php" or !$menu){
   echo "<div id='content-planning'>\n";
 }else{
   echo "<div id='content'>\n";
 }
 
-if(in_array($db->result[0]['groupe_id'],$droits)){
+//		Droits necessaires pour consulter la page en cours
+$db=new db();
+$db->select2("acces","*",array("page"=>$page));
+
+$access = false;
+if($db->result){
+  foreach($db->result as $elem){
+    if(in_array($elem['groupe_id'], $droits)){
+      $access = true;
+      break;
+    }
+  }
+}
+
+if($access){
   include $page;
 }
 else{
