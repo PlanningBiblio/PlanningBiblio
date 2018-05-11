@@ -1,10 +1,20 @@
+*** Version 2.8.1         (11 mai 2018)   ***
+- Améliorations
+Absences : gestion des notifications et des droits d'accès avec l'option "Absences-notifications-agent-par-agent"
+PlanningHebdo : gestion des notifications et des droits d'accès avec l'option "PlanningHebdo-notifications-agent-par-agent"
+Configuration : remplace les menus déroulants par des checkboxes pour les paramètres de type boolean
+Configuration / droits : suppression des options de débogage
+
+- Correction
+Absences : corrige la position des icônes "suppression agent" dans les fiches absences
+
 *** Version 2.8         (11 avril 2018)   ***
 - Améliorations
 Agents volants : Permet de distinguer une liste d'agents dans les plannings (attribution d'une couleur). Les agents sont choisi semaine par semaine dans le sous-menu Planning / Agents-volants
 Planning : Choix d'afficher ou non les heures de SP et les couleurs dans le menu du planning
 Planning notification : Affichage du nom du site dans les notifications de plannings validés / modifiés
 ICS : Fonction permettant d'envoyer aux agents l'URL de leur calendrier Planning Biblio
-Absences : Paramètre permettant d'activer ou non la préselection des agents logués
+Absences : Paramètre permettant d'activer ou non la présélection des agents logués
 Planning Hebdo : 2 niveaux de validation et circuit de notifications semblable à celui des absences
 LDAP : Ajout de l'attribut supannAliasLogin
 
@@ -14,12 +24,13 @@ Plannings semaine : Correction de la position des cellules grisées dans les pla
 Plannings semaine : Correction de l'initialisation de la variable $verrou sur l'affichage des plannings semaine
 
 *** Version 2.7.14      (26 avril 2018)   ***
-- Corrections
+- Correction
 Modification des ID de gestion des absences dans la base de données (ceci était fait sur la version 2.7.12 mais supprimé par erreur sur la 2.7.13)
 
 *** Version 2.7.13      (25 avril 2018)   ***
 - Améliorations
-Importation Hamac (à continuer : gestion des demi-journées)
+Importation Hamac
+Planning : améliore la mise en surbrillance, supprime la latence générée sur certains navigateurs
 
 *** Version 2.7.12      (29 janvier 2018)   ***
 - Améliorations
@@ -42,12 +53,12 @@ Planning : corrige une erreur empêchant de barrer les agents dans le planning s
 *** Version 2.7.09      (19 décembre 2017)   ***
 - Corrections
 Absences récurrentes : conserve les exceptions lors de la modification des absences récurrentes
-Absences récurrentes : Ne double plus la première occurence lors de la modification des absence récurrentes
-Absences récurrentes : N'affiche plus l'icône "récurrences" sur les événements ne contenant plus qu'une seule occurence
+Absences récurrentes : Ne double plus la première occurrence lors de la modification des absence récurrentes
+Absences récurrentes : N'affiche plus l'icône "récurrences" sur les événements ne contenant plus qu'une seule occurrence
 
 *** Version 2.7.08      (14 décembre 2017)   ***
 - Corrections
-Absences récurrentes : correction des erreurs d'ajout et suppression d'agents lors de la modification d'absences récurrentes toutes occurences.
+Absences récurrentes : correction des erreurs d'ajout et suppression d'agents lors de la modification d'absences récurrentes toutes occurrences.
 Absences récurrentes : correction de l'attribut COUNT lors de la modification des événements courant et suivants
 
 *** Version 2.7.07      (11 décembre 2017)   ***
@@ -59,7 +70,7 @@ Correction du filtre sur les absences dans le menudiv
 *** Version 2.7.05      (28 novembre 2017)   ***
 - Améliorations
 Absences récurrentes : Les règles de récurrences sont stockées dans la base de données 
-Absences récurrentes : Recherche perpétuelle des occurences liées à des absences récurrentes sans date de fin
+Absences récurrentes : Recherche perpétuelle des occurrences liées à des absences récurrentes sans date de fin
 
 *** Version 2.7.04      (22 novembre 2017)   ***
 - Améliorations
@@ -100,7 +111,7 @@ Permet de griser ponctuellement des cellules depuis le menu du planning
 
 - Corrections
 Décale le menu du planning par rapport au curseur : évite de cliquer trop vite sur le nom d'un agent
-Corrige l'importation des heures de présence : tout était importé en semaine 1, problèmatique lorsque la rotation des semaines était activée
+Corrige l'importation des heures de présence : tout était importé en semaine 1, problématique lorsque la rotation des semaines était activée
 
 - Sécurité
 Correction des vulnérabilités XSRF liées aux fonctions db::insert(2), db::update et db::delete(2)
