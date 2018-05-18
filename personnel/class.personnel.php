@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.12
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 24 janvier 2017
+Dernière modification : 7 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -29,6 +29,8 @@ class personnel{
   public $supprime=array(0);
   
   public $CSRFToken = null;
+
+  public $responsablesParAgent = null;
 
   public function __construct(){
   }
@@ -71,32 +73,60 @@ class personnel{
     // Filtre selon le champ actif (administratif, service public)
     $actif=htmlentities($actif,ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
     if($actif){
-      $filter[]="`actif`='$actif'";
+      $filter['actif'] = $actif;
     }
 
     // Filtre selon le champ supprime
-    $supprime=join("','",$this->supprime);
-    $filter[]="`supprime` IN ('$supprime')";
+    $supprime=join(',',$this->supprime);
+    $filter['supprime'] = "IN{$supprime}";
 
-    $filter=join(" AND ",$filter);
+    if($this->responsablesParAgent){
+      $db=new db();
+      $db->selectLeftJoin(
+        array('personnel', 'id'),
+        array('responsables', 'perso_id'),
+        array('id', 'nom', 'prenom', 'mail', 'statut', 'categorie', 'service', 'actif', 'droits', 'sites', 'check_ics', 'check_hamac'),
+        array('responsable', 'notification'),
+        $filter,
+        array(),
+        "ORDER BY $tri");
 
-    $db=new db();
-    $db->select("personnel",null,$filter,"ORDER BY $tri");
+    } else {
+      $db=new db();
+      $db->select2("personnel",null,$filter,"ORDER BY $tri");
+    }
+
     $all=$db->result;
+
+    // Si pas de résultat, on quitte
     if(!$db->result)
       return false;
 
     //	By default $result=$all
     $result=array();
     foreach($all as $elem){
-      $result[$elem['id']]=$elem;
-      $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
+      if(empty($result[$elem['id']])){
+        $result[$elem['id']]=$elem;
+        $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
 
-      // Contrôle des calendriers ICS distants : Oui/Non ?
-      $check_ics = json_decode($result[$elem['id']]['check_ics']);
-      $result[$elem['id']]['ics_1'] = !empty($check_ics[0]);
-      $result[$elem['id']]['ics_2'] = !empty($check_ics[1]);
-      $result[$elem['id']]['ics_3'] = !empty($check_ics[2]);
+        // Contrôle des calendriers ICS distants : Oui/Non ?
+        $check_ics = json_decode($result[$elem['id']]['check_ics']);
+        $result[$elem['id']]['ics_1'] = !empty($check_ics[0]);
+        $result[$elem['id']]['ics_2'] = !empty($check_ics[1]);
+        $result[$elem['id']]['ics_3'] = !empty($check_ics[2]);
+        
+        if($this->responsablesParAgent){
+          // Ajout des responsables et notifications
+          $result[$elem['id']]['responsables'] = array( array('responsable' => $elem['responsable'], 'notification' =>$elem['notification']));
+          
+          unset($result[$elem['id']]['responsable']); 
+          unset($result[$elem['id']]['notification']); 
+        }
+
+      } elseif($this->responsablesParAgent){
+        // Ajout des responsables et notifications
+        $result[$elem['id']]['responsables'][] = array('responsable' => $elem['responsable'], 'notification' => $elem['notification']);
+      }
     }
 
     //	If name, keep only matching results
@@ -228,6 +258,27 @@ class personnel{
       $db->CSRFToken = $this->CSRFToken;
       $db->insert("edt_samedi",$insert);
     }
+ }
+ 
+ public function updateResponsibles($agents, $responsables, $notifications){
+  // Suppression des éléments existant dans la base de données
+  $liste_agents = implode(',', $agents);
+  $db = new db();
+  $db->CSRFToken = $this->CSRFToken;
+  $db->delete('responsables', array('perso_id' => "IN{$liste_agents}"));
+
+  // Insertion des nouvelles données
+  $db = new dbh();
+  $db->CSRFToken = $this->CSRFToken;
+  $db->prepare("INSERT INTO `{$GLOBALS['config']['dbprefix']}responsables` (`perso_id`, `responsable`, `notification`) VALUES (:perso_id, :responsable, :notification);");
+  
+  foreach($agents as $agent){
+    foreach($responsables as $responsable){
+      $notification = in_array($responsable, $notifications) ? 1 : 0 ;
+      
+      $db->execute(array(':perso_id' => $agent, ':responsable' => $responsable, ':notification' => $notification));
+    }
+  }
  }
 
 }

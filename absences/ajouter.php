@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.05
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 28 novembre 2017
+Dernière modification : 25 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -71,8 +71,18 @@ $pj1=filter_var($pj1,FILTER_CALLBACK,array('options'=>'sanitize_on01'));
 $pj2=filter_var($pj2,FILTER_CALLBACK,array('options'=>'sanitize_on01'));
 $so=filter_var($so,FILTER_CALLBACK,array('options'=>'sanitize_on01'));
 
-$admin = in_array(1, $droits);
-$adminN2 = in_array(8, $droits);
+// Si droit de gestion des absences N1 ou N2 sur l'un des sites : $admin = true et accès à cette page autorisé
+for($i = 1; $i <= $config['Multisites-nombre']; $i++){
+  if(in_array((200+$i), $droits)){
+    $admin = true;
+  }
+  if(in_array((500+$i), $droits)){
+    $admin = true;
+    $adminN2 = true;
+    break;
+  }
+}
+
 $agents_multiples = ($admin or in_array(9, $droits));
 
 // Force $valide = 0 si login non admin

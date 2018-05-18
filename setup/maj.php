@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.12
+Planning Biblio, Version 2.7.14
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 24 janvier 2018
+Dernière modification : 26 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -1034,6 +1034,82 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   // Version
   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
+
+$v="2.7.13";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+
+  // Importation CSV HAMAC
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('Hamac-csv','text', '', '', 'Hamac', 'Chemin d&apos;acc&egrave;s au fichier CSV pour l&apos;importation des absences depuis Hamac','10');";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('Hamac-motif', 'text', '', '', 'Hamac', 'Motif pour les absences import&eacute;s depuis Hamac. Ex: Hamac','20');";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('Hamac-status','enum2', '1,2,3,5,6', '[[\"1,2,3,5,6\",\"Valid&eacute;es et en attente de validation\"],[\"2\",\"Valid&eacute;es\"]]', 'Hamac', 'Importer les absences valid&eacute;es et en attente de validation ou seulement les absences valid&eacute;es.','30');";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('Hamac-id','enum2', 'login', '[[\"login\",\"Login\"],[\"matricule\",\"Matricule\"]]', 'Hamac', 'Champ Planning Biblio &agrave; utiliser pour mapper les agents.','40');";
+  $sql[]="ALTER TABLE `{$dbprefix}personnel` ADD `check_hamac` INT(1) NOT NULL DEFAULT '1' AFTER `check_ics`;";
+
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.7.14";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Modification des IDs des droits Absences
+  $db = new db();
+  $db->select('personnel');
+  if($db->result){
+    foreach($db->result as $elem){
+      $update = false;
+      $droits = html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+      $droits = (array) json_decode($droits, true);
+      foreach($droits as $k => $val){
+        if($val == 1){
+          $droits[$k] = 201;
+          $update = true;
+        }
+        if($val == 8){
+          $droits[$k] = 501;
+          $update = true;
+        }
+      }
+      if($update){
+        $droits = json_encode($droits);
+        $sql[] = "UPDATE `{$dbprefix}personnel` SET `droits` = '$droits' WHERE `id` = '{$elem['id']}';";
+      }
+    }
+  }
+
+  $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe_id` = '201', `groupe` = 'Gestion des absences, validation niveau 1' WHERE `groupe_id` = '1';";
+  $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe_id` = '501', `groupe` = 'Gestion des absences, validation niveau 2' WHERE `groupe_id` = '8';";
+
+  // Version
+  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+
+// $v="2.8";
+// if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+// 
+//   // Responsables et notifications
+//   $sql[]="ALTER TABLE `{$dbprefix}config` CHANGE `nom` `nom` VARCHAR(50);";
+//   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
+//     ('Absences-notifications-agent-par-agent','boolean', '0', 'Absences', 'Gestion des notifications et des droits de validations agent par agent. Si cette option est activée, les paramètres Absences-notifications1, 2, 3 et 4 seront écrasés par les choix fait dans la page de configuration des notifications du menu Administration - Notifications','67');";
+//   $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES 
+//     ('50','77','Validations / Notifications','notifications/index.php','config=Absences-notifications-agent-par-agent');";
+//   $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Validations / Notifications', 21, 'Gestion des agents', 'notifications/index.php', 'Agents', 70);";
+//   $sql[]="CREATE TABLE `{$dbprefix}responsables` (
+//     `id` INT(11) NOT NULL AUTO_INCREMENT, 
+//     `perso_id` INT(11) NOT NULL DEFAULT '0', 
+//     `responsable` INT(11) NOT NULL DEFAULT '0', 
+//     `notification` INT(1) NOT NULL DEFAULT '0', 
+//     PRIMARY KEY (`id`))
+//     ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+//   // Version
+//   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+// }
+
 
 //	Execution des requetes et affichage
 foreach($sql as $elem){

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.04
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : absences/delete.php
 Création : mai 2011
-Dernière modification : 15 novembre 2017
+Dernière modification : 25 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -41,7 +41,15 @@ $uid=$a->elements['uid'];
 // Sécurité
 // Droit 1 = modification de toutes les absences
 // Droit 6 = modification de ses propres absences
-$acces=in_array(1,$droits)?true:false;
+$acces = false;
+
+for($i = 1; $i <= $config['Multisites-nombre']; $i++){
+  if(in_array((200+$i), $droits) or in_array((500+$i), $droits)){
+    $acces = true;
+    break;
+  }
+}
+
 if(!$acces){
   $acces=(in_array(6,$droits) and $perso_id==$_SESSION['login_id'] and !$groupe)?true:false;
 }

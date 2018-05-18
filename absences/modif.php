@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.05
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 28 novembre 2017
+Dernière modification : 7 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -26,8 +26,24 @@ $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 $display=null;
 $checked=null;
 
-$admin = in_array(1, $droits);
-$adminN2 = in_array(8, $droits);
+// Gestion des droits d'accès
+// 20x : gestion niveau 1
+// 50x : gestion niveau 2
+
+$admin = false;
+
+// Si droit de gestion des absences N1 ou N2 sur l'un des sites : $admin = true et accès à cette page autorisé
+// Les droits d'administration des absences seront ajustés ensuite
+for($i = 1; $i <= $config['Multisites-nombre']; $i++){
+  if(in_array((200+$i), $droits) or in_array((500+$i), $droits)){
+    $admin = true;
+    break;
+  }
+}
+
+// Validation N2 en monosite. Ce paramètre sera adapté par la suite si nous sommes en multi-sites
+$adminN2 = in_array(501, $droits);
+
 $agents_multiples = ($admin or in_array(9, $droits));
 
 $a=new absences();
@@ -107,16 +123,15 @@ if(!$patternExists){
 }
 
 // Sécurité
-// Droit 1 = modification de toutes les absences
 // Droit 6 = modification de ses propres absences
 // Les admins ont toujours accès à cette page
-$acces=in_array(1,$droits)?true:false;
+$acces = $admin;
 if(!$acces){
   // Les non admin ayant le droits de modifier leurs absences ont accès si l'absence les concerne
   $acces=(in_array(6,$droits) and $perso_id==$_SESSION['login_id'])?true:false;
 }
 // Si config Absences-adminSeulement, seuls les admins ont accès à cette page
-if($config['Absences-adminSeulement'] and !in_array(1,$droits)){
+if($config['Absences-adminSeulement'] and !$admin){
   $acces=false;
 }
 if(!$acces){
@@ -139,20 +154,18 @@ if($config['Multisites-nombre']>1){
     }
   }
 
-  $sites=array();
-  for($i=1;$i<=$config['Multisites-nombre'];$i++){
-    if(in_array((200+$i),$droits)){
-      $sites[]=$i;
+  $admin = false;
+  $adminN2 = false;
+
+  foreach($sites_agents as $site){
+    if(in_array((200+$site), $droits)){
+      $admin = true;
+    }
+    if(in_array((500+$site), $droits)){
+      $adminN2 = true;
     }
   }
 
-  $admin=false;
-  foreach($sites_agents as $site){
-    if(in_array($site,$sites)){
-      $admin=true;
-      break;
-    }
-  }
   if(!$admin and !$acces){
     echo "<h3>Modification de l'absence</h3>\n";
     echo "Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>\n";

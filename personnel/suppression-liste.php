@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.5.4
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/suppression-liste.php
 Création : mai 2011
-Dernière modification : 10 février 2017
+Dernière modification : 25 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -34,10 +34,28 @@ if($_SESSION['perso_actif']=="Supprimé"){
   $p->delete($liste);
 }
 else{
+  // TODO : demander la date de suppression en popup
+  // Date de suppression
+  $date = date('Y-m-d');
+
+  // Mise à jour de la table personnel
   $db=new db();
-  $liste=$db->escapeString($liste);
-  $req="UPDATE `{$dbprefix}personnel` SET `supprime`='1', `actif`='Supprim&eacute;' WHERE `id` IN ($liste);";
-  $db->query($req);
+  $db->CSRFToken = $CSRFToken;
+  $db->update("personnel",array("supprime"=>"1","actif"=>"Supprim&eacute;","depart"=>$date),array("id"=>"IN$liste"));
+
+  // Mise à jour de la table pl_poste
+  $db=new db();
+  $db->CSRFToken = $CSRFToken;
+  $db->update('pl_poste', array('supprime'=>1), array('perso_id' => "IN$liste", 'date' =>">$date"));
+  
+  // Mise à jour de la table responsables
+  $db=new db();
+  $db->CSRFToken = $CSRFToken;
+  $db->delete("responsables", array('responsable' => "IN$liste"));
+  $db=new db();
+  $db->CSRFToken = $CSRFToken;
+  $db->delete("responsables", array('perso_id' => "IN$liste"));
+
 }
 
 echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/index.php';</script>\n";

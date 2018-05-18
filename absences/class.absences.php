@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.09
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 19 décembre 2017
+Dernière modification : 25 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -998,9 +998,9 @@ class absences{
 	}
       }
     }
-    // Si un seul site, le droit de gestion des absences est 1
+    // Si un seul site, le droit de gestion des absences est 201
     else{
-      $droitsAbsences[]=1;
+      $droitsAbsences[]=201;
     }
 
     $db=new db();

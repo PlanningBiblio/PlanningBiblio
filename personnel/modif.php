@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 30 septembre 2017
+Dernière modification : 7 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -57,30 +57,22 @@ if($config['PlanningHebdo']){
 // Si multisites, les droits de gestion des absences, congés et modification planning dépendent des sites : 
 // on les places dans un autre tableau pour simplifier l'affichage
 $groupes_sites=array();
-if($config['Multisites-nombre']>1){  
-  $groupes_sites[1]=$groupes[1];	// Absences, validation N1
-  unset($groupes[1]);
-  $groupes_sites[8]=$groupes[8];	// Absences, validation N2
-  unset($groupes[8]);
-  if(array_key_exists(7,$groupes)){	// Congés, validation N1
-    $groupes_sites[7]=$groupes[7];
-    unset($groupes[7]);
+
+if($config['Multisites-nombre']>1){
+  for($i = 2; $i <= 10; $i++){
+
+    // Exception, groupe 701 = pas de gestion multisites (pour le moment)
+    if($i == 7){
+      continue;
+    }
+
+    $groupe = ( $i * 100 ) + 1 ;
+    if(array_key_exists($groupe, $groupes)){
+      $groupes_sites[]=$groupes[$groupe];
+      unset($groupes[$groupe]);
+    }
   }
-  if(array_key_exists(7,$groupes)){	// Congés, validation N2
-    $groupes_sites[2]=$groupes[2];
-    unset($groupes[2]);
-  }
-  $groupes_sites[301]=$groupes[301];	// Modification des plannings, niveau 1 et 2
-  unset($groupes[301]);
 
-  $groupes_sites[1001]=$groupes[1001];	// Modification des plannings, niveau 1
-  unset($groupes[1001]);
-
-  $groupes_sites[801]=$groupes[801];	// Modification des commentaires des plannings
-  unset($groupes[801]);
-
-  $groupes_sites[901]=$groupes[901];	// Griser les cellules des plannings
-  unset($groupes[901]);
 }
 
 uasort($groupes_sites, 'cmp_ordre');
@@ -134,6 +126,7 @@ if($id){		//	récupération des infos de l'agent en cas de modif
   $mail=$db->result[0]['mail'];
   $statut=$db->result[0]['statut'];
   $categorie=$db->result[0]['categorie'];
+  $check_hamac = $db->result[0]['check_hamac'];
   $check_ics = json_decode($db->result[0]['check_ics'],true);
   $service=$db->result[0]['service'];
   $heuresHebdo=$db->result[0]['heures_hebdo'];
@@ -190,6 +183,7 @@ else{		// pas d'id, donc ajout d'un agent
   $mail=null;
   $statut=null;
   $categorie=null;
+  $check_hamac = 1;
   $check_ics = array(1,1,1);
   $service=null;
   $heuresHebdo=null;
@@ -278,7 +272,7 @@ $postes_dispo=postesNoms($postes_dispo,$postes_completNoms);
 <li><a href='#temps' id='personnel-a-li3'>Heures de pr&eacute;sence</a></li>
 <?php
 if($config['ICS-Server1'] or $config['ICS-Server2'] or $config['ICS-Server3'] or $config['ICS-Export']){
-  echo "<li><a href='#agendas'>Agendas</a></li>";
+  echo "<li><a href='#agendas'>Agendas et Synchronisation</a></li>";
 }
 if(in_array("conges",$plugins)){
   echo "<li><a href='#conges'>Cong&eacute;s</a></li>";
@@ -306,7 +300,7 @@ echo "<input type='hidden' value='$action' name='action' />";
 echo "<input type='hidden' value='$id' name='id' />";
 
 echo "<table style='width:90%;'>";
-echo "<tr valign='top'><td style='width:350px'>";
+echo "<tr valign='top'><td style='width:400px'>";
 echo "Nom :";
 echo "</td><td>";
 echo in_array(21,$droits)?"<input type='text' value='$nom' name='nom' style='width:400px' />":$nom;
@@ -853,14 +847,28 @@ if($config['EDTSamedi']){
 echo "<table style='width:90%;'>";
 
 //
+if($config['Hamac-csv']){
+  $hamac_pattern = !empty($config['Hamac-motif']) ? $config['Hamac-motif'] : 'Hamac';
+  $checked = !empty($check_hamac) ? "checked='checked'" : null;
+  $checked2 = $checked ? "Oui" : "Non";
+  $class = $checked ? "green bold" : "red";
+
+  echo "<tr><td style='width:400px'>";
+  echo "Synchronisation $hamac_pattern : ";
+  echo "</td><td>";
+  echo in_array(21,$droits)?"<input type='checkbox' value='1' name='check_hamac' $checked />":"<span class='agent-acces-checked2 $class'>$checked2</span>\n";
+
+  echo "</td></tr>";
+}
+
 if($config['ICS-Server1']){
   $ics_pattern = !empty($config['ICS-Pattern1']) ? $config['ICS-Pattern1'] : 'Serveur ICS N&deg;1';
   $checked = !empty($check_ics[0]) ? "checked='checked'" : null;
   $checked2 = $checked ? "Oui" : "Non";
   $class = $checked ? "green bold" : "red";
 
-  echo "<tr><td style='width:350px'>";
-  echo "Agenda ICS $ics_pattern : ";
+  echo "<tr><td style='width:400px'>";
+  echo "Synchronisation de l'agenda ICS $ics_pattern : ";
   echo "</td><td>";
   echo in_array(21,$droits)?"<input type='checkbox' value='1' name='check_ics1' $checked />":"<span class='agent-acces-checked2 $class'>$checked2</span>\n";
  
@@ -873,7 +881,7 @@ if($config['ICS-Server2']){
   $checked2 = $checked ? "Oui" : "Non";
   $class = $checked ? "green bold" : "red";
 
-  echo "<tr><td style='width:350px'>";
+  echo "<tr><td style='width:400px'>";
   echo "Agenda ICS $ics_pattern : ";
   echo "</td><td>";
   echo in_array(21,$droits)?"<input type='checkbox' value='1' name='check_ics2' $checked />":"<span class='agent-acces-checked2 $class'>$checked2</span>\n";
@@ -887,7 +895,7 @@ if($config['ICS-Server3']){
   $checked2 = $checked ? "Oui" : "Non";
   $class = $checked ? "green bold" : "red";
 
-  echo "<tr><td style='width:350px'>";
+  echo "<tr><td style='width:400px'>";
   echo "Agenda ICS distant : ";
   echo "</td><td>";
   echo in_array(21,$droits)?"<input type='checkbox' value='1' name='check_ics3' $checked />":"<span class='agent-acces-checked2 $class'>$checked2</span>\n";
@@ -969,50 +977,12 @@ if($config['Multisites-nombre']>1){
     }
     $last_category = $elem['categorie'];
 
-    $groupe=ucfirst(str_replace("Gestion des ","",$elem['groupe']));
-    echo "<tr><td>$groupe</td>\n";
+    echo "<tr><td>{$elem['groupe']}</td>\n";
 
     for($i=1;$i<$config['Multisites-nombre']+1;$i++){
       $site=$config['Multisites-site'.$i];
 
-      // Gestion des absences N1
-      if($elem['groupe_id']==1){
-	$groupe_id=200+$i;
-      }
-
-      // Gestion des congés validation N2
-      elseif($elem['groupe_id']==2){
-	$groupe_id=600+$i;
-      }
-
-      // Gestion des congés N1
-      elseif($elem['groupe_id']==7){
-	$groupe_id=400+$i;
-      }
-
-      // Gestion des absences validation N2
-      elseif($elem['groupe_id']==8){
-	$groupe_id=500+$i;
-      }
-
-      // Modification des plannings si plusieurs sites (niveau 1 et 2)
-      elseif($elem['groupe_id']==301){
-	$groupe_id=300+$i;
-      }
-      // Modification des plannings si plusieurs sites (niveau 1)
-      elseif($elem['groupe_id']==1001){
-	$groupe_id=1000+$i;
-      }
-
-      // Modification des commentaires des plannings si plusieurs sites
-      elseif($elem['groupe_id']==801){
-	$groupe_id=800+$i;
-      }
-
-      // Griser les cellules des plannings si plusieurs sites
-      elseif($elem['groupe_id']==901){
-	$groupe_id=900+$i;
-      }
+      $groupe_id = $elem['groupe_id'] - 1 + $i;
 
       $checked=null;
       $checked="Non";

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 1.8.2
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : absences/index.php
 Création : mai 2011
-Dernière modification : 24 juin 2014
+Dernière modification : 25 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -28,7 +28,16 @@ require_once "class.absences.php";
 <li><a href='index.php?page=absences/voir.php'>Voir les absences</a></li>
 <li><a href='index.php?page=absences/ajouter.php'>Ajouter une absence</a></li>
 <?php
-$admin=in_array(1,$droits)?true:false;
+
+$admin = false;
+
+for($i = 1; $i <= $config['Multisites-nombre']; $i++){
+  if(in_array((200+$i), $droits) or in_array((500+$i), $droits)){
+    $admin = true;
+    break;
+  }
+}
+
 if($admin)
   echo "<li><a href='index.php?page=absences/infos.php'>Ajouter une information</a></li>\n";
 
