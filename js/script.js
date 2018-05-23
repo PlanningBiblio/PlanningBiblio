@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.8
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 4 avril 2018
+Dernière modification : 23 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 @author Etienne Cavalié
@@ -756,7 +756,10 @@ $(function(){
     });
 
     $(".ui-button").button();
-    $(".datepicker").datepicker();
+    $(".datepicker").datepicker({
+      showOtherMonths: true,
+    });
+
     $(".datepicker").addClass("center ui-widget-content ui-corner-all");
 
     /**
