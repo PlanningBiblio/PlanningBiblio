@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 11 avril 2018
+Dernière modification : 24 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
@@ -258,10 +258,7 @@ foreach($db->result as $elem){
     // Pour chaque agent, recherche si la semaine courante est avec samedi travaillé ou non
     $p=new personnel();
     $p->fetchEDTSamedi($elem['id'],$j1,$j1);
-    // Si oui, utilisation du 2ème emploi du temps ($jour+=7)
-    if(!empty($p->elements)){
-      $jour+=7;
-    }
+    $jour += $p->offset;
   }
 
   // Gestion des exclusions

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.7
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 12 mai 2017
+Dernière modification : 24 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -213,12 +213,9 @@ EOD;
       // Pour chaque agent, recherche si la semaine courante est avec samedi travaillé ou non
       $p=new personnel();
       $p->fetchEDTSamedi($perso_id,$j1,$j1);
-      // Si oui, utilisation du 2ème emploi du temps ($jour+=7)
-      if(!empty($p->elements)){
-	$jour+=7;
-      }
+      $jour += $p->offset;
     }
-      
+
     //	Horaires de travail si le module PlanningHebdo est activé
     if($config['PlanningHebdo']){
       include_once "planningHebdo/class.planningHebdo.php";

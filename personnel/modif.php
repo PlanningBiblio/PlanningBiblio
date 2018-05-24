@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 4 avril 2018
+Dernière modification : 24 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -683,14 +683,20 @@ switch($config['nb_semaine']){
 $fin=$config['Dimanche']?array(8,15,22):array(7,14,21);
 $debut=array(1,8,15);
 
-if($config['EDTSamedi']){
-  $config['nb_semaine']=2;
-  $cellule=array("Semaine standard","Semaine avec samedi");
+if($config['EDTSamedi'] == 1){
+  $config['nb_semaine'] = 2;
+  $cellule = array("Semaine standard", "Semaine<br/>avec samedi");
+  $table_name = array('Emploi du temps standard', 'Emploi du temps des semaines avec samedi travaillé');
+}
+elseif($config['EDTSamedi'] == 2){
+  $config['nb_semaine'] = 3;
+  $cellule=array("Semaine standard", "Semaine<br/>avec samedi", "Semaine<br/>ouverture restreinte");
+  $table_name = array('Emploi du temps standard', 'Emploi du temps des semaines avec samedi travaillé', 'Emploi du temps en ouverture restreinte');
 }
 
 for($j=0;$j<$config['nb_semaine'];$j++){
   if($config['EDTSamedi']){
-    echo $j==0?"<br/><b>Emploi du temps standard</b>":"<br/><b>Emploi du temps des semaines avec samedi travaillé</b>";
+    echo "<br/><b>{$table_name[$j]}</b>";
   }
   echo "<table border='1' cellspacing='0'>\n";
   echo "<tr style='text-align:center;'><td style='width:135px;'>{$cellule[$j]}</td><td style='width:135px;'>Heure d'arrivée</td>";
@@ -781,7 +787,13 @@ if($config['EDTSamedi']){
   echo "<input type='hidden' name='dernierLundi' value='$dernierLundi' />\n";
   echo "<div id='EDTChoix'>\n";
   echo "<h3>Choix des emplois du temps</h3>\n";
-  echo "<p>Cochez les semaines avec le samedi travaill&eacute;</p>\n";
+
+  if($config['EDTSamedi'] == 1){
+    echo "<p>Cochez les semaines avec le samedi travaill&eacute;</p>\n";
+  }
+  elseif($config['EDTSamedi'] == 2){
+    echo "<p>Pour chaque semaine, cochez s'il s'agit d'une semaine : standard (STD) / avec samedi travaill&eacute; (SAM) / ouverture restreinte (RES)</p>\n";
+  }
 
   echo "<div id='EDTTabs'>\n";
   echo "<ul>";
@@ -817,10 +829,40 @@ if($config['EDTSamedi']){
       $lundi=date("d/m/Y",strtotime($current));
       $dimanche=date("d/m/Y",strtotime("+6 day",strtotime($current)));
       $semaine=date("W",strtotime($current));
-      $checked=in_array($current,$edt)?"checked='checked'":null;
       echo "S$semaine : $lundi &rarr; $dimanche";
-      echo "<input type='checkbox' value='$current' name='EDTSamedi[]' $checked /><br/>\n";
-	
+
+      // Si config['EDTSamedi'] == 1 (Emploi du temps différent les semaines avec samedi travaillé)
+      if($config['EDTSamedi'] == 1){
+        $checked = array_key_exists( $current, $edt ) ? "checked='checked'" : null ;
+        echo "<input type='checkbox' value='$current' name='EDTSamedi[]' $checked /><br/>\n";
+      }
+
+      // Si config['EDTSamedi'] == 2 (Emploi du temps différent les semaines avec samedi travaillé et en ouverture restreinte)
+      elseif($config['EDTSamedi'] == 2){
+
+        $checked1 = "checked='checked'";
+        $checked2 = null;
+        $checked3 = null;
+
+        if( array_key_exists( $current, $edt )){
+          $checked1 = null;
+          
+          if( $edt[$current]['tableau'] == 2 ){
+            $checked2 = "checked='checked'";
+          }
+          elseif( $edt[$current]['tableau'] == 3 ){
+            $checked3 = "checked='checked'";
+          }
+        }
+
+        echo "<span style='margin-left:20px;'>\n";
+        echo "<input type='radio' value='1' name='EDTSamedi_$current' $checked1 id='radio_{$current}_STD'/> <label for='radio_{$current}_STD' >STD</label>\n";
+        echo "<input type='radio' value='2' name='EDTSamedi_$current' $checked2 id='radio_{$current}_SAM'/> <label for='radio_{$current}_SAM' >SAM</label>\n";
+        echo "<input type='radio' value='3' name='EDTSamedi_$current' $checked3 id='radio_{$current}_RES'/> <label for='radio_{$current}_RES' >RES</label>\n";
+        echo "</span>\n";
+        echo "<br/>\n";
+      }
+
       if($j==17 or $j==35){
 	echo "</td><td>";
       }

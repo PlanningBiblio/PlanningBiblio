@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/class.personnel.php
 Création : 16 janvier 2013
-Dernière modification : 19 avril 2018
+Dernière modification : 24 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -29,6 +29,8 @@ class personnel{
   public $supprime=array(0);
   
   public $CSRFToken = null;
+
+  public $offset = 0;
 
   public $responsablesParAgent = null;
 
@@ -191,15 +193,33 @@ class personnel{
   }
 
 
+  /** fetchEDTSamedi
+   * @desc : recherche le numéro de tableau d'emploi du temps associé à chaque semaine pour l'agent $perso_id entre les date $debut et $fin
+   * @param int $perso_id : ID de l'agent
+   * @param string $debut : date de début au format YYYY-MM-DD
+   * @param string $fin : date de fin au format YYYY-MM-DD
+   * @return array $this->elements : tableau contenant les semaines et les tableaux associés
+   * @return int $this->offset : calcul l'offset à appliquer pour la recherche, dans l'emploi du temps adéquat, des heures d'un jour donné
+   * (Attention, l'offset est valide pour la dernière valeur retournée. Ce qui est suffisant pour l'utilisation de cette fonction dans l'agenda et le menudiv car dans les 2 cas, une seule semaine est recherchée et donc une seule valeur est retournée)
+   */
   public function fetchEDTSamedi($perso_id,$debut,$fin){
     if(!$GLOBALS['config']['EDTSamedi'] or $GLOBALS['config']['PlanningHebdo']){
       return false;
     }
+
     $db=new db();
     $db->select("edt_samedi","*","semaine>='$debut' AND semaine<='$fin' AND perso_id='$perso_id'");
     if($db->result){
       foreach($db->result as $elem){
-	$this->elements[]=$elem['semaine'];
+
+        // Si config['EDTSamedi'] == 1 (Emploi du temps différent les semaines avec samedi travaillé), le champ tableau n'est pas nécessairement rempli car n'existait pas au départ.
+        // Dans ce cas, on le force à 2 par sécurité (si EDT Samedi est cochée, on passe au tableau 2
+        if( ! $elem['tableau'] ){
+          $elem['tableau'] = 2;
+        }
+
+        $this->elements[$elem['semaine']] = array('semaine' => $elem['semaine'], 'tableau' => $elem['tableau']);
+        $this->offset = ( intval($elem['tableau']) - 1 ) * 7 ;
       }
     }
   }
@@ -255,11 +275,20 @@ class personnel{
     $db->CSRFToken = $this->CSRFToken;
     $db->delete("edt_samedi", array('semaine' => ">=$debut", 'semaine' => "<=$fin", 'perso_id' => $perso_id));
 
-    if($eDTSamedi and !empty($eDTSamedi)){
+    if(!empty($eDTSamedi)){
       $insert=array();
       foreach($eDTSamedi as $elem){
-	$insert[]=array("perso_id"=>$perso_id, "semaine"=>$elem);
+
+        // Si config['EDTSamedi'] == 1 (Emploi du temps différent les semaines avec samedi travaillé)
+        if( ! is_array( $elem )){
+          $insert[] = array('perso_id' => $perso_id, 'semaine' => $elem, 'tableau' => 2 );
+
+        // Si config['EDTSamedi'] == 2 (Emploi du temps différent les semaines avec samedi travaillé et en ouverture restreinte)
+        } else {
+          $insert[] = array('perso_id' => $perso_id, 'semaine' => $elem[0], 'tableau' => $elem[1] );
+        }
       }
+
       $db=new db();
       $db->CSRFToken = $this->CSRFToken;
       $db->insert("edt_samedi",$insert);

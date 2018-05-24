@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/valid.php
 Création : mai 2011
-Dernière modification : 7 février 2018
+Dernière modification : 24 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -50,8 +50,19 @@ $sites=array_key_exists("sites",$post)?$post['sites']:null;
 $statut = htmlentities($post['statut'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
 $temps=array_key_exists("temps",$post)?$post['temps']:null;
 
-// Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
+// Modification du choix des emplois du temps avec l'option EDTSamedi == 1 (EDT différent les semaines avec samedi travaillé)
 $eDTSamedi=array_key_exists("EDTSamedi",$post)?$post['EDTSamedi']:null;
+
+// Modification du choix des emplois du temps avec l'option EDTSamedi == 2 (EDT différent les semaines avec samedi travaillé et les semaines à ouverture restreinte)
+if($config['EDTSamedi'] == 2){
+  $eDTSamedi = array();
+  foreach($post as $k => $v){
+    if(substr($k, 0, 10) == 'EDTSamedi_' and $v > 1){
+      $eDTSamedi[] = array(substr($k, -10), $v);
+    }
+  }
+}
+
 $premierLundi=array_key_exists("premierLundi",$post)?$post['premierLundi']:null;
 $dernierLundi=array_key_exists("dernierLundi",$post)?$post['dernierLundi']:null;
 
