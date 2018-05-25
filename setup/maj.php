@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.8.1
+Planning Biblio, Version 2.8.01
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
@@ -1152,7 +1152,7 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
-$v="2.8.1";
+$v="2.8.01";
 if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
 
   // Suppression des options de débogage
@@ -1169,7 +1169,7 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `groupe`, `page`, `ordre`, `categorie`) VALUES ('Planning Hebdo - Index', '1201', 'Gestion des heures de pr&eacute;sences, validation niveau 2', 'planningHebdo/index.php', '90', 'Heures de pr&eacute;sence');";
 
   // Emplois du temps différents les semaines avec samedi travaillé et en ouverture restreinte 
-  $sql[] = "UPDATE `{$dbprefix}config` SET `type` = 'enum2', `valeurs` = '[[0, \"D&eacute;sactiv&eacute;\"], [1, \"Emploi du temps diff&eacute;rent les semaines avec samedi travaill&eacute;\"], [2, \"Emploi du temps diff&eacute; les semaines avec samedi travaill&eacute; et les semaines &agrave; ouverture restreinte\"]]', `commentaires` = 'Emplois du temps diff&eacute;rents les semaines o&ugrave; le samedi est travaill&eacute; et les semaines &agrave; ouverture restreinte' WHERE `nom` = 'EDTSamedi'";
+  $sql[] = "UPDATE `{$dbprefix}config` SET `type` = 'enum2', `valeurs` = '[[0, \"D&eacute;sactiv&eacute;\"], [1, \"Emploi du temps diff&eacute;rent les semaines avec samedi travaill&eacute;\"], [2, \"Emploi du temps diff&eacute;rent les semaines avec samedi travaill&eacute; et les semaines &agrave; ouverture restreinte\"]]', `commentaires` = 'Emplois du temps diff&eacute;rents les semaines o&ugrave; le samedi est travaill&eacute; et les semaines &agrave; ouverture restreinte' WHERE `nom` = 'EDTSamedi'";
 
   $sql[] = "ALTER TABLE `{$dbprefix}edt_samedi` ADD `tableau` INT(1) NOT NULL DEFAULT 0;";
   $sql[] = "UPDATE `{$dbprefix}edt_samedi` SET `tableau` = 2;";

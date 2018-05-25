@@ -1,4 +1,4 @@
-*** Version 2.8.1         (24 mai 2018)   ***
+*** Version 2.8.01         (24 mai 2018)   ***
 - Améliorations
 Absences : gestion des notifications et des droits d'accès avec l'option "Absences-notifications-agent-par-agent"
 PlanningHebdo : gestion des notifications et des droits d'accès avec l'option "PlanningHebdo-notifications-agent-par-agent"
