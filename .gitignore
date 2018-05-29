@@ -8,6 +8,7 @@ data/*.txt
 data/ics/*
 include/config.php
 include/test.php
+lang/custom.php
 plugins/BSG*
 plugins/conges*
 plugins/ldap*

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.8.01
+Planning Biblio, Version 2.8.02
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 4 mai 2018
+Dernière modification : 29 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -23,7 +23,7 @@ Inclut à la fin le fichier footer.php
 session_start();
 
 // Version
-$version="2.8.01";
+$version="2.8.02";
 
 // Redirection vers setup si le fichier config est absent
 if(!file_exists("include/config.php")){
@@ -33,6 +33,9 @@ if(!file_exists("include/config.php")){
 require_once "include/config.php";
 require_once "include/sanitize.php";
 require_once __DIR__."/lang/fr_FR.php";
+if( file_exists( __DIR__."/lang/custom.php" )){
+  require_once __DIR__."/lang/custom.php";
+}
 
 // Initialisation des variables
 $date=filter_input(INPUT_GET,"date",FILTER_SANITIZE_STRING);

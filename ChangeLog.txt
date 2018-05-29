@@ -1,3 +1,7 @@
+*** Version 2.8.02         (29 mai 2018)   ***
+- Amélioration
+Permet l'utilisation d'un fichier lang/custom.php (voir fichier lang/fr_FR.php)
+
 *** Version 2.8.01         (24 mai 2018)   ***
 - Améliorations
 Absences : gestion des notifications et des droits d'accès avec l'option "Absences-notifications-agent-par-agent"
