@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio, Version 2.8.03
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 30 avril 2018
+Dernière modification : 11 septembre 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -211,16 +211,18 @@ if($absences){
   foreach($absences as $elem){
 
     // Filtre les agents non-gérés (notamment avec l'option Absences-notifications-agent-par-agent)
-    $continue = true;
-    foreach($elem['perso_ids'] as $perso){
-      if( in_array($perso, $perso_ids) ){
-        $continue = false;
-        break;
+    if($admin){
+      $continue = true;
+      foreach($elem['perso_ids'] as $perso){
+        if( in_array($perso, $perso_ids) ){
+          $continue = false;
+          break;
+        }
       }
-    }
-    
-    if($continue){
-      continue;
+
+      if($continue){
+        continue;
+      }
     }
 
     $id=$elem['id'];
