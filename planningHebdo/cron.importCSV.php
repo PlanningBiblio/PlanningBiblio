@@ -15,7 +15,7 @@ Import les heures de présences depuis un fichier CSV
 
 @note : Modifiez le crontab de l'utilisateur Apache (ex: #crontab -eu www-data) en ajoutant les 2 lignes suivantes :
 # Planning Biblio : Importation des heures de présence tous les jours à minuit
-0 0 * * * /usr/bin/php5 -f /var/www/html/planning/cron.ics.php
+0 0 * * * /usr/bin/php5 -f /var/www/html/planning/planningHebdo/cron.importCSV.php
 Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à ce fichier
 @note : Modifiez la variable $path suivante en renseignant le chemin absolu vers votre dossier planningBiblio
 */
