@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.8.02
+Planning Biblio, Version 2.8.03
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
@@ -21,7 +21,7 @@ session_start();
 session_destroy();
 session_start();
 
-$version="2.8.02";
+$version="2.8.03";
 
 include "header.php";
 include_once "../include/function.php";
