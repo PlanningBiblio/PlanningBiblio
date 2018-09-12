@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio, Version 2.8.03
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 30 avril 2018
+Dernière modification : 12 septembre 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -57,8 +57,6 @@ if(isset($_GET["perso_ids"])){
 
   if(is_array($perso_ids_get)){
 
-    $tmp=array();
-
     // Si l'option "Absences-notifications-agent-par-agent" est cochée, supprime (contrôle) les agents non-gérés
     if($config['Absences-notifications-agent-par-agent'] and !$adminN2){
       $perso_ids_verif = array($_SESSION['login_id']);
@@ -70,11 +68,19 @@ if(isset($_GET["perso_ids"])){
           $perso_ids_verif[] = $elem['perso_id'];
         }
       }
-    }
+      foreach($perso_ids_get as $elem){
+        if(!empty($elem) and in_array($elem, $perso_ids_verif)){
+          $perso_ids[]=(int) $elem;
+        }
+      }
 
-    foreach($perso_ids_get as $elem){
-      if(!empty($elem) and in_array($elem, $perso_ids_verif)){
-	$perso_ids[]=(int) $elem;
+    // Si l'option "Absences-notifications-agent-par-agent" n'est pas cochée, on récupère simplement la liste des agents
+    } else {
+
+      foreach($perso_ids_get as $elem){
+        if(!empty($elem)){
+          $perso_ids[]=(int) $elem;
+        }
       }
     }
   }
