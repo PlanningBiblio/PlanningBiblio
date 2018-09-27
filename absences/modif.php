@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/modif.php
 Création : mai 2011
-Dernière modification : 7 février 2018
+Dernière modification : 30 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -30,21 +30,21 @@ $checked=null;
 // 20x : gestion niveau 1
 // 50x : gestion niveau 2
 
-$admin = false;
+$adminN1 = false;
+$adminN2 = false;
 
-// Si droit de gestion des absences N1 ou N2 sur l'un des sites : $admin = true et accès à cette page autorisé
+// Si droit de gestion des absences N1 ou N2 sur l'un des sites : accès à cette page autorisé
 // Les droits d'administration des absences seront ajustés ensuite
 for($i = 1; $i <= $config['Multisites-nombre']; $i++){
-  if(in_array((200+$i), $droits) or in_array((500+$i), $droits)){
-    $admin = true;
-    break;
+  if(in_array((200+$i), $droits)){
+    $adminN1 = true;
+  }
+  if(in_array((500+$i), $droits)){
+    $adminN2 = true;
   }
 }
 
-// Validation N2 en monosite. Ce paramètre sera adapté par la suite si nous sommes en multi-sites
-$adminN2 = in_array(501, $droits);
-
-$agents_multiples = ($admin or in_array(9, $droits));
+$agents_multiples = ( $adminN1 or $adminN2 or in_array(9, $droits) );
 
 $a=new absences();
 $a->fetchById($id);
@@ -122,20 +122,42 @@ if(!$patternExists){
   $motifs[]=array("id"=>"99999", "valeur"=>$motif, "type"=> "0");
 }
 
+// Si l'option "Absences-notifications-agent-par-agent" est cochée, adapte la variable $adminN1 en fonction des agents de l'absence. S'ils sont tous gérés, $adminN1 = true, sinon, $adminN1 = false
+if($config['Absences-notifications-agent-par-agent'] and $adminN1){
+  $perso_ids_verif = array(0);
+
+  $db = new db();
+  $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']) );
+  if($db->result){
+    foreach($db->result as $elem){
+      $perso_ids_verif[] = $elem['perso_id'];
+    }
+  }
+
+  foreach($agents as $elem){
+    if( !in_array($elem['perso_id'], $perso_ids_verif) ){
+      $adminN1 = false;
+      break;
+    }
+  }
+}
+
 // Sécurité
 // Droit 6 = modification de ses propres absences
 // Les admins ont toujours accès à cette page
-$acces = $admin;
+$acces = ($adminN1 or $adminN2);
 if(!$acces){
   // Les non admin ayant le droits de modifier leurs absences ont accès si l'absence les concerne
   $acces=(in_array(6,$droits) and $perso_id==$_SESSION['login_id'])?true:false;
 }
 // Si config Absences-adminSeulement, seuls les admins ont accès à cette page
-if($config['Absences-adminSeulement'] and !$admin){
+if($config['Absences-adminSeulement'] and !($adminN1 or $adminN2)){
   $acces=false;
 }
 if(!$acces){
-  echo "<div id='acces_refuse'>Accès refusé</div>\n";
+  echo "<h3>Modification de l'absence</h3>\n";
+  echo "Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>\n";
+  echo "<a href='index.php?page=absences/voir.php'>Retour à la liste des absences</a><br/><br/>\n";
   include "include/footer.php";
   exit;
 }
@@ -154,19 +176,23 @@ if($config['Multisites-nombre']>1){
     }
   }
 
-  $admin = false;
+  if( !$config['Absences-notifications-agent-par-agent'] ){
+    $adminN1 = false;
+  }
   $adminN2 = false;
 
   foreach($sites_agents as $site){
-    if(in_array((200+$site), $droits)){
-      $admin = true;
+    if( !$config['Absences-notifications-agent-par-agent'] ){
+      if(in_array((200+$site), $droits)){
+        $adminN1 = true;
+      }
     }
     if(in_array((500+$site), $droits)){
       $adminN2 = true;
     }
   }
 
-  if(!$admin and !$acces){
+  if(!($adminN1 or $adminN2) and !$acces){
     echo "<h3>Modification de l'absence</h3>\n";
     echo "Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>\n";
     echo "<a href='index.php?page=absences/voir.php'>Retour à la liste des absences</a><br/><br/>\n";
@@ -174,6 +200,8 @@ if($config['Multisites-nombre']>1){
     exit;
   }
 }
+
+$admin = $adminN1 or $adminN2;
 
 // Si l'absence est importée depuis un agenda extérieur, on interdit la modification
 $agenda_externe = false;

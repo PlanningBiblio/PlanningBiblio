@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.7.13
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes

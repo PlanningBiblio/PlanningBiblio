@@ -1,5 +1,5 @@
 /**
-Planning Biblio, Version 2.7.13
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
@@ -167,6 +167,7 @@ $(function() {
 
   // Bouton Notes
   $("#pl-notes-button").click(function() {
+    $( '#pl-notes-tips' ).text("Vous pouvez écrire ici un commentaire qui sera affiché en bas du planning.");
     $( "#pl-notes-form" ).dialog( "open" );
     return false;
   });
@@ -215,7 +216,7 @@ $(function() {
 	      $("#pl-notes-form").dialog( "close" );
 	    },
 	    error: function(){
-	      updateTips("Une erreur est survenue lors de l'enregistrement du commentaire");
+	      updateTips("Une erreur est survenue lors de l'enregistrement du commentaire", "error");
 	    }
 	  });
 	}
@@ -275,7 +276,7 @@ $(function() {
 	      }
 	    },
 	    error: function(){
-	      updateTips("Une erreur est survenue lors de l'envoi de l'e-mail");
+	      updateTips("Une erreur est survenue lors de l'envoi de l'e-mail", "error");
 	    }
 	  });
 	}
@@ -287,7 +288,6 @@ $(function() {
     },
 
     close: function() {
-      updateTips("Envoyez un e-mail aux agents disponibles pour leur demander s&apos;ils sont volontaires pour occuper le poste choisi.");
       allFields.removeClass( "ui-state-error" );
     }
   });
@@ -312,7 +312,7 @@ $(function() {
     poste=$(this).attr("data-situation");
     perso_id=$(this).attr("data-perso-id");
     site=$("#site").val();
-    
+
     // On supprime l'ancien menu (s'il existe) pour eviter les problemes de remanence
     $("#menudiv1").remove();
     $("#menudiv2").remove();
@@ -407,7 +407,7 @@ $(function() {
     // Affiche les liens pour réafficher les tableaux masqués
     afficheTableauxDiv();
   });
-  
+
 });
 
 
@@ -478,6 +478,10 @@ function afficheTableauxDiv(){
 function appelDispo(site,siteNom,poste,posteNom,date,debut,fin){
   var agents = $('#td-appelDispo').attr('data-agents');
   
+  var weekday = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+  var d = new Date(date);
+  var jour = weekday[d.getDay()];
+
   // Variable globale à utiliser lors de l'envoi du mail
   appelDispoData={site:site, poste:poste, date:date, debut:debut, fin:fin, agents:agents};
   
@@ -498,11 +502,13 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin){
       }
 
       sujet=sujet.replace("[poste]",posteNom);
+      sujet=sujet.replace("[jour]",jour);
       sujet=sujet.replace("[date]",dateFr(date));
       sujet=sujet.replace("[debut]",heureFr(debut));
       sujet=sujet.replace("[fin]",heureFr(fin));
 
       message=message.replace("[poste]",posteNom);
+      message=message.replace("[jour]",jour);
       message=message.replace("[date]",dateFr(date));
       message=message.replace("[debut]",heureFr(debut));
       message=message.replace("[fin]",heureFr(fin));
@@ -510,6 +516,7 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin){
       // Mise à jour du formulaire
       $( "#pl-appelDispo-sujet" ).val(sujet);
       $( "#pl-appelDispo-text" ).text(message);
+      $( '#pl-appelDispo-tips' ).text("Envoyez un e-mail aux agents disponibles pour leur demander s'ils sont volontaires pour occuper le poste choisi.");
       $( "#pl-appelDispo-form" ).dialog( "open" );
     },
     error: function(result){
@@ -530,7 +537,6 @@ function appelDispo(site,siteNom,poste,posteNom,date,debut,fin){
  * @param int perso_id : Si 0 = griser la cellule, si 2 = Tout le monde
  */
 function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,griser){
-
   if(griser==undefined){
     griser=0;
   }
@@ -657,7 +663,6 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
 
         // Complète le tableau cellules initialisé au chargement de la page et contenant toutes les cellules ajoutées par la fonction bataille_navale
         cellules.push($('#cellule'+cellule+'_'+i));
-
       }
 
       // Suppresion de la surbrillance sur toutes les cellules une fois l'agent posté ou supprimé
@@ -841,6 +846,7 @@ function plMouseOut(id){
  * Met en surbrillance l'agent survolé dans le planning
  */
 function plMouseOver(id){
+
   // Ajoute la classe pl-highlight aux éléments existants au chargment de la page
   $('.pl-cellule-perso-'+id).addClass('pl-highlight');
 

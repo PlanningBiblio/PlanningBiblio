@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.7.04
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : js/script.js
 Création : mai 2011
-Dernière modification : 22 novembre 2017
+Dernière modification : 23 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 @author Etienne Cavalié
@@ -166,7 +166,7 @@ function checkDate1( o, n) {
   if(diff.day<0){
     if(n){
       o.addClass( "ui-state-error" );
-      updateTips( n );
+      updateTips( n , 'error');
     }
     return false;
   } else {
@@ -191,7 +191,7 @@ function checkDate2( date1, date2, n ) {
   diff=dateDiff(d1,d2);
   if(diff.day<0){
     date2.addClass( "ui-state-error" );
-    updateTips( n );
+    updateTips( n , 'error');
     return false;
   } else {
     return true;
@@ -202,7 +202,7 @@ function checkDate2( date1, date2, n ) {
 function checkDiff( o1, o2, n ) {
   if (o1.val() == o2.val()){
     o2.addClass( "ui-state-error" );
-    updateTips( n );
+    updateTips( n , 'error');
     return false;
   } else {
     return true;
@@ -213,7 +213,7 @@ function checkDiff( o1, o2, n ) {
 function checkRegexp( o, regexp, n ) {
   if ( !( regexp.test( o.val() ) ) ) {
     o.addClass( "ui-state-error" );
-    updateTips( n );
+    updateTips( n , 'error');
     return false;
   } else {
     return true;
@@ -554,14 +554,19 @@ function updateAgentsList(me,select_id){
 
 
 // updateTips : utilisée pour valider les formulaires Jquery-UI
-function updateTips( t ) {
-  var tips=$( ".validateTips" );
-  tips
-    .text( t )
-    .addClass( "ui-state-highlight" );
-  setTimeout(function() {
-    tips.removeClass( "ui-state-highlight", 1500 );
-  }, 500 );
+function updateTips( text , type) {
+  if ( type == undefined ) {
+    type = null;
+  }
+  else if ( type == "success" ) {
+    type = "highlight";
+  }
+  
+  text = text.replace("\n", "<br/>");
+
+  $(".validateTips").html(text);
+
+  errorHighlight( $(".validateTips"), type);
 }
 
 function verif_date(d){
@@ -751,7 +756,10 @@ $(function(){
     });
 
     $(".ui-button").button();
-    $(".datepicker").datepicker();
+    $(".datepicker").datepicker({
+      showOtherMonths: true,
+    });
+
     $(".datepicker").addClass("center ui-widget-content ui-corner-all");
 
     /**

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.14
+Planning Biblio, Version 2.8.03
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 11 décembre 2017
+Dernière modification : 29 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -23,7 +23,7 @@ Inclut à la fin le fichier footer.php
 session_start();
 
 // Version
-$version="2.7.14";
+$version="2.8.03";
 
 // Redirection vers setup si le fichier config est absent
 if(!file_exists("include/config.php")){
@@ -32,9 +32,10 @@ if(!file_exists("include/config.php")){
 
 require_once "include/config.php";
 require_once "include/sanitize.php";
-
-// Error reporting
-ini_set('display_errors',$config['display_errors']);
+require_once __DIR__."/lang/fr_FR.php";
+if( file_exists( __DIR__."/lang/custom.php" )){
+  require_once __DIR__."/lang/custom.php";
+}
 
 // Initialisation des variables
 $date=filter_input(INPUT_GET,"date",FILTER_SANITIZE_STRING);
@@ -130,17 +131,27 @@ $droits=json_decode(html_entity_decode($db->result[0]['droits'],ENT_QUOTES|ENT_I
 $droits[]=99;	// Ajout du droit de consultation pour les connexions anonymes
 $_SESSION['droits']=$droits;
 
-//		Droits necessaires pour consulter la page en cours
-$db=new db();
-$db->select2("acces","*",array("page"=>$page));
-
 if($page=="planning/poste/index.php" or $page=="planning/poste/semaine.php" or !$menu){
   echo "<div id='content-planning'>\n";
 }else{
   echo "<div id='content'>\n";
 }
 
-if(in_array($db->result[0]['groupe_id'],$droits)){
+//		Droits necessaires pour consulter la page en cours
+$db=new db();
+$db->select2("acces","*",array("page"=>$page));
+
+$access = false;
+if($db->result){
+  foreach($db->result as $elem){
+    if(in_array($elem['groupe_id'], $droits)){
+      $access = true;
+      break;
+    }
+  }
+}
+
+if($access){
   include $page;
 }
 else{

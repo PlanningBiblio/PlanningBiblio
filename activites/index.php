@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.6.7
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : activites/index.php
 Création : mai 2011
-Dernière modification : 12 mai 2017
+Dernière modification : 12 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -67,15 +67,9 @@ if(!empty($tab)){
 
 
 <?php
-// Tri par défaut du tableau
-$sort=in_array(13,$droits)?'[[2,"asc"]]':'[[1,"asc"]]';
-
-echo "<table id='tableActivites' class='CJDataTable' data-sort='$sort'>\n";
+echo "<table id='tableActivites' class='CJDataTable' data-sort='[[1,\"asc\"]]'>\n";
 echo "<thead><tr>\n";
 echo "<th class='dataTableNoSort'>&nbsp;</th>\n";
-if(in_array(13,$droits)){
-  echo "<th>ID</th>\n";
-}
 echo "<th>Nom de l'activité</th>\n";
 echo "</tr></thead>\n";
 
@@ -90,8 +84,6 @@ foreach($activites as $elem){
     echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
   }
   echo "</td>\n";
-  if(in_array(13,$droits))
-    echo "<td>{$elem['id']}</td>\n";
   echo "<td>{$elem['nom']}</td>\n";
   echo "</tr>\n";
 }

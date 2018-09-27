@@ -92,7 +92,7 @@ if($ldapbind){
 }
 
 if($erreurs){
-  $msg=urlencode("Il y a eu des erreus pendant l'importation.#BR#Veuillez vérifier la liste des agents");
+  $msg=urlencode("Il y a eu des erreurs pendant l'importation.#BR#Veuillez vérifier la liste des agents");
   $msgType="error";
 }else{
   $msg=urlencode("Les agents ont été importés avec succès");

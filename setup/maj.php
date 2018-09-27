@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.14
+Planning Biblio, Version 2.8.03
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 26 janvier 2018
+Dernière modification : 12 septembre 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -73,21 +73,12 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
       PRIMARY KEY (`id`))
       ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
-    $sql[]="CREATE TABLE `{$dbprefix}planningHebdoPeriodes` (
-      `id` INT(11) NOT NULL AUTO_INCREMENT, 
-      `annee` VARCHAR(9), 
-      `dates` TEXT,
-      PRIMARY KEY (`id`))
-      ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
-
     // Menu administration
     $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES (50,75,'Plannings de présence','planningHebdo/index.php');";
 
     // Cron
     $sql[]="INSERT INTO `{$dbprefix}cron` (`h`,`m`,`dom`,`mon`,`dow`,`command`,`comments`) VALUES ('0','0','*','*','*','planningHebdo/cron.daily.php','Daily Cron for planningHebdo module');";
 
-    // Périodes définies
-    $periodesDefinies=0;
     $notifications="droit";
   }
   // Si le plugin était installé, on met à jour les liens
@@ -110,11 +101,6 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
     // Suppression de la table plugins
     $sql[]="DELETE FROM `{$dbprefix}plugins` WHERE `nom`='planningHebdo';";
 
-    // Configuration : Périodes définies
-    $db=new db();
-    $db->query("SELECT `valeur` FROM `{$dbprefix}planningHebdoConfig` WHERE `nom`='periodesDefinies';");
-    $periodesDefinies=$db->result[0]['valeur'];
-
     // Configuration : Notifications
     $db=new db();
     $db->query("SELECT `valeur` FROM `{$dbprefix}planningHebdoConfig` WHERE `nom`='notifications';");
@@ -130,12 +116,6 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES 
     ('PlanningHebdo-Agents', 'boolean', '1', 'Heures de pr&eacute;sence','50', 'Autoriser les agents &agrave; saisir leurs plannings de pr&eacute;sence (avec le module Planning Hebdo). Les plannings saisis devront &ecirc;tre valid&eacute;s par un administrateur.');";
 
-  // Configuration : périodes définies
-  // Période définies = 0 pour le moment. Option plus utilisée par la BUA. Développements complexes.
-/*
-  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES 
-    ('PlanningHebdo-PeriodesDefinies', 'hidden', '$periodesDefinies', 'Heures de pr&eacute;sence','60', 'Utiliser des périodes définies pour les plannings hebdomadaires (Module Planning Hebdo)');";
-*/
   // Configuration : notifications
   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `ordre`, `commentaires`) VALUES 
     ('PlanningHebdo-Notifications', 'enum2', '$notifications', '[[\"droit\",\"Agents ayant le droit de g&eacute;rer les plannings de pr&eacute;sence\"],[\"Mail-Planning\",\"Cellule planning\"]]', 'Heures de pr&eacute;sence','70', 'A qui envoyer les notifications de nouveaux plannings de pr&eacute;sence (Module Planning Hebdo)');";
@@ -556,7 +536,6 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   serializeToJson('postes','activites', 'id', null, $CSRFToken);
   serializeToJson('postes','categories', 'id', null, $CSRFToken);
   serializeToJson('config','valeur','id', array('type'=>'checkboxes'), $CSRFToken);
-  serializeToJson('planningHebdoPeriodes','dates', 'id', null, $CSRFToken);
   serializeToJson('personnel','temps', 'id', null, $CSRFToken);
   serializeToJson('planningHebdo','temps', 'id', null, $CSRFToken);
 
@@ -726,11 +705,6 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   if($db->result){
     $sql[] = "RENAME TABLE `{$dbprefix}planningHebdo` TO `{$dbprefix}planning_hebdo`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
   }
-  $db=new db();
-  $db->query("SELECT count(*) FROM `{$dbprefix}planningHebdoPeriodes` WHERE 1; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e");
-  if($db->result){
-    $sql[] = "RENAME TABLE `{$dbprefix}planningHebdoPeriodes` TO `{$dbprefix}planning_hebdo_periodes`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
-  }
 
   // Renomme les champs en minuscules
   $sql[] = "ALTER TABLE `{$dbprefix}absences` CHANGE `CALNAME` `cal_name` VARCHAR(300) NOT NULL; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
@@ -787,11 +761,6 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $db->query("SELECT count(*) FROM `{$dbprefix}planninghebdo` WHERE 1; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e");
   if($db->result){
     $sql[] = "RENAME TABLE `{$dbprefix}planninghebdo` TO `{$dbprefix}planning_hebdo`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
-  }
-  $db=new db();
-  $db->query("SELECT count(*) FROM `{$dbprefix}planninghebdoperiodes` WHERE 1; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e");
-  if($db->result){
-    $sql[] = "RENAME TABLE `{$dbprefix}planninghebdoperiodes` TO `{$dbprefix}planning_hebdo_periodes`; # Si une erreur est affich&eacute;e, elle peut &ecirc;tre ignor&eacute;e";
   }
 
   // Contrôle des tables
@@ -1073,6 +1042,7 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
           $update = true;
         }
       }
+
       if($update){
         $droits = json_encode($droits);
         $sql[] = "UPDATE `{$dbprefix}personnel` SET `droits` = '$droits' WHERE `id` = '{$elem['id']}';";
@@ -1084,31 +1054,135 @@ if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
   $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe_id` = '501', `groupe` = 'Gestion des absences, validation niveau 2' WHERE `groupe_id` = '8';";
 
   // Version
-  $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+  $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="2.8";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
 
-// $v="2.8";
-// if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
-// 
-//   // Responsables et notifications
-//   $sql[]="ALTER TABLE `{$dbprefix}config` CHANGE `nom` `nom` VARCHAR(50);";
-//   $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
-//     ('Absences-notifications-agent-par-agent','boolean', '0', 'Absences', 'Gestion des notifications et des droits de validations agent par agent. Si cette option est activée, les paramètres Absences-notifications1, 2, 3 et 4 seront écrasés par les choix fait dans la page de configuration des notifications du menu Administration - Notifications','67');";
-//   $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES 
-//     ('50','77','Validations / Notifications','notifications/index.php','config=Absences-notifications-agent-par-agent');";
-//   $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Validations / Notifications', 21, 'Gestion des agents', 'notifications/index.php', 'Agents', 70);";
-//   $sql[]="CREATE TABLE `{$dbprefix}responsables` (
-//     `id` INT(11) NOT NULL AUTO_INCREMENT, 
-//     `perso_id` INT(11) NOT NULL DEFAULT '0', 
-//     `responsable` INT(11) NOT NULL DEFAULT '0', 
-//     `notification` INT(1) NOT NULL DEFAULT '0', 
-//     PRIMARY KEY (`id`))
-//     ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+  // Responsables et notifications
+  $sql[]="ALTER TABLE `{$dbprefix}config` CHANGE `nom` `nom` VARCHAR(50);";
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('Absences-notifications-agent-par-agent','boolean', '0', 'Absences', 'Gestion des notifications et des droits de validations agent par agent. Si cette option est activée, les paramètres Absences-notifications1, 2, 3 et 4 seront écrasés par les choix fait dans la page de configuration des notifications du menu Administration - Notifications / Validations','67');";
+  $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES 
+    ('50','77','Validations / Notifications','notifications/index.php','config=Absences-notifications-agent-par-agent');";
+  $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Notifications / Validations', 21, 'Gestion des agents', 'notifications/index.php', 'Agents', 70);";
+  $sql[]="CREATE TABLE `{$dbprefix}responsables` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT, 
+    `perso_id` INT(11) NOT NULL DEFAULT '0', 
+    `responsable` INT(11) NOT NULL DEFAULT '0', 
+    `notification` INT(1) NOT NULL DEFAULT '0', 
+    PRIMARY KEY (`id`))
+    ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
-//   // Version
-//   $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
-// }
+  // Modification des IDs des droits de gestion des heures de présence
+  $db = new db();
+  $db->select('personnel');
+  if($db->result){
+    foreach($db->result as $elem){
+      $update = false;
+      $droits = html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+      $droits = (array) json_decode($droits, true);
+      foreach($droits as $k => $val){
+        if($val == 24){
+          $droits[$k] = 1101;
+          $update = true;
+        }
+      }
+
+      if($update){
+        $droits = json_encode($droits);
+        $sql[] = "UPDATE `{$dbprefix}personnel` SET `droits` = '$droits' WHERE `id` = '{$elem['id']}';";
+      }
+    }
+  }
+
+  $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe_id` = '1101', `groupe` = 'Gestion des heures de pr&eacute;sences, validation niveau 1'  WHERE `groupe_id` = '24';";
+  
+  // Double validation des heures de présence
+  $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Planning Hebdo - Admin N2','1201','Gestion des heures de pr&eacute;sences, validation niveau 2','','Heures de pr&eacute;sence','90');";
+  
+  $sql[] = "ALTER TABLE `{$dbprefix}planning_hebdo` ADD `valide_n1` INT(11) NOT NULL DEFAULT '0' AFTER `modification`;";
+  $sql[] = "ALTER TABLE `{$dbprefix}planning_hebdo` ADD `validation_n1` TIMESTAMP NULL DEFAULT NULL AFTER `valide_n1`;";
+  
+  $db = new db();
+  $db->select2('config', array('valeur'), array('nom' => 'PlanningHebdo-Notifications'));
+  $result = $db->result[0]['valeur'];
+  $valeur = $result == 'droit' ? '[0,4]' : '[3,4]';
+
+  $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
+    VALUES ('PlanningHebdo-notifications1','checkboxes','$valeur','[[0,\"Agents ayant le droit de valider les heures de pr&eacute;sence au niveau 1\"],[1,\"Agents ayant le droit de valider les heures de pr&eacute;sence au niveau 2\"],[2,\"Responsables directs\"],[3,\"Cellule planning\"],[4,\"Agent concern&eacute;\"]]','Destinataires des notifications de nouveaux plannings de pr&eacute;sence','Heures de pr&eacute;sence','70');";
+  $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
+    VALUES ('PlanningHebdo-notifications2','checkboxes','$valeur','[[0,\"Agents ayant le droit de valider les heures de pr&eacute;sence au niveau 1\"],[1,\"Agents ayant le droit de valider les heures de pr&eacute;sence au niveau 2\"],[2,\"Responsables directs\"],[3,\"Cellule planning\"],[4,\"Agent concern&eacute;\"]]','Destinataires des notifications de modification de planning de pr&eacute;sence','Heures de pr&eacute;sence','72');";
+  $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
+    VALUES ('PlanningHebdo-notifications3','checkboxes','$valeur','[[0,\"Agents ayant le droit de valider les heures de pr&eacute;sence au niveau 1\"],[1,\"Agents ayant le droit de valider les heures de pr&eacute;sence au niveau 2\"],[2,\"Responsables directs\"],[3,\"Cellule planning\"],[4,\"Agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 1','Heures de pr&eacute;sence','74');";
+  $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
+    VALUES ('PlanningHebdo-notifications4','checkboxes','$valeur','[[0,\"Agents ayant le droit de valider les heures de pr&eacute;sence au niveau 1\"],[1,\"Agents ayant le droit de valider les heures de pr&eacute;sence au niveau 2\"],[2,\"Responsables directs\"],[3,\"Cellule planning\"],[4,\"Agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 2','Heures de pr&eacute;sence','76');";
+  $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('PlanningHebdo-notifications-agent-par-agent','boolean', '0', 'Heures de pr&eacute;sence', 'Gestion des notifications et des droits de validations agent par agent. Si cette option est activ&aecute;e, les param&egrave;tres PlanningHebdo-notifications1, 2, 3 et 4 seront &aecute;cras&aecute;s par les choix fait dans la page de configuration des notifications du menu Administration - Notifications / Validations','80');";
+  $sql[] = "DELETE FROM `{$dbprefix}config` WHERE `nom` = 'PlanningHebdo-Notifications';";
+
+  $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs`='[[0,\"Agents ayant le droit de g&eacute;rer les absences\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]' WHERE `nom` IN ('Absences-notifications1','Absences-notifications2','Absences-notifications3','Absences-notifications4');";
+
+  // Absences agent logué chargé automatiquement ou non
+  $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) 
+  VALUES ('Absences-agent-preselection', 'boolean', '1', 'Présélectionner l&apos;agent connecté lors de l&apos;ajout d&apos;une nouvelle absence.','Absences','36');";
+
+  // Affichage ou non des heures de SP et des couleurs dans le menu du planning
+  $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('Planning-Heures','boolean', '1', '', 'Planning', 'Afficher les heures &agrave; c&ocirc;t&eacute; du nom des agents dans le menu du planning','25');";
+
+  $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = 'uid,samaccountname,supannAliasLogin' WHERE `nom` =  'LDAP-ID-Attribute';";
+  
+  // Agents volants (SciencesPo)
+  $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`) VALUES ('30','90','Agents volants','planning/volants/index.php','config=Planning-agents-volants');";
+  $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES 
+    ('Planning-agents-volants','boolean', '0', '', 'Planning', 'Utiliser le module \"Agents volants\" permettant de diff&eacute;rencier un groupe d&apos;agents dans le planning','90');";
+  $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Agents volants', 301, 'Cr&eacute;ation / modification des plannings, utilisation et gestion des mod&egrave;les', 'planning/volants/index.php', 'Planning', 110);";
+
+  $sql[] = "CREATE TABLE `{$dbprefix}volants` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT, 
+    `date` DATE NULL DEFAULT NULL, 
+    `perso_id` INT(11) NOT NULL DEFAULT '0', 
+    PRIMARY KEY (`id`))
+    ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+
+  // Version
+  $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.8.01";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+
+  // Suppression des options de débogage
+  $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `groupe_id` = '13';";
+  $sql[] = "DELETE FROM `{$dbprefix}config` WHERE `nom` = 'display_errors';";
+
+  // Suppression de la table planning_hebdo_periodes
+  $sql[]="DROP TABLE IF EXISTS `{$dbprefix}planningHebdoPeriodes`;";
+  $sql[]="DROP TABLE IF EXISTS `{$dbprefix}planning_hebdo_periodes`;";
+
+  // PlanningHebdo : Attente de la validation niveau 1 avant d'autoriser la validation niveau 2
+  $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('PlanningHebdo-Validation-N2', 'enum2', '0', '[[0,\"Validation directe autoris&eacute;e\"],[1,\"Le planning doit &ecirc;tre valid&eacute; au niveau 1\"]]', 'Heures de pr&eacute;sence', 'La validation niveau 2 des plannings de pr&eacute;sence peut se faire directement ou doit attendre la validation niveau 1', '85');";
+  
+  $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `groupe`, `page`, `ordre`, `categorie`) VALUES ('Planning Hebdo - Index', '1201', 'Gestion des heures de pr&eacute;sences, validation niveau 2', 'planningHebdo/index.php', '90', 'Heures de pr&eacute;sence');";
+
+  // Emplois du temps différents les semaines avec samedi travaillé et en ouverture restreinte 
+  $sql[] = "UPDATE `{$dbprefix}config` SET `type` = 'enum2', `valeurs` = '[[0, \"D&eacute;sactiv&eacute;\"], [1, \"Emploi du temps diff&eacute;rent les semaines avec samedi travaill&eacute;\"], [2, \"Emploi du temps diff&eacute;rent les semaines avec samedi travaill&eacute; et les semaines &agrave; ouverture restreinte\"]]', `commentaires` = 'Emplois du temps diff&eacute;rents les semaines o&ugrave; le samedi est travaill&eacute; et les semaines &agrave; ouverture restreinte' WHERE `nom` = 'EDTSamedi';";
+
+  $sql[] = "ALTER TABLE `{$dbprefix}edt_samedi` ADD `tableau` INT(1) NOT NULL DEFAULT 0;";
+  $sql[] = "UPDATE `{$dbprefix}edt_samedi` SET `tableau` = 2;";
+
+  // Version
+  $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="2.8.03";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+  // Version
+  $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 
 
 //	Execution des requetes et affichage
@@ -1123,7 +1197,7 @@ foreach($sql as $elem){
 
 if(isset($check_tables) and $check_tables === true){
   echo "<p><h3>V&eacute;rification des tables</h3>\n";
-  $tables = array('appel_dispo', 'edt_samedi', 'heures_absences', 'heures_sp', 'hidden_tables', 'ip_blocker', 'jours_feries', 'planning_hebdo', 'planning_hebdo_periodes');
+  $tables = array('appel_dispo', 'edt_samedi', 'heures_absences', 'heures_sp', 'hidden_tables', 'ip_blocker', 'jours_feries', 'planning_hebdo');
   foreach($tables as $elem){
     $db=new db();
     $db->query("SELECT count(*) FROM `{$dbprefix}{$elem}` WHERE 1;");

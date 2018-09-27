@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planningHebdo/modif.php
 Création : 23 juillet 2013
-Dernière modification : 14 juillet 2017
+Dernière modification : 4 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -22,15 +22,13 @@ $copy=filter_input(INPUT_GET,"copy",FILTER_SANITIZE_NUMBER_INT);
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 $retour=filter_input(INPUT_GET,"retour",FILTER_SANITIZE_STRING);
 
-// Période définies = 0 pour le moment. Option plus utilisée par la BUA. Développements complexes.
-$config['PlanningHebdo-PeriodesDefinies']=0;
-
 if($copy){
   $id=$copy;
 }
 
 // Sécurité
-$admin=in_array(24,$droits)?true:false;
+$adminN1 = in_array(1101, $droits);
+$adminN2 = in_array(1201, $droits);
 
 $cle = null;
 
@@ -39,11 +37,11 @@ if($id){
   $p->id=$id;
   $p->fetch();
   if(empty($p->elements)){
-	echo "<h3>Planning de présence</h3>\n";
-	echo "<p>Le planning demand&eacute; n'est plus accessible &agrave; cette adresse.<br/>\n";
-	echo "Veuillez le rechercher dans le menu menu <a href='index.php?page=planningHebdo/index.php'>Administration / Plannings de pr&eacute;sence</a></p>\n";
-	include "include/footer.php";
-	exit;
+    echo "<h3>Planning de présence</h3>\n";
+    echo "<p>Le planning demand&eacute; n'est plus accessible &agrave; cette adresse.<br/>\n";
+    echo "Veuillez le rechercher dans le menu menu <a href='index.php?page=planningHebdo/index.php'>Administration / Plannings de pr&eacute;sence</a></p>\n";
+    include "include/footer.php";
+    exit;
   }
   $debut1=$p->elements[0]['debut'];
   $fin1=$p->elements[0]['fin'];
@@ -52,7 +50,15 @@ if($id){
 
   $perso_id=$p->elements[0]['perso_id'];
   $temps=$p->elements[0]['temps'];
-  $valide=$p->elements[0]['valide'];
+
+  if($copy){
+    $valide_n1 = 0;
+    $valide_n2 = 0;
+  } else {
+    $valide_n1 = $p->elements[0]['valide_n1'];
+    $valide_n2 = $p->elements[0]['valide'];
+  }
+
   $remplace=$p->elements[0]['remplace'];
   $cle=$p->elements[0]['cle'];
 
@@ -61,15 +67,20 @@ if($id){
   $p->fetchById($perso_id);
   $sites=$p->elements[0]['sites'];
 
+  // Droits de gestion des plannings de présence agent par agent
+  if($adminN1 and $config['PlanningHebdo-notifications-agent-par-agent']){
+    $db = new db();
+    $db->select2('responsables', 'perso_id', array('perso_id' => $perso_id, 'responsable' => $_SESSION['login_id']) );
+    
+    $adminN1 = $db->result ? true : false;
+  }
+
   // Modif autorisée si n'est pas validé ou si validé avec des périodes non définies (BSB).
   // Dans le 2eme cas copie du planning avec modification des dates
   $action="modif";
   $modifAutorisee=true;
 
-  if(!$admin and $valide and $config['PlanningHebdo-PeriodesDefinies']){
-    $modifAutorisee=false;
-  }
-  if(!$admin and !$config['PlanningHebdo-Agents']){
+  if( !( $adminN1 or $adminN2 ) and !$config['PlanningHebdo-Agents']){
     $modifAutorisee=false;
   }
   
@@ -78,7 +89,7 @@ if($id){
     $modifAutorisee = false;
   }
 
-  if(!$admin and $valide){
+  if( !( $adminN1 or $adminN2 ) and $valide_n2 > 0){
     $action="copie";
   }
 
@@ -95,7 +106,7 @@ if($id){
   $fin1Fr=null;
   $perso_id=$_SESSION['login_id'];
   $temps=null;
-  $valide=null;
+  $valide_n2 = 0;
   $remplace=null;
   $sites=array();
   for($i=1;$i<$config['Multisites-nombre']+1;$i++){
@@ -104,7 +115,7 @@ if($id){
 }
 
 // Sécurité
-if(!$admin and $id and $perso_id!=$_SESSION['login_id']){
+if( !( $adminN1 or $adminN2 ) and $id and $perso_id!=$_SESSION['login_id']){
   echo "<div id='acces_refuse'>Accès refusé</div>\n";
   include "include/footer.php";
   exit;
@@ -124,22 +135,37 @@ if($id and !$copy){
 ?>
 <div id='planning'>
 <?php
-if(!$config['PlanningHebdo-PeriodesDefinies']){
-  echo "<form name='form1' method='post' action='index.php' onsubmit='return plHebdoVerifForm();'>\n";
-}else{
-  echo "<form name='form1' method='post' action='index.php' onsubmit='return verif_form(\"debut=date1;fin=date2Obligatoire\",\"form1\");'>\n";
-}
+echo "<form name='form1' method='post' action='index.php' onsubmit='return plHebdoVerifForm();'>\n";
 
 // Modification
 if($id and !$copy){
   echo "<input type='hidden' name='perso_id' value='$perso_id' id='perso_id' />\n";
 // Ajout ou copie
 }else{
-  $db=new db();
-  $db->select2("personnel","*",array("supprime"=>0),"order by nom,prenom");
+
+  if($config['PlanningHebdo-notifications-agent-par-agent'] and !$adminN2){
+  // Sélection des agents gérés (table responsables) et de l'agent logué
+
+    $perso_ids = array($_SESSION['login_id']);
+    $db = new db();
+    $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']) );
+    if($db->result){
+      foreach($db->result as $elem){
+        $perso_ids[] = $elem['perso_id'];
+      }
+    }
+
+    $perso_ids = implode(',', $perso_ids);
+    $db=new db();
+    $db->select2('personnel', null, array('supprime'=>0, 'id' => "IN$perso_ids"), 'order by nom,prenom');
+
+  } else {
+    $db=new db();
+    $db->select2('personnel', null, array('supprime'=>0), 'order by nom,prenom');
+  }
 
   // Non admin
-  if(!$admin){
+  if(!( $adminN1 or $adminN2 )){
     echo "<h3>Nouveau planning pour $nomAgent</h3>\n";
   }
   // Copie
@@ -150,7 +176,7 @@ if($id and !$copy){
     echo "<h3>Nouveau planning</h3>\n";
   }
   echo "<div id='plHebdo-perso-id'>\n";
-  if($admin){
+  if( $adminN1 or $adminN2 ){
     echo "<label for='perso_id'>Pour l'agent</label>\n";
     echo "<select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id' style='position:absolute; left:200px; width:200px; text-align:center;' >\n";
     echo "<option value=''>&nbsp;</option>\n";
@@ -167,25 +193,19 @@ if($id and !$copy){
 
 // Choix de la période d'utilisation et validation
 echo "<div id='periode'>\n";
-if(!$config['PlanningHebdo-PeriodesDefinies']){
-  echo <<<EOD
-    <p><label for='debut'>Début d'utilisation</label>
-    <input type='text' name='debut' value='$debut1Fr' class='datepicker' style='position:absolute; left:200px; width:200px;' /></p>
-    <p><label for='fin'>Fin d'utilisation</label>
-    <input type='text' name='fin' value='$fin1Fr' class='datepicker' style='position:absolute; left:200px; width:200px;' /></p>
+echo <<<EOD
+  <p><label for='debut'>Début d'utilisation</label>
+  <input type='text' name='debut' value='$debut1Fr' class='datepicker' style='position:absolute; left:200px; width:200px;' /></p>
+  <p><label for='fin'>Fin d'utilisation</label>
+  <input type='text' name='fin' value='$fin1Fr' class='datepicker' style='position:absolute; left:200px; width:200px;' /></p>
 EOD;
-}
-else{
-  echo "<input type='hidden' name='debut' value='$debut1'/>\n";
-  echo "<input type='hidden' name='fin' value='$fin1'/>\n";
-}
+
 echo "</div> <!-- id=periode -->\n";
 
 ?>
 <input type='hidden' name='page' value='planningHebdo/valid.php' />
 <input type='hidden' name='CSRFToken' value='<?php echo $CSRFSession; ?>' />
 <input type='hidden' name='action' value='<?php echo $action; ?>' />
-<input type='hidden' name='validation' value='0' />
 <input type='hidden' name='retour' value='<?php echo $retour; ?>' />
 <input type='hidden' name='id' value='<?php echo $id; ?>' />
 <input type='hidden' name='valide' value='<?php echo $_SESSION['login_id']; ?>' />
@@ -301,22 +321,19 @@ if($cle){
 elseif(!$modifAutorisee){
   echo "<p><b class='important'>Vos horaires ont été validés.</b><br/>Pour les modifier, contactez votre chef de service.</p>\n";
 }
-elseif($valide and !$admin){
+elseif($valide_n2 > 0 and !( $adminN1 or $adminN2 )){
   echo "<p><b class='important'>Vos horaires ont été validés.</b><br/>Si vous souhaitez les changer, modifiez la date de début et/ou de fin d'effet.<br/>";
   echo "Vos nouveaux horaires seront enregistrés et devront être validés par un administrateur.<br/>";
   echo "Les anciens horaires seront conservés en attendant la validation des nouveaux.</p>\n";
 }
-elseif($valide and $admin and !$config['PlanningHebdo-PeriodesDefinies'] and !$copy){
+elseif($valide_n2 > 0 and ( $adminN1 or $adminN2 ) and !$copy){
   echo "<p style='width:850px;text-align:justify;margin-top:30px;'><b class='important'>Ces horaires ont été validés.</b><br/>";
-  echo "En tant qu'administrateur, vous pouvez les modifier et les enregistrer en tant que copie.<br/>";
-  echo "Dans ce cas, modifiez la date de début et/ou de fin d'effet. ";
-  echo "Les nouveaux horaires seront enregistrés et devront ensuite être validés. ";
-  echo "Les anciens horaires seront conservés en attendant la validation des nouveaux.<br/>";
-  echo "Vous pouvez également les enregistrer directement mais dans ce cas, vous ne conserverez pas les anciens horaires.</p>\n";
-}
-elseif($valide and $admin and $config['PlanningHebdo-PeriodesDefinies'] and !$copy){
-  echo "<p style='width:850px;text-align:justify;'><b class='important'>Ces horaires ont été validés.</b><br/>";
-  echo "En tant qu'administrateur, vous avez toujours la possibilité de les modifier et de les valider.</p>\n";
+  echo "Leur modification aura un effet immédiat.</p>\n";
+//   echo "En tant qu'administrateur, vous pouvez les modifier et les enregistrer en tant que copie.<br/>";
+//   echo "Dans ce cas, modifiez la date de début et/ou de fin d'effet. ";
+//   echo "Les nouveaux horaires seront enregistrés et devront ensuite être validés. ";
+//   echo "Les anciens horaires seront conservés en attendant la validation des nouveaux.<br/>";
+//   echo "Vous pouvez également les enregistrer directement mais dans ce cas, vous ne conserverez pas les anciens horaires.</p>\n";
 }
 
 if($copy and $config['Multisites-nombre']>1){
@@ -328,23 +345,67 @@ EOD;
 }
 echo "</div> <!-- id=informations -->\n";
 
-echo "<div id='boutons' style='padding-top:20px;'>\n";
+// Validation
+if(!$cle){
+  // Si admin, affiche le menu déroulant
+  if($adminN1 or $adminN2){
+
+    $selected1 = $valide_n1 > 0 ? "selected='selected'" : null;
+    $selected2 = $valide_n1 < 0 ? "selected='selected'" : null;
+    $selected3 = $valide_n2 > 0 ? "selected='selected'" : null;
+    $selected4 = $valide_n2 < 0 ? "selected='selected'" : null;
+
+    echo "<p><label for='validation'>Validation</label>\n";
+    echo "<select name='validation' id='validation' style='position:absolute; left:200px; width:200px;' >\n";
+    if($adminN1 or $valide_n1 == 0 ){
+      echo "<option value='0'>Demand&eacute;</option>\n";
+    }
+    if($adminN1 or ( $valide_n1 > 0 and $valide_n2 == 0 ) ){
+      echo "<option value='1' $selected1 >{$lang['work_hours_dropdown_accepted_pending']}</option>\n";
+    }
+    if($adminN1 or ( $valide_n1 < 0 and $valide_n2 == 0 ) ){
+      echo "<option value='-1' $selected2 >{$lang['work_hours_dropdown_refused_pending']}</option>\n";
+    }
+    if( ( $adminN2 and ( $valide_n1 > 0 or $config['PlanningHebdo-Validation-N2'] == 0 ) ) or $valide_n2 > 0 ){
+      echo "<option value='2' $selected3 >{$lang['work_hours_dropdown_accepted']}</option>\n";
+    }
+    if( ( $adminN2 and ( $valide_n1 > 0 or $config['PlanningHebdo-Validation-N2'] == 0 ) ) or $valide_n2 < 0 ){
+      echo "<option value='-2' $selected4 >{$lang['work_hours_dropdown_refused']}</option>\n";
+    }
+    echo "</select></p>\n";
+
+  // Si pas admin, affiche le niveau en validation en texte simple
+  } else {
+    $validation = "Demandé";
+    if( $valide_n2 > 0 ){
+      $validation = $lang['work_hours_dropdown_accepted'];
+    } elseif ( $valide_n2 < 0 ) {
+      $validation = $lang['work_hours_dropdown_refused'];
+    } elseif( $valide_n1 > 0 ){
+      $validation = $lang['work_hours_dropdown_accepted_pending'];
+    } elseif ( $valide_n1 < 0 ) {
+      $validation = $lang['work_hours_dropdown_refused_pending'];
+    }
+
+    echo "<p><label>Validation</label>\n";
+    echo "<span style='position:absolute; left:200px;'>$validation</span>\n";
+    echo "</p>\n";
+
+  }
+}
+
+echo "<div id='boutons' style='padding-top:50px;'>\n";
 echo "<input type='button' value='Retour' onclick='location.href=\"index.php?page=planningHebdo/$retour\";' class='ui-button' />\n";
 
 // Si le champ clé est renseigné, les heures de présences ont été importées automatiquement depuis une source externe. Donc pas de modif
-if($admin and !$cle){
-  echo "<input type='submit' value='Enregistrer SANS valider' style='margin-left:30px;' class='ui-button' />\n";
-  if(!$config['PlanningHebdo-PeriodesDefinies']){
-    echo "<input type='button' value='Enregistrer et VALIDER'  style='margin-left:30px;' onclick='document.forms[\"form1\"].validation.value=1;if(plHebdoVerifForm()){document.forms[\"form1\"].submit();}' class='ui-button' />";
-  }else{
-    echo "<input type='button' value='Enregistrer et VALIDER'  style='margin-left:30px;' onclick='document.forms[\"form1\"].validation.value=1;document.forms[\"form1\"].submit();' class='ui-button' />";
-  }
-  if($valide and !$config['PlanningHebdo-PeriodesDefinies'] and !$copy){
-    echo "<input type='button' value='Enregistrer une copie' style='margin-left:30px;' onclick='$(\"input[name=action]\").val(\"copie\");$(\"form[name=form1]\").submit();' class='ui-button' />\n";
-  }
+if( ( $adminN1 or $adminN2 ) and !$cle ){
+  echo "<input type='submit' value='Enregistrer' style='margin-left:30px;' class='ui-button' />\n";
+//   if($valide_n2 > 0 and !$copy){
+//     echo "<input type='button' value='Enregistrer une copie' style='margin-left:30px;' onclick='$(\"input[name=action]\").val(\"copie\");$(\"form[name=form1]\").submit();' class='ui-button' />\n";
+//   }
 }
 elseif($modifAutorisee){
-  echo "<input type='submit' value='Enregistrer les modifications' style='margin-left:30px;' class='ui-button' />\n";
+  echo "<input type='submit' value='Enregistrer' style='margin-left:30px;' class='ui-button' />\n";
 }
 
 ?>

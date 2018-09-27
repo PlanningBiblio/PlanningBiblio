@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.10
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 20 décembre 2017
+Dernière modification : 11 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -28,6 +28,7 @@ require_once "../../plugins/plugins.php";
 require_once "../../absences/class.absences.php";
 require_once "../../activites/class.activites.php";
 require_once "class.planning.php";
+require_once __DIR__."/../volants/class.volants.php";
 
 //	Initialisation des variables
 $ajouter=filter_input(INPUT_POST,"ajouter",FILTER_CALLBACK,array("options"=>"sanitize_on"));
@@ -192,8 +193,20 @@ $a->valide=false;
 $a->fetch("`nom`,`prenom`,`debut`,`fin`",null,$date.' '.$debut,$date.' '.$fin);
 $absences=$a->elements;
 
+// Recherche des agents volants
+if($config['Planning-agents-volants']){
+  $v = new volants($date);
+  $v->fetch($date);
+  $agents_volants = $v->selected;
+}
 
 for($i=0;$i<count($tab);$i++){
+
+  // Distinction des agents volants
+  if( $config['Planning-agents-volants'] and in_array($tab[$i]['perso_id'], $agents_volants )){
+    $tab[$i]["statut"] = 'volants';
+  }
+
   // Mise en forme des statut et service pour affectation des classes css
   $tab[$i]["statut"]=removeAccents($tab[$i]["statut"]);
   $tab[$i]["service"]=removeAccents($tab[$i]["service"]);

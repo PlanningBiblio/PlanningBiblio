@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.12
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 24 janvier 2018
+Dernière modification : 12 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -48,11 +48,15 @@ if($_POST){
   
   // Si les checkboxes ne sont pas cochées, elles ne sont pas transmises donc pas réinitialisées. Donc on les réinitialise ici.
   $db=new db();
-  $db->select2("config","nom",array("type"=>"checkboxes"));
+  $db->select2("config", array('nom', 'type') ,array("type"=>"IN boolean,checkboxes"));
   if($db->result){
     foreach($db->result as $elem){
       if(!array_key_exists($elem['nom'],$post)){
-	$post[$elem['nom']]=array();
+        if( $elem['type'] == 'boolean' ){
+          $post[$elem['nom']] = '0';
+        } else {
+          $post[$elem['nom']] = array();
+        }
       }
     }
   }
@@ -116,7 +120,7 @@ foreach($db->result as $elem){
     echo "<h3>{$elem['categorie']}</h3>\n";
     echo "<div>";
     echo "<table cellspacing='0' cellpadding='5' style='width:100%;'>\n";
-    echo "<tr><td class='ui-widget-header ui-corner-left' style='width:200px;border-right:0px;'>Nom</td><td style='width:400px;border-left:0px;border-right:0px;' class='ui-widget-header'>Valeur</td><td class='ui-widget-header ui-corner-right' style='border-left:0px;'>Commentaires</td></tr>\n";
+    echo "<tr><td class='ui-widget-header ui-corner-left' style='width:350px;border-right:0px;'>Nom</td><td style='width:600px;border-left:0px;border-right:0px;' class='ui-widget-header'>Valeur</td><td class='ui-widget-header ui-corner-right' style='border-left:0px;'>Commentaires</td></tr>\n";
   }
   elseif($elem['categorie']!=$last_category){
     echo "</table>\n";
@@ -124,18 +128,15 @@ foreach($db->result as $elem){
     echo "<h3>{$elem['categorie']}</h3>\n";
     echo "<div>";
     echo "<table cellspacing='0' cellpadding='5' style='width:100%;'>\n";
-    echo "<tr><td class='ui-widget-header ui-corner-left' style='width:200px;border-right:0px;'>Nom</td><td style='width:400px;border-left:0px;border-right:0px;' class='ui-widget-header'>Valeur</td><td class='ui-widget-header ui-corner-right' style='border-left:0px;'>Commentaires</td></tr>\n";
+    echo "<tr><td class='ui-widget-header ui-corner-left' style='width:350px;border-right:0px;'>Nom</td><td style='width:600px;border-left:0px;border-right:0px;' class='ui-widget-header'>Valeur</td><td class='ui-widget-header ui-corner-right' style='border-left:0px;'>Commentaires</td></tr>\n";
   }
 
   $last_category=$elem['categorie'];
   echo "<tr style='vertical-align:top;'><td style='width:180px;'>{$elem['nom']}</td><td>\n";
   switch($elem['type']){
     case "boolean" :
-      $selected=$elem['valeur']?"selected='selected'":null;
-      echo "<select name='{$elem['nom']}' id='{$elem['nom']}' style='width:305px;'>\n";
-      echo "<option value='0'>0</option>\n";
-      echo "<option value='1' $selected>1</option>\n";
-      echo "</select>\n";
+      $checked = $elem['valeur'] == '1' ? "checked='checked'" : null;
+      echo "<input type='checkbox' name='{$elem['nom']}' id='{$elem['nom']}' value='1' $checked />\n";
       break;
 
     // Checkboxes
@@ -146,9 +147,11 @@ foreach($db->result as $elem){
       $choisies=json_decode(html_entity_decode($elem['valeur'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
 
       if(is_array($valeurs)){
+        $i = 1;
 	foreach($valeurs as $val){
 	  $checked=in_array($val[0],$choisies)?"checked='checked'":null;
-	  echo "<input type='checkbox' name='{$elem['nom']}[]' id='{$elem['nom']}[]' value='{$val[0]}' $checked /> {$val[1]}<br/>\n";
+	  echo "<input type='checkbox' name='{$elem['nom']}[]' id='{$elem['nom']}_$i' value='{$val[0]}' $checked /> {$val[1]}<br/>\n";
+          $i++;
 	}
       }
       break;

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.05
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 28 novembre 2017
+Dernière modification : 24 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -462,6 +462,7 @@ $sql[]="CREATE TABLE `{$dbprefix}edt_samedi` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `perso_id` INT(11) NOT NULL,
   `semaine` DATE,
+  `tableau` INT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
@@ -476,6 +477,8 @@ $sql[]="CREATE TABLE `{$dbprefix}planning_hebdo` (
   `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
   `modif` INT(11) NOT NULL DEFAULT '0',
   `modification` TIMESTAMP, 
+  `valide_n1` INT(11) NOT NULL DEFAULT '0',
+  `validation_n1` TIMESTAMP NULL DEFAULT NULL, 
   `valide` INT(11) NOT NULL DEFAULT '0',
   `validation` TIMESTAMP, 
   `actuel` INT(1) NOT NULL DEFAULT '0', 
@@ -486,4 +489,13 @@ $sql[]="CREATE TABLE `{$dbprefix}planning_hebdo` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
 $sql[]="CREATE TABLE `{$dbprefix}planning_hebdo_periodes` (`id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `annee` VARCHAR(9), `dates` TEXT);";
+
+// Agents volants
+$sql[] = "CREATE TABLE `{$dbprefix}volants` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT, 
+  `date` DATE NULL DEFAULT NULL, 
+  `perso_id` INT(11) NOT NULL DEFAULT '0', 
+  PRIMARY KEY (`id`))
+  ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
 ?>

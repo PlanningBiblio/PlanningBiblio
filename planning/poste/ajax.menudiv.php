@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.12
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 29 janvier 2018
+Dernière modification : 24 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
@@ -31,6 +31,8 @@ require_once "../../absences/class.absences.php";
 require_once "../../personnel/class.personnel.php";
 require_once "fonctions.php";
 require_once "class.planning.php";
+require_once __DIR__."/../volants/class.volants.php";
+
 
 //	Initilisation des variables
 $site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
@@ -133,6 +135,12 @@ $db->query("SELECT `{$dbprefix}personnel`.`service` AS `service`, `{$dbprefix}se
 $services=$db->result;
 $services[]=array("service"=>"Sans service");
 
+// Recherche des agents volants
+if($config['Planning-agents-volants']){
+  $v = new volants($date);
+  $v->fetch($date);
+  $agents_volants = $v->selected;
+}
 
 // Recherche des agents déjà postés à l'horaire choisi
 // Ne pas regarder les postes non-bloquant et ne pas regarder si le poste est non-bloquant
@@ -250,10 +258,7 @@ foreach($db->result as $elem){
     // Pour chaque agent, recherche si la semaine courante est avec samedi travaillé ou non
     $p=new personnel();
     $p->fetchEDTSamedi($elem['id'],$j1,$j1);
-    // Si oui, utilisation du 2ème emploi du temps ($jour+=7)
-    if(!empty($p->elements)){
-      $jour+=7;
-    }
+    $jour += $p->offset;
   }
 
   // Gestion des exclusions
@@ -368,6 +373,11 @@ if($agents_tmp){
       }
     }
 
+    // Distinction des agents volants pour $agents_dispo (et agents_tous)
+    if( $config['Planning-agents-volants'] and in_array($elem['id'], $agents_volants )){
+      $elem['statut'] = 'volants';
+    }
+
     // Si aucune exclusion n'est enregistrée, on met l'agent dans la liste des agents disponibles
     if( empty($exclusion[$elem['id']]) ){
       $agents_dispo[] = $elem;
@@ -436,7 +446,12 @@ if($autres_agents_tmp){
         continue;
       }
     }
-    
+
+    // Distinction des agents volants pour $autres_agents (et agents_tous)
+    if( $config['Planning-agents-volants'] and in_array($elem['id'], $agents_volants )){
+      $elem['statut'] = 'volants';
+    }
+
     // Complète la liste des indisponibles et la liste de tous les agents
     $autres_agents[] = $elem;
     $agents_tous[]=$elem;

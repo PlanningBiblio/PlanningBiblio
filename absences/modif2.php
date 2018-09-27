@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/modif2.php
 Création : mai 2011
-Dernière modification : 25 janvier 2018
+Dernière modification : 19 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -15,6 +15,11 @@ Page validant la modification d'une absence : enregistrement dans la BDD des mod
 
 Page appelée par la page index.php
 Page d'entrée : absences/modif.php
+
+Variables
+$agents_tous : tous les agents enregistrés dans l'application
+$agents : les agents qui étaient enregistrés dans l'absence avant la modification
+$agents_concernes : tous les agents concernés par la modification de l'absences, y compris les agents supprimés (les anciens, les nouveaux, les supprimés)
 */
 
 
@@ -102,20 +107,31 @@ if($iCalKey and substr($cal_name, 0, 23) != 'PlanningBiblio-Absences'){
 
 // Récuperation des informations des agents concernés par l'absence après sa modification (agents sélectionnés)
 $p=new personnel();
-$p->fetchById($perso_ids);
-$agents_selectionnes=$p->elements;
+$p->supprime = array(0,1,2);
+$p->responsablesParAgent = true;
+$p->fetch();
+$agents_tous = $p->elements;
 
-// Tous les agents concernés (ajoutés, supprimés, restants)
-$agents_tous=array();
-foreach($agents as $elem){
-  if(!array_key_exists($elem['perso_id'],$agents_tous)){
-    $agents_tous[$elem['perso_id']]=$elem;
+// Tous les agents
+foreach($agents_tous as $elem){
+  if(in_array($elem['id'], $perso_ids)){
+    $agents_selectionnes[$elem['id']] = $elem;
   }
 }
+
+// Tous les agents concernés (ajoutés, supprimés, restants)
+$agents_concernes=array();
+// Ajoute au tableau $agents_concernes les agents qui étaient présents avant la modification
+foreach($agents as $elem){
+  if(!array_key_exists($elem['perso_id'],$agents_concernes)){
+    $agents_concernes[$elem['perso_id']] = $agents_tous[$elem['perso_id']];
+  }
+}
+
+// Ajoute au tableau $agents_concernes les agents sélectionnés
 foreach($agents_selectionnes as $elem){
-  if(!array_key_exists($elem['id'],$agents_tous)){
-    $elem['perso_id']=$elem['id'];
-    $agents_tous[$elem['id']]=$elem;
+  if(!array_key_exists($elem['id'],$agents_concernes)){
+    $agents_concernes[$elem['id']] = $elem;
   }
 }
 
@@ -123,11 +139,11 @@ foreach($agents_selectionnes as $elem){
 $agents_supprimes=array();
 foreach($agents as $elem){
   if(!array_key_exists($elem['perso_id'],$agents_selectionnes)){
-    $agents_supprimes[$elem['perso_id']]=$elem;
+    $agents_supprimes[$elem['perso_id']] = $agents_tous[$elem['perso_id']];
   }
 }
 
-// Les agents ajoutés
+// Les agents ajoutés à l'absence
 $agents_ajoutes=array();
 foreach($agents_selectionnes as $elem){
   if(!in_array($elem['id'],$perso_ids1)){
@@ -188,7 +204,7 @@ if(!$acces){
 if($config['Multisites-nombre']>1){
   // $sites_agents comprend l'ensemble des sites en lien avec les agents concernés par cette modification d'absence
   $sites_agents=array();
-  foreach($agents_tous as $elem){
+  foreach($agents_concernes as $elem){
     if(is_array($elem['sites'])){
       foreach($elem['sites'] as $site){
         if(!in_array($site,$sites_agents)){
@@ -259,10 +275,10 @@ if($rrule){
       // On ajoute une exception à l'événement ICS
       $exdate = preg_replace('/(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/',"$1$2$3T$4$5$6", $debut1);
 
-      foreach($agents_tous as $elem){
+      foreach($agents_concernes as $elem){
         $a = new absences();
         $a->CSRFToken = $CSRFToken;
-        $a->perso_id = $elem['perso_id'];
+        $a->perso_id = $elem['id'];
         $a->uid = $uid;
         $a->ics_add_exdate($exdate);
       }
@@ -324,10 +340,10 @@ if($rrule){
       $serie1_end = $datetime->format('Ymd\THis\Z');
 
       // On met à jour la première série : modification de RRULE en mettant UNTIL à la date de fin
-      foreach($agents_tous as $elem){
+      foreach($agents_concernes as $elem){
         $a = new absences();
         $a->CSRFToken = $CSRFToken;
-        $a->perso_id = $elem['perso_id'];
+        $a->perso_id = $elem['id'];
         $a->uid = $uid;
         $a->ics_update_until($serie1_end);
       }
@@ -481,7 +497,7 @@ else {
   // Suppresion des lignes de la table absences concernant les agents supprimés
   $agents_supprimes_ids=array();
   foreach($agents_supprimes as $agent){
-    $agents_supprimes_ids[]=$agent['perso_id'];
+    $agents_supprimes_ids[] = $agent['id'];
   }
   $agents_supprimes_ids=implode(",",$agents_supprimes_ids);
 
@@ -523,30 +539,44 @@ else{
 }
 
 // Liste des responsables
-// Pour chaque agent, recherche des responsables absences 
-$responsables=array();
-foreach($agents_tous as $agent){
-  $a=new absences();
-  $a->getResponsables($debutSQL,$finSQL,$agent['perso_id']);
-  $responsables=array_merge($responsables,$a->responsables);
-}
+// Pour chaque agent, recherche des responsables absences
 
-// Pour chaque agent, recherche des destinataires de notification en fonction de la config. (responsables absences, responsables directs, agent).
-$destinataires=array();
-foreach($agents_tous as $agent){
+/** Si le paramètre "Absences-notifications-agent-par-agent" est coché, 
+ * les notifications de modification d'absence sans validation sont envoyés aux responsables enregistrés dans dans la page Validations / Notifications
+ * Les absences validées au niveau 1 sont envoyés aux agents ayant le droit de validation niveau 2
+ * Les absences validées au niveau 2 sont envoyés aux agents concernés par l'absence
+ */
+ 
+if($config['Absences-notifications-agent-par-agent']){
   $a=new absences();
-  $a->getRecipients($notifications,$responsables,$agent['mail'],$agent['mails_responsables']);
-  $destinataires=array_merge($destinataires,$a->recipients);
-}
-
-// Suppresion des doublons dans les destinataires
-$tmp=array();
-foreach($destinataires as $elem){
-  if(!in_array($elem,$tmp)){
-    $tmp[]=$elem;
+  $a->getRecipients2($agents_tous, $agents_concernes, $notifications, 500, $debutSQL, $finSQL);
+  $destinataires = $a->recipients;
+  
+} else {
+  $responsables=array();
+  foreach($agents_concernes as $agent){
+    $a=new absences();
+    $a->getResponsables($debutSQL,$finSQL,$agent['id']);
+    $responsables=array_merge($responsables,$a->responsables);
   }
+
+  // Pour chaque agent, recherche des destinataires de notification en fonction de la config. (responsables absences, responsables directs, agent).
+  $destinataires=array();
+  foreach($agents_concernes as $agent){
+    $a=new absences();
+    $a->getRecipients($notifications,$responsables,$agent['mail'],$agent['mails_responsables']);
+    $destinataires=array_merge($destinataires,$a->recipients);
+  }
+
+  // Suppresion des doublons dans les destinataires
+  $tmp=array();
+  foreach($destinataires as $elem){
+    if(!in_array($elem,$tmp)){
+      $tmp[]=$elem;
+    }
+  }
+  $destinataires=$tmp;
 }
-$destinataires=$tmp;
 
 // Recherche des plages de SP concernées pour ajouter cette information dans le mail.
 $a=new absences();

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/semaine.php
 Création : 26 mai 2014
-Dernière modification : 30 septembre 2017
+Dernière modification : 10 mars 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -34,7 +34,6 @@ $date=filter_input(INPUT_GET,"date",FILTER_SANITIZE_STRING);
 // Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
 $date=filter_var($date,FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
 
-$verrou=false;
 
 //		------------------		DATE		-----------------------//
 if(!$date and array_key_exists('PLdate',$_SESSION)){
@@ -236,6 +235,7 @@ for($j=0;$j<=$fin;$j++){
   $perso2=null;
   $date_validation2=null;
   $heure_validation2=null;
+  $verrou=false;
 
   $db=new db();
   $db->select2("pl_poste_verrou","*",array("date"=>$date, "site"=>$site));
@@ -413,16 +413,23 @@ for($j=0;$j<=$fin;$j++){
 	  }
 	  echo "</td>\n";
 	  $i=1;
+	  $k=1;
 	  foreach($tab['horaires'] as $horaires){
-	    // recherche des infos à afficher dans chaque cellule 
-	    // fonction cellule_poste(date,debut,fin,colspan,affichage,poste,site)
-	    if(in_array("{$ligne['ligne']}_{$i}",$tab['cellules_grises'])){
+            // Recherche des infos à afficher dans chaque cellule 
+            // Cellules grisées si définies dans la configuration du tableau et si la colonne a été ajoutée automatiquement
+            if(in_array("{$ligne['ligne']}_{$k}",$tab['cellules_grises']) or in_array($i-1,$cellules_grises)){
 	      echo "<td colspan='".nb30($horaires['debut'],$horaires['fin'])."' class='cellule_grise' oncontextmenu='cellule=\"\";' >&nbsp;</td>";
+              // Si colonne ajoutée, ça décale les cellules grises initialement prévues. On se décale d'un cran en arrière pour rétablir l'ordre 
+              if(in_array($i-1,$cellules_grises)){
+                $k--;
+              }
 	    }
+            // fonction cellule_poste(date,debut,fin,colspan,affichage,poste,site)
 	    else{
 	      echo cellule_poste($date,$horaires["debut"],$horaires["fin"],nb30($horaires['debut'],$horaires['fin']),"noms",$ligne['poste'],$site);
 	    }
 	  $i++;
+          $k++;
 	  }
 	  echo "</tr>\n";
 	}

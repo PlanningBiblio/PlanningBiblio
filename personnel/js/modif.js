@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/js/modif.js
 Création : 3 mars 2014
-Dernière modification : 3 août 2017
+Dernière modification : 4 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -164,6 +164,35 @@ function select_drop_all(select_dispo,select_attrib,hidden_attrib,width){	// Att
   document.getElementById(hidden_attrib).value='';
 }
 // Fin Select Multpiles
+
+
+// Envoi de l'URL ICS Planning Biblio par mail
+function sendICSURL(){
+
+  // Récupération des paramètres si l'agent logué a les droits d'administration
+  if($('#nom').val() != undefined && $('#nom').val() != '' ){
+    var nom = $('#nom').val();
+    var prenom = $('#prenom').val();
+    var mail = $('#mail').val();
+
+  // Récupération des paramètres si l'agent logué n'a pas les droits d'administration
+  } else {
+    var nom = $('#nom').text();
+    var prenom = $('#prenom').text();
+    var mail = $('#mail').text();
+  }
+
+  var url = $('#url-ics').text();
+
+  var message = $('#ics-url-text').val();
+  message = message.replace('[lastname]', nom);
+  message = message.replace('[firstname]', prenom);
+  message = message.replace('[url]', url);
+
+  $( "#ics-url-recipient" ).text(mail);
+  $( "#ics-url-text" ).val(message);
+  $( "#ics-url-form" ).dialog( 'open' );
+}
 
 // Contrôle des champs lors de la validation
 function verif_form_agent(){
@@ -412,6 +441,53 @@ $(function() {
 
     // Reset du champ texte une fois l'ajout effectué
     $("#add-service-text").val(null);
+  });
+  
+  
+  $( "#ics-url-form" ).dialog({
+    autoOpen: false,
+    height: 525,
+    width: 650,
+    modal: true,
+    buttons: {
+      "Envoyer": function() {
+
+        // Envoi le mail
+        var CSRFToken = $( "#CSRFSession" ).val();
+        var recipient = $( "#ics-url-recipient" ).text();
+        var subject = $( "#ics-url-subject" ).val();
+        var message = $( "#ics-url-text" ).val();
+
+        $.ajax({
+          dataType: "json",
+          url: "personnel/ajax.sendICSURL.php",
+          type: "post",
+          data: {CSRFToken: CSRFToken, recipient: recipient, subject: subject, message: message},
+          success: function(result){
+
+            if(result.error){
+              updateTips(result.error, "error");
+            }
+            else{
+              CJInfo("L'appel à disponibilité a bien été envoyé","success");
+              $( "#ics-url-form" ).dialog( "close" );
+            }
+
+          },
+          error: function(){
+            updateTips("Une erreur est survenue lors de l'envoi de l'e-mail", "error");
+          }
+        });
+      },
+
+      Annuler: function() {
+	$( this ).dialog( "close" );
+      }
+    },
+
+    close: function() {
+      $(".validateTips").text("Envoyez à l'agent l'URL de son agenda Planning Biblio.");
+    }
   });
   
 

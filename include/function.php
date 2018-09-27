@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.12
+Planning Biblio, Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 24 janvier 2018
+Dernière modification : 16 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -975,7 +975,11 @@ function heure4($heure,$return0=false){
         $hre++;
         $minutes = 0;
       }
-      $hre += $minutes;
+      if($hre >= 0 ){
+        $hre += $minutes;
+      } else {
+        $hre -= $minutes;
+      }
       $heure = number_format($hre, 2, 'h', ' ');
     }
   }

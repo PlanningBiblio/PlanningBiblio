@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio, Version 2.8.1
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/modif.php
 Création : mai 2011
-Dernière modification : 7 février 2018
+Dernière modification : 24 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -27,7 +27,6 @@ require_once "planningHebdo/class.planningHebdo.php";
 $id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
 
 $actif=null;
-
 $admin=in_array(21,$droits)?true:false;
 // NB : le champ poste et les fonctions postes_... sont utilisés pour l'attribution des activités (qualification)
 
@@ -303,13 +302,13 @@ echo "<table style='width:90%;'>";
 echo "<tr valign='top'><td style='width:400px'>";
 echo "Nom :";
 echo "</td><td>";
-echo in_array(21,$droits)?"<input type='text' value='$nom' name='nom' style='width:400px' />":$nom;
+echo in_array(21,$droits) ? "<input type='text' value='$nom' name='nom' id='nom' style='width:400px' />" : "<span id='nom'>$nom</span>" ;
 echo "</td></tr>";
 
 echo "<tr><td>";
 echo "Prénom :";
 echo "</td><td>";
-echo in_array(21,$droits)?"<input type='text' value='$prenom' name='prenom' style='width:400px' />":$prenom;
+echo in_array(21,$droits) ? "<input type='text' value='$prenom' name='prenom' id='prenom' style='width:400px' />" : "<span id='prenom'>$prenom</span>";
 echo "</td></tr>";
 
 echo "<tr><td>";
@@ -317,7 +316,7 @@ echo "E-mail : ";
 if(in_array(21,$droits))
 	echo "<a href='mailto:$mail'>$mail</a>";
 echo "</td><td>";
-echo in_array(21,$droits)?"<input type='text' value='$mail' name='mail' style='width:400px' />":"<a href='mailto:$mail'>$mail</a>";
+echo in_array(21,$droits) ? "<input type='text' value='$mail' name='mail' id='mail' style='width:400px' />" : "<a href='mailto:$mail'><span id='mail'>$mail</span></a>";
 echo "</td></tr>";
 
 echo "<tr><td>";
@@ -684,14 +683,20 @@ switch($config['nb_semaine']){
 $fin=$config['Dimanche']?array(8,15,22):array(7,14,21);
 $debut=array(1,8,15);
 
-if($config['EDTSamedi']){
-  $config['nb_semaine']=2;
-  $cellule=array("Semaine standard","Semaine avec samedi");
+if($config['EDTSamedi'] == 1){
+  $config['nb_semaine'] = 2;
+  $cellule = array("Semaine standard", "Semaine<br/>avec samedi");
+  $table_name = array('Emploi du temps standard', 'Emploi du temps des semaines avec samedi travaillé');
+}
+elseif($config['EDTSamedi'] == 2){
+  $config['nb_semaine'] = 3;
+  $cellule=array("Semaine standard", "Semaine<br/>avec samedi", "Semaine<br/>ouverture restreinte");
+  $table_name = array('Emploi du temps standard', 'Emploi du temps des semaines avec samedi travaillé', 'Emploi du temps en ouverture restreinte');
 }
 
 for($j=0;$j<$config['nb_semaine'];$j++){
   if($config['EDTSamedi']){
-    echo $j==0?"<br/><b>Emploi du temps standard</b>":"<br/><b>Emploi du temps des semaines avec samedi travaillé</b>";
+    echo "<br/><b>{$table_name[$j]}</b>";
   }
   echo "<table border='1' cellspacing='0'>\n";
   echo "<tr style='text-align:center;'><td style='width:135px;'>{$cellule[$j]}</td><td style='width:135px;'>Heure d'arrivée</td>";
@@ -782,7 +787,13 @@ if($config['EDTSamedi']){
   echo "<input type='hidden' name='dernierLundi' value='$dernierLundi' />\n";
   echo "<div id='EDTChoix'>\n";
   echo "<h3>Choix des emplois du temps</h3>\n";
-  echo "<p>Cochez les semaines avec le samedi travaill&eacute;</p>\n";
+
+  if($config['EDTSamedi'] == 1){
+    echo "<p>Cochez les semaines avec le samedi travaill&eacute;</p>\n";
+  }
+  elseif($config['EDTSamedi'] == 2){
+    echo "<p>Pour chaque semaine, cochez s'il s'agit d'une semaine : standard (STD) / avec samedi travaill&eacute; (SAM) / ouverture restreinte (RES)</p>\n";
+  }
 
   echo "<div id='EDTTabs'>\n";
   echo "<ul>";
@@ -818,10 +829,40 @@ if($config['EDTSamedi']){
       $lundi=date("d/m/Y",strtotime($current));
       $dimanche=date("d/m/Y",strtotime("+6 day",strtotime($current)));
       $semaine=date("W",strtotime($current));
-      $checked=in_array($current,$edt)?"checked='checked'":null;
       echo "S$semaine : $lundi &rarr; $dimanche";
-      echo "<input type='checkbox' value='$current' name='EDTSamedi[]' $checked /><br/>\n";
-	
+
+      // Si config['EDTSamedi'] == 1 (Emploi du temps différent les semaines avec samedi travaillé)
+      if($config['EDTSamedi'] == 1){
+        $checked = array_key_exists( $current, $edt ) ? "checked='checked'" : null ;
+        echo "<input type='checkbox' value='$current' name='EDTSamedi[]' $checked /><br/>\n";
+      }
+
+      // Si config['EDTSamedi'] == 2 (Emploi du temps différent les semaines avec samedi travaillé et en ouverture restreinte)
+      elseif($config['EDTSamedi'] == 2){
+
+        $checked1 = "checked='checked'";
+        $checked2 = null;
+        $checked3 = null;
+
+        if( array_key_exists( $current, $edt )){
+          $checked1 = null;
+          
+          if( $edt[$current]['tableau'] == 2 ){
+            $checked2 = "checked='checked'";
+          }
+          elseif( $edt[$current]['tableau'] == 3 ){
+            $checked3 = "checked='checked'";
+          }
+        }
+
+        echo "<span style='margin-left:20px;'>\n";
+        echo "<input type='radio' value='1' name='EDTSamedi_$current' $checked1 id='radio_{$current}_STD'/> <label for='radio_{$current}_STD' >STD</label>\n";
+        echo "<input type='radio' value='2' name='EDTSamedi_$current' $checked2 id='radio_{$current}_SAM'/> <label for='radio_{$current}_SAM' >SAM</label>\n";
+        echo "<input type='radio' value='3' name='EDTSamedi_$current' $checked3 id='radio_{$current}_RES'/> <label for='radio_{$current}_RES' >RES</label>\n";
+        echo "</span>\n";
+        echo "<br/>\n";
+      }
+
       if($j==17 or $j==35){
 	echo "</td><td>";
       }
@@ -905,12 +946,15 @@ if($config['ICS-Server3']){
 
 // URL du fichier ICS Planning Biblio
 if($id and isset($ics)){
-  echo "<tr><td style='padding-top: 10px;'>Agenda ICS Planning Biblio</td>\n";
-  echo "<td style='padding-top: 10px;' id='url-ics'>$ics</td></tr>\n";
+  echo "<tr><td style='padding-top: 20px;'>Agenda ICS Planning Biblio</td>\n";
+  echo "<td style='padding-top: 20px;' id='url-ics'>$ics</td></tr>\n";
   if($config['ICS-Code']){
     echo "<tr><td>&nbsp;</td>\n";
     echo "<td><a href='javascript:resetICSURL($id, \"$CSRFSession\", \"$prenom $nom\");'>R&eacute;initialiser l'URL</a></td></tr>\n";
   }
+  echo "<tr><td>&nbsp;</td>\n";
+  echo "<td><a href='javascript:sendICSURL();'>Envoyer l'URL &agrave; l&apos;agent par e-mail ($mail)</a></td></tr>\n";
+
 }
 echo "</table>\n";
 ?>
@@ -1072,6 +1116,19 @@ if(in_array("conges",$plugins)){
 ?>
     </ul>
   </fieldset>
+  </form>
+</div>
+
+<!-- Envoi de l'URL ICS par mail -->
+<div id="ics-url-form" title="Envoi de l'URL de l'agenda Planning Biblio" class='noprint' style='display:none;'>
+  <p class="validateTips">Envoyez à l'agent l'URL de son agenda Planning Biblio.</p>
+  <form>
+  <strong>Destinataire</strong><br/>
+  <span id='ics-url-recipient'>&nbsp;</span><br/><br/>
+  <label for='ics-url-subject'>Sujet</label><br/>
+  <input type='text' id='ics-url-subject' name='ics-url-subject' value='<?php echo $lang['send_ics_url_subject']; ?>'/><br/><br/>
+  <label for='ics-url-text'>Message</label><br/>
+  <textarea id='ics-url-text' name='ics-url-text'><?php echo $lang['send_ics_url_message']; ?></textarea>
   </form>
 </div>
 
