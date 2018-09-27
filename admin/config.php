@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.12
+Planning Biblio, Version 2.7.15
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : admin/config.php
 Création : mai 2011
-Dernière modification : 24 janvier 2018
+Dernière modification : 27 septembre 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -203,7 +203,7 @@ foreach($db->result as $elem){
   echo "</td><td>$commentaires</td>\n";
   echo "</tr>\n";
   
-  if($elem['nom'] == 'LDAP-ID-Attribute'){
+  if($elem['nom'] == 'LDAP-Matricule'){
     echo "<tr><td>Tester</td>\n";
     echo "<td><input type='button' value='Tester' onclick='ldaptest();' id='LDAP-Test' /></td>\n";
     echo "<td>Tester les paramètres LDAP</td></tr>\n";

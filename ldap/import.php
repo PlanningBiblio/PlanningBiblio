@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio, Version 2.7.15
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : ldap/import.php
 Création : 2 juillet 2014
-Dernière modification : 29 août 2017
+Dernière modification : 27 septembre 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -69,6 +69,11 @@ if($rechercheLdap){
   }
   if($ldapbind){
     $justthese=array("dn",$config['LDAP-ID-Attribute'],"sn","givenname","userpassword","mail");
+
+    if( !empty($config['LDAP-Matricule'])){
+      $justthese = array_merge($justthese, array($config['LDAP-Matricule']));
+    }
+
     $sr=ldap_search($ldapconn,$config['LDAP-Suffix'],$filter,$justthese);
     $infos=ldap_get_entries($ldapconn,$sr);
   }
@@ -107,19 +112,26 @@ if($rechercheLdap){
     echo "<thead>\n";
     echo "<tr>\n";
     echo "<th class='dataTableNoSort aLeft'><input type='checkbox' class='CJCheckAll' /></th>\n";
-    echo "<th>Nom</th><th>Pr&eacute;nom</th><th>e-mail</th><th>Login</th></tr>\n";
+    echo "<th>Nom</th><th>Pr&eacute;nom</th><th>e-mail</th><th>Login</th><th>Matricule</th></tr>\n";
     echo "</thead><tbody>\n";
 
     foreach($infos as $info){
       $sn=array_key_exists('sn',$info)?$info['sn'][0]:null;
       $givenname=array_key_exists('givenname',$info)?$info['givenname'][0]:null;
       $mail=array_key_exists('mail',$info)?$info['mail'][0]:null;
+
+      $matricule = null;
+      if( !empty($config['LDAP-Matricule']) and !empty($info[$config['LDAP-Matricule']]) ) {
+        $matricule = is_array($info[$config['LDAP-Matricule']]) ? $info[$config['LDAP-Matricule']][0] : $info[$config['LDAP-Matricule']];
+      }
+
       echo "<tr>\n";
       echo "<td><input type='checkbox' name='chk[]' value='".utf8_decode($info[$config['LDAP-ID-Attribute']][0])."' /></td>\n";
       echo "<td>$sn</td>\n";
       echo "<td>$givenname</td>\n";
       echo "<td>$mail</td>\n";
       echo "<td>{$info[$config['LDAP-ID-Attribute']][0]}</td>\n";
+      echo "<td>$matricule</td>\n";
       echo "</tr>\n";
       $i++;
     }
