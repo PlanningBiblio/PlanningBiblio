@@ -28,6 +28,12 @@ Absences : Paramètre permettant d'activer ou non la présélection des agents l
 Planning Hebdo : 2 niveaux de validation et circuit de notifications semblable à celui des absences
 LDAP : Ajout de l'attribut supannAliasLogin
 
+*** Version 2.7.15      (27 septembre 2018)   ***
+- Améliorations
+Heures de présence : Export des heures de présences vers un fichier CSV (format Kelio/Bodet Software)
+LDAP : Permet l'import d'un attribut LDAP dans le champ matricule (choix de l'attribut dans la config, param LDAP-Matricule)
+
+*** Version 2.7.14      (26 avril 2018)   ***
 - Corrections
 Cron : Correction de la recherche des commandes à exécuter une fois par an (pseudo-cron)
 Plannings semaine : Correction de la position des cellules grisées dans les plannings semaine
