@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.7.14
+Planning Biblio, Version 2.7.15
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
@@ -28,7 +28,7 @@ if(PHP_VERSION_ID<50400 and session_id()==''){
 }
 
 // Initialisation des variables
-$version="2.7.14";
+$version="2.7.15";
 
 // Redirection vers setup si le fichier config est absent
 if(!file_exists("include/config.php")){

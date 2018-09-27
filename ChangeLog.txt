@@ -1,3 +1,7 @@
+*** Version 2.7.15      (27 septembre 2018)   ***
+- Améliorations
+Export des heures de présences vers un fichier CSV (format Kelio/Bodet Software)
+
 *** Version 2.7.14      (26 avril 2018)   ***
 - Corrections
 Modification des ID de gestion des absences dans la base de données (ceci était fait sur la version 2.7.12 mais supprimé par erreur sur la 2.7.13)
