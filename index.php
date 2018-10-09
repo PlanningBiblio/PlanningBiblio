@@ -21,6 +21,8 @@ Inclut à la fin le fichier footer.php
 */
 
 include_once('init.php');
+include_once('init_menu.php');
+include_once('init_templates.php');
 
 // Vérification de la version de la base de données
 // Si la version est différente, mise à jour de la base de données 
@@ -39,7 +41,7 @@ else{
 // Si pas de session, redirection vers la page d'authentification
 if(!array_key_exists("login_id",$_SESSION)){
   // Action executée dans un popup alors que la session a été perdue, on affiche
-  if(!$menu){
+  if(!$show_menu){
     echo "<div style='margin:60px 30px;'>\n";
     echo "<center>\n";
     echo "Votre session a expiré.<br/><br/>\n";
@@ -54,8 +56,15 @@ if(!array_key_exists("login_id",$_SESSION)){
   }
 }
 
+# Start using twigized script
+$checker = new PlanningBiblio\LegacyCodeChecker();
+if ($checker->isTwigized($page)) {
+    include $page;
+    exit;
+}
+
 include "include/header.php";
-if($menu){
+if($show_menu){
   include "include/menu.php";
 }
 
@@ -66,34 +75,13 @@ echo <<<EOD
 </form>
 EOD;
 
-//		Recupération des droits d'accès de l'agent
-$db=new db();
-$db->select2("personnel","droits",array("id"=>$_SESSION['login_id']));
-$droits=json_decode(html_entity_decode($db->result[0]['droits'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
-$droits[]=99;	// Ajout du droit de consultation pour les connexions anonymes
-$_SESSION['droits']=$droits;
-
-if($page=="planning/poste/index.php" or $page=="planning/poste/semaine.php" or !$menu){
+if($content_planning) {
   echo "<div id='content-planning'>\n";
 }else{
   echo "<div id='content'>\n";
 }
 
-//		Droits necessaires pour consulter la page en cours
-$db=new db();
-$db->select2("acces","*",array("page"=>$page));
-
-$access = false;
-if($db->result){
-  foreach($db->result as $elem){
-    if(in_array($elem['groupe_id'], $droits)){
-      $access = true;
-      break;
-    }
-  }
-}
-
-if($access){
+if($authorized){
   include $page;
 }
 else{
