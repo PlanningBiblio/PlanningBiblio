@@ -1,7 +1,5 @@
-{# templates/menu.html.twig #}
-{% extends 'base.html.twig' %}
+{# menu.html.twig #}
 
-{% block menu %}
   <div class="navigation">
     <div class='popper' id='topdeck'></div>
     <script type="text/JavaScript">
@@ -43,7 +41,7 @@
         <tr id='topmenu'>
           <td style='text-align:center;' class='menu_td'>
             <ul class='menu_ul'>
-              {{ menu_entries }}
+              {{ menu_entries | raw }}
             </ul>
           </td>
 
@@ -62,7 +60,7 @@
 
         <tr>
           <td colspan='2' style='text-align:right;'>
-            {% if planninghebdo || ics_export %}
+            {% if planninghebdo or ics_export %}
               <a href='index.php?page=monCompte.php' class='myAccountLink'>Mon Compte</a>
             {% elseif oups_auth_mod == 'SQL' %}
               <a href='index.php?page=personnel/password.php' class='myAccountLink'>
@@ -78,4 +76,3 @@
     </div>
   </div>
   <iframe id='popup' style='display:none;' ></iframe>
-{% endblock %}

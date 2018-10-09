@@ -113,5 +113,5 @@ if(!file_exists("themes/$theme/jquery-ui.min.css")){
 
 $favicon = null;
 if(!file_exists("themes/$theme/favicon.png")){
-    $favicon = "<link rel='icon' type='image/png' href='themes/$theme/images/favicon.png' />\n";
+    $favicon = "themes/$theme/images/favicon.png";
 }
