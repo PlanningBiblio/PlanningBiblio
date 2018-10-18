@@ -11,7 +11,7 @@ Dernière modification : 7 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
-Exemple de fichier de configuration. 
+Exemple de fichier de configuration.
 A copier vers include/config.php SI la création du fichier n'est pas possible avec le setup.
 Remplacez les informarions "your_db_xxx" par vos valeurs
 
@@ -22,12 +22,12 @@ Le fichier include/config.php est inclus dans les pages index.php, authentificat
 
 
 // Securité : Traitement pour une reponse Ajax
-if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
-  $version='ajax';
+if (array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+    $version='ajax';
 }
 
 global $config;
-$config=Array();
+$config=array();
 
 //		Paramètres MySQL
 $config['dbhost']="your_db_host";
@@ -45,12 +45,11 @@ include_once "db.php";
 //		Récuperation des paramètres stockés dans la base de données
 $db=new db();
 $db->query("SELECT * FROM `{$dbprefix}config` ORDER BY `id`;");
-foreach($db->result as $elem){
-  $config[$elem['nom']]=$elem['valeur'];
+foreach ($db->result as $elem) {
+    $config[$elem['nom']]=$elem['valeur'];
 }
 
 // Si pas de $version ou pas de reponseAjax => acces direct au fichier => Accès refusé
-if(!isset($version)){
-  include_once "accessDenied.php";
+if (!isset($version)) {
+    include_once "accessDenied.php";
 }
-?>

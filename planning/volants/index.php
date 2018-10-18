@@ -22,12 +22,12 @@ require_once 'class.volants.php';
 // Sélection de la date / de la semaine
 $date = filter_input(INPUT_GET, 'date', FILTER_SANITIZE_STRING);
 
-if(!$date){
-  if(!empty($_SESSION['oups']['volants_date'])){
-    $date = $_SESSION['oups']['volants_date'];
-  } else {
-    $date = date('Y-m-d');
-  }
+if (!$date) {
+    if (!empty($_SESSION['oups']['volants_date'])) {
+        $date = $_SESSION['oups']['volants_date'];
+    } else {
+        $date = date('Y-m-d');
+    }
 }
 
 $_SESSION['oups']['volants_date'] = $date;
@@ -74,9 +74,9 @@ $tous = $v->tous;
 <p><strong>Agents disponibles</strong></p>
 <select id='volants-dispo' name='dispo' multiple='multiple'>
 <?php
-foreach($tous as $elem){
-  $style = in_array($elem['id'], $selected) ? "style='display:none;'" : null;
-  echo "<option value='{$elem['id']}' class='volants-dispo dispo_{$elem['id']}' data-id='{$elem['id']}' $style >{$elem['nom']} {$elem['prenom']}</option>\n";
+foreach ($tous as $elem) {
+    $style = in_array($elem['id'], $selected) ? "style='display:none;'" : null;
+    echo "<option value='{$elem['id']}' class='volants-dispo dispo_{$elem['id']}' data-id='{$elem['id']}' $style >{$elem['nom']} {$elem['prenom']}</option>\n";
 }
 ?>
 </select>
@@ -95,9 +95,9 @@ foreach($tous as $elem){
 <p><strong>Agents sélectionnés</strong></p>
 <select id='volants-selectionnes' name='selectionnes' multiple='multiple'>
 <?php
-foreach($tous as $elem){
-  $style = ! in_array($elem['id'], $selected) ? "style='display:none;'" : null;
-  echo "<option value='{$elem['id']}' class='volants-selectionnes selected_{$elem['id']}' data-id='{$elem['id']}' $style >{$elem['nom']} {$elem['prenom']}</option>\n";
+foreach ($tous as $elem) {
+    $style = ! in_array($elem['id'], $selected) ? "style='display:none;'" : null;
+    echo "<option value='{$elem['id']}' class='volants-selectionnes selected_{$elem['id']}' data-id='{$elem['id']}' $style >{$elem['nom']} {$elem['prenom']}</option>\n";
 }
 ?>
 </select>

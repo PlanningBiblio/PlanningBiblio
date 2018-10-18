@@ -16,7 +16,7 @@ Permet de récupérer les préférences sur les tableaux cachés
 Cette page est appelée en Ajax lors de l'affichage du planning (planning/poste/index.php)
 */
 
-ini_set("display_errors",0);
+ini_set("display_errors", 0);
 
 session_start();
 
@@ -24,13 +24,12 @@ session_start();
 require_once "../../include/config.php";
 
 $perso_id=$_SESSION['login_id'];
-$tableId=filter_input(INPUT_POST,"tableId",FILTER_SANITIZE_NUMBER_INT);
+$tableId=filter_input(INPUT_POST, "tableId", FILTER_SANITIZE_NUMBER_INT);
 
 $db=new db();
-$db->select2("hidden_tables","*",array("perso_id"=>$perso_id,"tableau"=>$tableId));
-if($db->result){
-  echo json_encode(html_entity_decode($db->result[0]["hidden_tables"],ENT_QUOTES|ENT_IGNORE,"utf-8"));
-}else{
-  echo json_encode(null);
+$db->select2("hidden_tables", "*", array("perso_id"=>$perso_id,"tableau"=>$tableId));
+if ($db->result) {
+    echo json_encode(html_entity_decode($db->result[0]["hidden_tables"], ENT_QUOTES|ENT_IGNORE, "utf-8"));
+} else {
+    echo json_encode(null);
 }
-?>

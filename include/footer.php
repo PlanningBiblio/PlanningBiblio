@@ -16,9 +16,9 @@ Page notamment appelée par les fichiers index.php et admin/index.php
 */
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
-if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
-  include_once "accessDenied.php";
-  exit;
+if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
+    include_once "accessDenied.php";
+    exit;
 }
 ?>
 </div> <!-- content or planningPoste -->

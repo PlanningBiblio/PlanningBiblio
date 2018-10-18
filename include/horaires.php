@@ -12,25 +12,25 @@ Dernière modification : 8 avril 2015
 
 Description :
 Contient les fonctions permettant de travailler sur les horaires
-Mise en forme des heures, soustraction d'horaires, 
+Mise en forme des heures, soustraction d'horaires,
 */
 
 // pas de $version=acces direct au fichier => Accès refusé
-if(!isset($version)){
-  include_once "accessDenied.php";
+if (!isset($version)) {
+    include_once "accessDenied.php";
 }
 
-function diff_heures($debut,$fin,$format){
-  $debut=explode(":",$debut);
-  $fin=explode(":",$fin);
-  $debut=$debut[0]*60+$debut[1];
-  $fin=$fin[0]*60+$fin[1];
-  $diff=$fin-$debut;
+function diff_heures($debut, $fin, $format)
+{
+    $debut=explode(":", $debut);
+    $fin=explode(":", $fin);
+    $debut=$debut[0]*60+$debut[1];
+    $fin=$fin[0]*60+$fin[1];
+    $diff=$fin-$debut;
   
-  switch($format){
-    case "minutes" : return $diff; break;
-    case "decimal" : return $diff/60; break;
-    case "heures" : return $diff/60; break;		// heures + min *100/60
+    switch ($format) {
+    case "minutes": return $diff; break;
+    case "decimal": return $diff/60; break;
+    case "heures": return $diff/60; break;		// heures + min *100/60
   }
 }
-?>

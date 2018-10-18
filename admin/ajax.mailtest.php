@@ -37,45 +37,40 @@ $planning = filter_input(INPUT_POST, 'planning', FILTER_SANITIZE_STRING);
   
   
 // Connexion au serveur de messagerie
-if($fp=@fsockopen($host, $port, $errno, $errstr, 5)){
-
-  $config['Mail-IsEnabled'] = 1;
-  $config['Mail-IsMail-IsSMTP'] = $mailSmtp;
-  $config['Mail-WordWrap'] = $wordwrap;
-  $config['Mail-Hostname'] = $hostname;
-  $config['Mail-Host'] = $host;
-  $config['Mail-Port'] = $port;
-  $config['Mail-SMTPSecure'] = $secure;
-  $config['Mail-SMTPAuth'] = $auth;
-  $config['Mail-Username'] = $user;
-  $config['Mail-Password'] = encrypt($password);
-  $config['Mail-From'] = $fromMail;
-  $config['Mail-FromName'] = $fromName;
-  $config['Mail-Signature'] = $signature;
-  $config['Mail-Planning'] = $planning;
+if ($fp=@fsockopen($host, $port, $errno, $errstr, 5)) {
+    $config['Mail-IsEnabled'] = 1;
+    $config['Mail-IsMail-IsSMTP'] = $mailSmtp;
+    $config['Mail-WordWrap'] = $wordwrap;
+    $config['Mail-Hostname'] = $hostname;
+    $config['Mail-Host'] = $host;
+    $config['Mail-Port'] = $port;
+    $config['Mail-SMTPSecure'] = $secure;
+    $config['Mail-SMTPAuth'] = $auth;
+    $config['Mail-Username'] = $user;
+    $config['Mail-Password'] = encrypt($password);
+    $config['Mail-From'] = $fromMail;
+    $config['Mail-FromName'] = $fromName;
+    $config['Mail-Signature'] = $signature;
+    $config['Mail-Planning'] = $planning;
   
-  include_once "../include/function.php";
+    include_once "../include/function.php";
 
-  $m=new CJMail();
-  $m->subject="Message de test, Planning Biblio";
-  $m->message="Message de test, Planning Biblio<br/><br/>La messagerie de votre application Planning Biblio est correctement param&eacute;tr&eacute;e.";
-  $m->to=$planning;
-  $m->send();
+    $m=new CJMail();
+    $m->subject="Message de test, Planning Biblio";
+    $m->message="Message de test, Planning Biblio<br/><br/>La messagerie de votre application Planning Biblio est correctement param&eacute;tr&eacute;e.";
+    $m->to=$planning;
+    $m->send();
   
-  if($m->error){
-    echo json_encode($m->error_CJInfo);
+    if ($m->error) {
+        echo json_encode($m->error_CJInfo);
+        exit;
+    } else {
+        echo json_encode('ok');
+        exit;
+    }
+} else {
+    echo json_encode('socket');
     exit;
-  }else{
-    echo json_encode('ok');
-    exit;
-  }
-}else{
-  echo json_encode('socket');
-  exit;
 }
 
 echo json_encode('error');
-
-
-
-?>

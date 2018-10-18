@@ -14,12 +14,10 @@ Description :
 Fichier permettant l'importation des agents dans le planning
 */
 
-if(isset($_POST['import-type'])){
-  if($_POST['import-type']=="ldap"){
-    include "ldap/import2.php";
-  }
+if (isset($_POST['import-type'])) {
+    if ($_POST['import-type']=="ldap") {
+        include "ldap/import2.php";
+    }
+} else {
+    include "ldap/import.php";
 }
-else{
-  include "ldap/import.php";
-}
-?>

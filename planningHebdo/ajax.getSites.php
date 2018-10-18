@@ -19,16 +19,15 @@ require_once "../include/config.php";
 
 $options=array();
 
-$id=filter_input(INPUT_POST,"id",FILTER_SANITIZE_NUMBER_INT);
+$id=filter_input(INPUT_POST, "id", FILTER_SANITIZE_NUMBER_INT);
 $db=new db();
-$db->select2("personnel","sites",array("id"=>$id));
-if($db->result){
-  $sites = json_decode(html_entity_decode($db->result[0]['sites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
-  if(is_array($sites)){
-    foreach($sites as $elem){
-      $options[]=array($elem,$config["Multisites-site".$elem]);
+$db->select2("personnel", "sites", array("id"=>$id));
+if ($db->result) {
+    $sites = json_decode(html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+    if (is_array($sites)) {
+        foreach ($sites as $elem) {
+            $options[]=array($elem,$config["Multisites-site".$elem]);
+        }
     }
-  }
 }
 echo json_encode($options);
-?>

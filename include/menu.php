@@ -34,16 +34,16 @@ zlien = new Array;
 <?php
 $keys=array_keys($menu);
 sort($keys);
-foreach($keys as $key){
-  echo "zlien[$key] = new Array;\n";
-  $keys2=array_keys($menu[$key]);
-  sort($keys2);
-  unset($keys2[0]);
-  $i=0;
-  foreach($keys2 as $key2){
-    echo "zlien[$key][$i] = \"<a href='index.php?page={$menu[$key][$key2]['url']}' class='ejsmenu'>{$menu[$key][$key2]['titre']}<\/a>\";\n";
-    $i++;
-  }
+foreach ($keys as $key) {
+    echo "zlien[$key] = new Array;\n";
+    $keys2=array_keys($menu[$key]);
+    sort($keys2);
+    unset($keys2[0]);
+    $i=0;
+    foreach ($keys2 as $key2) {
+        echo "zlien[$key][$i] = \"<a href='index.php?page={$menu[$key][$key2]['url']}' class='ejsmenu'>{$menu[$key][$key2]['titre']}<\/a>\";\n";
+        $i++;
+    }
 }
 
 ?>
@@ -81,8 +81,8 @@ echo "<tr id='topmenu'>\n";
 
 echo "<td style='text-align:center;' class='menu_td'>\n";
 echo "<ul class='menu_ul'>\n";
-foreach($keys as $key){
-  echo "<li onmousemove='pop(zlien[$key],$(this))' class='menu_li'><a href='index.php?page={$menu[$key][0]['url']}' class='ejsmenu2'>{$menu[$key][0]['titre']}</a></li>\n";
+foreach ($keys as $key) {
+    echo "<li onmousemove='pop(zlien[$key],$(this))' class='menu_li'><a href='index.php?page={$menu[$key][0]['url']}' class='ejsmenu2'>{$menu[$key][0]['titre']}</a></li>\n";
 }
 echo "</ul>\n";
 
@@ -96,14 +96,14 @@ echo "</tr>\n";
 echo "<tr><td colspan='2' style='text-align:right;'>\n";
 
 // Si le module PlanningHebdo ou ICS-Export sont activés, remplace "Changer le mot de passe" par "Mon Compte"
-if($config['PlanningHebdo'] or $config['ICS-Export']){
-  echo "<a href='index.php?page=monCompte.php' class='myAccountLink'>\n";
-  echo "Mon Compte</a>\n";
+if ($config['PlanningHebdo'] or $config['ICS-Export']) {
+    echo "<a href='index.php?page=monCompte.php' class='myAccountLink'>\n";
+    echo "Mon Compte</a>\n";
 }
 // Mot de passe modifiable seulement si authentification SQL
-elseif($_SESSION['oups']['Auth-Mode']=="SQL"){
-  echo "<a href='index.php?page=personnel/password.php' class='myAccountLink'>\n";
-  echo "Changer de mot de passe\n";
+elseif ($_SESSION['oups']['Auth-Mode']=="SQL") {
+    echo "<a href='index.php?page=personnel/password.php' class='myAccountLink'>\n";
+    echo "Changer de mot de passe\n";
 }
 echo "<div id='logout_text'><a href='authentification.php' >Déconnexion</a></div>\n";
 ?>

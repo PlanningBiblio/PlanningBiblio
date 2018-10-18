@@ -17,19 +17,18 @@ Valide le formualire de la page joursFeries/index.php
 
 include "class.joursFeries.php";
 
-$post = filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
+$post = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 $CSRFToken = $post['CSRFToken'];
 
 $j=new joursFeries();
 $j->CSRFToken = $CSRFToken;
 $j->update($post);
-if($j->error){
-  $msg = "Une erreur est survenue lors de la modification de la liste des jours fériés.";
-  $msgType="error";
-}else{
-  $msg = "La liste des jours fériés a été modifée avec succès.";
-  $msgType="success";
+if ($j->error) {
+    $msg = "Une erreur est survenue lors de la modification de la liste des jours fériés.";
+    $msgType="error";
+} else {
+    $msg = "La liste des jours fériés a été modifée avec succès.";
+    $msgType="success";
 }
 
 echo "<script type='text/JavaScript'>document.location.href='index.php?page=joursFeries/index.php&msg=$msg&msgType=$msgType';</script>\n";
-?>

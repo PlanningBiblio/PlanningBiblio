@@ -34,11 +34,11 @@ $tableauxSupprimes=$t->elements;
 // Dernières utilisations des tableaux
 $tabAffect=array();
 $db=new db();
-$db->select2("pl_poste_tab_affect",null,null,"order by `date` asc");
-if($db->result){
-  foreach($db->result as $elem){
-    $tabAffect[$elem['tableau']]=$elem['date'];
-  }
+$db->select2("pl_poste_tab_affect", null, null, "order by `date` asc");
+if ($db->result) {
+    foreach ($db->result as $elem) {
+        $tabAffect[$elem['tableau']]=$elem['date'];
+    }
 }
 
 
@@ -57,8 +57,8 @@ echo <<<EOD
 <th class='dataTableNoSort'><input type='checkbox' class='CJCheckAll' /></th>
 EOD;
 echo "<th>Nom</th>\n";
-if($config['Multisites-nombre']>1){
-  echo "<th>Site</th>\n";
+if ($config['Multisites-nombre']>1) {
+    echo "<th>Site</th>\n";
 }
 echo "<th class='dataTableDateFR'>Derni&egrave;re utilisation</th>\n";
 echo "</tr>\n";
@@ -67,53 +67,53 @@ echo "</thead>\n";
 echo "<tbody>\n";
 
 $i=0;
-foreach($tableaux as $elem){
-  $site="Multisites-site{$elem['site']}";
+foreach ($tableaux as $elem) {
+    $site="Multisites-site{$elem['site']}";
   
-  if(array_key_exists($elem['tableau'],$tabAffect)){
-    $utilisation=dateFr($tabAffect[$elem['tableau']]);
-  }else{
-    $utilisation="Jamais";
-  }
+    if (array_key_exists($elem['tableau'], $tabAffect)) {
+        $utilisation=dateFr($tabAffect[$elem['tableau']]);
+    } else {
+        $utilisation="Jamais";
+    }
   
-  echo "<tr id='tr-tableau-{$elem['tableau']}' ><td style='white-space:nowrap;'>\n";
-  echo "<input type='checkbox' name='chk$i' value='{$elem['tableau']}' class='chk1'/>\n";
-  echo "<a href='index.php?page=planning/postes_cfg/modif.php&amp;numero={$elem['tableau']}'>\n";
-  echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
-  echo "<a href='javascript:popup(\"planning/postes_cfg/copie.php&amp;numero={$elem['tableau']}\",400,260);'>\n";
-  echo "<span class='pl-icon pl-icon-copy' title='Copier'></span></a>\n";
-  echo "<a href='javascript:supprimeTableau({$elem['tableau']});'>\n";
-  echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
-  echo "</td>\n";
-  echo "<td id='td-tableau-{$elem['tableau']}-nom'>{$elem['nom']}</td>\n";
-  if($config['Multisites-nombre']>1){
-    echo "<td>{$config[$site]}</td>\n";
-  }
-  echo "<td>$utilisation</td>\n";
-  echo "</tr>\n";
-  $i++;
+    echo "<tr id='tr-tableau-{$elem['tableau']}' ><td style='white-space:nowrap;'>\n";
+    echo "<input type='checkbox' name='chk$i' value='{$elem['tableau']}' class='chk1'/>\n";
+    echo "<a href='index.php?page=planning/postes_cfg/modif.php&amp;numero={$elem['tableau']}'>\n";
+    echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
+    echo "<a href='javascript:popup(\"planning/postes_cfg/copie.php&amp;numero={$elem['tableau']}\",400,260);'>\n";
+    echo "<span class='pl-icon pl-icon-copy' title='Copier'></span></a>\n";
+    echo "<a href='javascript:supprimeTableau({$elem['tableau']});'>\n";
+    echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
+    echo "</td>\n";
+    echo "<td id='td-tableau-{$elem['tableau']}-nom'>{$elem['nom']}</td>\n";
+    if ($config['Multisites-nombre']>1) {
+        echo "<td>{$config[$site]}</td>\n";
+    }
+    echo "<td>$utilisation</td>\n";
+    echo "</tr>\n";
+    $i++;
 }
 echo "</tbody>\n";
 echo "</table></form>\n";
 echo "<p><input type='button' value='Supprimer la s&eacute;lection' class='ui-button' onclick='supprime_select(\"chk1\",\"planning/postes_cfg/ajax.suppression.php\");'></p>\n";
 
 // Récupération de tableaux supprimés dans l'année
-if(!empty($tableauxSupprimes)){
-  echo "<p style='margin-top:30px;'>\n";
-  echo "R&eacute;cup&eacute;ration d&apos;un tableau supprim&eacute;&nbsp;\n";
-  echo "<select id='tableauxSupprimes'>\n";
-  echo "<option value=''>&nbsp;</option>\n";
-  foreach($tableauxSupprimes as $elem){
-    if(array_key_exists($elem['tableau'],$tabAffect)){
-      $utilisation=dateFr($tabAffect[$elem['tableau']]);
-    }else{
-      $utilisation="Jamais";
-    }
+if (!empty($tableauxSupprimes)) {
+    echo "<p style='margin-top:30px;'>\n";
+    echo "R&eacute;cup&eacute;ration d&apos;un tableau supprim&eacute;&nbsp;\n";
+    echo "<select id='tableauxSupprimes'>\n";
+    echo "<option value=''>&nbsp;</option>\n";
+    foreach ($tableauxSupprimes as $elem) {
+        if (array_key_exists($elem['tableau'], $tabAffect)) {
+            $utilisation=dateFr($tabAffect[$elem['tableau']]);
+        } else {
+            $utilisation="Jamais";
+        }
 
-    echo "<option value='{$elem['tableau']}'>{$elem['nom']}&nbsp;(utilisation : $utilisation)</option>\n";
-  }
-  echo "</select>\n";
-  echo "</p>\n";
+        echo "<option value='{$elem['tableau']}'>{$elem['nom']}&nbsp;(utilisation : $utilisation)</option>\n";
+    }
+    echo "</select>\n";
+    echo "</p>\n";
 }
 
 echo "</div> <!-- tableaux-liste -->\n";
@@ -134,27 +134,27 @@ echo <<<EOD
 <tr><th class='dataTableNoSort'>&nbsp;</th>
 EOD;
 echo "<th>Nom</th>\n";
-if($config['Multisites-nombre']>1){
-  echo "<th>Site</th>\n";
+if ($config['Multisites-nombre']>1) {
+    echo "<th>Site</th>\n";
 }
 echo "</tr>\n";
 echo "</thead>\n";
 
 echo "<tbody>\n";
 
-if(is_array($groupes)){
-  foreach($groupes as $elem){
-    echo "<tr id='tr-groupe-{$elem['id']}'><td><a href='index.php?page=planning/postes_cfg/groupes.php&amp;id={$elem['id']}'>\n";
-    echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
-    echo "<a href='javascript:supprimeGroupe({$elem['id']});'>\n";
-    echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
-    echo "</td>\n";
-    echo "<td id='td-groupe-{$elem['id']}-nom'>{$elem['nom']}</td>\n";
-    if($config['Multisites-nombre']>1){
-      echo "<td>".$config["Multisites-site{$elem['site']}"]."</td>\n";
+if (is_array($groupes)) {
+    foreach ($groupes as $elem) {
+        echo "<tr id='tr-groupe-{$elem['id']}'><td><a href='index.php?page=planning/postes_cfg/groupes.php&amp;id={$elem['id']}'>\n";
+        echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
+        echo "<a href='javascript:supprimeGroupe({$elem['id']});'>\n";
+        echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
+        echo "</td>\n";
+        echo "<td id='td-groupe-{$elem['id']}-nom'>{$elem['nom']}</td>\n";
+        if ($config['Multisites-nombre']>1) {
+            echo "<td>".$config["Multisites-site{$elem['site']}"]."</td>\n";
+        }
+        echo "</tr>\n";
     }
-    echo "</tr>\n";
-  }
 }
 echo "</tbody>\n";
 echo "</table>\n";
@@ -168,7 +168,7 @@ EOD;
 //	2.	Lignes de separation
 
 $db=new db();
-$db->select("lignes",null,null,"order by nom");
+$db->select("lignes", null, null, "order by nom");
 
 echo <<<EOD
 <h3>Lignes de s&eacute;paration</h3>
@@ -188,22 +188,22 @@ echo "<th>Nom</th></tr>\n";
 echo "</thead>\n";
 
 echo "<tbody>\n";
-if($db->result){
-  foreach($db->result as $elem){
-    $db2=new db();
-    $db2->select("pl_poste_lignes","*","poste='{$elem['id']}' AND type='ligne'");
-    $delete=$db2->result?false:true;
+if ($db->result) {
+    foreach ($db->result as $elem) {
+        $db2=new db();
+        $db2->select("pl_poste_lignes", "*", "poste='{$elem['id']}' AND type='ligne'");
+        $delete=$db2->result?false:true;
 
-    echo "<tr id='tr-ligne-{$elem['id']}' >\n";
-    echo "<td><a href='index.php?page=planning/postes_cfg/lignes_sep.php&amp;action=modif&amp;id={$elem['id']}'>\n";
-    echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
-    if($delete){
-      echo "<a href='javascript:supprimeLigne({$elem['id']});'>\n";
-      echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
+        echo "<tr id='tr-ligne-{$elem['id']}' >\n";
+        echo "<td><a href='index.php?page=planning/postes_cfg/lignes_sep.php&amp;action=modif&amp;id={$elem['id']}'>\n";
+        echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
+        if ($delete) {
+            echo "<a href='javascript:supprimeLigne({$elem['id']});'>\n";
+            echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
+        }
+        echo "</td>\n";
+        echo "<td id='td-ligne-{$elem['id']}-nom' >{$elem['nom']}</td></tr>\n";
     }
-    echo "</td>\n";
-    echo "<td id='td-ligne-{$elem['id']}-nom' >{$elem['nom']}</td></tr>\n";
-  }
 }
 
 echo <<<EOD
@@ -213,4 +213,3 @@ echo <<<EOD
 </div> <!-- tableaux-separations -->
 
 EOD;
-?>

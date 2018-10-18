@@ -21,8 +21,8 @@ session_start();
 require_once "../../include/config.php";
 require_once "class.tableaux.php";
 
-$ids=filter_input(INPUT_GET,"ids",FILTER_SANITIZE_STRING);
-$CSRFToken = filter_input(INPUT_GET,'CSRFToken',FILTER_SANITIZE_STRING);
+$ids=filter_input(INPUT_GET, "ids", FILTER_SANITIZE_STRING);
+$CSRFToken = filter_input(INPUT_GET, 'CSRFToken', FILTER_SANITIZE_STRING);
 
 $today=date("Y-m-d H:i:s");
 $set=array("supprime"=>$today);
@@ -33,5 +33,4 @@ $db->query("UPDATE `{$dbprefix}pl_poste_tab_grp` SET `supprime`='$today' WHERE `
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->update("pl_poste_tab",$set,$where);
-?>
+$db->update("pl_poste_tab", $set, $where);

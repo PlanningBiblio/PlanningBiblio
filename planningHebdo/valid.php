@@ -17,55 +17,53 @@ Fichier permettant de valider la saisie de son planning de présence hebdomadair
 require_once "class.planningHebdo.php";
 
 // Initialisation des variables
-$post=filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
+$post=filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
-switch($post["action"]){
-  case "ajout" :
+switch ($post["action"]) {
+  case "ajout":
     $p=new planningHebdo();
     $p->add($post);
-    if($p->error){
-      $msg=urlencode("Une erreur est survenue lors de l'enregistrement du planning.");
+    if ($p->error) {
+        $msg=urlencode("Une erreur est survenue lors de l'enregistrement du planning.");
 
-      if($post['id']){
-	$msg=urlencode("Une erreur est survenue lors de la copie du planning.");
-      }
+        if ($post['id']) {
+            $msg=urlencode("Une erreur est survenue lors de la copie du planning.");
+        }
 
-      $msgType="error";    	
-
-    }else{
-      $msg=urlencode("Le planning a été ajouté avec succès.");
-      if($post['id']){
-	$msg=urlencode("Le planning a été copié avec succès.");
-      }
-      $msgType="success";    	
+        $msgType="error";
+    } else {
+        $msg=urlencode("Le planning a été ajouté avec succès.");
+        if ($post['id']) {
+            $msg=urlencode("Le planning a été copié avec succès.");
+        }
+        $msgType="success";
     }
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=planningHebdo/{$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";
     break;
 
-  case "modif" :
+  case "modif":
     $p=new planningHebdo();
     $p->update($post);
-    if($p->error){
-    	$msg=urlencode("Une erreur est survenue lors de la modification du planning.");
-    	$msgType="error";    	
-    }else{
-    	$msg=urlencode("Le planning a été modifié avec succès.");
-    	$msgType="success";    	
+    if ($p->error) {
+        $msg=urlencode("Une erreur est survenue lors de la modification du planning.");
+        $msgType="error";
+    } else {
+        $msg=urlencode("Le planning a été modifié avec succès.");
+        $msgType="success";
     }
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=planningHebdo/{$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";
     break;
  
-  case "copie" :
+  case "copie":
     $p=new planningHebdo();
     $p->copy($post);
-    if($p->error){
-    	$msg=urlencode("Une erreur est survenue lors de la modification du planning.");
-    	$msgType="error";    	
-    }else{
-    	$msg=urlencode("Le planning a été modifié avec succès.");
-    	$msgType="success";    	
+    if ($p->error) {
+        $msg=urlencode("Une erreur est survenue lors de la modification du planning.");
+        $msgType="error";
+    } else {
+        $msg=urlencode("Le planning a été modifié avec succès.");
+        $msgType="success";
     }
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=planningHebdo/{$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";
     break;
 }
-?>

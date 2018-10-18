@@ -29,28 +29,28 @@ $password=gen_trivial_password(16);
 
 // Génération d'un CSRF Token
 // PHP 7
-if(phpversion() >= 7){
-  if (empty($_SESSION['oups']['CSRFToken'])) {
-    $_SESSION['oups']['CSRFToken'] = bin2hex(random_bytes(32));
-  }
+if (phpversion() >= 7) {
+    if (empty($_SESSION['oups']['CSRFToken'])) {
+        $_SESSION['oups']['CSRFToken'] = bin2hex(random_bytes(32));
+    }
 }
 
 // PHP 5.3+
-else{
-  if (empty($_SESSION['oups']['CSRFToken'])) {
-    if (function_exists('mcrypt_create_iv')) {
-      $_SESSION['oups']['CSRFToken'] = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
-    } else {
-      $_SESSION['oups']['CSRFToken'] = bin2hex(openssl_random_pseudo_bytes(32));
+else {
+    if (empty($_SESSION['oups']['CSRFToken'])) {
+        if (function_exists('mcrypt_create_iv')) {
+            $_SESSION['oups']['CSRFToken'] = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
+        } else {
+            $_SESSION['oups']['CSRFToken'] = bin2hex(openssl_random_pseudo_bytes(32));
+        }
     }
-  }
 }
 
 $msg = null;
 $Fnm = "../include/config.php";
-if(!$inF=fopen("../include/test.php","w\n")){
-  $msg="<br/>Important : Avant de continuer,<br/> Veuillez donner les droits d'&eacute;criture/modification <br/>aux dossiers \"include\" et \"data\".\n";
-  $msg.="<br/><a href='index.php'>Re-vérifier</a>";
+if (!$inF=fopen("../include/test.php", "w\n")) {
+    $msg="<br/>Important : Avant de continuer,<br/> Veuillez donner les droits d'&eacute;criture/modification <br/>aux dossiers \"include\" et \"data\".\n";
+    $msg.="<br/><a href='index.php'>Re-vérifier</a>";
 }
 
 echo "<h2>Installation de la version $version</h2>\n";

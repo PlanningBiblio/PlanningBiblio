@@ -12,7 +12,7 @@ Dernière modification : 10 fvévrier 2017
 
 Description :
 Supprime complétement un tableau. Supprime les horaires, cellules grisées, lignes et l'identifiant du tableau (table pl_poste_tab).
-Page appelée par la fonction supprimeTableau (planning/postes_cfg/js/tableaux.js) 
+Page appelée par la fonction supprimeTableau (planning/postes_cfg/js/tableaux.js)
 lors du clique sur les croix rouges dans la liste des tableaux (planning/postes_cfg/index.php)
 */
 
@@ -21,12 +21,11 @@ session_start();
 require_once "../../include/config.php";
 require_once "class.tableaux.php";
 
-$CSRFToken =filter_input(INPUT_POST,"CSRFToken",FILTER_SANITIZE_STRING);
-$tableau=filter_input(INPUT_POST,"tableau",FILTER_SANITIZE_NUMBER_INT);
+$CSRFToken =filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
+$tableau=filter_input(INPUT_POST, "tableau", FILTER_SANITIZE_NUMBER_INT);
 
 $t=new tableau();
 $t->number=$tableau;
 $t->CSRFToken = $CSRFToken;
 $t->deleteTab();
 echo json_encode(null);
-?>

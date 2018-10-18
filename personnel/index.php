@@ -19,10 +19,10 @@ Cette page est appelée par le fichier index.php
 require_once "class.personnel.php";
 
 // Initialisation des variables
-$actif=filter_input(INPUT_GET,"actif",FILTER_SANITIZE_STRING);
+$actif=filter_input(INPUT_GET, "actif", FILTER_SANITIZE_STRING);
 
-if(!$actif){
-  $actif = isset($_SESSION['perso_actif']) ? $_SESSION['perso_actif'] : 'Actif';
+if (!$actif) {
+    $actif = isset($_SESSION['perso_actif']) ? $_SESSION['perso_actif'] : 'Actif';
 }
 
 $_SESSION['perso_actif']=$actif;
@@ -41,19 +41,19 @@ Voir les agents
 <option value='Actif'>Service public</option>
 <option value='Inactif'>Administratif</option>
 <?php
-if(in_array(21,$droits)){
-  echo "<option value='Supprim&eacute;'>Supprim&eacute;</option>\n";
+if (in_array(21, $droits)) {
+    echo "<option value='Supprim&eacute;'>Supprim&eacute;</option>\n";
 }
 ?>
 </select>
 </td><td style='width:80px;'>
 </td><td>
 <?php
-if(in_array(21,$droits)){
-  echo "<input type='button' value='Ajouter' onclick='location.href=\"index.php?page=personnel/modif.php\";' class='ui-button'/>\n";
-  if($config['LDAP-Host'] and $config['LDAP-Suffix']){
-    echo "<input type='button' value='Import LDAP' onclick='location.href=\"index.php?page=personnel/import.php\";' class='ui-button' style='margin-left:20px;'/>\n";
-  }
+if (in_array(21, $droits)) {
+    echo "<input type='button' value='Ajouter' onclick='location.href=\"index.php?page=personnel/modif.php\";' class='ui-button'/>\n";
+    if ($config['LDAP-Host'] and $config['LDAP-Suffix']) {
+        echo "<input type='button' value='Import LDAP' onclick='location.href=\"index.php?page=personnel/import.php\";' class='ui-button' style='margin-left:20px;'/>\n";
+    }
 }
 ?>
 </td></tr></table>
@@ -70,8 +70,8 @@ $db->update('personnel', array('supprime'=>'1', 'actif'=>'Supprim&eacute;'), "`d
 echo "<script type='text/JavaScript'>document.form2.actif.value='$actif';</script>";
 
 $p=new personnel();
-$p->supprime=strstr($actif,"Supprim")?array(1):array(0);
-$p->fetch("nom,prenom",$actif);
+$p->supprime=strstr($actif, "Supprim")?array(1):array(0);
+$p->fetch("nom,prenom", $actif);
 $agents=$p->elements;
 
 echo "<form name='form' method='post' action='index.php' onsubmit='return confirm(\"Etes vous sûr de vouloir supprimer les agents sélectionnés ?\");'>\n";
@@ -84,8 +84,8 @@ echo "<th>Pr&#233;nom</th>";
 echo "<th class='dataTableHeureFR'>Heures</th>";
 echo "<th>Statut</th>";
 echo "<th>Service</th>";
-if($config['Multisites-nombre']>1){
-  echo "<th>Sites</th>\n";
+if ($config['Multisites-nombre']>1) {
+    echo "<th>Sites</th>\n";
 }
 echo "<th class='dataTableDateFR' >Arriv&#233;e</th>";
 echo "<th class='dataTableDateFR' >D&#233;part</th>";
@@ -93,49 +93,49 @@ echo "<th class='dataTableDateFR' >Acc&egrave;s</th>";
 echo "</thead>\n";
 echo "<tbody>\n";
 $i=0;
-foreach($agents as $agent){
-  $id=$agent['id'];
+foreach ($agents as $agent) {
+    $id=$agent['id'];
   
-  $arrivee=date1($agent['arrivee']);
-  $depart=date1($agent['depart']);
-  $last_login=date_time($agent['last_login']);
+    $arrivee=date1($agent['arrivee']);
+    $depart=date1($agent['depart']);
+    $last_login=date_time($agent['last_login']);
   
-  $heures=$agent['heures_hebdo']?$agent['heures_hebdo']:null;
-  $heures=heure4($heures);
-  if(is_numeric($heures)){
-    $heures.="h00";
-  }
-  $agent['service']=str_replace("`","'",$agent['service']);
-
-  echo "<tr><td style='white-space:nowrap;'>\n";
-  echo "<input type='checkbox' name='chk$i' value='$id' />\n";
-  echo "<a href='index.php?page=personnel/modif.php&amp;id=$id'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>";
-  if(in_array(21,$droits) and $id!=$_SESSION['login_id']){
-    echo "<a href='javascript:popup(\"personnel/suppression.php&amp;id=".$id."\",450,240);'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>";
-  }
-  echo "</td>";
-  echo "<td>{$agent['nom']}</td>";
-  echo "<td>{$agent['prenom']}</td>";
-  echo "<td>$heures</td>";
-  echo "<td>{$agent['statut']}</td>";
-  echo "<td>{$agent['service']}</td>";
-  if($config['Multisites-nombre']>1){
-    $tmp=array();
-    if(!empty($agent['sites'])){
-      foreach($agent['sites'] as $site){
-	if($site){
-	  $tmp[]=$config["Multisites-site{$site}"];
-	}
-      }
+    $heures=$agent['heures_hebdo']?$agent['heures_hebdo']:null;
+    $heures=heure4($heures);
+    if (is_numeric($heures)) {
+        $heures.="h00";
     }
-    $sites=!empty($tmp)?join(", ",$tmp):null;
-    echo "<td>$sites</td>";
-  }
-  echo "<td>$arrivee</td>";
-  echo "<td>$depart</td>";
-  echo "<td>$last_login</td>";
-  echo "</tr>";
-  $i++;
+    $agent['service']=str_replace("`", "'", $agent['service']);
+
+    echo "<tr><td style='white-space:nowrap;'>\n";
+    echo "<input type='checkbox' name='chk$i' value='$id' />\n";
+    echo "<a href='index.php?page=personnel/modif.php&amp;id=$id'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>";
+    if (in_array(21, $droits) and $id!=$_SESSION['login_id']) {
+        echo "<a href='javascript:popup(\"personnel/suppression.php&amp;id=".$id."\",450,240);'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>";
+    }
+    echo "</td>";
+    echo "<td>{$agent['nom']}</td>";
+    echo "<td>{$agent['prenom']}</td>";
+    echo "<td>$heures</td>";
+    echo "<td>{$agent['statut']}</td>";
+    echo "<td>{$agent['service']}</td>";
+    if ($config['Multisites-nombre']>1) {
+        $tmp=array();
+        if (!empty($agent['sites'])) {
+            foreach ($agent['sites'] as $site) {
+                if ($site) {
+                    $tmp[]=$config["Multisites-site{$site}"];
+                }
+            }
+        }
+        $sites=!empty($tmp)?join(", ", $tmp):null;
+        echo "<td>$sites</td>";
+    }
+    echo "<td>$arrivee</td>";
+    echo "<td>$depart</td>";
+    echo "<td>$last_login</td>";
+    echo "</tr>";
+    $i++;
 }
 
 echo "</tbody>";
@@ -145,13 +145,14 @@ echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
 echo "<input type='submit' value='Supprimer la sélection' class='ui-button'/>\n";
 echo "</form>\n";
 
-function date1($date){
-  if($date=="0000-00-00")
-    $date="";
-  else{
-    $date1=explode("-",$date);
-    $date=$date1[2]."/".$date1[1]."/".$date1[0];
-  }
-  return $date;
+function date1($date)
+{
+    if ($date=="0000-00-00") {
+        $date="";
+    } else {
+        $date1=explode("-", $date);
+        $date=$date1[2]."/".$date1[1]."/".$date1[0];
+    }
+    return $date;
 }
 ?>

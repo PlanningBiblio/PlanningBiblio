@@ -21,14 +21,14 @@ l'icône "Suppression" de la page planning/poste/index.php
 require_once "class.planning.php";
 
 // Initialisation des variables
-$confirm=filter_input(INPUT_GET,"confirm",FILTER_SANITIZE_STRING);
-$CSRFToken=filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING);
-$date=filter_input(INPUT_GET,"date",FILTER_SANITIZE_STRING);
-$semaineJour=filter_input(INPUT_GET,"semaineJour",FILTER_SANITIZE_STRING);
-$site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
+$confirm=filter_input(INPUT_GET, "confirm", FILTER_SANITIZE_STRING);
+$CSRFToken=filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
+$date=filter_input(INPUT_GET, "date", FILTER_SANITIZE_STRING);
+$semaineJour=filter_input(INPUT_GET, "semaineJour", FILTER_SANITIZE_STRING);
+$site=filter_input(INPUT_GET, "site", FILTER_SANITIZE_NUMBER_INT);
 
-$confirm=filter_var($confirm,FILTER_CALLBACK,array("options"=>"sanitize_on"));
-$date=filter_var($date,FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
+$confirm=filter_var($confirm, FILTER_CALLBACK, array("options"=>"sanitize_on"));
+$date=filter_var($date, FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
 
 $dateFr=dateFr($date);
 $d=new datePl($date);
@@ -39,59 +39,56 @@ $finFr=dateFr($fin);
 
 // Sécurité
 // Refuser l'accès aux agents n'ayant pas les droits de modifier le planning
-if(!in_array((300+$site),$droits)){
-  echo "<div id='acces_refuse'>Accès refusé</div>";
-  echo "<a href='javascript:popup_closed();'>Fermer</a>\n";
-  exit;
+if (!in_array((300+$site), $droits)) {
+    echo "<div id='acces_refuse'>Accès refusé</div>";
+    echo "<a href='javascript:popup_closed();'>Fermer</a>\n";
+    exit;
 }
 
 
 echo "<div style='text-align:center'>\n";
 
-if(!$semaineJour){		// Etape 1 : Suppression du jour ou de la semaine ?
-  echo "Voulez vous supprimer le planning du jour ($dateFr)<br/>ou de la semaine (du $debutFr au $finFr) ?<br/><br/>\n";
-  echo "<a href='index.php?page=planning/poste/supprimer.php&amp;menu=off&amp;date=$date&amp;site=$site&amp;semaineJour=jour&amp;CSRFToken=$CSRFSession'>Jour</a>&nbsp;&nbsp;&nbsp;\n";
-  echo "<a href='index.php?page=planning/poste/supprimer.php&amp;menu=off&amp;date=$date&amp;site=$site&amp;semaineJour=semaine&amp;CSRFToken=$CSRFSession'>Semaine</a><br/><br/>\n";
-  echo "<a href='javascript:popup_closed();'>Annuler</a>\n";
-}
-elseif(!$confirm){		// Etape 2 : Demande confirmation
-  if($semaineJour=="semaine"){		// confirmation pour la semaine
+if (!$semaineJour) {		// Etape 1 : Suppression du jour ou de la semaine ?
+    echo "Voulez vous supprimer le planning du jour ($dateFr)<br/>ou de la semaine (du $debutFr au $finFr) ?<br/><br/>\n";
+    echo "<a href='index.php?page=planning/poste/supprimer.php&amp;menu=off&amp;date=$date&amp;site=$site&amp;semaineJour=jour&amp;CSRFToken=$CSRFSession'>Jour</a>&nbsp;&nbsp;&nbsp;\n";
+    echo "<a href='index.php?page=planning/poste/supprimer.php&amp;menu=off&amp;date=$date&amp;site=$site&amp;semaineJour=semaine&amp;CSRFToken=$CSRFSession'>Semaine</a><br/><br/>\n";
+    echo "<a href='javascript:popup_closed();'>Annuler</a>\n";
+} elseif (!$confirm) {		// Etape 2 : Demande confirmation
+  if ($semaineJour=="semaine") {		// confirmation pour la semaine
     echo "Etes vous sûr de vouloir supprimer le planning de la semaine<br/>(du $debutFr au $finFr) ?<br/><br/>\n";
-    echo "<a href='index.php?page=planning/poste/supprimer.php&amp;menu=off&amp;date=$date&amp;site=$site&amp;semaineJour=semaine&amp;confirm=on&amp;CSRFToken=$CSRFToken'>Oui</a>&nbsp;&nbsp;&nbsp;\n";
-    echo "<a href='javascript:popup_closed();'>Non</a>\n";
+      echo "<a href='index.php?page=planning/poste/supprimer.php&amp;menu=off&amp;date=$date&amp;site=$site&amp;semaineJour=semaine&amp;confirm=on&amp;CSRFToken=$CSRFToken'>Oui</a>&nbsp;&nbsp;&nbsp;\n";
+      echo "<a href='javascript:popup_closed();'>Non</a>\n";
+  } else {									// confirmation pour le jour
+      echo "Etes vous sûr de vouloir supprimer du $dateFr ?<br/><br/>\n";
+      echo "<a href='index.php?page=planning/poste/supprimer.php&amp;menu=off&amp;date=$date&amp;site=$site&amp;semaineJour=jour&amp;confirm=on&amp;CSRFToken=$CSRFToken'>Oui</a>&nbsp;&nbsp;&nbsp;\n";
+      echo "<a href='javascript:popup_closed();'>Non</a>\n";
   }
-  else{									// confirmation pour le jour
-    echo "Etes vous sûr de vouloir supprimer du $dateFr ?<br/><br/>\n";
-    echo "<a href='index.php?page=planning/poste/supprimer.php&amp;menu=off&amp;date=$date&amp;site=$site&amp;semaineJour=jour&amp;confirm=on&amp;CSRFToken=$CSRFToken'>Oui</a>&nbsp;&nbsp;&nbsp;\n";
-    echo "<a href='javascript:popup_closed();'>Non</a>\n";
-  }
-}
-else{
-  // Suppression de la semaine
-  if($semaineJour=="semaine"){
-    // Table pl_poste (affectation des agents)
-    $db=new db();
-    $db->CSRFToken = $CSRFToken;
-    $db->delete("pl_poste",array("site"=>$site, "date"=>"BETWEEN{$debut}AND{$fin}"));
+} else {
+    // Suppression de la semaine
+    if ($semaineJour=="semaine") {
+        // Table pl_poste (affectation des agents)
+        $db=new db();
+        $db->CSRFToken = $CSRFToken;
+        $db->delete("pl_poste", array("site"=>$site, "date"=>"BETWEEN{$debut}AND{$fin}"));
 
-    // Table pl_poste_tab_affect (affectation des tableaux)
-    $db=new db();
-    $db->CSRFToken = $CSRFToken;
-    $db->delete("pl_poste_tab_affect",array("site"=>$site, "date"=>"BETWEEN{$debut}AND{$fin}"));
-  }
-  // Suppression du jour
-  else{
-    // Table pl_poste (affectation des agents)
-    $db=new db();
-    $db->CSRFToken = $CSRFToken;
-    $db->delete("pl_poste",array("site"=>$site, "date"=>$date));
+        // Table pl_poste_tab_affect (affectation des tableaux)
+        $db=new db();
+        $db->CSRFToken = $CSRFToken;
+        $db->delete("pl_poste_tab_affect", array("site"=>$site, "date"=>"BETWEEN{$debut}AND{$fin}"));
+    }
+    // Suppression du jour
+    else {
+        // Table pl_poste (affectation des agents)
+        $db=new db();
+        $db->CSRFToken = $CSRFToken;
+        $db->delete("pl_poste", array("site"=>$site, "date"=>$date));
 
-    // Table pl_poste_tab_affect (affectation des tableaux)
-    $db=new db();
-    $db->CSRFToken = $CSRFToken;
-    $db->delete("pl_poste_tab_affect",array("site"=>$site, "date"=>$date));
-  }
-  echo "<script type='text/JavaScript'>top.document.location.href=\"index.php\";</script>\n";
+        // Table pl_poste_tab_affect (affectation des tableaux)
+        $db=new db();
+        $db->CSRFToken = $CSRFToken;
+        $db->delete("pl_poste_tab_affect", array("site"=>$site, "date"=>$date));
+    }
+    echo "<script type='text/JavaScript'>top.document.location.href=\"index.php\";</script>\n";
 }
 ?>
 </div>

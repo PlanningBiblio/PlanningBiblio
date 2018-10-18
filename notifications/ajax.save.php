@@ -38,5 +38,3 @@ $p->CSRFToken = $CSRFToken;
 $p->updateResponsibles($agents, $responsables, $notifications);
 
 return json_encode('ok');
-
-?>

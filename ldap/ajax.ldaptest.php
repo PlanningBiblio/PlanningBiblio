@@ -20,41 +20,36 @@ session_start();
 include_once "../include/config.php";
 include_once "class.ldap.php";
 
-$filter = filter_input(INPUT_POST,'filter',FILTER_SANITIZE_STRING);
-$host = filter_input(INPUT_POST,'host',FILTER_SANITIZE_STRING);
-$idAttribute = filter_input(INPUT_POST,'idAttribute',FILTER_SANITIZE_STRING);
-$password = filter_input(INPUT_POST,'password',FILTER_UNSAFE_RAW);
-$port = filter_input(INPUT_POST,'port',FILTER_SANITIZE_NUMBER_INT);
-$protocol = filter_input(INPUT_POST,'protocol',FILTER_SANITIZE_STRING);
-$rdn = filter_input(INPUT_POST,'rdn',FILTER_SANITIZE_STRING);
-$suffix = filter_input(INPUT_POST,'suffix',FILTER_SANITIZE_STRING);
+$filter = filter_input(INPUT_POST, 'filter', FILTER_SANITIZE_STRING);
+$host = filter_input(INPUT_POST, 'host', FILTER_SANITIZE_STRING);
+$idAttribute = filter_input(INPUT_POST, 'idAttribute', FILTER_SANITIZE_STRING);
+$password = filter_input(INPUT_POST, 'password', FILTER_UNSAFE_RAW);
+$port = filter_input(INPUT_POST, 'port', FILTER_SANITIZE_NUMBER_INT);
+$protocol = filter_input(INPUT_POST, 'protocol', FILTER_SANITIZE_STRING);
+$rdn = filter_input(INPUT_POST, 'rdn', FILTER_SANITIZE_STRING);
+$suffix = filter_input(INPUT_POST, 'suffix', FILTER_SANITIZE_STRING);
 
 // Connexion au serveur LDAP
 $url = $protocol.'://'.$host;
 
-if($fp=@fsockopen($host, $port, $errno, $errstr, 5)){
-  if($ldapconn = ldap_connect($url)){
+if ($fp=@fsockopen($host, $port, $errno, $errstr, 5)) {
+    if ($ldapconn = ldap_connect($url)) {
+        ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
+        ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
 
-    ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
-    ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
-
-    if(ldap_bind($ldapconn,$rdn,$password)){
-      if(ldap_search($ldapconn,$suffix,$filter,array($idAttribute))){
-        echo json_encode('ok');
-        exit;
-      }else{
-        echo json_encode('search');
-        exit;
-      }
-    }else{
-      echo json_encode('bind');
-      exit;
+        if (ldap_bind($ldapconn, $rdn, $password)) {
+            if (ldap_search($ldapconn, $suffix, $filter, array($idAttribute))) {
+                echo json_encode('ok');
+                exit;
+            } else {
+                echo json_encode('search');
+                exit;
+            }
+        } else {
+            echo json_encode('bind');
+            exit;
+        }
     }
-  }
 }
 
 echo json_encode('error');
-
-
-
-?>

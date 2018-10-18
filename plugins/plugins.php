@@ -25,4 +25,3 @@ $plugins=$p->liste;
 
 // Vérifie si la base de données est à jour, la met à jour si besoin
 $p->checkUpdateDB();
-?>

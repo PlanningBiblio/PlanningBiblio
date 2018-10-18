@@ -14,7 +14,7 @@ Description :
 Affiche les liens voir les absences, ajouter une absence, ajouter une information (relative aux absences)
 Affiche les informations relatives aux absences_infos
 
-Page appelée par la page index.php 
+Page appelée par la page index.php
 */
 
 require_once "class.absences.php";
@@ -31,15 +31,16 @@ require_once "class.absences.php";
 
 $admin = false;
 
-for($i = 1; $i <= $config['Multisites-nombre']; $i++){
-  if(in_array((200+$i), $droits) or in_array((500+$i), $droits)){
-    $admin = true;
-    break;
-  }
+for ($i = 1; $i <= $config['Multisites-nombre']; $i++) {
+    if (in_array((200+$i), $droits) or in_array((500+$i), $droits)) {
+        $admin = true;
+        break;
+    }
 }
 
-if($admin)
-  echo "<li><a href='index.php?page=absences/infos.php'>Ajouter une information</a></li>\n";
+if ($admin) {
+    echo "<li><a href='index.php?page=absences/infos.php'>Ajouter une information</a></li>\n";
+}
 
 echo "</ul>\n";
 echo "</td>\n";
@@ -48,15 +49,15 @@ echo "<td style='color:#FF5E0E;'>\n";
 $date=date("Y-m-d");
 $db=new db();
 $db->query("SELECT * FROM `{$dbprefix}absences_infos` WHERE `fin`>='$date' ORDER BY `debut`,`fin`;");
-if($db->result){
-  echo "<b>Informations sur les absences :</b><br/><br/>\n";
-  foreach($db->result as $elem){
-    if($admin){
-      echo "<a href='index.php?page=absences/infos.php&amp;id={$elem['id']}'>\n";
-      echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
+if ($db->result) {
+    echo "<b>Informations sur les absences :</b><br/><br/>\n";
+    foreach ($db->result as $elem) {
+        if ($admin) {
+            echo "<a href='index.php?page=absences/infos.php&amp;id={$elem['id']}'>\n";
+            echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
+        }
+        echo "Du ".dateFr($elem['debut'])." au ".dateFr($elem['fin'])." : {$elem['texte']}<br/>\n";
     }
-    echo "Du ".dateFr($elem['debut'])." au ".dateFr($elem['fin'])." : {$elem['texte']}<br/>\n";
-  }	
 }
 ?>
 </td></tr></table>

@@ -32,11 +32,8 @@ $ids = json_decode($ids, true);
 $v = new volants();
 $v->set($date, $ids, $CSRFToken);
 
-if($v->error){
-  echo json_encode(array('error' => $v->error));
+if ($v->error) {
+    echo json_encode(array('error' => $v->error));
 } else {
-  echo json_encode('ok');
+    echo json_encode('ok');
 }
-  
-
-?>

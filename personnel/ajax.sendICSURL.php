@@ -16,7 +16,7 @@ Lors de la validation du formulaire "Envoi de l'URL de l'agenda Planning Biblio"
 Script appelé par $( "#ics-url-form" ).dialog({ Envoyer ]), personnel/js/modif.js
 */
 
-ini_set("display_errors",0);
+ini_set("display_errors", 0);
 
 session_start();
 
@@ -43,11 +43,10 @@ $m->to = $recipient;
 $isSent = $m->send();
 
 // retour vers la fonction JS
-if($m->error){
-  echo json_encode(array("error"=>$m->error));
-}elseif(!$isSent){
-  echo json_encode(array("error"=>"Une erreur est survenue lors de l&apos;envoi du mail"));
-}else{
-  echo json_encode("ok");
+if ($m->error) {
+    echo json_encode(array("error"=>$m->error));
+} elseif (!$isSent) {
+    echo json_encode(array("error"=>"Une erreur est survenue lors de l&apos;envoi du mail"));
+} else {
+    echo json_encode("ok");
 }
-?>

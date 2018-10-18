@@ -15,46 +15,49 @@ Classe plugins
 */
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
-if(!isset($version)){
-  include_once "../include/accessDenied.php";
+if (!isset($version)) {
+    include_once "../include/accessDenied.php";
 }
 
-class plugins{
-  public $liste=array();	// Liste des plugins (array("ldap","conges"))
+class plugins
+{
+    public $liste=array();	// Liste des plugins (array("ldap","conges"))
   public $tab=array();		// Tableau contenant les noms et versions des plugins (array("ldap"=>array("nom"=>"ldap","version"=>"1.0")))
 
-  public function __construct(){
+  public function __construct()
+  {
   }
 
-  public function fetch(){
-    $db=new db();
-    $db->select("plugins");
-    if($db->result){
-      foreach($db->result as $elem){
-	$this->liste[]=$elem['nom'];
-	$this->tab[]=array("name"=>$elem['nom'],"version"=>$elem['version']);
-      }
+    public function fetch()
+    {
+        $db=new db();
+        $db->select("plugins");
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                $this->liste[]=$elem['nom'];
+                $this->tab[]=array("name"=>$elem['nom'],"version"=>$elem['version']);
+            }
+        }
     }
-  }
 
-  public function checkUpdateDB(){
-    if(!isset($_SESSION['login_id'])){
-      return;
-    }
+    public function checkUpdateDB()
+    {
+        if (!isset($_SESSION['login_id'])) {
+            return;
+        }
     
-    $plugins=$this->tab;
-    foreach($plugins as $plugin){
-      $pluginVersion=null;
-      @include_once "plugins/{$plugin['name']}/version.php";
-      if($pluginVersion and $plugin['version']<$pluginVersion){
-	$this->updateDB($plugin['name'],$plugin['version'],$pluginVersion);
-      }
+        $plugins=$this->tab;
+        foreach ($plugins as $plugin) {
+            $pluginVersion=null;
+            @include_once "plugins/{$plugin['name']}/version.php";
+            if ($pluginVersion and $plugin['version']<$pluginVersion) {
+                $this->updateDB($plugin['name'], $plugin['version'], $pluginVersion);
+            }
+        }
     }
-  }
 
-  public function updateDB($name,$oldVersion,$version){
-    include_once "plugins/$name/updateDB.php";
-  }
-
+    public function updateDB($name, $oldVersion, $version)
+    {
+        include_once "plugins/$name/updateDB.php";
+    }
 }
-?>

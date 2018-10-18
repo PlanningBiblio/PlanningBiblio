@@ -18,15 +18,14 @@ Page appelée suite à la validation du formulaire "planning/postes_cfg/groupes.
 
 require_once "class.tableaux.php";
 
-$post=filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
+$post=filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 $CSRFToken = $post['CSRFToken'];
 unset($post['CSRFToken']);
 
-unset ($post['page']);
+unset($post['page']);
 
 $t=new tableau();
 $t->CSRFToken = $CSRFToken;
 $t->update($post);
 
 echo "<script type='text/JavaScript'>location.href='index.php?page=planning/postes_cfg/index.php';</script>\n";
-?>

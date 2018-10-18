@@ -26,5 +26,4 @@ $CSRFToken = filter_input(INPUT_GET, 'CSRFToken', FILTER_SANITIZE_STRING);
 
 $a=new absences();
 $a->CSRFToken = $CSRFToken;
-$a->piecesJustif($id,$pj,$checked);
-?>
+$a->piecesJustif($id, $pj, $checked);

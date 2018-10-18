@@ -20,38 +20,38 @@ Page appelée par le fichier index.php, accessible à partir de la page planning
 require_once "class.tableaux.php";
 
 // Initialisation des variables
-$action=filter_input(INPUT_GET,"action",FILTER_SANITIZE_STRING);
-$CSRFToken = filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING);
-$id=trim(filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT));
-$nom=trim(filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING));
+$action=filter_input(INPUT_GET, "action", FILTER_SANITIZE_STRING);
+$CSRFToken = filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
+$id=trim(filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT));
+$nom=trim(filter_input(INPUT_GET, "nom", FILTER_SANITIZE_STRING));
 
-switch($action){		//	Operations de mise a jour
-  case "modif2" :
+switch ($action) {		//	Operations de mise a jour
+  case "modif2":
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->update("lignes",array("nom"=>$nom),array("id"=>$id));
+    $db->update("lignes", array("nom"=>$nom), array("id"=>$id));
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=planning/postes_cfg/index.php'</script>\n";
     break;
 
-  case "ajout2" :
+  case "ajout2":
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->insert("lignes",array("nom"=>$nom));
+    $db->insert("lignes", array("nom"=>$nom));
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=planning/postes_cfg/index.php'</script>\n";
     break;
 
-  case "suppr" :
+  case "suppr":
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->delete("lignes",array("id"=>$id));
+    $db->delete("lignes", array("id"=>$id));
     break;
 }
 
 
-switch($action){		//	Affichages
-  case "modif" :
+switch ($action) {		//	Affichages
+  case "modif":
     $db=new db();
-    $db->select2("lignes","nom",array("id"=>$id));
+    $db->select2("lignes", "nom", array("id"=>$id));
     
     echo <<<EOD
     <h3>Lignes de séparation</h3>
@@ -73,7 +73,7 @@ switch($action){		//	Affichages
 EOD;
     break;
 
-  case "ajout" :
+  case "ajout":
     echo <<<EOD
     <h3>Lignes de séparation</h3>
     <b>Ajout d'une nouvelle ligne</b><br/><br/>
@@ -93,4 +93,3 @@ EOD;
 EOD;
     break;
 }
-?>

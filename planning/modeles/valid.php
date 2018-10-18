@@ -11,7 +11,7 @@ Dernière modification : 9 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
-Valide la modification d'un modèles de planning 
+Valide la modification d'un modèles de planning
 */
 
 require_once "class.modeles.php";
@@ -20,15 +20,14 @@ $nom = filter_input(INPUT_GET, 'nom', FILTER_SANITIZE_STRING);
 $origine = filter_input(INPUT_GET, 'nom_origine', FILTER_SANITIZE_STRING);
 $CSRFToken = filter_input(INPUT_GET, 'CSRFToken', FILTER_SANITIZE_STRING);
 
-$nom=htmlentities(trim($nom),ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
-$origine=htmlentities($origine,ENT_QUOTES|ENT_IGNORE,"UTF-8",false);
+$nom=htmlentities(trim($nom), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+$origine=htmlentities($origine, ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->update("pl_poste_modeles",array("nom"=>$nom),array("nom"=>$origine));
+$db->update("pl_poste_modeles", array("nom"=>$nom), array("nom"=>$origine));
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->update("pl_poste_modeles_tab",array("nom"=>$nom),array("nom"=>$origine));
+$db->update("pl_poste_modeles_tab", array("nom"=>$nom), array("nom"=>$origine));
 echo "<script type='text/JavaScript'>document.location.href='index.php?page=planning/modeles/index.php';</script>\n";
-?>

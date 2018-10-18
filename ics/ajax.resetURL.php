@@ -25,13 +25,11 @@ $CSRFToken = filter_input(INPUT_POST, 'CSRFToken', FILTER_SANITIZE_STRING);
 
 $db = new db();
 $db->CSRFToken = $CSRFToken;
-$db->update("personnel",array("code_ics"=>null), array("id"=>$id));
+$db->update("personnel", array("code_ics"=>null), array("id"=>$id));
 
 $p = new personnel();
 $p->CSRFToken = $CSRFToken;
 $url = $p->getICSURL($id);
-$url = html_entity_decode($url,ENT_QUOTES|ENT_IGNORE,'UTF-8');
+$url = html_entity_decode($url, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
 
 echo json_encode(array("url" => $url));
-
-?>

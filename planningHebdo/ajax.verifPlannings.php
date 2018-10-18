@@ -19,10 +19,10 @@ session_start();
 include "../include/config.php";
 
 // Initialisation des variables
-$debut=filter_input(INPUT_GET,"debut",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
-$fin=filter_input(INPUT_GET,"fin",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
-$id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
-$perso_id=filter_input(INPUT_GET,"perso_id",FILTER_SANITIZE_NUMBER_INT);
+$debut=filter_input(INPUT_GET, "debut", FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
+$fin=filter_input(INPUT_GET, "fin", FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
+$id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
+$perso_id=filter_input(INPUT_GET, "perso_id", FILTER_SANITIZE_NUMBER_INT);
 
 // Filtre permettant de ne rechercher que les plannings de l'agent sélectionné
 $perso_id=$perso_id?$perso_id:$_SESSION['login_id'];
@@ -35,23 +35,21 @@ $id=$id?" AND `id`<>'$id' AND `remplace`<>'$id' ":null;
 
 // Filtre permettant de ne pas regarder le planning remplacé par le planning sélectionné
 $remplace=null;
-if($id){
-  $db=new db();
-  $db->select("planning_hebdo","remplace","`id`='$id'");
-  if($db->result[0]['remplace']){
-    $remplace=" AND `id`<>'{$db->result[0]['remplace']}' AND `remplace`<>'{$db->result[0]['remplace']}' ";
-  }
+if ($id) {
+    $db=new db();
+    $db->select("planning_hebdo", "remplace", "`id`='$id'");
+    if ($db->result[0]['remplace']) {
+        $remplace=" AND `id`<>'{$db->result[0]['remplace']}' AND `remplace`<>'{$db->result[0]['remplace']}' ";
+    }
 }
 
 $db=new db();
-$db->select("planning_hebdo","*","perso_id='$perso_id' AND `debut`<='$fin' AND `fin`>='$debut' $id $remplace ");
+$db->select("planning_hebdo", "*", "perso_id='$perso_id' AND `debut`<='$fin' AND `fin`>='$debut' $id $remplace ");
 
 $result=array();
-if(!$db->result){
-  $result=array("retour"=>"OK");
-}
-else{
-  $result=array("retour"=>"NO","debut"=>$db->result[0]['debut'],"fin"=>$db->result[0]['fin'], "autre_agent"=>$autre_agent);
+if (!$db->result) {
+    $result=array("retour"=>"OK");
+} else {
+    $result=array("retour"=>"NO","debut"=>$db->result[0]['debut'],"fin"=>$db->result[0]['fin'], "autre_agent"=>$autre_agent);
 }
 echo json_encode($result);
-?>
