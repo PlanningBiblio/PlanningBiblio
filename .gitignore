@@ -2,6 +2,7 @@ maj.sh
 *.swp
 *~
 *.kate-swp
+/.php_cs.cache
 data/*.xls
 data/*.csv
 data/*.txt
