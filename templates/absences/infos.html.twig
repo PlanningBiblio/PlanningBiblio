@@ -22,7 +22,7 @@
   {% elseif validation %}
     <b>Votre demande a été enregistrée</b>
     <br/><br/><a href='index.php?page=absences/index.php'>Retour</a>
-  {% elseif debut %}
+  {% elseif save %}
     <h4>Confirmation</h4>
     Du {{ debut }} au {{ fin }}<br/>
     {{ texte }}<br/><br/>
@@ -46,6 +46,8 @@
     <form method='get' action='index.php' name='form' onsubmit='return verif_form("debut=date1;fin=date2;texte");'>
       <input type='hidden' name='page' value='absences/infos.php'/>
       <input type='hidden' name='id' value='{{ id }}'/>
+      <input type='hidden' name='op' value='save'/>
+
       <table class='tableauFiches'>
         <tr>
           <td><label class='intitule'>Date de début</label> </td>
@@ -74,7 +76,7 @@
 
         <tr>
           <td colspan='2' style='text-align:center;'>
-            {% if if %}
+            {% if id %}
               <a href='index.php?page=absences/infos.php&amp;id={{ id }}&amp;suppression=1' class='ui-button' >Supprimer</a>
             {% endif %}
             <a href='index.php?page=absences/index.php' class='ui-button' style='margin-left:30px;'>Annuler</a>

@@ -20,6 +20,7 @@ require_once "class.absences.php";
 
 //	Initialisation des variables
 $id = $request->get('id');
+$op = $request->get('op');
 $debut = $request->get('debut');
 $fin = $request->get('fin');
 $suppression = $request->get('suppression');
@@ -33,6 +34,10 @@ $fin=filter_var($fin,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
 
 $debutSQL=dateSQL($debut);
 $finSQL=dateSQL($fin);
+
+if ($op == 'save') {
+    $templates_params['save'] = 1;
+}
 
 $templates_params['id'] = $id;
 $templates_params['debut'] = $debut;
