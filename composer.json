@@ -1,0 +1,9 @@
+{
+    "require": {
+        "symfony/http-foundation": "^3.4",
+        "twig/twig": "^2.0"
+    },
+    "autoload": {
+        "psr-4": { "PlanningBiblio\\": "src/PlanningBiblio" }
+    }
+}
