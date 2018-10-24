@@ -21,7 +21,7 @@ require_once "class.modeles.php";
 
 echo "<h3>Modification du modèle</h3>\n";
 
-$nom=filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING);
+$nom=filter_input(INPUT_GET, "nom", FILTER_SANITIZE_STRING);
 $nom_origine=$nom;
 
 ?>

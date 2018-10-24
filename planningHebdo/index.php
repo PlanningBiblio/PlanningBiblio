@@ -19,25 +19,25 @@ require_once "class.planningHebdo.php";
 require_once "personnel/class.personnel.php";
 
 // Initialisation des variables
-$debut=filter_input(INPUT_GET,"debut",FILTER_SANITIZE_STRING);
-$fin=filter_input(INPUT_GET,"fin",FILTER_SANITIZE_STRING);
-$reset=filter_input(INPUT_GET,"reset",FILTER_SANITIZE_STRING);
+$debut=filter_input(INPUT_GET, "debut", FILTER_SANITIZE_STRING);
+$fin=filter_input(INPUT_GET, "fin", FILTER_SANITIZE_STRING);
+$reset=filter_input(INPUT_GET, "reset", FILTER_SANITIZE_STRING);
 
-$debut=filter_var($debut,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
-$fin=filter_var($fin,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
-$reset=filter_var($reset,FILTER_CALLBACK,array("options"=>"sanitize_on"));
+$debut=filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
+$fin=filter_var($fin, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
+$reset=filter_var($reset, FILTER_CALLBACK, array("options"=>"sanitize_on"));
 
-if(!$debut){
-  $debut=array_key_exists("planningHebdoDebut",$_SESSION['oups'])?$_SESSION['oups']['planningHebdoDebut']:null;
+if (!$debut) {
+    $debut=array_key_exists("planningHebdoDebut", $_SESSION['oups'])?$_SESSION['oups']['planningHebdoDebut']:null;
 }
 
-if(!$fin){
-  $fin=array_key_exists("planningHebdoFin",$_SESSION['oups'])?$_SESSION['oups']['planningHebdoFin']:null;
+if (!$fin) {
+    $fin=array_key_exists("planningHebdoFin", $_SESSION['oups'])?$_SESSION['oups']['planningHebdoFin']:null;
 }
 
-if($reset){
-  $debut=null;
-  $fin=null;
+if ($reset) {
+    $debut=null;
+    $fin=null;
 }
 $_SESSION['oups']['planningHebdoDebut']=$debut;
 $_SESSION['oups']['planningHebdoFin']=$fin;
@@ -49,27 +49,27 @@ $adminN1 = in_array(1101, $droits);
 $adminN2 = in_array(1201, $droits);
 
 // Droits de gestion des plannings de présence agent par agent
-if($adminN1 and $config['PlanningHebdo-notifications-agent-par-agent']){
-  $db = new db();
-  $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']) );
+if ($adminN1 and $config['PlanningHebdo-notifications-agent-par-agent']) {
+    $db = new db();
+    $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
 
-  if(!$adminN2){
-    $perso_ids = array($_SESSION['login_id']);
+    if (!$adminN2) {
+        $perso_ids = array($_SESSION['login_id']);
     
-    if($db->result){
-      foreach($db->result as $elem){
-        $perso_ids[] = $elem['perso_id'];
-      }
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                $perso_ids[] = $elem['perso_id'];
+            }
+        }
     }
-  }
 }
 
 // Recherche des plannings
 $p=new planningHebdo();
 $p->debut=dateFr($debut);
 $p->fin=dateFr($fin);
-if(!empty($perso_ids)){
-  $p->perso_ids = $perso_ids;
+if (!empty($perso_ids)) {
+    $p->perso_ids = $perso_ids;
 }
 $p->fetch();
 
@@ -114,80 +114,77 @@ Début : <input type='text' name='debut' class='datepicker' value='$debut' />
 </thead>
 <tbody>
 EOD;
-foreach($p->elements as $elem){
-  $actuel=$elem['actuel']?"Oui":null;
+foreach ($p->elements as $elem) {
+    $actuel=$elem['actuel']?"Oui":null;
 
-  // Validation
-  $validation_class = 'bold';
-  $validation_date = dateFr($elem['saisie'], true);
-  $validation = 'Demand&eacute;';
-
-  if( $elem['valide_n1'] > 0 ){
+    // Validation
     $validation_class = 'bold';
-    $validation_date = dateFr($elem['validation_n1'], true);
-    $validation = $lang['work_hours_dropdown_accepted_pending'];
-    // 99999 : ID cron : donc pas de nom a afficher
-    if($elem['valide_n1'] != 99999){
-      $validation.=", ".nom( $elem['valide'], 'nom p', $agents);
-    }
-  }
-  elseif( $elem['valide_n1'] < 0 ){
-    $validation_class = 'bold';
-    $validation_date = dateFr($elem['validation_n1'], true);
-    $validation = $lang['work_hours_dropdown_refused_pending'];
-    // 99999 : ID cron : donc pas de nom a afficher
-    if($elem['valide_n1'] != 99999){
-      $validation.=", ".nom( -$elem['valide'], 'nom p', $agents);
-    }
-  }
+    $validation_date = dateFr($elem['saisie'], true);
+    $validation = 'Demand&eacute;';
 
-  if( $elem['valide'] > 0 ){
-    $validation_class = null;
-    $validation_date = dateFr($elem['validation'], true);
-    $validation = $lang['work_hours_dropdown_accepted'];
-    // 99999 : ID cron : donc pas de nom a afficher
-    if($elem['valide'] != 99999){
-      $validation.=", ".nom( $elem['valide'], 'nom p', $agents);
+    if ($elem['valide_n1'] > 0) {
+        $validation_class = 'bold';
+        $validation_date = dateFr($elem['validation_n1'], true);
+        $validation = $lang['work_hours_dropdown_accepted_pending'];
+        // 99999 : ID cron : donc pas de nom a afficher
+        if ($elem['valide_n1'] != 99999) {
+            $validation.=", ".nom($elem['valide'], 'nom p', $agents);
+        }
+    } elseif ($elem['valide_n1'] < 0) {
+        $validation_class = 'bold';
+        $validation_date = dateFr($elem['validation_n1'], true);
+        $validation = $lang['work_hours_dropdown_refused_pending'];
+        // 99999 : ID cron : donc pas de nom a afficher
+        if ($elem['valide_n1'] != 99999) {
+            $validation.=", ".nom(-$elem['valide'], 'nom p', $agents);
+        }
     }
-  }
-  elseif( $elem['valide'] < 0 ){
-    $validation_class = 'red';
-    $validation_date = dateFr($elem['validation'], true);
-    $validation = $lang['work_hours_dropdown_refused'];
-    // 99999 : ID cron : donc pas de nom a afficher
-    if($elem['valide'] != 99999){
-      $validation.=", ".nom( -$elem['valide'], 'nom p', $agents);
+
+    if ($elem['valide'] > 0) {
+        $validation_class = null;
+        $validation_date = dateFr($elem['validation'], true);
+        $validation = $lang['work_hours_dropdown_accepted'];
+        // 99999 : ID cron : donc pas de nom a afficher
+        if ($elem['valide'] != 99999) {
+            $validation.=", ".nom($elem['valide'], 'nom p', $agents);
+        }
+    } elseif ($elem['valide'] < 0) {
+        $validation_class = 'red';
+        $validation_date = dateFr($elem['validation'], true);
+        $validation = $lang['work_hours_dropdown_refused'];
+        // 99999 : ID cron : donc pas de nom a afficher
+        if ($elem['valide'] != 99999) {
+            $validation.=", ".nom(-$elem['valide'], 'nom p', $agents);
+        }
     }
-  }
  
 
-  $planningRemplace=$elem['remplace']==0?dateFr($elem['saisie'],true):$planningRemplace;
-  $commentaires=$elem['remplace']?"Remplace le planning <br/>du $planningRemplace":null;
-  $arrow=$elem['remplace']?"<font style='font-size:20pt;'>&rdsh;</font>":null;
+    $planningRemplace=$elem['remplace']==0?dateFr($elem['saisie'], true):$planningRemplace;
+    $commentaires=$elem['remplace']?"Remplace le planning <br/>du $planningRemplace":null;
+    $arrow=$elem['remplace']?"<font style='font-size:20pt;'>&rdsh;</font>":null;
 
-  echo "<tr id='tr_{$elem['id']}'>";
-  echo "<td style='white-space:nowrap;'>$arrow \n";
+    echo "<tr id='tr_{$elem['id']}'>";
+    echo "<td style='white-space:nowrap;'>$arrow \n";
     echo "<a href='index.php?page=planningHebdo/modif.php&amp;id={$elem['id']}&amp;retour=index.php'/>";
     echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a>";
     
     // Si le champ "clé" est renseigné : importation automatique, donc on n'affiche pas les icônes copie et suppression
-    if(!$elem['cle']){
-      echo "<a href='index.php?page=planningHebdo/modif.php&amp;copy={$elem['id']}&amp;retour=index.php'/>";
-      echo "<span class='pl-icon pl-icon-copy' title='Copier'></span></a>";
-      echo "<a href='javascript:plHebdoSupprime({$elem['id']});' style='margin-left:6px;'/>";
-      echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>";
+    if (!$elem['cle']) {
+        echo "<a href='index.php?page=planningHebdo/modif.php&amp;copy={$elem['id']}&amp;retour=index.php'/>";
+        echo "<span class='pl-icon pl-icon-copy' title='Copier'></span></a>";
+        echo "<a href='javascript:plHebdoSupprime({$elem['id']});' style='margin-left:6px;'/>";
+        echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>";
     }
     
-  echo "<td>{$elem['nom']}</td>";
-  echo "<td>{$elem['service']}</td>";
-  echo "<td>".dateFr($elem['debut'])."</td>";
-  echo "<td>".dateFr($elem['fin'])."</td>";
-  echo "<td>".dateFr($elem['saisie'],true)."</td>";
-  echo "<td class='$validation_class' >$validation</td>";
-  echo "<td class='$validation_class' >$validation_date</td>";
-  echo "<td>$actuel</td>";
-  echo "<td>$commentaires</td>";
-  echo "</tr>\n";
+    echo "<td>{$elem['nom']}</td>";
+    echo "<td>{$elem['service']}</td>";
+    echo "<td>".dateFr($elem['debut'])."</td>";
+    echo "<td>".dateFr($elem['fin'])."</td>";
+    echo "<td>".dateFr($elem['saisie'], true)."</td>";
+    echo "<td class='$validation_class' >$validation</td>";
+    echo "<td class='$validation_class' >$validation_date</td>";
+    echo "<td>$actuel</td>";
+    echo "<td>$commentaires</td>";
+    echo "</tr>\n";
 }
 echo "</tbody></table>\n";
-?>

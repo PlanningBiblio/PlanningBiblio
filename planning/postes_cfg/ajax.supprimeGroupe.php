@@ -12,7 +12,7 @@ Dernière modification : 3 août 2017
 
 Description :
 Supprime un groupe de tableau.
-Page appelée par la fonction supprimeGroupe (planning/postes_cfg/js/tableaux.js) 
+Page appelée par la fonction supprimeGroupe (planning/postes_cfg/js/tableaux.js)
 lors du clique sur les croix rouges dans la liste des groupe (planning/postes_cfg/index.php)
 */
 
@@ -21,12 +21,11 @@ session_start();
 require_once "../../include/config.php";
 require_once "class.tableaux.php";
 
-$CSRFToken = filter_input(INPUT_POST,"CSRFToken",FILTER_SANITIZE_STRING);
-$id=filter_input(INPUT_POST,"id",FILTER_SANITIZE_NUMBER_INT);
+$CSRFToken = filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
+$id=filter_input(INPUT_POST, "id", FILTER_SANITIZE_NUMBER_INT);
 
 $t=new tableau();
 $t->id=$id;
 $t->CSRFToken = $CSRFToken;
 $t->deleteGroup();
 echo json_encode(null);
-?>

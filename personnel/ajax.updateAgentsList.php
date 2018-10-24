@@ -16,22 +16,21 @@ Affiche dans cette liste les agents supprimés ou non en fonction de la variable
 Appelé en Ajax via la fonction JS updateAgentsList à partir de la page voir.php
 */
 
-ini_set('display_errors',0);
+ini_set('display_errors', 0);
 
 include "../include/config.php";
 include "class.personnel.php";
 
 $p=new personnel();
-if($_GET['deleted']=="yes"){
-  $p->supprime=array(0,1);
+if ($_GET['deleted']=="yes") {
+    $p->supprime=array(0,1);
 }
 $p->fetch();
 $p->elements;
 
 $tab=array();
-foreach($p->elements as $elem){
-  $tab[]=array("id"=>$elem['id'],"nom"=>$elem['nom'],"prenom"=>$elem['prenom']);
+foreach ($p->elements as $elem) {
+    $tab[]=array("id"=>$elem['id'],"nom"=>$elem['nom'],"prenom"=>$elem['prenom']);
 }
   
 echo json_encode($tab);
-?>

@@ -20,17 +20,17 @@ Page appelée par la page index.php
 
 // Liste des motifs
 $db_motifs=new db();
-$db_motifs->select("select_abs",null,null,"order by rang");
+$db_motifs->select("select_abs", null, null, "order by rang");
 $motifs=$db_motifs->result;
 
 // Liste des motifs utilisés
 $motifs_utilises=array();
 $db_motifs=new db();
-$db_motifs->select("absences","motif",null,"group by motif");
-if($db_motifs->result){
-  foreach($db_motifs->result as $elem){
-    $motifs_utilises[]=$elem['motif'];
-  }
+$db_motifs->select("absences", "motif", null, "group by motif");
+if ($db_motifs->result) {
+    foreach ($db_motifs->result as $elem) {
+        $motifs_utilises[]=$elem['motif'];
+    }
 }
 
 // Types de motifs
@@ -46,24 +46,24 @@ $motifs_types=array(array("id"=>0,"valeur"=>"N1 cliquable"),array("id"=>1,"valeu
   <fieldset>
     <ul id="motifs-sortable">
 <?php
-    if(is_array($motifs)){
-      foreach($motifs as $elem){
-	$class=$elem['type']==2?"padding20":"bold";
-	echo "<li class='ui-state-default' id='li_{$elem['id']}'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>\n";
-	echo "<font class='$class' id='valeur_{$elem['id']}'>{$elem['valeur']}</font>\n";
-	echo "<select id='type_{$elem['id']}' style='position:absolute;left:330px;'>\n";
-	echo "<option value='0'>&nbsp;</option>\n";
-	foreach($motifs_types as $elem2){
-	  $selected=$elem2['id']==$elem['type']?"selected='selected'":null;
-	  echo "<option value='{$elem2['id']}' $selected>{$elem2['valeur']}</option>\n";
-	}
-	echo "</select>\n";
+    if (is_array($motifs)) {
+        foreach ($motifs as $elem) {
+            $class=$elem['type']==2?"padding20":"bold";
+            echo "<li class='ui-state-default' id='li_{$elem['id']}'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>\n";
+            echo "<font class='$class' id='valeur_{$elem['id']}'>{$elem['valeur']}</font>\n";
+            echo "<select id='type_{$elem['id']}' style='position:absolute;left:330px;'>\n";
+            echo "<option value='0'>&nbsp;</option>\n";
+            foreach ($motifs_types as $elem2) {
+                $selected=$elem2['id']==$elem['type']?"selected='selected'":null;
+                echo "<option value='{$elem2['id']}' $selected>{$elem2['valeur']}</option>\n";
+            }
+            echo "</select>\n";
 
-	if(!in_array($elem['valeur'],$motifs_utilises)){
-	  echo "<span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>\n";
-	}
-	echo "</li>\n";
-      }
+            if (!in_array($elem['valeur'], $motifs_utilises)) {
+                echo "<span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>\n";
+            }
+            echo "</li>\n";
+        }
     }
 ?>
     </ul>

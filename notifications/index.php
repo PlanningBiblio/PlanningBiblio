@@ -18,10 +18,10 @@ Cette page est appelée par le fichier index.php
 require_once __DIR__."/../personnel/class.personnel.php";
 
 // Initialisation des variables
-$actif=filter_input(INPUT_GET,"actif",FILTER_SANITIZE_STRING);
+$actif=filter_input(INPUT_GET, "actif", FILTER_SANITIZE_STRING);
 
-if(!$actif){
-  $actif = isset($_SESSION['perso_actif']) ? $_SESSION['perso_actif'] : 'Actif';
+if (!$actif) {
+    $actif = isset($_SESSION['perso_actif']) ? $_SESSION['perso_actif'] : 'Actif';
 }
 
 $_SESSION['perso_actif']=$actif;
@@ -58,12 +58,12 @@ $agents=$p->elements;
 
 // Agents ayant les droits de validation d'absence N1
 $agents_responsables = array();
-foreach($agents as $elem){
-  for($i = 1; $i <= $config['Multisites-nombre']; $i++){
-    if(in_array((200+$i), json_decode(html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8')))){
-      $agents_responsables[$elem['id']] = $elem;
+foreach ($agents as $elem) {
+    for ($i = 1; $i <= $config['Multisites-nombre']; $i++) {
+        if (in_array((200+$i), json_decode(html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8')))) {
+            $agents_responsables[$elem['id']] = $elem;
+        }
     }
-  }
 }
 
 echo "<form name='form' method='post' action='index.php' onsubmit='return confirm(\"Etes vous sûr de vouloir supprimer les agents sélectionnés ?\");'>\n";
@@ -75,71 +75,71 @@ echo "<th>Nom</th>";
 echo "<th>Pr&#233;nom</th>";
 echo "<th>Service</th>";
 echo "<th>Statut</th>";
-if($config['Multisites-nombre']>1){
-  echo "<th>Sites</th>\n";
+if ($config['Multisites-nombre']>1) {
+    echo "<th>Sites</th>\n";
 }
 echo "<th>Validations / notifications</th>";
 echo "</thead>\n";
 echo "<tbody>\n";
 $i=0;
-foreach($agents as $agent){
+foreach ($agents as $agent) {
 
   // Filtre des agents service public / administratif
-  if($agent['actif'] != $actif){
-    continue;
-  }
-
-  $id=$agent['id'];
-  
-  $agent['service']=str_replace("`","'",$agent['service']);
-
-  echo "<tr><td style='white-space:nowrap;'>\n";
-  echo "<input type='checkbox' name='chk$i' value='$id' class='checkboxes'/>\n";
-  echo "<span class='pl-icon pl-icon-edit pointer' title='Modifier' data-id='$id'></span>";
-  echo "</td>";
-  echo "<td>{$agent['nom']}</td>";
-  echo "<td>{$agent['prenom']}</td>";
-  echo "<td>{$agent['service']}</td>";
-  echo "<td>{$agent['statut']}</td>";
-  if($config['Multisites-nombre']>1){
-    $tmp=array();
-    if(!empty($agent['sites'])){
-      foreach($agent['sites'] as $site){
-	if($site){
-	  $tmp[]=$config["Multisites-site{$site}"];
-	}
-      }
+    if ($agent['actif'] != $actif) {
+        continue;
     }
-    $sites=!empty($tmp)?join(", ",$tmp):null;
-    echo "<td>$sites</td>";
-  }
 
-  $responsables = array();
-  foreach($agent['responsables'] as $resp){
-    if(!empty($resp['responsable']) and array_key_exists($resp['responsable'], $agents)){
-      $notification = $resp['notification'] ? 1 : 0 ;
-      $tmp = "<span class='resp_$id' data-resp='{$resp['responsable']}' data-notif='$notification' >";
-      $tmp .= nom($resp['responsable'],$format="nom p", $agents);
-      if($notification){
-        $tmp .= ' - Notifications';
+    $id=$agent['id'];
+  
+    $agent['service']=str_replace("`", "'", $agent['service']);
+
+    echo "<tr><td style='white-space:nowrap;'>\n";
+    echo "<input type='checkbox' name='chk$i' value='$id' class='checkboxes'/>\n";
+    echo "<span class='pl-icon pl-icon-edit pointer' title='Modifier' data-id='$id'></span>";
+    echo "</td>";
+    echo "<td>{$agent['nom']}</td>";
+    echo "<td>{$agent['prenom']}</td>";
+    echo "<td>{$agent['service']}</td>";
+    echo "<td>{$agent['statut']}</td>";
+    if ($config['Multisites-nombre']>1) {
+        $tmp=array();
+        if (!empty($agent['sites'])) {
+            foreach ($agent['sites'] as $site) {
+                if ($site) {
+                    $tmp[]=$config["Multisites-site{$site}"];
+                }
+            }
+        }
+        $sites=!empty($tmp)?join(", ", $tmp):null;
+        echo "<td>$sites</td>";
+    }
+
+    $responsables = array();
+    foreach ($agent['responsables'] as $resp) {
+        if (!empty($resp['responsable']) and array_key_exists($resp['responsable'], $agents)) {
+            $notification = $resp['notification'] ? 1 : 0 ;
+            $tmp = "<span class='resp_$id' data-resp='{$resp['responsable']}' data-notif='$notification' >";
+            $tmp .= nom($resp['responsable'], $format="nom p", $agents);
+            if ($notification) {
+                $tmp .= ' - Notifications';
 //       } elseif($resp['notification'] === '0') {
 //         $tmp .= " - <span class='striped red'>Notifications</span>";
-      }
-      $tmp .= "</span>";
-      $responsables[] = $tmp;
+            }
+            $tmp .= "</span>";
+            $responsables[] = $tmp;
+        }
     }
-  }
 
-  if(!empty($responsables)){
-    usort($responsables, 'cmp_strip_tags');
-    $responsables = implode('<br/>', $responsables);
-    echo "<td>$responsables</td>\n";
-  } else {
-    echo "<td>&nbsp;</td>\n";
-  }
+    if (!empty($responsables)) {
+        usort($responsables, 'cmp_strip_tags');
+        $responsables = implode('<br/>', $responsables);
+        echo "<td>$responsables</td>\n";
+    } else {
+        echo "<td>&nbsp;</td>\n";
+    }
 
-  echo "</tr>";
-  $i++;
+    echo "</tr>";
+    $i++;
 }
 
 echo "</tbody>";
@@ -163,17 +163,17 @@ echo "</form>\n";
 
   <tbody>
   <?php
-  for($i = 0; $i < 5; $i++){
-    echo "<tr><td>\n";
-    echo "<select name='responsable-$i' id='responsable-$i' class='responsables' data-id='$i'>\n";
-    echo "<option value=''>&nbsp;</option>\n";
-    foreach($agents_responsables as $agent){
-      echo "<option value='{$agent['id']}'>{$agent['nom']} {$agent['prenom']}</option>\n";
-    }
-    echo "</select>\n";
-    echo "</td><td>\n";
-    echo "<input type='checkbox' name='notification-$i' id='notification-$i' class='notifications' data-id='$i'/>\n";
-    echo "</td></tr>\n";
+  for ($i = 0; $i < 5; $i++) {
+      echo "<tr><td>\n";
+      echo "<select name='responsable-$i' id='responsable-$i' class='responsables' data-id='$i'>\n";
+      echo "<option value=''>&nbsp;</option>\n";
+      foreach ($agents_responsables as $agent) {
+          echo "<option value='{$agent['id']}'>{$agent['nom']} {$agent['prenom']}</option>\n";
+      }
+      echo "</select>\n";
+      echo "</td><td>\n";
+      echo "<input type='checkbox' name='notification-$i' id='notification-$i' class='notifications' data-id='$i'/>\n";
+      echo "</td></tr>\n";
   }
   ?>
   </tbody>

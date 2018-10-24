@@ -11,7 +11,7 @@ Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
-Affiche le formulaire demandant le nom, prénom, adresse email et mot de passe du responsable du planning pour créer son 
+Affiche le formulaire demandant le nom, prénom, adresse email et mot de passe du responsable du planning pour créer son
 compte lors de l'installation
 
 Page incluse dans le fichier setup/createconfig.php
@@ -20,7 +20,7 @@ Formulaire soumis au fichier setup/fin.php
 
 session_start();
 
-$dbprefix=filter_input(INPUT_POST,"dbprefix",FILTER_SANITIZE_STRING);
+$dbprefix=filter_input(INPUT_POST, "dbprefix", FILTER_SANITIZE_STRING);
 
 ?>
 <h3>Cr&eacute;ation du compte administrateur</h3>

@@ -27,31 +27,31 @@ $activites=$a->elements;
 $activites_utilisees=array();
 $tab=array();
 $db=new db();
-$db->select2("postes","activites",array("supprime"=>null),"GROUP BY `activites`");
-if($db->result){
-  foreach($db->result as $elem){
-    $tab[]=json_decode(html_entity_decode($elem['activites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
-  }
+$db->select2("postes", "activites", array("supprime"=>null), "GROUP BY `activites`");
+if ($db->result) {
+    foreach ($db->result as $elem) {
+        $tab[]=json_decode(html_entity_decode($elem['activites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+    }
 }
 
 // 		Contrôle si l'activité est attribuée à un agent pour en interdire la suppression
 $db=new db();
-$db->select2("personnel","postes",array("supprime"=>"<>2"),"GROUP BY `postes`");
-if($db->result){
-  foreach($db->result as $elem){
-    $tab[]=json_decode(html_entity_decode($elem['postes'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
-  }
-}
-if(!empty($tab)){
-  foreach($tab as $elem){
-    if(is_array($elem)){
-      foreach($elem as $act){
-	if(!in_array($act,$activites_utilisees)){
-	  $activites_utilisees[]=$act;
-	}
-      }
+$db->select2("personnel", "postes", array("supprime"=>"<>2"), "GROUP BY `postes`");
+if ($db->result) {
+    foreach ($db->result as $elem) {
+        $tab[]=json_decode(html_entity_decode($elem['postes'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
     }
-  }
+}
+if (!empty($tab)) {
+    foreach ($tab as $elem) {
+        if (is_array($elem)) {
+            foreach ($elem as $act) {
+                if (!in_array($act, $activites_utilisees)) {
+                    $activites_utilisees[]=$act;
+                }
+            }
+        }
+    }
 }
 
 ?>
@@ -74,18 +74,18 @@ echo "<th>Nom de l'activité</th>\n";
 echo "</tr></thead>\n";
 
 echo "<tbody>\n";
-foreach($activites as $elem){
-  echo "<tr><td>\n";
-  echo "<a href='index.php?page=activites/modif.php&amp;id={$elem['id']}'>\n";
-  echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
-  if(!in_array($elem['id'],$activites_utilisees)){
-    echo "&nbsp;&nbsp;";
-    echo "<a href='javascript:supprime(\"activites\",{$elem['id']}, \"$CSRFSession\");'>";
-    echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
-  }
-  echo "</td>\n";
-  echo "<td>{$elem['nom']}</td>\n";
-  echo "</tr>\n";
+foreach ($activites as $elem) {
+    echo "<tr><td>\n";
+    echo "<a href='index.php?page=activites/modif.php&amp;id={$elem['id']}'>\n";
+    echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
+    if (!in_array($elem['id'], $activites_utilisees)) {
+        echo "&nbsp;&nbsp;";
+        echo "<a href='javascript:supprime(\"activites\",{$elem['id']}, \"$CSRFSession\");'>";
+        echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
+    }
+    echo "</td>\n";
+    echo "<td>{$elem['nom']}</td>\n";
+    echo "</tr>\n";
 }
 echo "</tbody></table>\n";
 ?>

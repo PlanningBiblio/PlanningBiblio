@@ -16,14 +16,13 @@ Fichier inclus dans la page authentification.php
 */
 require_once "class.ldap.php";
 
-if(substr($config['Auth-Mode'],0,3)=="CAS"){
-  $authArgs=$_SESSION['oups']['Auth-Mode']=="CAS"?null:"?noCAS";
+if (substr($config['Auth-Mode'], 0, 3)=="CAS") {
+    $authArgs=$_SESSION['oups']['Auth-Mode']=="CAS"?null:"?noCAS";
 }
 
-if(substr($config['Auth-Mode'],0,3)=="CAS" and $_SESSION['oups']['Auth-Mode']=="CAS"){
-  session_destroy();
-  echo "<script type='text/JavaScript'>location.href='https://{$config['CAS-Hostname']}:{$config['CAS-Port']}/{$config['CAS-URI-Logout']}';</script>";
-  include "include/footer.php";
-  exit;
+if (substr($config['Auth-Mode'], 0, 3)=="CAS" and $_SESSION['oups']['Auth-Mode']=="CAS") {
+    session_destroy();
+    echo "<script type='text/JavaScript'>location.href='https://{$config['CAS-Hostname']}:{$config['CAS-Port']}/{$config['CAS-URI-Logout']}';</script>";
+    include "include/footer.php";
+    exit;
 }
-?>

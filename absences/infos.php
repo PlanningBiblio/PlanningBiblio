@@ -29,8 +29,8 @@ $texte = trim($request->get('texte'));
 $CSRFToken = trim($request->get('CSRFToken'));
 
 // Contrôle sanitize_dateFr en 2 temps pour éviter les erreurs CheckMarx
-$debut=filter_var($debut,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
-$fin=filter_var($fin,FILTER_CALLBACK,array("options"=>"sanitize_dateFr"));
+$debut=filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
+$fin=filter_var($fin, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
 
 $debutSQL=dateSQL($debut);
 $finSQL=dateSQL($fin);
@@ -45,51 +45,49 @@ $templates_params['fin'] = $fin;
 $templates_params['texte'] = $texte;
 $templates_params['suppression'] = $suppression;
 $templates_params['validation'] = $validation;
+
 //			----------------		Suppression							-------------------------------//
-if($suppression and $validation){
-  $db=new db();
-  $db->CSRFToken = $CSRFToken;
-  $db->delete("absences_infos",array("id"=>$id));
-}
-elseif($suppression){
+if ($suppression and $validation) {
+    $db=new db();
+    $db->CSRFToken = $CSRFToken;
+    $db->delete("absences_infos", array("id"=>$id));
+} elseif ($suppression) {
 }
 //			----------------		FIN Suppression							-------------------------------//
 //			----------------		Validation du formulaire							-------------------------------//
-elseif($validation){		//		Validation
-  if($id){
-    $db=new db();
-    $db->CSRFToken = $CSRFToken;
-    $db->update("absences_infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte),array("id"=>$id));
-  }else{
-    $db=new db();
-    $db->CSRFToken = $CSRFToken;
-    $db->insert("absences_infos",array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte));
-  }
-}
-elseif($debut){		//		Vérification
-  $fin=$fin?$fin:$debut;
-  $templates_params['fin'] = $fin;
+elseif ($validation) {		//		Validation
+    if ($id) {
+        $db=new db();
+        $db->CSRFToken = $CSRFToken;
+        $db->update("absences_infos", array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte), array("id"=>$id));
+    } else {
+        $db=new db();
+        $db->CSRFToken = $CSRFToken;
+        $db->insert("absences_infos", array("debut"=>$debutSQL,"fin"=>$finSQL,"texte"=>$texte));
+    }
+} elseif ($debut) {		//		Vérification
+    $fin=$fin?$fin:$debut;
+    $templates_params['fin'] = $fin;
 }
 //			----------------		FIN Validation du formulaire							-------------------------------//
-else{
-  if($id){
-    $db=new db();
-    $db->select2("absences_infos","*",array("id"=>$id));
-    $debut=dateFr3($db->result[0]['debut']);
-    $fin=dateFr3($db->result[0]['fin']);
-    $texte=$db->result[0]['texte'];
-  }
-  else{
-    $debut=null;
-    $fin=null;
-    $texte=null;
-  }
-  $templates_params['debut'] = $debut;
-  $templates_params['fin'] = $fin;
-  $templates_params['texte'] = $texte;
+else {
+    if ($id) {
+        $db=new db();
+        $db->select2("absences_infos", "*", array("id"=>$id));
+        $debut=dateFr3($db->result[0]['debut']);
+        $fin=dateFr3($db->result[0]['fin']);
+        $texte=$db->result[0]['texte'];
+    } else {
+        $debut=null;
+        $fin=null;
+        $texte=null;
+    }
+
+    $templates_params['debut'] = $debut;
+    $templates_params['fin'] = $fin;
+    $templates_params['texte'] = $texte;
 }
 
 $template = $twig->load('absences/infos.html.twig');
 echo $template->render($templates_params);
 exit;
-?>

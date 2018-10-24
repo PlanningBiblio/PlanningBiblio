@@ -81,6 +81,7 @@
             },
             "autoload": {
                 "psr-4": {
+                    "Symfony\\Component\\OptionsResolver\\": ""
                     "Symfony\\Component\\HttpFoundation\\": ""
                 },
                 "exclude-from-classmap": [

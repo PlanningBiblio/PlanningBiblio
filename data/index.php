@@ -13,4 +13,3 @@ Auteur : Jérôme Combes, jerome@planningbilbio.fr
 Description :
 Fichier permettant de conserver le dossier data dans git
 */
-?>

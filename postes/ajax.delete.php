@@ -27,4 +27,3 @@ $p=new postes();
 $p->CSRFToken=$CSRFToken;
 $p->id=$id;
 $p->delete();
-?>

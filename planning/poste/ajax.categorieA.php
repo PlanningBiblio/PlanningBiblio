@@ -13,7 +13,7 @@ Dernière modification : 13 janvier 2015
 Description :
 Contrôle en arrière plan si un agent de catégorie A est placé en fin de service.
 Permet d'afficher ou de masquer l'alerte "pas d'agent de catégorie A en fin de service" en haut du planning
-Page appellée par la fonction JavaScript verif_categorieA lors du chargement de la page planning/poste/index.php et lors de la modification 
+Page appellée par la fonction JavaScript verif_categorieA lors du chargement de la page planning/poste/index.php et lors de la modification
 d'une cellule (fonction JS bataille_navale)
 Affiche "true" ou "false"
 */
@@ -28,10 +28,8 @@ $p->date=$_POST['date'];
 $p->site=$_POST['site'];
 $p->finDeService();
 
-if($p->categorieA){
-  echo json_encode("true");
+if ($p->categorieA) {
+    echo json_encode("true");
+} else {
+    echo json_encode("false");
 }
-else{
-  echo json_encode("false");
-}
-?>

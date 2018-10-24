@@ -20,11 +20,10 @@ session_start();
 require_once "../include/config.php";
 require_once "class.activites.php";
 
-$id=filter_input(INPUT_GET,"id",FILTER_SANITIZE_NUMBER_INT);
-$CSRFToken = filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING);
+$id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
+$CSRFToken = filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
 
 $a=new activites();
 $a->id=$id;
 $a->CSRFToken = $CSRFToken;
 $a->delete();
-?>

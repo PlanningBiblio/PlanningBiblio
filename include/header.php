@@ -16,23 +16,23 @@ Page notamment appelée par les fichiers index.php, admin/index.php
 */
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
-if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
-  include_once "accessDenied.php";
-  exit;
+if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
+    include_once "accessDenied.php";
+    exit;
 }
 
 $theme=$config['Affichage-theme']?$config['Affichage-theme']:"default";
 $themeJQuery=$config['Affichage-theme']?$config['Affichage-theme']:"default";
-if(!file_exists("themes/$theme/jquery-ui.min.css")){
-  $themeJQuery="default";
+if (!file_exists("themes/$theme/jquery-ui.min.css")) {
+    $themeJQuery="default";
 }
-if(!file_exists("themes/$theme/$theme.css")){
-  $theme="default";
+if (!file_exists("themes/$theme/$theme.css")) {
+    $theme="default";
 }
 
 $favicon = null;
-if(!file_exists("themes/$theme/favicon.png")){
-  $favicon = "<link rel='icon' type='image/png' href='themes/$theme/images/favicon.png' />\n";
+if (!file_exists("themes/$theme/favicon.png")) {
+    $favicon = "<link rel='icon' type='image/png' href='themes/$theme/images/favicon.png' />\n";
 }
 
 ?>
@@ -54,7 +54,7 @@ if(!file_exists("themes/$theme/favicon.png")){
 <script type='text/JavaScript' src='js/dataTables.sort.js?version=<?php echo $version; ?>'></script>
 <script type='text/JavaScript' src='js/script.js?version=<?php echo $version; ?>'></script>
 <?php
-getJSFiles($page,$version);
+getJSFiles($page, $version);
 ?>
 
 <link rel='StyleSheet' href='vendor/DataTables-1.10.4/media/css/jquery.dataTables_themeroller.css' type='text/css' media='all'/>
@@ -63,8 +63,8 @@ getJSFiles($page,$version);
 <link rel='StyleSheet' href='themes/default/default.css?version=<?php echo $version; ?>' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/print.css?version=<?php echo $version; ?>' type='text/css' media='print'/>
 <?php
-if($theme!="default"){
-  echo "<link rel='StyleSheet' href='themes/{$theme}/{$theme}.css?version=$version' type='text/css' media='all'/>\n";
+if ($theme!="default") {
+    echo "<link rel='StyleSheet' href='themes/{$theme}/{$theme}.css?version=$version' type='text/css' media='all'/>\n";
 }
 echo $favicon;
 ?>
@@ -74,16 +74,16 @@ echo $favicon;
 
 <?php
 // Affichage des messages d'erreur ou de confirmation venant de la page précedente
-$msg=filter_input(INPUT_GET,"msg", FILTER_SANITIZE_STRING);
-$msgType=filter_input(INPUT_GET,"msgType", FILTER_SANITIZE_STRING);
-if($msg){
-  echo "<script type='text/JavaScript'>CJInfo('$msg','$msgType');</script>\n";
+$msg=filter_input(INPUT_GET, "msg", FILTER_SANITIZE_STRING);
+$msgType=filter_input(INPUT_GET, "msgType", FILTER_SANITIZE_STRING);
+if ($msg) {
+    echo "<script type='text/JavaScript'>CJInfo('$msg','$msgType');</script>\n";
 }
 
-$msg2=filter_input(INPUT_GET,"msg2", FILTER_SANITIZE_STRING);
-$msg2Type=filter_input(INPUT_GET,"msg2Type", FILTER_SANITIZE_STRING);
-if($msg2){
-  echo "<script type='text/JavaScript'>CJInfo('$msg2','$msg2Type',82,15000);</script>\n";
+$msg2=filter_input(INPUT_GET, "msg2", FILTER_SANITIZE_STRING);
+$msg2Type=filter_input(INPUT_GET, "msg2Type", FILTER_SANITIZE_STRING);
+if ($msg2) {
+    echo "<script type='text/JavaScript'>CJInfo('$msg2','$msg2Type',82,15000);</script>\n";
 }
 ?>
 

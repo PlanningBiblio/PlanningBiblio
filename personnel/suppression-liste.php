@@ -19,44 +19,41 @@ Cette page est appelée par le fichier index.php
 
 require_once "class.personnel.php";
 
-$post=filter_input_array(INPUT_POST,FILTER_SANITIZE_NUMBER_INT);
+$post=filter_input_array(INPUT_POST, FILTER_SANITIZE_NUMBER_INT);
 $CSRFToken = filter_input(INPUT_POST, 'CSRFToken', FILTER_SANITIZE_STRING);
 
-foreach($post as $key => $value){
-  if(substr($key,0,3)=="chk"){
-    $liste[]=$value;
-  }
+foreach ($post as $key => $value) {
+    if (substr($key, 0, 3)=="chk") {
+        $liste[]=$value;
+    }
 }
-$liste=join($liste,",");
-if($_SESSION['perso_actif']=="Supprimé"){
-  $p=new personnel();
-  $p->CSRFToken = $CSRFToken;
-  $p->delete($liste);
-}
-else{
-  // TODO : demander la date de suppression en popup
-  // Date de suppression
-  $date = date('Y-m-d');
+$liste=join($liste, ",");
+if ($_SESSION['perso_actif']=="Supprimé") {
+    $p=new personnel();
+    $p->CSRFToken = $CSRFToken;
+    $p->delete($liste);
+} else {
+    // TODO : demander la date de suppression en popup
+    // Date de suppression
+    $date = date('Y-m-d');
 
-  // Mise à jour de la table personnel
-  $db=new db();
-  $db->CSRFToken = $CSRFToken;
-  $db->update("personnel",array("supprime"=>"1","actif"=>"Supprim&eacute;","depart"=>$date),array("id"=>"IN$liste"));
+    // Mise à jour de la table personnel
+    $db=new db();
+    $db->CSRFToken = $CSRFToken;
+    $db->update("personnel", array("supprime"=>"1","actif"=>"Supprim&eacute;","depart"=>$date), array("id"=>"IN$liste"));
 
-  // Mise à jour de la table pl_poste
-  $db=new db();
-  $db->CSRFToken = $CSRFToken;
-  $db->update('pl_poste', array('supprime'=>1), array('perso_id' => "IN$liste", 'date' =>">$date"));
+    // Mise à jour de la table pl_poste
+    $db=new db();
+    $db->CSRFToken = $CSRFToken;
+    $db->update('pl_poste', array('supprime'=>1), array('perso_id' => "IN$liste", 'date' =>">$date"));
   
-  // Mise à jour de la table responsables
-  $db=new db();
-  $db->CSRFToken = $CSRFToken;
-  $db->delete("responsables", array('responsable' => "IN$liste"));
-  $db=new db();
-  $db->CSRFToken = $CSRFToken;
-  $db->delete("responsables", array('perso_id' => "IN$liste"));
-
+    // Mise à jour de la table responsables
+    $db=new db();
+    $db->CSRFToken = $CSRFToken;
+    $db->delete("responsables", array('responsable' => "IN$liste"));
+    $db=new db();
+    $db->CSRFToken = $CSRFToken;
+    $db->delete("responsables", array('perso_id' => "IN$liste"));
 }
 
 echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/index.php';</script>\n";
-?>

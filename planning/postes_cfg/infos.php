@@ -25,10 +25,10 @@ $nombre=$t->length;
 
 
 // Site
-if($config['Multisites-nombre']>1){
-  $db=new db();
-  $db->select("pl_poste_tab","*","tableau='$tableauNumero'");
-  $site=$db->result[0]['site'];
+if ($config['Multisites-nombre']>1) {
+    $db=new db();
+    $db->select("pl_poste_tab", "*", "tableau='$tableauNumero'");
+    $site=$db->result[0]['site'];
 }
 
 echo <<<EOD
@@ -44,27 +44,27 @@ echo <<<EOD
   <td><input type='text' id='nom' value='$tableauNom'  style='width:300px;'/></td></tr>
 EOD;
 
-if($config['Multisites-nombre']>1){
-  echo "<tr><td>Affecter au site :</td>\n";
-  echo "<td><select id='site' style='width:300px;'>\n";
-  echo "<option value=''>&nbsp;</option>\n";
+if ($config['Multisites-nombre']>1) {
+    echo "<tr><td>Affecter au site :</td>\n";
+    echo "<td><select id='site' style='width:300px;'>\n";
+    echo "<option value=''>&nbsp;</option>\n";
 
-  for($i=1;$i<=$config['Multisites-nombre'];$i++){
-    $selected=$i==$site?"selected='selected'":null;
-    echo "<option value='$i' $selected >".$config["Multisites-site$i"]."</option>\n";
-  }
-  echo "</select>\n";
-  echo "</td></tr>\n";
-}else{
-  echo "<input type='hidden' value='1' id='site' />\n";
+    for ($i=1;$i<=$config['Multisites-nombre'];$i++) {
+        $selected=$i==$site?"selected='selected'":null;
+        echo "<option value='$i' $selected >".$config["Multisites-site$i"]."</option>\n";
+    }
+    echo "</select>\n";
+    echo "</td></tr>\n";
+} else {
+    echo "<input type='hidden' value='1' id='site' />\n";
 }
   
 echo "<tr><td>Nombre de tableaux :</td>\n";
 echo "<td><select name='nombre' id='nombre' style='width:300px;'>\n";
 
-for($i=1;$i<16;$i++){
-  $selected=$i==$nombre?"selected='selected'":null;
-  echo "<option value='$i' $selected >$i</option>\n";
+for ($i=1;$i<16;$i++) {
+    $selected=$i==$nombre?"selected='selected'":null;
+    echo "<option value='$i' $selected >$i</option>\n";
 }
 echo "</select></td></tr>\n";
 

@@ -497,5 +497,3 @@ $sql[] = "CREATE TABLE `{$dbprefix}volants` (
   `perso_id` INT(11) NOT NULL DEFAULT '0', 
   PRIMARY KEY (`id`))
   ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
-
-?>

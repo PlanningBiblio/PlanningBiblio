@@ -20,7 +20,7 @@ include "class.joursFeries.php";
 $annee_courante=date("n")<9?(date("Y")-1)."-".(date("Y")):(date("Y"))."-".(date("Y")+1);
 $annee_suivante=date("n")<9?(date("Y"))."-".(date("Y")+1):(date("Y")+1)."-".(date("Y")+2);
 
-$annee_select = filter_input(INPUT_GET,'annee',FILTER_SANITIZE_STRING);
+$annee_select = filter_input(INPUT_GET, 'annee', FILTER_SANITIZE_STRING);
 $annee_select=$annee_select?$annee_select:(isset($_SESSION['oups']['anneeFeries'])?$_SESSION['oups']['anneeFeries']:$annee_courante);
 
 $_SESSION['oups']['anneeFeries']=$annee_select;
@@ -29,11 +29,11 @@ $j=new joursFeries();
 $j->fetchYears();
 $annees=$j->elements;
 
-if(!in_array($annee_suivante,$annees)){
-  $annees[]=$annee_suivante;
+if (!in_array($annee_suivante, $annees)) {
+    $annees[]=$annee_suivante;
 }
-if(!in_array($annee_courante,$annees)){
-  $annees[]=$annee_courante;
+if (!in_array($annee_courante, $annees)) {
+    $annees[]=$annee_courante;
 }
 
 sort($annees);
@@ -57,9 +57,9 @@ echo <<<EOD
   <select name='annee' onchange='document.form1.submit();'>
     <option value=''>&nbsp;</option>
 EOD;
-foreach($annees as $elem){
-  $selected=$elem==$annee_select?"selected='selected'":null;
-  echo "<option value='$elem' $selected >$elem</option>\n";
+foreach ($annees as $elem) {
+    $selected=$elem==$annee_select?"selected='selected'":null;
+    echo "<option value='$elem' $selected >$elem</option>\n";
 }
 echo <<<EOD
   </select>
@@ -75,11 +75,11 @@ echo <<<EOD
 EOD;
 $i=0;
 // Affichage des jours fériés enregistrés
-foreach($jours as $elem){
-  $ferie=$elem['ferie']?"checked='checked'":null;
-  $fermeture=$elem['fermeture']?"checked='checked'":null;
-  $date=dateFr($elem['jour']);
-  echo <<<EOD
+foreach ($jours as $elem) {
+    $ferie=$elem['ferie']?"checked='checked'":null;
+    $fermeture=$elem['fermeture']?"checked='checked'":null;
+    $date=dateFr($elem['jour']);
+    echo <<<EOD
     <tr id='tr$i'><td><a href='javascript:supprime_jourFerie($i);'>
       <span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>
     <td><input type='text' name='jour[$i]' value='$date' class='c100 datepicker' id='jour$i'/></td>
@@ -88,11 +88,11 @@ foreach($jours as $elem){
     <td><input type='text' name='nom[$i]' value='{$elem['nom']}'  class='c350'/></td>
     <td><input type='text' name='commentaire[$i]' value='{$elem['commentaire']}'  class='c350'/></td>
 EOD;
-  $i++;
+    $i++;
 }
 // Affichage de 15 lignes supplémentaires pour l'ajout de nouveaux jours de fermeture
-for($j=$i;$j<$i+15;$j++){
-  echo <<<EOD
+for ($j=$i;$j<$i+15;$j++) {
+    echo <<<EOD
     <tr id='tr$j'><td><a href='javascript:supprime_jourFerie($j);'>
       <span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>
     <td><input type='text' name='jour[$j]' class='c100 datepicker' id='jour$j'/></td>
@@ -101,7 +101,6 @@ for($j=$i;$j<$i+15;$j++){
     <td><input type='text' name='nom[$j]' class='c350'/></td>
     <td><input type='text' name='commentaire[$j]' class='c350'/></td>
 EOD;
-
 }
 
 echo <<<EOD
@@ -110,8 +109,8 @@ echo <<<EOD
   </form>
 EOD;
 
-if(in_array("conges",$plugins)){
-  echo "<p>Les jours de fermeture ne seront pas décomptés des congés.</p>\n";
+if (in_array("conges", $plugins)) {
+    echo "<p>Les jours de fermeture ne seront pas décomptés des congés.</p>\n";
 }
 
 

@@ -13,34 +13,34 @@ Dernière modification : 12 avril 2018
 Description :
 Affiche la liste des postes dans un tableau avec un filtre sur le nom des postes.
 
-Page appelée par le fichier index.php. Accessible à partir du menu "Administration / Les postes" 
+Page appelée par le fichier index.php. Accessible à partir du menu "Administration / Les postes"
 */
 
 require_once "class.postes.php";
 
 //			Affichage de la liste des postes
 $groupe="Tous";
-$nom=filter_input(INPUT_GET,"nom",FILTER_SANITIZE_STRING);
+$nom=filter_input(INPUT_GET, "nom", FILTER_SANITIZE_STRING);
 
 // Contrôle si le poste est utilisé dans un tableau non-supprimé (tables pl_poste_lignes et pl_poste_tab)
 $postes_utilises=array();
 
 $db=new db();
 $db->selectInnerJoin(array("pl_poste_lignes","numero"), array("pl_poste_tab","tableau"), array(array("name"=>"poste", "as"=>"poste")), array(), array("type"=>"poste"), array("supprime"=>null));
-if($db->result){
-  foreach($db->result as $elem){
-    $postes_utilises[]=$elem['poste'];
-  }
+if ($db->result) {
+    foreach ($db->result as $elem) {
+        $postes_utilises[]=$elem['poste'];
+    }
 }
 
 // Sélection des activités
 $activitesTab=array();
 $db=new db();
 $db->select("activites");
-if($db->result){
-  foreach($db->result as $elem){
-    $activitesTab[$elem["id"]]=$elem["nom"];
-  }
+if ($db->result) {
+    foreach ($db->result as $elem) {
+        $activitesTab[$elem["id"]]=$elem["nom"];
+    }
 }
 
 ?>
@@ -56,14 +56,14 @@ if($db->result){
 <?php
 echo "<script type='text/JavaScript'>document.form.groupe.value='$groupe';</script>";
 $p=new postes();
-$p->fetch("nom",$nom,$groupe);
+$p->fetch("nom", $nom, $groupe);
 $postes=$p->elements;
 
 echo "<table id='tablePostes' class='CJDataTable' data-sort='[[1],[2]]'>\n";
 echo "<thead><tr><th class='dataTableNoSort'>&nbsp;</th>\n";
 echo "<th>Nom du poste</th>\n";
-if($config['Multisites-nombre']>1){
-  echo "<th>Site</th>\n";
+if ($config['Multisites-nombre']>1) {
+    echo "<th>Site</th>\n";
 }
 echo <<<EOD
   <th>Etage</th>
@@ -76,44 +76,44 @@ echo <<<EOD
   <tbody>
 EOD;
 
-foreach($postes as $id => $value){
-  // Affichage des 3 premières activités dans le tableau, toutes les activités dans l'infobulle
-  $activites=array();
-  $activitesAffichees=array();
-  $activitesPoste=json_decode(html_entity_decode($value['activites'],ENT_QUOTES|ENT_IGNORE,'UTF-8'),true);
-  if(is_array($activitesPoste)){
-    foreach($activitesPoste as $act){
-      if(array_key_exists($act,$activitesTab)){
-	$activites[]=$activitesTab[$act];
-	if(count($activitesAffichees)<3){
-	  $activitesAffichees[]=$activitesTab[$act];
-	}
-      }
+foreach ($postes as $id => $value) {
+    // Affichage des 3 premières activités dans le tableau, toutes les activités dans l'infobulle
+    $activites=array();
+    $activitesAffichees=array();
+    $activitesPoste=json_decode(html_entity_decode($value['activites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+    if (is_array($activitesPoste)) {
+        foreach ($activitesPoste as $act) {
+            if (array_key_exists($act, $activitesTab)) {
+                $activites[]=$activitesTab[$act];
+                if (count($activitesAffichees)<3) {
+                    $activitesAffichees[]=$activitesTab[$act];
+                }
+            }
+        }
     }
-  }
-  $activites=join(", ",$activites);
-  $activitesAffichees=join(", ",$activitesAffichees);
-  if(count($activitesPoste)>3){
-    $activitesAffichees.=" ...";
-  }
+    $activites=join(", ", $activites);
+    $activitesAffichees=join(", ", $activitesAffichees);
+    if (count($activitesPoste)>3) {
+        $activitesAffichees.=" ...";
+    }
 
-  echo "<tr><td style='white-space:nowrap;'>\n";
-  echo "<a href='index.php?page=postes/modif.php&amp;id=$id'><span class='pl-icon pl-icon-edit' title='Modifier' ></span></a>\n";
-  if(!in_array($id,$postes_utilises)){
-    echo "&nbsp;<a href='javascript:supprime(\"postes\",$id,\"$CSRFSession\");'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>\n";
-  }
-  echo "<td>{$value['nom']}</td>\n";
-  if($config['Multisites-nombre']>1){
-    $site=array_key_exists("Multisites-site{$value['site']}",$config)?$config["Multisites-site{$value['site']}"]:"-";
-    echo "<td>$site</td>\n";
-  }
-  echo "<td>{$value['etage']}</td>\n";
-  echo "<td title='$activites' size='100'>$activitesAffichees</td>\n";
-  echo "<td>{$value['groupe']}</td>\n";
-  echo "<td>{$value['obligatoire']}</td>\n";
-  echo "<td>".($value['bloquant']?"Oui":"Non")."</td>\n";
-  echo "<td>".($value['statistiques']?"Oui":"Non")."</td>\n";
-  echo "</tr>\n";
+    echo "<tr><td style='white-space:nowrap;'>\n";
+    echo "<a href='index.php?page=postes/modif.php&amp;id=$id'><span class='pl-icon pl-icon-edit' title='Modifier' ></span></a>\n";
+    if (!in_array($id, $postes_utilises)) {
+        echo "&nbsp;<a href='javascript:supprime(\"postes\",$id,\"$CSRFSession\");'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>\n";
+    }
+    echo "<td>{$value['nom']}</td>\n";
+    if ($config['Multisites-nombre']>1) {
+        $site=array_key_exists("Multisites-site{$value['site']}", $config)?$config["Multisites-site{$value['site']}"]:"-";
+        echo "<td>$site</td>\n";
+    }
+    echo "<td>{$value['etage']}</td>\n";
+    echo "<td title='$activites' size='100'>$activitesAffichees</td>\n";
+    echo "<td>{$value['groupe']}</td>\n";
+    echo "<td>{$value['obligatoire']}</td>\n";
+    echo "<td>".($value['bloquant']?"Oui":"Non")."</td>\n";
+    echo "<td>".($value['statistiques']?"Oui":"Non")."</td>\n";
+    echo "</tr>\n";
 }
 
 echo "</tbody>\n";

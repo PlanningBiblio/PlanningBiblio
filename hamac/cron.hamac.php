@@ -43,21 +43,21 @@ logs("Début d'importation Hamac", "Hamac", $CSRFToken);
 
 // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
 $tmp_dir=sys_get_temp_dir();
-$lockFile=$tmp_dir."/planningBiblioHamac.lock"; 
+$lockFile=$tmp_dir."/planningBiblioHamac.lock";
 
-if(file_exists($lockFile)){
-  $fileTime = filemtime($lockFile);
-  $time = time();
-  // Si le fichier existe et date de plus de 10 minutes, on le supprime et on continue.
-  if ($time - $fileTime > 600){
-    unlink($lockFile);
-  // Si le fichier existe et date de moins de 10 minutes, on quitte
-  } else{
-    exit;
-  }
+if (file_exists($lockFile)) {
+    $fileTime = filemtime($lockFile);
+    $time = time();
+    // Si le fichier existe et date de plus de 10 minutes, on le supprime et on continue.
+    if ($time - $fileTime > 600) {
+        unlink($lockFile);
+    // Si le fichier existe et date de moins de 10 minutes, on quitte
+    } else {
+        exit;
+    }
 }
 // On créé le fichier .lock
-$inF=fopen($lockFile,"w");
+$inF=fopen($lockFile, "w");
 fclose($inF);
 
 // On recherche tout le personnel actif
@@ -70,11 +70,11 @@ $agents = $p->elements;
 $logins = array();
 $key = $config['Hamac-id'];
 
-foreach($agents as $elem){
-  if($elem['check_hamac']){
-    $logins[] = $elem[$key];
-    $perso_ids[$elem[$key]] = $elem['id'];
-  }
+foreach ($agents as $elem) {
+    if ($elem['check_hamac']) {
+        $logins[] = $elem[$key];
+        $perso_ids[$elem[$key]] = $elem['id'];
+    }
 }
 
 $ids_list = implode(',', $perso_ids);
@@ -83,11 +83,11 @@ $ids_list = implode(',', $perso_ids);
 $absences = array();
 $db = new db();
 $db->select2('absences', null, array('cal_name' => 'hamac', 'perso_id' => "IN$ids_list"));
-if($db->result){
-  foreach($db->result as $elem){
-    // On indexe le tableau avec le champ UID qui n'est autre que l'id Hamac
-    $absences[$elem['uid']] = $elem;
-  }
+if ($db->result) {
+    foreach ($db->result as $elem) {
+        // On indexe le tableau avec le champ UID qui n'est autre que l'id Hamac
+        $absences[$elem['uid']] = $elem;
+    }
 }
 
 // On récupère les clés (IDs Hamac) pour vérifier si les absences du fichier Hamac sont dans la base de données
@@ -98,12 +98,12 @@ $uids = array_keys($absences);
 $filename = trim($config['Hamac-csv']);
 
 // Si le fichier n'existe pas, on quitte
-if(!file_exists($filename)){
-  logs("Le fichier $filename n'existe pas", "Hamac", $CSRFToken);
-  // Unlock
-  unlink($lockFile);
+if (!file_exists($filename)) {
+    logs("Le fichier $filename n'existe pas", "Hamac", $CSRFToken);
+    // Unlock
+    unlink($lockFile);
 
-  exit;
+    exit;
 }
 
 // Status à importer
@@ -131,84 +131,80 @@ $dbd->prepare("DELETE FROM `{$dbprefix}absences` WHERE `id` = :id;");
 // On lit le fichier CSV
 $inF = fopen($filename, 'a+');
 
-while($tab = fgetcsv($inF, 1024, ';')){
+while ($tab = fgetcsv($inF, 1024, ';')) {
+    $uid = $tab[0];
 
-  $uid = $tab[0];
+    // Si les logins du fichier Hamac ne sont pas dans le tableau $logins, on passe.
+    // Le tableau $logins ne contient que les agents actifs qui acceptent la synchronisation Hamac
+    if (!in_array($tab[4], $logins)) {
+        continue;
+    }
 
-  // Si les logins du fichier Hamac ne sont pas dans le tableau $logins, on passe.
-  // Le tableau $logins ne contient que les agents actifs qui acceptent la synchronisation Hamac
-  if(!in_array($tab[4], $logins)){
-    continue;
-  }
+    // Si l'absence a été supprimée, on la supprime de la base (status 9)
+    // Important : Faire la suppression avant le contrôle des status car le status 9 sera ignoré à la prochaine étape
+    if ($tab[6] == 9 and in_array($uid, $uids)) {
+        $delete = array(':id' => $absences[$uid]['id']);
 
-  // Si l'absence a été supprimée, on la supprime de la base (status 9)
-  // Important : Faire la suppression avant le contrôle des status car le status 9 sera ignoré à la prochaine étape
-  if($tab[6] == 9 and in_array($uid, $uids)){
-    $delete = array(':id' => $absences[$uid]['id']);
+        $dbd->execute($delete);
 
-    $dbd->execute($delete);
+        continue;
+    }
 
-    continue;
-  }
+    // Si le status de l'absence Hamac n'est pas dans la liste des status à importer, on passe.
+    if (!in_array($tab[6], $status)) {
+        continue;
+    }
 
-  // Si le status de l'absence Hamac n'est pas dans la liste des status à importer, on passe.
-  if(!in_array($tab[6], $status)){
-    continue;
-  }
+    // Préparation des données
+    $perso_id = $perso_ids[$tab[4]];
+    $demande = date('Y-m-d H:i:s');
+    $debut = preg_replace('/(\d+)\/(\d+)\/(\d+) (\d+:\d+:\d+)/', "$3-$2-$1 $4", $tab[2]);
+    $fin = preg_replace('/(\d+)\/(\d+)\/(\d+) (\d+:\d+:\d+)/', "$3-$2-$1 $4", $tab[3]);
+    $motif = !empty(trim($config['Hamac-motif'])) ? trim($config['Hamac-motif']) : 'Hamac';
+    $commentaires = $tab[1];
 
-  // Préparation des données
-  $perso_id = $perso_ids[$tab[4]];
-  $demande = date('Y-m-d H:i:s');
-  $debut = preg_replace('/(\d+)\/(\d+)\/(\d+) (\d+:\d+:\d+)/', "$3-$2-$1 $4", $tab[2]);
-  $fin = preg_replace('/(\d+)\/(\d+)\/(\d+) (\d+:\d+:\d+)/', "$3-$2-$1 $4", $tab[3]);
-  $motif = !empty(trim($config['Hamac-motif'])) ? trim($config['Hamac-motif']) : 'Hamac';
-  $commentaires = $tab[1];
-
-  // Validations
-  // Si le status de l'absence Hamac est 2, l'absence est validée
-  if($tab[6] == 2){
-    $valide_n1 = 99999;
-    $validation_n1 = date('Y-m-d H:i:s');
-    $valide_n2 = 99999;
-    $validation_n2 = date('Y-m-d H:i:s');
-  } else {
-    $valide_n1 = 0;
-    $validation_n1 = '0000-00-00 00:00:00';
-    $valide_n2 = 0;
-    $validation_n2 = '0000-00-00 00:00:00';
-  }
+    // Validations
+    // Si le status de l'absence Hamac est 2, l'absence est validée
+    if ($tab[6] == 2) {
+        $valide_n1 = 99999;
+        $validation_n1 = date('Y-m-d H:i:s');
+        $valide_n2 = 99999;
+        $validation_n2 = date('Y-m-d H:i:s');
+    } else {
+        $valide_n1 = 0;
+        $validation_n1 = '0000-00-00 00:00:00';
+        $valide_n2 = 0;
+        $validation_n2 = '0000-00-00 00:00:00';
+    }
 
 
-  // Si l'absence n'est pas dans la base de données, on l'importe.
-  if(!in_array($uid, $uids)){
-    $insert = array(':perso_id' => $perso_id, ':debut' => $debut, ':fin' => $fin, ':motif' => $motif, ':commentaires' => $commentaires, ':demande' => $demande, ':valide' => $valide_n2, ':validation' => $validation_n2, ':valide_n1' => $valide_n1, ':validation_n1' => $validation_n1, ':cal_name' => 'hamac', ':ical_key' => $uid, ':uid' => $uid);
+    // Si l'absence n'est pas dans la base de données, on l'importe.
+    if (!in_array($uid, $uids)) {
+        $insert = array(':perso_id' => $perso_id, ':debut' => $debut, ':fin' => $fin, ':motif' => $motif, ':commentaires' => $commentaires, ':demande' => $demande, ':valide' => $valide_n2, ':validation' => $validation_n2, ':valide_n1' => $valide_n1, ':validation_n1' => $validation_n1, ':cal_name' => 'hamac', ':ical_key' => $uid, ':uid' => $uid);
 
-    $dbi->execute($insert);
+        $dbi->execute($insert);
     
-    continue;
-  }
+        continue;
+    }
 
-  // Si l'absence existe, on vérifie si elle a changé.
-  $absence = $absences[$uid];
+    // Si l'absence existe, on vérifie si elle a changé.
+    $absence = $absences[$uid];
 
-  if($absence['perso_id'] != $perso_id
+    if ($absence['perso_id'] != $perso_id
     or $absence['debut'] != $debut
     or $absence['fin'] != $fin
     or $absence['commentaires'] != $commentaires
-    or $absence['valide'] != $valide_n2)
-  {
+    or $absence['valide'] != $valide_n2) {
 
     // Si l'absence a changé, on met à jour la base de données
-    $update = array(':perso_id' => $perso_id, ':debut' => $debut, ':fin' => $fin, ':commentaires' => $commentaires, ':valide' => $valide_n2, ':validation' => $validation_n2, ':valide_n1' => $valide_n1, ':validation_n1' => $validation_n1, ':id' => $absence['id']);
+        $update = array(':perso_id' => $perso_id, ':debut' => $debut, ':fin' => $fin, ':commentaires' => $commentaires, ':valide' => $valide_n2, ':validation' => $validation_n2, ':valide_n1' => $valide_n1, ':validation_n1' => $validation_n1, ':id' => $absence['id']);
 
-    $dbu->execute($update);
+        $dbu->execute($update);
 
-    continue;
-  }
+        continue;
+    }
 }
 fclose($inF);
 
 // Unlock
 unlink($lockFile);
-
-?>

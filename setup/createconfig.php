@@ -15,28 +15,28 @@ Permet de créer le fichier de configuration (include/config.php) lors de l'inst
 Récupère les informations saisies dans le formulaire de la page setup/index.php (identifiant administrateur MySQL,
 nom de la base de données à créer, identifiant de l'utilisateur de la base de données à créer
 
-Inclus ensuite le fichier setup/config.php affichant le formulaire demandant les informations sur le responsable du planning 
+Inclus ensuite le fichier setup/config.php affichant le formulaire demandant les informations sur le responsable du planning
 */
 
-$version=filter_input(INPUT_POST,"version",FILTER_SANITIZE_STRING);
+$version=filter_input(INPUT_POST, "version", FILTER_SANITIZE_STRING);
 $Fnm = "../include/config.php";
 
 // Génération d'une clé pour crypter les mots de passe LDAP-Password et Mail-Password
 // PHP 7
-if(phpversion() >= 7){
-  $secret = bin2hex(random_bytes(12));
+if (phpversion() >= 7) {
+    $secret = bin2hex(random_bytes(12));
 }
 
 // PHP 5.3+
-else{
-  if (function_exists('mcrypt_create_iv')) {
-    $secret = bin2hex(mcrypt_create_iv(12, MCRYPT_DEV_URANDOM));
-  } else {
-    $secret = bin2hex(openssl_random_pseudo_bytes(12));
-  }
+else {
+    if (function_exists('mcrypt_create_iv')) {
+        $secret = bin2hex(mcrypt_create_iv(12, MCRYPT_DEV_URANDOM));
+    } else {
+        $secret = bin2hex(openssl_random_pseudo_bytes(12));
+    }
 }
 
-$file=Array();
+$file=array();
 $file[]="<?php\n";
 $file[]="/**\n";
 $file[]="Planning Biblio, Version $version\n";
@@ -83,16 +83,15 @@ $file[]="  include_once \"accessDenied.php\";\n";
 $file[]="}\n";
 $file[]="?>\n";
 
-if(!$inF=fopen($Fnm,"w\n")){
-  echo "<p style='color:red;'>Ne peut pas créer le fichier include/config.php. Vérifiez les droits d'accès au dossier include.</p>\n";
-  exit;
+if (!$inF=fopen($Fnm, "w\n")) {
+    echo "<p style='color:red;'>Ne peut pas créer le fichier include/config.php. Vérifiez les droits d'accès au dossier include.</p>\n";
+    exit;
 }
 
-foreach($file as $line){
-  fputs($inF,$line);
+foreach ($file as $line) {
+    fputs($inF, $line);
 }
 fclose($inF);
 
 echo "<p>Le fichier config.php a bien été créé.</p>\n";
 include "config.php";
-?>

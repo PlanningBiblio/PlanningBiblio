@@ -17,25 +17,26 @@ Page accessible à partir du menu administration/planning de présence
 
 require_once "class.planningHebdo.php";
 
-$post=filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
+$post=filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
 // Mise à jour de la configHebdo
-if($post){
-  $p=new planningHebdo();
-  $p->updatePeriodes($post);
-  $error=$p->error?true:false;
-  $message=null;
+if ($post) {
+    $p=new planningHebdo();
+    $p->updatePeriodes($post);
+    $error=$p->error?true:false;
+    $message=null;
 
-  // Notifications
-  if($error){
-    $message="Une erreur est survenue lors des p&eacute;riodes."; $type="error";
-  }
-  else{
-    $message="Les p&eacute;riodes ont été modifiées avec succès."; $type="highlight";
-  }
-  if($message){
-    echo "<script type='text/JavaScript'>CJInfo('$message','$type');</script>\n";
-  }
+    // Notifications
+    if ($error) {
+        $message="Une erreur est survenue lors des p&eacute;riodes.";
+        $type="error";
+    } else {
+        $message="Les p&eacute;riodes ont été modifiées avec succès.";
+        $type="highlight";
+    }
+    if ($message) {
+        echo "<script type='text/JavaScript'>CJInfo('$message','$type');</script>\n";
+    }
 }
 
 // Initialisation des variables
@@ -87,4 +88,3 @@ echo <<<EOD
 </table>
 </form>
 EOD;
-?>

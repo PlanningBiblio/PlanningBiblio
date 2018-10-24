@@ -12,11 +12,11 @@ Dernière modification : 21 décembre 2015
 
 Description :
 Récupère le message par défaut pour l'appel à disponibilité
-Script appelé depuis la function JS appelDispo (planning/poste/js/planning.js) 
+Script appelé depuis la function JS appelDispo (planning/poste/js/planning.js)
 lors du clic sur le lien "Appel à disponibilité" dans le menu permettant de placer les agents
 */
 
-ini_set("display_errors",0);
+ini_set("display_errors", 0);
 
 session_start();
 
@@ -26,15 +26,14 @@ require_once "../../include/config.php";
 $tab=array(null,null);
 
 $db=new db();
-$db->select2("config","valeur",array("nom"=>"Planning-AppelDispoSujet"));
-if($db->result){
-  $tab[0]=html_entity_decode($db->result[0]["valeur"],ENT_QUOTES|ENT_IGNORE,"utf-8");
+$db->select2("config", "valeur", array("nom"=>"Planning-AppelDispoSujet"));
+if ($db->result) {
+    $tab[0]=html_entity_decode($db->result[0]["valeur"], ENT_QUOTES|ENT_IGNORE, "utf-8");
 }
 $db=new db();
-$db->select2("config","valeur",array("nom"=>"Planning-AppelDispoMessage"));
-if($db->result){
-  $tab[1]=html_entity_decode($db->result[0]["valeur"],ENT_QUOTES|ENT_IGNORE,"utf-8");
+$db->select2("config", "valeur", array("nom"=>"Planning-AppelDispoMessage"));
+if ($db->result) {
+    $tab[1]=html_entity_decode($db->result[0]["valeur"], ENT_QUOTES|ENT_IGNORE, "utf-8");
 }
 
 echo json_encode($tab);
-?>

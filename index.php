@@ -25,35 +25,35 @@ include_once('init_menu.php');
 include_once('init_templates.php');
 
 // Vérification de la version de la base de données
-// Si la version est différente, mise à jour de la base de données 
-if($version!=$config['Version']){
-  include "setup/maj.php";
+// Si la version est différente, mise à jour de la base de données
+if ($version!=$config['Version']) {
+    include "setup/maj.php";
 }
 // Sinon, on continue
-else{
-  include "include/feries.php";
-  include "plugins/plugins.php";
-  if(isset($_SESSION['login_id'])){
-    include "include/cron.php";
-  }
+else {
+    include "include/feries.php";
+    include "plugins/plugins.php";
+    if (isset($_SESSION['login_id'])) {
+        include "include/cron.php";
+    }
 }
 
 // Si pas de session, redirection vers la page d'authentification
-if(!array_key_exists("login_id",$_SESSION)){
-  // Action executée dans un popup alors que la session a été perdue, on affiche
-  if(!$show_menu){
-    echo "<div style='margin:60px 30px;'>\n";
-    echo "<center>\n";
-    echo "Votre session a expiré.<br/><br/>\n";
-    echo "<a href='authentification.php' target='_top'>Cliquez ici pour vous reconnecter</a>\n";
-    echo "<center></div>\n";
-    exit;
-  }else{
-    // Session perdue, on affiche la page d'authentification
-    $redirURL="index.php?".$_SERVER['QUERY_STRING'];
-    include_once "authentification.php";
-    exit;
-  }
+if (!array_key_exists("login_id", $_SESSION)) {
+    // Action executée dans un popup alors que la session a été perdue, on affiche
+    if (!$show_menu) {
+        echo "<div style='margin:60px 30px;'>\n";
+        echo "<center>\n";
+        echo "Votre session a expiré.<br/><br/>\n";
+        echo "<a href='authentification.php' target='_top'>Cliquez ici pour vous reconnecter</a>\n";
+        echo "<center></div>\n";
+        exit;
+    } else {
+        // Session perdue, on affiche la page d'authentification
+        $redirURL="index.php?".$_SERVER['QUERY_STRING'];
+        include_once "authentification.php";
+        exit;
+    }
 }
 
 # Start using twigized script
@@ -64,8 +64,8 @@ if ($checker->isTwigized($page)) {
 }
 
 include "include/header.php";
-if($show_menu){
-  include "include/menu.php";
+if ($show_menu) {
+    include "include/menu.php";
 }
 
 // Sécurité CSRFToken
@@ -76,18 +76,16 @@ echo <<<EOD
 EOD;
 
 if($content_planning) {
-  echo "<div id='content-planning'>\n";
-}else{
-  echo "<div id='content'>\n";
+    echo "<div id='content-planning'>\n";
+} else {
+    echo "<div id='content'>\n";
 }
 
 if($authorized){
-  include $page;
+    include $page;
+} else {
+    echo "<div id='acces_refuse'>Accès refusé</div>\n";
 }
-else{
-  echo "<div id='acces_refuse'>Accès refusé</div>\n";
+if ($menu) {
+    include "include/footer.php";
 }
-if($menu){
-  include "include/footer.php";
-}
-?>

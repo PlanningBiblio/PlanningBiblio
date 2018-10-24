@@ -20,15 +20,15 @@ $dir1=dirname(__DIR__);
 // Fichier demandé
 $dir2=$_SERVER["SCRIPT_FILENAME"];
 // On récupère les 2 derniers dossiers de l'application plutôt que de récupérer le chemin absolut pour éviter les problèmes d'alias
-$tmp1=explode("/",$dir1);
+$tmp1=explode("/", $dir1);
 $tmp2=$tmp1[count($tmp1)-2]."/".$tmp1[count($tmp1)-1];
 // On recherche $tmp2 dans $dir2 pour récupérer la position
-$pos=stripos($dir2,$tmp2);
-$tmp3=substr($dir2,$pos);
-$nb=substr_count($tmp3,"/")-2;
+$pos=stripos($dir2, $tmp2);
+$tmp3=substr($dir2, $pos);
+$nb=substr_count($tmp3, "/")-2;
 $path="";
-for($i=0;$i<$nb;$i++){
-  $path.="../";
+for ($i=0;$i<$nb;$i++) {
+    $path.="../";
 }
 
 // Besoin de config pour récupérer le thème
@@ -60,14 +60,14 @@ $link="<a href='{$path}index.php'>Retour à l'application</a>";
 <p style='font-weight:bold;'>
 <?php
 // IP Blocker : Message affiché si l'IP a été bloquée
-if(isset($IPBlocker)){
-	echo "L'adresse IP \"{$_SERVER['REMOTE_ADDR']}\" a &eacute;t&eacute; bloqu&eacute;e.\n";
-	echo "<p id='chrono'></p>\n";
-	echo "<p id='link' style='display:none;'>$link</p>\n";
-	echo "<script type='text/JavaScript'>decompte($IPBlocker);</script>\n";
-}else{
-// Affichage du lien Retour vers l'application si tentative d'accès à une page interdite
-	echo $link;
+if (isset($IPBlocker)) {
+    echo "L'adresse IP \"{$_SERVER['REMOTE_ADDR']}\" a &eacute;t&eacute; bloqu&eacute;e.\n";
+    echo "<p id='chrono'></p>\n";
+    echo "<p id='link' style='display:none;'>$link</p>\n";
+    echo "<script type='text/JavaScript'>decompte($IPBlocker);</script>\n";
+} else {
+    // Affichage du lien Retour vers l'application si tentative d'accès à une page interdite
+    echo $link;
 }
 ?>
 </p>

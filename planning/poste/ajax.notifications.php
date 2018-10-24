@@ -13,7 +13,7 @@ Dernière modification : 30 septembre 2017
 Description :
 Envoie les notifications aux agents lorsque des plannings les concernant sont validés ou modifiés
 
-Page appelée en ajax lors du click sur les cadenas de la page planning/poste/index.php 
+Page appelée en ajax lors du click sur les cadenas de la page planning/poste/index.php
 (événement $("#icon-lock").click, page planning/poste/js/planning.js)
 */
 
@@ -22,17 +22,16 @@ require_once "../../include/config.php";
 require_once "class.planning.php";
 
 // Initialisation des variables
-$CSRFToken = filter_input(INPUT_GET,"CSRFToken",FILTER_SANITIZE_STRING);
-$date=filter_input(INPUT_GET,"date",FILTER_CALLBACK,array("options"=>"sanitize_dateSQL"));
-$site=filter_input(INPUT_GET,"site",FILTER_SANITIZE_NUMBER_INT);
+$CSRFToken = filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
+$date=filter_input(INPUT_GET, "date", FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
+$site=filter_input(INPUT_GET, "site", FILTER_SANITIZE_NUMBER_INT);
 
 // Envoi des notification
-if($config['Planning-Notifications']){
-  $p=new planning();
-  $p->date=$date;
-  $p->site=$site;
-  $p->CSRFToken = $CSRFToken;
-  $p->notifications();
+if ($config['Planning-Notifications']) {
+    $p=new planning();
+    $p->date=$date;
+    $p->site=$site;
+    $p->CSRFToken = $CSRFToken;
+    $p->notifications();
 }
 echo json_encode("ok");
-?>

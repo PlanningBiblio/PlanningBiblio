@@ -29,9 +29,8 @@ $p->fetch();
 
 $tempsPlanningHebdo=array();
 
-if(!empty($p->elements)){
-  foreach($p->elements as $elem){
-    $tempsPlanningHebdo[$elem["perso_id"]]=$elem["temps"];
-  }
+if (!empty($p->elements)) {
+    foreach ($p->elements as $elem) {
+        $tempsPlanningHebdo[$elem["perso_id"]]=$elem["temps"];
+    }
 }
-?>
