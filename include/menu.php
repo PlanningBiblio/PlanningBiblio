@@ -17,7 +17,7 @@ Le menu est affiché en HTML, les sous-menu s'affiche à l'aide des fonctions Ja
 Cette page est appelée par le fichier index.php
 */
 
-include "class.menu.php";
+require_once("class.menu.php");
 
 $m=new menu();
 $m->fetch();

@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 12 septembre 2018
+Dernière modification : 27 septembre 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -1056,6 +1056,17 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     // Version
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
+
+$v="2.7.15";
+if(strcmp($v,$config['Version'])>0 and strcmp($v,$version)<=0){
+
+  // Ajout du paramètre LDAP-Matricule
+  $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('LDAP-Matricule', 'text', '', '', 'Attribut &agrave; importer dans le champ matricule (optionnel)', 'LDAP', 90);";
+
+  // Version
+  $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 
 $v="2.8";
 if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {

@@ -23,6 +23,7 @@ Prérequis :
   - PDO-Mysql
   - CURL (si identification CAS)
   - LDAP (si utilisation avec un serveur LDAP)
+  - Symfony/HttpFoundation
 
 ===============
 Copyright (C) 2011-2018 - Jérôme Combes
