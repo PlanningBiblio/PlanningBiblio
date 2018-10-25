@@ -68,8 +68,8 @@ if ($rechercheLdap) {
     if ($ldapbind) {
         $justthese=array("dn",$config['LDAP-ID-Attribute'],"sn","givenname","userpassword","mail");
 
-        if( !empty($config['LDAP-Matricule'])){
-          $justthese = array_merge($justthese, array($config['LDAP-Matricule']));
+        if (!empty($config['LDAP-Matricule'])) {
+            $justthese = array_merge($justthese, array($config['LDAP-Matricule']));
         }
 
         $sr=ldap_search($ldapconn, $config['LDAP-Suffix'], $filter, $justthese);
@@ -119,8 +119,8 @@ if ($rechercheLdap) {
             $mail=array_key_exists('mail', $info)?$info['mail'][0]:null;
 
             $matricule = null;
-            if( !empty($config['LDAP-Matricule']) and !empty($info[$config['LDAP-Matricule']]) ) {
-              $matricule = is_array($info[$config['LDAP-Matricule']]) ? $info[$config['LDAP-Matricule']][0] : $info[$config['LDAP-Matricule']];
+            if (!empty($config['LDAP-Matricule']) and !empty($info[$config['LDAP-Matricule']])) {
+                $matricule = is_array($info[$config['LDAP-Matricule']]) ? $info[$config['LDAP-Matricule']][0] : $info[$config['LDAP-Matricule']];
             }
 
             echo "<tr>\n";

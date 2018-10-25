@@ -34,15 +34,15 @@ use Symfony\Component\HttpFoundation\Request;
 use PlanningBiblio\LegacyCodeChecker;
 
 // Redirection vers setup si le fichier config est absent
-if(!file_exists('include/config.php')) {
-  include 'include/noConfig.php';
+if (!file_exists('include/config.php')) {
+    include 'include/noConfig.php';
 }
 
 require_once "include/config.php";
 require_once "include/sanitize.php";
 require_once __DIR__."/lang/fr_FR.php";
-if( file_exists( __DIR__."/lang/custom.php" )){
-  require_once __DIR__."/lang/custom.php";
+if (file_exists(__DIR__."/lang/custom.php")) {
+    require_once __DIR__."/lang/custom.php";
 }
 
 date_default_timezone_set("Europe/Paris");
@@ -56,7 +56,7 @@ $page = $request->get('page', 'planning/poste/index.php');
 $login = $request->get('login');
 
 // Login Anonyme
-if($login and $login === "anonyme" and $config['Auth-Anonyme'] and !array_key_exists("login_id", $_SESSION)) {
+if ($login and $login === "anonyme" and $config['Auth-Anonyme'] and !array_key_exists("login_id", $_SESSION)) {
     $_SESSION['login_id']=999999999;
     $_SESSION['login_nom']="Anonyme";
     $_SESSION['login_prenom']="";
@@ -65,19 +65,19 @@ if($login and $login === "anonyme" and $config['Auth-Anonyme'] and !array_key_ex
 
 // Sécurité CSRFToken
 $CSRFSession = isset($_SESSION['oups']['CSRFToken']) ? $_SESSION['oups']['CSRFToken'] : null;
-$_SESSION['PLdate']=array_key_exists("PLdate",$_SESSION)?$_SESSION['PLdate']:date("Y-m-d");
+$_SESSION['PLdate']=array_key_exists("PLdate", $_SESSION)?$_SESSION['PLdate']:date("Y-m-d");
 
-if(!array_key_exists("oups",$_SESSION)){
+if (!array_key_exists("oups", $_SESSION)) {
     $_SESSION['oups']=array("week" => false);
 }
 
 // Affichage de tous les plannings de la semaine
-if($page=="planning/poste/index.php" and !$date and $_SESSION['oups']['week']){
+if ($page=="planning/poste/index.php" and !$date and $_SESSION['oups']['week']) {
     $page="planning/poste/semaine.php";
 }
 
 $content_planning = 0;
-if($page == 'planning/poste/index.php' or $page == 'planning/poste/semaine.php' or !$show_menu) {
+if ($page == 'planning/poste/index.php' or $page == 'planning/poste/semaine.php' or !$show_menu) {
     $content_planning = 1;
 }
 
@@ -92,26 +92,26 @@ $_SESSION['droits'] = $droits;
 $db = new db();
 $db->select2('acces', '*', array('page' => $page));
 $authorized = false;
-if($db->result){
-  foreach ($db->result as $elem) {
-    if (in_array($elem['groupe_id'], $droits)) {
-      $authorized = true;
-      break;
+if ($db->result) {
+    foreach ($db->result as $elem) {
+        if (in_array($elem['groupe_id'], $droits)) {
+            $authorized = true;
+            break;
+        }
     }
-  }
 }
 
 $theme=$config['Affichage-theme']?$config['Affichage-theme']:"default";
-if(!file_exists("themes/$theme/$theme.css")){
+if (!file_exists("themes/$theme/$theme.css")) {
     $theme="default";
 }
 
 $themeJQuery = $config['Affichage-theme'] ?$config['Affichage-theme'] : "default";
-if(!file_exists("themes/$theme/jquery-ui.min.css")){
+if (!file_exists("themes/$theme/jquery-ui.min.css")) {
     $themeJQuery="default";
 }
 
 $favicon = null;
-if(!file_exists("themes/$theme/favicon.png")){
+if (!file_exists("themes/$theme/favicon.png")) {
     $favicon = "themes/$theme/images/favicon.png";
 }

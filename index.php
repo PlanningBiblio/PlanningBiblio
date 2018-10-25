@@ -75,13 +75,13 @@ echo <<<EOD
 </form>
 EOD;
 
-if($content_planning) {
+if ($content_planning) {
     echo "<div id='content-planning'>\n";
 } else {
     echo "<div id='content'>\n";
 }
 
-if($authorized){
+if ($authorized) {
     include $page;
 } else {
     echo "<div id='acces_refuse'>Accès refusé</div>\n";

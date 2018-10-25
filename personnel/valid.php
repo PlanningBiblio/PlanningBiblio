@@ -196,7 +196,7 @@ switch ($action) {
             $update["depart"]="0000-00-00";
         }
     } else {
-      $update["actif"]="Supprim&eacute;";
+        $update["actif"]="Supprim&eacute;";
     }
 
     // Mise à jour de l'emploi du temps si modifié à partir de la fiche de l'agent

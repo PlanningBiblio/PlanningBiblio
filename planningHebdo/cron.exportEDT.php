@@ -58,21 +58,21 @@ $CSRFToken = CSRFToken();
 
 // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
 $tmp_dir=sys_get_temp_dir();
-$lockFile=$tmp_dir."/planningBiblioExportCSV.lock"; 
+$lockFile=$tmp_dir."/planningBiblioExportCSV.lock";
 
-if(file_exists($lockFile)){
-  $fileTime = filemtime($lockFile);
-  $time = time();
-  // Si le fichier existe et date de plus de 10 minutes, on le supprime et on continue.
-  if ($time - $fileTime > 600){
-    unlink($lockFile);
-  // Si le fichier existe et date de moins de 10 minutes, on quitte
-  } else{
-    exit;
-  }
+if (file_exists($lockFile)) {
+    $fileTime = filemtime($lockFile);
+    $time = time();
+    // Si le fichier existe et date de plus de 10 minutes, on le supprime et on continue.
+    if ($time - $fileTime > 600) {
+        unlink($lockFile);
+    // Si le fichier existe et date de moins de 10 minutes, on quitte
+    } else {
+        exit;
+    }
 }
 // On créé le fichier .lock
-$inF=fopen($lockFile,"w");
+$inF=fopen($lockFile, "w");
 
 // On recherche tout le personnel actif
 $p= new personnel();
@@ -81,7 +81,7 @@ $p->fetch();
 
 $agents = array();
 if (empty($p->elements)) {
-  exit;
+    exit;
 }
 
 $agents = $p->elements;
@@ -93,104 +93,101 @@ $list = array();
 $current = date('Y-m-d', strtotime("-$days_before days"));
 $end = date('Y-m-d', strtotime("+$days_after days"));
 
-while($current < $end){
+while ($current < $end) {
 
 //   $list[$current] = array();
 
-  // Recheche le jour de la semaine (lundi (0) à dimanche (6)) et l'offest (décalage si semaine paire/impaire ou toute autre rotation)
-  $d=new datePl($current);
+    // Recheche le jour de la semaine (lundi (0) à dimanche (6)) et l'offest (décalage si semaine paire/impaire ou toute autre rotation)
+    $d=new datePl($current);
 
-  // jour de la semaine lundi = 0 ,dimanche = 6
-  $jour = $d->position-1;
-  if($jour==-1){
-    $jour=6;
-  }
-
-  // Si utilisation de 2 plannings hebdo (semaine paire et semaine impaire)
-  // Si semaine paire, position +=7 : lundi A = 0 , lundi B = 7 , dimanche B = 13
-  if($config['nb_semaine']=="2" and !($d->semaine % 2) and !$config['EDTSamedi']){
-    $jour+=7;
-  }
-  // Si utilisation de 3 plannings hebdo
-  elseif($config['nb_semaine']=="3" and !$config['EDTSamedi']){
-    if($d->semaine3 == 2){
-      $jour+=7;
+    // jour de la semaine lundi = 0 ,dimanche = 6
+    $jour = $d->position-1;
+    if ($jour==-1) {
+        $jour=6;
     }
-    elseif($d->semaine3 == 3){
-      $jour+=14;
+
+    // Si utilisation de 2 plannings hebdo (semaine paire et semaine impaire)
+    // Si semaine paire, position +=7 : lundi A = 0 , lundi B = 7 , dimanche B = 13
+    if ($config['nb_semaine']=="2" and !($d->semaine % 2) and !$config['EDTSamedi']) {
+        $jour+=7;
     }
-  }
+    // Si utilisation de 3 plannings hebdo
+    elseif ($config['nb_semaine']=="3" and !$config['EDTSamedi']) {
+        if ($d->semaine3 == 2) {
+            $jour+=7;
+        } elseif ($d->semaine3 == 3) {
+            $jour+=14;
+        }
+    }
 
-  // Recherche les heures de présence valides ce jour pour tous les agents
-  $p=new planningHebdo();
-  $p->debut=$current;
-  $p->fin=$current;
-  $p->valide=true;
-  $p->fetch();
+    // Recherche les heures de présence valides ce jour pour tous les agents
+    $p=new planningHebdo();
+    $p->debut=$current;
+    $p->fin=$current;
+    $p->valide=true;
+    $p->fetch();
 
-  if(!empty($p->elements)){
-    foreach($p->elements as $elem){
+    if (!empty($p->elements)) {
+        foreach ($p->elements as $elem) {
 
       // Récupération de l'ID Harpege de l'agent
-      // Si l'agent n'a pas d'ID Harpège, on ne l'importe pas (donc continue) = Demande de la société Bodet
-      // TODO : Voir si nous devons rendre ceci paramètrable : utilisation du champ matricule, login, email ou id. Pour Lille, se sera le champ matricule
-      if(empty($agents[$elem["perso_id"]]['matricule'])){
-        continue;
-      }
-      $agent_id = $agents[$elem["perso_id"]]['matricule'];
+            // Si l'agent n'a pas d'ID Harpège, on ne l'importe pas (donc continue) = Demande de la société Bodet
+            // TODO : Voir si nous devons rendre ceci paramètrable : utilisation du champ matricule, login, email ou id. Pour Lille, se sera le champ matricule
+            if (empty($agents[$elem["perso_id"]]['matricule'])) {
+                continue;
+            }
+            $agent_id = $agents[$elem["perso_id"]]['matricule'];
 
-      // Mise en forme du tableau temps
-      /** Le tableau $elem["temps"][$jour] est constitué comme suit :
-       0 => début période 1, 
-       1 => fin période 1,
-       2 => début période 2,
-       5 => fin période 2 si pause2 activée, sinon null,
-       6 => début période 3 si pause 2, sinon null,
-       3 => fin de journée (peut être fin de période 1, 2 ou 3)
-       */
-      $temps = array();
+            // Mise en forme du tableau temps
+            /** Le tableau $elem["temps"][$jour] est constitué comme suit :
+             0 => début période 1,
+             1 => fin période 1,
+             2 => début période 2,
+             5 => fin période 2 si pause2 activée, sinon null,
+             6 => début période 3 si pause 2, sinon null,
+             3 => fin de journée (peut être fin de période 1, 2 ou 3)
+             */
+            $temps = array();
       
-      if( isset($elem["temps"][$jour])){
+            if (isset($elem["temps"][$jour])) {
 
         // Première période : matinée : index 0 (début) et 1 (fin)
-        if( !empty($elem["temps"][$jour][0]) and !empty($elem["temps"][$jour][1])){
-          $temps[] = substr($elem["temps"][$jour][0], 0, 5);
-          $temps[] = substr($elem["temps"][$jour][1], 0, 5);
-        }
-        // Deuxième période : après-midi : index 2 (début) et 3 (fin)
-        // Seulement s'il n'y a pas de 3ème période (voir cas suivant)
-        if( !empty($elem["temps"][$jour][2]) and !empty($elem["temps"][$jour][3]) and empty($elem["temps"][$jour][5])){
-          $temps[] = substr($elem["temps"][$jour][2], 0, 5);
-          $temps[] = substr($elem["temps"][$jour][3], 0, 5);
-        }
-        // Si 2 pauses sont enregistrées, les index 5 et 6 viennent s'intercaler entre les index 2 et 3. Les périodes sont donc composées des index 2 (début1) et 5 (fin1) et 6 (début2) et 3 (fin2)
-        if( !empty($elem["temps"][$jour][2]) and !empty($elem["temps"][$jour][5])){
-          $temps[] = substr($elem["temps"][$jour][2], 0, 5);
-          $temps[] = substr($elem["temps"][$jour][5], 0, 5);
-          $temps[] = substr($elem["temps"][$jour][6], 0, 5);
-          $temps[] = substr($elem["temps"][$jour][3], 0, 5);
-        }
-        // Journée complète : heures enregistrées sans pause entre les index 0 et 3
-        if( !empty($elem["temps"][$jour][0]) and empty($elem["temps"][$jour][2]) and empty($elem["temps"][$jour][5]) and !empty($elem["temps"][$jour][3])){
-          $temps[] = substr($elem["temps"][$jour][0], 0, 5);
-          $temps[] = substr($elem["temps"][$jour][3], 0, 5);
-        }
-        // Journée complète : heures enregistrées sans pause entre les index 0 et 5
-        if( !empty($elem["temps"][$jour][0]) and empty($elem["temps"][$jour][2]) and !empty($elem["temps"][$jour][5]) and empty($elem["temps"][$jour][3])){
-          $temps[] = substr($elem["temps"][$jour][0], 0, 5);
-          $temps[] = substr($elem["temps"][$jour][5], 0, 5);
-        }
-        
-      }
+                if (!empty($elem["temps"][$jour][0]) and !empty($elem["temps"][$jour][1])) {
+                    $temps[] = substr($elem["temps"][$jour][0], 0, 5);
+                    $temps[] = substr($elem["temps"][$jour][1], 0, 5);
+                }
+                // Deuxième période : après-midi : index 2 (début) et 3 (fin)
+                // Seulement s'il n'y a pas de 3ème période (voir cas suivant)
+                if (!empty($elem["temps"][$jour][2]) and !empty($elem["temps"][$jour][3]) and empty($elem["temps"][$jour][5])) {
+                    $temps[] = substr($elem["temps"][$jour][2], 0, 5);
+                    $temps[] = substr($elem["temps"][$jour][3], 0, 5);
+                }
+                // Si 2 pauses sont enregistrées, les index 5 et 6 viennent s'intercaler entre les index 2 et 3. Les périodes sont donc composées des index 2 (début1) et 5 (fin1) et 6 (début2) et 3 (fin2)
+                if (!empty($elem["temps"][$jour][2]) and !empty($elem["temps"][$jour][5])) {
+                    $temps[] = substr($elem["temps"][$jour][2], 0, 5);
+                    $temps[] = substr($elem["temps"][$jour][5], 0, 5);
+                    $temps[] = substr($elem["temps"][$jour][6], 0, 5);
+                    $temps[] = substr($elem["temps"][$jour][3], 0, 5);
+                }
+                // Journée complète : heures enregistrées sans pause entre les index 0 et 3
+                if (!empty($elem["temps"][$jour][0]) and empty($elem["temps"][$jour][2]) and empty($elem["temps"][$jour][5]) and !empty($elem["temps"][$jour][3])) {
+                    $temps[] = substr($elem["temps"][$jour][0], 0, 5);
+                    $temps[] = substr($elem["temps"][$jour][3], 0, 5);
+                }
+                // Journée complète : heures enregistrées sans pause entre les index 0 et 5
+                if (!empty($elem["temps"][$jour][0]) and empty($elem["temps"][$jour][2]) and !empty($elem["temps"][$jour][5]) and empty($elem["temps"][$jour][3])) {
+                    $temps[] = substr($elem["temps"][$jour][0], 0, 5);
+                    $temps[] = substr($elem["temps"][$jour][5], 0, 5);
+                }
+            }
 
-      $heures_supp = null ;
+            $heures_supp = null ;
 
-      $list[]=array_merge(array($current, $agent_id, $heures_supp), $temps );
+            $list[]=array_merge(array($current, $agent_id, $heures_supp), $temps);
+        }
     }
-  }
 
-  $current = date('Y-m-d', strtotime($current." + 1 day"));
-
+    $current = date('Y-m-d', strtotime($current." + 1 day"));
 }
 
 // On ouvre le fichier CSV
@@ -207,5 +204,3 @@ fclose($fp);
 // Unlock
 unlink($lockFile);
 logs("Exportation terminée (fichier $CSVFile)", "PlanningHebdo", $CSRFToken);
-
-?>

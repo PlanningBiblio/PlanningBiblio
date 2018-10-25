@@ -39,4 +39,3 @@ $templates_params = array(
     'authorized'          => $authorized,
     'CSRFSession'         => $CSRFSession,
 );
-

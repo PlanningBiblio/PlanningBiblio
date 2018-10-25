@@ -2,12 +2,14 @@
 
 namespace PlanningBiblio;
 
-class LegacyCodeChecker {
+class LegacyCodeChecker
+{
     private $twigized = array(
         'absences/infos.php',
     );
 
-    public function isTwigized($page) {
+    public function isTwigized($page)
+    {
         if (in_array($page, $this->twigized)) {
             return true;
         }
@@ -15,5 +17,3 @@ class LegacyCodeChecker {
         return false;
     }
 }
-
-?>
