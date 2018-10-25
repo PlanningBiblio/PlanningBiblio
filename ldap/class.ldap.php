@@ -22,7 +22,7 @@ if (!isset($version)) {
 
 function authCAS()
 {
-    include "vendor/CAS-1.3.4/CAS.php";
+    include __DIR__."/../vendor/apereo/phpcas/CAS.php";
     if ($GLOBALS['config']['CAS-Debug']) {
         $tmp_dir=sys_get_temp_dir();
         phpCAS::setDebug("$tmp_dir/cas_debug.txt");
