@@ -39,7 +39,7 @@ else {
 }
 
 // Si pas de session, redirection vers la page d'authentification
-if (!array_key_exists("login_id", $_SESSION)) {
+if (empty($_SESSION['login_id'])) {
     // Action executée dans un popup alors que la session a été perdue, on affiche
     if (!$show_menu) {
         echo "<div style='margin:60px 30px;'>\n";
