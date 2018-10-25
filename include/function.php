@@ -22,6 +22,13 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
     exit;
 }
 
+require_once(__DIR__."/../vendor/phpmailer/phpmailer/src/Exception.php");
+require_once(__DIR__."/../vendor/phpmailer/phpmailer/src/PHPMailer.php");
+require_once(__DIR__."/../vendor/phpmailer/phpmailer/src/SMTP.php");
+require_once(__DIR__."/../vendor/phpmailer/phpmailer/src/OAuth.php");
+
+use PHPMailer\PHPMailer\PHPMailer;
+
 class datePl
 {
     public $dates = null;
@@ -109,13 +116,11 @@ class CJMail
     public $error_encoded=null;
     public $failedAddresses=array();
     public $successAddresses=array();
-  
+
     public function __construct()
     {
-        require_once(__DIR__."/../vendor/PHPMailer/class.phpmailer.php");
-        require_once(__DIR__."/../vendor/PHPMailer/class.smtp.php");
     }
-  
+
 
     private function prepare()
     {
@@ -195,6 +200,7 @@ class CJMail
         $mail->SMTPAuth =$GLOBALS['config']['Mail-SMTPAuth'];
         $mail->Username =$GLOBALS['config']['Mail-Username'];
         $mail->Password =decrypt($GLOBALS['config']['Mail-Password']);
+        $mail->Sender =$GLOBALS['config']['Mail-From'];
         $mail->From =$GLOBALS['config']['Mail-From'];
         $mail->FromName =$GLOBALS['config']['Mail-FromName'];
         $mail->IsHTML();

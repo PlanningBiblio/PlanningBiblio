@@ -24,6 +24,7 @@ Prérequis :
   - CURL (si identification CAS)
   - LDAP (si utilisation avec un serveur LDAP)
   - Symfony/HttpFoundation
+  - phpmailer/phpmailer
 
 ===============
 Copyright (C) 2011-2018 - Jérôme Combes
@@ -72,19 +73,6 @@ Dossier vendor/ics-parser
  - Frank Gregor (programming, feedback, testing)
  - John Grogg (programming, addition of event recurrence handling)
  - [Jonathan Goode](https://github.com/u01jmg3) (programming, bug fixing, enhancement, coding standard)
-
-Dossier vendor/PHPMailer
- - Software: PHPMailer - The PHPMailer GitHub project
- - Version: 5.2.9
- - Lien https://github.com/PHPMailer/PHPMailer/
- - Auteurs :
-    - Marcus Bointon (Synchro/coolbru) <phpmailer@synchromedia.co.uk>
-    - Jim Jagielski (jimjag) <jimjag@gmail.com>
-    - Andy Prevost (codeworxtech) <codeworxtech@users.sourceforge.net>
-    - Brent R. Matzelle (original founder)
-  - Copyright 2012 - 2014 Marcus Bointon
-  - Copyright 2010 - 2012 Jim Jagielski
-  - Copyright 2004 - 2009 Andy Prevost
 
 Fichier include/feries.php
  - contient la fonction jour_ferie permettant de déterminer rapidement si un jour est férié (fêtes...
