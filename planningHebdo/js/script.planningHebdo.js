@@ -17,7 +17,7 @@ Fichier regroupant les fonctions JavaScript utiles à la gestion des plannings d
 // lors de la modification d'un select ou au chargement de la page modif
 function plHebdoCalculHeures(object,num){
   // Num : si horaires prédéfinis, 2 tableaux, num = null ou 2
-  // Numero : numéro du tableau, en fonction de la variable $config['nb_semaine'], on peut avoir jusqu'à 3 tableaux
+  // Numero : numéro du tableau, en fonction de la variable $config['nb_semaine'], on peut avoir jusqu'à 4 tableaux
 
   // Récupération du numéro du tableau
   // Si object est un objet, la fonction est appelée par l'événement "change" sur un select

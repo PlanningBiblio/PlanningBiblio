@@ -119,6 +119,16 @@ while ($current < $end) {
             $jour+=14;
         }
     }
+    // Si utilisation de 4 plannings hebdo
+    elseif ($config['nb_semaine']=="4" and !$config['EDTSamedi']) {
+        if ($d->semaine3 == 2) {
+            $jour+=7;
+        } elseif ($d->semaine3 == 3) {
+            $jour+=14;
+        } elseif ($d->semaine3 == 4) {
+            $jour+=21;
+        }
+    }
 
     // Recherche les heures de présence valides ce jour pour tous les agents
     $p=new planningHebdo();

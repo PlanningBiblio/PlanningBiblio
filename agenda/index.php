@@ -210,6 +210,8 @@ EOD;
                 $jour=$jour+7;
             } elseif ($d->semaine3==3) {
                 $jour=$jour+14;
+            } elseif ($d->semaine3==4) {
+                $jour=$jour+21;
             }
         }
 

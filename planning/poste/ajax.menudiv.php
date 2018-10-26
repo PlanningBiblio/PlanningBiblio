@@ -250,6 +250,16 @@ if ($db->result and $verif) {
                 $jour+=14;
             }
         }
+        // Si utilisation de 4 plannings hebdo
+        elseif ($config['nb_semaine']=="4" and !$config['EDTSamedi']) {
+            if ($semaine3==2) {
+                $jour+=7;
+            } elseif ($semaine3==3) {
+                $jour+=14;
+            } elseif ($semaine3==4) {
+                $jour+=21;
+            }
+        }
 
         // Si utilisation d'un planning pour les semaines sans samedi et un planning pour les semaines avec samedi travaillé
         if ($config['EDTSamedi']) {

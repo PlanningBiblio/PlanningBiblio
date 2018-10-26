@@ -213,10 +213,11 @@ echo "</div> <!-- id=periode -->\n";
 switch ($config['nb_semaine']) {
   case 2: $cellule=array("Semaine Impaire","Semaine Paire");		break;
   case 3: $cellule=array("Semaine 1","Semaine 2","Semaine 3");		break;
+  case 4: $cellule=array("Semaine 1","Semaine 2","Semaine 3","Semaine 4");		break;
   default: $cellule=array("Jour");					break;
 }
-$fin=$config['Dimanche']?array(8,15,22):array(7,14,21);
-$debut=array(1,8,15);
+$fin=$config['Dimanche']?array(8,15,22,29):array(7,14,21,28);
+$debut=array(1,8,15,22);
 $jours=array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
 ?>
 

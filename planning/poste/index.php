@@ -159,7 +159,8 @@ echo "<div class='noprint'>\n";
 
 switch ($config['nb_semaine']) {
   case 2:	$type_sem=$semaine%2?"Impaire":"Paire";	$affSem="$type_sem ($semaine)";	break;
-  case 3: 	$type_sem=$semaine3;			$affSem="$type_sem ($semaine)";	break;
+  case 3:
+  case 4: 	$type_sem=$semaine3;			$affSem="$type_sem ($semaine)";	break;
   default:	$affSem=$semaine;	break;
 }
 echo "<b>Semaine $affSem</b>\n";
@@ -849,6 +850,16 @@ EOD;
                     $jour+=7;
                 } elseif ($semaine3==3) {
                     $jour+=14;
+                }
+            }
+            // Si utilisation de 4 plannings hebdo
+            elseif ($config['nb_semaine']=="4") {
+                if ($semaine3==2) {
+                    $jour+=7;
+                } elseif ($semaine3==3) {
+                    $jour+=14;
+                } elseif ($semaine3==4) {
+                    $jour+=21;
                 }
             }
 

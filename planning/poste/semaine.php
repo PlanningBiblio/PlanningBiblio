@@ -115,7 +115,8 @@ echo "<div class='noprint'>\n";
 
 switch ($config['nb_semaine']) {
   case 2:	$type_sem=$semaine%2?"Impaire":"Paire";	$affSem="$type_sem ($semaine)";	break;
-  case 3: 	$type_sem=$semaine3;			$affSem="$type_sem ($semaine)";	break;
+  case 3:
+  case 4: 	$type_sem=$semaine3;			$affSem="$type_sem ($semaine)";	break;
   default:	$affSem=$semaine;	break;
 }
 echo "<b>Semaine $affSem</b>\n";

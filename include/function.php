@@ -103,6 +103,18 @@ class datePl
                 $this->semaine3=3;
             }
         }
+        // Calcul du numéro de la semaine pour l'utilisation de 4 plannings hebdomadaires
+        if ($GLOBALS['config']['nb_semaine']==4) {
+            $this->semaine3=$this->semaine%2?1:2;
+
+            $tmp = ($this->semaine % 4);
+            switch ($tmp) {
+                case 1: $this->semaine3 = 1; break;
+                case 2: $this->semaine3 = 2; break;
+                case 3: $this->semaine3 = 3; break;
+                case 0: $this->semaine3 = 4; break;
+            }
+        }
     }
 }
 

@@ -330,7 +330,6 @@ class absences
 
         $d=new datePl($date);
         $dates=$d->dates;
-        $semaine3=$d->semaine3;
         $j1=$dates[0];
         $j7=$dates[6];
 

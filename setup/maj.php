@@ -1195,6 +1195,15 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="2.8.04";
+if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+    // Rotation des heures de présence sur 4 semaines
+    $sql[]="UPDATE `{$dbprefix}config` SET `valeurs` = '1,2,3,4' WHERE `nom` = 'nb_semaine';";
+
+    // Version
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
