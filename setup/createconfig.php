@@ -29,11 +29,7 @@ if (phpversion() >= 7) {
 
 // PHP 5.3+
 else {
-    if (function_exists('mcrypt_create_iv')) {
-        $secret = bin2hex(mcrypt_create_iv(12, MCRYPT_DEV_URANDOM));
-    } else {
-        $secret = bin2hex(openssl_random_pseudo_bytes(12));
-    }
+    $secret = bin2hex(openssl_random_pseudo_bytes(12));
 }
 
 $file=array();

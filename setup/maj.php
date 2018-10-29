@@ -600,11 +600,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     // PHP 5.3+
     else {
         if (empty($_SESSION['oups']['CSRFToken'])) {
-            if (function_exists('mcrypt_create_iv')) {
-                $_SESSION['oups']['CSRFToken'] = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
-            } else {
-                $_SESSION['oups']['CSRFToken'] = bin2hex(openssl_random_pseudo_bytes(32));
-            }
+            $_SESSION['oups']['CSRFToken'] = bin2hex(openssl_random_pseudo_bytes(32));
         }
     }
     // Version
@@ -1195,6 +1191,21 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="2.8.04";
+if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+    $db = new db();
+    $db->select2('config', array('nom', 'valeur'), array('type'=>'password'));
+    if ($db->result) {
+        foreach ($db->result as $elem) {
+            $decrypted = decrypt_old($elem['valeur']);
+            $encrypted = encrypt($decrypted);
+            $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$encrypted' WHERE `nom`='{$elem['nom']}';";
+        }
+    }
+
+    // Version
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
 
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
@@ -1243,6 +1254,37 @@ if (isset($check_tables) and $check_tables === true) {
 
 echo "<br/><br/><a href='index.php'>Continuer</a>\n";
 include "include/footer.php";
+
+/**
+ * Functions used for migrations
+ */
+
+/**
+ * Old decrypt function (release < 2.8.04)
+ */
+function decrypt_old($str)
+{
+    if (!function_exists('mcrypt_create_iv')) {
+        return null;
+    }
+
+    $key="AB0972FA445DDE66178ADF76";
+    if (!empty($GLOBALS['config']['secret'])) {
+        $key = $GLOBALS['config']['secret'];
+    }
+
+    // Vérifie si la chaîne est encodée en base64
+    if (base64_encode(base64_decode($str, true)) === $str) {
+        // si oui, base64_decode
+        $str = base64_decode($str);
+    }
+
+    $str = mcrypt_decrypt(MCRYPT_3DES, $key, $str, MCRYPT_MODE_ECB);
+
+    $block = mcrypt_get_block_size('tripledes', 'ecb');
+    $pad = ord($str[($len = strlen($str)) - 1]);
+    return substr($str, 0, strlen($str) - $pad);
+}
 
 /**
  * serializeToJson

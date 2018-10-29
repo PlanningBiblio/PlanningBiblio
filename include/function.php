@@ -772,11 +772,7 @@ function CSRFToken()
 
     // PHP 5.3+
     else {
-        if (function_exists('mcrypt_create_iv')) {
-            $CSRFToken = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
-        } else {
-            $CSRFToken = bin2hex(openssl_random_pseudo_bytes(32));
-        }
+        $CSRFToken = bin2hex(openssl_random_pseudo_bytes(32));
     }
 
     $_SESSION['oups']['CSRFToken'] = $CSRFToken;
@@ -917,38 +913,48 @@ function decode($n)
     return utf8_decode($n);
 }
 
-function decrypt($str)
+function decrypt($crypted_token)
 {
+    if ($crypted_token === null) {
+        return null;
+    }
+
     $key="AB0972FA445DDE66178ADF76";
-    if (isset($GLOBALS['config']['secret']) and $GLOBALS['config']['secret']) {
+    if (!empty($GLOBALS['config']['secret'])) {
         $key = $GLOBALS['config']['secret'];
     }
 
-    // Vérifie si la chaîne est encodée en base64
-    if (base64_encode(base64_decode($str, true)) === $str) {
-        // si oui, base64_decode
-        $str = base64_decode($str);
-    }
-  
-    $str = mcrypt_decrypt(MCRYPT_3DES, $key, $str, MCRYPT_MODE_ECB);
+    $decrypted_token = false;
 
-    $block = mcrypt_get_block_size('tripledes', 'ecb');
-    $pad = ord($str[($len = strlen($str)) - 1]);
-    return substr($str, 0, strlen($str) - $pad);
+    if (preg_match("/^(.*)::(.*)$/", $crypted_token, $regs)) {
+        // decrypt encrypted string
+        list(, $crypted_token, $enc_iv) = $regs;
+        $enc_method = 'AES-128-CTR';
+        $enc_key = openssl_digest($key, 'SHA256', true);
+        $decrypted_token = openssl_decrypt($crypted_token, $enc_method, $enc_key, 0, hex2bin($enc_iv));
+        unset($crypted_token, $enc_method, $enc_key, $enc_iv, $regs);
+    }
+    return $decrypted_token;
 }
 
-function encrypt($str)
+function encrypt($string)
 {
+    if ($string === null) {
+        return null;
+    }
+
     $key="AB0972FA445DDE66178ADF76";
-    if (isset($GLOBALS['config']['secret']) and $GLOBALS['config']['secret']) {
+    if (!empty($GLOBALS['config']['secret'])) {
         $key = $GLOBALS['config']['secret'];
     }
-    $block = mcrypt_get_block_size('tripledes', 'ecb');
-    $pad = $block - (strlen($str) % $block);
-    $str .= str_repeat(chr($pad), $pad);
 
-    $str = mcrypt_encrypt(MCRYPT_3DES, $key, $str, MCRYPT_MODE_ECB);
-    return base64_encode($str);
+    $enc_method = 'AES-128-CTR';
+    $enc_key = openssl_digest($key, 'SHA256', true);
+    $enc_iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($enc_method));
+    $crypted_string = openssl_encrypt($string, $enc_method, $enc_key, 0, $enc_iv) . "::" . bin2hex($enc_iv);
+    unset($string, $enc_method, $enc_key, $enc_iv);
+
+    return $crypted_string;
 }
 
 function gen_trivial_password($len = 6)

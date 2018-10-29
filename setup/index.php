@@ -21,7 +21,7 @@ session_start();
 session_destroy();
 session_start();
 
-$version="2.8.03";
+$version="2.8.04";
 
 include "header.php";
 include_once "../include/function.php";
@@ -38,11 +38,7 @@ if (phpversion() >= 7) {
 // PHP 5.3+
 else {
     if (empty($_SESSION['oups']['CSRFToken'])) {
-        if (function_exists('mcrypt_create_iv')) {
-            $_SESSION['oups']['CSRFToken'] = bin2hex(mcrypt_create_iv(32, MCRYPT_DEV_URANDOM));
-        } else {
-            $_SESSION['oups']['CSRFToken'] = bin2hex(openssl_random_pseudo_bytes(32));
-        }
+        $_SESSION['oups']['CSRFToken'] = bin2hex(openssl_random_pseudo_bytes(32));
     }
 }
 
