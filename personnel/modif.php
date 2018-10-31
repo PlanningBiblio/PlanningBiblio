@@ -731,7 +731,7 @@ for ($j=0;$j<$config['nb_semaine'];$j++) {
         } else {
             echo "<tr><td>{$jours[$k]}</td>\n";
       
-            for ($l=0; $l<4; $l++) {
+            for ($l=0; $l<3; $l++) {
                 $heure = isset($temps[$i-1][0]) ? heure2($temps[$i-1][$l]) : null;
                 echo "<td id='temps_".($i-1)."_$l'>$heure</td>\n";
             }
@@ -743,7 +743,10 @@ for ($j=0;$j<$config['nb_semaine'];$j++) {
                 }
             }
 
-      
+            $heure = isset($temps[$i-1][0]) ? heure2($temps[$i-1][3]) : null;
+            echo "<td id='temps_".($i-1)."_3'>$heure</td>\n";
+
+
             if ($config['Multisites-nombre']>1) {
                 $site=null;
                 if (isset($temps[$i-1][4])) {
