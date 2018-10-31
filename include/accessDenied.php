@@ -33,8 +33,8 @@ for ($i=0;$i<$nb;$i++) {
 
 // Besoin de config pour récupérer le thème
 // Utilise le chemin absolut plutôt que relatif sinon pb avec le dossier admin qui contient également un config.php
-require_once "sanitize.php";
-require_once "config.php";
+require_once(__DIR__.'/sanitize.php');
+require_once(__DIR__.'/config.php');
 $theme=$config['Affichage-theme'];
 
 // Lien proposé pour le retour à l'application

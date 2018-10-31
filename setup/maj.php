@@ -16,13 +16,14 @@ Cette page est appelée par la page index.php si la version du fichier index.php
 dans la base de données
 */
 
-$CSRFToken = CSRFToken();
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
 if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
-    include_once "../include/accessDenied.php";
+    include_once(__DIR__.'/../include/accessDenied.php');
     exit;
 }
+
+$CSRFToken = CSRFToken();
 
 echo "Mise &agrave; jour de la base de donn&eacute;es version {$config['Version']} --> $version<br/>\n";
 if ($config['Version']<"2.0") {
@@ -1253,7 +1254,7 @@ if (isset($check_tables) and $check_tables === true) {
 }
 
 echo "<br/><br/><a href='index.php'>Continuer</a>\n";
-include "include/footer.php";
+include(__DIR__.'/../include/footer.php');
 
 /**
  * Functions used for migrations

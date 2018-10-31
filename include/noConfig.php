@@ -1,5 +1,5 @@
 <?php
-/*
+/**
 Planning Biblio, Version 1.9.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
@@ -15,6 +15,12 @@ Affiche une page renvoyant vers le fichier setup/index.php si le fichier de conf
 
 Page appelée (include) par les fichiers authentification.php et index.php si le fichier include/config.php est absent
 */
+
+// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
+if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
+    include_once(__DIR__.'/../include/accessDenied.php');
+    exit;
+}
 
 // Construction du chemin relatif pour trouver les fichiers css
 $dir1=dirname(__DIR__);
@@ -51,6 +57,6 @@ Le fichier de configuration est manquant.<br/>
 </strong>
 </center>
 <?php
-include "include/footer.php";
+include(__DIR__.'/footer.php');
 exit;
 ?>
