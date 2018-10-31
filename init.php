@@ -34,15 +34,15 @@ use Symfony\Component\HttpFoundation\Request;
 use PlanningBiblio\LegacyCodeChecker;
 
 // Redirection vers setup si le fichier config est absent
-if (!file_exists('include/config.php')) {
-    include 'include/noConfig.php';
+if (!file_exists(__DIR__.'/include/config.php')) {
+    include(__DIR__.'/include/noConfig.php');
 }
 
-require_once "include/config.php";
-require_once "include/sanitize.php";
-require_once __DIR__."/lang/fr_FR.php";
-if (file_exists(__DIR__."/lang/custom.php")) {
-    require_once __DIR__."/lang/custom.php";
+require_once(__DIR__.'/include/config.php');
+require_once(__DIR__.'/include/sanitize.php');
+require_once(__DIR__.'/lang/fr_FR.php');
+if (file_exists(__DIR__.'/lang/custom.php')) {
+    require_once(__DIR__.'/lang/custom.php');
 }
 
 date_default_timezone_set("Europe/Paris");

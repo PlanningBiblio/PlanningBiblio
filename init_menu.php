@@ -14,7 +14,7 @@
   * Initialisation du contenu du menu
 */
 
-require_once('include/class.menu.php');
+require_once(__DIR__.'/include/class.menu.php');
 
 $m = new menu();
 $m->fetch();

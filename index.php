@@ -27,14 +27,14 @@ include_once('init_templates.php');
 // Vérification de la version de la base de données
 // Si la version est différente, mise à jour de la base de données
 if ($version!=$config['Version']) {
-    include "setup/maj.php";
+    require_once(__DIR__.'/setup/maj.php');
 }
 // Sinon, on continue
 else {
-    include "include/feries.php";
-    include "plugins/plugins.php";
+    require_once(__DIR__.'/include/feries.php');
+    require_once(__DIR__.'/plugins/plugins.php');
     if (isset($_SESSION['login_id'])) {
-        include "include/cron.php";
+        require_once(__DIR__.'/include/cron.php');
     }
 }
 
@@ -51,7 +51,7 @@ if (empty($_SESSION['login_id'])) {
     } else {
         // Session perdue, on affiche la page d'authentification
         $redirURL="index.php?".$_SERVER['QUERY_STRING'];
-        include_once "authentification.php";
+        include_once(__DIR__.'/authentification.php');
         exit;
     }
 }
@@ -59,13 +59,13 @@ if (empty($_SESSION['login_id'])) {
 # Start using twigized script
 $checker = new PlanningBiblio\LegacyCodeChecker();
 if ($checker->isTwigized($page)) {
-    include $page;
+    include(__DIR__.'/'.$page);
     exit;
 }
 
-include "include/header.php";
+include(__DIR__.'/include/header.php');
 if ($show_menu) {
-    include "include/menu.php";
+    include(__DIR__.'/include/menu.php');
 }
 
 // Sécurité CSRFToken
@@ -82,10 +82,10 @@ if ($content_planning) {
 }
 
 if ($authorized) {
-    include $page;
+    include(__DIR__.'/'.$page);
 } else {
     echo "<div id='acces_refuse'>Accès refusé</div>\n";
 }
-if ($menu) {
-    include "include/footer.php";
+if ($show_menu) {
+    include(__DIR__.'/include/footer.php');
 }
