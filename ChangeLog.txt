@@ -4,6 +4,7 @@
 - Update PHPMailer using composer and set mail->Sender
 - Update phpCAS using composer
 - Replace deprecated mcrypt functions with openssl functions
+- Fix an error in the calculation of hours of absence
 
 *** Version 2.8.03         (12 septembre 2018)   ***
 - Correction

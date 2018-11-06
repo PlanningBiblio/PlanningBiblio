@@ -414,12 +414,12 @@ class absences
                     }
 
                     $heures[$perso_id]=$h;
-                }
 
-                // On applique le pourcentage
-                if (strpos($agents[$perso_id]["heures_hebdo"], "%")) {
-                    $pourcent=(float) str_replace("%", null, $agents[$perso_id]["heures_hebdo"]);
-                    $heures[$perso_id]=$heures[$perso_id]*$pourcent/100;
+                    // On applique le pourcentage
+                    if (strpos($agents[$perso_id]["heures_hebdo"], "%")) {
+                        $pourcent=(float) str_replace("%", null, $agents[$perso_id]["heures_hebdo"]);
+                        $heures[$perso_id]=$heures[$perso_id]*$pourcent/100;
+                    }
                 }
             }
 
