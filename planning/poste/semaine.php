@@ -399,6 +399,11 @@ for ($j=0;$j<=$fin;$j++) {
       
             //	Lignes postes et grandes lignes
             foreach ($tab['lignes'] as $ligne) {
+                $emptyLine=null;
+                if (!$config['Planning-lignesVides'] and $verrou and isAnEmptyLine($ligne['poste'])) {
+                    $emptyLine="empty-line";
+                }
+
                 if ($ligne['type']=="poste" and $ligne['poste']) {
                     $classTD = $postes[$ligne['poste']]['obligatoire'] == "Obligatoire" ? "td_obligatoire" : "td_renfort";
                     // Classe de la ligne en fonction du type de poste (obligatoire ou de renfort)
@@ -407,7 +412,7 @@ for ($j=0;$j<=$fin;$j++) {
                     // Classe de la ligne en fonction des activités et des catégories
                     $classTR .= ' ' . $postes[$ligne['poste']]['classes'];
 
-                    echo "<tr class='pl-line tableau$l $classTR {$tab['classe']}'>\n";
+                    echo "<tr class='pl-line tableau$l $classTR {$tab['classe']} $emptyLine'>\n";
                     echo "<td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
                     if ($config['Affichage-etages'] and $postes[$ligne['poste']]['etage']) {
                         echo " ({$postes[$ligne['poste']]['etage']})";
