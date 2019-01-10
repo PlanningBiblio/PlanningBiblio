@@ -26,11 +26,13 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
 $tmp_dir=sys_get_temp_dir();
 
 $url = createURL();
+$templates_params['CSRFSession'] = $CSRFSession;
 
 // Enregistrement des paramètres
 if ($_POST) {
 
-  // Initilisation des variables
+    $templates_params['post'] = 1;
+    // Initilisation des variables
     $post=array();
     foreach ($_POST as $key => $value) {
         $key=filter_var($key, FILTER_SANITIZE_STRING);
@@ -83,19 +85,7 @@ if ($_POST) {
         }
     }
 
-    if ($erreur) {
-        echo <<<EOD
-      <script type='text/JavaScript'>
-      CJInfo('Il y a eu des erreurs pendant la modification.<br/>Veuillez vérifier la configuration.','error');
-      </script>
-EOD;
-    } else {
-        echo <<<EOD
-      <script type='text/JavaScript'>
-      CJInfo('Les modifications ont été enregistrées.','highlight');
-      </script>
-EOD;
-    }
+    $templates_params['erreur'] = $erreur;
 }
 
 
@@ -104,124 +94,64 @@ $last_category=null;
 $db=new db();
 $db->query("SELECT * FROM `{$dbprefix}config` ORDER BY `categorie`,`ordre`,`id`;");
 
-echo "<h3>Configuration</h3>\n";
-echo "<form name='form' action='index.php' method='post'>\n";
-echo "<input type='hidden' name='page' value='admin/config.php' />\n";
-echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
-echo "<div id='accordion' class='ui-accordion'>\n";
-
+$elements = array();
 foreach ($db->result as $elem) {
     if (substr($elem['nom'], -9)=="-Password") {
         $elem['valeur']=decrypt($elem['valeur']);
     }
+    $elem['valeurs'] = html_entity_decode($elem['valeurs'], ENT_HTML5|ENT_QUOTES, 'UTF-8');
 
-    if (!$last_category) {
-        echo "<h3>{$elem['categorie']}</h3>\n";
-        echo "<div>";
-        echo "<table cellspacing='0' cellpadding='5' style='width:100%;'>\n";
-        echo "<tr><td class='ui-widget-header ui-corner-left' style='width:350px;border-right:0px;'>Nom</td><td style='width:600px;border-left:0px;border-right:0px;' class='ui-widget-header'>Valeur</td><td class='ui-widget-header ui-corner-right' style='border-left:0px;'>Commentaires</td></tr>\n";
-    } elseif ($elem['categorie']!=$last_category) {
-        echo "</table>\n";
-        echo "</div>\n";
-        echo "<h3>{$elem['categorie']}</h3>\n";
-        echo "<div>";
-        echo "<table cellspacing='0' cellpadding='5' style='width:100%;'>\n";
-        echo "<tr><td class='ui-widget-header ui-corner-left' style='width:350px;border-right:0px;'>Nom</td><td style='width:600px;border-left:0px;border-right:0px;' class='ui-widget-header'>Valeur</td><td class='ui-widget-header ui-corner-right' style='border-left:0px;'>Commentaires</td></tr>\n";
-    }
-
-    $last_category=$elem['categorie'];
-    echo "<tr style='vertical-align:top;'><td style='width:180px;'>{$elem['nom']}</td><td>\n";
     switch ($elem['type']) {
-    case "boolean":
-      $checked = $elem['valeur'] == '1' ? "checked='checked'" : null;
-      echo "<input type='checkbox' name='{$elem['nom']}' id='{$elem['nom']}' value='1' $checked />\n";
-      break;
-
-    // Checkboxes
-    // Valeurs proposées (champ valeurs) = tableau PHP à 2 dimensions
-    // Valeurs choisies (champ valeur) =  tableau PHP à 1 dimension
     case "checkboxes":
-      $valeurs=json_decode(str_replace("&#34;", '"', $elem['valeurs']), true);
-      $choisies=json_decode(html_entity_decode($elem['valeur'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-
-      if (is_array($valeurs)) {
-          $i = 1;
-          foreach ($valeurs as $val) {
-              $checked=in_array($val[0], $choisies)?"checked='checked'":null;
-              echo "<input type='checkbox' name='{$elem['nom']}[]' id='{$elem['nom']}_$i' value='{$val[0]}' $checked /> {$val[1]}<br/>\n";
-              $i++;
-          }
-      }
+      $elem['valeurs'] = json_decode(str_replace("&#34;", '"', $elem['valeurs']), true);
+      $elem['choisies'] = json_decode(html_entity_decode($elem['valeur'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
       break;
 
     // Select avec valeurs séparées par des virgules
     case "enum":
-      echo "<select name='{$elem['nom']}' id='{$elem['nom']}' style='width:305px;'>\n";
       $options=explode(",", $elem['valeurs']);
+      $selected = null;
       foreach ($options as $option) {
-          $selected=$option==$elem['valeur']?"selected='selected'":null;
-          $selected=$option==htmlentities($elem['valeur'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false)?"selected='selected'":$selected;
-          echo "<option value='$option' $selected >$option</option>\n";
+          $selected = $option == htmlentities($elem['valeur'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false) ? $elem['valeur'] : $selected;
       }
-      echo "</select>\n";
+      $elem['valeur'] = $selected;
+      $elem['options'] = $options;
       break;
 
     // Select avec valeurs dans un tableau PHP à 2 dimensions
     case "enum2":
-      echo "<select name='{$elem['nom']}' id='{$elem['nom']}' style='width:305px;'>\n";
-      $options=json_decode(str_replace("&#34;", '"', $elem['valeurs']), true);
-      foreach ($options as $option) {
-          $selected=$option[0]==$elem['valeur']?"selected='selected'":null;
-          echo "<option value='{$option[0]}' $selected >{$option[1]}</option>\n";
-      }
-      echo "</select>\n";
-      break;
-
-    case "password":
-      echo "<input type='password' name='{$elem['nom']}' id='{$elem['nom']}' value='{$elem['valeur']}' style='width:300px;'/>\n";
-      break;
-
-    case "info":
-      echo $elem['valeur'];
+      $elem['options'] = json_decode(str_replace("&#34;", '"', $elem['valeurs']), true);
       break;
 
     case "textarea":
-      $valeur=str_replace("<br/>", "\n", $elem['valeur']);
-      echo "<textarea name='{$elem['nom']}' id='{$elem['nom']}' style='width:300px;height:100px;' rows='1' cols='1'>$valeur</textarea>\n";
+      $elem['valeur'] = str_replace("<br/>", "\n", $elem['valeur']);
       break;
 
     case "date":
-      echo "<input type='text' name='{$elem['nom']}' id='{$elem['nom']}' value='".dateFr3($elem['valeur'])."' style='width:300px;' class='datepicker'/>\n";
+      $elem['valeur'] = dateFr3($elem['valeur']);
       break;
 
     default:
-      echo "<input type='text' name='{$elem['nom']}' id='{$elem['nom']}' value='{$elem['valeur']}' style='width:300px;'/>\n";
       break;
-  }
-
-    $commentaires=str_replace("[TEMP]", $tmp_dir, $elem['commentaires']);
-    $commentaires=str_replace("[SERVER]", $url, $commentaires);
-    echo "</td><td>$commentaires</td>\n";
-    echo "</tr>\n";
-  
-    if ($elem['nom'] == 'LDAP-Matricule') {
-        echo "<tr><td>Tester</td>\n";
-        echo "<td><input type='button' value='Tester' onclick='ldaptest();' id='LDAP-Test' /></td>\n";
-        echo "<td>Tester les paramètres LDAP</td></tr>\n";
     }
 
-    if ($elem['nom'] == 'Mail-Planning') {
-        echo "<tr><td>Tester</td>\n";
-        echo "<td><input type='button' value='Tester' onclick='mailtest();' id='Mail-Test' /></td>\n";
-        echo "<td>Tester les paramètres de messagerie. Un e-mail sera envoy&eacute; aux adresses mention&eacute;es dans le champ Mail-Planning.</td></tr>\n";
+    $commentaires = str_replace("[TEMP]", $tmp_dir, $elem['commentaires']);
+    $commentaires = str_replace("[SERVER]", $url, $commentaires);
+    $elem['commentaires'] = html_entity_decode($commentaires, ENT_HTML5|ENT_QUOTES, 'UTF-8');
+
+    $category = str_replace(' ', '', $elem['categorie']);
+
+    # Transform bad encoded category name.
+    if ($category == 'Cong&eacute;s') {
+        $category = 'conges';
     }
+    if ($category == 'Heuresdepr&eacute;sence') {
+        $category = 'heurespresence';
+    }
+
+    $elements[$category][] = $elem;
 }
-echo "</table>\n";
-echo "</div>\n";
-echo "</div>\n";
-echo "<div style='text-align:center;margin:20px;'>\n";
-echo "<input type='button' value='Annuler' onclick='document.location.href=\"index.php\";' class='ui-button'/>\n";
-echo "&nbsp;&nbsp;&nbsp;\n";
-echo "<input type='submit' value='Valider' class='ui-button' />\n";
-echo "</div>\n";
-echo "</form>\n";
+$templates_params['elements'] = $elements;
+
+$template = $twig->load('admin/config.html.twig');
+echo $template->render($templates_params);

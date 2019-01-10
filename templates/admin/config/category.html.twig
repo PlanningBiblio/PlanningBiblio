@@ -1,0 +1,77 @@
+{# admin/config/category.html.twig #}
+
+<div>
+  <table cellspacing='0' cellpadding='5' style='width:100%;'>
+    <tr>
+      <td class='ui-widget-header ui-corner-left' style='width:350px;border-right:0px;'>Nom</td>
+      <td style='width:600px;border-left:0px;border-right:0px;' class='ui-widget-header'>Valeur</td>
+      <td class='ui-widget-header ui-corner-right' style='border-left:0px;'>Commentaires</td>
+    </tr>
+
+    {% for v in vars %}
+      <tr style='vertical-align:top;'>
+        <td style='width:180px;'>{{ v.nom }}</td>
+        <td>
+          {% if v.type == 'boolean' %}
+            {% if v.valeur == '1' %}
+              <input type='checkbox' name='{{ v.nom }}' id='{{ v.nom }}' value='1' checked='checked' />
+            {% else %}
+              <input type='checkbox' name='{{ v.nom }}' id='{{ v.nom }}' value='1' $checked />
+            {% endif %}
+          {% elseif v.type == 'info' %}
+            {{ v.valeur }}
+          {% elseif v.type == 'enum' %}
+            <select name='{{ v.nom }}' id='{{ v.nom }}' style='width:305px;'>
+              {% for o in v.options %}
+                {% if o == v.valeur %}
+                  <option value='{{ o }}' selected='selected'>{{ o }}</option>
+                {% else %}
+                  <option value='{{ o }}'>{{ o }}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          {% elseif v.type == 'enum2' %}
+            <select name='{{ v.nom }}' id='{{ v.nom }}' style='width:305px;'>
+              {% for o in v.options %}
+                {% if o.0 == v.valeur %}
+                  <option value='{{ o.0 }}' selected='selected'>{{ o.1 }}</option>
+                {% else %}
+                  <option value='{{ o.0 }}'>{{ o.1 }}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          {% elseif v.type == 'checkboxes' %}
+            {% set i = 1 %}
+            {% for vs in v.valeurs %}
+              {% if vs.0 in v.choisies %}
+                <input type='checkbox' name='{{v.nom}}[]'
+                       id='{{ v.nom }}_{{ i }}' value='{{ vs.0 }}'
+                       checked="checked" /> {{ vs.1 }}<br/>
+              {% else %}
+                <input type='checkbox' name='{{v.nom}}[]'
+                       id='{{ v.nom }}_{{ i }}' value='{{ vs.0 }}'/> {{ vs.1 }}<br/>
+              {% endif %}
+              {% set i = i + 1 %}
+            {% endfor %}
+          {% elseif v.type == 'textarea' %}
+            <textarea name='{{ v.nom }}' id='{{ v.nom }}' style='width:300px;height:100px;' rows='1' cols='1'>{{ v.valeur }}</textarea>
+          {% elseif v.type == 'text' or v.type == '' %}
+            <input type='text' name='{{ v.nom }}' id='{{ v.nom }}' value='{{ v.valeur }}' style='width:300px;'/>
+          {% elseif v.type == 'password' %}
+            <input type='password' name='{{ v.nom }}' id='{{ v.nom }}' value='{{ v.valeur }}' style='width:300px;'/>
+          {% elseif v.type == 'date' %}
+            <input type='text' name='{{ v.nom }}' id='{{ v.nom }}' value="{{ v.valeur }}" style='width:300px;' class='datepicker'/>
+          {% endif %}
+        </td>
+        <td>{{ v.commentaires }}</td>
+      </tr>
+      {% if v.nom == 'Mail-Planning' %}
+        <tr>
+        <td>Tester</td>
+        <td><input type='button' value='Tester' onclick='mailtest();' id='Mail-Test' /></td>
+        <td>Tester les paramètres de messagerie. Un e-mail sera envoy&eacute; aux adresses mention&eacute;es dans le champ Mail-Planning.</td>
+        </tr>
+      {% endif %}
+    {% endfor %}
+  </table>
+</div>
