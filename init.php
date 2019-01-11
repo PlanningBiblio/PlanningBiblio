@@ -109,12 +109,12 @@ if ($page == 'planning/poste/index.php' or $page == 'planning/poste/semaine.php'
 // Recupération des droits d'accès de l'agent
 
 $logged_in = $entityManager->find(Personnel::class, $_SESSION['login_id']);
-$droits = $logged_in->droits_list();
+$droits = $logged_in ? $logged_in->droits_list() : array();
 $_SESSION['droits'] = array_merge($droits, array(99));
 
 // Droits necessaires pour consulter la page en cours
 $accesses = $entityManager->getRepository(Access::class)->findBy(array('page' => $page));
-$authorized = $logged_in->can_access($accesses, $page);
+$authorized = $logged_in ? $logged_in->can_access($accesses, $page) : false;
 
 $theme=$config['Affichage-theme']?$config['Affichage-theme']:"default";
 if (!file_exists("themes/$theme/$theme.css")) {
