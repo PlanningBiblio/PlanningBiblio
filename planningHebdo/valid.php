@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.0
+Planning Biblio, Version 2.8.05
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : plugins/planningHebdo/valid.php
 Création : 23 juillet 2013
-Dernière modification : 19 juin 2015
+Dernière modification : 6 décembre 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -38,7 +38,7 @@ switch ($post["action"]) {
         }
         $msgType="success";
     }
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page=planningHebdo/{$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";
+    echo "<script type='text/JavaScript'>document.location.href='index.php?page={$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";
     break;
 
   case "modif":
@@ -51,7 +51,7 @@ switch ($post["action"]) {
         $msg=urlencode("Le planning a été modifié avec succès.");
         $msgType="success";
     }
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page=planningHebdo/{$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";
+    echo "<script type='text/JavaScript'>document.location.href='index.php?page={$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";
     break;
  
   case "copie":
@@ -64,6 +64,6 @@ switch ($post["action"]) {
         $msg=urlencode("Le planning a été modifié avec succès.");
         $msgType="success";
     }
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page=planningHebdo/{$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";
+    echo "<script type='text/JavaScript'>document.location.href='index.php?page={$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";
     break;
 }
