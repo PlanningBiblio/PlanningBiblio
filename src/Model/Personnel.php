@@ -39,7 +39,7 @@ class Personnel extends Entity {
     /** @Column(type="string") **/
     protected $actif;
 
-    /** @Column(type="text") **/
+    /** @Column(type="json_array") **/
     protected $droits;
 
     /** @Column(type="string") **/
@@ -93,16 +93,8 @@ class Personnel extends Entity {
     /** @Column(type="integer") **/
     protected $check_hamac;
 
-    public function droits_list() {
-        $permissions = $this->droits();
-
-        $permissions = html_entity_decode($permissions, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-
-        return json_decode($permissions);
-    }
-
-    public function can_access(array $accesses, $page) {
-        $droits = $this->droits_list();
+    public function can_access(array $accesses) {
+        $droits = $this->droits();
 
         foreach ($accesses as $access) {
             if (in_array($access->groupe_id(), $droits)) {
