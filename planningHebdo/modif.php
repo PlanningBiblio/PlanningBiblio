@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.8.1
+Planning Biblio, Version 2.8.05
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planningHebdo/modif.php
 Création : 23 juillet 2013
-Dernière modification : 4 mai 2018
+Dernière modification : 6 décembre 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,6 +21,10 @@ require_once "class.planningHebdo.php";
 $copy=filter_input(INPUT_GET, "copy", FILTER_SANITIZE_NUMBER_INT);
 $id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
 $retour=filter_input(INPUT_GET, "retour", FILTER_SANITIZE_STRING);
+
+if ($retour != 'monCompte.php') {
+    $retour = "planningHebdo/$retour";
+}
 
 if ($copy) {
     $id=$copy;
@@ -218,6 +222,7 @@ switch ($config['nb_semaine']) {
 $fin=$config['Dimanche']?array(8,15,22):array(7,14,21);
 $debut=array(1,8,15);
 $jours=array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
+
 ?>
 
 <?php
@@ -385,7 +390,7 @@ if (!$cle) {
 }
 
 echo "<div id='boutons' style='padding-top:50px;'>\n";
-echo "<input type='button' value='Retour' onclick='location.href=\"index.php?page=planningHebdo/$retour\";' class='ui-button' />\n";
+echo "<input type='button' value='Retour' onclick='location.href=\"index.php?page=$retour\";' class='ui-button' />\n";
 
 // Si le champ clé est renseigné, les heures de présences ont été importées automatiquement depuis une source externe. Donc pas de modif
 if (($adminN1 or $adminN2) and !$cle) {

@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.8.1
+Planning Biblio, Version 2.8.05
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planningHebdo/class.planningHebdo.php
 Création : 23 juillet 2013
-Dernière modification : 4 mai 2018
+Dernière modification : 6 décembre 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -140,7 +140,7 @@ class planningHebdo
             $destinataires = $a->recipients;
         } else {
             $this->getRecipients(1, $perso_id);
-            $destinataires = $ph->recipients;
+            $destinataires = $this->recipients;
         }
 
         if (!empty($destinataires)) {
@@ -459,53 +459,53 @@ class planningHebdo
         $data['debut']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/", "$3-$2-$1", $data['debut']);
         $data['fin']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/", "$3-$2-$1", $data['fin']);
 
-        $perso_id=array_key_exists("valide", $data)?$data["valide"]:$_SESSION['login_id'];
-    
+        $perso_id = !empty($data['valide']) ? $data['valide'] : $_SESSION['login_id'];
+
         // Validation
-        if (array_key_exists("validation", $data)) {
+        if (!empty($data['validation'])) {
             switch ($data['validation']) {
-        case 0:
-          $valide_n1 = 0;
-          $validation_n1 = "0000-00-00 00:00:00";
-          $valide_n2 = 0;
-          $validation_n2 = "0000-00-00 00:00:00";
-          $notification = 2;
-          break;
-        case -1:
-          $valide_n1 = -1 * $_SESSION['login_id'];
-          $validation_n1 = date("Y-m-d H:i:s");
-          $valide_n2 = 0;
-          $validation_n2 = "0000-00-00 00:00:00";
-          $notification = 3;
-          break;
-        case 1:
-          $valide_n1 = $_SESSION['login_id'];
-          $validation_n1 = date("Y-m-d H:i:s");
-          $valide_n2 = 0;
-          $validation_n2 = "0000-00-00 00:00:00";
-          $notification = 3;
-          break;
-        case -2:
-          $valide_n2 = -1 * $_SESSION['login_id'];
-          $validation_n2 = date("Y-m-d H:i:s");
-          $notification = 4;
-          break;
-        case 2:
-          $valide_n2 = $_SESSION['login_id'];
-          $validation_n2 = date("Y-m-d H:i:s");
-          $notification = 4;
-          break;
-      }
+                case 0:
+                $valide_n1 = 0;
+                $validation_n1 = "0000-00-00 00:00:00";
+                $valide_n2 = 0;
+                $validation_n2 = "0000-00-00 00:00:00";
+                $notification = 2;
+                break;
+                case -1:
+                $valide_n1 = -1 * $_SESSION['login_id'];
+                $validation_n1 = date("Y-m-d H:i:s");
+                $valide_n2 = 0;
+                $validation_n2 = "0000-00-00 00:00:00";
+                $notification = 3;
+                break;
+                case 1:
+                $valide_n1 = $_SESSION['login_id'];
+                $validation_n1 = date("Y-m-d H:i:s");
+                $valide_n2 = 0;
+                $validation_n2 = "0000-00-00 00:00:00";
+                $notification = 3;
+                break;
+                case -2:
+                $valide_n2 = -1 * $_SESSION['login_id'];
+                $validation_n2 = date("Y-m-d H:i:s");
+                $notification = 4;
+                break;
+                case 2:
+                $valide_n2 = $_SESSION['login_id'];
+                $validation_n2 = date("Y-m-d H:i:s");
+                $notification = 4;
+                break;
+            }
         }
 
         $temps = json_encode($data['temps']);
         $update = array("debut" => $data['debut'], "fin" => $data['fin'], "temps" => $temps, "modif" => $perso_id, "modification" => date("Y-m-d H:i:s"), "valide" => $valide_n2, "validation" => $validation_n2 );
-    
+
         if (isset($valide_n1)) {
             $update['valide_n1'] = $valide_n1;
             $update['validation_n1'] = $validation_n1;
         }
-    
+
         $CSRFToken=$data['CSRFToken'];
         unset($data['CSRFToken']);
 
@@ -568,7 +568,7 @@ class planningHebdo
             $m->send();
         }
     }
-  
+
     public function update_time()
     {
         $db=new db();
