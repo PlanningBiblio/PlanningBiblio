@@ -26,6 +26,7 @@ Prérequis :
   - Symfony/HttpFoundation
   - phpmailer/phpmailer
   - apereo/phpCAS
+  - Doctrine
 
 ===============
 Copyright (C) 2011-2018 - Jérôme Combes

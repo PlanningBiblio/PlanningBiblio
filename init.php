@@ -30,8 +30,13 @@ $version="2.8.04";
 require_once __DIR__.'/vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
+use Doctrine\ORM\Tools\Setup;
+use Doctrine\ORM\EntityManager;
 
 use PlanningBiblio\LegacyCodeChecker;
+use Model\Extensions\TablePrefix;
+use Model\Personnel;
+use Model\Access;
 
 // Redirection vers setup si le fichier config est absent
 if (!file_exists(__DIR__.'/include/config.php')) {
@@ -63,6 +68,26 @@ if ($login and $login === "anonyme" and $config['Auth-Anonyme'] and !array_key_e
     $_SESSION['oups']["Auth-Mode"]="Anonyme";
 }
 
+// Instanciating entity manager.
+$entitiesPath = array('src/Model');
+$emConfig = Setup::createAnnotationMetadataConfiguration($entitiesPath, true);
+
+// Handle table prefix.
+$evm = new \Doctrine\Common\EventManager;
+$tablePrefix = new Model\Extensions\TablePrefix($config['dbprefix']);
+$evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $tablePrefix);
+
+$dbParams = array(
+    'driver'   => 'pdo_mysql',
+    'charset'  => 'utf8',
+    'host'     => $config['dbhost'],
+    'user'     => $config['dbuser'],
+    'password' => $config['dbpass'],
+    'dbname'   => $config['dbname'],
+);
+
+$entityManager = EntityManager::create($dbParams, $emConfig, $evm);
+
 // Sécurité CSRFToken
 $CSRFSession = isset($_SESSION['oups']['CSRFToken']) ? $_SESSION['oups']['CSRFToken'] : null;
 $_SESSION['PLdate']=array_key_exists("PLdate", $_SESSION)?$_SESSION['PLdate']:date("Y-m-d");
@@ -82,24 +107,14 @@ if ($page == 'planning/poste/index.php' or $page == 'planning/poste/semaine.php'
 }
 
 // Recupération des droits d'accès de l'agent
-$db = new db();
-$db->select2('personnel', 'droits', array('id' => $_SESSION['login_id']));
-$droits = json_decode(html_entity_decode($db->result[0]['droits'], ENT_QUOTES | ENT_IGNORE, 'UTF-8'), true);
-$droits[] = 99; // Ajout du droit de consultation pour les connexions anonymes
-$_SESSION['droits'] = $droits;
+
+$logged_in = $entityManager->find(Personnel::class, $_SESSION['login_id']);
+$droits = $logged_in ? $logged_in->droits() : array();
+$_SESSION['droits'] = array_merge($droits, array(99));
 
 // Droits necessaires pour consulter la page en cours
-$db = new db();
-$db->select2('acces', '*', array('page' => $page));
-$authorized = false;
-if ($db->result) {
-    foreach ($db->result as $elem) {
-        if (in_array($elem['groupe_id'], $droits)) {
-            $authorized = true;
-            break;
-        }
-    }
-}
+$accesses = $entityManager->getRepository(Access::class)->findBy(array('page' => $page));
+$authorized = $logged_in ? $logged_in->can_access($accesses, $page) : false;
 
 $theme=$config['Affichage-theme']?$config['Affichage-theme']:"default";
 if (!file_exists("themes/$theme/$theme.css")) {
