@@ -1044,7 +1044,7 @@ if ($config['Multisites-nombre']>1) {
 
 <?php
 if (in_array("conges", $plugins)) {
-    include "plugins/conges/ficheAgent.php";
+    include "conges/ficheAgent.php";
 }
 ?>
 </div>	<!-- .ui-tabs	-->

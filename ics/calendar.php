@@ -145,7 +145,7 @@ $absences=$a->elements;
 
 // Recherche des congés (si le plugin est installé)
 if (in_array('conges', $plugins)) {
-    require_once "../plugins/conges/class.conges.php";
+    require_once "../conges/class.conges.php";
     $c = new conges();
     $c->perso_id = $id;
     $c->debut = '0000-00-00 00:00:00';

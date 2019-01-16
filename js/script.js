@@ -521,7 +521,7 @@ function supprime_jourFerie(id){
 // updateAgentsList : actualise la liste des agents d'un select en fonction d'un paramètre deleted=yes/no
 // Permet d'afficher ou non les agents supprimés dans un select (select_id) selon si une checkbox (me) est cochée ou non
 // le fichier ajax.updateAgentsList.php retourne un tableau [[id=> ,nom=>, prenom=> ],[id=> ,nom=>, prenom=> ], ...] encodé en JSON
-// Fonction utilisée dans les pages absences/voir.php et plugins/conges/voir.php
+// Fonction utilisée dans les pages absences/voir.php et conges/voir.php
 
 function updateAgentsList(me,select_id){
   var deleted=me.checked?"yes":"no";

@@ -318,7 +318,7 @@ for ($j=0;$j<=$fin;$j++) {
 
         // Informations sur les congés
         if (in_array("conges", $plugins)) {
-            include "plugins/conges/planning_cellules.php";
+            include "conges/planning_cellules.php";
         }
         //--------------	FIN Recherche des infos cellules	------------//
   

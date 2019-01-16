@@ -316,7 +316,7 @@ EOD;
 
         // Intégration des congés
         if (in_array("conges", $plugins)) {
-            include "plugins/conges/agenda.php";
+            include "conges/agenda.php";
         }
 
         // Si l'agent n'est pas absent toute la journée : affiche ses heures de présences

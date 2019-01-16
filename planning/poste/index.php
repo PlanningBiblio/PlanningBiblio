@@ -478,7 +478,7 @@ if (!$verrou and !$autorisationN1) {
 
     // Informations sur les congés
     if (in_array("conges", $plugins)) {
-        include "plugins/conges/planning_cellules.php";
+        include "conges/planning_cellules.php";
     }
     //--------------	FIN Recherche des infos cellules	------------//
   
@@ -704,7 +704,7 @@ EOD;
 
     // Ajout des congés
         if (in_array("conges", $plugins)) {
-            include "plugins/conges/planning.php";
+            include "conges/planning.php";
         }
 
         switch ($config['Absences-planning']) {

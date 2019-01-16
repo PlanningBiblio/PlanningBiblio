@@ -131,7 +131,7 @@ switch ($action) {
       "droits"=>$droits,"postes"=>$postes,"temps"=>$temps,"informations"=>$informations,"recup"=>$recup,"sites"=>$sites,
       "mails_responsables"=>$mailsResponsables,"matricule"=>$matricule,"url_ics"=>$url_ics, "check_ics"=>$check_ics, "check_hamac"=>$check_hamac);
     if (in_array("conges", $plugins)) {
-        include "plugins/conges/ficheAgentValid.php";
+        include "conges/ficheAgentValid.php";
     }
     $db=new db();
     $db->CSRFToken = $CSRFToken;
@@ -205,7 +205,7 @@ switch ($action) {
     }
 
     if (in_array("conges", $plugins)) {
-        include "plugins/conges/ficheAgentValid.php";
+        include "conges/ficheAgentValid.php";
     }
 
     $db=new db();
