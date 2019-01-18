@@ -1359,7 +1359,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
         `solde_actuel` FLOAT(10));";
 
         // Insertion du plugin congés: menu
-        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','0','Cong&eacute;s','conges/voir.php','config=Conges-Enable');";
+        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES ('15','0','Cong&eacute;s','conges/voir.php');";
         $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES (15,10,'Liste des cong&eacute;s','conges/voir.php');";
         $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','15','Liste des r&eacute;cup&eacute;rations','conges/voir.php&amp;recup=1','config=Conges-Recuperations');";
         $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES (15,20,'Poser des cong&eacute;s','conges/enregistrer.php');";
@@ -1399,6 +1399,9 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
         `solde_actuel` FLOAT(10),
         `annee` VARCHAR(10));";
     }
+
+    // Affiche le menu congés seulement si le module est activé
+    $sql[]="UPDATE `{$dbprefix}menu` SET `condition`='config=Conges-Enable' WHERE niveau1='15';";
 
     // Version
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
