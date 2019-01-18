@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Plugin Congés Version 1.6.3
+/**
+Planning Biblio, Plugin Congés Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2013-2018 Jérôme Combes
 
 Fichier : conges/credits.php
 Création : 17 novembre 2014
-Dernière modification : 28 mars 2015
+Dernière modification : 28 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -18,28 +18,26 @@ Inclus dans le fichier index.php
 
 // Refuse l'accès aux personnes n'ayant pas le droit de gérer les congés et récupération des sites gérés
 /*
-2 : Congés validation N2 monosite
-7 : Congés validation N1 monosite
-40x : Congés validation N1 multisites
-60x : Congés validation N2 multisites
+40x : Congés validation niveau 1
+60x : Congés validation niveau 2
 */
-$required=array(2,7,401,402,403,404,405,406,407,408,409,410,601,602,603,604,605,606,607,608,609,610);
-$access=false;
-$sites=array();
-foreach ($required as $elem) {
-    if (in_array($elem, $droits)) {
-        $access=true;
-        if ($elem>600) {
-            $sites[]=$elem-600;
-        } elseif ($elem>400) {
-            $site=$elem-400;
-            if (!in_array($site, $sites)) {
-                $sites[]=$site;
-            }
-        }
+
+// Gestion des droits d'administration
+// NOTE : Ici, pas de différenciation entre les droits niveau 1 et niveau 2
+// NOTE : Les agents ayant les droits niveau 1 ou niveau 2 sont admin ($admin, droits 40x et 60x)
+// TODO : différencier les niveau 1 et 2 si demandé par les utilisateurs du plugin
+
+$admin = false;
+$sites = array();
+
+for ($i = 1; $i <= $config['Multisites-nombre']; $i++) {
+    if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
+        $admin = true;
+        $sites[] = $i;
     }
 }
-if (!$access) {
+
+if (!$admin) {
     echo "<div id='acces_refuse'>Accès refusé</div>\n";
     include "include/footer.php";
     exit;

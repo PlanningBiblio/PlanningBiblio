@@ -20,3 +20,20 @@ $lang['work_hours_dropdown_accepted_pending'] = 'Accepté (En attente de validat
 $lang['work_hours_dropdown_refused_pending'] = 'Refusé (En attente de validation hiérarchique)';
 $lang['send_ics_url_subject'] = 'URL de votre agenda Planning Biblio';
 $lang['send_ics_url_message'] = "Chère/Cher [firstname] [lastname],\n\nVoici l'URL de votre agenda Planning Biblio :\n[url]\n\nCordialement,";
+
+// Congés
+$lang['leave_dropdown_accepted'] = 'Accepté';
+$lang['leave_dropdown_refused'] = 'Refusé';
+$lang['leave_dropdown_accepted_pending'] = 'Accepté (En attente de validation hiérarchique)';
+$lang['leave_dropdown_refused_pending'] = 'Refusé (En attente de validation hiérarchique)';
+$lang['leave_subject_accepted_pending'] = 'Congés en attente de validation hiérarchique';
+$lang['leave_subject_refused_pending'] = 'Congés en attente de validation hiérarchique';
+$lang['leave_table_accepted'] = 'Validé';
+$lang['leave_table_refused'] = 'Refusé';
+$lang['leave_table_accepted_pending'] = 'En attente de validation hiérarchique';
+$lang['leave_table_refused_pending'] = 'En attente de validation hiérarchique';
+$lang['comp_time'] = 'Récupération';
+$lang['comp_time_subject_accepted'] = 'Demande de récupération acceptée';
+$lang['comp_time_subject_refused'] = 'Demande de récupération refusée';
+$lang['comp_time_subject_accepted_pending'] = 'Demande de récupération en attente de validation hiérarchique';
+$lang['comp_time_subject_refused_pending'] = 'Demande de récupération en attente de validation hiérarchique';

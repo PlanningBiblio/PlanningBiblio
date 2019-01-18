@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Plugin Congés Version 2.7.07
+Planning Biblio, Plugin Congés Version 2.8.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2013-2018 Jérôme Combes
 
 Fichier : conges/class.conges.php
 Création : 24 juillet 2013
-Dernière modification : 1er décembre 2017
+Dernière modification : 29 octobre 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -18,7 +18,12 @@ Inclus dans les autres fichiers PHP du dossier conges
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 if (!isset($version)) {
-    include_once "../include/accessDenied.php";
+    include_once __DIR__."/../include/accessDenied.php";
+}
+
+// Localisation
+if (file_exists(__DIR__."/../lang/custom.php")) {
+    include_once __DIR__."/../lang/custom.php";
 }
 
 require_once __DIR__."/../planningHebdo/class.planningHebdo.php";
@@ -36,6 +41,7 @@ class conges
     public $bornesExclues=null;
     public $CSRFToken=null;
     public $data=array();
+    public $debit=null;
     public $debut=null;
     public $elements=array();
     public $error=false;
@@ -53,7 +59,7 @@ class conges
     public $supprime = true;
     public $valide=null;
 
-    public function conges()
+    public function __construct()
     {
     }
 
@@ -150,6 +156,105 @@ class conges
     }
 
     /**
+    * @method calculCreditRecup
+    * @param int $perso_id
+    * @param string $date, format YYYY-MM-DD HH:ii:ss
+    * Calcule les crédits de récupération disponible pour l'agent $perso_id à la date $date
+    * Les crédits obtenus à des dates supérieures sont déduits
+    */
+    public function calculCreditRecup($perso_id, $date = null)
+    {
+        if (!$date) {
+            $date = date('Y-m-d');
+        }
+
+        $db = new db();
+        $db->select2('personnel', 'recup_samedi', array('id' => $perso_id));
+    
+        // $balance1 : solde à la date choisie
+        $balance1 = (float) $db->result[0]['recup_samedi'];
+
+        // Date à laquelle le compteur doit être remis à zéro
+        $reset_date = strtotime("09/01");
+        if ($reset_date <= time()) {
+            $reset_date = strtotime('+1 year', $reset_date);
+        }
+        $reset_date = date('Y-m-d', $reset_date);
+
+        // Mise à zéro du compte si la date choisie est après la remise à zéro
+        if ($date >= $reset_date) {
+            $balance1 = 0;
+        }
+    
+        // $balance2 : solde définitif, disponible à la date du dernier ajout
+        $balance2 = $balance1;
+        // $balance3 : solde prévisionnel à la date choisie
+        $balance3 = $balance1;
+    
+        $db = new db();
+        $db->select2('recuperations', null, array('perso_id' => $perso_id), "ORDER BY `date`");
+        $recup_tab = $db->result;
+
+        if (!empty($recup_tab)) {
+            foreach ($recup_tab as $elem) {
+
+        // On adapte les compteurs avec les enregistrements de la table récupération
+                // - si la date choisie est inférieure à la date de remise à zéro
+                // - ou si la date de l'enregistrement est supérieure ou égale à la date de remise à zéro
+                if ($date < $reset_date or $elem['date'] >= $reset_date) {
+
+          // On ajoute les demandes de crédits non validées au solde prévisionnel
+                    if ($elem['valide'] == 0 and ($elem['valide_n1'] >= 0 or $GLOBALS['config']['Conges-Validation-N2'] == 0)) {
+                        $balance3 += (float) $elem['heures'];
+                    }
+
+                    // On ajoute les crédits validés aux compteurs si la date choisie est supérieure à la date de remise à zéro
+                    if ($elem['valide'] > 0 and $date >= $reset_date) {
+                        $balance1 += (float) $elem['heures'];
+                        $balance3 += (float) $elem['heures'];
+                    }
+
+                    // Retire les crédits applicables aux dates supérieures à celle choisie
+                    if ($elem['date'] > $date) {
+
+            // Crédits validés ou non
+                        $balance3 -= (float) $elem['heures'];
+
+                        // Crédits validés
+                        if ($elem['valide'] > 0) {
+                            $balance1 -= (float) $elem['heures'];
+                        }
+                    }
+                }
+            }
+        }
+    
+        $db = new db();
+        $db->select2('conges', null, array('perso_id' => $perso_id, 'debit' => 'recuperation'));
+        $leave_tab = $db->result;
+
+        // On déduit les demandes de récupérations non-validées au solde prévisionnel
+        if (!empty($leave_tab)) {
+            foreach ($leave_tab as $elem) {
+
+        // On adapte le compteur prévisionnel avec les enregistrements de la table congés
+                // - si la date choisie est inférieure à la date de remise à zéro
+                // - ou si la date de l'enregistrement est supérieure ou égale à la date de remise à zéro
+                if ($date < $reset_date or $elem['debut'] >= $reset_date) {
+                    if ($elem['valide'] == 0 and ($elem['valide_n1'] >= 0 or $GLOBALS['config']['Conges-Validation-N2'] == 0)) {
+                        $balance3 -= (float) $elem['heures'];
+                    }
+                }
+            }
+        }
+
+        $last = end($recup_tab);
+        $last = $last['date'];
+
+        return array($date, $balance1, $last, $balance2, $balance3);
+    }
+
+    /**
     * @method check
     * @param int $perso_id
     * @param string $debut, format YYYY-MM-DD HH:ii:ss
@@ -210,18 +315,18 @@ class conges
             if ($valide>0) {
                 $db=new db();
                 $db->select("personnel", null, "id=$perso_id");
-                $perso_credit=$db->result[0]['congesCredit'];
-                $perso_reliquat=$db->result[0]['congesReliquat'];
-                $perso_anticipation=$db->result[0]['congesAnticipation'];
-                $perso_recup=$db->result[0]['recupSamedi'];
+                $perso_credit=$db->result[0]['conges_credit'];
+                $perso_reliquat=$db->result[0]['conges_reliquat'];
+                $perso_anticipation=$db->result[0]['conges_anticipation'];
+                $perso_recup=$db->result[0]['recup_samedi'];
 
                 $perso_credit_new=floatval($perso_credit)+floatval($credit);
                 $perso_reliquat_new=floatval($perso_reliquat)+floatval($reliquat);
                 $perso_recup_new=floatval($perso_recup)+floatval($recup);
                 $perso_anticipation_new=floatval($perso_anticipation)-floatval($anticipation);
 
-                $update=array("congesCredit"=>$perso_credit_new, "congesReliquat"=>$perso_reliquat_new,
-      "congesAnticipation"=>$perso_anticipation_new, "recupSamedi"=>$perso_recup_new);
+                $update=array("conges_credit"=>$perso_credit_new, "conges_reliquat"=>$perso_reliquat_new,
+      "conges_anticipation"=>$perso_anticipation_new, "recup_samedi"=>$perso_recup_new);
                 $db=new db();
                 $db->CSRFToken = $this->CSRFToken;
                 $db->update("personnel", $update, array("id"=>$perso_id));
@@ -244,7 +349,7 @@ class conges
                     $insert["reliquat_actuel"]=$perso_reliquat_new;
                     $insert["anticipation_actuel"]=$perso_anticipation_new;
                     $insert["information"]=$_SESSION['login_id'];
-                    $insert["infoDate"]=date("Y-m-d H:i:s");
+                    $insert["info_date"]=date("Y-m-d H:i:s");
                     $db=new db();
                     $db->CSRFToken = $this->CSRFToken;
                     $db->insert("conges", $insert);
@@ -297,6 +402,10 @@ class conges
             $filter .= " AND `supprime` = '0' ";
         }
     
+        if ($this->debit) {
+            $filter .= " AND ( `debit` = '{$this->debit}' OR `debit` IS NULL ) ";
+        }
+
         // Recherche des agents actifs seulement
         $perso_ids=array(0);
         $p=new personnel();
@@ -371,7 +480,7 @@ class conges
         }
 
         $db=new db();
-        $db->select("personnel", "id,nom,prenom,congesCredit,congesReliquat,congesAnticipation,recupSamedi,congesAnnuel", "`supprime` IN ('$supprime') AND `id`<>'2' AND actif like 'Actif' $sitesReq");
+        $db->select("personnel", "id,nom,prenom,conges_credit,conges_reliquat,conges_anticipation,recup_samedi,conges_annuel", "`supprime` IN ('$supprime') AND `id`<>'2' AND actif like 'Actif' $sitesReq");
         if (!$db->result) {
             return false;
         }
@@ -381,11 +490,11 @@ class conges
         foreach ($db->result as $elem) {
             $tab[$elem['id']]=$elem;
             $tab[$elem['id']]["agent"]=$elem["nom"]." ".substr($elem["prenom"], 0, 1);
-            $tab[$elem['id']]['conge_annuel']=$elem['congesAnnuel'];
+            $tab[$elem['id']]['conge_annuel']=$elem['conges_annuel'];
         }
 
         // Crédits initiaux
-        /* Utilise le champ infoDate pour rechercher la première mise à jour des crédits de l'année.
+        /* Utilise le champ info_date pour rechercher la première mise à jour des crédits de l'année.
         Cette mise à jour peut être faite :
           - par le cron au 1er septembre
           - par un administrateur lors de la création de l'agent en cours d'année
@@ -395,7 +504,7 @@ class conges
         $debut=date("n")<9?date("Y")-1:date("Y");
         $debut.="-09-01 00:00:00";
         $db=new db();
-        $db->select("conges", null, "`infoDate` >= '$debut'", "ORDER BY `infoDate`");
+        $db->select("conges", null, "`info_date` >= '$debut'", "ORDER BY `info_date`");
 
         if ($db->result) {
             foreach ($db->result as $elem) {
@@ -435,7 +544,7 @@ class conges
         // Crédits actuels
         // Sélection des dernières mises à jour de crédits
         $db=new db();
-        $db->select("conges", null, "information>0", "ORDER BY `infoDate` desc");
+        $db->select("conges", null, "information>0", "ORDER BY `info_date` desc");
 
         if ($db->result) {
             foreach ($db->result as $elem) {
@@ -445,12 +554,12 @@ class conges
                 if (!array_key_exists("validation", $tab[$elem['perso_id']])) {
                     $tab[$elem['perso_id']]['validation']="0000-00-00 00:00:00";
                 }
-                if (!array_key_exists("maj2", $tab[$elem['perso_id']]) and $elem['infoDate']>$tab[$elem['perso_id']]['validation']) {
+                if (!array_key_exists("maj2", $tab[$elem['perso_id']]) and $elem['info_date']>$tab[$elem['perso_id']]['validation']) {
                     $tab[$elem['perso_id']]['conge_restant']=$elem['solde_actuel'];
                     $tab[$elem['perso_id']]['reliquat_restant']=$elem['reliquat_actuel'];
                     $tab[$elem['perso_id']]['recup_restant']=$elem['recup_actuel'];
                     $tab[$elem['perso_id']]['anticipation_restant']=$elem['anticipation_actuel'];
-                    $tab[$elem['perso_id']]['validation']=$elem['infoDate'];
+                    $tab[$elem['perso_id']]['validation']=$elem['info_date'];
                     $tab[$elem['perso_id']]['maj2']=true;
                 }
             }
@@ -466,6 +575,9 @@ class conges
             foreach ($db->result as $elem) {
                 if (!array_key_exists($elem['perso_id'], $tab)) {
                     continue;
+                }
+                if (empty($tab[$elem['perso_id']]['validation'])) {
+                    $tab[$elem['perso_id']]['validation'] = '0000-00-00 00:00:00';
                 }
                 if (!array_key_exists("maj3", $tab[$elem['perso_id']]) and $elem['validation']>$tab[$elem['perso_id']]['validation']) {
                     $tab[$elem['perso_id']]['recup_restant']=$elem['solde_actuel'];
@@ -587,19 +699,19 @@ class conges
     public function fetchCredit()
     {
         if (!$this->perso_id) {
-            $this->elements=array("annuel"=>null,"anticipation"=>null,"credit"=>null,"recupSamedi"=>null,"reliquat"=>null,
+            $this->elements=array("annuel"=>null,"anticipation"=>null,"credit"=>null,"recup"=>null,"reliquat"=>null,
     "annuelHeures"=>null, "anticipationHeures"=>null, "creditHeures"=>null, "recupHeures"=>null, "reliquatHeures"=>null,
     "annuelMinutes"=>null, "anticipationMinutes"=>null, "creditMinutes"=>null, "recupMinutes"=>null, "reliquatMinutes"=>null,
     "annuelCents"=>null, "anticipationCents"=>null, "creditCents"=>null, "recupCents"=>null, "reliquatCents"=>null );
         } else {
             $db=new db();
-            $db->select("personnel", "congesCredit,congesReliquat,congesAnticipation,recupSamedi,congesAnnuel", "`id`='{$this->perso_id}'");
+            $db->select("personnel", "conges_credit,conges_reliquat,conges_anticipation,recup_samedi,conges_annuel", "`id`='{$this->perso_id}'");
             if ($db->result) {
-                $annuel=$db->result[0]['congesAnnuel'];
-                $anticipation=$db->result[0]['congesAnticipation'];
-                $credit=$db->result[0]['congesCredit'];
-                $recup=$db->result[0]['recupSamedi'];
-                $reliquat=$db->result[0]['congesReliquat'];
+                $annuel=$db->result[0]['conges_annuel'];
+                $anticipation=$db->result[0]['conges_anticipation'];
+                $credit=$db->result[0]['conges_credit'];
+                $recup=$db->result[0]['recup_samedi'];
+                $reliquat=$db->result[0]['conges_reliquat'];
 
                 $annuelHeures=floor($annuel);
                 $anticipationHeures=floor($anticipation);
@@ -619,7 +731,7 @@ class conges
                 $recupMinutes=$recupCents*0.6;
                 $reliquatMinutes=$reliquatCents*0.6;
 
-                $this->elements=array("annuel"=>$annuel, "anticipation"=>$anticipation, "credit"=>$credit, "recupSamedi"=>$recup, "reliquat"=>$reliquat,
+                $this->elements=array("annuel"=>$annuel, "anticipation"=>$anticipation, "credit"=>$credit, "recup"=>$recup, "reliquat"=>$reliquat,
       "annuelHeures"=>$annuelHeures, "anticipationHeures"=>$anticipationHeures, "creditHeures"=>$creditHeures, "recupHeures"=>$recupHeures, "reliquatHeures"=>$reliquatHeures,
       "annuelMinutes"=>$annuelMinutes, "anticipationMinutes"=>$anticipationMinutes, "creditMinutes"=>$creditMinutes, "recupMinutes"=>$recupMinutes, "reliquatMinutes"=>$reliquatMinutes,
       "annuelCents"=>$annuelCents, "anticipationCents"=>$anticipationCents, "creditCents"=>$creditCents, "recupCents"=>$recupCents, "reliquatCents"=>$reliquatCents );
@@ -736,11 +848,11 @@ class conges
                         $site=1;
                     }
                     // Ajout du numéro du droit correspondant à la gestion des congés de ce site
-                    // Validation N1
+                    // Validation niveau 1
                     if (!in_array((400+$site), $droitsConges) and $site) {
                         $droitsConges[]=400+$site;
                     }
-                    // Validation N2
+                    // Validation niveau 2
                     if (!in_array((600+$site), $droitsConges) and $site) {
                         $droitsConges[]=600+$site;
                     }
@@ -755,9 +867,9 @@ class conges
                 }
             }
         }
-        // Si un seul site, le droit de gestion de congés N1 est 7, le droit de gestion de congés N2 est 2
+        // Si un seul site, le droit de gestion de congés niveau 1 est 401, le droit de gestion de congés niveau 2 est 601
         else {
-            $droitsConges=array(2,7);
+            $droitsConges=array(401,601);
         }
 
         $db=new db();
@@ -821,33 +933,109 @@ class conges
         if ($action=="modif") {
             $db=new db();
             $db->select("personnel", "*", "id='{$this->perso_id}'");
-            $old=array("congesCredit"=>$db->result[0]['congesCredit'], "recupSamedi"=>$db->result[0]['recupSamedi'],
-    "congesReliquat"=>$db->result[0]['congesReliquat'], "congesAnticipation"=>$db->result[0]['congesAnticipation']);
+            $old=array("conges_credit"=>$db->result[0]['conges_credit'], "recup_samedi"=>$db->result[0]['recup_samedi'],
+    "conges_reliquat"=>$db->result[0]['conges_reliquat'], "conges_anticipation"=>$db->result[0]['conges_anticipation']);
         } else {
-            $old=array("congesCredit"=>0, "recupSamedi"=>0, "congesReliquat"=>0, "congesAnticipation"=>0);
+            $old=array("conges_credit"=>0, "recup_samedi"=>0, "conges_reliquat"=>0, "conges_anticipation"=>0);
         }
 
-        unset($credits["congesAnnuel"]);
+        unset($credits["conges_annuel"]);
         if ($credits!=$old) {
             $insert=array();
             $insert["perso_id"]=$this->perso_id;
             $insert["debut"]=date("Y-m-d 00:00:00");
             $insert["fin"]=date("Y-m-d 00:00:00");
-            $insert["solde_prec"]=$old['congesCredit'];
-            $insert["recup_prec"]=$old['recupSamedi'];
-            $insert["reliquat_prec"]=$old['congesReliquat'];
-            $insert["anticipation_prec"]=$old['congesAnticipation'];
-            $insert["solde_actuel"]=$credits['congesCredit'];
-            $insert["recup_actuel"]=$credits['recupSamedi'];
-            $insert["reliquat_actuel"]=$credits['congesReliquat'];
-            $insert["anticipation_actuel"]=$credits['congesAnticipation'];
+            $insert["solde_prec"]=$old['conges_credit'];
+            $insert["recup_prec"]=$old['recup_samedi'];
+            $insert["reliquat_prec"]=$old['conges_reliquat'];
+            $insert["anticipation_prec"]=$old['conges_anticipation'];
+            $insert["solde_actuel"]=$credits['conges_credit'];
+            $insert["recup_actuel"]=$credits['recup_samedi'];
+            $insert["reliquat_actuel"]=$credits['conges_reliquat'];
+            $insert["anticipation_actuel"]=$credits['conges_anticipation'];
             $insert["information"]=$cron?999999999:$_SESSION['login_id'];
-            $insert["infoDate"]=date("Y-m-d H:i:s");
+            $insert["info_date"]=date("Y-m-d H:i:s");
 
             $db=new db();
             $db->CSRFToken = $this->CSRFToken;
             $db->insert("conges", $insert);
         }
+    }
+
+    /** roles
+     * @param int $perso_id : ID de l'agent concerné par le congés ou la récupération
+     * @param boolean $accessDenied default false : afficher "accès refusé" si la page demandée ne concerne pas l'agent logué et s'il n'est pas admin
+     * @return Array($adminN1, $adminN2) : tableau ayant pour 1er valeur true si l'agent logué est adminN1, false sinon, pour 2ème valeur true s'il est adminN2, false sinon
+     * Affiche "accès refusé" si la page demandée ne concerne pas l'agent logué et s'il n'est pas admin
+     */
+    public function roles($perso_id, $accesDenied = false)
+    {
+
+    // Droits d'administration niveau 1 et niveau 2
+        // Droits nécessaires en mono-site
+        $droitsN1 = array(401);
+        $droitsN2 = array(601);
+
+        // Droits nécessaires en multisites avec vérification des sites attribués à l'agent concerné par le congé
+        if ($GLOBALS['config']['Multisites-nombre']>1) {
+            $droitsN1 = array();
+            $droitsN2 = array();
+
+            $p=new personnel();
+            $p->fetchById($perso_id);
+
+            if (is_array($p->elements[0]['sites'])) {
+                foreach ($p->elements[0]['sites'] as $site) {
+                    $droitsN1[] = 400 + $site;
+                    $droitsN2[] = 600 + $site;
+                }
+            }
+        }
+
+        // Ai-je le droit d'administration niveau 1 pour le congé demandé
+        $adminN1 = false;
+
+        // Si le paramètre "Absences-notifications-agent-par-agent" est coché, vérification du droit N1 à partir de la table "responsables"
+        if ($GLOBALS['config']['Absences-notifications-agent-par-agent']) {
+            $db = new db();
+            $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
+            if ($db->result) {
+                foreach ($db->result as $elem) {
+                    if ($elem['perso_id'] == $perso_id) {
+                        $adminN1 = true;
+                        break;
+                    }
+                }
+            }
+
+            // Si le paramètre "Absences-notifications-agent-par-agent" n'est pascoché, vérification du droit N1 à partir des droits cochés dans la fiche de l'agent logué ($_SESSION['droits']
+        } else {
+            foreach ($droitsN1 as $elem) {
+                if (in_array($elem, $_SESSION['droits'])) {
+                    $adminN1 = true;
+                    break;
+                }
+            }
+        }
+
+        // Ai-je le droit d'administration niveau 2 pour le congé demandé
+        $adminN2 = false;
+        foreach ($droitsN2 as $elem) {
+            if (in_array($elem, $_SESSION['droits'])) {
+                $adminN2 = true;
+                break;
+            }
+        }
+
+        // Affiche accès refusé si le congé ne concerne pas l'agent logué et qu'il n'est pas admin
+        if ($accesDenied and !$adminN1 and !$adminN2 and $perso_id != $_SESSION['login_id']) {
+            echo "<h3 style='text-align:center;'>Accès refusé</h3>\n";
+            echo "<p style='text-align:center;' >\n";
+            echo "<a href='javascript:history.back();'>Retour</a></p>\n";
+            include __DIR__.'/../../include/footer.php';
+        }
+
+        return array($adminN1, $adminN2);
     }
 
 
@@ -857,7 +1045,7 @@ class conges
         $db->CSRFToken = $this->CSRFToken;
         $db->update(
         "personnel",
-      array("congesCredit"=>null,"congesReliquat"=>null,"congesAnticipation"=>null,"congesAnnuel"=>null,"recupSamedi"=>null),
+      array("conges_credit"=>null,"conges_reliquat"=>null,"conges_anticipation"=>null,"conges_annuel"=>null,"recup_samedi"=>null),
       "id IN ($liste)"
     );
         $db=new db();
@@ -909,63 +1097,95 @@ class conges
             // Recherche des crédits actuels
             $p=new personnel();
             $p->fetchById($data['perso_id']);
-            $credit=$p->elements[0]['congesCredit'];
-            $reliquat=$p->elements[0]['congesReliquat'];
-            $recuperation=$p->elements[0]['recupSamedi'];
-            $anticipation=$p->elements[0]['congesAnticipation'];
-            $heures=$data['heures'];
+            $credit = floatval($p->elements[0]['conges_credit']);
+            $reliquat = floatval($p->elements[0]['conges_reliquat']);
+            $recuperation = floatval($p->elements[0]['recup_samedi']);
+            $anticipation = floatval($p->elements[0]['conges_anticipation']);
+            $heures = floatval($data['heures']);
       
             // Mise à jour des compteurs dans la table conges
             $updateConges=array("solde_prec"=>$credit, "recup_prec"=>$recuperation, "reliquat_prec"=>$reliquat, "anticipation_prec"=>$anticipation);
 
-            // Calcul du reliquat après décompte
-            $reste=0;
-            $reliquat=$reliquat-$heures;
-            if ($reliquat<0) {
-                $reste=-$reliquat;
-                $reliquat=0;
-            }
-            $reste2=0;
-            // Calcul du crédit de récupération
-            if ($data["debit"]=="recuperation") {
-                $recuperation=$recuperation-$reste;
-                if ($recuperation<0) {
-                    $reste2=-$recuperation;
-                    $recuperation=0;
+            // Si les congés et les récupérations sont traitées de la même façon (config['Conges-Recuperations'] = 0 / Assembler
+            if ($data['conges-recup'] == 0) {
+                // Calcul du reliquat après décompte
+                $reste=0;
+                $reliquat=$reliquat-$heures;
+                if ($reliquat<0) {
+                    $reste=-$reliquat;
+                    $reliquat=0;
                 }
-            }
-            // Calcul du crédit de congés
-            elseif ($data["debit"]=="credit") {
-                $credit=$credit-$reste;
-                if ($credit<0) {
-                    $reste2=-$credit;
-                    $credit=0;
-                }
-            }
-            // Si après tous les débits, il reste des heures, on débit le crédit restant
-            $reste3=0;
-            if ($reste2) {
+                $reste2=0;
+                // Calcul du crédit de récupération
                 if ($data["debit"]=="recuperation") {
-                    $credit=$credit-$reste2;
-                    if ($credit<0) {
-                        $reste3=-$credit;
-                        $credit=0;
-                    }
-                } elseif ($data["debit"]=="credit") {
-                    $recuperation=$recuperation-$reste2;
+                    $recuperation=$recuperation-$reste;
                     if ($recuperation<0) {
-                        $reste3=-$recuperation;
+                        $reste2=-$recuperation;
                         $recuperation=0;
                     }
                 }
-            }
+                // Calcul du crédit de congés
+                elseif ($data["debit"]=="credit") {
+                    $credit=$credit-$reste;
+                    if ($credit<0) {
+                        $reste2=-$credit;
+                        $credit=0;
+                    }
+                }
+                // Si après tous les débits, il reste des heures, on débit le crédit restant
+                $reste3=0;
+                if ($reste2) {
+                    if ($data["debit"]=="recuperation") {
+                        $credit=$credit-$reste2;
+                        if ($credit<0) {
+                            $reste3=-$credit;
+                            $credit=0;
+                        }
+                    } elseif ($data["debit"]=="credit") {
+                        $recuperation=$recuperation-$reste2;
+                        if ($recuperation<0) {
+                            $reste3=-$recuperation;
+                            $recuperation=0;
+                        }
+                    }
+                }
 
-            if ($reste3) {
-                $anticipation=floatval($anticipation)+$reste3;
+                if ($reste3) {
+                    $anticipation=floatval($anticipation)+$reste3;
+                }
+            }
+      
+            // Si les congés et les récupérations sont traitées différement (config['Conges-Recuperations'] = 1 / Dissocier
+            else {
+                if ($data["debit"]=="credit") {
+                    // Calcul du reliquat après décompte
+                    $reste=0;
+                    $reliquat=$reliquat-$heures;
+                    if ($reliquat<0) {
+                        $reste=-$reliquat;
+                        $reliquat=0;
+                    }
+                    // Calcul du crédit de congés
+                    $credit=$credit-$reste;
+                    if ($credit<0) {
+                        $reste=-$credit;
+                        $credit=0;
+                    } else {
+                        $reste = 0;
+                    }
+                    if ($reste) {
+                        $anticipation=floatval($anticipation)+$reste;
+                    }
+                }
+        
+                // Calcul du crédit de récupération
+                else {
+                    $recuperation = $recuperation - $heures;
+                }
             }
 
             // Mise à jour des compteurs dans la table personnel
-            $updateCredits=array("congesCredit"=>$credit,"congesReliquat"=>$reliquat,"recupSamedi"=>$recuperation,"congesAnticipation"=>$anticipation);
+            $updateCredits=array("conges_credit"=>$credit,"conges_reliquat"=>$reliquat,"recup_samedi"=>$recuperation,"conges_anticipation"=>$anticipation);
             $db=new db();
             $db->CSRFToken = $this->CSRFToken;
             $db->update("personnel", $updateCredits, array("id"=>$data["perso_id"]));
@@ -985,7 +1205,7 @@ class conges
             $jours=$data['jours'];
             $heures=intval($jours)*7;
             $db=new db();
-            $db->query("UPDATE `{$GLOBALS['config']['dbprefix']}personnel` SET `congesReliquat`=(`congesReliquat`-$heures)
+            $db->query("UPDATE `{$GLOBALS['config']['dbprefix']}personnel` SET `conges_reliquat`=(`conges_reliquat`-$heures)
 	WHERE `id`='{$data['perso_id']}'");
 
             // METTRE A JOUR LES CHAMPS solde_prec et solde_actuel
@@ -1111,6 +1331,82 @@ class conges
 
         if ($version < "2.7.07") {
             $version="2.7.07";
+            $sql[]="UPDATE `{$dbprefix}plugins` SET `version`='$version' WHERE `nom`='conges';";
+        }
+
+        if ($version < "2.8") {
+            $version="2.8";
+            $sql[] = "UPDATE `{$dbprefix}config` SET `categorie` = 'Cong&eacute;s' WHERE `categorie` LIKE 'Cong%s';";
+            $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('Conges-Recuperations', 'enum2', '0', '[[0,\"Assembler\"],[1,\"Dissocier\"]]', 'Cong&eacute;s', 'Traiter les r&eacute;cup&eacute;rations comme les cong&eacute;s (Assembler), ou les traiter s&eacute;par&eacute;ment (Dissocier)', '3');";
+            $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES (15, 24, 'Poser des r&eacute;cup&eacute;rations', 'conges/recup_pose.php', 'config=Conges-Recuperations');";
+            $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES (15, 15, 'Liste des r&eacute;cup&eacute;rations', 'conges/voir.php&amp;recup=1', 'config=Conges-Recuperations');";
+            $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong&eacute;s - Poser des r&eacute;cup&eacute;rations','100','conges/recup_pose.php');";
+
+            // Modification des ID des droits d'administration niveau 1 et 2
+            $db = new db();
+            $db->select('personnel');
+            if ($db->result) {
+                foreach ($db->result as $elem) {
+                    $update = false;
+                    $droits = html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+                    $droits = (array) json_decode($droits, true);
+                    foreach ($droits as $k => $v) {
+                        if ($v == 7) {
+                            $droits[$k] = 401;
+                            $update = true;
+                        }
+                        if ($v == 2) {
+                            $droits[$k] = 601;
+                            $update = true;
+                        }
+                    }
+                    if ($update) {
+                        $droits = json_encode($droits);
+                        $sql[] = "UPDATE `{$dbprefix}personnel` SET `droits` = '$droits' WHERE `id` = '{$elem['id']}';";
+                    }
+                }
+            }
+
+            $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe_id` = '401', `groupe` = 'Gestion des cong&eacute;s, validation niveau 1' WHERE `groupe_id` = '7';";
+            $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe_id` = '601', `groupe` = 'Gestion des cong&eacute;s, validation niveau 2' WHERE `groupe_id` = '2';";
+      
+            // Attente de la validation niveau 1 avant d'autoriser la validation niveau 2
+            $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('Conges-Validation-N2', 'enum2', '0', '[[0,\"Validation directe autoris&eacute;e\"],[1,\"Le cong&eacute; doit &ecirc;tre valid&eacute; au niveau 1\"]]', 'Cong&eacute;s', 'La validation niveau 2 des cong&eacute;s peut se faire directement ou doit attendre la validation niveau 1', '4');";
+
+            // Suppression des majuscules dans les noms des tables et des champs
+            $sql[] = "ALTER TABLE `{$dbprefix}conges` CHANGE `infoDate` `info_date` TIMESTAMP NULL DEFAULT NULL;";
+            $sql[] = "UPDATE `{$dbprefix}conges` SET `info_date` = NULL WHERE `info_date` = '0000-00-00 00:00:00';";
+
+            $sql[] = "RENAME TABLE `{$dbprefix}conges_CET` TO `{$dbprefix}conges_cet`;";
+
+            $sql[]="ALTER TABLE `{$dbprefix}personnel` CHANGE `congesCredit` `conges_credit` FLOAT(10) DEFAULT 0, CHANGE `congesReliquat` `conges_reliquat` FLOAT(10) DEFAULT 0, CHANGE `congesAnticipation` `conges_anticipation` FLOAT(10) DEFAULT 0, CHANGE `recupSamedi` `recup_samedi` FLOAT(10) DEFAULT 0, CHANGE `congesAnnuel` `conges_annuel` FLOAT(10) DEFAULT 0;";
+
+            // Suppression des doublons dans la table cron
+            $db = new db();
+            $db->select2('cron', 'id', array('command' => 'conges/cron.sept1.php'));
+            if ($db->result) {
+                for ($i = 1; $i < $db->nb; $i++) {
+                    $sql[] = "DELETE FROM `{$dbprefix}cron` WHERE `id` = '".$db->result[$i]['id']."';";
+                }
+            }
+
+            $db = new db();
+            $db->select2('cron', 'id', array('command' => 'conges/cron.jan1.php'));
+            if ($db->result) {
+                for ($i = 1; $i < $db->nb; $i++) {
+                    $sql[] = "DELETE FROM `{$dbprefix}cron` WHERE `id` = '".$db->result[$i]['id']."';";
+                }
+            }
+      
+            // Double validation des demandes de crédits de récupération
+            $sql[] = "ALTER TABLE `{$dbprefix}recuperations` ADD `validation_n1` DATETIME NULL DEFAULT NULL AFTER `modification`;";
+            $sql[] = "ALTER TABLE `{$dbprefix}recuperations` ADD `valide_n1` INT(11) NOT NULL DEFAULT 0 AFTER `modification`;";
+
+            $sql[]="UPDATE `{$dbprefix}plugins` SET `version`='$version' WHERE `nom`='conges';";
+        }
+
+        if ($version < "2.8.03") {
+            $version="2.8.03";
             $sql[]="UPDATE `{$dbprefix}plugins` SET `version`='$version' WHERE `nom`='conges';";
         }
 

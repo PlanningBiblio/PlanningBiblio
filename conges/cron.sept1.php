@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Plugin Conges Version 2.7
+Planning Biblio, Plugin Conges Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2013-2018 Jérôme Combes
 
 Fichier : conges/cron.sept1.php
 Création : 13 août 2013
-Dernière modification : 15 août 2017
+Dernière modification : 10 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -26,10 +26,10 @@ $p->fetch();
 if ($p->elements) {
     foreach ($p->elements as $elem) {
         $credits=array();
-        $credits['congesCredit']=floatval($elem['congesAnnuel'])-floatval($elem['congesAnticipation']);
-        $credits['recupSamedi']=0;
-        $credits['congesAnticipation']=0;
-        $credits['congesReliquat']=$elem['congesCredit'];
+        $credits['conges_credit'] = floatval($elem['conges_annuel']) - floatval($elem['conges_anticipation']);
+        $credits['recup_samedi'] = 0;
+        $credits['conges_anticipation'] = 0;
+        $credits['conges_reliquat'] = $elem['conges_credit'];
 
         $c=new conges();
         $c->perso_id=$elem['id'];
@@ -41,13 +41,13 @@ if ($p->elements) {
 // Modifie les crédits
 $db=new db();
 $db->CSRFToken = $CSRFSession;
-$db->update("personnel", "congesReliquat=congesCredit");
+$db->update("personnel", "conges_reliquat=conges_credit");
 $db=new db();
 $db->CSRFToken = $CSRFSession;
-$db->update("personnel", "recupSamedi='0.00'");
+$db->update("personnel", "recup_samedi='0.00'");
 $db=new db();
 $db->CSRFToken = $CSRFSession;
-$db->update("personnel", "congesCredit=(congesAnnuel-congesAnticipation)");
+$db->update("personnel", "conges_credit=(conges_annuel-conges_anticipation)");
 $db=new db();
 $db->CSRFToken = $CSRFSession;
-$db->update("personnel", "congesAnticipation=0.00");
+$db->update("personnel", "conges_anticipation=0.00");

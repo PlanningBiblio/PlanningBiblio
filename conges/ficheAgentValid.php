@@ -1,13 +1,13 @@
- <?php
+<?php
 /**
-Planning Biblio, Plugin Congés Version 2.4.6
+Planning Biblio, Plugin Congés Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2013-2018 Jérôme Combes
 
 Fichier : conges/ficheAgentValid.php
 Création : 15 janvier 2014
-Dernière modification : 28 octobre 2016
+Dernière modification : 10 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -20,24 +20,24 @@ Inclus dans le fichier personnel/valid.php
 include_once "conges/class.conges.php";
 
 
-$congesCredit = filter_input(INPUT_POST, 'congesCredit', FILTER_SANITIZE_STRING);
-$congesReliquat = filter_input(INPUT_POST, 'congesReliquat', FILTER_SANITIZE_STRING);
-$congesAnticipation = filter_input(INPUT_POST, 'congesAnticipation', FILTER_SANITIZE_STRING);
-$recupSamedi = filter_input(INPUT_POST, 'recupSamedi', FILTER_SANITIZE_STRING);
-$congesAnnuel = filter_input(INPUT_POST, 'congesAnnuel', FILTER_SANITIZE_STRING);
-$congesCreditMin = filter_input(INPUT_POST, 'congesCreditMin', FILTER_SANITIZE_STRING);
-$congesReliquatMin = filter_input(INPUT_POST, 'congesReliquatMin', FILTER_SANITIZE_STRING);
-$congesAnticipationMin = filter_input(INPUT_POST, 'congesAnticipationMin', FILTER_SANITIZE_STRING);
-$recupSamediMin = filter_input(INPUT_POST, 'recupSamediMin', FILTER_SANITIZE_STRING);
-$congesAnnuelMin = filter_input(INPUT_POST, 'congesAnnuelMin', FILTER_SANITIZE_STRING);
+$conges_credit = filter_input(INPUT_POST, 'conges_credit', FILTER_SANITIZE_STRING);
+$conges_reliquat = filter_input(INPUT_POST, 'conges_reliquat', FILTER_SANITIZE_STRING);
+$conges_anticipation = filter_input(INPUT_POST, 'conges_anticipation', FILTER_SANITIZE_STRING);
+$recup = filter_input(INPUT_POST, 'recup', FILTER_SANITIZE_STRING);
+$conges_annuel = filter_input(INPUT_POST, 'conges_annuel', FILTER_SANITIZE_STRING);
+$conges_credit_min = filter_input(INPUT_POST, 'conges_credit_min', FILTER_SANITIZE_STRING);
+$conges_reliquat_min = filter_input(INPUT_POST, 'conges_reliquat_min', FILTER_SANITIZE_STRING);
+$conges_anticipation_min = filter_input(INPUT_POST, 'conges_anticipation_min', FILTER_SANITIZE_STRING);
+$recup_min = filter_input(INPUT_POST, 'recup_min', FILTER_SANITIZE_STRING);
+$conges_annuel_min = filter_input(INPUT_POST, 'conges_annuel_min', FILTER_SANITIZE_STRING);
 
 // Mise à jour des crédits dans la table personnel
 $credits=array();
-$credits["congesCredit"]=$congesCredit + $congesCreditMin;
-$credits["congesReliquat"]=$congesReliquat + $congesReliquatMin;
-$credits["congesAnticipation"]=$congesAnticipation + $congesAnticipationMin;
-$credits["recupSamedi"]=$recupSamedi + $recupSamediMin;
-$credits["congesAnnuel"]=$congesAnnuel + $congesAnnuelMin;
+$credits["conges_credit"] = $conges_credit + $conges_credit_min;
+$credits["conges_reliquat"] = $conges_reliquat + $conges_reliquat_min;
+$credits["conges_anticipation"] = $conges_anticipation + $conges_anticipation_min;
+$credits["recup_samedi"] = $recup + $recup_min;
+$credits["conges_annuel"] = $conges_annuel + $conges_annuel_min;
 
 if ($action=="modif") {
     $update=array_merge($update, $credits);
@@ -50,5 +50,3 @@ $c=new conges();
 $c->perso_id=$id;
 $c->CSRFToken = $CSRFToken;
 $c->maj($credits, $action);
-
-?>

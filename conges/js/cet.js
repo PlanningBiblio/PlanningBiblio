@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Plugin Congés Version 2.6.4
+Planning Biblio, Plugin Congés Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2013-2018 Jérôme Combes
 
 Fichier : conges/js/cet.js
 Création : 6 mars 2014
-Dernière modification : 21 avril 2017
+Dernière modification : 4 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -61,7 +61,7 @@ $(document).ready(function(){
 	      $( this ).dialog( "close" );
 	    },
 	    error: function(){
-	      updateTips("Une erreur est survenue lors de l'enregistrement de votre demande");
+	      updateTips("Une erreur est survenue lors de l'enregistrement de votre demande", "error");
 	    }
 	  });
 	}

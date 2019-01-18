@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Plugin Congés Version 2.7
+Planning Biblio, Plugin Congés Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2013-2018 Jérôme Combes
 
 Fichier : conges/cron.ctrlConges.php
 Création : 21 juillet 2017
-Dernière modification : 29 août 2017
+Dernière modification : 19 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -22,6 +22,8 @@ ET le lundi suivant (3 jours ouvrés + samedi + jour courant)
 0 7 * * 1-5 /usr/bin/php5 -f /var/www/html/planning/conges/cron.ctrlConges.php
 Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à ce fichier
 @note : Modifiez la variable $path suivante en renseignant le chemin absolu vers votre dossier planningBiblio
+
+TODO : voir comment gérer les notifications avec le paramètre Absences-notifications-agent-par-agent
 */
 
 $path="/var/www/html/planning";
@@ -124,7 +126,7 @@ if ($db->result) {
                     $tmp['destinaires'] = array_merge($tmp['destinaires'], explode(';', $config['Mail-Planning']));
                 }
                 if (in_array('mails_responsables', $destN2)) {
-                    $tmp['destinaires'] = array_merge($tmp['destinaires'], explode(';', $tmp['mails_responsables']));
+                    $tmp['destinaires'] = array_merge($tmp['destinaires'], $tmp['mails_responsables']);
                 }
             }
 
@@ -135,7 +137,7 @@ if ($db->result) {
                     $tmp['destinaires'] = array_merge($tmp['destinaires'], explode(';', $config['Mail-Planning']));
                 }
                 if (in_array('mails_responsables', $destN1)) {
-                    $tmp['destinaires'] = array_merge($tmp['destinaires'], explode(';', $tmp['mails_responsables']));
+                    $tmp['destinaires'] = array_merge($tmp['destinaires'], $tmp['mails_responsables']);
                 }
             }
       

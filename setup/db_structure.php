@@ -227,11 +227,11 @@ $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `url_ics` TEXT NULL DEFAULT NULL,
   `check_ics` VARCHAR(10) NULL DEFAULT '[1,1,1]',
   `check_hamac` INT(1) NOT NULL DEFAULT '1',
-  `congesCredit` FLOAT(10),
-  `congesReliquat` FLOAT(10),
-  `congesAnticipation` FLOAT(10),
-  `recupSamedi` FLOAT(10),
-  `congesAnnuel` FLOAT(10),
+  `conges_credit` FLOAT(10),
+  `conges_reliquat` FLOAT(10),
+  `conges_anticipation` FLOAT(10),
+  `recup_samedi` FLOAT(10),
+  `conges_annuel` FLOAT(10),
   PRIMARY KEY (`id`),
   UNIQUE KEY `login` (`login`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
@@ -532,7 +532,7 @@ $sql[]="CREATE TABLE `{$dbprefix}conges` (
   `supprime` INT(11) NOT NULL DEFAULT 0,
   `suppr_date` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
   `information` INT(11) NOT NULL DEFAULT 0,
-  `infoDate` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00');";
+  `info_date` TIMESTAMP NULL DEFAULT NULL);";
 
 // Création de la table conges_infos
 $sql[]="CREATE TABLE `{$dbprefix}conges_infos` (
@@ -555,14 +555,16 @@ $sql[]="CREATE TABLE `{$dbprefix}recuperations` (
   `saisie_par` INT NOT NULL,
   `modif` INT(11) NOT NULL DEFAULT '0',
   `modification` TIMESTAMP,
+  `valide_n1` INT(11) NOT NULL DEFAULT 0,
+  `validation_n1` DATETIME NULL DEFAULT NULL,
   `valide` INT(11) NOT NULL DEFAULT '0',
   `validation` TIMESTAMP,
   `refus` TEXT,
   `solde_prec` FLOAT(10),
   `solde_actuel` FLOAT(10));";
 
-// Création de la table conges_CET
-$sql[]="CREATE TABLE `{$dbprefix}conges_CET` (
+// Création de la table conges_cet
+$sql[]="CREATE TABLE `{$dbprefix}conges_cet` (
   `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `perso_id` INT(11) NOT NULL,
   `jours` INT(11) NOT NULL DEFAULT '0',

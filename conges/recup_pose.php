@@ -5,19 +5,23 @@ Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2013-2018 Jérôme Combes
 
-Fichier : conges/enregistrer.php
-Création : 24 juillet 2013
+Fichier : conges/recup_pose.php
+Création : 12 janvier 2018
 Dernière modification : 30 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
-@author Etienne Cavalié <etienne.cavalie@unice.fr>
 
 Description :
-Fichier permettant de poser des congés
-Accessible par le menu congés / Poser des congés
+Fichier permettant de poser des récupérations
+Accessible par le menu congés / Poser des récupérations.
+Si l'option Conges-Recuperations est à 1 (Dissocier, gestion différente des congés et des récupérations)
 Inclus dans le fichier index.php
 */
 
 require_once "class.conges.php";
+
+if ($config['Conges-Recuperations'] == 0) {
+    include __DIR__.'/../include/accessDenied.php';
+}
 
 // Initialisation des variables
 $CSRFToken = filter_input(INPUT_GET, 'CSRFToken', FILTER_SANITIZE_STRING);
@@ -44,7 +48,7 @@ for ($i = 1; $i <= $config['Multisites-nombre']; $i++) {
         $admin = true;
     }
     if (in_array((600+$i), $droits)) {
-        $adminN2 = true;
+        $admin = true;
     }
 }
 
@@ -58,7 +62,7 @@ $c = new conges();
 $balance = $c->calculCreditRecup($perso_id);
 
 echo <<<EOD
-<h3>Poser des congés</h3>
+<h3>Poser des récupérations</h3>
 <table border='0'>
 <tr style='vertical-align:top'>
 <td style='width:700px;'>
@@ -79,7 +83,6 @@ if (isset($_GET['confirm'])) {	// Confirmation
     $id=$c->id;
 
     // Récupération des adresses e-mails de l'agent et des responsables pour l'envoi des alertes
-
     $p=new personnel();
     $p->fetchById($perso_id);
     $nom=$p->elements[0]['nom'];
@@ -135,7 +138,7 @@ if (isset($_GET['confirm'])) {	// Confirmation
     }
 
     $msg=urlencode("La demande de congé a été enregistrée");
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page=conges/voir.php&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
+    echo "<script type='text/JavaScript'>document.location.href='index.php?page=conges/voir.php&recup=1&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
 }
 
 // Formulaire
@@ -149,20 +152,16 @@ else {
     $credit = number_format((float) $p->elements[0]['conges_credit'], 2, '.', ' ');
     $reliquat = number_format((float) $p->elements[0]['conges_reliquat'], 2, '.', ' ');
     $anticipation = number_format((float) $p->elements[0]['conges_anticipation'], 2, '.', ' ');
-    $credit2 = heure4($credit, true);
-    $reliquat2 = heure4($reliquat, true);
-    $anticipation2 = heure4($anticipation, true);
+    $credit2 = heure4($credit);
+    $reliquat2 = heure4($reliquat);
+    $anticipation2 = heure4($anticipation);
     $recuperation = number_format((float) $balance[1], 2, '.', ' ');
-    $recuperation2=heure4($recuperation, true);
-
-    if ($balance[4] < 0) {
-        $balance[4] = 0;
-    }
+    $recuperation2=heure4($recuperation);
 
     // Affichage du formulaire
     echo "<form name='form' action='index.php' method='get' id='form'>\n";
     echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
-    echo "<input type='hidden' name='page' value='conges/enregistrer.php' />\n";
+    echo "<input type='hidden' name='page' value='conges/recup_pose.php' />\n";
     echo "<input type='hidden' name='confirm' value='confirm' />\n";
     echo "<input type='hidden' name='reliquat' value='$reliquat' />\n";
     echo "<input type='hidden' name='recuperation' id='recuperation' value='$recuperation' />\n";
@@ -170,15 +169,14 @@ else {
     echo "<input type='hidden' name='credit' value='$credit' />\n";
     echo "<input type='hidden' name='anticipation' value='$anticipation' />\n";
     echo "<input type='hidden' id='agent' value='{$_SESSION['login_nom']} {$_SESSION['login_prenom']}' />\n";
-    echo "<input type='hidden' id='conges-recup' value='{$config['Conges-Recuperations']}' />\n";
+    echo "<input type='hidden' id='conges-recup' value='1' />\n";
     echo "<table border='0'>\n";
     echo "<tr><td style='width:350px;'>\n";
     echo "Nom, prénom : \n";
-    echo "</td><td>\n";
+    echo "</td><td style='width:250px;'>\n";
 
     if ($admin) {
-
-    // Si l'option "Absences-notifications-agent-par-agent" est cochée, filtrer les agents à afficher dans le menu déroulant pour permettre la sélection des seuls agents gérés
+        // Si l'option "Absences-notifications-agent-par-agent" est cochée, filtrer les agents à afficher dans le menu déroulant pour permettre la sélection des seuls agents gérés
         if ($config['Absences-notifications-agent-par-agent'] and !$adminN2) {
             $perso_ids = array($_SESSION['login_id']);
 
@@ -201,8 +199,8 @@ else {
             $db_perso=new db();
             $db_perso->select2('personnel', null, array('supprime' => '0'), 'ORDER BY nom,prenom');
         }
-    
-        echo "<select name='perso_id' id='perso_id' onchange='document.location.href=\"index.php?page=conges/enregistrer.php&perso_id=\"+this.value;' style='width:98%;'>\n";
+
+        echo "<select name='perso_id' id='perso_id' onchange='document.location.href=\"index.php?page=conges/recup_pose.php&perso_id=\"+this.value;' style='width:98%;'>\n";
         foreach ($db_perso->result as $elem) {
             if ($perso_id==$elem['id']) {
                 echo "<option value='".$elem['id']."' selected='selected'>".$elem['nom']." ".$elem['prenom']."</option>\n";
@@ -216,21 +214,17 @@ else {
         echo $_SESSION['login_nom']." ".$_SESSION['login_prenom'];
     }
     echo "</td></tr>\n";
-  
-    if (!$config['Conges-Recuperations']) {
-        echo "<tr><td style='padding-top:15px;'>\n";
-        echo "Journée(s) entière(s) : \n";
-        echo "</td><td style='padding-top:15px;'>\n";
-        echo "<input type='checkbox' name='allday' checked='checked' onclick='all_day();'/>\n";
-        echo "</td></tr>\n";
-    }
-
+    echo "<tr><td style='padding-top:15px;'>\n";
+    echo "Journée(s) entière(s) : \n";
+    echo "</td><td style='padding-top:15px;'>\n";
+    echo "<input type='checkbox' name='allday' onclick='all_day();'/>\n";
+    echo "</td></tr>\n";
     echo "<tr><td>\n";
     echo "Date de début : \n";
     echo "</td><td>";
     echo "<input type='text' name='debut' id='debut' value='$debut' class='datepicker googleCalendarTrigger' style='width:97%;'/>&nbsp;\n";
     echo "</td></tr>\n";
-    echo "<tr id='hre_debut' style='display:none;'><td>\n";
+    echo "<tr id='hre_debut'><td>\n";
     echo "Heure de début : \n";
     echo "</td><td>\n";
     echo "<select name='hre_debut' id='hre_debut_select' style='width:98%;' class='googleCalendarTrigger'>\n";
@@ -242,7 +236,7 @@ else {
     echo "</td><td>";
     echo "<input type='text' name='fin' id='fin' value='$fin'  class='datepicker googleCalendarTrigger' style='width:97%;'/>&nbsp;\n";
     echo "</td></tr>\n";
-    echo "<tr id='hre_fin' style='display:none;'><td>\n";
+    echo "<tr id='hre_fin'><td>\n";
     echo "Heure de fin : \n";
     echo "</td><td>\n";
     echo "<select name='hre_fin' id='hre_fin_select' style='width:98%;' class='googleCalendarTrigger' onfocus='setEndHour();'>\n";
@@ -267,54 +261,23 @@ else {
   <tr><td colspan='2' style='padding-top:20px;'>
 EOD;
 
-    // Si les congés et les récupérations sont traités de la même façon (Conges-Recuperations = Assembler), l'utilisateur peut choisir quel compteur sera débité
-    if ($config['Conges-Recuperations'] == 0) {
-        if ($reliquat != '0.00') {
-            echo "Ces heures seront débitées sur le réliquat de l'année précédente puis sur : ";
-        } else {
-            echo "Ces heures seront débitées sur : ";
-        }
-        echo <<<EOD
-      </td></tr>
-      <tr><td>&nbsp;</td>
-      <td><select name='debit' style='width:98%;' onchange='calculRestes();'>
-      <option value='recuperation'>Le crédit de récupérations</option>
-      <option value='credit'>Le crédit de congés de l'année en cours</option>
-      </select></td></tr>
-EOD;
-    // Si les congés et les récupérations ne sont pas traités de la même façon (Conges-Recuperations = Dissocier), le compteur "congés" sera débité
-    } else {
-        if ($reliquat != '0.00') {
-            echo "Ces heures seront débitées sur le réliquat de l'année précédente puis sur les crédits de congés de l'année en cours.";
-        } else {
-            echo "Ces heures seront débitées sur les crédits de congés de l'année en cours.";
-        }
-        echo "<input type='hidden' name='debit' value='credit' />\n";
-        echo "</td></tr>\n";
-    }
-  
-    echo <<<EOD
-    <tr><td colspan='2'>
-      <table border='0'>
-        <tr><td style='width:348px;'>Reliquat : </td><td style='width:130px;'>$reliquat2</td><td>(après débit : <font id='reliquat4'>$reliquat2</font>)</td></tr>
-EOD;
-    if ($config['Conges-Recuperations'] == 0) {
-        echo "<tr class='balance_tr'><td>Crédit de récupérations disponible au <span class='balance_date'>".dateFr($balance[0])."</span> : </td>\n";
-        echo "<td id='balance_before'>".heure4($balance[1], true)."</td>\n";
-        echo "<td>(après débit : <span id='recup4'>".heure4($balance[1], true)."</span>)</td></tr>\n";
+    echo "Ces heures seront débitées sur les crédits de récupérations.";
+    echo "<input type='hidden' name='debit' value='recuperation' />\n";
+    echo "</td></tr>\n";
 
-        echo "<tr class='balance_tr'><td>Crédit de récupérations prévisionnel<sup>*</sup> au <span class='balance_date'>".dateFr($balance[0])."</span> : </td>\n";
-        echo "<td id='balance2_before'>".heure4($balance[4], true)."</td>\n";
-        echo "<td>(après débit : <span id='balance2_after'>".heure4($balance[4], true)."</span>)</td></tr>\n";
-    }
+    echo "<tr><td colspan='2'>\n";
+    echo "<table border='0'>\n";
 
-    echo <<<EOD
-        <tr><td>Crédit de congés : </td><td>$credit2</td><td><font id='credit3'>(après débit : <font id='credit4'>$credit2</font>)</font></td></tr>
-        <tr><td>Solde débiteur : </td><td>$anticipation2</td><td><font id='anticipation3'>(après débit : <font id='anticipation4'>$anticipation2</font>)</font></td></tr>
-      </table>
-    </td></tr>
-EOD;
+    echo "<tr class='balance_tr'><td style='width:348px;'>Solde disponible au <span class='balance_date'>".dateFr($balance[0])."</span> : </td>\n";
+    echo "<td id='balance_before'>".heure4($balance[1])."</td>\n";
+    echo "<td>(après débit : <span id='recup4'>".heure4($balance[1])."</span>)</td></tr>\n";
 
+    echo "<tr class='balance_tr'><td>Solde prévisionnel<sup>*</sup> au <span class='balance_date'>".dateFr($balance[0])."</span> : </td>\n";
+    echo "<td id='balance2_before'>".heure4($balance[4])."</td>\n";
+    echo "<td>(après débit : <span id='balance2_after'>".heure4($balance[4])."</span>)</td></tr>\n";
+
+    echo "</table>\n";
+    echo "</td></tr>\n";
 
     echo "<tr valign='top'><td style='padding-top:15px;'>\n";
     echo "Commentaires : \n";
@@ -322,12 +285,12 @@ EOD;
     echo "<textarea name='commentaires' cols='16' rows='5' style='width:97%;'></textarea>\n";
     echo "</td></tr><tr><td>&nbsp;\n";
     echo "</td></tr><tr><td colspan='2' style='text-align:center;'>\n";
-    echo "<input type='button' value='Annuler' onclick='document.location.href=\"index.php?page=conges/voir.php\";' class='ui-button'/>";
+    echo "<input type='button' value='Annuler' onclick='document.location.href=\"index.php?page=conges/voir.php&amp;recup=1\";' class='ui-button'/>";
     echo "&nbsp;&nbsp;\n";
-    echo "<input type='button' value='Valider' class='ui-button' onclick='verifConges();' style='margin-left:20px;'/>\n";
+    echo "<input type='button' value='Valider' class='ui-button' onclick='verifConges();' style='margin-left:20px;' id='submit-button'/>\n";
     echo "<div id='google-calendar-div' class='inline'></div>\n";
     echo "</td></tr>\n";
-    echo "<tr><td colspan='2' style='padding-top:30px; font-style:italic;'><sup>*</sup> Le crédit de récupérations prévisionnel tient compte des demandes non validées (crédits et utilisations).</td></tr>\n";
+    echo "<tr><td colspan='2' style='padding-top:30px; font-style:italic;'><sup>*</sup> Le solde prévisionnel tient compte des demandes des récupérations non validées (crédits et utilisations).</td></tr>\n";
     echo "</table>\n";
     echo "</form>\n";
 }

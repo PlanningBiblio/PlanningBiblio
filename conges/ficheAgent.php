@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Plugin Congés Version 2.4.8
+Planning Biblio, Plugin Congés Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2013-2018 Jérôme Combes
 
 Fichier : conges/ficheAgent.php
 Création : 26 juillet 2013
-Dernière modification : 29 octobre 2016
+Dernière modification : 16 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -32,9 +32,9 @@ echo "<table class='tableauFiches'><tr><td>";
 echo "Nombre d'heures de congés par an :";
 echo "</td><td style='text-align:right;'>";
 if ($admin) {
-    echo "<input type='text' name='congesAnnuel' value='{$conges['annuelHeures']}'  style='width:70px;text-align:right;'>\n";
+    echo "<input type='text' name='conges_annuel' value='{$conges['annuelHeures']}'  style='width:70px;text-align:right;'>\n";
     echo "<label style='text-align:center;padding:5px;'>h</label>";
-    echo "<select name='congesAnnuelMin' style='width:50px;'>\n";
+    echo "<select name='conges_annuel_min' style='width:50px;'>\n";
 
     for ($min=0;$min<1;$min=$min+(5/60)) {
         $minutes=sprintf("%02s", $min*60);
@@ -52,9 +52,9 @@ echo "<tr><td>";
 echo "Crédit d'heures de congés actuel :";
 echo "</td><td style='text-align:right;'>";
 if ($admin) {
-    echo "<input type='text' name='congesCredit' value='{$conges['creditHeures']}'  style='width:70px;text-align:right;'>\n";
+    echo "<input type='text' name='conges_credit' value='{$conges['creditHeures']}'  style='width:70px;text-align:right;'>\n";
     echo "<label style='text-align:center;padding:5px;'>h</label>";
-    echo "<select name='congesCreditMin' style='width:50px;'>\n";
+    echo "<select name='conges_credit_min' style='width:50px;'>\n";
 
     for ($min=0;$min<1;$min=$min+(5/60)) {
         $minutes=sprintf("%02s", $min*60);
@@ -72,9 +72,9 @@ echo "<tr><td>";
 echo "Reliquat de congés :";
 echo "</td><td style='text-align:right;'>";
 if ($admin) {
-    echo "<input type='text' name='congesReliquat' value='{$conges['reliquatHeures']}'  style='width:70px;text-align:right;'>\n";
+    echo "<input type='text' name='conges_reliquat' value='{$conges['reliquatHeures']}'  style='width:70px;text-align:right;'>\n";
     echo "<label style='text-align:center;padding:5px;'>h</label>";
-    echo "<select name='congesReliquatMin' style='width:50px;'>\n";
+    echo "<select name='conges_reliquat_min' style='width:50px;'>\n";
 
     for ($min=0;$min<1;$min=$min+(5/60)) {
         $minutes=sprintf("%02s", $min*60);
@@ -92,9 +92,9 @@ echo "<tr><td>";
 echo "Solde débiteur :";
 echo "</td><td style='text-align:right;'>";
 if ($admin) {
-    echo "<input type='text' name='congesAnticipation' value='{$conges['anticipationHeures']}'  style='width:70px;text-align:right;'>\n";
+    echo "<input type='text' name='conges_anticipation' value='{$conges['anticipationHeures']}'  style='width:70px;text-align:right;'>\n";
     echo "<label style='text-align:center;padding:5px;'>h</label>";
-    echo "<select name='congesAnticipationMin' style='width:50px;'>\n";
+    echo "<select name='conges_anticipation_min' style='width:50px;'>\n";
 
     for ($min=0;$min<1;$min=$min+(5/60)) {
         $minutes=sprintf("%02s", $min*60);
@@ -109,12 +109,12 @@ echo "</td></tr>";
 
 // Récupération
 echo "<tr><td>";
-echo "Récupération du samedi :";
+echo "{$lang['comp_time']} :";
 echo "</td><td style='text-align:right;'>";
 if ($admin) {
-    echo "<input type='text' name='recupSamedi' value='{$conges['recupHeures']}'  style='width:70px;text-align:right;'>\n";
+    echo "<input type='text' name='recup' value='{$conges['recupHeures']}'  style='width:70px;text-align:right;'>\n";
     echo "<label style='text-align:center;padding:5px;'>h</label>";
-    echo "<select name='recupSamediMin' style='width:50px;'>\n";
+    echo "<select name='recup_min' style='width:50px;'>\n";
 
     for ($min=0;$min<1;$min=$min+(5/60)) {
         $minutes=sprintf("%02s", $min*60);
@@ -123,7 +123,7 @@ if ($admin) {
     }
     echo "</select>\n";
 } else {
-    echo heure4($conges['recupSamedi']);
+    echo heure4($conges['recup_samedi']);
 }
 echo "</td></tr>";
 ?>

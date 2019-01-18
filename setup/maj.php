@@ -1254,11 +1254,17 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
         // Insertion du plugin congés: ajout des taches planifiées
         $sql[]="UPDATE `{$dbprefix}cron` SET command='conges/cron.jan1.php' WHERE command='plugins/conges/cron.jan1.php';";
         $sql[]="UPDATE `{$dbprefix}cron` SET command='conges/cron.sept1.php' WHERE command='plugins/conges/cron.sept1.php';";
+
+        // Activation du module Congés
+        $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES ('Conges-Enable', 'boolean', '1', 'Cong&eacute;s', 'Activer le module Congés', '1');";
     }
     // Plugin is not installed.
     // So installing it the normal way.
     else {
         // Insertion du plugin congés: configuration
+        $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES ('Conges-Enable', 'boolean', '0', 'Cong&eacute;s', 'Activer le module Congés', '1');";
+        $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('Conges-Recuperations', 'enum2', '0', '[[0,\"Assembler\"],[1,\"Dissocier\"]]', 'Cong&eacute;s', 'Traiter les r&eacute;cup&eacute;rations comme les cong&eacute;s (Assembler), ou les traiter s&eacute;par&eacute;ment (Dissocier)', '3');";
+        $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('Conges-Validation-N2', 'enum2', '0', '[[0,\"Validation directe autoris&eacute;e\"],[1,\"Le cong&eacute; doit &ecirc;tre valid&eacute; au niveau 1\"]]', 'Cong&eacute;s', 'La validation niveau 2 des cong&eacute;s peut se faire directement ou doit attendre la validation niveau 1', '4');";
         $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Recup-SamediSeulement','boolean','0','Autoriser les demandes de récupération des samedis seulement','Cong&eacute;s','','20');";
         $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Recup-DeuxSamedis','boolean','0','Autoriser les demandes de récupération pour 2 samedis','Cong&eacute;s','','30');";
         $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Recup-DelaiDefaut','text','7','Delai pour les demandes de récupération par d&eacute;faut (en jours)','Cong&eacute;s','','40');";
@@ -1278,66 +1284,120 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
         '[[\"Mail-Planning\",\"La cellule planning\"],[\"mails_responsables\",\"Les responsables hi&eacute;rarchiques\"]]','Cong&eacute;s', 'A qui envoyer les rappels sur les cong&eacute;s non-valid&eacute;s au niveau 2', '9');";
 
         // Insertion du plugin congés:  droits d'accès
-        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Index','100','conges/index.php');";
-        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Liste','100','conges/voir.php');";
-        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Enregistrer','100','conges/enregistrer.php');";
-        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Modifier','100','conges/modif.php');";
-        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe`,`groupe_id`,`categorie`,`ordre`) VALUES ('Gestion des cong&eacute;s, validation N2','Gestion des cong&eacute;s, validation N2',2,'Cong&eacute;s','76');";
-        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Infos','100','conges/infos.php');";
-        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - r&eacute;cuperations','100','conges/recuperations.php');";
-        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - R&eacute;cup&eacute;ration','100','conges/recuperation_modif.php');";
-        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`categorie`,`ordre`) VALUES ('Congés - Validation niveau 1','7','Gestion des cong&eacute;s, validation N1','Cong&eacute;s','75');";
-        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Compte &Eacute;pargne Temps','100','conges/cet.php');";
+        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong&eacute;s - Index','100','conges/index.php');";
+        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong&eacute;s - Liste','100','conges/voir.php');";
+        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong&eacute;s - Enregistrer','100','conges/enregistrer.php');";
+        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong&eacute;s - Modifier','100','conges/modif.php');";
+        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe`,`groupe_id`,`categorie`,`ordre`) VALUES ('Gestion des cong&eacute;s, validation niveau 2','Gestion des cong&eacute;s, validation niveau 2',601,'Cong&eacute;s','76');";
+        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong&eacute;s - Infos','100','conges/infos.php');";
+        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong&eacute;s - r&eacute;cuperations','100','conges/recuperations.php');";
+        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong&eacute;s - R&eacute;cup&eacute;ration','100','conges/recuperation_modif.php');";
+        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`categorie`,`ordre`) VALUES ('Gestion des cong&eacute;s, validation niveau 1','401','Gestion des cong&eacute;s, validation niveau 1','Cong&eacute;s','75');";
+        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong&eacute;s - Compte &Eacute;pargne Temps','100','conges/cet.php');";
         $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Cong&eacute;s - Cr&eacute;dits','100','','conges/credits.php');";
         $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong&eacute;s - R&eacute;cup&eacute;rations','100','conges/recuperation_valide.php');";
+        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong&eacute;s - Poser des r&eacute;cup&eacute;rations','100','conges/recup_pose.php');";
 
         // Insertion du plugin congés: table conges
-        $sql[]="CREATE TABLE `{$dbprefix}conges` (`id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `perso_id` INT(11) NOT NULL,
-          `debut` DATETIME NOT NULL, `fin` DATETIME NOT NULL, `commentaires` TEXT, `refus` TEXT, `heures` VARCHAR(20), `debit` VARCHAR(20),
-          `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, `saisie_par` INT NOT NULL, `modif` INT(11) NOT NULL DEFAULT '0',`modification` TIMESTAMP,
-          `valide_n1` INT(11) NOT NULL DEFAULT '0',`validation_n1` TIMESTAMP,`valide` INT(11) NOT NULL DEFAULT '0',`validation` TIMESTAMP,
-          `solde_prec` FLOAT(10), `solde_actuel` FLOAT(10),
-          `recup_prec` FLOAT(10), `recup_actuel` FLOAT(10),`reliquat_prec` FLOAT(10), `reliquat_actuel` FLOAT(10),
-          `anticipation_prec` FLOAT(10), `anticipation_actuel` FLOAT(10), `supprime` INT(11) NOT NULL DEFAULT 0,
-          `suppr_date` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00', `information` INT(11) NOT NULL DEFAULT 0,
-          `infoDate` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00');";
+        $sql[]="CREATE TABLE `{$dbprefix}conges` (
+        `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        `perso_id` INT(11) NOT NULL,
+        `debut` DATETIME NOT NULL,
+        `fin` DATETIME NOT NULL,
+        `commentaires` TEXT,
+        `refus` TEXT,
+        `heures` VARCHAR(20),
+        `debit` VARCHAR(20),
+        `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `saisie_par` INT NOT NULL,
+        `modif` INT(11) NOT NULL DEFAULT '0',
+        `modification` TIMESTAMP,
+        `valide_n1` INT(11) NOT NULL DEFAULT '0',
+        `validation_n1` TIMESTAMP,
+        `valide` INT(11) NOT NULL DEFAULT '0',
+        `validation` TIMESTAMP,
+        `solde_prec` FLOAT(10),
+        `solde_actuel` FLOAT(10),
+        `recup_prec` FLOAT(10),
+        `recup_actuel` FLOAT(10),
+        `reliquat_prec` FLOAT(10),
+        `reliquat_actuel` FLOAT(10),
+        `anticipation_prec` FLOAT(10),
+        `anticipation_actuel` FLOAT(10),
+        `supprime` INT(11) NOT NULL DEFAULT 0,
+        `suppr_date` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
+        `information` INT(11) NOT NULL DEFAULT 0,
+        `info_date` TIMESTAMP NULL DEFAULT NULL);";
 
         // Insertion du plugin congés: table conges_infos
-        $sql[]="CREATE TABLE `{$dbprefix}conges_infos` (`id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `debut` DATE NULL, `fin` DATE NULL, `texte` TEXT NULL, `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);";
+        $sql[]="CREATE TABLE `{$dbprefix}conges_infos` (
+        `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        `debut` DATE NULL,
+        `fin` DATE NULL,
+        `texte` TEXT NULL,
+        `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);";
 
         // Insertion du plugin congés: table récupérations
-        $sql[]="CREATE TABLE `{$dbprefix}recuperations` (`id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `perso_id` INT(11) NOT NULL,
-          `date` DATE NULL, `date2` DATE NULL, `heures` FLOAT(5), `etat` VARCHAR(20), `commentaires` TEXT,
-          `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, `saisie_par` INT NOT NULL, `modif` INT(11) NOT NULL DEFAULT '0',
-          `modification` TIMESTAMP, `valide` INT(11) NOT NULL DEFAULT '0',`validation` TIMESTAMP,`refus` TEXT,
-          `solde_prec` FLOAT(10), `solde_actuel` FLOAT(10));";
+        $sql[]="CREATE TABLE `{$dbprefix}recuperations` (
+        `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        `perso_id` INT(11) NOT NULL,
+        `date` DATE NULL,
+        `date2` DATE NULL,
+        `heures` FLOAT(5),
+        `etat` VARCHAR(20),
+        `commentaires` TEXT,
+        `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `saisie_par` INT NOT NULL,
+        `modif` INT(11) NOT NULL DEFAULT '0',
+        `modification` TIMESTAMP,
+        `valide_n1` INT(11) NOT NULL DEFAULT 0,
+        `validation_n1` DATETIME NULL DEFAULT NULL,
+        `valide` INT(11) NOT NULL DEFAULT '0',
+        `validation` TIMESTAMP,
+        `refus` TEXT,
+        `solde_prec` FLOAT(10),
+        `solde_actuel` FLOAT(10));";
 
         // Insertion du plugin congés: menu
-        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES (15,0,'Cong&eacute;s','conges/voir.php');";
+        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','0','Cong&eacute;s','conges/voir.php','config=Conges-Enable');";
         $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES (15,10,'Liste des cong&eacute;s','conges/voir.php');";
+        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','15','Liste des r&eacute;cup&eacute;rations','conges/voir.php&amp;recup=1','config=Conges-Recuperations');";
         $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES (15,20,'Poser des cong&eacute;s','conges/enregistrer.php');";
+        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','24','Poser des r&eacute;cup&eacute;rations','conges/recup_pose.php','config=Conges-Recuperations');";
         $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES (15,26,'R&eacute;cup&eacute;rations','conges/recuperations.php');";
         $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES (15,30,'Informations','conges/infos.php');";
         $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES (15,40,'Cr&eacute;dits','conges/credits.php');";
 
         // Insertion du plugin congés: modification de la table personnel
-        $sql[]="ALTER TABLE `{$dbprefix}personnel` ADD `congesCredit` FLOAT(10), ADD `congesReliquat` FLOAT(10), ADD `congesAnticipation` FLOAT(10);";
-        $sql[]="ALTER TABLE `{$dbprefix}personnel` ADD `recupSamedi` FLOAT(10);";
-        $sql[]="ALTER TABLE `{$dbprefix}personnel` ADD `congesAnnuel` FLOAT(10);";
+        $sql[]="ALTER TABLE `{$dbprefix}personnel` ADD `conges_credit` FLOAT(10), ADD `conges_reliquat` FLOAT(10), ADD `conges_anticipation` FLOAT(10);";
+        $sql[]="ALTER TABLE `{$dbprefix}personnel` ADD `recup_samedi` FLOAT(10);";
+        $sql[]="ALTER TABLE `{$dbprefix}personnel` ADD `conges_annuel` FLOAT(10);";
 
         // Insertion du plugin congés: ajout des taches planifiées
         $sql[]="INSERT INTO `{$dbprefix}cron` (m,h,dom,mon,dow,command,comments) VALUES (0,0,1,1,'*','conges/cron.jan1.php','Cron Congés 1er Janvier');";
         $sql[]="INSERT INTO `{$dbprefix}cron` (m,h,dom,mon,dow,command,comments) VALUES (0,0,1,9,'*','conges/cron.sept1.php','Cron Congés 1er Septembre');";
 
         // Insertion du plugin congés: inscription du plugin Congés dans la base
-        $sql[]="INSERT INTO `{$dbprefix}plugins` (`nom`,`version`) VALUES ('conges','$version');";
+        $sql[]="INSERT INTO `{$dbprefix}plugins` (`nom`,`version`) VALUES ('conges','$v');";
 
         // Insertion du plugin congés: création de la table conges_CET
-        $sql[]="CREATE TABLE `{$dbprefix}conges_CET` (`id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `perso_id` INT(11) NOT NULL,
-          `jours` INT(11) NOT NULL DEFAULT '0', `commentaires` TEXT, `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          `saisie_par` INT NOT NULL, `modif` INT(11) NOT NULL DEFAULT '0', `modification` TIMESTAMP, `valide_n1` INT(11) NOT NULL DEFAULT '0',
-          `validation_n1` TIMESTAMP, `valide_n2` INT(11) NOT NULL DEFAULT '0',`validation_n2` TIMESTAMP, `refus` TEXT,
-          `solde_prec` FLOAT(10), `solde_actuel` FLOAT(10), `annee` VARCHAR(10));";
+        $sql[]="CREATE TABLE `{$dbprefix}conges_cet` (
+        `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        `perso_id` INT(11) NOT NULL,
+        `jours` INT(11) NOT NULL DEFAULT '0',
+        `commentaires` TEXT,
+        `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `saisie_par` INT NOT NULL,
+        `modif` INT(11) NOT NULL DEFAULT '0',
+        `modification` TIMESTAMP,
+        `valide_n1` INT(11) NOT NULL DEFAULT '0',
+        `validation_n1` TIMESTAMP,
+        `valide_n2` INT(11) NOT NULL DEFAULT '0',
+        `validation_n2` TIMESTAMP,
+        `refus` TEXT,
+        `solde_prec` FLOAT(10),
+        `solde_actuel` FLOAT(10),
+        `annee` VARCHAR(10));";
     }
 
     // Version

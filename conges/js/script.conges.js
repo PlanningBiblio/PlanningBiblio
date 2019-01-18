@@ -1,12 +1,12 @@
 /**
-Planning Biblio, Plugin Congés Version 2.5.4
+Planning Biblio, Plugin Congés Version 2.8.03
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2013-2018 Jérôme Combes
 
 Fichier : conges/js/script.conges.js
 Création : 2 août 2013
-Dernière modification : 10 février 2010
+Dernière modification : 12 septembre 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié <etienne.cavalie@unice.fr>
 
@@ -62,12 +62,29 @@ function calculCredit(){
 	var minutes=tmp[1];             // centièmes
         var heures2=result[2];          // heures h minutes
 
+        var balance_date = result[3][0];  // Date de début, affichée pour le réajustement des crédits disponibles
+        var balance = result[3][1];       // Crédits de récupérations disponibles à la date choisie
+
+        var balance_estimated = result[3][4];       // Crédits de récupérations prévisionnels à la date choisie
+
+        if($('#conges-recup').val() == 0 && balance_estimated < 0 ){
+          balance_estimated = 0;
+        }
+        
+
+        $('#recuperation').val(balance);
+        $('.balance_date').text(dateFr(balance_date));
+        $('#balance_before').text(heure4(balance));
+        $('#balance2_before').text(heure4(balance_estimated));
+        $("#recuperation_prev").val(balance_estimated);
+        $(".balance_tr").effect("highlight",null,4000);
+
         document.form.elements["heures"].value=heures;
 	document.form.elements["minutes"].value=minutes;
 
         $("#nbHeures").text(heures2);
-	$("#nbHeures").effect("highlight",null,3000);
-	$("#nbJours").effect("highlight",null,3000);
+        $("#nbHeures").effect("highlight",null,4000);
+        $("#nbJours").effect("highlight",null,4000);
 	$("#erreurCalcul").val("false");
       }
     },
@@ -82,6 +99,7 @@ function calculRestes(){
   heures=document.form.elements["heures"].value+"."+document.form.elements["minutes"].value;
   reliquat=document.form.elements["reliquat"].value;
   recuperation=document.form.elements["recuperation"].value;
+  recuperation_prev = $('#recuperation_prev').val();
   credit=document.form.elements["credit"].value;
   anticipation=document.form.elements["anticipation"].value;
   debit=document.form.elements["debit"].value;
@@ -92,62 +110,122 @@ function calculRestes(){
   credit = parseFloat(credit.replace(' ',''));
   anticipation = parseFloat(anticipation.replace(' ',''));
 
+  var congesRecup = $('#conges-recup').val();
+
   jours=heures/7;
   $("#nbJours").text(jours.toFixed(2));
 
-  // Calcul du reliquat après décompte
-  reste=0;
-  reliquat=reliquat-heures;
-  if(reliquat<0){
-    reste=-reliquat;
-    reliquat=0;
+  
+  // Si les récupérations et les congés sont gérés de la même façon
+  if(congesRecup == 0){
+    
+    // Calcul du reliquat après décompte
+    reste=0;
+    reliquat=reliquat-heures;
+    if(reliquat<0){
+      reste=-reliquat;
+      reliquat=0;
+    }
+
+    reste2=0;
+    // Calcul du crédit de récupération
+    if(debit=="recuperation"){
+      recuperation=recuperation-reste;
+      recuperation_prev = recuperation_prev - reste;
+      if(recuperation<0){
+        reste2=-recuperation;
+        recuperation=0;
+      }
+
+      if(recuperation_prev < 0){
+        recuperation_prev = 0;
+      }
+    }
+    
+    // Calcul du crédit de congés
+    else if(debit=="credit"){
+      credit=credit-reste;
+      if(credit<0){
+        reste2=-credit;
+        credit=0;
+      }
+    }
+    
+    // Si après tous les débits, il reste des heures, on débit le crédit restant
+    reste3=0;
+    if(reste2){
+      if(debit=="recuperation"){
+        credit=credit-reste2;
+        if(credit<0){
+          reste3=-credit;
+          credit=0;
+        }
+      }
+      else if(debit=="credit"){
+        recuperation=recuperation-reste2;
+        recuperation_prev = recuperation_prev - reste2;
+        if(recuperation<0){
+          reste3=-recuperation;
+          recuperation=0;
+        }
+        if(recuperation_prev < 0){
+          recuperation_prev = 0;
+        }
+      }
+    }
+    
+    if(reste3){
+      anticipation=parseFloat(anticipation)+reste3;
+    }
   }
 
-  reste2=0;
-  // Calcul du crédit de récupération
-  if(debit=="recuperation"){
-    recuperation=recuperation-reste;
-    if(recuperation<0){
-      reste2=-recuperation;
-      recuperation=0;
-    }
-  }
-  
-  // Calcul du crédit de congés
-  else if(debit=="credit"){
-    credit=credit-reste;
-    if(credit<0){
-      reste2=-credit;
-      credit=0;
-    }
-  }
-  
-  // Si après tous les débits, il reste des heures, on débit le crédit restant
-  reste3=0;
-  if(reste2){
+  // Si les récupérations et les congés ne sont pas gérés de la même façon
+  else{
+    // Calcul du crédit de récupération
     if(debit=="recuperation"){
-      credit=credit-reste2;
-      if(credit<0){
-	reste3=-credit;
-	credit=0;
+      recuperation = recuperation - heures;
+      recuperation_prev = recuperation_prev - heures;
+
+      $('.recup-alert').remove();
+      if(recuperation < 0){
+        CJInfo("Le crédit de récupération ne peut pas être négatif.", "error", null, 5000, 'recup-alert');
+        $(".balance_tr").effect("highlight",null,4000);
       }
     }
+
+    // Calcul du crédit de congés
     else if(debit=="credit"){
-      recuperation=recuperation-reste2;
-      if(recuperation<0){
-	reste3=-recuperation;
-	recuperation=0;
+
+      // Calcul du reliquat après décompte
+      reste=0;
+      reliquat=reliquat-heures;
+      if(reliquat<0){
+        reste=-reliquat;
+        reliquat=0;
       }
+        
+      // Calcul du crédit de congés
+      credit=credit-reste;
+      if(credit<0){
+        reste=-credit;
+        credit=0;
+      } else {
+        reste = 0;
+      }
+      
+      // Anticipation
+      if(reste){
+        anticipation=parseFloat(anticipation)+reste;
+      }
+
     }
-  }
-  
-  if(reste3){
-    anticipation=parseFloat(anticipation)+reste3;
   }
   
   // Affichage
   $("#reliquat4").text(heure4(reliquat));
   $("#recup4").text(heure4(recuperation));
+//   $("#recuperation_prev").val(recuperation_prev);
+  $("#balance2_after").text(heure4(recuperation_prev));
   $("#credit4").text(heure4(credit));
   $("#anticipation4").text(heure4(anticipation));
 }
@@ -189,7 +267,11 @@ function googleCalendarIcon(){
 }
 
 
-function supprimeConges(){
+function supprimeConges(retour){
+  if(retour == undefined){
+    retour = "index.php?page=conges/voir.php";
+  }
+
   conf=confirm("Etes-vous sûr(e) de vouloir supprimer ce congé ?");
   if(conf){
     $.ajax({
@@ -197,7 +279,7 @@ function supprimeConges(){
       type: "get",
       data: "id="+$("#id").val()+"&CSRFToken="+$("#CSRFSession").val(),
       success: function(){
-	location.href="index.php?page=conges/voir.php";
+	location.href = retour;
       },
       error: function(){
 	information("Une erreur est survenue lors de la suppresion du congé.","error");
@@ -238,6 +320,17 @@ function verifConges(){
     information("La date de fin doit être supérieure à la date de début","error");
     return false;
   }
+  
+  // Vérifions si le solde des récupérations n'est pas négatif
+  var recuperation = parseFloat( $('#recup4').text() );
+  if(parseFloat(recuperation) < 0 && $('#validation').val() >= 0 ){
+    $('.recup-alert').remove();
+    CJInfo("Le crédit de récupération ne peut pas être négatif.", "error", null, 5000, 'recup-alert');
+    $(".balance_tr").effect("highlight",null,4000);
+    return false;
+  }
+  
+
   // Vérifions si un autre congé a été demandé ou validé
   var result=$.ajax({
     url: "conges/ajax.verifConges.php",
@@ -267,13 +360,13 @@ function verifRecup(o){
     success: function(result){
       if(result=="Demande"){
 	o.addClass( "ui-state-error" );
-	updateTips( "Une demande a déjà été enregistrée pour le "+o.val()+"." );
+	updateTips( "Une demande a déjà été enregistrée pour le "+o.val()+".", "error" );
       }else{
 	retour=true;
       }
     },
     error: function(result){
-      updateTips( "Une erreur s'est produite lors de la vérification des récupérations enregistrées");
+      updateTips( "Une erreur s'est produite lors de la vérification des récupérations enregistrées", "error");
     }
   });
   return retour;
@@ -285,7 +378,7 @@ function verifRecup(o){
 function checkLength( o, n, min, max ) {
   if ( o.val().length > max || o.val().length < min ) {
     o.addClass( "ui-state-error" );
-    updateTips( "Veuillez sélectionner le nombre d'heures.");
+    updateTips( "Veuillez sélectionner le nombre d'heures.", "error");
   return false;
   } else {
     return true;
@@ -295,7 +388,7 @@ function checkLength( o, n, min, max ) {
 function checkInt( o, n, min, max, tips ) {
   if ( o.val() > max || o.val() < min ) {
     o.addClass("ui-state-error");
-    updateTips(tips);
+    updateTips(tips, "error");
   return false;
   } else {
     return true;
@@ -314,7 +407,7 @@ function checkDateAge( o, limit, n, tip ) {
   if(diff.day>limit){
     if(tip){
       o.addClass( "ui-state-error" );
-      updateTips( n );
+      updateTips( n , "error");
     }
     return false;
   } else {
@@ -327,7 +420,7 @@ function checkSamedi( o, n ) {
   var d=new Date(tmp[2],tmp[1]-1,tmp[0]);
   if(d.getDay()!=6){
     o.addClass( "ui-state-error" );
-    updateTips( n );
+    updateTips( n , "error");
     return false;
   } else {
     return true;

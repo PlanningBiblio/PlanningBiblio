@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Plugin Congés Version 2.7.06
+Planning Biblio, Plugin Congés Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2013-2018 Jérôme Combes
 
 Fichier : conges/index.php
 Création : 24 juillet 2013
-Dernière modification : 30 novembre 2017
+Dernière modification : 28 janvier 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -28,14 +28,20 @@ require_once "class.conges.php";
 <li><a href='index.php?page=conges/enregistrer.php'>Poser des congés</a></li>
 <li><a href='index.php?page=conges/recuperations.php'>R&eacute;cup&eacute;rations</a></li>
 <?php
-$required=array(2,7,401,402,403,404,405,406,407,408,409,410,601,602,603,604,605,606,607,608,609,610);
-$admin=false;
-foreach ($required as $elem) {
-    if (in_array($elem, $droits)) {
-        $admin=true;
+
+// Gestion des droits d'administration
+// NOTE : Ici, pas de différenciation entre les droits niveau 1 et niveau 2
+// NOTE : Les agents ayant les droits niveau 1 ou niveau 2 sont admin ($admin, droits 40x et 60x)
+// TODO : différencier les niveau 1 et 2 si demandé par les utilisateurs du plugin
+
+$admin = false;
+for ($i = 1; $i <= $config['Multisites-nombre']; $i++) {
+    if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
+        $admin = true;
         break;
     }
 }
+
 if ($admin) {
     echo "<li><a href='index.php?page=conges/infos.php'>Ajouter une information</a></li>\n";
     echo "<li><a href='index.php?page=conges/credits.php'>Voir les cr&eacute;dits</a></li>\n";

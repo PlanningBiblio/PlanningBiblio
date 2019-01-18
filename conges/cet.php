@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Plugin Congés Version 2.6.4
+Planning Biblio, Plugin Congés Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2013-2018 Jérôme Combes
 
 Fichier : conges/cet.php
 Création : 6 mars 2014
-Dernière modification : 21 avril 2017
+Dernière modification : 16 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -18,19 +18,30 @@ include_once "class.conges.php";
 include_once "personnel/class.personnel.php";
 
 // Initialisation des variables
-$adminN1=in_array(7, $droits)?1:0;
-$adminN2=in_array(2, $droits)?1:0;
+$annee = filter_input(INPUT_GET, 'annee', FILTER_SANITIZE_NUMBER_INT);
+$msg = filter_input(INPUT_GET, 'message', FILTER_SANITIZE_STRING);
+$perso_id = filter_input(INPUT_GET, 'perso_id', FILTER_SANITIZE_NUMBER_INT);
+$reset = filter_input(INPUT_GET, 'reset', FILTER_SANITIZE_NUMBER_INT);
+
+if (!$annee) {
+  $annee = !empty($_SESSION['oups']['cet_annee']) ? $_SESSION['oups']['cet_annee'] : date("Y")+1 ;
+}
+
+// Droits d'administration niveau 1 et niveau 2
+$c = new conges();
+$roles = $c->roles($perso_id, true);
+list($adminN1, $adminN2) = $roles;
+
 $displayValidation=$adminN1?null:"style='display:none;'";
 $displayValidationN2=$adminN2?null:"style='display:none;'";
-$agent=isset($_GET['agent'])?$_GET['agent']:null;
-$tri=isset($_GET['tri'])?$_GET['tri']:"`debut`,`fin`,`nom`,`prenom`";
-$annee=isset($_GET['annee'])?$_GET['annee']:(isset($_SESSION['oups']['cet_annee'])?$_SESSION['oups']['cet_annee']:date("Y")+1);
 if ($adminN1) {
-    $perso_id=isset($_GET['perso_id'])?$_GET['perso_id']:(isset($_SESSION['oups']['cet_perso_id'])?$_SESSION['oups']['cet_perso_id']:$_SESSION['login_id']);
+  if (!$perso_id) {
+    $perso_id = !empty($_SESSION['oups']['cet_perso_id']) ? $_SESSION['oups']['cet_perso_id'] : $_SESSION['login_id'];
+  }
 } else {
     $perso_id=$_SESSION['login_id'];
 }
-if (isset($_GET['reset'])) {
+if ($reset) {
     $annee=date("Y")+1;
     $perso_id=$_SESSION['login_id'];
 }
@@ -67,14 +78,14 @@ for ($d=date("Y")+2;$d>date("Y")-11;$d--) {
 }
 
 // Notifications
-if (isset($_GET['message'])) {
-    switch ($_GET['message']) {
-    case "Demande-OK": $message="Votre demande a été enregistrée"; $type="highlight";	break;
-    case "Demande-Erreur": $message="Une erreur est survenue lors de l'enregitrement de votre demande."; $type="error"; break;
-    case "OK": $message="Vos modifications ont été enregistrées"; $type="highlight";	break;
-    case "Erreur": $message="Une erreur est survenue lors de la validation de vos modifications."; $type="error"; break;
-    case "Refus": $message="Accès refusé."; $type="error"; break;
-  }
+if ($msg) {
+    switch ($msg) {
+        case "Demande-OK": $message="Votre demande a été enregistrée"; $type="highlight"; break;
+        case "Demande-Erreur": $message="Une erreur est survenue lors de l'enregitrement de votre demande."; $type="error"; break;
+        case "OK": $message="Vos modifications ont été enregistrées"; $type="highlight"; break;
+        case "Erreur": $message="Une erreur est survenue lors de la validation de vos modifications."; $type="error"; break;
+        case "Refus": $message="Accès refusé."; $type="error"; break;
+    }
     if ($message) {
         echo "<script type='text/JavaScript'>information('$message','$type',70);</script>\n";
     }
@@ -115,7 +126,7 @@ if ($adminN1) {
 }
 echo <<<EOD
 &nbsp;&nbsp;<input type='submit' value='OK' id='button-OK' class='ui-button'/>
-&nbsp;&nbsp;<input type='button' value='Reset' id='button-Effacer' class='ui-button' onclick='location.href="index.php?page=conges/cet.php&reset"' />
+&nbsp;&nbsp;<input type='button' value='Reset' id='button-Effacer' class='ui-button' onclick='location.href="index.php?page=conges/cet.php&reset=1"' />
 </p>
 </form>
 <table id='tableCET' class='CJDataTable' data-sort='[[1]]'>
@@ -151,6 +162,7 @@ foreach ($cet as $elem) {
         if ($elem['solde_prec']!=null and $elem['solde_actuel']!=null) {
             $credits="{$elem['solde_prec']} &rarr; {$elem['solde_actuel']}";
         }
+
     } elseif ($elem['valide_n2']<0) {
         $validation="Refus&eacute;, ".nom(-$elem['valide_n2'], 'nom p', $agents);
         $validationStyle="color:red;font-weight:bold;";

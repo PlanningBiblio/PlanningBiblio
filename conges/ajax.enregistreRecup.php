@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Plugin Congés Version 2.6.4
+/**
+Planning Biblio, Plugin Congés Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2013-2018 Jérôme Combes
 
 Fichier : conges/ajax.enregistreRecup.php
 Création : 11 octobre 2013
-Dernière modification : 21 avril 2017
+Dernière modification : 30 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -57,14 +57,20 @@ if ($db->error) {
     $mail=$p->elements[0]['mail'];
     $mailsResponsables=$p->elements[0]['mails_responsables'];
 
-    $c=new conges();
-    $c->getResponsables($date, $date, $perso_id);
-    $responsables=$c->responsables;
+    if ($config['Absences-notifications-agent-par-agent']) {
+        $a = new absences();
+        $a->getRecipients2(null, $perso_id, 1);
+        $destinataires = $a->recipients;
+    } else {
+        $c = new conges();
+        $c->getResponsables($date, $date, $perso_id);
+        $responsables = $c->responsables;
 
-    // Choix des destinataires en fonction de la configuration
-    $a=new absences();
-    $a->getRecipients(1, $responsables, $mail, $mailsResponsables);
-    $destinataires=$a->recipients;
+        // Choix des destinataires en fonction de la configuration
+        $a = new absences();
+        $a->getRecipients(1, $responsables, $mail, $mailsResponsables);
+        $destinataires = $a->recipients;
+    }
 
     if (!empty($destinataires)) {
         $sujet="Nouvelle demande de récupération";

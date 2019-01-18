@@ -1,13 +1,13 @@
 <?php
-/*
-Planning Biblio, Plugin Congés Version 2.1
+/**
+Planning Biblio, Plugin Congés Version 2.8.04
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2013-2018 Jérôme Combes
 
 Fichier : conges/recuperations.php
 Création : 27 août 2013
-Dernière modification : 9 janvier 2016
+Dernière modification : 31 octobre 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -18,10 +18,25 @@ include_once "class.conges.php";
 include_once "personnel/class.personnel.php";
 
 // Initialisation des variables
-$admin=in_array(2, $droits)?true:false;
 $annee=filter_input(INPUT_GET, "annee", FILTER_SANITIZE_STRING);
 $reset=filter_input(INPUT_GET, "reset", FILTER_CALLBACK, array("options"=>"sanitize_on"));
 $perso_id=filter_input(INPUT_GET, "perso_id", FILTER_SANITIZE_NUMBER_INT);
+
+// Gestion des droits d'administration
+// NOTE : Ici, pas de différenciation entre les droits niveau 1 et niveau 2
+// NOTE : Les agents ayant les droits niveau 1 ou niveau 2 sont admin ($admin, droits 40x et 60x)
+// TODO : différencier les niveau 1 et 2 si demandé par les utilisateurs du plugin
+
+$admin = false;
+$adminN2 = false;
+for ($i = 1; $i <= $config['Multisites-nombre']; $i++) {
+    if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
+        $admin = true;
+    }
+    if (in_array((600+$i), $droits)) {
+        $adminN2 = true;
+    }
+}
 
 if ($admin and $perso_id===null) {
     $perso_id=isset($_SESSION['oups']['recup_perso_id'])?$_SESSION['oups']['recup_perso_id']:$_SESSION['login_id'];
@@ -43,7 +58,6 @@ $_SESSION['oups']['recup_perso_id']=$perso_id;
 
 $debut=$annee."-09-01";
 $fin=($annee+1)."-08-31";
-$admin=in_array(2, $droits)?true:false;
 $message=null;
 
 // Recherche des demandes de récupérations enregistrées
@@ -58,9 +72,37 @@ $c->getRecup();
 $recup=$c->elements;
 
 // Recherche des agents
-$p=new personnel();
-$p->fetch();
-$agents=$p->elements;
+if ($admin) {
+    $p=new personnel();
+    $p->responsablesParAgent = true;
+    $p->fetch();
+    $agents=$p->elements;
+
+    // Filtre pour n'afficher que les agents gérés si l'option "Absences-notifications-agent-par-agent" est cochée
+    if ($config['Absences-notifications-agent-par-agent'] and !$adminN2) {
+        $tmp = array();
+
+        foreach ($agents as $elem) {
+            foreach ($elem['responsables'] as $resp) {
+                if ($resp['responsable'] == $_SESSION['login_id']) {
+                    $tmp[$elem['id']] = $elem;
+                    break;
+                }
+            }
+        }
+
+        $agents = $tmp;
+    }
+}
+
+if (!array_key_exists($_SESSION['login_id'], $agents)) {
+    $agents[$_SESSION['login_id']] = array('id' => $_SESSION['login_id'], 'nom' => $_SESSION['login_nom'], 'prenom' => $_SESSION['login_prenom']);
+}
+
+usort($agents, 'cmp_nom_prenom', true);
+
+// Liste des agents à conserver :
+$perso_ids = array_keys($agents);
 
 // Années universitaires
 $annees=array();
@@ -76,7 +118,7 @@ echo <<<EOD
 <div id='liste'>
 <h4 class='noprint'>Liste des demandes de récupération</h4>
 <form name='form' method='get' action='index.php' class='noprint'>
-<p>
+<span style='float:left; vertical-align:top; margin-bottom:20px;'>
 <input type='hidden' name='page' value='conges/recuperations.php' />
 Ann&eacute;e : <select name='annee'>
 EOD;
@@ -87,7 +129,7 @@ foreach ($annees as $elem) {
 echo "</select>\n";
 
 if ($admin) {
-    echo "&nbsp;&nbsp;Agent : ";
+    echo "<span style='margin-left:30px;'>Agent : </span>";
     echo "<select name='perso_id'>";
     $selected=$perso_id==0?"selected='selected'":null;
     echo "<option value='0' $selected >Tous</option>";
@@ -98,38 +140,68 @@ if ($admin) {
     echo "</select>\n";
 }
 echo <<<EOD
-&nbsp;&nbsp;<input type='submit' value='OK' id='button-OK' class='ui-button'/>
-&nbsp;&nbsp;<input type='button' value='Reset' id='button-Effacer' class='ui-button' onclick='location.href="index.php?page=conges/recuperations.php&reset=on"' />
-</p>
+<span style='margin-left:30px;'><input type='submit' value='Rechercher' id='button-OK' class='ui-button'/></span>
+<span style='margin-left:30px;'><input type='button' value='Effacer' id='button-Effacer' class='ui-button' onclick='location.href="index.php?page=conges/recuperations.php&reset=on"' /></span>
+</span>
+
+<span style='float:right; vertical-align:top; margin:0px 5px;'>
+<button id='dialog-button' class='ui-button'>Nouvelle demande</button>
+</span>
+
 </form>
 <table id='tableRecup' class='CJDataTable' data-sort='[[1]]'>
 <thead>
-<tr><th class='dataTableNoSort' >&nbsp;</th>
+<tr><th rowspan='2' class='dataTableNoSort' >&nbsp;</th>
 EOD;
-echo "<th class='dataTableDateFR'>Date</th>\n";
+echo "<th rowspan='2' class='dataTableDateFR'>Date</th>\n";
 if ($admin) {
-    echo "<th>Agent</th>";
+    echo "<th rowspan='2'>Agent</th>";
 }
-echo "<th>Heures</th><th>Commentaires</th><th>Validation</th><th>Crédits</th></tr>\n";
+echo "<th rowspan='2'>Heures</th>\n";
+echo "<th colspan='2' >Validation</th>\n";
+echo "<th rowspan='2'>Crédits</th>\n";
+echo "<th rowspan='2'>Commentaires</th></tr>\n";
+
+echo "<tr><th>&Eacute;tat</th>\n";
+echo "<th class='dataTableDateFR'>Date</th></tr>\n";
+
 echo "</thead>\n";
 echo "<tbody>\n";
 
 foreach ($recup as $elem) {
-    $validation="Demand&eacute;e, ".dateFr($elem['saisie'], true);
+
+  // Filtre les agents non-gérés (notamment avec l'option Absences-notifications-agent-par-agent)
+    if (!in_array($elem['perso_id'], $perso_ids)) {
+        continue;
+    }
+
+    $validation="Demand&eacute;";
+    $validation_date = dateFr($elem['saisie'], true);
     $validationStyle="font-weight:bold;";
     if ($elem['saisie_par'] and $elem['saisie_par']!=$elem['perso_id']) {
         $validation.=" par ".nom($elem['saisie_par']);
     }
     $credits=null;
+
     if ($elem['valide']>0) {
-        $validation=nom($elem['valide']).", ".dateFr($elem['validation'], true);
+        $validation = $lang['leave_table_accepted'] ." par ". nom($elem['valide']);
+        $validation_date = dateFr($elem['validation'], true);
         $validationStyle=null;
         if ($elem['solde_prec']!=null and $elem['solde_actuel']!=null) {
             $credits=heure4($elem['solde_prec'])." &rarr; ".heure4($elem['solde_actuel']);
         }
     } elseif ($elem['valide']<0) {
-        $validation="Refus&eacute;, ".nom(-$elem['valide']).", ".dateFr($elem['validation'], true);
+        $validation = $lang['leave_table_refused'] ." par ". nom(-$elem['valide']);
+        $validation_date = dateFr($elem['validation'], true);
         $validationStyle="color:red;font-weight:bold;";
+    } elseif ($elem['valide_n1'] > 0) {
+        $validation = $lang['leave_table_accepted_pending'] .", ". nom($elem['valide_n1']);
+        $validation_date = dateFr($elem['validation_n1'], true);
+        $validationStyle="font-weight:bold;";
+    } elseif ($elem['valide_n1'] < 0) {
+        $validation = $lang['leave_table_refused_pending'] .", ". nom(-$elem['valide_n1']);
+        $validation_date = dateFr($elem['validation_n1'], true);
+        $validationStyle="font-weight:bold;";
     }
 
     echo "<tr>";
@@ -140,17 +212,16 @@ foreach ($recup as $elem) {
         echo "<td>".nom($elem['perso_id'])."</td>";
     }
     echo "<td>".heure4($elem['heures'])."</td>\n";
-    echo "<td>".str_replace("\n", "<br/>", $elem['commentaires'])."</td><td style='$validationStyle'>$validation</td><td>$credits</td></tr>\n";
+    echo "<td style='$validationStyle'>$validation</td>\n";
+    echo "<td>$validation_date</td>\n";
+    echo "<td>$credits</td>\n";
+    echo "<td>".str_replace("\n", "<br/>", $elem['commentaires'])."</td></tr>\n";
 }
 
 echo <<<EOD
 </tbody>
 </table>
 </div> <!-- liste -->
-
-<div class='noprint'>
-<br/><button id='dialog-button' class='ui-button'>Nouvelle demande</button>
-</div>
 
 <div id="dialog-form" title="Nouvelle demande" class='noprint'>
   <p class="validateTips">Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures à récuperer et un saisir un commentaire.</p>
@@ -336,11 +407,11 @@ $(function() {
 		// Ferme le dialog
 		$( this ).dialog( "close" );
 	      }else{
-		updateTips("Erreur lors de l'enregistrement de la récupération");
+		updateTips("Erreur lors de l'enregistrement de la récupération", "error");
 	      }
 	    },
 	    error: function (result){
-	      updateTips("Erreur lors de l'enregistrement de la récupération");
+	      updateTips("Erreur lors de l'enregistrement de la récupération", "error");
 	    },
 	  });
 	}
@@ -353,6 +424,7 @@ $(function() {
 
     close: function() {
       allFields.val( "" ).removeClass( "ui-state-error" );
+      $('.validateTips').text("Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures à récuperer et un saisir un commentaire.");
     }
   });
 

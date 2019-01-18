@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Plugin Congés Version 2.7
+Planning Biblio, Plugin Congés Version 2.8
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2013-2018 Jérôme Combes
 
 Fichier : conges/ajax.enregistreCet.php
 Création : 7 mars 2014
-Dernière modification : 29 août 2017
+Dernière modification : 30 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -56,19 +56,19 @@ if (is_numeric($id)) {
 
         $db=new db();
         $db->CSRFToken = $CSRFToken;
-        $db->update("conges_CET", $data, array("id"=>$id));
+        $db->update("conges_cet", $data, array("id"=>$id));
         if ($isValidate) {
             // Mise à jour du compteur personnel/reliquat
             $heures=$data['jours']*7;
             $db=new dbh();
             $db->CSRFToken = $CSRFToken;
-            $db->prepare("UPDATE `{$dbprefix}personnel` SET `congesReliquat`=(`congesReliquat`-:heures) WHERE `id`=:id;");
+            $db->prepare("UPDATE `{$dbprefix}personnel` SET `conges_reliquat`=(`conges_reliquat`-:heures) WHERE `id`=:id;");
             $db->execute(array(":heures"=>$heures,":id"=>$id));
 
-            // Mise à jour du compteur conges_CET / solde_prec
+            // Mise à jour du compteur conges_cet / solde_prec
             $db=new dbh();
             $db->CSRFToken = $CSRFToken;
-            $db->prepare("SELECT `solde_actuel` FROM `{$dbprefix}conges_CET` WHERE `annee`=:annee AND `valide_n2`>0 
+            $db->prepare("SELECT `solde_actuel` FROM `{$dbprefix}conges_cet` WHERE `annee`=:annee AND `valide_n2`>0 
 	  AND `validation_n2`=MAX(`validation_n2`) AND `perso_id`=:perso_id;");
             $db->execute(array(":annee"=>$annee,":perso_id"=>$id));
             $solde_prec=$db->result[0]['solde_actuel'];
@@ -78,14 +78,14 @@ if (is_numeric($id)) {
             $c->updateCETCredits();
 
 
-            // Mise à jour des compteurs conges_CET / solde_actuel et solde_prec
+            // Mise à jour des compteurs conges_cet / solde_actuel et solde_prec
             // A CONTINUER init :solde_actuel, solde_prec
             $db=new dbh();
             $db->CSRFToken = $CSRFToken;
-            $db->prepare("UPDATE `{$dbprefix}conges_CET` SET `solde_actuel`=:solde_actuel, `solde_prec`=:solde_prec
+            $db->prepare("UPDATE `{$dbprefix}conges_cet` SET `solde_actuel`=:solde_actuel, `solde_prec`=:solde_prec
 	WHERE `annee`=:annee AND `valide_n2`>0 AND `validation_n2`=MAX(`validation_n2`) AND `perso_id`=:perso_id);");
             $db->execute(array(":annee"=>$annee,":perso_id"=>$id));
-            // A FAIRE : Mettre à jour les compteurs conges_CET/solde_prec et solde_actuel
+            // TODO : Mettre à jour les compteurs conges_cet/solde_prec et solde_actuel
         }
     }
 } else {
@@ -95,9 +95,9 @@ if (is_numeric($id)) {
 
     $db=new db();
     $db->CSRFToken = $CSRFToken;
-    $db->insert("conges_CET", $data);
+    $db->insert("conges_cet", $data);
     if ($isValidate) {
-        // A FAIRE : Mettre à jour les compteurs
+        // TODO : Mettre à jour les compteurs
         $c=new conges();
         $c->data=$data;
         $c->updateCETCredits();
@@ -117,14 +117,20 @@ if ($db->error) {
     $mail=$p->elements[0]['mail'];
     $mailsResponsables=$p->elements[0]['mails_responsables'];
 
-    $c=new conges();
-    $c->getResponsables(null, null, $perso_id);
-    $responsables=$c->responsables;
+    if ($config['Absences-notifications-agent-par-agent']) {
+        $a = new absences();
+        $a->getRecipients2(null, $perso_id, 1);
+        $destinataires = $a->recipients;
+    } else {
+        $c = new conges();
+        $c->getResponsables(null, null, $perso_id);
+        $responsables = $c->responsables;
 
-    // Choix des destinataires en fonction de la configuration
-    $a=new absences();
-    $a->getRecipients(1, $responsables, $mail, $mailsResponsables);
-    $destinataires=$a->recipients;
+        // Choix des destinataires en fonction de la configuration
+        $a = new absences();
+        $a->getRecipients(1, $responsables, $mail, $mailsResponsables);
+        $destinataires = $a->recipients;
+    }
 
     if (!empty($destinataires)) {
         $sujet="Nouvelle demande de CET";
