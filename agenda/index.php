@@ -315,7 +315,7 @@ EOD;
         }
 
         // Intégration des congés
-        if (in_array("conges", $plugins)) {
+        if ($config['Conges-Enable']) {
             include "conges/agenda.php";
         }
 

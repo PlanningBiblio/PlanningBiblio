@@ -15,7 +15,7 @@ Fichier permettant de voir les CET
 */
 
 include_once "class.conges.php";
-include_once "personnel/class.personnel.php";
+include_once(__DIR__.'/../personnel/class.personnel.php');
 
 // Initialisation des variables
 $annee = filter_input(INPUT_GET, 'annee', FILTER_SANITIZE_NUMBER_INT);

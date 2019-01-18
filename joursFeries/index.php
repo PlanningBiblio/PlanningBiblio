@@ -109,7 +109,7 @@ echo <<<EOD
   </form>
 EOD;
 
-if (in_array("conges", $plugins)) {
+if ($config['Conges-Enable']) {
     echo "<p>Les jours de fermeture ne seront pas décomptés des congés.</p>\n";
 }
 

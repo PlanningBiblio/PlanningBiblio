@@ -275,7 +275,7 @@ $postes_dispo=postesNoms($postes_dispo, $postes_completNoms);
 if ($config['ICS-Server1'] or $config['ICS-Server2'] or $config['ICS-Server3'] or $config['ICS-Export']) {
     echo "<li><a href='#agendas'>Agendas et Synchronisation</a></li>";
 }
-if (in_array("conges", $plugins)) {
+if ($config['Conges-Enable']) {
     echo "<li><a href='#conges'>Cong&eacute;s</a></li>";
 }
 ?>
@@ -1043,7 +1043,7 @@ if ($config['Multisites-nombre']>1) {
 <!--	FIN Droits d'accès		-->
 
 <?php
-if (in_array("conges", $plugins)) {
+if ($config['Conges-Enable']) {
     include "conges/ficheAgent.php";
 }
 ?>

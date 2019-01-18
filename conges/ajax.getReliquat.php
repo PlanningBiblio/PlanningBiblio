@@ -1,5 +1,5 @@
 <?php
-/*
+/**
 Planning Biblio, Plugin Congés Version 1.6.2
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
@@ -14,7 +14,8 @@ Description :
 Recupére le nombre d'heure de reliquat pour un agent donné
 Utilisé pour l'alimentation du CET, formulaire de la page conges/cet.php
 */
-include "../../include/config.php";
+
+include(__DIR__.'/../include/config.php');
 include "class.conges.php";
 
 $c=new conges();

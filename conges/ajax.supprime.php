@@ -21,7 +21,7 @@ $version="2.5.4";
 
 ini_set('display_errors', 0);
 
-include "../../include/config.php";
+include(__DIR__.'/../include/config.php');
 include "class.conges.php";
 
 $id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);

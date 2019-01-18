@@ -1,5 +1,5 @@
 <?php
-/*
+/**
 Planning Biblio, Plugin Congés Version 1.4.5
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
@@ -15,8 +15,7 @@ Recupére les informations d'une demande de CET
 Utilisé pour la modification d'une demande de CET, formulaire de la page conges/cet.php
 */
 
-$version='test';
-include "../../include/config.php";
+include(__DIR__.'/../include/config.php');
 include "class.conges.php";
 
 $c=new conges();

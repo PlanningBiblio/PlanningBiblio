@@ -317,7 +317,7 @@ for ($j=0;$j<=$fin;$j++) {
         usort($absences, "cmp_nom_prenom_debut_fin");
 
         // Informations sur les congés
-        if (in_array("conges", $plugins)) {
+        if ($config['Conges-Enable']) {
             include "conges/planning_cellules.php";
         }
         //--------------	FIN Recherche des infos cellules	------------//

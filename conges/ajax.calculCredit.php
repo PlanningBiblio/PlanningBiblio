@@ -16,7 +16,7 @@ Appelé en arrière plan par la fonction JS calculCredit() (fichier conges/js/sc
   lors du clic sur le bouton calculer du formulaire de saisie de congés (fichier conges/enregistrer.php)
 */
 
-require_once "../../include/config.php";
+include(__DIR__.'/../include/config.php');
 require_once "class.conges.php";
 
 // Initilisation des variables

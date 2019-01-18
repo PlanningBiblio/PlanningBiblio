@@ -17,7 +17,7 @@ Enregistre la demande de récupération
 session_start();
 
 ini_set('display_errors', 0);
-include "../../include/config.php";
+include(__DIR__.'/../include/config.php');
 include "class.conges.php";
 
 $commentaires=filter_input(INPUT_GET, "commentaires", FILTER_SANITIZE_STRING);

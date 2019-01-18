@@ -1377,9 +1377,6 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
         $sql[]="INSERT INTO `{$dbprefix}cron` (m,h,dom,mon,dow,command,comments) VALUES (0,0,1,1,'*','conges/cron.jan1.php','Cron Congés 1er Janvier');";
         $sql[]="INSERT INTO `{$dbprefix}cron` (m,h,dom,mon,dow,command,comments) VALUES (0,0,1,9,'*','conges/cron.sept1.php','Cron Congés 1er Septembre');";
 
-        // Insertion du plugin congés: inscription du plugin Congés dans la base
-        $sql[]="INSERT INTO `{$dbprefix}plugins` (`nom`,`version`) VALUES ('conges','$v');";
-
         // Insertion du plugin congés: création de la table conges_CET
         $sql[]="CREATE TABLE `{$dbprefix}conges_cet` (
         `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -1402,6 +1399,9 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 
     // Affiche le menu congés seulement si le module est activé
     $sql[]="UPDATE `{$dbprefix}menu` SET `condition`='config=Conges-Enable' WHERE niveau1='15';";
+
+    // Supprime l'entrée "conges" de la table plugins
+    $sql[]="DELETE FROM `{$dbprefix}plugins` WHERE `nom`='conges';";
 
     // Version
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";

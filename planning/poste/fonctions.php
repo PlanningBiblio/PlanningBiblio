@@ -88,7 +88,7 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
     
     
                 //		On barre les congés
-                if (in_array("conges", $GLOBALS['plugins'])) {
+                if ($GLOBALS['config']['Conges-Enable']) {
                     include "conges/planning_cellule_poste.php";
                 }
       
