@@ -30,11 +30,8 @@ $version="2.8.04";
 require_once __DIR__.'/vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\Tools\Setup;
-use Doctrine\ORM\EntityManager;
 
 use PlanningBiblio\LegacyCodeChecker;
-use Model\Extensions\TablePrefix;
 use Model\Personnel;
 use Model\Access;
 
@@ -51,6 +48,8 @@ if (file_exists(__DIR__.'/lang/custom.php')) {
 }
 
 date_default_timezone_set("Europe/Paris");
+
+require_once(__DIR__.'/init_entitymanager.php');
 
 // Vérification de la version de la base de données
 // Si la version est différente, mise à jour de la base de données
@@ -73,26 +72,6 @@ if ($login and $login === "anonyme" and $config['Auth-Anonyme'] and !array_key_e
     $_SESSION['login_prenom']="";
     $_SESSION['oups']["Auth-Mode"]="Anonyme";
 }
-
-// Instanciating entity manager.
-$entitiesPath = array('src/Model');
-$emConfig = Setup::createAnnotationMetadataConfiguration($entitiesPath, true);
-
-// Handle table prefix.
-$evm = new \Doctrine\Common\EventManager;
-$tablePrefix = new Model\Extensions\TablePrefix($config['dbprefix']);
-$evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $tablePrefix);
-
-$dbParams = array(
-    'driver'   => 'pdo_mysql',
-    'charset'  => 'utf8',
-    'host'     => $config['dbhost'],
-    'user'     => $config['dbuser'],
-    'password' => $config['dbpass'],
-    'dbname'   => $config['dbname'],
-);
-
-$entityManager = EntityManager::create($dbParams, $emConfig, $evm);
 
 // Sécurité CSRFToken
 $CSRFSession = isset($_SESSION['oups']['CSRFToken']) ? $_SESSION['oups']['CSRFToken'] : null;

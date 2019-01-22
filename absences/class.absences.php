@@ -27,6 +27,8 @@ if (!isset($version)) {
 require_once __DIR__."/../ics/class.ics.php";
 require_once __DIR__."/../personnel/class.personnel.php";
 
+use Model\Personnel;
+
 
 class absences
 {
@@ -1033,7 +1035,7 @@ class absences
         $this->responsables=$responsables;
     }
 
-    public function getRecipients($validation, $responsables, $mail, $mails_responsables)
+    public function getRecipients($validation, $responsables, $perso_id, $mails_responsables)
     {
         /*
         Retourne la liste des destinataires des notifications en fonction du niveau de validation.
@@ -1062,6 +1064,9 @@ class absences
 
         // recipients : liste des mails qui sera retournée
         $recipients=array();
+        $entityManager = $GLOBALS['entityManager'];
+        $staff_member = $entityManager->find(Personnel::class, $perso_id);
+        $mail = $staff_member->mail();
 
         // Agents ayant le droits de gérer les absences
         if (in_array(0, $categories)) {
@@ -1085,7 +1090,8 @@ class absences
 
         // Cellule planning
         if (in_array(2, $categories)) {
-            $mailsCellule=explode(";", trim($GLOBALS['config']['Mail-Planning']));
+            $mailsCellule = $staff_member->get_planning_unit_mails();
+
             if (is_array($mailsCellule)) {
                 foreach ($mailsCellule as $elem) {
                     if (!in_array(trim(html_entity_decode($elem, ENT_QUOTES|ENT_IGNORE, "UTF-8")), $recipients)) {

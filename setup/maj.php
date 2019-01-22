@@ -1521,6 +1521,30 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="x.x.xx"; # To be changed when releasing.
+if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site1-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site2-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site3-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site4-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site5-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site6-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site7-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site8-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site9-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site10-mail', 'text', '', 'Multisites', '', '', 1);";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();

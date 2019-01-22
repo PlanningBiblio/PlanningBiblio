@@ -90,7 +90,6 @@ if (isset($update)) {
     $p->fetchById($perso_id);
     $nom=$p->elements[0]['nom'];
     $prenom=$p->elements[0]['prenom'];
-    $mail=$p->elements[0]['mail'];
     $mailsResponsables=$p->elements[0]['mails_responsables'];
 
     if (isset($update['valide']) and $update['valide'] > 0) {
@@ -134,7 +133,7 @@ if (isset($update)) {
         $responsables = $c->responsables;
 
         $a = new absences();
-        $a->getRecipients($notifications, $responsables, $mail, $mailsResponsables);
+        $a->getRecipients($notifications, $responsables, $perso_id, $mailsResponsables);
         $destinataires = $a->recipients;
     }
 

@@ -103,4 +103,26 @@ class Personnel extends Entity {
         }
         return false;
     }
+
+    public function get_planning_unit_mails() {
+        $config = $GLOBALS['config'];
+
+        // Get mails defined in Mail-Planning config element.
+        $unit_mails = array();
+        if ($config['Mail-Planning']) {
+            $unit_mails[] = explode(";", trim($config['Mail-Planning']));
+        }
+
+        // Add mails defined by sites (Multisites-siteX-mail).
+        $sites = json_decode($this->sites());
+        foreach ($sites as $site) {
+            $site_mail_config = "Multisites-site$site-mail";
+            if ($config[$site_mail_config]) {
+                $site_mails = explode(';', $config[$site_mail_config]);
+                $unit_mails = array_merge($unit_mails, $site_mails);
+            }
+        }
+
+        return $unit_mails;
+    }
 }
