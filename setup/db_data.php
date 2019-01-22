@@ -377,13 +377,13 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('10','20','Ajouter une absence','absences/ajouter.php',NULL),
   ('10','30','Informations','absences/infos.php',NULL),
   ('15','0','Cong&eacute;s','conges/voir.php','config=Conges-Enable'),
-  ('15','10','Liste des cong&eacute;s','conges/voir.php',NULL),
-  ('15','15','Liste des r&eacute;cup&eacute;rations','conges/voir.php&amp;recup=1','config=Conges-Recuperations'),
-  ('15','20','Poser des cong&eacute;s','conges/enregistrer.php',NULL),
-  ('15','24','Poser des r&eacute;cup&eacute;rations','conges/recup_pose.php','config=Conges-Recuperations'),
-  ('15','26','R&eacute;cup&eacute;rations','conges/recuperations.php',NULL),
-  ('15','30','Informations','conges/infos.php',NULL),
-  ('15','40','Cr&eacute;dits','conges/credits.php',NULL),
+  ('15','10','Liste des cong&eacute;s','conges/voir.php','config=Conges-Enable'),
+  ('15','15','Liste des r&eacute;cup&eacute;rations','conges/voir.php&amp;recup=1','config=Conges-Enable;Conges-Recuperations'),
+  ('15','20','Poser des cong&eacute;s','conges/enregistrer.php','config=Conges-Enable'),
+  ('15','24','Poser des r&eacute;cup&eacute;rations','conges/recup_pose.php','config=Conges-Enable;Conges-Recuperations'),
+  ('15','26','R&eacute;cup&eacute;rations','conges/recuperations.php','config=Conges-Enable'),
+  ('15','30','Informations','conges/infos.php','config=Conges-Enable'),
+  ('15','40','Cr&eacute;dits','conges/credits.php','config=Conges-Enable'),
   ('20','0','Agenda','agenda/index.php',NULL),
   ('30','0','Planning','planning/poste/index.php',NULL),
   ('30','90','Agents volants','planning/volants/index.php','config=Planning-agents-volants'),
@@ -411,7 +411,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('60','0','Aide','aide/index.php',NULL);";
 
 //	Personnel
-$sql[]="INSERT INTO `{$dbprefix}personnel` (`id`,`nom`,`postes`,`actif`,`droits`,`login`,`password`,`commentaires`) VALUES (1, 'Administrateur', '', 'Inactif', '[2,3,4,5,6,7,9,17,20,21,22,23,25,99,100,201,202,301,302,501,502,701,801,802,1001,1002,1101]','admin', 
+$sql[]="INSERT INTO `{$dbprefix}personnel` (`id`,`nom`,`postes`,`actif`,`droits`,`login`,`password`,`commentaires`) VALUES (1, 'Administrateur', '', 'Inactif', '[3,4,5,6,9,17,20,21,22,23,25,99,100,201,202,301,302,401,402,501,502,601,602,701,801,802,1001,1002,1101]','admin', 
 '5f4dcc3b5aa765d61d8327deb882cf99', 'Compte cr&eacute;&eacute; lors de l&apos;installation du planning');";
 $sql[]="INSERT INTO `{$dbprefix}personnel` (`id`,`nom`,`postes`,`actif`,`droits`,`commentaires`,`temps`) VALUES (2, 'Tout le monde', '', 'Actif', '[99,100]','Compte cr&eacute;&eacute; lors de l&apos;installation du planning', '[[\"09:00:00\",\"12:00:00\",\"13:00:00\",\"17:00:00\"],[\"09:00:00\",\"12:00:00\",\"13:00:00\",\"17:00:00\"],[\"09:00:00\",\"12:00:00\",\"13:00:00\",\"17:00:00\"],[\"09:00:00\",\"12:00:00\",\"13:00:00\",\"17:00:00\"],[\"09:00:00\",\"12:00:00\",\"13:00:00\",\"17:00:00\"],[\"\",\"\",\"\",\"\"]]');";
 

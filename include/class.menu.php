@@ -37,9 +37,12 @@ class menu
         foreach ($db->result as $elem) {
             if ($elem['condition']) {
                 if (substr($elem['condition'], 0, 7)=="config=") {
-                    $value=substr($elem['condition'], 7);
-                    if (!$GLOBALS['config'][$value]) {
-                        continue;
+                    $tmp = substr($elem['condition'], 7);
+                    $values = explode(";", $tmp);
+                    foreach ($values as $value) {
+                        if (!$GLOBALS['config'][$value]) {
+                            continue 2;
+                        }
                     }
                 }
             }

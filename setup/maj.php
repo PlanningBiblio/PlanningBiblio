@@ -1226,11 +1226,121 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 
 $v="x.x.xx"; # To be changed when releasing.
 if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
-    require_once('plugins/plugins.php');
+    require_once(__DIR__.'/../plugins/plugins.php');
 
     // Plugin is installed yet.
     // So, updating access and menu elements.
     if (in_array('conges', $plugins)) {
+
+        // Update the plugin from 2.6 to 2.8 before integration (nothing to do between 2.0 and 2.6)
+        $db = new db();
+        $db->select2('plugins', 'version', array('nom' => 'conges'));
+        $conges_version = $db->result[0]['version'];
+
+        if ($conges_version < "2.6") {
+            $sql[]="ALTER TABLE `{$dbprefix}conges` ADD `valideN1` INT(11) NOT NULL DEFAULT '0', ADD `validationN1` TIMESTAMP;";
+        }
+
+        if ($conges_version < "2.6.4") {
+            $sql[]="ALTER TABLE `{$dbprefix}conges` CHANGE `valideN1` `valide_n1` INT(11) NOT NULL DEFAULT '0', CHANGE `validationN1` `validation_n1` TIMESTAMP;";
+            $sql[]="ALTER TABLE `{$dbprefix}conges` CHANGE `supprDate` `suppr_date` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00';";
+            $sql[]="ALTER TABLE `{$dbprefix}conges_CET` CHANGE `valideN1` `valide_n1` INT(11) NOT NULL DEFAULT '0', CHANGE `validationN1` `validation_n1` TIMESTAMP;";
+            $sql[]="ALTER TABLE `{$dbprefix}conges_CET` CHANGE `valideN2` `valide_n2` INT(11) NOT NULL DEFAULT '0', CHANGE `validationN2` `validation_n2` TIMESTAMP;";
+        }
+
+        if ($conges_version < "2.7") {
+            // Configuration : gestion des rappels
+            $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) 
+        VALUES ('Conges-Rappels', 'boolean', '0', 'Congés', 'Activer / D&eacute;sactiver l&apos;envoi de rappels s&apos;il y a des cong&eacute;s non-valid&eacute;s', '6');";
+            $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) 
+        VALUES ('Conges-Rappels-Jours', 'text', '14', 'Congés', 'Nombre de jours &agrave; contr&ocirc;ler pour l&apos;envoi de rappels sur les cong&eacute;s non-valid&eacute;s', '7');";
+            $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('Conges-Rappels-N1', 'checkboxes', '[\"Mail-Planning\"]', 
+        '[[\"Mail-Planning\",\"La cellule planning\"],[\"mails_responsables\",\"Les responsables hi&eacute;rarchiques\"]]','Congés', 'A qui envoyer les rappels sur les cong&eacute;s non-valid&eacute;s au niveau 1', '8');";
+            $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('Conges-Rappels-N2', 'checkboxes', '[\"mails_responsables\"]', 
+      '[[\"Mail-Planning\",\"La cellule planning\"],[\"mails_responsables\",\"Les responsables hi&eacute;rarchiques\"]]','Congés', 'A qui envoyer les rappels sur les cong&eacute;s non-valid&eacute;s au niveau 2', '9');";
+        }
+
+        if ($conges_version < "2.7.01") {
+            $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Cong&eacute;s', `ordre`='75' WHERE `groupe_id`='7';";
+            $sql[]="UPDATE `{$dbprefix}acces` SET `categorie`='Cong&eacute;s', `ordre`='76' WHERE `groupe_id`='2';";
+        }
+
+        if ($conges_version < "2.7.06") {
+            $sql[]="UPDATE `{$dbprefix}menu` SET `url`='plugins/conges/voir.php' WHERE `titre`='Cong&eacute;s';";
+            $sql[]="UPDATE `{$dbprefix}acces` SET `groupe_id` = '100', `groupe` = '', `categorie` = '', ordre = '' WHERE `page`='plugins/conges/infos.php';";
+        }
+        
+        if ($conges_version < "2.8") {
+            $sql[] = "UPDATE `{$dbprefix}config` SET `categorie` = 'Cong&eacute;s' WHERE `categorie` LIKE 'Cong%s';";
+            $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('Conges-Recuperations', 'enum2', '0', '[[0,\"Assembler\"],[1,\"Dissocier\"]]', 'Cong&eacute;s', 'Traiter les r&eacute;cup&eacute;rations comme les cong&eacute;s (Assembler), ou les traiter s&eacute;par&eacute;ment (Dissocier)', '3');";
+            $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES (15, 24, 'Poser des r&eacute;cup&eacute;rations', 'plugins/conges/recup_pose.php', 'config=Conges-Recuperations');";
+            $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES (15, 15, 'Liste des r&eacute;cup&eacute;rations', 'plugins/conges/voir.php&amp;recup=1', 'config=Conges-Recuperations');";
+            $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong&eacute;s - Poser des r&eacute;cup&eacute;rations','100','plugins/conges/recup_pose.php');";
+
+            // Modification des ID des droits d'administration niveau 1 et 2
+            $db = new db();
+            $db->select('personnel');
+            if ($db->result) {
+                foreach ($db->result as $elem) {
+                    $update = false;
+                    $conges_droits = html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+                    $conges_droits = (array) json_decode($conges_droits, true);
+                    foreach ($conges_droits as $k => $v) {
+                        if ($v == 7) {
+                            $conges_droits[$k] = 401;
+                            $update = true;
+                        }
+                        if ($v == 2) {
+                            $conges_droits[$k] = 601;
+                            $update = true;
+                        }
+                    }
+                    if ($update) {
+                        $conges_droits = json_encode($conges_droits);
+                        $sql[] = "UPDATE `{$dbprefix}personnel` SET `droits` = '$conges_droits' WHERE `id` = '{$elem['id']}';";
+                    }
+                }
+            }
+
+            // Integration
+            // updating access and menu elements.
+            $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe_id` = '401', `groupe` = 'Gestion des cong&eacute;s, validation niveau 1' WHERE `groupe_id` = '7';";
+            $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe_id` = '601', `groupe` = 'Gestion des cong&eacute;s, validation niveau 2' WHERE `groupe_id` = '2';";
+      
+            // Attente de la validation niveau 1 avant d'autoriser la validation niveau 2
+            $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('Conges-Validation-N2', 'enum2', '0', '[[0,\"Validation directe autoris&eacute;e\"],[1,\"Le cong&eacute; doit &ecirc;tre valid&eacute; au niveau 1\"]]', 'Cong&eacute;s', 'La validation niveau 2 des cong&eacute;s peut se faire directement ou doit attendre la validation niveau 1', '4');";
+
+            // Suppression des majuscules dans les noms des tables et des champs
+            $sql[] = "ALTER TABLE `{$dbprefix}conges` CHANGE `infoDate` `info_date` TIMESTAMP NULL DEFAULT NULL;";
+            $sql[] = "UPDATE `{$dbprefix}conges` SET `info_date` = NULL WHERE `info_date` = '0000-00-00 00:00:00';";
+
+            $sql[] = "RENAME TABLE `{$dbprefix}conges_CET` TO `{$dbprefix}conges_cet`;";
+
+            $sql[]="ALTER TABLE `{$dbprefix}personnel` CHANGE `congesCredit` `conges_credit` FLOAT(10) DEFAULT 0, CHANGE `congesReliquat` `conges_reliquat` FLOAT(10) DEFAULT 0, CHANGE `congesAnticipation` `conges_anticipation` FLOAT(10) DEFAULT 0, CHANGE `recupSamedi` `recup_samedi` FLOAT(10) DEFAULT 0, CHANGE `congesAnnuel` `conges_annuel` FLOAT(10) DEFAULT 0;";
+
+            // Suppression des doublons dans la table cron
+            $db = new db();
+            $db->select2('cron', 'id', array('command' => 'plugins/conges/cron.sept1.php'));
+            if ($db->result) {
+                for ($i = 1; $i < $db->nb; $i++) {
+                    $sql[] = "DELETE FROM `{$dbprefix}cron` WHERE `id` = '".$db->result[$i]['id']."';";
+                }
+            }
+
+            $db = new db();
+            $db->select2('cron', 'id', array('command' => 'plugins/conges/cron.jan1.php'));
+            if ($db->result) {
+                for ($i = 1; $i < $db->nb; $i++) {
+                    $sql[] = "DELETE FROM `{$dbprefix}cron` WHERE `id` = '".$db->result[$i]['id']."';";
+                }
+            }
+      
+            // Double validation des demandes de crédits de récupération
+            $sql[] = "ALTER TABLE `{$dbprefix}recuperations` ADD `validation_n1` DATETIME NULL DEFAULT NULL AFTER `modification`;";
+            $sql[] = "ALTER TABLE `{$dbprefix}recuperations` ADD `valide_n1` INT(11) NOT NULL DEFAULT 0 AFTER `modification`;";
+
+            $sql[]="UPDATE `{$dbprefix}plugins` SET `version`='$version' WHERE `nom`='conges';";
+        }
 
         // Insertion du plugin congés:  modification droits d'accès
         $sql[]="UPDATE `{$dbprefix}acces` SET page='conges/index.php' WHERE page='plugins/conges/index.php';";
@@ -1245,11 +1355,13 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
         $sql[]="UPDATE `{$dbprefix}acces` SET page='conges/recuperation_valide.php' WHERE page='plugins/conges/recuperation_valide.php';";
 
         // Insertion du plugin congés: modification menu
-        $sql[]="UPDATE `{$dbprefix}menu` SET url='conges/voir.php' WHERE url='plugins/conges/voir.php';";
-        $sql[]="UPDATE `{$dbprefix}menu` SET url='conges/enregistrer.php' WHERE url='plugins/conges/enregistrer.php';";
-        $sql[]="UPDATE `{$dbprefix}menu` SET url='conges/recuperations.php' WHERE url='plugins/conges/recuperations.php';";
-        $sql[]="UPDATE `{$dbprefix}menu` SET url='conges/infos.php' WHERE url='plugins/conges/infos.php';";
-        $sql[]="UPDATE `{$dbprefix}menu` SET url='conges/credits.php' WHERE url='plugins/conges/credits.php';";
+        $sql[]="UPDATE `{$dbprefix}menu` SET `url`='conges/voir.php', `condition`='config=Conges-Enable' WHERE `url`='plugins/conges/voir.php';";
+        $sql[]="UPDATE `{$dbprefix}menu` SET `url`='conges/enregistrer.php', `condition`='config=Conges-Enable' WHERE `url`='plugins/conges/enregistrer.php';";
+        $sql[]="UPDATE `{$dbprefix}menu` SET `url`='conges/recuperations.php', `condition`='config=Conges-Enable' WHERE `url`='plugins/conges/recuperations.php';";
+        $sql[]="UPDATE `{$dbprefix}menu` SET `url`='conges/infos.php', `condition`='config=Conges-Enable' WHERE `url`='plugins/conges/infos.php';";
+        $sql[]="UPDATE `{$dbprefix}menu` SET `url`='conges/credits.php', `condition`='config=Conges-Enable' WHERE `url`='plugins/conges/credits.php';";
+        $sql[]="UPDATE `{$dbprefix}menu` SET `url`='conges/voir.php&amp;recup=1', `condition`='config=Conges-Enable;Conges-Recuperations' WHERE `url`='plugins/conges/voir.php&amp;recup=1';";
+        $sql[]="UPDATE `{$dbprefix}menu` SET `url`='conges/recup_pose.php', `condition`='config=Conges-Enable;Conges-Recuperations' WHERE `url`='plugins/conges/recup_pose.php';";
 
         // Insertion du plugin congés: ajout des taches planifiées
         $sql[]="UPDATE `{$dbprefix}cron` SET command='conges/cron.jan1.php' WHERE command='plugins/conges/cron.jan1.php';";
@@ -1359,14 +1471,14 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
         `solde_actuel` FLOAT(10));";
 
         // Insertion du plugin congés: menu
-        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES ('15','0','Cong&eacute;s','conges/voir.php');";
-        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES (15,10,'Liste des cong&eacute;s','conges/voir.php');";
-        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','15','Liste des r&eacute;cup&eacute;rations','conges/voir.php&amp;recup=1','config=Conges-Recuperations');";
-        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES (15,20,'Poser des cong&eacute;s','conges/enregistrer.php');";
-        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','24','Poser des r&eacute;cup&eacute;rations','conges/recup_pose.php','config=Conges-Recuperations');";
-        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES (15,26,'R&eacute;cup&eacute;rations','conges/recuperations.php');";
-        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES (15,30,'Informations','conges/infos.php');";
-        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`) VALUES (15,40,'Cr&eacute;dits','conges/credits.php');";
+        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','0','Cong&eacute;s','conges/voir.php','config=Conges-Enable');";
+        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','10','Liste des cong&eacute;s','conges/voir.php','config=Conges-Enable');";
+        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','15','Liste des r&eacute;cup&eacute;rations','conges/voir.php&amp;recup=1','config=Conges-Enable;Conges-Recuperations');";
+        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','20','Poser des cong&eacute;s','conges/enregistrer.php','config=Conges-Enable');";
+        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','24','Poser des r&eacute;cup&eacute;rations','conges/recup_pose.php','config=Conges-Enable;Conges-Recuperations');";
+        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','26','R&eacute;cup&eacute;rations','conges/recuperations.php','config=Conges-Enable');";
+        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','30','Informations','conges/infos.php','config=Conges-Enable');";
+        $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','40','Cr&eacute;dits','conges/credits.php','config=Conges-Enable');";
 
         // Insertion du plugin congés: modification de la table personnel
         $sql[]="ALTER TABLE `{$dbprefix}personnel` ADD `conges_credit` FLOAT(10), ADD `conges_reliquat` FLOAT(10), ADD `conges_anticipation` FLOAT(10);";
@@ -1396,9 +1508,6 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
         `solde_actuel` FLOAT(10),
         `annee` VARCHAR(10));";
     }
-
-    // Affiche le menu congés seulement si le module est activé
-    $sql[]="UPDATE `{$dbprefix}menu` SET `condition`='config=Conges-Enable' WHERE niveau1='15';";
 
     // Supprime l'entrée "conges" de la table plugins
     $sql[]="DELETE FROM `{$dbprefix}plugins` WHERE `nom`='conges';";
