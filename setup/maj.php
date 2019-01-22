@@ -1353,6 +1353,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
         $sql[]="UPDATE `{$dbprefix}acces` SET page='conges/cet.php' WHERE page='plugins/conges/cet.php';";
         $sql[]="UPDATE `{$dbprefix}acces` SET page='conges/credits.php' WHERE page='plugins/conges/credits.php';";
         $sql[]="UPDATE `{$dbprefix}acces` SET page='conges/recuperation_valide.php' WHERE page='plugins/conges/recuperation_valide.php';";
+        $sql[]="UPDATE `{$dbprefix}acces` SET page='conges/recup_pose.php' WHERE page='plugins/conges/recup_pose.php';";
 
         // Insertion du plugin congés: modification menu
         $sql[]="UPDATE `{$dbprefix}menu` SET `url`='conges/voir.php', `condition`='config=Conges-Enable' WHERE `url`='plugins/conges/voir.php';";
