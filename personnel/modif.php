@@ -967,6 +967,11 @@ foreach ($groupes as $elem) {
         continue;
     }
 
+    // N'affiche pas les droits de gérer les congés si le module n'est pas activé
+    if (!$config['Conges-Enable'] and in_array($elem['groupe_id'], array(401, 601))) {
+        continue;
+    }
+
     // N'affiche pas les droits de gérer les plannings de présence si le module n'est pas activé
     if (!$config['PlanningHebdo'] and $elem['groupe_id']==24) {
         continue;
@@ -1005,6 +1010,12 @@ if ($config['Multisites-nombre']>1) {
 
     $last_category = null;
     foreach ($groupes_sites as $elem) {
+
+        // N'affiche pas les droits de gérer les congés si le module n'est pas activé
+        if (!$config['Conges-Enable'] and in_array($elem['groupe_id'], array(401, 601))) {
+            continue;
+        }
+
         // Affichage des catégories
         if ($elem['categorie'] != $last_category) {
             echo "<tr><td><h3 style='margin:10px 0 5px 0;'>{$elem['categorie']}</h3></td>\n";

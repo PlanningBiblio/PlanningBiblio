@@ -1513,6 +1513,10 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     // Supprime l'entrée "conges" de la table plugins
     $sql[]="DELETE FROM `{$dbprefix}plugins` WHERE `nom`='conges';";
 
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `categorie` = 'Cong&eacute;s' WHERE `groupe_id` IN ('401','601');";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `ordre` = '75' WHERE `groupe_id` = '401';";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `ordre` = '76' WHERE `groupe_id` = '601';";
+
     // Version
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
