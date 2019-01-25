@@ -81,10 +81,10 @@ foreach ($configParams as $cp) {
     $elem = array(
         'type'          => $cp->type(),
         'nom'           => $cp->nom(),
-        'valeur'        => $cp->valeur(),
-        'valeurs'       => $cp->valeurs(),
+        'valeur'        => html_entity_decode($cp->valeur(), ENT_QUOTES|ENT_HTML5),
+        'valeurs'       => html_entity_decode($cp->valeurs(), ENT_QUOTES|ENT_HTML5),
         'categorie'     => $cp->categorie(),
-        'commentaires'  => $cp->commentaires()
+        'commentaires'  => html_entity_decode($cp->commentaires(), ENT_QUOTES|ENT_HTML5),
     );
 
     if ($cp->type() == "password") {
