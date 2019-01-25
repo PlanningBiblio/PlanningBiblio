@@ -32,7 +32,9 @@ $templates_params['CSRFSession'] = $CSRFSession;
 
 
 $params = $request->request->all();
-$configParams = $entityManager->getRepository(ConfigParam::class)->findAll();
+$configParams = $entityManager->getRepository(ConfigParam::class)->findBy(
+    array(), array('ordre' => 'ASC', 'id' => 'ASC')
+);
 
 if ($params && CSRFTokenOK($params['CSRFToken'], $_SESSION)) {
 
