@@ -29,7 +29,6 @@ $evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $tablePrefix);
 
 $dbParams = array(
     'driver'   => 'pdo_mysql',
-    'charset'  => 'utf8',
     'host'     => $config['dbhost'],
     'user'     => $config['dbuser'],
     'password' => $config['dbpass'],

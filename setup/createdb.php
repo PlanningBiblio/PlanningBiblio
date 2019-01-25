@@ -77,7 +77,7 @@ if (!$user_exists) {
 $sql[]="GRANT USAGE ON `$dbname` . * TO '$dbuser'@'$dbhost' IDENTIFIED BY '$dbpass' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0 ;";
 
 //	Création de la base
-$sql[]="CREATE DATABASE IF NOT EXISTS `$dbname` ;";
+$sql[]="CREATE DATABASE IF NOT EXISTS `$dbname` CHARACTER SET utf8 COLLATE utf8_bin;";
 $sql[]="GRANT ALL PRIVILEGES ON `$dbname` . * TO '$dbuser'@'$dbhost';";
 
 $sql[]="USE $dbname;";

@@ -1543,7 +1543,12 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
         VALUES ('Multisites-site9-mail', 'text', '', 'Multisites', '', '', 1);";
     $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
         VALUES ('Multisites-site10-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Gestion des notifications et des droits de validations agent par agent. Si cette option est activée, les paramètres PlanningHebdo-notifications1, 2, 3 et 4 seront écrasés par les choix fait dans la page de configuration des notifications du menu Administration - Notifications / Validations' WHERE `nom` = 'Absences-notifications-agent-par-agent';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Afficher le total d\'heures des 4 dernières semaine dans le menu' WHERE `nom` = 'hres4semaines';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Activer le débogage pour CAS. Créé un fichier \"cas_debug.txt\" dans le dossier \"[TEMP]\"' WHERE `nom` = 'CAS-Debug';";
 }
+
+
 
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
