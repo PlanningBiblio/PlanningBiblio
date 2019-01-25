@@ -177,8 +177,8 @@ foreach ($dates as $date) {
         
                                 // Contrôle des congés
                                 $conges=false;
-                                if (in_array("conges", $plugins)) {
-                                    require_once "$path/plugins/conges/class.conges.php";
+                                if ($config['Conges-Enable']) {
+                                    require_once "$path/conges/class.conges.php";
                                     $c=new conges();
                                     if ($c->check($res['perso_id'], $date." ".$h['debut'], $date." ".$h['fin'])) {
                                         $conges=true;

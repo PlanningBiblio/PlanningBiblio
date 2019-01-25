@@ -24,18 +24,10 @@ include_once('init.php');
 include_once('init_menu.php');
 include_once('init_templates.php');
 
-// Vérification de la version de la base de données
-// Si la version est différente, mise à jour de la base de données
-if ($version!=$config['Version']) {
-    require_once(__DIR__.'/setup/maj.php');
-}
-// Sinon, on continue
-else {
-    require_once(__DIR__.'/include/feries.php');
-    require_once(__DIR__.'/plugins/plugins.php');
-    if (isset($_SESSION['login_id'])) {
-        require_once(__DIR__.'/include/cron.php');
-    }
+require_once(__DIR__.'/include/feries.php');
+require_once(__DIR__.'/plugins/plugins.php');
+if (isset($_SESSION['login_id'])) {
+    require_once(__DIR__.'/include/cron.php');
 }
 
 // Si pas de session, redirection vers la page d'authentification

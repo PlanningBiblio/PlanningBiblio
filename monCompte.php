@@ -49,7 +49,7 @@ if ($config['ICS-Export']) {
 }
 
 // Crédits (congés, récupérations)
-if (in_array("conges", $plugins)) {
+if ($config['Conges-Enable']) {
     $credits['annuel'] = $p->elements[0]['conges_annuel'];
     $credits['conges'] = $p->elements[0]['conges_credit'];
     $credits['reliquat'] = $p->elements[0]['conges_reliquat'];
@@ -73,7 +73,7 @@ if (in_array("conges", $plugins)) {
 if ($config['PlanningHebdo']) {
     echo "<li><a href='#planningPresence'>Mes plannings de présence</a></li>\n";
 }
-if (in_array("conges", $plugins)) {
+if ($config['Conges-Enable']) {
     echo "<li><a href='#credits'>Mes crédits</a></li>\n";
 }
 if ($ics) {
@@ -162,7 +162,7 @@ EOD;
 
 
 // Crédits de congés
-if (in_array("conges", $plugins)) {
+if ($config['Conges-Enable']) {
     echo <<<EOD
   <!-- Crédits -->
   <div id='credits' style='margin-left:80px;display:none;'>

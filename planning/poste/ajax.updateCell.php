@@ -233,8 +233,8 @@ for ($i=0;$i<count($tab);$i++) {
 }
 
 // Marquage des congés
-if (in_array("conges", $plugins)) {
-    include "../../plugins/conges/ajax.planning.updateCell.php";
+if ($config['Conges-Enable']) {
+    include "../../conges/ajax.planning.updateCell.php";
 }
 
 echo json_encode($tab);

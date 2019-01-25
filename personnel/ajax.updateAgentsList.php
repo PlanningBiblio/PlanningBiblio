@@ -11,7 +11,7 @@ Dernière modification : 9 avril 2015
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
-Met à jour la liste des agents dans les select des pages absences/voir.php et plugins/conges/voir.php
+Met à jour la liste des agents dans les select des pages absences/voir.php et conges/voir.php
 Affiche dans cette liste les agents supprimés ou non en fonction de la variable $_GET['deleted']
 Appelé en Ajax via la fonction JS updateAgentsList à partir de la page voir.php
 */

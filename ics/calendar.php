@@ -144,8 +144,8 @@ $a->fetch("`debut`,`fin`", $id, '0000-00-00 00:00:00', date('Y-m-d', strtotime(d
 $absences=$a->elements;
 
 // Recherche des congés (si le plugin est installé)
-if (in_array('conges', $plugins)) {
-    require_once "../plugins/conges/class.conges.php";
+if ($config['Conges-Enable']) {
+    require_once "../conges/class.conges.php";
     $c = new conges();
     $c->perso_id = $id;
     $c->debut = '0000-00-00 00:00:00';

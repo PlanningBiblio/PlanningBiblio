@@ -183,8 +183,8 @@ if ($db->result) {
 }
 
 // recherche des personnes à exclure (congés)
-if (in_array("conges", $plugins)) {
-    include "../../plugins/conges/menudiv.php";
+if ($config['Conges-Enable']) {
+    include "../../conges/menudiv.php";
 }
 
 // recherche des personnes à exclure (ne travaillant pas à cette heure)

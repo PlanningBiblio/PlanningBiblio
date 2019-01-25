@@ -275,7 +275,7 @@ $postes_dispo=postesNoms($postes_dispo, $postes_completNoms);
 if ($config['ICS-Server1'] or $config['ICS-Server2'] or $config['ICS-Server3'] or $config['ICS-Export']) {
     echo "<li><a href='#agendas'>Agendas et Synchronisation</a></li>";
 }
-if (in_array("conges", $plugins)) {
+if ($config['Conges-Enable']) {
     echo "<li><a href='#conges'>Cong&eacute;s</a></li>";
 }
 ?>
@@ -967,6 +967,11 @@ foreach ($groupes as $elem) {
         continue;
     }
 
+    // N'affiche pas les droits de gérer les congés si le module n'est pas activé
+    if (!$config['Conges-Enable'] and in_array($elem['groupe_id'], array(401, 601))) {
+        continue;
+    }
+
     // N'affiche pas les droits de gérer les plannings de présence si le module n'est pas activé
     if (!$config['PlanningHebdo'] and $elem['groupe_id']==24) {
         continue;
@@ -1005,6 +1010,12 @@ if ($config['Multisites-nombre']>1) {
 
     $last_category = null;
     foreach ($groupes_sites as $elem) {
+
+        // N'affiche pas les droits de gérer les congés si le module n'est pas activé
+        if (!$config['Conges-Enable'] and in_array($elem['groupe_id'], array(401, 601))) {
+            continue;
+        }
+
         // Affichage des catégories
         if ($elem['categorie'] != $last_category) {
             echo "<tr><td><h3 style='margin:10px 0 5px 0;'>{$elem['categorie']}</h3></td>\n";
@@ -1043,8 +1054,8 @@ if ($config['Multisites-nombre']>1) {
 <!--	FIN Droits d'accès		-->
 
 <?php
-if (in_array("conges", $plugins)) {
-    include "plugins/conges/ficheAgent.php";
+if ($config['Conges-Enable']) {
+    include "conges/ficheAgent.php";
 }
 ?>
 </div>	<!-- .ui-tabs	-->

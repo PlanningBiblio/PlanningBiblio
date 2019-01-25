@@ -59,8 +59,8 @@ class personnel
         }
  
         $version=$GLOBALS['config']['Version'];	// Pour autoriser les accès aux pages suppression_agents
-        if (in_array("conges", $plugins)) {
-            include "plugins/conges/suppression_agents.php";
+        if ($GLOBALS['config']['Conges-Enable']) {
+            include "conges/suppression_agents.php";
         }
         if ($GLOBALS['config']['PlanningHebdo']) {
             require_once "planningHebdo/class.planningHebdo.php";

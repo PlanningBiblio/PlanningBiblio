@@ -130,8 +130,8 @@ switch ($action) {
       "heures_travail"=>$heuresTravail,"arrivee"=>$arrivee,"depart"=>$depart,"login"=>$login,"password"=>$mdp_crypt,"actif"=>$actif,
       "droits"=>$droits,"postes"=>$postes,"temps"=>$temps,"informations"=>$informations,"recup"=>$recup,"sites"=>$sites,
       "mails_responsables"=>$mailsResponsables,"matricule"=>$matricule,"url_ics"=>$url_ics, "check_ics"=>$check_ics, "check_hamac"=>$check_hamac);
-    if (in_array("conges", $plugins)) {
-        include "plugins/conges/ficheAgentValid.php";
+    if ($config['Conges-Enable']) {
+        include "conges/ficheAgentValid.php";
     }
     $db=new db();
     $db->CSRFToken = $CSRFToken;
@@ -204,8 +204,8 @@ switch ($action) {
         $update["temps"]=$temps;
     }
 
-    if (in_array("conges", $plugins)) {
-        include "plugins/conges/ficheAgentValid.php";
+    if ($config['Conges-Enable']) {
+        include "conges/ficheAgentValid.php";
     }
 
     $db=new db();

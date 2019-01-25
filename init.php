@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Planning Biblio, Version 2.8.03
  * Licence GNU/GPL (version 2 et au dela)
  * Voir les fichiers README.md et LICENSE
@@ -51,6 +51,12 @@ if (file_exists(__DIR__.'/lang/custom.php')) {
 }
 
 date_default_timezone_set("Europe/Paris");
+
+// Vérification de la version de la base de données
+// Si la version est différente, mise à jour de la base de données
+if ($version!=$config['Version']) {
+    require_once(__DIR__.'/setup/maj.php');
+}
 
 // Initialisation des variables
 $request = Request::createFromGlobals();
