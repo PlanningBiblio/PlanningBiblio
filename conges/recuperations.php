@@ -319,13 +319,13 @@ $(function() {
 	}
 	if(categories[perso_id]=="Titulaire"){
 	  if($("#date2").val()){
-	    if(limitTitulaire2=="Défaut"){
+	    if(limitTitulaire2 == -1){
 	      limitJours=limitDefaut;
 	    }else{
 	      limitJours=limitTitulaire2*30;
 	    }
 	  }else{
-	    if(limitTitulaire1=="Défaut"){
+	    if(limitTitulaire1 == -1){
 	      limitJours=limitDefaut;
 	    }else{
 	      limitJours=limitTitulaire1*30;
@@ -334,13 +334,13 @@ $(function() {
 	}
 	else if(categories[perso_id]=="Contractuel"){
 	  if($("#date2").val()){
-	    if(limitContractuel2=="Défaut"){
+	    if(limitContractuel2 == -1){
 	      limitJours=limitDefaut;
 	    }else{
 	      limitJours=limitContractuel2*7;
 	    }
 	  }else{
-	    if(limitContractuel1=="Défaut"){
+	    if(limitContractuel1 == -1){
 	      limitJours=limitDefaut;
 	    }else{
 	      limitJours=limitContractuel1*7;
