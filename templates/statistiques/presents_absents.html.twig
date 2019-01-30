@@ -1,0 +1,82 @@
+{# statistiquess/presents_absents.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  <h3>Liste des agents présents et absents</h3>
+
+  <div style="float:left;">
+    <form name="CSRFForm" method="post">
+      <table>
+        <tr>
+          <td>
+            <label class='intitule'>Date </label>
+            <input type='text' name='date' value='' class='datepicker'/>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <label class='intitule'>Absences validées </label>
+            <input type='checkbox' name='validated'/>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <input type='submit' value='Ok'/>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+
+  <div>
+    {% if absents or presents %}
+      <table class="tableauStandard">
+        <tr>
+          {% if presents %}
+            <td><h3>Liste des présents</h3></td>
+          {% endif %}
+          {% if absents %}
+          <td><h3>Liste des absents</h3></td>
+          {% endif %}
+        </tr>
+        <tr>
+          {% if presents %}
+            <td>
+              <table>
+                {% for present in presents %}
+                  <tr class="bold {% if loop.index is odd %}tr1{% else %}tr2{% endif %}">
+                    <td>{{ present.nom }} {{ present.prenom }}</td>
+                    <td>
+                      {{ present.site }}{{ present.heures|e('html') }}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </table>
+            </td>
+          {% endif %}
+          {% if absents %}
+            <td>
+              <table>
+                {% for absent in absents %}
+                  {% if absent.valide > 0 %}
+                    <tr class="bold {% if loop.index is odd %}tr1{% else %}tr2{% endif %}">
+                  {% else %}
+                    <tr class="{% if loop.index is odd %}tr1{% else %}tr2{% endif %}">
+                  {% endif %}
+                    <td>{{ absent.nom }} {{ absent.prenom }}</td>
+                    <td>
+                      {{ absent.motif }}{% if not absent.all_the_day %}, {{ absent.from }} - {{ absent.to }}{% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </table>
+            </td>
+          {% endif %}
+        </tr>
+      </table>
+    {% endif %}
+  <div>
+{% endblock %}
