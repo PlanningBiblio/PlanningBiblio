@@ -1,5 +1,5 @@
 <?php
-/*
+/**
 Planning Biblio, Plugin Congés Version 1.5.6
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
@@ -15,12 +15,7 @@ Vérifie si le jour demandé à déjà fait l'objet d'une demande de récuperati
 Appelé en arrière plan par la fonction JS verifRecup()
 */
 
-session_start();
-ini_set('display_errors', 0);
-ini_set('error_reporting', E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
-
 include(__DIR__.'/../include/config.php');
-include(__DIR__.'/../personnel/class.personnel.php');
 include "class.conges.php";
 
 $date=dateFr($_GET['date']);

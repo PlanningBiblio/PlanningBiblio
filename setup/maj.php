@@ -1551,7 +1551,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 $v="x.x.xx"; # To be changed when releasing.
 if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     // Recup-Agent.
-    $valeurs = addslashes('[[0,""][1,"Texte"],[2,"Menu déroulant"]]');
+    $valeurs = addslashes('[[0,""],[1,"Texte"],[2,"Menu déroulant"]]');
     $valeur = $config['Recup-Agent'] ? (($config['Recup-Agent'] == 'Texte') ? 1 : 2) : 0;
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = '$valeurs', `valeur` = '$valeur', `type` = 'enum2' WHERE `nom` = 'Recup-Agent';";
 
@@ -1565,7 +1565,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = '$valeurs', `valeur` = '$valeur', `type` = 'enum2' WHERE `nom` = 'Recup-DelaiTitulaire2';";
 
     //Recup-DelaiContractuel1, Recup-DelaiContractuel2.
-    $valeurs = addslashes('[["default","Défaut"],[0,0],[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],[10,10]]');
+    $valeurs = addslashes('[[-1,"Défaut"],[0,0],[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],[10,10]]');
 
     $valeur = $config['Recup-DelaiContractuel1'] == 'D&eacute;faut' ? -1 : $config['Recup-DelaiContractuel1'];
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = '$valeurs', `valeur` = '$valeur', `type` = 'enum2' WHERE `nom` = 'Recup-DelaiContractuel1';";

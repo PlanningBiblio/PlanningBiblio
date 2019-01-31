@@ -14,11 +14,7 @@ Description :
 Enregistre la demande de récupération
 */
 
-session_start();
 include(__DIR__.'/../include/config.php');
-
-ini_set('display_errors', 0);
-
 include "class.conges.php";
 
 // Initialisation des variables
@@ -87,6 +83,6 @@ if ($db->error) {
     
         $return[]=$m->error_CJInfo;
     }
-  
+
     echo json_encode($return);
 }

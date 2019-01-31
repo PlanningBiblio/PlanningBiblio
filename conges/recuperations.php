@@ -95,11 +95,13 @@ if ($admin) {
     }
 }
 
-if (!array_key_exists($_SESSION['login_id'], $agents)) {
-    $agents[$_SESSION['login_id']] = array('id' => $_SESSION['login_id'], 'nom' => $_SESSION['login_nom'], 'prenom' => $_SESSION['login_prenom']);
+if (empty($agents[$_SESSION['login_id']])) {
+    $p = new personnel();
+    $p->fetchById($_SESSION['login_id']);
+    $agents[$_SESSION['login_id']] = $p->elements[0];
 }
 
-usort($agents, 'cmp_nom_prenom', true);
+@usort($agents, 'cmp_nom_prenom', true);
 
 // Liste des agents à conserver :
 $perso_ids = array_keys($agents);
@@ -298,11 +300,12 @@ if ($config['Recup-SamediSeulement']) {
 }
 ?>
 $(function() {
+
   var date = $( "#date" ),
     date2 = $( "#date2" ),
     heures = $( "#heures" ),
     commentaires = $( "#commentaires" ),
-    allFields = $( [] ).add( date ).add( heures );
+    allFields = $( [] ).add( date ).add( heures ).add( date2 ).add( commentaires );
 
   $( "#dialog-form" ).dialog({
     autoOpen: false,
@@ -428,11 +431,14 @@ $(function() {
     }
   });
 
+
   $( "#dialog-button" )
     .click(function() {
       date.datepicker("disable");
+      date2.datepicker("disable");
       $( "#dialog-form" ).dialog( "open" );
       date.datepicker("enable");
+      date2.datepicker("enable");
       return false;
     });
 

@@ -14,9 +14,6 @@ Description :
 Enregistre la demande de récupération
 */
 
-session_start();
-
-ini_set('display_errors', 0);
 include(__DIR__.'/../include/config.php');
 include "class.conges.php";
 
