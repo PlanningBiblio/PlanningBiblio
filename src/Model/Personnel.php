@@ -111,6 +111,7 @@ class Personnel extends Entity {
         $unit_mails = array();
         if ($config['Mail-Planning']) {
             $unit_mails = explode(";", trim($config['Mail-Planning']));
+            $unit_mails = array_map('trim', $unit_mails);
         }
 
         // Add mails defined by sites (Multisites-siteX-mail).
@@ -120,10 +121,13 @@ class Personnel extends Entity {
                 $site_mail_config = "Multisites-site$site-mail";
                 if ($config[$site_mail_config]) {
                     $site_mails = explode(';', $config[$site_mail_config]);
+                    $site_mails = array_map('trim', $site_mails);
                     $unit_mails = array_merge($unit_mails, $site_mails);
                 }
             }
         }
+
+        $unit_mails = array_unique($unit_mails);
 
         return $unit_mails;
     }
