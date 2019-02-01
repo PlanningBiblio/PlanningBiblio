@@ -140,12 +140,25 @@ if($page=="planning/poste/index.php" or $page=="planning/poste/semaine.php" or !
   echo "<div id='content'>\n";
 }
 
+$access = false;
+
 if(in_array($db->result[0]['groupe_id'],$droits)){
-  include $page;
+    $access = true;
+} elseif ($config['Multisites-nombre'] > 1) {
+    for ($i = 1; $i <= $config['Multisites-nombre']; $i++) {
+        $droit = $db->result[0]['groupe_id'] -1 + $i;
+        if (in_array($droit, $droits)) {
+            $access = true;
+        }
+    }
 }
-else{
-  echo "<div id='acces_refuse'>Accès refusé</div>\n";
+
+if ($access) {
+    include $page;
+} else {
+    echo "<div id='acces_refuse'>Accès refusé</div>\n";
 }
+
 if($menu){
   include "include/footer.php";
 }
