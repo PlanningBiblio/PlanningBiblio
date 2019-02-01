@@ -190,6 +190,7 @@ class CJMail{
     $mail->Username =$GLOBALS['config']['Mail-Username'];
     $mail->Password =decrypt($GLOBALS['config']['Mail-Password']);
     $mail->From =$GLOBALS['config']['Mail-From'];
+    $mail->Sender =$GLOBALS['config']['Mail-From'];
     $mail->FromName =$GLOBALS['config']['Mail-FromName'];
     $mail->IsHTML();
     

@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.7.15
+Planning Biblio, Version 2.7.16
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
@@ -19,7 +19,7 @@ Affiche le message "configuration terminée" et invite l'utilisateur à se conne
 
 session_start();
 
-$version="2.7.15";
+$version="2.7.16";
 include "../include/config.php";
 include "header.php";
 
