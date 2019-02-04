@@ -1521,6 +1521,14 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="x.x.xx"; # To be changed when releasing.
+if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+    $sql[] = "INSERT INTO `{$dbprefix}config` VALUES (null,'Recup-Uneparjour','boolean','1','Autoriser une seule demande de r&eacute;cup&eacute;ration par jour seulement','Cong&eacute;s','','25');";
+
+    // Version
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();

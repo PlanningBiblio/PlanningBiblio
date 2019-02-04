@@ -99,10 +99,10 @@ if (!array_key_exists($_SESSION['login_id'], $agents)) {
     $agents[$_SESSION['login_id']] = array('id' => $_SESSION['login_id'], 'nom' => $_SESSION['login_nom'], 'prenom' => $_SESSION['login_prenom']);
 }
 
-usort($agents, 'cmp_nom_prenom', true);
+usort($agents, 'cmp_nom_prenom');
 
 // Liste des agents à conserver :
-$perso_ids = array_keys($agents);
+$perso_ids = array_column($agents, 'id');
 
 // Années universitaires
 $annees=array();
@@ -293,8 +293,12 @@ foreach ($agents as $elem) {
 }
 // Samedis seulement
 echo "var samediSeulement=false;";
+echo "var oneRecoveryPerDay = false;";
 if ($config['Recup-SamediSeulement']) {
     echo "var samediSeulement=true;";
+}
+if ($config['Recup-Uneparjour']) {
+    echo "var oneRecoveryPerDay = true;";
 }
 ?>
 $(function() {
@@ -357,6 +361,9 @@ $(function() {
 	if(samediSeulement){
 	  bValid = bValid && checkSamedi(date,"Vous devez choisir un samedi");
 	}
+    if (oneRecoveryPerDay) {
+      bValid = bValid && verifRecup($("#date"));
+    }
 	if($("#date2").val()){
 	  bValid = bValid && checkRegexp( date2, /^[0-9]{2}\/[0-9]{2}\/[0-9]{4}/i, "La date doit être au format JJ/MM/AAAA" );
 	  bValid = bValid && checkDate2(date, date2,"La 2ème date doit être supérieure à la première");
@@ -372,8 +379,6 @@ $(function() {
 	else{
 	  bValid = bValid && checkDateAge( date, limitJours, "La demande de récupération doit être effectuée dans les "+limitJours+" jours");
 	}
-
-	bValid = bValid && verifRecup($("#date"));
 
 	<?php
     if ($config['Recup-DeuxSamedis']) {
