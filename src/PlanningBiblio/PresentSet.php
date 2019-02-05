@@ -35,8 +35,11 @@ class PresentSet
     public function all()
     {
         $config = $GLOBALS['config'];
+        $version = $GLOBALS['version'];
         $date = $this->date;
         $date_planning = $this->date_planning;
+        $semaine = $date_planning->semaine;
+        $semaine3 = $date_planning->semaine3;
         $absents = $this->absents;
 
         $this->db->select("personnel", "*", "`actif` LIKE 'Actif' AND (`depart` > $date OR `depart` = '0000-00-00')", "ORDER BY `nom`,`prenom`");
