@@ -27,7 +27,7 @@ if (!isset($version)) {
 require_once __DIR__."/../ics/class.ics.php";
 require_once __DIR__."/../personnel/class.personnel.php";
 
-use Model\Personnel;
+use Model\Agent;
 
 
 class absences
@@ -1065,7 +1065,7 @@ class absences
         // recipients : liste des mails qui sera retournée
         $recipients=array();
         $entityManager = $GLOBALS['entityManager'];
-        $staff_member = $entityManager->find(Personnel::class, $perso_id);
+        $staff_member = $entityManager->find(Agent::class, $perso_id);
         $mail = $staff_member->mail();
 
         // Agents ayant le droits de gérer les absences

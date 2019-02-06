@@ -5,7 +5,7 @@ namespace Model;
 /**
  * @Entity @Table(name="personnel")
  **/
-class Personnel extends Entity {
+class Agent extends Entity {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 

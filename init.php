@@ -32,7 +32,7 @@ require_once __DIR__.'/vendor/autoload.php';
 use Symfony\Component\HttpFoundation\Request;
 
 use PlanningBiblio\LegacyCodeChecker;
-use Model\Personnel;
+use Model\Agent;
 use Model\Access;
 
 // Redirection vers setup si le fichier config est absent
@@ -93,7 +93,7 @@ if ($page == 'planning/poste/index.php' or $page == 'planning/poste/semaine.php'
 
 // Recupération des droits d'accès de l'agent
 
-$logged_in = $entityManager->find(Personnel::class, $_SESSION['login_id']);
+$logged_in = $entityManager->find(Agent::class, $_SESSION['login_id']);
 $droits = $logged_in ? $logged_in->droits() : array();
 $_SESSION['droits'] = array_merge($droits, array(99));
 
