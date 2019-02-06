@@ -14,7 +14,7 @@ Description :
 Enregistre la demande de récupération
 */
 
-include(__DIR__.'/../include/config.php');
+include(__DIR__.'/../init_ajax.php');
 include "class.conges.php";
 
 // Initialisation des variables

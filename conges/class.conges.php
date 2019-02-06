@@ -21,7 +21,6 @@ if (!isset($version)) {
     include_once __DIR__."/../include/accessDenied.php";
 }
 
-require_once(__DIR__.'/../init.php');
 require_once __DIR__."/../planningHebdo/class.planningHebdo.php";
 require_once __DIR__."/../joursFeries/class.joursFeries.php";
 require_once __DIR__."/../personnel/class.personnel.php";

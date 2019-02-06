@@ -15,7 +15,7 @@ Supprime un congé
 Appelé en Ajax via la fonction supprimeConges à partir de la page modif.php
 */
 
-include(__DIR__.'/../include/config.php');
+include(__DIR__.'/../init_ajax.php');
 include "class.conges.php";
 
 $id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);

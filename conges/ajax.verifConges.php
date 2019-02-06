@@ -15,7 +15,7 @@ Vérifie si la période demandée a déjà fait l'objet d'une demande de congés
 Appelé en arrière plan par la fonction JS verifConges()
 */
 
-include(__DIR__.'/../include/config.php');
+include(__DIR__.'/../init_ajax.php');
 include "class.conges.php";
 
 $debut=$_GET['debut'];

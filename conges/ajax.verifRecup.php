@@ -15,7 +15,7 @@ Vérifie si le jour demandé à déjà fait l'objet d'une demande de récuperati
 Appelé en arrière plan par la fonction JS verifRecup()
 */
 
-include(__DIR__.'/../include/config.php');
+include(__DIR__.'/../init_ajax.php');
 include "class.conges.php";
 
 $date=dateFr($_GET['date']);

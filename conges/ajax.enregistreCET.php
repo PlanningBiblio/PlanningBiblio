@@ -14,7 +14,7 @@ Description :
 Enregistre la demande de récupération
 */
 
-include(__DIR__.'/../include/config.php');
+include_once(__DIR__.'/../init_ajax.php');
 include "class.conges.php";
 
 $commentaires=filter_input(INPUT_GET, "commentaires", FILTER_SANITIZE_STRING);
