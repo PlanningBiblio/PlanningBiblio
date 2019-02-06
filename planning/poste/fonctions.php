@@ -57,9 +57,14 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
                 }
 
                 //		On barre les absents (agents barrés directement dans le plannings, table pl_poste)
-                if ($elem['absent'] or $elem['supprime']) {
+                if ($elem['absent'] == 1 or $elem['supprime']) {
                     $class_tmp[]="red";
                     $class_tmp[]="striped";
+                }
+
+                if ($elem['absent'] == 2) {
+                    $class_tmp[]="red-cel";
+                    $title = 'En dehors de ses heures de présences';
                 }
 
                 // On marque les absents (absences enregistrées dans la table absences)

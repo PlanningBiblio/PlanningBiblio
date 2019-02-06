@@ -18,6 +18,10 @@ Cette page est appelée par la fonction JavaScript Popup qui l'affiche dans un c
 */
 
 require_once "class.planning.php";
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../init_entitymanager.php';
+
+use Model\Agent;
 
 // Initialisation des variables
 $CSRFToken=filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
@@ -96,9 +100,9 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
 } else {					// Etape 2 : Insertion des données
     $semaine=false;
     $dates=array();
+    $d=new datePl($date);
     if (substr($get_nom, -10)=="###semaine") {	// S'il s'agit d'un modèle sur une semaine
         $semaine=true;
-        $d=new datePl($date);
         foreach ($d->dates as $elem) {	// Recherche de toute les dates de la semaine en cours pour insérer les données
             $dates[]=$elem;
         }
@@ -185,6 +189,7 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
         if ($db->result) {
             if ($get_absents) {	// on marque les absents
                 foreach ($db->result as $elem2) {
+                    $value = array();
 
           // On n'importe pas les agents s'ils sont placés sur un autre site
                     if (isset($autres_sites[$elem2['perso_id'].'_'.$elem])) {
@@ -210,13 +215,31 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
                             }
                         }
                         if ($exist) {
-                            $values[]=array(":date"=>$elem, ":perso_id"=>$elem2['perso_id'], ":poste"=>$elem2['poste'],
-                ":debut"=>$elem2['debut'], ":fin"=>$elem2['fin'], ":absent"=>$absent, ":site"=>$site);
+                            $value = array(
+                                ":date"=>$elem,
+                                ":perso_id"=>$elem2['perso_id'],
+                                ":poste"=>$elem2['poste'],
+                                ":debut"=>$elem2['debut'],
+                                ":fin"=>$elem2['fin'],
+                                ":absent"=>$absent,
+                                ":site"=>$site
+                            );
                         }
                     }
+
+                    // Check if the agent is out of his schedule (schedule has been changed).
+                    $agent = $entityManager->find(Agent::class, $elem2['perso_id']);
+                    $temps = json_decode(html_entity_decode($agent->temps(), ENT_QUOTES, 'UTF-8'), true);
+                    $day_index = $d->planning_day_index_for($elem2['perso_id']);
+                    if (!calculSiPresent($elem2['debut'], $elem2['fin'], $temps, $day_index)) {
+                        $value[':absent'] = 2;
+                    }
+
+                    $values[] = $value;
                 }
             } else {
                 foreach ($db->result as $elem2) {
+                    $value = array();
     
           // On n'importe pas les agents s'ils sont placés sur un autre site
                     if (isset($autres_sites[$elem2['perso_id'].'_'.$elem])) {
@@ -240,9 +263,28 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
                             }
                         }
                         if ($exist) {
-                            $values[]=array(":date"=>$elem, ":perso_id"=>$elem2['perso_id'], ":poste"=>$elem2['poste'],
-                ":debut"=>$elem2['debut'], ":fin"=>$elem2['fin'], ":absent"=>"0", ":site"=>$site);
+                            $value = array(
+                                ":date" => $elem,
+                                ":perso_id" => $elem2['perso_id'],
+                                ":poste" => $elem2['poste'],
+                                ":debut" => $elem2['debut'],
+                                ":fin" => $elem2['fin'],
+                                ":absent" => "0",
+                                ":site" => $site
+                            );
                         }
+                    }
+
+                    // Check if the agent is out of his schedule (schedule has been changed).
+                    $agent = $entityManager->find(Agent::class, $elem2['perso_id']);
+                    $temps = json_decode(html_entity_decode($agent->temps(), ENT_QUOTES, 'UTF-8'), true);
+                    $day_index = $d->planning_day_index_for($elem2['perso_id']);
+                    if (!calculSiPresent($elem2['debut'], $elem2['fin'], $temps, $day_index)) {
+                        $value[':absent'] = 2;
+                    }
+
+                    if (isset($value[':absent'])) {
+                        $values[] = $value;
                     }
                 }
             }
