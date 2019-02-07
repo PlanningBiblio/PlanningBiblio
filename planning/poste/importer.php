@@ -187,24 +187,33 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
     
         $filter=$config['Absences-validation']?"AND `valide`>0":null;
         if ($db->result) {
-            if ($get_absents) {	// on marque les absents
-                foreach ($db->result as $elem2) {
-                    $value = array();
+            foreach ($db->result as $elem2) {
+                $value = array();
 
-          // On n'importe pas les agents s'ils sont placés sur un autre site
-                    if (isset($autres_sites[$elem2['perso_id'].'_'.$elem])) {
-                        foreach ($autres_sites[$elem2['perso_id'].'_'.$elem] as $as) {
-                            if ($as['debut'] < $elem2['fin'] and $as['fin'] > $elem2['debut']) {
-                                continue 2;
-                            }
+                // On n'importe pas les agents s'ils sont placés sur un autre site
+                if (isset($autres_sites[$elem2['perso_id'].'_'.$elem])) {
+                    foreach ($autres_sites[$elem2['perso_id'].'_'.$elem] as $as) {
+                        if ($as['debut'] < $elem2['fin'] and $as['fin'] > $elem2['debut']) {
+                            continue 2;
                         }
                     }
-    
+                }
 
-                    $debut=$elem." ".$elem2['debut'];
-                    $fin=$elem." ".$elem2['fin'];
-                    $db2=new db();
-                    $db2->select("absences", "*", "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
+                $value = array(
+                    ':date' => $elem,
+                    ':perso_id' => $elem2['perso_id'],
+                    ':poste' => $elem2['poste'],
+                    ':debut' => $elem2['debut'],
+                    ':fin' => $elem2['fin'],
+                    ':site' => $site
+                );
+
+
+                $debut=$elem." ".$elem2['debut'];
+                $fin=$elem." ".$elem2['fin'];
+                $db2=new db();
+                $db2->select("absences", "*", "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
+                if ($get_absents) {
                     $absent=$db2->result?"1":"0";
                     if (in_array($elem2['poste'], $postes)) {
                         $exist = false;
@@ -215,45 +224,10 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
                             }
                         }
                         if ($exist) {
-                            $value = array(
-                                ":date"=>$elem,
-                                ":perso_id"=>$elem2['perso_id'],
-                                ":poste"=>$elem2['poste'],
-                                ":debut"=>$elem2['debut'],
-                                ":fin"=>$elem2['fin'],
-                                ":absent"=>$absent,
-                                ":site"=>$site
-                            );
+                            $value[':absent'] = $absent;
                         }
                     }
-
-                    // Check if the agent is out of his schedule (schedule has been changed).
-                    $agent = $entityManager->find(Agent::class, $elem2['perso_id']);
-                    $temps = json_decode(html_entity_decode($agent->temps(), ENT_QUOTES, 'UTF-8'), true);
-                    $day_index = $d->planning_day_index_for($elem2['perso_id']);
-                    if (!calculSiPresent($elem2['debut'], $elem2['fin'], $temps, $day_index)) {
-                        $value[':absent'] = 2;
-                    }
-
-                    $values[] = $value;
-                }
-            } else {
-                foreach ($db->result as $elem2) {
-                    $value = array();
-    
-          // On n'importe pas les agents s'ils sont placés sur un autre site
-                    if (isset($autres_sites[$elem2['perso_id'].'_'.$elem])) {
-                        foreach ($autres_sites[$elem2['perso_id'].'_'.$elem] as $as) {
-                            if ($as['debut'] < $elem2['fin'] and $as['fin'] > $elem2['debut']) {
-                                continue 2;
-                            }
-                        }
-                    }
-    
-                    $debut=$elem." ".$elem2['debut'];
-                    $fin=$elem." ".$elem2['fin'];
-                    $db2=new db();
-                    $db2->select("absences", "*", "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
+                } else {
                     if ($db2->nb==0 and in_array($elem2['poste'], $postes)) {
                         $exist = false;
                         foreach ($horaires as $h) {
@@ -263,29 +237,21 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
                             }
                         }
                         if ($exist) {
-                            $value = array(
-                                ":date" => $elem,
-                                ":perso_id" => $elem2['perso_id'],
-                                ":poste" => $elem2['poste'],
-                                ":debut" => $elem2['debut'],
-                                ":fin" => $elem2['fin'],
-                                ":absent" => "0",
-                                ":site" => $site
-                            );
+                            $value[':absent'] = 0;
                         }
                     }
+                }
 
-                    // Check if the agent is out of his schedule (schedule has been changed).
-                    $agent = $entityManager->find(Agent::class, $elem2['perso_id']);
-                    $temps = json_decode(html_entity_decode($agent->temps(), ENT_QUOTES, 'UTF-8'), true);
-                    $day_index = $d->planning_day_index_for($elem2['perso_id']);
-                    if (!calculSiPresent($elem2['debut'], $elem2['fin'], $temps, $day_index)) {
-                        $value[':absent'] = 2;
-                    }
+                // Check if the agent is out of his schedule (schedule has been changed).
+                $agent = $entityManager->find(Agent::class, $elem2['perso_id']);
+                $temps = json_decode(html_entity_decode($agent->temps(), ENT_QUOTES, 'UTF-8'), true);
+                $day_index = $d->planning_day_index_for($elem2['perso_id']);
+                if (!calculSiPresent($elem2['debut'], $elem2['fin'], $temps, $day_index)) {
+                    $value[':absent'] = 2;
+                }
 
-                    if (isset($value[':absent'])) {
-                        $values[] = $value;
-                    }
+                if (isset($value[':absent'])) {
+                    $values[] = $value;
                 }
             }
       
