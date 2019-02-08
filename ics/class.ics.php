@@ -173,8 +173,39 @@ class CJICS
 
             // Traite seulement les événéments ayant un status occupés TRANSP OPAQUE (TRANSP OPAQUE défini un status BUSY)
             if (isset($elem['TRANSP']) && $elem['TRANSP']=="OPAQUE") {
+                $add = false;
                 // Traite seulement les événéments ayant le STATUS CONFIRMED si la configuration demande seulement les status CONFIRMED
-                if (($elem['STATUS']=="CONFIRMED" or $this->status != 'CONFIRMED') and $elem['STATUS'] != 'CANCELLED') {
+
+                // If STATUS not CANCELLED
+                if ($elem['STATUS'] != 'CANCELLED') {
+
+                    // If unconfirmed events are accepted
+                    if ($this->status != 'CONFIRMED') {
+                        $add = true;
+
+                    // If only confirmed events are accepted
+                    } elseif ($elem['STATUS']=="CONFIRMED") {
+
+                        // Check if it is an invitation from someone else
+                        // And check if it's confirmed
+                        if (!empty($elem['ATTENDEE'])) {
+                            $attendees = explode('CUTYPE=', $elem['ATTENDEE']);
+                            foreach ($attendees as $attendee) {
+                                if (!empty($attendee) and !strpos($attendee, 'CN=')) {
+                                    if (strpos($attendee, 'PARTSTAT=CONFIRMED')) {
+                                        $add = true;
+                                    }
+                                }
+                            }
+
+                            // If event created by calendar's owner and STATUS=CONFIRMED
+                        } else {
+                            $add = true;
+                        }
+                    }
+                }
+                
+                if ($add) {
                     $events[]=$elem;
                     $iCalKeys[]=$elem['key'];
                 }
@@ -264,13 +295,23 @@ class CJICS
                         $commentaires .= $elem['DESCRIPTION'];
                     }
                 }
-        
+
                 // Utilisation du champ CATEGORIES pour la gestion des absences groupées (plusieurs agents), et des validations
                 $groupe = '';
-                $valide_n1 = 0;
-                $validation_n1 = '0000-00-00 00:00:00';
-                $valide_n2 = 0;
-                $validation_n2 = '0000-00-00 00:00:00';
+
+                // Initialization of validation parameters for Planning Biblio's event (recurrent absences)
+                if (stripos($calName, 'PlanningBiblio')) {
+                    $valide_n1 = 0;
+                    $validation_n1 = '0000-00-00 00:00:00';
+                    $valide_n2 = 0;
+                    $validation_n2 = '0000-00-00 00:00:00';
+                // Initialization of validation parameters for imported events
+                } else {
+                    $valide_n1 = $elem['STATUS'] == 'CONFIRMED' ? 99999 : 0;
+                    $validation_n1 = $elem['STATUS'] == 'CONFIRMED' ? $lastmodified : '0000-00-00 00:00:00';
+                    $valide_n2 = $elem['STATUS'] == 'CONFIRMED' ? 99999 : 0;
+                    $validation_n2 = $elem['STATUS'] == 'CONFIRMED' ? $lastmodified : '0000-00-00 00:00:00';
+                }
 
                 if (!empty($elem['CATEGORIES'])) {
                     $categories = $elem['CATEGORIES'];
