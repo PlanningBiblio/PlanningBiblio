@@ -1,4 +1,13 @@
-*** Unreleased ***
+*** Version 2.8.05         (9 février 2019)   ***
+- Planning Hebdo : correct working time display with parameter PlanningHebdo-Pause2
+- Planning Hebdo : fix broken links
+- Planning Hebdo : fix errors of saving copies
+- ICS importation check attendees confirmation and update absences validation
+- Fix access rights when using multisites mode
+- Absences : fix error in calculating absences hours
+- Planning : hide empty lines in weekly views where Planning-lignesVides is disabled
+
+*** Version 2.8.04         (29 octobre 2018)   ***
 - Add Symfony/HttpFoundation component
 - Code refactoring: move initialization in ini.php
 - Update PHPMailer using composer and set mail->Sender

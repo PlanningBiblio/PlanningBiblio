@@ -1,6 +1,6 @@
 <?php
 /*
- * Planning Biblio, Version 2.8.03
+ * Planning Biblio, Version 2.8.05
  * Licence GNU/GPL (version 2 et au dela)
  * Voir les fichiers README.md et LICENSE
  * @copyright 2011-2018 Jérôme Combes
@@ -26,7 +26,7 @@ $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSI
 $_SESSION['oups']['week'] = isset($_SESSION['oups']['week']) ? $_SESSION['oups']['week'] : '';
 
 // Version
-$version="2.8.04";
+$version="2.8.05";
 require_once __DIR__.'/vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
