@@ -38,7 +38,7 @@ class menu
             if ($elem['condition']) {
                 if (substr($elem['condition'], 0, 7)=="config=") {
                     $value=substr($elem['condition'], 7);
-                    if (!$GLOBALS['config'][$value]) {
+                    if (empty($GLOBALS['config'][$value])) {
                         continue;
                     }
                 }
