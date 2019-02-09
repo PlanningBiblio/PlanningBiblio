@@ -91,12 +91,22 @@ $_SESSION['droits'] = $droits;
 // Droits necessaires pour consulter la page en cours
 $db = new db();
 $db->select2('acces', '*', array('page' => $page));
+
 $authorized = false;
+
 if ($db->result) {
     foreach ($db->result as $elem) {
         if (in_array($elem['groupe_id'], $droits)) {
             $authorized = true;
             break;
+        }
+    }
+    if (!$authorized && $config['Multisites-nombre'] > 1) {
+        for ($i = 1; $i <= $config['Multisites-nombre']; $i++) {
+            $droit = $db->result[0]['groupe_id'] -1 + $i;
+            if (in_array($droit, $droits)) {
+                $authorized = true;
+            }
         }
     }
 }
