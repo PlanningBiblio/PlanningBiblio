@@ -40,7 +40,7 @@ class menu
                     $tmp = substr($elem['condition'], 7);
                     $values = explode(";", $tmp);
                     foreach ($values as $value) {
-                        if (!$GLOBALS['config'][$value]) {
+                        if (empty($GLOBALS['config'][$value])) {
                             continue 2;
                         }
                     }
