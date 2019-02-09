@@ -207,11 +207,12 @@ if (isset($planning)) {
     
         // Regroupe les plages de SP qui se suivent sur le même poste
         if (isset($tab[$i-1])
-      and $tab[$i-1]['debut'] == $elem['fin']
-      and $tab[$i-1]['poste'] == $elem['poste']
-      and $tab[$i-1]['site'] == $elem['site']
-      and $tab[$i-1]['supprime'] == $elem['supprime']
-      and $tab[$i-1]['absent'] == $elem['absent']) {
+            and $tab[$i-1]['date'] == $elem['date']
+            and $tab[$i-1]['debut'] == $elem['fin']
+            and $tab[$i-1]['poste'] == $elem['poste']
+            and $tab[$i-1]['site'] == $elem['site']
+            and $tab[$i-1]['supprime'] == $elem['supprime']
+            and $tab[$i-1]['absent'] == $elem['absent']) {
             $tab[$i-1]['debut'] = $elem['debut'];
         } else {
             $tab[$i++] = $elem;
