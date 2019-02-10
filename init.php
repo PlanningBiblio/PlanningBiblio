@@ -67,7 +67,7 @@ $page = $request->get('page', 'planning/poste/index.php');
 $login = $request->get('login');
 
 // Login Anonyme
-if ($login and $login === "anonyme" and $config['Auth-Anonyme'] and !array_key_exists("login_id", $_SESSION)) {
+if ($login and $login === "anonyme" and $config['Auth-Anonyme'] and empty($_SESSION["login_id"])) {
     $_SESSION['login_id']=999999999;
     $_SESSION['login_nom']="Anonyme";
     $_SESSION['login_prenom']="";
@@ -121,6 +121,14 @@ $_SESSION['droits'] = array_merge($droits, array(99));
 // Droits necessaires pour consulter la page en cours
 $accesses = $entityManager->getRepository(Access::class)->findBy(array('page' => $page));
 $authorized = $logged_in ? $logged_in->can_access($accesses, $page) : false;
+
+if ($_SESSION['oups']["Auth-Mode"] == 'Anonyme' ) {
+    foreach ($accesses as $access) {
+        if ($access->groupe_id() == '99') {
+            $authorized = true;
+        }
+    }
+};
 
 $theme=$config['Affichage-theme']?$config['Affichage-theme']:"default";
 if (!file_exists("themes/$theme/$theme.css")) {
