@@ -1566,6 +1566,21 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="x.x.xx"; # To be changed when releasing.
+if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`)
+      VALUES ('Recup-notifications1','checkboxes','[0,1,2,3]','[[0,\"Agents ayant le droit de g&eacute;rer les r&eacute;cup&eacute;rations\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications de nouvelles demandes de r&eacute;cup&eacute;rations','Cong&eacute;s','100');";
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`)
+      VALUES ('Recup-notifications2','checkboxes','[0,1,2,3]','[[0,\"Agents ayant le droit de g&eacute;rer les r&eacute;cup&eacute;rations\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications de modification de r&eacute;cup&eacute;rations','Cong&eacute;s','100');";
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`)
+      VALUES ('Recup-notifications3','checkboxes','[1]','[[0,\"Agents ayant le droit de g&eacute;rer les r&eacute;cup&eacute;rations\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 1','Cong&eacute;s','100');";
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`)
+      VALUES ('Recup-notifications4','checkboxes','[3]','[[0,\"Agents ayant le droit de g&eacute;rer les r&eacute;cup&eacute;rations\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 2','Cong&eacute;s','100');";
+
+    // Version
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
