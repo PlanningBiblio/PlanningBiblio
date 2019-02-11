@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Planning Biblio, Version 2.8.05
  * Licence GNU/GPL (version 2 et au dela)
  * Voir les fichiers README.md et LICENSE
@@ -24,6 +24,7 @@ $_SESSION['login_nom'] = isset($_SESSION['login_nom']) ? $_SESSION['login_nom'] 
 $_SESSION['login_prenom'] = isset($_SESSION['login_prenom']) ? $_SESSION['login_prenom'] : '';
 $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSION['oups']['Auth-Mode'] : '';
 $_SESSION['oups']['week'] = isset($_SESSION['oups']['week']) ? $_SESSION['oups']['week'] : '';
+$_SESSION['PLdate'] = isset($_SESSION["PLdate"]) ? $_SESSION['PLdate'] : date("Y-m-d");
 
 // Version
 $version="2.8.05";
@@ -56,7 +57,7 @@ $page = $request->get('page', 'planning/poste/index.php');
 $login = $request->get('login');
 
 // Login Anonyme
-if ($login and $login === "anonyme" and $config['Auth-Anonyme'] and !array_key_exists("login_id", $_SESSION)) {
+if ($login and $login === "anonyme" and $config['Auth-Anonyme'] and empty($_SESSION["login_id"])) {
     $_SESSION['login_id']=999999999;
     $_SESSION['login_nom']="Anonyme";
     $_SESSION['login_prenom']="";
@@ -65,11 +66,6 @@ if ($login and $login === "anonyme" and $config['Auth-Anonyme'] and !array_key_e
 
 // Sécurité CSRFToken
 $CSRFSession = isset($_SESSION['oups']['CSRFToken']) ? $_SESSION['oups']['CSRFToken'] : null;
-$_SESSION['PLdate']=array_key_exists("PLdate", $_SESSION)?$_SESSION['PLdate']:date("Y-m-d");
-
-if (!array_key_exists("oups", $_SESSION)) {
-    $_SESSION['oups']=array("week" => false);
-}
 
 // Affichage de tous les plannings de la semaine
 if ($page=="planning/poste/index.php" and !$date and $_SESSION['oups']['week']) {
