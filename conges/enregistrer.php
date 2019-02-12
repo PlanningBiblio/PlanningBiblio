@@ -84,7 +84,6 @@ if (isset($_GET['confirm'])) {	// Confirmation
     $p->fetchById($perso_id);
     $nom=$p->elements[0]['nom'];
     $prenom=$p->elements[0]['prenom'];
-    $mailsResponsables=$p->elements[0]['mails_responsables'];
 
     // Choix des destinataires en fonction de la configuration
     if ($config['Absences-notifications-agent-par-agent']) {
@@ -97,7 +96,7 @@ if (isset($_GET['confirm'])) {	// Confirmation
         $responsables = $c->responsables;
 
         $a = new absences();
-        $a->getRecipients(1, $responsables, $perso_id, $mailsResponsables);
+        $a->getRecipients(1, $responsables, $perso_id);
         $destinataires = $a->recipients;
     }
 

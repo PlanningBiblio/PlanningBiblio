@@ -93,6 +93,7 @@ $pj2=filter_var($pj2, FILTER_CALLBACK, array('options'=>'sanitize_on01'));
 $so=filter_var($so, FILTER_CALLBACK, array('options'=>'sanitize_on01'));
 
 // Si droit de gestion des absences N1 ou N2 sur l'un des sites : $admin = true et accès à cette page autorisé
+$admin = false;
 for ($i = 1; $i <= $config['Multisites-nombre']; $i++) {
     if (in_array((200+$i), $droits)) {
         $admin = true;

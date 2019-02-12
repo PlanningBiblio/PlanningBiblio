@@ -1208,22 +1208,6 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
-$v="2.8.04";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
-    $db = new db();
-    $db->select2('config', array('nom', 'valeur'), array('type'=>'password'));
-    if ($db->result) {
-        foreach ($db->result as $elem) {
-            $decrypted = decrypt_old($elem['valeur']);
-            $encrypted = encrypt($decrypted);
-            $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$encrypted' WHERE `nom`='{$elem['nom']}';";
-        }
-    }
-
-    // Version
-    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
-}
-
 $v="x.x.xx"; # To be changed when releasing.
 if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     require_once(__DIR__.'/../plugins/plugins.php');
@@ -1285,13 +1269,13 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
                     $update = false;
                     $conges_droits = html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
                     $conges_droits = (array) json_decode($conges_droits, true);
-                    foreach ($conges_droits as $k => $v) {
-                        if ($v == 7) {
-                            $conges_droits[$k] = 401;
+                    foreach ($conges_droits as $key => $value) {
+                        if ($value == 7) {
+                            $conges_droits[$key] = 401;
                             $update = true;
                         }
-                        if ($v == 2) {
-                            $conges_droits[$k] = 601;
+                        if ($value == 2) {
+                            $conges_droits[$key] = 601;
                             $update = true;
                         }
                     }

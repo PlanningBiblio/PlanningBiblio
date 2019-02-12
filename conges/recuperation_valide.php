@@ -90,7 +90,6 @@ if (isset($update)) {
     $p->fetchById($perso_id);
     $nom=$p->elements[0]['nom'];
     $prenom=$p->elements[0]['prenom'];
-    $mailsResponsables=$p->elements[0]['mails_responsables'];
 
     if (isset($update['valide']) and $update['valide'] > 0) {
         $sujet = $lang['comp_time_subject_accepted'];
@@ -133,7 +132,7 @@ if (isset($update)) {
         $responsables = $c->responsables;
 
         $a = new absences();
-        $a->getRecipients($notifications, $responsables, $perso_id, $mailsResponsables);
+        $a->getRecipients($notifications, $responsables, $perso_id);
         $destinataires = $a->recipients;
     }
 

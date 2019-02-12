@@ -111,7 +111,6 @@ if ($db->error) {
     $p->fetchById($perso_id);
     $nom=$p->elements[0]['nom'];
     $prenom=$p->elements[0]['prenom'];
-    $mailsResponsables=$p->elements[0]['mails_responsables'];
 
     if ($config['Absences-notifications-agent-par-agent']) {
         $a = new absences();
@@ -124,7 +123,7 @@ if ($db->error) {
 
         // Choix des destinataires en fonction de la configuration
         $a = new absences();
-        $a->getRecipients(1, $responsables, $perso_id, $mailsResponsables);
+        $a->getRecipients(1, $responsables, $perso_id);
         $destinataires = $a->recipients;
     }
 

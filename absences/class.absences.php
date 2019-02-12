@@ -211,8 +211,6 @@ class absences
             $p->fetchById($perso_id);
             $nom = $p->elements[0]['nom'];
             $prenom = $p->elements[0]['prenom'];
-            $mail = $p->elements[0]['mail'];
-            $mails_responsables = $p->elements[0]['mails_responsables'];
 
             // Choix des destinataires des notifications selon la configuration
             if ($GLOBALS['config']['Absences-notifications-agent-par-agent']) {
@@ -221,7 +219,7 @@ class absences
                 $destinataires = $a->recipients;
             } else {
                 $a = new absences();
-                $a->getRecipients($notifications, $responsables, $mail, $mails_responsables);
+                $a->getRecipients($notifications, $responsables, $perso_id);
                 $destinataires = $a->recipients;
             }
 
@@ -1035,7 +1033,7 @@ class absences
         $this->responsables=$responsables;
     }
 
-    public function getRecipients($validation, $responsables, $perso_id, $mails_responsables)
+    public function getRecipients($validation, $responsables, $perso_id)
     {
         /*
         Retourne la liste des destinataires des notifications en fonction du niveau de validation.
@@ -1045,8 +1043,7 @@ class absences
           3 : validation N1
           4 : validation N2
         $responsables : listes des agents (array) ayant le droit de gérer les absences
-        $mail : mail de l'agent concerné par l'absence
-        $mails_responsables : mails de ses responsables (tableau)
+        $perso_id : identifiant interne de l'agent concerné par l'absence
         */
 
         $categories=$GLOBALS['config']["Absences-notifications{$validation}"];
@@ -1067,6 +1064,7 @@ class absences
         $entityManager = $GLOBALS['entityManager'];
         $staff_member = $entityManager->find(Agent::class, $perso_id);
         $mail = $staff_member->mail();
+        $mails_responsables = explode(";", html_entity_decode($staff_member->mails_responsables(), ENT_QUOTES|ENT_HTML5, "UTF-8"));
 
         // Agents ayant le droits de gérer les absences
         if (in_array(0, $categories)) {

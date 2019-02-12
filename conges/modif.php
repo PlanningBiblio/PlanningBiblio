@@ -75,7 +75,6 @@ if ($confirm) {
     $p->fetchById($perso_id);
     $nom=$p->elements[0]['nom'];
     $prenom=$p->elements[0]['prenom'];
-    $mailsResponsables=$p->elements[0]['mails_responsables'];
 
     // Choix du sujet et des destinataires en fonction du degré de validation
     switch ($valide) {
@@ -115,7 +114,7 @@ if ($confirm) {
         $responsables = $c->responsables;
 
         $a = new absences();
-        $a->getRecipients($notifications, $responsables, $perso_id, $mailsResponsables);
+        $a->getRecipients($notifications, $responsables, $perso_id);
         $destinataires = $a->recipients;
     }
 
