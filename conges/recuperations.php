@@ -381,7 +381,7 @@ $(function() {
 	}
 
 	<?php
-    if ($config['Recup-DeuxSamedis']) {
+    if ($config['Recup-DeuxSamedis'] && $config['Recup-Uneparjour']) {
         echo "if($(\"#date2\").val())\n";
         echo "bValid = bValid && verifRecup($(\"#date2\"));\n";
     }
