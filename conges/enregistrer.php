@@ -19,6 +19,8 @@ Inclus dans le fichier index.php
 
 require_once "class.conges.php";
 
+use Model\Agent;
+
 // Initialisation des variables
 $CSRFToken = filter_input(INPUT_GET, 'CSRFToken', FILTER_SANITIZE_STRING);
 $perso_id = filter_input(INPUT_GET, 'perso_id', FILTER_SANITIZE_NUMBER_INT);
@@ -79,11 +81,9 @@ if (isset($_GET['confirm'])) {	// Confirmation
     $id=$c->id;
 
     // Récupération des adresses e-mails de l'agent et des responsables pour l'envoi des alertes
-
-    $p=new personnel();
-    $p->fetchById($perso_id);
-    $nom=$p->elements[0]['nom'];
-    $prenom=$p->elements[0]['prenom'];
+    $agent = $entityManager->find(Agent::class, $perso_id);
+    $nom = $agent->nom();
+    $prenom = $agent->prenom();
 
     // Choix des destinataires en fonction de la configuration
     if ($config['Absences-notifications-agent-par-agent']) {
@@ -96,7 +96,7 @@ if (isset($_GET['confirm'])) {	// Confirmation
         $responsables = $c->responsables;
 
         $a = new absences();
-        $a->getRecipients(1, $responsables, $perso_id);
+        $a->getRecipients(1, $responsables, $agent);
         $destinataires = $a->recipients;
     }
 

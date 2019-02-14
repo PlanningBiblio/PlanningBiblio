@@ -131,4 +131,10 @@ class Agent extends Entity {
 
         return $unit_mails;
     }
+
+    public function get_manager_emails() {
+        $emails_string = $this->mails_responsables();
+
+        return explode(';', $emails_string);
+    }
 }

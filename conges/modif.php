@@ -19,6 +19,8 @@ Inclus dans le fichier index.php
 
 require_once "class.conges.php";
 
+use Model\Agent;
+
 // Initialisation des variables
 $get=filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
 
@@ -71,10 +73,9 @@ if ($confirm) {
 
     // Envoi d'une notification par email
     // Récupération des adresses e-mails de l'agent et des responsables pour m'envoi des alertes
-    $p=new personnel();
-    $p->fetchById($perso_id);
-    $nom=$p->elements[0]['nom'];
-    $prenom=$p->elements[0]['prenom'];
+    $agent = $entityManager->find(Agent::class, $perso_id);
+    $nom = $agent->nom();
+    $prenom = $agent->prenom();
 
     // Choix du sujet et des destinataires en fonction du degré de validation
     switch ($valide) {
@@ -114,7 +115,7 @@ if ($confirm) {
         $responsables = $c->responsables;
 
         $a = new absences();
-        $a->getRecipients($notifications, $responsables, $perso_id);
+        $a->getRecipients($notifications, $responsables, $agent);
         $destinataires = $a->recipients;
     }
 

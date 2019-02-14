@@ -26,6 +26,8 @@ $agents_concernes : tous les agents concernés par la modification de l'absences
 require_once "class.absences.php";
 require_once "personnel/class.personnel.php";
 
+use Model\Agent;
+
 // Initialisation des variables
 $commentaires=trim(filter_input(INPUT_GET, "commentaires", FILTER_SANITIZE_STRING));
 $CSRFToken=trim(filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING));
@@ -554,10 +556,12 @@ if ($config['Absences-notifications-agent-par-agent']) {
     }
 
     // Pour chaque agent, recherche des destinataires de notification en fonction de la config. (responsables absences, responsables directs, agent).
+    $ids = array_column($agents, 'perso_id'); 
+    $staff_members = $entityManager->getRepository(Agent::class)->findById($ids);
     $destinataires=array();
-    foreach ($agents_concernes as $agent) {
+    foreach ($staff_members as $member) {
         $a=new absences();
-        $a->getRecipients($notifications, $responsables, $agent['perso_id']);
+        $a->getRecipients($notifications, $responsables, $member);
         $destinataires=array_merge($destinataires, $a->recipients);
     }
 
