@@ -170,7 +170,7 @@ if (!empty($postes)) {
                 // Vérifie à partir de la table absences si l'agent est absent
                 // S'il est absent : continue
                 foreach ($absencesDB as $a) {
-                    if ($elem['perso_id']==$a['perso_id']) 
+                    if ($elem['perso_id']==$a['perso_id']) {
                         if($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
                             continue 2;
                         }
