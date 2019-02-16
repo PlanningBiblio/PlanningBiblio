@@ -193,13 +193,15 @@ if (!empty($agents)) {
         if (is_array($resultat)) {
             foreach ($resultat as $elem) {
                 if ($agent==$elem['perso_id']) {
-    
-      // Vérifie à partir de la table absences si l'agent est absent
+
+                    // Vérifie à partir de la table absences si l'agent est absent
                     // S'il est absent, on met à 1 la variable $elem['absent']
                     foreach ($absencesDB as $a) {
-                        if ($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
-                            $elem['absent']="1";
-                            break;
+                        if ($elem['perso_id']==$a['perso_id']) {
+                            if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
+                                $elem['absent']="1";
+                                break;
+                            }
                         }
                     }
     
@@ -218,18 +220,18 @@ if (!empty($agents)) {
                         $heures+=diff_heures($elem['debut'], $elem['fin'], "decimal");
                         $d=new datePl($elem['date']);
                         if ($d->sam=="samedi") {	// tableau des samedis
-          if (!array_key_exists($elem['date'], $samedi)) { // on stock les dates et la somme des heures faites par date
-        $samedi[$elem['date']][0]=$elem['date'];
-              $samedi[$elem['date']][1]=0;
-          }
+                            if (!array_key_exists($elem['date'], $samedi)) { // on stock les dates et la somme des heures faites par date
+                            $samedi[$elem['date']][0]=$elem['date'];
+                                $samedi[$elem['date']][1]=0;
+                            }
                             $samedi[$elem['date']][1]+=diff_heures($elem['debut'], $elem['fin'], "decimal");
                             $exists_samedi=true;
                         }
                         if ($d->position==0) {		// tableau des dimanches
-          if (!array_key_exists($elem['date'], $dimanche)) { 	// on stock les dates et la somme des heures faites par date
-        $dimanche[$elem['date']][0]=$elem['date'];
-              $dimanche[$elem['date']][1]=0;
-          }
+                            if (!array_key_exists($elem['date'], $dimanche)) { 	// on stock les dates et la somme des heures faites par date
+                            $dimanche[$elem['date']][0]=$elem['date'];
+                                $dimanche[$elem['date']][1]=0;
+                            }
                             $dimanche[$elem['date']][1]+=diff_heures($elem['debut'], $elem['fin'], "decimal");
                             $exists_dimanche=true;
                         }
