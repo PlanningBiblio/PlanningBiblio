@@ -164,8 +164,7 @@ if (!empty($postes)) {
         }
         $agents=array();
         if (is_array($resultat)) {
-            foreach ($resultat as $elem) {
-                
+            foreach ($resultat as $elem) {                
                 if ($poste==$elem['poste']) {
                 // Vérifie à partir de la table absences si l'agent est absent
                 // S'il est absent : continue
