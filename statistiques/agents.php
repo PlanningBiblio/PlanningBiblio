@@ -196,9 +196,10 @@ if (!empty($agents)) {
       // Vérifie à partir de la table absences si l'agent est absent
                     // S'il est absent, on met à 1 la variable $elem['absent']
                     foreach ($absencesDB as $a) {
-                        if ($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
-                            $elem['absent']="1";
-                            break;
+                        if ($elem['perso_id']==$a['perso_id']){ 
+                            if($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
+                                $elem['absent']="1";
+                                break;
                         }
                     }
     
