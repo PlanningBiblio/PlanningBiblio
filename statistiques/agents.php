@@ -199,7 +199,8 @@ if (!empty($agents)) {
                         if ($elem['perso_id']==$a['perso_id']){ 
                             if($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
                                 $elem['absent']="1";
-                                break;
+                                break
+                            }
                         }
                     }
     
