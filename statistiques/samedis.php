@@ -151,13 +151,13 @@ if (!empty($agents) and $dates) {
 
     $db=new db();
     $db->selectInnerJoin(
-      array("pl_poste","poste"),
-      array("postes","id"),
-    array("debut","fin","date","perso_id","poste","absent"),
-    array(array("name"=>"nom","as"=>"poste_nom"),"etage","site"),
-    array("date"=>"IN{$dates}", "supprime"=>"<>1", "perso_id"=>"IN{$agents_select}", "site"=>"IN{$sitesSQL}"),
-    array("statistiques"=>"1"),
-    "ORDER BY `poste_nom`,`etage`"
+        array("pl_poste","poste"),
+        array("postes","id"),
+        array("debut","fin","date","perso_id","poste","absent"),
+        array(array("name"=>"nom","as"=>"poste_nom"),"etage","site"),
+        array("date"=>"IN{$dates}", "supprime"=>"<>1", "perso_id"=>"IN{$agents_select}", "site"=>"IN{$sitesSQL}"),
+        array("statistiques"=>"1"),
+        "ORDER BY `poste_nom`,`etage`"
   );
 
     $resultat=$db->result;
@@ -189,20 +189,21 @@ if (!empty($agents) and $dates) {
         $postes=array();
         if (is_array($resultat)) {
             foreach ($resultat as $elem) {
-                // Vérifie à partir de la table absences si l'agent est absent
-                // S'il est absent : continue
-                foreach ($absencesDB as $a) {
-                    if ($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
-                        continue 2;
-                    }
-                }
-
                 if ($agent==$elem['perso_id']) {
+                    // Vérifie à partir de la table absences si l'agent est absent
+                    // S'il est absent : continue
+                    foreach ($absencesDB as $a) {
+                        if ($elem['perso_id']==$a['perso_id']) {
+                            if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
+                                continue 2;
+                            }
+                        }
+                    }
                     if ($elem['absent']!="1") { // on compte les heures et les samedis pour lesquels l'agent n'est pas absent
-        if (!array_key_exists($elem['date'], $samedi)) { // on stock les dates et la somme des heures faites par date
-          $samedi[$elem['date']][0]=$elem['date'];
-            $samedi[$elem['date']][1]=0;
-        }
+                        if (!array_key_exists($elem['date'], $samedi)) { // on stock les dates et la somme des heures faites par date
+                            $samedi[$elem['date']][0]=$elem['date'];
+                            $samedi[$elem['date']][1]=0;
+                        }
                         $samedi[$elem['date']][1]+=diff_heures($elem['debut'], $elem['fin'], "decimal");
 
                         if (jour_ferie($elem['date'])) {
