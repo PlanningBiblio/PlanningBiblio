@@ -189,15 +189,18 @@ if (!empty($agents) and $dates) {
         $postes=array();
         if (is_array($resultat)) {
             foreach ($resultat as $elem) {
+                
+                if ($agent==$elem['perso_id']) {
                 // Vérifie à partir de la table absences si l'agent est absent
                 // S'il est absent : continue
                 foreach ($absencesDB as $a) {
-                    if ($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
-                        continue 2;
+                    if ($elem['perso_id']==$a['perso_id']){ 
+                        if($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
+                            continue 2;
+                        }
                     }
                 }
 
-                if ($agent==$elem['perso_id']) {
                     if ($elem['absent']!="1") { // on compte les heures et les samedis pour lesquels l'agent n'est pas absent
         if (!array_key_exists($elem['date'], $samedi)) { // on stock les dates et la somme des heures faites par date
           $samedi[$elem['date']][0]=$elem['date'];
