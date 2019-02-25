@@ -81,10 +81,19 @@ function etape2()
 function etape3()
 {
     global $id;
+
+    // Disalow admin deletion
+    if ($id == 1) {
+        $msg = "Le compte admin ne peut être supprimé !";
+        $msg = urlencode($msg);
+        echo "<script type='text/Javascript'>parent.location.href='index.php?page=personnel/index.php&msg=$msg&msgType=error';</script>\n";
+        return false;
+    }
+
     $CSRFToken = filter_input(INPUT_GET, 'CSRFToken', FILTER_SANITIZE_STRING);
     $date=filter_input(INPUT_GET, "date", FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
     $date=dateSQL($date);
-  
+
     // Mise à jour de la table personnel
     $db=new db();
     $db->CSRFToken = $CSRFToken;
@@ -110,6 +119,15 @@ function etape3()
 function etape4()
 {
     global $id;
+
+    // Disalow admin deletion
+    if ($id == 1) {
+        $msg = "Le compte admin ne peut être supprimé !";
+        $msg = urlencode($msg);
+        echo "<script type='text/Javascript'>parent.location.href='index.php?page=personnel/index.php&msg=$msg&msgType=error';</script>\n";
+        return false;
+    }
+
     $CSRFToken = filter_input(INPUT_GET, 'CSRFToken', FILTER_SANITIZE_STRING);
 
     //	Mise à jour de la table personnel

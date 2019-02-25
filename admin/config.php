@@ -30,7 +30,16 @@ $url = createURL();
 // Enregistrement des paramètres
 if ($_POST) {
 
-  // Initilisation des variables
+    // Demo mode
+    if (!empty($config['demo'])) {
+        $msg = "La modification de la configuration n'est pas autorisée sur la version de démonstration.";
+        $msg .= "#BR#Merci de votre compréhension";
+        $msg = urlencode($msg);
+        echo "<script type='text/JavaScript'>document.location.href='index.php?page=admin/config.php&msg=$msg&msgType=success';</script>";
+        exit;
+    }
+
+    // Initilisation des variables
     $post=array();
     foreach ($_POST as $key => $value) {
         $key=filter_var($key, FILTER_SANITIZE_STRING);

@@ -104,25 +104,35 @@ switch ($action) {
     $id=$db->result[0]['id']+1;
 
     $login=login($nom, $prenom);
-    $mdp=gen_trivial_password();
-    $mdp_crypt=md5($mdp);
 
-    // Envoi du mail
-    $message="Votre compte Planning Biblio a &eacute;t&eacute; cr&eacute;&eacute; :";
-    $message.="<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
-    
-    $m=new CJMail();
-    $m->subject="Création de compte";
-    $m->message=$message;
-    $m->to=$mail;
-    $m->send();
+    // Demo mode
+    if (!empty($config['demo'])) {
+        $mdp_crypt = md5("password");
+        $msg = "Vous utilisez une version de démonstration : l'agent a été créé avec les identifiants $login / password";
+        $msg .= "#BR#Sur une version standard, les identifiants de l'agent lui auraient été envoyés par e-mail.";
+        $msg = urlencode($msg);
+        $msgType = "success";
+    } else {
+        $mdp=gen_trivial_password();
+        $mdp_crypt=md5($mdp);
 
-    // Si erreur d'envoi de mail, affichage de l'erreur
-    $msg=null;
-    $msgType=null;
-    if ($m->error) {
-        $msg=urlencode($m->error_CJInfo);
-        $msgType="error";
+        // Envoi du mail
+        $message="Votre compte Planning Biblio a &eacute;t&eacute; cr&eacute;&eacute; :";
+        $message.="<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
+
+        $m=new CJMail();
+        $m->subject="Création de compte";
+        $m->message=$message;
+        $m->to=$mail;
+        $m->send();
+
+        // Si erreur d'envoi de mail, affichage de l'erreur
+        $msg=null;
+        $msgType=null;
+        if ($m->error) {
+            $msg=urlencode($m->error_CJInfo);
+            $msgType="error";
+        }
     }
 
     // Enregistrement des infos dans la base de données
@@ -147,6 +157,14 @@ switch ($action) {
     break;
   
   case "mdp":
+
+    // Demo mode
+    if (!empty($config['demo'])) {
+        $msg = urlencode("Le mot de passe n'a pas été modifié car vous utilisez une version de démonstration");
+        echo "<script type='text/JavaScript'>document.location.href='index.php?page=personnel/index.php&msg=$msg&msgType=success';</script>";
+        break;
+    }
+
     $mdp=gen_trivial_password();
     $mdp_crypt=md5($mdp);
     $db=new db();

@@ -110,7 +110,7 @@ foreach ($agents as $agent) {
     echo "<tr><td style='white-space:nowrap;'>\n";
     echo "<input type='checkbox' name='chk$i' value='$id' />\n";
     echo "<a href='index.php?page=personnel/modif.php&amp;id=$id'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>";
-    if (in_array(21, $droits) and $id!=$_SESSION['login_id']) {
+    if (in_array(21, $droits) and $id!=$_SESSION['login_id'] and $id >1) {
         echo "<a href='javascript:popup(\"personnel/suppression.php&amp;id=".$id."\",450,240);'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>";
     }
     echo "</td>";
