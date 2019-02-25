@@ -5,7 +5,7 @@ namespace Model;
 /**
  * @Entity @Table(name="personnel")
  **/
-class Personnel extends Entity {
+class Agent extends Entity {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 
@@ -102,5 +102,39 @@ class Personnel extends Entity {
             }
         }
         return false;
+    }
+
+    public function get_planning_unit_mails() {
+        $config = $GLOBALS['config'];
+
+        // Get mails defined in Mail-Planning config element.
+        $unit_mails = array();
+        if ($config['Mail-Planning']) {
+            $unit_mails = explode(";", trim($config['Mail-Planning']));
+            $unit_mails = array_map('trim', $unit_mails);
+        }
+
+        // Add mails defined by sites (Multisites-siteX-mail).
+        $sites = json_decode($this->sites());
+        if (is_array($sites)) {
+            foreach ($sites as $site) {
+                $site_mail_config = "Multisites-site$site-mail";
+                if ($config[$site_mail_config]) {
+                    $site_mails = explode(';', $config[$site_mail_config]);
+                    $site_mails = array_map('trim', $site_mails);
+                    $unit_mails = array_merge($unit_mails, $site_mails);
+                }
+            }
+        }
+
+        $unit_mails = array_unique($unit_mails);
+
+        return $unit_mails;
+    }
+
+    public function get_manager_emails() {
+        $emails_string = $this->mails_responsables();
+
+        return explode(';', $emails_string);
     }
 }

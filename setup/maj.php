@@ -1208,22 +1208,6 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
-$v="2.8.04";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
-    $db = new db();
-    $db->select2('config', array('nom', 'valeur'), array('type'=>'password'));
-    if ($db->result) {
-        foreach ($db->result as $elem) {
-            $decrypted = decrypt_old($elem['valeur']);
-            $encrypted = encrypt($decrypted);
-            $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$encrypted' WHERE `nom`='{$elem['nom']}';";
-        }
-    }
-
-    // Version
-    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
-}
-
 $v="x.x.xx"; # To be changed when releasing.
 if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     require_once(__DIR__.'/../plugins/plugins.php');
@@ -1285,13 +1269,13 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
                     $update = false;
                     $conges_droits = html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
                     $conges_droits = (array) json_decode($conges_droits, true);
-                    foreach ($conges_droits as $k => $v) {
-                        if ($v == 7) {
-                            $conges_droits[$k] = 401;
+                    foreach ($conges_droits as $key => $value) {
+                        if ($value == 7) {
+                            $conges_droits[$key] = 401;
                             $update = true;
                         }
-                        if ($v == 2) {
-                            $conges_droits[$k] = 601;
+                        if ($value == 2) {
+                            $conges_droits[$key] = 601;
                             $update = true;
                         }
                     }
@@ -1520,6 +1504,61 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     // Version
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
+
+$v="x.x.xx"; # To be changed when releasing.
+if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site1-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site2-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site3-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site4-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site5-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site6-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site7-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site8-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site9-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
+        VALUES ('Multisites-site10-mail', 'text', '', 'Multisites', '', '', 1);";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Gestion des notifications et des droits de validations agent par agent. Si cette option est activée, les paramètres PlanningHebdo-notifications1, 2, 3 et 4 seront écrasés par les choix fait dans la page de configuration des notifications du menu Administration - Notifications / Validations' WHERE `nom` = 'Absences-notifications-agent-par-agent';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Afficher le total d\'heures des 4 dernières semaine dans le menu' WHERE `nom` = 'hres4semaines';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Activer le débogage pour CAS. Créé un fichier \"cas_debug.txt\" dans le dossier \"[TEMP]\"' WHERE `nom` = 'CAS-Debug';";
+}
+
+$v="x.x.xx"; # To be changed when releasing.
+if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+    // Recup-Agent.
+    $valeurs = addslashes('[[0,""],[1,"Texte"],[2,"Menu déroulant"]]');
+    $valeur = $config['Recup-Agent'] ? (($config['Recup-Agent'] == 'Texte') ? 1 : 2) : 0;
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = '$valeurs', `valeur` = '$valeur', `type` = 'enum2' WHERE `nom` = 'Recup-Agent';";
+
+    //Recup-DelaiTitulaire1, Recup-DelaiTitulaire2.
+    $valeurs = addslashes('[[-1,"Défaut"],[0,0],[1,1],[2,2],[3,3],[4,4],[5,5]]');
+
+    $valeur = $config['Recup-DelaiTitulaire1'] == 'D&eacute;faut' ? -1 : $config['Recup-DelaiTitulaire1'];
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = '$valeurs', `valeur` = '$valeur', `type` = 'enum2' WHERE `nom` = 'Recup-DelaiTitulaire1';";
+
+    $valeur = $config['Recup-DelaiTitulaire2'] == 'D&eacute;faut' ? -1 : $config['Recup-DelaiTitulaire2'];
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = '$valeurs', `valeur` = '$valeur', `type` = 'enum2' WHERE `nom` = 'Recup-DelaiTitulaire2';";
+
+    //Recup-DelaiContractuel1, Recup-DelaiContractuel2.
+    $valeurs = addslashes('[[-1,"Défaut"],[0,0],[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],[10,10]]');
+
+    $valeur = $config['Recup-DelaiContractuel1'] == 'D&eacute;faut' ? -1 : $config['Recup-DelaiContractuel1'];
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = '$valeurs', `valeur` = '$valeur', `type` = 'enum2' WHERE `nom` = 'Recup-DelaiContractuel1';";
+
+    $valeur = $config['Recup-DelaiContractuel2'] == 'D&eacute;faut' ? -1 : $config['Recup-DelaiContractuel2'];
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = '$valeurs', `valeur` = '$valeur', `type` = 'enum2' WHERE `nom` = 'Recup-DelaiContractuel2';";
+}
+
+
 
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {

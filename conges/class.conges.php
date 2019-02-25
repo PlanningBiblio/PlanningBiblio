@@ -21,11 +21,6 @@ if (!isset($version)) {
     include_once __DIR__."/../include/accessDenied.php";
 }
 
-// Localisation
-if (file_exists(__DIR__."/../lang/custom.php")) {
-    include_once __DIR__."/../lang/custom.php";
-}
-
 require_once __DIR__."/../planningHebdo/class.planningHebdo.php";
 require_once __DIR__."/../joursFeries/class.joursFeries.php";
 require_once __DIR__."/../personnel/class.personnel.php";

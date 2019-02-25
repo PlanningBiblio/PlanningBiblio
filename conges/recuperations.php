@@ -95,11 +95,13 @@ if ($admin) {
     }
 }
 
-if (!array_key_exists($_SESSION['login_id'], $agents)) {
-    $agents[$_SESSION['login_id']] = array('id' => $_SESSION['login_id'], 'nom' => $_SESSION['login_nom'], 'prenom' => $_SESSION['login_prenom']);
+if (empty($agents[$_SESSION['login_id']])) {
+    $p = new personnel();
+    $p->fetchById($_SESSION['login_id']);
+    $agents[$_SESSION['login_id']] = $p->elements[0];
 }
 
-usort($agents, 'cmp_nom_prenom', true);
+@usort($agents, 'cmp_nom_prenom', true);
 
 // Liste des agents à conserver :
 $perso_ids = array_keys($agents);
@@ -298,11 +300,12 @@ if ($config['Recup-SamediSeulement']) {
 }
 ?>
 $(function() {
+
   var date = $( "#date" ),
     date2 = $( "#date2" ),
     heures = $( "#heures" ),
     commentaires = $( "#commentaires" ),
-    allFields = $( [] ).add( date ).add( heures );
+    allFields = $( [] ).add( date ).add( heures ).add( date2 ).add( commentaires );
 
   $( "#dialog-form" ).dialog({
     autoOpen: false,
@@ -319,13 +322,13 @@ $(function() {
 	}
 	if(categories[perso_id]=="Titulaire"){
 	  if($("#date2").val()){
-	    if(limitTitulaire2=="Défaut"){
+	    if(limitTitulaire2 == -1){
 	      limitJours=limitDefaut;
 	    }else{
 	      limitJours=limitTitulaire2*30;
 	    }
 	  }else{
-	    if(limitTitulaire1=="Défaut"){
+	    if(limitTitulaire1 == -1){
 	      limitJours=limitDefaut;
 	    }else{
 	      limitJours=limitTitulaire1*30;
@@ -334,13 +337,13 @@ $(function() {
 	}
 	else if(categories[perso_id]=="Contractuel"){
 	  if($("#date2").val()){
-	    if(limitContractuel2=="Défaut"){
+	    if(limitContractuel2 == -1){
 	      limitJours=limitDefaut;
 	    }else{
 	      limitJours=limitContractuel2*7;
 	    }
 	  }else{
-	    if(limitContractuel1=="Défaut"){
+	    if(limitContractuel1 == -1){
 	      limitJours=limitDefaut;
 	    }else{
 	      limitJours=limitContractuel1*7;
@@ -428,11 +431,14 @@ $(function() {
     }
   });
 
+
   $( "#dialog-button" )
     .click(function() {
       date.datepicker("disable");
+      date2.datepicker("disable");
       $( "#dialog-form" ).dialog( "open" );
       date.datepicker("enable");
+      date2.datepicker("enable");
       return false;
     });
 

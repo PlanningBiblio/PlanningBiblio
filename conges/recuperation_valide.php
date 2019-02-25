@@ -16,6 +16,8 @@ Fichier permettant de modifier et valider les demandes de récupérations des sa
 
 include "class.conges.php";
 
+use Model\Agent;
+
 // Initialisation des variables
 $CSRFToken = filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
 $id=filter_input(INPUT_POST, "id", FILTER_SANITIZE_NUMBER_INT);
@@ -86,12 +88,9 @@ if (isset($update)) {
     }
 
     // Envoi d'un e-mail à l'agent et aux responsables
-    $p=new personnel();
-    $p->fetchById($perso_id);
-    $nom=$p->elements[0]['nom'];
-    $prenom=$p->elements[0]['prenom'];
-    $mail=$p->elements[0]['mail'];
-    $mailsResponsables=$p->elements[0]['mails_responsables'];
+    $agent = $entityManager->find(Agent::class, $perso_id);
+    $nom = $agent->nom();
+    $prenom = $agent->prenom();
 
     if (isset($update['valide']) and $update['valide'] > 0) {
         $sujet = $lang['comp_time_subject_accepted'];
@@ -134,7 +133,7 @@ if (isset($update)) {
         $responsables = $c->responsables;
 
         $a = new absences();
-        $a->getRecipients($notifications, $responsables, $mail, $mailsResponsables);
+        $a->getRecipients($notifications, $responsables, $agent);
         $destinataires = $a->recipients;
     }
 

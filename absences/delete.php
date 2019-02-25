@@ -18,6 +18,8 @@ Page appelée par la page index.php après avoir cliqué sur l'icône supprimer 
 
 require_once "class.absences.php";
 
+use Model\Agent;
+
 // Initialisation des variables
 $CSRFToken = filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
 $id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
@@ -149,10 +151,12 @@ if ($config['Absences-notifications-agent-par-agent']) {
     }
 
     // Pour chaque agent, recherche des destinataires de notification en fonction de la config. (responsables absences, responsables directs, agent).
+    $ids = array_column($agents, 'perso_id'); 
+    $staff_members = $entityManager->getRepository(Agent::class)->findById($ids);
     $destinataires=array();
-    foreach ($agents as $agent) {
+    foreach ($staff_members as $member) {
         $a=new absences();
-        $a->getRecipients(2, $responsables, $agent['mail'], $agent['mails_responsables']);
+        $a->getRecipients(2, $responsables, $member);
         $destinataires=array_merge($destinataires, $a->recipients);
     }
 

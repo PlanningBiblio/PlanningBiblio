@@ -26,8 +26,6 @@ Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à
 TODO : voir comment gérer les notifications avec le paramètre Absences-notifications-agent-par-agent
 */
 
-$path="/var/www/html/planning";
-
 session_start();
 
 /** $version=$argv[0]; permet d'interdire l'execution de ce script via un navigateur
@@ -38,14 +36,13 @@ session_start();
 // $version=$argv[0]; = sécurité : autorise l'execution du script en CLI, l'interdit en HTTP
 $version=$argv[0];
 
-// chdir($path) : important pour l'execution via le cron
-chdir($path);
-
-require_once "$path/include/config.php";
-require_once "$path/include/function.php";
-require_once "$path/plugins/plugins.php";
-require_once "$path/conges/class.conges.php";
-require_once "$path/personnel/class.personnel.php";
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../include/config.php';
+require_once __DIR__ . '/../init_entitymanager.php';
+require_once __DIR__ . '/../include/function.php';
+require_once __DIR__ . '/../plugins/plugins.php';
+require_once __DIR__ . '/class.conges.php';
+require_once __DIR__ . '/../personnel/class.personnel.php';
 
 $CSRFToken = CSRFToken();
 
@@ -111,11 +108,12 @@ $db->select2('conges', null, array('debut' => "<$fin 23:59:59", 'fin' => ">$debu
 if ($db->result) {
     foreach ($db->result as $elem) {
         if ($elem['valide'] == '0' or $elem['valide_n1'] == '0') {
+            $staff_member = $entityManager->find(Personnel::class, $elem['perso_id']);
             $tmp = $elem;
-            $tmp['nom'] = $agents[$elem['perso_id']]['nom'];
-            $tmp['prenom'] = $agents[$elem['perso_id']]['prenom'];
-            $tmp['mail'] = $agents[$elem['perso_id']]['mail'];
-            $tmp['mails_responsables'] = $agents[$elem['perso_id']]['mails_responsables'];
+            $tmp['nom'] = $staff_member->nom();
+            $tmp['prenom'] = $staff_member->prenom();
+            $tmp['mail'] = $staff_member->mail();
+            $tmp['mails_responsables'] = $staff_member->mails_responsables();
       
             // Ajoute les destinaires pour les congés n'étant pas validés en N2 en fonction du paramètre $config['Conges-Rappels-N2']
             $tmp['destinaires'] = array();
@@ -123,7 +121,8 @@ if ($db->result) {
             $destN2 = json_decode(html_entity_decode($config['Conges-Rappels-N2'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
             if (is_array($destN2)) {
                 if (in_array('Mail-Planning', $destN2)) {
-                    $tmp['destinaires'] = array_merge($tmp['destinaires'], explode(';', $config['Mail-Planning']));
+                    $tmp['destinaires'] = array_merge($tmp['destinaires'],
+                        $staff_member->get_planning_unit_mails());
                 }
                 if (in_array('mails_responsables', $destN2)) {
                     $tmp['destinaires'] = array_merge($tmp['destinaires'], $tmp['mails_responsables']);
@@ -134,7 +133,8 @@ if ($db->result) {
             $destN1 = json_decode(html_entity_decode($config['Conges-Rappels-N1'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
             if ($tmp['valide_n1'] == 0 and is_array($destN1)) {
                 if (in_array('Mail-Planning', $destN1)) {
-                    $tmp['destinaires'] = array_merge($tmp['destinaires'], explode(';', $config['Mail-Planning']));
+                    $tmp['destinaires'] = array_merge($tmp['destinaires'],
+                        $staff_member->get_planning_unit_mails());
                 }
                 if (in_array('mails_responsables', $destN1)) {
                     $tmp['destinaires'] = array_merge($tmp['destinaires'], $tmp['mails_responsables']);

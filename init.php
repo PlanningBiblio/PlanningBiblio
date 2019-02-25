@@ -30,12 +30,9 @@ $version="2.8.04";
 require_once __DIR__.'/vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\Tools\Setup;
-use Doctrine\ORM\EntityManager;
 
 use PlanningBiblio\LegacyCodeChecker;
-use Model\Extensions\TablePrefix;
-use Model\Personnel;
+use Model\Agent;
 use Model\Access;
 
 // Redirection vers setup si le fichier config est absent
@@ -51,6 +48,8 @@ if (file_exists(__DIR__.'/lang/custom.php')) {
 }
 
 date_default_timezone_set("Europe/Paris");
+
+require_once(__DIR__.'/init_entitymanager.php');
 
 // Vérification de la version de la base de données
 // Si la version est différente, mise à jour de la base de données
@@ -74,26 +73,6 @@ if ($login and $login === "anonyme" and $config['Auth-Anonyme'] and empty($_SESS
     $_SESSION['oups']["Auth-Mode"]="Anonyme";
 }
 
-// Instanciating entity manager.
-$entitiesPath = array('src/Model');
-$emConfig = Setup::createAnnotationMetadataConfiguration($entitiesPath, true);
-
-// Handle table prefix.
-$evm = new \Doctrine\Common\EventManager;
-$tablePrefix = new Model\Extensions\TablePrefix($config['dbprefix']);
-$evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $tablePrefix);
-
-$dbParams = array(
-    'driver'   => 'pdo_mysql',
-    'charset'  => 'utf8',
-    'host'     => $config['dbhost'],
-    'user'     => $config['dbuser'],
-    'password' => $config['dbpass'],
-    'dbname'   => $config['dbname'],
-);
-
-$entityManager = EntityManager::create($dbParams, $emConfig, $evm);
-
 // Sécurité CSRFToken
 $CSRFSession = isset($_SESSION['oups']['CSRFToken']) ? $_SESSION['oups']['CSRFToken'] : null;
 $_SESSION['PLdate']=array_key_exists("PLdate", $_SESSION)?$_SESSION['PLdate']:date("Y-m-d");
@@ -114,7 +93,7 @@ if ($page == 'planning/poste/index.php' or $page == 'planning/poste/semaine.php'
 
 // Recupération des droits d'accès de l'agent
 
-$logged_in = $entityManager->find(Personnel::class, $_SESSION['login_id']);
+$logged_in = $entityManager->find(Agent::class, $_SESSION['login_id']);
 $droits = $logged_in ? $logged_in->droits() : array();
 $_SESSION['droits'] = array_merge($droits, array(99));
 
@@ -143,4 +122,25 @@ if (!file_exists("themes/$theme/jquery-ui.min.css")) {
 $favicon = null;
 if (!file_exists("themes/$theme/favicon.png")) {
     $favicon = "themes/$theme/images/favicon.png";
+}
+
+function CSRFTokenOK($token, $session) {
+    $error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
+
+    if (!$token) {
+        error_log($error);
+        return false;
+    }
+
+    if (!$session['oups']['CSRFToken']) {
+        error_log($error);
+        return false;
+    }
+
+    if ($token !== $session['oups']['CSRFToken']) {
+        error_log($error);
+        return false;
+    }
+
+    return true;
 }

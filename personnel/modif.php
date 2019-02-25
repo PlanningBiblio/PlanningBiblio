@@ -570,14 +570,14 @@ echo "</td><td>";
 echo in_array(21, $droits)?"<textarea name='informations' style='width:400px' cols='10' rows='4'>$informations</textarea>":str_replace("\n", "<br/>", $informations);
 echo "</td></tr>";
 
-if ($config['Recup-Agent']) {
+if ($config['Recup-Agent'] != "0") {
     echo "<tr style='vertical-align:top;'><td>";
     echo "Récupération du samedi :";
     echo "</td><td>";
-    if ($config['Recup-Agent']=="Texte" and in_array(21, $droits)) {
+    if ($config['Recup-Agent']== "1" and in_array(21, $droits)) {
         echo "<textarea name='recup' style='width:400px' cols='10' rows='4'>$recup</textarea>";
     }
-    if (htmlentities($config['Recup-Agent'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false)=="Menu d&eacute;roulant" and in_array(21, $droits)) {
+    if ($config['Recup-Agent'] == "2" and in_array(21, $droits)) {
         echo "<select name='recup' style='width:400px'>\n";
         echo "<option value=''>&nbsp;</option>\n";
         foreach ($recupAgents as $elem) {

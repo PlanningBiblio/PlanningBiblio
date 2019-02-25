@@ -14,11 +14,10 @@ Description :
 Enregistre la demande de récupération
 */
 
-session_start();
-
-ini_set('display_errors', 0);
-include(__DIR__.'/../include/config.php');
+include_once(__DIR__.'/../init_ajax.php');
 include "class.conges.php";
+
+use Model\Agent;
 
 $commentaires=filter_input(INPUT_GET, "commentaires", FILTER_SANITIZE_STRING);
 $CSRFToken = filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
@@ -110,12 +109,9 @@ if ($db->error) {
     echo "###Demande-OK###";
 
     // Envoi d'un e-mail à l'agent et aux responsables
-    $p=new personnel();
-    $p->fetchById($perso_id);
-    $nom=$p->elements[0]['nom'];
-    $prenom=$p->elements[0]['prenom'];
-    $mail=$p->elements[0]['mail'];
-    $mailsResponsables=$p->elements[0]['mails_responsables'];
+    $agent = $entityManager->find(Agent::class, $perso_id);
+    $nom = $agent->nom();
+    $prenom = $agent->prenom();
 
     if ($config['Absences-notifications-agent-par-agent']) {
         $a = new absences();
@@ -128,7 +124,7 @@ if ($db->error) {
 
         // Choix des destinataires en fonction de la configuration
         $a = new absences();
-        $a->getRecipients(1, $responsables, $mail, $mailsResponsables);
+        $a->getRecipients(1, $responsables, $agent);
         $destinataires = $a->recipients;
     }
 

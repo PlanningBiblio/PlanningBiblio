@@ -27,6 +27,8 @@ if (!isset($version)) {
 require_once __DIR__."/../ics/class.ics.php";
 require_once __DIR__."/../personnel/class.personnel.php";
 
+use Model\Agent;
+
 
 class absences
 {
@@ -153,8 +155,11 @@ class absences
         // On définie le dtstamp avant la boucle, sinon il différe selon les agents, ce qui est problématique pour retrouver les événéments des membres d'un groupe pour les modifications car le DTSTAMP est intégré dans l'UID
         $dtstamp = gmdate('Ymd\THis\Z');
 
+        $em = $GLOBALS['entityManager'];
+        $agents = $em->getRepository(Agent::class)->findById($perso_ids);
+
         // Pour chaque agents
-        foreach ($perso_ids as $perso_id) {
+        foreach ($agents as $agent) {
             // Enregistrement des récurrences
             // Les événements récurrents sont enregistrés dans un fichier ICS puis importés dans la base de données
             // La méthode absences::ics_add_event se charge de créer le fichier et d'enregistrer les infos dans la base de données
@@ -164,7 +169,7 @@ class absences
                 $a->CSRFToken = $this->CSRFToken;
                 $a->dtstamp = $dtstamp;
                 $a->exdate = $this->exdate;
-                $a->perso_id = $perso_id;
+                $a->perso_id = $agent->id();
                 $a->commentaires = $commentaires;
                 $a->debut = $debut;
                 $a->fin = $fin;
@@ -183,7 +188,7 @@ class absences
             // Les événements sans récurrence sont enregistrés directement dans la base de données
             } else {
                 // Ajout de l'absence dans la table 'absence'
-                $insert = array("perso_id"=>$perso_id, "debut"=>$debut_sql, "fin"=>$fin_sql, "motif"=>$motif, "motif_autre"=>$motif_autre, "commentaires"=>$commentaires,
+                $insert = array("perso_id"=>$agent->id(), "debut"=>$debut_sql, "fin"=>$fin_sql, "motif"=>$motif, "motif_autre"=>$motif_autre, "commentaires"=>$commentaires,
         "demande"=>date("Y-m-d H:i:s"), "pj1"=>$this->pj1, "pj2"=>$this->pj2, "so"=>$this->so, "groupe"=>$groupe);
 
                 if ($valide_n1 != 0) {
@@ -201,31 +206,27 @@ class absences
 
             // Recherche du responsables pour l'envoi de notifications
             $a = new absences();
-            $a->getResponsables($debutSQL, $finSQL, $perso_id);
+            $a->getResponsables($debutSQL, $finSQL, $agent->id());
             $responsables = $a->responsables;
 
             // Informations sur l'agent
-            $p = new personnel();
-            $p->fetchById($perso_id);
-            $nom = $p->elements[0]['nom'];
-            $prenom = $p->elements[0]['prenom'];
-            $mail = $p->elements[0]['mail'];
-            $mails_responsables = $p->elements[0]['mails_responsables'];
+            $nom = $agent->nom();
+            $prenom = $agent->prenom();
 
             // Choix des destinataires des notifications selon la configuration
             if ($GLOBALS['config']['Absences-notifications-agent-par-agent']) {
                 $a=new absences();
-                $a->getRecipients2(null, $perso_id, $notifications, 500, $debutSQL, $finSQL);
+                $a->getRecipients2(null, $agent->perso_id(), $notifications, 500, $debutSQL, $finSQL);
                 $destinataires = $a->recipients;
             } else {
                 $a = new absences();
-                $a->getRecipients($notifications, $responsables, $mail, $mails_responsables);
+                $a->getRecipients($notifications, $responsables, $agent);
                 $destinataires = $a->recipients;
             }
 
             // Récupération de l'ID de l'absence enregistrée pour la création du lien dans le mail
             $info = array(array("name"=>"MAX(id)", "as"=>"id"));
-            $where = array("debut"=>$debut_sql, "fin"=>$fin_sql, "perso_id"=>$perso_id);
+            $where = array("debut"=>$debut_sql, "fin"=>$fin_sql, "perso_id"=>$agent->id());
             $db = new db();
             $db->select2("absences", $info, $where);
             if ($db->result) {
@@ -1033,7 +1034,7 @@ class absences
         $this->responsables=$responsables;
     }
 
-    public function getRecipients($validation, $responsables, $mail, $mails_responsables)
+    public function getRecipients($validation, $responsables, Agent $agent)
     {
         /*
         Retourne la liste des destinataires des notifications en fonction du niveau de validation.
@@ -1043,8 +1044,7 @@ class absences
           3 : validation N1
           4 : validation N2
         $responsables : listes des agents (array) ayant le droit de gérer les absences
-        $mail : mail de l'agent concerné par l'absence
-        $mails_responsables : mails de ses responsables (tableau)
+        $agent : Model\Agent object
         */
 
         $categories=$GLOBALS['config']["Absences-notifications{$validation}"];
@@ -1062,6 +1062,8 @@ class absences
 
         // recipients : liste des mails qui sera retournée
         $recipients=array();
+        $mail = $agent->mail();
+        $mails_responsables = $agent->get_manager_emails();
 
         // Agents ayant le droits de gérer les absences
         if (in_array(0, $categories)) {
@@ -1085,7 +1087,8 @@ class absences
 
         // Cellule planning
         if (in_array(2, $categories)) {
-            $mailsCellule=explode(";", trim($GLOBALS['config']['Mail-Planning']));
+            $mailsCellule = $agent->get_planning_unit_mails();
+
             if (is_array($mailsCellule)) {
                 foreach ($mailsCellule as $elem) {
                     if (!in_array(trim(html_entity_decode($elem, ENT_QUOTES|ENT_IGNORE, "UTF-8")), $recipients)) {
