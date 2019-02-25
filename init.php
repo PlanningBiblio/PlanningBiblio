@@ -27,7 +27,7 @@ $_SESSION['oups']['week'] = isset($_SESSION['oups']['week']) ? $_SESSION['oups']
 $_SESSION['PLdate'] = isset($_SESSION["PLdate"]) ? $_SESSION['PLdate'] : date("Y-m-d");
 
 // Version
-$version="2.8.05";
+$version="2.8.06";
 require_once __DIR__.'/vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;

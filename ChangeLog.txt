@@ -1,3 +1,6 @@
+*** Version 2.8.06         (25 février 2019)   ***
+- Add Demo mode
+
 *** Version 2.8.05         (9 février 2019)   ***
 - Planning Hebdo : correct working time display with parameter PlanningHebdo-Pause2
 - Planning Hebdo : fix broken links

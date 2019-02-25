@@ -1208,7 +1208,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
-$v="2.8.05";
+$v="2.8.06";
 if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     // Version
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
