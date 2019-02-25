@@ -46,12 +46,12 @@ $validation = null;
 $displayRefus = "none";
 
 
-if ($recup['valide_n1'] > 0 and $data['valide']==0) {
+if ($recup['valide_n1'] > 0 and $recup['valide']==0) {
     $selectAccept[0] = "selected='selected'";
     $validation = $lang['leave_dropdown_accepted_pending'];
 }
 
-if ($recup['valide_n1'] < 0 and $data['valide']==0) {
+if ($recup['valide_n1'] < 0 and $recup['valide']==0) {
     $selectAccept[1] = "selected='selected'";
     $validation = $lang['leave_dropdown_refused_pending'];
 }
