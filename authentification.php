@@ -164,7 +164,7 @@ EOD;
     // Demo mode
     if (!empty($config['demo'])) {
         echo "<tr><td colspan='2' align='center'><p>Pour les essais, vous pouvez utiliser les identifiants suivants :<br/>\n";
-        echo "<br/>Utilisateur : admin<br/>Mot de passe : TiZ6W9iAGh<br/><br/>\n";
+        echo "<br/>Utilisateur : admin<br/>Mot de passe : {$config['demo-password']}<br/><br/>\n";
         echo "Attention : cette plateforme de tests est réinitialisée tous les dimanches.</p></td></tr>\n";
     }
 
