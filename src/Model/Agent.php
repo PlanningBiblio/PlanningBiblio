@@ -95,12 +95,23 @@ class Agent extends Entity {
 
     public function can_access(array $accesses) {
         $droits = $this->droits();
+        $multisites = $GLOBALS['config']['Multisites-nombre'];
 
         foreach ($accesses as $access) {
             if (in_array($access->groupe_id(), $droits)) {
                 return true;
             }
         }
+
+        if ($multisites > 1) {
+            for ($i = 1; $i <= $multisites; $i++) {
+                $droit = $accesses[0]->groupe_id() -1 + $i;
+                if (in_array($droit, $droits)) {
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 

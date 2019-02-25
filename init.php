@@ -99,7 +99,7 @@ $_SESSION['droits'] = array_merge($droits, array(99));
 
 // Droits necessaires pour consulter la page en cours
 $accesses = $entityManager->getRepository(Access::class)->findBy(array('page' => $page));
-$authorized = $logged_in ? $logged_in->can_access($accesses, $page) : false;
+$authorized = $logged_in ? $logged_in->can_access($accesses) : false;
 
 if ($_SESSION['oups']["Auth-Mode"] == 'Anonyme' ) {
     foreach ($accesses as $access) {

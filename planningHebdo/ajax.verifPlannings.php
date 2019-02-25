@@ -31,7 +31,7 @@ $perso_id=$perso_id?$perso_id:$_SESSION['login_id'];
 $autre_agent=$perso_id!=$_SESSION['login_id']?nom($perso_id):false;
 
 // Filtre permettant de ne pas regarder l'actuel planning et les plannings remplacant celui-ci
-$id=$id?" AND `id`<>'$id' AND `remplace`<>'$id' ":null;
+$ignore_id = $id?" AND `id`<>'$id' AND `remplace`<>'$id' " : null;
 
 // Filtre permettant de ne pas regarder le planning remplacé par le planning sélectionné
 $remplace=null;
@@ -44,7 +44,7 @@ if ($id) {
 }
 
 $db=new db();
-$db->select("planning_hebdo", "*", "perso_id='$perso_id' AND `debut`<='$fin' AND `fin`>='$debut' $id $remplace ");
+$db->select("planning_hebdo", "*", "perso_id='$perso_id' AND `debut`<='$fin' AND `fin`>='$debut' $ignore_id $remplace ");
 
 $result=array();
 if (!$db->result) {

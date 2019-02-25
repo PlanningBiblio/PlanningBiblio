@@ -169,11 +169,25 @@ class planningHebdo
         $this->fetch();
         $actuel=$this->elements[0];
 
+        // Check if something changed, if not: return
+        $compare_temps = strcmp(json_encode($actuel['temps']), json_encode($data['temps']));
+        $compare_dates = ($data['debut'] != $actuel['debut'] or $data['fin'] != $actuel['fin']);
+        $compare_perso_id = $data['perso_id'] != $actuel['perso_id'];
+        
+        // If nothing changed: return
+        if (!$compare_temps and !$compare_dates and !$compare_perso_id) {
+            return false;
+        }
+
         // Copie de l'ancien planning avec modification des dates de début et/ou de fin
         $pl=array();
-        // Copie de l'ancien planning
-        $pl[0]=$actuel;
-        $pl[0]['remplace']=$actuel['id'];
+
+        // If dates didn't change, don't create multiple copies (only one copy : end of this method)
+        if ($data['debut'] != $actuel['debut'] or $data['fin'] != $actuel['fin']) {
+            // Copie de l'ancien planning
+            $pl[0]=$actuel;
+            $pl[0]['remplace']=$actuel['id'];
+        }
 
         // Modification de la date de fin de la copie et création d'une 2ème copie si les 2 dates sont modifiées
         if ($data['debut']>$actuel['debut'] and $data['fin']<$actuel['fin']) {
@@ -461,6 +475,13 @@ class planningHebdo
 
         $perso_id = !empty($data['valide']) ? $data['valide'] : $_SESSION['login_id'];
 
+        // Validation : initialisation
+        $valide_n1 = 0;
+        $validation_n1 = "0000-00-00 00:00:00";
+        $valide_n2 = 0;
+        $validation_n2 = "0000-00-00 00:00:00";
+        $notification = 2;
+
         // Validation
         if (!empty($data['validation'])) {
             switch ($data['validation']) {
@@ -515,7 +536,7 @@ class planningHebdo
         $this->error=$db->error;
 
         // Remplacement du planning de la fiche agent si validation et date courante entre debut et fin
-        if ($data['validation'] == 2 and $data['debut']<=date("Y-m-d") and $data['fin']>=date("Y-m-d")) {
+        if ($valide_n2 > 0 and $data['debut']<=date("Y-m-d") and $data['fin']>=date("Y-m-d")) {
             $db=new db();
             $db->CSRFToken = $CSRFToken;
             $db->update('planning_hebdo', array('actuel'=>0), array('perso_id'=>$data['perso_id']));
@@ -525,7 +546,7 @@ class planningHebdo
         }
 
         // Si validation d'un planning de remplacement, suppression du planning d'origine
-        if ($data['validation'] == 2 and $data['remplace']) {
+        if ($valide_n2 > 0  and $data['remplace']) {
             $db=new db();
             $db->CSRFToken = $CSRFToken;
             $db->delete('planning_hebdo', array('id' =>$data['remplace']));
@@ -542,13 +563,13 @@ class planningHebdo
             $destinataires = $a->recipients;
         } else {
             $this->getRecipients($notification, $data['perso_id']);
-            $destinataires = $ph->recipients;
+            $destinataires = $this->recipients;
         }
 
         $nomAgent = nom($data['perso_id'], "prenom nom");
 
         if (!empty($destinataires)) {
-            if ($data['validation'] == 2) {
+            if ($valide_n2 > 0) {
                 $sujet="Validation d'un planning de présence, ".html_entity_decode($nomAgent, ENT_QUOTES|ENT_IGNORE, "UTF-8");
                 $message="Un planning de présence de ";
                 $message.=$nomAgent;

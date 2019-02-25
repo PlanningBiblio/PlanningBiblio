@@ -122,13 +122,14 @@ foreach ($p->elements as $elem) {
     $validation_date = dateFr($elem['saisie'], true);
     $validation = 'Demand&eacute;';
 
+    // Validation niveau 1
     if ($elem['valide_n1'] > 0) {
         $validation_class = 'bold';
         $validation_date = dateFr($elem['validation_n1'], true);
         $validation = $lang['work_hours_dropdown_accepted_pending'];
         // 99999 : ID cron : donc pas de nom a afficher
         if ($elem['valide_n1'] != 99999) {
-            $validation.=", ".nom($elem['valide'], 'nom p', $agents);
+            $validation.=", ".nom($elem['valide_n1'], 'nom p', $agents);
         }
     } elseif ($elem['valide_n1'] < 0) {
         $validation_class = 'bold';
@@ -136,10 +137,10 @@ foreach ($p->elements as $elem) {
         $validation = $lang['work_hours_dropdown_refused_pending'];
         // 99999 : ID cron : donc pas de nom a afficher
         if ($elem['valide_n1'] != 99999) {
-            $validation.=", ".nom(-$elem['valide'], 'nom p', $agents);
+            $validation.=", ".nom(-$elem['valide_n1'], 'nom p', $agents);
         }
     }
-
+    // Validation niveau 2
     if ($elem['valide'] > 0) {
         $validation_class = null;
         $validation_date = dateFr($elem['validation'], true);
