@@ -1568,14 +1568,19 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 
 $v="x.x.xx"; # To be changed when releasing.
 if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+    $notification1 = $config['Absences-notifications1'];
+    $notification2 = $config['Absences-notifications2'];
+    $notification3 = $config['Absences-notifications3'];
+    $notification4 = $config['Absences-notifications4'];
+
     $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`)
-      VALUES ('Recup-notifications1','checkboxes','[0,1,2,3]','[[0,\"Agents ayant le droit de g&eacute;rer les r&eacute;cup&eacute;rations\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications de nouvelles demandes de r&eacute;cup&eacute;rations','Cong&eacute;s','100');";
+          VALUES ('Recup-notifications1','checkboxes','$notification1','[[0,\"Agents ayant le droit de gérer les récupérations\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concerné\"]]','Destinataires des notifications de nouvelles demandes de crédit de récupérations','Cong&eacute;s','100');";
     $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`)
-      VALUES ('Recup-notifications2','checkboxes','[0,1,2,3]','[[0,\"Agents ayant le droit de g&eacute;rer les r&eacute;cup&eacute;rations\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications de modification de r&eacute;cup&eacute;rations','Cong&eacute;s','100');";
+          VALUES ('Recup-notifications2','checkboxes','$notification2','[[0,\"Agents ayant le droit de gérer les récupérations\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concerné\"]]','Destinataires des notifications de modification crédit de récupérations','Cong&eacute;s','100');";
     $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`)
-      VALUES ('Recup-notifications3','checkboxes','[1]','[[0,\"Agents ayant le droit de g&eacute;rer les r&eacute;cup&eacute;rations\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 1','Cong&eacute;s','100');";
+          VALUES ('Recup-notifications3','checkboxes','$notification3','[[0,\"Agents ayant le droit de gérer les récupérations\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concerné\"]]','Destinataires des notifications des validations de crédit de récupérations niveau 1','Cong&eacute;s','100');";
     $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`)
-      VALUES ('Recup-notifications4','checkboxes','[3]','[[0,\"Agents ayant le droit de g&eacute;rer les r&eacute;cup&eacute;rations\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 2','Cong&eacute;s','100');";
+          VALUES ('Recup-notifications4','checkboxes','$notification4','[[0,\"Agents ayant le droit de gérer les récupérations\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concerné\"]]','Destinataires des notifications des validations de crédit de récupérations niveau 2','Cong&eacute;s','100');";
 
     // Version
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
