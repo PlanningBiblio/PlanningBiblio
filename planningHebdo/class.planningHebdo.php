@@ -458,14 +458,6 @@ class planningHebdo
         $this->recipients=$recipients;
     }
 
-  
-  
-    public function suppression_agents($liste)
-    {
-        $db=new db();
-        $db->CSRFToken = $this->CSRFToken;
-        $db->delete("planning_hebdo", array('perso_id' => "IN$liste"));
-    }
 
     public function update($data)
     {

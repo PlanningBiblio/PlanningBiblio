@@ -41,35 +41,43 @@ class personnel
 
     public function delete($liste)
     {
-        $update=array("supprime"=>"2","login"=>"CONCAT(login,SYSDATE())","mail"=>null,"arrivee"=>null,"depart"=>null,"postes"=>null,"droits"=>null,
-      "password"=>null,"commentaires"=>"Suppression définitive le ".date("d/m/Y"), "last_login"=>null, "temps"=>null,
-      "informations"=>null, "recup"=>null, "heures_travail"=>null, "heures_hebdo"=>null, "sites"=>null, "mails_responsables"=>null, "matricule"=>null, "code_ics"=>null, "url_ics"=>null);
-    
+        // Suppresion des informations de la table personnel
+        // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
+        $update=array("supprime" => "2", "login" => "CONCAT('deleted_',id)", "mail" => null, "arrivee" => null, "depart" => null, "postes" => null, "droits" => null, "password" => null,
+            "commentaires" => "Suppression définitive le ".date("d/m/Y"), "last_login" => null, "temps" => null, "informations" => null, "recup" => null, "heures_travail" => null,
+            "heures_hebdo" => null, "sites" => null, "mails_responsables" => null, "matricule" => null, "code_ics" => null, "url_ics" => null, "check_ics" => null, "check_hamac" => null,
+            "conges_credit" => null, "conges_reliquat" => null, "conges_anticipation" => null, "conges_annuel" => null, "recup_samedi" => null, "nom" => "CONCAT('Agent_',id)", "prenom" => null);
+
         $db=new db();
         $db->CSRFToken = $this->CSRFToken;
         $db->update("personnel", $update, "`id` IN ($liste)");
 
-        $db=new db();
-        $db->select("plugins");
-        $plugins=array();
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $plugins[]=$elem['nom'];
-            }
-        }
- 
-        $version=$GLOBALS['config']['Version'];	// Pour autoriser les accès aux pages suppression_agents
-        if ($GLOBALS['config']['Conges-Enable']) {
-            include "conges/suppression_agents.php";
-        }
-        if ($GLOBALS['config']['PlanningHebdo']) {
-            require_once "planningHebdo/class.planningHebdo.php";
+        // Suppression des informations sur les absences
+        // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
+        $update = array('commentaires' => null, 'motif_autre' => null);
 
-            // recherche des personnes à exclure (congés)
-            $p=new planningHebdo();
-            $p->CSRFToken = $this->CSRFToken;
-            $p->suppression_agents($liste);
-        }
+        $db=new db();
+        $db->CSRFToken = $this->CSRFToken;
+        $db->update('absences', $update, "`perso_id` IN ($liste)");
+
+        // Suppression des informations sur les congés
+        // NB : les entrées ne sont pas complétement supprimées car nous devons les garder pour l'historique des plannings et les statistiques. Mais les données personnelles sont anonymisées.
+        $update = array('commentaires' => null, 'refus' => null, 'heures' => null, 'solde_prec' => null, 'solde_actuel' => null, 'recup_prec' => null,
+            'recup_actuel' => null, 'reliquat_prec' => null, 'reliquat_actuel' => null, 'anticipation_prec' => null, 'anticipation_actuel' => null);
+
+        $db=new db();
+        $db->CSRFToken = $this->CSRFToken;
+        $db->update('conges', $update, "`perso_id` IN ($liste)");
+
+        // Suppresion des informations sur les récupérations
+        $db=new db();
+        $db->CSRFToken = $this->CSRFToken;
+        $db->delete("recuperations", "`perso_id` IN ($liste)");
+
+        // Suppression des informations sur les heures de présence
+        $db=new db();
+        $db->CSRFToken = $this->CSRFToken;
+        $db->delete("planning_hebdo", "`perso_id` IN ($liste)");
     }
 
     public function fetch($tri="nom", $actif=null, $name=null)
@@ -93,13 +101,13 @@ class personnel
         if ($this->responsablesParAgent) {
             $db=new db();
             $db->selectLeftJoin(
-        array('personnel', 'id'),
-        array('responsables', 'perso_id'),
-        array('id', 'nom', 'prenom', 'mail', 'mails_responsables', 'statut', 'categorie', 'service', 'actif', 'droits', 'sites', 'check_ics', 'check_hamac'),
-        array('responsable', 'notification'),
-        $filter,
-        array(),
-        "ORDER BY $tri"
+                array('personnel', 'id'),
+                array('responsables', 'perso_id'),
+                array('id', 'nom', 'prenom', 'mail', 'mails_responsables', 'statut', 'categorie', 'service', 'actif', 'droits', 'sites', 'check_ics', 'check_hamac'),
+                array('responsable', 'notification'),
+                $filter,
+                array(),
+                "ORDER BY $tri"
       );
         } else {
             $db=new db();
