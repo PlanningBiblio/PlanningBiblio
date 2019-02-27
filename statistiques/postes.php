@@ -117,6 +117,7 @@ $agents_infos=$p->elements;
 // Recherche des absences dans la table absences
 $a=new absences();
 $a->valide=true;
+$a->agents_supprimes = array(0,1,2);
 $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $debutSQL." 00:00:00", $finSQL." 23:59:59");
 $absencesDB=$a->elements;
 
@@ -137,14 +138,14 @@ if (!empty($postes)) {
     $db=new db();
 
     $db->selectInnerJoin(
-      array("pl_poste","perso_id"),
-      array("personnel","id"),
-    array("debut","fin","date","poste","site"),
-    array("nom","prenom",array("name"=>"id", "as"=>"perso_id")),
-    array("date"=>"BETWEEN{$debutSQL}AND{$finSQL}", "poste"=>"IN{$postes_select}","absent"=>"<>1",
+        array("pl_poste","perso_id"),
+        array("personnel","id"),
+        array("debut","fin","date","poste","site"),
+        array("nom","prenom",array("name"=>"id", "as"=>"perso_id")),
+        array("date"=>"BETWEEN{$debutSQL}AND{$finSQL}", "poste"=>"IN{$postes_select}","absent"=>"<>1",
       "supprime"=>"<>1", "site"=>"IN{$sitesSQL}"),
-    array(),
-    "ORDER BY `poste`,`nom`,`prenom`"
+        array(),
+        "ORDER BY `poste`,`nom`,`prenom`"
   );
 
     $resultat=$db->result;

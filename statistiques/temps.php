@@ -168,6 +168,7 @@ foreach ($totalSP as $key => $value) {
 // Recherche des absences dans la table absences
 $a=new absences();
 $a->valide=true;
+$a->agents_supprimes = array(0,1,2);
 $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $debut." 00:00:00", $fin." 23:59:59");
 $absencesDB=$a->elements;
 

@@ -130,6 +130,7 @@ if ($config['Multisites-nombre']>1) {
 // Recherche des absences dans la table absences
 $a=new absences();
 $a->valide=true;
+$a->agents_supprimes = array(0,1,2);
 $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $debutSQL." 00:00:00", $finSQL." 23:59:59");
 $absencesDB=$a->elements;
 
@@ -151,13 +152,13 @@ if (!empty($agents) and $dates) {
 
     $db=new db();
     $db->selectInnerJoin(
-      array("pl_poste","poste"),
-      array("postes","id"),
-    array("debut","fin","date","perso_id","poste","absent"),
-    array(array("name"=>"nom","as"=>"poste_nom"),"etage","site"),
-    array("date"=>"IN{$dates}", "supprime"=>"<>1", "perso_id"=>"IN{$agents_select}", "site"=>"IN{$sitesSQL}"),
-    array("statistiques"=>"1"),
-    "ORDER BY `poste_nom`,`etage`"
+        array("pl_poste","poste"),
+        array("postes","id"),
+        array("debut","fin","date","perso_id","poste","absent"),
+        array(array("name"=>"nom","as"=>"poste_nom"),"etage","site"),
+        array("date"=>"IN{$dates}", "supprime"=>"<>1", "perso_id"=>"IN{$agents_select}", "site"=>"IN{$sitesSQL}"),
+        array("statistiques"=>"1"),
+        "ORDER BY `poste_nom`,`etage`"
   );
 
     $resultat=$db->result;

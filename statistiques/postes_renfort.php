@@ -119,6 +119,7 @@ $selected=null;
 // Recherche des absences dans la table absences
 $a=new absences();
 $a->valide=true;
+$a->agents_supprimes = array(0,1,2);
 $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $debutSQL." 00:00:00", $finSQL." 23:59:59");
 $absencesDB=$a->elements;
 
