@@ -1034,7 +1034,7 @@ class absences
         $this->responsables=$responsables;
     }
 
-    public function getRecipients($validation, $responsables, Agent $agent)
+    public function getRecipients($validation, $responsables, Agent $agent, $type = 'Absences')
     {
         /*
         Retourne la liste des destinataires des notifications en fonction du niveau de validation.
@@ -1047,7 +1047,7 @@ class absences
         $agent : Model\Agent object
         */
 
-        $categories=$GLOBALS['config']["Absences-notifications{$validation}"];
+        $categories=$GLOBALS['config']["{$type}-notifications{$validation}"];
         $categories=json_decode(html_entity_decode(stripslashes($categories), ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
         /*
         $categories : Catégories de personnes à qui les notifications doivent être envoyées
