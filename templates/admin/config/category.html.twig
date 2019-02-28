@@ -63,7 +63,7 @@
             <input type='text' name='{{ v.nom }}' id='{{ v.nom }}' value="{{ v.valeur }}" style='width:300px;' class='datepicker'/>
           {% endif %}
         </td>
-        <td>{{ v.commentaires }}</td>
+        <td>{{ v.commentaires | raw }}</td>
       </tr>
       {% if v.nom == 'Mail-Planning' %}
         <tr>
