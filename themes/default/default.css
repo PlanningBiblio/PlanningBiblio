@@ -1052,6 +1052,11 @@ option.bold{
   text-align:center;
 }
 
+div.presents-absents {
+  width: 1000px;
+  margin-left: 25px;
+}
+
 /*	FixedColumns	*/
 .DTFC_LeftBodyLiner{
   overflow:hidden;
@@ -1191,14 +1196,4 @@ option.bold{
 /*	Congés	*/
 #tableConges td{
   white-space: nowrap;
-}
-div.presents-absents {
-  float:left;
-}
-div.presents-absents h3.day{
-  text-align: center;
-  background-color:#FFBE9D;
-}
-div.presents-absents table.agents-list {
-  min-width: 500px;
 }

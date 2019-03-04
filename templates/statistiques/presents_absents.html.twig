@@ -5,34 +5,23 @@
 {% block page %}
   <h3>Liste des agents présents et absents</h3>
 
-  <div class="presents-absents">
+  <div>
     <form name="CSRFForm" method="post">
-      <table>
+      <table class='tableauStandard' style='margin-top:35px;'>
         <tr>
           <td>
-            <label class='intitule'>Début </label>
+            <label class='intitule'>Début :</label>
             <input type='text' name='from' value='{{ from }}' class='datepicker'/>
           </td>
           <td>
-            <label class='intitule'>Fin </label>
+            <label class='intitule'>Fin :</label>
             <input type='text' name='to' value='{{ to }}' class='datepicker'/>
           </td>
-        </tr>
-
-        <tr>
           <td>
-            <label class='intitule'>Absences validées </label>
-            {% if validated %}
-              <input type='checkbox' name='validated' checked="checked"/>
-            {% else %}
-              <input type='checkbox' name='validated'/>
-            {% endif %}
+            <input type='submit' value='Rechercher' class='ui-button' />
           </td>
-        </tr>
-
-        <tr>
           <td>
-            <input type='submit' value='Ok'/>
+            <a href='index.php?page=statistiques/presents_absents.php&reset=1' class='ui-button'>Réinitialiser</a>
           </td>
         </tr>
       </table>
@@ -41,53 +30,34 @@
 
   <div class="presents-absents">
     {% for day in by_date %}
-      {% if day.absents or day.presents %}
+      {% if day.tab %}
       <h3 class="day">Le {{ day.date }}</h3>
-        <table class="tableauStandard">
-          <tr>
-            {% if day.presents %}
-              <td><h3>Liste des présents</h3></td>
-            {% endif %}
-            {% if day.absents %}
-            <td><h3>Liste des absents</h3></td>
-            {% endif %}
-          </tr>
-          <tr>
-            {% if day.presents %}
-              <td>
-                <table class="agents-list">
-                  {% for present in day.presents %}
-                    <tr class="bold {% if loop.index is odd %}tr1{% else %}tr2{% endif %}">
-                      <td>{{ present.nom }} {{ present.prenom }}</td>
-                      <td>
-                        {{ present.site }}{{ present.heures|e('html') }}
-                      </td>
-                    </tr>
-                  {% endfor %}
-                </table>
-              </td>
-            {% endif %}
-            {% if day.absents %}
-              <td>
-                <table class="agents-list">
-                  {% for absent in day.absents %}
-                    {% if absent.valide > 0 %}
-                      <tr class="bold {% if loop.index is odd %}tr1{% else %}tr2{% endif %}">
-                    {% else %}
-                      <tr class="{% if loop.index is odd %}tr1{% else %}tr2{% endif %}">
-                    {% endif %}
-                      <td>{{ absent.nom }} {{ absent.prenom }}</td>
-                      <td>
-                        {{ absent.motif }}{% if not absent.all_the_day %}, {{ absent.from }} - {{ absent.to }}{% endif %}
-                      </td>
-                    </tr>
-                  {% endfor %}
-                </table>
-              </td>
-            {% endif %}
-          </tr>
+        <table class="CJDataTable">
+          <thead>
+            <tr>
+              <th>Agent</th>
+              <th>Présence</th>
+              <th>Absences</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for agent in day.tab %}
+            <tr>
+                <td>{{ agent.nom }} {{ agent.prenom }}</td>
+                <td>
+                {{ agent.presence.site }}{{ agent.presence.heures|e('html') }}
+                </td>
+                <td>
+                {% for absence in agent.absences %}
+                    {{ absence.motif }}{% if not absence.all_the_day %}, {{ absence.from }} - {{ absence.to }}{% endif %} {% if absence.valide == 0 %} <b>(non-validée)</b> {% endif %}
+                    <br/>
+                {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+          </tbody>
         </table>
       {% endif %}
     {% endfor %}
-  <div>
+  </div>
 {% endblock %}
