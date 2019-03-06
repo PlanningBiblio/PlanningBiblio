@@ -22,11 +22,22 @@ include_once __DIR__ . "/../include/db.php";
 use PlanningBiblio\PresentSet;
 
 $params = $request->request->all();
+if ($request->query->get('reset')) {
+    $params['reset'] = 1;
+}
 
-if (empty($params) or !empty($params['reset'])) {
+if (empty($params) and !empty($_SESSION['present_absent_from'])) {
+    $params['from'] = $_SESSION['present_absent_from'];
+    $params['to'] = $_SESSION['present_absent_to'];
+}
+
+if (isset($params['reset']) && $params['reset'] == 1) {
     $params['from'] = date('d/m/Y');
     $params['to'] = date('d/m/Y');
 }
+
+$_SESSION['present_absent_from'] = $params['from'];
+$_SESSION['present_absent_to'] = $params['to'];
 
 $startTime = strtotime(dateSQL($params['from']));
 $endTime = strtotime(dateSQL($params['to']));
