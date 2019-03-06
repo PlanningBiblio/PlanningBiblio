@@ -23,6 +23,7 @@ require_once "class.planning.php";
 require_once "planning/postes_cfg/class.tableaux.php";
 require_once __DIR__."/../volants/class.volants.php";
 include_once "absences/class.absences.php";
+include_once __DIR__ . "/../../conges/class.conges.php";
 include_once "activites/class.activites.php";
 include_once "personnel/class.personnel.php";
 echo "<div id='planning'>\n";
@@ -479,8 +480,10 @@ if (!$verrou and !$autorisationN1) {
     $absences_planning = $a->elements;
 
     // Informations sur les congés
+    $conges = array();
     if ($config['Conges-Enable']) {
-        include "conges/planning_cellules.php";
+        $c = new conges();
+        $conges = $c->all($date.' 00:00:00', $date.' 23:59:59', 0, 1);
     }
     //--------------	FIN Recherche des infos cellules	------------//
   
@@ -704,10 +707,16 @@ EOD;
     // Affichage des absences
     if ($config['Absences-planning']) {
 
-    // Ajout des congés
-        if ($config['Conges-Enable']) {
-            include "conges/planning.php";
+        // Ajout des congés
+        foreach ($conges as $elem) {
+            if ($elem['valide'] > 0) {
+            $elem['motif'] = 'Congé payé';
+            $absences_planning[] = $elem;
+            $absences_id[] = $elem['perso_id'];
+            }
         }
+
+        usort($absences_planning, 'cmp_nom_prenom_debut_fin');
 
         switch ($config['Absences-planning']) {
       case "1":

@@ -15,6 +15,7 @@
 */
 
 require_once __DIR__ . "/../absences/class.absences.php";
+include_once __DIR__ . "/../conges/class.conges.php";
 include_once __DIR__ . "/../include/function.php";
 include_once __DIR__ . "/../include/db.php";
 
@@ -34,11 +35,22 @@ $by_date = array();
 for ( $i = $startTime; $i <= $endTime; $i = $i + 86400 ) {
     $date = date('Y-m-d', $i);
 
+    $conges = array();
+    if ($config['Conges-Enable']) {
+        $c = new conges();
+        $conges = $c->all($date.' 00:00:00', $date.' 23:59:59', 0, 1);
+    }
+
     $absences = new absences();
     $absences->valide = false;
     $absent_ids = array(2);
     $absences->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date, array(1));
     $absents = $absences->elements;
+
+    foreach ($conges as $elem) {
+        $elem['motif']="Congé payé";
+        $absents[] = $elem;
+    }
 
     foreach ($absents as $key => $absent) {
         $absents[$key]['motif'] = html_entity_decode($absent['motif'], ENT_QUOTES|ENT_HTML5);

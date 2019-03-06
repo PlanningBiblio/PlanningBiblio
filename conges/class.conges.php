@@ -1207,4 +1207,35 @@ class conges
       // Les afficher dans le tableau si demande validée
         }
     }
+
+    public function all($from, $to, $rejected = 1, $rejected_n1 = 1)
+    {
+        $this->debut = $from;
+        $this->fin = $to;
+        $this->valide = false;
+        $this->information = false;
+        $this->supprime = false;
+
+        $filtered = array();
+        $this->fetch();
+        $all = $this->elements;
+
+        foreach ($all as $holiday) {
+            # Exclude rejected.
+            if (!$rejected && $holiday['valide'] < 0) {
+                continue;
+            }
+
+            # Exclude rejected N1.
+            if (!$rejected_n1 && $holiday['valide_n1'] < 0) {
+                continue;
+            }
+
+            $filtered[] = $holiday;
+        }
+
+        return $filtered;
+
+    }
+
 }
