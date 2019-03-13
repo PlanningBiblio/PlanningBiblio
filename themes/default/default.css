@@ -428,6 +428,12 @@ select
   color:red;
 }
 
+.red-cel {
+  background-color: red;
+  color: white;
+  font-weight: bold;
+}
+
 .orange{
   color:#FFA500;
 }

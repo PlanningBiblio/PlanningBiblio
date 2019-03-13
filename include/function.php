@@ -26,6 +26,7 @@ require_once(__DIR__."/../vendor/phpmailer/phpmailer/src/Exception.php");
 require_once(__DIR__."/../vendor/phpmailer/phpmailer/src/PHPMailer.php");
 require_once(__DIR__."/../vendor/phpmailer/phpmailer/src/SMTP.php");
 require_once(__DIR__."/../vendor/phpmailer/phpmailer/src/OAuth.php");
+require_once(__DIR__.'/../personnel/class.personnel.php');
 
 use PHPMailer\PHPMailer\PHPMailer;
 
@@ -37,6 +38,7 @@ class datePl
     public $sam = null;
     public $sem = null;
     public $semaine = null;
+    public $semaine3 = null;
     public $position = null;
   
     public function __construct($date)
@@ -103,6 +105,43 @@ class datePl
                 $this->semaine3=3;
             }
         }
+    }
+
+    public function planning_day_index_for($agent_id)
+    {
+        $config = $GLOBALS['config'];
+        $semaine = $this->semaine;
+        $semaine3 = $this->semaine3;
+
+        // Day of week. Mon = 0 ,Sun = 6
+        $day = $this->position - 1;
+        if ($day == -1) {
+            $day = 6;
+        }
+
+        // Using 2 weekly schedule (even odd).
+        // Even: position += 7, Mon A = 0, Mon B = 7, Sun B = 13
+        if ($config['nb_semaine'] == '2' and !($semaine%2) and !$config['EDTSamedi']) {
+            $day += 7;
+        }
+        // Using 3 weekly schedule.
+        elseif ($config['nb_semaine'] == '3' and !$config['EDTSamedi']) {
+            if ($semaine3 == 2) {
+                $day += 7;
+            } elseif ($semaine3 == 3) {
+                $day += 14;
+            }
+        }
+
+        // Using a schedule with Saturday and one without.
+        if ($config['EDTSamedi']) {
+            // Check if the current week has Saturday.
+            $p=new personnel();
+            $p->fetchEDTSamedi($agent_id, $this->dates[0], $this->dates[0]);
+            $day += $p->offset;
+        }
+
+        return $day;
     }
 }
 
