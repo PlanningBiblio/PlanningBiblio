@@ -18,8 +18,6 @@ Cette page est appelée par la fonction JavaScript Popup qui l'affiche dans un c
 */
 
 require_once "class.planning.php";
-require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '/../../init_entitymanager.php';
 
 use Model\Agent;
 
@@ -68,7 +66,7 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
         echo "<input type='hidden' name='site' value='$site' />\n";
         echo "Importer le modèle \"{$db->result[0]['nom']}\" $semaine?<br/><br/>\n";
         echo "Importer les absents ?&nbsp;&nbsp;";
-        echo "<input type='checkbox' name='absents' /><br/><br/>\n";
+        echo "<input type='checkbox' name='absents' checked='checked' /><br/><br/>\n";
         echo "<a href='#' onclick='document.form.submit();'>Oui</a>";
         echo "&nbsp;&nbsp;\n";
         echo "<a href='javascript:popup_closed();'>Non</a>\n";
@@ -91,7 +89,7 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
         }
         echo "</select><br/>\n";
         echo "Importer les absents ?&nbsp;&nbsp;";
-        echo "<input type='checkbox' name='absents' /><br/><br/>\n";
+        echo "<input type='checkbox' name='absents' checked='checked' /><br/><br/>\n";
         echo "<input type='button' value='Annuler' onclick='popup_closed();' />\n";
         echo "&nbsp;&nbsp;\n";
         echo "<input type='submit' value='Valider'/>\n";
@@ -205,41 +203,27 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
                     ':poste' => $elem2['poste'],
                     ':debut' => $elem2['debut'],
                     ':fin' => $elem2['fin'],
-                    ':site' => $site
+                    ':site' => $site,
+                    ':absent' => 0
                 );
 
 
                 $debut=$elem." ".$elem2['debut'];
                 $fin=$elem." ".$elem2['fin'];
-                $db2=new db();
+
+                // Look for absences
+                $db2 = new db();
                 $db2->select("absences", "*", "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
-                if ($get_absents) {
-                    $absent=$db2->result?"1":"0";
-                    if (in_array($elem2['poste'], $postes)) {
-                        $exist = false;
-                        foreach ($horaires as $h) {
-                            if ($h['debut'] == $elem2['debut'] and $h['fin'] == $elem2['fin']) {
-                                $exist = true;
-                                break;
-                            }
-                        }
-                        if ($exist) {
-                            $value[':absent'] = $absent;
-                        }
-                    }
-                } else {
-                    if ($db2->nb==0 and in_array($elem2['poste'], $postes)) {
-                        $exist = false;
-                        foreach ($horaires as $h) {
-                            if ($h['debut'] == $elem2['debut'] and $h['fin'] == $elem2['fin']) {
-                                $exist = true;
-                                break;
-                            }
-                        }
-                        if ($exist) {
-                            $value[':absent'] = 0;
-                        }
-                    }
+                $absent = $db2->result ? true : false;
+
+                // Look for hollidays
+                $db2 = new db();
+                $db2->select("conges", "*", "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' AND `valide`>0");
+                $absent = $db2->result ? true : $absent ;
+
+                // Don't import if absent and get_absents not checked
+                if (!$get_absents and $absent) {
+                    continue;
                 }
 
                 // Check if the agent is out of his schedule (schedule has been changed).
@@ -254,7 +238,7 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
                     $values[] = $value;
                 }
             }
-      
+
             // insertion des données dans le planning du jour
             if (!empty($values)) {
                 // Suppression des anciennes données
