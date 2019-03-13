@@ -483,7 +483,7 @@ if (!$verrou and !$autorisationN1) {
     $conges = array();
     if ($config['Conges-Enable']) {
         $c = new conges();
-        $conges = $c->all($date.' 00:00:00', $date.' 23:59:59', 0, 1);
+        $conges = $c->all($date.' 00:00:00', $date.' 23:59:59');
     }
     //--------------	FIN Recherche des infos cellules	------------//
   
