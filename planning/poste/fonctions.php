@@ -63,7 +63,7 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
                 }
 
                 if ($elem['absent'] == 2) {
-                    $class_tmp[]="red-cel";
+                    $class_tmp[] = "out-of-work-time";
                     $title = 'En dehors de ses heures de présences';
                 }
 
