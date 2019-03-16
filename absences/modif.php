@@ -49,6 +49,10 @@ $agents_multiples = ($adminN1 or $adminN2 or in_array(9, $droits));
 $a=new absences();
 $a->fetchById($id);
 
+if (empty($a->elements)) {
+    include __DIR__.'/../include/accessDenied.php';
+}
+
 $agents=$a->elements['agents'];
 $groupe=$a->elements['groupe'];
 $perso_id=$a->elements['perso_id'];
