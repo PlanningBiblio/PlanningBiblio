@@ -185,7 +185,9 @@ class conges
         $balance2 = $balance1;
         // $balance3 : solde prévisionnel à la date choisie
         $balance3 = $balance1;
-    
+
+        $last = null;
+
         $db = new db();
         $db->select2('recuperations', null, array('perso_id' => $perso_id), "ORDER BY `date`");
         $recup_tab = $db->result;
@@ -224,8 +226,11 @@ class conges
                     }
                 }
             }
+
+            $last = end($recup_tab);
+            $last = $last['date'];
         }
-    
+
         $db = new db();
         $db->select2('conges', null, array('perso_id' => $perso_id, 'debit' => 'recuperation'));
         $leave_tab = $db->result;
@@ -234,7 +239,7 @@ class conges
         if (!empty($leave_tab)) {
             foreach ($leave_tab as $elem) {
 
-        // On adapte le compteur prévisionnel avec les enregistrements de la table congés
+                // On adapte le compteur prévisionnel avec les enregistrements de la table congés
                 // - si la date choisie est inférieure à la date de remise à zéro
                 // - ou si la date de l'enregistrement est supérieure ou égale à la date de remise à zéro
                 if ($date < $reset_date or $elem['debut'] >= $reset_date) {
@@ -245,8 +250,6 @@ class conges
             }
         }
 
-        $last = end($recup_tab);
-        $last = $last['date'];
 
         return array($date, $balance1, $last, $balance2, $balance3);
     }
