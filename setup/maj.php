@@ -1592,8 +1592,8 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
         VALUES ('40','80','Pr&eacute;sents / absents','statistiques/presents_absents.php',NULL);";
 
     $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`)
-            VALUES ('Liste des agents pr&eacute;sents et absents', 17, 'Acc&egrave;s au statistiques',
-            'statistiques/presents_absents.php','Statistiques','170');";
+            VALUES ('Liste des agents pr&eacute;sents et absents', 1301, 'Acc&egrave;s aux statistiques Pr&eacute;sents / Absents',
+            'statistiques/presents_absents.php','Statistiques','171');";
 
     // Version
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
