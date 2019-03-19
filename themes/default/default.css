@@ -428,10 +428,8 @@ select
   color:red;
 }
 
-.red-cel {
-  background-color: red;
-  color: white;
-  font-weight: bold;
+.out-of-work-time {
+  color:red;
 }
 
 .orange{
