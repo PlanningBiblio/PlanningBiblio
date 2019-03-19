@@ -481,9 +481,10 @@ if (!$verrou and !$autorisationN1) {
 
     // Informations sur les congés
     $conges = array();
+    global $conges;
     if ($config['Conges-Enable']) {
         $c = new conges();
-        $conges = $c->all($date.' 00:00:00', $date.' 23:59:59', 0, 1);
+        $conges = $c->all($date.' 00:00:00', $date.' 23:59:59');
     }
     //--------------	FIN Recherche des infos cellules	------------//
   
@@ -709,11 +710,9 @@ EOD;
 
         // Ajout des congés
         foreach ($conges as $elem) {
-            if ($elem['valide'] > 0) {
             $elem['motif'] = 'Congé payé';
             $absences_planning[] = $elem;
             $absences_id[] = $elem['perso_id'];
-            }
         }
 
         usort($absences_planning, 'cmp_nom_prenom_debut_fin');

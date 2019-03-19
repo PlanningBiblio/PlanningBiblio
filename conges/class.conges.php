@@ -1208,7 +1208,7 @@ class conges
         }
     }
 
-    public function all($from, $to, $rejected = 1, $rejected_n1 = 1)
+    public function all($from, $to, $rejected = 0)
     {
         $this->debut = $from;
         $this->fin = $to;
@@ -1223,11 +1223,6 @@ class conges
         foreach ($all as $holiday) {
             # Exclude rejected.
             if (!$rejected && $holiday['valide'] < 0) {
-                continue;
-            }
-
-            # Exclude rejected N1.
-            if (!$rejected_n1 && $holiday['valide_n1'] < 0) {
                 continue;
             }
 
