@@ -1,0 +1,64 @@
+{# statistiquess/presents_absents.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  <h3>Liste des agents présents et absents</h3>
+
+  <div>
+    <form name="CSRFForm" method="post" action="index.php">
+      <input type="hidden" name="page" value="statistiques/presents_absents.php"/>
+      <table class='tableauStandard' style='margin-top:35px;'>
+        <tr>
+          <td>
+            <label class='intitule'>Début :</label>
+            <input type='text' name='from' value='{{ from }}' class='datepicker'/>
+          </td>
+          <td>
+            <label class='intitule'>Fin :</label>
+            <input type='text' name='to' value='{{ to }}' class='datepicker'/>
+          </td>
+          <td>
+            <input type='submit' value='Rechercher' class='ui-button' />
+          </td>
+          <td>
+            <a href='index.php?page=statistiques/presents_absents.php&reset=1' class='ui-button'>Réinitialiser</a>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+
+  <div class="presents-absents">
+    {% for day in by_date %}
+      {% if day.tab %}
+      <h3 class="day">Le {{ day.date }}</h3>
+        <table class="CJDataTable">
+          <thead>
+            <tr>
+              <th>Agent</th>
+              <th>Présence</th>
+              <th>Absences</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for agent in day.tab %}
+            <tr>
+                <td>{{ agent.nom }} {{ agent.prenom }}</td>
+                <td>
+                {{ agent.presence.site }}{{ agent.presence.heures|e('html') }}
+                </td>
+                <td>
+                {% for absence in agent.absences %}
+                    {{ absence.motif }}{% if not absence.all_the_day %}, {{ absence.from }} - {{ absence.to }}{% endif %} {% if absence.valide == 0 %} <b>(non-validée)</b> {% endif %}
+                    <br/>
+                {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endblock %}

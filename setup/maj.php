@@ -1586,6 +1586,19 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="x.x.xx"; # To be changed when releasing.
+if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+    $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`)
+        VALUES ('40','80','Pr&eacute;sents / absents','statistiques/presents_absents.php',NULL);";
+
+    $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`)
+            VALUES ('Liste des agents pr&eacute;sents et absents', 1301, 'Acc&egrave;s aux statistiques Pr&eacute;sents / Absents',
+            'statistiques/presents_absents.php','Statistiques','171');";
+
+    // Version
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();

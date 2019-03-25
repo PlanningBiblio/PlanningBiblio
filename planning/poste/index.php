@@ -23,11 +23,14 @@ require_once "class.planning.php";
 require_once "planning/postes_cfg/class.tableaux.php";
 require_once __DIR__."/../volants/class.volants.php";
 include_once "absences/class.absences.php";
+include_once __DIR__ . "/../../conges/class.conges.php";
 include_once "activites/class.activites.php";
 include_once "personnel/class.personnel.php";
 echo "<div id='planning'>\n";
 
 include "fonctions.php";
+
+use PlanningBiblio\PresentSet;
 
 // Initialisation des variables
 $CSRFToken=filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
@@ -477,8 +480,11 @@ if (!$verrou and !$autorisationN1) {
     $absences_planning = $a->elements;
 
     // Informations sur les congés
+    $conges = array();
+    global $conges;
     if ($config['Conges-Enable']) {
-        include "conges/planning_cellules.php";
+        $c = new conges();
+        $conges = $c->all($date.' 00:00:00', $date.' 23:59:59');
     }
     //--------------	FIN Recherche des infos cellules	------------//
   
@@ -702,10 +708,14 @@ EOD;
     // Affichage des absences
     if ($config['Absences-planning']) {
 
-    // Ajout des congés
-        if ($config['Conges-Enable']) {
-            include "conges/planning.php";
+        // Ajout des congés
+        foreach ($conges as $elem) {
+            $elem['motif'] = 'Congé payé';
+            $absences_planning[] = $elem;
+            $absences_id[] = $elem['perso_id'];
         }
+
+        usort($absences_planning, 'cmp_nom_prenom_debut_fin');
 
         switch ($config['Absences-planning']) {
       case "1":
@@ -802,89 +812,9 @@ EOD;
     // recherche des personnes à exclure (ne travaillant ce jour)
     $db=new db();
     $dateSQL=$db->escapeString($date);
-    $db->select("personnel", "*", "`actif` LIKE 'Actif' AND (`depart` > $dateSQL OR `depart` = '0000-00-00')", "ORDER BY `nom`,`prenom`");
 
-    $verif=true;	// verification des heures des agents
-    if (!$config['ctrlHresAgents'] and ($d->position==6 or $d->position==0)) {
-        $verif=false; // on ne verifie pas les heures des agents le samedi et le dimanche (Si ctrlHresAgents est desactivé)
-    }
-
-    // Si il y a des agents et verification des heures de présences
-    if ($db->result and $verif) {
-
-      // Si module PlanningHebdo : recherche des plannings correspondant à la date actuelle
-        if ($config['PlanningHebdo']) {
-            include "planningHebdo/planning.php";
-        }
-
-        // Pour chaque agent
-        foreach ($db->result as $elem) {
-            $heures=null;
-
-            // Récupération du planning de présence
-            $temps=array();
-
-            // Si module PlanningHebdo : emploi du temps récupéré à partir de planningHebdo
-            if ($config['PlanningHebdo']) {
-                if (array_key_exists($elem['id'], $tempsPlanningHebdo)) {
-                    $temps=$tempsPlanningHebdo[$elem['id']];
-                }
-            } else {
-                // Emploi du temps récupéré à partir de la table personnel
-                $temps = json_decode(html_entity_decode($elem['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-            }
-
-            $jour=$d->position-1;		// jour de la semaine lundi = 0 ,dimanche = 6
-            if ($jour==-1) {
-                $jour=6;
-            }
-
-            // Si semaine paire, position +7 : lundi A = 0 , lundi B = 7 , dimanche B = 13
-            if ($config['nb_semaine']=="2" and !($semaine%2)) {
-                $jour+=7;
-            }
-            // Si utilisation de 3 plannings hebdo
-            elseif ($config['nb_semaine']=="3") {
-                if ($semaine3==2) {
-                    $jour+=7;
-                } elseif ($semaine3==3) {
-                    $jour+=14;
-                }
-            }
-
-            // Si l'emploi du temps est renseigné
-            if (!empty($temps) and array_key_exists($jour, $temps)) {
-                // S'il y a une heure de début (matin ou midi)
-                if ($temps[$jour][0] or $temps[$jour][2]) {
-                    $heures=$temps[$jour];
-                }
-            }
-
-            // S'il y a des horaires correctement renseignés
-            $siteAgent=null;
-            if ($heures and !in_array($elem['id'], $absents)) {
-                if ($config['Multisites-nombre']>1) {
-                    if (isset($heures[4])) {
-                        $siteAgent=$config['Multisites-site'.$heures[4]];
-                    }
-                }
-                $siteAgent=$siteAgent?$siteAgent.", ":null;
-
-
-                $horaires=null;
-                if (!$heures[1] and !$heures[2]) {		// Pas de pause le midi
-                    $horaires=heure2($heures[0])." - ".heure2($heures[3]);
-                } elseif (!$heures[2] and !$heures[3]) {	// matin seulement
-                    $horaires=heure2($heures[0])." - ".heure2($heures[1]);
-                } elseif (!$heures[0] and !$heures[1]) {	// après midi seulement
-                    $horaires=heure2($heures[2])." - ".heure2($heures[3]);
-                } else {		// matin et après midi avec pause
-                    $horaires=heure2($heures[0])." - ".heure2($heures[1])." &amp; ".heure2($heures[2])." - ".heure2($heures[3]);
-                }
-                $presents[]=array("id"=>$elem['id'],"nom"=>$elem['nom']." ".$elem['prenom'],"site"=>$siteAgent,"heures"=>$horaires);
-            }
-        }
-    }
+    $presentset = new PresentSet($dateSQL, $d, $absents, $db);
+    $presents = $presentset->all();
 
     echo "<table class='tableauStandard'>\n";
     echo "<tr><td><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des présents</h3></td>\n";
