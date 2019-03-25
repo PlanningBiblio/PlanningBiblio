@@ -24,7 +24,10 @@ $CSRFToken = filter_input(INPUT_POST, 'CSRFToken', FILTER_SANITIZE_STRING);
 
 foreach ($post as $key => $value) {
     if (substr($key, 0, 3)=="chk") {
-        $liste[]=$value;
+        // Disallow admin deletion
+        if ($value != 1) {
+            $liste[]=$value;
+        }
     }
 }
 $liste=join($liste, ",");

@@ -36,7 +36,15 @@ $configParams = $entityManager->getRepository(ConfigParam::class)->findBy(
     array(), array('ordre' => 'ASC', 'id' => 'ASC')
 );
 
-if ($params && CSRFTokenOK($params['CSRFToken'], $_SESSION)) {
+
+// Demo mode
+if ($params && !empty($config['demo'])) {
+    $warning = "La modification de la configuration n'est pas autorisée sur la version de démonstration.";
+    $warning .= "#BR#Merci de votre compréhension";
+    $templates_params['warning'] = $warning;
+}
+elseif ($params && CSRFTokenOK($params['CSRFToken'], $_SESSION)) {
+    $templates_params['post'] = 1;
 
     foreach ($configParams as $cp) {
 
