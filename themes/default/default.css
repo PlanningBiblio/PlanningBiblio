@@ -428,6 +428,10 @@ select
   color:red;
 }
 
+.out-of-work-time {
+  color:red;
+}
+
 .orange{
   color:#FFA500;
 }

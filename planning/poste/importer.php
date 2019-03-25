@@ -19,6 +19,8 @@ Cette page est appelée par la fonction JavaScript Popup qui l'affiche dans un c
 
 require_once "class.planning.php";
 
+use Model\Agent;
+
 // Initialisation des variables
 $CSRFToken=filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
 $date=filter_input(INPUT_GET, "date", FILTER_SANITIZE_STRING);
@@ -64,7 +66,7 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
         echo "<input type='hidden' name='site' value='$site' />\n";
         echo "Importer le modèle \"{$db->result[0]['nom']}\" $semaine?<br/><br/>\n";
         echo "Importer les absents ?&nbsp;&nbsp;";
-        echo "<input type='checkbox' name='absents' /><br/><br/>\n";
+        echo "<input type='checkbox' name='absents' checked='checked' /><br/><br/>\n";
         echo "<a href='#' onclick='document.form.submit();'>Oui</a>";
         echo "&nbsp;&nbsp;\n";
         echo "<a href='javascript:popup_closed();'>Non</a>\n";
@@ -87,7 +89,7 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
         }
         echo "</select><br/>\n";
         echo "Importer les absents ?&nbsp;&nbsp;";
-        echo "<input type='checkbox' name='absents' /><br/><br/>\n";
+        echo "<input type='checkbox' name='absents' checked='checked' /><br/><br/>\n";
         echo "<input type='button' value='Annuler' onclick='popup_closed();' />\n";
         echo "&nbsp;&nbsp;\n";
         echo "<input type='submit' value='Valider'/>\n";
@@ -96,9 +98,9 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
 } else {					// Etape 2 : Insertion des données
     $semaine=false;
     $dates=array();
+    $d=new datePl($date);
     if (substr($get_nom, -10)=="###semaine") {	// S'il s'agit d'un modèle sur une semaine
         $semaine=true;
-        $d=new datePl($date);
         foreach ($d->dates as $elem) {	// Recherche de toute les dates de la semaine en cours pour insérer les données
             $dates[]=$elem;
         }
@@ -183,70 +185,60 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
     
         $filter=$config['Absences-validation']?"AND `valide`>0":null;
         if ($db->result) {
-            if ($get_absents) {	// on marque les absents
-                foreach ($db->result as $elem2) {
+            foreach ($db->result as $elem2) {
+                $value = array();
 
-          // On n'importe pas les agents s'ils sont placés sur un autre site
-                    if (isset($autres_sites[$elem2['perso_id'].'_'.$elem])) {
-                        foreach ($autres_sites[$elem2['perso_id'].'_'.$elem] as $as) {
-                            if ($as['debut'] < $elem2['fin'] and $as['fin'] > $elem2['debut']) {
-                                continue 2;
-                            }
-                        }
-                    }
-    
-
-                    $debut=$elem." ".$elem2['debut'];
-                    $fin=$elem." ".$elem2['fin'];
-                    $db2=new db();
-                    $db2->select("absences", "*", "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
-                    $absent=$db2->result?"1":"0";
-                    if (in_array($elem2['poste'], $postes)) {
-                        $exist = false;
-                        foreach ($horaires as $h) {
-                            if ($h['debut'] == $elem2['debut'] and $h['fin'] == $elem2['fin']) {
-                                $exist = true;
-                                break;
-                            }
-                        }
-                        if ($exist) {
-                            $values[]=array(":date"=>$elem, ":perso_id"=>$elem2['perso_id'], ":poste"=>$elem2['poste'],
-                ":debut"=>$elem2['debut'], ":fin"=>$elem2['fin'], ":absent"=>$absent, ":site"=>$site);
+                // On n'importe pas les agents s'ils sont placés sur un autre site
+                if (isset($autres_sites[$elem2['perso_id'].'_'.$elem])) {
+                    foreach ($autres_sites[$elem2['perso_id'].'_'.$elem] as $as) {
+                        if ($as['debut'] < $elem2['fin'] and $as['fin'] > $elem2['debut']) {
+                            continue 2;
                         }
                     }
                 }
-            } else {
-                foreach ($db->result as $elem2) {
-    
-          // On n'importe pas les agents s'ils sont placés sur un autre site
-                    if (isset($autres_sites[$elem2['perso_id'].'_'.$elem])) {
-                        foreach ($autres_sites[$elem2['perso_id'].'_'.$elem] as $as) {
-                            if ($as['debut'] < $elem2['fin'] and $as['fin'] > $elem2['debut']) {
-                                continue 2;
-                            }
-                        }
-                    }
-    
-                    $debut=$elem." ".$elem2['debut'];
-                    $fin=$elem." ".$elem2['fin'];
-                    $db2=new db();
-                    $db2->select("absences", "*", "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
-                    if ($db2->nb==0 and in_array($elem2['poste'], $postes)) {
-                        $exist = false;
-                        foreach ($horaires as $h) {
-                            if ($h['debut'] == $elem2['debut'] and $h['fin'] == $elem2['fin']) {
-                                $exist = true;
-                                break;
-                            }
-                        }
-                        if ($exist) {
-                            $values[]=array(":date"=>$elem, ":perso_id"=>$elem2['perso_id'], ":poste"=>$elem2['poste'],
-                ":debut"=>$elem2['debut'], ":fin"=>$elem2['fin'], ":absent"=>"0", ":site"=>$site);
-                        }
-                    }
+
+                $value = array(
+                    ':date' => $elem,
+                    ':perso_id' => $elem2['perso_id'],
+                    ':poste' => $elem2['poste'],
+                    ':debut' => $elem2['debut'],
+                    ':fin' => $elem2['fin'],
+                    ':site' => $site,
+                    ':absent' => 0
+                );
+
+
+                $debut=$elem." ".$elem2['debut'];
+                $fin=$elem." ".$elem2['fin'];
+
+                // Look for absences
+                $db2 = new db();
+                $db2->select("absences", "*", "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
+                $absent = $db2->result ? true : false;
+
+                // Look for hollidays
+                $db2 = new db();
+                $db2->select("conges", "*", "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' AND `valide`>0");
+                $absent = $db2->result ? true : $absent ;
+
+                // Don't import if absent and get_absents not checked
+                if (!$get_absents and $absent) {
+                    continue;
+                }
+
+                // Check if the agent is out of his schedule (schedule has been changed).
+                $agent = $entityManager->find(Agent::class, $elem2['perso_id']);
+                $temps = json_decode(html_entity_decode($agent->temps(), ENT_QUOTES, 'UTF-8'), true);
+                $day_index = $d->planning_day_index_for($elem2['perso_id']);
+                if (!calculSiPresent($elem2['debut'], $elem2['fin'], $temps, $day_index)) {
+                    $value[':absent'] = 2;
+                }
+
+                if (isset($value[':absent'])) {
+                    $values[] = $value;
                 }
             }
-      
+
             // insertion des données dans le planning du jour
             if (!empty($values)) {
                 // Suppression des anciennes données
