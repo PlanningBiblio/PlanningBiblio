@@ -324,6 +324,7 @@ if ($rrule) {
           $a->pj2 = $pj2;
           $a->so = $so;
           $a->uid = $uid;
+          $a->id = $id;
           $a->ics_update_event();
 
           $nouvel_enregistrement = false;
@@ -403,6 +404,7 @@ if ($rrule) {
       $a->pj2 = $pj2;
       $a->so = $so;
       $a->uid = $uid;
+      $a->id = $id;
       $a->ics_update_event();
 
       break;
@@ -430,6 +432,7 @@ if ($rrule) {
         $a->pj2 = $pj2;
         $a->so = $so;
         $a->uid = $uid;
+        $a->id = $id;
         $a->add();
         $msg2 = $a->msg2;
         $msg2_type = $a->msg2_type;

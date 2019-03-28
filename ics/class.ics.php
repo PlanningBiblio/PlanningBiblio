@@ -254,8 +254,9 @@ class CJICS
         $nb=0;
         if (!empty($insert)) {
             $db=new dbh();
-            $req="INSERT INTO `{$GLOBALS['config']['dbprefix']}$table` (`perso_id`, `debut`, `fin`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `motif`, `motif_autre`, `commentaires`, `groupe`, `cal_name`, `ical_key`, `uid`, `rrule`) 
-        VALUES (:perso_id, :debut, :fin, :demande, :valide, :validation, :valide_n1, :validation_n1, :motif, :motif_autre, :commentaires, :groupe, :cal_name, :ical_key, :uid, :rrule);";
+            $req = "INSERT INTO `{$GLOBALS['config']['dbprefix']}$table`
+                (`perso_id`, `debut`, `fin`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `motif`, `motif_autre`, `commentaires`, `groupe`, `cal_name`, `ical_key`, `uid`, `rrule`, `id_origin`)
+                VALUES (:perso_id, :debut, :fin, :demande, :valide, :validation, :valide_n1, :validation_n1, :motif, :motif_autre, :commentaires, :groupe, :cal_name, :ical_key, :uid, :rrule, :id_origin);";
             $db->CSRFToken = $CSRFToken;
             $db->prepare($req);
 
@@ -338,13 +339,20 @@ class CJICS
                     if (strstr($categories, 'PBValidationN2=')) {
                         $validation_n2 = preg_replace('/.*PBValidationN2=(\d+-\d+-\d+ \d+:\d+:\d+).*/', "$1", $categories);
                     }
+
+                    // ID Origin
+                    $id_origin = 0;
+                    if (strstr($categories, 'PBIDOrigin=')) {
+                        $id_origin = preg_replace('/.*PBIDOrigin=(\d+).*/', "$1", $categories);
+                    }
                 }
 
                 $rrule = !empty($elem['RRULE']) ? $elem['RRULE'] : '';
 
                 // Préparation de l'insertion dans la base de données
                 $tab[] = array(":perso_id" => $perso_id, ":debut" => $debut, ":fin" => $fin, ":demande" => $demande, ":valide"=> $valide_n2, ":validation" => $validation_n2, ":valide_n1"=> $valide_n1, ":validation_n1" => $validation_n1,
-          ":motif" => $motif, ":motif_autre" => $motif_autre, ":commentaires" => $commentaires, ":groupe" => $groupe, ":cal_name" => $calName, ":ical_key" => $elem['key'], ":uid" => $elem['UID'], ":rrule" => $rrule);
+                    ":motif" => $motif, ":motif_autre" => $motif_autre, ":commentaires" => $commentaires, ":groupe" => $groupe, ":cal_name" => $calName, ":ical_key" => $elem['key'], ":uid" => $elem['UID'], ":rrule" => $rrule, 
+                    ":id_origin" => $id_origin);
 
                 $nb++;
             }

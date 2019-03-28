@@ -40,6 +40,7 @@ $sql[]="CREATE TABLE `{$dbprefix}absences` (
   `ical_key` TEXT NOT NULL,
   `uid` TEXT NULL DEFAULT NULL,
   `rrule` TEXT NULL DEFAULT NULL,
+  `id_origin` INT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `cal_name`(`cal_name`),
   KEY `perso_id`(`perso_id`),

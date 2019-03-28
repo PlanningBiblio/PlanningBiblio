@@ -47,6 +47,7 @@ class absences
     public $heures2=null;
     public $hre_debut = null;
     public $hre_fin = null;
+    public $id = null;
     public $ignoreFermeture=false;
     public $minutes=0;
     public $motif = null;
@@ -107,30 +108,30 @@ class absences
         // Si workflow, validation en fonction de $this->valide
         else {
             switch ($this->valide) {
-        case 1:
-          $valide_n2 = $_SESSION['login_id'];
-          $validation_n2 = date("Y-m-d H:i:s");
-          $validationText = "Valid&eacute;e";
-          break;
-          
-        case -1:
-          $valide_n2 = $_SESSION['login_id']*-1;
-          $validation_n2 = date("Y-m-d H:i:s");
-          $validationText = "Refus&eacute;e";
-          break;
-          
-        case 2:
-          $valide_n1 = $_SESSION['login_id'];
-          $validation_n1 = date("Y-m-d H:i:s");
-          $validationText = "Accept&eacute;e (en attente de validation hi&eacute;rarchique)";
-          break;
-          
-        case -2:
-          $valide_n1 = $_SESSION['login_id']*-1;
-          $validation_n1 = date("Y-m-d H:i:s");
-          $validationText = "Refus&eacute;e (en attente de validation hi&eacute;rarchique)";
-          break;
-      }
+                case 1:
+                    $valide_n2 = $_SESSION['login_id'];
+                    $validation_n2 = date("Y-m-d H:i:s");
+                    $validationText = "Valid&eacute;e";
+                    break;
+
+                case -1:
+                    $valide_n2 = $_SESSION['login_id']*-1;
+                    $validation_n2 = date("Y-m-d H:i:s");
+                    $validationText = "Refus&eacute;e";
+                    break;
+
+                case 2:
+                    $valide_n1 = $_SESSION['login_id'];
+                    $validation_n1 = date("Y-m-d H:i:s");
+                    $validationText = "Accept&eacute;e (en attente de validation hi&eacute;rarchique)";
+                    break;
+
+                case -2:
+                    $valide_n1 = $_SESSION['login_id']*-1;
+                    $validation_n1 = date("Y-m-d H:i:s");
+                    $validationText = "Refus&eacute;e (en attente de validation hi&eacute;rarchique)";
+                    break;
+            }
         }
 
         // Choix des destinataires des notifications selon le degré de validation
@@ -183,13 +184,25 @@ class absences
                 $a->valide_n2 = $valide_n2;
                 $a->validation_n1 = $validation_n1;
                 $a->validation_n2 = $validation_n2;
+                $a->id = $this->id;
                 $a->ics_add_event();
 
             // Les événements sans récurrence sont enregistrés directement dans la base de données
             } else {
                 // Ajout de l'absence dans la table 'absence'
-                $insert = array("perso_id"=>$agent->id(), "debut"=>$debut_sql, "fin"=>$fin_sql, "motif"=>$motif, "motif_autre"=>$motif_autre, "commentaires"=>$commentaires,
-        "demande"=>date("Y-m-d H:i:s"), "pj1"=>$this->pj1, "pj2"=>$this->pj2, "so"=>$this->so, "groupe"=>$groupe);
+                $insert = array(
+                    "perso_id" => $agent->id(),
+                    "debut" => $debut_sql,
+                    "fin" => $fin_sql,
+                    "motif" => $motif,
+                    "motif_autre" => $motif_autre,
+                    "commentaires" => $commentaires,
+                    "demande" => date("Y-m-d H:i:s"),
+                    "pj1" => $this->pj1,
+                    "pj2" => $this->pj2,
+                    "so" => $this->so,
+                    "groupe" => $groupe
+                );
 
                 if ($valide_n1 != 0) {
                     $insert["valide_n1"] = $valide_n1;
@@ -197,6 +210,10 @@ class absences
                 } else {
                     $insert["valide"]=$valide_n2;
                     $insert["validation"]=$validation_n2;
+                }
+
+                if ($this->id) {
+                    $insert["id_origin"] = $this->id;
                 }
 
                 $db = new db();
@@ -898,20 +915,37 @@ class absences
 
     public function fetchById($id)
     {
+        // Search absence by Id
         $db=new db();
         $db->selectInnerJoin(
-        array("absences","perso_id"),
-        array("personnel","id"),
-      array("id","debut","fin","motif","motif_autre","commentaires","valide_n1","validation_n1","pj1","pj2","so","demande","groupe","ical_key","cal_name","rrule","uid",
-      array("name"=>"valide","as"=>"valide_n2"),array("name"=>"validation","as"=>"validation_n2")),
-      array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mails_responsables"),
-      array("id"=>$id)
-    );
+            array("absences","perso_id"),
+            array("personnel","id"),
+            array("id","debut","fin","motif","motif_autre","commentaires","valide_n1","validation_n1","pj1","pj2","so","demande","groupe","ical_key","cal_name","rrule","uid",
+            array("name"=>"valide","as"=>"valide_n2"),array("name"=>"validation","as"=>"validation_n2")),
+            array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mails_responsables"),
+            array("id"=>$id)
+        );
+
+        // If no result, search by id_origin (used when updating recurring absences)
+        // Several records may have the same id_origin, therefore results are sort by begin/end to keep only the first one (only begin and end may change among these records)
+        if (!$db->result) {
+            $db=new db();
+            $db->selectInnerJoin(
+                array("absences","perso_id","id"),
+                array("personnel","id"),
+                array("id","debut","fin","motif","motif_autre","commentaires","valide_n1","validation_n1","pj1","pj2","so","demande","groupe","ical_key","cal_name","rrule","uid",
+                array("name"=>"valide","as"=>"valide_n2"),array("name"=>"validation","as"=>"validation_n2")),
+                array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mails_responsables"),
+                array("id_origin"=>$id),
+                array(),
+                "order by debut, fin"
+            );
+        }
 
         if ($db->result) {
             $result=$db->result[0];
             $result['mails_responsables']=explode(";", html_entity_decode($result['mails_responsables'], ENT_QUOTES|ENT_IGNORE, "UTF-8"));
-      
+
             // Créé un tableau $agents qui sera placé dans $this->elements['agents']
             // Ce tableau contient un tableau par agent avec les informations le concernant (nom, prenom, mail, etc.)
             // En cas d'absence enregistrée pour plusieurs agents, il sera complété avec les informations des autres agents
@@ -930,15 +964,15 @@ class absences
                 // Recherche les absences enregistrées sous le même groupe et les infos des agents concernés
                 $db=new db();
                 $db->selectInnerJoin(
-        array("absences","perso_id"),
-        array("personnel","id"),
-      array("id"),
-      array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mails_responsables"),
-          array("groupe"=>$groupe, "debut"=>$debut, "fin"=>$fin),
-      array(),
-      "order by nom, prenom"
-    );
-    
+                    array("absences","perso_id"),
+                    array("personnel","id"),
+                    array("id"),
+                    array("nom","prenom","sites",array("name"=>"id","as"=>"perso_id"),"mail","mails_responsables"),
+                    array("groupe"=>$groupe, "debut"=>$debut, "fin"=>$fin),
+                    array(),
+                    "order by nom, prenom"
+                );
+
                 // Complète le tableau $agents
                 if ($db->result) {
                     foreach ($db->result as $elem) {
@@ -1270,6 +1304,11 @@ class absences
         if ($this->validation_n2) {
             $categories[] = "PBValidationN2=".$this->validation_n2;
         }
+
+        if ($this->id) {
+            $categories[] = "PBIDOrigin={$this->id}";
+        }
+
         $categories = implode(';', $categories);
 
         // On créé l'entête du fichier ICS
@@ -1530,6 +1569,10 @@ class absences
                 }
                 if ($this->validation_n2) {
                     $tmp[] = "PBValidationN2={$this->validation_n2}";
+                }
+
+                if ($this->id) {
+                    $tmp[] = "PBIDOrigin={$this->id}";
                 }
 
                 if (!empty($tmp)) {
