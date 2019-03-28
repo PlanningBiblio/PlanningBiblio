@@ -160,6 +160,14 @@ EOD;
     <td><input type='password' name='password' /></td></tr>
     <tr><td colspan='2' align='center'><br/><input type='submit' class='ui-button' value='Valider' /></td></tr>
 EOD;
+
+    // Demo mode
+    if (!empty($config['demo'])) {
+        echo "<tr><td colspan='2' align='center'><p>Pour les essais, vous pouvez utiliser les identifiants suivants :<br/>\n";
+        echo "<br/>Utilisateur : admin<br/>Mot de passe : {$config['demo-password']}<br/><br/>\n";
+        echo "Attention : cette plateforme de tests est réinitialisée tous les dimanches.</p></td></tr>\n";
+    }
+
     if ($config['Auth-Anonyme']) {
         echo "<tr><td colspan='2' align='center'><br/><a href='index.php?login=anonyme'>Accès anonyme</a></td></tr>\n";
     }
