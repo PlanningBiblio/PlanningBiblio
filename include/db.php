@@ -185,13 +185,13 @@ class db
     @param string options : permet d'ajouter des options de recherche après where, ex : order by
     */
     public function selectInnerJoin(
-      $table1=array(),
-      $table2=array(),
-      $table1Fields=array(),
-    $table2Fields=array(),
-      $table1Where=array(),
-      $table2Where=array(),
-      $options=null
+        $table1=array(),
+        $table2=array(),
+        $table1Fields=array(),
+        $table2Fields=array(),
+        $table1Where=array(),
+        $table2Where=array(),
+        $options=null
   ) {
         if (empty($table1) or empty($table2)) {
             $this->error=true;
@@ -263,13 +263,13 @@ class db
     @param string options : permet d'ajouter des options de recherche après where, ex : order by
     */
     public function selectLeftJoin(
-      $table1=array(),
-      $table2=array(),
-      $table1Fields=array(),
-    $table2Fields=array(),
-      $table1Where=array(),
-      $table2Where=array(),
-      $options=null
+        $table1=array(),
+        $table2=array(),
+        $table1Fields=array(),
+        $table2Fields=array(),
+        $table1Where=array(),
+        $table2Where=array(),
+        $options=null
   ) {
         if (empty($table1) or empty($table2)) {
             $this->error=true;
@@ -349,13 +349,11 @@ class db
                 // SET field = SYSDATE()
                 elseif ($set[$field]==="SYSDATE") {
                     $tmp[]="`{$field}`=SYSDATE()";
+                } elseif (substr($set[$field], 0, 7)==="CONCAT(") {
+                    $tmp[]="`{$field}`={$set[$field]}";
                 } else {
                     $set[$field]=mysqli_real_escape_string($this->conn, $set[$field]);
-                    if (substr($set[$field], 0, 7)==="CONCAT(") {
-                        $tmp[]="`{$field}`={$set[$field]}";
-                    } else {
-                        $tmp[]="`{$field}`='{$set[$field]}'";
-                    }
+                    $tmp[]="`{$field}`='{$set[$field]}'";
                 }
             }
             $set=join(",", $tmp);
@@ -548,9 +546,9 @@ class dbh
         $this->result=array();
 
         $this->pdo=new PDO(
-        "mysql:host={$this->dbhost};dbname={$this->dbname}",
-        $this->dbuser,
-        $this->dbpass,
+            "mysql:host={$this->dbhost};dbname={$this->dbname}",
+            $this->dbuser,
+            $this->dbpass,
             array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET sql_mode=''")
     );
     }

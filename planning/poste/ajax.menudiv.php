@@ -232,32 +232,7 @@ if ($db->result and $verif) {
             $temps=json_decode(html_entity_decode($elem['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
         }
 
-        $jour=$d->position-1;		// jour de la semaine lundi = 0 ,dimanche = 6
-        if ($jour==-1) {
-            $jour=6;
-        }
-
-        // Si utilisation de 2 plannings hebdo (semaine paire et semaine impaire)
-        // Si semaine paire, position +=7 : lundi A = 0 , lundi B = 7 , dimanche B = 13
-        if ($config['nb_semaine']=="2" and !($semaine%2) and !$config['EDTSamedi']) {
-            $jour+=7;
-        }
-        // Si utilisation de 3 plannings hebdo
-        elseif ($config['nb_semaine']=="3" and !$config['EDTSamedi']) {
-            if ($semaine3==2) {
-                $jour+=7;
-            } elseif ($semaine3==3) {
-                $jour+=14;
-            }
-        }
-
-        // Si utilisation d'un planning pour les semaines sans samedi et un planning pour les semaines avec samedi travaillé
-        if ($config['EDTSamedi']) {
-            // Pour chaque agent, recherche si la semaine courante est avec samedi travaillé ou non
-            $p=new personnel();
-            $p->fetchEDTSamedi($elem['id'], $j1, $j1);
-            $jour += $p->offset;
-        }
+        $jour = $d->planning_day_index_for($elem['id']);
 
         // Gestion des exclusions
         $exclusion[$elem['id']] = array();

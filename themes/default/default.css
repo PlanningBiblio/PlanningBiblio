@@ -428,6 +428,10 @@ select
   color:red;
 }
 
+.out-of-work-time {
+  color:red;
+}
+
 .orange{
   color:#FFA500;
 }
@@ -1050,6 +1054,11 @@ option.bold{
 
 #table_temps{
   text-align:center;
+}
+
+div.presents-absents {
+  width: 1000px;
+  margin-left: 25px;
 }
 
 /*	FixedColumns	*/

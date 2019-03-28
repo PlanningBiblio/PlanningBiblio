@@ -23,7 +23,7 @@ $c->debut=$date." 00:00:00";
 $c->fin=$date." 23:59:59";
 $c->valide=false;
 $c->information = false;
-$c->supprime = false;
+$c->agents_supprimes = array(0,1,2);    // required for history
 $c->fetch();
 $conges=$c->elements;
 global $conges;
