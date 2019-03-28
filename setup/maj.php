@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.8.03
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
@@ -34,7 +34,7 @@ $sql=array();
 
 
 $v="2.0";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     $sql[]="UPDATE `{$dbprefix}config` SET `categorie`='Planning' WHERE `nom`='CatAFinDeService';";
     $sql[]="UPDATE `{$dbprefix}config` SET `categorie`='Planning' WHERE `nom`='ctrlHresAgents';";
     $sql[]="UPDATE `{$dbprefix}config` SET `categorie`='Heures de pr&eacute;sence' WHERE `nom`='nb_semaine';";
@@ -137,7 +137,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.0.1";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     $sql[]="ALTER TABLE `{$dbprefix}personnel` CHANGE `heuresHebdo` `heuresHebdo` VARCHAR(6);";
     $sql[]="CREATE TABLE `{$dbprefix}heures_Absences` (
   `id` INT(11) NOT NULL AUTO_INCREMENT, 
@@ -168,7 +168,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.0.2";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES 
     ('Planning-Notifications', 'boolean', '0', 'Planning','40', 'Envoyer une notification aux agents lors de la validation des plannings les concernant');";
     $sql[]="CREATE TABLE `{$dbprefix}pl_notifications` (
@@ -183,7 +183,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 
 
 $v="2.0.3";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Modification de la config pour les checkboxes Absences-notification
     $db=new db();
     $db->query("SELECT `valeurs` FROM `{$dbprefix}config` WHERE `nom`='Absences-notifications1';");
@@ -218,7 +218,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.0.4";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Modification de la config pour l'ajout de l'option "Absences-planningVide"
     $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
   ('Absences-planningVide','boolean','1','Absences', 
@@ -229,13 +229,13 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.0.5";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Version
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='2.0.5' WHERE `nom`='Version';";
 }
 
 $v="2.1";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Masquer les tableaux du planning
     $sql[]="CREATE TABLE `{$dbprefix}hiddenTables` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -292,7 +292,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.2";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // IPBlocker
     $sql[]="CREATE TABLE `{$dbprefix}IPBlocker` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -318,25 +318,25 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.2.1";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Version
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="2.2.2";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Version
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="2.2.3";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Version
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="2.3";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Suppression des tableaux
     $sql[]="ALTER TABLE `{$dbprefix}pl_poste_tab` ADD `supprime` TIMESTAMP NULL DEFAULT NULL ;";
     $sql[]="ALTER TABLE `{$dbprefix}pl_poste_tab_grp` ADD `supprime` TIMESTAMP NULL DEFAULT NULL ;";
@@ -352,7 +352,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.3.1";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Absences groupées
     $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `groupe` VARCHAR(14) NULL DEFAULT NULL ;";
     // Version
@@ -360,7 +360,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.3.2";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Suppression des postes
     $sql[]="ALTER TABLE `{$dbprefix}postes` ADD supprime DATETIME NULL DEFAULT NULL;";
     // Suppression des activités
@@ -370,19 +370,19 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.3.3";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Version
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="2.3.4";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Version
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="2.4";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Absences
     $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `CALNAME` VARCHAR(300) NOT NULL;";
     $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `iCalKey` TEXT NOT NULL;";
@@ -406,7 +406,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.4.1";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Config
     // Supprime les éventuels doublons
     $db=new db();
@@ -439,20 +439,20 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.4.2";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Version
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="2.4.3";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     $sql[]="UPDATE `{$dbprefix}config` SET `commentaires` = 'Corps du mail pour les appels &agrave; disponibilit&eacute;' WHERE `nom` = 'Planning-AppelDispoMessage';";
     // Version
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="2.4.4";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `nom`='Granularite', `commentaires`='Granularit&eacute; des champs horaires. ATTENTION : le choix \"5 minutes\" est exp&eacute;rimental. Certains calculs peuvent manquer de pr&eacute;cision si la valeur \"5 minutes\" est choisie.', `valeurs`='[[60,\"Heure\"],[30,\"Demi-heure\"],[15,\"Quart d&apos;heure\"],[5,\"5 minutes\"]]' WHERE `nom`='heuresPrecision'";
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='60' WHERE `nom` = 'Granularite' and `valeur`='heure'";
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='30' WHERE `nom` = 'Granularite' and `valeur`='demi-heure'";
@@ -463,9 +463,8 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
-
 $v="2.4.5";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Agenda
     $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
     ('Agenda-Plannings-Non-Valides', 'boolean', '1', 'Agenda', 'Afficher ou non les plages de service public des plannings non valid&eacute;s dans les agendas.', '10');";
@@ -474,7 +473,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.4.6";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // PlanningHebdo
     $sql[]="ALTER TABLE `{$dbprefix}planningHebdo` CHANGE `key` `cle` VARCHAR( 100 ) NULL DEFAULT NULL;";
     $sql[]="ALTER TABLE `{$dbprefix}planningHebdo` ADD UNIQUE `cle` (`cle`);";
@@ -483,9 +482,8 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
-
 $v="2.4.7";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Affichage absences non validées
     $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
     ('Absences-non-validees','boolean','1','Absences', 'Dans les plannings, afficher en rouge les agents pour lesquels une absence non-valid&eacute;e est enregistr&eacute;e','35');";
@@ -495,20 +493,20 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.4.8";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires`='Granularit&eacute; des champs horaires.' WHERE `nom`='Granularite';";
     // Version
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="2.4.9";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Version
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="2.5";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Select groupe (pour les postes)
     $sql[]="CREATE TABLE `{$dbprefix}select_groupes` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -528,7 +526,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 
 
 $v="2.5.1";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
 
   // Transformation serialized -> JSON
     serializeToJson('personnel', 'droits', 'id', null, $CSRFToken);
@@ -547,7 +545,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.5.2";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // ICS si pas openURL
     $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
     ('ICS-Server3','boolean','0','ICS', 'Utiliser une URL d&eacute;finie pour chaque agent dans le menu Administration / Les agents','44');";
@@ -560,7 +558,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.5.3";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page` = 'include/ajoutSelect.php';";
   
     // Version
@@ -568,26 +566,26 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.5.4";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Version
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="2.5.5";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     $SQL[]="ALTER TABLE `{$dbprefix}pl_poste` ADD INDEX `site` (`site`);";
     // Version
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="2.5.6";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Version
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="2.5.7";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('LDAP-ID-Attribute', 'enum', 'uid', 'uid,samAccountName', 'Attribut d&apos;authentification (OpenLDAP : uid, ActiveDirectory : samAccountName)', 'LDAP', 80);";
   
     // Génération d'un CSRF Token
@@ -610,7 +608,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 
 
 $v="2.5.8";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Encodage HTML de la table pl_poste_modeles
     $db = new db();
     $db->select2('pl_poste_modeles');
@@ -635,7 +633,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.6";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // LDAP
     $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Attribut d&apos;authentification (OpenLDAP : uid, Active Directory : samaccountname)', `valeurs` = 'uid,samaccountname' WHERE `nom` = 'LDAP-ID-Attribute';";
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur` = 'samaccountname' WHERE `valeur` = 'samAccountName';";
@@ -646,20 +644,20 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.6.1";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     $sql[]="ALTER TABLE `{$dbprefix}personnel` ENGINE=MyISAM;";
     // Version
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="2.6.3";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Version
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="2.6.4";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Renomme les tables en minuscules
     $db=new db();
     $db->query("SELECT count(*) FROM `{$dbprefix}appelDispo` WHERE 1;");
@@ -726,7 +724,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.6.8";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Renomme les tables en minuscules si elles étaient déjà en minuscules (ajout d'undercores)
     $db=new db();
     $db->query("SELECT count(*) FROM `{$dbprefix}appeldispo` WHERE 1;");
@@ -768,13 +766,13 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.6.9";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Version
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="2.6.91";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Mise à jour des menus déroulants (select_) : encodage html des valeurs
     $menus = array('abs', 'categories', 'etages', 'groupes', 'services', 'statuts');
     foreach ($menus as $m) {
@@ -793,7 +791,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.7";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // 2 pauses par jour
     $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('PlanningHebdo-Pause2', 'boolean', '0', '2 pauses dans une journ&eacute;e', 'Heures de pr&eacute;sence', 60);";
 
@@ -812,7 +810,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.7.01";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Statistiques
     $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `commentaires`, `categorie`, `ordre`) 
     VALUES ('Statistiques-Heures', 'textarea', 'Afficher des statistiques sur les cr&eacute;neaux horaires voulus. Les cr&eacute;neaux doivent &ecirc;tre au format 00h00-00h00 et s&eacute;par&eacute;s par des ; Exemple : 19h00-20h00; 20h00-21h00; 21h00-22h00','Statistiques','10');";
@@ -898,13 +896,13 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.7.02";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Version
     $sql[]="UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="2.7.03";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES 
     ('ICS-Status1','enum2', 'CONFIRMED', '[[\"CONFIRMED\",\"Confirm&eacute;s\"],[\"ALL\",\"Tous\"]]', 'ICS', 'Importer tous les &eacute;v&eacute;nements ou seulement les &eacute;v&eacute;nements confirm&eacute;s (attribut STATUS = CONFIRMED). Si \"tous\" est choisi, les &eacute;v&eacute;nements non-confirm&eacute;s seront enregistr&eacute;s comme des absences en attente de validation','22');";
 
@@ -918,7 +916,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.7.04";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     $sql[]="UPDATE `{$dbprefix}menu` SET `url`='absences/voir.php' WHERE `url`='absences/index.php';";
     $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `uid` TEXT NULL DEFAULT NULL;";
     $sql[]="ALTER TABLE `{$dbprefix}absences` ADD `rrule` TEXT NULL DEFAULT NULL;";
@@ -929,7 +927,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.7.05";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     $sql[]="CREATE TABLE `{$dbprefix}absences_recurrentes` (
     `id` INT(11) NOT NULL AUTO_INCREMENT, 
     `uid` VARCHAR(50), 
@@ -953,7 +951,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.7.06";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Si la création de la table absences_recurrentes a échoué en 2.7.05 à cause des multiples champs TIMESTAMP, on la créé ici
     $sql[]="CREATE TABLE IF NOT EXISTS `{$dbprefix}absences_recurrentes` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -983,7 +981,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.7.11";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Nettoyage de la table absences
     $sql[]="DELETE FROM `{$dbprefix}absences` WHERE `fin`='0000-00-00 00:00:00';";
 
@@ -992,7 +990,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.7.12";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
 
   // CAS Service URL (pour bonne redirection si proxy)
     $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `categorie`, `ordre`, `commentaires`) VALUES 
@@ -1002,7 +1000,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.7.13";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
 
   // Importation CSV HAMAC
     $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES 
@@ -1020,7 +1018,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.7.14";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Modification des IDs des droits Absences
     $db = new db();
     $db->select('personnel');
@@ -1055,7 +1053,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.7.15";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
 
   // Ajout du paramètre LDAP-Matricule
     $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('LDAP-Matricule', 'text', '', '', 'Attribut &agrave; importer dans le champ matricule (optionnel)', 'LDAP', 90);";
@@ -1066,7 +1064,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 
 
 $v="2.8";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
 
   // Responsables et notifications
     $sql[]="ALTER TABLE `{$dbprefix}config` CHANGE `nom` `nom` VARCHAR(50);";
@@ -1161,7 +1159,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.8.01";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
 
   // Suppression des options de débogage
     $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `groupe_id` = '13';";
@@ -1187,13 +1185,13 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 }
 
 $v="2.8.03";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     // Version
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 $v="2.8.04";
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+if (version_compare($config['Version'], $v) === -1) {
     $db = new db();
     $db->select2('config', array('nom', 'valeur'), array('type'=>'password'));
     if ($db->result) {
@@ -1208,8 +1206,8 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
-$v="x.x.xx"; # To be changed when releasing.
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+$v="19.04.00";
+if (version_compare($config['Version'], $v) === -1) {
     require_once(__DIR__.'/../plugins/plugins.php');
 
     // Plugin is installed yet.
@@ -1370,6 +1368,12 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
         $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Recup-DelaiContractuel1','enum','0','Delai pour les demandes de récupération des contractuels pour 1 samedi (en semaines)','Cong&eacute;s','D&eacute;faut,0,1,2,3,4,5,6,7,8,9,10','70');";
         $sql[]="INSERT INTO `{$dbprefix}config` VALUES (null,'Recup-DelaiContractuel2','enum','0','Delai pour les demandes de récupération des contractuels pour 2 samedis (en semaines)','Cong&eacute;s','D&eacute;faut,0,1,2,3,4,5,6,7,8,9,10','80');";
 
+        # Set new variables in config because we need these keys later in the update.
+        $config['Recup-DelaiTitulaire1'] = '0';
+        $config['Recup-DelaiTitulaire2'] = '0';
+        $config['Recup-DelaiContractuel1'] = '0';
+        $config['Recup-DelaiContractuel2'] = '0';
+
         // Insertion du plugin congés: configuration - gestion des rappels
         $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` )
           VALUES ('Conges-Rappels', 'boolean', '0', 'Cong&eacute;s', 'Activer / D&eacute;sactiver l&apos;envoi de rappels s&apos;il y a des cong&eacute;s non-valid&eacute;s', '6');";
@@ -1501,12 +1505,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     $sql[] = "UPDATE `{$dbprefix}acces` SET `ordre` = '75' WHERE `groupe_id` = '401';";
     $sql[] = "UPDATE `{$dbprefix}acces` SET `ordre` = '76' WHERE `groupe_id` = '601';";
 
-    // Version
-    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
-}
-
-$v="x.x.xx"; # To be changed when releasing.
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+    # Define planning unit's emails site by site
     $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
         VALUES ('Multisites-site1-mail', 'text', '', 'Multisites', '', '', 1);";
     $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `valeurs`, `ordre` )
@@ -1530,10 +1529,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Gestion des notifications et des droits de validations agent par agent. Si cette option est activée, les paramètres PlanningHebdo-notifications1, 2, 3 et 4 seront écrasés par les choix fait dans la page de configuration des notifications du menu Administration - Notifications / Validations' WHERE `nom` = 'Absences-notifications-agent-par-agent';";
     $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Afficher le total d\'heures des 4 dernières semaine dans le menu' WHERE `nom` = 'hres4semaines';";
     $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Activer le débogage pour CAS. Créé un fichier \"cas_debug.txt\" dans le dossier \"[TEMP]\"' WHERE `nom` = 'CAS-Debug';";
-}
 
-$v="x.x.xx"; # To be changed when releasing.
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     // Recup-Agent.
     $valeurs = addslashes('[[0,""],[1,"Texte"],[2,"Menu déroulant"]]');
     $valeur = $config['Recup-Agent'] ? (($config['Recup-Agent'] == 'Texte') ? 1 : 2) : 0;
@@ -1556,18 +1552,11 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
 
     $valeur = $config['Recup-DelaiContractuel2'] == 'D&eacute;faut' ? -1 : $config['Recup-DelaiContractuel2'];
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = '$valeurs', `valeur` = '$valeur', `type` = 'enum2' WHERE `nom` = 'Recup-DelaiContractuel2';";
-}
 
-$v="x.x.xx"; # To be changed when releasing.
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+    # Allow more than one over time recovery per day
     $sql[] = "INSERT INTO `{$dbprefix}config` VALUES (null,'Recup-Uneparjour','boolean','1','Autoriser une seule demande de r&eacute;cup&eacute;ration par jour','Cong&eacute;s','','15');";
 
-    // Version
-    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
-}
-
-$v="x.x.xx"; # To be changed when releasing.
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+    # Define planning unit's emails site by site
     $notification1 = $config['Absences-notifications1'];
     $notification2 = $config['Absences-notifications2'];
     $notification3 = $config['Absences-notifications3'];
@@ -1582,12 +1571,7 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
     $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`)
           VALUES ('Recup-notifications4','checkboxes','$notification4','[[0,\"Agents ayant le droit de gérer les récupérations\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concerné\"]]','Destinataires des notifications des validations de crédit de récupérations niveau 2','Cong&eacute;s','100');";
 
-    // Version
-    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
-}
-
-$v="x.x.xx"; # To be changed when releasing.
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+    # New statistic page: presents/absents agents
     $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`)
         VALUES ('40','80','Pr&eacute;sents / absents','statistiques/presents_absents.php',NULL);";
 
@@ -1595,14 +1579,9 @@ if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
             VALUES ('Liste des agents pr&eacute;sents et absents', 1301, 'Acc&egrave;s aux statistiques Pr&eacute;sents / Absents',
             'statistiques/presents_absents.php','Statistiques','171');";
 
-    // Version
-    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
-}
-
-$v="x.x.xx"; # To be changed when releasing.
-if (strcmp($v, $config['Version'])>0 and strcmp($v, $version)<=0) {
+    # Fix wrong link on notifications of recurring absences modification (github issue #36)
     $sql[] = "ALTER TABLE `{$dbprefix}absences` ADD `id_origin` INT NOT NULL DEFAULT 0;";
-  
+
     // Version
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }

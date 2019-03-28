@@ -1,5 +1,5 @@
 /**
-Planning Biblio, Plugin Congés Version 2.8.03
+Planning Biblio, Plugin Congés
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2013-2018 Jérôme Combes

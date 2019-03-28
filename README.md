@@ -11,7 +11,7 @@ Planning Biblio est un logiciel libre développé en PHP-MySQL permettant de ré
 ===============
 Prérequis :
 
-- Serveur Apache 2.2 ou supérieur
+- Serveur Apache 2.2 ou supérieur / Nginx 1.10.3 ou supérieur
 - PHP 5.3 ou supérieur
 - MySQL client/serveur 5 ou supérieur
 
@@ -23,10 +23,11 @@ Prérequis :
   - PDO-Mysql
   - CURL (si identification CAS)
   - LDAP (si utilisation avec un serveur LDAP)
-  - Symfony/HttpFoundation
-  - phpmailer/phpmailer
-  - apereo/phpCAS
-  - Doctrine
+  - Symfony/HttpFoundation 3.4
+  - phpmailer/phpmailer >= 6.0.5
+  - Twig 2.0
+  - apereo/phpcas 1.3
+  - Doctrine 2.5
 
 ===============
 Copyright (C) 2011-2018 - Jérôme Combes

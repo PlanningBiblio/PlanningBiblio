@@ -1,6 +1,31 @@
 *** Unreleased ***
+
+*** Version 19.04          (2019-03-28)   ***
 - Plumbing
 Implements Doctrine ORM
+Include conges plugin into the core
+
+- Enhancements
+Move the call to the update script to init.php
+Define planning unit's emails site by site
+Allow more than one over time recovery per day
+Planning template import: show agents out of their work timetable in a red cell
+ICS importation : check attendees confirmation and update absences validation
+Over time recovery: create a notifications system
+GDPR: Anonymize personal data when deleting users
+Remove a typo in PlanningHebdo-notifications-agent-par-agent's comment
+add atomic updates system
+New statistic page: presents/absents agents
+Demo mode
+
+- Fixes
+Fix anonymous authentication
+Fix access rights when using multisites mode
+Planning Hebdo: fix errors of saving copies
+Fix calendar sync (github: issue #38)
+Fix wrong link on notifications of recurring absences modification (github issue #36)
+Conges plugin: Initialize variable last in conges::calculCreditRecup
+Conges plugin: Remove a warn caused by an undefined index
 
 *** Version 2.8.04         (2018-10-29)   ***
 - Plumbing
