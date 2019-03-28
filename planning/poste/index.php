@@ -422,13 +422,13 @@ if (!$verrou and !$autorisationN1) {
     // Toutes les infos seront stockées danx un tableau et utilisées par les fonctions cellules_postes
     $db=new db();
     $db->selectLeftJoin(
-      array("pl_poste","perso_id"),
-      array("personnel","id"),
-    array("perso_id","debut","fin","poste","absent","supprime","grise"),
-    array("nom","prenom","statut","service","postes"),
-    array("date"=>$date, "site"=>$site),
-    array(),
-    "ORDER BY `{$dbprefix}personnel`.`nom`, `{$dbprefix}personnel`.`prenom`"
+        array("pl_poste","perso_id"),
+        array("personnel","id"),
+        array("perso_id","debut","fin","poste","absent","supprime","grise"),
+        array("nom","prenom","statut","service","postes"),
+        array("date"=>$date, "site"=>$site),
+        array(),
+        "ORDER BY `{$dbprefix}personnel`.`nom`, `{$dbprefix}personnel`.`prenom`"
   );
 
     global $cellules;
@@ -453,6 +453,7 @@ if (!$verrou and !$autorisationN1) {
     // Le tableau $absences sera utilisé par la fonction cellule_poste pour barrer les absents dans le plannings et pour afficher les absents en bas du planning
     $a=new absences();
     $a->valide=false;
+    $a->agents_supprimes = array(0,1,2);    // required for history
     $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date);
     $absences=$a->elements;
     global $absences;
