@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 16 février 2018
+Dernière modification : 8 avril 2019
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -222,7 +222,11 @@ class CJMail
         if ($this->prepare()===false) {
             return false;
         }
-    
+
+        $from = $GLOBALS['config']['Mail-From'];
+        $sender = !empty($GLOBALS['config']['Mail-ReturnPath']) ? $GLOBALS['config']['Mail-ReturnPath'] : $from;
+        $replyTo = !empty($GLOBALS['config']['Mail-ReplyTo']) ? $GLOBALS['config']['Mail-ReplyTo'] : $from;
+
         $mail = new PHPMailer();
         $mail->setLanguage('fr');
         if ($GLOBALS['config']['Mail-IsMail-IsSMTP']=="IsMail") {
@@ -239,8 +243,9 @@ class CJMail
         $mail->SMTPAuth =$GLOBALS['config']['Mail-SMTPAuth'];
         $mail->Username =$GLOBALS['config']['Mail-Username'];
         $mail->Password =decrypt($GLOBALS['config']['Mail-Password']);
-        $mail->Sender =$GLOBALS['config']['Mail-From'];
-        $mail->From =$GLOBALS['config']['Mail-From'];
+        $mail->Sender = $sender;
+        $mail->From = $from;
+        $mail->addReplyTo($replyTo);
         $mail->FromName =$GLOBALS['config']['Mail-FromName'];
         $mail->IsHTML();
     
