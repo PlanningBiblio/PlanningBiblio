@@ -1,13 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.7.09
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : ics/class.ics.php
 Création : 29 mai 2016
-Dernière modification : 19 décembre 2017
+Dernière modification : 9 avril 2019
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -40,8 +40,9 @@ Classe permettant le traitement des fichiers ICS
  * EXDATE : exception dates
  */
  
-require_once __DIR__."/../include/config.php";
-require_once __DIR__."/../vendor/ics-parser/class.iCalReader.php";
+require_once(__DIR__.'/../include/config.php');
+require_once(__DIR__.'/../vendor/ics-parser/class.iCalReader.php');
+require_once(__DIR__.'/../personnel/class.personnel.php');
 
 class CJICS
 {
@@ -54,7 +55,6 @@ class CJICS
     public $src=null;
     public $table="absences";
 
-  
     /**
      * purge
      * @param string $this->table
@@ -65,12 +65,12 @@ class CJICS
     {
         // Initialisation des variables
         $CSRFToken = $this->CSRFToken;
-        $perso_id=$this->perso_id;	// perso_id
-    $table=$this->table;	// Table à mettre à jour
-    $src=$this->src;		// Fichier ICS
-    $calName=null;		// Nom du calendrier
+        $perso_id = $this->perso_id;    // perso_id
+        $table = $this->table;          // Table à mettre à jour
+        $src = $this->src;              // Fichier ICS
+        $calName = null;                // Nom du calendrier
 
-    // Parse le fichier ICS, le tableau $events contient les événements du fichier ICS
+        // Parse le fichier ICS, le tableau $events contient les événements du fichier ICS
         $ical   = new ICal($src, "MO");
 
         // Récupération du nom du calendrier
@@ -96,8 +96,7 @@ class CJICS
         $db->CSRFToken = $CSRFToken;
         $db->delete($table, array('cal_name' => $calName, 'perso_id' => $perso_id));
     }
-  
-  
+
     /**
      * @function updateTable
      * @param string $this->table : table à mettre à jour (ex: absences)
@@ -109,25 +108,26 @@ class CJICS
     public function updateTable()
     {
 
-    // Initialisation des variables
+        // Initialisation des variables
         $CSRFToken = $this->CSRFToken;
-        $perso_id=$this->perso_id;	// perso_id
-    $table=$this->table;	// Table à mettre à jour
-    $src=$this->src;		// Fichier ICS
-    $iCalKeys=array();  	// Clés des événements confirmés et occupés du fichier ICS
-    $tableKeys=array();		// Clés des événements ICS de la table $table
-    $calName=null;		// Nom du calendrier
-    $deleted=array();		// Evénements supprimés du fichier ICS ou événements modifiés
-    $insert=array();		// Evénements à insérer (nouveaux ou événements modifiés (suppression + réinsertion))
+        $perso_id=$this->perso_id;  // perso_id
+        $table=$this->table;        // Table à mettre à jour
+        $src=$this->src;            // Fichier ICS
+        $iCalKeys=array();          // Clés des événements confirmés et occupés du fichier ICS
+        $tableKeys=array();         // Clés des événements ICS de la table $table
+        $calName=null;              // Nom du calendrier
+        $deleted=array();           // Evénements supprimés du fichier ICS ou événements modifiés
+        $insert=array();            // Evénements à insérer (nouveaux ou événements modifiés (suppression + réinsertion))
+        $email=null;                // Email de l'agent
 
-    if ($this->logs) {
-        logs("Agent #$perso_id : Table: $table, src: $src", "ICS", $CSRFToken);
-    }
+        if ($this->logs) {
+            logs("Agent #$perso_id : Table: $table, src: $src", "ICS", $CSRFToken);
+        }
 
         // Parse le fichier ICS, le tableau $events contient les événements du fichier ICS
         $ical   = new ICal($src, "MO");
         $events = $ical->events();
-    
+
         // Récupération du nom du calendrier
         $calName=$ical->calendarName();
         $calName = removeAccents($calName);
@@ -135,29 +135,34 @@ class CJICS
         if ($this->logs) {
             logs("Agent #$perso_id : Calendrier: $calName, Fuseau horaire: $calTimeZone", "ICS", $CSRFToken);
         }
-    
+
         if (!is_array($events) or empty($events)) {
             if ($this->logs) {
                 logs("Agent #$perso_id : Aucun élément trouvé dans le fichier $src", "ICS", $CSRFToken);
                 $events = array();
             }
         }
-    
+
+        // Récupération de l'email de l'agent
+        $p = new personnel();
+        $p->fetchById($perso_id);
+        $email = $p->elements[0]['mail'];
+
         // Ne garde que les événements confirmés et occupés et rempli le tableau $iCalKeys
         $tmp=array();
-    
+
         foreach ($events as $elem) {
             $key=$elem['UID']."_".$elem['DTSTART']."_".$elem['LAST-MODIFIED'];
             $tmp[]=array_merge($elem, array("key"=>$key));
         }
-    
+
         $events=array();
         foreach ($tmp as $elem) {
             // Ne traite pas les événéments ayant le status X-MICROSOFT-CDO-INTENDEDSTATUS différent de BUSY (si le paramètre X-MICROSOFT-CDO-INTENDEDSTATUS existe)
             if (isset($elem['X-MICROSOFT-CDO-INTENDEDSTATUS']) and $elem['X-MICROSOFT-CDO-INTENDEDSTATUS'] != "BUSY") {
                 continue;
             }
-      
+
             // Exclusion des dates EXDATE (ics-parser ne le gère pas correctement)
             if (isset($elem['EXDATE'])) {
                 $exdate_array = explode(",", $elem['EXDATE']);
@@ -171,7 +176,7 @@ class CJICS
                 }
             }
 
-            // Traite seulement les événéments ayant un status occupés TRANSP OPAQUE (TRANSP OPAQUE défini un status BUSY)
+            // Traite seulement les événéments ayant un status occupé TRANSP OPAQUE (TRANSP OPAQUE défini un status BUSY)
             if (isset($elem['TRANSP']) && $elem['TRANSP']=="OPAQUE") {
                 $add = false;
                 // Traite seulement les événéments ayant le STATUS CONFIRMED si la configuration demande seulement les status CONFIRMED
@@ -191,8 +196,8 @@ class CJICS
                         if (!empty($elem['ATTENDEE'])) {
                             $attendees = explode('CUTYPE=', $elem['ATTENDEE']);
                             foreach ($attendees as $attendee) {
-                                if (!empty($attendee) and !strpos($attendee, 'CN=')) {
-                                    if (strpos($attendee, 'PARTSTAT=CONFIRMED')) {
+                                if (!empty($attendee) and strpos($attendee, $email)) {
+                                    if (strpos($attendee, 'PARTSTAT=ACCEPTED')) {
                                         $add = true;
                                     }
                                 }
@@ -204,7 +209,7 @@ class CJICS
                         }
                     }
                 }
-                
+
                 if ($add) {
                     $events[]=$elem;
                     $iCalKeys[]=$elem['key'];
@@ -227,7 +232,7 @@ class CJICS
                 }
             }
         }
-    
+
         // Suppression des événements supprimés ou modifiés de la base de données
         $nb = count($deleted);
         if (!empty($deleted)) {
@@ -249,7 +254,7 @@ class CJICS
                 $insert[]=$elem;
             }
         }
-      
+
         // Insertion des nouveux éléments ou des éléments modifiés dans la table $table : insertion dans la base de données
         $nb=0;
         if (!empty($insert)) {
