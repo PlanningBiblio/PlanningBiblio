@@ -119,6 +119,7 @@ class CJICS
         $deleted=array();           // Evénements supprimés du fichier ICS ou événements modifiés
         $insert=array();            // Evénements à insérer (nouveaux ou événements modifiés (suppression + réinsertion))
         $email=null;                // Email de l'agent
+        $now = date('Ymd\THis\Z');  // Current time
 
         if ($this->logs) {
             logs("Agent #$perso_id : Table: $table, src: $src", "ICS", $CSRFToken);
@@ -152,6 +153,15 @@ class CJICS
         $tmp=array();
 
         foreach ($events as $elem) {
+            // Add LAST-MODIFIED = Now, if this attribute doesn't exist (missing in Hamac)
+            if (empty($elem['LAST-MODIFIED'])) {
+                $elem['LAST-MODIFIED'] = $now;
+            }
+            // Add STATUS = "CONFIRMED", if this attribute doesn't exist (missing in Hamac)
+            if (empty($elem['STATUS'])) {
+                $elem['STATUS'] = "CONFIRMED";
+            }
+
             $key=$elem['UID']."_".$elem['DTSTART']."_".$elem['LAST-MODIFIED'];
             $tmp[]=array_merge($elem, array("key"=>$key));
         }
@@ -177,43 +187,46 @@ class CJICS
             }
 
             // Traite seulement les événéments ayant un status occupé TRANSP OPAQUE (TRANSP OPAQUE défini un status BUSY)
-            if (isset($elem['TRANSP']) && $elem['TRANSP']=="OPAQUE") {
-                $add = false;
-                // Traite seulement les événéments ayant le STATUS CONFIRMED si la configuration demande seulement les status CONFIRMED
+            if (isset($elem['TRANSP']) && $elem['TRANSP'] != "OPAQUE") {
+                continue;
+            }
 
-                // If STATUS not CANCELLED
-                if ($elem['STATUS'] != 'CANCELLED') {
+            // Ignore events with STATUS = CANCELLED
+            if ($elem['STATUS'] == 'CANCELLED') {
+                continue;
+            }
 
-                    // If unconfirmed events are accepted
-                    if ($this->status != 'CONFIRMED') {
-                        $add = true;
+            // Traite seulement les événéments ayant le STATUS CONFIRMED si la configuration demande seulement les status CONFIRMED
+            $add = false;
 
-                    // If only confirmed events are accepted
-                    } elseif ($elem['STATUS']=="CONFIRMED") {
+            // If unconfirmed events are accepted
+            if ($this->status != 'CONFIRMED') {
+                $add = true;
 
-                        // Check if it is an invitation from someone else
-                        // And check if it's confirmed
-                        if (!empty($elem['ATTENDEE'])) {
-                            $attendees = explode('CUTYPE=', $elem['ATTENDEE']);
-                            foreach ($attendees as $attendee) {
-                                if (!empty($attendee) and strpos($attendee, $email)) {
-                                    if (strpos($attendee, 'PARTSTAT=ACCEPTED')) {
-                                        $add = true;
-                                    }
-                                }
+            // If only confirmed events are accepted
+            } elseif ($elem['STATUS']=="CONFIRMED") {
+
+                // Check if it is an invitation from someone else (or including attendees)
+                // And check if the owner of this calendar accepted it
+                if (!empty($elem['ATTENDEE'])) {
+                    $attendees = explode('CUTYPE=', $elem['ATTENDEE']);
+                    foreach ($attendees as $attendee) {
+                        if (!empty($attendee) and strpos($attendee, $email)) {
+                            if (strpos($attendee, 'PARTSTAT=ACCEPTED')) {
+                                $add = true;
                             }
-
-                            // If event created by calendar's owner and STATUS=CONFIRMED
-                        } else {
-                            $add = true;
                         }
                     }
-                }
 
-                if ($add) {
-                    $events[]=$elem;
-                    $iCalKeys[]=$elem['key'];
+                // If event created by calendar's owner and STATUS=CONFIRMED
+                } else {
+                    $add = true;
                 }
+            }
+
+            if ($add) {
+                $events[]=$elem;
+                $iCalKeys[]=$elem['key'];
             }
         }
 
@@ -305,6 +318,9 @@ class CJICS
                 // Utilisation du champ CATEGORIES pour la gestion des absences groupées (plusieurs agents), et des validations
                 $groupe = '';
 
+                // ID Origin
+                $id_origin = 0;
+
                 // Initialization of validation parameters for Planning Biblio's event (recurrent absences)
                 if (stripos($calName, 'PlanningBiblio')) {
                     $valide_n1 = 0;
@@ -346,7 +362,6 @@ class CJICS
                     }
 
                     // ID Origin
-                    $id_origin = 0;
                     if (strstr($categories, 'PBIDOrigin=')) {
                         $id_origin = preg_replace('/.*PBIDOrigin=(\d+).*/', "$1", $categories);
                     }
