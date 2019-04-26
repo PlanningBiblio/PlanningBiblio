@@ -38,13 +38,16 @@ Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec ce
 si ce n'est pas le cas, consultez : http://www.gnu.org/licenses
 
 ===============
-Ressources :
+Ressources installées via composer:
 
 - Symfony/HttpFoundation 3.4
 - phpmailer/phpmailer >= 6.0.5
 - Twig 2.0
 - apereo/phpcas 1.3
 - Doctrine 2.5
+
+===============
+Ressources intégrées au code :
 
 - Dossier vendor/ics-parser
  - Licence MIT : http://www.datatables.net/license/mit
