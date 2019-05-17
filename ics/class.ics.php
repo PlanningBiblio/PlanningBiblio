@@ -319,9 +319,6 @@ class CJICS
                 // Utilisation du champ CATEGORIES pour la gestion des absences groupées (plusieurs agents), et des validations
                 $groupe = '';
 
-                // ID Origin
-                $id_origin = 0;
-
                 // Initialization of validation parameters for Planning Biblio's event (recurrent absences)
                 if (stripos($calName, 'PlanningBiblio')) {
                     $valide_n1 = 0;
