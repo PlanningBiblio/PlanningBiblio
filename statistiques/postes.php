@@ -168,15 +168,16 @@ if (!empty($postes)) {
         $statuts=array();
         if (is_array($resultat)) {
             foreach ($resultat as $elem) {
-                // Vérifie à partir de la table absences si l'agent est absent
-                // S'il est absent : continue
-                foreach ($absencesDB as $a) {
-                    if ($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
-                        continue 2;
-                    }
-                }
-
                 if ($poste==$elem['poste']) {
+                    // Vérifie à partir de la table absences si l'agent est absent
+                    // S'il est absent : continue
+                    foreach ($absencesDB as $a) {
+                        if ($elem['perso_id']==$a['perso_id']) {
+                            if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
+                                continue 2;
+                            }
+                        }
+                    }
                     // on créé un tableau par agent avec son nom, prénom et la somme des heures faites par poste
                     if (!array_key_exists($elem['perso_id'], $agents)) {
                         $agents[$elem['perso_id']]=array($elem['perso_id'],$elem['nom'],$elem['prenom'],0,"site"=>$elem['site']);
