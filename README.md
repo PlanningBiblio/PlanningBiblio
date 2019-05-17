@@ -1,5 +1,4 @@
-Planning Biblio
-===============
+# Planning Biblio
 
 Planning Biblio est un logiciel libre développé en PHP-MySQL permettant de réaliser les plannings de service public
 
@@ -8,8 +7,7 @@ Planning Biblio est un logiciel libre développé en PHP-MySQL permettant de ré
 - Facebook : facebook.com/PlanningBiblio
 - Groupe Facebook : Les faiseurs de planning : https://www.facebook.com/groups/350347521813310
 
-===============
-Prérequis :
+## Prérequis :
 
 - Serveur Apache 2.2 ou supérieur / Nginx 1.10.3 ou supérieur
 - PHP 7.0 ou supérieur
@@ -23,8 +21,7 @@ Prérequis :
   - CURL (si identification CAS)
   - LDAP (si utilisation avec un serveur LDAP)
 
-===============
-Copyright (C) 2011-2018 - Jérôme Combes
+## Copyright (C) 2011-2018 - Jérôme Combes
 
 Planning Biblio est un logiciel libre : vous pouvez le redistribuer et/ou le modifier
 suivant les termes de la "GNU General Public License", telle que publiée par la 
@@ -37,8 +34,7 @@ Consultez la Licence Générale Publique GNU pour plus de détails.
 Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec ce programme (fichier LICENSE); 
 si ce n'est pas le cas, consultez : http://www.gnu.org/licenses
 
-===============
-Ressources installées via composer:
+## Ressources installées via composer:
 
 - Symfony/HttpFoundation 3.4
 - phpmailer/phpmailer >= 6.0.5
@@ -46,8 +42,7 @@ Ressources installées via composer:
 - apereo/phpcas 1.3
 - Doctrine 2.5
 
-===============
-Ressources intégrées au code :
+## Ressources intégrées au code :
 
 - Dossier vendor/ics-parser
  - Licence MIT : http://www.datatables.net/license/mit
