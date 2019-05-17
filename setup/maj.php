@@ -7,7 +7,7 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 27 septembre 2018
+Dernière modification : 9 avril 2019
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -26,7 +26,7 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
 $CSRFToken = CSRFToken();
 
 echo "Mise &agrave; jour de la base de donn&eacute;es version {$config['Version']} --> $version<br/>\n";
-if ($config['Version']<"2.0") {
+if (version_compare($config['Version'], "2.0") === -1) {
     echo "<br/>Vous devez d'abord installer la version 2.0<br/>\n";
     exit;
 }
@@ -928,7 +928,7 @@ if (version_compare($config['Version'], $v) === -1) {
 
 $v="2.7.05";
 if (version_compare($config['Version'], $v) === -1) {
-    $sql[]="CREATE TABLE `{$dbprefix}absences_recurrentes` (
+    $sql[]="CREATE TABLE IF NOT EXISTS `{$dbprefix}absences_recurrentes` (
     `id` INT(11) NOT NULL AUTO_INCREMENT, 
     `uid` VARCHAR(50), 
     `perso_id` INT,
@@ -1073,7 +1073,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES 
     ('50','77','Validations / Notifications','notifications/index.php','config=Absences-notifications-agent-par-agent');";
     $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Notifications / Validations', 21, 'Gestion des agents', 'notifications/index.php', 'Agents', 70);";
-    $sql[]="CREATE TABLE `{$dbprefix}responsables` (
+    $sql[]="CREATE TABLE IF NOT EXISTS `{$dbprefix}responsables` (
     `id` INT(11) NOT NULL AUTO_INCREMENT, 
     `perso_id` INT(11) NOT NULL DEFAULT '0', 
     `responsable` INT(11) NOT NULL DEFAULT '0', 
@@ -1146,7 +1146,7 @@ if (version_compare($config['Version'], $v) === -1) {
     ('Planning-agents-volants','boolean', '0', '', 'Planning', 'Utiliser le module \"Agents volants\" permettant de diff&eacute;rencier un groupe d&apos;agents dans le planning','90');";
     $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Agents volants', 301, 'Cr&eacute;ation / modification des plannings, utilisation et gestion des mod&egrave;les', 'planning/volants/index.php', 'Planning', 110);";
 
-    $sql[] = "CREATE TABLE `{$dbprefix}volants` (
+    $sql[] = "CREATE TABLE IF NOT EXISTS `{$dbprefix}volants` (
     `id` INT(11) NOT NULL AUTO_INCREMENT, 
     `date` DATE NULL DEFAULT NULL, 
     `perso_id` INT(11) NOT NULL DEFAULT '0', 
