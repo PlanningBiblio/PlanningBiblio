@@ -268,6 +268,7 @@ class CJICS
                 $demande= array_key_exists("CREATED", $elem) ? date("Y-m-d H:i:s", strtotime($elem['CREATED'])) : $lastmodified;
 
                 $debut = date("Y-m-d H:i:s", strtotime($elem["DTSTART_tz"]));
+                $id_origin = 0;
 
                 // Si pas de date de fin, la fin est égale au début
                 if (empty($elem["DTEND_tz"])) {
@@ -341,7 +342,6 @@ class CJICS
                     }
 
                     // ID Origin
-                    $id_origin = 0;
                     if (strstr($categories, 'PBIDOrigin=')) {
                         $id_origin = preg_replace('/.*PBIDOrigin=(\d+).*/', "$1", $categories);
                     }
