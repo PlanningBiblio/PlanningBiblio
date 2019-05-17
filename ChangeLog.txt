@@ -1,5 +1,14 @@
 *** Unreleased ***
 
+*** Version 19.04.01       (2019-05-17)   ***
+- Fixes
+Optimization of statistics: avoid timeout on statistic pages for large dataset
+Fix version checks in setup/maj.php
+Fix README.md markdown format
+
+- Enhancements
+Make ICS import compatible with Google invitations and the "Hamac" format
+
 *** Version 19.04          (2019-03-28)   ***
 - Plumbing
 Implements Doctrine ORM

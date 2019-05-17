@@ -26,7 +26,7 @@ $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSI
 $_SESSION['oups']['week'] = isset($_SESSION['oups']['week']) ? $_SESSION['oups']['week'] : '';
 
 // Version
-$version="19.04.00";
+$version="19.04.01";
 require_once __DIR__.'/vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
