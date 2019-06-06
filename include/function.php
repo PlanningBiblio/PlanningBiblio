@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : include/function.php
 Création : mai 2011
-Dernière modification : 16 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -15,6 +14,8 @@ Description :
 Page contenant les fonctions PHP communes
 Page appelée par les fichiers index.php, setup/index.php et planning/poste/menudiv.php
 */
+
+use Model\Agent;
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
 if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
@@ -294,13 +295,43 @@ class CJMail
 
 function authSQL($login, $password)
 {
-    $auth=false;
-    $db=new db();
-    $db->select2("personnel", array("id","nom","prenom"), array("password"=>MD5($password), "login"=>$login, "supprime"=>0));
-    if ($db->nb==1 and $login!=null) {
-        $auth=true;
-        $_SESSION['oups']['Auth-Mode']="SQL";
+
+    $auth = false;
+    $em = $GLOBALS['entityManager'];
+
+    $agent = $em->getRepository(Agent::class)->findBy(array('login' => $login, 'supprime' => 0));
+
+    if (empty($agent) or empty($login)) {
+        return false;
     }
+
+    if (count($agent) <> 1) {
+        return false;
+    }
+
+    $agent = $agent[0];
+
+    // Old MD5 password
+    if (strlen($agent->password()) == 32) {
+        if (md5($password) == $agent->password()) {
+            $auth=true;
+            $_SESSION['oups']['Auth-Mode']="SQL";
+
+            // Update password
+            $bcrypt_password = password_hash($password,PASSWORD_BCRYPT);
+
+            $agent->password($bcrypt_password);
+            $em->persist($agent);
+            $em->flush();
+        }
+    // New bcrypt password
+    } else {
+        if (password_verify($password, $agent->password())) {
+            $auth=true;
+            $_SESSION['oups']['Auth-Mode']="SQL";
+        }
+    }
+
     return $auth;
 }
 
