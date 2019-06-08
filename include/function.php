@@ -1,13 +1,11 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : include/function.php
-Création : mai 2011
-Dernière modification : 16 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -1393,6 +1391,37 @@ function selectTemps($jour, $i, $periodes=null, $class=null)
   
     $select.="</select>\n";
     return $select;
+}
+
+/**
+ * @function sites
+ * @return Array Sites
+ */
+function sites()
+{
+    $config = $GLOBALS['config'];
+    $sites = array();
+
+    if ($config['Multisites-nombre'] > 1) {
+        for ($i=1; $i<= $config['Multisites-nombre']; $i++) {
+            if (empty($config["Multisites-site$i"])) {
+                continue;
+            }
+
+            $site = array('id' => $i, 'name' => $config["Multisites-site{$i}"]);
+            $pos = $config["Multisites-site{$i}-position"];
+
+            if (isset($sites[$pos])) {
+                array_splice($sites, $pos, 0, array($site));
+            } else {
+                $sites[$pos] = $site;
+            }
+        }
+
+        ksort($sites);
+    }
+    return $sites;
+    
 }
 
 function verifmail($texte)

@@ -187,8 +187,20 @@ class personnel
             $db=new db();
             $db->select("personnel", null, "id='$id'");
             $this->elements=$db->result;
+
             $sites = json_decode(html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-            $this->elements[0]['sites'] = $sites ? $sites : array();
+
+            if (empty($sites)) {
+                $sites = array();
+            }
+
+            $tmp = array();
+            foreach ($sites as $site) {
+                $tmp[] = array($site, 'id'=> $site, 'name' => $GLOBALS['config']['Multisites-site'.$site]);
+            }
+            $sites = $tmp;
+
+            $this->elements[0]['sites'] = $sites;
             $this->elements[0]['mails_responsables']=explode(";", html_entity_decode($db->result[0]['mails_responsables'], ENT_QUOTES|ENT_IGNORE, "UTF-8"));
         } elseif (is_array($id)) {
             $ids=join(",", $id);
@@ -197,8 +209,20 @@ class personnel
             if ($db->result) {
                 foreach ($db->result as $elem) {
                     $this->elements[$elem['id']]=$elem;
+
                     $sites = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-                    $this->elements[$elem['id']]['sites'] = $sites ? $sites : array();
+
+                    if (empty($sites)) {
+                        $sites = array();
+                    }
+
+                    $tmp = array();
+                    foreach ($sites as $site) {
+                        $tmp[] = array($site, 'id'=> $site, 'name' => $GLOBALS['config']['Multisites-site'.$site]);
+                    }
+                    $sites = $tmp;
+
+                    $this->elements[$elem['id']]['sites'] = $sites;
                     $this->elements[$elem['id']]['mails_responsables']=explode(";", html_entity_decode($elem['mails_responsables'], ENT_QUOTES|ENT_IGNORE, "UTF-8"));
                 }
             }

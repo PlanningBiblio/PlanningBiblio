@@ -1,13 +1,11 @@
 <?php
 /**
-Planning Biblio, Version 2.8.1
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/modif.php
-Création : mai 2011
-Dernière modification : 24 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -53,6 +51,8 @@ if ($config['PlanningHebdo']) {
     $config['EDTSamedi']=0;
 }
 
+
+
 // Si multisites, les droits de gestion des absences, congés et modification planning dépendent des sites :
 // on les places dans un autre tableau pour simplifier l'affichage
 $groupes_sites=array();
@@ -72,9 +72,9 @@ if ($config['Multisites-nombre']>1) {
         }
     }
 }
-
 uasort($groupes_sites, 'cmp_ordre');
 
+$all_sites = sites();
 
 $db=new db();
 $db->select2("select_statuts", null, null, "order by rang");
@@ -267,7 +267,7 @@ $postes_dispo=postesNoms($postes_dispo, $postes_completNoms);
 <h3><?php echo $titre; ?></h3>
 <!--		Menu						-->
 <div class='ui-tabs'>
-<ul>		
+<ul>
 <li><a href='#main'>Infos générales</a></li>
 <li><a href='#qualif'>Activités</a></li>
 <li><a href='#temps' id='personnel-a-li3'>Heures de pr&eacute;sence</a></li>
@@ -503,18 +503,21 @@ echo "</td></tr>";
 
 // Multi-sites
 if ($config['Multisites-nombre']>1) {
+
     echo "<tr style='vertical-align:top;'><td>Sites :</td><td>";
-    for ($i=1;$i<=$config['Multisites-nombre'];$i++) {
+
+    foreach ($all_sites as $elem) {
+
         if (in_array(21, $droits)) {
-            $checked=in_array($i, $sites)?"checked='checked'":null;
-            echo "<input type='checkbox' name='sites[]' value='$i' $checked >{$config["Multisites-site$i"]}<br/>";
+            $checked=in_array($elem['id'], $sites)?"checked='checked'":null;
+            echo "<input type='checkbox' name='sites[]' value='{$elem['id']}' $checked >{$elem['name']}<br/>";
         } else {
             if (in_array($i, $sites)) {
-                echo $config["Multisites-site{$i}"]."<br/>";
-                ;
+                echo $elem['name']."<br/>";
             }
         }
     }
+
     echo "</td></tr>\n";
 }
 
@@ -702,7 +705,7 @@ for ($j=0;$j<$config['nb_semaine'];$j++) {
     if ($config['Multisites-nombre']>1) {
         echo "<td>Site</td>";
     }
-  
+
     echo "<td style='width:135px;'>Temps</td>";
     echo "</tr>\n";
     for ($i=$debut[$j];$i<$fin[$j];$i++) {
@@ -720,9 +723,9 @@ for ($j=0;$j<$config['nb_semaine'];$j++) {
             if ($config['Multisites-nombre']>1) {
                 echo "<td><select name='temps[".($i-1)."][4]' class='edt-site'>\n";
                 echo "<option value='' class='edt-site-0'>&nbsp;</option>\n";
-                for ($l=1;$l<=$config['Multisites-nombre'];$l++) {
-                    $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4]==$l) ? "selected='selected'" : null;
-                    echo "<option value='$l' $selected class='edt-site-$l'>{$config["Multisites-site{$l}"]}</option>\n";
+                foreach ($all_sites as $elem) {
+                    $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4] == $elem['id']) ? "selected='selected'" : null;
+                    echo "<option value='{$elem['id']}' $selected class='edt-site-{$elem['id']}'>{$elem['name']}</option>\n";
                 }
                 echo "</select></td>";
             }
@@ -1002,8 +1005,8 @@ if (!$admin) {
 // Affichage des droits d'accès dépendant des sites (si plusieurs sites)
 if ($config['Multisites-nombre']>1) {
     echo "<table style='margin-top:50px;'><thead><tr><th>&nbsp;</th>\n";
-    for ($i=1;$i<=$config['Multisites-nombre'];$i++) {
-        echo "<th class='center' style='padding:0 10px;'>{$config["Multisites-site$i"]}</th>\n";
+    foreach ($all_sites as $site_elem) {
+        echo "<th class='center' style='padding:0 10px;'>{$site_elem['name']}</th>\n";
     }
     echo "</tr></thead>\n";
     echo "<tbody>\n";
@@ -1024,10 +1027,8 @@ if ($config['Multisites-nombre']>1) {
 
         echo "<tr><td>{$elem['groupe']}</td>\n";
 
-        for ($i=1;$i<$config['Multisites-nombre']+1;$i++) {
-            $site=$config['Multisites-site'.$i];
-
-            $groupe_id = $elem['groupe_id'] - 1 + $i;
+        foreach ($all_sites as $site_elem) {
+             $groupe_id = $elem['groupe_id'] - 1 + $site_elem['id'];
 
             $checked=null;
             $checked="Non";
@@ -1062,7 +1063,7 @@ if ($config['Conges-Enable']) {
 </form>
 
 
-<!--	Modification de la liste des statuts (Dialog Box) -->  
+<!--	Modification de la liste des statuts (Dialog Box) -->
 <div id="add-statut-form" title="Liste des statuts" class='noprint'>
   <p class="validateTips">Ajoutez, supprimez des statuts. Modifiez leur catégorie. Modifiez l'ordre des statuts dans les menus déroulant.</p>
   <form>
@@ -1094,7 +1095,7 @@ if ($config['Conges-Enable']) {
   </form>
 </div>
 
-<!--	Modification de la liste des services (Dialog Box) -->  
+<!--	Modification de la liste des services (Dialog Box) -->
 <div id="add-service-form" title="Liste des services" class='noprint' style='display:none;' >
   <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des services dans le menu déroulant.</p>
   <form>

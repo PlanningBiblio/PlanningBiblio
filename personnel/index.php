@@ -1,13 +1,11 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/index.php
-Création : mai 2011
-Dernière modification : 21 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Chritophe Le Guennec <christophe.leguennec@u-pem.fr>
 
@@ -123,11 +121,13 @@ foreach ($agents as $agent) {
         $tmp=array();
         if (!empty($agent['sites'])) {
             foreach ($agent['sites'] as $site) {
-                if ($site) {
-                    $tmp[]=$config["Multisites-site{$site}"];
+                if (!empty($config["Multisites-site{$site}"])) {
+                    $tmp[$config["Multisites-site{$site}-position"]] = $config["Multisites-site{$site}"];
                 }
             }
         }
+
+        ksort($tmp);
         $sites=!empty($tmp)?join(", ", $tmp):null;
         echo "<td>$sites</td>";
     }
