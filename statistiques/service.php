@@ -1,13 +1,11 @@
 <?php
 /**
-Planning Biblio, Version 2.7.04
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : statistiques/service.php
-Création : 9 septembre 2013
-Dernière modification : 22 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -37,6 +35,8 @@ $joursParSemaine=$config['Dimanche']?7:6;
 $services_tab=null;
 $exists_JF=false;
 $exists_absences=false;
+
+$all_sites = sites();
 
 // Statistiques-Heures
 $heures_tab_global = array();
@@ -175,8 +175,8 @@ if (!empty($services)) {
 
     // Ajoute le service pour chaque agents dans le tableau resultat
     for ($i=0;$i<count($resultat);$i++) {
-        $resultat[$i]['service']=$agents[$resultat[$i]['perso_id']]['service'];
-        $resultat[$i]['service_id']=$agents[$resultat[$i]['perso_id']]['service_id'];
+        $resultat[$i]['service'] = !empty($agents[$resultat[$i]['perso_id']]) ? $agents[$resultat[$i]['perso_id']]['service'] : null;
+        $resultat[$i]['service_id'] = !empty($agents[$resultat[$i]['perso_id']]) ? $agents[$resultat[$i]['perso_id']]['service_id'] : null;
     }
 
     //	Recherche des infos dans le tableau $resultat (issu de pl_poste et postes)
@@ -336,14 +336,14 @@ echo "<tr style='vertical-align:top;'><td><label for='statistiques_heures' class
 echo "<td><textarea name='statistiques_heures' rows='7' class='ui-widget-content ui-corner-all'>$statistiques_heures</textarea><br/>\n";
 echo "<a href='#' id='statistiques_heures_defaut_lien'>Charger les heures par d&eacute;faut</a></td></tr>\n";
 
-if ($config['Multisites-nombre']>1) {
-    $nbSites=$config['Multisites-nombre'];
+if (!empty($all_sites)) {
+    $nbSites = count($all_sites);
     echo "<tr style='vertical-align:top'><td><label class='intitule'>Sites</label></td>\n";
     echo "<td><select name='selectedSites[]' multiple='multiple' size='".($nbSites+1)."' onchange='verif_select(\"selectedSites\");' class='ui-widget-content ui-corner-all' >\n";
     echo "<option value='Tous'>Tous</option>\n";
-    for ($i=1;$i<=$nbSites;$i++) {
-        $selected=in_array($i, $selectedSites)?"selected='selected'":null;
-        echo "<option value='$i' $selected>{$config["Multisites-site$i"]}</option>\n";
+    foreach ($all_sites as $elem) {
+        $selected = in_array($elem['id'], $selectedSites) ? "selected='selected'" : null;
+        echo "<option value='{$elem['id']}' $selected >{$elem['name']}</option>\n";
     }
     echo "</select></td></tr>\n";
 }

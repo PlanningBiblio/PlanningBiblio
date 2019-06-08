@@ -1,13 +1,11 @@
 <?php
 /**
-Planning Biblio, Version 2.8.05
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planningHebdo/modif.php
-Création : 23 juillet 2013
-Dernière modification : 6 décembre 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -111,10 +109,7 @@ if ($id) {
     $temps=null;
     $valide_n2 = 0;
     $remplace=null;
-    $sites=array();
-    for ($i=1;$i<$config['Multisites-nombre']+1;$i++) {
-        $sites[]=$i;
-    }
+    $sites = sites();
 }
 
 // Sécurité
@@ -294,8 +289,8 @@ for ($j=0;$j<$config['nb_semaine'];$j++) {
                     echo "<option value=''>&nbsp;</option>\n";
                 }
                 foreach ($sites as $site) {
-                    $selected=$temps[$i-1][4]==$site?"selected='selected'":null;
-                    echo "<option value='$site' $selected >{$config["Multisites-site{$site}"]}</option>\n";
+                    $selected = $temps[$i-1][4] == $site['id'] ? "selected='selected'" : null;
+                    echo "<option value='{$site['id']}' $selected >{$site['name']}</option>\n";
                 }
                 echo "</select></td>";
             } else {

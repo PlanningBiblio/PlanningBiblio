@@ -1,13 +1,11 @@
 <?php
 /**
-Planning Biblio, Version 2.3
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/postes_cfg/infos.php
-Création : 20 février 2016
-Dernière modification : 20 février 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -31,6 +29,8 @@ if ($config['Multisites-nombre']>1) {
     $site=$db->result[0]['site'];
 }
 
+$all_sites = sites();
+
 echo <<<EOD
   <div style='min-height:350px;'>
   <form name='form' action='index.php' method='get'>
@@ -49,9 +49,9 @@ if ($config['Multisites-nombre']>1) {
     echo "<td><select id='site' style='width:300px;'>\n";
     echo "<option value=''>&nbsp;</option>\n";
 
-    for ($i=1;$i<=$config['Multisites-nombre'];$i++) {
-        $selected=$i==$site?"selected='selected'":null;
-        echo "<option value='$i' $selected >".$config["Multisites-site$i"]."</option>\n";
+    foreach ($all_sites as $elem) {
+        $selected = $elem['id'] == $site ? "selected='selected'" : null;
+        echo "<option value='{$elem['id']}' $selected >{$elem['name']}</option>\n";
     }
     echo "</select>\n";
     echo "</td></tr>\n";

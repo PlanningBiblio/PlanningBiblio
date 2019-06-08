@@ -5,7 +5,7 @@ Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2019 Jérôme Combes
 
-Fichier : public/personnel/index.php
+Fichier : personnel/index.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Chritophe Le Guennec <christophe.leguennec@u-pem.fr>
 
@@ -128,11 +128,13 @@ foreach ($agents as $agent) {
         $tmp=array();
         if (!empty($agent['sites'])) {
             foreach ($agent['sites'] as $site) {
-                if ($site) {
-                    $tmp[]=$config["Multisites-site{$site}"];
+                if (!empty($config["Multisites-site{$site}"])) {
+                    $tmp[$config["Multisites-site{$site}-position"]] = $config["Multisites-site{$site}"];
                 }
             }
         }
+
+        ksort($tmp);
         $sites=!empty($tmp)?join(", ", $tmp):null;
         echo "<td>$sites</td>";
     }

@@ -1,13 +1,11 @@
 <?php
 /**
-Planning Biblio, Version 2.7.04
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : statistiques/postes.php
-Création : mai 2011
-Dernière modification : 22 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -67,6 +65,8 @@ $_SESSION['stat_poste_tri']=$tri;
 
 $debutSQL=dateFr($debut);
 $finSQL=dateFr($fin);
+
+$all_sites = sites();
 
 // Postes
 $postes=array();
@@ -280,14 +280,14 @@ if (is_array($postes_list)) {
 }
 echo "</select></td></tr>\n";
 
-if ($config['Multisites-nombre']>1) {
-    $nbSites=$config['Multisites-nombre'];
+if (!empty($all_sites)) {
+    $nbSites = count($all_sites);
     echo "<tr style='vertical-align:top'><td><label class='intitule'>Sites</label></td>\n";
     echo "<td><select name='selectedSites[]' multiple='multiple' size='".($nbSites+1)."' onchange='verif_select(\"selectedSites\");' class='ui-widget-content ui-corner-all' >\n";
     echo "<option value='Tous'>Tous</option>\n";
-    for ($i=1;$i<=$nbSites;$i++) {
-        $selected=in_array($i, $selectedSites)?"selected='selected'":null;
-        echo "<option value='$i' $selected>{$config["Multisites-site$i"]}</option>\n";
+    foreach ($all_sites as $elem) {
+        $selected = in_array($elem['id'], $selectedSites) ? "selected='selected'" : null;
+        echo "<option value='{$elem['id']}' $selected >{$elem['name']}</option>\n";
     }
     echo "</select></td></tr>\n";
 }
