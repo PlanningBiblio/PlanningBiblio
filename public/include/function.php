@@ -1327,6 +1327,46 @@ function recurrenceRRuleText($rrule)
     return $text;
 }
 
+/**
+ * @function sites
+ * @return Array Sites
+ */
+function sites()
+{
+    $config = $GLOBALS['config'];
+    $sites = array();
+
+    if ($config['Multisites-nombre'] > 1) {
+
+        $i = 0;
+        $nb = 0;
+
+        while ($nb < $config['Multisites-nombre']) {
+
+            $i++;
+
+            if (empty($config["Multisites-site$i"])
+                or empty($config["Multisites-site{$i}-position"])) {
+                continue;
+            }
+
+            $nb++;
+            $site = array('id' => $i, 'name' => $config["Multisites-site{$i}"]);
+            $pos = $config["Multisites-site{$i}-position"];
+
+            if (isset($sites[$pos])) {
+                array_splice($sites, $pos, 0, array($site));
+            } else {
+                $sites[$pos] = $site;
+            }
+        }
+
+        ksort($sites);
+    }
+    return $sites;
+    
+}
+
 function verifmail($texte)
 {
     return preg_match("/^[^@ ]+@[^@ ]+\.[^@ \.]+$/", $texte);

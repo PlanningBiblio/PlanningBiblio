@@ -51,8 +51,8 @@
               <td>
                 <select name='site' id='selectSite' class='ui-widget-content ui-corner-all' onchange="tabOptions(this)">
                   <option value=''>&nbsp;</option>
-                  {% for i in 1..config('Multisites-nombre') %}
-                    <option value="{{ i }}" {{ groupe.site == i ? "selected='selected'" : ""}}>{{ multisites[i] }}</option>
+                  {% for site in multisites %}
+                    <option value="{{ site.id }}" {{ groupe.site == site.id ? "selected='selected'" : ""}}>{{ site.name }}</option>
                   {% endfor %}
                 </select>
               </td>

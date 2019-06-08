@@ -6,7 +6,6 @@ Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : setup/db_structure.php
-Création : mai 2011
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -93,7 +92,7 @@ $sql[]="CREATE TABLE `{$dbprefix}activites` (
 
 $sql[]="CREATE TABLE `{$dbprefix}appel_dispo` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `site` int(11) NOT NULL DEFAULT '1',
+  `site` int(3) NOT NULL DEFAULT '1',
   `poste` int(11) NOT NULL DEFAULT '0',
   `date` VARCHAR(10), 
   `debut` VARCHAR(8),
@@ -191,7 +190,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_notes` (
 $sql[]="CREATE TABLE `{$dbprefix}pl_notifications` (
   `id` INT(11) NOT NULL AUTO_INCREMENT, 
   `date` DATE,
-  `site` INT(2) NOT NULL DEFAULT '1',
+  `site` INT(3) NOT NULL DEFAULT '1',
   `update_time` TIMESTAMP,
   `data` TEXT,
   PRIMARY KEY (`id`))
@@ -294,7 +293,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_modeles` (
   `fin` time NOT NULL,
   `tableau` varchar(20) NOT NULL,
   `jour` varchar(10) NOT NULL,
-  `site` INT(1) NOT NULL DEFAULT '1',
+  `site` INT(3) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
@@ -304,7 +303,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_modeles_tab` (
   `model_id` INT(11) NOT NULL DEFAULT '0',
   `jour` INT NOT NULL,
   `tableau` INT NOT NULL,
-  `site` INT(1) NOT NULL DEFAULT '1',
+  `site` INT(3) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
@@ -312,7 +311,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_tab` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `tableau` int(20) NOT NULL,
   `nom` text NOT NULL,
-  `site` INT(2) NOT NULL DEFAULT 1,
+  `site` INT(3) NOT NULL DEFAULT 1,
   `supprime` TIMESTAMP NULL DEFAULT NULL ,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
@@ -335,7 +334,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_tab_grp` (
   `vendredi` INT,
   `samedi` INT,
   `dimanche` INT,
-  `site` INT(2) NOT NULL DEFAULT 1,
+  `site` INT(3) NOT NULL DEFAULT 1,
   `supprime` TIMESTAMP NULL DEFAULT NULL ,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
@@ -351,7 +350,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_verrou` (
   `validation2` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `perso2` int(11) NOT NULL DEFAULT '0',
   `vivier` int(1) NOT NULL DEFAULT '0',
-  `site` int(1) NOT NULL DEFAULT '1',
+  `site` int(3) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
@@ -366,7 +365,7 @@ $sql[]="CREATE TABLE `{$dbprefix}postes` (
   `statistiques` ENUM('0','1') DEFAULT '1',
   `teleworking` ENUM('0','1') NOT NULL DEFAULT '0',
   `bloquant` enum('0','1') DEFAULT '1',
-  `site` INT(1) DEFAULT '1',
+  `site` INT(3) DEFAULT '1',
   `categories` TEXT NULL DEFAULT NULL,
   `supprime` DATETIME NULL DEFAULT NULL,
   PRIMARY KEY (`id`)

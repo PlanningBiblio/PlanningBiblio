@@ -6,8 +6,6 @@ Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : include/class.menu.inc
-Création : 22 juillet 2013
-Dernière modification : 22 juin 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -33,6 +31,8 @@ class menu
 
     public function fetch()
     {
+        $config = $GLOBALS['config'];
+
         $menu=array();
         $db=new db();
         $db->select("menu", null, null, "ORDER BY `niveau1`,`niveau2`");
@@ -42,7 +42,7 @@ class menu
                     $tmp = substr($elem['condition'], 7);
                     $values = explode(";", $tmp);
                     foreach ($values as $value) {
-                        if (empty($GLOBALS['config'][$value])) {
+                        if (empty($config[$value])) {
                             continue 2;
                         }
                     }
@@ -68,11 +68,15 @@ class menu
             $menu[$elem['niveau1']][$elem['niveau2']]['url'] = $url;
         }
 
-        if ($GLOBALS['config']['Multisites-nombre']>1) {
-            for ($i=0;$i<$GLOBALS['config']['Multisites-nombre'];$i++) {
-                $j=$i+1;
-                $menu[30][$j]['titre']=$GLOBALS['config']["Multisites-site".$j];
-                $menu[30][$j]['url']="index?site=$j";
+        $sites = sites();
+
+        if (!empty($sites)) {
+            $i = 1;
+
+            foreach ($sites as $site) {
+                $menu[30][$i]['titre']=$site['name'];
+                $menu[30][$i]['url']='index?site='.$site['id'];
+                $i++;
             }
         }
 

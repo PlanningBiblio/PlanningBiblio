@@ -89,10 +89,10 @@
                         <select name="temps[{{ i-1 }}][4]" class='select selectSite wh-timepicker' {{ disabled }} >
                             <option value=''>&nbsp;</option>
                           {% for site in sites %}
-                            {% if (temps is not null and temps[i-1][4] is defined and site == temps[i-1][4]) or (temps is null and sites | length == 1) %}
-                              <option value="{{ site }}" selected='selected' >{{ multisites[site] | raw }}</option>
+                            {% if (temps is not null and temps[i-1][4] is defined and site.id == temps[i-1][4]) or (temps is null and sites | length == 1) %}
+                              <option value="{{ site.id }}" selected='selected' >{{ site.name }}</option>
                             {% else %}
-                              <option value="{{ site }}">{{ multisites[site] | raw }}</option>
+                              <option value="{{ site.id }}">{{ site.name }}</option>
                             {% endif %}
                           {% endfor %}
                           {% if temps[i-1][4] is defined and temps[i-1][4] == '-1' %}

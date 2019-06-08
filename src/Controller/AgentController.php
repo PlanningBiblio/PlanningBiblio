@@ -111,11 +111,14 @@ class AgentController extends BaseController
                 if (!empty($agent['sites'])) {
                     foreach ($agent['sites'] as $site) {
                         if ($site) {
-                            $tmp[] = $this->config("Multisites-site{$site}");
+                            $tmp[$this->config("Multisites-site{$site}-position")] = $this->config("Multisites-site{$site}");
                         }
                     }
                 }
-                $sites = !empty($tmp)?implode(", ", $tmp):null;
+
+                ksort($tmp);
+
+                $sites = !empty($tmp) ? implode(", ", $tmp) : null;
             }
 
             $elem = array(
@@ -569,18 +572,13 @@ class AgentController extends BaseController
 
         // Multi-sites
         if ($this->config('Multisites-nombre') > 1) {
-            $sites_select = array();
-            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-                $site_select = array(
-                    'id' => $i,
-                    'name' => $this->config("Multisites-site$i"),
-                    'checked' => 0
-                );
-                if ( in_array($i, $sites) ) {
-                    $site_select['checked'] = 1;
-                }
-                $sites_select[] = $site_select;
+
+            $sites_select = \sites();
+
+            foreach ($sites_select as $key => $value) {
+                $sites_select[$key]['checked'] = in_array($value['id'], $sites) ? 1 : 0;
             }
+
             $this->templateParams(array( 'sites_select' => $sites_select ));
         }
 
@@ -667,10 +665,9 @@ class AgentController extends BaseController
 
         // Affichage des droits d'accès dépendant des sites (si plusieurs sites)
         if ($this->config('Multisites-nombre') > 1) {
-            $sites_for_rights = array();
-            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-                $sites_for_rights[] = array( 'site_name' => $this->config("Multisites-site$i") );
-            }
+
+            $all_sites = \sites();
+            $sites_for_rights = $all_sites;
 
             $this->templateParams(array('sites_for_rights' => $sites_for_rights));
 
@@ -693,8 +690,8 @@ class AgentController extends BaseController
                 }
 
                 $elem['sites'] = array();
-                for ($i = 1; $i < $this->config('Multisites-nombre') +1; $i++) {
-                    $groupe_id = $elem['groupe_id'] - 1 + $i;
+                foreach ($all_sites as $site) {
+                    $groupe_id = $elem['groupe_id'] - 1 + $site['id'];
 
                     $checked = false;
                     if (is_array($acces)) {

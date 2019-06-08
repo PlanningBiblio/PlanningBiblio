@@ -71,10 +71,6 @@ class WorkingHourController extends BaseController
         $p->fetchById($perso_id);
         $sites = $p->elements[0]['sites'];
         $nbSites = $this->config('Multisites-nombre');
-        $multisites = array();
-        foreach ($sites as $site) {
-            $multisites[$site] = $this->config("Multisites-site{$site}");
-        }
 
         if ($ph_id != null) {
             $p = new \planningHebdo();
@@ -109,7 +105,6 @@ class WorkingHourController extends BaseController
                 "fin"            => $fin,
                 "jours"          => $jours,
                 "modifAutorisee" => $modifAutorisee,
-                "multisites"     => $multisites,
                 "nbSemaine"      => $nbSemaine,
                 "nbSites"        => $nbSites,
                 "pause2_enabled" => $pause2_enabled,
@@ -291,10 +286,7 @@ class WorkingHourController extends BaseController
         $debut1Fr = null;
         $fin1Fr = null;
         $remplace = null;
-        $sites = array();
         $nbSemaine = $this->config('nb_semaine');
-        $nbSites = $this->config('Multisites-nombre');
-        $multisites = array();
 
         $managed = $this->entityManager
             ->getRepository(Agent::class)
@@ -303,11 +295,6 @@ class WorkingHourController extends BaseController
 
         if (!$admin && !$this->config('PlanningHebdo-Agents') && count($managed) < 2 ) {
             return $this->redirectToRoute('access-denied');
-        }
-
-        for ($i = 1; $i < $nbSites+1; $i++) {
-            $sites[] = $i;
-            $multisites[$i] = $this->config("Multisites-site{$i}");
         }
 
         $nomAgent = nom($perso_id, "prenom nom");
@@ -332,8 +319,6 @@ class WorkingHourController extends BaseController
                 "lang"               => $lang,
                 "login_id"           => $_SESSION['login_id'],
                 "modifAutorisee"     => $modifAutorisee,
-                "multisites"         => $multisites,
-                "nbSites"            => $nbSites,
                 "nbSemaine"          => $nbSemaine,
                 "nomAgent"           => $nomAgent,
                 "notAdmin"           => $notAdmin,
@@ -344,7 +329,6 @@ class WorkingHourController extends BaseController
                 "remplace"           => null,
                 "retour"             => $retour,
                 "request_exception"  => null,
-                "sites"              => $sites,
                 "valide_n1"          => 0,
                 "valide_n2"          => 0,
                 "validation"         => 'Demandé'
@@ -368,14 +352,7 @@ class WorkingHourController extends BaseController
         $lang = $GLOBALS['lang'];
         $pause2_enabled = $this->config('PlanningHebdo-Pause2');
         $nbSemaine = $this->config('nb_semaine');
-        $nbSites = $this->config('Multisites-nombre');
         $validation = "";
-        $sites = array();
-        $multisites = array();
-        for ($i = 1; $i < $nbSites+1; $i++) {
-            $sites[] = $i;
-            $multisites[$i] = $this->config("Multisites-site{$i}");
-        }
         $exception_back = '/myaccount';
         if ($retour != '/myaccount') {
             $exception_back = $retour;
@@ -443,10 +420,6 @@ class WorkingHourController extends BaseController
         $remplace = $p->elements[0]['remplace'];
         $cle = $p->elements[0]['cle'];
         $this->imported = $cle ? true : false;
-        // Informations sur l'agents
-        $p = new \personnel();
-        $p->fetchById($perso_id);
-        $sites = $p->elements[0]['sites'];
 
         // Modif autorisée si n'est pas validé ou si validé avec des périodes non définies (BSB).
         // Dans le 2eme cas copie des heures de présence avec modification des dates
@@ -520,8 +493,6 @@ class WorkingHourController extends BaseController
                 "lang"               => $lang,
                 "login_id"           => $_SESSION['login_id'],
                 "modifAutorisee"     => $modifAutorisee,
-                "multisites"         => $multisites,
-                "nbSites"            => $nbSites,
                 "nbSemaine"          => $nbSemaine,
                 "nomAgent"           => $nomAgent,
                 "perso_id"           => $perso_id,
@@ -535,7 +506,6 @@ class WorkingHourController extends BaseController
                 "selected2"          => $selected2,
                 "selected3"          => $selected3,
                 "selected4"          => $selected4,
-                "sites"              => $sites,
                 "valide_n1"          => $valide_n1,
                 "valide_n2"          => $valide_n2,
                 "validation"         => $validation

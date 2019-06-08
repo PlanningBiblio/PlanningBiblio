@@ -157,21 +157,23 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         }
 
         if ($config['Multisites-nombre']>1) {
+
+            $all_sites = sites();
+
             if ($disabled) {
                 $site=null;
                 if (isset($temps[$i-1][4])) {
-                    $site="Multisites-site".$temps[$i-1][4];
-                    $site = isset($config[$site]) ? $config[$site] : null;
-
+                    $site = $all_sites[$temps[$i-1][4]]['name'] ?? null;
                     $site = $temps[$i-1][4] == -1 ? 'Tout site' : $site;
                 }
                 $hours_tab .= "<td class='wh-timepicker'>&nbsp;$site&nbsp;</td>";
             } else {
                 $hours_tab .= "<td class='wh-timepicker'><select name='temps[".($i-1)."][4]' class='edt-site'>\n";
                 $hours_tab .= "<option value='' class='edt-site-0'>&nbsp;</option>\n";
-                for ($l=1;$l<=$config['Multisites-nombre'];$l++) {
-                    $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4]==$l) ? "selected='selected'" : null;
-                    $hours_tab .= "<option value='$l' $selected class='edt-site-$l'>{$config["Multisites-site{$l}"]}</option>\n";
+
+                foreach ($all_sites as $site) {
+                    $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4] == $site['id']) ? "selected='selected'" : null;
+                    $hours_tab .= "<option value='{$site['id']}' $selected class='edt-site-{$site['id']}'>{$site['name']}</option>\n";
                 }
                 $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4] == -1) ? "selected='selected'" : null;
                 $hours_tab .= "<option value='-1' $selected class='edt-site--1'>Tout site</option>\n";

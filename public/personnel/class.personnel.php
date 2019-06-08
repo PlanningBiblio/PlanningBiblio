@@ -125,12 +125,27 @@ class personnel
             return false;
         }
 
+        $all_sites = sites();
+        $all_sites_ids = array();
+        foreach ($all_sites as $elem) {
+            $all_sites_ids[] = $elem['id'];
+        }
+
         //	By default $result=$all
         $result=array();
         foreach ($all as $elem) {
             if (empty($result[$elem['id']])) {
                 $result[$elem['id']]=$elem;
-                $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+
+                $sites = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                foreach ($sites as $k => $v) {
+                    if (!in_array($v, $all_sites_ids)) {
+                        unset($sites[$k]);
+                    }
+                }
+
+                $result[$elem['id']]['sites'] = $sites;
+
                 $result[$elem['id']]['mails_responsables'] = explode(";", html_entity_decode($elem['mails_responsables'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
 
                 // Contrôle des calendriers ICS distants : Oui/Non ?
@@ -200,11 +215,24 @@ class personnel
             $db->sanitize_string = false;
             $db->select("personnel", null, "id='$id'");
             $this->elements=$db->result;
+
             if ($db->result) {
                 $sites = json_decode(html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-                $this->elements[0]['sites'] = $sites ? $sites : array();
+
+                if (empty($sites)) {
+                    $sites = array();
+                }
+
+                $tmp = array();
+                foreach ($sites as $site) {
+                    $tmp[] = array($site, 'id'=> $site, 'name' => $GLOBALS['config']['Multisites-site'.$site]);
+                }
+                $sites = $tmp;
+
+                $this->elements[0]['sites'] = $sites;
                 $this->elements[0]['mails_responsables']=explode(";", html_entity_decode($db->result[0]['mails_responsables'], ENT_QUOTES|ENT_IGNORE, "UTF-8"));
             }
+
         } elseif (is_array($id)) {
             $ids=implode(",", $id);
             $db=new db();
@@ -213,8 +241,20 @@ class personnel
             if ($db->result) {
                 foreach ($db->result as $elem) {
                     $this->elements[$elem['id']]=$elem;
+
                     $sites = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-                    $this->elements[$elem['id']]['sites'] = $sites ? $sites : array();
+
+                    if (empty($sites)) {
+                        $sites = array();
+                    }
+
+                    $tmp = array();
+                    foreach ($sites as $site) {
+                        $tmp[] = array($site, 'id'=> $site, 'name' => $GLOBALS['config']['Multisites-site'.$site]);
+                    }
+                    $sites = $tmp;
+
+                    $this->elements[$elem['id']]['sites'] = $sites;
                     $this->elements[$elem['id']]['mails_responsables']=explode(";", html_entity_decode($elem['mails_responsables'], ENT_QUOTES|ENT_IGNORE, "UTF-8"));
                 }
             }

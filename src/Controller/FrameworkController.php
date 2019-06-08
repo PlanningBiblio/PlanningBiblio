@@ -199,12 +199,7 @@ class FrameworkController extends BaseController
             $tableauNom = $db->result[0]['nom'];
         }
 
-        $multisites = array();
-        if ($nbSites>1) {
-            for ($i = 1 ;$i <= $nbSites; $i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
-            }
-        }
+        $multisites = \sites();
 
         $this->templateParams(
             array(
@@ -227,6 +222,7 @@ class FrameworkController extends BaseController
         return $this->output('framework/edit_tab.html.twig');
 
      }
+
     /**
      * @Route ("/framework/{id}", name="framework.edit_table", methods={"GET"})
      */
@@ -257,12 +253,7 @@ class FrameworkController extends BaseController
             $tableauNom = $db->result[0]['nom'];
         }
 
-        $multisites = array();
-        if ($nbSites>1) {
-            for ($i = 1 ;$i <= $nbSites; $i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
-            }
-        }
+        $multisites = \sites();
 
         // Nombre de tableaux
         $t = new Framework();
@@ -629,13 +620,7 @@ class FrameworkController extends BaseController
         // Initialisation des variables
         $id = $request->get("id");
         $CSRFToken = $GLOBALS['CSRFSession'];
-        $multisites = array();
-
-        if($this->config('Multisites-nombre') > 1){
-            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++){
-                $multisites[$i] = $this->config("Multisites-site{$i}");
-            }
-        }
+        $multisites = \sites();
 
         //	Recherche des tableaux
         $t = new Framework();
@@ -678,13 +663,7 @@ class FrameworkController extends BaseController
         // Initialisation des variables
         $id = $request->get("id");
         $CSRFToken = $GLOBALS['CSRFSession'];
-        $multisites = array();
-
-        if($this->config('Multisites-nombre') > 1){
-            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++){
-                $multisites[$i] = $this->config("Multisites-site{$i}");
-            }
-        }
+        $multisites = \sites();
 
         //	Recherche des tableaux
         $t = new Framework();

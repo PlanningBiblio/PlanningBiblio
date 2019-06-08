@@ -1896,7 +1896,8 @@ class StatisticController extends BaseController
         $exists_samedi = false;
         $exists_dimanche = false;
 
-        $nbSites = $this->config('Multisites-nombre');
+        $all_sites = sites();
+        $nbSites = count($all_sites);
 
         // Statistiques-Heures
         $heures_tab_global = array();
@@ -2207,7 +2208,7 @@ class StatisticController extends BaseController
         $_SESSION['stat_tab'] = array_merge($tab, array('neverSelected' => $neverSelected));
 
         $selectedAgents = array();
-        $multisites = array();
+        $multisites = \sites();
 
         if (is_array($agents_list)) {
             foreach ($agents_list as $elem) {
@@ -2215,12 +2216,6 @@ class StatisticController extends BaseController
                 if ($agents) {
                     $selectedAgents[] = in_array($elem['id'], $agents) ?? $elem;
                 }
-            }
-        }
-
-        if ($nbSites > 1){
-            for ($i = 1 ; $i <= $nbSites; $i++) {
-                $multisites[] = $this->config("Multisites-site$i");
             }
         }
 
@@ -2235,7 +2230,12 @@ class StatisticController extends BaseController
             foreach ($tab[$key][1] as &$poste) {
                 $site=null;
                 if ($poste["site"]>0 and $nbSites>1) {
-                    $site = $this->config("Multisites-site{$poste['site']}")." ";
+                    foreach ($multisites as $s) {
+                        if ($s['id'] == $poste['site']) {
+                            $site = $s['name'] . ' ';
+                            break;
+                        }
+                    }
                 }
                 $etage = $poste[2] ? $poste[2] : null;
 

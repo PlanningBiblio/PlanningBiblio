@@ -55,11 +55,11 @@
                   <td>
                     <select name='selectedSites[]' multiple='multiple' size='{{ nbSites+1 }}' onchange='verif_select("selectedSites");' class='ui-widget-content ui-corner-all' >
                       <option value='Tous'>Tous</option>
-                        {% for i in 1..nbSites %}
-                          {% if i in selectedSites %}
-                            <option value='{{ i }}' selected='selected'>{{ multisites[i-1] | raw }}</option>
+                        {% for s in multisites %}
+                          {% if s.id in selectedSites %}
+                            <option value='{{ s.id }}' selected='selected'>{{ s.name }}</option>
                           {% else %}
-                            <option value='{{ i }}'>{{ multisites[i-1] | raw }}</option>
+                            <option value='{{ s.id }}'>{{ s.name }}</option>
                           {% endif %}
                         {% endfor %}
                     </select>
@@ -137,14 +137,14 @@
                         <td class='statistiques-heures'>{{ elem.hebdo }}</td>
                       </tr>
                       {% if nbSites > 1 %}
-                        {% for i in 1..nbSites %}
+                        {% for s in multisites %}
                           {% if elem.sites[i] %}
                             <tr>
-                              <td colspan='2' style='padding-top:20px;'><u>{{ multisites[i-1] | raw }}</u></td>
+                              <td colspan='2' style='padding-top:20px;'><u>{{ s.name }}</u></td>
                             </tr>
                             <tr>
                               <td>Total</td>
-                              <td class='statistiques-heures'>{{ elem.sites[i] }}</td>
+                              <td class='statistiques-heures'>{{ elem.sites[s.id] }}</td>
                             </tr>
                             <tr>
                               <td>Moyenne</td>
