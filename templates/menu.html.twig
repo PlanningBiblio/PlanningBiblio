@@ -1,0 +1,78 @@
+{# menu.html.twig #}
+
+  <div class="navigation">
+    <div class='popper' id='topdeck'></div>
+    <script type="text/JavaScript">
+      <!--
+      {{ menu_js | raw }}
+
+      function pop(msg,li){
+        $(".menu_table").remove();
+        posTop = li.offset().top + li.height() + 2;
+        posLeft = li.offset().left+li.width() / 2-85;
+        var content ="<table cellspacing='0' border='0' class='menu_table' style='top:"+posTop+"px; left:"+posLeft+"px;'>";
+        for(i in msg){
+          content += "<tr><td class='menu_td2' >" + msg[i] + "</td></tr>";
+        }
+        content += "</td></tr></table>";
+        $("body").append(content);
+      }
+
+      $(document).click(function(){
+        $(".menu_table").remove();
+      });
+      -->
+    </script>
+
+    <div id='topgauche'>
+      <table cellpadding='0' cellspacing='0' border='0' style='width:100%;'>
+        <tr>
+          <td class='logo_td' rowspan='4'>
+            <font class='noprint'>
+              <a href='index.php'><div id='logo'></div></a>
+            </font>
+          </td>
+        </tr>
+
+        <tr>
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr id='topmenu'>
+          <td style='text-align:center;' class='menu_td'>
+            <ul class='menu_ul'>
+              {{ menu_entries | raw }}
+            </ul>
+          </td>
+
+          <td align='right'>
+            <font  class='noprint' style='font-size:19px'>
+              {{ user_firstname }} {{ user_surname }}
+            </font>
+          </td>
+
+          <td id='logout_img'>
+            <a href='authentification.php' title='Déconnexion'>
+              <span class='pl-icon pl-icon-logout'></span>
+            </a>
+          </td>
+        </tr>
+
+        <tr>
+          <td colspan='2' style='text-align:right;'>
+            {% if planninghebdo or ics_export %}
+              <a href='index.php?page=monCompte.php' class='myAccountLink'>Mon Compte</a>
+            {% elseif oups_auth_mod == 'SQL' %}
+              <a href='index.php?page=personnel/password.php' class='myAccountLink'>
+                Changer de mot de passe
+              </a>
+            {% endif %}
+            <div id='logout_text'>
+              <a href='authentification.php' >Déconnexion</a>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <iframe id='popup' style='display:none;' ></iframe>
