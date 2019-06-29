@@ -1,6 +1,6 @@
 <?php
 
-namespace Model;
+namespace App\Model;
 
 /**
  * @Entity @Table(name="personnel")

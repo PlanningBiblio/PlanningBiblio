@@ -1,20 +1,6 @@
 <?php
-/**
-  Planning Biblio
-  Licence GNU/GPL (version 2 et au dela)
-  see README.md et LICENSE
-  @copyright 2011-2019 Jérôme Combes
 
-  File: src/planningBiblio/PresentSet.php
-  Created: 2019-01-31
-  Last changes: 2019-01-31
-  @author Alex Arnaud <alex.arnaud@biblibre.com>
-
-  Description :
-  Return a set of present staff people
-*/
-
-namespace PlanningBiblio;
+namespace App\PlanningBiblio;
 
 class PresentSet
 {

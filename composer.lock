@@ -5,6 +5,7 @@
         "This file is @generated automatically"
     ],
 <<<<<<< HEAD
+<<<<<<< HEAD
     "content-hash": "2e2cac7877462c90f5762786bd38c587",
     "packages": [
         {
@@ -25,6 +26,9 @@
                 "php": ">=5.0.0"
 =======
     "content-hash": "2a5ae143ec9dd04687506eb7ea5ae5fd",
+=======
+    "content-hash": "0b9a5ea6d836d6eb138c8bcd9be837d4",
+>>>>>>> Symfony : Make help page
     "packages": [
         {
             "name": "apereo/phpcas",

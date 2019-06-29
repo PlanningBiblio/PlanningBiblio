@@ -1,6 +1,6 @@
 <?php
 
-namespace Model\Extensions;
+namespace App\Model\Extensions;
 
 use \Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 
