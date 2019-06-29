@@ -1,12 +1,71 @@
-<!DOCTYPE html>
+{# base.html.twig #}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
-    </body>
+  <head>
+    <title>Planning</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type='text/JavaScript' src='js/jquery-1.11.1.min.js'></script>
+    <script type='text/JavaScript' src='js/jquery-ui-1.11.2/jquery-ui.js'></script>
+    <script type='text/JavaScript' src='js/carhartl-jquery-cookie-3caf209/jquery.cookie.js'></script>
+    <script type='text/JavaScript' src='js/DataTables-1.10.4/media/js/jquery.dataTables.min.js'></script>
+    <script type='text/JavaScript' src='js/DataTables-1.10.4/extensions/FixedColumns/js/dataTables.fixedColumns.min.js'></script>
+    <script type='text/JavaScript' src='js/DataTables-1.10.4/extensions/TableTools/js/dataTables.tableTools.min.js'></script>
+    <script type='text/JavaScript' src='js/dataTables.jqueryui.js'></script>
+    <script type='text/JavaScript' src='js/CJScript.js?version={{ version }}'></script>
+    <script type='text/JavaScript' src='js/datePickerFr.js?version={{ version }}'></script>
+    <script type='text/JavaScript' src='js/dataTables.sort.js?version={{ version }}'></script>
+    <script type='text/JavaScript' src='js/script.js?version={{ version }}'></script>
+    {% block specificjs %}{% endblock %}
+    <link rel='StyleSheet' href='css/DataTables-1.10.4/media/css/jquery.dataTables_themeroller.css' type='text/css' media='all'/>
+    <link rel='StyleSheet' href='css/DataTables-1.10.4/extensions/TableTools/css/dataTables.tableTools.min.css' type='text/css' media='all'/>
+    <link rel='StyleSheet' href='themes/{{ theme }}/jquery-ui.min.css' type='text/css' media='all'/>
+    <link rel='StyleSheet' href='themes/default/default.css?version={{ version }}' type='text/css' media='all'/>
+    <link rel='StyleSheet' href='themes/default/print.css?version={{ version }}' type='text/css' media='print'/>
+    {% if theme != 'default' %}
+      <link rel='StyleSheet' href='themes/{{ theme }}/{{ theme }}.css?version={{ version }}' type='text/css' media='all'/>
+    {% endif %}
+    <link rel='icon' type='image/png' href='themes/{{ theme }}/favicon.ico' />
+  </head>
+  <body>
+    <!-- Affichage des messages d'erreur ou de confirmation venant de la page précedente-->
+    {% if msg %}
+      <script type='text/JavaScript'>CJInfo({{ msg }},{{ msgType }});</script>
+    {% endif %}
+
+    {% if msg2 %}
+      <script type='text/JavaScript'>CJInfo({{ msg2 }},{{ msg2Type }}, 82, 15000);</script>
+    {% endif %}
+
+    <div id='opac' style='display:none'></div>
+    <div style='position:relative;top:30px;' class='noprint'></div>
+
+    {% if show_menu %}
+      {% include 'menu.html.twig' %}
+    {% endif %}
+
+    <form name='CSRFForm' action='#' method='get'>
+      <input type='hidden' name='CSRFSession' id='CSRFSession' value='{{ CSRFSession }}' />
+    </form>
+
+    {% if content_planning %}
+      <div id='content-planning'>
+    {% else %}
+      <div id='content'>
+    {% endif %}
+
+
+    {% if authorized %}
+      {% block page %}{% endblock %}
+    {% else %}
+      <div id='acces_refuse'>Accès refusé</div>
+    {% endif %}
+
+    </div> <!-- content or planningPoste -->
+
+    <div class='footer'>
+      PlanningBiblio ({{ version }}) - Copyright &copy; 2011-2018 - J&eacute;r&ocirc;me Combes - 
+      <a href='http://www.planningbiblio.fr' target='_blank' style='font-size:9pt;'>www.planningbiblio.fr</a>
+    </div>
+  </body>
 </html>

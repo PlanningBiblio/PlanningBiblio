@@ -6,6 +6,10 @@ use Symfony\Component\HttpFoundation\Request;
 
 require dirname(__DIR__).'/config/bootstrap.php';
 
+include_once(__DIR__.'/../init/init.php');
+include_once(__DIR__.'/../init/init_menu.php');
+include_once(__DIR__.'/../init/init_templates.php');
+
 if ($_SERVER['APP_DEBUG']) {
     umask(0000);
 

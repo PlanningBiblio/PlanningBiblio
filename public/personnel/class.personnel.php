@@ -19,7 +19,7 @@ Page appelée par les autres fichiers du dossier personnel
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 if (!isset($version)) {
-    include_once "../include/accessDenied.php";
+    include_once(__DIR__.'/../include/accessDenied.php');
 }
 
 class personnel
