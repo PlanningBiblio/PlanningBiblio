@@ -16,8 +16,8 @@ require_once __DIR__.'/../vendor/autoload.php';
 use Symfony\Component\HttpFoundation\Request;
 
 use PlanningBiblio\LegacyCodeChecker;
-use Model\Agent;
-use Model\Access;
+use App\Entity\Agent;
+use App\Entity\Access;
 
 // Redirection vers setup si le fichier config est absent
 if (!file_exists(__DIR__.'/../public/include/config.php')) {
@@ -31,7 +31,6 @@ if (file_exists(__DIR__.'/../public/lang/custom.php')) {
     require_once(__DIR__.'/../public/lang/custom.php');
 }
 
-/*
 date_default_timezone_set("Europe/Paris");
 
 require_once(__DIR__.'/init_entitymanager.php');
@@ -77,17 +76,14 @@ if ($page == 'planning/poste/index.php' or $page == 'planning/poste/semaine.php'
 }
 
 // Recupération des droits d'accès de l'agent
-
 $logged_in = $entityManager->find(Agent::class, $_SESSION['login_id']);
 $droits = $logged_in ? $logged_in->droits() : array();
+
 $_SESSION['droits'] = array_merge($droits, array(99));
 
 // Droits necessaires pour consulter la page en cours
-// TEST
-// $accesses = $entityManager->getRepository(Access::class)->findBy(array('page' => $page));
-// $authorized = $logged_in ? $logged_in->can_access($accesses) : false;
-$access = array();
-$authorized = true;
+$accesses = $entityManager->getRepository(Access::class)->findBy(array('page' => $page));
+$authorized = $logged_in ? $logged_in->can_access($accesses) : false;
 
 if ($_SESSION['oups']["Auth-Mode"] == 'Anonyme' ) {
     foreach ($accesses as $access) {
@@ -132,4 +128,3 @@ function CSRFTokenOK($token, $session) {
 
     return true;
 }
-*/

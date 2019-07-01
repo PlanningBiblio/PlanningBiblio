@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Model;
+namespace App\Entity;
 
 /**
  * @Entity @Table(name="personnel")
  **/
-class Agent extends Entity {
+class Agent extends Entity{
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 
