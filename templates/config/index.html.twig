@@ -1,4 +1,4 @@
-{# admin/config.html.twig #}
+{# config/index.html.twig #}
 
 {% extends 'base.html.twig' %}
 
@@ -10,7 +10,7 @@
     </script>
   {% endif %}
   {% if post %}
-    {% if erreur %}
+    {% if error %}
       <script type='text/JavaScript'>
         CJInfo('Il y a eu des erreurs pendant la modification.<br/>Veuillez vérifier la configuration.','error');
       </script>
@@ -22,13 +22,13 @@
   {% endif %}
 
   <h3>Configuration</h3>
-    <form name='form' action='index.php' method='post'>
+    <form name='form' action='config' method='post'>
       <input type='hidden' name='page' value='admin/config.php' />
       <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
       <div id='accordion' class='ui-accordion'>
         {% for key,val in elements %}
             <h3><span>{{ key }}</span></h3>
-            {% include 'admin/config/category.html.twig' with { 'vars': val } %}
+            {% include 'config/category.html.twig' with { 'vars': val } %}
         {% endfor %}
       </div>
 
