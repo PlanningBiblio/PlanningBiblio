@@ -1,6 +1,6 @@
 <?php
 
-namespace Model;
+namespace App\Entity;
 
 /**
  * @Entity @Table(name="config")
