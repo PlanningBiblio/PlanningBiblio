@@ -197,6 +197,8 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
                     }
                 }
 
+                $grise = $elem2['perso_id'] == 0 ? 1 : 0;
+
                 $value = array(
                     ':date' => $elem,
                     ':perso_id' => $elem2['perso_id'],
@@ -204,7 +206,8 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
                     ':debut' => $elem2['debut'],
                     ':fin' => $elem2['fin'],
                     ':site' => $site,
-                    ':absent' => 0
+                    ':absent' => 0,
+                    ':grise' => $grise
                 );
 
 
@@ -247,8 +250,8 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
                 $db->delete("pl_poste", array("date"=>$elem, "site"=>$site));
 
                 // Insertion des nouvelles données
-                $req="INSERT INTO `{$dbprefix}pl_poste` (`date`,`perso_id`,`poste`,`debut`,`fin`,`absent`,`site`) ";
-                $req.="VALUES (:date, :perso_id, :poste, :debut, :fin, :absent, :site);";
+                $req="INSERT INTO `{$dbprefix}pl_poste` (`date`,`perso_id`,`poste`,`debut`,`fin`,`absent`,`site`,`grise`) ";
+                $req.="VALUES (:date, :perso_id, :poste, :debut, :fin, :absent, :site, :grise);";
                 $dbh=new dbh();
                 $dbh->CSRFToken = $CSRFToken;
                 $dbh->prepare($req);
