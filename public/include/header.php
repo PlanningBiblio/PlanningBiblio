@@ -42,14 +42,14 @@ if (!file_exists("themes/$theme/favicon.png")) {
 <title>Planning</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-<script type='text/JavaScript' src='vendor/jquery-1.11.1.min.js'></script>
-<script type='text/JavaScript' src='vendor/jquery-ui-1.11.2/jquery-ui.js'></script>
-<script type='text/JavaScript' src='vendor/carhartl-jquery-cookie-3caf209/jquery.cookie.js'></script>
-<script type='text/JavaScript' src='vendor/DataTables-1.10.4/media/js/jquery.dataTables.min.js'></script>
-<script type='text/JavaScript' src='vendor/DataTables-1.10.4/extensions/FixedColumns/js/dataTables.fixedColumns.min.js'></script>
-<script type='text/JavaScript' src='vendor/DataTables-1.10.4/extensions/TableTools/js/dataTables.tableTools.min.js'></script>
-<script type='text/JavaScript' src='vendor/dataTables.jqueryui.js'></script>
-<script type='text/JavaScript' src='vendor/CJScript.js?version=<?php echo $version; ?>'></script>
+<script type='text/JavaScript' src='js/jquery-1.11.1.min.js'></script>
+<script type='text/JavaScript' src='js/jquery-ui-1.11.2/jquery-ui.js'></script>
+<script type='text/JavaScript' src='js/carhartl-jquery-cookie-3caf209/jquery.cookie.js'></script>
+<script type='text/JavaScript' src='js/DataTables-1.10.4/media/js/jquery.dataTables.min.js'></script>
+<script type='text/JavaScript' src='js/DataTables-1.10.4/extensions/FixedColumns/js/dataTables.fixedColumns.min.js'></script>
+<script type='text/JavaScript' src='js/DataTables-1.10.4/extensions/TableTools/js/dataTables.tableTools.min.js'></script>
+<script type='text/JavaScript' src='js/dataTables.jqueryui.js'></script>
+<script type='text/JavaScript' src='js/CJScript.js?version=<?php echo $version; ?>'></script>
 <script type='text/JavaScript' src='js/datePickerFr.js?version=<?php echo $version; ?>'></script>
 <script type='text/JavaScript' src='js/dataTables.sort.js?version=<?php echo $version; ?>'></script>
 <script type='text/JavaScript' src='js/script.js?version=<?php echo $version; ?>'></script>
@@ -57,8 +57,8 @@ if (!file_exists("themes/$theme/favicon.png")) {
 getJSFiles($page, $version);
 ?>
 
-<link rel='StyleSheet' href='vendor/DataTables-1.10.4/media/css/jquery.dataTables_themeroller.css' type='text/css' media='all'/>
-<link rel='StyleSheet' href='vendor/DataTables-1.10.4/extensions/TableTools/css/dataTables.tableTools.min.css' type='text/css' media='all'/>
+<link rel='StyleSheet' href='js/DataTables-1.10.4/media/css/jquery.dataTables_themeroller.css' type='text/css' media='all'/>
+<link rel='StyleSheet' href='js/DataTables-1.10.4/extensions/TableTools/css/dataTables.tableTools.min.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/<?php echo $themeJQuery; ?>/jquery-ui.min.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/default.css?version=<?php echo $version; ?>' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/print.css?version=<?php echo $version; ?>' type='text/css' media='print'/>

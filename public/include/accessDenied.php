@@ -1,13 +1,11 @@
 <?php
 /**
-Planning Biblio, Version 2.6.9
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : include/accessDenied.php
-Création : 8 avril 2015
-Dernière modification : 21 mai 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -49,7 +47,7 @@ $link="<a href='{$path}index.php'>Retour à l'application</a>";
 <link rel='StyleSheet' href='<?php echo $path; ?>themes/default/default.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='<?php echo $path; ?>themes/default/print.css' type='text/css' media='print'/>
 <link rel='StyleSheet' href='<?php echo $path; ?>themes/<?php echo "$theme/$theme"; ?>.css' type='text/css' media='all'/>
-<script type='text/JavaScript' src='<?php echo $path; ?>vendor/jquery-1.11.1.min.js'></script>
+<script type='text/JavaScript' src='<?php echo $path; ?>js/jquery-1.11.1.min.js'></script>
 <script type='text/JavaScript' src='<?php echo $path; ?>js/script.js'></script>
 </head>
 

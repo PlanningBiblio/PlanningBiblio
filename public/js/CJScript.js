@@ -3,8 +3,6 @@ Divers scripts JS
 Licence GNU/GPL (version 2 et au dela)
 
 Fichier : CJScript.js
-Création : mars 2015
-Dernière modification : 06 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 */
 
@@ -258,11 +256,11 @@ $(function(){
       "iDisplayLength" : tableLength,
       "aaSorting" : sort,
       "aoColumns" : aoCol,
-      "oLanguage" : {"sUrl" : "vendor/dataTables.french.lang"},
+      "oLanguage" : {"sUrl" : "js/dataTables.french.lang"},
       "sScrollX": scollX,
       "sDom": sDom,
       "oTableTools": {
-	"sSwfPath" : "vendor/DataTables-1.10.4/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
+	"sSwfPath" : "js/DataTables-1.10.4/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
 	"aButtons": [
 	  {
 	    "sExtends": "xls",
