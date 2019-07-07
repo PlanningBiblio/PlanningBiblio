@@ -4,7 +4,15 @@
     <div class='popper' id='topdeck'></div>
     <script type="text/JavaScript">
       <!--
-      {{ menu_js | raw }}
+      zlien = new Array;
+      {% for menu in menu_js %}
+        zlien[{{ menu.key }}] = new Array;
+        {% set i = 0 %}
+        {% for item in menu.items %}
+            {% set i = i + 1 %}
+            zlien['{{ item.key }}'][{{ i }}] = "<a href='{{ asset(item.url) }}' class='ejsmenu'>{{ item.title|raw }}</a>";
+        {% endfor %}
+      {% endfor %}
 
       function pop(msg,li){
         $(".menu_table").remove();
@@ -29,7 +37,7 @@
         <tr>
           <td class='logo_td' rowspan='4'>
             <font class='noprint'>
-              <a href='index.php'><div id='logo'></div></a>
+              <a href='{{ asset("index.php") }}'><div id='logo'></div></a>
             </font>
           </td>
         </tr>
@@ -41,7 +49,10 @@
         <tr id='topmenu'>
           <td style='text-align:center;' class='menu_td'>
             <ul class='menu_ul'>
-              {{ menu_entries | raw }}
+                {% for entry in menu_entries %}
+                    <li onmousemove='pop(zlien[{{ entry.key }}],$(this))' class='menu_li'>
+                    <a href='{{ asset(entry.url) }}' class='ejsmenu2'>{{ entry.title|raw}}</a></li>
+                {% endfor %}
             </ul>
           </td>
 
@@ -52,7 +63,7 @@
           </td>
 
           <td id='logout_img'>
-            <a href='authentification.php' title='Déconnexion'>
+            <a href='{{ asset("authentification.php") }}' title='Déconnexion'>
               <span class='pl-icon pl-icon-logout'></span>
             </a>
           </td>
@@ -61,14 +72,14 @@
         <tr>
           <td colspan='2' style='text-align:right;'>
             {% if planninghebdo or ics_export %}
-              <a href='index.php?page=monCompte.php' class='myAccountLink'>Mon Compte</a>
+              <a href='{{ asset("index.php?page=monCompte.php") }}' class='myAccountLink'>Mon Compte</a>
             {% elseif oups_auth_mod == 'SQL' %}
-              <a href='index.php?page=personnel/password.php' class='myAccountLink'>
+              <a href='{{ asset("index.php?page=personnel/password.php") }}' class='myAccountLink'>
                 Changer de mot de passe
               </a>
             {% endif %}
             <div id='logout_text'>
-              <a href='authentification.php' >Déconnexion</a>
+              <a href='{{ asset("authentification.php") }}' >Déconnexion</a>
             </div>
           </td>
         </tr>
