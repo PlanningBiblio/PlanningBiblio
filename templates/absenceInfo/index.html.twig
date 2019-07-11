@@ -1,0 +1,40 @@
+{# absenceInfo/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+    <h3>Informations sur les absences</h3>
+    
+    <div class='top-button-div'>
+        <a href='{{ asset("/absences/info/add") }}' class='ui-button'>Ajouter</a>
+    </div>
+
+    {% if info %}
+        <table class='CJDataTable' data-sort='[[1,"asc"],[2,"asc"]]' id='AbsenceInfoTable'>
+            <thead>
+                <tr>
+                    <th class='dataTableNoSort'></th>
+                    <th>Début</th>
+                    <th>Fin</th>
+                    <th>Texte</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for elem in info %}
+                    <tr>
+                        <td>
+                            <a href='{{ asset('/absences/info/') }}{{elem.id}}'>
+                                <span class='pl-icon pl-icon-edit' title='Edit'></span>
+                            </a>
+                        </td>
+                        <td>{{ elem.debut }}</td>
+                        <td>{{ elem.fin }}</td>
+                        <td>{{ elem.texte }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        Aucune information enregistrée.
+    {% endif %}
+{% endblock %}

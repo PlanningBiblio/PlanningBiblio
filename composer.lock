@@ -1,10 +1,11 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0b9a5ea6d836d6eb138c8bcd9be837d4",
+    "hash": "a007eb3140dd253d647d4afca7921fe4",
+    "content-hash": "4aa34c239333a8311d86ad3a289f8e4e",
     "packages": [
         {
             "name": "apereo/phpcas",
@@ -59,7 +60,7 @@
                 "cas",
                 "jasig"
             ],
-            "time": "2019-04-22T19:48:16+00:00"
+            "time": "2019-04-22 19:48:16"
         },
         {
             "name": "doctrine/annotations",
@@ -127,7 +128,7 @@
                 "docblock",
                 "parser"
             ],
-            "time": "2017-02-24T16:22:25+00:00"
+            "time": "2017-02-24 16:22:25"
         },
         {
             "name": "doctrine/cache",
@@ -197,7 +198,7 @@
                 "cache",
                 "caching"
             ],
-            "time": "2017-07-22T12:49:21+00:00"
+            "time": "2017-07-22 12:49:21"
         },
         {
             "name": "doctrine/collections",
@@ -264,7 +265,7 @@
                 "collections",
                 "iterator"
             ],
-            "time": "2017-01-03T10:49:41+00:00"
+            "time": "2017-01-03 10:49:41"
         },
         {
             "name": "doctrine/common",
@@ -337,7 +338,7 @@
                 "persistence",
                 "spl"
             ],
-            "time": "2017-07-22T08:35:12+00:00"
+            "time": "2017-07-22 08:35:12"
         },
         {
             "name": "doctrine/dbal",
@@ -408,7 +409,7 @@
                 "persistence",
                 "queryobject"
             ],
-            "time": "2017-07-22T20:44:48+00:00"
+            "time": "2017-07-22 20:44:48"
         },
         {
             "name": "doctrine/doctrine-bundle",
@@ -493,7 +494,7 @@
                 "orm",
                 "persistence"
             ],
-            "time": "2019-04-04T08:03:53+00:00"
+            "time": "2019-04-04 08:03:53"
         },
         {
             "name": "doctrine/doctrine-cache-bundle",
@@ -584,7 +585,7 @@
                 "cache",
                 "caching"
             ],
-            "time": "2018-11-09T06:25:35+00:00"
+            "time": "2018-11-09 06:25:35"
         },
         {
             "name": "doctrine/doctrine-migrations-bundle",
@@ -645,7 +646,7 @@
                 "migrations",
                 "schema"
             ],
-            "time": "2018-12-03T11:55:33+00:00"
+            "time": "2018-12-03 11:55:33"
         },
         {
             "name": "doctrine/inflector",
@@ -712,7 +713,7 @@
                 "singularize",
                 "string"
             ],
-            "time": "2017-07-22T12:18:28+00:00"
+            "time": "2017-07-22 12:18:28"
         },
         {
             "name": "doctrine/instantiator",
@@ -766,7 +767,7 @@
                 "constructor",
                 "instantiate"
             ],
-            "time": "2015-06-14T21:17:01+00:00"
+            "time": "2015-06-14 21:17:01"
         },
         {
             "name": "doctrine/lexer",
@@ -826,7 +827,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2019-06-08T11:03:04+00:00"
+            "time": "2019-06-08 11:03:04"
         },
         {
             "name": "doctrine/migrations",
@@ -900,7 +901,7 @@
                 "database",
                 "migrations"
             ],
-            "time": "2016-12-25T22:54:00+00:00"
+            "time": "2016-12-25 22:54:00"
         },
         {
             "name": "doctrine/orm",
@@ -976,7 +977,7 @@
                 "database",
                 "orm"
             ],
-            "time": "2017-12-17T02:57:51+00:00"
+            "time": "2017-12-17 02:57:51"
         },
         {
             "name": "egulias/email-validator",
@@ -1033,7 +1034,7 @@
                 "validation",
                 "validator"
             ],
-            "time": "2019-06-23T10:14:27+00:00"
+            "time": "2019-06-23 10:14:27"
         },
         {
             "name": "fig/link-util",
@@ -1087,7 +1088,7 @@
                 "psr-13",
                 "rest"
             ],
-            "time": "2016-10-17T18:31:11+00:00"
+            "time": "2016-10-17 18:31:11"
         },
         {
             "name": "jdorn/sql-formatter",
@@ -1137,7 +1138,7 @@
                 "highlight",
                 "sql"
             ],
-            "time": "2014-01-12T16:20:24+00:00"
+            "time": "2014-01-12 16:20:24"
         },
         {
             "name": "monolog/monolog",
@@ -1215,7 +1216,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2018-11-05T09:00:11+00:00"
+            "time": "2018-11-05 09:00:11"
         },
         {
             "name": "ocramius/package-versions",
@@ -1264,7 +1265,7 @@
                 }
             ],
             "description": "Composer plugin that provides efficient querying for installed package versions (no runtime IO)",
-            "time": "2017-11-24T11:07:03+00:00"
+            "time": "2017-11-24 11:07:03"
         },
         {
             "name": "ocramius/proxy-manager",
@@ -1329,7 +1330,7 @@
                 "proxy pattern",
                 "service proxies"
             ],
-            "time": "2016-11-04T15:53:15+00:00"
+            "time": "2016-11-04 15:53:15"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -1383,7 +1384,7 @@
                 "reflection",
                 "static analysis"
             ],
-            "time": "2017-09-11T18:02:19+00:00"
+            "time": "2017-09-11 18:02:19"
         },
         {
             "name": "phpdocumentor/reflection-docblock",
@@ -1434,7 +1435,7 @@
                 }
             ],
             "description": "With this component, a library can provide support for annotations via DocBlocks or otherwise retrieve information that is embedded in a DocBlock.",
-            "time": "2019-04-30T17:48:53+00:00"
+            "time": "2019-04-30 17:48:53"
         },
         {
             "name": "phpdocumentor/type-resolver",
@@ -1481,7 +1482,7 @@
                     "email": "me@mikevanriel.com"
                 }
             ],
-            "time": "2017-07-14T14:27:02+00:00"
+            "time": "2017-07-14 14:27:02"
         },
         {
             "name": "phpmailer/phpmailer",
@@ -1547,7 +1548,7 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2019-02-01T15:04:28+00:00"
+            "time": "2019-02-01 15:04:28"
         },
         {
             "name": "psr/cache",
@@ -1593,7 +1594,7 @@
                 "psr",
                 "psr-6"
             ],
-            "time": "2016-08-06T20:24:11+00:00"
+            "time": "2016-08-06 20:24:11"
         },
         {
             "name": "psr/container",
@@ -1642,7 +1643,7 @@
                 "container-interop",
                 "psr"
             ],
-            "time": "2017-02-14T16:28:37+00:00"
+            "time": "2017-02-14 16:28:37"
         },
         {
             "name": "psr/link",
@@ -1691,7 +1692,7 @@
                 "psr-13",
                 "rest"
             ],
-            "time": "2016-10-28T16:06:13+00:00"
+            "time": "2016-10-28 16:06:13"
         },
         {
             "name": "psr/log",
@@ -1738,7 +1739,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2018-11-20T15:27:04+00:00"
+            "time": "2018-11-20 15:27:04"
         },
         {
             "name": "psr/simple-cache",
@@ -1786,7 +1787,7 @@
                 "psr-16",
                 "simple-cache"
             ],
-            "time": "2017-10-23T01:57:42+00:00"
+            "time": "2017-10-23 01:57:42"
         },
         {
             "name": "sensio/framework-extra-bundle",
@@ -1857,7 +1858,7 @@
                 "annotations",
                 "controllers"
             ],
-            "time": "2018-12-11T16:59:23+00:00"
+            "time": "2018-12-11 16:59:23"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -1919,7 +1920,7 @@
                 "mail",
                 "mailer"
             ],
-            "time": "2019-04-21T09:21:45+00:00"
+            "time": "2019-04-21 09:21:45"
         },
         {
             "name": "symfony/asset",
@@ -1975,7 +1976,7 @@
             ],
             "description": "Symfony Asset Component",
             "homepage": "https://symfony.com",
-            "time": "2019-05-30T15:47:52+00:00"
+            "time": "2019-05-30 15:47:52"
         },
         {
             "name": "symfony/cache",
@@ -2045,7 +2046,7 @@
                 "caching",
                 "psr6"
             ],
-            "time": "2019-06-17T17:26:15+00:00"
+            "time": "2019-06-17 17:26:15"
         },
         {
             "name": "symfony/class-loader",
@@ -2101,7 +2102,7 @@
             ],
             "description": "Symfony ClassLoader Component",
             "homepage": "https://symfony.com",
-            "time": "2019-01-16T09:39:14+00:00"
+            "time": "2019-01-16 09:39:14"
         },
         {
             "name": "symfony/config",
@@ -2165,7 +2166,7 @@
             ],
             "description": "Symfony Config Component",
             "homepage": "https://symfony.com",
-            "time": "2019-05-30T15:47:52+00:00"
+            "time": "2019-05-30 15:47:52"
         },
         {
             "name": "symfony/console",
@@ -2237,7 +2238,7 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2019-06-05T11:33:52+00:00"
+            "time": "2019-06-05 11:33:52"
         },
         {
             "name": "symfony/debug",
@@ -2293,7 +2294,7 @@
             ],
             "description": "Symfony Debug Component",
             "homepage": "https://symfony.com",
-            "time": "2019-06-18T21:26:03+00:00"
+            "time": "2019-06-18 21:26:03"
         },
         {
             "name": "symfony/dependency-injection",
@@ -2364,7 +2365,7 @@
             ],
             "description": "Symfony DependencyInjection Component",
             "homepage": "https://symfony.com",
-            "time": "2019-05-30T15:47:52+00:00"
+            "time": "2019-05-30 15:47:52"
         },
         {
             "name": "symfony/doctrine-bridge",
@@ -2444,7 +2445,7 @@
             ],
             "description": "Symfony Doctrine Bridge",
             "homepage": "https://symfony.com",
-            "time": "2019-06-25T14:06:32+00:00"
+            "time": "2019-06-25 14:06:32"
         },
         {
             "name": "symfony/dotenv",
@@ -2501,7 +2502,7 @@
                 "env",
                 "environment"
             ],
-            "time": "2019-06-23T08:10:04+00:00"
+            "time": "2019-06-23 08:10:04"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -2564,7 +2565,7 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
-            "time": "2019-06-25T07:45:31+00:00"
+            "time": "2019-06-25 07:45:31"
         },
         {
             "name": "symfony/expression-language",
@@ -2614,7 +2615,7 @@
             ],
             "description": "Symfony ExpressionLanguage Component",
             "homepage": "https://symfony.com",
-            "time": "2019-05-30T15:47:52+00:00"
+            "time": "2019-05-30 15:47:52"
         },
         {
             "name": "symfony/filesystem",
@@ -2664,7 +2665,7 @@
             ],
             "description": "Symfony Filesystem Component",
             "homepage": "https://symfony.com",
-            "time": "2019-06-23T09:29:17+00:00"
+            "time": "2019-06-23 09:29:17"
         },
         {
             "name": "symfony/finder",
@@ -2713,7 +2714,7 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
-            "time": "2019-05-30T15:47:52+00:00"
+            "time": "2019-05-30 15:47:52"
         },
         {
             "name": "symfony/flex",
@@ -2762,7 +2763,7 @@
                 }
             ],
             "description": "Composer plugin for Symfony",
-            "time": "2019-06-28T18:01:09+00:00"
+            "time": "2019-06-28 18:01:09"
         },
         {
             "name": "symfony/form",
@@ -2843,7 +2844,7 @@
             ],
             "description": "Symfony Form Component",
             "homepage": "https://symfony.com",
-            "time": "2019-06-23T07:45:21+00:00"
+            "time": "2019-06-23 07:45:21"
         },
         {
             "name": "symfony/framework-bundle",
@@ -2957,7 +2958,7 @@
             ],
             "description": "Symfony FrameworkBundle",
             "homepage": "https://symfony.com",
-            "time": "2019-06-25T15:43:39+00:00"
+            "time": "2019-06-25 15:43:39"
         },
         {
             "name": "symfony/http-foundation",
@@ -3011,7 +3012,7 @@
             ],
             "description": "Symfony HttpFoundation Component",
             "homepage": "https://symfony.com",
-            "time": "2019-06-22T20:10:25+00:00"
+            "time": "2019-06-22 20:10:25"
         },
         {
             "name": "symfony/http-kernel",
@@ -3100,7 +3101,7 @@
             ],
             "description": "Symfony HttpKernel Component",
             "homepage": "https://symfony.com",
-            "time": "2019-06-26T13:56:39+00:00"
+            "time": "2019-06-26 13:56:39"
         },
         {
             "name": "symfony/inflector",
@@ -3158,7 +3159,7 @@
                 "symfony",
                 "words"
             ],
-            "time": "2019-01-16T13:27:11+00:00"
+            "time": "2019-01-16 13:27:11"
         },
         {
             "name": "symfony/intl",
@@ -3233,7 +3234,7 @@
                 "l10n",
                 "localization"
             ],
-            "time": "2019-06-13T15:39:17+00:00"
+            "time": "2019-06-13 15:39:17"
         },
         {
             "name": "symfony/monolog-bridge",
@@ -3300,7 +3301,7 @@
             ],
             "description": "Symfony Monolog Bridge",
             "homepage": "https://symfony.com",
-            "time": "2019-05-30T15:47:52+00:00"
+            "time": "2019-05-30 15:47:52"
         },
         {
             "name": "symfony/monolog-bundle",
@@ -3363,7 +3364,7 @@
                 "log",
                 "logging"
             ],
-            "time": "2019-06-20T12:18:19+00:00"
+            "time": "2019-06-20 12:18:19"
         },
         {
             "name": "symfony/options-resolver",
@@ -3417,7 +3418,7 @@
                 "configuration",
                 "options"
             ],
-            "time": "2019-04-10T16:00:48+00:00"
+            "time": "2019-04-10 16:00:48"
         },
         {
             "name": "symfony/orm-pack",
@@ -3445,7 +3446,7 @@
                 "MIT"
             ],
             "description": "A pack for the Doctrine ORM",
-            "time": "2019-01-16T09:49:15+00:00"
+            "time": "2019-01-16 09:49:15"
         },
         {
             "name": "symfony/polyfill-apcu",
@@ -3501,7 +3502,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2019-02-06T07:57:58+00:00"
+            "time": "2019-02-06 07:57:58"
         },
         {
             "name": "symfony/polyfill-intl-icu",
@@ -3559,7 +3560,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2019-01-07T19:39:47+00:00"
+            "time": "2019-01-07 19:39:47"
         },
         {
             "name": "symfony/polyfill-intl-idn",
@@ -3621,7 +3622,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2019-03-04T13:44:35+00:00"
+            "time": "2019-03-04 13:44:35"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -3680,7 +3681,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2019-02-06T07:57:58+00:00"
+            "time": "2019-02-06 07:57:58"
         },
         {
             "name": "symfony/polyfill-php72",
@@ -3735,7 +3736,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2019-02-06T07:57:58+00:00"
+            "time": "2019-02-06 07:57:58"
         },
         {
             "name": "symfony/process",
@@ -3784,7 +3785,7 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
-            "time": "2019-05-30T15:47:52+00:00"
+            "time": "2019-05-30 15:47:52"
         },
         {
             "name": "symfony/property-access",
@@ -3852,7 +3853,7 @@
                 "property path",
                 "reflection"
             ],
-            "time": "2019-06-05T15:56:22+00:00"
+            "time": "2019-06-05 15:56:22"
         },
         {
             "name": "symfony/property-info",
@@ -3928,7 +3929,7 @@
                 "type",
                 "validator"
             ],
-            "time": "2019-05-16T14:10:36+00:00"
+            "time": "2019-05-16 14:10:36"
         },
         {
             "name": "symfony/routing",
@@ -4004,7 +4005,7 @@
                 "uri",
                 "url"
             ],
-            "time": "2019-06-26T11:14:13+00:00"
+            "time": "2019-06-26 11:14:13"
         },
         {
             "name": "symfony/security",
@@ -4087,7 +4088,7 @@
             ],
             "description": "Symfony Security Component",
             "homepage": "https://symfony.com",
-            "time": "2019-06-25T12:22:47+00:00"
+            "time": "2019-06-25 12:22:47"
         },
         {
             "name": "symfony/security-bundle",
@@ -4173,7 +4174,7 @@
             ],
             "description": "Symfony SecurityBundle",
             "homepage": "https://symfony.com",
-            "time": "2019-06-07T20:39:07+00:00"
+            "time": "2019-06-07 20:39:07"
         },
         {
             "name": "symfony/serializer",
@@ -4252,7 +4253,7 @@
             ],
             "description": "Symfony Serializer Component",
             "homepage": "https://symfony.com",
-            "time": "2019-06-14T05:50:06+00:00"
+            "time": "2019-06-14 05:50:06"
         },
         {
             "name": "symfony/serializer-pack",
@@ -4282,7 +4283,7 @@
                 "MIT"
             ],
             "description": "A pack for the Symfony serializer",
-            "time": "2018-12-10T12:14:14+00:00"
+            "time": "2018-12-10 12:14:14"
         },
         {
             "name": "symfony/swiftmailer-bundle",
@@ -4347,7 +4348,7 @@
             ],
             "description": "Symfony SwiftmailerBundle",
             "homepage": "http://symfony.com",
-            "time": "2019-06-18T15:27:04+00:00"
+            "time": "2019-06-18 15:27:04"
         },
         {
             "name": "symfony/translation",
@@ -4417,7 +4418,7 @@
             ],
             "description": "Symfony Translation Component",
             "homepage": "https://symfony.com",
-            "time": "2019-06-13T10:34:15+00:00"
+            "time": "2019-06-13 10:34:15"
         },
         {
             "name": "symfony/twig-bridge",
@@ -4507,7 +4508,7 @@
             ],
             "description": "Symfony Twig Bridge",
             "homepage": "https://symfony.com",
-            "time": "2019-06-13T10:34:15+00:00"
+            "time": "2019-06-13 10:34:15"
         },
         {
             "name": "symfony/twig-bundle",
@@ -4581,7 +4582,7 @@
             ],
             "description": "Symfony TwigBundle",
             "homepage": "https://symfony.com",
-            "time": "2019-05-30T15:47:52+00:00"
+            "time": "2019-05-30 15:47:52"
         },
         {
             "name": "symfony/validator",
@@ -4666,7 +4667,7 @@
             ],
             "description": "Symfony Validator Component",
             "homepage": "https://symfony.com",
-            "time": "2019-06-20T06:43:29+00:00"
+            "time": "2019-06-20 06:43:29"
         },
         {
             "name": "symfony/web-link",
@@ -4737,7 +4738,7 @@
                 "psr13",
                 "push"
             ],
-            "time": "2019-01-16T09:39:14+00:00"
+            "time": "2019-01-16 09:39:14"
         },
         {
             "name": "symfony/yaml",
@@ -4796,7 +4797,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2019-03-25T07:48:46+00:00"
+            "time": "2019-03-25 07:48:46"
         },
         {
             "name": "twig/twig",
@@ -4863,7 +4864,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2019-06-18T15:37:11+00:00"
+            "time": "2019-06-18 15:37:11"
         },
         {
             "name": "webmozart/assert",
@@ -4914,7 +4915,7 @@
                 "check",
                 "validate"
             ],
-            "time": "2018-12-25T11:19:39+00:00"
+            "time": "2018-12-25 11:19:39"
         },
         {
             "name": "zendframework/zend-code",
@@ -4967,7 +4968,7 @@
                 "code",
                 "zf2"
             ],
-            "time": "2016-10-24T13:23:32+00:00"
+            "time": "2016-10-24 13:23:32"
         },
         {
             "name": "zendframework/zend-eventmanager",
@@ -5021,7 +5022,7 @@
                 "events",
                 "zf2"
             ],
-            "time": "2018-04-25T15:33:34+00:00"
+            "time": "2018-04-25 15:33:34"
         }
     ],
     "packages-dev": [
@@ -5085,7 +5086,7 @@
                 "validation",
                 "versioning"
             ],
-            "time": "2019-03-19T17:25:45+00:00"
+            "time": "2019-03-19 17:25:45"
         },
         {
             "name": "composer/xdebug-handler",
@@ -5129,7 +5130,7 @@
                 "Xdebug",
                 "performance"
             ],
-            "time": "2019-05-27T17:52:04+00:00"
+            "time": "2019-05-27 17:52:04"
         },
         {
             "name": "easycorp/easy-log-handler",
@@ -5179,7 +5180,7 @@
                 "monolog",
                 "productivity"
             ],
-            "time": "2018-07-27T15:41:37+00:00"
+            "time": "2018-07-27 15:41:37"
         },
         {
             "name": "friendsofphp/php-cs-fixer",
@@ -5267,7 +5268,7 @@
                 }
             ],
             "description": "A tool to automatically fix PHP code style",
-            "time": "2019-06-01T10:32:12+00:00"
+            "time": "2019-06-01 10:32:12"
         },
         {
             "name": "nikic/php-parser",
@@ -5318,7 +5319,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2019-05-25T20:07:01+00:00"
+            "time": "2019-05-25 20:07:01"
         },
         {
             "name": "php-cs-fixer/diff",
@@ -5369,7 +5370,7 @@
             "keywords": [
                 "diff"
             ],
-            "time": "2018-02-15T16:58:55+00:00"
+            "time": "2018-02-15 16:58:55"
         },
         {
             "name": "symfony/browser-kit",
@@ -5426,7 +5427,7 @@
             ],
             "description": "Symfony BrowserKit Component",
             "homepage": "https://symfony.com",
-            "time": "2019-06-09T14:27:26+00:00"
+            "time": "2019-06-09 14:27:26"
         },
         {
             "name": "symfony/css-selector",
@@ -5479,7 +5480,7 @@
             ],
             "description": "Symfony CssSelector Component",
             "homepage": "https://symfony.com",
-            "time": "2019-01-16T09:39:14+00:00"
+            "time": "2019-01-16 09:39:14"
         },
         {
             "name": "symfony/debug-bundle",
@@ -5544,7 +5545,7 @@
             ],
             "description": "Symfony DebugBundle",
             "homepage": "https://symfony.com",
-            "time": "2019-03-04T10:06:18+00:00"
+            "time": "2019-03-04 10:06:18"
         },
         {
             "name": "symfony/debug-pack",
@@ -5574,7 +5575,7 @@
                 "MIT"
             ],
             "description": "A debug pack for Symfony projects",
-            "time": "2018-12-10T12:11:11+00:00"
+            "time": "2018-12-10 12:11:11"
         },
         {
             "name": "symfony/dom-crawler",
@@ -5631,7 +5632,7 @@
             ],
             "description": "Symfony DomCrawler Component",
             "homepage": "https://symfony.com",
-            "time": "2019-05-30T15:47:52+00:00"
+            "time": "2019-05-30 15:47:52"
         },
         {
             "name": "symfony/maker-bundle",
@@ -5697,7 +5698,7 @@
                 "scaffold",
                 "scaffolding"
             ],
-            "time": "2019-04-19T17:26:45+00:00"
+            "time": "2019-04-19 17:26:45"
         },
         {
             "name": "symfony/phpunit-bridge",
@@ -5762,7 +5763,7 @@
             ],
             "description": "Symfony PHPUnit Bridge",
             "homepage": "https://symfony.com",
-            "time": "2019-06-26T12:14:14+00:00"
+            "time": "2019-06-26 12:14:14"
         },
         {
             "name": "symfony/profiler-pack",
@@ -5790,7 +5791,7 @@
                 "MIT"
             ],
             "description": "A pack for the Symfony web profiler",
-            "time": "2018-12-10T12:11:44+00:00"
+            "time": "2018-12-10 12:11:44"
         },
         {
             "name": "symfony/stopwatch",
@@ -5839,7 +5840,7 @@
             ],
             "description": "Symfony Stopwatch Component",
             "homepage": "https://symfony.com",
-            "time": "2019-01-16T09:39:14+00:00"
+            "time": "2019-01-16 09:39:14"
         },
         {
             "name": "symfony/test-pack",
@@ -5867,7 +5868,7 @@
                 "MIT"
             ],
             "description": "A pack for functional and end-to-end testing within a Symfony app",
-            "time": "2019-06-21T06:27:32+00:00"
+            "time": "2019-06-21 06:27:32"
         },
         {
             "name": "symfony/var-dumper",
@@ -5936,7 +5937,7 @@
                 "debug",
                 "dump"
             ],
-            "time": "2019-06-13T16:26:35+00:00"
+            "time": "2019-06-13 16:26:35"
         },
         {
             "name": "symfony/web-profiler-bundle",
@@ -6003,7 +6004,7 @@
             ],
             "description": "Symfony WebProfilerBundle",
             "homepage": "https://symfony.com",
-            "time": "2019-06-09T16:36:33+00:00"
+            "time": "2019-06-09 16:36:33"
         },
         {
             "name": "symfony/web-server-bundle",
@@ -6062,7 +6063,7 @@
             ],
             "description": "Symfony WebServerBundle",
             "homepage": "https://symfony.com",
-            "time": "2019-03-04T10:06:18+00:00"
+            "time": "2019-03-04 10:06:18"
         }
     ],
     "aliases": [],
