@@ -30,7 +30,7 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUE
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Absences - Modif', 100, '', 'absences/modif.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Absences - Modif2', 100, '', 'absences/modif2.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Absences - Suppression', 100, '', 'absences/delete.php');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`, `ordre`) VALUES ('Absences - Infos', 201, 'Gestion des absences, validation niveau 1', 'absences/infos.php', 'Absences', 30);";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`, `ordre`) VALUES ('Absences - Infos', 201, 'Gestion des absences, validation niveau 1', '/absences/info', 'Absences', 30);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Personnel - Index', 4, 'Voir les fiches des agents', 'personnel/index.php', 'Agents', 60);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Personnel - Modif', 4, 'Voir les fiches des agents', 'personnel/modif.php', 'Agents', 60);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Liste des postes - Index', 5, 'Gestion des postes', 'postes/index.php','Postes',160);";
@@ -395,7 +395,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('10','0','Absences','absences/voir.php',NULL),
   ('10','10','Voir les absences','absences/voir.php',NULL),
   ('10','20','Ajouter une absence','absences/ajouter.php',NULL),
-  ('10','30','Informations','absences/infos.php',NULL),
+  ('10','30','Informations','/absences/info',NULL),
   ('15','0','Congés','conges/voir.php','config=Conges-Enable'),
   ('15','10','Liste des cong&eacute;s','conges/voir.php','config=Conges-Enable'),
   ('15','15','Liste des r&eacute;cup&eacute;rations','conges/voir.php&amp;recup=1','config=Conges-Enable;Conges-Recuperations'),
