@@ -423,7 +423,7 @@ select
 
 /* .out-of-work-time avant .red dans le CSS : permet de donner la priorité au red (absences) par rapport au out-of-work-time (heures de présence) dans le marquage des absences et congés dans le planning */
 .out-of-work-time {
-  color: #A361A8;
+  color: #6D2C15;
 }
 
 /* .red avant .orange dans le CSS : permet de donner la priorité au orange (congés) par rapport au red (absences) dans le marquage des absences et congés dans le planning */
