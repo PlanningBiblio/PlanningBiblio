@@ -228,7 +228,12 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
 
                 // Check if the agent is out of his schedule (schedule has been changed).
                 $agent = $entityManager->find(Agent::class, $elem2['perso_id']);
-                $temps = json_decode(html_entity_decode($agent->temps(), ENT_QUOTES, 'UTF-8'), true);
+                if (!empty($agent)) {
+                    $temps = json_decode(html_entity_decode($agent->temps(), ENT_QUOTES, 'UTF-8'), true);
+                } else {
+                    $temps = array();
+                }
+
                 $day_index = $d->planning_day_index_for($elem2['perso_id']);
                 if (!calculSiPresent($elem2['debut'], $elem2['fin'], $temps, $day_index)) {
                     $value[':absent'] = 2;
