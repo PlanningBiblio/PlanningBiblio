@@ -6,8 +6,6 @@
  * @copyright 2011-2018 Jérôme Combes
 
  * Fichier : init.php
- * Création : mai 2018
- * Dernière modification : 9 octobre 2018
  * @author Alex Arnaud <alex.arnaud@biblibre.com>
 
  * Description :
@@ -26,7 +24,7 @@ $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSI
 $_SESSION['oups']['week'] = isset($_SESSION['oups']['week']) ? $_SESSION['oups']['week'] : '';
 
 // Version
-$version="19.04.01";
+$version="19.04.02";
 require_once __DIR__.'/vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;

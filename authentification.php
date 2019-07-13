@@ -6,8 +6,6 @@ Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : authentification.php
-Création : mai 2011
-Dernière modification : 12 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -28,7 +26,7 @@ if (PHP_VERSION_ID<50400 and session_id()=='') {
 }
 
 // Initialisation des variables
-$version="19.04.01";
+$version="19.04.02";
 
 // Redirection vers setup si le fichier config est absent
 if (!file_exists("include/config.php")) {
