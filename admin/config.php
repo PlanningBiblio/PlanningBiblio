@@ -63,6 +63,10 @@ elseif ($params && CSRFTokenOK($params['CSRFToken'], $_SESSION)) {
 
         $value = $params[$cp->nom()];
 
+        if (is_string($value)) {
+            $value = trim($value);
+        }
+
         if (substr($cp->nom(), -9)=="-Password") {
             $value = encrypt($value);
         }
