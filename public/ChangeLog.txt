@@ -1,5 +1,10 @@
 *** Unreleased ***
 
+*** Version 19.04.03       (2019-07-26)   ***
+- Fixes
+Fix misallocation of rights in multisites mode
+Fix bug #86, Wrong CAS version numbers
+
 *** Version 19.04.02       (2019-07-13)   ***
 - Fixes
 Fix the error that prevented the import of some plannings
