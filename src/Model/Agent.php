@@ -96,6 +96,12 @@ class Agent extends Entity {
     public function can_access(array $accesses) {
         $droits = $this->droits();
         $multisites = $GLOBALS['config']['Multisites-nombre'];
+        $multisites_rights = array(200,300,400,500,600,800,900,1000);
+
+        // Right 21 (Edit personnel) gives right 4 (Show personnel)
+        if (in_array(21, $droits)) {
+            $droits[] = 4;
+        }
 
         foreach ($accesses as $access) {
             if (in_array($access->groupe_id(), $droits)) {
@@ -104,10 +110,12 @@ class Agent extends Entity {
         }
 
         if ($multisites > 1) {
-            for ($i = 1; $i <= $multisites; $i++) {
-                $droit = $accesses[0]->groupe_id() -1 + $i;
-                if (in_array($droit, $droits)) {
-                    return true;
+            if (in_array($accesses[0]->groupe_id(), $multisites_rights)) {
+                for ($i = 1; $i <= $multisites; $i++) {
+                    $droit = $accesses[0]->groupe_id() -1 + $i;
+                    if (in_array($droit, $droits)) {
+                        return true;
+                    }
                 }
             }
         }
