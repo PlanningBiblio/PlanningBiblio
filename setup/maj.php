@@ -3,7 +3,7 @@
 Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
+@copyright 2011-2019 Jérôme Combes
 
 Fichier : setup/maj.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
@@ -1584,8 +1584,12 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
-$v="19.04.02";
+$v="19.04.03";
 if (version_compare($config['Version'], $v) === -1) {
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = '2.0,3.0,4.0' WHERE `nom` = 'CAS-Version';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur` = '2.0' WHERE `nom` = 'CAS-Version' AND `valeur`= '2';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur` = '3.0' WHERE `nom` = 'CAS-Version' AND `valeur`= '3';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur` = '4.0' WHERE `nom` = 'CAS-Version' AND `valeur`= '4';";
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 

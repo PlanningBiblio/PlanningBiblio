@@ -3,11 +3,9 @@
 Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
+@copyright 2011-2019 Jérôme Combes
 
 Fichier : setup/index.php
-Création : mai 2011
-Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,7 +19,7 @@ session_start();
 session_destroy();
 session_start();
 
-$version="2.8.04";
+$version="19.04.03";
 
 include "header.php";
 include_once "../include/function.php";

@@ -3,7 +3,7 @@
  * Planning Biblio
  * Licence GNU/GPL (version 2 et au dela)
  * Voir les fichiers README.md et LICENSE
- * @copyright 2011-2018 Jérôme Combes
+ * @copyright 2011-2019 Jérôme Combes
 
  * Fichier : init.php
  * @author Alex Arnaud <alex.arnaud@biblibre.com>
@@ -24,7 +24,7 @@ $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSI
 $_SESSION['oups']['week'] = isset($_SESSION['oups']['week']) ? $_SESSION['oups']['week'] : '';
 
 // Version
-$version="19.04.02";
+$version="19.04.03";
 require_once __DIR__.'/vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;

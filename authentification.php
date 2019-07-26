@@ -3,7 +3,7 @@
 Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
+@copyright 2011-2019 Jérôme Combes
 
 Fichier : authentification.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
@@ -26,7 +26,7 @@ if (PHP_VERSION_ID<50400 and session_id()=='') {
 }
 
 // Initialisation des variables
-$version="19.04.02";
+$version="19.04.03";
 
 // Redirection vers setup si le fichier config est absent
 if (!file_exists("include/config.php")) {

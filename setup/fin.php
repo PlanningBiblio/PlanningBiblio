@@ -3,11 +3,9 @@
 Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
+@copyright 2011-2019 Jérôme Combes
 
 Fichier : setup/fin.php
-Création : mai 2011
-Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -19,7 +17,7 @@ Affiche le message "configuration terminée" et invite l'utilisateur à se conne
 
 session_start();
 
-$version="2.8.04";
+$version="19.04.03";
 
 include "../include/config.php";
 include "header.php";
