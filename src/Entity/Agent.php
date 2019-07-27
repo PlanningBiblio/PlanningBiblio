@@ -97,17 +97,26 @@ class Agent extends Entity{
         $droits = $this->droits();
         $multisites = $GLOBALS['config']['Multisites-nombre'];
 
+        // Right 21 (Edit personnel) gives right 4 (Show personnel)
+        if (in_array(21, $droits)) {
+            $droits[] = 4;
+        }
+
         foreach ($accesses as $access) {
             if (in_array($access->groupe_id(), $droits)) {
                 return true;
             }
         }
 
+        // Multisites rights associated with page access
+        $multisites_rights = array(201,301);
         if ($multisites > 1) {
-            for ($i = 1; $i <= $multisites; $i++) {
-                $droit = $accesses[0]->groupe_id() -1 + $i;
-                if (in_array($droit, $droits)) {
-                    return true;
+            if (in_array($accesses[0]->groupe_id(), $multisites_rights)) {
+                for ($i = 1; $i <= $multisites; $i++) {
+                    $droit = $accesses[0]->groupe_id() -1 + $i;
+                    if (in_array($droit, $droits)) {
+                        return true;
+                    }
                 }
             }
         }
