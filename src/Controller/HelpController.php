@@ -2,19 +2,17 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use App\Controller\BaseController;
+
 use Symfony\Component\Routing\Annotation\Route;
 
-class HelpController extends Controller
+class HelpController extends BaseController
 {
     /**
      * @Route("/help", name="help")
      */
     public function index()
     {
-
-        $templates_params = array_merge($GLOBALS['templates_params'], ['controller_name' => 'HelpController']);
-        
-        return $this->render('help/index.html.twig', $templates_params);
+        return $this->output('help/index.html.twig');
     }
 }

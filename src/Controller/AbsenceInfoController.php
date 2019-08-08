@@ -2,17 +2,15 @@
 
 namespace App\Controller;
 
-use Doctrine\ORM\EntityManager;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use App\Controller\BaseController;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-
-
 use App\Entity\AbsenceInfo;
 
-class AbsenceInfoController extends Controller
+class AbsenceInfoController extends BaseController
 {
     /**
      * @Route("/absences/info", name="absences.info.index", methods={"GET"})
@@ -21,9 +19,7 @@ class AbsenceInfoController extends Controller
     {
         $today = date('Ymd');
 
-        $entityManager = $GLOBALS['entityManager'];
-
-        $queryBuilder = $entityManager->createQueryBuilder();
+        $queryBuilder = $this->entityManager->createQueryBuilder();
 
         $query = $queryBuilder->select(array('a'))
             ->from(AbsenceInfo::class, 'a')
@@ -31,11 +27,9 @@ class AbsenceInfoController extends Controller
             ->orderBy('a.debut', 'ASC', 'a.fin', 'ASC')
             ->getQuery();
 
-        $info = $query->getResult();
+        $this->templateParams( array('info' => $query->getResult()) );
 
-        $templates_params = array_merge(array('info' => $info), $GLOBALS['templates_params']);
-
-        return $this->render('absenceInfo/index.html.twig', $templates_params);
+        return $this->output('absenceInfo/index.html.twig');
     }
 
     /**
@@ -43,14 +37,14 @@ class AbsenceInfoController extends Controller
      */
     public function add(Request $request)
     {
-        $templates_params['id'] = null;
-        $templates_params['start'] = null;
-        $templates_params['end'] = null;
-        $templates_params['text'] = null;
+        $this->templateParams(array(
+            'id'    => null,
+            'start' => null,
+            'end'   => null,
+            'text'  => null,
+        ));
 
-        $templates_params = array_merge($templates_params, $GLOBALS['templates_params']);
-
-        return $this->render('absenceInfo/edit.html.twig', $templates_params);
+        return $this->output('absenceInfo/edit.html.twig');
     }
 
     /**
@@ -60,18 +54,16 @@ class AbsenceInfoController extends Controller
     {
         $id = $request->get('id');
 
-        $entityManager = $GLOBALS['entityManager'];
+        $info = $this->entityManager->getRepository(AbsenceInfo::class)->findOneById($id);
 
-        $info = $entityManager->getRepository(AbsenceInfo::class)->findOneById($id);
+        $this->templateParams(array(
+            'id'    => $id,
+            'start' => date('d/m/Y', strtotime($info->debut())),
+            'end'   => date('d/m/Y', strtotime($info->fin())),
+            'text'  => $info->texte()
+        ));
 
-        $templates_params['id'] = $id;
-        $templates_params['start'] = date('d/m/Y', strtotime($info->debut()));
-        $templates_params['end'] = date('d/m/Y', strtotime($info->fin()));
-        $templates_params['text'] = $info->texte();
-
-        $templates_params = array_merge($templates_params, $GLOBALS['templates_params']);
-
-        return $this->render('absenceInfo/edit.html.twig', $templates_params);
+        return $this->output('absenceInfo/edit.html.twig');
     }
 
     /**
@@ -90,10 +82,8 @@ class AbsenceInfoController extends Controller
         $end = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $request->get('end'));
         $text = trim($request->get('text'));
 
-        $entityManager = $GLOBALS['entityManager'];
-
         if ($id) {
-            $info = $entityManager->getRepository(AbsenceInfo::class)->find($id);
+            $info = $this->entityManager->getRepository(AbsenceInfo::class)->find($id);
             $info->debut($start);
             $info->fin($end);
             $info->texte($text);
@@ -107,8 +97,8 @@ class AbsenceInfoController extends Controller
             $flash = "L'information a bien été enregistrée.";
         }
 
-        $entityManager->persist($info);
-        $entityManager->flush();
+        $this->entityManager->persist($info);
+        $this->entityManager->flush();
 
         $session->getFlashBag()->add('notice', $flash);
         return $this->redirectToRoute('absences.info.index');
@@ -127,10 +117,9 @@ class AbsenceInfoController extends Controller
 
         $id = $request->get('id');
 
-        $entityManager = $GLOBALS['entityManager'];
-        $info = $entityManager->getRepository(AbsenceInfo::class)->find($id);
-        $entityManager->remove($info);
-        $entityManager->flush();
+        $info = $this->entityManager->getRepository(AbsenceInfo::class)->find($id);
+        $this->entityManager->remove($info);
+        $this->entityManager->flush();
 
         $flash = "L'information a bien été supprimée.";
 

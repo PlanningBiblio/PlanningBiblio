@@ -2,13 +2,14 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use App\Controller\BaseController;
+
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
 use App\Entity\ConfigParam;
 
-class ConfigController extends Controller
+class ConfigController extends BaseController
 {
     /**
      * @Route("/config", name="config.index", methods={"GET"})
@@ -21,9 +22,7 @@ class ConfigController extends Controller
         // App URL
         $url = $request->getSchemeAndHttpHost() . $request->getBaseUrl();
 
-        $entityManager = $GLOBALS['entityManager'];
-
-        $configParams = $entityManager->getRepository(ConfigParam::class)->findBy(
+        $configParams = $this->entityManager->getRepository(ConfigParam::class)->findBy(
             array(),
             array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
         );
@@ -38,7 +37,7 @@ class ConfigController extends Controller
                 'categorie'     => $cp->categorie(),
                 'commentaires'  => html_entity_decode($cp->commentaires(), ENT_QUOTES|ENT_HTML5),
             );
-            
+
             if ($elem['nom'] == 'URL' ) {
                 $elem['valeur'] = $url;
             }
@@ -88,17 +87,18 @@ class ConfigController extends Controller
 
             $elements[$category][$cp->nom()] = $elem;
         }
-        $templates_params['elements'] = $elements;
 
-        $templates_params['error'] = $request->query->get('error');
-        $templates_params['post'] = $request->query->get('post');
-        $templates_params['warning'] = $request->query->get('warning');
+        $this->templateParams(array(
+            'elements'  => $elements,
+            'error'     => $request->query->get('error'),
+            'post'      => $request->query->get('post'),
+            'warning'   => $request->query->get('warning')
+        ));
 
-        $templates_params = array_merge($templates_params, $GLOBALS['templates_params']);
 
-        return $this->render('config/index.html.twig', $templates_params);
+        return $this->output('config/index.html.twig');
     }
-    
+
     /**
      * @Route("/config", name="config.update"), methods={"POST"})
      */
@@ -107,21 +107,19 @@ class ConfigController extends Controller
         $params = $request->request->all();
 
         // Demo mode
-        if ($params && !empty($GLOBALS['config']['demo'])) {
+        if ($params && !empty($this->config('demo'))) {
             $warning = "La modification de la configuration n'est pas autorisée sur la version de démonstration.";
             $warning .= "#BR#Merci de votre compréhension";
-            $templates_params['warning'] = $warning;
+            $this->templateParams(array('warning' => $warning));
         }
 
         elseif ($params && CSRFTokenOK($params['CSRFToken'], $_SESSION)) {
 
-            $entityManager = $GLOBALS['entityManager'];
-
-            $configParams = $entityManager->getRepository(ConfigParam::class)->findBy(
+            $configParams = $this->entityManager->getRepository(ConfigParam::class)->findBy(
                 array(), array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
             );
 
-            $templates_params['post'] = 1;
+            $this->templateParams(array('post' => 1));
 
             foreach ($configParams as $cp) {
 
@@ -141,8 +139,8 @@ class ConfigController extends Controller
                 $value = $params[$cp->nom()];
 
                 if (is_string($value)) {
-	            $value = trim($value);
-	        }
+                $value = trim($value);
+            }
 
                 // App URL
                 if ($cp->nom() == 'URL') {
@@ -160,17 +158,17 @@ class ConfigController extends Controller
 
                 try {
                     $cp->valeur($value);
-                    $entityManager->persist($cp);
+                    $this->entityManager->persist($cp);
                 }
                 catch (Exception $e) {
-                    $templates_params['error'] = true;
+                    $this->templateParams(array('error' => true));
                 }
             }
-            $entityManager->flush();
+            $this->entityManager->flush();
 
         }
 
-        return $this->redirectToRoute('config.index', $templates_params);
+        return $this->redirectToRoute('config.index', $this->templateParams());
     }
 
 }
