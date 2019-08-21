@@ -4,6 +4,33 @@
 
 {% block page %}
   <script type="text/JavaScript" src="admin/js/config.js?version=2.8.04"></script>
+  <script type="text/JavaScript">
+    $( document ).ready(function() {
+      $( "#confirm" ).dialog({
+        autoOpen: false,
+        resizable: false,
+        width: 400,
+        modal: true,
+        buttons: {
+          "Je suis d'accord": function() {
+            $( this ).dialog( "close" );
+            $("#Conges-Recuperations").val('1');
+          },
+          "Annuler ma modification": function() {
+            $( this ).dialog( "close" );
+            $("#Conges-Mode").val('heures');
+          }
+        }
+      });
+      $('#Conges-Mode').on('change', function() {
+        conges_mode = $("#Conges-Mode").val();
+        conges_recuperations = $("#Conges-Recuperations").val();
+        if (conges_mode == 'jours' && conges_recuperations == 0) {
+          $( "#confirm" ).dialog( "open" );
+        }
+      });
+    });
+  </script>
   {% if warning %}
     <script type='text/JavaScript'>
       CJInfo('{{ warning }}','error');
@@ -38,5 +65,9 @@
         <input type='submit' value='Valider' class='ui-button' />
       </div>
     </form>
+
+    <div id="confirm" title="Modification du mode de congés">
+     Le mode de décompte des congés en jour implique de modifier le paramètre "Conges-Recuperations" en "Dissocier".
+    </div>
 
 {% endblock %}
