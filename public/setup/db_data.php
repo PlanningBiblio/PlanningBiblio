@@ -47,7 +47,7 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categ
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Statistiques', 17, 'Acc&egrave;s au statistiques', 'statistiques/service.php','Statistiques','170');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Statistiques', 17, 'Acc&egrave;s au statistiques', 'statistiques/statut.php','Statistiques','170');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Feuille de temps-  index', 17, 'Acc&egrave;s au statistiques', 'statistiques/temps.php','Statistiques','170');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Liste des agents pr&eacute;sents et absents', 1301, 'Acc&egrave;s aux statistiques Pr&eacute;sents / Absents', 'statistiques/presents_absents.php','Statistiques','171');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Liste des agents pr&eacute;sents et absents', 1301, 'Acc&egrave;s aux statistiques Pr&eacute;sents / Absents', '/statistics/attendeesmissing','Statistiques','171');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Configuration avanc&eacute;e', 20, 'Configuration avanc&eacute;e', '/config');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Personnel - Suppression', 21, 'Gestion des agents', 'personnel/suppression.php', 'Agents', 70);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Personnel - Valid', 21, 'Gestion des agents', 'personnel/valid.php', 'Agents', 70);";
@@ -418,7 +418,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('40','24','Par service','statistiques/service.php',NULL),
   ('40','60','Samedis','statistiques/samedis.php',NULL),
   ('40','70','Absences','statistiques/absences.php',NULL),
-  ('40','80','Pr&eacute;sents / absents','statistiques/presents_absents.php',NULL),
+  ('40','80','Pr&eacute;sents / absents','/statistics/attendeesmissing',NULL),
   ('40','26','Par statut','statistiques/statut.php',NULL),
   ('50','0','Administration','admin/index.php',NULL),
   ('50','10','Informations','infos/index.php',NULL),
