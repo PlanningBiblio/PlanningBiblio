@@ -1,0 +1,35 @@
+{# agents/skills_edit.html.twig #}
+
+<table style='width:90%;'>
+  <tr style='vertical-align:top;'>
+    <td>
+      <b>Activités disponibles</b><br/>
+      <div id='dispo_div'>
+        <select id='postes_dispo' name='postes_dispo' style='width:300px;' size='20' multiple='multiple'>
+          {% for elem in postes_dispo %}
+            <option value='{{ elem[0] }}'>{{ elem[1] }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </td>
+
+    <td style='text-align:center;padding-top:100px;'>
+      <input type="button" style="width:200px" value="Attribuer >>" onclick="select_add('postes_dispo','postes_attribues','postes','300');"/><br/><br/>
+      <input type="button" style="width:200px" value="Attribuer Tout >>" onclick="select_add_all('postes_dispo','postes_attribues','postes','300');"/><br/><br/>
+      <input type="button" style="width:200px" value="<< Supprimer" onclick="select_drop('postes_dispo','postes_attribues','postes','300');"/><br/><br/>
+      <input type="button" style="width:200px" value="<< Supprimer Tout" onclick="select_drop_all('postes_dispo','postes_attribues','postes','300');"/><br/><br/>
+    </td>
+
+    <td>
+      <b>Activités attribu&eacute;es</b><br/>
+      <div id='attrib_div'>
+        <select id='postes_attribues' name='postes_attribues' style='width:300px;' size='20' multiple='multiple'>
+          {% for elem in postes_attribues %}
+            <option value='{{ elem[0] }}'>{{ elem[1] }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <input type='hidden' name='postes' id='postes' value="{{ postes }}"/>
+    </td>
+  </tr>
+</table>

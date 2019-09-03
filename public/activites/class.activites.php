@@ -16,6 +16,7 @@ Page appelée par les pages du dossier activites
 */
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
+$version = $GLOBALS['version'];
 if (!isset($version)) {
     include_once "../include/accessDenied.php";
 }

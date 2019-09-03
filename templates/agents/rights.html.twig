@@ -1,0 +1,52 @@
+{# agents/rights.html.twig #}
+
+<div id='access' style='margin-left:70px;display:none;padding-top:30px;'>
+  <ul>
+    {% for category, elem in rights %}
+      <h3 style='margin:10px 0 5px 0;'>{{ category }}</h3>
+      {% for right in elem.rights %}
+        <li>
+          {% if right.checked %}
+            {{ right.groupe}<label class='agent-acces-checked2 green bold'>Oui</label>
+          {% else %}
+            {{ right.groupe}<label class='agent-acces-checked2 red'>Non</label>
+          {% endif %}
+        </li>
+      {% endfor %}
+    {% endfor %}
+  </ul>
+
+  {% if multi_site %}
+    <table style='margin-top:50px;'>
+      <thead>
+        <tr>
+          <th>&nbsp;</th>
+          {% for s in sites_for_rights %}
+            <th class='center' style='padding:0 10px;'>{{ s.site_name }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for category, elem in rights_sites %}
+          <tr>
+            <td>
+              <h3 style='margin:10px 0 5px 0;'>{{ category }}</h3>
+            </td>
+          </tr>
+          {% for right in elem.rights %}
+            <tr>
+              <td>{{ right.groupe }}</td>
+              {% for s in right.sites %}
+                {% if s.checked %}
+                  <td class='center green bold'>Oui</td>
+                {% else %}
+                  <td class='center red'>Non</td>
+                {% endif %}
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</div>
