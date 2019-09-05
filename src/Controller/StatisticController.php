@@ -10,6 +10,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 use App\PlanningBiblio\PresentSet;
 
+$version = 'symfony';
+
 include_once __DIR__ . "/../../public/conges/class.conges.php";
 include_once __DIR__ . "/../../public/include/function.php";
 require_once __DIR__ . "/../../public/include/db.php";
