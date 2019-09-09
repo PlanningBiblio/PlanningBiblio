@@ -64,10 +64,8 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categ
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Planning - Mod&egrave;les', 301, 'Cr&eacute;ation / modification des plannings, utilisation et gestion des mod&egrave;les','planning/modeles/valid.php','Planning','110');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Personnel - Suppression liste', 21, 'Gestion des agents','personnel/suppression-liste.php', 'Agents', 70);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Configuration des tableaux - Modif',22,'Configuration des tableaux','planning/postes_cfg/modif.php','Planning',140);";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Informations',23,'Informations','infos/index.php');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Informations',23,'Informations','infos/modif.php');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Informations',23,'Informations','infos/supprime.php');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Informations',23,'Informations','infos/ajout.php');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (id, nom, groupe_id, groupe, page, ordre, categorie) VALUES (NULL, 'Afficher les informations', 23, 'Informations', '/admin/info', 0, 'Informations');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (id, nom, groupe_id, groupe, page, ordre, categorie) VALUES (NULL, 'Ajouter une information', 23, 'Informations', '/admin/info/add', 0, 'Informations');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Configuration des tableaux - Modif',22,'Configuration des tableaux','planning/postes_cfg/lignes_sep.php','Planning',140);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Configuration des tableaux - Modif',22,'Configuration des tableaux','planning/postes_cfg/groupes.php','Planning',140);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Configuration des tableaux - Modif',22,'Configuration des tableaux','planning/postes_cfg/groupes2.php','Planning',140);";
@@ -425,7 +423,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('40','80','Pr&eacute;sents / absents','/statistics/attendeesmissing',NULL),
   ('40','26','Par statut','statistiques/statut.php',NULL),
   ('50','0','Administration','admin/index.php',NULL),
-  ('50','10','Informations','infos/index.php',NULL),
+  ('50','10','Informations','/admin/info',NULL),
   ('50','20','Les activit&eacute;s','activites/index.php',NULL),
   ('50','30','Les agents','personnel/index.php',NULL),
   ('50','40','Les postes','postes/index.php',NULL),

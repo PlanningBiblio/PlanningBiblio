@@ -384,6 +384,14 @@ function deleteAbsenceInfo(id) {
     }
 }
 
+function deleteAdminInfo(id) {
+    if (confirm("Etes vous sûr(e) de vouloir supprimer cette information ?")) {
+        $('#form').prepend("<input type='hidden' name='_method' value='DEL' />");
+        $('#form').submit();
+    }
+}
+
+
 function diffMinutes(debut,fin){		// Calcul la différence en minutes entre 2 heures (formats H:i:s)
   var d=new Date("Mon, 26 Aug 2013 "+debut);
   d=d.getTime()/60000;				// Nombre de milisecondes, converti en minutes
