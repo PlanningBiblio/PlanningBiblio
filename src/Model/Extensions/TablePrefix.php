@@ -2,15 +2,21 @@
 
 namespace App\Model\Extensions;
 
+use Doctrine\Common\EventSubscriber;
 use \Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 
-class TablePrefix
+class TablePrefix implements EventSubscriber
 {
     protected $prefix = '';
 
     public function __construct($prefix)
     {
         $this->prefix = (string) $prefix;
+    }
+
+    public function getSubscribedEvents()
+    {
+        return ['loadClassMetadata'];
     }
 
     public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)

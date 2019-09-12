@@ -1,4 +1,6 @@
 *** Unreleased ***
+- Enhancements
+Retrieve absences from microsoft graph API
 
 *** Version 20.04.00       (2020-06-15)   ***
 - Enhancements
