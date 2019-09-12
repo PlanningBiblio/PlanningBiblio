@@ -123,6 +123,11 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
         }
     }
   
+    // if module PlanningHebdo: search related plannings.
+    if ($config['PlanningHebdo']) {
+        include(__DIR__.'/../../planningHebdo/planning.php');
+    }
+
     $i=0;
     foreach ($dates as $elem) {
         $i++;				// utilisé pour la colone jour du modèle (1=lundi, 2=mardi ...) : on commence à 1
@@ -230,11 +235,15 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
                 }
 
                 // Check if the agent is out of his schedule (schedule has been changed).
-                $agent = $entityManager->find(Agent::class, $elem2['perso_id']);
-                if (!empty($agent)) {
-                    $temps = json_decode(html_entity_decode($agent->temps(), ENT_QUOTES, 'UTF-8'), true);
+                if ($config['PlanningHebdo']) {
+                    $temps = !empty($tempsPlanningHebdo[$elem2['perso_id']]) ? $tempsPlanningHebdo[$elem2['perso_id']] : array();
                 } else {
-                    $temps = array();
+                    $agent = $entityManager->find(Agent::class, $elem2['perso_id']);
+                    if (!empty($agent)) {
+                        $temps = json_decode(html_entity_decode($agent->temps(), ENT_QUOTES, 'UTF-8'), true);
+                    } else {
+                        $temps = array();
+                    }
                 }
 
                 $day_index = $d->planning_day_index_for($elem2['perso_id']);
