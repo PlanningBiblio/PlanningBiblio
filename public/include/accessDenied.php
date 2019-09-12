@@ -60,6 +60,7 @@ $link="<a href='{$path}index.php'>Retour à l'application</a>";
 <center>
 <p style='font-weight:bold;'>
 <?php
+debug_print_backtrace();
 // IP Blocker : Message affiché si l'IP a été bloquée
 if (isset($IPBlocker)) {
     echo "L'adresse IP \"{$_SERVER['REMOTE_ADDR']}\" a &eacute;t&eacute; bloqu&eacute;e.\n";
