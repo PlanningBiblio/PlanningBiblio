@@ -1,10 +1,12 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
-use PlanningBiblio\OAuth;
+use App\PlanningBiblio\GraphClient;
+
 session_start();
-$oauth = new OAuth();
-$token = $oauth->getToken();
-echo "token: $token";
+
+$graph_client = new GraphClient();
+$response = $graph_client->getEvent();
+var_dump($response);
 ?>
 

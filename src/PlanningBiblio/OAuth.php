@@ -1,7 +1,10 @@
 <?php
-namespace PlanningBiblio;
+
+namespace App\PlanningBiblio;
+
 use Symfony\Component\HttpFoundation\Request;
 use League\OAuth2\Client\Provider\GenericProvider;
+
 class OAuth {
 
     # Prérequis:
@@ -41,10 +44,10 @@ class OAuth {
     private $redirectURL = "https://my.planningbiblio.fr/graphauth";
 
     function __construct() {
-        $this->clientid = 'e99dfb02-a369-4443-9c6a-b92e430ba7c5';
-        $this->clientsecret = 'v61P@qXxJGP53MzcfLYl.OcTla**0MvC';
-        $this->tokenURL = "https://login.microsoftonline.com/467158a5-8844-4109-a16a-79d35a612a5a/oauth2/token";
-        $this->authURL = "https://login.microsoftonline.com/467158a5-8844-4109-a16a-79d35a612a5a/oauth2/authorize";
+        $this->clientid = '';
+        $this->clientsecret = '';
+        $this->tokenURL = "";
+        $this->authURL = "";
 	$this->redirectURL = "https://graph-planningb.test.biblibre.eu/graphauth";
     }
 
@@ -59,46 +62,37 @@ class OAuth {
             'urlResourceOwnerDetails' => $this->redirectURL
         ]);
 
-	try {
+        if (!array_key_exists("oauthToken", $_SESSION)) {
+            try {
 
-	    // Try to get an access token using the client credentials grant.
-	    $accessToken = $provider->getAccessToken('client_credentials');
+                // Try to get an access token using the client credentials grant.
+                $accessToken = $provider->getAccessToken('client_credentials');
 
-	} catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
+            } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
 
-	    // Failed to get the access token
-	    #exit("hey" . $e->getMessage());
-	    var_dump($e->getResponseBody());
+                // Failed to get the access token
+                exit("hey" . $e->getMessage());
+                var_dump($e->getResponseBody());
 
-	}
-
-        #if (!array_key_exists("oauthToken", $_SESSION)) {
-        #    try {
-
-        #        // Try to get an access token using the client credentials grant.
-        #        $accessToken = $provider->getAccessToken('client_credentials');
-
-        #    } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
-
-        #        // Failed to get the access token
-        #        exit("hey" . $e->getMessage());
-        #        var_dump($e->getResponseBody());
-
-        #    }
-        #} else {
-        #    $existingAccessToken = unserialize($_SESSION['oauthToken']);
-        #    if ($existingAccessToken->hasExpired()) {
-        #        $newAccessToken = $provider->getAccessToken('refresh_token', [
-        #            'refresh_token' => $existingAccessToken->getRefreshToken()
-        #        ]);
-        #        $accessToken = $newAccessToken;
-        #    } else {
-        #        $accessToken = $existingAccessToken;
-        #    }
-        #}
-        #$_SESSION['oauthToken'] = serialize($accessToken);
+            }
+        } else {
+            $existingAccessToken = unserialize($_SESSION['oauthToken']);
+            if ($existingAccessToken->hasExpired()) {
+		$refresh_token = $existingAccessToken->getRefreshToken();
+		if ($refresh_token != null) {
+			$newAccessToken = $provider->getAccessToken('refresh_token', [
+			    'refresh_token' => $refresh_token
+			]);
+		} else {
+			$newAccessToken = $provider->getAccessToken('client_credentials');
+		}
+                $accessToken = $newAccessToken;
+            } else {
+                $accessToken = $existingAccessToken;
+            }
+        }
+        $_SESSION['oauthToken'] = serialize($accessToken);
         return $accessToken;
     }
-
 }
 
