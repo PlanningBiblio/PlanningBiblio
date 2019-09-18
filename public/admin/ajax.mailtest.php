@@ -1,13 +1,11 @@
 <?php
 /**
-Planning Biblio, Version 2.5.7
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
+@copyright 2011-2019 Jérôme Combes
 
-Fichier : ldap/ajax.mailtest.php
-Création : 7 mars 2017
-Dernière modification : 7 mars 2017
+Fichier : public/admin/ajax.mailtest.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -25,7 +23,6 @@ $hostname = filter_input(INPUT_POST, 'hostname', FILTER_SANITIZE_STRING);
 $host = filter_input(INPUT_POST, 'host', FILTER_SANITIZE_STRING);
 $port = filter_input(INPUT_POST, 'port', FILTER_SANITIZE_STRING);
 $secure = filter_input(INPUT_POST, 'secure', FILTER_SANITIZE_STRING);
-$auth = filter_input(INPUT_POST, 'auth', FILTER_SANITIZE_STRING);
 $auth = filter_input(INPUT_POST, 'auth', FILTER_SANITIZE_STRING);
 $user = filter_input(INPUT_POST, 'user', FILTER_SANITIZE_STRING);
 $password = filter_input(INPUT_POST, 'password', FILTER_UNSAFE_RAW);
