@@ -20,6 +20,8 @@ $lang['work_hours_dropdown_accepted_pending'] = 'Accepté (En attente de validat
 $lang['work_hours_dropdown_refused_pending'] = 'Refusé (En attente de validation hiérarchique)';
 $lang['send_ics_url_subject'] = 'URL de votre agenda Planning Biblio';
 $lang['send_ics_url_message'] = "Chère/Cher [firstname] [lastname],\n\nVoici l'URL de votre agenda Planning Biblio :\n[url]\n\nCordialement,";
+$lang['do_not_change'] = "Ne pas modifier";
+$lang['edit_selected_users'] = "Modification des agents sélectionnés";
 
 // Congés
 $lang['leave_dropdown_accepted'] = 'Accepté';
