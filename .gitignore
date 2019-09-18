@@ -12,8 +12,8 @@ public/plugins/*
 !public/plugins/class.plugins.php
 !public/plugins/plugins.php
 test-*
-themes/*
-!themes/default
+public/themes/*
+!public/themes/default
 public/vendor/*
 !public/vendor/ics-parser
 ###> symfony/framework-bundle ###
