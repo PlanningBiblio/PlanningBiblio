@@ -296,9 +296,10 @@ $(function(){
 
    // Check all checkboxes 
    $(".CJCheckAll").click(function(){
-    $(this).closest("table").find("td input[type=checkbox]:visible").each(function(){
-      $(this).click();
+        var checked = $(this).prop('checked');
+        $(this).closest("table").find("td input[type=checkbox]").each(function(){
+            $(this).prop('checked', checked);
+        });
     });
-  });
   
 });

@@ -1,13 +1,11 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
+@copyright 2011-2019 Jérôme Combes
 
-Fichier : personnel/index.php
-Création : mai 2011
-Dernière modification : 21 septembre 2017
+Fichier : public/personnel/index.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Chritophe Le Guennec <christophe.leguennec@u-pem.fr>
 
@@ -74,10 +72,15 @@ $p->supprime=strstr($actif, "Supprim")?array(1):array(0);
 $p->fetch("nom,prenom", $actif);
 $agents=$p->elements;
 
-echo "<form name='form' method='post' action='index.php' onsubmit='return confirm(\"Etes vous sûr de vouloir supprimer les agents sélectionnés ?\");'>\n";
 echo "<table id='tableAgents' class='CJDataTable' data-sort='[[1,\"asc\"],[2,\"asc\"]]' >\n";
 echo "<thead>\n";
-echo "<tr><th class='dataTableNoSort aLeft' ><input type='checkbox' class='CJCheckAll'/></th>\n";
+echo "<tr>\n";
+
+echo "<th class='dataTableNoSort aLeft' >\n";
+if (in_array(21, $droits)){
+    echo "<input type='checkbox' class='CJCheckAll'/>\n";
+}
+echo "</th>\n";
 
 echo "<th>Nom</th>";
 echo "<th>Pr&#233;nom</th>";
@@ -96,8 +99,8 @@ $i=0;
 foreach ($agents as $agent) {
     $id=$agent['id'];
   
-    $arrivee=date1($agent['arrivee']);
-    $depart=date1($agent['depart']);
+    $arrivee = dateFr($agent['arrivee']);
+    $depart = dateFr($agent['depart']);
     $last_login=date_time($agent['last_login']);
   
     $heures=$agent['heures_hebdo']?$agent['heures_hebdo']:null;
@@ -108,7 +111,9 @@ foreach ($agents as $agent) {
     $agent['service']=str_replace("`", "'", $agent['service']);
 
     echo "<tr><td style='white-space:nowrap;'>\n";
-    echo "<input type='checkbox' name='chk$i' value='$id' />\n";
+    if (in_array(21, $droits)){
+        echo "<input type='checkbox' name='chk$i' value='$id' class='checkbox' />\n";
+    }
     echo "<a href='index.php?page=personnel/modif.php&amp;id=$id'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>";
     if (in_array(21, $droits) and $id!=$_SESSION['login_id'] and $id >1) {
         echo "<a href='javascript:popup(\"personnel/suppression.php&amp;id=".$id."\",450,240);'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>";
@@ -140,19 +145,18 @@ foreach ($agents as $agent) {
 
 echo "</tbody>";
 echo "</table>";
-echo "<input type='hidden' name='page' value='personnel/suppression-liste.php' />\n";
-echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
-echo "<input type='submit' value='Supprimer la sélection' class='ui-button'/>\n";
-echo "</form>\n";
 
-function date1($date)
-{
-    if ($date=="0000-00-00") {
-        $date="";
-    } else {
-        $date1=explode("-", $date);
-        $date=$date1[2]."/".$date1[1]."/".$date1[0];
-    }
-    return $date;
+if (in_array(21, $droits)) {
+    echo <<<EOD
+        <select name='action' id='action' style='width:200px;'>
+            <option value=''></option>
+            <option value='edit'>Modifier la sélection</option>
+            <option value='delete'>Supprimer la sélection</option>
+        </select>
+
+        <input type='button' value='Valider' class='ui-button' style='margin-left:20px;' onclick='agent_list()'/>
+EOD;
 }
+
+include('dialogbox.php');
 ?>
