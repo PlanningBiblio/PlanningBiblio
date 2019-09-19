@@ -111,7 +111,7 @@ class Agent extends Entity{
         // Multisites rights associated with page access
         $multisites_rights = array(201,301);
         if ($multisites > 1) {
-            if (in_array($accesses[0]->groupe_id(), $multisites_rights)) {
+            if (isset($accesses[0]) and in_array($accesses[0]->groupe_id(), $multisites_rights)) {
                 for ($i = 1; $i <= $multisites; $i++) {
                     $droit = $accesses[0]->groupe_id() -1 + $i;
                     if (in_array($droit, $droits)) {
