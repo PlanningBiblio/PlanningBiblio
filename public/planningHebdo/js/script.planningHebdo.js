@@ -1,12 +1,10 @@
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
+@copyright 2011-2019 Jérôme Combes
 
-Fichier : planningHebdo/js/script.planningHebdo.js
-Création : 26 août 2013
-Dernière modification : 4 mai 2018
+Fichier : public/planningHebdo/js/script.planningHebdo.js
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -330,7 +328,11 @@ $(function(){
       success: function(result){
 	var options="<option value=''>&nbsp;</option>\n";
 	for(i in result){
-	  options+= "<option value='"+result[i][0]+"'>"+result[i][1]+"</option>\n";
+            if (result.length == 1) {
+                options+= "<option selected='selected' value='"+result[i][0]+"'>"+result[i][1]+"</option>\n";
+            } else {
+                options+= "<option value='"+result[i][0]+"'>"+result[i][1]+"</option>\n";
+            }
 	}
 	$(".selectSite").html(options);
       },
