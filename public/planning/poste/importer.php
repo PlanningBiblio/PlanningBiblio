@@ -1,13 +1,11 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
+@copyright 2011-2019 Jérôme Combes
 
 Fichier : planning/poste/importer.php
-Création : mai 2011
-Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -122,7 +120,15 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
             }
         }
     }
-  
+
+    // Find all agents that are not deleted
+    $agents = $entityManager->getRepository('Model\Agent')->findBy(array('supprime' =>'0'));
+    if (!empty($agents)) {
+        foreach ($agents as $agent) {
+            $agent_list[] = $agent->id();
+        }
+    }
+
     // if module PlanningHebdo: search related plannings.
     if ($config['PlanningHebdo']) {
         include(__DIR__.'/../../planningHebdo/planning.php');
@@ -191,6 +197,12 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
         $filter=$config['Absences-validation']?"AND `valide`>0":null;
         if ($db->result) {
             foreach ($db->result as $elem2) {
+
+                // Don't import deleted agents
+                if ($elem2['perso_id'] > 0 and !in_array($elem2['perso_id'], $agent_list)) {
+                    continue;
+                }
+
                 $value = array();
 
                 // On n'importe pas les agents s'ils sont placés sur un autre site
