@@ -1,13 +1,11 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
+@copyright 2011-2019 Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
-Création : mai 2011
-Dernière modification : 25 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -20,6 +18,22 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
     exit;
 }
 
+function cellule_animation($agents, $debut, $fin, $colspan) {
+
+    $GLOBALS['idCellule']++;
+
+    $cellule="<td id='td{$GLOBALS['idCellule']}' colspan='$colspan' style='text-align:center; font-weight:bold;'
+    data-start='$debut' data-end='$fin' data-situation='0' data-cell='{$GLOBALS['idCellule']}' data-perso-id='0'>";
+
+    $i = 0;
+    foreach ($agents as $elem) {
+        $cellule.="<div id='cellule{$GLOBALS['idCellule']}_$i' class='cellDiv pl-cellule-perso-{$elem}' data-perso-id='{$elem}' style='padding: 2px;'>".nom($elem)."</div>";
+        $i++;
+    }
+
+    $cellule.="</td>\n";
+    return $cellule;
+}
 function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
 {
     $resultats=array();
@@ -120,8 +134,7 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
         }
     }
     $GLOBALS['idCellule']++;
-    $cellule="<td id='td{$GLOBALS['idCellule']}' colspan='$colspan' style='text-align:center;' class='menuTrigger' 
-    oncontextmenu='cellule={$GLOBALS['idCellule']}'
+    $cellule="<td id='td{$GLOBALS['idCellule']}' colspan='$colspan' style='text-align:center;' class='menuTrigger' oncontextmenu='cellule={$GLOBALS['idCellule']}'
     data-start='$debut' data-end='$fin' data-situation='$poste' data-cell='{$GLOBALS['idCellule']}' data-perso-id='0'>";
     for ($i=0;$i<count($resultats);$i++) {
         $cellule.="<div id='cellule{$GLOBALS['idCellule']}_$i' class='cellDiv {$classe[$i]} pl-cellule-perso-{$resultats[$i]['perso_id']}' data-perso-id='{$resultats[$i]['perso_id']}'>{$resultats[$i]['text']}</div>";

@@ -1,13 +1,11 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
+@copyright 2011-2019 Jérôme Combes
 
 Fichier : planning/poste/index.php
-Création : mai 2011
-Dernière modification : 7 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -473,7 +471,15 @@ if (!$verrou and !$autorisationN1) {
 
     // Tri des absences par nom
     usort($absences, "cmp_nom_prenom_debut_fin");
-  
+
+    // Look for animations
+    $animations = array();
+    foreach ($absences as $abs) {
+        if ( !empty($config['animations']) and in_array(strtolower($abs['motif']), $config['animations'])) {
+            $animations[] = $abs;
+        }
+    }
+
     // Affichage des absences en bas du planning : absences concernant le site choisi
     $a=new absences();
     $a->valide=false;
@@ -513,6 +519,106 @@ if (!$verrou and !$autorisationN1) {
         $debut=$elem["horaires"][0]["debut"]<$debut?$elem["horaires"][0]["debut"]:$debut;
         $nb=count($elem["horaires"])-1;
         $fin=$elem["horaires"][$nb]["fin"]>$fin?$elem["horaires"][$nb]["fin"]:$fin;
+    }
+
+
+    // Create a table for animations
+    if (!empty($animations)) {
+
+        // Group animations by hours
+        $anim_tables = array();
+        foreach ($animations as $anim) {
+            $begin = preg_replace('/.* (.*)/', "$1", $anim['debut']);
+            $end = preg_replace('/.* (.*)/', "$1", $anim['fin']);
+
+            if ($begin < $debut) {
+                $begin = $debut;
+            }
+
+            if ($end > $fin) {
+                $end = $fin;
+            }
+
+            if (!array_key_exists($begin.'-'.$end, $anim_tables)) {
+                $anim_tables[$begin.'-'.$end] = array(
+                    'begin' => $begin,
+                    'end' => $end,
+                    'animations' => array(),
+                    );
+            }
+
+            if (!array_key_exists($anim['groupe'], $anim_tables[$begin.'-'.$end]['animations'])) {
+                $agents[$anim['groupe']] = array($anim['perso_id']);
+                $anim_tables[$begin.'-'.$end]['animations'][$anim['groupe']] = array ('animation' => $anim['commentaires'], 'agents' => $agents[$anim['groupe']]);
+            } else {
+                $agents[$anim['groupe']][] = $anim['perso_id'];
+                $anim_tables[$begin.'-'.$end]['animations'][$anim['groupe']]['agents'] = $agents[$anim['groupe']];
+            }
+        }
+
+        $animation_tables = array();
+
+        foreach ($anim_tables as $table) {
+
+            $hours = array();
+            $lines = array();
+            $cells = array();
+            $offset1 = false;
+            $offset2 = false;
+
+            if ($table['begin'] > $debut) {
+                $hours[] = array('debut' => $debut, 'fin' => $table['begin']);
+                $offset1 = true;
+            }
+
+            $hours[] = array('debut' => $table['begin'], 'fin' => $table['end']);
+
+            if ($table['end'] < $fin) {
+                $hours[] = array('debut' => $table['end'], 'fin' => $fin);
+                $offset2 = true;
+            }
+
+            $i = 0;
+            foreach ($table['animations'] as $anim) {
+                $lines[] = array(
+                    'tableau' => '-1',
+                    'type' => 'animation',
+                    'poste' => $anim['animation'],
+                    'ligne' => $i,
+                    'agents' => $anim['agents'],
+                    );
+
+                if ($offset1) {
+                    $cells[] = $i."_1";
+                }
+
+                if ($offset2 and !$offset1) {
+                    $cells[] = $i."_2";
+                }
+
+                if ($offset2 and $offset1) {
+                    $cells[] = $i."_3";
+                }
+
+                $i++;
+            }
+
+            $animation_table[] = array(
+                'nom' => '-1',
+                'titre' => 'Animations',
+                'classe' => 'violet',
+                'horaires' => $hours,
+                'lignes' => $lines,
+                'cellules_grises' => $cells,
+                );
+
+
+        }
+
+        foreach ($animation_table as $anim_tab) {
+            array_unshift($tabs, $anim_tab);
+        }
+
     }
 
     // affichage du tableau :
@@ -598,6 +704,36 @@ if (!$verrou and !$autorisationN1) {
             $emptyLine=null;
             if (!$config['Planning-lignesVides'] and $verrou and isAnEmptyLine($ligne['poste'])) {
                 $emptyLine="empty-line";
+            }
+
+            // Animations lines
+            if ($ligne['type'] == 'animation') {
+                // Affichage de la ligne
+                echo "<tr class='pl-line tableau$j tr_animation {$tab['classe']} $hiddenTable $emptyLine'>\n";
+                echo "<td class='td_postes'>{$ligne['poste']}";
+                echo "</td>\n";
+                $i=1;
+                $k=1;
+                foreach ($tab['horaires'] as $horaires) {
+                    // Recherche des infos à afficher dans chaque cellule
+                    // Cellules grisées si définies dans la configuration du tableau et si la colonne a été ajoutée automatiquement
+                    if (in_array("{$ligne['ligne']}_{$k}", $tab['cellules_grises']) or in_array($i-1, $cellules_grises)) {
+                        echo "<td colspan='".nb30($horaires['debut'], $horaires['fin'])."' class='cellule_grise'>&nbsp;</td>";
+                        // Si colonne ajoutée, ça décale les cellules grises initialement prévues. On se décale d'un cran en arrière pour rétablir l'ordre
+                        if (in_array($i-1, $cellules_grises)) {
+                            $k--;
+                        }
+                    }
+                    // fonction cellule_animation($agents, $debut, $fin, $colspan) {
+                    else {
+//                         echo "<td colspan='".nb30($horaires['debut'], $horaires['fin'])."'>".nom(5)."</td>";
+                        echo cellule_animation($ligne['agents'], $horaires["debut"], $horaires["fin"], nb30($horaires['debut'], $horaires['fin']));
+                    }
+                    $i++;
+                    $k++;
+                }
+                echo "</tr>\n";
+
             }
 
             // Lignes postes
