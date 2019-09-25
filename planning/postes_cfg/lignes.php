@@ -1,13 +1,11 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
+@copyright 2011-2019 Jérôme Combes
 
 Fichier : planning/postes_cfg/lignes.php
-Création : mai 2011
-Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -24,7 +22,7 @@ require_once "postes/class.postes.php";
 // Liste des postes
 $p=new postes();
 if ($config['Multisites-nombre']>1) {
-    $p->sites=$site;
+    $p->site=$site;
 }
 $p->fetch("nom");
 $postes=$p->elements;
