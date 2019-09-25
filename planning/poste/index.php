@@ -709,7 +709,7 @@ if (!$verrou and !$autorisationN1) {
             // Animations lines
             if ($ligne['type'] == 'animation') {
                 // Affichage de la ligne
-                echo "<tr class='pl-line tableau$j tr_animation {$tab['classe']} $hiddenTable $emptyLine'>\n";
+                echo "<tr class='pl-line tableau$j tr_animation {$tab['classe']} $hiddenTable'>\n";
                 echo "<td class='td_postes'>{$ligne['poste']}";
                 echo "</td>\n";
                 $i=1;
