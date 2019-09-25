@@ -21,7 +21,7 @@
           {% elseif v.type == 'info' %}
             {{ v.valeur }}
           {% elseif v.type == 'enum' %}
-            <select name='{{ v.nom }}' id='{{ v.nom }}' style='width:305px;'>
+            <select name='{{ v.nom }}' id='{{ v.nom }}' style='width:400px;'>
               {% for o in v.options %}
                 {% if o == v.valeur %}
                   <option value='{{ o }}' selected='selected'>{{ o }}</option>
@@ -31,7 +31,7 @@
               {% endfor %}
             </select>
           {% elseif v.type == 'enum2' %}
-            <select name='{{ v.nom }}' id='{{ v.nom }}' style='width:305px;'>
+            <select name='{{ v.nom }}' id='{{ v.nom }}' style='width:400px;'>
               {% for o in v.options %}
                 {% if o.0 == v.valeur %}
                   <option value='{{ o.0 }}' selected='selected'>{{ o.1 }}</option>
@@ -54,13 +54,13 @@
               {% set i = i + 1 %}
             {% endfor %}
           {% elseif v.type == 'textarea' %}
-            <textarea name='{{ v.nom }}' id='{{ v.nom }}' style='width:300px;height:100px;' rows='1' cols='1'>{{ v.valeur }}</textarea>
+            <textarea name='{{ v.nom }}' id='{{ v.nom }}' style='width:400px;height:100px;' rows='1' cols='1'>{{ v.valeur }}</textarea>
           {% elseif v.type == 'text' or v.type == '' %}
-            <input type='text' name='{{ v.nom }}' id='{{ v.nom }}' value='{{ v.valeur }}' style='width:300px;'/>
+            <input type='text' name='{{ v.nom }}' id='{{ v.nom }}' value='{{ v.valeur }}' style='width:400px;'/>
           {% elseif v.type == 'password' %}
-            <input type='password' name='{{ v.nom }}' id='{{ v.nom }}' value='{{ v.valeur }}' style='width:300px;'/>
+            <input type='password' name='{{ v.nom }}' id='{{ v.nom }}' value='{{ v.valeur }}' style='width:400px;'/>
           {% elseif v.type == 'date' %}
-            <input type='text' name='{{ v.nom }}' id='{{ v.nom }}' value="{{ v.valeur }}" style='width:300px;' class='datepicker'/>
+            <input type='text' name='{{ v.nom }}' id='{{ v.nom }}' value="{{ v.valeur }}" style='width:400px;' class='datepicker'/>
           {% endif %}
         </td>
         <td>{{ v.commentaires | raw }}</td>

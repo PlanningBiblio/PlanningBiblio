@@ -1,14 +1,13 @@
 <?php
 /**
-Planning Biblio, Version 2.8.1
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
+@copyright 2011-2019 Jérôme Combes
 
-Fichier : admin/config.php
-Création : mai 2011
-Dernière modification : 27 septembre 2018
+@file admin/config.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
+@author Alex arnaud <alex.arnaud@biblibre.com >
 
 Description :
 Affiche et modifie les paramètres de configuration (Serveur Mail, autres options) : Formulaire et validation
@@ -33,7 +32,7 @@ $templates_params['CSRFSession'] = $CSRFSession;
 
 $params = $request->request->all();
 $configParams = $entityManager->getRepository(ConfigParam::class)->findBy(
-    array(), array('ordre' => 'ASC', 'id' => 'ASC')
+    array(), array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
 );
 
 
@@ -139,17 +138,8 @@ foreach ($configParams as $cp) {
 
     $elem['commentaires'] = str_replace("[TEMP]", $tmp_dir, $elem['commentaires']);
     $elem['commentaires'] = str_replace("[SERVER]", $url, $elem['commentaires']);
-    $elem['commentaires'] = html_entity_decode($elem['commentaires'], ENT_QUOTES|ENT_HTML5);
 
-    $category = str_replace(' ', '', $elem['categorie']);
-
-    # Transform bad encoded category name.
-    if ($category == 'Cong&eacute;s') {
-        $category = 'conges';
-    }
-    if ($category == 'Heuresdepr&eacute;sence') {
-        $category = 'heurespresence';
-    }
+    $category = str_replace('_', '', $elem['categorie']);
 
     $elements[$category][$cp->nom()] = $elem;
 }

@@ -26,53 +26,10 @@
       <input type='hidden' name='page' value='admin/config.php' />
       <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
       <div id='accordion' class='ui-accordion'>
-        <h3><span>Divers</span></h3>
-        {% include 'admin/config/category.html.twig' with { 'vars': elements.Divers } %}
-
-        <h3><span>Absences</span></h3>
-        {% include 'admin/config/category.html.twig' with { 'vars': elements.Absences } %}
-
-        <h3><span>Affichage</span></h3>
-        {% include 'admin/config/category.html.twig' with { 'vars': elements.Affichage } %}
-
-        <h3><span>Agenda</span></h3>
-        {% include 'admin/config/category.html.twig' with { 'vars': elements.Agenda } %}
-
-        <h3><span>Authentification</span></h3>
-        {% include 'admin/config/category.html.twig' with { 'vars': elements.Authentification } only %}
-
-        <h3><span>CAS</span></h3>
-        {% include 'admin/config/category.html.twig' with { 'vars': elements.CAS } only %}
-
-        <h3><span>Congés</span></h3>
-        {% include 'admin/config/category.html.twig' with { 'vars': elements.conges } only %}
-
-        <h3><span>Hamac</span></h3>
-        {% include 'admin/config/category.html.twig' with { 'vars': elements.Hamac } only %}
-
-        <h3><span>Heures de présence</span></h3>
-        {% include 'admin/config/category.html.twig' with { 'vars': elements.heurespresence } only %}
-
-        <h3><span>ICS</span></h3>
-        {% include 'admin/config/category.html.twig' with { 'vars': elements.ICS } only %}
-
-        <h3><span>LDAP</span></h3>
-        {% include 'admin/config/category.html.twig' with { 'vars': elements.LDAP } only %}
-
-        <h3><span>Messagerie</span></h3>
-        {% include 'admin/config/category.html.twig' with { 'vars': elements.Messagerie } only %}
-
-        <h3><span>Multisites</span></h3>
-        {% include 'admin/config/multisites.html.twig' with { 'vars': elements.Multisites } only %}
-
-        <h3><span>Planning</span></h3>
-        {% include 'admin/config/category.html.twig' with { 'vars': elements.Planning } only %}
-
-        <h3><span>Rappels</span></h3>
-        {% include 'admin/config/category.html.twig' with { 'vars': elements.Rappels } only %}
-
-        <h3><span>Statistiques</span></h3>
-        {% include 'admin/config/category.html.twig' with { 'vars': elements.Statistiques } only %}
+        {% for key,val in elements %}
+            <h3><span>{{ key }}</span></h3>
+            {% include 'admin/config/category.html.twig' with { 'vars': val } %}
+        {% endfor %}
       </div>
 
       <div style='text-align:center;margin:20px;'>
