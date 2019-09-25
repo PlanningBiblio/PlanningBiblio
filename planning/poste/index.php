@@ -74,13 +74,13 @@ $groupes=$t->elements;
 // Multisites : la variable $site est égale à 1 par défaut.
 // Elle prend la valeur GET['site'] si elle existe, sinon la valeur de la SESSION ['site']
 // En dernier lieu, la valeur du site renseignée dans la fiche de l'agent
-if (!$site and array_key_exists("site", $_SESSION['oups'])) {
+if (!$site and !empty($_SESSION['oups']['site'])) {
     $site=$_SESSION['oups']['site'];
 }
 if (!$site) {
     $p=new personnel();
     $p->fetchById($_SESSION['login_id']);
-    $site = isset($p->elements[0]['sites'][0]) ? $p->elements[0]['sites'][0] : null;
+    $site = isset($p->elements[0]['sites'][0][0]) ? $p->elements[0]['sites'][0][0] : null;
 }
 $site=$site?$site:1;
 $_SESSION['oups']['site']=$site;
