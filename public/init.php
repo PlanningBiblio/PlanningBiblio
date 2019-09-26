@@ -28,7 +28,7 @@ $_SESSION['oups']['week'] = isset($_SESSION['oups']['week']) ? $_SESSION['oups']
 // Version
 $version="19.11.00.001"; // xx.xx.xx.xxx
 $displayed_version="19.11.00"; // xx.xx.xx
-require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
 
@@ -51,6 +51,7 @@ if (file_exists(__DIR__.'/lang/custom.php')) {
 date_default_timezone_set("Europe/Paris");
 
 require_once(__DIR__.'/init_entitymanager.php');
+require_once(__DIR__.'/init_plugins.php');
 
 // Vérification de la version de la base de données
 // Si la version est différente, mise à jour de la base de données

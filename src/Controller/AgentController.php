@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
+use App\PlanningBiblio\Event\OnTransformLeaveDays;
+use App\PlanningBiblio\Event\OnTransformLeaveHours;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -172,7 +174,7 @@ class AgentController extends BaseController
 
             // URL ICS
             if ($this->config('ICS-Export')) {
-                $p = new personnel();
+                $p = new \personnel();
                 $p->CSRFToken = $CSRFSession;
                 $ics = $p->getICSURL($id);
             }
@@ -271,6 +273,7 @@ class AgentController extends BaseController
             'can_manage_agent'  => in_array(21, $droits) ? 1 : 0,
             'titre'             => $titre,
             'conges_enabled'    => $this->config('Conges-Enable'),
+            'conges_mode'       => $this->config('Conges-Mode'),
             'multi_site'        => $this->config('Multisites-nombre') > 1 ? 1 : 0,
             'nb_sites'          => $this->config('Multisites-nombre'),
             'recup_agent'       => $this->config('Recup-Agent'),
@@ -490,23 +493,69 @@ class AgentController extends BaseController
             $c->fetchCredit();
             $conges = $c->elements;
 
+            $annuelHeures = $conges['annuelHeures'] ? $conges['annuelHeures'] : 0;
+            $annuelString = heure4($conges['annuel']);
+
+            $creditHeures = $conges['creditHeures'] ? $conges['creditHeures'] : 0;
+            $creditString = heure4($conges['credit']);
+
+            $reliquatHeures = $conges['reliquatHeures'] ? $conges['reliquatHeures'] : 0;
+            $reliquatString = heure4($conges['reliquat']);
+
+            $anticipationHeures = $conges['anticipationHeures'] ? $conges['anticipationHeures'] : 0;
+            $anticipationString = heure4($conges['anticipation']);
+
+            $recupHeures = $conges['recupHeures'] ? $conges['recupHeures'] : 0;
+            $recupString = isset($conges['recup_samedi']) ? heure4($conges['recup_samedi']) : '';
+
+            if ($this->config('Conges-Mode') == 'jours' ) {
+                $event = new OnTransformLeaveHours($conges);
+                $this->dispatcher->dispatch($event::ACTION, $event);
+
+                if ($event->hasResponse()) {
+                    $response = $event->response();
+                    $annuelHeures = $response['annuel'];
+                    $annuelString = $annuelHeures;
+                    $creditHeures = $response['credit'];
+                    $creditString = $creditHeures;
+                    $reliquatHeures = $response['reliquat'];
+                    $reliquatString = $reliquatHeures;
+                    $anticipationHeures = $response['anticipation'];
+                    $anticipationString = $anticipationHeures;
+                    $recupHeures = $response['recup'];
+                    $recupString = $recupHeures;
+                } else {
+                    $annuelHeures = $conges['annuel'] / 7;
+                    $annuelString = $annuelHeures;
+                    $creditHeures = $conges['credit'] / 7;
+                    $creditString = $creditHeures;
+                    $reliquatHeures = $conges['reliquat'] / 7;
+                    $reliquatString = $reliquatHeures;
+                    $anticipationHeures = $conges['anticipation'] / 7;
+                    $anticipationString = $anticipationHeures;
+                    $recupHeures = $conges['recup'] / 7;
+                    $recupString = $recupHeures;
+                }
+            }
+
             $this->templateParams(array(
-                'annuel_heures'     => $conges['annuelHeures'],
+                'annuel_heures'         => $annuelHeures,
                 'annuel_min'            => $conges['annuelCents'],
-                'annuel_string'         => heure4($conges['annuel']),
-                'credit_heures'         => $conges['creditHeures'],
+                'annuel_string'         => $annuelString,
+                'credit_heures'         => $creditHeures,
                 'credit_min'            => $conges['creditCents'],
-                'credit_string'         => heure4($conges['credit']),
-                'reliquat_heures'       => $conges['reliquatHeures'],
+                'credit_string'         => $creditString,
+                'reliquat_heures'       => $reliquatHeures,
                 'reliquat_min'          => $conges['reliquatCents'],
-                'reliquat_string'       => heure4($conges['reliquat']),
-                'anticipation_heures'    $conges['anticipationHeures'],
+                'reliquat_string'       => $reliquatString,
+                'anticipation_heures'   => $anticipationHeures,
                 'anticipation_min'      => $conges['anticipationCents'],
-                'anticipation_string'   => heure4($conges['anticipation']),
-                'lang_comp_time'        => $lang['comp_time'],
-                'recup_heures'           => $conges['recupHeures'],
+                'anticipation_string'   => $anticipationString,
+
+                'recup_heures'          => $recupHeures,
                 'recup_min'             => $conges['recupCents'],
-                'recup_string'          => isset($conges['recup_samedi']) ? heure4($conges['recup_samedi']) : '',
+                'recup_string'          => $recupString,
+                'lang_comp_time'        => $lang['comp_time'],
             ));
         }
 
@@ -519,4 +568,324 @@ class AgentController extends BaseController
         return $this->output('agents/edit.html.twig');
     }
 
+    /**
+     * @Route("/agent/save", name="agent.save", methods={"POST"})
+     */
+    public function save(Request $request)
+    {
+        $params = $request->request->all();
+
+        $arrivee=filter_input(INPUT_POST, "arrivee", FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
+        $CSRFToken = filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
+        $depart=filter_input(INPUT_POST, "depart", FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
+        $heuresHebdo=filter_input(INPUT_POST, "heuresHebdo", FILTER_SANITIZE_STRING);
+        $heuresTravail=filter_input(INPUT_POST, "heuresTravail", FILTER_SANITIZE_STRING);
+        $id=filter_input(INPUT_POST, "id", FILTER_SANITIZE_NUMBER_INT);
+        $mail=trim(filter_input(INPUT_POST, "mail", FILTER_SANITIZE_EMAIL));
+
+        $actif = htmlentities($params['actif'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+        $action=$params['action'];
+        $check_hamac = !empty($params['check_hamac']) ? 1 : 0;
+        $check_ics1 = !empty($params['check_ics1']) ? 1 : 0;
+        $check_ics2 = !empty($params['check_ics2']) ? 1 : 0;
+        $check_ics3 = !empty($params['check_ics3']) ? 1 : 0;
+        $check_ics = "[$check_ics1,$check_ics2,$check_ics3]";
+        $droits = array_key_exists("droits", $params) ? $params['droits'] : null;
+        $categorie = trim($params['categorie']);
+        $informations = trim($params['informations']);
+        $mailsResponsables = trim(str_replace(array("\n", " "), null, $params['mailsResponsables']));
+        $matricule = trim($params['matricule']);
+        $url_ics = isset($params['url_ics']) ? trim($params['url_ics']) : null;
+        $nom=trim($params['nom']);
+        $postes = $params['postes'];
+        $prenom = trim($params['prenom']);
+        $recup = isset($params['recup']) ? trim($params['recup']) : null;
+        $service = htmlentities($params['service'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+        $sites = array_key_exists("sites", $params) ? $params['sites'] : null;
+        $statut = htmlentities($params['statut'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+        $temps=array_key_exists("temps", $params) ? $params['temps'] : null;
+
+        // Modification du choix des emplois du temps avec l'option EDTSamedi == 1 (EDT différent les semaines avec samedi travaillé)
+        $eDTSamedi=array_key_exists("EDTSamedi", $params) ? $params['EDTSamedi'] : null;
+
+        // Modification du choix des emplois du temps avec l'option EDTSamedi == 2 (EDT différent les semaines avec samedi travaillé et les semaines à ouverture restreinte)
+        if ($this->config('EDTSamedi') == 2) {
+            $eDTSamedi = array();
+            foreach ($params as $k => $v) {
+                if (substr($k, 0, 10) == 'EDTSamedi_' and $v > 1) {
+                    $eDTSamedi[] = array(substr($k, -10), $v);
+                }
+            }
+        }
+
+        $premierLundi=array_key_exists("premierLundi", $params) ? $params['premierLundi'] : null;
+        $dernierLundi=array_key_exists("dernierLundi", $params) ? $params['dernierLundi'] : null;
+
+        $droits=$droits?$droits:array();
+        $postes = $postes ? json_encode(explode(",", $postes)) : null;
+        $sites=$sites?json_encode($sites):null;
+        $temps = $temps ? json_encode($temps) : null;
+
+        $arrivee=dateSQL($arrivee);
+        $depart=dateSQL($depart);
+
+        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+            // Modification des plannings Niveau 2 donne les droits Modification des plannings Niveau 1
+            if (in_array((300+$i), $droits) and !in_array((1000+$i), $droits)) {
+                $droits[]=1000+$i;
+            }
+        }
+
+        // Le droit de gestion des absences (20x) donne le droit modifier ses propres absences (6) et le droit d'ajouter des absences pour plusieurs personnes (9)
+        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+            if (in_array((200+$i), $droits) or in_array((500+$i), $droits)) {
+                $droits[]=6;
+                $droits[]=9;
+                break;
+            }
+        }
+
+        $droits[]=99;
+        $droits[]=100;
+        if ($id==1) {		// Ajoute config. avancée à l'utilisateur admin.
+            $droits[]=20;
+        }
+        $droits=json_encode($droits);
+
+        switch ($action) {
+          case "ajout":
+            $db=new \db();
+            $db->select2("personnel", array(array("name"=>"MAX(`id`)", "as"=>"id")));
+            $id=$db->result[0]['id']+1;
+
+            $login = $this->login($nom, $prenom);
+
+            // Demo mode
+            if (!empty($config['demo'])) {
+                $mdp_crypt = md5("password");
+                $msg = "Vous utilisez une version de démonstration : l'agent a été créé avec les identifiants $login / password";
+                $msg .= "#BR#Sur une version standard, les identifiants de l'agent lui auraient été envoyés par e-mail.";
+                $msg = urlencode($msg);
+                $msgType = "success";
+            } else {
+                $mdp=gen_trivial_password();
+                $mdp_crypt=md5($mdp);
+
+                // Envoi du mail
+                $message="Votre compte Planning Biblio a &eacute;t&eacute; cr&eacute;&eacute; :";
+                $message.="<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
+
+                $m=new \CJMail();
+                $m->subject="Création de compte";
+                $m->message=$message;
+                $m->to=$mail;
+                $m->send();
+
+                // Si erreur d'envoi de mail, affichage de l'erreur
+                $msg=null;
+                $msgType=null;
+                if ($m->error) {
+                    $msg=urlencode($m->error_CJInfo);
+                    $msgType="error";
+                }
+            }
+
+            // Enregistrement des infos dans la base de données
+            $insert=array("nom"=>$nom,"prenom"=>$prenom,"mail"=>$mail,"statut"=>$statut,"categorie"=>$categorie,"service"=>$service,"heures_hebdo"=>$heuresHebdo,
+              "heures_travail"=>$heuresTravail,"arrivee"=>$arrivee,"depart"=>$depart,"login"=>$login,"password"=>$mdp_crypt,"actif"=>$actif,
+              "droits"=>$droits,"postes"=>$postes,"temps"=>$temps,"informations"=>$informations,"recup"=>$recup,"sites"=>$sites,
+              "mails_responsables"=>$mailsResponsables,"matricule"=>$matricule,"url_ics"=>$url_ics, "check_ics"=>$check_ics, "check_hamac"=>$check_hamac);
+
+            $holidays = $this->save_holidays($params);
+            $insert = array_merge($insert, $holidays);
+
+            $db=new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->insert("personnel", $insert);
+
+            // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
+            $p=new \personnel();
+            $p->CSRFToken = $CSRFToken;
+            $p->updateEDTSamedi($eDTSamedi, $premierLundi, $dernierLundi, $id);
+
+
+            return $this->redirect("/index.php?page=personnel/index.php&msg=$msg&msgType=$msgType");
+            break;
+
+          case "mdp":
+
+            // Demo mode
+            if (!empty($config['demo'])) {
+                $msg = urlencode("Le mot de passe n'a pas été modifié car vous utilisez une version de démonstration");
+                return $this->redirect("/index.php?page=personnel/index.php&msg=$msg&msgType=success");
+                break;
+            }
+
+            $mdp=gen_trivial_password();
+            $mdp_crypt=md5($mdp);
+            $db=new \db();
+            $db->select2("personnel", "login", array("id"=>$id));
+            $login=$db->result[0]['login'];
+
+            // Envoi du mail
+            $message="Votre mot de passe Planning Biblio a &eacute;t&eacute; modifi&eacute;";
+            $message.="<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
+            
+            $m=new \CJMail();
+            $m->subject="Modification du mot de passe";
+            $m->message=$message;
+            $m->to=$mail;
+            $m->send();
+
+            // Si erreur d'envoi de mail, affichage de l'erreur
+            $msg=null;
+            $msgType=null;
+            if ($m->error) {
+                $msg=urlencode($m->error_CJInfo);
+                $msgType="error";
+            } else {
+                $msg=urlencode("Le mot de passe a été modifié et envoyé par e-mail à l'agent");
+                $msgType="success";
+            }
+
+            $db=new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->update("personnel", array("password"=>$mdp_crypt), array("id"=>$id));
+            return $this->redirect("/index.php?page=personnel/index.php&msg=$msg&msgType=$msgType");
+            break;
+
+          case "modif":
+            $update=array("nom"=>$nom, "prenom"=>$prenom, "mail"=>$mail, "statut"=>$statut, "categorie"=>$categorie, "service"=>$service,
+              "heures_hebdo"=>$heuresHebdo, "heures_travail"=>$heuresTravail, "actif"=>$actif, "droits"=>$droits, "arrivee"=>$arrivee,
+              "depart"=>$depart, "postes"=>$postes, "informations"=>$informations, "recup"=>$recup, "sites"=>$sites,
+              "mails_responsables"=>$mailsResponsables, "matricule"=>$matricule, "url_ics"=>$url_ics, "check_ics"=>$check_ics, "check_hamac"=>$check_hamac);
+            // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
+            if (!strstr($actif, "Supprim")) {
+                $update["supprime"]="0";
+                // Si l'agent était supprimé et qu'on le réintégre, on change sa date de départ
+                // pour qu'il ne soit pas supprimé de la liste des agents actifs
+                $db=new \db();
+                $db->select2("personnel", "*", array("id"=>$id));
+                if (strstr($db->result[0]['actif'], "Supprim") and $db->result[0]['depart']<=date("Y-m-d")) {
+                    $update["depart"]="0000-00-00";
+                }
+            } else {
+                $update["actif"]="Supprim&eacute;";
+            }
+
+            // Mise à jour de l'emploi du temps si modifié à partir de la fiche de l'agent
+            if ($temps) {
+                $update["temps"]=$temps;
+            }
+
+            $holidays = $this->save_holidays($params);
+            $update = array_merge($update, $holidays);
+
+            $db=new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->update("personnel", $update, array("id"=>$id));
+
+            // Mise à jour de la table pl_poste en cas de modification de la date de départ
+            $db=new \db();		// On met supprime=0 partout pour cet agent
+            $db->CSRFToken = $CSRFToken;
+            $db->update("pl_poste", array("supprime"=>"0"), array("perso_id"=>$id));
+            if ($depart!="0000-00-00" and $depart!="") {
+                // Si une date de départ est précisée, on met supprime=1 au dela de cette date
+                $db=new \db();
+                $id=$db->escapeString($id);
+                $depart=$db->escapeString($depart);
+                $db->query("UPDATE `{$GLOBALS['config']['dbprefix']}pl_poste` SET `supprime`='1' WHERE `perso_id`='$id' AND `date`>'$depart';");
+            }
+
+            // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
+            $p=new \personnel();
+            $p->CSRFToken = $CSRFToken;
+            $p->updateEDTSamedi($eDTSamedi, $premierLundi, $dernierLundi, $id);
+
+            return $this->redirect('/index.php?page=personnel/index.php');
+            break;
+        }
+    }
+
+    private function save_holidays($params)
+    {
+        if (!$this->config('Conges-Enable')) {
+            return array();
+        }
+
+        $available_keys = array(
+            'conges_credit',
+            'conges_reliquat',
+            'conges_anticipation',
+            'recup',
+            'conges_annuel');
+
+        foreach ($available_keys as $key) {
+            $params[$key . '_min'] = isset($params[$key . '_min']) ? $params[$key . '_min'] : 0;
+        }
+
+        if ($this->config('Conges-Mode') == 'jours' ) {
+            $event = new OnTransformLeaveDays($params);
+            $this->dispatcher->dispatch($event::ACTION, $event);
+
+            if ($event->hasResponse()) {
+                $credits = $event->response();
+            } else {
+                $credits = array(
+                    'conges_credit' => $params['conges_credit'] *= 7,
+                    'conges_reliquat' => $params['conges_reliquat'] *= 7,
+                    'conges_anticipation' => $params['conges_anticipation'] *= 7,
+                    'recup_samedi' => $params['recup'] *= 7,
+                    'conges_annuel' => $params['conges_annuel'] *= 7,
+                );
+            }
+        } else {
+            $credits = array(
+                'conges_credit' => $params['conges_credit'] + $params['conges_credit_min'],
+                'conges_reliquat' => $params['conges_reliquat'] + $params['conges_reliquat_min'],
+                'conges_anticipation' => $params['conges_anticipation'] + $params['conges_anticipation_min'],
+                'recup_samedi' => $params['recup'] + $params['recup_min'],
+                'conges_annuel' => $params['conges_annuel'] + $params['conges_annuel_min'],
+            );
+        }
+
+        $c = new \conges();
+        $c->perso_id = $params['id'];
+        $c->CSRFToken = $params['CSRFToken'];
+        $c->maj($credits, $params['action']);
+
+        return $credits;
+    }
+
+    private function login($nom, $prenom)
+    {
+        $prenom=trim($prenom);
+        $nom=trim($nom);
+        if ($prenom) {
+            $tmp[]=$prenom;
+        }
+        if ($nom) {
+            $tmp[]=$nom;
+        }
+
+        $tmp=join($tmp, ".");
+        $login=removeAccents(strtolower($tmp));
+        $login=str_replace(" ", "-", $login);
+        $login=substr($login, 0, 95);
+
+        $i=1;
+        $db=new \db();
+        $db->select2("personnel", "*", array("login"=>$login));
+        while ($db->result) {
+            $i++;
+            if ($i==2) {
+                $login.="2";
+            } else {
+                $login=substr($login, 0, strlen($login)-1).$i;
+            }
+            $db=new \db();
+            $db->select("personnel", null, "login='$login'");
+        }
+        return $login;
+    }
 }
