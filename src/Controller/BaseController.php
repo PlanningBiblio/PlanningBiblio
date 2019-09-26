@@ -13,6 +13,8 @@ class BaseController extends Controller
 
     private $templateParams = array();
 
+    protected $dispatcher;
+
     private $config = array();
 
     public function __construct()
@@ -20,6 +22,8 @@ class BaseController extends Controller
         $this->entityManager = $GLOBALS['entityManager'];
 
         $this->templateParams = $GLOBALS['templates_params'];
+
+        $this->dispatcher = $GLOBALS['dispatcher'];
 
         $this->config = $GLOBALS['config'];
     }

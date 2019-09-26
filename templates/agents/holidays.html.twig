@@ -1,0 +1,65 @@
+{# agents/holidays.html.twig #}
+
+<div id='conges' style='margin-left:80px;padding-top:30px;'>
+  <table class='tableauFiches'>
+    <tr>
+      <td>Nombre de jours de congés par an :</td>
+      <td style='text-align:right;'>
+        {% if can_manage_agent %}
+          <input type="number" name="conges_annuel" step="0.5" style="width:60px;" value="{{ annuel_heures }}">
+          <label style='text-align:center;padding:5px;'>jour(s)</label>
+        {% else %}
+          {{ annuel_string }} jour(s)
+        {% endif %}
+      </td>
+    </tr>
+
+    <tr>
+      <td>Crédit d'heures de congés actuel :</td>
+      <td style='text-align:right;'>
+        {% if can_manage_agent %}
+          <input type='number' name="conges_credit" step="0.5" value='{{ credit_heures}}'  style='width:60px;'>
+          <label style='text-align:center;padding:5px;'>jour(s)</label>
+        {% else %}
+          {{ credit_string }} jour(s)
+        {% endif %}
+      </td>
+    </tr>
+
+    <tr>
+      <td>Reliquat de congés :</td>
+      <td style='text-align:right;'>
+        {% if can_manage_agent %}
+          <input type='number' name='conges_reliquat' step="0.5" value='{{ reliquat_heures}}'  style='width:60px;'>
+          <label style='text-align:center;padding:5px;'>jour(s)</label>
+        {% else %}
+          {{ reliquat_string }} jour(s)
+        {% endif %}
+      </td>
+    </tr>
+
+    <tr>
+      <td>Solde débiteur :</td>
+      <td style='text-align:right;'>
+        {% if can_manage_agent %}
+          <input type='number' name='conges_anticipation' step="0.5" value='{{ anticipation_heures}}'  style='width:60px;'>
+          <label style='text-align:center;padding:5px;'>jour(s)</label>
+        {% else %}
+          {{ anticipation_string }} jour(s)
+        {% endif %}
+      </td>
+    </tr>
+
+    <tr>
+      <td>{{ lang_comp_time }}</td>
+      <td style='text-align:right;'>
+        {% if can_manage_agent %}
+          <input type='number' name='recup' step="0.5" value='{{ recup_heures}}'  style='width:60px;'>
+          <label style='text-align:center;padding:5px;'>jour(s)</label>
+        {% else %}
+          {{ recup_string }} jour(s)
+        {% endif %}
+      </td>
+    </tr>
+  </table>
+</div>
