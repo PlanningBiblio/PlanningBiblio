@@ -1,5 +1,9 @@
 *** Unreleased ***
 
+*** Version 19.04.05       (2019-09-26)   ***
+- Fixes
+Check workings hours in Planning Hebdo module when importing plannings
+
 *** Version 19.04.03       (2019-07-26)   ***
 - Fixes
 Fix misallocation of rights in multisites mode
