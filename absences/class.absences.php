@@ -834,7 +834,7 @@ class absences
                 }
                 $tmp['debutAff']="$debut $debutHeure";
                 $tmp['finAff']="$fin $finHeure";
-                $all[]=$tmp;
+                $all[$tmp['perso_id']]=$tmp;
             }
         }
 
@@ -869,7 +869,7 @@ class absences
             $cles_a_supprimer = array();
       
             $last = 0;
-            for ($i=1; $i<count($result); $i++) {
+            foreach ( $result as $perso_id => $elem ) {
       
         // Comparaisons : différents cas de figures
                 //   |-----------------------------|      $last
@@ -887,20 +887,21 @@ class absences
                 //      |--------------------------|    $i
                 //      |---------------------|         $i
         
-                if ($result[$i]['perso_id'] == $result[$last]['perso_id'] and $result[$i]['debut'] < $result[$last]['fin']) {
-                    if ($result[$i]['debut'] >= $result[$last]['debut'] and $result[$i]['fin'] <= $result[$last]['fin']) {
+                if ( $perso_id == $result[$last]['perso_id'] and $elem['debut'] < $result[$last]['fin'] ) {
+                #if ($result[$i]['perso_id'] == $result[$last]['perso_id'] and $result[$i]['debut'] < $result[$last]['fin']) {
+                    if ($elem['debut'] >= $result[$last]['debut'] and $elem['fin'] <= $result[$last]['fin']) {
                         $cles_a_supprimer[] = $i;
-                    } elseif ($result[$i]['debut'] == $result[$last]['debut'] and $result[$i]['fin'] > $result[$last]['fin']) {
+                    } elseif ($elem['debut'] == $result[$last]['debut'] and $elem['fin'] > $result[$last]['fin']) {
                         $cles_a_supprimer[] = $last;
-                        $last = $i;
-                    } elseif ($result[$i]['debut'] > $result[$last]['debut'] and $result[$i]['fin'] > $result[$last]['fin']) {
-                        $result[$last]['fin']=$result[$i]['debut'];
-                        $last = $i;
+                        $last = $perso_id;
+                    } elseif ($elem['debut'] > $result[$last]['debut'] and $elem['fin'] > $result[$last]['fin']) {
+                        $result[$last]['fin'] = $elem['debut'];
+                        $last = $perso_id;
                     } else {
-                        $last = $i;
+                        $last = $perso_id;
                     }
                 } else {
-                    $last = $i;
+                    $last = $perso_id;
                 }
             }
             foreach ($cles_a_supprimer as $elem) {
