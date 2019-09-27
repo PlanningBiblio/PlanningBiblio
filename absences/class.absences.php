@@ -706,7 +706,7 @@ class absences
     }
 
 
-    public function fetch($sort="`debut`,`fin`,`nom`,`prenom`", $agent=null, $debut=null, $fin=null, $sites=null)
+    public function fetch($sort="`debut`,`fin`,`nom`,`prenom`", $agent=null, $debut=null, $fin=null, $sites=null, $nogroup = false)
     {
         $filter="";
         //	DB prefix
@@ -784,7 +784,7 @@ class absences
 
                 // Gestion des groupes : ajout des infos sur les autres agents et affichage d'une seule ligne si $this->groupe=true
                 $groupe = null;
-                if (!empty($elem['groupe'])) {
+                if (!empty($elem['groupe']) && $nogroup === false) {
                     // Le groupe est complété de la date et heure de début et de fin pour qu'il soit unique pour chaque occurence (si récurrence)
                     $groupe = $elem['groupe'].$elem['debut'].$elem['fin'];
                 }
