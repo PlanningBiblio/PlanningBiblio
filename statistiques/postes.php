@@ -114,13 +114,6 @@ $p=new personnel();
 $p->fetch();
 $agents_infos=$p->elements;
 
-// Recherche des absences dans la table absences
-$a=new absences();
-$a->valide=true;
-$a->agents_supprimes = array(0,1,2);
-$a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $debutSQL." 00:00:00", $finSQL." 23:59:59");
-$absencesDB=$a->elements;
-
 //		--------------		Récupération de la liste des postes pour le menu déroulant		------------------------
 $db=new db();
 $db->select2("postes", "*", array("statistiques"=>"1"), "ORDER BY `etage`,`nom`");
@@ -131,7 +124,14 @@ if (!empty($postes)) {
     $db=new db();
     $db->select2("pl_poste", "date", array("date"=>"BETWEEN{$debutSQL}AND{$finSQL}", "site"=>"IN{$sitesSQL}"), "GROUP BY `date`;");
     $nbJours=$db->nb;
-  
+
+    // Recherche des absences dans la table absences
+    $a = new absences();
+    $a->valide = true;
+    $a->agents_supprimes = array(0,1,2);
+    $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $debutSQL." 00:00:00", $finSQL." 23:59:59", null, true);
+    $absencesDB = $a->elements;
+
     //	Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
     //	On stock le tout dans le tableau $resultat
     $postes_select=join(",", $postes);
@@ -171,13 +171,13 @@ if (!empty($postes)) {
                 if ($poste==$elem['poste']) {
                     // Vérifie à partir de la table absences si l'agent est absent
                     // S'il est absent : continue
-                    foreach ($absencesDB as $a) {
-                        if ($elem['perso_id']==$a['perso_id']) {
-                            if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
-                                continue 2;
-                            }
+                    if ( isset($absencesDB[$elem['perso_id']]) ) {
+                        $a = $absencesDB[$elem['perso_id']];
+                        if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
+                            continue;
                         }
                     }
+
                     // on créé un tableau par agent avec son nom, prénom et la somme des heures faites par poste
                     if (!array_key_exists($elem['perso_id'], $agents)) {
                         $agents[$elem['perso_id']]=array($elem['perso_id'],$elem['nom'],$elem['prenom'],0,"site"=>$elem['site']);
