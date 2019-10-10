@@ -1,4 +1,6 @@
 *** Unreleased ***
+- Enhancements
+LDAP authentication improvement
 
 *** Version 19.04.03       (2019-07-26)   ***
 - Fixes
