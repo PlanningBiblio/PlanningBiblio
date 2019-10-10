@@ -117,13 +117,6 @@ $total_jour=0;
 $total_hebdo=0;
 $selected=null;
 
-// Recherche des absences dans la table absences
-$a=new absences();
-$a->valide=true;
-$a->agents_supprimes = array(0,1,2);
-$a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $debutSQL." 00:00:00", $finSQL." 23:59:59");
-$absencesDB=$a->elements;
-
 //		--------------		Récupération de la liste des postes pour le menu déroulant		------------------------
 $db=new db();
 $db->query("SELECT * FROM `{$dbprefix}postes` WHERE `statistiques`='1' ORDER BY `etage`,`nom`;");
@@ -138,6 +131,13 @@ if (!empty($postes)) {
     $finREQ=$db->escapeString($finSQL);
     $sitesREQ=$db->escapeString($sitesSQL);
     $postesREQ=$db->escapeString($postes_select);
+
+    // Recherche des absences dans la table absences
+    $a=new absences();
+    $a->valide=true;
+    $a->agents_supprimes = array(0,1,2);
+    $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $debutSQL." 00:00:00", $finSQL." 23:59:59", null, true);
+    $absencesDB=$a->elements;
 
     $req="SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
     `{$dbprefix}pl_poste`.`date` as `date`,  `{$dbprefix}pl_poste`.`poste` as `poste`, 
@@ -169,11 +169,10 @@ if (!empty($postes)) {
                 if ($poste==$elem['poste']) {
                     // Vérifie à partir de la table absences si l'agent est absent
                     // S'il est absent : continue
-                    foreach ($absencesDB as $a) {
-                        if ($elem['perso_id']==$a['perso_id']) {
-                            if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
-                                continue 2;
-                            }
+                    if ( isset($absencesDB[$elem['perso_id']]) ) {
+                        $a = $absencesDB[$elem['perso_id']];
+                        if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
+                            continue;
                         }
                     }
                     //	On créé un tableau par agent avec son nom, prénom et la somme des heures faites par poste
