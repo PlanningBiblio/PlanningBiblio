@@ -91,6 +91,11 @@ function authLDAP($login, $password)
 {
     // Variables
     $auth=false;
+
+    if ($password == '') {
+        return $auth;
+    }
+
     if (!$GLOBALS['config']['LDAP-Port']) {
         $GLOBALS['config']['LDAP-Port']="389";
     }
