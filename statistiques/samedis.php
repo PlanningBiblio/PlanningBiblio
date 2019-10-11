@@ -142,8 +142,7 @@ if (!empty($agents) and $dates) {
     // Recherche des absences dans la table absences
     $a=new absences();
     $a->valide=true;
-    $a->agents_supprimes = array(0,1,2);
-    $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $debutSQL." 00:00:00", $finSQL." 23:59:59", null, true);
+    $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
     $absencesDB=$a->elements;
 
     //	Recherche des infos dans pl_poste et postes pour tous les agents sélectionnés
@@ -193,10 +192,11 @@ if (!empty($agents) and $dates) {
                 if ($agent==$elem['perso_id']) {
                     // Vérifie à partir de la table absences si l'agent est absent
                     // S'il est absent : continue
-                    if ( isset($absencesDB[$elem['perso_id']]) ) {
-                        $a = $absencesDB[$elem['perso_id']];
-                        if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
-                            continue;
+                    if ( !empty($absencesDB[$elem['perso_id']]) ) {
+                        foreach ($absencesDB[$elem['perso_id']] as $a) {
+                            if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
+                                continue 2;
+                            }
                         }
                     }
                     if ($elem['absent']!="1") { // on compte les heures et les samedis pour lesquels l'agent n'est pas absent
