@@ -705,8 +705,7 @@ class absences
         return false;
     }
 
-
-    public function fetch($sort="`debut`,`fin`,`nom`,`prenom`", $agent=null, $debut=null, $fin=null, $sites=null, $nogroup = false)
+    public function fetch($sort="`debut`,`fin`,`nom`,`prenom`", $agent=null, $debut=null, $fin=null, $sites=null)
     {
         $filter="";
         //	DB prefix
@@ -784,7 +783,7 @@ class absences
 
                 // Gestion des groupes : ajout des infos sur les autres agents et affichage d'une seule ligne si $this->groupe=true
                 $groupe = null;
-                if (!empty($elem['groupe']) && $nogroup === false) {
+                if (!empty($elem['groupe'])) {
                     // Le groupe est complété de la date et heure de début et de fin pour qu'il soit unique pour chaque occurence (si récurrence)
                     $groupe = $elem['groupe'].$elem['debut'].$elem['fin'];
                 }
@@ -834,7 +833,7 @@ class absences
                 }
                 $tmp['debutAff']="$debut $debutHeure";
                 $tmp['finAff']="$fin $finHeure";
-                $all[$tmp['perso_id']]=$tmp;
+                $all[]=$tmp;
             }
         }
 
@@ -869,7 +868,7 @@ class absences
             $cles_a_supprimer = array();
       
             $last = 0;
-            foreach ( $result as $perso_id => $elem ) {
+            for ($i=1; $i<count($result); $i++) {
       
         // Comparaisons : différents cas de figures
                 //   |-----------------------------|      $last
@@ -887,21 +886,20 @@ class absences
                 //      |--------------------------|    $i
                 //      |---------------------|         $i
         
-                if ( $perso_id == $result[$last]['perso_id'] and $elem['debut'] < $result[$last]['fin'] ) {
-                #if ($result[$i]['perso_id'] == $result[$last]['perso_id'] and $result[$i]['debut'] < $result[$last]['fin']) {
-                    if ($elem['debut'] >= $result[$last]['debut'] and $elem['fin'] <= $result[$last]['fin']) {
+                if ($result[$i]['perso_id'] == $result[$last]['perso_id'] and $result[$i]['debut'] < $result[$last]['fin']) {
+                    if ($result[$i]['debut'] >= $result[$last]['debut'] and $result[$i]['fin'] <= $result[$last]['fin']) {
                         $cles_a_supprimer[] = $i;
-                    } elseif ($elem['debut'] == $result[$last]['debut'] and $elem['fin'] > $result[$last]['fin']) {
+                    } elseif ($result[$i]['debut'] == $result[$last]['debut'] and $result[$i]['fin'] > $result[$last]['fin']) {
                         $cles_a_supprimer[] = $last;
-                        $last = $perso_id;
-                    } elseif ($elem['debut'] > $result[$last]['debut'] and $elem['fin'] > $result[$last]['fin']) {
-                        $result[$last]['fin'] = $elem['debut'];
-                        $last = $perso_id;
+                        $last = $i;
+                    } elseif ($result[$i]['debut'] > $result[$last]['debut'] and $result[$i]['fin'] > $result[$last]['fin']) {
+                        $result[$last]['fin']=$result[$i]['debut'];
+                        $last = $i;
                     } else {
-                        $last = $perso_id;
+                        $last = $i;
                     }
                 } else {
-                    $last = $perso_id;
+                    $last = $i;
                 }
             }
             foreach ($cles_a_supprimer as $elem) {
@@ -911,6 +909,48 @@ class absences
     
         if ($result) {
             $this->elements=$result;
+        }
+    }
+
+    public function fetchForStatistics($debut=null, $fin=null)
+    {
+        $filter = "";
+
+        //	DB prefix
+        $dbprefix = $GLOBALS['config']['dbprefix'];
+
+        // Date, debut, fin
+        $date = date("Y-m-d");
+        if ($debut) {
+            $fin = $fin ? $fin : $date;
+            $dates = "`debut`<='$fin' AND `fin`>='$debut'";
+        } else {
+            $dates = "`fin`>='$date'";
+        }
+
+        if ($this->valide and $GLOBALS['config']['Absences-validation']) {
+            $filter .= " AND `{$dbprefix}absences`.`valide`>0 ";
+        }
+
+        //	Select All
+        $req="SELECT `{$dbprefix}absences`.`perso_id` AS `perso_id`, "
+        ."`{$dbprefix}absences`.`id` AS `id`, `{$dbprefix}absences`.`debut` AS `debut`, "
+        ."`{$dbprefix}absences`.`fin` AS `fin` "
+        ."FROM `{$dbprefix}absences` "
+        ."WHERE $dates $filter;";
+
+        $db = new db();
+        $db->query($req);
+
+        $all = array();
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                $all[ $elem['perso_id'] ][] = $elem;
+            }
+        }
+
+        if ($all) {
+            $this->elements=$all;
         }
     }
 

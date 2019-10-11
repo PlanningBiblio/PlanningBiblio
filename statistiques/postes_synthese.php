@@ -135,8 +135,7 @@ if (!empty($postes)) {
     // Recherche des absences dans la table absences
     $a=new absences();
     $a->valide=true;
-    $a->agents_supprimes = array(0,1,2);
-    $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $debutSQL." 00:00:00", $finSQL." 23:59:59", null, true);
+    $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
     $absencesDB=$a->elements;
 
     $req="SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
@@ -169,10 +168,11 @@ if (!empty($postes)) {
                 if ($poste==$elem['poste']) {
                     // Vérifie à partir de la table absences si l'agent est absent
                     // S'il est absent : continue
-                    if ( isset($absencesDB[$elem['perso_id']]) ) {
-                        $a = $absencesDB[$elem['perso_id']];
-                        if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
-                            continue;
+                    if ( !empty($absencesDB[$elem['perso_id']]) ) {
+                        foreach ($absencesDB[$elem['perso_id']] as $a) {
+                            if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
+                                continue 2;
+                            }
                         }
                     }
                     //	On créé un tableau par agent avec son nom, prénom et la somme des heures faites par poste
