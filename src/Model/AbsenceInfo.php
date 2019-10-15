@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Entity;
+namespace App\Model;
 
 /**
  * @Entity @Table(name="absences_infos")
  **/
-class AbsenceInfo extends Entity
+class AbsenceInfo extends PLBEntity
 {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;

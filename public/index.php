@@ -49,7 +49,7 @@ if (empty($_SESSION['login_id'])) {
 }
 
 # Start using twigized script
-$checker = new PlanningBiblio\LegacyCodeChecker();
+$checker = new App\PlanningBiblio\LegacyCodeChecker();
 if ($checker->isTwigized($page)) {
     include(__DIR__.'/'.$page);
     exit;

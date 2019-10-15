@@ -32,8 +32,8 @@ require_once __DIR__.'/../vendor/autoload.php';
 use Symfony\Component\HttpFoundation\Request;
 
 use PlanningBiblio\LegacyCodeChecker;
-use Model\Agent;
-use Model\Access;
+use App\Model\Agent;
+use App\Model\Access;
 
 // Redirection vers setup si le fichier config est absent
 if (!file_exists(__DIR__.'/include/config.php')) {

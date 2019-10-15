@@ -7,7 +7,7 @@ use App\Controller\BaseController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
-use App\Entity\ConfigParam;
+use App\Model\ConfigParam;
 
 class ConfigController extends BaseController
 {

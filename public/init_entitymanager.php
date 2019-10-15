@@ -16,7 +16,7 @@
 
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
-use Model\Extensions\TablePrefix;
+use App\Model\Extensions\TablePrefix;
 
 // Instanciating entity manager.
 $entitiesPath = array('src/Model');
@@ -24,7 +24,7 @@ $emConfig = Setup::createAnnotationMetadataConfiguration($entitiesPath, true);
 
 // Handle table prefix.
 $evm = new \Doctrine\Common\EventManager;
-$tablePrefix = new Model\Extensions\TablePrefix($config['dbprefix']);
+$tablePrefix = new App\Model\Extensions\TablePrefix($config['dbprefix']);
 $evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $tablePrefix);
 
 $dbParams = array(

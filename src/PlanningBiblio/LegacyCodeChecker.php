@@ -1,6 +1,6 @@
 <?php
 
-namespace PlanningBiblio;
+namespace App\PlanningBiblio;
 
 class LegacyCodeChecker
 {

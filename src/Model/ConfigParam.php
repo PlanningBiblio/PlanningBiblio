@@ -1,11 +1,11 @@
 <?php
 
-namespace Model;
+namespace App\Model;
 
 /**
  * @Entity @Table(name="config")
  **/
-class ConfigParam extends Entity
+class ConfigParam extends PLBEntity
 {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
