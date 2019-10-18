@@ -124,18 +124,17 @@ $db=new db();
 $db->select2("select_services");
 $services_list=$db->result;
 
-// Recherche des absences dans la table absences
-$a=new absences();
-$a->valide=true;
-$a->agents_supprimes = array(0,1,2);
-$a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $debutSQL." 00:00:00", $finSQL." 23:59:59");
-$absencesDB=$a->elements;
-
 if (!empty($services)) {
     //	Recherche du nombre de jours concernés
     $db=new db();
     $db->select2("pl_poste", "date", array("date"=>"BETWEEN{$debutSQL}AND{$finSQL}", "site"=>"IN{$sitesSQL}"), "GROUP BY `date`;");
     $nbJours=$db->nb;
+
+    // Recherche des absences dans la table absences
+    $a = new absences();
+    $a->valide = true;
+    $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
+    $absencesDB = $a->elements;
 
     // Recherche des services de chaque agent
     $db=new db();
@@ -211,10 +210,11 @@ if (!empty($services)) {
 
       // Vérifie à partir de la table absences si l'agent est absent
                     // S'il est absent, on met à 1 la variable $elem['absent']
-                    foreach ($absencesDB as $a) {
-                        if ($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
-                            $elem['absent']="1";
-                            break;
+                    if ( !empty($absencesDB[$elem['perso_id']]) ) {
+                        foreach ($absencesDB[$elem['perso_id']] as $a) {
+                            if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
+                                $elem['absent']="1";
+                            }
                         }
                     }
 
