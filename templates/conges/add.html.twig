@@ -1,0 +1,284 @@
+{# conges/add.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/conges/js/script.conges.js?version={{ version }}'></script>
+{% endblock %}
+
+{% block page %}
+  <script type='text/JavaScript'>
+    $( document ).ready(function() {
+      $('#perso_id').on('change', function() {
+        document.location.href="/holiday/new/" + this.value;
+      });
+
+      $('select[name="debit"]').on('change', function() {
+        calculRestes();
+      });
+
+      $('input[name="allday"]').on('click', function() {
+        all_day();
+      });
+
+      $('#cancel').on('click', function() {
+        document.location.href="/holiday/index";
+      });
+
+      $('#validate').on('click', function() {
+        verifConges();
+      });
+    });
+  </script>
+  <h3>Poser des congés</h3>
+
+  <table border='0'>
+    <tr style='vertical-align:top'>
+      <td style='width:700px;'>
+        <form name='form' action='index.php' method='get' id='form'>
+          <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
+          <input type='hidden' name='page' value='conges/enregistrer.php' />
+          <input type='hidden' name='confirm' value='confirm' />
+          <input type='hidden' name='reliquat' value='{{ reliquat }}' />
+          <input type='hidden' name='recuperation' id='recuperation' value='{{ recuperation }}' />
+          <input type='hidden' name='recuperation_prev' id='recuperation_prev' value='{{ recuperation_prev }}' />
+          <input type='hidden' name='credit' value='{{ credit }}' />
+          <input type='hidden' name='anticipation' value='{{ anticipation }}' />
+          <input type='hidden' id='agent' value='{{ agent_name }}' />
+          <input type='hidden' id='conges-recup' value='{{ conges_recuperations }}' />
+
+          <table border='0'>
+            <tr>
+              <td style='width:350px;'> Nom, prénom : </td>
+              <td>
+                {% if admin %}
+                  <select name='perso_id' id='perso_id' style='width:98%;'>
+                    {% for a in db_perso %}
+                      {% if a.id == perso_id %}
+                        <option value='{{ a.id }}' selected='selected'>{{ a.nom }} {{ a.prenom }}</option>
+                      {% else %}
+                        <option value='{{ a.id }}'>{{ a.nom }} {{ a.prenom }}</option>
+                      {%endif %}
+                    {% endfor %}
+                  </select>
+                {% else %}
+                  <input type='hidden' name='perso_id' id='perso_id' value='{{ login_id }}' />
+                  {{ login_nom }} {{ login_prenom }}
+                {% endif %}
+              </td>
+            </tr>
+
+            {% if not conges_recuperations %}
+              <tr>
+                <td style='padding-top:15px;'>Journée(s) entière(s) : </td>
+                <td style='padding-top:15px;'>
+                  <input type='checkbox' name='allday' checked='checked' />
+                </td>
+              </tr>
+            {% endif %}
+
+            <tr>
+              <td>Date de début : </td>
+              <td>
+                <input type='text' name='debut' id='debut' value='{{ debut }}' class='datepicker googleCalendarTrigger' style='width:97%;'/>&nbsp;</td>
+            </tr>
+
+            <tr id='hre_debut' style='display:none;'>
+              <td>Heure de début : </td>
+              <td>
+                <select name='hre_debut' id='hre_debut_select' style='width:98%;' class='googleCalendarTrigger'>
+                  <option value=""></option>
+                  <option value="07:00:00">07h00</option>
+                  <option value="08:00:00">08h00</option>
+                  <option value="09:00:00">09h00</option>
+                  <option value="10:00:00">10h00</option>
+                  <option value="11:00:00">11h00</option>
+                  <option value="12:00:00">12h00</option>
+                  <option value="13:00:00">13h00</option>
+                  <option value="14:00:00">14h00</option>
+                  <option value="15:00:00">16h00</option>
+                  <option value="16:00:00">16h00</option>
+                  <option value="17:00:00">17h00</option>
+                  <option value="19:00:00">18h00</option>
+                  <option value="19:00:00">19h00</option>
+                  <option value="20:00:00">20h00</option>
+                  <option value="21:00:00">21h00</option>
+                  <option value="22:00:00">22h00</option>
+                  <option value="23:00:00">23h00</option>
+                </select>
+              </td>
+            </tr>
+
+            <tr>
+              <td>Date de fin : </td>
+              <td>
+                <input type='text' name='fin' id='fin' value='{{ fin }}'  class='datepicker googleCalendarTrigger' style='width:97%;'/>&nbsp;
+              </td>
+            </tr>
+
+            <tr id='hre_fin' style='display:none;'><td>Heure de fin : </td>
+              <td>
+                <select name='hre_fin' id='hre_fin_select' style='width:98%;' class='googleCalendarTrigger' onfocus='setEndHour();'>
+                  <option value=""></option>
+                  <option value="07:00:00">07h00</option>
+                  <option value="08:00:00">08h00</option>
+                  <option value="09:00:00">09h00</option>
+                  <option value="10:00:00">10h00</option>
+                  <option value="11:00:00">11h00</option>
+                  <option value="12:00:00">12h00</option>
+                  <option value="13:00:00">13h00</option>
+                  <option value="14:00:00">14h00</option>
+                  <option value="15:00:00">16h00</option>
+                  <option value="16:00:00">16h00</option>
+                  <option value="17:00:00">17h00</option>
+                  <option value="19:00:00">18h00</option>
+                  <option value="19:00:00">19h00</option>
+                  <option value="20:00:00">20h00</option>
+                  <option value="21:00:00">21h00</option>
+                  <option value="22:00:00">22h00</option>
+                  <option value="23:00:00">23h00</option>
+                </select>
+              </td>
+            </tr>
+
+            <tr>
+              <td style='padding-top:15px;'>Nombre d'heures : </td>
+              <td style='padding-top:15px;'>
+                <div id='nbHeures' style='padding:0 5px; width:50px;'></div>
+                <input type='hidden' name='heures' value='0' />
+                <input type='hidden' name='minutes' value='0' />
+                <input type='hidden' id='erreurCalcul' value='false' />
+              </td>
+            </tr>
+
+            <tr>
+              <td>Nombre de jours (7h/jour) : </td>
+              <td>
+                <div id='nbJours' style='padding:0 5px; width:50px;'></div>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan='2' style='padding-top:20px;'>
+                {% if conges_recuperations == 0 %}
+                  {% if reliquat != '0.00' %}
+                    Ces heures seront débitées sur le réliquat de l'année précédente puis sur : 
+                  {% else %}
+                    Ces heures seront débitées sur : 
+                  {% endif %}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>&nbsp;</td>
+                  <td>
+                    <select name='debit' style='width:98%;'>
+                      <option value='recuperation'>Le crédit de récupérations</option>
+                      <option value='credit'>Le crédit de congés de l'année en cours</option>
+                    </select>
+                  </td>
+                </tr>
+                {% else %}
+                  {% if reliquat != '0.00' %}
+                    Ces heures seront débitées sur le réliquat de l'année précédente puis sur les crédits de congés de l'année en cours.
+                  {% else %}
+                    Ces heures seront débitées sur les crédits de congés de l'année en cours.
+                  {% endif %}
+                    <input type='hidden' name='debit' value='credit' />
+                  </td>
+                </tr>
+                {% endif %}
+
+                <tr>
+                  <td colspan='2'>
+                    <table border='0'>
+                      <tr>
+                        <td style='width:348px;'>Reliquat : </td>
+                        <td style='width:130px;'>{{ reliquat2 }}</td>
+                        <td>(après débit : <font id='reliquat4'>{{ reliquat2 }}</font>)</td>
+                      </tr>
+
+                      {% if conges_recuperations == 0 %}
+                        <tr class='balance_tr'>
+                          <td>Crédit de récupérations disponible au 
+                            <span class='balance_date'>{{ balance0 }}</span> : 
+                          </td>
+
+                          <td id='balance_before'>{{ balance1 }}</td>
+                          <td>(après débit : 
+                            <span id='recup4'>{{ balance1 }}</span>)
+                          </td>
+                        </tr>
+
+                        <tr class='balance_tr'>
+                          <td>Crédit de récupérations prévisionnel<sup>*</sup> au 
+                            <span class='balance_date'>{{ balance0 }}</span> : 
+                          </td>
+
+                          <td id='balance2_before'>{{ balance4 }}</td>
+
+                          <td>(après débit : 
+                            <span id='balance2_after'>{{ balance4 }}</span>)
+                          </td>
+                        </tr>
+                      {% endif %}
+
+                <tr>
+                  <td>Crédit de congés : </td>
+                  <td>{{ credit2 }}</td>
+                  <td>
+                    <font id='credit3'>(après débit : <font id='credit4'>{{ credit2 }}</font>)</font>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>Solde débiteur : </td>
+                  <td>{{ anticipation2 }}</td>
+                  <td><font id='anticipation3'>(après débit : <font id='anticipation4'>{{ anticipation2 }}</font>)</font>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr valign='top'>
+            <td style='padding-top:15px;'>Commentaires : </td>
+            <td style='padding-top:15px;'>
+              <textarea name='commentaires' cols='16' rows='5' style='width:97%;'></textarea>
+            </td>
+          </tr>
+
+          <tr>
+            <td>&nbsp;
+            </td>
+          </tr>
+
+          <tr>
+            <td colspan='2' style='text-align:center;'>
+              <input id="cancel" type='button' value='Annuler' class='ui-button'/>
+              &nbsp;&nbsp;
+              <input id="validate" type='button' value='Valider' class='ui-button' style='margin-left:20px;'/>
+              <div id='google-calendar-div' class='inline'></div>
+            </td>
+          </tr>
+
+          <tr>
+            <td colspan='2' style='padding-top:30px; font-style:italic;'>
+              <sup>*</sup> Le crédit de récupérations prévisionnel tient compte des demandes non validées (crédits et utilisations).
+            </td>
+          </tr>
+        </table>
+      </form>
+    </td>
+    <td style='color:#FF5E0E;'>
+      {% if holifay_info %}
+        <b>Informations sur les congés :</b><br/><br/>
+        {% for i in holifay_info %}
+          Du {{ i.start }} au {{ i.end }} :<br/>{{ i.texte|nl2br }}<br/><br/>
+        {% endfor %}
+      {% endif %}
+    </td>
+  </tr>
+</table>
+
+{% endblock %}

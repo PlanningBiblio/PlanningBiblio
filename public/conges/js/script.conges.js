@@ -40,7 +40,7 @@ function calculCredit(){
   hre_fin=hre_fin?hre_fin:"23:59:59";
   
   $.ajax({
-    url: "conges/ajax.calculCredit.php",
+    url: "/conges/ajax.calculCredit.php",
     data: {debut: debut, fin: fin, hre_debut: hre_debut, hre_fin: hre_fin, perso_id: perso_id},
     dataType: "json",
     type: "get",
@@ -429,15 +429,13 @@ function checkSamedi( o, n ) {
 
 
 $(function(){
-  if($(".googleCalendarTrigger").length){
-    $(".googleCalendarTrigger").change(function(){
-      googleCalendarIcon();
-      calculCredit();
-    });
+  $(".googleCalendarTrigger").change(function(){
+    googleCalendarIcon();
+    calculCredit();
+  });
 
-    $(".googleCalendarForm").ready(function(){
-      googleCalendarIcon();
-      calculCredit();
-    });
-  }
+  $(".googleCalendarForm").ready(function(){
+    googleCalendarIcon();
+    calculCredit();
+  });
 });
