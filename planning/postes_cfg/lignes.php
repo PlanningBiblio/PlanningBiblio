@@ -1,22 +1,20 @@
 <?php
 /**
-Planning Biblio, Version 2.7
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
-
-Fichier : planning/postes_cfg/lignes.php
-Création : mai 2011
-Dernière modification : 3 août 2017
-@author Jérôme Combes <jerome@planningbiblio.fr>
-
-Description :
-Permet de modifier les lignes d'un tableau. Affichage d'un tableau avec les horaires en colonnes, les postes dans des menus
-déroulant en lignes. Permet également de griser des cellules avec les cases à cocher "G"
-Affichage et validation
-
-Page incluse dans le fichier "planning/postes_cfg/modif.php"
-*/
+ * Planning Biblio
+ * Licence GNU/GPL (version 2 et au dela)
+ * Voir les fichiers README.md et LICENSE
+ * @copyright 2011-2019 Jérôme Combes
+ *
+ * Fichier : planning/postes_cfg/lignes.php
+ * @author Jérôme Combes <jerome@planningbiblio.fr>
+ *
+ * Description :
+ * Permet de modifier les lignes d'un tableau. Affichage d'un tableau avec les horaires en colonnes, les postes dans des menus
+ * déroulant en lignes. Permet également de griser des cellules avec les cases à cocher "G"
+ * Affichage et validation
+ *
+ * Page incluse dans le fichier "planning/postes_cfg/modif.php"
+ */
 
 require_once "class.tableaux.php";
 require_once "postes/class.postes.php";
@@ -24,7 +22,7 @@ require_once "postes/class.postes.php";
 // Liste des postes
 $p=new postes();
 if ($config['Multisites-nombre']>1) {
-    $p->sites=$site;
+    $p->site=$site;
 }
 $p->fetch("nom");
 $postes=$p->elements;
@@ -125,7 +123,6 @@ if ($tableauNumero) {
 echo "</form>\n";
 echo "</div>\n";
 ?>
-
 <div class='highlight' style='margin-top:40px;'>
 <p style='margin-left:30px;'>
 <sup>* Classe CSS appliqu&eacute;e sur le tableau. Permet d'en personnaliser l&apos;affichage.</sup><br/>
@@ -144,7 +141,6 @@ $("document").ready(function(){
     $(this).closest("td").addClass(myClass);
   });
 });
-
 // Change la class du select et du td lorsque l'on change d'option dans les listes des postes
 $(".tab_select").change(function(){
   var myClass=$(this).find(":selected").attr("class");
@@ -154,7 +150,6 @@ $(".tab_select").change(function(){
   $(this).closest("td").removeClass();
   $(this).closest("td").addClass(myClass);
 });
-
 // Validation AJAX pour éviter le problème de limitation à 1000 éléments en post
 // N'envoie que les éléments sélectionnés et visibles
 function configLignes(){
@@ -163,24 +158,20 @@ function configLignes(){
   $(".select_titre").each(function(){
     tab.push($(this).attr("name")+"="+$(this).val());
   });
-
   // Récupération des postes
   $(".tab_select:visible").each(function(){
     tab.push($(this).attr("name")+"="+$(this).val());
   });
-
   // Récupération des cellules grises
   $("input[type=checkbox]:checked:visible").each(function(){
     tab.push($(this).attr("name")+"="+$(this).val());
   });
-
   // La variable data contient tous les éléments à enregistrer
   var data="id="+$("#id").val();
   data+="&CSRFToken="+$('#CSRFSession').val();
   for(elem in tab){
     data+="&"+tab[elem];
   }
-
   // Enregistrement des données en ajax (fichier ajax.lignes.php)
   $.ajax({
     url: "planning/postes_cfg/ajax.lignes.php",
