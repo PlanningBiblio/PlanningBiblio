@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 use App\Entity\ConfigParam;
 
@@ -102,15 +103,15 @@ class ConfigController extends BaseController
     /**
      * @Route("/config", name="config.update"), methods={"POST"})
      */
-    public function update(Request $request)
+    public function update(Request $request, Session $session)
     {
         $params = $request->request->all();
 
         // Demo mode
         if ($params && !empty($this->config('demo'))) {
-            $warning = "La modification de la configuration n'est pas autorisée sur la version de démonstration.";
-            $warning .= "#BR#Merci de votre compréhension";
-            $this->templateParams(array('warning' => $warning));
+            $flash = "La modification de la configuration n'est pas autorisée sur la version de démonstration.";
+            $flash .= "#BR#Merci de votre compréhension";
+            $session->getFlashBag()->add('error', $flash);
         }
 
         elseif ($params && CSRFTokenOK($params['CSRFToken'], $_SESSION)) {
@@ -118,8 +119,6 @@ class ConfigController extends BaseController
             $configParams = $this->entityManager->getRepository(ConfigParam::class)->findBy(
                 array(), array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
             );
-
-            $this->templateParams(array('post' => 1));
 
             foreach ($configParams as $cp) {
 
@@ -168,7 +167,7 @@ class ConfigController extends BaseController
 
         }
 
-        return $this->redirectToRoute('config.index', $this->templateParams());
+        return $this->redirectToRoute('config.index');
     }
 
 }
