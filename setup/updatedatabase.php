@@ -26,6 +26,8 @@ foreach (glob($atomic_dir) as $file) {
     }
 
     foreach ($sql as $queries) {
+        print $queries . "\n";
+
         $db = new db();
         $db->query($queries);
         if ($db->error) {
