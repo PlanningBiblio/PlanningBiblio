@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Model\Agent;
+use App\PlanningBiblio\Helper\HolidayHelper;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,7 +15,7 @@ require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
 class HolidayController extends BaseController
 {
     /**
-     * @Route("/holiday/index/{recovery}", defaults={"recovery"=0}, name="holiday.index", methods={"GET"})
+     * @Route("/holiday/index", name="holiday.index", methods={"GET"})
      */
     public function index(Request $request)
     {
@@ -156,6 +157,7 @@ class HolidayController extends BaseController
             'agents_menu'           => $agents_menu,
             'deleted_agents'        => $agents_supprimes ? 1 : 0,
             'conges_recuperation'   => $this->config('Conges-Recuperations'),
+            'conges_mode'           => $this->config('Conges-Mode'),
             'show_recovery'         => $voir_recup,
             'agent_name'            => nom($perso_id, "prenom nom", $agents),
             'from_year'             => $annee,
@@ -167,25 +169,26 @@ class HolidayController extends BaseController
             'perso_ids'             => $perso_ids,
         ));
 
+        $holiday_helper = new HolidayHelper();
         $holidays = array();
         foreach ($c->elements as $elem) {
-
-          // Filtre les agents non-gérés (notamment avec l'option Absences-notifications-agent-par-agent)
+            // Filter non handled agent.
+            // See among others option Absences-notifications-agent-par-agent.
             if (!in_array($elem['perso_id'], $perso_ids)) {
                 continue;
             }
 
-            // Si la gestion des congés et des récupérations est dissociée, la requête recherche également les mises à jour des crédits.
-            // Ici, on filtre les lignes "Mises à jour des crédits" pour n'afficher que celles qui concernent les récupérations ou les congés.
+            // If Conges-Recuperations is 1, also search
+            // credits updates.
             if ($this->config('Conges-Recuperations') == '1') {
                 if ($elem['debit'] == null) {
                     if ($voir_recup and $elem['recup_actuel'] == $elem['recup_prec']) {
                         continue;
                     }
                     if (!$voir_recup
-                and $elem['solde_actuel'] == $elem['solde_prec']
-                and $elem['reliquat_actuel'] == $elem['reliquat_prec']
-                and $elem['anticipation_actuel'] == $elem['anticipation_prec']) {
+                        and $elem['solde_actuel'] == $elem['solde_prec']
+                        and $elem['reliquat_actuel'] == $elem['reliquat_prec']
+                        and $elem['anticipation_actuel'] == $elem['anticipation_prec']) {
                         continue;
                     }
                 }
@@ -193,60 +196,31 @@ class HolidayController extends BaseController
 
             $elem['start'] = str_replace("00h00", "", dateFr($elem['debut'], true));
             $elem['end'] = str_replace("23h59", "", dateFr($elem['fin'], true));
-            $elem['hours'] = heure4($elem['heures']);
+            $elem['hours'] = $holiday_helper->HumanReadableDuration($elem['heures']);
             $elem['status'] = "Demandé, ".dateFr($elem['saisie'], true);
             $elem['validationDate'] = dateFr($elem['saisie'], true);
-            $elem['validationStyle'] = "font-weight:bold;";
 
-            $elem['credits'] = '';
+            foreach (array('solde_prec', 'solde_actuel',
+                'recup_prec', 'recup_actuel',
+                'reliquat_prec', 'reliquat_actuel',
+                'anticipation_prec', 'anticipation_actuel') as $key) {
+                $elem[$key] = $holiday_helper->HumanReadableDuration($elem[$key]);
+            }
+
             $elem['reliquat'] = '';
             $elem['recuperations'] = '';
             $elem['anticipation'] = '';
-            $elem['creditClass'] = '';
-            $elem['reliquatClass'] = '';
-            $elem['recuperationsClass'] = '';
-            $elem['anticipationClass'] = '';
 
             if ($elem['saisie_par'] and $elem['perso_id']!=$elem['saisie_par']) {
                 $elem['status'] .= " par ".nom($elem['saisie_par'], 'nom p', $agents);
             }
 
-            if ($elem['valide']<0) {
+            if ($elem['valide'] < 0) {
                 $elem['status'] = "Refusé, ".nom(-$elem['valide'], 'nom p', $agents);
                 $elem['validationDate'] = dateFr($elem['validation'], true);
-                $elem['validationStyle'] = "color:red;";
             } elseif ($elem['valide'] or $elem['information']) {
                 $elem['status'] = "Validé, ".nom($elem['valide'], 'nom p', $agents);
                 $elem['validationDate'] = dateFr($elem['validation'], true);
-                $elem['validationStyle'] = '';
-
-                $credits = heure4($elem['solde_prec']);
-                $elem['creditClass'] = 'aRight ';
-                if ($elem['solde_prec']!=$elem['solde_actuel']) {
-                    $elem['credits'] = heure4($elem['solde_prec'], true)." → ".heure4($elem['solde_actuel'], true);
-                    $elem['creditClass'] .= "bold";
-                }
-
-                $elem['recuperations'] = heure4($elem['recup_prec']);
-                $elem['recuperationsClass'] = "aRight ";
-                if ($elem['recup_prec']!=$elem['recup_actuel']) {
-                    $elem['recuperations'] = heure4($elem['recup_prec'], true)." &rarr; ".heure4($elem['recup_actuel'], true);
-                    $elem['recuperationsClass'] .= "bold";
-                }
-
-                $elem['reliquat'] = heure4($elem['reliquat_prec']);
-                $elem['reliquatClass'] = "aRight ";
-                if ($elem['reliquat_prec']!=$elem['reliquat_actuel']) {
-                    $elem['reliquat'] = heure4($elem['reliquat_prec'], true)." &rarr; ".heure4($elem['reliquat_actuel'], true);
-                    $elem['reliquatClass'] .= "bold";
-                }
-
-                $elem['anticipation'] = heure4($elem['anticipation_prec']);
-                $elem['anticipationClass'] = "aRight ";
-                if ($elem['anticipation_prec']!=$elem['anticipation_actuel']) {
-                    $elem['anticipation'] = heure4($elem['anticipation_prec'], true)." &rarr; ".heure4($elem['anticipation_actuel'], true);
-                    $elem['anticipationClass'] .= "bold";
-                }
             } elseif ($elem['valide_n1']) {
                 $elem['status'] = $elem['valide_n1'] > 0 ? $lang['leave_table_accepted_pending'] : $lang['leave_table_refused_pending'];
                 $elem['validationDate'] = dateFr($elem['validation_n1'], true);
@@ -275,6 +249,196 @@ class HolidayController extends BaseController
     }
 
     /**
+     * @Route("/holiday/edit", name="holiday.update", methods={"POST"})
+     * @Route("/holiday/edit/{id}", name="holiday.edit", methods={"GET"})
+     */
+    public function edit(Request $request)
+    {
+        $id = $request->get('id');
+        $commentaires = $request->get('commentaires');
+        $confirm = $request->get('confirm');
+        $debut = $request->get('debut');
+        $fin = $request->get('fin');
+        $hre_debut = $request->get('hre_debut');
+        $hre_fin = $request->get('hre_fin');
+
+        $dbprefix = $GLOBALS['dbprefix'];
+
+        // Elements du congé demandé
+        $c = new \conges();
+        $c->id = $id;
+        $c->fetch();
+        $data = $c->elements[0];
+
+        $perso_id = $data['perso_id'];
+
+        // Calcul des crédits de récupération disponibles lors de l'ouverture du formulaire (date du jour)
+        $c = new \conges();
+        $balance = $c->calculCreditRecup($perso_id);
+
+        // Droits d'administration niveau 1 et niveau 2
+        $c = new \conges();
+        $roles = $c->roles($perso_id, true);
+        list($adminN1, $adminN2) = $roles;
+
+        if ( $confirm ) {
+            $result = $this->update($request);
+            $msg = $result['msg'];
+            $msg2 = $result['msg2'];
+            $msg2Type = $result['msg2Type'];
+
+            $recover = 0;
+            if ($result['back_to'] == 'recover') {
+                $recover = 1;
+            }
+
+            return $this->redirect("/holiday/index?msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type&recup=$recover");
+        }
+
+        $this->templateParams(array('CSRFToken' => $GLOBALS['CSRFSession']));
+
+        $valide=$data['valide']>0?true:false;
+        $displayRefus=$data['valide']>=0?"display:none;":null;
+        $displayRefus = ($data['valide_n1'] <0 and ($adminN1 or $adminN2)) ? null : $displayRefus;
+        $perso_id=$data['perso_id'];
+        $debut=dateFr(substr($data['debut'], 0, 10));
+        $fin=dateFr(substr($data['fin'], 0, 10));
+        $hre_debut=substr($data['debut'], -8);
+        $hre_fin=substr($data['fin'], -8);
+        $jours=number_format(($data['heures']/7), 2, ".", " ");
+        $tmp=explode(".", $data['heures']);
+        $heures=$tmp[0];
+        $minutes=$tmp[1];
+
+        // Crédits
+        $p = new \personnel();
+        $p->fetchById($perso_id);
+        $nom=$p->elements[0]['nom']; //FIXME utile?
+        $prenom=$p->elements[0]['prenom']; //FIXME utile?
+        $credit = number_format((float) $p->elements[0]['conges_credit'], 2, '.', ' ');
+        $reliquat = number_format((float) $p->elements[0]['conges_reliquat'], 2, '.', ' ');
+        $anticipation = number_format((float) $p->elements[0]['conges_anticipation'], 2, '.', ' ');
+        $recuperation = number_format((float) $balance[1], 2, '.', ' ');
+        $recuperation2=heure4($recuperation, true);
+
+        if ($balance[4] < 0) {
+            $balance[4] = 0;
+        }
+
+
+        $request_type = 'holiday';
+        if ($this->config('Conges-Recuperations') == 1 and $data['debit']=="recuperation") {
+            $request_type = 'recover';
+        }
+
+        $show_allday = 0;
+        if (!$this->config('Conges-Recuperations') or $data['debit']=="recuperation") {
+            $show_allday = 1;
+        }
+
+        $displayHeures=null;
+        if ($hre_debut=="00:00:00" and $hre_fin=="23:59:59") {
+            $displayHeures="style='display:none;'";
+        }
+
+        $holiday_helper = new HolidayHelper();
+
+        $this->templateParams(array(
+            'id'                    => $id,
+            'perso_id'              => $perso_id,
+            'login_id'              => $_SESSION['login_id'],
+            'agent_name'            => $_SESSION['login_nom'] . ' ' . $_SESSION['login_prenom'],
+            'reliquat'              => $reliquat,
+            'reliquat2'             => $holiday_helper->HumanReadableDuration($reliquat),
+            'recuperation'          => $recuperation,
+            'recuperation_prev'     => $balance[4],
+            'credit'                => $credit,
+            'credit2'               => $holiday_helper->HumanReadableDuration($credit),
+            'anticipation'          => $anticipation,
+            'anticipation2'         => $holiday_helper->HumanReadableDuration($anticipation),
+            'conges_recuperations'  => $this->config('Conges-Recuperations'),
+            'debut'                 => $debut,
+            'fin'                   => $fin,
+            'hre_debut'             => $hre_debut,
+            'hre_fin'               => $hre_fin,
+            'conges_mode'           => $this->config('Conges-Mode'),
+            'request_type'          => $request_type,
+            'adminN1'               => $adminN1,
+            'adminN2'               => $adminN2,
+            'show_allday'           => $show_allday,
+            'debit'                 => $data['debit'],
+            'valide'                => $valide,
+            'valide_n1'             => $data['valide_n1'],
+            'balance_date'          => dateFr($balance[0]),
+            'balance_before'        => heure4($balance[1]),
+            'balance2_before'       => heure4($balance[4], true),
+            'recup4'                => heure4($balance[1], true),
+            'commentaires'          => $data['commentaires'],
+            'refus'                 => $data['refus'],
+            'saisie'                => dateFr($data['saisie'], true),
+            'displayRefus'          => $displayRefus,
+        ));
+
+        if ($adminN1 or $adminN2) {
+            $db_perso = new \db();
+            $db_perso->query("select * from {$dbprefix}personnel where actif='Actif' order by nom,prenom;");
+            $this->templateParams(array('db_perso' => $db_perso->result));
+        }
+
+        $saisie_par = '';
+        if ($data['saisie_par'] and $data['saisie_par'] != $data['perso_id']) {
+            $saisie_par = nom($data['saisie_par']);
+        }
+        $this->templateParams(array('saisie_par' => $saisie_par));
+
+        // Si droit de validation niveau 2 sans avoir le droit de validation niveau 1,
+        // on affiche l'état de validation niveau 1
+        if ($adminN2 and !$adminN1) {
+            if ($data['valide_n1'] == 0) {
+                $validation_n1 = "Congé demandé";
+            } elseif ($data['valide_n1'] > 0) {
+                $validation_n1 = "Congé accepté au niveau 1";
+            } else {
+                $validation_n1 = "Congé refusé au niveau 1";
+            }
+
+            $this->templateParams(array('validation_n1' => $validation_n1));
+        }
+
+        $lang = $GLOBALS['lang'];
+        $this->templateParams(array(
+            'accepted_pending_str' => $lang['leave_dropdown_accepted_pending'],
+            'refused_pending_str' => $lang['leave_dropdown_refused_pending']
+        ));
+
+        $select_valide_others = 0;
+        if ($adminN2 and ($data['valide_n1'] > 0 or $this->config('Conges-Validation-N2') == 0)) {
+            $select_valide_others = 1;
+        }
+        $this->templateParams(array('select_valide_others' => $select_valide_others));
+
+        $select_valide = 0;
+        if (($adminN2 and !$valide) or ($adminN1 and $data['valide']==0)) {
+            $select_valide = 1;
+        }
+        $this->templateParams(array('select_valide' => $select_valide));
+
+        $save_button = 0;
+        if ((!$valide and ($adminN1 or $adminN2)) or ($data['valide']==0 and $data['valide_n1']==0)) {
+            $save_button = 1;
+        }
+        $this->templateParams(array('save_button' => $save_button));
+
+        $delete_button = 0;
+        if (($adminN1 and $data['valide']==0) or $adminN2) {
+            $delete_button = 1;
+        }
+        $this->templateParams(array('delete_button' => $delete_button));
+
+        return $this->output('conges/edit.html.twig');
+    }
+
+    /**
      * @Route("/holiday/new", name="holiday.new", methods={"GET", "POST"})
      * @Route("/holiday/new/{perso_id}", name="holiday.new.new", methods={"GET", "POST"})
      */
@@ -282,6 +446,7 @@ class HolidayController extends BaseController
     {
         // Initialisation des variables
         $CSRFToken = $request->get('CSRFToken');
+        $CSRFSession = $GLOBALS['CSRFSession'];
         $perso_id = $request->get('perso_id');
         $debut = $request->get('debut');
         $fin = $request->get('fin');
@@ -290,17 +455,17 @@ class HolidayController extends BaseController
         $droits = $GLOBALS['droits'];
         $dbprefix = $GLOBALS['dbprefix'];
 
-        $this->templateParams(array(
-            'debut' => $debut,
-            'fin'   => $fin,
-        ));
-
         if (!$perso_id) {
             $perso_id = $_SESSION['login_id'];
         }
         if (!$fin) {
             $fin = $debut;
         }
+
+        $this->templateParams(array(
+            'debut' => $debut,
+            'fin'   => $fin,
+        ));
 
         // Gestion des droits d'administration
         // NOTE : Ici, pas de différenciation entre les droits niveau 1 et niveau 2
@@ -329,16 +494,18 @@ class HolidayController extends BaseController
 
 
         if ( $confirm ) {
-            $this->save($request);
+            $result = $this->save($request);
+            $msg = $result['msg'];
+            $msg2 = $result['msg2'];
+            $msg2Type = $result['msg2Type'];
 
-            return $this->redirect("/index.php?page=personnel/index.php&msg=$msg&msgType=$msgType");
-            // Redirect ?
-            //"index.php?page=conges/voir.php&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type"
+            return $this->redirect("/holiday/index?msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type");
         }
 
         // Formulaire
         else {
             // Initialisation des variables
+            $holiday_helper = new HolidayHelper();
             $perso_id=$perso_id?$perso_id:$_SESSION['login_id'];
             $p=new \personnel();
             $p->fetchById($perso_id);
@@ -347,11 +514,7 @@ class HolidayController extends BaseController
             $credit = number_format((float) $p->elements[0]['conges_credit'], 2, '.', ' ');
             $reliquat = number_format((float) $p->elements[0]['conges_reliquat'], 2, '.', ' ');
             $anticipation = number_format((float) $p->elements[0]['conges_anticipation'], 2, '.', ' ');
-            $credit2 = heure4($credit, true);
-            $reliquat2 = heure4($reliquat, true);
-            $anticipation2 = heure4($anticipation, true);
             $recuperation = number_format((float) $balance[1], 2, '.', ' ');
-            $recuperation2=heure4($recuperation, true);
 
             if ($balance[4] < 0) {
                 $balance[4] = 0;
@@ -361,18 +524,19 @@ class HolidayController extends BaseController
                 'admin'                 => $admin,
                 'perso_id'              => $perso_id,
                 'conges_recuperations'  => $this->config('Conges-Recuperations'),
-                'CSRFToken'             => $CSRFToken,
+                'conges_mode'           => $this->config('Conges-Mode'),
+                'CSRFToken'             => $CSRFSession,
                 'reliquat'              => $reliquat,
-                'reliquat2'             => $reliquat2,
+                'reliquat2'             => $holiday_helper->HumanReadableDuration($reliquat),
                 'recuperation'          => $recuperation,
                 'recuperation_prev'     => $balance[4],
                 'balance0'              => dateFr($balance[0]),
                 'balance1'              => heure4($balance[1], true),
                 'balance4'              => heure4($balance[4], true),
                 'credit'                => $credit,
-                'credit2'               => $credit2,
+                'credit2'               => $holiday_helper->HumanReadableDuration($credit),
                 'anticipation'          => $anticipation,
-                'anticipation2'         => $anticipation2,
+                'anticipation2'         => $holiday_helper->HumanReadableDuration($anticipation),
                 'agent_name'            => $_SESSION['login_nom'] . ' ' . $_SESSION['login_prenom'],
                 'login_id'              => $_SESSION['login_id'],
                 'login_nom'             => $_SESSION['login_nom'],
@@ -431,18 +595,23 @@ class HolidayController extends BaseController
         return $this->output('conges/add.html.twig');
     }
 
-    private function save(Request $request) {
+    private function save($request)
+    {
         $CSRFToken = $request->get('CSRFToken');
+        $perso_id = $request->get('perso_id');
         $debutSQL = dateSQL($request->get('debut'));
         $finSQL = dateSQL($request->get('fin'));
         $hre_debut = $request->get('hre_debut') ? $request->get('hre_debut') :"00:00:00";
         $hre_fin = $request->get('hre_fin') ? $request->get('hre_fin') : "23:59:59";
         $commentaires=htmlentities($request->get('commentaires'), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+        if (!$finSQL) {
+            $finSQL = $debutSQL;
+        }
 
         // Enregistrement du congés
         $c = new \conges();
         $c->CSRFToken = $CSRFToken;
-        $c->add($request->request->all());
+        $c->add($request->query->all());
         $id = $c->id;
 
         // Récupération des adresses e-mails de l'agent et des responsables pour l'envoi des alertes
@@ -460,17 +629,17 @@ class HolidayController extends BaseController
             $c->getResponsables($debutSQL, $finSQL, $perso_id);
             $responsables = $c->responsables;
 
-            $a = new absences();
+            $a = new \absences();
             $a->getRecipients(1, $responsables, $agent);
             $destinataires = $a->recipients;
         }
 
         // Message qui sera envoyé par email
-        $message="Nouveau congés: <br/>$prenom $nom<br/>Début : $debut";
+        $message="Nouveau congés: <br/>$prenom $nom<br/>Début : $debutSQL";
         if ($hre_debut!="00:00:00") {
             $message.=" ".heure3($hre_debut);
         }
-        $message.="<br/>Fin : $fin";
+        $message.="<br/>Fin : $finSQL";
         if ($hre_fin!="23:59:59") {
             $message.=" ".heure3($hre_fin);
         }
@@ -483,7 +652,7 @@ class HolidayController extends BaseController
         $message.="<br/><br/>Lien vers la demande de cong&eacute; :<br/><a href='$url'>$url</a><br/><br/>";
 
         // Envoi du mail
-        $m=new CJMail();
+        $m=new \CJMail();
         $m->subject="Nouveau congés";
         $m->message=$message;
         $m->to=$destinataires;
@@ -498,5 +667,131 @@ class HolidayController extends BaseController
         }
 
         $msg=urlencode("La demande de congé a été enregistrée");
+
+        return array(
+            'msg'       => $msg,
+            'msg2'      => $msg2,
+            'msg2Type'  => $msg2Type
+        );
+    }
+
+    private function update($request)
+    {
+        $post = $request->request->all();
+
+        $perso_id = $request->get('perso_id');
+        $id = $request->get('id');
+        $debut = $request->get('debut');
+        $fin = $request->get('fin');
+        $hre_debut = $request->get('hre_debut');
+        $hre_fin = $request->get('hre_fin');
+        $fin = $fin ? $fin : $debut;
+        $debutSQL=dateSQL($debut);
+        $finSQL=dateSQL($fin);
+        $refus = $request->get('refus');
+        $valide = $request->get('valide');
+        $commentaires = $request->get('commentaires');
+        $CSRFToken = $request->get('CSRFToken');
+
+        // Enregistre la modification du congés
+        $c=new \conges();
+        $c->CSRFToken = $CSRFToken;
+        $c->update($post);
+
+        // Envoi d'une notification par email
+        // Récupération des adresses e-mails de l'agent et des responsables pour m'envoi des alertes
+        $agent = $this->entityManager->find(Agent::class, $perso_id);
+        $nom = $agent->nom();
+        $prenom = $agent->prenom();
+
+        // Choix du sujet et des destinataires en fonction du degré de validation
+        switch ($valide) {
+        // Modification sans validation
+        case 0:
+          $sujet="Modification de congés";
+          $notifications=2;
+          break;
+        // Validations Niveau 2
+        case 1:
+          $sujet="Validation de congés";
+          $notifications=4;
+          break;
+        case -1:
+          $sujet="Refus de congés";
+          $notifications=4;
+          break;
+        // Validations Niveau 1
+        case 2:
+          $sujet = $lang['leave_subject_accepted_pending'];
+          $notifications=3;
+          break;
+        case -2:
+          $sujet = $lang['leave_subject_refused_pending'];
+          $notifications=3;
+          break;
+      }
+
+        // Choix des destinataires en fonction de la configuration
+        if ($this->config('Absences-notifications-agent-par-agent')) {
+            $a = new \absences();
+            $a->getRecipients2(null, $perso_id, $notifications, 600, $debutSQL, $finSQL);
+            $destinataires = $a->recipients;
+        } else {
+            $c = new \conges();
+            $c->getResponsables($debutSQL, $finSQL, $perso_id);
+            $responsables = $c->responsables;
+
+            $a = new \absences();
+            $a->getRecipients($notifications, $responsables, $agent);
+            $destinataires = $a->recipients;
+        }
+
+        // Message qui sera envoyé par email
+        $message="$sujet : <br/><br/>$prenom $nom<br/>Début : $debut";
+        if ($hre_debut!="00:00:00") {
+            $message.=" ".heure3($hre_debut);
+        }
+        $message.="<br/>Fin : $fin";
+        if ($hre_fin!="23:59:59") {
+            $message.=" ".heure3($hre_fin);
+        }
+        if ($commentaires) {
+            $message.="<br/><br/>Commentaires :<br/>$commentaires<br/>";
+        }
+        if ($refus and $valide==-1) {
+            $message.="<br/>Motif du refus :<br/>$refus<br/>";
+        }
+
+        // ajout d'un lien permettant de rebondir sur la demande
+        $url=createURL("/holiday/edit/$id");
+        $message.="<br/><br/>Lien vers la demande de cong&eacute; :<br/><a href='$url'>$url</a><br/><br/>";
+
+        // Envoi du mail
+        $m=new \CJMail();
+        $m->subject=$sujet;
+        $m->message=$message;
+        $m->to=$destinataires;
+        $m->send();
+
+        // Si erreur d'envoi de mail, affichage de l'erreur
+        $msg2=null;
+        $msg2Type=null;
+        if ($m->error) {
+            $msg2=urlencode($m->error_CJInfo);
+            $msg2Type="error";
+        }
+
+        $result = array(
+            'msg'       => $message,
+            'msg2'      => $msg2,
+            'msg2Type'  => $msg2Type
+        );
+
+        $result['back_to'] = 'holiday';
+        if ($this->config('Conges-Recuperations') and $post['debit'] == 'recuperation') {
+            $result['back_to'] = 'recover';
+        }
+
+        return $result;
     }
 }

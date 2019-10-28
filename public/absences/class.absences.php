@@ -1068,7 +1068,7 @@ class absences
         $this->responsables=$responsables;
     }
 
-    public function getRecipients($validation, $responsables, Agent $agent, $type = 'Absences')
+    public function getRecipients($validation, $responsables, App\Model\Agent $agent, $type = 'Absences')
     {
         /*
         Retourne la liste des destinataires des notifications en fonction du niveau de validation.

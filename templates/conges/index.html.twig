@@ -104,7 +104,11 @@
           <th rowspan='2'>Nom</th>
         {% endif %}
         <th colspan='2' class='ui-state-default'>Validation</th>
-        <th rowspan='2'>Heures</th>
+        {% if conges_mode == 'jours' %}
+          <th rowspan='2'>Jours</th>
+        {% else %}
+          <th rowspan='2'>Heures</th>
+        {% endif %}
 
         {% if balance %}
           <th rowspan='2'>Crédits</th>
@@ -132,7 +136,7 @@
             {% if c.supprime or c.information %}
               &nbsp;
             {% else %}
-              <a href='/index.php?page=conges/modif.php&id={{ c.id }}'/>
+              <a href='/holiday/edit/{{ c.id }}'/>
                 <span class='pl-icon pl-icon-edit' title='Voir'></span>
               </a>
             {% endif %}
@@ -143,21 +147,61 @@
           {% if admin %}
             <td>{{ c.nom }}</td>
           {% endif %}
-          <td style='{{ c.validationStyle }}'>{{ c.status }}</td>
+          {% if c.valide < 0 %}
+              <td style="color: red;">{{ c.status }}</td>
+          {% elseif c.valide or c.information %}
+              <td>{{ c.status }}</td>
+          {% else %}
+              <td style="font-weight: bold;">{{ c.status }}</td>
+          {% endif %}
+
           <td>{{ c.validationDate }}</td>
           <td class='aRight'>{{ c.hours }}</td>
 
           {% if balance %}
-            <td class='{{ c.creditClass }}'>{{ c.credits }}</td>
-            <td class='{{ c.reliquatClass }}'>{{ c.reliquat }}</td>
+            {% if c.valide or c.information %}
+              {% if c.solde_prec != c.solde_actuel %}
+                <td class="bold">{{ c.solde_prec }} →  {{ c.solde_actuel }}</td>
+              {% else %}
+                <td class="aRight">{{ c.solde_prec }}</td>
+              {% endif %}
+            {% else %}
+              <td></td>
+            {% endif %}
+
+            {% if c.valide or c.information %}
+              {% if c.reliquat_prec != c.reliquat_actuel %}
+                <td class="bold">{{ c.reliquat_prec }} →  {{ c.reliquat_actuel }}</td>
+              {% else %}
+              <td class="aRight">{{ c.reliquat_prec }}</td>
+              {% endif %}
+            {% else %}
+              <td></td>
+            {% endif %}
           {% endif %}
 
           {% if recovery %}
-            <td class='{{ c.recuperationsClass }}'>{{ c.recuperations }}</td>
+            {% if c.valide or c.information %}
+              {% if c.recup_prec != c.recup_actuel %}
+                <td class="bold">{{ c.recup_prec }} →  {{ c.recup_actuel }}</td>
+              {% else %}
+                <td class="aRight">{{ c.recup_prec }}</td>
+              {% endif %}
+            {% else %}
+              <td></td>
+            {% endif %}
           {% endif %}
 
           {% if balance %}
-            <td class='{{ c.anticipationClass }}'>{{ c.anticipation }}</td>
+            {% if c.valide or c.information %}
+              {% if c.anticipation_prec != c.anticipation_actuel %}
+                <td class="bold">{{ c.anticipation_prec }} →  {{ c.anticipation_actuel }}</td>
+              {% else %}
+                <td class="aRight">{{ c.anticipation_prec }}</td>
+              {% endif %}
+            {% else %}
+              <td></td>
+            {% endif %}
           {% endif %}
         </tr>
       {% endfor %}

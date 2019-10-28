@@ -35,9 +35,8 @@
   <table border='0'>
     <tr style='vertical-align:top'>
       <td style='width:700px;'>
-        <form name='form' action='index.php' method='get' id='form'>
+        <form name='form' action='/holiday/new' method='get' id='form'>
           <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
-          <input type='hidden' name='page' value='conges/enregistrer.php' />
           <input type='hidden' name='confirm' value='confirm' />
           <input type='hidden' name='reliquat' value='{{ reliquat }}' />
           <input type='hidden' name='recuperation' id='recuperation' value='{{ recuperation }}' />
@@ -46,6 +45,7 @@
           <input type='hidden' name='anticipation' value='{{ anticipation }}' />
           <input type='hidden' id='agent' value='{{ agent_name }}' />
           <input type='hidden' id='conges-recup' value='{{ conges_recuperations }}' />
+          <input type='hidden' id='conges-mode' value='{{ conges_mode }}' />
 
           <table border='0'>
             <tr>
@@ -96,7 +96,7 @@
                   <option value="12:00:00">12h00</option>
                   <option value="13:00:00">13h00</option>
                   <option value="14:00:00">14h00</option>
-                  <option value="15:00:00">16h00</option>
+                  <option value="15:00:00">15h00</option>
                   <option value="16:00:00">16h00</option>
                   <option value="17:00:00">17h00</option>
                   <option value="19:00:00">18h00</option>
@@ -128,7 +128,7 @@
                   <option value="12:00:00">12h00</option>
                   <option value="13:00:00">13h00</option>
                   <option value="14:00:00">14h00</option>
-                  <option value="15:00:00">16h00</option>
+                  <option value="15:00:00">15h00</option>
                   <option value="16:00:00">16h00</option>
                   <option value="17:00:00">17h00</option>
                   <option value="19:00:00">18h00</option>
@@ -142,21 +142,31 @@
             </tr>
 
             <tr>
-              <td style='padding-top:15px;'>Nombre d'heures : </td>
+              {% if conges_mode == 'heures' %}
+                <td style='padding-top:15px;'>Nombre d'heures : </td>
+              {% else %}
+                <td style='padding-top:15px;'>Nombre de jours : </td>
+              {% endif %}
               <td style='padding-top:15px;'>
-                <div id='nbHeures' style='padding:0 5px; width:50px;'></div>
+                {% if conges_mode == 'heures' %}
+                  <div id='nbHeures' style='padding:0 5px; width:50px;'></div>
+                {% else %}
+                  <div id='nbJours' style='padding:0 5px; width:50px;'></div>
+                {% endif %}
                 <input type='hidden' name='heures' value='0' />
                 <input type='hidden' name='minutes' value='0' />
                 <input type='hidden' id='erreurCalcul' value='false' />
               </td>
             </tr>
 
-            <tr>
-              <td>Nombre de jours (7h/jour) : </td>
-              <td>
-                <div id='nbJours' style='padding:0 5px; width:50px;'></div>
-              </td>
-            </tr>
+            {% if conges_mode == 'heures' %}
+              <tr>
+                <td>Nombre de jours (7h/jour) : </td>
+                <td>
+                  <div id='nbJours' style='padding:0 5px; width:50px;'></div>
+                </td>
+              </tr>
+            {% endif %}
 
             <tr>
               <td colspan='2' style='padding-top:20px;'>

@@ -40,32 +40,27 @@ function calculCredit(){
   hre_fin=hre_fin?hre_fin:"23:59:59";
   
   $.ajax({
-    url: "/conges/ajax.calculCredit.php",
+    url: "/ajax/holiday-credit",
     data: {debut: debut, fin: fin, hre_debut: hre_debut, hre_fin: hre_fin, perso_id: perso_id},
     dataType: "json",
     type: "get",
     async: false,
     success: function(result){
       var msg=result[0];
-      if(msg=="error"){
-	$("#erreurCalcul").val("true");
-	document.form.elements["heures"].value=0;
-	document.form.elements["minutes"].value=0;
-	$("#nbHeures").text("0h00");
-	$("#nbHeures").effect("highlight",null,3000);
-	$("#nbJours").effect("highlight",null,3000);
-	information("Aucun planning de présence enregistré pour cette période - calcul impossible.","error");
-      }else{
-	$("#JSInformation").remove();
-	var tmp=result[1].split(".");
-	var heures=tmp[0];              // heures pleines
-	var minutes=tmp[1];             // centièmes
-        var heures2=result[2];          // heures h minutes
+      if(result.error == true) {
+        $("#erreurCalcul").val("true");
+        document.form.elements["heures"].value=0;
+        document.form.elements["minutes"].value=0;
+        $("#nbHeures").text("0h00");
+        $("#nbHeures").effect("highlight",null,3000);
+        $("#nbJours").effect("highlight",null,3000);
+        information("Aucun planning de présence enregistré pour cette période - calcul impossible.","error");
+      } else {
+        $("#JSInformation").remove();
+        var balance_date = result.recover[0];  // Date de début, affichée pour le réajustement des crédits disponibles
+        var balance = result.recover[1];       // Crédits de récupérations disponibles à la date choisie
 
-        var balance_date = result[3][0];  // Date de début, affichée pour le réajustement des crédits disponibles
-        var balance = result[3][1];       // Crédits de récupérations disponibles à la date choisie
-
-        var balance_estimated = result[3][4];       // Crédits de récupérations prévisionnels à la date choisie
+        var balance_estimated = result.recover[4];       // Crédits de récupérations prévisionnels à la date choisie
 
         if($('#conges-recup').val() == 0 && balance_estimated < 0 ){
           balance_estimated = 0;
@@ -79,16 +74,17 @@ function calculCredit(){
         $("#recuperation_prev").val(balance_estimated);
         $(".balance_tr").effect("highlight",null,4000);
 
-        document.form.elements["heures"].value=heures;
-	document.form.elements["minutes"].value=minutes;
+        document.form.elements["heures"].value = result.hours;
+        document.form.elements["minutes"].value = result.minutes;
 
-        $("#nbHeures").text(heures2);
+        $("#nbHeures").text(result.hr_hours);
+        $("#nbJours").text(result.days);
         $("#nbHeures").effect("highlight",null,4000);
         $("#nbJours").effect("highlight",null,4000);
-	$("#erreurCalcul").val("false");
+        $("#erreurCalcul").val("false");
       }
     },
-    error: function(){
+    error: function(xhr, ajaxOptions, thrownError){
       information("Impossible de calculer le nombre d'heures correspondant au congé demandé.","error");
     },
   });
@@ -111,9 +107,8 @@ function calculRestes(){
   anticipation = parseFloat(anticipation.replace(' ',''));
 
   var congesRecup = $('#conges-recup').val();
+  var congesMode = $('#conges-mode').val();
 
-  jours=heures/7;
-  $("#nbJours").text(jours.toFixed(2));
 
   
   // Si les récupérations et les congés sont gérés de la même façon
@@ -222,12 +217,24 @@ function calculRestes(){
   }
   
   // Affichage
-  $("#reliquat4").text(heure4(reliquat));
   $("#recup4").text(heure4(recuperation));
-//   $("#recuperation_prev").val(recuperation_prev);
   $("#balance2_after").text(heure4(recuperation_prev));
-  $("#credit4").text(heure4(credit));
-  $("#anticipation4").text(heure4(anticipation));
+  if (congesMode == 'jours') {
+    day_reliquat = reliquat / 7;
+    day_reliquat = day_reliquat > 1 ? day_reliquat + ' jours' : day_reliquat + ' jour';
+    $("#reliquat4").text(day_reliquat);
+
+    day_credit = credit / 7;
+    day_credit = day_credit > 1 ? day_credit + ' jours' : day_credit + ' jour';
+    $("#credit4").text(day_credit);
+
+    day_anticipation = anticipation / 7;
+    day_anticipation = day_anticipation > 1 ? day_anticipation + ' jours' : day_anticipation + ' jour';
+    $("#anticipation4").text(day_anticipation);
+  } else {
+    $("#credit4").text(heure4(credit));
+    $("#anticipation4").text(heure4(anticipation));
+  }
 }
 
 
@@ -333,14 +340,15 @@ function verifConges(){
 
   // Vérifions si un autre congé a été demandé ou validé
   var result=$.ajax({
-    url: "conges/ajax.verifConges.php",
+    url: '/conges/ajax.verifConges.php',
     type: "get",
     data: "perso_id="+perso_id+"&debut="+debut+"&fin="+fin+"&hre_debut="+hre_debut+"&hre_fin="+hre_fin+"&id="+id,
-    success: function(){
-      if(result.responseText != "Pas de congé"){
-	information("Un congé a déjà été demandé "+result.responseText,"error");
+    async: false,
+    success: function(data){
+      if(data != "Pas de congé"){
+        information("Un congé a déjà été demandé " + data,"error");
       }else{
-	$("#form").submit();
+        $("#form").submit();
       }
     },
     error: function(){
