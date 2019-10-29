@@ -17,6 +17,9 @@ Page appelée par les fichiers index.php, setup/index.php et planning/poste/menu
 */
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
+
+use Model\Agent;
+
 if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
     include_once "accessDenied.php";
     exit;
@@ -294,12 +297,39 @@ class CJMail
 
 function authSQL($login, $password)
 {
-    $auth=false;
-    $db=new db();
-    $db->select2("personnel", array("id","nom","prenom"), array("password"=>MD5($password), "login"=>$login, "supprime"=>0));
-    if ($db->nb==1 and $login!=null) {
-        $auth=true;
-        $_SESSION['oups']['Auth-Mode']="SQL";
+$auth = false;
+    $em = $GLOBALS['entityManager'];
+
+    $agent = $em->getRepository(Agent::class)->findBy(array('login' => $login, 'supprime' => 0));
+
+    if (empty($agent) or empty($login)) {
+        return false;
+    }
+    if (count($agent) <> 1) {
+        return false;
+    }
+
+    $agent = $agent[0];
+
+    // Old MD5 password
+    if (strlen($agent->password()) == 32) {
+        if (md5($password) == $agent->password()) {
+            $auth=true;
+            $_SESSION['oups']['Auth-Mode']="SQL";
+
+            // Update password
+            $bcrypt_password = password_hash($password,PASSWORD_BCRYPT);
+
+            $agent->password($bcrypt_password);
+            $em->persist($agent);
+            $em->flush();
+        }
+        // New bcrypt password
+    } else {
+        if (password_verify($password, $agent->password())) {
+            $auth=true;
+            $_SESSION['oups']['Auth-Mode']="SQL";
+        }
     }
     return $auth;
 }

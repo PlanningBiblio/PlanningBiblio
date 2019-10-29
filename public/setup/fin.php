@@ -7,7 +7,6 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/fin.php
 Création : mai 2011
-Dernière modification : 10 février 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -45,8 +44,9 @@ if ($password!=$password2) {
     include "footer.php";
     exit;
 }
-    
-$password=md5($password);
+
+$password =  password_hash($password, PASSWORD_BCRYPT);
+
 $db=new db();
 $db->CSRFToken = $CSRFToken;
 $db->update("personnel", array("nom"=>$nom, "prenom"=>$prenom, "password"=>$password, "mail"=>$email), array("id"=>"1"));

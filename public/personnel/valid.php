@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.8.1
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
@@ -107,14 +107,14 @@ switch ($action) {
 
     // Demo mode
     if (!empty($config['demo'])) {
-        $mdp_crypt = md5("password");
+        $mdp_crypt = password_hash("password", PASSWORD_BCRYPT);
         $msg = "Vous utilisez une version de démonstration : l'agent a été créé avec les identifiants $login / password";
         $msg .= "#BR#Sur une version standard, les identifiants de l'agent lui auraient été envoyés par e-mail.";
         $msg = urlencode($msg);
         $msgType = "success";
     } else {
         $mdp=gen_trivial_password();
-        $mdp_crypt=md5($mdp);
+        $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
 
         // Envoi du mail
         $message="Votre compte Planning Biblio a &eacute;t&eacute; cr&eacute;&eacute; :";
@@ -166,7 +166,7 @@ switch ($action) {
     }
 
     $mdp=gen_trivial_password();
-    $mdp_crypt=md5($mdp);
+    $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
     $db=new db();
     $db->select2("personnel", "login", array("id"=>$id));
     $login=$db->result[0]['login'];
