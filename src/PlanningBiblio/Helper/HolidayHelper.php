@@ -200,6 +200,7 @@ class HolidayHelper extends BaseHelper
          if (empty($p->elements)) {
              $this->error = true;
              $this->message = "Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
+             return;
          }
          return $p->elements[0]['temps'];
     }
