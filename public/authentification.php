@@ -19,12 +19,8 @@ Page en sortie :inclus le fichier footer.php
 
 // Cette page peut être chargée directment ou incluse dans la page index.php
 // La page index.php démarre déjà une session. On contrôle donc qu'aucune session n'existe avant de la démarrer
-// Si PHP version <5.4 et pas de session
-if (PHP_VERSION_ID<50400 and session_id()=='') {
-    session_start();
-// Si PHP version >=5.4 et pas de session
-} elseif (PHP_VERSION_ID>=50400 and session_status() == PHP_SESSION_NONE) {
-    session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    include_once('init.php');
 }
 
 // Initialisation des variables
@@ -55,7 +51,7 @@ $page=null;
 $auth=null;
 $authArgs=null;
 
-if (!array_key_exists("oups", $_SESSION)) {
+if (empty($_SESSION['oups'])) {
     $_SESSION['oups']=array("week"=>false);
 }
 
@@ -138,7 +134,7 @@ EOD;
         include "include/menu.php";
         echo "<div id='acces_refuse'>Accès refusé</div>\n";
     }
-} elseif (array_key_exists("login_id", $_SESSION)) {		//		logout
+} elseif (!empty($_SESSION['login_id'])) {
     include "ldap/logoutCAS.php";
 
     session_destroy();
