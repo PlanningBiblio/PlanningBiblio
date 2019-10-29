@@ -747,24 +747,23 @@ class HolidayController extends BaseController
         }
 
         // Message qui sera envoyé par email
-        $message="$sujet : <br/><br/>$prenom $nom<br/>Début : $debut";
+        $message="$sujet : $prenom $nom Début : $debut";
         if ($hre_debut!="00:00:00") {
             $message.=" ".heure3($hre_debut);
         }
-        $message.="<br/>Fin : $fin";
+        $message.=", Fin : $fin";
         if ($hre_fin!="23:59:59") {
             $message.=" ".heure3($hre_fin);
         }
         if ($commentaires) {
-            $message.="<br/><br/>Commentaires :<br/>$commentaires<br/>";
+            $message.=", Commentaires : $commentaires";
         }
         if ($refus and $valide==-1) {
-            $message.="<br/>Motif du refus :<br/>$refus<br/>";
+            $message.=", Motif du refus :$refus,";
         }
 
         // ajout d'un lien permettant de rebondir sur la demande
         $url=createURL("/holiday/edit/$id");
-        $message.="<br/><br/>Lien vers la demande de cong&eacute; :<br/><a href='$url'>$url</a><br/><br/>";
 
         // Envoi du mail
         $m=new \CJMail();

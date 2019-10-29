@@ -93,6 +93,21 @@ class Agent extends PLBEntity {
     /** @Column(type="integer") **/
     protected $check_hamac;
 
+    /** @Column(type="float") **/
+    protected $conges_credit;
+
+    /** @Column(type="float") **/
+    protected $conges_reliquat;
+
+    /** @Column(type="float") **/
+    protected $conges_anticipation;
+
+    /** @Column(type="float") **/
+    protected $recup_samedi;
+
+    /** @Column(type="float") **/
+    protected $conges_annuel;
+
     public function can_access(array $accesses) {
         $droits = $this->droits();
         $multisites = $GLOBALS['config']['Multisites-nombre'];

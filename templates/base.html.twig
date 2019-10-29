@@ -30,7 +30,7 @@
   <body>
     <!-- Affichage des messages d'erreur ou de confirmation venant de la page précedente-->
     {% if msg %}
-      <script type='text/JavaScript'>CJInfo('{{ msg }}','{{ msgType }}');</script>
+      <script type='text/JavaScript'>CJInfo('{{ msg | nl2br }}','{{ msgType }}');</script>
     {% endif %}
 
     {% if msg2 %}
