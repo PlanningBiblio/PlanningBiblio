@@ -212,7 +212,7 @@ $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `actif` varchar(20) NOT NULL DEFAULT 'true',
   `droits` varchar(500) NOT NULL,
   `login` varchar(100) NOT NULL DEFAULT '',
-  `password` varchar(40) NOT NULL DEFAULT '',
+  `password` varchar(255) NOT NULL DEFAULT '',
   `commentaires` text NOT NULL,
   `last_login` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `heures_hebdo` VARCHAR(6) NOT NULL,

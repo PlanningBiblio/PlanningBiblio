@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.4.6
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/password.php
 Création : mai 2011
-Dernière modification : 27 octobre 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -54,7 +53,7 @@ if (!$nouveau) {
     $db->query("select login,password,mail from {$dbprefix}personnel where id=".$_SESSION['login_id'].";");
     $login=$db->result[0]['login'];
     $mail=$db->result[0]['mail'];
-    if ($db->result[0]['password']!=md5($ancien)) {
+    if (!password_verify($ancien, $db->result[0]['password'])) {
         echo "Ancien mot de passe incorrect";
         echo "<br/><br/>\n";
         echo "<a href='javascript:history.back();'>Retour</a>\n";
@@ -64,7 +63,7 @@ if (!$nouveau) {
         echo "<a href='javascript:history.back();'>Retour</a>\n";
     } else {
         $mdp=$nouveau;
-        $mdp_crypt=md5($nouveau);
+        $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
         $db=new db();
         $db->query("update {$dbprefix}personnel set password='".$mdp_crypt."' where id=".$_SESSION['login_id'].";");
         echo "Le mot de passe a été changé";
