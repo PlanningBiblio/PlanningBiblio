@@ -2,6 +2,7 @@
 
 $templates_params = array(
     'version'             => $version,
+    'displayed_version'   => $displayed_version,
     'themeJQuery'         => $themeJQuery,
     'theme'               => $theme,
     'msg'                 => $request->get('msg'),
