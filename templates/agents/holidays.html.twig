@@ -52,10 +52,11 @@
 
     <tr>
       <td>{{ lang_comp_time }}</td>
-      <td style='text-align:right;'>
+      <td style='text-align:right; padding-right: 45px;'>
         {% if can_manage_agent %}
-          <input type='number' name='recup' step="0.5" value='{{ recup_heures}}'  style='width:60px;'>
-          <label style='text-align:center;padding:5px;'>jour(s)</label>
+          <input type='text' name='recup' value='{{ recup_heures}}'  style='width:60px;text-align:right;'>
+          <label style='text-align:center;padding:5px;'>h</label>
+          {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': recup_min, 'name': 'recup_min' } %}
         {% else %}
           {{ recup_string }} jour(s)
         {% endif %}
