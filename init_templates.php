@@ -20,6 +20,7 @@ $twig = new Twig_Environment($loader);
 
 $templates_params = array(
     'version'             => $version,
+    'displayed_version'   => $displayed_version,
     'themeJQuery'         => $themeJQuery,
     'theme'               => $theme,
     'favicon'             => $favicon,
