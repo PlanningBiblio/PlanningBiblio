@@ -96,7 +96,7 @@ $idCellule=0;
 //		------------------		Vérification des droits de modification (Autorisation)	------------------//
 $autorisationN1 = (in_array((300+$site), $droits) or in_array((1000+$site), $droits));
 $autorisationN2 = in_array((300+$site), $droits);
-$autorisationNotes = (in_array((300+$site), $droits) or in_array((800+$site), $droits));
+$autorisationNotes = (in_array((300+$site), $droits) or in_array((800+$site), $droits) or in_array(1000+$site, $droits));
 
 //		-----------------		FIN Vérification des droits de modification (Autorisation)	----------//
 
