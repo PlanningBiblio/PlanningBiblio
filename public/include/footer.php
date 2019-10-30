@@ -23,7 +23,7 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
 ?>
 </div> <!-- content or planningPoste -->
 <div class='footer'>
-PlanningBiblio (<?php echo $version; ?>) - Copyright &copy; 2011-2018 - J&eacute;r&ocirc;me Combes - 
+PlanningBiblio (<?php echo $displayed_version; ?>) - Copyright &copy; 2011-2018 - J&eacute;r&ocirc;me Combes - 
 <a href='http://www.planningbiblio.fr' target='_blank' style='font-size:9pt;'>www.planningbiblio.fr</a>
 </div>
 </body>
