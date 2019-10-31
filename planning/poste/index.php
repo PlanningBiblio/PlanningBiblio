@@ -96,7 +96,7 @@ $idCellule=0;
 //		------------------		Vérification des droits de modification (Autorisation)	------------------//
 $autorisationN1 = (in_array((300+$site), $droits) or in_array((1000+$site), $droits));
 $autorisationN2 = in_array((300+$site), $droits);
-$autorisationNotes = (in_array((300+$site), $droits) or in_array((800+$site), $droits));
+$autorisationNotes = (in_array((300+$site), $droits) or in_array((800+$site), $droits) or in_array(1000+$site, $droits));
 
 //		-----------------		FIN Vérification des droits de modification (Autorisation)	----------//
 
@@ -353,6 +353,9 @@ EOD;
         }
     }
     echo "</div>\n";
+    if ($config['Planning-CommentairesToujoursActifs']) {
+        include "comment.php";
+    }
     include "include/footer.php";
     exit;
 } elseif ($groupe and $autorisationN2) {	//	Si Groupe en argument
@@ -390,7 +393,10 @@ EOD;
     $tab=$db->result[0]['tableau'];
 }
 if (!$tab) {
-    echo "Le planning n'est pas pr&ecirc;t.\n";
+    echo "<p>Le planning n'est pas pr&ecirc;t.</p>";
+    if ($config['Planning-CommentairesToujoursActifs']) {
+        include "comment.php";
+    }
     include "include/footer.php";
     exit;
 }
@@ -415,6 +421,9 @@ if ($verrou) {
 
 if (!$verrou and !$autorisationN1) {
     echo "<br/><br/><font color='red'>Le planning du $dateFr n'est pas validé !</font><br/>\n";
+    if ($config['Planning-CommentairesToujoursActifs']) {
+        include "comment.php";
+    }
     include "include/footer.php";
     exit;
 } else {
@@ -651,45 +660,7 @@ if (!$verrou and !$autorisationN1) {
     echo "</table>\n";
     echo "</div>\n";
   
-    // Notes : Affichage
-    $p=new planning();
-    $p->date=$date;
-    $p->site=$site;
-    $p->getNotes();
-    $notes=$p->notes;
-    $notesTextarea=$p->notesTextarea;
-    $notesValidation=$p->validation;
-    $notesDisplay=trim($notes)?null:"style='display:none;'";
-    $notesSuppression=($notesValidation and !trim($notes)) ? "Suppression du commentaire : ":null;
-
-
-    echo <<<EOD
-  <div id='pl-notes-div1' $notesDisplay >
-  $notes
-  </div>
-EOD;
-
-    // Notes : Modifications
-    if ($autorisationNotes) {
-        echo <<<EOD
-    <div id='pl-notes-div2' class='noprint'>
-    <input type='button' class='ui-button noprint' id='pl-notes-button' value='Ajouter un commentaire' />
-    </div>
-
-    <div id="pl-notes-form" title="Commentaire" class='noprint' style='display:none;'>
-      <p class="validateTips" id='pl-notes-tips'>Vous pouvez écrire ici un commentaire qui sera affich&eacute; en bas du planning.</p>
-      <form>
-      <textarea id='pl-notes-text'>$notesTextarea</textarea>
-      </form>
-    </div>
-EOD;
-    }
-
-    echo <<<EOD
-  <div id='pl-notes-div1-validation'>
-  $notesSuppression$notesValidation
-  </div>  
-EOD;
+    include "comment.php";
 
     // Appel à disponibilités : envoi d'un mail aux agents disponibles pour occuper le poste choisi depuis le menu des agents
     if ($config['Planning-AppelDispo']) {

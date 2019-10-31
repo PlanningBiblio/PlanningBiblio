@@ -26,15 +26,13 @@ $text=filter_input(INPUT_POST, "text", FILTER_SANITIZE_STRING);
 $text=urldecode($text);
 
 // Sécurité : droits d'accès à la page
-$required1=300+$site;		// Droits de modifier les plannings du sites N° $site
+$required1 = 300 + $site; // Droits de modifier les plannings du sites N° $site
+$required2 = 800 + $site; // Droits de modifier les commentaures
+$required3 = 1000 + $site; // Droits de modifier les plannings
 
-if ($config['Multisites-nombre']>1) {
-    $required2=800+$site;		// Droits de modifier les commentaires sites N° $site
-} else {
-    $required2=801;		// Droits de modifier les commentaires en monosite
-}
+$droits = $_SESSION['droits'];
 
-if (!in_array($required1, $_SESSION['droits']) and !in_array($required2, $_SESSION['droits'])) {
+if (!in_array($required1, $droits) and !in_array($required2, $droits) and !in_array($required3, $droits)) {
     echo json_encode(array("error"=>"Vous n'avez pas le droit de modifier les commentaires"));
     exit;
 }
