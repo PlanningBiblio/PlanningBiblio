@@ -13,8 +13,7 @@ sort($keys);
 
 foreach ($keys as $key) {
     $menu_entries .= "<li onmousemove='pop(zlien[$key],$(this))' class='menu_li'>";
-    $menu_entries .= "<a href='index.php?page=" . $elements[$key][0]['url'] . "'";
-    $menu_entries .= "class='ejsmenu2'>" . $elements[$key][0]['titre'] . "</a></li>\n";
+    $menu_entries .= "<a href='{$elements[$key][0]['url']}' class='ejsmenu2'>{$elements[$key][0]['titre']}</a></li>\n";
 
     $menu_js .= "zlien[$key] = new Array;\n";
     $keys2 = array_keys($elements[$key]);
@@ -23,8 +22,7 @@ foreach ($keys as $key) {
     $i=0;
     foreach ($keys2 as $key2) {
         $menu_js .= "zlien[$key][$i] = ";
-        $menu_js .= "\"<a href='index.php?page=" . $elements[$key][$key2]['url'];
-        $menu_js .= "' class='ejsmenu'>" . $elements[$key][$key2]['titre'] . "<\/a>\";\n";
+        $menu_js .= "\"<a href='{$elements[$key][$key2]['url']}' class='ejsmenu'>{$elements[$key][$key2]['titre']}<\/a>\";\n";
         $i++;
     }
 }

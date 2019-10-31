@@ -1,6 +1,6 @@
 <?php
 /**
-Planning Biblio, Version 2.4.1
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
@@ -41,7 +41,7 @@ foreach ($keys as $key) {
     unset($keys2[0]);
     $i=0;
     foreach ($keys2 as $key2) {
-        echo "zlien[$key][$i] = \"<a href='index.php?page={$menu[$key][$key2]['url']}' class='ejsmenu'>{$menu[$key][$key2]['titre']}<\/a>\";\n";
+        echo "zlien[$key][$i] = \"<a href='{$menu[$key][$key2]['url']}' class='ejsmenu'>{$menu[$key][$key2]['titre']}<\/a>\";\n";
         $i++;
     }
 }
@@ -82,7 +82,7 @@ echo "<tr id='topmenu'>\n";
 echo "<td style='text-align:center;' class='menu_td'>\n";
 echo "<ul class='menu_ul'>\n";
 foreach ($keys as $key) {
-    echo "<li onmousemove='pop(zlien[$key],$(this))' class='menu_li'><a href='index.php?page={$menu[$key][0]['url']}' class='ejsmenu2'>{$menu[$key][0]['titre']}</a></li>\n";
+    echo "<li onmousemove='pop(zlien[$key],$(this))' class='menu_li'><a href='{$menu[$key][0]['url']}' class='ejsmenu2'>{$menu[$key][0]['titre']}</a></li>\n";
 }
 echo "</ul>\n";
 
