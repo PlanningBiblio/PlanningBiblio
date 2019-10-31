@@ -18,10 +18,10 @@ require_once(__DIR__ . "/../../public/conges/class.conges.php");
 class AgentController extends BaseController
 {
     /**
-     * @Route("/agent/edit", name="agent.new", methods={"GET"})
-     * @Route("/agent/edit/{id}", name="agent.edit", methods={"GET"})
+     * @Route("/agent/add", name="agent.add", methods={"GET"})
+     * @Route("/agent/add/{id}", name="agent.edit", methods={"GET"})
      */
-    public function edit(Request $request)
+    public function add(Request $request)
     {
         $id = $request->get('id');
         $CSRFSession = $GLOBALS['CSRFSession'];
@@ -565,7 +565,7 @@ class AgentController extends BaseController
     }
 
     /**
-     * @Route("/agent/save", name="agent.save", methods={"POST"})
+     * @Route("/agent", name="agent.save", methods={"POST"})
      */
     public function save(Request $request)
     {
@@ -726,7 +726,7 @@ class AgentController extends BaseController
             // Envoi du mail
             $message="Votre mot de passe Planning Biblio a &eacute;t&eacute; modifi&eacute;";
             $message.="<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
-            
+
             $m=new \CJMail();
             $m->subject="Modification du mot de passe";
             $m->message=$message;
