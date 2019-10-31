@@ -1591,6 +1591,50 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="19.10.00";
+if (version_compare($config['Version'], $v) === -1) {
+    // Update config multisites.
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '10' WHERE `nom` = 'Multisites-nombre';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '20', `commentaires` = 'Nom du site N°1' WHERE `nom` = 'Multisites-site1';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '30', `commentaires` = 'Nom du site N°2' WHERE `nom` = 'Multisites-site2';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '40', `commentaires` = 'Nom du site N°3' WHERE `nom` = 'Multisites-site3';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '50', `commentaires` = 'Nom du site N°4' WHERE `nom` = 'Multisites-site4';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '60', `commentaires` = 'Nom du site N°5' WHERE `nom` = 'Multisites-site5';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '70', `commentaires` = 'Nom du site N°6' WHERE `nom` = 'Multisites-site6';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '80', `commentaires` = 'Nom du site N°7' WHERE `nom` = 'Multisites-site7';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '90', `commentaires` = 'Nom du site N°8' WHERE `nom` = 'Multisites-site8';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '100', `commentaires` = 'Nom du site N°9' WHERE `nom` = 'Multisites-site9';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '110', `commentaires` = 'Nom du site N°10' WHERE `nom` = 'Multisites-site10';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '25', `commentaires` = 'Adresses e-mails de la cellule planning du site N°1, séparées par des ;' WHERE `nom` = 'Multisites-site1-mail';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '35', `commentaires` = 'Adresses e-mails de la cellule planning du site N°2, séparées par des ;' WHERE `nom` = 'Multisites-site2-mail';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '45', `commentaires` = 'Adresses e-mails de la cellule planning du site N°3, séparées par des ;' WHERE `nom` = 'Multisites-site3-mail';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '55', `commentaires` = 'Adresses e-mails de la cellule planning du site N°4, séparées par des ;' WHERE `nom` = 'Multisites-site4-mail';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '65', `commentaires` = 'Adresses e-mails de la cellule planning du site N°5, séparées par des ;' WHERE `nom` = 'Multisites-site5-mail';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '75', `commentaires` = 'Adresses e-mails de la cellule planning du site N°6, séparées par des ;' WHERE `nom` = 'Multisites-site6-mail';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '85', `commentaires` = 'Adresses e-mails de la cellule planning du site N°7, séparées par des ;' WHERE `nom` = 'Multisites-site7-mail';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '95', `commentaires` = 'Adresses e-mails de la cellule planning du site N°8, séparées par des ;' WHERE `nom` = 'Multisites-site8-mail';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '105', `commentaires` = 'Adresses e-mails de la cellule planning du site N°9, séparées par des ;' WHERE `nom` = 'Multisites-site9-mail';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '115', `commentaires` = 'Adresses e-mails de la cellule planning du site N°1O, séparées par des ;' WHERE `nom` = 'Multisites-site10-mail';";
+
+    // Update config encoding
+    $sql[] = "UPDATE `{$dbprefix}config` SET `categorie` = 'Congés' WHERE `categorie` = 'Cong&eacute;s';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `categorie` = 'Heures de présence' WHERE `categorie` = 'Heures de pr&eacute;sence';";
+
+    // Bcrypt password.
+    $sql[] = "ALTER TABLE `{$dbprefix}personnel` CHANGE `password` `password` VARCHAR(255) NOT NULL DEFAULT '';";
+
+    // Update config CAS version.
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = '2.0,3.0,4.0' WHERE `nom` = 'CAS-Version';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur` = '2.0' WHERE `nom` = 'CAS-Version' AND `valeur`= '2';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur` = '3.0' WHERE `nom` = 'CAS-Version' AND `valeur`= '3';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur` = '4.0' WHERE `nom` = 'CAS-Version' AND `valeur`= '4';";
+
+    // Add config Planning-CommentairesToujoursActifs.
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES ('Planning-CommentairesToujoursActifs', 'boolean', '0', 'Planning','100', 'Afficher la zone de commentaire même si le planning n\'est pas encore commencé.');";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
