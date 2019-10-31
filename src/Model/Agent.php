@@ -109,6 +109,10 @@ class Agent extends PLBEntity {
     protected $conges_annuel;
 
     public function can_access(array $accesses) {
+        if (empty($accesses)) {
+            return false;
+        }
+
         $droits = $this->droits();
         $multisites = $GLOBALS['config']['Multisites-nombre'];
 
