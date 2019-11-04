@@ -1,6 +1,8 @@
 <?php
+use Symfony\Component\HttpFoundation\Session\Session;
 
-session_start();
+$session = new Session();
+$session->start();
 
 $_SESSION['login_id'] = isset($_SESSION['login_id']) ? $_SESSION['login_id'] : '';
 $_SESSION['login_nom'] = isset($_SESSION['login_nom']) ? $_SESSION['login_nom'] : '';
@@ -46,7 +48,14 @@ $request = Request::createFromGlobals();
 
 $date = $request->get('date');
 $show_menu = $request->get('menu') == 'off' ? false : true;
-$page = $request->get('page', 'planning/poste/index.php');
+
+// To control access rights, we keep only the part of the URI before the numbers
+// e.g. : we keep /absences/info when the URI is /absences/info/11/edit
+$page = $request->getPathInfo();
+$page = preg_replace('/([a-z\/]*).*/', "$1", $page);
+$page = rtrim($page, '/add');
+$page = rtrim($page, '/');
+
 $login = $request->get('login');
 
 // Login Anonyme

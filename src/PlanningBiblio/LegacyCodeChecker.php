@@ -5,7 +5,6 @@ namespace App\PlanningBiblio;
 class LegacyCodeChecker
 {
     private $twigized = array(
-        'absences/infos.php',
         'statistiques/presents_absents.php',
     );
 

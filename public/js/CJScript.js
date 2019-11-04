@@ -139,6 +139,13 @@ function CJPosition(object,top,left){
 
 // Fonction JQuery
 $(function(){
+
+    /** jsFileLocation
+     * Used to include other JS files. e.g. DataTable language and buttons files
+     */
+    jsFileLocation = $('script[src*=CJScript]').attr('src');  // the js file path
+    jsFileLocation = jsFileLocation.replace(/CJScript\.js.*/, '');   // the js folder path
+
   // DataTables
   /*
   Les tableaux ayant la classe CJDataTable seront transformés en DataTable
@@ -256,11 +263,11 @@ $(function(){
       "iDisplayLength" : tableLength,
       "aaSorting" : sort,
       "aoColumns" : aoCol,
-      "oLanguage" : {"sUrl" : "js/dataTables.french.lang"},
+      "oLanguage" : {"sUrl" : jsFileLocation+"/dataTables.french.lang"},
       "sScrollX": scollX,
       "sDom": sDom,
       "oTableTools": {
-    "sSwfPath" : "js/DataTables-1.10.4/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
+    "sSwfPath" : jsFileLocation+"/DataTables-1.10.4/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
 	"aButtons": [
 	  {
 	    "sExtends": "xls",

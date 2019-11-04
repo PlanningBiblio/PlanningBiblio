@@ -30,12 +30,20 @@
   <body>
     <!-- Affichage des messages d'erreur ou de confirmation venant de la page précedente-->
     {% if msg %}
-      <script type='text/JavaScript'>CJInfo({{ msg }},{{ msgType }});</script>
+      <script type='text/JavaScript'>CJInfo('{{ msg }}','{{ msgType }}');</script>
     {% endif %}
 
     {% if msg2 %}
-      <script type='text/JavaScript'>CJInfo({{ msg2 }},{{ msg2Type }}, 82, 15000);</script>
+      <script type='text/JavaScript'>CJInfo('{{ msg2 }}','{{ msg2Type }}', 82, 15000);</script>
     {% endif %}
+
+    <!-- Symfony flashMessages -->
+    {% for flashMessage in app.session.flashbag.get('error') %}
+        <script type='text/JavaScript'>CJInfo('{{ flashMessage }}','error', 82, 15000);</script>
+    {% endfor %}
+    {% for flashMessage in app.session.flashbag.get('notice') %}
+        <script type='text/JavaScript'>CJInfo('{{ flashMessage }}','success', 82, 15000);</script>
+    {% endfor %}
 
     <div id='opac' style='display:none'></div>
     <div style='position:relative;top:30px;' class='noprint'></div>

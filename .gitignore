@@ -14,14 +14,8 @@ public/plugins/*
 test-*
 themes/*
 !themes/default
-vendor/*
-!vendor/carhartl-jquery-cookie-3caf209
-!vendor/CAS-1.3.4
-!vendor/CJScript.js
-!vendor/DataTables-1.10.4
-!vendor/dataTables.*
-!vendor/ics-parser
-!vendor/jquery-*
+public/vendor/*
+!public/vendor/ics-parser
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php

@@ -862,6 +862,11 @@ a:hover.menuRed, a:hover.menu {
   text-align:center;
 }
 
+.top-button-div {
+    text-align:right;
+    margin: 0 10px 30px 0;
+}
+
 #tab_jours{	/*	planning/poste/index.php	*/
   margin : 5px auto 0px auto;
   text-align:center;
