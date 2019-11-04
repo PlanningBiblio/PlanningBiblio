@@ -1,13 +1,11 @@
 <?php
 /**
-Planning Biblio, Version 2.5.7
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : include/config.sample.php
-Création : 2 avril 2015
-Dernière modification : 7 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -22,7 +20,9 @@ Le fichier include/config.php est inclus dans les pages index.php, authentificat
 
 
 // Securité : Traitement pour une reponse Ajax
-if (array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+if (!empty($_SERVER['HTTP_X_REQUESTED_WITH'])
+    and strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'
+    and basename($_SERVER['SCRIPT_FILENAME']) != 'index_symfony.php') {
     $version='ajax';
 }
 
