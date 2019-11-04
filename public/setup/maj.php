@@ -1635,6 +1635,18 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="19.11.00.001";
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[] = "UPDATE `{$dbprefix}menu` SET `url` = '/help' WHERE `url` = 'aide/index.php';";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `page` = '/help' WHERE `page` = 'aide/index.php';";
+    $sql[] = "UPDATE `{$dbprefix}menu` SET `url` = '/config' WHERE `url` = 'admin/config.php';";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `page` = '/config' WHERE `page` = 'admin/config.php';";
+    $sql[] = "UPDATE `{$dbprefix}menu` SET `url` = '/absences/info' WHERE `url` = 'absences/infos.php';";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `page` = '/absences/info' WHERE `page` = 'absences/infos.php';";
+    $sql[] = "UPDATE `{$dbprefix}menu` SET `url` = '/statistics/attendeesmissing' WHERE `url` = 'statistiques/presents_absents.php';";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `page` = '/statistics/attendeesmissing' WHERE `page` = 'statistiques/presents_absents.php';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
