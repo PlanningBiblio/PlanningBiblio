@@ -109,6 +109,11 @@ class ConfigController extends Controller
                     }
                 }
                 $value = $params[$cp->nom()];
+
+                if (is_string($value)) {
+                    $value = trim($value);
+                }
+
                 // App URL
                 if ($cp->nom() == 'URL') {
                     $value = $request->getSchemeAndHttpHost() . $request->getBaseUrl();
