@@ -1,11 +1,11 @@
 <?php
 
-namespace Model;
+namespace App\Model;
 
 /**
  * @Entity @Table(name="acces")
  **/
-class Access extends Entity {
+class Access extends PLBEntity {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 
