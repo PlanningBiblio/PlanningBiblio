@@ -708,11 +708,11 @@ class conges
             $db=new db();
             $db->select("personnel", "conges_credit,conges_reliquat,conges_anticipation,recup_samedi,conges_annuel", "`id`='{$this->perso_id}'");
             if ($db->result) {
-                $annuel=$db->result[0]['conges_annuel'];
-                $anticipation=$db->result[0]['conges_anticipation'];
-                $credit=$db->result[0]['conges_credit'];
-                $recup=$db->result[0]['recup_samedi'];
-                $reliquat=$db->result[0]['conges_reliquat'];
+                $annuel = $db->result[0]['conges_annuel'] ? $db->result[0]['conges_annuel'] : 0;
+                $anticipation = $db->result[0]['conges_anticipation'] ? $db->result[0]['conges_anticipation'] : 0;
+                $credit = $db->result[0]['conges_credit'] ? $db->result[0]['conges_credit'] : 0;
+                $recup = $db->result[0]['recup_samedi'] ? $db->result[0]['recup_samedi'] : 0;
+                $reliquat = $db->result[0]['conges_reliquat'] ? $db->result[0]['conges_reliquat'] : 0;
 
                 $annuelHeures=floor($annuel);
                 $anticipationHeures=floor($anticipation);
