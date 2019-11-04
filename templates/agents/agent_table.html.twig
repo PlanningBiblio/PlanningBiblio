@@ -1,0 +1,122 @@
+{# agents/agent_table.html.twig #}
+
+<table style='width:90%;'>
+  <tr valign='top'>
+    <td style='width:400px'>Nom :</td>
+    <td>
+      <span id='nom'>{{ nom }}</span>
+    </td>
+  </tr>
+
+  <tr>
+    <td>Prénom :</td>
+    <td>
+      <span id='prenom'>{{ prenom }}</span>
+    </td>
+  </tr>
+
+  <tr>
+    <td>E-mail :</td>
+
+    <td>
+      <a href='mailto:{{ mail }}'><span id='mail'>{{ mail }}</span></a>
+    </td>
+  </tr>
+
+  <tr>
+    <td>Statut :</td>
+    <td style='white-space:nowrap'>{{ statut }}</td>
+  </tr>
+
+  <tr>
+    <td>Contrat :</td>
+    <td>{{ categorie }}</td>
+  </tr>
+
+  <tr>
+    <td>Service de rattachement:</td>
+    <td style='white-space:nowrap'>{{ service }}</td>
+  </tr>
+
+  <tr>
+    <td>Heures de service public par semaine:</td>
+    <td>{{ heuresHebdo_label }}</td>
+  </tr>
+
+  <tr>
+    <td>Heures de travail par semaine:</td>
+    <td>{{ heuresTravail_label }}</td>
+  </tr>
+
+  <tr>
+    <td> Service public / Administratif :</td>
+    <td>
+      {% if actif %}
+        {% if actif == 'Actif' %}
+          Service public
+        {% elseif actif == 'Inactif' %}
+          Administratif
+        {% elseif actif == 'Supprim&eacute;' %}
+        {% endif %}
+      {% else %}
+        Service public
+      {% endif %}
+    </td>
+  </tr>
+
+  {% if multi_site %}
+    <tr style='vertical-align:top;'>
+      <td>Sites :</td>
+      <td>
+        {% for s in sites_select %}
+          {% if s.checked %}
+          {{ s.name }}<br/>
+          {% endif %}
+        {% endfor %}
+      </td>
+    </tr>
+  {% endif %}
+
+  <tr>
+    <td>Date d'arrivée</td>
+    <td>{{ arrivee }}</td>
+  </tr>
+
+  <tr>
+    <td>Date de départ</td>
+    <td>{{ départ }}</td>
+  </tr>
+
+  <tr>
+    <td>Matricule :</td>
+    <td>{{ matricule }}</td>
+  </tr>
+
+  <tr>
+    <td>E-mails des responsables :</td>
+    <td>
+      {% for r in mailsResponsables %}
+        <a href='mailto:{{ r|trim }}' style='margin-left:30px;'>{{ r|trim }}</a><br/>
+      {% endfor %}
+    </td>
+  </tr>
+
+  <tr style='vertical-align:top;'>
+    <td>Informations :</td>
+    <td>{{ informations_str }}</td>
+  </tr>
+
+  {% if recup_agent %}
+    <tr style='vertical-align:top;'>
+      <td>Récupération du samedi :</td>
+      <td>{{ recup_str }}</td>
+    </tr>
+  {% endif %}
+
+  {% if id %}
+    <tr>
+      <td>Login :</td>
+      <td>{{ login }}</td>
+    </tr>
+  {% endif %}
+</table>

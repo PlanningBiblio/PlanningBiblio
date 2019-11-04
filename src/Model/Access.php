@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace Model;
 
 /**
  * @Entity @Table(name="acces")

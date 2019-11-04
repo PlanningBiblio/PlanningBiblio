@@ -40,13 +40,21 @@ class BaseController extends Controller
         return $this->render($templateName, $this->templateParams);
     }
 
-    protected function config($key)
+    protected function config($key, $value = null)
     {
-        if ( isset($this->config[$key]) )
-        {
-            return $this->config[$key];
+        if ( !isset($key) ) {
+            return null;
         }
 
-        return null;
+        if ( isset($value) ) {
+            $this->config[$key] = $value;
+            return null;
+        }
+
+        if ( !isset($this->config[$key]) ) {
+            return null;
+        }
+
+        return $this->config[$key];
     }
 }

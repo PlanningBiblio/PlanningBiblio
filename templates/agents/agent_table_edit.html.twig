@@ -1,0 +1,229 @@
+{# agents/agent_table_edit.html.twig #}
+
+<table style='width:90%;'>
+  <tr valign='top'>
+    <td style='width:400px'>Nom :</td>
+    <td>
+      <input type='text' value='{{ nom }}' name='nom' id='nom' style='width:400px' />
+    </td>
+  </tr>
+
+  <tr>
+    <td>Prénom :</td>
+    <td>
+      <input type='text' value='{{ prenom }}' name='prenom' id='prenom' style='width:400px' />
+    </td>
+  </tr>
+
+  <tr>
+    <td>E-mail :
+      <a href='mailto:{{ mail }}'>{{ mail }}</a>
+    </td>
+
+    <td>
+      <input type='text' value='{{ mail }}' name='mail' id='mail' style='width:400px' />
+    </td>
+  </tr>
+
+  <tr>
+    <td>Statut :</td>
+    <td style='white-space:nowrap'>
+      <select name='statut' id='statut' style='width:405px'>
+        <option value=''>Aucun</option>
+          {%for elem in statuts %}
+            {% if elem.valeur == statut %}
+              <option selected="selected" value="{{ elem.valeur }}">{{ elem.valeur }}</option>
+            {% else %}
+              <option value="{{ elem.valeur }}">{{ elem.valeur }}</option>
+            {% endif %}
+          {% endfor %}
+      </select>
+      <span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer; margin-left:4px;' id='add-statut-button'></span>
+    </td>
+  </tr>
+
+  <tr>
+    <td>Contrat :</td>
+    <td>
+      <select name='categorie' id='categorie' style='width:405px'>
+        <option value=''>Aucun</option>
+        {%for elem in contrats %}
+          {% if elem == categorie %}
+            <option selected="selected" value='{{ elem }}'>{{ elem }}</option>
+          {% else %}
+            <option value='{{ elem }}'>{{ elem }}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+    <td>
+  </tr>
+
+  <tr>
+    <td>Service de rattachement:</td>
+    <td style='white-space:nowrap'>
+      <select name='service' id='service' style='width:405px'>
+        <option value=''>Aucun</option>
+        {%for elem in services %}
+          {% if elem.valeur == service %}
+            <option selected="selected" value='{{ elem.valeur }}'>{{ elem.valeur }}</option>\n";
+          {% else %}
+            <option value='{{ elem.valeur }}'>{{ elem.valeur }}</option>\n";
+          {% endif %}
+        {% endfor %}
+      </select>
+      <span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer; margin-left:4px;' id='add-service-button'></span>
+    </td>
+  </tr>
+
+  <tr>
+    <td>Heures de service public par semaine:</td>
+    <td>
+      <select name='heuresHebdo' style='width:405px'  title='Choisissez un nombre d&apos;heures ou un pourcentage. Si vous Choisissez un pourcentage, le nombre d&apos;heures sera calculé à partir des plannings de pr&eacute;sence'>
+        <option value='0'>&nbsp;</option>
+        {% for i in 1..100 %}
+          {% if i == heures_hebdo %}
+            <option selected="selected" value='{{ i }}%'>{{ i }}%</option>
+          {% else %}
+            <option value='{{ i }}%'>{{ i }}%</option>
+          {% endif %}
+        {% endfor %}
+
+        {% for time in times %}
+          {% if time[0] == heures_hebdo %}
+            <option selected="selected" value='{{ time[0] }}'>{{ time[1] }}</option>
+          {% else %}
+            <option value='{{ time[0] }}'>{{ time[1] }}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+    </td>
+  </tr>
+
+  <tr>
+    <td>Heures de travail par semaine:</td>
+    <td>
+      <select name='heuresTravail' style='width:405px'>
+        <option value='0'>&nbsp;</option>
+        {% for time in times %}
+          {% if time[0] == heures_travail %}
+            <option selected="selected" value='{{ time[0] }}'>{{ time[1] }}</option>
+          {% else %}
+            <option value='{{ time[0] }}'>{{ time[1] }}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+    </td>
+  </tr>
+
+  <tr>
+    <td> Service public / Administratif :</td>
+    <td>
+      <select name='actif' style='width:405px'>
+        {% if actif == 'Actif' %}
+          <option selected="selected" value='Actif'>Service public</option>
+        {% else %}
+          <option value='Actif'>Service public</option>
+        {% endif %}
+
+        {% if actif == 'Inactif' %}
+          <option selected="selected" value='Inactif'>Administratif</option>
+        {% else %}
+          <option value='Inactif'>Administratif</option>
+        {% endif %}
+
+        {% if actif == 'Supprim&eacute;' %}
+          <option selected="selected" value="Supprim&eacute;">Supprim&eacute;</option>
+        {% else %}
+          <option value="Supprim&eacute;" style="display:none;">Supprim&eacute;</option>
+        {% endif %}
+      </select>
+    </td>
+  </tr>
+
+  {% if multi_site %}
+    <tr style='vertical-align:top;'>
+      <td>Sites :</td>
+      <td>
+        {% for s in sites_select %}
+          {% if s.checked %}
+            <input type='checkbox' name='sites[]' value='{{ s.id }}' checked="checked" >{{ s.name }}<br/>
+          {% else %}
+            <input type='checkbox' name='sites[]' value='{{ s.id }}'>{{ s.name }}<br/>
+          {% endif %}
+        {% endfor %}
+      </td>
+    </tr>
+  {% endif %}
+
+  <tr>
+    <td>Date d'arrivée</td>
+    <td>
+      <input type="text" value="{{ arrivee }}" name="arrivee" style="width:400px" class="datepicker"/>
+    </td>
+  </tr>
+
+  <tr>
+    <td>Date de départ</td>
+    <td>
+      <input type="text" value="{{ depart }}" name="depart" style="width:400px" class="datepicker"/>
+    </td>
+  </tr>
+
+  <tr>
+    <td>Matricule :</td>
+    <td><input type='text' value='{{ matricule }}' name='matricule' style='width:400px' /></td>
+  </tr>
+
+  <tr>
+    <td>E-mails des responsables :
+      {% for r in mailsResponsables %}
+        <br/><a href='mailto:{{ r|trim }}' style='margin-left:30px;'>{{ r|trim }}</a>
+      {% endfor %}
+    </td>
+    <td>
+      <textarea name='mailsResponsables' style='width:400px' cols='10' rows='4'>{{ mailsResp_joined }}</textarea>
+    </td>
+  </tr>
+
+  <tr style='vertical-align:top;'>
+    <td>Informations :</td>
+    <td>
+      <textarea name='informations' style='width:400px' cols='10' rows='4'>{{ informations }}</textarea>
+    </td>
+  </tr>
+
+  {% if recup_agent %}
+    <tr style='vertical-align:top;'>
+      <td>Récupération du samedi :</td>
+      <td>
+        {% if recup_agent == 1 %}
+          <textarea name='recup' style='width:400px' cols='10' rows='4'>{{ recup }}</textarea>
+        {% elseif recup_agent == 2 %}
+          <select name='recup' style='width:400px'>
+            <option value=''>&nbsp;</option>
+            {% for elem in recupAgents %}
+              {% if elem == recup %}
+                <option selected="selected" value='{{ elem }}' $selected>{{ elem }}</option>
+              {% else %}
+                <option value='{{ elem }}' $selected>{{ elem }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        {% endif %}
+      </td>
+    </tr>
+  {% endif %}
+
+  {% if id %}
+    <tr>
+      <td>Login :</td>
+      <td>{{ login }}</td>
+    </tr>
+
+    <tr>
+      <td colspan='2'>
+        <a href='javascript:modif_mdp();'>Changer le mot de passe</a>
+      </td>
+    </tr>
+  {% endif %}
+</table>

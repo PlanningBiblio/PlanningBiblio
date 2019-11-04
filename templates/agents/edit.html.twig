@@ -1,0 +1,347 @@
+{# agents/edit.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  <script type='text/JavaScript'>
+    <!--
+    complet = JSON.parse('{{ postes_completNoms_json|raw }}');
+    -->
+  </script>
+
+  <h3>{{ titre }}</h3>
+
+  <div class='ui-tabs'>
+    <ul>
+      <li><a href='#main'>Infos générales</a></li>
+      <li><a href='#qualif'>Activités</a></li>
+      <li><a href='#temps' id='personnel-a-li3'>Heures de pr&eacute;sence</a></li>
+
+      {% if agendas_and_sync is defined %}
+        <li><a href='#agendas'>Agendas et Synchronisation</a></li>
+      {% endif %}
+
+      {% if conges_enabled %}
+        <li><a href='#conges'>Cong&eacute;s</a></li>
+      {% endif %}
+
+      <li><a href='#access'>Droits d'accès</a></li>
+
+      {% if can_manage_agent %}
+        <li class='ui-tab-cancel'><a href='/index.php?page=personnel/index.php'>Annuler</a></li>
+        <li class='ui-tab-submit'><a href='javascript:verif_form_agent();'>Valider</a></li>
+      {% else %}
+        <li class='ui-tab-cancel'><a href='/index.php?page=personnel/index.php'>Fermer</a></li>
+      {% endif %}
+    </ul>
+
+    <form method='post' action='/index.php' name='form'>
+      <input type='hidden' name='page' value='personnel/valid.php' />
+      <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
+
+      <div id='main' style='margin-left:70px;padding-top:30px;'>
+        <input type='hidden' value='{{ action }}' name='action' />
+        <input type='hidden' value='{{ id }}' name='id' />
+
+        {% if can_manage_agent %}
+          {% include 'agents/agent_table_edit.html.twig' %}
+        {% else %}
+          {% include 'agents/agent_table.html.twig' %}
+        {% endif %}
+      </div>
+
+      <div id='qualif' style='margin-left:70px;display:none;padding-top:30px;'>
+        {% if can_manage_agent %}
+          {% include 'agents/skills_edit.html.twig' %}
+        {% else %}
+          {% include 'agents/skills.html.twig' %}
+        {% endif %}
+      </div>
+
+      <div id='temps' style='margin-left:70px;display:none;padding-top:30px;'>
+        {{ hours_tab | raw }}
+      </div>
+
+      <div id='agendas' style='margin-left:70px;display:none;padding-top:30px;'>
+        <table style='width:90%;'>
+          {% if Hamac_csv %}
+            <tr>
+              <td style='width:400px'>Synchronisation {{ hamac_pattern }} :</td>
+              <td>
+                {% if can_manage_agent %}
+                  {% if check_hamac %}
+                    <input type='checkbox' value='1' name='check_hamac' checked="checked"/>
+                  {% else %}
+                    <input type='checkbox' value='1' name='check_hamac'/>
+                  {% endif %}
+                {% else %}
+                  {% if check_hamac %}
+                    <span class="agent-acces-checked2 green bold">Oui</span>
+                  {% else %}
+                    <span class="agent-acces-checked2 red">Non</span>
+                  {% endif %}
+                {% endif %}
+              </td>
+            </tr>
+          {% endif %}
+
+          {% if ICS_Server1 %}
+            <tr>
+              <td style='width:400px'>Synchronisation de l'agenda ICS {{ ics_pattern }} :</td>
+              <td>
+                {% if can_manage_agent %}
+                  {% if check_ics %}
+                    <input type='checkbox' value='1' name='check_ics1' checked="checked"/>
+                  {% else %}
+                    <input type='checkbox' value='1' name='check_ics1'/>
+                  {% endif %}
+                {% else %}
+                  {% if check_ics %}
+                    <span class='agent-acces-checked2 green bold'>Oui</span>
+                  {% else %}
+                    <span class='agent-acces-checked2 red'>Non</span>
+                  {% endif %}
+                {% endif %}
+              </td>
+            </tr>
+          {% endif %}
+
+          {% if ICS_Server2 %}
+            <tr>
+              <td style='width:400px'>Agenda ICS {{ ics_pattern2 }} :</td>
+              <td>
+                {% if can_manage_agent %}
+                  {% if check_ics2 %}
+                    <input type='checkbox' value='1' name='check_ics2' checked="checked"/>
+                  {% else %}
+                    <input type='checkbox' value='1' name='check_ics2'/>
+                  {% endif %}
+                {% else %}
+                  {% if check_ics2 %}
+                    <span class='agent-acces-checked2 green bold'>Oui</span>
+                  {% else %}
+                    <span class='agent-acces-checked2 red'>Non</span>
+                  {% endif %}
+                {% endif %}
+              </td>
+            </tr>
+          {% endif %}
+
+          {% if ICS_Server3 %}
+            <tr>
+              <td style='width:400px'>Agenda ICS distant :</td>
+              <td>
+                {% if can_manage_agent %}
+                  {% if check_ics3 %}
+                    <input type='checkbox' value='1' name='check_ics3' checked="checked"/>
+                  {% else %}
+                    <input type='checkbox' value='1' name='check_ics3'/>
+                  {% endif %}
+                  <input type='text' value='{{ url_ics }}' name='url_ics' style='width:400px; margin-left:20px;'/>
+                {% else %}
+                  {% if check_ics3 %}
+                    <span class='agent-acces-checked2 green bold'>Oui</span>
+                  {% else %}
+                    <span class='agent-acces-checked2 red'>Non</span>
+                  {% endif %}
+                  <span style='margin-left:20px;'>{{ url_ics }}</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endif %}
+
+          {% if id and ics %}
+            <tr>
+              <td style='padding-top: 20px;'>Agenda ICS Planning Biblio</td>
+              <td style='padding-top: 20px;' id='url-ics'>{{ ics }}</td>
+            </tr>
+
+            {% if ICS_Code %}
+              <tr>
+                <td>&nbsp;</td>
+                <td>
+                  <a href="javascript:resetICSURL('{{ id }}', '{{ CSRFSession }}', '{{ prenom }} {{ nom }}');">
+                    R&eacute;initialiser l'URL
+                  </a>
+                </td>
+              </tr>
+            {% endif %}
+              <tr>
+                <td>&nbsp;</td>
+                <td>
+                  <a href='javascript:sendICSURL();'>
+                    Envoyer l'URL &agrave; l&apos;agent par e-mail ({{ mail }})
+                  </a>
+                </td>
+              </tr>
+          {% endif %}
+        </table>
+      </div>
+
+      {% if can_manage_agent %}
+        {% include 'agents/rights_edit.html.twig' %}
+      {% else %}
+        {% include 'agents/rights.html.twig' %}
+      {% endif %}
+
+      {% if conges_enabled %}
+        <div id='conges' style='margin-left:80px;padding-top:30px;'>
+          <table class='tableauFiches'>
+            <tr>
+              <td>Nombre d'heures de congés par an :</td>
+              <td style='text-align:right;'>
+                {% if can_manage_agent %}
+                  <input type='text' name='conges_annuel' value='{{ annuel_heures}}'  style='width:70px;text-align:right;'>
+                  <label style='text-align:center;padding:5px;'>h</label>
+                  {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': annuel_min, 'name': 'conges_annuel_min' } %}
+                {% else %}
+                  {{ annuel_string }}
+                {% endif %}
+              </td>
+            </tr>
+
+            <tr>
+              <td>Crédit d'heures de congés actuel :</td>
+              <td style='text-align:right;'>
+                {% if can_manage_agent %}
+                  <input type='text' name='conges_reliquat' value='{{ credit_heures}}'  style='width:70px;text-align:right;'>
+                  <label style='text-align:center;padding:5px;'>h</label>
+                  {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': credit_min, 'name': 'conges_credit_min' } %}
+                {% else %}
+                  {{ credit_string }}
+                {% endif %}
+              </td>
+            </tr>
+
+            <tr>
+              <td>Reliquat de congés :</td>
+              <td style='text-align:right;'>
+                {% if can_manage_agent %}
+                  <input type='text' name='conges_reliquat' value='{{ reliquat_heures}}'  style='width:70px;text-align:right;'>
+                  <label style='text-align:center;padding:5px;'>h</label>
+                  {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': reliquat_min, 'name': 'conges_reliquat_min' } %}
+                {% else %}
+                  {{ reliquat_string }}
+                {% endif %}
+              </td>
+            </tr>
+
+            <tr>
+              <td>Solde débiteur :</td>
+              <td style='text-align:right;'>
+                {% if can_manage_agent %}
+                  <input type='text' name='conges_anticipation' value='{{ anticipation_heures}}'  style='width:70px;text-align:right;'>
+                  <label style='text-align:center;padding:5px;'>h</label>
+                  {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': anticipation_min, 'name': 'conges_anticipation_min' } %}
+                {% else %}
+                  {{ anticipation_string }}
+                {% endif %}
+              </td>
+            </tr>
+
+            <tr>
+              <td>{{ lang_comp_time }}</td>
+              <td style='text-align:right;'>
+                {% if can_manage_agent %}
+                  <input type='text' name='recup' value='{{ recup_heures}}'  style='width:70px;text-align:right;'>
+                  <label style='text-align:center;padding:5px;'>h</label>
+                  {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': recup_min, 'name': 'recup_min' } %}
+                {% else %}
+                  {{ recup_string }}
+                {% endif %}
+              </td>
+            </tr>
+          </table>
+        </div>
+      {% endif %}
+    </form>
+  </div>
+
+  <div id="add-statut-form" title="Liste des statuts" class='noprint'>
+    <p class="validateTips">Ajoutez, supprimez des statuts. Modifiez leur catégorie. Modifiez l'ordre des statuts dans les menus déroulant.</p>
+    <form>
+      <p>
+        <input type='text' id='add-statut-text' style='width:300px;'/>
+        <input type='button' id='add-statut-button2' class='ui-button' value='Ajouter' style='margin-left:15px;'/>
+      </p>
+
+      <fieldset>
+        <ul id="statuts-sortable">
+          {% if statuts is iterable %}
+            {% for elem in statuts %}
+              <li class='ui-state-default' id='li_{{ elem.id }}'>
+                <span class='ui-icon ui-icon-arrowthick-2-n-s'></span>
+                <font id='valeur_{{ elem.id }}'>{{ elem.valeur }}</font>
+                <select id='categorie_{{ elem.id }}' style='position:absolute;left:330px;'>
+                  <option value='0'>&nbsp;</option>
+                  {% for elem2 in categories %}
+                    {% if elem2.id == elem.categorie %}
+                      <option value='{{ elem2.id }}' selected="selected">{{ elem2.valeur }}</option>
+                    {% else %}
+                      <option value='{{ elem2.id }}'>{{ elem2.valeur }}</option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+                {% if elem.valeur in statuts_utilises %}
+                  <span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick="$(this).closest(\"li\").hide();"></span>
+                {% endif %}
+              </li>
+            {% endfor %}
+          {% endif %}
+        </ul>
+      </fieldset>
+    </form>
+  </div>
+
+  <div id="add-service-form" title="Liste des services" class='noprint' style='display:none;' >
+    <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des services dans le menu déroulant.</p>
+    <form>
+      <p>
+        <input type='text' id='add-service-text' style='width:300px;'/>
+        <input type='button' id='add-service-button2' class='ui-button' value='Ajouter' style='margin-left:15px;'/>
+      </p>
+
+      <fieldset>
+        <ul id="services-sortable">
+          {% if services is iterable %}
+            {% for elem in services %}
+              <li class='ui-state-default' id='li_{{ elem.id }}'>
+                <span class='ui-icon ui-icon-arrowthick-2-n-s'></span>
+                <font id='valeur_{{ elem.id }}'>{{ elem.valeur }}</font>
+                {% if elem.valeur in services_utilises %}
+                  <span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>
+                {% endif %}
+              </li>
+            {% endfor %}
+          {% endif %}
+        </ul>
+      </fieldset>
+    </form>
+  </div>
+
+  <div id="ics-url-form" title="Envoi de l'URL de l'agenda Planning Biblio" class='noprint' style='display:none;'>
+    <p class="validateTips">Envoyez à l'agent l'URL de son agenda Planning Biblio.</p>
+    <form>
+      <strong>Destinataire</strong><br/>
+      <span id='ics-url-recipient'>&nbsp;</span><br/><br/>
+      <label for='ics-url-subject'>Sujet</label><br/>
+      <input type='text' id='ics-url-subject' name='ics-url-subject' value='{{ lang_send_ics_url_subject }}'/><br/><br/>
+      <label for='ics-url-text'>Message</label><br/>
+      <textarea id='ics-url-text' name='ics-url-text'>{{ lang_send_ics_url_message }}</textarea>
+    </form>
+  </div>
+
+  <script type='text/JavaScript'>
+    {% if edt_samedi %}
+      $("#EDTTabs").tabs();
+      $("{{ current_tab }}").click();
+    {% endif %}
+    {% for i in 0..nb_semaine %}
+      $(".select{{ i }}").change(function(){calculHeures($(this),"","form","heures{{ i }}",{{ i }});});
+      $("document").ready(function(){calculHeures($(this),"","form","heures{{ i }}",{{ i }});});
+    {% endfor %}
+  </script>
+  <script src="/personnel/js/modif.js"></script>
+
+<!-- CONTINUER ICI -->
+{% endblock %}
