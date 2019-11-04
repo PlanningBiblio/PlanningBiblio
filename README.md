@@ -60,12 +60,12 @@ si ce n'est pas le cas, consultez : http://www.gnu.org/licenses
  	- Date édition   : 05 Mai 2008
  	- Website auteur : http://olravet.fr/
 
-- Fichier vendor/jquery-*.min.js
+- Fichier public/js/jquery-*.min.js
  	- Bibliothèques JQuery
  	- About jQuery : http://learn.jquery.com/about-jquery
  	- Licence MIT : https://jquery.org/license
 
-- Fichiers et dossiers vendor/jquery-ui-*, themes/default/jquery-ui-min.css
+- Fichiers et dossiers public/js/jquery-ui-*, themes/default/jquery-ui-min.css
  	- Bibliothèques et thèmes JQuery-UI
  	- About jQuery UI : http://jqueryui.com/about
  	- Licence MIT : https://jquery.org/license
