@@ -35,7 +35,8 @@ class HolidayHelper extends BaseHelper
         }
 
         // TODO: should be altered by a plugin.
-        $days = round($hours / 7, 1);
+        $days = $hours / 7;
+        $days = round($days * 2) / 2;
 
         // Handle plurals
         if ($days > 1) {

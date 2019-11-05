@@ -33,6 +33,9 @@ for ($i=0;$i<$nb;$i++) {
 // Utilise le chemin absolut plutôt que relatif sinon pb avec le dossier admin qui contient également un config.php
 require_once(__DIR__.'/sanitize.php');
 require_once(__DIR__.'/config.php');
+if (empty($config)) {
+    $config = $GLOBALS['config'];
+}
 $theme=$config['Affichage-theme'];
 
 // Lien proposé pour le retour à l'application

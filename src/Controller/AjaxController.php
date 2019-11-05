@@ -41,4 +41,20 @@ class AjaxController extends BaseController
 
         return $this->json($result);
     }
+
+    /**
+     * @Route("/ajax/holiday-delete", name="ajax.holidaydelete", methods={"GET"})
+     */
+    public function deleteHoliday(Request $request)
+    {
+        $id = $request->get('id');
+        $CSRFToken = $request->get('CSRFToken');
+
+        $c = new \conges();
+        $c->id = $id;
+        $c->CSRFToken = $CSRFToken;
+        $c->delete();
+
+        return $this->json("Holiday deleted");
+    }
 }

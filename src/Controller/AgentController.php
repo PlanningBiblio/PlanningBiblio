@@ -524,12 +524,16 @@ class AgentController extends BaseController
                     $anticipationString = $anticipationHeures;
                 } else {
                     $annuelHeures = $conges['annuel'] / 7;
+                    $annuelHeures = round($annuelHeures * 2) / 2;
                     $annuelString = $annuelHeures;
                     $creditHeures = $conges['credit'] / 7;
+                    $creditHeures = round($creditHeures * 2) / 2;
                     $creditString = $creditHeures;
                     $reliquatHeures = $conges['reliquat'] / 7;
+                    $reliquatHeures = round($reliquatHeures * 2) / 2;
                     $reliquatString = $reliquatHeures;
                     $anticipationHeures = $conges['anticipation'] / 7;
+                    $anticipationHeures = round($anticipationHeures * 2) / 2;
                     $anticipationString = $anticipationHeures;
                 }
             }
