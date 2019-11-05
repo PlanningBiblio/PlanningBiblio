@@ -34,6 +34,10 @@ class WeekPlanningHelper extends BaseHelper
     public function isWorkingDay(\DateTime $date) {
         $day_index = $date->format('N') - 1;
 
+        if (!isset($this->week_planning[$day_index])) {
+            return false;
+        }
+
         $day_planning = $this->week_planning[$day_index];
         $day = new DayPlanningHelper($day_planning);
 
