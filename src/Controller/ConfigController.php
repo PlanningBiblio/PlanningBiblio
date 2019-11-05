@@ -146,6 +146,6 @@ class ConfigController extends BaseController
 
         }
 
-        return $this->redirectToRoute('config.index', $this->templateParams());
+        return $this->redirectToRoute('config.index');
     }
 }
