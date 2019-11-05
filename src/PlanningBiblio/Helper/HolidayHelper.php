@@ -165,6 +165,10 @@ class HolidayHelper extends BaseHelper
         $annual_hours = $agent->conges_annuel() / 7;
         $counting_chart = $this->config('holiday_counting_chart');
 
+        if (empty($counting_chart)) {
+            return 0;
+        }
+
         foreach ($counting_chart as $range => $hours) {
             list($from, $to) = explode('.', $range);
 

@@ -85,7 +85,13 @@ function calculCredit(){
       }
     },
     error: function(xhr, ajaxOptions, thrownError){
-      information("Impossible de calculer le nombre d'heures correspondant au congé demandé.","error");
+      var congesMode = $('#conges-mode').val();
+
+      if (congesMode == 'heures') {
+        information("Impossible de calculer le nombre d'heures correspondant au congé demandé.","error");
+      } else {
+        information("Impossible de calculer le nombre de jours correspondant au congé demandé.","error");
+      }
     },
   });
   calculRestes();
