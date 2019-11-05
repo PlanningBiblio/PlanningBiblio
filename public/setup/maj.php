@@ -1645,6 +1645,8 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}acces` SET `page` = '/absences/info' WHERE `page` = 'absences/infos.php';";
     $sql[] = "UPDATE `{$dbprefix}menu` SET `url` = '/statistics/attendeesmissing' WHERE `url` = 'statistiques/presents_absents.php';";
     $sql[] = "UPDATE `{$dbprefix}acces` SET `page` = '/statistics/attendeesmissing' WHERE `page` = 'statistiques/presents_absents.php';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
 //	Execution des requetes et affichage

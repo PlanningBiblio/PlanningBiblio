@@ -15,7 +15,7 @@ Page contenant les fonctions PHP communes
 Page appelée par les fichiers index.php, setup/index.php et planning/poste/menudiv.php
 */
 
-use Model\Agent;
+use App\Model\Agent;
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
 if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
