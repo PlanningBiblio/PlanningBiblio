@@ -198,8 +198,9 @@ class HolidayHelper extends BaseHelper
          $p->fetch();
          // Si le planning n'est pas validé pour l'une des dates, on affiche un message d'erreur et on arrête le calcul
          if (empty($p->elements)) {
-             $this->error = true;
-             $this->message = "Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
+            $this->error = true;
+            $this->message = "Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
+            return;
          }
          return $p->elements[0]['temps'];
     }
