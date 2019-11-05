@@ -3,6 +3,8 @@
 namespace App\PlanningBiblio\Helper;
 
 use App\PlanningBiblio\Helper\BaseHelper;
+use App\PlanningBiblio\Helper\WeekPlanningHelper;
+use App\Model\Agent;
 
 include_once(__DIR__ . '/../../../public/joursFeries/class.joursFeries.php');
 include_once __DIR__ . '/../../../public/planningHebdo/class.planningHebdo.php';
@@ -53,7 +55,6 @@ class HolidayHelper extends BaseHelper
 
         // Calcul du nombre d'heures correspondant aux congés demandés
         $current = $debut;
-        $total = 0;
         $result = array(
             'error'     => false,
             'minutes'   => 0,
@@ -61,20 +62,39 @@ class HolidayHelper extends BaseHelper
             'hr_hours'  => '0h00'
         );
 
-        // Pour chaque date
-        while ($current<=$fin) {
+        $per_week = array();
+        // For each requested date.
+        while ($current <= $fin) {
 
-            // On ignore les jours de fermeture
-            if ($this->isTodayHoliday($current)) {
-                $current = date("Y-m-d", strtotime("+1 day", strtotime($current)));
-                continue;
-            }
+            $date_current = new \DateTime($current);
+            $week_id = $date_current->format("W");
 
-            // On consulte le planning de présence de l'agent
+            // Check agent's planning.
             $planning = $this->getPlanning($current);
             if ($this->error) {
                 $result['error'] = true;
                 return $result;
+            }
+
+            $week_helper = new WeekPlanningHelper($planning);
+            $per_week[$week_id]['worked_days'] = $week_helper->NumberWorkingDays();
+
+            if (!isset($per_week[$week_id]['requested_days'])) {
+                $per_week[$week_id]['requested_days'] = 0;
+                $per_week[$week_id]['times'] = 0;
+            }
+
+            if ($week_helper->isWorkingDay($date_current)) {
+                $per_week[$week_id]['requested_days']++;
+            }
+
+            // We ignore closing day
+            if ($this->isClosingDay($current)) {
+                if ($week_helper->isWorkingDay($date_current)) {
+                    $per_week[$week_id]['requested_days']--;
+                }
+                $current = date("Y-m-d", strtotime("+1 day", strtotime($current)));
+                continue;
             }
 
 
@@ -96,23 +116,64 @@ class HolidayHelper extends BaseHelper
                     $today += $finConges1 - $debutConges1;
                 }
             }
-            if($this->config('Conges-Mode') == 'jours') {
+
+            if($today > 0 && $this->config('Conges-Mode') == 'jours') {
                 // 14400 = 4h, 12600 = 3,5h, 25200 = 7h
                 $today = $today <= 14400 ? 12600 : 25200;
             }
-            $total += $today;
+
+            $per_week[$week_id]['times'] += number_format($today / 3600, 2, '.', '');
 
             $current = date("Y-m-d", strtotime("+1 day", strtotime($current)));
         }
 
-        $time = number_format($total / 3600, 2, '.', ''); // 2h30 => 2.5
-        $hours_minutes = explode('.', $time);
+        $total = 0;
+        foreach ($per_week as $week) {
+            $counted = $this->applyWeekTable($week);
+
+            if ($counted > 0) {
+                $total += $counted;
+                continue;
+            }
+
+            $total += $week['times'];
+        }
+
+        $total = number_format($total, 2, '.', '');
+        $hours_minutes = explode('.', $total);
         $result['hours'] = $hours_minutes[0];
-        $result['minutes'] = $hours_minutes[1];
-        $result['hr_hours'] = heure4($time); // 2h30 => 2h30
-        $result['days'] = round($time / 7, 2);
+        $result['minutes'] = isset($hours_minutes[1]) ? $hours_minutes[1] : 0;
+        $result['hr_hours'] = heure4($total); // 2.5 => 2h30
+        $result['days'] = round($total / 7, 2);
 
         return $result;
+    }
+
+    private function applyWeekTable($week)
+    {
+        if($this->config('Conges-Mode') == 'heures') {
+            return 0;
+        }
+
+        // Staff member didn't request a full week.
+        if ($week['requested_days'] < $week['worked_days']) {
+            return 0;
+        }
+
+        $perso_id = $this->data['perso_id'];
+        $agent = $this->entityManager->find(Agent::class, $perso_id);
+        $annual_hours = $agent->conges_annuel() / 7;
+        $counting_chart = $this->config('holiday_counting_chart');
+
+        foreach ($counting_chart as $range => $hours) {
+            list($from, $to) = explode('.', $range);
+
+            if ( $annual_hours >= $from && $annual_hours <= $to ) {
+                return $hours;
+            }
+        }
+
+        return 0;
     }
 
     private function getTimes($planning, $date)
@@ -143,7 +204,7 @@ class HolidayHelper extends BaseHelper
          return $p->elements[0]['temps'];
     }
 
-    private function isTodayHoliday($date)
+    private function isClosingDay($date)
     {
         $j = new \joursFeries();
         $j->fetchByDate($date);
