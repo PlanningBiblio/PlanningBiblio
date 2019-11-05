@@ -522,8 +522,6 @@ class AgentController extends BaseController
                     $reliquatString = $reliquatHeures;
                     $anticipationHeures = $response['anticipation'];
                     $anticipationString = $anticipationHeures;
-                    $recupHeures = $response['recup'];
-                    $recupString = $recupHeures;
                 } else {
                     $annuelHeures = $conges['annuel'] / 7;
                     $annuelString = $annuelHeures;
@@ -533,8 +531,6 @@ class AgentController extends BaseController
                     $reliquatString = $reliquatHeures;
                     $anticipationHeures = $conges['anticipation'] / 7;
                     $anticipationString = $anticipationHeures;
-                    $recupHeures = $conges['recup'] / 7;
-                    $recupString = $recupHeures;
                 }
             }
 
@@ -835,7 +831,7 @@ class AgentController extends BaseController
                     'conges_credit' => $params['conges_credit'] *= 7,
                     'conges_reliquat' => $params['conges_reliquat'] *= 7,
                     'conges_anticipation' => $params['conges_anticipation'] *= 7,
-                    'recup_samedi' => $params['recup'] *= 7,
+                    'recup_samedi' => $params['recup'] + $params['recup_min'],
                     'conges_annuel' => $params['conges_annuel'] *= 7,
                 );
             }
