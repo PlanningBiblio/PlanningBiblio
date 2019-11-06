@@ -1649,6 +1649,21 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="19.11.00.002";
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('Conges-Mode', 'enum2', 'heures', '[[\"heures\",\"Heures\"],[\"jours\",\"Jours\"]]', 'Congés', 'Décompte des congés en heures ou en jours', '2');";
+
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `page` = '/agent' WHERE `page` = 'personnel/modif.php';";
+    $sql[] = "UPDATE `{$dbprefix}menu` SET `url` = '/holiday/index' WHERE `url` = 'conges/voir.php';";
+    $sql[] = "UPDATE `{$dbprefix}menu` SET `url` = '/holiday/index?recup=1' WHERE `url` = 'conges/voir.php&amp;recup=1';";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `page` = '/holiday/index' WHERE `page` = 'conges/voir.php';";
+    $sql[] = "UPDATE `{$dbprefix}menu` SET `url` = '/holiday/new' WHERE `url` = 'conges/enregistrer.php';";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `page` = '/holiday/new' WHERE `page` = 'conges/enregistrer.php';";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `page` = '/holiday/edit' WHERE `page` = 'conges/modif.php';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
