@@ -20,6 +20,7 @@ TODO : Si modification des notifications : adapter le message (lister tous les a
 */
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
+$version = $GLOBALS['version'];
 if (!isset($version)) {
     require_once __DIR__."/../include/accessDenied.php";
 }
@@ -27,7 +28,7 @@ if (!isset($version)) {
 require_once __DIR__."/../ics/class.ics.php";
 require_once __DIR__."/../personnel/class.personnel.php";
 
-use Model\Agent;
+use App\Model\Agent;
 
 
 class absences
@@ -233,7 +234,7 @@ class absences
             // Choix des destinataires des notifications selon la configuration
             if ($GLOBALS['config']['Absences-notifications-agent-par-agent']) {
                 $a=new absences();
-                $a->getRecipients2(null, $agent->perso_id(), $notifications, 500, $debutSQL, $finSQL);
+                $a->getRecipients2(null, $agent->id(), $notifications, 500, $debutSQL, $finSQL);
                 $destinataires = $a->recipients;
             } else {
                 $a = new absences();
