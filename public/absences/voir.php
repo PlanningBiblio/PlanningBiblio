@@ -176,7 +176,7 @@ echo "<input type='button' value='Réinitialiser' onclick='absences_reinit();'  
 echo "</tr></tbody></table>\n";
 echo "</span>\n";
 echo "<span style='float:right; vertical-align:top; margin:10px 5px;'>\n";
-echo "<a href='index.php?page=absences/ajouter.php' class='ui-button'>Ajouter</a>\n";
+echo "<a href='/absence' class='ui-button'>Ajouter</a>\n";
 echo "</span>\n";
 echo "</form>\n";
 
@@ -242,7 +242,7 @@ if ($absences) {
         echo "<tr>\n";
         echo "<td style='white-space: nowrap;'>\n";
         if ($admin or (!$config['Absences-adminSeulement'] and in_array(6, $droits))) {
-            echo "<a href='index.php?page=absences/modif.php&amp;id=$id'>\n";
+            echo "<a href='/absence/$id'>\n";
             echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a>\n";
         }
         if ($elem['rrule']) {
