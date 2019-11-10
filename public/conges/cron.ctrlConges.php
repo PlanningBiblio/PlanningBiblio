@@ -35,7 +35,7 @@ session_start();
 // $version=$argv[0]; = sécurité : autorise l'execution du script en CLI, l'interdit en HTTP
 $version=$argv[0];
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../include/config.php';
 require_once __DIR__ . '/../init_entitymanager.php';
 require_once __DIR__ . '/../include/function.php';
