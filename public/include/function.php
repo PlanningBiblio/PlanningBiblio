@@ -23,10 +23,10 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
     exit;
 }
 
-require_once(__DIR__."/../vendor/phpmailer/phpmailer/src/Exception.php");
-require_once(__DIR__."/../vendor/phpmailer/phpmailer/src/PHPMailer.php");
-require_once(__DIR__."/../vendor/phpmailer/phpmailer/src/SMTP.php");
-require_once(__DIR__."/../vendor/phpmailer/phpmailer/src/OAuth.php");
+require_once(__DIR__."/../../vendor/phpmailer/phpmailer/src/Exception.php");
+require_once(__DIR__."/../../vendor/phpmailer/phpmailer/src/PHPMailer.php");
+require_once(__DIR__."/../../vendor/phpmailer/phpmailer/src/SMTP.php");
+require_once(__DIR__."/../../vendor/phpmailer/phpmailer/src/OAuth.php");
 require_once(__DIR__.'/../personnel/class.personnel.php');
 
 use PHPMailer\PHPMailer\PHPMailer;
