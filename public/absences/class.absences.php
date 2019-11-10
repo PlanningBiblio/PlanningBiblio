@@ -27,7 +27,7 @@ if (!isset($version)) {
 require_once __DIR__."/../ics/class.ics.php";
 require_once __DIR__."/../personnel/class.personnel.php";
 
-use Model\Agent;
+use App\Model\Agent;
 
 
 class absences
