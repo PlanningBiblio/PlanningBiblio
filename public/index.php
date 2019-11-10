@@ -46,13 +46,6 @@ if (empty($_SESSION['login_id'])) {
     }
 }
 
-# Start using twigized script
-$checker = new App\PlanningBiblio\LegacyCodeChecker();
-if ($checker->isTwigized($page)) {
-    include(__DIR__.'/'.$page);
-    exit;
-}
-
 include(__DIR__.'/include/header.php');
 if ($show_menu) {
     include(__DIR__.'/include/menu.php');

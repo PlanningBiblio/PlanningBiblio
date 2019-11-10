@@ -32,7 +32,6 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
 
-use PlanningBiblio\LegacyCodeChecker;
 use App\Model\Agent;
 use App\Model\Access;
 
