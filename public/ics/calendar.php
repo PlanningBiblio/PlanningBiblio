@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : ics/calendar.php
 Création : juillet 2016
-Dernière modification : 30 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -41,7 +40,6 @@ $version="ics";
 
 require_once "../include/config.php";
 require_once "../include/function.php";
-require_once "../plugins/plugins.php";
 require_once "../absences/class.absences.php";
 require_once "../personnel/class.personnel.php";
 require_once "../postes/class.postes.php";
@@ -143,7 +141,7 @@ $a->valide=true;
 $a->fetch("`debut`,`fin`", $id, '0000-00-00 00:00:00', date('Y-m-d', strtotime(date('Y-m-d').' + 2 years')));
 $absences=$a->elements;
 
-// Recherche des congés (si le plugin est installé)
+// Recherche des congés (si le module est activé)
 if ($config['Conges-Enable']) {
     require_once "../conges/class.conges.php";
     $c = new conges();

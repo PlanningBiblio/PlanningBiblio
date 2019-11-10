@@ -7,7 +7,6 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : index.php
 Création : mai 2011
-Dernière modification : 29 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -25,7 +24,6 @@ include_once(__DIR__.'/init_menu.php');
 include_once('init_templates.php');
 
 require_once(__DIR__.'/include/feries.php');
-require_once(__DIR__.'/plugins/plugins.php');
 if (isset($_SESSION['login_id'])) {
     require_once(__DIR__.'/include/cron.php');
 }

@@ -5,9 +5,8 @@ Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
-Fichier : plugins/planningHebdo/ajax.verifPlannings.php
+Fichier : planningHebdo/ajax.verifPlannings.php
 Création : 2 octobre 2013
-Dernière modification : 21 avril 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :

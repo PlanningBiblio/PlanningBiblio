@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Plugin Congés Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2013-2018 Jérôme Combes
 
 Fichier : conges/cron.ctrlConges.php
 Création : 21 juillet 2017
-Dernière modification : 19 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -40,7 +39,6 @@ require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../include/config.php';
 require_once __DIR__ . '/../init_entitymanager.php';
 require_once __DIR__ . '/../include/function.php';
-require_once __DIR__ . '/../plugins/plugins.php';
 require_once __DIR__ . '/class.conges.php';
 require_once __DIR__ . '/../personnel/class.personnel.php';
 

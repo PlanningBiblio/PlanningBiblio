@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.8.1
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/ajax.menudiv.php
 Création : mai 2011
-Dernière modification : 24 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Christophe Le Guennec <Christophe.Leguennec@u-pem.fr>
 
@@ -24,7 +23,6 @@ session_start();
 ini_set("display_error", 0);
 
 require_once "../../include/config.php";
-require_once "../../plugins/plugins.php";
 require_once "../../include/function.php";
 require_once "../../include/horaires.php";
 require_once "../../absences/class.absences.php";

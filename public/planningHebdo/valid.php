@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.8.05
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
-Fichier : plugins/planningHebdo/valid.php
+Fichier : planningHebdo/valid.php
 Création : 23 juillet 2013
-Dernière modification : 6 décembre 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
