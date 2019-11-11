@@ -72,7 +72,7 @@ function mailtest(){
   var fromMail = $('#Mail-From').val();
   var fromName = $('#Mail-FromName').val();
   var signature = $('#Mail-Signature').val();
-  var planning = $('#Mail-Planning').val();
+  var planning = $('#Mail-Planning').val().trim();
   
   var pos = $('#Mail-Test').position();
   top1 = pos.top - 10;
@@ -81,6 +81,11 @@ function mailtest(){
   
   if(enabled == 0){
     CJInfo("Le paramètre \"Mail-IsEnabled\" est d&eacute;sactiv&eacute;","error",top1,8000);
+    return false;
+  }
+
+  if( !planning){
+    CJInfo("Veuillez entrer une (ou plusieurs) adresse(s) valide(s) dans le champ \"Mail-Planning\"","error",top1,8000);
     return false;
   }
 
