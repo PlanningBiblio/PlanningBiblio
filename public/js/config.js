@@ -2,10 +2,9 @@
 Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
+@copyright 2011-2019 Jérôme Combes
 
-Fichier : admin/js/config.js
-Création : 6 mars 2017
+@file public/js/config.js
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -86,7 +85,7 @@ function mailtest(){
   }
 
   $.ajax({
-    url: 'admin/ajax.mailtest.php',
+    url: 'ajax/mail-test',
     type: 'post',
     dataType: 'json',
     data: {mailSmtp: mailSmtp, wordwrap: wordwrap, hostanme: hostname, host: host, port: port, secure: secure, auth: auth, user: user, password: password, fromMail: fromMail, fromName: fromName, signature: signature, planning: planning},
