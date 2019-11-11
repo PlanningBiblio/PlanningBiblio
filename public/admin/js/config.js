@@ -1,12 +1,11 @@
 /**
-Planning Biblio, Version 2.5.7
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : admin/js/config.js
 Création : 6 mars 2017
-Dernière modification : 7 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -61,22 +60,20 @@ function ldaptest(){
 
 function mailtest(){
  
-  var enabled = $('#Mail-IsEnabled').val();
+  var enabled = $('#Mail-IsEnabled').prop('checked');
   var mailSmtp = $('#Mail-IsMail-IsSMTP').val();
   var wordwrap = $('#Mail-WordWrap').val();
   var hostname = $('#Mail-Hostname').val();
   var host = $('#Mail-Host').val();
   var port = $('#Mail-Port').val();
   var secure = $('#Mail-SMTPSecure').val();
-  var auth = $('#Mail-SMTPAuth').val();
-  var auth = $('#Mail-SMTPAuth').val();
+  var auth = $('#Mail-SMTPAuth').prop('checked') ? 1 : 0;
   var user = $('#Mail-Username').val();
   var password = $('#Mail-Password').val();
   var fromMail = $('#Mail-From').val();
   var fromName = $('#Mail-FromName').val();
   var signature = $('#Mail-Signature').val();
   var planning = $('#Mail-Planning').val();
-  
   
   var pos = $('#Mail-Test').position();
   top1 = pos.top - 10;
