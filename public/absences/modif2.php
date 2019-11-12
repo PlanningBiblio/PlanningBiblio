@@ -44,8 +44,6 @@ $groupe=filter_input(INPUT_GET, "groupe", FILTER_SANITIZE_STRING);
 $rrule=filter_input(INPUT_GET, "rrule", FILTER_SANITIZE_STRING);
 $recurrenceModif=filter_input(INPUT_GET, "recurrence-modif", FILTER_SANITIZE_STRING);
 
-$motif = htmlentities($motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
-
 // perso_ids est un tableau de 1 ou plusieurs ID d'agent. Complété même si l'absence ne concerne qu'une personne
 $perso_ids=$_GET['perso_ids'];
 $perso_ids=filter_var_array($perso_ids, FILTER_SANITIZE_NUMBER_INT);
