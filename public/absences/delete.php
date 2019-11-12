@@ -156,7 +156,7 @@ if ($config['Absences-notifications-agent-par-agent']) {
     $destinataires=array();
     foreach ($staff_members as $member) {
         $a=new absences();
-        $a->getRecipients(2, $responsables, $member);
+        $a->getRecipients('-A2', $responsables, $member);
         $destinataires=array_merge($destinataires, $a->recipients);
     }
 

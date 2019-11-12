@@ -19,20 +19,34 @@
               {% else %}
                 <font class='bold' id='valeur_{{ r.id}}'>{{ r.valeur }}</font>
               {% endif %}
-                <select id='type_{{ r.id }}' style='position:absolute;left:330px;'>
-                  <option value='0'>&nbsp;</option>
-                  {% for t in reason_types %}
-                    {% if t.id == r.type %}
-                      <option value='{{ t.id }}' selected="selected">{{ t.valeur }}</option>
-                    {% else %}
-                      <option value='{{ t.id }}'>{{ t.valeur }}</option>
-                    {% endif %}
-                  {% endfor %}
+              <select id='type_{{ r.id }}' style='position:absolute;left:330px;'>
+                <option value='0'>&nbsp;</option>
+                {% for t in reason_types %}
+                  {% if t.id == r.type %}
+                    <option value='{{ t.id }}' selected="selected">{{ t.valeur }}</option>
+                  {% else %}
+                    <option value='{{ t.id }}'>{{ t.valeur }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+
+                <select id="notification-workflow_{{ r.id }}" style="position:absolute;width:190px;left:500px">
+                  {% if r.notification_workflow == 'A' %}
+                    <option value="A" selected="selected">Circuit de notifications A</option>
+                  {% else %}
+                    <option value="A">Circuit de notifications A</option>
+                  {% endif %}
+
+                  {% if r.notification_workflow == 'B' %}
+                    <option value="B" selected="selected">Circuit de notifications B</option>
+                  {% else %}
+                    <option value="B">Circuit de notifications B</option>
+                  {% endif %}
                 </select>
 
-                {% if r.unused %}
-                  <span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick="$(this).closest('li').hide();"></span>
-                {% endif %}
+              {% if r.unused %}
+                <span class='ui-icon ui-icon-trash' style='position:relative;left:655px;top:-20px;cursor:pointer;' onclick="$(this).closest('li').hide();"></span>
+              {% endif %}
             </li>
           {% endfor %}
         {% endif %}

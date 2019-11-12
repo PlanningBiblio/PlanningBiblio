@@ -29,6 +29,7 @@ require_once __DIR__."/../ics/class.ics.php";
 require_once __DIR__."/../personnel/class.personnel.php";
 
 use App\Model\Agent;
+use App\Model\AbsenceReason;
 
 
 class absences
@@ -92,6 +93,8 @@ class absences
         $debutSQL = dateSQL($debut);
         $finSQL = dateSQL($fin);
 
+        $em = $GLOBALS['entityManager'];
+
         // Validation
         // Validation, valeurs par défaut
         $valide_n1 = 0;
@@ -143,6 +146,13 @@ class absences
             $notifications=4;
         }
 
+        $workflow = 'A';
+        $reason = $em->getRepository(AbsenceReason::class)->findoneBy(['valeur' => $motif]);
+        if ($reason) {
+            $workflow = $reason->notification_workflow();
+        }
+        $notifications = "-$workflow$notifications";
+
         // Formatage des dates/heures de début/fin pour les requêtes SQL
         $debut_sql = $debutSQL.' '.$hre_debut;
         $fin_sql = $finSQL.' '.$hre_fin;
@@ -157,7 +167,6 @@ class absences
         // On définie le dtstamp avant la boucle, sinon il différe selon les agents, ce qui est problématique pour retrouver les événéments des membres d'un groupe pour les modifications car le DTSTAMP est intégré dans l'UID
         $dtstamp = gmdate('Ymd\THis\Z');
 
-        $em = $GLOBALS['entityManager'];
         $agents = $em->getRepository(Agent::class)->findById($perso_ids);
 
         // Pour chaque agents

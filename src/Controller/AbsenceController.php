@@ -77,7 +77,7 @@ class AbsenceController extends BaseController
             }
         }
 
-        $agents_multiples = ($adminN1 or $adminN2 or in_array(9, $droits));
+        $agents_multiples = ($adminN1 or $adminN2 or in_array(9, $this->droits));
 
 
         $a = new \absences();
@@ -497,20 +497,5 @@ class AbsenceController extends BaseController
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
             'abences_infos'         => $this->absenceInfos(),
         ));
-    }
-
-    private function getPreparedAbsence($id)
-    {
-        $a = new \absences();
-        $a->fetchById($id);
-
-        $absence = array(
-        );
-
-        if (empty($a->elements)) {
-            return $this->output('accesss-denied.html.twig');
-        }
-
-        return $a;
     }
 }
