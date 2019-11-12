@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
+use App\Model\AbsenceDocument;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -35,7 +36,21 @@ class AbsenceController extends BaseController
 
         // Save absence(s).
         if ($confirm) {
-            $result = $this->save($request, $this->admin);
+
+            $file = $request->files->get('documentFile');
+            //TODO: use isCsrfTokenValid
+            if (!empty($file)) {
+                $filename = $file->getClientOriginalName();
+                $file->move(__DIR__ . "/../../upload/absences/", $filename);
+                $result = $this->save($request, $this->admin);
+
+                $ad = new AbsenceDocument();
+                $ad->absence_id($result['id']);
+                $ad->filename($filename);
+                $this->entityManager->persist($ad);
+                $this->entityManager->flush();
+            }
+
             $msg = $result['msg'];
             $msg2 = $result['msg2'];
             $msg2_type = $result['msg2_type'];
@@ -332,7 +347,8 @@ class AbsenceController extends BaseController
         return array(
             'msg' => $msg,
             'msg2' => $msg2,
-            'msg2_type' => $msg2_type
+            'msg2_type' => $msg2_type,
+            'id' => $a->id
         );
 
     }

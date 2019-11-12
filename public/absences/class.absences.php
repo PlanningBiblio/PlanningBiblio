@@ -332,6 +332,8 @@ class absences
         }
         $this->msg2 = $msg2;
         $this->msg2_type = $msg2_type;
+        $this->id = $id;
+
     }
 
     /**
