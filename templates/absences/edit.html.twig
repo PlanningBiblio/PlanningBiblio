@@ -20,7 +20,7 @@
       Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>
       <a href='index.php?page=absences/voir.php'>Retour à la liste des absences</a><br/><br/>
   {% else %}
-    <form name='form' id='form' method='get' action='index.php' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");'>
+    <form name='form' id='form' method='get' action='/index.php' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");'>
       <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
       <input type='hidden' name='page' value='absences/modif2.php' />
       <input type='hidden' name='perso_id' value='{{ absence.perso_id }}' />

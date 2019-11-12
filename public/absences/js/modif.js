@@ -849,7 +849,7 @@ function verif_absences(ctrl_form){
   var retour=true;
 
   $.ajax({
-    url: "absences/ajax.control.php",
+    url: "/absences/ajax.control.php",
     type: "get",
     datatype: "json",
     data: {perso_ids: JSON.stringify(perso_ids), id: id, groupe: groupe, debut: debut, fin: fin},

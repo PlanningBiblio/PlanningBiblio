@@ -297,6 +297,12 @@ class AbsenceController extends BaseController
         $rrule = $request->get('recurrence-hidden');
         $rcheckbox = $request->get('recurrence-checkbox');
         $valide = $request->get('valide');
+        $allday = $request->get('allday');
+
+        if ($allday) {
+            $hre_debut = '00:00:00';
+            $hre_fin = '23:59:59';
+        }
 
         $pj1 = $request->get('pj1');
         $pj2 = $request->get('pj2');
