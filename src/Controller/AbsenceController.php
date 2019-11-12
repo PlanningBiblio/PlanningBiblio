@@ -48,7 +48,7 @@ class AbsenceController extends BaseController
                 }
 
                 $filename = $file->getClientOriginalName();
-                $file->move(__DIR__ . "/../../upload/absences/", $filename);
+                $file->move(__DIR__ . AbsenceDocument::UPLOAD_DIR, $filename);
                 $result = $this->save($request, $this->admin);
 
                 $ad = new AbsenceDocument();

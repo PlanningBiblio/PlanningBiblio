@@ -7,6 +7,8 @@ namespace App\Model;
  **/
 class AbsenceDocument extends PLBEntity
 {
+    const UPLOAD_DIR = '/../../upload/absences/';
+
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 

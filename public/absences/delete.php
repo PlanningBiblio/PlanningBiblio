@@ -18,7 +18,7 @@ Page appelée par la page index.php après avoir cliqué sur l'icône supprimer 
 
 require_once "class.absences.php";
 
-use Model\Agent;
+use App\Model\Agent;
 
 // Initialisation des variables
 $CSRFToken = filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
