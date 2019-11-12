@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 use App\Model\AbsenceDocument;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
@@ -38,8 +39,14 @@ class AbsenceController extends BaseController
         if ($confirm) {
 
             $file = $request->files->get('documentFile');
-            //TODO: use isCsrfTokenValid
+
             if (!empty($file)) {
+                $token = $request->get("token");
+                if (!$this->isCsrfTokenValid('upload', $token)) {
+                    return new Response("Operation not allowed",  Response::HTTP_BAD_REQUEST,
+                    ['content-type' => 'text/plain']);
+                }
+
                 $filename = $file->getClientOriginalName();
                 $file->move(__DIR__ . "/../../upload/absences/", $filename);
                 $result = $this->save($request, $this->admin);
