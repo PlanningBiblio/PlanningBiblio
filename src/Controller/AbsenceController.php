@@ -152,7 +152,7 @@ class AbsenceController extends BaseController
         $acces = ($adminN1 or $adminN2);
         if (!$acces) {
             // Les non admin ayant le droits de modifier leurs absences ont accès si l'absence les concerne
-            $acces=(in_array(6, $droits) and $perso_id==$_SESSION['login_id'])?true:false;
+            $acces=(in_array(6, $this->droits) and $perso_id==$_SESSION['login_id'])?true:false;
         }
         // Si config Absences-adminSeulement, seuls les admins ont accès à cette page
         if ($this->config('Absences-adminSeulement') and !($adminN1 or $adminN2)) {
@@ -204,6 +204,7 @@ class AbsenceController extends BaseController
         }
 
         // Liste des agents
+        $agents_tous = array();
         if ($agents_multiples) {
             $db_perso=new \db();
             $db_perso->select2("personnel", "*", array("supprime"=>0,"id"=>"<>2"), "order by nom,prenom");
