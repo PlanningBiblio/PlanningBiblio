@@ -382,6 +382,7 @@ $sql[]="CREATE TABLE `{$dbprefix}select_abs` (
   `valeur` text NOT NULL DEFAULT '',
   `rang` int(11) NOT NULL DEFAULT '0',
   `type` INT(1) NOT NULL DEFAULT '0',
+  `notification_workflow` CHAR(1) NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 

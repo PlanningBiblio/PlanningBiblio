@@ -35,7 +35,7 @@ $(function() {
   $("#add-motif-form").dialog({
     autoOpen: false,
     height: 480,
-    width: 560,
+    width: 780,
     modal: true,
     resizable: false,
     draggable: false,
@@ -50,15 +50,20 @@ $(function() {
 	tab=new Array();
 	$("#motifs-sortable li").each(function(){
 	  var id=$(this).attr("id").replace("li_","");
- 	  tab.push(new Array($("#valeur_"+id).text(), $(this).index(), $("#type_"+id+" option:selected").val()));
-	});
-        
+      tab.push(new Array(
+        $("#valeur_"+id).text(),
+        $(this).index(),
+        $("#type_"+id+" option:selected").val(),
+        $("#notification-workflow_" + id).val(),
+      ));
+    });
+
         // Transmet le tableau à la page de validation ajax
 	$.ajax({
-	  url: "include/ajax.menus.php",
+	  url: "/ajax/edit-absence-reasons",
 	  type: "post",
           dataType: "json",
-	  data: {tab: tab, menu:"abs", option: "type", CSRFToken: $('#CSRFSession').val()},
+	  data: {data: tab, menu:"abs", option: "type", CSRFToken: $('#CSRFSession').val()},
 	  success: function(){
             var current_val = $('#motif').val();
             $('#motif').empty();
@@ -120,6 +125,15 @@ $(function() {
       options+="<option value='"+val+"'>"+text+"</option>";
     });
 
+    var select_wf = $("select[id^=notification-workflow_]");
+    var select_id_wf = select_wf.attr("id");
+    var options_wf = "";
+    $("#" + select_id_wf + " option").each(function() {
+      var val=sanitize_string($(this).val());
+      var text=sanitize_string($(this).text());
+      options_wf+="<option value='"+val+"'>"+text+"</option>";
+    });
+
     var text=sanitize_string($("#add-motif-text").val());
     if(!text){
       CJInfo("Donnée invalide","error");
@@ -137,7 +151,10 @@ $(function() {
       +"<select id='type_"+number+"' style='position:absolute;left:330px;'>"
       +options
       +"</select>"
-      +"<span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
+      +"<select id='notification-workflow_"+number+"' style='position:absolute;width:190px;left:500px'>"
+      +options_wf
+      +"</select>"
+      +"<span class='ui-icon ui-icon-trash' style='position:relative;left:655px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
       +"</li>");
 
     // Reset du champ texte une fois l'ajout effectué
@@ -849,7 +866,7 @@ function verif_absences(ctrl_form){
   var retour=true;
 
   $.ajax({
-    url: "absences/ajax.control.php",
+    url: "/absences/ajax.control.php",
     type: "get",
     datatype: "json",
     data: {perso_ids: JSON.stringify(perso_ids), id: id, groupe: groupe, debut: debut, fin: fin},

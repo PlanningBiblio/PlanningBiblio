@@ -26,7 +26,8 @@ $agents_concernes : tous les agents concernés par la modification de l'absences
 require_once "class.absences.php";
 require_once "personnel/class.personnel.php";
 
-use Model\Agent;
+use App\Model\Agent;
+use App\Model\AbsenceReason;
 
 // Initialisation des variables
 $commentaires=trim(filter_input(INPUT_GET, "commentaires", FILTER_SANITIZE_STRING));
@@ -536,6 +537,14 @@ if ($config['Absences-validation']=='0') {
         $notifications=2;
     }
 }
+
+$workflow = 'A';
+$entityManager = $GLOBALS['entityManager'];
+$reason = $entityManager->getRepository(AbsenceReason::class)->findoneBy(['valeur' => $motif]);
+if ($reason) {
+    $workflow = $reason->notification_workflow();
+}
+$notifications = "-$workflow$notifications";
 
 // Liste des responsables
 // Pour chaque agent, recherche des responsables absences

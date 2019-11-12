@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Model\Agent;
 use App\PlanningBiblio\Helper\HolidayHelper;
+use App\Model\AbsenceReason;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -610,7 +611,7 @@ class HolidayController extends BaseController
             $responsables = $c->responsables;
 
             $a = new \absences();
-            $a->getRecipients(1, $responsables, $agent);
+            $a->getRecipients('-A1', $responsables, $agent);
             $destinataires = $a->recipients;
         }
 
@@ -710,6 +711,13 @@ class HolidayController extends BaseController
           $notifications=3;
           break;
         }
+
+        $workflow = 'A';
+        $reason = $this->entityManager->getRepository(AbsenceReason::class)->findoneBy(['valeur' => $motif]);
+        if ($reason) {
+            $workflow = $reason->notification_workflow();
+        }
+        $notifications = "-$workflow$notifications";
 
         // Choix des destinataires en fonction de la configuration
         if ($this->config('Absences-notifications-agent-par-agent')) {
