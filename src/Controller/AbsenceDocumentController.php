@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
+use App\Model\AbsenceDocument;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -18,7 +19,9 @@ class AbsenceDocumentController extends BaseController
      */
     public function index(Request $request, Session $session)
     {
-        $file = new File('/home/planningb/www/planningbiblio/upload/absences/subjects.csv');
+        $id = $request->get('id');
+        $ad = $this->entityManager->getRepository(AbsenceDocument::class)->find($id);
+        $file = new File(__DIR__ . AbsenceDocument::UPLOAD_DIR . $ad->absence_id() . '/' . $ad->filename());
         $response = new BinaryFileResponse($file);
 
         return $response;

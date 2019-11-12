@@ -38,8 +38,9 @@ class AbsenceController extends BaseController
         // Save absence(s).
         if ($confirm) {
 
-            $file = $request->files->get('documentFile');
+            $result = $this->save($request, $this->admin);
 
+            $file = $request->files->get('documentFile');
             if (!empty($file)) {
                 $token = $request->get("token");
                 if (!$this->isCsrfTokenValid('upload', $token)) {
@@ -48,8 +49,7 @@ class AbsenceController extends BaseController
                 }
 
                 $filename = $file->getClientOriginalName();
-                $file->move(__DIR__ . AbsenceDocument::UPLOAD_DIR, $filename);
-                $result = $this->save($request, $this->admin);
+                $file->move(__DIR__ . AbsenceDocument::UPLOAD_DIR . $result['id'], $filename);
 
                 $ad = new AbsenceDocument();
                 $ad->absence_id($result['id']);
