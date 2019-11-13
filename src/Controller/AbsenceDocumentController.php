@@ -42,4 +42,41 @@ class AbsenceDocumentController extends BaseController
         return $response;
     }
 
+   /**
+     * @Route("/absences/document/{id_absence}", name="absences.document.add", methods={"POST"})
+     */
+    public function add(Request $request, Session $session)
+    {
+        $id = $request->get('id_absence');
+        $file = $request->files->get('documentFile');
+        if (!empty($file)) {
+            $filename = $file->getClientOriginalName();
+            $file->move(__DIR__ . AbsenceDocument::UPLOAD_DIR . $id, $filename);
+            $ad = new AbsenceDocument();
+            $ad->absence_id($id);
+            $ad->filename($filename);
+            $this->entityManager->persist($ad);
+            $this->entityManager->flush();
+        }
+        $response = new Response();
+        return $response;
+    }
+
+   /**
+     * @Route("/absences/documents/{id_absence}", name="absences.document.list", methods={"GET"})
+     */
+    public function list(Request $request, Session $session)
+    {
+        $id = $request->get('id_absence');
+        $absdocs = $this->entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);
+        $adarray = array();
+        foreach ($absdocs as $absdoc) {
+            $adarray[] = array('filename' => $absdoc->filename(), 'id' => $absdoc->id());
+        }
+        $response = new Response();
+        $response->setContent(json_encode($adarray));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+    }
+
 }

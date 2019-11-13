@@ -326,6 +326,42 @@ function decompte(dcpt){
 	}
 }
 
+function addAbsenceDocument(id) {
+    var file_data = $('#documentFile').prop('files')[0];
+    if (!file_data) { alert('Vous devez sélectionner un fichier.'); return false; }
+    var form_data = new FormData();
+    form_data.append('documentFile', file_data);
+    $.ajax({
+        url: '/absences/document/' + id,
+        type: 'POST',
+        dataType: 'text',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        success: function(id) {
+            refreshAbsenceDocumentList(id);
+            return false;
+        }.bind(this, id)
+    });
+}
+
+function refreshAbsenceDocumentList(id) {
+        $.ajax({
+            url: '/absences/documents/' + id,
+            type: 'GET',
+            success: function(result) {
+                listString = "<ul>";
+                jQuery.each(result, function() {
+                    listString += '<li id="document_' + this.id + '"><a href="/absences/document/' + this.id + '">' + this.filename + '</a> <a href="javascript:deleteAbsenceDocument(' + this.id + ');">supprimer</a/</li>';
+                });
+                listString += "</ul>";
+                $("#documentsList").replaceWith(listString);
+                return false;
+            }
+        });
+}
+
 function deleteAbsenceDocument(id) {
     if (confirm("Êtes vous sûr(e) de vouloir supprimer ce document ?")) {
         $.ajax({
