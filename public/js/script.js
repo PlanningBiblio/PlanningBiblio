@@ -351,7 +351,7 @@ function refreshAbsenceDocumentList(id) {
             url: '/absences/documents/' + id,
             type: 'GET',
             success: function(result) {
-                listString = "<ul>";
+                listString = "<ul id='documentsList'>";
                 jQuery.each(result, function() {
                     listString += '<li id="document_' + this.id + '"><a href="/absences/document/' + this.id + '">' + this.filename + '</a> <a href="javascript:deleteAbsenceDocument(' + this.id + ');">supprimer</a/</li>';
                 });
