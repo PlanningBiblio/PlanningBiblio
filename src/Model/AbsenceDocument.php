@@ -18,4 +18,9 @@ class AbsenceDocument extends PLBEntity
     /** @Column(type="text") **/
     protected $filename;
 
+    public function deleteFile() {
+        if (!$this->absence_id || !$this->filename) return;
+        unlink(__DIR__ . AbsenceDocument::UPLOAD_DIR . $this->absence_id . '/' . $this->filename);
+    }
+
 }
