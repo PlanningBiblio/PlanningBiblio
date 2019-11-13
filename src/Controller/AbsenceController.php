@@ -49,13 +49,15 @@ class AbsenceController extends BaseController
                 }
 
                 $filename = $file->getClientOriginalName();
-                $file->move(__DIR__ . AbsenceDocument::UPLOAD_DIR . $result['id'], $filename);
 
                 $ad = new AbsenceDocument();
                 $ad->absence_id($result['id']);
                 $ad->filename($filename);
                 $this->entityManager->persist($ad);
                 $this->entityManager->flush();
+
+                $file->move(__DIR__ . AbsenceDocument::UPLOAD_DIR . $result['id'] . '/' . $ad->id(), $filename);
+
             }
 
             $msg = $result['msg'];
