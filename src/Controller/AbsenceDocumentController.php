@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 use App\Model\AbsenceDocument;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\File\File;
@@ -26,4 +27,19 @@ class AbsenceDocumentController extends BaseController
 
         return $response;
     }
+
+    /**
+     * @Route("/absences/document/{id}", name="absences.document.delete", methods={"DELETE"})
+     */
+    public function delete(Request $request, Session $session)
+    {
+        $id = $request->get('id');
+        $ad = $this->entityManager->getRepository(AbsenceDocument::class)->find($id);
+        $ad->deleteFile();
+        $this->entityManager->remove($ad);
+        $this->entityManager->flush();
+        $response = new Response();
+        return $response;
+    }
+
 }

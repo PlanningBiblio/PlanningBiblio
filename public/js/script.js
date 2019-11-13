@@ -326,6 +326,21 @@ function decompte(dcpt){
 	}
 }
 
+function deleteAbsenceDocument(id) {
+    if (confirm("Êtes vous sûr(e) de vouloir supprimer ce document ?")) {
+        $.ajax({
+            url: '/absences/document/' + id,
+            type: 'DELETE',
+            success: function(id) {
+                $("#document_" + id).fadeOut("normal", function() {
+                    $(this).remove();
+                });
+                return false;
+            }.bind(this, id)
+        });
+    }
+}
+
 function deleteAbsenceInfo(id) {
     if (confirm("Etes vous sûr(e) de vouloir supprimer cette information ?")) {
         $('#form').prepend("<input type='hidden' name='_method' value='DEL' />");

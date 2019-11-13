@@ -449,6 +449,17 @@
               </td>
             </tr>
           {% endif %}
+
+            <tr style='vertical-align:top;'>
+              <td><label class='intitule'>Documents attachés</label></td>
+              <td>
+                <ul>
+                  {% for document in documents %}
+                    <li id="document_{{ document.id}}"><a href="/absences/document/{{ document.id }}">{{ document.filename }}</a> <a href="javascript:deleteAbsenceDocument({{ document.id }});">supprimer</a></li>
+                  {% endfor %}
+                </ul>
+              </td>
+            </tr>
           {% if absences_validation %}
             <tr>
               <td><label class='intitule'>Validation</label></td>

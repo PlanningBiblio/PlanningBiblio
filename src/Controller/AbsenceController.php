@@ -271,8 +271,17 @@ class AbsenceController extends BaseController
         }
 
         $this->templateParams(array('button_del_valide' => $button_del_valide));
-
+        $this->templateParams(array('documents' => $this->getDocuments($a->id)));
         return $this->output('absences/edit.html.twig');
+    }
+
+    private function getDocuments($id) {
+        $docsarray = array();
+        $absdocs = $this->entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);
+        foreach ($absdocs as $absdoc) {
+           $docsarray[] = array('filename' => $absdoc->filename(), 'id' => $absdoc->id());
+        }
+        return $docsarray;
     }
 
     private function save(Request $request) {
