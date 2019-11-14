@@ -198,13 +198,13 @@ class AbsenceController extends BaseController
                 }
             }
 
-            if (!$this->config['Absences-notifications-agent-par-agent']) {
+            if (!$this->config('Absences-notifications-agent-par-agent')) {
                 $adminN1 = false;
             }
             $adminN2 = false;
 
             foreach ($sites_agents as $site) {
-                if (!$this->config['Absences-notifications-agent-par-agent']) {
+                if (!$this->config('Absences-notifications-agent-par-agent')) {
                     if (in_array((200+$site), $droits)) {
                         $adminN1 = true;
                     }
