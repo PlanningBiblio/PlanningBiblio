@@ -205,11 +205,11 @@ class AbsenceController extends BaseController
 
             foreach ($sites_agents as $site) {
                 if (!$this->config('Absences-notifications-agent-par-agent')) {
-                    if (in_array((200+$site), $droits)) {
+                    if (in_array((200+$site), $this->droits)) {
                         $adminN1 = true;
                     }
                 }
-                if (in_array((500+$site), $droits)) {
+                if (in_array((500+$site), $this->droits)) {
                     $adminN2 = true;
                 }
             }
