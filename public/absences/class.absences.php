@@ -151,6 +151,9 @@ class absences
         $reason = $em->getRepository(AbsenceReason::class)->findoneBy(['valeur' => $motif]);
         if ($reason) {
             $workflow = $reason->notification_workflow();
+            if (!isset($workflow)) {
+                $workflow = 'A';
+            }
         }
         $notifications = "-$workflow$notifications";
 
