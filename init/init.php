@@ -59,7 +59,7 @@ $page = rtrim($page, '/add');
 $page = rtrim($page, '/');
 
 $ajax = false;
-if (strpos($page, '/ajax') == 0) {
+if (strpos($page, '/ajax') === 0) {
     $ajax = true;
 }
 
