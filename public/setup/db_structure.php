@@ -583,3 +583,10 @@ $sql[]="CREATE TABLE `{$dbprefix}conges_cet` (
   `solde_prec` FLOAT(10),
   `solde_actuel` FLOAT(10),
   `annee` VARCHAR(10));";
+
+// Création de la table absences_documents
+$sql[] = "CREATE TABLE `{$dbprefix}absences_documents` (
+  id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  absence_id int(11) NOT NULL,
+  filename text NOT NULL,
+  date DATETIME NOT NULL);";

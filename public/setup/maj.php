@@ -1698,8 +1698,18 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Gestion des notifications et des droits de validations agent par agent. Si cette option est activée, les paramètres Absences-notifications-A1, A2, A3 et A4 ou B1, B2, B3 et B4 seront écrasés par les choix fait dans la page de configuration des notifications du menu Administration - Notifications / Validations' WHERE `nom` = 'Absences-notifications-agent-par-agent';";
 
     $sql[] = "ALTER table `{$dbprefix}select_abs` ADD COLUMN `notification_workflow` CHAR(1) AFTER `type`;";
-    $sql[] = "UPDATE `{$dbprefix}select_abs` SET `notification_workflow` = 'A'; WHERE `type` != 1";
+    $sql[] = "UPDATE `{$dbprefix}select_abs` SET `notification_workflow` = 'A' WHERE `type` != 1";
 
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="19.11.00.004";
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[] = "CREATE TABLE `{$dbprefix}absences_documents` (id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,absence_id int(11) NOT NULL,filename text NOT NULL, date DATETIME NOT NULL);";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}acces` VALUES(NULL, 'Absences - Voir document', 100, '', '/absences/document', 0, 'Absences')";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}acces` VALUES(NULL, 'Absences - liste documents', 100, '', '/absences/documents', 0, 'Absences')";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES ('Absences-DelaiSuppressionDocuments', 'text', '90', 'Absences','100', 'Les documents associ&eacute;s aux absences sont supprim&eacute;s au-del&agrave; du nombre de jours d&eacute;finis par ce param&egrave;tre.');";
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
