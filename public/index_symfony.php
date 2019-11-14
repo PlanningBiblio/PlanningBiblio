@@ -28,7 +28,7 @@ if (empty($_SESSION['login_id'])) {
 }
 
 // Access denied.
-if (!$authorized && $path != '/access-denied') {
+if (!$authorized && !$ajax && $path != '/access-denied') {
     header("Location: /access-denied");
     exit();
 }

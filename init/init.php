@@ -58,6 +58,11 @@ $page = preg_replace('/([a-z\/]*).*/', "$1", $page);
 $page = rtrim($page, '/add');
 $page = rtrim($page, '/');
 
+$ajax = false;
+if (strpos($page, '/ajax') == 0) {
+    $ajax = true;
+}
+
 $login = $request->get('login');
 
 // Login Anonyme

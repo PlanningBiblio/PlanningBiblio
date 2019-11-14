@@ -3,6 +3,7 @@
 Include symfony framework
 Ability to request holiday in days (optionnal)
 Add a 2nd notifications workflow
+Ability to check permissions on kernel.request event
 
 *** Version 19.10.00       (2019-10-31)   ***
 - Enhancements
