@@ -18,7 +18,8 @@ Page appelée par la page index.php après avoir cliqué sur l'icône supprimer 
 
 require_once "class.absences.php";
 
-use Model\Agent;
+use App\Model\Agent;
+use App\Model\AbsenceDocument;
 
 // Initialisation des variables
 $CSRFToken = filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
@@ -89,6 +90,8 @@ if (!$acces) {
     echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=error';</script>\n";
     exit;
 }
+
+$a->deleteAllDocuments();
 
 // Envoi d'un mail à l'agent et aux responsables
 $message="<b><u/>Suppression d'une absence</u></b> : \n";

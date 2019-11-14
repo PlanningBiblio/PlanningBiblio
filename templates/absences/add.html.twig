@@ -20,7 +20,7 @@
     <tr style='vertical-align:top'>
       <td style='width:560px;'>
 
-        <form id="form" name='form' action='/absence' method='post'>
+        <form id="form" name='form' action='/absence' method='post' enctype='multipart/form-data'>
           <input type='hidden' name='confirm' value='1' />
           <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
           <input type='hidden' id='admin' value='{{ admin }}' />
@@ -271,6 +271,14 @@
                 </td>
               </tr>
             {% endif %}
+
+            <input type="hidden" name="token" value="{{ csrf_token('upload') }}" />
+            <tr style='vertical-align:top;'>
+              <td>
+                <label class='intitule'>Attacher un document</label>
+              </td>
+              <td><input type="file" name="documentFile" id="documentFile" /></td>
+            </tr>
 
             {% if absences_validation %}
               <tr>

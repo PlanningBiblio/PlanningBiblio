@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
+use App\Model\AbsenceDocument;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
@@ -35,7 +37,29 @@ class AbsenceController extends BaseController
 
         // Save absence(s).
         if ($confirm) {
+
             $result = $this->save($request, $this->admin);
+
+            $file = $request->files->get('documentFile');
+            if (!empty($file)) {
+                $token = $request->get("token");
+                if (!$this->isCsrfTokenValid('upload', $token)) {
+                    return new Response("Operation not allowed",  Response::HTTP_BAD_REQUEST,
+                    ['content-type' => 'text/plain']);
+                }
+
+                $filename = $file->getClientOriginalName();
+
+                $ad = new AbsenceDocument();
+                $ad->absence_id($result['id']);
+                $ad->filename($filename);
+                $this->entityManager->persist($ad);
+                $this->entityManager->flush();
+
+                $file->move(__DIR__ . AbsenceDocument::UPLOAD_DIR . $result['id'] . '/' . $ad->id(), $filename);
+
+            }
+
             $msg = $result['msg'];
             $msg2 = $result['msg2'];
             $msg2_type = $result['msg2_type'];
@@ -249,8 +273,17 @@ class AbsenceController extends BaseController
         }
 
         $this->templateParams(array('button_del_valide' => $button_del_valide));
-
+        $this->templateParams(array('documents' => $this->getDocuments($a->id)));
         return $this->output('absences/edit.html.twig');
+    }
+
+    private function getDocuments($id) {
+        $docsarray = array();
+        $absdocs = $this->entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);
+        foreach ($absdocs as $absdoc) {
+           $docsarray[] = array('filename' => $absdoc->filename(), 'id' => $absdoc->id());
+        }
+        return $docsarray;
     }
 
     private function save(Request $request) {
@@ -339,7 +372,8 @@ class AbsenceController extends BaseController
         return array(
             'msg' => $msg,
             'msg2' => $msg2,
-            'msg2_type' => $msg2_type
+            'msg2_type' => $msg2_type,
+            'id' => $a->id
         );
 
     }

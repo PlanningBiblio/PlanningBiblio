@@ -30,6 +30,7 @@ require_once __DIR__."/../personnel/class.personnel.php";
 
 use App\Model\Agent;
 use App\Model\AbsenceReason;
+use App\Model\AbsenceDocument;
 
 
 class absences
@@ -341,6 +342,8 @@ class absences
         }
         $this->msg2 = $msg2;
         $this->msg2_type = $msg2_type;
+        $this->id = $id;
+
     }
 
     /**
@@ -715,6 +718,18 @@ class absences
         return false;
     }
 
+    public function deleteAllDocuments() {
+        if (!$this->id) return;
+        $entityManager = $GLOBALS['entityManager'];
+        $absdocs = $entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $this->id]);
+        foreach ($absdocs as $absdoc) {
+            $absdoc->deleteFile();
+            $entityManager->remove($absdoc);
+        }
+        $entityManager->flush();
+        rmdir(__DIR__ . AbsenceDocument::UPLOAD_DIR . $this->id);
+    }
+
     public function fetch($sort="`debut`,`fin`,`nom`,`prenom`", $agent=null, $debut=null, $fin=null, $sites=null)
     {
         $filter="";
@@ -1043,6 +1058,7 @@ class absences
             $result['agents']=$agents;
             $result['perso_ids']=$perso_ids;
             $this->elements=$result;
+            $this->id = $id;
         }
     }
 
