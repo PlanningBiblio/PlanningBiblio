@@ -53,6 +53,7 @@ class AbsenceController extends BaseController
                 $ad = new AbsenceDocument();
                 $ad->absence_id($result['id']);
                 $ad->filename($filename);
+                $ad->date(new \DateTime());
                 $this->entityManager->persist($ad);
                 $this->entityManager->flush();
 

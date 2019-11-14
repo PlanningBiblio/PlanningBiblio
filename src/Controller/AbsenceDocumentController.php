@@ -54,6 +54,7 @@ class AbsenceDocumentController extends BaseController
             $ad = new AbsenceDocument();
             $ad->absence_id($id);
             $ad->filename($filename);
+            $ad->date(new \DateTime());
             $this->entityManager->persist($ad);
             $this->entityManager->flush();
             $file->move(__DIR__ . AbsenceDocument::UPLOAD_DIR . $id . '/' . $ad->id(), $filename);
