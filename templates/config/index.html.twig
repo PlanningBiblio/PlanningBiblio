@@ -3,7 +3,7 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-  <script type="text/JavaScript" src="admin/js/config.js?version=2.8.04"></script>
+  <script type="text/JavaScript" src="{{ asset('js/config.js') }}"></script>
   <script type="text/JavaScript">
     $( document ).ready(function() {
       $( "#confirm" ).dialog({
