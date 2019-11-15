@@ -1,4 +1,7 @@
 *** Unreleased ***
+- Fixes
+Fix undefined indexes on statistiques/service.php & statut.php
+Fix mail configuration test
 
 *** Version 19.10.00       (2019-10-31)   ***
 - Enhancements
