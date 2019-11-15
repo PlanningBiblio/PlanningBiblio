@@ -23,7 +23,7 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUE
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Aide', 99, '', '/help');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Absences - Index', 100, '', 'absences/index.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Absences - Voir', 100, '', 'absences/voir.php');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Absences - Ajouter', 100, '', 'absences/ajouter.php');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Absences - Ajouter', 100, '', '/absence');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Personnel - Password', 100, '', 'personnel/password.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Admin Index', 100, '', 'admin/index.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Agenda - index', 100, 'Agenda', 'agenda/index.php');";
@@ -121,7 +121,7 @@ $sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('11', 'Renseign
 $sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('12', 'Renseignement sp&eacute;cialis&eacute;');";
 
 // Insertion de la config
-$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Version', 'info', '19.11.00.002', 'Version de l&apos;application',' Divers','','0');";
+$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Version', 'info', '19.11.00.004', 'Version de l&apos;application',' Divers','','0');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('URL', 'info', '', 'URL de l&apos;application',' Divers','','10');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Mail-IsEnabled', 'boolean', '0', 'Active ou d&eacute;sactive l&apos;envoi des mails','Messagerie','','10');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('toutlemonde', 'boolean', '0', 'Affiche ou non l&apos;utilisateur \"tout le monde\" dans le menu.','Planning','','5');";
@@ -225,15 +225,19 @@ $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`,
       ('Planning-CommentairesToujoursActifs', 'boolean', '0', 'Planning','100', 'Afficher la zone de commentaire m&ecirc;me si le planning n\'est pas encore commenc&eacute;.');";
 
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications1','checkboxes','[0,1,2,3]','[[0,\"Agents ayant le droit de g&eacute;rer les absences\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications de nouvelles absences','Absences','40');";
+  VALUES ('Absences-notifications-A1','checkboxes','[0,1,2,3]','[[0,\"Agents ayant le droit de g&eacute;rer les absences\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications de nouvelles absences (Circuit A)','Absences','40');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications2','checkboxes','[0,1,2,3]','[[0,\"Agents ayant le droit de g&eacute;rer les absences\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications de modification d&apos;absences','Absences','50');";
+  VALUES ('Absences-notifications-A2','checkboxes','[0,1,2,3]','[[0,\"Agents ayant le droit de g&eacute;rer les absences\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications de modification d&apos;absences (Circuit A)','Absences','50');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications3','checkboxes','[1]','[[0,\"Agents ayant le droit de g&eacute;rer les absences\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 1','Absences','60');";
+  VALUES ('Absences-notifications-A3','checkboxes','[1]','[[0,\"Agents ayant le droit de g&eacute;rer les absences\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 1 (Circuit A)','Absences','60');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) 
-  VALUES ('Absences-notifications4','checkboxes','[3]','[[0,\"Agents ayant le droit de g&eacute;rer les absences\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 2','Absences','65');";
+  VALUES ('Absences-notifications-A4','checkboxes','[3]','[[0,\"Agents ayant le droit de g&eacute;rer les absences\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 2 (Circuit A)','Absences','65');";
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES
-  ('Absences-notifications-agent-par-agent','boolean', '0', 'Absences', 'Gestion des notifications et des droits de validations agent par agent. Si cette option est activée, les paramètres Absences-notifications1, 2, 3 et 4 seront écrasés par les choix fait dans la page de configuration des notifications du menu Administration - Notifications / Validations','67');";
+  ('Absences-notifications-agent-par-agent','boolean', '0', 'Absences', 'Gestion des notifications et des droits de validations agent par agent. Si cette option est activée, les paramètres Absences-notifications-A1, A2, A3 et A4 ou B1, B2, B3 et B4 seront écrasés par les choix fait dans la page de configuration des notifications du menu Administration - Notifications / Validations','67');";
+$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('Absences-notifications-B1','checkboxes','[0,1,2,3]','[[0,\"Agents ayant le droit de g&eacute;rer les absences\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications de nouvelles absences (Circuit B)','Absences','40');";
+$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('Absences-notifications-B2','checkboxes','[0,1,2,3]','[[0,\"Agents ayant le droit de g&eacute;rer les absences\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications de modification d&apos;absences (Circuit B)','Absences','50');";
+$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('Absences-notifications-B3','checkboxes','[1]','[[0,\"Agents ayant le droit de g&eacute;rer les absences\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 1 (Circuit B)','Absences','60');";
+$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('Absences-notifications-B4','checkboxes','[3]','[[0,\"Agents ayant le droit de g&eacute;rer les absences\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 2 (Circuit B)','Absences','65');";
 
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `commentaires`, `categorie`, `ordre`) 
   VALUES ('Absences-notifications-titre','text','Titre personnalis&eacute; pour les notifications de nouvelles absences','Absences','70'),
@@ -395,7 +399,7 @@ $sql[]="INSERT INTO `{$dbprefix}lignes` (`nom`) VALUES ('Rez de jardin');";
 $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES
   ('10','0','Absences','absences/voir.php',NULL),
   ('10','10','Voir les absences','absences/voir.php',NULL),
-  ('10','20','Ajouter une absence','absences/ajouter.php',NULL),
+  ('10','20','Ajouter une absence','/absence',NULL),
   ('10','30','Informations','/absences/info',NULL),
   ('15','0','Congés','/holiday/index','config=Conges-Enable'),
   ('15','10','Liste des cong&eacute;s','/holiday/index','config=Conges-Enable'),
@@ -593,18 +597,18 @@ $sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `o
 $sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('36', 'Renseignement kiosque', '', '0', 'Renfort', 'Mezzanine', '[9,10]','1','1');";
 
 //	Insertion des motif d'absences
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Non justifi&eacute;e', '1');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Congés pay&eacute;s', '2');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Maladie', '3');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Cong&eacute; maternit&eacute;', '4');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('R&eacute;union syndicale', '5');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Gr&egrave;ve', '6');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Formation', '7');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Concours', '8');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Stage', '9');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('R&eacute;union', '10');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Entretien', '11');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`) VALUES ('Autre', '12');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Non justifiée', '1', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Congés payés', '2', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Maladie', '3', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Congé maternité', '4', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Réunion syndicale', '5', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Grève', '6', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Formation', '7', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Concours', '8', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Stage', '9', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Réunion', '10', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Entretien', '11', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Autre', '12', 'A');";
 
 //	Insertion des catégories
 $sql[]="INSERT INTO `{$dbprefix}select_categories` (`valeur`,`rang`) VALUES ('Cat&eacute;gorie A','10'),('Cat&eacute;gorie B','20'),('Cat&eacute;gorie C','30');";

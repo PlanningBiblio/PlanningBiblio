@@ -19,6 +19,8 @@ Page appelée par la page index.php
 
 require_once "class.absences.php";
 
+use App\Model\AbsenceDocument;
+
 // Initialisation des variables
 $debut=filter_input(INPUT_GET, "debut", FILTER_SANITIZE_STRING);
 $fin=filter_input(INPUT_GET, "fin", FILTER_SANITIZE_STRING);
@@ -176,7 +178,7 @@ echo "<input type='button' value='Réinitialiser' onclick='absences_reinit();'  
 echo "</tr></tbody></table>\n";
 echo "</span>\n";
 echo "<span style='float:right; vertical-align:top; margin:10px 5px;'>\n";
-echo "<a href='index.php?page=absences/ajouter.php' class='ui-button'>Ajouter</a>\n";
+echo "<a href='/absence' class='ui-button'>Ajouter</a>\n";
 echo "</span>\n";
 echo "</form>\n";
 
@@ -198,7 +200,7 @@ if (in_array(701, $droits)) {
     echo "<label style='white-space:nowrap'>Pi&egrave;ces justificatives</label><br/>\n";
     echo "<div class='absences-pj'>PJ 1</div><div class='absences-pj'>PJ 2</div><div class='absences-pj'>SO</div></th>\n";
 }
-
+echo "<th>Documents</th>\n";
 echo "</tr></thead>\n";
 echo "<tbody>\n";
 
@@ -223,6 +225,8 @@ if ($absences) {
 
         $id=$elem['id'];
 
+        $absdocs = $entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);
+
         $nom_n1a = $elem['valide_n1'] != 99999 ? nom($elem['valide_n1'], 'nom p', $agents).", " : null;
         $nom_n1b = $elem['valide_n1'] != -99999 ? nom(-$elem['valide_n1'], 'nom p', $agents).", " : null;
         $nom_n2a = $elem['valide'] != 99999 ? nom($elem['valide'], 'nom p', $agents).", " : null;
@@ -242,7 +246,7 @@ if ($absences) {
         echo "<tr>\n";
         echo "<td style='white-space: nowrap;'>\n";
         if ($admin or (!$config['Absences-adminSeulement'] and in_array(6, $droits))) {
-            echo "<a href='index.php?page=absences/modif.php&amp;id=$id'>\n";
+            echo "<a href='/absence/$id'>\n";
             echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a>\n";
         }
         if ($elem['rrule']) {
@@ -270,6 +274,11 @@ if ($absences) {
             echo "<div class='absences-pj'><input type='checkbox' id='so-$id'  $soChecked  /></div>\n";
             echo "</td>\n";
         }
+        echo "<td>\n";
+        foreach ($absdocs as $absdoc) {
+            echo ("<a href='/absences/document/" . $absdoc->id() . "'>" . $absdoc->filename() . "</a><br />");
+        }
+        echo "</td>\n";
         echo "</tr>\n";
         $i++;
     }

@@ -7,7 +7,7 @@
       <div id='dispo_div'>
         <select id='postes_dispo' name='postes_dispo' style='width:300px;' size='20' multiple='multiple'>
           {% for elem in postes_dispo %}
-            <option value='{{ elem[0] }}'>{{ elem[1] }}</option>
+            <option value='{{ elem[0] }}'>{{ elem[1] | raw }}</option>
           {% endfor %}
         </select>
       </div>
@@ -25,7 +25,7 @@
       <div id='attrib_div'>
         <select id='postes_attribues' name='postes_attribues' style='width:300px;' size='20' multiple='multiple'>
           {% for elem in postes_attribues %}
-            <option value='{{ elem[0] }}'>{{ elem[1] }}</option>
+            <option value='{{ elem[0] }}'>{{ elem[1] | raw }}</option>
           {% endfor %}
         </select>
       </div>

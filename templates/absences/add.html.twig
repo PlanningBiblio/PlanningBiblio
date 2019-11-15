@@ -1,0 +1,476 @@
+{# absences/add.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/absences/js/modif.js?version={{ version }}'></script>
+{% endblock %}
+
+{% block page %}
+  <script type='text/JavaScript'>
+    $( document ).ready(function() {
+      $('#form').submit(function() {
+        return verif_absences("debut=date1;fin=date2;motif");
+      });
+    });
+  </script>
+
+  <h3>Ajouter une absence</h3>
+  <table>
+    <tr style='vertical-align:top'>
+      <td style='width:560px;'>
+
+        <form id="form" name='form' action='/absence' method='post' enctype='multipart/form-data'>
+          <input type='hidden' name='confirm' value='1' />
+          <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
+          <input type='hidden' id='admin' value='{{ admin }}' />
+          <input type='hidden' id='login_id' value='{{ loggedin_id }}' />
+
+          <table class='tableauFiches'>
+            <tr>
+              <td>
+                {% if agents_multiples %}
+                  <label class='intitule'>Agent(s)</label>
+                {% else %}
+                  <label class='intitule'>Agent</label>
+                {% endif %}
+              </td>
+
+              <td colspan='2'>
+                {% if agents_multiples %}
+                  {% if agent_preselection %}
+                    <input type='hidden' name='perso_ids[]' value='{{ loggedin_id }}' id='hidden{{ loggedin_id }}' class='perso_ids_hidden'/>
+                  {% endif %}
+
+                  <ul id='perso_ul1' class='perso_ul'>
+                    {% if agent_preselection %}
+                      <li id='li{{ loggedin_id }}' class='perso_ids_li'>
+                        {{ loggedin_name }} {{ loggedin_firstname }}
+                        {% if admin %}
+                          <span class='perso-drop' onclick="supprimeAgent({{ loggedin_id }});">
+                            <span class='pl-icon pl-icon-drop'></span>
+                          </span>
+                        {% endif %}
+                      </li>
+                    {% endif %}
+                  </ul>
+
+                  <ul id='perso_ul2' class='perso_ul'></ul>
+                  <ul id='perso_ul3' class='perso_ul'></ul>
+                  <ul id='perso_ul4' class='perso_ul'></ul>
+                  <ul id='perso_ul5' class='perso_ul'></ul>
+              
+              </td>
+            </tr>
+
+            <tr>
+              <td>&nbsp;</td>
+              <td>
+                <select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
+                  <option value='0' selected='selected'>-- Ajoutez un agent --</option>
+                  {% if absences_tous %}
+                    <option value='tous'>Tous les agents</option>
+                  {% endif %}
+
+                  {% for a in agents %}
+                    {% if a.id == loggedin_id and agent_preselection %}
+                      <option value='{{ a.id }}' id='option{{ a.id }}' style="display:none;">
+                        {{ a.nom }} {{ a.prenom }}
+                      </option>
+                    {% else %}
+                      <option value='{{ a.id }}' id='option{{ a.id }}'>
+                        {{ a.nom }} {{ a.prenom }}
+                      </option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+                {% else %}
+                  <input type='hidden' name='perso_id' value='{{ loggedin_id }}' class='perso_ids_hidden' />
+                  {{ loggedin_name }} {{ loggedin_firstname }}
+
+                {% endif %}
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <label class='intitule'>Journée(s) entière(s) </label>
+              </td>
+
+              <td>
+                <input type='checkbox' name='allday' checked='checked' onclick='all_day();'/>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <label class='intitule'>Date de début </label>
+              </td>
+
+              <td style='white-space:nowrap;'>
+                <input type='text' name='debut' value='' style='width:100%;' class='recurrence-start datepicker' id='absence-start'/>
+              </td>
+            </tr>
+
+            <tr id='hre_debut' style='display:none;'>
+              <td>
+                <label class='intitule'>Heure de début </label>
+              </td>
+
+              <td>
+                <select name='hre_debut' class='center ui-widget-content ui-corner-all'>
+                  <option value=""></option>
+                  <option value="07:00:00">07h00</option>
+                  <option value="08:00:00">08h00</option>
+                  <option value="09:00:00">09h00</option>
+                  <option value="10:00:00">10h00</option>
+                  <option value="11:00:00">11h00</option>
+                  <option value="12:00:00">12h00</option>
+                  <option value="13:00:00">13h00</option>
+                  <option value="14:00:00">14h00</option>
+                  <option value="15:00:00">15h00</option>
+                  <option value="16:00:00">16h00</option>
+                  <option value="17:00:00">17h00</option>
+                  <option value="19:00:00">18h00</option>
+                  <option value="19:00:00">19h00</option>
+                  <option value="20:00:00">20h00</option>
+                  <option value="21:00:00">21h00</option>
+                  <option value="22:00:00">22h00</option>
+                  <option value="23:00:00">23h00</option>
+                </select>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <label class='intitule'>Date de fin </label>
+              </td>
+
+              <td style='white-space:nowrap;'>
+                <input type='text' name='fin' value='' style='width:100%;' class='datepicker'/>
+              </td>
+            </tr>
+
+            <tr id='hre_fin' style='display:none;'>
+              <td>
+                <label class='intitule'>Heure de fin </label>
+              </td>
+
+              <td>
+                <select name='hre_fin' class='center ui-widget-content ui-corner-all' onfocus='setEndHour();'>
+                  <option value=""></option>
+                  <option value="07:00:00">07h00</option>
+                  <option value="08:00:00">08h00</option>
+                  <option value="09:00:00">09h00</option>
+                  <option value="10:00:00">10h00</option>
+                  <option value="11:00:00">11h00</option>
+                  <option value="12:00:00">12h00</option>
+                  <option value="13:00:00">13h00</option>
+                  <option value="14:00:00">14h00</option>
+                  <option value="15:00:00">15h00</option>
+                  <option value="16:00:00">16h00</option>
+                  <option value="17:00:00">17h00</option>
+                  <option value="19:00:00">18h00</option>
+                  <option value="19:00:00">19h00</option>
+                  <option value="20:00:00">20h00</option>
+                  <option value="21:00:00">21h00</option>
+                  <option value="22:00:00">22h00</option>
+                  <option value="23:00:00">23h00</option>
+                </select>
+              </td>
+            </tr>
+
+            <tr>
+              <td style='padding-bottom:30px;'>
+                <label class='intitule'>Récurrence</label>
+              </td>
+
+              <td style='padding-bottom:30px;'>
+                <input type='checkbox' name='recurrence-checkbox' id='recurrence-checkbox' value='1'/>
+
+                <span id='recurrence-info' style='display:none;'>
+                  <span id='recurrence-summary'>&nbsp;</span>
+                  <a href='#' id='recurrence-link' style='margin-left:10px;'>Modifier</a>
+                </span>
+
+                <input type='hidden' name='recurrence-hidden' id='recurrence-hidden' />
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <label class='intitule'>Motif </label>
+              </td>
+              
+              <td style='white-space:nowrap;'>
+                <select name='motif' id='motif' style='width:100%;' class='ui-widget-content ui-corner-all'>
+                  <option value=''></option>
+                  {% for r in reasons %}
+                    {% if r.type == 2 %}
+                      <option value="{{ r.valeur }}" class="padding20">
+                        &nbsp;&nbsp;&nbsp;{{ r.valeur }}
+                      </option>
+                    {% else %}
+                      {% if r.type == 1 %}
+                        <option value="{{ r.valeur }}" class="bold" disabled="disabled">
+                          {{ r.valeur }}
+                        </option>
+                      {% else %}
+                        <option value="{{ r.valeur }}" class="bold">
+                          {{ r.valeur }}
+                        </option>
+                      {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                </select>
+
+                {% if admin %}
+                  <span class='pl-icon pl-icon-add' title='Ajouter' id='add-motif-button' style='cursor:pointer'></span>
+                {% endif %}
+              </td>
+            </tr>
+
+            <tr style='display:none;' id='tr_motif_autre'>
+              <td>
+                <label class='intitule'>Motif (autre)</label>
+              </td>
+
+              <td>
+                <input type='text' name='motif_autre' style='width:100%;' class='ui-widget-content ui-corner-all'/>
+              </td>
+            </tr>
+
+            <tr style='vertical-align:top;'>
+              <td>
+                <label class='intitule'>Commentaires </label>
+              </td>
+
+              <td>
+                <textarea name='commentaires' cols='16' rows='5' class='ui-widget-content ui-corner-all'></textarea>
+              </td>
+            </tr>
+
+            {% if right701 %}
+              <tr style='vertical-align:top;'>
+                <td>
+                  <label class='intitule'>Pièces justificatives</label>
+                </td>
+
+                <td>
+                  <div class='absences-pj-fiche'>
+                    PJ1 <input type='checkbox' name='pj1' id='pj1' />
+                  </div>
+
+                  <div class='absences-pj-fiche'>
+                    PJ2 <input type='checkbox' name='pj2' id='pj2' />
+                  </div>
+
+                  <div class='absences-pj-fiche'>
+                    SO <input type='checkbox' name='so' id='so' />
+                  </div>
+                </td>
+              </tr>
+            {% endif %}
+
+            <input type="hidden" name="token" value="{{ csrf_token('upload') }}" />
+            <tr style='vertical-align:top;'>
+              <td>
+                <label class='intitule'>Attacher un document</label>
+              </td>
+              <td><input type="file" name="documentFile" id="documentFile" /></td>
+            </tr>
+
+            {% if absences_validation %}
+              <tr>
+                <td>
+                  <label class='intitule'>État </label>
+                </td>
+
+                <td>
+                  {% if admin %}
+                    <select name='valide' class='ui-widget-content ui-corner-all'>
+                      <option value='0'>Demandée</option>
+                      <option value='2'>Acceptée (En attente de validation hiérarchique)</option>\
+                      <option value='-2' >Refusée (En attente de validation hiérarchique)</option>
+                      {% if adminN2 %}
+                        <option value='1' >Acceptée</option>
+                        <option value='-1' >Refusée</option>
+                      {% endif %}
+                    </select>
+                  {% else %}
+                    Demandée
+                  {% endif %}
+                </td>
+              </tr>
+            {% endif %}
+
+            <tr>
+              <td>&nbsp;</td>
+            </tr>
+
+            <tr>
+              <td colspan='2' style='text-align:center;'>
+                <input type='button' class='ui-button' value='Annuler' onclick="document.location.href='index.php?page=absences/voir.php';" />
+                &nbsp;&nbsp;
+                <input type='submit' class='ui-button' value='Valider' />
+
+              </td>
+            </tr>
+          </table>
+        </form>
+      </td>
+
+      <td style='color:#FF5E0E;'>
+        {% if abences_infos %}
+          <b>Informations congés / absences :</b><br/><br/>
+          {% for a in abences_infos %}
+            Du {{ a.debut_fr }} au {{ a.fin_fr }} : {{ a.texte }}<br/>
+          {% endfor %}
+        {% endif %}
+
+      </td>
+    </tr>
+  </table>
+
+  <div id="recurrence-form" title="Récurrence" class='noprint' style='display:none;'>
+    <p class="validateTips">&nbsp;</p>
+    <form>
+      <table class='tableauFiches'>
+        <tr>
+          <td>
+            <label for='recurrence-freq' >Récurrent : 
+          </td>
+
+          <td>
+            <select name='recurrence-freq' id='recurrence-freq' class='recurrence'>
+              <option value='DAILY'>Tous les jours</option>
+              <option value='WEEKLY' selected='selected'>Toutes les semaines</option>
+              <option value='MONTHLY'>Tous les mois</option>
+            </select>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <label for='recurrence-interval' >R&eacute;p&eacute;ter tous les : </label>
+          </td>
+
+          <td>
+            <select name='recurrence-interval' id='recurrence-interval' style='width:50%;' class='recurrence'>
+              <option value='1'>1</option>
+              <option value='2'>2</option>
+              <option value='3'>3</option>
+              <option value='4'>4</option>
+              <option value='5'>5</option>
+              <option value='6'>6</option>
+              <option value='7'>7</option>
+              <option value='8'>8</option>
+              <option value='9'>9</option>
+              <option value='10'>10</option>
+              <option value='11'>11</option>
+              <option value='12'>12</option>
+              <option value='13'>13</option>
+              <option value='14'>14</option>
+              <option value='15'>15</option>
+              <option value='16'>16</option>
+              <option value='17'>17</option>
+              <option value='18'>18</option>
+              <option value='19'>19</option>
+              <option value='20'>20</option>
+              <option value='21'>21</option>
+              <option value='22'>22</option>
+              <option value='23'>23</option>
+              <option value='24'>24</option>
+              <option value='25'>25</option>
+              <option value='26'>26</option>
+              <option value='27'>27</option>
+              <option value='28'>28</option>
+              <option value='29'>29</option>
+              <option value='30'>30</option>
+            </select>
+            <span id='recurrence-repet-freq'>semaines</span>
+          </td>
+        </tr>
+
+        <tr id='recurrence-tr-semaine'>
+          <td>
+            <label>R&eacute;p&eacute;ter le : </label>
+          </td>
+
+          <td>
+            <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day1' value='MO' class='recurrence recurrence-by-day recurrence-by-day1' /><label for='recurrence-by-day1'>L</label>
+            <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day2' value='TU' class='recurrence recurrence-by-day recurrence-by-day2' /><label for='recurrence-by-day2'>Ma</label>
+            <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day3' value='WE' class='recurrence recurrence-by-day recurrence-by-day3' /><label for='recurrence-by-day3'>Me</label>
+            <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day4' value='TH' class='recurrence recurrence-by-day recurrence-by-day4' /><label for='recurrence-by-day4'>J</label>
+            <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day5' value='FR' class='recurrence recurrence-by-day recurrence-by-day5' /><label for='recurrence-by-day5'>V</label>
+            <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day6' value='SA' class='recurrence recurrence-by-day recurrence-by-day6' /><label for='recurrence-by-day6'>S</label>
+            <input type='checkbox' name='recurrence-by-day[]' id='recurrence-by-day0' value='SU' class='recurrence recurrence-by-day recurrence-by-day0' /><label for='recurrence-by-day0'>D</label>
+          </td>
+        </tr>
+
+        <tr id='recurrence-tr-mois' style='display:none;'>
+          <td>
+            <label>Répéter chaque : </label>
+          </td>
+
+          <td>
+            <input type='radio' name='recurrence-repet-mois' id='recurrence-repet-mois1' class='recurrence' value='BYMONTHDAY' checked='cheched' /><label for='recurrence-repet-mois1'>jour du mois</label>
+            <input type='radio' name='recurrence-repet-mois' id='recurrence-repet-mois2' class='recurrence' value='BYDAY' />
+            <label for='recurrence-repet-mois2'>jour de la semaine</label>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <label for='recurrence-debut'>Date de d&eacute;but : </label>
+          </td>
+
+          <td>
+            <span id='recurrence-start'></span>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <label for='recurrence-end'>Fin : </label>
+          </td>
+
+          <td>
+            <ul style='margin:0; padding:0; list-style:none;'>
+              <li style='margin:5px 0;' id='recurrence-end1-li'>
+                <input type='radio' name='recurrence-end' class='recurrence recurrence-end' id='recurrence-end1' value='never' checked='checked' />
+                <label for='recurrence-end1'> Jamais</label>
+              </li>
+
+              <li style='margin:5px 0;' id='recurrence-end2-li'>
+                <input type='radio' name='recurrence-end' class='recurrence recurrence-end' id='recurrence-end2' value='count'/>
+                <label for='recurrence-end2'>  Après 
+                  <input type='text' name='recurrence-count' id='recurrence-count' style='width:30px;' class='recurrence ui-widget ui-corner-all ui-widget-content'/> répétitions
+                </label>
+              </li>
+
+              <li style='margin:5px 0;' id='recurrence-end3-li'>
+                <input type='radio' name='recurrence-end' class='recurrence recurrence-end' id='recurrence-end3' value='until'/>
+                <label for='recurrence-end3'> Le 
+                  <input type='text' name='recurrence-until' id='recurrence-until' style='width:130px;' class='recurrence datepicker'/>
+                </label>
+              </li>
+            </ul>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <label>R&eacute;sum&eacute; : </label>
+          </td>
+
+          <td>
+            <span id='recurrence-summary-form'>&nbsp;</span>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+  {% include 'absences/reasons.html.twig' %}
+
+{% endblock %}

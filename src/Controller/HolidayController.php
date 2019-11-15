@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Model\Agent;
 use App\PlanningBiblio\Helper\HolidayHelper;
+use App\Model\AbsenceReason;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -610,7 +611,7 @@ class HolidayController extends BaseController
             $responsables = $c->responsables;
 
             $a = new \absences();
-            $a->getRecipients(1, $responsables, $agent);
+            $a->getRecipients('-A1', $responsables, $agent);
             $destinataires = $a->recipients;
         }
 
@@ -689,25 +690,25 @@ class HolidayController extends BaseController
         // Modification sans validation
         case 0:
           $sujet="Modification de congés";
-          $notifications=2;
+          $notifications='-A2';
           break;
         // Validations Niveau 2
         case 1:
           $sujet="Validation de congés";
-          $notifications=4;
+          $notifications='-A4';
           break;
         case -1:
           $sujet="Refus de congés";
-          $notifications=4;
+          $notifications='-A4';
           break;
         // Validations Niveau 1
         case 2:
           $sujet = $lang['leave_subject_accepted_pending'];
-          $notifications=3;
+          $notifications='-A3';
           break;
         case -2:
           $sujet = $lang['leave_subject_refused_pending'];
-          $notifications=3;
+          $notifications='-A3';
           break;
         }
 
