@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : personnel/index.php
 Création : mai 2011
-Dernière modification : 21 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Chritophe Le Guennec <christophe.leguennec@u-pem.fr>
 
@@ -109,7 +108,7 @@ foreach ($agents as $agent) {
 
     echo "<tr><td style='white-space:nowrap;'>\n";
     echo "<input type='checkbox' name='chk$i' value='$id' />\n";
-    echo "<a href='agent/add/$id'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>";
+    echo "<a href='agent/$id'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>";
     if (in_array(21, $droits) and $id!=$_SESSION['login_id'] and $id >1) {
         echo "<a href='javascript:popup(\"personnel/suppression.php&amp;id=".$id."\",450,240);'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>";
     }

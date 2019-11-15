@@ -19,7 +19,7 @@ class AgentController extends BaseController
 {
     /**
      * @Route("/agent/add", name="agent.add", methods={"GET"})
-     * @Route("/agent/add/{id}", name="agent.edit", methods={"GET"})
+     * @Route("/agent/{id}", name="agent.edit", methods={"GET"})
      */
     public function add(Request $request)
     {
