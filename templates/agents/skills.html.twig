@@ -17,7 +17,9 @@
       <b>Activités attribu&eacute;es</b><br/>
       <div id='attrib_div'>
         <ul>
-          <li>{{ elem[1] | raw }}</li>
+          {% for elem in postes_attribues %}
+            <li>{{ elem[1] | raw }}</li>
+          {% endfor %}
         </ul>
       </div>
 
