@@ -7,7 +7,6 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : planning/poste/ajax.updateCell.php
 Création : 31 octobre 2014
-Dernière modification : 11 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -24,7 +23,6 @@ session_start();
 // Includes
 require_once "../../include/config.php";
 require_once "../../include/function.php";
-require_once "../../plugins/plugins.php";
 require_once "../../absences/class.absences.php";
 require_once "../../activites/class.activites.php";
 require_once "class.planning.php";

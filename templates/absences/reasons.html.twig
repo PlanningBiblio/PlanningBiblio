@@ -1,0 +1,56 @@
+{# absences/reasons.html.twig #}
+
+<div id="add-motif-form" title="Liste des motifs d'absences" class='noprint' style='display:none;'>
+  <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des motifs dans le menu déroulant.</p>
+  <form>
+    <p>
+      <input type='text' id='add-motif-text' style='width:300px;'/>
+      <input type='button' id='add-motif-button2' class='ui-button' value='Ajouter' style='margin-left:15px;'/>
+    </p>
+
+    <fieldset>
+      <ul id="motifs-sortable">
+        {% if reasons is iterable %}
+          {% for r in reasons %}
+            <li class='ui-state-default' id='li_{{ r.id }}'>
+              <span class='ui-icon ui-icon-arrowthick-2-n-s'></span>
+              {% if r.type == 2 %}
+                <font class='padding20' id='valeur_{{ r.id}}'>{{ r.valeur }}</font>
+              {% else %}
+                <font class='bold' id='valeur_{{ r.id}}'>{{ r.valeur }}</font>
+              {% endif %}
+              <select id='type_{{ r.id }}' style='position:absolute;left:330px;'>
+                <option value='0'>&nbsp;</option>
+                {% for t in reason_types %}
+                  {% if t.id == r.type %}
+                    <option value='{{ t.id }}' selected="selected">{{ t.valeur }}</option>
+                  {% else %}
+                    <option value='{{ t.id }}'>{{ t.valeur }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+
+                <select id="notification-workflow_{{ r.id }}" style="position:absolute;width:190px;left:500px">
+                  {% if r.notification_workflow == 'A' %}
+                    <option value="A" selected="selected">Circuit de notifications A</option>
+                  {% else %}
+                    <option value="A">Circuit de notifications A</option>
+                  {% endif %}
+
+                  {% if r.notification_workflow == 'B' %}
+                    <option value="B" selected="selected">Circuit de notifications B</option>
+                  {% else %}
+                    <option value="B">Circuit de notifications B</option>
+                  {% endif %}
+                </select>
+
+              {% if r.unused %}
+                <span class='ui-icon ui-icon-trash' style='position:relative;left:655px;top:-20px;cursor:pointer;' onclick="$(this).closest('li').hide();"></span>
+              {% endif %}
+            </li>
+          {% endfor %}
+        {% endif %}
+      </ul>
+    </fieldset>
+  </form>
+</div>

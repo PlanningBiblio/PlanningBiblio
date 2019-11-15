@@ -100,7 +100,7 @@ if (isset($_GET['confirm'])) {	// Confirmation
         $responsables = $c->responsables;
 
         $a = new absences();
-        $a->getRecipients(1, $responsables, $agent);
+        $a->getRecipients('-A1', $responsables, $agent);
         $destinataires = $a->recipients;
     }
 

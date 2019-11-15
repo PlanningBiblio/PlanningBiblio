@@ -5,6 +5,7 @@ use App\Controller\BaseController;
 
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 use App\Model\ConfigParam;
 
 class ConfigController extends BaseController
@@ -88,22 +89,19 @@ class ConfigController extends BaseController
     /**
      * @Route("/config", name="config.update"), methods={"POST"})
      */
-    public function update(Request $request)
+    public function update(Request $request, Session $session)
     {
         $params = $request->request->all();
         // Demo mode
         if ($params && !empty($this->config('demo'))) {
-            $warning = "La modification de la configuration n'est pas autorisée sur la version de démonstration.";
-            $warning .= "#BR#Merci de votre compréhension";
-            $this->templateParams(array('warning' => $warning));
+            $error = "La modification de la configuration n'est pas autorisée sur la version de démonstration.";
+            $error .= "#BR#Merci de votre compréhension";
         }
         elseif ($params && CSRFTokenOK($params['CSRFToken'], $_SESSION)) {
 
             $configParams = $this->entityManager->getRepository(ConfigParam::class)->findBy(
                 array(), array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
             );
-
-            $this->templateParams(array('post' => 1));
 
             foreach ($configParams as $cp) {
                 if ($cp->type() == 'info' and $cp->nom() != 'URL') {
@@ -139,11 +137,18 @@ class ConfigController extends BaseController
                     $this->entityManager->persist($cp);
                 }
                 catch (Exception $e) {
-                    $this->templateParams(array('error' => true));
+                    $error = 'Une erreur est survenue pendant la modification de la configuration !';
                 }
             }
             $this->entityManager->flush();
 
+        }
+
+        if (isset($error)) {
+            $session->getFlashBag()->add('error', $error);
+        } else {
+            $flash = 'La configuration a été modifiée avec succès';
+            $session->getFlashBag()->add('notice', $flash);
         }
 
         return $this->redirectToRoute('config.index');

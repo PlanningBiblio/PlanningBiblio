@@ -166,6 +166,11 @@ if (!empty($statuts)) {
 
     // Ajoute le statut pour chaque agents dans le tableau resultat
     for ($i=0;$i<count($resultat);$i++) {
+
+        if ($resultat[$i]['perso_id'] == 0) {
+            continue;
+        }
+
         $resultat[$i]['statut']=$agents[$resultat[$i]['perso_id']]['statut'];
         $resultat[$i]['statut_id']=$agents[$resultat[$i]['perso_id']]['statut_id'];
     }
@@ -198,6 +203,11 @@ if (!empty($statuts)) {
         $postes=array();
         if (is_array($resultat)) {
             foreach ($resultat as $elem) {
+
+                if (!isset($elem['statut_id'])) {
+                    continue;
+                }
+
                 if ($statut==$elem['statut_id']) {
     
       // Vérifie à partir de la table absences si l'agent est absent

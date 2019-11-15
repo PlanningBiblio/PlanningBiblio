@@ -20,6 +20,7 @@ TODO : Si modification des notifications : adapter le message (lister tous les a
 */
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
+$version = $GLOBALS['version'];
 if (!isset($version)) {
     require_once __DIR__."/../include/accessDenied.php";
 }
@@ -27,7 +28,9 @@ if (!isset($version)) {
 require_once __DIR__."/../ics/class.ics.php";
 require_once __DIR__."/../personnel/class.personnel.php";
 
-use Model\Agent;
+use App\Model\Agent;
+use App\Model\AbsenceReason;
+use App\Model\AbsenceDocument;
 
 
 class absences
@@ -91,6 +94,8 @@ class absences
         $debutSQL = dateSQL($debut);
         $finSQL = dateSQL($fin);
 
+        $em = $GLOBALS['entityManager'];
+
         // Validation
         // Validation, valeurs par défaut
         $valide_n1 = 0;
@@ -142,6 +147,16 @@ class absences
             $notifications=4;
         }
 
+        $workflow = 'A';
+        $reason = $em->getRepository(AbsenceReason::class)->findoneBy(['valeur' => $motif]);
+        if ($reason) {
+            $workflow = $reason->notification_workflow();
+            if (!isset($workflow)) {
+                $workflow = 'A';
+            }
+        }
+        $notifications = "-$workflow$notifications";
+
         // Formatage des dates/heures de début/fin pour les requêtes SQL
         $debut_sql = $debutSQL.' '.$hre_debut;
         $fin_sql = $finSQL.' '.$hre_fin;
@@ -156,7 +171,6 @@ class absences
         // On définie le dtstamp avant la boucle, sinon il différe selon les agents, ce qui est problématique pour retrouver les événéments des membres d'un groupe pour les modifications car le DTSTAMP est intégré dans l'UID
         $dtstamp = gmdate('Ymd\THis\Z');
 
-        $em = $GLOBALS['entityManager'];
         $agents = $em->getRepository(Agent::class)->findById($perso_ids);
 
         // Pour chaque agents
@@ -233,7 +247,7 @@ class absences
             // Choix des destinataires des notifications selon la configuration
             if ($GLOBALS['config']['Absences-notifications-agent-par-agent']) {
                 $a=new absences();
-                $a->getRecipients2(null, $agent->perso_id(), $notifications, 500, $debutSQL, $finSQL);
+                $a->getRecipients2(null, $agent->id(), $notifications, 500, $debutSQL, $finSQL);
                 $destinataires = $a->recipients;
             } else {
                 $a = new absences();
@@ -331,6 +345,8 @@ class absences
         }
         $this->msg2 = $msg2;
         $this->msg2_type = $msg2_type;
+        $this->id = $id;
+
     }
 
     /**
@@ -705,6 +721,18 @@ class absences
         return false;
     }
 
+    public function deleteAllDocuments() {
+        if (!$this->id) return;
+        $entityManager = $GLOBALS['entityManager'];
+        $absdocs = $entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $this->id]);
+        foreach ($absdocs as $absdoc) {
+            $absdoc->deleteFile();
+            $entityManager->remove($absdoc);
+        }
+        $entityManager->flush();
+        rmdir(__DIR__ . AbsenceDocument::UPLOAD_DIR . $this->id);
+    }
+
     public function fetch($sort="`debut`,`fin`,`nom`,`prenom`", $agent=null, $debut=null, $fin=null, $sites=null)
     {
         $filter="";
@@ -1033,6 +1061,7 @@ class absences
             $result['agents']=$agents;
             $result['perso_ids']=$perso_ids;
             $this->elements=$result;
+            $this->id = $id;
         }
     }
 

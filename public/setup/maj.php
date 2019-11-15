@@ -7,7 +7,6 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : setup/maj.php
 Création : mai 2011
-Dernière modification : 9 avril 2019
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -51,7 +50,6 @@ if (version_compare($config['Version'], $v) === -1) {
 
         // Droits d'accès
         $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Planning Hebdo - Index','24','Gestion des plannings de présences','planningHebdo/index.php');";
-        $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Planning Hebdo - Configuration','24','Gestion des plannings de présences','planningHebdo/configuration.php');";
         $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Planning Hebdo - Modif','100','planningHebdo/modif.php');";
         $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Planning Hebdo - Mon Compte','100','planningHebdo/monCompte.php');";
         $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Planning Hebdo - Validation','100','planningHebdo/valid.php');";
@@ -91,7 +89,6 @@ if (version_compare($config['Version'], $v) === -1) {
         // Modification des URL
         $sql[]="UPDATE `{$dbprefix}acces` SET `groupe`='Gestion des plannings de présences' WHERE `groupe_id`='24';";
         $sql[]="UPDATE `{$dbprefix}acces` SET `page`='planningHebdo/index.php' WHERE `page`='plugins/planningHebdo/index.php';";
-        $sql[]="UPDATE `{$dbprefix}acces` SET `page`='planningHebdo/configuration.php' WHERE `page`='plugins/planningHebdo/configuration.php';";
         $sql[]="UPDATE `{$dbprefix}acces` SET `page`='planningHebdo/modif.php' WHERE `page`='plugins/planningHebdo/modif.php';";
         $sql[]="UPDATE `{$dbprefix}acces` SET `page`='planningHebdo/monCompte.php' WHERE `page`='plugins/planningHebdo/monCompte.php';";
         $sql[]="UPDATE `{$dbprefix}acces` SET `page`='planningHebdo/valid.php' WHERE `page`='plugins/planningHebdo/valid.php';";
@@ -1208,15 +1205,16 @@ if (version_compare($config['Version'], $v) === -1) {
 
 $v="19.04.00";
 if (version_compare($config['Version'], $v) === -1) {
-    require_once(__DIR__.'/../plugins/plugins.php');
+
+    $db = new db();
+    $db->select2('plugins', '*', array('nom' => 'conges'));
+    $plugin_conges = $db->result ? true : false;
 
     // Plugin is installed yet.
     // So, updating access and menu elements.
-    if (in_array('conges', $plugins)) {
+    if ($plugin_conges) {
 
         // Update the plugin from 2.6 to 2.8 before integration (nothing to do between 2.0 and 2.6)
-        $db = new db();
-        $db->select2('plugins', 'version', array('nom' => 'conges'));
         $conges_version = $db->result[0]['version'];
 
         if ($conges_version < "2.6") {
@@ -1324,7 +1322,7 @@ if (version_compare($config['Version'], $v) === -1) {
             $sql[]="UPDATE `{$dbprefix}plugins` SET `version`='$version' WHERE `nom`='conges';";
         }
 
-        // Insertion du plugin congés:  modification droits d'accès
+        // Insertion du module congés:  modification droits d'accès
         $sql[]="UPDATE `{$dbprefix}acces` SET page='conges/index.php' WHERE page='plugins/conges/index.php';";
         $sql[]="UPDATE `{$dbprefix}acces` SET page='conges/voir.php' WHERE page='plugins/conges/voir.php';";
         $sql[]="UPDATE `{$dbprefix}acces` SET page='conges/enregistrer.php' WHERE page='plugins/conges/enregistrer.php';";
@@ -1337,7 +1335,7 @@ if (version_compare($config['Version'], $v) === -1) {
         $sql[]="UPDATE `{$dbprefix}acces` SET page='conges/recuperation_valide.php' WHERE page='plugins/conges/recuperation_valide.php';";
         $sql[]="UPDATE `{$dbprefix}acces` SET page='conges/recup_pose.php' WHERE page='plugins/conges/recup_pose.php';";
 
-        // Insertion du plugin congés: modification menu
+        // Insertion du module congés: modification menu
         $sql[]="UPDATE `{$dbprefix}menu` SET `url`='conges/voir.php', `condition`='config=Conges-Enable' WHERE `url`='plugins/conges/voir.php';";
         $sql[]="UPDATE `{$dbprefix}menu` SET `url`='conges/enregistrer.php', `condition`='config=Conges-Enable' WHERE `url`='plugins/conges/enregistrer.php';";
         $sql[]="UPDATE `{$dbprefix}menu` SET `url`='conges/recuperations.php', `condition`='config=Conges-Enable' WHERE `url`='plugins/conges/recuperations.php';";
@@ -1346,7 +1344,7 @@ if (version_compare($config['Version'], $v) === -1) {
         $sql[]="UPDATE `{$dbprefix}menu` SET `url`='conges/voir.php&amp;recup=1', `condition`='config=Conges-Enable;Conges-Recuperations' WHERE `url`='plugins/conges/voir.php&amp;recup=1';";
         $sql[]="UPDATE `{$dbprefix}menu` SET `url`='conges/recup_pose.php', `condition`='config=Conges-Enable;Conges-Recuperations' WHERE `url`='plugins/conges/recup_pose.php';";
 
-        // Insertion du plugin congés: ajout des taches planifiées
+        // Insertion du module congés: ajout des taches planifiées
         $sql[]="UPDATE `{$dbprefix}cron` SET command='conges/cron.jan1.php' WHERE command='plugins/conges/cron.jan1.php';";
         $sql[]="UPDATE `{$dbprefix}cron` SET command='conges/cron.sept1.php' WHERE command='plugins/conges/cron.sept1.php';";
 
@@ -1356,7 +1354,7 @@ if (version_compare($config['Version'], $v) === -1) {
     // Plugin is not installed.
     // So installing it the normal way.
     else {
-        // Insertion du plugin congés: configuration
+        // Insertion du module congés: configuration
         $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES ('Conges-Enable', 'boolean', '0', 'Cong&eacute;s', 'Activer le module Congés', '1');";
         $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('Conges-Recuperations', 'enum2', '0', '[[0,\"Assembler\"],[1,\"Dissocier\"]]', 'Cong&eacute;s', 'Traiter les r&eacute;cup&eacute;rations comme les cong&eacute;s (Assembler), ou les traiter s&eacute;par&eacute;ment (Dissocier)', '3');";
         $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('Conges-Validation-N2', 'enum2', '0', '[[0,\"Validation directe autoris&eacute;e\"],[1,\"Le cong&eacute; doit &ecirc;tre valid&eacute; au niveau 1\"]]', 'Cong&eacute;s', 'La validation niveau 2 des cong&eacute;s peut se faire directement ou doit attendre la validation niveau 1', '4');";
@@ -1374,7 +1372,7 @@ if (version_compare($config['Version'], $v) === -1) {
         $config['Recup-DelaiContractuel1'] = '0';
         $config['Recup-DelaiContractuel2'] = '0';
 
-        // Insertion du plugin congés: configuration - gestion des rappels
+        // Insertion du module congés: configuration - gestion des rappels
         $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` )
           VALUES ('Conges-Rappels', 'boolean', '0', 'Cong&eacute;s', 'Activer / D&eacute;sactiver l&apos;envoi de rappels s&apos;il y a des cong&eacute;s non-valid&eacute;s', '6');";
         $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` )
@@ -1384,7 +1382,7 @@ if (version_compare($config['Version'], $v) === -1) {
         $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('Conges-Rappels-N2', 'checkboxes', '[\"mails_responsables\"]',
         '[[\"Mail-Planning\",\"La cellule planning\"],[\"mails_responsables\",\"Les responsables hi&eacute;rarchiques\"]]','Cong&eacute;s', 'A qui envoyer les rappels sur les cong&eacute;s non-valid&eacute;s au niveau 2', '9');";
 
-        // Insertion du plugin congés:  droits d'accès
+        // Insertion du module congés:  droits d'accès
         $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong&eacute;s - Index','100','conges/index.php');";
         $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong&eacute;s - Liste','100','conges/voir.php');";
         $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong&eacute;s - Enregistrer','100','conges/enregistrer.php');";
@@ -1399,7 +1397,7 @@ if (version_compare($config['Version'], $v) === -1) {
         $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong&eacute;s - R&eacute;cup&eacute;rations','100','conges/recuperation_valide.php');";
         $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong&eacute;s - Poser des r&eacute;cup&eacute;rations','100','conges/recup_pose.php');";
 
-        // Insertion du plugin congés: table conges
+        // Insertion du module congés: table conges
         $sql[]="CREATE TABLE `{$dbprefix}conges` (
         `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
         `perso_id` INT(11) NOT NULL,
@@ -1430,7 +1428,7 @@ if (version_compare($config['Version'], $v) === -1) {
         `information` INT(11) NOT NULL DEFAULT 0,
         `info_date` TIMESTAMP NULL DEFAULT NULL);";
 
-        // Insertion du plugin congés: table conges_infos
+        // Insertion du module congés: table conges_infos
         $sql[]="CREATE TABLE `{$dbprefix}conges_infos` (
         `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
         `debut` DATE NULL,
@@ -1438,7 +1436,7 @@ if (version_compare($config['Version'], $v) === -1) {
         `texte` TEXT NULL,
         `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);";
 
-        // Insertion du plugin congés: table récupérations
+        // Insertion du module congés: table récupérations
         $sql[]="CREATE TABLE `{$dbprefix}recuperations` (
         `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
         `perso_id` INT(11) NOT NULL,
@@ -1459,7 +1457,7 @@ if (version_compare($config['Version'], $v) === -1) {
         `solde_prec` FLOAT(10),
         `solde_actuel` FLOAT(10));";
 
-        // Insertion du plugin congés: menu
+        // Insertion du module congés: menu
         $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','0','Cong&eacute;s','conges/voir.php','config=Conges-Enable');";
         $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','10','Liste des cong&eacute;s','conges/voir.php','config=Conges-Enable');";
         $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','15','Liste des r&eacute;cup&eacute;rations','conges/voir.php&amp;recup=1','config=Conges-Enable;Conges-Recuperations');";
@@ -1469,16 +1467,16 @@ if (version_compare($config['Version'], $v) === -1) {
         $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','30','Informations','conges/infos.php','config=Conges-Enable');";
         $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES ('15','40','Cr&eacute;dits','conges/credits.php','config=Conges-Enable');";
 
-        // Insertion du plugin congés: modification de la table personnel
+        // Insertion du module congés: modification de la table personnel
         $sql[]="ALTER TABLE `{$dbprefix}personnel` ADD `conges_credit` FLOAT(10), ADD `conges_reliquat` FLOAT(10), ADD `conges_anticipation` FLOAT(10);";
         $sql[]="ALTER TABLE `{$dbprefix}personnel` ADD `recup_samedi` FLOAT(10);";
         $sql[]="ALTER TABLE `{$dbprefix}personnel` ADD `conges_annuel` FLOAT(10);";
 
-        // Insertion du plugin congés: ajout des taches planifiées
+        // Insertion du module congés: ajout des taches planifiées
         $sql[]="INSERT INTO `{$dbprefix}cron` (m,h,dom,mon,dow,command,comments) VALUES (0,0,1,1,'*','conges/cron.jan1.php','Cron Congés 1er Janvier');";
         $sql[]="INSERT INTO `{$dbprefix}cron` (m,h,dom,mon,dow,command,comments) VALUES (0,0,1,9,'*','conges/cron.sept1.php','Cron Congés 1er Septembre');";
 
-        // Insertion du plugin congés: création de la table conges_CET
+        // Insertion du module congés: création de la table conges_CET
         $sql[]="CREATE TABLE `{$dbprefix}conges_cet` (
         `id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
         `perso_id` INT(11) NOT NULL,
@@ -1660,6 +1658,56 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}menu` SET `url` = '/holiday/new' WHERE `url` = 'conges/enregistrer.php';";
     $sql[] = "UPDATE `{$dbprefix}acces` SET `page` = '/holiday/new' WHERE `page` = 'conges/enregistrer.php';";
     $sql[] = "UPDATE `{$dbprefix}acces` SET `page` = '/holiday/edit' WHERE `page` = 'conges/modif.php';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="19.11.00.003";
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `page` = '/absence' WHERE `page` = 'absences/ajouter.php';";
+    $sql[] = "UPDATE `{$dbprefix}menu` SET `url` = '/absence' WHERE `url` = 'absences/ajouter.php';";
+    $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `page` = 'absences/modif.php';";
+
+    $sql[] = "UPDATE `{$dbprefix}select_abs` SET `valeur` = 'Non justifiée' WHERE `valeur` = 'Non justifi&eacute;e';";
+    $sql[] = "UPDATE `{$dbprefix}select_abs` SET `valeur` = 'Congés payés' WHERE `valeur` = 'Cong&eacute;s pay&eacute;s';";
+    $sql[] = "UPDATE `{$dbprefix}select_abs` SET `valeur` = 'Congé maternité' WHERE `valeur` = 'Cong&eacute; maternit&eacute;';";
+    $sql[] = "UPDATE `{$dbprefix}select_abs` SET `valeur` = 'Réunion syndicale' WHERE `valeur` = 'R&eacute;union syndicale';";
+    $sql[] = "UPDATE `{$dbprefix}select_abs` SET `valeur` = 'Grève' WHERE `valeur` = 'Gr&egrave;ve';";
+    $sql[] = "UPDATE `{$dbprefix}select_abs` SET `valeur` = 'Réunion' WHERE `valeur` = 'R&eacute;union';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Destinataires des notifications de nouvelles absences (Circuit A)' WHERE `nom` = 'Absences-notifications1';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `nom` = 'Absences-notifications-A1' WHERE `nom` = 'Absences-notifications1';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Destinataires des notifications de modification d&apos;absences (Circuit A)' WHERE `nom` = 'Absences-notifications2';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `nom` = 'Absences-notifications-A2' WHERE `nom` = 'Absences-notifications2';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Destinataires des notifications des validations niveau 1 (Circuit A)' WHERE `nom` = 'Absences-notifications3';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `nom` = 'Absences-notifications-A3' WHERE `nom` = 'Absences-notifications3';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Destinataires des notifications des validations niveau 2 (Circuit A)' WHERE `nom` = 'Absences-notifications4';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `nom` = 'Absences-notifications-A4' WHERE `nom` = 'Absences-notifications4';";
+
+
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('Absences-notifications-B1','checkboxes','[0,1,2,3]','[[0,\"Agents ayant le droit de g&eacute;rer les absences\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications de nouvelles absences (Circuit B)','Absences','40');";
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('Absences-notifications-B2','checkboxes','[0,1,2,3]','[[0,\"Agents ayant le droit de g&eacute;rer les absences\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications de modification d&apos;absences (Circuit B)','Absences','50');";
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('Absences-notifications-B3','checkboxes','[1]','[[0,\"Agents ayant le droit de g&eacute;rer les absences\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 1 (Circuit B)','Absences','60');";
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `commentaires`, `categorie`, `ordre`) VALUES ('Absences-notifications-B4','checkboxes','[3]','[[0,\"Agents ayant le droit de g&eacute;rer les absences\"],[1,\"Responsables directs\"],[2,\"Cellule planning\"],[3,\"Agent concern&eacute;\"]]','Destinataires des notifications des validations niveau 2 (Circuit B)','Absences','65');";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Gestion des notifications et des droits de validations agent par agent. Si cette option est activée, les paramètres Absences-notifications-A1, A2, A3 et A4 ou B1, B2, B3 et B4 seront écrasés par les choix fait dans la page de configuration des notifications du menu Administration - Notifications / Validations' WHERE `nom` = 'Absences-notifications-agent-par-agent';";
+
+    $sql[] = "ALTER table `{$dbprefix}select_abs` ADD COLUMN `notification_workflow` CHAR(1) AFTER `type`;";
+    $sql[] = "UPDATE `{$dbprefix}select_abs` SET `notification_workflow` = 'A' WHERE `type` != 1";
+
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="19.11.00.004";
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[] = "CREATE TABLE `{$dbprefix}absences_documents` (id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,absence_id int(11) NOT NULL,filename text NOT NULL, date DATETIME NOT NULL);";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}acces` VALUES(NULL, 'Absences - Voir document', 100, '', '/absences/document', 0, 'Absences')";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}acces` VALUES(NULL, 'Absences - liste documents', 100, '', '/absences/documents', 0, 'Absences')";
+    $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES ('Absences-DelaiSuppressionDocuments', 'text', '90', 'Absences','100', 'Les documents associ&eacute;s aux absences sont supprim&eacute;s au-del&agrave; du nombre de jours d&eacute;finis par ce param&egrave;tre.');";
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }

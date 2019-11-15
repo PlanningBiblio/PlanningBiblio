@@ -26,13 +26,12 @@ $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSI
 $_SESSION['oups']['week'] = isset($_SESSION['oups']['week']) ? $_SESSION['oups']['week'] : '';
 
 // Version
-$version="19.11.00.002"; // xx.xx.xx.xxx
+$version="19.11.00.004"; // xx.xx.xx.xxx
 $displayed_version="19.11.00"; // xx.xx.xx
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
 
-use PlanningBiblio\LegacyCodeChecker;
 use App\Model\Agent;
 use App\Model\Access;
 

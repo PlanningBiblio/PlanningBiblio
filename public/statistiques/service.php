@@ -174,6 +174,11 @@ if (!empty($services)) {
 
     // Ajoute le service pour chaque agents dans le tableau resultat
     for ($i=0;$i<count($resultat);$i++) {
+
+        if ($resultat[$i]['perso_id'] == 0) {
+            continue;
+        }
+
         $resultat[$i]['service']=$agents[$resultat[$i]['perso_id']]['service'];
         $resultat[$i]['service_id']=$agents[$resultat[$i]['perso_id']]['service_id'];
     }
@@ -206,6 +211,11 @@ if (!empty($services)) {
         $postes=array();
         if (is_array($resultat)) {
             foreach ($resultat as $elem) {
+
+                if (!isset($elem['service_id'])) {
+                    continue;
+                }
+
                 if ($service==$elem['service_id']) {
 
       // Vérifie à partir de la table absences si l'agent est absent
