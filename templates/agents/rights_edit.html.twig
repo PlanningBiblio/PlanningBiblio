@@ -5,9 +5,9 @@
     <h3 style='margin:10px 0 5px 0;'>{{ category }}</h3>
     {% for right in elem.rights %}
       {% if right.checked %}
-        <input type='checkbox' name='droits[]' checked="checked" value='{{ right.groupe_id }}' style='margin:0 10px 0 20px;'/>{{ right.groupe }}<br/>
+        <input type='checkbox' name='droits[]' checked="checked" value='{{ right.groupe_id }}' style='margin:0 10px 0 20px;'/>{{ right.groupe | raw }}<br/>
       {% else %}
-        <input type='checkbox' name='droits[]' value='{{ right.groupe_id }}' style='margin:0 10px 0 20px;'/>{{ right.groupe }}<br/>
+        <input type='checkbox' name='droits[]' value='{{ right.groupe_id }}' style='margin:0 10px 0 20px;'/>{{ right.groupe | raw }}<br/>
       {% endif %}
     {% endfor %}
   {% endfor %}
@@ -26,12 +26,12 @@
         {% for category, elem in rights_sites %}
           <tr>
             <td>
-              <h3 style='margin:10px 0 5px 0;'>{{ category }}</h3>
+              <h3 style='margin:10px 0 5px 0;'>{{ category | raw }}</h3>
             </td>
           </tr>
           {% for right in elem.rights %}
             <tr>
-              <td>{{ right.groupe }}</td>
+              <td>{{ right.groupe | raw }}</td>
               {% for s in right.sites %}
                 <td class='center'>
                   {% if s.checked %}
