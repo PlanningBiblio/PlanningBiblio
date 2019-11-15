@@ -57,7 +57,6 @@ if (empty($_SESSION['oups'])) {
 // Authentification CAS
 include_once "ldap/authCAS.php";
 
-include "plugins/plugins.php";
 include "include/header.php";
 
 echo "<div id='content-auth'>\n";

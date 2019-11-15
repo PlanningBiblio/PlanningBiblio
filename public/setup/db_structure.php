@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.8.1
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : setup/db_structure.php
 Création : mai 2011
-Dernière modification : 24 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -421,13 +420,6 @@ $sql[]="CREATE TABLE `{$dbprefix}select_statuts` (
   `rang` int(11) NOT NULL DEFAULT '0',
   `couleur` varchar(7) NOT NULL,
   `categorie` INT(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
-
-$sql[]="CREATE TABLE `{$dbprefix}plugins` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `nom` VARCHAR(30) NOT NULL,
-  `version` VARCHAR(20),
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 

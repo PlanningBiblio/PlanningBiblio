@@ -7,7 +7,6 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : ics/class.ics.php
 Création : 29 mai 2016
-Dernière modification : 9 avril 2019
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -41,7 +40,7 @@ Classe permettant le traitement des fichiers ICS
  */
  
 require_once(__DIR__.'/../include/config.php');
-require_once(__DIR__.'/../vendor/ics-parser/class.iCalReader.php');
+require_once(__DIR__.'/ics-parser/class.iCalReader.php');
 require_once(__DIR__.'/../personnel/class.personnel.php');
 
 class CJICS

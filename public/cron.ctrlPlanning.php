@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : cron.ctrlPlanning.php
 Création : 18 janvier 2016
-Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -39,7 +38,6 @@ chdir($path);
 
 require_once "$path/include/config.php";
 require_once "$path/include/function.php";
-require_once "$path/plugins/plugins.php";
 require_once "$path/absences/class.absences.php";
 require_once "$path/planning/postes_cfg/class.tableaux.php";
 require_once "$path/postes/class.postes.php";
