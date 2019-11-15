@@ -1,0 +1,55 @@
+{# absenceInfo/edit.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+    <h3>Messages d'information</h3>
+
+    {% if id %}
+        <h4>Modifications des messages d'informations</h4>
+    {% else %}
+        <h4>Ajout d'une information</h4>
+    {% endif %}
+
+    <form id='form' method='post' action='{% if id %}{{ url('admin.info.update', {id:id}) }}{% else %}{{ url('admin.info.add') }}{% endif %}' name='form' onsubmit='return verif_form("start=date1;end=date2;text");'>
+        <input type="hidden" name="_token" value="{{ csrf_token('csrf') }}"/>
+        <input type='hidden' name='id' value='{{ id }}'/>
+
+        <table class='tableauFiches'>
+        <tr>
+            <td><label>Date de début</label> </td>
+            <td>
+            <input type='text' name='start' value='{{ start }}' style='width:100%;' class='datepicker'/>
+            </td>
+        </tr>
+
+        <tr>
+            <td><label>Date de fin</label></td>
+            <td>
+            <input type='text' name='end' value='{{ end }}' style='width:100%;' class='datepicker'/>
+            </td>
+        </tr>
+
+        <tr>
+            <td><label>Texte</label></td>
+            <td>
+            <textarea name='text' rows='3' cols='25' class='ui-widget-content ui-corner-all'>{{ text }}</textarea>
+            </td>
+        </tr>
+
+        <tr>
+            <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+            <td colspan='2' style='text-align:center;'>
+            <a href='{{ url('admin.info.index') }}' class='ui-button' style='margin-left:30px;'>Annuler</a>
+            {% if id %}
+                <a href='javascript:deleteAdminInfo({{ id }});' class='ui-button' style='margin-left:30px;' >Supprimer</a>
+            {% endif %}
+            <input type='submit' value='Valider' class='ui-button' style='margin-left:30px;'/>
+            </td>
+        </tr>
+        </table>
+    </form>
+{% endblock %}
