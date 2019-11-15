@@ -1712,6 +1712,14 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="19.11.00.005";
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE page='plugins/%';";
+    $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE page='planningHebdo/configuration.php';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
