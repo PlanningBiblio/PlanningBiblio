@@ -65,9 +65,9 @@
         <option value=''>Aucun</option>
         {%for elem in services %}
           {% if elem.valeur == service %}
-            <option selected="selected" value='{{ elem.valeur }}'>{{ elem.valeur }}</option>\n";
+            <option selected="selected" value='{{ elem.valeur }}'>{{ elem.valeur | raw }}</option>
           {% else %}
-            <option value='{{ elem.valeur }}'>{{ elem.valeur }}</option>\n";
+            <option value='{{ elem.valeur }}'>{{ elem.valeur | raw }}</option>
           {% endif %}
         {% endfor %}
       </select>
