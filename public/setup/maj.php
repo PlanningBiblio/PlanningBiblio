@@ -1714,6 +1714,18 @@ if (version_compare($config['Version'], $v) === -1) {
 
 $v="19.11.00.005";
 if (version_compare($config['Version'], $v) === -1) {
+    $sql[] = "UPDATE `{$dbprefix}menu` SET `url` = '/admin/info' WHERE `url` = 'infos/index.php';";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `page` = '/admin/info' WHERE `page` = 'infos/index.php';";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `page` = '/admin/info/add' WHERE `page` = 'infos/ajout.php';";
+    $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `page` = 'infos/modif.php';";
+    $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `page` = 'infos/supprime.php';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="19.11.00.006";
+if (version_compare($config['Version'], $v) === -1) {
+    // Remove Old plugins system
+    $sql[] = "DROP TABLE `{$dbprefix}plugins`;";
     $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE page='plugins/%';";
     $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE page='planningHebdo/configuration.php';";
 
