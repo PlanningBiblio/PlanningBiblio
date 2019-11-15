@@ -18,6 +18,7 @@ class ControllerAuthorizationListener
     private $permissions = array(
         'ajax.editabsencereasons' => array(100),
         'ajax.holidaydelete' => array(100),
+        'ajax.changepassword' => array(21),
     );
 
     public function __construct(\Twig_Environment $twig)
