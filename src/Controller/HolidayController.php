@@ -690,34 +690,27 @@ class HolidayController extends BaseController
         // Modification sans validation
         case 0:
           $sujet="Modification de congés";
-          $notifications=2;
+          $notifications='-A2';
           break;
         // Validations Niveau 2
         case 1:
           $sujet="Validation de congés";
-          $notifications=4;
+          $notifications='-A4';
           break;
         case -1:
           $sujet="Refus de congés";
-          $notifications=4;
+          $notifications='-A4';
           break;
         // Validations Niveau 1
         case 2:
           $sujet = $lang['leave_subject_accepted_pending'];
-          $notifications=3;
+          $notifications='-A3';
           break;
         case -2:
           $sujet = $lang['leave_subject_refused_pending'];
-          $notifications=3;
+          $notifications='-A3';
           break;
         }
-
-        $workflow = 'A';
-        $reason = $this->entityManager->getRepository(AbsenceReason::class)->findoneBy(['valeur' => $motif]);
-        if ($reason) {
-            $workflow = $reason->notification_workflow();
-        }
-        $notifications = "-$workflow$notifications";
 
         // Choix des destinataires en fonction de la configuration
         if ($this->config('Absences-notifications-agent-par-agent')) {
