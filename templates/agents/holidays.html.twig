@@ -58,7 +58,9 @@
           <label style='text-align:center;padding:5px;'>h</label>
           {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': recup_min, 'name': 'recup_min' } %}
         {% else %}
-          {{ recup_string }} jour(s)
+          <p style='padding-right: 18px;'>
+          {{ recup_string }}
+          </p>
         {% endif %}
       </td>
     </tr>

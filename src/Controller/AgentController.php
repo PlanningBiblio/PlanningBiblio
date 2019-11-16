@@ -506,7 +506,7 @@ class AgentController extends BaseController
             $anticipationString = heure4($conges['anticipation']);
 
             $recupHeures = $conges['recupHeures'] ? $conges['recupHeures'] : 0;
-            $recupString = isset($conges['recup_samedi']) ? heure4($conges['recup_samedi']) : '';
+            $recupString = heure4($conges['recup']);
 
             if ($this->config('Conges-Mode') == 'jours' ) {
                 $event = new OnTransformLeaveHours($conges);

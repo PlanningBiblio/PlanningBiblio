@@ -32,9 +32,9 @@
         <option value=''>Aucun</option>
           {%for elem in statuts %}
             {% if elem.valeur == statut %}
-              <option selected="selected" value="{{ elem.valeur }}">{{ elem.valeur }}</option>
+              <option selected="selected" value="{{ elem.valeur | raw }}">{{ elem.valeur | raw }}</option>
             {% else %}
-              <option value="{{ elem.valeur }}">{{ elem.valeur }}</option>
+              <option value="{{ elem.valeur | raw }}">{{ elem.valeur | raw }}</option>
             {% endif %}
           {% endfor %}
       </select>
@@ -146,9 +146,9 @@
       <td>
         {% for s in sites_select %}
           {% if s.checked %}
-            <input type='checkbox' name='sites[]' value='{{ s.id }}' checked="checked" >{{ s.name }}<br/>
+            <input type='checkbox' name='sites[]' value='{{ s.id }}' checked="checked" >{{ s.name | raw }}<br/>
           {% else %}
-            <input type='checkbox' name='sites[]' value='{{ s.id }}'>{{ s.name }}<br/>
+            <input type='checkbox' name='sites[]' value='{{ s.id }}'>{{ s.name | raw }}<br/>
           {% endif %}
         {% endfor %}
       </td>

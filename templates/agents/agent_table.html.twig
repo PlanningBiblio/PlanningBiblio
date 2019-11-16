@@ -25,7 +25,7 @@
 
   <tr>
     <td>Statut :</td>
-    <td style='white-space:nowrap'>{{ statut }}</td>
+    <td style='white-space:nowrap'>{{ statut | raw }}</td>
   </tr>
 
   <tr>
@@ -35,7 +35,7 @@
 
   <tr>
     <td>Service de rattachement:</td>
-    <td style='white-space:nowrap'>{{ service }}</td>
+    <td style='white-space:nowrap'>{{ service | raw  }}</td>
   </tr>
 
   <tr>
@@ -96,7 +96,7 @@
     <td>E-mails des responsables :</td>
     <td>
       {% for r in mailsResponsables %}
-        <a href='mailto:{{ r|trim }}' style='margin-left:30px;'>{{ r|trim }}</a><br/>
+        <a href='mailto:{{ r|trim }}'>{{ r|trim }}</a><br/>
       {% endfor %}
     </td>
   </tr>
