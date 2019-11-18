@@ -1,0 +1,102 @@
+{# statedweek/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/statedweek.js?version={{ version }}'></script>
+{% endblock %}
+
+{% block page %}
+  <style>
+    #stateweek-header {
+      width: 100%;
+    }
+    #statedweek-tables {
+      width: 100%;
+    }
+    .table-bottom {
+      margin-top: -5px;
+    }
+    .table-right {
+      border-left: 0px;
+    }
+    .text-red {
+      color: red;
+    }
+    .statedweek-table {
+      float: left;
+      border-collapse: collapse;
+    }
+    .statedweek-table td {
+      height: 16px;
+    }
+    .cell-header {
+      text-align: center;
+      background-color: #782513;
+      color: white;
+    }
+    .custom-menu {
+      display: none;
+      z-index: 1000;
+      position: absolute;
+      overflow: hidden;
+      border: 1px solid #CCC;
+      white-space: nowrap;
+      background: #FFF;
+      color: #333;
+      border-radius: 5px;
+      padding: 0;
+    }
+  </style>
+
+  <div id="statedweek">
+    <table id="stateweek-header">
+      <tr>
+        <td>
+          <div class='noprint'>
+            <div id='pl-calendar' class='datepicker'></div>
+          </div>
+        </td>
+
+        <td class="title">
+          <div class='noprint'>
+            <strong>semaine {{ week_number }}</strong>
+          </div>
+
+          <div id="date_text">
+            Planning du {{ date_text }}
+            {% if public_holiday %}
+              - <font id='public_holiday'> {{ public_holiday }}</font>
+            {% endif %}
+          </div>
+
+          <div class="noprint">
+            {% include 'statedweek/days_menu.html.twig' %}
+          </div>
+        </td>
+
+        <td class="actions">
+          <span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning' style='$display1'></span></a>
+          <span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning' style='$display2'></span></a>
+        </td>
+      </tr>
+    </table>
+
+    <table id="statedweek-tables">
+      <tr>
+        <td>
+          {% include 'statedweek/tables/planning.html.twig' %}
+          {% include 'statedweek/tables/poste.html.twig' %}
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          {% include 'statedweek/tables/absences.html.twig' %}
+          {% include 'statedweek/tables/holidays.html.twig' %}
+        </td>
+      </tr>
+    </table>
+  </div>
+  {% include 'statedweek/contextual-menu.html.twig' %}
+{% endblock %}

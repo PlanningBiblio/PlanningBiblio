@@ -1,0 +1,45 @@
+{# statedweek/days_menu.html.twig #}
+
+{% if week_days[0] == date %}
+  <a class="text-red" href="/statedweek?date={{ week_days[0] }}">Lundi</a> /
+{% else %}
+  <a href="/statedweek?date={{ week_days[0] }}">Lundi</a> /
+{% endif %}
+
+{% if week_days[1] == date %}
+  <a class="text-red" href="/statedweek?date={{ week_days[1] }}">Mardi</a> /
+{% else %}
+  <a href="/statedweek?date={{ week_days[1] }}">Mardi</a> /
+{% endif %}
+
+{% if week_days[2] == date %}
+  <a class="text-red" href="/statedweek?date={{ week_days[2] }}">Mercredi</a> /
+{% else %}
+  <a href="/statedweek?date={{ week_days[2] }}">Mercredi</a> /
+{% endif %}
+
+{% if week_days[3] == date %}
+  <a class="text-red" href="/statedweek?date={{ week_days[3] }}">Jeudi</a> /
+{% else %}
+  <a href="/statedweek?date={{ week_days[3] }}">Jeudi</a> /
+{% endif %}
+
+{% if week_days[4] == date %}
+  <a class="text-red" href="/statedweek?date={{ week_days[4] }}">Vendredi</a> /
+{% else %}
+  <a href="/statedweek?date={{ week_days[4] }}">Vendredi</a> /
+{% endif %}
+
+{% if week_days[5] == date %}
+  <a class="text-red" href="/statedweek?date={{ week_days[5] }}">Samedi</a> /
+{% else %}
+  <a href="/statedweek?date={{ week_days[5] }}">Samedi</a>
+{% endif %}
+
+{% if sunday_enabled %}
+  {% if week_days[6] == date %}
+     / <a class="text-red" href="/statedweek?date={{ week_days[6] }}">Dimanche</a>
+  {% else %}
+     / <a href="/statedweek?date={{ week_days[6] }}">Dimanche</a>
+  {% endif %}
+{% endif %}

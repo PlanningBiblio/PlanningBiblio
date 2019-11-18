@@ -1,0 +1,20 @@
+{# statedweek/tables/planning.html.twig #}
+
+<table class="statedweek-table" id="statedweek-planning" border="1">
+  <thead>
+    <tr>
+      <th class="cell-header">9:00 - 17:00</th>
+      <th class="cell-header">13:00 - 20:00</th>
+      <th class="cell-header">15:00 - 22:00</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in 0..24 %}
+      <tr>
+        <td id="first-time-slot-{{ i }}"></td>
+        <td id="second-time-slot-{{ i }}"></td>
+        <td id="third-time-slot-{{ i }}"></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

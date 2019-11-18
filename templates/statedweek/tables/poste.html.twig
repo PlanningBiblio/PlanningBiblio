@@ -1,0 +1,65 @@
+{# statedweek/tables/poste.html.twig #}
+
+<table class="statedweek-table table-right" id="statedweek-poste" border="1">
+  <thead>
+    <tr>
+      <th class="cell-header">Concierges</th>
+      <th class="cell-header">Horaires</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in 0..3 %}
+      <tr>
+        <td id="first-poste-slot-{{ i }}"></td>
+        <td id="first-poste-time-slot-{{ i }}"></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+
+  <thead>
+    <tr>
+      <th class="cell-header">Accueil</th>
+      <th class="cell-header">Horaires</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in 0..3 %}
+      <tr>
+        <td id="second-poste-slot-{{ i }}"></td>
+        <td id="second-poste-time-slot-{{ i }}"></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+
+  <thead>
+    <tr>
+      <th class="cell-header">Autres services</th>
+      <th class="cell-header">Horaires</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in 0..6 %}
+      <tr>
+        <td id="third-poste-slot-{{ i }}"></td>
+        <td id="third-poste-time-slot-{{ i }}"></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+
+  <thead>
+    <tr>
+      <th class="cell-header" colspan="2">Repos</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% set index = 0 %}
+    {% for i in 0..6 %}
+      <tr>
+        <td id="pause-slot-{{ index }}"></td>
+        {% set index = index + 1 %}
+        <td id="pause-slot-{{ index }}"></td>
+      </tr>
+      {% set index = index + 1 %}
+    {% endfor %}
+  </tbody>
+</table>
