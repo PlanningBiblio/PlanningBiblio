@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.7.04
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : statistiques/statut.php
 Création : 13 septembre 2013
-Dernière modification : 22 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -141,7 +140,7 @@ if (!empty($statuts)) {
     foreach ($db->result as $elem) {
         $statutId=null;
         foreach ($statuts_list as $stat) {
-            if ($stat['valeur']==$elem['statut']) {
+            if ($stat['id']==$elem['statut']) {
                 $statutId=$stat['id'];
                 continue;
             }

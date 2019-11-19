@@ -26,6 +26,15 @@ if (!$actif) {
 
 $_SESSION['perso_actif']=$actif;
 
+$statuts = array('' => '');
+$db = new db();
+$db->select('select_statuts');
+if (!empty($db->result)) {
+    foreach ($db->result as $elem) {
+        $statuts[$elem['id']] = $elem['valeur'];
+    }
+}
+
 ?>
 
 <form name='form2' action='index.php' method='get'>
@@ -105,6 +114,8 @@ foreach ($agents as $agent) {
         $heures.="h00";
     }
     $agent['service']=str_replace("`", "'", $agent['service']);
+
+    $agent['statut'] = isset($statuts[$agent['statut']]) ? $statuts[$agent['statut']] : null;
 
     echo "<tr><td style='white-space:nowrap;'>\n";
     echo "<input type='checkbox' name='chk$i' value='$id' />\n";

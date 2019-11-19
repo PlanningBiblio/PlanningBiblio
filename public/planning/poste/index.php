@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/index.php
 Création : mai 2011
-Dernière modification : 7 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -443,6 +442,17 @@ if (!$verrou and !$autorisationN1) {
     global $cellules;
     $cellules=$db->result?$db->result:array();
     usort($cellules, "cmp_nom_prenom");
+
+    // Selection des statuts pour l'ajout des classes statut_
+    global $statuts;
+    $statuts = array('' => '');
+    $db = new db();
+    $db->select('select_statuts');
+    if (!empty($db->result)) {
+        foreach ($db->result as $elem) {
+            $statuts[$elem['id']] = $elem['valeur'];
+        }
+    }
   
     // Recherche des agents volants
     if ($config['Planning-agents-volants']) {

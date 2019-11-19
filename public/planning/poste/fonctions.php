@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/fonctions.php
 Création : mai 2011
-Dernière modification : 25 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -31,6 +30,8 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
     // Recherche des sans repas en dehors de la boucle pour optimiser les performances (juillet 2016)
         $p = new planning();
         $sansRepas = $p->sansRepas($date, $debut, $fin);
+
+        $statuts = $GLOBALS['statuts'];
 
         foreach ($GLOBALS['cellules'] as $elem) {
             $title=null;
@@ -99,7 +100,9 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
       
                 // Classe en fonction du statut et du service
                 if ($elem['statut']) {
-                    $class_tmp[]="statut_".strtolower(removeAccents(str_replace(" ", "_", $elem['statut'])));
+                    if (isset($statuts[$elem['statut']])) {
+                        $class_tmp[]="statut_".strtolower(removeAccents(str_replace(" ", "_", $statuts[$elem['statut']])));
+                    }
                 }
                 if ($elem['service']) {
                     $class_tmp[]="service_".strtolower(removeAccents(str_replace(" ", "_", $elem['service'])));

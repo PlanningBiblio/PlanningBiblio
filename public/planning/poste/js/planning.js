@@ -1,12 +1,11 @@
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 25 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -559,6 +558,9 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
     dataType: "json",
     data: {poste: poste, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, perso_id: perso_id, perso_id_origine: perso_id_origine, barrer: barrer, ajouter: ajouter, site: site, tout: tout, griser: griser},
     success: function(result){
+        statuts = result[1];
+        result = result[0];
+
       $("#td"+cellule).html("");
       
       // Suppression du sans repas sur les cellules ainsi marquée
@@ -628,7 +630,9 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
 
         // Service et Statut
         classes+=" service_"+result[i]["service"].toLowerCase().replace(" ","_");
-        classes+=" statut_"+result[i]["statut"].toLowerCase().replace(" ","_");
+        if (statuts[result[i]["statut"]] != undefined) {
+            classes+=" statut_"+statuts[result[i]["statut"]].toLowerCase().replace(" ","_");
+        }
         
         // Qualifications (activités) de l'agent
         classes+=' '+result[i]['activites'];

@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 4 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -148,6 +147,16 @@ class planning
         $a=new absences();
         $a->CSRFToken = $this->CSRFToken;
         $heuresAbsencesTab=$a->calculHeuresAbsences($date);
+
+        // Selection des statuts pour l'ajout des classes statut_
+        $statuts = array('' => '');
+        $db = new db();
+        $db->select('select_statuts');
+        if (!empty($db->result)) {
+            foreach ($db->result as $elem) {
+                $statuts[$elem['id']] = $elem['valeur'];
+            }
+        }
 
         if (is_array($agents)) {
             usort($agents, "cmp_nom_prenom");
@@ -339,7 +348,9 @@ class planning
                 // Classe en fonction du statut et du service
                 $class_tmp=array();
                 if ($elem['statut']) {
-                    $class_tmp[]="statut_".strtolower(removeAccents(str_replace(" ", "_", $elem['statut'])));
+                    if (isset($statuts[$elem['statut']])) {
+                        $class_tmp[]="statut_".strtolower(removeAccents(str_replace(" ", "_", $statuts[$elem['statut']])));
+                    }
                 }
                 if ($elem['service']) {
                     $class_tmp[]="service_".strtolower(removeAccents(str_replace(" ", "_", $elem['service'])));

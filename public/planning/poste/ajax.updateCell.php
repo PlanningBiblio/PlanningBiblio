@@ -235,7 +235,19 @@ if ($config['Conges-Enable']) {
     include "../../conges/ajax.planning.updateCell.php";
 }
 
-echo json_encode($tab);
+// Selection des statuts pour l'ajout des classes statut_
+$statuts = array('' => '');
+$db = new db();
+$db->select('select_statuts');
+if (!empty($db->result)) {
+    foreach ($db->result as $elem) {
+        $statuts[$elem['id']] = $elem['valeur'];
+    }
+}
+
+$data = array($tab, $statuts);
+
+echo json_encode($data);
 
 /*
 Résultat :

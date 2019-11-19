@@ -80,9 +80,13 @@ class AgentController extends BaseController
         uasort($groupes_sites, 'cmp_ordre');
 
 
+        // Liste des statuts
         $db = new \db();
         $db->select2("select_statuts", null, null, "order by rang");
-        $statuts = $db->result;
+        foreach ($db->result as $elem) {
+            $statuts[$elem['id']] = $elem;
+        }
+
         $db = new \db();
         $db->select2("select_categories", null, null, "order by rang");
         $categories = $db->result;
@@ -129,6 +133,7 @@ class AgentController extends BaseController
             $prenom = $db->result[0]['prenom'];
             $mail = $db->result[0]['mail'];
             $statut = $db->result[0]['statut'];
+            $statut_string = isset($statuts[$statut]) ? $statuts[$statut]['valeur'] : null;
             $categorie = $db->result[0]['categorie'];
             $check_hamac = $db->result[0]['check_hamac'];
             $check_ics = json_decode($db->result[0]['check_ics'], true);
@@ -184,6 +189,7 @@ class AgentController extends BaseController
             $prenom=null;
             $mail=null;
             $statut=null;
+            $statut_string = 'Aucun';
             $categorie=null;
             $check_hamac = 1;
             $check_ics = array(1,1,1);
@@ -291,6 +297,7 @@ class AgentController extends BaseController
             'mail'              => $mail,
             'statuts'           => $statuts,
             'statut'            => $statut,
+            'statut_string'     => $statut_string,
             'statuts_utilises'  => $statuts_utilises,
             'categories'        => $categories,
             'login'             => $login,
@@ -602,7 +609,7 @@ class AgentController extends BaseController
         $recup = isset($params['recup']) ? trim($params['recup']) : null;
         $service = htmlentities($params['service'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
         $sites = array_key_exists("sites", $params) ? $params['sites'] : null;
-        $statut = htmlentities($params['statut'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+        $statut = $params['statut'];
         $temps=array_key_exists("temps", $params) ? $params['temps'] : null;
 
         // Modification du choix des emplois du temps avec l'option EDTSamedi == 1 (EDT différent les semaines avec samedi travaillé)
