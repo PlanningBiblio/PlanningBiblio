@@ -68,8 +68,7 @@ function mailtest(){
   var host = $('#Mail-Host').val();
   var port = $('#Mail-Port').val();
   var secure = $('#Mail-SMTPSecure').val();
-  var auth = $('#Mail-SMTPAuth').val();
-  var auth = $('#Mail-SMTPAuth').val();
+  var auth = $('#Mail-SMTPAuth').prop('checked');
   var user = $('#Mail-Username').val();
   var password = $('#Mail-Password').val();
   var fromMail = $('#Mail-From').val();
