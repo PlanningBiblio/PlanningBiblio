@@ -383,8 +383,8 @@ $(function() {
 	tab=new Array();
 	$("#services-sortable li").each(function(){
 	  var id=$(this).attr("id").replace("li_","");
- 	  tab.push(new Array($("#valeur_"+id).text(), $(this).index()));
-	});
+          tab.push(new Array($("#valeur_"+id).text(), $(this).index(), id));
+        });
 
 	// Transmet le tableau à la page de validation ajax
 	$.ajax({
@@ -392,21 +392,44 @@ $(function() {
 	  type: "post",
           dataType: "json",
 	  data: {tab: tab, menu: "services", CSRFToken: $('#CSRFSession').val()},
-	  success: function(){
+	  success: function(result){
+
+            // New items, from DB
+            items = JSON.parse(result[0]);
+
+            // Used items, from DB
+            used = JSON.parse(result[1]);
+
+            // Keep current value
             var current_val = $('#service').val();
+
+            // Reset menu configurator
+            $("#services-sortable").empty();
+
+            items.forEach(function(item) {
+                trash = '';
+                if ( used.indexOf(item.id) == -1 ) {
+                    trash = "<span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>";
+                }
+
+                $("#services-sortable").append(
+                    "<li class='ui-state-default' id='li_"+item.id+"'>"
+                    + "<span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
+                    + "<font id='valeur_"+item.id+"'>"+item.valeur+"</font>"
+                    + trash
+                    + "</li>"
+                );
+            });
+
+            // Reset dropdown menu
             $('#service').empty();
             $('#service').append("<option value=''>Aucun</option>");
 
-            $("#services-sortable li").each(function(){
-              var id=$(this).attr("id").replace("li_","");
-              var val = $("#valeur_"+id).text();
-              if( val == current_val){
-                var option = "<option value='"+val+"' selected='selected'>"+val+"</option>";
-              } else {
-                var option = "<option value='"+val+"'>"+val+"</option>";
-              }
-              $('#service').append(option);
+            items.forEach(function(item) {
+                selected = item.id == current_val ? "selected='selected'" : '';
+                $('#service').append("<option value='"+item.id+"' "+selected+">"+item.valeur+"</option>");
             });
+
             $("#add-service-form").dialog( "close" );
             $('#service').effect("highlight",null,2000);
 	  },
@@ -461,11 +484,11 @@ $(function() {
     }
     
     var number = 1;
-    while($('#li_'+number).length){
+    while($('#li_new_'+number).length){
       number++;
     }
-    $("#services-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
-      +"<font id='valeur_"+number+"'>"+text+"</font>"
+    $("#services-sortable").append("<li id='li_new_"+number+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
+      +"<font id='valeur_new_"+number+"'>"+text+"</font>"
       +"<span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
       +"</li>");
 

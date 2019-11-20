@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\PlanningBiblio\Event\OnTransformLeaveDays;
 use App\PlanningBiblio\Event\OnTransformLeaveHours;
+use App\Model\Service;
+use App\Model\Statut;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -79,13 +81,17 @@ class AgentController extends BaseController
 
         uasort($groupes_sites, 'cmp_ordre');
 
+        // Liste des services
+        $services = $this->entityManager->getRepository(Service::class)->findBy(
+            array(),
+            array('rang' => 'ASC')
+        );
 
         // Liste des statuts
-        $db = new \db();
-        $db->select2("select_statuts", null, null, "order by rang");
-        foreach ($db->result as $elem) {
-            $statuts[$elem['id']] = $elem;
-        }
+        $statuts = $this->entityManager->getRepository(Statut::class)->findBy(
+            array(),
+            array('rang' => 'ASC')
+        );
 
         $db = new \db();
         $db->select2("select_categories", null, null, "order by rang");
@@ -96,16 +102,6 @@ class AgentController extends BaseController
         if ($db->result) {
             foreach ($db->result as $elem) {
                 $statuts_utilises[]=$elem['statut'];
-            }
-        }
-
-        // Liste des services
-        $services = array();
-        $db = new \db();
-        $db->select2("select_services", null, null, "ORDER BY `rang`");
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $services[]=$elem;
             }
         }
 
@@ -132,12 +128,20 @@ class AgentController extends BaseController
             $nom = $db->result[0]['nom'];
             $prenom = $db->result[0]['prenom'];
             $mail = $db->result[0]['mail'];
-            $statut = $db->result[0]['statut'];
-            $statut_string = isset($statuts[$statut]) ? $statuts[$statut]['valeur'] : null;
             $categorie = $db->result[0]['categorie'];
             $check_hamac = $db->result[0]['check_hamac'];
             $check_ics = json_decode($db->result[0]['check_ics'], true);
+
+            // Services
             $service = $db->result[0]['service'];
+            $service_entity = $this->entityManager->getRepository(Service::class)->findOneById($service);
+            $service_string = $service_entity ? $service_entity->valeur() : "Aucun";
+
+            // Statuts
+            $statut = $db->result[0]['statut'];
+            $statut_entity = $this->entityManager->getRepository(Statut::class)->findOneById($statut);
+            $statut_string = $statut_entity ? $statut_entity->valeur() : "Aucun";
+
             $heuresHebdo = $db->result[0]['heures_hebdo'];
             $heuresTravail = $db->result[0]['heures_travail'];
             $arrivee = dateFr($db->result[0]['arrivee']);
@@ -194,6 +198,7 @@ class AgentController extends BaseController
             $check_hamac = 1;
             $check_ics = array(1,1,1);
             $service=null;
+            $service_string = 'Aucun';
             $heuresHebdo=null;
             $heuresTravail=null;
             $arrivee=null;
@@ -304,6 +309,8 @@ class AgentController extends BaseController
             'contrats'          => $contrats,
             'categorie'         => $categorie,
             'services'          => $services,
+            'service'           => $service,
+            'service_string'    => $service_string,
             'services_utilises' => $services_utilises,
             'service'           => $service,
             'heures_hebdo'      => $heuresHebdo,
@@ -607,7 +614,7 @@ class AgentController extends BaseController
         $postes = $params['postes'];
         $prenom = trim($params['prenom']);
         $recup = isset($params['recup']) ? trim($params['recup']) : null;
-        $service = htmlentities($params['service'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+        $service = $params['service'];
         $sites = array_key_exists("sites", $params) ? $params['sites'] : null;
         $statut = $params['statut'];
         $temps=array_key_exists("temps", $params) ? $params['temps'] : null;

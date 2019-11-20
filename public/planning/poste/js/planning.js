@@ -558,9 +558,6 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
     dataType: "json",
     data: {poste: poste, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, perso_id: perso_id, perso_id_origine: perso_id_origine, barrer: barrer, ajouter: ajouter, site: site, tout: tout, griser: griser},
     success: function(result){
-        statuts = result[1];
-        result = result[0];
-
       $("#td"+cellule).html("");
       
       // Suppression du sans repas sur les cellules ainsi marquée
@@ -608,9 +605,13 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
           classes+=" red striped";
           absence_valide = true;
         // absent == 2 : Absence non validée
-        }else if(result[i]['absent'] == '2'){
+        }else if(result[i]['absent'] == '3'){
           classes+=" red";
           title = agent+=' : Absence non validée';
+        // absent == 2 : En dehors de ses heures de présence
+        }else if(result[i]['absent'] == '2'){
+          classes+=" out-of-work-time";
+          title = 'En dehors de ses heures de présence';
         }
 
         // congés == 1 : Congé validé
@@ -628,12 +629,10 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
           title = '';
         }
 
-        // Service et Statut
-        classes+=" service_"+result[i]["service"].toLowerCase().replace(" ","_");
-        if (statuts[result[i]["statut"]] != undefined) {
-            classes+=" statut_"+statuts[result[i]["statut"]].toLowerCase().replace(" ","_");
-        }
-        
+        // Statut et service
+        classes+=" statut_"+result[i]["statut"];
+        classes+=" service_"+result[i]["service"];
+
         // Qualifications (activités) de l'agent
         classes+=' '+result[i]['activites'];
 

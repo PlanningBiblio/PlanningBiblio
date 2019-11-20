@@ -443,6 +443,22 @@ if (!$verrou and !$autorisationN1) {
     $cellules=$db->result?$db->result:array();
     usort($cellules, "cmp_nom_prenom");
 
+    // Selection des services pour l'ajout des classes service_
+    global $services;
+    $services = array('' => '');
+    $db = new db();
+    $db->select('select_services');
+    if (!empty($db->result)) {
+        foreach ($db->result as $elem) {
+            $value = $elem['valeur'];
+            $value = removeAccents($value);
+            $value = html_entity_decode($value, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $value = strtolower($value);
+            $value = str_replace(array(" ", "'", '"'), '_', $value);
+            $services[$elem['id']] = $value;
+        }
+    }
+
     // Selection des statuts pour l'ajout des classes statut_
     global $statuts;
     $statuts = array('' => '');
@@ -450,7 +466,12 @@ if (!$verrou and !$autorisationN1) {
     $db->select('select_statuts');
     if (!empty($db->result)) {
         foreach ($db->result as $elem) {
-            $statuts[$elem['id']] = $elem['valeur'];
+            $value = $elem['valeur'];
+            $value = removeAccents($value);
+            $value = html_entity_decode($value, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $value = strtolower($value);
+            $value = str_replace(array(" ", "'", '"'), '_', $value);
+            $statuts[$elem['id']] = $value;
         }
     }
   

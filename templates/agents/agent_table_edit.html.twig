@@ -64,10 +64,10 @@
       <select name='service' id='service' style='width:405px'>
         <option value=''>Aucun</option>
         {%for elem in services %}
-          {% if elem.valeur == service %}
-            <option selected="selected" value='{{ elem.valeur }}'>{{ elem.valeur | raw }}</option>
+          {% if elem.id == service %}
+            <option selected="selected" value='{{ elem.id }}'>{{ elem.valeur }}</option>
           {% else %}
-            <option value='{{ elem.valeur }}'>{{ elem.valeur | raw }}</option>
+            <option value='{{ elem.id }}'>{{ elem.valeur }}</option>
           {% endif %}
         {% endfor %}
       </select>

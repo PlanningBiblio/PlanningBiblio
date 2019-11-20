@@ -35,6 +35,15 @@ if (!empty($db->result)) {
     }
 }
 
+$services = array('' => '');
+$db = new db();
+$db->select('select_services');
+if (!empty($db->result)) {
+    foreach ($db->result as $elem) {
+        $services[$elem['id']] = $elem['valeur'];
+    }
+}
+
 ?>
 
 <form name='form2' action='index.php' method='get'>
@@ -113,7 +122,7 @@ foreach ($agents as $agent) {
     if (is_numeric($heures)) {
         $heures.="h00";
     }
-    $agent['service']=str_replace("`", "'", $agent['service']);
+    $agent['service'] = isset($services[$agent['service']]) ? $services[$agent['service']] : null;
 
     $agent['statut'] = isset($statuts[$agent['statut']]) ? $statuts[$agent['statut']] : null;
 

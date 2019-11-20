@@ -29,17 +29,26 @@ $option = FILTER_INPUT(INPUT_POST, 'option', FILTER_SANITIZE_STRING);
 $tab = $_POST['tab'];
 
 // New process
-if ($menu == 'statuts') {
+if (in_array($menu, array('services', 'statuts'))) {
 
     $insert = array();
     $update = array();
     $update_ids = array();
 
+    switch($menu) {
+        case 'services' :
+            $index = 2;
+            break;
+        case 'statuts' :
+            $index = 3;
+            break;
+    }
+
     foreach ($tab as $elem) {
-        if ( is_numeric($elem[3])) {
+        if ( is_numeric($elem[$index])) {
             $update[] = $elem;
-            $update_ids[] = $elem[3];
-        } elseif (substr($elem[3], 0, 4) == 'new_') {
+            $update_ids[] = $elem[$index];
+        } elseif (substr($elem[$index], 0, 4) == 'new_') {
             $insert[] = $elem;
         }
     }
@@ -61,26 +70,46 @@ if ($menu == 'statuts') {
     // Update changed items
     $db = new dbh();
     $db->CSRFToken = $CSRFToken;
-    if ($menu == 'statuts') {
-        $db->prepare("UPDATE `select_$menu` SET `valeur` = :valeur, `categorie` = :categorie, `rang` = :rang WHERE `id` = :id;");
+    switch($menu) {
+        case 'services' :
+            $db->prepare("UPDATE `select_$menu` SET `valeur` = :valeur, `rang` = :rang WHERE `id` = :id;");
+            break;
+        case 'statuts' :
+            $db->prepare("UPDATE `select_$menu` SET `valeur` = :valeur, `categorie` = :categorie, `rang` = :rang WHERE `id` = :id;");
+            break;
     }
 
     foreach ($update as $elem) {
-        if ($menu == 'statuts') {
-            $db->execute(array(':valeur' => $elem[0], ':rang' => $elem[1], ':categorie' => $elem[2], ':id' => $elem[3]));
+        switch($menu) {
+            case 'services' :
+                $db->execute(array(':valeur' => $elem[0], ':rang' => $elem[1], ':id' => $elem[2]));
+                break;
+            case 'statuts' :
+                $db->execute(array(':valeur' => $elem[0], ':rang' => $elem[1], ':categorie' => $elem[2], ':id' => $elem[3]));
+                break;
         }
     }
 
     // Add new items
     $db = new dbh();
     $db->CSRFToken = $CSRFToken;
-    if ($menu == 'statuts') {
-        $db->prepare("INSERT INTO `select_$menu` (`valeur`, `rang`, `categorie`) VALUES (:valeur, :rang, :categorie);");
+    switch($menu) {
+        case 'services' :
+            $db->prepare("INSERT INTO `select_$menu` (`valeur`, `rang`) VALUES (:valeur, :rang);");
+            break;
+        case 'statuts' :
+            $db->prepare("INSERT INTO `select_$menu` (`valeur`, `rang`, `categorie`) VALUES (:valeur, :rang, :categorie);");
+            break;
     }
 
     foreach ($insert as $elem) {
-        if ($menu == 'statuts') {
-            $db->execute(array(':valeur' => $elem[0], ':rang' => $elem[1], ':categorie' => $elem[2]));
+        switch($menu) {
+            case 'services' :
+                $db->execute(array(':valeur' => $elem[0], ':rang' => $elem[1]));
+                break;
+            case 'statuts' :
+                $db->execute(array(':valeur' => $elem[0], ':rang' => $elem[1], ':categorie' => $elem[2]));
+                break;
         }
     }
 
@@ -91,13 +120,13 @@ if ($menu == 'statuts') {
 
     // Select used items
     $used = array();
-    if ($menu == 'statuts') {
-        $db = new db();
-        $db->select("personnel", "statut", null, "GROUP BY `statut`");
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $used[] = $elem['statut'];
-            }
+
+    $field = substr($menu, 0, -1);
+    $db = new db();
+    $db->select("personnel", $field, null, "GROUP BY `$field`");
+    if ($db->result) {
+        foreach ($db->result as $elem) {
+            $used[] = $elem[$field];
         }
     }
     $used = json_encode($used);

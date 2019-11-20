@@ -148,13 +148,33 @@ class planning
         $a->CSRFToken = $this->CSRFToken;
         $heuresAbsencesTab=$a->calculHeuresAbsences($date);
 
+        // Selection des services pour l'ajout des classes service_
+        $services = array('' => '');
+        $db = new db();
+        $db->select('select_services');
+        if (!empty($db->result)) {
+            foreach ($db->result as $elem) {
+                $value = $elem['valeur'];
+                $value = removeAccents($value);
+                $value = html_entity_decode($value, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+                $value = strtolower($value);
+                $value = str_replace(array(" ", "'", '"'), '_', $value);
+                $services[$elem['id']] = $value;
+            }
+        }
+
         // Selection des statuts pour l'ajout des classes statut_
         $statuts = array('' => '');
         $db = new db();
         $db->select('select_statuts');
         if (!empty($db->result)) {
             foreach ($db->result as $elem) {
-                $statuts[$elem['id']] = $elem['valeur'];
+                $value = $elem['valeur'];
+                $value = removeAccents($value);
+                $value = html_entity_decode($value, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+                $value = strtolower($value);
+                $value = str_replace(array(" ", "'", '"'), '_', $value);
+                $statuts[$elem['id']] = $value;
             }
         }
 
@@ -349,12 +369,16 @@ class planning
                 $class_tmp=array();
                 if ($elem['statut']) {
                     if (isset($statuts[$elem['statut']])) {
-                        $class_tmp[]="statut_".strtolower(removeAccents(str_replace(" ", "_", $statuts[$elem['statut']])));
+                        $class_tmp[]="statut_".$statuts[$elem['statut']];
                     }
                 }
+
                 if ($elem['service']) {
-                    $class_tmp[]="service_".strtolower(removeAccents(str_replace(" ", "_", $elem['service'])));
+                    if (isset($services[$elem['service']])) {
+                        $class_tmp[]="service_".$services[$elem['service']];
+                    }
                 }
+
                 $classe=empty($class_tmp)?null:join(" ", $class_tmp);
 
                 //	Affichage des lignes

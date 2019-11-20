@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.7.04
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : statistiques/service.php
 Création : 9 septembre 2013
-Dernière modification : 22 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -142,7 +141,7 @@ if (!empty($services)) {
     foreach ($db->result as $elem) {
         $servId=null;
         foreach ($services_list as $serv) {
-            if ($serv['valeur']==$elem['service']) {
+            if ($serv['id']==$elem['service']) {
                 $servId=$serv['id'];
                 continue;
             }

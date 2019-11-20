@@ -139,6 +139,37 @@ if ($griser == 1) {
 // Partie 2 : Récupération de l'ensemble des éléments
 // Et transmission à la fonction JS bataille_navale pour mise à jour de l'affichage de la cellule
 
+// Selection des statuts pour l'ajout des classes statut_
+$statuts = array('' => '');
+$db = new db();
+$db->select('select_statuts');
+if (!empty($db->result)) {
+    foreach ($db->result as $elem) {
+        $value = $elem['valeur'];
+        $value = removeAccents($value);
+        $value = html_entity_decode($value, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+        $value = strtolower($value);
+        $value = str_replace(array(" ", "'", '"'), '_', $value);
+        $statuts[$elem['id']] = $value;
+    }
+}
+
+// Selection des services pour l'ajout des classes service_
+$services = array('' => '');
+$db = new db();
+$db->select('select_services');
+if (!empty($db->result)) {
+    foreach ($db->result as $elem) {
+        $value = $elem['valeur'];
+        $value = removeAccents($value);
+        $value = html_entity_decode($value, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+        $value = strtolower($value);
+        $value = str_replace(array(" ", "'", '"'), '_', $value);
+        $services[$elem['id']] = $value;
+    }
+}
+
+$db = new db();
 $db->selectLeftJoin(
   array("pl_poste","perso_id"),
   array("personnel","id"),
@@ -206,9 +237,9 @@ for ($i=0;$i<count($tab);$i++) {
         $tab[$i]["statut"] = 'volants';
     }
 
-    // Mise en forme des statut et service pour affectation des classes css
-    $tab[$i]["statut"]=removeAccents($tab[$i]["statut"]);
-    $tab[$i]["service"]=removeAccents($tab[$i]["service"]);
+    // Service et statut pour affectation des classes css
+    $tab[$i]["service"] = $services[$tab[$i]["service"]];
+    $tab[$i]["statut"] = $statuts[$tab[$i]["statut"]];
 
     // Ajout des Sans Repas (SR)
     if ($sansRepas === true or in_array($tab[$i]['perso_id'], $sansRepas)) {
@@ -224,7 +255,7 @@ for ($i=0;$i<count($tab);$i++) {
                 $tab[$i]['absent']=1;
                 break;  // Garder le break à cet endroit pour que les absences validées prennent le dessus sur les non-validées
             } elseif ($config['Absences-non-validees'] and $tab[$i]['absent'] != 1) {
-                $tab[$i]['absent']=2;
+                $tab[$i]['absent']=3;
             }
         }
     }
@@ -235,19 +266,7 @@ if ($config['Conges-Enable']) {
     include "../../conges/ajax.planning.updateCell.php";
 }
 
-// Selection des statuts pour l'ajout des classes statut_
-$statuts = array('' => '');
-$db = new db();
-$db->select('select_statuts');
-if (!empty($db->result)) {
-    foreach ($db->result as $elem) {
-        $statuts[$elem['id']] = $elem['valeur'];
-    }
-}
-
-$data = array($tab, $statuts);
-
-echo json_encode($data);
+echo json_encode($tab);
 
 /*
 Résultat :
@@ -258,7 +277,7 @@ Résultat :
     [service] => Service
     [activites] => activite_activite1 activite_activite2 (activités de l'agents précédées de activite_ et séparées par des espaces, pour appliquer les classes .activite_xxx)
     [perso_id] => 86
-    [absent] => 0/1/2 ( 0 = pas d'absence ; 1 = absence validée ; 2 = absence non validée )
+    [absent] => 0/1/2/3 ( 0 = pas d'absence ; 1 = absence validée ; 2 = agent importé en dehors de ses heures de présence ; 3 = absence non validée )
     [supprime] => 0/1
     [sr] =>0/1
     )

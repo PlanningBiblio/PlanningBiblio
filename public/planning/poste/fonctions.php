@@ -31,6 +31,7 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
         $p = new planning();
         $sansRepas = $p->sansRepas($date, $debut, $fin);
 
+        $services = $GLOBALS['services'];
         $statuts = $GLOBALS['statuts'];
 
         foreach ($GLOBALS['cellules'] as $elem) {
@@ -65,7 +66,7 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
 
                 if ($elem['absent'] == 2) {
                     $class_tmp[] = "out-of-work-time";
-                    $title = 'En dehors de ses heures de présences';
+                    $title = 'En dehors de ses heures de présence';
                 }
 
                 // On marque les absents (absences enregistrées dans la table absences)
@@ -101,11 +102,13 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
                 // Classe en fonction du statut et du service
                 if ($elem['statut']) {
                     if (isset($statuts[$elem['statut']])) {
-                        $class_tmp[]="statut_".strtolower(removeAccents(str_replace(" ", "_", $statuts[$elem['statut']])));
+                        $class_tmp[]="statut_".$statuts[$elem['statut']];
                     }
                 }
                 if ($elem['service']) {
-                    $class_tmp[]="service_".strtolower(removeAccents(str_replace(" ", "_", $elem['service'])));
+                    if (isset($services[$elem['service']])) {
+                        $class_tmp[]="service_".$services[$elem['service']];
+                    }
                 }
                 if (isset($elem['activites']) and is_array($elem['activites'])) {
                     foreach ($elem['activites'] as $a) {
