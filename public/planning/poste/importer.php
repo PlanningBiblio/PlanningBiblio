@@ -17,7 +17,7 @@ Cette page est appelée par la fonction JavaScript Popup qui l'affiche dans un c
 
 require_once "class.planning.php";
 
-use Model\Agent;
+use App\Model\Agent;
 
 // Initialisation des variables
 $CSRFToken=filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
@@ -122,7 +122,7 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
     }
 
     // Find all agents that are not deleted
-    $agents = $entityManager->getRepository('Model\Agent')->findBy(array('supprime' =>'0'));
+    $agents = $entityManager->getRepository('App\Model\Agent')->findBy(array('supprime' =>'0'));
     if (!empty($agents)) {
         foreach ($agents as $agent) {
             $agent_list[] = $agent->id();
