@@ -2,6 +2,8 @@
 
 namespace App\Model;
 
+include_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
+
 /**
  * @Entity @Table(name="personnel")
  **/
@@ -175,5 +177,21 @@ class Agent extends PLBEntity {
         $emails_string = $this->mails_responsables();
 
         return explode(';', $emails_string);
+    }
+
+    public function getWorkingHoursOn($date)
+    {
+        $working_hours = new \planningHebdo();
+        $working_hours->perso_id = $this->id;
+        $working_hours->debut = $date;
+        $working_hours->fin = $date;
+        $working_hours->valide = false;
+        $working_hours->fetch();
+
+        if (empty($working_hours->elements)) {
+          return array();
+        }
+
+        return $working_hours->elements[0];
     }
 }

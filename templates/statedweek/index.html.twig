@@ -35,21 +35,11 @@
       background-color: #782513;
       color: white;
     }
-    .custom-menu {
-      display: none;
-      z-index: 1000;
-      position: absolute;
-      overflow: hidden;
-      border: 1px solid #CCC;
-      white-space: nowrap;
-      background: #FFF;
-      color: #333;
-      border-radius: 5px;
-      padding: 0;
-    }
   </style>
 
   <div id="statedweek">
+    <input type="hidden" name="date" value="{{ date }}"/>
+    <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}"/>
     <table id="stateweek-header">
       <tr>
         <td>

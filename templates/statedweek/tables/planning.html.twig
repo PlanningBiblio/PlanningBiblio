@@ -1,19 +1,39 @@
 {# statedweek/tables/planning.html.twig #}
 
-<table class="statedweek-table" id="statedweek-planning" border="1">
+<table class="statedweek-table table-placed" id="statedweek-planning" border="1">
   <thead>
     <tr>
-      <th class="cell-header">9:00 - 17:00</th>
-      <th class="cell-header">13:00 - 20:00</th>
-      <th class="cell-header">15:00 - 22:00</th>
+      <th class="cell-header">
+        {{ plcolumns[0].from | hour }} - {{ plcolumns[0].to | hour }}
+      </th>
+      <th class="cell-header">
+        {{ plcolumns[1].from | hour }} - {{ plcolumns[1].to | hour }}
+      </th>
+      <th class="cell-header">
+        {{ plcolumns[2].from | hour }} - {{ plcolumns[2].to | hour }}
+      </th>
     </tr>
   </thead>
   <tbody>
     {% for i in 0..24 %}
       <tr>
-        <td id="first-time-slot-{{ i }}"></td>
-        <td id="second-time-slot-{{ i }}"></td>
-        <td id="third-time-slot-{{ i }}"></td>
+        <td
+          class="time-slot first-slot"
+          id="first-time-slot-{{ i }}"
+          data-from="{{ plcolumns[0].from }}"
+          data-to="{{ plcolumns[0].to }}"></td>
+
+        <td
+          class="time-slot second-slot"
+          id="second-time-slot-{{ i }}"
+          data-from="{{ plcolumns[1].from }}"
+          data-to="{{ plcolumns[1].to }}"></td>
+
+        <td
+          class="time-slot third-slot"
+          id="third-time-slot-{{ i }}"
+          data-from="{{ plcolumns[2].from }}"
+          data-to="{{ plcolumns[2].to }}"></td>
       </tr>
     {% endfor %}
   </tbody>
