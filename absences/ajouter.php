@@ -1,3 +1,4 @@
+
 <?php
 /**
 Planning Biblio
@@ -7,7 +8,6 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/ajouter.php
 Création : mai 2011
-Dernière modification : 12 septembre 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -385,6 +385,10 @@ $db->query("SELECT * FROM `{$dbprefix}absences_infos` WHERE `fin`>='$date' ORDER
 if ($db->result) {
     echo "<b>Informations congés / absences :</b><br/><br/>\n";
     foreach ($db->result as $elem) {
+        if($admin){
+            echo "<a href='index.php?page=absences/infos.php&amp;id={$elem['id']}'>\n";
+            echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
+        }
         echo "Du ".dateFr($elem['debut'])." au ".dateFr($elem['fin'])." : {$elem['texte']}<br/>\n";
     }
 }
@@ -466,9 +470,9 @@ if ($db->result) {
   </td><td>
     <span id='recurrence-summary-form'>&nbsp;</span>
   </td></tr>
-    
+
   </table>
-    
-    
+
+
   </form>
 </div>

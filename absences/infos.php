@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : absences/infos.php
 Création : mai 2011
-Dernière modification : 3 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -76,7 +75,7 @@ else {
         $db->select2("absences_infos", "*", array("id"=>$id));
         $debut=dateFr3($db->result[0]['debut']);
         $fin=dateFr3($db->result[0]['fin']);
-        $texte=$db->result[0]['texte'];
+        $texte = html_entity_decode($db->result[0]['texte'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
     } else {
         $debut=null;
         $fin=null;
