@@ -50,8 +50,16 @@ $( document ).ready(function() {
   $(document).on('click', '.add-agent', function() {
     cell_id = $(this).data('cell');
     agent_id = $(this).data('agent');
-    $('#' + cell_id).append('<span>' + $(this).html() + '</span>');
+    $('#' + cell_id).append($(this).html());
     $('#' + cell_id).attr('data-agent', agent_id);
+
+    if ($(this).hasClass('absent')) {
+      $('#' + cell_id).addClass('absent');
+    }
+
+    if ($(this).hasClass('partially-absent')) {
+      $('#' + cell_id).addClass('partially-absent');
+    }
 
     addWorkingHours(cell_id);
 
@@ -83,16 +91,44 @@ $( document ).ready(function() {
   }
 
   function showAvailables(cell) {
+    date = $('input[name="date"]').val();
+    from = cell.data('from');
+    to = cell.data('to');
+
     $.ajax({
       url: '/ajax/statedweek/availables',
       type: 'post',
       dataType: 'json',
+      data: {date: date, from: from, to: to},
       success: function(data) {
         $.each(data, function(index, agent) {
           if (agentAlreadyPlaced(agent.id)) {
             return;
           }
-          $('.context-list').append('<li data-agent="' + agent.id + '" data-cell="' + cell.attr('id') + '" class="add-agent">' + agent.fullname + '</li>');
+
+          item = $("<li></li>");
+          item.attr('data-agent', agent.id);
+          item.attr('data-cell', cell.attr('id'));
+          item.addClass('add-agent');
+          item.append('<span>' + agent.fullname + '</span>');
+
+          if (agent.absent) {
+            item.addClass('absent');
+            item.children('span').addClass('absent');
+            item.append('<i> - absent(e)</i>');
+          }
+
+          if (agent.partially_absent) {
+            item.addClass('partially-absent');
+            item.children('span').addClass('partially-absent');
+            item.append('<i> - absent(e)</i>');
+            $.each(agent.partially_absent, function(index, absence) {
+              item.children('i').append(' de ' + absence.from + ' à ' + absence.to);
+            });
+          }
+
+          $('.context-list').append(item);
+
         });
       },
       error: function() {
@@ -178,8 +214,25 @@ $( document ).ready(function() {
 
     $('#statedweek-planning td[data-from="' + from + '"][data-to="' + to +'"]').each(function() {
       if ($(this).is(':empty')) {
-        $(this).append('<span>' + name + '</span>');
+        item = $('<span></span>');
+        item.append(name);
+
+        $(this).append(item);
         $(this).attr('data-agent', id);
+
+        if (agent.absent) {
+          $(this).addClass('absent');
+          $(this).append(' <i> - absent(e)</<i>');
+        }
+
+        if (agent.partially_absent) {
+          $(this).addClass('partially-absent');
+          $(this).append(' <i> - absent(e)</<i>');
+          $.each(agent.partially_absent, function(index, absence) {
+            $(this).children('i').append(' de ' + absence.from + ' à ' + absence.to);
+          });
+        }
+
         return false;
       }
     });

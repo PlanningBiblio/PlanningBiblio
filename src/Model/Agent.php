@@ -3,6 +3,7 @@
 namespace App\Model;
 
 include_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
+require_once(__DIR__ . '/../../public/absences/class.absences.php');
 
 /**
  * @Entity @Table(name="personnel")
@@ -193,5 +194,25 @@ class Agent extends PLBEntity {
         }
 
         return $working_hours->elements[0];
+    }
+
+    public function isAbsentOn($from, $to)
+    {
+        $a = new \absences();
+        if ($a->check($this->id(), $from, $to, true)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function isPartiallyAbsentOn($from, $to)
+    {
+        $a = new \absences();
+        if ($absences = $a->checkPartial($this->id(), $from, $to, true)) {
+            return $absences;
+        }
+
+        return false;
     }
 }

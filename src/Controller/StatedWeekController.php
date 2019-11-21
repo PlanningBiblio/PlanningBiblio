@@ -19,6 +19,7 @@ class StatedWeekController extends BaseController
      */
     public function index(Request $request)
     {
+
         $date = $request->get('date');
         if (!$date) {
             $date = date('Y-m-d');
@@ -45,6 +46,10 @@ class StatedWeekController extends BaseController
      */
     public function availableAgent(Request $request)
     {
+        $date = $request->get('date');
+        $from = $date . ' ' . $request->get('from');
+        $to = $date . ' ' . $request->get('to');
+
         $availables = array();
         $agents = $this->entityManager->getRepository(Agent::class)->findAll();
 
@@ -54,10 +59,29 @@ class StatedWeekController extends BaseController
                 continue;
             }
 
-            $availables[] = array(
-                'fullname'  => $agent->nom() . ' ' . $agent->prenom(),
-                'id'        => $agent->id(),
+            $available = array(
+                'fullname'          => $agent->nom() . ' ' . $agent->prenom(),
+                'id'                => $agent->id(),
+                'absent'            => 0,
+                'partially_absent'  => 0,
             );
+
+            if ($agent->isAbsentOn($from, $to)) {
+                $available['absent'] = 1;
+            }
+
+            if ($absences = $agent->isPartiallyAbsentOn($from, $to)) {
+                $available['absent'] = 0;
+                $absence_times = array();
+                foreach ($absences as $absence) {
+                    $start = substr($absence['from'], -8);
+                    $end = substr($absence['to'], -8);
+                    $absence_times[] = array('from' => $start, 'to' => $end);
+                }
+                $available['partially_absent'] = $absence_times;
+            }
+
+            $availables[] = $available;
         }
 
         return $this->json($availables);
@@ -217,10 +241,11 @@ class StatedWeekController extends BaseController
             }
 
             $placed[] = array(
-                'id'    => $agent->id(),
-                'name'  => $agent->nom() . ' ' .$agent->prenom(),
-                'from'  => $workingHours['temps'][$day_index][0],
-                'to'    => end($workingHours['temps'][$day_index]),
+                'id'        => $agent->id(),
+                'name'      => $agent->nom() . ' ' .$agent->prenom(),
+                'from'      => $workingHours['temps'][$day_index][0],
+                'to'        => end($workingHours['temps'][$day_index]),
+                'absent'    => $agent->isAbsentOn($date, $date) ? 1 : 0,
             );
 
         }
