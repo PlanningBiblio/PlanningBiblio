@@ -516,7 +516,7 @@ class AbsenceController extends BaseController
             foreach ($db->result as $elem) {
                 $elem['debut_fr'] = dateFr($elem['debut']);
                 $elem['fin_fr'] = dateFr($elem['fin']);
-                $abences_infos[] = $elem;
+                $absences_infos[] = $elem;
             }
         }
 
