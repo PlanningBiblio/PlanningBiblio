@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.8.1
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 24 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -367,10 +366,13 @@ EOD;
             $tmp=array();
             $j=0;
             for ($i=0; $i<count($current_postes);$i++) {
+                $current_postes[$i]['absent'] = $current_postes[$i]['absent'] == 1 ? 1 : 0;
                 if ($i==0) {
                     $tmp[$j]=$current_postes[$i];
-                } elseif ($current_postes[$i]['site']==$tmp[$j]['site'] and $current_postes[$i]['poste']==$tmp[$j]['poste']
-         and $current_postes[$i]['absent']==$tmp[$j]['absent']and $current_postes[$i]['debut']==$tmp[$j]['fin']) {
+                } elseif ($current_postes[$i]['site']==$tmp[$j]['site']
+                    and $current_postes[$i]['poste']==$tmp[$j]['poste']
+                    and $current_postes[$i]['absent']==$tmp[$j]['absent']
+                    and $current_postes[$i]['debut']==$tmp[$j]['fin']) {
                     $tmp[$j]['fin']=$current_postes[$i]['fin'];
                 } else {
                     $j++;
