@@ -370,7 +370,7 @@ class HolidayController extends BaseController
         ));
         if ($adminN1 or $adminN2) {
             $db_perso = new \db();
-            $db_perso->query("select * from {$dbprefix}personnel where actif='Actif' order by nom,prenom;");
+            $db_perso->query("select * from {$dbprefix}personnel order by nom,prenom;");
             $this->templateParams(array('db_perso' => $db_perso->result));
         }
         $saisie_par = '';
