@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/class.planning.php
 Création : 16 janvier 2013
-Dernière modification : 4 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -677,6 +676,9 @@ class planning
                 $result = array();
                 // On classe les résultats par agent
                 foreach ($db->result as $elem) {
+                    if ($elem['perso_id'] == 0) {
+                        continue;
+                    }
                     // On commence par ajouter la plage interrogée à chaque agent
                     if (!array_key_exists($elem['perso_id'], $result)) {
                         $result[$elem['perso_id']] = array(array('debut'=>$debut, 'fin'=>$fin));

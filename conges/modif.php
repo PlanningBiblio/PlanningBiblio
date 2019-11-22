@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Plugin Congés
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2013-2018 Jérôme Combes
 
 Fichier : conges/modif.php
 Création : 1er août 2013
-Dernière modification : 12 septembre 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié <etienne.cavalie@unice.fr>
 
@@ -229,7 +228,7 @@ if ($confirm) {
     echo "</td><td>\n";
     if ($adminN1 or $adminN2) {
         $db_perso=new db();
-        $db_perso->query("select * from {$dbprefix}personnel where actif='Actif' order by nom,prenom;");
+        $db_perso->query("select * from {$dbprefix}personnel order by nom,prenom;");
         echo "<select name='perso_id' id='perso_id' style='width:98%;' class='googleCalendarTrigger'>\n";
         foreach ($db_perso->result as $elem) {
             if ($perso_id==$elem['id']) {
