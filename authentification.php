@@ -23,7 +23,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 // Initialisation des variables
-$version="19.10.00";
+$version="19.10.01";
 
 // Redirection vers setup si le fichier config est absent
 if (!file_exists("include/config.php")) {
