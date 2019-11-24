@@ -108,7 +108,7 @@ if (!empty($categories)) {
     $db->select("select_statuts", null, "categorie IN ($categories)");
     if ($db->result) {
         foreach ($db->result as $elem) {
-            $statuts[]=$elem['valeur'];
+            $statuts[]=$elem['id'];
         }
     }
     $db=new db();
@@ -117,7 +117,7 @@ if (!empty($categories)) {
     $tmp = array();
     if ($db->result) {
         foreach ($db->result as $elem) {
-            $tmp[] = str_replace('Cat&eacute;gorie ', null, $elem['valeur']);
+            $tmp[] = str_replace('Catégorie ', null, $elem['valeur']);
         }
         $categorie = ' ('.implode(', ', $tmp).')';
 

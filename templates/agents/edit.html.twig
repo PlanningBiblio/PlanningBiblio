@@ -271,9 +271,9 @@
                   <option value='0'>&nbsp;</option>
                   {% for elem2 in categories %}
                     {% if elem2.id == elem.categorie %}
-                      <option value='{{ elem2.id }}' selected="selected">{{ elem2.valeur | raw }}</option>
+                      <option value='{{ elem2.id }}' selected="selected">{{ elem2.valeur }}</option>
                     {% else %}
-                      <option value='{{ elem2.id }}'>{{ elem2.valeur | raw }}</option>
+                      <option value='{{ elem2.id }}'>{{ elem2.valeur }}</option>
                     {% endif %}
                   {% endfor %}
                 </select>

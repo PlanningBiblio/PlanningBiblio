@@ -609,7 +609,7 @@ $sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_work
 $sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Autre', '12', 'A');";
 
 //	Insertion des catégories
-$sql[]="INSERT INTO `{$dbprefix}select_categories` (`valeur`,`rang`) VALUES ('Cat&eacute;gorie A','10'),('Cat&eacute;gorie B','20'),('Cat&eacute;gorie C','30');";
+$sql[]="INSERT INTO `{$dbprefix}select_categories` (`id`, `valeur`, `rang`) VALUES ('1', 'Catégorie A', '10'), ('2', 'Catégorie B', '20'), ('3', 'Catégorie C', '30');";
 
 //	Insertion des étages
 $sql[]="INSERT INTO `{$dbprefix}select_etages` (`valeur`,`rang`) VALUES ('Mezzanine','1'),('RDC','2'),('RDJ','3'),('Magasins','4');";
