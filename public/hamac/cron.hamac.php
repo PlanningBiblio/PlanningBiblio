@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : ics/cron.hamac.php
 Création : 7 février 2018
-Dernière modification : 7 février 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,9 +20,7 @@ Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à
 @note : Modifiez la variable $path suivante en renseignant le chemin absolu vers votre dossier planningBiblio
 */
 
-$path="/var/www/html/planning";
-
-session_start();
+$path="/symfony/public";
 
 /** $version=$argv[0]; permet d'interdire l'execution de ce script via un navigateur
  *  Le fichier config.php affichera une page "accès interdit si la $version n'existe pas
@@ -34,8 +31,12 @@ $version=$argv[0];
 // chdir($path) : important pour l'execution via le cron
 chdir($path);
 
+require_once "$path/init_ajax.php";
+require_once "$path/init_entitymanager.php";
 require_once "$path/include/config.php";
 require_once "$path/personnel/class.personnel.php";
+
+use App\Model\AbsenceReason;
 
 $CSRFToken = CSRFToken();
 
@@ -160,8 +161,28 @@ while ($tab = fgetcsv($inF, 1024, ';')) {
     $demande = date('Y-m-d H:i:s');
     $debut = preg_replace('/(\d+)\/(\d+)\/(\d+) (\d+:\d+:\d+)/', "$3-$2-$1 $4", $tab[2]);
     $fin = preg_replace('/(\d+)\/(\d+)\/(\d+) (\d+:\d+:\d+)/', "$3-$2-$1 $4", $tab[3]);
-    $motif = !empty(trim($config['Hamac-motif'])) ? trim($config['Hamac-motif']) : 'Hamac';
     $commentaires = $tab[1];
+
+    // Motif
+    $motif = !empty(trim($config['Hamac-motif'])) ? trim($config['Hamac-motif']) : 'Hamac';
+
+    // Find required Absence's reason
+    $reasons_entity = $entityManager->getRepository(AbsenceReason::class)->findOneBy(array('valeur' => $motif));
+
+    // If doesn't exist, creates it
+    if (empty($reasons_entity)) {
+        $reason = new App\Model\AbsenceReason();
+        $reason->valeur($motif);
+        $reason->rang(999999);
+        $reason->type(2);
+        $reason->notification_workflow('A');
+        $entityManager->persist($reason);
+        $entityManager->flush();
+    }
+    $reasons_entity = $entityManager->getRepository(AbsenceReason::class)->findOneBy(array('valeur' => $motif));
+
+    // Get required absence's reason id
+    $motif = $reasons_entity->id();
 
     // Validations
     // Si le status de l'absence Hamac est 2, l'absence est validée

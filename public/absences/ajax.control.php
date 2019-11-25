@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : absences/ajax.control.php
 Création : mai 2011
-Dernière modification : 7 octobre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié <etienne.cavalie@unice.fr>
 
@@ -19,10 +18,14 @@ Page appelée par la fonction javascript verif_absences utilisée par les page a
 
 ini_set('display_errors', 0);
 
-require_once "../include/config.php";
-require_once "../include/function.php";
-require_once "class.absences.php";
-require_once "../personnel/class.personnel.php";
+require_once(__DIR__ . '/../init_ajax.php');
+require_once(__DIR__ . '/../init_entitymanager.php');
+require_once(__DIR__ . '/../include/config.php');
+require_once(__DIR__ . '/../include/function.php');
+require_once(__DIR__ . '/class.absences.php');
+require_once(__DIR__ . '/../personnel/class.personnel.php');
+
+use App\Model\AbsenceReason;
 
 $id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
 $groupe=filter_input(INPUT_GET, "groupe", FILTER_SANITIZE_STRING);
@@ -37,6 +40,15 @@ $p = new personnel();
 $p->supprime=array(0,1,2);
 $p->fetch();
 $agents = $p->elements;
+
+// Get absences reasons
+$reasons = array();
+$reasons_entity = $entityManager->getRepository(AbsenceReason::class)->findAll();
+if (!empty($reasons_entity)) {
+    foreach ($reasons_entity as $reason) {
+        $reasons[$reason->id()] = $reason->valeur();
+    }
+}
 
 // Pour chaque agent, contrôle si autre absence, si placé sur planning validé, si placé sur planning en cours d'élaboration
 foreach ($perso_ids as $perso_id) {
@@ -55,8 +67,9 @@ foreach ($perso_ids as $perso_id) {
   
     if ($db->result) {
         foreach ($db->result as $elem) {
-            $motif = html_entity_decode($elem['motif'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-    
+            $motif = !empty($reasons[$elem['motif']]) ? $reasons[$elem['motif']] : '';
+            $motif = html_entity_decode($motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+
             // Si absence sur une seule journée
             if (substr($elem['debut'], 0, 10) == substr($elem['fin'], 0, 10)) {
                 // Si journée complète

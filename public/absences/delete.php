@@ -20,6 +20,7 @@ require_once "class.absences.php";
 
 use App\Model\Agent;
 use App\Model\AbsenceDocument;
+use App\Model\AbsenceReason;
 
 // Initialisation des variables
 $CSRFToken = filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
@@ -40,6 +41,11 @@ $groupe=$a->elements['groupe'];
 $agents=$a->elements['agents'];
 $perso_ids=$a->elements['perso_ids'];
 $uid=$a->elements['uid'];
+
+$reason_entity = $entityManager->getRepository(AbsenceReason::class)->find($motif);
+if ($reason_entity) {
+    $motif = $reason_entity->valeur();
+}
 
 // Sécurité
 // Droit 20x = modification de toutes les absences

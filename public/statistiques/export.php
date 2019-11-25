@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : statistiques/export.php
 Création : mai 2011
-Dernière modification : 20 septembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :

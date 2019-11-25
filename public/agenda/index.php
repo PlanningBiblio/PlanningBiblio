@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.8.1
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : agenda/index.php
 Création : mai 2011
-Dernière modification : 24 mai 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -129,10 +128,10 @@ $db->select2("personnel", "temps", array("id"=>$perso_id));
 $temps=json_decode(html_entity_decode($db->result[0]['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);	//	$temps = emploi du temps
 
 //	Selection des absences
-$filter=$config['Absences-validation']?"AND `valide`>0":null;
-$db=new db();
-$db->select("absences", null, "`perso_id`='$perso_id' $filter ");
-$absences=$db->result;					//	$absences = tableau d'absences
+$a =new absences();
+$a->valide = true;
+$a->fetch(null, $perso_id, $debutSQL, $finSQL);
+$absences = $a->elements;
 
 // Plannings verrouillés
 $verrou=array();

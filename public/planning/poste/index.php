@@ -29,7 +29,7 @@ echo "<div id='planning'>\n";
 
 include "fonctions.php";
 
-use PlanningBiblio\PresentSet;
+use App\PlanningBiblio\PresentSet;
 
 // Initialisation des variables
 $CSRFToken=filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);

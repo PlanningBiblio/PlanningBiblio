@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Model\AbsenceDocument;
+use App\Model\AbsenceReason;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -143,12 +144,12 @@ class AbsenceController extends BaseController
         $fin=substr($fin, 0, 10);
 
 
-        $validation_texte=$valide>0?"Valid&eacute;e":"&nbsp;";
-        $validation_texte=$valide<0?"Refus&eacute;e":$validation_texte;
-        $validation_texte=$valide==0?"Demand&eacute;e":$validation_texte;
+        $validation_texte=$valide>0?"Validée":"&nbsp;";
+        $validation_texte=$valide<0?"Refusée":$validation_texte;
+        $validation_texte=$valide==0?"Demandée":$validation_texte;
         if ($valide==0 and $valideN1!=0) {
-            $validation_texte=$valideN1>0?"Valid&eacute;e (en attente de validation hi&eacute;rarchique)":$validation_texte;
-            $validation_texte=$valideN1<0?"Refus&eacute;e (en attente de validation hi&eacute;rarchique)":$validation_texte;
+            $validation_texte=$valideN1>0?"Validée (en attente de validation hiérarchique)":$validation_texte;
+            $validation_texte=$valideN1<0?"Refusée (en attente de validation hiérarchique)":$validation_texte;
         }
 
         // Si l'option "Absences-notifications-agent-par-agent" est cochée, adapte la variable $adminN1 en fonction des agents de l'absence. S'ils sont tous gérés, $adminN1 = true, sinon, $adminN1 = false
@@ -236,7 +237,7 @@ class AbsenceController extends BaseController
             $agents_tous=$db_perso->result?$db_perso->result:array();
         }
 
-        $display_autre = in_array(strtolower($motif), array("autre","other")) ? 1 : 0;
+        $display_autre = $motif == 12 ? 1 : 0;
 
         $this->templateParams(array(
             'id'                    => $id,
@@ -459,8 +460,11 @@ class AbsenceController extends BaseController
 
     private function availablesReasons()
     {
-        $db_reasons=new \db();
-        $db_reasons->select("select_abs", null, null, "order by rang");
+
+        $reasons_entity = $this->entityManager->getRepository(AbsenceReason::class)->findBy(
+            array(),
+            array('rang' => 'ASC')
+        );
 
         // Liste des motifs utilisés
         $reasons_used = array();
@@ -473,11 +477,11 @@ class AbsenceController extends BaseController
         }
 
         $reasons = array();
-        if (is_array($db_reasons->result)) {
-            foreach ($db_reasons->result as $elem) {
-                $elem['unused'] = false;
-                if (!in_array($elem['valeur'], $reasons_used)) {
-                    $elem['unused'] = true;
+        if (is_array($reasons_entity)) {
+            foreach ($reasons_entity as $elem) {
+                $elem->unused = false;
+                if (!in_array($elem->id(), $reasons_used)) {
+                    $elem->unused = true;
                 }
                 $reasons[] = $elem;
             }

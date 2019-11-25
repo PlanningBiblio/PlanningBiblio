@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : absences/class.absences.php
 Création : mai 2011
-Dernière modification : 30 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -148,7 +147,7 @@ class absences
         }
 
         $workflow = 'A';
-        $reason = $em->getRepository(AbsenceReason::class)->findoneBy(['valeur' => $motif]);
+        $reason = $em->getRepository(AbsenceReason::class)->find($motif);
         if ($reason) {
             $workflow = $reason->notification_workflow();
             if (!isset($workflow)) {
@@ -730,7 +729,9 @@ class absences
             $entityManager->remove($absdoc);
         }
         $entityManager->flush();
-        rmdir(__DIR__ . AbsenceDocument::UPLOAD_DIR . $this->id);
+        if (is_dir(__DIR__ . AbsenceDocument::UPLOAD_DIR . $this->id)) {
+            rmdir(__DIR__ . AbsenceDocument::UPLOAD_DIR . $this->id);
+        }
     }
 
     public function fetch($sort="`debut`,`fin`,`nom`,`prenom`", $agent=null, $debut=null, $fin=null, $sites=null)
@@ -780,12 +781,24 @@ class absences
         $db=new db();
         $db->query($req);
 
+        // Get absences reasons
+        $reasons = array();
+        $reasons_entity = $GLOBALS['entityManager']->getRepository(AbsenceReason::class)->findAll();
+        if (!empty($reasons_entity)) {
+            foreach ($reasons_entity as $reason) {
+                $reasons[$reason->id()] = $reason->valeur();
+            }
+        }
+
         $all=array();
         $groupes=array();
+
         if ($db->result) {
             foreach ($db->result as $elem) {
-      
-        // Multisites, n'affiche que les agents des sites choisis
+
+                $elem['motif'] = !empty($reasons[$elem['motif']]) ? $reasons[$elem['motif']] : null;
+
+                // Multisites, n'affiche que les agents des sites choisis
                 if (!empty($sites)) {
                     if ($GLOBALS['config']['Multisites-nombre'] > 1) {
                         $sitesAgent = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);

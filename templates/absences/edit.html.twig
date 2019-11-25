@@ -18,7 +18,7 @@
   <h3>Modification de l'absence</h3>
   {% if not access %}
       Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>
-      <a href='index.php?page=absences/voir.php'>Retour à la liste des absences</a><br/><br/>
+      <a href='{{ asset("index.php?page=absences/voir.php") }}'>Retour à la liste des absences</a><br/><br/>
   {% else %}
     <form name='form' id='form' method='get' action='/index.php' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");'>
       <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
@@ -358,23 +358,23 @@
                 <option value=''></option>
                   {% for r in reasons %}
                     {% if r.type == 2 %}
-                      {% if r.valeur == absence.motif %}
-                      <option value="{{ r.valeur }}" class="padding20" selected="selected">
+                      {% if r.id == absence.motif %}
+                      <option value="{{ r.id }}" class="padding20" selected="selected">
                       {% else %}
-                      <option value="{{ r.valeur }}" class="padding20">
+                      <option value="{{ r.id }}" class="padding20">
                       {% endif %}
                         &nbsp;&nbsp;&nbsp;{{ r.valeur }}
                       </option>
                     {% else %}
                       {% if r.type == 1 %}
-                        <option value="{{ r.valeur }}" class="bold" disabled="disabled">
+                        <option value="{{ r.id }}" class="bold" disabled="disabled">
                           {{ r.valeur }}
                         </option>
                       {% else %}
                         {% if r.valeur == absence.motif %}
-                        <option value="{{ r.valeur }}" class="bold" selected="selected">
+                        <option value="{{ r.id }}" class="bold" selected="selected">
                         {% else %}
-                        <option value="{{ r.valeur }}" class="bold">
+                        <option value="{{ r.id }}" class="bold">
                         {% endif %}
                           {{ r.valeur }}
                         </option>
@@ -455,7 +455,7 @@
               <td>
                 <ul id='documentsList'>
                   {% for document in documents %}
-                    <li id="document_{{ document.id}}"><a href="/absences/document/{{ document.id }}">{{ document.filename }}</a> <a href="javascript:deleteAbsenceDocument({{ document.id }});">supprimer</a></li>
+                    <li id="document_{{ document.id}}"><a href="{{ asset('/absences/document/')}}{{ document.id }}" target="_blank" >{{ document.filename }}</a> <a href="javascript:deleteAbsenceDocument({{ document.id }});">supprimer</a></li>
                   {% endfor %}
                 </ul>
               </td>
@@ -509,7 +509,7 @@
                   </select>
                 {% else %}
                   {{ validation_texte }}
-                  <input type='hidden' name='valide' value='{{ valide_n2 }}' />
+                  <input type='hidden' name='valide' value='{{ absence.valide_n2 }}' />
                 {% endif %}
               </td>
             </tr>
@@ -527,7 +527,7 @@
                 <input type='button' class='ui-button' value='Annuler' onclick="annuler(1);"/> 
                 <input type='submit' class='ui-button' value='Valider'/>
               {% else %}
-                <a href='index.php?page=absences/voir.php' class='ui-button'>Retour</a>
+                <a href='{{ asset("index.php?page=absences/voir.php") }}' class='ui-button'>Retour</a>
               {% endif %}
 
             </td>

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\PlanningBiblio\Helper\HolidayHelper;
+use App\Model\Absence;
 use App\Model\AbsenceReason;
 use App\Model\Agent;
 
@@ -125,29 +126,96 @@ class AjaxController extends BaseController
      */
     public function editAbsenceReasons(Request $request)
     {
-        $CSRFToken = $request->get('CSRFToken');
         $data = $request->get('data');
 
-        $reasons = $this->entityManager->getRepository(AbsenceReason::class)->findAll();
-        foreach ($reasons as $reason) {
-            $this->entityManager->remove($reason);
+        $insert = array();
+        $update = array();
+
+        foreach ($data as $elem) {
+            if ( is_numeric($elem['id'])) {
+                $update[$elem['id']] = $elem;
+            } elseif (substr($elem['id'], 0, 4) == 'new_') {
+                $insert[] = $elem;
+            }
         }
+
+        $reasons = $this->entityManager->getRepository(AbsenceReason::class)->findAll();
+
+        foreach ($reasons as $reason) {
+
+            // Delete removed items
+            if (!in_array($reason->id(), array_keys($update))) {
+                $this->entityManager->remove($reason);
+
+            // Update changed items
+            } else {
+                $updated = $update[$reason->id()];
+                $reason->type($updated['type']);
+                $reason->rang($updated['index']);
+                $reason->notification_workflow($updated['workflow']);
+                $this->entityManager->persist($reason);
+            }
+        }
+
         $this->entityManager->flush();
 
-        foreach ($data as $r) {
-            $r[2] = isset($r[2]) ? $r[2] : 0;
-            $r[3] = isset($r[3]) ? $r[3] : 'A';
+        // Add new items
+        foreach ($insert as $elem) {
             $reason = new AbsenceReason();
-            $reason->valeur($r[0]);
-            $reason->rang($r[1]);
-            $reason->type($r[2]);
-            $reason->notification_workflow($r[3]);
+            $reason->valeur($elem['value']);
+            $reason->type($elem['type']);
+            $reason->rang($elem['index']);
+            $reason->notification_workflow($elem['workflow']);
             $this->entityManager->persist($reason);
         }
+
         $this->entityManager->flush();
 
-        #return $this->json("Ok");
-        return $this->json($data);
+
+        // Select items from DB
+        $reasons = array();
+        $reasons_entity = $this->entityManager->getRepository(AbsenceReason::class)->findBy(
+            array(),
+            array('rang' => 'ASC')
+        );
+
+        if (!empty($reasons_entity)) {
+            foreach ($reasons_entity as $elem) {
+                $reasons[] = array(
+                    'id' => $elem->id(),
+                    'valeur' => $elem->valeur(),
+                    'rang' => $elem->rang(),
+                    'type' => $elem->type(),
+                    'notification_workflow' => $elem->notification_workflow(),
+                );
+            }
+        }
+
+        $reasons = json_encode($reasons);
+
+        // Select used items
+        $used = array();
+
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $query = $queryBuilder
+            ->select(array('a.motif'))
+            ->from(Absence::class, 'a')
+            ->groupBy('a.motif')
+            ->getQuery();
+
+        $absences = $query->execute();
+
+        if (!empty($absences)) {
+            foreach ($absences as $elem) {
+                if (is_numeric($elem['motif'])) {
+                    $used[] = $elem['motif'];
+                }
+            }
+        }
+
+        $used = json_encode($used);
+
+        return $this->json( ['items' => $reasons, 'used' => $used] );
     }
 
     /**

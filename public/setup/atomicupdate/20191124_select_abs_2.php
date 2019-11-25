@@ -1,9 +1,9 @@
 <?php
 
- $dbname = 'personnel';
+ $dbname = 'absences';
 
  $fields = array(
-     'statut',
+     'motif',
  );
 
  $old_characters = array('Ã©', 'Ã§', 'Ã¨', 'Ã¯', 'Ã«', 'Ã´', 'Ã', 'Ãª');

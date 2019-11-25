@@ -1,12 +1,11 @@
 /**
-Planning Biblio, Version 2.7.08
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : absences/js/modif.js
 Création : 28 février 2014
-Dernière modification : 14 décembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -50,12 +49,13 @@ $(function() {
 	tab=new Array();
 	$("#motifs-sortable li").each(function(){
 	  var id=$(this).attr("id").replace("li_","");
-      tab.push(new Array(
-        $("#valeur_"+id).text(),
-        $(this).index(),
-        $("#type_"+id+" option:selected").val(),
-        $("#notification-workflow_" + id).val(),
-      ));
+      tab.push( {
+        value: $("#valeur_"+id).text(),
+        index: $(this).index(),
+        type: $("#type_"+id+" option:selected").val(),
+        workflow: $("#notification-workflow_" + id).val(),
+        id: id,
+      });
     });
 
         // Transmet le tableau à la page de validation ajax
@@ -64,24 +64,66 @@ $(function() {
 	  type: "post",
           dataType: "json",
 	  data: {data: tab, menu:"abs", option: "type", CSRFToken: $('#CSRFSession').val()},
-	  success: function(){
+	  success: function(result){
+
+            // New items, from DB
+            items = JSON.parse(result['items']);
+
+            // Used items, from DB
+            used = JSON.parse(result['used']);
+
+            // Keep current value
             var current_val = $('#motif').val();
-            $('#motif').empty();
-            $('#motif').append("<option value=''>&nbsp;</option>");
-            
-            $("#motifs-sortable li").each(function(){
-              var id=$(this).attr("id").replace("li_","");
-              var val = $("#valeur_"+id).text();
-              var type = $("#type_"+id+" option:selected").val();
 
-              var disabled = (type == 1) ? "disabled='disabled'" : "";
-              var padding = (type == 2) ? "&nbsp;&nbsp;&nbsp;" : "" ;
-              var selected = (val == current_val) ? "selected='selected'" : "";
+            // Reset menu configurator
+            $("#motifs-sortable").empty();
 
-              var option = "<option value='"+val+"' "+selected+" "+disabled+">"+padding+""+val+"</option>";
-              
-              $('#motif').append(option);
+            items.forEach(function(item) {
+                trash = '';
+                if ( used.indexOf(item.id) == -1 ) {
+                    trash = "<span class='ui-icon ui-icon-trash' style='position:relative;left:655px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>";
+                }
+
+                var padding = item.type == 2 ? 'padding20' : '' ;
+                var bold = item.type != 2 ? 'bold' : '' ;
+
+                var select_type_0 = item.type == 0 ? "selected='selected'" : '';
+                var select_type_1 = item.type == 1 ? "selected='selected'" : '';
+                var select_type_2 = item.type == 2 ? "selected='selected'" : '';
+
+                var select_workflow_A = item.notification_workflow == 'A' ? "selected='selected'" : '';
+                var select_workflow_B = item.notification_workflow == 'B' ? "selected='selected'" : '';
+
+                $("#motifs-sortable").append(
+                    "<li class='ui-state-default' id='li_"+item.id+"'>"
+                    + "<span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
+                    + "<font class='" + padding + bold + "' id='valeur_"+item.id+"'>"+item.valeur+"</font>"
+                    + "<select id='type_"+item.id+"' style='position:absolute;left:330px;'>"
+                    + "<option value='0'>&nbsp;</option>"
+                    + "<option value='0' " + select_type_0 + ">N1 cliquable</option>"
+                    + "<option value='1' " + select_type_1 + ">N1 non-cliquable</option>"
+                    + "<option value='2' " + select_type_2 + ">N2</option>"
+                    + "</select>"
+                    + "<select id='notification-workflow_"+item.id+"' style='position:absolute;width:190px;left:500px'>"
+                    + "<option value='A' " + select_workflow_A + ">Circuit de notifications A</option>"
+                    + "<option value='B' " + select_workflow_B + ">Circuit de notifications B</option>"
+                    + "</select>"
+                    + trash
+                    + "</li>"
+                );
             });
+
+            // Reset dropdown menu
+            $('#motif').empty();
+            $('#motif').append("<option value=''></option>");
+
+            items.forEach(function(item) {
+                var selected = item.id == current_val ? "selected='selected'" : '';
+                var disabled = item.type == 1 ? "disabled='disabled'" : "";
+                var padding = item.type == 2 ? "&nbsp;&nbsp;&nbsp;" : "" ;
+                $('#motif').append("<option value='"+item.id+"' "+selected+" "+disabled+">"+padding+item.valeur+"</option>");
+            });
+
             $("#add-motif-form").dialog( "close" );
             $('#motif').effect("highlight",null,2000);
 	  },
@@ -142,16 +184,16 @@ $(function() {
     }
     
     var number = 1;
-    while($('#li_'+number).length){
+    while($('#li_new_'+number).length){
       number++;
     }
 
-    $("#motifs-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
-      +"<font id='valeur_"+number+"'>"+text+"</font>"
-      +"<select id='type_"+number+"' style='position:absolute;left:330px;'>"
+    $("#motifs-sortable").append("<li id='li_new_"+number+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
+      +"<font id='valeur_new_"+number+"'>"+text+"</font>"
+      +"<select id='type_new_"+number+"' style='position:absolute;left:330px;'>"
       +options
       +"</select>"
-      +"<select id='notification-workflow_"+number+"' style='position:absolute;width:190px;left:500px'>"
+      +"<select id='notification-workflow_new_"+number+"' style='position:absolute;width:190px;left:500px'>"
       +options_wf
       +"</select>"
       +"<span class='ui-icon ui-icon-trash' style='position:relative;left:655px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
@@ -174,7 +216,7 @@ $(function() {
 
   // Affiche ou masque le champ motif_autre en fonction de la valeur du select motif
   $("select[name=motif]").change(function(){
-    if($(this).val().toLowerCase()=="autre" || $(this).val().toLowerCase()=="other"){
+    if ($(this).val() == 12) {
       $("#tr_motif_autre").show();
     }else{
       $("#tr_motif_autre").hide();
@@ -828,7 +870,7 @@ function verif_absences(ctrl_form){
     return false;
   }
   
-  if($("select[name=motif]").val().toLowerCase()=="autre" || $("select[name=motif]").val().toLowerCase()=="other"){
+  if ($("select[name=motif]").val() == 12) {
     if($("input[name=motif_autre]").val()==""){
       CJInfo("Veuillez choisir un motif.","error");
       return false;

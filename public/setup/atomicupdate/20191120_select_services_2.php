@@ -6,8 +6,8 @@
      'service',
  );
 
- $old_characters = array('Ã©', 'Ã§', 'Ã¨', 'Ã¯', 'Ã«', 'Ã´', 'Ã',);
- $new_characters = array('é', 'ç', 'è', 'ï', 'ë', 'ô', 'à',);
+ $old_characters = array('Ã©', 'Ã§', 'Ã¨', 'Ã¯', 'Ã«', 'Ã´', 'Ã', 'Ãª');
+ $new_characters = array('é', 'ç', 'è', 'ï', 'ë', 'ô', 'à', 'ê');
 
  $fields_query = '`id`, `' . join('`, `', $fields) . '`';
 

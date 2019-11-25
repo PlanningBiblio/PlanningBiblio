@@ -595,18 +595,18 @@ $sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `o
 $sql[]=" INSERT INTO `{$dbprefix}postes` (`id`, `nom`, `groupe`, `groupe_id`, `obligatoire`, `etage`, `activites`, `statistiques`, `bloquant`) VALUES ('36', 'Renseignement kiosque', '', '0', 'Renfort', 'Mezzanine', '[9,10]','1','1');";
 
 //	Insertion des motif d'absences
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Non justifiée', '1', 'A');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Congés payés', '2', 'A');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Maladie', '3', 'A');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Congé maternité', '4', 'A');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Réunion syndicale', '5', 'A');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Grève', '6', 'A');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Formation', '7', 'A');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Concours', '8', 'A');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Stage', '9', 'A');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Réunion', '10', 'A');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Entretien', '11', 'A');";
-$sql[]="INSERT INTO `{$dbprefix}select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Autre', '12', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`id`, `valeur`, `rang`, `notification_workflow`) VALUES ('1', 'Non justifiée', '1', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`id`, `valeur`, `rang`, `notification_workflow`) VALUES ('2', 'Congés payés', '2', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`id`, `valeur`, `rang`, `notification_workflow`) VALUES ('3', 'Maladie', '3', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`id`, `valeur`, `rang`, `notification_workflow`) VALUES ('4', 'Congé maternité', '4', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`id`, `valeur`, `rang`, `notification_workflow`) VALUES ('5', 'Réunion syndicale', '5', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`id`, `valeur`, `rang`, `notification_workflow`) VALUES ('6', 'Grève', '6', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`id`, `valeur`, `rang`, `notification_workflow`) VALUES ('7', 'Formation', '7', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`id`, `valeur`, `rang`, `notification_workflow`) VALUES ('8', 'Concours', '8', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`id`, `valeur`, `rang`, `notification_workflow`) VALUES ('9', 'Stage', '9', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`id`, `valeur`, `rang`, `notification_workflow`) VALUES ('10', 'Réunion', '10', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`id`, `valeur`, `rang`, `notification_workflow`) VALUES ('11', 'Entretien', '11', 'A');";
+$sql[]="INSERT INTO `{$dbprefix}select_abs` (`id`, `valeur`, `rang`, `notification_workflow`) VALUES ('12', 'Autre', '12', 'A');";
 
 //	Insertion des catégories
 $sql[]="INSERT INTO `{$dbprefix}select_categories` (`id`, `valeur`, `rang`) VALUES ('1', 'Catégorie A', '10'), ('2', 'Catégorie B', '20'), ('3', 'Catégorie C', '30');";

@@ -7,7 +7,6 @@ Voir les fichiers README.md et LICENSE
 
 Fichier : absences/voir.php
 Création : mai 2011
-Dernière modification : 11 septembre 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -20,6 +19,7 @@ Page appelée par la page index.php
 require_once "class.absences.php";
 
 use App\Model\AbsenceDocument;
+use App\Model\AbsenceReason;
 
 // Initialisation des variables
 $debut=filter_input(INPUT_GET, "debut", FILTER_SANITIZE_STRING);

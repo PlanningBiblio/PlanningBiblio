@@ -1,9 +1,9 @@
 <?php
 
- $dbname = 'personnel';
+ $dbname = 'select_abs';
 
  $fields = array(
-     'statut',
+     'valeur',
  );
 
  $old_characters = array('Ã©', 'Ã§', 'Ã¨', 'Ã¯', 'Ã«', 'Ã´', 'Ã', 'Ãª');
@@ -16,7 +16,7 @@
  $db = new db();
  $db->query($req);
 
-if ($db->result) {
+ if ($db->result) {
     foreach ($db->result as $elem) {
 
         foreach ($fields as $field) {
