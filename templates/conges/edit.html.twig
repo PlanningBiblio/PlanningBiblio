@@ -496,7 +496,7 @@
                     <option value='0'>&nbsp;</option>
                     {% if adminN1 %}
                       {% if valide_n1 > 0 and valide == 0 %}
-                        <option value='2' selected="selected">{$lang['leave_dropdown_accepted_pending']}</option>\n";
+                      <option value='2' selected="selected">{{ accepted_pending_str }}</option>
                       {% else %}
                         <option value='2'>{{ accepted_pending_str }}</option>
                       {% endif %}

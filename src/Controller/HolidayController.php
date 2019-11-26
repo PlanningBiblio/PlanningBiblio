@@ -27,6 +27,8 @@ class HolidayController extends BaseController
         $supprimes = $request->get('supprimes');
         $voir_recup = $request->get('recup');
 
+        $lang = $GLOBALS['lang'];
+
         // Gestion des droits d'administration
         // NOTE : Ici, pas de différenciation entre les droits niveau 1 et niveau 2
         // NOTE : Les agents ayant les droits niveau 1 ou niveau 2 sont admin ($admin, droits 40x et 60x)
@@ -673,6 +675,8 @@ class HolidayController extends BaseController
         $valide = $request->get('valide');
         $commentaires = $request->get('commentaires');
         $CSRFToken = $request->get('CSRFToken');
+
+        $lang = $GLOBALS['lang'];
 
         // Enregistre la modification du congés
         $c=new \conges();
