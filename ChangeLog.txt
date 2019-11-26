@@ -12,6 +12,12 @@ Move admin/info pages into a controller
 Add raw filter on agent templates for fields services, right and skills
 Fix undefined indexes on statistiques/service.php & statut.php
 Fix checking email settings on configuration page
+Fix the wrong red marking in the diaries
+Allow selection of days in other months on datepickers
+Fix wrong SR (without meal) marking on gray cells
+Allow modification and validation of admins leave request
+Show information messages on the add absence form
+Fix error "Cannot declare App\Model\Agent" when importing planning model
 
 *** Version 19.10.00       (2019-10-31)   ***
 - Enhancements
