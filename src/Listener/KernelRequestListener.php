@@ -10,10 +10,14 @@ use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 
 use ReflectionClass;
 
-class ControllerAuthorizationListener
+class KernelRequestListener
 {
 
     private $templateParams = array();
+
+    private $defaultLocale = 'en';
+
+    private $supportedLangs = array('en', 'fr');
 
     private $permissions = array(
         'ajax.editabsencereasons' => array(100),
@@ -31,7 +35,15 @@ class ControllerAuthorizationListener
 
     public function onKernelRequest(GetResponseEvent $event)
     {
-        $route = $event->getRequest()->attributes->get('_route');
+        $request = $event->getRequest();
+
+        // Define user's locale.
+        $locale = $this->guessLocale($request);
+        $request->getSession()->set('_locale', $locale);
+        $request->setLocale($locale, $this->defaultLocale);
+
+        // Access control.
+        $route = $request->attributes->get('_route');
 
         if (!$this->canAccess($route)) {
             $body = $this->twig->render('accesss-denied.html.twig', $this->templateParams);
@@ -43,6 +55,33 @@ class ControllerAuthorizationListener
             $event->setResponse($response);
         }
 
+    }
+
+    private function guessLocale($request)
+    {
+        // User requested a specific locale as request parameter.
+        if ($locale = $request->get('locale')) {
+            return $locale;
+        }
+
+        // We already have a locale in session.
+        if ($locale = $request->getSession()->get('_locale')) {
+            return $locale;
+        }
+
+        //return explode(',',$_SERVER['HTTP_ACCEPT_LANGUAGE']);
+        //return $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+
+        // Get broswer locale.
+        $browser_lnguages = explode(',', $request->headers->get('Accept-Language'));
+        foreach ($browser_lnguages as $lang) {
+            $lang = substr( $lang, 0, 2 );
+            if (in_array($lang, $this->supportedLangs)) {
+                return $lang;
+            }
+        }
+
+        return $this->defaultLocale;
     }
 
     private function canAccess($route)

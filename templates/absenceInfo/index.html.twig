@@ -3,10 +3,10 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-    <h3>Informations sur les absences</h3>
+    <h3>{% trans %}Information on absences{% endtrans %}</h3>
 
     <div class='top-button-div'>
-        <a href='{{ asset("/absences/info/add") }}' class='ui-button'>Ajouter</a>
+        <a href='{{ asset("/absences/info/add") }}' class='ui-button'>{% trans %}Add{% endtrans %}</a>
     </div>
 
     {% if info %}
@@ -14,9 +14,9 @@
             <thead>
                 <tr>
                     <th class='dataTableNoSort'></th>
-                    <th>Début</th>
-                    <th>Fin</th>
-                    <th>Texte</th>
+                    <th>{% trans %}Start on{% endtrans %}</th>
+                    <th>{% trans %}End on{% endtrans %}</th>
+                    <th>{% trans %}Text{% endtrans %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -35,6 +35,6 @@
             </tbody>
         </table>
     {% else %}
-        Aucune information enregistrée.
+        {% trans %}No information.{% endtrans %}
     {% endif %}
 {% endblock %}
