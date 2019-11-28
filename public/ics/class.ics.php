@@ -48,11 +48,13 @@ class CJICS
     public $CSRFToken = null;
     public $error=null;
     public $logs=null;
+    public $motif_id = 0;
     public $pattern=null;
     public $perso_id=0;
     public $status = 'CONFIRMED';
     public $src=null;
     public $table="absences";
+
 
     /**
      * purge
@@ -301,6 +303,10 @@ class CJICS
                 // Mais nous pouvons mettre l'information présente dans le champ SUMMARY de l'événements. Dans ce cas, il faut préciser $this->pattern = "[SUMMARY]"; (exemple d'utilisation : enregistrement d'absences récurrentes dans Planning Biblio)
                 $motif = $this->pattern == '[SUMMARY]' ? $elem['SUMMARY'] : $this->pattern;
                 $motif_autre = $this->pattern == '[SUMMARY]' ? $elem['SUMMARY'] : $this->pattern;
+
+                if ($motif_id) {
+                    $motif = $motif_id;
+                }
 
                 // Si SUMMARY est enregistré dans le champ motif, on ne le met pas dans le champ description
                 if ($this->pattern == '[SUMMARY]') {

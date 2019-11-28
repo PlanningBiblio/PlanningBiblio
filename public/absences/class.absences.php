@@ -234,6 +234,10 @@ class absences
                 $db->insert("absences", $insert);
             }
 
+            // Get absence's reason
+            $reason = $em->getRepository(AbsenceReason::class)->find($motif);
+            $motif = $reason ? $reason->valeur() : null;
+
             // Recherche du responsables pour l'envoi de notifications
             $a = new absences();
             $a->getResponsables($debutSQL, $finSQL, $agent->id());
@@ -1351,7 +1355,7 @@ class absences
     public function ics_add_event()
     {
 
-    // Initilisation des variables, adaptation des valeurs
+        // Initilisation des variables, adaptation des valeurs
         $perso_id = $this->perso_id;
         $folder = sys_get_temp_dir();
         $file = "$folder/PBCalendar-$perso_id.ics";
@@ -1361,7 +1365,10 @@ class absences
         $dtend = preg_replace('/(\d+)\/(\d+)\/(\d+)/', '$3$2$1', $this->fin).'T';
         $dtend .= preg_replace('/(\d+):(\d+):(\d+)/', '$1$2$3', $this->hre_fin);
         $dtstamp = !empty($this->dtstamp) ? $this->dtstamp : gmdate('Ymd\THis\Z');
-        $summary = $this->motif_autre ? html_entity_decode($this->motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8') : html_entity_decode($this->motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+
+        $reason = $GLOBALS['entityManager']->getRepository(AbsenceReason::class)->find($this->motif);
+        $motif = $reason ? $reason->valeur() : null;
+        $summary = $this->motif_autre ? html_entity_decode($this->motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8') : html_entity_decode($motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
         $cal_name = "PlanningBiblio-Absences-$perso_id-$dtstamp";
         $uid = !empty($this->uid) ? $this->uid : $dtstart."_".$dtstamp;
         $status = $this->valide_n2 > 0 ? 'CONFIRMED' : 'TENTATIVE';
@@ -1670,7 +1677,10 @@ class absences
                 }
 
                 // Mise à jour de SUMMARY
-                $summary = $this->motif == 'Autre' ? $this->motif_autre : $this->motif;
+                $reason = $GLOBALS['entityManager']->getRepository(AbsenceReason::class)->find($this->motif);
+                $motif = $reason ? $reason->valeur() : null;
+
+                $summary = $this->motif == 12 ? $this->motif_autre : $motif;
                 $summary = html_entity_decode($summary, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
                 $ics_event = preg_replace("/SUMMARY:.*\n/", "SUMMARY:$summary\n", $ics_event);
 

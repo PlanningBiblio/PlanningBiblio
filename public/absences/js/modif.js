@@ -546,21 +546,21 @@ $(function() {
       "Uniquement cet événement": function() {
         var CSRFToken = $('#CSRFSession').val();
         var id=$("#absence-bouton-supprimer").attr("data-id");
-        document.location.href="index.php?page=absences/delete.php&id="+id+"&rec=current&CSRFToken="+CSRFToken;
+        document.location.href="../../index.php?page=absences/delete.php&id="+id+"&rec=current&CSRFToken="+CSRFToken;
         $( this ).dialog( "close" );
       },
 
       "Cet événement et les suivants": function() {
         var CSRFToken = $('#CSRFSession').val();
         var id=$("#absence-bouton-supprimer").attr("data-id");
-        document.location.href="index.php?page=absences/delete.php&id="+id+"&rec=next&CSRFToken="+CSRFToken;
+        document.location.href="../../index.php?page=absences/delete.php&id="+id+"&rec=next&CSRFToken="+CSRFToken;
         $( this ).dialog( "close" );
       },
 
       "Tous les événements": function() {
         var CSRFToken = $('#CSRFSession').val();
         var id=$("#absence-bouton-supprimer").attr("data-id");
-        document.location.href="index.php?page=absences/delete.php&id="+id+"&rec=all&CSRFToken="+CSRFToken;
+        document.location.href="../../index.php?page=absences/delete.php&id="+id+"&rec=all&CSRFToken="+CSRFToken;
         $( this ).dialog( "close" );
       },
 
