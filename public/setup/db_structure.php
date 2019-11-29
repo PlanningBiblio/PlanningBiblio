@@ -473,6 +473,7 @@ $sql[]="CREATE TABLE `{$dbprefix}planning_hebdo` (
   `debut` DATE NOT NULL, 
   `fin` DATE NOT NULL, 
   `temps` TEXT NOT NULL, 
+  `breaktime` TEXT NOT NULL,
   `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
   `modif` INT(11) NOT NULL DEFAULT '0',
   `modification` TIMESTAMP, 

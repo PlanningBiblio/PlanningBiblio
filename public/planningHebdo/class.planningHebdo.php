@@ -101,7 +101,7 @@ class planningHebdo
 
             // 1er tableau
             $insert=array("perso_id"=>$perso_id,"debut"=>$dates[0][0],"fin"=>$dates[0][1],"temps"=>json_encode($data['temps']),
-        "valide_n1" => $valide_n1, "validation_n1" => $validation_n1, "valide" => $valide_n2, "validation" => $validation_n2 );
+        "valide_n1" => $valide_n1, "validation_n1" => $validation_n1, "valide" => $valide_n2, "validation" => $validation_n2, 'breaktime' => json_encode($data['breaktime']) );
 
             $db=new db();
             $db->CSRFToken = $CSRFToken;
@@ -110,7 +110,7 @@ class planningHebdo
 
             // 2ème tableau
             $insert=array("perso_id"=>$perso_id,"debut"=>$dates[0][2],"fin"=>$dates[0][3],"temps"=>json_encode($data['temps2']),
-        "valide_n1" => $valide_n1, "validation_n1" => $validation_n1, "valide" => $valide_n2, "validation" => $validation_n2 );
+        "valide_n1" => $valide_n1, "validation_n1" => $validation_n1, "valide" => $valide_n2, "validation" => $validation_n2, 'breaktime' => json_encode($data['breaktime']) );
 
             $db=new db();
             $db->CSRFToken = $CSRFToken;
@@ -121,7 +121,7 @@ class planningHebdo
         // Sinon, insertion d'un seul tableau
         else {
             $insert=array("perso_id"=>$perso_id,"debut"=>$data['debut'],"fin"=>$data['fin'],"temps"=>json_encode($data['temps']),
-        "valide_n1" => $valide_n1, "validation_n1" => $validation_n1, "valide" => $valide_n2, "validation" => $validation_n2 );
+        "valide_n1" => $valide_n1, "validation_n1" => $validation_n1, "valide" => $valide_n2, "validation" => $validation_n2, 'breaktime' => json_encode($data['breaktime']) );
 
             // Dans le cas d'une copie (voir fonction copy)
             if (isset($data['remplace'])) {
@@ -302,6 +302,7 @@ class planningHebdo
         if ($db->result) {
             foreach ($db->result as $elem) {
                 $elem['temps'] = json_decode(html_entity_decode($elem['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                $elem['breaktime'] = json_decode(html_entity_decode($elem['breaktime'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                 $elem['nom'] = nom($elem['perso_id'], 'nom p', $agents);
                 $elem['service']=$services[$elem['perso_id']];
                 $this->elements[]=$elem;
@@ -512,7 +513,8 @@ class planningHebdo
         }
 
         $temps = json_encode($data['temps']);
-        $update = array("debut" => $data['debut'], "fin" => $data['fin'], "temps" => $temps, "modif" => $perso_id, "modification" => date("Y-m-d H:i:s"), "valide" => $valide_n2, "validation" => $validation_n2 );
+        $breaktime = json_encode($data['breaktime']);
+        $update = array("debut" => $data['debut'], "fin" => $data['fin'], "temps" => $temps, "modif" => $perso_id, "modification" => date("Y-m-d H:i:s"), "valide" => $valide_n2, "validation" => $validation_n2, 'breaktime' => $breaktime );
 
         if (isset($valide_n1)) {
             $update['valide_n1'] = $valide_n1;
