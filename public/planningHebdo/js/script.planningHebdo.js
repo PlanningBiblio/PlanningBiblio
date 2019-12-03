@@ -58,7 +58,7 @@ function plHebdoCalculHeures(object,num){
         debut3 = $("select[name*='temps"+num+"["+i+"][6]']").val();
       }
 
-      if ($("select[name*='breaktime["+i+"]']")){
+      if ($("select[name*='breaktime["+i+"]']").val()){
         breaktime = $("select[name*='breaktime["+i+"]']").val();
       }
     
