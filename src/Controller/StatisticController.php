@@ -70,6 +70,7 @@ class StatisticController extends BaseController
                 $absents[$key]['motif'] = html_entity_decode($absent['motif'], ENT_QUOTES|ENT_HTML5);
                 preg_match('/00:00:00$/', $absent['debut'], $matche_start, PREG_OFFSET_CAPTURE);
                 preg_match('/23:59:59$/', $absent['fin'], $matche_end, PREG_OFFSET_CAPTURE);
+                $absents[$key]['all_the_day'] = 0;
                 if ($matche_start && $matche_end) {
                     $absents[$key]['all_the_day'] = 1;
                 } else {

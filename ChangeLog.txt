@@ -18,6 +18,7 @@ Fix wrong SR (without meal) marking on gray cells
 Allow modification and validation of admins leave request
 Show information messages on the add absence form
 Fix error "Cannot declare App\Model\Agent" when importing planning model
+Fix error on Attendes / missing statistic page with absence not on all the day (MT 27001)
 
 *** Version 19.10.00       (2019-10-31)   ***
 - Enhancements
