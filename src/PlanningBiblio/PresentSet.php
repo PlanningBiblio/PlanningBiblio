@@ -77,12 +77,10 @@ class PresentSet
             $siteAgent=null;
             if ($heures and !in_array($elem['id'], $absents)) {
                 if ($config['Multisites-nombre']>1) {
-                    if (isset($heures[4])) {
+                    if (isset($heures[4]) && $heures[4] != '') {
                         $siteAgent=$config['Multisites-site'.$heures[4]];
                     }
                 }
-                $siteAgent=$siteAgent?$siteAgent.", ":null;
-
 
                 $horaires=null;
                 if (!$heures[1] and !$heures[2]) {		// Pas de pause le midi
