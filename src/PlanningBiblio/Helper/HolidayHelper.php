@@ -207,7 +207,37 @@ class HolidayHelper extends BaseHelper
             $this->message = "Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
             return;
          }
-         return $p->elements[0]['temps'];
+         $times = $p->elements[0]['temps'];
+         $breaktimes = $p->elements[0]['breaktime'];
+
+         if ($this->config('PlanningHebdo-PauseLibre')) {
+             foreach ($times as $index => $t) {
+                 // FIXME: This make the feature inconsistent with
+                 // the option 'PlanningHebdo-Pause2'.
+                 $start_break = $t[1];
+                 $end_break = $t[2];
+                 $end_hour = $t[3];
+
+                 if ($breaktimes[$index]) {
+                     $minutes = $breaktimes[$index] * 60;
+                     $end_hour = date('H:i:s', strtotime("- $minutes minutes $end_hour"));
+                 }
+
+                 if (strtotime($end_hour) < strtotime($end_break)) {
+                     $end_break = $end_hour;
+                 }
+
+                 if (strtotime($end_hour) < strtotime($start_break)) {
+                     $start_break = $end_hour;
+                 }
+
+                 $times[$index][1] = $start_break;
+                 $times[$index][2] = $end_break;
+                 $times[$index][3] = $end_hour;
+             }
+         }
+
+         return $times;
     }
 
     private function isClosingDay($date)
