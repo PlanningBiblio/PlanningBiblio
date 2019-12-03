@@ -59,6 +59,7 @@ $j7=$d->dates[6];
 $semaine=$d->semaine;
 $semaine3=$d->semaine3;
 
+$break_countdown = ($config['PlanningHebdo'] && $config['PlanningHebdo-PauseLibre']) ? 1 : 0;
 // PlanningHebdo et EDTSamedi étant incompatibles, EDTSamedi est désactivé si PlanningHebdo est activé
 if ($config['PlanningHebdo']) {
     $config['EDTSamedi']=0;
@@ -161,6 +162,28 @@ if ($bloquant=='1') {
     }
 }
 
+// Count day hours for all agent.
+$day_hours = array();
+if ($break_countdown) {
+    $db=new db();
+    $dateSQL=$db->escapeString($date);
+
+    $db->query("SELECT perso_id, debut, fin FROM `{$dbprefix}pl_poste` WHERE date = '$dateSQL' AND supprime = '0';");
+    if ($db->result) {
+        foreach ($db->result as $elem) {
+            // Get day duration as timestamp
+            // for an easier comparison.
+            $elem_duration = strtotime($elem['fin']) - strtotime($elem['debut']);
+
+            if (!isset($day_hours[$elem['perso_id']])) {
+                $day_hours[$elem['perso_id']] = 0;
+            }
+
+            $day_hours[$elem['perso_id']] += $elem_duration;
+        }
+    }
+}
+
 // recherche des personnes à exclure (absents)
 $db=new db();
 $dateSQL=$db->escapeString($date);
@@ -206,10 +229,12 @@ if ($config['PlanningHebdo']) {
     $p->fetch();
 
     $tempsPlanningHebdo=array();
+    $breakTimes = array();
 
     if (!empty($p->elements)) {
         foreach ($p->elements as $elem) {
             $tempsPlanningHebdo[$elem["perso_id"]]=$elem["temps"];
+            $breaktimes[$elem["perso_id"]] = $elem["breaktime"];
         }
     }
 }
@@ -238,6 +263,24 @@ if ($db->result and $verif) {
         // Contrôle des heures de présence. Si l'agent n'est pas présent sur toute la plage horaire, type d'exclusion = horaires
         if (!calculSiPresent($debut, $fin, $temps, $jour)) {
             $exclusion[$elem['id']][]="horaires";
+        }
+
+        if ($break_countdown) {
+            $day_hour = isset($day_hours[$elem['id']]) ? $day_hours[$elem['id']] : 0;
+            $requested_hours = strtotime($fin) - strtotime($debut);
+            $tab = calculPresence($temps, $jour);
+
+            $hours_limit = 0;
+            foreach ($tab as $t) {
+                $hours_limit += strtotime($t[1]) - strtotime($t[0]);
+            }
+            $breaktime = strtotime($breaktimes[$elem['id']][$jour]);
+            $hours_limit = $hours_limit - $breaktime;
+
+            if ($day_hour + $requested_hours > $hours_limit) {
+                $exclusion[$elem['id']][]="break";
+            }
+
         }
 
         // Multisites : Contrôle si l'agent est prévu sur ce site.
@@ -359,6 +402,9 @@ if ($agents_tmp) {
         else {
             if (in_array('horaires', $exclusion[$elem['id']])) {
                 $motifExclusion[$elem['id']][]="<span title='Les horaires de l&apos;agent ne lui permettent pas d&apos;occuper ce poste'>Horaires</span>";
+            }
+            if (in_array('break', $exclusion[$elem['id']])) {
+                $motifExclusion[$elem['id']][]="<span title='La pause de cet agent n&apos;est pas respectée'>Pause</span>";
             }
             if (in_array('autre_site', $exclusion[$elem['id']])) {
                 $motifExclusion[$elem['id']][]="<span title='L&apos;agent est pr&eacute;vu sur un autre site'>Autre site</span>";
