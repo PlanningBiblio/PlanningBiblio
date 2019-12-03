@@ -17,7 +17,7 @@ $atomic_dir = __DIR__ . '/../setup/atomicupdate/*.php';
 
 $sql = array();
 foreach (glob($atomic_dir) as $file) {
-    print basename($file) . ': ';
+    print basename($file) . ": \n";
     try {
         require_once($file);
     } catch (Exception $e) {
@@ -26,6 +26,8 @@ foreach (glob($atomic_dir) as $file) {
     }
 
     foreach ($sql as $queries) {
+        print $queries . " : ";
+
         $db = new db();
         $db->query($queries);
         if ($db->error) {
