@@ -52,6 +52,7 @@ class planningHebdo
             $data['debut']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/", "$3-$2-$1", $data['debut']);
             $data['fin']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/", "$3-$2-$1", $data['fin']);
         }
+        $data['breaktime'] = isset($data['breaktime']) ? $data['breaktime'] : null;
 
         $perso_id=array_key_exists("perso_id", $data)?$data["perso_id"]:$_SESSION['login_id'];
 
@@ -465,6 +466,7 @@ class planningHebdo
         // Modification du format des dates de début et de fin si elles sont en français
         $data['debut']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/", "$3-$2-$1", $data['debut']);
         $data['fin']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/", "$3-$2-$1", $data['fin']);
+        $data['breaktime'] = isset($data['breaktime']) ? $data['breaktime'] : null;
 
         $perso_id = !empty($data['valide']) ? $data['valide'] : $_SESSION['login_id'];
 
