@@ -1249,6 +1249,8 @@ class conges
     private function applyHalfDays($data)
     {
         // Ability to request half day.
+        $data['halfday'] = isset($data['halfday']) ? $data['halfday'] : 0;
+
         if ($data['conges-mode'] == "jours"
             && $data['conges-demi-journees']
             && $data['halfday']) {
