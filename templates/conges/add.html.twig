@@ -4,37 +4,16 @@
 
 {% block specificjs %}
   <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/conges/js/script.conges.js?version={{ version }}'></script>
+  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/dateUtils.js?version={{ version }}'></script>
+  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/holiday.js?version={{ version }}'></script>
 {% endblock %}
 
 {% block page %}
-  <script type='text/JavaScript'>
-    $( document ).ready(function() {
-      $('#perso_id').on('change', function() {
-        document.location.href="/holiday/new/" + this.value;
-      });
-
-      $('select[name="debit"]').on('change', function() {
-        calculRestes();
-      });
-
-      $('input[name="allday"]').on('click', function() {
-        all_day();
-      });
-
-      $('#cancel').on('click', function() {
-        document.location.href="/holiday/index";
-      });
-
-      $('#validate').on('click', function() {
-        verifConges();
-      });
-    });
-  </script>
   <h3>Poser des congés</h3>
 
   <table border='0'>
     <tr style='vertical-align:top'>
-      <td style='width:700px;'>
+      <td style='width:1200px;'>
         <form name='form' action='/holiday/new' method='get' id='form'>
           <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
           <input type='hidden' name='confirm' value='confirm' />
@@ -45,14 +24,15 @@
           <input type='hidden' name='anticipation' value='{{ anticipation }}' />
           <input type='hidden' id='agent' value='{{ agent_name }}' />
           <input type='hidden' id='conges-recup' value='{{ conges_recuperations }}' />
-          <input type='hidden' id='conges-mode' value='{{ conges_mode }}' />
+          <input type='hidden' name="conges-mode" id='conges-mode' value='{{ conges_mode }}' />
+          <input type='hidden' name="conges-demi-journees" id='conges-demi-journees' value='{{ conges_demi_journee }}' />
 
-          <table border='0'>
+          <table border='0' style="width: 100%">
             <tr>
               <td style='width:350px;'> Nom, prénom : </td>
               <td>
                 {% if admin %}
-                  <select name='perso_id' id='perso_id' style='width:98%;'>
+                  <select name='perso_id' id='perso_id' style='width:20%;'>
                     {% for a in db_perso %}
                       {% if a.id == perso_id %}
                         <option value='{{ a.id }}' selected='selected'>{{ a.nom }} {{ a.prenom }}</option>
@@ -75,18 +55,33 @@
                   <input type='checkbox' name='allday' checked='checked' />
                 </td>
               </tr>
+            {% elseif conges_demi_journee %}
+              <tr>
+                <td style='padding-top:15px;'>Demi-journée(s) : </td>
+                <td style='padding-top:15px;'>
+                  <input type='checkbox' name='halfday' class="checkdate"/>
+                </td>
+              </tr>
             {% endif %}
 
             <tr>
               <td>Date de début : </td>
               <td>
-                <input type='text' name='debut' id='debut' value='{{ debut }}' class='datepicker googleCalendarTrigger' style='width:97%;'/>&nbsp;</td>
+                <input type='text' name='debut' id='debut' value='{{ debut }}' class='datepicker googleCalendarTrigger checkdate' style='width:20%;'/>&nbsp;
+                {% if conges_recuperations and conges_demi_journee %}
+                  <select name="start_halfday" style="display: none;" class="checkdate">
+                    <option value="fullday">Journée complète</option>
+                    <option value="morning">Matin</option>
+                    <option value="afternoon">Après-midi</option>
+                  </select>
+                {% endif %}
+              </td>
             </tr>
 
             <tr id='hre_debut' style='display:none;'>
               <td>Heure de début : </td>
               <td>
-                <select name='hre_debut' id='hre_debut_select' style='width:98%;' class='googleCalendarTrigger'>
+                <select name='hre_debut' id='hre_debut_select' style='width:20%;' class='googleCalendarTrigger'>
                   <option value=""></option>
                   <option value="07:00:00">07h00</option>
                   <option value="08:00:00">08h00</option>
@@ -112,13 +107,20 @@
             <tr>
               <td>Date de fin : </td>
               <td>
-                <input type='text' name='fin' id='fin' value='{{ fin }}'  class='datepicker googleCalendarTrigger' style='width:97%;'/>&nbsp;
+                <input type='text' name='fin' id='fin' value='{{ fin }}'  class='datepicker googleCalendarTrigger checkdate' style='width:20%;'/>&nbsp;
+                {% if conges_recuperations and conges_demi_journee %}
+                  <select name="end_halfday" style="display: none;" class="checkdate">
+                    <option value="fullday">Journée complète</option>
+                    <option value="morning">Matin</option>
+                    <option value="afternoon">Après-midi</option>
+                  </select>
+                {% endif %}
               </td>
             </tr>
 
             <tr id='hre_fin' style='display:none;'><td>Heure de fin : </td>
               <td>
-                <select name='hre_fin' id='hre_fin_select' style='width:98%;' class='googleCalendarTrigger' onfocus='setEndHour();'>
+                <select name='hre_fin' id='hre_fin_select' style='width:20%;' class='googleCalendarTrigger' onfocus='setEndHour();'>
                   <option value=""></option>
                   <option value="07:00:00">07h00</option>
                   <option value="08:00:00">08h00</option>
@@ -182,7 +184,7 @@
                 <tr>
                   <td>&nbsp;</td>
                   <td>
-                    <select name='debit' style='width:98%;'>
+                    <select name='debit' style='width:30%;'>
                       <option value='recuperation'>Le crédit de récupérations</option>
                       <option value='credit'>Le crédit de congés de l'année en cours</option>
                     </select>
@@ -254,7 +256,7 @@
           <tr valign='top'>
             <td style='padding-top:15px;'>Commentaires : </td>
             <td style='padding-top:15px;'>
-              <textarea name='commentaires' cols='16' rows='5' style='width:97%;'></textarea>
+              <textarea name='commentaires' cols='16' rows='5' style='width:40%;'></textarea>
             </td>
           </tr>
 

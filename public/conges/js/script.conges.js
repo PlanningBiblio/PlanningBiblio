@@ -29,16 +29,51 @@ function calculCredit(){
   hre_debut=document.form.elements["hre_debut"].value;
   hre_fin=document.form.elements["hre_fin"].value;
   perso_id=document.form.elements["perso_id"].value;
+  halfday = $('input[name="halfday"]').is(':checked') ? 1 : 0;
+  conges_mode = $('#conges-mode').val();
+  conges_demi_journee = $('#conges-demi-journees')
+
   if(!fin){
     fin=debut;
   }
   if(!debut){
     return;
   }
-    
+
   hre_debut=hre_debut?hre_debut:"00:00:00";
   hre_fin=hre_fin?hre_fin:"23:59:59";
-  
+
+  if (conges_mode == 'jours' && conges_demi_journee && halfday) {
+    start_halfday = $('select[name="start_halfday"]').val();
+    end_halfday = $('select[name="end_halfday"]').val();
+
+    start = ddmmyyyy_to_date(debut);
+    end = ddmmyyyy_to_date(fin);
+
+    if (start.getTime() == end.getTime()) {
+      if (start_halfday == 'morning') {
+        hre_debut = '00:00:00';
+        hre_fin = '12:00:00';
+      }
+
+      if (start_halfday == 'afternoon') {
+        hre_debut = '12:00:00';
+        hre_fin = '23:59:59';
+      }
+    }
+
+    if (start.getTime() < end.getTime()) {
+      if (start_halfday == 'afternoon') {
+        hre_debut = '12:00:00';
+      }
+
+      if (end_halfday == 'morning') {
+        hre_fin = '12:00:00';
+      }
+    }
+
+  }
+
   $.ajax({
     url: "/ajax/holiday-credit",
     data: {debut: debut, fin: fin, hre_debut: hre_debut, hre_fin: hre_fin, perso_id: perso_id},
@@ -445,12 +480,14 @@ function checkSamedi( o, n ) {
 
 
 $(function(){
+  $('.checkdate').on('change', function() {
+    calculCredit();
+  });
+
   $(".googleCalendarTrigger").change(function(){
     googleCalendarIcon();
-    calculCredit();
   });
   $(".googleCalendarForm").ready(function(){
     googleCalendarIcon();
-    calculCredit();
   });
 });

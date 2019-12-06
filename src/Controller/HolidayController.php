@@ -340,6 +340,9 @@ class HolidayController extends BaseController
             'perso_id'              => $perso_id,
             'login_id'              => $_SESSION['login_id'],
             'agent_name'            => $_SESSION['login_nom'] . ' ' . $_SESSION['login_prenom'],
+            'halfday'               => $data['halfday'],
+            'start_halfday'         => $data['start_halfday'],
+            'end_halfday'           => $data['end_halfday'],
             'reliquat'              => $reliquat,
             'reliquat2'             => $holiday_helper->HumanReadableDuration($reliquat),
             'recuperation'          => $recuperation,
@@ -354,6 +357,7 @@ class HolidayController extends BaseController
             'hre_debut'             => $hre_debut,
             'hre_fin'               => $hre_fin,
             'conges_mode'           => $this->config('Conges-Mode'),
+            'conges_demi_journee'   => $this->config('Conges-demi-journees'),
             'request_type'          => $request_type,
             'adminN1'               => $adminN1,
             'adminN2'               => $adminN2,
@@ -508,6 +512,7 @@ class HolidayController extends BaseController
                 'perso_id'              => $perso_id,
                 'conges_recuperations'  => $this->config('Conges-Recuperations'),
                 'conges_mode'           => $this->config('Conges-Mode'),
+                'conges_demi_journee'   => $this->config('Conges-demi-journees'),
                 'CSRFToken'             => $CSRFSession,
                 'reliquat'              => $reliquat,
                 'reliquat2'             => $holiday_helper->HumanReadableDuration($reliquat),
@@ -587,6 +592,7 @@ class HolidayController extends BaseController
         $hre_debut = $request->get('hre_debut') ? $request->get('hre_debut') :"00:00:00";
         $hre_fin = $request->get('hre_fin') ? $request->get('hre_fin') : "23:59:59";
         $commentaires=htmlentities($request->get('commentaires'), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+
         if (!$finSQL) {
             $finSQL = $debutSQL;
         }

@@ -70,13 +70,23 @@ class conges
         $data['debut']=dateSQL($data['debut']);
         $data['fin']=dateSQL($data['fin']);
 
+        $data = $this->applyHalfDays($data);
+
         // Enregistrement du congé
-        $insert=array("debut"=>$data['debut']." ".$data['hre_debut'], "fin"=>$data['fin']." ".$data['hre_fin'],
-      "commentaires"=>$data['commentaires'],"heures"=>$data['heures'],"debit"=>$data['debit'],"perso_id"=>$data['perso_id'],
-      "saisie_par"=>$_SESSION['login_id']);
         $db=new db();
         $db->CSRFToken = $this->CSRFToken;
-        $db->insert("conges", $insert);
+        $db->insert("conges", array(
+            'debut'         => $data['debut'] . ' ' . $data['hre_debut'],
+            'fin'           => $data['fin'] . ' ' . $data['hre_fin'],
+            'halfday'       => $data['halfday'] ? 1 : 0,
+            'start_halfday' => $data['start_halfday'],
+            'end_halfday'   => $data['end_halfday'],
+            'commentaires'  => $data['commentaires'],
+            'heures'        => $data['heures'],
+            'debit'         => $data['debit'],
+            'perso_id'      => $data['perso_id'],
+            'saisie_par'    => $_SESSION['login_id']
+        ));
 
         // Récupération de l'id du congé enregistré
         $this->id=0;
@@ -1052,10 +1062,23 @@ class conges
         $data['debut']=dateSQL($data['debut']);
         $data['fin']=dateSQL($data['fin']);
 
-        $update=array("debut"=>$data['debut']." ".$data['hre_debut'], "fin"=>$data['fin']." ".$data['hre_fin'],
-      "commentaires"=>$data['commentaires'],"refus"=>$data['refus'],"heures"=>$data['heures'],"debit"=>$data['debit'],
-      "perso_id"=>$data['perso_id'],"modif"=>$_SESSION['login_id'],"modification"=>date("Y-m-d H:i:s"));
-    
+        $data = $this->applyHalfDays($data);
+
+        $update=array(
+            'debut'         => $data['debut'] . ' ' . $data['hre_debut'],
+            'fin'           => $data['fin'] . ' ' . $data['hre_fin'],
+            'halfday'       => $data['halfday'] ? 1 : 0,
+            'start_halfday' => $data['start_halfday'],
+            'end_halfday'   => $data['end_halfday'],
+            'commentaires'  => $data['commentaires'],
+            'refus'         => $data['refus'],
+            'heures'        => $data['heures'],
+            'debit'         => $data['debit'],
+            'perso_id'      => $data['perso_id'],
+            'modif'         => $_SESSION['login_id'],
+            'modification'  => date("Y-m-d H:i:s")
+        );
+
         if ($data['valide']) {
             // Validation Niveau 2
             if ($data['valide']==-1 or $data['valide']==1) {
@@ -1221,6 +1244,42 @@ class conges
 
         return $filtered;
 
+    }
+
+    private function applyHalfDays($data)
+    {
+        // Ability to request half day.
+        if ($data['conges-mode'] == "jours"
+            && $data['conges-demi-journees']
+            && $data['halfday']) {
+
+            if (!$data['fin']) {
+                $data['fin'] = $data['debut'];
+                $data['end_halfday'] = $data['start_halfday'];
+            }
+
+            if ($data['debut'] == $data['fin']) {
+                if ($data['start_halfday'] == 'morning') {
+                    $data['hre_debut'] = '00:00:00';
+                    $data['hre_fin'] = '12:00:00';
+                }
+                if ($data['start_halfday'] == 'afternoon') {
+                    $data['hre_debut'] = '12:00:00';
+                    $data['hre_fin'] = '23:59:59';
+                }
+            }
+
+            if (strtotime($data['debut']) < strtotime($data['fin'])) {
+                if ($data['start_halfday'] == 'afternoon') {
+                    $data['hre_debut'] = '12:00:00';
+                }
+                if ($data['end_halfday'] == 'morning') {
+                    $data['hre_fin'] = '12:00:00';
+                }
+            }
+        }
+
+        return $data;
     }
 
 }
