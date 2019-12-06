@@ -7,6 +7,7 @@ Ability to check permissions on kernel.request event
 Ability to add documents on absences
 Ability to change user password
 Move admin/info pages into a controller
+Abiblity to request holiday on half day
 
 -Fixes
 Add raw filter on agent templates for fields services, right and skills
