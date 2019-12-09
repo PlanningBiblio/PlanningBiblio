@@ -17,6 +17,8 @@ Page accessible à partir du menu administration/planning de présence
 
 require_once "class.planningHebdo.php";
 
+$twig = $GLOBALS['twig'];
+
 // Initialisation des variables
 $copy=filter_input(INPUT_GET, "copy", FILTER_SANITIZE_NUMBER_INT);
 $id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
@@ -54,6 +56,7 @@ if ($id) {
 
     $perso_id=$p->elements[0]['perso_id'];
     $temps=$p->elements[0]['temps'];
+    $breaktime=$p->elements[0]['breaktime'];
 
     if ($copy) {
         $valide_n1 = 0;
@@ -251,6 +254,9 @@ for ($j=0;$j<$config['nb_semaine'];$j++) {
     }
   
     echo "<td style='width:135px;'>Heure de départ</td>";
+    if ($config['PlanningHebdo-PauseLibre']) {
+        echo "<td style='width:135px;'>Temps de pause</td>";
+    }
     if ($config['Multisites-nombre']>1) {
         echo "<td style='width:135px;'>Site</td>";
     }
@@ -268,6 +274,12 @@ for ($j=0;$j<$config['nb_semaine'];$j++) {
                 echo "<td>".selectTemps($i-1, 6, null, "select")."</td>\n";
             }
             echo "<td>".selectTemps($i-1, 3, null, "select")."</td>";
+            if ($config['PlanningHebdo-PauseLibre']) {
+                echo "<td>";
+                echo $twig->render('weeklyplanning/breakingtime.html.twig',
+                    array('breaktime' => $breaktime[$i - 1], 'day_index' => $i - 1));
+                echo "</td>";
+            }
         } else {
             $h1 = isset($temps[$i-1])?heure2($temps[$i-1][0]):null;
             $h2 = isset($temps[$i-1])?heure2($temps[$i-1][1]):null;
@@ -286,6 +298,12 @@ for ($j=0;$j<$config['nb_semaine'];$j++) {
                 echo "<td id='temps_".($i-1)."_6' class='td_heures'>$h6</td>\n";
             }
             echo "<td id='temps_".($i-1)."_3' class='td_heures'>$h4</td>\n";
+            if ($config['PlanningHebdo-PauseLibre']) {
+                echo "<td id='breaktime_" . ($i -1) ."'>";
+                echo heure4($breaktime[$i -1]);
+                echo "<input type='hidden' name='breaktime_" . ($i -1) . "' value='" . $breaktime[$i -1] . "'/>";
+                echo "</td>";
+            }
         }
         if ($config['Multisites-nombre']>1) {
             if ($modifAutorisee) {

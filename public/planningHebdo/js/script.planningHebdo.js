@@ -42,11 +42,11 @@ function plHebdoCalculHeures(object,num){
     fin1 = 0;
     fin2 = 0;
     fin3 = 0;
+    breaktime = 0;
     
     
     // Si modification possible (select)
     if(elements["temps"+num+"["+i+"][0]"]){
-      
       debut1 = $("select[name*='temps"+num+"["+i+"][0]']").val();
       fin1 = $("select[name*='temps"+num+"["+i+"][1]']").val();
       debut2 = $("select[name*='temps"+num+"["+i+"][2]']").val();
@@ -56,6 +56,10 @@ function plHebdoCalculHeures(object,num){
       if($("select[name*='temps"+num+"["+i+"][5]']")){
         fin2 = $("select[name*='temps"+num+"["+i+"][5]']").val();
         debut3 = $("select[name*='temps"+num+"["+i+"][6]']").val();
+      }
+
+      if ($("select[name*='breaktime["+i+"]']").val()){
+        breaktime = $("select[name*='breaktime["+i+"]']").val();
       }
     
     // Si lecture seule
@@ -69,6 +73,10 @@ function plHebdoCalculHeures(object,num){
       if($("#temps"+num+"_"+i+"_5")){
         fin2 = $("#temps"+num+"_"+i+"_5").text().replace("h",":");
         debut3 = $("#temps"+num+"_"+i+"_6").text().replace("h",":");
+      }
+
+      if ($("input[name='breaktime_" + i + "']").val()) {
+        breaktime = $("input[name='breaktime_" + i + "']").val();
       }
     }
 
@@ -115,6 +123,7 @@ function plHebdoCalculHeures(object,num){
     else if(debut3 && fin3){
       diff=diffMinutes(debut3,fin3);
     }
+    diff = diff - (breaktime * 60);
     heures+=diff;
     
     // Affichage du nombre d'heure pour chaque ligne
