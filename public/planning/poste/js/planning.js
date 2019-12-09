@@ -1,12 +1,11 @@
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
 Fichier : planning/poste/js/planning.js
 Création : 2 juin 2014
-Dernière modification : 25 avril 2018
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -627,8 +626,8 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
         }
 
         // Service et Statut
-        classes+=" service_"+result[i]["service"].toLowerCase().replace(" ","_");
-        classes+=" statut_"+result[i]["statut"].toLowerCase().replace(" ","_");
+        classes+=" service_"+result[i]["service"].toLowerCase().replace(/ /g,"_");
+        classes+=" statut_"+result[i]["statut"].toLowerCase().replace(/ /g,"_");
         
         // Qualifications (activités) de l'agent
         classes+=' '+result[i]['activites'];
