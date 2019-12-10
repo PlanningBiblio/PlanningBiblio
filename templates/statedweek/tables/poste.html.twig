@@ -3,45 +3,72 @@
 <table class="statedweek-table table-placed table-right" id="statedweek-poste" border="1">
   <thead>
     <tr>
-      <th class="cell-header">Concierges</th>
+      <th class="cell-header">
+          {{ planning.jobs[0].description }}
+      </th>
       <th class="cell-header">Horaires</th>
     </tr>
   </thead>
   <tbody>
     {% for i in 0..3 %}
       <tr>
-        <td id="first-poste-slot-{{ i }}"></td>
-        <td id="first-poste-time-slot-{{ i }}"></td>
+        <td class="time-slot"
+            data-job="{{ planning.jobs[0].name }}"
+            data-jobdesc="{{ planning.jobs[0].description }}"
+            data-timeid="first-poste-time-slot-{{ i }}"
+            id="first-job-slot{{ i }}"></td>
+        <td class="editable" id="first-poste-time-slot-{{ i }}">
+          <span></span>
+          <input type="text" style="display: none;"/>
+        </td>
       </tr>
     {% endfor %}
   </tbody>
 
   <thead>
     <tr>
-      <th class="cell-header">Accueil</th>
+      <th class="cell-header">
+          {{ planning.jobs[1].description }}
+      </th>
       <th class="cell-header">Horaires</th>
     </tr>
   </thead>
   <tbody>
     {% for i in 0..3 %}
       <tr>
-        <td id="second-poste-slot-{{ i }}"></td>
-        <td id="second-poste-time-slot-{{ i }}"></td>
+        <td class="time-slot"
+            data-job="{{ planning.jobs[1].name }}"
+            data-jobdesc="{{ planning.jobs[1].description }}"
+            data-timeid="second-poste-time-slot-{{ i }}"
+            id="second-job-slot{{ i }}"></td>
+        <td class="editable" id="second-poste-time-slot-{{ i }}">
+          <span></span>
+          <input type="text" style="display: none;"/>
+        </td>
       </tr>
     {% endfor %}
   </tbody>
 
   <thead>
     <tr>
-      <th class="cell-header">Autres services</th>
+      <th class="cell-header">
+          {{ planning.jobs[2].description }}
+      </th>
       <th class="cell-header">Horaires</th>
     </tr>
   </thead>
   <tbody>
     {% for i in 0..6 %}
       <tr>
-        <td id="third-poste-slot-{{ i }}"></td>
-        <td id="third-poste-time-slot-{{ i }}"></td>
+        <td class="time-slot"
+            data-job="{{ planning.jobs[2].name }}"
+            data-jobdesc="{{ planning.jobs[2].description }}"
+            data-timeid="third-poste-time-slot-{{ i }}"
+            id="third-job-slot{{ i }}"></td>
+        <td class="editable" id="third-poste-time-slot-{{ i }}">
+          <span></span>
+          <input type="text" style="display: none;"/>
+        </td>
       </tr>
     {% endfor %}
   </tbody>

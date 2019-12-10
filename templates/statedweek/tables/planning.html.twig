@@ -4,13 +4,13 @@
   <thead>
     <tr>
       <th class="cell-header">
-        {{ plcolumns[0].from | hour }} - {{ plcolumns[0].to | hour }}
+        {{ planning.columns[0].starttime | date('H:i:s') | hour }} - {{ planning.columns[0].endtime | date('H:i:s') | hour }}
       </th>
       <th class="cell-header">
-        {{ plcolumns[1].from | hour }} - {{ plcolumns[1].to | hour }}
+        {{ planning.columns[1].starttime | date('H:i:s') | hour }} - {{ planning.columns[1].endtime | date('H:i:s') | hour }}
       </th>
       <th class="cell-header">
-        {{ plcolumns[2].from | hour }} - {{ plcolumns[2].to | hour }}
+        {{ planning.columns[2].starttime | date('H:i:s') | hour }} - {{ planning.columns[2].endtime | date('H:i:s') | hour }}
       </th>
     </tr>
   </thead>
@@ -20,20 +20,20 @@
         <td
           class="time-slot first-slot"
           id="first-time-slot-{{ i }}"
-          data-from="{{ plcolumns[0].from }}"
-          data-to="{{ plcolumns[0].to }}"></td>
+          data-from="{{ planning.columns[0].starttime | date('H:i:s') }}"
+          data-to="{{ planning.columns[0].endtime | date('H:i:s') }}"></td>
 
         <td
           class="time-slot second-slot"
           id="second-time-slot-{{ i }}"
-          data-from="{{ plcolumns[1].from }}"
-          data-to="{{ plcolumns[1].to }}"></td>
+          data-from="{{ planning.columns[1].starttime | date('H:i:s') }}"
+          data-to="{{ planning.columns[1].endtime | date('H:i:s') }}"></td>
 
         <td
           class="time-slot third-slot"
           id="third-time-slot-{{ i }}"
-          data-from="{{ plcolumns[2].from }}"
-          data-to="{{ plcolumns[2].to }}"></td>
+          data-from="{{ planning.columns[2].starttime | date('H:i:s') }}"
+          data-to="{{ planning.columns[2].endtime | date('H:i:s') }}"></td>
       </tr>
     {% endfor %}
   </tbody>

@@ -14,6 +14,49 @@ $( document ).ready(function() {
     resize_td();
   });
 
+  $('.editable').on('click', function() {
+    span = $(this).find('span');
+    input = $(this).find('input');
+    text = span.text();
+    span.hide();
+    input.val(text).show()
+    input.focus();
+
+  });
+
+  $('.editable input').on('blur', function() {
+    span = $(this).parent().find('span');
+    times = $(this).val();
+    span.text($(this).val()).show();
+    $(this).hide();
+
+    agent_id = $('td[data-timeid="' + $(this).parent().attr('id') + '"]').data('agent');
+
+    if (!agent_id) {
+      return;
+    }
+
+    job_name = $('td[data-timeid="' + $(this).parent().attr('id') + '"]').data('job');
+    date = $('input[name="date"]').val();
+
+    $.ajax({
+      url: '/ajax/statedweekjob/update',
+      type: 'post',
+      data: {agent_id: agent_id, date: date, job_name: job_name, times: times},
+      error: function() {
+        alert("Une erreur est survenue lors de la mise à jour du planning");
+      }
+    });
+  });
+
+  $('.editable input').focusout(function() {
+    span = $(this).find('span');
+    input = $(this).find('input');
+    text = input.val();
+    span.text(text).show();
+    input.val('').hide();
+  });
+
   $("#pl-calendar").change(function(){
     var date = dateFr($(this).val());
     window.location.href="?date="+date;
@@ -94,6 +137,7 @@ $( document ).ready(function() {
     date = $('input[name="date"]').val();
     from = cell.data('from');
     to = cell.data('to');
+    job_name = cell.data('job');
 
     $.ajax({
       url: '/ajax/statedweek/availables',
@@ -109,6 +153,11 @@ $( document ).ready(function() {
           item = $("<li></li>");
           item.attr('data-agent', agent.id);
           item.attr('data-cell', cell.attr('id'));
+
+          if (job_name) {
+            item.attr('data-job', cell.data('job'));
+          }
+
           item.addClass('add-agent');
           item.append('<span>' + agent.fullname + '</span>');
 
@@ -147,6 +196,10 @@ $( document ).ready(function() {
     if (cell.data('from') && cell.data('to')) {
       $('.context-menu-title').html(heureFr(cell.data('from')) + ' - ' + heureFr(cell.data('to')));
     }
+
+    if (cell.data('jobdesc')) {
+      $('.context-menu-title').html('Poste: ' + cell.data('jobdesc'));
+    }
   }
 
   function addWorkingHours(cell_id) {
@@ -154,13 +207,21 @@ $( document ).ready(function() {
     agent_id = cell.data('agent');
     hour_from = cell.data('from');
     hour_to = cell.data('to');
+    job_name = cell.data('job');
     date = $('input[name="date"]').val();
-    CSRFToken = $('input[name="CSRFToken"]').val();
+
+    url = '/ajax/statedweek/add';
+    data = {agent_id: agent_id, from: hour_from, to: hour_to, date: date};
+
+    if (job_name) {
+      url = '/ajax/statedweekjob/add';
+      data = {agent_id: agent_id, job_name: job_name, date: date};
+    }
 
     $.ajax({
-      url: '/ajax/statedweek/add',
+      url: url,
       type: 'post',
-      data: {agent_id: agent_id, from: hour_from, to: hour_to, date: date, CSRFToken: CSRFToken},
+      data: data,
       error: function() {
         cell.empty();
         cell.removeAttr('data-agent');
@@ -172,16 +233,26 @@ $( document ).ready(function() {
   function removeWorkingHours(cell_id) {
     cell = $('#' + cell_id);
     agent_id = cell.data('agent');
+    job_name = cell.data('job');
     date = $('input[name="date"]').val();
-    CSRFToken = $('input[name="CSRFToken"]').val();
+
+    url = '/ajax/statedweek/remove';
+    data = {agent_id: agent_id, date: date};
+
+    if (job_name) {
+      url = '/ajax/statedweekjob/remove';
+      data = {agent_id: agent_id, job_name: job_name, date: date};
+    }
 
     $.ajax({
-      url: '/ajax/statedweek/remove',
+      url: url,
       type: 'post',
-      data: {agent_id: agent_id, date: date, CSRFToken: CSRFToken},
+      data: data,
       success: function() {
         cell.empty();
         cell.removeAttr('data-agent');
+        timeid = cell.data('timeid');
+        $('#' + timeid + ' span').text('');
       },
       error: function() {
         alert("Une erreur est survenue lors de la mise à jour du planning");
@@ -207,6 +278,50 @@ $( document ).ready(function() {
   }
 
   function placeAgent(agent) {
+    if (agent.place == 'planning') {
+      placeOnPlanning(agent);
+    }
+
+    if (agent.place == 'job') {
+      placeOnJob(agent);
+    }
+  }
+
+  function placeOnJob(agent) {
+    id = agent.id;
+    name = agent.name;
+    job_name= agent.job_name;
+
+    $('#statedweek-poste td[data-job="' + job_name + '"]').each(function() {
+      if ($(this).is(':empty')) {
+        item = $('<span></span>');
+        item.append(name);
+
+        $(this).append(item);
+        $(this).attr('data-agent', id);
+
+        if (agent.absent) {
+          $(this).addClass('absent');
+          $(this).append(' <i> - absent(e)</<i>');
+        }
+
+        if (agent.partially_absent) {
+          $(this).addClass('partially-absent');
+          $(this).append(' <i> - absent(e)</<i>');
+          $.each(agent.partially_absent, function(index, absence) {
+            $(this).children('i').append(' de ' + absence.from + ' à ' + absence.to);
+          });
+        }
+
+        time_cell_id = $(this).data('timeid');
+        $('#' + time_cell_id).find('span').html(agent.times);
+
+        return false;
+      }
+    });
+  }
+
+  function placeOnPlanning(agent) {
     id = agent.id;
     name = agent.name;
     from = agent.from;

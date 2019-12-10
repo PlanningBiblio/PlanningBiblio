@@ -45,6 +45,9 @@
       background-color: #782513;
       color: white;
     }
+    .editable:hover {
+      cursor: text;
+    }
   </style>
 
   <div id="statedweek">
@@ -64,9 +67,9 @@
           </div>
 
           <div id="date_text">
-            Planning du {{ date_text }}
-            {% if public_holiday %}
-              - <font id='public_holiday'> {{ public_holiday }}</font>
+            Planning du {{ date | fulldate }}
+            {% if date | publicholiday %}
+              - <font id='public_holiday'> {{ date | publicholiday }}</font>
             {% endif %}
           </div>
 
