@@ -9,9 +9,16 @@
   <tbody>
     {% for i in 0..6 %}
       <tr>
-        <td></td>
-        <td></td>
-        <td></td>
+        {% if absences[i] is defined %}
+          {% set absence = absences[i] %}
+          <td>{{ absence.nom }} {{ absence.prenom }}</td>
+          <td>{{ absence.debut | datehour }} - {{ absence.fin | datehour }}</td>
+          <td>{{ absence.motif }}</td>
+        {% else %}
+          <td></td>
+          <td></td>
+          <td></td>
+        {% endif %}
       </tr>
     {% endfor %}
   </tbody>

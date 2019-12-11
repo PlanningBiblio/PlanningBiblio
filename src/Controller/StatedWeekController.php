@@ -16,7 +16,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 
 include_once(__DIR__ . '/../../public/include/function.php');
-include_once(__DIR__ . '/../../public/include/feries.php');
+require_once(__DIR__ . '/../../public/absences/class.absences.php');
+require_once(__DIR__ . '/../../public/conges/class.conges.php');
 
 class StatedWeekController extends BaseController
 {
@@ -35,12 +36,24 @@ class StatedWeekController extends BaseController
 
         $planning = $this->getPlanningOn($date);
 
+        // Absences
+        $a = new \absences();
+        $a->valide = true;
+        $a->agents_supprimes = array(0,1,2);
+        $a->fetch(null, null, $date, $date);
+        $absences = $a->elements;
+
+        // Holidays
+        $c = new \conges();
+        $holidays = $c->all($date.' 00:00:00', $date.' 23:59:59');
+
         $this->templateParams(array(
-            'CSRFSession'           => $GLOBALS['CSRFSession'],
-            'planning'              => $planning,
-            'date'                  => $date,
-            'week_number'           => $date_pl->semaine,
-            'week_days'             => $date_pl->dates,
+            'planning'      => $planning,
+            'absences'      => $absences,
+            'holidays'      => $holidays,
+            'date'          => $date,
+            'week_number'   => $date_pl->semaine,
+            'week_days'     => $date_pl->dates,
         ));
 
         return $this->output('statedweek/index.html.twig');

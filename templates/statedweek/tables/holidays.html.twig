@@ -7,10 +7,24 @@
     </tr>
   </thead>
   <tbody>
+    {% set index = 0 %}
     {% for i in 0..6 %}
       <tr>
-        <td></td>
-        <td></td>
+        {% if holidays[index] is defined %}
+          {% set holiday = holidays[index] %}
+          <td>{{ holiday.nom }} {{ holiday.prenom }}</td>
+          {% set index = index + 1 %}
+        {% else %}
+          <td></td>
+        {% endif %}
+
+        {% if holidays[index] is defined %}
+          {% set holiday = holidays[index] %}
+          <td>{{ holiday.nom }} {{ holiday.prenom }}</td>
+          {% set index = index + 1 %}
+        {% else %}
+          <td></td>
+        {% endif %}
       </tr>
     {% endfor %}
   </tbody>
