@@ -225,4 +225,18 @@ class Agent extends PLBEntity {
 
         return false;
     }
+
+    public function isInSite($site) {
+        $sites = json_decode($this->sites);
+
+        if (empty($sites)) {
+            return false;
+        }
+
+        if (in_array($site, $sites)) {
+            return true;
+        }
+
+        return false;
+    }
 }

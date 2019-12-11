@@ -41,11 +41,11 @@ class StatedWeekController extends BaseController
         $a->valide = true;
         $a->agents_supprimes = array(0,1,2);
         $a->fetch(null, null, $date, $date);
-        $absences = $a->elements;
+        $absences = $this->filterAgents($a->elements);
 
         // Holidays
         $c = new \conges();
-        $holidays = $c->all($date.' 00:00:00', $date.' 23:59:59');
+        $holidays = $this->filterAgents($c->all($date.' 00:00:00', $date.' 23:59:59'));
 
         $this->templateParams(array(
             'planning'      => $planning,
@@ -69,11 +69,20 @@ class StatedWeekController extends BaseController
         $to = $date . ' ' . $request->get('to');
 
         $availables = array();
-        $agents = $this->entityManager->getRepository(Agent::class)->findAll();
+        $agents = $this->entityManager
+            ->getRepository(Agent::class)
+            ->findBy(array(
+                'supprime'  => 0,
+                'service'   => $this->config('statedweek_service_filter')
+            ));
 
         foreach ($agents as $agent) {
 
             if ($agent->id() == 1 || $agent->id() == 2) {
+                continue;
+            }
+
+            if (!$agent->isInSite($this->config('statedweek_site_filter'))) {
                 continue;
             }
 
@@ -649,5 +658,29 @@ class StatedWeekController extends BaseController
         }
 
         return $planning->jobs();
+    }
+
+    private function filterAgents($elements)
+    {
+        $filtered = array();
+        foreach ($elements as $elem) {
+            $agent = $this->entityManager->getRepository(Agent::class)->find($elem['perso_id']);
+
+            if ($agent->supprime() == 1) {
+                continue;
+            }
+
+            if ($agent->service() != $this->config('statedweek_service_filter')) {
+                continue;
+            }
+
+            if (!$agent->isInSite($this->config('statedweek_site_filter'))) {
+                continue;
+            }
+
+            $filtered[] = $elem;
+        }
+
+        return $filtered;
     }
 }
