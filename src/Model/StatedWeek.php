@@ -27,10 +27,17 @@ class StatedWeek extends PLBEntity {
      */
     protected $jobs;
 
+    /**
+     * @OneToMany(targetEntity="StatedWeekPause", mappedBy="planning", cascade={"ALL"})
+     */
+    protected $pauses;
+
     public function __construct() {
         $this->columns = new ArrayCollection();
 
         $this->jobs = new ArrayCollection();
+
+        $this->pauses = new ArrayCollection();
     }
 
     public function addColumn(StatedWeekColumn $column)
@@ -43,5 +50,11 @@ class StatedWeek extends PLBEntity {
     {
         $this->jobs->add($job);
         $job->planning($this);
+    }
+
+    public function addPause(StatedWeekPause $pause)
+    {
+        $this->pauses->add($pause);
+        $pause->planning($this);
     }
 }

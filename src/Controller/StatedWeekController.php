@@ -9,6 +9,7 @@ use App\Model\StatedWeekColumn;
 use App\Model\StatedWeekJob;
 use App\Model\StatedWeekTimes;
 use App\Model\StatedWeekJobTimes;
+use App\Model\StatedWeekPause;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -89,6 +90,80 @@ class StatedWeekController extends BaseController
         }
 
         return $this->json($availables);
+    }
+
+    /**
+     * @Route("/ajax/statedweekpause/add", name="statedweekpause.add", methods={"POST"})
+     */
+    public function addPause(Request $request)
+    {
+        $response = new Response();
+
+        $agent_id = $request->get('agent_id');
+        $date = $request->get('date');
+
+        $agent = $this->entityManager->getRepository(Agent::class)->find($agent_id);
+        if (!$agent) {
+            $response->setContent('Agent not found');
+            $response->setStatusCode(404);
+            return $response;
+        }
+
+        $planning = $this->getPlanningOn($date);
+        if (!$planning) {
+            $response->setContent('Planning not found');
+            $response->setStatusCode(404);
+            return $response;
+        }
+
+        $pause = new StatedWeekPause();
+        $pause->agent_id($agent_id);
+
+        $planning->addPause($pause);
+
+        $this->entityManager->persist($planning);
+        $this->entityManager->flush();
+
+        $response->setContent('Pause added');
+        $response->setStatusCode(200);
+        return $response;
+    }
+
+    /**
+     * @Route("/ajax/statedweekpause/remove", name="statedweekpause.remove", methods={"POST"})
+     */
+    public function removePause(Request $request)
+    {
+        $response = new Response();
+
+        $agent_id = $request->get('agent_id');
+        $date = $request->get('date');
+
+        $agent = $this->entityManager->getRepository(Agent::class)->find($agent_id);
+        if (!$agent) {
+            $response->setContent('Agent not found');
+            $response->setStatusCode(404);
+            return $response;
+        }
+
+        $planning = $this->getPlanningOn($date);
+        if (!$planning) {
+            $response->setContent('Planning not found');
+            $response->setStatusCode(404);
+            return $response;
+        }
+
+        $planning_id = $planning->id();
+        $pause = $this->entityManager
+            ->getRepository(StatedWeekPause::class)
+            ->findOneBy(array('agent_id' => $agent_id, 'planning_id' => $planning_id));
+
+        $this->entityManager->remove($pause);
+        $this->entityManager->flush();
+
+        $response->setContent('Pause deleted');
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
@@ -302,21 +377,28 @@ class StatedWeekController extends BaseController
     }
 
     /**
-     * @Route("/ajax/statedweek/placed", name="statedweek.placed", methods={"POST"})
+     * @Route("/ajax/statedweek/placed", name="statedweek.placed", methods={"GET", "POST"})
      */
     public function placedWorkingHours(Request $request)
     {
         $date = $request->get('date');
 
-        $columns = $this->getColumns($date);
-        if (empty($columns)) {
+        $planning = $this->getPlanningOn($date);
+
+        //$columns = $this->getColumns($date);
+        //if (empty($columns)) {
+        //    $response->setContent('Planning not found');
+        //    $response->setStatusCode(404);
+        //    return $response;
+        //}
+        if (!$planning) {
             $response->setContent('Planning not found');
             $response->setStatusCode(404);
             return $response;
         }
 
         $placed = array();
-        foreach ($columns as $column) {
+        foreach ($planning->columns() as $column) {
             $from = $column->starttime()->format('H:i:s');
             $to = $column->endtime()->format('H:i:s');
 
@@ -338,8 +420,7 @@ class StatedWeekController extends BaseController
             }
         }
 
-        $jobs = $this->getJobs($date);
-        foreach ($jobs as $job) {
+        foreach ($planning->jobs() as $job) {
             $times = $this->entityManager
                 ->getRepository(StatedWeekJobTimes::class)
                 ->findBy(array('job_id' => $job->id()));
@@ -356,6 +437,16 @@ class StatedWeekController extends BaseController
                     'absent'    => $agent->isAbsentOn($date, $date) ? 1 : 0,
                 );
             }
+        }
+
+        foreach ($planning->pauses() as $pause) {
+            $agent = $this->entityManager->getRepository(Agent::class)->find($pause->agent_id());
+
+                $placed[] = array(
+                    'place'     => 'pause',
+                    'id'        => $agent->id(),
+                    'name'      => $agent->nom() . ' ' .$agent->prenom()
+                );
         }
 
         return $this->json($placed);

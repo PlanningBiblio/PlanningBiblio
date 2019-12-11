@@ -630,3 +630,12 @@ $sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_job_times` (
     UNIQUE KEY `agent_job` (`agent_id`,`job_id`),
     FOREIGN KEY (job_id) REFERENCES stated_week_planning_job(id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+
+$sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_pauses` (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    agent_id int(11) NOT NULL DEFAULT '0',
+    planning_id INT(11),
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `agent_job` (`agent_id`,`planning_id`),
+    FOREIGN KEY (planning_id) REFERENCES stated_week_plannings(id)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;";

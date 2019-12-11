@@ -82,9 +82,14 @@
     {% set index = 0 %}
     {% for i in 0..6 %}
       <tr>
-        <td id="pause-slot-{{ index }}"></td>
-        {% set index = index + 1 %}
-        <td id="pause-slot-{{ index }}"></td>
+        <td class="time-slot"
+            data-pause="1"
+            data-jobdesc="Repos"
+            id="pause-slot-{{ index }}"></td>
+        <td class="time-slot"
+            data-pause="1"
+            data-jobdesc="Repos"
+            id="pause-slot-{{ index + 7 }}"></td>
       </tr>
       {% set index = index + 1 %}
     {% endfor %}

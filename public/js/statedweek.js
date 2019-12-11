@@ -198,7 +198,7 @@ $( document ).ready(function() {
     }
 
     if (cell.data('jobdesc')) {
-      $('.context-menu-title').html('Poste: ' + cell.data('jobdesc'));
+      $('.context-menu-title').html(cell.data('jobdesc'));
     }
   }
 
@@ -208,6 +208,7 @@ $( document ).ready(function() {
     hour_from = cell.data('from');
     hour_to = cell.data('to');
     job_name = cell.data('job');
+    pause = cell.data('pause');
     date = $('input[name="date"]').val();
 
     url = '/ajax/statedweek/add';
@@ -216,6 +217,11 @@ $( document ).ready(function() {
     if (job_name) {
       url = '/ajax/statedweekjob/add';
       data = {agent_id: agent_id, job_name: job_name, date: date};
+    }
+
+    if (pause) {
+      url = '/ajax/statedweekpause/add';
+      data = {agent_id: agent_id, date: date};
     }
 
     $.ajax({
@@ -234,6 +240,7 @@ $( document ).ready(function() {
     cell = $('#' + cell_id);
     agent_id = cell.data('agent');
     job_name = cell.data('job');
+    pause = cell.data('pause');
     date = $('input[name="date"]').val();
 
     url = '/ajax/statedweek/remove';
@@ -242,6 +249,11 @@ $( document ).ready(function() {
     if (job_name) {
       url = '/ajax/statedweekjob/remove';
       data = {agent_id: agent_id, job_name: job_name, date: date};
+    }
+
+    if (pause) {
+      url = '/ajax/statedweekpause/remove';
+      data = {agent_id: agent_id, date: date};
     }
 
     $.ajax({
@@ -285,6 +297,27 @@ $( document ).ready(function() {
     if (agent.place == 'job') {
       placeOnJob(agent);
     }
+
+    if (agent.place == 'pause') {
+      placeOnPause(agent);
+    }
+  }
+
+  function placeOnPause(agent) {
+    id = agent.id;
+    name = agent.name;
+
+    $('#statedweek-poste td[data-pause="1"]').each(function() {
+      if ($(this).is(':empty')) {
+        item = $('<span></span>');
+        item.append(name);
+
+        $(this).append(item);
+        $(this).attr('data-agent', id);
+
+        return false;
+      }
+    });
   }
 
   function placeOnJob(agent) {
