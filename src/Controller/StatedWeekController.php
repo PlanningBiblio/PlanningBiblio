@@ -82,6 +82,7 @@ class StatedWeekController extends BaseController
                 'id'                => $agent->id(),
                 'absent'            => 0,
                 'partially_absent'  => 0,
+                'holiday'           => 0
             );
 
             if ($agent->isAbsentOn($from, $to)) {
@@ -97,6 +98,10 @@ class StatedWeekController extends BaseController
                     $absence_times[] = array('from' => $start, 'to' => $end);
                 }
                 $available['partially_absent'] = $absence_times;
+            }
+
+            if ($agent->isOnVacationOn($from, $to)) {
+                $available['holiday'] = 1;
             }
 
             $availables[] = $available;

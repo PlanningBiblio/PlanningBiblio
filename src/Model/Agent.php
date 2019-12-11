@@ -215,4 +215,14 @@ class Agent extends PLBEntity {
 
         return false;
     }
+
+    public function isOnVacationOn($from, $to)
+    {
+        $c = new \conges();
+        if ($c->check($this->id(), $from, $to, true)) {
+            return true;
+        }
+
+        return false;
+    }
 }

@@ -176,6 +176,12 @@ $( document ).ready(function() {
             });
           }
 
+          if (agent.holiday) {
+            item.addClass('absent');
+            item.children('span').addClass('absent');
+            item.append('<i> - Congés</i>');
+          }
+
           $('.context-list').append(item);
 
         });
