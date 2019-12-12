@@ -5,12 +5,15 @@
     <tr>
       <th class="cell-header">
         {{ planning.columns[0].starttime | date('H:i:s') | hour }} - {{ planning.columns[0].endtime | date('H:i:s') | hour }}
+        <span id="first-slot-count"></span>
       </th>
       <th class="cell-header">
         {{ planning.columns[1].starttime | date('H:i:s') | hour }} - {{ planning.columns[1].endtime | date('H:i:s') | hour }}
+        <span id="second-slot-count"></span>
       </th>
       <th class="cell-header">
         {{ planning.columns[2].starttime | date('H:i:s') | hour }} - {{ planning.columns[2].endtime | date('H:i:s') | hour }}
+        <span id="third-slot-count"></span>
       </th>
     </tr>
   </thead>

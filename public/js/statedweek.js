@@ -240,6 +240,8 @@ $( document ).ready(function() {
         alert("Une erreur est survenue lors de la mise à jour du planning");
       }
     });
+
+    countByPlace();
   }
 
   function removeWorkingHours(cell_id) {
@@ -275,6 +277,8 @@ $( document ).ready(function() {
       error: function() {
         alert("Une erreur est survenue lors de la mise à jour du planning");
       }
+    }).done(function() {
+      countByPlace();
     });
   }
 
@@ -288,6 +292,7 @@ $( document ).ready(function() {
         $.each(agents, function(index, agent) {
           placeAgent(agent);
         });
+        countByPlace();
       },
       error: function() {
         alert("Une erreur est survenue lors de la récupération du planning");
@@ -332,27 +337,34 @@ $( document ).ready(function() {
     job_name= agent.job_name;
 
     $('#statedweek-poste td[data-job="' + job_name + '"]').each(function() {
-      if ($(this).is(':empty')) {
+      cell = $(this);
+      if (cell.is(':empty')) {
         item = $('<span></span>');
         item.append(name);
 
-        $(this).append(item);
-        $(this).attr('data-agent', id);
+        cell.append(item);
+        cell.attr('data-agent', id);
 
         if (agent.absent) {
-          $(this).addClass('absent');
-          $(this).append(' <i> - absent(e)</<i>');
+          cell.addClass('absent');
+          cell.append(' <i> - absent(e)</<i>');
         }
 
         if (agent.partially_absent) {
-          $(this).addClass('partially-absent');
-          $(this).append(' <i> - absent(e)</<i>');
+          cell.addClass('partially-absent');
+          cell.append(' <i> - absent(e)</<i>');
           $.each(agent.partially_absent, function(index, absence) {
-            $(this).children('i').append(' de ' + absence.from + ' à ' + absence.to);
+            cell.children('i').append(' de ' + absence.from + ' à ' + absence.to);
           });
         }
 
-        time_cell_id = $(this).data('timeid');
+        if (agent.holiday) {
+          cell.addClass('absent');
+          cell.children('span').addClass('absent');
+          cell.append('<i> - Congés</i>');
+        }
+
+        time_cell_id = cell.data('timeid');
         $('#' + time_cell_id).find('span').html(agent.times);
 
         return false;
@@ -367,28 +379,54 @@ $( document ).ready(function() {
     to = agent.to;
 
     $('#statedweek-planning td[data-from="' + from + '"][data-to="' + to +'"]').each(function() {
-      if ($(this).is(':empty')) {
+      cell = $(this);
+      if (cell.is(':empty')) {
         item = $('<span></span>');
         item.append(name);
 
-        $(this).append(item);
-        $(this).attr('data-agent', id);
+        cell.append(item);
+        cell.attr('data-agent', id);
 
         if (agent.absent) {
-          $(this).addClass('absent');
-          $(this).append(' <i> - absent(e)</<i>');
+          cell.addClass('absent');
+          cell.append(' <i> - absent(e)</<i>');
         }
 
         if (agent.partially_absent) {
-          $(this).addClass('partially-absent');
-          $(this).append(' <i> - absent(e)</<i>');
+          cell.addClass('partially-absent');
+          cell.append(' <i> - absent(e)</<i>');
           $.each(agent.partially_absent, function(index, absence) {
-            $(this).children('i').append(' de ' + absence.from + ' à ' + absence.to);
+            cell.children('i').append(' de ' + absence.from + ' à ' + absence.to);
           });
+        }
+
+        if (agent.holiday) {
+          cell.addClass('absent');
+          cell.children('span').addClass('absent');
+          cell.append('<i> - Congés</i>');
         }
 
         return false;
       }
+    });
+  }
+
+  function countByPlace() {
+    slots = [
+      'first-slot', 'second-slot', 'third-slot',
+      'first-job', 'second-job', 'third-job'
+    ];
+
+    slots.forEach(function(slot) {
+      count = 0;
+      $('.' + slot).each(function() {
+        agent_id = $(this).attr('data-agent');
+        absent = $(this).hasClass('absent');
+        if (!absent && agent_id) {
+          count++;
+        }
+      });
+      $('#' + slot + '-count').html('&nbsp;(' + count + ')');
     });
   }
 });

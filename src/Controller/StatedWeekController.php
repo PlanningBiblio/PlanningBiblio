@@ -412,12 +412,6 @@ class StatedWeekController extends BaseController
 
         $planning = $this->getPlanningOn($date);
 
-        //$columns = $this->getColumns($date);
-        //if (empty($columns)) {
-        //    $response->setContent('Planning not found');
-        //    $response->setStatusCode(404);
-        //    return $response;
-        //}
         if (!$planning) {
             $response->setContent('Planning not found');
             $response->setStatusCode(404);
@@ -436,7 +430,7 @@ class StatedWeekController extends BaseController
             foreach ($times as $t) {
                 $agent = $this->entityManager->getRepository(Agent::class)->find($t->agent_id());
 
-                $placed[] = array(
+                $p = array(
                     'place'     => 'planning',
                     'id'        => $agent->id(),
                     'name'      => $agent->nom() . ' ' .$agent->prenom(),
@@ -444,6 +438,23 @@ class StatedWeekController extends BaseController
                     'to'        => $to,
                     'absent'    => $agent->isAbsentOn($date, $date) ? 1 : 0,
                 );
+
+                if ($absences = $agent->isPartiallyAbsentOn("$date $from", "$date $to")) {
+                    $p['absent'] = 0;
+                    $absence_times = array();
+                    foreach ($absences as $absence) {
+                        $start = substr($absence['from'], -8);
+                        $end = substr($absence['to'], -8);
+                        $absence_times[] = array('from' => $start, 'to' => $end);
+                    }
+                    $p['partially_absent'] = $absence_times;
+                }
+
+                if ($agent->isOnVacationOn("$date $from", "$date $to")) {
+                    $p['holiday'] = 1;
+                }
+
+                $placed[] = $p;
             }
         }
 
@@ -455,7 +466,7 @@ class StatedWeekController extends BaseController
             foreach ($times as $t) {
                 $agent = $this->entityManager->getRepository(Agent::class)->find($t->agent_id());
 
-                $placed[] = array(
+                $p = array(
                     'place'     => 'job',
                     'id'        => $agent->id(),
                     'name'      => $agent->nom() . ' ' .$agent->prenom(),
@@ -463,6 +474,23 @@ class StatedWeekController extends BaseController
                     'times'     => $t->times(),
                     'absent'    => $agent->isAbsentOn($date, $date) ? 1 : 0,
                 );
+
+                if ($absences = $agent->isPartiallyAbsentOn("$date $from", "$date $to")) {
+                    $p['absent'] = 0;
+                    $absence_times = array();
+                    foreach ($absences as $absence) {
+                        $start = substr($absence['from'], -8);
+                        $end = substr($absence['to'], -8);
+                        $absence_times[] = array('from' => $start, 'to' => $end);
+                    }
+                    $p['partially_absent'] = $absence_times;
+                }
+
+                if ($agent->isOnVacationOn("$date $from", "$date $to")) {
+                    $p['holiday'] = 1;
+                }
+
+                $placed[] = $p;
             }
         }
 

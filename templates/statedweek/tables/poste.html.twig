@@ -5,6 +5,7 @@
     <tr>
       <th class="cell-header">
           {{ planning.jobs[0].description }}
+          <span id="first-job-count"></span>
       </th>
       <th class="cell-header">Horaires</th>
     </tr>
@@ -12,7 +13,7 @@
   <tbody>
     {% for i in 0..3 %}
       <tr>
-        <td class="time-slot"
+        <td class="time-slot first-job"
             data-job="{{ planning.jobs[0].name }}"
             data-jobdesc="{{ planning.jobs[0].description }}"
             data-timeid="first-poste-time-slot-{{ i }}"
@@ -29,6 +30,7 @@
     <tr>
       <th class="cell-header">
           {{ planning.jobs[1].description }}
+          <span id="second-job-count"></span>
       </th>
       <th class="cell-header">Horaires</th>
     </tr>
@@ -36,7 +38,7 @@
   <tbody>
     {% for i in 0..3 %}
       <tr>
-        <td class="time-slot"
+        <td class="time-slot second-job"
             data-job="{{ planning.jobs[1].name }}"
             data-jobdesc="{{ planning.jobs[1].description }}"
             data-timeid="second-poste-time-slot-{{ i }}"
@@ -53,6 +55,7 @@
     <tr>
       <th class="cell-header">
           {{ planning.jobs[2].description }}
+          <span id="third-job-count"></span>
       </th>
       <th class="cell-header">Horaires</th>
     </tr>
@@ -60,7 +63,7 @@
   <tbody>
     {% for i in 0..6 %}
       <tr>
-        <td class="time-slot"
+        <td class="time-slot third-job"
             data-job="{{ planning.jobs[2].name }}"
             data-jobdesc="{{ planning.jobs[2].description }}"
             data-timeid="third-poste-time-slot-{{ i }}"
