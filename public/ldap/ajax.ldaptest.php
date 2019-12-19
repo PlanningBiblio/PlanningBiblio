@@ -1,13 +1,12 @@
 <?php
 /**
-Planning Biblio, Version 2.5.7
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
-Fichier : ldap/ajax.ldaptest.php
+@file public/ldap/ajax.ldaptest.php
 Création : 6 mars 2017
-Dernière modification : 6 mars 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -30,7 +29,7 @@ $rdn = filter_input(INPUT_POST, 'rdn', FILTER_SANITIZE_STRING);
 $suffix = filter_input(INPUT_POST, 'suffix', FILTER_SANITIZE_STRING);
 
 // Connexion au serveur LDAP
-$url = $protocol.'://'.$host;
+$url = $protocol.'://'.$host.':'.$port;
 
 if ($fp=@fsockopen($host, $port, $errno, $errstr, 5)) {
     if ($ldapconn = ldap_connect($url)) {
