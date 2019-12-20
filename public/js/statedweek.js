@@ -147,8 +147,36 @@ $( document ).ready(function() {
     return false;
   }
 
-  function agentAlreadyPlaced(agent_id) {
+  function maxJobsReached(agent_id) {
     if ($('.table-placed td[data-agent="' + agent_id + '"]').length) {
+      return true;
+    }
+
+    pause2 = $('input[name="pause2"]').val();
+    nb_job = $('.table-placed-job td[data-agent="' + agent_id + '"]').length
+
+    if (pause2 == 1 && nb_job > 2) {
+      return true;
+    }
+
+    if (pause2 == 0 && nb_job > 1) {
+      return true;
+    }
+
+    return false;
+
+  }
+
+  function agentAlreadyPlaced(agent_id, job_name) {
+    if (job_name) {
+      return maxJobsReached(agent_id);
+    }
+
+    if ($('.table-placed td[data-agent="' + agent_id + '"]').length) {
+      return true;
+    }
+
+    if ($('.table-placed-job td[data-agent="' + agent_id + '"]').length) {
       return true;
     }
 
@@ -168,7 +196,7 @@ $( document ).ready(function() {
       data: {date: date, from: from, to: to},
       success: function(data) {
         $.each(data, function(index, agent) {
-          if (agentAlreadyPlaced(agent.id)) {
+          if (agentAlreadyPlaced(agent.id, job_name)) {
             return;
           }
 
@@ -310,7 +338,7 @@ $( document ).ready(function() {
         cell.empty();
         cell.removeAttr('data-agent');
         timeid = cell.data('timeid');
-        $('#' + timeid + ' span').text('');
+        $('#' + timeid + ' span.view-time').text('');
         $('#' + timeid + ' a.edit-time').hide();
       },
       error: function() {

@@ -80,6 +80,7 @@ class StatedWeekController extends BaseController
             'date'          => $date,
             'week_number'   => $date_pl->semaine,
             'week_days'     => $date_pl->dates,
+            'pause2'        => $this->Config('PlanningHebdo-Pause2') ? 1 : 0,
         ));
 
         return $this->output('statedweek/index.html.twig');

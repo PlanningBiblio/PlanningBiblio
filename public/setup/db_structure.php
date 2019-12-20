@@ -629,7 +629,6 @@ $sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_job_times` (
     endtime TIME NULL,
     breaktime TIME NULL,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `agent_job` (`agent_id`,`job_id`),
     FOREIGN KEY (job_id) REFERENCES stated_week_planning_job(id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 

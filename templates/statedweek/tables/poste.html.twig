@@ -1,6 +1,6 @@
 {# statedweek/tables/poste.html.twig #}
 
-<table class="statedweek-table table-placed table-right" id="statedweek-poste" border="1">
+<table class="statedweek-table table-placed-job table-right" id="statedweek-poste" border="1">
   <thead>
     <tr>
       <th class="cell-header">
@@ -23,7 +23,7 @@
           <a class="edit-time pl-icon pl-icon-edit" href="javascript:void(0);" style="display:none;"></a>
           <span class="editable" style="display:none;">
             &nbsp;<input class="time-from" type="time"/> à <input class="time-to" type="time"/>
-            &nbsp;&nbsp;pause: <input class="time-break" type="time"/>
+            &nbsp;&nbsp;pause: <input class="time-break" type="time" min="00:00" max="02:00"/>
             <a class='valid-time pl-icon pl-icon-add' title='Valider'></a>
           </span>
         </td>
@@ -53,7 +53,7 @@
           <a class="edit-time pl-icon pl-icon-edit" href="javascript:void(0);" style="display:none;"></a>
           <span class="editable" style="display:none;">
             &nbsp;<input class="time-from" type="time"/> à <input class="time-to" type="time"/>
-            &nbsp;&nbsp;pause: <input class="time-break" type="time"/>
+            &nbsp;&nbsp;pause: <input class="time-break" type="time"  min="00:00" max="02:00"/>
             <a class='valid-time pl-icon pl-icon-add' title='Valider'></a>
           </span>
         </td>
@@ -83,7 +83,7 @@
           <a class="edit-time pl-icon pl-icon-edit" href="javascript:void(0);" style="display:none;"></a>
           <span class="editable" style="display:none;">
             &nbsp;<input class="time-from" type="time"/> à <input class="time-to" type="time"/>
-            &nbsp;&nbsp;pause: <input class="time-break" type="time"/>
+            &nbsp;&nbsp;pause: <input class="time-break" type="time" min="00:00" max="02:00"/>
             <a class='valid-time pl-icon pl-icon-add' title='Valider'></a>
           </span>
         </td>
