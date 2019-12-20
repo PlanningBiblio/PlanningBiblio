@@ -37,7 +37,9 @@ $sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_job_times` (
     id INT(11) NOT NULL AUTO_INCREMENT,
     agent_id int(11) NOT NULL DEFAULT '0',
     job_id INT(11),
-    times VARCHAR(255) NOT NULL,
+    starttime TIME NULL,
+    endtime TIME NULL,
+    breaktime TIME NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `agent_job` (`agent_id`,`job_id`),
     FOREIGN KEY (job_id) REFERENCES stated_week_planning_job(id)

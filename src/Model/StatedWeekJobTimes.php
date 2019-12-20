@@ -15,6 +15,12 @@ class StatedWeekJobTimes extends PLBEntity {
     /** @Column(type="integer") **/
     protected $job_id;
 
-    /** @Column(type="string") **/
-    protected $times;
+    /** @Column(type="time") **/
+    protected $starttime;
+
+    /** @Column(type="time") **/
+    protected $endtime;
+
+    /** @Column(type="time") **/
+    protected $breaktime;
 }

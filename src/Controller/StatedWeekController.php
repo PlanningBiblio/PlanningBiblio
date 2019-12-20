@@ -22,6 +22,32 @@ require_once(__DIR__ . '/../../public/conges/class.conges.php');
 class StatedWeekController extends BaseController
 {
     /**
+     * @Route("/ajax/statedweek/lock", name="statedweek.lock", methods={"GET", "POST"})
+     */
+    public function lockPlanning(Request $request)
+    {
+        $response = new Response();
+
+        $date = $request->get('date');
+        if (!$date) {
+            $response->setContent('Missing date');
+            $response->setStatusCode(400);
+            return $response;
+        }
+
+        $planning = $this->getPlanningOn($date);
+        if (!$planning) {
+            $response->setContent('Planning not found');
+            $response->setStatusCode(404);
+            return $response;
+        }
+
+        $response->setContent('Planning locked');
+        $response->setStatusCode(200);
+        return $response;
+    }
+
+    /**
      * @Route("/statedweek", name="statedweek.index", methods={"GET"})
      */
     public function index(Request $request)
@@ -203,6 +229,13 @@ class StatedWeekController extends BaseController
         $agent_id = $request->get('agent_id');
         $date = $request->get('date');
         $job_name = $request->get('job_name');
+        $from = \DateTime::createFromFormat('H:i', $request->get('from'));
+        $to = \DateTime::createFromFormat('H:i', $request->get('to'));
+        $break = \DateTime::createFromFormat('H:i', $request->get('breaktime'));
+
+        $from = $from ? $from : null;
+        $to = $to ? $to : null;
+        $break = $break ? $break : null;
 
         $agent = $this->entityManager->getRepository(Agent::class)->find($agent_id);
         if (!$agent) {
@@ -223,7 +256,9 @@ class StatedWeekController extends BaseController
         $times = new StatedWeekJobTimes();
         $times->agent_id($agent->id());
         $times->job_id($job->id());
-        $times->times('');
+        $times->starttime($from);
+        $times->endtime($to);
+        $times->breaktime($break);
 
         $this->entityManager->persist($times);
         $this->entityManager->flush();
@@ -241,9 +276,15 @@ class StatedWeekController extends BaseController
         $response = new Response();
 
         $agent_id = $request->get('agent_id');
-        $times = $request->get('times');
         $date = $request->get('date');
         $job_name = $request->get('job_name');
+        $from = \DateTime::createFromFormat('H:i', $request->get('from'));
+        $to = \DateTime::createFromFormat('H:i', $request->get('to'));
+        $break = \DateTime::createFromFormat('H:i', $request->get('breaktime'));
+
+        $from = $from ? $from : null;
+        $to = $to ? $to : null;
+        $break = $break ? $break : null;
 
         $agent = $this->entityManager->getRepository(Agent::class)->find($agent_id);
         if (!$agent) {
@@ -271,7 +312,9 @@ class StatedWeekController extends BaseController
             return $response;
         }
 
-        $job_agent->times($times);
+        $job_agent->starttime($from);
+        $job_agent->endtime($to);
+        $job_agent->breaktime($break);
 
         $this->entityManager->persist($job_agent);
         $this->entityManager->flush();
@@ -465,13 +508,18 @@ class StatedWeekController extends BaseController
 
             foreach ($times as $t) {
                 $agent = $this->entityManager->getRepository(Agent::class)->find($t->agent_id());
+                $from = $t->starttime() ? $t->starttime()->format('H:i') : '';
+                $to = $t->endtime() ? $t->endtime()->format('H:i') : '';
+                $break = $t->breaktime() ? $t->breaktime()->format('H:i') : '';
 
                 $p = array(
                     'place'     => 'job',
                     'id'        => $agent->id(),
                     'name'      => $agent->nom() . ' ' .$agent->prenom(),
                     'job_name'  => $job->name(),
-                    'times'     => $t->times(),
+                    'from'      => $from,
+                    'to'        => $to,
+                    'breaktime' => $break,
                     'absent'    => $agent->isAbsentOn($date, $date) ? 1 : 0,
                 );
 

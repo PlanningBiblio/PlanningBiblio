@@ -19,8 +19,13 @@
             data-timeid="first-poste-time-slot-{{ i }}"
             id="first-job-slot{{ i }}"></td>
         <td class="editable" id="first-poste-time-slot-{{ i }}">
-          <span></span>
-          <input type="text" style="display: none;"/>
+          <span class="view-time"></span>
+          <a class="edit-time pl-icon pl-icon-edit" href="javascript:void(0);" style="display:none;"></a>
+          <span class="editable" style="display:none;">
+            &nbsp;<input class="time-from" type="time"/> à <input class="time-to" type="time"/>
+            &nbsp;&nbsp;pause: <input class="time-break" type="time"/>
+            <a class='valid-time pl-icon pl-icon-add' title='Valider'></a>
+          </span>
         </td>
       </tr>
     {% endfor %}
@@ -44,8 +49,13 @@
             data-timeid="second-poste-time-slot-{{ i }}"
             id="second-job-slot{{ i }}"></td>
         <td class="editable" id="second-poste-time-slot-{{ i }}">
-          <span></span>
-          <input type="text" style="display: none;"/>
+          <span class="view-time"></span>
+          <a class="edit-time pl-icon pl-icon-edit" href="javascript:void(0);" style="display:none;"></a>
+          <span class="editable" style="display:none;">
+            &nbsp;<input class="time-from" type="time"/> à <input class="time-to" type="time"/>
+            &nbsp;&nbsp;pause: <input class="time-break" type="time"/>
+            <a class='valid-time pl-icon pl-icon-add' title='Valider'></a>
+          </span>
         </td>
       </tr>
     {% endfor %}
@@ -69,8 +79,13 @@
             data-timeid="third-poste-time-slot-{{ i }}"
             id="third-job-slot{{ i }}"></td>
         <td class="editable" id="third-poste-time-slot-{{ i }}">
-          <span></span>
-          <input type="text" style="display: none;"/>
+          <span class="view-time"></span>
+          <a class="edit-time pl-icon pl-icon-edit" href="javascript:void(0);" style="display:none;"></a>
+          <span class="editable" style="display:none;">
+            &nbsp;<input class="time-from" type="time"/> à <input class="time-to" type="time"/>
+            &nbsp;&nbsp;pause: <input class="time-break" type="time"/>
+            <a class='valid-time pl-icon pl-icon-add' title='Valider'></a>
+          </span>
         </td>
       </tr>
     {% endfor %}
