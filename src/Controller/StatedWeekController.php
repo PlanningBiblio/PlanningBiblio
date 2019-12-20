@@ -94,6 +94,7 @@ class StatedWeekController extends BaseController
         $date = $request->get('date');
         $from = $date . ' ' . $request->get('from');
         $to = $date . ' ' . $request->get('to');
+        $job_name = $request->get('job_name');
 
         $availables = array();
         $agents = $this->entityManager
@@ -103,6 +104,16 @@ class StatedWeekController extends BaseController
                 'service'   => $this->config('statedweek_service_filter')
             ));
 
+        $required_skills = array();
+        $jobs_conf = $this->config('statedweek_times_job');
+        if ($job_name) {
+            foreach ($jobs_conf as $job_conf) {
+                if ($job_conf['name'] == $job_name) {
+                    $required_skills = $job_conf['skills'];
+                }
+            }
+        }
+
         foreach ($agents as $agent) {
 
             if ($agent->id() == 1 || $agent->id() == 2) {
@@ -110,6 +121,10 @@ class StatedWeekController extends BaseController
             }
 
             if (!$agent->isInSite($this->config('statedweek_site_filter'))) {
+                continue;
+            }
+
+            if (!$agent->hasSkills($required_skills)) {
                 continue;
             }
 

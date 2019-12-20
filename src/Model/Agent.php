@@ -239,4 +239,23 @@ class Agent extends PLBEntity {
 
         return false;
     }
+
+    public function hasSkills($skills = array())
+    {
+        if (empty($skills)) {
+            return true;
+        }
+
+        $own_skills = array();
+        if ($this->postes) {
+            $own_skills = json_decode($this->postes);
+        }
+        foreach ($skills as $skill) {
+            if (!in_array($skill, $own_skills)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

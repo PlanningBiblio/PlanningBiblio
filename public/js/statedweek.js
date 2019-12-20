@@ -193,7 +193,7 @@ $( document ).ready(function() {
       url: '/ajax/statedweek/availables',
       type: 'post',
       dataType: 'json',
-      data: {date: date, from: from, to: to},
+      data: {date: date, from: from, to: to, job_name: job_name},
       success: function(data) {
         $.each(data, function(index, agent) {
           if (agentAlreadyPlaced(agent.id, job_name)) {
