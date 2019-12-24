@@ -64,7 +64,7 @@ class StatedWeekController extends BaseController
 
         // Absences
         $a = new \absences();
-        $a->valide = true;
+        $a->valide = false;
         $a->agents_supprimes = array(0,1,2);
         $a->fetch(null, null, $date, $date);
         $absences = $this->filterAgents($a->elements);

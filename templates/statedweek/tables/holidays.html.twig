@@ -12,7 +12,12 @@
       <tr>
         {% if holidays[index] is defined %}
           {% set holiday = holidays[index] %}
-          <td>{{ holiday.nom }} {{ holiday.prenom }}</td>
+          <td>
+            {{ holiday.nom }} {{ holiday.prenom }}
+            {% if holiday.valide < 1 %}
+              <strong>(Non validé)</strong>
+            {% endif %}
+          </td>
           {% set index = index + 1 %}
         {% else %}
           <td></td>
@@ -20,7 +25,12 @@
 
         {% if holidays[index] is defined %}
           {% set holiday = holidays[index] %}
-          <td>{{ holiday.nom }} {{ holiday.prenom }}</td>
+          <td>
+            {{ holiday.nom }} {{ holiday.prenom }}
+            {% if holiday.valide < 1 %}
+              <strong>(Non validé)</strong>
+            {% endif %}
+          </td>
           {% set index = index + 1 %}
         {% else %}
           <td></td>

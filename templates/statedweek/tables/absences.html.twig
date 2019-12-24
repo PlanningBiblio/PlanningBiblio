@@ -12,7 +12,12 @@
         {% if absences[i] is defined %}
           {% set absence = absences[i] %}
           <td>{{ absence.nom }} {{ absence.prenom }}</td>
-          <td>{{ absence.debut | datehour }} - {{ absence.fin | datehour }}</td>
+          <td>
+            {{ absence.debut | datehour }} - {{ absence.fin | datehour }}
+            {% if absence.valide < 1 %}
+              <strong> (Non validée)</strong>
+            {% endif %}
+          </td>
           <td>{{ absence.motif }}</td>
         {% else %}
           <td></td>
