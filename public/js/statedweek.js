@@ -25,16 +25,61 @@ $( document ).ready(function() {
         $( this ).dialog( "close" );
       },
       "Annuler": function() {
+        $('#empty-plannings').empty();
+        $('#confirm-lock p.warning').hide();
+        $( this ).dialog( "close" );
+      }
+    }
+  });
+
+  $( "#confirm-unlock" ).dialog({
+    autoOpen: false,
+    resizable: false,
+    width: 400,
+    modal: true,
+    buttons: {
+      "Continuer": function() {
+        unlockPlanning();
+        $( this ).dialog( "close" );
+      },
+      "Annuler": function() {
         $( this ).dialog( "close" );
       }
     }
   });
 
   $('#lock').on('click', function() {
-    $( "#confirm-lock" ).dialog( "open" );
+    date = $('input[name="date"]').val();
+
+    $.ajax({
+      url: '/ajax/statedweek/emptyplanning',
+      type: 'post',
+      data: { date: date },
+      success: function(data) {
+        if (data.length > 0) {
+          $.each(data, function(index, value) {
+            $("#empty-plannings").append('<li>' + value + '</li>');
+            $("#confirm-lock p.warning").show();
+          });
+
+        }
+        $("#confirm-lock").dialog( "open" );
+      },
+      error: function() {
+        alert("Une erreur est survenue lors de la vérification des plannings");
+      }
+    });
+  });
+
+  $('#unlock').on('click', function() {
+      $("#confirm-unlock").dialog( "open" );
   });
 
   $('.edit-time').on('click', function() {
+    if ($('input[name="locked"]').val() == '1') {
+      return;
+    }
+
     $(this).hide();
     $(this).parent().find('span.editable').show();
     $(this).parent().find('span.view-time').hide();
@@ -86,6 +131,10 @@ $( document ).ready(function() {
 
   $('.statedweek-table td').bind("contextmenu", function (event) {
     event.preventDefault();
+
+    if ($('input[name="locked"]').val() == '1') {
+      return;
+    }
 
     $('.context-list').empty();
     $('.context-menu-title').empty();
@@ -528,15 +577,32 @@ $( document ).ready(function() {
     $.ajax({
       url: '/ajax/statedweek/lock',
       type: 'post',
-      data: {date: date},
+      data: {date: date, lock: true},
       success: function() {
-        cell.empty();
-        cell.removeAttr('data-agent');
-        timeid = cell.data('timeid');
-        $('#' + timeid + ' span').text('');
+        $('#lock').hide();
+        $('#unlock').show();
+        $('input[name="locked"]').val('1');
       },
       error: function() {
-        alert("Une erreur est survenue lors de la mise à jour du planning");
+        alert("Une erreur est survenue lors du vérouillage des plannings");
+      }
+    });
+  }
+
+  function unlockPlanning() {
+    date = $('input[name="date"]').val();
+
+    $.ajax({
+      url: '/ajax/statedweek/lock',
+      type: 'post',
+      data: {date: date},
+      success: function() {
+        $('#unlock').hide();
+        $('#lock').show();
+        $('input[name="locked"]').val('0');
+      },
+      error: function() {
+        alert("Une erreur est survenue lors du déverouillage des plannings");
       }
     });
   }

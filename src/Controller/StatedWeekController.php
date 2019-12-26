@@ -35,14 +35,26 @@ class StatedWeekController extends BaseController
             return $response;
         }
 
-        $planning = $this->getPlanningOn($date);
-        if (!$planning) {
-            $response->setContent('Planning not found');
-            $response->setStatusCode(404);
-            return $response;
+        $date_pl = new \datePl($date);
+        $dates = $date_pl->dates;
+        if (!$this->config('Dimanche')) {
+            unset($dates[6]);
         }
 
-        $response->setContent('Planning locked');
+        $lock = false;
+        if ($request->get('lock')) {
+            $lock = true;
+        }
+
+        foreach ($dates as $d) {
+            $planning = $this->getPlanningOn($d);
+            $planning->locked($lock);
+            $this->entityManager->persist($planning);
+        }
+
+        $this->entityManager->flush();
+
+        $response->setContent('Planning updated');
         $response->setStatusCode(200);
         return $response;
     }
@@ -571,6 +583,37 @@ class StatedWeekController extends BaseController
         return $this->json($placed);
     }
 
+    /**
+     * @Route("/ajax/statedweek/emptyplanning", name="statedweek.empty", methods={"GET", "POST"})
+     */
+    public function checkWeekPlanning(Request $request)
+    {
+        $response = new Response();
+
+        $date = $request->get('date');
+        if (!$date) {
+            $response->setContent('Missing date');
+            $response->setStatusCode(400);
+            return $response;
+        }
+
+        $date_pl = new \datePl($date);
+        $dates = $date_pl->dates;
+        if (!$this->config('Dimanche')) {
+            unset($dates[6]);
+        }
+
+        $empty_plannings = array();
+        foreach ($dates as $d) {
+            $planning = $this->getPlanningOn($d, false);
+            if (empty($planning)) {
+                $empty_plannings[] = dateAlpha($d);
+            }
+        }
+
+        return $this->json($empty_plannings);
+    }
+
     private function updateWeeklyPlanning() {
         $agent = $this->entityManager->getRepository(Agent::class)->find($agent_id);
         $workingHours = $agent->getWorkingHoursOn($date);
@@ -662,7 +705,7 @@ class StatedWeekController extends BaseController
         return $planning;
     }
 
-    private function getPlanningOn($date)
+    private function getPlanningOn($date, $create = true)
     {
         $date = \DateTime::createFromFormat('Y-m-d', $date);
 
@@ -670,7 +713,7 @@ class StatedWeekController extends BaseController
             ->getRepository(StatedWeek::class)
             ->findOneBy(array('date' => $date));
 
-        if (empty($planning)) {
+        if (empty($planning) && $create) {
             $planning = $this->createPlanning($date);
         }
 

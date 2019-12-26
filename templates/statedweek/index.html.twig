@@ -54,6 +54,11 @@
   <div id="statedweek">
     <input type="hidden" name="date" value="{{ date }}"/>
     <input type="hidden" name="pause2" value="{{ pause2 }}"/>
+    {% if planning.locked %}
+      <input type="hidden" name="locked" value="1"/>
+    {% else %}
+      <input type="hidden" name="locked" value="0"/>
+    {% endif %}
     <table id="stateweek-header">
       <tr>
         <td>
@@ -82,8 +87,10 @@
         <td class="actions">
             {% if planning.locked %}
             <a id="unlock"><span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning'></span></a>
+            <a id="lock" style="display:none;"><span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning'></span></a>
             {% else %}
             <a id="lock"><span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning'></span></a>
+            <a id="unlock" style="display:none;"><span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning'></span></a>
             {% endif %}
         </td>
       </tr>
@@ -108,6 +115,16 @@
   {% include 'statedweek/contextual-menu.html.twig' %}
   <div id="confirm-lock" title="Vérouillage du planning">
     Ceci entrainera le vérouillage de tous les plannings de la semaine.
+    <p class="warning" style="display:none;">
+      Certains plannings sont inexistants et seront créés automatiquement:
+      <ul id="empty-plannings">
+      </ul>
+    </p>
+    Souhaitez-vous continuer ?
+  </div>
+
+  <div id="confirm-unlock" title="Déverouillage du planning">
+    Ceci entrainera le déverouillage de tous les plannings de la semaine.
     Souhaitez-vous continuer ?
   </div>
 {% endblock %}
