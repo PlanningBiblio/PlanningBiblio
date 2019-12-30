@@ -92,11 +92,10 @@ $( document ).ready(function() {
     date = $('input[name="date"]').val();
     agent_id = $('td[data-timeid="' + $(this).parent().parent().attr('id') + '"]').data('agent');
     job_name = $('td[data-timeid="' + $(this).parent().parent().attr('id') + '"]').data('job');
+    jobtimeid = $('td[data-timeid="' + $(this).parent().parent().attr('id') + '"]').data('jobtimeid');
 
     data = {
-      agent_id: agent_id,
-      date: date,
-      job_name: job_name,
+      jobtimeid: jobtimeid,
       from: from,
       to: to,
       breaktime: breaktime
@@ -344,9 +343,10 @@ $( document ).ready(function() {
       url: url,
       type: 'post',
       data: data,
-      success: function() {
+      success: function(id) {
         if (time_cell) {
           time_cell.find('a.edit-time').show();
+          cell.attr('data-jobtimeid', id);
         }
       },
       error: function() {
@@ -386,6 +386,7 @@ $( document ).ready(function() {
       success: function() {
         cell.empty();
         cell.removeAttr('data-agent');
+        cell.removeAttr('data-jobtimeid');
         timeid = cell.data('timeid');
         $('#' + timeid + ' span.view-time').text('');
         $('#' + timeid + ' a.edit-time').hide();
@@ -463,6 +464,7 @@ $( document ).ready(function() {
 
         cell.append(item);
         cell.attr('data-agent', id);
+        cell.attr('data-jobtimeid', agent.jobtimeid);
 
         if (agent.absent) {
           cell.addClass('absent');
@@ -573,11 +575,12 @@ $( document ).ready(function() {
 
   function lockPlanning() {
     date = $('input[name="date"]').val();
+    CSRFToken = $('input[name="CSRFToken"]').val();
 
     $.ajax({
       url: '/ajax/statedweek/lock',
       type: 'post',
-      data: {date: date, lock: true},
+      data: {date: date, lock: true, CSRFToken: CSRFToken},
       success: function() {
         $('#lock').hide();
         $('#unlock').show();

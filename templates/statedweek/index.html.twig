@@ -54,6 +54,7 @@
   <div id="statedweek">
     <input type="hidden" name="date" value="{{ date }}"/>
     <input type="hidden" name="pause2" value="{{ pause2 }}"/>
+    <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}" />
     {% if planning.locked %}
       <input type="hidden" name="locked" value="1"/>
     {% else %}
