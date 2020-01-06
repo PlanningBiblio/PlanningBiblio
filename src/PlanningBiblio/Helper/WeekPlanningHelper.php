@@ -5,6 +5,8 @@ namespace App\PlanningBiblio\Helper;
 use App\PlanningBiblio\Helper\BaseHelper;
 use App\PlanningBiblio\Helper\DayPlanningHelper;
 
+ include_once(__DIR__ . '/../../../public/include/function.php');
+
 class WeekPlanningHelper extends BaseHelper
 {
     private $week_planning;
@@ -46,5 +48,22 @@ class WeekPlanningHelper extends BaseHelper
         }
 
         return false;
+    }
+
+    public static function emptyPlanning()
+    {
+        $config = $GLOBALS['config'];
+        $day = DayPlanningHelper::emptyDay();
+
+        $week = array();
+        foreach (array(0, 1, 2, 3, 4, 5, 6) as $index) {
+            $week[] = $day;
+        }
+
+        if (!$config['Dimanche']) {
+            unset($week[6]);
+        }
+
+        return $week;
     }
 }

@@ -11,6 +11,10 @@ use App\Model\StatedWeekTimes;
 use App\Model\StatedWeekJobTimes;
 use App\Model\StatedWeekPause;
 
+use App\PlanningBiblio\Helper\WeekPlanningHelper;
+use App\PlanningBiblio\Helper\DayPlanningHelper;
+use App\PlanningBiblio\Helper\TimeHelper;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
@@ -51,7 +55,9 @@ class StatedWeekController extends BaseController
 
         foreach ($dates as $d) {
             $planning = $this->getPlanningOn($d);
-            $this->updateWeeklyPlanning($planning);
+            if ($lock) {
+                $this->updateWeeklyPlanning($planning);
+            }
             $planning->locked($lock);
             $this->entityManager->persist($planning);
         }
@@ -601,6 +607,47 @@ class StatedWeekController extends BaseController
         return $this->json($empty_plannings);
     }
 
+    private function pausesToPlanning($pauses, $date)
+    {
+        $date_pl = new \datePl($date);
+        $day_index = $date_pl->position -1;
+
+        foreach ($pauses as $p) {
+            $agent = $this->entityManager->getRepository(Agent::class)->find($p->agent_id());
+            $workingHours = $agent->getWorkingHoursOn($date);
+
+            // Edit current working hours
+            if (!empty($workingHours)) {
+                $workingHours['temps'][$day_index] = DayPlanningHelper::emptyDay();
+                $workingHours['CSRFToken'] = $this->CSRFToken;
+                $workingHours['breaktime'][$day_index] = '';
+                $p = new \planningHebdo();
+                $p->update($workingHours);
+
+                if ($p->error) {
+                }
+
+                continue;
+            }
+
+            // Adding a new working hours for the current week.
+            $p=new \planningHebdo();
+            $hours = WeekPlanningHelper::emptyPlanning();
+            $hours[$day_index] = DayPlanningHelper::emptyDay();
+            $breaktimes = array('', '', '', '', '', '');
+
+            $workingHours = array(
+                'perso_id'  => $agent->id(),
+                'debut'     => $date_pl->dates[0],
+                'fin'       => end($date_pl->dates),
+                'CSRFToken' => $this->CSRFToken,
+                'temps'     => $hours,
+            );
+
+            $p->add($workingHours);
+        }
+    }
+
     private function columnsToPlanning($columns, $date)
     {
         $date_pl = new \datePl($date);
@@ -620,7 +667,10 @@ class StatedWeekController extends BaseController
 
                 // Edit current working hours
                 if (!empty($workingHours)) {
-                    $workingHours['temps'][$day_index] = array($from, '', '', $to);
+                    $day = DayPlanningHelper::emptyDay();
+                    $day[0] = $from;
+                    $day[1] = $to;
+                    $workingHours['temps'][$day_index] = $day;
                     $workingHours['CSRFToken'] = $this->CSRFToken;
                     $p = new \planningHebdo();
                     $p->update($workingHours);
@@ -633,20 +683,10 @@ class StatedWeekController extends BaseController
 
                 // Adding a new working hours for the current week.
                 $p=new \planningHebdo();
-                $hours = array(
-                    array('', '', '', ''),
-                    array('', '', '', ''),
-                    array('', '', '', ''),
-                    array('', '', '', ''),
-                    array('', '', '', ''),
-                    array('', '', '', ''),
-                );
+                $hours = WeekPlanningHelper::emptyPlanning();
 
-                if ($this->config('Dimanche')) {
-                    $hours[] = array('', '', '', '');
-                }
-
-                $hours[$day_index] = array($from, '', '', $to);
+                $hours[$day_index][0] = $from;
+                $hours[$day_index][1] = $to;
 
                 $workingHours = array(
                     'perso_id'  => $agent->id(),
@@ -685,33 +725,12 @@ class StatedWeekController extends BaseController
         }
 
         // Adding a new working hours for the current week.
-        $day;
-        if ($this->config('PlanningHebdo-Pause2')) {
-            $day = array(
-                '0' => '', '1' => '', '2' => '',
-                '3' => '', '4' => '', '5' => '', '6' => ''
-            );
-        } else {
-            $day = ['', '', '', '', ''];
-        }
-
-        $today = $day;
-        $today[$start_index] = $job['from'];
-        $today[$end_index] = $job['to'];
-
         $p=new \planningHebdo();
-        $hours = array(
-            $day, $day, $day,
-            $day, $day, $day,
-        );
+        $hours = WeekPlanningHelper::emptyPlanning();
+        $hours[$job['day']][$start_index] = $job['from'];
+        $hours[$job['day']][$end_index] = $job['to'];
+
         $breaktimes = array('', '', '', '', '', '');
-
-        if ($this->config('Dimanche')) {
-            $hours[] = $day;
-            $breaktimes[] = '';
-        }
-
-        $hours[$job['day']] = $today;
         $breaktimes[$job['day']] = $job['break'];
 
         $workingHours = array(
@@ -732,12 +751,12 @@ class StatedWeekController extends BaseController
         $date_pl = new \datePl($date);
         $day_index = $date_pl->position -1;
 
+        $agent_times = array();
         foreach ($jobs as $job) {
             $times = $this->entityManager
                 ->getRepository(StatedWeekJobTimes::class)
                 ->findBy(array('job_id' => $job->id()));
 
-            $agent_times = array();
             foreach ($times as $t) {
                 $agent_id = $t->agent_id();
                 $from = $t->starttime() ? $t->starttime()->format('H:i:s') : '';
@@ -765,7 +784,13 @@ class StatedWeekController extends BaseController
                     return ($a['from'] < $b['from']) ? -1 : 1;
                 });
 
+                $break = new TimeHelper($jobs[0]['break']);
+
                 if (!empty($jobs[2])) {
+                    $break->add($jobs[1]['break']);
+                    $break->add($jobs[2]['break']);
+                    $jobs[0]['break'] = $break->getDecimal();
+
                     $this->jobToPlanning($jobs[2], 6, 3);
                     $this->jobToPlanning($jobs[1], 2, 5);
                     $this->jobToPlanning($jobs[0], 0, 1);
@@ -773,11 +798,15 @@ class StatedWeekController extends BaseController
                 }
 
                 if (!empty($jobs[1])) {
+                    $break->add($jobs[1]['break']);
+                    $jobs[0]['break'] = $break->getDecimal();
+
                     $this->jobToPlanning($jobs[1], 2, 3);
                     $this->jobToPlanning($jobs[0], 0, 1);
                     continue;
                 }
 
+                $jobs[0]['break'] = $break->getDecimal();
                 $this->jobToPlanning($jobs[0], 0, 3);
             }
         }
@@ -786,11 +815,14 @@ class StatedWeekController extends BaseController
     private function updateWeeklyPlanning($planning) {
         $jobs = $planning->jobs();
         $columns = $planning->columns();
+        $pauses = $planning->pauses();
         $date = $planning->date()->format('Y-m-d');
 
         $this->jobsToPlanning($jobs, $date);
 
         $this->columnsToPlanning($columns, $date);
+
+        $this->pausesToPlanning($pauses, $date);
     }
 
     private function createPlanning($date) {

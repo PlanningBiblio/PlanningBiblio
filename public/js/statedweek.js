@@ -200,6 +200,10 @@ $( document ).ready(function() {
       return true;
     }
 
+    if ($('.table-placed-job td[data-pause="1"][data-agent="' + agent_id + '"]').length) {
+      return true;
+    }
+
     pause2 = $('input[name="pause2"]').val();
     nb_job = $('.table-placed-job td[data-agent="' + agent_id + '"]').length
 
