@@ -5,6 +5,159 @@ function resize_td() {
   $('.statedweek-table td').width(Math.round(body_width / 5) + 'px');
 }
 
+function allowDrop(e) {
+  e.preventDefault();
+}
+
+function initDroppable(cell) {
+  cell.removeAttr('draggable');
+  cell.attr('ondragover', "allowDrop(event)");
+  cell.attr('ondrop', "drop(event)");
+}
+
+function initDraggable(cell) {
+  cell.attr('draggable', true);
+  cell.on('dragstart', function(e){drag(e)});
+  cell.removeAttr('ondrop');
+  cell.removeAttr('ondragover');
+}
+
+function drag(e) {
+  e.dataTransfer = e.originalEvent.dataTransfer;
+  e.dataTransfer.setData('agent_id', e.target.getAttribute('data-agent'));
+  e.dataTransfer.setData('agent_name', $(e.target.querySelector('span')).text());
+  e.dataTransfer.setData('origin_id', e.target.id);
+}
+
+function drop(e) {
+  var agent_id = e.dataTransfer.getData('agent_id');
+  var agent_name = e.dataTransfer.getData('agent_name');
+  var origin_id = e.dataTransfer.getData('origin_id');
+  var cellid = e.target.id;
+
+  //remove from origine.
+  removeWorkingHours(origin_id);
+
+  $('#' + cellid).attr('data-agent', agent_id);
+  $('#' + cellid).append('<span>' + agent_name + '</span>');
+  addWorkingHours(cellid);
+}
+
+function removeWorkingHours(cell_id) {
+  var cell = $('#' + cell_id);
+  agent_id = cell.data('agent');
+  job_name = cell.data('job');
+  pause = cell.data('pause');
+  date = $('input[name="date"]').val();
+
+  url = '/ajax/statedweek/remove';
+  data = {agent_id: agent_id, date: date};
+
+  if (job_name) {
+    url = '/ajax/statedweekjob/remove';
+    data = {agent_id: agent_id, job_name: job_name, date: date};
+  }
+
+  if (pause) {
+    url = '/ajax/statedweekpause/remove';
+    data = {agent_id: agent_id, date: date};
+  }
+
+  $.ajax({
+    url: url,
+    type: 'post',
+    data: data,
+    success: function() {
+      cell.empty();
+      cell.removeAttr('data-agent');
+      cell.removeAttr('data-jobtimeid');
+      timeid = cell.data('timeid');
+      $('#' + timeid + ' span.view-time').text('');
+      $('#' + timeid + ' a.edit-time').hide();
+      initDroppable(cell);
+    },
+    error: function() {
+      alert("Une erreur est survenue lors de la mise à jour du planning");
+    }
+  }).done(function() {
+    countByPlace();
+  });
+}
+
+function addWorkingHours(cell_id) {
+  cell = $('#' + cell_id);
+  agent_id = cell.data('agent');
+  hour_from = cell.data('from');
+  hour_to = cell.data('to');
+  job_name = cell.data('job');
+  pause = cell.data('pause');
+  date = $('input[name="date"]').val();
+
+  url = '/ajax/statedweek/add';
+  data = {agent_id: agent_id, from: hour_from, to: hour_to, date: date};
+
+  var time_cell;
+  if (job_name) {
+    url = '/ajax/statedweekjob/add';
+    time_cell_id = cell.data('timeid');
+    time_cell = $('#' + time_cell_id);
+
+    data = {
+      agent_id: agent_id,
+      job_name: job_name,
+      date: date,
+      from: time_cell.find('input.time-from').val(),
+      to: time_cell.find('input.time-to').val(),
+      breaktime: time_cell.find('input.time-break').val()
+    };
+  }
+
+  if (pause) {
+    url = '/ajax/statedweekpause/add';
+    data = {agent_id: agent_id, date: date};
+  }
+
+  $.ajax({
+    url: url,
+    type: 'post',
+    data: data,
+    success: function(id) {
+      if (time_cell) {
+        time_cell.find('a.edit-time').show();
+        cell.attr('data-jobtimeid', id);
+      } else {
+        initDraggable(cell);
+      }
+    },
+    error: function() {
+      cell.empty();
+      cell.removeAttr('data-agent');
+      alert("Une erreur est survenue lors de la mise à jour du planning");
+    }
+  });
+
+  countByPlace();
+}
+
+function countByPlace() {
+  slots = [
+    'first-slot', 'second-slot', 'third-slot',
+    'first-job', 'second-job', 'third-job'
+  ];
+
+  slots.forEach(function(slot) {
+    count = 0;
+    $('.' + slot).each(function() {
+      agent_id = $(this).attr('data-agent');
+      absent = $(this).hasClass('absent');
+      if (!absent && agent_id) {
+        count++;
+      }
+    });
+    $('#' + slot + '-count').html('&nbsp;(' + count + ')');
+  });
+}
+
 $( document ).ready(function() {
   resize_td();
 
@@ -310,99 +463,6 @@ $( document ).ready(function() {
     }
   }
 
-  function addWorkingHours(cell_id) {
-    cell = $('#' + cell_id);
-    agent_id = cell.data('agent');
-    hour_from = cell.data('from');
-    hour_to = cell.data('to');
-    job_name = cell.data('job');
-    pause = cell.data('pause');
-    date = $('input[name="date"]').val();
-
-    url = '/ajax/statedweek/add';
-    data = {agent_id: agent_id, from: hour_from, to: hour_to, date: date};
-
-    var time_cell;
-    if (job_name) {
-      url = '/ajax/statedweekjob/add';
-      time_cell_id = cell.data('timeid');
-      time_cell = $('#' + time_cell_id);
-
-      data = {
-        agent_id: agent_id,
-        job_name: job_name,
-        date: date,
-        from: time_cell.find('input.time-from').val(),
-        to: time_cell.find('input.time-to').val(),
-        breaktime: time_cell.find('input.time-break').val()
-      };
-    }
-
-    if (pause) {
-      url = '/ajax/statedweekpause/add';
-      data = {agent_id: agent_id, date: date};
-    }
-
-    $.ajax({
-      url: url,
-      type: 'post',
-      data: data,
-      success: function(id) {
-        if (time_cell) {
-          time_cell.find('a.edit-time').show();
-          cell.attr('data-jobtimeid', id);
-        }
-      },
-      error: function() {
-        cell.empty();
-        cell.removeAttr('data-agent');
-        alert("Une erreur est survenue lors de la mise à jour du planning");
-      }
-    });
-
-    countByPlace();
-  }
-
-  function removeWorkingHours(cell_id) {
-    cell = $('#' + cell_id);
-    agent_id = cell.data('agent');
-    job_name = cell.data('job');
-    pause = cell.data('pause');
-    date = $('input[name="date"]').val();
-
-    url = '/ajax/statedweek/remove';
-    data = {agent_id: agent_id, date: date};
-
-    if (job_name) {
-      url = '/ajax/statedweekjob/remove';
-      data = {agent_id: agent_id, job_name: job_name, date: date};
-    }
-
-    if (pause) {
-      url = '/ajax/statedweekpause/remove';
-      data = {agent_id: agent_id, date: date};
-    }
-
-    $.ajax({
-      url: url,
-      type: 'post',
-      data: data,
-      success: function() {
-        cell.empty();
-        cell.removeAttr('data-agent');
-        cell.removeAttr('data-jobtimeid');
-        timeid = cell.data('timeid');
-        $('#' + timeid + ' span.view-time').text('');
-        $('#' + timeid + ' a.edit-time').hide();
-      },
-      error: function() {
-        alert("Une erreur est survenue lors de la mise à jour du planning");
-      }
-    }).done(function() {
-      countByPlace();
-    });
-  }
-
   function initializePlanning() {
     date = $('input[name="date"]').val();
     $.ajax({
@@ -553,27 +613,10 @@ $( document ).ready(function() {
           cell.append('<i> - Congés</i>');
         }
 
+        initDraggable(cell);
+
         return false;
       }
-    });
-  }
-
-  function countByPlace() {
-    slots = [
-      'first-slot', 'second-slot', 'third-slot',
-      'first-job', 'second-job', 'third-job'
-    ];
-
-    slots.forEach(function(slot) {
-      count = 0;
-      $('.' + slot).each(function() {
-        agent_id = $(this).attr('data-agent');
-        absent = $(this).hasClass('absent');
-        if (!absent && agent_id) {
-          count++;
-        }
-      });
-      $('#' + slot + '-count').html('&nbsp;(' + count + ')');
     });
   }
 

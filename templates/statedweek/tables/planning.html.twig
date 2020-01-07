@@ -24,19 +24,22 @@
           class="time-slot first-slot"
           id="first-time-slot-{{ i }}"
           data-from="{{ planning.columns[0].starttime | date('H:i:s') }}"
-          data-to="{{ planning.columns[0].endtime | date('H:i:s') }}"></td>
+          data-to="{{ planning.columns[0].endtime | date('H:i:s') }}"
+          ondrop="drop(event)" ondragover="allowDrop(event);"></td>
 
         <td
           class="time-slot second-slot"
           id="second-time-slot-{{ i }}"
           data-from="{{ planning.columns[1].starttime | date('H:i:s') }}"
-          data-to="{{ planning.columns[1].endtime | date('H:i:s') }}"></td>
+          data-to="{{ planning.columns[1].endtime | date('H:i:s') }}"
+          ondrop="drop(event)" ondragover="allowDrop(event);"></td>
 
         <td
           class="time-slot third-slot"
           id="third-time-slot-{{ i }}"
           data-from="{{ planning.columns[2].starttime | date('H:i:s') }}"
-          data-to="{{ planning.columns[2].endtime | date('H:i:s') }}"></td>
+          data-to="{{ planning.columns[2].endtime | date('H:i:s') }}"
+          ondrop="drop(event)" ondragover="allowDrop(event);"></td>
       </tr>
     {% endfor %}
   </tbody>
