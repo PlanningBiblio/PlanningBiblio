@@ -43,11 +43,7 @@ if ($sitename != 'Fond Général C') {
 */
 
 $agentsPlanning = new AgentsPlanning($date, $debut, $fin);
-$agentsPlanning->removeExcluded();
-$agentsPlanning->removeForTimes($debut, $fin);
-$agentsPlanning->removeForAbsences(true);
-$agentsPlanning->removeForHolidays(true);
-$agentsPlanning->removeForOccupied();
+$agentsPlanning->removeForAnyReason($debut, $fin);
 $unplacedAgents = array();
 $unplacedAgents['names'] = $agentsPlanning->getNames();
 $unplacedAgents['amount'] = sizeof($agentsPlanning->getAvailables());

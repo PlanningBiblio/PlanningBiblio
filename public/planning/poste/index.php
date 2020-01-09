@@ -598,11 +598,7 @@ if (!$verrou and !$autorisationN1) {
         $colspan=0;
         foreach ($tab['horaires'] as $horaires) {
             $agentsPlanning = new AgentsPlanning($date, $horaires['debut'], $horaires['fin']);
-            $agentsPlanning->removeExcluded();
-            $agentsPlanning->removeForTimes($horaires['debut'], $horaires['fin']);
-            $agentsPlanning->removeForAbsences(true);
-            $agentsPlanning->removeForHolidays(true);
-            $agentsPlanning->removeForOccupied();
+            $agentsPlanning->removeForAnyReason($horaires['debut'], $horaires['fin']);
             $agents_non_places = $agentsPlanning->getAvailables();
             if ($agents_non_places && is_array($agents_non_places)) {
                 $noms_agents_non_places = join(", ", $agentsPlanning->getNames());

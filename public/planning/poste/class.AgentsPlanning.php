@@ -29,6 +29,15 @@ class AgentsPlanning {
         return $names;
     }
 
+    // Removes workers that are not available for any reason
+    public function removeForAnyReason($start, $end) {
+        $this->removeExcluded();
+        $this->removeForTimes($start, $end);
+        $this->removeForAbsences(true);
+        $this->removeForHolidays(true);
+        $this->removeForOccupied();
+    }
+
     // Removes workers that are excluded by default ("admin admin" and "Tout le monde")
     public function removeExcluded() {
         $this->removeById(1); // Removes "admin admin"
