@@ -720,6 +720,8 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
 }
 
 function updatePlanningAlert(debut, fin) {
+    var link = $('a.non_places');
+    if (!link) return;
     var date = $('#date').val();
     var site = $('#site').val();
     $.ajax({
