@@ -32,6 +32,7 @@ class AgentsPlanning {
     // Removes workers that are not available for any reason
     public function removeForAnyReason($start, $end) {
         $this->removeExcluded();
+        $this->removeInactive();
         $this->removeForTimes($start, $end);
         $this->removeForAbsences(true);
         $this->removeForHolidays(true);
@@ -42,6 +43,13 @@ class AgentsPlanning {
     public function removeExcluded() {
         $this->removeById(1); // Removes "admin admin"
         $this->removeById(2); // Removes "Tout le monde"
+    }
+
+    // Removes workers that are inactive
+    public function removeInactive() {
+        $this->availables = array_filter($this->availables, function($agent, $k) use($id) {
+            return (!($agent->actif() != "Actif"));
+        }, ARRAY_FILTER_USE_BOTH);
     }
 
     // Removes workers that are unavailable during this period
