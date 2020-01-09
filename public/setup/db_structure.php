@@ -141,6 +141,13 @@ $sql[]="CREATE TABLE `{$dbprefix}hidden_tables` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
+$sql[]="CREATE TABLE `{$dbprefix}hidden_sites` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `perso_id` int(11) NOT NULL DEFAULT '0',
+  `hidden_sites` TEXT NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
 $sql[]="CREATE TABLE `{$dbprefix}lignes` (
   `id` int AUTO_INCREMENT,
   nom text,
