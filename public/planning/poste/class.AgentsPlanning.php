@@ -66,6 +66,7 @@ class AgentsPlanning {
         }
 
         foreach ($this->availables as $agent) {
+            $temps = '';
             if ($config['PlanningHebdo']) {
                 if (array_key_exists($agent->id(), $tempsPlanningHebdo)) {
                     $temps=$tempsPlanningHebdo[$agent->id()];
