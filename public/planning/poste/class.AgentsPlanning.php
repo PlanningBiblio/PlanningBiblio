@@ -26,7 +26,7 @@ class AgentsPlanning {
         $names = array_map(function ($agent) {
             return $agent->nom() . " " . $agent->prenom();
         }, $this->availables);
-        return $names;
+        return array_values($names);
     }
 
     // Removes workers that are not available for any reason

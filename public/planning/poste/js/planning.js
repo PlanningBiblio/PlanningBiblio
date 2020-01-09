@@ -730,8 +730,6 @@ function updatePlanningAlert(debut, fin) {
         success: function(result){
             if (result['amount'] == 0) {
                 tooltip = 'Aucun';
-            } else if (result['amount'] == 1) {
-                tooltip = result['names'][1];
             } else {
                 tooltip = result['names'].join(', ');
             }
