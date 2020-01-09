@@ -29,6 +29,11 @@ class AgentsPlanning {
         return $names;
     }
 
+    // Removes workers that are excluded by default ("admin admin" and "Tout le monde")
+    public function removeExcluded() {
+        $this->removeById(1); // Removes "admin admin"
+        $this->removeById(2); // Removes "Tout le monde"
+    }
 
     // Removes workers that are unavailable during this period
     public function removeForTimes($start, $end) {
@@ -60,7 +65,6 @@ class AgentsPlanning {
                 // Emploi du temps récupéré à partir de la table personnel
                 $temps=json_decode(html_entity_decode($agent->temps(), ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
             }
-
             $day = $d->planning_day_index_for($agent->id());
             if (!calculSiPresent($start, $end, $temps, $day)) {
                 $this->removeById($agent->id());
