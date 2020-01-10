@@ -35,34 +35,23 @@ $agents=filter_input(INPUT_GET, "agents", FILTER_SANITIZE_STRING);
 $sujet=filter_input(INPUT_GET, "sujet", FILTER_SANITIZE_STRING);
 $message=filter_input(INPUT_GET, "message", FILTER_SANITIZE_STRING);
 $sitename = $config["Multisites-site$site"];
-
-/*
-if ($sitename != 'Fond Général C') {
-    exit;
+$service = null;
+if ($config['Planning-AfficheAgentsDisponibles-service']) {
+    $service = $config['Planning-AfficheAgentsDisponibles-service'];
 }
-*/
+$agentsite = null;
+if ($config['Planning-AfficheAgentsDisponibles-site']) {
+    $agentsite = $config['Planning-AfficheAgentsDisponibles-site'];
+}
+$category = null;
+if ($config['Planning-AfficheAgentsDisponibles-category']) {
+    $category = $config['Planning-AfficheAgentsDisponibles-category'];
+}
 
-$agentsPlanning = new AgentsPlanning($date, $debut, $fin);
+$agentsPlanning = new AgentsPlanning($date, $debut, $fin, $service, $agentsite, $category);
 $agentsPlanning->removeForAnyReason($debut, $fin);
 $unplacedAgents = array();
 $unplacedAgents['names'] = $agentsPlanning->getNames();
 $unplacedAgents['amount'] = sizeof($agentsPlanning->getAvailables());
 echo json_encode($unplacedAgents);
 
-
-/*
-$agents = $entityManager->getRepository(Agent::class)->findBy(['service' => 'Service au public']);
-foreach ($agents as $agent) {
-    $sitesarray = json_decode($agent->sites());
-
-    # Agent belongs to site 'Fond Général C'
-    if (!is_array($sitesarray) || !in_array($site, $sitesarray)) {
-        continue;
-    }
-
-    if (!$agent->is_agent_status_in_category('Catégorie C')) {
-        continue;
-    }
-    //error_log($agent->id());
-}
-*/

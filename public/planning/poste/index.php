@@ -598,15 +598,30 @@ if (!$verrou and !$autorisationN1) {
         $colspan=0;
         foreach ($tab['horaires'] as $horaires) {
             if ($config['Planning-AfficheAgentsDisponibles']) {
-                $agentsPlanning = new AgentsPlanning($date, $horaires['debut'], $horaires['fin']);
-                $agentsPlanning->removeForAnyReason($horaires['debut'], $horaires['fin']);
-                $agents_non_places = $agentsPlanning->getAvailables();
-                if ($agents_non_places && is_array($agents_non_places)) {
-                    $noms_agents_non_places = join(", ", $agentsPlanning->getNames());
-                } else {
-                    $noms_agents_non_places = 'Aucun';
+                if (!$config['Planning-AfficheAgentsDisponibles-site'] || $config["Multisites-site$site"] == $config['Planning-AfficheAgentsDisponibles-site']) {
+                    $service = null;
+                    if ($config['Planning-AfficheAgentsDisponibles-service']) {
+                        $service = $config['Planning-AfficheAgentsDisponibles-service'];
+                    }
+                    $agentsite = null;
+                    if ($config['Planning-AfficheAgentsDisponibles-site']) {
+                        $agentsite = $config['Planning-AfficheAgentsDisponibles-site'];
+                    }
+                    $category = null;
+                    if ($config['Planning-AfficheAgentsDisponibles-category']) {
+                        $category = $config['Planning-AfficheAgentsDisponibles-category'];
+                    }
+
+                    $agentsPlanning = new AgentsPlanning($date, $horaires['debut'], $horaires['fin'], $service, $agentsite, $category);
+                    $agentsPlanning->removeForAnyReason($horaires['debut'], $horaires['fin']);
+                    $agents_non_places = $agentsPlanning->getAvailables();
+                    if ($agents_non_places && is_array($agents_non_places)) {
+                        $noms_agents_non_places = join(", ", $agentsPlanning->getNames());
+                    } else {
+                        $noms_agents_non_places = 'Aucun';
+                    }
+                    $non_places = " <a class='non_places' href='#' title='" . $noms_agents_non_places . "'>(" . sizeof($agents_non_places) . ")</a>";
                 }
-                $non_places = " <a class='non_places' href='#' title='" . $noms_agents_non_places . "'>(" . sizeof($agents_non_places) . ")</a>";
             }
             echo "<td id='" . str_replace(':', '', $horaires['debut']) . str_replace(':', '', $horaires['fin']) . "' class='td_horaires' colspan='".nb30($horaires['debut'], $horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin']).$non_places."</td>";
             $colspan+=nb30($horaires['debut'], $horaires['fin']);

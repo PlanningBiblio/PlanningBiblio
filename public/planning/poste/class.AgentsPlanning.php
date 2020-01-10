@@ -8,14 +8,19 @@ class AgentsPlanning {
 
     private $availables = array();
 
-    private $date, $start, $end;
+    private $date, $start, $end, $service, $site, $category;
 
-    public function __construct($date, $start, $end) {
+    public function __construct($date, $start, $end, $service = null, $site = null, $category = null) {
         $this->date = $date;
         $this->start = $start;
         $this->end = $end;
+        $this->service = $service;
+        $this->site = $site;
+        $this->category = $category;
         $entityManager = $GLOBALS['entityManager'];
-        $this->availables = $entityManager->getRepository(Agent::class)->findAll();
+        $this->availables = ($service) ? 
+            $entityManager->getRepository(Agent::class)->findBy(['service' => $service]) :
+            $entityManager->getRepository(Agent::class)->findAll();
     }
 
     public function getAvailables() {
@@ -32,11 +37,40 @@ class AgentsPlanning {
     // Removes workers that are not available for any reason
     public function removeForAnyReason($start, $end) {
         $this->removeExcluded();
+        if ($this->site) {
+            $this->keepSite($this->site);
+        }
+        if ($this->category) {
+            $this->keepCategory($this->category);
+        }
         $this->removeInactive();
         $this->removeForTimes($start, $end);
         $this->removeForAbsences(true);
         $this->removeForHolidays(true);
         $this->removeForOccupied();
+    }
+
+    // Keeps only the workers that belongs to the given category
+    public function keepCategory($category) {
+        if (!$category) { return; }
+        foreach ($this->availables as $agent) {
+            if (!$agent->is_agent_status_in_category($category)) {
+                $this->removeById($agent->id());
+            }
+        }
+    }
+
+    // Keeps only the workers that belongs to the given site
+    public function keepSite($site) {
+        if (!$site) { return; }
+        foreach ($this->availables as $agent) {
+            $sitesarray = json_decode($agent->sites());
+
+            # Agent belongs to site 
+            if (!is_array($sitesarray) || !in_array($site, $sitesarray)) {
+                $this->removeById($agent->id());
+            }
+        }
     }
 
     // Removes workers that are excluded by default ("admin admin" and "Tout le monde")
