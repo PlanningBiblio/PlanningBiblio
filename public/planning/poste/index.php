@@ -597,6 +597,7 @@ if (!$verrou and !$autorisationN1) {
         echo "<td class='td_postes' data-id='$j' data-title='{$tab['titre2']}'>{$tab['titre']} $masqueTableaux </td>\n";
         $colspan=0;
         foreach ($tab['horaires'] as $horaires) {
+            $non_places = '';
             if ($config['Planning-AfficheAgentsDisponibles']) {
                 if (!get_config('Planning-AfficheAgentsDisponibles-site') || $config["Multisites-site$site"] == $config['Planning-AfficheAgentsDisponibles-site']) {
                     $service = null;
