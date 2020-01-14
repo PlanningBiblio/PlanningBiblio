@@ -1,6 +1,6 @@
 <?php
 
-use Model\Agent;
+use App\Model\Agent;
 use PHPUnit\Framework\TestCase;
 
 class AgentTest extends TestCase

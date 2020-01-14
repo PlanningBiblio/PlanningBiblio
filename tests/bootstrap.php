@@ -17,8 +17,8 @@ $sql[]="DROP DATABASE IF EXISTS `$dbname`;";
 $sql[]="CREATE DATABASE IF NOT EXISTS `$dbname` CHARACTER SET utf8 COLLATE utf8_bin;";
 $sql[]="USE $dbname;";
 
-include __DIR__ . '/../setup/db_structure.php';
-include __DIR__ . '/../setup/db_data.php';
+include __DIR__ . '/../public/setup/db_structure.php';
+include __DIR__ . '/../public/setup/db_data.php';
 
 if ($dbconn) {
     foreach ($sql as $elem) {
