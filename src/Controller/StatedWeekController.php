@@ -11,9 +11,7 @@ use App\Model\StatedWeekTimes;
 use App\Model\StatedWeekJobTimes;
 use App\Model\StatedWeekPause;
 
-use App\PlanningBiblio\Helper\WeekPlanningHelper;
-use App\PlanningBiblio\Helper\DayPlanningHelper;
-use App\PlanningBiblio\Helper\TimeHelper;
+use App\PlanningBiblio\Helper\StatedWeekHelper;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -53,16 +51,20 @@ class StatedWeekController extends BaseController
             $lock = true;
         }
 
+        $plannings = array();
         foreach ($dates as $d) {
             $planning = $this->getPlanningOn($d);
-            if ($lock) {
-                $this->updateWeeklyPlanning($planning);
-            }
+            $plannings[] = $planning;
             $planning->locked($lock);
             $this->entityManager->persist($planning);
+            $this->entityManager->flush();
         }
 
-        $this->entityManager->flush();
+        if ($lock) {
+            $statedweekHelper = new StatedWeekHelper($plannings);
+            $statedweekHelper->CSRFToken = $this->CSRFToken;
+            $statedweekHelper->saveToWeeklyPlannings();
+        }
 
         $response->setContent('Planning updated');
         $response->setStatusCode(200);
@@ -605,224 +607,6 @@ class StatedWeekController extends BaseController
         }
 
         return $this->json($empty_plannings);
-    }
-
-    private function pausesToPlanning($pauses, $date)
-    {
-        $date_pl = new \datePl($date);
-        $day_index = $date_pl->position -1;
-
-        foreach ($pauses as $p) {
-            $agent = $this->entityManager->getRepository(Agent::class)->find($p->agent_id());
-            $workingHours = $agent->getWorkingHoursOn($date);
-
-            // Edit current working hours
-            if (!empty($workingHours)) {
-                $workingHours['temps'][$day_index] = DayPlanningHelper::emptyDay();
-                $workingHours['CSRFToken'] = $this->CSRFToken;
-                $workingHours['breaktime'][$day_index] = '';
-                $p = new \planningHebdo();
-                $p->update($workingHours);
-
-                if ($p->error) {
-                }
-
-                continue;
-            }
-
-            // Adding a new working hours for the current week.
-            $p=new \planningHebdo();
-            $hours = WeekPlanningHelper::emptyPlanning();
-            $hours[$day_index] = DayPlanningHelper::emptyDay();
-            $breaktimes = array('', '', '', '', '', '');
-
-            $workingHours = array(
-                'perso_id'  => $agent->id(),
-                'debut'     => $date_pl->dates[0],
-                'fin'       => end($date_pl->dates),
-                'CSRFToken' => $this->CSRFToken,
-                'temps'     => $hours,
-            );
-
-            $p->add($workingHours);
-        }
-    }
-
-    private function columnsToPlanning($columns, $date)
-    {
-        $date_pl = new \datePl($date);
-        $day_index = $date_pl->position -1;
-
-        foreach ($columns as $column) {
-            $from = $column->starttime()->format('H:i:s');
-            $to = $column->endtime()->format('H:i:s');
-
-            $times = $this->entityManager
-                ->getRepository(StatedWeekTimes::class)
-                ->findBy(array('column_id' => $column->id()));
-
-            foreach ($times as $t) {
-                $agent = $this->entityManager->getRepository(Agent::class)->find($t->agent_id());
-                $workingHours = $agent->getWorkingHoursOn($date);
-
-                // Edit current working hours
-                if (!empty($workingHours)) {
-                    $day = DayPlanningHelper::emptyDay();
-                    $day[0] = $from;
-                    $day[1] = $to;
-                    $workingHours['temps'][$day_index] = $day;
-                    $workingHours['CSRFToken'] = $this->CSRFToken;
-                    $p = new \planningHebdo();
-                    $p->update($workingHours);
-
-                    if ($p->error) {
-                    }
-
-                    continue;
-                }
-
-                // Adding a new working hours for the current week.
-                $p=new \planningHebdo();
-                $hours = WeekPlanningHelper::emptyPlanning();
-
-                $hours[$day_index][0] = $from;
-                $hours[$day_index][1] = $to;
-
-                $workingHours = array(
-                    'perso_id'  => $agent->id(),
-                    'debut'     => $date_pl->dates[0],
-                    'fin'       => end($date_pl->dates),
-                    'CSRFToken' => $this->CSRFToken,
-                    'temps'     => $hours,
-                );
-
-                $p->add($workingHours);
-            }
-        }
-    }
-
-    private function jobToPlanning($job, $start_index, $end_index)
-    {
-        $agent = $this->entityManager->getRepository(Agent::class)->find($job['agent']);
-        $workingHours = $agent->getWorkingHoursOn($job['date']);
-
-        // Edit current working hours
-        if (!empty($workingHours)) {
-            $today = $workingHours['temps'][$job['day']];
-            $today[$start_index] = $job['from'];
-            $today[$end_index] = $job['to'];
-
-            $workingHours['temps'][$job['day']] = $today;
-            $workingHours['breaktime'][$job['day']] = $job['break'];
-            $workingHours['CSRFToken'] = $this->CSRFToken;
-            $p = new \planningHebdo();
-            $p->update($workingHours);
-
-            if ($p->error) {
-            }
-
-            return;
-        }
-
-        // Adding a new working hours for the current week.
-        $p=new \planningHebdo();
-        $hours = WeekPlanningHelper::emptyPlanning();
-        $hours[$job['day']][$start_index] = $job['from'];
-        $hours[$job['day']][$end_index] = $job['to'];
-
-        $breaktimes = array('', '', '', '', '', '');
-        $breaktimes[$job['day']] = $job['break'];
-
-        $workingHours = array(
-            'perso_id'  => $job['agent'],
-            'debut'     => $job['pl_start'],
-            'fin'       => $job['pl_end'],
-            'CSRFToken' => $this->CSRFToken,
-            'temps'     => $hours,
-            'breaktime' => $breaktimes
-        );
-
-        $p->add($workingHours);
-    }
-
-    private function jobsToPlanning($jobs, $date)
-    {
-
-        $date_pl = new \datePl($date);
-        $day_index = $date_pl->position -1;
-
-        $agent_times = array();
-        foreach ($jobs as $job) {
-            $times = $this->entityManager
-                ->getRepository(StatedWeekJobTimes::class)
-                ->findBy(array('job_id' => $job->id()));
-
-            foreach ($times as $t) {
-                $agent_id = $t->agent_id();
-                $from = $t->starttime() ? $t->starttime()->format('H:i:s') : '';
-                $to = $t->endtime() ? $t->endtime()->format('H:i:s') : '';
-                $break = $t->breaktime() ? $t->breaktime()->format('H:i:s') : '';
-
-                if (empty($agent_times[$agent_id])) {
-                    $agent_times[$agent_id] = array();
-                }
-
-                $agent_times[$agent_id][] = array(
-                    'from'      => $from,
-                    'to'        => $to,
-                    'break'     => $break,
-                    'date'      => $date,
-                    'day'       => $day_index,
-                    'pl_start'  => $date_pl->dates[0],
-                    'pl_end'    => end($date_pl->dates),
-                    'agent'     => $agent_id
-                );
-            }
-
-            foreach ($agent_times as $jobs) {
-                usort($jobs, function($a, $b) {
-                    return ($a['from'] < $b['from']) ? -1 : 1;
-                });
-
-                $break = new TimeHelper($jobs[0]['break']);
-
-                if (!empty($jobs[2])) {
-                    $break->add($jobs[1]['break']);
-                    $break->add($jobs[2]['break']);
-                    $jobs[0]['break'] = $break->getDecimal();
-
-                    $this->jobToPlanning($jobs[2], 6, 3);
-                    $this->jobToPlanning($jobs[1], 2, 5);
-                    $this->jobToPlanning($jobs[0], 0, 1);
-                    continue;
-                }
-
-                if (!empty($jobs[1])) {
-                    $break->add($jobs[1]['break']);
-                    $jobs[0]['break'] = $break->getDecimal();
-
-                    $this->jobToPlanning($jobs[1], 2, 3);
-                    $this->jobToPlanning($jobs[0], 0, 1);
-                    continue;
-                }
-
-                $jobs[0]['break'] = $break->getDecimal();
-                $this->jobToPlanning($jobs[0], 0, 3);
-            }
-        }
-    }
-
-    private function updateWeeklyPlanning($planning) {
-        $jobs = $planning->jobs();
-        $columns = $planning->columns();
-        $pauses = $planning->pauses();
-        $date = $planning->date()->format('Y-m-d');
-
-        $this->jobsToPlanning($jobs, $date);
-
-        $this->columnsToPlanning($columns, $date);
-
-        $this->pausesToPlanning($pauses, $date);
     }
 
     private function createPlanning($date) {
