@@ -81,7 +81,7 @@ class AgentsPlanning {
 
     // Removes workers that are inactive
     public function removeInactive() {
-        $this->availables = array_filter($this->availables, function($agent, $k) use($id) {
+        $this->availables = array_filter($this->availables, function($agent, $k) {
             return (!($agent->actif() != "Actif"));
         }, ARRAY_FILTER_USE_BOTH);
     }

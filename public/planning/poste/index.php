@@ -598,17 +598,17 @@ if (!$verrou and !$autorisationN1) {
         $colspan=0;
         foreach ($tab['horaires'] as $horaires) {
             if ($config['Planning-AfficheAgentsDisponibles']) {
-                if (!$config['Planning-AfficheAgentsDisponibles-site'] || $config["Multisites-site$site"] == $config['Planning-AfficheAgentsDisponibles-site']) {
+                if (!get_config('Planning-AfficheAgentsDisponibles-site') || $config["Multisites-site$site"] == $config['Planning-AfficheAgentsDisponibles-site']) {
                     $service = null;
-                    if ($config['Planning-AfficheAgentsDisponibles-service']) {
+                    if (get_config('Planning-AfficheAgentsDisponibles-service')) {
                         $service = $config['Planning-AfficheAgentsDisponibles-service'];
                     }
                     $agentsite = null;
-                    if ($config['Planning-AfficheAgentsDisponibles-site']) {
+                    if (get_config('Planning-AfficheAgentsDisponibles-site')) {
                         $agentsite = $config['Planning-AfficheAgentsDisponibles-site'];
                     }
                     $category = null;
-                    if ($config['Planning-AfficheAgentsDisponibles-category']) {
+                    if (get_config('Planning-AfficheAgentsDisponibles-category')) {
                         $category = $config['Planning-AfficheAgentsDisponibles-category'];
                     }
 
