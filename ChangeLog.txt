@@ -9,6 +9,7 @@ Ability to change user password
 Move admin/info pages into a controller
 Abiblity to request holiday on half day
 Add free breaktimes
+Add unit tests
 
 -Fixes
 Add raw filter on agent templates for fields services, right and skills
