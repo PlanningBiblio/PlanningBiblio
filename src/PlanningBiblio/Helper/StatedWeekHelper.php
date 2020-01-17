@@ -16,6 +16,10 @@ class StatedWeekHelper extends BaseHelper
 {
     private $plannings = array();
 
+    private $planning_ids = array();
+
+    private $pl_key;
+
     private $current_day;
 
     private $dates = array();
@@ -33,6 +37,7 @@ class StatedWeekHelper extends BaseHelper
         $this->plannings = $plannings;
 
         foreach ($plannings as $planning) {
+            $this->planning_ids[] = $planning->id();
             $date = $planning->date()->format('Y-m-d');
             $this->dates[] = $date;
             $jobs = $planning->jobs();
@@ -64,6 +69,9 @@ class StatedWeekHelper extends BaseHelper
     public function saveToWeeklyPlannings()
     {
         $planning_agents = $this->planning_agents;
+        $planning_ids = $this->planning_ids;
+
+        $this->pl_key = join('_', $this->planning_ids);
 
         foreach ($planning_agents as $agent_id => $planning) {
             $agent = $this->entityManager->getRepository(Agent::class)->find($agent_id);
@@ -111,14 +119,27 @@ class StatedWeekHelper extends BaseHelper
             }
         }
 
+        $workingHours['validation'] = 2;
+        $workingHours['cle'] = $this->pl_key;
         $workingHours['CSRFToken'] = $this->CSRFToken;
         $p = new \planningHebdo();
         $p->update($workingHours);
+
+        // Set cle here because the add() method
+        // doesn't permit that.
+        $id = $workingHours['id'];
+        $cle = $this->pl_key;
+        $dbprefix = $GLOBALS['dbprefix'];
+
+        $db = new \dbh();
+        $db->CSRFToken = $this->CSRFToken;
+        $db->prepare("UPDATE `{$dbprefix}planning_hebdo` SET `cle` = :cle WHERE `id` = :id");
+        $db->execute(array(':cle' => $cle, ':id' => $id));
     }
 
     private function addWorkingHours($planning, $agent)
     {
-        $ph=new \planningHebdo();
+        $ph = new \planningHebdo();
         $hours = WeekPlanningHelper::emptyPlanning();
         $breaktimes = array('', '', '', '', '', '');
         if ($this->config('Dimanche')) {
@@ -145,15 +166,36 @@ class StatedWeekHelper extends BaseHelper
         }
 
         $workingHours = array(
-            'perso_id'  => $agent->id(),
-            'debut'     => $this->dates[0],
-            'fin'       => end($this->dates),
-            'CSRFToken' => $this->CSRFToken,
-            'temps'     => $hours,
-            'breaktime' => $breaktimes
+            'perso_id'      => $agent->id(),
+            'debut'         => $this->dates[0],
+            'fin'           => end($this->dates),
+            'CSRFToken'     => $this->CSRFToken,
+            'temps'         => $hours,
+            'breaktime'     => $breaktimes,
+            'validation'    => 2,
         );
 
         $ph->add($workingHours);
+
+        // Set cle here because the add() method
+        // doesn't permit that.
+        $ph = new \planningHebdo();
+        $ph->perso_id = $agent->id();
+        $ph->debut = $this->dates[0];
+        $ph->fin = end($this->dates);
+        $ph->valide = true;
+        $ph->fetch();
+
+        if (!empty($ph->elements)) {
+            $id = $ph->elements[0]['id'];
+            $cle = $this->pl_key;
+            $dbprefix = $GLOBALS['dbprefix'];
+
+            $db = new \dbh();
+            $db->CSRFToken = $this->CSRFToken;
+            $db->prepare("UPDATE `{$dbprefix}planning_hebdo` SET `cle` = :cle WHERE `id` = :id");
+            $db->execute(array(':cle' => $cle, ':id' => $id));
+        }
     }
 
     private function prepareJobsForPlanning($times)
