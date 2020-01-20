@@ -49,6 +49,9 @@
     .editable:hover {
       cursor: text;
     }
+    #validation {
+      margin-bottom: 7px;
+    }
   </style>
 
   <div id="statedweek">
@@ -86,13 +89,30 @@
         </td>
 
         <td class="actions">
-            {% if planning.locked %}
+          <div style="min-width: 185px">
+          {% if planning.locked %}
+            <div id="validation">
+              <u>Validation</u>
+              <br />
+              <span id="locker">{{ locker.nom }} {{ locker.prenom }}</span>
+              <span id="locked-on">{{ planning.locked_on | date('d/m/Y H:i') }}</span>
+            </div>
+          {% else %}
+            <div id="validation" style="display:none;">
+              <u>Validation</u>
+              <br />
+              <span id="locker"></span>
+              <span id="locked-on"></span>
+            </div>
+          {% endif %}
+          {% if planning.locked %}
             <a id="unlock"><span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning'></span></a>
             <a id="lock" style="display:none;"><span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning'></span></a>
             {% else %}
             <a id="lock"><span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning'></span></a>
             <a id="unlock" style="display:none;"><span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning'></span></a>
-            {% endif %}
+          {% endif %}
+          </div>
         </td>
       </tr>
     </table>

@@ -3,6 +3,8 @@ $sql[] = "CREATE TABLE `{$dbprefix}stated_week_plannings` (
     id INT(11) NOT NULL AUTO_INCREMENT,
     date DATE NOT NULL,
     locked TINYINT(1) NULL,
+    locker_id int(11) NULL,
+    locked_on datetime NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 

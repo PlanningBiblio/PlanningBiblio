@@ -26,6 +26,8 @@ class StatedWeekHelper extends BaseHelper
 
     private $columns = array();
 
+    private $fixed_breaktime = 0;
+
     public $planning_agents = array();
 
     public $CSRFToken;
@@ -63,6 +65,10 @@ class StatedWeekHelper extends BaseHelper
 
                 $this->extractTimes($times, 'column');
             }
+        }
+
+        if ($this->config('statedweek_3columns_breaktime')) {
+            $this->fixed_breaktime = $this->config('statedweek_3columns_breaktime');
         }
     }
 
@@ -116,6 +122,7 @@ class StatedWeekHelper extends BaseHelper
                 $today[1] = $this->columns[$time->column_id()]['to'];
 
                 $workingHours['temps'][$day_index] = $today;
+                $workingHours['breaktime'][$day_index] = $this->fixed_breaktime;
             }
         }
 

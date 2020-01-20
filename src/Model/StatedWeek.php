@@ -17,6 +17,12 @@ class StatedWeek extends PLBEntity {
     /** @Column(type="boolean") **/
     protected $locked;
 
+    /** @Column(type="integer") **/
+    protected $locker_id;
+
+    /** @Column(type="datetime", nullable=true) **/
+    protected $locked_on;
+
     /**
      * @OneToMany(targetEntity="StatedWeekColumn", mappedBy="planning", cascade={"ALL"})
      */

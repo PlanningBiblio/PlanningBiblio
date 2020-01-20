@@ -628,10 +628,13 @@ $( document ).ready(function() {
       url: '/ajax/statedweek/lock',
       type: 'post',
       data: {date: date, lock: true, CSRFToken: CSRFToken},
-      success: function() {
+      success: function(data) {
         $('#lock').hide();
         $('#unlock').show();
         $('input[name="locked"]').val('1');
+        $('#locker').html(data.locker)
+        $('#locked-on').html(data.locked_on)
+        $('#validation').show();
       },
       error: function() {
         alert("Une erreur est survenue lors du vérouillage des plannings");
@@ -650,6 +653,7 @@ $( document ).ready(function() {
         $('#unlock').hide();
         $('#lock').show();
         $('input[name="locked"]').val('0');
+        $('#validation').hide();
       },
       error: function() {
         alert("Une erreur est survenue lors du déverouillage des plannings");

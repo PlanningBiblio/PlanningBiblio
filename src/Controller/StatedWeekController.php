@@ -56,6 +56,10 @@ class StatedWeekController extends BaseController
             $planning = $this->getPlanningOn($d);
             $plannings[] = $planning;
             $planning->locked($lock);
+            if ($lock) {
+                $planning->locker_id($_SESSION['login_id']);
+                $planning->locked_on(new \DateTime('now'));
+            }
             $this->entityManager->persist($planning);
             $this->entityManager->flush();
         }
@@ -66,9 +70,15 @@ class StatedWeekController extends BaseController
             $statedweekHelper->saveToWeeklyPlannings();
         }
 
-        $response->setContent('Planning updated');
-        $response->setStatusCode(200);
-        return $response;
+        $current_planning = $this->getPlanningOn($date);
+        $return = array();
+        if ($current_planning->locked()) {
+            $locker = $this->entityManager->getRepository(Agent::class)->find($current_planning->locker_id());
+            $return['locker'] = $locker->nom() . ' ' . $locker->prenom();
+            $return['locked_on'] = $current_planning->locked_on()->format('d/m/Y H:i');
+        }
+
+        return $this->json($return);
     }
 
     /**
@@ -107,6 +117,10 @@ class StatedWeekController extends BaseController
             'pause2'        => $this->Config('PlanningHebdo-Pause2') ? 1 : 0,
             'CSRFSession'   => $GLOBALS['CSRFSession'],
         ));
+        if ($planning->locked()) {
+            $locker = $this->entityManager->getRepository(Agent::class)->find($planning->locker_id());
+            $this->templateParams(array('locker' => $locker));
+        }
 
         return $this->output('statedweek/index.html.twig');
     }
