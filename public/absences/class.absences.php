@@ -718,7 +718,9 @@ class absences
             $entityManager->remove($absdoc);
         }
         $entityManager->flush();
-        rmdir(__DIR__ . AbsenceDocument::UPLOAD_DIR . $this->id);
+        if (is_dir(__DIR__ . AbsenceDocument::UPLOAD_DIR . $this->id)) {
+            rmdir(__DIR__ . AbsenceDocument::UPLOAD_DIR . $this->id);
+        }
     }
 
     public function fetch($sort="`debut`,`fin`,`nom`,`prenom`", $agent=null, $debut=null, $fin=null, $sites=null)
