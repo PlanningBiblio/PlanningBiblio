@@ -96,34 +96,26 @@ class StatedWeekHelper extends BaseHelper
     {
         foreach ($this->dates as $day_index => $d) {
             $today = DayPlanningHelper::emptyDay();
+            $break = 0;
 
-            // Agent doesn't work today.
-            if (!isset($planning[$day_index])) {
-                $workingHours['temps'][$day_index] = $today;
-                continue;
-            }
-
-            if ($planning[$day_index]['type'] == 'job') {
+            if (isset($planning[$day_index]) && $planning[$day_index]['type'] == 'job') {
                 list($jobs, $break) = $this->prepareJobsForPlanning($planning[$day_index]['times']);
                 foreach ($jobs as $job) {
                     $today[$job['start_index']] = $job['from'];
                     $today[$job['end_index']] = $job['to'];
                 }
-
-                $workingHours['temps'][$day_index] = $today;
-                $workingHours['breaktime'][$day_index] = $break;
-                continue;
             }
 
-            if ($planning[$day_index]['type'] == 'column') {
+            if (isset($planning[$day_index]) && $planning[$day_index]['type'] == 'column') {
                 // Only one column by day is permitted.
                 $time = $planning[$day_index]['times'][0];
                 $today[0] = $this->columns[$time->column_id()]['from'];
                 $today[1] = $this->columns[$time->column_id()]['to'];
-
-                $workingHours['temps'][$day_index] = $today;
-                $workingHours['breaktime'][$day_index] = $this->fixed_breaktime;
+                $break = $this->fixed_breaktime;
             }
+
+            $this->addDay($workingHours['temps'], $today, $day_index);
+            $this->addDay($workingHours['breaktime'], $break, $day_index);
         }
 
         $workingHours['validation'] = 2;
@@ -135,7 +127,7 @@ class StatedWeekHelper extends BaseHelper
         // Set cle here because the add() method
         // doesn't permit that.
         $id = $workingHours['id'];
-        $cle = $this->pl_key;
+        $cle = $this->pl_key . "_$id";
         $dbprefix = $GLOBALS['dbprefix'];
 
         $db = new \dbh();
@@ -148,28 +140,28 @@ class StatedWeekHelper extends BaseHelper
     {
         $ph = new \planningHebdo();
         $hours = WeekPlanningHelper::emptyPlanning();
-        $breaktimes = array('', '', '', '', '', '');
-        if ($this->config('Dimanche')) {
-            $breaktimes[] = '';
-        }
+        $breaktimes = WeekPlanningHelper::emptyBreaktimes();
 
         foreach ($planning as $day_index => $p) {
+            $today = DayPlanningHelper::emptyDay();
+            $break = $this->fixed_breaktime;
+
             if ($p['type'] == 'job') {
                 list($jobs, $break) = $this->prepareJobsForPlanning($p['times']);
                 foreach ($jobs as $job) {
-                    $hours[$day_index][$job['start_index']] = $job['from'];
-                    $hours[$day_index][$job['end_index']] = $job['to'];
+                    $today[$job['start_index']] = $job['from'];
+                    $today[$job['end_index']] = $job['to'];
                 }
-
-                $breaktimes[$day_index] = $break;
-                continue;
             }
 
             if ($p['type'] == 'column') {
                 $time = $p['times'][0];
-                $hours[$day_index][0] = $this->columns[$time->column_id()]['from'];
-                $hours[$day_index][1] = $this->columns[$time->column_id()]['to'];
+                $today[0] = $this->columns[$time->column_id()]['from'];
+                $today[1] = $this->columns[$time->column_id()]['to'];
             }
+
+            $this->addDay($hours, $today, $day_index);
+            $this->addDay($breaktimes, $break, $day_index);
         }
 
         $workingHours = array(
@@ -195,7 +187,7 @@ class StatedWeekHelper extends BaseHelper
 
         if (!empty($ph->elements)) {
             $id = $ph->elements[0]['id'];
-            $cle = $this->pl_key;
+            $cle = $this->pl_key . "_$id";
             $dbprefix = $GLOBALS['dbprefix'];
 
             $db = new \dbh();
@@ -212,7 +204,7 @@ class StatedWeekHelper extends BaseHelper
         foreach ($times as $t) {
             $from = $t->starttime() ? $t->starttime()->format('H:i:s') : '';
             $to = $t->endtime() ? $t->endtime()->format('H:i:s') : '';
-            $break = $t->breaktime() ? $t->breaktime()->format('H:i:s') : '';
+            $break = $t->breaktime() ? $t->breaktime()->format('H:i:s') : '00:00:00';
 
             if ($break) {
                 if (empty($total_break)) {
@@ -305,5 +297,19 @@ class StatedWeekHelper extends BaseHelper
         $day_index = $date_pl->position -1;
 
         return $day_index;
+    }
+
+    private function addDay(&$target, $day, $index)
+    {
+
+        $target[$index] = $day;
+
+        if ($this->config('nb_semaine') > 1) {
+            $target[$index + 7] = $day;
+        }
+
+        if ($this->config('nb_semaine') > 2) {
+            $target[$index + 14] = $day;
+        }
     }
 }

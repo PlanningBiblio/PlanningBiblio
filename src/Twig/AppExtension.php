@@ -78,12 +78,26 @@ class AppExtension extends AbstractExtension
         return jour_ferie($date);
     }
 
-    public function getConfig($key)
+    public function getConfig($key = null)
     {
         $config = $GLOBALS['config'];
 
+        // Request all config parameters.
         if ( !isset($key) ) {
-            return null;
+            //filter some paremeters for safety.
+            unset($config['CAS-CACert']);
+            unset($config['LDAP-Password']);
+            unset($config['Mail-Password']);
+            unset($config['Mail-Signature']);
+            unset($config['Planning-AppelDispoMessage']);
+
+            foreach ($config as $key => $value) {
+                if (is_array($value)) {
+                    unset($config[$key]);
+                }
+            }
+
+            return $config;
         }
 
         if ( !isset($config[$key]) ) {

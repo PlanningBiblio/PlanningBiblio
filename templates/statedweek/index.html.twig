@@ -8,7 +8,7 @@
 
 {% block page %}
   <style>
-    #stateweek-header {
+    #statedweek-header {
       width: 100%;
     }
     #statedweek-tables {
@@ -52,8 +52,12 @@
     #validation {
       margin-bottom: 7px;
     }
+    .plb-timepicker, .break-timepicker {
+      max-width: 80px;
+    }
   </style>
 
+  <input class="plb-timepicker" />
   <div id="statedweek">
     <input type="hidden" name="date" value="{{ date }}"/>
     <input type="hidden" name="pause2" value="{{ pause2 }}"/>
@@ -63,7 +67,7 @@
     {% else %}
       <input type="hidden" name="locked" value="0"/>
     {% endif %}
-    <table id="stateweek-header">
+    <table id="statedweek-header">
       <tr>
         <td>
           <div class='noprint'>

@@ -332,6 +332,18 @@ $( document ).ready(function() {
     $(".context-menu").hide(100);
   });
 
+  $('.break-timepicker').timepicker({
+    timeFormat: 'HH:mm',
+    interval: 15,
+    minTime: '00:00',
+    maxTime: '02:00',
+    defaultTime: '0',
+    startTime: '00:00',
+    dynamic: false,
+    dropdown: true,
+    scrollbar: true
+  });
+
   $(document).on('click', '.delete-agent', function() {
     cell_id = $(this).data('cell');
 

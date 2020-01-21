@@ -895,7 +895,19 @@ $(function(){
     $(".ui-tab-cancel").css("right",right);
     $(".ui-tab-cancel").css("top",7);
   });
-  
+
+  $('.plb-timepicker').timepicker({
+    timeFormat: 'HH:mm',
+    interval: window.plb_config['Granularite'],
+    minTime: '07:00',
+    maxTime: '23:59',
+    defaultTime: '07',
+    startTime: '07:00',
+    dynamic: true,
+    dropdown: true,
+    scrollbar: true
+  });
+
   // Infobulles
   $(document).tooltip();
 });

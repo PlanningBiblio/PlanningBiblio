@@ -54,16 +54,60 @@ class WeekPlanningHelper extends BaseHelper
     {
         $config = $GLOBALS['config'];
         $day = DayPlanningHelper::emptyDay();
-
         $week = array();
-        foreach (array(0, 1, 2, 3, 4, 5, 6) as $index) {
+
+        $days_of_week = 6;
+        if (!$config['Dimanche']) {
+            $days_of_week = 5;
+        }
+
+        foreach (range(0, $days_of_week) as $index) {
+            if ($config['nb_semaine'] == 3) {
+                $week[$index] = $day;
+                $week[$index + 7] = $day;
+                $week[$index + 14] = $day;
+                continue;
+            }
+
+            if ($config['nb_semaine'] == 2) {
+                $week[$index] = $day;
+                $week[$index + 7] = $day;
+                continue;
+            }
+
             $week[] = $day;
         }
 
+        return $week;
+    }
+
+    public static function emptyBreaktimes()
+    {
+        $config = $GLOBALS['config'];
+        $week_breaktimes = array();
+
+        $days_of_week = 6;
         if (!$config['Dimanche']) {
-            unset($week[6]);
+            $days_of_week = 5;
         }
 
-        return $week;
+        foreach (range(0, $days_of_week) as $index) {
+            if ($config['nb_semaine'] == 3) {
+                $week_breaktimes[$index] = 0;
+                $week_breaktimes[$index + 7] = 0;
+                $week_breaktimes[$index + 14] = 0;
+                continue;
+            }
+
+            if ($config['nb_semaine'] == 2) {
+                $week_breaktimes[$index] = 0;
+                $week_breaktimes[$index + 7] = 0;
+                continue;
+            }
+
+            $week_breaktimes[] = $day;
+        }
+
+        return $week_breaktimes;
     }
 }

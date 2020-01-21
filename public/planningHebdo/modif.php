@@ -264,6 +264,12 @@ for ($j=0;$j<$config['nb_semaine'];$j++) {
     echo "</tr>\n";
     for ($i=$debut[$j];$i<$fin[$j];$i++) {
         $k=$i-($j*7)-1;
+
+        $break = 0;
+        if (isset($breaktime) && isset($breaktime[$i - 1])) {
+            $break = $breaktime[$i - 1];
+        }
+
         echo "<tr style='text-align:center;'><td>{$jours[$k]}</td>";
         if ($modifAutorisee) {
             echo "<td>".selectTemps($i-1, 0, null, "select")."</td>";
@@ -277,7 +283,7 @@ for ($j=0;$j<$config['nb_semaine'];$j++) {
             if ($config['PlanningHebdo-PauseLibre']) {
                 echo "<td>";
                 echo $twig->render('weeklyplanning/breakingtime.html.twig',
-                    array('breaktime' => $breaktime[$i - 1], 'day_index' => $i - 1));
+                    array('breaktime' => $break, 'day_index' => $i - 1));
                 echo "</td>";
             }
         } else {
@@ -300,8 +306,8 @@ for ($j=0;$j<$config['nb_semaine'];$j++) {
             echo "<td id='temps_".($i-1)."_3' class='td_heures'>$h4</td>\n";
             if ($config['PlanningHebdo-PauseLibre']) {
                 echo "<td id='breaktime_" . ($i -1) ."'>";
-                echo heure4($breaktime[$i -1]);
-                echo "<input type='hidden' name='breaktime_" . ($i -1) . "' value='" . $breaktime[$i -1] . "'/>";
+                echo heure4($break);
+                echo "<input type='hidden' name='breaktime_" . ($i -1) . "' value='" . $break . "'/>";
                 echo "</td>";
             }
         }
