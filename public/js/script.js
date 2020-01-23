@@ -896,13 +896,15 @@ $(function(){
     $(".ui-tab-cancel").css("top",7);
   });
 
+  $('.plb-timepicker').attr('readonly', 'readonly');
+
   $('.plb-timepicker').timepicker({
     timeFormat: 'HH:mm',
     interval: window.plb_config['Granularite'],
-    minTime: '07:00',
+    minTime: '06:00',
     maxTime: '23:59',
-    defaultTime: '07',
-    startTime: '07:00',
+    defaultTime: '',
+    startTime: '06:00',
     dynamic: true,
     dropdown: true,
     scrollbar: true

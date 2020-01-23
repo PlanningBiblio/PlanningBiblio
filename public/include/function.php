@@ -1407,7 +1407,7 @@ function selectTemps($jour, $i, $periodes=null, $class=null)
     }
     $select.="<option value=''>&nbsp;</option>\n";
 
-    for ($j=7;$j<=23;$j++) {
+    for ($j=6;$j<=23;$j++) {
         $hre = sprintf("%'.02d", $j);
     
         for ($k=0; $k<60; $k=$k+$granularite) {

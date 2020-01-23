@@ -332,6 +332,8 @@ $( document ).ready(function() {
     $(".context-menu").hide(100);
   });
 
+  $('.break-timepicker').attr('readonly', 'readonly');
+
   $('.break-timepicker').timepicker({
     timeFormat: 'HH:mm',
     interval: 15,
