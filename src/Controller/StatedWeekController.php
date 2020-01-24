@@ -538,7 +538,7 @@ class StatedWeekController extends BaseController
                     foreach ($absences as $absence) {
                         $start = substr($absence['from'], -8);
                         $end = substr($absence['to'], -8);
-                        $absence_times[] = array('from' => $start, 'to' => $end);
+                        $absence_times[] = array('from' => heure3($start), 'to' => heure3($end));
                     }
                     $p['partially_absent'] = $absence_times;
                 }

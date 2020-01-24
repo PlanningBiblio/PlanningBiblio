@@ -168,12 +168,28 @@ $( document ).ready(function() {
   });
 
   $('td.time-slot').each(function() {
-    $(this).init.prototype.removeHolyday = function() {
-      cell.removeClass('partially-absent');
-      $(this).find('i').remove();
+    $(this).init.prototype.addAgent = function(agent) {
+      cell = $(this);
+      item = $('<span></span>');
+      item.append(agent.name);
+
+      cell.append(item);
+      cell.attr('data-agent', agent.id);
     };
 
-    $(this).init.prototype.addPartialHolyday = function(holidays) {
+    $(this).init.prototype.removeHolyday = function() {
+      cell = $(this);
+      cell.removeClass('partially-absent');
+      cell.find('i').remove();
+    };
+
+    $(this).init.prototype.addAbsence = function() {
+      cell = $(this);
+      cell.addClass('absent');
+      cell.append(' <i> - absent(e)</i>');
+    };
+
+    $(this).init.prototype.addPartialAbsences = function(holidays) {
       cell = $(this);
       cell.addClass('partially-absent');
       cell.append(' <i> - absent(e)</i>');
@@ -186,6 +202,13 @@ $( document ).ready(function() {
           has_partial = 1;
         }
       });
+    };
+
+    $(this).init.prototype.addHoliday = function() {
+      cell = $(this);
+      cell.addClass('absent');
+      cell.children('span').addClass('absent');
+      cell.append('<i> - Congés</i>');
     };
   });
 
@@ -285,7 +308,7 @@ $( document ).ready(function() {
         if (data.partially_absent) {
           cell = $('td[data-jobtimeid="' + jobtimeid + '"]');
           cell.removeHolyday();
-          cell.addPartialHolyday(data.partially_absent);
+          cell.addPartialAbsences(data.partially_absent);
         }
       },
       error: function() {
@@ -551,16 +574,10 @@ $( document ).ready(function() {
   }
 
   function placeOnPause(agent) {
-    id = agent.id;
-    name = agent.name;
-
     $('#statedweek-poste td[data-pause="1"]').each(function() {
+      cell = $(this);
       if ($(this).is(':empty')) {
-        item = $('<span></span>');
-        item.append(name);
-
-        $(this).append(item);
-        $(this).attr('data-agent', id);
+        cell.addAgent(agent);
 
         return false;
       }
@@ -568,8 +585,6 @@ $( document ).ready(function() {
   }
 
   function placeOnJob(agent) {
-    id = agent.id;
-    name = agent.name;
     job_name= agent.job_name;
     from = agent.from;
     to = agent.to;
@@ -578,36 +593,19 @@ $( document ).ready(function() {
     $('#statedweek-poste td[data-job="' + job_name + '"]').each(function() {
       cell = $(this);
       if (cell.is(':empty')) {
-        item = $('<span></span>');
-        item.append(name);
-
-        cell.append(item);
-        cell.attr('data-agent', id);
+        cell.addAgent(agent);
         cell.attr('data-jobtimeid', agent.jobtimeid);
 
         if (agent.absent) {
-          cell.addClass('absent');
-          cell.append(' <i> - absent(e)</i>');
+          cell.addAbsence();
         }
 
         if (agent.partially_absent) {
-          cell.addClass('partially-absent');
-          cell.append(' <i> - absent(e)</i>');
-          has_partial = 0;
-          $.each(agent.partially_absent, function(index, absence) {
-            if (has_partial) {
-              cell.children('i').append(', de ' + absence.from + ' à ' + absence.to);
-            } else {
-              cell.children('i').append(' de ' + absence.from + ' à ' + absence.to);
-              has_partial = 1;
-            }
-          });
+          cell.addPartialAbsences(agent.partially_absent);
         }
 
         if (agent.holiday) {
-          cell.addClass('absent');
-          cell.children('span').addClass('absent');
-          cell.append('<i> - Congés</i>');
+          cell.addHoliday();
         }
 
         //Working hours.
@@ -641,43 +639,24 @@ $( document ).ready(function() {
   }
 
   function placeOnPlanning(agent) {
-    id = agent.id;
-    name = agent.name;
     from = agent.from;
     to = agent.to;
 
     $('#statedweek-planning td[data-from="' + from + '"][data-to="' + to +'"]').each(function() {
       cell = $(this);
       if (cell.is(':empty')) {
-        item = $('<span></span>');
-        item.append(name);
-
-        cell.append(item);
-        cell.attr('data-agent', id);
+        cell.addAgent(agent);
 
         if (agent.absent) {
-          cell.addClass('absent');
-          cell.append(' <i> - absent(e)</i>');
+          cell.addAbsence();
         }
 
         if (agent.partially_absent) {
-          cell.addClass('partially-absent');
-          cell.append(' <i> - absent(e)</i>');
-          has_partial = 0;
-          $.each(agent.partially_absent, function(index, absence) {
-            if (has_partial) {
-              cell.children('i').append(', de ' + absence.from + ' à ' + absence.to);
-            } else {
-              cell.children('i').append(' de ' + absence.from + ' à ' + absence.to);
-              has_partial = 1;
-            }
-          });
+          cell.addPartialAbsences(agent.partially_absent);
         }
 
         if (agent.holiday) {
-          cell.addClass('absent');
-          cell.children('span').addClass('absent');
-          cell.append('<i> - Congés</i>');
+          cell.addHoliday();
         }
 
         initDraggable(cell);
