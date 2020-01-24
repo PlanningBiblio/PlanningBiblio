@@ -167,6 +167,28 @@ $( document ).ready(function() {
     resize_td();
   });
 
+  $('td.time-slot').each(function() {
+    $(this).init.prototype.removeHolyday = function() {
+      cell.removeClass('partially-absent');
+      $(this).find('i').remove();
+    };
+
+    $(this).init.prototype.addPartialHolyday = function(holidays) {
+      cell = $(this);
+      cell.addClass('partially-absent');
+      cell.append(' <i> - absent(e)</i>');
+      has_partial = 0;
+      $.each(holidays, function(index, h) {
+        if (has_partial) {
+          cell.children('i').append(', de ' + h.from + ' à ' + h.to);
+        } else {
+          cell.children('i').append(' de ' + h.from + ' à ' + h.to);
+          has_partial = 1;
+        }
+      });
+    };
+  });
+
   $( "#confirm-lock" ).dialog({
     autoOpen: false,
     resizable: false,
@@ -251,13 +273,21 @@ $( document ).ready(function() {
       jobtimeid: jobtimeid,
       from: from,
       to: to,
-      breaktime: breaktime
+      breaktime: breaktime,
+      date: date
     };
 
     $.ajax({
       url: '/ajax/statedweekjob/update',
       type: 'post',
       data: data,
+      success: function(data) {
+        if (data.partially_absent) {
+          cell = $('td[data-jobtimeid="' + jobtimeid + '"]');
+          cell.removeHolyday();
+          cell.addPartialHolyday(data.partially_absent);
+        }
+      },
       error: function() {
         alert("Une erreur est survenue lors de la mise à jour du planning");
       }
@@ -408,6 +438,11 @@ $( document ).ready(function() {
     to = cell.data('to');
     job_name = cell.data('job');
 
+    if (typeof(job_name) != "undefined") {
+      from = '00:00:00';
+      to = '23:59:00';
+    }
+
     $.ajax({
       url: '/ajax/statedweek/availables',
       type: 'post',
@@ -440,8 +475,14 @@ $( document ).ready(function() {
             item.addClass('partially-absent');
             item.children('span').addClass('partially-absent');
             item.append('<i> - absent(e)</i>');
+            has_partial = 0;
             $.each(agent.partially_absent, function(index, absence) {
-              item.children('i').append(' de ' + absence.from + ' à ' + absence.to);
+              if (has_partial) {
+                item.children('i').append(', de ' + absence.from + ' à ' + absence.to);
+              } else {
+                item.children('i').append(' de ' + absence.from + ' à ' + absence.to);
+                has_partial = 1;
+              }
             });
           }
 
@@ -546,14 +587,20 @@ $( document ).ready(function() {
 
         if (agent.absent) {
           cell.addClass('absent');
-          cell.append(' <i> - absent(e)</<i>');
+          cell.append(' <i> - absent(e)</i>');
         }
 
         if (agent.partially_absent) {
           cell.addClass('partially-absent');
-          cell.append(' <i> - absent(e)</<i>');
+          cell.append(' <i> - absent(e)</i>');
+          has_partial = 0;
           $.each(agent.partially_absent, function(index, absence) {
-            cell.children('i').append(' de ' + absence.from + ' à ' + absence.to);
+            if (has_partial) {
+              cell.children('i').append(', de ' + absence.from + ' à ' + absence.to);
+            } else {
+              cell.children('i').append(' de ' + absence.from + ' à ' + absence.to);
+              has_partial = 1;
+            }
           });
         }
 
@@ -610,14 +657,20 @@ $( document ).ready(function() {
 
         if (agent.absent) {
           cell.addClass('absent');
-          cell.append(' <i> - absent(e)</<i>');
+          cell.append(' <i> - absent(e)</i>');
         }
 
         if (agent.partially_absent) {
           cell.addClass('partially-absent');
-          cell.append(' <i> - absent(e)</<i>');
+          cell.append(' <i> - absent(e)</i>');
+          has_partial = 0;
           $.each(agent.partially_absent, function(index, absence) {
-            cell.children('i').append(' de ' + absence.from + ' à ' + absence.to);
+            if (has_partial) {
+              cell.children('i').append(', de ' + absence.from + ' à ' + absence.to);
+            } else {
+              cell.children('i').append(' de ' + absence.from + ' à ' + absence.to);
+              has_partial = 1;
+            }
           });
         }
 

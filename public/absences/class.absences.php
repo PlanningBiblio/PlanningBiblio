@@ -766,13 +766,13 @@ class absences
             $start_absence = strtotime($absence['debut']);
             if ($start_absence < $start_timestamp) {
                 $start_absence = $start_timestamp;
-                $absence['debut'] = $start;
+                $absence['debut'] = $start .':00';
             }
 
             $end_absence = strtotime($absence['fin']);
             if ($end_absence > $end_timestamp) {
                 $end_absence = $end_timestamp;
-                $absence['fin'] = $end;
+                $absence['fin'] = $end . ':00';
             }
 
             $absences[] = array('from' => $absence['debut'], 'to' => $absence['fin']);

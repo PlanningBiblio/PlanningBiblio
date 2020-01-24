@@ -898,9 +898,15 @@ $(function(){
 
   $('.plb-timepicker').attr('readonly', 'readonly');
 
+  var interval = '60';
+  if(typeof(window.plb_config) != "undefined"
+    && window.plb_config['Granularite'] !== null) {
+      interval = window.plb_config['Granularite'];
+  }
+
   $('.plb-timepicker').timepicker({
     timeFormat: 'HH:mm',
-    interval: window.plb_config['Granularite'],
+    interval: interval,
     minTime: '06:00',
     maxTime: '23:59',
     defaultTime: '',

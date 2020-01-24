@@ -185,7 +185,7 @@ class StatedWeekController extends BaseController
                 foreach ($absences as $absence) {
                     $start = substr($absence['from'], -8);
                     $end = substr($absence['to'], -8);
-                    $absence_times[] = array('from' => $start, 'to' => $end);
+                    $absence_times[] = array('from' => heure3($start), 'to' => heure3($end));
                 }
                 $available['partially_absent'] = $absence_times;
             }
@@ -323,7 +323,7 @@ class StatedWeekController extends BaseController
     }
 
     /**
-     * @Route("/ajax/statedweekjob/update", name="statedweekjob.update", methods={"POST"})
+     * @Route("/ajax/statedweekjob/update", name="statedweekjob.update", methods={"GET", "POST"})
      */
     public function updateJobHours(Request $request)
     {
@@ -333,6 +333,7 @@ class StatedWeekController extends BaseController
         $from = \DateTime::createFromFormat('H:i', $request->get('from'));
         $to = \DateTime::createFromFormat('H:i', $request->get('to'));
         $break = \DateTime::createFromFormat('H:i', $request->get('breaktime'));
+        $date = $request->get('date');
 
         $from = $from ? $from : null;
         $to = $to ? $to : null;
@@ -355,9 +356,22 @@ class StatedWeekController extends BaseController
         $this->entityManager->persist($job_agent);
         $this->entityManager->flush();
 
-        $response->setContent('job hours updated');
-        $response->setStatusCode(200);
-        return $response;
+        $return = array('absence' => 0);
+        $from = $from->format('H:i:s');
+        $to = $to->format('H:i:s');
+        $agent = $this->entityManager->getRepository(Agent::class)->find($job_agent->agent_id());
+        if ($absences = $agent->isPartiallyAbsentOn("$date $from", "$date $to")) {
+            $return['absence'] = 1;
+            $absence_times = array();
+            foreach ($absences as $absence) {
+                $start = substr($absence['from'], -8);
+                $end = substr($absence['to'], -8);
+                $absence_times[] = array('from' => heure3($start), 'to' => heure3($end));
+            }
+            $return['partially_absent'] = $absence_times;
+        }
+
+        return $this->json($return);
     }
 
     /**
@@ -566,7 +580,7 @@ class StatedWeekController extends BaseController
                     foreach ($absences as $absence) {
                         $start = substr($absence['from'], -8);
                         $end = substr($absence['to'], -8);
-                        $absence_times[] = array('from' => $start, 'to' => $end);
+                        $absence_times[] = array('from' => heure3($start), 'to' => heure3($end));
                     }
                     $p['partially_absent'] = $absence_times;
                 }

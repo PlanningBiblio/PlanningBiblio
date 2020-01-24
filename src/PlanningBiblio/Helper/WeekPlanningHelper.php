@@ -92,20 +92,15 @@ class WeekPlanningHelper extends BaseHelper
         }
 
         foreach (range(0, $days_of_week) as $index) {
-            if ($config['nb_semaine'] == 3) {
-                $week_breaktimes[$index] = 0;
+            $week_breaktimes[$index] = $day;
+
+            if ($config['nb_semaine'] > 1) {
                 $week_breaktimes[$index + 7] = 0;
+            }
+
+            if ($config['nb_semaine'] > 2) {
                 $week_breaktimes[$index + 14] = 0;
-                continue;
             }
-
-            if ($config['nb_semaine'] == 2) {
-                $week_breaktimes[$index] = 0;
-                $week_breaktimes[$index + 7] = 0;
-                continue;
-            }
-
-            $week_breaktimes[] = $day;
         }
 
         return $week_breaktimes;
