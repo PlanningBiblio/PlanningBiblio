@@ -90,6 +90,26 @@ class StatedWeekHelper extends BaseHelper
 
             $this->addWorkingHours($planning, $agent);
         }
+
+        $db = new \db();
+        $fin = end($this->dates);
+        $agent_ids = implode(',', array_keys($planning_agents));
+        $query = "SELECT id FROM {$GLOBALS['config']['dbprefix']}planning_hebdo ";
+        $query .= "WHERE debut = '{$this->dates[0]}' AND fin = '$fin' ";
+        $query .= "AND cle like '{$this->pl_key}%' ";
+        $query .= "AND perso_id NOT IN ($agent_ids);";
+        $db->query($query);
+        $pl_ids = $db->result;
+
+        if (!empty($pl_ids)) {
+            $ids = array();
+            foreach ($pl_ids as $pl_id) {
+                $ids[] = $pl_id['id'];
+            }
+            $ids = implode(',', $ids);
+            $db = new \db();
+            $db->query("DELETE FROM {$GLOBALS['config']['dbprefix']}planning_hebdo WHERE id IN ($ids);");
+        }
     }
 
     private function updateWorkingHours($workingHours, $planning)
