@@ -40,10 +40,11 @@ if ($nom) {
     $action=$get["action"];
     $etage = htmlentities($get["etage"], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
     $groupe = htmlentities($get["groupe"], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+    $position=$get["position"];
     $obligatoire=$get["obligatoire"];
     $site=$site?$site:1;
 
-    $data=array("nom"=>$nom,"obligatoire"=>$obligatoire,"etage"=>$etage,"groupe"=>$groupe,"activites"=>$activites,
+    $data=array("nom"=>$nom,"position"=>$position,"obligatoire"=>$obligatoire,"etage"=>$etage,"groupe"=>$groupe,"activites"=>$activites,
   "statistiques"=>$statistiques,"bloquant"=>$bloquant,"site"=>$site,"categories"=>$categories);
 
     switch ($action) {
