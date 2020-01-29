@@ -5,7 +5,7 @@ Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
-Fichier : ics/class.ics.php
+@file ics/class.ics.php
 Création : 29 mai 2016
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
@@ -119,6 +119,7 @@ class CJICS
         $insert=array();            // Evénements à insérer (nouveaux ou événements modifiés (suppression + réinsertion))
         $email=null;                // Email de l'agent
         $now = date('Ymd\THis\Z');  // Current time
+        $config = $GLOBALS['config'];
 
         if ($this->logs) {
             logs("Agent #$perso_id : Table: $table, src: $src", "ICS", $CSRFToken);
@@ -193,6 +194,13 @@ class CJICS
             // Ignore events with STATUS = CANCELLED
             if ($elem['STATUS'] == 'CANCELLED') {
                 continue;
+            }
+
+            // Ignore events with SUMMARY defined in $config['ics_exclude_summary']
+            if (isset($config['ics_exclude_summary']) and is_array($config['ics_exclude_summary'])) {
+              if ( in_array($elem['SUMMARY'], $config['ics_exclude_summary'])) {
+                  continue;
+              }
             }
 
             // Traite seulement les événéments ayant le STATUS CONFIRMED si la configuration demande seulement les status CONFIRMED
