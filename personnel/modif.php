@@ -272,7 +272,7 @@ $postes_dispo=postesNoms($postes_dispo, $postes_completNoms);
 <li><a href='#qualif'>Activités</a></li>
 <li><a href='#temps' id='personnel-a-li3'>Heures de pr&eacute;sence</a></li>
 <?php
-if ($config['ICS-Server1'] or $config['ICS-Server2'] or $config['ICS-Server3'] or $config['ICS-Export']) {
+if ($config['ICS-Server1'] or $config['ICS-Server2'] or $config['ICS-Server3'] or $config['ICS-Export'] or $config['Hamac-csv']) {
     echo "<li><a href='#agendas'>Agendas et Synchronisation</a></li>";
 }
 if ($config['Conges-Enable']) {
