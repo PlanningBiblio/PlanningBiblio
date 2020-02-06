@@ -1,4 +1,7 @@
 *** Unreleased ***
+- Fixes
+Update URL on administration/configuration page
+
 - Enhancements
 LDAP authentication improvement
 

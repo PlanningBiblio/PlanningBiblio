@@ -20,6 +20,7 @@
             {% endif %}
           {% elseif v.type == 'info' %}
             {{ v.valeur }}
+            <input type='hidden' name='{{ v.nom }}' id='{{ v.nom }}' value="{{ v.valeur }}" />
           {% elseif v.type == 'enum' %}
             <select name='{{ v.nom }}' id='{{ v.nom }}' style='width:305px;'>
               {% for o in v.options %}
