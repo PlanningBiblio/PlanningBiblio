@@ -231,7 +231,7 @@ $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `conges_credit` FLOAT(10),
   `conges_reliquat` FLOAT(10),
   `conges_anticipation` FLOAT(10),
-  `recup_samedi` FLOAT(10),
+  `comp_time` FLOAT(10),
   `conges_annuel` FLOAT(10),
   PRIMARY KEY (`id`),
   UNIQUE KEY `login` (`login`)
