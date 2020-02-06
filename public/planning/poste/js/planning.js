@@ -407,6 +407,12 @@ $(function() {
     afficheTableauxDiv();
   });
 
+  $("#site-filter").change(function() {
+    var date=$("#date").val();
+    var site=$("#site").val();
+    window.location.href="?filter_site=" + $(this).val() + '&date=' + date;
+  });
+
 });
 
 

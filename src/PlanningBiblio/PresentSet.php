@@ -18,7 +18,17 @@ class PresentSet
         $this->db = $db;
     }
 
+    public function getBySite($site = null)
+    {
+        return $this->getPresentSet($site);
+    }
+
     public function all()
+    {
+        return $this->getPresentSet();
+    }
+
+    private function getPresentSet($site = null)
     {
         $config = $GLOBALS['config'];
         $version = $GLOBALS['version'];
@@ -37,6 +47,11 @@ class PresentSet
 
         $presents = array();
         foreach ($this->db->result as $elem) {
+            if ($site != null) {
+                $sites = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                if (!is_array($sites) || !in_array($site, $sites)) { continue; }
+            }
+
             $heures = null;
 
             $temps = array();

@@ -30,12 +30,13 @@ echo "<div id='planning'>\n";
 
 include "fonctions.php";
 
-use PlanningBiblio\PresentSet;
+use App\PlanningBiblio\PresentSet;
 
 // Initialisation des variables
 $CSRFToken=filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
 $groupe=filter_input(INPUT_GET, "groupe", FILTER_SANITIZE_NUMBER_INT);
 $site=filter_input(INPUT_GET, "site", FILTER_SANITIZE_NUMBER_INT);
+$filter_site=filter_input(INPUT_GET, "filter_site", FILTER_SANITIZE_NUMBER_INT);
 $tableau=filter_input(INPUT_GET, "tableau", FILTER_SANITIZE_NUMBER_INT);
 $date=filter_input(INPUT_GET, "date", FILTER_SANITIZE_STRING);
 
@@ -785,8 +786,22 @@ EOD;
     $db=new db();
     $dateSQL=$db->escapeString($date);
 
+    if ($config['Multisites-nombre']>1) {
+        $filtered_site = isset($filter_site) ? $filter_site : $site;
+        $nbSites = $config['Multisites-nombre'];
+        echo "<br /><br /><br /><br />";
+        echo "<label for='site-filter'>Filtrer par site:</label>\n";
+        echo "<select name='site-filter' id='site-filter'>\n";
+        echo "<option value=''>Tous les sites</option>\n";
+        for ($i = 1; $i <= $nbSites; $i++) {
+            $selected = ($i == $filtered_site) ? 'selected="selected"' : '';
+            echo "<option value='$i' $selected>{$config["Multisites-site$i"]}</option>\n";
+        }
+        echo "</select>";
+    }
+
     $presentset = new PresentSet($dateSQL, $d, $absents, $db);
-    $presents = $presentset->all();
+    $presents = $presentset->getBySite(isset($filter_site) ? $filter_site : $site);
 
     echo "<table class='tableauStandard'>\n";
     echo "<tr><td><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des présents</h3></td>\n";

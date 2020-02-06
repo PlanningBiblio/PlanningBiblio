@@ -18,6 +18,17 @@
             <label class='intitule'>Fin :</label>
             <input type='text' name='to' value='{{ to }}' class='datepicker'/>
           </td>
+          {% if multisites %}
+          <td>
+            <label for='site-filter' class='intitule'>Site: </label>
+            <select id='site-filter' name='site-filter'>
+              <option value="">Tous</option>
+              {% for site in multisites %}
+              <option value="{{ site.id }}"{% if site.selected %} selected="selected"{% endif %}>{{ site.name }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          {% endif %}
           <td>
             <input type='submit' value='Rechercher' class='ui-button' />
           </td>

@@ -24,6 +24,7 @@ class StatisticController extends BaseController
      */
     public function attendeesmissing( Request $request, Session $session )
     {
+
         $params = $request->request->all();
         if ($request->get('reset')) {
             $params['reset'] = 1;
@@ -44,6 +45,7 @@ class StatisticController extends BaseController
 
         $startTime = strtotime(dateSQL($params['from']));
         $endTime = strtotime(dateSQL($params['to']));
+        $sitefilter = isset($params['site-filter']) ? $params['site-filter'] : null;
 
         $by_date = array();
         for ( $i = $startTime; $i <= $endTime; $i = $i + 86400 ) {
@@ -86,7 +88,7 @@ class StatisticController extends BaseController
 
             $d = new \datePL($date);
             $presentset = new PresentSet($date, $d, $absent_ids, new \db());
-            $presents = $presentset->all();
+            $presents = $sitefilter != null ? $presentset->getBySite($sitefilter) : $presentset->all();
             foreach ($presents as $key => $present) {
                 $presents[$key]['heures'] = html_entity_decode($present['heures'], ENT_QUOTES|ENT_HTML5);
             }
@@ -113,10 +115,19 @@ class StatisticController extends BaseController
             );
         }
 
+        $multisites = null;
+        $nbSites = $this->config('Multisites-nombre');
+        if ($nbSites > 1) {
+            for ($i = 1; $i <= $nbSites; $i++) {
+                $multisites[] = array('id' => $i, 'name' => $this->config("Multisites-site$i"), 'selected' => $i == $sitefilter);
+            }
+        }
+
         $this->templateParams(array(
             'by_date'   => $by_date,
             'from'      => $params['from'],
-            'to'        => $params['to']
+            'to'        => $params['to'],
+            'multisites' => $multisites
         ));
 
         return $this->output('statistics/attendeesmissing.html.twig');
