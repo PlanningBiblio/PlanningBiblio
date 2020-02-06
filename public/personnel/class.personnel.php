@@ -46,7 +46,7 @@ class personnel
         $update=array("supprime" => "2", "login" => "CONCAT('deleted_',id)", "mail" => null, "arrivee" => null, "depart" => null, "postes" => null, "droits" => null, "password" => null,
             "commentaires" => "Suppression définitive le ".date("d/m/Y"), "last_login" => null, "temps" => null, "informations" => null, "recup" => null, "heures_travail" => null,
             "heures_hebdo" => null, "sites" => null, "mails_responsables" => null, "matricule" => null, "code_ics" => null, "url_ics" => null, "check_ics" => null, "check_hamac" => null,
-            "conges_credit" => null, "conges_reliquat" => null, "conges_anticipation" => null, "conges_annuel" => null, "recup_samedi" => null, "nom" => "CONCAT('Agent_',id)", "prenom" => null);
+            "conges_credit" => null, "conges_reliquat" => null, "conges_anticipation" => null, "conges_annuel" => null, "comp_time" => null, "nom" => "CONCAT('Agent_',id)", "prenom" => null);
 
         $db=new db();
         $db->CSRFToken = $this->CSRFToken;

@@ -58,9 +58,9 @@
       <td>{{ lang_comp_time }}</td>
       <td style='text-align:right;'>
         {% if can_manage_agent %}
-          <input type='text' name='recup' value='{{ recup_heures}}'  style='width:70px;text-align:right;'>
+          <input type='text' name='comp_time' value='{{ recup_heures}}'  style='width:70px;text-align:right;'>
           <label style='text-align:center;padding:5px;'>h</label>
-          {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': recup_min, 'name': 'recup_min' } %}
+          {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': recup_min, 'name': 'comp_time_min' } %}
         {% else %}
           {{ recup_string }}
         {% endif %}

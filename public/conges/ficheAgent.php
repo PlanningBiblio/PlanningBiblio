@@ -123,7 +123,7 @@ if ($admin) {
     }
     echo "</select>\n";
 } else {
-    echo heure4($conges['recup_samedi']);
+    echo heure4($conges['comp_time']);
 }
 echo "</td></tr>";
 ?>

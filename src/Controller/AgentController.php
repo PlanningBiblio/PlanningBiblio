@@ -835,7 +835,7 @@ class AgentController extends BaseController
                     'conges_credit' => $params['conges_credit'] *= 7,
                     'conges_reliquat' => $params['conges_reliquat'] *= 7,
                     'conges_anticipation' => $params['conges_anticipation'] *= 7,
-                    'recup_samedi' => $params['recup'] + $params['recup_min'],
+                    'comp_time' => $params['comp_time'] + $params['comp_time_min'],
                     'conges_annuel' => $params['conges_annuel'] *= 7,
                 );
             }
@@ -844,7 +844,7 @@ class AgentController extends BaseController
                 'conges_credit' => $params['conges_credit'] + $params['conges_credit_min'],
                 'conges_reliquat' => $params['conges_reliquat'] + $params['conges_reliquat_min'],
                 'conges_anticipation' => $params['conges_anticipation'] + $params['conges_anticipation_min'],
-                'recup_samedi' => $params['recup'] + $params['recup_min'],
+                'comp_time' => $params['comp_time'] + $params['comp_time_min'],
                 'conges_annuel' => $params['conges_annuel'] + $params['conges_annuel_min'],
             );
         }
