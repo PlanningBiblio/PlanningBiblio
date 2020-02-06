@@ -103,7 +103,7 @@ class Agent extends PLBEntity {
     protected $conges_anticipation;
 
     /** @Column(type="float") **/
-    protected $recup_samedi;
+    protected $comp_time;
 
     /** @Column(type="float") **/
     protected $conges_annuel;

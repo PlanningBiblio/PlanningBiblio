@@ -176,10 +176,10 @@ class conges
         }
 
         $db = new db();
-        $db->select2('personnel', 'recup_samedi', array('id' => $perso_id));
+        $db->select2('personnel', 'comp_time', array('id' => $perso_id));
     
         // $balance1 : solde à la date choisie
-        $balance1 = (float) $db->result[0]['recup_samedi'];
+        $balance1 = (float) $db->result[0]['comp_time'];
 
         // Date à laquelle le compteur doit être remis à zéro
         $reset_date = strtotime("09/01");
@@ -330,7 +330,7 @@ class conges
                 $perso_credit=$db->result[0]['conges_credit'];
                 $perso_reliquat=$db->result[0]['conges_reliquat'];
                 $perso_anticipation=$db->result[0]['conges_anticipation'];
-                $perso_recup=$db->result[0]['recup_samedi'];
+                $perso_recup=$db->result[0]['comp_time'];
 
                 $perso_credit_new=floatval($perso_credit)+floatval($credit);
                 $perso_reliquat_new=floatval($perso_reliquat)+floatval($reliquat);
@@ -338,7 +338,7 @@ class conges
                 $perso_anticipation_new=floatval($perso_anticipation)-floatval($anticipation);
 
                 $update=array("conges_credit"=>$perso_credit_new, "conges_reliquat"=>$perso_reliquat_new,
-      "conges_anticipation"=>$perso_anticipation_new, "recup_samedi"=>$perso_recup_new);
+      "conges_anticipation"=>$perso_anticipation_new, "comp_time"=>$perso_recup_new);
                 $db=new db();
                 $db->CSRFToken = $this->CSRFToken;
                 $db->update("personnel", $update, array("id"=>$perso_id));
@@ -492,7 +492,7 @@ class conges
         }
 
         $db=new db();
-        $db->select("personnel", "id,nom,prenom,conges_credit,conges_reliquat,conges_anticipation,recup_samedi,conges_annuel", "`supprime` IN ('$supprime') AND `id`<>'2' AND actif like 'Actif' $sitesReq");
+        $db->select("personnel", "id,nom,prenom,conges_credit,conges_reliquat,conges_anticipation,comp_time,conges_annuel", "`supprime` IN ('$supprime') AND `id`<>'2' AND actif like 'Actif' $sitesReq");
         if (!$db->result) {
             return false;
         }
@@ -717,12 +717,12 @@ class conges
     "annuelCents"=>null, "anticipationCents"=>null, "creditCents"=>null, "recupCents"=>null, "reliquatCents"=>null );
         } else {
             $db=new db();
-            $db->select("personnel", "conges_credit,conges_reliquat,conges_anticipation,recup_samedi,conges_annuel", "`id`='{$this->perso_id}'");
+            $db->select("personnel", "conges_credit,conges_reliquat,conges_anticipation,comp_time,conges_annuel", "`id`='{$this->perso_id}'");
             if ($db->result) {
                 $annuel = $db->result[0]['conges_annuel'] ? $db->result[0]['conges_annuel'] : 0;
                 $anticipation = $db->result[0]['conges_anticipation'] ? $db->result[0]['conges_anticipation'] : 0;
                 $credit = $db->result[0]['conges_credit'] ? $db->result[0]['conges_credit'] : 0;
-                $recup = $db->result[0]['recup_samedi'] ? $db->result[0]['recup_samedi'] : 0;
+                $recup = $db->result[0]['comp_time'] ? $db->result[0]['comp_time'] : 0;
                 $reliquat = $db->result[0]['conges_reliquat'] ? $db->result[0]['conges_reliquat'] : 0;
 
                 $annuelHeures=floor($annuel);
@@ -945,10 +945,10 @@ class conges
         if ($action=="modif") {
             $db=new db();
             $db->select("personnel", "*", "id='{$this->perso_id}'");
-            $old=array("conges_credit"=>$db->result[0]['conges_credit'], "recup_samedi"=>$db->result[0]['recup_samedi'],
+            $old=array("conges_credit"=>$db->result[0]['conges_credit'], "comp_time"=>$db->result[0]['comp_time'],
     "conges_reliquat"=>$db->result[0]['conges_reliquat'], "conges_anticipation"=>$db->result[0]['conges_anticipation']);
         } else {
-            $old=array("conges_credit"=>0, "recup_samedi"=>0, "conges_reliquat"=>0, "conges_anticipation"=>0);
+            $old=array("conges_credit"=>0, "comp_time"=>0, "conges_reliquat"=>0, "conges_anticipation"=>0);
         }
 
         unset($credits["conges_annuel"]);
@@ -958,11 +958,11 @@ class conges
             $insert["debut"]=date("Y-m-d 00:00:00");
             $insert["fin"]=date("Y-m-d 00:00:00");
             $insert["solde_prec"]=$old['conges_credit'];
-            $insert["recup_prec"]=$old['recup_samedi'];
+            $insert["recup_prec"]=$old['comp_time'];
             $insert["reliquat_prec"]=$old['conges_reliquat'];
             $insert["anticipation_prec"]=$old['conges_anticipation'];
             $insert["solde_actuel"]=$credits['conges_credit'];
-            $insert["recup_actuel"]=$credits['recup_samedi'];
+            $insert["recup_actuel"]=$credits['comp_time'];
             $insert["reliquat_actuel"]=$credits['conges_reliquat'];
             $insert["anticipation_actuel"]=$credits['conges_anticipation'];
             $insert["information"]=$cron?999999999:$_SESSION['login_id'];
@@ -1107,7 +1107,7 @@ class conges
             $p->fetchById($data['perso_id']);
             $credit = floatval($p->elements[0]['conges_credit']);
             $reliquat = floatval($p->elements[0]['conges_reliquat']);
-            $recuperation = floatval($p->elements[0]['recup_samedi']);
+            $recuperation = floatval($p->elements[0]['comp_time']);
             $anticipation = floatval($p->elements[0]['conges_anticipation']);
             $heures = floatval($data['heures']);
       
@@ -1193,7 +1193,7 @@ class conges
             }
 
             // Mise à jour des compteurs dans la table personnel
-            $updateCredits=array("conges_credit"=>$credit,"conges_reliquat"=>$reliquat,"recup_samedi"=>$recuperation,"conges_anticipation"=>$anticipation);
+            $updateCredits=array("conges_credit"=>$credit,"conges_reliquat"=>$reliquat,"comp_time"=>$recuperation,"conges_anticipation"=>$anticipation);
             $db=new db();
             $db->CSRFToken = $this->CSRFToken;
             $db->update("personnel", $updateCredits, array("id"=>$data["perso_id"]));
