@@ -112,9 +112,9 @@ echo "<tr><td>";
 echo "{$lang['comp_time']} :";
 echo "</td><td style='text-align:right;'>";
 if ($admin) {
-    echo "<input type='text' name='recup' value='{$conges['recupHeures']}'  style='width:70px;text-align:right;'>\n";
+    echo "<input type='text' name='comp_time' value='{$conges['recupHeures']}'  style='width:70px;text-align:right;'>\n";
     echo "<label style='text-align:center;padding:5px;'>h</label>";
-    echo "<select name='recup_min' style='width:50px;'>\n";
+    echo "<select name='comp_time_min' style='width:50px;'>\n";
 
     for ($min=0;$min<1;$min=$min+(5/60)) {
         $minutes=sprintf("%02s", $min*60);
@@ -123,7 +123,7 @@ if ($admin) {
     }
     echo "</select>\n";
 } else {
-    echo heure4($conges['recup_samedi']);
+    echo heure4($conges['comp_time']);
 }
 echo "</td></tr>";
 ?>

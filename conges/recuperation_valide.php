@@ -76,12 +76,12 @@ if (isset($update)) {
     // Modification du crédit d'heures de récupérations s'il y a validation
     if (isset($update['valide']) and $update['valide']>0) {
         $db=new db();
-        $db->select("personnel", "recup_samedi", "id='$perso_id'");
-        $solde_prec=$db->result[0]['recup_samedi'];
+        $db->select("personnel", "comp_time", "id='$perso_id'");
+        $solde_prec=$db->result[0]['comp_time'];
         $recup_update=$solde_prec+$update['heures'];
         $db=new db();
         $db->CSRFToken = $CSRFToken;
-        $db->update("personnel", array("recup_samedi"=>$recup_update), array("id"=>$perso_id));
+        $db->update("personnel", array("comp_time"=>$recup_update), array("id"=>$perso_id));
         $db=new db();
         $db->CSRFToken = $CSRFToken;
         $db->update("recuperations", array("solde_prec"=>$solde_prec,"solde_actuel"=>$recup_update), array("id"=>$id));

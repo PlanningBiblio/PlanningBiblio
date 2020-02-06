@@ -27,7 +27,7 @@ if ($p->elements) {
     foreach ($p->elements as $elem) {
         $credits=array();
         $credits['conges_credit'] = $elem['conges_credit'];
-        $credits['recup_samedi'] = $elem['recup_samedi'];
+        $credits['comp_time'] = $elem['comp_time'];
         $credits['conges_anticipation'] = $elem['conges_anticipation'];
         $credits['conges_reliquat'] = 0;
 

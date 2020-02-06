@@ -27,7 +27,7 @@ if ($p->elements) {
     foreach ($p->elements as $elem) {
         $credits=array();
         $credits['conges_credit'] = floatval($elem['conges_annuel']) - floatval($elem['conges_anticipation']);
-        $credits['recup_samedi'] = 0;
+        $credits['comp_time'] = 0;
         $credits['conges_anticipation'] = 0;
         $credits['conges_reliquat'] = $elem['conges_credit'];
 
@@ -44,7 +44,7 @@ $db->CSRFToken = $CSRFSession;
 $db->update("personnel", "conges_reliquat=conges_credit");
 $db=new db();
 $db->CSRFToken = $CSRFSession;
-$db->update("personnel", "recup_samedi='0.00'");
+$db->update("personnel", "comp_time='0.00'");
 $db=new db();
 $db->CSRFToken = $CSRFSession;
 $db->update("personnel", "conges_credit=(conges_annuel-conges_anticipation)");
