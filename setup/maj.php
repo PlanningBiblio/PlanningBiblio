@@ -1598,7 +1598,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
-$v="19.10.01.001";
+$v="19.04.06.000";
 if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "ALTER TABLE {$dbprefix}personnel CHANGE `recup_samedi` `comp_time` float NULL;";
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";

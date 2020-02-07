@@ -1,6 +1,9 @@
 *** Unreleased ***
+
+*** Version 19.04.06       (2020-02-07)   ***
 - Fixes
 Update URL on administration/configuration page
+rename recup_samedi to comp_time
 
 - Enhancements
 LDAP authentication improvement

@@ -26,7 +26,7 @@ if (PHP_VERSION_ID<50400 and session_id()=='') {
 }
 
 // Initialisation des variables
-$version="19.04.05.000";
+$version="19.04.06.000";
 
 // Redirection vers setup si le fichier config est absent
 if (!file_exists("include/config.php")) {
