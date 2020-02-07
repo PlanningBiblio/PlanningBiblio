@@ -2,6 +2,7 @@
 - Fixes
 Update URL on administration/configuration page
 Shows Agendas/Synchro tab on agent's pages when Hamac-csv param is set
+rename recup_samedi to comp_time
 
 *** Version 19.10.01       (2019-11-22)   ***
 - Fixes
