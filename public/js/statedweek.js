@@ -171,6 +171,7 @@ $( document ).ready(function() {
     $(this).init.prototype.addAgent = function(agent) {
       cell = $(this);
       item = $('<span></span>');
+      item = $('<span class="status_'+ agent.status + '"></span>');
       item.append(agent.name);
 
       cell.append(item);
@@ -486,7 +487,7 @@ $( document ).ready(function() {
           }
 
           item.addClass('add-agent');
-          item.append('<span>' + agent.fullname + '</span>');
+          item.append('<span class="status_' + agent.status +'">' + agent.fullname + '</span>');
 
           if (agent.absent) {
             item.addClass('absent');

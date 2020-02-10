@@ -172,7 +172,8 @@ class StatedWeekController extends BaseController
                 'id'                => $agent->id(),
                 'absent'            => 0,
                 'partially_absent'  => 0,
-                'holiday'           => 0
+                'holiday'           => 0,
+                'status'            => strtolower(removeAccents(str_replace(' ', '_', $agent->statut()))),
             );
 
             if ($agent->isAbsentOn($from, $to)) {
@@ -530,6 +531,7 @@ class StatedWeekController extends BaseController
                     'from'      => $from,
                     'to'        => $to,
                     'absent'    => $agent->isAbsentOn($date, $date) ? 1 : 0,
+                    'status'    => strtolower(removeAccents(str_replace(' ', '_', $agent->statut()))),
                 );
 
                 if ($absences = $agent->isPartiallyAbsentOn("$date $from", "$date $to")) {
@@ -572,6 +574,7 @@ class StatedWeekController extends BaseController
                     'to'        => $to,
                     'breaktime' => $break,
                     'absent'    => $agent->isAbsentOn($date, $date) ? 1 : 0,
+                    'status'    => strtolower(removeAccents(str_replace(' ', '_', $agent->statut()))),
                 );
 
                 if ($absences = $agent->isPartiallyAbsentOn("$date $from", "$date $to")) {
@@ -599,7 +602,8 @@ class StatedWeekController extends BaseController
                 $placed[] = array(
                     'place'     => 'pause',
                     'id'        => $agent->id(),
-                    'name'      => $agent->nom() . ' ' .$agent->prenom()
+                    'name'      => $agent->nom() . ' ' .$agent->prenom(),
+                    'status'    => strtolower(removeAccents(str_replace(' ', '_', $agent->statut()))),
                 );
         }
 
@@ -774,6 +778,8 @@ class StatedWeekController extends BaseController
             if (!$agent->isInSite($this->config('statedweek_site_filter'))) {
                 continue;
             }
+
+            $elem['status'] = strtolower(removeAccents(str_replace(' ', '_', $agent->statut())));
 
             $filtered[] = $elem;
         }

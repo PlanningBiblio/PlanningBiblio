@@ -11,7 +11,7 @@
       <tr>
         {% if absences[i] is defined %}
           {% set absence = absences[i] %}
-          <td>{{ absence.nom }} {{ absence.prenom }}</td>
+          <td><span class="status_{{ absence.status }}">{{ absence.nom }} {{ absence.prenom }}</span></td>
           <td>
             {{ absence.debut | datehour }} - {{ absence.fin | datehour }}
             {% if absence.valide < 1 %}
