@@ -299,7 +299,7 @@ echo "</table></div>\n";
 $db=new db();
 $db->select2("pl_poste_tab_affect", "tableau", array("date"=>$date, "site"=>$site));
 
-if (!$db->result[0]['tableau'] and !$tableau and !$groupe and $autorisationN2) {
+if (!isset($db->result[0]['tableau']) and !$tableau and !$groupe and $autorisationN2) {
     $db=new db();
     $db->select2("pl_poste_tab", "*", array("supprime"=>null), "order by `nom` DESC");
     if ($db->result) {

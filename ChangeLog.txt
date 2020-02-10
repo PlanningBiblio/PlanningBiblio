@@ -23,6 +23,7 @@ Show information messages on the add absence form
 Fix error "Cannot declare App\Model\Agent" when importing planning model
 Fix the creation of status and service CSS classes in the planning.js file
 Rename recup_samedi to comp_time
+Fixe a warning when a day planning is empty
 
 *** Version 19.10.00       (2019-10-31)   ***
 - Enhancements
