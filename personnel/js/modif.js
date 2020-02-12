@@ -214,7 +214,7 @@ $(function() {
 	tab=new Array();
 	$("#statuts-sortable li").each(function(){
 	  var id=$(this).attr("id").replace("li_","");
-	  tab.push(new Array($("#valeur_"+id).text(), $(this).index(), $("#categorie_"+id+" option:selected").val()));
+	  tab.push(new Array($(this).find("#valeur_"+id).text(), $(this).index(), $(this).find("#categorie_"+id+" option:selected").val()));
 	});
 
 	// Transmet le tableau à la page de validation ajax
@@ -230,7 +230,7 @@ $(function() {
 
             $("#statuts-sortable li").each(function(){
               var id=$(this).attr("id").replace("li_","");
-              var val = $("#valeur_"+id).text();
+              var val = $(this).find("#valeur_"+id).text();
               if( val == current_val){
                 var option = "<option value='"+val+"' selected='selected'>"+val+"</option>";
               } else {
@@ -324,7 +324,7 @@ $(function() {
 	tab=new Array();
 	$("#services-sortable li").each(function(){
 	  var id=$(this).attr("id").replace("li_","");
- 	  tab.push(new Array($("#valeur_"+id).text(), $(this).index()));
+ 	  tab.push(new Array($(this).find("#valeur_"+id).text(), $(this).index()));
 	});
 
 	// Transmet le tableau à la page de validation ajax
@@ -340,7 +340,7 @@ $(function() {
 
             $("#services-sortable li").each(function(){
               var id=$(this).attr("id").replace("li_","");
-              var val = $("#valeur_"+id).text();
+              var val = $(this).find("#valeur_"+id).text();
               if( val == current_val){
                 var option = "<option value='"+val+"' selected='selected'>"+val+"</option>";
               } else {

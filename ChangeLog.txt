@@ -1,3 +1,6 @@
+*** Unreleased ***
+- Fix saving status and services in agent's form
+
 *** Version 2.7.16      (1er février 2019)   ***
 - Fix access rights when using multisites mode
 
