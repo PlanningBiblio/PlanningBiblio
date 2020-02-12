@@ -1,4 +1,6 @@
 *** Unreleased ***
+- Fixes
+Fix saving status and services in agent's form
 
 *** Version 19.04.06       (2020-02-07)   ***
 - Fixes
