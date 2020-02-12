@@ -12,6 +12,9 @@ class StatedWeekJob extends PLBEntity {
     /** @Column(type="integer") **/
     protected $planning_id;
 
+    /** @Column(type="string", columnDefinition="ENUM('first-job', 'second-job', 'third-job')") **/
+    protected $type;
+
     /** @Column(type="string") **/
     protected $name;
 

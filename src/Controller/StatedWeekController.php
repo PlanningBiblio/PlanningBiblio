@@ -10,6 +10,8 @@ use App\Model\StatedWeekJob;
 use App\Model\StatedWeekTimes;
 use App\Model\StatedWeekJobTimes;
 use App\Model\StatedWeekPause;
+use App\Model\StatedWeekTemplate;
+use App\Model\StatedWeekTimeTemplate;
 
 use App\PlanningBiblio\Helper\StatedWeekHelper;
 
@@ -107,8 +109,11 @@ class StatedWeekController extends BaseController
         $c = new \conges();
         $holidays = $this->filterAgents($c->all($date.' 00:00:00', $date.' 23:59:59'));
 
+        $templates = $this->entityManager->getRepository(StatedWeekTemplate::class)->findAll();
+
         $this->templateParams(array(
             'planning'      => $planning,
+            'templates'     => $templates,
             'absences'      => $absences,
             'holidays'      => $holidays,
             'date'          => $date,
@@ -641,27 +646,266 @@ class StatedWeekController extends BaseController
         return $this->json($empty_plannings);
     }
 
+    /**
+     * @Route("/ajax/statedweek/template/load", name="statedweek.template.load", methods={"POST"})
+     */
+    public function loadTemplate(Request $request)
+    {
+        $response = new Response();
+
+        $date = $request->get('date');
+        $template_id = $request->get('template');
+        $template = $this->entityManager->getRepository(StatedWeekTemplate::class)->find($template_id);
+
+        $date_pl = new \datePl($date);
+        $dates = $date_pl->dates;
+        foreach ($dates as $day_index => $d) {
+            if ($template->type() == 'day' && $d != $date) {
+                continue;
+            }
+
+            if ($template->type() == 'day') {
+                $day_index = 0;
+            }
+
+            $planning = $this->getPlanningOn($d);
+            $this->emptyPlanning($planning);
+
+            $times = $template->times();
+            $this->templateToPlanning($times, $planning, $day_index);
+        }
+
+        $response->setContent('Template loaded');
+        $response->setStatusCode(200);
+        return $response;
+    }
+
+    /**
+     * @Route("/ajax/statedweek/template", name="statedweek.template.add", methods={"POST"})
+     */
+    public function addTemplate(Request $request)
+    {
+        $response = new Response();
+
+        $date = $request->get('date');
+        $name = $request->get('name');
+        $isweek = $request->get('week');
+
+        $template = new StatedWeekTemplate();
+        $template->name($name);
+        $template->type($isweek ? 'week' : 'day');
+
+        $date_pl = new \datePl($date);
+        $dates = $date_pl->dates;
+        foreach ($dates as $day_index => $d) {
+            if ($isweek == 0 && $d != $date) {
+                continue;
+            }
+
+            if ($isweek == 0) {
+                $day_index = 0;
+            }
+
+            $planning = $this->getPlanningOn($d, false);
+            if (!$planning) {
+                continue;
+            }
+
+            $columns = $planning->columns();
+            $this->columnsToTemplate($columns, $template, $day_index);
+
+            $jobs = $planning->jobs();
+            $this->jobsToTemplate($jobs, $template, $day_index);
+
+            $pauses = $planning->pauses();
+            $this->pausesToTemplate($pauses, $template, $day_index);
+        }
+
+        $this->entityManager->persist($template);
+        $this->entityManager->flush();
+
+        $response->setContent('Template saved');
+        $response->setStatusCode(200);
+        return $response;
+    }
+
+    private function templateToPlanning($times, $planning, $day)
+    {
+        $columns_map = array();
+        foreach ($planning->columns() as $column) {
+            $columns_map[$column->type()] = $column->id();
+        }
+
+        $jobs_map = array();
+        foreach ($planning->jobs() as $job) {
+            $jobs_map[$job->type()] = $job->id();
+        }
+
+        foreach ($times as $time) {
+            if ($time->day_index() != $day) {
+                continue;
+            }
+
+            if ($time->job() == 'pause') {
+                $pause = new StatedWeekPause();
+                $pause->agent_id($time->agent_id());
+                $planning->addPause($pause);
+            }
+
+            if (substr($time->job(), -4) == 'slot') {
+                $c_time = new StatedWeekTimes();
+                $c_time->agent_id($time->agent_id());
+                $c_time->column_id($columns_map[$time->job()]);
+                $this->entityManager->persist($c_time);
+            }
+
+            if (substr($time->job(), -3) == 'job') {
+                $c_time = new StatedWeekJobTimes();
+                $c_time->agent_id($time->agent_id());
+                $c_time->job_id($jobs_map[$time->job()]);
+                $c_time->starttime($time->starttime());
+                $c_time->endtime($time->endtime());
+                $c_time->breaktime($time->breaktime());
+                $this->entityManager->persist($c_time);
+            }
+        }
+
+        $this->entityManager->persist($planning);
+        $this->entityManager->flush();
+    }
+
+    private function emptyPlanning($planning)
+    {
+        $columns = $planning->columns();
+        foreach ($columns as $column) {
+            $times = $this->entityManager
+                ->getRepository(StatedWeekTimes::class)
+                ->findBy(array('column_id' => $column->id()));
+
+            foreach ($times as $time) {
+                $this->entityManager->remove($time);
+            }
+
+        }
+
+        $jobs = $planning->jobs();
+        foreach ($jobs as $job) {
+            $times = $this->entityManager
+                ->getRepository(StatedWeekJobTimes::class)
+                ->findBy(array('job_id' => $job->id()));
+
+            foreach ($times as $time) {
+                $this->entityManager->remove($time);
+            }
+        }
+
+        $pauses = $planning->pauses();
+        foreach ($pauses as $pause) {
+            $this->entityManager->remove($pause);
+        }
+
+        $this->entityManager->flush();
+    }
+
+    private function pausesToTemplate($pauses, $template, $day)
+    {
+        foreach ($pauses as $pause) {
+            $time_template = new StatedWeekTimeTemplate();
+            $time_template->day_index($day);
+            $time_template->job('pause');
+            $time_template->agent_id($pause->agent_id());
+            $template->addTime($time_template);
+        }
+    }
+
+    private function jobsToTemplate($jobs, $template, $day)
+    {
+        foreach ($jobs as $job) {
+            $type = $job->type();
+            $times = $this->entityManager
+                ->getRepository(StatedWeekJobTimes::class)
+                ->findBy(array('job_id' => $job->id()));
+
+            foreach ($times as $time) {
+                $time_template = new StatedWeekTimeTemplate();
+                $time_template->day_index($day);
+                $time_template->job($type);
+                $time_template->agent_id($time->agent_id());
+                $time_template->starttime($time->starttime());
+                $time_template->endtime($time->endtime());
+                $time_template->breaktime($time->breaktime());
+                $template->addTime($time_template);
+            }
+        }
+    }
+
+    private function columnsToTemplate($columns, $template, $day)
+    {
+        foreach ($columns as $column) {
+            $type = $column->type();
+            $times = $this->entityManager
+                ->getRepository(StatedWeekTimes::class)
+                ->findBy(array('column_id' => $column->id()));
+
+            foreach ($times as $time) {
+                $time_template = new StatedWeekTimeTemplate();
+                $time_template->day_index($day);
+                $time_template->job($type);
+                $time_template->agent_id($time->agent_id());
+                $template->addTime($time_template);
+            }
+        }
+    }
+
     private function createPlanning($date) {
 
         $planning = new StatedWeek();
         $planning->date($date);
 
         $times_ranges = $this->config('statedweek_times_range');
-        foreach ($times_ranges as $range) {
+        foreach ($times_ranges as $index => $range) {
             $from = \DateTime::createFromFormat('H:i:s', $range['from']);
             $to = \DateTime::createFromFormat('H:i:s', $range['to']);
+
+            $type = '';
+            switch($index) {
+                case 0:
+                    $type = 'first-slot';
+                    break;
+                case 1:
+                    $type = 'second-slot';
+                    break;
+                case 2:
+                    $type = 'third-slot';
+                    break;
+            }
 
             $column = new StatedWeekColumn();
             $column->starttime($from);
             $column->endtime($to);
+            $column->type($type);
             $planning->addColumn($column);
         }
 
         $jobs = $this->config('statedweek_times_job');
-        foreach ($jobs as $j) {
+        foreach ($jobs as $index => $j) {
+            $type = '';
+            switch($index) {
+                case 0:
+                    $type = 'first-job';
+                    break;
+                case 1:
+                    $type = 'second-job';
+                    break;
+                case 2:
+                    $type = 'third-job';
+                    break;
+            }
+
             $job = new StatedWeekJob();
             $job->name($j['name']);
             $job->description($j['description']);
+            $job->type($type);
             $planning->addJob($job);
         }
 

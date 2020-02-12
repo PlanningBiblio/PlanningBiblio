@@ -116,6 +116,8 @@
             <a id="lock"><span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning'></span></a>
             <a id="unlock" style="display:none;"><span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning'></span></a>
           {% endif %}
+            <a id="save-template" href="#" title="Enregistrer comme modèle"><span class="pl-icon pl-icon-save"></span></a>
+            <a id="open-template" href="#" title="Importer un modèle"><span class="pl-icon pl-icon-open"></span></a>
           </div>
         </td>
       </tr>
@@ -151,5 +153,31 @@
   <div id="confirm-unlock" title="Déverouillage du planning">
     Ceci entrainera le déverouillage de tous les plannings de la semaine.
     Souhaitez-vous continuer ?
+  </div>
+
+  <div id="confirm-save-template" title="Enregitrer comme modèle">
+    <form>
+      <label for="template_name">Nom du modèle</label>
+      <input type="text" name="template_name" id="template_name">
+
+      <label for="template_week">Enregistrer toute le semaine</label>
+      <input type="checkbox" name="template_week" id="template_week">
+    </form>
+  </div>
+
+  <div id="confirm-load-template" title="Enregitrer comme modèle">
+    <form>
+      {% if templates %}
+        <p>Sélectionnez le modèle à importer</p>
+        <select name="template">
+          <option></option>
+          {% for template in templates %}
+          <option value="{{ template.id }}">{{ template.name }} {% if template.type == 'week' %}(semaine){% endif %}</option>
+          {% endfor %}
+        </select>
+      {% else %}
+        <p>Aucun modèle à importer</p>
+      {% endif %}
+    </form>
   </div>
 {% endblock %}

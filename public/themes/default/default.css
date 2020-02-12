@@ -13,6 +13,9 @@ Feuille de style principale du programme.
 Incluse dans les fichiers include/header.php et setup/header.php
 */
 
+span.status_magasinier_en_chef {
+	font-weight: bold;
+}
 body,a,input,select,textarea,button {
 	color:#7D3C25;
 	font-family:Verdana;

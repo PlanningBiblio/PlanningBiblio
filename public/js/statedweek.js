@@ -77,7 +77,7 @@ function removeWorkingHours(cell_id) {
       initDroppable(cell);
     },
     error: function() {
-      alert("Une erreur est survenue lors de la mise à jour du planning");
+      information("Une erreur est survenue lors de la mise à jour du planning", 'error');
     }
   }).done(function() {
     countByPlace();
@@ -132,7 +132,7 @@ function addWorkingHours(cell_id) {
     error: function() {
       cell.empty();
       cell.removeAttr('data-agent');
-      alert("Une erreur est survenue lors de la mise à jour du planning");
+      information("Une erreur est survenue lors de la mise à jour du planning", 'error');
     }
   });
 
@@ -247,6 +247,81 @@ $( document ).ready(function() {
     }
   });
 
+  $( "#confirm-load-template" ).dialog({
+    autoOpen: false,
+    resizable: false,
+    width: 400,
+    modal: true,
+    buttons: {
+      "Importer": function() {
+        template = $('select[name="template"]').val();
+        console.log(template);
+        if (template) {
+          date = $('input[name="date"]').val();
+          $.ajax({
+            url: '/ajax/statedweek/template/load',
+            type: 'post',
+            data: {date: date, template: template},
+            success: function() {
+              window.location.href = 'statedweek?date=' + date;
+            },
+            error: function() {
+              information("Une erreur est survenue lors de l'import du modèle", 'error');
+            }
+          });
+          $( this ).dialog( "close" );
+        } else {
+          information('Sélectionnez un modèle à importer', 'error');
+        }
+      },
+      "Annuler": function() {
+        $( this ).dialog( "close" );
+      }
+    }
+  });
+
+  $( "#confirm-save-template" ).dialog({
+    autoOpen: false,
+    resizable: false,
+    width: 400,
+    modal: true,
+    buttons: {
+      "Enregitrer": function() {
+        date = $('input[name="date"]').val();
+        name = $('#template_name').val();
+        week = 0;
+        if ($('#template_week').is(':checked')) {
+          week = 1;
+        }
+
+        $.ajax({
+          url: '/ajax/statedweek/template',
+          type: 'post',
+          data: {date: date, name: name, week: week},
+          success: function() {
+            information('Modèle enregistré avec succés');
+          },
+          error: function() {
+            information("Une erreur est survenue lors de l'enregistrement du modèle", 'error');
+          }
+        });
+
+        $( this ).dialog( "close" );
+      },
+      "Annuler": function() {
+        $( this ).dialog( "close" );
+      }
+    }
+  });
+
+  $('#save-template').on('click', function() {
+      $("#confirm-save-template").dialog( "open" );
+  });
+
+  $('#open-template').on('click', function() {
+      $("#confirm-load-template").dialog( "open" );
+  });
+
   $('#lock').on('click', function() {
     date = $('input[name="date"]').val();
 
@@ -265,7 +340,7 @@ $( document ).ready(function() {
         $("#confirm-lock").dialog( "open" );
       },
       error: function() {
-        alert("Une erreur est survenue lors de la vérification des plannings");
+        information("Une erreur est survenue lors de la vérification des plannings", 'error');
       }
     });
   });
@@ -313,7 +388,7 @@ $( document ).ready(function() {
         }
       },
       error: function() {
-        alert("Une erreur est survenue lors de la mise à jour du planning");
+        information("Une erreur est survenue lors de la mise à jour du planning", 'error');
       }
     });
 
@@ -555,7 +630,7 @@ $( document ).ready(function() {
         countByPlace();
       },
       error: function() {
-        alert("Une erreur est survenue lors de la récupération du planning");
+        information("Une erreur est survenue lors de la récupération du planning", 'error');
       }
     });
   }
@@ -684,7 +759,7 @@ $( document ).ready(function() {
         $('#validation').show();
       },
       error: function() {
-        alert("Une erreur est survenue lors du vérouillage des plannings");
+        information("Une erreur est survenue lors du vérouillage des plannings", 'error');
       }
     });
   }
@@ -703,7 +778,7 @@ $( document ).ready(function() {
         $('#validation').hide();
       },
       error: function() {
-        alert("Une erreur est survenue lors du déverouillage des plannings");
+        information("Une erreur est survenue lors du déverouillage des plannings", 'error');
       }
     });
   }

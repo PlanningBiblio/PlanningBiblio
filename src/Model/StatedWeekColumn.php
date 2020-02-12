@@ -12,6 +12,9 @@ class StatedWeekColumn extends PLBEntity {
     /** @Column(type="integer") **/
     protected $planning_id;
 
+    /** @Column(type="string", columnDefinition="ENUM('first-slot', 'second-slot', 'third-slot')") **/
+    protected $type;
+
     /** @Column(type="time") **/
     protected $starttime;
 
