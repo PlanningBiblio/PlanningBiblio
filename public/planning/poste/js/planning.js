@@ -698,6 +698,8 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
   // Affiche un message en haut du planning si pas de catégorie A en fin de service 
   verif_categorieA();
   
+  updatePlanningAlert(debut, fin);
+
   /*
   Exemple de valeur pour la variable result :
 
@@ -714,6 +716,28 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
   [1] => Array (
     ...
   */
+}
+
+function updatePlanningAlert(debut, fin) {
+    var link = $('a.non_places');
+    if (!link) return;
+    var date = $('#date').val();
+    var site = $('#site').val();
+    $.ajax({
+        url: "planning/poste/ajax.getPlanningAlert.php",
+        dataType: "json",
+        data: {date: date, site: site, debut: debut, fin: fin},
+        type: "get",
+        success: function(result){
+            if (result['amount'] == 0) {
+                tooltip = 'Aucun';
+            } else {
+                tooltip = result['names'].join(', ');
+            }
+            trid = debut.replace(/:/g, "") + fin.replace(/:/g, "");
+            $("#" + trid + " a").replaceWith("<a href='#' title='" + tooltip + "'> (" + result['amount'] + ")</a>");
+        },
+    });
 }
 
 //	groupe_tab : utiliser pour menudiv

@@ -176,4 +176,19 @@ class Agent extends PLBEntity {
 
         return explode(';', $emails_string);
     }
+
+    public function is_agent_status_in_category($category) {
+        $db = new \db();
+        $db->select2("select_statuts", "categorie", array('valeur' => $this->statut()));
+        $results = $db->result;
+        if (!$results) { return false; }
+        $categorie_id = $results[0]['categorie'];
+
+        $db = new \db();
+        $db->select2("select_categories", "valeur", array('id' => $categorie_id));
+        $results = $db->result;
+        if (!$results) { return false; }
+        $categorie_name = $results[0]['valeur'];
+        return ($categorie_name == htmlentities($category));
+    }
 }
