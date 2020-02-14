@@ -23,6 +23,8 @@ class AgentController extends BaseController
      */
     public function add(Request $request)
     {
+        $config = $GLOBALS['config'];
+
         $id = $request->get('id');
         $CSRFSession = $GLOBALS['CSRFSession'];
         $lang = $GLOBALS['lang'];
@@ -574,6 +576,9 @@ class AgentController extends BaseController
      */
     public function save(Request $request)
     {
+
+        $config = $GLOBALS['config'];
+
         $params = $request->request->all();
 
         $arrivee=filter_input(INPUT_POST, "arrivee", FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
@@ -663,14 +668,13 @@ class AgentController extends BaseController
 
             // Demo mode
             if (!empty($config['demo'])) {
-                $mdp_crypt = md5("password");
+                $mdp_crypt = password_hash("password", PASSWORD_BCRYPT);
                 $msg = "Vous utilisez une version de démonstration : l'agent a été créé avec les identifiants $login / password";
                 $msg .= "#BR#Sur une version standard, les identifiants de l'agent lui auraient été envoyés par e-mail.";
-                $msg = urlencode($msg);
                 $msgType = "success";
             } else {
                 $mdp=gen_trivial_password();
-                $mdp_crypt=md5($mdp);
+                $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
 
                 // Envoi du mail
                 $message="Votre compte Planning Biblio a &eacute;t&eacute; cr&eacute;&eacute; :";
@@ -686,7 +690,7 @@ class AgentController extends BaseController
                 $msg=null;
                 $msgType=null;
                 if ($m->error) {
-                    $msg=urlencode($m->error_CJInfo);
+                    $msg = $m->error_CJInfo;
                     $msgType="error";
                 }
             }
@@ -709,21 +713,21 @@ class AgentController extends BaseController
             $p->CSRFToken = $CSRFToken;
             $p->updateEDTSamedi($eDTSamedi, $premierLundi, $dernierLundi, $id);
 
+            return $this->redirectToRoute('default', array('page' => 'personnel/index.php', 'msg' => $msg, 'msgType' => $msgType));
 
-            return $this->redirect("/index.php?page=personnel/index.php&msg=$msg&msgType=$msgType");
             break;
 
           case "mdp":
 
             // Demo mode
             if (!empty($config['demo'])) {
-                $msg = urlencode("Le mot de passe n'a pas été modifié car vous utilisez une version de démonstration");
-                return $this->redirect("/index.php?page=personnel/index.php&msg=$msg&msgType=success");
+                $msg = "Le mot de passe n'a pas été modifié car vous utilisez une version de démonstration";
+                return $this->redirectToRoute('default', array('page' => 'personnel/index.php', 'msg' => $msg, 'msgType' => 'success'));
                 break;
             }
 
             $mdp=gen_trivial_password();
-            $mdp_crypt=md5($mdp);
+            $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
             $db=new \db();
             $db->select2("personnel", "login", array("id"=>$id));
             $login=$db->result[0]['login'];
@@ -742,17 +746,18 @@ class AgentController extends BaseController
             $msg=null;
             $msgType=null;
             if ($m->error) {
-                $msg=urlencode($m->error_CJInfo);
+                $msg = $m->error_CJInfo;
                 $msgType="error";
             } else {
-                $msg=urlencode("Le mot de passe a été modifié et envoyé par e-mail à l'agent");
+                $msg = "Le mot de passe a été modifié et envoyé par e-mail à l'agent";
                 $msgType="success";
             }
 
             $db=new \db();
             $db->CSRFToken = $CSRFToken;
             $db->update("personnel", array("password"=>$mdp_crypt), array("id"=>$id));
-            return $this->redirect("/index.php?page=personnel/index.php&msg=$msg&msgType=$msgType");
+            return $this->redirectToRoute('default', array('page' => 'personnel/index.php', 'msg' => $msg, 'msgType' => $msgType));
+
             break;
 
           case "modif":
@@ -803,7 +808,8 @@ class AgentController extends BaseController
             $p->CSRFToken = $CSRFToken;
             $p->updateEDTSamedi($eDTSamedi, $premierLundi, $dernierLundi, $id);
 
-            return $this->redirect('/index.php?page=personnel/index.php');
+            return $this->redirectToRoute('default', array('page' => 'personnel/index.php'));
+
             break;
         }
     }
