@@ -64,4 +64,13 @@ class BaseController extends Controller
 
         return $this->config[$key];
     }
+
+    /**
+     * @Route("/index.php", name="default", methods={"GET"})
+     */
+    protected function default_route()
+    {
+      // Named route used to redirect to old index.php
+    }
+
 }
