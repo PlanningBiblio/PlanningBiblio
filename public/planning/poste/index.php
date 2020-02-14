@@ -487,7 +487,9 @@ if (!$verrou and !$autorisationN1) {
     // Affichage des absences en bas du planning : absences concernant le site choisi
     $a=new absences();
     $a->valide=false;
-    $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date, array($site));
+
+    $absences_site_filter = array_filter([$filter_site ?? $site]);
+    $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date, $absences_site_filter);
     $absences_planning = $a->elements;
 
     // Informations sur les congés
@@ -787,7 +789,7 @@ EOD;
     $dateSQL=$db->escapeString($date);
 
     if ($config['Multisites-nombre']>1) {
-        $filtered_site = isset($filter_site) ? $filter_site : $site;
+        $filtered_site = $filter_site ?? $site;
         $nbSites = $config['Multisites-nombre'];
         echo "<br /><br /><br /><br />";
         echo "<label for='site-filter'>Filtrer par site:</label>\n";
@@ -801,7 +803,7 @@ EOD;
     }
 
     $presentset = new PresentSet($dateSQL, $d, $absents, $db);
-    $presents = $presentset->getBySite(isset($filter_site) ? $filter_site : $site);
+    $presents = $presentset->getBySite($filter_site ?? $site);
 
     echo "<table class='tableauStandard'>\n";
     echo "<tr><td><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des présents</h3></td>\n";
