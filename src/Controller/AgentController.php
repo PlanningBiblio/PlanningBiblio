@@ -23,8 +23,6 @@ class AgentController extends BaseController
      */
     public function add(Request $request)
     {
-        $config = $GLOBALS['config'];
-
         $id = $request->get('id');
         $CSRFSession = $GLOBALS['CSRFSession'];
         $lang = $GLOBALS['lang'];
@@ -272,7 +270,7 @@ class AgentController extends BaseController
         $postes_dispo = postesNoms($postes_dispo, $postes_completNoms);
 
         $this->templateParams(array(
-            'demo'              => empty($config['demo']) ? 0 : 1,
+            'demo'              => empty($this->config('demo')) ? 0 : 1,
             'can_manage_agent'  => in_array(21, $droits) ? 1 : 0,
             'titre'             => $titre,
             'conges_enabled'    => $this->config('Conges-Enable'),
@@ -457,7 +455,7 @@ class AgentController extends BaseController
         // Affichage des droits d'accès dépendant des sites (si plusieurs sites)
         if ($this->config('Multisites-nombre') > 1) {
             $sites_for_rights = array();
-            for ($i = 1; $i <= $config['Multisites-nombre']; $i++) {
+            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
                 $sites_for_rights[] = array( 'site_name' => $this->config("Multisites-site$i") );
             }
 
@@ -577,8 +575,6 @@ class AgentController extends BaseController
     public function save(Request $request)
     {
 
-        $config = $GLOBALS['config'];
-
         $params = $request->request->all();
 
         $arrivee=filter_input(INPUT_POST, "arrivee", FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
@@ -667,7 +663,7 @@ class AgentController extends BaseController
             $login = $this->login($nom, $prenom);
 
             // Demo mode
-            if (!empty($config['demo'])) {
+            if (!empty($this->config('demo'))) {
                 $mdp_crypt = password_hash("password", PASSWORD_BCRYPT);
                 $msg = "Vous utilisez une version de démonstration : l'agent a été créé avec les identifiants $login / password";
                 $msg .= "#BR#Sur une version standard, les identifiants de l'agent lui auraient été envoyés par e-mail.";
@@ -720,7 +716,7 @@ class AgentController extends BaseController
           case "mdp":
 
             // Demo mode
-            if (!empty($config['demo'])) {
+            if (!empty($this->config('demo'))) {
                 $msg = "Le mot de passe n'a pas été modifié car vous utilisez une version de démonstration";
                 return $this->redirectToRoute('default', array('page' => 'personnel/index.php', 'msg' => $msg, 'msgType' => 'success'));
                 break;
@@ -800,7 +796,8 @@ class AgentController extends BaseController
                 $db=new \db();
                 $id=$db->escapeString($id);
                 $depart=$db->escapeString($depart);
-                $db->query("UPDATE `{$GLOBALS['config']['dbprefix']}pl_poste` SET `supprime`='1' WHERE `perso_id`='$id' AND `date`>'$depart';");
+                $dbprefix = $this->config('dbprefix');
+                $db->query("UPDATE `{$dbprefix}pl_poste` SET `supprime`='1' WHERE `perso_id`='$id' AND `date`>'$depart';");
             }
 
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
