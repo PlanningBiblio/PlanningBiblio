@@ -39,6 +39,8 @@ if ($id) {
     $categories = $db->result[0]['categories'] ? json_decode(html_entity_decode($db->result[0]['categories'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true) : array();
     $site=$db->result[0]['site'];
     $activites=json_decode(html_entity_decode($db->result[0]['activites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+    $backOffice=$db->result[0]['position']=="backOffice"?"checked='checked'":"";
+    $frontOffice=$db->result[0]['position']=="frontOffice"?"checked='checked'":""; 
     $obligatoire=$db->result[0]['obligatoire']=="Obligatoire"?"checked='checked'":"";
     $renfort=$db->result[0]['obligatoire']=="Renfort"?"checked='checked'":"";
     $stat1=$db->result[0]['statistiques']?"checked='checked'":"";
@@ -155,8 +157,16 @@ echo "<span class='pl-icon pl-icon-add' title='Ajouter' id='add-group-button' st
 echo "</td></tr>";
 
 echo "<tr><td style='padding-top:20px;'>";
-echo "Obligatoire / renfort :";
+echo "Position :";
 echo "</td><td style='padding-top:20px;'>";
+echo "<input type='radio' name='position' value='frontOffice' $frontOffice/> Front Office\n";
+echo "<input type='radio' name='position' value='backOffice' $backOffice/> Back Office\n";
+echo "</td></tr>";
+
+
+echo "<tr><td>";
+echo "Obligatoire / renfort :";
+echo "</td><td>";
 echo "<input type='radio' name='obligatoire' value='Obligatoire' $obligatoire/> Obligatoire\n";
 echo "<input type='radio' name='obligatoire' value='Renfort' $renfort/> Renfort\n";
 echo "</td></tr>";

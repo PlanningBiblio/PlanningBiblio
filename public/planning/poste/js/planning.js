@@ -312,6 +312,8 @@ $(function() {
     perso_id=$(this).attr("data-perso-id");
     site=$("#site").val();
 
+    postesFrontOffice = $("#planning-data").attr("data-postesFrontOffice");
+
     // On supprime l'ancien menu (s'il existe) pour eviter les problemes de remanence
     $("#menudiv1").remove();
     $("#menudiv2").remove();
@@ -319,7 +321,7 @@ $(function() {
     $.ajax({
       url: "planning/poste/ajax.menudiv.php",
       datatype: "json",
-      data: {cellule: cellule, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, poste: poste, site: site, perso_nom: perso_nom_origine, perso_id:perso_id_origine},
+      data: {cellule: cellule, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, poste: poste, site: site, perso_nom: perso_nom_origine, perso_id:perso_id_origine, postesFrontOffice:postesFrontOffice},
       type: "get",
       success: function(result){
 	// si pas de result : on quitte (pas de droit admin)
