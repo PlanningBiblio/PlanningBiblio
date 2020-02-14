@@ -48,14 +48,15 @@
               </td>
             </tr>
 
-            {% if not conges_recuperations %}
+            {% if conges_heures %}
               <tr>
                 <td style='padding-top:15px;'>Journée(s) entière(s) : </td>
                 <td style='padding-top:15px;'>
-                  <input type='checkbox' name='allday' checked='checked' />
+                  <input type='checkbox' name='allday' checked='checked' class='checkdate' />
                 </td>
               </tr>
-            {% elseif conges_demi_journee %}
+            {% endif %}
+            {% if conges_recuperations and conges_demi_journee %}
               <tr>
                 <td style='padding-top:15px;'>Demi-journée(s) : </td>
                 <td style='padding-top:15px;'>
@@ -81,7 +82,7 @@
             <tr id='hre_debut' style='display:none;'>
               <td>Heure de début : </td>
               <td>
-                <select name='hre_debut' id='hre_debut_select' style='width:20%;' class='googleCalendarTrigger'>
+                <select name='hre_debut' id='hre_debut_select' style='width:20%;' class='googleCalendarTrigger checkdate'>
                   <option value=""></option>
                   <option value="07:00:00">07h00</option>
                   <option value="08:00:00">08h00</option>
@@ -120,7 +121,7 @@
 
             <tr id='hre_fin' style='display:none;'><td>Heure de fin : </td>
               <td>
-                <select name='hre_fin' id='hre_fin_select' style='width:20%;' class='googleCalendarTrigger' onfocus='setEndHour();'>
+                <select name='hre_fin' id='hre_fin_select' style='width:20%;' class='googleCalendarTrigger checkdate' onfocus='setEndHour();'>
                   <option value=""></option>
                   <option value="07:00:00">07h00</option>
                   <option value="08:00:00">08h00</option>
