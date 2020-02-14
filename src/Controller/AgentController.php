@@ -272,6 +272,7 @@ class AgentController extends BaseController
         $postes_dispo = postesNoms($postes_dispo, $postes_completNoms);
 
         $this->templateParams(array(
+            'demo'              => empty($config['demo']) ? 0 : 1,
             'can_manage_agent'  => in_array(21, $droits) ? 1 : 0,
             'titre'             => $titre,
             'conges_enabled'    => $this->config('Conges-Enable'),
