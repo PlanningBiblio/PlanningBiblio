@@ -15,9 +15,7 @@ class KernelRequestListener
 
     private $templateParams = array();
 
-    private $defaultLocale = 'en';
-
-    private $supportedLangs = array('en', 'fr');
+    private $defaultLocale = 'en_US';
 
     private $permissions = array(
         'ajax.editabsencereasons' => array(100),
@@ -69,20 +67,15 @@ class KernelRequestListener
             return $locale;
         }
 
-        //return explode(',',$_SERVER['HTTP_ACCEPT_LANGUAGE']);
-        //return $_SERVER['HTTP_ACCEPT_LANGUAGE'];
-
         // Get broswer locale.
-        $browser_lnguages = explode(',', $request->headers->get('Accept-Language'));
-        foreach ($browser_lnguages as $lang) {
-            $lang = substr( $lang, 0, 2 );
-            if (in_array($lang, $this->supportedLangs)) {
-                return $lang;
-            }
-        }
+        $locale = $this->getBrowserLanguage($request);
 
-        return $this->defaultLocale;
+        return $locale;
     }
+
+     private function getBrowserLanguage($request) {
+         return str_replace('-', '_', substr($request->headers->get('Accept-Language'),0,5));
+     }
 
     private function canAccess($route)
     {

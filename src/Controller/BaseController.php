@@ -29,6 +29,8 @@ class BaseController extends Controller
         $this->dispatcher = $GLOBALS['dispatcher'];
 
         $this->config = $GLOBALS['config'];
+
+        $this->templateParams(array('language' => $request->getLocale()));
     }
 
     protected function templateParams( array $params = array() )

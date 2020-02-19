@@ -1,0 +1,35 @@
+#: /tmp/cache/68/68ac5617c3396078304c346c99737efb82d5881358cd431389a15c09dd2144cf.php:51
+msgid "Information on absences"
+msgstr "Information sur les absences"
+
+#: /tmp/cache/68/68ac5617c3396078304c346c99737efb82d5881358cd431389a15c09dd2144cf.php:59
+msgid "Add"
+msgstr "Ajouter"
+
+#: /tmp/cache/68/68ac5617c3396078304c346c99737efb82d5881358cd431389a15c09dd2144cf.php:73
+msgid "Start on"
+msgstr "Début"
+
+#: /tmp/cache/68/68ac5617c3396078304c346c99737efb82d5881358cd431389a15c09dd2144cf.php:77
+msgid "End on"
+msgstr "Fin"
+
+#: /tmp/cache/68/68ac5617c3396078304c346c99737efb82d5881358cd431389a15c09dd2144cf.php:81
+msgid "Text"
+msgstr "Texte"
+
+#: /tmp/cache/68/68ac5617c3396078304c346c99737efb82d5881358cd431389a15c09dd2144cf.php:127
+msgid "No information."
+msgstr "Aucune information"
+
+#: /tmp/cache/84/84a72e227a2f669671682df0470df3cfb8c36c84741f1487ece2e6da5ab33e80.php:127
+msgid "General informations"
+msgstr "Informations générales"
+
+#: /tmp/cache/84/84a72e227a2f669671682df0470df3cfb8c36c84741f1487ece2e6da5ab33e80.php:131
+msgid "Activities"
+msgstr "Activités"
+
+#: /tmp/cache/84/84a72e227a2f669671682df0470df3cfb8c36c84741f1487ece2e6da5ab33e80.php:135
+msgid "Attendance hours"
+msgstr "Heures de présence"
