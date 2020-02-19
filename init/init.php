@@ -1,7 +1,8 @@
 <?php
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\PhpBridgeSessionStorage;
 
-$session = new Session();
+$session = new Session(new PhpBridgeSessionStorage());
 $session->start();
 
 $_SESSION['login_id'] = isset($_SESSION['login_id']) ? $_SESSION['login_id'] : '';

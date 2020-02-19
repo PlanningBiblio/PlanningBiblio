@@ -86,7 +86,21 @@ foreach ($keys as $key) {
 }
 echo "</ul>\n";
 
-echo "<td align='right'  ><font  class='noprint' style='font-size:19px'>\n";
+echo "<td align='right'  >\n";
+echo "<select id='lang-selector'>";
+if ($request->getLocale() == 'en_US') {
+    echo '<option value="en_US" selected="selected">English</option>';
+} else {
+    echo '<option value="en_US">English</option>';
+}
+
+if ($request->getLocale() == 'fr_FR') {
+    echo '<option value="fr_FR" selected="selected">Français</option>';
+} else {
+    echo '<option value="fr_FR">Français</option>';
+}
+echo "</select>";
+echo "<font  class='noprint' style='font-size:19px'>\n";
 echo $_SESSION['login_prenom']." ".$_SESSION['login_nom'];
 echo "</font></td>\n";
 echo "<td id='logout_img'>\n";

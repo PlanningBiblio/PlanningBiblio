@@ -18,7 +18,9 @@
  *   session,
  */
 
+
 session_start();
+
 $_SESSION['login_id'] = isset($_SESSION['login_id']) ? $_SESSION['login_id'] : '';
 $_SESSION['login_nom'] = isset($_SESSION['login_nom']) ? $_SESSION['login_nom'] : '';
 $_SESSION['login_prenom'] = isset($_SESSION['login_prenom']) ? $_SESSION['login_prenom'] : '';
@@ -31,9 +33,14 @@ $displayed_version="19.11.00"; // xx.xx.xx
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\PhpBridgeSessionStorage;
 
 use App\Model\Agent;
 use App\Model\Access;
+
+$session = new Session(new PhpBridgeSessionStorage());
+$session->start();
 
 // Redirection vers setup si le fichier config est absent
 if (!file_exists(__DIR__.'/include/config.php')) {
@@ -60,6 +67,10 @@ if ($version!=$config['Version']) {
 
 // Initialisation des variables
 $request = Request::createFromGlobals();
+$request->setSession($session);
+$locale = guessLocale($request);
+$request->getSession()->set('_locale', $locale);
+$request->setLocale($locale, 'en_US');
 
 $date = $request->get('date');
 $show_menu = $request->get('menu') == 'off' ? false : true;
@@ -145,3 +156,31 @@ function CSRFTokenOK($token, $session) {
 
     return true;
 }
+
+function guessLocale($request)
+{
+    // User requested a specific locale as request parameter.
+    if ($locale = $request->get('locale')) {
+        return $locale;
+    }
+
+    // We already have a locale in session.
+    //if (!$request->getSession()) {
+    //    $session = new Session();
+    //    $session->start();
+    //    $request->setSession($session);
+    //}
+
+    if ($locale = $request->getSession()->get('_locale')) {
+        return $locale;
+    }
+
+    // Get broswer locale.
+    $locale = getBrowserLanguage($request);
+
+    return $locale;
+}
+
+ function getBrowserLanguage($request) {
+     return str_replace('-', '_', substr($request->headers->get('Accept-Language'),0,5));
+ }
