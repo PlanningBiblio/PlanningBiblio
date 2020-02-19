@@ -33,3 +33,7 @@ msgstr "Activités"
 #: /tmp/cache/84/84a72e227a2f669671682df0470df3cfb8c36c84741f1487ece2e6da5ab33e80.php:135
 msgid "Attendance hours"
 msgstr "Heures de présence"
+
+#: public/conges/js/script.conges.js:364
+msgid "Please select a start date"
+msgstr "Veuillez choisir une date de début"

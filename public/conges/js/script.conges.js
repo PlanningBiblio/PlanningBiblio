@@ -361,7 +361,7 @@ function verifConges(){
   }
   // Vérifions si les dates sont correctement saisies
   if($("#debut").val()==""){
-    information("Veuillez choisir la date de début","error");
+    information(_("Please select a start date"),"error");
     return false;
   }
 
