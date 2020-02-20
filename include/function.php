@@ -243,8 +243,16 @@ class CJMail
         $mail->Sender =$GLOBALS['config']['Mail-From'];
         $mail->From =$GLOBALS['config']['Mail-From'];
         $mail->FromName =$GLOBALS['config']['Mail-FromName'];
+	$mail->SMTPOptions = array(
+		'ssl' => array(
+		'verify_peer' => false,
+		'verify_peer_name' => false,
+		'allow_self_signed' => true
+		)
+	);
         $mail->IsHTML();
     
+
         $mail->Body = $this->message;
     
         if (count($this->to)>1) {
