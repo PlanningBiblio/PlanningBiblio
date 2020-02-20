@@ -21,7 +21,7 @@ Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à
 @note : Modifiez la variable $path suivante en renseignant le chemin absolu vers votre dossier planningBiblio
 */
 
-$path="/var/www/html/planning";
+$path="/var/www/planningbiblio";
 
 session_start();
 
