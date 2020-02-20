@@ -47,7 +47,7 @@ elseif ($params && CSRFTokenOK($params['CSRFToken'], $_SESSION)) {
 
     foreach ($configParams as $cp) {
 
-        if ($cp->type() == 'info') {
+        if ($cp->nom() == 'Version') {
             continue;
         }
 
@@ -143,6 +143,9 @@ foreach ($configParams as $cp) {
 
     $elements[$category][$cp->nom()] = $elem;
 }
+
+$elements[' Divers']['URL']['valeur'] = $url;
+
 $templates_params['elements'] = $elements;
 
 $template = $twig->load('admin/config.html.twig');
