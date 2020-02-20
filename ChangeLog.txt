@@ -1,8 +1,10 @@
 *** Unreleased ***
+
+*** Version 19.10.03       (2020-02-20)   ***
 - Fixes
 Fix saving status and services in agent's form
 
-*** Version 19.10.01       (2020-02-07)   ***
+*** Version 19.10.02       (2020-02-07)   ***
 - Fixes
 Update URL on administration/configuration page
 Shows Agendas/Synchro tab on agent's pages when Hamac-csv param is set
