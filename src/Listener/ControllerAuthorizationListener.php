@@ -19,6 +19,10 @@ class ControllerAuthorizationListener
         'ajax.editabsencereasons' => array(100),
         'ajax.holidaydelete' => array(100),
         'ajax.changepassword' => array(21),
+        'statedweek.availables' => array(301, 1001),
+        'statedweek.add' => array(301, 1001),
+        'statedweek.remove' => array(301, 1001),
+        'statedweek.placed' => array(301, 1001),
     );
 
     public function __construct(\Twig_Environment $twig)

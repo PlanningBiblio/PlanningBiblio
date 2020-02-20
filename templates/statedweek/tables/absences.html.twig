@@ -1,0 +1,30 @@
+{# statedweek/tables/absences.html.twig #}
+
+<table class="statedweek-table table-bottom" id="statedweek-absences" border="1">
+  <thead>
+    <tr>
+      <th class="cell-header" colspan="3">Absents</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in 0..6 %}
+      <tr>
+        {% if absences[i] is defined %}
+          {% set absence = absences[i] %}
+          <td><span class="status_{{ absence.status }}">{{ absence.nom }} {{ absence.prenom }}</span></td>
+          <td>
+            {{ absence.debut | datehour }} - {{ absence.fin | datehour }}
+            {% if absence.valide < 1 %}
+              <strong> (Non validée)</strong>
+            {% endif %}
+          </td>
+          <td>{{ absence.motif }}</td>
+        {% else %}
+          <td></td>
+          <td></td>
+          <td></td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

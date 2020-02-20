@@ -895,7 +895,27 @@ $(function(){
     $(".ui-tab-cancel").css("right",right);
     $(".ui-tab-cancel").css("top",7);
   });
-  
+
+  $('.plb-timepicker').attr('readonly', 'readonly');
+
+  var interval = '60';
+  if(typeof(window.plb_config) != "undefined"
+    && window.plb_config['Granularite'] !== null) {
+      interval = window.plb_config['Granularite'];
+  }
+
+  $('.plb-timepicker').timepicker({
+    timeFormat: 'HH:mm',
+    interval: interval,
+    minTime: '06:00',
+    maxTime: '23:59',
+    defaultTime: '',
+    startTime: '06:00',
+    dynamic: true,
+    dropdown: true,
+    scrollbar: true
+  });
+
   // Infobulles
   $(document).tooltip();
 });

@@ -16,6 +16,7 @@ Appelé par les autres fichiers du dossier planningHebdo
 */
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
+$version = $GLOBALS['version'];
 if (!isset($version)) {
     include_once __DIR__."/../include/accessDenied.php";
 }
