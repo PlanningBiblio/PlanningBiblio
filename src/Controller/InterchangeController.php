@@ -96,6 +96,10 @@ class InterchangeController extends BaseController
     {
         $id = $request->get('id');
         $interchange = $this->entityManager->getRepository(Interchange::class)->find($id);
+        $requester = $this->entityManager
+          ->getRepository(Agent::class)->find($interchange->requester());
+        $asked = $this->entityManager
+          ->getRepository(Agent::class)->find($interchange->asked());
 
         $droits = $GLOBALS['droits'];
 
@@ -105,60 +109,26 @@ class InterchangeController extends BaseController
             ->find($interchange->planning());
 
         $i['id'] = $interchange->id();
-        $i['date'] = $planning->date()->format('d/m/Y');
-        $i['asked_time'] = $interchange->asked_time();
+        $i['requester'] = $requester->prenom() . ' ' . $requester->nom();
+        $i['asked'] = $asked->prenom() . ' ' . $asked->nom();
+        $i['date'] = $planning->date()->format('Y-m-d');
         $i['status'] = $interchange->status();
+
         $asked_time = $this->entityManager
             ->getRepository(StatedWeekTimes::class)
             ->find($interchange->asked_time());
-        $i['asked_column'] = $asked_time->column_id();
+        $asked_column = $this->entityManager
+          ->getRepository(StatedWeekColumn::class)->find($asked_time->column_id());
+        $i['asked_start'] = $asked_column->starttime()->format('H:i:s');
+        $i['asked_to'] = $asked_column->endtime()->format('H:i:s');
 
-        $columns = $planning->columns();
-        $i['columns'] = array();
-        $i['agents'] = array();
-        foreach ($columns as $column) {
-            $time = $this->entityManager
-                ->getRepository(StatedWeekTimes::class)
-                ->findBy(array(
-                    'agent_id'  => $interchange->requester(),
-                    'column_id' => $column->id()
-                ));
-
-            if (empty($time)) {
-                $i['columns'][] = array(
-                    'id' => $column->id(),
-                    'from' => $column->starttime()->format('H:i:s'),
-                    'to' => $column->endtime()->format('H:i:s'),
-                );
-            }
-
-            if ($column->id() == $asked_time->column_id()){
-                $times = $this->entityManager
-                    ->getRepository(StatedWeekTimes::class)
-                    ->findBy(array(
-                        'column_id' => $column->id()
-                    ));
-
-                foreach ($times as $t) {
-                    $agent = $this->entityManager->getRepository(Agent::class)->find($t->agent_id());
-                    $name = $agent->nom() . ' ' . $agent->prenom();
-                    if ($agent->statut() || $agent->service()) {
-                        $name .= ' (';
-                        if ($agent->statut()) {
-                            $name .= $agent->statut();
-                        }
-                        if ($agent->service()) {
-                            $name .= ' - ' . $agent->service();
-                        }
-                        $name .= ')';
-                    }
-                    $i['agents'][] = array(
-                        'time' => $t->id(),
-                        'name' => $name
-                    );
-                }
-            }
-        }
+        $requester_time = $this->entityManager
+            ->getRepository(StatedWeekTimes::class)
+            ->find($interchange->requester_time());
+        $requester_column = $this->entityManager
+          ->getRepository(StatedWeekColumn::class)->find($requester_time->column_id());
+        $i['requester_start'] = $requester_column->starttime()->format('H:i:s');
+        $i['requester_to'] = $requester_column->endtime()->format('H:i:s');
 
         $logged_in = $this->entityManager->getRepository(Agent::class)->find($_SESSION['login_id']);
         $can_accept = false;
