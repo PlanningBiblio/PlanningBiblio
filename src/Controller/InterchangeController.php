@@ -28,6 +28,10 @@ class InterchangeController extends BaseController
             ->getRepository(Interchange::class)
             ->findAll() as $interchange) {
 
+            if ($interchange->status() == 'VALIDATED') {
+                continue;
+            }
+
             $planning = $this->entityManager
                 ->getRepository(StatedWeek::class)
                 ->find($interchange->planning());
@@ -46,7 +50,7 @@ class InterchangeController extends BaseController
 
             $asked = $this->entityManager
                 ->getRepository(Agent::class)
-                ->find($interchange->requester());
+                ->find($interchange->asked());
 
             $asked_time = $this->entityManager
                 ->getRepository(StatedWeekTimes::class)
@@ -219,6 +223,8 @@ class InterchangeController extends BaseController
         $this->entityManager->persist($interchange);
         $this->entityManager->flush();
 
+        $this->notifyRequestedAgent($interchange);
+
         return $this->redirectToRoute('interchange.index');
     }
 
@@ -327,6 +333,12 @@ class InterchangeController extends BaseController
 
         $this->entityManager->persist($interchange);
         $this->entityManager->flush();
+
+        $this->notifyRequestedAgent($interchange);
+
+        if ($interchange->status() == 'VALIDATED') {
+            $this->apply($interchange);
+        }
     }
 
     private function getPlanningOn($date)
@@ -338,5 +350,134 @@ class InterchangeController extends BaseController
             ->findOneBy(array('date' => $date));
 
         return $planning;
+    }
+
+    private function notifyRequestedAgent(Interchange $interchange)
+    {
+        $logged_in = $this->entityManager->getRepository(Agent::class)->find($_SESSION['login_id']);
+
+        $planning = $this->entityManager
+            ->getRepository(StatedWeek::class)
+            ->find($interchange->planning());
+
+        $requester = $this->entityManager
+            ->getRepository(Agent::class)
+            ->find($interchange->requester());
+
+        $requester_time = $this->entityManager
+            ->getRepository(StatedWeekTimes::class)
+            ->find($interchange->requester_time());
+
+        $requester_column = $this->entityManager
+            ->getRepository(StatedWeekColumn::class)
+            ->find($requester_time->column_id());
+
+        $asked = $this->entityManager
+            ->getRepository(Agent::class)
+            ->find($interchange->asked());
+
+        $asked_time = $this->entityManager
+            ->getRepository(StatedWeekTimes::class)
+            ->find($interchange->asked_time());
+
+        $asked_column = $this->entityManager
+            ->getRepository(StatedWeekColumn::class)
+            ->find($asked_time->column_id());
+
+        $id = $interchange->id();
+        $replacements = array(
+            '<<date>>'                  => dateAlpha($planning->date()->format('Y-m-d')),
+            '<<requester.firstname>>'   => $requester->prenom(),
+            '<<requester.surname>>'     => $requester->nom(),
+            '<<requester.from>>'        => $requester_column->starttime()->format('H:i'),
+            '<<requester.to>>'          => $requester_column->endtime()->format('H:i'),
+            '<<asked.firstname>>'       => $asked->prenom(),
+            '<<asked.surname>>'         => $asked->nom(),
+            '<<asked.from>>'            => $asked_column->starttime()->format('H:i'),
+            '<<asked.to>>'              => $asked_column->endtime()->format('H:i'),
+            '<<url>>'                   => $this->getRequest()->getUriForPath("/interchange/$id")
+        );
+
+        $message = $this->config('interchange_mail_' . $interchange->status());
+
+        foreach ($replacements as $search => $replace) {
+            $message['subject'] = str_replace($search, $replace, $message['subject']);
+            $message['content'] = str_replace($search, $replace, $message['content']);
+        }
+
+        $recipients = array();
+
+        if ($interchange->status() == 'ASKED') {
+            $recipients[] = $asked->mail();
+        }
+
+        if ($interchange->status() == 'ACCEPTED') {
+            $site = $this->config('statedweek_site_filter');
+            $recipients[] = $requester->mail();
+            $recipients[] = $this->config("Multisites-site$site-mail");
+        }
+
+        if ($interchange->status() == 'REJECTED') {
+            $recipients[] = $requester->mail();
+
+            // Rejected by an admin. Notify also asked agent.
+            if ($logged_in->id() != $asked->id()) {
+                $recipients[] = $asked->mail();
+            }
+        }
+
+        if ($interchange->status() == 'VALIDATED') {
+            $recipients[] = $asked->mail();
+            $recipients[] = $requester->mail();
+        }
+
+        $email = new \CJMail();
+        $email->subject = $message['subject'];
+        $email->message = $message['content'];
+        $email->to = $asked->mail();
+        $email->send();
+    }
+
+    private function apply(Interchange $interchange)
+    {
+        $requester = $this->entityManager
+            ->getRepository(Agent::class)
+            ->find($interchange->requester());
+
+        $requester_time = $this->entityManager
+            ->getRepository(StatedWeekTimes::class)
+            ->find($interchange->requester_time());
+
+        $requester_column = $this->entityManager
+            ->getRepository(StatedWeekColumn::class)
+            ->find($requester_time->column_id());
+
+        $asked = $this->entityManager
+            ->getRepository(Agent::class)
+            ->find($interchange->asked());
+
+        $asked_time = $this->entityManager
+            ->getRepository(StatedWeekTimes::class)
+            ->find($interchange->asked_time());
+
+        $asked_column = $this->entityManager
+            ->getRepository(StatedWeekColumn::class)
+            ->find($asked_time->column_id());
+
+        //Move requester.
+        $this->entityManager->remove($requester_time);
+        $new_requester_time = new StatedWeekTimes();
+        $new_requester_time->agent_id($requester->id());
+        $new_requester_time->column_id($asked_column->id());
+        $this->entityManager->persist($new_requester_time);
+        $this->entityManager->flush();
+
+        //Move asked agent.
+        $this->entityManager->remove($asked_time);
+        $new_asked_time = new StatedWeekTimes();
+        $new_asked_time->agent_id($asked->id());
+        $new_asked_time->column_id($requester_column->id());
+        $this->entityManager->persist($new_asked_time);
+        $this->entityManager->flush();
     }
 }
