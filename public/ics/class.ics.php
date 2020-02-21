@@ -132,6 +132,10 @@ class CJICS
         // Récupération du nom du calendrier
         $calName=$ical->calendarName();
         $calName = removeAccents($calName);
+
+        // Product ID / Product name
+        $prodID = $ical->calendarProdID();
+
         $calTimeZone = $ical->calendarTimezone();
         if ($this->logs) {
             logs("Agent #$perso_id : Calendrier: $calName, Fuseau horaire: $calTimeZone", "ICS", $CSRFToken);
@@ -194,6 +198,15 @@ class CJICS
             // Ignore events with STATUS = CANCELLED
             if ($elem['STATUS'] == 'CANCELLED') {
                 continue;
+            }
+
+            // Add "[PRE]" exclusion for Hamac import
+            if (!empty($prodID) and stristr($prodID, 'Serveur de planning Cocktail')) {
+              if (isset($config['ics_exclude_summary']) and is_array($config['ics_exclude_summary'])) {
+                $config['ics_exclude_summary'][] = '[PRE]';
+              } else {
+                $config['ics_exclude_summary'] = array('[PRE]');
+              }
             }
 
             // Ignore events with SUMMARY defined in $config['ics_exclude_summary']

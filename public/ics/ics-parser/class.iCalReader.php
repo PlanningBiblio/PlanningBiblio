@@ -781,6 +781,16 @@ class ICal
     }
 
     /**
+     * Returns the calendar product ID
+     *
+     * @return {calendar product ID}
+     */
+    public function calendarProdID()
+    {
+        return $this->cal['VCALENDAR']['PRODID'] ?? null;
+    }
+
+    /**
      * Returns the calendar description
      *
      * @return {calendar description}
