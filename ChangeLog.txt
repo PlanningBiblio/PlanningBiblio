@@ -10,6 +10,7 @@ Move admin/info pages into a controller
 Abiblity to request holiday on half day
 Add free breaktimes
 Add unit tests
+Hamac import : Add intermediate validation and information logging
 
 -Fixes
 Add raw filter on agent templates for fields services, right and skills
