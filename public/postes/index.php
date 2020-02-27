@@ -69,6 +69,7 @@ echo <<<EOD
   <th>Etage</th>
   <th>Activités</th>
   <th>Groupe</th>
+  <th>Position</th>
   <th>Obligatoire/renfort</th>
   <th>Bloquant</th>
   <th>Statistiques</th>
@@ -110,6 +111,7 @@ foreach ($postes as $id => $value) {
     echo "<td>{$value['etage']}</td>\n";
     echo "<td title='$activites' size='100'>$activitesAffichees</td>\n";
     echo "<td>{$value['groupe']}</td>\n";
+    echo "<td>" . ($value['position'] == 'backOffice' ? 'Back Office' : 'Front Office') . "</td>\n";
     echo "<td>{$value['obligatoire']}</td>\n";
     echo "<td>".($value['bloquant']?"Oui":"Non")."</td>\n";
     echo "<td>".($value['statistiques']?"Oui":"Non")."</td>\n";
