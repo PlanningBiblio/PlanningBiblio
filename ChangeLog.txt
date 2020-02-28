@@ -1,5 +1,9 @@
 *** Unreleased ***
 
+*** Version 19.10.04       (2020-02-27)   ***
+- Fixes
+Fix an error on importing models / wrong index to get working hours
+
 *** Version 19.10.03       (2020-02-20)   ***
 - Fixes
 Fix saving status and services in agent's form
