@@ -258,6 +258,7 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
                     }
                 }
 
+                $d = new datePl($elem);
                 $day_index = $d->planning_day_index_for($elem2['perso_id']);
                 if (!calculSiPresent($elem2['debut'], $elem2['fin'], $temps, $day_index)) {
                     $value[':absent'] = 2;
