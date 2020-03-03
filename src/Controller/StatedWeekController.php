@@ -105,6 +105,25 @@ class StatedWeekController extends BaseController
         $a->fetch(null, null, $date, $date);
         $absences = $this->filterAgents($a->elements);
 
+        // Check if the absence is partial
+        $today_start = strtotime($date . ' 00:00:00');
+        $today_end = strtotime($date . ' 23:59:59');
+        foreach ($absences as $index => $absence) {
+            $start_absence = strtotime($absence['debut']);
+            if ($start_absence < $today_start) {
+                $absences[$index]['debut'] = '00:00:00';
+            } else {
+                $absences[$index]['debut'] = date('H:i:s', $start_absence);
+            }
+
+            $end_absence = strtotime($absence['fin']);
+            if ($end_absence > $today_end) {
+                $absences[$index]['fin'] = '23:59:59';
+            } else {
+                $absences[$index]['fin'] = date('H:i:s', $end_absence);
+            }
+        }
+
         // Holidays
         $c = new \conges();
         $holidays = $this->filterAgents($c->all($date.' 00:00:00', $date.' 23:59:59'));

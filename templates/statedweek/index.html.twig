@@ -140,8 +140,8 @@
     </table>
   </div>
   {% include 'statedweek/contextual-menu.html.twig' %}
-  <div id="confirm-lock" title="Vérouillage du planning">
-    Ceci entrainera le vérouillage de tous les plannings de la semaine.
+  <div id="confirm-lock" title="Verrouillage du planning">
+    Ceci entraînera le verrouillage de tous les plannings de la semaine.
     <p class="warning" style="display:none;">
       Certains plannings sont inexistants et seront créés automatiquement:
       <ul id="empty-plannings">
@@ -150,22 +150,22 @@
     Souhaitez-vous continuer ?
   </div>
 
-  <div id="confirm-unlock" title="Déverouillage du planning">
-    Ceci entrainera le déverouillage de tous les plannings de la semaine.
+  <div id="confirm-unlock" title="Déverrouillage du planning">
+    Ceci entraînera le déverrouillage de tous les plannings de la semaine.
     Souhaitez-vous continuer ?
   </div>
 
-  <div id="confirm-save-template" title="Enregitrer comme modèle">
+  <div id="confirm-save-template" title="Enregistrer comme modèle">
     <form>
       <label for="template_name">Nom du modèle</label>
       <input type="text" name="template_name" id="template_name">
 
-      <label for="template_week">Enregistrer toute le semaine</label>
+      <label for="template_week">Enregistrer toute la semaine</label>
       <input type="checkbox" name="template_week" id="template_week">
     </form>
   </div>
 
-  <div id="confirm-load-template" title="Enregitrer comme modèle">
+  <div id="confirm-load-template" title="Enregistrer comme modèle">
     <form>
       {% if templates %}
         <p>Sélectionnez le modèle à importer</p>

@@ -286,7 +286,7 @@ $( document ).ready(function() {
     width: 400,
     modal: true,
     buttons: {
-      "Enregitrer": function() {
+      "Enregistrer": function() {
         date = $('input[name="date"]').val();
         name = $('#template_name').val();
         week = 0;
@@ -299,7 +299,7 @@ $( document ).ready(function() {
           type: 'post',
           data: {date: date, name: name, week: week},
           success: function() {
-            information('Modèle enregistré avec succés');
+            information('Modèle enregistré avec succès');
           },
           error: function() {
             information("Une erreur est survenue lors de l'enregistrement du modèle", 'error');
@@ -759,7 +759,7 @@ $( document ).ready(function() {
         $('#validation').show();
       },
       error: function() {
-        information("Une erreur est survenue lors du vérouillage des plannings", 'error');
+        information("Une erreur est survenue lors du verrouillage des plannings", 'error');
       }
     });
   }
@@ -778,7 +778,7 @@ $( document ).ready(function() {
         $('#validation').hide();
       },
       error: function() {
-        information("Une erreur est survenue lors du déverouillage des plannings", 'error');
+        information("Une erreur est survenue lors du déverrouillage des plannings", 'error');
       }
     });
   }
