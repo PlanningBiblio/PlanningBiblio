@@ -1,0 +1,126 @@
+{# interchange/add.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/interchange.js?version={{ version }}'></script>
+{% endblock %}
+
+{% block page %}
+  <h3>Demande d'échange de poste</h3>
+
+  <form id="interchange" method="POST" action='{{ asset("/interchange") }}'>
+    <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
+    <!-- edit -->
+    {% if i is defined %}
+      <input type="hidden" name="id" value="{{ i.id }}"/>
+
+      <table>
+        <tr>
+          <td>
+            Planning du: <strong>{{ i.date | date('d/m/Y') }}</strong> <a href="{{ asset('statedweek?date=' ~ i.date) }}">(Voir le planning)</a>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Agent demandeur et poste:
+            <strong>
+              {{ i.requester }} - de {{ i.requester_start | hour}} à {{ i.requester_to | hour }}
+            </strong>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Échange demandé avec:
+            <strong>
+              {{ i.asked }} - de {{ i.asked_start | hour }} à {{ i.asked_to | hour }}
+            </strong>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Statut de la demande:
+            <strong>
+              {% if i.status == 'ASKED' %}
+                Demandée
+              {% elseif i.status == 'ACCEPTED' %}
+                Acceptée par l'agent
+              {% elseif i.status == 'REJECTED' %}
+                Refusée
+              {% elseif i.status == 'VALIDATED' %}
+                Validée
+              {% endif %}
+            </strong>
+          </td>
+        </tr>
+      </table>
+
+      {% if i.status == 'ASKED' and (can_accept or can_validate) %}
+        <input type="submit" name="action" value="Accepter"/>
+        <input type="submit" name="action" value="Refuser"/>
+      {% elseif i.status == 'ACCEPTED' and can_validate %}
+        <input type="submit" name="action" value="Valider"/>
+        <input type="submit" name="action" value="Refuser"/>
+      {% elseif i.status == 'REJECTED' %}
+        <span>La demande a été refusée.</span>
+      {% elseif i.status == 'VALIDATED' %}
+        <span>La demande a été validée.</span>
+      {% endif %}
+    <!-- New -->
+    {% else %}
+      <table>
+        <tr>
+          <td>Choisissez un date: </td>
+          <td>
+              <input type="text" name="date" class="datepicker">
+          </td>
+        </tr>
+
+        <tr>
+          <td>Choisissez la tranche horaire souhaitée: </td>
+          <td>
+            <select name="column" disabled="disabled">
+              {% if i is defined %}
+                  {% for c in i.columns %}
+                    {% if c.id == i.asked_column %}
+                      <option value="{{ c.id }}" selected>{{ c.from | hour }} - {{ c.to | hour }}</option>
+                    {% else %}
+                      <option value="{{ c.id }}">{{ c.from | hour }} - {{ c.to | hour }}</option>
+                    {% endif %}
+                  {% endfor %}
+              {% endif %}
+            </select>
+          </td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td>
+          </td>
+        </tr>
+      </table>
+
+      <div class="agents" style="display: none;">
+        <span>Choisissez l'agent à remplacer:</span>
+        <ul id="agents" style="list-style: none;">
+          {% if i is defined %}
+            {% for a in i.agents %}
+              {% if a.time == i.asked_time %}
+                <li><input type="radio" name="agent" value="{{ a.time }}" checked disabled/>
+                  <strong>{{ a.name | raw }}</strong></li>
+              {% else %}
+                <li><input type="radio" name="agent" value="{{ a.time }}" disabled/>{{ a.name | raw }}</li>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </ul>
+
+        <input type="submit" name="action" value="Demander"/>
+      </div>
+    {% endif %}
+
+      {% if i is defined %}
+      {% endif %}
+    </div>
+  </form>
+{% endblock %}

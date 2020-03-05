@@ -671,3 +671,14 @@ $sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_time_templates` (
     PRIMARY KEY (`id`),
     FOREIGN KEY (template_id) REFERENCES stated_week_planning_templates(id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+
+$sql[] = "CREATE TABLE `{$dbprefix}interchanges` (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    planning INT(11) NOT NULL,
+    requester int(11) NOT NULL,
+    requester_time int(11) NOT NULL,
+    asked int(11) NOT NULL,
+    asked_time int(11) NOT NULL,
+    status ENUM ('ASKED','ACCEPTED', 'REJECTED', 'VALIDATED') NOT NULL DEFAULT 'ASKED',
+    PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;";

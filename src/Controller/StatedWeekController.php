@@ -12,6 +12,7 @@ use App\Model\StatedWeekJobTimes;
 use App\Model\StatedWeekPause;
 use App\Model\StatedWeekTemplate;
 use App\Model\StatedWeekTimeTemplate;
+use App\Model\Interchange;
 
 use App\PlanningBiblio\Helper\StatedWeekHelper;
 
@@ -549,14 +550,39 @@ class StatedWeekController extends BaseController
                 $agent = $this->entityManager->getRepository(Agent::class)->find($t->agent_id());
 
                 $p = array(
-                    'place'     => 'planning',
-                    'id'        => $agent->id(),
-                    'name'      => $agent->nom() . ' ' .$agent->prenom(),
-                    'from'      => $from,
-                    'to'        => $to,
-                    'absent'    => $agent->isAbsentOn($date, $date) ? 1 : 0,
-                    'status'    => strtolower(removeAccents(str_replace(' ', '_', $agent->statut()))),
+                    'place'         => 'planning',
+                    'id'            => $agent->id(),
+                    'name'          => $agent->nom() . ' ' .$agent->prenom(),
+                    'from'          => $from,
+                    'to'            => $to,
+                    'absent'        => $agent->isAbsentOn($date, $date) ? 1 : 0,
+                    'status'        => strtolower(removeAccents(str_replace(' ', '_', $agent->statut()))),
+                    'interchange'   => 0,
                 );
+
+                $asked_interchange = $this->entityManager
+                    ->getRepository(Interchange::class)
+                    ->findOneBy(array('requester' => $agent->id()));
+
+                if ($asked_interchange) {
+                    $asked = $this->entityManager
+                        ->getRepository(Agent::class)
+                        ->find($asked_interchange->asked());
+
+                    $p['interchange'] = $asked->prenom() . ' ' . $asked->nom();
+                }
+
+                $interchange = $this->entityManager
+                    ->getRepository(Interchange::class)
+                    ->findOneBy(array('asked' => $agent->id()));
+
+                if ($interchange) {
+                    $requester = $this->entityManager
+                        ->getRepository(Agent::class)
+                        ->find($interchange->requester());
+
+                    $p['interchange'] = $requester->prenom() . ' ' . $requester->nom();
+                }
 
                 if ($absences = $agent->isPartiallyAbsentOn("$date $from", "$date $to")) {
                     $p['absent'] = 0;
