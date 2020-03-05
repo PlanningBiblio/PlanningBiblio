@@ -210,6 +210,11 @@ $( document ).ready(function() {
       cell.children('span').addClass('absent');
       cell.append('<i> - Congés</i>');
     };
+
+    $(this).init.prototype.addInterchange = function(interchange) {
+      cell = $(this);
+      cell.append('<i title="Échangé avec ' + interchange + '"> - (échangé)</i>');
+    };
   });
 
   $( "#confirm-lock" ).dialog({
@@ -657,6 +662,10 @@ $( document ).ready(function() {
 
         if (agent.holiday) {
           cell.addHoliday();
+        }
+
+        if (agent.interchange) {
+          cell.addInterchange(agent.interchange);
         }
 
         initDraggable(cell);

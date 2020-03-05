@@ -911,7 +911,7 @@ $(function(){
     maxTime: '23:59',
     defaultTime: '',
     startTime: '06:00',
-    dynamic: true,
+    dynamic: false,
     dropdown: true,
     scrollbar: true
   });

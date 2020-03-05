@@ -52,6 +52,9 @@ $( document ).ready(function() {
   });
 
   $('#interchange').on('submit', function() {
+    if ($('input[name="id"]').val()) {
+      return;
+    }
     time_id = $('input[name="agent"]:checked').val();
     if (!time_id) {
       information('Choisisser un agent.', 'error');

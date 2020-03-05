@@ -18,6 +18,8 @@ include_once(__DIR__ . '/../../public/include/function.php');
 
 class InterchangeController extends BaseController
 {
+    private $CSRFToken;
+
     /**
      * @Route("/interchange", name="interchange.index", methods={"GET"})
      */
@@ -28,10 +30,6 @@ class InterchangeController extends BaseController
             ->getRepository(Interchange::class)
             ->findAll() as $interchange) {
 
-            if ($interchange->status() == 'VALIDATED') {
-                continue;
-            }
-
             $planning = $this->entityManager
                 ->getRepository(StatedWeek::class)
                 ->find($interchange->planning());
@@ -40,26 +38,17 @@ class InterchangeController extends BaseController
                 ->getRepository(Agent::class)
                 ->find($interchange->requester());
 
-            $requester_time = $this->entityManager
-                ->getRepository(StatedWeekTimes::class)
-                ->find($interchange->requester_time());
-
             $requester_column = $this->entityManager
                 ->getRepository(StatedWeekColumn::class)
-                ->find($requester_time->column_id());
+                ->find($interchange->requester_time());
 
             $asked = $this->entityManager
                 ->getRepository(Agent::class)
                 ->find($interchange->asked());
 
-            $asked_time = $this->entityManager
-                ->getRepository(StatedWeekTimes::class)
-                ->find($interchange->asked_time());
-
             $asked_column = $this->entityManager
                 ->getRepository(StatedWeekColumn::class)
-                ->find($asked_time->column_id());
-
+                ->find($interchange->asked_time());
 
             $interchanges[] = array(
                 'id' => $interchange->id(),
@@ -114,19 +103,15 @@ class InterchangeController extends BaseController
         $i['date'] = $planning->date()->format('Y-m-d');
         $i['status'] = $interchange->status();
 
-        $asked_time = $this->entityManager
-            ->getRepository(StatedWeekTimes::class)
-            ->find($interchange->asked_time());
         $asked_column = $this->entityManager
-          ->getRepository(StatedWeekColumn::class)->find($asked_time->column_id());
+            ->getRepository(StatedWeekColumn::class)
+            ->find($interchange->asked_time());
         $i['asked_start'] = $asked_column->starttime()->format('H:i:s');
         $i['asked_to'] = $asked_column->endtime()->format('H:i:s');
 
-        $requester_time = $this->entityManager
-            ->getRepository(StatedWeekTimes::class)
-            ->find($interchange->requester_time());
         $requester_column = $this->entityManager
-          ->getRepository(StatedWeekColumn::class)->find($requester_time->column_id());
+            ->getRepository(StatedWeekColumn::class)
+            ->find($interchange->requester_time());
         $i['requester_start'] = $requester_column->starttime()->format('H:i:s');
         $i['requester_to'] = $requester_column->endtime()->format('H:i:s');
 
@@ -143,6 +128,7 @@ class InterchangeController extends BaseController
             'i'             => $i,
             'can_accept'    => $can_accept,
             'can_validate'  => $can_validate,
+            'CSRFSession'   => $GLOBALS['CSRFSession']
         ));
 
         return $this->output('interchange/add.html.twig');
@@ -153,6 +139,8 @@ class InterchangeController extends BaseController
      */
     public function save(Request $request)
     {
+        $this->CSRFToken = $request->get('CSRFToken');
+
         if ($request->get('id')) {
             $this->update($request);
             return $this->redirectToRoute('interchange.index');
@@ -161,7 +149,9 @@ class InterchangeController extends BaseController
         $date = dateFr($request->get('date'));
         $planning = $this->getPlanningOn($date);
 
-        $asked_time = $request->get('agent');
+        $asked_time = $this->entityManager
+            ->getRepository(StatedWeekTimes::class)
+            ->find($request->get('agent'));
 
         $columns = $planning->columns();
         $requester_time;
@@ -174,20 +164,16 @@ class InterchangeController extends BaseController
                 ));
 
             if (!empty($time)) {
-                $requester_time = $time->id();
+                $requester_time = $time;
             }
         }
-
-        $time = $this->entityManager
-            ->getRepository(StatedWeekTimes::class)
-            ->find($asked_time);
 
         $interchange = new Interchange();
         $interchange->planning($planning->id());
         $interchange->requester($_SESSION['login_id']);
-        $interchange->requester_time($requester_time);
-        $interchange->asked($time->agent_id());
-        $interchange->asked_time($asked_time);
+        $interchange->requester_time($requester_time->column_id());
+        $interchange->asked($asked_time->agent_id());
+        $interchange->asked_time($request->get('column'));
         $interchange->status('ASKED');
 
         $this->entityManager->persist($interchange);
@@ -334,25 +320,17 @@ class InterchangeController extends BaseController
             ->getRepository(Agent::class)
             ->find($interchange->requester());
 
-        $requester_time = $this->entityManager
-            ->getRepository(StatedWeekTimes::class)
-            ->find($interchange->requester_time());
-
         $requester_column = $this->entityManager
             ->getRepository(StatedWeekColumn::class)
-            ->find($requester_time->column_id());
+            ->find($interchange->requester_time());
 
         $asked = $this->entityManager
             ->getRepository(Agent::class)
             ->find($interchange->asked());
 
-        $asked_time = $this->entityManager
-            ->getRepository(StatedWeekTimes::class)
-            ->find($interchange->asked_time());
-
         $asked_column = $this->entityManager
             ->getRepository(StatedWeekColumn::class)
-            ->find($asked_time->column_id());
+            ->find($interchange->asked_time());
 
         $id = $interchange->id();
         $replacements = array(
@@ -414,27 +392,25 @@ class InterchangeController extends BaseController
             ->getRepository(Agent::class)
             ->find($interchange->requester());
 
-        $requester_time = $this->entityManager
-            ->getRepository(StatedWeekTimes::class)
-            ->find($interchange->requester_time());
-
         $requester_column = $this->entityManager
             ->getRepository(StatedWeekColumn::class)
-            ->find($requester_time->column_id());
+            ->find($interchange->requester_time());
 
         $asked = $this->entityManager
             ->getRepository(Agent::class)
             ->find($interchange->asked());
 
-        $asked_time = $this->entityManager
-            ->getRepository(StatedWeekTimes::class)
-            ->find($interchange->asked_time());
-
         $asked_column = $this->entityManager
             ->getRepository(StatedWeekColumn::class)
-            ->find($asked_time->column_id());
+            ->find($interchange->asked_time());
 
         //Move requester.
+        $requester_time = $this->entityManager
+            ->getRepository(StatedWeekTimes::class)
+            ->findOneBy(array(
+                'agent_id' => $requester->id(),
+                'column_id' => $requester_column->id()));
+
         $this->entityManager->remove($requester_time);
         $new_requester_time = new StatedWeekTimes();
         $new_requester_time->agent_id($requester->id());
@@ -443,11 +419,79 @@ class InterchangeController extends BaseController
         $this->entityManager->flush();
 
         //Move asked agent.
+        $asked_time = $this->entityManager
+            ->getRepository(StatedWeekTimes::class)
+            ->findOneBy(array(
+                'agent_id' => $asked->id(),
+                'column_id' => $asked_column->id()));
+
         $this->entityManager->remove($asked_time);
         $new_asked_time = new StatedWeekTimes();
         $new_asked_time->agent_id($asked->id());
         $new_asked_time->column_id($requester_column->id());
         $this->entityManager->persist($new_asked_time);
         $this->entityManager->flush();
+
+        // Update working hours.
+        $planning = $this->entityManager
+            ->getRepository(StatedWeek::class)
+            ->find($interchange->planning());
+        if ($planning->locked()) {
+            $date = $planning->date()->format('Y-m-d');
+            $date_pl = new \datePl($date);
+            $day_index = $date_pl->position - 1;
+
+            $requester_working_hours = $requester->getWorkingHoursOn($date);
+            $asked_working_hours = $asked->getWorkingHoursOn($date);
+            $asked_time = $asked_working_hours['temps'][$day_index];
+            $asked_breaktime = $asked_working_hours['breaktime'][$day_index];
+
+            $asked_working_hours['temps'][$day_index]
+                = $requester_working_hours['temps'][$day_index];
+            $asked_working_hours['breaktime'][$day_index]
+                = $requester_working_hours['breaktime'][$day_index];
+
+            $requester_working_hours['temps'][$day_index]
+                = $asked_time;
+            $requester_working_hours['breaktime'][$day_index]
+                = $asked_breaktime;
+
+            if ($this->config('nb_semaine') > 1) {
+                $asked_time = $asked_working_hours['temps'][$day_index + 7];
+                $asked_breaktime = $asked_working_hours['breaktime'][$day_index + 7];
+
+                $asked_working_hours['temps'][$day_index + 7]
+                    = $requester_working_hours['temps'][$day_index + 7];
+                $asked_working_hours['breaktime'][$day_index + 7]
+                    = $requester_working_hours['breaktime'][$day_index + 7];
+
+                $requester_working_hours['temps'][$day_index + 7]
+                    = $asked_time;
+                $requester_working_hours['breaktime'][$day_index + 7]
+                    = $asked_breaktime;
+            }
+
+            if ($this->config('nb_semaine') > 2) {
+                $asked_time = $asked_working_hours['temps'][$day_index + 14];
+                $asked_breaktime = $asked_working_hours['breaktime'][$day_index + 14];
+
+                $asked_working_hours['temps'][$day_index + 14]
+                    = $requester_working_hours['temps'][$day_index + 14];
+                $asked_working_hours['breaktime'][$day_index + 14]
+                    = $requester_working_hours['breaktime'][$day_index + 14];
+
+                $requester_working_hours['temps'][$day_index + 14]
+                    = $asked_time;
+                $requester_working_hours['breaktime'][$day_index + 14]
+                    = $asked_breaktime;
+            }
+
+            $asked_working_hours['CSRFToken'] = $this->CSRFToken;
+            $requester_working_hours['CSRFToken'] = $this->CSRFToken;
+
+            $p = new \planningHebdo();
+            $p->update($asked_working_hours);
+            $p->update($requester_working_hours);
+        }
     }
 }

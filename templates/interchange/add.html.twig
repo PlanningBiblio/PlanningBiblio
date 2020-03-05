@@ -10,6 +10,7 @@
   <h3>Demande d'échange de poste</h3>
 
   <form id="interchange" method="POST" action='{{ asset("/interchange") }}'>
+    <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
     <!-- edit -->
     {% if i is defined %}
       <input type="hidden" name="id" value="{{ i.id }}"/>
@@ -67,7 +68,6 @@
       {% endif %}
     <!-- New -->
     {% else %}
-
       <table>
         <tr>
           <td>Choisissez un date: </td>
