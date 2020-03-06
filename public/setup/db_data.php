@@ -443,6 +443,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('50','80','Configuration','/config',NULL),
   ('60','0','Aide','/help',NULL),
   (35, 0, 'Échanges de poste', '/interchange', 'config=statedweek_enabled'),
+  (35, 5, 'Voir les échanges', '/interchange', 'config=statedweek_enabled');";
   (35, 10, 'Demande d\'échange', '/interchange/add', 'config=statedweek_enabled');";
 
 //	Personnel

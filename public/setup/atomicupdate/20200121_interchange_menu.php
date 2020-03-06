@@ -1,5 +1,6 @@
 <?php
 $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`) VALUES(35, 0, 'Échanges de poste', '/interchange', 'config=statedweek_enabled')";
+$sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`) VALUES(35, 5, 'Voir les échanges', '/interchange', 'config=statedweek_enabled')";
 $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`) VALUES(35, 10, 'Demande d\'échange', '/interchange/add', 'config=statedweek_enabled')";
 $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `page`, `ordre`) VALUES('Échanges de poste', 100, '/interchange', 0)";
 $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `page`, `ordre`) VALUES('Demande d\'échange', 100, '/interchange/add', 0)";
@@ -16,3 +17,5 @@ $sql[] = "CREATE TABLE `{$dbprefix}interchanges` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 
 $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `groupe`, `ordre`, `categorie`) VALUES('Échanges de poste', 1301, 'Validation des échanges de postes', 135, 'Semaines fixes')";
+
+$sql[] = "UPDATE `{$dbprefix}menu` SET `titre` = 'Échanges' WHERE `titre` = 'Échanges de poste'";
