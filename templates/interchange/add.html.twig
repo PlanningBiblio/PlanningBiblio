@@ -55,6 +55,50 @@
         </tr>
       </table>
 
+      <table style="margin-top: 15px">
+          <tr>
+            <td>
+              {{ i.requested_on | date('d/m/Y H:i') }} -
+            </td>
+            <td>
+              Demandé par {{ i.requester }}
+            </td>
+          </tr>
+
+          {% if i.accepted_by is defined %}
+            <tr>
+              <td>
+                {{ i.accepted_on | date('d/m/Y H:i') }} -
+              </td>
+              <td>
+                Accepté par {{ i.accepted_by }}
+              </td>
+            </tr>
+          {% endif %}
+
+          {% if i.rejected_by is defined %}
+            <tr>
+              <td>
+                {{ i.rejected_on | date('d/m/Y H:i') }} -
+              </td>
+              <td>
+                Refusé par {{ i.rejected_by }}
+              </td>
+            </tr>
+          {% endif %}
+
+          {% if i.validated_by is defined %}
+            <tr>
+              <td>
+                {{ i.validated_on | date('d/m/Y H:i') }} -
+              </td>
+              <td>
+                Validé par {{ i.validated_by }}
+              </td>
+            </tr>
+          {% endif %}
+      </table>
+
       {% if i.status == 'ASKED' and (can_accept or can_validate) %}
         <input type="submit" name="action" value="Accepter"/>
         <input type="submit" name="action" value="Refuser"/>

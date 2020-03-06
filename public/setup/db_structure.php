@@ -676,9 +676,16 @@ $sql[] = "CREATE TABLE `{$dbprefix}interchanges` (
     id INT(11) NOT NULL AUTO_INCREMENT,
     planning INT(11) NOT NULL,
     requester int(11) NOT NULL,
+    requested_on datetime NOT NULL,
     requester_time int(11) NOT NULL,
     asked int(11) NOT NULL,
     asked_time int(11) NOT NULL,
+    accepted_by int(11) NULL DEFAULT 0,
+    accepted_on datetime NULL,
+    rejected_by int(11) NULL DEFAULT 0,
+    rejected_on datetime NULL,
+    validated_by int(11) NULL DEFAULT 0,
+    validated_on datetime NULL,
     status ENUM ('ASKED','ACCEPTED', 'REJECTED', 'VALIDATED') NOT NULL DEFAULT 'ASKED',
     PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";

@@ -124,6 +124,7 @@ class InterchangeController extends BaseController
 
         $i['id'] = $interchange->id();
         $i['requester'] = $requester->prenom() . ' ' . $requester->nom();
+        $i['requested_on'] = $interchange->requested_on()->format('Y-m-d H:i:s');
         $i['asked'] = $asked->prenom() . ' ' . $asked->nom();
         $i['date'] = $planning->date()->format('Y-m-d');
         $i['status'] = $interchange->status();
@@ -139,6 +140,30 @@ class InterchangeController extends BaseController
             ->find($interchange->requester_time());
         $i['requester_start'] = $requester_column->starttime()->format('H:i:s');
         $i['requester_to'] = $requester_column->endtime()->format('H:i:s');
+
+        if ($interchange->accepted_by()) {
+            $accepted_by = $this->entityManager
+                ->getRepository(Agent::class)
+                ->find($interchange->accepted_by());
+            $i['accepted_by'] = $accepted_by->prenom() . ' ' . $accepted_by->nom();
+            $i['accepted_on'] = $interchange->accepted_on()->format('Y-m-d H:i:s');
+        }
+
+        if ($interchange->rejected_by()) {
+            $rejected_by = $this->entityManager
+                ->getRepository(Agent::class)
+                ->find($interchange->rejected_by());
+            $i['rejected_by'] = $rejected_by->prenom() . ' ' . $rejected_by->nom();
+            $i['rejected_on'] = $interchange->rejected_on()->format('Y-m-d H:i:s');
+        }
+
+        if ($interchange->validated_by()) {
+            $validated_by = $this->entityManager
+                ->getRepository(Agent::class)
+                ->find($interchange->validated_by());
+            $i['validated_by'] = $validated_by->prenom() . ' ' . $validated_by->nom();
+            $i['validated_on'] = $interchange->validated_on()->format('Y-m-d H:i:s');
+        }
 
         $this->templateParams(array(
             'i'             => $i,
@@ -187,6 +212,7 @@ class InterchangeController extends BaseController
         $interchange = new Interchange();
         $interchange->planning($planning->id());
         $interchange->requester($_SESSION['login_id']);
+        $interchange->requested_on(new \DateTime());
         $interchange->requester_time($requester_time->column_id());
         $interchange->asked($asked_time->agent_id());
         $interchange->asked_time($request->get('column'));
@@ -289,18 +315,25 @@ class InterchangeController extends BaseController
         $id = $request->get('id');
         $action = $request->get('action');
 
+        $logged_in = $this->entityManager->getRepository(Agent::class)->find($_SESSION['login_id']);
         $interchange = $this->entityManager->getRepository(Interchange::class)->find($id);
 
         if ($action == 'Accepter') {
             $interchange->status('ACCEPTED');
+            $interchange->accepted_by($logged_in->id());
+            $interchange->accepted_on(new \DateTime());
         }
 
         if ($action == 'Refuser') {
             $interchange->status('REJECTED');
+            $interchange->rejected_by($logged_in->id());
+            $interchange->rejected_on(new \DateTime());
         }
 
         if ($action == 'Valider') {
             $interchange->status('VALIDATED');
+            $interchange->validated_by($logged_in->id());
+            $interchange->validated_on(new \DateTime());
         }
 
         $this->entityManager->persist($interchange);
