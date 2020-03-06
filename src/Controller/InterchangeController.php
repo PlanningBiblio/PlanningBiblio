@@ -25,10 +25,21 @@ class InterchangeController extends BaseController
      */
     public function index(Request $request)
     {
+        $droits = $GLOBALS['droits'];
+        $can_admin = in_array(1301, $droits) ? true : false;
+
         $interchanges = array();
         foreach ($this->entityManager
             ->getRepository(Interchange::class)
             ->findAll() as $interchange) {
+
+            $logged_in = $this->entityManager->getRepository(Agent::class)->find($_SESSION['login_id']);
+
+            if ($logged_in->id() != $interchange->asked()
+                && $logged_in->id() != $interchange->requester()
+                && !$can_admin) {
+                continue;
+            }
 
             $planning = $this->entityManager
                 ->getRepository(StatedWeek::class)
@@ -92,6 +103,20 @@ class InterchangeController extends BaseController
 
         $droits = $GLOBALS['droits'];
 
+        $logged_in = $this->entityManager->getRepository(Agent::class)->find($_SESSION['login_id']);
+        $can_accept = false;
+        if ($logged_in->id() == $interchange->asked()) {
+            $can_accept = true;
+        }
+
+        $can_validate = in_array(1301, $droits) ? true : false;
+
+        if ($logged_in->id() != $interchange->asked()
+            && $logged_in->id() != $interchange->requester()
+            && !$can_validate) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         $i = array();
         $planning = $this->entityManager
             ->getRepository(StatedWeek::class)
@@ -114,15 +139,6 @@ class InterchangeController extends BaseController
             ->find($interchange->requester_time());
         $i['requester_start'] = $requester_column->starttime()->format('H:i:s');
         $i['requester_to'] = $requester_column->endtime()->format('H:i:s');
-
-        $logged_in = $this->entityManager->getRepository(Agent::class)->find($_SESSION['login_id']);
-        $can_accept = false;
-        if ($logged_in->id() == $interchange->asked()) {
-            $can_accept = true;
-        }
-
-        $can_validate = in_array(1301, $droits) ? true : false;
-
 
         $this->templateParams(array(
             'i'             => $i,
