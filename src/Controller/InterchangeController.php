@@ -128,6 +128,7 @@ class InterchangeController extends BaseController
         $i['asked'] = $asked->prenom() . ' ' . $asked->nom();
         $i['date'] = $planning->date()->format('Y-m-d');
         $i['status'] = $interchange->status();
+        $i['rejected_admin'] = 0;
 
         $asked_column = $this->entityManager
             ->getRepository(StatedWeekColumn::class)
@@ -155,6 +156,11 @@ class InterchangeController extends BaseController
                 ->find($interchange->rejected_by());
             $i['rejected_by'] = $rejected_by->prenom() . ' ' . $rejected_by->nom();
             $i['rejected_on'] = $interchange->rejected_on()->format('Y-m-d H:i:s');
+
+            // Rejected by admin.
+            if ($interchange->rejected_by() != $interchange->asked()) {
+              $i['rejected_admin'] = 1;
+            }
         }
 
         if ($interchange->validated_by()) {

@@ -7,10 +7,11 @@
 {% endblock %}
 
 {% block page %}
-  <h3>Demande d'échange de poste</h3>
+  <h3>Échange d'horaires</h3>
 
   <form id="interchange" method="POST" action='{{ asset("/interchange") }}'>
     <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
+    <input type="button" value="Retour à la liste" onclick="location.href='{{ asset("/interchange") }}'" class="ui-button" style="float: right; margin-bottom: 10px;"/>
     <!-- edit -->
     {% if i is defined %}
       <input type="hidden" name="id" value="{{ i.id }}"/>
@@ -23,7 +24,7 @@
         </tr>
         <tr>
           <td>
-            Agent demandeur et poste:
+            Agent demandeur et horaires:
             <strong>
               {{ i.requester }} - de {{ i.requester_start | hour}} à {{ i.requester_to | hour }}
             </strong>
@@ -39,16 +40,20 @@
         </tr>
         <tr>
           <td>
-            Statut de la demande:
+            Statut:
             <strong>
               {% if i.status == 'ASKED' %}
-                Demandée
+                demandé par {{ i.requester }}
               {% elseif i.status == 'ACCEPTED' %}
-                Acceptée par l'agent
+                accepté par les deux agents
               {% elseif i.status == 'REJECTED' %}
-                Refusée
+                {% if i.rejected_admin %}
+                  échange refusé par l'administrateur
+                {% else %}
+                  refusé par {{ i.rejected_by }}
+                {% endif %}
               {% elseif i.status == 'VALIDATED' %}
-                Validée
+                échange validé
               {% endif %}
             </strong>
           </td>
