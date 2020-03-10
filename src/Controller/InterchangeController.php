@@ -11,6 +11,7 @@ use App\Model\StatedWeekColumn;
 use App\Model\Interchange;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -184,7 +185,7 @@ class InterchangeController extends BaseController
     /**
      * @Route("/interchange", name="interchange.save", methods={"POST"})
      */
-    public function save(Request $request)
+    public function save(Request $request, Session $session)
     {
         $this->CSRFToken = $request->get('CSRFToken');
 
@@ -193,8 +194,19 @@ class InterchangeController extends BaseController
             return $this->redirectToRoute('interchange.index');
         }
 
+        $requester = $_SESSION['login_id'];
+
         $date = dateFr($request->get('date'));
         $planning = $this->getPlanningOn($date);
+
+        $interchange = $this->entityManager
+            ->getRepository(Interchange::class)
+            ->findOneBy(array('planning' => $planning->id(), 'requester' => $requester));
+
+        if ($interchange) {
+            $session->getFlashBag()->add('error', 'Une demande existe déjà ce jour');
+            return $this->redirectToRoute('interchange.index', array('error' => 'existing_interchange'));
+        }
 
         $asked_time = $this->entityManager
             ->getRepository(StatedWeekTimes::class)
@@ -246,6 +258,26 @@ class InterchangeController extends BaseController
         if (empty($planning)) {
             $response->setContent('no planning');
             $response->setStatusCode(404);
+            return $response;
+        }
+
+        $interchange = $this->entityManager
+            ->getRepository(Interchange::class)
+            ->findOneBy(array('planning' => $planning->id(), 'requester' => $agent_id));
+
+        if ($interchange) {
+            $response->setContent('existing_requester');
+            $response->setStatusCode(409);
+            return $response;
+        }
+
+        $interchange = $this->entityManager
+            ->getRepository(Interchange::class)
+            ->findOneBy(array('planning' => $planning->id(), 'asked' => $agent_id));
+
+        if ($interchange) {
+            $response->setContent('existing_asked');
+            $response->setStatusCode(409);
             return $response;
         }
 

@@ -23,6 +23,14 @@ $( document ).ready(function() {
         if (xhr.responseText == 'no time') {
           information("Vous n'êtes pas affecté(e) au planning à cette date.<br/>Saisissez une autre date.", 'error');
         }
+
+        if (xhr.responseText == 'existing_requester') {
+          information("Vous avez déjà effectué une demande ce jour", 'error');
+        }
+
+        if (xhr.responseText == 'existing_asked') {
+          information("Une demande vous concernant existe déjà ce jour", 'error');
+        }
       }
     });
 
