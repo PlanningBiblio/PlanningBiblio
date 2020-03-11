@@ -288,7 +288,8 @@ $( document ).ready(function() {
   $( "#confirm-save-template" ).dialog({
     autoOpen: false,
     resizable: false,
-    width: 400,
+    width: 500,
+    height: 250,
     modal: true,
     buttons: {
       "Enregistrer": function() {
@@ -320,7 +321,8 @@ $( document ).ready(function() {
   });
 
   $('#save-template').on('click', function() {
-      $("#confirm-save-template").dialog( "open" );
+    $('input[name="template_name"]').val('');
+    $("#confirm-save-template").dialog( "open" );
   });
 
   $('#open-template').on('click', function() {
