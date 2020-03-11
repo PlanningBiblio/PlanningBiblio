@@ -116,13 +116,6 @@ if ($config['Multisites-nombre']>1 and is_array($selectedSites)) {
 $tab=array();
 $selected=null;
 
-// Recherche des absences dans la table absences
-$a=new absences();
-$a->valide=true;
-$a->agents_supprimes = array(0,1,2);
-$a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $debutSQL." 00:00:00", $finSQL." 23:59:59");
-$absencesDB=$a->elements;
-
 //		--------------		Récupération de la liste des postes pour le menu déroulant		------------------------
 $db=new db();
 $db->select2("postes", "*", array("obligatoire"=>"Renfort", "statistiques"=>"1"), "ORDER BY `etage`,`nom`");
@@ -136,6 +129,12 @@ if (!empty($postes)) {
     $sitesREQ=$db->escapeString($sitesSQL);
     $db->select("pl_poste", "`date`", "`date` BETWEEN '$debutREQ' AND '$finREQ' AND `site` IN ($sitesREQ)", "GROUP BY `date`;");
     $nbJours=$db->nb;
+
+    // Recherche des absences dans la table absences
+    $a=new absences();
+    $a->valide=true;
+    $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
+    $absencesDB=$a->elements;
 
     //	Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
     //	On stock le tout dans le tableau $resultat
@@ -180,9 +179,11 @@ if (!empty($postes)) {
             foreach ($resultat as $elem) {
                 // Vérifie à partir de la table absences si l'agent est absent
                 // S'il est absent : continue
-                foreach ($absencesDB as $a) {
-                    if ($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
-                        continue 2;
+                if ( !empty($absencesDB[$elem['perso_id']]) ) {
+                    foreach ($absencesDB[$elem['perso_id']] as $a) {
+                        if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
+                            continue 2;
+                        }
                     }
                 }
 

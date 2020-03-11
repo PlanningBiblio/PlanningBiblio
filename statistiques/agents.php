@@ -125,14 +125,14 @@ $db=new db();
 $db->select2("personnel", "*", array("actif"=>"Actif"), "ORDER BY `nom`,`prenom`");
 $agents_list=$db->result;
 
-// Recherche des absences dans la table absences
-$a=new absences();
-$a->valide=true;
-$a->agents_supprimes = array(0,1,2);
-$a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $debutSQL." 00:00:00", $finSQL." 23:59:59");
-$absencesDB=$a->elements;
-
 if (!empty($agents)) {
+
+    // Recherche des absences dans la table absences
+    $a=new absences();
+    $a->valide=true;
+    $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
+    $absencesDB=$a->elements;
+
     //	Recherche du nombre de jours concernés
     $db=new db();
     $debutREQ=$db->escapeString($debutSQL);
@@ -196,15 +196,14 @@ if (!empty($agents)) {
 
                     // Vérifie à partir de la table absences si l'agent est absent
                     // S'il est absent, on met à 1 la variable $elem['absent']
-                    foreach ($absencesDB as $a) {
-                        if ($elem['perso_id']==$a['perso_id']) {
+                    if ( !empty($absencesDB[$elem['perso_id']]) ) {
+                        foreach ($absencesDB[$elem['perso_id']] as $a) {
                             if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
                                 $elem['absent']="1";
-                                break;
                             }
                         }
                     }
-    
+
                     if ($elem['absent']!="1") {		// on compte les heures et les samedis pour lesquels l'agent n'est pas absent
                         // on créé un tableau par poste avec son nom, étage et la somme des heures faites par agent
                         if (!array_key_exists($elem['poste'], $postes)) {
