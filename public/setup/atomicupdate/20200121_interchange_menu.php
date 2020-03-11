@@ -26,3 +26,5 @@ $sql[] = "CREATE TABLE `{$dbprefix}interchanges` (
 $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `groupe`, `ordre`, `categorie`) VALUES('Échanges de poste', 1301, 'Validation des échanges de postes', 135, 'Semaines fixes')";
 
 $sql[] = "UPDATE `{$dbprefix}menu` SET `titre` = 'Échanges' WHERE `titre` = 'Échanges de poste'";
+
+$sql[] = "UPDATE `{$dbprefix}acces` SET `goupe` = 'Validation des échanges' WHERE `groupe` = 'Validation des échanges de postes'";
