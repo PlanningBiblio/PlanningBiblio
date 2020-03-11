@@ -99,6 +99,12 @@ class StatedWeekController extends BaseController
 
         $planning = $this->getPlanningOn($date);
 
+        $canEdit = 0;
+        $droits = $GLOBALS['droits'];
+        if (in_array(1401, $droits)) {
+            $canEdit = 1;
+        }
+
         // Absences
         $a = new \absences();
         $a->valide = false;
@@ -141,6 +147,7 @@ class StatedWeekController extends BaseController
             'week_days'     => $date_pl->dates,
             'pause2'        => $this->Config('PlanningHebdo-Pause2') ? 1 : 0,
             'CSRFSession'   => $GLOBALS['CSRFSession'],
+            'canEdit'       => $canEdit,
         ));
         if ($planning->locked()) {
             $locker = $this->entityManager->getRepository(Agent::class)->find($planning->locker_id());

@@ -19,10 +19,18 @@ class ControllerAuthorizationListener
         'ajax.editabsencereasons' => array(100),
         'ajax.holidaydelete' => array(100),
         'ajax.changepassword' => array(21),
-        'statedweek.availables' => array(301, 1001),
-        'statedweek.add' => array(301, 1001),
-        'statedweek.remove' => array(301, 1001),
-        'statedweek.placed' => array(301, 1001),
+        'statedweek.availables' => array(1401),
+        'statedweek.add' => array(1401),
+        'statedweekjob.add' => array(1401),
+        'statedweekpause.add' => array(1401),
+        'statedweekjob.update' => array(1401),
+        'statedweek.remove' => array(1401),
+        'statedweekjob.remove' => array(1401),
+        'statedweekpause.remove' => array(1401),
+        'statedweek.lock' => array(1401),
+        'statedweek.empty' => array(1401),
+        'statedweek.template.load' => array(1401),
+        'statedweek.template.add' => array(1401),
     );
 
     public function __construct(\Twig_Environment $twig)

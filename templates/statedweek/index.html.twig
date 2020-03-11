@@ -91,92 +91,98 @@
           </div>
         </td>
 
-        <td class="actions">
-          <div style="min-width: 185px">
-          {% if planning.locked %}
-            <div id="validation">
-              <u>Validation</u>
-              <br />
-              <span id="locker">{{ locker.nom }} {{ locker.prenom }}</span>
-              <span id="locked-on">{{ planning.locked_on | date('d/m/Y H:i') }}</span>
-            </div>
-          {% else %}
-            <div id="validation" style="display:none;">
-              <u>Validation</u>
-              <br />
-              <span id="locker"></span>
-              <span id="locked-on"></span>
-            </div>
-          {% endif %}
-          {% if planning.locked %}
-            <a id="unlock"><span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning'></span></a>
-            <a id="lock" style="display:none;"><span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning'></span></a>
+        {% if canEdit %}
+          <td class="actions">
+            <div style="min-width: 185px">
+            {% if planning.locked %}
+              <div id="validation">
+                <u>Validation</u>
+                <br />
+                <span id="locker">{{ locker.nom }} {{ locker.prenom }}</span>
+                <span id="locked-on">{{ planning.locked_on | date('d/m/Y H:i') }}</span>
+              </div>
             {% else %}
-            <a id="lock"><span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning'></span></a>
-            <a id="unlock" style="display:none;"><span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning'></span></a>
-          {% endif %}
-            <a id="save-template" href="#" title="Enregistrer comme modèle"><span class="pl-icon pl-icon-save"></span></a>
-            <a id="open-template" href="#" title="Importer un modèle"><span class="pl-icon pl-icon-open"></span></a>
-          </div>
-        </td>
+              <div id="validation" style="display:none;">
+                <u>Validation</u>
+                <br />
+                <span id="locker"></span>
+                <span id="locked-on"></span>
+              </div>
+            {% endif %}
+            {% if planning.locked %}
+              <a id="unlock"><span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning'></span></a>
+              <a id="lock" style="display:none;"><span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning'></span></a>
+              {% else %}
+              <a id="lock"><span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning'></span></a>
+              <a id="unlock" style="display:none;"><span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning'></span></a>
+            {% endif %}
+              <a id="save-template" href="#" title="Enregistrer comme modèle"><span class="pl-icon pl-icon-save"></span></a>
+              <a id="open-template" href="#" title="Importer un modèle"><span class="pl-icon pl-icon-open"></span></a>
+            </div>
+          </td>
+        {% endif %}
       </tr>
     </table>
 
-    <table id="statedweek-tables">
-      <tr>
-        <td>
-          {% include 'statedweek/tables/planning.html.twig' %}
-          {% include 'statedweek/tables/poste.html.twig' %}
-        </td>
-      </tr>
+    {% if canEdit or planning.locked %}
+      <table id="statedweek-tables">
+        <tr>
+          <td>
+            {% include 'statedweek/tables/planning.html.twig' %}
+            {% include 'statedweek/tables/poste.html.twig' %}
+          </td>
+        </tr>
 
-      <tr>
-        <td>
-          {% include 'statedweek/tables/absences.html.twig' %}
-          {% include 'statedweek/tables/holidays.html.twig' %}
-        </td>
-      </tr>
-    </table>
-  </div>
-  {% include 'statedweek/contextual-menu.html.twig' %}
-  <div id="confirm-lock" title="Verrouillage du planning">
-    Ceci entraînera le verrouillage de tous les plannings de la semaine.
-    <p class="warning" style="display:none;">
-      Certains plannings sont inexistants et seront créés automatiquement:
-      <ul id="empty-plannings">
-      </ul>
-    </p>
-    Souhaitez-vous continuer ?
-  </div>
+        <tr>
+          <td>
+            {% include 'statedweek/tables/absences.html.twig' %}
+            {% include 'statedweek/tables/holidays.html.twig' %}
+          </td>
+        </tr>
+      </table>
+    </div>
+    {% include 'statedweek/contextual-menu.html.twig' %}
+    <div id="confirm-lock" title="Verrouillage du planning">
+      Ceci entraînera le verrouillage de tous les plannings de la semaine.
+      <p class="warning" style="display:none;">
+        Certains plannings sont inexistants et seront créés automatiquement:
+        <ul id="empty-plannings">
+        </ul>
+      </p>
+      Souhaitez-vous continuer ?
+    </div>
 
-  <div id="confirm-unlock" title="Déverrouillage du planning">
-    Ceci entraînera le déverrouillage de tous les plannings de la semaine.
-    Souhaitez-vous continuer ?
-  </div>
+    <div id="confirm-unlock" title="Déverrouillage du planning">
+      Ceci entraînera le déverrouillage de tous les plannings de la semaine.
+      Souhaitez-vous continuer ?
+    </div>
 
-  <div id="confirm-save-template" title="Enregistrer comme modèle">
-    <form>
-      <label for="template_name">Nom du modèle</label>
-      <input type="text" name="template_name" id="template_name">
+    <div id="confirm-save-template" title="Enregistrer comme modèle">
+      <form>
+        <label for="template_name">Nom du modèle</label>
+        <input type="text" name="template_name" id="template_name">
 
-      <label for="template_week">Enregistrer toute la semaine</label>
-      <input type="checkbox" name="template_week" id="template_week">
-    </form>
-  </div>
+        <label for="template_week">Enregistrer toute la semaine</label>
+        <input type="checkbox" name="template_week" id="template_week">
+      </form>
+    </div>
 
-  <div id="confirm-load-template" title="Enregistrer comme modèle">
-    <form>
-      {% if templates %}
-        <p>Sélectionnez le modèle à importer</p>
-        <select name="template">
-          <option></option>
-          {% for template in templates %}
-          <option value="{{ template.id }}">{{ template.name }} {% if template.type == 'week' %}(semaine){% endif %}</option>
-          {% endfor %}
-        </select>
-      {% else %}
-        <p>Aucun modèle à importer</p>
-      {% endif %}
-    </form>
-  </div>
+    <div id="confirm-load-template" title="Enregistrer comme modèle">
+      <form>
+        {% if templates %}
+          <p>Sélectionnez le modèle à importer</p>
+          <select name="template">
+            <option></option>
+            {% for template in templates %}
+            <option value="{{ template.id }}">{{ template.name }} {% if template.type == 'week' %}(semaine){% endif %}</option>
+            {% endfor %}
+          </select>
+        {% else %}
+          <p>Aucun modèle à importer</p>
+        {% endif %}
+      </form>
+    </div>
+  {% else %}
+    <center>Le planning du {{ date | date('d/m/Y') }} n'est pas encore validé.</center>
+  {% endif %}
 {% endblock %}
