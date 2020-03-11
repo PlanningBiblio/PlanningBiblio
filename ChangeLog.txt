@@ -2,6 +2,9 @@
 - Fixes
 Fix saving status and services in agent's form
 
+- Enhancements
+Improves performances on statistics pages
+
 *** Version 19.04.06       (2020-02-07)   ***
 - Fixes
 Update URL on administration/configuration page
