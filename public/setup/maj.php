@@ -1757,6 +1757,145 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="19.11.00.010";
+if (version_compare($config['Version'], $v) === -1) {
+    //Statedweek
+    $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`) VALUES(30, 95, 'Semaines fixes', '/statedweek', 'config=statedweek_enabled')";
+    $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `page`, `ordre`) VALUES('Semaine fixes', 100, '/statedweek', 0)";
+
+    $sql[] = "CREATE TABLE `{$dbprefix}stated_week_plannings` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        date DATE NOT NULL,
+        locked TINYINT(1) NULL,
+        locker_id int(11) NULL,
+        locked_on datetime NULL,
+        PRIMARY KEY (`id`)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+
+    $sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_columns` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        planning_id INT(11),
+        type ENUM('first-slot', 'second-slot', 'third-slot'),
+        starttime TIME NOT NULL,
+        endtime TIME NOT NULL,
+        PRIMARY KEY (`id`),
+        FOREIGN KEY (planning_id) REFERENCES stated_week_plannings(id)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+
+    $sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_times` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        agent_id int(11) NOT NULL DEFAULT '0',
+        column_id INT(11),
+        PRIMARY KEY (`id`),
+        UNIQUE KEY `agent_column` (`agent_id`,`column_id`),
+        FOREIGN KEY (column_id) REFERENCES stated_week_planning_columns(id)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+
+    $sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_job` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        planning_id INT(11),
+        type ENUM('first-job', 'second-job', 'third-job'),
+        name VARCHAR(255) NOT NULL,
+        description VARCHAR(255) NOT NULL,
+        PRIMARY KEY (`id`),
+        FOREIGN KEY (planning_id) REFERENCES stated_week_plannings(id)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+
+    $sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_job_times` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        agent_id int(11) NOT NULL DEFAULT '0',
+        job_id INT(11),
+        starttime TIME NULL,
+        endtime TIME NULL,
+        breaktime TIME NULL,
+        PRIMARY KEY (`id`),
+        FOREIGN KEY (job_id) REFERENCES stated_week_planning_job(id)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+
+    $sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_pauses` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        agent_id int(11) NOT NULL DEFAULT '0',
+        planning_id INT(11),
+        PRIMARY KEY (`id`),
+        UNIQUE KEY `agent_job` (`agent_id`,`planning_id`),
+        FOREIGN KEY (planning_id) REFERENCES stated_week_plannings(id)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+
+    $sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_templates` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        name VARCHAR(255) NOT NULL,
+        type ENUM('day', 'week'),
+        PRIMARY KEY (`id`)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+
+    $sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_time_templates` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        template_id INT(11) NOT NULL,
+        day_index tinyint NOT NULL,
+        job VARCHAR(50),
+        agent_id int(11) NOT NULL DEFAULT '0',
+        starttime TIME NULL,
+        endtime TIME NULL,
+        breaktime TIME NULL,
+        PRIMARY KEY (`id`),
+        FOREIGN KEY (template_id) REFERENCES stated_week_planning_templates(id)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+
+    $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `groupe`, `ordre`, `categorie`) VALUES('Plannings semaines fixes', 1401, 'Création / modification des plannings semaines fixes', 136, 'Semaines fixes')";
+
+    // Unaffected workers
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES ('Planning-AfficheAgentsDisponibles', 'boolean', '0', 'Planning','100', 'Afficher le nombre d\'agents disponibles pour une tranche horaire du planning.');";
+
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES ('Conges-Heures', 'boolean', '0', 'Congés','5', 'Permet la saisie de cong&eacute;s avec une heure de deacute;but et une heure de fin.');";
+
+    // interchanges
+    $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`) VALUES(35, 0, 'Échanges de poste', '/interchange', 'config=statedweek_enabled')";
+    $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`) VALUES(35, 5, 'Voir les échanges', '/interchange', 'config=statedweek_enabled')";
+    $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`) VALUES(35, 10, 'Demande d\'échange', '/interchange/add', 'config=statedweek_enabled')";
+    $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `page`, `ordre`) VALUES('Échanges de poste', 100, '/interchange', 0)";
+    $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `page`, `ordre`) VALUES('Demande d\'échange', 100, '/interchange/add', 0)";
+
+    $sql[] = "CREATE TABLE `{$dbprefix}interchanges` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        planning INT(11) NOT NULL,
+        requester int(11) NOT NULL,
+        requested_on datetime NOT NULL,
+        requester_time int(11) NOT NULL,
+        asked int(11) NOT NULL,
+        asked_time int(11) NOT NULL,
+        accepted_by int(11) NULL DEFAULT 0,
+        accepted_on datetime NULL,
+        rejected_by int(11) NULL DEFAULT 0,
+        rejected_on datetime NULL,
+        validated_by int(11) NULL DEFAULT 0,
+        validated_on datetime NULL,
+        status ENUM ('ASKED','ACCEPTED', 'REJECTED', 'VALIDATED') NOT NULL DEFAULT 'ASKED',
+        PRIMARY KEY (`id`)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+
+    $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `groupe`, `ordre`, `categorie`) VALUES('Échanges de poste', 1301, 'Validation des échanges de postes', 135, 'Semaines fixes')";
+
+    $sql[] = "UPDATE `{$dbprefix}menu` SET `titre` = 'Échanges' WHERE `titre` = 'Échanges de poste'";
+
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `goupe` = 'Validation des échanges' WHERE `groupe` = 'Validation des échanges de postes'";
+
+    // MT 27498
+    $sql[] = "ALTER TABLE `{$dbprefix}postes` ADD COLUMN position VARCHAR(11) DEFAULT 'frontOffice' AFTER groupe_id;";
+
+    // Overall site view
+    $sql[]="CREATE TABLE `{$dbprefix}hidden_sites` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `perso_id` int(11) NOT NULL DEFAULT '0',
+      `hidden_sites` TEXT NULL DEFAULT NULL,
+      PRIMARY KEY (`id`)
+    ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+
+    $sql[] = "INSERT INTO `{$dbprefix}menu` (niveau1, niveau2, titre, url) VALUES(30, 105, 'Tous les sites', 'planning/poste/overall.php')";
+    $sql[] = "INSERT INTO `{$dbprefix}acces` (nom, groupe_id, page, ordre) VALUES('Tous les sites', 100, 'planning/poste/overall.php', 0)";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
