@@ -5,6 +5,21 @@
   <head>
     <title>Planning</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel='gettext' type='application/x-po' href='{{ app.request.getBaseURL() }}/locale/messages.{{ language }}.po' />
+    <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/Gettext.js'></script>
+    <script type='text/Javascript'>
+    /*
+     * gt : Object to translate JavaScript strings
+     * function _() : Syntax of gettext
+     */
+
+    var gt = new Gettext({ 'domain' : 'messages' });
+    function _(msgid) {
+        return gt.gettext(msgid);
+    }
+    </script>
+
     <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/jquery-1.11.1.min.js'></script>
     <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/jquery-ui-1.11.2/jquery-ui.js'></script>
     <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/carhartl-jquery-cookie-3caf209/jquery.cookie.js'></script>

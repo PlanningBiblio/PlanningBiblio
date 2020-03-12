@@ -10,10 +10,12 @@ use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 
 use ReflectionClass;
 
-class ControllerAuthorizationListener
+class KernelRequestListener
 {
 
     private $templateParams = array();
+
+    private $defaultLocale = 'en_US';
 
     private $permissions = array(
         'ajax.editabsencereasons' => array(100),
@@ -31,7 +33,15 @@ class ControllerAuthorizationListener
 
     public function onKernelRequest(GetResponseEvent $event)
     {
-        $route = $event->getRequest()->attributes->get('_route');
+        $request = $event->getRequest();
+
+        // Define user's locale.
+        $locale = $this->guessLocale($request);
+        $request->getSession()->set('_locale', $locale);
+        $request->setLocale($locale, $this->defaultLocale);
+
+        // Access control.
+        $route = $request->attributes->get('_route');
 
         if (!$this->canAccess($route)) {
             $body = $this->twig->render('accesss-denied.html.twig', $this->templateParams);
@@ -44,6 +54,28 @@ class ControllerAuthorizationListener
         }
 
     }
+
+    private function guessLocale($request)
+    {
+        // User requested a specific locale as request parameter.
+        if ($locale = $request->get('locale')) {
+            return $locale;
+        }
+
+        // We already have a locale in session.
+        if ($locale = $request->getSession()->get('_locale')) {
+            return $locale;
+        }
+
+        // Get broswer locale.
+        $locale = $this->getBrowserLanguage($request);
+
+        return $locale;
+    }
+
+     private function getBrowserLanguage($request) {
+         return str_replace('-', '_', substr($request->headers->get('Accept-Language'),0,5));
+     }
 
     private function canAccess($route)
     {

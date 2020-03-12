@@ -17,6 +17,7 @@ class AbsenceInfoController extends BaseController
      */
     public function index(Request $request, Session $session)
     {
+        //$translated = $this->get('translator')->trans('Symfony is great');
         $today = date('Ymd');
 
         $queryBuilder = $this->entityManager->createQueryBuilder();

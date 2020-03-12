@@ -29,6 +29,23 @@
       $(document).click(function(){
         $(".menu_table").remove();
       });
+
+      $(document).ready(function(){
+        $('#lang-selector').on('change', function() {
+          language = $(this).val();
+          $.ajax({
+            url: "/ajax/language/change",
+            type: "get",
+            data: {language: language},
+            success: function(){
+              document.location.reload();
+            },
+            error: function(){
+              information("Une erreur est survenue lors de la modification de la langue.","error");
+            }
+          });
+        });
+      });
       -->
     </script>
 
@@ -57,6 +74,20 @@
           </td>
 
           <td align='right'>
+            <select id="lang-selector">
+              {% if language == 'en_US' %}
+                <option value="en_US" selected="selected">English</option>
+              {% else %}
+                <option value="en_US">English</option>
+              {% endif %}
+
+              {% if language == 'fr_FR' %}
+                <option value="fr_FR" selected="selected">Français</option>
+              {% else %}
+                <option value="fr_FR">Français</option>
+              {% endif %}
+
+            </select>
             <font  class='noprint' style='font-size:19px'>
               {{ user_firstname }} {{ user_surname }}
             </font>
