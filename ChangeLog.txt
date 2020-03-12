@@ -11,6 +11,7 @@ Abiblity to request holiday on half day
 Add free breaktimes
 Add unit tests
 Hamac import : Add intermediate validation and information logging
+Shows Agendas/Synchro tab on agent's pages when Hamac-csv param is set
 
 -Fixes
 Add raw filter on agent templates for fields services, right and skills

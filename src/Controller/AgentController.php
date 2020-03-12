@@ -322,7 +322,8 @@ class AgentController extends BaseController
             'lang_send_ics_url_message' => $lang['send_ics_url_message'],
         ));
         if ($this->config('ICS-Server1') or $this->config('ICS-Server2')
-            or $this->config('ICS-Server3') or $this->config('ICS-Export')) {
+            or $this->config('ICS-Server3') or $this->config('ICS-Export')
+            or $this->config('Hamac-csv')) {
             $this->templateParams(array( 'agendas_and_sync' => 1 ));
         }
 
