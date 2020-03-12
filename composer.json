@@ -42,7 +42,7 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.13",
-        "symfony/phpunit-bridge": "^3.4",
+        "symfony/phpunit-bridge": "^4.1",
         "symfony/debug-pack": "*",
         "symfony/maker-bundle": "^1.11",
         "symfony/profiler-pack": "*",
