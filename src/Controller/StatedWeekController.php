@@ -167,14 +167,15 @@ class StatedWeekController extends BaseController
         $to = $date . ' ' . $request->get('to');
         $job_name = $request->get('job_name');
 
+	$params = array('supprime' => 0);
+	if ($job_name != 'concierges') {
+            $params['service'] = $this->config('statedweek_service_filter');
+	}
+
         $availables = array();
         $agents = $this->entityManager
             ->getRepository(Agent::class)
-            ->findBy(array(
-                'supprime'  => 0,
-                'service'   => $this->config('statedweek_service_filter')
-            ),
-            array('nom' => 'ASC'));
+            ->findBy($params, array('nom' => 'ASC'));
 
         $required_skills = array();
         $jobs_conf = $this->config('statedweek_times_job');
