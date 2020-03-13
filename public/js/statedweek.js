@@ -75,6 +75,7 @@ function removeWorkingHours(cell_id) {
       $('#' + timeid + ' span.view-time').text('');
       $('#' + timeid + ' a.edit-time').hide();
       initDroppable(cell);
+      initializePlanning();
     },
     error: function() {
       information("Une erreur est survenue lors de la mise à jour du planning", 'error');
@@ -128,6 +129,7 @@ function addWorkingHours(cell_id) {
       } else {
         initDraggable(cell);
       }
+      initializePlanning();
     },
     error: function() {
       cell.empty();
@@ -155,6 +157,142 @@ function countByPlace() {
       }
     });
     $('#' + slot + '-count').html('&nbsp;(' + count + ')');
+  });
+}
+
+function initializePlanning() {
+  date = $('input[name="date"]').val();
+  $.ajax({
+    url: '/ajax/statedweek/placed',
+    type: 'post',
+    data: {date: date},
+    success: function(agents) {
+      emptyPlanning();
+      $.each(agents, function(index, agent) {
+        placeAgent(agent);
+      });
+      countByPlace();
+    },
+    error: function() {
+      information("Une erreur est survenue lors de la récupération du planning", 'error');
+    }
+  });
+}
+
+function emptyPlanning() {
+  $('.time-slot').each(function() {
+    $(this).empty();
+  });
+};
+
+function placeAgent(agent) {
+  if (agent.place == 'planning') {
+    placeOnPlanning(agent);
+  }
+
+  if (agent.place == 'job') {
+    placeOnJob(agent);
+  }
+
+  if (agent.place == 'pause') {
+    placeOnPause(agent);
+  }
+}
+
+function placeOnPause(agent) {
+  $('#statedweek-poste td[data-pause="1"]').each(function() {
+    cell = $(this);
+    if ($(this).is(':empty')) {
+      cell.addAgent(agent);
+
+      return false;
+    }
+  });
+}
+
+function placeOnJob(agent) {
+  job_name= agent.job_name;
+  from = agent.from;
+  to = agent.to;
+  breaktime = agent.breaktime;
+
+  $('#statedweek-poste td[data-job="' + job_name + '"]').each(function() {
+    cell = $(this);
+    if (cell.is(':empty')) {
+      cell.addAgent(agent);
+      cell.attr('data-jobtimeid', agent.jobtimeid);
+
+      if (agent.absent) {
+        cell.addAbsence();
+      }
+
+      if (agent.partially_absent) {
+        cell.addPartialAbsences(agent.partially_absent);
+      }
+
+      if (agent.holiday) {
+        cell.addHoliday();
+      }
+
+      //Working hours.
+      time_cell_id = cell.data('timeid');
+      time_cell = $('#' + time_cell_id);
+
+      if (from) {
+        time_cell.find('input.time-from').val(from);
+      }
+
+      if (to) {
+        time_cell.find('input.time-to').val(to);
+      }
+
+
+      from = from ? from : '--:--';
+      to = to ? to : '--:--';
+
+      content = from + ' - ' + to;
+      if (breaktime) {
+        content += ' (' + breaktime + ')';
+        time_cell.find('input.time-break').val(breaktime);
+      }
+
+      time_cell.find('span.view-time').html(content);
+      time_cell.find('a.edit-time').show();
+
+      return false;
+    }
+  });
+}
+
+function placeOnPlanning(agent) {
+  from = agent.from;
+  to = agent.to;
+
+  $('#statedweek-planning td[data-from="' + from + '"][data-to="' + to +'"]').each(function() {
+    cell = $(this);
+    if (cell.is(':empty')) {
+      cell.addAgent(agent);
+
+      if (agent.absent) {
+        cell.addAbsence();
+      }
+
+      if (agent.partially_absent) {
+        cell.addPartialAbsences(agent.partially_absent);
+      }
+
+      if (agent.holiday) {
+        cell.addHoliday();
+      }
+
+      if (agent.interchange) {
+        cell.addInterchange(agent.interchange);
+      }
+
+      initDraggable(cell);
+
+      return false;
+    }
   });
 }
 
@@ -464,7 +602,6 @@ $( document ).ready(function() {
     }
 
     addWorkingHours(cell_id);
-    initializePlanning();
 
     $(".context-menu").hide(100);
   });
@@ -623,142 +760,6 @@ $( document ).ready(function() {
     if (cell.data('jobdesc')) {
       $('.context-menu-title').html(cell.data('jobdesc'));
     }
-  }
-
-  function initializePlanning() {
-    date = $('input[name="date"]').val();
-    $.ajax({
-      url: '/ajax/statedweek/placed',
-      type: 'post',
-      data: {date: date},
-      success: function(agents) {
-        emptyPlanning();
-        $.each(agents, function(index, agent) {
-          placeAgent(agent);
-        });
-        countByPlace();
-      },
-      error: function() {
-        information("Une erreur est survenue lors de la récupération du planning", 'error');
-      }
-    });
-  }
-
-  function emptyPlanning() {
-    $('.time-slot').each(function() {
-      $(this).empty();
-    });
-  };
-
-  function placeAgent(agent) {
-    if (agent.place == 'planning') {
-      placeOnPlanning(agent);
-    }
-
-    if (agent.place == 'job') {
-      placeOnJob(agent);
-    }
-
-    if (agent.place == 'pause') {
-      placeOnPause(agent);
-    }
-  }
-
-  function placeOnPause(agent) {
-    $('#statedweek-poste td[data-pause="1"]').each(function() {
-      cell = $(this);
-      if ($(this).is(':empty')) {
-        cell.addAgent(agent);
-
-        return false;
-      }
-    });
-  }
-
-  function placeOnJob(agent) {
-    job_name= agent.job_name;
-    from = agent.from;
-    to = agent.to;
-    breaktime = agent.breaktime;
-
-    $('#statedweek-poste td[data-job="' + job_name + '"]').each(function() {
-      cell = $(this);
-      if (cell.is(':empty')) {
-        cell.addAgent(agent);
-        cell.attr('data-jobtimeid', agent.jobtimeid);
-
-        if (agent.absent) {
-          cell.addAbsence();
-        }
-
-        if (agent.partially_absent) {
-          cell.addPartialAbsences(agent.partially_absent);
-        }
-
-        if (agent.holiday) {
-          cell.addHoliday();
-        }
-
-        //Working hours.
-        time_cell_id = cell.data('timeid');
-        time_cell = $('#' + time_cell_id);
-
-        if (from) {
-          time_cell.find('input.time-from').val(from);
-        }
-
-        if (to) {
-          time_cell.find('input.time-to').val(to);
-        }
-
-
-        from = from ? from : '--:--';
-        to = to ? to : '--:--';
-
-        content = from + ' - ' + to;
-        if (breaktime) {
-          content += ' (' + breaktime + ')';
-          time_cell.find('input.time-break').val(breaktime);
-        }
-
-        time_cell.find('span.view-time').html(content);
-        time_cell.find('a.edit-time').show();
-
-        return false;
-      }
-    });
-  }
-
-  function placeOnPlanning(agent) {
-    from = agent.from;
-    to = agent.to;
-
-    $('#statedweek-planning td[data-from="' + from + '"][data-to="' + to +'"]').each(function() {
-      cell = $(this);
-      if (cell.is(':empty')) {
-        cell.addAgent(agent);
-
-        if (agent.absent) {
-          cell.addAbsence();
-        }
-
-        if (agent.partially_absent) {
-          cell.addPartialAbsences(agent.partially_absent);
-        }
-
-        if (agent.holiday) {
-          cell.addHoliday();
-        }
-
-        if (agent.interchange) {
-          cell.addInterchange(agent.interchange);
-        }
-
-        initDraggable(cell);
-
-        return false;
-      }
-    });
   }
 
   function lockPlanning() {
