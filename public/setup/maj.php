@@ -1849,7 +1849,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES ('Conges-Heures', 'boolean', '0', 'Congés','5', 'Permet la saisie de cong&eacute;s avec une heure de deacute;but et une heure de fin.');";
 
     // interchanges
-    $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`) VALUES(35, 0, 'Échanges de poste', '/interchange', 'config=statedweek_enabled')";
+    $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`) VALUES(35, 0, 'Échanges', '/interchange', 'config=statedweek_enabled')";
     $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`) VALUES(35, 5, 'Voir les échanges', '/interchange', 'config=statedweek_enabled')";
     $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`) VALUES(35, 10, 'Demande d\'échange', '/interchange/add', 'config=statedweek_enabled')";
     $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `page`, `ordre`) VALUES('Échanges de poste', 100, '/interchange', 0)";
@@ -1873,11 +1873,7 @@ if (version_compare($config['Version'], $v) === -1) {
         PRIMARY KEY (`id`)
     ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 
-    $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `groupe`, `ordre`, `categorie`) VALUES('Échanges de poste', 1301, 'Validation des échanges de postes', 135, 'Semaines fixes')";
-
-    $sql[] = "UPDATE `{$dbprefix}menu` SET `titre` = 'Échanges' WHERE `titre` = 'Échanges de poste'";
-
-    $sql[] = "UPDATE `{$dbprefix}acces` SET `goupe` = 'Validation des échanges' WHERE `groupe` = 'Validation des échanges de postes'";
+    $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `groupe`, `ordre`, `categorie`) VALUES('Échanges de poste', 1301, 'Validation des échanges', 135, 'Semaines fixes')";
 
     // MT 27498
     $sql[] = "ALTER TABLE `{$dbprefix}postes` ADD COLUMN position VARCHAR(11) DEFAULT 'frontOffice' AFTER groupe_id;";
