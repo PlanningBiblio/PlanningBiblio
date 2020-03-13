@@ -666,6 +666,9 @@ class StatedWeekController extends BaseController
                 );
         }
 
+        $names  = array_column($placed, 'name');
+        array_multisort($names, SORT_ASC, $placed);
+
         return $this->json($placed);
     }
 

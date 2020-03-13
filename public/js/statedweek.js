@@ -464,6 +464,7 @@ $( document ).ready(function() {
     }
 
     addWorkingHours(cell_id);
+    initializePlanning();
 
     $(".context-menu").hide(100);
   });
@@ -631,6 +632,7 @@ $( document ).ready(function() {
       type: 'post',
       data: {date: date},
       success: function(agents) {
+        emptyPlanning();
         $.each(agents, function(index, agent) {
           placeAgent(agent);
         });
@@ -641,6 +643,12 @@ $( document ).ready(function() {
       }
     });
   }
+
+  function emptyPlanning() {
+    $('.time-slot').each(function() {
+      $(this).empty();
+    });
+  };
 
   function placeAgent(agent) {
     if (agent.place == 'planning') {
