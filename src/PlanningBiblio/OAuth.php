@@ -44,14 +44,22 @@ class OAuth {
     private $redirectURL = "https://my.planningbiblio.fr/graphauth";
 
     function __construct() {
-        $this->clientid = '';
-        $this->clientsecret = '';
-        $this->tokenURL = "";
-        $this->authURL = "";
-	$this->redirectURL = "https://graph-planningb.test.biblibre.eu/graphauth";
+        $this->clientid = 'b1ac0c42-9c34-4539-aa79-8383d7d27531';
+        $this->clientsecret = 'K6UFI5c_BgdL:=XJBw*iOJU6k28=Jlyr';
+        #$this->tokenURL = "https://login.microsoftonline.com/3c9a740f-a262-428a-8135-db6db17d87d3/oauth2/token";
+        #$this->authURL = "https://login.microsoftonline.com/3c9a740f-a262-428a-8135-db6db17d87d3/oauth2/authorize";
+        $this->tokenURL = 'https://login.microsoftonline.com/common/oauth2/v2.0/token';
+        $this->authURL = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize';
+	$this->redirectURL = "https://graph-planningb.test.biblibre.eu/";
     }
 
     function getToken() {
+
+
+	$options = [
+	     'scope' => 'https://graph.microsoft.com/.default'
+	];
+
         //$provider = new \League\OAuth2\Client\Provider\GenericProvider([
         $provider = new GenericProvider([
             'clientId'                => $this->clientid,
@@ -59,20 +67,31 @@ class OAuth {
             'urlAuthorize'            => $this->authURL,
             'urlAccessToken'          => $this->tokenURL,
 	    'redirectUri'             => $this->redirectURL,
-            'urlResourceOwnerDetails' => $this->redirectURL
+            'urlResourceOwnerDetails' => '',
+            'scopes'                  => 'openid profile offline_access user.read calendars.read'
         ]);
+
+	$authUrl = $provider->getAuthorizationUrl();
+	$state = $provider->getState();
+	var_dump($this->authURL . "<br /><br />");
+	var_dump($state . "<br /><br />");
+
 
         if (!array_key_exists("oauthToken", $_SESSION)) {
             try {
 
                 // Try to get an access token using the client credentials grant.
-                $accessToken = $provider->getAccessToken('client_credentials');
+                $accessToken = $provider->getAccessToken('client_credentials', $options);
 
             } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
 
                 // Failed to get the access token
-                exit("hey" . $e->getMessage());
+		echo("Unable to get token: \n");
+		echo ("<pre>");
                 var_dump($e->getResponseBody());
+		echo ("</pre>");
+                echo("Message: " . $e->getMessage() . " code: " . $e->getCode());
+		exit();
 
             }
         } else {
