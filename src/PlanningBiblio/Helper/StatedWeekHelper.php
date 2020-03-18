@@ -6,6 +6,7 @@ use App\PlanningBiblio\Helper\BaseHelper;
 
 use App\Model\Agent;
 use App\Model\StatedWeekJobTimes;
+use App\Model\StatedWeekJob;
 use App\Model\StatedWeekTimes;
 
 use App\PlanningBiblio\Helper\TimeHelper;
@@ -70,6 +71,95 @@ class StatedWeekHelper extends BaseHelper
         if ($this->config('statedweek_3columns_breaktime')) {
             $this->fixed_breaktime = $this->config('statedweek_3columns_breaktime');
         }
+    }
+
+    public function saveToNormalPlanning()
+    {
+        $planning_agents = $this->planning_agents;
+        foreach ($planning_agents as $agent_id => $planning) {
+            foreach ($planning as $day_index => $elem) {
+                if ($elem['type'] != 'job') {
+                    continue;
+                }
+
+                $date = $this->dates[$day_index];
+                $normal_planning = $this->getNormalPlanning($date);
+                if (!$normal_planning) {
+                    continue;
+                }
+
+
+                $times = $elem['times'];
+                foreach ($times as $time) {
+                    $job_id = $time->job_id();
+                    $starttime = $time->starttime();
+                    $andtime = $time->endtime();
+
+                    $job = $this->entityManager
+                        ->getRepository(StatedWeekJob::class)
+                        ->find($job_id);
+
+                    $normal_job_id = $this->getRelatedNormalJob($job);
+
+                    // Retrieve planning's line for the job.
+                    $line = $this->getTable($normal_planning['tableau'], $normal_job_id);
+                    if (!$line) {
+                        continue;
+                    }
+
+                    // Retrieve time slots
+                    $time_slots = $this->getTimeSlots($line, $time);
+                    $db = new \db();
+                    $db->CSRFToken = $this->CSRFToken;
+                    foreach ($time_slots as $time_slot) {
+                        $data = array(
+                            'perso_id'      => $agent_id,
+                            'date'          => $date,
+                            'poste'         => $normal_job_id,
+                            'chgt_login'    => $_SESSION['login_id'],
+                            'debut'         => $time_slot['debut'],
+                            'fin'           => $time_slot['fin'],
+                            'site'          => $this->config('statedweek_site_filter')
+                        );
+                        $db->insert('pl_poste', $data);
+                    }
+                }
+            }
+        }
+    }
+
+    private function getTimeSlots($line, $time)
+    {
+        // select * from pl_poste_horaires where fin >= '10:00:00' and debut <= '18:00:00' and tableau = 1 and numero = 1;
+        $start = $time->starttime()->format('H:i:s');
+        $end = $time->endtime()->format('H:i:s');
+        $params = array(
+            'tableau'   => $line['tableau'],
+            'numero'    => $line['numero'],
+            'fin'       => ">=$start",
+            'debut'     => "<=$end"
+        );
+
+        $db = new \db();
+        $db->select2('pl_poste_horaires', null, $params);
+
+        $time_slots = $db->result;
+        if (is_array($time_slots)) {
+            return $time_slots;
+        }
+        return array();
+    }
+
+    private function getTable($planning_id, $job_id)
+    {
+        $db = new \db();
+        $db->select2('pl_poste_lignes', null, array('numero' => $planning_id, 'poste' => $job_id));
+
+        $tables = $db->result;
+        if (is_array($tables)) {
+            return $tables[0];
+        }
+        return null;
     }
 
     public function saveToWeeklyPlannings()
@@ -331,5 +421,34 @@ class StatedWeekHelper extends BaseHelper
         if ($this->config('nb_semaine') > 2) {
             $target[$index + 14] = $day;
         }
+    }
+
+    private function getRelatedNormalJob($job)
+    {
+        foreach ($this->config('statedweek_times_job') as $normal_job) {
+            if ($normal_job['name'] != $job->name()) {
+                continue;
+            }
+
+            if (isset($normal_job['related_to']) && $normal_job['related_to']) {
+                return $normal_job['related_to'];
+            }
+        }
+
+        return 0;
+    }
+
+    private function getNormalPlanning($date)
+    {
+        $site = $this->config('statedweek_site_filter') ?? 1;
+
+        $db = new \db();
+        $db->select2('pl_poste_tab_affect', null, array('date' => $date, 'site' => $site));
+
+        $normal_plannings = $db->result;
+        if (is_array($normal_plannings)) {
+            return $normal_plannings[0];
+        }
+        return $normal_plannings;
     }
 }

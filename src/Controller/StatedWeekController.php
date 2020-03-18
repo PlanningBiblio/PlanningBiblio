@@ -70,7 +70,8 @@ class StatedWeekController extends BaseController
         if ($lock) {
             $statedweekHelper = new StatedWeekHelper($plannings);
             $statedweekHelper->CSRFToken = $this->CSRFToken;
-            $statedweekHelper->saveToWeeklyPlannings();
+            //$statedweekHelper->saveToWeeklyPlannings();
+            $statedweekHelper->saveToNormalPlanning();
         }
 
         $current_planning = $this->getPlanningOn($date);
