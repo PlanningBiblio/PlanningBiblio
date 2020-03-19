@@ -30,7 +30,7 @@ class AbsenceController extends BaseController
         $this->agents_multiples = ($this->admin or in_array(9, $this->droits));
 
         if ($this->config('Absences-adminSeulement') and !$this->admin) {
-            return $this->output('accesss-denied.html.twig');
+            return $this->output('access-denied.html.twig');
         }
 
         $this->setCommonTemplateParams();
@@ -288,8 +288,13 @@ class AbsenceController extends BaseController
     }
 
     private function save(Request $request) {
-
-        $perso_ids = $this->filterAgents($request->get('perso_ids'));
+        $perso_id = $request->get('perso_id');
+        $perso_ids = array();
+        if (!empty($perso_id)) {
+            $perso_ids[] = $perso_id;
+        } else {
+            $perso_ids = $this->filterAgents($request->get('perso_ids'));
+        }
 
         // Sécurité : Si l'agent enregistrant l'absence n'est pas admin et n'est pas dans la liste des absents ou pas autorisé à enregistrer des absences pour plusieurs agents, l'accès est refusé.
         $access = false;

@@ -46,7 +46,7 @@ class ControllerAuthorizationListener
         $route = $event->getRequest()->attributes->get('_route');
 
         if (!$this->canAccess($route)) {
-            $body = $this->twig->render('accesss-denied.html.twig', $this->templateParams);
+            $body = $this->twig->render('access-denied.html.twig', $this->templateParams);
 
             $response = new Response();
             $response->setContent($body);

@@ -15,6 +15,6 @@ class AuthorizationsController extends BaseController
      */
     public function denied(Request $request)
     {
-        return $this->output('accesss-denied.html.twig');
+        return $this->output('access-denied.html.twig');
     }
 }
