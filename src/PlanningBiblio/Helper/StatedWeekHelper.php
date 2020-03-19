@@ -136,8 +136,8 @@ class StatedWeekHelper extends BaseHelper
         $params = array(
             'tableau'   => $line['tableau'],
             'numero'    => $line['numero'],
-            'fin'       => ">=$start",
-            'debut'     => "<=$end"
+            'fin'       => ">$start",
+            'debut'     => "<$end"
         );
 
         $db = new \db();
