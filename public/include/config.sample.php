@@ -49,6 +49,11 @@ foreach ($db->result as $elem) {
     $config[$elem['nom']]=$elem['valeur'];
 }
 
+// MT 28388: Microsoft Graph API parameters (calendars import)
+$config['graph_api_tenantid'] = '';
+$config['graph_api_clientid'] = '';
+$config['graph_api_clientsecret'] = '';
+
 // Si pas de $version ou pas de reponseAjax => acces direct au fichier => Accès refusé
 if (!isset($version)) {
     include_once "accessDenied.php";

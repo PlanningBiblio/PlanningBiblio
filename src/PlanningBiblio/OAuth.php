@@ -43,17 +43,17 @@ class OAuth {
 
     private $redirectURL = "https://my.planningbiblio.fr/graphauth";
 
-    function __construct() {
+    function __construct($tenantid, $clientid, $clientsecret) {
 
 	// Application client id
-        $this->clientid = 'e99dfb02-a369-4443-9c6a-b92e430ba7c5';
+        $this->clientid = $clientid;
 
 	// Application client secret
-        $this->clientsecret = 'ZGgAw0:8AJ_e=Tjv-hemqnbB97:xkr:I';
+        $this->clientsecret = $clientsecret;
 
 	// Tenant id
-	$this->tokenURL = "https://login.microsoftonline.com/467158a5-8844-4109-a16a-79d35a612a5a/oauth2/v2.0/token";
-	$this->authURL = "https://login.microsoftonline.com/467158a5-8844-4109-a16a-79d35a612a5a/oauth2/v2.0/authorize";
+	$this->tokenURL = "https://login.microsoftonline.com/$tenantid/oauth2/v2.0/token";
+	$this->authURL = "https://login.microsoftonline.com/$tenantid/oauth2/v2.0/authorize";
 
 	$this->redirectURL = "https://graph-planningb.test.biblibre.eu/";
     }
