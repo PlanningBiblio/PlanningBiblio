@@ -44,12 +44,17 @@ class OAuth {
     private $redirectURL = "https://my.planningbiblio.fr/graphauth";
 
     function __construct() {
-        $this->clientid = 'b1ac0c42-9c34-4539-aa79-8383d7d27531';
-        $this->clientsecret = 'K6UFI5c_BgdL:=XJBw*iOJU6k28=Jlyr';
-        #$this->tokenURL = "https://login.microsoftonline.com/3c9a740f-a262-428a-8135-db6db17d87d3/oauth2/token";
-        #$this->authURL = "https://login.microsoftonline.com/3c9a740f-a262-428a-8135-db6db17d87d3/oauth2/authorize";
-        $this->tokenURL = 'https://login.microsoftonline.com/common/oauth2/v2.0/token';
-        $this->authURL = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize';
+
+	// Application client id
+        $this->clientid = 'e99dfb02-a369-4443-9c6a-b92e430ba7c5';
+
+	// Application client secret
+        $this->clientsecret = 'ZGgAw0:8AJ_e=Tjv-hemqnbB97:xkr:I';
+
+	// Tenant id
+	$this->tokenURL = "https://login.microsoftonline.com/467158a5-8844-4109-a16a-79d35a612a5a/oauth2/v2.0/token";
+	$this->authURL = "https://login.microsoftonline.com/467158a5-8844-4109-a16a-79d35a612a5a/oauth2/v2.0/authorize";
+
 	$this->redirectURL = "https://graph-planningb.test.biblibre.eu/";
     }
 
@@ -57,7 +62,9 @@ class OAuth {
 
 
 	$options = [
+	     //'scope' => 'https://graph.microsoft.com/'
 	     'scope' => 'https://graph.microsoft.com/.default'
+	     //'scope' => 'https://graph.windows.net'
 	];
 
         //$provider = new \League\OAuth2\Client\Provider\GenericProvider([
@@ -77,7 +84,9 @@ class OAuth {
 	var_dump($state . "<br /><br />");
 
 
-        if (!array_key_exists("oauthToken", $_SESSION)) {
+        //if (!array_key_exists("oauthToken", $_SESSION)) {
+	// For debug purposes, ask the token every time
+        if (1) {
             try {
 
                 // Try to get an access token using the client credentials grant.
