@@ -16,7 +16,7 @@ Fichier permettant de modifier et valider les demandes de récupérations des sa
 
 include "class.conges.php";
 
-use Model\Agent;
+use App\Model\Agent;
 
 // Initialisation des variables
 $CSRFToken = filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
