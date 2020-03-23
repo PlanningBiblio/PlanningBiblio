@@ -113,7 +113,9 @@ for ($d=date("Y")+2;$d>date("Y")-11;$d--) {
 }
 
 // Affichage
-echo "<h3 class='print_only'>Liste des congés de ".nom($perso_id, "prenom nom").", année $annee-".($annee+1)."</h3>\n";
+if ($perso_id != 0) {
+    echo "<h3 class='print_only'>Liste des congés de ".nom($perso_id, "prenom nom").", année $annee-".($annee+1)."</h3>\n";
+}
 echo <<<EOD
 <h3 class='noprint'>Récupérations</h3>
 
