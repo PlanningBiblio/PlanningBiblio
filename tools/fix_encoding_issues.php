@@ -1,5 +1,8 @@
 <?php
 
+require_once(__DIR__ . '/../init.php');
+require_once(__DIR__ . '/../include/db.php');
+
 $tables = array (
     array(
         'name' => 'absences',
@@ -25,6 +28,8 @@ $tables = array (
         'name' => 'absences_recurrentes',
         'fields' => array(
             'event',
+            'last_update',
+            'last_check',
             'uid',
         ),
     ),
@@ -74,6 +79,7 @@ $tables = array (
             'refus',
         ),
     ),
+
     array(
         'name' => 'conges_cet',
         'fields' => array(
@@ -456,4 +462,16 @@ foreach ($tables as $table) {
             }
         }
     }
+}
+
+foreach ($sql as $queries) {
+    print $queries . " : ";
+
+    $db = new db();
+    $db->query($queries);
+    if ($db->error) {
+        print $db->error . "\n";
+        continue;
+    }
+    print "Ok\n";
 }
