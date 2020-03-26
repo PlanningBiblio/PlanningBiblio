@@ -24,7 +24,17 @@ $list = filter_input(INPUT_POST, 'list', FILTER_SANITIZE_STRING);
 $CSRFToken = filter_input(INPUT_POST, 'CSRFToken', FILTER_SANITIZE_STRING);
 
 $list = html_entity_decode($list, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-$list = str_replace(array('"','[',']'), null, $list);
+
+// prohibits removal of admin and "tout le monde"
+$tab = array();
+$tmp = json_decode($list);
+foreach ($tmp as $elem) {
+  if ($elem > 2) {
+    $tab[] = $elem;
+  }
+}
+
+$list = join(',', $tab);
 
 if ($_SESSION['perso_actif']=="Supprimé") {
     $p=new personnel();
