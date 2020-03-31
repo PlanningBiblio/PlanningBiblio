@@ -75,6 +75,7 @@ class StatisticController extends BaseController
                 } else {
                     $absents[$key]['from'] = substr($absent['debutAff'], -5);
                     $absents[$key]['to'] = substr($absent['finAff'], -5);
+                    $absents[$key]['all_the_day'] = 0;
                 }
 
                 if ($absent['debut'] <= $date . " 00:00:00"

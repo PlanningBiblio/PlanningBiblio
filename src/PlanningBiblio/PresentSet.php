@@ -77,7 +77,7 @@ class PresentSet
             $siteAgent=null;
             if ($heures and !in_array($elem['id'], $absents)) {
                 if ($config['Multisites-nombre']>1) {
-                    if (isset($heures[4])) {
+                    if (!empty($heures[4])) {
                         $siteAgent=$config['Multisites-site'.$heures[4]];
                     }
                 }
