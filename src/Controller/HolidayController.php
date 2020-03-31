@@ -175,9 +175,34 @@ class HolidayController extends BaseController
         $holiday_helper = new HolidayHelper();
         $holidays = array();
         foreach ($c->elements as $elem) {
+
             // Filter non handled agent.
             // See among others option Absences-notifications-agent-par-agent.
             if (!in_array($elem['perso_id'], $perso_ids)) {
+                continue;
+            }
+
+            $can_see = 0;
+            $agent = $this->entityManager->find(Agent::Class, $elem['perso_id']);
+            foreach (json_decode($agent->sites()) as $site) {
+                if ($elem['valide_n1'] > 0) {
+                    if (in_array((600 + $site), $droits)) {
+                        $can_see = 1;
+                    }
+                }
+
+                if ($elem['valide_n1'] == 0) {
+                    if (in_array((400 + $site), $droits) or in_array((600 + $site), $droits)) {
+                        $can_see = 1;
+                    }
+                }
+            }
+
+            if ($elem['perso_id'] == $_SESSION['login_id']) {
+                $can_see = 1;
+            }
+
+            if ($can_see == 0) {
                 continue;
             }
 
