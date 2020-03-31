@@ -605,9 +605,9 @@
         <tr>
           <td colspan='2' style='text-align:center;'>
             {% if conges_recuperations and debit == 'recuperation' %}
-              <input type='button' value='Annuler' onclick="document.location.href='/holiday/index?recup=1';" class='ui-button'/>
+              <a href='{{ asset("holiday/index?recup=1") }}' class='ui-button' >Annuler</a>
             {% else %}
-              <input type='button' value='Annuler' onclick="document.location.href='/holiday/index';" class='ui-button'/>
+              <a href='{{ asset("holiday/index") }}' class='ui-button' >Annuler</a>
             {% endif %}
 
             {% if save_button %}

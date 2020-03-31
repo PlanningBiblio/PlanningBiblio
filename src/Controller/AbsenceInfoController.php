@@ -80,6 +80,11 @@ class AbsenceInfoController extends BaseController
         $id = $request->get('id');
         $start = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $request->get('start'));
         $end = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $request->get('end'));
+
+        if (empty($end)) {
+          $end = $start;
+        }
+
         $text = trim($request->get('text'));
 
         if ($id) {

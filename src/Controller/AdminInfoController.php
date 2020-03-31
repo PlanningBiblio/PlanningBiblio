@@ -91,6 +91,10 @@ class AdminInfoController extends BaseController
         $end = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $request->get('end'));
         $text = trim($request->get('text'));
 
+        if (empty($end)) {
+          $end = $start;
+        }
+
         if ($id) {
             $info = $this->entityManager->getRepository(AdminInfo::class)->find($id);
             $info->debut($start);
