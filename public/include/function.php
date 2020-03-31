@@ -1045,7 +1045,7 @@ function getJSFiles($page, $version)
 
     $pos=strpos(strrev($page), "/");
     $folder=substr($page, 0, -$pos);
-    if (is_dir("{$folder}js")) {
+    if ($folder and is_dir("{$folder}js")) {
         foreach (scandir("{$folder}js") as $elem) {
             if (substr($elem, -3)==".js") {
                 echo "<script type='text/JavaScript' src='{$folder}js/{$elem}?version=$version'></script>\n";
