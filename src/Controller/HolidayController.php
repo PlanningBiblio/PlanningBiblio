@@ -115,6 +115,23 @@ class HolidayController extends BaseController
             $p->fetch();
             $agents_menu=$p->elements;
 
+            // If config Multi-sites : keep only users that we can manage.
+            if ($this->config('Multisites-nombre') > 1) {
+                $tmp = array();
+
+                foreach ($agents_menu as $elem) {
+                    if (is_array($elem['sites'])) {
+                        foreach ($elem['sites'] as $site_agent) {
+                            if (in_array((400+$site_agent), $droits) or in_array((600+$site_agent), $droits)) {
+                                $tmp[$elem['id']] = $elem;
+                                continue 2;
+                            }
+                        }
+                    }   
+                }
+                $agents_menu = $tmp;
+            }
+
             // Filtre pour n'afficher que les agents gérés si l'option "Absences-notifications-agent-par-agent" est cochée
             if ($this->config('Absences-notifications-agent-par-agent') and !$adminN2) {
                 $tmp = array();
