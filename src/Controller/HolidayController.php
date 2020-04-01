@@ -380,7 +380,7 @@ class HolidayController extends BaseController
             'adminN2'               => $adminN2,
             'show_allday'           => $show_allday,
             'debit'                 => $data['debit'],
-            'valide'                => $valide,
+            'valide'                => $data['valide'],
             'valide_n1'             => $data['valide_n1'],
             'balance_date'          => dateFr($balance[0]),
             'balance_before'        => heure4($balance[1]),
