@@ -22,6 +22,7 @@ $debut=filter_input(INPUT_GET, "debut", FILTER_CALLBACK, array("options"=>"sanit
 $fin=filter_input(INPUT_GET, "fin", FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
 $id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
 $perso_id=filter_input(INPUT_GET, "perso_id", FILTER_SANITIZE_NUMBER_INT);
+$exception = filter_input(INPUT_GET, "exception", FILTER_SANITIZE_NUMBER_INT) ?? '';
 
 // Filtre permettant de ne rechercher que les plannings de l'agent sélectionné
 $perso_id=$perso_id?$perso_id:$_SESSION['login_id'];
@@ -42,8 +43,13 @@ if ($id) {
     }
 }
 
+$filter = "perso_id='$perso_id' AND `debut`<='$fin' AND `fin`>='$debut'";
+if ($exception) {
+    $filter .= " AND exception = $exception";
+}
+
 $db=new db();
-$db->select("planning_hebdo", "*", "perso_id='$perso_id' AND `debut`<='$fin' AND `fin`>='$debut' $ignore_id $remplace ");
+$db->select("planning_hebdo", "*", "$filter $ignore_id $remplace ");
 
 $result=array();
 if (!$db->result) {

@@ -39,6 +39,7 @@ class planningHebdo
     public $perso_ids=null;
     public $tri=null;
     public $valide=null;
+    public $merge_exception = true;
 
 
     public function __construct()
@@ -101,8 +102,18 @@ class planningHebdo
             $dates=$this->periodes;
 
             // 1er tableau
-            $insert=array("perso_id"=>$perso_id,"debut"=>$dates[0][0],"fin"=>$dates[0][1],"temps"=>json_encode($data['temps']),
-        "valide_n1" => $valide_n1, "validation_n1" => $validation_n1, "valide" => $valide_n2, "validation" => $validation_n2, 'breaktime' => json_encode($data['breaktime']) );
+            $insert = array(
+                'perso_id'      => $perso_id,
+                'debut'         => $dates[0][0],
+                'fin'           => $dates[0][1],
+                'temps'         => json_encode($data['temps']),
+                'valide_n1'     => $valide_n1,
+                'validation_n1' => $validation_n1,
+                'valide'        => $valide_n2,
+                'validation'    => $validation_n2,
+                'breaktime'     => json_encode($data['breaktime']),
+                'exception'     => $data['exception']
+            );
 
             $db=new db();
             $db->CSRFToken = $CSRFToken;
@@ -110,8 +121,18 @@ class planningHebdo
             $this->error=$db->error;
 
             // 2ème tableau
-            $insert=array("perso_id"=>$perso_id,"debut"=>$dates[0][2],"fin"=>$dates[0][3],"temps"=>json_encode($data['temps2']),
-        "valide_n1" => $valide_n1, "validation_n1" => $validation_n1, "valide" => $valide_n2, "validation" => $validation_n2, 'breaktime' => json_encode($data['breaktime']) );
+            $insert = array(
+                "perso_id"      => $perso_id,
+                "debut"         => $dates[0][2],
+                "fin"           => $dates[0][3],
+                "temps"         => json_encode($data['temps2']),
+                "valide_n1"     => $valide_n1,
+                "validation_n1" => $validation_n1,
+                "valide"        => $valide_n2,
+                "validation"    => $validation_n2,
+                'breaktime'     => json_encode($data['breaktime']),
+                'exception'     => $data['exception']
+            );
 
             $db=new db();
             $db->CSRFToken = $CSRFToken;
@@ -121,8 +142,18 @@ class planningHebdo
 
         // Sinon, insertion d'un seul tableau
         else {
-            $insert=array("perso_id"=>$perso_id,"debut"=>$data['debut'],"fin"=>$data['fin'],"temps"=>json_encode($data['temps']),
-        "valide_n1" => $valide_n1, "validation_n1" => $validation_n1, "valide" => $valide_n2, "validation" => $validation_n2, 'breaktime' => json_encode($data['breaktime']) );
+            $insert = array(
+                'perso_id'      => $perso_id,
+                'debut'         => $data['debut'],
+                'fin'           => $data['fin'],
+                'temps'         => json_encode($data['temps']),
+                'valide_n1'     => $valide_n1,
+                'validation_n1' => $validation_n1,
+                'valide'        => $valide_n2,
+                'validation'    => $validation_n2,
+                'breaktime'     => json_encode($data['breaktime']),
+                'exception'     => $data['exception']
+            );
 
             // Dans le cas d'une copie (voir fonction copy)
             if (isset($data['remplace'])) {
@@ -326,11 +357,51 @@ class planningHebdo
             }
         }
 
+        // Merge exception planning into their target.
+        if ($this->merge_exception) {
+            foreach ($tab as $elem) {
+                if ($target = $elem['exception']) {
+                    // Searching for target planning.
+                    foreach ($tab as $index => $elem2) {
+                        if ($elem2['id'] == $target) {
+                            $merged = $this->merge($elem, $elem2);
+                            $tab[$index] = $merged;
+                        }
+                    }
+                }
+            }
+
+            // Clear from exception.
+            // Need to do that after last loop
+            // to keep proper indexes.
+            foreach ($tab as $index => $elem) {
+                if ($target = $elem['exception']) {
+                    unset($tab[$index]);
+                }
+            }
+        }
+
         // $tab est vide si on accède directement à un planning copié,
         // on remplace donc $this->elements par $tab seulement si $tab n'est pas vide.
         if (!empty($tab)) {
             $this->elements=$tab;
         }
+    }
+
+    private function merge($from, $to)
+    {
+        $start_exception = $from['debut'];
+        $end_exception = $from['fin'];
+
+        $d = new datePl($start_exception);
+        foreach ($d->dates as $pl_index => $date ) {
+            if ($date >= $start_exception
+                && $date <= $end_exception) {
+                $to['temps'][$pl_index] = $from['temps'][$pl_index];
+            }
+        }
+
+        return $to;
     }
 
     public function getPeriodes()
@@ -516,7 +587,17 @@ class planningHebdo
 
         $temps = json_encode($data['temps']);
         $breaktime = json_encode($data['breaktime']);
-        $update = array("debut" => $data['debut'], "fin" => $data['fin'], "temps" => $temps, "modif" => $perso_id, "modification" => date("Y-m-d H:i:s"), "valide" => $valide_n2, "validation" => $validation_n2, 'breaktime' => $breaktime );
+        $update = array(
+            'debut'         => $data['debut'],
+            'fin'           => $data['fin'],
+            'temps'         => $temps,
+            'modif'         => $perso_id,
+            'modification'  => date("Y-m-d H:i:s"),
+            'valide'        => $valide_n2,
+            'validation'    => $validation_n2,
+            'breaktime'     => $breaktime,
+            'exception'     => $data['exception']
+        );
 
         if (isset($valide_n1)) {
             $update['valide_n1'] = $valide_n1;

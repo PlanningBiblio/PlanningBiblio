@@ -269,6 +269,7 @@ function plHebdoVerifForm(){
   fin=$("input[name=fin]").val().replace(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/g,"$3-$2-$1");
   id=$("input[name=id]").val();
   perso_id=$("#perso_id").val();
+  is_exception = $('input[name="exception"]').val();
 
   if(!debut || !fin){
     alert("Les dates de début et de fin sont obligatoires");
@@ -280,36 +281,59 @@ function plHebdoVerifForm(){
     return false;
   }
 
+  data = {debut: debut, fin: fin, id: id, perso_id: perso_id};
+  if (is_exception) {
+    data['exception'] = is_exception;
+  }
+
   var retour=false;
   $.ajax({
     url: "planningHebdo/ajax.verifPlannings.php",
     dataType: "json",
-    data: {debut: debut, fin: fin, id: id, perso_id: perso_id},
+    data: data,
     type: "get",
     async: false,
     success: function(result){
       if(result["retour"]=="OK"){
-	retour="true";
-      }else{
-        if(result["autre_agent"]){
-	  message="Un planning est enregistré pour l'agent "+result["autre_agent"]+" pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"])
-	  +"\nVeuillez modifier les dates de début et/ou de fin ou modifier le premier planning.";
-	}else{
-	  message="Vous avez déjà enregistré un planning pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"])
-	  +"\nVeuillez modifier les dates de début et/ou de fin ou modifier le premier planning.";
-	}
-	alert(message);
-	retour="false";
+        retour="true";
+      }
+      else {
+        if(result["autre_agent"]) {
+          if (is_exception) {
+            message="Une exception est enregistrés pour l'agent "+result["autre_agent"]+" pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"])
+          } else {
+            message="Un planning est enregistré pour l'agent "+result["autre_agent"]+" pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"])
+          }
+          message += "\nVeuillez modifier les dates de début et/ou de fin ou modifier le premier planning.";
+        } else {
+          message="Vous avez déjà enregistré un planning pour la période du "+dateFr(result["debut"])+" au "+dateFr(result["fin"])
+          +"\nVeuillez modifier les dates de début et/ou de fin ou modifier le premier planning.";
+        }
+        alert(message);
+        retour="false";
       }
     },
     error: function(result){
       information(result.responseText,"error");
-	retour="false";
+      retour="false";
     }
   });
-  if(retour){
-    return retour=="true"?true:false;
+
+  if(retour == "false"){
+    return false;
+  } else if (is_exception) {
+    if (id) {
+      return true;
+    }
+
+    if (confirm("Vous êtes sur le point d'enregistrer une exception, voulez-vous continuer ?")){
+      return true;
+    } else {
+      return false;
+    }
   }
+
+  return true;
 }
 
 $(function(){

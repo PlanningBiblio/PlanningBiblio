@@ -15,11 +15,16 @@ Page accessible à partir du menu administration / Heures de présence
 require_once "class.planningHebdo.php";
 
 $twig = $GLOBALS['twig'];
+$request = $GLOBALS['request'];
 
 // Initialisation des variables
-$copy=filter_input(INPUT_GET, "copy", FILTER_SANITIZE_NUMBER_INT);
-$id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
+$copy = $request->get('copy');
+$request_exception = $request->get('exception');
+$id = $request->get('id');
 $retour=filter_input(INPUT_GET, "retour", FILTER_SANITIZE_STRING);
+$retour = $request->get('retour');
+$is_exception = 0;
+$exception_id = '';
 
 if ($retour != 'monCompte.php') {
     $retour = "planningHebdo/$retour";
@@ -27,6 +32,15 @@ if ($retour != 'monCompte.php') {
 
 if ($copy) {
     $id=$copy;
+}
+
+if ($request_exception) {
+    $id = $request_exception;
+}
+
+$is_new = 0;
+if (!$id) {
+    $is_new = 1;
 }
 
 // Sécurité
@@ -55,12 +69,17 @@ if ($id) {
     $temps=$p->elements[0]['temps'];
     $breaktime=$p->elements[0]['breaktime'];
 
-    if ($copy) {
+    if ($p->elements[0]['exception']) {
+        $is_exception = 1;
+        $exception_id = $p->elements[0]['exception'];
+    }
+
+    if ($copy or $request_exception) {
         $valide_n1 = 0;
         $valide_n2 = 0;
     } else {
-        $valide_n1 = $p->elements[0]['valide_n1'];
-        $valide_n2 = $p->elements[0]['valide'];
+        $valide_n1 = $p->elements[0]['valide_n1'] ?? 0;
+        $valide_n2 = $p->elements[0]['valide'] ?? 0;
     }
 
     $remplace=$p->elements[0]['remplace'];
@@ -97,7 +116,7 @@ if ($id) {
         $action="copie";
     }
 
-    if ($copy) {
+    if ($copy or $request_exception) {
         $action="ajout";
     }
 } else {
@@ -135,7 +154,7 @@ $nomAgent = nom($perso_id, "prenom nom");
 <!-- Formulaire Heures de présence-->
 <h3>Heures de présence</h3>
 <?php
-if ($id and !$copy) {
+if ($id and !$copy and !$request_exception) {
     echo "<h3>Heures de $nomAgent du $debut1Fr au $fin1Fr</h3>";
 }
 ?>
@@ -144,10 +163,14 @@ if ($id and !$copy) {
 echo "<form name='form1' method='post' action='index.php' onsubmit='return plHebdoVerifForm();'>\n";
 
 // Modification
-if ($id and !$copy) {
+if ($id and !$copy and !$request_exception) {
     echo "<input type='hidden' name='perso_id' value='$perso_id' id='perso_id' />\n";
 // Ajout ou copie
 } else {
+    if ($request_exception) {
+        echo "<input type='hidden' name='perso_id' value='$perso_id' id='perso_id' />\n";
+    }
+
     if ($config['PlanningHebdo-notifications-agent-par-agent'] and !$adminN2) {
         // Sélection des agents gérés (table responsables) et de l'agent logué
 
@@ -176,11 +199,14 @@ if ($id and !$copy) {
     elseif ($copy) {
         echo "<h3>Copie des heures de $nomAgent du $debut1Fr au $fin1Fr</h3>\n";
     // Ajout par un admin
+    }
+    elseif ($request_exception) {
+        echo "<h3>Création d'une exception au planning de $nomAgent du $debut1Fr au $fin1Fr</h3>\n";
     } else {
         echo "<h3>Nouveaux horaires</h3>\n";
     }
     echo "<div id='plHebdo-perso-id'>\n";
-    if ($adminN1 or $adminN2) {
+    if (($adminN1 or $adminN2) and !$request_exception) {
         echo "<label for='perso_id'>Pour l'agent</label>\n";
         echo "<select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id' style='position:absolute; left:200px; width:200px; text-align:center;' >\n";
         echo "<option value=''>&nbsp;</option>\n";
@@ -196,6 +222,10 @@ if ($id and !$copy) {
 }
 
 // Choix de la période d'utilisation et validation
+if ($request_exception) {
+    $debut1Fr = '';
+    $fin1Fr = '';
+}
 echo "<div id='periode'>\n";
 echo <<<EOD
   <p><label for='debut'>Début d'utilisation</label>
@@ -206,6 +236,11 @@ EOD;
 
 echo "</div> <!-- id=periode -->\n";
 
+if ($request_exception) {
+    $exception_id = $id;
+    $id = '';
+}
+
 ?>
 <input type='hidden' name='page' value='planningHebdo/valid.php' />
 <input type='hidden' name='CSRFToken' value='<?php echo $CSRFSession; ?>' />
@@ -214,6 +249,7 @@ echo "</div> <!-- id=periode -->\n";
 <input type='hidden' name='id' value='<?php echo $id; ?>' />
 <input type='hidden' name='valide' value='<?php echo $_SESSION['login_id']; ?>' />
 <input type='hidden' name='remplace' value='<?php echo $remplace; ?>' />
+<input type='hidden' name='exception' value='<?php echo $exception_id; ?>' />
 
 <!-- Affichage des tableaux avec la sélection des horaires -->
 <?php
@@ -315,7 +351,7 @@ for ($j=0;$j<$config['nb_semaine'];$j++) {
                     echo "<option value=''>&nbsp;</option>\n";
                 }
                 foreach ($sites as $site) {
-                    $selected=$temps[$i-1][4]==$site?"selected='selected'":null;
+                    $selected = isset($temps) && $temps[$i-1][4] == $site ? "selected='selected'" : null;
                     echo "<option value='$site' $selected >{$config["Multisites-site{$site}"]}</option>\n";
                 }
                 echo "</select></td>";
@@ -354,7 +390,7 @@ if ($cle) {
 //   echo "Vous pouvez également les enregistrer directement mais dans ce cas, vous ne conserverez pas les anciens horaires.</p>\n";
 }
 
-if ($copy and $config['Multisites-nombre']>1) {
+if (($copy or $request_exception) and $config['Multisites-nombre']>1) {
     echo <<<EOD
   <p id='info_copie' style='display:none;' class='important'><strong>
     Attention : Veuillez vérifier les affectations aux sites avant d'enregistrer.
@@ -367,10 +403,10 @@ echo "</div> <!-- id=informations -->\n";
 if (!$cle) {
     // Si admin, affiche le menu déroulant
     if ($adminN1 or $adminN2) {
-        $selected1 = $valide_n1 > 0 ? "selected='selected'" : null;
-        $selected2 = $valide_n1 < 0 ? "selected='selected'" : null;
-        $selected3 = $valide_n2 > 0 ? "selected='selected'" : null;
-        $selected4 = $valide_n2 < 0 ? "selected='selected'" : null;
+        $selected1 = isset($valide_n1) && $valide_n1 > 0 ? "selected='selected'" : null;
+        $selected2 = isset($valide_n1) && $valide_n1 < 0 ? "selected='selected'" : null;
+        $selected3 = isset($valide_n2) && $valide_n2 > 0 ? "selected='selected'" : null;
+        $selected4 = isset($valide_n2) && $valide_n2 < 0 ? "selected='selected'" : null;
 
         echo "<p><label for='validation'>Validation</label>\n";
         echo "<select name='validation' id='validation' style='position:absolute; left:200px; width:200px;' >\n";
@@ -415,12 +451,26 @@ echo "<input type='button' value='Retour' onclick='location.href=\"index.php?pag
 
 // Si le champ clé est renseigné, les heures de présences ont été importées automatiquement depuis une source externe. Donc pas de modif
 if (($adminN1 or $adminN2) and !$cle) {
-    echo "<input type='submit' value='Enregistrer' style='margin-left:30px;' class='ui-button' />\n";
+    if ($request_exception) {
+        echo '<input id="save-exception" type="submit" value="Enregistrer l\'exception" style="margin-left:30px;" class="ui-button" />';
+        echo "\n";
+    } else {
+        echo "<input type='submit' value='Enregistrer' style='margin-left:30px;' class='ui-button' />\n";
+    }
 //   if($valide_n2 > 0 and !$copy){
 //     echo "<input type='button' value='Enregistrer une copie' style='margin-left:30px;' onclick='$(\"input[name=action]\").val(\"copie\");$(\"form[name=form1]\").submit();' class='ui-button' />\n";
 //   }
 } elseif ($modifAutorisee) {
-    echo "<input type='submit' value='Enregistrer' style='margin-left:30px;' class='ui-button' />\n";
+    if ($request_exception) {
+        echo '<input id="save-exception" type="submit" value="Enregistrer l\'exception" style="margin-left:30px;" class="ui-button" />';
+        echo "\n";
+    } else {
+        echo "<input type='submit' value='Enregistrer' style='margin-left:30px;' class='ui-button' />\n";
+    }
+}
+
+if (($adminN1 or $adminN2 or $modifAutorisee) and (!$request_exception and !$is_exception and !$copy and !$is_new)) {
+    echo "<input type='button' value='Ajouter une exception' onclick='location.href=\"index.php?page=planningHebdo/modif.php&exception=$id&retour=index.php\";' style='margin-left:30px;' class='ui-button' />\n";
 }
 
 ?>

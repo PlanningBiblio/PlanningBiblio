@@ -63,6 +63,7 @@ if ($adminN1 and $config['PlanningHebdo-notifications-agent-par-agent']) {
 
 // Recherche des plannings
 $p=new planningHebdo();
+$p->merge_exception = false;
 $p->debut=dateFr($debut);
 $p->fin=dateFr($fin);
 if (!empty($perso_ids)) {
@@ -156,9 +157,9 @@ foreach ($p->elements as $elem) {
         }
     }
  
-
     $planningRemplace=$elem['remplace']==0?dateFr($elem['saisie'], true):$planningRemplace;
     $commentaires=$elem['remplace']?"Remplace les heures <br/>du $planningRemplace":null;
+    $commentaires = $elem['exception'] ? 'Exception' : $commentaires;
     $arrow=$elem['remplace']?"<font style='font-size:20pt;'>&rdsh;</font>":null;
 
     echo "<tr id='tr_{$elem['id']}'>";
