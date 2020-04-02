@@ -47,7 +47,6 @@ class MSGraphClient
             if ($response) {
                 echo $user->mail() . " is graph user\n";
                 array_push($this->graphUsers, $user->id());
-                //array_push($this->incomingEvents, $response->body);
                 foreach ($response->body->value as $event) {
                         $this->incomingEvents[$event->iCalUId]['plb_id'] = $user->id();
                         $this->incomingEvents[$event->iCalUId]['last_modified'] = $event->lastModifiedDateTime;
@@ -58,7 +57,6 @@ class MSGraphClient
     }
 
     private function getLocalEvents() {
-        // Getting events and ical keys from PLB
         $usersSQLIds = join(',', $this->graphUsers);
         $query = "SELECT * FROM " . $this->dbprefix . "absences WHERE cal_name='" . self::CAL_NAME . "' AND perso_id IN($usersSQLIds)";
         $statement = $this->entityManager->getConnection()->prepare($query);
@@ -101,24 +99,32 @@ class MSGraphClient
                 $localEvent = $this->localEvents[$incomingEvent->iCalUId];
                 if ($incomingEvent->lastModifiedDateTime != $localEvent['last_modified']) {
                     echo "update\n";
-                    $query = "UPDATE " . $this->dbprefix . "absences SET last_modified=:last_modified, motif=:motif WHERE ical_key=:ical_key";
+                    $query = "UPDATE " . $this->dbprefix . "absences SET debut=:debut, fin=:fin, motif=:motif, commentaires=:commentaires, last_modified=:last_modified WHERE ical_key=:ical_key LIMIT 1";
                     $statement = $this->entityManager->getConnection()->prepare($query);
-                    $statement->bindParam(':ical_key', $incomingEvent->iCalUId);
-                    $statement->bindParam(':last_modified', $incomingEvent->lastModifiedDateTime);
+                    $statement->bindParam(':debut', $incomingEvent->start->dateTime);
+                    $statement->bindParam(':fin', $incomingEvent->end->dateTime);
                     $statement->bindParam(':motif', $incomingEvent->subject);
+                    $statement->bindParam(':commentaires', $incomingEvent->bodyPreview);
+                    $statement->bindParam(':last_modified', $incomingEvent->lastModifiedDateTime);
+                    $statement->bindParam(':ical_key', $incomingEvent->iCalUId);
                     $statement->execute();
                 }
             } else {
                 echo "insert\n";
-                $query = "INSERT INTO " . $this->dbprefix . "absences (perso_id, cal_name, ical_key, last_modified, motif) VALUES (:perso_id, :cal_name, :ical_key, :last_modified, :motif)";
+                $query = "INSERT INTO " . $this->dbprefix . "absences ";
+                $query .= "( perso_id,  debut,  fin,  motif,  commentaires, demande, cal_name,  ical_key,  last_modified) VALUES ";
+                $query .= "(:perso_id, :debut, :fin, :motif, :commentaires, NOW(), :cal_name, :ical_key, :last_modified)";
                 $statement = $this->entityManager->getConnection()->prepare($query);
                 $perso_id = $eventArray['plb_id'];
                 $cal_name = self::CAL_NAME;
                 $statement->bindParam(':perso_id', $perso_id);
+                $statement->bindParam(':debut', $incomingEvent->start->dateTime);
+                $statement->bindParam(':fin', $incomingEvent->end->dateTime);
+                $statement->bindParam(':motif', $incomingEvent->subject);
+                $statement->bindParam(':commentaires', $incomingEvent->bodyPreview);
                 $statement->bindParam(':cal_name', $cal_name);
                 $statement->bindParam(':ical_key', $incomingEvent->iCalUId);
                 $statement->bindParam(':last_modified', $incomingEvent->lastModifiedDateTime);
-                $statement->bindParam(':motif', $incomingEvent->subject);
                 $statement->execute();
             }
         }
