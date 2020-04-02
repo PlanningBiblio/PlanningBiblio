@@ -1,4 +1,6 @@
 *** Unreleased ***
+- Enhancements
+Add working hours exceptions
 
 *** Version 20.04.00       (2020-06-15)   ***
 - Enhancements
