@@ -16,9 +16,7 @@ class MSGraphClient
     private $dbprefix;
     private $entityManager;
     private $incomingEvents;
-    private $incomingICalKeys;
     private $localEvents;
-    private $localICalKeys;
     private $graphUsers;
 
     public function __construct($entityManager, $tenantid, $clientid, $clientsecret)
@@ -48,17 +46,13 @@ class MSGraphClient
             $response = $this->isGraphUser($user);
             if ($response) {
                 echo $user->mail() . " is graph user\n";
-               array_push($this->graphUsers, $user->id());
-               array_push($this->incomingEvents, $response->body);
-                //var_dump($response);
-            }
-        }
-        //TODO: Un seul tableau avec icalkey = event ?
-        // Getting all ical keys from graph events
-        $this->incomingICalKeys = array();
-        foreach ($this->incomingEvents as $events) {
-            foreach ($events->value as $event) {
-               $this->incomingICalKeys[$event->iCalUId] = 1; 
+                array_push($this->graphUsers, $user->id());
+                //array_push($this->incomingEvents, $response->body);
+                foreach ($response->body->value as $event) {
+                        $this->incomingEvents[$event->iCalUId]['plb_id'] = $user->id();
+                        $this->incomingEvents[$event->iCalUId]['last_modified'] = $event->lastModifiedDateTime;
+                        $this->incomingEvents[$event->iCalUId]['event'] = $event;
+                }
             }
         }
     }
@@ -71,10 +65,8 @@ class MSGraphClient
         $statement->execute();
         $results = $statement->fetchAll();
         $this->localEvents = array();
-        $this->localICalKeys = array();
         foreach ($results as $localEvent) {
-            array_push($this->localEvents, $localEvent); 
-            $this->localICalKeys[$localEvent['ical_key']] = $localEvent['perso_id'];
+            $this->localEvents[$localEvent['ical_key']] = $localEvent;
         }
     }
 
@@ -92,8 +84,8 @@ class MSGraphClient
         // The SQL calls in this function should be replaced by doctrine calls when available
         $query = "DELETE FROM " . $this->dbprefix . "absences WHERE ical_key=:ical_key LIMIT 1";
         $statement = $this->entityManager->getConnection()->prepare($query);
-        foreach ($this->localEvents as $localEvent) {
-            if (!array_key_exists($localEvent['ical_key'], $this->incomingICalKeys)) {
+        foreach ($this->localEvents as $ical_key => $localEvent) {
+            if (!array_key_exists($ical_key, $this->incomingEvents)) {
                 echo "delete " . $localEvent['ical_key'] . "\n";
                 $statement->bindParam(':ical_key', $localEvent['ical_key']);
                 $statement->execute();
@@ -103,33 +95,31 @@ class MSGraphClient
 
     private function insertOrUpdateEvents() {
         // The SQL calls in this function should be replaced by doctrine calls when available
-
-        // For each user,
-        // Run through all events, and add the graph event to local events if needed
-        foreach ($this->incomingEvents as $events) {
-            foreach ($events->value as $event) {
-
-                if (array_key_exists($event->iCalUId, $this->localICalKeys)) {
+        foreach ($this->incomingEvents as $eventArray) {
+            $incomingEvent = $eventArray['event'];
+            if (array_key_exists($incomingEvent->iCalUId, $this->localEvents)) {
+                $localEvent = $this->localEvents[$incomingEvent->iCalUId];
+                if ($incomingEvent->lastModifiedDateTime != $localEvent['last_modified']) {
                     echo "update\n";
-                    // TODO: Ne pas faire l'update si la date est la même
                     $query = "UPDATE " . $this->dbprefix . "absences SET last_modified=:last_modified, motif=:motif WHERE ical_key=:ical_key";
                     $statement = $this->entityManager->getConnection()->prepare($query);
-                    $statement->bindParam(':ical_key', $event->iCalUId);
-                    $statement->bindParam(':last_modified', $event->lastModifiedDateTime);
-                    $statement->bindParam(':motif', $event->subject);
-                    $statement->execute();
-                } else {
-                    echo "insert\n";
-                    $query = "INSERT INTO " . $this->dbprefix . "absences (perso_id, cal_name, ical_key, last_modified, motif) VALUES (:perso_id, :cal_name, :ical_key, :last_modified, :motif)";
-                    $statement = $this->entityManager->getConnection()->prepare($query);
-                    $perso_id = 3;
-                    $statement->bindParam(':perso_id', $perso_id);
-                    $statement->bindParam(':cal_name', self::CAL_NAME);
-                    $statement->bindParam(':ical_key', $event->iCalUId);
-                    $statement->bindParam(':last_modified', $event->lastModifiedDateTime);
-                    $statement->bindParam(':motif', $event->subject);
+                    $statement->bindParam(':ical_key', $incomingEvent->iCalUId);
+                    $statement->bindParam(':last_modified', $incomingEvent->lastModifiedDateTime);
+                    $statement->bindParam(':motif', $incomingEvent->subject);
                     $statement->execute();
                 }
+            } else {
+                echo "insert\n";
+                $query = "INSERT INTO " . $this->dbprefix . "absences (perso_id, cal_name, ical_key, last_modified, motif) VALUES (:perso_id, :cal_name, :ical_key, :last_modified, :motif)";
+                $statement = $this->entityManager->getConnection()->prepare($query);
+                $perso_id = $eventArray['plb_id'];
+                $cal_name = self::CAL_NAME;
+                $statement->bindParam(':perso_id', $perso_id);
+                $statement->bindParam(':cal_name', $cal_name);
+                $statement->bindParam(':ical_key', $incomingEvent->iCalUId);
+                $statement->bindParam(':last_modified', $incomingEvent->lastModifiedDateTime);
+                $statement->bindParam(':motif', $incomingEvent->subject);
+                $statement->execute();
             }
         }
     }
