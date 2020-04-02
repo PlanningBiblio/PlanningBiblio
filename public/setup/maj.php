@@ -1839,6 +1839,23 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="19.11.00.011";
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `categorie` = REPLACE(`categorie`, '&eacute;', 'é');";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe` = REPLACE(`groupe`, '&eacute;', 'é');";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe` = REPLACE(`groupe`, '&egrave;', 'è');";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe` = REPLACE(`groupe`, '&apos;', \"'\");";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `nom` = REPLACE(`nom`, '&Eacute;', 'É');";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `nom` = REPLACE(`nom`, '&eacute;', 'é');";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `nom` = REPLACE(`nom`, '&egrave;', 'è');";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `nom` = REPLACE(`nom`, '&apos;', \"'\");";
+
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `groupe_id` = '9';";
+    $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`categorie`,`ordre`) VALUES (\"Enregistrement d'absences pour plusieurs agents\",'9',\"Enregistrement d'absences pour plusieurs agents\", 'Absences', '25');";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
