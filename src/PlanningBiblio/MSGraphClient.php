@@ -4,6 +4,7 @@ namespace App\PlanningBiblio;
 
 use App\Model\Agent;
 use App\PlanningBiblio\OAuth;
+use App\PlanningBiblio\Logger;
 use Unirest\Request;
 
 class MSGraphClient
@@ -18,6 +19,7 @@ class MSGraphClient
     private $incomingEvents;
     private $localEvents;
     private $graphUsers;
+    private $logger;
 
     public function __construct($entityManager, $tenantid, $clientid, $clientsecret)
     {
@@ -29,13 +31,16 @@ class MSGraphClient
         $this->oauth = new OAuth($clientid, $clientsecret, $tokenURL, $authURL, $options);
         $this->entityManager = $entityManager;
         $this->dbprefix = $_ENV['DATABASE_PREFIX'];
+        $this->logger = new Logger($entityManager);
     }
 
     public function retrieveEvents() {
+        $this->log("Start absences import from MS Graph Calendars");
         $this->getIncomingEvents();
         $this->getLocalEvents();
         $this->deleteEvents();
         $this->insertOrUpdateEvents();
+        $this->log("End absences import from MS Graph Calendars");
     }
 
     private function getIncomingEvents() {
@@ -45,7 +50,6 @@ class MSGraphClient
         foreach ($users as $user) {
             $response = $this->isGraphUser($user);
             if ($response) {
-                echo $user->mail() . " is graph user\n";
                 array_push($this->graphUsers, $user->id());
                 foreach ($response->body->value as $event) {
                         $this->incomingEvents[$event->iCalUId]['plb_id'] = $user->id();
@@ -84,7 +88,7 @@ class MSGraphClient
         $statement = $this->entityManager->getConnection()->prepare($query);
         foreach ($this->localEvents as $ical_key => $localEvent) {
             if (!array_key_exists($ical_key, $this->incomingEvents)) {
-                echo "delete " . $localEvent['ical_key'] . "\n";
+                $this->log("deleting user " . $localEvent['perso_id'] . " event " . $localEvent['ical_key']);
                 $statement->bindParam(':ical_key', $localEvent['ical_key']);
                 $statement->execute();
             }
@@ -98,7 +102,7 @@ class MSGraphClient
             if (array_key_exists($incomingEvent->iCalUId, $this->localEvents)) {
                 $localEvent = $this->localEvents[$incomingEvent->iCalUId];
                 if ($incomingEvent->lastModifiedDateTime != $localEvent['last_modified']) {
-                    echo "update\n";
+                    $this->log("updating user " . $eventArray['plb_id'] . " event " . $eventArray['ical_key']);
                     $query = "UPDATE " . $this->dbprefix . "absences SET debut=:debut, fin=:fin, motif=:motif, commentaires=:commentaires, last_modified=:last_modified WHERE ical_key=:ical_key LIMIT 1";
                     $statement = $this->entityManager->getConnection()->prepare($query);
                     $statement->bindParam(':debut', $incomingEvent->start->dateTime);
@@ -110,7 +114,7 @@ class MSGraphClient
                     $statement->execute();
                 }
             } else {
-                echo "insert\n";
+                $this->log("inserting user " . $eventArray['plb_id'] . " event " . $incomingEvent->iCalUId);
                 $query = "INSERT INTO " . $this->dbprefix . "absences ";
                 $query .= "( perso_id,  debut,  fin,  motif,  commentaires, demande, cal_name,  ical_key,  last_modified) VALUES ";
                 $query .= "(:perso_id, :debut, :fin, :motif, :commentaires, NOW(), :cal_name, :ical_key, :last_modified)";
@@ -135,6 +139,10 @@ class MSGraphClient
         $headers['Authorization'] = "Bearer $token";
         $response = \Unirest\Request::get(self::BASE_URL . $request, $headers);
         return $response;
+    }
+
+    private function log($message) {
+        $this->logger->log($message, self::CAL_NAME);
     }
 
 }

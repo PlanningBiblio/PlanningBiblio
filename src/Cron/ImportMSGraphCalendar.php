@@ -20,7 +20,6 @@ class ImportMSGraphCalendar extends Command {
 	}
 
 	public function execute (InputInterface $input, OutputInterface $output) {
-		$output->writeln("start importMS");
 
         if (!$this->lock()) {
             $output->writeln('The command is already running in another process.');
@@ -44,7 +43,6 @@ class ImportMSGraphCalendar extends Command {
         $graph_client->retrieveEvents();
 
         $this->release();
-		$output->writeln("end");
 	}
 }
 
