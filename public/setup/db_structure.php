@@ -364,6 +364,7 @@ $sql[]="CREATE TABLE `{$dbprefix}postes` (
   `nom` text NOT NULL DEFAULT '',
   `groupe` TEXT NOT NULL DEFAULT '',
   `groupe_id` int(11) NOT NULL DEFAULT '0',
+  `position` VARCHAR(11) DEFAULT 'frontOffice',
   `obligatoire` varchar(15) NOT NULL,
   `etage` TEXT NOT NULL,
   `activites` text NOT NULL,
