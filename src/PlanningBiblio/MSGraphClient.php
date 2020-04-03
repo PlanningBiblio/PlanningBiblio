@@ -28,10 +28,10 @@ class MSGraphClient
         $options = [
              'scope' => 'https://graph.microsoft.com/.default'
         ];
-        $this->oauth = new OAuth($clientid, $clientsecret, $tokenURL, $authURL, $options);
+        $this->logger = new Logger($entityManager);
+        $this->oauth = new OAuth($this->logger, $clientid, $clientsecret, $tokenURL, $authURL, $options);
         $this->entityManager = $entityManager;
         $this->dbprefix = $_ENV['DATABASE_PREFIX'];
-        $this->logger = new Logger($entityManager);
     }
 
     public function retrieveEvents() {
@@ -142,7 +142,7 @@ class MSGraphClient
     }
 
     private function log($message) {
-        $this->logger->log($message, self::CAL_NAME);
+        $this->logger->log($message, get_class($this));
     }
 
 }

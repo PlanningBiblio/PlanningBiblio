@@ -2,6 +2,8 @@
 
 namespace App\PlanningBiblio;
 
+use App\PlanningBiblio\Logger;
+
 use Symfony\Component\HttpFoundation\Request;
 use League\OAuth2\Client\Provider\GenericProvider;
 
@@ -13,14 +15,16 @@ class OAuth {
     private $authURL;
     private $options;
     private $token;
+    private $logger;
 
-    function __construct($clientid, $clientsecret, $tokenURL, $authURL, $options = array()) {
+    function __construct($logger, $clientid, $clientsecret, $tokenURL, $authURL, $options = array()) {
 
         $this->clientid = $clientid;
         $this->clientsecret = $clientsecret;
         $this->tokenURL = $tokenURL;
         $this->authURL = $authURL;
         $this->options = $options;
+        $this->logger = $logger;
 
     }
 
@@ -43,8 +47,8 @@ class OAuth {
             } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
 
                 // Failed to get the access token
-                error_log("Unable to get OAuth token");
-                error_log("Message: " . $e->getMessage() . " code: " . $e->getCode());
+                $this->logger->log("Unable to get OAuth token", get_class($this));
+                $this->logger->log("Message: " . $e->getMessage() . " code: " . $e->getCode(), get_class($this));
                 exit();
 
             }

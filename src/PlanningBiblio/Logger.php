@@ -14,7 +14,7 @@ class Logger
     }
 
     public function log($message, $application) {
-        echo $message . "\n";
+        //echo $message . "\n";
         $query = "INSERT INTO " . $this->dbprefix . "log (msg, program) VALUES (?,?)";
         $this->entityManager->getConnection()->prepare($query)->execute([$message, $application]);
     }
