@@ -102,7 +102,7 @@ class MSGraphClient
             if (array_key_exists($incomingEvent->iCalUId, $this->localEvents)) {
                 $localEvent = $this->localEvents[$incomingEvent->iCalUId];
                 if ($incomingEvent->lastModifiedDateTime != $localEvent['last_modified']) {
-                    $this->log("updating user " . $eventArray['plb_id'] . " event " . $eventArray['ical_key']);
+                    $this->log("updating user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
                     $query = "UPDATE " . $this->dbprefix . "absences SET debut=:debut, fin=:fin, motif=:motif, commentaires=:commentaires, last_modified=:last_modified WHERE ical_key=:ical_key LIMIT 1";
                     $statement = $this->entityManager->getConnection()->prepare($query);
                     $statement->bindParam(':debut', $incomingEvent->start->dateTime);
@@ -114,7 +114,7 @@ class MSGraphClient
                     $statement->execute();
                 }
             } else {
-                $this->log("inserting user " . $eventArray['plb_id'] . " event " . $incomingEvent->iCalUId);
+                $this->log("inserting user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
                 $query = "INSERT INTO " . $this->dbprefix . "absences ";
                 $query .= "( perso_id,  debut,  fin,  motif,  commentaires, demande, cal_name,  ical_key,  last_modified) VALUES ";
                 $query .= "(:perso_id, :debut, :fin, :motif, :commentaires, NOW(), :cal_name, :ical_key, :last_modified)";
