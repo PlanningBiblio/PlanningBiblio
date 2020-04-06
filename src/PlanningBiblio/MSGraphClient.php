@@ -116,8 +116,8 @@ class MSGraphClient
             } else {
                 $this->log("inserting user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
                 $query = "INSERT INTO " . $this->dbprefix . "absences ";
-                $query .= "( perso_id,  debut,  fin,  motif,  commentaires, demande, cal_name,  ical_key,  last_modified) VALUES ";
-                $query .= "(:perso_id, :debut, :fin, :motif, :commentaires, NOW(), :cal_name, :ical_key, :last_modified)";
+                $query .= "( perso_id,  debut,  fin,  motif, motif_autre, commentaires, etat, demande, cal_name,  ical_key,  last_modified) VALUES ";
+                $query .= "(:perso_id, :debut, :fin, :motif, '',         :commentaires, '',   NOW(),  :cal_name, :ical_key, :last_modified)";
                 $statement = $this->entityManager->getConnection()->prepare($query);
                 $perso_id = $eventArray['plb_id'];
                 $cal_name = self::CAL_NAME;
