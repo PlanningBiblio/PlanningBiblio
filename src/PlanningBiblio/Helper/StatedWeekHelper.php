@@ -92,8 +92,10 @@ class StatedWeekHelper extends BaseHelper
                 $times = $elem['times'];
                 foreach ($times as $time) {
                     $job_id = $time->job_id();
-                    $starttime = $time->starttime();
-                    $andtime = $time->endtime();
+
+                    if (!$time->starttime() && !$time->endtime()) {
+                        continue;
+                    }
 
                     $job = $this->entityManager
                         ->getRepository(StatedWeekJob::class)
@@ -112,6 +114,14 @@ class StatedWeekHelper extends BaseHelper
                     $db = new \db();
                     $db->CSRFToken = $this->CSRFToken;
                     foreach ($time_slots as $time_slot) {
+                        if ($this->normalJobExists($agent_id, $date,
+                                        $normal_job_id, $time_slot['debut'],
+                                        $time_slot['fin'],
+                                        $this->config('statedweek_site_filter')))
+                        {
+                            continue;
+                        }
+
                         $data = array(
                             'perso_id'      => $agent_id,
                             'date'          => $date,
@@ -126,6 +136,28 @@ class StatedWeekHelper extends BaseHelper
                 }
             }
         }
+    }
+
+    private function normalJobExists($agent_id, $date, $job_id, $start, $end, $site)
+    {
+        $filters = array(
+            'perso_id'  => $agent_id,
+            'date'      => $date,
+            'poste'     => $job_id,
+            'debut'     => $start,
+            'fin'       => $end,
+            'site'      => $site
+
+        );
+
+        $db = new \db();
+        $db->select2("pl_poste", "*", $filters);
+
+        if ($db->result) {
+            return true;
+        }
+
+        return false;
     }
 
     private function getTimeSlots($line, $time)
