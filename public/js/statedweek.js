@@ -46,16 +46,17 @@ function drop(e) {
 function removeWorkingHours(cell_id) {
   var cell = $('#' + cell_id);
   agent_id = cell.data('agent');
-  job_name = cell.data('job');
+  time_id = cell.data('jobtimeid');
   pause = cell.data('pause');
   date = $('input[name="date"]').val();
+  CSRFToken = $('input[name="CSRFToken"]').val();
 
   url = '/ajax/statedweek/remove';
   data = {agent_id: agent_id, date: date};
 
   if (job_name) {
     url = '/ajax/statedweekjob/remove';
-    data = {agent_id: agent_id, job_name: job_name, date: date};
+    data = {agent_id: agent_id, time_id: time_id, date: date, CSRFToken: CSRFToken};
   }
 
   if (pause) {

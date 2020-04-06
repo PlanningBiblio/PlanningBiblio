@@ -458,8 +458,9 @@ class StatedWeekController extends BaseController
         $response = new Response();
 
         $agent_id = $request->get('agent_id');
-        $job_name = $request->get('job_name');
+        $time_id = $request->get('time_id');
         $date = $request->get('date');
+        $CSRFToken = $request->get('CSRFToken');
 
         $agent = $this->entityManager->getRepository(Agent::class)->find($agent_id);
         if (!$agent) {
@@ -468,18 +469,9 @@ class StatedWeekController extends BaseController
             return $response;
         }
 
-        $job = $this->getJob($date, $job_name);
-        if (!$job) {
-            $response->setContent('Job not found');
-            $response->setStatusCode(404);
-            return $response;
-        }
-
-        $job_id = $job->id();
-
         $job_agent = $this->entityManager
             ->getRepository(StatedWeekJobTimes::class)
-            ->findOneBy(array('agent_id' => $agent_id, 'job_id' => $job_id));
+            ->find($time_id);
 
         if (!$job_agent) {
             $response->setContent('Time not found');
@@ -489,6 +481,35 @@ class StatedWeekController extends BaseController
 
         $this->entityManager->remove($job_agent);
         $this->entityManager->flush();
+
+        // Remove related job
+        // in normal planning.
+        $job = $this->entityManager
+            ->getRepository(StatedWeekJob::class)
+            ->find($job_agent->job_id());
+
+        $normal_job_id = 0;
+        foreach ($this->config('statedweek_times_job') as $normal_job) {
+            if ($normal_job['name'] != $job->name()) {
+                continue;
+            }
+
+            if (isset($normal_job['related_to']) && $normal_job['related_to']) {
+                $normal_job_id = $normal_job['related_to'];
+            }
+        }
+
+        if ($normal_job_id) {
+            $db=new \db();
+            $db->CSRFToken = $CSRFToken;
+            $delete_params = array(
+                'perso_id'  => $agent_id,
+                'date'      => $date,
+                'poste'     => $normal_job_id,
+                'site'      => $this->config('statedweek_site_filter')
+            );
+            $db->delete("pl_poste", $delete_params);
+        }
 
         $response->setContent('job hours deleted');
         $response->setStatusCode(200);
