@@ -593,9 +593,9 @@ class StatedWeekController extends BaseController
 
                 $asked_interchange = $this->entityManager
                     ->getRepository(Interchange::class)
-                    ->findOneBy(array('requester' => $agent->id()));
+                    ->findOneBy(array('requester' => $agent->id(), 'planning' => $planning->id()));
 
-                if ($asked_interchange) {
+                if ($asked_interchange && $asked_interchange->status() == 'VALIDATED') {
                     $asked = $this->entityManager
                         ->getRepository(Agent::class)
                         ->find($asked_interchange->asked());
@@ -605,9 +605,9 @@ class StatedWeekController extends BaseController
 
                 $interchange = $this->entityManager
                     ->getRepository(Interchange::class)
-                    ->findOneBy(array('asked' => $agent->id()));
+                    ->findOneBy(array('asked' => $agent->id(), 'planning' => $planning->id()));
 
-                if ($interchange) {
+                if ($interchange && $interchange->status() == 'VALIDATED') {
                     $requester = $this->entityManager
                         ->getRepository(Agent::class)
                         ->find($interchange->requester());
