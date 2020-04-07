@@ -108,6 +108,7 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `page`, `ordre`) VAL
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `page`, `ordre`) VALUES('Demande d\'échange', 100, '/interchange/add', 0)";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `groupe`, `ordre`, `categorie`) VALUES('Échanges de poste', 1301, 'Validation des échanges', 135, 'Semaines fixes')";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `groupe`, `ordre`, `categorie`) VALUES('Plannings semaines fixes', 1401, 'Création / modification des plannings semaines fixes', 136, 'Semaines fixes')";
+$sql[] = "INSERT INTO `{$dbprefix}acces` (nom, groupe_id, page, ordre) VALUES('Tous les sites', 100, 'planning/poste/overall.php', 0)";
 
 //	Insertion des activités
 $sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('1', 'Assistance audiovisuel');";
@@ -445,7 +446,8 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('60','0','Aide','/help',NULL),
   (35, 0, 'Échanges de poste', '/interchange', 'config=statedweek_enabled'),
   (35, 5, 'Voir les échanges', '/interchange', 'config=statedweek_enabled'),
-  (35, 10, 'Demande d\'échange', '/interchange/add', 'config=statedweek_enabled');";
+  (35, 10, 'Demande d\'échange', '/interchange/add', 'config=statedweek_enabled'),
+  (30, 105, 'Tous les sites', 'planning/poste/overall.php', NULL);";
 
 //	Personnel
 $sql[]="INSERT INTO `{$dbprefix}personnel` (`id`,`nom`,`postes`,`actif`,`droits`,`login`,`password`,`commentaires`) VALUES (1, 'Administrateur', '', 'Inactif', '[3,4,5,6,9,17,20,21,22,23,25,99,100,201,202,301,302,401,402,501,502,601,602,701,801,802,901,1001,1002,1101,1201,1301]','admin', 

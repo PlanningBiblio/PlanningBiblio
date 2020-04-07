@@ -222,17 +222,21 @@ $nb_sites = $config['Multisites-nombre'];
 // START SITE PLANNING
 $site = 1;
 while ($site <= $nb_sites) {
-    $can_see = (in_array((300+$site), $droits) or in_array((1000+$site), $droits));
-    if (!$can_see) {
-        $site++;
-        continue;
-    }
 
     $db=new db();
     $db->select2("pl_poste_verrou", "*", array("date"=>$date, "site"=>$site));
     $verrou = 0;
     if ($db->result) {
         $verrou=$db->result[0]['verrou2'];
+    }
+
+    $can_see = (in_array((300+$site), $droits) or in_array((1000+$site), $droits));
+    if ($verrou) {
+        $can_see = 1;
+    }
+    if (!$can_see) {
+        $site++;
+        continue;
     }
 
     $site_name = $config["Multisites-site$site"];
@@ -245,7 +249,7 @@ while ($site <= $nb_sites) {
 
     if ($nb_sites > 1) {
         echo "Planning du site: $site_name";
-        echo "<span title='Masquer le site $site_name' class='pl-icon pl-icon-hide hideSite pointer' data-site='$site'></span>";
+        echo "<span title='Masquer le site $site_name' class='pl-icon pl-icon-hide hideSite pointer' data-site='$site' data-site-name='$site_name'></span>";
     }
     echo "</h3>";
 

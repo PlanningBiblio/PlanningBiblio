@@ -20,8 +20,11 @@ $hidden_for_agent = $entityManager
     ->getRepository(HiddenSites::class)
     ->findOneBy(array('perso_id' => $perso_id));
 
-$hidden_sites = $hidden_for_agent->hidden_sites();
-$hidden_sites = $hidden_sites ? explode(';', $hidden_sites) : array();
+$hidden_sites = array();
+if ($hidden_for_agent) {
+  $hidden_sites = $hidden_for_agent->hidden_sites() ?? '';
+  $hidden_sites = $hidden_sites ? explode(';', $hidden_sites) : array();
+}
 
 if ($op == 'add' && !in_array($site, $hidden_sites) ) {
     $hidden_sites[] = $site;
