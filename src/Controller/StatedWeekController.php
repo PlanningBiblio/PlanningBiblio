@@ -770,6 +770,16 @@ class StatedWeekController extends BaseController
         $name = $request->get('name');
         $isweek = $request->get('week');
 
+        $existing_template = $this->entityManager
+          ->getRepository(StatedWeekTemplate::class)
+          ->findOneBy(array('name' => $name));
+
+        if ($existing_template) {
+          $response->setContent('Template exists');
+          $response->setStatusCode(200);
+          return $response;
+        }
+
         $template = new StatedWeekTemplate();
         $template->name($name);
         $template->type($isweek ? 'week' : 'day');

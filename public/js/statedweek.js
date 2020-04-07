@@ -443,15 +443,21 @@ $( document ).ready(function() {
           url: '/ajax/statedweek/template',
           type: 'post',
           data: {date: date, name: name, week: week},
-          success: function() {
-            information('Modèle enregistré avec succès');
+          success: function(data) {
+            if (data == 'Template exists') {
+              information("Impossible d'enregistrer le modèle. Un modèle avec le même nom existe", 'error');
+            } else {
+              information('Modèle enregistré avec succès');
+            }
           },
           error: function() {
             information("Une erreur est survenue lors de l'enregistrement du modèle", 'error');
           }
         });
 
-        $( this ).dialog( "close" );
+        if (close) {
+          $( this ).dialog( "close" );
+        }
       },
       "Annuler": function() {
         $( this ).dialog( "close" );
