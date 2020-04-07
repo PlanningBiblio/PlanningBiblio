@@ -115,6 +115,11 @@ $tables = array (
         ),
     ),
     array(
+        'name' => 'edt_samedi',
+        'fields' => array(
+        ),
+    ),
+    array(
         'name' => 'heures_absences',
         'fields' => array(
             'heures',
@@ -216,6 +221,21 @@ $tables = array (
         ),
     ),
     array(
+        'name' => 'pl_poste',
+        'fields' => array(
+        ),
+    ),
+    array(
+        'name' => 'pl_cellules',
+        'fields' => array(
+        ),
+    ),
+    array(
+        'name' => 'pl_horaires',
+        'fields' => array(
+        ),
+    ),
+    array(
         'name' => 'pl_poste_lignes',
         'fields' => array(
             'poste',
@@ -243,9 +263,19 @@ $tables = array (
         ),
     ),
     array(
+        'name' => 'pl_poste_tab_affect',
+        'fields' => array(
+        ),
+    ),
+    array(
         'name' => 'pl_poste_tab_grp',
         'fields' => array(
             'nom',
+        ),
+    ),
+    array(
+        'name' => 'pl_poste_verrou',
+        'fields' => array(
         ),
     ),
     array(
@@ -312,6 +342,11 @@ $tables = array (
         'fields' => array(
             'couleur',
             'valeur',
+        ),
+    ),
+    array(
+        'name' => 'volants',
+        'fields' => array(
         ),
     ),
 );
@@ -442,7 +477,7 @@ foreach ($tables as $table) {
     $name = $table['name'];
     $fields = $table['fields'];
 
-    $sql[] = "ALTER TABLE `{$dbprefix}{$name}` CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}{$name}` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 
     $fields_query = '`id`, `' . join('`, `', $table['fields']) . '`';
 
