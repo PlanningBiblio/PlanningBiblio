@@ -64,7 +64,7 @@ $break_countdown = ($config['PlanningHebdo'] && $config['PlanningHebdo-PauseLibr
 if ($config['PlanningHebdo']) {
     $config['EDTSamedi']=0;
 }
-  
+
 //			----------------		Vérification des droits d'accès		-----------------------------//
 $url=explode("?", $_SERVER['REQUEST_URI']);
 $url=$url[0];
@@ -152,7 +152,7 @@ if ($bloquant=='1') {
     ."INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` "
     ."WHERE `{$dbprefix}pl_poste`.`debut`<'$finSQL' AND `{$dbprefix}pl_poste`.`fin`>'$debutSQL' "
         ."AND `{$dbprefix}pl_poste`.`date`='$dateSQL' AND `{$dbprefix}postes`.`bloquant`='1'";
-    
+
     $db->query($req);
     if ($db->result) {
         foreach ($db->result as $elem) {
@@ -212,7 +212,7 @@ if ($config['Conges-Enable']) {
 $db=new db();
 $dateSQL=$db->escapeString($date);
 
-$db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` >= $dateSQL OR `depart` = '0000-00-00');");
+$db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` >= '$dateSQL' OR `depart` = '0000-00-00');");
 
 $verif=true;	// verification des heures des agents
 if (!$config['ctrlHresAgents'] and ($d->position==6 or $d->position==0)) {
@@ -370,7 +370,7 @@ if ($agents_tmp) {
                 }
             }
         }
-    
+
         // Elimine les agents qui ne sont pas dans la catégorie requise
         if (!empty($statuts)) {
             if (!in_array($elem['statut'], $statuts)) {
@@ -445,7 +445,7 @@ $db=new db();
 $dateSQL=$db->escapeString($date);
 
 $req="SELECT * FROM `{$dbprefix}personnel` "
-  ."WHERE `actif` LIKE 'Actif' AND `arrivee` <= '$dateSQL' AND (`depart` >= $dateSQL OR `depart` = '0000-00-00') AND `id` NOT IN ($agents_qualif) "
+  ."WHERE `actif` LIKE 'Actif' AND `arrivee` <= '$dateSQL' AND (`depart` >= '$dateSQL' OR `depart` = '0000-00-00') AND `id` NOT IN ($agents_qualif) "
   ."AND `id` NOT IN ($tab_deja_place) AND `id` NOT IN ($absents)  ORDER BY `nom`,`prenom`;";
 
 
@@ -516,7 +516,7 @@ if (array_key_exists("Autres", $newtab)) {
     $listparservices[]=null;
 }
 $tab_agent=join($listparservices, ";");
-    
+
 // début d'affichage
 $tableaux[0]="<table frame='box' cellspacing='0' cellpadding='0' id='menudivtab1' rules='rows' border='1'>\n";
 
