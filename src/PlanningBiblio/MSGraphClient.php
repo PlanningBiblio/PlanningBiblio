@@ -20,6 +20,7 @@ class MSGraphClient
     private $localEvents;
     private $graphUsers;
     private $logger;
+    private $reason_name;
 
     public function __construct($entityManager, $tenantid, $clientid, $clientsecret)
     {
@@ -32,6 +33,7 @@ class MSGraphClient
         $this->oauth = new OAuth($this->logger, $clientid, $clientsecret, $tokenURL, $authURL, $options);
         $this->entityManager = $entityManager;
         $this->dbprefix = $_ENV['DATABASE_PREFIX'];
+        $this->reason_name = array_key_exists('MS_GRAPH_REASON_NAME', $_ENV) ? $_ENV['MS_GRAPH_REASON_NAME'] : 'Outlook';
     }
 
     public function retrieveEvents() {
@@ -107,8 +109,7 @@ class MSGraphClient
                     $statement = $this->entityManager->getConnection()->prepare($query);
                     $statement->bindParam(':debut', $incomingEvent->start->dateTime);
                     $statement->bindParam(':fin', $incomingEvent->end->dateTime);
-                    $statement->bindParam(':motif', $incomingEvent->subject);
-                    $statement->bindParam(':commentaires', $incomingEvent->bodyPreview);
+                    $statement->bindParam(':commentaires', $incomingEvent->subject);
                     $statement->bindParam(':last_modified', $incomingEvent->lastModifiedDateTime);
                     $statement->bindParam(':ical_key', $incomingEvent->iCalUId);
                     $statement->execute();
@@ -124,8 +125,8 @@ class MSGraphClient
                 $statement->bindParam(':perso_id', $perso_id);
                 $statement->bindParam(':debut', $incomingEvent->start->dateTime);
                 $statement->bindParam(':fin', $incomingEvent->end->dateTime);
-                $statement->bindParam(':motif', $incomingEvent->subject);
-                $statement->bindParam(':commentaires', $incomingEvent->bodyPreview);
+                $statement->bindParam(':motif', $this->reason_name);
+                $statement->bindParam(':commentaires', $incomingEvent->subject);
                 $statement->bindParam(':cal_name', $cal_name);
                 $statement->bindParam(':ical_key', $incomingEvent->iCalUId);
                 $statement->bindParam(':last_modified', $incomingEvent->lastModifiedDateTime);
