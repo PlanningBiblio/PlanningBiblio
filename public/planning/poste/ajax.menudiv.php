@@ -212,7 +212,7 @@ if ($config['Conges-Enable']) {
 $db=new db();
 $dateSQL=$db->escapeString($date);
 
-$db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` >= $dateSQL OR `depart` = '0000-00-00');");
+$db->query("SELECT * FROM `{$dbprefix}personnel` WHERE `actif` LIKE 'Actif' AND (`depart` >= '$dateSQL' OR `depart` = '0000-00-00');");
 
 $verif=true;	// verification des heures des agents
 if (!$config['ctrlHresAgents'] and ($d->position==6 or $d->position==0)) {
@@ -445,7 +445,7 @@ $db=new db();
 $dateSQL=$db->escapeString($date);
 
 $req="SELECT * FROM `{$dbprefix}personnel` "
-  ."WHERE `actif` LIKE 'Actif' AND `arrivee` <= '$dateSQL' AND (`depart` >= $dateSQL OR `depart` = '0000-00-00') AND `id` NOT IN ($agents_qualif) "
+  ."WHERE `actif` LIKE 'Actif' AND `arrivee` <= '$dateSQL' AND (`depart` >= '$dateSQL' OR `depart` = '0000-00-00') AND `id` NOT IN ($agents_qualif) "
   ."AND `id` NOT IN ($tab_deja_place) AND `id` NOT IN ($absents)  ORDER BY `nom`,`prenom`;";
 
 
