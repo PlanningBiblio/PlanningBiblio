@@ -21,6 +21,7 @@ class MSGraphClient
     private $graphUsers;
     private $logger;
     private $reason_name;
+    private $login_suffix;
 
     public function __construct($entityManager, $tenantid, $clientid, $clientsecret)
     {
@@ -33,15 +34,20 @@ class MSGraphClient
         $this->oauth = new OAuth($this->logger, $clientid, $clientsecret, $tokenURL, $authURL, $options);
         $this->entityManager = $entityManager;
         $this->dbprefix = $_ENV['DATABASE_PREFIX'];
-        $this->reason_name = array_key_exists('MS_GRAPH_REASON_NAME', $_ENV) ? $_ENV['MS_GRAPH_REASON_NAME'] : 'Outlook';
+        $this->reason_name = $_ENV['MS_GRAPH_REASON_NAME'] ?? 'Outlook';
+        $this->login_suffix = $_ENV['MS_GRAPH_LOGIN_SUFFIX'] ?? null;
     }
 
     public function retrieveEvents() {
         $this->log("Start absences import from MS Graph Calendars");
         $this->getIncomingEvents();
-        $this->getLocalEvents();
-        $this->deleteEvents();
-        $this->insertOrUpdateEvents();
+        if (!$this->incomingEvents) {
+            $this->log("No suitable users found for import");
+        } else {
+            $this->getLocalEvents();
+            $this->deleteEvents();
+            $this->insertOrUpdateEvents();
+        }
         $this->log("End absences import from MS Graph Calendars");
     }
 
@@ -75,9 +81,8 @@ class MSGraphClient
     }
 
     private function isGraphUser($user) {
-        $email = $user->mail();
-        if (!$email) { return false; }
-        $response = $this->sendGet("/users/$email/calendar/events");
+        $login = $user->login();
+        $response = $this->sendGet("/users/$login" . $this->login_suffix . "/calendar/events");
         if ($response->code == 200) {
             return $response;
         }
