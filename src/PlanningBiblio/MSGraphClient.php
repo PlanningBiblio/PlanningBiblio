@@ -107,12 +107,14 @@ class MSGraphClient
                     $this->log("updating user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
                     $query = "UPDATE " . $this->dbprefix . "absences SET debut=:debut, fin=:fin, motif=:motif, commentaires=:commentaires, last_modified=:last_modified WHERE ical_key=:ical_key LIMIT 1";
                     $statement = $this->entityManager->getConnection()->prepare($query);
-                    $statement->bindParam(':debut', $incomingEvent->start->dateTime);
-                    $statement->bindParam(':fin', $incomingEvent->end->dateTime);
-                    $statement->bindParam(':commentaires', $incomingEvent->subject);
-                    $statement->bindParam(':last_modified', $incomingEvent->lastModifiedDateTime);
-                    $statement->bindParam(':ical_key', $incomingEvent->iCalUId);
-                    $statement->execute();
+                    $statement->execute(array(
+                        'debut'         => $this->formatDate($incomingEvent->start),
+                        'fin'           => $this->formatDate($incomingEvent->end),
+                        'motif'         => $this->reason_name,
+                        'commentaires'  => $incomingEvent->subject,
+                        'ical_key'      => $incomingEvent->iCalUId,
+                        'last_modified' => $incomingEvent->lastModifiedDateTime
+                    ));
                 }
             } else {
                 $this->log("inserting user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
@@ -120,17 +122,16 @@ class MSGraphClient
                 $query .= "( perso_id,  debut,  fin,  motif, motif_autre, commentaires, etat, demande, cal_name,  ical_key,  last_modified) VALUES ";
                 $query .= "(:perso_id, :debut, :fin, :motif, '',         :commentaires, '',   NOW(),  :cal_name, :ical_key, :last_modified)";
                 $statement = $this->entityManager->getConnection()->prepare($query);
-                $perso_id = $eventArray['plb_id'];
-                $cal_name = self::CAL_NAME;
-                $statement->bindParam(':perso_id', $perso_id);
-                $statement->bindParam(':debut', $incomingEvent->start->dateTime);
-                $statement->bindParam(':fin', $incomingEvent->end->dateTime);
-                $statement->bindParam(':motif', $this->reason_name);
-                $statement->bindParam(':commentaires', $incomingEvent->subject);
-                $statement->bindParam(':cal_name', $cal_name);
-                $statement->bindParam(':ical_key', $incomingEvent->iCalUId);
-                $statement->bindParam(':last_modified', $incomingEvent->lastModifiedDateTime);
-                $statement->execute();
+                $statement->execute(array(
+                    'perso_id'      => $eventArray['plb_id'],
+                    'debut'         => $this->formatDate($incomingEvent->start),
+                    'fin'           => $this->formatDate($incomingEvent->end),
+                    'motif'         => $this->reason_name,
+                    'commentaires'  => $incomingEvent->subject,
+                    'cal_name'      => self::CAL_NAME,
+                    'ical_key'      => $incomingEvent->iCalUId,
+                    'last_modified' => $incomingEvent->lastModifiedDateTime
+                ));
             }
         }
     }
@@ -144,6 +145,11 @@ class MSGraphClient
 
     private function log($message) {
         $this->logger->log($message, get_class($this));
+    }
+
+    private function formatDate($graphdate) {
+        $time = strtotime($graphdate->dateTime . $graphdate->timeZone);
+        return date("Y-m-d H:i:s", $time);
     }
 
 }
