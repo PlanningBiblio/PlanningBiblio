@@ -48,6 +48,7 @@ $dbAdminPass=mysqli_real_escape_string($dblink,$dbAdminPass);
 $user_exists=false;
 $req="SELECT * FROM `mysql`.`user` WHERE `User`='$dbuser' AND `Host`='$dbhost';";
 $dbconn=mysqli_real_connect($dblink, $dbhost, $dbAdminUser, $dbAdminPass, 'mysql');
+$dblink->set_charset("utf8mb4");
 
 $dbname=mysqli_real_escape_string($dblink, $dbname);
 $dbuser=mysqli_real_escape_string($dblink, $dbuser);

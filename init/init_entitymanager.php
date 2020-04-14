@@ -33,6 +33,7 @@ $dbParams = array(
     'user'     => $config['dbuser'],
     'password' => $config['dbpass'],
     'dbname'   => $config['dbname'],
+    'charset'  => 'utf8mb4',
 );
 
 global $entityManager;
