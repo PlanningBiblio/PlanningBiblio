@@ -78,7 +78,7 @@ $(function() {
               var padding = (type == 2) ? "&nbsp;&nbsp;&nbsp;" : "" ;
               var selected = (val == current_val) ? "selected='selected'" : "";
 
-              var option = "<option value='"+val+"' "+selected+" "+disabled+">"+padding+""+val+"</option>";
+              var option = "<option value=\""+val+"\" "+selected+" "+disabled+">"+padding+""+val+"</option>";
               
               $('#motif').append(option);
             });
