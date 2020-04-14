@@ -113,24 +113,17 @@ class AbsenceController extends BaseController
         }
 
         $absence = $a->elements;
+        $absence['motif'] = html_entity_decode($a->elements['motif'], ENT_QUOTES);
+        $absence['motif_autre'] = html_entity_decode($a->elements['motif_autre'], ENT_QUOTES);
+        $absence['commentaires'] = html_entity_decode($a->elements['commentaires'], ENT_QUOTES);
+
         $agents=$a->elements['agents'];
-        $perso_ids=$a->elements['perso_ids'];
-        $motif=$a->elements['motif'];
-        $motif_autre=$a->elements['motif_autre'];
         $debutSQL=filter_var($a->elements['debut'], FILTER_CALLBACK, array("options"=>"sanitize_dateTimeSQL"));
         $finSQL=filter_var($a->elements['fin'], FILTER_CALLBACK, array("options"=>"sanitize_dateTimeSQL"));
         $valide=filter_var($a->elements['valide_n2'], FILTER_SANITIZE_NUMBER_INT);
-        $validation=$a->elements['validation_n2'];
         $valideN1=$a->elements['valide_n1'];
-        $validationN1=$a->elements['validation_n1'];
         $ical_key=$a->elements['ical_key'];
         $cal_name=$a->elements['cal_name'];
-        $rrule=$a->elements['rrule'];
-
-        // Pièces justificatives
-        $pj1Checked=$a->elements['pj1']?"checked='checked'":null;
-        $pj2Checked=$a->elements['pj2']?"checked='checked'":null;
-        $soChecked=$a->elements['so']?"checked='checked'":null;
 
         // Traitement des dates et des heures
         $absence['demande'] = dateFr($absence['demande'], true);
@@ -236,7 +229,7 @@ class AbsenceController extends BaseController
             $agents_tous=$db_perso->result?$db_perso->result:array();
         }
 
-        $display_autre = in_array(strtolower($motif), array("autre","other")) ? 1 : 0;
+        $display_autre = in_array(strtolower($absence['motif']), array("autre","other")) ? 1 : 0;
 
         $this->templateParams(array(
             'id'                    => $id,
@@ -484,6 +477,7 @@ class AbsenceController extends BaseController
                 if (!in_array($elem['valeur'], $reasons_used)) {
                     $elem['unused'] = true;
                 }
+                $elem['valeur'] = html_entity_decode($elem['valeur'], ENT_QUOTES);
                 $reasons[] = $elem;
             }
         }
