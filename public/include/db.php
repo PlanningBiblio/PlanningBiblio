@@ -54,6 +54,8 @@ class db
     public function connect()
     {
         $this->conn=mysqli_connect($this->host, $this->user, $this->password, $this->dbname);
+        $this->conn->set_charset("utf8mb4");
+
         mysqli_query($this->conn, "SET SESSION sql_mode = ''");
         if (mysqli_connect_errno($this->conn)) {
             $this->error=true;
@@ -546,7 +548,7 @@ class dbh
         $this->result=array();
 
         $this->pdo=new PDO(
-            "mysql:host={$this->dbhost};dbname={$this->dbname}",
+            "mysql:host={$this->dbhost};dbname={$this->dbname};charset=utf8mb4",
             $this->dbuser,
             $this->dbpass,
             array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET sql_mode=''")
