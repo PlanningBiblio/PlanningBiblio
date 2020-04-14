@@ -1759,37 +1759,6 @@ if (version_compare($config['Version'], $v) === -1) {
 
 $v="19.11.00.010";
 if (version_compare($config['Version'], $v) === -1) {
-
-    $db = new db();
-    $db->select2('absences', array('id', 'motif'), "`motif` LIKE '%&%'");
-
-    foreach ($db->result as $elem) {
-      $id = $elem['id'];
-      $old = $elem['motif'];
-
-      $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-
-      if ($new != $old) {
-        $new = addslashes($new);
-        $sql[] = "UPDATE `{$dbprefix}absences` SET `motif` = '$new' WHERE `id` = '$id';";
-      }
-    }
-
-    $db = new db();
-    $db->select2('select_abs', array('id', 'valeur'), "`valeur` LIKE '%&%'");
-
-    foreach ($db->result as $elem) {
-      $id = $elem['id'];
-      $old = $elem['valeur'];
-
-      $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-
-      if ($new != $old) {
-        $new = addslashes($new);
-        $sql[] = "UPDATE `{$dbprefix}select_abs` SET `valeur` = '$new' WHERE `id` = '$id';";
-      }
-    }
-
     // Aff collate UTF8
     $sql[] = "ALTER TABLE `{$dbprefix}absences` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
     $sql[] = "ALTER TABLE `{$dbprefix}absences_documents` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
@@ -1816,7 +1785,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "ALTER TABLE `{$dbprefix}personnel` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
     $sql[] = "ALTER TABLE `{$dbprefix}pl_notes` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
     $sql[] = "ALTER TABLE `{$dbprefix}pl_notifications` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
-    $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}pl_poste` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
     $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_cellules` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
     $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_horaires` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
     $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_lignes` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
