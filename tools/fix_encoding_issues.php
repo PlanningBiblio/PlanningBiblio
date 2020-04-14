@@ -456,8 +456,8 @@ $new2old = array(
     '½' => 'Â½',
     '¾' => 'Â¾',
     '¿' => 'Â¿',
-    'à' => 'Ã ',
-    '†' => 'â€ ',
+    'à' => 'Ã ',
+    '†' => 'â€',
     '”' => 'â€',
     'â' => 'Ã¢',
     'Â' => 'Ã‚',
@@ -493,6 +493,7 @@ foreach ($tables as $table) {
 
                 $value = $elem[$field];
                 $origin = $value;
+
                 $value = str_replace($old_characters, $new_characters, $value);
 
                 $test = mb_detect_encoding($value, 'UTF-8', true);
