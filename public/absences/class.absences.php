@@ -40,6 +40,7 @@ class absences
     public $agents_supprimes=array(0);
     public $CSRFToken=null;
     public $commentaires=null;
+    public $cal_name=null;
     public $debut=null;
     public $dtstamp=null;
     public $edt=array();
@@ -1353,7 +1354,8 @@ class absences
         $dtend .= preg_replace('/(\d+):(\d+):(\d+)/', '$1$2$3', $this->hre_fin);
         $dtstamp = !empty($this->dtstamp) ? $this->dtstamp : gmdate('Ymd\THis\Z');
         $summary = $this->motif_autre ? html_entity_decode($this->motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8') : html_entity_decode($this->motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-        $cal_name = "PlanningBiblio-Absences-$perso_id-$dtstamp";
+        //$cal_name = "PlanningBiblio-Absences-$perso_id-$dtstamp";
+        $cal_name = !empty($this->cal_name) ? $this->cal_name : "PlanningBiblio-Absences-$perso_id-$dtstamp";
         $uid = !empty($this->uid) ? $this->uid : $dtstart."_".$dtstamp;
         $status = $this->valide_n2 > 0 ? 'CONFIRMED' : 'TENTATIVE';
 

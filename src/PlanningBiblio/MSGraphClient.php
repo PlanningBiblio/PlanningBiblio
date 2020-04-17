@@ -5,7 +5,12 @@ namespace App\PlanningBiblio;
 use App\Model\Agent;
 use App\PlanningBiblio\OAuth;
 use App\PlanningBiblio\Logger;
+use App\PlanningBiblio\MSCalendarUtils;
 use Unirest\Request;
+
+require_once __DIR__."/../../public/absences/class.absences.php";
+require_once(__DIR__ . '/../../public/include/config.php');
+require_once(__DIR__ . '/../../public/include/function.php');
 
 class MSGraphClient
 {
@@ -13,15 +18,18 @@ class MSGraphClient
     private CONST BASE_URL = 'https://graph.microsoft.com/v1.0';
     private CONST CAL_NAME = 'ms_graph';
 
-    private $oauth;
+    private $absences;
+    private $calendarUtils;
+    private $csrftoken;
     private $dbprefix;
     private $entityManager;
+    private $graphUsers;
     private $incomingEvents;
     private $localEvents;
-    private $graphUsers;
     private $logger;
-    private $reason_name;
     private $login_suffix;
+    private $oauth;
+    private $reason_name;
 
     public function __construct($entityManager, $tenantid, $clientid, $clientsecret)
     {
@@ -30,17 +38,21 @@ class MSGraphClient
         $options = [
              'scope' => 'https://graph.microsoft.com/.default'
         ];
+        $this->absences = new \absences();
         $this->logger = new Logger($entityManager);
         $this->oauth = new OAuth($this->logger, $clientid, $clientsecret, $tokenURL, $authURL, $options);
+        $this->msCalendarUtils = new MSCalendarUtils();
         $this->entityManager = $entityManager;
         $this->dbprefix = $_ENV['DATABASE_PREFIX'];
         $this->reason_name = $_ENV['MS_GRAPH_REASON_NAME'] ?? 'Outlook';
         $this->login_suffix = $_ENV['MS_GRAPH_LOGIN_SUFFIX'] ?? null;
+        $this->csrftoken = CSRFToken();
     }
 
     public function retrieveEvents() {
         $this->log("Start absences import from MS Graph Calendars");
         $this->getIncomingEvents();
+        //die();
         if (!$this->incomingEvents) {
             $this->log("No suitable users found for import");
         } else {
@@ -60,9 +72,9 @@ class MSGraphClient
             if ($response) {
                 array_push($this->graphUsers, $user->id());
                 foreach ($response->body->value as $event) {
-                        $this->incomingEvents[$event->iCalUId]['plb_id'] = $user->id();
-                        $this->incomingEvents[$event->iCalUId]['last_modified'] = $event->lastModifiedDateTime;
-                        $this->incomingEvents[$event->iCalUId]['event'] = $event;
+                    $this->incomingEvents[$event->iCalUId]['plb_id'] = $user->id();
+                    $this->incomingEvents[$event->iCalUId]['last_modified'] = $event->lastModifiedDateTime;
+                    $this->incomingEvents[$event->iCalUId]['event'] = $event;
                 }
             }
         }
@@ -102,13 +114,35 @@ class MSGraphClient
         }
     }
 
+    private function addRecurrentEvent($event, $perso_id) {
+        $rrule = $this->msCalendarUtils->recurrenceToRRule($event->recurrence);
+        $a = new \absences();
+        $a->CSRFToken = $this->csrftoken;
+        $a->perso_id = $perso_id;
+        $a->commentaires = $event->subject;
+        $a->debut = $this->formatDate($event->start, "d/m/Y");
+        $dtstamp = gmdate('Ymd\THis\Z');
+        $a->dtstamp = $dtstamp;
+        $a->fin = $this->formatDate($event->end, "d/m/Y");
+        $a->hre_debut = $this->formatDate($event->start, "H:i:s");
+        $a->hre_fin = $this->formatDate($event->end, "H:i:s");
+        $a->motif = $this->reason_name;
+        $a->rrule = $rrule;
+        $a->valide_n2 = 1;
+        $a->uid = $event->iCalUId;
+        $a->cal_name = self::CAL_NAME;
+        $a->ics_add_event();
+}
+
     private function insertOrUpdateEvents() {
         // The SQL calls in this function should be replaced by doctrine calls when available
         foreach ($this->incomingEvents as $eventArray) {
             $incomingEvent = $eventArray['event'];
             if (array_key_exists($incomingEvent->iCalUId, $this->localEvents)) {
+                // Event modification
                 $localEvent = $this->localEvents[$incomingEvent->iCalUId];
                 if ($incomingEvent->lastModifiedDateTime != $localEvent['last_modified']) {
+
                     $this->log("updating user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
                     $query = "UPDATE " . $this->dbprefix . "absences SET debut=:debut, fin=:fin, motif=:motif, commentaires=:commentaires, last_modified=:last_modified WHERE ical_key=:ical_key LIMIT 1";
                     $statement = $this->entityManager->getConnection()->prepare($query);
@@ -122,21 +156,27 @@ class MSGraphClient
                     ));
                 }
             } else {
-                $this->log("inserting user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
-                $query = "INSERT INTO " . $this->dbprefix . "absences ";
-                $query .= "( perso_id,  debut,  fin,  motif, motif_autre, commentaires, etat, demande, cal_name,  ical_key,  last_modified) VALUES ";
-                $query .= "(:perso_id, :debut, :fin, :motif, '',         :commentaires, '',   NOW(),  :cal_name, :ical_key, :last_modified)";
-                $statement = $this->entityManager->getConnection()->prepare($query);
-                $statement->execute(array(
-                    'perso_id'      => $eventArray['plb_id'],
-                    'debut'         => $this->formatDate($incomingEvent->start),
-                    'fin'           => $this->formatDate($incomingEvent->end),
-                    'motif'         => $this->reason_name,
-                    'commentaires'  => $incomingEvent->subject,
-                    'cal_name'      => self::CAL_NAME,
-                    'ical_key'      => $incomingEvent->iCalUId,
-                    'last_modified' => $incomingEvent->lastModifiedDateTime
-                ));
+                // Event insertion
+                if ($incomingEvent->recurrence) {
+                    $this->log("inserting user " . $eventArray['plb_id'] . " recurring event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
+                    $this->addRecurrentEvent($incomingEvent, $eventArray['plb_id']);
+                } else {
+                    $this->log("inserting user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
+                    $query = "INSERT INTO " . $this->dbprefix . "absences ";
+                    $query .= "( perso_id,  debut,  fin,  motif, motif_autre, commentaires, valide, etat, demande, cal_name,  ical_key,  last_modified) VALUES ";
+                    $query .= "(:perso_id, :debut, :fin, :motif, '',         :commentaires, 9999,   '',   NOW(),  :cal_name, :ical_key, :last_modified)";
+                    $statement = $this->entityManager->getConnection()->prepare($query);
+                    $statement->execute(array(
+                        'perso_id'      => $eventArray['plb_id'],
+                        'debut'         => $this->formatDate($incomingEvent->start),
+                        'fin'           => $this->formatDate($incomingEvent->end),
+                        'motif'         => $this->reason_name,
+                        'commentaires'  => $incomingEvent->subject,
+                        'cal_name'      => self::CAL_NAME,
+                        'ical_key'      => $incomingEvent->iCalUId,
+                        'last_modified' => $incomingEvent->lastModifiedDateTime
+                    ));
+                }
             }
         }
     }
@@ -152,9 +192,8 @@ class MSGraphClient
         $this->logger->log($message, get_class($this));
     }
 
-    private function formatDate($graphdate) {
+    private function formatDate($graphdate, $format = "Y-m-d H:i:s") {
         $time = strtotime($graphdate->dateTime . $graphdate->timeZone);
-        return date("Y-m-d H:i:s", $time);
+        return date($format, $time);
     }
-
 }
