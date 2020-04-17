@@ -12,7 +12,7 @@
     Liste des congés de {{ agent_name }}, année {{ from_year }}-{{ to_year }}.
   </h3>
 
-  <form name='form' method='get' action='/holiday/index' class='noprint'>
+  <form name='form' method='get' action='{{ asset("holiday/index") }}' class='noprint'>
     <span style='float:left; vertical-align:top; margin-bottom:20px;'>
       <table class='tableauStandard'>
         <tbody>
@@ -77,7 +77,7 @@
               <input type='submit' value='Rechercher' id='button-OK' class='ui-button'/>
             </td>
             <td>
-              <input type='button' value='Effacer' onclick='location.href="/holiday/index/{{ show_recovery }}/?reset=on"' class='ui-button'/>
+              <a href='{{ asset("holiday/index/") }}{{ show_recovery }}/?reset=on' class='ui-button' >Effacer</a>
             </td>
           </tr>
         </tbody>
@@ -136,7 +136,7 @@
             {% if c.supprime or c.information %}
               &nbsp;
             {% else %}
-              <a href='/holiday/edit/{{ c.id }}'/>
+              <a href='{{ asset("holiday/edit/") }}{{ c.id }}'/>
                 <span class='pl-icon pl-icon-edit' title='Voir'></span>
               </a>
             {% endif %}
