@@ -3,11 +3,8 @@
 Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : setup/index.php
-Création : mai 2011
-Dernière modification : 10 février 2017
+@file public/setup/index.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -21,43 +18,31 @@ session_start();
 session_destroy();
 session_start();
 
-$version="2.8.04";
 
-include "header.php";
-include_once "../include/function.php";
-$password=gen_trivial_password(16);
+$password = substr(bin2hex(random_bytes(32)), 0, 16);
 
 // Génération d'un CSRF Token
-// PHP 7
-if (phpversion() >= 7) {
-    if (empty($_SESSION['oups']['CSRFToken'])) {
-        $_SESSION['oups']['CSRFToken'] = bin2hex(random_bytes(32));
-    }
+if (empty($_SESSION['oups']['CSRFToken'])) {
+    $_SESSION['oups']['CSRFToken'] = bin2hex(random_bytes(32));
 }
 
-// PHP 5.3+
-else {
-    if (empty($_SESSION['oups']['CSRFToken'])) {
-        $_SESSION['oups']['CSRFToken'] = bin2hex(openssl_random_pseudo_bytes(32));
-    }
+include "header.php";
+
+if (file_exists(__DIR__ . '/../../.env.local')) {
+    echo "<p style='color:red;'>L'installation a déjà été effectuée !</p>\n";
+    echo "<p>Si vous souhaitez recommencer l'installation, supprimez, déplacez ou renommez le fichier .env.local</p>\n";
+    include "footer.php";
+    exit;
 }
 
-$msg = null;
-$Fnm = "../include/config.php";
-if (!$inF=fopen("../include/test.php", "w\n")) {
-    $msg="<br/>Important : Avant de continuer,<br/> Veuillez donner les droits d'&eacute;criture/modification <br/>aux dossiers \"include\" et \"data\".\n";
-    $msg.="<br/><a href='index.php'>Re-vérifier</a>";
-}
-
-echo "<h2>Installation de la version $version</h2>\n";
 ?>
 <h3>Création de la base de donnée</h3>
 <p>
 Veuillez entrer ci-dessous les informations<br/>
 n&eacute;cessaires &agrave; la cr&eacute;ation de la base de donn&eacute;es.
 </p>
-<form name='form' method='post' action='createdb.php'>
-<input type='hidden' name='version' value='<?php echo $version; ?>' />
+<form name='form' method='post' action='createconfig.php'>
+<input type='hidden' name='dbport' value='3306' />
 <fieldset class='ui-widget-content ui-corner-all' >
 <table>
 <tr><td>Nom d'h&ocirc;te ou adresse IP du serveur MySQL</td>

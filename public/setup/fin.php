@@ -3,10 +3,8 @@
 Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : setup/fin.php
-Création : mai 2011
+@file public/setup/fin.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -18,10 +16,25 @@ Affiche le message "configuration terminée" et invite l'utilisateur à se conne
 
 session_start();
 
-$version="2.8.04";
+$version="setup";
+$path = substr(__DIR__, 0, -12);
+
+include "header.php";
+
+if (!file_exists(__DIR__ . '/../../.env.local')) {
+    echo "<p style='color:red;'>Le fichier de configuration est manquant.<br/><br/>\n";
+    echo "Veuillez créer le fichier <b>.env.local</b> dans le dossier <b>$path</b> avec les informations suivantes.<br/><br/>\n";
+    echo "<p style='text-align:left;margin-bottom: 30px;'>\n";
+    foreach ($_SESSION['env_local_data'] as $line) {
+        echo $line . "<br/>\n";
+    }
+    echo "</p>\n";
+    echo "<p>Cliquez ensuite sur <a href='javascript:location.reload();' class='ui-button'>Recharger</a>\n";
+    include "footer.php";
+    exit;
+}
 
 include "../include/config.php";
-include "header.php";
 
 $CSRFToken = filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
 $nom=filter_input(INPUT_POST, "nom", FILTER_SANITIZE_STRING);
