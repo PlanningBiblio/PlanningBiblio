@@ -4,7 +4,6 @@
 /.php_cs.cache
 public/data/*
 !public/data/index.php
-public/include/config.php
 public/include/test.php
 public/lang/custom.php
 

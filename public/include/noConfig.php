@@ -53,7 +53,7 @@ for ($i=0;$i<$nb;$i++) {
 <center>
 <strong>
 Le fichier de configuration est manquant.<br/> 
-<a href='setup/index.php'>Cliquez ici pour commencer l'installation.</a>
+<a href='setup'>Cliquez ici pour commencer l'installation.</a>
 </strong>
 </center>
 <?php
