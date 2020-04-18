@@ -16,7 +16,7 @@ class MSGraphClient
 {
 
     private CONST BASE_URL = 'https://graph.microsoft.com/v1.0';
-    private CONST CAL_NAME = 'ms_graph';
+    private CONST CAL_NAME = 'PlanningBiblio-Absences-';
 
     private $absences;
     private $calendarUtils;
@@ -82,13 +82,13 @@ class MSGraphClient
 
     private function getLocalEvents() {
         $usersSQLIds = join(',', $this->graphUsers);
-        $query = "SELECT * FROM " . $this->dbprefix . "absences WHERE cal_name='" . self::CAL_NAME . "' AND perso_id IN($usersSQLIds)";
+        $query = "SELECT * FROM " . $this->dbprefix . "absences WHERE motif='" . $this->reason_name . "' AND perso_id IN($usersSQLIds)";
         $statement = $this->entityManager->getConnection()->prepare($query);
         $statement->execute();
         $results = $statement->fetchAll();
         $this->localEvents = array();
         foreach ($results as $localEvent) {
-            $this->localEvents[$localEvent['ical_key']] = $localEvent;
+            $this->localEvents[$localEvent['external_ical_key']] = $localEvent;
         }
     }
 
@@ -107,32 +107,51 @@ class MSGraphClient
         $statement = $this->entityManager->getConnection()->prepare($query);
         foreach ($this->localEvents as $ical_key => $localEvent) {
             if (!array_key_exists($ical_key, $this->incomingEvents)) {
-                $this->log("deleting user " . $localEvent['perso_id'] . " event " . $localEvent['ical_key']);
-                $statement->bindParam(':ical_key', $localEvent['ical_key']);
-                $statement->execute();
+                if ($localEvent['uid']) {
+                    $this->log("deleting uid " . $localEvent['uid'] .  " user " . $localEvent['perso_id'] . " recurring event " . $localEvent['ical_key']);
+                    $a = new \absences();
+                    $a->CSRFToken = $this->csrftoken;
+                    $a->perso_id = $localEvent['perso_id'];
+                    $a->uid = $localEvent['uid'];
+                    $a->ics_delete_event();
+                } else {
+                    $this->log("deleting user " . $localEvent['perso_id'] . " event " . $localEvent['ical_key']);
+                    $statement->bindParam(':ical_key', $localEvent['ical_key']);
+                    $statement->execute();
+                }
             }
         }
     }
 
-    private function addRecurrentEvent($event, $perso_id) {
+    private function addOrUpdateRecurrentEvent($event, $perso_id, $add = false) {
         $rrule = $this->msCalendarUtils->recurrenceToRRule($event->recurrence);
         $a = new \absences();
         $a->CSRFToken = $this->csrftoken;
         $a->perso_id = $perso_id;
         $a->commentaires = $event->subject;
         $a->debut = $this->formatDate($event->start, "d/m/Y");
-        $dtstamp = gmdate('Ymd\THis\Z');
-        $a->dtstamp = $dtstamp;
+        // $dtstamp = gmdate('Ymd\THis\Z');
         $a->fin = $this->formatDate($event->end, "d/m/Y");
         $a->hre_debut = $this->formatDate($event->start, "H:i:s");
         $a->hre_fin = $this->formatDate($event->end, "H:i:s");
         $a->motif = $this->reason_name;
         $a->rrule = $rrule;
         $a->valide_n2 = 1;
-        $a->uid = $event->iCalUId;
-        $a->cal_name = self::CAL_NAME;
-        $a->ics_add_event();
+        $a->last_modified = $event->lastModifiedDateTime;
+        $a->uid = substr($event->iCalUId, 0, 50);
+        $a->external_ical_key = $event->iCalUId;
+        $a->perso_ids = array($perso_id);
+        if ($add) {
+            $a->ics_add_event();
+        } else {
+            $a->ics_update_event();
+        }
 }
+
+    #TODO?
+    private function createICalKey($event) {
+        //$key=$elem['UID']."_".$elem['DTSTART']."_".$elem['LAST-MODIFIED'];
+    }
 
     private function insertOrUpdateEvents() {
         // The SQL calls in this function should be replaced by doctrine calls when available
@@ -142,29 +161,33 @@ class MSGraphClient
                 // Event modification
                 $localEvent = $this->localEvents[$incomingEvent->iCalUId];
                 if ($incomingEvent->lastModifiedDateTime != $localEvent['last_modified']) {
-
-                    $this->log("updating user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
-                    $query = "UPDATE " . $this->dbprefix . "absences SET debut=:debut, fin=:fin, motif=:motif, commentaires=:commentaires, last_modified=:last_modified WHERE ical_key=:ical_key LIMIT 1";
-                    $statement = $this->entityManager->getConnection()->prepare($query);
-                    $statement->execute(array(
-                        'debut'         => $this->formatDate($incomingEvent->start),
-                        'fin'           => $this->formatDate($incomingEvent->end),
-                        'motif'         => $this->reason_name,
-                        'commentaires'  => $incomingEvent->subject,
-                        'ical_key'      => $incomingEvent->iCalUId,
-                        'last_modified' => $incomingEvent->lastModifiedDateTime
-                    ));
+                    if ($incomingEvent->recurrence) {
+                        $this->log("updating user " . $eventArray['plb_id'] . " recurring event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
+                        $this->addOrUpdateRecurrentEvent($incomingEvent, $eventArray['plb_id']);
+                    } else {
+                        $this->log("updating user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
+                        $query = "UPDATE " . $this->dbprefix . "absences SET debut=:debut, fin=:fin, motif=:motif, commentaires=:commentaires, last_modified=:last_modified WHERE ical_key=:ical_key LIMIT 1";
+                        $statement = $this->entityManager->getConnection()->prepare($query);
+                        $statement->execute(array(
+                            'debut'         => $this->formatDate($incomingEvent->start),
+                            'fin'           => $this->formatDate($incomingEvent->end),
+                            'motif'         => $this->reason_name,
+                            'commentaires'  => $incomingEvent->subject,
+                            'ical_key'      => $incomingEvent->iCalUId,
+                            'last_modified' => $incomingEvent->lastModifiedDateTime
+                        ));
+                    }
                 }
             } else {
                 // Event insertion
                 if ($incomingEvent->recurrence) {
                     $this->log("inserting user " . $eventArray['plb_id'] . " recurring event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
-                    $this->addRecurrentEvent($incomingEvent, $eventArray['plb_id']);
+                    $this->addOrUpdateRecurrentEvent($incomingEvent, $eventArray['plb_id'], true);
                 } else {
                     $this->log("inserting user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
                     $query = "INSERT INTO " . $this->dbprefix . "absences ";
-                    $query .= "( perso_id,  debut,  fin,  motif, motif_autre, commentaires, valide, etat, demande, cal_name,  ical_key,  last_modified) VALUES ";
-                    $query .= "(:perso_id, :debut, :fin, :motif, '',         :commentaires, 9999,   '',   NOW(),  :cal_name, :ical_key, :last_modified)";
+                    $query .= "( perso_id,  debut,  fin,  motif, motif_autre, commentaires, valide, etat, demande, cal_name,  ical_key, external_ical_key, last_modified) VALUES ";
+                    $query .= "(:perso_id, :debut, :fin, :motif, '',         :commentaires, 9999,   '',   NOW(),  :cal_name, :ical_key, :external_ical_key, :last_modified)";
                     $statement = $this->entityManager->getConnection()->prepare($query);
                     $statement->execute(array(
                         'perso_id'      => $eventArray['plb_id'],
@@ -172,8 +195,9 @@ class MSGraphClient
                         'fin'           => $this->formatDate($incomingEvent->end),
                         'motif'         => $this->reason_name,
                         'commentaires'  => $incomingEvent->subject,
-                        'cal_name'      => self::CAL_NAME,
+                        'cal_name'      => self::CAL_NAME . '-' . $eventArray['plb_id'] . '-',
                         'ical_key'      => $incomingEvent->iCalUId,
+                        'external_ical_key'      => $incomingEvent->iCalUId,
                         'last_modified' => $incomingEvent->lastModifiedDateTime
                     ));
                 }

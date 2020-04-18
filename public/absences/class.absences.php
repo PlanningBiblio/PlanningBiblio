@@ -41,6 +41,7 @@ class absences
     public $CSRFToken=null;
     public $commentaires=null;
     public $cal_name=null;
+    public $external_ical_key=null;
     public $debut=null;
     public $dtstamp=null;
     public $edt=array();
@@ -55,6 +56,7 @@ class absences
     public $hre_fin = null;
     public $id = null;
     public $ignoreFermeture=false;
+    public $last_modified = null;
     public $minutes=0;
     public $motif = null;
     public $motif_autre = null;
@@ -1402,6 +1404,8 @@ class absences
 
         // On créé un événement ICS
         $ics_content .= "BEGIN:VEVENT\n";
+        $ics_content .= "X-EXTERNAL-ICAL-KEY:{$this->external_ical_key}\n";
+        $ics_content .= "X-LAST-MODIFIED:{$this->last_modified}\n";
         $ics_content .= "UID:$uid\n";
         $ics_content .= "DTSTART;TZID=$tzid:$dtstart\n";
         $ics_content .= "DTEND;TZID=$tzid:$dtend\n";
@@ -1556,7 +1560,6 @@ class absences
      */
     public function ics_update_event()
     {
-
     // Recherche de l'événement pour récupèrer la date de départ pour la création des événements des agents ajoutés
         // le tableau $event servira aussi à la suppression des agents retirés de l'événement
         $db = new db();

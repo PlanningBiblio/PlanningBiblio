@@ -18,7 +18,6 @@ class MSCalendarUtils
         // https://www.textmagic.com/free-tools/rrule-generator
         $rrule = '';
         //var_dump($recurrence);
-        //$rrule .= $this->returnStart($recurrence) . "\n";
         switch ($recurrence->pattern->type) {
             case "daily":
                 $rrule = 'FREQ=DAILY';
@@ -60,7 +59,7 @@ class MSCalendarUtils
                 break;
         }
         $rrule .= $this->returnEnd($recurrence);
-        echo $rrule . "\n";
+        //echo $rrule . "\n";
         return $rrule;
     }
 
