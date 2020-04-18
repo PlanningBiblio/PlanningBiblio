@@ -50,6 +50,8 @@ foreach ($db->result as $elem) {
 }
 
 // Si pas de $version ou pas de reponseAjax => acces direct au fichier => Accès refusé
+/*
 if (!isset($version)) {
     include_once "accessDenied.php";
 }
+*/

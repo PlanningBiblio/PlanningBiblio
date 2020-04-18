@@ -106,7 +106,6 @@ class CJICS
      */
     public function updateTable()
     {
-
         // Initialisation des variables
         $CSRFToken = $this->CSRFToken;
         $perso_id=$this->perso_id;  // perso_id
@@ -155,7 +154,6 @@ class CJICS
 
         // Ne garde que les événements confirmés et occupés et rempli le tableau $iCalKeys
         $tmp=array();
-
         foreach ($events as $elem) {
             // Add LAST-MODIFIED = Now, if this attribute doesn't exist (missing in Hamac)
             if (empty($elem['LAST-MODIFIED'])) {
@@ -218,14 +216,12 @@ class CJICS
 
             // Traite seulement les événéments ayant le STATUS CONFIRMED si la configuration demande seulement les status CONFIRMED
             $add = false;
-
             // If unconfirmed events are accepted
             if ($this->status != 'CONFIRMED') {
                 $add = true;
 
             // If only confirmed events are accepted
             } elseif ($elem['STATUS']=="CONFIRMED") {
-
                 // Check if it is an invitation from someone else (or including attendees)
                 // And check if the owner of this calendar accepted it
                 if (!empty($elem['ATTENDEE'])) {
@@ -293,8 +289,8 @@ class CJICS
         if (!empty($insert)) {
             $db=new dbh();
             $req = "INSERT INTO `{$GLOBALS['config']['dbprefix']}$table`
-                (`perso_id`, `debut`, `fin`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `motif`, `motif_autre`, `commentaires`, `groupe`, `cal_name`, `ical_key`, `uid`, `rrule`, `id_origin`)
-                VALUES (:perso_id, :debut, :fin, :demande, :valide, :validation, :valide_n1, :validation_n1, :motif, :motif_autre, :commentaires, :groupe, :cal_name, :ical_key, :uid, :rrule, :id_origin);";
+                (`perso_id`, `debut`, `fin`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `motif`, `motif_autre`, `commentaires`, `groupe`, `cal_name`, `ical_key`, `uid`, `rrule`, `id_origin`, `external_ical_key`, `last_modified`)
+                VALUES (:perso_id, :debut, :fin, :demande, :valide, :validation, :valide_n1, :validation_n1, :motif, :motif_autre, :commentaires, :groupe, :cal_name, :ical_key, :uid, :rrule, :id_origin, :external_ical_key, :last_modified);";
             $db->CSRFToken = $CSRFToken;
             $db->prepare($req);
 
@@ -386,11 +382,12 @@ class CJICS
                 }
 
                 $rrule = !empty($elem['RRULE']) ? $elem['RRULE'] : '';
-
+                $external_ical_key = !empty($elem['X-EXTERNAL-ICAL-KEY']) ? $elem['X-EXTERNAL-ICAL-KEY'] : null;
+                $last_modified = !empty($elem['X-LAST-MODIFIED-STRING']) ? $elem['X-LAST-MODIFIED-STRING'] : null;
                 // Préparation de l'insertion dans la base de données
                 $tab[] = array(":perso_id" => $perso_id, ":debut" => $debut, ":fin" => $fin, ":demande" => $demande, ":valide"=> $valide_n2, ":validation" => $validation_n2, ":valide_n1"=> $valide_n1, ":validation_n1" => $validation_n1,
                     ":motif" => $motif, ":motif_autre" => $motif_autre, ":commentaires" => $commentaires, ":groupe" => $groupe, ":cal_name" => $calName, ":ical_key" => $elem['key'], ":uid" => $elem['UID'], ":rrule" => $rrule, 
-                    ":id_origin" => $id_origin);
+                    ":id_origin" => $id_origin, ':external_ical_key' => $external_ical_key, ':last_modified' => $last_modified);
 
                 $nb++;
             }

@@ -39,7 +39,9 @@ class absences
 {
     public $agents_supprimes=array(0);
     public $CSRFToken=null;
+    public $cal_name;
     public $commentaires=null;
+    public $external_ical_key=null;
     public $debut=null;
     public $dtstamp=null;
     public $edt=array();
@@ -54,6 +56,7 @@ class absences
     public $hre_fin = null;
     public $id = null;
     public $ignoreFermeture=false;
+    public $last_modified = null;
     public $minutes=0;
     public $motif = null;
     public $motif_autre = null;
@@ -1353,7 +1356,7 @@ class absences
         $dtend .= preg_replace('/(\d+):(\d+):(\d+)/', '$1$2$3', $this->hre_fin);
         $dtstamp = !empty($this->dtstamp) ? $this->dtstamp : gmdate('Ymd\THis\Z');
         $summary = $this->motif_autre ? html_entity_decode($this->motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8') : html_entity_decode($this->motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-        $cal_name = "PlanningBiblio-Absences-$perso_id-$dtstamp";
+        $cal_name = !empty($this->cal_name) ? $this->cal_name : "PlanningBiblio-Absences-$perso_id-$dtstamp";
         $uid = !empty($this->uid) ? $this->uid : $dtstart."_".$dtstamp;
         $status = $this->valide_n2 > 0 ? 'CONFIRMED' : 'TENTATIVE';
 
@@ -1400,6 +1403,8 @@ class absences
 
         // On créé un événement ICS
         $ics_content .= "BEGIN:VEVENT\n";
+        $ics_content .= "X-EXTERNAL-ICAL-KEY:{$this->external_ical_key}\n";
+        $ics_content .= "X-LAST-MODIFIED-STRING:{$this->last_modified}\n";
         $ics_content .= "UID:$uid\n";
         $ics_content .= "DTSTART;TZID=$tzid:$dtstart\n";
         $ics_content .= "DTEND;TZID=$tzid:$dtend\n";
@@ -1554,7 +1559,6 @@ class absences
      */
     public function ics_update_event()
     {
-
     // Recherche de l'événement pour récupèrer la date de départ pour la création des événements des agents ajoutés
         // le tableau $event servira aussi à la suppression des agents retirés de l'événement
         $db = new db();
@@ -1564,7 +1568,6 @@ class absences
         if (empty($event)) {
             return false;
         }
-
         // Récupération de la date de début de la série
         preg_match('/DTSTART.*:(\d*)T\d*\n/', $event[0]['event'], $matches);
         $debut = date('d/m/Y', strtotime($matches[1]));
@@ -1670,6 +1673,8 @@ class absences
                 $description = html_entity_decode($this->commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
                 $description = str_replace("\n", "<br/>", $description);
                 $ics_event = preg_replace("/DESCRIPTION:.*\n/", "DESCRIPTION:$description\n", $ics_event);
+
+                $ics_event = preg_replace("/X-LAST-MODIFIED-STRING:.*\n/", "X-LAST-MODIFIED-STRING:{$this->last_modified}\n", $ics_event);
 
                 // Modification de RRULE
                 // TODO : Adapter la modification du RRULE si la date de début change
