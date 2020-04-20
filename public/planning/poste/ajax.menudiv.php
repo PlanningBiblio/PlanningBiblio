@@ -48,6 +48,7 @@ $absents=array(0);
 $absences_non_validees = array(0);
 $agents_qualif=array(0);
 $tab_deja_place=array(0);
+$journey = array();
 $sr_init=null;
 $exclusion = array();
 $motifExclusion = array();
@@ -152,12 +153,34 @@ if ($bloquant=='1') {
     ."INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` "
     ."WHERE `{$dbprefix}pl_poste`.`debut`<'$finSQL' AND `{$dbprefix}pl_poste`.`fin`>'$debutSQL' "
         ."AND `{$dbprefix}pl_poste`.`date`='$dateSQL' AND `{$dbprefix}postes`.`bloquant`='1'";
-    
+
     $db->query($req);
     if ($db->result) {
         foreach ($db->result as $elem) {
             $tab_exclus[]=$elem['perso_id'];
             $tab_deja_place[]=$elem['perso_id'];
+        }
+    }
+
+    // Search for remote job (add journey time)
+    if ($config['Journey-time-between-sites'] > 0 && $config['Multisites-nombre'] > 1) {
+        $j_time = $config['Journey-time-between-sites'];
+        $start_with_journey = date('H:i:s', strtotime("-$j_time minutes", strtotime($debutSQL)));
+        $end_with_journey = date('H:i:s', strtotime("+$j_time minutes", strtotime($finSQL)));
+
+        $req="SELECT `{$dbprefix}pl_poste`.`perso_id` AS `perso_id` "
+            . "FROM `{$dbprefix}pl_poste` "
+            . "INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` "
+            . "WHERE `{$dbprefix}pl_poste`.`debut`<'$end_with_journey' AND `{$dbprefix}pl_poste`.`fin`>'$start_with_journey' "
+            . "AND `{$dbprefix}pl_poste`.`site` != $site "
+            . "AND `{$dbprefix}pl_poste`.`date`='$dateSQL' AND `{$dbprefix}postes`.`bloquant`='1'";
+
+        $db=new db();
+        $db->query($req);
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                $journey[] = $elem['perso_id'];
+            }
         }
     }
 }
@@ -544,7 +567,7 @@ if (!$config['ClasseParService'] and !$cellule_grise) {
     $p=new planning();
     $p->site=$site;
     $p->CSRFToken = $CSRFToken;
-    $p->menudivAfficheAgents($poste, $agents_dispo, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees);
+    $p->menudivAfficheAgents($poste, $agents_dispo, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey);
     $tableaux[0].=$p->menudiv;
 }
 
@@ -644,7 +667,7 @@ if ($agents_tous and $config['ClasseParService']) {
     $p=new planning();
     $p->site=$site;
     $p->CSRFToken = $CSRFToken;
-    $p->menudivAfficheAgents($poste, $agents_tous, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees);
+    $p->menudivAfficheAgents($poste, $agents_tous, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey);
     $tableaux[1].=$p->menudiv;
 }
 
@@ -654,7 +677,7 @@ if ($autres_agents and !$config['ClasseParService'] and $config['agentsIndispo']
     $p=new planning();
     $p->site=$site;
     $p->CSRFToken = $CSRFToken;
-    $p->menudivAfficheAgents($poste, $autres_agents, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees);
+    $p->menudivAfficheAgents($poste, $autres_agents, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey);
     $tableaux[1].=$p->menudiv;
 }
 
