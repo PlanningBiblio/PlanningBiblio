@@ -84,9 +84,9 @@ if ($file = fopen($env_local_file, "w\n")) {
     foreach ($env_local_data as $line) {
         fputs($file, $line."\n");
     }
-    fclose($inF);
+    fclose($file);
 
-    echo "<p>Le fichier config.php a bien été créé.</p>\n";
+    echo "<p>Le fichier de configuration a bien été créé.</p>\n";
     echo "<p>Cliquez sur <a href='javascript:document.form.submit();'>continuer</a>.</p>\n";
 
 } else {

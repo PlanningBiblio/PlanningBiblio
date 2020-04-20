@@ -67,7 +67,6 @@ n&eacute;cessaires &agrave; la cr&eacute;ation de la base de donn&eacute;es.
 <input type='reset' name='Anuuler' class='ui-button'/>
 &nbsp;&nbsp;&nbsp;<input type='submit' value='Créer' class='ui-button'/>
 </td></tr>
-<tr><td colspan='2' style='text-align:center;color:red;'><?php echo $msg; ?></td></tr>
 </table>
 </fieldset>
 </form>
