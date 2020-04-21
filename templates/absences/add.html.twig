@@ -98,7 +98,7 @@
               </td>
 
               <td>
-                <input type='checkbox' name='allday' checked='checked' onclick='all_day();'/>
+                <input type='checkbox' name='allday' {% if fullday_checked %} checked="checked" {% endif %} onclick='all_day();'/>
               </td>
             </tr>
 
@@ -112,7 +112,7 @@
               </td>
             </tr>
 
-            <tr id='hre_debut' style='display:none;'>
+            <tr id='hre_debut' {% if fullday_checked %} style='display:none;' {% endif %}>
               <td>
                 <label class='intitule'>Heure de début </label>
               </td>
@@ -151,7 +151,7 @@
               </td>
             </tr>
 
-            <tr id='hre_fin' style='display:none;'>
+            <tr id='hre_fin' {% if fullday_checked %} style='display:none;' {% endif %}>
               <td>
                 <label class='intitule'>Heure de fin </label>
               </td>
