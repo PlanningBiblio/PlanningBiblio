@@ -42,6 +42,7 @@ Fix 2 conversion errors in tools/fix_encoding_issues.php
 No longer deletes HTML entities from in setup/maj.php. Creation of a dedicated file :tools/remove_html_entities_from_absence_reasons.php
 Decode quotes in AbsenceController::edit
 Fix display and JavaScript errors on my_account page
+Correct check of admin rights in absence:edit controller
 
 *** Version 19.10.00       (2019-10-31)   ***
 - Enhancements
