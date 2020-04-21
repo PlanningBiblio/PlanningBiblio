@@ -212,7 +212,7 @@ class AbsenceController extends BaseController
             }
         }
 
-        $admin = $adminN1 or $adminN2;
+        $admin = $adminN1 || $adminN2;
 
         // Si l'absence est importée depuis un agenda extérieur, on interdit la modification
         $agenda_externe = false;
