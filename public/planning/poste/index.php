@@ -601,7 +601,7 @@ if (!$verrou and !$autorisationN1) {
         foreach ($tab['horaires'] as $horaires) {
             $non_places = '';
             if ($config['Planning-AfficheAgentsDisponibles']) {
-                if (!get_config('Planning-AfficheAgentsDisponibles-site') || $config["Multisites-site$site"] == $config['Planning-AfficheAgentsDisponibles-site']) {
+                if (!get_config('Planning-AfficheAgentsDisponibles-site') || $site == $config['Planning-AfficheAgentsDisponibles-site']) {
                     $service = null;
                     if (get_config('Planning-AfficheAgentsDisponibles-service')) {
                         $service = $config['Planning-AfficheAgentsDisponibles-service'];
@@ -614,7 +614,6 @@ if (!$verrou and !$autorisationN1) {
                     if (get_config('Planning-AfficheAgentsDisponibles-category')) {
                         $category = $config['Planning-AfficheAgentsDisponibles-category'];
                     }
-
                     $agentsPlanning = new AgentsPlanning($date, $horaires['debut'], $horaires['fin'], $service, $agentsite, $category);
                     $agentsPlanning->removeForAnyReason($horaires['debut'], $horaires['fin']);
                     $agents_non_places = $agentsPlanning->getAvailables();
