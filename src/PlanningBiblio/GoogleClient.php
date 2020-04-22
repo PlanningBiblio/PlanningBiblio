@@ -45,17 +45,21 @@ class GoogleClient
  */
 function getClient()
 {
+    putenv('GOOGLE_APPLICATION_CREDENTIALS=/home/planningb/www/planningbiblio/service-account.json');
     $client = new Google_Client();
+    $client->useApplicationDefaultCredentials();
     $client->setApplicationName('Google Calendar API PHP Quickstart');
-    $client->setScopes(Google_Service_Calendar::CALENDAR_READONLY);
-    $client->setAuthConfig('credentials.json');
-    $client->setAccessType('offline');
-    $client->setPrompt('select_account consent');
+    // $client->addScope(Google_Service_Calendar::CALENDAR_READONLY);
+    $client->addScope('https://www.googleapis.com/auth/calendar.readonly');
+    //$client->addScope('https://www.googleapis.com/auth/admin.directory.resource.calendar.readonly');
+    $email = 'name@organization.org';
+    $client->setSubject($email);
 
     // Load previously authorized token from a file, if it exists.
     // The file token.json stores the user's access and refresh tokens, and is
     // created automatically when the authorization flow completes for the first
     // time.
+
     $tokenPath = 'token.json';
     if (file_exists($tokenPath)) {
         $accessToken = json_decode(file_get_contents($tokenPath), true);
