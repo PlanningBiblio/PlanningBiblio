@@ -1,0 +1,18 @@
+https://developers.google.com/calendar/quickstart/php
+
+La récupération des événements fonctionne, pour l'instant uniquement après
+une interaction avec l'utilisateur.
+
+
+Ça pourrait également fonctionner avec une URL de callback OAuth.
+(demander une instance à sysop pour tester)
+
+À voir si ça peut fonctionner sans interaction du tout.
+À priori c'est uniquement pour les calendriers publics, cf
+https://stackoverflow.com/questions/24243613/how-do-i-authenticate-google-calendar-api-v3-without-user-interaction
+Voir OAuth service account:
+https://developers.google.com/identity/protocols/oauth2#serviceaccount
+https://cloud.google.com/iam/docs/understanding-service-accounts?hl=fr
+https://developers.google.com/identity/protocols/oauth2/service-account
+https://github.com/googleapis/google-api-php-client/blob/master/examples/service-account.php
+https://github.com/googleapis/google-api-php-client
