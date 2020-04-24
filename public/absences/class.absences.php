@@ -324,9 +324,9 @@ class absences
 
                 // Ajout des informations sur les plannings
                 $message .= $infosPlanning;
-        
+
                 // Ajout du lien permettant de rebondir sur l'absence
-                $url = createURL("absences/modif.php&id=$id");
+                $url = $GLOBALS['config']['URL'] . "/absence/$id";
                 $message .= "<p>Lien vers la demande d&apos;absence :<br/><a href='$url'>$url</a></p>";
 
                 // Envoi du mail
