@@ -405,8 +405,7 @@ if ($agents_tmp) {
         else {
             if (in_array('horaires', $exclusion[$elem['id']])) {
                 $motifExclusion[$elem['id']][]="<span title='Les horaires de l&apos;agent ne lui permettent pas d&apos;occuper ce poste'>Horaires</span>";
-            }
-            if (in_array('break', $exclusion[$elem['id']])) {
+            } elseif (in_array('break', $exclusion[$elem['id']])) {
                 $motifExclusion[$elem['id']][]="<span title='La pause de cet agent n&apos;est pas respectée'>Pause</span>";
             }
             if (in_array('autre_site', $exclusion[$elem['id']])) {
