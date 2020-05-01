@@ -118,6 +118,9 @@ if ($id) {
     for ($i=1;$i<$config['Multisites-nombre']+1;$i++) {
         $sites[]=$i;
     }
+    $valide_n1 = 0;
+    $valide_n2 = 0;
+
 }
 
 // Sécurité
@@ -264,6 +267,9 @@ for ($j=0;$j<$config['nb_semaine'];$j++) {
     echo "</tr>\n";
     for ($i=$debut[$j];$i<$fin[$j];$i++) {
         $k=$i-($j*7)-1;
+
+        $breaktime[$i - 1] = isset($breaktime[$i - 1]) ? $breaktime[$i - 1] : 0;
+
         echo "<tr style='text-align:center;'><td>{$jours[$k]}</td>";
         if ($modifAutorisee) {
             echo "<td>".selectTemps($i-1, 0, null, "select")."</td>";
