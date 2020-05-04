@@ -26,7 +26,7 @@ class HolidayHelper extends BaseHelper
 
     public function HumanReadableDuration($hours)
     {
-        if ($hours == '') {
+        if ($hours == '' || $hours = '0.00') {
           $hours = 0;
         }
 
