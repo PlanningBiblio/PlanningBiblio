@@ -19,7 +19,7 @@ Inclus dans le fichier index.php
 
 require_once "class.conges.php";
 
-use Model\Agent;
+use App\Model\Agent;
 
 if ($config['Conges-Recuperations'] == 0) {
     include __DIR__.'/../include/accessDenied.php';
@@ -137,7 +137,7 @@ if (isset($_GET['confirm'])) {	// Confirmation
     }
 
     $msg=urlencode("La demande de congé a été enregistrée");
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page=conges/voir.php&recup=1&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
+    echo "<script type='text/JavaScript'>document.location.href='{$config['URL']}/holiday/index?recup=1&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
 }
 
 // Formulaire
@@ -221,12 +221,12 @@ else {
     echo "<tr><td>\n";
     echo "Date de début : \n";
     echo "</td><td>";
-    echo "<input type='text' name='debut' id='debut' value='$debut' class='datepicker googleCalendarTrigger' style='width:97%;'/>&nbsp;\n";
+    echo "<input type='text' name='debut' id='debut' value='$debut' class='datepicker googleCalendarTrigger checkdate' style='width:97%;'/>&nbsp;\n";
     echo "</td></tr>\n";
     echo "<tr id='hre_debut'><td>\n";
     echo "Heure de début : \n";
     echo "</td><td>\n";
-    echo "<select name='hre_debut' id='hre_debut_select' style='width:98%;' class='googleCalendarTrigger'>\n";
+    echo "<select name='hre_debut' id='hre_debut_select' style='width:98%;' class='googleCalendarTrigger checkdate'>\n";
     selectHeure(7, 23, true);
     echo "</select>\n";
     echo "</td></tr>\n";
