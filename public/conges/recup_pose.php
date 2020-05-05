@@ -50,7 +50,7 @@ for ($i = 1; $i <= $config['Multisites-nombre']; $i++) {
         $admin = true;
     }
     if (in_array((600+$i), $droits)) {
-        $admin = true;
+        $adminN2 = true;
     }
 }
 
