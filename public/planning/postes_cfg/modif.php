@@ -44,14 +44,14 @@ if (!$cfgType and !in_array("cfg_type", $_SESSION)) {
 }
 $_SESSION['cfg_type']=$cfgType;
 
-$db=new db();
-$db->select2("pl_poste_tab", "*", array("tableau"=>$tableauNumero));
-$tableauNom=$db->result[0]['nom'];
-
 // Affichage
+$tableauNom = '';
 if (!$tableauNumero) {
     echo "<h3>Nouveau tableau</h3>\n";
 } else {
+    $db=new db();
+    $db->select2("pl_poste_tab", "*", array("tableau"=>$tableauNumero));
+    $tableauNom = $db->result[0]['nom'];
     echo "<h3>Configuration du tableau &quot;$tableauNom&quot;</h3>\n";
 }
 
