@@ -46,11 +46,10 @@ if (!$id) {
     $db->CSRFToken = $CSRFToken;
     $db->insert("pl_poste_tab", $insert);
 
-    // Insertion d'une ligne dans la table pl_poste_tab_horaires
-    $insert=array("debut"=>"09:00:00", "fin"=>"10:00:00", "tableau"=>"1", "numero"=>$numero);
-    $db=new db();
-    $db->CSRFToken = $CSRFToken;
-    $db->insert("pl_poste_horaires", $insert);
+    $t=new tableau();
+    $t->id = $numero;
+    $t->CSRFToken = $CSRFToken;
+    $t->setNumbers($nombre);
 
     echo json_encode((int) $numero);
 }
