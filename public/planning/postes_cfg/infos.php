@@ -22,10 +22,11 @@ $t=new tableau();
 $t->id=$tableauNumero;
 $t->getNumbers();
 $nombre=$t->length;
+$site = 1;
 
 
 // Site
-if ($config['Multisites-nombre']>1) {
+if ($config['Multisites-nombre'] > 1 && $tableauNumero) {
     $db=new db();
     $db->select("pl_poste_tab", "*", "tableau='$tableauNumero'");
     $site=$db->result[0]['site'];
