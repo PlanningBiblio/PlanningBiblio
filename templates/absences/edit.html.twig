@@ -473,34 +473,30 @@
             <tr>
               <td><label class='intitule'>Validation</label></td>
               <td>
-                {% if admin %}
+                {% if absence.status_editable %}
                   <select name='valide' class='ui-widget-content ui-corner-all'>
-                    {% if absence.valide_n2 == 0 and absence.valide_n1 > 0 %}
+                    <option value='0'>Demandée</option>
+
+                    {% if absence.status == 'ACCEPTED' %}
                       <option value='2' selected="selected">Acceptée (En attente de validation hiérarchique)</option>
                     {% else %}
                       <option value='2'>Acceptée (En attente de validation hiérarchique)</option>
                     {% endif %}
 
-                    {% if absence.valide_n2 == 0 and absence.valide_n1 < 0 %}
+                    {% if absence.status == 'REJECTED' %}
                       <option value='-2' selected="selected">Refusée (En attente de validation hiérarchique)</option>
                     {% else %}
                       <option value='-2'>Refusée (En attente de validation hiérarchique)</option>
                     {% endif %}
 
-                    {% if absence.valide_n2 == 0 %}
-                      <option value='0' selected="selected">Demandée</option>
-                    {% else %}
-                      <option value='0'>Demandée</option>
-                    {% endif %}
-
                     {% if adminN2 %}
-                      {% if absence.valide_n2 > 0 %}
+                      {% if absence.status == 'ACCEPTED_N2' %}
                         <option value='1' selected="selected">Acceptée</option>
                       {% else %}
                         <option value='1'>Acceptée</option>
                       {% endif %}
 
-                      {% if absence.valide_n2 < 0 %}
+                      {% if absence.status == 'REJECTED_N2' %}
                         <option value='-1' selected="selected">Refusée</option>
                       {% else %}
                         <option value='-1'>Refusée</option>
@@ -508,7 +504,17 @@
                     {% endif %}
                   </select>
                 {% else %}
-                  {{ validation_texte }}
+                  {% if absence.status == 'ASKED' %}
+                    Demandée
+                  {% elseif absence.status == 'ACCEPTED' %}
+                    Acceptée (En attente de validation hiérarchique)
+                  {% elseif absence.status == 'ACCEPTED_N2' %}
+                    Acceptée
+                  {% elseif absence.status == 'REJECTED' %}
+                    Refusée (En attente de validation hiérarchique)
+                  {% elseif absence.status == 'REJECTED_N2' %}
+                    Refusée
+                  {% endif %}
                   <input type='hidden' name='valide' value='{{ absence.valide_n2 }}' />
                 {% endif %}
               </td>
