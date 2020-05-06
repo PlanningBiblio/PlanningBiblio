@@ -321,9 +321,9 @@ class AbsenceController extends BaseController
             $hre_fin = '23:59:59';
         }
 
-        $pj1 = $request->get('pj1');
-        $pj2 = $request->get('pj2');
-        $so = $request->get('so');
+        $pj1 = $request->get('pj1') ? 1 : 0;
+        $pj2 = $request->get('pj2') ? 1 : 0;
+        $so = $request->get('so') ? 1 : 0;
 
         // Récurrence : supprime la règle rrule si la case à cocher "Récurrence" n'est pas cochée
         if (!$rcheckbox) {
