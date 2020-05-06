@@ -519,8 +519,10 @@ $( document ).ready(function() {
     agent_id = $('td[data-timeid="' + $(this).parent().parent().attr('id') + '"]').data('agent');
     job_name = $('td[data-timeid="' + $(this).parent().parent().attr('id') + '"]').data('job');
     jobtimeid = $('td[data-timeid="' + $(this).parent().parent().attr('id') + '"]').data('jobtimeid');
+    CSRFToken = $('input[name="CSRFToken"]').val();
 
     data = {
+      CSRFToken: CSRFToken,
       jobtimeid: jobtimeid,
       from: from,
       to: to,

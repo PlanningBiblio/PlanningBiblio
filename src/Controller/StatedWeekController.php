@@ -370,6 +370,7 @@ class StatedWeekController extends BaseController
         $to = \DateTime::createFromFormat('H:i', $request->get('to'));
         $break = \DateTime::createFromFormat('H:i', $request->get('breaktime'));
         $date = $request->get('date');
+        $CSRFToken = $request->get('CSRFToken');
 
         $from = $from ? $from : null;
         $to = $to ? $to : null;
@@ -405,6 +406,35 @@ class StatedWeekController extends BaseController
                 $absence_times[] = array('from' => heure3($start), 'to' => heure3($end));
             }
             $return['partially_absent'] = $absence_times;
+        }
+
+        // Remove related job
+        // in normal planning.
+        $job = $this->entityManager
+            ->getRepository(StatedWeekJob::class)
+            ->find($job_agent->job_id());
+
+        $normal_job_id = 0;
+        foreach ($this->config('statedweek_times_job') as $normal_job) {
+            if ($normal_job['name'] != $job->name()) {
+                continue;
+            }
+
+            if (isset($normal_job['related_to']) && $normal_job['related_to']) {
+                $normal_job_id = $normal_job['related_to'];
+            }
+        }
+
+        if ($normal_job_id) {
+            $db=new \db();
+            $db->CSRFToken = $CSRFToken;
+            $delete_params = array(
+                'perso_id'  => $job_agent->agent_id(),
+                'date'      => $date,
+                'poste'     => $normal_job_id,
+                'site'      => $this->config('statedweek_site_filter')
+            );
+            $db->delete("pl_poste", $delete_params);
         }
 
         return $this->json($return);
