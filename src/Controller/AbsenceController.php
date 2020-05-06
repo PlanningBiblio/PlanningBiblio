@@ -135,13 +135,21 @@ class AbsenceController extends BaseController
         $debut=substr($debut, 0, 10);
         $fin=substr($fin, 0, 10);
 
-
-        $validation_texte=$valide>0?"Valid&eacute;e":"&nbsp;";
-        $validation_texte=$valide<0?"Refus&eacute;e":$validation_texte;
-        $validation_texte=$valide==0?"Demand&eacute;e":$validation_texte;
-        if ($valide==0 and $valideN1!=0) {
-            $validation_texte=$valideN1>0?"Valid&eacute;e (en attente de validation hi&eacute;rarchique)":$validation_texte;
-            $validation_texte=$valideN1<0?"Refus&eacute;e (en attente de validation hi&eacute;rarchique)":$validation_texte;
+        $absence['status'] = 'ASKED';
+        $absence['status_editable'] = ($adminN1 or $adminN2) ? true : false;
+        if ($valide == 0 && $valideN1 == 1) {
+            $absence['status'] = 'ACCEPTED';
+        }
+        if ($valide == 1 && $valideN1 == 1) {
+            $absence['status'] = 'ACCEPTED_N2';
+            $absence['status_editable'] = $adminN2 ? true : false;
+        }
+        if ($valide == 0 && $valideN1 == -1) {
+            $absence['status'] = 'REJECTED';
+        }
+        if ($valide == -1 && $valideN1 == -1) {
+            $absence['status'] = 'REJECTED_N2';
+            $absence['status_editable'] = $adminN2 ? true : false;
         }
 
         // Si l'option "Absences-notifications-agent-par-agent" est cochée, adapte la variable $adminN1 en fonction des agents de l'absence. S'ils sont tous gérés, $adminN1 = true, sinon, $adminN1 = false
@@ -254,7 +262,6 @@ class AbsenceController extends BaseController
             'reason_types'          => $this->reasonTypes(),
             'display_autre'         => $display_autre,
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
-            'validation_texte'      => $validation_texte,
         ));
 
 
