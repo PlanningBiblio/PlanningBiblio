@@ -54,7 +54,7 @@ if ($config['Conges-Enable']) {
     $credits['conges'] = $p->elements[0]['conges_credit'];
     $credits['reliquat'] = $p->elements[0]['conges_reliquat'];
     $credits['anticipation'] = $p->elements[0]['conges_anticipation'];
-    $credits['recuperation'] = $p->elements[0]['recup'];
+    $credits['recuperation'] = $p->elements[0]['comp_time'];
     $credits['joursAnnuel']=number_format($credits['annuel']/7, 2, ",", " ");
     $credits['joursConges']=number_format($credits['conges']/7, 2, ",", " ");
     $credits['joursReliquat']=number_format($credits['reliquat']/7, 2, ",", " ");
