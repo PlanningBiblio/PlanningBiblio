@@ -15,7 +15,7 @@
     </tr>
 
     <tr>
-      <td>Crédit d'heures de congés actuel :</td>
+      <td>Crédit de congés actuel :</td>
       <td style='text-align:right;'>
         {% if can_manage_agent %}
           <input type='number' name="conges_credit" step="0.5" value='{{ credit_heures}}'  style='width:60px;'>
@@ -51,7 +51,7 @@
     </tr>
 
     <tr>
-      <td>{{ lang_comp_time }}</td>
+      <td>{{ lang_comp_time }} :</td>
       <td style='text-align:right; padding-right: 45px;'>
         {% if can_manage_agent %}
           <input type='text' name='comp_time' value='{{ recup_heures}}'  style='width:60px;text-align:right;'>
