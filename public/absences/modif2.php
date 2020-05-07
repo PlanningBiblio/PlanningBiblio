@@ -464,7 +464,7 @@ else {
     $data = array('motif' => $motif, 'motif_autre' => $motif_autre, 'commentaires' => $commentaires, 'debut' => $debut_sql, 'fin' => $fin_sql, 'groupe' => $groupe,
     'valide' => $valide_n2, 'validation' => $validation_n2, 'valide_n1' => $valide_n1, 'validation_n1' => $validation_n1);
 
-    if ($admin) {
+    if (in_array(701, $droits)) {
         $data=array_merge($data, array("pj1"=>$pj1, "pj2"=>$pj2, "so"=>$so));
     }
 
