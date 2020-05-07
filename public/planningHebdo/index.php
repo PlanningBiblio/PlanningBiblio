@@ -1,18 +1,15 @@
 <?php
 /**
-Planning Biblio, Version 2.8.1
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : planningHebdo/index.php
-Création : 23 juillet 2013
-Dernière modification : 4 mai 2018
+@file public/planningHebdo/index.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affiche la liste des plannings de présence pour l'administrateur
-Page accessible à partir du menu administration/planning de présence
+Page accessible à partir du menu administration / Heures de présence
 */
 
 require_once "class.planningHebdo.php";
@@ -78,7 +75,7 @@ $a->supprime = array(0,1,2);
 $a->fetch();
 $agents = $a->elements;
 
-echo "<h3>Plannings de présence</h3>\n";
+echo "<h3>Heures de présence</h3>\n";
 
 echo <<<EOD
 <div id='buttons'>
@@ -88,7 +85,7 @@ Début : <input type='text' name='debut' class='datepicker' value='$debut' />
 &nbsp;&nbsp;Fin : <input type='text' name='fin' class='datepicker' value='$fin' />
 &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />
 &nbsp;&nbsp;<input type='button' value='Effacer' onclick='location.href="index.php?page=planningHebdo/index.php&amp;reset=on"' class='ui-button' />
-<a class='ui-button' href='index.php?page=planningHebdo/modif.php&amp;retour=index.php' style='position:absolute; right:10px;'>Entrer un nouveau planning</a>
+<a class='ui-button' href='index.php?page=planningHebdo/modif.php&amp;retour=index.php' style='position:absolute; right:10px;'>Entrer de nouveaux horaires</a>
 </div>
 </form>
 
@@ -161,7 +158,7 @@ foreach ($p->elements as $elem) {
  
 
     $planningRemplace=$elem['remplace']==0?dateFr($elem['saisie'], true):$planningRemplace;
-    $commentaires=$elem['remplace']?"Remplace le planning <br/>du $planningRemplace":null;
+    $commentaires=$elem['remplace']?"Remplace les heures <br/>du $planningRemplace":null;
     $arrow=$elem['remplace']?"<font style='font-size:20pt;'>&rdsh;</font>":null;
 
     echo "<tr id='tr_{$elem['id']}'>";

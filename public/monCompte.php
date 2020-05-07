@@ -1,24 +1,21 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : monCompte.php
-Création : 23 juillet 2013
-Dernière modification : 10 février 2018
+@file public/monCompte.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
-Fichier permettant de modifier son mot de passe et son planning de présence hebdomadaire
+Fichier permettant de modifier son mot de passe et ses heures de présence
 */
 
 require_once "personnel/class.personnel.php";
 require_once "planningHebdo/class.planningHebdo.php";
 
 // Initialisation des variables
-// Plannings de présence
+// Working hours
 // Années universitaires (si utilisation des périodes définies)
 $tmp=array();
 $tmp[0]=date("n")<9?(date("Y")-1)."-".(date("Y")):(date("Y"))."-".(date("Y")+1);
@@ -71,7 +68,7 @@ if ($config['Conges-Enable']) {
 <ul>
 <?php
 if ($config['PlanningHebdo']) {
-    echo "<li><a href='#planningPresence'>Mes plannings de présence</a></li>\n";
+    echo "<li><a href='#working_hours'>Mes heures de présence</a></li>\n";
 }
 if ($config['Conges-Enable']) {
     echo "<li><a href='#credits'>Mes crédits</a></li>\n";
@@ -83,14 +80,14 @@ echo "<li><a href='#motDePasse'>Mon mot de passe</a></li>\n";
 
 echo "</ul>\n";
 
-// Planning de présence
+// Working hours
 if ($config['PlanningHebdo']) {
-    echo "<!-- Planning de présence -->\n";
+    echo "<!-- Working hours -->\n";
     echo <<<EOD
-  <div id='planningPresence'>
+  <div id='working_hours'>
 
   <div style='display: inline-block; width:300px;'>
-  <h3>Planning de présence</h3>
+  <h3>Heures de présence</h3>
   </div>
 EOD;
 
@@ -98,15 +95,14 @@ EOD;
         echo <<<EOD
     <div style='display: inline-block; width:300px; position: absolute; right: 22px; text-align: right; margin-top:22px;'>
     <a href='index.php?page=planningHebdo/modif.php&retour=monCompte.php' class='ui-button'>
-      Entrer un nouveau planning</a>
+      Entrer de nouveaux horaires</a>
     </div>
 EOD;
     }
 
     echo <<<EOD
-  <!-- Historique des plannings de présence -->
+  <!-- Working hours history -->
   <div id='historique'>
-  Mes plannings de présence
   <br/>
   <table id='tablePresenceMonCompte' class='CJDataTable' data-sort='[[1],[2],[3]]'>
   <thead>
@@ -139,7 +135,7 @@ EOD;
             $validation=nom($elem['valide'], "nom p", $agents).", ".dateFr($elem['validation'], true);
         }
         $planningRemplace=$elem['remplace']==0?dateFr($elem['saisie'], true):$planningRemplace;
-        $commentaires=$elem['remplace']?"Remplace le planning <br/>du $planningRemplace":null;
+        $commentaires=$elem['remplace']?"Remplace les heures <br/>du $planningRemplace":null;
         $arrow=$elem['remplace']?"<font style='font-size:20pt;'>&rdsh;</font>":null;
 
         echo "<tr>";
@@ -157,7 +153,7 @@ EOD;
     echo "</tbody>\n";
     echo "</table>\n";
     echo "</div> <!-- Historique' -->\n";
-    echo "</div> <!-- PlanningPresence -->\n";
+    echo "</div> <!-- working_hours -->\n";
 }
 
 
