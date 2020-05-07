@@ -1,18 +1,15 @@
 <?php
 /**
-Planning Biblio, Version 2.8.05
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : planningHebdo/modif.php
-Création : 23 juillet 2013
-Dernière modification : 6 décembre 2018
+@file public/planningHebdo/modif.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Affiche la liste des plannings de présence pour l'administrateur
-Page accessible à partir du menu administration/planning de présence
+Page accessible à partir du menu administration / Heures de présence
 */
 
 require_once "class.planningHebdo.php";
@@ -43,9 +40,9 @@ if ($id) {
     $p->id=$id;
     $p->fetch();
     if (empty($p->elements)) {
-        echo "<h3>Planning de présence</h3>\n";
-        echo "<p>Le planning demand&eacute; n'est plus accessible &agrave; cette adresse.<br/>\n";
-        echo "Veuillez le rechercher dans le menu menu <a href='index.php?page=planningHebdo/index.php'>Administration / Plannings de pr&eacute;sence</a></p>\n";
+        echo "<h3>Heures de présence</h3>\n";
+        echo "<p>Les heures demandées ne sont plus accessibles à cette adresse.<br/>\n";
+        echo "Veuillez les rechercher dans le menu menu <a href='index.php?page=planningHebdo/index.php'>Administration / Heures de présence</a></p>\n";
         include "include/footer.php";
         exit;
     }
@@ -83,7 +80,7 @@ if ($id) {
     }
 
     // Modif autorisée si n'est pas validé ou si validé avec des périodes non définies (BSB).
-    // Dans le 2eme cas copie du planning avec modification des dates
+    // Dans le 2eme cas copie des heures de présence avec modification des dates
     $action="modif";
     $modifAutorisee=true;
 
@@ -135,14 +132,14 @@ $nomAgent = nom($perso_id, "prenom nom");
 ?>
 
 
-<!-- Formulaire Planning-->
-<h3>Planning de présence</h3>
+<!-- Formulaire Heures de présence-->
+<h3>Heures de présence</h3>
 <?php
 if ($id and !$copy) {
-    echo "<h3>Planning de $nomAgent du $debut1Fr au $fin1Fr</h3>";
+    echo "<h3>Heures de $nomAgent du $debut1Fr au $fin1Fr</h3>";
 }
 ?>
-<div id='planning'>
+<div id='working_hours'>
 <?php
 echo "<form name='form1' method='post' action='index.php' onsubmit='return plHebdoVerifForm();'>\n";
 
@@ -173,14 +170,14 @@ if ($id and !$copy) {
 
     // Non admin
     if (!($adminN1 or $adminN2)) {
-        echo "<h3>Nouveau planning pour $nomAgent</h3>\n";
+        echo "<h3>Nouveaux horaires pour $nomAgent</h3>\n";
     }
     // Copie
     elseif ($copy) {
-        echo "<h3>Copie du planning de $nomAgent du $debut1Fr au $fin1Fr</h3>\n";
+        echo "<h3>Copie des heures de $nomAgent du $debut1Fr au $fin1Fr</h3>\n";
     // Ajout par un admin
     } else {
-        echo "<h3>Nouveau planning</h3>\n";
+        echo "<h3>Nouveaux horaires</h3>\n";
     }
     echo "<div id='plHebdo-perso-id'>\n";
     if ($adminN1 or $adminN2) {
@@ -235,13 +232,13 @@ $jours=array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
 for ($j=0;$j<$config['nb_semaine'];$j++) {
     echo "<h3>{$cellule[$j]}</h3>\n";
 
-    // Affichage de la case à cocher "Même planning qu'en semaine 1"
+    // Affichage de la case à cocher "Mêmes heures qu'en semaine 1"
     if ($j>0) {
         if ($modifAutorisee) {
             echo "<p><input type='checkbox' name='memePlanning$j' class='memePlanning' data-id='$j' id='memePlanning$j' />";
-            echo "<label for='memePlanning$j' >Même planning qu'en {$cellule[0]}</label></p>\n";
+            echo "<label for='memePlanning$j' >Mêmes heures qu'en {$cellule[0]}</label></p>\n";
         } else {
-            echo "<p style='display:none;' id='memePlanning$j' ><strong>Même planning qu'en {$cellule[0]}</strong></p>\n";
+            echo "<p style='display:none;' id='memePlanning$j' ><strong>Mêmes heures qu'en {$cellule[0]}</strong></p>\n";
         }
     }
 
@@ -444,4 +441,4 @@ $("#perso_id").change(function(){
 });
 </script>
 
-</div> <!-- Planning -->
+</div> <!-- working_hours -->

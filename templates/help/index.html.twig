@@ -332,16 +332,14 @@ Vous pouvez ajouter, modifier, supprimer des lignes de séparation dans le menu 
 <p>
 Le module "Planning Hebdo" permet de gérer différents plannings de présence dans le temps. Avec ce module, les agents peuvent avoir par exemple des horaires standards et des horaires différents  
 pour les périodes avec ouvertures réduites. Il permet également d'anticiper les changements d'horaires liés à la modification d'un contrat de travail.
-<br/>Ce module est à présent intégré à Planning Biblio. Vous pouvez l'activer depuis le menu "Administration / Configuration".<br/><br/>
+<br/>Ce module est intégré à Planning Biblio. Vous pouvez l'activer depuis le menu "Administration / Configuration / Heures de présence".<br/><br/>
 Si le module "Planning Hebdo" est activé, les heures de présence peuvent être saisies par les agents (selon la configuration choisie) et validées par les administrateurs.
 <br/>Si l'application est configurée de façon à autoriser la saisies des heures de présence par les agents, ceux-ci peuvent les saisir dans le menu "Mon compte", onglet "Mes heures de présence".
 Ils doivent choisir une date de début et une date de fin d'effet.
-<br/>Les administrateurs (agents ayant le droit de gérer les plannings de présence) doivent ensuite les valider dans le menu "Administration / Plannings de présence".
-<br/>Ils peuvent également apporter des modifications sans les valider directement avec le bouton "Enregistrer SANS valider".
-<br/>Les administrateurs peuvent copier les plannings de présence depuis la liste avec l'icône <span class='pl-icon pl-icon-copy' title='Copier'></span> ou 
-avec le bouton "Enregistrer une copie" depuis la fiche. Dans ce cas, ils doivent changer les dates de début et de fin d'effet de façon à ce qu'aucun planning ne se chevauche. 
-Ils peuvent également les copier pour les affecter à d'autres agents en utilisant l'icône <span class='pl-icon pl-icon-copy' title='Copier'></span> depuis la liste.
-<br/><br/>Si vous utilisez le plugin "congés", l'utilisation du module "Planning Hebdo" est obligatoire et vous devez veiller à ce qu'il n'y ait pas de manque entre deux plannings de présence 
+<br/>Les administrateurs (agents ayant le droit de gérer les heures de présence) doivent ensuite les valider dans le menu "Administration / Heures de présence".
+<br/>Les administrateurs peuvent copier les heures de présence depuis la liste avec l'icône <span class='pl-icon pl-icon-copy' title='Copier'></span>. Dans ce cas, ils doivent changer les dates de début et de fin d'effet de façon à ce qu'aucun planning ne se chevauche. 
+Ils peuvent également les copier pour les affecter à d'autres agents.
+<br/><br/>Si vous utilisez le module "congés", l'utilisation du module "Planning Hebdo" est obligatoire et vous devez veiller à ce qu'il n'y ait pas de manque entre deux plannings de présence 
 (ex: si un planning se termine le 31 août, le suivant devra débuter le 1er septembre) sinon le calcul des crédits ne fonctionnera pas.
 </p>
 
@@ -349,7 +347,7 @@ Ils peuvent également les copier pour les affecter à d'autres agents en utilis
 <h4>5.2 ) Heures de présence sans le module "Planning Hebdo"</h4>
 <p>
 Sans le module "Planning Hebdo", vous ne pourrez pas gérer les horaires de présence dans le temps. 
-La modification des plannings de présence se fera dans la fiche des agents (voir <a href='#agent_ajout'>6.1) Ajout d'un agent</a>) et les 
+La modification des heures de présence se fera dans la fiche des agents (voir <a href='#agent_ajout'>6.1) Ajout d'un agent</a>) et les 
 modifications prendront effet immédiatement.
 </p>
 
@@ -368,7 +366,7 @@ Pour ajouter un agent, cliquez sur le bouton « Ajouter » puis remplissez le 
 <br/>Vous pouvez personnaliser la liste des statuts et des services en cliquant sur les signes <span class='pl-icon pl-icon-add' title='Ajouter'></span> 
 se trouvant à droite des menus déroulants. Vous devez attribuer une catégorie à chaque statut.
 <br/>Pour les heures de service public, vous pouvez choisir un nombre d'heures fixe (ex: 17 heures) ou un pourcentage (ex: 50%). 
-Si vous choisissez un pourcentage, le nombre d'heures sera calculé depuis le planning de présence de l'agent. 
+Si vous choisissez un pourcentage, le nombre d'heures sera calculé sur la base des heures de présence de l'agent. 
 Les heures de service public à effectuer sont affichées et comparées aux heures faites pour chaque agent dans le menu qui permet de remplir le planning. 
 Les heures d'absences peuvent être déduites au même taux dans ce menu (si un pourcentage est choisi et selon la configuration de l'application).
 <br/>Dans le menu déroulant « Service public / Administratif » choisissez
@@ -394,8 +392,8 @@ Dans le 3<sup>ème</sup> onglet, vous devez renseigner les heures de présence d
 Pour chaque journée (du lundi au samedi/dimanche), sélectionnez les heures d'arrivée et de départ ainsi que les heures de début et de fin de pause.<br/>
 Si votre configuration permet la saisie d'un planning différent les semaines où le samedi est travaillé, renseignez-le dans le 2<sup>ème</sup> tableau 
 et cochez les semaines avec samedi travaillé.
-<br/>Si le module "Planning Hebdo" est activé, la saisie des plannings de présence se fait depuis le menu "Mon compte" pour les agents et depuis le menu 
-"Administration / Plannings de présence" pour les administrateurs. Dans ce cas, l'onget "Heures de présence" de la fiche agent permet seulement la consultation du planning en cours.<br/>
+<br/>Si le module "Planning Hebdo" est activé, la saisie des heures de présence se fait depuis le menu "Mon compte" pour les agents et depuis le menu 
+"Administration / Heures de présence" pour les administrateurs. Dans ce cas, l'onget "Heures de présence" de la fiche agent permet seulement la consultation des horaires courants.<br/>
 
 <br/>
 <b><u>4<sup>ème</sup> onglet : Les droits d'accès</u></b><br/>
