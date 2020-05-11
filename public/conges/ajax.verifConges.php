@@ -26,10 +26,8 @@ $hre_fin=$_GET['hre_fin']?$_GET['hre_fin']:"23:59:59";
 $perso_id=$_GET['perso_id'];
 $id=$_GET['id'];
 
-$db=new db();
-$db->select("conges", null, "`id`<>'$id' AND `perso_id`='$perso_id' AND `debut` < '$fin $hre_fin' AND `fin` > '$debut $hre_debut' AND `supprime`='0' AND `information`='0' AND `valide`>='0' ", "ORDER BY `debut`,`fin`");
-if (!$db->result) {
-    echo "Pas de congé";
+if ($result = conges::exists($perso_id, "$debut $hre_debut", "$fin $hre_fin", $id)) {
+    echo 'du ' . dateFr($result['from'], true) . ' au ' . dateFr($result['to'], true);
 } else {
-    echo "du ".dateFr($db->result[0]['debut'], true)." au ".dateFr($db->result[0]['fin'], true);
+    echo "Pas de congé";
 }

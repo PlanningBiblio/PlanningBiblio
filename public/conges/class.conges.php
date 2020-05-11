@@ -1246,6 +1246,19 @@ class conges
 
     }
 
+    public static function exists($agent_id, $from, $to, $id = null) {
+        $db = new db();
+        $db->select('conges', null, "`id`<>'$id' AND `perso_id`='$agent_id' AND `debut` < '$to' AND `fin` > '$from' AND `supprime`='0' AND `information`='0' AND `valide`>='0' ", "ORDER BY `debut`,`fin`");
+        if (!$db->result) {
+            return null;
+        }
+
+        return array(
+            'from'  => $db->result[0]['debut'],
+            'to'    => $db->result[0]['fin']
+        );
+    }
+
     private function applyHalfDays($data)
     {
         // Ability to request half day.
