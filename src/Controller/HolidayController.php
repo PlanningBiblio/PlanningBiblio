@@ -443,6 +443,19 @@ class HolidayController extends BaseController
     }
 
     /**
+     * @Route("/holiday", name="holiday.save", methods={"POST"})
+     */
+    public function add_confirm(Request $request)
+    {
+        $result = $this->save($request);
+        $msg = $result['msg'];
+        $msg2 = $result['msg2'];
+        $msg2Type = $result['msg2Type'];
+
+        return $this->redirect("/holiday/index?msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type");
+    }
+
+    /**
      * @Route("/holiday/new", name="holiday.new", methods={"GET", "POST"})
      * @Route("/holiday/new/{perso_id}", name="holiday.new.new", methods={"GET", "POST"})
      */
@@ -496,91 +509,76 @@ class HolidayController extends BaseController
         $c = new \conges();
         $balance = $c->calculCreditRecup($perso_id);
 
+        // Initialisation des variables
+        $holiday_helper = new HolidayHelper();
+        $perso_id=$perso_id?$perso_id:$_SESSION['login_id'];
+        $p=new \personnel();
+        $p->fetchById($perso_id);
+        $nom=$p->elements[0]['nom'];
+        $prenom=$p->elements[0]['prenom'];
+        $credit = number_format((float) $p->elements[0]['conges_credit'], 2, '.', ' ');
+        $reliquat = number_format((float) $p->elements[0]['conges_reliquat'], 2, '.', ' ');
+        $anticipation = number_format((float) $p->elements[0]['conges_anticipation'], 2, '.', ' ');
+        $recuperation = number_format((float) $balance[1], 2, '.', ' ');
 
-        if ( $confirm ) {
-            $result = $this->save($request);
-            $msg = $result['msg'];
-            $msg2 = $result['msg2'];
-            $msg2Type = $result['msg2Type'];
-
-            return $this->redirect("/holiday/index?msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type");
+        if ($balance[4] < 0) {
+            $balance[4] = 0;
         }
 
-        // Formulaire
-        else {
-            // Initialisation des variables
-            $holiday_helper = new HolidayHelper();
-            $perso_id=$perso_id?$perso_id:$_SESSION['login_id'];
-            $p=new \personnel();
-            $p->fetchById($perso_id);
-            $nom=$p->elements[0]['nom'];
-            $prenom=$p->elements[0]['prenom'];
-            $credit = number_format((float) $p->elements[0]['conges_credit'], 2, '.', ' ');
-            $reliquat = number_format((float) $p->elements[0]['conges_reliquat'], 2, '.', ' ');
-            $anticipation = number_format((float) $p->elements[0]['conges_anticipation'], 2, '.', ' ');
-            $recuperation = number_format((float) $balance[1], 2, '.', ' ');
+        $this->templateParams(array(
+            'admin'                 => $admin,
+            'perso_id'              => $perso_id,
+            'conges_recuperations'  => $this->config('Conges-Recuperations'),
+            'conges_mode'           => $this->config('Conges-Mode'),
+            'conges_demi_journee'   => $this->config('Conges-demi-journees'),
+            'CSRFToken'             => $CSRFSession,
+            'reliquat'              => $reliquat,
+            'reliquat2'             => $holiday_helper->HumanReadableDuration($reliquat),
+            'recuperation'          => $recuperation,
+            'recuperation_prev'     => $balance[4],
+            'balance0'              => dateFr($balance[0]),
+            'balance1'              => heure4($balance[1], true),
+            'balance4'              => heure4($balance[4], true),
+            'credit'                => $credit,
+            'credit2'               => $holiday_helper->HumanReadableDuration($credit),
+            'anticipation'          => $anticipation,
+            'anticipation2'         => $holiday_helper->HumanReadableDuration($anticipation),
+            'agent_name'            => $_SESSION['login_nom'] . ' ' . $_SESSION['login_prenom'],
+            'login_id'              => $_SESSION['login_id'],
+            'login_nom'             => $_SESSION['login_nom'],
+            'login_prenom'          => $_SESSION['login_prenom'],
+        ));
 
-            if ($balance[4] < 0) {
-                $balance[4] = 0;
-            }
+        // Affichage du formulaire
 
-            $this->templateParams(array(
-                'admin'                 => $admin,
-                'perso_id'              => $perso_id,
-                'conges_recuperations'  => $this->config('Conges-Recuperations'),
-                'conges_mode'           => $this->config('Conges-Mode'),
-                'conges_demi_journee'   => $this->config('Conges-demi-journees'),
-                'CSRFToken'             => $CSRFSession,
-                'reliquat'              => $reliquat,
-                'reliquat2'             => $holiday_helper->HumanReadableDuration($reliquat),
-                'recuperation'          => $recuperation,
-                'recuperation_prev'     => $balance[4],
-                'balance0'              => dateFr($balance[0]),
-                'balance1'              => heure4($balance[1], true),
-                'balance4'              => heure4($balance[4], true),
-                'credit'                => $credit,
-                'credit2'               => $holiday_helper->HumanReadableDuration($credit),
-                'anticipation'          => $anticipation,
-                'anticipation2'         => $holiday_helper->HumanReadableDuration($anticipation),
-                'agent_name'            => $_SESSION['login_nom'] . ' ' . $_SESSION['login_prenom'],
-                'login_id'              => $_SESSION['login_id'],
-                'login_nom'             => $_SESSION['login_nom'],
-                'login_prenom'          => $_SESSION['login_prenom'],
-            ));
+        if ($admin) {
 
-            // Affichage du formulaire
+        // Si l'option "Absences-notifications-agent-par-agent" est cochée, filtrer les agents à afficher dans le menu déroulant pour permettre la sélection des seuls agents gérés
+            if ($this->config('Absences-notifications-agent-par-agent') and !$adminN2) {
+                $perso_ids = array($_SESSION['login_id']);
 
-            if ($admin) {
-
-            // Si l'option "Absences-notifications-agent-par-agent" est cochée, filtrer les agents à afficher dans le menu déroulant pour permettre la sélection des seuls agents gérés
-                if ($this->config('Absences-notifications-agent-par-agent') and !$adminN2) {
-                    $perso_ids = array($_SESSION['login_id']);
-
-                    $db = new \db();
-                    $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
-                    if ($db->result) {
-                        foreach ($db->result as $elem) {
-                            $perso_ids[] = $elem['perso_id'];
-                        }
+                $db = new \db();
+                $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
+                if ($db->result) {
+                    foreach ($db->result as $elem) {
+                        $perso_ids[] = $elem['perso_id'];
                     }
-
-                    $perso_ids = implode(',', $perso_ids);
-
-                    $db_perso=new \db();
-                    $db_perso->select2('personnel', null, array('supprime' => '0', 'id' => "IN$perso_ids"), 'ORDER BY nom,prenom');
                 }
 
-                // Si l'option "Absences-notifications-agent-par-agent" n'est pas cochée, on affiche tous les agents dans le menu déroulant
-                else {
-                    $db_perso=new \db();
-                    $db_perso->select2('personnel', null, array('supprime' => '0'), 'ORDER BY nom,prenom');
-                }
+                $perso_ids = implode(',', $perso_ids);
 
-                $this->templateParams(array('db_perso' => $db_perso->result));
+                $db_perso=new \db();
+                $db_perso->select2('personnel', null, array('supprime' => '0', 'id' => "IN$perso_ids"), 'ORDER BY nom,prenom');
             }
 
-        }
+            // Si l'option "Absences-notifications-agent-par-agent" n'est pas cochée, on affiche tous les agents dans le menu déroulant
+            else {
+                $db_perso=new \db();
+                $db_perso->select2('personnel', null, array('supprime' => '0'), 'ORDER BY nom,prenom');
+            }
 
+            $this->templateParams(array('db_perso' => $db_perso->result));
+        }
 
         $date = date("Y-m-d");
         $db = new \db();
@@ -617,7 +615,7 @@ class HolidayController extends BaseController
         // Enregistrement du congés
         $c = new \conges();
         $c->CSRFToken = $CSRFToken;
-        $c->add($request->query->all());
+        $c->add($request->request->all());
         $id = $c->id;
 
         // Récupération des adresses e-mails de l'agent et des responsables pour l'envoi des alertes
