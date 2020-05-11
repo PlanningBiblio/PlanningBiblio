@@ -652,7 +652,7 @@ class HolidayController extends BaseController
         }
 
         // ajout d'un lien permettant de rebondir sur la demande
-        $url=createURL("conges/modif.php&id=$id");
+        $url = $GLOBALS['config']['URL'] . "/holiday/edit/$id";
         $message.="<br/><br/>Lien vers la demande de cong&eacute; :<br/><a href='$url'>$url</a><br/><br/>";
 
         // Envoi du mail
