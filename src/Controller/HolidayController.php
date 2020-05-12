@@ -8,6 +8,7 @@ use App\PlanningBiblio\Helper\HolidayHelper;
 use App\Model\AbsenceReason;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 require_once(__DIR__ . '/../../public/conges/class.conges.php');
@@ -445,14 +446,21 @@ class HolidayController extends BaseController
     /**
      * @Route("/holiday", name="holiday.save", methods={"POST"})
      */
-    public function add_confirm(Request $request)
+    public function add_confirm(Request $request, Session $session)
     {
         $result = $this->save($request);
-        $msg = $result['msg'];
-        $msg2 = $result['msg2'];
-        $msg2Type = $result['msg2Type'];
 
-        return $this->redirect("/holiday/index?msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type");
+        if (!empty($result['msg'])) {
+            $type = $result['msgType'] == 'success' ? 'notice' : 'error';
+            $session->getFlashBag()->add($type, $result['msg']);
+        }
+
+        if (!empty($result['msg2'])) {
+            $type = $result['msg2Type'] == 'success' ? 'notice' : 'error';
+            $session->getFlashBag()->add($type, $result['msg2']);
+        }
+
+        return $this->redirectToRoute('holiday.index');
     }
 
     /**
@@ -675,14 +683,15 @@ class HolidayController extends BaseController
         $msg2=null;
         $msg2Type=null;
         if ($m->error) {
-            $msg2=urlencode($m->error_CJInfo);
+            $msg2 = $m->error_CJInfo;
             $msg2Type="error";
         }
 
-        $msg=urlencode("La demande de congé a été enregistrée");
+        $msg = 'La demande de congé a été enregistrée';
 
         return array(
             'msg'       => $msg,
+            'msgType'   => 'success',
             'msg2'      => $msg2,
             'msg2Type'  => $msg2Type
         );
