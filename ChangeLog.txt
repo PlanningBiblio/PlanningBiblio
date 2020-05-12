@@ -1,4 +1,6 @@
 *** Unreleased ***
+
+*** Version 19.10.05       (2020-05-12)   ***
 - Fixes
 Table creation - apply number of sub-table on first save
 Table creation: remove PHP warning
