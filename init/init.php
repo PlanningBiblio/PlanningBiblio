@@ -22,7 +22,7 @@ use App\Model\Agent;
 use App\Model\Access;
 
 // Redirection vers setup si le fichier config est absent
-if (!file_exists(__DIR__.'/../public/include/config.php')) {
+if (!file_exists(__DIR__.'/../.env.local')) {
     include(__DIR__.'/../public/include/noConfig.php');
 }
 

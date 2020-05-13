@@ -1,93 +1,104 @@
 <?php
 /**
-Planning Biblio, Version 2.5.7
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : setup/createconfig.php
-Création : mai 2011
-Dernière modification : 8 mars 2017
+@file public/setup/createconfig.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Permet de créer le fichier de configuration (include/config.php) lors de l'installation.
 Récupère les informations saisies dans le formulaire de la page setup/index.php (identifiant administrateur MySQL,
 nom de la base de données à créer, identifiant de l'utilisateur de la base de données à créer
-
-Inclus ensuite le fichier setup/config.php affichant le formulaire demandant les informations sur le responsable du planning
 */
 
-$version=filter_input(INPUT_POST, "version", FILTER_SANITIZE_STRING);
-$Fnm = "../include/config.php";
+session_start();
 
-// Génération d'une clé pour crypter les mots de passe LDAP-Password et Mail-Password
-// PHP 7
-if (phpversion() >= 7) {
-    $secret = bin2hex(random_bytes(12));
+$env_file = __DIR__ . '/../../.env';
+$env_local_file = __DIR__ . '/../../.env.local';
+
+if (file_exists(__DIR__ . '/../../.env.local')) {
+    header('Location: index.php');
 }
 
-// PHP 5.3+
-else {
-    $secret = bin2hex(openssl_random_pseudo_bytes(12));
+$dbhost = filter_input(INPUT_POST, 'dbhost', FILTER_SANITIZE_STRING);
+$dbport = filter_input(INPUT_POST, 'dbport', FILTER_SANITIZE_NUMBER_INT);
+$dbname = filter_input(INPUT_POST, 'dbname', FILTER_SANITIZE_STRING);
+$adminuser = filter_input(INPUT_POST, 'adminuser', FILTER_SANITIZE_STRING);
+$adminpass = filter_input(INPUT_POST, 'adminpass', FILTER_UNSAFE_RAW);
+$dbuser = filter_input(INPUT_POST, 'dbuser', FILTER_SANITIZE_STRING);
+$dbpass = filter_input(INPUT_POST, 'dbpass', FILTER_UNSAFE_RAW);
+$dbprefix = filter_input(INPUT_POST, 'dbprefix', FILTER_SANITIZE_STRING);
+$dropuser = filter_input(INPUT_POST, 'dropuser', FILTER_SANITIZE_STRING);
+$dropdb = filter_input(INPUT_POST, 'dropdb', FILTER_SANITIZE_STRING);
+
+$app_secret = isset($_SESSION['app_secret']) ? $_SESSION['app_secret'] : bin2hex(random_bytes(16));
+$_SESSION['app_secret'] = $app_secret;
+
+$env_local_data = array();
+
+foreach (file($env_file) as $line) {
+    if (substr($line, 0, 1) == '#') {
+        continue;
+    }
+    /** Set APP_ENV to prod generate errors on symfony pages
+    // TODO FIXIT
+    if (substr($line, 0, 7) == 'APP_ENV') {
+        $line = "APP_ENV=prod";
+    }
+    */
+    if (substr($line, 0, 12) == 'DATABASE_URL') {
+        $line = "DATABASE_URL=mysql://$dbuser:$dbpass@$dbhost:$dbport/$dbname";
+    }
+    elseif (substr($line, 0, 15) == 'DATABASE_PREFIX') {
+        $line = "DATABASE_PREFIX=$dbprefix";
+    }
+    elseif (substr($line, 0, 10) == 'APP_SECRET') {
+        $line = "APP_SECRET=$app_secret";
+    }
+
+    $env_local_data[] = $line;
 }
 
-$file=array();
-$file[]="<?php\n";
-$file[]="/**\n";
-$file[]="Planning Biblio, Version $version\n";
-$file[]="Licence GNU/GPL (version 2 et au dela)\n";
-$file[]="Voir les fichiers README.md et LICENSE\n";
-$file[]="@copyright 2011-2018 Jérôme Combes\n";
-$file[]="\n";
-$file[]="Fichier : include/config.php\n";
-$file[]="Création : mai 2011\n";
-$file[]="Dernière modification : 8 avril 2015\n";
-$file[]="@author Jérôme Combes <jerome@planningbiblio.fr>\n";
-$file[]="\n";
-$file[]="Description :\n";
-$file[]="Fichier de configuration. Contient les informations de connexion à la base de données MySQL.\n";
-$file[]="Initialise la variable globale \"\$config\" avec les informations contenues dans la table \"config\".\n";
-$file[]="\n";
-$file[]="Ce fichier est inclus dans les pages index.php, authentification.php, admin/index.php, setup/index.php et setup/fin.php\n";
-$file[]="*/\n\n";
+$_SESSION['env_local_data'] = $env_local_data;
 
-$file[]="// Securité : Traitement pour une reponse Ajax\n";
-$file[]="if(array_key_exists('HTTP_X_REQUESTED_WITH', \$_SERVER) and strtolower(\$_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){\n";
-$file[]="  \$version='ajax';\n";
-$file[]="}\n\n";
-$file[]="global \$config;\n";
-$file[]="\$config=Array();\n\n";
-$file[]="// Paramètres MySQL\n";
-$file[]="\$config['dbhost']=\"{$_POST['dbhost']}\";\n";
-$file[]="\$config['dbname']=\"{$_POST['dbname']}\";\n";
-$file[]="\$config['dbuser']=\"{$_POST['dbuser']}\";\n";
-$file[]="\$config['dbpass']=\"{$_POST['dbpass']}\";\n";
-$file[]="\$config['dbprefix']=\"{$_POST['dbprefix']}\";\n";
-$file[]="\$dbprefix=\$config['dbprefix'];\n\n";
-$file[]="\$config['secret']=\"$secret\";\n\n";
-$file[]="include 'db.php';\n\n";
-$file[]="// Récuperation des paramètres stockés dans la base de données\n";
-$file[]="\$db=new db();\n";
-$file[]="\$db->query(\"SELECT * FROM `{\$dbprefix}config` ORDER BY `id`;\");\n";
-$file[]="foreach(\$db->result as \$elem){\n";
-$file[]="  \$config[\$elem['nom']]=\$elem['valeur'];\n";
-$file[]="}\n\n";
-$file[]="// Si pas de \$version ou pas de reponseAjax => acces direct au fichier => Accès refusé\n";
-$file[]="if(!isset(\$version)){\n";
-$file[]="  include_once \"accessDenied.php\";\n";
-$file[]="}\n";
-$file[]="?>\n";
+$path = substr(__DIR__, 0, -12);
 
-if (!$inF=fopen($Fnm, "w\n")) {
-    echo "<p style='color:red;'>Ne peut pas créer le fichier include/config.php. Vérifiez les droits d'accès au dossier include.</p>\n";
-    exit;
+include "header.php";
+echo "<form name='form' action='createdb.php' method='post'>\n";
+echo "<input type='hidden' name='dbhost' value='$dbhost' />\n";
+echo "<input type='hidden' name='dbport' value='$dbport' />\n";
+echo "<input type='hidden' name='dbuser' value='$dbuser' />\n";
+echo "<input type='hidden' name='dbpass' value='$dbpass' />\n";
+echo "<input type='hidden' name='adminuser' value='$adminuser' />\n";
+echo "<input type='hidden' name='adminpass' value='$adminpass' />\n";
+echo "<input type='hidden' name='dbname' value='$dbname' />\n";
+echo "<input type='hidden' name='dbprefix' value='$dbprefix' />\n";
+echo "<input type='hidden' name='dropuser' value='$dropuser' />\n";
+echo "<input type='hidden' name='dropdb' value='$dropdb' />\n";
+echo "</form>\n";
+
+if ($file = fopen($env_local_file, "w\n")) {
+
+    foreach ($env_local_data as $line) {
+        fputs($file, $line."\n");
+    }
+    fclose($file);
+
+    echo "<p>Le fichier de configuration a bien été créé.</p>\n";
+    echo "<p>Cliquez sur <a href='javascript:document.form.submit();'>continuer</a>.</p>\n";
+
+} else {
+
+    echo "<p style='color:red;'>Impossible de créer le fichier .env.local<br/><br/>\n";
+    echo "Veuillez créer manuellement le fichier <b>.env.local</b> dans le dossier <b>$path</b> avec les informations suivantes.<br/><br/>\n";
+    echo "<p style='text-align:left; color:black;'>\n";
+    foreach ($env_local_data as $line) {
+        echo $line . "<br/>\n";
+    }
+    echo "</p>\n";
+    echo "Cliquez ensuite sur <a href='javascript:document.form.submit();' class='ui-button'>Continuer</a></p>\n";
 }
 
-foreach ($file as $line) {
-    fputs($inF, $line);
-}
-fclose($inF);
-
-echo "<p>Le fichier config.php a bien été créé.</p>\n";
-include "config.php";
+include "footer.php";

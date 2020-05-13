@@ -1,13 +1,10 @@
 <?php
 /**
-Planning Biblio, Version 2.3
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : setup/createdb.php
-Création : mai 2011
-Dernière modification : 4 avril 2015
+@file public/setup/createdb.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -19,8 +16,11 @@ Inclus ensuite le fichier setup/createconfig.php si la base a été créée corr
 Ce fichier valide le formulaire de la page setup/index.php
 */
 
+session_start();
+
 //	Variables
 $dbhost=filter_input(INPUT_POST, "dbhost", FILTER_SANITIZE_STRING);
+$dbport = filter_input(INPUT_POST, 'dbport', FILTER_SANITIZE_NUMBER_INT);
 $dbname=filter_input(INPUT_POST, "dbname", FILTER_SANITIZE_STRING);
 $dbAdminUser=filter_input(INPUT_POST, "adminuser", FILTER_SANITIZE_STRING);
 $dbAdminPass=filter_input(INPUT_POST, "adminpass", FILTER_UNSAFE_RAW);
@@ -39,11 +39,7 @@ include "header.php";
 
 // Initialisation de la connexion MySQL
 $dblink=mysqli_init();
-/**
-$dbhost=mysqli_real_escape_string($dblink,$dbhost);
-$dbAdminUser=mysqli_real_escape_string($dblink,$dbAdminUser);
-$dbAdminPass=mysqli_real_escape_string($dblink,$dbAdminPass);
-*/
+
 //	Vérifions si l'utilisateur existe
 $user_exists=false;
 $req="SELECT * FROM `mysql`.`user` WHERE `User`='$dbuser' AND `Host`='$dbhost';";
@@ -110,11 +106,25 @@ if ($dbconn) {
 
 $message.="<p><a href='index.php'>Retour</a></p>\n";
 
+$path = substr(__DIR__, 0, -12);
+
 if ($erreur) {
     echo $message;
 } else {
     echo "<p>La base de donnée a bien été créée.</p>\n";
-    include "createconfig.php";
+
+    if (!file_exists(__DIR__ . '/../../.env.local')) {
+        echo "<p style='color:red;'>Le fichier de configuration est manquant.<br/><br/>\n";
+        echo "Veuillez créer le fichier <b>.env.local</b> dans le dossier <b>$path</b> avec les informations suivantes.<br/><br/>\n";
+        echo "<p style='text-align:left;margin-bottom: 30px;'>\n";
+        foreach ($_SESSION['env_local_data'] as $line) {
+            echo $line . "<br/>\n";
+        }
+        echo "</p>\n";
+    }
+
+
+    include "config.php";
 }
 
 include "footer.php";
