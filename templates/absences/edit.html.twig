@@ -477,13 +477,13 @@
                   <select name='valide' class='ui-widget-content ui-corner-all'>
                     <option value='0'>Demandée</option>
 
-                    {% if absence.status == 'ACCEPTED' %}
+                    {% if absence.status == 'ACCEPTED_N1' %}
                       <option value='2' selected="selected">Acceptée (En attente de validation hiérarchique)</option>
                     {% else %}
                       <option value='2'>Acceptée (En attente de validation hiérarchique)</option>
                     {% endif %}
 
-                    {% if absence.status == 'REJECTED' %}
+                    {% if absence.status == 'REJECTED_N1' %}
                       <option value='-2' selected="selected">Refusée (En attente de validation hiérarchique)</option>
                     {% else %}
                       <option value='-2'>Refusée (En attente de validation hiérarchique)</option>
@@ -506,11 +506,11 @@
                 {% else %}
                   {% if absence.status == 'ASKED' %}
                     Demandée
-                  {% elseif absence.status == 'ACCEPTED' %}
+                  {% elseif absence.status == 'ACCEPTED_N1' %}
                     Acceptée (En attente de validation hiérarchique)
                   {% elseif absence.status == 'ACCEPTED_N2' %}
                     Acceptée
-                  {% elseif absence.status == 'REJECTED' %}
+                  {% elseif absence.status == 'REJECTED_N1' %}
                     Refusée (En attente de validation hiérarchique)
                   {% elseif absence.status == 'REJECTED_N2' %}
                     Refusée
