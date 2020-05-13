@@ -501,6 +501,15 @@ $( document ).ready(function() {
       $("#confirm-unlock").dialog( "open" );
   });
 
+  $('.slot-range').on('click', function() {
+    if ($('input[name="locked"]').val() == '1') {
+      return;
+    }
+
+    $(this).hide();
+    $(this).parent().find('span.slot-editable').show();
+  });
+
   $('.edit-time').on('click', function() {
     if ($('input[name="locked"]').val() == '1') {
       return;
@@ -509,6 +518,37 @@ $( document ).ready(function() {
     $(this).hide();
     $(this).parent().find('span.editable').show();
     $(this).parent().find('span.view-time').hide();
+  });
+
+  $('.valid-slot-time').on('click', function() {
+    from = $(this).parent().find('input.time-from').val();
+    to = $(this).parent().find('input.time-to').val();
+    date = $('input[name="date"]').val();
+    type = $(this).data('type');
+    slot_range = $(this).parent().parent().find('span.slot-range');
+
+    data = {
+      from: from,
+      to: to,
+      date: date,
+      type: type
+    };
+
+    $.ajax({
+      url: '/ajax/statedweek/slothours',
+      type: 'post',
+      data: data,
+      success: function(data) {
+        content = data.from + ' - ' + data.to;
+        slot_range.html(content).show();
+      },
+      error: function() {
+        slot_range.show();
+        information("Une erreur est survenue lors du changement des horaires", 'error');
+      }
+    });
+
+    $(this).parent().hide();
   });
 
   $('.valid-time').on('click', function() {

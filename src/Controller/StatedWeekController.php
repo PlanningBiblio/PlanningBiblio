@@ -848,6 +848,41 @@ class StatedWeekController extends BaseController
         return $response;
     }
 
+    /**
+     * @Route("/ajax/statedweek/slothours", name="statedweek.slothours", methods={"GET", "POST"})
+     */
+    public function updateSlotHours(Request $request)
+    {
+        $response = new Response();
+
+        $date = $request->get('date');
+        $type = $request->get('type');
+        $from = $request->get('from');
+        $to = $request->get('to');
+
+        $planning = $this->getPlanningOn($date, false);
+        if (!$planning) {
+            $response->setContent('Planning not found');
+            $response->setStatusCode(404);
+            return $response;
+        }
+
+        $column = $this->entityManager
+          ->getRepository(StatedWeekColumn::class)
+          ->findOneBy(array('planning_id' => $planning->id(), 'type' => $type));
+
+        $column->starttime(\DateTime::createFromFormat('H:i', $from));
+        $column->endtime(\DateTime::createFromFormat('H:i', $to));
+
+        $this->entityManager->persist($column);
+        $this->entityManager->flush();
+
+        $new_from = $column->starttime()->format('H:i');
+        $new_to = $column->endtime()->format('H:i');
+
+        return $this->json(array('from' => heure3($new_from), 'to' => heure3($new_to)));
+    }
+
     private function templateToPlanning($times, $planning, $day)
     {
         $columns_map = array();
