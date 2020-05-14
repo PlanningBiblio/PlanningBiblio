@@ -780,7 +780,7 @@ class StatedWeekController extends BaseController
 
             $columns = $template->columns();
             $planning = $this->getPlanningOn($d);
-            $this->emptyPlanning($planning, $columns);
+            $this->emptyPlanning($planning, $columns, $day_index);
 
             $times = $template->times();
             $this->templateToPlanning($times, $planning, $day_index);
@@ -930,11 +930,15 @@ class StatedWeekController extends BaseController
         $this->entityManager->flush();
     }
 
-    private function emptyPlanning($planning, $new_columns)
+    private function emptyPlanning($planning, $new_columns, $day_index)
     {
         $columns = $planning->columns();
         foreach ($columns as $column) {
             foreach ($new_columns as $c) {
+                if ($c->day_index() != $day_index) {
+                    continue;
+                }
+
                 if ($c->slot() == $column->type()) {
                     $column->starttime($c->starttime());
                     $column->endtime($c->endtime());

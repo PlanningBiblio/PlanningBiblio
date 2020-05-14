@@ -541,6 +541,10 @@ $( document ).ready(function() {
       success: function(data) {
         content = data.from + ' - ' + data.to;
         slot_range.html(content).show();
+        $('td.' + type).each(function() {
+          $(this).attr('data-from', from + ':00');
+          $(this).attr('data-to', to + ':00');
+        });
       },
       error: function() {
         slot_range.show();
