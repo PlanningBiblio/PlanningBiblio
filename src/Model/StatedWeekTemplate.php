@@ -22,13 +22,25 @@ class StatedWeekTemplate extends PLBEntity {
      */
     protected $times;
 
+    /**
+     * @OneToMany(targetEntity="StatedWeekColumnTemplate", mappedBy="template", cascade={"ALL"})
+     */
+    protected $columns;
+
     public function __construct() {
         $this->times = new ArrayCollection();
+        $this->columns = new ArrayCollection();
     }
 
     public function addTime(StatedWeekTimeTemplate $time)
     {
         $this->times->add($time);
         $time->template($this);
+    }
+
+    public function addColumn(StatedWeekColumnTemplate $column)
+    {
+        $this->columns->add($column);
+        $column->template($this);
     }
 }

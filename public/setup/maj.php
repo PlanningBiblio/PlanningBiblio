@@ -1892,6 +1892,23 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="19.11.00.011";
+if (version_compare($config['Version'], $v) === -1) {
+
+    $sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_column_templates` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        template_id INT(11) NOT NULL,
+        day_index tinyint NOT NULL,
+        slot VARCHAR(50) NOT NULL,
+        starttime TIME NOT NULL,
+        endtime TIME NOT NULL,
+        PRIMARY KEY (`id`),
+        FOREIGN KEY (template_id) REFERENCES stated_week_planning_templates(id)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();

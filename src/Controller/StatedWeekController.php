@@ -12,6 +12,7 @@ use App\Model\StatedWeekJobTimes;
 use App\Model\StatedWeekPause;
 use App\Model\StatedWeekTemplate;
 use App\Model\StatedWeekTimeTemplate;
+use App\Model\StatedWeekColumnTemplate;
 use App\Model\Interchange;
 
 use App\PlanningBiblio\Helper\StatedWeekHelper;
@@ -777,8 +778,9 @@ class StatedWeekController extends BaseController
                 $day_index = 0;
             }
 
+            $columns = $template->columns();
             $planning = $this->getPlanningOn($d);
-            $this->emptyPlanning($planning);
+            $this->emptyPlanning($planning, $columns);
 
             $times = $template->times();
             $this->templateToPlanning($times, $planning, $day_index);
@@ -928,10 +930,17 @@ class StatedWeekController extends BaseController
         $this->entityManager->flush();
     }
 
-    private function emptyPlanning($planning)
+    private function emptyPlanning($planning, $new_columns)
     {
         $columns = $planning->columns();
         foreach ($columns as $column) {
+            foreach ($new_columns as $c) {
+                if ($c->slot() == $column->type()) {
+                    $column->starttime($c->starttime());
+                    $column->endtime($c->endtime());
+                    $this->entityManager->persist($column);
+                }
+            }
             $times = $this->entityManager
                 ->getRepository(StatedWeekTimes::class)
                 ->findBy(array('column_id' => $column->id()));
@@ -997,6 +1006,14 @@ class StatedWeekController extends BaseController
     {
         foreach ($columns as $column) {
             $type = $column->type();
+
+            $column_template = new StatedWeekColumnTemplate();
+            $column_template->day_index($day);
+            $column_template->slot($type);
+            $column_template->starttime($column->starttime());
+            $column_template->endtime($column->endtime());
+            $template->addColumn($column_template);
+
             $times = $this->entityManager
                 ->getRepository(StatedWeekTimes::class)
                 ->findBy(array('column_id' => $column->id()));

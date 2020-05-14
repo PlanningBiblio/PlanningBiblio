@@ -660,6 +660,17 @@ $sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_templates` (
     PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 
+$sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_column_templates` (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    template_id INT(11) NOT NULL,
+    day_index tinyint NOT NULL,
+    slot VARCHAR(50) NOT NULL,
+    starttime TIME NOT NULL,
+    endtime TIME NOT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (template_id) REFERENCES stated_week_planning_templates(id)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+
 $sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_time_templates` (
     id INT(11) NOT NULL AUTO_INCREMENT,
     template_id INT(11) NOT NULL,
