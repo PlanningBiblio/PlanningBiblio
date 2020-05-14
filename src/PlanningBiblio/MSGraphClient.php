@@ -93,7 +93,7 @@ class MSGraphClient
 
     private function isGraphUser($user) {
         $login = $user->login();
-        $response = $this->sendGet("/users/$login" . $this->login_suffix . "/calendar/events");
+        $response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar/events/?$top=1000');
         if ($response->code == 200) {
             return $response;
         }
