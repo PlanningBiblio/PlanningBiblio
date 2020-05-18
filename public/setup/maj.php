@@ -1833,6 +1833,14 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="19.11.00.012";
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `nom` = 'Congés - Nouveau' WHERE `page` = '/holiday/new';";
+    $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES (\"Congés - Enregistrer\",'100','/holiday');";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
