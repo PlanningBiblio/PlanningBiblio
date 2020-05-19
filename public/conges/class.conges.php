@@ -286,8 +286,14 @@ class conges
             $fin.=" 23:59:59";
         }
 
-        $filter=array("perso_id"=>$perso_id, "debut"=>"<$fin", "fin"=>">$debut");
-    
+        $filter = array(
+            'perso_id'      => $perso_id,
+            'debut'         => "<$fin",
+            'fin'           => ">$debut",
+            'supprime'      => 0,
+            'information'   => 0
+        );
+
         if ($valide==true) {
             $filter["valide"]=">0";
         }
