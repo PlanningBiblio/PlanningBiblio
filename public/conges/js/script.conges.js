@@ -31,6 +31,7 @@ function calculCredit(){
   perso_id=document.form.elements["perso_id"].value;
   halfday = $('input[name="halfday"]').is(':checked') ? 1 : 0;
   conges_mode = $('#conges-mode').val();
+  is_recover = $('#is-recover').val();
   conges_demi_journee = $('#conges-demi-journees')
 
   if(!fin){
@@ -76,7 +77,7 @@ function calculCredit(){
 
   $.ajax({
     url: "/ajax/holiday-credit",
-    data: {debut: debut, fin: fin, hre_debut: hre_debut, hre_fin: hre_fin, perso_id: perso_id},
+    data: {debut: debut, fin: fin, hre_debut: hre_debut, hre_fin: hre_fin, perso_id: perso_id, is_recover: is_recover},
     dataType: "json",
     type: "get",
     async: false,

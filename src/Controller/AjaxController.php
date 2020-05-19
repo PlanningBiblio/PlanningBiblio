@@ -27,6 +27,7 @@ class AjaxController extends BaseController
         $hre_debut = $request->get('hre_debut');
         $hre_fin = $request->get('hre_fin');
         $perso_id = $request->get('perso_id');
+        $is_recover = $request->get('is_recover');
 
         $c = new \conges();
         $recover = $c->calculCreditRecup($perso_id, $debut);
@@ -36,7 +37,8 @@ class AjaxController extends BaseController
             'hour_start' => $hre_debut,
             'end' => $fin,
             'hour_end' => $hre_fin,
-            'perso_id' => $perso_id
+            'perso_id' => $perso_id,
+            'is_recover' => $is_recover
         ));
         $result = $holidayHlper->getCountedHours();
 
