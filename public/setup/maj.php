@@ -24,7 +24,13 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
 
 $CSRFToken = CSRFToken();
 
-echo "Mise &agrave; jour de la base de donn&eacute;es version {$config['Version']} --> $version<br/>\n";
+$cli = isset($argv[0]);
+
+echo "Mise à jour de la base de données version {$config['Version']} --> $version\n";
+if (! $cli) {
+    echo "<br/>\n";
+}
+
 if (version_compare($config['Version'], "2.0") === -1) {
     echo "<br/>Vous devez d'abord installer la version 2.0<br/>\n";
     exit;
@@ -1846,9 +1852,17 @@ foreach ($sql as $elem) {
     $db=new db();
     $db->query($elem);
     if (!$db->error) {
-        echo "$elem : <font style='color:green;'>OK</font><br/>\n";
+        if ($cli) {
+            echo "$elem : \033[32m[OK]\e[0m\n";
+        } else {
+            echo "$elem : <font style='color:green;'>OK</font><br/>\n";
+        }
     } else {
-        echo "$elem : <font style='color:red;'>Erreur</font><br/>\n";
+        if ($cli) {
+            echo "\e[1mBold$elem : \033[31m[KO]\e[0m\n";
+        } else {
+            echo "$elem : <font style='color:red;'>Erreur</font><br/>\n";
+        }
     }
 }
 
@@ -1886,8 +1900,10 @@ if (isset($check_tables) and $check_tables === true) {
     echo "</p>\n";
 }
 
-echo "<br/><br/><a href='index.php'>Continuer</a>\n";
-include(__DIR__.'/../include/footer.php');
+if (!$cli) {
+    echo "<br/><br/><a href='index.php'>Continuer</a>\n";
+    include(__DIR__.'/../include/footer.php');
+}
 
 /**
  * Functions used for migrations
