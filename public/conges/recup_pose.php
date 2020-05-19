@@ -169,6 +169,7 @@ else {
     echo "<input type='hidden' name='anticipation' value='$anticipation' />\n";
     echo "<input type='hidden' id='agent' value='{$_SESSION['login_nom']} {$_SESSION['login_prenom']}' />\n";
     echo "<input type='hidden' id='conges-recup' value='1' />\n";
+    echo "<input type='hidden' id='is-recover' value='1' />\n";
     echo "<table border='0'>\n";
     echo "<tr><td style='width:350px;'>\n";
     echo "Nom, prénom : \n";
@@ -233,12 +234,12 @@ else {
     echo "<tr><td>\n";
     echo "Date de fin : \n";
     echo "</td><td>";
-    echo "<input type='text' name='fin' id='fin' value='$fin'  class='datepicker googleCalendarTrigger' style='width:97%;'/>&nbsp;\n";
+    echo "<input type='text' name='fin' id='fin' value='$fin'  class='datepicker googleCalendarTrigger checkdate' style='width:97%;'/>&nbsp;\n";
     echo "</td></tr>\n";
     echo "<tr id='hre_fin'><td>\n";
     echo "Heure de fin : \n";
     echo "</td><td>\n";
-    echo "<select name='hre_fin' id='hre_fin_select' style='width:98%;' class='googleCalendarTrigger' onfocus='setEndHour();'>\n";
+    echo "<select name='hre_fin' id='hre_fin_select' style='width:98%;' class='googleCalendarTrigger checkdate' onfocus='setEndHour();'>\n";
     selectHeure(7, 23, true);
     echo "</select>\n";
     echo "</td></tr>\n";

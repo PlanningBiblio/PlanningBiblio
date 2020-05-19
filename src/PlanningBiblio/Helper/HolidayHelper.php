@@ -118,7 +118,7 @@ class HolidayHelper extends BaseHelper
                 }
             }
 
-            if($today > 0 && $this->config('Conges-Mode') == 'jours') {
+            if($today > 0 && $this->config('Conges-Mode') == 'jours' && !$this->data['is_recover']) {
                 // 14400 = 4h, 12600 = 3,5h, 25200 = 7h
                 $today = $today <= 14400 ? 12600 : 25200;
             }
@@ -152,7 +152,7 @@ class HolidayHelper extends BaseHelper
 
     private function applyWeekTable($week)
     {
-        if($this->config('Conges-Mode') == 'heures') {
+        if($this->config('Conges-Mode') == 'heures' || $this->data['is_recover']) {
             return 0;
         }
 
