@@ -15,7 +15,7 @@
   {% else %}
     <h3>Demande de congés</h3>
   {% endif %}
-  <form name='form' action='/holiday/edit' method='post' id='form' class='googleCalendarForm'>
+  <form name='form' action='{{ asset("/holiday/edit") }}' method='post' id='form' class='googleCalendarForm'>
     <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}" />
     <input type='hidden' name='confirm' value='confirm' />
     <input type='hidden' name='reliquat' value="{{ reliquat }}" />

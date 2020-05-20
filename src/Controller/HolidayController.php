@@ -402,7 +402,7 @@ class HolidayController extends BaseController
         ));
         if ($adminN1 or $adminN2) {
             $db_perso = new \db();
-            $db_perso->query("select * from {$dbprefix}personnel order by nom,prenom;");
+            $db_perso->query("select * from {$dbprefix}personnel where id <> 2 order by nom,prenom;");
             $this->templateParams(array('db_perso' => $db_perso->result));
         }
         $saisie_par = '';
@@ -590,7 +590,7 @@ class HolidayController extends BaseController
             // Si l'option "Absences-notifications-agent-par-agent" n'est pas cochée, on affiche tous les agents dans le menu déroulant
             else {
                 $db_perso=new \db();
-                $db_perso->select2('personnel', null, array('supprime' => '0'), 'ORDER BY nom,prenom');
+                $db_perso->select2('personnel', null, array('supprime' => '0', 'id' => '<>2'), 'ORDER BY nom,prenom');
             }
 
             $this->templateParams(array('db_perso' => $db_perso->result));
