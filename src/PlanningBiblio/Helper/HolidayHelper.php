@@ -24,13 +24,18 @@ class HolidayHelper extends BaseHelper
         parent::__construct();
     }
 
-    public function HumanReadableDuration($hours)
+    public function HumanReadableDuration($hours, $force = null)
     {
         if ($hours == '' || $hours == '0.00') {
           $hours = 0;
         }
 
-        if ($this->config('Conges-Mode') == 'heures') {
+        $mode = $this->config('Conges-Mode');
+        if ($force && ($force == 'heures' || $force == 'jours')) {
+            $mode = $force;
+        }
+
+        if ($mode == 'heures') {
             return heure4($hours, true);
         }
 

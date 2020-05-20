@@ -217,15 +217,23 @@ class HolidayController extends BaseController
 
             $elem['start'] = str_replace("00h00", "", dateFr($elem['debut'], true));
             $elem['end'] = str_replace("23h59", "", dateFr($elem['fin'], true));
-            $elem['hours'] = $holiday_helper->HumanReadableDuration($elem['heures']);
+
+            $force = null;
+            if ($voir_recup) {
+                $force = 'heures';
+            }
+            $elem['hours'] = $holiday_helper->HumanReadableDuration($elem['heures'], $force);
             $elem['status'] = "Demandé, ".dateFr($elem['saisie'], true);
             $elem['validationDate'] = dateFr($elem['saisie'], true);
 
             foreach (array('solde_prec', 'solde_actuel',
-                'recup_prec', 'recup_actuel',
                 'reliquat_prec', 'reliquat_actuel',
                 'anticipation_prec', 'anticipation_actuel') as $key) {
                 $elem[$key] = $holiday_helper->HumanReadableDuration($elem[$key]);
+            }
+
+            foreach (array('recup_prec', 'recup_actuel') as $key) {
+                $elem[$key] = $holiday_helper->HumanReadableDuration($elem[$key], 'heures');
             }
 
             $elem['reliquat'] = '';
