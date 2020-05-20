@@ -139,6 +139,10 @@ if [[ ! -d public/themes/light_blue ]]; then
 fi
 
 # Run composer install
+if [[ -f composer.lock ]]; then
+    rm composer.lock
+fi
+
 php composer.phar install
 
 # Remove composer.phar
