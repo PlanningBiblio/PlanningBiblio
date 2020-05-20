@@ -163,25 +163,61 @@ if ($bloquant=='1') {
     }
 
     // Search for remote job (add journey time)
-    if ($config['Journey-time-between-sites'] > 0 && $config['Multisites-nombre'] > 1) {
+    if ($config['Journey-time-between-sites'] > 0) {
         $j_time = $config['Journey-time-between-sites'];
         $start_with_journey = date('H:i:s', strtotime("-$j_time minutes", strtotime($debutSQL)));
         $end_with_journey = date('H:i:s', strtotime("+$j_time minutes", strtotime($finSQL)));
+
+        if ($config['Multisites-nombre'] > 1) {
+            $req="SELECT `{$dbprefix}pl_poste`.`perso_id` AS `perso_id` "
+                . "FROM `{$dbprefix}pl_poste` "
+                . "INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` "
+                . "WHERE `{$dbprefix}pl_poste`.`debut`<'$end_with_journey' AND `{$dbprefix}pl_poste`.`fin`>'$start_with_journey' "
+                . "AND `{$dbprefix}pl_poste`.`site` != $site "
+                . "AND `{$dbprefix}pl_poste`.`date`='$dateSQL' AND `{$dbprefix}postes`.`bloquant`='1'";
+
+            $db=new db();
+            $db->query($req);
+            if ($db->result) {
+                foreach ($db->result as $elem) {
+                    $journey[] = $elem['perso_id'];
+                }
+            }
+        }
+
+        $req = "SELECT `tableau` FROM `{$dbprefix}pl_poste_tab_affect` WHERE `date` = '$dateSQL' AND `site` = $site";
+        $db = new db();
+        $db->query($req);
+        $table_id = $db->result[0]['tableau'];
+
+        $req = "SELECT `tableau` FROM `{$dbprefix}pl_poste_lignes` WHERE `numero` = $table_id AND `poste` = $poste AND `type` = 'poste'";
+        $db = new db();
+        $db->query($req);
+        $sub_table_id = $db->result[0]['tableau'];
+
+        $req = "SELECT `poste` FROM `{$dbprefix}pl_poste_lignes` WHERE `numero` = $table_id AND `tableau` != $sub_table_id AND `type` = 'poste'";
+        $db = new db();
+        $db->query($req);
+        $autres_postes = array();
+        foreach ($db->result as $elem) {
+            $autres_postes[] = $elem['poste'];
+        }
 
         $req="SELECT `{$dbprefix}pl_poste`.`perso_id` AS `perso_id` "
             . "FROM `{$dbprefix}pl_poste` "
             . "INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` "
             . "WHERE `{$dbprefix}pl_poste`.`debut`<'$end_with_journey' AND `{$dbprefix}pl_poste`.`fin`>'$start_with_journey' "
-            . "AND `{$dbprefix}pl_poste`.`site` != $site "
+            . "AND `{$dbprefix}pl_poste`.`poste` IN (" . join(",", $autres_postes) . ") "
+            . "AND `{$dbprefix}pl_poste`.`site` = $site "
             . "AND `{$dbprefix}pl_poste`.`date`='$dateSQL' AND `{$dbprefix}postes`.`bloquant`='1'";
-
-        $db=new db();
+        $db = new db();
         $db->query($req);
         if ($db->result) {
             foreach ($db->result as $elem) {
                 $journey[] = $elem['perso_id'];
             }
         }
+
     }
 }
 
