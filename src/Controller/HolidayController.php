@@ -281,7 +281,7 @@ class HolidayController extends BaseController
      * @Route("/holiday/edit", name="holiday.update", methods={"POST"})
      * @Route("/holiday/edit/{id}", name="holiday.edit", methods={"GET"})
      */
-    public function edit(Request $request)
+    public function edit(Request $request, Session $session)
     {
         $id = $request->get('id');
         $commentaires = $request->get('commentaires');
@@ -318,7 +318,17 @@ class HolidayController extends BaseController
                 $recover = 1;
             }
 
-            return $this->redirect("/holiday/index?msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type&recup=$recover");
+
+            if (!empty($msg)) {
+                $session->getFlashBag()->add('notice', $msg);
+            }
+
+            if (!empty($msg2)) {
+                $type = $msg2Type == 'success' ? 'notice' : 'error';
+                $session->getFlashBag()->add($type, $msg2);
+            }
+
+            return $this->redirectToRoute("holiday.index", array('recup' => $recover));
         }
 
         $this->templateParams(array('CSRFToken' => $GLOBALS['CSRFSession']));
