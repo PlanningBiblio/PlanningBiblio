@@ -135,6 +135,16 @@ class AbsenceController extends BaseController
         $debut=substr($debut, 0, 10);
         $fin=substr($fin, 0, 10);
 
+        $admin = $adminN1 || $adminN2;
+
+        $absence['editable'] = false;
+
+        if ($admin
+            or ($valide==0 and $valideN1==0)
+            or $this->config('Absences-validation')==0) {
+            $absence['editable'] = true;
+        }
+
         $absence['status'] = 'ASKED';
         $absence['status_editable'] = ($adminN1 or $adminN2) ? true : false;
         if ($valide == 0 && $valideN1 > 0) {
@@ -143,6 +153,7 @@ class AbsenceController extends BaseController
         if ($valide > 0) {
             $absence['status'] = 'ACCEPTED_N2';
             $absence['status_editable'] = $adminN2 ? true : false;
+            $absence['editable'] = $adminN2 ? true : false;
         }
         if ($valide == 0 && $valideN1 < 0) {
             $absence['status'] = 'REJECTED_N1';
@@ -150,6 +161,13 @@ class AbsenceController extends BaseController
         if ($valide < 0) {
             $absence['status'] = 'REJECTED_N2';
             $absence['status_editable'] = $adminN2 ? true : false;
+            $absence['editable'] = $adminN2 ? true : false;
+        }
+
+        // Si l'absence est importée depuis un agenda extérieur, on interdit la modification
+        if ($ical_key and substr($cal_name, 0, 14) != 'PlanningBiblio') {
+            $absence['editable'] = false;
+            $admin=false;
         }
 
         // Si l'option "Absences-notifications-agent-par-agent" est cochée, adapte la variable $adminN1 en fonction des agents de l'absence. S'ils sont tous gérés, $adminN1 = true, sinon, $adminN1 = false
@@ -220,15 +238,6 @@ class AbsenceController extends BaseController
             }
         }
 
-        $admin = $adminN1 || $adminN2;
-
-        // Si l'absence est importée depuis un agenda extérieur, on interdit la modification
-        $agenda_externe = false;
-        if ($ical_key and substr($cal_name, 0, 14) != 'PlanningBiblio') {
-            $agenda_externe = true;
-            $admin=false;
-        }
-
         // Liste des agents
         $agents_tous = array();
         if ($agents_multiples) {
@@ -264,16 +273,6 @@ class AbsenceController extends BaseController
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
         ));
 
-
-
-        // Si l'absence est importée depuis un agenda extérieur, on interdit la modification
-        $button_del_valide = 0;
-        if (($admin or ($valide==0 and $valideN1==0)
-            or $this->config('Absences-validation')==0) and !$agenda_externe) {
-            $button_del_valide = 1;
-        }
-
-        $this->templateParams(array('button_del_valide' => $button_del_valide));
         $this->templateParams(array('documents' => $this->getDocuments($a->id)));
         return $this->output('absences/edit.html.twig');
     }

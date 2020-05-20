@@ -1,13 +1,10 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : absences/modif2.php
-Création : mai 2011
-Dernière modification : 19 avril 2018
+@file public/absences/modif2.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -180,6 +177,7 @@ if (!$modification) {
 // Droits 20x = modification de toutes les absences (admin seulement)
 // Droits 50x = validation N2
 
+$acces = false;
 for ($i = 1; $i <= $config['Multisites-nombre']; $i++) {
     if (in_array((200+$i), $droits) or in_array((500+$i), $droits)) {
         $acces = true;
