@@ -137,17 +137,17 @@ class AbsenceController extends BaseController
 
         $absence['status'] = 'ASKED';
         $absence['status_editable'] = ($adminN1 or $adminN2) ? true : false;
-        if ($valide == 0 && $valideN1 == 1) {
+        if ($valide == 0 && $valideN1 > 0) {
             $absence['status'] = 'ACCEPTED_N1';
         }
-        if ($valide == 1 && $valideN1 == 1) {
+        if ($valide > 0) {
             $absence['status'] = 'ACCEPTED_N2';
             $absence['status_editable'] = $adminN2 ? true : false;
         }
-        if ($valide == 0 && $valideN1 == -1) {
+        if ($valide == 0 && $valideN1 < 0) {
             $absence['status'] = 'REJECTED_N1';
         }
-        if ($valide == -1 && $valideN1 == -1) {
+        if ($valide < 0) {
             $absence['status'] = 'REJECTED_N2';
             $absence['status_editable'] = $adminN2 ? true : false;
         }
