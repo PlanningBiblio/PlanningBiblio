@@ -1270,8 +1270,9 @@ class conges
         // Ability to request half day.
         $data['halfday'] = isset($data['halfday']) ? $data['halfday'] : 0;
 
-        if ($data['conges-mode'] == "jours"
-            && $data['conges-demi-journees']
+        $config = $GLOBALS['config'];
+        if ($config['Conges-Mode'] == 'jours'
+            && $config['Conges-demi-journees']
             && $data['halfday']) {
 
             if (!$data['fin']) {
