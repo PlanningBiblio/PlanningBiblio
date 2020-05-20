@@ -27,6 +27,9 @@
     <input type='hidden' name='valide' value='0' />
     <input type='hidden' id='agent' value="{{ agent_name }}" />
     <input type='hidden' name='conges-recup' id='conges-recup' value="{{ conges_recuperations }}" />
+    {% if request_type == 'recover' %}
+      <input type='hidden' id='is-recover' value='1' />
+    {% endif %}
     <input type='hidden' name="conges-mode" id='conges-mode' value='{{ conges_mode }}' />
     <input type='hidden' name="conges-demi-journees" id='conges-demi-journees' value='{{ conges_demi_journee }}' />
 
@@ -372,13 +375,13 @@
       </tr>
 
       <tr>
-        {% if conges_mode == 'heures' %}
+        {% if conges_mode == 'heures' or request_type == 'recover' %}
           <td style='padding-top:15px;'>Nombre d'heures : </td>
         {% else %}
           <td style='padding-top:15px;'>Nombre de jours : </td>
         {% endif %}
         <td style='padding-top:15px;'>
-          {% if conges_mode == 'heures' %}
+          {% if conges_mode == 'heures' or request_type == 'recover' %}
             <div id='nbHeures' style='padding:0 5px; width:50px;'></div>
           {% else %}
             <div id='nbJours' style='padding:0 5px; width:50px;'></div>
@@ -389,7 +392,7 @@
         </td>
       </tr>
 
-      {% if conges_mode == 'heures' %}
+      {% if conges_mode == 'heures' or request_type == 'recover' %}
         <tr>
           <td>Nombre de jours (7h/jour) : </td>
           <td>
