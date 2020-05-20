@@ -24,7 +24,6 @@
       <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
       <input type='hidden' name='page' value='absences/modif2.php' />
       <input type='hidden' name='perso_id' value='{{ absence.perso_id }}' />
-      <input type='hidden' id='admin' value='{{ admin }}' />
       <input type='hidden' id='login_id' value='{{ loggedin_id }}' />
       <input type='hidden' name='groupe' id='groupe' value='{{ absence.groupe }}' />
       <input type='hidden' name='rrule' id='rrule' value='{{ absence.rrule }}' />
@@ -455,19 +454,24 @@
               <td>
                 <ul id='documentsList'>
                   {% for document in documents %}
-                    <li id="document_{{ document.id}}"><a href="{{ asset('absences/document/') }}{{ document.id }}">{{ document.filename }}</a> <a href="javascript:deleteAbsenceDocument({{ document.id }});">supprimer</a></li>
+                    <li id="document_{{ document.id}}"><a href="{{ asset('absences/document/') }}{{ document.id }}">{{ document.filename }}</a>
+                    {% if absence.editable %}
+                        <a href="javascript:deleteAbsenceDocument({{ document.id }});">supprimer</a></li>
+                    {% endif %}
                   {% endfor %}
                 </ul>
               </td>
             </tr>
 
             <input type="hidden" name="token" value="{{ csrf_token('upload') }}" />
-            <tr style='vertical-align:top;'>
-              <td>
-                <label class='intitule'>Attacher un document</label>
-              </td>
-              <td><input type="file" name="documentFile" id="documentFile" /> <a href="javascript:addAbsenceDocument({{ id }})">Ajouter</a></td>
-            </tr>
+            {% if absence.editable %}
+                <tr style='vertical-align:top;'>
+                <td>
+                    <label class='intitule'>Attacher un document</label>
+                </td>
+                <td><input type="file" name="documentFile" id="documentFile" /> <a href="javascript:addAbsenceDocument({{ id }})">Ajouter</a></td>
+                </tr>
+            {% endif %}
 
           {% if absences_validation %}
             <tr>
@@ -532,7 +536,7 @@
 
           <tr>
             <td colspan='2'><br/>
-              {% if button_del_valide %}
+              {% if absence.editable %}
                 <input type='button' class='ui-button' value='Supprimer' id='absence-bouton-supprimer' data-id='{{ id }}'/> 
                 <input type='button' class='ui-button' value='Annuler' onclick="annuler(1);"/> 
                 <input type='submit' class='ui-button' value='Valider'/>
