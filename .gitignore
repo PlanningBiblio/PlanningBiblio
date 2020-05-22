@@ -2,6 +2,8 @@
 *~
 *.kate-swp
 /.php_cs.cache
+
+custom_options.php
 public/data/*
 !public/data/index.php
 public/include/test.php
