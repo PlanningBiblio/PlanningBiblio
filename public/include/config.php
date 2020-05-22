@@ -40,6 +40,20 @@ $config['dbprefix'] = $_ENV['DATABASE_PREFIX'];
 
 $config['secret'] = $_ENV['APP_SECRET'];
 
+/** Get specific parameters from the .env.local file
+ * Using the "OPTIONS" setting (json format)
+ * example :
+ * OPTIONS='{"config": {"demo" : 1, "demo-password" : "MyDemoPassword"} }'
+ */
+if (!empty($_ENV['OPTIONS'])) {
+    $options = json_decode($_ENV['OPTIONS']);
+    if (!empty($options->config)) {
+        foreach ($options->config as $key => $value) {
+            $config[$key] = $value;
+        }
+    }
+}
+
 $dbprefix = $config['dbprefix'];
 
 include 'db.php';
