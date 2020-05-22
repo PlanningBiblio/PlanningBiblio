@@ -40,20 +40,6 @@ $config['dbprefix'] = $_ENV['DATABASE_PREFIX'];
 
 $config['secret'] = $_ENV['APP_SECRET'];
 
-/** Get specific parameters from the .env.local file
- * Using the "OPTIONS" setting (json format)
- * example :
- * OPTIONS='{"config": {"demo" : 1, "demo-password" : "MyDemoPassword"} }'
- */
-if (!empty($_ENV['OPTIONS'])) {
-    $options = json_decode($_ENV['OPTIONS']);
-    if (!empty($options->config)) {
-        foreach ($options->config as $key => $value) {
-            $config[$key] = $value;
-        }
-    }
-}
-
 $dbprefix = $config['dbprefix'];
 
 include 'db.php';
@@ -63,6 +49,14 @@ $db = new db();
 $db->query("SELECT * FROM `{$dbprefix}config` ORDER BY `id`;");
 foreach ($db->result as $elem) {
   $config[$elem['nom']] = $elem['valeur'];
+}
+
+/** Get custom options
+ * custom_options.php may contain extra config values
+ * Example : $config['demo'] = 1; $config['demo-password'] = 'My_demo_password';
+ */
+if (file_exists(__DIR__ . '/../../custom_options.php')) {
+    include_once(__DIR__ . '/../../custom_options.php');
 }
 
 // $version not set means direct access to an unauthorized file ==> load the access denied page
