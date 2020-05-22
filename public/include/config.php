@@ -51,6 +51,14 @@ foreach ($db->result as $elem) {
   $config[$elem['nom']] = $elem['valeur'];
 }
 
+/** Get custom options
+ * custom_options.php may contain extra config values
+ * Example : $config['demo'] = 1; $config['demo-password'] = 'My_demo_password';
+ */
+if (file_exists(__DIR__ . '/../../custom_options.php')) {
+    include_once(__DIR__ . '/../../custom_options.php');
+}
+
 // $version not set means direct access to an unauthorized file ==> load the access denied page
 if (!isset($version)) {
   include_once "accessDenied.php";
