@@ -13,6 +13,7 @@ Add unit tests
 Hamac import : Add intermediate validation and information logging
 Shows Agendas/Synchro tab on agent's pages when Hamac-csv param is set
 Disallow changing passwords in demo mode
+Add a script to launch setup from CLI (install.sh)
 
 -Fixes
 Add raw filter on agent templates for fields services, right and skills

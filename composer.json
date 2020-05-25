@@ -9,6 +9,10 @@
         {
             "name": "Alex Arnaud",
             "email": "alex.arnaud@biblibre.com"
+        },
+        {
+            "name": "Matthias Meusburger",
+            "email": "matthias.meusburger@biblibre.com"            
         }
     ],
     "license": "GPL-2.0-or-later",
