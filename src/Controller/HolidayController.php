@@ -817,12 +817,12 @@ class HolidayController extends BaseController
         $msg2=null;
         $msg2Type=null;
         if ($m->error) {
-            $msg2=urlencode($m->error_CJInfo);
+            $msg2 = $m->error_CJInfo;
             $msg2Type="error";
         }
 
         $result = array(
-            'msg'       => $message,
+            'msg'       => "Le congé a été modifié avec succès",
             'msg2'      => $msg2,
             'msg2Type'  => $msg2Type
         );
@@ -830,6 +830,7 @@ class HolidayController extends BaseController
         $result['back_to'] = 'holiday';
         if ($this->config('Conges-Recuperations') and $post['debit'] == 'recuperation') {
             $result['back_to'] = 'recover';
+            $result['msg'] = "La demande de récupération a été modifiée avec succès";
         }
 
         return $result;
