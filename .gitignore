@@ -1,7 +1,6 @@
 *.swp
 *~
 *.kate-swp
-composer.lock
 /.php_cs.cache
 public/data/*
 !public/data/index.php

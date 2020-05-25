@@ -12,6 +12,7 @@ fi
 echo "You are about to install Planning Biblio";
 echo "You will be asking for information to create the database.";
 echo "A database and a user will be created with given information. WARNING: if the database and the user already exist, they will be overwritten";
+echo "We strongly recommend that you back up your databases before starting this installation";
 echo "Do you want to proceed ? [yes/no]"
 read proceed 
 
@@ -35,19 +36,40 @@ echo "DB Admin User [root] :"
 read dbroot
 
 echo "DB Admin Pass :"
-read dbpass
+prompt=''
+while IFS= read -p "$prompt" -r -s -n 1 char
+do
+    if [[ $char == $'\0' ]]
+    then
+        break
+    fi
+    prompt='*'
+    dbpass+="$char"
+done
 
+echo ""
 echo "DB User [planningbiblio] (will be overwritten if exists) :"
 read planningbdbuser
 
 echo "DB Pass [$planningbdbpass_default] (will be overwritten if exists) :"
-read planningbdbpass
+prompt=''
+while IFS= read -p "$prompt" -r -s -n 1 char
+do
+    if [[ $char == $'\0' ]]
+    then
+        break
+    fi
+    prompt='*'
+    planningbdbpass+="$char"
+done
 
+echo ""
 echo "DB Name [planningbiblio] (will be overwritten if exists) :"
 read planningbdbname
 
-echo "DB Prefix [] :"
-read planningbdbprefix
+# DB Prefix : does not work by loading the sql file
+# echo "DB Prefix [] (optional) :"
+# read planningbdbprefix
 
 echo "Planning Biblio admin's lastname [admin] :"
 read planningbadminlastname
@@ -59,7 +81,20 @@ echo "Planning Biblio admin's e-mail address [admin@example.com] :"
 read planningbadminemail
 
 echo "Planning Biblio admin's password [$planningbadminpass_default] :"
-read planningbadminpass
+prompt=''
+while IFS= read -p "$prompt" -r -s -n 1 char
+do
+    if [[ $char == $'\0' ]]
+    then
+        break
+    fi
+    prompt='*'
+    planningbadminpass+="$char"
+done
+
+echo ""
+echo "Update composer dependencies [no] :"
+read updatecomposer
 
 # Set defaults
 if [[ $planningdbhost = '' ]]; then
@@ -102,10 +137,16 @@ if [[ $planningbadminpass = '' ]]; then
     planningbadminpass=$planningbadminpass_default
 fi
 
+updatecomposer=$(echo $updatecomposer | tr '[:upper:]' '[:lower:]');
+if [[ $updatecomposer = '' ]]; then
+    updatecomposer='no'
+fi
+
+
+
 # Set variables
 planningbdatas=data/planningb_1911_utf8.sql.gz
 planningbsecret=$(hexdump -n 16 -e '4/4 "%08X" 1 "\n"' /dev/random)
-planningbadminpass=$(head /dev/urandom|tr -dc "a-zA-Z0-9"|fold -w 10|head -n 1)
 
 # Download composer
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
@@ -134,15 +175,18 @@ mysql -u $planningbdbuser --password=$planningbdbpass -e "UPDATE $planningbdbnam
 
 # Set the light_blue theme
 mysql -u $planningbdbuser --password=$planningbdbpass -e "UPDATE $planningbdbname.\`config\` SET \`valeur\` = 'light_blue' WHERE \`nom\` = 'Affichage-theme';"
+
 if [[ ! -d public/themes/light_blue ]]; then
     git clone https://github.com/planningbiblio/theme_light_blue public/themes/light_blue
 fi
 
-# Run composer install
-if [[ -f composer.lock ]]; then
+# Update dependencies ?
+if [[ $updatecomposer = 'yes' && -f composer.lock ]]; then
+    echo "Removing composer.lock"
     rm composer.lock
 fi
 
+# Run composer install
 php composer.phar install
 
 # Remove composer.phar
