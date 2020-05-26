@@ -156,7 +156,7 @@ php -r "unlink('composer-setup.php');"
 
 # Create the .env.local file
 cp .env .env.local
-sed -i "s/APP_SECRET=.*/APP_SECRET=${planningbsecret}/" .env.local
+sed -i "s/APP_SECRET=.*/APP_DEBUG=0\nAPP_SECRET=${planningbsecret}/" .env.local
 
 sed -i "s/DATABASE_URL=.*/DATABASE_URL=mysql:\/\/$planningbdbuser:$planningbdbpass@$planningdbhost:$planningdbport\/$planningbdbname/" .env.local
 sed -i "s/DATABASE_PREFIX=.*/DATABASE_PREFIX=$planningbdbprefix/" .env.local
