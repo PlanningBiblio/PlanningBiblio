@@ -1,47 +1,44 @@
 *** Unreleased ***
 - Enhancements
 Include symfony framework
-Ability to request holiday in days (optionnal)
-Add a 2nd notifications workflow
-Ability to check permissions on kernel.request event
-Ability to add documents on absences
-Ability to change user password
-Move admin/info pages into a controller
-Abiblity to request holiday on half day
-Add free breaktimes
+Move absences pages into a symfony controller
+Move absences/info pages into a symfony controller
+Move admin/info pages into a symfony controller
+Move agents pages into a symfony controller
+Move configuration page into a symfony controller
+Move help page into a symfony controller
+Move holidays pages into a symfony controller
+Ability to check permissions on symfony kernel.request event
 Add unit tests
+Ability to request holiday in days (optionnal)
+Ability to request holiday on half day
+Add a second notifications workflow on absences
+Ability to add documents on absences
+Ability to change user password by typing a new one into a form
+Add free breaktimes on working hours
 Hamac import : Add intermediate validation and information logging
 Shows Agendas/Synchro tab on agent's pages when Hamac-csv param is set
 Disallow changing passwords in demo mode
-Add a script to launch setup from CLI (install.sh)
+Allow selection of days in other months on datepickers
+Add a script to launch setup from CLI (for a new installation: run install.sh)
 
 -Fixes
 Add raw filter on agent templates for fields services, right and skills
 Fix undefined indexes on statistiques/service.php & statut.php
 Fix checking email settings on configuration page
 Fix the wrong red marking in the diaries
-Allow selection of days in other months on datepickers
 Fix wrong SR (without meal) marking on gray cells
-Allow modification and validation of admins leave request
-Show information messages on the add absence form
-Fix error "Cannot declare App\Model\Agent" when importing planning model
 Fix the creation of status and service CSS classes in the planning.js file
 Rename recup_samedi to comp_time
-Fixe a warning when a day planning is empty
+Fix a warning when a day planning is empty
 Correct use of PresentSet class in planning/poste/index
 Fix saving status and services in agent's form
 Use the port when checking LDAP settings
-Hash password with password_hash
 Fix a typo on staticts rights
-Fix-encoding-issues
-handle single perso_id when adding absences
-Correct uses of App\Model\Agent in holiday recovery system
+Fix-encoding-issues. Run php -f tools/fix_encoding_issues.php if you have encoding errors after update
+Change database character encoding to utf8mb4. Run (once) php -f tools/fix_encoding_issues.php to convert your data after update
+Remove HTML entities from absences reasons. Run php -f tools/remove_html_entities_from_absence_reasons.php
 Prevent non authorized users to see holidays
-Fix errors on validation of holidays
-Change database character encoding to utf8mb4
-Fix 2 conversion errors in tools/fix_encoding_issues.php
-No longer deletes HTML entities from in setup/maj.php. Creation of a dedicated file :tools/remove_html_entities_from_absence_reasons.php
-Decode quotes in AbsenceController::edit
 Fix display and JavaScript errors on my_account page
 Correct check of admin rights in absence:edit controller
 Fix absences url in mails
@@ -49,9 +46,7 @@ Recovery times: restore hours checking and fix error on saving
 Recovery times: check admin level 2 rights
 Table creation - apply number of sub-table on first save
 Table creation: remove PHP warning
-Take pj1, pj2 and SO checkboxes into account on saving abences
 Use correct array key for recorevery times in my account
-Remove wrong variable set on a test in HolidayHelper::HumanReadableDuration
 Fix wrong SQL queries on the departure date in ajax.menudiv.php
 
 *** Version 19.10.00       (2019-10-31)   ***
