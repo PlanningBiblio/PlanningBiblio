@@ -52,11 +52,11 @@ n&eacute;cessaires &agrave; la cr&eacute;ation de la base de donn&eacute;es.
 <tr><td>Mot de passe administrateur</td>
 <td><input type='password' name='adminpass' class='ui-widget-content ui-corner-all' /></td></tr>
 <tr><td>Nom de la base de donnée à utiliser<br/>(sera cr&eacute;&eacute;e si n&apos;existe pas)</td>
-<td><input type='text' name='dbname' value='planningBiblio' class='ui-widget-content ui-corner-all' /></td></tr>
+<td><input type='text' name='dbname' value='planningbiblio' class='ui-widget-content ui-corner-all' /></td></tr>
 <tr><td>Préfix des tables</td>
 <td><input type='text' name='dbprefix' value='' class='ui-widget-content ui-corner-all' /></td></tr>
 <tr><td>Nom d'utilisateur</td>
-<td><input type='text' name='dbuser' value='planningBiblio' class='ui-widget-content ui-corner-all' /></td></tr>
+<td><input type='text' name='dbuser' value='planningbiblio' class='ui-widget-content ui-corner-all' /></td></tr>
 <tr><td>Mot de passe</td>
 <td><input type='text' name='dbpass' value='<?php echo $password; ?>' class='ui-widget-content ui-corner-all' /></td></tr>
 <tr><td>Supprimer la base si elle existe ?</td>

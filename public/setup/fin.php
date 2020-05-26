@@ -26,6 +26,7 @@ if (!file_exists(__DIR__ . '/../../.env.local')) {
     echo "Veuillez créer le fichier <b>.env.local</b> dans le dossier <b>$path</b> avec les informations suivantes.<br/><br/>\n";
     echo "<p style='text-align:left;margin-bottom: 30px;'>\n";
     foreach ($_SESSION['env_local_data'] as $line) {
+        $line = str_replace("\n", "<br/>", $line);
         echo $line . "<br/>\n";
     }
     echo "</p>\n";

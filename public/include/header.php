@@ -1,13 +1,10 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : include/header.php
-Création : mai 2011
-Dernière modification : 19 juillet 2017
+@file public/include/header.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -36,7 +33,7 @@ if (!file_exists("themes/$theme/favicon.png")) {
 }
 
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 <title>Planning</title>

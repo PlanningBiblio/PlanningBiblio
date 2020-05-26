@@ -55,7 +55,7 @@ foreach (file($env_file) as $line) {
         $line = "DATABASE_PREFIX=$dbprefix";
     }
     elseif (substr($line, 0, 10) == 'APP_SECRET') {
-        $line = "APP_SECRET=$app_secret";
+        $line = "APP_DEBUG=0\nAPP_SECRET=$app_secret";
     }
 
     $env_local_data[] = $line;
@@ -95,6 +95,7 @@ if ($file = fopen($env_local_file, "w\n")) {
     echo "Veuillez créer manuellement le fichier <b>.env.local</b> dans le dossier <b>$path</b> avec les informations suivantes.<br/><br/>\n";
     echo "<p style='text-align:left; color:black;'>\n";
     foreach ($env_local_data as $line) {
+        $line = str_replace("\n", "<br/>", $line);
         echo $line . "<br/>\n";
     }
     echo "</p>\n";
