@@ -146,7 +146,7 @@ fi
 
 # Set variables
 planningbdatas=data/planningb_1911_utf8.sql.gz
-planningbsecret=$(hexdump -n 16 -e '4/4 "%08X" 1 "\n"' /dev/random)
+planningbsecret=$(head /dev/urandom|tr -dc "a-f0-9"|fold -w 32|head -n 1)
 
 # Download composer
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
