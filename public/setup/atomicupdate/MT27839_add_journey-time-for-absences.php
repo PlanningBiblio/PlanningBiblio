@@ -1,0 +1,2 @@
+<?php
+$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('Journey-time-for-absences', 'text', '0', 'Time it takes an agent to travel between an absence and a job (minutes)', 'Planning', 22);";
