@@ -49,6 +49,7 @@ $absences_non_validees = array(0);
 $agents_qualif=array(0);
 $tab_deja_place=array(0);
 $journey = array();
+$absences_journey = array();
 $sr_init=null;
 $exclusion = array();
 $motifExclusion = array();
@@ -225,6 +226,20 @@ if ($bloquant=='1') {
                 $journey[] = $elem['perso_id'];
             }
         }
+    }
+}
+
+if ($config['Journey-time-for-absences'] > 0) {
+    $j_time = $config['Journey-time-for-absences'];
+    $start_with_journey = date('Y-m-d H:i:s', strtotime("-$j_time minutes", strtotime($debutSQL)));
+    $end_with_journey = date('Y-m-d H:i:s', strtotime("+$j_time minutes", strtotime($finSQL)));
+
+    $a=new absences();
+    $a->fetch(null, null, $start_with_journey, $end_with_journey, null);
+    $absences=$a->elements;
+
+    foreach ($absences as $absence) {
+        $absences_journey[] = $absence['perso_id'];
     }
 }
 
@@ -610,7 +625,7 @@ if (!$config['ClasseParService'] and !$cellule_grise) {
     $p=new planning();
     $p->site=$site;
     $p->CSRFToken = $CSRFToken;
-    $p->menudivAfficheAgents($poste, $agents_dispo, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey);
+    $p->menudivAfficheAgents($poste, $agents_dispo, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey);
     $tableaux[0].=$p->menudiv;
 }
 
@@ -710,7 +725,7 @@ if ($agents_tous and $config['ClasseParService']) {
     $p=new planning();
     $p->site=$site;
     $p->CSRFToken = $CSRFToken;
-    $p->menudivAfficheAgents($poste, $agents_tous, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey);
+    $p->menudivAfficheAgents($poste, $agents_tous, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey);
     $tableaux[1].=$p->menudiv;
 }
 
@@ -720,7 +735,7 @@ if ($autres_agents and !$config['ClasseParService'] and $config['agentsIndispo']
     $p=new planning();
     $p->site=$site;
     $p->CSRFToken = $CSRFToken;
-    $p->menudivAfficheAgents($poste, $autres_agents, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey);
+    $p->menudivAfficheAgents($poste, $autres_agents, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey);
     $tableaux[1].=$p->menudiv;
 }
 

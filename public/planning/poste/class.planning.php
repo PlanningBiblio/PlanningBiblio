@@ -108,12 +108,13 @@ class planning
     }
 
     // Affiche la liste des agents dans le menudiv
-    public function menudivAfficheAgents($poste, $agents, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey)
+    public function menudivAfficheAgents($poste, $agents, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey)
     {
         $msg_deja_place="&nbsp;<span class='red bold' title='L&apos;agent est d&eacute;j&agrave; plac&eacute; sur ce poste dans la journ&eacute;e'>(DP)</span>";
         $msg_deuxSP="&nbsp;<span class='red bold' title='2 plages de service public cons&eacute;cutives'>(2 SP)</span>";
         $msg_SR="&nbsp;<span class='red bold' title='Sans Repas, l&apos;agent n&apos; aucun cr&eacute;neau horaire pour prendre son repas'>(SR)</span>";
         $msg_T="&nbsp;<span class='red bold' title='Temps de trajet insuffisant pour rejoindre le poste'>(T)</span>";
+        $msg_A="&nbsp;<span class='red bold' title='Délai insuffisant entre une indisponibilité et une plage de service public'>(A)</span>";
         $config=$GLOBALS['config'];
         $dbprefix=$config['dbprefix'];
         $d=new datePl($date);
@@ -294,6 +295,10 @@ class planning
 
                 if (in_array($elem['id'], $journey)) {
                     $nom .= $msg_T;
+                }
+
+                if (in_array($elem['id'], $absences_journey)) {
+                    $nom .= $msg_A;
                 }
 
                 // Motifs d'indisponibilité
