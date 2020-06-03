@@ -199,8 +199,10 @@ if ($bloquant=='1') {
         $db = new db();
         $db->query($req);
         $autres_postes = array();
-        foreach ($db->result as $elem) {
-            $autres_postes[] = $elem['poste'];
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                $autres_postes[] = $elem['poste'];
+            }
         }
 
         $req="SELECT `{$dbprefix}pl_poste`.`perso_id` AS `perso_id` "
