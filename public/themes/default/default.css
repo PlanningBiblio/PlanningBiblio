@@ -2,15 +2,12 @@
 Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : themes/default/default.css
+@file public/themes/default/default.css
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Feuille de style principale du programme.
-
-Incluse dans les fichiers include/header.php et setup/header.php
 */
 
 body,a,input,select,textarea,button {
@@ -712,6 +709,19 @@ div#tabsemaine1{
   white-space:nowrap;
   font-style: italic;
   font-size: 0.95em;
+}
+
+.menuTrigger {
+  position: relative;
+}
+
+.arrow-right {
+  background:url("images/arrow-right-16.png") no-repeat center;
+  z-index:7;
+  display: none;
+  position:absolute;
+  right: -15px;
+  top: calc(50% - 8px);
 }
 
 /* Configuration des tableaux */
