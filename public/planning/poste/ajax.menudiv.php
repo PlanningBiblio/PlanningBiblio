@@ -184,6 +184,12 @@ if ($bloquant=='1') {
                 }
             }
         }
+    }
+
+    if ($config['Journey-time-between-floors'] > 0) {
+        $j_time = $config['Journey-time-between-floors'];
+        $start_with_journey = date('H:i:s', strtotime("-$j_time minutes", strtotime($debutSQL)));
+        $end_with_journey = date('H:i:s', strtotime("+$j_time minutes", strtotime($finSQL)));
 
         $req = "SELECT `tableau` FROM `{$dbprefix}pl_poste_tab_affect` WHERE `date` = '$dateSQL' AND `site` = $site";
         $db = new db();
@@ -219,7 +225,6 @@ if ($bloquant=='1') {
                 $journey[] = $elem['perso_id'];
             }
         }
-
     }
 }
 
