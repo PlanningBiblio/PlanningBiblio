@@ -127,6 +127,7 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
         $cellule.="<div id='cellule{$GLOBALS['idCellule']}_$i' class='cellDiv {$classe[$i]} pl-cellule-perso-{$resultats[$i]['perso_id']}' data-perso-id='{$resultats[$i]['perso_id']}'>{$resultats[$i]['text']}</div>";
     }
 
+    $cellule .= '<a class="pl-icon arrow-right" href="#"></a>';
     $cellule.="</td>\n";
     return $cellule;
 }
