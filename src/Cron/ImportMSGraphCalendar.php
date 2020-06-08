@@ -6,6 +6,7 @@ use App\PlanningBiblio\MSGraphClient;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\LockableTrait;
 
@@ -17,6 +18,7 @@ class ImportMSGraphCalendar extends Command {
 		$this->setName('PlanningBiblio:importMSGraphCalendar');
 		$this->setDescription("Import a calendar from Microsoft Graph API");
 		$this->setHelp("Import a calendar from Microsoft Graph API");
+        $this->addOption('full', null, InputOption::VALUE_OPTIONAL, 'Performs a full import', false);
 	}
 
 	public function execute (InputInterface $input, OutputInterface $output) {
@@ -39,7 +41,7 @@ class ImportMSGraphCalendar extends Command {
         $container = $kernel->getContainer();
         $em = $container->get('doctrine')->getManager();
 
-        $graph_client = new MSGraphClient($em, $tenantid, $clientid, $clientsecret);
+        $graph_client = new MSGraphClient($em, $tenantid, $clientid, $clientsecret, $input->getOption('full'));
         $graph_client->retrieveEvents();
 
         $this->release();

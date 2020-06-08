@@ -17,12 +17,15 @@ class MSGraphClient
 
     private CONST BASE_URL = 'https://graph.microsoft.com/v1.0';
     private CONST CAL_NAME = 'PlanningBiblio-Absences-';
+    // Start year for full scan
+    private CONST START_YEAR = '2000';
 
     private $absences;
     private $calendarUtils;
     private $csrftoken;
     private $dbprefix;
     private $entityManager;
+    private $full;
     private $graphUsers;
     private $incomingEvents;
     private $localEvents;
@@ -31,7 +34,7 @@ class MSGraphClient
     private $oauth;
     private $reason_name;
 
-    public function __construct($entityManager, $tenantid, $clientid, $clientsecret)
+    public function __construct($entityManager, $tenantid, $clientid, $clientsecret, $full)
     {
         $tokenURL = "https://login.microsoftonline.com/$tenantid/oauth2/v2.0/token";
         $authURL = "https://login.microsoftonline.com/$tenantid/oauth2/v2.0/authorize";
@@ -47,10 +50,12 @@ class MSGraphClient
         $this->reason_name = $_ENV['MS_GRAPH_REASON_NAME'] ?? 'Outlook';
         $this->login_suffix = $_ENV['MS_GRAPH_LOGIN_SUFFIX'] ?? null;
         $this->csrftoken = CSRFToken();
+        $this->full = $full;
     }
 
     public function retrieveEvents() {
         $this->log("Start absences import from MS Graph Calendars");
+        $this->log("full scan: $this->full");
         $this->getIncomingEvents();
         if (!$this->incomingEvents) {
             $this->log("No suitable users found for import");
@@ -67,15 +72,37 @@ class MSGraphClient
         $this->graphUsers = array();
         $users = $this->entityManager->getRepository(Agent::class)->findBy(['supprime' => 0]);
         foreach ($users as $user) {
-            $response = $this->isGraphUser($user);
-            if ($response) {
+            if ($this->isGraphUser($user)) {
                 array_push($this->graphUsers, $user->id());
-                foreach ($response->body->value as $event) {
-                    $this->incomingEvents[$event->iCalUId]['plb_id'] = $user->id();
-                    $this->incomingEvents[$event->iCalUId]['last_modified'] = $event->lastModifiedDateTime;
-                    $this->incomingEvents[$event->iCalUId]['event'] = $event;
+                $currentYear = date("Y");
+                if ($this->full) {
+                    $yearCount = 0;
+                    while (self::START_YEAR + $yearCount <= $currentYear) {
+                        $from = (self::START_YEAR + $yearCount) . "-01-01";
+                        $to = (self::START_YEAR + $yearCount) . "-12-31";
+                        $this->log("Getting events from $from to $to for user ". $user->login());
+                        $response = $this->getCalendarView($user, $from, $to);
+                        $this->addToIncomingEvents($user, $response);
+                        $yearCount++;
+                    }
+                } else {
+                    $from = date("Y-m-d");
+                    $to = date("Y-m-d", strtotime($from. ' + 365 days'));
+                    $this->log("Getting events from $from to $to for user ". $user->login());
+                    $response = $this->getCalendarView($user, $from, $to);
+                    $this->addToIncomingEvents($user, $response);
                 }
             }
+        }
+    }
+
+    private function addToIncomingEvents($user, $response) {
+        #TODO: Add pagination (see @odata.nextLink)
+        foreach ($response->body->value as $event) {
+            $this->incomingEvents[$event->iCalUId]['plb_id'] = $user->id();
+            $this->incomingEvents[$event->iCalUId]['plb_login'] = $user->login();
+            $this->incomingEvents[$event->iCalUId]['last_modified'] = $event->lastModifiedDateTime;
+            $this->incomingEvents[$event->iCalUId]['event'] = $event;
         }
     }
 
@@ -91,11 +118,23 @@ class MSGraphClient
         }
     }
 
-    private function isGraphUser($user) {
+    private function getCalendarView($user, $from, $to) {
         $login = $user->login();
-        $response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar/events/?$top=1000');
+        $response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar/calendarView?startDateTime=' . $from . 'T00:00:00.0000000&endDateTime=' . $to . 'T00:00:00.0000000&$top=1000');
         if ($response->code == 200) {
             return $response;
+        } else {
+            $this->log("Response: $response->code");
+            $this->log($response->raw_body);
+        }
+        return false;
+    }
+
+    private function isGraphUser($user) {
+        $login = $user->login();
+        $response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar');
+        if ($response->code == 200) {
+            return true;
         }
         return false;
     }
@@ -152,55 +191,53 @@ class MSGraphClient
         // The SQL calls in this function should be replaced by doctrine calls when available
         foreach ($this->incomingEvents as $eventArray) {
             $incomingEvent = $eventArray['event'];
+            $rrule = null;
+            if ($incomingEvent->type == "occurrence") {
+                $response = $this->sendGet("/users/" . $eventArray['plb_login'] . $this->login_suffix . '/calendar/events/' . $incomingEvent->seriesMasterId);
+                $rrule = $this->msCalendarUtils->recurrenceToRRule($response->body->recurrence);
+            }
             if (array_key_exists($incomingEvent->iCalUId, $this->localEvents)) {
                 // Event modification
                 $localEvent = $this->localEvents[$incomingEvent->iCalUId];
                 if ($incomingEvent->lastModifiedDateTime != $localEvent['last_modified']) {
-                    if ($incomingEvent->recurrence) {
-                        $this->log("updating user " . $eventArray['plb_id'] . " recurring event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
-                        $this->addOrUpdateRecurrentEvent($incomingEvent, $eventArray['plb_id']);
-                    } else {
-                        $this->log("updating user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
-                        $query = "UPDATE " . $this->dbprefix . "absences SET debut=:debut, fin=:fin, motif=:motif, commentaires=:commentaires, last_modified=:last_modified WHERE external_ical_key=:external_ical_key LIMIT 1";
-                        $statement = $this->entityManager->getConnection()->prepare($query);
-                        $statement->execute(array(
-                            'debut'             => $this->formatDate($incomingEvent->start),
-                            'fin'               => $this->formatDate($incomingEvent->end),
-                            'motif'             => $this->reason_name,
-                            'commentaires'      => $incomingEvent->subject,
-                            'last_modified'     => $incomingEvent->lastModifiedDateTime,
-                            'external_ical_key' => $incomingEvent->iCalUId
-                        ));
-                    }
+                    $this->log("updating user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
+                    $query = "UPDATE " . $this->dbprefix . "absences SET debut=:debut, fin=:fin, motif=:motif, commentaires=:commentaires, last_modified=:last_modified, rrule=:rrule WHERE external_ical_key=:external_ical_key LIMIT 1";
+                    $statement = $this->entityManager->getConnection()->prepare($query);
+                    $statement->execute(array(
+                        'debut'             => $this->formatDate($incomingEvent->start),
+                        'fin'               => $this->formatDate($incomingEvent->end),
+                        'motif'             => $this->reason_name,
+                        'commentaires'      => $incomingEvent->subject,
+                        'last_modified'     => $incomingEvent->lastModifiedDateTime,
+                        'external_ical_key' => $incomingEvent->iCalUId,
+                        'rrule'             => $rrule
+                    ));
                 }
             } else {
                 // Event insertion
-                if ($incomingEvent->recurrence) {
-                    $this->log("inserting user " . $eventArray['plb_id'] . " recurring event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
-                    $this->addOrUpdateRecurrentEvent($incomingEvent, $eventArray['plb_id'], true);
-                } else {
-                    $this->log("inserting user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
-                    $query = "INSERT INTO " . $this->dbprefix . "absences ";
-                    $query .= "( perso_id,  debut,  fin,  motif, motif_autre, commentaires, valide, etat, demande, cal_name,  ical_key, external_ical_key, last_modified) VALUES ";
-                    $query .= "(:perso_id, :debut, :fin, :motif, '',         :commentaires, 9999,   '',   NOW(),  :cal_name, :ical_key, :external_ical_key, :last_modified)";
-                    $statement = $this->entityManager->getConnection()->prepare($query);
-                    $statement->execute(array(
-                        'perso_id'      => $eventArray['plb_id'],
-                        'debut'         => $this->formatDate($incomingEvent->start),
-                        'fin'           => $this->formatDate($incomingEvent->end),
-                        'motif'         => $this->reason_name,
-                        'commentaires'  => $incomingEvent->subject,
-                        'cal_name'      => self::CAL_NAME . $eventArray['plb_id'] . '-' . md5($incomingEvent->iCalUId),
-                        'ical_key'      => $incomingEvent->iCalUId,
-                        'external_ical_key'      => $incomingEvent->iCalUId,
-                        'last_modified' => $incomingEvent->lastModifiedDateTime
-                    ));
-                }
+                $this->log("inserting user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
+                $query = "INSERT INTO " . $this->dbprefix . "absences ";
+                $query .= "( perso_id,  debut,  fin,  motif, motif_autre, commentaires, valide, etat, demande, cal_name,  ical_key, external_ical_key, last_modified, rrule) VALUES ";
+                $query .= "(:perso_id, :debut, :fin, :motif, '',         :commentaires, 9999,   '',   NOW(),  :cal_name, :ical_key, :external_ical_key, :last_modified, :rrule)";
+                $statement = $this->entityManager->getConnection()->prepare($query);
+                $statement->execute(array(
+                    'perso_id'      => $eventArray['plb_id'],
+                    'debut'         => $this->formatDate($incomingEvent->start),
+                    'fin'           => $this->formatDate($incomingEvent->end),
+                    'motif'         => $this->reason_name,
+                    'commentaires'  => $incomingEvent->subject,
+                    'cal_name'      => self::CAL_NAME . $eventArray['plb_id'] . '-' . md5($incomingEvent->iCalUId),
+                    'ical_key'      => $incomingEvent->iCalUId,
+                    'external_ical_key' => $incomingEvent->iCalUId,
+                    'last_modified' => $incomingEvent->lastModifiedDateTime,
+                    'rrule'         => $rrule
+                ));
             }
         }
     }
 
     private function sendGet($request) {
+        echo "$request\n";
         $token = $this->oauth->getToken();
         $headers['Authorization'] = "Bearer $token";
         $response = \Unirest\Request::get(self::BASE_URL . $request, $headers);
