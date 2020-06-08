@@ -572,6 +572,17 @@ div#tabsemaine1{
   font-size:12pt;
   font-weight:bold;
 }
+.tr_horaires {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+  z-index: 1;
+}
+.sticky-col {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 0;
+}
 
 /* tr_espace : permet d'ajouter un espace entre les tableaux : ex: display:block; height:20px; */
 .tr_espace{

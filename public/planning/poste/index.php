@@ -621,7 +621,7 @@ if (!$verrou and !$autorisationN1) {
 
                 // Affichage de la ligne
                 echo "<tr class='pl-line tableau$j $classTR {$tab['classe']} $hiddenTable $emptyLine'>\n";
-                echo "<td class='td_postes $classTD'>{$postes[$ligne['poste']]['nom']}";
+                echo "<td class='td_postes sticky-col $classTD'>{$postes[$ligne['poste']]['nom']}";
                 // Affichage ou non des étages
                 if ($config['Affichage-etages'] and $postes[$ligne['poste']]['etage']) {
                     echo " ({$postes[$ligne['poste']]['etage']})";
