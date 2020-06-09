@@ -116,7 +116,15 @@ class MSGraphClient
 
     private function getLocalEvents() {
         $usersSQLIds = join(',', $this->graphUsers);
-        $query = "SELECT * FROM " . $this->dbprefix . "absences WHERE motif='" . $this->reason_name . "' AND perso_id IN($usersSQLIds)";
+
+        if ($this->full) {
+            $from = self::START_YEAR . "-01-01";
+            $to = date("Y") . "-12-31";
+        } else {
+            $from = date("Y-m-d");
+            $to = date("Y-m-d", strtotime($from. ' + 365 days'));
+        }
+        $query = "SELECT * FROM " . $this->dbprefix . "absences WHERE motif='" . $this->reason_name . "' AND perso_id IN($usersSQLIds) AND debut >= '" . $from . "' AND debut <= '" . $to . "'";
         $statement = $this->entityManager->getConnection()->prepare($query);
         $statement->execute();
         $results = $statement->fetchAll();
