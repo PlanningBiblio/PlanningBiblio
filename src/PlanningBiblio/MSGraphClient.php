@@ -104,13 +104,25 @@ class MSGraphClient
         }
     }
 
-    private function addToIncomingEvents($user, $response) {
-        #TODO: Add pagination (see @odata.nextLink)
+    private function addToIncomingEvents($user, $response, $nextLink = null) {
+        if ($nextLink) {
+            $response = $this->sendGet($nextLink, true);
+            if ($response->code != 200) {
+                $this->log("Unable to get events, http status: " . $response->code);
+                return;
+            }
+        }
+
         foreach ($response->body->value as $event) {
             $this->incomingEvents[$event->iCalUId]['plb_id'] = $user->id();
             $this->incomingEvents[$event->iCalUId]['plb_login'] = $user->login();
             $this->incomingEvents[$event->iCalUId]['last_modified'] = $event->lastModifiedDateTime;
             $this->incomingEvents[$event->iCalUId]['event'] = $event;
+        }
+
+        if (property_exists($response->body, '@odata.nextLink')) {
+            $this->log("Paginate " . $response->body->{'@odata.nextLink'});
+            $this->addToIncomingEvents($user, $response, $response->body->{'@odata.nextLink'});
         }
     }
 
@@ -136,7 +148,7 @@ class MSGraphClient
 
     private function getCalendarView($user, $from, $to) {
         $login = $user->login();
-        $response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar/calendarView?startDateTime=' . $from . 'T00:00:00.0000000&endDateTime=' . $to . 'T00:00:00.0000000&$top=1000');
+        $response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar/calendarView?startDateTime=' . $from . 'T00:00:00.0000000&endDateTime=' . $to . 'T00:00:00.0000000&$top=200');
         if ($response->code == 200) {
             return $response;
         } else {
@@ -266,11 +278,11 @@ class MSGraphClient
         }
     }
 
-    private function sendGet($request) {
+    private function sendGet($request, $absolute = false) {
         echo "$request\n";
         $token = $this->oauth->getToken();
         $headers['Authorization'] = "Bearer $token";
-        $response = \Unirest\Request::get(self::BASE_URL . $request, $headers);
+        $response = \Unirest\Request::get($absolute ? $request : self::BASE_URL . $request, $headers);
         return $response;
     }
 
