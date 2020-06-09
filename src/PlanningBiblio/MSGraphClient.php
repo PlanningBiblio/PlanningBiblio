@@ -192,15 +192,15 @@ class MSGraphClient
         foreach ($this->incomingEvents as $eventArray) {
             $incomingEvent = $eventArray['event'];
             $rrule = null;
-            if ($incomingEvent->type == "occurrence") {
-                $response = $this->sendGet("/users/" . $eventArray['plb_login'] . $this->login_suffix . '/calendar/events/' . $incomingEvent->seriesMasterId);
-                $rrule = $this->msCalendarUtils->recurrenceToRRule($response->body->recurrence);
-            }
             if (array_key_exists($incomingEvent->iCalUId, $this->localEvents)) {
                 // Event modification
                 $localEvent = $this->localEvents[$incomingEvent->iCalUId];
                 if ($incomingEvent->lastModifiedDateTime != $localEvent['last_modified']) {
                     $this->log("updating user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
+                    if ($incomingEvent->type == "occurrence") {
+                        $response = $this->sendGet("/users/" . $eventArray['plb_login'] . $this->login_suffix . '/calendar/events/' . $incomingEvent->seriesMasterId);
+                        $rrule = $this->msCalendarUtils->recurrenceToRRule($response->body->recurrence);
+                    }
                     $query = "UPDATE " . $this->dbprefix . "absences SET debut=:debut, fin=:fin, motif=:motif, commentaires=:commentaires, last_modified=:last_modified, rrule=:rrule WHERE external_ical_key=:external_ical_key LIMIT 1";
                     $statement = $this->entityManager->getConnection()->prepare($query);
                     $statement->execute(array(
@@ -216,6 +216,10 @@ class MSGraphClient
             } else {
                 // Event insertion
                 $this->log("inserting user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
+                if ($incomingEvent->type == "occurrence") {
+                    $response = $this->sendGet("/users/" . $eventArray['plb_login'] . $this->login_suffix . '/calendar/events/' . $incomingEvent->seriesMasterId);
+                    $rrule = $this->msCalendarUtils->recurrenceToRRule($response->body->recurrence);
+                }
                 $query = "INSERT INTO " . $this->dbprefix . "absences ";
                 $query .= "( perso_id,  debut,  fin,  motif, motif_autre, commentaires, valide, etat, demande, cal_name,  ical_key, external_ical_key, last_modified, rrule) VALUES ";
                 $query .= "(:perso_id, :debut, :fin, :motif, '',         :commentaires, 9999,   '',   NOW(),  :cal_name, :ical_key, :external_ical_key, :last_modified, :rrule)";
