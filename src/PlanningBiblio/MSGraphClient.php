@@ -82,7 +82,11 @@ class MSGraphClient
                         $to = (self::START_YEAR + $yearCount) . "-12-31";
                         $this->log("Getting events from $from to $to for user ". $user->login());
                         $response = $this->getCalendarView($user, $from, $to);
-                        $this->addToIncomingEvents($user, $response);
+                        if ($response->code == 200) {
+                            $this->addToIncomingEvents($user, $response);
+                        } else {
+                            $this->log("Unable to get events, http status: " . $response->code);
+                        }
                         $yearCount++;
                     }
                 } else {
@@ -90,7 +94,11 @@ class MSGraphClient
                     $to = date("Y-m-d", strtotime($from. ' + 365 days'));
                     $this->log("Getting events from $from to $to for user ". $user->login());
                     $response = $this->getCalendarView($user, $from, $to);
-                    $this->addToIncomingEvents($user, $response);
+                    if ($response->code == 200) {
+                        $this->addToIncomingEvents($user, $response);
+                    } else {
+                        $this->log("Unable to get events, http status: " . $response->code);
+                    }
                 }
             }
         }
@@ -192,6 +200,16 @@ class MSGraphClient
         foreach ($this->incomingEvents as $eventArray) {
             $incomingEvent = $eventArray['event'];
             $rrule = null;
+
+            if (!$incomingEvent->iCalUId) {
+                $this->log("Cannot process event: ical_key is null");
+                continue;
+            }
+
+            if (!$incomingEvent->subject) {
+                $incomingEvent->subject = "[Empty]";
+            }
+
             if (array_key_exists($incomingEvent->iCalUId, $this->localEvents)) {
                 // Event modification
                 $localEvent = $this->localEvents[$incomingEvent->iCalUId];
