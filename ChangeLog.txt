@@ -21,6 +21,7 @@ Shows Agendas/Synchro tab on agent's pages when Hamac-csv param is set
 Disallow changing passwords in demo mode
 Allow selection of days in other months on datepickers
 Add a script to launch setup from CLI (for a new installation: run install.sh)
+Update PHPMailer from 6.0.5 to 6.1.6
 
 -Fixes
 Add raw filter on agent templates for fields services, right and skills
