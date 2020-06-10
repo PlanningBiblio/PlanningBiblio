@@ -189,32 +189,6 @@ class MSGraphClient
         }
     }
 
-    private function addOrUpdateRecurrentEvent($event, $perso_id, $add = false) {
-        $rrule = $this->msCalendarUtils->recurrenceToRRule($event->recurrence);
-        $a = new \absences();
-        $a->CSRFToken = $this->csrftoken;
-        $a->cal_name = self::CAL_NAME . $perso_id . '-' . md5($event->iCalUId);
-        $a->perso_id = $perso_id;
-        $a->commentaires = $event->subject;
-        $a->debut = $this->formatDate($event->start, "d/m/Y");
-        // $dtstamp = gmdate('Ymd\THis\Z');
-        $a->fin = $this->formatDate($event->end, "d/m/Y");
-        $a->hre_debut = $this->formatDate($event->start, "H:i:s");
-        $a->hre_fin = $this->formatDate($event->end, "H:i:s");
-        $a->motif = $this->reason_name;
-        $a->rrule = $rrule;
-        $a->valide_n2 = 1;
-        $a->last_modified = $event->lastModifiedDateTime;
-        $a->uid = substr($event->iCalUId, 0, 50);
-        $a->external_ical_key = $event->iCalUId;
-        $a->perso_ids = array($perso_id);
-        if ($add) {
-            $a->ics_add_event();
-        } else {
-            $a->ics_update_event();
-        }
-}
-
     private function insertOrUpdateEvents() {
         // The SQL calls in this function should be replaced by doctrine calls when available
         foreach ($this->incomingEvents as $eventArray) {
