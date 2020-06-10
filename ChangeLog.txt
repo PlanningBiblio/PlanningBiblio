@@ -6,6 +6,7 @@ Add a cron script to purge the log table: planningBibio:PurgeLogTable
 Check journey times between site / areas
 Having "Full day" checked by default in absences is configurable
 Check journey times between absences and jobs
+Enable web profiler on dev environment
 
 *** Version 20.04.00       (2020-06-15)   ***
 - Enhancements
