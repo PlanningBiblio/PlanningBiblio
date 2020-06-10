@@ -20,7 +20,7 @@ if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
 ?>
 </div> <!-- content or planningPoste -->
 <div class='footer'>
-Planning Biblio (<?php echo $displayed_version; ?>) -
+Planning Biblio (<?php echo $GLOBALS['displayed_version']; ?>) -
 <a href='http://www.planningbiblio.fr' target='_blank' style='font-size:9pt;'>www.planningbiblio.fr</a>
 </div>
 </body>
