@@ -1,4 +1,6 @@
 *** Unreleased ***
+
+*** Version 20.04.00       (2020-06-15)   ***
 - Enhancements
 Include symfony framework
 Move absences pages into a symfony controller
