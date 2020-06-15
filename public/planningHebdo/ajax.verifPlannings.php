@@ -45,7 +45,9 @@ if ($id) {
 
 $filter = "perso_id='$perso_id' AND `debut`<='$fin' AND `fin`>='$debut'";
 if ($exception) {
-    $filter .= " AND exception = $exception";
+    $filter .= " AND id <> $exception";
+} else {
+    $filter .= " AND exception <> $id";
 }
 
 $db=new db();
