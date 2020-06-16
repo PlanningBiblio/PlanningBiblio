@@ -484,6 +484,7 @@ $sql[]="CREATE TABLE `{$dbprefix}planning_hebdo` (
   `actuel` INT(1) NOT NULL DEFAULT '0', 
   `remplace` INT(11) NOT NULL DEFAULT '0',
   `cle` VARCHAR( 100 ) NULL DEFAULT NULL,
+  `exception` INT(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `cle` (`cle`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
