@@ -67,6 +67,14 @@ class MSGraphClient
         $this->log("End absences import from MS Graph Calendars");
     }
 
+    private function getDateRange() {
+        $range = array();
+        $today = date("Y-m-d");
+        $range['from'] = date("Y-m-d", strtotime($today . '- 15 days'));
+        $range['to'] = date("Y-m-d", strtotime($today . ' + 365 days'));
+        return $range;
+    }
+
     private function getIncomingEvents() {
         $this->incomingEvents = array();
         $this->graphUsers = array();
@@ -90,8 +98,9 @@ class MSGraphClient
                         $yearCount++;
                     }
                 } else {
-                    $from = date("Y-m-d");
-                    $to = date("Y-m-d", strtotime($from. ' + 365 days'));
+                    $range = $this->getDateRange();
+                    $from = $range['from'];
+                    $to = $range['to'];
                     $this->log("Getting events from $from to $to for user ". $user->login());
                     $response = $this->getCalendarView($user, $from, $to);
                     if ($response->code == 200) {
@@ -132,8 +141,9 @@ class MSGraphClient
             $from = self::START_YEAR . "-01-01";
             $to = date("Y") . "-12-31";
         } else {
-            $from = date("Y-m-d");
-            $to = date("Y-m-d", strtotime($from. ' + 365 days'));
+            $range = $this->getDateRange();
+            $from = $range['from'];
+            $to = $range['to'];
         }
         $query = "SELECT * FROM " . $this->dbprefix . "absences WHERE motif='" . $this->reason_name . "' AND perso_id IN($usersSQLIds) AND debut >= '" . $from . "' AND debut <= '" . $to . "'";
         $statement = $this->entityManager->getConnection()->prepare($query);
