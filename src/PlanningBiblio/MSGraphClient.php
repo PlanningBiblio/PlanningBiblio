@@ -34,6 +34,8 @@ class MSGraphClient
     private $oauth;
     private $reason_name;
 
+    #TODO: Remove external_ical_key from code and db, not needed anymore
+
     public function __construct($entityManager, $tenantid, $clientid, $clientsecret, $full)
     {
         $tokenURL = "https://login.microsoftonline.com/$tenantid/oauth2/v2.0/token";
@@ -112,12 +114,11 @@ class MSGraphClient
                 return;
             }
         }
-
         foreach ($response->body->value as $event) {
-            $this->incomingEvents[$event->iCalUId]['plb_id'] = $user->id();
-            $this->incomingEvents[$event->iCalUId]['plb_login'] = $user->login();
-            $this->incomingEvents[$event->iCalUId]['last_modified'] = $event->lastModifiedDateTime;
-            $this->incomingEvents[$event->iCalUId]['event'] = $event;
+            $this->incomingEvents[$user->id() . $event->iCalUId]['plb_id'] = $user->id();
+            $this->incomingEvents[$user->id() . $event->iCalUId]['plb_login'] = $user->login();
+            $this->incomingEvents[$user->id() . $event->iCalUId]['last_modified'] = $event->lastModifiedDateTime;
+            $this->incomingEvents[$user->id() . $event->iCalUId]['event'] = $event;
         }
 
         if (property_exists($response->body, '@odata.nextLink')) {
@@ -142,7 +143,7 @@ class MSGraphClient
         $results = $statement->fetchAll();
         $this->localEvents = array();
         foreach ($results as $localEvent) {
-            $this->localEvents[$localEvent['external_ical_key']] = $localEvent;
+            $this->localEvents[$localEvent['perso_id'] . $localEvent['external_ical_key']] = $localEvent;
         }
     }
 
@@ -204,9 +205,9 @@ class MSGraphClient
                 $incomingEvent->subject = "[Empty]";
             }
 
-            if (array_key_exists($incomingEvent->iCalUId, $this->localEvents)) {
+            if (array_key_exists($eventArray['plb_id'] . $incomingEvent->iCalUId, $this->localEvents)) {
                 // Event modification
-                $localEvent = $this->localEvents[$incomingEvent->iCalUId];
+                $localEvent = $this->localEvents[$eventArray['plb_id'] . $incomingEvent->iCalUId];
                 if ($incomingEvent->lastModifiedDateTime != $localEvent['last_modified']) {
                     $this->log("updating user " . $eventArray['plb_id'] . " event '" . $incomingEvent->subject . "' " . $incomingEvent->iCalUId);
                     if ($incomingEvent->type == "occurrence") {
