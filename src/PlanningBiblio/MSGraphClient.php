@@ -34,8 +34,6 @@ class MSGraphClient
     private $oauth;
     private $reason_name;
 
-    #TODO: Remove external_ical_key from code and db, not needed anymore
-
     public function __construct($entityManager, $tenantid, $clientid, $clientsecret, $full)
     {
         $tokenURL = "https://login.microsoftonline.com/$tenantid/oauth2/v2.0/token";
@@ -143,7 +141,7 @@ class MSGraphClient
         $results = $statement->fetchAll();
         $this->localEvents = array();
         foreach ($results as $localEvent) {
-            $this->localEvents[$localEvent['perso_id'] . $localEvent['external_ical_key']] = $localEvent;
+            $this->localEvents[$localEvent['perso_id'] . $localEvent['ical_key']] = $localEvent;
         }
     }
 
@@ -214,7 +212,7 @@ class MSGraphClient
                         $response = $this->sendGet("/users/" . $eventArray['plb_login'] . $this->login_suffix . '/calendar/events/' . $incomingEvent->seriesMasterId);
                         $rrule = $this->msCalendarUtils->recurrenceToRRule($response->body->recurrence);
                     }
-                    $query = "UPDATE " . $this->dbprefix . "absences SET debut=:debut, fin=:fin, motif=:motif, commentaires=:commentaires, last_modified=:last_modified, rrule=:rrule WHERE external_ical_key=:external_ical_key LIMIT 1";
+                    $query = "UPDATE " . $this->dbprefix . "absences SET debut=:debut, fin=:fin, motif=:motif, commentaires=:commentaires, last_modified=:last_modified, rrule=:rrule WHERE ical_key=:ical_key LIMIT 1";
                     $statement = $this->entityManager->getConnection()->prepare($query);
                     $statement->execute(array(
                         'debut'             => $this->formatDate($incomingEvent->start),
@@ -222,7 +220,7 @@ class MSGraphClient
                         'motif'             => $this->reason_name,
                         'commentaires'      => $incomingEvent->subject,
                         'last_modified'     => $incomingEvent->lastModifiedDateTime,
-                        'external_ical_key' => $incomingEvent->iCalUId,
+                        'ical_key'          => $incomingEvent->iCalUId,
                         'rrule'             => $rrule
                     ));
                 }
@@ -234,8 +232,8 @@ class MSGraphClient
                     $rrule = $this->msCalendarUtils->recurrenceToRRule($response->body->recurrence);
                 }
                 $query = "INSERT INTO " . $this->dbprefix . "absences ";
-                $query .= "( perso_id,  debut,  fin,  motif, motif_autre, commentaires, valide, etat, demande, cal_name,  ical_key, external_ical_key, last_modified, rrule) VALUES ";
-                $query .= "(:perso_id, :debut, :fin, :motif, '',         :commentaires, 9999,   '',   NOW(),  :cal_name, :ical_key, :external_ical_key, :last_modified, :rrule)";
+                $query .= "( perso_id,  debut,  fin,  motif, motif_autre, commentaires, valide, etat, demande, cal_name,  ical_key, last_modified, rrule) VALUES ";
+                $query .= "(:perso_id, :debut, :fin, :motif, '',         :commentaires, 9999,   '',   NOW(),  :cal_name, :ical_key, :last_modified, :rrule)";
                 $statement = $this->entityManager->getConnection()->prepare($query);
                 $statement->execute(array(
                     'perso_id'      => $eventArray['plb_id'],
@@ -245,7 +243,6 @@ class MSGraphClient
                     'commentaires'  => $incomingEvent->subject,
                     'cal_name'      => self::CAL_NAME . $eventArray['plb_id'] . '-' . md5($incomingEvent->iCalUId),
                     'ical_key'      => $incomingEvent->iCalUId,
-                    'external_ical_key' => $incomingEvent->iCalUId,
                     'last_modified' => $incomingEvent->lastModifiedDateTime,
                     'rrule'         => $rrule
                 ));

@@ -289,8 +289,8 @@ class CJICS
         if (!empty($insert)) {
             $db=new dbh();
             $req = "INSERT INTO `{$GLOBALS['config']['dbprefix']}$table`
-                (`perso_id`, `debut`, `fin`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `motif`, `motif_autre`, `commentaires`, `groupe`, `cal_name`, `ical_key`, `uid`, `rrule`, `id_origin`, `external_ical_key`, `last_modified`)
-                VALUES (:perso_id, :debut, :fin, :demande, :valide, :validation, :valide_n1, :validation_n1, :motif, :motif_autre, :commentaires, :groupe, :cal_name, :ical_key, :uid, :rrule, :id_origin, :external_ical_key, :last_modified);";
+                (`perso_id`, `debut`, `fin`, `demande`, `valide`, `validation`, `valide_n1`, `validation_n1`, `motif`, `motif_autre`, `commentaires`, `groupe`, `cal_name`, `ical_key`, `uid`, `rrule`, `id_origin`, `last_modified`)
+                VALUES (:perso_id, :debut, :fin, :demande, :valide, :validation, :valide_n1, :validation_n1, :motif, :motif_autre, :commentaires, :groupe, :cal_name, :ical_key, :uid, :rrule, :id_origin, :last_modified);";
             $db->CSRFToken = $CSRFToken;
             $db->prepare($req);
 
@@ -382,12 +382,11 @@ class CJICS
                 }
 
                 $rrule = !empty($elem['RRULE']) ? $elem['RRULE'] : '';
-                $external_ical_key = !empty($elem['X-EXTERNAL-ICAL-KEY']) ? $elem['X-EXTERNAL-ICAL-KEY'] : null;
                 $last_modified = !empty($elem['X-LAST-MODIFIED-STRING']) ? $elem['X-LAST-MODIFIED-STRING'] : null;
                 // Préparation de l'insertion dans la base de données
                 $tab[] = array(":perso_id" => $perso_id, ":debut" => $debut, ":fin" => $fin, ":demande" => $demande, ":valide"=> $valide_n2, ":validation" => $validation_n2, ":valide_n1"=> $valide_n1, ":validation_n1" => $validation_n1,
                     ":motif" => $motif, ":motif_autre" => $motif_autre, ":commentaires" => $commentaires, ":groupe" => $groupe, ":cal_name" => $calName, ":ical_key" => $elem['key'], ":uid" => $elem['UID'], ":rrule" => $rrule, 
-                    ":id_origin" => $id_origin, ':external_ical_key' => $external_ical_key, ':last_modified' => $last_modified);
+                    ":id_origin" => $id_origin, ':last_modified' => $last_modified);
 
                 $nb++;
             }

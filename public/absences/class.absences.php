@@ -41,7 +41,6 @@ class absences
     public $CSRFToken=null;
     public $cal_name;
     public $commentaires=null;
-    public $external_ical_key=null;
     public $debut=null;
     public $dtstamp=null;
     public $edt=array();
@@ -1403,7 +1402,6 @@ class absences
 
         // On créé un événement ICS
         $ics_content .= "BEGIN:VEVENT\n";
-        $ics_content .= "X-EXTERNAL-ICAL-KEY:{$this->external_ical_key}\n";
         $ics_content .= "X-LAST-MODIFIED-STRING:{$this->last_modified}\n";
         $ics_content .= "UID:$uid\n";
         $ics_content .= "DTSTART;TZID=$tzid:$dtstart\n";
