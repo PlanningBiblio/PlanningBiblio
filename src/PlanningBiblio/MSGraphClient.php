@@ -178,22 +178,14 @@ class MSGraphClient
 
     private function deleteEvents() {
         // The SQL calls in this function should be replaced by doctrine calls when available
-        $query = "DELETE FROM " . $this->dbprefix . "absences WHERE ical_key=:ical_key LIMIT 1";
+        $query = "DELETE FROM " . $this->dbprefix . "absences WHERE ical_key=:ical_key AND perso_id=:perso_id";
         $statement = $this->entityManager->getConnection()->prepare($query);
         foreach ($this->localEvents as $ical_key => $localEvent) {
             if (!array_key_exists($ical_key, $this->incomingEvents)) {
-                if ($localEvent['uid']) {
-                    $this->log("deleting uid " . $localEvent['uid'] .  " user " . $localEvent['perso_id'] . " recurring event " . $localEvent['ical_key']);
-                    $a = new \absences();
-                    $a->CSRFToken = $this->csrftoken;
-                    $a->perso_id = $localEvent['perso_id'];
-                    $a->uid = $localEvent['uid'];
-                    $a->ics_delete_event();
-                } else {
-                    $this->log("deleting user " . $localEvent['perso_id'] . " event " . $localEvent['ical_key']);
-                    $statement->bindParam(':ical_key', $localEvent['ical_key']);
-                    $statement->execute();
-                }
+                $this->log("deleting user " . $localEvent['perso_id'] . " event " . $localEvent['ical_key']);
+                $statement->bindParam(':ical_key', $localEvent['ical_key']);
+                $statement->bindParam(':perso_id', $localEvent['perso_id']);
+                $statement->execute();
             }
         }
     }
