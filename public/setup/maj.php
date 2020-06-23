@@ -1915,6 +1915,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}acces` SET `page` = '/admin/template' WHERE `page` = 'planning/modeles/index.php';";
     $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `page` = 'planning/modeles/modif.php';";
     $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `page` = 'planning/modeles/valid.php';";
+    $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Planning - Mod&egrave;les', 301, 'Cr&eacute;ation / modification des plannings, utilisation et gestion des mod&egrave;les','/admin/statedweektemplate','Planning','110');";
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
