@@ -1,0 +1,48 @@
+{# admin/model/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type='text/JavaScript'>
+    function delete_template(id) {
+      if (confirm("Etes vous sûr de vouloir supprimer cet élément ?")) {
+        $.ajax({
+          url: '/model/' + id,
+          type: "DEL",
+          success: function(data) {
+            window.location.reload(false);
+          },
+          error: function() {
+            CJInfo("Une erreur est survenue lors de la suppression","error");
+          }
+        });
+      }
+    }
+  </script>
+{% endblock %}
+
+{% block page %}
+    <h3>Modèles de planning</h3>
+
+    {% if templates %}
+      <table id='tableModeles' class='CJDataTable' data-sort='[[1]]'>
+      <thead>
+        <tr>
+          <th class='dataTableNoSort'>&nbsp;</th>
+          <th>nom</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in templates %}
+          <tr>
+            <td>
+              <a href='{{ asset("/model/") }}{{ t.id }}'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>
+              <a href='javascript:delete_template({{ t.id }});'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>
+            </td>
+
+            <td>{{ t.nom }}</td>
+          </tr>
+        {% endfor %}
+    {% else %}
+    {% endif %}
+{% endblock %}
