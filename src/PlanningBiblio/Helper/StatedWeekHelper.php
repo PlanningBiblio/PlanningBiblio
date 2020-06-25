@@ -256,6 +256,7 @@ class StatedWeekHelper extends BaseHelper
                 $break = $this->fixed_breaktime;
             }
 
+            $today[4] = $this->config('statedweek_site_filter');
             $this->addDay($workingHours['temps'], $today, $day_index);
             $this->addDay($workingHours['breaktime'], $break, $day_index);
         }
@@ -302,6 +303,7 @@ class StatedWeekHelper extends BaseHelper
                 $today[1] = $this->columns[$time->column_id()]['to'];
             }
 
+            $today[4] = $this->config('statedweek_site_filter');
             $this->addDay($hours, $today, $day_index);
             $this->addDay($breaktimes, $break, $day_index);
         }
