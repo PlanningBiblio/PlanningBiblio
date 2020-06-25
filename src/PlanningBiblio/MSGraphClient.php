@@ -57,13 +57,9 @@ class MSGraphClient
         $this->log("Start absences import from MS Graph Calendars");
         $this->log("full scan: $this->full");
         $this->getIncomingEvents();
-        if (!$this->incomingEvents) {
-            $this->log("No suitable users found for import");
-        } else {
-            $this->getLocalEvents();
-            $this->deleteEvents();
-            $this->insertOrUpdateEvents();
-        }
+        $this->getLocalEvents();
+        $this->deleteEvents();
+        $this->insertOrUpdateEvents();
         $this->log("End absences import from MS Graph Calendars");
     }
 
@@ -122,10 +118,12 @@ class MSGraphClient
             }
         }
         foreach ($response->body->value as $event) {
-            $this->incomingEvents[$user->id() . $event->iCalUId]['plb_id'] = $user->id();
-            $this->incomingEvents[$user->id() . $event->iCalUId]['plb_login'] = $user->login();
-            $this->incomingEvents[$user->id() . $event->iCalUId]['last_modified'] = $event->lastModifiedDateTime;
-            $this->incomingEvents[$user->id() . $event->iCalUId]['event'] = $event;
+            if (!$event->responseStatus || $event->responseStatus->response == "accepted" || $event->responseStatus->response == "organizer" ) {
+                $this->incomingEvents[$user->id() . $event->iCalUId]['plb_id'] = $user->id();
+                $this->incomingEvents[$user->id() . $event->iCalUId]['plb_login'] = $user->login();
+                $this->incomingEvents[$user->id() . $event->iCalUId]['last_modified'] = $event->lastModifiedDateTime;
+                $this->incomingEvents[$user->id() . $event->iCalUId]['event'] = $event;
+            }
         }
 
         if (property_exists($response->body, '@odata.nextLink')) {
