@@ -169,10 +169,10 @@ class StatedWeekController extends BaseController
         $to = $date . ' ' . $request->get('to');
         $job_name = $request->get('job_name');
 
-	$params = array('supprime' => 0);
-	if ($job_name != 'concierges') {
+        $params = array('supprime' => 0);
+        if ($job_name != 'concierges' && $job_name != 'autre') {
             $params['service'] = $this->config('statedweek_service_filter');
-	}
+        }
 
         $availables = array();
         $agents = $this->entityManager
