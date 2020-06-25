@@ -21,11 +21,11 @@ TODO : Si modification des notifications : adapter le message (lister tous les a
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 //$version = $GLOBALS['version'];
-/*
+
 if (!isset($version)) {
     require_once __DIR__."/../include/accessDenied.php";
 }
-*/
+
 
 require_once __DIR__."/../ics/class.ics.php";
 require_once __DIR__."/../personnel/class.personnel.php";

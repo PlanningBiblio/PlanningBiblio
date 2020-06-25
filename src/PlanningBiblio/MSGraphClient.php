@@ -8,10 +8,6 @@ use App\PlanningBiblio\Logger;
 use App\PlanningBiblio\MSCalendarUtils;
 use Unirest\Request;
 
-require_once __DIR__."/../../public/absences/class.absences.php";
-require_once(__DIR__ . '/../../public/include/config.php');
-require_once(__DIR__ . '/../../public/include/function.php');
-
 class MSGraphClient
 {
 
@@ -20,9 +16,7 @@ class MSGraphClient
     // Start year for full scan
     private CONST START_YEAR = '2000';
 
-    private $absences;
     private $calendarUtils;
-    private $csrftoken;
     private $dbprefix;
     private $entityManager;
     private $full;
@@ -41,7 +35,6 @@ class MSGraphClient
         $options = [
              'scope' => 'https://graph.microsoft.com/.default'
         ];
-        $this->absences = new \absences();
         $this->logger = new Logger($entityManager);
         $this->oauth = new OAuth($this->logger, $clientid, $clientsecret, $tokenURL, $authURL, $options);
         $this->msCalendarUtils = new MSCalendarUtils();
@@ -49,7 +42,6 @@ class MSGraphClient
         $this->dbprefix = $_ENV['DATABASE_PREFIX'];
         $this->reason_name = $_ENV['MS_GRAPH_REASON_NAME'] ?? 'Outlook';
         $this->login_suffix = $_ENV['MS_GRAPH_LOGIN_SUFFIX'] ?? null;
-        $this->csrftoken = CSRFToken();
         $this->full = $full;
     }
 
