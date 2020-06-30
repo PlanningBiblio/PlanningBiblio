@@ -17,12 +17,23 @@ Page incluse dans le fichier "planning/postes_cfg/modif.php"
 */
 require_once "class.tableaux.php";
 
+use App\Model\PlanningTableUse;
+
 // Nombre de tableaux
 $t=new tableau();
 $t->id=$tableauNumero;
 $t->getNumbers();
 $nombre=$t->length;
 $site = 1;
+
+$entityManager = $GLOBALS['entityManager'];
+$tables = $entityManager->getRepository(PlanningTableUse::class)
+                       ->findBy(array('tableau' => $tableauNumero));
+
+$used = false;
+if ($tables) {
+    $used = true;
+}
 
 
 // Site
@@ -61,7 +72,11 @@ if ($config['Multisites-nombre']>1) {
 }
   
 echo "<tr><td>Nombre de tableaux :</td>\n";
-echo "<td><select name='nombre' id='nombre' style='width:300px;'>\n";
+if ($used) {
+    echo "<td><select name='nombre' id='nombre' style='width:300px;' disabled='disabled'>\n";
+} else {
+    echo "<td><select name='nombre' id='nombre' style='width:300px;'>\n";
+}
 
 for ($i=1;$i<16;$i++) {
     $selected=$i==$nombre?"selected='selected'":null;
