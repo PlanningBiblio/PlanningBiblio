@@ -26,8 +26,11 @@
               <span class='pl-icon pl-icon-edit' title='Modifier'></span></a>
               <a href='javascript:popup("planning/postes_cfg/copie.php&numero={{ table.tableau }}",400,260);'>
               <span class='pl-icon pl-icon-copy' title='Copier'></span></a>
-              <a href='javascript:supprimeTableau({{ table.tableau }});'>
-              <span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>
+
+              {% if table.last_use == 'Jamais' %}
+                <a href='javascript:supprimeTableau({{ table.tableau }});'>
+                <span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>
+              {% endif %}
             </td>
 
             <td id='td-tableau-{{ table.tableau }}-nom'>{{ table.nom }}</td>
