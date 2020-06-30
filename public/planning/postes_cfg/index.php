@@ -18,18 +18,15 @@ Page appelée par le fichier index.php, accessible via le menu administration / 
 
 require_once "class.tableaux.php";
 
+use App\Model\PlanningTableConfig;
+
 echo "<h2>Gestion des tableaux</h2>\n";
 
-// Tableaux
-$t=new tableau();
-$t->fetchAll();
-$tableaux=$t->elements;
 
-// Tableaux supprimés
-$t=new tableau();
-$t->supprime=true;
-$t->fetchAll();
-$tableauxSupprimes=$t->elements;
+// Tables
+$entityManager = $GLOBALS['entityManager'];
+$table_objects = $entityManager->getRepository(PlanningTableConfig::class)
+                        ->findBy(array(), array('nom' => 'asc'));
 
 // Dernières utilisations des tableaux
 $tabAffect=array();
@@ -41,82 +38,41 @@ if ($db->result) {
     }
 }
 
+$one_year_ago = date("Y-m-d H:i:s", strtotime("- 1 year"));
+$tables = array();
+$deleted_tables = array();
+foreach ($table_objects as $table) {
+    $t = $table->properties();
 
-//	Affichage
-
-//	1. 	Tableaux
-echo "<div id='tableaux-listes' class='tableaux-cfg'>\n";
-echo "<h3>Liste des tableaux</h3>\n";
-echo "<p><a href='index.php?page=planning/postes_cfg/modif.php' class='ui-button'>Nouveau tableau</a></p>\n";
-
-echo <<<EOD
-<form name='form' method='get' action='index.php'>
-<table class='CJDataTable' id='table-list' data-noExport='1' data-sort='[[1,"asc"]]'>
-<thead>
-<tr>
-<th class='dataTableNoSort'><input type='checkbox' class='CJCheckAll' /></th>
-EOD;
-echo "<th>Nom</th>\n";
-if ($config['Multisites-nombre']>1) {
-    echo "<th>Site</th>\n";
-}
-echo "<th class='dataTableDateFR'>Derni&egrave;re utilisation</th>\n";
-echo "</tr>\n";
-echo "</thead>\n";
-
-echo "<tbody>\n";
-
-$i=0;
-foreach ($tableaux as $elem) {
-    $site="Multisites-site{$elem['site']}";
-  
-    if (array_key_exists($elem['tableau'], $tabAffect)) {
-        $utilisation=dateFr($tabAffect[$elem['tableau']]);
-    } else {
-        $utilisation="Jamais";
+    $t['last_use'] = 'Jamais';
+    if (array_key_exists($table->tableau(), $tabAffect)) {
+        $t['last_use'] = dateFr($tabAffect[$table->tableau()]);
     }
-  
-    echo "<tr id='tr-tableau-{$elem['tableau']}' ><td style='white-space:nowrap;'>\n";
-    echo "<input type='checkbox' name='chk$i' value='{$elem['tableau']}' class='chk1'/>\n";
-    echo "<a href='index.php?page=planning/postes_cfg/modif.php&amp;numero={$elem['tableau']}'>\n";
-    echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
-    echo "<a href='javascript:popup(\"planning/postes_cfg/copie.php&amp;numero={$elem['tableau']}\",400,260);'>\n";
-    echo "<span class='pl-icon pl-icon-copy' title='Copier'></span></a>\n";
-    echo "<a href='javascript:supprimeTableau({$elem['tableau']});'>\n";
-    echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
-    echo "</td>\n";
-    echo "<td id='td-tableau-{$elem['tableau']}-nom'>{$elem['nom']}</td>\n";
-    if ($config['Multisites-nombre']>1) {
-        echo "<td>{$config[$site]}</td>\n";
-    }
-    echo "<td>$utilisation</td>\n";
-    echo "</tr>\n";
-    $i++;
-}
-echo "</tbody>\n";
-echo "</table></form>\n";
-echo "<p><input type='button' value='Supprimer la s&eacute;lection' class='ui-button' onclick='supprime_select(\"chk1\",\"planning/postes_cfg/ajax.suppression.php\");'></p>\n";
 
-// Récupération de tableaux supprimés dans l'année
-if (!empty($tableauxSupprimes)) {
-    echo "<p style='margin-top:30px;'>\n";
-    echo "R&eacute;cup&eacute;ration d&apos;un tableau supprim&eacute;&nbsp;\n";
-    echo "<select id='tableauxSupprimes'>\n";
-    echo "<option value=''>&nbsp;</option>\n";
-    foreach ($tableauxSupprimes as $elem) {
-        if (array_key_exists($elem['tableau'], $tabAffect)) {
-            $utilisation=dateFr($tabAffect[$elem['tableau']]);
-        } else {
-            $utilisation="Jamais";
-        }
-
-        echo "<option value='{$elem['tableau']}'>{$elem['nom']}&nbsp;(utilisation : $utilisation)</option>\n";
+    if ($table->supprime() && $table->supprime() >= $one_year_ago) {
+        $deleted_tables[] = $t;
+        continue;
     }
-    echo "</select>\n";
-    echo "</p>\n";
+
+    $site = "Multisites-site{$table->site()}";
+    $t['site'] = 0;
+    if ($config['Multisites-nombre'] > 1) {
+        $t['site'] = $config[$site];
+    }
+
+    $tables[] = $t;
 }
 
-echo "</div> <!-- tableaux-liste -->\n";
+// Affichage
+
+// 1. Tables
+echo $twig->render('admin/tables_config/tables_list.html.twig',
+    array(
+        'deleted_tables' => $deleted_tables,
+        'tables' => $tables,
+        'multisites_nombre' => $config['Multisites-nombre']
+    )
+);
 
 echo "<div id='tableaux-groupes' class='tableaux-cfg' >\n";
 //		Groupes
