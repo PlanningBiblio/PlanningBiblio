@@ -20,16 +20,26 @@ Page appelée par le fichier index.php, accessible en cliquant sur les icônes "
 require_once "class.tableaux.php";
 include "planning/poste/fonctions.php";
 
+use App\Model\PlanningTableUse;
+
 // Initialisation des variables
 $CSRFToken = filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
 $cfgType=filter_input(INPUT_POST, "cfg-type", FILTER_SANITIZE_STRING);
 $cfgTypeGet=filter_input(INPUT_GET, "cfg-type", FILTER_SANITIZE_STRING);
 $tableauNumero=filter_input(INPUT_POST, "numero", FILTER_SANITIZE_NUMBER_INT);
 $tableauGet=filter_input(INPUT_GET, "numero", FILTER_SANITIZE_NUMBER_INT);
-
 // Choix du tableau
 if ($tableauGet) {
     $tableauNumero=$tableauGet;
+}
+
+$entityManager = $GLOBALS['entityManager'];
+$used = $entityManager->getRepository(PlanningTableUse::class)
+                       ->findBy(array('tableau' => $tableauNumero));
+
+$locked = false;
+if ($used) {
+    $locked = true;
 }
 
 // Choix de l'onglet (cfg-type)
@@ -46,12 +56,14 @@ $_SESSION['cfg_type']=$cfgType;
 
 // Affichage
 $tableauNom = '';
+$table_site = 1;
 if (!$tableauNumero) {
     echo "<h3>Nouveau tableau</h3>\n";
 } else {
     $db=new db();
     $db->select2("pl_poste_tab", "*", array("tableau"=>$tableauNumero));
     $tableauNom = $db->result[0]['nom'];
+    $table_site = $db->result[0]['site'];
     echo "<h3>Configuration du tableau &quot;$tableauNom&quot;</h3>\n";
 }
 

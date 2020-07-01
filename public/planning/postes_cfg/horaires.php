@@ -19,6 +19,9 @@ Page incluse dans le fichier "planning/postes_cfg/modif.php"
 
 require_once "class.tableaux.php";
 
+use App\Model\PlanningTableLine;
+use App\Model\PlanningJob;
+
 $post = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 $CSRFToken = $post['CSRFToken'];
 unset($post['CSRFToken']);
@@ -79,23 +82,6 @@ if ($horaires) {
     }
 }
 
-//	Liste des tableaux utilisés
-$used=array();
-$db=new db();
-$db->select("pl_poste_tab_affect", "tableau", null, "group by tableau");
-if ($db->result) {
-    foreach ($db->result as $elem) {
-        $used[]=$elem['tableau'];
-    }
-}
-$db=new db();
-$db->select("pl_poste_modeles_tab", "tableau", null, "group by tableau");
-if ($db->result) {
-    foreach ($db->result as $elem) {
-        $used[]=$elem['tableau'];
-    }
-}
-
 //	Affichage des horaires
 echo "<div style='min-height:350px;'>\n";
 echo "<form name='form2' action='index.php' method='post'>\n";
@@ -113,22 +99,53 @@ if (!empty($tableaux)) {
         $tableau=$t['tableau'];
         $numero++;
 
+        $lines = $entityManager->getRepository(PlanningTableLine::class)
+                               ->findBy(array(
+                                   'numero' => $tableauNumero,
+                                   'tableau' => $tableau,
+                                   'type' => 'poste'
+                               ));
+
+        $jobs_id = array_map(function($v) { return $v->poste(); }, $lines);
+        $dates = array_map(function($v) { return $v->date()->format('Y-m-d'); }, $used);
+
+        $jobs = $entityManager->createQueryBuilder()
+            ->select('to')
+            ->from('App\Model\PlanningJob', 'to')
+            ->where("to.site = $table_site")
+            ->andWhere('to.date IN (:date)')
+            ->setParameter('date', $dates, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY)
+            ->andWhere('to.poste IN (:job)')
+            ->setParameter('job', $jobs_id, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY)
+            ->getQuery()->getResult();
+
+        $times_occupied = array();
+        foreach ($jobs as $job) {
+            $times_occupied[$job->debut()->format('H:i:s') . '-' . $job->fin()->format('H:i:s')] = 1;
+        }
+
         echo "<div id='div_horaires_{$tableau}' style='display:inline-block; width:200px; vertical-align:top; padding-bottom:30px;'>\n";
         echo "<table id='tab_horaires_{$tableau}'>\n";
         echo "<tr><td colspan='2' ><strong>Tableau $numero</strong></td></tr>\n";
 
         $i=0;
         foreach ($t['horaires'] as $elem) {
+            $disabled = '';
+            if (isset($times_occupied[$elem['debut'] . '-' . $elem['fin']])) {
+                $disabled = 'disabled="disabled"';
+            }
             // Affichage des horaires existants
             echo "<tr id='tr_{$tableau}_$i' ><td>\n";
-            echo "<select name='debut_{$tableau}_{$i}' style='width:75px;' >\n";
+            echo "<select name='debut_{$tableau}_{$i}' style='width:75px;' $disabled>\n";
             selectHeure(6, 23, true, $elem['debut']);
             echo "</select>\n";
             echo "</td><td style='width:120px;'>\n";
-            echo "<select name='fin_{$tableau}_{$i}' style='width:75px;' onchange='change_horaires(this);'>\n";
+            echo "<select name='fin_{$tableau}_{$i}' style='width:75px;' onchange='change_horaires(this);' $disabled>\n";
             selectHeure(6, 23, true, $elem['fin']);
             echo "</select>\n";
-            echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$tableau}_{$i}.value=\"\";document.form2.fin_{$tableau}_{$i}.value=\"\";$(\"#tr_{$tableau}_$i\").hide();''></span>\n";
+            if (!$disabled) {
+                echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$tableau}_{$i}.value=\"\";document.form2.fin_{$tableau}_{$i}.value=\"\";$(\"#tr_{$tableau}_$i\").hide();''></span>\n";
+            }
             echo "</td>\n";
             echo "</tr>\n";
             $i++;
