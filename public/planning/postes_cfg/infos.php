@@ -45,8 +45,13 @@ echo <<<EOD
 EOD;
 
 if ($config['Multisites-nombre']>1) {
+    $disabled = '';
+    if ($locked_site) {
+        $disabled = 'disabled="disabled"';
+    }
+
     echo "<tr><td>Affecter au site :</td>\n";
-    echo "<td><select id='site' style='width:300px;'>\n";
+    echo "<td><select id='site' style='width:300px;' $disabled>\n";
     echo "<option value=''>&nbsp;</option>\n";
 
     for ($i=1;$i<=$config['Multisites-nombre'];$i++) {
@@ -60,7 +65,7 @@ if ($config['Multisites-nombre']>1) {
 }
   
 echo "<tr><td>Nombre de tableaux :</td>\n";
-if ($locked) {
+if ($locked_subtable) {
     echo "<td><select name='nombre' id='nombre' style='width:300px;' disabled='disabled'>\n";
 } else {
     echo "<td><select name='nombre' id='nombre' style='width:300px;'>\n";

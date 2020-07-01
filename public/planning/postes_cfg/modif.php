@@ -21,6 +21,7 @@ require_once "class.tableaux.php";
 include "planning/poste/fonctions.php";
 
 use App\Model\PlanningTableUse;
+use App\Model\PlanningJob;
 
 // Initialisation des variables
 $CSRFToken = filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
@@ -36,11 +37,6 @@ if ($tableauGet) {
 $entityManager = $GLOBALS['entityManager'];
 $used = $entityManager->getRepository(PlanningTableUse::class)
                        ->findBy(array('tableau' => $tableauNumero));
-
-$locked = false;
-if ($used) {
-    $locked = true;
-}
 
 // Choix de l'onglet (cfg-type)
 if ($cfgTypeGet) {
@@ -65,6 +61,25 @@ if (!$tableauNumero) {
     $tableauNom = $db->result[0]['nom'];
     $table_site = $db->result[0]['site'];
     echo "<h3>Configuration du tableau &quot;$tableauNom&quot;</h3>\n";
+}
+
+$dates = array_map(function($v) { return $v->date()->format('Y-m-d'); }, $used);
+$jobs = $entityManager->createQueryBuilder()
+    ->select('to')
+    ->from('App\Model\PlanningJob', 'to')
+    ->where("to.site = $table_site")
+    ->andWhere('to.date IN (:date)')
+    ->setParameter('date', $dates, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY)
+    ->getQuery()->getResult();
+var_dump($table_site);
+
+$locked_subtable = false;
+$locked_site = false;
+if ($used and $jobs) {
+    $locked_subtable = true;
+}
+if ($used) {
+    $locked_site = true;
 }
 
 echo "<div id='tabs' class='ui-tabs' data-active='$cfgType'>\n";
