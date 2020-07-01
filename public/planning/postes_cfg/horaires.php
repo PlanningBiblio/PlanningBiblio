@@ -23,7 +23,7 @@ use App\Model\PlanningTableLine;
 use App\Model\PlanningJob;
 
 $post = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-$CSRFToken = $post['CSRFToken'];
+$CSRFToken = isset($post['CSRFToken']) ? $post['CSRFToken'] : '';
 unset($post['CSRFToken']);
 
 //	Mise à jour du tableau (après validation)
