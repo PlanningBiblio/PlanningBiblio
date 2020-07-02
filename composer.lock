@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9cb4ad1025a08b3152478e90562d7fcb",
+    "content-hash": "1fe2e59fba916670c0ed2d4c1bfc2bc2",
     "packages": [
         {
             "name": "apereo/phpcas",
@@ -60,6 +60,103 @@
                 "jasig"
             ],
             "time": "2019-08-18T20:01:55+00:00"
+        },
+        {
+            "name": "cron/cron",
+            "version": "1.4.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Cron/Cron.git",
+                "reference": "8156b9532ecc64ed5aa5c4ebdfc4346d2ef91c4d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Cron/Cron/zipball/8156b9532ecc64ed5aa5c4ebdfc4346d2ef91c4d",
+                "reference": "8156b9532ecc64ed5aa5c4ebdfc4346d2ef91c4d",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1",
+                "symfony/process": "^2.4|^3.0|^4.0|^5.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Cron\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dries De Peuter",
+                    "email": "dries@nousefreak.be"
+                }
+            ],
+            "description": "Cronjobs",
+            "time": "2019-11-23T12:08:49+00:00"
+        },
+        {
+            "name": "cron/cron-bundle",
+            "version": "2.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Cron/Symfony-Bundle.git",
+                "reference": "4c0fb6bfaaab38fd1e1ffdba4296d4d837e90414"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Cron/Symfony-Bundle/zipball/4c0fb6bfaaab38fd1e1ffdba4296d4d837e90414",
+                "reference": "4c0fb6bfaaab38fd1e1ffdba4296d4d837e90414",
+                "shasum": ""
+            },
+            "require": {
+                "cron/cron": "^1.0.1",
+                "doctrine/doctrine-bundle": "~1.4|~2.0",
+                "doctrine/orm": "~2.4,>=2.4.5",
+                "php": ">=7.2",
+                "symfony/framework-bundle": "^3.4|^4.4|^5.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8.0",
+                "symfony/symfony": "^3.0|^4.0|^5.0"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Cron\\CronBundle\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dries De Peuter",
+                    "email": "dries@nousefreak.be"
+                }
+            ],
+            "description": "Symfony cron",
+            "time": "2020-05-26T10:44:27+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -6819,6 +6916,65 @@
                 "validate"
             ],
             "time": "2020-06-16T10:16:42+00:00"
+        },
+        {
+            "name": "yethee/enum-bundle",
+            "version": "v3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yethee/BiplaneEnumBundle.git",
+                "reference": "f7d289d724b71adddcc300fd89d499abe3c7cd2e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yethee/BiplaneEnumBundle/zipball/f7d289d724b71adddcc300fd89d499abe3c7cd2e",
+                "reference": "f7d289d724b71adddcc300fd89d499abe3c7cd2e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6",
+                "symfony/form": "^3.4|^4.0",
+                "symfony/framework-bundle": "^3.4|^4.0"
+            },
+            "conflict": {
+                "jms/serializer": "<1.0",
+                "jms/serializer-bundle": "<1.1"
+            },
+            "require-dev": {
+                "jms/serializer-bundle": "^1.1",
+                "phpunit/phpunit": "^4.8",
+                "symfony/serializer": "^3.4|^4.0"
+            },
+            "suggest": {
+                "jms/serializer-bundle": "provides the handler for the JMSSerializer",
+                "symfony/serializer": "provides the normalizer for the Symfony's Serializer"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Biplane\\EnumBundle\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Denis Vasilev",
+                    "email": "liquid.yethee@hotmail.com"
+                }
+            ],
+            "description": "This bundle provides a typed enumeration for Symfony applications",
+            "keywords": [
+                "typed enumeration"
+            ],
+            "time": "2019-01-18T19:00:05+00:00"
         }
     ],
     "packages-dev": [
