@@ -127,6 +127,7 @@ EOD;
 
     $p=new planningHebdo();
     $p->perso_id=$_SESSION['login_id'];
+    $p->merge_exception = false;
     $p->fetch();
     foreach ($p->elements as $elem) {
         $actuel=$elem['actuel']?"Oui":null;
@@ -136,6 +137,7 @@ EOD;
         }
         $planningRemplace=$elem['remplace']==0?dateFr($elem['saisie'], true):$planningRemplace;
         $commentaires=$elem['remplace']?"Remplace les heures <br/>du $planningRemplace":null;
+        $commentaires = $elem['exception'] ? 'Exception' : $commentaires;
         $arrow=$elem['remplace']?"<font style='font-size:20pt;'>&rdsh;</font>":null;
 
         echo "<tr>";
