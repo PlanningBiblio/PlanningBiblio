@@ -21,12 +21,13 @@ $request = $GLOBALS['request'];
 $copy = $request->get('copy');
 $request_exception = $request->get('exception');
 $id = $request->get('id');
-$retour=filter_input(INPUT_GET, "retour", FILTER_SANITIZE_STRING);
 $retour = $request->get('retour');
 $is_exception = 0;
 $exception_id = '';
 
+$exception_back = 'monCompte.php';
 if ($retour != 'monCompte.php') {
+    $exception_back = $retour;
     $retour = "planningHebdo/$retour";
 }
 
@@ -470,7 +471,7 @@ if (($adminN1 or $adminN2) and !$cle) {
 }
 
 if (($adminN1 or $adminN2 or $modifAutorisee) and (!$request_exception and !$is_exception and !$copy and !$is_new)) {
-    echo "<input type='button' value='Ajouter une exception' onclick='location.href=\"index.php?page=planningHebdo/modif.php&exception=$id&retour=index.php\";' style='margin-left:30px;' class='ui-button' />\n";
+    echo "<input type='button' value='Ajouter une exception' onclick='location.href=\"index.php?page=planningHebdo/modif.php&exception=$id&retour=$exception_back\";' style='margin-left:30px;' class='ui-button' />\n";
 }
 
 ?>
