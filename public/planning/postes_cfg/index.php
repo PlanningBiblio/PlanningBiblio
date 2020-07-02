@@ -49,13 +49,15 @@ foreach ($table_objects as $table) {
         $t['last_use'] = dateFr($tabAffect[$table->tableau()]);
     }
 
-    if ($table->supprime() && $table->supprime() >= $one_year_ago) {
-        $deleted_tables[] = $t;
+    if ($table->supprime()) {
+        if (date_format($table->supprime(), 'Y-m-d H:i:s') >= $one_year_ago) {
+            $deleted_tables[] = $t;
+        }
         continue;
     }
 
     $site = "Multisites-site{$table->site()}";
-    $t['site'] = 0;
+    $t['site'] = '';
     if ($config['Multisites-nombre'] > 1) {
         $t['site'] = $config[$site];
     }
