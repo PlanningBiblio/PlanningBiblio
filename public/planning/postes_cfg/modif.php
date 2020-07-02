@@ -71,7 +71,6 @@ $jobs = $entityManager->createQueryBuilder()
     ->andWhere('to.date IN (:date)')
     ->setParameter('date', $dates, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY)
     ->getQuery()->getResult();
-var_dump($table_site);
 
 $locked_subtable = false;
 $locked_site = false;
