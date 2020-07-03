@@ -63,19 +63,19 @@ if ($config['Multisites-nombre']>1) {
 } else {
     echo "<input type='hidden' value='1' id='site' />\n";
 }
-  
 echo "<tr><td>Nombre de tableaux :</td>\n";
 if ($locked_subtable) {
-    echo "<td><select name='nombre' id='nombre' style='width:300px;' disabled='disabled'>\n";
+    echo "<td>$nombre</td>\n";
 } else {
     echo "<td><select name='nombre' id='nombre' style='width:300px;'>\n";
+    for ($i=1;$i<16;$i++) {
+        $selected=$i==$nombre?"selected='selected'":null;
+        echo "<option value='$i' $selected >$i</option>\n";
+    }
+    echo "</select></td>\n";
 }
 
-for ($i=1;$i<16;$i++) {
-    $selected=$i==$nombre?"selected='selected'":null;
-    echo "<option value='$i' $selected >$i</option>\n";
-}
-echo "</select></td></tr>\n";
+echo "</tr>\n";
 
 echo "</table>\n";
 echo "</form>\n";
