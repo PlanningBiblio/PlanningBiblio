@@ -19,6 +19,9 @@
 require_once "class.tableaux.php";
 require_once "postes/class.postes.php";
 
+use App\Model\PlanningTableLine;
+use App\Model\PlanningJob;
+
 // Liste des postes
 $p=new postes();
 if ($config['Multisites-nombre']>1) {
@@ -52,6 +55,38 @@ echo "<h3>Configuration des lignes</h3>\n";
 if ($tableauNumero) {
     echo "<table style='min-width:1250px; width:100%;' cellspacing='0' cellpadding='0' border='1' >\n";
     foreach ($tabs as $tab) {
+
+        $lines = $entityManager->getRepository(PlanningTableLine::class)
+                               ->findBy(array(
+                                   'numero' => $tableauNumero,
+                                   'tableau' => $tab['nom'],
+                                   'type' => 'poste'
+                               ));
+
+        $jobs_id = array_map(function($v) { return $v->poste(); }, $lines);
+        $dates = array_map(function($v) { return $v->date()->format('Y-m-d'); }, $used);
+
+        $jobs = $entityManager->createQueryBuilder()
+            ->select('to')
+            ->from('App\Model\PlanningJob', 'to')
+            ->where("to.site = $table_site")
+            ->andWhere('to.date IN (:date)')
+            ->setParameter('date', $dates, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY)
+            ->andWhere('to.poste IN (:job)')
+            ->setParameter('job', $jobs_id, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY)
+            ->getQuery()->getResult();
+
+        $times_occupied = array();
+        $jobs_occupied = array();
+        foreach ($jobs as $job) {
+            $key = $job->debut()->format('H:i:s') . '-' . $job->fin()->format('H:i:s');
+            if (!isset($times_occupied[$key])) {
+                $times_occupied[$key] = array();
+            }
+            $times_occupied[$key][] = $job->poste();
+            $jobs_occupied[$job->poste()] = 1;
+        }
+
         // Lignes Titre et Horaires
         echo "<tr class='tr_horaires' style='text-align:center;'>\n";
         echo "<td style='white-space:nowrap;text-align:left;'>\n";
@@ -72,7 +107,11 @@ if ($tableauNumero) {
             // Première colonne
             echo "<td id='td_select_{$tab['nom']}_{$i}_0' style='white-space:nowrap;'>\n";
             // Sélection des postes et des lignes de séparation
-            echo "<select name='select_{$tab['nom']}_$i' style='width:200px;color:black;font-weight:normal;' class='tab_select'>\n";
+            $job_disabled = ($tab['lignes'][$i]
+                and $tab['lignes'][$i]['type']=="poste"
+                and isset($jobs_occupied[$tab['lignes'][$i]['poste']])) ? 'disabled="disabled"' : '';
+
+            echo "<select name='select_{$tab['nom']}_$i' style='width:200px;color:black;font-weight:normal;' class='tab_select' $job_disabled>\n";
             echo "<option value=''>&nbsp;</option>\n";
             // Les postes
             if (is_array($postes)) {
@@ -96,7 +135,9 @@ if ($tableauNumero) {
             echo "</select>&nbsp;&nbsp;\n";
             // Boutons ajout et suppression
             echo "<a href='javascript:ajout(\"select_{$tab["nom"]}_\",$i);'><span class='pl-icon pl-icon-add' title='Ajouter'></span></a>\n";
-            echo "<a href='javascript:supprime_tab(\"{$tab["nom"]}_\",$i);'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
+            if (!$job_disabled) {
+                echo "<a href='javascript:supprime_tab(\"{$tab["nom"]}_\",$i);'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
+            }
             echo "</td>\n";
 
             // Cellules (grises ou non)
@@ -104,12 +145,18 @@ if ($tableauNumero) {
             foreach ($tab['horaires'] as $horaire) {
                 $class=null;
                 $checked=null;
+                $time_disabled = null;
                 if (in_array("{$i}_{$j}", $tab['cellules_grises'])) {
                     $class="class='cellule_grise'";
                     $checked="checked='checked'";
                 }
+
+                $key = $horaire['debut'] . '-' . $horaire['fin'];
+                if ($job_disabled && isset($times_occupied[$key]) && in_array($tab['lignes'][$i]['poste'], $times_occupied[$key])) {
+                    $time_disabled = 'disabled="disabled"';
+                }
                 echo "<td id='td_select_{$tab['nom']}_{$i}_$j' $class colspan='".nb30($horaire['debut'], $horaire['fin'])."' style='text-align:center;'>\n";
-                echo "<input type='checkbox' name='checkbox_{$tab['nom']}_{$i}_$j' $checked onclick='couleur2(this,\"td_select_{$tab['nom']}_{$i}_$j\");'/> G\n";
+                echo "<input type='checkbox' name='checkbox_{$tab['nom']}_{$i}_$j' $checked onclick='couleur2(this,\"td_select_{$tab['nom']}_{$i}_$j\");' $time_disabled/> G\n";
                 echo "</td>\n";
                 $j++;
             }

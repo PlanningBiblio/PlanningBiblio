@@ -49,7 +49,7 @@ if (file_exists(__DIR__.'/lang/custom.php')) {
 
 date_default_timezone_set("Europe/Paris");
 
-require_once(__DIR__.'/init_entitymanager.php');
+require_once(__DIR__.'/../init/init_entitymanager.php');
 require_once(__DIR__.'/init_plugins.php');
 
 // Vérification de la version de la base de données

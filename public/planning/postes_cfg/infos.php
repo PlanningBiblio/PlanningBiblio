@@ -24,7 +24,6 @@ $t->getNumbers();
 $nombre=$t->length;
 $site = 1;
 
-
 // Site
 if ($config['Multisites-nombre'] > 1 && $tableauNumero) {
     $db=new db();
@@ -46,8 +45,13 @@ echo <<<EOD
 EOD;
 
 if ($config['Multisites-nombre']>1) {
+    $disabled = '';
+    if ($locked_site) {
+        $disabled = 'disabled="disabled"';
+    }
+
     echo "<tr><td>Affecter au site :</td>\n";
-    echo "<td><select id='site' style='width:300px;'>\n";
+    echo "<td><select id='site' style='width:300px;' $disabled>\n";
     echo "<option value=''>&nbsp;</option>\n";
 
     for ($i=1;$i<=$config['Multisites-nombre'];$i++) {
@@ -59,15 +63,19 @@ if ($config['Multisites-nombre']>1) {
 } else {
     echo "<input type='hidden' value='1' id='site' />\n";
 }
-  
 echo "<tr><td>Nombre de tableaux :</td>\n";
-echo "<td><select name='nombre' id='nombre' style='width:300px;'>\n";
-
-for ($i=1;$i<16;$i++) {
-    $selected=$i==$nombre?"selected='selected'":null;
-    echo "<option value='$i' $selected >$i</option>\n";
+if ($locked_subtable) {
+    echo "<td>$nombre</td>\n";
+} else {
+    echo "<td><select name='nombre' id='nombre' style='width:300px;'>\n";
+    for ($i=1;$i<16;$i++) {
+        $selected=$i==$nombre?"selected='selected'":null;
+        echo "<option value='$i' $selected >$i</option>\n";
+    }
+    echo "</select></td>\n";
 }
-echo "</select></td></tr>\n";
+
+echo "</tr>\n";
 
 echo "</table>\n";
 echo "</form>\n";

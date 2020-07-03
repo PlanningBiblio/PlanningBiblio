@@ -1,0 +1,61 @@
+<div id='tableaux-listes' class='tableaux-cfg'>
+  <h3>Liste des tableaux</h3>
+  <p><a href='index.php?page=planning/postes_cfg/modif.php' class='ui-button'>Nouveau tableau</a></p>
+
+  <form name='form' method='get' action='index.php'>
+    <table class='CJDataTable' id='table-list' data-noExport='1' data-sort='[[1,"asc"]]'>
+      <thead>
+        <tr>
+          <th class='dataTableNoSort'><input type='checkbox' class='CJCheckAll' /></th>
+          <th>Nom</th>
+            {% if multisites_nombre > 1 %}
+              <th>Site</th>
+            {% endif %}
+          <th class='dataTableDateFR'>Derni&egrave;re utilisation</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        {% set id = 0 %}
+        {% for table in tables %}
+          <tr id='tr-tableau-{{ table.tableau }}' >
+            <td style='white-space:nowrap;'>
+              <input type='checkbox' name='chk{{ i }}' value='{{ table.tableau }}' class='chk1'/>
+              <a href='index.php?page=planning/postes_cfg/modif.php&numero={{ table.tableau }}'>
+              <span class='pl-icon pl-icon-edit' title='Modifier'></span></a>
+              <a href='javascript:popup("planning/postes_cfg/copie.php&numero={{ table.tableau }}",400,260);'>
+              <span class='pl-icon pl-icon-copy' title='Copier'></span></a>
+              <a href='javascript:supprimeTableau({{ table.tableau }});'>
+              <span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>
+            </td>
+
+            <td id='td-tableau-{{ table.tableau }}-nom'>{{ table.nom }}</td>
+            {% if multisites_nombre > 1 %}
+              <td>{{ table.site }}</td>
+            {% endif %}
+
+            <td>{{ table.last_use }}</td>
+          </tr>
+            {% set i = i + 1 %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </form>
+
+  <p>
+    <input type='button' value='Supprimer la sélection' class='ui-button' onclick='supprime_select("chk1","planning/postes_cfg/ajax.suppression.php");'>
+  </p>
+
+  {% if deleted_tables is not empty %}
+    <p style='margin-top:30px;'>
+      Récupération d'un tableau supprimé
+      <select id='tableauxSupprimes'>
+        <option value=''></option>
+        {% for table in deleted_tables %}
+          <option value='{{ table.tableau }}'>{{ table.nom }}&nbsp;(utilisation : {{ table.last_use}})</option>
+        {% endfor %}
+      </select>
+    </p>
+  {% endif %}
+</div> <!-- tableaux-liste -->

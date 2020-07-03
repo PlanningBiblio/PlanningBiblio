@@ -16,10 +16,10 @@
 
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
-use Model\Extensions\TablePrefix;
+use App\Model\Extensions\TablePrefix;
 
 // Instanciating entity manager.
-$entitiesPath = array(__DIR__.'/../src/Entity');
+$entitiesPath = array(__DIR__.'/../src/Model');
 $emConfig = Setup::createAnnotationMetadataConfiguration($entitiesPath, true);
 
 // Handle table prefix.
