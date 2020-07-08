@@ -2,6 +2,7 @@
 - Enhancements
 Add working hours exceptions
 Retrieve absences from microsoft graph API
+Add a cron script to purge the log table: planningBibio:PurgeLogTable
 
 *** Version 20.04.00       (2020-06-15)   ***
 - Enhancements
