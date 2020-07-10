@@ -1912,7 +1912,7 @@ foreach ($sql as $elem) {
         }
     } else {
         if ($cli) {
-            echo "\e[1mBold$elem : \033[31m[KO]\e[0m\n";
+            echo "\e[1m$elem : \033[31m[KO]\e[0m\n";
         } else {
             echo "$elem : <font style='color:red;'>Erreur</font><br/>\n";
         }
