@@ -62,6 +62,8 @@ for ($j = 0; $j < $this->config('nb_semaine'); $j++) {
                     $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4]==$l) ? "selected='selected'" : null;
                     $hours_tab .= "<option value='$l' $selected class='edt-site-$l'>{$config["Multisites-site{$l}"]}</option>\n";
                 }
+                $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4] == -1) ? "selected='selected'" : null;
+                $hours_tab .= "<option value='-1' $selected class='edt-site--1'>Tout site</option>\n";
                 $hours_tab .= "</select></td>";
             }
             $hours_tab .= "<td id='heures_{$j}_$i'></td>\n";

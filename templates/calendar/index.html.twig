@@ -76,7 +76,7 @@
                   {% if d.presence is not empty %}
                     {% if d.presence.schedule | length > 1 %}
                       {% if nbSites > 1 %}
-                        <p style='margin-bottom:0;'> Présence à {{ d.presence.site }} : </p>
+                        <p style='margin-bottom:0;'> Présence / {{ d.presence.site }} : </p>
                       {% else %}
                         <p style='margin-bottom:0;'> Présence :</p>
                       {% endif %}
