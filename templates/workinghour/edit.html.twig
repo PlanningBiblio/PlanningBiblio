@@ -151,6 +151,11 @@
                                 <option value="{{ site }}">{{ multisites[site] | raw }}</option>
                               {% endif %}
                             {% endfor %}
+                            {% if temps is not null and temps[i-1][4] == '-1' %}
+                              <option value='-1' selected='selected' >Tout site</option>
+                            {% else %}
+                              <option value='-1'>Tout site</option>
+                            {% endif %}
                           </select>
                         </td>
                       {% else %}

@@ -288,7 +288,9 @@ class CalendarController extends BaseController
             if (!$absent) {
                 $site = $this->config('Multisites-site1');
                 if ($nbSites > 1 and isset($horaires[4])) {
-                    if ($horaires[4]) {
+                    if ($horaires[4] == '-1') {
+                        $site = "tout site";
+                    } elseif ($horaires[4]) {
                         $site = $this->config('Multisites-site'.$horaires[4]);
                     }
                 }

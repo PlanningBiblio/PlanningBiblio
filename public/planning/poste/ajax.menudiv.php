@@ -374,7 +374,7 @@ if ($db->result and $verif) {
         // Un autre filtre éliminera complétement les agents pour lesquels le courant site n'est pas cochés dans leur onglet "infos générales".
         if ($config['Multisites-nombre']>1) {
 
-    // Le champs correspondant à l'affectation du site est heures[4]
+            // Le champs correspondant à l'affectation du site est heures[4]
             $site_agent = !empty($temps[$jour][4]) ? $temps[$jour][4] : null;
 
             // Si le champ "site_agent" est vide et que l'agent n'a pas déjà été exclus pour un problème d'horaires, type d'exclusion = sites
@@ -383,7 +383,7 @@ if ($db->result and $verif) {
             }
 
             // Si le champs "site_agent" est renseigné mais qu'il ne correspond pas au site choisi, type d'exclusion = autre_site
-            if (!empty($site_agent) and $site_agent != $site) {
+            if (!empty($site_agent) and $site_agent != -1 and $site_agent != $site) {
                 $exclusion[$elem['id']][]="autre_site";
             }
         }
