@@ -5,7 +5,7 @@ namespace App\Model;
 /**
  * @Entity @Table(name="pl_poste_modeles")
  **/
-class AdminTemplate extends PLBEntity
+class Model extends PLBEntity
 {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;

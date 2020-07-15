@@ -6,9 +6,9 @@
   <script type='text/JavaScript'>
     function delete_template(id, statedweek) {
       if (confirm("Etes vous sûr de vouloir supprimer cet élément ?")) {
-        url = '/admin/template/' + id;
+        url = '/model/' + id;
         if (statedweek == true) {
-          url = '/admin/statedweektemplate/' + id;
+          url = '/statedweekmodel/' + id;
         }
         $.ajax({
           url: url,
@@ -43,7 +43,7 @@
                 {% for t in templates %}
                   <tr>
                     <td>
-                      <a href='{{ asset("/admin/template/") }}{{ t.id }}'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>
+                      <a href='{{ asset("/model/") }}{{ t.id }}'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>
                       <a href='javascript:delete_template({{ t.id }});'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>
                     </td>
 
@@ -67,7 +67,7 @@
                 {% for t in statedweek_templates %}
                   <tr>
                     <td>
-                      <a href='{{ asset("/admin/statedweektemplate/") }}{{ t.id }}'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>
+                      <a href='{{ asset("/statedweekmodel/") }}{{ t.id }}'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>
                       <a href='javascript:delete_template({{ t.id }}, true);'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>
                     </td>
 

@@ -8,17 +8,17 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-use App\Model\AdminTemplate;
+use App\Model\Model;
 use App\Model\StatedWeekTemplate;
 
-class AdminTemplateController extends BaseController
+class ModelController extends BaseController
 {
     /**
-     * @Route("/admin/template", name="admin.template.index", methods={"GET"})
+     * @Route("/model", name="model.index", methods={"GET"})
      */
     public function index(Request $request, Session $session)
     {
-        $templates = $this->entityManager->getRepository(AdminTemplate::class)->findAll();
+        $templates = $this->entityManager->getRepository(Model::class)->findAll();
         $statedweek_templates =  $this->entityManager->getRepository(StatedWeekTemplate::class)->findAll();
 
         $this->templateParams(array(
@@ -26,29 +26,29 @@ class AdminTemplateController extends BaseController
             'statedweek_templates' => $statedweek_templates
         ));
 
-        return $this->output('admin/template/index.html.twig');
+        return $this->output('admin/model/index.html.twig');
     }
 
     /**
-     * @Route("/admin/template", name="admin.template.save", methods={"POST"})
+     * @Route("/model", name="model.save", methods={"POST"})
      */
     public function save(Request $request, Session $session)
     {
         $id = $request->get('id');
         $name = $request->get('name');
 
-        $template = $this->entityManager->getRepository(AdminTemplate::class)->find($id);
+        $template = $this->entityManager->getRepository(Model::class)->find($id);
         $template->nom($name);
 
         $this->entityManager->persist($template);
         $this->entityManager->flush();
 
         $session->getFlashBag()->add('notice', 'Modèle enregistré');
-        return $this->redirectToRoute('admin.template.index');
+        return $this->redirectToRoute('model.index');
     }
 
     /**
-     * @Route("/admin/statedweektemplate", name="admin.statedweektemplate.save", methods={"POST"})
+     * @Route("/statedweekmodel", name="statedweekmodel.save", methods={"POST"})
      */
     public function save_statedweek(Request $request, Session $session)
     {
@@ -62,25 +62,25 @@ class AdminTemplateController extends BaseController
         $this->entityManager->flush();
 
         $session->getFlashBag()->add('notice', 'Modèle enregistré');
-        return $this->redirectToRoute('admin.template.index');
+        return $this->redirectToRoute('model.index');
     }
 
     /**
-     * @Route("/admin/template/{id}", name="admin.template.edit", methods={"GET"})
+     * @Route("/model/{id}", name="model.edit", methods={"GET"})
      */
     public function edit(Request $request)
     {
         $id = $request->get('id');
 
-        $template = $this->entityManager->getRepository(AdminTemplate::class)->find($id);
+        $template = $this->entityManager->getRepository(Model::class)->find($id);
 
         $this->templateParams(array( 'template'  => $template ));
 
-        return $this->output('admin/template/edit.html.twig');
+        return $this->output('admin/model/edit.html.twig');
     }
 
     /**
-     * @Route("/admin/statedweektemplate/{id}", name="admin.statedweektemplate.edit", methods={"GET"})
+     * @Route("/statedweekmodel/{id}", name="statedweekmodel.edit", methods={"GET"})
      */
     public function edit_statedweek(Request $request)
     {
@@ -90,17 +90,17 @@ class AdminTemplateController extends BaseController
 
         $this->templateParams(array( 'template'  => $template ));
 
-        return $this->output('admin/statedweektemplate/edit.html.twig');
+        return $this->output('admin/statedweekmodel/edit.html.twig');
     }
 
     /**
-     * @Route("/admin/template/{id}", name="admin.template.delete", methods={"DEL"})
+     * @Route("/model/{id}", name="model.delete", methods={"DEL"})
      */
     public function delete(Request $request, Session $session)
     {
         $id = $request->get('id');
 
-        $template = $this->entityManager->getRepository(AdminTemplate::class)->find($id);
+        $template = $this->entityManager->getRepository(Model::class)->find($id);
 
         $this->entityManager->remove($template);
         $this->entityManager->flush();
@@ -110,7 +110,7 @@ class AdminTemplateController extends BaseController
     }
 
     /**
-     * @Route("/admin/statedweektemplate/{id}", name="admin.statedweektemplate.delete", methods={"DEL"})
+     * @Route("/statedweekmodel/{id}", name="statedweekmodel.delete", methods={"DEL"})
      */
     public function delete_statedweek(Request $request, Session $session)
     {
