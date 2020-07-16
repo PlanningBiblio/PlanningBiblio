@@ -19,15 +19,6 @@ TODO : Il serait intéressant de sortir de la boucle la gestion des notification
 TODO : Si modification des notifications : adapter le message (lister tous les agents), adapter les variables fournies à getRecipients2, refaire une boucle pour getRecipients ou adapter getRecipients
 */
 
-// pas de $version=acces direct aux pages de ce dossier => Accès refusé
-/*
-$version = $GLOBALS['version'];
-
-if (!isset($version)) {
-    require_once __DIR__."/../include/accessDenied.php";
-}
-*/
-
 require_once __DIR__."/../ics/class.ics.php";
 require_once __DIR__."/../personnel/class.personnel.php";
 

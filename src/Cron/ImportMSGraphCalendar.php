@@ -14,15 +14,15 @@ class ImportMSGraphCalendar extends Command {
 
     use LockableTrait;
 
-	protected function configure () {
-		$this->setName('PlanningBiblio:importMSGraphCalendar');
-		$this->setDescription("Import a calendar from Microsoft Graph API");
-		$this->setHelp("Import a calendar from Microsoft Graph API");
+    protected function configure () {
+        $this->setName('PlanningBiblio:importMSGraphCalendar');
+        $this->setDescription("Import a calendar from Microsoft Graph API");
+        $this->setHelp("Import a calendar from Microsoft Graph API");
         $this->addOption('full', null, InputOption::VALUE_OPTIONAL, 'Performs a full import', false);
         $this->addOption('stdout', null, InputOption::VALUE_OPTIONAL, 'Also output logs in stdout', false);
-	}
+    }
 
-	public function execute (InputInterface $input, OutputInterface $output) {
+    public function execute (InputInterface $input, OutputInterface $output) {
 
         if (!$this->lock()) {
             $output->writeln('The command is already running in another process.');
@@ -46,7 +46,7 @@ class ImportMSGraphCalendar extends Command {
         $graph_client->retrieveEvents();
 
         $this->release();
-	}
+    }
 }
 
 ?>
