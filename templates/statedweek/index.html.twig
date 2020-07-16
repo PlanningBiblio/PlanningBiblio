@@ -80,7 +80,7 @@
           </div>
 
           <div id="date_text">
-            Planning du {{ date | fulldate }}
+            Planning du {{ date | fulldate | raw }}
             {% if date | publicholiday %}
               - <font id='public_holiday'> {{ date | publicholiday }}</font>
             {% endif %}
