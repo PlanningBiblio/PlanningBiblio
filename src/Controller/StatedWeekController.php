@@ -93,9 +93,13 @@ class StatedWeekController extends BaseController
     {
 
         $date = $request->get('date');
-        if (!$date) {
+        if (!$date and array_key_exists('PLdate', $_SESSION)) {
+            $date = $_SESSION['PLdate'];
+        } elseif (!$date) {
             $date = date('Y-m-d');
         }
+
+        $_SESSION['PLdate']=$date;
 
         $date_pl = new \datePl($date);
 

@@ -58,7 +58,7 @@
   </style>
 
   <div id="statedweek">
-    <input type="hidden" name="date" value="{{ date }}"/>
+    <input type="hidden" id="date" name="date" value="{{ date }}" data-set-calendar="{{ date }}"/>
     <input type="hidden" name="pause2" value="{{ pause2 }}"/>
     <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}" />
     {% if planning.locked %}
