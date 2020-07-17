@@ -1886,6 +1886,13 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="20.04.00.001";
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[]="ALTER TABLE `{$dbprefix}planning_hebdo` ADD `exception` INT(11) NOT NULL DEFAULT 0;";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
