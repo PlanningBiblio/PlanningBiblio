@@ -11,10 +11,10 @@ use Unirest\Request;
 class MSGraphClient
 {
 
-    private CONST BASE_URL = 'https://graph.microsoft.com/v1.0';
-    private CONST CAL_NAME = 'PlanningBiblio-Absences-';
+    private $base_url = 'https://graph.microsoft.com/v1.0';
+    private $cal_name = 'PlanningBiblio-Absences-';
     // Start year for full scan
-    private CONST START_YEAR = '2000';
+    private $start_year = '2000';
 
     private $calendarUtils;
     private $dbprefix;
@@ -73,9 +73,9 @@ class MSGraphClient
                 $currentYear = date("Y");
                 if ($this->full) {
                     $yearCount = 0;
-                    while (self::START_YEAR + $yearCount <= $currentYear) {
-                        $from = (self::START_YEAR + $yearCount) . "-01-01";
-                        $to = (self::START_YEAR + $yearCount) . "-12-31";
+                    while ($this->start_year + $yearCount <= $currentYear) {
+                        $from = ($this->start_year + $yearCount) . "-01-01";
+                        $to = ($this->start_year + $yearCount) . "-12-31";
                         $this->log("Getting events from $from to $to for user ". $user->login());
                         $response = $this->getCalendarView($user, $from, $to);
                         if ($response->code == 200) {
@@ -128,7 +128,7 @@ class MSGraphClient
         $usersSQLIds = join(',', $this->graphUsers);
 
         if ($this->full) {
-            $from = self::START_YEAR . "-01-01";
+            $from = $this->start_year . "-01-01";
             $to = date("Y") . "-12-31";
         } else {
             $range = $this->getDateRange();
@@ -233,7 +233,7 @@ class MSGraphClient
                     'fin'           => $this->formatDate($incomingEvent->end),
                     'motif'         => $this->reason_name,
                     'commentaires'  => $incomingEvent->subject,
-                    'cal_name'      => self::CAL_NAME . $eventArray['plb_id'] . '-' . md5($incomingEvent->iCalUId),
+                    'cal_name'      => $this->cal_name . $eventArray['plb_id'] . '-' . md5($incomingEvent->iCalUId),
                     'ical_key'      => $incomingEvent->iCalUId,
                     'last_modified' => $incomingEvent->lastModifiedDateTime,
                     'rrule'         => $rrule
@@ -245,7 +245,7 @@ class MSGraphClient
     private function sendGet($request, $absolute = false) {
         $token = $this->oauth->getToken();
         $headers['Authorization'] = "Bearer $token";
-        $response = \Unirest\Request::get($absolute ? $request : self::BASE_URL . $request, $headers);
+        $response = \Unirest\Request::get($absolute ? $request : $this->base_url . $request, $headers);
         return $response;
     }
 
