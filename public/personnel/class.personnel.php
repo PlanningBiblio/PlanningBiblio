@@ -17,6 +17,11 @@ personnel::fetch prend en paramètres $tri (nom de la colonne), $actif (string),
 Page appelée par les autres fichiers du dossier personnel
 */
 
+// pas de $version=acces direct aux pages de ce dossier => Accès refusé
+if (!isset($version) and php_sapi_name() != 'cli') {
+    include_once(__DIR__.'/../include/accessDenied.php');
+}
+
 class personnel
 {
     public $elements=array();
