@@ -1,12 +1,9 @@
 /**
-Planning Biblio, Plugin Congés
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2013-2018 Jérôme Combes
 
-Fichier : conges/js/script.conges.js
-Création : 2 août 2013
-Dernière modification : 12 septembre 2018
+@file public/conges/js/script.conges.js
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié <etienne.cavalie@unice.fr>
 
@@ -381,17 +378,37 @@ function verifConges(){
     return false;
   }
   
+  var admin = $("#admin").val();
 
   // Vérifions si un autre congé a été demandé ou validé
   var result=$.ajax({
     url: '/conges/ajax.verifConges.php',
     type: "get",
-    data: "perso_id="+perso_id+"&debut="+debut+"&fin="+fin+"&hre_debut="+hre_debut+"&hre_fin="+hre_fin+"&id="+id,
+    dataType: "json",
+    data: {perso_id: perso_id, debut: debut, fin: fin, hre_debut: hre_debut, hre_fin: hre_fin, id: id},
     async: false,
-    success: function(data){
-      if(data != "Pas de congé"){
-        information("Un congé a déjà été demandé " + data,"error");
-      }else{
+    success: function(warning){
+
+      if (warning.length !=0) {
+        var valid = false;
+
+        if (warning['holiday'] != undefined) {
+            CJInfo("Un congé a déjà été demandé " + warning['holiday'], "error");
+        }
+
+        if (warning['planning_started'] != undefined) {
+          if (admin == 1) {
+            if (confirm("Vous essayer d'enregistrer un congés sur des plannings en cours d'élaboration : "+warning["planning_started"]+"\nVoulez-vous continuer ?")) {
+              valid = true;
+            }
+          } else {
+            CJInfo("Vous essayez d'enregistrer un congés sur des plannings en cours d'élaboration : "+warning["planning_started"], "error");
+          }
+        }
+        if (valid == true) {
+          $("#form").submit();
+        }
+      } else {
         $("#form").submit();
       }
     },
