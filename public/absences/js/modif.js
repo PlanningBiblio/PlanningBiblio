@@ -867,10 +867,10 @@ function verif_absences(ctrl_form){
   var retour=true;
 
   $.ajax({
-    url: "/absences/ajax.control.php",
+    url: "/include/ajax/holiday-absence-control.php",
     type: "get",
     datatype: "json",
-    data: {perso_ids: JSON.stringify(perso_ids), id: id, groupe: groupe, debut: debut, fin: fin},
+    data: {perso_ids: JSON.stringify(perso_ids), id: id, groupe: groupe, debut: debut, fin: fin, type:'absence'},
     async: false,
     success: function(result){
       result=JSON.parse(result);
@@ -919,32 +919,32 @@ function verif_absences(ctrl_form){
       // Contrôle si les agents apparaissent dans des plannings validés
       // Pour chaque agent
       for(i in result){
-	if(result[i]["planning"]){
+	if(result[i]["planning_validated"]){
 	  if(admin==1){
-	    if(!confirm("L'agent "+result[i]["nom"]+" apparaît dans des plannings validés : "+result[i]["planning"]+"\nVoulez-vous continuer ?")){
+	    if(!confirm("L'agent "+result[i]["nom"]+" apparaît dans des plannings validés : "+result[i]["planning_validated"]+"\nVoulez-vous continuer ?")){
 	      retour=false;
 	    }
 	  }
 	  else{
-	    CJInfo("Vous ne pouvez pas ajouter d'absences pour les dates suivantes<br/>car les plannings sont validés : "+result[i]["planning"]+"<br/>Veuillez modifier vos dates ou contacter le responsable du planning","error");
+	    CJInfo("Vous ne pouvez pas ajouter d'absences pour les dates suivantes<br/>car les plannings sont validés : "+result[i]["planning_validated"]+"<br/>Veuillez modifier vos dates ou contacter le responsable du planning","error");
 	    retour=false;
 	  }
 	}
-      }
 
       // Contrôle si des plannings sont en cours d'élaboration
-      if(result["planningsEnElaboration"]){
+      if(result[i]["planning_started"]){
 	if(admin==1){
-	  if(!confirm("Vous essayer de placer une absence sur des plannings en cours d'élaboration : "+result["planningsEnElaboration"]+"\nVoulez-vous continuer ?")){
+	  if(!confirm("Vous essayer de placer une absence sur des plannings en cours d'élaboration : "+result[i]["planning_started"]+"\nVoulez-vous continuer ?")){
 	    retour=false;
 	  }
 	}
 	else{
-	  CJInfo("Vous essayez de placer une absence sur des plannings en cours d'élaboration : "+result["planningsEnElaboration"],"error");
+	  CJInfo("Vous essayez de placer une absence sur des plannings en cours d'élaboration : "+result[i]["planning_started"],"error");
 	  retour=false;
 	}
       }
       
+      }
     },
     error: function(result){
       information("Une erreur est survenue.","error");
