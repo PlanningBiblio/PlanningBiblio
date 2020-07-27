@@ -3,9 +3,8 @@
 Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2020 Jérôme Combes
 
-@file hamac/cron.hamac.php
+@file src/Cron/Legacy/cron.hamac.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -13,20 +12,10 @@ Importe les absences depuis Hamac
 
 @note : Modifiez le crontab de l'utilisateur Apache (ex: #crontab -eu www-data) en ajoutant les 2 lignes suivantes :
 # Planning Biblio : Importation des absences Hamac toutes les 15 minutes
-* /15 * /usr/bin/php5 -f /var/www/html/planning/ics/cron.ics.php
+* /15 * /usr/bin/php -f /dossier/PlanningBiblio/src/Cron/Legacy/cron.hamac.php
 Pour la ligne précédente, ne mettez pas d'espace entre l'étoile et le /15
 Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à ce fichier
-@note : Modifiez la variable $path suivante en renseignant le chemin absolu vers votre dossier planningBiblio
 */
-
-$path="/var/www/html/planning";
-
-/**
- * @note Default configuration for Hamac
- */
-$status_extra = array();
-$status_waiting = array(3);
-$status_validated = array(2,5);
 
 session_start();
 
@@ -36,11 +25,21 @@ session_start();
  */
 $version=$argv[0];
 
-// chdir($path) : important pour l'execution via le cron
-chdir($path);
+// chdir(__DIR__ . '/../../../public/') : important pour l'execution via le cron
+chdir(__DIR__ . '/../../../public/');
 
-require_once "$path/include/config.php";
-require_once "$path/personnel/class.personnel.php";
+require_once( __DIR__ . '/../../../public/include/config.php');
+require_once( __DIR__ . '/../../../public/personnel/class.personnel.php');
+
+/**
+ * @note Default configuration for Hamac
+ */
+$status_extra = $config['hamac_status_extra'] ?? array();
+$status_waiting = $config['hamac_status_waiting'] ?? array(3);
+$status_validated = $config['hamac_status_validated'] ?? array(2,5);
+// Days_before is used to remove entries that have been deleted from source file.
+// If null or false : deleted entries will not be removed. If interger >= 0 : entries with end upper than today minor the specified value will be deleted
+$days_before = $config['hamac_days_before'] ?? null;
 
 $CSRFToken = CSRFToken();
 
@@ -154,6 +153,22 @@ $dbd->CSRFToken = $CSRFToken;
 $dbd->prepare("DELETE FROM `{$dbprefix}absences` WHERE `id` = :id;");
 
 
+// Absences DB / file : used to remove entries deleted from source file
+$absences_file = array();
+$absences_db = array();
+
+if (is_integer($days_before)) {
+    $end = date('Y-m-d 00:00:00', strtotime("- $days_before days"));
+    $dbx = new db();
+    $dbx->CSRFToken = $CSRFToken;
+    $dbx->select2('absences', array('ical_key'), array('cal_name' =>'hamac', 'fin' => ">$end"));
+    if ($dbx->result) {
+        foreach ($dbx->result as $elem) {
+            $absences_db[] = $elem['ical_key'];
+        }
+    }
+}
+
 // On lit le fichier CSV
 $inF = fopen($filename, 'r');
 
@@ -161,6 +176,7 @@ logs("On lit le fichier CSV " . $filename, "Hamac", $CSRFToken);
 
 while ($tab = fgetcsv($inF, 1024, ';')) {
     $uid = $tab[0];
+    $absences_file[] = $uid;
 
     logs("uid = " . $uid, "Hamac", $CSRFToken);
 
@@ -259,6 +275,22 @@ while ($tab = fgetcsv($inF, 1024, ';')) {
     }
 }
 fclose($inF);
+
+// Remove entries deleted from source file
+// $dbd : DB Delete
+if (!empty($absences_db)) {
+    $dbd = new dbh();
+    $dbd->CSRFToken = $CSRFToken;
+    $dbd->prepare("DELETE FROM `{$dbprefix}absences` WHERE `cal_name` = 'hamac' AND `ical_key` = :ical_key;");
+
+    foreach ($absences_db as $elem) {
+        if (!in_array($elem, $absences_file)) {
+            logs("Absence deleted from source file : $elem", "Hamac", $CSRFToken);
+            $delete = array(':ical_key' => $elem);
+            $dbd->execute($delete);
+        }
+    }
+}
 
 // Unlock
 unlink($lockFile);
