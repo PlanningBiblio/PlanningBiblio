@@ -183,6 +183,7 @@ function initializePlanning() {
 function emptyPlanning() {
   $('.time-slot').each(function() {
     $(this).empty();
+    $(this).removeAttr('data-agent');
     $(this).removeData('agent');
   });
 };
