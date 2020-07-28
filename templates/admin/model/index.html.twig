@@ -47,7 +47,12 @@
                       <a href='javascript:delete_template({{ t.id }});'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>
                     </td>
 
-                    <td>{{ t.nom }}</td>
+                    <td>
+                      {{ t.nom }}
+                      {% if t.jour == '' %}
+                        (semaine)
+                      {% endif %}
+                    </td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -71,7 +76,12 @@
                       <a href='javascript:delete_template({{ t.id }}, true);'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>
                     </td>
 
-                    <td>{{ t.name }}</td>
+                    <td>
+                      {{ t.name }}
+                      {% if t.type == 'week' %}
+                        (semaine)
+                      {% endif %}
+                    </td>
                   </tr>
                 {% endfor %}
               </tbody>
