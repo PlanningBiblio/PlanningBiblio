@@ -54,7 +54,7 @@ function removeWorkingHours(cell_id) {
   url = '/ajax/statedweek/remove';
   data = {agent_id: agent_id, date: date};
 
-  if (job_name) {
+  if (time_id) {
     url = '/ajax/statedweekjob/remove';
     data = {agent_id: agent_id, time_id: time_id, date: date, CSRFToken: CSRFToken};
   }
@@ -183,6 +183,7 @@ function initializePlanning() {
 function emptyPlanning() {
   $('.time-slot').each(function() {
     $(this).empty();
+    $(this).removeData('agent');
   });
 };
 
