@@ -235,6 +235,7 @@ if ($config['Journey-time-for-absences'] > 0) {
     $end_with_journey = date('Y-m-d H:i:s', strtotime("+$j_time minutes", strtotime($finSQL)));
 
     $a=new absences();
+    $a->valide = true;
     $a->fetch(null, null, $start_with_journey, $end_with_journey, null);
     $absences=$a->elements;
 
