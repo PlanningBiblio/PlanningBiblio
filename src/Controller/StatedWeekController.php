@@ -723,8 +723,12 @@ class StatedWeekController extends BaseController
                 );
         }
 
-        $names  = array_column($placed, 'name');
-        array_multisort($names, SORT_ASC, $placed);
+        for($i=0; $i < count($placed); $i++) {
+            $placed[$i]['sort'] = ($placed[$i]['status'] == 'chef_d_equipe' ? '0' : '1') . $placed[$i]['name'];
+        }
+
+        $sort = array_column($placed, 'sort');
+        array_multisort($sort, SORT_ASC, $placed);
 
         return $this->json($placed);
     }
