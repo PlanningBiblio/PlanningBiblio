@@ -14,6 +14,8 @@ Description :
 Fichier permettant de modifier son mot de passe et son planning de présence hebdomadaire
 */
 
+use App\PlanningBiblio\Helper\StatedWeekAgentsFilterHelper;
+
 require_once "personnel/class.personnel.php";
 require_once "planningHebdo/class.planningHebdo.php";
 
@@ -24,6 +26,7 @@ $tmp=array();
 $tmp[0]=date("n")<9?(date("Y")-1)."-".(date("Y")):(date("Y"))."-".(date("Y")+1);
 $tmp[1]=date("n")<9?(date("Y"))."-".(date("Y")+1):(date("Y")+1)."-".(date("Y")+2);
 $message=null;
+$agent_filter = new StatedWeekAgentsFilterHelper();
 
 // Contrôle si les périodes sont renseignées avant d'afficher les années universitaires dans le menu déroulant
 $annees=array();
@@ -40,6 +43,7 @@ foreach ($tmp as $elem) {
 $p=new personnel();
 $p->CSRFToken = $CSRFSession;
 $p->fetchById($_SESSION['login_id']);
+$agent = $p->elements[0];
 $sites=$p->elements[0]['sites'];
 
 // URL ICS
@@ -94,7 +98,7 @@ if ($config['PlanningHebdo']) {
   </div>
 EOD;
 
-    if ($config['PlanningHebdo-Agents']) {
+    if ($config['PlanningHebdo-Agents'] && $agent_filter->canEnterWorkingHoursFor($agent)) {
         echo <<<EOD
     <div style='display: inline-block; width:300px; position: absolute; right: 22px; text-align: right; margin-top:22px;'>
     <a href='index.php?page=planningHebdo/modif.php&retour=monCompte.php' class='ui-button'>

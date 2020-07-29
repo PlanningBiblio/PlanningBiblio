@@ -15,6 +15,8 @@ Affiche la liste des plannings de présence pour l'administrateur
 Page accessible à partir du menu administration/planning de présence
 */
 
+use App\PlanningBiblio\Helper\StatedWeekAgentsFilterHelper;
+
 require_once "class.planningHebdo.php";
 
 $twig = $GLOBALS['twig'];
@@ -23,6 +25,7 @@ $twig = $GLOBALS['twig'];
 $copy=filter_input(INPUT_GET, "copy", FILTER_SANITIZE_NUMBER_INT);
 $id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
 $retour=filter_input(INPUT_GET, "retour", FILTER_SANITIZE_STRING);
+$agent_filter = new StatedWeekAgentsFilterHelper();
 
 if ($retour != 'monCompte.php') {
     $retour = "planningHebdo/$retour";
@@ -185,8 +188,10 @@ if ($id and !$copy) {
         echo "<select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id' style='position:absolute; left:200px; width:200px; text-align:center;' >\n";
         echo "<option value=''>&nbsp;</option>\n";
         foreach ($db->result as $elem) {
-            $selected=$perso_id==$elem['id']?"selected='selected'":null;
-            echo "<option value='{$elem['id']}' $selected >{$elem['nom']} {$elem['prenom']}</option>\n";
+            if ($agent_filter->canEnterWorkingHoursFor($elem)) {
+                $selected=$perso_id==$elem['id']?"selected='selected'":null;
+                echo "<option value='{$elem['id']}' $selected >{$elem['nom']} {$elem['prenom']}</option>\n";
+            }
         }
         echo "</select>\n";
     } else {
