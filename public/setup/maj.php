@@ -1886,14 +1886,14 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
-$v="20.04.00.001";
+$v="20.05.00.001";
 if (version_compare($config['Version'], $v) === -1) {
     $sql[]="ALTER TABLE `{$dbprefix}planning_hebdo` ADD `exception` INT(11) NOT NULL DEFAULT 0;";
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
-$v="20.04.00.002";
+$v="20.05.00.002";
 if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "ALTER TABLE `{$dbprefix}absences` ADD COLUMN last_modified VARCHAR(255) NULL AFTER ical_key;";
 
