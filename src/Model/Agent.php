@@ -206,6 +206,12 @@ class Agent extends PLBEntity {
 
     public function getWorkingHoursOn($date)
     {
+        $config = $GLOBALS['config'];
+
+        if (!$config['PlanningHebdo']) {
+            return array('temps' => json_decode($this->temps()));
+        }
+
         $working_hours = new \planningHebdo();
         $working_hours->perso_id = $this->id;
         $working_hours->debut = $date;
