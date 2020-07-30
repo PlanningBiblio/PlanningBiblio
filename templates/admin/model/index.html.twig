@@ -29,7 +29,11 @@
         <thead>
           <tr>
             <th class='dataTableNoSort'>&nbsp;</th>
-            <th>nom</th>
+            <th>Nom</th>
+            <th>Type</th>
+            {% if multi_sites %}
+                <th>Site</th>
+            {% endif %}
           </tr>
         </thead>
         <tbody>
@@ -41,11 +45,18 @@
               </td>
 
               <td>
-                {{ name }}
+                {{ name | raw }}
+              </td>
+              <td>
                 {% if model.count > 1 %}
-                  (semaine)
+                  Semaine
+                {% else %}
+                  Jour
                 {% endif %}
               </td>
+                {% if multi_sites %}
+                    <td>{{ sites[model.site] }}</td>
+                {% endif %}
             </tr>
           {% endfor %}
         </tbody>
