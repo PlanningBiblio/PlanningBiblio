@@ -3,7 +3,7 @@
 namespace App\Model;
 
 /**
- * @Entity @Table(name="pl_poste_modeles")
+ * @Entity @Table(name="pl_poste_modeles_tab")
  **/
 class Model extends PLBEntity
 {
@@ -14,27 +14,11 @@ class Model extends PLBEntity
     protected $nom;
 
     /** @Column(type="integer") **/
-    protected $perso_id;
-
-    /** @Column(type="integer") **/
-    protected $poste;
-
-    /** @Column(type="string") **/
-    protected $commentaire;
-
-    /** @Column(type="time") **/
-    protected $debut;
-
-    /** @Column(type="time") **/
-    protected $fin;
-
-    /** @Column(type="text") **/
-    protected $tableau;
-
-    /** @Column(type="text") **/
     protected $jour;
 
     /** @Column(type="integer") **/
-    protected $site;
+    protected $tableau;
 
+    /** @Column(type="integer") **/
+    protected $site;
 }

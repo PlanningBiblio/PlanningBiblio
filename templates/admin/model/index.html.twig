@@ -28,7 +28,7 @@
 {% block page %}
     <h3>Modèles</h3>
 
-    {% if templates or statedweek_templates %}
+    {% if models or statedweek_templates %}
 
         <div class="tableaux-cfg">
           <h3>Modèles de planning</h3>
@@ -40,16 +40,16 @@
                 </tr>
               </thead>
               <tbody>
-                {% for t in templates %}
+                {% for name,model in models %}
                   <tr>
                     <td>
-                      <a href='{{ asset("/model/") }}{{ t.id }}'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>
-                      <a href='javascript:delete_template({{ t.id }});'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>
+                      <a href='{{ asset("/model/") }}{{ model.id }}'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>
+                      <a href='javascript:delete_template({{ model.id }});'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>
                     </td>
 
                     <td>
-                      {{ t.nom }}
-                      {% if t.jour == '' %}
+                      {{ name }}
+                      {% if model.count > 1 %}
                         (semaine)
                       {% endif %}
                     </td>
@@ -88,5 +88,6 @@
           </table>
         </div>
     {% else %}
+      <p>Aucun modèles n'est enregistré</p>
     {% endif %}
 {% endblock %}

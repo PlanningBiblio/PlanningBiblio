@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Model\Model;
+use App\Model\ModelAgent;
 use App\Model\StatedWeekTemplate;
 
 class ModelController extends BaseController
@@ -18,11 +19,22 @@ class ModelController extends BaseController
      */
     public function index(Request $request, Session $session)
     {
-        $templates = $this->entityManager->getRepository(Model::class)->findAll();
+        $all_models = $this->entityManager->getRepository(Model::class)->findAll();
+        $models = array();
+        foreach ($all_models as $model) {
+          if (!isset($models[$model->nom()])) {
+            $models[$model->nom()] = array(
+              'count' => 0,
+              'id' => $model->id()
+            );
+          }
+          $models[$model->nom()]['count']++;
+        }
+
         $statedweek_templates =  $this->entityManager->getRepository(StatedWeekTemplate::class)->findAll();
 
         $this->templateParams(array(
-            'templates' => $templates,
+            'models' => $models,
             'statedweek_templates' => $statedweek_templates
         ));
 
@@ -37,10 +49,21 @@ class ModelController extends BaseController
         $id = $request->get('id');
         $name = $request->get('name');
 
-        $template = $this->entityManager->getRepository(Model::class)->find($id);
-        $template->nom($name);
+        $model = $this->entityManager->getRepository(Model::class)->find($id);
+        $models = $this->entityManager->getRepository(Model::class)
+            ->findBy(array('nom' => $model->nom()));
+        $modelAgents = $this->entityManager->getRepository(ModelAgent::class)
+            ->findBy(array('nom' => $model->nom()));
 
-        $this->entityManager->persist($template);
+        foreach ($models as $model) {
+            $model->nom($name);
+            $this->entityManager->persist($model);
+        }
+        foreach ($modelAgents as $modelAgent) {
+            $modelAgent->nom($name);
+            $this->entityManager->persist($modelAgent);
+        }
+
         $this->entityManager->flush();
 
         $session->getFlashBag()->add('notice', 'Modèle enregistré');
@@ -100,9 +123,19 @@ class ModelController extends BaseController
     {
         $id = $request->get('id');
 
-        $template = $this->entityManager->getRepository(Model::class)->find($id);
+        $model = $this->entityManager->getRepository(Model::class)->find($id);
+        $models = $this->entityManager->getRepository(Model::class)
+            ->findBy(array('nom' => $model->nom()));
+        $modelAgents = $this->entityManager->getRepository(ModelAgent::class)
+            ->findBy(array('nom' => $model->nom()));
 
-        $this->entityManager->remove($template);
+        foreach ($models as $model) {
+            $this->entityManager->remove($model);
+        }
+        foreach ($modelAgents as $modelAgent) {
+            $this->entityManager->remove($modelAgent);
+        }
+
         $this->entityManager->flush();
 
         $session->getFlashBag()->add('notice', 'Modèle supprimé');
