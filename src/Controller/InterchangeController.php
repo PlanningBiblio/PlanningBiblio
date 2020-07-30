@@ -64,7 +64,8 @@ class InterchangeController extends BaseController
 
             $interchanges[] = array(
                 'id' => $interchange->id(),
-                'date' => dateAlpha($planning->date()->format('Y-m-d')),
+                'date' => $planning->date()->format('Y-m-d'),
+                'fulldate' => dateAlpha($planning->date()->format('Y-m-d')),
                 'requester' => $requester->nom() . ' ' . $requester->prenom(),
                 'from' => $requester_column->starttime()->format('H:i:s'),
                 'to' => $requester_column->endtime()->format('H:i:s'),
@@ -452,10 +453,18 @@ class InterchangeController extends BaseController
             '<<asked.surname>>'         => $asked->nom(),
             '<<asked.from>>'            => $asked_column->starttime()->format('H:i'),
             '<<asked.to>>'              => $asked_column->endtime()->format('H:i'),
+            '<<logged.firstname>>'      => $logged_in->prenom(),
+            '<<logged.surname>>'        => $logged_in->nom(),
             '<<url>>'                   => $this->getRequest()->getUriForPath("/interchange/$id")
         );
 
         $message = $this->config('interchange_mail_' . $interchange->status());
+
+        // Rejected by admin.
+        if ($asked->id() != $logged_in->id()
+            && $interchange->status() == 'REJECTED') {
+            $message = $this->config('interchange_mail_admin_REJECTED');
+        }
 
         foreach ($replacements as $search => $replace) {
             $message['subject'] = str_replace($search, $replace, $message['subject']);
@@ -491,7 +500,7 @@ class InterchangeController extends BaseController
         $email = new \CJMail();
         $email->subject = $message['subject'];
         $email->message = $message['content'];
-        $email->to = $asked->mail();
+        $email->to = $recipients;
         $email->send();
     }
 

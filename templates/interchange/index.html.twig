@@ -11,7 +11,7 @@
 
   <input type="button" value="Nouvelle demande" onclick="location.href='/interchange/add'" class="ui-button" style="float: right; margin-bottom: 10px;"/>
 
-  <table class="CJDataTable">
+  <table class="CJDataTable" data-sort='[[1, "desc"]]'>
     <thead>
       <tr>
         <th></th>
@@ -31,7 +31,7 @@
               <span class='pl-icon pl-icon-edit' title='Éditer'></span>
             </a>
           </td>
-          <td>{{ i.date }}</td>
+          <td data-sort="{{ i.date }}">{{ i.fulldate | raw }}</td>
           <td>{{ i.requester }}</td>
           <td>{{ i.from | hour }} - {{ i.to | hour }}</td>
           <td>{{ i.asked }}</td>
