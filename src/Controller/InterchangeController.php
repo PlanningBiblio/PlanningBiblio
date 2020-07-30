@@ -263,7 +263,11 @@ class InterchangeController extends BaseController
 
         $interchange = $this->entityManager
             ->getRepository(Interchange::class)
-            ->findOneBy(array('planning' => $planning->id(), 'requester' => $agent_id));
+            ->findOneBy(array(
+                'planning' => $planning->id(),
+                'requester' => $agent_id,
+                'status' => array('ASKED','ACCEPTED','VALIDATED')
+        ));
 
         if ($interchange) {
             $response->setContent('existing_requester');
@@ -273,7 +277,11 @@ class InterchangeController extends BaseController
 
         $interchange = $this->entityManager
             ->getRepository(Interchange::class)
-            ->findOneBy(array('planning' => $planning->id(), 'asked' => $agent_id));
+            ->findOneBy(array(
+                'planning' => $planning->id(),
+                'asked' => $agent_id,
+                'status' => array('ASKED','ACCEPTED','VALIDATED')
+        ));
 
         if ($interchange) {
             $response->setContent('existing_asked');
@@ -321,6 +329,7 @@ class InterchangeController extends BaseController
         $response = new Response();
 
         $column_id = $request->get('column_id');
+        $requester_id = $_SESSION['login_id'];
 
         $times = $this->entityManager
             ->getRepository(StatedWeekTimes::class)
@@ -334,15 +343,28 @@ class InterchangeController extends BaseController
             return $response;
         }
 
+        $column = $this->entityManager->getRepository(StatedWeekColumn::class)
+            ->find($column_id);
+        $rejected = $this->entityManager
+            ->getRepository(Interchange::class)
+            ->findBy(array(
+                'planning' => $column->planning_id(),
+                'requester' => $requester_id,
+                'status' => 'REJECTED'
+        ));
+        $rejected_ids = array_map(function($v) { return $v->asked(); }, $rejected);
+
         $agents = array();
         foreach ($times as $time) {
             $agent = $this->entityManager->getRepository(Agent::class)->find($time->agent_id());
-            $agents[] = array(
-                'time_id' => $time->id(),
-                'name' => $agent->prenom() . ' ' . $agent->nom(),
-                'statut' => $agent->statut(),
-                'service' => $agent->service()
-            );
+            if (!in_array($agent->id(), $rejected_ids)) {
+                $agents[] = array(
+                    'time_id' => $time->id(),
+                    'name' => $agent->prenom() . ' ' . $agent->nom(),
+                    'statut' => $agent->statut(),
+                    'service' => $agent->service()
+                );
+            }
         }
 
         return $this->json($agents);
