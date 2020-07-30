@@ -25,14 +25,27 @@ class ModelController extends BaseController
             if (!isset($models[$model->nom()])) {
                 $models[$model->nom()] = array(
                     'count' => 0,
-                    'id' => $model->id()
+                    'id' => $model->id(),
+                    'site' => $model->site()
                 );
             }
 
             $models[$model->nom()]['count']++;
         }
 
-        $this->templateParams(array( 'models' => $models ));
+        $multi_sites = $this->config('Multisites-nombre') > 1 ? 1 : 0;
+        $sites = array();
+        if ($multi_sites) {
+            for ($i=1; $i < $this->config('Multisites-nombre')+1; $i++) {
+                $sites[$i] = $this->config("Multisites-site$i");
+            }
+        }
+
+        $this->templateParams(array(
+            'models' => $models,
+            'multi_sites' => $multi_sites,
+            'sites' => $sites,
+            ));
 
         return $this->output('admin/model/index.html.twig');
     }
