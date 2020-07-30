@@ -186,8 +186,8 @@ if ($bloquant=='1') {
         }
     }
 
-    if ($config['Journey-time-between-floors'] > 0) {
-        $j_time = $config['Journey-time-between-floors'];
+    if ($config['Journey-time-between-areas'] > 0) {
+        $j_time = $config['Journey-time-between-areas'];
         $start_with_journey = date('H:i:s', strtotime("-$j_time minutes", strtotime($debutSQL)));
         $end_with_journey = date('H:i:s', strtotime("+$j_time minutes", strtotime($finSQL)));
 
