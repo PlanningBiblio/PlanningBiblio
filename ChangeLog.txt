@@ -4,6 +4,7 @@ Add working hours exceptions
 Retrieve absences from microsoft graph API
 Add a cron script to purge the log table: planningBibio:PurgeLogTable
 Check journey times between site / areas
+Having "Full day" checked by default in absences is configurable
 
 *** Version 20.04.00       (2020-06-15)   ***
 - Enhancements
