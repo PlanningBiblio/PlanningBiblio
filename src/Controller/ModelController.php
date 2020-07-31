@@ -57,6 +57,13 @@ class ModelController extends BaseController
         $id = $request->get('id');
         $name = $request->get('name');
 
+        $existing_name = $this->entityManager->getRepository(Model::class)
+            ->findBy(array('nom' => $name));
+        if ($existing_name) {
+            $session->getFlashBag()->add('error', 'Ce nom est utilisé par un autre modèle');
+            return $this->redirectToRoute('model.edit', array('id' => $id));
+        }
+
         $models = $this->entityManager->getRepository(Model::class)
             ->findBy(array('model_id' => $id));
 
