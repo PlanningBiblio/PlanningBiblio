@@ -24,13 +24,11 @@ class ModelController extends BaseController
         foreach ($all_models as $model) {
             if (!isset($models[$model->nom()])) {
                 $models[$model->nom()] = array(
-                    'count' => 0,
-                    'id' => $model->id(),
+                    'week' => $model->jour() == 9 ? 0 : 1,
+                    'id' => $model->model_id(),
                     'site' => $model->site()
                 );
             }
-
-            $models[$model->nom()]['count']++;
         }
 
         $multi_sites = $this->config('Multisites-nombre') > 1 ? 1 : 0;
@@ -58,19 +56,12 @@ class ModelController extends BaseController
         $id = $request->get('id');
         $name = $request->get('name');
 
-        $model = $this->entityManager->getRepository(Model::class)->find($id);
         $models = $this->entityManager->getRepository(Model::class)
-            ->findBy(array('nom' => $model->nom()));
-        $modelAgents = $this->entityManager->getRepository(ModelAgent::class)
-            ->findBy(array('nom' => $model->nom()));
+            ->findBy(array('model_id' => $id));
 
         foreach ($models as $model) {
             $model->nom($name);
             $this->entityManager->persist($model);
-        }
-        foreach ($modelAgents as $modelAgent) {
-            $modelAgent->nom($name);
-            $this->entityManager->persist($modelAgent);
         }
 
         $this->entityManager->flush();
@@ -86,7 +77,8 @@ class ModelController extends BaseController
     {
         $id = $request->get('id');
 
-        $template = $this->entityManager->getRepository(Model::class)->find($id);
+        $template = $this->entityManager->getRepository(Model::class)
+            ->findOneBy(array('model_id' => $id));
 
         $this->templateParams(array( 'template'  => $template ));
 
@@ -101,11 +93,11 @@ class ModelController extends BaseController
     {
         $id = $request->get('id');
 
-        $model = $this->entityManager->getRepository(Model::class)->find($id);
         $models = $this->entityManager->getRepository(Model::class)
-            ->findBy(array('nom' => $model->nom()));
+            ->findBy(array('model_id' => $id));
+
         $modelAgents = $this->entityManager->getRepository(ModelAgent::class)
-            ->findBy(array('nom' => $model->nom()));
+            ->findBy(array('model_id' => $id));
 
         foreach ($models as $model) {
             $this->entityManager->remove($model);

@@ -1,13 +1,10 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : planning/poste/enregistrer.php
-Création : mai 2011
-Dernière modification : 30 septembre 2017
+@file public/planning/poste/enregistrer.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -26,6 +23,7 @@ require_once "class.planning.php";
 $confirm=filter_input(INPUT_GET, "confirm", FILTER_SANITIZE_STRING);
 $CSRFToken=filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
 $date=filter_input(INPUT_GET, "date", FILTER_SANITIZE_STRING);
+$model = filter_input(INPUT_GET, "model", FILTER_SANITIZE_NUMBER_INT);
 $nom=trim(filter_input(INPUT_GET, "nom", FILTER_SANITIZE_STRING));
 $semaine=filter_input(INPUT_GET, "semaine", FILTER_SANITIZE_STRING);
 $site=filter_input(INPUT_GET, "site", FILTER_SANITIZE_NUMBER_INT);
@@ -72,12 +70,13 @@ EOD;
 // Etape 2 : Vérifions si le nom n'est pas déjà utilisé
 elseif (!$confirm) {
     $db=new db();
-    $db->select2("pl_poste_modeles", "*", array("nom"=>$nom, "site"=>$site));
+    $db->query("SELECT * FROM `{$config['dbprefix']}pl_poste_modeles_tab` WHERE `nom`= '$nom' AND `site`= '$site';");
     if ($db->result) {				// Si le nom existe, on propose de le remplacer
+        $model = $db->result[0]['model_id'];
         echo "<b>Le modèle \"$nom\" existe<b><br/><br/>\n";
         echo "Voulez vous le remplacer ?<br/><br/>\n";
         echo "<a href='javascript:popup_closed();'>Non</a>&nbsp;&nbsp;\n";
-        echo "<a href='index.php?page=planning/poste/enregistrer.php&amp;confirm=oui&amp;menu=off&amp;nom=$nom&amp;semaine=$semaine&amp;date=$date&amp;site=$site&amp;CSRFToken=$CSRFToken'>Oui</a>\n";
+        echo "<a href='index.php?page=planning/poste/enregistrer.php&amp;confirm=oui&amp;menu=off&amp;model=$model&amp;nom=$nom&amp;semaine=$semaine&amp;date=$date&amp;site=$site&amp;CSRFToken=$CSRFToken'>Oui</a>\n";
     }
     // Etape 2b : si le nom n'existe pas, on enregistre le planning du jour
     else {
@@ -91,10 +90,10 @@ else {
     if ($select->result) {
         $delete=new db();
         $delete->CSRFToken = $CSRFToken;
-        $delete->delete("pl_poste_modeles", array("nom"=>$nom, "site"=>$site));
+        $delete->delete("pl_poste_modeles", array("model_id" => $model));
         $delete=new db();
         $delete->CSRFToken = $CSRFToken;
-        $delete->delete("pl_poste_modeles_tab", array("nom"=>$nom, "site"=>$site));
+        $delete->delete("pl_poste_modeles_tab", array("model_id" => $model));
         enregistre_modele($nom, $date, $semaine, $site, $CSRFToken);
     }
 }
@@ -103,8 +102,6 @@ function enregistre_modele($nom, $date, $semaine, $site, $CSRFToken)
 {
     $dbprefix=$GLOBALS['config']['dbprefix'];
     $d=new datePl($date);
-
-    $nom = htmlentities($nom, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
 
     // Sélection des données entre le lundi et le dimanche de la semaine courante
     if ($semaine) {
@@ -127,6 +124,12 @@ function enregistre_modele($nom, $date, $semaine, $site, $CSRFToken)
     }
   
     if ($select->result and $tab_db->result) {
+
+        // Model_id
+        $db = new db();
+        $db->query('select MAX(`model_id`) AS `model` FROM `pl_poste_modeles_tab`;');
+        $model = $db->result ? $db->result[0]['model'] + 1 : 1;
+
         $values=array();
         foreach ($select->result as $elem) {
             $jour="";			// $jour reste nul si on n'importe pas une semaine
@@ -137,14 +140,20 @@ function enregistre_modele($nom, $date, $semaine, $site, $CSRFToken)
                     $jour = 7;
                 }
             }
-            $values[]=array(":nom"=>$nom, ":perso_id"=>$elem['perso_id'], ":poste"=>$elem['poste'], ":debut"=>$elem['debut'],
-    ":fin"=>$elem['fin'], ":jour"=>$jour, ":site"=>$site);
+            $values[] = array(
+                ':model_id' => $model,
+                ':perso_id' => $elem['perso_id'],
+                ':poste' => $elem['poste'],
+                ':debut' => $elem['debut'],
+                ':fin' => $elem['fin'],
+                ':jour' => $jour,
+                ':site' => $site,
+            );
         }
 
         $dbh=new dbh();
         $dbh->CSRFToken = $CSRFToken;
-        $dbh->prepare("INSERT INTO `{$dbprefix}pl_poste_modeles` (`nom`,`perso_id`,`poste`,`debut`,`fin`,`jour`,`site`) 
-      VALUES (:nom, :perso_id, :poste, :debut, :fin, :jour, :site);");
+        $dbh->prepare("INSERT INTO `{$dbprefix}pl_poste_modeles` (`model_id`, `perso_id`, `poste`, `debut`, `fin`, `jour`, `site`) VALUES (:model_id, :perso_id, :poste, :debut, :fin, :jour, :site);");
         foreach ($values as $value) {
             $dbh->execute($value);
         }
@@ -158,7 +167,7 @@ function enregistre_modele($nom, $date, $semaine, $site, $CSRFToken)
                     $jour = 7;
                 }
             }
-            $insert=array("nom"=>$nom, "jour"=>$jour, "tableau"=>$elem['tableau'], "site"=>$site);
+            $insert=array("model_id" => $model, "nom"=>$nom, "jour"=>$jour, "tableau"=>$elem['tableau'], "site"=>$site);
             $db=new db();
             $db->CSRFToken = $CSRFToken;
             $db->insert("pl_poste_modeles_tab", $insert);
