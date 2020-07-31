@@ -582,6 +582,10 @@ div#tabsemaine1{
   position: -webkit-sticky;
   position: sticky;
   left: 0;
+  z-index: 2;
+}
+.td_sep {
+  background: #7D3C25;
 }
 
 /* tr_espace : permet d'ajouter un espace entre les tableaux : ex: display:block; height:20px; */
