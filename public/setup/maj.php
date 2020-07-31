@@ -1900,6 +1900,17 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="20.05.00.003";
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`, `valeurs`) VALUES ('Absences-journeeEntiere', 'boolean', '1', 'Absences','38', 'Le paramètre \"Journée(s) entière(s)\" est coché par défaut lors de la saisie d\'une absence.', '');";
+
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('Journey-time-between-sites', 'text', '0', 'Temps de trajet moyen entre sites (en minutes)', 'Planning', 95);";
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('Journey-time-between-areas', 'text', '0', 'Temps de trajet moyen entre zones (en minutes)', 'Planning', 96);";
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `ordre`) VALUES ('Journey-time-for-absences', 'text', '0', 'Temps de trajet moyen entre une absence et un poste de service public (en minutes)', 'Planning', 97);";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
