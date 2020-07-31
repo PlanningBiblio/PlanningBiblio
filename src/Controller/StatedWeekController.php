@@ -173,22 +173,29 @@ class StatedWeekController extends BaseController
         $to = $date . ' ' . $request->get('to');
         $job_name = $request->get('job_name');
 
-        $params = array('supprime' => 0);
-        if ($job_name != 'concierges' && $job_name != 'autre') {
-            $params['service'] = $this->config('statedweek_service_filter');
-        }
-
         $availables = array();
         $agents = $this->entityManager
             ->getRepository(Agent::class)
-            ->findBy($params, array('nom' => 'ASC'));
+            ->findBy(array('supprime' => 0), array('nom' => 'ASC'));
 
         $required_skills = array();
-        $jobs_conf = $this->config('statedweek_times_job');
+        $required_services = array($this->config('statedweek_service_filter'));
         if ($job_name) {
+            $jobs_conf = $this->config('statedweek_times_job');
             foreach ($jobs_conf as $job_conf) {
                 if ($job_conf['name'] == $job_name) {
                     $required_skills = $job_conf['skills'];
+
+                    $services_option = $job_conf['services_option'];
+                    if ($services_option && $this->config($services_option) !== null) {
+                        if (is_array($this->config($services_option))) {
+                            $required_services = $this->config($services_option);
+                        } else {
+                            $required_services = array($this->config($services_option));
+                        }
+                    } else {
+                        $required_services = array();
+                    }
                 }
             }
         }
@@ -196,6 +203,10 @@ class StatedWeekController extends BaseController
         foreach ($agents as $agent) {
 
             if ($agent->id() == 1 || $agent->id() == 2) {
+                continue;
+            }
+
+            if (!$agent->isInService($required_services)) {
                 continue;
             }
 
