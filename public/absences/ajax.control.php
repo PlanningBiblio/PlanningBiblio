@@ -28,9 +28,14 @@ $id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
 $groupe=filter_input(INPUT_GET, "groupe", FILTER_SANITIZE_STRING);
 $debut=filter_input(INPUT_GET, "debut", FILTER_CALLBACK, array("options"=>"sanitize_dateTimeSQL"));
 $fin=filter_input(INPUT_GET, "fin", FILTER_CALLBACK, array("options"=>"sanitize_dateTimeSQL"));
+$hre_debut = filter_input(INPUT_GET, 'hre_debut', FILTER_SANITIZE_STRING);
+$hre_fin = filter_input(INPUT_GET, 'hre_fin', FILTER_SANITIZE_STRING);
 $perso_ids=filter_input(INPUT_GET, "perso_ids", FILTER_SANITIZE_STRING);
 $perso_ids=json_decode(html_entity_decode($perso_ids, ENT_QUOTES|ENT_IGNORE, "UTF-8"), true);
 
+$fin = $fin ?? $debut;
+$hre_debut = $hre_debut ?? "00:00:00";
+$hre_fin = $hre_fin ?? "23:59:59";
 $result=array();
 
 $p = new personnel();
@@ -86,7 +91,6 @@ foreach ($perso_ids as $perso_id) {
     // Contrôle si placé sur planning validé
     if ($config['Absences-apresValidation']==0) {
         $datesValidees=array();
-
         $req="SELECT `date`,`site` FROM `{$dbprefix}pl_poste` WHERE `perso_id`='$perso_id' ";
         $req.="AND CONCAT_WS(' ',`date`,`debut`)<'$fin' AND CONCAT_WS(' ',`date`,`fin`)>'$debut' ";
         $req.="GROUP BY `date`;";

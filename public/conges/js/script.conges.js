@@ -354,9 +354,11 @@ function verifConges(){
   var hre_fin=$("#hre_fin_select").val();
   var perso_id=$("#perso_id").val();
   var id=$("#id").val();
-  if(hre_fin==""){
-    hre_fin="23:59:59";
-  }
+  hre_debut=hre_debut?hre_debut:"00:00:00";
+  hre_fin=hre_fin?hre_fin:"23:59:59";
+  debut=debut+" "+hre_debut;
+  fin=fin+" "+hre_fin;
+
   // Vérifions si les dates sont correctement saisies
   if($("#debut").val()==""){
     information("Veuillez choisir la date de début","error");
@@ -396,13 +398,23 @@ function verifConges(){
             CJInfo("Un congé a déjà été demandé " + warning['holiday'], "error");
         }
 
-        if (warning['planning_started'] != undefined) {
+         if (warning['planning_validated'] != undefined) {
           if (admin == 1) {
-            if (confirm("Vous essayer d'enregistrer un congés sur des plannings en cours d'élaboration : "+warning["planning_started"]+"\nVoulez-vous continuer ?")) {
+            if (confirm("Vous essayer d'enregistrer un congé sur des plannings validés : "+warning["planning_validated"]+"\nVoulez-vous continuer ?")) {
               valid = true;
             }
           } else {
-            CJInfo("Vous essayez d'enregistrer un congés sur des plannings en cours d'élaboration : "+warning["planning_started"], "error");
+            CJInfo("Vous essayez d'enregistrer un congé sur des plannings validés : "+warning["planning_validated"], "error");
+          }
+        }
+ 
+        else if (warning['planning_started'] != undefined) {
+          if (admin == 1) {
+            if (confirm("Vous essayer d'enregistrer un congé sur des plannings en cours d'élaboration : "+warning["planning_started"]+"\nVoulez-vous continuer ?")) {
+              valid = true;
+            }
+          } else {
+            CJInfo("Vous essayez d'enregistrer un congé sur des plannings en cours d'élaboration : "+warning["planning_started"], "error");
           }
         }
         if (valid == true) {
