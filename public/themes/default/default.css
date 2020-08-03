@@ -585,7 +585,7 @@ div#tabsemaine1{
   z-index: 2;
 }
 .td_sep {
-  background: #7D3C25;
+  background: inherit;
 }
 
 /* tr_espace : permet d'ajouter un espace entre les tableaux : ex: display:block; height:20px; */
@@ -603,6 +603,7 @@ div#tabsemaine1{
   width:192px;
   font-size:12pt;
   font-weight: bold;
+  white-space: nowrap;
 }
 
 .td_obligatoire{
