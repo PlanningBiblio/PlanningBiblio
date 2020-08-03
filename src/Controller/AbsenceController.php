@@ -73,6 +73,7 @@ class AbsenceController extends BaseController
             'reason_types'          => $this->reasonTypes(),
             'agents'                => $this->getAgents(),
             'fullday_checked'       => $this->config('Absences-journeeEntiere'),
+            'hour_precision'        => $this->config('Granularite'),
         ));
 
         return $this->output('absences/add.html.twig');
@@ -272,6 +273,7 @@ class AbsenceController extends BaseController
             'reason_types'          => $this->reasonTypes(),
             'display_autre'         => $display_autre,
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
+            'hour_precision'        => $this->config('Granularite'),
         ));
 
         $this->templateParams(array('documents' => $this->getDocuments($a->id)));

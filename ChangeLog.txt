@@ -8,6 +8,9 @@ Having "Full day" checked by default in absences is configurable
 Check journey times between absences and jobs
 Enable web profiler on dev environment
 
+-Fixes
+Use fine tuning of hours in absence forms
+
 *** Version 20.04.00       (2020-06-15)   ***
 - Enhancements
 Include symfony framework
