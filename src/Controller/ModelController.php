@@ -22,8 +22,9 @@ class ModelController extends BaseController
 
         $models = array();
         foreach ($all_models as $model) {
-            if (!isset($models[$model->nom()])) {
-                $models[$model->nom()] = array(
+            if (!isset($models[$model->site() . $model->nom()])) {
+                $models[$model->site() . $model->nom()] = array(
+                    'name' => $model->nom(),
                     'week' => $model->jour() == 9 ? 0 : 1,
                     'id' => $model->model_id(),
                     'site' => $model->site()

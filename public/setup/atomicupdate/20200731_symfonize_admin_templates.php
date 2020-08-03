@@ -4,7 +4,7 @@ $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_modeles_tab` ADD `model_id` INT(11) N
 $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_modeles` ADD `model_id` INT(11) NOT NULL DEFAULT '0' AFTER `nom`;";
 
 $db = new db();
-$db->select2('pl_poste_modeles_tab', array('id', 'nom', 'site'), null, "ORDER BY `nom`, `id`");
+$db->select2('pl_poste_modeles_tab', array('id', 'nom', 'site'), null, "ORDER BY `site`, `nom`, `id`");
 
 $last = null;
 $model = 0;
