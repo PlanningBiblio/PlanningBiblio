@@ -1881,7 +1881,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
-$v="20.04.00.000";
+$v="20.04.01.000";
 if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
@@ -1898,7 +1898,7 @@ foreach ($sql as $elem) {
         }
     } else {
         if ($cli) {
-            echo "\e[1mBold$elem : \033[31m[KO]\e[0m\n";
+            echo "\e[1m$elem : \033[31m[KO]\e[0m\n";
         } else {
             echo "$elem : <font style='color:red;'>Erreur</font><br/>\n";
         }

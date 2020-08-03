@@ -143,16 +143,32 @@ if [[ $updatecomposer = '' ]]; then
 fi
 
 
+if [[ $planningdbhost = 'localhost' ]] || [[ $planningdbhost = '127.0.0.1' ]]; then
+    planningdbuserhost='localhost'
+else
+    planningdbuserhost='%'
+fi
 
 # Set variables
 planningbdatas=data/planningb_1911_utf8.sql.gz
 planningbsecret=$(head /dev/urandom|tr -dc "a-f0-9"|fold -w 32|head -n 1)
 
-# Download composer
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-php -r "if (hash_file('sha384', 'composer-setup.php') === 'e0012edf3e80b6978849f5eff0d4b4e4c79ff1609dd1e613307e16318854d24ae64f26d17af3ef0bf7cfb710ca74755a') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-php composer-setup.php
-php -r "unlink('composer-setup.php');"
+# Create the database
+mysql -h $planningdbhost -u $dbroot --password=$dbpass -e "DROP USER IF EXISTS '$planningbdbuser'@'$planningdbuserhost';"
+mysql -h $planningdbhost -u $dbroot --password=$dbpass -e "DROP DATABASE IF EXISTS $planningbdbname;"
+
+mysql -h $planningdbhost -u $dbroot --password=$dbpass -e "CREATE DATABASE IF NOT EXISTS $planningbdbname CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"
+
+mysql -h $planningdbhost -u $dbroot --password=$dbpass -e "CREATE USER '$planningbdbuser'@'$planningdbuserhost' IDENTIFIED BY '$planningbdbpass';"
+mysql -h $planningdbhost -u $dbroot --password=$dbpass -e "GRANT ALL PRIVILEGES ON $planningbdbname.* TO '$planningbdbuser'@'$planningdbuserhost' IDENTIFIED BY '$planningbdbpass'"
+
+mysql -h $planningdbhost -u $dbroot --password=$dbpass -e "FLUSH PRIVILEGES"
+zcat $planningbdatas | mysql -h $planningdbhost -u $dbroot --password=$dbpass $planningbdbname
+mysql -h $planningdbhost -u $planningbdbuser --password=$planningbdbpass -e "UPDATE $planningbdbname.\`personnel\` SET \`nom\`='$planningbadminlastname', \`prenom\`='$planningbadminfirstname', \`mail\`='$planningbadminemail', \`password\`=MD5('$planningbadminpass') WHERE \`id\` = 1;"
+
+if [[ $? -ne 0 ]]; then
+    exit;
+fi
 
 # Create the .env.local file
 cp .env .env.local
@@ -161,24 +177,17 @@ sed -i "s/APP_SECRET=.*/APP_DEBUG=0\nAPP_SECRET=${planningbsecret}/" .env.local
 sed -i "s/DATABASE_URL=.*/DATABASE_URL=mysql:\/\/$planningbdbuser:$planningbdbpass@$planningdbhost:$planningdbport\/$planningbdbname/" .env.local
 sed -i "s/DATABASE_PREFIX=.*/DATABASE_PREFIX=$planningbdbprefix/" .env.local
 
-# Create the database
-mysql -u $dbroot --password=$dbpass -e "DROP USER IF EXISTS '$planningbdbuser'@'$planningdbhost';"
-mysql -u $dbroot --password=$dbpass -e "DROP DATABASE IF EXISTS $planningbdbname;"
-
-mysql -u $dbroot --password=$dbpass -e "CREATE DATABASE IF NOT EXISTS $planningbdbname CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"
-mysql -u $dbroot --password=$dbpass -e "CREATE USER '$planningbdbuser'@'$planningdbhost' IDENTIFIED BY '$planningbdbpass';"
-mysql -u $dbroot --password=$dbpass -e "GRANT ALL PRIVILEGES ON $planningbdbname.* TO $planningbdbuser@$planningdbhost IDENTIFIED BY '$planningbdbpass'"
-
-mysql -u $dbroot --password=$dbpass -e "FLUSH PRIVILEGES"
-zcat $planningbdatas | mysql -u $dbroot --password=$dbpass $planningbdbname
-mysql -u $planningbdbuser --password=$planningbdbpass -e "UPDATE $planningbdbname.\`personnel\` SET \`nom\`='$planningbadminlastname', \`prenom\`='$planningbadminfirstname', \`mail\`='$planningbadminemail', \`password\`=MD5('$planningbadminpass') WHERE \`id\` = 1;"
-
 # Set the light_blue theme
-mysql -u $planningbdbuser --password=$planningbdbpass -e "UPDATE $planningbdbname.\`config\` SET \`valeur\` = 'light_blue' WHERE \`nom\` = 'Affichage-theme';"
+mysql -h $planningdbhost -u $planningbdbuser --password=$planningbdbpass -e "UPDATE $planningbdbname.\`config\` SET \`valeur\` = 'light_blue' WHERE \`nom\` = 'Affichage-theme';"
 
 if [[ ! -d public/themes/light_blue ]]; then
     git clone https://github.com/planningbiblio/theme_light_blue public/themes/light_blue
 fi
+
+# Download composer
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php composer-setup.php
+php -r "unlink('composer-setup.php');"
 
 # Update dependencies ?
 if [[ $updatecomposer = 'yes' && -f composer.lock ]]; then
@@ -196,5 +205,6 @@ php -r "unlink('composer.phar');"
 php -f public/index.php
 
 echo ""
-echo "Installation is completed. You can open Planning Biblio in your web browser with these cretentials : admin / $planningbadminpass";
+echo -e "One more step, run : \e[1m\033[32msudo chmod -R 777 var\e[0m";
+echo "Then, the installation will be completed and you will be able to use Planning Biblio in your web browser with these cretentials : admin / $planningbadminpass";
 echo ""
