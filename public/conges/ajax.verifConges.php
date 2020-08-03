@@ -34,7 +34,7 @@ if ($result = conges::exists($perso_id, "$debut $hre_debut", "$fin $hre_fin", $i
 
 
 // Contrôle si placé sur des plannings en cours d'élaboration;
-if (!isset($warning['holiday']) and $config['Absences-planningVide']==0) {
+if (!isset($warning['holiday']) and $config['Conges-planningVide']==0) {
     // Dates à contrôler
     $date_debut=substr($debut, 0, 10);
     $date_fin=substr($fin, 0, 10);
