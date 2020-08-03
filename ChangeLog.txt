@@ -1,5 +1,9 @@
 *** Unreleased ***
 
+*** Version 20.04.01       (2020-08-03)   ***
+-Fixes
+Use fine tuning of hours in absence forms
+
 *** Version 20.04.00       (2020-06-15)   ***
 - Enhancements
 Include symfony framework
