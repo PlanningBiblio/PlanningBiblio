@@ -110,107 +110,17 @@
             <td>
               <select name='hre_debut' class='center ui-widget-content ui-corner-all'>
                 <option value=""></option>
-                {% if hre_debut == '07:00:00' %}
-                  <option value="07:00:00" selected="selected">07h00</option>
-                {% else %}
-                  <option value="07:00:00">07h00</option>
-                {% endif %}
-
-                {% if hre_debut == '08:00:00' %}
-                  <option value="08:00:00" selected="selected">08h00</option>
-                {% else %}
-                  <option value="08:00:00">08h00</option>
-                {% endif %}
-
-                {% if hre_debut == '09:00:00' %}
-                  <option value="09:00:00" selected="selected">09h00</option>
-                {% else %}
-                  <option value="09:00:00">09h00</option>
-                {% endif %}
-
-                {% if hre_debut == '10:00:00' %}
-                  <option value="10:00:00" selected="selected">10h00</option>
-                {% else %}
-                  <option value="10:00:00">10h00</option>
-                {% endif %}
-
-                {% if hre_debut == '11:00:00' %}
-                  <option value="11:00:00" selected="selected">11h00</option>
-                {% else %}
-                  <option value="11:00:00">11h00</option>
-                {% endif %}
-
-                {% if hre_debut == '12:00:00' %}
-                  <option value="12:00:00" selected="selected">12h00</option>
-                {% else %}
-                  <option value="12:00:00">12h00</option>
-                {% endif %}
-
-                {% if hre_debut == '13:00:00' %}
-                  <option value="13:00:00" selected="selected">13h00</option>
-                {% else %}
-                  <option value="13:00:00">13h00</option>
-                {% endif %}
-
-                {% if hre_debut == '14:00:00' %}
-                  <option value="14:00:00" selected="selected">14h00</option>
-                {% else %}
-                  <option value="14:00:00">14h00</option>
-                {% endif %}
-
-                {% if hre_debut == '15:00:00' %}
-                  <option value="15:00:00" selected="selected">15h00</option>
-                {% else %}
-                  <option value="15:00:00">15h00</option>
-                {% endif %}
-
-                {% if hre_debut == '16:00:00' %}
-                  <option value="16:00:00" selected="selected">16h00</option>
-                {% else %}
-                  <option value="16:00:00">16h00</option>
-                {% endif %}
-
-                {% if hre_debut == '17:00:00' %}
-                  <option value="17:00:00" selected="selected">17h00</option>
-                {% else %}
-                  <option value="17:00:00">17h00</option>
-                {% endif %}
-
-                {% if hre_debut == '18:00:00' %}
-                  <option value="18:00:00" selected="selected">18h00</option>
-                {% else %}
-                  <option value="18:00:00">18h00</option>
-                {% endif %}
-
-                {% if hre_debut == '19:00:00' %}
-                  <option value="19:00:00" selected="selected">19h00</option>
-                {% else %}
-                  <option value="19:00:00">19h00</option>
-                {% endif %}
-
-                {% if hre_debut == '20:00:00' %}
-                  <option value="20:00:00" selected="selected">20h00</option>
-                {% else %}
-                  <option value="20:00:00">20h00</option>
-                {% endif %}
-
-                {% if hre_debut == '21:00:00' %}
-                  <option value="21:00:00" selected="selected">21h00</option>
-                {% else %}
-                  <option value="21:00:00">21h00</option>
-                {% endif %}
-
-                {% if hre_debut == '22:00:00' %}
-                  <option value="22:00:00" selected="selected">22h00</option>
-                {% else %}
-                  <option value="22:00:00">22h00</option>
-                {% endif %}
-
-                {% if hre_debut == '23:00:00' %}
-                  <option value="23:00:00" selected="selected">23h00</option>
-                {% else %}
-                  <option value="23:00:00">23h00</option>
-                {% endif %}
+                {% for i in 6..23 %}
+                    {% for j in range(low=0, high=60, step=hour_precision) %}
+                      {% if j != 60 %}
+                        {% if hre_debut == "%02d:%02d:00"|format(i,j) %}
+                          <option value='{{ "%02d:%02d:00"|format(i,j) }}' selected='selected' >{{ "%02dh%02d"|format(i,j) }}</option>
+                        {% else %}
+                          <option value='{{ "%02d:%02d:00"|format(i,j) }}' >{{ "%02dh%02d"|format(i,j) }}</option>
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                {% endfor %}
               </select>
             </td>
           </tr>
@@ -231,107 +141,17 @@
               <td>
                 <select name='hre_fin' class='center ui-widget-content ui-corner-all' onfocus='setEndHour();'>
                 <option value=""></option>
-                {% if hre_fin == '07:00:00' %}
-                  <option value="07:00:00" selected="selected">07h00</option>
-                {% else %}
-                  <option value="07:00:00">07h00</option>
-                {% endif %}
-
-                {% if hre_fin == '08:00:00' %}
-                  <option value="08:00:00" selected="selected">08h00</option>
-                {% else %}
-                  <option value="08:00:00">08h00</option>
-                {% endif %}
-
-                {% if hre_fin == '09:00:00' %}
-                  <option value="09:00:00" selected="selected">09h00</option>
-                {% else %}
-                  <option value="09:00:00">09h00</option>
-                {% endif %}
-
-                {% if hre_fin == '10:00:00' %}
-                  <option value="10:00:00" selected="selected">10h00</option>
-                {% else %}
-                  <option value="10:00:00">10h00</option>
-                {% endif %}
-
-                {% if hre_fin == '11:00:00' %}
-                  <option value="11:00:00" selected="selected">11h00</option>
-                {% else %}
-                  <option value="11:00:00">11h00</option>
-                {% endif %}
-
-                {% if hre_fin == '12:00:00' %}
-                  <option value="12:00:00" selected="selected">12h00</option>
-                {% else %}
-                  <option value="12:00:00">12h00</option>
-                {% endif %}
-
-                {% if hre_fin == '13:00:00' %}
-                  <option value="13:00:00" selected="selected">13h00</option>
-                {% else %}
-                  <option value="13:00:00">13h00</option>
-                {% endif %}
-
-                {% if hre_fin == '14:00:00' %}
-                  <option value="14:00:00" selected="selected">14h00</option>
-                {% else %}
-                  <option value="14:00:00">14h00</option>
-                {% endif %}
-
-                {% if hre_fin == '15:00:00' %}
-                  <option value="15:00:00" selected="selected">15h00</option>
-                {% else %}
-                  <option value="15:00:00">15h00</option>
-                {% endif %}
-
-                {% if hre_fin == '16:00:00' %}
-                  <option value="16:00:00" selected="selected">16h00</option>
-                {% else %}
-                  <option value="16:00:00">16h00</option>
-                {% endif %}
-
-                {% if hre_fin == '17:00:00' %}
-                  <option value="17:00:00" selected="selected">17h00</option>
-                {% else %}
-                  <option value="17:00:00">17h00</option>
-                {% endif %}
-
-                {% if hre_fin == '18:00:00' %}
-                  <option value="18:00:00" selected="selected">18h00</option>
-                {% else %}
-                  <option value="18:00:00">18h00</option>
-                {% endif %}
-
-                {% if hre_fin == '19:00:00' %}
-                  <option value="19:00:00" selected="selected">19h00</option>
-                {% else %}
-                  <option value="19:00:00">19h00</option>
-                {% endif %}
-
-                {% if hre_fin == '20:00:00' %}
-                  <option value="20:00:00" selected="selected">20h00</option>
-                {% else %}
-                  <option value="20:00:00">20h00</option>
-                {% endif %}
-
-                {% if hre_fin == '21:00:00' %}
-                  <option value="21:00:00" selected="selected">21h00</option>
-                {% else %}
-                  <option value="21:00:00">21h00</option>
-                {% endif %}
-
-                {% if hre_fin == '22:00:00' %}
-                  <option value="22:00:00" selected="selected">22h00</option>
-                {% else %}
-                  <option value="22:00:00">22h00</option>
-                {% endif %}
-
-                {% if hre_fin == '23:00:00' %}
-                  <option value="23:00:00" selected="selected">23h00</option>
-                {% else %}
-                  <option value="23:00:00">23h00</option>
-                {% endif %}
+                {% for i in 6..23 %}
+                    {% for j in range(low=0, high=60, step=hour_precision) %}
+                      {% if j != 60 %}
+                        {% if hre_fin == "%02d:%02d:00"|format(i,j) %}
+                          <option value='{{ "%02d:%02d:00"|format(i,j) }}' selected='selected' >{{ "%02dh%02d"|format(i,j) }}</option>
+                        {% else %}
+                          <option value='{{ "%02d:%02d:00"|format(i,j) }}' >{{ "%02dh%02d"|format(i,j) }}</option>
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                {% endfor %}
               </select>
             </td>
           </tr>
