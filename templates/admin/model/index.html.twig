@@ -37,7 +37,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for name,model in models %}
+          {% for model in models %}
             <tr>
               <td>
                 <a href='{{ asset("/model/") }}{{ model.id }}'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a>
@@ -45,7 +45,7 @@
               </td>
 
               <td>
-                {{ name }}
+                {{ model.name }}
               </td>
               <td>
                 {% if model.week %}
