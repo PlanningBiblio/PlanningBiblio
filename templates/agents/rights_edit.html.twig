@@ -2,7 +2,7 @@
 
 <div id='access' style='margin-left:70px;display:none;padding-top:30px;'>
   {% for category, elem in rights %}
-    <h3 style='margin:10px 0 5px 0;'>{{ category }}</h3>
+    <h3 style='margin:10px 0 5px 0;'>{{ category | raw }}</h3>
     {% for right in elem.rights %}
       {% if right.checked %}
         <input type='checkbox' name='droits[]' checked="checked" value='{{ right.groupe_id }}' style='margin:0 10px 0 20px;'/>{{ right.groupe | raw }}<br/>

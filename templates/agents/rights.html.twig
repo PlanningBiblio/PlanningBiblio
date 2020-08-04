@@ -3,7 +3,7 @@
 <div id='access' style='margin-left:70px;display:none;padding-top:30px;'>
   <ul>
     {% for category, elem in rights %}
-      <h3 style='margin:10px 0 5px 0;'>{{ category }}</h3>
+      <h3 style='margin:10px 0 5px 0;'>{{ category | raw }}</h3>
       {% for right in elem.rights %}
         <li>
           {% if right.checked %}
@@ -30,7 +30,7 @@
         {% for category, elem in rights_sites %}
           <tr>
             <td>
-              <h3 style='margin:10px 0 5px 0;'>{{ category }}</h3>
+              <h3 style='margin:10px 0 5px 0;'>{{ category | raw }}</h3>
             </td>
           </tr>
           {% for right in elem.rights %}
