@@ -880,7 +880,7 @@ function verif_absences(ctrl_form){
       // Pour chaque agent
       for(i in result){
         // Contrôle si d'autres absences sont enregistrées
-        if(result[i]["autresAbsences"].length){
+        if(result[i]["autresAbsences"] && result[i]["autresAbsences"].length){
           autresAbsences.push(result[i]);
         }
       }
