@@ -1,5 +1,9 @@
 *** Unreleased ***
 
+*** Version 20.04.02       (2020-08-04)   ***
+-Fixes
+Fix the control of plannings when an absence is recorded
+
 *** Version 20.04.01       (2020-08-03)   ***
 -Fixes
 Use fine tuning of hours in absence forms
