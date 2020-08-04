@@ -384,45 +384,42 @@ function verifConges(){
 
   // Vérifions si un autre congé a été demandé ou validé
   var result=$.ajax({
-    url: '/conges/ajax.verifConges.php',
+    url: '/include/ajax/holiday-absence-control.php',
     type: "get",
     dataType: "json",
-    data: {perso_id: perso_id, debut: debut, fin: fin, hre_debut: hre_debut, hre_fin: hre_fin, id: id},
+    data: {perso_ids: JSON.stringify([perso_id]), debut: debut, fin: fin, hre_debut: hre_debut, hre_fin: hre_fin, id: id, type:'holiday'},
     async: false,
     success: function(warning){
+      var valid = false;
+      for (i in warning) {
 
-      if (warning.length !=0) {
-        var valid = false;
-
-        if (warning['holiday'] != undefined) {
-            CJInfo("Un congé a déjà été demandé " + warning['holiday'], "error");
+        if (warning[i]['holiday'] != undefined) {
+            CJInfo("Un congé a déjà été demandé " + warning[i]['holiday'], "error");
         }
 
-         if (warning['planning_validated'] != undefined) {
+         if (warning[i]['planning_validated'] != undefined) {
           if (admin == 1) {
-            if (confirm("Vous essayer d'enregistrer un congé sur des plannings validés : "+warning["planning_validated"]+"\nVoulez-vous continuer ?")) {
+            if (confirm("Vous essayer d'enregistrer un congé sur des plannings validés : "+warning[i]["planning_validated"]+"\nVoulez-vous continuer ?")) {
               valid = true;
             }
           } else {
-            CJInfo("Vous essayez d'enregistrer un congé sur des plannings validés : "+warning["planning_validated"], "error");
+            CJInfo("Vous essayez d'enregistrer un congé sur des plannings validés : "+warning[i]["planning_validated"], "error");
           }
         }
  
-        else if (warning['planning_started'] != undefined) {
+        if (warning[i]['planning_started'] != undefined) {
           if (admin == 1) {
-            if (confirm("Vous essayer d'enregistrer un congé sur des plannings en cours d'élaboration : "+warning["planning_started"]+"\nVoulez-vous continuer ?")) {
+            if (confirm("Vous essayer d'enregistrer un congé sur des plannings en cours d'élaboration : "+warning[i]["planning_started"]+"\nVoulez-vous continuer ?")) {
               valid = true;
             }
           } else {
-            CJInfo("Vous essayez d'enregistrer un congé sur des plannings en cours d'élaboration : "+warning["planning_started"], "error");
+            CJInfo("Vous essayez d'enregistrer un congé sur des plannings en cours d'élaboration : "+warning[i]["planning_started"], "error");
           }
         }
-        if (valid == true) {
-          $("#form").submit();
-        }
-      } else {
-        $("#form").submit();
-      }
+     }
+     if (valid == true) {
+      $("#form").submit();
+     }
     },
     error: function(){
       information("Une erreur est survenue lors de l'enregistrement du congé","error");
