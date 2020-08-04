@@ -36,7 +36,11 @@
               <thead>
                 <tr>
                   <th class='dataTableNoSort'>&nbsp;</th>
-                  <th>nom</th>
+                  <th>Nom</th>
+                  <th>Type</th>
+                  {% if multi_sites %}
+                    <th>Site</th>
+                  {% endif %}
                 </tr>
               </thead>
               <tbody>
@@ -49,9 +53,20 @@
 
                     <td>
                       {{ name }}
-                      {% if model.count > 1 %}
-                        (semaine)
-                      {% endif %}
+                    </td>
+                    <td>
+                    {% if model.week %}
+                      Semaine
+                    {% else %}
+                      Jour
+                    {% endif %}
+                    </td>
+                    {% if multi_sites %}
+                      <td>
+                        {{ sites[model.site] }}
+                      </td>
+                    {% endif %}
+
                     </td>
                   </tr>
                 {% endfor %}
@@ -65,7 +80,8 @@
               <thead>
                 <tr>
                   <th class='dataTableNoSort'>&nbsp;</th>
-                  <th>nom</th>
+                  <th>Nom</th>
+                  <th>Type</th>
                 </tr>
               </thead>
               <tbody>
@@ -78,9 +94,13 @@
 
                     <td>
                       {{ t.name }}
-                      {% if t.type == 'week' %}
-                        (semaine)
-                      {% endif %}
+                    </td>
+                    <td>
+                    {% if t.type == 'week' %}
+                      Semaine
+                    {% else %}
+                      Jour
+                    {% endif %}
                     </td>
                   </tr>
                 {% endfor %}

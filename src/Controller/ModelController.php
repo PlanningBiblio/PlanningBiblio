@@ -25,7 +25,9 @@ class ModelController extends BaseController
           if (!isset($models[$model->nom()])) {
             $models[$model->nom()] = array(
               'count' => 0,
-              'id' => $model->id()
+              'id' => $model->id(),
+              'site' => $model->site(),
+              'week' => $model->jour() == 9 ? 0 : 1,
             );
           }
           $models[$model->nom()]['count']++;
@@ -33,9 +35,19 @@ class ModelController extends BaseController
 
         $statedweek_templates =  $this->entityManager->getRepository(StatedWeekTemplate::class)->findAll();
 
+        $multi_sites = $this->config('Multisites-nombre') > 1 ? 1 : 0;
+        $sites = array();
+        if ($multi_sites) {
+            for ($i=1; $i < $this->config('Multisites-nombre')+1; $i++) {
+                $sites[$i] = $this->config("Multisites-site$i");
+            }
+        }
+
         $this->templateParams(array(
             'models' => $models,
-            'statedweek_templates' => $statedweek_templates
+            'statedweek_templates' => $statedweek_templates,
+            'multi_sites' => $multi_sites,
+            'sites' => $sites,
         ));
 
         return $this->output('admin/model/index.html.twig');
