@@ -106,7 +106,6 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
         $dates[0]=$date;			// S'il ne s'agit pas d'un modèle semaine, insertion seulement pour le jour en cours
     }
     $nom=str_replace("###semaine", "", $get_nom);
-    $nom=htmlentities($nom, ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
   
   
     // Recherche des agents placés sur d'autres sites
@@ -145,11 +144,11 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
         // S'il s'agit d'un modèle pour une semaine
         if ($semaine) {
             $db=new db();
-            $db->select2("pl_poste_modeles_tab", "*", array("nom"=>$nom, "site"=>$site, "jour"=>$i));
+            $db->select2("pl_poste_modeles_tab", "*", array("nom"=>$nom, "site"=>$site, "jour"=>$i), null, false);
         // S'il s'agit d'un modèle pour un seul jour
         } else {
             $db=new db();
-            $db->select2("pl_poste_modeles_tab", "*", array("nom"=>$nom, "site"=>$site));
+            $db->select2("pl_poste_modeles_tab", "*", array("nom"=>$nom, "site"=>$site), null, false);
         }
 
         $tableau=$db->result[0]['tableau'];
@@ -185,11 +184,11 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
         // S'il s'agit d'un modèle pour une semaine
         if ($semaine) {
             $db=new db();
-            $db->select2("pl_poste_modeles", "*", array("nom"=>$nom, "site"=>$site, "jour"=>$i));
+            $db->select2("pl_poste_modeles", "*", array("nom"=>$nom, "site"=>$site, "jour"=>$i), null, false);
         // S'il s'agit d'un modèle pour un seul jour
         } else {
             $db=new db();
-            $db->select2("pl_poste_modeles", "*", array("nom"=>$nom, "site"=>$site));
+            $db->select2("pl_poste_modeles", "*", array("nom"=>$nom, "site"=>$site), null, false);
         }
 
     

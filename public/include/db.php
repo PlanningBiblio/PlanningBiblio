@@ -131,7 +131,7 @@ class db
       Si array : array(champ1=>valeur1, champ2=>valeur2, ...)
     @param string option : permet d'ajouter des options de recherche après where, ex : order by
     */
-    public function select2($table, $infos="*", $where="1", $options=null)
+    public function select2($table, $infos="*", $where="1", $options=null, $htmlentities=true)
     {
         $this->connect();
         $dbprefix=$this->dbprefix;
@@ -160,7 +160,7 @@ class db
         if (is_array($where)) {
             $tmp=array();
             foreach ($where as $key => $value) {
-                $tmp[]=$this->makeSearch($key, $value);
+                $tmp[]=$this->makeSearch($key, $value, $htmlentities);
             }
             $where=join(" AND ", $tmp);
         }
@@ -435,7 +435,7 @@ class db
     }
 
 
-    public function makeSearch($key, $value)
+    public function makeSearch($key, $value, $htmlentities = true)
     {
         // Trim des valeurs et opérateurs
         if ($value!==null) {
@@ -514,7 +514,9 @@ class db
             // On permet donc l'utilisation du signe < suivi d'un espace
             return "{$key}{$operator} {$value}()";
         } else {
-            $value=htmlentities($value, ENT_QUOTES | ENT_IGNORE, "UTF-8", false);
+            if ($htmlentities) {
+              $value=htmlentities($value, ENT_QUOTES | ENT_IGNORE, "UTF-8", false);
+            }
             $value=$this->escapeString($value);
             return "{$key}{$operator}'$value'";
         }

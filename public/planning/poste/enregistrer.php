@@ -20,6 +20,9 @@ Etape 3 : enregistrement dans la base de données
 Cette page est appelée par la fonction JavaScript Popup qui l'affiche dans un cadre flottant
 */
 
+use App\Model\Model;
+use App\Model\ModelAgent;
+
 require_once "class.planning.php";
 
 // Initialisation des variables
@@ -71,9 +74,9 @@ EOD;
 }
 // Etape 2 : Vérifions si le nom n'est pas déjà utilisé
 elseif (!$confirm) {
-    $db=new db();
-    $db->select2("pl_poste_modeles", "*", array("nom"=>$nom, "site"=>$site));
-    if ($db->result) {				// Si le nom existe, on propose de le remplacer
+    $model = $entityManager->getRepository(Model::class)->findOneBy(array('nom' => $nom, 'site' => $site));
+
+    if ($model) {				// Si le nom existe, on propose de le remplacer
         echo "<b>Le modèle \"$nom\" existe<b><br/><br/>\n";
         echo "Voulez vous le remplacer ?<br/><br/>\n";
         echo "<a href='javascript:popup_closed();'>Non</a>&nbsp;&nbsp;\n";
@@ -89,12 +92,18 @@ else {
     $select=new db();
     $select->select2("pl_poste", "*", array("date"=>$date, "site"=>$site));
     if ($select->result) {
-        $delete=new db();
-        $delete->CSRFToken = $CSRFToken;
-        $delete->delete("pl_poste_modeles", array("nom"=>$nom, "site"=>$site));
-        $delete=new db();
-        $delete->CSRFToken = $CSRFToken;
-        $delete->delete("pl_poste_modeles_tab", array("nom"=>$nom, "site"=>$site));
+        $models = $entityManager->getRepository(Model::class)->findBy(array('nom' => $nom, 'site' => $site));
+        foreach ($models as $model) {
+          $entityManager->remove($model);
+        }
+        $entityManager->flush();
+
+        $modelAgents = $entityManager->getRepository(ModelAgent::class)->findBy(array('nom' => $nom, 'site' => $site));
+        foreach ($modelAgents as $modelAgent) {
+          $entityManager->remove($modelAgent);
+        }
+        $entityManager->flush();
+
         enregistre_modele($nom, $date, $semaine, $site, $CSRFToken);
     }
 }
@@ -103,8 +112,6 @@ function enregistre_modele($nom, $date, $semaine, $site, $CSRFToken)
 {
     $dbprefix=$GLOBALS['config']['dbprefix'];
     $d=new datePl($date);
-
-    $nom = htmlentities($nom, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
 
     // Sélection des données entre le lundi et le dimanche de la semaine courante
     if ($semaine) {
@@ -158,10 +165,16 @@ function enregistre_modele($nom, $date, $semaine, $site, $CSRFToken)
                     $jour = 7;
                 }
             }
-            $insert=array("nom"=>$nom, "jour"=>$jour, "tableau"=>$elem['tableau'], "site"=>$site);
-            $db=new db();
-            $db->CSRFToken = $CSRFToken;
-            $db->insert("pl_poste_modeles_tab", $insert);
+
+            $model = new Model();
+            $model->nom($nom);
+            $model->jour($jour);
+            $model->tableau($elem['tableau']);
+            $model->site($site);
+
+            $entityManager = $GLOBALS['entityManager'];
+            $entityManager->persist($model);
+            $entityManager->flush();
         }
     }
     echo "Modèle \"$nom\" enregistré<br/><br/>\n";
