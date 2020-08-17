@@ -56,6 +56,10 @@
       <input type='hidden' name='CSRFSession' id='CSRFSession' value='{{ CSRFSession }}' />
     </form>
 
+    <form name='baseURLForm' action='#' method='get'>
+      <input type='hidden' name='baseURL' id='baseURL' value='{{ app.request.getBaseURL() }}' />
+    </form>
+
     {% if content_planning %}
       <div id='content-planning'>
     {% else %}
