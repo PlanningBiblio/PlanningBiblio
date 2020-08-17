@@ -1,12 +1,9 @@
 /**
-Planning Biblio, Version 2.7.08
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : absences/js/modif.js
-Création : 28 février 2014
-Dernière modification : 14 décembre 2017
+@file public/absences/js/modif.js
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -222,8 +219,9 @@ $(function() {
     
     if(confirm("Etes vous sûr de vouloir supprimer cette absence ?")){
       var CSRFToken = $('#CSRFSession').val();
+      var baseURL = $('#baseURL').val();
       var id=$("#absence-bouton-supprimer").attr("data-id");
-      document.location.href="/index.php?page=absences/delete.php&id="+id+"&CSRFToken="+CSRFToken;
+      document.location.href = baseURL + "/index.php?page=absences/delete.php&id="+id+"&CSRFToken="+CSRFToken;
     }
   });
 
@@ -503,22 +501,25 @@ $(function() {
 
       "Uniquement cet événement": function() {
         var CSRFToken = $('#CSRFSession').val();
+        var baseURL = $('#baseURL').val();
         var id=$("#absence-bouton-supprimer").attr("data-id");
-        document.location.href="index.php?page=absences/delete.php&id="+id+"&rec=current&CSRFToken="+CSRFToken;
+        document.location.href = baseURL + "/index.php?page=absences/delete.php&id="+id+"&rec=current&CSRFToken="+CSRFToken;
         $( this ).dialog( "close" );
       },
 
       "Cet événement et les suivants": function() {
         var CSRFToken = $('#CSRFSession').val();
+        var baseURL = $('#baseURL').val();
         var id=$("#absence-bouton-supprimer").attr("data-id");
-        document.location.href="index.php?page=absences/delete.php&id="+id+"&rec=next&CSRFToken="+CSRFToken;
+        document.location.href = baseURL + "/index.php?page=absences/delete.php&id="+id+"&rec=next&CSRFToken="+CSRFToken;
         $( this ).dialog( "close" );
       },
 
       "Tous les événements": function() {
         var CSRFToken = $('#CSRFSession').val();
+        var baseURL = $('#baseURL').val();
         var id=$("#absence-bouton-supprimer").attr("data-id");
-        document.location.href="index.php?page=absences/delete.php&id="+id+"&rec=all&CSRFToken="+CSRFToken;
+        document.location.href = baseURL + "/index.php?page=absences/delete.php&id="+id+"&rec=all&CSRFToken="+CSRFToken;
         $( this ).dialog( "close" );
       },
 
