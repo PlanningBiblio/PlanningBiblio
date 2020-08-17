@@ -11,6 +11,7 @@ Enable web profiler on dev environment
 -Fixes
 Use fine tuning of hours in absence forms
 Fix the control of plannings when an absence is recorded
+Fix removal of reccuring absences
 
 *** Version 20.04.00       (2020-06-15)   ***
 - Enhancements
