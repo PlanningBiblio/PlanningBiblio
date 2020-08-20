@@ -1,9 +1,8 @@
 <?php
 /**
-Planning Biblio, Version 2.7.01
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
 Called from absences and holidays add/edit, to check if said absence or holiday can be added or edited.
 */
@@ -22,14 +21,10 @@ $config_name = ($type == "holiday") ? "Conges" : "Absences";
 $groupe=filter_input(INPUT_GET, "groupe", FILTER_SANITIZE_STRING);
 $debut=filter_input(INPUT_GET, "debut", FILTER_CALLBACK, array("options"=>"sanitize_dateTimeSQL"));
 $fin=filter_input(INPUT_GET, "fin", FILTER_CALLBACK, array("options"=>"sanitize_dateTimeSQL"));
-$hre_debut = filter_input(INPUT_GET, 'hre_debut', FILTER_SANITIZE_STRING);
-$hre_fin = filter_input(INPUT_GET, 'hre_fin', FILTER_SANITIZE_STRING);
 $perso_ids=filter_input(INPUT_GET, "perso_ids", FILTER_SANITIZE_STRING);
 $perso_ids=json_decode(html_entity_decode($perso_ids, ENT_QUOTES|ENT_IGNORE, "UTF-8"), true);
 
 $fin = $fin ?? $debut;
-$hre_debut = $hre_debut ?? "00:00:00";
-$hre_fin = $hre_fin ?? "23:59:59";
 $result=array();
 
 $p = new personnel();
@@ -82,8 +77,8 @@ foreach ($perso_ids as $perso_id) {
             }
         }
     } elseif ($type == 'holiday') {
-        if ($holiday_exists = conges::exists($perso_id, "$debut $hre_debut", "$fin $hre_fin", $id)) {
-            $result['holiday'] = 'du ' . dateFr($holiday_exists['from'], true) . ' au ' . dateFr($holiday_exists['to'], true);
+        if ($holiday_exists = conges::exists($perso_id, $debut, $fin, $id)) {
+            $result[$perso_id]['holiday'] = 'du ' . dateFr($holiday_exists['from'], true) . ' au ' . dateFr($holiday_exists['to'], true);
         }
     }
 
@@ -115,7 +110,7 @@ foreach ($perso_ids as $perso_id) {
     $result[$perso_id]['nom']=nom($perso_id, 'nom prenom', $agents);
 
     // Contrôle si placé sur des plannings en cours d'élaboration;
-    if (!$result[$perso_id]["planning_validated"] && $config["$config_name-planningVide"]==0) {
+    if ($config["$config_name-planningVide"]==0) {
         // Dates à contrôler
         $date_debut=substr($debut, 0, 10);
         $date_fin=substr($fin, 0, 10);
@@ -149,7 +144,6 @@ foreach ($perso_ids as $perso_id) {
         $result[$perso_id]["planning_started"]=implode(" ; ", $planningsEnElaboration);
     }
 }
-
 
 
 echo json_encode($result);

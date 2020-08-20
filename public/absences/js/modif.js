@@ -926,7 +926,7 @@ function verif_absences(ctrl_form){
 	    }
 	  }
 	  else{
-	    CJInfo("Vous ne pouvez pas ajouter d'absences pour les dates suivantes<br/>car les plannings sont validés : "+result[i]["planning_validated"]+"<br/>Veuillez modifier vos dates ou contacter le responsable du planning","error");
+	    CJInfo("Vous ne pouvez pas ajouter d'absences pour les dates suivantes car les plannings sont validés :#BR#"+result[i]["planning_validated"]+"#BR#Veuillez modifier vos dates ou contacter le responsable du planning", "error");
 	    retour=false;
 	  }
 	}
@@ -939,7 +939,7 @@ function verif_absences(ctrl_form){
 	  }
 	}
 	else{
-	  CJInfo("Vous essayez de placer une absence sur des plannings en cours d'élaboration : "+result[i]["planning_started"],"error");
+	  CJInfo("Vous ne pouvez pas enregistrer d'absences pour les dates suivantes car les plannings sont en cours d'élaboration :#BR#"+result[i]["planning_started"], "error");
 	  retour=false;
 	}
       }

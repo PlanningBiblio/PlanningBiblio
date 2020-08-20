@@ -27,6 +27,7 @@
     <input type='hidden' name='valide' value='0' />
     <input type='hidden' id='agent' value="{{ agent_name }}" />
     <input type='hidden' name='conges-recup' id='conges-recup' value="{{ conges_recuperations }}" />
+    <input type='hidden' name="admin" id='admin' value='{{ admin }}' />
     {% if request_type == 'recover' %}
       <input type='hidden' id='is-recover' value='1' />
     {% endif %}
