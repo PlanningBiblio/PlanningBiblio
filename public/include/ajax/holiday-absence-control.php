@@ -35,7 +35,7 @@ $agents = $p->elements;
 // Pour chaque agent, contrôle si autre absence, si placé sur planning validé, si placé sur planning en cours d'élaboration
 foreach ($perso_ids as $perso_id) {
     if ($type == 'absence') {
-        $result[$perso_id]=array("perso_id"=>$perso_id, "autresAbsences"=>array(), "planning"=>null);
+        $result['users'][$perso_id]=array("perso_id"=>$perso_id, "autresAbsences"=>array(), "planning"=>null);
 
         // Contrôle des autres absences
         if ($groupe) {
@@ -73,12 +73,12 @@ foreach ($perso_ids as $perso_id) {
                     }
                 }
 
-                $result[$perso_id]["autresAbsences"][] = $absence;
+                $result['users'][$perso_id]["autresAbsences"][] = $absence;
             }
         }
     } elseif ($type == 'holiday') {
         if ($holiday_exists = conges::exists($perso_id, $debut, $fin, $id)) {
-            $result[$perso_id]['holiday'] = 'du ' . dateFr($holiday_exists['from'], true) . ' au ' . dateFr($holiday_exists['to'], true);
+            $result['users'][$perso_id]['holiday'] = 'du ' . dateFr($holiday_exists['from'], true) . ' au ' . dateFr($holiday_exists['to'], true);
         }
     }
 
@@ -102,47 +102,47 @@ foreach ($perso_ids as $perso_id) {
             }
         }
         if (!empty($datesValidees)) {
-            $result[$perso_id]["planning_validated"]=join(" ; ", $datesValidees);
+            $result['users'][$perso_id]["planning_validated"]=join(" ; ", $datesValidees);
         }
     }
 
     // Ajoute le nom de l'agent
-    $result[$perso_id]['nom']=nom($perso_id, 'nom prenom', $agents);
+    $result['users'][$perso_id]['nom']=nom($perso_id, 'nom prenom', $agents);
+}
 
-    // Contrôle si placé sur des plannings en cours d'élaboration;
-    if ($config["$config_name-planningVide"]==0) {
-        // Dates à contrôler
-        $date_debut=substr($debut, 0, 10);
-        $date_fin=substr($fin, 0, 10);
+// Contrôle si placé sur des plannings en cours d'élaboration;
+if ($config["$config_name-planningVide"]==0) {
+    // Dates à contrôler
+    $date_debut=substr($debut, 0, 10);
+    $date_fin=substr($fin, 0, 10);
 
-        // Tableau des plannings en cours d'élaboration
-        $planningsEnElaboration=array();
+    // Tableau des plannings en cours d'élaboration
+    $planningsEnElaboration=array();
 
-        // Pour chaque dates
-        $date=$date_debut;
-        while ($date<=$date_fin) {
-            // Vérifie si les plannings de tous les sites sont validés
-            $db=new db();
-            $db->select2("pl_poste_verrou", "*", array("date"=>$date, "verrou2"=>"1"));
-            // S'ils ne sont pas tous validés, vérifie si certains d'entre eux sont commencés
-            if ($db->nb < $config['Multisites-nombre']) {
-                // TODO : ceci peut être amélioré en cherchant en particulier si les sites non validés sont commencés, car les sites non validés et non commencés ne nous interressent pas.
-                // for($i=1;$i<=$config['Multisites-nombre'];$i++){} // Attention, faire une première requête si $db->nb=0 pour éviter les erreurs foreach not array
-                // Le nom des sites pourrait également être retourné
+    // Pour chaque dates
+    $date=$date_debut;
+    while ($date<=$date_fin) {
+        // Vérifie si les plannings de tous les sites sont validés
+        $db=new db();
+        $db->select2("pl_poste_verrou", "*", array("date"=>$date, "verrou2"=>"1"));
+        // S'ils ne sont pas tous validés, vérifie si certains d'entre eux sont commencés
+        if ($db->nb < $config['Multisites-nombre']) {
+            // TODO : ceci peut être amélioré en cherchant en particulier si les sites non validés sont commencés, car les sites non validés et non commencés ne nous interressent pas.
+            // for($i=1;$i<=$config['Multisites-nombre'];$i++){} // Attention, faire une première requête si $db->nb=0 pour éviter les erreurs foreach not array
+            // Le nom des sites pourrait également être retourné
 
-                $db2=new db();
-                $db2->select2("pl_poste", "id", array("date"=>$date));
-                // Si tous les sites ne sont pas validés et si certains sont commencés, on affichera la date correspondante
-                if ($db2->result) {
-                    $planningsEnElaboration[]=date("d/m/Y", strtotime($date));
-                }
+            $db2=new db();
+            $db2->select2("pl_poste", "id", array("date"=>$date));
+            // Si tous les sites ne sont pas validés et si certains sont commencés, on affichera la date correspondante
+            if ($db2->result) {
+                $planningsEnElaboration[]=date("d/m/Y", strtotime($date));
             }
-            $date=date("Y-m-d", strtotime($date." +1 day"));
         }
-
-        // Affichage des dates correspondantes aux plannings en cours d'élaboration
-        $result[$perso_id]["planning_started"]=implode(" ; ", $planningsEnElaboration);
+        $date=date("Y-m-d", strtotime($date." +1 day"));
     }
+
+    // Affichage des dates correspondantes aux plannings en cours d'élaboration
+    $result["planning_started"]=implode(" ; ", $planningsEnElaboration);
 }
 
 
