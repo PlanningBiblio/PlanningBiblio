@@ -34,14 +34,6 @@ class AdminInfoController extends BaseController
     }
 
     /**
-     * @Route("/admin/info/add", name="admin.info.add", methods={"POST"})
-     */
-    public function add(Request $request, Session $session)
-    {
-        return $this->update($request, $session);
-    }
-
-    /**
      * @Route("/admin/info/add", name="admin.info.addform", methods={"GET"})
      */
     public function addform(Request $request)
@@ -76,7 +68,7 @@ class AdminInfoController extends BaseController
     }
 
     /**
-     * @Route("/admin/info/{id}", name="admin.info.update", methods={"POST"})
+     * @Route("/admin/info", name="admin.info.update", methods={"POST"})
      */
     public function update(Request $request, Session $session)
     {
@@ -118,7 +110,7 @@ class AdminInfoController extends BaseController
     }
 
     /**
-     * @Route("/admin/info/{id}", name="admin.info.delete", methods={"DEL"})
+     * @Route("/admin/info", name="admin.info.delete", methods={"DEL"})
      */
     public function delete(Request $request, Session $session)
     {
