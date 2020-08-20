@@ -288,6 +288,7 @@ class HolidayController extends BaseController
             return $this->redirectToRoute("holiday.index", array('recup' => $recover));
         }
 
+        $admin = ($adminN1 or $adminN2);
         $this->templateParams(array('CSRFToken' => $GLOBALS['CSRFSession']));
         $valide=$data['valide']>0?true:false;
         $displayRefus=$data['valide']>=0?"display:none;":null;
@@ -329,6 +330,7 @@ class HolidayController extends BaseController
         }
         $holiday_helper = new HolidayHelper();
         $this->templateParams(array(
+            'admin'                 => $admin,
             'id'                    => $id,
             'perso_id'              => $perso_id,
             'login_id'              => $_SESSION['login_id'],
