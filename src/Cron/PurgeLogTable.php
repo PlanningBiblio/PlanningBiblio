@@ -3,10 +3,13 @@
 namespace App\Cron;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\LockableTrait;
+
+use App\PlanningBiblio\Logger;
 
 class PurgeLogTable extends Command {
 
@@ -22,6 +25,7 @@ Usage:   php bin/console PlanningBiblio:PurgeLogTable \"<DELAY>\"
 Example: php bin/console PlanningBiblio:PurgeLogTable \"12 MONTH\"
         ");
         $this->addArgument('delay', InputArgument::REQUIRED, 'MySQL interval (ex: 12 MONTH)');
+        $this->addOption('stdout', null, InputOption::VALUE_OPTIONAL, 'Output result in stdout', false);
     }
 
     public function execute (InputInterface $input, OutputInterface $output) {
@@ -38,7 +42,8 @@ Example: php bin/console PlanningBiblio:PurgeLogTable \"12 MONTH\"
         $query = "DELETE FROM " . $_ENV['DATABASE_PREFIX'] . "log WHERE timestamp < (NOW() - INTERVAL $delay)";
         $statement = $em->getConnection()->prepare($query);
         $statement->execute();
-        $output->writeln("Log table entries older than $delay purged (" . $statement->rowCount() . " deleted)");
+        $logger = new Logger($em, $input->getOption('stdout'));
+        $logger->log("Log table entries older than $delay purged (" . $statement->rowCount() . " deleted)", "PurgeLogTable");
         $this->release();
     }
 }
