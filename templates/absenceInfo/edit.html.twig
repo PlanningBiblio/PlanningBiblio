@@ -11,7 +11,7 @@
         <h4>Ajout d'une information</h4>
     {% endif %}
 
-    <form id='form' method='post' action='{{ url('absences.info.update') }}' name='form' onsubmit='return verif_form("start=date1;end=date2;text");'>
+    <form id='form' method='POST' action='{{ asset('/absences/info') }}' name='form' onsubmit='return verif_form("start=date1;end=date2;text");'>
         <input type="hidden" name="_token" value="{{ csrf_token('csrf') }}"/>
         <input type='hidden' name='id' value='{{ id }}'/>
 
@@ -43,7 +43,7 @@
 
         <tr>
             <td colspan='2' style='text-align:center;'>
-            <a href='{{ url('absences.info.index') }}' class='ui-button' style='margin-left:30px;'>Annuler</a>
+            <a href='{{ asset('absences/info') }}' class='ui-button' style='margin-left:30px;'>Annuler</a>
             {% if id %}
                 <a href='javascript:deleteAbsenceInfo({{ id }});' class='ui-button' style='margin-left:30px;' >Supprimer</a>
             {% endif %}
