@@ -324,10 +324,8 @@ class AbsenceController extends BaseController
         $valide = $request->get('valide');
         $allday = $request->get('allday');
 
-        if ($allday) {
-            $hre_debut = '00:00:00';
-            $hre_fin = '23:59:59';
-        }
+        $hre_debut = !empty($hre_debut) ? hre_debut : '00:00:00';
+        $hre_fin = !empty($hre_fin) ? $hre_fin : '23:59:59';
 
         $pj1 = $request->get('pj1') ? 1 : 0;
         $pj2 = $request->get('pj2') ? 1 : 0;
