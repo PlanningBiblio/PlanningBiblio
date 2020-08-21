@@ -865,9 +865,10 @@ function verif_absences(ctrl_form){
 
   var admin=$("#admin").val();
   var retour=true;
+  var baseURL = $('#baseURL').val();
 
   $.ajax({
-    url: "/include/ajax/holiday-absence-control.php",
+    url: baseURL + "/ajax/holiday-absence-control",
     type: "get",
     datatype: "json",
     data: {perso_ids: JSON.stringify(perso_ids), id: id, groupe: groupe, debut: debut, fin: fin, type:'absence'},
