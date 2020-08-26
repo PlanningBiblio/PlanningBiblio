@@ -20,6 +20,7 @@ Fix removal of reccuring absences
 Set default value for start and end hours when saving an absence
 Fix admin info and absences info forms
 fix retrieving of start hour when adding absence
+Prevent duplicating working hours via clone option
 
 *** Version 20.04.00       (2020-06-15)   ***
 - Enhancements
