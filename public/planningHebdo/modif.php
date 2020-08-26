@@ -242,6 +242,10 @@ if ($request_exception) {
     $id = '';
 }
 
+if ($copy) {
+    $id = '';
+}
+
 ?>
 <input type='hidden' name='page' value='planningHebdo/valid.php' />
 <input type='hidden' name='CSRFToken' value='<?php echo $CSRFSession; ?>' />
