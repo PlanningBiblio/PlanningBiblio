@@ -79,7 +79,7 @@ class MSGraphClient
                         $this->log("Getting events from $from to $to for user ". $user->login());
                         $response = $this->getCalendarView($user, $from, $to);
                         if ($response->code == 200) {
-                            $this->addToIncomingEvents($user, $response);
+                            $this->addToIncomingEvents($user, $response, $from, $to);
                         } else {
                             $this->log("Unable to get events, http status: " . $response->code);
                         }
@@ -92,16 +92,17 @@ class MSGraphClient
                     $this->log("Getting events from $from to $to for user ". $user->login());
                     $response = $this->getCalendarView($user, $from, $to);
                     if ($response->code == 200) {
-                        $this->addToIncomingEvents($user, $response);
+                        $this->addToIncomingEvents($user, $response, $from, $to);
                     } else {
                         $this->log("Unable to get events, http status: " . $response->code);
                     }
                 }
             }
         }
+        $this->log("Amount of incoming events: " . count($this->incomingEvents));
     }
 
-    private function addToIncomingEvents($user, $response, $nextLink = null) {
+    private function addToIncomingEvents($user, $response, $from, $to, $nextLink = null) {
         if ($nextLink) {
             $response = $this->sendGet($nextLink, true);
             if ($response->code != 200) {
@@ -110,7 +111,9 @@ class MSGraphClient
             }
         }
         foreach ($response->body->value as $event) {
-            if ($event->isOrganizer == true || $event->responseStatus->response == "accepted") {
+            if (($event->start->dateTime >= $from . 'T00:00:00.0000000' && $event->end->dateTime <= $to . 'T00:00:00.0000000' ) &&
+                ($event->isOrganizer == true || $event->responseStatus->response == "accepted") &&
+                 !$this->isEventEmpty($user->login(), $event->iCalUId)) {
                 $this->incomingEvents[$user->id() . $event->iCalUId]['plb_id'] = $user->id();
                 $this->incomingEvents[$user->id() . $event->iCalUId]['plb_login'] = $user->login();
                 $this->incomingEvents[$user->id() . $event->iCalUId]['last_modified'] = $event->lastModifiedDateTime;
@@ -120,8 +123,16 @@ class MSGraphClient
 
         if (property_exists($response->body, '@odata.nextLink')) {
             $this->log("Paginate " . $response->body->{'@odata.nextLink'});
-            $this->addToIncomingEvents($user, $response, $response->body->{'@odata.nextLink'});
+            $this->addToIncomingEvents($user, $response, $from, $to, $response->body->{'@odata.nextLink'});
         }
+    }
+
+    private function isEventEmpty($login, $iCalUId) {
+        $response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar/events/?$filter=iCalUId eq \'' . $iCalUId . '\'');
+        if ($response->code == 200 && !empty($response->body->value)) {
+            return false;
+        }
+        return true;
     }
 
     private function getLocalEvents() {
@@ -135,7 +146,7 @@ class MSGraphClient
             $from = $range['from'];
             $to = $range['to'];
         }
-        $query = "SELECT * FROM " . $this->dbprefix . "absences WHERE motif='" . $this->reason_name . "' AND perso_id IN($usersSQLIds) AND debut >= '" . $from . "' AND debut <= '" . $to . "'";
+        $query = "SELECT * FROM " . $this->dbprefix . "absences WHERE motif='" . $this->reason_name . "' AND perso_id IN($usersSQLIds) AND debut >= '" . $from . "' AND fin <= '" . $to . "'";
         $statement = $this->entityManager->getConnection()->prepare($query);
         $statement->execute();
         $results = $statement->fetchAll();
@@ -143,6 +154,7 @@ class MSGraphClient
         foreach ($results as $localEvent) {
             $this->localEvents[$localEvent['perso_id'] . $localEvent['ical_key']] = $localEvent;
         }
+        $this->log("Amount of local events: " . count($this->localEvents));
     }
 
     private function getCalendarView($user, $from, $to) {
