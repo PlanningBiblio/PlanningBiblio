@@ -1,4 +1,6 @@
 *** Unreleased ***
+
+*** Version 20.04.03       (2020-08-27)   ***
 -Fixes
 Fix removal of reccuring absences
 Set default value for start and end hours when saving an absence
