@@ -17,7 +17,7 @@ require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
 class HolidayController extends BaseController
 {
     /**
-     * @Route("/holiday/index", name="holiday.index", methods={"GET"})
+     * @Route("/holiday", name="holiday.index", methods={"GET"})
      */
     public function index(Request $request)
     {

@@ -91,7 +91,7 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`categorie`,`
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Notifications / Validations', 21, 'Gestion des agents', 'notifications/index.php', 'Agents', 70);";
 $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Agents volants', 301, 'Création / modification des plannings, utilisation et gestion des modèles', 'planning/volants/index.php', 'Planning', 110);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Index','100','conges/index.php');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Liste','100','/holiday/index');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Liste','100','/holiday');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Nouveau','100','/holiday/new');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Enregistrer','100','/holiday');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Modifier','100','/holiday/edit');";
@@ -408,9 +408,9 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('10','10','Voir les absences','absences/voir.php',NULL),
   ('10','20','Ajouter une absence','/absence',NULL),
   ('10','30','Informations','/absences/info',NULL),
-  ('15','0','Congés','/holiday/index','config=Conges-Enable'),
-  ('15','10','Liste des cong&eacute;s','/holiday/index','config=Conges-Enable'),
-  ('15','15','Liste des r&eacute;cup&eacute;rations','/holiday/index?recup=1','config=Conges-Enable;Conges-Recuperations'),
+  ('15','0','Congés','/holiday','config=Conges-Enable'),
+  ('15','10','Liste des cong&eacute;s','/holiday','config=Conges-Enable'),
+  ('15','15','Liste des r&eacute;cup&eacute;rations','/holiday?recup=1','config=Conges-Enable;Conges-Recuperations'),
   ('15','20','Poser des cong&eacute;s','/holiday/new','config=Conges-Enable'),
   ('15','24','Poser des r&eacute;cup&eacute;rations','conges/recup_pose.php','config=Conges-Enable;Conges-Recuperations'),
   ('15','26','R&eacute;cup&eacute;rations','conges/recuperations.php','config=Conges-Enable'),
