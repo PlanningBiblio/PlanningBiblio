@@ -1,0 +1,68 @@
+{# job/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+
+  <form name="form" action="#">
+    <input type='hidden' name='page' value='{{asset("job")}}' />
+    <table style='margin:20px 0;'>
+      <tr valign='top'>
+        <td style='width:270px'>
+          <h3 style='margin-top:0px;'>Liste des postes</h3>
+        </td>
+        <td>
+          <input type="button" value="Ajouter" id="ajouter" onclick='location.href="index.php?page=postes/modif.php"' class='ui-button'/>
+        </td>
+      </tr>
+    </table>
+  </form>
+
+  <script type='text/JavaScript'>document.form.groupe.value='{{groupe}}';</script>
+
+  <table id='tablePostes' class='CJDataTable' data-sort='[[1],[2]]'>
+    <thead>
+      <tr>
+        <th class='dataTableNoSort'>&nbsp;</th>
+        <th>Nom du poste</th>
+          {% if multisite > 1 %}
+            <th>Site</th>
+          {% endif %}
+        <th>Etage</th>
+        <th>Activités</th>
+        <th>Groupe</th>
+        <th>Obligatoire/renfort</th>
+        <th>Bloquant</th>
+        <th>Statistiques</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for j in jobs %}
+        <tr>
+          <td style='white-space:nowrap;'>
+            <a href='index.php?page=postes/modif.php&amp;id={{j.id}}'>
+              <span class='pl-icon pl-icon-edit' title='Modifier' ></span>
+            </a>
+            {% if not j in usedJobs %}
+              &nbsp<a href='javascript:supprime(\"postes\",{{j.id}},\"{{CSRFSession}}");'>
+                  <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
+                </a>
+              </td>
+            {% endif %}
+          <td>{{j.nom}}</td>
+
+          {% if multisite > 1 %}
+            <td>{{j.site}}</td>
+          {% endif %}
+          <td>{{j.etage}}</td>
+          <td title='{{j.activites}}' size='100'>{{j.activitesAffichees}}</td>
+          <td>{{j.groupe}}</td>
+          <td>{{j.obligatoire}}</td> 
+          <td>{{j.bloquant ? "Oui" : "Non"}}</td>
+          <td>{{j.statistiques ? "Oui" : "Non"}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock %}
