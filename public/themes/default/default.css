@@ -572,7 +572,15 @@ div#tabsemaine1{
   font-size:12pt;
   font-weight:bold;
 }
-.tr_horaires {
+.sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+  left: 0;
+  z-index: 3;
+}
+.sticky-line {
+  background: #7D3C25;
   position: -webkit-sticky;
   position: sticky;
   top: 0px;
@@ -582,7 +590,6 @@ div#tabsemaine1{
   position: -webkit-sticky;
   position: sticky;
   left: 0;
-  z-index: 2;
 }
 .td_sep {
   background: inherit;

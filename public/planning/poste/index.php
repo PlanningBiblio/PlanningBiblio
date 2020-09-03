@@ -593,10 +593,10 @@ if (!$verrou and !$autorisationN1) {
 
         //		Lignes horaires
         echo "<tr class='tr_horaires tableau$j {$tab['classe']} $hiddenTable'>\n";
-        echo "<td class='td_postes sticky-col td_sep' data-id='$j' data-title='{$tab['titre2']}'>{$tab['titre']} $masqueTableaux </td>\n";
+        echo "<td class='td_postes sticky td_sep' data-id='$j' data-title='{$tab['titre2']}'>{$tab['titre']} $masqueTableaux </td>\n";
         $colspan=0;
         foreach ($tab['horaires'] as $horaires) {
-            echo "<td colspan='".nb30($horaires['debut'], $horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin'])."</td>";
+            echo "<td class='sticky-line' colspan='".nb30($horaires['debut'], $horaires['fin'])."'>".heure3($horaires['debut'])."-".heure3($horaires['fin'])."</td>";
             $colspan+=nb30($horaires['debut'], $horaires['fin']);
         }
         echo "</tr>\n";
