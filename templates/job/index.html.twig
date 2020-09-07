@@ -12,7 +12,7 @@
           <h3 style='margin-top:0px;'>Liste des postes</h3>
         </td>
         <td>
-          <input type="button" value="Ajouter" id="ajouter" onclick='location.href="index.php?page=postes/modif.php"' class='ui-button'/>
+          <input type="button" value="Ajouter" id="ajouter" onclick="location.href='{{asset('job/add')}}'" class='ui-button'/>
         </td>
       </tr>
     </table>
@@ -40,11 +40,11 @@
       {% for j in jobs %}
         <tr>
           <td style='white-space:nowrap;'>
-            <a href='index.php?page=postes/modif.php&amp;id={{j.id}}'>
+            <a href='{{asset("job/")}}{{j.id}}'>
               <span class='pl-icon pl-icon-edit' title='Modifier' ></span>
             </a>
             {% if not j in usedJobs %}
-              &nbsp<a href='javascript:supprime(\"postes\",{{j.id}},\"{{CSRFSession}}");'>
+              &nbsp;<a href='javascript:supprime(\"postes\",{{j.id}},\"{{CSRFSession}}");'>
                   <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
                 </a>
               </td>

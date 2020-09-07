@@ -39,7 +39,7 @@ $(function() {
 
 	// Transmet le tableau à la page de validation ajax
 	$.ajax({
-	  url: "include/ajax.menus.php",
+	  url: "/include/ajax.menus.php",
 	  type: "post",
           dataType: "json",
 	  data: {tab: tab, menu: "etages", CSRFToken: $('#CSRFSession').val()},
@@ -146,7 +146,7 @@ $(function() {
 
 	// Transmet le tableau à la page de validation ajax
 	$.ajax({
-	  url: "include/ajax.menus.php",
+	  url: "/include/ajax.menus.php",
 	  type: "post",
           dataType: "json",
 	  data: {tab: tab, menu: "groupes", CSRFToken: $('#CSRFSession').val()},
