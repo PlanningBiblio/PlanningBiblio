@@ -1,5 +1,6 @@
 *** Unreleased ***
 
+*** Version 20.04.04       (2020-09-07)   ***
 -Fixes
 fix retrieving of start hour when adding absence
 
