@@ -34,7 +34,6 @@ class AdminJobController extends BaseController
                 $postes_utilises[]=$elem['poste'];
               }
         }
-
         // Sélection des activités
         $activitesTab=array();
         $db=new \db();
@@ -278,6 +277,21 @@ class AdminJobController extends BaseController
 
         return $this->redirect('/job');
     }
+
+    /**
+     * @Route("/job",name="job.delete", methods={"DELETE"})
+     */
+     public function delete_job(Request $request){
+
+        $id = $request->get('id');
+        $CSRFToken = $request->get('CSRFToken');
+        $p = new \postes();
+        $p->CSRFToken = $CSRFToken;
+        $p->id=$id;
+        $p->delete();
+
+        return $this->json("Ok");
+     }
 
 
 }
