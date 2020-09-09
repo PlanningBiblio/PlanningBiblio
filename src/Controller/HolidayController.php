@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 require_once(__DIR__ . '/../../public/conges/class.conges.php');
 require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
+require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
 
 class HolidayController extends BaseController
 {
@@ -135,6 +136,7 @@ class HolidayController extends BaseController
 
         $templateParams = array(
             'admin'                 => $admin,
+            'agents'                => $this->get_agents($adminN2),
             'perso_id'              => $perso_id,
             'agents_menu'           => $agents_menu,
             'deleted_agents'        => $agents_supprimes ? 1 : 0,
@@ -277,6 +279,23 @@ class HolidayController extends BaseController
         $hre_debut = $request->get('hre_debut');
         $hre_fin = $request->get('hre_fin');
         $dbprefix = $GLOBALS['dbprefix'];
+        $this->droits = $GLOBALS['droits'];
+
+        $adminN1 = false;
+        $adminN2 = false;
+
+        // Si droit de gestion des absences N1 ou N2 sur l'un des sites : accès à cette page autorisé
+        // Les droits d'administration des absences seront ajustés ensuite
+        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+            if (in_array((200+$i), $this->droits)) {
+                $adminN1 = true;
+            }
+            if (in_array((500+$i), $this->droits)) {
+                $adminN2 = true;
+            }
+        }
+
+        $agents_multiples = (($adminN1 or $adminN2) && $this->config('Conges-Recuperations') == 1);
 
         // Elements du congé demandé
         $c = new \conges();
@@ -406,6 +425,7 @@ class HolidayController extends BaseController
             'hre_fin'               => $hre_fin,
             'conges_mode'           => $this->config('Conges-Mode'),
             'conges_demi_journee'   => $this->config('Conges-demi-journees'),
+            'conges_tous'           => $this->config('Conges-tous'),
             'request_type'          => $request_type,
             'adminN1'               => $adminN1,
             'adminN2'               => $adminN2,
@@ -508,8 +528,10 @@ class HolidayController extends BaseController
         $debut = $request->get('debut');
         $fin = $request->get('fin');
         $confirm = $request->get('confirm') ? 1 : 0;
+        $this->droits = $GLOBALS['droits'];
         $droits = $GLOBALS['droits'];
         $dbprefix = $GLOBALS['dbprefix'];
+        $this->setAdminPermissions();
 
         if (!$perso_id) {
             $perso_id = $_SESSION['login_id'];
@@ -527,17 +549,24 @@ class HolidayController extends BaseController
         // NOTE : Ici, pas de différenciation entre les droits niveau 1 et niveau 2
         // NOTE : Les agents ayant les droits niveau 1 ou niveau 2 sont admin ($admin, droits 40x et 60x)
         // TODO : différencier les niveau 1 et 2 si demandé par les utilisateurs du plugin
-
         $admin = false;
         $adminN2 = false;
+        $multisites = false;
+        $sites_select = array();
         for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
             if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
                 $admin = true;
+                $sites_select[] = array( 'id' => $i, 'name' => $this->config("Multisites-site$i") );
             }
             if (in_array((600+$i), $droits)) {
                 $adminN2 = true;
             }
         }
+        if ($this->config('Multisites-nombre') > 1) {
+            $multisites = true;
+        }
+
+        $agents_multiples = (($this->admin || ($admin && $adminN2)) && $this->config('Conges-Recuperations') == 1);
 
         // Si pas de droits de gestion des congés, on force $perso_id = son propre ID
         if (!$admin) {
@@ -581,13 +610,17 @@ class HolidayController extends BaseController
             $balance[4] = 0;
         }
 
+        $lang = $GLOBALS['lang'];
+
         $templateParams = array(
             'admin'                 => $admin,
             'adminN2'               => $adminN2,
+            'agents_multiples'      => $agents_multiples,
             'perso_id'              => $perso_id,
             'conges_recuperations'  => $this->config('Conges-Recuperations'),
             'conges_mode'           => $this->config('Conges-Mode'),
             'conges_demi_journee'   => $this->config('Conges-demi-journees'),
+            'conges_tous'           => $this->config('Conges-tous'),
             'CSRFToken'             => $CSRFSession,
             'hours_per_day'         => $hoursPerDay,
             'reliquat'              => $reliquat,
@@ -608,15 +641,16 @@ class HolidayController extends BaseController
             'login_id'              => $_SESSION['login_id'],
             'login_nom'             => $_SESSION['login_nom'],
             'login_prenom'          => $_SESSION['login_prenom'],
+            'accepted_pending_str'  => $lang['leave_dropdown_accepted_pending'],
+            'refused_pending_str'   => $lang['leave_dropdown_refused_pending'],
+            'loggedin_id'           => $_SESSION['login_id'],
+            'loggedin_name'         => $_SESSION['login_nom'],
+            'loggedin_firstname'    => $_SESSION['login_prenom'],
+            'multisites'            => $multisites,
+            'sites_select'          => $sites_select,
         );
 
         $this->templateParams($templateParams);
-
-        $lang = $GLOBALS['lang'];
-        $this->templateParams(array(
-            'accepted_pending_str' => $lang['leave_dropdown_accepted_pending'],
-            'refused_pending_str' => $lang['leave_dropdown_refused_pending']
-        ));
 
         // Affichage du formulaire
 
@@ -703,14 +737,66 @@ class HolidayController extends BaseController
         return $response;
     }
 
+    /**
+     * @Route("/ajax/check-planning", name="ajax.checkplanning", methods={"POST"})
+     */
+    public function checkPlanning(Request $request)
+    {
+        $perso_ids = json_decode($request->get('perso_ids'));
+        $start =dateSQL($request->get('start'));
+        $end =dateSQL($request->get('end'));
+        $maxAgentsDisplay = 5;
+
+        // On consulte le planning de présence de l'agent
+        $message = "";
+        $agents = array();
+        $unknownHours = 0;
+        foreach ($perso_ids as $perso_id) {
+            $p=new \planningHebdo();
+            $p->debut = $start;
+            $p->fin = $end;
+            $p->perso_id=$perso_id;
+            $p->valide=true;
+            $p->fetch();
+            // Si le planning n'est pas validé pour l'une des dates, on affiche un message d'erreur et on arrête le calcul
+            if (empty($p->elements)) {
+                $agent = new \personnel();
+                $agent->fetchById($perso_id);
+                $agent_infos = $agent->elements[0];
+                $unknownHours++;
+                if ($unknownHours <= $maxAgentsDisplay) {
+                    array_push($agents, $agent_infos['prenom'] . " " . $agent_infos['nom']);
+                }
+            }
+        }
+        if (!empty($agents)) {
+            $message = "Impossible de déterminer le nombre d'heures correspondant aux congés demandés pour les agents suivants: " . join(', ', $agents);
+            if ($unknownHours > $maxAgentsDisplay) {
+                $agentsLeft = $unknownHours - $maxAgentsDisplay;
+                $message .= " et " . $agentsLeft . ($agentsLeft == 1 ? " autre." : " autres.");
+            }
+        }
+        return $this->json($message);
+    }
+
+
     private function save($request)
     {
-        $CSRFToken = $request->get('CSRFToken');
         $perso_id = $request->get('perso_id');
         $debut = $request->get('debut');
         $fin = $request->get('fin');
+
+        $perso_ids = array();
+        if (!empty($perso_id) && $perso_id != 0) {
+            $perso_ids[] = $perso_id;
+        } else {
+            $perso_ids = $request->get('perso_ids');
+        }
+
+        $CSRFToken = $request->get('CSRFToken');
         $debutSQL = dateSQL($request->get('debut'));
         $finSQL = dateSQL($request->get('fin'));
+        $is_recover = $request->get('is_recover');
         $hre_debut = $request->get('hre_debut') ? $request->get('hre_debut') :"00:00:00";
         $hre_fin = $request->get('hre_fin') ? $request->get('hre_fin') : "23:59:59";
         $commentaires=htmlentities($request->get('commentaires'), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
@@ -750,84 +836,91 @@ class HolidayController extends BaseController
             $finSQL = $debutSQL;
         }
 
-        if ($result = \conges::exists($perso_id, "$debutSQL $hre_debut", "$finSQL $hre_fin")) {
-            $from = dateFr($result['from'], true);
-            $to = dateFr($result['to'], true);
-            return array(
-                'msg2'      => "Un congé a déjà été demandé du $from au $to",
-                'msg2Type'  => 'error'
-            );
-        }
-
         // Enregistrement du congés
-        $c = new \conges();
-        $c->CSRFToken = $CSRFToken;
-        $c->add($request->request->all());
-        $id = $c->id;
+        $data = $request->request->all();
 
-        // Récupération des adresses e-mails de l'agent et des responsables pour l'envoi des alertes
-        $agent = $this->entityManager->find(Agent::class, $perso_id);
-        $nom = $agent->nom();
-        $prenom = $agent->prenom();
+        foreach ($perso_ids as $perso_id) {
 
-        // Choix du sujet et des destinataires en fonction du degré de validation
-        switch ($valide) {
-        // Modification sans validation
-        case 0:
-          $sujet="Demande de congés";
-          $notifications='-A2';
-          break;
-        // Validations Niveau 2
-        case 1:
-          $sujet="Validation de congés";
-          $notifications='-A4';
-          break;
-        case -1:
-          $sujet="Refus de congés";
-          $notifications='-A4';
-          break;
-        // Validations Niveau 1
-        case 2:
-          $sujet = $lang['leave_subject_accepted_pending'];
-          $notifications='-A3';
-          break;
-        case -2:
-          $sujet = $lang['leave_subject_refused_pending'];
-          $notifications='-A3';
-          break;
-        }
+            # In case multiple agents were selected
+            if (!$data['heures']) {
+                $holidayHlper = new HolidayHelper(array(
+                    'start' => $debutSQL,
+                    'hour_start' => $hre_debut,
+                    'end' => $finSQL,
+                    'hour_end' => $hre_fin,
+                    'perso_id' => $perso_id,
+                    'is_recover' => $is_recover
+                ));
+                $result = $holidayHlper->getCountedHours();
+                $data['heures'] = $result['hours'];
+                $data['minutes'] = $result['minutes'];
+            }
 
-        // Choix des destinataires en fonction de la configuration
-        if ($this->config('Absences-notifications-agent-par-agent')) {
-            $a = new \absences();
-            $a->getRecipients2(null, $perso_id, $notifications, 600, $debutSQL, $finSQL);
-            $destinataires = $a->recipients;
-        } else {
+            // Enregistrement du congés
             $c = new \conges();
-            $c->getResponsables($debutSQL, $finSQL, $perso_id);
-            $responsables = $c->responsables;
-            $a = new \absences();
-            $a->getRecipients($notifications, $responsables, $agent);
-            $destinataires = $a->recipients;
-        }
+            $c->CSRFToken = $CSRFToken;
+            $data['perso_id'] = $perso_id;
+            $c->add($data);
+            $id = $c->id;
 
-        // Message qui sera envoyé par email
-        $fin = empty($fin) ? $debut : $fin;
-        $message = $this->makeMail($sujet, "$prenom $nom", $debut, $fin, $hre_debut, $hre_fin, $commentaires, $refus, $valide, $id);
+            // Récupération des adresses e-mails de l'agent et des responsables pour l'envoi des alertes
+            $agent = $this->entityManager->find(Agent::class, $perso_id);
+            $nom = $agent->nom();
+            $prenom = $agent->prenom();
 
-        // Envoi du mail
-        $m=new \CJMail();
-        $m->subject = $sujet;
-        $m->message=$message;
-        $m->to=$destinataires;
-        $m->send();
+            // Choix du sujet et des destinataires en fonction du degré de validation
+            switch ($valide) {
+            // Modification sans validation
+            case 0:
+              $sujet="Demande de congés";
+              $notifications='-A2';
+              break;
+            // Validations Niveau 2
+            case 1:
+              $sujet="Validation de congés";
+              $notifications='-A4';
+              break;
+            case -1:
+              $sujet="Refus de congés";
+              $notifications='-A4';
+              break;
+            // Validations Niveau 1
+            case 2:
+              $sujet = $lang['leave_subject_accepted_pending'];
+              $notifications='-A3';
+              break;
+            case -2:
+              $sujet = $lang['leave_subject_refused_pending'];
+              $notifications='-A3';
+              break;
+            }
 
-        // Si erreur d'envoi de mail, affichage de l'erreur
-        $msg2=null;
-        $msg2Type=null;
-        if ($m->error) {
-            $msg2 = $m->error_CJInfo;
-            $msg2Type="error";
+            // Choix des destinataires en fonction de la configuration
+            if ($this->config('Absences-notifications-agent-par-agent')) {
+                $a = new \absences();
+                $a->getRecipients2(null, $perso_id, $notifications, 600, $debutSQL, $finSQL);
+                $destinataires = $a->recipients;
+            } else {
+                $c = new \conges();
+                $c->getResponsables($debutSQL, $finSQL, $perso_id);
+                $responsables = $c->responsables;
+                $a = new \absences();
+                $a->getRecipients($notifications, $responsables, $agent);
+                $destinataires = $a->recipients;
+            }
+
+            // Message qui sera envoyé par email
+            $fin = empty($fin) ? $debut : $fin;
+            $message = $this->makeMail($sujet, "$prenom $nom", $debut, $fin, $hre_debut, $hre_fin, $commentaires, $refus, $valide, $id);
+
+            // Envoi du mail
+            $m=new \CJMail();
+            $m->subject = $sujet;
+            $m->message=$message;
+            $m->to=$destinataires;
+            $m->send();
+
+            unset($data['heures']);
         }
 
         $msg = 'La demande de congé a été enregistrée';
@@ -835,8 +928,6 @@ class HolidayController extends BaseController
         return array(
             'msg'       => $msg,
             'msgType'   => 'success',
-            'msg2'      => $msg2,
-            'msg2Type'  => $msg2Type
         );
     }
 
@@ -944,6 +1035,25 @@ class HolidayController extends BaseController
 
         return $result;
     }
+
+    private function setAdminPermissions()
+    {
+        // If can validate level 1: admin = true.
+        // If can validate level 2: adminN2 = true.
+        $this->adminN2 = false;
+        $this->admin = false;
+        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+            if (in_array((200+$i), $this->droits)) {
+                $this->admin = true;
+            }
+            if (in_array((500+$i), $this->droits)) {
+                $this->admin = true;
+                $this->adminN2 = true;
+                break;
+            }
+        }
+    }
+
 
     /**
      * Get managed agents
