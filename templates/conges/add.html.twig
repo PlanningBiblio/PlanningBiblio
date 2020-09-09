@@ -27,22 +27,67 @@
           <input type='hidden' name="conges-mode" id='conges-mode' value='{{ conges_mode }}' />
           <input type='hidden' name="conges-demi-journees" id='conges-demi-journees' value='{{ conges_demi_journee }}' />
 
-          <table border='0' style="width: 100%">
+			<table class='tableauFiches'>
+		       <tr> 
+              <td> 
+                {% if agents_multiples %} 
+                  <label class='intitule'>Agent(s)</label> 
+                {% else %} 
+                  <label class='intitule'>Agent</label> 
+                {% endif %} 
+              </td> 
+ 
+              <td colspan='2'> 
+                {% if agents_multiples %} 
+                    <input type='hidden' name='perso_ids[]' value='{{ loggedin_id }}' id='hidden{{ loggedin_id }}' class='perso_ids_hidden'/> 
+ 
+                  <ul id='perso_ul1' class='perso_ul'> 
+                      <li id='li{{ loggedin_id }}' class='perso_ids_li'> 
+                        {{ loggedin_name }} {{ loggedin_firstname }} 
+                        {% if admin %} 
+                          <span class='perso-drop' onclick="supprimeAgent({{ loggedin_id }});"> 
+                            <span class='pl-icon pl-icon-drop'></span> 
+                          </span> 
+                        {% endif %} 
+                      </li> 
+                  </ul> 
+ 
+                  <ul id='perso_ul2' class='perso_ul'></ul> 
+                  <ul id='perso_ul3' class='perso_ul'></ul> 
+                  <ul id='perso_ul4' class='perso_ul'></ul> 
+                  <ul id='perso_ul5' class='perso_ul'></ul> 
+               
+              </td> 
+            </tr> 
+
+
             <tr>
-              <td style='width:350px;'> Nom, prénom : </td>
+				<td>&nbsp;</td>
+
+
               <td>
-                {% if admin %}
-                  <select name='perso_id' id='perso_id' style='width:20%;'>
-                    {% for a in db_perso %}
-                      {% if a.id == perso_id %}
-                        <option value='{{ a.id }}' selected='selected'>{{ a.nom }} {{ a.prenom }}</option>
-                      {% else %}
-                        <option value='{{ a.id }}'>{{ a.nom }} {{ a.prenom }}</option>
-                      {%endif %}
-                    {% endfor %}
-                  </select>
+				  <select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
+                  <option value='0' selected='selected'>-- Ajoutez un agent --</option>
+                  {% if conges_tous %}
+                    <option value='tous'>Tous les agents</option>
+                  {% endif %}
+
+                  {% for a in agents %}
+                    {% if a.id == loggedin_id %}
+                      <option value='{{ a.id }}' id='option{{ a.id }}' style="display:none;">
+                        {{ a.nom }} {{ a.prenom }}
+                      </option>
+                    {% else %}
+                      <option value='{{ a.id }}' id='option{{ a.id }}'>
+                        {{ a.nom }} {{ a.prenom }}
+                      </option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+
                 {% else %}
-                  <input type='hidden' name='perso_id' id='perso_id' value='{{ login_id }}' />
+                  <!-- #TODO: Test without admin -->
+                  <input type='hidden' name='perso_id' id='perso_id' value='{{ loggedin_id }}' />
                   {{ login_nom }} {{ login_prenom }}
                 {% endif %}
               </td>
@@ -203,7 +248,7 @@
 
                 <tr>
                   <td colspan='2'>
-                    <table border='0'>
+                    <table id='credits_summary' border='0'>
                       <tr>
                         <td style='width:348px;'>Reliquat : </td>
                         <td style='width:130px;'>{{ reliquat2 }}</td>

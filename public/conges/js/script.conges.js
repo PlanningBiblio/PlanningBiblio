@@ -28,7 +28,7 @@ function calculCredit(){
   fin=document.form.elements["fin"].value;
   hre_debut=document.form.elements["hre_debut"].value;
   hre_fin=document.form.elements["hre_fin"].value;
-  perso_id=document.form.elements["perso_id"].value;
+  perso_id=$(".perso_ids_hidden").first().val();
   halfday = $('input[name="halfday"]').is(':checked') ? 1 : 0;
   conges_mode = $('#conges-mode').val();
   is_recover = $('#is-recover').val();
@@ -350,12 +350,23 @@ function verifConges(){
     return false;
   }
 
+  // ID des agents
+  perso_ids=[];
+  $(".perso_ids_hidden").each(function(){
+    perso_ids.push($(this).val());
+  });
+
+  // Si aucun agent n'est sélectionné, on quitte en affichant "Veuillez sélectionner ..."
+  if(perso_ids.length<1){
+    CJInfo("Veuillez sélectionner un ou plusieurs agents","error");
+    return false;
+  }
+
   // Variable, convertion des dates au format YYYY-MM-DD
   var debut=dateFr($("#debut").val());
   var fin=$("#fin").val()?dateFr($("#fin").val()):debut;
   var hre_debut=$("#hre_debut_select").val();
   var hre_fin=$("#hre_fin_select").val();
-  var perso_id=$("#perso_id").val();
   var id=$("#id").val();
   if(hre_fin==""){
     hre_fin="23:59:59";
@@ -386,7 +397,7 @@ function verifConges(){
   var result=$.ajax({
     url: '/conges/ajax.verifConges.php',
     type: "get",
-    data: "perso_id="+perso_id+"&debut="+debut+"&fin="+fin+"&hre_debut="+hre_debut+"&hre_fin="+hre_fin+"&id="+id,
+    data: "perso_ids="+JSON.stringify(perso_ids)+"&debut="+debut+"&fin="+fin+"&hre_debut="+hre_debut+"&hre_fin="+hre_fin+"&id="+id,
     async: false,
     success: function(data){
       if(data != "Pas de congé"){
@@ -479,10 +490,90 @@ function checkSamedi( o, n ) {
   }
 }
 
+//TODO: Factorize me
+function change_select_perso_ids(id){
+  // Ajout des champs hidden permettant la validation des agents
+  $('#perso_ids').before("<input type='hidden' name='perso_ids[]' value='"+id+"' id='hidden"+id+"' class='perso_ids_hidden'/>\n");
+
+  $("#option"+id).hide();
+  
+  // Affichage des agents sélectionnés avec tri alphabétique
+  affiche_perso_ul();
+}
+
+
+/**
+ * Affichage des agents sélectionnés avec tri alphabétique
+ */
+function affiche_perso_ul(){
+  var tab=[];
+  $(".perso_ids_hidden").each(function(){
+    var id=$(this).val();
+    var name=$("#perso_ids option[value='"+id+"']").text();
+    tab.push([name,id]);
+  });
+
+  tab.sort(function (a, b) {
+    return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
+  });
+  
+  $(".perso_ids_li").remove();
+  
+  // Réparti l'affichage des agents sélectionnés sur 5 colonnes de 10 (ou plus)
+  var nb = Math.ceil(tab.length / 5);
+  if(nb<10){
+    nb=10;
+  }
+  
+  for(i in tab){
+    var li="<li id='li"+tab[i][1]+"' class='perso_ids_li' data-id='"+tab[i][1]+"'>"+tab[i][0];
+
+    if( $('#admin').val() == 1 || tab[i][1] != $('#login_id').val() ){
+      li+="<span class='perso-drop' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-drop'></span></span>";
+    }
+
+    li+="</li>\n";
+    
+    if(i < nb){
+      $("#perso_ul1").append(li);
+    } else if(i < (2*nb)){
+      $("#perso_ul2").append(li);
+    } else if(i < (3*nb)){
+      $("#perso_ul3").append(li);
+    } else if(i < (4*nb)){
+      $("#perso_ul4").append(li);
+    } else{
+      $("#perso_ul5").append(li);
+    }
+  }
+}
+
+function multipleAgentsSelected() {
+    return $(".perso_ids_hidden").length > 1 ? true : false;
+}
+
+/**
+ * supprimeAgent
+ * supprime les agents de la sélection lors de l'ajout ou modification d'une absence
+ */
+function supprimeAgent(id){
+  $("#option"+id).show();
+  $("#li"+id).remove();
+  $("#hidden"+id).remove();
+  if (multipleAgentsSelected()) {
+    $("#credits_summary").hide();
+  } else {
+    $("#credits_summary").show();
+  }
+  affiche_perso_ul();
+}
+// END #TODO
 
 $(function(){
   $('.checkdate').on('change', function() {
-    calculCredit();
+    if (!multipleAgentsSelected()) {
+        calculCredit();
+    }
   });
 
   $(".googleCalendarTrigger").change(function(){
@@ -491,4 +582,35 @@ $(function(){
   $(".googleCalendarForm").ready(function(){
     googleCalendarIcon();
   });
+  $("#perso_ids").change(function(){
+    console.log($(".perso_ids_hidden").length);
+    // Variables
+    var id=$(this).val();
+    
+    // Si sélection de "tous" dans le menu déroulant des agents, ajoute tous les id non-sélectionnés
+    if(id == 'tous'){
+      $("#perso_ids > option").each(function(){
+        var id = $(this).val();
+        if(id != 'tous' && id != 0 && $('#hidden'+id).length == 0){
+          change_select_perso_ids(id);
+        }
+      });
+      
+    } else {
+      // Ajoute l'agent choisi dans la liste
+      change_select_perso_ids(id);
+    }
+
+    if (multipleAgentsSelected()) {
+        $("#credits_summary").hide();
+    } else {
+        $("#credits_summary").show();
+    }
+
+    // Réinitialise le menu déroulant
+    $("#perso_ids").val(0);
+    
+  });
+
+
 });
