@@ -192,9 +192,11 @@ class personnel
             $db->sanitize_string = false;
             $db->select("personnel", null, "id='$id'");
             $this->elements=$db->result;
-            $sites = json_decode(html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-            $this->elements[0]['sites'] = $sites ? $sites : array();
-            $this->elements[0]['mails_responsables']=explode(";", html_entity_decode($db->result[0]['mails_responsables'], ENT_QUOTES|ENT_IGNORE, "UTF-8"));
+            if ($db->result) {
+                $sites = json_decode(html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                $this->elements[0]['sites'] = $sites ? $sites : array();
+                $this->elements[0]['mails_responsables']=explode(";", html_entity_decode($db->result[0]['mails_responsables'], ENT_QUOTES|ENT_IGNORE, "UTF-8"));
+            }
         } elseif (is_array($id)) {
             $ids=implode(",", $id);
             $db=new db();
