@@ -1,4 +1,4 @@
-{# job/edit.html.twig #}
+{# position/edit.html.twig #}
 
 {% extends 'base.html.twig' %}
 
@@ -11,8 +11,8 @@
   {% else %}
     <h3>Ajout d'un poste</h3>
   {% endif %}
-  <form method='post' action="{{ asset('/job') }}" name='form'>
-    <input type='hidden' name='page' value='{{ asset("job/save") }}' />
+  <form method='post' action="{{ asset('/position') }}" name='form'>
+    <input type='hidden' name='page' value='{{ asset("position/save") }}' />
     <input type='hidden' name='CSRFToken' value="{{ CSRFToken }}"/>
     {% if id %}
         <input type='hidden' name='id' value='{{ id }}'/>
@@ -134,7 +134,7 @@
         <td colspan='2' style='text-align:center;'><br/><br/>
           <input type='hidden' value={{action}} name='action'/>
           <input type='hidden' value={{id}} name='id'/>
-          <a href='{{ asset("job") }}'class='ui-button'>Annuler</a>
+          <a href='{{ asset("position") }}'class='ui-button'>Annuler</a>
               &nbsp;&nbsp;&nbsp;
           <input type='submit' value='Valider' class='ui-button'/>
         </td>

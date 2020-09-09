@@ -11,10 +11,10 @@ use Symfony\Component\Routing\Annotation\Route;
 require_once(__DIR__ . '/../../public/postes/class.postes.php');
 require_once(__DIR__ . '/../../public/activites/class.activites.php');
 
-class AdminJobController extends BaseController
+class AdminPositionController extends BaseController
 {
     /**
-     * @Route("/job", name="job.index", methods={"GET"})
+     * @Route("/position", name="position.index", methods={"GET"})
      */
     public function index(Request $request)
     {
@@ -22,7 +22,7 @@ class AdminJobController extends BaseController
         $groupe="Tous";
         $this->templateParams(array('groupe' =>$groupe));
 
-        $nom=filter_input(INPUT_GET, "nom", FILTER_SANITIZE_STRING);
+        $nom=$request->get('nom');
 
         // Contrôle si le poste est utilisé dans un tableau non-supprimé (tables pl_poste_lignes et pl_poste_tab)
         $postes_utilises=array();
@@ -47,10 +47,10 @@ class AdminJobController extends BaseController
         $p=new \postes();
         $p->fetch("nom", $nom, $groupe);
         $postes=$p->elements;
-        $nbMultisite = $GLOBALS['config']['Multisites-nombre'];
+        $nbMultisite = $this->config('Multisites-nombre');
         $this->templateParams(array(
             'multisite' =>$nbMultisite,
-            'usedJobs' => $postes_utilises,
+            'usedPositions' => $postes_utilises,
             'CSRFSession' => $GLOBALS['CSRFSession']
         ));
         foreach ($postes as $id => $value) {
@@ -75,7 +75,7 @@ class AdminJobController extends BaseController
             }
 
             if ($nbMultisite>1) {
-                $site=array_key_exists("Multisites-site{$value['site']}", $GLOBALS['config'])?$GLOBALS['config']["Multisites-site{$value['site']}"]:"-";
+                $site = $this->config("Multisites-site{$value['site']}") ? $this->config("Multisites-site{$value['site']}") :"-";
                 $value['site']=$site;
             }
             $value['nom']=html_entity_decode($value['nom'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
@@ -83,16 +83,16 @@ class AdminJobController extends BaseController
             $value['activitesAffichees']=html_entity_decode($activitesAffichees, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             $postes[$id]=$value;
         }
-        $this->templateParams(array('jobs'=> $postes));
-        return $this->output('job/index.html.twig');
+        $this->templateParams(array('positions'=> $postes));
+        return $this->output('position/index.html.twig');
     }
 
     /**
-     * @Route("/job/add", name="job.add", methods={"GET"})
+     * @Route("/position/add", name="position.add", methods={"GET"})
      */
     public function add(Request $request)
     {
-        $a = new\activites();
+        $a = new \activites();
         $a->fetch();
         $actList=$a->elements;
 
@@ -111,6 +111,17 @@ class AdminJobController extends BaseController
         $activites = $actList;
         $categories = $categories_list;
 
+        $nbMultisite = $this->config('Multisites-nombre');
+        $sites = array();
+
+        if ($nbMultisite>1) {
+            for ($elem = 0; $elem < $nbMultisite +1; $elem++){
+                if ($this->config("Multisites-site$elem")){
+                    $sites[]=$this->config("Multisites-site$elem");
+                }
+            }
+        }
+
         $this->templateParams(array(
             'CSRFToken'=> $GLOBALS['CSRFSession'],
             'activites' => $activites,
@@ -118,13 +129,15 @@ class AdminJobController extends BaseController
             'categories' => $categories,
             'categoriesList' => $categories_list,
             'etages' => $etages,
-            'groupes'=>$groupes
+            'groupes'=>$groupes,
+            'nbSites' => $nbMultisite,
+            'multisite' => $sites
         ));
-        return $this->output('job/edit.html.twig');
+        return $this->output('position/edit.html.twig');
     }
 
     /**
-     * @Route("/job/{id}", name="job.edit", methods={"GET"})
+     * @Route("/position/{id}", name="position.edit", methods={"GET"})
      */
     public function edit(Request $request)
     {
@@ -185,13 +198,12 @@ class AdminJobController extends BaseController
         $db->select2("select_categories", "*", "1", "order by rang");
         $categories_list=$db->result;
 
-        $config=$GLOBALS['config'];
-        $nbSites = $config['Multisites-nombre'];
+        $nbSites = $this->config('Multisites-nombre');
         $multisite=array();
         if ($nbSites>1){
-            for ($i=1;$i<=$config['Multisites-nombre'];$i++) {
+            for ($i=1;$i<=$nbSites;$i++) {
                 $selected=$site==$i?"selected='selected'":null;
-                $multisite[]=$config["Multisites-site{$i}"];
+                $multisite[]=$this->config("Multisites-site{$i}");
                 $selectedSites[]=$selected;
             }
         }
@@ -210,7 +222,6 @@ class AdminJobController extends BaseController
             'stat2' => $stat2,
             'bloq1' => $bloq1,
             'bloq2' => $bloq2,
-            'config'=> $config,
             'etages' => $etages,
             'groupes' => $groupes,
             'nbSites'=> $nbSites,
@@ -222,11 +233,11 @@ class AdminJobController extends BaseController
             'CSRFToken' => $GLOBALS['CSRFSession']
             )
         );
-        return $this->output('job/edit.html.twig');
+        return $this->output('position/edit.html.twig');
     }
 
     /**
-     * @Route("/job", name="job.save", methods={"POST"})
+     * @Route("/position", name="position.save", methods={"POST"})
      */
     public function save(Request $request, Session $session)
     {
@@ -235,13 +246,16 @@ class AdminJobController extends BaseController
 
 
         if (!$nom) {
-            $msg=urlencode("Le nom est obligatoire");
-            $session->getFlashBag()->add('error',$error);
-            return $this->redirect("/job/$id");
+            $session->getFlashBag()->add('error',"Le nom est obligatoire");
+            if(!$id){
+                return $this->redirectToRoute('position.add');
+            } else {
+                return $this->redirectToRoute('position.edit', array('id' => $id));
+            }
         }else{
             //$activites = array();
             $activites = json_encode($request->get('activites'));
-            $categories = json_encode($request->request->get('categories'));
+            $categories = json_encode($request->get('categories'));
 
 
             $id = $request->get('id');
@@ -254,20 +268,20 @@ class AdminJobController extends BaseController
             $site=$site?$site:1;
             $data=array("nom"=>$nom,"obligatoire"=>$obligatoire,"etage"=>$etage,"groupe"=>$groupe,"activites"=>$activites, "statistiques"=>$statistiques,"bloquant"=>$bloquant,"site"=>$site,"categories"=>$categories);
             if (!$id){
-                    $job = new \db();
-                    $job->CSRFToken = $CSRFToken;
-                    $job->insert("postes", $data);
-                    if ($job->error) {
-                        $session->getFlashBag()->add('error', "Une erreur est survenue lors de l'ajout du poste " . $job->error);
+                    $position = new \db();
+                    $position->CSRFToken = $CSRFToken;
+                    $position->insert("postes", $data);
+                    if ($position->error) {
+                        $session->getFlashBag()->add('error', "Une erreur est survenue lors de l'ajout du poste " . $position->error);
                     } else {
                         $session->getFlashBag()->add('notice', "Le poste a été ajouté avec succès");
                     }
             }else{
-                    $job=new \db();
-                    $job->CSRFToken = $CSRFToken;
-                    $job->update("postes", $data, array("id"=>$id));
-                    if ($job->error) {
-                        $session->getFlashBag()->add('error', "Une erreur est survenue lors de la modification du poste " . $job->CSRFToken);
+                    $position=new \db();
+                    $position->CSRFToken = $CSRFToken;
+                    $position->update("postes", $data, array("id"=>$id));
+                    if ($position->error) {
+                        $session->getFlashBag()->add('error', "Une erreur est survenue lors de la modification du poste " . $position->CSRFToken);
                     } else {
                         $session->getFlashBag()->add('notice',"Le poste a été modifié avec succès");
                     }
@@ -275,13 +289,13 @@ class AdminJobController extends BaseController
         }
 
 
-        return $this->redirect('/job');
+        return $this->redirectToRoute('position.index');
     }
 
     /**
-     * @Route("/job",name="job.delete", methods={"DELETE"})
+     * @Route("/position",name="position.delete", methods={"DELETE"})
      */
-     public function delete_job(Request $request){
+     public function delete_position(Request $request){
 
         $id = $request->get('id');
         $CSRFToken = $request->get('CSRFToken');

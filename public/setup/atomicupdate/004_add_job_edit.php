@@ -1,4 +1,5 @@
 <?php
 
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Ajouter un nouveau poste', 5, 'Gestion des postes', '/job/add','Postes',160);";
+$sql[]="UPDATE `{$dbprefix}acces` SET `page`=`/position/add` WHERE `page`=`postes/modif.php`;" ;
+
 ?>

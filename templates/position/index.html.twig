@@ -1,18 +1,18 @@
-{# job/index.html.twig #}
+{# position/index.html.twig #}
 
 {% extends 'base.html.twig' %}
 
 {% block page %}
 
   <form name="form" action="#">
-    <input type='hidden' name='page' value='{{asset("job")}}' />
+    <input type='hidden' name='page' value='{{asset("position")}}' />
     <table style='margin:20px 0;'>
       <tr valign='top'>
         <td style='width:270px'>
           <h3 style='margin-top:0px;'>Liste des postes</h3>
         </td>
         <td>
-          <input type="button" value="Ajouter" id="ajouter" onclick="location.href='{{asset('job/add')}}'" class='ui-button'/>
+          <input type="button" value="Ajouter" id="ajouter" onclick="location.href='{{asset('position/add')}}'" class='ui-button'/>
         </td>
       </tr>
     </table>
@@ -37,13 +37,13 @@
       </tr>
     </thead>
     <tbody>
-      {% for j in jobs %}
+      {% for j in positions %}
         <tr>
           <td style='white-space:nowrap;'>
-            <a href='{{ asset("job/") }} {{ j.id }}'>
+            <a href='{{ asset("position/") }} {{ j.id }}'>
               <span class='pl-icon pl-icon-edit' title='Modifier' ></span>
             </a>
-            {% if j.id in usedJobs == false %}
+            {% if j.id in usedPositions == false %}
             &nbsp;<a href='#'>
                   <span id='{{ j.id }}' class='pl-icon pl-icon-drop' title='Supprimer' onclick="confirmDel(this.id)"></span>
                   <script>
@@ -51,14 +51,14 @@
                       if (window.confirm("Voulez-vous vraiment supprimer ce poste ?")){
                       CSRFToken = $('#CSRFSession').val();
                         $.ajax({
-                          url : '{{ asset("job") }}',
+                          url : '{{ asset("position") }}',
                           type : 'DELETE',
                           data : {id: id, CSRFToken: CSRFToken},
                           success: function(response){
                             if (response == "Ok"){
-                              window.location.reload('/job');
+                              window.location.reload('/position');
                             }
-                            CJInfo("OK","success")
+                            CJInfo("Le poste a bien été supprimé","success")
                           },
                           error: function(){
                             CJInfo("Une erreur est survenue lors de la suppression","error")
