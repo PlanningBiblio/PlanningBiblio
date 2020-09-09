@@ -1179,6 +1179,7 @@ class conges
     private function calcCreditsOnValidation($data) {
         // On débite les crédits dans la fiche de l'agent
         // Recherche des crédits actuels
+
         $p=new personnel();
         $p->fetchById($data['perso_id']);
         $credit = floatval($p->elements[0]['conges_credit']);
