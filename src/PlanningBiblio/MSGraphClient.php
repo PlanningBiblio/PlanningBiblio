@@ -91,7 +91,7 @@ class MSGraphClient
                     $to = $range['to'];
                     $this->log("Getting events from $from to $to for user ". $user->login());
                     $response = $this->getCalendarView($user, $from, $to);
-                    if ($response->code == 200) {
+                    if ($response && $response->code == 200) {
                         $this->addToIncomingEvents($user, $response, $from, $to);
                     } else {
                         $this->log("Unable to get events, http status: " . $response->code);

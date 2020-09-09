@@ -23,27 +23,68 @@
           <input type='hidden' name='credit' value='{{ credit }}' />
           <input type='hidden' name='anticipation' value='{{ anticipation }}' />
           <input type='hidden' id='agent' value='{{ agent_name }}' />
+          <input type='hidden' id='agent_id' value='{{ loggedin_id }}' />
           <input type='hidden' id='conges-recup' value='{{ conges_recuperations }}' />
           <input type='hidden' name="conges-mode" id='conges-mode' value='{{ conges_mode }}' />
           <input type='hidden' name="conges-demi-journees" id='conges-demi-journees' value='{{ conges_demi_journee }}' />
 
-          <table border='0' style="width: 100%">
+          <table class='tableauFiches'>
             <tr>
-              <td style='width:350px;'> Nom, prénom : </td>
               <td>
-                {% if admin %}
-                  <select name='perso_id' id='perso_id' style='width:20%;'>
-                    {% for a in db_perso %}
-                      {% if a.id == perso_id %}
-                        <option value='{{ a.id }}' selected='selected'>{{ a.nom }} {{ a.prenom }}</option>
-                      {% else %}
-                        <option value='{{ a.id }}'>{{ a.nom }} {{ a.prenom }}</option>
-                      {%endif %}
-                    {% endfor %}
-                  </select>
+                {% if agents_multiples %}
+                  <label class='intitule'>Agent(s)</label>
                 {% else %}
-                  <input type='hidden' name='perso_id' id='perso_id' value='{{ login_id }}' />
-                  {{ login_nom }} {{ login_prenom }}
+                  <label class='intitule'>Agent</label>
+                {% endif %}
+              </td>
+
+              <td colspan='2'>
+                {% if admin %}
+                  {% if agents_multiples %}
+                    <input type='hidden' name='perso_ids[]' value='{{ loggedin_id }}' id='hidden{{ loggedin_id }}' class='perso_ids_hidden'/>
+
+                  <ul id='perso_ul1' class='perso_ul'>
+                      <li id='li{{ loggedin_id }}' class='perso_ids_li'>
+                        <b>{{ loggedin_name }} {{ loggedin_firstname }}</b>
+                        {% if admin %}
+                          <span class='perso-drop' onclick="supprimeAgent({{ loggedin_id }});">
+                            <span class='pl-icon pl-icon-drop'></span>
+                          </span>
+                        {% endif %}
+                      </li>
+                  </ul>
+
+                  <ul id='perso_ul2' class='perso_ul'></ul>
+                  <ul id='perso_ul3' class='perso_ul'></ul>
+                  <ul id='perso_ul4' class='perso_ul'></ul>
+                  <ul id='perso_ul5' class='perso_ul'></ul>
+                {% endif %}
+              </td>
+            </tr>
+
+            <tr>
+              <td>&nbsp;</td>
+              <td>
+                  {% if multisites %}
+                    Sites:
+                     {% for s in sites_select %}
+                      <input type="checkbox" checked="checked" name="selected_sites" value="{{s.id}}" id="site_{{s.id}}" /><label for="site_{{s.id}}">{{ s.name }}</label>
+                     {% endfor %}
+                     <br /><br />
+                  {% endif %}
+
+                  <select name='perso_id' id='perso_ids' class='{% if agents_multiples %}agents_multiples{% endif %} ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
+                  {% if agents_multiples %}
+                    <option value='0' selected='selected'> -- Ajoutez un agent --</option>
+                      {% if conges_tous %}
+                        <option value='tous'>Tous les agents</option>
+                      {% endif %}
+                  {% endif %}
+                  </select>
+
+                {% else %}
+                  <input type='hidden' name='perso_id' id='perso_id' value='{{ loggedin_id }}' />
+                  {{ loggedin_name }} {{ loggedin_firstname }}
                 {% endif %}
               </td>
             </tr>
@@ -203,7 +244,7 @@
 
                 <tr>
                   <td colspan='2'>
-                    <table border='0'>
+                    <table id='credits_summary' border='0'>
                       <tr>
                         <td style='width:348px;'>Reliquat : </td>
                         <td style='width:130px;'>{{ reliquat2 }}</td>

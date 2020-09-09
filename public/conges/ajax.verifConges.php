@@ -23,11 +23,18 @@ $fin=$_GET['fin']?$_GET['fin']:$debut;
 $fin=$fin;
 $hre_debut=$_GET['hre_debut']?$_GET['hre_debut']:"00:00:00";
 $hre_fin=$_GET['hre_fin']?$_GET['hre_fin']:"23:59:59";
-$perso_id=$_GET['perso_id'];
+$perso_ids=filter_input(INPUT_GET, "perso_ids", FILTER_SANITIZE_STRING);
+$perso_ids=json_decode(html_entity_decode($perso_ids, ENT_QUOTES|ENT_IGNORE, "UTF-8"), true);
 $id=$_GET['id'];
 
-if ($result = conges::exists($perso_id, "$debut $hre_debut", "$fin $hre_fin", $id)) {
-    echo 'du ' . dateFr($result['from'], true) . ' au ' . dateFr($result['to'], true);
-} else {
+$noholiday = true;
+foreach ($perso_ids as $perso_id) {
+    if ($result = conges::exists($perso_id, "$debut $hre_debut", "$fin $hre_fin", $id)) {
+        echo 'du ' . dateFr($result['from'], true) . ' au ' . dateFr($result['to'], true);
+        $noholiday = false;
+    }
+}
+
+if ($noholiday) {
     echo "Pas de congé";
 }

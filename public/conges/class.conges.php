@@ -860,7 +860,7 @@ class conges
                 // Récupération du numéro du site concerné par la date courante
                 $offset=$jour-1+($semaine*7)-7;
                 if (array_key_exists($offset, $temps)) {
-                    if (array_key_exists(4, $temps[$offset])) {
+                    if (!empty($temps[$offset][4])) {
                         $site=$temps[$offset][4];
                     } else {
                         $site=1;
