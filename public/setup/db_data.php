@@ -33,8 +33,8 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categ
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`categorie`,`ordre`) VALUES (\"Enregistrement d'absences pour plusieurs agents\",'9',\"Enregistrement d'absences pour plusieurs agents\", 'Absences', '25');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Personnel - Index', 4, 'Voir les fiches des agents', 'personnel/index.php', 'Agents', 60);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Personnel - Modif', 4, 'Voir les fiches des agents', '/agent', 'Agents', 60);";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Liste des postes - Index', 5, 'Gestion des postes', '/job','Postes',160);";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Liste des postes - Modif', 5, 'Gestion des postes', 'postes/modif.php','Postes',160);";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Liste des postes - Index', 5, 'Gestion des postes', '/position','Postes',160);";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Liste des postes - Modif', 5, 'Gestion des postes','/position/add','Postes',160);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Liste des postes - Valid', 5, 'Gestion des postes', 'postes/valid.php','Postes',160);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Planning Poste - Suppression', 301, 'Création / modification des plannings, utilisation et gestion des modèles', 'planning/poste/supprimer.php','Planning','110');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Planning Poste - Importer un modèle', 301, 'Création / modification des plannings, utilisation et gestion des modèles', 'planning/poste/importer.php','Planning','110');";
@@ -434,7 +434,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('50','10','Informations','/admin/info',NULL),
   ('50','20','Les activit&eacute;s','activites/index.php',NULL),
   ('50','30','Les agents','personnel/index.php',NULL),
-  ('50','40','Les postes','/job',NULL),
+  ('50','40','Les postes','/position',NULL),
   ('50','50','Les mod&egrave;les','planning/modeles/index.php',NULL),
   ('50','60','Les tableaux','planning/postes_cfg/index.php',NULL),
   ('50','70','Jours de fermeture','joursFeries/index.php',NULL),
