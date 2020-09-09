@@ -14,6 +14,7 @@
   <form method='post' action="{{ asset('/position') }}" name='form'>
     <input type='hidden' name='page' value='{{ asset("position/save") }}' />
     <input type='hidden' name='CSRFToken' value="{{ CSRFToken }}"/>
+    <input type='hidden' name='group-id' value="{{ group_id }}"/>
     {% if id %}
         <input type='hidden' name='id' value='{{ id }}'/>
     {% else %}
