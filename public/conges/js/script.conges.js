@@ -22,12 +22,13 @@ function afficheRefus(me){
 
 function calculCredit(){
   if( ! $('input[name=debut]').length) { return; }
+  if (multipleAgentsSelected()) { return; }
 
   debut=document.form.elements["debut"].value;
   fin=document.form.elements["fin"].value;
   hre_debut=document.form.elements["hre_debut"].value;
   hre_fin=document.form.elements["hre_fin"].value;
-  perso_id=document.form.elements["perso_id"].value;
+  perso_id=$(".perso_ids_hidden").first().val() || document.form.elements["perso_id"].value;
   halfday = $('input[name="halfday"]').is(':checked') ? 1 : 0;
   conges_mode = $('#conges-mode').val();
   is_recover = $('#is-recover').val();
@@ -367,12 +368,36 @@ function verifConges(){
     return false;
   }
 
+  // ID des agents
+  perso_ids=[];
+
+  // Only one agent pre-selected
+  if ($("#perso_id").length > 0) {
+      perso_ids.push($("#perso_id").val());
+
+  // Multiple agents
+  } else if ($("select.agents_multiples").length > 0) {
+      $(".perso_ids_hidden").each(function(){
+        perso_ids.push($(this).val());
+      });
+
+  // Only one agent in a select list
+  } else {
+      console.log("list");
+      perso_ids.push($("#perso_ids").val());
+  }
+
+  // Si aucun agent n'est sélectionné, on quitte en affichant "Veuillez sélectionner ..."
+  if(perso_ids.length<1){
+    CJInfo("Veuillez sélectionner un ou plusieurs agents","error");
+    return false;
+  }
+
   // Variable, convertion des dates au format YYYY-MM-DD
   var debut=dateFr($("#debut").val());
   var fin=$("#fin").val()?dateFr($("#fin").val()):debut;
   var hre_debut=$("#hre_debut_select").val();
   var hre_fin=$("#hre_fin_select").val();
-  var perso_id=$("#perso_id").val();
   var id=$("#id").val();
   hre_debut=hre_debut?hre_debut:"00:00:00";
   hre_fin=hre_fin?hre_fin:"23:59:59";
@@ -412,6 +437,8 @@ function verifConges(){
   }
 
   // Vérifions si un autre congé a été demandé ou validé
+
+  var baseURL = $('#baseURL').val();
   var result=$.ajax({
     url: baseURL + "/ajax/holiday-absence-control",
     type: "get",
@@ -424,7 +451,7 @@ function verifConges(){
 
       for (i in result['users']) {
         if (result['users'][i]['holiday'] != undefined) {
-          CJInfo("Un congé a déjà été demandé " + result['users'][i]['holiday'], "error");
+          CJInfo("Un congé a déjà été demandé par " + result['users'][i]['nom'] + " " + result['users'][i]['holiday'], "error");
           valid = false;
         }
       }
@@ -472,7 +499,28 @@ function verifConges(){
       }
 
       if (valid == true) {
-        $("#form").submit();
+          // Vérifions les plannings de présence pour le calcul des crédits
+          if (multipleAgentsSelected()) {
+            var baseURL = $('#baseURL').val();
+            var result=$.ajax({
+                url: baseURL + '/ajax/check-planning/',
+                type: "get",
+                data: "perso_ids="+JSON.stringify(perso_ids)+"&start="+debut+"&end="+fin,
+                async: false,
+                success: function(data){
+                  if(data){
+                    CJInfo(data, "error");
+                  }else{
+                    $("#form").submit();
+                  }
+                },
+                error: function(){
+                  CJInfo("Une erreur est survenue lors de l'enregistrement du congé","error");
+                },
+            });
+          } else {
+            $("#form").submit(); 
+          }
       }
     },
     error: function(){
@@ -559,12 +607,194 @@ function checkSamedi( o, n ) {
   }
 }
 
+function change_select_perso_ids(id){
+  // Ajout des champs hidden permettant la validation des agents
+  $('#perso_ids').before("<input type='hidden' name='perso_ids[]' value='"+id+"' id='hidden"+id+"' class='perso_ids_hidden'/>\n");
+
+  $("#option"+id).hide();
+
+  // Affichage des agents sélectionnés avec tri alphabétique
+  affiche_perso_ul();
+}
+
+/**
+ * Affichage des agents sélectionnés avec tri alphabétique
+ */
+function affiche_perso_ul(){
+  var tab=[];
+  $(".perso_ids_hidden").each(function(){
+    var id=$(this).val();
+    var name=$("#perso_ids option[value='"+id+"']").text();
+    tab.push([name,id]);
+  });
+
+  tab.sort(function (a, b) {
+    return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
+  });
+
+  $(".perso_ids_li").remove();
+
+  // Réparti l'affichage des agents sélectionnés sur 5 colonnes de 10 (ou plus)
+  var nb = Math.ceil(tab.length / 5);
+  if(nb<10){
+    nb=10;
+  }
+
+  for(i in tab){
+    var style = tab[i][1] == $("#agent_id").val() ? ' style="font-weight:bolder;"' : '';
+    var li="<li" + style + " id='li"+tab[i][1]+"' class='perso_ids_li' data-id='"+tab[i][1]+"'>"+tab[i][0];
+
+    if( $('#admin').val() == 1 || tab[i][1] != $('#login_id').val() ){
+      li+="<span class='perso-drop' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-drop'></span></span>";
+    }
+
+    li+="</li>\n";
+
+    if(i < nb){
+      $("#perso_ul1").append(li);
+    } else if(i < (2*nb)){
+      $("#perso_ul2").append(li);
+    } else if(i < (3*nb)){
+      $("#perso_ul3").append(li);
+    } else if(i < (4*nb)){
+      $("#perso_ul4").append(li);
+    } else{
+      $("#perso_ul5").append(li);
+    }
+  }
+}
+
+function multipleAgentsSelected() {
+    return $(".perso_ids_hidden").length > 1 ? true : false;
+}
+
+/**
+ * supprimeAgent
+ * supprime les agents de la sélection lors de l'ajout ou modification d'une absence
+ */
+function supprimeAgent(id){
+  $("#option"+id).show();
+  $("#li"+id).remove();
+  $("#hidden"+id).remove();
+  if (multipleAgentsSelected()) {
+    $("#credits_summary").hide();
+  } else {
+    $("#credits_summary").show();
+  }
+  affiche_perso_ul();
+}
+
+function getAgentsBySites(sites) {
+  var agents = null;
+  $.ajax({
+    url: "/ajax/agents-by-sites",
+    data: {sites: sites},
+    dataType: "json",
+    type: "get",
+    async: false,
+    success: function(result){
+      agents = result;
+    }
+  });
+  return agents;
+}
+
+function updateAgentsListBySites() {
+
+    if ($("input#multisites").val()) {
+        managed_sites = JSON.stringify($("input[name='selected_sites']").map(function(){
+          return $(this).val();
+        }).get());
+
+        selected_sites = JSON.stringify($("input[name='selected_sites']:checked").map(function(){
+          return $(this).val();
+        }).get());
+    } else {
+        managed_sites = "[1]";
+        selected_sites = "[1]";
+    }
+
+    managed_sites_agents = getAgentsBySites(managed_sites);
+    selected_sites_agents = getAgentsBySites(selected_sites);
+    selected_sites_agents = selected_sites_agents.map(x => x.id);
+
+    options = '';
+
+    // Check if multiple agents is allowed
+    if ($('#perso_ids option[value="0"]').length > 0) {
+        options += '<option value="0" selected="selected">-- Ajoutez un agent --</option>';
+    }
+
+    // Check if all agents is allowed
+    if ($('#perso_ids option[value="tous"]').length > 0) {
+        options += '<option value="tous">Tous les agents</option>';
+    }
+
+    $.each(managed_sites_agents, function(index, value) {
+        style = value.id == $("#agent_id").val() ? ' style="font-weight:bolder;"' : '';
+        options += '<option' + style + ' value="' + value.id + '" id="option' + value.id + '">' + value.nom + ' ' + value.prenom + '</option>';
+    });
+
+    $("#perso_ids").html(options);
+
+    selected_agents = $(".perso_ids_hidden").map(function(){
+        return $(this).val();
+    }).get();
+
+    $.each(managed_sites_agents, function(index, value) {
+        // Check if not selected or not already added
+        if ($.inArray(value.id, selected_sites_agents) == -1 || $.inArray(value.id, selected_agents) !== -1) {
+            $("#option" + value.id).hide();
+        }
+    });
+}
 
 $(function(){
+  $('.checkdate').on('change', function() {
+    calculCredit();
+  });
+
+  $("input[name='selected_sites']").change(function() {
+    updateAgentsListBySites();
+  });
+
   $(".googleCalendarTrigger").change(function(){
     googleCalendarIcon();
   });
   $(".googleCalendarForm").ready(function(){
     googleCalendarIcon();
   });
+
+  $("#perso_ids.agents_multiples").change(function(){
+    // Variables
+    var id=$(this).val();
+
+    // Si sélection de "tous" dans le menu déroulant des agents, ajoute tous les id non-sélectionnés
+    if(id == 'tous'){
+      $("#perso_ids > option").each(function(){
+        var id = $(this).val();
+        if(id != 'tous' && id != 0 && $('#hidden'+id).length == 0 && $(this).css('display') != 'none'){
+          change_select_perso_ids(id);
+        }
+      });
+
+    } else {
+      // Ajoute l'agent choisi dans la liste
+      change_select_perso_ids(id);
+    }
+
+    if (multipleAgentsSelected()) {
+        $("#credits_summary").hide();
+    } else {
+        $("#credits_summary").show();
+    }
+
+    // Réinitialise le menu déroulant
+    $("#perso_ids").val(0);
+
+  });
+});
+
+$(document).ready(function() {
+    updateAgentsListBySites();
 });
