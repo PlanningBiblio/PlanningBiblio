@@ -40,7 +40,7 @@
       {% for j in positions %}
         <tr>
           <td style='white-space:nowrap;'>
-            <a href='{{ asset("position/") }} {{ j.id }}'>
+            <a href='{{ asset("position/") }}{{ j.id }}'>
               <span class='pl-icon pl-icon-edit' title='Modifier' ></span>
             </a>
             {% if j.id in usedPositions == false %}
