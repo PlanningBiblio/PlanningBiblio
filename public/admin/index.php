@@ -28,7 +28,7 @@ if (in_array(23, $droits)) {
     echo "<li><a href='index.php?page=infos/index.php'>Informations</a></li>\n";
 }
 if (in_array(5, $droits)) {
-    echo "<li><a href='index.php?page=activites/index.php'>Les activités</a></li>\n";
+    echo "<li><a href='/skill'>Les activités</a></li>\n";
 }
 if (in_array(4, $droits)) {
     echo "<li><a href='index.php?page=personnel/index.php'>Les agents</a></li>\n";
