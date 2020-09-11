@@ -113,51 +113,38 @@ $(document).ready(function(){
     var site = $('#site').val();
 
     i = 0;
-    checkcopy_messages = [];
     checkcopy_agents = [];
 
     cell.find('div').each(function() {
-      var element = $(this).clone();
-      var agent_id = element.data('perso-id');
-      element.attr('id', cellid + '_' + i);
-
-      $.ajax({
-        url: '/ajax/planningjob/checkcopy',
-        async: false,
-        type: "get",
-        dataType: "json",
-        data: {date: date, from: cFrom, to: to, agent: agent_id},
-        success: function(result) {
-          if (result.error) {
-              checkcopy_messages.push("L'agent " + result.error + " n'a pas été placé de " + heureFr(cFrom) + " à " + heureFr(to) + " car il n'est pas disponible sur cette période");
-          } else {
-              checkcopy_agents.push(agent_id);
-          }
-        },
-        error: function(){
-            checkcopy_messages.push('Une erreur est survenue lors de la copie.');
-        }
-      });
-
-      i++;
+        var element = $(this).clone();
+        var agent_id = element.data('perso-id');
+        element.attr('id', cellid + '_' + i);
+        checkcopy_agents.push(agent_id);
+        i++;
     });
 
-    if (checkcopy_agents.length) {
-        var agents = JSON.stringify(checkcopy_agents);
-        console.log(agents);
-        // User interaction is needed to refresh the cell with bataille_navale (I don't know why). Therefore I add cell.click()
-        cell.click();
-        bataille_navale(job, date, cFrom, to, agents, '', '', site, '', cellid);
-    }
+    checkcopy_agents = JSON.stringify(checkcopy_agents);
 
-    if (checkcopy_messages.length) {
-        var message = checkcopy_messages.join('#BR#');
-        CJInfo(message, 'error');
-    }
-
-    return false;
+    $.ajax({
+        url: '/ajax/planningjob/checkcopy',
+        type: "get",
+        dataType: "json",
+        data: {date: date, from: cFrom, to: to, agents: checkcopy_agents},
+        success: function(result) {
+            if (result.availables.length) {
+                var agents = JSON.stringify(result.availables);
+                bataille_navale(job, date, cFrom, to, agents, '', '', site, '', cellid);
+            }
+            if (result.unavailables) {
+                var message = "Les agents suivants n'ont pas été placés car ils sont indisponibles de " + heureFr(cFrom) + " à " + heureFr(to) + " : " + result.unavailables;
+                CJInfo(message, 'error');
+            }
+        },
+        error: function(){
+            CJInfo("Une erreur est survenue lors de la copie.", "error");
+        }
+    });
   });
-
 });
 
 // Evénements JQuery
