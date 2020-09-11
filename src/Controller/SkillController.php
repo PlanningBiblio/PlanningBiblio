@@ -71,10 +71,9 @@ class SkillController extends BaseController
      */
     public function add(Request $request, Session $session){
 
-        $nom='';
         $CSRFSession = $request->get('CSRFSession');
         $this->templateParams(array(
-            'skill_name'=>$nom,
+            'skill_name'=>'',
             'CSRFSession' => $CSRFSession,
        ));
 
