@@ -264,7 +264,7 @@ class HolidayController extends BaseController
             }
         }
 
-        $agents_multiples = ($adminN1 or $adminN2 or in_array(9, $this->droits));
+        $agents_multiples = (($adminN1 or $adminN2 or in_array(9, $this->droits)) && $this->config('Conges-Recuperations') == 1);
 
         // Elements du congé demandé
         $c = new \conges();
@@ -492,7 +492,9 @@ class HolidayController extends BaseController
         // NOTE : Les agents ayant les droits niveau 1 ou niveau 2 sont admin ($admin, droits 40x et 60x)
         // TODO : différencier les niveau 1 et 2 si demandé par les utilisateurs du plugin
 
-        $agents_multiples = ($this->admin or in_array(9, $this->droits));
+        $agents_multiples = (($this->admin || in_array(9, $this->droits)) && $this->config('Conges-Recuperations') == 1);
+        error_log("agents_multiples add: $agents_multiples");
+        
 
         $admin = false;
         $adminN2 = false;
@@ -592,8 +594,15 @@ class HolidayController extends BaseController
 
     private function save($request)
     {
-        $CSRFToken = $request->get('CSRFToken');
         $perso_id = $request->get('perso_id');
+        $perso_ids = array();
+        if (!empty($perso_id)) {
+            $perso_ids[] = $perso_id;
+        } else {
+            $perso_ids = $request->get('perso_ids');
+        }
+
+        $CSRFToken = $request->get('CSRFToken');
         $debutSQL = dateSQL($request->get('debut'));
         $finSQL = dateSQL($request->get('fin'));
         $hre_debut = $request->get('hre_debut') ? $request->get('hre_debut') :"00:00:00";
@@ -604,71 +613,73 @@ class HolidayController extends BaseController
             $finSQL = $debutSQL;
         }
 
-        if ($result = \conges::exists($perso_id, "$debutSQL $hre_debut", "$finSQL $hre_fin")) {
-            $from = dateFr($result['from'], true);
-            $to = dateFr($result['to'], true);
-            return array(
-                'msg2'      => "Un congé a déjà été demandé du $from au $to",
-                'msg2Type'  => 'error'
-            );
-        }
+        foreach ($perso_ids as $perso_id) { 
+            if ($result = \conges::exists($perso_id, "$debutSQL $hre_debut", "$finSQL $hre_fin")) {
+                $from = dateFr($result['from'], true);
+                $to = dateFr($result['to'], true);
+                return array(
+                    'msg2'      => "Un congé a déjà été demandé du $from au $to",
+                    'msg2Type'  => 'error'
+                );
+            }
 
-        // Enregistrement du congés
-        $c = new \conges();
-        $c->CSRFToken = $CSRFToken;
-        $c->add($request->request->all());
-        $id = $c->id;
-
-        // Récupération des adresses e-mails de l'agent et des responsables pour l'envoi des alertes
-        $agent = $this->entityManager->find(Agent::class, $perso_id);
-        $nom = $agent->nom();
-        $prenom = $agent->prenom();
-
-        // Choix des destinataires en fonction de la configuration
-        if ($this->config('Absences-notifications-agent-par-agent')) {
-            $a = new \absences();
-            $a->getRecipients2(null, $perso_id, 1);
-            $destinataires = $a->recipients;
-        } else {
+            // Enregistrement du congés
             $c = new \conges();
-            $c->getResponsables($debutSQL, $finSQL, $perso_id);
-            $responsables = $c->responsables;
+            $c->CSRFToken = $CSRFToken;
+            $c->add($request->request->all());
+            $id = $c->id;
 
-            $a = new \absences();
-            $a->getRecipients('-A1', $responsables, $agent);
-            $destinataires = $a->recipients;
-        }
+            // Récupération des adresses e-mails de l'agent et des responsables pour l'envoi des alertes
+            $agent = $this->entityManager->find(Agent::class, $perso_id);
+            $nom = $agent->nom();
+            $prenom = $agent->prenom();
 
-        // Message qui sera envoyé par email
-        $message="Nouveau congés: <br/>$prenom $nom<br/>Début : $debutSQL";
-        if ($hre_debut!="00:00:00") {
-            $message.=" ".heure3($hre_debut);
-        }
-        $message.="<br/>Fin : $finSQL";
-        if ($hre_fin!="23:59:59") {
-            $message.=" ".heure3($hre_fin);
-        }
-        if ($commentaires) {
-            $message.="<br/><br/>Commentaire :<br/>$commentaires<br/>";
-        }
+            // Choix des destinataires en fonction de la configuration
+            if ($this->config('Absences-notifications-agent-par-agent')) {
+                $a = new \absences();
+                $a->getRecipients2(null, $perso_id, 1);
+                $destinataires = $a->recipients;
+            } else {
+                $c = new \conges();
+                $c->getResponsables($debutSQL, $finSQL, $perso_id);
+                $responsables = $c->responsables;
 
-        // ajout d'un lien permettant de rebondir sur la demande
-        $url = $GLOBALS['config']['URL'] . "/holiday/edit/$id";
-        $message.="<br/><br/>Lien vers la demande de cong&eacute; :<br/><a href='$url'>$url</a><br/><br/>";
+                $a = new \absences();
+                $a->getRecipients('-A1', $responsables, $agent);
+                $destinataires = $a->recipients;
+            }
 
-        // Envoi du mail
-        $m=new \CJMail();
-        $m->subject="Nouveau congés";
-        $m->message=$message;
-        $m->to=$destinataires;
-        $m->send();
+            // Message qui sera envoyé par email
+            $message="Nouveau congés: <br/>$prenom $nom<br/>Début : $debutSQL";
+            if ($hre_debut!="00:00:00") {
+                $message.=" ".heure3($hre_debut);
+            }
+            $message.="<br/>Fin : $finSQL";
+            if ($hre_fin!="23:59:59") {
+                $message.=" ".heure3($hre_fin);
+            }
+            if ($commentaires) {
+                $message.="<br/><br/>Commentaire :<br/>$commentaires<br/>";
+            }
 
-        // Si erreur d'envoi de mail, affichage de l'erreur
-        $msg2=null;
-        $msg2Type=null;
-        if ($m->error) {
-            $msg2 = $m->error_CJInfo;
-            $msg2Type="error";
+            // ajout d'un lien permettant de rebondir sur la demande
+            $url = $GLOBALS['config']['URL'] . "/holiday/edit/$id";
+            $message.="<br/><br/>Lien vers la demande de cong&eacute; :<br/><a href='$url'>$url</a><br/><br/>";
+
+            // Envoi du mail
+            $m=new \CJMail();
+            $m->subject="Nouveau(x) congés";
+            $m->message=$message;
+            $m->to=$destinataires;
+            $m->send();
+
+            // Si erreur d'envoi d'au moins un mail, affichage de l'erreur
+            $msg2=null;
+            $msg2Type=null;
+            if ($m->error) {
+                $msg2 = $m->error_CJInfo;
+                $msg2Type="error";
+            }
         }
 
         $msg = 'La demande de congé a été enregistrée';

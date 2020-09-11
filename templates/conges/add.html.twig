@@ -38,7 +38,8 @@
               </td> 
  
               <td colspan='2'> 
-                {% if agents_multiples %} 
+                {% if admin %} 
+                  {% if agents_multiples %}
                     <input type='hidden' name='perso_ids[]' value='{{ loggedin_id }}' id='hidden{{ loggedin_id }}' class='perso_ids_hidden'/> 
  
                   <ul id='perso_ul1' class='perso_ul'> 
@@ -56,7 +57,7 @@
                   <ul id='perso_ul3' class='perso_ul'></ul> 
                   <ul id='perso_ul4' class='perso_ul'></ul> 
                   <ul id='perso_ul5' class='perso_ul'></ul> 
-               
+                {% endif %} 
               </td> 
             </tr> 
 
@@ -66,8 +67,12 @@
 
 
               <td>
-				  <select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
+                  {% if agents_multiples %}
+				  <select name='perso_id' id='perso_ids' class='agents_multiples ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
                   <option value='0' selected='selected'>-- Ajoutez un agent --</option>
+                  {% else %}
+				  <select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
+                  {% endif %}
                   {% if conges_tous %}
                     <option value='tous'>Tous les agents</option>
                   {% endif %}
@@ -86,9 +91,8 @@
                 </select>
 
                 {% else %}
-                  <!-- #TODO: Test without admin -->
                   <input type='hidden' name='perso_id' id='perso_id' value='{{ loggedin_id }}' />
-                  {{ login_nom }} {{ login_prenom }}
+                  {{ loggedin_name }} {{ loggedin_firstname }}
                 {% endif %}
               </td>
             </tr>

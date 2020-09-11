@@ -582,7 +582,7 @@ $(function(){
   $(".googleCalendarForm").ready(function(){
     googleCalendarIcon();
   });
-  $("#perso_ids").change(function(){
+  $("#perso_ids.agents_multiples").change(function(){
     console.log($(".perso_ids_hidden").length);
     // Variables
     var id=$(this).val();
