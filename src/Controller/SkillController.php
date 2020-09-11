@@ -142,7 +142,7 @@ class SkillController extends BaseController
      * @Route("/skill", name="skill.delete", methods={"DELETE"})
      */
 
-    public function delete_skill(Request $request){
+    public function delete_skill(Request $request, Session $session){
 
         $id = $request->get('id');
         $CSRFToken = $request->get('CSRFToken');
@@ -151,6 +151,7 @@ class SkillController extends BaseController
         $a->CSRFToken = $CSRFToken;
         $a->id=$id;
         $a->delete();
+        $session->getFlashBag()->add('notice',"L'activité a bien été supprimée");
 
         return $this->json("Ok");
     }
