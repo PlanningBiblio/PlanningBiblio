@@ -17,7 +17,7 @@ Enregistre la demande de récupération
 include(__DIR__.'/../init_ajax.php');
 include "class.conges.php";
 
-use Model\Agent;
+use App\Model\Agent;
 
 // Initialisation des variables
 $commentaires=trim(filter_input(INPUT_POST, "commentaires", FILTER_SANITIZE_STRING));
