@@ -4,7 +4,6 @@
 
 {% block page %}
   <form name="form" action='{{ asset("skill") }}'>
-    <input type="hidden" name="page" value='{{ asset("/skill") }}'/>
     <input type="hidden" id="CSRFSession" value='{{ CSRFSession }}'/>
     <table>
       <tr valign="top">
@@ -28,13 +27,14 @@
       {% for s in skills %}
         <tr>
           <td>
-            <a href='{{ asset("/skill") }}{{ s.id }}'>
+            <input type="hidden" name="skill_name" value="{{ s.nom }}"/>
+            <a href='{{ asset("skill/") }}{{ s.id }}'>
               <span class="pl-icon pl-icon-edit" title="Modifier"></span>
             </a>
             {% if s.id in usedSkills == false %}
               &nbsp;&nbsp;
               <a href="#">
-                <span class="pl-icon pl-icon-drop" title="Supprimer" onclick="confirmDel(this.id)">
+                <span id='{{ s.id }}' class="pl-icon pl-icon-drop" title="Supprimer" onclick="confirmDel(this.id)">
                   <script>
                     function confirmDel(id){
                       if (window.confirm("Voulez-vous vraiment supprimer cette activité ?")){

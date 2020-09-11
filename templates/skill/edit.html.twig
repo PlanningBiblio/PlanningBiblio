@@ -1,7 +1,9 @@
 {# skill/edit.html.twig #}
 
 {% extends 'base.html.twig' %}
-
+{% block specificjs %}
+    <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/activites/js/modif.js?version={{ version }}'></script>
+{% endblock %}
 
 {% block page %}
   {% if id is defined %}
@@ -9,26 +11,22 @@
   {% else %}
     <h3>Ajout d'une activité</h3>
   {% endif %}
-  <form method="POST" name="form" action='{{ asset("skills")}}'>
-    {% if id %}
-      <input type="hidden" name='page' value='{{ asset("skills/") }}{{ id }}'/>
-    {% else %}
-      <input type="hidden" name='page' value='{{ asset("skills/add") }}'/>
-    {% endif %}
+  <form method="post" name="form" action='{{ asset("skill") }}'>
     <input type="hidden" name='CSRFToken' value='{{ CSRFSession }}' />
     <table class='tableauFiches'>
       <tr>
         <td> Nom :</td>
         <td>
-          <input type='text' value='{{ skill-name }}' name = 'nom' style='width:250px' class='ui-widget-content ui-corner-all' />
+          <input type='text' value='{{ skill_name }}' name = 'nom' style='width:250px' class='ui-widget-content ui-corner-all' />
         </td>
       </tr>
       <tr>
         <td colspan='2' style='text-align :center; padding-top: 40px;'>
-          <input type='hidden' value='{{ action }}' name = 'action' />
-          <input type='hidden' value='{{ id }}' name = 'id' />
+          {% if id is defined %}
+            <input type='hidden' value='{{ id }}' name = 'id' />
+           {% endif %}
           <input type='button' value='Annuler' onclick='history.go(-1);' class='ui-button'/>
-          <input type='button' value='Valider' class='ui-button' onclick="location.href='{{ asset('skill.save') }}'" />
+          <input type='submit' value='Valider' class='ui-button' :>
         </td>
       </tr>
     </table>

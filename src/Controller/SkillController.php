@@ -71,13 +71,11 @@ class SkillController extends BaseController
      */
     public function add(Request $request, Session $session){
 
-        $action="ajout";
-        $nom=null;
+        $nom='';
         $CSRFSession = $request->get('CSRFSession');
         $this->templateParams(array(
-            'skill-name'=>$nom,
+            'skill_name'=>$nom,
             'CSRFSession' => $CSRFSession,
-            'action' => $action
        ));
 
         return $this->output('skill/edit.html.twig');
@@ -87,19 +85,15 @@ class SkillController extends BaseController
      * @Route("/skill/{id}", name = "skill.edit", methods={"GET"})
      */
     public function edit(Request $request, Session $session){
-
-        $id = $request->get('id');
+        $id =  $request->get('id');
         $CSRFSession = $request->get('CSRFSession');
         $db = new \db();
-        $db->select2("activites", "*", array("is" => $id));
-        $action = "modif";
+        $db->select2("activites", "*", array("id" => $id)) ;
         $nom=$db->result[0]['nom'];
-
         $this->templateParams(array(
-            'skill-name'=>$nom,
+            'skill_name'=>$nom,
             'CSRFSession' => $CSRFSession,
             'id' => $id,
-            'action' => $action
         ));
 
         return $this->output('skill/edit.html.twig');
@@ -111,10 +105,8 @@ class SkillController extends BaseController
      */
     public function save(Request $request, Session $session){
         $id = $request->get('id');
-        $action = $resquest->get('action');
-        $nom = $request->get('skill-name');
+        $nom = $request->get('nom');
         $CSRFToken = $request->get('CSRFToken');
-
         if(!$nom){
             $session->getFlashbag()->add('error',"Le nom ne peut pas être vide");
             if(!$id){
@@ -123,10 +115,10 @@ class SkillController extends BaseController
                 return $this->redirectToRoute('skill.edit', array('id' => $id));
             }
         } else {
-            if($id){
+            if(!$id){
                 $db = new \db();
                 $db->CSRFToken = $CSRFToken;
-                $db->insert("activites", array("nom"=>nom));
+                $db->insert("activites", array("nom"=>$nom));
                 if ($db->error){
                     $session->getFlashBag()->add('error',"L'activité n'a pas pu être ajoutée");
                 } else {
