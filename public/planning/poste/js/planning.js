@@ -107,12 +107,15 @@ $(document).ready(function(){
     var job = cell.data('situation');
     var cell_to = cell.next();
     var cellid = cell_to.data('cell');
-    var from = cell_to.data('start');
+    var cFrom = cell_to.data('start');
     var to = cell_to.data('end');
     var date = $('#date').val();
     var site = $('#site').val();
 
     i = 0;
+    checkcopy_messages = [];
+    checkcopy_agents = [];
+
     cell.find('div').each(function() {
       var element = $(this).clone();
       var agent_id = element.data('perso-id');
@@ -120,27 +123,37 @@ $(document).ready(function(){
 
       $.ajax({
         url: '/ajax/planningjob/checkcopy',
+        async: false,
         type: "get",
         dataType: "json",
-        data: {date: date, from: from, to: to, agent: agent_id},
+        data: {date: date, from: cFrom, to: to, agent: agent_id},
         success: function(result) {
           if (result.error) {
-              var message = 'L\'agent ' + result.error +
-                  ' n\'a pas été placé de ' +
-                  heureFr(from) + ' à ' + heureFr(to) +
-                  ' car il n\'est pas disponible sur cette période';
-              CJInfo(message,"error");
+              checkcopy_messages.push("L'agent " + result.error + " n'a pas été placé de " + heureFr(cFrom) + " à " + heureFr(to) + " car il n'est pas disponible sur cette période");
           } else {
-            element.appendTo(cell_to);
-            bataille_navale(job, date, from, to, agent_id, '', '', site, '', cellid);
+              checkcopy_agents.push(agent_id);
           }
         },
-        error: function(result){
-          CJInfo("Une erreur est survenue lors de la copie.","error");
+        error: function(){
+            checkcopy_messages.push('Une erreur est survenue lors de la copie.');
         }
-      })
+      });
+
       i++;
     });
+
+    if (checkcopy_agents.length) {
+        var agents = JSON.stringify(checkcopy_agents);
+        console.log(agents);
+        // User interaction is needed to refresh the cell with bataille_navale (I don't know why). Therefore I add cell.click()
+        cell.click();
+        bataille_navale(job, date, cFrom, to, agents, '', '', site, '', cellid);
+    }
+
+    if (checkcopy_messages.length) {
+        var message = checkcopy_messages.join('#BR#');
+        CJInfo(message, 'error');
+    }
 
     return false;
   });
