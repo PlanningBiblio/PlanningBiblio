@@ -66,63 +66,59 @@
     {% else %}
       <input type="hidden" name="locked" value="0"/>
     {% endif %}
-    <table id="statedweek-header">
-      <tr>
-        <td>
-          <div class='noprint'>
-            <div id='pl-calendar' class='datepicker'></div>
-          </div>
-        </td>
 
-        <td class="title">
-          <div class='noprint'>
-            <strong>semaine {{ week_number }}</strong>
-          </div>
+    <div id='statedweek-header'>
+      <div style='display:inline-block; min-width:400px; width:25%; height:60px; vertical-align:top;' class='noprint' >
+        <div id='pl-calendar' class='datepicker'></div>
+      </div>
 
-          <div id="date_text">
-            Planning du {{ date | datefull | raw }}
-            {% if date | publicholiday %}
-              - <font id='public_holiday'> {{ date | publicholiday }}</font>
-            {% endif %}
-          </div>
+      <div style='display:inline-block; min-width:600px; width:40%; vertical-align:top;' class='title titreSemFixe' >
+        <strong>semaine {{ week_number }}</strong>
+        <div id="date_text">
+          Planning du {{ date | fulldate | raw }}
+          {% if date | publicholiday %}
+            - <font id='public_holiday'> {{ date | publicholiday }}</font>
+          {% endif %}
+        </div>
 
-          <div class="noprint">
-            {% include 'statedweek/days_menu.html.twig' %}
-          </div>
-        </td>
+        <div class="noprint">
+          {% include 'statedweek/days_menu.html.twig' %}
+        </div>
+      </div>
 
-        {% if canEdit %}
-          <td class="actions">
-            <div style="min-width: 185px">
-            {% if planning.locked %}
-              <div id="validation">
-                <u>Validation</u>
-                <br />
-                <span id="locker">{{ locker.nom }} {{ locker.prenom }}</span>
-                <span id="locked-on">{{ planning.locked_on | date('d/m/Y H:i') }}</span>
-              </div>
-            {% else %}
-              <div id="validation" style="display:none;">
-                <u>Validation</u>
-                <br />
-                <span id="locker"></span>
-                <span id="locked-on"></span>
-              </div>
-            {% endif %}
-            {% if planning.locked %}
-              <a id="unlock"><span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning'></span></a>
-              <a id="lock" style="display:none;"><span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning'></span></a>
-              {% else %}
-              <a id="lock"><span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning'></span></a>
-              <a id="unlock" style="display:none;"><span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning'></span></a>
-            {% endif %}
-              <a id="save-template" href="#" title="Enregistrer comme modèle"><span class="pl-icon pl-icon-save"></span></a>
-              <a id="open-template" href="#" title="Importer un modèle"><span class="pl-icon pl-icon-open"></span></a>
+      <div style='display:inline-block; min-width:400px; width:25%; vertical-align:top;' class='actions' >
+        <div>
+        {% if planning.locked %}
+          <div id="validation">
+            <u>Validation</u>
+            <br />
+            <span id="locker">{{ locker.nom }} {{ locker.prenom }}</span>
+            <span id="locked-on">{{ planning.locked_on | date('d/m/Y H:i') }}</span>
+          </div>
+        {% else %}
+          {% if canEdit %}
+            <div id="validation" style="display:none;">
+              <u>Validation</u>
+              <br />
+              <span id="locker"></span>
+              <span id="locked-on"></span>
             </div>
-          </td>
+          {% endif %}
         {% endif %}
-      </tr>
-    </table>
+        {% if canEdit %}
+          {% if planning.locked %}
+            <a id="unlock"><span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning'></span></a>
+            <a id="lock" style="display:none;"><span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning'></span></a>
+            {% else %}
+            <a id="lock"><span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning'></span></a>
+            <a id="unlock" style="display:none;"><span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning'></span></a>
+          {% endif %}
+            <a id="save-template" href="#" title="Enregistrer comme modèle"><span class="pl-icon pl-icon-save"></span></a>
+            <a id="open-template" href="#" title="Importer un modèle"><span class="pl-icon pl-icon-open"></span></a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
 
     {% if canEdit or planning.locked %}
       <table id="statedweek-tables">
