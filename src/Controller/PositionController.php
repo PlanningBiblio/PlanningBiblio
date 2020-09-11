@@ -151,7 +151,7 @@ class PositionController extends BaseController
             'categoriesList' => $categories_list,
             'etages' => $etages,
             'groupes'=> $groupes,
-            'group-id' => $groupe_id,
+            'group_id' => $groupe_id,
             'obligatoire' => $obligatoire,
             'bloquant' => $bloquant,
             'nbSites' => $nbMultisite,
@@ -196,10 +196,11 @@ class PositionController extends BaseController
         $etages_utilises = array();
 
         $qb = $this->entityManager->createQueryBuilder();
-        $qb->add('select','etage')
-           ->add('from', 'postes etage')
-           ->add('where', 'supprime = null')
-           ->add('groupBy', 'etage');
+        $qb
+            ->select('etage')
+            ->from('activites', null)
+            ->where('supprime = null')
+            ->groupBy('etage');
 
         $response = $qb->getQuery();
 
@@ -218,10 +219,10 @@ class PositionController extends BaseController
         $groupes_utilises = array();
 
         $qb = $this->entityManager->createQueryBuilder();
-        $qb->add('select','groupe')
-           ->add('from', 'postes groupe')
-           ->add('where', 'supprime = null')
-           ->add('groupBy', 'groupe');
+        $qb->select('groupe')
+            ->from('postes', null)
+            ->where('supprime = null')
+             ->groupBy('groupe');
 
         $response = $qb->getQuery();
         if ($response) {
@@ -250,7 +251,7 @@ class PositionController extends BaseController
             'nom' => $nom,
             'etage' => $etage,
             'groupe' => $groupe,
-            'group-id'=>$groupe_id,
+            'group_id'=>$groupe_id,
             'categories' =>$categories,
             'site' => $site,
             'activites' => $activites,
@@ -267,6 +268,7 @@ class PositionController extends BaseController
             'actList' => $actList,
             'categoriesList'=>$categories_list,
             'usedGroups'=> $groupes_utilises,
+            'usedFloors'=> $etages_utilises,
             'selectedSites' => $selectedSites,
             'CSRFToken' => $GLOBALS['CSRFSession']
             )
@@ -300,7 +302,7 @@ class PositionController extends BaseController
             $statistiques= $request->get('statistiques');
             $etage = $request->get('etage');
             $groupe = $request->get('groupe');
-            $groupe_id = $request->get('group-id');
+            $groupe_id = $request->get('group_id');
             $obligatoire= $request->get('obligatoire');
             $site=$site?$site:1;
 
@@ -316,12 +318,17 @@ class PositionController extends BaseController
                     $position->groupe_id($groupe_id);
                     $position->obligatoire($obligatoire);
                     $position->site(site);
-                    $this->entityManager->persist($position);
+                    try{
+                        $this->entityManager->persist($position);
+                        $this->entityManager->flush();
+                    }
+                    catch(Exception $e){
+                        $error = $e->getMessage();
+                    }
 
                     if (isset($error)) {
                         $session->getFlashBag()->add('error', "Une erreur est survenue lors de l'ajout du poste " );
                     } else {
-                        $this->entityManager->flush();
                         $session->getFlashBag()->add('notice', "Le poste a été ajouté avec succès");
                     }
 
@@ -338,12 +345,17 @@ class PositionController extends BaseController
                     $position->obligatoire($obligatoire);
                     $position->site($site);
 
-                    $this->entityManager->persist($position);
+                    try{
+                        $this->entityManager->persist($position);
+                        $this->entityManager->flush();
+                    }
+                    catch(Exception $e){
+                        $error = $e->getMessage();
+                    }
 
                     if(isset($error)) {
                         $session->getFlashBag()->add('error', "Une erreur est survenue lors de la modification du poste " );
                     } else {
-                        $this->entityManager->flush();
                         $session->getFlashBag()->add('notice',"Le poste a été modifié avec succès");
                     }
             }
@@ -356,7 +368,7 @@ class PositionController extends BaseController
     /**
      * @Route("/position",name="position.delete", methods={"DELETE"})
      */
-     public function delete_position(Request $request){
+     public function delete_position(Request $request, Session $session){
 
         $id = $request->get('id');
         $CSRFToken = $request->get('CSRFToken');
@@ -365,6 +377,7 @@ class PositionController extends BaseController
         $this->entityManager->remove($p);
         $this->entityManager->flush();
 
+        $session->getFlashBag()->add('notice',"Le poste a bien été supprimé");
         return $this->json("Ok");
      }
 

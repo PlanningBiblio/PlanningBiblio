@@ -12,8 +12,8 @@
     <h3>Ajout d'un poste</h3>
   {% endif %}
   <form method='post' action="{{ asset('/position') }}" name='form'>
-    <input type='hidden' name='page' value='{{ asset("position/save") }}' />
     <input type='hidden' name='CSRFToken' value="{{ CSRFToken }}"/>
+    <input type='hidden' name='group_id' value='{{ group_id }}'/>
     {% if id %}
         <input type='hidden' name='id' value='{{ id }}'/>
     {% else %}
@@ -64,7 +64,7 @@
                 <select name='groupe' id='groupe' style='width:255px' class='ui-widget-content ui-corner-all'>
                   <option value=''>&nbsp;</option>
                   {% for group in groupes %}
-                    {% if groupe == group.valeur %} 
+                    {% if groupe == group.valeur %}
                       <option value='{{ group.valeur }}' selected=selected  >{{ group.valeur }}</option>
                     {% else %}
                       <option value='{{ group.valeur }}'>{{ group.valeur }}</option>
@@ -132,7 +132,6 @@
       </tr>
       <tr>
         <td colspan='2' style='text-align:center;'><br/><br/>
-          <input type='hidden' value={{action}} name='action'/>
           <input type='hidden' value={{id}} name='id'/>
           <a href='{{ asset("position") }}'class='ui-button'>Annuler</a>
               &nbsp;&nbsp;&nbsp;
@@ -161,7 +160,7 @@
               <li class='ui-state-default' id='li_{{ e.id }}'>
                 <span class='ui-icon ui-icon-arrowthick-2-n-s'></span>
                 <font id='valeur_{{ e.id }}'>{{ e.valeur }}</font>
-                {% if not e.valeur in usedFloors %}
+                {% if e.valeur in usedFloors == false %}
                   <span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>
                 {% endif %}
               </li>

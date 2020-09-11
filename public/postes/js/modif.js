@@ -29,17 +29,16 @@ $(function() {
     $("#etages-sortable li:hidden").each(function(){
       $(this).remove();
     });
-    
+
     // Enregistre les éléments du formulaire dans un tableau
     tab=new Array();
     $("#etages-sortable li").each(function(){
       var id=$(this).attr("id").replace("li_","");
        tab.push(new Array($("#valeur_"+id).text(), $(this).index()));
     });
-
     // Transmet le tableau à la page de validation ajax
     $.ajax({
-      url: baseURL + "/include/ajax.menus.php",
+      url: $('#baseURL').val() + "/include/ajax.menus.php",
       type: "post",
           dataType: "json",
       data: {tab: tab, menu: "etages", CSRFToken: $('#CSRFSession').val()},
@@ -93,7 +92,7 @@ $(function() {
       $("#add-etage-text").val();
       return;
     }
-    
+
     // Vérifie si l'étage existe déjà
     var exist = false;
     $('#etages-sortable > li > font').each(function(){
@@ -103,11 +102,11 @@ $(function() {
         return;
       }
     });
-    
+
     if(exist){
       return;
     }
-    
+
     var number = 1;
     while($('#li_'+number).length){
       number++;
@@ -146,7 +145,7 @@ $(function() {
 
     // Transmet le tableau à la page de validation ajax
     $.ajax({
-      url: baseURL + "/include/ajax.menus.php",
+      url: $('#baseURL').val() + "/include/ajax.menus.php",
       type: "post",
           dataType: "json",
       data: {tab: tab, menu: "groupes", CSRFToken: $('#CSRFSession').val()},

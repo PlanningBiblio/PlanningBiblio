@@ -5,7 +5,6 @@
 {% block page %}
 
   <form name="form" action="#">
-    <input type='hidden' name='page' value='{{asset("position")}}' />
     <table style='margin:20px 0;'>
       <tr valign='top'>
         <td style='width:270px'>
@@ -58,7 +57,6 @@
                             if (response == "Ok"){
                               window.location.reload('/position');
                             }
-                            CJInfo("Le poste a bien été supprimé","success")
                           },
                           error: function(){
                             CJInfo("Une erreur est survenue lors de la suppression","error")
@@ -78,7 +76,7 @@
           <td>{{j.etage}}</td>
           <td title='{{j.activites}}' size='100'>{{ j.activitesAffichees }}</td>
           <td>{{j.groupe}}</td>
-          <td>{{j.obligatoire}}</td> 
+          <td>{{j.obligatoire}}</td>
           <td>{{j.bloquant ? "Oui" : "Non"}}</td>
           <td>{{j.statistiques ? "Oui" : "Non"}}</td>
         </tr>
