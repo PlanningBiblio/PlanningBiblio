@@ -1,12 +1,10 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : planning/poste/ajax.updateCell.php
-Création : 31 octobre 2014
+@file public/planning/poste/ajax.updateCell.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -36,7 +34,7 @@ $date=filter_input(INPUT_POST, "date", FILTER_CALLBACK, array("options"=>"saniti
 $debut=filter_input(INPUT_POST, "debut", FILTER_CALLBACK, array("options"=>"sanitize_time"));
 $fin=filter_input(INPUT_POST, "fin", FILTER_CALLBACK, array("options"=>"sanitize_time"));
 $griser=filter_input(INPUT_POST, "griser", FILTER_SANITIZE_NUMBER_INT);
-$perso_id=filter_input(INPUT_POST, "perso_id", FILTER_SANITIZE_NUMBER_INT);
+$perso_id=filter_input(INPUT_POST, "perso_id", FILTER_SANITIZE_STRING);
 $perso_id_origine=filter_input(INPUT_POST, "perso_id_origine", FILTER_SANITIZE_NUMBER_INT);
 $poste=filter_input(INPUT_POST, "poste", FILTER_SANITIZE_NUMBER_INT);
 $site=filter_input(INPUT_POST, "site", FILTER_SANITIZE_NUMBER_INT);
@@ -48,7 +46,7 @@ $now=date("Y-m-d H:i:s");
 // Pärtie 1 : Enregistrement des nouveaux éléments
 
 // Suppression ou marquage absent
-if ($perso_id==0) {
+if (is_numeric($perso_id) and $perso_id == 0) {
     // Tout barrer
     if ($barrer and $tout) {
         $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
@@ -89,12 +87,20 @@ else {
         $db->CSRFToken = $CSRFToken;
         $db->delete("pl_poste", $where);
 
-        // Insertion des nouveaux éléments
-        $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id,
-      "chgt_login"=>$login_id, "chgt_time"=>$now);
-        $db=new db();
-        $db->CSRFToken = $CSRFToken;
-        $db->insert("pl_poste", $insert);
+        if (is_numeric($perso_id)) {
+            // Insertion des nouveaux éléments
+            $p = new planning();
+            $p->update_cell_add_agents($date, $debut, $fin, $poste, $site, $perso_id, $login_id, $CSRFToken);
+        } else {
+            $tab = json_decode($perso_id);
+            if (is_array($tab) and !empty($tab)) {
+                foreach ($tab as $elem) {
+                    // Insertion des nouveaux éléments
+                    $p = new planning();
+                    $p->update_cell_add_agents($date, $debut, $fin, $poste, $site, $elem, $login_id, $CSRFToken);
+                }
+            }
+        }
     }
     // Si barrer : on barre l'ancien et ajoute le nouveau
     elseif ($barrer) {

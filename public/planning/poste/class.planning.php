@@ -632,6 +632,24 @@ class planning
         }
     }
 
+    public function update_cell_add_agents($date, $debut, $fin, $poste, $site, $perso_id, $login_id, $CSRFToken)
+    {
+        $insert = array(
+            "date" => $date,
+            "debut" => $debut,
+            "fin" => $fin,
+            "poste" => $poste,
+            "site" => $site,
+            "perso_id" => $perso_id,
+            "chgt_login" => $login_id,
+            "chgt_time" => date("Y-m-d H:i:s")
+        );
+
+        $db = new db();
+        $db->CSRFToken = $CSRFToken;
+        $db->insert("pl_poste", $insert);
+    }
+
     // Insertion, mise à jour des notes
     public function updateNotes()
     {
