@@ -31,6 +31,7 @@ require_once __DIR__."/../personnel/class.personnel.php";
 use App\Model\Agent;
 use App\Model\AbsenceReason;
 use App\Model\AbsenceDocument;
+use App\PlanningBiblio\WorkingHours;
 
 
 class absences
@@ -547,7 +548,8 @@ class absences
             $jour=$d->position?$d->position:7;
             $jour=$jour+(($semaine-1)*7)-1;
 
-            $temps = calculPresence($p->elements[0]['temps'], $jour);
+            $wh = new WorkingHours($p->elements[0]['temps']);
+            $temps = $wh->hoursOf($jour);
 
             foreach ($temps as $t) {
                 $t0 = strtotime($t[0]);
@@ -665,7 +667,9 @@ class absences
                 $jour=$jour+(($semaine-1)*7)-1;
             }
       
-            $temps = calculPresence($edt['temps'], $jour);
+
+            $wh = new WorkingHours($edt['temps']);
+            $temps = $wh->hoursOf($jour);
 
             foreach ($temps as $t) {
                 $t0 = strtotime($t[0]);

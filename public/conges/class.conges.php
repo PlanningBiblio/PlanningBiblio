@@ -28,6 +28,7 @@ require_once __DIR__."/../joursFeries/class.joursFeries.php";
 require_once __DIR__."/../personnel/class.personnel.php";
 require_once __DIR__."/../absences/class.absences.php";
 
+use App\PlanningBiblio\WorkingHours;
 
 class conges
 {
@@ -142,7 +143,8 @@ class conges
             $debutConges=strtotime($debutConges);
             $finConges=strtotime($finConges);
       
-            $temps = calculPresence($p->elements[0]['temps'], $jour);
+            $wh = new WorkingHours($p->elements[0]['temps']);
+            $temps = $wh->hoursOf($jour);
       
             foreach ($temps as $t) {
                 $t0 = strtotime($t[0]);
