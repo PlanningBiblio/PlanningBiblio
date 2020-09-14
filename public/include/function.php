@@ -16,6 +16,7 @@ Page appelée par les fichiers index.php, setup/index.php et planning/poste/menu
 */
 
 use App\Model\Agent;
+use App\PlanningBiblio\WorkingHours;
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
 if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
@@ -544,77 +545,6 @@ function calculHeuresSP($date, $CSRFToken)
     return (array) $heuresSP;
 }
 
-/** @function calculPresence
- *  @param array $temps : tableau emploi du temps de l'agent
- *  @param int $jour : jour de la semaine de 0 à 6 puis de 7 à 13 en semaines paires/impaires, etc.
- *  La fonction retourne un tableau contenant les créneaux horaires de présence
- */
-function calculPresence($temps, $jour)
-{
-
-  // $pause2 = 1 si la gestion de la 2ème pause est activée, 0 sinon
-    $pause2 = $GLOBALS['config']['PlanningHebdo-Pause2'];
-  
-  
-    /**
-     * Tableau affichant les différentes possibilités
-     * NB : le paramètre heures[4] est utilisé pour l'affectation du site. Il n'est pas utile ici
-     * NB : la 2ème pause n'est pas implémentée depuis le début, c'est pourquoi les paramètres heures[5] et heures[6] viennent s'intercaler avant $heure[3]
-     *
-     *    Heure 0     Heure 1     Heure 2     Heure 5     Heure 6     Heure 3
-     * 1                           [ tableau vide]
-     * 2    |-----------|           |-----------|           |-----------|
-     * 3    |-----------|           |-----------------------------------|
-     * 4    |-----------|                                   |-----------|
-     * 5    |-----------|
-     * 6    |-----------------------------------|           |-----------|
-     * 7    |-----------------------------------|
-     * 8    |-----------------------------------------------------------|
-     * 9                            |-----------|
-     * 10                           |-----------------------------------|
-     */
-  
-
-    // Cas N°1
-    // Si le tableau $temps est vide ou invalide ou si le jour recherché n'est pas dans le tableau, on retourne false
-    if (!is_array($temps) or empty($temps) or !array_key_exists($jour, $temps)) {
-        return array();
-    }
-  
-    // Constitution des groupes de plages horaires
-    $tab = array();
-    $heures=$temps[$jour];
-  
-    // 1er créneau : cas N° 2; 3; 4; 5
-    if (!empty($heures[0]) and !empty($heures[1])) {
-        $tab[] = array($heures[0], $heures[1]);
-  
-    // 1er créneau fusionné avec le 2nd : cas N° 6 et 7
-    } elseif ($pause2 and !empty($heures[0]) and !empty($heures[5])) {
-        $tab[] = array($heures[0], $heures[5]);
-  
-    // Journée complète : cas N° 8
-    } elseif (!empty($heures[0]) and !empty($heures[3])) {
-        $tab[] = array($heures[0], $heures[3]);
-    }
-  
-    // 2ème créneau : cas N° 1 et 9
-    if ($pause2 and !empty($heures[2]) and !empty($heures[5])) {
-        $tab[] = array($heures[2], $heures[5]);
-    
-    // 2ème créneau fusionné au 3ème : cas N° 3 et 10
-    } elseif (!empty($heures[2]) and !empty($heures[3])) {
-        $tab[] = array($heures[2], $heures[3]);
-    }
-  
-    // 3ème créneau : cas N° 2; 4; 6
-    if ($pause2 and !empty($heures[6]) and !empty($heures[3])) {
-        $tab[] = array($heures[6], $heures[3]);
-    }
-  
-    return $tab;
-}
-
 /** @function calculSiPresent
  *  @param string $debut : heure de début, format 00:00:00
  *  @param string $fin : heure de fin, format 00:00:00
@@ -624,7 +554,9 @@ function calculPresence($temps, $jour)
  */
 function calculSiPresent($debut, $fin, $temps, $jour)
 {
-    $tab = calculPresence($temps, $jour);
+
+    $wh = new WorkingHours($temps);
+    $tab = $wh->hoursOf($jour);
   
     // Confrontation du créneau de service public aux tableaux
     foreach ($tab as $elem) {

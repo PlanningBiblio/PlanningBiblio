@@ -4,6 +4,7 @@ namespace App\PlanningBiblio\Helper;
 
 use App\PlanningBiblio\Helper\BaseHelper;
 use App\PlanningBiblio\Helper\WeekPlanningHelper;
+use App\PlanningBiblio\WorkingHours;
 use App\Model\Agent;
 
 include_once(__DIR__ . '/../../../public/joursFeries/class.joursFeries.php');
@@ -189,7 +190,8 @@ class HolidayHelper extends BaseHelper
         $day = $d->position ? $d->position : 7;
         $day = $day + (($week - 1) * 7) - 1;
 
-        return calculPresence($planning, $day);
+        $wh = new WorkingHours($planning);
+        return $wh->hoursOf($day);
     }
 
     private function getPlanning($date)

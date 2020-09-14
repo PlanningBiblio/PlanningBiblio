@@ -31,6 +31,7 @@ require_once "fonctions.php";
 require_once "class.planning.php";
 require_once __DIR__."/../volants/class.volants.php";
 
+use App\PlanningBiblio\WorkingHours;
 
 //	Initilisation des variables
 $site=filter_input(INPUT_GET, "site", FILTER_SANITIZE_NUMBER_INT);
@@ -270,7 +271,9 @@ if ($db->result and $verif) {
         if ($break_countdown) {
             $day_hour = isset($day_hours[$elem['id']]) ? $day_hours[$elem['id']] : 0;
             $requested_hours = strtotime($fin) - strtotime($debut);
-            $tab = calculPresence($temps, $jour);
+
+            $wh = new WorkingHours($temps);
+            $tab = $wh->hoursOf($jour);
 
             $hours_limit = 0;
             foreach ($tab as $t) {
