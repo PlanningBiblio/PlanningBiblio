@@ -1,4 +1,6 @@
 *** Unreleased ***
+- Enhancements
+Use fine tuning of hours in holidays forms
 
 *** Version 20.04.04       (2020-09-07)   ***
 -Fixes
