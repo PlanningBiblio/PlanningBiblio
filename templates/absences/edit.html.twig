@@ -111,7 +111,7 @@
               <select name='hre_debut' class='center ui-widget-content ui-corner-all'>
                 <option value=""></option>
                 {% for i in 6..23 %}
-                    {% for j in range(low=0, high=60, step=hour_precision) %}
+                    {% for j in range(low=0, high=60, step=config('Granularite')) %}
                       {% if j != 60 %}
                         {% if hre_debut == "%02d:%02d:00"|format(i,j) %}
                           <option value='{{ "%02d:%02d:00"|format(i,j) }}' selected='selected' >{{ "%02dh%02d"|format(i,j) }}</option>
@@ -142,7 +142,7 @@
                 <select name='hre_fin' class='center ui-widget-content ui-corner-all' onfocus='setEndHour();'>
                 <option value=""></option>
                 {% for i in 6..23 %}
-                    {% for j in range(low=0, high=60, step=hour_precision) %}
+                    {% for j in range(low=0, high=60, step=config('Granularite')) %}
                       {% if j != 60 %}
                         {% if hre_fin == "%02d:%02d:00"|format(i,j) %}
                           <option value='{{ "%02d:%02d:00"|format(i,j) }}' selected='selected' >{{ "%02dh%02d"|format(i,j) }}</option>
