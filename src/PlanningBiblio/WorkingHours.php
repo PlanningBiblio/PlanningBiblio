@@ -26,6 +26,7 @@ class WorkingHours
         // Constitution des groupes de plages horaires
         $tab = array();
         $heures=$this->times[$day];
+        $break = isset($this->breaks[$day]) ? $this->breaks[$day] : 0;
 
         // 1er créneau : cas N° 2; 3; 4; 5
         if (!empty($heures[0]) and !empty($heures[1])) {
@@ -48,13 +49,42 @@ class WorkingHours
         } elseif (!empty($heures[2]) and !empty($heures[3])) {
             $tab[] = array($heures[2], $heures[3]);
         }
-      
+
         // 3ème créneau : cas N° 2; 4; 6
         if ($pause2 and !empty($heures[6]) and !empty($heures[3])) {
             $tab[] = array($heures[6], $heures[3]);
         }
-      
+
+        if ($break) {
+            $substracted = 0;
+            foreach (array(2, 1, 0) as $i) {
+                if (isset($tab[$i])) {
+                    if (!$substracted) {
+                        $tab[$i][1] = $this->substractBreak($tab[$i][1], $break);
+                    }
+                    $substracted = 1;
+
+                    if ($i -1 >= 0 && strtotime($tab[$i][1]) <= strtotime($tab[$i -1][1])) {
+                        $tab[$i -1][1] = $tab[$i][1];
+                    }
+
+                    if (strtotime($tab[$i][1]) <= strtotime($tab[$i][0])) {
+                        unset($tab[$i]);
+                    }
+                }
+            }
+        }
+
         return $tab;
+
+    }
+
+    private function substractBreak($hour, $interval)
+    {
+         $minutes = $interval * 60;
+         $new_hour = date('H:i:s', strtotime("- $minutes minutes $hour"));
+
+         return $new_hour;
     }
 
 }
