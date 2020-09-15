@@ -113,4 +113,90 @@ class WorkingHoursTest extends TestCase
         $this->assertEquals('15:00:00', $times[2][0], 'Thursday third part starts at 15:00');
         $this->assertEquals('16:00:00', $times[2][1], 'Thursday third part ends at 16:00');
     }
+
+    public function testWithFreeBreaks()
+    {
+        $working_hours = array(
+            0 => array('0' => '08:00:00', '1' => '', '2' => '', '3' => '16:00:00'),
+            1 => array('0' => '08:00:00', '1' => '12:15:00', '2' => '', '3' => ''),
+            2 => array('0' => '08:00:00', '1' => '', '2' => '', '3' => '10:00:00'),
+            3 => array('0' => '08:00:00', '1' => '10:00:00', '2' => '11:00:00', '3' => '13:00:00'),
+            4 => array('0' => '08:00:00', '1' => '12:00:00', '2' => '13:00:00', '3' => '14:00:00'),
+            5 => array('0' => '08:00:00', '1' => '12:00:00', '2' => '13:00:00', '3' => '14:00:00'),
+        );
+
+        $breaktimes = array(0 => 0.75, 1 => 1.25, 2 => 2, 3 => 0.5, 4 => 1.5, 5 => 3);
+
+        $GLOBALS['config']['PlanningHebdo-Pause2'] = 0;
+
+        $wh = new WorkingHours($working_hours, $breaktimes);
+
+        $times = $wh->hoursOf(0);
+        $this->assertEquals('08:00:00', $times[0][0], 'Monday starts at 08:00');
+        $this->assertEquals('15:15:00', $times[0][1], 'Monday ends at 15:15');
+
+        $times = $wh->hoursOf(1);
+        $this->assertEquals('08:00:00', $times[0][0], 'Tuesday starts at 08:00');
+        $this->assertEquals('11:00:00', $times[0][1], 'Tuesday ends at 11:00');
+
+        $times = $wh->hoursOf(2);
+        $this->assertEmpty($times, 'Wednesday times are null');
+
+        $times = $wh->hoursOf(3);
+        $this->assertEquals('08:00:00', $times[0][0], 'Thursday first part starts at 08:00');
+        $this->assertEquals('10:00:00', $times[0][1], 'Thursday first part ends at 10:00');
+        $this->assertEquals('11:00:00', $times[1][0], 'Thursday second part starts at 11:00');
+        $this->assertEquals('12:30:00', $times[1][1], 'Thursday second part ends at 12:30');
+
+        $times = $wh->hoursOf(4);
+        $this->assertEquals('08:00:00', $times[0][0], 'Friday first part starts at 08:00');
+        $this->assertEquals('12:00:00', $times[0][1], 'Friday first part ends at 12:00');
+        $this->assertArrayNotHasKey(1, $times, 'Friday second part does not exist');
+
+        $times = $wh->hoursOf(5);
+        $this->assertEquals('08:00:00', $times[0][0], 'Saturday first part starts at 08:00');
+        $this->assertEquals('11:00:00', $times[0][1], 'Saturday first part ends at 11:00');
+        $this->assertArrayNotHasKey(1, $times, 'Saturday second part does not exist');
+
+        $working_hours = array(
+            0 => array('0' => '08:00:00', '1' => '10:00:00', '2' => '11:00:00', '3' => '17:00:00', 5 => '12:00:00', 6 => '14:00:00'),
+            1 => array('0' => '08:00:00', '1' => '10:00:00', '2' => '11:00:00', '3' => '17:00:00', 5 => '12:00:00', 6 => '14:00:00'),
+            2 => array('0' => '08:00:00', '1' => '10:00:00', '2' => '11:00:00', '3' => '17:00:00', 5 => '12:00:00', 6 => '14:00:00'),
+            3 => array('0' => '08:00:00', '1' => '10:00:00', '2' => '11:00:00', '3' => '14:00:00', 5 => '12:00:00', 6 => '13:00:00'),
+        );
+
+        $breaktimes = array(0 => 0.25, 1 => 3.5, 2 => 5.5, 3 => 3);
+
+        $GLOBALS['config']['PlanningHebdo-Pause2'] = 1;
+
+        $wh = new WorkingHours($working_hours, $breaktimes);
+
+        $times = $wh->hoursOf(0);
+        $this->assertEquals('08:00:00', $times[0][0], 'Monday first part starts at 08:00');
+        $this->assertEquals('10:00:00', $times[0][1], 'Monday first part ends at 10:00');
+        $this->assertEquals('11:00:00', $times[1][0], 'Monday second part starts at 11:00');
+        $this->assertEquals('12:00:00', $times[1][1], 'Monday second part ends at 12:00');
+        $this->assertEquals('14:00:00', $times[2][0], 'Monday third part starts at 14:00');
+        $this->assertEquals('16:45:00', $times[2][1], 'Monday third part ends at 16:45');
+
+        $times = $wh->hoursOf(1);
+        $this->assertEquals('08:00:00', $times[0][0], 'Tuesday first part starts at 08:00');
+        $this->assertEquals('10:00:00', $times[0][1], 'Tuesday first part ends at 10:00');
+        $this->assertEquals('11:00:00', $times[1][0], 'Tuesday second part starts at 11:00');
+        $this->assertEquals('12:00:00', $times[1][1], 'Tuesday second part ends at 12:00');
+        $this->assertArrayNotHasKey(2, $times, 'Tuesday third part does not exist');
+
+        $times = $wh->hoursOf(2);
+        $this->assertEquals('08:00:00', $times[0][0], 'Wednesday first part starts at 08:00');
+        $this->assertEquals('10:00:00', $times[0][1], 'Wednesday first part ends at 10:00');
+        $this->assertEquals('11:00:00', $times[1][0], 'Wednesday second part starts at 11:00');
+        $this->assertEquals('11:30:00', $times[1][1], 'Wednesday second part ends at 11:30');
+        $this->assertArrayNotHasKey(2, $times, 'Wednesday third part does not exist');
+
+        $times = $wh->hoursOf(3);
+        $this->assertEquals('08:00:00', $times[0][0], 'Thursday first part starts at 08:00');
+        $this->assertEquals('10:00:00', $times[0][1], 'Wednesday first part ends at 10:00');
+        $this->assertArrayNotHasKey(1, $times, 'Wednesday second part does not exist');
+        $this->assertArrayNotHasKey(2, $times, 'Wednesday third part does not exist');
+    }
 }
