@@ -78,7 +78,7 @@ class HolidayHelper extends BaseHelper
                 return $result;
             }
 
-            $week_helper = new WeekPlanningHelper($planning);
+            $week_helper = new WeekPlanningHelper($planning['times']);
             $per_week[$week_id]['worked_days'] = $week_helper->NumberWorkingDays();
 
             if (!isset($per_week[$week_id]['requested_days'])) {
@@ -190,7 +190,12 @@ class HolidayHelper extends BaseHelper
         $day = $d->position ? $d->position : 7;
         $day = $day + (($week - 1) * 7) - 1;
 
-        $wh = new WorkingHours($planning);
+
+        if ($this->config('PlanningHebdo-PauseLibre')) {
+            $wh = new WorkingHours($planning['times'], $planning['breaktimes']);
+        } else {
+            $wh = new WorkingHours($planning['times']);
+        }
         return $wh->hoursOf($day);
     }
 
@@ -212,34 +217,7 @@ class HolidayHelper extends BaseHelper
          $times = $p->elements[0]['temps'];
          $breaktimes = $p->elements[0]['breaktime'];
 
-         if ($this->config('PlanningHebdo-PauseLibre')) {
-             foreach ($times as $index => $t) {
-                 // FIXME: This make the feature inconsistent with
-                 // the option 'PlanningHebdo-Pause2'.
-                 $start_break = $t[1];
-                 $end_break = $t[2];
-                 $end_hour = $t[3];
-
-                 if ($breaktimes[$index]) {
-                     $minutes = $breaktimes[$index] * 60;
-                     $end_hour = date('H:i:s', strtotime("- $minutes minutes $end_hour"));
-                 }
-
-                 if (strtotime($end_hour) < strtotime($end_break)) {
-                     $end_break = $end_hour;
-                 }
-
-                 if (strtotime($end_hour) < strtotime($start_break)) {
-                     $start_break = $end_hour;
-                 }
-
-                 $times[$index][1] = $start_break;
-                 $times[$index][2] = $end_break;
-                 $times[$index][3] = $end_hour;
-             }
-         }
-
-         return $times;
+         return array('times' => $times, 'breaktimes' => $breaktimes);
     }
 
     private function isClosingDay($date)
