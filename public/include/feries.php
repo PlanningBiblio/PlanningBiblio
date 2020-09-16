@@ -18,11 +18,12 @@ Code source de Olravet commenté en page de cette page
 */
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
-if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
-    include_once "accessDenied.php";
-    exit;
-}
-
+$version = $GLOBALS['version'] ?? null;
+//if (!isset($version)) {
+//    include_once "accessDenied.php";
+//    exit;
+//}
+//
 function jour_ferie($date)
 {
     $tmp=explode("-", $date);
