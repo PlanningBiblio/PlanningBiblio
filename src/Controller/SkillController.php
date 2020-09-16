@@ -21,12 +21,12 @@ class SkillController extends BaseController
     {
         //        Recherche des activites
 
-        $query = $this->entityManager->getRepository(Skill::class)->findAll();
+        $query = $this->entityManager->getRepository(Skill::class)->findBy(array('supprime' => NULL));
         $activites = array();
 
         if($query){
             foreach ($query as $elem){
-                $activites[]=$elem;
+                $activites[] = $elem;
             }
         }
 
@@ -39,7 +39,7 @@ class SkillController extends BaseController
 
         if ($db->result){
             foreach ($db->result as $elem){
-                $tab[]= json_decode($elem['activites'], true);
+                $tab[] = json_decode($elem['activites'], true);
             }
         }
 
@@ -49,7 +49,7 @@ class SkillController extends BaseController
         $db->select2("personnel", "postes", array("supprime"=>"<>2"), "GROUP BY `postes`");
         if ($db->result){
             foreach ($db->result as $elem){
-              $tab[]=json_decode(html_entity_decode($elem['postes'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                $tab[] = json_decode(html_entity_decode($elem['postes'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
             }
         }
 
@@ -58,7 +58,7 @@ class SkillController extends BaseController
                 if(is_array ($elem)){
                     foreach ($elem as $act){
                         if (!in_array ($act, $activites_utilisees)){
-                            $activites_utilisees[]=$act;
+                            $activites_utilisees[] = $act;
                         }
                     }
                 }
@@ -172,11 +172,26 @@ class SkillController extends BaseController
         $CSRFToken = $request->get('CSRFToken');
         $skill = $this->entityManager->getRepository(Skill::class)->find($id);
 
-        $this->entityManager->remove($skill);
-        $this->entityManager->flush();
+		$date = new \DateTime();
 
-        $session->getFlashBag()->add('notice',"L'activité a bien été supprimée");
-        return $this->json("Ok");
+        $skill->supprime($date);
+
+        try{
+            $this->entityManager->persist($skill);
+            $this->entityManager->flush();
+        }
+        catch(Exception $e){
+            $error = $e->getMessage();
+        }
+        if(isset($error)) {
+            $session->getFlashBag()->add('error', "Une erreur est survenue lors de la suppression de l'activité " );
+            $this->logger->error($error);
+        } else {
+            $session->getFlashBag()->add('notice',"L'activité a bien été supprimée");
+            return $this->json("Ok");
+        }
+
+
     }
 
 }
