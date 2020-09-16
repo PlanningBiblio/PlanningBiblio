@@ -2,9 +2,13 @@
 
 namespace App\Controller;
 
+use App\Controller\BaseController;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
+
+use App\Model\Skill;
 
 require_once(__DIR__.'/../../public/activites/class.activites.php');
 
@@ -17,28 +21,35 @@ class SkillController extends BaseController
     {
         //        Recherche des activites
 
-        $a = new \activites();
-        $a->fetch();
-        $activites = $a->elements;
+        $query = $this->entityManager->getRepository(Skill::class)->findAll();
+        $activites = array();
+
+        if($query){
+            foreach ($query as $elem){
+                $activites[]=$elem;
+            }
+        }
 
         //        Contrôle si l'activité est attribuée à un agent pour en interdire la suppression
         $activites_utilisees = array();
         $tab = array();
+
         $db = new \db();
         $db->select2("postes", "activites", array("supprime"=>null), "GROUP BY `activites`");
 
         if ($db->result){
             foreach ($db->result as $elem){
-                $tab[]=json_decode(html_entity_decode($elem['activites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                $tab[]= json_decode($elem['activites'], true);
             }
         }
+
 
         //        Contrôle si l'activité est attribuée à un agent pour en interdire la suppression
         $db = new \db();
         $db->select2("personnel", "postes", array("supprime"=>"<>2"), "GROUP BY `postes`");
         if ($db->result){
             foreach ($db->result as $elem){
-                $tab[]=json_decode(html_entity_decode($elem['postes'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+              $tab[]=json_decode(html_entity_decode($elem['postes'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
             }
         }
 
@@ -104,8 +115,8 @@ class SkillController extends BaseController
      */
     public function save(Request $request, Session $session){
         $id = $request->get('id');
-        $nom = $request->get('nom');
         $CSRFToken = $request->get('CSRFToken');
+        $nom = $request->get('nom');
         if(!$nom){
             $session->getFlashbag()->add('error',"Le nom ne peut pas être vide");
             if(!$id){
@@ -115,20 +126,33 @@ class SkillController extends BaseController
             }
         } else {
             if(!$id){
-                $db = new \db();
-                $db->CSRFToken = $CSRFToken;
-                $db->insert("activites", array("nom"=>$nom));
-                if ($db->error){
-                    $session->getFlashBag()->add('error',"L'activité n'a pas pu être ajoutée");
+                $skill = new Skill;
+                $skill->nom($nom);
+                try{
+                    $this->entityManager->persist($skill);
+                    $this->entityManager->flush();
+                }
+                catch(Exception $e){
+                    $error = $e->getMessage();
+                }
+                if (isset($error)) {
+                    $session->getFlashBag()->add('error', "Une erreur est survenue lors de l'ajout de l'activité " );
+                    $this->logger->error($error);
                 } else {
-                    $session->getFlashBag()->add('notice',"L'activité a été ajoutée avec succès");
+                    $session->getFlashBag()->add('notice', "L'activité a été ajoutée avec succès");
                 }
             }else{
-                $db = new \db();
-                $db->CSRFToken = $CSRFToken;
-                $db->update("activites", array("nom"=>$nom), array("id"=>$id));
-                if ($db->error){
-                    $session->getFlashBag()->add('error',"L'activité n'a pas pu être modifiée");
+                $skill = $this->entityManager->getRepository(Skill::class)->find($id);
+                try{
+                    $this->entityManager->persist($skill);
+                    $this->entityManager->flush();
+                }
+                catch(Exception $e){
+                    $error = $e->getMessage();
+                }
+                if(isset($error)) {
+                    $session->getFlashBag()->add('error', "Une erreur est survenue lors de la modification de l'activité " );
+                    $this->logger->error($error);
                 } else {
                     $session->getFlashBag()->add('notice',"L'activité a été modifiée avec succès");
                 }
@@ -146,13 +170,12 @@ class SkillController extends BaseController
 
         $id = $request->get('id');
         $CSRFToken = $request->get('CSRFToken');
-        $a = new \activites();
+        $skill = $this->entityManager->getRepository(Skill::class)->find($id);
 
-        $a->CSRFToken = $CSRFToken;
-        $a->id=$id;
-        $a->delete();
+        $this->entityManager->remove($skill);
+        $this->entityManager->flush();
+
         $session->getFlashBag()->add('notice',"L'activité a bien été supprimée");
-
         return $this->json("Ok");
     }
 
