@@ -18,7 +18,7 @@ Page appelée par la page index.php
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
 if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
-    include_once "../include/accessDenied.php";
+    include_once "/../include/accessDenied.php";
     exit;
 }
 

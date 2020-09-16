@@ -19,7 +19,7 @@
 
   <script type='text/JavaScript'>document.form.groupe.value='{{groupe}}';</script>
 
-  <table id='tablePostes' class='CJDataTable' data-sort='[[1],[2]]'>
+  <table id='tablePostes' class='CJDataTable' data-sort='[[1, "asc"],[2, "asc"]]'>
     <thead>
       <tr>
         <th class='dataTableNoSort'>&nbsp;</th>
@@ -68,7 +68,7 @@
                 </a>
               </td>
             {% endif %}
-          <td>{{j.nom}}</td>
+          <td>{{j.nom | raw }}</td>
 
           {% if multisite > 1 %}
             <td>{{j.site}}</td>

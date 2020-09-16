@@ -20,7 +20,7 @@ Utilisée par les fichiers du dossier "postes"
 
 $version = $GLOBALS['version'] ?? null;
 if (!isset($version)) {
-    include_once (__DIR__."../include/accessDenied.php");
+    include_once (__DIR__."/../include/accessDenied.php");
 }
 
 class postes

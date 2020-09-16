@@ -24,7 +24,7 @@ class PositionController extends BaseController
         $groupe="Tous";
         $this->templateParams(array('groupe' =>$groupe));
 
-        $nom=$request->get('nom');
+        $nom = $request->get('nom');
 
         // Contrôle si le poste est utilisé dans un tableau non-supprimé (tables pl_poste_lignes et pl_poste_tab)
         $postes_utilises=array();
@@ -88,9 +88,9 @@ class PositionController extends BaseController
                 $site = $this->config("Multisites-site{$value->site()}") ? $this->config("Multisites-site{$value->site()}") :"-";
                 $new['site']=$site;
             }
-            $new['nom']=html_entity_decode($value->nom(), ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new['nom']= $value->nom();
             $new['activites']=$activites;
-            $new['activitesAffichees']=html_entity_decode($activitesAffichees, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new['activitesAffichees']=$activitesAffichees;
             $new['id']=$value->id();
             $new['groupe']=$value->groupe();
             $new['etage']=$value->etage();
@@ -172,7 +172,7 @@ class PositionController extends BaseController
         $actList=$a->elements;
 
         $position = $this->entityManager->getRepository(Position::class)->find($id);
-        $nom=htmlentities($position->nom());
+        $nom= $position->nom();
         $etage=$position->etage();
         $groupe=$position->groupe();
         $groupe_id=$position->groupe_id();
@@ -282,7 +282,7 @@ class PositionController extends BaseController
     public function save(Request $request, Session $session)
     {
         $CSRFToken = $request->get('CSRFToken');
-        $nom=$request->get('nom');
+        $nom = $request->get('nom');
         $id = $request->get('id');
 
 
@@ -295,8 +295,8 @@ class PositionController extends BaseController
             }
         }else{
 
-            $activites = json_encode($request->get('activites'));
-            $categories = json_encode($request->get('categories'));
+            $activites = json_encode($request->get('activites'), JSON_HEX_QUOT);
+            $categories = json_encode($request->get('categories'), JSON_HEX_QUOT);
             $site = $request->get('site');
             $bloquant= $request->get('bloquant');
             $statistiques= $request->get('statistiques');
@@ -328,6 +328,7 @@ class PositionController extends BaseController
 
                     if (isset($error)) {
                         $session->getFlashBag()->add('error', "Une erreur est survenue lors de l'ajout du poste " );
+                        $this->logger->error($error);
                     } else {
                         $session->getFlashBag()->add('notice', "Le poste a été ajouté avec succès");
                     }
@@ -355,6 +356,7 @@ class PositionController extends BaseController
 
                     if(isset($error)) {
                         $session->getFlashBag()->add('error', "Une erreur est survenue lors de la modification du poste " );
+                        $this->logger->error($error);
                     } else {
                         $session->getFlashBag()->add('notice',"Le poste a été modifié avec succès");
                     }

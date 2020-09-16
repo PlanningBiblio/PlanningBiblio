@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Psr\Log\LoggerInterface;
 
 class BaseController extends Controller
 {
@@ -18,7 +19,7 @@ class BaseController extends Controller
 
     private $config = array();
 
-    public function __construct(RequestStack $requestStack)
+    public function __construct(RequestStack $requestStack, LoggerInterface $logger)
     {
         $request = $requestStack->getCurrentRequest();
 
@@ -29,6 +30,8 @@ class BaseController extends Controller
         $this->dispatcher = $GLOBALS['dispatcher'];
 
         $this->config = $GLOBALS['config'];
+
+        $this->logger = $logger;
     }
 
     protected function templateParams( array $params = array() )
