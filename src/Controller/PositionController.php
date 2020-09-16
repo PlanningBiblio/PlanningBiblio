@@ -376,11 +376,23 @@ class PositionController extends BaseController
         $CSRFToken = $request->get('CSRFToken');
         $p = $this->entityManager->getRepository(Position::class)->find($id);
 
-        $this->entityManager->remove($p);
-        $this->entityManager->flush();
+        $date = new \DateTime();
+        $p->supprime($date);
+        try{
+            $this->entityManager->persist($p);
+            $this->entityManager->flush();
+        }
+        catch(Exception $e){
+            $error = $e->getMessage();
+        }
 
-        $session->getFlashBag()->add('notice',"Le poste a bien été supprimé");
-        return $this->json("Ok");
+        if(isset($error)) {
+            $session->getFlashBag()->add('error', "Une erreur est survenue lors de la suppression du poste " );
+            $this->logger->error($error);
+        } else {
+            $session->getFlashBag()->add('notice',"Le poste a bien été supprimé");
+            return $this->json("Ok");
+        }
      }
 
 
