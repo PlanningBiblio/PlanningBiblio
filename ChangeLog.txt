@@ -8,6 +8,7 @@ Having "Full day" checked by default in absences is configurable
 Check journey times between absences and jobs
 Enable web profiler on dev environment
 Symfonisation of admin -> activites
+Use Doctrine ORM for skill pages
 
 -Fixes
 Use fine tuning of hours in absence forms

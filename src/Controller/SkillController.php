@@ -2,9 +2,15 @@
 
 namespace App\Controller;
 
+use App\Controller\BaseController;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
+
+use App\Model\Skill;
+use App\Model\Agent;
+use App\Model\Position;
 
 require_once(__DIR__.'/../../public/activites/class.activites.php');
 
@@ -17,28 +23,43 @@ class SkillController extends BaseController
     {
         //        Recherche des activites
 
-        $a = new \activites();
-        $a->fetch();
-        $activites = $a->elements;
+        $activites = $this->entityManager->getRepository(Skill::class)->findBy(array('supprime' => NULL));
 
         //        Contrôle si l'activité est attribuée à un agent pour en interdire la suppression
         $activites_utilisees = array();
         $tab = array();
-        $db = new \db();
-        $db->select2("postes", "activites", array("supprime"=>null), "GROUP BY `activites`");
 
-        if ($db->result){
-            foreach ($db->result as $elem){
-                $tab[]=json_decode(html_entity_decode($elem['activites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-            }
+
+        $db = $this->entityManager->createQueryBuilder();
+        $db->select('p.activites')
+           ->from(Position::class, 'p')
+           ->where('p.supprime IS NULL')
+           ->groupBy('p.activites');
+
+        $res = $db->getQuery();
+        $result = $res->getResult();
+
+        if ($result){
+           foreach ($result as $elem){
+               $tab[] = $elem['activites'];
+           }
         }
 
-        //        Contrôle si l'activité est attribuée à un agent pour en interdire la suppression
-        $db = new \db();
-        $db->select2("personnel", "postes", array("supprime"=>"<>2"), "GROUP BY `postes`");
-        if ($db->result){
-            foreach ($db->result as $elem){
-                $tab[]=json_decode(html_entity_decode($elem['postes'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+
+      //        Contrôle si l'activité est attribuée à un agent pour en interdire la suppression
+
+        $db = $this->entityManager->createQueryBuilder();
+        $db->select('a.postes')
+           ->from(Agent::class, 'a')
+           ->where('a.supprime <> 2')
+           ->groupBy('a.postes');
+
+        $res = $db->getQuery();
+        $result = $res->getResult();
+
+        if ($result){
+            foreach ($result as $elem){
+                $tab[] = html_entity_decode($elem['postes'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             }
         }
 
@@ -47,7 +68,7 @@ class SkillController extends BaseController
                 if(is_array ($elem)){
                     foreach ($elem as $act){
                         if (!in_array ($act, $activites_utilisees)){
-                            $activites_utilisees[]=$act;
+                            $activites_utilisees[] = $act;
                         }
                     }
                 }
@@ -105,7 +126,7 @@ class SkillController extends BaseController
     public function save(Request $request, Session $session){
         $id = $request->get('id');
         $nom = $request->get('nom');
-        $CSRFToken = $request->get('CSRFToken');
+
         if(!$nom){
             $session->getFlashbag()->add('error',"Le nom ne peut pas être vide");
             if(!$id){
@@ -115,20 +136,33 @@ class SkillController extends BaseController
             }
         } else {
             if(!$id){
-                $db = new \db();
-                $db->CSRFToken = $CSRFToken;
-                $db->insert("activites", array("nom"=>$nom));
-                if ($db->error){
-                    $session->getFlashBag()->add('error',"L'activité n'a pas pu être ajoutée");
+                $skill = new Skill();
+                $skill->nom($nom);
+                try{
+                    $this->entityManager->persist($skill);
+                    $this->entityManager->flush();
+                }
+                catch(Exception $e){
+                    $error = $e->getMessage();
+                }
+                if (isset($error)) {
+                    $session->getFlashBag()->add('error', "Une erreur est survenue lors de l'ajout de l'activité " );
+                    $this->logger->error($error);
                 } else {
-                    $session->getFlashBag()->add('notice',"L'activité a été ajoutée avec succès");
+                    $session->getFlashBag()->add('notice', "L'activité a été ajoutée avec succès");
                 }
             }else{
-                $db = new \db();
-                $db->CSRFToken = $CSRFToken;
-                $db->update("activites", array("nom"=>$nom), array("id"=>$id));
-                if ($db->error){
-                    $session->getFlashBag()->add('error',"L'activité n'a pas pu être modifiée");
+                $skill = $this->entityManager->getRepository(Skill::class)->find($id);
+                try{
+                    $this->entityManager->persist($skill);
+                    $this->entityManager->flush();
+                }
+                catch(Exception $e){
+                    $error = $e->getMessage();
+                }
+                if(isset($error)) {
+                    $session->getFlashBag()->add('error', "Une erreur est survenue lors de la modification de l'activité " );
+                    $this->logger->error($error);
                 } else {
                     $session->getFlashBag()->add('notice',"L'activité a été modifiée avec succès");
                 }
@@ -145,15 +179,26 @@ class SkillController extends BaseController
     public function delete_skill(Request $request, Session $session){
 
         $id = $request->get('id');
-        $CSRFToken = $request->get('CSRFToken');
-        $a = new \activites();
 
-        $a->CSRFToken = $CSRFToken;
-        $a->id=$id;
-        $a->delete();
-        $session->getFlashBag()->add('notice',"L'activité a bien été supprimée");
+        $skill = $this->entityManager->getRepository(Skill::class)->find($id);
+        $skill->disable();
 
-        return $this->json("Ok");
+        try{
+            $this->entityManager->persist($skill);
+            $this->entityManager->flush();
+        }
+        catch(Exception $e){
+            $error = $e->getMessage();
+        }
+        if(isset($error)) {
+            $session->getFlashBag()->add('error', "Une erreur est survenue lors de la suppression de l'activité " );
+            $this->logger->error($error);
+        } else {
+            $session->getFlashBag()->add('notice',"L'activité a bien été supprimée");
+            return $this->json("Ok");
+        }
+
+
     }
 
 }

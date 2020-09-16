@@ -20,4 +20,18 @@ class PLBEntity {
 
         return $this;
     }
+    public function disable() {
+        if (!property_exists($this, 'supprime')) {
+            trigger_error("This entity cannot be disabled");
+        }
+            $this->supprime(new \DateTime());
+    }
+
+    public function enable() {
+        if (!property_exists($this, 'supprime')) {
+            trigger_error("This entity cannot be enabled");
+        }
+
+        $this->supprime = null;
+    }
 }
