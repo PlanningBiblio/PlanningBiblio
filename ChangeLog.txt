@@ -11,6 +11,7 @@ Symfonisation of admin -> activites
 Use Doctrine ORM for skill pages
 Use fine tuning of hours in holidays forms
 Mass modification of agents
+Symfonize agenda/index page
 
 -Fixes
 Use fine tuning of hours in absence forms

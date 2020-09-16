@@ -16,9 +16,6 @@ Appelé par les autres fichiers du dossier planningHebdo
 */
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
-if (!isset($version) and php_sapi_name() != 'cli') {
-    include_once __DIR__."/../include/accessDenied.php";
-}
 
 require_once __DIR__."/../absences/class.absences.php";
 

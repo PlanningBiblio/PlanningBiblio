@@ -1,0 +1,138 @@
+{# calendar/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type="text/JavaScript" src="{{ asset('agenda/js/agenda.js') }}"></script>
+{% endblock %}
+
+{% block page %}
+  <div id='div_agenda'>
+    {% if agent is not null %}
+      <h3> Agenda de {{ agent }} du {{ begin }} au {{ end }} </h3>
+    {% else %}
+      <h3>Agenda</h3>
+    {% endif %}
+    {% if agents is iterable %}
+      <form name='form' method='get' action="{{ asset('calendar') }}">
+        Début : <input type='text' name='debut' id='debut' value={{begin}} class='datepicker' />
+        &nbsp;&nbsp;Fin : <input type='text' name='fin' id='fin' value={{end}} class='datepicker' />
+      {% if admin == 1 %}
+        &nbsp;&nbsp;Agent :
+        <select name='perso_id' class='ui-widget-content ui-corner-all' >
+         {% for a in agents %}
+          {% if a.id == perso_id %}
+            <option value={{a.id}} selected > {{ a.nom }} {{ a.prenom }}</option>
+          {% else %}
+            <option value={{a.id}} > {{ a.nom }} {{ a.prenom }}</option>
+          {% endif %}
+         {% endfor %}
+        </select>
+      {% endif %}
+      &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button'/>
+      </form>
+    {% else %}
+      Aucun agent disponible
+    {% endif %}
+
+    {% if beginSQL > endSQL  %}
+    <p class='information'> La date de fin doit être supérieure à la date de début </p>
+    {% elseif agent is not null and days %}
+      <br/>
+      <table cellpadding='10' cellspacing='2' border='0' id='tab_agenda'>
+        <thead>
+          <tr class='center'>
+            <th class='ui-widget-header ui-corner-all' style="width : 143px;"> Lundi </th>
+            <th class='ui-widget-header ui-corner-all' style="width : 143px;"> Mardi </th>
+            <th class='ui-widget-header ui-corner-all' style="width : 143px;"> Mercredi </th>
+            <th class='ui-widget-header ui-corner-all' style="width : 143px;"> Jeudi </th>
+            <th class='ui-widget-header ui-corner-all' style="width : 143px;"> Vendredi </th>
+            <th class='ui-widget-header ui-corner-all' style="width : 143px;"> Samedi </th>
+            <th class='ui-widget-header ui-corner-all' style="width : 143px;"> Dimanche </th>
+           </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% if cellsBefore %}
+              {% for c in 1..cellsBefore %}
+                <td class='cellule_grise'>&nbsp;</td>
+              {% endfor %}
+            {% endif %}
+
+            {% for d in days %}
+              {% if d.nb is divisible by (7) %}
+                </tr>
+                <tr>
+              {% endif %}
+              <td>
+                <div class='div_date'> {{ d.aff | raw }} </div>
+                {% if d.closed == true %}
+                    <div class='ferie'>
+                          Bibliothèque fermée<br/><b>{{ d.name }}</b>
+                    </div>
+                  </td>
+                {% else %}
+                  {% if d.presence is not empty %}
+                    {% if d.presence.schedule | length > 1 %}
+                      {% if nbSites > 1 %}
+                        <p> Présence à {{ d.presence.site }} : </p>
+                      {% else %}
+                        <p> Présence :</p>
+                      {% endif %}
+                      <ul>
+                       {% for p in d.presence.schedule %}
+                         <li> de {{ p.begin }} à {{ p.end }} </li>
+                       {% endfor %}
+                      </ul>
+                    {% else %}
+                      {% if nbSites > 1 %}
+                        <p> Présent(e) à {{ d.presence.site }} de {{ d.presence.schedule[0].begin }} à {{ d.presence.schedule[0].end }} </p>
+                      {% else %}
+                        <p> Présent(e) de {{ d.presence.schedule[0].begin }} à {{ d.presence.schedule[0].end }} </p>
+                      {% endif %}
+                    {% endif %}
+                  {% endif %}
+                  {% if d.absence is not empty %}
+                    {% for a in d.absence %}
+                      <div class ='important'>
+                        {% if a.nbAbs == 1 %}
+                          <p> Absence : </p>
+                        {% elseif a.nbAbs>1 %}
+                          <p> Absences : </p>
+                        {% endif %}
+                        <ul>
+                        {% for a in d.absence %}
+                          <li> {{ a | raw }} </li>
+                        {% endfor %}
+                        </ul>
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                  {% if d.position is not empty %}
+                    <div class ='postes'>Postes occupés :
+                      <ul>
+                      {% for position in d.position  %}
+                        {% if position.absent == true %}
+                          <li style="text-decoration: line-through;" class="important">
+                        {% else %}
+                          <li>
+                        {% endif %}
+                        {{ position.hour }} {{ position.name }} </li>
+                      {% endfor %}
+                      </ul>
+                    </div>
+                  {% endif %}
+                {% endif %}
+            {% endfor %}
+            {% if cellsAfter %}
+              {% for c in 1..cellsAfter %}
+                <td class='cellule_grise'>&nbsp;</td>
+              {% endfor %}
+            {% endif %}
+          </tr>
+        </tbody>
+      </table>
+    {% endif %}
+  </div>
+
+{% endblock %}
