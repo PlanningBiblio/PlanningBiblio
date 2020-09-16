@@ -4,8 +4,12 @@ use App\Kernel;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 require dirname(__DIR__).'/config/bootstrap.php';
+
+$session = new Session();
+$session->start();
 
 include_once(__DIR__.'/../init/init.php');
 include_once(__DIR__.'/../init/init_menu.php');

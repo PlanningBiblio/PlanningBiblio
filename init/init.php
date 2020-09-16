@@ -1,9 +1,4 @@
 <?php
-use Symfony\Component\HttpFoundation\Session\Session;
-
-$session = new Session();
-$session->start();
-
 $_SESSION['login_id'] = isset($_SESSION['login_id']) ? $_SESSION['login_id'] : '';
 $_SESSION['login_nom'] = isset($_SESSION['login_nom']) ? $_SESSION['login_nom'] : '';
 $_SESSION['login_prenom'] = isset($_SESSION['login_prenom']) ? $_SESSION['login_prenom'] : '';
