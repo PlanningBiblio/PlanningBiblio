@@ -295,8 +295,8 @@ class PositionController extends BaseController
             }
         }else{
 
-            $activites = json_encode($request->get('activites'), JSON_HEX_QUOT);
-            $categories = json_encode($request->get('categories'), JSON_HEX_QUOT);
+            $activites = $request->get('activites');
+            $categories = $request->get('categories');
             $site = $request->get('site');
             $bloquant= $request->get('bloquant');
             $statistiques= $request->get('statistiques');
