@@ -200,9 +200,10 @@ class PositionController extends BaseController
             ->select('etage')
             ->from('activites', null)
             ->where('supprime = null')
-            ->groupBy('etage');
+            ->groupBy('etage')
+            ->getQuery();
 
-        $response = $qb->getQuery();
+        $response = $qb->getResult();
 
         if ($response) {
             foreach ($response as $elem) {
@@ -222,9 +223,10 @@ class PositionController extends BaseController
         $qb->select('groupe')
             ->from('postes', null)
             ->where('supprime = null')
-             ->groupBy('groupe');
+            ->groupBy('groupe')
+            ->getQuery();
 
-        $response = $qb->getQuery();
+        $response = $qb->getResults();
         if ($response) {
             foreach ($response as $elem) {
                 $groupes_utilises[] = $elem->groupe();

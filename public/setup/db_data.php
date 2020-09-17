@@ -108,15 +108,15 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong�
 $sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('1', 'Assistance audiovisuel');";
 $sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('2', 'Assistance autoformation');";
 $sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('3', 'Communication');";
-$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('4', 'Communication r&eacute;serve');";
+$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('4', 'Communication réserve');";
 $sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('5', 'Inscription');";
-$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('6', 'Pr&ecirc;t/retour de document');";
-$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('7', 'Pr&ecirc;t de mat&eacute;riel');";
+$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('6', 'Prêt/retour de document');";
+$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('7', 'Prêt de matériel');";
 $sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('8', 'Rangement');";
 $sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('9', 'Renseignement');";
 $sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('10', 'Renseignement bibliographique');";
-$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('11', 'Renseignement r&eacute;serve');";
-$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('12', 'Renseignement sp&eacute;cialis&eacute;');";
+$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('11', 'Renseignement réserve');";
+$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('12', 'Renseignement spécialisé;');";
 
 // Insertion de la config
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Version', 'info', '20.05.00.003', 'Version de l&apos;application',' Divers','','0');";
