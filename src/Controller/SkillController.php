@@ -132,8 +132,8 @@ class SkillController extends BaseController
      */
     public function save(Request $request, Session $session){
         $id = $request->get('id');
-        $CSRFToken = $request->get('CSRFToken');
         $nom = $request->get('nom');
+
         if(!$nom){
             $session->getFlashbag()->add('error',"Le nom ne peut pas être vide");
             if(!$id){
@@ -186,12 +186,9 @@ class SkillController extends BaseController
     public function delete_skill(Request $request, Session $session){
 
         $id = $request->get('id');
-        $CSRFToken = $request->get('CSRFToken');
+
         $skill = $this->entityManager->getRepository(Skill::class)->find($id);
-
-        $date = new \DateTime();
-
-        $skill->supprime($date);
+        $skill->disable();
 
         try{
             $this->entityManager->persist($skill);
