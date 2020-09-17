@@ -1,0 +1,140 @@
+{# absences/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+
+{% block page %}
+
+  <h3>Liste des absences</h3>
+  <form name='form' id='form' method='get' action='{{ asset("/absence") }}'>
+      <span style='float:left; vertical-align:top; margin-bottom:20px;'> 
+      <table class='tableauStandard'>
+        <tbody>
+          <tr>
+            <td style='vertical-align:middle;'>
+              <label class='intitule'>Début :</label>
+              <input type='text' name='debut' value='{{begin}}' class='datepicker'/>
+            </td>
+            <td style='vertical-align:middle;'>
+              <label class='intitule'>Fin :</label>
+              <input type='text' name='fin' value='{{end}}'  class='datepicker'/>
+            </td>
+            {% if admin == true %}
+              <td style='vertical-align:middle;text-align:left;'>
+                <span style='padding:5px;'>
+                  <label class='intitule'>Agent :</label>
+                  <select name='perso_id' id='perso_id' class='ui-widget-content ui-corner-all'>
+                    {% if selected == perso_id and perso_id == 0 %}
+                      <option value='0' selected >Tous</option>
+                    {% else %}
+                      <option value='0' >Tous</option>
+                    {% endif %}
+
+                    {% for a in agentsMenu %}
+                      {% if a in selectedAgents %}
+                        <option value={{a.id}} selected> {{ a.nom }} {{ a.prenom }}</option>
+                      {% else %}
+                        <option value={{a.id}} > {{ a.nom }} {{ a.prenom }}</option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                </span>
+                <br/>
+               <span style='padding : 5px;'>Agents supprimés :
+                  {% if deletedAgents | length > 1 %}
+                    <input type='checkbox' checked name='supprimes' onclick='updateAgentsList(this,"perso_id");'/>
+                  {% else %}
+                    <input type='checkbox' name='supprimes' onclick='updateAgentsList(this,"perso_id");'/>
+                  {% endif %}
+                </span>
+              </td>
+            {% endif %}
+          <td>
+            <input type ='submit' value = 'Rechercher' class='ui-button' style='margin-right: 20px;'/>
+            <input type ='button' value = 'Réinitialiser' class='ui-button' onclick='absences_reinit()'/>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    </span>
+    <span style='float:right; vertical-align:top; margin: 10px 5px;'>
+      <a href='{{ asset("/absence/add") }}' class='ui-button'> Ajouter </a>
+    </span>
+  </form>
+  {% if sort == true%}
+    <table id='tableAbsencesVoir' class='CJDataTable' data-sort='[[1, "asc"],[2, "asc"]]' >
+  {% else %}
+    <table id='tableAbsencesVoir' class='CJDataTable' data-sort='[[0, "asc"],[1, "asc"]]' >
+  {% endif %}
+    <thead>
+      <tr>
+        <th class='dataTableNoSort'> &nbsp; </th>
+        <th class='dataTableDateFR'> Début </th>
+        <th class='dataTableDateFR-fin'> Fin </th>
+        <th id='thNom'> Agents </th>
+        {% if absences_validation %}
+          <th id='thValidation'>&Eacute;tat</th>
+        {% endif %}
+        <th> Motif </th>
+        <th> Commentaires </th>
+        <th class='dataTableDateFR'> Demande </th>
+        {% if right701 == 1 %}
+          <th id='thPiecesJustif' class='dataTableNoSort'>
+            <label style='absences-pj'> Pièces justificatives </label><br/>
+            <div class='absences-pj'> PJ 1 </div>
+            <div class='absences-pj'> PJ 2 </div>
+            <div class='absences-pj'> SO <div>
+          </th>
+        {% endif %}
+        <th> Documents </th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in absences %}
+        <tr>
+          <td style='white-space : nowrap;'>
+          {% if sort == true %}
+            <a href='{{ asset("/absence/")}}{{ a.id }}'>
+              <span class='pl-icon pl-icon-edit' title='Voir'></span>
+            </a>
+          {% endif %}
+          {% if a.rrule is not null %}
+            <span class='pl-icon pl-icon-recurring' title='Récurrence'></span>
+          {% endif %}
+          </td>
+          <td>{{ a.begin }}</td>
+          <td>{{ a.end }}</td>
+          <td>{{ a.agentsList }}</td>
+
+          {% if absences_validation %}
+            <td style={{a.stateStyle}}> {{ a.state }} </td>
+          {% endif %}
+          <td>{{ a.motive }}</td>
+          <td title={{a.comments}}>
+            <div style='height: 20px; overflow: hidden;'>{{ a.comments }}</div>
+          </td>
+          <td>{{ a.requestDate }}</td>
+
+          {% if right701 == 1 %}
+            <td style='text-align : center;'>
+              <div class='absences-pj>
+                <input type='checkbox' id="pj1-'{{ a.id }}'" {{ a.pj1Checked }} />
+              </div>
+              <div class='absences-pj>
+                <input type='checkbox' id="pj2-'{{a.id}}'" {{ a.pj2Checked }} />
+              </div>
+              <div class='absences-pj'>
+                <input type='checkbox' id="so-{{ a.id }}'" {{ a.soChecked }}/>
+              </div>
+            </td>
+          {% endif %}
+          <td>
+          {% for doc in a.absLinks %}
+           <a href={{doc.link}}>{{ doc.name }}</a><br/>
+          {% endfor %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

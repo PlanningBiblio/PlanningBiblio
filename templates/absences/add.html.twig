@@ -20,7 +20,7 @@
     <tr style='vertical-align:top'>
       <td style='width:560px;'>
 
-        <form id="form" name='form' action='/absence' method='post' enctype='multipart/form-data'>
+        <form id="form" name='form' action='/absence/add' method='post' enctype='multipart/form-data'>
           <input type='hidden' name='confirm' value='1' />
           <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
           <input type='hidden' id='admin' value='{{ admin }}' />
@@ -59,7 +59,7 @@
                   <ul id='perso_ul3' class='perso_ul'></ul>
                   <ul id='perso_ul4' class='perso_ul'></ul>
                   <ul id='perso_ul5' class='perso_ul'></ul>
-              
+
               </td>
             </tr>
 
@@ -121,7 +121,7 @@
                 <select name='hre_debut' class='center ui-widget-content ui-corner-all'>
                   <option value=""></option>
                   {% for i in 6..23 %}
-                      {% for j in range(low=0, high=60, step=config('Granularite')) %}
+                      {% for j in range(low=0, high=60, step=hour_precision) %}
                         {% if j != 60 %}
                           <option value='{{ "%02d:%02d:00"|format(i,j) }}' >{{ "%02dh%02d"|format(i,j) }}</option>
                         {% endif %}
@@ -150,7 +150,7 @@
                 <select name='hre_fin' class='center ui-widget-content ui-corner-all' onfocus='setEndHour();'>
                   <option value=""></option>
                   {% for i in 6..23 %}
-                      {% for j in range(low=0, high=60, step=config('Granularite')) %}
+                      {% for j in range(low=0, high=60, step=hour_precision) %}
                         {% if j != 60 %}
                           <option value='{{ "%02d:%02d:00"|format(i,j) }}' >{{ "%02dh%02d"|format(i,j) }}</option>
                         {% endif %}
@@ -181,7 +181,7 @@
               <td>
                 <label class='intitule'>Motif </label>
               </td>
-              
+
               <td style='white-space:nowrap;'>
                 <select name='motif' id='motif' style='width:100%;' class='ui-widget-content ui-corner-all'>
                   <option value=''></option>
@@ -230,7 +230,7 @@
               </td>
             </tr>
 
-            {% if right701 %}
+            {% if right701 == 1 %}
               <tr style='vertical-align:top;'>
                 <td>
                   <label class='intitule'>Pièces justificatives</label>
@@ -290,7 +290,7 @@
 
             <tr>
               <td colspan='2' style='text-align:center;'>
-                <input type='button' class='ui-button' value='Annuler' onclick="document.location.href='index.php?page=absences/voir.php';" />
+                <input type='button' class='ui-button' value='Annuler' onclick="document.location.href='{{ asset("absence") }}';" />
                 &nbsp;&nbsp;
                 <input type='submit' class='ui-button' value='Valider' />
 

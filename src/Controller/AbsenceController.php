@@ -15,7 +15,237 @@ class AbsenceController extends BaseController
 {
 
     /**
-     * @Route("/absence", name="absence.add", methods={"GET", "POST"})
+     * @Route("/absence", name="absence.index", methods={"GET"})
+     */
+
+    public function index(Request $request){
+
+        // Initialisation des variables
+        $debut=$request->get("debut");
+        $fin=$request->get("fin");
+        $reset=$request->get("reset");
+
+        // Contrôle sanitize_dateFr en 2 temps pour éviter les erreurs CheckMarx
+        $debut=filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
+        $fin=filter_var($fin, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
+
+        $debut = $debut?$debut:(isset($_SESSION['oups']['absences_debut'])?$_SESSION['oups']['absences_debut']:null);
+        $fin = $fin?$fin:(isset($_SESSION['oups']['absences_fin'])?$_SESSION['oups']['absences_fin']:null);
+
+        $this->droits = $GLOBALS['droits'];
+
+        $p = new \personnel();
+        $p->supprime=array(0,1,2);
+        $p->fetch();
+        $agents = $p->elements;
+
+        // Initialisation des variables
+        $nbSites = $this->config('Multisites-nombre');
+        $admin = false;
+        $adminN2 = false;
+
+        for($i = 1; $i <= $nbSites; $i++){
+            if (in_array((200 + $i), $this->droits)){
+                $admin = true;
+            }
+
+            if (in_array((500 + $i), $this->droits)){
+                $admin = true;
+                $adminN2 = true;
+                break;
+            }
+        }
+
+        if ($admin) {
+            $perso_id=filter_input(INPUT_GET, "perso_id", FILTER_SANITIZE_NUMBER_INT);
+            if ($perso_id===null) {
+                $perso_id=isset($_SESSION['oups']['absences_perso_id'])?$_SESSION['oups']['absences_perso_id']:$_SESSION['login_id'];
+            }
+        } else {
+            $perso_id=$_SESSION['login_id'];
+        }
+
+        if ($reset) {
+            $perso_id=$_SESSION['login_id'];
+        }
+
+        $agents_supprimes=isset($_SESSION['oups']['absences_agents_supprimes'])?$_SESSION['oups']['absences_agents_supprimes']:false;
+        $agents_supprimes=(isset($_GET['debut']) and isset($_GET['supprimes']))?true:$agents_supprimes;
+        $agents_supprimes=(isset($_GET['debut']) and !isset($_GET['supprimes']))?false:$agents_supprimes;
+
+        if ($reset) {
+            $debut=null;
+            $fin=null;
+            $agents_supprimes=false;
+        }
+
+        $_SESSION['oups']['absences_debut']=$debut;
+        $_SESSION['oups']['absences_fin']=$fin;
+        $_SESSION['oups']['absences_perso_id']=$perso_id;
+        $_SESSION['oups']['absences_agents_supprimes']=$agents_supprimes;
+
+        $debutSQL=dateSQL($debut);
+        $finSQL=dateSQL($fin);
+
+        // Multisites : filtre pour n'afficher que les agents du site voulu
+        $sites=null;
+        if ($nbSites>1) {
+            $sites=array();
+            for ($i=1; $i<11; $i++) {
+                if (in_array((200 + $i), $droits)) {
+                    $sites[]=$i;
+                }
+            }
+        }
+
+        $a=new \absences();
+        $a->groupe=true;
+        if ($agents_supprimes) {
+            $a->agents_supprimes=array(0,1);
+        }
+        $a->fetch(null, $perso_id, $debutSQL, $finSQL, $sites);
+
+        $absences=$a->elements;
+
+        $adminOnly = $this->config('Absences-adminSeulement');
+
+        $sort = false;
+        // Tri par défaut du tableau
+        if ($admin or (!$adminOnly and in_array(6, $droits))) {
+            $sort = true;
+        }
+
+        $selectedAgents = array();
+        if ($admin) {
+            $selected=$perso_id==0?"selected='selected'":null;
+            $p = new \personnel();
+            if ($agents_supprimes) {
+                $p->supprime = array(0,1);
+            }
+            $p->responsablesParAgent = true;
+            $p->fetch();
+            $agents_menu = $p->elements;
+
+            // Filtre pour n'afficher que les agents gérés si l'option "Absences-notifications-agent-par-agent" est cochée
+            if ($this->config('Absences-notifications-agent-par-agent') and !$adminN2) {
+                $tmp = array();
+                foreach ($agents_menu as $elem) {
+                    if ($elem['id'] == $_SESSION['login_id']) {
+                        $tmp[$elem['id']] = $elem;
+                    } else {
+                        foreach ($elem['responsables'] as $resp) {
+                            if ($resp['responsable'] == $_SESSION['login_id']) {
+                                $tmp[$elem['id']] = $elem;
+                                break;
+                            }
+                        }
+                    }
+                }
+                $agents_menu = $tmp;
+            }
+
+            // Liste des agents à conserver :
+            $perso_ids = array_keys($agents_menu);
+            foreach ($agents_menu as $agent) {
+                $selected=$agent['id']==$perso_id?"selected='selected'":null;
+                if ($selected != null){
+                  $selectedAgents[] = $selected;
+                }
+            }
+            $checked=$agents_supprimes?"checked='checked'":null;
+        }
+
+        $absList = array ();
+        if ($absences) {
+            foreach ($absences as $elem) {
+
+            // Filtre les agents non-gérés (notamment avec l'option Absences-notifications-agent-par-agent)
+                if ($admin) {
+                    $continue = true;
+                    foreach ($elem['perso_ids'] as $perso) {
+                        if (in_array($perso, $perso_ids)) {
+                            $continue = false;
+                            break;
+                        }
+                    }
+                    if ($continue) {
+                        continue;
+                    }
+                }
+                $id=$elem['id'];
+                $absdocs = $this->entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);
+                $nom_n1a = $elem['valide_n1'] != 99999 ? nom($elem['valide_n1'], 'nom p', $agents).", " : null;
+                $nom_n1b = $elem['valide_n1'] != -99999 ? nom(-$elem['valide_n1'], 'nom p', $agents).", " : null;
+                $nom_n2a = $elem['valide'] != 99999 ? nom($elem['valide'], 'nom p', $agents).", " : null;
+                $nom_n2b = $elem['valide'] != -99999 ? nom(-$elem['valide'], 'nom p', $agents).", " : null;
+                $etat="Demand&eacute;e";
+                $etat=$elem['valide_n1']>0?"En attente de validation hierarchique, $nom_n1a".dateFr($elem['validation_n1'], true):$etat;
+                $etat=$elem['valide_n1']<0?"En attente de validation hierarchique, $nom_n1b".dateFr($elem['validation_n1'], true):$etat;
+                $etat=$elem['valide']>0?"Valid&eacute;e, $nom_n2a".dateFr($elem['validation'], true):$etat;
+                $etat=$elem['valide']<0?"Refus&eacute;e, $nom_n2b".dateFr($elem['validation'], true):$etat;
+                $etatStyle=$elem['valide']==0?"font-weight:bold;":null;
+                $etatStyle=$elem['valide']<0?"color:red;":$etatStyle;
+
+                $pj1Checked=$elem['pj1']?"checked='checked'":null;
+                $pj2Checked=$elem['pj2']?"checked='checked'":null;
+                $soChecked=$elem['so']?"checked='checked'":null; 
+
+                $begin = dateFr($elem['debut'], true);
+                $end = dateFr($elem['fin'], true);
+
+                $agentsList = implode($elem['agents'], ",");
+                $rrule = $elem['rrule']?$elem['rrule']:null;
+                $commentaires = $elem['commentaires'];
+                $motif = $elem['motif'];
+                $requestDate = dateFr($elem['demande'], true);
+
+                foreach($absdocs as $absdoc){
+                   $absLinks[]=array(
+                    'link' =>"absences/document/". $absdoc->id() . "target='_blank'",
+                    'name' => $absdoc->filename()
+                  );
+                }
+
+                $absList[] = array(
+                  'id'            => $id,
+                  'rrule'         => $rrule,
+                  'agentsList'    => $agentsList,
+                  'state'         => $etat,
+                  'stateStyle'    => $etatStyle,
+                  'absLinks'      => $absLinks,
+                  'pj1Checked'    => $pj1Checked,
+                  'pj2Checked'    => $pj2Checked,
+                  'soChecked'     => $soChecked,
+                  'motive'        => $motif,
+                  'comments'      => $commentaires,
+                  'requestDate'   => $requestDate,
+                  'begin'         => $begin,
+                  'end'           => $end
+                );
+
+            }
+        }
+
+
+        $this->templateParams(array(
+            'admin'                 => $admin,
+            'begin'                 => dateFr($debutSQL),
+            'end'                   => dateFr($finSQL),
+            'sort'                  => $sort,
+            'perso_id'              => $perso_id,
+            'agentsMenu'            => $agents_menu,
+            'right6'                => in_array(6, $this->droits)?1:0,
+            'right701'              => in_array(701, $this->droits)?1:0,
+            'selectedAgents'        => $selectedAgents ,
+            'absences'              => $absList,
+            'absences_validation'   => $this->config('Absences-validation')
+        ));
+
+        return $this->output('absences/index.html.twig');
+    }
+
+    /**
+     * @Route("/absence/add", name="absence.add", methods={"GET"})
      */
     public function add(Request $request)
     {
@@ -34,39 +264,6 @@ class AbsenceController extends BaseController
         }
 
         $this->setCommonTemplateParams();
-
-        // Save absence(s).
-        if ($confirm) {
-
-            $result = $this->save($request, $this->admin);
-
-            $file = $request->files->get('documentFile');
-            if (!empty($file)) {
-                $token = $request->get("token");
-                if (!$this->isCsrfTokenValid('upload', $token)) {
-                    return new Response("Operation not allowed",  Response::HTTP_BAD_REQUEST,
-                    ['content-type' => 'text/plain']);
-                }
-
-                $filename = $file->getClientOriginalName();
-
-                $ad = new AbsenceDocument();
-                $ad->absence_id($result['id']);
-                $ad->filename($filename);
-                $ad->date(new \DateTime());
-                $this->entityManager->persist($ad);
-                $this->entityManager->flush();
-
-                $file->move(__DIR__ . AbsenceDocument::UPLOAD_DIR . $result['id'] . '/' . $ad->id(), $filename);
-
-            }
-
-            $msg = $result['msg'];
-            $msg2 = $result['msg2'];
-            $msg2_type = $result['msg2_type'];
-
-            return $this->redirect("index.php?page=absences/voir.php&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2_type");
-        }
 
         $this->templateParams(array(
             'reasons'               => $this->availablesReasons(),
@@ -276,6 +473,38 @@ class AbsenceController extends BaseController
 
         $this->templateParams(array('documents' => $this->getDocuments($a->id)));
         return $this->output('absences/edit.html.twig');
+    }
+    /**
+     *@Route("/absence", name="absence.save", methods = {"POST"})
+     */
+    public function save_absence(Request $request) {
+
+        // Save absence(s).
+
+        $result = $this->save($request, $this->admin);
+        $file = $request->files->get('documentFile');
+        if (!empty($file)) {
+            $token = $request->get("token");
+            if (!$this->isCsrfTokenValid('upload', $token)) {
+                return new Response("Operation not allowed",  Response::HTTP_BAD_REQUEST,['content-type' => 'text/plain']);
+            }
+            $filename = $file->getClientOriginalName();
+            $ad = new AbsenceDocument();
+            $ad->absence_id($result['id']);
+            $ad->filename($filename);
+            $ad->date(new \DateTime());
+            $this->entityManager->persist($ad);
+            $this->entityManager->flush();
+            $file->move(__DIR__ . AbsenceDocument::UPLOAD_DIR . $result['id'] . '/' . $ad->id(), $filename);
+        }
+       // $msg = $result['msg'];
+       // $msg2 = $result['msg2'];
+       // $msg2_type = $result['msg2_type'];
+        
+        return $this->redirectToRoute('absence.index');
+        //return $this->redirect("index.php?page=absences/voir.php&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2_type");
+
+
     }
 
     private function getDocuments($id) {

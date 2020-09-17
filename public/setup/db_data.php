@@ -21,9 +21,8 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUE
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Planning par poste - Index', 99, '', 'planning/poste/index.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Planning par poste - Semaine', 99, '', 'planning/poste/semaine.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Aide', 99, '', '/help');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Absences - Index', 100, '', 'absences/index.php');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Absences - Voir', 100, '', 'absences/voir.php');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Absences - Ajouter', 100, '', '/absence');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Absences - Index', 100, '', '/absence');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Absences - Ajouter', 100, '', '/absence/add');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Personnel - Password', 100, '', 'personnel/password.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Admin Index', 100, '', 'admin/index.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Agenda - index', 100, 'Agenda', 'agenda/index.php');";
@@ -403,9 +402,9 @@ $sql[]="INSERT INTO `{$dbprefix}lignes` (`nom`) VALUES ('Rez de jardin');";
 
 // Menu
 $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES
-  ('10','0','Absences','absences/voir.php',NULL),
-  ('10','10','Voir les absences','absences/voir.php',NULL),
-  ('10','20','Ajouter une absence','/absence',NULL),
+  ('10','0','Absences','/absence', NULL),
+  ('10','10','Voir les absences','/absence',NULL),
+  ('10','20','Ajouter une absence','/absence/add',NULL),
   ('10','30','Informations','/absences/info',NULL),
   ('15','0','Congés','/holiday/index','config=Conges-Enable'),
   ('15','10','Liste des cong&eacute;s','/holiday/index','config=Conges-Enable'),
@@ -425,7 +424,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('40','40','Par poste (Synth&egrave;se)','statistiques/postes_synthese.php',NULL),
   ('40','50','Postes de renfort','statistiques/postes_renfort.php',NULL),
   ('40','24','Par service','statistiques/service.php',NULL),
-  ('40','60','Samedis','statistiques/samedis.php',NULL),
+  ('40','60','Samedis','statistiqu es/samedis.php',NULL),
   ('40','70','Absences','statistiques/absences.php',NULL),
   ('40','80','Pr&eacute;sents / absents','/statistics/attendeesmissing',NULL),
   ('40','26','Par statut','statistiques/statut.php',NULL),
