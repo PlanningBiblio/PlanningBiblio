@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Model\Skill;
+use App\Model\Agent;
+use App\Model\Position;
 
 require_once(__DIR__.'/../../public/activites/class.activites.php');
 
@@ -34,22 +36,37 @@ class SkillController extends BaseController
         $activites_utilisees = array();
         $tab = array();
 
-        $db = new \db();
-        $db->select2("postes", "activites", array("supprime"=>null), "GROUP BY `activites`");
 
-        if ($db->result){
-            foreach ($db->result as $elem){
-                $tab[] = json_decode($elem['activites'], true);
-            }
+        $db = $this->entityManager->createQueryBuilder();
+        $db->select('p.activites')
+           ->from(Position::class, 'p')
+           ->where('p.supprime IS NULL')
+           ->groupBy('p.activites');
+
+        $res = $db->getQuery();
+        $result = $res->getResult();
+
+        if ($result){
+           foreach ($result as $elem){
+               $tab[] = $elem['activites'];
+           }
         }
 
 
-        //        Contrôle si l'activité est attribuée à un agent pour en interdire la suppression
-        $db = new \db();
-        $db->select2("personnel", "postes", array("supprime"=>"<>2"), "GROUP BY `postes`");
-        if ($db->result){
-            foreach ($db->result as $elem){
-                $tab[] = json_decode(html_entity_decode($elem['postes'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+      //        Contrôle si l'activité est attribuée à un agent pour en interdire la suppression
+
+        $db = $this->entityManager->createQueryBuilder();
+        $db->select('a.postes')
+           ->from(Agent::class, 'a')
+           ->where('a.supprime <> 2')
+           ->groupBy('a.postes');
+
+        $res = $db->getQuery();
+        $result = $res->getResult();
+
+        if ($result){
+            foreach ($result as $elem){
+                $tab[] = html_entity_decode($elem['postes'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
             }
         }
 
@@ -172,7 +189,7 @@ class SkillController extends BaseController
         $CSRFToken = $request->get('CSRFToken');
         $skill = $this->entityManager->getRepository(Skill::class)->find($id);
 
-		$date = new \DateTime();
+        $date = new \DateTime();
 
         $skill->supprime($date);
 
