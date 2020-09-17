@@ -130,11 +130,11 @@ class AjaxController extends BaseController
         $CSRFToken = $request->get('CSRFToken');
         $data = $request->get('data');
 
-        $reasons = $this->entityManager->getRepository(AbsenceReason::class)->findAll();
+        $reasons = $this->entityManager()->getRepository(AbsenceReason::class)->findAll();
         foreach ($reasons as $reason) {
-            $this->entityManager->remove($reason);
+            $this->entityManager()->remove($reason);
         }
-        $this->entityManager->flush();
+        $this->entityManager()->flush();
 
         foreach ($data as $r) {
             $r[2] = isset($r[2]) ? $r[2] : 0;
@@ -144,9 +144,9 @@ class AjaxController extends BaseController
             $reason->rang($r[1]);
             $reason->type($r[2]);
             $reason->notification_workflow($r[3]);
-            $this->entityManager->persist($reason);
+            $this->entityManager()->persist($reason);
         }
-        $this->entityManager->flush();
+        $this->entityManager()->flush();
 
         #return $this->json("Ok");
         return $this->json($data);
@@ -160,7 +160,7 @@ class AjaxController extends BaseController
         $agent_id = $request->get('id');
         $password = $request->get('password');
 
-        $agent = $this->entityManager->find(Agent::class, $agent_id);
+        $agent = $this->entityManager()->find(Agent::class, $agent_id);
 
         $response = new Response();
         if (!$agent) {
@@ -179,8 +179,8 @@ class AjaxController extends BaseController
 
         $password = password_hash($password, PASSWORD_BCRYPT);
         $agent->password($password);
-        $this->entityManager->persist($agent);
-        $this->entityManager->flush();
+        $this->entityManager()->persist($agent);
+        $this->entityManager()->flush();
 
         $response->setContent('Password successfully changed');
         $response->setStatusCode(200);

@@ -586,7 +586,7 @@ class HolidayController extends BaseController
         $id = $c->id;
 
         // Récupération des adresses e-mails de l'agent et des responsables pour l'envoi des alertes
-        $agent = $this->entityManager->find(Agent::class, $perso_id);
+        $agent = $this->entityManager()->find(Agent::class, $perso_id);
         $nom = $agent->nom();
         $prenom = $agent->prenom();
 
@@ -674,7 +674,7 @@ class HolidayController extends BaseController
 
         // Envoi d'une notification par email
         // Récupération des adresses e-mails de l'agent et des responsables pour m'envoi des alertes
-        $agent = $this->entityManager->find(Agent::class, $perso_id);
+        $agent = $this->entityManager()->find(Agent::class, $perso_id);
         $nom = $agent->nom();
         $prenom = $agent->prenom();
 

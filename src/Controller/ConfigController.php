@@ -21,7 +21,7 @@ class ConfigController extends BaseController
         $request::setTrustedProxies(array($request->server->get('REMOTE_ADDR')));
         $url = $request->getSchemeAndHttpHost() . $request->getBaseUrl();
 
-        $configParams = $this->entityManager->getRepository(ConfigParam::class)->findBy(
+        $configParams = $this->entityManager()->getRepository(ConfigParam::class)->findBy(
             array(),
             array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
         );
@@ -100,7 +100,7 @@ class ConfigController extends BaseController
         }
         elseif ($params && CSRFTokenOK($params['CSRFToken'], $_SESSION)) {
 
-            $configParams = $this->entityManager->getRepository(ConfigParam::class)->findBy(
+            $configParams = $this->entityManager()->getRepository(ConfigParam::class)->findBy(
                 array(), array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
             );
 
@@ -135,13 +135,13 @@ class ConfigController extends BaseController
                 }
                 try {
                     $cp->valeur($value);
-                    $this->entityManager->persist($cp);
+                    $this->entityManager()->persist($cp);
                 }
                 catch (Exception $e) {
                     $error = 'Une erreur est survenue pendant la modification de la configuration !';
                 }
             }
-            $this->entityManager->flush();
+            $this->entityManager()->flush();
 
         }
 

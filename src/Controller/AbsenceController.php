@@ -54,8 +54,8 @@ class AbsenceController extends BaseController
                 $ad->absence_id($result['id']);
                 $ad->filename($filename);
                 $ad->date(new \DateTime());
-                $this->entityManager->persist($ad);
-                $this->entityManager->flush();
+                $this->entityManager()->persist($ad);
+                $this->entityManager()->flush();
 
                 $file->move(__DIR__ . AbsenceDocument::UPLOAD_DIR . $result['id'] . '/' . $ad->id(), $filename);
 
@@ -282,7 +282,7 @@ class AbsenceController extends BaseController
 
     private function getDocuments($id) {
         $docsarray = array();
-        $absdocs = $this->entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);
+        $absdocs = $this->entityManager()->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);
         foreach ($absdocs as $absdoc) {
            $docsarray[] = array('filename' => $absdoc->filename(), 'id' => $absdoc->id());
         }

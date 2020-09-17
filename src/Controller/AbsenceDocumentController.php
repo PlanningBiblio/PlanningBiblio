@@ -21,7 +21,7 @@ class AbsenceDocumentController extends BaseController
     public function index(Request $request, Session $session)
     {
         $id = $request->get('id');
-        $ad = $this->entityManager->getRepository(AbsenceDocument::class)->find($id);
+        $ad = $this->entityManager()->getRepository(AbsenceDocument::class)->find($id);
         $file = new File(__DIR__ . AbsenceDocument::UPLOAD_DIR . $ad->absence_id() . '/' . $ad->id() . '/' . $ad->filename());
         $response = new BinaryFileResponse($file);
 
@@ -34,10 +34,10 @@ class AbsenceDocumentController extends BaseController
     public function delete(Request $request, Session $session)
     {
         $id = $request->get('id');
-        $ad = $this->entityManager->getRepository(AbsenceDocument::class)->find($id);
+        $ad = $this->entityManager()->getRepository(AbsenceDocument::class)->find($id);
         $ad->deleteFile();
-        $this->entityManager->remove($ad);
-        $this->entityManager->flush();
+        $this->entityManager()->remove($ad);
+        $this->entityManager()->flush();
         $response = new Response();
         return $response;
     }
@@ -55,8 +55,8 @@ class AbsenceDocumentController extends BaseController
             $ad->absence_id($id);
             $ad->filename($filename);
             $ad->date(new \DateTime());
-            $this->entityManager->persist($ad);
-            $this->entityManager->flush();
+            $this->entityManager()->persist($ad);
+            $this->entityManager()->flush();
             $file->move(__DIR__ . AbsenceDocument::UPLOAD_DIR . $id . '/' . $ad->id(), $filename);
         }
         $response = new Response();
@@ -69,7 +69,7 @@ class AbsenceDocumentController extends BaseController
     public function list(Request $request, Session $session)
     {
         $id = $request->get('id_absence');
-        $absdocs = $this->entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);
+        $absdocs = $this->entityManager()->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);
         $adarray = array();
         foreach ($absdocs as $absdoc) {
             $adarray[] = array('filename' => $absdoc->filename(), 'id' => $absdoc->id());

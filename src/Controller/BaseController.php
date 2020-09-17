@@ -22,8 +22,6 @@ class BaseController extends Controller
     {
         $request = $requestStack->getCurrentRequest();
 
-        $this->entityManager = $GLOBALS['entityManager'];
-
         $this->templateParams = $GLOBALS['templates_params'];
 
         $this->dispatcher = $GLOBALS['dispatcher'];
@@ -40,6 +38,11 @@ class BaseController extends Controller
         $this->templateParams = array_merge($params, $this->templateParams);
 
         return $this;
+    }
+
+    protected function entityManager()
+    {
+        return $this->getDoctrine()->getManager();
     }
 
     protected function output($templateName)

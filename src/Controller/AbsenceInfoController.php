@@ -19,7 +19,7 @@ class AbsenceInfoController extends BaseController
     {
         $today = date('Ymd');
 
-        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder = $this->entityManager()->createQueryBuilder();
 
         $query = $queryBuilder->select(array('a'))
             ->from(AbsenceInfo::class, 'a')
@@ -54,7 +54,7 @@ class AbsenceInfoController extends BaseController
     {
         $id = $request->get('id');
 
-        $info = $this->entityManager->getRepository(AbsenceInfo::class)->findOneById($id);
+        $info = $this->entityManager()->getRepository(AbsenceInfo::class)->findOneById($id);
 
         $this->templateParams(array(
             'id'    => $id,
@@ -88,7 +88,7 @@ class AbsenceInfoController extends BaseController
         $text = trim($request->get('text'));
 
         if ($id) {
-            $info = $this->entityManager->getRepository(AbsenceInfo::class)->find($id);
+            $info = $this->entityManager()->getRepository(AbsenceInfo::class)->find($id);
             $info->debut($start);
             $info->fin($end);
             $info->texte($text);
@@ -102,8 +102,8 @@ class AbsenceInfoController extends BaseController
             $flash = "L'information a bien été enregistrée.";
         }
 
-        $this->entityManager->persist($info);
-        $this->entityManager->flush();
+        $this->entityManager()->persist($info);
+        $this->entityManager()->flush();
 
         $session->getFlashBag()->add('notice', $flash);
         return $this->redirectToRoute('absences.info.index');
@@ -122,9 +122,9 @@ class AbsenceInfoController extends BaseController
 
         $id = $request->get('id');
 
-        $info = $this->entityManager->getRepository(AbsenceInfo::class)->find($id);
-        $this->entityManager->remove($info);
-        $this->entityManager->flush();
+        $info = $this->entityManager()->getRepository(AbsenceInfo::class)->find($id);
+        $this->entityManager()->remove($info);
+        $this->entityManager()->flush();
 
         $flash = "L'information a bien été supprimée.";
 
