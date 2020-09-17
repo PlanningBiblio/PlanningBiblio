@@ -23,14 +23,7 @@ class SkillController extends BaseController
     {
         //        Recherche des activites
 
-        $query = $this->entityManager->getRepository(Skill::class)->findBy(array('supprime' => NULL));
-        $activites = array();
-
-        if($query){
-            foreach ($query as $elem){
-                $activites[] = $elem;
-            }
-        }
+        $activites = $this->entityManager->getRepository(Skill::class)->findBy(array('supprime' => NULL));
 
         //        Contrôle si l'activité est attribuée à un agent pour en interdire la suppression
         $activites_utilisees = array();
