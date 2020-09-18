@@ -18,7 +18,6 @@ Appelée par les autres fichiers de ce dossier
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 $version = $GLOBALS['version'] ?? null;
 
-
 if (!isset($version) and php_sapi_name() != 'cli') {
     include_once "../include/accessDenied.php";
 }
