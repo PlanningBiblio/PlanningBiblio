@@ -309,31 +309,31 @@ class PositionController extends BaseController
             $site=$site?$site:1;
 
             if (!$id){
-                    $position = new Position;
-                    $position->nom($nom);
-                    $position->activites($activites);
-                    $position->categories($categories);
-                    $position->bloquant($bloquant);
-                    $position->statistiques($statistiques);
-                    $position->etage($etage);
-                    $position->groupe($groupe);
-                    $position->groupe_id($groupe_id);
-                    $position->obligatoire($obligatoire);
-                    $position->site(site);
-                    try{
-                        $this->entityManager->persist($position);
-                        $this->entityManager->flush();
-                    }
-                    catch(Exception $e){
-                        $error = $e->getMessage();
-                    }
+                $position = new Position;
+                $position->nom($nom);
+                $position->activites($activites);
+                $position->categories($categories);
+                $position->bloquant($bloquant);
+                $position->statistiques($statistiques);
+                $position->etage($etage);
+                $position->groupe($groupe);
+                $position->groupe_id($groupe_id);
+                $position->obligatoire($obligatoire);
+                $position->site(site);
+                try{
+                    $this->entityManager->persist($position);
+                    $this->entityManager->flush();
+                }
+                catch(Exception $e){
+                    $error = $e->getMessage();
+                }
 
-                    if (isset($error)) {
-                        $session->getFlashBag()->add('error', "Une erreur est survenue lors de l'ajout du poste " );
-                        $this->logger->error($error);
-                    } else {
-                        $session->getFlashBag()->add('notice', "Le poste a été ajouté avec succès");
-                    }
+                if (isset($error)) {
+                    $session->getFlashBag()->add('error', "Une erreur est survenue lors de l'ajout du poste " );
+                    $this->logger->error($error);
+                } else {
+                    $session->getFlashBag()->add('notice', "Le poste a été ajouté avec succès");
+                }
 
             }else{
                     $position=$this->entityManager->getRepository(Position::class)->find($id);
@@ -375,7 +375,6 @@ class PositionController extends BaseController
      public function delete_position(Request $request, Session $session){
 
         $id = $request->get('id');
-        $CSRFToken = $request->get('CSRFToken');
         $p = $this->entityManager->getRepository(Position::class)->find($id);
 
         $date = new \DateTime();

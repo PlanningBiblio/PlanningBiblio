@@ -19,6 +19,8 @@ class BaseController extends Controller
 
     private $config = array();
 
+    private $logger;
+
     public function __construct(RequestStack $requestStack, LoggerInterface $logger)
     {
         $request = $requestStack->getCurrentRequest();
