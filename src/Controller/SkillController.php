@@ -136,7 +136,7 @@ class SkillController extends BaseController
             }
         } else {
             if(!$id){
-                $skill = new Skill;
+                $skill = new Skill();
                 $skill->nom($nom);
                 try{
                     $this->entityManager->persist($skill);
