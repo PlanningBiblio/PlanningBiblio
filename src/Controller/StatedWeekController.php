@@ -223,6 +223,7 @@ class StatedWeekController extends BaseController
                 'id'                => $agent->id(),
                 'absent'            => 0,
                 'partially_absent'  => 0,
+                'partially_holiday' => 0,
                 'holiday'           => 0,
                 'status'            => strtolower(removeAccents(str_replace(' ', '_', $agent->statut()))),
             );
@@ -244,6 +245,17 @@ class StatedWeekController extends BaseController
 
             if ($agent->isOnVacationOn($from, $to)) {
                 $available['holiday'] = 1;
+            }
+
+            if ($absences = $agent->isPartiallyOnVacationOn($from, $to)) {
+                $available['holiday'] = 0;
+                $absence_times = array();
+                foreach ($absences as $absence) {
+                    $start = substr($absence['from'], -8);
+                    $end = substr($absence['to'], -8);
+                    $absence_times[] = array('from' => heure3($start), 'to' => heure3($end));
+                }
+                $available['partially_holiday'] = $absence_times;
             }
 
             $availables[] = $available;
@@ -674,6 +686,17 @@ class StatedWeekController extends BaseController
 
                 if ($agent->isOnVacationOn("$date $from", "$date $to")) {
                     $p['holiday'] = 1;
+                }
+
+                if ($absences = $agent->isPartiallyOnVacationOn("$date $from", "$date $to")) {
+                    $p['holiday'] = 0;
+                    $absence_times = array();
+                    foreach ($absences as $absence) {
+                        $start = substr($absence['from'], -8);
+                        $end = substr($absence['to'], -8);
+                        $absence_times[] = array('from' => heure3($start), 'to' => heure3($end));
+                    }
+                    $p['partially_holiday'] = $absence_times;
                 }
 
                 $placed[] = $p;

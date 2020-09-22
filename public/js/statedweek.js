@@ -237,6 +237,10 @@ function placeOnJob(agent) {
         cell.addHoliday();
       }
 
+      if (agent.partially_holiday) {
+        cell.addPartialHolidays(agent.partially_holiday);
+      }
+
       //Working hours.
       time_cell_id = cell.data('timeid');
       time_cell = $('#' + time_cell_id);
@@ -286,6 +290,10 @@ function placeOnPlanning(agent) {
 
       if (agent.holiday) {
         cell.addHoliday();
+      }
+
+      if (agent.partially_holiday) {
+        cell.addPartialHolidays(agent.partially_holiday);
       }
 
       if (agent.interchange) {
@@ -351,6 +359,21 @@ $( document ).ready(function() {
       cell.addClass('absent');
       cell.children('span').addClass('absent');
       cell.append('<i> - Congés</i>');
+    };
+
+    $(this).init.prototype.addPartialHolidays = function(holidays) {
+      cell = $(this);
+      cell.addClass('partially-absent');
+      cell.append(' <i> - Congés</i>');
+      has_partial = 0;
+      $.each(holidays, function(index, h) {
+        if (has_partial) {
+          cell.children('i').append(', de ' + h.from + ' à ' + h.to);
+        } else {
+          cell.children('i').append(' de ' + h.from + ' à ' + h.to);
+          has_partial = 1;
+        }
+      });
     };
 
     $(this).init.prototype.addInterchange = function(interchange) {
@@ -789,6 +812,21 @@ $( document ).ready(function() {
             item.addClass('absent');
             item.children('span').addClass('absent');
             item.append('<i> - Congés</i>');
+          }
+
+          if (agent.partially_holiday) {
+            item.addClass('partially-absent');
+            item.children('span').addClass('partially-absent');
+            item.append('<i> - Congés</i>');
+            has_partial = 0;
+            $.each(agent.partially_holiday, function(index, absence) {
+              if (has_partial) {
+                item.children('i').append(', de ' + absence.from + ' à ' + absence.to);
+              } else {
+                item.children('i').append(' de ' + absence.from + ' à ' + absence.to);
+                has_partial = 1;
+              }
+            });
           }
 
           $('.context-list').append(item);
