@@ -101,7 +101,6 @@ $(document).ready(function(){
     }
   );
 
-  //$('.arrow-right').on('click', function() {
   $('tr').on('click', '.arrow-right', function() {
     var cell = $(this).parent();
     var job = cell.data('situation');
@@ -114,13 +113,15 @@ $(document).ready(function(){
 
     i = 0;
     checkcopy_agents = [];
+    cells_to_copy = [];
 
     cell.find('div').each(function() {
-        var element = $(this).clone();
-        var agent_id = element.data('perso-id');
-        element.attr('id', cellid + '_' + i);
-        checkcopy_agents.push(agent_id);
-        i++;
+      var element = $(this).clone();
+      var agent_id = element.data('perso-id');
+      element.attr('id', cellid + '_' + i);
+      cells_to_copy[agent_id] = element;
+      checkcopy_agents.push(agent_id);
+      i++;
     });
 
     checkcopy_agents = JSON.stringify(checkcopy_agents);
@@ -132,8 +133,12 @@ $(document).ready(function(){
         data: {date: date, from: cFrom, to: to, agents: checkcopy_agents},
         success: function(result) {
             if (result.availables.length) {
-                var agents = JSON.stringify(result.availables);
-                bataille_navale(job, date, cFrom, to, agents, '', '', site, '', cellid);
+              var agents = JSON.stringify(result.availables);
+              $.each(result.availables, function(i, id) {
+                element = cells_to_copy[id];
+                element.appendTo(cell_to);
+              });
+              bataille_navale(job, date, cFrom, to, agents, '', '', site, '', cellid);
             }
             if (result.unavailables) {
                 var message = "Les agents suivants n'ont pas été placés car ils sont indisponibles de " + heureFr(cFrom) + " à " + heureFr(to) + " : " + result.unavailables;
@@ -144,6 +149,8 @@ $(document).ready(function(){
             CJInfo("Une erreur est survenue lors de la copie.", "error");
         }
     });
+
+    return false;
   });
 });
 
