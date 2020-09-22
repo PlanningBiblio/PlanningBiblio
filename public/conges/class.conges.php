@@ -306,6 +306,68 @@ class conges
         return false;
     }
 
+    public function checkPartial($perso_id, $debut, $fin, $valide=true)
+    {
+        if (strlen($debut)==10) {
+            $debut.=" 00:00:00";
+        }
+
+        if (strlen($fin)==10) {
+            $fin.=" 23:59:59";
+        }
+
+        $start_timestamp = strtotime($debut);
+        $end_timestamp = strtotime($fin);
+        $duration = $end_timestamp - $start_timestamp;
+
+        $filter = array(
+            'perso_id'      => $perso_id,
+            'debut'         => "<$fin",
+            'fin'           => ">$debut",
+            'supprime'      => 0,
+            'information'   => 0
+        );
+
+        if ($valide==true) {
+            $filter["valide"]=">0";
+        }
+
+        $db=new db();
+        $db->select2("conges", null, $filter);
+        $result = $db->result;
+
+        if (!$result) {
+            return false;
+        }
+
+        $absence_duration = 0;
+        $absences = array();
+        foreach ($result as $absence) {
+            $start_absence = strtotime($absence['debut']);
+            if ($start_absence < $start_timestamp) {
+                $start_absence = $start_timestamp;
+                $absence['debut'] = $debut;
+            }
+
+            $end_absence = strtotime($absence['fin']);
+            if ($end_absence > $end_timestamp) {
+                $end_absence = $end_timestamp;
+                $absence['fin'] = $fin;
+            }
+
+            $absences[] = array('from' => $absence['debut'], 'to' => $absence['fin']);
+
+            $absence_duration = $end_absence - $start_absence;
+            $duration -= $absence_duration;
+        }
+
+        if ($duration > 0) {
+            return $absences;
+        }
+
+        return false;
+    }
+
     public function delete()
     {
         // Marque une demande de congé comme supprimée
