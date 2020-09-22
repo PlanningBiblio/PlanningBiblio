@@ -288,6 +288,17 @@ class Agent extends PLBEntity {
 
         return false;
     }
+
+    public function isPartiallyOnVacationOn($from, $to)
+    {
+        $c = new \conges();
+        if ($holidays = $c->checkPartial($this->id(), $from, $to, true)) {
+            return $holidays;
+        }
+
+        return false;
+    }
+
     public function isInService($services)
     {
         if (empty($services)) {
