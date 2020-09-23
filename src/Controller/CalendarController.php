@@ -21,8 +21,8 @@ class CalendarController extends BaseController
         $fin = $request->get('fin');
 
         if (!array_key_exists('agenda_debut', $_SESSION)){
-            $_SESSION['agenda_debut'] = $debut;
-            $_SESSION['agenda_fin'] = $fin;
+            $_SESSION['agenda_debut'] = null;
+            $_SESSION['agenda_fin'] = null;
             $_SESSION['agenda_perso_id'] = $_SESSION['login_id'];
         }
 
