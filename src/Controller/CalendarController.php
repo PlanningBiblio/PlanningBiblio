@@ -26,8 +26,8 @@ class CalendarController extends BaseController
             $_SESSION['agenda_perso_id'] = $_SESSION['login_id'];
         }
 
-        $debut=$debut?$debut:$_SESSION['agenda-debut'];
-        $fin=$fin?$fin:$_SESSION['agenda-fin'];
+        $debut=$debut?$debut:$_SESSION['agenda_debut'];
+        $fin=$fin?$fin:$_SESSION['agenda_fin'];
 
         $admin = in_array(3, $GLOBALS['droits'])?true:false;
         if($admin){
@@ -147,15 +147,15 @@ class CalendarController extends BaseController
 
             // Si utilisation d'un planning pour les semaines sans samedi et un planning pour les semaines avec samedi travaillé
             if ($this->config('EDTSamedi')) {
-            // Pour chaque agent, recherche si la semaine courante est avec samedi travaillé ou non
+                // Pour chaque agent, recherche si la semaine courante est avec samedi travaillé ou non
                 $p = new \personnel();
                 $p->fetchEDTSamedi($perso_id, $j1, $j1);
                 $jour += $p->offset;
             }
 
-             //ø Horaires de travail si le module PlanningHebdo est activé
-         if ($this->config('PlanningHebdo')) {
-            include_once __DIR__."/../../public/planningHebdo/class.planningHebdo.php";
+            // Horaires de travail si le module PlanningHebdo est activé
+            if ($this->config('PlanningHebdo')) {
+                include_once __DIR__."/../../public/planningHebdo/class.planningHebdo.php";
                 $p = new \planningHebdo();
                 $p->perso_id = $perso_id;
                 $p->debut = $current;
