@@ -19,7 +19,7 @@ Inclus dans le fichier index.php
 
 require_once "class.conges.php";
 
-use Model\Agent;
+use App\Model\Agent;
 
 if ($config['Conges-Recuperations'] == 0) {
     include __DIR__.'/../include/accessDenied.php';
@@ -137,7 +137,7 @@ if (isset($_GET['confirm'])) {	// Confirmation
     }
 
     $msg=urlencode("La demande de congé a été enregistrée");
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page=conges/voir.php&recup=1&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
+    echo "<script type='text/JavaScript'>document.location.href='{$config['URL']}/holiday/index?recup=1&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
 }
 
 // Formulaire
@@ -284,7 +284,7 @@ EOD;
     echo "<textarea name='commentaires' cols='16' rows='5' style='width:97%;'></textarea>\n";
     echo "</td></tr><tr><td>&nbsp;\n";
     echo "</td></tr><tr><td colspan='2' style='text-align:center;'>\n";
-    echo "<input type='button' value='Annuler' onclick='document.location.href=\"index.php?page=conges/voir.php&amp;recup=1\";' class='ui-button'/>";
+    echo "<input type='button' value='Annuler' onclick='document.location.href=\"{$config['URL']}/holiday/index?recup=1\";' class='ui-button'/>";
     echo "&nbsp;&nbsp;\n";
     echo "<input type='button' value='Valider' class='ui-button' onclick='verifConges();' style='margin-left:20px;' id='submit-button'/>\n";
     echo "<div id='google-calendar-div' class='inline'></div>\n";
