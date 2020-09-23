@@ -1120,29 +1120,31 @@ class HolidayController extends BaseController
         $nom = $agent->nom();
         $prenom = $agent->prenom();
 
+        $recover = $post['debit'] == 'recuperation' ? 1 : 0;
+
         // Choix du sujet et des destinataires en fonction du degré de validation
         switch ($valide) {
         // Modification sans validation
         case 0:
-          $sujet="Modification de congés";
+          $sujet = $recover ? "Modification d'une récupération" : "Modification de congés";
           $notifications='2';
           break;
         // Validations Niveau 2
         case 1:
-          $sujet="Validation de congés";
+          $sujet = $recover ? "Validation d'une récupération" : "Validation de congés";
           $notifications='4';
           break;
         case -1:
-          $sujet="Refus de congés";
+          $sujet = $recover ? "Refus d'une récupération" : "Refus de congés";
           $notifications='4';
           break;
         // Validations Niveau 1
         case 2:
-          $sujet = $lang['leave_subject_accepted_pending'];
+          $sujet = $recover ? $lang['leave_subject_accepted_pending_recover'] : $lang['leave_subject_accepted_pending'];
           $notifications='3';
           break;
         case -2:
-          $sujet = $lang['leave_subject_refused_pending'];
+          $sujet = $recover ? $lang['leave_subject_refused_pending_recover'] : $lang['leave_subject_refused_pending'];
           $notifications='3';
           break;
         }
