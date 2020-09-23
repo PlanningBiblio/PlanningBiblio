@@ -396,7 +396,8 @@ class CalendarController extends BaseController
             "days" => $days,
             "end" => $fin,
             "endSQL" => $finSQL,
-            "nbSites" => $nbSites
+            "nbSites" => $nbSites,
+            "perso_id" => $perso_id
         ));
 
         return $this->output('calendar/index.html.twig');
