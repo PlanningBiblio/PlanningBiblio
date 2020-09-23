@@ -26,21 +26,21 @@ class CalendarController extends BaseController
             $_SESSION['agenda_perso_id'] = $_SESSION['login_id'];
         }
 
-        $debut=$debut?$debut:$_SESSION['agenda_debut'];
-        $fin=$fin?$fin:$_SESSION['agenda_fin'];
+        $debut = $debut ? $debut : $_SESSION['agenda_debut'];
+        $fin = $fin ? $fin : $_SESSION['agenda_fin'];
 
         $admin = in_array(3, $GLOBALS['droits'])?true:false;
         if($admin){
             $perso_id = $request->get('perso_id');
             $perso_id = $perso_id?$perso_id:$_SESSION['agenda_perso_id'];
         } else {
-            $perso_id=$_SESSION['login_id'];
+            $perso_id = $_SESSION['login_id'];
         }
 
         $d= new \datePl(date("Y-m-d"));
-        $debutSQL=$debut?dateSQL($debut):$d->dates[0]; //lundi de la semaine courante
+        $debutSQL = $debut ? dateSQL($debut) : $d->dates[0]; //lundi de la semaine courante
         $debut = dateFr3($debutSQL);
-        $finSQL=$fin?dateSQL($fin):$d->dates[6]; //lundi de la semaine courante
+        $finSQL = $fin ? dateSQL($fin) : $d->dates[6]; //lundi de la semaine courante
         $fin = dateFr3($finSQL);
         $_SESSION['agenda_debut'] = $debut;
         $_SESSION['agenda_fin'] = $fin;
@@ -99,7 +99,7 @@ class CalendarController extends BaseController
         $db->select2("absences", null, "`perso_id`=$perso_id' $filter");
         if ($db->result){
             foreach ($db->result as $elem){
-                $verrou[$elem('site')][]=$elem['date'];
+                $verrou[$elem('site')][] = $elem['date'];
             }
         }
 
