@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Model\Position;
+use App\Model\Skill;
 
 require_once(__DIR__ . '/../../public/postes/class.postes.php');
 require_once(__DIR__ . '/../../public/activites/class.activites.php');
@@ -187,6 +188,7 @@ class PositionController extends BaseController
         $bloq2=!$position->bloquant()?"checked='checked'":"";
 
         $checked=null;
+
         // Recherche des étages
         $db=new \db();
         $db->select2("select_etages", "*", "1", "order by rang");
@@ -196,18 +198,18 @@ class PositionController extends BaseController
         $etages_utilises = array();
 
         $qb = $this->entityManager->createQueryBuilder();
-        $qb
-            ->select('etage')
-            ->from('activites', null)
-            ->where('supprime = null')
-            ->groupBy('etage')
-            ->getQuery();
+        $qb->select('a.etage')
+           ->from(Position::class,'a')
+           ->where($qb->expr()->isNull('a.supprime'))
+           ->groupBy('a.etage');
 
-        $response = $qb->getResult();
+        $query = $qb->getQuery();
+
+        $response = $query->getResult();
 
         if ($response) {
             foreach ($response as $elem) {
-                $etages_utilises[] = $elem->etage();
+                $etages_utilises[] = $elem->etage;
             }
         }
 
@@ -220,16 +222,17 @@ class PositionController extends BaseController
         $groupes_utilises = array();
 
         $qb = $this->entityManager->createQueryBuilder();
-        $qb->select('groupe')
-            ->from('postes', null)
-            ->where('supprime = null')
-            ->groupBy('groupe')
-            ->getQuery();
+        $qb->select('p.groupe')
+           ->from(Position::class,'p')
+           ->where($qb->expr()->isNull('p.supprime'))
+           ->groupBy('p.groupe');
 
-        $response = $qb->getResults();
+        $query = $qb->getQuery();
+
+        $response = $query->getResult();
         if ($response) {
             foreach ($response as $elem) {
-                $groupes_utilises[] = $elem->groupe();
+                $groupes_utilises[] = $elem->groupe;
             }
         }
 
