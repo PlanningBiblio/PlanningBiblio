@@ -107,7 +107,6 @@ class ClosingDaysController extends BaseController
             $session->getFlashBag()->add('notice',"La liste des jours fériés a été modifiée avec succès.");
         }
 
-        return $this->output("closingdays/index.html.twig");
-        //return $this->redirectToRoute('closingdays.index');
+        return $this->redirectToRoute('closingdays.index');
     }
 }
