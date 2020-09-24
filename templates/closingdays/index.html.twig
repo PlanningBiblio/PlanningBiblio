@@ -1,0 +1,96 @@
+{# closingdays/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  <div id='joursFeries'>
+    <h3>Jours fériés et jours de fermeture</h3>
+    <form name='form1' method='get' action='{{ asset("closingdays") }}'>
+      <input type='hidden' name='page' value='{{ asset("closingdays") }}' />
+      Sélectionnez l'année à paramétrer
+      <select name='annee' onchange='document.form1.submit();'>
+        <option value=''>&nbsp;</option>
+        {% for y in years %}
+          {% if selectedYears[loop.index0] is not null %}
+            <option value={{y}} selected >{{ y }}</option>
+          {% else %}
+            <option value={{y}} >{{ y }}</option>
+          {% endif%}
+        {% endfor %}
+      </select>
+    </form>
+
+    <!-- Tableau des jours fériés -->
+    <form name='form' method='post' action='{{ asset("closingdays") }}'>
+      <input type='hidden' name='page' value='{{ asset("closingdays") }}' />
+      <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
+      <input type='hidden' name='annee' value='{{ selectedYear }}' />
+      <table cellspacing='0'>
+        <tr class='th'>
+          <td>&nbsp;</td>
+          <td>Jour</td>
+          <td>Férié</td>
+          <td>Fermeture</td>
+          <td>Nom</td>
+          <td>Commentaire</td>
+        </tr>
+        {% for d in days %}
+          <tr id='tr{{ d.number }}'>
+            <td>
+              <a href='javascript:supprime_jourFerie({{ d.number }});'>
+                <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
+              </a>
+            </td>
+            <td>
+              <input type='text' name='jour[{{ d.number }}]' value={{ d.date }} class='c100 datepicker' id='jour{{ d.number }}'/>
+            </td>
+            <td>
+              <input type='checkbox' name='ferie[{{ d.number }}]' value='1' {{ d.holiday }} />
+            </td>
+            <td>
+              <input type='checkbox' name='fermeture[{{ d.number }}]' value='1' {{ d.closed }}/>
+            </td>
+            <td>
+              <input type='text' name='nom[{{ d.number }}]' value='{{ d.name | raw }}'  class='c350'/>
+            </td>
+            <td>
+              <input type='text' name='commentaire[{{ d.number }}]' value='{{ d.comment }}'  class='c350'/>
+            </td>
+          </tr>
+        {% endfor %}
+        {% for j in nbDays..nbExtra %}
+          <tr id='tr{{ j }}'>
+            <td>
+              <a href='javascript:supprime_jourFerie({{ j }});'>
+                <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
+              </a>
+            </td>
+            <td>
+              <input type='text' name="jour['{{ j }}']" class='c100 datepicker' id='jour{{ j }}'/>
+            </td>
+            <td>
+              <input type='checkbox' name="ferie['{{ j }}']" value='1' />
+            </td>
+            <td>
+              <input type='checkbox' name="fermeture['{{ j }}']" value='1' />
+            </td>
+            <td>
+              <input type='text' name="nom['{{ j }}']" class='c350'/>
+            </td>
+            <td>
+              <input type='text' name="commentaire['{{ j }}']" class='c350'/>
+            </td>
+          </tr>
+        {% endfor %}
+        <tr>
+          <td colspan='6' style='padding:20px 0 0 20px;'>
+            <input type='submit' value='Valider' class='ui-button' />
+          </td>
+        </tr>
+      </table>
+    </form>
+    {% if activated == true %}
+      <p>Les jours de fermeture ne seront pas décomptés des congés.</p>
+    {% endif %}
+  </div>
+{% endblock %}
