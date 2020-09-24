@@ -70,8 +70,7 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categ
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Modification des plannings - menudiv','1001','Modification des plannings','planning/poste/menudiv.php','Planning','120');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Modification des plannings - majdb','1001','Modification des plannings','planning/poste/majdb.php','Planning','120');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Personnel - Importation','21','Gestion des agents','personnel/import.php', 'Agents', 70);";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Jours fériés','25','Gestion des jours fériés','joursFeries/index.php');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Jours fériés','25','Gestion des jours fériés','joursFeries/valid.php');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Jours fériés','25','Gestion des jours fériés','/closingday');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Voir les agendas de tous','3','Voir les agendas de tous','', 'Agendas', 55);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Modifier ses propres absences','6','Modifier ses propres absences','','Absences',20);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Statistiques', 17, 'Accès aux statistiques', 'statistiques/samedis.php','Statistiques','170');";
@@ -435,7 +434,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('50','40','Les postes','postes/index.php',NULL),
   ('50','50','Les mod&egrave;les','planning/modeles/index.php',NULL),
   ('50','60','Les tableaux','planning/postes_cfg/index.php',NULL),
-  ('50','70','Jours de fermeture','joursFeries/index.php',NULL),
+  ('50','70','Jours de fermeture','/closingday',NULL),
   ('50','75','Heures de présence','planningHebdo/index.php','config=PlanningHebdo'),
   ('50','77','Notifications / Validations','notifications/index.php','config=Absences-notifications-agent-par-agent'),
   ('50','80','Configuration','/config',NULL),
