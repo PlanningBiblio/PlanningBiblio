@@ -10,6 +10,7 @@ Enable web profiler on dev environment
 Symfonisation of admin -> activites
 Use Doctrine ORM for skill pages
 Use fine tuning of hours in holidays forms
+Mass modification of agents
 
 -Fixes
 Use fine tuning of hours in absence forms
