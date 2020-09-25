@@ -54,8 +54,8 @@ class CalendarController extends BaseController
         }
 
         //Sélection du personnel pour le menu déroulant
-		$agent = null;
-		$toutlemonde ="AND id > 2";
+        $agent = null;
+        $toutlemonde ="AND id > 2";
         $db = new \db();
         $db->query("SELECT * FROM `{$GLOBALS['dbprefix']}personnel` WHERE actif='Actif' $toutlemonde ORDER by `nom`,`prenom`;");
         $agents = $db->result;
