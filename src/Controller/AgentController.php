@@ -23,6 +23,7 @@ class AgentController extends BaseController
     public fonction index(Request $request){
 
         $actif = $request->get('actif');
+        $lang = $GLOBALS['lang'];
 
         if (!$actif) {
             $actif = isset($_SESSION['perso_actif']) ? $_SESSION['perso_actif'] : 'Actif';
@@ -42,9 +43,9 @@ class AgentController extends BaseController
         $p->fetch("nom,prenom", $actif);
         $agents = $p->elements;
 
-        $i=0;
+        $i = 0;
         foreach ($agents as $agent) {
-            $id=$agent['id'];
+            $id = $agent['id'];
 
             $arrivee = dateFr($agent['arrivee']);
             $depart = dateFr($agent['depart']);
@@ -79,7 +80,7 @@ class AgentController extends BaseController
 
         // Liste des services
         $services = array();
-        $db = new db();
+        $db = new \db();
         $db->select2("select_services", null, null, "ORDER BY `rang`");
         if ($db->result) {
             foreach ($db->result as $elem) {
@@ -116,7 +117,7 @@ class AgentController extends BaseController
         }
 
         // Toutes les activités
-        $a = new activites();
+        $a = new \activites();
         $a->fetch();
         $activites = $a->elements;
 
@@ -125,8 +126,16 @@ class AgentController extends BaseController
         }
         $postes_completNoms_json = json_encode($postes_completNoms);
 
-
-
+        $this->templateParams(array(
+            "contracts" => $contrats,
+            "lang" => $lang,
+            "positionsCompleteNames" => $postes_completNoms_json,
+            "services" => $services,
+            "skills" => $activites,
+            "status" => $statuts
+        
+        ));
+        
         return $this->output('/agents/index.html.twig');
     }
 
