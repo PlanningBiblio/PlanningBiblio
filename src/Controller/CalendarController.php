@@ -55,9 +55,8 @@ class CalendarController extends BaseController
 
         //Sélection du personnel pour le menu déroulant
         $agent = null;
-        $toutlemonde ="AND id > 2";
         $db = new \db();
-        $db->query("SELECT * FROM `{$GLOBALS['dbprefix']}personnel` WHERE actif='Actif' $toutlemonde ORDER by `nom`,`prenom`;");
+        $db->query("SELECT * FROM `{$GLOBALS['dbprefix']}personnel` WHERE actif='Actif' AND id > 2 ORDER by `nom`,`prenom`;");
         $agents = $db->result;
 
         if(is_array($agents)){
@@ -176,7 +175,6 @@ class CalendarController extends BaseController
             $current_date = ucfirst($d->jour_complet);
             if (is_array($postes)) {
                 foreach ($postes as $elem) {
-
                     if ($elem['date'] == $current and (in_array($current, $verrou[$elem['site']]) or $nonValides)) {
                         // Contrôle des absences depuis la table absence
                         if (is_array($absences)) {
