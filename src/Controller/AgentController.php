@@ -18,6 +18,156 @@ require_once(__DIR__ . "/../../public/conges/class.conges.php");
 class AgentController extends BaseController
 {
     /**
+     * @Route("/agent", name="agent.index", methods={"GET"})
+     */
+    public function index(Request $request){
+
+        $actif = $request->get('actif');
+        $lang = $GLOBALS['lang'];
+        $droits = $GLOBALS['droits'];
+        $login_id = $_SESSION['login_id'];
+        $LDAP_host = $this->config('LDAP-Host');
+        $LDAP_suf = $this->config('LDAP-Suffix');
+
+        if (!$actif) {
+            $actif = isset($_SESSION['perso_actif']) ? $_SESSION['perso_actif'] : 'Actif';
+        }
+
+        $_SESSION['perso_actif'] = $actif;
+
+        //        Suppression des agents dont la date de départ est passée        //
+        $tab = array(0);
+        $db = new \db();
+        $db->CSRFToken = $GLOBALS['CSRFSession'];
+        $db->update('personnel', array('supprime'=>'1', 'actif'=>'Supprim&eacute;'), "`depart`<CURDATE() AND `depart`<>'0000-00-00' and `actif` NOT LIKE 'Supprim%'");
+
+
+        $p = new \personnel();
+        $p->supprime = strstr($actif, "Supprim") ? array(1) : array(0);
+        $p->fetch("nom,prenom", $actif);
+        $agentsTab = $p->elements;
+
+        $nbSites = $this->config('Multisites-nombre');
+
+        $agents = array();
+        foreach ($agentsTab as $agent) {
+            $elem = [];
+            $id = $agent['id'];
+
+            $arrivee = dateFr($agent['arrivee']);
+            $depart = dateFr($agent['depart']);
+            $last_login = date_time($agent['last_login']);
+            $heures = $agent['heures_hebdo'] ? $agent['heures_hebdo'] : null;
+            $heures = heure4($heures);
+            if (is_numeric($heures)) {
+                $heures.= "h00";
+            }
+            $agent['service'] = str_replace("`", "'", $agent['service']);
+
+            $sites = $agent['sites'];
+
+            if ($nbSites > 1) {
+                $tmp = array();
+                if (!empty($agent['sites'])) {
+                    foreach ($agent['sites'] as $site) {
+                        if ($site) {
+                            $tmp[] = $this->config("Multisites-site{$site}");
+                        }
+                    }
+                }
+                $sites = !empty($tmp)?join(", ", $tmp):null;
+            }
+
+            $elem = array(
+                'id' => $id,
+                'name' => $agent['nom'],
+                'surname' => $agent['prenom'],
+                'departure' => $depart,
+                'arrival' => $arrivee,
+                'status' => $agent['statut'],
+                'service' => $agent['service'],
+                'hours' => $heures,
+                'last_login' => $last_login,
+                'sites' => $sites,
+            );
+            $agents[]= $elem;
+        }
+
+        $db = new \db();
+        $db->select2("select_statuts", null, null, "order by rang");
+        $statuts = $db->result;
+
+        $contrats = array("Titulaire","Contractuel");
+
+        // Liste des services
+        $services = array();
+        $db = new \db();
+        $db->select2("select_services", null, null, "ORDER BY `rang`");
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                $services[]=$elem;
+            }
+        }
+
+        $hours = array();
+        for ($i = 1 ; $i < 40; $i++) {
+            if ($this->config('Granularite') == 5) {
+                $hours[] = array($i,$i."h00");
+                $hours[] = array($i.".08",$i."h05");
+                $hours[] = array($i.".17",$i."h10");
+                $hours[] = array($i.".25",$i."h15");
+                $hours[] = array($i.".33",$i."h20");
+                $hours[] = array($i.".42",$i."h25");
+                $hours[] = array($i.".5",$i."h30");
+                $hours[] = array($i.".58",$i."h35");
+                $hours[] = array($i.".67",$i."h40");
+                $hours[] = array($i.".75",$i."h45");
+                $hours[] = array($i.".83",$i."h50");
+                $hours[] = array($i.".92",$i."h55");
+            } elseif ($this->config('Granularite')==15) {
+                $hours[] = array($i,$i."h00");
+                $hours[] = array($i.".25",$i."h15");
+                $hours[] = array($i.".5",$i."h30");
+                $hours[] = array($i.".75",$i."h45");
+            } elseif ($this->config('Granularite')==30) {
+                $hours[] = array($i,$i."h00");
+                $hours[] = array($i.".5",$i."h30");
+            } else {
+                $hours[] = array($i,$i."h00");
+            }
+        }
+
+        // Toutes les activités
+        $a = new \activites();
+        $a->fetch();
+        $activites = $a->elements;
+
+        foreach ($activites as $elem) {
+            $postes_completNoms[] = array($elem['nom'],$elem['id']);
+        }
+        $postes_completNoms_json = json_encode($postes_completNoms);
+
+        $this->templateParams(array(
+            "agents"                 => $agents,
+            "actif"                  => $actif,
+            "contracts"              => $contrats,
+            "hours"                  => $hours,
+            "lang"                   => $lang,
+            "LDAP_host"              => $LDAP_host,
+            "LDAP_suf"               => $LDAP_suf,
+            "login_id"               => $login_id,
+            "nbSites"                => $nbSites,
+            "positionsCompleteNames" => $postes_completNoms_json,
+            "rights21"               => in_array(21, $droits),
+            "services"               => $services,
+            "skills"                 => $activites,
+            "status"                 => $statuts
+
+        ));
+        return $this->output('/agents/index.html.twig');
+    }
+
+    /**
      * @Route("/agent/add", name="agent.add", methods={"GET"})
      * @Route("/agent/{id}", name="agent.edit", methods={"GET"})
      */
@@ -71,7 +221,7 @@ class AgentController extends BaseController
 
                 $groupe = ($i * 100) + 1 ;
                 if (array_key_exists($groupe, $groupes)) {
-                    $groupes_sites[]=$groupes[$groupe];
+                    $groupes_sites[] = $groupes[$groupe];
                     unset($groupes[$groupe]);
                 }
             }
@@ -88,10 +238,10 @@ class AgentController extends BaseController
         $categories = $db->result;
         $db = new \db();
         $db->select2("personnel", "statut", null, "group by statut");
-        $statuts_utilises=array();
+        $statuts_utilises = array();
         if ($db->result) {
             foreach ($db->result as $elem) {
-                $statuts_utilises[]=$elem['statut'];
+                $statuts_utilises[] = $elem['statut'];
             }
         }
 
@@ -101,7 +251,7 @@ class AgentController extends BaseController
         $db->select2("select_services", null, null, "ORDER BY `rang`");
         if ($db->result) {
             foreach ($db->result as $elem) {
-                $services[]=$elem;
+                $services[] = $elem;
             }
         }
 
@@ -111,7 +261,7 @@ class AgentController extends BaseController
         $db->select2('personnel', 'service', null, "GROUP BY `service`");
         if ($db->result) {
             foreach ($db->result as $elem) {
-                $services_utilises[]=$elem['service'];
+                $services_utilises[] = $elem['service'];
             }
         }
 
@@ -151,7 +301,7 @@ class AgentController extends BaseController
                     $temps = array();
                 }
             } else {
-                $temps=json_decode(html_entity_decode($db->result[0]['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                $temps = json_decode(html_entity_decode($db->result[0]['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                 if (!is_array($temps)) {
                     $temps = array();
                 }
@@ -160,17 +310,17 @@ class AgentController extends BaseController
             if (is_array($postes_attribues)) {
                 sort($postes_attribues);
             }
-            $acces=json_decode(html_entity_decode($db->result[0]['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-            $matricule=$db->result[0]['matricule'];
+            $acces = json_decode(html_entity_decode($db->result[0]['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+            $matricule = $db->result[0]['matricule'];
             $url_ics = $db->result[0]['url_ics'];
-            $mailsResponsables=explode(";", html_entity_decode($db->result[0]['mails_responsables'], ENT_QUOTES|ENT_IGNORE, "UTF-8"));
+            $mailsResponsables = explode(";", html_entity_decode($db->result[0]['mails_responsables'], ENT_QUOTES|ENT_IGNORE, "UTF-8"));
             // $mailsResponsables : html_entity_decode necéssaire sinon ajoute des espaces après les accents ($mailsResponsables=join("; ",$mailsResponsables);)
-            $informations=stripslashes($db->result[0]['informations']);
-            $recup=stripslashes($db->result[0]['recup']);
-            $sites=html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-            $sites=$sites?json_decode($sites, true):array();
-            $action="modif";
-            $titre=$nom." ".$prenom;
+            $informations = stripslashes($db->result[0]['informations']);
+            $recup = stripslashes($db->result[0]['recup']);
+            $sites = html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $sites = $sites?json_decode($sites, true):array();
+            $action = "modif";
+            $titre = $nom." ".$prenom;
 
             // URL ICS
             if ($this->config('ICS-Export')) {
@@ -179,65 +329,65 @@ class AgentController extends BaseController
                 $ics = $p->getICSURL($id);
             }
         } else {// pas d'id, donc ajout d'un agent
-            $id=null;
-            $nom=null;
-            $prenom=null;
-            $mail=null;
-            $statut=null;
-            $categorie=null;
+            $id = null;
+            $nom = null;
+            $prenom = null;
+            $mail = null;
+            $statut = null;
+            $categorie = null;
             $check_hamac = 1;
             $check_ics = array(1,1,1);
-            $service=null;
-            $heuresHebdo=null;
-            $heuresTravail=null;
-            $arrivee=null;
-            $depart=null;
-            $login=null;
-            $temps=null;
-            $postes_attribues=array();
-            $access=array();
-            $matricule=null;
-            $url_ics=null;
-            $mailsResponsables=array();
-            $informations=null;
-            $recup=null;
-            $sites=array();
-            $titre="Ajout d'un agent";
-            $action="ajout";
+            $service = null;
+            $heuresHebdo = null;
+            $heuresTravail = null;
+            $arrivee = null;
+            $depart = null;
+            $login = null;
+            $temps = null;
+            $postes_attribues = array();
+            $access = array();
+            $matricule = null;
+            $url_ics = null;
+            $mailsResponsables = array();
+            $informations = null;
+            $recup = null;
+            $sites = array();
+            $titre = "Ajout d'un agent";
+            $action = "ajout";
             if ($_SESSION['perso_actif'] and $_SESSION['perso_actif']!="Supprim&eacute;") {
-                $actif=$_SESSION['perso_actif'];
+                $actif = $_SESSION['perso_actif'];
             }// vérifie dans quel tableau on se trouve pour la valeur par défaut
         }
 
         $jours = array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
         $contrats = array("Titulaire","Contractuel");
 
-        //		--------------		Début listes des activités		---------------------//
+        //        --------------        Début listes des activités        ---------------------//
         // Toutes les activités
         $a = new \activites();
         $a->fetch();
         $activites = $a->elements;
 
         foreach ($activites as $elem) {
-            $postes_completNoms[]=array($elem['nom'],$elem['id']);
-            $postes_complet[]=$elem['id'];
+            $postes_completNoms[] = array($elem['nom'],$elem['id']);
+            $postes_complet[] = $elem['id'];
         }
 
         // les activités non attribuées (disponibles)
-        $postes_dispo=array();
+        $postes_dispo = array();
         if ($postes_attribues) {
-            $postes=join(",", $postes_attribues);	//	activités attribuées séparées par des virgules (valeur transmise à valid.php)
+            $postes = join(",", $postes_attribues);    //    activités attribuées séparées par des virgules (valeur transmise à valid.php)
             if (is_array($postes_complet)) {
                 foreach ($postes_complet as $elem) {
                     if (!in_array($elem, $postes_attribues)) {
-                        $postes_dispo[]=$elem;
+                        $postes_dispo[] = $elem;
                     }
                 }
             }
         } else {
             //activités attribuées séparées par des virgules (valeur transmise à valid.php)
             $postes = "";
-            $postes_dispo=$postes_complet;
+            $postes_dispo = $postes_complet;
         }
 
         // traduction en JavaScript du tableau postes_completNoms
@@ -250,13 +400,13 @@ class AgentController extends BaseController
         // Ajout des noms dans les tableaux postes attribués et dispo
         function postesNoms($postes, $tab_noms)
         {
-            $tmp=array();
+            $tmp = array();
             if (is_array($postes)) {
                 foreach ($postes as $elem) {
                     if (is_array($tab_noms)) {
                         foreach ($tab_noms as $noms) {
                             if ($elem==$noms[1]) {
-                                $tmp[]=array($elem,$noms[0]);
+                                $tmp[] = array($elem,$noms[0]);
                                 break;
                             }
                         }
@@ -329,31 +479,31 @@ class AgentController extends BaseController
         }
 
         if (in_array(21, $droits)) {
-            $h=array();
-            for ($i=1;$i<40;$i++) {
+            $h = array();
+            for ($i = 1; $i<40; $i++) {
                 if ($this->config('Granularite') == 5) {
-                    $h[]=array($i,$i."h00");
-                    $h[]=array($i.".08",$i."h05");
-                    $h[]=array($i.".17",$i."h10");
-                    $h[]=array($i.".25",$i."h15");
-                    $h[]=array($i.".33",$i."h20");
-                    $h[]=array($i.".42",$i."h25");
-                    $h[]=array($i.".5",$i."h30");
-                    $h[]=array($i.".58",$i."h35");
-                    $h[]=array($i.".67",$i."h40");
-                    $h[]=array($i.".75",$i."h45");
-                    $h[]=array($i.".83",$i."h50");
-                    $h[]=array($i.".92",$i."h55");
-                } elseif ($this->config('Granularite') == 15) {
-                    $h[]=array($i,$i."h00");
-                    $h[]=array($i.".25",$i."h15");
-                    $h[]=array($i.".5",$i."h30");
-                    $h[]=array($i.".75",$i."h45");
+                    $h[] = array($i,$i."h00");
+                    $h[] = array($i.".08",$i."h05");
+                    $h[] = array($i.".17",$i."h10");
+                    $h[] = array($i.".25",$i."h15");
+                    $h[] = array($i.".33",$i."h20");
+                    $h[] = array($i.".42",$i."h25");
+                    $h[] = array($i.".5",$i."h30");
+                    $h[] = array($i.".58",$i."h35");
+                    $h[] = array($i.".67",$i."h40");
+                    $h[] = array($i.".75",$i."h45");
+                    $h[] = array($i.".83",$i."h50");
+                    $h[] = array($i.".92",$i."h55");
+                } elseif ($this->config('Granularite')  == 15) {
+                    $h[] = array($i,$i."h00");
+                    $h[] = array($i.".25",$i."h15");
+                    $h[] = array($i.".5",$i."h30");
+                    $h[] = array($i.".75",$i."h45");
                 } elseif ($this->config('Granularite') == 30) {
-                    $h[]=array($i,$i."h00");
-                    $h[]=array($i.".5",$i."h30");
+                    $h[] = array($i,$i."h00");
+                    $h[] = array($i.".5",$i."h30");
                 } else {
-                    $h[]=array($i,$i."h00");
+                    $h[] = array($i,$i."h00");
                 }
             }
             $this->templateParams(array( 'times' => $h ));
@@ -363,7 +513,7 @@ class AgentController extends BaseController
                 $heuresHebdo_label .= " heures";
             }
             $this->templateParams(array(
-                'heuresHebdo_label' => $heuresHebdo_label,
+                'heuresHebdo_label'   => $heuresHebdo_label,
                 'heuresTravail_label' => $heuresTravail . " heures",
             ));
         }
@@ -424,7 +574,7 @@ class AgentController extends BaseController
 
         // URL du fichier ICS Planning Biblio
         if ($id and isset($ics)) {
-            if ($config['ICS-Code']) {
+            if ($this->config('ICS-Code')) {
             }
         }
 
@@ -489,7 +639,7 @@ class AgentController extends BaseController
             $this->templateParams(array('rights_sites' => $rights_sites));
         }
 
-        if ($config['Conges-Enable']) {
+        if ($this->config('Conges-Enable')) {
             $c = new \conges();
             $c->perso_id = $id;
             $c->fetchCredit();
@@ -553,7 +703,6 @@ class AgentController extends BaseController
                 'anticipation_heures'   => $anticipationHeures,
                 'anticipation_min'      => $conges['anticipationCents'],
                 'anticipation_string'   => $anticipationString,
-
                 'recup_heures'          => $recupHeures,
                 'recup_min'             => $conges['recupCents'],
                 'recup_string'          => $recupString,
@@ -578,16 +727,16 @@ class AgentController extends BaseController
 
         $params = $request->request->all();
 
-        $arrivee=filter_input(INPUT_POST, "arrivee", FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
+        $arrivee = filter_input(INPUT_POST, "arrivee", FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
         $CSRFToken = filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
-        $depart=filter_input(INPUT_POST, "depart", FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
-        $heuresHebdo=filter_input(INPUT_POST, "heuresHebdo", FILTER_SANITIZE_STRING);
-        $heuresTravail=filter_input(INPUT_POST, "heuresTravail", FILTER_SANITIZE_STRING);
-        $id=filter_input(INPUT_POST, "id", FILTER_SANITIZE_NUMBER_INT);
-        $mail=trim(filter_input(INPUT_POST, "mail", FILTER_SANITIZE_EMAIL));
+        $depart = filter_input(INPUT_POST, "depart", FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
+        $heuresHebdo = filter_input(INPUT_POST, "heuresHebdo", FILTER_SANITIZE_STRING);
+        $heuresTravail = filter_input(INPUT_POST, "heuresTravail", FILTER_SANITIZE_STRING);
+        $id = filter_input(INPUT_POST, "id", FILTER_SANITIZE_NUMBER_INT);
+        $mail = trim(filter_input(INPUT_POST, "mail", FILTER_SANITIZE_EMAIL));
 
         $actif = htmlentities($params['actif'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-        $action=$params['action'];
+        $action = $params['action'];
         $check_hamac = !empty($params['check_hamac']) ? 1 : 0;
         $check_ics1 = !empty($params['check_ics1']) ? 1 : 0;
         $check_ics2 = !empty($params['check_ics2']) ? 1 : 0;
@@ -599,17 +748,17 @@ class AgentController extends BaseController
         $mailsResponsables = trim(str_replace(array("\n", " "), null, $params['mailsResponsables']));
         $matricule = trim($params['matricule']);
         $url_ics = isset($params['url_ics']) ? trim($params['url_ics']) : null;
-        $nom=trim($params['nom']);
+        $nom = trim($params['nom']);
         $postes = $params['postes'];
         $prenom = trim($params['prenom']);
         $recup = isset($params['recup']) ? trim($params['recup']) : null;
         $service = htmlentities($params['service'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
         $sites = array_key_exists("sites", $params) ? $params['sites'] : null;
         $statut = htmlentities($params['statut'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
-        $temps=array_key_exists("temps", $params) ? $params['temps'] : null;
+        $temps = array_key_exists("temps", $params) ? $params['temps'] : null;
 
         // Modification du choix des emplois du temps avec l'option EDTSamedi == 1 (EDT différent les semaines avec samedi travaillé)
-        $eDTSamedi=array_key_exists("EDTSamedi", $params) ? $params['EDTSamedi'] : null;
+        $eDTSamedi = array_key_exists("EDTSamedi", $params) ? $params['EDTSamedi'] : null;
 
         // Modification du choix des emplois du temps avec l'option EDTSamedi == 2 (EDT différent les semaines avec samedi travaillé et les semaines à ouverture restreinte)
         if ($this->config('EDTSamedi') == 2) {
@@ -621,16 +770,16 @@ class AgentController extends BaseController
             }
         }
 
-        $premierLundi=array_key_exists("premierLundi", $params) ? $params['premierLundi'] : null;
-        $dernierLundi=array_key_exists("dernierLundi", $params) ? $params['dernierLundi'] : null;
+        $premierLundi = array_key_exists("premierLundi", $params) ? $params['premierLundi'] : null;
+        $dernierLundi = array_key_exists("dernierLundi", $params) ? $params['dernierLundi'] : null;
 
-        $droits=$droits?$droits:array();
+        $droits = $droits ? $droits : array();
         $postes = $postes ? json_encode(explode(",", $postes)) : null;
-        $sites=$sites?json_encode($sites):null;
+        $sites = $sites ? json_encode($sites) : null;
         $temps = $temps ? json_encode($temps) : null;
 
-        $arrivee=dateSQL($arrivee);
-        $depart=dateSQL($depart);
+        $arrivee = dateSQL($arrivee);
+        $depart = dateSQL($depart);
 
         for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
             // Modification des plannings Niveau 2 donne les droits Modification des plannings Niveau 1
@@ -642,24 +791,24 @@ class AgentController extends BaseController
         // Le droit de gestion des absences (20x) donne le droit modifier ses propres absences (6) et le droit d'ajouter des absences pour plusieurs personnes (9)
         for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
             if (in_array((200+$i), $droits) or in_array((500+$i), $droits)) {
-                $droits[]=6;
-                $droits[]=9;
+                $droits[] = 6;
+                $droits[] = 9;
                 break;
             }
         }
 
-        $droits[]=99;
-        $droits[]=100;
-        if ($id==1) {		// Ajoute config. avancée à l'utilisateur admin.
-            $droits[]=20;
+        $droits[] = 99;
+        $droits[] = 100;
+        if ($id == 1) {        // Ajoute config. avancée à l'utilisateur admin.
+            $droits[] = 20;
         }
-        $droits=json_encode($droits);
+        $droits = json_encode($droits);
 
         switch ($action) {
           case "ajout":
-            $db=new \db();
+            $db = new \db();
             $db->select2("personnel", array(array("name"=>"MAX(`id`)", "as"=>"id")));
-            $id=$db->result[0]['id']+1;
+            $id = $db->result[0]['id']+1;
 
             $login = $this->login($nom, $prenom);
 
@@ -670,47 +819,68 @@ class AgentController extends BaseController
                 $msg .= "#BR#Sur une version standard, les identifiants de l'agent lui auraient été envoyés par e-mail.";
                 $msgType = "success";
             } else {
-                $mdp=gen_trivial_password();
+                $mdp = gen_trivial_password();
                 $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
 
                 // Envoi du mail
-                $message="Votre compte Planning Biblio a &eacute;t&eacute; cr&eacute;&eacute; :";
-                $message.="<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
+                $message = "Votre compte Planning Biblio a &eacute;t&eacute; cr&eacute;&eacute; :";
+                $message.= "<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
 
-                $m=new \CJMail();
-                $m->subject="Création de compte";
-                $m->message=$message;
-                $m->to=$mail;
+                $m = new \CJMail();
+                $m->subject = "Création de compte";
+                $m->message = $message;
+                $m->to = $mail;
                 $m->send();
 
                 // Si erreur d'envoi de mail, affichage de l'erreur
-                $msg=null;
-                $msgType=null;
+                $msg = null;
+                $msgType = null;
                 if ($m->error) {
                     $msg = $m->error_CJInfo;
-                    $msgType="error";
+                    $msgType = "error";
                 }
             }
 
             // Enregistrement des infos dans la base de données
-            $insert=array("nom"=>$nom,"prenom"=>$prenom,"mail"=>$mail,"statut"=>$statut,"categorie"=>$categorie,"service"=>$service,"heures_hebdo"=>$heuresHebdo,
-              "heures_travail"=>$heuresTravail,"arrivee"=>$arrivee,"depart"=>$depart,"login"=>$login,"password"=>$mdp_crypt,"actif"=>$actif,
-              "droits"=>$droits,"postes"=>$postes,"temps"=>$temps,"informations"=>$informations,"recup"=>$recup,"sites"=>$sites,
-              "mails_responsables"=>$mailsResponsables,"matricule"=>$matricule,"url_ics"=>$url_ics, "check_ics"=>$check_ics, "check_hamac"=>$check_hamac);
-
+            $insert = array(
+                "nom"=>$nom,
+                "prenom"=>$prenom,
+                "mail"=>$mail,
+                "statut"=>$statut,
+                "categorie"=>$categorie,
+                "service"=>$service,
+                "heures_hebdo"=>$heuresHebdo,
+                "heures_travail"=>$heuresTravail,
+                "arrivee"=>$arrivee,
+                "depart"=>$depart,
+                "login"=>$login,
+                "password"=>$mdp_crypt,
+                "actif"=>$actif,
+                "droits"=>$droits,
+                "postes"=>$postes,
+                "temps"=>$temps,
+                "informations"=>$informations,
+                "recup"=>$recup,
+                "sites"=>$sites,
+                "mails_responsables"=>$mailsResponsables,
+                "matricule"=>$matricule,
+                "url_ics"=>$url_ics, 
+                "check_ics"=>$check_ics, 
+                "check_hamac"=>$check_hamac
+            );
             $holidays = $this->save_holidays($params);
             $insert = array_merge($insert, $holidays);
 
-            $db=new \db();
+            $db = new \db();
             $db->CSRFToken = $CSRFToken;
             $db->insert("personnel", $insert);
 
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
-            $p=new \personnel();
+            $p = new \personnel();
             $p->CSRFToken = $CSRFToken;
             $p->updateEDTSamedi($eDTSamedi, $premierLundi, $dernierLundi, $id);
 
-            return $this->redirectToRoute('default', array('page' => 'personnel/index.php', 'msg' => $msg, 'msgType' => $msgType));
+            return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => $msgType));
 
             break;
 
@@ -719,94 +889,113 @@ class AgentController extends BaseController
             // Demo mode
             if (!empty($this->config('demo'))) {
                 $msg = "Le mot de passe n'a pas été modifié car vous utilisez une version de démonstration";
-                return $this->redirectToRoute('default', array('page' => 'personnel/index.php', 'msg' => $msg, 'msgType' => 'success'));
+                return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => 'success'));
                 break;
             }
 
             $mdp=gen_trivial_password();
             $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
-            $db=new \db();
+            $db = new \db();
             $db->select2("personnel", "login", array("id"=>$id));
-            $login=$db->result[0]['login'];
+            $login = $db->result[0]['login'];
 
             // Envoi du mail
-            $message="Votre mot de passe Planning Biblio a &eacute;t&eacute; modifi&eacute;";
-            $message.="<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
+            $message = "Votre mot de passe Planning Biblio a &eacute;t&eacute; modifi&eacute;";
+            $message.= "<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
 
-            $m=new \CJMail();
-            $m->subject="Modification du mot de passe";
-            $m->message=$message;
-            $m->to=$mail;
+            $m = new \CJMail();
+            $m->subject = "Modification du mot de passe";
+            $m->message = $message;
+            $m->to = $mail;
             $m->send();
 
             // Si erreur d'envoi de mail, affichage de l'erreur
-            $msg=null;
-            $msgType=null;
+            $msg = null;
+            $msgType = null;
             if ($m->error) {
                 $msg = $m->error_CJInfo;
-                $msgType="error";
+                $msgType = "error";
             } else {
                 $msg = "Le mot de passe a été modifié et envoyé par e-mail à l'agent";
-                $msgType="success";
+                $msgType = "success";
             }
 
-            $db=new \db();
+            $db = new \db();
             $db->CSRFToken = $CSRFToken;
             $db->update("personnel", array("password"=>$mdp_crypt), array("id"=>$id));
-            return $this->redirectToRoute('default', array('page' => 'personnel/index.php', 'msg' => $msg, 'msgType' => $msgType));
+            return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => $msgType));
 
             break;
 
           case "modif":
-            $update=array("nom"=>$nom, "prenom"=>$prenom, "mail"=>$mail, "statut"=>$statut, "categorie"=>$categorie, "service"=>$service,
-              "heures_hebdo"=>$heuresHebdo, "heures_travail"=>$heuresTravail, "actif"=>$actif, "droits"=>$droits, "arrivee"=>$arrivee,
-              "depart"=>$depart, "postes"=>$postes, "informations"=>$informations, "recup"=>$recup, "sites"=>$sites,
-              "mails_responsables"=>$mailsResponsables, "matricule"=>$matricule, "url_ics"=>$url_ics, "check_ics"=>$check_ics, "check_hamac"=>$check_hamac);
+            $update = array(
+                "nom"=>$nom,
+                "prenom"=>$prenom,
+                "mail"=>$mail,
+                "statut"=>$statut, 
+                "categorie"=>$categorie, 
+                "service"=>$service,
+                "heures_hebdo"=>$heuresHebdo, 
+                "heures_travail"=>$heuresTravail, 
+                "actif"=>$actif, 
+                "droits"=>$droits, 
+                "arrivee"=>$arrivee,
+                "depart"=>$depart, 
+                "postes"=>$postes, 
+                "informations"=>$informations, 
+                "recup"=>$recup, 
+                "sites"=>$sites,
+                "mails_responsables"=>$mailsResponsables, 
+                "matricule"=>$matricule, 
+                "url_ics"=>$url_ics, 
+                "check_ics"=>$check_ics, 
+                "check_hamac"=>$check_hamac
+            );
             // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
             if (!strstr($actif, "Supprim")) {
                 $update["supprime"]="0";
                 // Si l'agent était supprimé et qu'on le réintégre, on change sa date de départ
                 // pour qu'il ne soit pas supprimé de la liste des agents actifs
-                $db=new \db();
-                $db->select2("personnel", "*", array("id"=>$id));
-                if (strstr($db->result[0]['actif'], "Supprim") and $db->result[0]['depart']<=date("Y-m-d")) {
-                    $update["depart"]="0000-00-00";
+                $db = new \db();
+                $db->select2("personnel", "*", array("id" => $id));
+                if (strstr($db->result[0]['actif'], "Supprim") and $db->result[0]['depart'] <= date("Y-m-d")) {
+                    $update["depart"] = "0000-00-00";
                 }
             } else {
-                $update["actif"]="Supprim&eacute;";
+                $update["actif"] = "Supprim&eacute;";
             }
 
             // Mise à jour de l'emploi du temps si modifié à partir de la fiche de l'agent
             if ($temps) {
-                $update["temps"]=$temps;
+                $update["temps"] = $temps;
             }
 
             $holidays = $this->save_holidays($params);
             $update = array_merge($update, $holidays);
 
-            $db=new \db();
+            $db = new \db();
             $db->CSRFToken = $CSRFToken;
-            $db->update("personnel", $update, array("id"=>$id));
+            $db->update("personnel", $update, array("id" => $id));
 
             // Mise à jour de la table pl_poste en cas de modification de la date de départ
-            $db=new \db();		// On met supprime=0 partout pour cet agent
+            $db = new \db();        // On met supprime=0 partout pour cet agent
             $db->CSRFToken = $CSRFToken;
-            $db->update("pl_poste", array("supprime"=>"0"), array("perso_id"=>$id));
-            if ($depart!="0000-00-00" and $depart!="") {
+            $db->update("pl_poste", array("supprime" => "0"), array("perso_id" => $id));
+            if ($depart != "0000-00-00" and $depart != "") {
                 // Si une date de départ est précisée, on met supprime=1 au dela de cette date
-                $db=new \db();
-                $id=$db->escapeString($id);
-                $depart=$db->escapeString($depart);
+                $db = new \db();
+                $id = $db->escapeString($id);
+                $depart = $db->escapeString($depart);
                 $dbprefix = $this->config('dbprefix');
                 $db->query("UPDATE `{$dbprefix}pl_poste` SET `supprime`='1' WHERE `perso_id`='$id' AND `date`>'$depart';");
             }
 
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
-            $p=new \personnel();
+            $p = new \personnel();
             $p->CSRFToken = $CSRFToken;
             $p->updateEDTSamedi($eDTSamedi, $premierLundi, $dernierLundi, $id);
 
-            return $this->redirectToRoute('default', array('page' => 'personnel/index.php'));
+            return $this->redirectToRoute('agent.index');
 
             break;
         }
@@ -864,31 +1053,31 @@ class AgentController extends BaseController
 
     private function login($nom, $prenom)
     {
-        $prenom=trim($prenom);
-        $nom=trim($nom);
+        $prenom = trim($prenom);
+        $nom = trim($nom);
         if ($prenom) {
-            $tmp[]=$prenom;
+            $tmp[] = $prenom;
         }
         if ($nom) {
-            $tmp[]=$nom;
+            $tmp[] = $nom;
         }
 
-        $tmp=join($tmp, ".");
-        $login=removeAccents(strtolower($tmp));
-        $login=str_replace(" ", "-", $login);
-        $login=substr($login, 0, 95);
+        $tmp = join($tmp, ".");
+        $login = removeAccents(strtolower($tmp));
+        $login = str_replace(" ", "-", $login);
+        $login = substr($login, 0, 95);
 
-        $i=1;
-        $db=new \db();
+        $i = 1;
+        $db = new \db();
         $db->select2("personnel", "*", array("login"=>$login));
         while ($db->result) {
             $i++;
-            if ($i==2) {
-                $login.="2";
+            if ($i == 2) {
+                $login.= "2";
             } else {
-                $login=substr($login, 0, strlen($login)-1).$i;
+                $login = substr($login, 0, strlen($login)-1).$i;
             }
-            $db=new \db();
+            $db = new \db();
             $db->select("personnel", null, "login='$login'");
         }
         return $login;

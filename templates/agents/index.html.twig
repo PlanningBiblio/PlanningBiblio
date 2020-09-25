@@ -1,0 +1,227 @@
+{# agents/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  <form name='form2' action='{{ asset("/agent") }}' method='get'>
+    <input type = 'hidden' value='{{ actif }}' />
+    <table style='margin-bottom:10px;'>
+      <tr style='vertical-align:center;'>
+        <td style='width:270px;'>
+          <h3 style='margin:0;'>Liste des agents</h3>
+        </td>
+        <td>Voir les agents</td>
+        <td style='width:150px;'>
+          <select name='actif' onchange='document.form2.submit();'  class='ui-widget-content ui-corner-all'>
+            <option value='Actif'{% if actif == 'Actif' %} selected='selected' {% endif %}>Service public</option>
+            <option value='Inactif' {% if actif == 'Inactif' %} selected='selected' {% endif %}>Administratif</option>
+            {% if rights21 %}
+              <option value='Supprimé' {% if actif == 'Supprimé' %} selected='selected' {% endif %}>Supprimé</option>
+            {% endif %}
+          </select>
+        </td>
+        <td style='width:80px;'></td>
+        <td>
+          {% if rights21 %}
+          <input type='button' value='Ajouter' onclick="location.href='{{ asset('agent/add') }}';" class='ui-button'/>
+            {% if LDAP_host and LDAP_suf %}
+              <input type='button' value='Import LDAP' onclick='location.href="{{ app.request.getBaseURL() }}/personnel/import.php";' class='ui-button' style='margin-left:21px;'/>
+            {% endif %}
+          {% endif %}
+        </td>
+      </tr>
+    </table>
+  </form>
+  <table id='tableAgents' class='CJDataTable' data-sort='[[1,"asc"],[2,"asc"]]'>
+    <thead>
+      <tr>
+        <th class='dataTableNoSort aLeft' >
+          {% if rights21 %}
+            <input type='checkbox' class='CJCheckAll'/>
+          {% endif %}
+        </th>
+        <th>Nom</th>
+        <th>Prénom</th>
+        <th class='dataTableHeureFR'>Heures</th>
+        <th>Statut</th>
+        <th>Service</th>
+        {% if nbSites > 1 %}
+          <th>Sites</th>
+        {% endif %}
+        <th class='dataTableDateFR' >Arrivée</th>
+        <th class='dataTableDateFR' >Départ</th>
+        <th class='dataTableDateFR' >Accès</th>
+    </thead>
+    <tbody>
+      {% for a in agents %}
+        <tr>
+          <td style='white-space:nowrap;'>
+            {% if rights21 %}
+            <input type='checkbox' name='chk{{ loop.index0 }}' value='{{ a.id }}' class='checkbox' />
+            {% endif %}
+            <a href="{{ asset ('/agent/')}}{{ a.id }}">
+              <span class='pl-icon pl-icon-edit' title='Modifier'></span>
+            </a>
+            {% if rights21 and a.id != login_id and a.id > 1 %}
+              <a href='javascript:popup("personnel/suppression.php&amp;id={{ a.id }}",450,240);'>
+                <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
+              </a>
+            {% endif %}
+          </td>
+          <td>{{ a.name | raw }}</td>
+          <td>{{ a.surname | raw}} </td>
+          <td>{{ a.hours }}</td>
+          <td>{{ a.status | raw }}</td>
+          <td>{{ a.service | raw }}</td>
+          {% if nbSites > 1 %}
+            <td>{{ a.sites | raw }}</td>
+          {% endif %}
+          <td>{{ a.arrival }}</td>
+          <td>{{ a.departure }}</td>
+          <td>{{ a.last_login }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if rights21 %}
+    <select name='action' id='action' style='width:200px;'>
+      <option value=''></option>
+      <option value='edit'>Modifier la sélection</option>
+      <option value='delete'>Supprimer la sélection</option>
+    </select>
+    <input type='button' value='Valider' class='ui-button' style='margin-left:20px;' onclick='agent_list()'/>
+  {% endif %}
+  <div id="dialog-form" title='{{ lang.edit_selected_users }}' class='noprint' style='display:none;'>
+    <p class="validateTips"></p>
+    <form>
+      <div class='ui-tabs'>
+        <ul>
+            <li><a href='#main'>Infos générales</a></li>
+            <li><a href='#qualif'>Activités</a></li>
+        </ul>
+        <div id='main' style='margin-left:70px;padding-top:30px;'>
+          <table class='tableauFiches'>
+            <tr>
+              <td>
+                <label for="statut">Statut</label>
+              </td>
+              <td>
+                <select name='statut' id='statut' style='text-align:center;'>
+                  <option value='-1'>{{ lang.do_not_change }}</option>
+                  <option value=''>Aucun</option>
+                  {% for s in status %}
+                    <option value='{{ s.valeur }}'>{{ s.valeur | raw }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+            <tr>
+            <tr>
+              <td>
+                <label for='contrat'>Contrat</label>
+              </td>
+              <td>
+                <select name='contrat' id='contrat' style='text-align:center;'>
+                  <option value='-1'>{{ lang.do_not_change }}</option>
+                  <option value=''>Aucun</option>
+                  {% for c in contracts %}
+                    <option value={{c}}>{{ c }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label for='service'>Service de rattachement</label>
+              </td>
+              <td style='white-space:nowrap'>
+                <select name='service' id='service' style='text-align:center;'>
+                  <option value='-1'>{{ lang.do_not_change }}</option>
+                  <option value=''>Aucun</option>
+                  {% for se in services %}
+                    <option value='{{ se.valeur }}'>{{ se.valeur | raw }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label for="heures_hebdo">Heures de service public</label>
+              </td>
+              <td>
+                <select id='heures_hebdo' name='heures_hebdo' style='text-align:center;'>
+                  <option value='-1'>{{ lang.do_not_change }}</option>
+                  <option value='0'>&nbsp;</option>
+                  {% for i in 1..101%}
+                    <option value='{{ i }}%'>{{ i }}%</option>
+                  {% endfor %}
+                  {% for h in hours %}
+                    <option value='{{ h[0] }}'>{{ h[1] }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label for='heures_travail'>Heures de travail par semaine</label>
+              </td>
+              <td>
+                <select name='heures_travail' id='heures_travail' style='text-align:center;'>
+                  <option value='-1'>{{ lang.do_not_change }}</option>
+                  <option value='0'>&nbsp;</option>
+                  {% for h in hours %}
+                    <option value='{{ h[0] }}'>{{ h[1] }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+            </tr>
+            <tr>
+                <td><label for='actif'>Service public / Administratif</label></td>
+                <td>
+                    <select name='actif' id='actif' style='text-align:center;'>
+                      <option value='-1'>{{ lang.do_not_change }}</option>
+                        <option value='Actif'>Service public</option>
+                        <option value='Inactif'>Administratif</option>
+                    </select>
+                </td>
+            </tr>
+          </table>
+        </div> <!-- main -->
+        <div id='qualif' style='margin-left:70px;padding-top:30px;'>
+          <input type='hidden' name='postes' id='postes' value='-1'/>
+          <table style='width:90%;'>
+            <tr style='vertical-align:top;'>
+              <td>
+                <b>Activités disponibles</b><br/>
+                <div id='dispo_div'>
+                  <select id='postes_dispo' name='postes_dispo' style='width:300px;' size='20' multiple='multiple'>
+                    {% for sk in skills %}
+                      <option value='{{ sk.id }}'>{{ sk.nom | raw }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </td>
+              <td style='text-align:center;padding-top:100px;'>
+                <input type='button' style='width:200px' value='Attribuer >>' onclick='select_add("postes_dispo","postes_attribues","postes",300);' /><br/><br/>
+                <input type='button' style='width:200px' value='Attribuer Tout >>' onclick='select_add_all("postes_dispo","postes_attribues","postes",300);' /><br/><br/>
+                <input type='button' style='width:200px' value='<< Supprimer' onclick='select_drop("postes_dispo","postes_attribues","postes",300);' /><br/><br/>
+                <input type='button' style='width:200px' value='<< Supprimer Tout' onclick='select_drop_all("postes_dispo","postes_attribues","postes",300);' /><br/><br/>
+              </td>
+              <td>
+                <b>Activités attribuées</b><br/>
+                <div id='attrib_div'>
+                  <select id='postes_attribues' name='postes_attribues' style='width:300px;' size='20' multiple='multiple'>
+                  </select>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div> <!-- qualif -->
+      </div> <!-- ui-tabs -->
+    </form>
+{% endblock %}
+
+{% block specificjs %}
+    <script type='text/JavaScript'> var complet = JSON.parse('{{ positionsCompleteNames | e('js') }}'); </script>
+    <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/personnel/js/modif.js'></script>
+    <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/personnel/js/index.js'></script>
+{% endblock %}

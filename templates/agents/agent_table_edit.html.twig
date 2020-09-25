@@ -65,9 +65,9 @@
         <option value=''>Aucun</option>
         {%for elem in services %}
           {% if elem.valeur == service %}
-            <option selected="selected" value='{{ elem.valeur }}'>{{ elem.valeur | raw }}</option>
+            <option selected="selected" value='{{ elem.valeur | raw }}'>{{ elem.valeur | raw }}</option>
           {% else %}
-            <option value='{{ elem.valeur }}'>{{ elem.valeur | raw }}</option>
+            <option value='{{ elem.valeur | raw }}'>{{ elem.valeur | raw }}</option>
           {% endif %}
         {% endfor %}
       </select>
@@ -188,7 +188,7 @@
   <tr style='vertical-align:top;'>
     <td>Informations :</td>
     <td>
-      <textarea name='informations' style='width:400px' cols='10' rows='4'>{{ informations }}</textarea>
+      <textarea name='informations' style='width:400px' cols='10' rows='4'>{{ informations|raw }}</textarea>
     </td>
   </tr>
 
