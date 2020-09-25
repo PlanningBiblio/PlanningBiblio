@@ -249,6 +249,7 @@ class HolidayController extends BaseController
         $hre_debut = $request->get('hre_debut');
         $hre_fin = $request->get('hre_fin');
         $dbprefix = $GLOBALS['dbprefix'];
+        $this->droits = $GLOBALS['droits'];
 
         $adminN1 = false;
         $adminN2 = false;
