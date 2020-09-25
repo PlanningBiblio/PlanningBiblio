@@ -540,6 +540,17 @@ class HolidayController extends BaseController
             $agents_tous=$db_perso->result?$db_perso->result:array();
         }
 
+        $multisites = $this->config('Multisites-nombre');
+
+        // Multi-sites
+        if ($this->config('Multisites-nombre') > 1) {
+            $sites_select = array();
+            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+                $sites_select[] = array( 'id' => $i, 'name' => $this->config("Multisites-site$i") );
+            }
+            $this->templateParams(array( 'sites_select' => $sites_select ));
+        }
+
         $this->templateParams(array(
             'admin'                 => $admin,
             'agents'                => $this->get_agents($adminN2),
@@ -562,9 +573,10 @@ class HolidayController extends BaseController
             'anticipation'          => $anticipation,
             'anticipation2'         => $holiday_helper->HumanReadableDuration($anticipation),
             'agent_name'            => $_SESSION['login_nom'] . ' ' . $_SESSION['login_prenom'],
-            'loggedin_id'              => $_SESSION['login_id'],
-            'loggedin_name'             => $_SESSION['login_nom'],
-            'loggedin_firstname'          => $_SESSION['login_prenom'],
+            'loggedin_id'           => $_SESSION['login_id'],
+            'loggedin_name'         => $_SESSION['login_nom'],
+            'loggedin_firstname'    => $_SESSION['login_prenom'],
+            'multisites'            => $multisites,
         ));
 
         // Affichage du formulaire
@@ -596,7 +608,7 @@ class HolidayController extends BaseController
     {
         $perso_id = $request->get('perso_id');
         $perso_ids = array();
-        if (!empty($perso_id)) {
+        if (!empty($perso_id) && $perso_id != 0) {
             $perso_ids[] = $perso_id;
         } else {
             $perso_ids = $request->get('perso_ids');
@@ -622,11 +634,12 @@ class HolidayController extends BaseController
                     'msg2Type'  => 'error'
                 );
             }
-
             // Enregistrement du congés
             $c = new \conges();
             $c->CSRFToken = $CSRFToken;
-            $c->add($request->request->all());
+            $data = $request->request->all();
+            $data['perso_id'] = $perso_id;
+            $c->add($data);
             $id = $c->id;
 
             // Récupération des adresses e-mails de l'agent et des responsables pour l'envoi des alertes

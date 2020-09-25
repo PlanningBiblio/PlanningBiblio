@@ -510,6 +510,7 @@ function affiche_perso_ul(){
   $(".perso_ids_hidden").each(function(){
     var id=$(this).val();
     var name=$("#perso_ids option[value='"+id+"']").text();
+    console.log("Pushing " + name + " " + id);
     tab.push([name,id]);
   });
 
@@ -569,11 +570,63 @@ function supprimeAgent(id){
 }
 // END #TODO
 
+function updateAgentsListBySites() {
+  selected_sites = JSON.stringify($("input[name='selected_sites']:checked").map(function(){                                               
+      return $(this).val();
+  }).get());
+
+  $.ajax({
+    url: "/ajax/agents-by-sites",
+    data: {sites: selected_sites},
+    dataType: "json",
+    type: "get",
+    async: false,
+    success: function(result){
+
+        options = '';
+
+        // Check if multiple agents is allowed (really necessary?)
+        if ($('#perso_ids option[value="0"]')) {
+            options += '<option value="0" selected="selected">-- Ajoutez un agent --</option>';
+        }
+
+        // Check if all agents is allowed
+        if ($('#perso_ids option[value="tous"]')) {
+            options += '<option value="tous">Tous les agents</option>';
+        }
+
+        $.each(result, function(index, value) {
+            options += '<option value="' + value.id + '" id="option' + value.id + '">' + value.nom + ' ' + value.prenom + '</option>';
+        });
+
+        $("#perso_ids").html(options);
+
+        selected_agents = $(".perso_ids_hidden").map(function(){                                        
+            return $(this).val();
+        }).get();
+
+        $.each(result, function(index, value) {
+            // Check if not already added
+            if ($.inArray(value.id, selected_agents) !== -1) {
+                console.log(value.id + " is in " + selected_agents);
+                $("#option" + value.id).hide();
+            } else {
+//                $("#option" + value.id).prop('selected', true);
+            }
+        });
+    }
+  });
+}
+
 $(function(){
   $('.checkdate').on('change', function() {
     if (!multipleAgentsSelected()) {
         calculCredit();
     }
+  });
+
+  $("input[name='selected_sites']").change(function() {
+    updateAgentsListBySites();
   });
 
   $(".googleCalendarTrigger").change(function(){

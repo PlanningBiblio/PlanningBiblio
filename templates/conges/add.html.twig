@@ -67,6 +67,14 @@
 
 
               <td>
+                  {% if multisites %}
+                    Sites:
+                     {% for s in sites_select %}
+                      <input type="checkbox" checked="checked" name="selected_sites" value="{{s.id}}" id="site_{{s.id}}" /><label for="site_{{s.id}}">{{ s.name }}</label>
+                     {% endfor %}
+                     <br /><br />
+                  {% endif %}
+
                   {% if agents_multiples %}
 				  <select name='perso_id' id='perso_ids' class='agents_multiples ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
                   <option value='0' selected='selected'>-- Ajoutez un agent --</option>

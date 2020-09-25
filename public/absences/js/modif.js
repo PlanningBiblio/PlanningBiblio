@@ -559,6 +559,7 @@ function affiche_perso_ul(){
   $(".perso_ids_hidden").each(function(){
     var id=$(this).val();
     var name=$("#perso_ids option[value='"+id+"']").text();
+    console.log("Pushing " + name + " " + id);
     tab.push([name,id]);
   });
 
