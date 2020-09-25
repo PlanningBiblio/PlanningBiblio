@@ -43,31 +43,32 @@
               <span class='pl-icon pl-icon-edit' title='Modifier' ></span>
             </a>
             {% if j.id in usedPositions == false %}
-            &nbsp;<a href='#'>
-                  <span id='{{ j.id }}' class='pl-icon pl-icon-drop' title='Supprimer' onclick="confirmDel(this.id)"></span>
-                  <script>
-                    function confirmDel(id){
-                      if (window.confirm("Voulez-vous vraiment supprimer ce poste ?")){
+              &nbsp;
+              <a href='#'>
+                <span id='{{ j.id }}' class='pl-icon pl-icon-drop' title='Supprimer' onclick="confirmDel(this.id)"></span>
+                <script>
+                  function confirmDel(id){
+                    if (window.confirm("Voulez-vous vraiment supprimer ce poste ?")){
                       CSRFToken = $('#CSRFSession').val();
-                        $.ajax({
-                          url : '{{ asset("position") }}',
-                          type : 'DELETE',
-                          data : {id: id, CSRFToken: CSRFToken},
-                          success: function(response){
-                            if (response == "Ok"){
-                              window.location.reload('/position');
-                            }
-                          },
-                          error: function(){
-                            CJInfo("Une erreur est survenue lors de la suppression","error")
+                      $.ajax({
+                        url : '{{ asset("position") }}',
+                        type : 'DELETE',
+                        data : {id: id, CSRFToken: CSRFToken},
+                        success: function(response){
+                          if (response == "Ok"){
+                            window.location.reload('/position');
                           }
-                        });
-                     }
+                        },
+                        error: function(){
+                          CJInfo("Une erreur est survenue lors de la suppression","error")
+                        }
+                      });
                     }
-                  </script>
-                </a>
-              </td>
+                  }
+                </script>
+              </a>
             {% endif %}
+          </td>
           <td>{{j.nom}}</td>
 
           {% if multisite > 1 %}

@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 /**
  * @Entity @Table(name="activites")
  **/
-
 class Skill extends PLBEntity{
     /** @Id @Column(type="integer", length = 11) @GeneratedValue **/
     protected $id;
@@ -21,5 +20,4 @@ class Skill extends PLBEntity{
 
     /** @Column(type="datetime") **/
     protected $supprime;
-
 }

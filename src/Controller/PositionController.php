@@ -22,42 +22,42 @@ class PositionController extends BaseController
     public function index(Request $request)
     {
         //            Affichage de la liste des postes
-        $groupe="Tous";
+        $groupe = "Tous";
         $this->templateParams(array('groupe' =>$groupe));
 
         $nom = $request->get('nom');
 
         // Contrôle si le poste est utilisé dans un tableau non-supprimé (tables pl_poste_lignes et pl_poste_tab)
-        $postes_utilises=array();
+        $postes_utilises = array();
 
-        $db=new \db();
+        $db = new \db();
         $db->selectInnerJoin(array("pl_poste_lignes","numero"), array("pl_poste_tab","tableau"), array(array("name"=>"poste", "as"=>"poste")), array(), array("type"=>"poste"), array("supprime"=>null));
         if ($db->result) {
             foreach ($db->result as $elem) {
-                $postes_utilises[]=$elem['poste'];
+                $postes_utilises[] = $elem['poste'];
               }
         }
         // Sélection des activités
-        $activitesTab=array();
-        $db=new \db();
+        $activitesTab = array();
+        $db = new \db();
         $db->select("activites");
         if ($db->result) {
             foreach ($db->result as $elem) {
-                $activitesTab[$elem["id"]]=$elem["nom"];
+                $activitesTab[$elem["id"]] = $elem["nom"];
             }
         }
 
-        $p=$this->entityManager->getRepository(Position::class)->findBy(array('supprime' => NULL), array('nom'=>'ASC'));
+        $p = $this->entityManager->getRepository(Position::class)->findBy(array('supprime' => NULL), array('nom'=>'ASC'));
         $postes = array();
         foreach($p as $poste){
-            $postes[]=$poste;
+            $postes[] = $poste;
         }
 
         $nbMultisite = $this->config('Multisites-nombre');
         $this->templateParams(array(
-            'multisite' =>$nbMultisite,
+            'multisite'     => $nbMultisite,
             'usedPositions' => $postes_utilises,
-            'CSRFSession' => $GLOBALS['CSRFSession']
+            'CSRFSession'   => $GLOBALS['CSRFSession']
         ));
 
         $positions = array();
@@ -65,40 +65,40 @@ class PositionController extends BaseController
         foreach ($postes as $id => $value) {
             // Affichage des 3 premières activités dans le tableau, toutes les activités dans l'infobulle
 
-            $activites=array();
-            $activitesAffichees=array();
-            $activitesPoste=$value->activites();
+            $activites = array();
+            $activitesAffichees = array();
+            $activitesPoste = $value->activites();
 
             if (is_array($activitesPoste)) {
                 foreach ($activitesPoste as $act) {
                     if (array_key_exists($act, $activitesTab)) {
-                        $activites[]=$activitesTab[$act];
+                        $activites[] = $activitesTab[$act];
                         if (count($activitesAffichees)<3) {
-                            $activitesAffichees[]=$activitesTab[$act];
+                            $activitesAffichees[] = $activitesTab[$act];
                         }
                     }
                 }
             }
-            $activites=join(", ", $activites);
-            $activitesAffichees=join(", ", $activitesAffichees);
+            $activites = join(", ", $activites);
+            $activitesAffichees = join(", ", $activitesAffichees);
             if (count($activitesPoste)>3) {
                 $activitesAffichees.=" ...";
             }
 
             if ($nbMultisite>1) {
                 $site = $this->config("Multisites-site{$value->site()}") ? $this->config("Multisites-site{$value->site()}") :"-";
-                $new['site']=$site;
+                $new['site'] = $site;
             }
-            $new['nom']= $value->nom();
-            $new['activites']=$activites;
-            $new['activitesAffichees']=$activitesAffichees;
-            $new['id']=$value->id();
-            $new['groupe']=$value->groupe();
-            $new['etage']=$value->etage();
-            $new['statistiques']=$value->statistiques();
-            $new['bloquant']=$value->bloquant();
-            $new['obligatoire']=$value->obligatoire();
-            $positions[]=$new;
+            $new['nom'] =  $value->nom();
+            $new['activites'] = $activites;
+            $new['activitesAffichees'] = $activitesAffichees;
+            $new['id'] = $value->id();
+            $new['groupe'] = $value->groupe();
+            $new['etage'] = $value->etage();
+            $new['statistiques'] = $value->statistiques();
+            $new['bloquant'] = $value->bloquant();
+            $new['obligatoire'] = $value->obligatoire();
+            $positions[] = $new;
         }
 
         $this->templateParams(array('positions'=> $positions));
@@ -113,17 +113,17 @@ class PositionController extends BaseController
     {
         $a = new \activites();
         $a->fetch();
-        $actList=$a->elements;
+        $actList = $a->elements;
 
         $db = new \db();
         $db->select2("select_categories", "*", "1", "order by rang");
         $categories_list = $db->result;
 
-        $db= new \db();
+        $db = new \db();
         $db->select2("select_etages", "*", "1", "order by rang");
-        $etages=$db->result;
+        $etages = $db->result;
 
-        $db= new \db();
+        $db = new \db();
         $db->select2("select_groupes", "*", "1", "order by rang");
         $groupes = $db->result;
 
@@ -136,27 +136,30 @@ class PositionController extends BaseController
         if ($nbMultisite>1) {
             for ($elem = 0; $elem < $nbMultisite +1; $elem++){
                 if ($this->config("Multisites-site$elem")){
-                    $sites[]=$this->config("Multisites-site$elem");
+                    $sites[] = $this->config("Multisites-site$elem");
                 }
             }
         }
         $groupe_id  = '0';
-        $obligatoire = "0";
-        $bloquant = "0";
+        $obligatoire = "checked";
+        $bloq1 = "checked";
+        $stat1 = "checked";
+
 
         $this->templateParams(array(
-            'CSRFToken'=> $GLOBALS['CSRFSession'],
-            'activites' => $activites,
-            'actList' => $actList,
-            'categories' => $categories,
+            'CSRFToken'      => $GLOBALS['CSRFSession'],
+            'activites'      => $activites,
+            'actList'        => $actList,
+            'categories'     => $categories,
             'categoriesList' => $categories_list,
-            'etages' => $etages,
-            'groupes'=> $groupes,
-            'group_id' => $groupe_id,
-            'obligatoire' => $obligatoire,
-            'bloquant' => $bloquant,
-            'nbSites' => $nbMultisite,
-            'multisite' => $sites
+            'etages'         => $etages,
+            'groupes'        => $groupes,
+            'group_id'       => $groupe_id,
+            'obligatoire'    => $obligatoire,
+            'bloq1'          => $bloq1,
+            'stat1'          => $stat1,
+            'nbSites'        => $nbMultisite,
+            'multisite'      => $sites
         ));
         return $this->output('position/edit.html.twig');
     }
@@ -167,32 +170,32 @@ class PositionController extends BaseController
     public function edit(Request $request)
     {
         // Initialisation des variables
-        $id=$request->get('id');
-        $a=new \activites();
+        $id = $request->get('id');
+        $a = new \activites();
         $a->fetch();
-        $actList=$a->elements;
+        $actList = $a->elements;
 
-        $position = $this->entityManager->getRepository(Position::class)->find($id);
-        $nom= $position->nom();
-        $etage=$position->etage();
-        $groupe=$position->groupe();
-        $groupe_id=$position->groupe_id();
-        $categories = $position->categories() ?  : array();
-        $site=$position->site();
-        $activites=$position->activites();
-        $obligatoire=$position->obligatoire()=="Obligatoire"?"checked='checked'":"";
-        $renfort=$position->obligatoire()=="Renfort"?"checked='checked'":"";
-        $stat1=$position->statistiques()?"checked='checked'":"";
-        $stat2=!$position->statistiques()?"checked='checked'":"";
-        $bloq1=$position->bloquant()?"checked='checked'":"";
-        $bloq2=!$position->bloquant()?"checked='checked'":"";
+        $position  =  $this->entityManager->getRepository(Position::class)->find($id);
+        $nom =  $position->nom();
+        $etage = $position->etage();
+        $groupe = $position->groupe();
+        $groupe_id = $position->groupe_id();
+        $categories  =  $position->categories() ?  : array();
+        $site = $position->site();
+        $activites = $position->activites();
+        $obligatoire = $position->obligatoire() =="Obligatoire"?"checked='checked'":"";
+        $renfort = $position->obligatoire() == "Renfort"?"checked='checked'":"";
+        $stat1 = $position->statistiques()?"checked='checked'":"";
+        $stat2 = !$position->statistiques()?"checked='checked'":"";
+        $bloq1 = $position->bloquant()?"checked='checked'":"";
+        $bloq2 = !$position->bloquant()?"checked='checked'":"";
 
-        $checked=null;
+        $checked = null;
 
         // Recherche des étages
-        $db=new \db();
+        $db = new \db();
         $db->select2("select_etages", "*", "1", "order by rang");
-        $etages=$db->result;
+        $etages = $db->result;
 
         // Recherche des étages utilisés
         $etages_utilises = array();
@@ -214,9 +217,9 @@ class PositionController extends BaseController
         }
 
         // Recherche des groupes
-        $db=new \db;
+        $db = new \db;
         $db->select2("select_groupes", "*", "1", "order by rang");
-        $groupes=$db->result;
+        $groupes = $db->result;
 
         //Recherche des groupes utilisés
         $groupes_utilises = array();
@@ -237,45 +240,45 @@ class PositionController extends BaseController
         }
 
         // Recherche des catégories
-        $db=new \db();
+        $db = new \db();
         $db->select2("select_categories", "*", "1", "order by rang");
-        $categories_list=$db->result;
+        $categories_list = $db->result;
 
         $nbSites = $this->config('Multisites-nombre');
-        $multisite=array();
+        $multisite = array();
         if ($nbSites>1){
-            for ($i=1;$i<=$nbSites;$i++) {
-                $selected=$site==$i?"selected='selected'":null;
-                $multisite[]=$this->config("Multisites-site{$i}");
-                $selectedSites[]=$selected;
+            for ($i = 1; $i<= $nbSites; $i++) {
+                $selected = $site==$i?"selected='selected'":null;
+                $multisite[] = $this->config("Multisites-site{$i}");
+                $selectedSites[] = $selected;
             }
         }
 
         $this->templateParams(array(
-            'id' => $id,
-            'nom' => $nom,
-            'etage' => $etage,
-            'groupe' => $groupe,
-            'group_id'=>$groupe_id,
-            'categories' =>$categories,
-            'site' => $site,
-            'activites' => $activites,
-            'obligatoire'=> $obligatoire,
-            'renfort' => $renfort,
-            'stat1' => $stat1,
-            'stat2' => $stat2,
-            'bloq1' => $bloq1,
-            'bloq2' => $bloq2,
-            'etages' => $etages,
-            'groupes' => $groupes,
-            'nbSites'=> $nbSites,
-            'multisite'=>$multisite,
-            'actList' => $actList,
-            'categoriesList'=>$categories_list,
-            'usedGroups'=> $groupes_utilises,
-            'usedFloors'=> $etages_utilises,
+            'id'            => $id,
+            'nom'           => $nom,
+            'etage'         => $etage,
+            'groupe'        => $groupe,
+            'group_id'      => $groupe_id,
+            'categories'    => $categories,
+            'site'          => $site,
+            'activites'     => $activites,
+            'obligatoire'   => $obligatoire,
+            'renfort'       => $renfort,
+            'stat1'         => $stat1,
+            'stat2'         => $stat2,
+            'bloq1'         => $bloq1,
+            'bloq2'         => $bloq2,
+            'etages'        => $etages,
+            'groupes'       => $groupes,
+            'nbSites'       => $nbSites,
+            'multisite'     => $multisite,
+            'actList'       => $actList,
+            'categoriesList'=> $categories_list,
+            'usedGroups'    => $groupes_utilises,
+            'usedFloors'    => $etages_utilises,
             'selectedSites' => $selectedSites,
-            'CSRFToken' => $GLOBALS['CSRFSession']
+            'CSRFToken'     => $GLOBALS['CSRFSession']
             )
         );
         return $this->output('position/edit.html.twig');
@@ -290,7 +293,6 @@ class PositionController extends BaseController
         $nom = $request->get('nom');
         $id = $request->get('id');
 
-
         if (!$nom) {
             $session->getFlashBag()->add('error',"Le nom est obligatoire");
             if(!$id){
@@ -298,18 +300,18 @@ class PositionController extends BaseController
             } else {
                 return $this->redirectToRoute('position.edit', array('id' => $id));
             }
-        }else{
+        } else {
 
             $activites = $request->get('activites');
             $categories = $request->get('categories');
             $site = $request->get('site');
-            $bloquant= $request->get('bloquant');
-            $statistiques= $request->get('statistiques');
+            $bloquant = $request->get('bloquant');
+            $statistiques = $request->get('statistiques');
             $etage = $request->get('etage');
             $groupe = $request->get('groupe');
             $groupe_id = $request->get('group_id');
-            $obligatoire= $request->get('obligatoire');
-            $site=$site?$site:1;
+            $obligatoire = $request->get('obligatoire');
+            $site = $request->get('site') ? $request->get('site') : 1;
 
             if (!$id){
                 $position = new Position;
@@ -322,7 +324,7 @@ class PositionController extends BaseController
                 $position->groupe($groupe);
                 $position->groupe_id($groupe_id);
                 $position->obligatoire($obligatoire);
-                $position->site(site);
+                $position->site($site);
                 try{
                     $this->entityManager->persist($position);
                     $this->entityManager->flush();
@@ -338,37 +340,36 @@ class PositionController extends BaseController
                     $session->getFlashBag()->add('notice', "Le poste a été ajouté avec succès");
                 }
 
-            }else{
-                    $position=$this->entityManager->getRepository(Position::class)->find($id);
-                    $position->nom($nom);
-                    $position->activites($activites);
-                    $position->categories($categories);
-                    $position->bloquant($bloquant);
-                    $position->statistiques($statistiques);
-                    $position->etage($etage);
-                    $position->groupe($groupe);
-                    $position->groupe_id($groupe_id);
-                    $position->obligatoire($obligatoire);
-                    $position->site($site);
+            } else {
+                $position=$this->entityManager->getRepository(Position::class)->find($id);
+                $position->nom($nom);
+                $position->activites($activites);
+                $position->categories($categories);
+                $position->bloquant($bloquant);
+                $position->statistiques($statistiques);
+                $position->etage($etage);
+                $position->groupe($groupe);
+                $position->groupe_id($groupe_id);
+                $position->obligatoire($obligatoire);
+                $position->site($site);
 
-                    try{
-                        $this->entityManager->persist($position);
-                        $this->entityManager->flush();
-                    }
-                    catch(Exception $e){
-                        $error = $e->getMessage();
-                    }
+                try{
+                    $this->entityManager->persist($position);
+                    $this->entityManager->flush();
+                }
+                catch(Exception $e){
+                    $error = $e->getMessage();
+                }
 
-                    if(isset($error)) {
-                        $session->getFlashBag()->add('error', "Une erreur est survenue lors de la modification du poste " );
-                        $this->logger->error($error);
-                    } else {
-                        $session->getFlashBag()->add('notice',"Le poste a été modifié avec succès");
-                    }
+                if(isset($error)) {
+                    $session->getFlashBag()->add('error', "Une erreur est survenue lors de la modification du poste " );
+                    $this->logger->error($error);
+                } else {
+                    $session->getFlashBag()->add('notice',"Le poste a été modifié avec succès");
+                }
             }
         }
-
-
+    
         return $this->redirectToRoute('position.index');
     }
 
@@ -398,6 +399,5 @@ class PositionController extends BaseController
             return $this->json("Ok");
         }
      }
-
 
 }
