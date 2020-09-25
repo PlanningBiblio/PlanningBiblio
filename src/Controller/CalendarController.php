@@ -54,10 +54,9 @@ class CalendarController extends BaseController
         }
 
         //Sélection du personnel pour le menu déroulant
-
         $agent = null;
         $db = new \db();
-        $db->query("SELECT * FROM `{$GLOBALS['dbprefix']}personnel` WHERE actif='Actif' $toutlemonde ORDER by `nom`,`prenom`;");
+        $db->query("SELECT * FROM `{$GLOBALS['dbprefix']}personnel` WHERE actif='Actif' ORDER by `nom`,`prenom`;");
         $agents = $db->result;
 
         if(is_array($agents)){
@@ -231,7 +230,7 @@ class CalendarController extends BaseController
                     $absences_affichage[] = "{$elem['debut']} &rarr; {$elem['fin']} : {$elem['motif']}";
                 }
             }
-             // Intégration des congés
+            // Intégration des congés
             if ($this->config('Conges-Enable')) {
                 include_once __DIR__."/../../public/conges/class.conges.php";
                 $c=new \conges();
@@ -361,43 +360,43 @@ class CalendarController extends BaseController
                     $pos_absent = $elem['absent'];
                     $heure = heure2($elem['debut'])." - ".heure2($elem['fin']);
                     $positions[] = array(
-                        "name" => $pos_name,
+                        "name"   => $pos_name,
                         "absent" => $pos_absent,
-                        "hour" => $heure
+                        "hour"   => $heure
                     );
                 }
             }
 
             $days[] = array(
-                "aff" => $date_aff,
-                "closed" => $closed,
-                "name" => html_entity_decode($nom, ENT_QUOTES|RNT_IGNORE, 'UTF-8'),
+                "aff"      => $date_aff,
+                "closed"   => $closed,
+                "name"     => html_entity_decode($nom, ENT_QUOTES|RNT_IGNORE, 'UTF-8'),
                 "presence" => $presence,
-                "absence" => $absences_affichage,
+                "absence"  => $absences_affichage,
                 "position" => $positions,
-                "nb" => $nb
+                "nb"       => $nb
             );
             $nb++;
             $current=date("Y-m-d", mktime(0, 0, 0, $date_tab[1], $date_tab[2]+1, $date_tab[0]));
 
         }
         //Cellules vides à la fin pour aller jusqu'au dimanche
-        $d=new \datePl($finSQL);
-        $cellsAfter = $d->position>0?7-$d->position:0;
+        $d = new \datePl($finSQL);
+        $cellsAfter = $d->position > 0 ? 7-$d->position : 0;
 
         $this->templateParams(array(
-            "admin" => $admin,
-            "agent" => $agent,
-            "agents" => $agents,
-            "begin" => $debut,
-            "beginSQL" => $debutSQL,
-            "cellsAfter" => $cellsAfter,
+            "admin"       => $admin,
+            "agent"       => $agent,
+            "agents"      => $agents,
+            "begin"       => $debut,
+            "beginSQL"    => $debutSQL,
+            "cellsAfter"  => $cellsAfter,
             "cellsBefore" => $cellsBefore,
-            "days" => $days,
-            "end" => $fin,
-            "endSQL" => $finSQL,
-            "nbSites" => $nbSites,
-            "perso_id" => $perso_id
+            "days"        => $days,
+            "end"         => $fin,
+            "endSQL"      => $finSQL,
+            "nbSites"     => $nbSites,
+            "perso_id"    => $perso_id
         ));
 
         return $this->output('calendar/index.html.twig');
