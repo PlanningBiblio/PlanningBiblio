@@ -140,10 +140,15 @@ class PositionController extends BaseController
                 }
             }
         }
+        $groupe ="";
+        $etage ="";
+        $activites = "[]";
+        $categories = "";
         $groupe_id  = '0';
         $obligatoire = "checked";
         $bloq1 = "checked";
         $stat1 = "checked";
+
 
 
         $this->templateParams(array(
@@ -153,13 +158,16 @@ class PositionController extends BaseController
             'categories'     => $categories,
             'categoriesList' => $categories_list,
             'etages'         => $etages,
+            'groupe'         => $groupe,
             'groupes'        => $groupes,
             'group_id'       => $groupe_id,
             'obligatoire'    => $obligatoire,
             'bloq1'          => $bloq1,
             'stat1'          => $stat1,
             'nbSites'        => $nbMultisite,
-            'multisite'      => $sites
+            'multisite'      => $sites,
+            'etage'          => $etage,
+
         ));
         return $this->output('position/edit.html.twig');
     }
@@ -302,16 +310,16 @@ class PositionController extends BaseController
             }
         } else {
 
-            $activites = $request->get('activites');
-            $categories = $request->get('categories');
+            $activites = $request->get('activites', []);
+            $categories = $request->get('categories', []);
             $site = $request->get('site');
             $bloquant = $request->get('bloquant');
             $statistiques = $request->get('statistiques');
-            $etage = $request->get('etage');
-            $groupe = $request->get('groupe');
-            $groupe_id = $request->get('group_id');
+            $etage = $request->get('etage',"");
+            $groupe = $request->get('groupe', "");
+            $groupe_id = $request->get('group_id', "");
             $obligatoire = $request->get('obligatoire');
-            $site = $request->get('site') ? $request->get('site') : 1;
+            $site = $request->get('site', "");
 
             if (!$id){
                 $position = new Position;
@@ -325,6 +333,7 @@ class PositionController extends BaseController
                 $position->groupe_id($groupe_id);
                 $position->obligatoire($obligatoire);
                 $position->site($site);
+
                 try{
                     $this->entityManager->persist($position);
                     $this->entityManager->flush();
