@@ -22,12 +22,61 @@ class AgentController extends BaseController
      */
     public fonction index(Request $request){
 
+        $actif = $request->get('actif');
+
+        if (!$actif) {
+            $actif = isset($_SESSION['perso_actif']) ? $_SESSION['perso_actif'] : 'Actif';
+        }
+
+        $_SESSION['perso_actif'] = $actif;
+
+        
+        //        Suppression des agents dont la date de départ est passée        //
+        $tab = array(0);
+        $db = new \db();
+        $db->CSRFToken = $CSRFSession;
+        $db->update('personnel', array('supprime'=>'1', 'actif'=>'Supprim&eacute;'), "`depart`<CURDATE() AND `depart`<>'0000-00-00' and `actif` NOT LIKE 'Supprim%'");
 
 
+        $p = new \personnel();
+        $p->supprime = strstr($actif, "Supprim") ? array(1) : array(0);
+        $p->fetch("nom,prenom", $actif);
+        $agents = $p->elements;
+
+        
+        $i=0;
+        foreach ($agents as $agent) {
+            $id=$agent['id'];
+
+            $arrivee = dateFr($agent['arrivee']);
+            $depart = dateFr($agent['depart']);
+            $last_login = date_time($agent['last_login']);
+
+            $heures = $agent['heures_hebdo'] ? $agent['heures_hebdo'] : null;
+            $heures = heure4($heures);
+            if (is_numeric($heures)) {
+                $heures.="h00";
+            }
+            $agent['service']=str_replace("`", "'", $agent['service']);
+
+            if ($config['Multisites-nombre']>1) {
+                $tmp=array();
+                if (!empty($agent['sites'])) {
+                    foreach ($agent['sites'] as $site) {
+                        if ($site) {
+                            $tmp[]=$config["Multisites-site{$site}"];
+                        }
+                    }
+                }
+                $sites=!empty($tmp)?join(", ", $tmp):null;
+            }
+            $i++;
+        }
+        
 
         return $this->output('/agents/index.html.twig');
     }
-    
+
     /**
      * @Route("/agent/add", name="agent.add", methods={"GET"})
      * @Route("/agent/{id}", name="agent.edit", methods={"GET"})
@@ -685,7 +734,7 @@ class AgentController extends BaseController
                 $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
 
                 // Envoi du mail
-				$message = "Votre compte Planning Biblio a &eacute;t&eacute; cr&eacute;&eacute; :";
+                $message = "Votre compte Planning Biblio a &eacute;t&eacute; cr&eacute;&eacute; :";
                 $message.= "<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
 
                 $m = new \CJMail();
