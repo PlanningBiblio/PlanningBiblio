@@ -30,7 +30,6 @@ class AgentController extends BaseController
 
         $_SESSION['perso_actif'] = $actif;
 
-        
         //        Suppression des agents dont la date de départ est passée        //
         $tab = array(0);
         $db = new \db();
@@ -43,7 +42,6 @@ class AgentController extends BaseController
         $p->fetch("nom,prenom", $actif);
         $agents = $p->elements;
 
-        
         $i=0;
         foreach ($agents as $agent) {
             $id=$agent['id'];
@@ -55,24 +53,79 @@ class AgentController extends BaseController
             $heures = $agent['heures_hebdo'] ? $agent['heures_hebdo'] : null;
             $heures = heure4($heures);
             if (is_numeric($heures)) {
-                $heures.="h00";
+                $heures.= "h00";
             }
-            $agent['service']=str_replace("`", "'", $agent['service']);
+            $agent['service'] = str_replace("`", "'", $agent['service']);
 
-            if ($config['Multisites-nombre']>1) {
-                $tmp=array();
+            if ($nbSites > 1) {
+                $tmp = array();
                 if (!empty($agent['sites'])) {
                     foreach ($agent['sites'] as $site) {
                         if ($site) {
-                            $tmp[]=$config["Multisites-site{$site}"];
+                            $tmp[] = $this->config("Multisites-site{$site}");
                         }
                     }
                 }
-                $sites=!empty($tmp)?join(", ", $tmp):null;
+                $sites = !empty($tmp)?join(", ", $tmp):null;
             }
             $i++;
         }
-        
+
+        $db = new \db();
+        $db->select2("select_statuts", null, null, "order by rang");
+        $statuts = $db->result;
+
+        $contrats = array("Titulaire","Contractuel");
+
+        // Liste des services
+        $services = array();
+        $db = new db();
+        $db->select2("select_services", null, null, "ORDER BY `rang`");
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                $services[]=$elem;
+            }
+        }
+
+        $hours = array();
+        for ($i = 1 ; $i < 40; $i++) {
+            if ($this->config['Granularite'] == 5) {
+                $hours[] = array($i,$i."h00");
+                $hours[] = array($i.".08",$i."h05");
+                $hours[] = array($i.".17",$i."h10");
+                $hours[] = array($i.".25",$i."h15");
+                $hours[] = array($i.".33",$i."h20");
+                $hours[] = array($i.".42",$i."h25");
+                $hours[] = array($i.".5",$i."h30");
+                $hours[] = array($i.".58",$i."h35");
+                $hours[] = array($i.".67",$i."h40");
+                $hours[] = array($i.".75",$i."h45");
+                $hours[] = array($i.".83",$i."h50");
+                $hours[] = array($i.".92",$i."h55");
+            } elseif ($this->config['Granularite']==15) {
+                $hours[] = array($i,$i."h00");
+                $hours[] = array($i.".25",$i."h15");
+                $hours[] = array($i.".5",$i."h30");
+                $hours[] = array($i.".75",$i."h45");
+            } elseif ($this->config['Granularite']==30) {
+                $hours[] = array($i,$i."h00");
+                $hours[] = array($i.".5",$i."h30");
+            } else {
+                $hours[] = array($i,$i."h00");
+            }
+        }
+
+        // Toutes les activités
+        $a = new activites();
+        $a->fetch();
+        $activites = $a->elements;
+
+        foreach ($activites as $elem) {
+            $postes_completNoms[] = array($elem['nom'],$elem['id']);
+        }
+        $postes_completNoms_json = json_encode($postes_completNoms);
+
+
 
         return $this->output('/agents/index.html.twig');
     }
@@ -549,7 +602,7 @@ class AgentController extends BaseController
             $this->templateParams(array('rights_sites' => $rights_sites));
         }
 
-        if ($config['Conges-Enable']) {
+        if ($this->config('Conges-Enable')) {
             $c = new \conges();
             $c->perso_id = $id;
             $c->fetchCredit();
