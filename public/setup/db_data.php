@@ -115,7 +115,7 @@ $sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('8', 'Rangement
 $sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('9', 'Renseignement');";
 $sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('10', 'Renseignement bibliographique');";
 $sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('11', 'Renseignement réserve');";
-$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('12', 'Renseignement spécialisé;');";
+$sql[]="INSERT INTO `{$dbprefix}activites` (`id`, `nom`) VALUES ('12', 'Renseignement spécialisé');";
 
 // Insertion de la config
 $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Version', 'info', '20.05.00.003', 'Version de l&apos;application',' Divers','','0');";
