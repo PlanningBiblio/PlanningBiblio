@@ -9,12 +9,11 @@ use Symfony\Component\Routing\Annotation\Route;
 
 require_once(__DIR__. '/../../public/joursFeries/class.joursFeries.php');
 
-
 class ClosingDaysController extends BaseController
 {
 
     /**
-     * @Route("/closingdays", name="closingdays.index", methods={"GET"})
+     * @Route("/closingday", name="closingday.index", methods={"GET"})
      */
     public function index(Request $request){
         // Initalisation des variables
@@ -50,8 +49,8 @@ class ClosingDaysController extends BaseController
             $selected = $elem == $annee_select ? "selected='selected'" : null;
             $selectedYears[] = $selected;
         }
-		
-		$nbDays = count($jours);
+
+        $nbDays = count($jours);
         $nbExtra = $nbDays + 15;
         $days = [];
         // Affichage des jours fériés enregistrés
@@ -91,7 +90,7 @@ class ClosingDaysController extends BaseController
     }
 
     /**
-     * @Route("/closingdays", name="closingdays.save", methods={"POST"})
+     * @Route("/closingday", name="closingday.save", methods={"POST"})
      */
     public function save(Request $request, Session $session){
         $post = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
@@ -107,6 +106,6 @@ class ClosingDaysController extends BaseController
             $session->getFlashBag()->add('notice',"La liste des jours fériés a été modifiée avec succès.");
         }
 
-        return $this->redirectToRoute('closingdays.index');
+        return $this->redirectToRoute('closingday.index');
     }
 }
