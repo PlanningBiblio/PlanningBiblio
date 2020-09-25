@@ -21,23 +21,31 @@ class AbsenceController extends BaseController
     public function index(Request $request){
 
         // Initialisation des variables
-        $debut=$request->get("debut");
-        $fin=$request->get("fin");
-        $reset=$request->get("reset");
+        $debut = $request->get("debut");
+        $fin = $request->get("fin");
+        $reset = $request->get("reset");
 
         // Contrôle sanitize_dateFr en 2 temps pour éviter les erreurs CheckMarx
-        $debut=filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
-        $fin=filter_var($fin, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
+        $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
+        $fin = filter_var($fin, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
 
-        $debut = $debut?$debut:(isset($_SESSION['oups']['absences_debut'])?$_SESSION['oups']['absences_debut']:null);
-        $fin = $fin?$fin:(isset($_SESSION['oups']['absences_fin'])?$_SESSION['oups']['absences_fin']:null);
+        $debut = $debut ? $debut : (isset($_SESSION['oups']['absences_debut']) ? $_SESSION['oups']['absences_debut'] : null);
+        $fin = $fin ? $fin : (isset($_SESSION['oups']['absences_fin']) ? $_SESSION['oups']['absences_fin'] : null);
 
         $this->droits = $GLOBALS['droits'];
 
         $p = new \personnel();
-        $p->supprime=array(0,1,2);
+        $p->supprime = array(0,1,2);
         $p->fetch();
         $agents = $p->elements;
+
+        $temporary = array();
+        foreach ($agents as $elem){
+            if ($elem['id']>2){
+                $temporary[] = $elem;
+            }
+        }
+        $agents = $temporary;
 
         // Initialisation des variables
         $nbSites = $this->config('Multisites-nombre');
@@ -57,55 +65,55 @@ class AbsenceController extends BaseController
         }
 
         if ($admin) {
-            $perso_id=filter_input(INPUT_GET, "perso_id", FILTER_SANITIZE_NUMBER_INT);
+            $perso_id = filter_input(INPUT_GET, "perso_id", FILTER_SANITIZE_NUMBER_INT);
             if ($perso_id===null) {
-                $perso_id=isset($_SESSION['oups']['absences_perso_id'])?$_SESSION['oups']['absences_perso_id']:$_SESSION['login_id'];
+                $perso_id = isset($_SESSION['oups']['absences_perso_id']) ? $_SESSION['oups']['absences_perso_id'] : $_SESSION['login_id'];
             }
         } else {
-            $perso_id=$_SESSION['login_id'];
+            $perso_id = $_SESSION['login_id'];
         }
 
         if ($reset) {
-            $perso_id=$_SESSION['login_id'];
+            $perso_id = $_SESSION['login_id'];
         }
 
-        $agents_supprimes=isset($_SESSION['oups']['absences_agents_supprimes'])?$_SESSION['oups']['absences_agents_supprimes']:false;
-        $agents_supprimes=(isset($_GET['debut']) and isset($_GET['supprimes']))?true:$agents_supprimes;
-        $agents_supprimes=(isset($_GET['debut']) and !isset($_GET['supprimes']))?false:$agents_supprimes;
+        $agents_supprimes = isset($_SESSION['oups']['absences_agents_supprimes']) ? $_SESSION['oups']['absences_agents_supprimes'] : false;
+        $agents_supprimes = (isset($_GET['debut']) and isset($_GET['supprimes'])) ? true : $agents_supprimes;
+        $agents_supprimes = (isset($_GET['debut']) and !isset($_GET['supprimes'])) ? false : $agents_supprimes;
 
         if ($reset) {
-            $debut=null;
-            $fin=null;
-            $agents_supprimes=false;
+            $debut = null;
+            $fin = null;
+            $agents_supprimes = false;
         }
 
-        $_SESSION['oups']['absences_debut']=$debut;
-        $_SESSION['oups']['absences_fin']=$fin;
-        $_SESSION['oups']['absences_perso_id']=$perso_id;
-        $_SESSION['oups']['absences_agents_supprimes']=$agents_supprimes;
+        $_SESSION['oups']['absences_debut'] = $debut;
+        $_SESSION['oups']['absences_fin'] = $fin;
+        $_SESSION['oups']['absences_perso_id'] = $perso_id;
+        $_SESSION['oups']['absences_agents_supprimes'] = $agents_supprimes;
 
-        $debutSQL=dateSQL($debut);
-        $finSQL=dateSQL($fin);
+        $debutSQL = dateSQL($debut);
+        $finSQL = dateSQL($fin);
 
         // Multisites : filtre pour n'afficher que les agents du site voulu
-        $sites=null;
+        $sites = null;
         if ($nbSites>1) {
-            $sites=array();
-            for ($i=1; $i<11; $i++) {
+            $sites = array();
+            for ($i = 1; $i < 11; $i++) {
                 if (in_array((200 + $i), $droits)) {
-                    $sites[]=$i;
+                    $sites[] = $i;
                 }
             }
         }
 
-        $a=new \absences();
-        $a->groupe=true;
+        $a = new \absences();
+        $a->groupe = true;
         if ($agents_supprimes) {
-            $a->agents_supprimes=array(0,1);
+            $a->agents_supprimes = array(0,1);
         }
         $a->fetch(null, $perso_id, $debutSQL, $finSQL, $sites);
 
-        $absences=$a->elements;
+        $absences = $a->elements;
 
         $adminOnly = $this->config('Absences-adminSeulement');
 
@@ -117,7 +125,7 @@ class AbsenceController extends BaseController
 
         $selectedAgents = array();
         if ($admin) {
-            $selected=$perso_id==0?"selected='selected'":null;
+            $selected = $perso_id == 0 ? "selected='selected'" : null;
             $p = new \personnel();
             if ($agents_supprimes) {
                 $p->supprime = array(0,1);
@@ -130,15 +138,19 @@ class AbsenceController extends BaseController
             if ($this->config('Absences-notifications-agent-par-agent') and !$adminN2) {
                 $tmp = array();
                 foreach ($agents_menu as $elem) {
-                    if ($elem['id'] == $_SESSION['login_id']) {
-                        $tmp[$elem['id']] = $elem;
-                    } else {
-                        foreach ($elem['responsables'] as $resp) {
-                            if ($resp['responsable'] == $_SESSION['login_id']) {
-                                $tmp[$elem['id']] = $elem;
-                                break;
+                    if ($elem['id'] > 2) {
+                        if ($elem['id'] == $_SESSION['login_id']) {
+                            $tmp[$elem['id']] = $elem;
+                        } else {
+                            foreach ($elem['responsables'] as $resp) {
+                                if ($resp['responsable'] == $_SESSION['login_id']) {
+                                    $tmp[$elem['id']] = $elem;
+                                    break;
+                                }
                             }
                         }
+                    } else {
+                        continue;
                     }
                 }
                 $agents_menu = $tmp;
@@ -147,12 +159,12 @@ class AbsenceController extends BaseController
             // Liste des agents à conserver :
             $perso_ids = array_keys($agents_menu);
             foreach ($agents_menu as $agent) {
-                $selected=$agent['id']==$perso_id?"selected='selected'":null;
+                $selected = $agent['id'] == $perso_id ? "selected='selected'":null;
                 if ($selected != null){
                   $selectedAgents[] = $selected;
                 }
             }
-            $checked=$agents_supprimes?"checked='checked'":null;
+            $checked = $agents_supprimes ? "checked='checked'" : null;
         }
 
         $absList = array ();
@@ -179,16 +191,16 @@ class AbsenceController extends BaseController
                 $nom_n2a = $elem['valide'] != 99999 ? nom($elem['valide'], 'nom p', $agents).", " : null;
                 $nom_n2b = $elem['valide'] != -99999 ? nom(-$elem['valide'], 'nom p', $agents).", " : null;
                 $etat="Demand&eacute;e";
-                $etat=$elem['valide_n1']>0?"En attente de validation hierarchique, $nom_n1a".dateFr($elem['validation_n1'], true):$etat;
-                $etat=$elem['valide_n1']<0?"En attente de validation hierarchique, $nom_n1b".dateFr($elem['validation_n1'], true):$etat;
-                $etat=$elem['valide']>0?"Valid&eacute;e, $nom_n2a".dateFr($elem['validation'], true):$etat;
-                $etat=$elem['valide']<0?"Refus&eacute;e, $nom_n2b".dateFr($elem['validation'], true):$etat;
-                $etatStyle=$elem['valide']==0?"font-weight:bold;":null;
-                $etatStyle=$elem['valide']<0?"color:red;":$etatStyle;
+                $etat = $elem['valide_n1'] > 0 ? "En attente de validation hierarchique, $nom_n1a".dateFr($elem['validation_n1'], true) : $etat;
+                $etat = $elem['valide_n1'] < 0 ? "En attente de validation hierarchique, $nom_n1b".dateFr($elem['validation_n1'], true) : $etat;
+                $etat = $elem['valide']>0?"Valid&eacute;e, $nom_n2a".dateFr($elem['validation'], true):$etat;
+                $etat = $elem['valide']<0?"Refus&eacute;e, $nom_n2b".dateFr($elem['validation'], true):$etat;
+                $etatStyle = $elem['valide'] == 0 ? "font-weight:bold;" : null;
+                $etatStyle = $elem['valide'] < 0 ? "color:red;" : $etatStyle;
 
-                $pj1Checked=$elem['pj1']?"checked='checked'":null;
-                $pj2Checked=$elem['pj2']?"checked='checked'":null;
-                $soChecked=$elem['so']?"checked='checked'":null; 
+                $pj1Checked = $elem['pj1'] ? "checked='checked'" : null;
+                $pj2Checked = $elem['pj2'] ? "checked='checked'" : null;
+                $soChecked = $elem['so'] ? "checked='checked'" : null;
 
                 $begin = dateFr($elem['debut'], true);
                 $end = dateFr($elem['fin'], true);
