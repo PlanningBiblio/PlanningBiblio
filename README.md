@@ -11,13 +11,14 @@ Planning Biblio est un logiciel libre développé en PHP-MySQL permettant de ré
 
 - Serveur Apache 2.2 ou supérieur / Nginx 1.10.3 ou supérieur
 - PHP 7.0 ou supérieur
-- MySQL client/serveur 5 ou supérieur / MariaDB
+- MariaDB client/serveur 10 ou supérieur
 
 - Extensions PHP :
   - Calendar
   - Mysqli
   - PDO
   - PDO-Mysql
+  - XML
   - CURL (si identification CAS)
   - LDAP (si utilisation avec un serveur LDAP)
 
