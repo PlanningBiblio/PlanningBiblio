@@ -1943,6 +1943,14 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="20.05.00.006";
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[]="UPDATE `{$dbprefix}acces` SET `page`='/calendar' WHERE `page`='agenda/index.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` SET `url`='/calendar' WHERE `url`='agenda/index.php';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
