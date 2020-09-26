@@ -101,7 +101,6 @@ $(document).ready(function(){
     }
   );
 
-  //$('.arrow-right').on('click', function() {
   $('tr').on('click', '.arrow-right', function() {
     var cell = $(this).parent();
     var job = cell.data('situation');
@@ -133,7 +132,7 @@ $(document).ready(function(){
         success: function(result) {
             if (result.availables.length) {
                 var agents = JSON.stringify(result.availables);
-                bataille_navale(job, date, cFrom, to, agents, '', '', site, '', cellid);
+                bataille_navale(job, date, cFrom, to, agents, '', '', site, '', null, cellid);
             }
             if (result.unavailables) {
                 var message = "Les agents suivants n'ont pas été placés car ils sont indisponibles de " + heureFr(cFrom) + " à " + heureFr(to) + " : " + result.unavailables;
@@ -617,10 +616,10 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
     tout=0;
   }
 
-  if (typeof cellule === 'undefined') {
+  if (typeof cellid != 'undefined') {
     cellule = cellid;
   }
-  
+
   var sr_config_debut=$("#planning-data").attr("data-sr-debut");
   var sr_config_fin=$("#planning-data").attr("data-sr-fin");
   var CSRFToken = $("#planning-data").attr("data-CSRFToken");
