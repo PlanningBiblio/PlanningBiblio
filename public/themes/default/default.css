@@ -580,7 +580,7 @@ div#tabsemaine1{
   z-index: 3;
 }
 .sticky-line {
-  background: #7D3C25;
+  background: inherit;
   position: -webkit-sticky;
   position: sticky;
   top: 0px;
