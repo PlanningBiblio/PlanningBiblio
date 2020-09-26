@@ -20,13 +20,14 @@
       {% if admin == 1 %}
         &nbsp;&nbsp;Agent :
         <select name='perso_id' class='ui-widget-content ui-corner-all' >
-         {% for a in agents %}
-          {% if a.id == perso_id %}
-            <option value={{a.id}} selected > {{ a.nom }} {{ a.prenom }}</option>
-          {% else %}
-            <option value={{a.id}} > {{ a.nom }} {{ a.prenom }}</option>
-          {% endif %}
-         {% endfor %}
+          <option value='0' selected >&nbsp;</option>
+          {% for a in agents %}
+            {% if a.id == perso_id %}
+              <option value='{{a.id}}' selected > {{ a.nom }} {{ a.prenom }}</option>
+            {% else %}
+              <option value='{{a.id}}' > {{ a.nom }} {{ a.prenom }}</option>
+            {% endif %}
+          {% endfor %}
         </select>
       {% endif %}
       &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button'/>
@@ -75,9 +76,9 @@
                   {% if d.presence is not empty %}
                     {% if d.presence.schedule | length > 1 %}
                       {% if nbSites > 1 %}
-                        <p> Présence à {{ d.presence.site }} : </p>
+                        <p style='margin-bottom:0;'> Présence à {{ d.presence.site }} : </p>
                       {% else %}
-                        <p> Présence :</p>
+                        <p style='margin-bottom:0;'> Présence :</p>
                       {% endif %}
                       <ul>
                        {% for p in d.presence.schedule %}

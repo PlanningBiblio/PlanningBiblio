@@ -200,6 +200,8 @@ class CalendarController extends BaseController
                          }
                     }
             }
+            $closed = false;
+            $nom = null;
             // Jours fériés : affiche Bibliothèque fermée et passe au jour suivant
             if (array_key_exists($current, $joursFeries) and $joursFeries[$current]['fermeture']) {
                 $current = date("Y-m-d", mktime(0, 0, 0, $date_tab[1], $date_tab[2]+1, $date_tab[0]));
@@ -284,42 +286,41 @@ class CalendarController extends BaseController
                     }
                 }
                 $schedule = array();
-                if ($horaires[0] and $horaires[1]){
+                if (!empty($horaires[0]) and !empty($horaires[1])) {
                     $schedule[] = array(
                         'begin' => heure2($horaires[0]),
                         'end'=> heure2($horaires[1])
                     );
-                } elseif ($horaires[0] and $horaires[5]){
+                } elseif (!empty($horaires[0]) and !empty($horaires[5])) {
                     $schedule[] = array(
                         'begin' => heure2($horaires[0]),
                         'end'=> heure2($horaires[5])
                     );
-                } elseif ($horaires[0] and $horaires[3]){
+                } elseif (!empty($horaires[0]) and !empty($horaires[3])) {
                     $schedule[] = array(
                         'begin' => heure2($horaires[0]),
                         'end'=> heure2($horaires[3])
                     );
                 }
 
-                if ($horaires[2] and $horaires[5]){
+                if (!empty($horaires[2]) and !empty($horaires[5])) {
                     $schedule[] = array(
                         'begin' => heure2($horaires[2]),
                         'end'=> heure2($horaires[5])
                     );
-                } elseif ($horaires[2] and $horaires[3]){
+                } elseif (!empty($horaires[2]) and !empty($horaires[3])) {
                     $schedule[] = array(
-                        'begin' => heure2($horaires[3]),
+                        'begin' => heure2($horaires[2]),
                         'end'=> heure2($horaires[3])
                     );
                 }
 
-                if ($horaires[6] and $horaires[3]){
+                if (!empty($horaires[6]) and !empty($horaires[3])) {
                     $schedule[] = array(
                         'begin' => heure2($horaires[6]),
                         'end'=> heure2($horaires[3])
                     );
                 }
-
 
                 if (!empty($schedule)){
                     $presence = array(
@@ -356,7 +357,7 @@ class CalendarController extends BaseController
                 $current_postes = $tmp;
                 foreach ($current_postes as $elem) {
                     $pos_name = html_entity_decode($elem['poste'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-                    $pos_absent = $elem['absent'];
+                    $pos_absent = $elem['absent'] == 1;
                     $heure = heure2($elem['debut'])." - ".heure2($elem['fin']);
                     $positions[] = array(
                         "name"   => $pos_name,
@@ -369,7 +370,7 @@ class CalendarController extends BaseController
             $days[] = array(
                 "aff"      => $date_aff,
                 "closed"   => $closed,
-                "name"     => html_entity_decode($nom, ENT_QUOTES|RNT_IGNORE, 'UTF-8'),
+                "name"     => html_entity_decode($nom, ENT_QUOTES|ENT_IGNORE, 'UTF-8'),
                 "presence" => $presence,
                 "absence"  => $absences_affichage,
                 "position" => $positions,
