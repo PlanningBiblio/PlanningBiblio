@@ -206,6 +206,11 @@ EOD;
 
 echo "</div> <!-- id=periode -->\n";
 
+
+if ($copy) {
+    $id = '';
+}
+
 ?>
 <input type='hidden' name='page' value='planningHebdo/valid.php' />
 <input type='hidden' name='CSRFToken' value='<?php echo $CSRFSession; ?>' />
