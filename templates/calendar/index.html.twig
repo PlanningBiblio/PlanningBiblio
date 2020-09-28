@@ -94,20 +94,18 @@
                     {% endif %}
                   {% endif %}
                   {% if d.absence is not empty %}
-                    {% for a in d.absence %}
-                      <div class ='important'>
-                        {% if a.nbAbs == 1 %}
-                          <p> Absence : </p>
-                        {% elseif a.nbAbs>1 %}
-                          <p> Absences : </p>
-                        {% endif %}
-                        <ul>
-                        {% for a in d.absence %}
-                          <li> {{ a | raw }} </li>
-                        {% endfor %}
-                        </ul>
-                      </div>
-                    {% endfor %}
+                    <div class ='important'>
+                      {% if d.absence | length == 1 %}
+                        <p> Absence : </p>
+                      {% elseif d.absence | length > 1 %}
+                        <p> Absences : </p>
+                      {% endif %}
+                      <ul>
+                      {% for a in d.absence %}
+                        <li> {{ a | raw }} </li>
+                      {% endfor %}
+                      </ul>
+                    </div>
                   {% endif %}
                   {% if d.position is not empty %}
                     <div class ='postes'>Postes occupés :
