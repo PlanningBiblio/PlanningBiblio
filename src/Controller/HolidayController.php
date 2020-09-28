@@ -487,16 +487,6 @@ class HolidayController extends BaseController
             'fin'   => $fin,
         ));
 
-
-        // Gestion des droits d'administration
-        // NOTE : Ici, pas de différenciation entre les droits niveau 1 et niveau 2
-        // NOTE : Les agents ayant les droits niveau 1 ou niveau 2 sont admin ($admin, droits 40x et 60x)
-        // TODO : différencier les niveau 1 et 2 si demandé par les utilisateurs du plugin
-
-        $agents_multiples = (($this->admin || in_array(9, $this->droits)) && $this->config('Conges-Recuperations') == 1);
-        error_log("agents_multiples add: $agents_multiples");
-        
-
         $admin = false;
         $adminN2 = false;
         for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
@@ -507,6 +497,13 @@ class HolidayController extends BaseController
                 $adminN2 = true;
             }
         }
+
+        // Gestion des droits d'administration
+        // NOTE : Ici, pas de différenciation entre les droits niveau 1 et niveau 2
+        // NOTE : Les agents ayant les droits niveau 1 ou niveau 2 sont admin ($admin, droits 40x et 60x)
+        // TODO : différencier les niveau 1 et 2 si demandé par les utilisateurs du plugin
+        $agents_multiples = (($this->admin || ($admin && $adminN2)) && $this->config('Conges-Recuperations') == 1);
+        error_log("agents_multiples add: $agents_multiples");
 
         // Si pas de droits de gestion des congés, on force $perso_id = son propre ID
         if (!$admin) {
