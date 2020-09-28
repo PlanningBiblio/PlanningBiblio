@@ -19,6 +19,15 @@ include_once __DIR__ . '/../../public/absences/class.absences.php';
 
 class StatisticController extends BaseController
 {
+
+    /**
+     * @Route("/statistics", name="statistics.index", methods={"GET"})
+     */
+    public function index(Request $request, Session $session)
+    {
+        return $this->output('statistics/index.html.twig');
+    }
+
     /**
      * @Route("/statistics/attendeesmissing", name="statistics.attendeesmissing", methods={"GET", "POST"})
      */
