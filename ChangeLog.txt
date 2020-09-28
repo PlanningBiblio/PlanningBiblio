@@ -12,6 +12,7 @@ Use Doctrine ORM for skill pages
 Use fine tuning of hours in holidays forms
 Mass modification of agents
 Symfonize agenda/index page
+Stick planning times row and job columns
 
 -Fixes
 Use fine tuning of hours in absence forms
