@@ -530,14 +530,6 @@ class HolidayController extends BaseController
             $balance[4] = 0;
         }
 
-     // Liste des agents
-        $agents_tous = array();
-        if ($agents_multiples) {
-            $db_perso=new \db();
-            $db_perso->select2("personnel", "*", array("supprime"=>0,"id"=>"<>2"), "order by nom,prenom");
-            $agents_tous=$db_perso->result?$db_perso->result:array();
-        }
-
         $multisites = $this->config('Multisites-nombre');
 
         // Multi-sites

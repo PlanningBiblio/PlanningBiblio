@@ -664,6 +664,8 @@ $(function(){
     $("#perso_ids").val(0);
     
   });
+});
 
-
+$(document).ready(function() {
+    updateAgentsListBySites();
 });
