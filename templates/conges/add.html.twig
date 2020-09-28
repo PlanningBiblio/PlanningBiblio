@@ -78,25 +78,13 @@
                   {% if agents_multiples %}
 				  <select name='perso_id' id='perso_ids' class='agents_multiples ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
                   <option value='0' selected='selected'>-- Ajoutez un agent --</option>
+                      {% if conges_tous %}
+                        <option value='tous'>Tous les agents</option>
+                      {% endif %}
                   {% else %}
 				  <select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
                   {% endif %}
-                  {% if conges_tous %}
-                    <option value='tous'>Tous les agents</option>
-                  {% endif %}
-
-                  {% for a in agents %}
-                    {% if a.id == loggedin_id %}
-                      <option value='{{ a.id }}' id='option{{ a.id }}' style="display:none;">
-                        {{ a.nom }} {{ a.prenom }}
-                      </option>
-                    {% else %}
-                      <option value='{{ a.id }}' id='option{{ a.id }}'>
-                        {{ a.nom }} {{ a.prenom }}
-                      </option>
-                    {% endif %}
-                  {% endfor %}
-                </select>
+                  </select>
 
                 {% else %}
                   <input type='hidden' name='perso_id' id='perso_id' value='{{ loggedin_id }}' />

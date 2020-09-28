@@ -543,7 +543,6 @@ class HolidayController extends BaseController
 
         $this->templateParams(array(
             'admin'                 => $admin,
-            'agents'                => $this->get_agents($adminN2),
             'agents_multiples'      => $agents_multiples,
             'perso_id'              => $perso_id,
             'conges_recuperations'  => $this->config('Conges-Recuperations'),
