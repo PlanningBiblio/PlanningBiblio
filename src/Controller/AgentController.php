@@ -20,10 +20,14 @@ class AgentController extends BaseController
     /**
      * @Route("/agent", name="agent.index", methods={"GET"})
      */
-    public fonction index(Request $request){
+    public function index(Request $request){
 
         $actif = $request->get('actif');
         $lang = $GLOBALS['lang'];
+        $droits = $GLOBALS['droits'];
+        $login_id = $_SESSION['login_id'];
+        $LDAP_host = $this->config('LDAP-Host');
+        $LDAP_suf = $this->config('LDAP-Suffix');
 
         if (!$actif) {
             $actif = isset($_SESSION['perso_actif']) ? $_SESSION['perso_actif'] : 'Actif';
@@ -41,22 +45,26 @@ class AgentController extends BaseController
         $p = new \personnel();
         $p->supprime = strstr($actif, "Supprim") ? array(1) : array(0);
         $p->fetch("nom,prenom", $actif);
-        $agents = $p->elements;
+        $agentsTab = $p->elements;
 
-        $i = 0;
-        foreach ($agents as $agent) {
+        $nbSites = $this->config('Multisites-nombre');
+
+        $agents = array();
+        foreach ($agentsTab as $agent) {
+            $elem = [];
             $id = $agent['id'];
 
             $arrivee = dateFr($agent['arrivee']);
             $depart = dateFr($agent['depart']);
             $last_login = date_time($agent['last_login']);
-
             $heures = $agent['heures_hebdo'] ? $agent['heures_hebdo'] : null;
             $heures = heure4($heures);
             if (is_numeric($heures)) {
                 $heures.= "h00";
             }
             $agent['service'] = str_replace("`", "'", $agent['service']);
+
+            $sites = $agent['sites'];
 
             if ($nbSites > 1) {
                 $tmp = array();
@@ -69,7 +77,20 @@ class AgentController extends BaseController
                 }
                 $sites = !empty($tmp)?join(", ", $tmp):null;
             }
-            $i++;
+
+            $elem = array(
+                'id' => $id,
+                'name' => $agent['nom'],
+                'surname' => $agent['prenom'],
+                'departure' => $depart,
+                'arrival' => $arrivee,
+                'status' => $agent['statut'],
+                'service' => $agent['service'],
+                'hours' => $heures,
+                'last_login' => $last_login,
+                'sites' => $sites,
+            );
+            $agents[]= $elem;
         }
 
         $db = new \db();
@@ -127,15 +148,21 @@ class AgentController extends BaseController
         $postes_completNoms_json = json_encode($postes_completNoms);
 
         $this->templateParams(array(
-            "contracts" => $contrats,
-            "lang" => $lang,
+            "agents"                 => $agents,
+            "contracts"              => $contrats,
+            "lang"                   => $lang,
+            "LDAP_host"              => $LDAP_host,
+            "LDAP_suf"               => $LDAP_suf,
+            "login_id"               => $login_id,
+            "nbSites"                => $nbSites,
             "positionsCompleteNames" => $postes_completNoms_json,
-            "services" => $services,
-            "skills" => $activites,
-            "status" => $statuts
-        
+            "rights21"               => in_array(21, $droits),
+            "services"               => $services,
+            "skills"                 => $activites,
+            "status"                 => $statuts
+
         ));
-        
+
         return $this->output('/agents/index.html.twig');
     }
 
