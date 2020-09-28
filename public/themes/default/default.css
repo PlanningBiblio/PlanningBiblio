@@ -572,6 +572,29 @@ div#tabsemaine1{
   font-size:12pt;
   font-weight:bold;
 }
+.sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+  left: 0;
+  z-index: 3;
+}
+.sticky-line {
+  background: inherit;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+  z-index: 1;
+}
+.sticky-col {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+.td_sep {
+  background: inherit;
+}
 
 /* tr_espace : permet d'ajouter un espace entre les tableaux : ex: display:block; height:20px; */
 .tr_espace{
@@ -588,6 +611,7 @@ div#tabsemaine1{
   width:192px;
   font-size:12pt;
   font-weight: bold;
+  white-space: nowrap;
 }
 
 .td_obligatoire{
