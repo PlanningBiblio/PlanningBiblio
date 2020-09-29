@@ -87,7 +87,7 @@ if (!$acces) {
 
 if (!$acces) {
     $msg=urlencode("Suppression refusée");
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=error';</script>\n";
+    echo "<script type='text/JavaScript'>document.location.href='/absences';</script>\n";
     exit;
 }
 
@@ -281,4 +281,4 @@ if (!empty($errors)) {
     $msg2Type="error";
 }
 
-echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=$msgType&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
+echo "<script type='text/JavaScript'>document.location.href='/absence';</script>\n";

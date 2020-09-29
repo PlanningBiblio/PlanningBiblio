@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 use App\Model\AbsenceDocument;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -24,6 +25,7 @@ class AbsenceController extends BaseController
         $debut = $request->get("debut");
         $fin = $request->get("fin");
         $reset = $request->get("reset");
+        $droits= $GLOBALS['droits'];
 
         // Contrôle sanitize_dateFr en 2 temps pour éviter les erreurs CheckMarx
         $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
@@ -161,13 +163,14 @@ class AbsenceController extends BaseController
             foreach ($agents_menu as $agent) {
                 $selected = $agent['id'] == $perso_id ? "selected='selected'":null;
                 if ($selected != null){
-                  $selectedAgents[] = $selected;
+                  $selectedAgents[] = $agent;
                 }
             }
             $checked = $agents_supprimes ? "checked='checked'" : null;
         }
 
         $absList = array ();
+        $absLinks = array ();
         if ($absences) {
             foreach ($absences as $elem) {
 
@@ -248,6 +251,7 @@ class AbsenceController extends BaseController
             'agentsMenu'            => $agents_menu,
             'right6'                => in_array(6, $this->droits)?1:0,
             'right701'              => in_array(701, $this->droits)?1:0,
+            'deletedAgents'         => $agents_supprimes ,
             'selectedAgents'        => $selectedAgents ,
             'absences'              => $absList,
             'absences_validation'   => $this->config('Absences-validation')
@@ -327,23 +331,23 @@ class AbsenceController extends BaseController
         $absence['motif_autre'] = html_entity_decode($a->elements['motif_autre'], ENT_QUOTES);
         $absence['commentaires'] = html_entity_decode($a->elements['commentaires'], ENT_QUOTES);
 
-        $agents=$a->elements['agents'];
-        $debutSQL=filter_var($a->elements['debut'], FILTER_CALLBACK, array("options"=>"sanitize_dateTimeSQL"));
-        $finSQL=filter_var($a->elements['fin'], FILTER_CALLBACK, array("options"=>"sanitize_dateTimeSQL"));
-        $valide=filter_var($a->elements['valide_n2'], FILTER_SANITIZE_NUMBER_INT);
-        $valideN1=$a->elements['valide_n1'];
-        $ical_key=$a->elements['ical_key'];
-        $cal_name=$a->elements['cal_name'];
+        $agents = $a->elements['agents'];
+        $debutSQL = filter_var($a->elements['debut'], FILTER_CALLBACK, array("options"=>"sanitize_dateTimeSQL"));
+        $finSQL = filter_var($a->elements['fin'], FILTER_CALLBACK, array("options"=>"sanitize_dateTimeSQL"));
+        $valide = filter_var($a->elements['valide_n2'], FILTER_SANITIZE_NUMBER_INT);
+        $valideN1 = $a->elements['valide_n1'];
+        $ical_key = $a->elements['ical_key'];
+        $cal_name = $a->elements['cal_name'];
 
         // Traitement des dates et des heures
         $absence['demande'] = dateFr($absence['demande'], true);
-        $debut=dateFr3($debutSQL);
-        $fin=dateFr3($finSQL);
+        $debut = dateFr3($debutSQL);
+        $fin = dateFr3($finSQL);
 
-        $hre_debut=substr($debut, -8);
-        $hre_fin=substr($fin, -8);
-        $debut=substr($debut, 0, 10);
-        $fin=substr($fin, 0, 10);
+        $hre_debut = substr($debut, -8);
+        $hre_fin = substr($fin, -8);
+        $debut = substr($debut, 0, 10);
+        $fin = substr($fin, 0, 10);
 
         $admin = $adminN1 || $adminN2;
 
@@ -492,6 +496,9 @@ class AbsenceController extends BaseController
     public function save_absence(Request $request) {
 
         // Save absence(s).
+        $this->dbprefix = $GLOBALS['dbprefix'];
+        $this->droits = $GLOBALS['droits'];
+        $this->setAdminPermissions();
 
         $result = $this->save($request, $this->admin);
         $file = $request->files->get('documentFile');
@@ -509,12 +516,8 @@ class AbsenceController extends BaseController
             $this->entityManager->flush();
             $file->move(__DIR__ . AbsenceDocument::UPLOAD_DIR . $result['id'] . '/' . $ad->id(), $filename);
         }
-       // $msg = $result['msg'];
-       // $msg2 = $result['msg2'];
-       // $msg2_type = $result['msg2_type'];
-        
+
         return $this->redirectToRoute('absence.index');
-        //return $this->redirect("index.php?page=absences/voir.php&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2_type");
 
 
     }
