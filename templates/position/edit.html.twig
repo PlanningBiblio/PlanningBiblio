@@ -14,7 +14,7 @@
   <form method='post' action="{{ asset('/position') }}" name='form'>
     <input type='hidden' name='CSRFToken' value="{{ CSRFToken }}"/>
     <input type='hidden' name='group_id' value='{{ group_id }}'/>
-    {% if id %}
+    {% if id is defined %}
         <input type='hidden' name='id' value='{{ id }}'/>
     {% else %}
         <input type='hidden' name='id' value=''/>
@@ -26,7 +26,7 @@
             <tr>
               <td style='width:160px'>Nom du poste :</td>
               <td>
-                <input type='text' value='{{nom}}' name='nom' style='width:250px' class='ui-widget-content ui-corner-all'/>
+                <input type='text' value='{{ nom }}' name='nom' style='width:250px' class='ui-widget-content ui-corner-all'/>
               </td>
             </tr>
             {% if nbSites > 1 %}

@@ -132,14 +132,17 @@ class PositionController extends BaseController
 
         $nbMultisite = $this->config('Multisites-nombre');
         $sites = array();
+        $selectedSites = array();
 
         if ($nbMultisite>1) {
             for ($elem = 0; $elem < $nbMultisite +1; $elem++){
                 if ($this->config("Multisites-site$elem")){
                     $sites[] = $this->config("Multisites-site$elem");
+                    $selectedSites[] = null;
                 }
             }
         }
+        $nom ="";
         $groupe ="";
         $etage ="";
         $activites = "[]";
@@ -152,21 +155,29 @@ class PositionController extends BaseController
 
 
         $this->templateParams(array(
-            'CSRFToken'      => $GLOBALS['CSRFSession'],
             'activites'      => $activites,
             'actList'        => $actList,
             'categories'     => $categories,
+            'bloq1'          => $bloq1,
+            'bloq2'          => null,
+            'CSRFToken'      => $GLOBALS['CSRFSession'],
             'categoriesList' => $categories_list,
+            'etage'          => $etage,
             'etages'         => $etages,
             'groupe'         => $groupe,
             'groupes'        => $groupes,
             'group_id'       => $groupe_id,
-            'obligatoire'    => $obligatoire,
-            'bloq1'          => $bloq1,
-            'stat1'          => $stat1,
-            'nbSites'        => $nbMultisite,
+            'id'             => null,
             'multisite'      => $sites,
-            'etage'          => $etage,
+            'nbSites'        => $nbMultisite,
+            'nom'            => $nom,
+            'obligatoire'    => $obligatoire,
+            'renfort'        => null,
+            'selectedSites'  => $selectedSites,
+            'stat1'          => $stat1,
+            'stat2'          => null,
+            'usedFloors'     => null,
+            'usedGroups'     => null,
 
         ));
         return $this->output('position/edit.html.twig');
