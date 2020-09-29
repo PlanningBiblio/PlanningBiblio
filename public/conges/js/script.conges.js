@@ -585,14 +585,14 @@ function updateAgentsListBySites() {
 
         options = '';
 
-        // Check if multiple agents is allowed (really necessary?)
-        if ($('#perso_ids option[value="0"]')) {
+        // Check if multiple agents is allowed
+        if ($('#perso_ids option[value="0"]').length > 0) {
             options += '<option value="0" selected="selected">-- Ajoutez un agent --</option>';
         }
 
         // Check if all agents is allowed
-        if ($('#perso_ids option[value="tous"]')) {
-            options += '<option value="tous">Tous les agents</option>';
+        if ($('#perso_ids option[value="tous"]').length > 0) {
+            options += '<option value="tous">ous les agents</option>';
         }
 
         $.each(result, function(index, value) {

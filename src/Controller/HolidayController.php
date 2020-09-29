@@ -265,7 +265,7 @@ class HolidayController extends BaseController
             }
         }
 
-        $agents_multiples = (($adminN1 or $adminN2 or in_array(9, $this->droits)) && $this->config('Conges-Recuperations') == 1);
+        $agents_multiples = (($adminN1 or $adminN2) && $this->config('Conges-Recuperations') == 1);
 
         // Elements du congé demandé
         $c = new \conges();

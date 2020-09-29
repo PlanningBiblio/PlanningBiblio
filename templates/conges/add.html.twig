@@ -75,14 +75,12 @@
                      <br /><br />
                   {% endif %}
 
+				  <select name='perso_id' id='perso_ids' class='{% if agents_multiples %}agents_multiples{% endif %} ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
                   {% if agents_multiples %}
-				  <select name='perso_id' id='perso_ids' class='agents_multiples ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
-                  <option value='0' selected='selected'>-- Ajoutez un agent --</option>
+                    <option value='0' selected='selected'> -- Ajoutez un agent --</option>
                       {% if conges_tous %}
                         <option value='tous'>Tous les agents</option>
                       {% endif %}
-                  {% else %}
-				  <select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
                   {% endif %}
                   </select>
 
