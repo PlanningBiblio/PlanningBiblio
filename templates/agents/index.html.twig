@@ -8,8 +8,7 @@
 {% endblock %}
 
 {% block page %}
-  <form name='form2' action='index.php' method='get'>
-    <input type='hidden' name='page' value='personnel/index.php' />
+  <form name='form2' action='{{ asset("/agent") }}' method='get'>
     <table style='margin-bottom:10px;'>
       <tr style='vertical-align:center;'>
         <td style='width:270px;'>
@@ -62,7 +61,7 @@
         <tr>
           <td style='white-space:nowrap;'>
             {% if rights21 %}
-            <input type='checkbox' name='chk{{ a.index0 }}' value='{{ a.id }}' class='checkbox' />
+            <input type='checkbox' name='chk{{ loop.index0 }}' value='{{ a.id }}' class='checkbox' />
             {% endif %}
             <a href="{{ asset ('/agent/')}}{{ a.id }}">
               <span class='pl-icon pl-icon-edit' title='Modifier'></span>

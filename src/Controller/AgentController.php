@@ -38,7 +38,7 @@ class AgentController extends BaseController
         //        Suppression des agents dont la date de départ est passée        //
         $tab = array(0);
         $db = new \db();
-        $db->CSRFToken = $CSRFSession;
+        $db->CSRFToken = $GLOBALS['CSRFSession'];
         $db->update('personnel', array('supprime'=>'1', 'actif'=>'Supprim&eacute;'), "`depart`<CURDATE() AND `depart`<>'0000-00-00' and `actif` NOT LIKE 'Supprim%'");
 
 
@@ -111,7 +111,7 @@ class AgentController extends BaseController
 
         $hours = array();
         for ($i = 1 ; $i < 40; $i++) {
-            if ($this->config['Granularite'] == 5) {
+            if ($this->config('Granularite') == 5) {
                 $hours[] = array($i,$i."h00");
                 $hours[] = array($i.".08",$i."h05");
                 $hours[] = array($i.".17",$i."h10");
@@ -124,12 +124,12 @@ class AgentController extends BaseController
                 $hours[] = array($i.".75",$i."h45");
                 $hours[] = array($i.".83",$i."h50");
                 $hours[] = array($i.".92",$i."h55");
-            } elseif ($this->config['Granularite']==15) {
+            } elseif ($this->config('Granularite')==15) {
                 $hours[] = array($i,$i."h00");
                 $hours[] = array($i.".25",$i."h15");
                 $hours[] = array($i.".5",$i."h30");
                 $hours[] = array($i.".75",$i."h45");
-            } elseif ($this->config['Granularite']==30) {
+            } elseif ($this->config('Granularite')==30) {
                 $hours[] = array($i,$i."h00");
                 $hours[] = array($i.".5",$i."h30");
             } else {
@@ -150,6 +150,7 @@ class AgentController extends BaseController
         $this->templateParams(array(
             "agents"                 => $agents,
             "contracts"              => $contrats,
+            "hours"                  => $hours,
             "lang"                   => $lang,
             "LDAP_host"              => $LDAP_host,
             "LDAP_suf"               => $LDAP_suf,
