@@ -3,19 +3,19 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-
+  <h3>Feuille de temps</h3>
   <table>
     <tr>
-      <td style='width:350px;'><b>Du $debutFr au $finFr</b></td>
+      <td style='width:350px;'><b>Du {{ debutFr }} au {{ finFr }}</b></td>
       <td>
-        <form name='form' method='get' action='index.php'>
+        <form name='form' method='get' action=''>
           <input type='hidden' name='page' />
           <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
           <label for='debut'>Début</label>
           <input type='text' name='debut' class='datepicker' value='{{ debutFr }}' style='margin:0 20px 0 5px;' />
           <label for='fin'>Fin</label>
-          <input type='text' name='fin' class='datepicker' value='$finFr' style='margin:0 0 0 5px;' />
-          {% if groups is iterable and nbGroups > 1 %}
+          <input type='text' name='fin' class='datepicker' value='{{ finFr }}' style='margin:0 0 0 5px;' />
+          {% if groupes is iterable and nbGroupes > 1 %}
             {% if checked is not null %}
               <span id='stat-temps-aff-grp'>
                 <input type='checkbox' value='on' id='selection_groupe' name='selection_groupe' checked />
@@ -26,6 +26,7 @@
                 <input type='checkbox' value='on' id='selection_groupe' name='selection_groupe'/>
                 <label for='selection_groupe'>Afficher les heures par groupe de postes</label>
               </span>
+            {% endif %}
           {% endif %}
           <input type='submit' value='OK' id='submit' class='ui-button' style='margin-left:30px;'/>
         </form>
@@ -41,11 +42,11 @@
           <th>Agents</th>
           <th>Statut</th>
           {% for d in dates %}
-            <th class='dataTableHeureFR'>{{ d.1 }}</th>
+            <th class='dataTableHeureFR'>{{ d[1] | raw }}</th>
           {% endfor %}
           {% if nbSites > 1 %}
             {% for i in 1..nbSites %}
-              <th class="dataTableHeureFR">{{ multisites[i] }}</th>
+              <th class="dataTableHeureFR">{{ multisites[i-1] }}</th>
             {% endfor %}
           {% endif %}
           {% if groupes_keys is iterable %}
@@ -54,7 +55,7 @@
                 <th class='dataTableHeureFR'> {{ g }} </th>
               {% endif %}
             {% endfor %}
-            {% if emptystr in groups_keys and emptystr in totauxGroupesPerso %}
+            {% if emptystr in groupes_keys and emptystr in totauxGroupesPerso %}
               <th class='dataTableHeureFR' > Autres </th>
             {% endif %}
           {% endif %}
@@ -70,6 +71,7 @@
         {% for t in tab %}
           <tr style ='vertical-align:top;'>
             <td>{{ t.nom }}</td>
+            <td>{{ t.prenom }}</td>
             {% if t.statut is not null %}
               <td>{{ t.statut }}</td>
             {% else %}
@@ -87,7 +89,7 @@
                   {% for g in groupes_keys %}
                     {% if t.group_key is not null %}
                       <br/>
-                      {% if g is defined}
+                      {% if g is defined %}
                         {{ g }}
                       {% else %}
                         Autres
@@ -111,13 +113,13 @@
                 {% if g != emptystr and g in totauxGroupesPerso %}
                   <td style ='text-align : center;'>{{ g.heures_groupe }}</td>
                 {% endif %}
-                {% if emptystr in groups_keys and emptystr in totauxGroupesPerso %}
+                {% if emptystr in groupes_keys and emptystr in totauxGroupesPerso %}
                   <td style ='text-align : center;'>{{ g.heures_ }}</td>
                 {% endif %}
               {% endfor %}
               {% if nbSemaines != 1 %}
-                <td style='{{ t.style }}'>{{ t.total }}</td>
-                <td style='text-align : center;'>{{ t.max }}</td>
+                <td style='{{ t.style }}'>{{ t.totalH }}</td>
+                <td style='text-align : center;'>{{ t.maxH }}</td>
               {% endif %}
               <td style='{{ t.style }}'>{{ t.semaine }}</td>
               <td style='text-align: center;'>{{ t.hebdo }}</td>
@@ -127,13 +129,13 @@
         </tbody>
         <tfoot>
           <tr style='background:#DDDDDD;' >
-            <th colspax='2'> Nombre d'heures</th>
+            <th colspan='2'> Nombre d'heures</th>
             {% for d in dates %}
               <th>{{ heures[d[0]] }}</th>
             {% endfor %}
             {% if nbSites > 1 %}
               {% for i in 1..nbSites %}
-                <th>{{ sitesHeures[i] }}</th>
+                <th>{{ sitesHeures[i-1] }}</th>
                 {% if nbSemaines != 1 %}
                   <th> &nbsp; </th>
                 {% endif %}
@@ -159,7 +161,7 @@
           <tr style='background:#DDDDDD;'>
             <th colspan='2'>Nombre d'agents</th>
             {% for d in dates %}
-              <th>{{ nbAgents[d[0]]}}</th>
+              <th>{{ nbAgents[d[0]] }}</th>
             {% endfor %}
             {% if nbSites >1 %}
               {% for i in 1..nbSites %}

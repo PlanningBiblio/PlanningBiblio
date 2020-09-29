@@ -36,10 +36,10 @@ class StatisticController extends BaseController
      */
     public function bytime(Request $request, Session $session)
     {
-        //	Initialisation des variables
+        //    Initialisation des variables
         $CSRFToken = trim($request->get("CSRFToken"));
         if (!$CSRFToken) {
-            $CSRFToken = $GOBALS['CSRFSession'];
+            $CSRFToken = $GLOBALS['CSRFSession'];
         }
 
         $debut = $request->get("debut");
@@ -58,7 +58,7 @@ class StatisticController extends BaseController
             $selection_groupe = $_SESSION['oups']['stat_temps_selection_groupe'];
         } else {
            $date=$_SESSION['PLdate'];
-           $d = new datePl($date);
+           $d = new \datePl($date);
            $debut = $d->dates[0];
            $fin = $this->config('Dimanche') ? $d->dates[6] : $d->dates[5];
            $selection_groupe = false;
@@ -88,35 +88,37 @@ class StatisticController extends BaseController
         $tab = array();
         $nb = count($dates);  // Nombre de dates
         $nbSemaines = $nb/($this->config('Dimanche')? 7 : 6);   // Nombre de semaines
-        $totalAgents = 0;		// Les totaux
+        $totalAgents = 0;        // Les totaux
         $totalHeures = 0;
         $siteHeures = array(0,0);   // Heures par site
         $siteAgents = array(0,0);   // Agents par site
-        
+        $multisites = [];
+
         // Affichage des statistiques par groupe de postes
         $groupes = array();
         $groupes_keys = array();
         $affichage_groupe = null;
         $totauxGroupesHeures = null;
         $totauxGroupesPerso = null;
-        
+
         $p = new \postes();
         $p->fetch();
         // Rassemble les postes dans un tableau en fonction de leur groupe (ex: $groupe['pret'] = array(1,2,3))
-        
+
         foreach ($p->elements as $poste) {
             $groupes[$poste['groupe']][] = $poste['id'];
         }
-    
+
+		$checked = null;
         if (!empty($groupes) and count($groupes)>1) {
             $checked = $selection_groupe ? "checked='checked'" : null;
             $affichage_groupe = "<span id='stat-temps-aff-grp'><input type='checkbox' value='on' id='selection_groupe' name='selection_groupe' $checked /><label for='selection_groupe'>Afficher les heures par groupe de postes</label></span>";
         }
-        
+
         if ($affichage_groupe and $selection_groupe) {
             // $groupes_keys : nom des groupes
             $keys = array_keys($groupes);
-  
+
             // Affichage des groupes selon l'ordre du menu déroulant
             $db = new \db();
             $db->select2('select_groupes', 'valeur', null, 'order by rang');
@@ -140,7 +142,7 @@ class StatisticController extends BaseController
         }
 
         // Recherche des heures de SP à effectuer pour tous les agents pour toutes les semaines demandées
-        $d = new datePl($debut);
+        $d = new \datePl($debut);
         $d1 = $d->dates[0];
         // Pour chaque semaine
         for ($d = $d1; $d <= $fin; $d = date("Y-m-d", strtotime($d."+1 week"))) {
@@ -162,8 +164,8 @@ class StatisticController extends BaseController
         }
         // Calcul des totaux d'heures de SP à effectuer sur la période
         $totalSP = array();
-        foreach ($heuresSP as $key => $value) {		// $key=date, $value=array
-            foreach ($value as $key2 => $value2) {		// $key2=perso_id, $value2=heures
+        foreach ($heuresSP as $key => $value) {        // $key=date, $value=array
+            foreach ($value as $key2 => $value2) {        // $key2=perso_id, $value2=heures
                 if (!array_key_exists($key2, $totalSP)) {
                     $totalSP[$key2]=(float) $value2;
                 } else {
@@ -188,6 +190,7 @@ class StatisticController extends BaseController
         $db = new \db();
         $debutREQ = $db->escapeString($debut);
         $finREQ = $db->escapeString($fin);
+        $dbprefix = $GLOBALS['dbprefix'];
 
         $req = "SELECT `{$dbprefix}pl_poste`.`date` AS `date`, `{$dbprefix}pl_poste`.`debut` AS `debut`, ";
         $req.="`{$dbprefix}pl_poste`.`fin` AS `fin`, `{$dbprefix}personnel`.`id` AS `perso_id`, ";
@@ -209,7 +212,7 @@ class StatisticController extends BaseController
                         continue 2;
                     }
                 }
-                if (!array_key_exists($elem['perso_id'], $tab)) {		// création d'un tableau de données par agent (id, nom, heures de chaque jour ...)
+                if (!array_key_exists($elem['perso_id'], $tab)) {        // création d'un tableau de données par agent (id, nom, heures de chaque jour ...)
                     $tab[$elem['perso_id']] = array(
                         "perso_id" => $elem['perso_id'],
                         "nom"      => $elem['nom'],
@@ -235,18 +238,18 @@ class StatisticController extends BaseController
                     }
                 }
 
-                $d = new datePl($elem['date']);
+                $d = new \datePl($elem['date']);
                 $position = $d->position != 0 ? $d->position-1 : 6;
-                $tab[$elem['perso_id']][$elem['date']]['total']+=diff_heures($elem['debut'], $elem['fin'], "decimal");	// ajout des heures par jour
-                $tab[$elem['perso_id']]['total']+=diff_heures($elem['debut'], $elem['fin'], "decimal");	// ajout des heures sur toutes la période
+                $tab[$elem['perso_id']][$elem['date']]['total']+=diff_heures($elem['debut'], $elem['fin'], "decimal");    // ajout des heures par jour
+                $tab[$elem['perso_id']]['total']+=diff_heures($elem['debut'], $elem['fin'], "decimal");    // ajout des heures sur toutes la période
                 if ($elem["site"]) {
                     if (!array_key_exists("site{$elem['site']}", $tab[$elem['perso_id']])) {
                         $tab[$elem['perso_id']]["site{$elem['site']}"]=0;
                     }
-                    $tab[$elem['perso_id']]["site{$elem['site']}"]+=diff_heures($elem['debut'], $elem['fin'], "decimal");	// ajout des heures sur toutes la période par site
+                    $tab[$elem['perso_id']]["site{$elem['site']}"]+=diff_heures($elem['debut'], $elem['fin'], "decimal");    // ajout des heures sur toutes la période par site
                 }
 
-                $totalHeures+=diff_heures($elem['debut'], $elem['fin'], "decimal");		// compte la somme des heures sur la période
+                $totalHeures+=diff_heures($elem['debut'], $elem['fin'], "decimal");        // compte la somme des heures sur la période
 
                 if (!array_key_exists($elem['site'], $siteHeures)) {
                     $siteHeures[$elem['site']] = 0;
@@ -264,126 +267,155 @@ class StatisticController extends BaseController
                     }
                 }
             }
+        }
 
-            $nbSites = $this->config('Multisites-nombre');
-            // Totaux par groupe de postes
-            foreach ($groupes_keys as $g) {
-                $totauxGroupesPerso[$g] = count($totauxGroupesPerso[$g]);
+        $nbSites = $this->config('Multisites-nombre');
+        if ($nbSites >1){
+            for($i = 1; $i <= $nbSites; $i++){
+                $multisites[] = $this->config("Multisites-sites$i");
             }
+        }
 
-            // pour chaque jour, on compte les heures et les agents
-            foreach ($dates as $d) {
-                $agents_id = array();
-                if (is_array($tab)) {
-                    foreach ($tab as $elem) {
-                        // on compte les heures de chaque agent
-                        if (!array_key_exists($d[0], $agents)) {
-                            $agents[$d[0]] = 0;
-                        }
-                        if (array_key_exists($d[0], $elem)) {
-                            $agents[$d[0]]++;
-                        }
+        // Totaux par groupe de postes
+        foreach ($groupes_keys as $g) {
+            $totauxGroupesPerso[$g] = count($totauxGroupesPerso[$g]);
+        }
 
-                        // on compte le total d'heures par jour
-                        if (!array_key_exists($d[0], $heures)) {
-                            $heures[$d[0]] = 0;
-                        }
-                        if (array_key_exists($d[0], $elem)) {
-                            $heures[$d[0]] += $elem[$d[0]]['total'];
-                        }
-            
-                        // on compte les agents par jour + le total sur la période
-                        if (!in_array($elem['perso_id'], $agents_id) and $elem[$d[0]]['total']){
-                            $agents_id[] = $elem['perso_id'];
-                            $totalAgents++;
+        // pour chaque jour, on compte les heures et les agents
+        foreach ($dates as $d) {
+            $agents_id = array();
+            if (is_array($tab)) {
+                foreach ($tab as $elem) {
+                    // on compte les heures de chaque agent
+                    if (!array_key_exists($d[0], $agents)) {
+                        $agents[$d[0]] = 0;
+                    }
+                    if (array_key_exists($d[0], $elem)) {
+                        $agents[$d[0]]++;
+                    }
 
-                            for ($i = 1; $i <= $nbSites; $i++) {
-                                if (array_key_exists("site$i", $elem)) {
-                                    if (!array_key_exists($i, $siteAgents)) {
-                                        $siteAgents[$i] = 0;
-                                    }
-                                    $siteAgents[$i]++;
+                    // on compte le total d'heures par jour
+                    if (!array_key_exists($d[0], $heures)) {
+                        $heures[$d[0]] = 0;
+                    }
+                    if (array_key_exists($d[0], $elem)) {
+                        $heures[$d[0]] += $elem[$d[0]]['total'];
+                    }
+
+                    // on compte les agents par jour + le total sur la période
+                    if (!in_array($elem['perso_id'], $agents_id) and $elem[$d[0]]['total']){
+                        $agents_id[] = $elem['perso_id'];
+                        $totalAgents++;
+
+                        for ($i = 1; $i <= $nbSites; $i++) {
+                            if (array_key_exists("site$i", $elem)) {
+                                if (!array_key_exists($i, $siteAgents)) {
+                                    $siteAgents[$i] = 0;
                                 }
+                                $siteAgents[$i]++;
                             }
                         }
                     }
                 }
-                // on compte les agents par jour (2ème partie)
-                $nbAgents[$d[0]] = count($agents_id);
+            }
+            // on compte les agents par jour (2ème partie)
+            $nbAgents[$d[0]] = count($agents_id);
+        }
+
+        // Formatage des données pour affichage
+        $keys = array_keys($tab);
+        foreach ($keys as $key) {
+            for ($i = 1; $i <= $nbSites; $i++) {
+                $tab[$key]["site{$i}Semaine"] = array_key_exists("site{$i}", $tab[$key])?number_format($tab[$key]["site{$i}"] / $nbSemaines, 2, '.', ' ') : "-";
+                $tab[$key]["site{$i}"] = array_key_exists("site{$i}", $tab[$key]) ? number_format($tab[$key]["site{$i}"], 2, '.', ' ') : "-";
             }
 
-            // Formatage des données pour affichage
-            $keys = array_keys($tab);
-            foreach ($keys as $key) {
-                for ($i = 1; $i <= $nbSites; $i++) {
-                    $tab[$key]["site{$i}Semaine"] = array_key_exists("site{$i}", $tab[$key])?number_format($tab[$key]["site{$i}"] / $nbSemaines, 2, '.', ' ') : "-";
-                    $tab[$key]["site{$i}"] = array_key_exists("site{$i}", $tab[$key]) ? number_format($tab[$key]["site{$i}"], 2, '.', ' ') : "-";
-                }
+            $tab[$key]['total'] = number_format($tab[$key]['total'], 2, '.', ' ');
+            $tab[$key]['semaine'] = number_format($tab[$key]['total'] / $nbSemaines, 2, '.', ' ');      // ajout la moyenne par semaine
 
-                $tab[$key]['total'] = number_format($tab[$key]['total'], 2, '.', ' ');
-                $tab[$key]['semaine'] = number_format($tab[$key]['total'] / $nbSemaines, 2, '.', ' ');      // ajout la moyenne par semaine
+            if (!array_key_exists($key, $moyennesSP) or !is_numeric($moyennesSP[$key])) {
+                $tab[$key]['heuresHebdo'] = "Erreur";
+            } elseif ($moyennesSP[$key] > 0) {
+                $tab[$key]['heuresHebdo'] = number_format($moyennesSP[$key], 2, '.', ' ');
+            } else {
+                $tab[$key]['heuresHebdo'] = 0;
+            }
 
-                if (!array_key_exists($key, $moyennesSP) or !is_numeric($moyennesSP[$key])) {
-                    $tab[$key]['heuresHebdo'] = "Erreur";
-                } elseif ($moyennesSP[$key] > 0) {
-                    $tab[$key]['heuresHebdo'] = number_format($moyennesSP[$key], 2, '.', ' ');
-                } else {
-                    $tab[$key]['heuresHebdo'] = 0;
-                }
-
-                if (!array_key_exists($key, $totalSP) or !is_numeric($totalSP[$key])) {
-                    $tab[$key]['max'] = "Erreur";
-                } elseif ($totalSP[$key] > 0) {
-                    $tab[$key]['max'] = number_format($totalSP[$key], 2, '.', ' ');
-                } else {
-                    $tab[$key]['max'] = 0;
-                }
-
-                foreach ($dates as $d) {
-                    $tab[$key][$d[0]]['total'] = $tab[$key][$d[0]]['total'] != 0 ? number_format($tab[$key][$d[0]]['total'], 2, '.', ' ') : '-';
-                }
+            if (!array_key_exists($key, $totalSP) or !is_numeric($totalSP[$key])) {
+                $tab[$key]['max'] = "Erreur";
+            } elseif ($totalSP[$key] > 0) {
+                $tab[$key]['max'] = number_format($totalSP[$key], 2, '.', ' ');
+            } else {
+                $tab[$key]['max'] = 0;
             }
 
             foreach ($dates as $d) {
-                if (array_key_exists($d[0], $heures)) {
-                    $heures[$d[0]] = $heures[$d[0]] != 0 ? number_format($heures[$d[0]], 2, '.', ' ') : "-";
-                } else {
-                    $heures[$d[0]] = "-";
-                }
-
-                if (array_key_exists($d[0], $nbAgents)) {
-                    $nbAgents[$d[0]] = $nbAgents[$d[0]] != 0 ? $nbAgents[$d[0]] : "-";
-                } else {
-                    $nbAgents[$d[0]] = "-";
-                }
+                $tab[$key][$d[0]]['total'] = $tab[$key][$d[0]]['total'] != 0 ? number_format($tab[$key][$d[0]]['total'], 2, '.', ' ') : '-';
             }
-            $totalHeures = $totalHeures != 0 ? number_format($totalHeures, 2, '.', ' ') : "-";
+        }
 
-            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-                if (array_key_exists($i, $siteHeures) and $siteHeures[$i] != 0) {
-                    $siteHeures[$i] = number_format($siteHeures[$i], 2, '.', ' ');
-                } else {
-                    $siteHeures[$i] = "-";
-                }
-                if (array_key_exists($i, $siteAgents) and $siteAgents[$i]!=0) {
-                    $siteAgents[$i] = $siteAgents[$i];
-                } else {
-                    $siteAgents[$i] = "-";
-                } 
+        foreach ($dates as $d) {
+            if (array_key_exists($d[0], $heures)) {
+                $heures[$d[0]] = $heures[$d[0]] != 0 ? number_format($heures[$d[0]], 2, '.', ' ') : "-";
+            } else {
+                $heures[$d[0]] = "-";
             }
-            // passage en session du tableau pour le fichier export.php
-            $_SESSION['stat_tab'] = $tab;
-            $_SESSION['stat_heures'] = $heures;
-            $_SESSION['stat_agents'] = $agents;
-            $_SESSION['stat_dates'] = $dates;
-            $_SESSION['oups']['stat_totalHeures'] = $totalHeures;
-            $_SESSION['oups']['stat_nbAgents'] = $nbAgents;
-            $_SESSION['oups']['stat_groupes'] = $groupes_keys;
-            $_SESSION['oups']['stat_groupesHeures'] = $totauxGroupesHeures;
-            $_SESSION['oups']['stat_groupesPerso'] = $totauxGroupesPerso;
 
+            if (array_key_exists($d[0], $nbAgents)) {
+                $nbAgents[$d[0]] = $nbAgents[$d[0]] != 0 ? $nbAgents[$d[0]] : "-";
+            } else {
+                $nbAgents[$d[0]] = "-";
+            }
+        }
+        $totalHeures = $totalHeures != 0 ? number_format($totalHeures, 2, '.', ' ') : "-";
 
-            return $this->output('statistics/time.html.twig');
+        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+            if (array_key_exists($i, $siteHeures) and $siteHeures[$i] != 0) {
+                $siteHeures[$i] = number_format($siteHeures[$i], 2, '.', ' ');
+            } else {
+                $siteHeures[$i] = "-";
+            }
+            if (array_key_exists($i, $siteAgents) and $siteAgents[$i]!=0) {
+                $siteAgents[$i] = $siteAgents[$i];
+            } else {
+                $siteAgents[$i] = "-";
+            } 
+        }
+        // passage en session du tableau pour le fichier export.php
+        $_SESSION['stat_tab'] = $tab;
+        $_SESSION['stat_heures'] = $heures;
+        $_SESSION['stat_agents'] = $agents;
+        $_SESSION['stat_dates'] = $dates;
+        $_SESSION['oups']['stat_totalHeures'] = $totalHeures;
+        $_SESSION['oups']['stat_nbAgents'] = $nbAgents;
+        $_SESSION['oups']['stat_groupes'] = $groupes_keys;
+        $_SESSION['oups']['stat_groupesHeures'] = $totauxGroupesHeures;
+        $_SESSION['oups']['stat_groupesPerso'] = $totauxGroupesPerso;
+
+        $this->templateParams(array(
+            'debutFr'             => $debutFr,
+            'finFr'               => $finFr,
+            'CSRFToken'           => $CSRFToken,
+            'dates'               => $dates,
+            'heures'              => $heures,
+            'groupes'             => $groupes,
+            'groupes_keys'        => $groupes_keys,
+            'nbGroupes'           => count($groupes),
+            'checked'             => $checked,
+            'nbAgents'            => $nbAgents,
+            'nbSites'             => $nbSites,
+            'multisites'          => $multisites,
+            'totauxGroupesHeures' => $totauxGroupesHeures,
+            'totauxGroupesPerso'  => $totauxGroupesPerso,
+            'emptystr'            => '',
+            'nbSemaines'          => $nbSemaines,
+            'tab'                 => $tab,
+            'siteAgents'         => $siteAgents,
+            'sitesHeures'         => $siteHeures,
+            'totalAgents'         => $totalAgents,
+            'totalHeures'         => $totalHeures
+        ));
+        return $this->output('statistics/time.html.twig');
     }
 
 
