@@ -27,7 +27,7 @@ class StatisticController extends BaseController
      */
     public function index(Request $request, Session $session)
     {
-        return $this->output('statistiques/index.html.twig');
+        return $this->output('statistics/index.html.twig');
     }
 
 
