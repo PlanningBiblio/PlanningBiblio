@@ -490,7 +490,6 @@ function checkSamedi( o, n ) {
   }
 }
 
-//TODO: Factorize me
 function change_select_perso_ids(id){
   // Ajout des champs hidden permettant la validation des agents
   $('#perso_ids').before("<input type='hidden' name='perso_ids[]' value='"+id+"' id='hidden"+id+"' class='perso_ids_hidden'/>\n");
@@ -500,7 +499,6 @@ function change_select_perso_ids(id){
   // Affichage des agents sélectionnés avec tri alphabétique
   affiche_perso_ul();
 }
-
 
 /**
  * Affichage des agents sélectionnés avec tri alphabétique
@@ -568,7 +566,6 @@ function supprimeAgent(id){
   }
   affiche_perso_ul();
 }
-// END #TODO
 
 function updateAgentsListBySites() {
   selected_sites = JSON.stringify($("input[name='selected_sites']:checked").map(function(){                                               
