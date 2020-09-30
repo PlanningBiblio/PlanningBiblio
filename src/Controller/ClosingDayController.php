@@ -44,20 +44,22 @@ class ClosingDayController extends BaseController
         $j->fetch();
         $jours = $j->elements;
 
-        $selectedYears = [];
-        foreach ($annees as $elem) {
-            $selected = $elem == $annee_select ? "selected='selected'" : null;
-            $selectedYears[] = $selected;
-        }
-
         $nbDays = count($jours);
         $nbExtra = $nbDays + 15;
         $days = [];
         // Affichage des jours fériés enregistrés
         $i = 0;
         foreach ($jours as $elem) {
-            $ferie = $elem['ferie'] ? "checked='checked'" : null;
-            $fermeture = $elem['fermeture'] ? "checked='checked'" : null;
+            if ($elem['ferie']){
+                $ferie = true;
+            }else{
+                $ferie = false;
+            }
+            if ($elem['fermeture']){
+                $fermeture = true;
+            }else{
+                $fermeture = false;
+            }
             $date = dateFr($elem['jour']);
             $commentaire = $elem['commentaire'];
             $nom = $elem['nom'];
@@ -72,17 +74,16 @@ class ClosingDayController extends BaseController
             $i++;
         }
 
-        $activated = $this->config('Conges-Enable');
+        $holiday_enable = $this->config('Conges-Enable');
 
         $this->templateParams(array(
-            "activated"     => $activated,
-            "CSRFSession"   => $GLOBALS['CSRFSession'],
-            "days"          => $days,
-            "nbDays"        => $nbDays,
-            "nbExtra"       => $nbExtra,
-            "selectedYear"  => $annee_select,
-            "selectedYears" => $selectedYears,
-            "years"         => $annees
+            "CSRFSession"        => $GLOBALS['CSRFSession'],
+            "days"               => $days,
+            "holiday_enable"     => $holiday_enable,
+            "nbDays"             => $nbDays,
+            "nbExtra"            => $nbExtra,
+            "selectedYear"       => $annee_select,
+            "years"              => $annees
         ));
 
         return $this->output("closingdays/index.html.twig");
@@ -93,8 +94,8 @@ class ClosingDayController extends BaseController
      * @Route("/closingday", name="closingday.save", methods={"POST"})
      */
     public function save(Request $request, Session $session){
-        $post = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-        $CSRFToken = $post['CSRFToken'];
+        $post = $request->request->all();
+        $CSRFToken = $request->get('CSRFToken');
 
         $j = new \joursFeries();
         $j->CSRFToken = $CSRFToken;

@@ -6,12 +6,11 @@
   <div id='joursFeries'>
     <h3>Jours fériés et jours de fermeture</h3>
     <form name='form1' method='get' action='{{ asset("closingday") }}'>
-      <input type='hidden' name='page' value='{{ asset("closingday") }}' />
       Sélectionnez l'année à paramétrer
       <select name='annee' onchange='document.form1.submit();'>
         <option value=''>&nbsp;</option>
         {% for y in years %}
-          {% if selectedYears[loop.index0] is not null %}
+          {% if y == selectedYear %}
             <option value={{y}} selected >{{ y }}</option>
           {% else %}
             <option value={{y}} >{{ y }}</option>
@@ -44,12 +43,24 @@
             <td>
               <input type='text' name='jour[{{ d.number }}]' value={{ d.date }} class='c100 datepicker' id='jour{{ d.number }}'/>
             </td>
-            <td>
-              <input type='checkbox' name='ferie[{{ d.number }}]' value='1' {{ d.holiday }} />
-            </td>
-            <td>
-              <input type='checkbox' name='fermeture[{{ d.number }}]' value='1' {{ d.closed }}/>
-            </td>
+            {% if d.holiday == true %}
+              <td>
+                <input type='checkbox' name='ferie[{{ d.number }}]' value='1' checked />
+              </td>
+            {% else %}
+              <td>
+                <input type='checkbox' name='ferie[{{ d.number }}]' value='1' />
+              </td>
+            {% endif %}
+            {% if d.closed == true %}
+              <td>
+                <input type='checkbox' name='fermeture[{{ d.number }}]' value='1' checked />
+              </td>
+            {% else %}
+              <td>
+                <input type='checkbox' name='fermeture[{{ d.number }}]' value='1' />
+              </td>
+            {% endif %}
             <td>
               <input type='text' name='nom[{{ d.number }}]' value='{{ d.name | raw }}'  class='c350'/>
             </td>
@@ -89,7 +100,7 @@
         </tr>
       </table>
     </form>
-    {% if activated == true %}
+    {% if holiday_enable == true %}
       <p>Les jours de fermeture ne seront pas décomptés des congés.</p>
     {% endif %}
   </div>
