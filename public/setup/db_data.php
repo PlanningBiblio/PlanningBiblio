@@ -38,7 +38,7 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categ
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Planning Poste - Importer un modèle', 301, 'Création / modification des plannings, utilisation et gestion des modèles', 'planning/poste/importer.php','Planning','110');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Planning Poste - Enregistrer un modèle', 301, 'Création / modification des plannings, utilisation et gestion des modèles', 'planning/poste/enregistrer.php','Planning','110');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Statistiques', 17, 'Accès aux statistiques', '','Statistiques','170');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('stats postes par agent', 17, 'Accès aux statistiques', 'statistiques/postes.php','Statistiques','170');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('stats postes par agent', 17, 'Accès aux statistiques', '/statistics/position','Statistiques','170');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Statistiques Postes de renfort', 17, 'Accès aux statistiques', 'statistiques/postes_renfort.php','Statistiques','170');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Liste des agents présents et absents', 1301, 'Accès aux statistiques Présents / Absents', '/statistics/attendeesmissing','Statistiques','171');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Configuration avancée', 20, 'Configuration avancée', '/config');";
@@ -404,7 +404,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('40','0','Statistiques','/statistics',NULL),
   ('40','10','Feuille de temps','/statistics/time',NULL),
   ('40','20','Par agent','/statistics/agent',NULL),
-  ('40','30','Par poste','statistiques/postes.php',NULL),
+  ('40','30','Par poste','/statistics/position',NULL),
   ('40','40','Par poste (Synth&egrave;se)','/statistics/positionsummary',NULL),
   ('40','50','Postes de renfort','statistiques/postes_renfort.php',NULL),
   ('40','24','Par service','/statistics/service',NULL),
