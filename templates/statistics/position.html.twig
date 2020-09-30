@@ -1,0 +1,198 @@
+{# 'statistics/postion.html.twig' #}
+
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type='text/JavaScript'>document.form.tri.value='{{ tri }}';</script>
+{% endblock %}
+
+{% block page %}
+  <h3>Statistiques par poste</h3>
+  <div id='statistiques'>
+    <table>
+      <tr style='vertical-align:top;'>
+        <td id='stat-col1'>
+          <form name='form' action='{{ asset("statistics/position") }}' method='post'>
+            <table>
+              <tr>
+                <td><label class='intitule'>Début</label></td>
+                <td><input type='text' name='debut' value='{{ debut }}' class='datepicker'/></td>
+              </tr>
+              <tr>
+                <td><label class='intitule'>Fin</label></td>
+                <td><input type='text' name='fin' value='{{ fin }}' class='datepicker'/></td>
+              </tr>
+              <tr>
+                <td><label class='intitule'>Tri</label></td> 
+                <td>
+                  <select name='tri' class='ui-widget-content ui-corner-all' >
+                    <option value='cmp_01'>Nom du poste</option>
+                    <option value='cmp_02'>Etage</option>
+                    <option value='cmp_03'>Obligatoire</option>
+                    <option value='cmp_03desc'>Renfort</option>
+                    <option value='cmp_2'>Heures du - au +</option>
+                    <option value='cmp_2desc'>Heures du + au -</option>
+                  </select>
+                </td>
+              </tr>
+              <tr style='vertical-align:top'>
+                <td><label class='intitule'>Postes</label></td>
+                <td>
+                  <select name='postes[]' multiple='multiple' size='20' onchange='verif_select("postes");' class='ui-widget-content ui-corner-all' >
+                    {% if postes_list is iterable %}
+                      <option value='Tous'>Tous</option>
+                        {% for elem in postes_list %}
+                          {% if postes is not null %}
+                            {% if elem.obligatoire == "Obligatoire" %}
+                              {% if elem.id in postes %}
+                                <option value'{{ elem.id }}' selected class='td_obligatoire'>
+                              {% else %}
+                                <option value'{{ elem.id }}' class='td_obligatoire'>
+                              {% endif %}
+                            {% else %}
+                              {% if elem.id in postes %}
+                                <option value'{{ elem.id }}' selected class='td_renfort'>
+                              {% else %}
+                                <option value'{{ elem.id }}' class='td_renfort'>
+                              {% endif %}
+                            {% endif %}
+                            {{ elem.nom }} {{ elem.etage}}</option>
+                          {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                  </select>
+                </td>
+              </tr>
+              {% if nbSites>1 %}
+                <tr style='vertical-align:top'>
+                  <td><label class='intitule'>Sites</label></td>
+                  <td>
+                    <select name='selectedSites[]' multiple='multiple' size='{{ nbSites+1 }}' onchange='verif_select("selectedSites");' class='ui-widget-content ui-corner-all' >
+                      <option value='Tous'>Tous</option>
+                        {% for i in 1..nbSites %}
+                          {% if i in selectedSites %}
+                            <option value='{{ i }}' selected>{{ multisites[i]  }}</option>
+                          {% else %}
+                            <option value='{{ i }}' >{{ multisites[i]  }}</option>
+                          {% endif %}
+                        {% endfor %}
+                    </select>
+                  </td>
+                </tr>
+              {% endif %}
+              <tr>
+                <td colspan='2' style='text-align:center;padding:10px;'>
+                  <input type='button' value='Effacer' onclick='location.href="{{ asset(/statistics/position) }} ";' class='ui-button' />
+                  &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />
+                </td>
+              </tr>
+              <tr>
+                <td colspan='2'><hr/></td>
+              </tr>
+              <tr>
+                <td>Exporter </td>
+                <td>
+                  <a href='javascript:export_stat(\"postes\",\"csv\");'>CSV</a>&nbsp;&nbsp;
+                  <a href='javascript:export_stat(\"postes\",\"xsl\");'>XLS</a>
+                </td>
+              </tr>
+            </table>
+          </form>
+        </td>
+        <td>
+          {% if tab is not null %}
+            <b>Statistiques par poste du {{ debut }} au {{ fin }}</b>
+            {{ ouverture }}
+            <table border='1' cellspacing='0' cellpadding='0'>
+              <tr class='th'>
+                <td style='width:200px; padding-left:8px;'>Postes</td>
+                <td style='width:300px; padding-left:8px;'>Agents</td>
+                <td style='width:300px; padding-left:8px;'>Services</td>
+                <td style='width:300px; padding-left:8px;'>Statuts</td>
+              </tr>
+              {% for elem in tab %}
+                {% if elem[0][3] == "Obligatoire" %}
+                  <tr style='vertical-align:top;' class='td_obligatoire'>
+                {% else %}
+                  <tr style='vertical-align:top;' class='td_renfort'>
+                {% endif %}
+                  <td style='padding-left:8px;'>
+                    <table>
+                      <tr>
+                        <td colspan='2'><b>{{ elem[0][1] }}</b></td>
+                      </tr>
+                      <tr>
+                        <td colspan='2'><i>{{ elem.siteEtage }}</i></td>
+                      </tr>
+                      <tr>
+                        <td>Total</td>
+                        <td class='statistiques-heures'>{{ elem[2] }}</td>
+                      </tr>
+                      <tr>
+                        <td>Moyenne jour</td>
+                        <td class='statistiques-heures'>{{ elem.jour }}</td>
+                      </tr>
+                      <tr>
+                        <td>Moyenne hebdo.</td>
+                        <td class='statistiques-heures'> {{ elem.hebdo }}</td>
+                      </tr>
+                      {% if nbSites>1 %}
+                        {% for i in 1..nbSites %}
+                          {% if elem.sites[i] and elem.sites[i] != elem[2] %}
+                            <tr>
+                              <td colspan='2' style='padding-top:20px;'>
+                                <u>{{ multisites[i] }}</u>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>Total</td>
+                              <td class='statistiques-heures'>{{ elem.sites[i] }}</td>
+                            </tr>
+                            <tr>
+                              <td>Moyenne</td>
+                              <td class='statistiques-heures'>{{ elem.hebdo }}</td>
+                            </tr>
+                          {% endif %}
+                        {% endfor %}
+                      {% endif %}
+                    </table>
+                  </td>
+                  <td style='padding-left:8px;'>
+                    <table style='width:100%;'>
+                      {% for agent in elem[1] %}
+                        <tr>
+                          <td>{{ agent[1] }} {{ agent[2] }}</td>
+                          <td class='statistiques-heures'>{{ agent[3] }}</td>
+                        </tr>
+                      {% endfor %}
+                    </table>
+                  </td>
+                  <td>
+                    <table style='width:100%;'>
+                      {% for service in elem.services %}
+                        <tr>
+                          <td>{{ service.nom }}</td>
+                          <td class='statistiques-heures'>{{ service.heures }}</td>
+                        </tr>
+                      {% endfor %}
+                    </table>
+                  </td>
+                  <td>
+                    <table style='width:100%;'>
+                      {% for statut in elem.status %}
+                        <tr>
+                          <td>{{ statut.nom }}</td>
+                          <td class='statistiques-heures'>{{ statut.heures }}</td>
+                        </tr>
+                      {% endfor %}
+                    </table>
+                  </td>
+                </tr>
+              {% endfor %}
+            </table>
+          {% endif %}
+        </td>
+      </tr>
+    </table>
+  </div> <!-- Statistiques --> 
+{% endblock %}

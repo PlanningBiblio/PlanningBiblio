@@ -43,6 +43,8 @@ class StatisticController extends BaseController
 
         $joursParSemaine = $this->config('Dimanche') ? 7 : 6;
 
+        $nbSites = $this->config('Multisites-nombre');
+
         if (!array_key_exists('stat_poste_postes', $_SESSION)) {
             $_SESSION['stat_poste_postes'] = null;
             $_SESSION['stat_poste_tri'] = null;
@@ -105,13 +107,20 @@ class StatisticController extends BaseController
             $selectedSites = $_SESSION['stat_poste_sites'];
         }
 
-        $nbSites = $this->config('Multisites-nombre');
 
         if ($nbSites > 1 and empty($selectedSites)) {
             for ($i = 1; $i <= $nbSites; $i++) {
                 $selectedSites[] = $i;
             }
         }
+        
+        $multisites= [];
+        if ($nbSites > 1){
+            for ($i = 1; $i <= $nbSites; $i++){
+                $multisites[] = $this->config("Multisites-site{$i}");
+            }
+        }
+
         $_SESSION['stat_poste_sites'] = $selectedSites;
 
         // Filtre les sites dans les requêtes SQL
@@ -255,6 +264,61 @@ class StatisticController extends BaseController
         // passage en session du tableau pour le fichier export.php
         $_SESSION['stat_tab'] = $tab;
 
+        if($tab){
+            foreach($tab as $elem){
+                $siteEtage=array();
+                if ($nbSites >1) {
+                    for ($i = 1; $i <= $nbSites; $i++) {
+                        if ($elem["sites"][$i]==$elem[2]) {
+                            $siteEtage[] = $this->config("Multisites-site{$i}");
+                            continue;
+                        }
+                    }
+                }
+                if ($elem[0][2]) {
+                    $siteEtage[]=$elem[0][2];
+                }
+                if (!empty($siteEtage)) {
+                    $siteEtage="(".join(" ", $siteEtage).")";
+                } else {
+                    $siteEtage=null;
+                }
+                $jour = heure4($elem[2]/$nbJours);
+                $hebdo = heure4($jour*$joursParSemaine);
+                $av_jour = null;
+                $av_hebdo = null;
+
+                if ($nbSites>1) {
+                    for ($i = 1 ; $i <= $nbSites; $i++) {
+                        if ($elem["sites"][$i] and $elem["sites"][$i] != $elem[2]) {
+                            $av_jour = $elem["sites"][$i]/$nbJours;
+                            $av_hebdo = $jour*$joursParSemaine;
+                        }
+                    }
+                }
+            }
+            foreach ($elem[1] as $agent) {
+                $agent[3] = heure4($agent[3]);
+            }
+
+            $elem['services'] = sort($elem['services']);
+            foreach ($elem['services'] as $service) {
+                $service['nom'] = str_replace("ZZZ_", "", $service['nom']);
+                $service['heures'] = heure4($service['heures']);
+            }
+            $elem['status'] = sort($elem['statuts']);
+            foreach ($elem['statuts'] as $statut) {
+                $statut['nom'] = str_replace("ZZZ_", "", $statut['nom']);
+                $statut['heures']= heure4($statut['heures']);
+            }
+            $elem[]=array(
+                "jour" => $jour,
+                "av_jour" => $av_jour,
+                "hebdo" => $hebdo,
+                "av_hebdo" => $av_hebdo,
+                "siteEtage" => $siteEtage
+            );
+        }
 
         return $this->output('statistics/position.html.twig');
     }
