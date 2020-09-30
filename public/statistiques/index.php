@@ -25,7 +25,7 @@ require_once "class.statistiques.php";
 <li><a href='index.php?page=statistiques/agents.php'>Par agent</a></li>
 <li><a href='index.php?page=statistiques/service.php'>Par service</a></li>
 <li><a href='index.php?page=statistiques/statut.php'>Par statut</a></li>
-<li><a href='index.php?page=statistiques/postes.php'>Par poste</a></li>
+<li><a href='statistics/position'>Par poste</a></li>
 <li><a href='index.php?page=statistiques/postes_synthese.php'>Par poste (Synth&egrave;se)</a></li>
 <li><a href='index.php?page=statistiques/postes_renfort.php'>Postes de renfort</a></li>
 </ul>
