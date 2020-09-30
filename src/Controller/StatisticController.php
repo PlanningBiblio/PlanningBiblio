@@ -109,7 +109,7 @@ class StatisticController extends BaseController
             $groupes[$poste['groupe']][] = $poste['id'];
         }
 
-		$checked = null;
+        $checked = null;
         if (!empty($groupes) and count($groupes)>1) {
             $checked = $selection_groupe ? "checked='checked'" : null;
             $affichage_groupe = "<span id='stat-temps-aff-grp'><input type='checkbox' value='on' id='selection_groupe' name='selection_groupe' $checked /><label for='selection_groupe'>Afficher les heures par groupe de postes</label></span>";
@@ -410,7 +410,7 @@ class StatisticController extends BaseController
             'emptystr'            => '',
             'nbSemaines'          => $nbSemaines,
             'tab'                 => $tab,
-            'siteAgents'         => $siteAgents,
+            'siteAgents'          => $siteAgents,
             'sitesHeures'         => $siteHeures,
             'totalAgents'         => $totalAgents,
             'totalHeures'         => $totalHeures
