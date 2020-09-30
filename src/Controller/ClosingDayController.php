@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 require_once(__DIR__. '/../../public/joursFeries/class.joursFeries.php');
 
-class ClosingDaysController extends BaseController
+class ClosingDayController extends BaseController
 {
 
     /**
@@ -56,8 +56,8 @@ class ClosingDaysController extends BaseController
         // Affichage des jours fériés enregistrés
         $i = 0;
         foreach ($jours as $elem) {
-            $ferie = $elem['ferie']?"checked='checked'":null;
-            $fermeture = $elem['fermeture']?"checked='checked'":null;
+            $ferie = $elem['ferie'] ? "checked='checked'" : null;
+            $fermeture = $elem['fermeture'] ? "checked='checked'" : null;
             $date = dateFr($elem['jour']);
             $commentaire = $elem['commentaire'];
             $nom = $elem['nom'];

@@ -5,8 +5,8 @@
 {% block page %}
   <div id='joursFeries'>
     <h3>Jours fériés et jours de fermeture</h3>
-    <form name='form1' method='get' action='{{ asset("closingdays") }}'>
-      <input type='hidden' name='page' value='{{ asset("closingdays") }}' />
+    <form name='form1' method='get' action='{{ asset("closingday") }}'>
+      <input type='hidden' name='page' value='{{ asset("closingday") }}' />
       Sélectionnez l'année à paramétrer
       <select name='annee' onchange='document.form1.submit();'>
         <option value=''>&nbsp;</option>
@@ -21,8 +21,8 @@
     </form>
 
     <!-- Tableau des jours fériés -->
-    <form name='form' method='post' action='{{ asset("closingdays") }}'>
-      <input type='hidden' name='page' value='{{ asset("closingdays") }}' />
+    <form name='form' method='post' action='{{ asset("closingday") }}'>
+      <input type='hidden' name='page' value='{{ asset("closingday") }}' />
       <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
       <input type='hidden' name='annee' value='{{ selectedYear }}' />
       <table cellspacing='0'>
