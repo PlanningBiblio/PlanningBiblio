@@ -44,7 +44,7 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categ
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Statistiques par poste (synthèse)', 17, 'Accès aux statistiques', 'statistiques/postes_synthese.php','Statistiques','170');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Statistiques', 17, 'Accès aux statistiques', 'statistiques/service.php','Statistiques','170');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Statistiques', 17, 'Accès aux statistiques', 'statistiques/statut.php','Statistiques','170');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Feuille de temps-  index', 17, 'Accès aux statistiques', 'statistiques/temps.php','Statistiques','170');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Feuille de temps-  index', 17, 'Accès aux statistiques', '/statistics/time','Statistiques','170');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Liste des agents présents et absents', 1301, 'Accès aux statistiques Présents / Absents', '/statistics/attendeesmissing','Statistiques','171');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Configuration avancée', 20, 'Configuration avancée', '/config');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Personnel - Suppression', 21, 'Gestion des agents', 'personnel/suppression.php', 'Agents', 70);";
@@ -411,7 +411,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('30','0','Planning','planning/poste/index.php',NULL),
   ('30','90','Agents volants','planning/volants/index.php','config=Planning-agents-volants'),
   ('40','0','Statistiques','/statistics',NULL),
-  ('40','10','Feuille de temps','statistiques/temps.php',NULL),
+  ('40','10','Feuille de temps','/statistics/time',NULL),
   ('40','20','Par agent','statistiques/agents.php',NULL),
   ('40','30','Par poste','statistiques/postes.php',NULL),
   ('40','40','Par poste (Synth&egrave;se)','statistiques/postes_synthese.php',NULL),
