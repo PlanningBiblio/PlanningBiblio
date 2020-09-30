@@ -182,4 +182,14 @@ class Agent extends PLBEntity {
 
         return explode(';', $emails_string);
     }
+
+    public function _set($attr, $val)
+    {
+        $this->$attr = $val;
+    }
+
+    public function _get($attr)
+    {
+            return $this->$attr;
+    }
 }
