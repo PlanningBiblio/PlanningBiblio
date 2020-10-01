@@ -20,8 +20,7 @@ class ClosingDayController extends BaseController
         $annee_courante = date("n") < 9 ? (date("Y")-1)."-".(date("Y")) : (date("Y"))."-".(date("Y")+1);
         $annee_suivante = date("n") < 9 ? (date("Y"))."-".(date("Y")+1) : (date("Y")+1)."-".(date("Y")+2);
 
-        $annee_select = $request->get("annee");
-        $annee_select = $annee_select ? $annee_select : (isset($_SESSION['oups']['anneeFeries']) ? $_SESSION['oups']['anneeFeries'] : $annee_courante);
+        $annee_select = $request->get("annee") ?? (isset($_SESSION['oups']['anneeFeries']) ? $_SESSION['oups']['anneeFeries'] : $annee_courante);
         $_SESSION['oups']['anneeFeries'] = $annee_select;
 
         $j = new \joursFeries();
