@@ -379,9 +379,12 @@ function verifConges(){
     $(".balance_tr").effect("highlight",null,4000);
     return false;
   }
-  
+
   var admin = $("#admin").val();
   var baseURL = $('#baseURL').val();
+  if (baseURL == undefined) {
+      baseURL = '';
+  }
 
   // Vérifions si un autre congé a été demandé ou validé
   var result=$.ajax({
