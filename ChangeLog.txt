@@ -1,6 +1,12 @@
 *** Unreleased ***
+
+*** Version 20.04.05       (2020-10-02)   ***
 - Enhancements
 Use fine tuning of hours in holidays forms
+
+-Fixes
+Fix agent template, select service hours
+Prevent duplicating working hours via clone option
 
 *** Version 20.04.04       (2020-09-07)   ***
 -Fixes
