@@ -1951,6 +1951,15 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="20.05.00.007";
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[]="UPDATE `{$dbprefix}acces` SET `page` = '/closingday' WHERE `page` ='joursFeries/index.php';";
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page` ='joursFeries/valid.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` SET `url` = '/closingday' WHERE `url` ='joursFeries/index.php';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
