@@ -113,7 +113,7 @@ class StatisticController extends BaseController
                 $selectedSites[] = $i;
             }
         }
-        
+
         $multisites= [];
         if ($nbSites > 1){
             for ($i = 1; $i <= $nbSites; $i++){
@@ -320,6 +320,18 @@ class StatisticController extends BaseController
             );
         }
 
+        $this->templateParams(array(
+            "debut" => $debut,
+            "fin" => $fin,
+            "multisites" => $multisites,
+            "nbSites" => $nbSites,
+            "ouverture" => $ouverture,
+            "postes" => $postes,
+            "postes_list" => $postes_list,
+            "selectedSites" => $selectedSites,
+            "tab" => $tab,
+            "tri" => $tri
+        ));
         return $this->output('statistics/position.html.twig');
     }
 

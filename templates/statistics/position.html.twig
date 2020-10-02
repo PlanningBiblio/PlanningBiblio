@@ -23,7 +23,7 @@
                 <td><input type='text' name='fin' value='{{ fin }}' class='datepicker'/></td>
               </tr>
               <tr>
-                <td><label class='intitule'>Tri</label></td> 
+                <td><label class='intitule'>Tri</label></td>
                 <td>
                   <select name='tri' class='ui-widget-content ui-corner-all' >
                     <option value='cmp_01'>Nom du poste</option>
@@ -45,18 +45,17 @@
                           {% if postes is not null %}
                             {% if elem.obligatoire == "Obligatoire" %}
                               {% if elem.id in postes %}
-                                <option value'{{ elem.id }}' selected class='td_obligatoire'>
+                                <option value'{{ elem.id }}' selected class='td_obligatoire'> {{ elem.nom | raw}} ({{ elem.etage | raw }})</option>
                               {% else %}
-                                <option value'{{ elem.id }}' class='td_obligatoire'>
+                                <option value'{{ elem.id }}' class='td_obligatoire'>{{ elem.nom | raw}} ({{ elem.etage | raw }})</option>
                               {% endif %}
                             {% else %}
                               {% if elem.id in postes %}
-                                <option value'{{ elem.id }}' selected class='td_renfort'>
+                                <option value'{{ elem.id }}' selected class='td_renfort'> {{ elem.nom | raw}} ({{ elem.etage | raw }})</option>
                               {% else %}
-                                <option value'{{ elem.id }}' class='td_renfort'>
+                                <option value'{{ elem.id }}' class='td_renfort'>{{ elem.nom | raw}} ({{ elem.etage | raw }})</option>
                               {% endif %}
                             {% endif %}
-                            {{ elem.nom }} {{ elem.etage}}</option>
                           {% endif %}
                         {% endfor %}
                     {% endif %}
@@ -71,9 +70,9 @@
                       <option value='Tous'>Tous</option>
                         {% for i in 1..nbSites %}
                           {% if i in selectedSites %}
-                            <option value='{{ i }}' selected>{{ multisites[i]  }}</option>
+                            <option value='{{ i }}' selected>{{ multisites[i-1] }}</option>
                           {% else %}
-                            <option value='{{ i }}' >{{ multisites[i]  }}</option>
+                            <option value='{{ i }}' >{{ multisites[i-1] }}</option>
                           {% endif %}
                         {% endfor %}
                     </select>
@@ -82,7 +81,7 @@
               {% endif %}
               <tr>
                 <td colspan='2' style='text-align:center;padding:10px;'>
-                  <input type='button' value='Effacer' onclick='location.href="{{ asset(/statistics/position) }} ";' class='ui-button' />
+                  <input type='button' value='Effacer' onclick="location.href='{{ asset(/statistics/position) }} ';" class='ui-button' />
                   &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />
                 </td>
               </tr>
@@ -102,7 +101,7 @@
         <td>
           {% if tab is not null %}
             <b>Statistiques par poste du {{ debut }} au {{ fin }}</b>
-            {{ ouverture }}
+            {{ ouverture | raw }}
             <table border='1' cellspacing='0' cellpadding='0'>
               <tr class='th'>
                 <td style='width:200px; padding-left:8px;'>Postes</td>
@@ -171,7 +170,7 @@
                     <table style='width:100%;'>
                       {% for service in elem.services %}
                         <tr>
-                          <td>{{ service.nom }}</td>
+                          <td>{{ service.nom | raw }}</td>
                           <td class='statistiques-heures'>{{ service.heures }}</td>
                         </tr>
                       {% endfor %}
@@ -179,9 +178,9 @@
                   </td>
                   <td>
                     <table style='width:100%;'>
-                      {% for statut in elem.status %}
+                      {% for statut in elem.statuts %}
                         <tr>
-                          <td>{{ statut.nom }}</td>
+                          <td>{{ statut.nom | raw  }}</td>
                           <td class='statistiques-heures'>{{ statut.heures }}</td>
                         </tr>
                       {% endfor %}
@@ -194,5 +193,5 @@
         </td>
       </tr>
     </table>
-  </div> <!-- Statistiques --> 
+  </div> <!-- Statistiques -->
 {% endblock %}
