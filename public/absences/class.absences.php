@@ -1956,6 +1956,37 @@ class absences
     }
 
 
+    public function update(){
+        if(is_numeric($this->id)){
+            dump("coucou");
+            $data = array(
+                "debut"        => $this->debut.' '.$this->hre_debut,
+                "fin"          => $this->fin.' '.$this->hre_fin,
+                "perso_id"     => $this->perso_id,
+                "commentaires" => $this->commentaires,
+                "motif"        => $this->motif,
+                "motif_autre"  => $this->motif_autre,
+                "CSRFToken"    => $this->CSRFToken,
+                "rrule"        => $this->rrule,
+                "valide"       => $this->valide,
+                "pj1"          => $this->pj1,
+                "pj2"          => $this->pj2,
+                "so"           => $this->so
+            );
+
+            $db = new db();
+            $db->CSRFToken = $this->CSRFToken;
+            dump($this->id);
+            $db->update("absences", $data, array("id"=>$this->id));
+            dump($db->error);
+            $this->msg2 = null;
+            $this->msg2_type = null;
+            die("fini");
+        } else {
+            die("beuh c mal");
+        }
+    }
+
     public function update_time()
     {
         $db=new db();

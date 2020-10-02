@@ -18,7 +18,6 @@ class AbsenceController extends BaseController
     /**
      * @Route("/absence", name="absence.index", methods={"GET"})
      */
-
     public function index(Request $request){
 
         // Initialisation des variables
@@ -67,7 +66,7 @@ class AbsenceController extends BaseController
         }
 
         if ($admin) {
-            $perso_id = filter_input(INPUT_GET, "perso_id", FILTER_SANITIZE_NUMBER_INT);
+            $perso_id = $request->get("perso_id");
             if ($perso_id===null) {
                 $perso_id = isset($_SESSION['oups']['absences_perso_id']) ? $_SESSION['oups']['absences_perso_id'] : $_SESSION['login_id'];
             }
@@ -127,7 +126,6 @@ class AbsenceController extends BaseController
 
         $selectedAgents = array();
         if ($admin) {
-            $selected = $perso_id == 0 ? "selected='selected'" : null;
             $p = new \personnel();
             if ($agents_supprimes) {
                 $p->supprime = array(0,1);
@@ -161,20 +159,19 @@ class AbsenceController extends BaseController
             // Liste des agents à conserver :
             $perso_ids = array_keys($agents_menu);
             foreach ($agents_menu as $agent) {
-                $selected = $agent['id'] == $perso_id ? "selected='selected'":null;
+                $selected = $agent['id'] == $perso_id ? true :null;
                 if ($selected != null){
                   $selectedAgents[] = $agent;
                 }
             }
-            $checked = $agents_supprimes ? "checked='checked'" : null;
+            $checked = $agents_supprimes ? true : null;
         }
 
         $absList = array ();
         $absLinks = array ();
         if ($absences) {
             foreach ($absences as $elem) {
-
-            // Filtre les agents non-gérés (notamment avec l'option Absences-notifications-agent-par-agent)
+                // Filtre les agents non-gérés (notamment avec l'option Absences-notifications-agent-par-agent)
                 if ($admin) {
                     $continue = true;
                     foreach ($elem['perso_ids'] as $perso) {
@@ -187,29 +184,23 @@ class AbsenceController extends BaseController
                         continue;
                     }
                 }
-                $id=$elem['id'];
+                $id = $elem['id'];
                 $absdocs = $this->entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);
                 $nom_n1a = $elem['valide_n1'] != 99999 ? nom($elem['valide_n1'], 'nom p', $agents).", " : null;
                 $nom_n1b = $elem['valide_n1'] != -99999 ? nom(-$elem['valide_n1'], 'nom p', $agents).", " : null;
                 $nom_n2a = $elem['valide'] != 99999 ? nom($elem['valide'], 'nom p', $agents).", " : null;
                 $nom_n2b = $elem['valide'] != -99999 ? nom(-$elem['valide'], 'nom p', $agents).", " : null;
-                $etat="Demand&eacute;e";
+                $etati = "Demand&eacute;e";
                 $etat = $elem['valide_n1'] > 0 ? "En attente de validation hierarchique, $nom_n1a".dateFr($elem['validation_n1'], true) : $etat;
                 $etat = $elem['valide_n1'] < 0 ? "En attente de validation hierarchique, $nom_n1b".dateFr($elem['validation_n1'], true) : $etat;
-                $etat = $elem['valide']>0?"Valid&eacute;e, $nom_n2a".dateFr($elem['validation'], true):$etat;
-                $etat = $elem['valide']<0?"Refus&eacute;e, $nom_n2b".dateFr($elem['validation'], true):$etat;
-                $etatStyle = $elem['valide'] == 0 ? "font-weight:bold;" : null;
-                $etatStyle = $elem['valide'] < 0 ? "color:red;" : $etatStyle;
-
-                $pj1Checked = $elem['pj1'] ? "checked='checked'" : null;
-                $pj2Checked = $elem['pj2'] ? "checked='checked'" : null;
-                $soChecked = $elem['so'] ? "checked='checked'" : null;
+                $etat = $elem['valide'] > 0 ? "Valid&eacute;e, $nom_n2a".dateFr($elem['validation'], true) : $etat;
+                $etat = $elem['valide'] < 0 ? "Refus&eacute;e, $nom_n2b".dateFr($elem['validation'], true) : $etat;
 
                 $begin = dateFr($elem['debut'], true);
                 $end = dateFr($elem['fin'], true);
 
                 $agentsList = implode($elem['agents'], ",");
-                $rrule = $elem['rrule']?$elem['rrule']:null;
+                $rrule = $elem['rrule'] ? $elem['rrule'] : null;
                 $commentaires = $elem['commentaires'];
                 $motif = $elem['motif'];
                 $requestDate = dateFr($elem['demande'], true);
@@ -226,11 +217,7 @@ class AbsenceController extends BaseController
                   'rrule'         => $rrule,
                   'agentsList'    => $agentsList,
                   'state'         => $etat,
-                  'stateStyle'    => $etatStyle,
                   'absLinks'      => $absLinks,
-                  'pj1Checked'    => $pj1Checked,
-                  'pj2Checked'    => $pj2Checked,
-                  'soChecked'     => $soChecked,
                   'motive'        => $motif,
                   'comments'      => $commentaires,
                   'requestDate'   => $requestDate,
@@ -265,7 +252,6 @@ class AbsenceController extends BaseController
      */
     public function add(Request $request)
     {
-        $confirm = $request->get('confirm');
         $id = $request->get('id');
 
         $this->dbprefix = $GLOBALS['dbprefix'];
@@ -299,7 +285,6 @@ class AbsenceController extends BaseController
 
         $id = $request->get('id');
 
-        $this->dbprefix = $GLOBALS['dbprefix'];
         $this->droits = $GLOBALS['droits'];
 
         $adminN1 = false;
@@ -490,10 +475,11 @@ class AbsenceController extends BaseController
         $this->templateParams(array('documents' => $this->getDocuments($a->id)));
         return $this->output('absences/edit.html.twig');
     }
+
     /**
      *@Route("/absence", name="absence.save", methods = {"POST"})
      */
-    public function save_absence(Request $request) {
+    public function save_absence(Request $request, Session $session) {
 
         // Save absence(s).
         $this->dbprefix = $GLOBALS['dbprefix'];
@@ -516,6 +502,11 @@ class AbsenceController extends BaseController
             $this->entityManager->flush();
             $file->move(__DIR__ . AbsenceDocument::UPLOAD_DIR . $result['id'] . '/' . $ad->id(), $filename);
         }
+        if ($result['msg2_type'] !== null){
+            $session->getFlashBag()->add('error',"L'absence n'a pas pu être sauvée");
+        } else {
+            $session->getFlashBag()->add('success',"L'absence a bien été enregistrée");
+        }
 
         return $this->redirectToRoute('absence.index');
 
@@ -533,6 +524,8 @@ class AbsenceController extends BaseController
 
     private function save(Request $request) {
         $perso_id = $request->get('perso_id');
+        $id = $request->get('id');
+
         $perso_ids = array();
         if (!empty($perso_id)) {
             $perso_ids[] = $perso_id;
@@ -585,21 +578,45 @@ class AbsenceController extends BaseController
         }
 
         $a = new \absences();
-        $a->debut = $debut;
-        $a->fin = $fin;
-        $a->hre_debut = $hre_debut;
-        $a->hre_fin = $hre_fin;
-        $a->perso_ids = $perso_ids;
-        $a->commentaires = $commentaires;
-        $a->motif = $motif;
-        $a->motif_autre = $motif_autre;
-        $a->CSRFToken = $CSRFToken;
-        $a->rrule = $rrule;
-        $a->valide = $valide;
-        $a->pj1 = $pj1;
-        $a->pj2 = $pj2;
-        $a->so = $so;
-        $a->add();
+        
+        if(!$id){
+            $a->debut = $debut;
+            $a->fin = $fin;
+            $a->hre_debut = $hre_debut;
+            $a->hre_fin = $hre_fin;
+            $a->perso_ids = $perso_ids;
+            $a->commentaires = $commentaires;
+            $a->motif = $motif;
+            $a->motif_autre = $motif_autre;
+            $a->CSRFToken = $CSRFToken;
+            $a->rrule = $rrule;
+            $a->valide = $valide;
+            $a->pj1 = $pj1;
+            $a->pj2 = $pj2;
+            $a->so = $so;
+
+            $a->add();
+        } else {
+            $a->id = $id;
+            $a->debut = $debut;
+            $a->fin = $fin;
+            $a->hre_debut = $hre_debut;
+            $a->hre_fin = $hre_fin;
+            $a->perso_ids = $perso_ids;
+            $a->commentaires = $commentaires;
+            $a->motif = $motif;
+            $a->motif_autre = $motif_autre;
+            $a->CSRFToken = $CSRFToken;
+            $a->rrule = $rrule;
+            $a->valide = $valide;
+            $a->pj1 = $pj1;
+            $a->pj2 = $pj2;
+            $a->so = $so;
+
+            $a->update();
+
+        }
+
         $msg2 = $a->msg2;
         $msg2_type = $a->msg2_type;
 

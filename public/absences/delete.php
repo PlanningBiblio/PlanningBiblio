@@ -17,7 +17,6 @@ Page appelée par la page index.php après avoir cliqué sur l'icône supprimer 
 */
 
 require_once "class.absences.php";
-
 use App\Model\Agent;
 use App\Model\AbsenceDocument;
 
@@ -87,7 +86,7 @@ if (!$acces) {
 
 if (!$acces) {
     $msg=urlencode("Suppression refusée");
-    echo "<script type='text/JavaScript'>document.location.href='/absences';</script>\n";
+    echo "<script type='text/JavaScript'>document.location.href='{$config['URL']}/absences';</script>\n";
     exit;
 }
 
@@ -281,4 +280,4 @@ if (!empty($errors)) {
     $msg2Type="error";
 }
 
-echo "<script type='text/JavaScript'>document.location.href='/absence';</script>\n";
+echo "<script type='text/JavaScript'>document.location.href='{$config['URL']}/absence';</script>\n";
