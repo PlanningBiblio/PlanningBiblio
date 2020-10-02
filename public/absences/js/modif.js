@@ -221,7 +221,7 @@ $(function() {
       var CSRFToken = $('#CSRFSession').val();
       var baseURL = $('#baseURL').val();
       var id=$("#absence-bouton-supprimer").attr("data-id");
-      document.location.href = baseURL + "/absence&id="+id+"&CSRFToken="+CSRFToken;
+      document.location.href = baseURL + "index.php?page=absences/delete.php&id="+id+"&CSRFToken="+CSRFToken;
     }
   });
 

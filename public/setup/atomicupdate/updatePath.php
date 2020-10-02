@@ -1,11 +1,9 @@
 <?php
 
-$sql[]="UPDATE `{$dbprefix}acces` SET `page` = '/absence' WHERE `nom`='Absences - Index';";
-$sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`= 'absences/voir.php';";
-$sql[]="UPDATE `{$dbprefix}acces` SET `page` = '/absence/add' WHERE `nom` = 'Absences - Ajouter';";
-$sql[]="UPDATE `{$dbprefix}menu` SET `url`='/absence' WHERE `url` = 'absences/voir.php';";
-$sql[]="UPDATE `{$dbprefix}menu` SET `url`='/absence/nom' WHERE `titre` = 'Ajouter une absence';";
+$sql[]="UPDATE `{$dbprefix}acces` SET `page` = '/absence' WHERE `page`='absences/index.php';";
+$sql[]="UPDATE `{$dbprefix}menu` SET `url`='/absence' WHERE `url` = 'absences/index.php';";
 
-
+$sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page` ='absences/voir.php'";
+$sql[]="DELETE FROM `{$dbprefix}menu` WHERE `url` = 'absences/voir.php';";
 
 ?>

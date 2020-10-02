@@ -24,7 +24,10 @@
                 <span style='padding:5px;'>
                   <label class='intitule'>Agent :</label>
                   <select name='perso_id' id='perso_id' class='ui-widget-content ui-corner-all'>
-                    {% for a in agentsMenu %}
+                    {% if absences_tous %}
+                    	<option value='tous'>Tous les agents</option>
+                  	{% endif %}
+					{% for a in agentsMenu %}
                       {% if a in selectedAgents %}
                         <option value={{a.id}} selected> {{ a.nom }} {{ a.prenom }}</option>
                       {% else %}
@@ -101,7 +104,13 @@
           <td>{{ a.agentsList }}</td>
 
           {% if absences_validation %}
-            <td style={{a.stateStyle}}> {{ a.state }} </td>
+            {% if a.valide == 0 %}
+              <td style="font-weight:bold;" > {{ a.state }} </td>
+            {% elseif a.valide < 0 %}
+              <td style="color:red;" > {{ a.state }} </td>
+            {% else %}
+              <td> {{ a.state }} </td>
+            {% endif %}
           {% endif %}
           <td>{{ a.motive }}</td>
           <td title={{a.comments}}>
@@ -112,13 +121,25 @@
           {% if right701 == 1 %}
             <td style='text-align : center;'>
               <div class='absences-pj>
-                <input type='checkbox' id="pj1-'{{ a.id }}'" {{ a.pj1Checked }} />
+                {% if a.pj1 is defined %}
+                  <input type='checkbox' id="pj1-'{{ a.id }}'" checked />
+                {% else %}
+                  <input type='checkbox' id="pj1-'{{ a.id }}'" />
+                {% endif %}
               </div>
               <div class='absences-pj>
-                <input type='checkbox' id="pj2-'{{a.id}}'" {{ a.pj2Checked }} />
+                {% if a.pj2 is defined %}
+                  <input type='checkbox' id="pj2-'{{ a.id }}'" checked />
+                {% else %}
+                  <input type='checkbox' id="pj2-'{{ a.id }}'" />
+                {% endif %}
               </div>
               <div class='absences-pj'>
-                <input type='checkbox' id="so-{{ a.id }}'" {{ a.soChecked }}/>
+                {% if a.so is defined %}
+                  <input type='checkbox' id="so-'{{ a.id }}'" checked />
+                {% else %}
+                  <input type='checkbox' id="so-'{{ a.id }}'" />
+                {% endif %}
               </div>
             </td>
           {% endif %}
