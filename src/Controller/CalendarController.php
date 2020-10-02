@@ -8,6 +8,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
+use App\Model\Agent;
+use App\Model\Position;
+
 require_once(__DIR__.'/../../public/joursFeries/class.joursFeries.php');
 require_once(__DIR__.'/../../public/personnel/class.personnel.php');
 
@@ -32,7 +35,7 @@ class CalendarController extends BaseController
         $admin = in_array(3, $GLOBALS['droits'])?true:false;
         if($admin){
             $perso_id = $request->get('perso_id');
-            $perso_id = $perso_id?$perso_id:$_SESSION['agenda_perso_id'];
+            $perso_id = $perso_id ? $perso_id : $_SESSION['agenda_perso_id'];
         } else {
             $perso_id = $_SESSION['login_id'];
         }
@@ -55,14 +58,22 @@ class CalendarController extends BaseController
 
         //Sélection du personnel pour le menu déroulant
         $agent = null;
-        $db = new \db();
-        $db->query("SELECT * FROM `{$GLOBALS['dbprefix']}personnel` WHERE actif='Actif' AND id > 2 ORDER by `nom`,`prenom`;");
-        $agents = $db->result;
+
+        $db = $this->entityManager->createQueryBuilder();
+        $db->select('a')
+            ->from(Agent::class, 'a')
+            ->where(
+                "a.actif = 'Actif'",
+                'a.id > 2'
+            )
+            ->orderBy('a.nom, a.prenom');
+        $res = $db->getQuery();
+        $agents = $res->getResult();
 
         if(is_array($agents)){
             foreach ($agents as $elem){
-                if($elem['id'] == $perso_id){
-                    $agent = $elem['nom']." ".$elem['prenom'];
+                if($elem->_get('id') == $perso_id){
+                    $agent = $elem->_get('nom')." ".$elem->_get('prenom');
                     break;
                 }
             }
@@ -70,16 +81,22 @@ class CalendarController extends BaseController
 
         // Jours fériés
         $j = new \joursFeries();
-        $j->debut=$debutSQL;
-        $j->fin=$finSQL;
-        $j->index= "date";
+        $j->debut = $debutSQL;
+        $j->fin = $finSQL;
+        $j->index = "date";
         $j->fetch();
-        $joursFeries=$j->elements;
+        $joursFeries = $j->elements;
 
         //Sélection des horaires de travail
-        $db = new \db();
-        $db->select2("personnel","temps", array("id"=> $perso_id));
-        $temps=json_decode(html_entity_decode($db->result[0]['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true); //$temps = emploi du temps
+        $db = $this->entityManager->createQueryBuilder();
+        $db->select('a.temps')
+            ->from(Agent::class, 'a')
+            ->where('a.id = :perso_id')
+            ->setParameter('perso_id', $perso_id);
+        $res = $db->getQuery();
+        $result = $res->getResult();
+
+        $temps = json_decode(html_entity_decode($result[0]['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true); //$temps = emploi du temps
 
         // Sélection des absences
         $filter = $this->config('Absences-validation')?"AND `valide`>0":null;
@@ -91,7 +108,7 @@ class CalendarController extends BaseController
         $verrou = array();
         $nbSites = $this->config('Multisites-nombre');
         for ($i = 1; $i <= $nbSites; $i++){
-            $verrou[$i]=array();
+            $verrou[$i] = array();
         }
 
         $db = new \db();
@@ -117,7 +134,7 @@ class CalendarController extends BaseController
 
         // Affiche des cellules vides devant le premier jour demandé de façon à avoir les lundis dans la première colonne
         $d = new \datePl($debutSQL);
-        $cellsBefore = $d->position>0?$d->position-1:6;
+        $cellsBefore = $d->position>0 ? $d->position-1 : 6;
 
         $nb = $cellsBefore;
         $current = $debutSQL;
