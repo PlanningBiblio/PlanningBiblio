@@ -588,7 +588,7 @@ function updateAgentsListBySites() {
 
         // Check if all agents is allowed
         if ($('#perso_ids option[value="tous"]').length > 0) {
-            options += '<option value="tous">ous les agents</option>';
+            options += '<option value="tous">Tous les agents</option>';
         }
 
         $.each(result, function(index, value) {
