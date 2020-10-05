@@ -403,7 +403,8 @@ $sql[]="INSERT INTO `{$dbprefix}lignes` (`nom`) VALUES ('Rez de jardin');";
 $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condition`) VALUES
   ('10','0','Absences','/absence', NULL),
   ('10','10','Voir les absences','/absence',NULL),
-  ('10','30','Informations','/absences/info',NULL),
+  ('10','20','Ajouter une absence','/absence/add',NULL),
+  ('10','30','Informations','/absence/info',NULL),
   ('15','0','Congés','/holiday/index','config=Conges-Enable'),
   ('15','10','Liste des cong&eacute;s','/holiday/index','config=Conges-Enable'),
   ('15','15','Liste des r&eacute;cup&eacute;rations','/holiday/index?recup=1','config=Conges-Enable;Conges-Recuperations'),
