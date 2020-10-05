@@ -190,7 +190,7 @@ class AbsenceController extends BaseController
                 $nom_n1b = $elem['valide_n1'] != -99999 ? nom(-$elem['valide_n1'], 'nom p', $agents).", " : null;
                 $nom_n2a = $elem['valide'] != 99999 ? nom($elem['valide'], 'nom p', $agents).", " : null;
                 $nom_n2b = $elem['valide'] != -99999 ? nom(-$elem['valide'], 'nom p', $agents).", " : null;
-                $etati = "Demand&eacute;e";
+                $etat = "Demand&eacute;e";
                 $etat = $elem['valide_n1'] > 0 ? "En attente de validation hierarchique, $nom_n1a".dateFr($elem['validation_n1'], true) : $etat;
                 $etat = $elem['valide_n1'] < 0 ? "En attente de validation hierarchique, $nom_n1b".dateFr($elem['validation_n1'], true) : $etat;
                 $etat = $elem['valide'] > 0 ? "Valid&eacute;e, $nom_n2a".dateFr($elem['validation'], true) : $etat;
@@ -509,8 +509,6 @@ class AbsenceController extends BaseController
         }
 
         return $this->redirectToRoute('absence.index');
-
-
     }
 
     private function getDocuments($id) {
@@ -559,6 +557,9 @@ class AbsenceController extends BaseController
         $rcheckbox = $request->get('recurrence-checkbox');
         $valide = $request->get('valide');
         $allday = $request->get('allday');
+        $groupe = $request->get('groupe');
+        $etat = $request->get('etat');
+        $demande = $request->get('demande');
 
         $hre_debut = !empty($hre_debut) ? $hre_debut : '00:00:00';
         $hre_fin = !empty($hre_fin) ? $hre_fin : '23:59:59';
@@ -578,8 +579,8 @@ class AbsenceController extends BaseController
         }
 
         $a = new \absences();
-        
-        if(!$id){
+
+        if(!$id){ //Si nouvelle absence, on ajoute
             $a->debut = $debut;
             $a->fin = $fin;
             $a->hre_debut = $hre_debut;
@@ -594,14 +595,15 @@ class AbsenceController extends BaseController
             $a->pj1 = $pj1;
             $a->pj2 = $pj2;
             $a->so = $so;
-
             $a->add();
         } else {
+            // Sinon, on enregistre les champs et l'on fait appel à update
             $a->id = $id;
             $a->debut = $debut;
             $a->fin = $fin;
             $a->hre_debut = $hre_debut;
             $a->hre_fin = $hre_fin;
+            $a->groupe = $groupe;
             $a->perso_ids = $perso_ids;
             $a->commentaires = $commentaires;
             $a->motif = $motif;
@@ -612,9 +614,7 @@ class AbsenceController extends BaseController
             $a->pj1 = $pj1;
             $a->pj2 = $pj2;
             $a->so = $so;
-
             $a->update();
-
         }
 
         $msg2 = $a->msg2;

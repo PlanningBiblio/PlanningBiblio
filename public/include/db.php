@@ -369,6 +369,7 @@ class db
             $where=join(" AND ", $tmp);
         }
         $requete="UPDATE `{$dbprefix}$table` SET $set WHERE $where;";
+        dump($requete);
         $this->query($requete);
     }
 
@@ -433,6 +434,7 @@ class db
         }
 
         $values=join("),(", $tab);
+        dump("INSERT INTO `$table` (`$fields`) VALUES ($values);");
         $this->query("INSERT INTO `$table` (`$fields`) VALUES ($values);");
     }
 

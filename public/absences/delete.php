@@ -86,7 +86,7 @@ if (!$acces) {
 
 if (!$acces) {
     $msg=urlencode("Suppression refusée");
-    echo "<script type='text/JavaScript'>document.location.href='{$config['URL']}/absences';</script>\n";
+    echo "<script type='text/JavaScript'>document.location.href='{$config['URL']}/absence';</script>\n";
     exit;
 }
 

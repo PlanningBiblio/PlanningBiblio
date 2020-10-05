@@ -24,10 +24,12 @@
                 <span style='padding:5px;'>
                   <label class='intitule'>Agent :</label>
                   <select name='perso_id' id='perso_id' class='ui-widget-content ui-corner-all'>
-                    {% if absences_tous %}
-                    	<option value='tous'>Tous les agents</option>
-                  	{% endif %}
-					{% for a in agentsMenu %}
+                    {% if perso_id in selectedAgents and perso_id == 0 %}
+                      <option value='0' selected >Tous</option>
+                    {% else %}
+                      <option value='0' >Tous</option>
+                    {% endif %}
+                    {% for a in agentsMenu %}
                       {% if a in selectedAgents %}
                         <option value={{a.id}} selected> {{ a.nom }} {{ a.prenom }}</option>
                       {% else %}

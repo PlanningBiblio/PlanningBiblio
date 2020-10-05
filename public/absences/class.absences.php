@@ -340,10 +340,10 @@ class absences
                 $m->send();
 
                 // Si erreur d'envoi de mail
-                if ($m->error) {
+               /* if ($m->error) {
                     $msg2 .= "<li>".$m->error_CJInfo."</li>";
                     $msg2_type = "error";
-                }
+                }*/
             }
         }
         $this->msg2 = $msg2;
@@ -741,7 +741,7 @@ class absences
     public function fetch($sort="`debut`,`fin`,`nom`,`prenom`", $agent=null, $debut=null, $fin=null, $sites=null)
     {
         $filter="";
-        //	DB prefix
+        //    DB prefix
         $dbprefix=$GLOBALS['config']['dbprefix'];
         // Date, debut, fin
         $date=date("Y-m-d");
@@ -768,7 +768,7 @@ class absences
         // Sort
         $sort=$sort?$sort:"`debut`,`fin`,`nom`,`prenom`";
 
-        //	Select All
+        //    Select All
         $req="SELECT `{$dbprefix}personnel`.`nom` AS `nom`, `{$dbprefix}personnel`.`prenom` AS `prenom`, "
       ."`{$dbprefix}personnel`.`id` AS `perso_id`, `{$dbprefix}personnel`.`sites` AS `sites`, "
       ."`{$dbprefix}absences`.`id` AS `id`, `{$dbprefix}absences`.`debut` AS `debut`, "
@@ -871,10 +871,10 @@ class absences
         }
 
     
-        //	By default $result=$all
+        //    By default $result=$all
         $result=$all;
     
-        //	If name, keep only matching results
+        //    If name, keep only matching results
         if (is_array($all) and $agent) {
             $result=array();
 
@@ -949,7 +949,7 @@ class absences
     {
         $filter = "";
 
-        //	DB prefix
+        //    DB prefix
         $dbprefix = $GLOBALS['config']['dbprefix'];
 
         // Date, debut, fin
@@ -965,7 +965,7 @@ class absences
             $filter .= " AND `{$dbprefix}absences`.`valide`>0 ";
         }
 
-        //	Select All
+        //    Select All
         $req="SELECT `{$dbprefix}absences`.`perso_id` AS `perso_id`, "
         ."`{$dbprefix}absences`.`id` AS `id`, `{$dbprefix}absences`.`debut` AS `debut`, "
         ."`{$dbprefix}absences`.`fin` AS `fin` "
@@ -1075,7 +1075,7 @@ class absences
     {
         $responsables=array();
         $droitsAbsences=array();
-        //	Si plusieurs sites et agents autorisés à travailler sur plusieurs sites, vérifions dans l'emploi du temps quels sont les sites concernés par l'absence
+        //    Si plusieurs sites et agents autorisés à travailler sur plusieurs sites, vérifions dans l'emploi du temps quels sont les sites concernés par l'absence
         if ($GLOBALS['config']['Multisites-nombre']>1) {
             $db=new db();
             $db->select("personnel", "temps", "id='$perso_id'");
@@ -1957,16 +1957,48 @@ class absences
 
 
     public function update(){
-        if(is_numeric($this->id)){
-            dump("coucou");
+        $db = new db();
+        $where = ["groupe" => $this->groupe];
+        if ($this->groupe == null){
+            $where = ["id" => $this->id];
+        }
+        $db->select2('absences', 'perso_id, id', $where);
+        $absences = $db->result;
+
+        $db->CSRFToken = $this->CSRFToken;
+
+        //Suppression des absences quand les agents ne sont plus concernés par le groupe 
+        //d'absence
+        foreach($absences as $absence){
+            if(!in_array($absence["perso_id"], $this->perso_ids)){
+                $db->delete("absences", array("id" => $absence["id"]));
+            }
+        }
+
+        //Ajoute ou met à jour les agents dans 
+        //le groupe d'absence
+        if(count($this->perso_ids) > 1 and $this->groupe == null){
+            $this->groupe = (count($perso_ids) > 1) ? time().'-'.rand(100, 999) : null;
+        }
+
+        foreach ($this->perso_ids as $perso_id){
+
+            $absence = current(
+                array_filter(
+                    $absences,
+                    function($elt) use ($perso_id){
+                        return $elt['perso_id']== $perso_id;
+                    }
+                )
+            );
             $data = array(
-                "debut"        => $this->debut.' '.$this->hre_debut,
-                "fin"          => $this->fin.' '.$this->hre_fin,
-                "perso_id"     => $this->perso_id,
+                "debut"        => DateTime::createFromFormat('d/m/Y H:i:s',$this->debut.' '.$this->hre_debut)->format('Y-m-d H:i:s'),
+                "fin"          => DateTime::createFromFormat('d/m/Y H:i:s',$this->fin.' '.$this->hre_fin)->format('Y-m-d H:i:s'),
+                "perso_id"     => $perso_id,
+                "groupe"       => $this->groupe,
                 "commentaires" => $this->commentaires,
                 "motif"        => $this->motif,
                 "motif_autre"  => $this->motif_autre,
-                "CSRFToken"    => $this->CSRFToken,
                 "rrule"        => $this->rrule,
                 "valide"       => $this->valide,
                 "pj1"          => $this->pj1,
@@ -1974,17 +2006,17 @@ class absences
                 "so"           => $this->so
             );
 
-            $db = new db();
-            $db->CSRFToken = $this->CSRFToken;
-            dump($this->id);
-            $db->update("absences", $data, array("id"=>$this->id));
-            dump($db->error);
-            $this->msg2 = null;
-            $this->msg2_type = null;
-            die("fini");
-        } else {
-            die("beuh c mal");
+            if (empty($absence)){
+                $data["demande"] = $this->demande;
+                $db->insert("absences", $data);
+            } else {
+                $data["etat"] = $this->etat;
+                $db->update("absences", $data, ["id" => $absence["id"]]);
+            }
         }
+
+        $this->msg2 = null;
+        $this->msg2_type = null;
     }
 
     public function update_time()
