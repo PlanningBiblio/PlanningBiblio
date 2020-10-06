@@ -15,9 +15,7 @@ $version = 'symfony';
 include_once __DIR__ . "/../../public/conges/class.conges.php";
 include_once __DIR__ . "/../../public/include/function.php";
 require_once __DIR__ . "/../../public/include/db.php";
-require_once __DIR__ . "/../../public/statistiques/class.statistiques.php";
 include_once __DIR__ . '/../../public/absences/class.absences.php';
-include_once __DIR__ . '/../../public/postes/class.postes.php';
 
 class StatisticController extends BaseController
 {

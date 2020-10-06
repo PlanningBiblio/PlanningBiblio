@@ -6,13 +6,13 @@
 
   <h3>Statistiques</h3>
   <ul>
-    <li><a href='index.php?page=statistiques/temps.php'>Feuille de temps</a></li>
-    <li><a href='index.php?page=statistiques/agents.php'>Par agent</a></li>
-    <li><a href='index.php?page=statistiques/service.php'>Par service</a></li>
-    <li><a href='index.php?page=statistiques/statut.php'>Par statut</a></li>
-    <li><a href='index.php?page=statistiques/postes.php'>Par poste</a></li>
-    <li><a href='index.php?page=statistiques/postes_synthese.php'>Par poste (Synthèse)</a></li>
-    <li><a href='index.php?page=statistiques/postes_renfort.php'>Postes de renfort</a></li>
+    <li><a href='{{ asset("statistics/time") }}'>Feuille de temps</a></li>
+    <li><a href='{{ asset("statistics/agent") }}'>Par agent</a></li>
+    <li><a href='{{ asset("statistics/service") }}'>Par service</a></li>
+    <li><a href='{{ asset("statistics/status") }}'>Par statut</a></li>
+    <li><a href='{{ asset("statistics/position") }}'>Par poste</a></li>
+    <li><a href='{{ asset("statistics/position_summary") }}'>Par poste (Synthèse)</a></li>
+    <li><a href='{{ asset("statistics/support_position") }}'>Postes de renfort</a></li>
   </ul>
 
 {% endblock %}
