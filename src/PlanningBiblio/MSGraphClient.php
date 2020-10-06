@@ -254,10 +254,19 @@ class MSGraphClient
         }
     }
 
-    private function sendGet($request, $absolute = false) {
+    private function sendGet($request, $absolute = false, $retry = 0) {
         $token = $this->oauth->getToken();
         $headers['Authorization'] = "Bearer $token";
-        $response = \Unirest\Request::get($absolute ? $request : $this->base_url . $request, $headers);
+        try {
+            $response = \Unirest\Request::get($absolute ? $request : $this->base_url . $request, $headers);
+        } catch (\Exception $e) {
+            $this->log("Error in Unirest::get: " . $e->getMessage());
+            if ($retry < 5) {
+                $retry++;
+                $this->log("Retry #$retry...");
+                return $this->sendGet($request, $absolute, $retry);
+            }
+        }
         return $response;
     }
 
