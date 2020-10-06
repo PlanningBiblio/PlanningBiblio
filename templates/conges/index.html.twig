@@ -3,40 +3,208 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-  <h3>Les congés</h3>
-  <table>
-    <tr style='vertical-align:top;'>
-      <td style='width:400px;'>
-        <ul style='margin-top:0px;'>
-          <li><a href='{{ asset("holiday") }}'>Liste des congés</a></li>
-          <li><a href='{{ asset("holiday/new") }}'>Poser des congés</a></li>
-          <li><a href='/index.php?page=conges/recuperations.php'>Récupérations</a></li>
+  {% if conges_recuperation == 1 and show_recovery %}
+    <h3 class='noprint'>Liste des récupérations</h3>
+  {% else %}
+    <h3 class='noprint'>Liste des congés</h3>
+  {% endif %}
+  <h3 class='print_only'>
+    Liste des congés de {{ agent_name }}, année {{ from_year }}-{{ to_year }}.
+  </h3>
 
+  <form name='form' method='get' action='{{ asset("holiday") }}' class='noprint'>
+    <span style='float:left; vertical-align:top; margin-bottom:20px;'>
+      <table class='tableauStandard'>
+        <tbody>
+          <tr>
+            <td>
+              Année:
+              <select name='annee'>
+                {% for y in years %}
+                  {% if from_year == y[0] %}
+                    <option value='{{ y[0] }}' selected="selected">{{ y[1] }}</option>
+                  {% else %}
+                    <option value='{{ y[0] }}'>{{ y[1] }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </td>
+
+            <td>
+              Congés:
+              <select name='congesAffiches'>
+                <option value='tous'>Tous</option>
+                {% if forthcoming %}
+                  <option value='aVenir' selected="selected">A venir</option>
+                {% else %}
+                  <option value='aVenir'>A venir</option>
+                {% endif %}
+              </select>
+            </td>
+
+            {% if admin %}
+              <td style='text-align:left;'>
+                <span style='padding:5px;'>Agents : 
+                  <select name='perso_id' id='perso_id'>
+                    {% if perso_id == 0 %}
+                      <option value='0' selected="selected">Tous</option>
+                    {% else %}
+                      <option value='0'>Tous</option>
+                    {% endif %}
+
+                    {% for a in agents_menu %}
+                      {% if a.id == perso_id %}
+                        <option value='{{ a.id }}' selected="selected">{{ a.nom }} {{ a.prenom }}</option>
+                      {% else %}
+                        <option value='{{ a.id }}'>{{ a.nom }} {{ a.prenom }}</option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                </span>
+
+                <br/>
+                <span style='padding:5px;'>Agents supprimés :
+                  {% if deleted_agents %}
+                    <input type='checkbox' checked="checked" name='supprimes' onclick="updateAgentsList(this, {{ perso_id }});"/>
+                  {% else %}
+                    <input type='checkbox' name='supprimes' onclick="updateAgentsList(this, {{ perso_id }});"/>
+                  {% endif %}
+                </span>
+              </td>
+            {% endif %}
+
+            <td>
+              <input type='submit' value='Rechercher' id='button-OK' class='ui-button'/>
+            </td>
+            <td>
+              <a href='{{ asset("holiday") }}{{ show_recovery }}?reset=on' class='ui-button' >Effacer</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </span>
+
+    <span style='float:right; vertical-align:top; margin:10px 5px;'>
+      <a href='{{ addlink }}' class='ui-button'>Ajouter</a>
+    </span>
+
+    {% if show_recovery %}
+      <input type='hidden' name='recup' value='1'/>
+    {% endif %}
+  </form>
+
+  <br/>
+  <table id="tableConges" class="CJDataTable" data-sort="[[1],[2]]">
+    <thead>
+      <tr>
+        <th rowspan='2' class='dataTableNoSort'>&nbsp;</th>
+        <th rowspan='2' class='dataTableDateFR'>Début</th>
+        <th rowspan='2' class='dataTableDateFR-fin'>Fin</th>
+        {% if admin %}
+          <th rowspan='2'>Nom</th>
+        {% endif %}
+        <th colspan='2' class='ui-state-default'>Validation</th>
+        {% if conges_mode == 'jours' and not show_recovery %}
+          <th rowspan='2'>Jours</th>
+        {% else %}
+          <th rowspan='2'>Heures</th>
+        {% endif %}
+
+        {% if balance %}
+          <th rowspan='2'>Crédits</th>
+          <th rowspan='2'>Reliquat</th>
+        {% endif %}
+
+        {% if recovery %}
+          <th rowspan='2'>Récupérations</th>
+        {% endif %}
+
+        {% if balance %}
+          <th rowspan='2'>Solde Débiteur</th>
+        {% endif %}
+      </tr>
+
+      <tr>
+        <th>&Eacute;tat</th>
+        <th class='dataTableDateFR'>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in holidays %}
+        <tr>
+          <td>
+            {% if c.supprime or c.information %}
+              &nbsp;
+            {% else %}
+              <a href='{{ asset("holiday/edit/") }}{{ c.id }}'/>
+                <span class='pl-icon pl-icon-edit' title='Voir'></span>
+              </a>
+            {% endif %}
+          </td>
+
+          <td>{{ c.start }}</td>
+          <td>{{ c.end }}</td>
           {% if admin %}
-            <li>
-              <a href='/index.php?page=conges/infos.php'>Ajouter une information</a>
-            </li>
-            <li>
-              <a href='/index.php?page=conges/credits.php'>Voir les crédits</a>
-            </li>
+            <td>{{ c.nom }}</td>
+          {% endif %}
+          {% if c.valide < 0 %}
+              <td style="color: red;">{{ c.status }}</td>
+          {% elseif c.valide or c.information %}
+              <td>{{ c.status }}</td>
+          {% else %}
+              <td style="font-weight: bold;">{{ c.status }}</td>
           {% endif %}
 
-        </ul>
-      </td>
+          <td>{{ c.validationDate }}</td>
+          <td class='aRight'>{{ c.hours }}</td>
 
-      <td style='color:#FF5E0E;'>
-        {% if holidays_infos %}
-          <b>Informations sur les congés :</b><br/><br/>
-          {% for h in holidays_infos %}
-            {% if admin %}
-              <a href='/index.php?page=conges/infos.php&id={{ h.id }}'>
-                <span class='pl-icon pl-icon-edit' title='Modifier'></span>
-            </a>
+          {% if balance %}
+            {% if c.valide or c.information %}
+              {% if c.solde_prec != c.solde_actuel %}
+                <td class="bold">{{ c.solde_prec }} →  {{ c.solde_actuel }}</td>
+              {% else %}
+                <td class="aRight">{{ c.solde_prec }}</td>
+              {% endif %}
+            {% else %}
+              <td></td>
             {% endif %}
-              Du {{ h.debut | date('d/m/Y') }} au {{ h.fin | date('y/m/Y') }} : <br/> {{ h.texte | nl2br }}<br/><br/>
-          {% endfor %}
-        {% endif %}
-      </td>
-    </tr>
+
+            {% if c.valide or c.information %}
+              {% if c.reliquat_prec != c.reliquat_actuel %}
+                <td class="bold">{{ c.reliquat_prec }} →  {{ c.reliquat_actuel }}</td>
+              {% else %}
+              <td class="aRight">{{ c.reliquat_prec }}</td>
+              {% endif %}
+            {% else %}
+              <td></td>
+            {% endif %}
+          {% endif %}
+
+          {% if recovery %}
+            {% if c.valide or c.information %}
+              {% if c.recup_prec != c.recup_actuel %}
+                <td class="bold">{{ c.recup_prec }} →  {{ c.recup_actuel }}</td>
+              {% else %}
+                <td class="aRight">{{ c.recup_prec }}</td>
+              {% endif %}
+            {% else %}
+              <td></td>
+            {% endif %}
+          {% endif %}
+
+          {% if balance %}
+            {% if c.valide or c.information %}
+              {% if c.anticipation_prec != c.anticipation_actuel %}
+                <td class="bold">{{ c.anticipation_prec }} →  {{ c.anticipation_actuel }}</td>
+              {% else %}
+                <td class="aRight">{{ c.anticipation_prec }}</td>
+              {% endif %}
+            {% else %}
+              <td></td>
+            {% endif %}
+          {% endif %}
+        </tr>
+      {% endfor %}
+    </tbody>
   </table>
 {% endblock %}

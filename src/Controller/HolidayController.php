@@ -13,44 +13,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 require_once(__DIR__ . '/../../public/conges/class.conges.php');
 require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
-require_once(__DIR__ . '/../../public/include/db.php');
 
 class HolidayController extends BaseController
 {
     /**
-     * @Route("/holiday/index", name="holiday.index", methods={"GET"})
+     * @Route("/holiday", name="holiday.index", methods={"GET"})
      */
     public function index(Request $request)
-    {
-        $droits = $GLOBALS['droits'];
-
-        // Gestion des droits d'administration
-        // NOTE : Ici, pas de différenciation entre les droits niveau 1 et niveau 2
-        // NOTE : Les agents ayant les droits niveau 1 ou niveau 2 sont admin ($admin, droits 40x et 60x)
-        // TODO : différencier les niveau 1 et 2 si demandé par les utilisateurs du plugin
-        $admin = false;
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-            if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
-                $admin = true;
-                break;
-            }
-        }
-        $this->templateParams(array('admin' => $admin));
-
-
-        $date=date("Y-m-d");
-        $db=new \db();
-        $db->query("SELECT * FROM `{$dbprefix}conges_infos` WHERE `fin`>='$date' ORDER BY `debut`,`fin`;");
-        $this->templateParams(array('holidays_infos' => $db->result));
-
-
-        return $this->output('conges/index.html.twig');
-    }
-
-    /**
-     * @Route("/holiday", name="holiday.list", methods={"GET"})
-     */
-    public function listAll(Request $request)
     {
         $annee = $request->get('annee');
         $congesAffiches = $request->get('congesAffiches');
@@ -123,7 +92,7 @@ class HolidayController extends BaseController
             $c->agents_supprimes = array(0,1);
         }
 
-        $addLink = '/holiday/new';
+        $addLink = '/holiday/add';
         // Si la gestion des congés et des récupérations est dissociée, on ne recherche que les infos voulues
         if ($this->config('Conges-Recuperations') == '1') {
             if ($voir_recup) {
@@ -262,7 +231,7 @@ class HolidayController extends BaseController
 
         $this->templateParams(array('holidays' => $holidays));
 
-        return $this->output('conges/list.html.twig');
+        return $this->output('conges/index.html.twig');
     }
 
     /**
@@ -469,8 +438,8 @@ class HolidayController extends BaseController
     }
 
     /**
-     * @Route("/holiday/new", name="holiday.new", methods={"GET", "POST"})
-     * @Route("/holiday/new/{perso_id}", name="holiday.new.new", methods={"GET", "POST"})
+     * @Route("/holiday/add", name="holiday.add", methods={"GET", "POST"})
+     * @Route("/holiday/add/{perso_id}", name="holiday.add.new", methods={"GET", "POST"})
      */
     public function add(Request $request)
     {
@@ -827,7 +796,7 @@ class HolidayController extends BaseController
                             continue 2;
                         }
                     }
-                }   
+                }
             }
             $agents = $tmp;
         }
