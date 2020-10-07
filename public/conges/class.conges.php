@@ -85,7 +85,11 @@ class conges
             'heures'        => $data['heures'],
             'debit'         => $data['debit'],
             'perso_id'      => $data['perso_id'],
-            'saisie_par'    => $_SESSION['login_id']
+            'saisie_par'    => $_SESSION['login_id'],
+            'valide'        => $data['valide'] ?? 0,
+            'valide_n1'     => $data['valide_n1'] ?? 0,
+            'validation'    => $data['validation'] ?? '',
+            'validation_n1' => $data['validation_n1'] ?? ''
         ));
 
         // Récupération de l'id du congé enregistré

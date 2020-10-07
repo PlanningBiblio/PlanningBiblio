@@ -450,7 +450,6 @@ class HolidayController extends BaseController
         $debut = $request->get('debut');
         $fin = $request->get('fin');
         $confirm = $request->get('confirm') ? 1 : 0;
-
         $droits = $GLOBALS['droits'];
         $dbprefix = $GLOBALS['dbprefix'];
 
@@ -506,9 +505,9 @@ class HolidayController extends BaseController
         if ($balance[4] < 0) {
             $balance[4] = 0;
         }
-
         $this->templateParams(array(
             'admin'                 => $admin,
+            'adminN2'               => $adminN2,
             'perso_id'              => $perso_id,
             'conges_recuperations'  => $this->config('Conges-Recuperations'),
             'conges_mode'           => $this->config('Conges-Mode'),
@@ -565,6 +564,31 @@ class HolidayController extends BaseController
         $hre_debut = $request->get('hre_debut') ? $request->get('hre_debut') :"00:00:00";
         $hre_fin = $request->get('hre_fin') ? $request->get('hre_fin') : "23:59:59";
         $commentaires=htmlentities($request->get('commentaires'), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+        $valide = $request->get('valide');
+        switch ($valide) {
+            case -2:
+                $request->request->set('valide', 0);
+                $request->request->set('valide_n1', -1);
+                $request->request->set('validation_n1', date("Y-m-d H:i:s"));
+                break;
+            case -1:
+                $request->request->set('valide', -1);
+                $request->request->set('valide_n1', -1);
+                $request->request->set('validation', date("Y-m-d H:i:s"));
+                $request->request->set('validation_n1', date("Y-m-d H:i:s"));
+                break;
+            case 1:
+                $request->request->set('valide', 1);
+                $request->request->set('valide_n1', 1);
+                $request->request->set('validation', date("Y-m-d H:i:s"));
+                $request->request->set('validation_n1', date("Y-m-d H:i:s"));
+                break;
+            case 2:
+                $request->request->set('valide_n1', 1);
+                $request->request->set('validation_n1', date("Y-m-d H:i:s"));
+                $request->request->set('valide', 0);
+                break;
+        }
 
         if (!$finSQL) {
             $finSQL = $debutSQL;
