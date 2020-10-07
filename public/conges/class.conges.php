@@ -68,6 +68,7 @@ class conges
         $data['debut']=dateSQL($data['debut']);
         $data['fin']=dateSQL($data['fin']);
         $data['halfday'] = isset($data['halfday']) && $data['halfday'] == 'on' ? 1 : 0;
+        $data['conges-recup'] = $GLOBALS['config']['Conges-Recuperations'];
 
         // Enregistrement du congé
         $db=new db();
@@ -79,10 +80,15 @@ class conges
             'start_halfday' => $data['start_halfday'] ?? '',
             'end_halfday'   => $data['end_halfday'] ?? '',
             'commentaires'  => $data['commentaires'],
+            'refus'         => $data['refus'] ?? null,
             'heures'        => $data['heures'],
             'debit'         => $data['debit'],
             'perso_id'      => $data['perso_id'],
-            'saisie_par'    => $_SESSION['login_id']
+            'saisie_par'    => $_SESSION['login_id'],
+            'valide'        => $data['valide'] ?? 0,
+            'valide_n1'     => $data['valide_n1'] ?? 0,
+            'validation'    => $data['validation'] ?? '',
+            'validation_n1' => $data['validation_n1'] ?? ''
         ));
 
         // Récupération de l'id du congé enregistré
@@ -92,6 +98,12 @@ class conges
       AND heures='{$data['heures']}' AND perso_id='{$data['perso_id']}'");
         if ($db->result) {
             $this->id=$db->result[0]['id'];
+        }
+
+        // En cas de validation, on débite les crédits dans la fiche de l'agent et on barre l'agent s'il est déjà placé dans le planning
+        if ($data['valide_init'] == 1 and !$db->error) {
+            $data['id'] = $this->id;
+            $this->calcCreditsOnValidation($data);
         }
     }
 
@@ -1103,21 +1115,76 @@ class conges
   
         // En cas de validation, on débite les crédits dans la fiche de l'agent et on barre l'agent s'il est déjà placé dans le planning
         if ($data['valide']=="1" and !$db->error) {
-            // On débite les crédits dans la fiche de l'agent
-            // Recherche des crédits actuels
-            $p=new personnel();
-            $p->fetchById($data['perso_id']);
-            $credit = floatval($p->elements[0]['conges_credit']);
-            $reliquat = floatval($p->elements[0]['conges_reliquat']);
-            $recuperation = floatval($p->elements[0]['comp_time']);
-            $anticipation = floatval($p->elements[0]['conges_anticipation']);
-            $heures = floatval($data['heures']);
-      
-            // Mise à jour des compteurs dans la table conges
-            $updateConges=array("solde_prec"=>$credit, "recup_prec"=>$recuperation, "reliquat_prec"=>$reliquat, "anticipation_prec"=>$anticipation);
+            $this->calcCreditsOnValidation($data);
+        }
+    }
 
-            // Si les congés et les récupérations sont traitées de la même façon (config['Conges-Recuperations'] = 0 / Assembler
-            if ($data['conges-recup'] == 0) {
+    private function calcCreditsOnValidation($data) {
+        // On débite les crédits dans la fiche de l'agent
+        // Recherche des crédits actuels
+        $p=new personnel();
+        $p->fetchById($data['perso_id']);
+        $credit = floatval($p->elements[0]['conges_credit']);
+        $reliquat = floatval($p->elements[0]['conges_reliquat']);
+        $recuperation = floatval($p->elements[0]['comp_time']);
+        $anticipation = floatval($p->elements[0]['conges_anticipation']);
+        $heures = floatval($data['heures']);
+
+        // Mise à jour des compteurs dans la table conges
+        $updateConges=array("solde_prec"=>$credit, "recup_prec"=>$recuperation, "reliquat_prec"=>$reliquat, "anticipation_prec"=>$anticipation);
+
+        // Si les congés et les récupérations sont traitées de la même façon (config['Conges-Recuperations'] = 0 / Assembler
+        if ($data['conges-recup'] == 0) {
+            // Calcul du reliquat après décompte
+            $reste=0;
+            $reliquat=$reliquat-$heures;
+            if ($reliquat<0) {
+                $reste=-$reliquat;
+                $reliquat=0;
+            }
+            $reste2=0;
+            // Calcul du crédit de récupération
+            if ($data["debit"]=="recuperation") {
+                $recuperation=$recuperation-$reste;
+                if ($recuperation<0) {
+                    $reste2=-$recuperation;
+                    $recuperation=0;
+                }
+            }
+            // Calcul du crédit de congés
+            elseif ($data["debit"]=="credit") {
+                $credit=$credit-$reste;
+                if ($credit<0) {
+                    $reste2=-$credit;
+                    $credit=0;
+                }
+            }
+            // Si après tous les débits, il reste des heures, on débit le crédit restant
+            $reste3=0;
+            if ($reste2) {
+                if ($data["debit"]=="recuperation") {
+                    $credit=$credit-$reste2;
+                    if ($credit<0) {
+                        $reste3=-$credit;
+                        $credit=0;
+                    }
+                } elseif ($data["debit"]=="credit") {
+                    $recuperation=$recuperation-$reste2;
+                    if ($recuperation<0) {
+                        $reste3=-$recuperation;
+                        $recuperation=0;
+                    }
+                }
+            }
+
+            if ($reste3) {
+                $anticipation=floatval($anticipation)+$reste3;
+            }
+        }
+
+        // Si les congés et les récupérations sont traitées différement (config['Conges-Recuperations'] = 1 / Dissocier
+        else {
+            if ($data["debit"]=="credit") {
                 // Calcul du reliquat après décompte
                 $reste=0;
                 $reliquat=$reliquat-$heures;
@@ -1125,88 +1192,38 @@ class conges
                     $reste=-$reliquat;
                     $reliquat=0;
                 }
-                $reste2=0;
-                // Calcul du crédit de récupération
-                if ($data["debit"]=="recuperation") {
-                    $recuperation=$recuperation-$reste;
-                    if ($recuperation<0) {
-                        $reste2=-$recuperation;
-                        $recuperation=0;
-                    }
-                }
                 // Calcul du crédit de congés
-                elseif ($data["debit"]=="credit") {
-                    $credit=$credit-$reste;
-                    if ($credit<0) {
-                        $reste2=-$credit;
-                        $credit=0;
-                    }
+                $credit=$credit-$reste;
+                if ($credit<0) {
+                    $reste=-$credit;
+                    $credit=0;
+                } else {
+                    $reste = 0;
                 }
-                // Si après tous les débits, il reste des heures, on débit le crédit restant
-                $reste3=0;
-                if ($reste2) {
-                    if ($data["debit"]=="recuperation") {
-                        $credit=$credit-$reste2;
-                        if ($credit<0) {
-                            $reste3=-$credit;
-                            $credit=0;
-                        }
-                    } elseif ($data["debit"]=="credit") {
-                        $recuperation=$recuperation-$reste2;
-                        if ($recuperation<0) {
-                            $reste3=-$recuperation;
-                            $recuperation=0;
-                        }
-                    }
-                }
-
-                if ($reste3) {
-                    $anticipation=floatval($anticipation)+$reste3;
+                if ($reste) {
+                    $anticipation=floatval($anticipation)+$reste;
                 }
             }
-      
-            // Si les congés et les récupérations sont traitées différement (config['Conges-Recuperations'] = 1 / Dissocier
+
+            // Calcul du crédit de récupération
             else {
-                if ($data["debit"]=="credit") {
-                    // Calcul du reliquat après décompte
-                    $reste=0;
-                    $reliquat=$reliquat-$heures;
-                    if ($reliquat<0) {
-                        $reste=-$reliquat;
-                        $reliquat=0;
-                    }
-                    // Calcul du crédit de congés
-                    $credit=$credit-$reste;
-                    if ($credit<0) {
-                        $reste=-$credit;
-                        $credit=0;
-                    } else {
-                        $reste = 0;
-                    }
-                    if ($reste) {
-                        $anticipation=floatval($anticipation)+$reste;
-                    }
-                }
-        
-                // Calcul du crédit de récupération
-                else {
-                    $recuperation = $recuperation - $heures;
-                }
+                $recuperation = $recuperation - $heures;
             }
-
-            // Mise à jour des compteurs dans la table personnel
-            $updateCredits=array("conges_credit"=>$credit,"conges_reliquat"=>$reliquat,"comp_time"=>$recuperation,"conges_anticipation"=>$anticipation);
-            $db=new db();
-            $db->CSRFToken = $this->CSRFToken;
-            $db->update("personnel", $updateCredits, array("id"=>$data["perso_id"]));
-
-            // Mise à jour des compteurs dans la table conges
-            $updateConges=array_merge($updateConges, array("solde_actuel"=>$credit,"reliquat_actuel"=>$reliquat,"recup_actuel"=>$recuperation,"anticipation_actuel"=>$anticipation));
-            $db=new db();
-            $db->CSRFToken = $this->CSRFToken;
-            $db->update("conges", $updateConges, array("id"=>$data['id']));
         }
+
+        // Mise à jour des compteurs dans la table personnel
+        $updateCredits=array("conges_credit"=>$credit,"conges_reliquat"=>$reliquat,"comp_time"=>$recuperation,"conges_anticipation"=>$anticipation);
+        $db=new db();
+        $db->CSRFToken = $this->CSRFToken;
+        $db->update("personnel", $updateCredits, array("id"=>$data["perso_id"]));
+
+        // Mise à jour des compteurs dans la table conges
+        $updateConges=array_merge($updateConges, array("solde_actuel"=>$credit,"reliquat_actuel"=>$reliquat,"recup_actuel"=>$recuperation,"anticipation_actuel"=>$anticipation));
+        $db=new db();
+        $db->CSRFToken = $this->CSRFToken;
+        $db->update("conges", $updateConges, array("id"=>$data['id']));
     }
+
 
     public function updateCETCredits()
     {
