@@ -136,6 +136,7 @@ class HolidayController extends BaseController
             'deleted_agents'        => $agents_supprimes ? 1 : 0,
             'conges_recuperation'   => $this->config('Conges-Recuperations'),
             'conges_mode'           => $this->config('Conges-Mode'),
+            'conges_validation'     => $this->config('Conges-validation'),
             'show_recovery'         => $voir_recup,
             'agent_name'            => nom($perso_id, "prenom nom", $agents),
             'from_year'             => $annee,
@@ -450,7 +451,6 @@ class HolidayController extends BaseController
         $debut = $request->get('debut');
         $fin = $request->get('fin');
         $confirm = $request->get('confirm') ? 1 : 0;
-
         $droits = $GLOBALS['droits'];
         $dbprefix = $GLOBALS['dbprefix'];
 
@@ -506,13 +506,14 @@ class HolidayController extends BaseController
         if ($balance[4] < 0) {
             $balance[4] = 0;
         }
-
         $this->templateParams(array(
             'admin'                 => $admin,
+            'adminN2'               => $adminN2,
             'perso_id'              => $perso_id,
             'conges_recuperations'  => $this->config('Conges-Recuperations'),
             'conges_mode'           => $this->config('Conges-Mode'),
             'conges_demi_journee'   => $this->config('Conges-demi-journees'),
+            'conges_validation'     => $this->config('Conges-validation'),
             'CSRFToken'             => $CSRFSession,
             'reliquat'              => $reliquat,
             'reliquat2'             => $holiday_helper->HumanReadableDuration($reliquat),
@@ -529,6 +530,12 @@ class HolidayController extends BaseController
             'login_id'              => $_SESSION['login_id'],
             'login_nom'             => $_SESSION['login_nom'],
             'login_prenom'          => $_SESSION['login_prenom'],
+        ));
+
+        $lang = $GLOBALS['lang'];
+        $this->templateParams(array(
+            'accepted_pending_str' => $lang['leave_dropdown_accepted_pending'],
+            'refused_pending_str' => $lang['leave_dropdown_refused_pending']
         ));
 
         // Affichage du formulaire
@@ -560,11 +567,42 @@ class HolidayController extends BaseController
     {
         $CSRFToken = $request->get('CSRFToken');
         $perso_id = $request->get('perso_id');
+        $debut = $request->get('debut');
+        $fin = $request->get('fin');
         $debutSQL = dateSQL($request->get('debut'));
         $finSQL = dateSQL($request->get('fin'));
         $hre_debut = $request->get('hre_debut') ? $request->get('hre_debut') :"00:00:00";
         $hre_fin = $request->get('hre_fin') ? $request->get('hre_fin') : "23:59:59";
         $commentaires=htmlentities($request->get('commentaires'), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+        $refus = $request->get('refus');
+        $valide = $request->get('valide');
+        $perso_id = $_SESSION['login_id'];
+        $lang = $GLOBALS['lang'];
+
+        switch ($valide) {
+            case -2:
+                $request->request->set('valide', 0);
+                $request->request->set('valide_n1', $perso_id * -1);
+                $request->request->set('validation_n1', date("Y-m-d H:i:s"));
+                break;
+            case -1:
+                $request->request->set('valide', $perso_id * -1);
+                $request->request->set('valide_n1', $perso_id * -1);
+                $request->request->set('validation', date("Y-m-d H:i:s"));
+                $request->request->set('validation_n1', date("Y-m-d H:i:s"));
+                break;
+            case 1:
+                $request->request->set('valide', $perso_id);
+                $request->request->set('valide_n1', $perso_id);
+                $request->request->set('validation', date("Y-m-d H:i:s"));
+                $request->request->set('validation_n1', date("Y-m-d H:i:s"));
+                break;
+            case 2:
+                $request->request->set('valide_n1', $perso_id);
+                $request->request->set('validation_n1', date("Y-m-d H:i:s"));
+                $request->request->set('valide', 0);
+                break;
+        }
 
         if (!$finSQL) {
             $finSQL = $debutSQL;
@@ -590,32 +628,61 @@ class HolidayController extends BaseController
         $nom = $agent->nom();
         $prenom = $agent->prenom();
 
+        // Choix du sujet et des destinataires en fonction du degré de validation
+        switch ($valide) {
+        // Modification sans validation
+        case 0:
+          $sujet="Modification de congés";
+          $notifications='-A2';
+          break;
+        // Validations Niveau 2
+        case 1:
+          $sujet="Validation de congés";
+          $notifications='-A4';
+          break;
+        case -1:
+          $sujet="Refus de congés";
+          $notifications='-A4';
+          break;
+        // Validations Niveau 1
+        case 2:
+          $sujet = $lang['leave_subject_accepted_pending'];
+          $notifications='-A3';
+          break;
+        case -2:
+          $sujet = $lang['leave_subject_refused_pending'];
+          $notifications='-A3';
+          break;
+        }
+
         // Choix des destinataires en fonction de la configuration
         if ($this->config('Absences-notifications-agent-par-agent')) {
             $a = new \absences();
-            $a->getRecipients2(null, $perso_id, 1);
+            $a->getRecipients2(null, $perso_id, $notifications, 600, $debutSQL, $finSQL);
             $destinataires = $a->recipients;
         } else {
             $c = new \conges();
             $c->getResponsables($debutSQL, $finSQL, $perso_id);
             $responsables = $c->responsables;
-
             $a = new \absences();
-            $a->getRecipients('-A1', $responsables, $agent);
+            $a->getRecipients($notifications, $responsables, $agent);
             $destinataires = $a->recipients;
         }
 
         // Message qui sera envoyé par email
-        $message="Nouveau congés: <br/>$prenom $nom<br/>Début : $debutSQL";
+        $message="$sujet : $prenom $nom Début : $debut";
         if ($hre_debut!="00:00:00") {
             $message.=" ".heure3($hre_debut);
         }
-        $message.="<br/>Fin : $finSQL";
+        $message.=", Fin : $fin";
         if ($hre_fin!="23:59:59") {
             $message.=" ".heure3($hre_fin);
         }
         if ($commentaires) {
-            $message.="<br/><br/>Commentaire :<br/>$commentaires<br/>";
+            $message.=", Commentaires : $commentaires";
+        }
+        if ($refus and $valide==-1) {
+            $message.=", Motif du refus :$refus,";
         }
 
         // ajout d'un lien permettant de rebondir sur la demande
