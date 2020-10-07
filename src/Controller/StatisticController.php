@@ -30,10 +30,10 @@ class StatisticController extends BaseController
     public function position(Request $request, Session $session)
     {
         // Initialisation des variables :
-        $debut = $request->get("debut");
-        $fin = $request->get("fin");
-        $tri = $request->get("tri");
-        $post = filter_input_array(INPUT_POST, FILTER_SANITIZE_NUMBER_INT);
+        $debut = $request->get('debut');
+        $fin = $request->get('fin');
+        $tri = $request->get('tri');
+        $post = $request->request->all();
 
         $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
         $fin = filter_var($fin, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
@@ -91,6 +91,7 @@ class StatisticController extends BaseController
         } else {
             $postes = $_SESSION['stat_poste_postes'];
         }
+
         $_SESSION['stat_poste_postes'] = $postes;
 
         // Filtre les sites
@@ -168,9 +169,7 @@ class StatisticController extends BaseController
                 array(),
                 "ORDER BY `poste`,`nom`,`prenom`"
             );
-
             $resultat = $db->result;
-
 
             //    Recherche des infos dans le tableau $resultat (issu de pl_poste et personnel)
             //    pour chaques postes sélectionnés
@@ -205,6 +204,7 @@ class StatisticController extends BaseController
                                 $agents[$elem['perso_id']] = array($elem['perso_id'],$elem['nom'],$elem['prenom'],0,"site" => $elem['site']);
                             }
                             $agents[$elem['perso_id']][3] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                            $agents[$elem['perso_id']][3] = heure4($agents[$elem['perso_id']][3]);
 
                             // On compte les heures de chaque site
                             if ($nbSites > 1) {
@@ -230,6 +230,7 @@ class StatisticController extends BaseController
                                 $services[$service] = array("nom"=>$service,"heures"=>0);
                             }
                             $services[$service]["heures"] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                            $services[$service]["heures"] = heure4($services[$service]["heures"]);
 
                             // On créé un tableau par statut
                             if (array_key_exists($elem['perso_id'], $agents_infos)) {
@@ -240,6 +241,7 @@ class StatisticController extends BaseController
                                 $statuts[$statut] = array("nom" => $statut, "heures" => 0);
                             }
                             $statuts[$statut]["heures"] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                            $statuts[$statut]["heures"] = heure4($statuts[$statut]["heures"]);
 
                             // On met dans tab tous les éléments (infos postes + agents + heures du poste)
                             $tab[$poste] = array($poste_tab, $agents, $heures, "services" => $services, "statuts" => $statuts, "sites" => $sites);
@@ -265,59 +267,61 @@ class StatisticController extends BaseController
         $_SESSION['stat_tab'] = $tab;
 
         if($tab){
-            foreach($tab as $elem){
-                $siteEtage=array();
+            foreach($tab as $key => $elem){
+                $siteEtage = array();
                 if ($nbSites >1) {
                     for ($i = 1; $i <= $nbSites; $i++) {
-                        if ($elem["sites"][$i]==$elem[2]) {
+                        if ($tab[$key]["sites"][$i] == $tab[$key][2]) {
                             $siteEtage[] = $this->config("Multisites-site{$i}");
                             continue;
                         }
                     }
                 }
-                if ($elem[0][2]) {
-                    $siteEtage[]=$elem[0][2];
+                $tab[$key][2] = heure4($tab[$key][2]);
+                if ($tab[$key][0][2]) {
+                    $siteEtage[] = $tab[$key][0][2];
                 }
                 if (!empty($siteEtage)) {
                     $siteEtage="(".join(" ", $siteEtage).")";
                 } else {
                     $siteEtage=null;
                 }
-                $jour = heure4($elem[2]/$nbJours);
-                $hebdo = heure4($jour*$joursParSemaine);
+                $jour = $tab[$key][2]/$nbJours;
+                $hebdo = $jour*$joursParSemaine;
                 $av_jour = null;
                 $av_hebdo = null;
 
                 if ($nbSites>1) {
                     for ($i = 1 ; $i <= $nbSites; $i++) {
-                        if ($elem["sites"][$i] and $elem["sites"][$i] != $elem[2]) {
-                            $av_jour = $elem["sites"][$i]/$nbJours;
+                        if ($tab[$key]["sites"][$i] and $tab[$key]["sites"][$i] != $tab[$key][2]) {
+                            $av_jour = $tab[$key]["sites"][$i]/$nbJours;
                             $av_hebdo = $jour*$joursParSemaine;
                         }
                     }
                 }
+
+                $tab[$key]["jour"] = heure4($jour);
+                $tab[$key]["hebdo"] = heure4($hebdo);
+                $tab[$key]["av_hebdo"] = $av_hebdo;
+                $tab[$key]["av_jour"] = $av_jour;
+                $tab[$key]["siteEtage"] = $siteEtage;
             }
-            foreach ($elem[1] as $agent) {
+            
+            foreach ($tab[$key][1] as $agent) {
                 $agent[3] = heure4($agent[3]);
             }
 
-            $elem['services'] = sort($elem['services']);
-            foreach ($elem['services'] as $service) {
+            $tab[$key]['services'] = sort($tab[$key]['services']);
+            foreach ($tab[$key]['services'] as $service) {
                 $service['nom'] = str_replace("ZZZ_", "", $service['nom']);
                 $service['heures'] = heure4($service['heures']);
             }
-            $elem['status'] = sort($elem['statuts']);
-            foreach ($elem['statuts'] as $statut) {
+            $tab[$key]['status'] = sort($tab[$key]['statuts']);
+            foreach ($tab[$key]['statuts'] as $statut) {
                 $statut['nom'] = str_replace("ZZZ_", "", $statut['nom']);
                 $statut['heures']= heure4($statut['heures']);
             }
-            $elem[]=array(
-                "jour" => $jour,
-                "av_jour" => $av_jour,
-                "hebdo" => $hebdo,
-                "av_hebdo" => $av_hebdo,
-                "siteEtage" => $siteEtage
-            );
+
         }
 
         $this->templateParams(array(

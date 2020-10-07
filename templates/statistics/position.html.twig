@@ -2,10 +2,6 @@
 
 {% extends 'base.html.twig' %}
 
-{% block specificjs %}
-  <script type='text/JavaScript'>document.form.tri.value='{{ tri }}';</script>
-{% endblock %}
-
 {% block page %}
   <h3>Statistiques par poste</h3>
   <div id='statistiques'>
@@ -23,15 +19,15 @@
                 <td><input type='text' name='fin' value='{{ fin }}' class='datepicker'/></td>
               </tr>
               <tr>
-                <td><label class='intitule'>Tri</label></td>
+                <td><label class='intitule'>Tri</label>{{ form.tri }}</td>
                 <td>
-                  <select name='tri' class='ui-widget-content ui-corner-all' >
-                    <option value='cmp_01'>Nom du poste</option>
-                    <option value='cmp_02'>Etage</option>
-                    <option value='cmp_03'>Obligatoire</option>
-                    <option value='cmp_03desc'>Renfort</option>
-                    <option value='cmp_2'>Heures du - au +</option>
-                    <option value='cmp_2desc'>Heures du + au -</option>
+				  <select name='tri' class='ui-widget-content ui-corner-all' >
+                    <option value='cmp_01'{% if tri is same as('cmp_01') %}selected='selected'{% endif %}>Nom du poste</option>
+                    <option value='cmp_02' {% if tri is same as('cmp_02') %}selected='selected'{% endif %}>Etage</option>
+                    <option value='cmp_03' {% if tri is same as('cmp_03') %}selected='selected'{% endif %}>Obligatoire</option>
+                    <option value='cmp_03desc' {% if tri is same as('cmp_03desc') %}selected='selected'{% endif %}>Renfort</option>
+                    <option value='cmp_2' {% if tri is same as('cmp_2') %}selected='selected'{% endif %}>Heures du - au +</option>
+                    <option value='cmp_2desc' {% if tri is same as('cmp_2desc') %}selected='selected'{% endif %}>Heures du + au -</option>
                   </select>
                 </td>
               </tr>
@@ -39,15 +35,15 @@
                 <td><label class='intitule'>Postes</label></td>
                 <td>
                   <select name='postes[]' multiple='multiple' size='20' onchange='verif_select("postes");' class='ui-widget-content ui-corner-all' >
-                    {% if postes_list is iterable %}
+                    {% if postes_list is not empty %}
                       <option value='Tous'>Tous</option>
                         {% for elem in postes_list %}
-                          {% if postes is not null %}
+                          {% if postes is defined %}
                             {% if elem.obligatoire == "Obligatoire" %}
                               {% if elem.id in postes %}
-                                <option value'{{ elem.id }}' selected class='td_obligatoire'> {{ elem.nom | raw}} ({{ elem.etage | raw }})</option>
+                                <option value='{{ elem.id }}' selected class='td_obligatoire'> {{ elem.nom | raw}} ({{ elem.etage | raw }})</option>
                               {% else %}
-                                <option value'{{ elem.id }}' class='td_obligatoire'>{{ elem.nom | raw}} ({{ elem.etage | raw }})</option>
+                                <option value='{{ elem.id }}' class='td_obligatoire'>{{ elem.nom | raw}} ({{ elem.etage | raw }})</option>
                               {% endif %}
                             {% else %}
                               {% if elem.id in postes %}
@@ -81,7 +77,7 @@
               {% endif %}
               <tr>
                 <td colspan='2' style='text-align:center;padding:10px;'>
-                  <input type='button' value='Effacer' onclick="location.href='{{ asset(/statistics/position) }} ';" class='ui-button' />
+                  <input type='reset' value='Effacer' onclick="location.href='{{ asset('statistics/position') }} ';" class='ui-button' />
                   &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />
                 </td>
               </tr>
@@ -99,7 +95,7 @@
           </form>
         </td>
         <td>
-          {% if tab is not null %}
+          {% if tab is not empty %}
             <b>Statistiques par poste du {{ debut }} au {{ fin }}</b>
             {{ ouverture | raw }}
             <table border='1' cellspacing='0' cellpadding='0'>
@@ -121,7 +117,7 @@
                         <td colspan='2'><b>{{ elem[0][1] }}</b></td>
                       </tr>
                       <tr>
-                        <td colspan='2'><i>{{ elem.siteEtage }}</i></td>
+                        <td colspan='2'><i>{{ elem.siteEtage | raw }}</i></td>
                       </tr>
                       <tr>
                         <td>Total</td>
@@ -137,7 +133,7 @@
                       </tr>
                       {% if nbSites>1 %}
                         {% for i in 1..nbSites %}
-                          {% if elem.sites[i] and elem.sites[i] != elem[2] %}
+                          {% if elem.sites[i] != 0 and not elem.sites[i] == elem[2] %}
                             <tr>
                               <td colspan='2' style='padding-top:20px;'>
                                 <u>{{ multisites[i] }}</u>
@@ -194,4 +190,7 @@
       </tr>
     </table>
   </div> <!-- Statistiques -->
+{% endblock %}
+{% block specificjs %}
+  <script type='text/JavaScript'>document.form.tri.value='{{ tri }}';</script>
 {% endblock %}
