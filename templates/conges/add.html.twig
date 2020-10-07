@@ -240,6 +240,39 @@
             </td>
           </tr>
 
+          {% if config('Conges-validation') %}
+              <tr>
+                <td>
+                  <label class='intitule'>État </label>
+                </td>
+
+                <td>
+                  {% if admin %}
+                    <select name='valide' id='validation' style='width:35%;' onchange="afficheRefus(this);">
+                      <option value='0'>Demandé</option>
+                      <option value='2'>{{ accepted_pending_str }}</option>
+                      <option value='-2' >{{ refused_pending_str }}</option>
+                      {% if adminN2 %}
+                        <option value='1' >Accepté</option>
+                        <option value='-1' >Refusé</option>
+                      {% endif %}
+                    </select>
+                  {% else %}
+                    Demandée
+                  {% endif %}
+                </td>
+              </tr>
+
+              <tr id='tr_refus' style='vertical-align:top; display:none;'>
+                <td>Motif du refus :</td>
+                <td>
+                  <textarea name='refus' cols='16' rows='5' style='width:40%;'></textarea>
+                </td>
+              </tr>
+            {% else %}
+                <input type='hidden' name='valide' id='validation' value='1' />
+            {% endif %}
+
           <tr>
             <td>&nbsp;
             </td>
