@@ -103,7 +103,9 @@
         {% if admin %}
           <th rowspan='2'>Nom</th>
         {% endif %}
-        <th colspan='2' class='ui-state-default'>Validation</th>
+        {% if conges_validation %}
+            <th colspan='2' class='ui-state-default'>Validation</th>
+        {% endif %}
         {% if conges_mode == 'jours' and not show_recovery %}
           <th rowspan='2'>Jours</th>
         {% else %}
@@ -147,15 +149,16 @@
           {% if admin %}
             <td>{{ c.nom }}</td>
           {% endif %}
-          {% if c.valide < 0 %}
-              <td style="color: red;">{{ c.status }}</td>
-          {% elseif c.valide or c.information %}
-              <td>{{ c.status }}</td>
-          {% else %}
-              <td style="font-weight: bold;">{{ c.status }}</td>
+          {% if conges_validation %}
+              {% if c.valide < 0 %}
+                  <td style="color: red;">{{ c.status }}</td>
+              {% elseif c.valide or c.information %}
+                  <td>{{ c.status }}</td>
+              {% else %}
+                  <td style="font-weight: bold;">{{ c.status }}</td>
+              {% endif %}
+              <td>{{ c.validationDate }}</td>
           {% endif %}
-
-          <td>{{ c.validationDate }}</td>
           <td class='aRight'>{{ c.hours }}</td>
 
           {% if balance %}

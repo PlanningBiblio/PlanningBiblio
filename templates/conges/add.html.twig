@@ -240,7 +240,7 @@
             </td>
           </tr>
 
-          {% if (admin or adminN2) %}
+          {% if (conges_validation) %}
               <tr>
                 <td>
                   <label class='intitule'>État </label>
@@ -249,12 +249,12 @@
                 <td>
                   {% if admin %}
                     <select name='valide' class='ui-widget-content ui-corner-all'>
-                      <option value='0'>Demandée</option>
-                      <option value='2'>Acceptée (En attente de validation hiérarchique)</option>\
-                      <option value='-2' >Refusée (En attente de validation hiérarchique)</option>
+                      <option value='0'>Demandé</option>
+                      <option value='2'>{{ accepted_pending_str }}</option>
+                      <option value='-2' >{{ refused_pending_str }}</option>
                       {% if adminN2 %}
-                        <option value='1' >Acceptée</option>
-                        <option value='-1' >Refusée</option>
+                        <option value='1' >Accepté</option>
+                        <option value='-1' >Refusé</option>
                       {% endif %}
                     </select>
                   {% else %}

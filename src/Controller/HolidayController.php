@@ -136,6 +136,7 @@ class HolidayController extends BaseController
             'deleted_agents'        => $agents_supprimes ? 1 : 0,
             'conges_recuperation'   => $this->config('Conges-Recuperations'),
             'conges_mode'           => $this->config('Conges-Mode'),
+            'conges_validation'     => $this->config('Conges-validation'),
             'show_recovery'         => $voir_recup,
             'agent_name'            => nom($perso_id, "prenom nom", $agents),
             'from_year'             => $annee,
@@ -512,6 +513,7 @@ class HolidayController extends BaseController
             'conges_recuperations'  => $this->config('Conges-Recuperations'),
             'conges_mode'           => $this->config('Conges-Mode'),
             'conges_demi_journee'   => $this->config('Conges-demi-journees'),
+            'conges_validation'     => $this->config('Conges-validation'),
             'CSRFToken'             => $CSRFSession,
             'reliquat'              => $reliquat,
             'reliquat2'             => $holiday_helper->HumanReadableDuration($reliquat),
@@ -528,6 +530,12 @@ class HolidayController extends BaseController
             'login_id'              => $_SESSION['login_id'],
             'login_nom'             => $_SESSION['login_nom'],
             'login_prenom'          => $_SESSION['login_prenom'],
+        ));
+
+        $lang = $GLOBALS['lang'];
+        $this->templateParams(array(
+            'accepted_pending_str' => $lang['leave_dropdown_accepted_pending'],
+            'refused_pending_str' => $lang['leave_dropdown_refused_pending']
         ));
 
         // Affichage du formulaire
@@ -565,26 +573,28 @@ class HolidayController extends BaseController
         $hre_fin = $request->get('hre_fin') ? $request->get('hre_fin') : "23:59:59";
         $commentaires=htmlentities($request->get('commentaires'), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
         $valide = $request->get('valide');
+        $perso_id = $_SESSION['login_id'];
+
         switch ($valide) {
             case -2:
                 $request->request->set('valide', 0);
-                $request->request->set('valide_n1', -1);
+                $request->request->set('valide_n1', $perso_id * -1);
                 $request->request->set('validation_n1', date("Y-m-d H:i:s"));
                 break;
             case -1:
-                $request->request->set('valide', -1);
-                $request->request->set('valide_n1', -1);
+                $request->request->set('valide', $perso_id * -1);
+                $request->request->set('valide_n1', $perso_id * -1);
                 $request->request->set('validation', date("Y-m-d H:i:s"));
                 $request->request->set('validation_n1', date("Y-m-d H:i:s"));
                 break;
             case 1:
-                $request->request->set('valide', 1);
-                $request->request->set('valide_n1', 1);
+                $request->request->set('valide', $perso_id);
+                $request->request->set('valide_n1', $perso_id);
                 $request->request->set('validation', date("Y-m-d H:i:s"));
                 $request->request->set('validation_n1', date("Y-m-d H:i:s"));
                 break;
             case 2:
-                $request->request->set('valide_n1', 1);
+                $request->request->set('valide_n1', $perso_id);
                 $request->request->set('validation_n1', date("Y-m-d H:i:s"));
                 $request->request->set('valide', 0);
                 break;
