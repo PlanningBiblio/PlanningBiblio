@@ -22,14 +22,14 @@
               <td><label class='intitule'>Agents</label></td>
               <td>
                 <select name='agents[]' multiple='multiple' size='20' onchange='verif_select(\"agents\");' class='ui-widget-content ui-corner-all' >
-                  {% if agents_list is not empty %}
+                  {% if agents_list is iterable %}
                     <option value='Tous'>Tous</option>
                     {% for elem in agents_list %}
                       {% if agents is defined %}
                         {% if elem.id in agents == true %}
-                          <option value='{{ elem.id}}}' selected='selected'>{{ elem.nom }} {{ elem.prenom }}</option>}
+                          <option value='{{ elem.id }}' selected='selected'>{{ elem.nom }} {{ elem.prenom }}</option>}
                         {% else %}
-                          <option value='{{ elem.id}}}' selected='selected'>{{ elem.nom }} {{ elem.prenom }}</option>
+                          <option value='{{ elem.id }}' selected='selected'>{{ elem.nom }} {{ elem.prenom }}</option>
                         {% endif %}
                       {% endif %}
                     {% endfor %}
@@ -42,7 +42,7 @@
                 <label for='statistiques_heures' class='intitule'>Heures<sup>*</sup></label>
               </td>
               <td>
-                <textarea name='statistiques_heures' rows='7' class='ui-widget-content ui-corner-all'>{{ statistiques_heures }}</textarea><br/> 
+                <textarea name='statistiques_heures' rows='7' class='ui-widget-content ui-corner-all'>{{ statistiques_heures }}</textarea><br/>
                 <a href='#' id='statistiques_heures_defaut_lien'>Charger les heures par d&eacute;faut</a>
               </td>
             </tr>
@@ -52,13 +52,13 @@
                   <label class='intitule'>Sites</label>
                 </td>
                 <td>
-                  <select name='selectedSites[]' multiple='multiple' size='{{ nbSites+1 }}' onchange='verif_select(\"selectedSites\");' class='ui-widget-content ui-corner-all' >
+                  <select name='selectedSites[]' multiple='multiple' size='{{ nbSites+1 }}' onchange='verif_select("selectedSites");' class='ui-widget-content ui-corner-all' >
                     <option value='Tous'>Tous</option>
                       {% for i in 1..nbSites %}
-                        {% if i in selectedSites == true %}
-                          <option value='{{ i }}' selected='selected'>{{ multisites [i] }}</option>
+                        {% if i in selectedSites %}
+                          <option value='{{ i }}' selected='selected'>{{ multisites[i-1] }}</option>
                         {% else %}
-                          <option value='{{ i }}'>{{ multisites [i] }}</option>
+                          <option value='{{ i }}'>{{ multisites[i-1] }}</option>
                         {% endif %}
                       {% endfor %}
                   </select>
@@ -67,7 +67,7 @@
             {% endif %}
             <tr>
               <td colspan='2' style='text-align:center;padding:10px;'>
-                <input type='reset' value='Effacer' onclick="location.href='{{ asset('statistics/agent')}}&amp;debut=&amp;fin=&amp;agents=';" class='ui-button' />
+                <input type='button' id="reset" value='Effacer' onclick="$('#form').trigger('reset'); $('#form').submit(); location.href='{{ asset('statistics/agent') }}';" class='ui-button' />
                 &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />
               </td>
             </tr>
@@ -97,27 +97,27 @@
         </form>
       </td>
       <td>
-        {% if tab is defined %}
+        {% if tab is not empty %}
           <b>Statistiques par agent du {{ debut }} au {{ fin }}</b>
-          {{ ouverture }}
+          {{ ouverture | raw }}
           <table border='1' cellspacing='0' cellpadding='0'>
             <tr class='th'>
               <td style='width:200px; padding-left:8px;'>Agents</td>
               <td style='width:280px; padding-left:8px;'>Postes</td>
-              {% is exists_samedi == true %}
+              {% if exists_samedi == true %}
                 <td style='width:120px; padding-left:8px;'>Samedi</td>
               {% endif %}
-              {% is exists_dimanche == true %}
+              {% if exists_dimanche == true %}
                 <td style='width:120px; padding-left:8px;'>Dimanche</td>
               {% endif %}
-              {% is exists_JF == true %}
+              {% if exists_JF == true %}
                 <td style='width:120px; padding-left:8px;'>J. Feriés</td>
               {% endif %}
-              {% is exists_absences == true %}
+              {% if exists_absences == true %}
                 <td style='width:120px; padding-left:8px;'>Absences</td>
               {% endif %}
               {% for v in heures_tab_global %}
-                <td style='width:120px; padding-left:8px;'>{{ v[0] }}-{{ v[1] }}</td>
+                <td style='width:120px; padding-left:8px;'>{{ v[2] }}</td>
               {% endfor %}
             </tr>
             {% for elem in tab %}
@@ -135,11 +135,11 @@
                       <td>Moyenne hebdo</td>
                       <td class='statistiques-heures'>{{ elem.hebdo }}</td>
                     </tr>
-                    {% if nbSites > %}
+                    {% if nbSites > 1 %}
                       {% for i in 1..nbSites %}
-                        {% if elem["sites"][i] is defined %}
+                        {% if elem.sites[i] %}
                           <tr>
-                            <td colspan='2' style='padding-top:20px;'><u>{{ multisites[i] }}</u></td>
+                            <td colspan='2' style='padding-top:20px;'><u>{{ multisites[i-1] }}</u></td>
                           </tr>
                           <tr>
                             <td>Total</td>
@@ -159,9 +159,9 @@
                     {% for poste in elem[1] %}
                       <tr style='vertical-align:top;'>
                         <td>
-                          <b>{{ poste[1] }}</b><br/><i>{{ elem.siteEtage[poste] }}</i>
+                          <b>{{ poste[1] }}</b><br/><i>{{ elem.siteEtage[poste[0]] }}</i>
                         </td>
-                        <td>{{ poste[3]) }}</td>
+                        <td>{{ poste[3] }}</td>
                       </tr>
                     {% endfor %}
                   </table>
@@ -171,8 +171,7 @@
                     {{ elem[3] | length }} {{ elem[3] | length > 1 ? 'samedis' : 'samedi' }}
                     <br/>
                     {% for samedi in elem[3] %}
-                      {{ samedi[0] }}
-                      &nbsp;:&nbsp; {{ samedi[1] }}<br/>
+                      {{ samedi[0] }} : {{ samedi[1] }}<br/>
                     {% endfor %}
                   </td>
                 {% endif %}
@@ -181,8 +180,7 @@
                     {{ elem[6] | length }} {{ elem[6] | length > 1 ? 'dimanches' : 'dimanche' }}
                     <br/>
                     {% for dimanche in elem[6] %}
-                      {{ dimanche[0] }}
-                      &nbsp;:&nbsp; {{ dimanche[1] }}<br/>
+                      {{ dimanche[0] }} : {{ dimanche[1] }}<br/>
                     {% endfor %}
                   </td>
                 {% endif %}
@@ -191,8 +189,7 @@
                     {{ elem[8] | length }} {{ elem[8] | length > 1 ? 'J. feriés' : 'J. ferié' }}
                     <br/>
                     {% for ferie in elem[8] %}
-                      {{ ferie[0] }}
-                      &nbsp;:&nbsp; {{ ferie[1] }}<br/>
+                      {{ ferie[0] }} : {{ ferie[1] }}<br/>
                     {% endfor %}
                   </td>
                 {% endif %}
@@ -200,18 +197,18 @@
                   <td style='padding-left:8px;'>
                     Total : {{ elem[5] }}<br/>
                     {% for absence in elem[4] %}
-                      {{ absence[0] }}
-                      &nbsp;:&nbsp; {{ absence[1] }}<br/>
+                      {{ absence[0] }} : {{ absence[1] }}<br/>
                     {% endfor %}
                   </td>
                 {% endif %}
 
-                {% for v in heures_tab_global %} 
+                {% for v in heures_tab_global %}
                   <td>
-                    {% if elem[7][v] is not empty %}
-                      Nb {{ h1 }}-{{ h2 }} :
-                      {{ elem[7][v] | length }}
-                      {% for h in elem[7][v] %}
+                    {% set horaire = v[0]~'-'~v[1] %}
+                    {% if elem[7][horaire] is defined  %}
+                      Nb {{ v[2] }} :
+                      {{ elem[7][horaire] | length }}
+                      {% for h in elem[7][horaire] %}
                         <br/> {{ h }}
                       {% endfor %}
                     {% endif %}
@@ -224,4 +221,7 @@
       </td>
     </tr>
   </table>
+{% endblock %}
+{% block specificjs %}
+  <script type="text/JavaScript" src="{{ asset('statistiques/js/statistiques.js') }}"></script>
 {% endblock %}

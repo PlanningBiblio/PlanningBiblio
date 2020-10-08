@@ -283,7 +283,6 @@ if (!empty($agents)) {
         }
     }
 }
-
 // Heures et jours d'ouverture au public
 $s=new statistiques();
 $s->debut=$debutSQL;
