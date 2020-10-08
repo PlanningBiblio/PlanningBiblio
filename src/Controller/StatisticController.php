@@ -201,7 +201,7 @@ class StatisticController extends BaseController
 
                             // on créé un tableau par agent avec son nom, prénom et la somme des heures faites par poste
                             if (!array_key_exists($elem['perso_id'], $agents)) {
-                                $agents[$elem['perso_id']] = array($elem['perso_id'],$elem['nom'],$elem['prenom'],0,"site" => $elem['site']);
+                                $agents[$elem['perso_id']] = array($elem['perso_id'], $elem['nom'], $elem['prenom'], 0, "site" => $elem['site']);
                             }
                             $agents[$elem['perso_id']][3] += diff_heures($elem['debut'], $elem['fin'], "decimal");
                             $agents[$elem['perso_id']][3] = heure4($agents[$elem['perso_id']][3]);
