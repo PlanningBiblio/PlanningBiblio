@@ -3,6 +3,9 @@
 Move function calculPresence in dedicated class (WorkingHours)
 Allows more permissive entries in working hours
 
+-Fixes
+Remove HTML entities in closig days
+
 *** Version 20.10.00       (2020-10-09)   ***
 - Enhancements
 Add working hours exceptions
