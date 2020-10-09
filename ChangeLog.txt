@@ -163,6 +163,9 @@ Prevent skills to be deleted if used by agents
 Workinghours exception should take into account weeks turnover
 Mark leaved agents as crossed off when importing models
 
+-Fixes
+Remove HTML entities in closig days
+
 *** Version 20.10.00       (2020-10-09)   ***
 - Enhancements
 Add working hours exceptions
