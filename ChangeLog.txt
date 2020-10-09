@@ -1,4 +1,6 @@
 *** Unreleased ***
+
+*** Version 20.10.00       (2020-10-09)   ***
 - Enhancements
 Add working hours exceptions
 Retrieve absences from microsoft graph API
