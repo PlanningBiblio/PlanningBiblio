@@ -17,6 +17,7 @@ class ConfigController extends BaseController
     {
         // Temporary folder
         $tmp_dir=sys_get_temp_dir();
+
         // App URL
         $request::setTrustedProxies(array($request->server->get('REMOTE_ADDR')));
         $url = $request->getSchemeAndHttpHost() . $request->getBaseUrl();
@@ -124,6 +125,7 @@ class ConfigController extends BaseController
 
                 // App URL
                 if ($cp->nom() == 'URL') {
+                    $request::setTrustedProxies(array($request->server->get('REMOTE_ADDR')));
                     $value = $request->getSchemeAndHttpHost() . $request->getBaseUrl();
                 }
                 if (substr($cp->nom(), -9)=="-Password") {
