@@ -233,8 +233,6 @@ class planning
                             $pourcent=null;
                             if (strpos($elem["heures_hebdo"], "%") and $elem["heures_hebdo"]!="100%") {
                                 $pourcent=" {$elem["heures_hebdo"]}";
-                                $calcul_pourcentage = (float) str_replace('%', null, $elem["heures_hebdo"]);
-                                $heuresAbsences = $heuresAbsences * $calcul_pourcentage / 100;
                             }
               
                             $heuresHebdoTitle="Quota hebdomadaire = ".heure4($heuresHebdo, true)." - ".heure4($heuresAbsences, true)." (Absences{$pourcent})";
