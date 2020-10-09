@@ -60,6 +60,7 @@ class joursFeries
         // Recherche des jours fériés enregistrés dans la base de données
         $annees=join("','", $annees);
         $db=new db();
+        $db->sanitize_string = false;
         $db->select("jours_feries", "*", "annee in ('$annees')", "ORDER BY `jour`");
         if ($db->result) {
             foreach ($db->result as $elem) {
@@ -77,9 +78,13 @@ class joursFeries
             for ($date=$this->debut;$date<$this->fin;$date=date("Y-m-d", strtotime("+1 day", strtotime($date)))) {
                 if (jour_ferie($date)) {
                     if (!in_array($date, $tmp)) {
-                        $line=array("jour"=>$date,"ferie"=>1,"fermeture"=>0,
-          "nom"=>htmlentities(jour_ferie($date), ENT_QUOTES|ENT_IGNORE, "UTF-8"),
-          "commentaire"=>"Ajouté automatiquement");
+                        $line = array(
+                            "jour" => $date,
+                            "ferie" => 1,
+                            "fermeture" => 0,
+                            "nom" => jour_ferie($date),
+                            "commentaire" => "Ajouté automatiquement"
+                        );
                         if ($this->index and $this->index=="date") {
                             $tab[$date]=$line;
                         } else {
