@@ -278,6 +278,9 @@ Workinghours exception should take into account weeks turnover
 Mark leaved agents as crossed off when importing models
 [BSG] Show non validated planning in personal calendar
 
+-Fixes
+Remove HTML entities in closing days
+
 *** Version 20.10.00       (2020-10-09)   ***
 - Enhancements
 Add working hours exceptions
