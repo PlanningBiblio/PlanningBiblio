@@ -16,7 +16,27 @@ class WorkingHours
     public function hoursOf($day)
     {
 
+        /**
+        * Tableau affichant les différentes possibilités
+        * NB : le paramètre heures[4] est utilisé pour l'affectation du site. Il n'est pas utile ici
+        * NB : la 2ème pause n'est pas implémentée depuis le début, c'est pourquoi les paramètres heures[5] et heures[6] viennent s'intercaler avant $heure[3]
+        *
+        *    Heure 0     Heure 1     Heure 2     Heure 5     Heure 6     Heure 3
+        * 1                           [ tableau vide]
+        * 2    |-----------|           |-----------|           |-----------|
+        * 3    |-----------|           |-----------------------------------|
+        * 4    |-----------|                                   |-----------|
+        * 5    |-----------|
+        * 6    |-----------------------------------|           |-----------|
+        * 7    |-----------------------------------|
+        * 8    |-----------------------------------------------------------|
+        * 9                            |-----------|
+        * 10                           |-----------------------------------|
+        */
+
+
         $pause2 = $GLOBALS['config']['PlanningHebdo-Pause2'];
+
         if (!is_array($this->times)
             or empty($this->times)
             or !array_key_exists($day, $this->times)) {
@@ -25,7 +45,7 @@ class WorkingHours
 
         // Constitution des groupes de plages horaires
         $tab = array();
-        $heures=$this->times[$day];
+        $heures = $this->times[$day];
         $break = isset($this->breaks[$day]) ? $this->breaks[$day] : 0;
 
         // 1er créneau : cas N° 2; 3; 4; 5
@@ -41,7 +61,7 @@ class WorkingHours
             $tab[] = array($heures[0], $heures[3]);
         }
 
-        // 2ème créneau : cas N° 1 et 9
+        // 2ème créneau : cas N° 2 et 9
         if ($pause2 and !empty($heures[2]) and !empty($heures[5])) {
             $tab[] = array($heures[2], $heures[5]);
 
