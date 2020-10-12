@@ -87,14 +87,14 @@
       <li><a href='#access'>Droits d'accès</a></li>
 
       {% if can_manage_agent %}
-        <li class='ui-tab-cancel'><a href='{{ asset("index.php?page=personnel/index.php") }}'>Annuler</a></li>
+        <li class='ui-tab-cancel'><a href='{{ asset("/agent") }}'>Annuler</a></li>
         <li class='ui-tab-submit'><a href='javascript:verif_form_agent();'>Valider</a></li>
       {% else %}
-        <li class='ui-tab-cancel'><a href='{{ asset("index.php?page=personnel/index.php") }}'>Fermer</a></li>
+        <li class='ui-tab-cancel'><a href='{{ asset("/agent") }}'>Fermer</a></li>
       {% endif %}
     </ul>
 
-    <form method='post' action='/agent' name='form'>
+    <form method='post' action='{{ asset("/agent") }}' name='form'>
       <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
 
       <div id='main' style='margin-left:70px;padding-top:30px;'>

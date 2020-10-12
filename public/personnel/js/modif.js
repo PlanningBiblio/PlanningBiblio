@@ -218,7 +218,9 @@ function verif_form_agent(){
       alert("Adresse e-mail invalide");
     }
     else{
+      var baseURL = $('#baseURL').val();
       document.form.submit();
+      window.location.href= baseURL + "/agent";
     }
   }
 }
