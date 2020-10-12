@@ -349,6 +349,37 @@ $tables = array (
         'fields' => array(
         ),
     ),
+    array(
+        'name' => 'hidden_sites',
+        'fields' => array(
+            'hidden_sites',
+        ),
+    ),
+    array(
+        'name' => 'stated_week_planning_column_templates',
+        'fields' => array(
+            'slot',
+        ),
+    ),
+    array(
+        'name' => 'stated_week_planning_job',
+        'fields' => array(
+            'description',
+            'name',
+        ),
+    ),
+    array(
+        'name' => 'stated_week_planning_templates',
+        'fields' => array(
+            'name',
+        ),
+    ),
+    array(
+        'name' => 'stated_week_planning_time_templates',
+        'fields' => array(
+            'job',
+        ),
+    ),
 );
 
 $new2old = array(

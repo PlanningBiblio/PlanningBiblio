@@ -103,6 +103,30 @@
     - 301
 "planningjob.contextmenu":
     - 100
+"statedweek.availables":
+    - 1401
+"statedweek.add":
+    - 1401
+"statedweekjob.add":
+    - 1401
+"statedweekpause.add":
+    - 1401
+"statedweekjob.update":
+    - 1401
+"statedweek.remove":
+    - 1401
+"statedweekjob.remove":
+    - 1401
+"statedweekpause.remove":
+    - 1401
+"statedweek.lock":
+    - 1401
+"statedweek.empty":
+    - 1401
+"statedweek.template.load":
+    - 1401
+"statedweek.template.add":
+    - 1401
 "statistics.absence":
     - 17
 "statistics.agent":

@@ -1,0 +1,175 @@
+{# interchange/add.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/interchange.js?version={{ version }}'></script>
+{% endblock %}
+
+{% block page %}
+  <h3>Échange d'horaires</h3>
+
+  <form id="interchange" method="POST" action='{{ asset("/interchange") }}'>
+    <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
+    <input type="button" value="Retour à la liste" onclick="location.href='{{ asset("/interchange") }}'" class="ui-button" style="float: right; margin-bottom: 10px;"/>
+    <!-- edit -->
+    {% if i is defined %}
+      <input type="hidden" name="id" value="{{ i.id }}"/>
+
+      <table>
+        <tr>
+          <td>
+            Planning du: <strong>{{ i.date | date('d/m/Y') }}</strong> <a href="{{ asset('statedweek?date=' ~ i.date) }}">(Voir le planning)</a>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Agent demandeur et horaires:
+            <strong>
+              {{ i.requester }} - de {{ i.requester_start | hour}} à {{ i.requester_to | hour }}
+            </strong>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Échange demandé avec:
+            <strong>
+              {{ i.asked }} - de {{ i.asked_start | hour }} à {{ i.asked_to | hour }}
+            </strong>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Statut:
+            <strong>
+              {% if i.status == 'ASKED' %}
+                demandé par {{ i.requester }}
+              {% elseif i.status == 'ACCEPTED' %}
+                accepté par les deux agents
+              {% elseif i.status == 'REJECTED' %}
+                {% if i.rejected_admin %}
+                  échange refusé par l'administrateur
+                {% else %}
+                  refusé par {{ i.rejected_by }}
+                {% endif %}
+              {% elseif i.status == 'VALIDATED' %}
+                échange validé
+              {% endif %}
+            </strong>
+          </td>
+        </tr>
+      </table>
+
+      <table style="margin-top: 15px">
+          <tr>
+            <td>
+              {{ i.requested_on | date('d/m/Y H:i') }} -
+            </td>
+            <td>
+              Demandé par {{ i.requester }}
+            </td>
+          </tr>
+
+          {% if i.accepted_by is defined %}
+            <tr>
+              <td>
+                {{ i.accepted_on | date('d/m/Y H:i') }} -
+              </td>
+              <td>
+                Accepté par {{ i.accepted_by }}
+              </td>
+            </tr>
+          {% endif %}
+
+          {% if i.rejected_by is defined %}
+            <tr>
+              <td>
+                {{ i.rejected_on | date('d/m/Y H:i') }} -
+              </td>
+              <td>
+                Refusé par {{ i.rejected_by }}
+              </td>
+            </tr>
+          {% endif %}
+
+          {% if i.validated_by is defined %}
+            <tr>
+              <td>
+                {{ i.validated_on | date('d/m/Y H:i') }} -
+              </td>
+              <td>
+                Validé par {{ i.validated_by }}
+              </td>
+            </tr>
+          {% endif %}
+      </table>
+
+      {% if i.status == 'ASKED' and (can_accept or can_validate) %}
+        <input type="submit" name="action" value="Accepter"/>
+        <input type="submit" name="action" value="Refuser"/>
+      {% elseif i.status == 'ACCEPTED' and can_validate %}
+        <input type="submit" name="action" value="Valider"/>
+        <input type="submit" name="action" value="Refuser"/>
+      {% elseif i.status == 'REJECTED' %}
+        <span>La demande a été refusée.</span>
+      {% elseif i.status == 'VALIDATED' %}
+        <span>La demande a été validée.</span>
+      {% endif %}
+    <!-- New -->
+    {% else %}
+      <table>
+        <tr>
+          <td>Choisissez une date: </td>
+          <td>
+              <input type="text" name="date" class="datepicker">
+          </td>
+        </tr>
+
+        <tr>
+          <td>Choisissez la tranche horaire souhaitée: </td>
+          <td>
+            <select name="column" disabled="disabled">
+              {% if i is defined %}
+                  {% for c in i.columns %}
+                    {% if c.id == i.asked_column %}
+                      <option value="{{ c.id }}" selected>{{ c.from | hour }} - {{ c.to | hour }}</option>
+                    {% else %}
+                      <option value="{{ c.id }}">{{ c.from | hour }} - {{ c.to | hour }}</option>
+                    {% endif %}
+                  {% endfor %}
+              {% endif %}
+            </select>
+          </td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td>
+          </td>
+        </tr>
+      </table>
+
+      <div class="agents" style="display: none;">
+        <span>Choisissez l'agent à remplacer:</span>
+        <ul id="agents" style="list-style: none;">
+          {% if i is defined %}
+            {% for a in i.agents %}
+              {% if a.time == i.asked_time %}
+                <li><input type="radio" name="agent" value="{{ a.time }}" checked disabled/>
+                  <strong>{{ a.name | raw }}</strong></li>
+              {% else %}
+                <li><input type="radio" name="agent" value="{{ a.time }}" disabled/>{{ a.name | raw }}</li>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </ul>
+
+        <input type="submit" name="action" value="Demander"/>
+      </div>
+    {% endif %}
+
+      {% if i is defined %}
+      {% endif %}
+    </div>
+  </form>
+{% endblock %}
