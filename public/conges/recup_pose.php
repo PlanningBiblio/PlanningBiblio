@@ -118,7 +118,7 @@ if (isset($_GET['confirm'])) {	// Confirmation
     }
 
     // ajout d'un lien permettant de rebondir sur la demande
-    $url=createURL("conges/modif.php&id=$id");
+    $url = $config['URL'] . '/holiday/edit/' . $id;
     $message.="<br/><br/>Lien vers la demande de cong&eacute; :<br/><a href='$url'>$url</a><br/><br/>";
 
     // Envoi du mail
@@ -285,7 +285,7 @@ EOD;
     echo "<textarea name='commentaires' cols='16' rows='5' style='width:97%;'></textarea>\n";
     echo "</td></tr><tr><td>&nbsp;\n";
     echo "</td></tr><tr><td colspan='2' style='text-align:center;'>\n";
-    echo "<input type='button' value='Annuler' onclick='document.location.href=\"index.php?page=conges/voir.php&amp;recup=1\";' class='ui-button'/>";
+    echo "<input type='button' value='Annuler' onclick='document.location.href=\"{$config['URL']}/holiday/index?recup=1\";' class='ui-button'/>";
     echo "&nbsp;&nbsp;\n";
     echo "<input type='button' value='Valider' class='ui-button' onclick='verifConges();' style='margin-left:20px;' id='submit-button'/>\n";
     echo "<div id='google-calendar-div' class='inline'></div>\n";

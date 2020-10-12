@@ -81,7 +81,7 @@
             <tr id='hre_debut' style='display:none;'>
               <td>Heure de début : </td>
               <td>
-                <select name='hre_debut' id='hre_debut_select' style='width:20%;' class='googleCalendarTrigger'>
+                <select name='hre_debut' id='hre_debut_select' style='width:20%;' class='googleCalendarTrigger checkdate'>
                     <option value=""></option>
                     {% for i in 6..23 %}
                         {% for j in range(low=0, high=60, step=config('Granularite')) %}
