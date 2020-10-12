@@ -3,6 +3,8 @@
 namespace App\Model;
 
 use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
+
+require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
 require_once(__DIR__ . '/../../public/include/db.php');
 
@@ -261,6 +263,76 @@ class Agent extends PLBEntity
     {
         $skills = json_decode($this->postes());
         return is_array($skills) ? $skills : [];
+    }
+
+    public function is_agent_status_in_category($category) {
+        $db = new \db();
+        $db->select2("select_statuts", "categorie", array('valeur' => $this->statut()));
+        $results = $db->result;
+        if (!$results) { return false; }
+        $categorie_id = $results[0]['categorie'];
+
+        $db = new \db();
+        $db->select2("select_categories", "valeur", array('id' => $categorie_id));
+        $results = $db->result;
+        if (!$results) { return false; }
+        $categorie_name = $results[0]['valeur'];
+        return ($categorie_name == htmlentities($category));
+    }
+
+    public function isPartiallyAbsentOn($from, $to)
+    {
+        $a = new \absences();
+        if ($absences = $a->checkPartial($this->id(), $from, $to, true)) {
+            return $absences;
+        }
+
+        return false;
+    }
+    public function isInService($services)
+    {
+        if (empty($services)) {
+            return true;
+        }
+
+        if (in_array($this->service, $services)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function isInSite($site) {
+        $sites = json_decode($this->sites);
+
+        if (empty($sites)) {
+            return false;
+        }
+
+        if (in_array($site, $sites)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function hasSkills($skills = array())
+    {
+        if (empty($skills)) {
+            return true;
+        }
+
+        $own_skills = array();
+        if ($this->postes) {
+            $own_skills = json_decode($this->postes);
+        }
+        foreach ($skills as $skill) {
+            if (!in_array($skill, $own_skills)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }

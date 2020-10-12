@@ -727,6 +727,89 @@ class absences
         return false;
     }
 
+    /**
+    * @method checkPartial
+    * @param int $perso_id
+    * @param string $debut, format YYYY-MM-DD HH:ii:ss
+    * @param string $fin, format YYYY-MM-DD HH:ii:ss
+    * @param boolean $valide, default = true
+    * Check if an agent is partially absent only for a given date range.
+    * If it is totaly absent, return false.
+    * If it is totaly present, return false.
+    * If it is partially absent, return his absences.
+    */
+    public function checkPartial($agent_id, $start, $end, $valide=true)
+    {
+        if (strlen($start) == 10) {
+            $start .= " 00:00:00";
+        }
+
+        if (strlen($end) == 10) {
+            $end .= " 23:59:59";
+        }
+
+        $start_timestamp = strtotime($start);
+        $end_timestamp = strtotime($end);
+        $duration = $end_timestamp - $start_timestamp;
+
+        $filter = array("perso_id" => $agent_id, "debut" => "<$end", "fin" => ">$start");
+
+        if ($valide==true or $GLOBALS['config']['Absences-validation']==0) {
+            $filter["valide"]=">0";
+        }
+
+        $db=new db();
+        $db->select2("absences", null, $filter);
+        $result = $db->result;
+
+        if (!$result) {
+            return false;
+        }
+
+        $absence_duration = 0;
+        $absences = array();
+        foreach ($result as $absence) {
+            $start_absence = strtotime($absence['debut']);
+            if ($start_absence < $start_timestamp) {
+                $start_absence = $start_timestamp;
+                $absence['debut'] = $start;
+            }
+
+            $end_absence = strtotime($absence['fin']);
+            if ($end_absence > $end_timestamp) {
+                $end_absence = $end_timestamp;
+                $absence['fin'] = $end;
+            }
+
+            $absences[] = array('from' => $absence['debut'], 'to' => $absence['fin']);
+
+            $absence_duration = $end_absence - $start_absence;
+            $duration -= $absence_duration;
+        }
+
+        if ($duration > 0) {
+            return $absences;
+        }
+
+        return false;
+    }
+
+    public function deleteAllDocuments() {
+        if (!$this->id) return;
+        $entityManager = $GLOBALS['entityManager'];
+        $absdocs = $entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $this->id]);
+        foreach ($absdocs as $absdoc) {
+            $absdoc->deleteFile();
+            $entityManager->remove($absdoc);
+        }
+        $entityManager->flush();
+
+        $absenceDocument = new AbsenceDocument();
+        if (is_dir($absenceDocument->upload_dir() . $this->id)) {
+            rmdir($absenceDocument->upload_dir() . $this->id);
+        }
+    }
+
     public function fetch($sort="`debut`,`fin`,`nom`,`prenom`", $agent=null, $debut=null, $fin=null, $sites=null)
     {
         $entityManager = $GLOBALS['entityManager'];

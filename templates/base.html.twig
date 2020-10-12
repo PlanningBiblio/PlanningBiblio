@@ -5,6 +5,13 @@
   <head>
     <title>Planning</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type='text/JavaScript'>
+      config = {};
+      {% for key, value in config() %}
+        config['{{ key }}']  = '{{ value | escape }}';
+      {% endfor %}
+      window.plb_config = config;
+    </script>
     <script type='text/JavaScript' src='{{ asset("js/jquery-1.11.1.min.js") }}'></script>
     <script type='text/JavaScript' src='{{ asset("js/jquery.timepicker.min.js") }}'></script>
     <script type='text/JavaScript' src='{{ asset("js/plb/planno-timepicker.js") }}'></script>
