@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 use App\Model\Model;
 use App\Model\ModelAgent;
+use App\Model\StatedWeekTemplate;
 
 require_once(__DIR__ . '/../../public/include/db.php');
 
@@ -35,6 +36,8 @@ class ModelController extends BaseController
             }
         }
 
+        $statedweek_templates =  $this->entityManager->getRepository(StatedWeekTemplate::class)->findAll();
+
         $multi_sites = $this->config('Multisites-nombre') > 1 ? 1 : 0;
         $sites = array();
         if ($multi_sites) {
@@ -45,9 +48,10 @@ class ModelController extends BaseController
 
         $this->templateParams(array(
             'models' => $models,
+            'statedweek_templates' => $statedweek_templates,
             'multi_sites' => $multi_sites,
             'sites' => $sites,
-            ));
+        ));
 
         return $this->output('admin/model/index.html.twig');
     }
@@ -75,6 +79,32 @@ class ModelController extends BaseController
             $this->entityManager->persist($model);
         }
 
+        $modelAgents = $this->entityManager->getRepository(ModelAgent::class)
+            ->findBy(array('nom' => $model->nom()));
+
+        foreach ($modelAgents as $modelAgent) {
+            $modelAgent->nom($name);
+            $this->entityManager->persist($modelAgent);
+        }
+
+        $this->entityManager->flush();
+
+        $session->getFlashBag()->add('notice', 'Modèle enregistré');
+        return $this->redirectToRoute('model.index');
+    }
+
+    /**
+     * @Route("/statedweekmodel", name="statedweekmodel.save", methods={"POST"})
+     */
+    public function save_statedweek(Request $request, Session $session)
+    {
+        $id = $request->get('id');
+        $name = $request->get('name');
+
+        $template = $this->entityManager->getRepository(StatedWeekTemplate::class)->find($id);
+        $template->name($name);
+
+        $this->entityManager->persist($template);
         $this->entityManager->flush();
 
         $session->getFlashBag()->add('notice', 'Modèle enregistré');
@@ -150,6 +180,19 @@ class ModelController extends BaseController
         return $this->output('admin/model/edit.html.twig');
     }
 
+    /**
+     * @Route("/statedweekmodel/{id}", name="statedweekmodel.edit", methods={"GET"})
+     */
+    public function edit_statedweek(Request $request)
+    {
+        $id = $request->get('id');
+
+        $template =  $this->entityManager->getRepository(StatedWeekTemplate::class)->find($id);
+
+        $this->templateParams(array( 'template'  => $template ));
+
+        return $this->output('admin/statedweekmodel/edit.html.twig');
+    }
 
     /**
      * @Route("/model/{id}", name="model.delete", methods={"DELETE"})
@@ -279,4 +322,20 @@ class ModelController extends BaseController
       }
       //echo "Modèle \"$nom\" enregistré<br/><br/>\n";
   }
+
+    /**
+     * @Route("/statedweekmodel/{id}", name="statedweekmodel.delete", methods={"DEL"})
+     */
+    public function delete_statedweek(Request $request, Session $session)
+    {
+        $id = $request->get('id');
+
+        $template = $this->entityManager->getRepository(StatedWeekTemplate::class)->find($id);
+
+        $this->entityManager->remove($template);
+        $this->entityManager->flush();
+
+        $session->getFlashBag()->add('notice', 'Modèle supprimé');
+        return $this->json(array('id' => $id));
+    }
 }

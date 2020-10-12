@@ -1,0 +1,115 @@
+{# statedweek/tables/poste.html.twig #}
+
+<table class="statedweek-table table-placed-job table-right" id="statedweek-poste" border="1">
+  <thead>
+    <tr>
+      <th class="cell-header">
+          {{ planning.jobs[0].description }}
+          <span id="first-job-count"></span>
+      </th>
+      <th class="cell-header">Horaires</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in 0..3 %}
+      <tr>
+        <td class="time-slot first-job"
+            data-job="{{ planning.jobs[0].name }}"
+            data-jobdesc="{{ planning.jobs[0].description }}"
+            data-timeid="first-poste-time-slot-{{ i }}"
+            id="first-job-slot{{ i }}"></td>
+        <td class="editable" id="first-poste-time-slot-{{ i }}">
+          <span class="view-time"></span>
+          <a class="edit-time pl-icon pl-icon-edit" href="javascript:void(0);" style="display:none;"></a>
+          <span class="editable" style="display:none;">
+            &nbsp;<input class="plb-timepicker time-from"/> à <input class="plb-timepicker time-to"/>
+            &nbsp;&nbsp;pause: <input class="break-timepicker time-break"/>
+            <a class='valid-time pl-icon pl-icon-valid' title='Valider'></a>
+          </span>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+
+  <thead>
+    <tr>
+      <th class="cell-header">
+          {{ planning.jobs[1].description }}
+          <span id="second-job-count"></span>
+      </th>
+      <th class="cell-header">Horaires</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in 0..3 %}
+      <tr>
+        <td class="time-slot second-job"
+            data-job="{{ planning.jobs[1].name }}"
+            data-jobdesc="{{ planning.jobs[1].description }}"
+            data-timeid="second-poste-time-slot-{{ i }}"
+            id="second-job-slot{{ i }}"></td>
+        <td class="editable" id="second-poste-time-slot-{{ i }}">
+          <span class="view-time"></span>
+          <a class="edit-time pl-icon pl-icon-edit" href="javascript:void(0);" style="display:none;"></a>
+          <span class="editable" style="display:none;">
+            &nbsp;<input class="plb-timepicker time-from"/> à <input class="plb-timepicker time-to"/>
+            &nbsp;&nbsp;pause: <input class="break-timepicker time-break"/>
+            <a class='valid-time pl-icon pl-icon-valid' title='Valider'></a>
+          </span>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+
+  <thead>
+    <tr>
+      <th class="cell-header">
+          {{ planning.jobs[2].description }}
+          <span id="third-job-count"></span>
+      </th>
+      <th class="cell-header">Horaires</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in 0..6 %}
+      <tr>
+        <td class="time-slot third-job"
+            data-job="{{ planning.jobs[2].name }}"
+            data-jobdesc="{{ planning.jobs[2].description }}"
+            data-timeid="third-poste-time-slot-{{ i }}"
+            id="third-job-slot{{ i }}"></td>
+        <td class="editable" id="third-poste-time-slot-{{ i }}">
+          <span class="view-time"></span>
+          <a class="edit-time pl-icon pl-icon-edit" href="javascript:void(0);" style="display:none;"></a>
+          <span class="editable" style="display:none;">
+            &nbsp;<input class="plb-timepicker time-from"/> à <input class="plb-timepicker time-to"/>
+            &nbsp;&nbsp;pause: <input class="break-timepicker time-break"/>
+            <a class='valid-time pl-icon pl-icon-valid' title='Valider'></a>
+          </span>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+
+  <thead>
+    <tr>
+      <th class="cell-header" colspan="2">Repos</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% set index = 0 %}
+    {% for i in 0..9 %}
+      <tr>
+        <td class="time-slot"
+            data-pause="1"
+            data-jobdesc="Repos"
+            id="pause-slot-{{ index }}"></td>
+        <td class="time-slot"
+            data-pause="1"
+            data-jobdesc="Repos"
+            id="pause-slot-{{ index + 7 }}"></td>
+      </tr>
+      {% set index = index + 1 %}
+    {% endfor %}
+  </tbody>
+</table>

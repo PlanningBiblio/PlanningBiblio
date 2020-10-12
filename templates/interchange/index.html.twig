@@ -1,0 +1,60 @@
+{# interchange/add.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/interchange.js?version={{ version }}'></script>
+{% endblock %}
+
+{% block page %}
+  <h3>Liste des demandes d'échange de poste</h3>
+
+  <input type="button" value="Nouvelle demande" onclick="location.href='/interchange/add'" class="ui-button" style="float: right; margin-bottom: 10px;"/>
+
+  <table class="CJDataTable" data-sort='[[1, "desc"]]'>
+    <thead>
+      <tr>
+        <th></th>
+        <th>Planning du</th>
+        <th>Agent demandeur</th>
+        <th>Horaires prévus</th>
+        <th>Agent sollicité</th>
+        <th>Horaires sollicités</th>
+        <th>État de la demande</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for i in interchanges %}
+        <tr>
+          <td>
+            <a href='/interchange/{{ i.id }}'/>
+              <span class='pl-icon pl-icon-edit' title='Éditer'></span>
+            </a>
+          </td>
+          <td data-sort="{{ i.date }}">{{ i.fulldate | raw }}</td>
+          <td>{{ i.requester }}</td>
+          <td>{{ i.from | hour }} - {{ i.to | hour }}</td>
+          <td>{{ i.asked }}</td>
+          <td>{{ i.asked_from | hour }} - {{ i.asked_to | hour }}</td>
+          <td>
+            {% if i.status == 'ASKED' %}
+              Demandée
+            {% endif %}
+
+            {% if i.status == 'ACCEPTED' %}
+              Acceptée
+            {% endif %}
+
+            {% if i.status == 'VALIDATED' %}
+              Validée
+            {% endif %}
+
+            {% if i.status == 'REJECTED' %}
+              Refusée
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

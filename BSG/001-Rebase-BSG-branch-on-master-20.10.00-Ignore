@@ -1,0 +1,20 @@
+commit cd2230057d202a26acce518e8663cded2105c9d0
+Author: Jérôme Combes <jerome@planningbiblio.fr>
+Date:   Mon Oct 12 10:45:42 2020 +0200
+
+    Rebase BSG branch on master - 20.10.00
+
+diff --git a/public/planning/poste/enregistrer.php b/public/planning/poste/enregistrer.php
+index d8a057c6..37019a32 100644
+--- a/public/planning/poste/enregistrer.php
++++ b/public/planning/poste/enregistrer.php
+@@ -17,6 +17,9 @@ Etape 3 : enregistrement dans la base de données
+ Cette page est appelée par la fonction JavaScript Popup qui l'affiche dans un cadre flottant
+ */
+ 
++use App\Model\Model;
++use App\Model\ModelAgent;
++
+ require_once "class.planning.php";
+ 
+ // Initialisation des variables

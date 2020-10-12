@@ -1,0 +1,27 @@
+{# admin/template/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  <h3>Modification du modèle de semaine fixe</h3>
+
+  <form method='post' action='{{ asset("/statedweekmodel") }}' name='form'>
+    <input type='hidden' name='id' value='{{ template.id }}' />
+    <table class='tableauFiches' style='width:700px;'>
+      <tr>
+        <td style='width:150px;'>Nom du modèle :</td>
+        <td style='width:550px;'>
+          <input type='text' value='{{ template.name }}' name='name' class='ui-corner-all ui-widget-content' />
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan='2' style='text-align:center;'>
+          <br/><input type='button' value='Annuler' onclick='history.go(-1);' class='ui-button'/>
+  &nbsp;&nbsp;&nbsp;
+          <input type='submit' value='Valider' class='ui-button'/>
+        </td>
+      </tr>
+    </table>
+  </form>
+{% endblock %}

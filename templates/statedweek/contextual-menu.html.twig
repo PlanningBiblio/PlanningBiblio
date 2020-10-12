@@ -1,0 +1,51 @@
+{# statedweek/contextual-menu.html.twig #}
+
+<style>
+  .context-menu {
+    display: none;
+    z-index: 1000;
+    position: absolute;
+    overflow: hidden;
+    border: 1px solid #CCC;
+    white-space: nowrap;
+    background: #FFF;
+    border-radius: 5px;
+    padding: 0;
+  }
+  .context-list {
+    list-style-type: none;
+    padding: 5px 0px 5px 0px;
+    margin: 0;
+  }
+  .context-list li {
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+    color: black;
+  }
+  .context-list li:hover {
+    background: #7D3C25;
+    color: white;
+  }
+  li.absent {
+      color: red;
+  }
+  li.partially-absent i {
+      color: red;
+  }
+  li.absent span {
+      text-decoration: line-through;
+  }
+  .context-menu-title {
+    text-align: center;
+    margin: 0px;
+    padding: 7px 0px 7px 0px;
+    color: white;
+    background: #7D3C25;
+  }
+</style>
+
+<div class="context-menu">
+  <h4 class="context-menu-title"></h4>
+  <ul class='context-list'>
+  </ul>
+</div>
