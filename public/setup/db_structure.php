@@ -142,6 +142,13 @@ $sql[]="CREATE TABLE `{$dbprefix}hidden_tables` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
+$sql[]="CREATE TABLE `{$dbprefix}hidden_sites` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `perso_id` int(11) NOT NULL DEFAULT '0',
+  `hidden_sites` TEXT NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
 $sql[]="CREATE TABLE `{$dbprefix}lignes` (
   `id` int AUTO_INCREMENT,
   nom text,
@@ -358,6 +365,7 @@ $sql[]="CREATE TABLE `{$dbprefix}postes` (
   `nom` text NOT NULL DEFAULT '',
   `groupe` TEXT NOT NULL DEFAULT '',
   `groupe_id` int(11) NOT NULL DEFAULT '0',
+  `position` VARCHAR(11) DEFAULT 'frontOffice',
   `obligatoire` varchar(15) NOT NULL,
   `etage` TEXT NOT NULL,
   `activites` text NOT NULL,
@@ -598,4 +606,111 @@ $sql[] = "CREATE TABLE `{$dbprefix}absences_documents` (
   absence_id int(11) NOT NULL,
   filename text NOT NULL,
   date DATETIME NOT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+$sql[] = "CREATE TABLE `{$dbprefix}stated_week_plannings` (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    date DATE NOT NULL,
+    locked TINYINT(1) NULL,
+    locker_id int(11) NULL,
+    locked_on datetime NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+$sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_columns` (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    planning_id INT(11),
+    type ENUM('first-slot', 'second-slot', 'third-slot'),
+    starttime TIME NOT NULL,
+    endtime TIME NOT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (planning_id) REFERENCES stated_week_plannings(id)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+$sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_times` (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    agent_id int(11) NOT NULL DEFAULT '0',
+    column_id INT(11),
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `agent_column` (`agent_id`,`column_id`),
+    FOREIGN KEY (column_id) REFERENCES stated_week_planning_columns(id)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+$sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_job` (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    planning_id INT(11),
+    type ENUM('first-job', 'second-job', 'third-job'),
+    name VARCHAR(255) NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (planning_id) REFERENCES stated_week_plannings(id)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+$sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_job_times` (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    agent_id int(11) NOT NULL DEFAULT '0',
+    job_id INT(11),
+    starttime TIME NULL,
+    endtime TIME NULL,
+    breaktime TIME NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (job_id) REFERENCES stated_week_planning_job(id)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+$sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_pauses` (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    agent_id int(11) NOT NULL DEFAULT '0',
+    planning_id INT(11),
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `agent_job` (`agent_id`,`planning_id`),
+    FOREIGN KEY (planning_id) REFERENCES stated_week_plannings(id)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+$sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_templates` (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    type ENUM('day', 'week'),
+    PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+$sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_column_templates` (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    template_id INT(11) NOT NULL,
+    day_index tinyint NOT NULL,
+    slot VARCHAR(50) NOT NULL,
+    starttime TIME NOT NULL,
+    endtime TIME NOT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (template_id) REFERENCES stated_week_planning_templates(id)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+$sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_time_templates` (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    template_id INT(11) NOT NULL,
+    day_index tinyint NOT NULL,
+    job VARCHAR(50),
+    agent_id int(11) NOT NULL DEFAULT '0',
+    starttime TIME NULL,
+    endtime TIME NULL,
+    breaktime TIME NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (template_id) REFERENCES stated_week_planning_templates(id)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+$sql[] = "CREATE TABLE `{$dbprefix}interchanges` (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    planning INT(11) NOT NULL,
+    requester int(11) NOT NULL,
+    requested_on datetime NOT NULL,
+    requester_time int(11) NOT NULL,
+    asked int(11) NOT NULL,
+    asked_time int(11) NOT NULL,
+    accepted_by int(11) NULL DEFAULT 0,
+    accepted_on datetime NULL,
+    rejected_by int(11) NULL DEFAULT 0,
+    rejected_on datetime NULL,
+    validated_by int(11) NULL DEFAULT 0,
+    validated_on datetime NULL,
+    status ENUM ('ASKED','ACCEPTED', 'REJECTED', 'VALIDATED') NOT NULL DEFAULT 'ASKED',
+    PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";

@@ -44,6 +44,8 @@ $perso_id=filter_input(INPUT_GET, "perso_id", FILTER_SANITIZE_NUMBER_INT);
 $perso_nom=filter_input(INPUT_GET, "perso_nom", FILTER_SANITIZE_STRING);
 $poste=filter_input(INPUT_GET, "poste", FILTER_SANITIZE_NUMBER_INT);
 $CSRFToken=trim(filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING));
+$postesFrontOfficeString=filter_input(INPUT_GET, "postesFrontOffice", FILTER_SANITIZE_STRING);
+$postesFrontOffice = explode(',', $postesFrontOfficeString);
 
 $login_id=$_SESSION['login_id'];
 $tab_exclus=array(0);
@@ -408,7 +410,7 @@ if ($db->result and $verif) {
 $deja=deja_place($date, $poste);
 
 // Contrôle du personnel placé juste avant ou juste après la plage choisie
-$deuxSP=deuxSP($date, $debut, $fin);
+$deuxSP=deuxSP($date, $debut, $fin, $poste, $postesFrontOffice);
 
 // Récupère le nombre d'agents déjà placés dans la cellule
 $db=new db();

@@ -12,6 +12,8 @@ Affiche la liste des plannings de présence pour l'administrateur
 Page accessible à partir du menu administration / Heures de présence
 */
 
+use App\PlanningBiblio\Helper\StatedWeekAgentsFilterHelper;
+
 require_once "class.planningHebdo.php";
 
 $twig = $GLOBALS['twig'];
@@ -24,6 +26,7 @@ $id = $request->get('id');
 $retour = $request->get('retour');
 $is_exception = 0;
 $exception_id = '';
+$agent_filter = new StatedWeekAgentsFilterHelper();
 
 $exception_back = 'monCompte.php';
 if ($retour != 'monCompte.php') {
@@ -212,8 +215,10 @@ if ($id and !$copy and !$request_exception) {
         echo "<select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id' style='position:absolute; left:200px; width:200px; text-align:center;' >\n";
         echo "<option value=''>&nbsp;</option>\n";
         foreach ($db->result as $elem) {
-            $selected=$perso_id==$elem['id']?"selected='selected'":null;
-            echo "<option value='{$elem['id']}' $selected >{$elem['nom']} {$elem['prenom']}</option>\n";
+            if ($agent_filter->canEnterWorkingHoursFor($elem)) {
+                $selected=$perso_id==$elem['id']?"selected='selected'":null;
+                echo "<option value='{$elem['id']}' $selected >{$elem['nom']} {$elem['prenom']}</option>\n";
+            }
         }
         echo "</select>\n";
     } else {

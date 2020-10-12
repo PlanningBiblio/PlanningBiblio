@@ -612,7 +612,19 @@ class planning
             }
         }
     }
-  
+
+    public function getPostesFrontOffice() {
+        $postes = array();
+        $db=new db();
+        $db->select2("postes", "id", array("position" => 'frontOffice'));
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                array_push($postes, $elem['id']);
+            }
+        }
+        return $postes;
+    }
+
     // Notes
     // Récupère les notes (en bas des plannings)
     public function getNotes()
