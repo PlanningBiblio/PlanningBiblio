@@ -34,4 +34,21 @@ class DayPlanningHelper extends BaseHelper
 
         return false;
     }
+
+    public static function emptyDay()
+    {
+        $config = $GLOBALS['config'];
+        $day = array('', '', '', '');
+
+        if ($config['Multisites-nombre'] > 1) {
+            $day[] = '';
+        }
+
+        if ($config['PlanningHebdo-Pause2']) {
+            $day['5'] = '';
+            $day['6'] = '';
+        }
+
+        return $day;
+    }
 }

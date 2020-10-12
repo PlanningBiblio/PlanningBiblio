@@ -1002,6 +1002,11 @@ function gen_trivial_password($len = 6)
     return $r;
 }
 
+function get_config($key) {
+    global $config;
+    return (array_key_exists($key, $config) ? $config[$key] : null);
+}
+
 // getJSFiles : permet de rechercher les scripts liés à la page courante (fichiers .js dans sous dossier js)
 function getJSFiles($page, $version)
 {

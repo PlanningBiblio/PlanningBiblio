@@ -223,6 +223,10 @@ h3{
   background:url("images/icon/add_black_18dp.svg") no-repeat center;
 }
 
+.pl-icon-valid {
+  background:url("images/valid.png") no-repeat center/70%;
+}
+
 .pl-icon-copy {
   background:url("images/icon/content_copy_black_18dp.svg") no-repeat center;
 }
