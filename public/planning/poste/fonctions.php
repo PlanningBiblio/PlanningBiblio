@@ -166,11 +166,14 @@ function deja_place($date, $poste)
     return $deja;
 }
 
-function deuxSP($date, $debut, $fin)
+function deuxSP($date, $debut, $fin, $posteID, $postesFrontOffice)
 {
     $tab=array(0);
     $db=new db();
-    $db->select("pl_poste", "perso_id", "absent = '0' AND date='$date' AND (debut='$fin' OR fin='$debut')", "group by perso_id");
+    if (!$postesFrontOffice || !in_array($posteID, $postesFrontOffice)) {
+        return $tab;
+    }
+    $db->select("pl_poste", "perso_id", "absent = '0' AND date='$date' AND (debut='$fin' OR fin='$debut') AND poste IN(" . join(',', $postesFrontOffice) . ")", "group by perso_id");
     if ($db->result) {
         foreach ($db->result as $elem) {
             $tab[]=$elem['perso_id'];

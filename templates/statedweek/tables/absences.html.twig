@@ -1,0 +1,87 @@
+{# statedweek/tables/absences.html.twig #}
+
+<table class="statedweek-table table-bottom" id="statedweek-absences" border="1">
+  <thead>
+    <tr>
+      <th class="cell-header" colspan="3">Absents</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% set index = 0 %}
+    {% for i in 0..6 %}
+      <tr>
+        {% if absences[index] is defined %}
+          {% set absence = absences[index] %}
+          <td>
+            <span class="status_{{ absence.status }}">{{ absence.nom }} {{ absence.prenom }}</span>
+            {% if absence.debut != '00:00:00' or absence.fin != '23:59:59' %}
+              <span class="text-red">
+                {% if absence.debut != '00:00:00' and absence.fin != '23:59:59' %}
+                  de {{ absence.debut | hour }} à {{ absence.fin | hour }}
+                {% elseif absence.debut != '00:00:00' %}
+                  à partir de {{ absence.debut | hour }}
+                {% else %}
+                  jusqu'à {{ absence.fin | hour }}
+                {% endif %}
+              <span>
+            {% endif %}
+            {% if absence.valide < 1 %}
+              <strong> (Non validée)</strong>
+            {% endif %}
+          </td>
+          {% set index = index + 1 %}
+        {% else %}
+          <td></td>
+        {% endif %}
+
+        {% if absences[index] is defined %}
+          {% set absence = absences[index] %}
+          <td>
+            <span class="status_{{ absence.status }}">{{ absence.nom }} {{ absence.prenom }}</span>
+            {% if absence.debut != '00:00:00' or absence.fin != '23:59:59' %}
+              <span class="text-red">
+                {% if absence.debut != '00:00:00' and absence.fin != '23:59:59' %}
+                  de {{ absence.debut | hour }} à {{ absence.fin | hour }}
+                {% elseif absence.debut != '00:00:00' %}
+                  à partir de {{ absence.debut | hour }}
+                {% else %}
+                  jusqu'à {{ absence.fin | hour }}
+                {% endif %}
+              <span>
+            {% endif %}
+            {% if absence.valide < 1 %}
+              <strong> (Non validée)</strong>
+            {% endif %}
+          </td>
+          {% set index = index + 1 %}
+        {% else %}
+          <td></td>
+        {% endif %}
+
+        {% if absences[index] is defined %}
+          {% set absence = absences[index] %}
+          <td>
+            <span class="status_{{ absence.status }}">{{ absence.nom }} {{ absence.prenom }}</span>
+            {% if absence.debut != '00:00:00' or absence.fin != '23:59:59' %}
+              <span class="text-red">
+                {% if absence.debut != '00:00:00' and absence.fin != '23:59:59' %}
+                  de {{ absence.debut | hour }} à {{ absence.fin | hour }}
+                {% elseif absence.debut != '00:00:00' %}
+                  à partir de {{ absence.debut | hour }}
+                {% else %}
+                  jusqu'à {{ absence.fin | hour }}
+                {% endif %}
+              <span>
+            {% endif %}
+            {% if absence.valide < 1 %}
+              <strong> (Non validée)</strong>
+            {% endif %}
+          </td>
+          {% set index = index + 1 %}
+        {% else %}
+          <td></td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

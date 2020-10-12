@@ -2047,6 +2047,237 @@ if (version_compare($config['Version'], $v) === -1) {
 
 $v="20.10.00.000";
 if (version_compare($config['Version'], $v) === -1) {
+
+    // BSG
+
+    //Statedweek
+//     $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`) VALUES(30, 95, 'Semaines fixes', '/statedweek', 'config=statedweek_enabled')";
+//     $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `page`, `ordre`) VALUES('Semaine fixes', 100, '/statedweek', 0)";
+//     $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `groupe`, `ordre`, `categorie`) VALUES('Plannings semaines fixes', 1401, 'Création / modification des plannings semaines fixes', 136, 'Semaines fixes')";
+    // Unaffected workers
+//     $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `ordre`, `commentaires`) VALUES ('Planning-AfficheAgentsDisponibles', 'boolean', '0', 'Planning','100', 'Afficher le nombre d\'agents disponibles pour une tranche horaire du planning.');";
+
+    // interchanges
+//     $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`) VALUES(35, 0, 'Échanges', '/interchange', 'config=statedweek_enabled')";
+//     $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`) VALUES(35, 5, 'Voir les échanges', '/interchange', 'config=statedweek_enabled')";
+//     $sql[] = "INSERT INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`) VALUES(35, 10, 'Demande d\'échange', '/interchange/add', 'config=statedweek_enabled')";
+//     $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `page`, `ordre`) VALUES('Échanges de poste', 100, '/interchange', 0)";
+//     $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `page`, `ordre`) VALUES('Demande d\'échange', 100, '/interchange/add', 0)";
+
+//     $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`, `groupe_id`, `groupe`, `ordre`, `categorie`) VALUES('Échanges de poste', 1301, 'Validation des échanges', 135, 'Semaines fixes')";
+
+//     $sql[] = "INSERT INTO `{$dbprefix}menu` (niveau1, niveau2, titre, url) VALUES(30, 105, 'Tous les sites', 'planning/poste/overall.php')";
+//     $sql[] = "INSERT INTO `{$dbprefix}acces` (nom, groupe_id, page, ordre) VALUES('Tous les sites', 100, 'planning/poste/overall.php', 0)";
+
+    $sql[] = "UPDATE `{$dbprefix}menu` SET `url` = '/model' WHERE `url` = 'planning/modeles/index.php';";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `page` = '/model' WHERE `page` = 'planning/modeles/index.php';";
+    $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `page` = 'planning/modeles/modif.php';";
+    $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `page` = 'planning/modeles/valid.php';";
+
+//     $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Planning - Modèles', 301, 'Création / modification des plannings, utilisation et gestion des modèles','/statedweekmodel','Planning','110');";
+
+    $sql[] = "DELETE FROM `{$dbprefix}config` WHERE `nom` = 'Conges-Heures';";
+
+    $sql[] = "CREATE TABLE IF NOT EXISTS `{$dbprefix}stated_week_plannings` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        date DATE NOT NULL,
+        locked TINYINT(1) NULL,
+        locker_id int(11) NULL,
+        locked_on datetime NULL,
+        PRIMARY KEY (`id`)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+    $sql[] = "CREATE TABLE IF NOT EXISTS `{$dbprefix}stated_week_planning_columns` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        planning_id INT(11),
+        type ENUM('first-slot', 'second-slot', 'third-slot'),
+        starttime TIME NOT NULL,
+        endtime TIME NOT NULL,
+        PRIMARY KEY (`id`),
+        FOREIGN KEY (planning_id) REFERENCES stated_week_plannings(id)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+    $sql[] = "CREATE TABLE IF NOT EXISTS `{$dbprefix}stated_week_planning_times` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        agent_id int(11) NOT NULL DEFAULT '0',
+        column_id INT(11),
+        PRIMARY KEY (`id`),
+        UNIQUE KEY `agent_column` (`agent_id`,`column_id`),
+        FOREIGN KEY (column_id) REFERENCES stated_week_planning_columns(id)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+    $sql[] = "CREATE TABLE IF NOT EXISTS `{$dbprefix}stated_week_planning_job` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        planning_id INT(11),
+        type ENUM('first-job', 'second-job', 'third-job'),
+        name VARCHAR(255) NOT NULL,
+        description VARCHAR(255) NOT NULL,
+        PRIMARY KEY (`id`),
+        FOREIGN KEY (planning_id) REFERENCES stated_week_plannings(id)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+    $sql[] = "CREATE TABLE IF NOT EXISTS `{$dbprefix}stated_week_planning_job_times` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        agent_id int(11) NOT NULL DEFAULT '0',
+        job_id INT(11),
+        starttime TIME NULL,
+        endtime TIME NULL,
+        breaktime TIME NULL,
+        PRIMARY KEY (`id`),
+        FOREIGN KEY (job_id) REFERENCES stated_week_planning_job(id)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+    $sql[] = "CREATE TABLE IF NOT EXISTS `{$dbprefix}stated_week_planning_pauses` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        agent_id int(11) NOT NULL DEFAULT '0',
+        planning_id INT(11),
+        PRIMARY KEY (`id`),
+        UNIQUE KEY `agent_job` (`agent_id`,`planning_id`),
+        FOREIGN KEY (planning_id) REFERENCES stated_week_plannings(id)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+    $sql[] = "CREATE TABLE IF NOT EXISTS `{$dbprefix}stated_week_planning_templates` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        name VARCHAR(255) NOT NULL,
+        type ENUM('day', 'week'),
+        PRIMARY KEY (`id`)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+    $sql[] = "CREATE TABLE IF NOT EXISTS `{$dbprefix}stated_week_planning_time_templates` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        template_id INT(11) NOT NULL,
+        day_index tinyint NOT NULL,
+        job VARCHAR(50),
+        agent_id int(11) NOT NULL DEFAULT '0',
+        starttime TIME NULL,
+        endtime TIME NULL,
+        breaktime TIME NULL,
+        PRIMARY KEY (`id`),
+        FOREIGN KEY (template_id) REFERENCES stated_week_planning_templates(id)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+    // interchanges
+    $sql[] = "CREATE TABLE IF NOT EXISTS `{$dbprefix}interchanges` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        planning INT(11) NOT NULL,
+        requester int(11) NOT NULL,
+        requested_on datetime NOT NULL,
+        requester_time int(11) NOT NULL,
+        asked int(11) NOT NULL,
+        asked_time int(11) NOT NULL,
+        accepted_by int(11) NULL DEFAULT 0,
+        accepted_on datetime NULL,
+        rejected_by int(11) NULL DEFAULT 0,
+        rejected_on datetime NULL,
+        validated_by int(11) NULL DEFAULT 0,
+        validated_on datetime NULL,
+        status ENUM ('ASKED','ACCEPTED', 'REJECTED', 'VALIDATED') NOT NULL DEFAULT 'ASKED',
+        PRIMARY KEY (`id`)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+    // Overall site view
+    $sql[]="CREATE TABLE IF NOT EXISTS `{$dbprefix}hidden_sites` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `perso_id` int(11) NOT NULL DEFAULT '0',
+      `hidden_sites` TEXT NULL DEFAULT NULL,
+      PRIMARY KEY (`id`)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+    $sql[] = "CREATE TABLE IF NOT EXISTS `{$dbprefix}stated_week_planning_column_templates` (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        template_id INT(11) NOT NULL,
+        day_index tinyint NOT NULL,
+        slot VARCHAR(50) NOT NULL,
+        starttime TIME NOT NULL,
+        endtime TIME NOT NULL,
+        PRIMARY KEY (`id`),
+        FOREIGN KEY (template_id) REFERENCES stated_week_planning_templates(id)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+
+    // Aff collate UTF8
+    $sql[] = "ALTER TABLE `{$dbprefix}absences` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}absences_documents` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}absences_infos` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}absences_recurrentes` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}acces` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}activites` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}appel_dispo` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}config` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}conges` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}conges_cet` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}conges_infos` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}cron` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}edt_samedi` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}heures_absences` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}heures_sp` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}hidden_tables` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}infos` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}ip_blocker` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}jours_feries` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}lignes` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}log` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}menu` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}personnel` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}pl_notes` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}pl_notifications` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}pl_poste` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_cellules` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_horaires` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_lignes` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_modeles` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_modeles_tab` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_affect` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_tab_grp` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_verrou` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}planning_hebdo` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}postes` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}recuperations` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}responsables` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}select_abs` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}select_categories` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}select_etages` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}select_groupes` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}select_services` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}select_statuts` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}volants` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+
+    // Convert tables created for BSG
+    $sql[] = "ALTER TABLE `{$dbprefix}stated_week_plannings` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}stated_week_planning_columns` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}stated_week_planning_times` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}stated_week_planning_job` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}stated_week_planning_job_times` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}stated_week_planning_pauses` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}stated_week_planning_templates` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}stated_week_planning_column_templates` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}stated_week_planning_time_templates` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+    $sql[] = "ALTER TABLE `{$dbprefix}interchanges` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+
+    // MT 27498
+    $sql[] = "ALTER TABLE `{$dbprefix}postes` ADD COLUMN position VARCHAR(11) DEFAULT 'frontOffice' AFTER groupe_id;";
+
+    // Drop table planning_hebdo_periodes
+    $sql[]="DROP TABLE IF EXISTS `{$dbprefix}planning_hebdo_periodes`;";
+
+    // fix a type in statistics_access
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe` = 'Accès aux statistiques' WHERE `groupe_id` = '17';";
+
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `categorie` = REPLACE(`categorie`, '&eacute;', 'é');";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe` = REPLACE(`groupe`, '&eacute;', 'é');";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe` = REPLACE(`groupe`, '&egrave;', 'è');";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `groupe` = REPLACE(`groupe`, '&apos;', \"'\");";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `nom` = REPLACE(`nom`, '&Eacute;', 'É');";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `nom` = REPLACE(`nom`, '&eacute;', 'é');";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `nom` = REPLACE(`nom`, '&egrave;', 'è');";
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `nom` = REPLACE(`nom`, '&apos;', \"'\");";
+
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `groupe_id` = '9';";
+    $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`categorie`,`ordre`) VALUES (\"Enregistrement d'absences pour plusieurs agents\",'9',\"Enregistrement d'absences pour plusieurs agents\", 'Absences', '25');";
+
+    $sql[] = "UPDATE `{$dbprefix}acces` SET `nom` = 'Congés - Nouveau' WHERE `page` = '/holiday/new';";
+    $sql[] = "INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES (\"Congés - Enregistrer\",'100','/holiday');";
+
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
