@@ -35,5 +35,4 @@ class Model extends PLBEntity
 
         return false;
     }
-
 }

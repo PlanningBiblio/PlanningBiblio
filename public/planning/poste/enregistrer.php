@@ -17,6 +17,9 @@ Etape 3 : enregistrement dans la base de données
 Cette page est appelée par la fonction JavaScript Popup qui l'affiche dans un cadre flottant
 */
 
+use App\Model\Model;
+use App\Model\ModelAgent;
+
 require_once "class.planning.php";
 
 // Initialisation des variables

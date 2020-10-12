@@ -1,0 +1,64 @@
+{# statedweek/tables/planning.html.twig #}
+
+<table class="statedweek-table table-placed" id="statedweek-planning" border="1">
+  <thead>
+    <tr>
+      <th class="cell-header">
+        <span class="slot-editable" style="display: none;">
+          &nbsp;<input class="plb-timepicker time-from" value="{{ planning.columns[0].starttime | date('H:i') }}"/> à <input class="plb-timepicker time-to" value="{{ planning.columns[0].endtime | date('H:i') }}"/>
+          <a class='valid-slot-time pl-icon pl-icon-valid' title='Valider' data-type="first-slot"></a>
+        </span>
+        <span class="slot-range">
+          {{ planning.columns[0].starttime | date('H:i:s') | hour }} - {{ planning.columns[0].endtime | date('H:i:s') | hour }}
+        </span>
+        <span id="first-slot-count"></span>
+      </th>
+      <th class="cell-header">
+        <span class="slot-editable" style="display: none;">
+          &nbsp;<input class="plb-timepicker time-from" value="{{ planning.columns[1].starttime | date('H:i') }}"/> à <input class="plb-timepicker time-to" value="{{ planning.columns[1].endtime | date('H:i') }}"/>
+          <a class='valid-slot-time pl-icon pl-icon-valid' title='Valider' data-type="second-slot"></a>
+        </span>
+        <span class="slot-range">
+          {{ planning.columns[1].starttime | date('H:i:s') | hour }} - {{ planning.columns[1].endtime | date('H:i:s') | hour }}
+        </span>
+        <span id="second-slot-count"></span>
+      </th>
+      <th class="cell-header">
+        <span class="slot-editable" style="display: none;">
+          &nbsp;<input class="plb-timepicker time-from" value="{{ planning.columns[2].starttime | date('H:i') }}"/> à <input class="plb-timepicker time-to" value="{{ planning.columns[2].endtime | date('H:i') }}"/>
+          <a class='valid-slot-time pl-icon pl-icon-valid' title='Valider' data-type="third-slot"></a>
+        </span>
+        <span class="slot-range">
+          {{ planning.columns[2].starttime | date('H:i:s') | hour }} - {{ planning.columns[2].endtime | date('H:i:s') | hour }}
+        </span>
+        <span id="third-slot-count"></span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in 0..27 %}
+      <tr>
+        <td
+          class="time-slot first-slot"
+          id="first-time-slot-{{ i }}"
+          data-from="{{ planning.columns[0].starttime | date('H:i:s') }}"
+          data-to="{{ planning.columns[0].endtime | date('H:i:s') }}"
+          ondrop="drop(event)" ondragover="allowDrop(event);"></td>
+
+        <td
+          class="time-slot second-slot"
+          id="second-time-slot-{{ i }}"
+          data-from="{{ planning.columns[1].starttime | date('H:i:s') }}"
+          data-to="{{ planning.columns[1].endtime | date('H:i:s') }}"
+          ondrop="drop(event)" ondragover="allowDrop(event);"></td>
+
+        <td
+          class="time-slot third-slot"
+          id="third-time-slot-{{ i }}"
+          data-from="{{ planning.columns[2].starttime | date('H:i:s') }}"
+          data-to="{{ planning.columns[2].endtime | date('H:i:s') }}"
+          ondrop="drop(event)" ondragover="allowDrop(event);"></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

@@ -390,13 +390,15 @@ $(function() {
     perso_id=$(this).attr("data-perso-id");
     site=$("#site").val();
 
+    postesFrontOffice = $("#planning-data").attr("data-postesFrontOffice");
+
     // On supprime l'ancien menu (s'il existe) pour eviter les problemes de remanence
     emptyContextMenu();
 
     $.ajax({
       url: url('planningjob/contextmenu'),
       datatype: "json",
-      data: {cellule: cellule, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, poste: poste, site: site, perso_nom: perso_nom_origine, perso_id:perso_id_origine},
+      data: {cellule: cellule, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, poste: poste, site: site, perso_nom: perso_nom_origine, perso_id:perso_id_origine, postesFrontOffice:postesFrontOffice},
       type: "get",
       success: function(result){
         // si pas de result : on quitte (pas de droit admin)
@@ -1268,7 +1270,9 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
 
   // Affiche un message en haut du planning si pas de catégorie A en fin de service 
   verif_categorieA();
-  
+
+  updatePlanningAlert(debut, fin);
+
   /*
   Exemple de valeur pour la variable result :
 
@@ -1285,6 +1289,28 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
   [1] => Array (
     ...
   */
+}
+
+function updatePlanningAlert(debut, fin) {
+    var link = $('a.non_places');
+    if (!link) return;
+    var date = $('#date').val();
+    var site = $('#site').val();
+    $.ajax({
+        url: "planning/poste/ajax.getPlanningAlert.php",
+        dataType: "json",
+        data: {date: date, site: site, debut: debut, fin: fin},
+        type: "get",
+        success: function(result){
+            if (result['amount'] == 0) {
+                tooltip = 'Aucun';
+            } else {
+                tooltip = result['names'].join(', ');
+            }
+            trid = debut.replace(/:/g, "") + fin.replace(/:/g, "");
+            $("#" + trid + " a").replaceWith("<a href='#' title='" + tooltip + "'> (" + result['amount'] + ")</a>");
+        },
+    });
 }
 
 //	groupe_tab : utiliser pour menudiv
