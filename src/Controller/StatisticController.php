@@ -402,6 +402,11 @@ class StatisticController extends BaseController
                     }
                 }
             }
+            for ( $i = 1; $i <= $nbSites; $i++ ){
+                if ($tab[$key]['sites'][$i]){
+                    $tab[$key]['sites'][$i] = heure4($tab[$key]['sites'][$i]);
+                }
+            }
         }
 
         $this->templateParams(array(

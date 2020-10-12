@@ -21,7 +21,7 @@
             <tr style='vertical-align:top'>
               <td><label class='intitule'>Agents</label></td>
               <td>
-                <select name='agents[]' multiple='multiple' size='20' onchange='verif_select(\"agents\");' class='ui-widget-content ui-corner-all' >
+                <select name='agents[]' multiple='multiple' size='20' onchange='verif_select("agents");' class='ui-widget-content ui-corner-all' >
                   {% if agents_list is iterable %}
                     <option value='Tous'>Tous</option>
                     {% for elem in agents_list %}
