@@ -5,8 +5,16 @@
   <head>
     <title>Planning</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type='text/JavaScript'>
+      config = {};
+      {% for key, value in config() %}
+        config['{{ key }}']  = '{{ value | escape }}';
+      {% endfor %}
+      window.plb_config = config;
+    </script>
     <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/jquery-1.11.1.min.js'></script>
     <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/jquery-ui-1.11.2/jquery-ui.js'></script>
+    <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/jquery.timepicker.min.js'></script>
     <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/carhartl-jquery-cookie-3caf209/jquery.cookie.js'></script>
     <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/DataTables/datatables.min.js'></script>
     <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/CJScript.js?version={{ version }}'></script>
@@ -16,6 +24,7 @@
     {% block specificjs %}{% endblock %}
     <link rel='StyleSheet' href='{{ app.request.getBaseURL() }}/js/DataTables/datatables.min.css' type='text/css' media='all'/>
     <link rel='StyleSheet' href='{{ app.request.getBaseURL() }}/themes/{{ themeJQuery }}/jquery-ui.min.css' type='text/css' media='all'/>
+    <link rel='StyleSheet' href='{{ app.request.getBaseURL() }}/themes/default/jquery.timepicker.min.css'/>
     <link rel='StyleSheet' href='{{ app.request.getBaseURL() }}/themes/default/default.css?version={{ version }}' type='text/css' media='all'/>
     <link rel='StyleSheet' href='{{ app.request.getBaseURL() }}/themes/default/print.css?version={{ version }}' type='text/css' media='print'/>
     {% if theme != 'default' %}
