@@ -1978,7 +1978,7 @@ class absences
         //Ajoute ou met à jour les agents dans 
         //le groupe d'absence
         if(count($this->perso_ids) > 1 and $this->groupe == null){
-            $this->groupe = (count($perso_ids) > 1) ? time().'-'.rand(100, 999) : null;
+            $this->groupe = (count($this->perso_ids) > 1) ? time().'-'.rand(100, 999) : null;
         }
 
         foreach ($this->perso_ids as $perso_id){

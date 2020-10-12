@@ -587,6 +587,8 @@ class AbsenceController extends BaseController
             $a->hre_fin = $hre_fin;
             $a->perso_ids = $perso_ids;
             $a->commentaires = $commentaires;
+            $a->demande = $demande;
+            $a->etat = $etat;
             $a->motif = $motif;
             $a->motif_autre = $motif_autre;
             $a->CSRFToken = $CSRFToken;
@@ -606,6 +608,7 @@ class AbsenceController extends BaseController
             $a->groupe = $groupe;
             $a->perso_ids = $perso_ids;
             $a->commentaires = $commentaires;
+            $a->etat = $etat;
             $a->motif = $motif;
             $a->motif_autre = $motif_autre;
             $a->CSRFToken = $CSRFToken;
@@ -614,6 +617,7 @@ class AbsenceController extends BaseController
             $a->pj1 = $pj1;
             $a->pj2 = $pj2;
             $a->so = $so;
+            $a->demande = $demande;
             $a->update();
         }
 
