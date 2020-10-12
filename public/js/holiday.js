@@ -26,7 +26,7 @@ $( document ).ready(function() {
   });
 
   $('#cancel').on('click', function() {
-    document.location.href="/holiday/index";
+    document.location.href="/holiday";
   });
 
   $('#validate').on('click', function() {

@@ -608,9 +608,9 @@
         <tr>
           <td colspan='2' style='text-align:center;'>
             {% if conges_recuperations and debit == 'recuperation' %}
-              <a href='{{ asset("holiday/index?recup=1") }}' class='ui-button' >Annuler</a>
+              <a href='{{ asset("holiday?recup=1") }}' class='ui-button' >Annuler</a>
             {% else %}
-              <a href='{{ asset("holiday/index") }}' class='ui-button' >Annuler</a>
+              <a href='{{ asset("holiday") }}' class='ui-button' >Annuler</a>
             {% endif %}
 
             {% if save_button %}
