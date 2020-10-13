@@ -2,13 +2,9 @@
 
 {% extends 'base.html.twig' %}
 
-{% block specificjs %}
-    <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/personnel/js/modif.js'></script>
-    <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/personnel/js/index.js'></script>
-{% endblock %}
-
 {% block page %}
   <form name='form2' action='{{ asset("/agent") }}' method='get'>
+  <input type = 'hidden' value='{{ actif }}' />
     <table style='margin-bottom:10px;'>
       <tr style='vertical-align:center;'>
         <td style='width:270px;'>
@@ -17,10 +13,10 @@
         <td>Voir les agents</td>
         <td style='width:150px;'>
           <select name='actif' onchange='document.form2.submit();'  class='ui-widget-content ui-corner-all'>
-            <option value='Actif'>Service public</option>
-            <option value='Inactif'>Administratif</option>
+            <option value='Actif'{% if actif == 'Actif' %} selected='selected' {% endif %}>Service public</option>
+            <option value='Inactif' {% if actif == 'Inactif' %} selected='selected' {% endif %}>Administratif</option>
             {% if rights21 %}
-              <option value='Supprimé'>Supprimé</option>
+              <option value='Supprimé' {% if actif == 'Supprimé' %} selected='selected' {% endif %}>Supprimé</option>
             {% endif %}
           </select>
         </td>
@@ -29,7 +25,7 @@
           {% if rights21 %}
           <input type='button' value='Ajouter' onclick="location.href='{{ asset('agent/add') }}';" class='ui-button'/>
             {% if LDAP_host and LDAP_suf %}
-              <input type='button' value='Import LDAP' onclick='location.href=\"index.php?page=personnel/import.php\";' class='ui-button' style='margin-left:21px;'/>
+              <input type='button' value='Import LDAP' onclick='location.href="{{ app.request.getBaseURL() }}/personnel/import.php";' class='ui-button' style='margin-left:21px;'/>
             {% endif %}
           {% endif %}
         </td>
@@ -95,10 +91,6 @@
     </select>
     <input type='button' value='Valider' class='ui-button' style='margin-left:20px;' onclick='agent_list()'/>
   {% endif %}
-
-  <script type='text/JavaScript'>
-    <!--complet = JSON.parse({{ positionsCompleteNames}})-->
-  </script>
   <div id="dialog-form" title='{{ lang.edit_selected_users }}' class='noprint' style='display:none;'>
     <p class="validateTips"></p>
     <form>
@@ -118,7 +110,7 @@
                   <option value='-1'>{{ lang.do_not_change }}</option>
                   <option value=''>Aucun</option>
                   {% for s in status %}
-                    <option value='".$elem['valeur']."'>{{ s.valeur }}</option>
+                    <option value='{{ s.valeur }}'>{{ s.valeur }}</option>
                   {% endfor %}
                 </select>
               </td>
@@ -203,7 +195,7 @@
                 <div id='dispo_div'>
                   <select id='postes_dispo' name='postes_dispo' style='width:300px;' size='20' multiple='multiple'>
                     {% for sk in skills %}
-                      <option value='{{ sk.id }}'>{{ sk.id }}</option>
+                      <option value='{{ sk.id }}'>{{ sk.nom }}</option>
                     {% endfor %}
                   </select>
                 </div>
@@ -226,4 +218,10 @@
         </div> <!-- qualif -->
       </div> <!-- ui-tabs -->
     </form>
+{% endblock %}
+
+{% block specificjs %}
+    <script type='text/JavaScript'> var complet = JSON.parse({{ positionsCompleteNames }}); </script>
+    <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/personnel/js/modif.js'></script>
+    <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/personnel/js/index.js'></script>
 {% endblock %}

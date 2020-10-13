@@ -149,6 +149,7 @@ class AgentController extends BaseController
 
         $this->templateParams(array(
             "agents"                 => $agents,
+            "actif"                  => $actif,
             "contracts"              => $contrats,
             "hours"                  => $hours,
             "lang"                   => $lang,
@@ -163,7 +164,6 @@ class AgentController extends BaseController
             "status"                 => $statuts
 
         ));
-
         return $this->output('/agents/index.html.twig');
     }
 
@@ -860,7 +860,7 @@ class AgentController extends BaseController
             $p->CSRFToken = $CSRFToken;
             $p->updateEDTSamedi($eDTSamedi, $premierLundi, $dernierLundi, $id);
 
-            return $this->redirectToRoute('default', array('page' => 'personnel/index.php', 'msg' => $msg, 'msgType' => $msgType));
+            return $this->redirectToRoute('default', array('page' => 'agent.index', 'msg' => $msg, 'msgType' => $msgType));
 
             break;
 
@@ -869,7 +869,7 @@ class AgentController extends BaseController
             // Demo mode
             if (!empty($this->config('demo'))) {
                 $msg = "Le mot de passe n'a pas été modifié car vous utilisez une version de démonstration";
-                return $this->redirectToRoute('default', array('page' => 'personnel/index.php', 'msg' => $msg, 'msgType' => 'success'));
+                return $this->redirectToRoute('default', array('page' => 'agent.index', 'msg' => $msg, 'msgType' => 'success'));
                 break;
             }
 
@@ -903,7 +903,7 @@ class AgentController extends BaseController
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
             $db->update("personnel", array("password"=>$mdp_crypt), array("id"=>$id));
-            return $this->redirectToRoute('default', array('page' => 'personnel/index.php', 'msg' => $msg, 'msgType' => $msgType));
+            return $this->redirectToRoute('default', array('page' => 'agent.index', 'msg' => $msg, 'msgType' => $msgType));
 
             break;
 
@@ -956,7 +956,7 @@ class AgentController extends BaseController
             $p->CSRFToken = $CSRFToken;
             $p->updateEDTSamedi($eDTSamedi, $premierLundi, $dernierLundi, $id);
 
-            return $this->redirectToRoute('default', array('page' => 'personnel/index.php'));
+            return $this->redirectToRoute('agent.index');
 
             break;
         }
