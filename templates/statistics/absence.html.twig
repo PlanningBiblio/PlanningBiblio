@@ -1,0 +1,120 @@
+{# statistics/absence.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  <h3>Statistiques sur les absences</h3>
+  <table>
+    <tr>
+      <td style='width:350px;'><b>Du {{ debut }} au {{ fin }}</b></td>
+      <td>
+        <form name='form' method='get' action='{{ asset("statistics/absence") }}'>
+          <input type='hidden' id='afficheHeures' value='{{ afficheHeures }}' />
+          Début <input type='text' name='debut' class='datepicker' value='{{ debut }}' />&nbsp;
+          Fin <input type='text' name='fin' class='datepicker' value='{{ fin }}' />&nbsp;
+          {% if nbSites >1 %}
+            Sites : 
+            <select name='site'>
+              <option value='0'>Tous</option>
+              {% for i in 1..nbSites %}
+                {% if i in selectedSites %}
+                  <option value='{{ i }}' selected = 'selected'> {{ multisites[i-1] }}</option>
+                {% else %}
+                  <option value='{{ i }}'> {{ multisites[i-1] }}</option>
+                {% endif %}
+              {% endfor %}
+            </select>&nbsp;
+          {% endif %}
+          <input type='submit' value='OK' id='submit' class='ui-button'/>
+        </form>
+      </td>
+    </tr>
+  </table>
+  <br/>
+  <table id='tableStatAbsences' class='CJDataTable dataTable' data-fixedColumns='3'>
+    <thead>
+      <tr>
+        {% if afficheHeures == true %}
+          <th rowspan = 2 >Agents</th>
+          <th rowspan = 2 >Total<br/>d'absences</th>
+          <th rowspan = 2 class='dataTableHeureFR'>Total<br/>d'heures</th>
+        {% else %}
+          <th rowspan = 1  >Agents</th>
+          <th rowspan = 1 >Total<br/>d'absences</th>          
+        {% endif %}
+        {% for elem in motifs %}
+          {% if afficheHeures == true %}
+            <th colspan = 2  >{{ elem }}</th>
+          {% else %}
+            <th colspan = 1 >{{ elem }}</th>  
+          {% endif %}
+        {% endfor %}
+        {% if afficheHeures == true %}
+          </tr>
+          <tr>
+            {% for elem in motifs %}
+              <th>Nombre</th>
+              <th class='dataTableHeureFR'>Heures</th>
+            {% endfor %}
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for elem in tab %}
+        <tr>
+          <td> {{ elem.nom }} {{ elem.prenom }}</td>
+          <td class='center nowrap'>{{ elem.total }}</td>
+          {% if afficheHeures == true %}
+            {% if elem.totalHeures == 'Erreur' %}
+              <td class='center nowrap' title="Erreur de calcul. Vérifiez les heures de présence de l'agent (Emploi du temps)."> Erreur </td>
+            {% else %}
+              <td class='center nowrap'> {{ elem.totalHeures }}</td>
+            {% endif %}
+          {% endif %}
+          {% for motif in motifs %}
+            {% if attribute(elem, motif) is defined %}
+              <td class='center nowrap bg-yellow'>{{ elem[motif].total }}</td>
+            {% else %}
+              <td class='center nowrap'> - </td> 
+            {% endif %}  
+            {% if attribute(elem, motif) is defined %}
+              {% if afficheHeures == true %}
+                {% if elem[motif].heures == 'Erreur' %}
+                  <td class='center nowrap bg-yellow' title="Erreur de calcul. Vérifiez les heures de présence de l'agent (Emploi du temps)."> Erreur </td>
+                {% else %}
+                  <td class='center nowrap bg-yellow'>{{ elem[motif].heures }}</td>
+                {% endif %}
+              {% endif %}
+            {% else %}
+              <td> </td>
+            {% endif %}            
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr style='background:#DDDDDD;'>
+        <th>Totaux</th>
+        <th class='nowrap'>{{ totaux._general}}</th>
+        {% if totaux._generalHeures == 'Erreur' %}
+          <th class='nowrap' title="Erreur de calcul. Vérifiez les heures de présence des agents (Emploi du temps)."> Erreur </th>
+        {% else %}
+          <th class='nowrap'> {{ totaux._generalHeures }} </th>
+        {% endif %}
+        {% for motif in motifs %}
+          <th class='nowrap'>{{ totaux[motif].frequence }}</th>
+          {% if afficheHeures %}
+            {% if totaux[motif].heures == 'Erreur' %}
+              <th class='nowrap' title="Erreur de calcul. Vérifiez les heures de présence de l'agent (Emploi du temps)."> Erreur </th>
+            {% else %}
+              <th class='nowrap'>{{ totaux[motif].heures }}</th>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </tr>
+    </tfoot>
+  </table>
+  <br/>Exporter
+  <a href='javascript:export_stat("absences","csv");'>CSV</a>&nbsp;&nbsp;
+  <a href='javascript:export_stat("absences","xls");'>XLS</a>
+{% endblock %}
