@@ -28,10 +28,10 @@ class StatisticController extends BaseController
         $debut = $request->get('debut');
         $fin = $request->get('fin');
         $site = $request->get('site');
-                
+
         $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
         $fin = filter_var($fin, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
-        
+
         $afficheHeures = $this->config('PlanningHebdo') ? true : false;
 
         if ($debut) {
@@ -45,15 +45,15 @@ class StatisticController extends BaseController
             $date = $_SESSION['PLdate'];
             $d = new \datePl($date);
             $debut = dateFr($d->dates[0]);
-            $fin = $config['Dimanche'] ? dateFr($d->dates[6]) : dateFr($d->dates[5]);
+            $fin = $this->config('Dimanche') ? dateFr($d->dates[6]) : dateFr($d->dates[5]);
             $site = 0;
         }
         $_SESSION['oups']['stat_absences_debut'] = $debut;
         $_SESSION['oups']['stat_absences_fin'] = $fin;
-        
+
         $debutSQL = dateSQL($debut);
         $finSQL = dateSQL($fin);
-        
+
         $sites = null;
         $nbSites = $this->config('Multisites-nombre');;
         if ($nbSites > 1) {
@@ -66,13 +66,13 @@ class StatisticController extends BaseController
                 $sites = array($site);
             }
         }
-        
+
         // Recherche des absences
         $a = new \absences();
         $a->valide = true;
         $a->fetch("`debut`,`fin`,`nom`,`prenom`", null, $debutSQL, $finSQL, $sites);
         $absences = $a->elements;
-        
+
         // Recherche des motifs d'absences
         $motifs = array();
         if (is_array($absences) and !empty($absences)) {
@@ -83,7 +83,7 @@ class StatisticController extends BaseController
             }
         }
         sort($motifs);
-        
+
         // Regroupe les absences par agent et par motif
         // Et ajoute les heures correspondantes
         $tab = array();
@@ -109,7 +109,7 @@ class StatisticController extends BaseController
                     "heures"    => 0
                 );
             }
-          
+
             // Total agent
             $tab[$elem['perso_id']]['total']++;
             // Totaux généraux
@@ -118,13 +118,13 @@ class StatisticController extends BaseController
             $tab[$elem['perso_id']][$elem['motif']]['total']++;
             // Total pour ce motif
             $totaux[$elem['motif']]['frequence']++;
-        
+
             // Ajout des heures d'absences
             if ($afficheHeures) {
                 $a = new \absences();
                 $a->calculTemps($elem['debut'], $elem['fin'], $elem['perso_id']);
                 $heures = $a->heures;
-        
+
                 // heures agent pour le motif courant
                 if ($a->error) {
                     $tab[$elem['perso_id']][$elem['motif']]['heures'] = "Erreur";
@@ -137,7 +137,7 @@ class StatisticController extends BaseController
                 } elseif (is_numeric($totaux[$elem['motif']]['heures'])) {
                     $totaux[$elem['motif']]['heures'] += $heures;
                 }
-        
+
                 if ($a->error) {
                     // Total heures agent
                     $tab[$elem['perso_id']]['totalHeures'] = "Erreur";
@@ -155,12 +155,12 @@ class StatisticController extends BaseController
                 }
             }
         }
-        
+
         // Pour les exports
         $_SESSION['oups']['stat_absences_motifs'] = $motifs;
         $_SESSION['oups']['stat_absences_totaux'] = $totaux;
         $_SESSION['stat_tab']=$tab;
-        
+
         // Affichage du tableau
         $multisites = array();
         $selectedSites = array();
@@ -170,7 +170,7 @@ class StatisticController extends BaseController
                 $multisites[] = $this->config("Multisites-site{$i}");
             }
         }
-      
+
         foreach ($tab as &$elem) {
             foreach ($motifs as $motif) {
                 if (in_array($motif, $elem)){
@@ -178,9 +178,9 @@ class StatisticController extends BaseController
                 }
             }
         }
-        
+
         $totaux['_generalHeures'] = is_numeric($totaux['_generalHeures']) ? heure4($totaux['_generalHeures']) : "Erreur";
-            
+
         foreach ($motifs as $motif) {
             $totaux[$motif]['heures'] = is_numeric($totaux[$motif]['heures']) ? heure4($totaux[$motif]['heures']) : "Erreur";
         }
