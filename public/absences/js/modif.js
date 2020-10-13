@@ -11,9 +11,9 @@ Fichier regroupant les fonctions JavaScript utiles à l'ajout et la modification
 */
 
 $(function() {
-  
+
   $(document).ready(function(){
-    
+
     // Affichage de la liste des agents sélectionnés lors du chargement de la page modif.php
     if($('.perso_ul').length){
       affiche_perso_ul();
@@ -197,7 +197,7 @@ $(function() {
           change_select_perso_ids(id);
         }
       });
-      
+
     } else {
       // Ajoute l'agent choisi dans la liste
       change_select_perso_ids(id);
@@ -205,10 +205,10 @@ $(function() {
 
     // Réinitialise le menu déroulant
     $("#perso_ids").val(0);
-    
+
   });
 
-  
+
   $("#absence-bouton-supprimer").click(function(){
 
     // Suppression d'une absence récurrente
@@ -216,11 +216,11 @@ $(function() {
       $("#recurrence-alert-suppression").dialog('open');
       return false;
 	}
-    
+    var baseURL = $('#baseURL').val();
 	if(confirm("Etes vous sûr de vouloir supprimer cette absence ?")){
 	  var CSRFToken = $('#CSRFSession').val();
 	  var id=$("#absence-bouton-supprimer").attr("data-id");
-	  document.location.href = "/index.php?page=absences/delete.php&id="+id+"&CSRFToken="+CSRFToken;
+	  document.location.href = baseURL + "/index.php?page=absences/delete.php&id="+id+"&CSRFToken="+CSRFToken;
     }
   });
 

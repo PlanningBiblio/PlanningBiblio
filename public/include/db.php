@@ -369,7 +369,6 @@ class db
             $where=join(" AND ", $tmp);
         }
         $requete="UPDATE `{$dbprefix}$table` SET $set WHERE $where;";
-        dump($requete);
         $this->query($requete);
     }
 
@@ -434,7 +433,6 @@ class db
         }
 
         $values=join("),(", $tab);
-        dump("INSERT INTO `$table` (`$fields`) VALUES ($values);");
         $this->query("INSERT INTO `$table` (`$fields`) VALUES ($values);");
     }
 
@@ -447,7 +445,7 @@ class db
         }
         // Par défaut, opérateur =
         $operator="=";
-    
+
         if (!strstr($key, "`") and !strstr($key, ".")) {
             $key="`$key`";
         }

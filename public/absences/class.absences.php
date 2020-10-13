@@ -340,10 +340,10 @@ class absences
                 $m->send();
 
                 // Si erreur d'envoi de mail
-               /* if ($m->error) {
+                if ($m->error) {
                     $msg2 .= "<li>".$m->error_CJInfo."</li>";
                     $msg2_type = "error";
-                }*/
+                }
             }
         }
         $this->msg2 = $msg2;
@@ -1953,70 +1953,6 @@ class absences
         $db=new db();
         $db->CSRFToken = $this->CSRFToken;
         $db->update("absences", array($pj => $checked), array("id"=>$id));
-    }
-
-
-    public function update(){
-        $db = new db();
-        $where = ["groupe" => $this->groupe];
-        if ($this->groupe == null){
-            $where = ["id" => $this->id];
-        }
-        $db->select2('absences', 'perso_id, id', $where);
-        $absences = $db->result;
-
-        $db->CSRFToken = $this->CSRFToken;
-
-        //Suppression des absences quand les agents ne sont plus concernés par le groupe 
-        //d'absence
-        foreach($absences as $absence){
-            if(!in_array($absence["perso_id"], $this->perso_ids)){
-                $db->delete("absences", array("id" => $absence["id"]));
-            }
-        }
-
-        //Ajoute ou met à jour les agents dans 
-        //le groupe d'absence
-        if(count($this->perso_ids) > 1 and $this->groupe == null){
-            $this->groupe = (count($this->perso_ids) > 1) ? time().'-'.rand(100, 999) : null;
-        }
-
-        foreach ($this->perso_ids as $perso_id){
-
-            $absence = current(
-                array_filter(
-                    $absences,
-                    function($elt) use ($perso_id){
-                        return $elt['perso_id']== $perso_id;
-                    }
-                )
-            );
-            $data = array(
-                "debut"        => DateTime::createFromFormat('d/m/Y H:i:s',$this->debut.' '.$this->hre_debut)->format('Y-m-d H:i:s'),
-                "fin"          => DateTime::createFromFormat('d/m/Y H:i:s',$this->fin.' '.$this->hre_fin)->format('Y-m-d H:i:s'),
-                "perso_id"     => $perso_id,
-                "groupe"       => $this->groupe,
-                "commentaires" => $this->commentaires,
-                "motif"        => $this->motif,
-                "motif_autre"  => $this->motif_autre,
-                "rrule"        => $this->rrule,
-                "valide"       => $this->valide,
-                "pj1"          => $this->pj1,
-                "pj2"          => $this->pj2,
-                "so"           => $this->so
-            );
-
-            if (empty($absence)){
-                $data["demande"] = $this->demande;
-                $db->insert("absences", $data);
-            } else {
-                $data["etat"] = $this->etat;
-                $db->update("absences", $data, ["id" => $absence["id"]]);
-            }
-        }
-
-        $this->msg2 = null;
-        $this->msg2_type = null;
     }
 
     public function update_time()
