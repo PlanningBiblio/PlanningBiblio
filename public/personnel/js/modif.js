@@ -197,7 +197,7 @@ function sendICSURL(){
 // Contrôle des champs lors de la validation
 function verif_form_agent(){
   erreur=false;
-  message="Les champs suivant sont obligatoires :";
+  message="Les champs suivants sont obligatoires :";
   if(!document.form.nom.value){
     erreur=true;
     message=message+"\n- Nom";

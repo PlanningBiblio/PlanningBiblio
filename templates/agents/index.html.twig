@@ -221,7 +221,7 @@
 {% endblock %}
 
 {% block specificjs %}
-    <script type='text/JavaScript'> var complet = JSON.parse({{ positionsCompleteNames }}); </script>
+    <script type='text/JavaScript'> var complet = JSON.parse('{{ positionsCompleteNames | raw }}'); </script>
     <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/personnel/js/modif.js'></script>
     <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/personnel/js/index.js'></script>
 {% endblock %}

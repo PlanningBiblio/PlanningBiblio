@@ -15,6 +15,7 @@ Fichier regroupant les fonctions JavaScript utiles à la gestion des agents (ind
 $(function() {
 
     var allFields = $( [] );
+    var baseURL = $('#baseURL').val();
 
     $( "#dialog-form" ).dialog({
         autoOpen: false,
@@ -56,10 +57,10 @@ $(function() {
                             var msg = result;
                             var msgType = 'error';
                         }
-                        location.href = 'index.php?page=personnel/index.php&msg='+msg+'&msgType='+msgType;
+                        location.href = baseURL +'/agent?msg='+msg+'&msgType='+msgType;
                         },
                     error: function(){
-                        location.href = 'index.php?page=personnel/index.php&msg=Une erreur est survenue lors de la modification des agents&msgType=error';
+                        location.href = baseURL + '/agent?msg=Une erreur est survenue lors de la modification des agents&msgType=error';
                         }
                     });
                 },
@@ -82,6 +83,8 @@ function agent_list() {
         alert('Veuillez sélectionner un ou plusieurs agents.');
         return false;
     }
+   
+    var baseURL = $('#baseURL').val();
 
 
     // Action
@@ -108,10 +111,10 @@ function agent_list() {
                 dataType: "json",
                 data: {list: list, CSRFToken: $('#CSRFSession').val()},
                 success: function(){
-                    location.href = 'index.php?page=personnel/index.php&msg=Les agents ont été supprimés avec succés&msgType=success';
+                    location.href = baseURL +'/agent?msg=Les agents ont été supprimés avec succés&msgType=success';
                     },
                 error: function(){
-                    location.href = 'index.php?page=personnel/index.php&msg=Une erreur est survenue lors de la suppresion des agents&msgType=error';
+                    location.href =  baseURL +'/agent?msg=Une erreur est survenue lors de la suppresion des agents&msgType=error';
                     }
                 });
 
