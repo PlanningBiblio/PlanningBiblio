@@ -116,7 +116,7 @@ if (!file_exists("themes/$theme/$theme.css")) {
 }
 
 $themeJQuery = $config['Affichage-theme'] ?$config['Affichage-theme'] : "default";
-if (!file_exists("themes/$theme/jquery-ui.min.css")) {
+if (!file_exists("themes/$themeJQuery/jquery-ui.min.css")) {
     $themeJQuery="default";
 }
 
