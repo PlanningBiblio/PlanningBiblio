@@ -567,13 +567,17 @@ class HolidayController extends BaseController
     {
         $CSRFToken = $request->get('CSRFToken');
         $perso_id = $request->get('perso_id');
+        $debut = $request->get('debut');
+        $fin = $request->get('fin');
         $debutSQL = dateSQL($request->get('debut'));
         $finSQL = dateSQL($request->get('fin'));
         $hre_debut = $request->get('hre_debut') ? $request->get('hre_debut') :"00:00:00";
         $hre_fin = $request->get('hre_fin') ? $request->get('hre_fin') : "23:59:59";
         $commentaires=htmlentities($request->get('commentaires'), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+        $refus = $request->get('refus');
         $valide = $request->get('valide');
         $perso_id = $_SESSION['login_id'];
+        $lang = $GLOBALS['lang'];
 
         switch ($valide) {
             case -2:
@@ -624,32 +628,61 @@ class HolidayController extends BaseController
         $nom = $agent->nom();
         $prenom = $agent->prenom();
 
+        // Choix du sujet et des destinataires en fonction du degré de validation
+        switch ($valide) {
+        // Modification sans validation
+        case 0:
+          $sujet="Modification de congés";
+          $notifications='-A2';
+          break;
+        // Validations Niveau 2
+        case 1:
+          $sujet="Validation de congés";
+          $notifications='-A4';
+          break;
+        case -1:
+          $sujet="Refus de congés";
+          $notifications='-A4';
+          break;
+        // Validations Niveau 1
+        case 2:
+          $sujet = $lang['leave_subject_accepted_pending'];
+          $notifications='-A3';
+          break;
+        case -2:
+          $sujet = $lang['leave_subject_refused_pending'];
+          $notifications='-A3';
+          break;
+        }
+
         // Choix des destinataires en fonction de la configuration
         if ($this->config('Absences-notifications-agent-par-agent')) {
             $a = new \absences();
-            $a->getRecipients2(null, $perso_id, 1);
+            $a->getRecipients2(null, $perso_id, $notifications, 600, $debutSQL, $finSQL);
             $destinataires = $a->recipients;
         } else {
             $c = new \conges();
             $c->getResponsables($debutSQL, $finSQL, $perso_id);
             $responsables = $c->responsables;
-
             $a = new \absences();
-            $a->getRecipients('-A1', $responsables, $agent);
+            $a->getRecipients($notifications, $responsables, $agent);
             $destinataires = $a->recipients;
         }
 
         // Message qui sera envoyé par email
-        $message="Nouveau congés: <br/>$prenom $nom<br/>Début : $debutSQL";
+        $message="$sujet : $prenom $nom Début : $debut";
         if ($hre_debut!="00:00:00") {
             $message.=" ".heure3($hre_debut);
         }
-        $message.="<br/>Fin : $finSQL";
+        $message.=", Fin : $fin";
         if ($hre_fin!="23:59:59") {
             $message.=" ".heure3($hre_fin);
         }
         if ($commentaires) {
-            $message.="<br/><br/>Commentaire :<br/>$commentaires<br/>";
+            $message.=", Commentaires : $commentaires";
+        }
+        if ($refus and $valide==-1) {
+            $message.=", Motif du refus :$refus,";
         }
 
         // ajout d'un lien permettant de rebondir sur la demande

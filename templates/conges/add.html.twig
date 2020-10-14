@@ -248,7 +248,7 @@
 
                 <td>
                   {% if admin %}
-                    <select name='valide' class='ui-widget-content ui-corner-all'>
+                    <select name='valide' id='validation' style='width:35%;' onchange="afficheRefus(this);">
                       <option value='0'>Demandé</option>
                       <option value='2'>{{ accepted_pending_str }}</option>
                       <option value='-2' >{{ refused_pending_str }}</option>
@@ -262,6 +262,14 @@
                   {% endif %}
                 </td>
               </tr>
+
+              <tr id='tr_refus' style='vertical-align:top; display:none;'>
+                <td>Motif du refus :</td>
+                <td>
+                  <textarea name='refus' cols='16' rows='5' style='width:40%;'></textarea>
+                </td>
+              </tr>
+
             {% endif %}
 
           <tr>

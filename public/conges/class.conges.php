@@ -69,6 +69,7 @@ class conges
         $data['heures']=$data['heures'].".".$data['minutes'];
         $data['debut']=dateSQL($data['debut']);
         $data['fin']=dateSQL($data['fin']);
+        $data['refus']=htmlentities($data['refus'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
 
         $data = $this->applyHalfDays($data);
 
@@ -82,6 +83,7 @@ class conges
             'start_halfday' => $data['start_halfday'] ?? '',
             'end_halfday'   => $data['end_halfday'] ?? '',
             'commentaires'  => $data['commentaires'],
+            'refus'         => $data['refus'],
             'heures'        => $data['heures'],
             'debit'         => $data['debit'],
             'perso_id'      => $data['perso_id'],
@@ -864,7 +866,7 @@ class conges
                 // Récupération du numéro du site concerné par la date courante
                 $offset=$jour-1+($semaine*7)-7;
                 if (array_key_exists($offset, $temps)) {
-                    if (array_key_exists(4, $temps[$offset])) {
+                    if (array_key_exists(4, $temps[$offset]) && $temps[$offset][4] != '') {
                         $site=$temps[$offset][4];
                     } else {
                         $site=1;
@@ -1120,7 +1122,7 @@ class conges
             $recuperation = floatval($p->elements[0]['comp_time']);
             $anticipation = floatval($p->elements[0]['conges_anticipation']);
             $heures = floatval($data['heures']);
-      
+     #TODO: A faire dans add 
             // Mise à jour des compteurs dans la table conges
             $updateConges=array("solde_prec"=>$credit, "recup_prec"=>$recuperation, "reliquat_prec"=>$reliquat, "anticipation_prec"=>$anticipation);
 
