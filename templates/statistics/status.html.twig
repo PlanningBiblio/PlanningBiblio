@@ -1,0 +1,225 @@
+{# statistics/status.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  <h3>Statistiques par statut</h3>
+  <table>
+    <tr style='vertical-align:top;'>
+      <td id='stat-col1'>
+        <form name='form' id='form' action='{{ asset("statistics/status") }}' method='post'>
+          <input type='hidden' name='statistiques_heures_defaut' id='statistiques_heures_defaut_hidden' value='0' />
+          <table>
+            <tr>
+              <td>
+                <label class='intitule'>Début</label>
+              </td>
+              <td>
+                <input type='text' name='debut' value='{{ debut }}' class='datepicker' />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label class='intitule'>Fin</label>
+              </td>
+              <td>
+                <input type='text' name='fin' value='{{ fin }}' class='datepicker' />
+              </td>
+            </tr>
+            <tr style='vertical-align:top'>
+              <td>
+                <label class='intitule'>Services</label>
+              </td>
+              <td>
+                <select name='statuts[]' multiple='multiple' size='20' onchange='verif_select("statuts");' class='ui-widget-content ui-corner-all' >
+                {% if statuts_list is iterable %}
+                    <option value='Tous'>Tous</option>
+                    {% for statut in statuts_list %}
+                        {% if statut.id in statuts %}
+                            <option value='{{ statut.id }}' selected = 'selected'>{{ statut.valeur|raw }}</option>
+                        {% else %}
+                            <option value='{{ statut.id }}' >{{ statut.valeur|raw }}</option>
+                        {% endif %} 
+                    {% endfor %}
+                {% endif %}
+                </select>
+              </td>
+            </tr>
+            <tr style='vertical-align:top;'>
+              <td>
+                <label for='statistiques_heures' class='intitule'>Heures<sup>*</sup></label>
+              </td>
+              <td>
+                <textarea name='statistiques_heures' rows='7' class='ui-widget-content ui-corner-all'>{{ statistiques_heures }}</textarea><br/>
+                <a href='#' id='statistiques_heures_defaut_lien'>Charger les heures par défaut</a>
+              </td>
+            </tr>
+            {% if nbSites > 1 %}
+              <tr style='vertical-align:top'>
+                <td>
+                  <label class='intitule'>Sites</label>
+                </td>
+                <td>
+                  <select name='selectedSites[]' multiple='multiple' size='{{ nbSites+1 }}' onchange='verif_select("selectedSites");' class='ui-widget-content ui-corner-all' >
+                    <option value='Tous'>Tous</option>
+                    {% for i in 1..nbSites %}
+                      {% if i in selectedSites %}
+                          <option value='{{ i }}' selected = 'selected'> {{ multisites[i-1] }}</option>  
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                </td>
+              </tr>
+            {% endif %}
+            <tr>
+              <td colspan='2' style='text-align:center;padding:10px;'>
+                <input type='button' value='Effacer' onclick='location.href="{{ asset('statistics/status')}}?debut=&amp;fin=&amp;agents="' class='ui-button' />
+                &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />
+              </td>
+            </tr>
+            <tr>
+              <td colspan='2'><hr/></td>
+            </tr>
+            <tr>
+              <td>Exporter </td>
+              <td>
+                <a href='javascript:export_stat("statut","csv");'>CSV</a>&nbsp;&nbsp;
+                <a href='javascript:export_stat("statut","xsl");'>XLS</a>
+              </td>
+            </tr>
+            <tr>
+              <td colspan='2'><hr/></td>
+            </tr>
+            <tr>
+              <td colspan='2'>
+                <p>
+                  <sup>*</sup>Afficher des statistiques sur les créneaux horaires voulus.<br/>
+                  Les créneaux doivent être au format 00h00-00h00 et séparés par des ;<br/>
+                  Exemple : 19h00-20h00; 20h00-21h00; 21h00-22h00
+                </p>
+              </td>
+            </tr>
+          </table>
+        </form>
+      </td>
+      <td>
+        {% if tab %}
+          <b>Statistiques par statut du {{ debut }} au {{ fin }}</b>
+          {{ ouverture|raw }}
+          <table border='1' cellspacing='0' cellpadding='0'>
+            <tr class='th'>
+              <td style='width:200px; padding-left:8px;'>Services</td>
+              <td style='width:280px; padding-left:8px;'>Postes</td>
+              <td style='width:120px; padding-left:8px;'>Samedi</td>
+              {% if exists_dimanche == true %}
+                  <td style='width:120px; padding-left:8px;'>Dimanche</td>
+              {% endif %}
+              {% if exists_JF == true %}
+                <td style='width:120px; padding-left:8px;'>J. Fériés</td>
+              {% endif %}
+              {% if exists_absences == true %}
+                <td style='width:120px; padding-left:8px;'>Absences</td>
+              {% endif %}
+              {% for v in heures_tab_global %}
+                <td style='width:120px; padding-left:8px;'>{{ v[2] }}</td>  
+              {% endfor %}
+            </tr>
+            {% for elem in tab %}
+              <tr style='vertical-align:top;'>
+                <td style='padding-left:8px;'>
+                  <table>
+                    <tr>
+                      <td colspan='2'><b>{{elem[0]}}</b></td>
+                    </tr>
+                    <tr>
+                      <td>Total</td>
+                      <td class='statistiques-heures'>{{ elem[2] }}</td>
+                    </tr>
+                    <tr>
+                      <td>Moyenne hebdo</td>
+                      <td class='statistiques-heures'>{{ elem.hebdo }}</td>
+                    </tr>
+                    {% if nbSites > 1 %}
+                      {% for i in 1..nbSites %}
+                          {% if elem.sites[i] is defined %}
+                            <tr>
+                              <td colspan='2' style='padding-top:20px;'><u>{{ multisites[i-1] }}</u></td>
+                            </tr>
+                            <tr>
+                              <td>Total</td>
+                              <td class='statistiques-heures'>{{ elem.sites[i] }}</td>
+                            </tr>
+                            <tr>
+                              <td>Moyenne</td>
+                              <td class='statistiques-heures'>{{ elem.site_hebdo[i] }}</td>
+                            </tr>
+                          {% endif %}
+                      {% endfor %}
+                    {% endif %}
+                  </table>
+                </td>
+                <td style='padding-left:8px;'>
+                  <table>
+                    {% for poste in elem[1] %}
+                      <tr style='vertical-align:top;'>
+                        <td>
+                          <b>{{ poste[1] }}</b>
+                          <br/><i>{{ poste.siteEtage }}</i>
+                        </td>
+                        <td class='statistiques-heures'>{{ poste[3] }}</td>
+                      </tr>
+                    {% endfor %}
+                  </table>
+                </td>
+                <td style='padding-left:8px;'> 
+                  {{ elem[3]|length }} {{ elem[3]|length>1 ? "samedis" : "samedi"  }}
+                  <br/>
+                  {% for samedi in elem[3] %}
+                    {{ samedi[0] }}&nbsp;:&nbsp;{{ samedi[1] }}
+                  {% endfor %}
+                </td>
+                {% if exists_dimanche == true %}
+                  <td style='padding-left:8px;'> 
+                    {{ elem[6]|length }} {{ elem[6]|length>1 ? "dimanches" : "dimanche"  }}
+                    <br/>
+                    {% for dim in elem[6] %}
+                      {{ dim[0] }}&nbsp;:&nbsp;{{ dim[1] }}
+                    {% endfor %}
+                  </td> 
+                {% endif %}
+                {% if exists_JF == true %}
+                  <td style='padding-left:8px;'> 
+                    {{ elem[8]|length }} {{ elem[8]|length>1 ? "J. Fériés" : "J. Férié"  }}
+                    <br/>
+                    {% for ferie in elem[8] %}
+                      {{ ferie[0] }}&nbsp;:&nbsp;{{ ferie[1] }}
+                    {% endfor %}
+                  </td> 
+                {% endif %}
+                {% if exists_absences == true %}
+                  <td style='padding-left:8px;'> 
+                    {% if elem[5] %}
+                      Total : {{ elem[5] }}
+                    {% endif %} 
+                    <br/>
+                    {% for absence in elem[4] %}
+                      {{ absence[0] }}&nbsp;:&nbsp;{{ absence[1] }}
+                    {% endfor %}
+                  </td> 
+                {% endif %}
+                {% for v in heures_tab_global %}
+                  <td>
+                    Nb {{ v[2] }} :
+                    {% for k in elem[7].count %}
+                      <br> {{ k }} {{ v }}
+                    {% endfor %}
+                  </td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+            </table>
+       {% endif %}
+      </td>
+    </tr>
+  </table>
+{% endblock %}
