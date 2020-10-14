@@ -1,0 +1,28 @@
+# docker-compose.yaml
+version: '3'
+
+services :
+  nginx:
+    container_name: nginx.planningbiblio 
+    image: nginx:stable
+    ports:
+      - "8080:80"
+    restart: always
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf  
+      - ./docker/logformat.conf:/etc/nginx/conf.d/01-logformat.conf 
+      - ./docker/real_ip.conf:/etc/nginx/conf.d/02-real_ip.conf 
+      - ./docker/fastcgi-php.conf:/etc/nginx/snippets/fastcgi-php.conf 
+      - ./docker/fastcgi.conf:/etc/nginx/fastcgi.conf 
+      - ./docker/planningbiblio.conf:/etc/nginx/conf.d/default.conf
+      - .:/var/www
+
+  php:
+    container_name: php.planningbiblio 
+    image: php:7.4.10-fpm
+    restart: always
+    volumes:
+      - .:/var/www
+    environment:
+      APP_ENV: dev
+    working_dir: /var/www

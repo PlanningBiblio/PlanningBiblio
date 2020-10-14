@@ -1,6 +1,7 @@
 *.swp
 *~
 *.kate-swp
+*.vscode
 /.php_cs.cache
 
 custom_options.php
