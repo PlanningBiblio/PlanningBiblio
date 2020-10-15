@@ -17,7 +17,7 @@ require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
 class HolidayController extends BaseController
 {
     /**
-     * @Route("/holiday/index", name="holiday.index", methods={"GET"})
+     * @Route("/holiday", name="holiday.index", methods={"GET"})
      */
     public function index(Request $request)
     {
@@ -92,7 +92,7 @@ class HolidayController extends BaseController
             $c->agents_supprimes = array(0,1);
         }
 
-        $addLink = '/holiday/new';
+        $addLink = '/holiday/add';
         // Si la gestion des congés et des récupérations est dissociée, on ne recherche que les infos voulues
         if ($this->config('Conges-Recuperations') == '1') {
             if ($voir_recup) {
@@ -438,8 +438,8 @@ class HolidayController extends BaseController
     }
 
     /**
-     * @Route("/holiday/new", name="holiday.new", methods={"GET", "POST"})
-     * @Route("/holiday/new/{perso_id}", name="holiday.new.new", methods={"GET", "POST"})
+     * @Route("/holiday/add", name="holiday.add", methods={"GET", "POST"})
+     * @Route("/holiday/add/{perso_id}", name="holiday.add.new", methods={"GET", "POST"})
      */
     public function add(Request $request)
     {
@@ -796,7 +796,7 @@ class HolidayController extends BaseController
                             continue 2;
                         }
                     }
-                }   
+                }
             }
             $agents = $tmp;
         }

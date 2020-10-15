@@ -119,7 +119,7 @@
       {% endif %}
         <td>Heure de début : </td>
         <td>
-          <select name='hre_debut' id='hre_debut_select' style='width:20%;' class='googleCalendarTrigger'>
+          <select name='hre_debut' id='hre_debut_select' style='width:20%;' class='googleCalendarTrigger checkdate'>
             <option value=""></option>
             {% for i in 6..23 %}
                 {% for j in range(low=0, high=60, step=config('Granularite')) %}
@@ -177,7 +177,7 @@
       {% endif %}
         <td>Heure de fin : </td>
         <td>
-          <select name='hre_fin' id='hre_fin_select' style='width:20%;' class='googleCalendarTrigger'>
+          <select name='hre_fin' id='hre_fin_select' style='width:20%;' class='googleCalendarTrigger checkdate'>
             <option value=""></option>
                 {% for i in 6..23 %}
                     {% for j in range(low=0, high=60, step=config('Granularite')) %}
@@ -428,9 +428,9 @@
         <tr>
           <td colspan='2' style='text-align:center;'>
             {% if conges_recuperations and debit == 'recuperation' %}
-              <a href='{{ asset("holiday/index?recup=1") }}' class='ui-button' >Annuler</a>
+              <a href='{{ asset("holiday?recup=1") }}' class='ui-button' >Annuler</a>
             {% else %}
-              <a href='{{ asset("holiday/index") }}' class='ui-button' >Annuler</a>
+              <a href='{{ asset("holiday") }}' class='ui-button' >Annuler</a>
             {% endif %}
 
             {% if save_button %}
@@ -441,7 +441,7 @@
               {% if conges_recuperations and debit == 'recuperation' %}
                 <input type='button' value='Supprimer' style='margin-left:20px;' onclick="supprimeConges('/holiday/index?recup=1')" class='ui-button'/>
               {% else %}
-                <input type='button' value='Supprimer' style='margin-left:20px;' onclick="supprimeConges('/holiday/index')" class='ui-button'/>
+                <input type='button' value='Supprimer' style='margin-left:20px;' onclick="supprimeConges('/holiday')" class='ui-button'/>
               {% endif %}
             {% endif %}
             <div id='google-calendar-div' class='inline'></div>

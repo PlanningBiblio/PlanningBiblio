@@ -12,13 +12,13 @@
     Liste des congés de {{ agent_name }}, année {{ from_year }}-{{ to_year }}.
   </h3>
 
-  <form name='form' method='get' action='{{ asset("holiday/index") }}' class='noprint'>
+  <form name='form' method='get' action='{{ asset("holiday") }}' class='noprint'>
     <span style='float:left; vertical-align:top; margin-bottom:20px;'>
       <table class='tableauStandard'>
         <tbody>
           <tr>
             <td>
-              Année: 
+              Année:
               <select name='annee'>
                 {% for y in years %}
                   {% if from_year == y[0] %}
@@ -31,7 +31,7 @@
             </td>
 
             <td>
-              Congés: 
+              Congés:
               <select name='congesAffiches'>
                 <option value='tous'>Tous</option>
                 {% if forthcoming %}
@@ -63,7 +63,7 @@
                 </span>
 
                 <br/>
-                <span style='padding:5px;'>Agents supprim&eacute;s : 
+                <span style='padding:5px;'>Agents supprimés :
                   {% if deleted_agents %}
                     <input type='checkbox' checked="checked" name='supprimes' onclick="updateAgentsList(this, {{ perso_id }});"/>
                   {% else %}
@@ -77,7 +77,7 @@
               <input type='submit' value='Rechercher' id='button-OK' class='ui-button'/>
             </td>
             <td>
-              <a href='{{ asset("holiday/index/") }}{{ show_recovery }}/?reset=on' class='ui-button' >Effacer</a>
+              <a href='{{ asset("holiday") }}{{ show_recovery }}?reset=on' class='ui-button' >Effacer</a>
             </td>
           </tr>
         </tbody>
