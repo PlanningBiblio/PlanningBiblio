@@ -20,6 +20,7 @@ class PLBEntity {
 
         return $this;
     }
+
     public function disable() {
         if (!property_exists($this, 'supprime')) {
             trigger_error("This entity cannot be disabled");
