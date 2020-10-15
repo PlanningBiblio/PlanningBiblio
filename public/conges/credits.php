@@ -44,9 +44,12 @@ if (!$admin) {
 }
 
 // Includes
+use App\PlanningBiblio\Helper\HolidayHelper;
 require_once "class.conges.php";
 require_once "personnel/class.personnel.php";
 
+$holiday_helper = new HolidayHelper();
+$show_hours_to_days = $holiday_helper->showHoursToDays();
 // Initialisation des variables
 $agents_supprimes=isset($_SESSION['oups']['conges_agents_supprimes'])?$_SESSION['oups']['conges_agents_supprimes']:false;
 $agents_supprimes=(isset($_GET['get']) and isset($_GET['supprimes']))?true:$agents_supprimes;
@@ -60,6 +63,9 @@ $credits_en_attente=isset($_SESSION['oups']['conges_credits_attente'])?$_SESSION
 $credits_en_attente=(isset($_GET['get']) and isset($_GET['attente']))?true:$credits_en_attente;
 $credits_en_attente=(isset($_GET['get']) and !isset($_GET['attente']))?false:$credits_en_attente;
 
+$hours_to_days=(isset($_GET['get']) and isset($_GET['hours_to_days']));
+
+
 $_SESSION['oups']['conges_agents_supprimes']=$agents_supprimes;
 $_SESSION['oups']['conges_credits_effectifs']=$credits_effectifs;
 $_SESSION['oups']['conges_credits_attente']=$credits_en_attente;
@@ -67,6 +73,7 @@ $_SESSION['oups']['conges_credits_attente']=$credits_en_attente;
 $checked1=$agents_supprimes?"checked='checked'":null;
 $checked2=$credits_effectifs?"checked='checked'":null;
 $checked3=$credits_en_attente?"checked='checked'":null;
+$checked4=$hours_to_days?"checked='checked'":null;
 
 $c=new conges();
 if ($agents_supprimes) {
@@ -76,6 +83,16 @@ if ($config['Multisites-nombre']>1) {
     $c->sites=$sites;
 }
 $c->fetchAllCredits();
+
+function display_credits_hours($hours, $perso_id) {
+    $holiday_helper = new HolidayHelper();
+    $formatted_hour = heure4($hours);
+    $hours_to_days=(isset($_GET['get']) and isset($_GET['hours_to_days']));
+    if ($hours && $hours_to_days) {
+        $formatted_hour .= "<br />" . $holiday_helper->hoursToDays($hours, $perso_id) . "j";
+    }
+    return $formatted_hour;
+}
 
 // Affichage du tableau
 echo <<<EOD
@@ -97,6 +114,13 @@ echo <<<EOD
     <span style='padding:5px 40px 5px 0;' class='orange'>
     <input type='checkbox' $checked3 name='attente' onclick='$("#form").submit();'/>
     Cr&eacute;dits en attente</span>
+EOD;
+if ($show_hours_to_days) {
+    echo "<span style='padding:5px 40px 5px 0;'>";
+    echo "<input type='checkbox' $checked4 name='hours_to_days' onclick='$(\"#form\").submit();'/>";
+    echo "Afficher les équivalences en jours</span>";
+}
+echo <<<EOD
   </td>
 </tr></tbody></table>
 
@@ -130,42 +154,41 @@ echo <<<EOD
 </thead>
 <tbody>
 EOD;
-
 foreach ($c->elements as $elem) {
     if ($credits_effectifs) {
         echo "<tr style='vertical-align:top;'>\n";
         echo "<td>{$elem['agent']}</td>\n";
-        echo "<td class='aRight nowrap'>".heure4($elem['conge_annuel'])."</td>\n";
-        echo "<td class='aRight nowrap'>".heure4($elem['conge_initial'])."</td>\n";
-        echo "<td class='aRight nowrap'>".heure4($elem['conge_utilise'])."</td>\n";
-        echo "<td class='aRight nowrap'>".heure4($elem['conge_restant'])."</td>\n";
-        echo "<td class='aRight nowrap'>".heure4($elem['reliquat_initial'])."</td>\n";
-        echo "<td class='aRight nowrap'>".heure4($elem['reliquat_utilise'])."</td>\n";
-        echo "<td class='aRight nowrap'>".heure4($elem['reliquat_restant'])."</td>\n";
-        echo "<td class='aRight nowrap'>".heure4($elem['recup_initial'])."</td>\n";
-        echo "<td class='aRight nowrap'>".heure4($elem['recup_utilise'])."</td>\n";
-        echo "<td class='aRight nowrap'>".heure4($elem['recup_restant'])."</td>\n";
-        echo "<td class='aRight nowrap'>".heure4($elem['anticipation_initial'])."</td>\n";
-        echo "<td class='aRight nowrap'>".heure4($elem['anticipation_utilise'])."</td>\n";
-        echo "<td class='aRight nowrap'>".heure4($elem['anticipation_restant'])."</td></tr>\n";
+        echo "<td class='aRight nowrap'>".display_credits_hours($elem['conge_annuel'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap'>".display_credits_hours($elem['conge_initial'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap'>".display_credits_hours($elem['conge_utilise'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap'>".display_credits_hours($elem['conge_restant'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap'>".display_credits_hours($elem['reliquat_initial'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap'>".display_credits_hours($elem['reliquat_utilise'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap'>".display_credits_hours($elem['reliquat_restant'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap'>".display_credits_hours($elem['recup_initial'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap'>".display_credits_hours($elem['recup_utilise'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap'>".display_credits_hours($elem['recup_restant'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap'>".display_credits_hours($elem['anticipation_initial'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap'>".display_credits_hours($elem['anticipation_utilise'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap'>".display_credits_hours($elem['anticipation_restant'], $elem['id'])."</td></tr>\n";
     }
 
     if ($credits_en_attente) {
         echo "<tr style='vertical-align:top;' class='orange'>\n";
         echo "<td>{$elem['agent']}</td>\n";
-        echo "<td class='aRight nowrap'>".heure4($elem['conge_annuel'])."</td>\n";
-        echo "<td class='aRight nowrap'>".heure4($elem['conge_initial'])."</td>\n";
-        echo "<td class='aRight nowrap {$elem['conge_classe']}'>".heure4($elem['conge_demande'])."</td>\n";
-        echo "<td class='aRight nowrap {$elem['conge_classe']}'>".heure4($elem['conge_en_attente'])."</td>\n";
-        echo "<td class='aRight nowrap'>".heure4($elem['reliquat_initial'])."</td>\n";
-        echo "<td class='aRight nowrap {$elem['reliquat_classe']}'>".heure4($elem['reliquat_demande'])."</td>\n";
-        echo "<td class='aRight nowrap {$elem['reliquat_classe']}'>".heure4($elem['reliquat_en_attente'])."</td>\n";
-        echo "<td class='aRight nowrap'>".heure4($elem['recup_initial'])."</td>\n";
-        echo "<td class='aRight nowrap {$elem['recup_classe']}'>".heure4($elem['recup_demande'])."</td>\n";
-        echo "<td class='aRight nowrap {$elem['recup_classe']}'>".heure4($elem['recup_en_attente'])."</td>\n";
-        echo "<td class='aRight nowrap'>".heure4($elem['anticipation_initial'])."</td>\n";
-        echo "<td class='aRight nowrap {$elem['anticipation_classe']}'>".heure4($elem['anticipation_demande'])."</td>\n";
-        echo "<td class='aRight nowrap {$elem['anticipation_classe']}'>".heure4($elem['anticipation_en_attente'])."</td></tr>\n";
+        echo "<td class='aRight nowrap'>".display_credits_hours($elem['conge_annuel'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap'>".display_credits_hours($elem['conge_initial'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap {$elem['conge_classe']}'>".display_credits_hours($elem['conge_demande'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap {$elem['conge_classe']}'>".display_credits_hours($elem['conge_en_attente'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap'>".display_credits_hours($elem['reliquat_initial'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap {$elem['reliquat_classe']}'>".display_credits_hours($elem['reliquat_demande'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap {$elem['reliquat_classe']}'>".display_credits_hours($elem['reliquat_en_attente'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap'>".display_credits_hours($elem['recup_initial'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap {$elem['recup_classe']}'>".display_credits_hours($elem['recup_demande'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap {$elem['recup_classe']}'>".display_credits_hours($elem['recup_en_attente'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap'>".display_credits_hours($elem['anticipation_initial'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap {$elem['anticipation_classe']}'>".display_credits_hours($elem['anticipation_demande'], $elem['id'])."</td>\n";
+        echo "<td class='aRight nowrap {$elem['anticipation_classe']}'>".display_credits_hours($elem['anticipation_en_attente'], $elem['id'])."</td></tr>\n";
     }
 }
 

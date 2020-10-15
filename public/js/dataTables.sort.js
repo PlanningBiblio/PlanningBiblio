@@ -70,6 +70,11 @@ jQuery.extend( jQuery.fn.dataTableExt.oSort, {
       a="0000";
     }
 
+    if (a.indexOf("<br>") >= 0) {
+        hours_and_days = a.split("<br>");
+        a = hours_and_days[0];
+    }
+
     var prefix="";
     switch(a.length){
       case 4 : prefix="000"; break;

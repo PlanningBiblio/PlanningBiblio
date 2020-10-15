@@ -1,57 +1,99 @@
 {# agents/holidays_hours.html.twig #}
 
+<script>
+
+function getHours(id, hours) {
+    hours_per_year = parseFloat($("#conges_annuel").val()) + parseFloat($("#conges_annuel_min option:selected").val());
+    $.ajax({
+        url: "/ajax/holidays-hours-to-days",
+        data: {hours_to_convert: hours , hours_per_year: hours_per_year},
+        dataType: "json",
+        type: "get",
+        async: false,
+        success: function(result){
+            $("#hours_per_day").text(result['hoursPerDay']);
+            $(id).text(result['hoursToDays']);
+        }
+    });
+}
+
+$(document).ready(function() {
+    $("#conges_annuel, #conges_annuel_min").change(function() {
+        result = getHours('#annuel_jours', parseFloat($("#conges_annuel").val()) + parseFloat($("#conges_annuel_min option:selected").val()));
+        result = getHours('#credit_jours', parseFloat($("#conges_credit").val()) + parseFloat($("#conges_credit_min option:selected").val()));
+        result = getHours('#reliquat_jours', parseFloat($("#conges_reliquat").val()) + parseFloat($("#conges_reliquat_min option:selected").val()));
+        result = getHours('#anticipation_jours', parseFloat($("#conges_anticipation").val()) + parseFloat($("#conges_anticipation_min option:selected").val()));
+    });
+
+    $("#conges_credit, #conges_credit_min").change(function() {
+        result = getHours('#credit_jours', parseFloat($("#conges_credit").val()) + parseFloat($("#conges_credit_min option:selected").val()));
+    });
+
+    $("#conges_reliquat, #conges_reliquat_min").change(function() {
+        result = getHours('#reliquat_jours', parseFloat($("#conges_reliquat").val()) + parseFloat($("#conges_reliquat_min option:selected").val()));
+    });
+
+    $("#conges_anticipation, #conges_anticipation_min").change(function() {
+        result = getHours('#anticipation_jours', parseFloat($("#conges_anticipation").val()) + parseFloat($("#conges_anticipation_min option:selected").val()));
+    });
+});
+</script>
 <div id='conges' style='margin-left:80px;padding-top:30px;'>
   <table class='tableauFiches'>
     <tr>
       <td>Nombre d'heures de congés par an :</td>
       <td style='text-align:right;'>
         {% if can_manage_agent %}
-          <input type='text' name='conges_annuel' value='{{ annuel_heures}}'  style='width:70px;text-align:right;'>
+          <input type='text' id='conges_annuel' name='conges_annuel' value='{{ annuel_heures}}'  style='width:70px;text-align:right;'>
           <label style='text-align:center;padding:5px;'>h</label>
           {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': annuel_min, 'name': 'conges_annuel_min' } %}
         {% else %}
           {{ annuel_string }}
         {% endif %}
       </td>
+      <td>{% if show_hours_to_days %}<span id="annuel_jours">{{ annuel_jours }}</span> jours{% endif %}</td>
     </tr>
 
     <tr>
       <td>Crédit d'heures de congés actuel :</td>
       <td style='text-align:right;'>
         {% if can_manage_agent %}
-          <input type='text' name='conges_credit' value='{{ credit_heures}}'  style='width:70px;text-align:right;'>
+          <input type='text' id='conges_credit' name='conges_credit' value='{{ credit_heures}}'  style='width:70px;text-align:right;'>
           <label style='text-align:center;padding:5px;'>h</label>
           {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': credit_min, 'name': 'conges_credit_min' } %}
         {% else %}
           {{ credit_string }}
         {% endif %}
       </td>
+      <td>{% if show_hours_to_days %}<span id="credit_jours">{{ credit_jours }}</span> jours{% endif %}</td>
     </tr>
 
     <tr>
       <td>Reliquat de congés :</td>
       <td style='text-align:right;'>
         {% if can_manage_agent %}
-          <input type='text' name='conges_reliquat' value='{{ reliquat_heures}}'  style='width:70px;text-align:right;'>
+          <input type='text' id='conges_reliquat' name='conges_reliquat' value='{{ reliquat_heures}}'  style='width:70px;text-align:right;'>
           <label style='text-align:center;padding:5px;'>h</label>
           {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': reliquat_min, 'name': 'conges_reliquat_min' } %}
         {% else %}
           {{ reliquat_string }}
         {% endif %}
       </td>
+        <td>{% if show_hours_to_days %}<span id="reliquat_jours">{{ reliquat_jours }}</span> jours{% endif %}</td>
     </tr>
 
     <tr>
       <td>Solde débiteur :</td>
       <td style='text-align:right;'>
         {% if can_manage_agent %}
-          <input type='text' name='conges_anticipation' value='{{ anticipation_heures}}'  style='width:70px;text-align:right;'>
+          <input type='text' id='conges_anticipation' name='conges_anticipation' value='{{ anticipation_heures}}'  style='width:70px;text-align:right;'>
           <label style='text-align:center;padding:5px;'>h</label>
           {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': anticipation_min, 'name': 'conges_anticipation_min' } %}
         {% else %}
           {{ anticipation_string }}
         {% endif %}
       </td>
+        <td>{% if show_hours_to_days %}<span id="anticipation_jours">{{ anticipation_jours }}</span> jours{% endif %}</td>
     </tr>
 
     <tr>
@@ -65,6 +107,8 @@
           {{ recup_string }}
         {% endif %}
       </td>
+      <td></td>
     </tr>
   </table>
+  {% if show_hours_to_days %}Équivalence utilisée : 1 jour = <span id="hours_per_day">{{ hours_per_day }}</span> heures{% endif %}
 </div>
