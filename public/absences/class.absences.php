@@ -737,8 +737,10 @@ class absences
             $entityManager->remove($absdoc);
         }
         $entityManager->flush();
-        if (is_dir(__DIR__ . AbsenceDocument::UPLOAD_DIR . $this->id)) {
-            rmdir(__DIR__ . AbsenceDocument::UPLOAD_DIR . $this->id);
+
+        $absenceDocument = new AbsenceDocument();
+        if (is_dir($absenceDocument->upload_dir . $this->id)) {
+            rmdir($absenceDocument->upload_dir . $this->id);
         }
     }
 

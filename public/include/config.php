@@ -17,8 +17,30 @@ if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['
   $version = 'ajax';
 }
 
+# In all environments, the following files are loaded if they exist,
+# the later taking precedence over the former:
+#
+#  * .env                contains default values for the environment variables needed by the app
+#  * .env.local          uncommitted file with local overrides
+#  * .env.$APP_ENV       committed environment-specific defaults
+#  * .env.$APP_ENV.local uncommitted environment-specific overrides
+
 $dotenv = new Dotenv();
-$dotenv->load(__DIR__.'/../../.env.local');
+if (file_exists(__DIR__ . '/../../.env')) {
+    $dotenv->load(__DIR__ . '/../../.env');
+}
+if (file_exists(__DIR__ . '/../../.env.local')) {
+    $dotenv->load(__DIR__ . '/../../.env.local');
+}
+if (isset($_SERVER['APP_ENV'])) {
+    $app_env = $_SERVER['APP_ENV'];
+    if (file_exists(__DIR__ . "/../../.env.$app_env")) {
+        $dotenv->load(__DIR__ . "/../../.env.$app_env");
+    }
+    if (file_exists(__DIR__ . "/../../.env.$app_env.local")) {
+        $dotenv->load(__DIR__ . "/../../.env.$app_env.local");
+    }
+}
 
 global $config;
 $config=Array();
