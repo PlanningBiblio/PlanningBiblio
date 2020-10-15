@@ -7,17 +7,19 @@
     - 4
 "ajax.editabsencereasons":
     - 100
+"ajax.holidaycredit":
+    - 100
 "ajax.holidaydelete":
+    - 100
+"ajax.holiday-halfday-hours":
+    - 100
+"ajax.holidays-hours-to-days":
     - 100
 "ajax.changepassword":
     - 21
 "ajax.planningjobcheckcopy":
     - 100
 "ajax.mailtest":
-    - 100
-"ajax.holidaycredit":
-    - 100
-"ajax.holiday-halfday-hours":
     - 100
 "framework.index":
     - 22

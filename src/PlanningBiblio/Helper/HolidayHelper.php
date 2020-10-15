@@ -154,9 +154,51 @@ class HolidayHelper extends BaseHelper
         $result['hours'] = $hours_minutes[0];
         $result['minutes'] = isset($hours_minutes[1]) ? $hours_minutes[1] : 0;
         $result['hr_hours'] = heure4($total); // 2.5 => 2h30
-        $result['days'] = round($total / 7, 2);
+
+        $result['days'] = $this->hoursToDays($total, $perso_id);
 
         return $result;
+    }
+
+    public function hoursPerDay($perso_id, $holidays_hours_per_year = null)
+    {
+        if ($this->config('conges-hours-per-day')) {
+            if ($holidays_hours_per_year == null) {
+                $agent = $this->entityManager->find(Agent::class, $perso_id);
+                $holidays_hours_per_year = $agent->conges_annuel();
+            }
+            $intervals = $this->config['conges-hours-per-day'];
+            foreach ($intervals as $hours => $hours_per_day) {
+                if ($holidays_hours_per_year >= $hours) {
+                    return $hours_per_day;
+                }
+            }
+        } else {
+            return 7;
+        }
+        return -1;
+    }
+
+    public function hoursToDays($given_hours, $perso_id, $holidays_hours_per_year = null, $human_readable = false) {
+        if (empty($given_hours) and !$human_readable) { return 0; }
+        if (empty($given_hours) and $human_readable) { return null; }
+
+        $hours_per_day = ($holidays_hours_per_year == null) ? $this->hoursPerDay($perso_id) : $this->hoursPerDay(null, $holidays_hours_per_year);
+
+        $result = round($given_hours / $hours_per_day, 2);
+
+        if ($human_readable) {
+            if (empty($result)) {
+                return null;
+            }
+            return $result  > 1 ? ' / ' . $result . ' jours' : ' / ' . $result . ' jour';
+        }
+
+        return $result;
+    }
+
+    public function showHoursToDays() {
+        return $this->config('conges-hours-per-day');
     }
 
     private function applyWeekTable($week)

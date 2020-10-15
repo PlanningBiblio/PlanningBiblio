@@ -20,6 +20,7 @@ Inclus dans le fichier index.php
 require_once "class.conges.php";
 
 use App\Model\Agent;
+use App\PlanningBiblio\Helper\HolidayHelper;
 
 if ($config['Conges-Recuperations'] == 0) {
     include __DIR__.'/../include/accessDenied.php';
@@ -67,7 +68,7 @@ echo <<<EOD
 <h3>Poser des récupérations</h3>
 <table border='0'>
 <tr style='vertical-align:top'>
-<td style='width:700px;'>
+<td>
 EOD;
 
 if (isset($_GET['confirm'])) {	// Confirmation
@@ -157,6 +158,16 @@ else {
     $recuperation = number_format((float) $balance[1], 2, '.', ' ');
     $recuperation2=heure4($recuperation);
 
+    $balance_before_days = null;
+    $balance2_before_days = null;
+
+    $holiday_helper = new HolidayHelper();
+    if ($holiday_helper->showHoursToDays()) {
+        $hours_per_day = $holiday_helper->hoursPerDay($perso_id);
+        $balance_before_days = $holiday_helper->hoursToDays($balance[1], $perso_id, null, true);
+        $balance2_before_days = $holiday_helper->hoursToDays($balance[4], $perso_id, null, true);
+    }
+    
     // Affichage du formulaire
     echo "<form name='form' action='index.php' method='get' id='form'>\n";
     echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
@@ -173,7 +184,7 @@ else {
     echo "<table border='0'>\n";
     echo "<tr><td style='width:350px;'>\n";
     echo "Nom, prénom : \n";
-    echo "</td><td style='width:250px;'>\n";
+    echo "</td><td>\n";
 
     if ($admin) {
         // Si l'option "Absences-notifications-agent-par-agent" est cochée, filtrer les agents à afficher dans le menu déroulant pour permettre la sélection des seuls agents gérés
@@ -201,6 +212,7 @@ else {
         }
 
         echo "<select name='perso_id' id='perso_id' onchange='document.location.href=\"index.php?page=conges/recup_pose.php&perso_id=\"+this.value;' style='width:98%;'>\n";
+        echo "<option value='0'></option>\n";
         foreach ($db_perso->result as $elem) {
             if ($perso_id==$elem['id']) {
                 echo "<option value='".$elem['id']."' selected='selected'>".$elem['nom']." ".$elem['prenom']."</option>\n";
@@ -252,14 +264,19 @@ else {
       <input type='hidden' name='minutes' value='0' />
       <input type='hidden' id='erreurCalcul' value='false' />
       </td></tr>
-
-  <tr><td>Nombre de jours (7h/jour) : </td>
-    <td>
-      <div id='nbJours' style='padding:0 5px; width:50px;'></div>
-    </td></tr>
-
-  <tr><td colspan='2' style='padding-top:20px;'>
 EOD;
+
+    if (!empty($hours_per_day)) {
+        echo "<tr><td>\n";
+        echo "Nombre de jours ({$hours_per_day}h/jour) :\n";
+        echo "<input type='hidden' name='hours_per_day' id='hours_per_day' value = '{$hours_per_day}' />\n";
+        echo "</td>\n";
+
+        echo "<td><div id='nbJours' style='padding:0 5px; width:50px;'></div></td>\n";
+        echo "</tr>\n";
+    }
+
+    echo "<tr><td colspan='2' style='padding-top:20px;'>\n";
 
     echo "Ces heures seront débitées sur les crédits de récupérations.";
     echo "<input type='hidden' name='debit' value='recuperation' />\n";
@@ -269,12 +286,12 @@ EOD;
     echo "<table border='0'>\n";
 
     echo "<tr class='balance_tr'><td style='width:348px;'>Solde disponible au <span class='balance_date'>".dateFr($balance[0])."</span> : </td>\n";
-    echo "<td id='balance_before'>".heure4($balance[1])."</td>\n";
-    echo "<td>(après débit : <span id='recup4'>".heure4($balance[1])."</span>)</td></tr>\n";
+    echo "<td id='balance_before'>" . heure4($balance[1]) . " " . $balance_before_days . "</td>\n";
+    echo "<td>(après débit : <span id='recup4'>" . heure4($balance[1]) . " " . $balance_before_days . "</span>)</td></tr>\n";
 
     echo "<tr class='balance_tr'><td>Solde prévisionnel<sup>*</sup> au <span class='balance_date'>".dateFr($balance[0])."</span> : </td>\n";
-    echo "<td id='balance2_before'>".heure4($balance[4])."</td>\n";
-    echo "<td>(après débit : <span id='balance2_after'>".heure4($balance[4])."</span>)</td></tr>\n";
+    echo "<td id='balance2_before'>" . heure4($balance[4]) . " " . $balance2_before_days . "</td>\n";
+    echo "<td>(après débit : <span id='balance2_after'>" . heure4($balance[4]) . " " . $balance2_before_days . "</span>)</td></tr>\n";
 
     echo "</table>\n";
     echo "</td></tr>\n";

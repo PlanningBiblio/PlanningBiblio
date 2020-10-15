@@ -131,7 +131,9 @@ class HolidayController extends BaseController
             $annees[]=array($d,$d."-".($d+1));
         }
 
-        $this->templateParams(array(
+        $holiday_helper = new HolidayHelper();
+
+        $templateParams = array(
             'admin'                 => $admin,
             'perso_id'              => $perso_id,
             'agents_menu'           => $agents_menu,
@@ -147,9 +149,11 @@ class HolidayController extends BaseController
             'balance'               => $this->config('Conges-Recuperations') == '0' or !$voir_recup ? 1 : 0,
             'recovery'              => $this->config('Conges-Recuperations') == '0' or $voir_recup ? 1 : 0,
             'perso_ids'             => $perso_ids,
-        ));
+            'show_hours_to_days'    => $holiday_helper->showHoursToDays() ? 1 : 0,
+        );
 
-        $holiday_helper = new HolidayHelper();
+        $this->templateParams($templateParams);
+
         $holidays = array();
         foreach ($c->elements as $elem) {
             // Filter non handled agent.
@@ -182,16 +186,25 @@ class HolidayController extends BaseController
                 $force = 'heures';
             }
             $elem['hours'] = $holiday_helper->HumanReadableDuration($elem['heures'], $force);
+            if ($holiday_helper->showHoursToDays()) {
+                $elem['days'] = $holiday_helper->hoursToDays($elem['heures'], $elem['perso_id']);
+            }
             $elem['status'] = "Demandé, ".dateFr($elem['saisie'], true);
             $elem['validationDate'] = dateFr($elem['saisie'], true);
 
             foreach (array('solde_prec', 'solde_actuel',
                 'reliquat_prec', 'reliquat_actuel',
                 'anticipation_prec', 'anticipation_actuel') as $key) {
+                if ($holiday_helper->showHoursToDays()) {
+                    $elem[$key . '_days'] = $holiday_helper->hoursToDays($elem[$key], $elem['perso_id']);
+                }
                 $elem[$key] = $holiday_helper->HumanReadableDuration($elem[$key]);
             }
 
             foreach (array('recup_prec', 'recup_actuel') as $key) {
+                if ($holiday_helper->showHoursToDays()) {
+                    $elem[$key . '_days'] = $holiday_helper->hoursToDays($elem[$key], $elem['perso_id']);
+                }
                 $elem[$key] = $holiday_helper->HumanReadableDuration($elem[$key], 'heures');
             }
 
@@ -234,6 +247,20 @@ class HolidayController extends BaseController
         $this->templateParams(array('holidays' => $holidays));
 
         return $this->output('conges/index.html.twig');
+    }
+
+    /**
+     * @Route("/ajax/holidays-hours-to-days", name="ajax.holidays-hours-to-days", methods={"GET"})
+     */
+    public function hoursToDays(Request $request, Session $session)
+    {
+        $hours_to_convert = $request->get('hours_to_convert');
+        $hours_per_year = $request->get('hours_per_year');
+        $holiday_helper = new HolidayHelper();
+        $results = array();
+        $results['hoursToDays'] = $holiday_helper->hoursToDays($hours_to_convert, null, $hours_per_year);
+        $results['hoursPerDay'] = $holiday_helper->hoursPerDay(null, $hours_per_year);
+        return $this->json($results);
     }
 
     /**
@@ -309,9 +336,14 @@ class HolidayController extends BaseController
         $p->fetchById($perso_id);
         $nom=$p->elements[0]['nom']; //FIXME utile?
         $prenom=$p->elements[0]['prenom']; //FIXME utile?
-        $credit = number_format((float) $p->elements[0]['conges_credit'], 2, '.', ' ');
-        $reliquat = number_format((float) $p->elements[0]['conges_reliquat'], 2, '.', ' ');
-        $anticipation = number_format((float) $p->elements[0]['conges_anticipation'], 2, '.', ' ');
+
+        $conges_anticipation = $p->elements[0]['conges_anticipation'];
+        $conges_credit = $p->elements[0]['conges_credit'];
+        $conges_reliquat = $p->elements[0]['conges_reliquat'];
+
+        $credit = number_format((float) $conges_credit, 2, '.', ' ');
+        $reliquat = number_format((float) $conges_reliquat, 2, '.', ' ');
+        $anticipation = number_format((float) $conges_anticipation, 2, '.', ' ');
         $recuperation = number_format((float) $balance[1], 2, '.', ' ');
         $recuperation2=heure4($recuperation, true);
         if ($balance[4] < 0) {
@@ -329,8 +361,23 @@ class HolidayController extends BaseController
         if ($hre_debut=="00:00:00" and $hre_fin=="23:59:59") {
             $displayHeures="style='display:none;'";
         }
+
         $holiday_helper = new HolidayHelper();
-        $this->templateParams(array(
+
+        $anticipation_jours = null;
+        $credit_jours = null;
+        $reliquat_jours = null;
+
+        $hoursPerDay = null;
+        if ($holiday_helper->showHoursToDays()) {
+            $hoursPerDay = $holiday_helper->hoursPerDay($perso_id);
+
+            $anticipation_jours = $holiday_helper->hoursToDays($conges_anticipation, $perso_id, null, true);
+            $credit_jours = $holiday_helper->hoursToDays($conges_credit, $perso_id, null, true);
+            $reliquat_jours = $holiday_helper->hoursToDays($conges_reliquat, $perso_id, null, true);
+        }
+
+        $templateParams = array(
             'id'                    => $id,
             'perso_id'              => $perso_id,
             'login_id'              => $_SESSION['login_id'],
@@ -338,14 +385,18 @@ class HolidayController extends BaseController
             'halfday'               => $data['halfday'],
             'start_halfday'         => $data['start_halfday'],
             'end_halfday'           => $data['end_halfday'],
+            'hours_per_day'         => $hoursPerDay,
             'reliquat'              => $reliquat,
             'reliquat2'             => $holiday_helper->HumanReadableDuration($reliquat),
+            'reliquat_jours'        => $reliquat_jours,
             'recuperation'          => $recuperation,
             'recuperation_prev'     => $balance[4],
             'credit'                => $credit,
             'credit2'               => $holiday_helper->HumanReadableDuration($credit),
+            'credit_jours'          => $credit_jours,
             'anticipation'          => $anticipation,
             'anticipation2'         => $holiday_helper->HumanReadableDuration($anticipation),
+            'anticipation_jours'    => $anticipation_jours,
             'conges_recuperations'  => $this->config('Conges-Recuperations'),
             'debut'                 => $debut,
             'fin'                   => $fin,
@@ -368,7 +419,10 @@ class HolidayController extends BaseController
             'refus'                 => $data['refus'],
             'saisie'                => dateFr($data['saisie'], true),
             'displayRefus'          => $displayRefus,
-        ));
+        );
+
+        $this->templateParams($templateParams);
+
         if ($adminN1 or $adminN2) {
             $agents = $this->get_agents($adminN2);
             $this->templateParams(array('db_perso' => $agents));
@@ -500,24 +554,43 @@ class HolidayController extends BaseController
         $p->fetchById($perso_id);
         $nom=$p->elements[0]['nom'];
         $prenom=$p->elements[0]['prenom'];
-        $credit = number_format((float) $p->elements[0]['conges_credit'], 2, '.', ' ');
-        $reliquat = number_format((float) $p->elements[0]['conges_reliquat'], 2, '.', ' ');
-        $anticipation = number_format((float) $p->elements[0]['conges_anticipation'], 2, '.', ' ');
+        $conges_anticipation = $p->elements[0]['conges_anticipation'];
+        $conges_credit = $p->elements[0]['conges_credit'];
+        $conges_reliquat = $p->elements[0]['conges_reliquat'];
+
+        $credit = number_format((float) $conges_credit, 2, '.', ' ');
+        $reliquat = number_format((float) $conges_reliquat, 2, '.', ' ');
+        $anticipation = number_format((float) $conges_anticipation, 2, '.', ' ');
         $recuperation = number_format((float) $balance[1], 2, '.', ' ');
+
+        $anticipation_jours = null;
+        $credit_jours = null;
+        $reliquat_jours = null;
+
+        $hoursPerDay = null;
+        if ($holiday_helper->showHoursToDays()) {
+            $hoursPerDay = $holiday_helper->hoursPerDay($perso_id);
+
+            $anticipation_jours = $holiday_helper->hoursToDays($conges_anticipation, $perso_id, null, true);
+            $credit_jours = $holiday_helper->hoursToDays($conges_credit, $perso_id, null, true);
+            $reliquat_jours = $holiday_helper->hoursToDays($conges_reliquat, $perso_id, null, true);
+        }
 
         if ($balance[4] < 0) {
             $balance[4] = 0;
         }
 
-        $this->templateParams(array(
+        $templateParams = array(
             'admin'                 => $admin,
             'perso_id'              => $perso_id,
             'conges_recuperations'  => $this->config('Conges-Recuperations'),
             'conges_mode'           => $this->config('Conges-Mode'),
             'conges_demi_journee'   => $this->config('Conges-demi-journees'),
             'CSRFToken'             => $CSRFSession,
+            'hours_per_day'         => $hoursPerDay,
             'reliquat'              => $reliquat,
             'reliquat2'             => $holiday_helper->HumanReadableDuration($reliquat),
+            'reliquat_jours'        => $reliquat_jours,
             'recuperation'          => $recuperation,
             'recuperation_prev'     => $balance[4],
             'balance0'              => dateFr($balance[0]),
@@ -525,13 +598,17 @@ class HolidayController extends BaseController
             'balance4'              => heure4($balance[4], true),
             'credit'                => $credit,
             'credit2'               => $holiday_helper->HumanReadableDuration($credit),
+            'credit_jours'          => $credit_jours,
             'anticipation'          => $anticipation,
             'anticipation2'         => $holiday_helper->HumanReadableDuration($anticipation),
+            'anticipation_jours'    => $anticipation_jours,
             'agent_name'            => $_SESSION['login_nom'] . ' ' . $_SESSION['login_prenom'],
             'login_id'              => $_SESSION['login_id'],
             'login_nom'             => $_SESSION['login_nom'],
             'login_prenom'          => $_SESSION['login_prenom'],
-        ));
+        );
+
+        $this->templateParams($templateParams);
 
         // Affichage du formulaire
 
