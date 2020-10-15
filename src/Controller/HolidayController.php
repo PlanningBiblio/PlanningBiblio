@@ -180,16 +180,19 @@ class HolidayController extends BaseController
                 $force = 'heures';
             }
             $elem['hours'] = $holiday_helper->HumanReadableDuration($elem['heures'], $force);
+            $elem['days'] = $holiday_helper->hoursToDays($elem['heures']);
             $elem['status'] = "Demandé, ".dateFr($elem['saisie'], true);
             $elem['validationDate'] = dateFr($elem['saisie'], true);
 
             foreach (array('solde_prec', 'solde_actuel',
                 'reliquat_prec', 'reliquat_actuel',
                 'anticipation_prec', 'anticipation_actuel') as $key) {
+                $elem[$key . '_days'] = $holiday_helper->hoursToDays($elem[$key]);
                 $elem[$key] = $holiday_helper->HumanReadableDuration($elem[$key]);
             }
 
             foreach (array('recup_prec', 'recup_actuel') as $key) {
+                $elem[$key . '_days'] = $holiday_helper->hoursToDays($elem[$key]);
                 $elem[$key] = $holiday_helper->HumanReadableDuration($elem[$key], 'heures');
             }
 

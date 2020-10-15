@@ -115,8 +115,10 @@ function calculCredit(){
 
         $("#nbHeures").text(result.hr_hours);
         $("#nbJours").text(result.days);
+        $("#hours_per_day").text(result.hours_per_day);
         $("#nbHeures").effect("highlight",null,4000);
         $("#nbJours").effect("highlight",null,4000);
+        $("#hours_per_day").effect("highlight",null,4000);
         $("#erreurCalcul").val("false");
       }
     },

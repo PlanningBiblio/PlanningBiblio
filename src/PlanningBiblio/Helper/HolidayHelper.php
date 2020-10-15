@@ -150,9 +150,35 @@ class HolidayHelper extends BaseHelper
         $result['hours'] = $hours_minutes[0];
         $result['minutes'] = isset($hours_minutes[1]) ? $hours_minutes[1] : 0;
         $result['hr_hours'] = heure4($total); // 2.5 => 2h30
-        $result['days'] = round($total / 7, 2);
+
+        $hours_per_day = $this->hoursPerDay($total);
+        $result['days'] = $this->hoursToDays($total, $hours_per_day); 
+        $result['hours_per_day'] = $hours_per_day;
 
         return $result;
+    }
+
+    private function hoursPerDay($given_hours)
+    {
+        if ($this->config('conges-hours-per-day')) {
+            $intervals = $this->config['conges-hours-per-day'];
+            arsort($intervals);
+            foreach ($intervals as $hours => $hours_per_day) {
+                if ($given_hours >= $hours) {
+                    return $hours_per_day;
+                }
+            }
+        } else {
+            return 7;
+        }
+        return -1;
+    }
+
+    public function hoursToDays($given_hours, $hours_per_day = null) {
+        if (!isset($given_hours) || $given_hours == '') { return 0; } 
+        $hours_per_day ??= $this->hoursPerDay($given_hours);
+        error_log("given hours: *$given_hours* hours per day $hours_per_day");
+        return round($given_hours / $hours_per_day, 2);
     }
 
     private function applyWeekTable($week)

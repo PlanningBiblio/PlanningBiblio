@@ -944,6 +944,17 @@ class conges
         $this->samedis=$samedis;
     }
 
+    public function hoursToDays($hours) {
+        if (is_array($config['conges-hours-to-days'])) {
+            $intervals = $config['conges-hours-to-days'];
+            arsort($intervals);
+            #error_log(print_r($intervals));
+            #array_map to get interval
+            return $days;
+        }
+        return -1;
+    }
+
 
     public function maj($credits, $action="modif", $cron=false)
     {
