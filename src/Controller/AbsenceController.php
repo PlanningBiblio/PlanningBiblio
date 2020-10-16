@@ -58,7 +58,7 @@ class AbsenceController extends BaseController
                 $this->entityManager->flush();
 
                 $absenceDocument = new AbsenceDocument();
-                $file->move($absenceDocument->upload_dir . $result['id'] . '/' . $ad->id(), $filename);
+                $file->move($absenceDocument->upload_dir() . $result['id'] . '/' . $ad->id(), $filename);
 
             }
 
