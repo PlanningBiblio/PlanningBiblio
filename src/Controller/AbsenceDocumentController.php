@@ -24,7 +24,7 @@ class AbsenceDocumentController extends BaseController
         $ad = $this->entityManager->getRepository(AbsenceDocument::class)->find($id);
 
         $absenceDocument = new AbsenceDocument();
-        $file = new File($absenceDocument->upload_dir . $ad->absence_id() . '/' . $ad->id() . '/' . $ad->filename());
+        $file = new File($absenceDocument->upload_dir() . $ad->absence_id() . '/' . $ad->id() . '/' . $ad->filename());
 
         $response = new BinaryFileResponse($file);
 
@@ -62,7 +62,7 @@ class AbsenceDocumentController extends BaseController
             $this->entityManager->flush();
 
             $absenceDocument = new AbsenceDocument();
-            $file->move($absenceDocument->upload_dir . $id . '/' . $ad->id(), $filename);
+            $file->move($absenceDocument->upload_dir() . $id . '/' . $ad->id(), $filename);
         }
         $response = new Response();
         return $response;
