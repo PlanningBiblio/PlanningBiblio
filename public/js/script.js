@@ -17,8 +17,8 @@ Fichier contenant les principales fonctions JavaScript
 Cette page est appelée par les fichiers include/header.php, setup/header.php et planning/poste/menudiv.php
 */
 
-//	---------------------------		Fonctions communes		------------------------	//
-	
+//    ---------------------------        Fonctions communes        ------------------------    //
+    
 // Fonction permettant d'afficher les heures correspondantes à chaque tableau d'emploi du temps
 // lors de la modification d'un select ou au chargement d'une page
 function calculHeures(object,num,form,tip,numero){
@@ -27,17 +27,17 @@ function calculHeures(object,num,form,tip,numero){
   // tip : Affichage qui sera mis à jour
   debut=numero*7;
   fin=debut+7;
-  
+
   heures=0;
   elements=document.forms[form].elements;
-  
+
   for(i=debut;i<fin;i++){
     if(elements["temps"+num+"["+i+"][0]"]){
       heure0=elements["temps"+num+"["+i+"][0]"].value;
       heure1=elements["temps"+num+"["+i+"][1]"].value;
       heure2=elements["temps"+num+"["+i+"][2]"].value;
       heure3=elements["temps"+num+"["+i+"][3]"].value;
-      
+
       heure5 = null;
       heure6 = null;
       if(elements["temps"+num+"["+i+"][5]"] != undefined){
@@ -53,8 +53,7 @@ function calculHeures(object,num,form,tip,numero){
       heure6=$("#temps"+num+"_"+i+"_6").text().replace("h",":");
       heure3=$("#temps"+num+"_"+i+"_3").text().replace("h",":");
     }
-    
-    
+
   /**
    * Tableau affichant les différentes possibilités
    * NB : le paramètre heures[4] est utilisé pour l'affectation du site. Il n'est pas utile ici
@@ -62,11 +61,11 @@ function calculHeures(object,num,form,tip,numero){
    *
    *    Heure 0     Heure 1     Heure 2     Heure 5     Heure 6     Heure 3
    * 1                           [ tableau vide]
-   * 2    |-----------|           |-----------|           |-----------|   
-   * 3    |-----------|           |-----------------------------------|   
+   * 2    |-----------|           |-----------|           |-----------|
+   * 3    |-----------|           |-----------------------------------|
    * 4    |-----------|                                   |-----------|
    * 5    |-----------|
-   * 6    |-----------------------------------|           |-----------|   
+   * 6    |-----------------------------------|           |-----------|
    * 7    |-----------------------------------|
    * 8    |-----------------------------------------------------------|
    * 9                            |-----------|
@@ -76,50 +75,49 @@ function calculHeures(object,num,form,tip,numero){
     // Constitution des groupes de plages horaires
     var diff=0;
     var tab = new Array();
-    
+
     // 1er créneau : cas N° 2; 3; 4; 5
     if (heure0 && heure1) {
       tab.push(new Array(heure0, heure1));
-    
+
     // 1er créneau fusionné avec le 2nd : cas N° 6 et 7
     } else if (heure0 && heure5) {
       tab.push(new Array(heure0, heure5));
-    
+
     // Journée complète : cas N° 8
     } else if (heure0 && heure3) {
       tab.push(new Array(heure0, heure3));
     }
-    
+
     // 2ème créneau : cas N° 1 et 9
     if (heure2 &&  heure5) {
       tab.push(new Array(heure2, heure5));
-      
+
     // 2ème créneau fusionné au 3ème : cas N° 3 et 10
     } else if (heure2 && heure3) {
       tab.push(new Array(heure2, heure3));
     }
-    
+
     // 3ème créneau : cas N° 2; 4; 6
     if (heure6 && heure3) {
       tab.push(new Array(heure6, heure3));
     }
 
-    
     for(j in tab){
       diff += diffMinutes(tab[j][0],tab[j][1]);
     }
-    
+
     heures+=diff;
-    
+
     // Affichage du nombre d'heure pour chaque ligne
     if(diff){
       $("#heures"+num+"_"+numero+"_"+(i+1)).html(heure4(diff/60));
     }
-      
+
   }
   heures=heure4(heures/60);
   $("#"+tip).text(heures);
-  
+
 }
 
 function ctrl_form(champs){
@@ -216,19 +214,19 @@ function dateDiff(date1,date2){
 
   tmp=Math.floor(tmp/1000);
   diff.sec=tmp%60;
-  
+
   tmp=Math.floor((tmp-diff.sec)/60);
   diff.min=tmp%60;
-  
+
   tmp=Math.floor((tmp-diff.min)/60);
   diff.hour=tmp%24;
 
   tmp=Math.floor((tmp-diff.hour)/24);
   diff.day=tmp;
-  
+
   return diff;
 }
-  
+
 function dateFr(date){
   if(date.indexOf("-")>0){
     tab=date.split("-");
@@ -299,21 +297,21 @@ function daysInMonth(month,year) {
 
 function decompte(dcpt){
   var affiche = '';
-	dcpt=parseInt(dcpt);
+    dcpt=parseInt(dcpt);
      
   if(dcpt > 1){
     var affiche = 'Veuillez réessayer dans '+dcpt+' secondes';
   }else{
     var affiche = 'Veuillez réessayer dans '+dcpt+' seconde';
   }
-	if(dcpt > 0){
-  	$("#chrono").text(affiche);
-		dcpt--;
-		setTimeout('decompte('+dcpt+')', 1000);
-	}else{
-		$("#chrono").hide();
-		$("#link").show();
-	}
+    if(dcpt > 0){
+      $("#chrono").text(affiche);
+        dcpt--;
+        setTimeout('decompte('+dcpt+')', 1000);
+    }else{
+        $("#chrono").hide();
+        $("#link").show();
+    }
 }
 
 function addAbsenceDocument(id) {
@@ -382,9 +380,9 @@ function deleteAdminInfo(id) {
 }
 
 
-function diffMinutes(debut,fin){		// Calcul la différence en minutes entre 2 heures (formats H:i:s)
+function diffMinutes(debut,fin){        // Calcul la différence en minutes entre 2 heures (formats H:i:s)
   var d=new Date("Mon, 26 Aug 2013 "+debut);
-  d=d.getTime()/60000;				// Nombre de milisecondes, converti en minutes
+  d=d.getTime()/60000;                // Nombre de milisecondes, converti en minutes
   var f=new Date("Mon, 26 Aug 2013 "+fin);
   f=f.getTime()/60000;
   return f-d;
@@ -445,7 +443,7 @@ function information(message,type,top,time){
   if(top==undefined){
     top=60;
   }
-  
+
   if(time==undefined){
     time=5000;
   }
@@ -511,7 +509,7 @@ function resetICSURL(id, CSRFToken, nom){
   } else {
     var res = confirm("Etes vous sûr(e) de vouloir réinitialiser l'URL du calendrier de "+nom+" ?");
   }
-  
+
   if(res){
     $.ajax({
       url: "ics/ajax.resetURL.php",
@@ -545,7 +543,7 @@ function setEndHour(){
   }
 }
 
-// supprime(page,id, CSRFToken)	Utilisée par postes et modeles
+// supprime(page,id, CSRFToken)    Utilisée par postes et modeles
 function supprime(page, id, CSRFToken){
   if(confirm("Etes vous sûr de vouloir supprimer cet élément ?")){
     $.ajax({
@@ -553,10 +551,10 @@ function supprime(page, id, CSRFToken){
       type: "get",
       data: "id="+id+"&CSRFToken="+CSRFToken,
       success: function(){
-	window.location.reload(false);
+    window.location.reload(false);
       },
       error: function(){
-	CJInfo("Une erreur est survenue lors de la suppression","error");
+    CJInfo("Une erreur est survenue lors de la suppression","error");
       }
     });
   }
@@ -591,10 +589,10 @@ function updateAgentsList(me,select_id){
       result=JSON.parse(result);
       $("#"+select_id).html("<option value='0'>Tous</option>");
       for(key in result){
-	$("#"+select_id).append("<option value='"+result[key]["id"]+"'>"+result[key]["nom"]+" "+result[key]["prenom"]+"</option>");
-	if(result[key]["id"]==index){
-	  in_array=true;
-	}
+    $("#"+select_id).append("<option value='"+result[key]["id"]+"'>"+result[key]["nom"]+" "+result[key]["prenom"]+"</option>");
+    if(result[key]["id"]==index){
+      in_array=true;
+    }
       }
       index=in_array?index:0;
       $("#"+select_id).val(index);
@@ -616,7 +614,7 @@ function updateTips( text , type) {
   else if ( type == "success" ) {
     type = "highlight";
   }
-  
+
   text = text.replace("\n", "<br/>");
 
   $(".validateTips").html(text);
@@ -685,36 +683,36 @@ function verif_form(champs,form){
       erreurs=erreurs+"<li>"+objet+"</li>";
     else if(type){
       if(type.substr(0,4)=="date"){
-	// Converti les dates JJ/MM/AAAA en AAAA-MM-JJ
+    // Converti les dates JJ/MM/AAAA en AAAA-MM-JJ
         valeur=valeur.replace(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/g,"$3-$2-$1");
       }
       if(type.substr(0,4)=="date" && verif_date(valeur)==0)
-	erreurs=erreurs+"<li>"+objet+" doit être au format JJ/MM/AAAA</li>";
+    erreurs=erreurs+"<li>"+objet+" doit être au format JJ/MM/AAAA</li>";
       if(type=="date1"){
-	objet1=objet;
-	valeur1=valeur;
+    objet1=objet;
+    valeur1=valeur;
       }
       else if(type=="date2"){
-	objet2=objet;
-	valeur2=valeur;
+    objet2=objet;
+    valeur2=valeur;
       }
       else if(type=="date2Obligatoire"){
-	objet2=objet;
-	valeur2=valeur;
+    objet2=objet;
+    valeur2=valeur;
       }
       if(type.substr(0,5)=="heure" && verif_heure(valeur)==0)
-	erreurs=erreurs+"<li>"+objet+" doit être au format HH:MM:SS</li>";
+    erreurs=erreurs+"<li>"+objet+" doit être au format HH:MM:SS</li>";
       if(type=="heure1"){
-	objet1=objet;
-	valeur1=valeur;
+    objet1=objet;
+    valeur1=valeur;
       }
       else if(type=="heure2"){
-	objet2=objet;
-	valeur2=valeur;
+    objet2=objet;
+    valeur2=valeur;
       }
     }
   }
-  
+
   if(erreurs){
     CJInfo("Les champs suivants sont obligatoires :<ul>"+erreurs+"</ul>","error");
     return false;
@@ -741,7 +739,7 @@ function verif_heure(heure){
     ok=1;
   return ok;
 }
-	
+
 function verif_mail(mail){
   p=mail.indexOf('@');
   if (p<1 || p==(mail.length-1))
@@ -752,8 +750,8 @@ function verif_mail(mail){
     return false;
   return true;
 }
-//	---------------------------		FIN Fonctions communes		------------------------	//
-//	--------------------------------	Absences		---------------------------------	//
+//    ---------------------------        FIN Fonctions communes        ------------------------    //
+//    --------------------------------    Absences        ---------------------------------    //
 function all_day(){
   if(!document.form.allday.checked){
     document.getElementById("hre_debut").style.display="";
@@ -766,8 +764,8 @@ function all_day(){
     document.form.hre_fin.value="";
   }
 }
-//	--------------------------------	FIN Absences		---------------------------------	//
-//	--------------------------------	Aide			---------------------------------	//
+//    --------------------------------    FIN Absences        ---------------------------------    //
+//    --------------------------------    Aide            ---------------------------------    //
 function position(object,top,left){
   object.css("position","absolute");
   object.css("top",top);
@@ -777,8 +775,8 @@ function position(object,top,left){
     object.css("left",left);
   }
 }
-//	--------------------------------	FIN Aide		---------------------------------	//
-//	--------------------------------	Statistiques		---------------------------------	//
+//    --------------------------------    FIN Aide        ---------------------------------    //
+//    --------------------------------    Statistiques        ---------------------------------    //
 function export_stat(nom,type){
   $.ajax({
     url: "statistiques/export.php",
@@ -801,7 +799,7 @@ function verif_select(nom){
     document.form.elements[nom+'[]'][0].selected=false;
   }
 }
-//	--------------------------------	FIN Statistiques	---------------------------------	//
+//    --------------------------------    FIN Statistiques    ---------------------------------    //
 
 // Initialisations JQuery-UI
 $(function(){
@@ -824,15 +822,15 @@ $(function(){
     */
     if ($("#date").length > 0){
       if ($("#date").attr("data-set-calendar") != 'undefined' && $("#date").attr("data-set-calendar")!= false  ){
-	var strSelectedDate=$("#date").attr("data-set-calendar");
-	if(strSelectedDate){
-	  var arrSelectedDate=strSelectedDate.split("-");
-	  var numYear = arrSelectedDate[0];
-	  var numMonth = parseInt(arrSelectedDate[1]) - 1;
-	  var numDay = arrSelectedDate[2];
-	  var objSelectedDate = new Date(numYear,numMonth,numDay);
-	  $(".datepicker").datepicker("setDate",objSelectedDate);
-	}
+    var strSelectedDate=$("#date").attr("data-set-calendar");
+    if(strSelectedDate){
+      var arrSelectedDate=strSelectedDate.split("-");
+      var numYear = arrSelectedDate[0];
+      var numMonth = parseInt(arrSelectedDate[1]) - 1;
+      var numDay = arrSelectedDate[2];
+      var objSelectedDate = new Date(numYear,numMonth,numDay);
+      $(".datepicker").datepicker("setDate",objSelectedDate);
+    }
       }
     }
 
@@ -842,20 +840,20 @@ $(function(){
     */
     $(".datepicker").focusin(function(){
       if($(this).attr("name") == "fin"){
-	var objDateDefaultFin = "";
-	var objDateCurrentDeb = "";
-	if($('input[name="debut"]').datepicker("getDate")){
-	  if(!$(this).datepicker("option","defaultDate" )){
-	    $(this).datepicker("option","defaultDate",$('input[name="debut"]').datepicker("getDate"));
-	  }
-	  else{
-	    objDateDefaultFin = new Date($(this).datepicker("option","defaultDate"));
-	    objDateCurrentDeb = new Date($('input[name="debut"]').datepicker("getDate"));
-	    if(objDateDefaultFin.getDate() != objDateCurrentDeb.getDate() || objDateDefaultFin.getMonth() != objDateCurrentDeb.getMonth() || objDateDefaultFin.getYear() != objDateCurrentDeb.getYear()){
-	      $(this).datepicker("option","defaultDate",$('input[name="debut"]').datepicker("getDate"));
-	    }
-	  }
-	}
+    var objDateDefaultFin = "";
+    var objDateCurrentDeb = "";
+    if($('input[name="debut"]').datepicker("getDate")){
+      if(!$(this).datepicker("option","defaultDate" )){
+        $(this).datepicker("option","defaultDate",$('input[name="debut"]').datepicker("getDate"));
+      }
+      else{
+        objDateDefaultFin = new Date($(this).datepicker("option","defaultDate"));
+        objDateCurrentDeb = new Date($('input[name="debut"]').datepicker("getDate"));
+        if(objDateDefaultFin.getDate() != objDateCurrentDeb.getDate() || objDateDefaultFin.getMonth() != objDateCurrentDeb.getMonth() || objDateDefaultFin.getYear() != objDateCurrentDeb.getYear()){
+          $(this).datepicker("option","defaultDate",$('input[name="debut"]').datepicker("getDate"));
+        }
+      }
+    }
       }
     });
 
@@ -864,18 +862,18 @@ $(function(){
       active: $(".ui-tabs").attr("data-active"),
       // Fonctions personnalisées pour les tabs .ui-tab-cancel et .ui-tab-submit dans personnel/modif.php
       beforeActivate: function(event,ui){
-	if($(ui.newTab).hasClass("ui-tab-cancel")){
- 	  window.location.href=$(".ui-tab-cancel > a").attr("href");
-	  return false;
-	}
-	if($(ui.newTab).hasClass("ui-tab-submit")){
- 	  var command=$(".ui-tab-submit > a").attr("href");
-	  if(command.substring(0,11)=="javascript:"){
-	    command=command.substring(11,command.length);
-	    eval(command);
-	  }
-	  return false;
-	}
+    if($(ui.newTab).hasClass("ui-tab-cancel")){
+       window.location.href=$(".ui-tab-cancel > a").attr("href");
+      return false;
+    }
+    if($(ui.newTab).hasClass("ui-tab-submit")){
+       var command=$(".ui-tab-submit > a").attr("href");
+      if(command.substring(0,11)=="javascript:"){
+        command=command.substring(11,command.length);
+        eval(command);
+      }
+      return false;
+    }
       }
     });
     $(".ui-tab-submit").css("position","absolute");
@@ -886,7 +884,7 @@ $(function(){
     $(".ui-tab-cancel").css("right",right);
     $(".ui-tab-cancel").css("top",7);
   });
-  
+
   // Infobulles
   $(document).tooltip();
 });
