@@ -489,7 +489,7 @@ class AbsenceController extends BaseController
         
 
         $session->getFlashBag()->clear();
-        
+
         $this->agents_multiples = ($this->admin or in_array(9, $this->droits));
 
         if ($this->config('Absences-adminSeulement') and !$this->admin) {
@@ -513,10 +513,7 @@ class AbsenceController extends BaseController
             $file->move(__DIR__ . AbsenceDocument::UPLOAD_DIR . $result['id'] . '/' . $ad->id(), $filename);
         }
 
-        $succes = urlencode("L'absence a été modifiée avec succès");
-        $succes2 = urlencode("L'absence a été enregistrée");
-
-        if ($result['msg'] === $succes || $result['msg'] === $succes2){
+        if ($result['msg2'] != " " ){
             $session->getFlashBag()->add('notice',"L'absence a bien été enregistrée");
         } else {
             $session->getFlashBag()->add('error',"L'absence n'a pas pu être sauvée");    
