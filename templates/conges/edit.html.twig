@@ -59,9 +59,9 @@
           <td style='padding-top:15px;'>Journée(s) entière(s) : </td>
           <td style='padding-top:15px;'>
             {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
-              <input type='checkbox' name='allday' checked="checked"/>
+              <input type='checkbox' name='allday' class='checkdate' checked='checked'/>
             {% else %}
-              <input type='checkbox' name='allday'/>
+              <input type='checkbox' name='allday' class='checkdate'/>
             {% endif %}
           </td>
         </tr>
