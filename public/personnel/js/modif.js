@@ -220,7 +220,6 @@ function verif_form_agent(){
     else{
       var baseURL = $('#baseURL').val();
       document.form.submit();
-      window.location.href= baseURL + "/agent";
     }
   }
 }

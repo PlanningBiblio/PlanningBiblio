@@ -237,6 +237,7 @@ class AgentController extends BaseController
         $db->select2("select_categories", null, null, "order by rang");
         $categories = $db->result;
         $db = new \db();
+        $db->sanitize_string = false;
         $db->select2("personnel", "statut", null, "group by statut");
         $statuts_utilises = array();
         if ($db->result) {
@@ -258,6 +259,7 @@ class AgentController extends BaseController
         // Liste des services utilisés
         $services_utilises = array();
         $db = new \db();
+        $db->sanitize_string = false;
         $db->select2('personnel', 'service', null, "GROUP BY `service`");
         if ($db->result) {
             foreach ($db->result as $elem) {
@@ -703,7 +705,6 @@ class AgentController extends BaseController
                 'anticipation_heures'   => $anticipationHeures,
                 'anticipation_min'      => $conges['anticipationCents'],
                 'anticipation_string'   => $anticipationString,
-
                 'recup_heures'          => $recupHeures,
                 'recup_min'             => $conges['recupCents'],
                 'recup_string'          => $recupString,
@@ -753,9 +754,9 @@ class AgentController extends BaseController
         $postes = $params['postes'];
         $prenom = trim($params['prenom']);
         $recup = isset($params['recup']) ? trim($params['recup']) : null;
-        $service = htmlentities($params['service'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+        $service = $params['service'];
         $sites = array_key_exists("sites", $params) ? $params['sites'] : null;
-        $statut = htmlentities($params['statut'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+        $statut = $params['statut'];
         $temps = array_key_exists("temps", $params) ? $params['temps'] : null;
 
         // Modification du choix des emplois du temps avec l'option EDTSamedi == 1 (EDT différent les semaines avec samedi travaillé)
@@ -843,16 +844,38 @@ class AgentController extends BaseController
             }
 
             // Enregistrement des infos dans la base de données
-            $insert = array("nom"=>$nom,"prenom"=>$prenom,"mail"=>$mail,"statut"=>$statut,"categorie"=>$categorie,"service"=>$service,"heures_hebdo"=>$heuresHebdo,
-              "heures_travail"=>$heuresTravail,"arrivee"=>$arrivee,"depart"=>$depart,"login"=>$login,"password"=>$mdp_crypt,"actif"=>$actif,
-              "droits"=>$droits,"postes"=>$postes,"temps"=>$temps,"informations"=>$informations,"recup"=>$recup,"sites"=>$sites,
-              "mails_responsables"=>$mailsResponsables,"matricule"=>$matricule,"url_ics"=>$url_ics, "check_ics"=>$check_ics, "check_hamac"=>$check_hamac);
-
+            $insert = array(
+                "nom"=>$nom,
+                "prenom"=>$prenom,
+                "mail"=>$mail,
+                "statut"=>$statut,
+                "categorie"=>$categorie,
+                "service"=>$service,
+                "heures_hebdo"=>$heuresHebdo,
+                "heures_travail"=>$heuresTravail,
+                "arrivee"=>$arrivee,
+                "depart"=>$depart,
+                "login"=>$login,
+                "password"=>$mdp_crypt,
+                "actif"=>$actif,
+                "droits"=>$droits,
+                "postes"=>$postes,
+                "temps"=>$temps,
+                "informations"=>$informations,
+                "recup"=>$recup,
+                "sites"=>$sites,
+                "mails_responsables"=>$mailsResponsables,
+                "matricule"=>$matricule,
+                "url_ics"=>$url_ics, 
+                "check_ics"=>$check_ics, 
+                "check_hamac"=>$check_hamac
+            );
             $holidays = $this->save_holidays($params);
             $insert = array_merge($insert, $holidays);
 
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
+            $db->sanitize_string = false;
             $db->insert("personnel", $insert);
 
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
@@ -908,10 +931,29 @@ class AgentController extends BaseController
             break;
 
           case "modif":
-            $update = array("nom"=>$nom, "prenom"=>$prenom, "mail"=>$mail, "statut"=>$statut, "categorie"=>$categorie, "service"=>$service,
-              "heures_hebdo"=>$heuresHebdo, "heures_travail"=>$heuresTravail, "actif"=>$actif, "droits"=>$droits, "arrivee"=>$arrivee,
-              "depart"=>$depart, "postes"=>$postes, "informations"=>$informations, "recup"=>$recup, "sites"=>$sites,
-              "mails_responsables"=>$mailsResponsables, "matricule"=>$matricule, "url_ics"=>$url_ics, "check_ics"=>$check_ics, "check_hamac"=>$check_hamac);
+            $update = array(
+                "nom"=>$nom,
+                "prenom"=>$prenom,
+                "mail"=>$mail,
+                "statut"=>$statut, 
+                "categorie"=>$categorie, 
+                "service"=>$service,
+                "heures_hebdo"=>$heuresHebdo, 
+                "heures_travail"=>$heuresTravail, 
+                "actif"=>$actif, 
+                "droits"=>$droits, 
+                "arrivee"=>$arrivee,
+                "depart"=>$depart, 
+                "postes"=>$postes, 
+                "informations"=>$informations, 
+                "recup"=>$recup, 
+                "sites"=>$sites,
+                "mails_responsables"=>$mailsResponsables, 
+                "matricule"=>$matricule, 
+                "url_ics"=>$url_ics, 
+                "check_ics"=>$check_ics, 
+                "check_hamac"=>$check_hamac
+            );
             // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
             if (!strstr($actif, "Supprim")) {
                 $update["supprime"]="0";

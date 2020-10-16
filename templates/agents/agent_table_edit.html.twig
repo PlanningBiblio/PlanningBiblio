@@ -32,9 +32,9 @@
         <option value=''>Aucun</option>
           {%for elem in statuts %}
             {% if elem.valeur == statut %}
-              <option selected="selected" value="{{ elem.valeur | raw }}">{{ elem.valeur | raw }}</option>
+              <option selected="selected" value="{{ elem.valeur | raw }}">{{ elem.valeur | raw  }}</option>
             {% else %}
-              <option value="{{ elem.valeur | raw }}">{{ elem.valeur | raw }}</option>
+              <option value="{{ elem.valeur | raw  }}">{{ elem.valeur | raw  }}</option>
             {% endif %}
           {% endfor %}
       </select>
@@ -65,9 +65,9 @@
         <option value=''>Aucun</option>
         {%for elem in services %}
           {% if elem.valeur == service %}
-            <option selected="selected" value='{{ elem.valeur }}'>{{ elem.valeur | raw }}</option>
+            <option selected="selected" value='{{ elem.valeur | raw }}'>{{ elem.valeur | raw }}</option>
           {% else %}
-            <option value='{{ elem.valeur }}'>{{ elem.valeur | raw }}</option>
+            <option value='{{ elem.valeur | raw }}'>{{ elem.valeur | raw }}</option>
           {% endif %}
         {% endfor %}
       </select>
@@ -146,9 +146,9 @@
       <td>
         {% for s in sites_select %}
           {% if s.checked %}
-            <input type='checkbox' name='sites[]' value='{{ s.id }}' checked="checked" >{{ s.name | raw }}<br/>
+            <input type='checkbox' name='sites[]' value='{{ s.id }}' checked="checked" >{{ s.name }}<br/>
           {% else %}
-            <input type='checkbox' name='sites[]' value='{{ s.id }}'>{{ s.name | raw }}<br/>
+            <input type='checkbox' name='sites[]' value='{{ s.id }}'>{{ s.name }}<br/>
           {% endif %}
         {% endfor %}
       </td>
@@ -188,7 +188,7 @@
   <tr style='vertical-align:top;'>
     <td>Informations :</td>
     <td>
-      <textarea name='informations' style='width:400px' cols='10' rows='4'>{{ informations }}</textarea>
+      <textarea name='informations' style='width:400px' cols='10' rows='4'>{{ informations|raw }}</textarea>
     </td>
   </tr>
 

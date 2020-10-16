@@ -100,6 +100,7 @@ class personnel
 
         if ($this->responsablesParAgent) {
             $db=new db();
+            $db->sanitize_string = false;
             $db->selectLeftJoin(
                 array('personnel', 'id'),
                 array('responsables', 'perso_id'),
@@ -111,6 +112,7 @@ class personnel
       );
         } else {
             $db=new db();
+            $db->sanitize_string = false;
             $db->select2("personnel", null, $filter, "ORDER BY $tri");
         }
 
@@ -185,6 +187,7 @@ class personnel
     {
         if (is_numeric($id)) {
             $db=new db();
+            $db->sanitize_string = false;
             $db->select("personnel", null, "id='$id'");
             $this->elements=$db->result;
             $sites = json_decode(html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
@@ -193,6 +196,7 @@ class personnel
         } elseif (is_array($id)) {
             $ids=join(",", $id);
             $db=new db();
+            $db->sanitize_string = false;
             $db->select2("personnel", null, array("id"=>"IN $ids"));
             if ($db->result) {
                 foreach ($db->result as $elem) {
