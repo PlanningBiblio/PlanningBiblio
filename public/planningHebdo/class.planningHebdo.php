@@ -51,6 +51,7 @@ class planningHebdo
             $data['fin']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/", "$3-$2-$1", $data['fin']);
         }
         $data['breaktime'] = isset($data['breaktime']) ? $data['breaktime'] : null;
+        $data['exception'] = $data['exception'] ?? 0;
 
         $perso_id=array_key_exists("perso_id", $data)?$data["perso_id"]:$_SESSION['login_id'];
 
