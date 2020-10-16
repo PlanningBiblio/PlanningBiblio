@@ -486,7 +486,15 @@ class AbsenceController extends BaseController
         $this->dbprefix = $GLOBALS['dbprefix'];
         $this->droits = $GLOBALS['droits'];
         $this->setAdminPermissions();
+        
 
+        $session->getFlashBag()->clear();
+        
+        $this->agents_multiples = ($this->admin or in_array(9, $this->droits));
+
+        if ($this->config('Absences-adminSeulement') and !$this->admin) {
+            return $this->output('access-denied.html.twig');
+        }
          
         $result = $this->save($request, $this->admin);
         $file = $request->files->get('documentFile');
@@ -506,8 +514,9 @@ class AbsenceController extends BaseController
         }
 
         $succes = urlencode("L'absence a été modifiée avec succès");
+        $succes2 = urlencode("L'absence a été enregistrée");
 
-        if ($result['msg'] === $succes){
+        if ($result['msg'] === $succes || $result['msg'] === $succes2){
             $session->getFlashBag()->add('notice',"L'absence a bien été enregistrée");
         } else {
             $session->getFlashBag()->add('error',"L'absence n'a pas pu être sauvée");    
@@ -603,9 +612,16 @@ class AbsenceController extends BaseController
             $a->pj2 = $pj2;
             $a->so = $so;
             $a->add();
-            $msg = $a->msg;
             $msg2 = $a->msg2;
             $msg2Type = $a->msg2_type;
+             
+            // Confirmation de l'enregistrement
+            if ($this->config('Absences-validation') and !$this->admin) {
+                $msg="La demande d'absence a été enregistrée";
+            } else {
+                $msg="L'absence a été enregistrée";
+            }
+            $msg=urlencode($msg);
         } else { // Modification
             // perso_ids est un tableau de 1 ou plusieurs ID d'agent. Complété même si l'absence ne concerne qu'une personne
             $perso_ids = $request->get('perso_ids');
@@ -971,7 +987,7 @@ class AbsenceController extends BaseController
 
                 if ($nouvel_enregistrement) {
 
-                // On enregistre l'événement modifié dans la base de données, et dans les fichiers ICS si $rrule
+                    // On enregistre l'événement modifié dans la base de données, et dans les fichiers ICS si $rrule
                     $a = new \absences();
                     $a->debut = $debut;
                     $a->fin = $fin;
@@ -1069,7 +1085,7 @@ class AbsenceController extends BaseController
 
 
             // Envoi d'un mail de notification
-            $sujet="Modification d'une absence";
+            $sujet = "Modification d'une absence";
 
             // Choix des destinataires des notifications selon le degré de validation
             // Si pas de validation, la notification est envoyée au 1er groupe
@@ -1149,7 +1165,7 @@ class AbsenceController extends BaseController
             $a->fin = $fin_sql;
             $a->perso_ids=$perso_ids;
             $a->infoPlannings();
-            $infosPlanning=$a->message;
+            $infosPlanning = $a->message;
 
             // Message
             usort($agents_selectionnes, "cmp_prenom_nom");
@@ -1233,7 +1249,6 @@ class AbsenceController extends BaseController
                 $msg2 = urlencode($m->error_CJInfo);
                 $msg2Type = "error";
             }
-
             
             $msg = urlencode("L'absence a été modifiée avec succès");
         }

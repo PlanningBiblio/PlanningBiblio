@@ -360,10 +360,10 @@
             <td colspan='2'><br/>
               {% if absence.editable %}
                 <input type='button' class='ui-button' value='Supprimer' id='absence-bouton-supprimer' data-id='{{ id }}'/> 
-                <input type='button' class='ui-button' value='Annuler' onclick="annuler(1);"/> 
+                <a href='{{ asset("absence") }}' class='ui-button'> Annuler </a> 
                 <input type='submit' class='ui-button' value='Valider'/>
               {% else %}
-                <a href='{{ asset("/absences") }}' class='ui-button'>Retour</a>
+                <a href='{{ asset("absence") }}' class='ui-button'>Retour</a>
               {% endif %}
 
             </td>
