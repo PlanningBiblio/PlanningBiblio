@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\PlanningBiblio\Event\OnTransformLeaveDays;
 use App\PlanningBiblio\Event\OnTransformLeaveHours;
+use App\PlanningBiblio\Helper\HolidayHelper;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -494,6 +495,7 @@ class AgentController extends BaseController
             $c->perso_id = $id;
             $c->fetchCredit();
             $conges = $c->elements;
+            $holiday_helper = new HolidayHelper();
 
             $annuelHeures = $conges['annuelHeures'] ? $conges['annuelHeures'] : 0;
             $annuelString = heure4($conges['annuel']);
@@ -540,7 +542,7 @@ class AgentController extends BaseController
                 }
             }
 
-            $this->templateParams(array(
+            $templateParams = array(
                 'annuel_heures'         => $annuelHeures,
                 'annuel_min'            => $conges['annuelCents'],
                 'annuel_string'         => $annuelString,
@@ -558,7 +560,17 @@ class AgentController extends BaseController
                 'recup_min'             => $conges['recupCents'],
                 'recup_string'          => $recupString,
                 'lang_comp_time'        => $lang['comp_time'],
-            ));
+                'show_hours_to_days'    => $holiday_helper->showHoursToDays(),
+            );
+            if ($holiday_helper->showHoursToDays()) {
+                $templateParams['annuel_jours'] = $holiday_helper->hoursToDays(heure4($annuelString), $id);
+                $templateParams['credit_jours'] = $holiday_helper->hoursToDays(heure4($creditString), $id);
+                $templateParams['reliquat_jours'] = $holiday_helper->hoursToDays(heure4($reliquatString), $id);
+                $templateParams['anticipation_jours'] = $holiday_helper->hoursToDays(heure4($anticipationString), $id);
+                $templateParams['hours_per_day'] = $holiday_helper->hoursPerDay($id);
+                
+            }
+            $this->templateParams($templateParams);
         }
 
         $this->templateParams(array(

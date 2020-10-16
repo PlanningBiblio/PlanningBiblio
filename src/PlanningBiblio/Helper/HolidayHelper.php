@@ -151,20 +151,22 @@ class HolidayHelper extends BaseHelper
         $result['minutes'] = isset($hours_minutes[1]) ? $hours_minutes[1] : 0;
         $result['hr_hours'] = heure4($total); // 2.5 => 2h30
 
-        $hours_per_day = $this->hoursPerDay($total);
-        $result['days'] = $this->hoursToDays($total, $hours_per_day); 
-        $result['hours_per_day'] = $hours_per_day;
+        $result['days'] = $this->hoursToDays($total, $perso_id); 
 
         return $result;
     }
 
-    private function hoursPerDay($given_hours)
+    public function hoursPerDay($perso_id, $holidays_hours_per_year = null)
     {
         if ($this->config('conges-hours-per-day')) {
+            if ($holidays_hours_per_year == null) {
+                $agent = $this->entityManager->find(Agent::class, $perso_id);
+                $holidays_hours_per_year = $agent->conges_annuel();
+            } 
             $intervals = $this->config['conges-hours-per-day'];
             arsort($intervals);
             foreach ($intervals as $hours => $hours_per_day) {
-                if ($given_hours >= $hours) {
+                if ($holidays_hours_per_year >= $hours) {
                     return $hours_per_day;
                 }
             }
@@ -174,11 +176,14 @@ class HolidayHelper extends BaseHelper
         return -1;
     }
 
-    public function hoursToDays($given_hours, $hours_per_day = null) {
+    public function hoursToDays($given_hours, $perso_id, $holidays_hours_per_year = null) {
         if (!isset($given_hours) || $given_hours == '') { return 0; } 
-        $hours_per_day ??= $this->hoursPerDay($given_hours);
-        error_log("given hours: *$given_hours* hours per day $hours_per_day");
+        $hours_per_day = ($holidays_hours_per_year == null) ? $this->hoursPerDay($perso_id) : $this->hoursPerDay(null, $holidays_hours_per_year);
         return round($given_hours / $hours_per_day, 2);
+    }
+
+    public function showHoursToDays() {
+        return $this->config('conges-hours-per-day');
     }
 
     private function applyWeekTable($week)

@@ -129,7 +129,9 @@ class HolidayController extends BaseController
             $annees[]=array($d,$d."-".($d+1));
         }
 
-        $this->templateParams(array(
+        $holiday_helper = new HolidayHelper();
+
+        $templateParams = array(
             'admin'                 => $admin,
             'perso_id'              => $perso_id,
             'agents_menu'           => $agents_menu,
@@ -145,9 +147,11 @@ class HolidayController extends BaseController
             'balance'               => $this->config('Conges-Recuperations') == '0' or !$voir_recup ? 1 : 0,
             'recovery'              => $this->config('Conges-Recuperations') == '0' or $voir_recup ? 1 : 0,
             'perso_ids'             => $perso_ids,
-        ));
+            'show_hours_to_days'    => $holiday_helper->showHoursToDays() ? 1 : 0,
+        );
 
-        $holiday_helper = new HolidayHelper();
+        $this->templateParams($templateParams);
+
         $holidays = array();
         foreach ($c->elements as $elem) {
             // Filter non handled agent.
@@ -180,19 +184,25 @@ class HolidayController extends BaseController
                 $force = 'heures';
             }
             $elem['hours'] = $holiday_helper->HumanReadableDuration($elem['heures'], $force);
-            $elem['days'] = $holiday_helper->hoursToDays($elem['heures']);
+            if ($holiday_helper->showHoursToDays()) {
+                $elem['days'] = $holiday_helper->hoursToDays($elem['heures'], $elem['perso_id']);
+            }
             $elem['status'] = "Demandé, ".dateFr($elem['saisie'], true);
             $elem['validationDate'] = dateFr($elem['saisie'], true);
 
             foreach (array('solde_prec', 'solde_actuel',
                 'reliquat_prec', 'reliquat_actuel',
                 'anticipation_prec', 'anticipation_actuel') as $key) {
-                $elem[$key . '_days'] = $holiday_helper->hoursToDays($elem[$key]);
+                if ($holiday_helper->showHoursToDays()) {
+                    $elem[$key . '_days'] = $holiday_helper->hoursToDays($elem[$key], $elem['perso_id']);
+                }
                 $elem[$key] = $holiday_helper->HumanReadableDuration($elem[$key]);
             }
 
             foreach (array('recup_prec', 'recup_actuel') as $key) {
-                $elem[$key . '_days'] = $holiday_helper->hoursToDays($elem[$key]);
+                if ($holiday_helper->showHoursToDays()) {
+                    $elem[$key . '_days'] = $holiday_helper->hoursToDays($elem[$key], $elem['perso_id']);
+                }
                 $elem[$key] = $holiday_helper->HumanReadableDuration($elem[$key], 'heures');
             }
 
@@ -235,6 +245,20 @@ class HolidayController extends BaseController
         $this->templateParams(array('holidays' => $holidays));
 
         return $this->output('conges/index.html.twig');
+    }
+
+    /**
+     * @Route("/ajax/holidays-hours-to-days", name="ajax.holidays-hours-to-days", methods={"GET"})
+     */
+    public function hoursToDays(Request $request, Session $session)
+    {
+        $hours_to_convert = $request->get('hours_to_convert');
+        $hours_per_year = $request->get('hours_per_year');
+        $holiday_helper = new HolidayHelper();
+        $results = array();
+        $results['hoursToDays'] = $holiday_helper->hoursToDays($hours_to_convert, null, $hours_per_year);
+        $results['hoursPerDay'] = $holiday_helper->hoursPerDay(null, $hours_per_year);
+        return $this->json($results); 
     }
 
     /**
@@ -331,7 +355,7 @@ class HolidayController extends BaseController
             $displayHeures="style='display:none;'";
         }
         $holiday_helper = new HolidayHelper();
-        $this->templateParams(array(
+        $templateParams = array(
             'id'                    => $id,
             'perso_id'              => $perso_id,
             'login_id'              => $_SESSION['login_id'],
@@ -369,7 +393,14 @@ class HolidayController extends BaseController
             'refus'                 => $data['refus'],
             'saisie'                => dateFr($data['saisie'], true),
             'displayRefus'          => $displayRefus,
-        ));
+        );
+
+        if ($holiday_helper->showHoursToDays()) {
+            $templateParams['hours_per_day'] = $holiday_helper->hoursPerDay($perso_id);
+        }
+
+        $this->templateParams($templateParams);
+
         if ($adminN1 or $adminN2) {
             $agents = $this->get_agents($adminN2);
             $this->templateParams(array('db_perso' => $agents));
@@ -510,7 +541,7 @@ class HolidayController extends BaseController
             $balance[4] = 0;
         }
 
-        $this->templateParams(array(
+        $templateParams = array(
             'admin'                 => $admin,
             'perso_id'              => $perso_id,
             'conges_recuperations'  => $this->config('Conges-Recuperations'),
@@ -532,7 +563,13 @@ class HolidayController extends BaseController
             'login_id'              => $_SESSION['login_id'],
             'login_nom'             => $_SESSION['login_nom'],
             'login_prenom'          => $_SESSION['login_prenom'],
-        ));
+        );
+
+        if ($holiday_helper->showHoursToDays()) {
+            $templateParams['hours_per_day'] = $holiday_helper->hoursPerDay($perso_id);
+        }
+
+        $this->templateParams($templateParams);
 
         // Affichage du formulaire
 

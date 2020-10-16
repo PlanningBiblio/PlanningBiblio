@@ -29,7 +29,7 @@ $conges=$c->elements;
 echo "<div id='conges' style='margin-left:80px;padding-top:30px;'>\n";
 // Nombre d'heures de congés par an
 echo "<table class='tableauFiches'><tr><td>";
-echo "Nombre d'heures de congés par an :";
+echo "aaaNombre d'heures de congés par an :";
 echo "</td><td style='text-align:right;'>";
 if ($admin) {
     echo "<input type='text' name='conges_annuel' value='{$conges['annuelHeures']}'  style='width:70px;text-align:right;'>\n";
