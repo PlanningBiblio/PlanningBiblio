@@ -18,15 +18,6 @@ Cette page est appelée par les fichiers include/header.php, setup/header.php et
 */
 
 //	---------------------------		Fonctions communes		------------------------	//
-function annuler(nb){
-  if(opener){
-    opener.window.location.reload(false);
-    window.close();
-  }
-  else{
-	  history.go(-nb);
-  }
-}
 	
 // Fonction permettant d'afficher les heures correspondantes à chaque tableau d'emploi du temps
 // lors de la modification d'un select ou au chargement d'une page
