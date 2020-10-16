@@ -2,10 +2,6 @@
 
 {% extends 'base.html.twig' %}
 
-{% block specificjs %}
-  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/absences/js/modif.js?version={{ version }}'></script>
-{% endblock %}
-
 {% block page %}
   <script type='text/JavaScript'>
     $( document ).ready(function() {
@@ -452,4 +448,8 @@
   </div>
   {% include 'absences/reasons.html.twig' %}
 
+{% endblock %}
+
+{% block specificjs %}
+  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/absences/js/modif.js?version={{ version }}'></script>
 {% endblock %}

@@ -16,7 +16,6 @@ require_once(__DIR__ . '/../../public/absences/class.absences.php');
 
 class AbsenceController extends BaseController
 {
-
     /**
      * @Route("/absence", name="absence.index", methods={"GET"})
      */
@@ -26,7 +25,7 @@ class AbsenceController extends BaseController
         $debut = $request->get("debut");
         $fin = $request->get("fin");
         $reset = $request->get("reset");
-        $droits= $GLOBALS['droits'];
+        $droits = $GLOBALS['droits'];
 
         // Contrôle sanitize_dateFr en 2 temps pour éviter les erreurs CheckMarx
         $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
@@ -513,7 +512,6 @@ class AbsenceController extends BaseController
         } else {
             $session->getFlashBag()->add('error',"L'absence n'a pas pu être sauvée");    
         }
-
         return $this->redirectToRoute('absence.index');
     }
 
@@ -561,12 +559,13 @@ class AbsenceController extends BaseController
         $CSRFToken = $request->get('CSRFToken');
         $rrule = $request->get('recurrence-hidden');
         $rcheckbox = $request->get('recurrence-checkbox');
+        $recurrenceModif = $request->get('recurrence-modif');
         $valide = $request->get('valide');
         $allday = $request->get('allday');
         $groupe = $request->get('groupe');
         $etat = $request->get('etat');
         $demande = $request->get('demande');
-
+   
         $hre_debut = !empty($hre_debut) ? $hre_debut : '00:00:00';
         $hre_fin = !empty($hre_fin) ? $hre_fin : '23:59:59';
 
@@ -832,7 +831,6 @@ class AbsenceController extends BaseController
 
             // $nouvel_enregistrement permet de définir s'il y aura besoin d'un nouvel enregistrement dans le cas de l'ajout d'une exception ou de la modification des événements à venir
                 $nouvel_enregistrement = false;
-
                 switch ($recurrenceModif) {
                     case 'current':
                         // On ajoute une exception à l'événement ICS
