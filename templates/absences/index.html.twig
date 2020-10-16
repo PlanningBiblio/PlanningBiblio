@@ -115,8 +115,8 @@
             {% endif %}
           {% endif %}
           <td>{{ a.motive }}</td>
-          <td title={{a.comments}}>
-            <div style='height: 20px; overflow: hidden;'>{{ a.comments }}</div>
+          <td title={{ a.comments|raw }}>
+            <div style='height: 20px; overflow: hidden;'>{{ a.comments|raw }}</div>
           </td>
           <td>{{ a.requestDate }}</td>
 
