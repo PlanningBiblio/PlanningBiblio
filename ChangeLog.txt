@@ -3,6 +3,7 @@
 Move function calculPresence in dedicated class (WorkingHours)
 Allows more permissive entries in working hours
 Update DataTable libraries and remove flash buttons
+Use APP_ENV in legacy code (config.php) and move uploaded files
 
 -Fixes
 Remove HTML entities in closig days
