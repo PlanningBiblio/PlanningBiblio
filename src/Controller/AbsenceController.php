@@ -723,7 +723,7 @@ class AbsenceController extends BaseController
                 or $fin1 != $fin_sql
                 or htmlentities($motif1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
                 or htmlentities($motif_autre1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
-                or htmlentities($commentaires1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
+                or htmlentities($commentaires1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) 
                 or $valide1 != $valide
                 or $rrule1 != $rrule
                 or empty($pj1_1) != empty($pj1)
@@ -734,7 +734,7 @@ class AbsenceController extends BaseController
             // Si aucune modification, on retourne directement à la liste des absences
             if (!$modification) {
                 $msg = urlencode("L'absence a été modifiée avec succès");
-                echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success';</script>\n";
+                echo "<script type='text/JavaScript'>document.location.href='/holiday?msg=$msg&msgType=success';</script>\n";
             }
 
             // Sécurité
@@ -789,7 +789,7 @@ class AbsenceController extends BaseController
                 if (!$admin and !$acces) {
                     echo "<h3>Modification de l'absence</h3>\n";
                     echo "Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>\n";
-                    echo "<a href='index.php?page=absences/voir.php'>Retour à la liste des absences</a><br/><br/>\n";
+                    echo "<a href='/holiday'>Retour à la liste des absences</a><br/><br/>\n";
                     include "include/footer.php";
                     exit;
                 }
