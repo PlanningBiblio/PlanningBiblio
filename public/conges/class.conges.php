@@ -75,6 +75,7 @@ class conges
         // Enregistrement du congé
         $db=new db();
         $db->CSRFToken = $this->CSRFToken;
+        
         $db->insert("conges", array(
             'debut'         => $data['debut'] . ' ' . $data['hre_debut'],
             'fin'           => $data['fin'] . ' ' . $data['hre_fin'],
@@ -1063,7 +1064,7 @@ class conges
         $data['hre_debut']=$data['hre_debut']?$data['hre_debut']:"00:00:00";
         $data['hre_fin']=$data['hre_fin']?$data['hre_fin']:"23:59:59";
         $data['heures']=$data['heures'].".".$data['minutes'];
-        $data['commentaires']=htmlentities($data['commentaires'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+        $data['commentaires']=$data['commentaires'];
         $data['refus']=htmlentities($data['refus'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
         $data['debut']=dateSQL($data['debut']);
         $data['fin']=dateSQL($data['fin']);
@@ -1103,6 +1104,7 @@ class conges
 
         $db=new db();
         $db->CSRFToken = $this->CSRFToken;
+        $db->sanitize_string = false;
         $db->update("conges", $update, array("id"=>$data['id']));
   
         // En cas de validation, on débite les crédits dans la fiche de l'agent et on barre l'agent s'il est déjà placé dans le planning

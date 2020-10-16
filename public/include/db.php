@@ -39,6 +39,7 @@ class db
     public $error = null;
     public $msg = null;
     public $CSRFToken = false;
+    public $sanitize_string = true;
   
     public function __construct()
     {
@@ -98,7 +99,11 @@ class db
                     if (isset($isCryptedPassword) and $isCryptedPassword===true) {
                         $result[$key]=filter_var($value, FILTER_UNSAFE_RAW);
                     } else {
-                        $result[$key]=filter_var($value, FILTER_SANITIZE_STRING);
+                        if ($this->sanitize_string) {
+                            $result[$key] = filter_var($value, FILTER_SANITIZE_STRING);
+                        } else {
+                            $result[$key] = filter_var($value, FILTER_UNSAFE_RAW);
+                        } 
                     }
                     $isCryptedPassword=($key=="type" and $value=="password")?true:false;
                 }

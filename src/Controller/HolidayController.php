@@ -564,7 +564,7 @@ class HolidayController extends BaseController
         $finSQL = dateSQL($request->get('fin'));
         $hre_debut = $request->get('hre_debut') ? $request->get('hre_debut') :"00:00:00";
         $hre_fin = $request->get('hre_fin') ? $request->get('hre_fin') : "23:59:59";
-        $commentaires=htmlentities($request->get('commentaires'), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+        $commentaires = $request->get('commentaires');
 
         if (!$finSQL) {
             $finSQL = $debutSQL;
