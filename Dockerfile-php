@@ -1,0 +1,21 @@
+# PHP 
+#
+# VERSION    7.4.10
+
+FROM php:7.4.10-fpm
+
+# Install required apps : git, zip, zcat, mariadb and ldap libraries
+RUN apt-get update && apt-get install -y zip git mariadb-client apt-utils libldb-dev libldap2-dev 
+RUN apt-get update && apt-get install -y --no-install-recommends unixodbc-dev
+
+# Install required extensions for php
+RUN docker-php-ext-configure odbc --with-unixODBC=shared,/usr;
+RUN docker-php-ext-install ldap json odbc pdo pdo_mysql mysqli curl && docker-php-ext-enable curl json ldap odbc pdo pdo_mysql mysqli 
+
+# Install composer
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+RUN php -r "if (hash_file('sha384', 'composer-setup.php') === '795f976fe0ebd8b75f26a6dd68f78fd3453ce79f32ecb33e7fd087d39bfeb978342fb73ac986cd4f54edd0dc902601dc') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+RUN php composer-setup.php
+RUN php -r "unlink('composer-setup.php');"
+RUN mv composer.phar /usr/bin/composer
+
