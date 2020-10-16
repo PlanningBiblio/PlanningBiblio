@@ -208,6 +208,10 @@ h3{
   background:url("images/unlock.png") no-repeat center;
 }
 
+.pl-icon-valid {
+  background:url("images/valid.png") no-repeat center/70%;
+}
+
 /* Info-bulles */
 .ui-tooltip{
   /* Permet les sauts de lignes avec l'entité .&#013; */
