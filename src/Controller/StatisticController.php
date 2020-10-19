@@ -15,10 +15,322 @@ $version = 'symfony';
 include_once __DIR__ . "/../../public/conges/class.conges.php";
 include_once __DIR__ . "/../../public/include/function.php";
 require_once __DIR__ . "/../../public/include/db.php";
+require_once __DIR__ . "/../../public/include/horaires.php";
+include_once __DIR__ . '/../../public/statistiques/class.statistiques.php';
 include_once __DIR__ . '/../../public/absences/class.absences.php';
 
 class StatisticController extends BaseController
 {
+    /**
+     * @Route("/statistics/service", name="statistics.service", methods={"GET", "POST"})
+     */
+    public function service(Request $request, Session $session)
+    {
+        // Initialisation des variables :
+        $debut = $request->get("debut");
+        $fin = $request->get("fin");
+        $statistiques_heures = $request->get("statistiques_heures");
+        $statistiques_heures_defaut = $request->get("statistiques_heures_defaut");
+        $post = $request->request->all();
+        $nbSites = $this->config("Multisites-nombre");
+        $dbprefix = $GLOBALS["dbprefix"];
+
+        $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
+        $fin = filter_var($fin, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
+
+        $post_services = isset($post['services']) ? $post['services'] : null;
+        $post_sites = isset($post['selectedSites']) ? $post['selectedSites'] : null;
+
+        $joursParSemaine = $this->config('Dimanche') ? 7 : 6;
+        $services_tab = null;
+        $exists_JF = false;
+        $exists_absences = false;
+
+        // Statistiques-Heures
+        $heures_tab_global = array();
+        if ($statistiques_heures_defaut) {
+            $statistiques_heures = $config['Statistiques-Heures'];
+        } else {
+            if (!$statistiques_heures and !empty($_SESSION['oups']['statistiques_heures'])) {
+                $statistiques_heures = $_SESSION['oups']['statistiques_heures'];
+            } elseif (!$statistiques_heures and !empty($config['Statistiques-Heures'])) {
+                $statistiques_heures = $config['Statistiques-Heures'];
+            }
+        }
+
+        $_SESSION['oups']['statistiques_heures'] = $statistiques_heures;
+
+        if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
+            $debut = $_SESSION['stat_debut'];
+        }
+        if (!$fin and array_key_exists('stat_fin', $_SESSION)) {
+            $fin = $_SESSION['stat_fin'];
+        }
+
+        if (!$debut) {
+            $debut = "01/01/".date("Y");
+        }
+        if (!$fin) {
+            $fin = date("d/m/Y");
+        }
+
+        $_SESSION['stat_debut'] = $debut;
+        $_SESSION['stat_fin'] = $fin;
+
+        $debutSQL = dateFr($debut);
+        $finSQL = dateFr($fin);
+
+        // Filtre les services
+        if (!array_key_exists('stat_service_services', $_SESSION)) {
+            $_SESSION['stat_service_services'] = null;
+        }
+
+        $services = array();
+        if ($post_services) {
+            foreach ($post_services as $elem) {
+                $services[] = $elem;
+            }
+        } else {
+            $services = $_SESSION['stat_service_services'];
+        }
+        $_SESSION['stat_service_services'] = $services;
+
+
+        // Filtre les sites
+        if (!array_key_exists('stat_services_sites', $_SESSION)) {
+            $_SESSION['stat_services_sites'] = array();
+        }
+
+        $selectedSites = array();
+        if ($post_sites) {
+            foreach ($post_sites as $elem) {
+                $selectedSites[] = $elem;
+            }
+        } else {
+            $selectedSites = $_SESSION['stat_services_sites'];
+        }
+
+        if ($nbSites > 1 and empty($selectedSites)) {
+            for ($i = 1; $i <= $nbSites; $i++) {
+                $selectedSites[] = $i;
+            }
+        }
+        $_SESSION['stat_services_sites'] = $selectedSites;
+
+
+        // Filtre les sites dans les requêtes SQL
+        if ($nbSites > 1 and is_array($selectedSites)) {
+            $sitesSQL = "0,".join(",", $selectedSites);
+        } else {
+            $sitesSQL = "0,1";
+        }
+
+        $tab = array();
+
+        //		--------------		Récupération de la liste des services pour le menu déroulant		------------------------
+        $db = new \db();
+        $db->select2("select_services");
+        $services_list = $db->result;
+
+        if (!empty($services)) {
+            //	Recherche du nombre de jours concernés
+            $db = new \db();
+            $db->select2("pl_poste", "date", array("date"=>"BETWEEN{$debutSQL}AND{$finSQL}", "site"=>"IN{$sitesSQL}"), "GROUP BY `date`;");
+            $nbJours = $db->nb;
+
+            // Recherche des absences dans la table absences
+            $a = new \absences();
+            $a->valide = true;
+            $a->fetchForStatistics("$debutSQL 00:00:00", "$finSQL 23:59:59");
+            $absencesDB = $a->elements;
+
+            // Recherche des services de chaque agent
+            $db = new \db();
+            $db->select2("personnel", array("id","service"));
+            foreach ($db->result as $elem) {
+                $servId = null;
+                foreach ($services_list as $serv) {
+                    if ($serv['valeur'] == $elem['service']) {
+                        $servId = $serv['id'];
+                        continue;
+                    }
+                }
+                $agents[$elem['id']] = array("id"=>$elem['id'],"service"=>$elem['service'],"service_id"=>$servId);
+            }
+
+            //	Recherche des infos dans pl_poste et postes pour tous les services sélectionnés
+            //	On stock le tout dans le tableau $resultat
+
+            $db = new \db();
+            $debutREQ = $db->escapeString($debutSQL);
+            $finREQ = $db->escapeString($finSQL);
+            $sitesREQ = $db->escapeString($sitesSQL);
+
+            $req = "SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
+            `{$dbprefix}pl_poste`.`date` as `date`, `{$dbprefix}pl_poste`.`perso_id` as `perso_id`, 
+            `{$dbprefix}pl_poste`.`poste` as `poste`, `{$dbprefix}pl_poste`.`absent` as `absent`, 
+            `{$dbprefix}postes`.`nom` as `poste_nom`, `{$dbprefix}postes`.`etage` as `etage`,
+            `{$dbprefix}pl_poste`.`site` as `site` 
+            FROM `{$dbprefix}pl_poste` 
+            INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` 
+            WHERE `{$dbprefix}pl_poste`.`date`>='$debutREQ' AND `{$dbprefix}pl_poste`.`date`<='$finREQ' 
+            AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' 
+            AND `{$dbprefix}pl_poste`.`site` IN ($sitesREQ)
+            ORDER BY `poste_nom`,`etage`;";
+            $db->query($req);
+            $resultat = $db->result;
+
+            // Ajoute le service pour chaque agents dans le tableau resultat
+            for ($i = 0; $i<count($resultat); $i++) {
+
+                if ($resultat[$i]['perso_id'] == 0) {
+                    continue;
+                }
+
+                $resultat[$i]['service'] = $agents[$resultat[$i]['perso_id']]['service'];
+                $resultat[$i]['service_id'] = $agents[$resultat[$i]['perso_id']]['service_id'];
+            }
+
+            //	Recherche des infos dans le tableau $resultat (issu de pl_poste et postes)
+            //	pour chaque service sélectionné
+
+            foreach ($services as $service) {
+                if (array_key_exists($service, $tab)) {
+                    $heures = $tab[$service][2];
+                    $total_absences = $tab[$service][5];
+                    $samedi = $tab[$service][3];
+                    $dimanche = $tab[$service][6];
+                    $heures_tab = $tab[$service][7];
+                    $absences = $tab[$service][4];
+                    $feries = $tab[$service][8];
+                    $sites = $tab[$service]["sites"];
+                } else {
+                    $heures = 0;
+                    $total_absences = 0;
+                    $samedi = array();
+                    $dimanche = array();
+                    $absences = array();
+                    $heures_tab = array();
+                    $feries = array();
+                    for ($i = 1; $i <= $nbSites; $i++) {
+                        $sites[$i] = 0;
+                    }
+                }
+                $postes = array();
+                if (is_array($resultat)) {
+                    foreach ($resultat as $elem) {
+                        if (!isset($elem['service_id'])) {
+                            continue;
+                        }
+                        
+                        if ($service == $elem['service_id']) {
+                            // Vérifie à partir de la table absences si l'agent est absent
+                            // S'il est absent, on met à 1 la variable $elem['absent']
+                            if ( !empty($absencesDB[$elem['perso_id']]) ) {
+                                foreach ($absencesDB[$elem['perso_id']] as $a) {
+                                    if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
+                                        $elem['absent'] = "1";
+                                    }
+                                }
+                            }
+
+                            if ($elem['absent']!="1") {		// on compte les heures et les samedis pour lesquels l'agent n'est pas absent
+                                // on créé un tableau par poste avec son nom, étage et la somme des heures faites par service
+                                if (!array_key_exists($elem['poste'], $postes)) {
+                                    $postes[$elem['poste']] = array($elem['poste'],$elem['poste_nom'],$elem['etage'],0,"site"=>$elem['site']);
+                                }
+                                $postes[$elem['poste']][3] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                                // On compte les heures de chaque site
+                                if ($nbSites>1) {
+                                    $sites[$elem['site']] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                                }
+                                // On compte toutes les heures (globales)
+                                $heures += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                                $d = new datePl($elem['date']);
+                                if ($d->sam == "samedi") {	// tableau des samedis
+                                    if (!array_key_exists($elem['date'], $samedi)) { // on stock les dates et la somme des heures faites par date
+                                        $samedi[$elem['date']][0] = $elem['date'];
+                                        $samedi[$elem['date']][1] = 0;
+                                    }
+                                    $samedi[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                                }
+                                if ($d->position == 0) {		// tableau des dimanches 
+                                    if (!array_key_exists($elem['date'], $dimanche)) { 	// on stock les dates et la somme des heures faites par date
+                                        $dimanche[$elem['date']][0] = $elem['date'];
+                                        $dimanche[$elem['date']][1] = 0;
+                                    }
+                                    $dimanche[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                                }
+                                if (jour_ferie($elem['date'])) {
+                                    if (!array_key_exists($elem['date'], $feries)) {
+                                        $feries[$elem['date']][0] = $elem['date'];
+                                        $feries[$elem['date']][1] = 0;
+                                    }
+                                    $feries[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                                    $exists_JF = true;
+                                }
+
+                                // Statistiques-Heures
+                                if ($statistiques_heures) {
+                                    $statistiques_heures_tab = explode(';', $statistiques_heures);
+                                    foreach ($statistiques_heures_tab as $h) {
+                                        $tmp = heures($h);
+                                        if (!$tmp) {
+                                            continue;
+                                        }
+                        
+                                        if ($elem['debut'] == $tmp[0] and $elem['fin'] == $tmp[1]) {
+                                            $heures_tab[$tmp[0].'-'.$tmp[1]][] = $elem['date'];
+                                            if (!in_array($tmp, $heures_tab_global)) {
+                                                $heures_tab_global[] = $tmp;
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {				// On compte les absences
+                                if (!array_key_exists($elem['date'], $absences)) {
+                                    $absences[$elem['date']][0] = $elem['date'];
+                                    $absences[$elem['date']][1] = 0;
+                                }
+                                $absences[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                                $total_absences += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                                $exists_absences = true;
+                            }
+                            // On met dans tab tous les éléments (infos postes + services + heures)
+                            $tab[$service] = array(
+                                $elem['service'], 
+                                $postes, 
+                                $heures, 
+                                $samedi, 
+                                $absences, 
+                                $total_absences, 
+                                $dimanche, 
+                                $heures_tab,
+                                $feries,
+                                "sites"=>$sites
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
+        // Heures et jours d'ouverture au public
+        $s = new statistiques();
+        $s->debut = $debutSQL;
+        $s->fin = $finSQL;
+        $s->joursParSemaine = $joursParSemaine;
+        $s->selectedSites = $selectedSites;
+        $s->ouverture();
+        $ouverture = $s->ouvertureTexte;
+
+        sort($heures_tab_global);
+
+        // passage en session du tableau pour le fichier export.php
+        $_SESSION['stat_tab'] = $tab;
+
+    }
+      
     /**
      * @Route("/statistics/attendeesmissing", name="statistics.attendeesmissing", methods={"GET", "POST"})
      */
