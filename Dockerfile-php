@@ -5,12 +5,10 @@
 FROM php:7.4.10-fpm
 
 # Install required apps : git, zip, zcat, mariadb and ldap libraries
-RUN apt-get update && apt-get install -y zip git mariadb-client apt-utils libldb-dev libldap2-dev 
-RUN apt-get update && apt-get install -y --no-install-recommends unixodbc-dev
+RUN apt-get update && apt-get install -y zip git mariadb-client apt-utils libldb-dev libldap2-dev curl unixodbc-dev unixodbc-bin unixodbc
 
 # Install required extensions for php
-RUN docker-php-ext-configure odbc --with-unixODBC=shared,/usr;
-RUN docker-php-ext-install ldap json odbc pdo pdo_mysql mysqli curl && docker-php-ext-enable curl json ldap odbc pdo pdo_mysql mysqli 
+RUN docker-php-ext-install calendar ldap json pdo pdo_mysql mysqli && docker-php-ext-enable json ldap pdo pdo_mysql mysqli 
 
 # Install composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
