@@ -20,6 +20,9 @@ function getHours(id, hours) {
 $(document).ready(function() {
     $("#conges_annuel, #conges_annuel_min").change(function() {
         result = getHours('#annuel_jours', parseFloat($("#conges_annuel").val()) + parseFloat($("#conges_annuel_min option:selected").val()));
+        result = getHours('#credit_jours', parseFloat($("#conges_credit").val()) + parseFloat($("#conges_credit_min option:selected").val()));
+        result = getHours('#reliquat_jours', parseFloat($("#conges_reliquat").val()) + parseFloat($("#conges_reliquat_min option:selected").val()));
+        result = getHours('#anticipation_jours', parseFloat($("#conges_anticipation").val()) + parseFloat($("#conges_anticipation_min option:selected").val()));
     });
 
     $("#conges_credit, #conges_credit_min").change(function() {
@@ -55,7 +58,7 @@ $(document).ready(function() {
       <td>Crédit d'heures de congés actuel :</td>
       <td style='text-align:right;'>
         {% if can_manage_agent %}
-          <input type='text' name='conges_credit' value='{{ credit_heures}}'  style='width:70px;text-align:right;'>
+          <input type='text' id='conges_credit' name='conges_credit' value='{{ credit_heures}}'  style='width:70px;text-align:right;'>
           <label style='text-align:center;padding:5px;'>h</label>
           {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': credit_min, 'name': 'conges_credit_min' } %}
         {% else %}
@@ -69,7 +72,7 @@ $(document).ready(function() {
       <td>Reliquat de congés :</td>
       <td style='text-align:right;'>
         {% if can_manage_agent %}
-          <input type='text' name='conges_reliquat' value='{{ reliquat_heures}}'  style='width:70px;text-align:right;'>
+          <input type='text' id='conges_reliquat' name='conges_reliquat' value='{{ reliquat_heures}}'  style='width:70px;text-align:right;'>
           <label style='text-align:center;padding:5px;'>h</label>
           {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': reliquat_min, 'name': 'conges_reliquat_min' } %}
         {% else %}
@@ -83,7 +86,7 @@ $(document).ready(function() {
       <td>Solde débiteur :</td>
       <td style='text-align:right;'>
         {% if can_manage_agent %}
-          <input type='text' name='conges_anticipation' value='{{ anticipation_heures}}'  style='width:70px;text-align:right;'>
+          <input type='text' id='conges_anticipation' name='conges_anticipation' value='{{ anticipation_heures}}'  style='width:70px;text-align:right;'>
           <label style='text-align:center;padding:5px;'>h</label>
           {% include 'agents/elements/select_holiday_minutes.html.twig' with {'minutes': anticipation_min, 'name': 'conges_anticipation_min' } %}
         {% else %}
