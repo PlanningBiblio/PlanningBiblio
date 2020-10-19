@@ -1,0 +1,154 @@
+{# statistics/supportposition.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+    <h3>Statistiques par poste de renfort</h3>
+    <table>
+      <tr style='vertical-align:top;'>
+        <td id='stat-col1'>
+          <form name='form' action='{{ asset('statistics/supportposition') }}' method='post'>
+            <table>
+              <tr>
+                <td><label class='intitule'>Début</label></td>
+                <td><input type='text' name='debut' value='{{ debut }}' class='datepicker' /></td>
+            </tr>
+            <tr>
+              <td><label class='intitule'>Fin</label></td>
+              <td><input type='text' name='fin' value='{{ fin }}' class='datepicker' /></td>
+            </tr>
+            <tr>
+              <td><label class='intitule'>Tri</label></td>
+              <td>
+                <select name='tri' class='ui-widget-content ui-corner-all' >
+                  <option value='cmp_01' {% if tri == 'cmp_01' %} selected ='selected'{% endif %}>Nom du poste</option>
+                  <option value='cmp_02' {% if tri == 'cmp_02' %} selected ='selected'{% endif %}>Etage</option>
+                  <option value='cmp_2' {% if tri == 'cmp_2' %} selected ='selected'{% endif %}>Heures du - au +</option>
+                  <option value='cmp_2desc' {% if tri == 'cmp_2desc' %} selected ='selected'{% endif %}>Heures du + au -</option>
+                </select>
+              </td>
+            </tr>
+            <tr style='vertical-align:top'><td><label class='intitule'>Postes</label></td>
+              <td>
+                <select name='postes[]' multiple='multiple' size='20' onchange='verif_select("postes");' class='ui-widget-content ui-corner-all' >
+                  {% if postes_list is iterable %}
+                    <option value='Tous'>Tous</option>
+                    {% for poste in postes_list %}
+                      {% if postes is defined %}
+                        {% if poste.id in postes %}
+                          <option value='{{ poste.id }}' selected='selected' class='td_renfort'>{{ poste.nom }} ({{ poste.etage }})</option>
+                        {% else %}
+                          <option value='{{ poste.id }}' class='td_renfort'>{{ poste.nom }} {{ poste.etage }}</option>  
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}  
+                  {% endif %}
+                </select>
+              </td>
+            </tr>
+            {% if nbSites > 1 %}
+              <tr style='vertical-align:top'>
+                <td><label class='intitule'>Sites</label></td>
+                <td>
+                  <select name='selectedSites[]' multiple='multiple' size='{{ nbSites + 1 }}' onchange='verif_select("selectedSites");' class='ui-widget-content ui-corner-all' >
+                    <option value='Tous'>Tous</option>
+                    {% for i in 1..nbSites %}
+                      {% if i in selectedSites %}
+                        <option value='{{ i }}' selected = 'selected' >{{ multisites[i] }}</option>
+                      {% else %}
+                        <option value='{{ i }}'>{{ multisites[i] }}</option>  
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                </td>
+              </tr>
+            {% endif %}
+            <tr>
+              <td colspan='2' style='text-align:center;padding:10px;'>
+                <input type='button' value='Effacer' onclick='location.href="{{ asset('statistics/supportposition')}}?debut=&amp;fin=&amp;postes="' class='ui-button' />
+                &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />
+              </td>
+            </tr>
+            <tr>
+              <td colspan='2'><hr/></td>
+            </tr>
+            <tr>
+              <td>Exporter </td>
+              <td>
+                <a href='javascript:export_stat("postes_renfort","csv");'>CSV</a>&nbsp;&nbsp;
+                <a href='javascript:export_stat("postes_renfort","xsl");'>XLS</a>
+              </td>
+            </tr>
+          </table>
+        </form>
+      </td>
+      <td>
+        {% if tab %}
+          <b>Statistiques par poste de renfort du {{ debut }} au {{ fin }}</b>
+          {{ ouverture | raw }}
+          <table border='1' cellspacing='0' cellpadding='0'>
+            <tr class='th'>
+              <td style='width:200px; padding-left:8px;'>Postes</td>
+              <td style='width:300px; padding-left:8px;'>Horaires</td>
+            </tr>
+            {% for elem in tab %}
+              <tr style='vertical-align:top;' class='td_renfort'>
+                <td>
+                  <table>
+                    <tr>
+                      <td colspan='2'><b>{{ elem[0][1] }}</b></td>
+                    </tr>
+                    <tr>
+                      <td colspan='2'><i>{{ elem.siteEtage }}</i></td>
+                    </tr>
+                    <tr>
+                      <td>Total</td>
+                      <td style='text-align:right;'>{{ elem[2] }}</td>
+                    </tr>
+                    <tr>
+                      <td>Moyenne jour</td>
+                      <td style='text-align:right;'>{{ elem.jour }}</td>
+                    </tr>
+                    <tr>
+                      <td>Moyenne hebdo</td>
+                      <td style='text-align:right;'>{{ elem.hebdo }}</td>
+                    </tr>
+                    {% if nbSites > 1 %}
+                      {% for i in 1..nbSites %}
+                        {% if elem.sites[i] and  elem.sites[i] != elem[2] %}
+                          <tr>
+                            <td colspan='2' style='padding-top:20px;'><u> {{ multisites[i] }}</u></td>
+                          </tr>
+                          <tr>
+                            <td>Total</td>
+                            <td style='text-align:right;'>{{ elem.sites[i] }}</td>
+                          </tr>
+                          <tr>
+                            <td>Moyenne</td>
+                            <td style='text-align:right;'>{{ elem.hebdo }}</td>
+                          </tr>
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
+                  </table>
+                </td>
+                <td style='padding-left:8px;'>
+                  {% for date in elem[1] %}
+                    <b>{{ date[3]|raw }} </b><br/>
+                    {% for horaires in date[1] %}
+                      {{ horaires[3] }}<br/>
+                    {% endfor %}
+                    <br/>
+                  {% endfor %}
+                </td>
+              </tr>
+            {% endfor %}
+          </table>
+        {% endif %}
+      </td>
+    </tr>
+  </table>
+{% endblock %}
+{% block specificjs %}
+  <script type='text/JavaScript'>document.form.tri.value='{{ tri }}';</script>
+{% endblock %}
