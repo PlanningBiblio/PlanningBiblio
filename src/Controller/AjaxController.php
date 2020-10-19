@@ -203,7 +203,7 @@ class AjaxController extends BaseController
       $debut = $request->get('debut');
       $fin = $request->get('fin');
       $perso_ids = $request->get('perso_ids');
-      $perso_ids=json_decode(html_entity_decode($perso_ids, ENT_QUOTES|ENT_IGNORE, "UTF-8"), true);
+      $perso_ids = json_decode(html_entity_decode($perso_ids, ENT_QUOTES|ENT_IGNORE, "UTF-8"), true);
 
       $fin = $fin ?? str_replace('00:00:00', '23:59:59', $debut);
       $result = array();
@@ -322,6 +322,17 @@ class AjaxController extends BaseController
 
           // Affichage des dates correspondantes aux plannings en cours d'élaboration
           $result["planning_started"] = implode(" ; ", $planningsEnElaboration);
+      }
+
+      // Check if logged in user is admin
+      if ($type == 'absence') {
+        $c = new \absences();
+        $roles = $c->roles($perso_ids[0], false);
+        $result['admin'] = ($roles[0] or $roles[1]);
+      } else {
+        $c = new \conges();
+        $roles = $c->roles($perso_ids[0], false);
+        $result['admin'] = ($roles[0] or $roles[1]);
       }
 
       $result = json_encode($result);

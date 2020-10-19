@@ -863,7 +863,6 @@ function verif_absences(ctrl_form){
   debut=debut+" "+hre_debut;
   fin=fin+" "+hre_fin;
 
-  var admin=$("#admin").val();
   var retour=true;
   var baseURL = $('#baseURL').val();
 
@@ -875,6 +874,7 @@ function verif_absences(ctrl_form){
     async: false,
     success: function(result){
       result=JSON.parse(result);
+      var admin = result['admin'];
 
       // Contrôle si d'autres absences sont enregistrées
       autresAbsences = new Array();
@@ -919,7 +919,7 @@ function verif_absences(ctrl_form){
 
       // Contrôle si des plannings sont en cours d'élaboration
       if(result["planning_started"] && retour == true){
-        if(admin==1){
+        if(admin == true){
           if(!confirm("Vous essayer de placer une absence sur des plannings en cours d'élaboration : "+result["planning_started"]+"\nVoulez-vous continuer ?")){
             retour=false;
           }
@@ -949,7 +949,7 @@ function verif_absences(ctrl_form){
               message += planning_validated[i];
             }
           }
-        if(admin == 1){
+        if(admin == true){
           if(!confirm(message +"\nVoulez-vous continuer ?"))
             retour=false;
           } else {
