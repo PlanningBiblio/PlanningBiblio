@@ -1,0 +1,122 @@
+{# statistics/positionsummary.html.twig #}
+
+{% extends "base.html.twig" %}
+
+{% block page %}
+  <h3>Statistiques par poste (Synthèse)</h3>
+  <table>
+    <tr style='vertical-align:top;'>
+      <td id='stat-col1'>
+        <form name='form' action='{{ asset("statistics/positionsummary") }}' method='post'>
+          <table>
+            <tr>
+              <td><label class='intitule'>Début</label></td>
+              <td><input type='text' name='debut' value='{{ debut }}' class='datepicker' /></td>
+            </tr>
+            <tr>
+              <td><label class='intitule'>Fin</label></td>
+              <td><input type='text' name='fin' value='{{ fin }}' class='datepicker' /></td>
+            </tr>
+            <tr>
+              <td><label class='intitule'>Tri</label></td>
+              <td>
+                <select name='tri' class='ui-widget-content ui-corner-all' >
+                  <option value='cmp_01' {% if tri == 'cmp_01' %} selected='selected'{% endif %} >Nom du poste</option>
+                  <option value='cmp_02' {% if tri == 'cmp_02' %} selected='selected'{% endif %} >Etage</option>
+                  <option value='cmp_03' {% if tri == 'cmp_03' %} selected='selected'{% endif %} >Obligatoire</option>
+                  <option value='cmp_03desc' {% if tri == 'cmp_03desc' %} selected='selected'{% endif %} >Renfort</option>
+                  <option value='cmp_2' {% if tri == 'cmp_2' %} selected='selected'{% endif %} >Heures du - au +</option>
+                  <option value='cmp_2desc' {% if tri == 'cmp_2desc' %} selected='selected'{% endif %}>Heures du + au -</option>
+                </select>
+              </td>
+            </tr>
+            <tr style='vertical-align:top'>
+              <td><label class='intitule'>Postes</label></td>
+              <td>
+                <select name='postes[]' multiple='multiple' size='20' onchange='verif_select("postes");'class='ui-widget-content ui-corner-all' >
+                  {% if postes_list is iterable %}
+                    <option value='Tous'>Tous</option>
+                    {% for poste in postes_list %}
+                      {% if postes is defined %}
+                        <option value='{{ poste.id }}' {{ (poste.id in postes) ? "selected='selected'" : " " }} {{ (poste.obligatoire == "Obligatoire") ? "class='td_obligatoire'" : "class='td_renfort'" }}>{{ poste.nom }} {{ poste.etage ?? "(elem.etage)" }}</option>                   
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                </select>
+              </td>
+            </tr>
+            {% if nbSites > 1 %}
+              <tr style='vertical-align:top'>
+                <td><label class='intitule'>Sites</label></td>
+                <td>
+                  <select name='selectedSites[]' multiple='multiple' size='{{ nbSites+1 }}' onchange='verif_select("selectedSites");' class='ui-widget-content ui-corner-all' >
+                    <option value='Tous'>Tous</option>
+                    {% for i in 1..nbSites %}
+                      <option value='{{ i }}' {{ (i in selectedSites) ? "selected = 'selected'" : " " }}>{{ multisites[i] }}</option> 
+                    {% endfor %}
+                  </select>
+                </td>
+              </tr>
+            {% endif %}
+            <tr>
+              <td colspan='2' style='text-align:center;padding:10px;'>
+                <input type='button' value='Effacer' onclick='location.href="{{ asset('statistics/positionsummary')}}?debut=&amp;fin=&amp;postes="' class='ui-button' />
+                &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />
+              </td>
+            </tr>
+            <tr>
+              <td colspan='2'><hr/></td>
+            </tr>
+            <tr>
+              <td>Exporter </td>
+              <td>
+                <a href='javascript:export_stat("postes_synthese","csv");'>CSV</a>&nbsp;&nbsp;
+                <a href='javascript:export_stat("postes_synthese","xsl");'>XLS</a>
+              </td>
+            </tr>
+          </table>
+        </form>
+      </td>
+      <td>
+        {% if tab %}
+          <b>Statistiques par poste (Synthèse) du {{ debut }} au {{ fin }}</b>
+          {{ ouverture | raw }}
+          <table id='tableStatSynthese' class='CJDataTable'>
+            <thead>
+              <tr>
+                <th>Postes</th>
+                <th class='dataTableHeureFR'>Total d'heures</th>
+                <th class='dataTableHeureFR'>Moyenne jour</th>
+                <th class='dataTableHeureFR'>Moyenne hebdomadaire</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for elem in tab %}
+                <tr style='vertical-align:top;' class='{{ elem[0][3] == "Obligatoire" ? "td_obligatoire" : "td_renfort" }}'>
+                  <td>
+                      <b>{{ elem[0][1] }}</b>
+                      <br/><i>{{ elem.siteEtage }}</i>
+                  </td>
+                  <td>{{ elem[2] }}</td>
+                  <td>{{ elem.jour }}</td>
+                  <td>{{ elem.hebdo }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+            <tfooter>
+              <tr>
+                <th><b>Total</b></th>
+                <th>{{ total_heures }}</th>
+                <th>{{ total_jour }}</th>
+                <th>{{ total_hebdo }}</th>
+              </tr>
+            </tfooter>
+          </table>
+        {% endif %}
+      </td>
+    </tr>
+  </table>
+{% endblock %}
+{% block specificjs %}
+  <script type='text/JavaScript'>document.form.tri.value='{{ tri }}';</script>
+{% endblock %}
