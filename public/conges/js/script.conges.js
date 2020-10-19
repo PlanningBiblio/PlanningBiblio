@@ -380,7 +380,6 @@ function verifConges(){
     return false;
   }
 
-  var admin = $("#admin").val();
   var baseURL = $('#baseURL').val();
   if (baseURL == undefined) {
       baseURL = '';
@@ -393,24 +392,24 @@ function verifConges(){
     dataType: "json",
     data: {perso_ids: JSON.stringify([perso_id]), debut: debut, fin: fin, id: id, type:'holiday'},
     async: false,
-    success: function(warning){
+    success: function(result){
       var valid = true;
+      var admin = result['admin'];
 
-
-      for (i in warning['users']) {
-        if (warning['users'][i]['holiday'] != undefined) {
-          CJInfo("Un congé a déjà été demandé " + warning['users'][i]['holiday'], "error");
+      for (i in result['users']) {
+        if (result['users'][i]['holiday'] != undefined) {
+          CJInfo("Un congé a déjà été demandé " + result['users'][i]['holiday'], "error");
           valid = false;
         }
       }
 
-      if (warning['planning_started'] && valid == true) {
-        if (admin == 1) {
-          if (!confirm("Vous essayer d'enregistrer un congé sur des plannings en cours d'élaboration : "+warning["planning_started"]+"\nVoulez-vous continuer ?")) {
+      if (result['planning_started'] && valid == true) {
+        if (admin == true) {
+          if (!confirm("Vous essayer d'enregistrer un congé sur des plannings en cours d'élaboration : "+result["planning_started"]+"\nVoulez-vous continuer ?")) {
             valid = false;
           }
         } else {
-          CJInfo("Vous ne pouvez pas enregistrer d'absences pour les dates suivantes car les plannings sont en cours d'élaboration :#BR#"+warning["planning_started"], "error");
+          CJInfo("Vous ne pouvez pas enregistrer d'absences pour les dates suivantes car les plannings sont en cours d'élaboration :#BR#"+result["planning_started"], "error");
           valid = false;
         }
       }
@@ -419,9 +418,9 @@ function verifConges(){
       // Pour chaque agent
       if (valid == true) {
         var planning_validated = [];
-        for (i in warning['users']) {
-          if(warning['users'][i]["planning_validated"]){
-            planning_validated.push("\n- " + warning['users'][i]['nom'] + "\n-- " + warning['users'][i]['planning_validated'].replace(';', "\n-- "));
+        for (i in result['users']) {
+          if(result['users'][i]["planning_validated"]){
+            planning_validated.push("\n- " + result['users'][i]['nom'] + "\n-- " + result['users'][i]['planning_validated'].replace(';', "\n-- "));
           }
         }
 
@@ -436,7 +435,7 @@ function verifConges(){
             }
           }
 
-        if(admin == 1){
+        if(admin == true){
           if(!confirm(message +"\nVoulez-vous continuer ?"))
             valid = false;
           } else {
