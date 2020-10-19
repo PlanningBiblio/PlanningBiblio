@@ -513,10 +513,16 @@ class AbsenceController extends BaseController
             $file->move(__DIR__ . AbsenceDocument::UPLOAD_DIR . $result['id'] . '/' . $ad->id(), $filename);
         }
 
+        $succes = urlencode("L'absence a été modifiée avec succès");
+        $succes2 = urlencode("L'absence a bien été enregistrée");
+        $succes3 = urlencode("La demande d'absence a été enregistrée");
+
+        if ($result['msg'] === $succes || $result['msg'] === $succes2 || $result['msg'] === $succes3){
+            $session->getFlashBag()->add('notice', urldecode($result['msg']));    
+        }
+
         if ($result['msg2'] != " " ){
-            $session->getFlashBag()->add('notice',"L'absence a bien été enregistrée");
-        } else {
-            $session->getFlashBag()->add('error',"L'absence n'a pas pu être sauvée");    
+            $session->getFlashBag()->add('error', urldecode($result['msg2']));    
         }
         return $this->redirectToRoute('absence.index');
     }
@@ -856,11 +862,9 @@ class AbsenceController extends BaseController
                             $a->uid = $uid;
                             $a->ics_add_exdate($exdate);
                         }
-
                         // Un nouvel enregistrement sera créé pour l'occurence modifiée
                         $nouvel_enregistrement = true;
                         $rrule = false;
-
                         break;
 
                     case 'next':
@@ -922,7 +926,6 @@ class AbsenceController extends BaseController
                             $a->ics_update_until($serie1_end);
                         }
 
-
                         // Un nouvel événement sera créé pour les occurences à venir
                         $nouvel_enregistrement = true;
 
@@ -952,7 +955,6 @@ class AbsenceController extends BaseController
                         break;
 
                     case 'all':
-
                         // On modifie toutes les occurences de l'événement.
                         // Modification de l'événement ICS pour les agents qui en faisaient déjà partie, ajout pour les nouveaux, suppression pour les agents retirés
 
@@ -983,7 +985,6 @@ class AbsenceController extends BaseController
                 }
 
                 if ($nouvel_enregistrement) {
-
                     // On enregistre l'événement modifié dans la base de données, et dans les fichiers ICS si $rrule
                     $a = new \absences();
                     $a->debut = $debut;
@@ -1009,10 +1010,7 @@ class AbsenceController extends BaseController
                     $msg2 = $a->msg2;
                     $msg2_type = $a->msg2_type;
                 }
-            }
-
-            // Si pas de récurrence, modifiation des informations directement dan la base de données
-            else {
+            } else { // Si pas de récurrence, modifiation des informations directement dan la base de données
                 // Mise à jour du champs 'absent' dans 'pl_poste'
                 // Suppression du marquage absent pour tous les agents qui étaient concernés par l'absence avant sa modification
                 // Comprend les agents supprimés et ceux qui restent
