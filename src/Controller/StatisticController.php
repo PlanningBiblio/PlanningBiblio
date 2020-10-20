@@ -30,6 +30,7 @@ class StatisticController extends BaseController
         $debut = $request->get("debut");
         $fin = $request->get("fin");
         $statistiques_heures = $request->get("statistiques_heures");
+
         $statistiques_heures_defaut = $request->get("statistiques_heures_defaut");
         $post = $request->request->all();
         $nbSites = $this->config("Multisites-nombre");
@@ -50,12 +51,12 @@ class StatisticController extends BaseController
         // Statistiques-Heures
         $heures_tab_global = array();
         if ($statistiques_heures_defaut) {
-            $statistiques_heures = $config['Statistiques-Heures'];
+            $statistiques_heures = $this->config('Statistiques-Heures');
         } else {
             if (!$statistiques_heures and !empty($_SESSION['oups']['statistiques_heures'])) {
                 $statistiques_heures = $_SESSION['oups']['statistiques_heures'];
-            } elseif (!$statistiques_heures and !empty($config['Statistiques-Heures'])) {
-                $statistiques_heures = $config['Statistiques-Heures'];
+            } elseif (!$statistiques_heures and !empty($this->config('Statistiques-Heures'))) {
+                $statistiques_heures = $this->config('Statistiques-Heures');
             }
         }
 
@@ -156,7 +157,7 @@ class StatisticController extends BaseController
                         continue;
                     }
                 }
-                $agents[$elem['id']] = array("id"=>$elem['id'],"service"=>$elem['service'],"service_id"=>$servId);
+                $agents[$elem['id']] = array("id"=>$elem['id'],"service"=>html_entity_decode($elem['service']),"service_id"=>$servId);
             }
 
             //	Recherche des infos dans pl_poste et postes pour tous les services sélectionnés
@@ -179,9 +180,7 @@ class StatisticController extends BaseController
             AND `{$dbprefix}pl_poste`.`site` IN ($sitesREQ)
             ORDER BY `poste_nom`,`etage`;";
             $db->query($req);
-            dump($req);
             $resultat = $db->result;
-            dump($resultat);
             // Ajoute le service pour chaque agents dans le tableau resultat
             for ($i = 0; $i<count($resultat); $i++) {
 
@@ -248,7 +247,7 @@ class StatisticController extends BaseController
                                 }
                                 // On compte toutes les heures (globales)
                                 $heures += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                                $d = new datePl($elem['date']);
+                                $d = new \datePl($elem['date']);
                                 if ($d->sam == "samedi") {	// tableau des samedis
                                     if (!array_key_exists($elem['date'], $samedi)) { // on stock les dates et la somme des heures faites par date
                                         $samedi[$elem['date']][0] = $elem['date'];
@@ -280,9 +279,9 @@ class StatisticController extends BaseController
                                         if (!$tmp) {
                                             continue;
                                         }
-                        
+                                        $tmp[2] = heure3($tmp[0]).'-'.heure3($tmp[1]);
                                         if ($elem['debut'] == $tmp[0] and $elem['fin'] == $tmp[1]) {
-                                            $heures_tab[$tmp[0].'-'.$tmp[1]][] = $elem['date'];
+                                            $heures_tab[$tmp[2]][] = $elem['date'];
                                             if (!in_array($tmp, $heures_tab_global)) {
                                                 $heures_tab_global[] = $tmp;
                                             }
@@ -300,7 +299,7 @@ class StatisticController extends BaseController
                             }
                             // On met dans tab tous les éléments (infos postes + services + heures)
                             $tab[$service] = array(
-                                $elem['service'], 
+                                html_entity_decode($elem['service']), 
                                 $postes, 
                                 $heures, 
                                 $samedi, 
@@ -316,7 +315,7 @@ class StatisticController extends BaseController
                 }
             }
         }
-
+        sort($heures_tab_global);
         // Heures et jours d'ouverture au public
         $s = new \statistiques();
         $s->debut = $debutSQL;
@@ -326,8 +325,6 @@ class StatisticController extends BaseController
         $s->ouverture();
         $ouverture = $s->ouvertureTexte;
 
-        sort($heures_tab_global);
-
         // passage en session du tableau pour le fichier export.php
         $_SESSION['stat_tab'] = $tab;
 
@@ -335,10 +332,6 @@ class StatisticController extends BaseController
             for ($i = 1; $i <= $nbSites; $i++) {
                 $multisites[$i] = $this->config("Multisites-site{$i}");
             }
-        }
-        
-        foreach ($heures_tab_global as &$v) {
-            $v[2] = heure3($v[0]).'-'.heure3($v[1]);
         }
 
         foreach ($tab as &$elem) {
@@ -357,32 +350,30 @@ class StatisticController extends BaseController
                     }
                 }
             }
-            foreach ($elem[1] as $poste) {
+            foreach ($elem[1] as &$poste) {
                 $site = null;
                 if ($poste["site"] > 0 and $nbSites > 1) {
-                    $site = $this->config["Multisites-site{$poste['site']}"]." ";
+                    $site = $this->config("Multisites-site{$poste['site']}")." ";
                 }
                 $etage = $poste[2] ? $poste[2] : null;
                 $siteEtage = ($site or $etage) ? "(".trim($site.$etage).")" : null;
+                $poste[3] = heure4($poste[3]);
                 $poste["siteEtage"] = $siteEtage;
             }
-            sort($elem[3]);
-            foreach ($elem[3] as $samedi) {			//	Affiche les dates et heures des samedis
+            foreach ($elem[3] as &$samedi) {			//	Affiche les dates et heures des samedis
                 $samedi[0] = dateFr($samedi[0]);			//	date
                 $samedi[1] = heure4($samedi[1]);	// heures
             }
 
             if ($this->config('Dimanche')) {
-                sort($elem[6]);
-                foreach ($elem[6] as $dimanche) {		//	Affiche les dates et heures des dimanches
+                foreach ($elem[6] as &$dimanche) {		//	Affiche les dates et heures des dimanches
                     $dimanche[0] = dateFr($dimanche[0]);		//	date
                     $dimanche[1] = heure4($dimanche[1]);	//	heures
                 }
             }
 
             if ($exists_JF) {
-                sort($elem[8]);				//	tri les jours fériés par dates croissantes
-                foreach ($elem[8] as $ferie) {		// 	Affiche les dates et heures des jours fériés
+                foreach ($elem[8] as &$ferie) {		// 	Affiche les dates et heures des jours fériés
                     $ferie[0] = dateFr($ferie[0]);			//	date
                     $ferie[1] = heure4($ferie[1]);	//	heures
                 }
@@ -392,32 +383,30 @@ class StatisticController extends BaseController
                 if ($elem[5]) {				//	Affichage du total d'heures d'absences
                     $elem[5] = heure4($elem[5]);
                 }
-                sort($elem[4]);				//	tri les absences par dates croissantes
-                foreach ($elem[4] as $absences) {		//	Affiche les dates et heures des absences
+                foreach ($elem[4] as &$absences) {		//	Affiche les dates et heures des absences
                     $absences[0] = dateFr($absences[0]);	//	date
                     $absences[1] = heure4($absences[1]);	// heures
                 }
             }
-
+            
             foreach ($heures_tab_global as $v) {
-                if (!empty($elem[7][$v])) {
-                    sort($elem[7][$v]);
-    
+                if ($elem[7][$v[2]] and !empty($elem[7][$v[2]])) {
                     $count = array();
-    
-                    foreach ($elem[7][$v] as $h) {
+                    foreach ($elem[7][$v[2]] as $h) {
                         if (empty($count[$h])) {
                             $count[$h] = 1;
                         } else {
                             $count[$h]++;
                         }
                     }
-                    $elem[7][$v]["count"] = $count;
-
-            
-                    foreach ($count as $k => $v) {
-                        $k = dateFr($k);
+                    $elem[7][$v[2]]["count"] = $count;
+                    
+                    foreach ($elem[7][$v[2]]["count"] as $k => $v2) {
+                        $nk = dateFr($k);
+                        $elem[7][$v[2]]["count"][$nk] = $elem[7][$v[2]]["count"][$k];
+                        unset($elem[7][$v[2]]["count"][$k]);
                     }
+                    ksort($elem[7][$v[2]]["count"]);
                 }
             }
         }

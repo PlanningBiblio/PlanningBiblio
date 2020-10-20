@@ -25,7 +25,7 @@
                   {% if services_list is iterable %}
                     <option value='Tous'>Tous</option>
                     {% for service in services_list %}
-                        <option value='{{ service.id }}' {{ (service.id in services)?"selected = 'selected'":" "}}>{{ service.valeur | raw}}</option>
+                        <option value='{{ service.id }}' {{ (service.id in services)?"selected = 'selected'":" "}}>{{ service.valeur | raw }}</option>
                     {% endfor %} 
                   {% endif %}
                 </select>
@@ -64,7 +64,7 @@
               <td>Exporter </td>
               <td>
                 <a href='javascript:export_stat("service","csv");'>CSV</a>&nbsp;&nbsp;
-                <a href='javascript:export_stat(\"service\",\"xsl\");'>XLS</a>
+                <a href='javascript:export_stat("service","xsl");'>XLS</a>
               </td>
             </tr>
             <tr>
@@ -121,7 +121,7 @@
                       </tr>
                       {% if nbSites > 1 %}
                         {% for i in 1..nbSites %}
-                          {% if elem.sites[i] is defined %}
+                          {% if elem.sites[i] > 0 %}
                             <tr>
                               <td colspan='2' style='padding-top:20px;'><u>{{ multisites[i] }}</u></td>
                             </tr>
@@ -143,7 +143,7 @@
                     {% for poste in elem[1] %}
                       <tr style='vertical-align:top;'>
                         <td>
-                          <b>{[ poste[1] }}</b><br/><i>{{ poste.siteEtage }}</i>
+                          <b>{{ poste[1] }}</b><br/><i>{{ poste.siteEtage }}</i>
                         </td>
                         <td class='statistiques-heures'>{{ poste[3] }}</td>
                        </tr>
@@ -154,8 +154,7 @@
                   {{  elem[3] | length }} {{ elem[3] | length > 1 ? "samedis" : "samedi" }}
                   <br/>
                   {% for samedi in elem[3] %}
-                    {{ samedi[0] }}
-                     &nbsp;:&nbsp;{{ samedi[1] }}<br/>
+                    {{ samedi[0] }}&nbsp;:&nbsp;{{ samedi[1] }}<br/>
                   {% endfor %}
                 </td>
                 {% if exists_dimanche == true %}
@@ -163,8 +162,7 @@
                     {{  elem[6] | length }} {{ elem[6] | length > 1 ? "dimanches" : "dimanche" }}
                     <br/>
                     {% for dimanche in elem[6] %}
-                      {{ dimanche [0] }}
-                      &nbsp;:&nbsp;{{ dimanche[1] }}<br/>
+                      {{ dimanche [0] }}&nbsp;:&nbsp;{{ dimanche[1] }}<br/>
                     {% endfor %}
                   </td>
                 {% endif %}
@@ -173,29 +171,26 @@
                     {{  elem[8] | length }} {{ elem[8] | length > 1 ? "J. feriés" : "J. ferié" }}
                     <br/>
                     {% for ferie in elem[8] %}
-                      {{ ferie[0] }}
-                      &nbsp;:&nbsp;{{ ferie[1] }}<br/>
+                      {{ ferie[0] }}&nbsp;:&nbsp;{{ ferie[1] }}<br/>
                     {% endfor %}
                   </td>
                 {% endif %}
                 {% if exists_absences == true %}
-                  <td style='padding-left:8px;'>
-                    {{ (elem[5] is defined)?"Total : elem[5]":" "}}
-                    <br/>
+                  <td>
+                    {{(elem[5] > 0)?'Total : '~elem[5] :" "}}<br/>
                     {% for absence in elem[4] %}
-                      {{ absence[0] }}
-                      &nbsp;:&nbsp;{{ absence[1] }}<br/>
+                      {{ absence[0] }}&nbsp;:&nbsp;{{ absence[1] }}<br/>
                     {% endfor %}
                   </td>
                 {% endif %}
                 {% for v in heures_tab_global %}
                   <td>
-                    {% if elem[7][v] is not empty %}
+                    {% if elem[7][v[2]] is not empty %}
                       Nb {{ v[2] }} :
-                      {{ elem[7][v] | length }}
-                      {% for k in elem[7][v].count %}
-                        <br/>  {{ k }}
-                        {{ v }}
+                      {{ elem[7][v[2]] | length -1 }}
+                      {% for k,c in elem[7][v[2]].count %}
+                        <br/>{{ k }}  
+                        ({{ c }})
                       {% endfor %}  
                     {% endif %}
                   </td>
