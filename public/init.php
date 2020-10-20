@@ -47,8 +47,6 @@ if (file_exists(__DIR__.'/lang/custom.php')) {
     require_once(__DIR__.'/lang/custom.php');
 }
 
-date_default_timezone_set("Europe/Paris");
-
 require_once(__DIR__.'/init_entitymanager.php');
 require_once(__DIR__.'/init_plugins.php');
 

@@ -162,6 +162,7 @@ $p->supprime = array(0,1,2);
 $p->fetch();
 $agents=$p->elements;
 
+$tz = date_default_timezone_get();
 // Tableau $ical
 $ical=array();
 $ical[]="BEGIN:VCALENDAR";
@@ -170,7 +171,7 @@ $ical[]="PRODID:Planning-Biblio-Calendar";
 $ical[]="VERSION:2.0";
 $ical[]="METHOD:PUBLISH";
 $ical[]="BEGIN:VTIMEZONE";
-$ical[]="TZID:Europe/Paris";
+$ical[]="TZID:$tz";
 $ical[]="BEGIN:STANDARD";
 $ical[]="DTSTART:16010101T030000";
 $ical[]="TZOFFSETTO:+0100";
@@ -239,8 +240,8 @@ if (isset($planning)) {
         $ical[]="BEGIN:VEVENT";
         $ical[]="UID: $id-{$elem['site']}-{$elem['poste']}-$debut-$fin@$url";
         $ical[]="DTSTAMP:" . gmdate('Ymd').'T'. gmdate('His') . "Z";
-        $ical[]="DTSTART;TZID=Europe/Paris:$debut";
-        $ical[]="DTEND;TZID=Europe/Paris:$fin";
+        $ical[]="DTSTART;TZID=$tz:$debut";
+        $ical[]="DTEND;TZID=$tz:$fin";
         $ical[]="SUMMARY:$poste";
         if ($organizer) {
             $ical[]="ORGANIZER;CN=$organizer";
