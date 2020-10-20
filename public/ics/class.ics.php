@@ -53,6 +53,7 @@ class CJICS
     public $status = 'CONFIRMED';
     public $src=null;
     public $table="absences";
+    public $db_summary = null;
 
     /**
      * purge
@@ -384,9 +385,26 @@ class CJICS
                 $rrule = !empty($elem['RRULE']) ? $elem['RRULE'] : '';
                 $last_modified = !empty($elem['X-LAST-MODIFIED-STRING']) ? $elem['X-LAST-MODIFIED-STRING'] : null;
                 // Préparation de l'insertion dans la base de données
-                $tab[] = array(":perso_id" => $perso_id, ":debut" => $debut, ":fin" => $fin, ":demande" => $demande, ":valide"=> $valide_n2, ":validation" => $validation_n2, ":valide_n1"=> $valide_n1, ":validation_n1" => $validation_n1,
-                    ":motif" => $motif, ":motif_autre" => $motif_autre, ":commentaires" => $commentaires, ":groupe" => $groupe, ":cal_name" => $calName, ":ical_key" => $elem['key'], ":uid" => $elem['UID'], ":rrule" => $rrule, 
-                    ":id_origin" => $id_origin, ':last_modified' => $last_modified);
+                $tab[] = array(
+                  ":perso_id" => $perso_id,
+                  ":debut" => $debut,
+                  ":fin" => $fin,
+                  ":demande" => $demande,
+                  ":valide"=> $valide_n2,
+                  ":validation" => $validation_n2,
+                  ":valide_n1"=> $valide_n1,
+                  ":validation_n1" => $validation_n1,
+                  ":motif" => $this->db_summary,
+                  ":motif_autre" => $motif_autre,
+                  ":commentaires" => $commentaires,
+                  ":groupe" => $groupe,
+                  ":cal_name" => $calName,
+                  ":ical_key" => $elem['key'],
+                  ":uid" => $elem['UID'],
+                  ":rrule" => $rrule, 
+                  ":id_origin" => $id_origin,
+                  ':last_modified' => $last_modified
+                );
 
                 $nb++;
             }

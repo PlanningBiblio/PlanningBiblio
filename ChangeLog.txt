@@ -10,6 +10,7 @@ Remove HTML entities in closig days
 Working hours fixes
 Add validate icon
 Use PHP default timezone.
+Keep absence's other reason when there is recurrence
 
 *** Version 20.10.00       (2020-10-09)   ***
 - Enhancements
