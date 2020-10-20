@@ -34,6 +34,7 @@ class StatisticController extends BaseController
         $post = $request->request->all();
         $nbSites = $this->config("Multisites-nombre");
         $dbprefix = $GLOBALS["dbprefix"];
+        $multisites = array();
 
         $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
         $fin = filter_var($fin, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
@@ -178,8 +179,9 @@ class StatisticController extends BaseController
             AND `{$dbprefix}pl_poste`.`site` IN ($sitesREQ)
             ORDER BY `poste_nom`,`etage`;";
             $db->query($req);
+            dump($req);
             $resultat = $db->result;
-
+            dump($resultat);
             // Ajoute le service pour chaque agents dans le tableau resultat
             for ($i = 0; $i<count($resultat); $i++) {
 
@@ -316,7 +318,7 @@ class StatisticController extends BaseController
         }
 
         // Heures et jours d'ouverture au public
-        $s = new statistiques();
+        $s = new \statistiques();
         $s->debut = $debutSQL;
         $s->fin = $finSQL;
         $s->joursParSemaine = $joursParSemaine;
@@ -329,6 +331,116 @@ class StatisticController extends BaseController
         // passage en session du tableau pour le fichier export.php
         $_SESSION['stat_tab'] = $tab;
 
+        if ($nbSites > 1){
+            for ($i = 1; $i <= $nbSites; $i++) {
+                $multisites[$i] = $this->config("Multisites-site{$i}");
+            }
+        }
+        
+        foreach ($heures_tab_global as &$v) {
+            $v[2] = heure3($v[0]).'-'.heure3($v[1]);
+        }
+
+        foreach ($tab as &$elem) {
+            $jour = $elem[2]/$nbJours;
+            $hebdo = $jour*$joursParSemaine;
+            $elem[2] = heure4($elem[2]);
+            $elem["hebdo"] = heure4($hebdo);
+            
+            if ($nbSites > 1) {
+                for ($i = 1; $i <= $nbSites; $i++) {
+                    if ($elem["sites"][$i]) {
+                        // Calcul des moyennes
+                        $jour = floatval($elem["sites"][$i])/$nbJours;
+                        $hebdo = $jour*$joursParSemaine;
+                        $elem["sites"][$i] = heure4($elem["sites"][$i]);
+                    }
+                }
+            }
+            foreach ($elem[1] as $poste) {
+                $site = null;
+                if ($poste["site"] > 0 and $nbSites > 1) {
+                    $site = $this->config["Multisites-site{$poste['site']}"]." ";
+                }
+                $etage = $poste[2] ? $poste[2] : null;
+                $siteEtage = ($site or $etage) ? "(".trim($site.$etage).")" : null;
+                $poste["siteEtage"] = $siteEtage;
+            }
+            sort($elem[3]);
+            foreach ($elem[3] as $samedi) {			//	Affiche les dates et heures des samedis
+                $samedi[0] = dateFr($samedi[0]);			//	date
+                $samedi[1] = heure4($samedi[1]);	// heures
+            }
+
+            if ($this->config('Dimanche')) {
+                sort($elem[6]);
+                foreach ($elem[6] as $dimanche) {		//	Affiche les dates et heures des dimanches
+                    $dimanche[0] = dateFr($dimanche[0]);		//	date
+                    $dimanche[1] = heure4($dimanche[1]);	//	heures
+                }
+            }
+
+            if ($exists_JF) {
+                sort($elem[8]);				//	tri les jours fériés par dates croissantes
+                foreach ($elem[8] as $ferie) {		// 	Affiche les dates et heures des jours fériés
+                    $ferie[0] = dateFr($ferie[0]);			//	date
+                    $ferie[1] = heure4($ferie[1]);	//	heures
+                }
+            }
+
+            if ($exists_absences) {
+                if ($elem[5]) {				//	Affichage du total d'heures d'absences
+                    $elem[5] = heure4($elem[5]);
+                }
+                sort($elem[4]);				//	tri les absences par dates croissantes
+                foreach ($elem[4] as $absences) {		//	Affiche les dates et heures des absences
+                    $absences[0] = dateFr($absences[0]);	//	date
+                    $absences[1] = heure4($absences[1]);	// heures
+                }
+            }
+
+            foreach ($heures_tab_global as $v) {
+                if (!empty($elem[7][$v])) {
+                    sort($elem[7][$v]);
+    
+                    $count = array();
+    
+                    foreach ($elem[7][$v] as $h) {
+                        if (empty($count[$h])) {
+                            $count[$h] = 1;
+                        } else {
+                            $count[$h]++;
+                        }
+                    }
+                    $elem[7][$v]["count"] = $count;
+
+            
+                    foreach ($count as $k => $v) {
+                        $k = dateFr($k);
+                    }
+                }
+            }
+        }
+
+        $this->templateParams(
+            array(
+                "debut" => $debut,
+                "exists_absences" => $exists_absences,
+                "exists_dimanche" => $this->config('Dimanche'),
+                "exists_JF" => $exists_JF,
+                "fin" => $fin,
+                "heures_tab_global" => $heures_tab_global,
+                "multisites" => $multisites,
+                "nbSites" => $nbSites,
+                "ouverture" => $ouverture,
+                "selectedSites" => $selectedSites,
+                "services" => $services,
+                "services_list" => $services_list,
+                "statistiques_heures" => $statistiques_heures,
+                "tab" => $tab,
+            )
+        );
+        return $this->output("statistics/service.html.twig");
     }
       
     /**
