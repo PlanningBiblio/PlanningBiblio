@@ -9,6 +9,7 @@ Use APP_ENV in legacy code (config.php) and move uploaded files
 Remove HTML entities in closig days
 Working hours fixes
 Add validate icon
+Use PHP default timezone.
 
 *** Version 20.10.00       (2020-10-09)   ***
 - Enhancements
