@@ -5,6 +5,7 @@ Allows more permissive entries in working hours
 
 -Fixes
 Remove HTML entities in closing days
+Use PHP default timezone.
 
 *** Version 20.10.00       (2020-10-09)   ***
 - Enhancements
