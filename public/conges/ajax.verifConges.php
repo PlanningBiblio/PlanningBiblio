@@ -25,10 +25,11 @@ $hre_debut=$_GET['hre_debut']?$_GET['hre_debut']:"00:00:00";
 $hre_fin=$_GET['hre_fin']?$_GET['hre_fin']:"23:59:59";
 $perso_ids=filter_input(INPUT_GET, "perso_ids", FILTER_SANITIZE_STRING);
 $perso_ids=json_decode(html_entity_decode($perso_ids, ENT_QUOTES|ENT_IGNORE, "UTF-8"), true);
+$id=$_GET['id'];
 
 $noholiday = true;
 foreach ($perso_ids as $perso_id) {
-    if ($result = conges::exists($perso_id, "$debut $hre_debut", "$fin $hre_fin", $perso_id)) {
+    if ($result = conges::exists($perso_id, "$debut $hre_debut", "$fin $hre_fin", $id)) {
         echo 'du ' . dateFr($result['from'], true) . ' au ' . dateFr($result['to'], true);
         $noholiday = false;
     }

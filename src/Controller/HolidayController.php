@@ -529,13 +529,17 @@ class HolidayController extends BaseController
             $balance[4] = 0;
         }
 
-        $multisites = $this->config('Multisites-nombre');
 
         // Multi-sites
-        if ($this->config('Multisites-nombre') > 1) {
+        $multisites = false;
+        $agent = $this->entityManager->find(Agent::class, $perso_id);
+        $sites_agents = json_decode($agent->sites());
+        $sites_selec = array();
+        if ($this->config('Multisites-nombre') > 1 && $sites_agents) {
             $sites_select = array();
-            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-                $sites_select[] = array( 'id' => $i, 'name' => $this->config("Multisites-site$i") );
+            $multisites = true;
+            foreach ($sites_agents as $siteid) {
+                $sites_select[] = array( 'id' => $siteid, 'name' => $this->config("Multisites-site$siteid") );
             }
             $this->templateParams(array( 'sites_select' => $sites_select ));
         }
