@@ -19,8 +19,6 @@ services :
     ports:
       - "80:80"
     volumes:
-      # - ./docker/logformat.conf:/etc/nginx/conf.d/01-logformat.conf 
-      # - ./docker/real_ip.conf:/etc/nginx/conf.d/02-real_ip.conf 
       - ./docker/planningbiblio.conf:/etc/nginx/conf.d/default.conf
       - .:/var/www
     links:
