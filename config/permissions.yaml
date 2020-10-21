@@ -49,6 +49,8 @@
     - 100
 "ajax.mailtest":
     - 100
+"ajax.update_agent_login":
+    - 21
 "comp-time.index":
     - 100
 "ajax.workinghourtables":
