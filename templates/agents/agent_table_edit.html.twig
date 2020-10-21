@@ -217,7 +217,7 @@
   {% if id %}
     <tr>
       <td>Login :</td>
-      <td>{{ login }}</td>
+      <td><span id="login">{{ login }}</span> <a id="change-login-link" href="javascript:void(0)">Changer le login</a></td>
     </tr>
 
     <tr>
@@ -229,7 +229,7 @@
     {% if not demo %}
       <tr>
         <td colspan='2'>
-          <a id="change-password-link" href='#'>Changer le mot de passe</a>
+          <a id="change-password-link" href='javascript:void(0)'>Changer le mot de passe</a>
         </td>
       </tr>
     {% endif %}
@@ -258,6 +258,25 @@
         </div>
         <div class="password-error" id="password-empty">
             Le mot de passe ne peut pas être vide.
+        </div>
+      </form>
+    </div>
+
+    <div id="reset-login-form" title="Réinitialisation du login" class='noprint' style='display:none;'>
+      <form>
+        <div>
+          <label for="new_login">Nouveau login</label>
+          <input type='text' id="new_login" name="new_login"/>
+        </div>
+
+        <div class="password-error" id="login-duplicate">
+            Ce login existe déjà.
+        </div>
+        <div class="password-error" id="login-identic">
+            Le nouveau login est identique au précédent.
+        </div>
+        <div class="password-error" id="login-empty">
+            Le login ne peut pas être vide.
         </div>
       </form>
     </div>
