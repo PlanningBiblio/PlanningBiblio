@@ -5,10 +5,12 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\PlanningBiblio\Event\OnTransformLeaveDays;
 use App\PlanningBiblio\Event\OnTransformLeaveHours;
+use App\Model\Agent;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Response;
 
 require_once(__DIR__ . "/../../public/personnel/class.personnel.php");
 require_once(__DIR__ . "/../../public/activites/class.activites.php");
@@ -810,6 +812,46 @@ class AgentController extends BaseController
 
             break;
         }
+    }
+
+    /**
+     * @Route("/ajax/update_agent_login", name="ajax.update_agent_login", methods={"POST"})
+     */
+    public function update_login(Request $request)
+    {
+        $login = $request->get('login');
+        $agent_id = $request->get('id');
+        $response = new Response();
+
+        $agent = $this->entityManager->find(Agent::class, $agent_id);
+
+        $duplicate = $this->entityManager
+            ->getRepository(Agent::class)
+            ->findOneBy(array('login' => $login));
+
+        if ($login == $agent->login()) {
+            $response->setContent('identic');
+            $response->setStatusCode(400);
+
+            return $response;
+        }
+
+        if ($duplicate && $login != $agent->login()) {
+            $response->setContent('duplicate');
+            $response->setStatusCode(400);
+
+            return $response;
+        }
+
+        $agent = $this->entityManager->find(Agent::class, $agent_id);
+        $agent->login($login);
+        $this->entityManager->persist($agent);
+        $this->entityManager->flush();
+
+        $response->setContent('Login successfully changed');
+        $response->setStatusCode(200);
+
+        return $response;
     }
 
     private function save_holidays($params)

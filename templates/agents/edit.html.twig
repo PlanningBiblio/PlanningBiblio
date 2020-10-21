@@ -62,8 +62,61 @@
         },
       });
 
+      $("#reset-login-form").dialog({
+        autoOpen: false,
+        height: 180,
+        width: 380,
+        modal: true,
+        buttons: {
+          Enregistrer: function() {
+            $('#login-duplicate').hide();
+            $('#login-empty').hide();
+            $('#login-identic').hide();
+
+            login = $('#new_login').val();
+            agent_id = $('input[name="id"]').val();
+
+            if (login == '') {
+              $('#login-empty').show();
+            } else {
+              $.ajax({
+                url: "/ajax/update_agent_login",
+                type: "POST",
+                dataType: "html",
+                data: {login: login, id: agent_id},
+                success: function(){
+                    $("#reset-login-form").dialog( "close" );
+                    $('#login').html(login);
+                },
+                error: function(xhr, ajaxOptions, thrownError){
+                  if (xhr.responseText == 'duplicate') {
+                    $('#login-duplicate').show();
+                  } else if (xhr.responseText == 'identic') {
+                    $('#login-identic').show();
+                  } else {
+                    information("Une erreur est survenue lors de la modification du login.","error");
+                    $(this).dialog( "close" );
+                  }
+                }
+              });
+            }
+          },
+          Annuler: function() {
+            $(this).dialog( "close" );
+          },
+        },
+      });
+
       $('#change-password-link').on('click', function() {
         $("#reset-password-form").dialog( "open" );
+      });
+
+      $('#change-login-link').on('click', function() {
+        $('#login-duplicate').hide();
+        $('#login-empty').hide();
+        $('#login-identic').hide();
+        $('#new_login').val('');
+        $("#reset-login-form").dialog( "open" );
       });
     });
   </script>
