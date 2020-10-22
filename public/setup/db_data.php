@@ -75,7 +75,7 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categ
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`categorie`,`ordre`) VALUES ('Gestion des absences, validation niveau 2', 501, 'Gestion des absences, validation niveau 2', 'Absences', 40);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Statistiques', 17, 'Accès aux statistiques', 'statistiques/absences.php','Statistiques','170');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`categorie`,`ordre`) VALUES ('Gestion des absences, pièces justificatives', 701, 'Gestion des absences, pièces justificatives', 'Absences', 50);";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Planning Hebdo - Index','1101','Gestion des heures de présences, validation niveau 1','planningHebdo/index.php','Heures de présence','80');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Planning Hebdo - Index','1101','Gestion des heures de présences, validation niveau 1','/workinghour','Heures de présence','80');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Planning Hebdo - Modif','100','planningHebdo/modif.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Planning Hebdo - Mon Compte','100','monCompte.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Planning Hebdo - Validation','100','planningHebdo/valid.php');";
@@ -433,7 +433,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('50','50','Les mod&egrave;les','planning/modeles/index.php',NULL),
   ('50','60','Les tableaux','planning/postes_cfg/index.php',NULL),
   ('50','70','Jours de fermeture','/closingday',NULL),
-  ('50','75','Heures de présence','planningHebdo/index.php','config=PlanningHebdo'),
+  ('50','75','Heures de présence','/workinghour','config=PlanningHebdo'),
   ('50','77','Notifications / Validations','/notification','config=Absences-notifications-agent-par-agent'),
   ('50','80','Configuration','/config',NULL),
   ('60','0','Aide','/help',NULL);";
