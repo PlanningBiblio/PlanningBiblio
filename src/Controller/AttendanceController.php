@@ -10,11 +10,11 @@ use Symfony\Component\Routing\Annotation\Route;
 require_once(__DIR__. '/../../public/planningHebdo/class.planningHebdo.php');
 require_once(__DIR__. '/../../public/personnel/class.personnel.php');
 
-class PresenceController extends BaseController
+class AttendanceController extends BaseController
 {
 
     /**
-     * @Route("/presence", name="presence.index", methods={"GET"})
+     * @Route("/attendance", name="attendance.index", methods={"GET"})
      */
     public function index(Request $request, Session $session){
         // Initialisation des variables
@@ -128,11 +128,11 @@ class PresenceController extends BaseController
             $elem['fin'] = dateFr($elem['fin']);
             $elem['saisie'] = dateFr($elem['saisie'], true);
         }
-         return $this->output('/presence/index.html.twig');
+         return $this->output('/attendance/index.html.twig');
     }
     
     /**
-     * @Route("/presence/add", name="presence.add", methods={"GET"})
+     * @Route("/attendance/add", name="attendance.add", methods={"GET"})
      */
     public function add(Request $request, Session $session){
         // Initialisation des variables
@@ -187,7 +187,7 @@ class PresenceController extends BaseController
     }
     
     /**
-     * @Route("/presence/{id}", name="presence.edit", methods={"GET"})
+     * @Route("/attendance/{id}", name="attendance.edit", methods={"GET"})
      */
     public function edit(Request $request, Session $session){
         // Initialisation des variables
@@ -293,7 +293,7 @@ class PresenceController extends BaseController
     }
 
     /**
-     * @Route("/presence", name="presence.save", methods={"POST"})
+     * @Route("/attendance", name="attendance.save", methods={"POST"})
      */
     public function save(Request $request, Session $session){
         $post = $request->request->all();
