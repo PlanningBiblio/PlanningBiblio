@@ -43,6 +43,7 @@ if (!$id) {
     }
   
     $db=new db();
+    $db->sanitize_string = false;
     $db->CSRFToken = $CSRFToken;
     $db->insert("pl_poste_tab", $insert);
 
@@ -63,6 +64,7 @@ else {
 
     $db=new db();
     $db->CSRFToken = $CSRFToken;
+    $db->sanitize_string = false;
     $db->update("pl_poste_tab", array("nom"=>trim($nom)), array("tableau"=>$id));
 
     if ($site) {

@@ -60,7 +60,7 @@ echo "<ul>\n";
 echo "<li><a href='#div_infos' id='infos'>Infos générales</a></li>\n";
 echo "<li><a href='#div_horaires' id='horaires'>Horaires</a></li>\n";
 echo "<li><a href='#div_lignes' id='lignes'>Lignes</a></li>\n";
-echo "<li class='ui-tab-cancel'><a href='index.php?page=planning/postes_cfg/index.php' >Retour</a></li>\n";
+echo "<li class='ui-tab-cancel'><a href='{$config['URL']}/framework' >Retour</a></li>\n";
 echo "<li class='ui-tab-submit'><a href='javascript:tableauxInfos();' class='tableaux-valide'>Valider</a></li>\n";
 
 echo "</ul>\n";

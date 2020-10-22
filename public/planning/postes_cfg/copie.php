@@ -104,7 +104,7 @@ if ($confirm) {
     }
 
     // Retour à  la page principale
-    echo "<script type='text/javaScript'>parent.location.href='index.php?page=planning/postes_cfg/index.php&cfg-type=horaires&numero=$numero2';</script>\n";
+    echo "<script type='text/javaScript'>parent.location.href='{$config['URL']}/framework?cfg-type=horaires&numero=$numero2';</script>\n";
 } else {
     echo "<h3>Copie du tableau</h3>\n";
     echo "<form name='form' action='index.php' method='get'>\n";

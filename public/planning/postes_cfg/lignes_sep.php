@@ -30,14 +30,14 @@ switch ($action) {		//	Operations de mise a jour
     $db=new db();
     $db->CSRFToken = $CSRFToken;
     $db->update("lignes", array("nom"=>$nom), array("id"=>$id));
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page=planning/postes_cfg/index.php'</script>\n";
+    echo "<script type='text/JavaScript'>parent.location.href = '{$config['URL']}/framework'</script>\n";
     break;
 
   case "ajout2":
     $db=new db();
     $db->CSRFToken = $CSRFToken;
     $db->insert("lignes", array("nom"=>$nom));
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page=planning/postes_cfg/index.php'</script>\n";
+    echo "<script type='text/JavaScript'>parent.location.href = '{$config['URL']}/framework'</script>\n";
     break;
 
   case "suppr":
