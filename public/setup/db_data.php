@@ -50,7 +50,7 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUE
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Personnel - Suppression', 21, 'Gestion des agents', 'personnel/suppression.php', 'Agents', 70);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Personnel - Valid', 21, 'Gestion des agents', 'personnel/valid.php', 'Agents', 70);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Gestion du personnel', 21, 'Gestion des agents', '', 'Agents', 70);";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Configuration des tableaux', 22, 'Configuration des tableaux', 'planning/postes_cfg/index.php','Planning',140);";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Configuration des tableaux', 22, 'Configuration des tableaux', '/framework','Planning',140);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Configuration des horaires des tableaux', 22, 'Configuration des tableaux', 'planning/postes_cfg/horaires.php','Planning',140);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Configuration des horaires des tableaux', 22, 'Configuration des tableaux', 'planning/postes_cfg/copie.php','Planning',140);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Configuration des lignes des tableaux', 22, 'Configuration des tableaux', 'planning/postes_cfg/lignes.php','Planning',140);";
@@ -431,7 +431,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('50','30','Les agents','personnel/index.php',NULL),
   ('50','40','Les postes','/position',NULL),
   ('50','50','Les mod&egrave;les','planning/modeles/index.php',NULL),
-  ('50','60','Les tableaux','planning/postes_cfg/index.php',NULL),
+  ('50','60','Les tableaux','/framework',NULL),
   ('50','70','Jours de fermeture','/closingday',NULL),
   ('50','75','Heures de présence','planningHebdo/index.php','config=PlanningHebdo'),
   ('50','77','Notifications / Validations','notifications/index.php','config=Absences-notifications-agent-par-agent'),
