@@ -33,6 +33,7 @@
               <td>
                 {% if admin %}
                   <select name='perso_id' id='perso_id' style='width:20%;'>
+                    <option value='0' ></option>
                     {% for a in db_perso %}
                       {% if a.id == perso_id %}
                         <option value='{{ a.id }}' selected='selected'>{{ a.nom }} {{ a.prenom }}</option>

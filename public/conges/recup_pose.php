@@ -201,6 +201,7 @@ else {
         }
 
         echo "<select name='perso_id' id='perso_id' onchange='document.location.href=\"index.php?page=conges/recup_pose.php&perso_id=\"+this.value;' style='width:98%;'>\n";
+        echo "<option value='0'></option>\n";
         foreach ($db_perso->result as $elem) {
             if ($perso_id==$elem['id']) {
                 echo "<option value='".$elem['id']."' selected='selected'>".$elem['nom']." ".$elem['prenom']."</option>\n";
