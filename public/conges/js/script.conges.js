@@ -320,7 +320,7 @@ function googleCalendarIcon(){
 
 function supprimeConges(retour){
   if(retour == undefined){
-    retour = '/holiday/index';
+    retour = '/holiday';
   }
 
   conf=confirm("Etes-vous sûr(e) de vouloir supprimer ce congé ?");

@@ -137,7 +137,7 @@ if (isset($_GET['confirm'])) {	// Confirmation
     }
 
     $msg=urlencode("La demande de congé a été enregistrée");
-    echo "<script type='text/JavaScript'>document.location.href='{$config['URL']}/holiday/index?recup=1&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
+    echo "<script type='text/JavaScript'>document.location.href='{$config['URL']}/holiday?recup=1&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
 }
 
 // Formulaire

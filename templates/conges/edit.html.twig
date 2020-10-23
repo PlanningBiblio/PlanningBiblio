@@ -619,7 +619,7 @@
 
             {% if delete_button %}
               {% if conges_recuperations and debit == 'recuperation' %}
-                <input type='button' value='Supprimer' style='margin-left:20px;' onclick="supprimeConges('/holiday/index?recup=1')" class='ui-button'/>
+                <input type='button' value='Supprimer' style='margin-left:20px;' onclick="supprimeConges('/holiday?recup=1')" class='ui-button'/>
               {% else %}
                 <input type='button' value='Supprimer' style='margin-left:20px;' onclick="supprimeConges('/holiday')" class='ui-button'/>
               {% endif %}
