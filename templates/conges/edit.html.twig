@@ -39,6 +39,7 @@
         <td>
           {% if adminN1 or adminN2 %}
             <select name='perso_id' id='perso_id' style='width:20%;' class='googleCalendarTrigger'>
+              <option value='0' ></option>
               {% for d in db_perso %}
                 {% if d.id == perso_id %}
                   <option value="{{ d.id }}" selected='selected'>{{ d.nom }} {{ d.prenom }}</option>
