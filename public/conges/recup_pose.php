@@ -20,6 +20,7 @@ Inclus dans le fichier index.php
 require_once "class.conges.php";
 
 use App\Model\Agent;
+use App\PlanningBiblio\Helper\HolidayHelper;
 
 if ($config['Conges-Recuperations'] == 0) {
     include __DIR__.'/../include/accessDenied.php';
@@ -157,6 +158,11 @@ else {
     $recuperation = number_format((float) $balance[1], 2, '.', ' ');
     $recuperation2=heure4($recuperation);
 
+    $holiday_helper = new HolidayHelper();
+    if ($holiday_helper->showHoursToDays()) {
+        $hours_per_day = $holiday_helper->hoursPerDay($perso_id);
+    }
+
     // Affichage du formulaire
     echo "<form name='form' action='index.php' method='get' id='form'>\n";
     echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
@@ -253,14 +259,15 @@ else {
       <input type='hidden' name='minutes' value='0' />
       <input type='hidden' id='erreurCalcul' value='false' />
       </td></tr>
-
-  <tr><td>Nombre de jours (7h/jour) : </td>
-    <td>
-      <div id='nbJours' style='padding:0 5px; width:50px;'></div>
-    </td></tr>
-
-  <tr><td colspan='2' style='padding-top:20px;'>
 EOD;
+
+    if (!empty($hours_per_day)) {
+        echo "<tr><td>Nombre de jours ({$hours_per_day}h/jour) : </td>\n";
+        echo "<td><div id='nbJours' style='padding:0 5px; width:50px;'></div></td>\n";
+        echo "</tr>\n";
+    }
+
+    echo "<tr><td colspan='2' style='padding-top:20px;'>\n";
 
     echo "Ces heures seront débitées sur les crédits de récupérations.";
     echo "<input type='hidden' name='debit' value='recuperation' />\n";
