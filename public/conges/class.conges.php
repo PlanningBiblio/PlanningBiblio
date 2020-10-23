@@ -465,6 +465,7 @@ class conges
         $agents=$p->elements;
 
         $db=new db();
+        $db->sanitize_string = false;
         $db->select("conges", "*", $filter, "ORDER BY debut,fin,saisie");
         if ($db->result) {
             foreach ($db->result as $elem) {

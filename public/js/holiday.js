@@ -4,7 +4,7 @@ $( document ).ready(function() {
   calculRestes();
 
   $('#perso_id').on('change', function() {
-    document.location.href="/holiday/new/" + this.value;
+    document.location.href="/holiday/add/" + this.value;
   });
 
   $('select[name="debit"]').on('change', function() {
