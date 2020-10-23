@@ -21,6 +21,9 @@ class AttendanceController extends BaseController
         $debut = $request->get("debut");
         $fin = $request->get("fin");
         $reset = $request->get("reset");
+        $droits = $GLOBALS['droits'];
+        $lang = $GLOBALS['lang'];
+
 
         $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
         $fin = filter_var($fin, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
@@ -47,9 +50,12 @@ class AttendanceController extends BaseController
         $adminN1 = in_array(1101, $droits);
         $adminN2 = in_array(1201, $droits);
 
+        $notAdmin = !($adminN1 or $adminN2);
+        $admin = ($adminN1 or $adminN2);
+        
         // Droits de gestion des plannings de présence agent par agent
-        if ($adminN1 and $config['PlanningHebdo-notifications-agent-par-agent']) {
-            $db = new db();
+        if ($adminN1 and $this->config('PlanningHebdo-notifications-agent-par-agent')) {
+            $db = new \db();
             $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
 
             if (!$adminN2) {
@@ -78,13 +84,15 @@ class AttendanceController extends BaseController
         $a->fetch();
         $agents = $a->elements;
 
-        foreach ($p->elements as $elem) {
+        $tab = $p->elements ;
+
+        foreach ($tab as &$elem) {
             $actuel = $elem['actuel'] ? "Oui" : null;
 
             // Validation
             $validation_class = 'bold';
             $validation_date = dateFr($elem['saisie'], true);
-            $validation = 'Demandé;';
+            $validation = 'Demandé';
 
             // Validation niveau 1
             if ($elem['valide_n1'] > 0) {
@@ -127,8 +135,19 @@ class AttendanceController extends BaseController
             $elem['debut'] = dateFr($elem['debut']);
             $elem['fin'] = dateFr($elem['fin']);
             $elem['saisie'] = dateFr($elem['saisie'], true);
+            $elem['validation'] = $validation;
+            $elem['validation_date'] = $validation_date;
+            $elem['commentaires'] = $commentaires;
         }
-         return $this->output('/attendance/index.html.twig');
+
+        $this->templateParams(
+            array(
+                "debut" => $debut,
+                "fin"   => $fin,
+                "tab"   => $tab
+            )
+        );
+        return $this->output('/attendance/index.html.twig');
     }
     
     /**
@@ -225,69 +244,71 @@ class AttendanceController extends BaseController
         $cle = null;
         
         $p=new \planningHebdo();
-            $p->id = $id;
-            $p->fetch();
+        $p->id = $id;
+        $p->fetch();
 
-            $debut1 = $p->elements[0]['debut'];
-            $fin1 = $p->elements[0]['fin'];
-            $debut1Fr = dateFr($debut1);
-            $fin1Fr = dateFr($fin1);
+        $tab = $p->elements;
+
+        $debut1 = $p->elements[0]['debut'];
+        $fin1 = $p->elements[0]['fin'];
+        $debut1Fr = dateFr($debut1);
+        $fin1Fr = dateFr($fin1);
+    
+        $perso_id = $p->elements[0]['perso_id'];
+        $temps = $p->elements[0]['temps'];
+        $breaktime = $p->elements[0]['breaktime'];
+    
+        if ($p->elements[0]['exception']) {
+            $is_exception = 1;
+            $exception_id = $p->elements[0]['exception'];
+        }
+    
+        if ($copy or $request_exception) {
+            $valide_n1 = 0;
+            $valide_n2 = 0;
+        } else {
+            $valide_n1 = $p->elements[0]['valide_n1'] ?? 0;
+            $valide_n2 = $p->elements[0]['valide'] ?? 0;
+        }
+    
+        $remplace = $p->elements[0]['remplace'];
+        $cle = $p->elements[0]['cle'];
+    
+        // Informations sur l'agents
+        $p = new \personnel();
+        $p->fetchById($perso_id);
+        $sites = $p->elements[0]['sites'];
+    
+        // Droits de gestion des plannings de présence agent par agent
+        if ($adminN1 and $this->config('PlanningHebdo-notifications-agent-par-agent')) {
+            $db = new \db();
+            $db->select2('responsables', 'perso_id', array('perso_id' => $perso_id, 'responsable' => $_SESSION['login_id']));
         
-            $perso_id = $p->elements[0]['perso_id'];
-            $temps = $p->elements[0]['temps'];
-            $breaktime = $p->elements[0]['breaktime'];
+            $adminN1 = $db->result ? true : false;
+        }
+    
+        // Modif autorisée si n'est pas validé ou si validé avec des périodes non définies (BSB).
+        // Dans le 2eme cas copie des heures de présence avec modification des dates
+        $action = "modif";
+        $modifAutorisee = true;
+    
+        if (!($adminN1 or $adminN2) and !$this->config('PlanningHebdo-Agents')) {
+            $modifAutorisee = false;
+        }
         
-            if ($p->elements[0]['exception']) {
-                $is_exception = 1;
-                $exception_id = $p->elements[0]['exception'];
-            }
-        
-            if ($copy or $request_exception) {
-                $valide_n1 = 0;
-                $valide_n2 = 0;
-            } else {
-                $valide_n1 = $p->elements[0]['valide_n1'] ?? 0;
-                $valide_n2 = $p->elements[0]['valide'] ?? 0;
-            }
-        
-            $remplace = $p->elements[0]['remplace'];
-            $cle = $p->elements[0]['cle'];
-        
-            // Informations sur l'agents
-            $p = new \personnel();
-            $p->fetchById($perso_id);
-            $sites = $p->elements[0]['sites'];
-        
-            // Droits de gestion des plannings de présence agent par agent
-            if ($adminN1 and $config['PlanningHebdo-notifications-agent-par-agent']) {
-                $db = new \db();
-                $db->select2('responsables', 'perso_id', array('perso_id' => $perso_id, 'responsable' => $_SESSION['login_id']));
-            
-                $adminN1 = $db->result ? true : false;
-            }
-        
-            // Modif autorisée si n'est pas validé ou si validé avec des périodes non définies (BSB).
-            // Dans le 2eme cas copie des heures de présence avec modification des dates
-            $action = "modif";
-            $modifAutorisee = true;
-        
-            if (!($adminN1 or $adminN2) and !$this->config('PlanningHebdo-Agents')) {
-                $modifAutorisee = false;
-            }
-          
-            // Si le champ clé est renseigné, les heures de présences ont été importées automatiquement depuis une source externe. Donc pas de modif
-            if ($cle) {
-                $modifAutorisee = false;
-            }
-        
-            if (!($adminN1 or $adminN2) and $valide_n2 > 0) {
-                $action = "copie";
-            }
-        
-            if ($copy or $request_exception) {
-                $action = "ajout";
-            }
-                  
+        // Si le champ clé est renseigné, les heures de présences ont été importées automatiquement depuis une source externe. Donc pas de modif
+        if ($cle) {
+            $modifAutorisee = false;
+        }
+    
+        if (!($adminN1 or $adminN2) and $valide_n2 > 0) {
+            $action = "copie";
+        }
+    
+        if ($copy or $request_exception) {
+            $action = "ajout";
+        }
+                
         $nomAgent = nom($perso_id, "prenom nom");
         
     }
@@ -347,6 +368,6 @@ class AttendanceController extends BaseController
           }
 
 
-        return $this->redirectToRoute('presence.index');
+        return $this->redirectToRoute('attendance.index');
     }
 }

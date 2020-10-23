@@ -1,0 +1,67 @@
+{# attendance/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+
+  <h3>Heures de présence</h3>
+  <div id='buttons'>
+    <form name='form' method='get' action='{{ asset("attendance") }}'>
+      Début : <input type='text' name='debut' class='datepicker' value='{{ debut }}' />
+      &nbsp;&nbsp;Fin : <input type='text' name='fin' class='datepicker' value='{{ fin }}' />
+      &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />
+      &nbsp;&nbsp;<input type='button' value='Effacer' onclick="location.href='{{ asset("attendance") }}?reset=on'" class='ui-button' />
+     <a class='ui-button' href='index.php?page=planningHebdo/modif.php&amp;retour=index.php' style='position:absolute; right:10px;'>Entrer de nouveaux horaires</a>
+    </form>
+  </div>
+  <br/>
+  <table id='tablePlanningHebdo' class='CJDataTable' data-sort='[[3],[4],[1]]'>
+    <thead>
+      <tr>
+        <th rowspan='2' class='dataTableNoSort'>&nbsp;</th>
+        <th rowspan='2' >Agent</th>
+        <th rowspan='2' >Service</th>
+        <th rowspan='2' class='dataTableDateFR'>Début</th>
+        <th rowspan='2' class='dataTableDateFR'>Fin</th>
+        <th rowspan='2' class='dataTableDateFR'>Saisie</th>
+        <th colspan='2' >Validation</th>
+        <th rowspan='2' >Actuel</th>
+        <th rowspan='2' >Commentaires</th>
+      </tr>
+      <tr>
+        <th>État</th>
+        <th class='dataTableDateFR'>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for elem in tab %}
+        <tr id='tr_{{ elem.id }}'>
+          <td style='white-space:nowrap;'> 
+            {{ (elem.remplace != 0) ? "<font style='font-size:20pt;'>&rdsh;</font>": " " }}
+            <a href='index.php?page=planningHebdo/modif.php&amp;id={{ elem.id }}&amp;retour=index.php'/>
+              <span class='pl-icon pl-icon-edit' title='Voir'></span>
+            </a>
+            {% if elem.cle == null %}
+              <a href='index.php?page=planningHebdo/modif.php&amp;copy={{ elem.id }}&amp;retour=index.php'/>
+                <span class='pl-icon pl-icon-copy' title='Copier'></span>
+              </a>
+              <a href='javascript:plHebdoSupprime({{ elem.id }});' style='margin-left:6px;'/>
+                <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
+              </a>
+            {% endif %}
+          </td>
+          <td>{{ elem.nom}}</td>
+          <td>{{ elem.service | raw }}</td>
+          <td>{{ elem.debut }}</td>
+          <td>{{ elem.fin }}</td>
+          <td>{{ elem.saisie }}</td>
+          <td {{ (elem.valide >= 0) ? " " : "class='red'"}} >{{ elem.validation }}</td>
+          <td {{ (elem.valide >= 0) ? " " : "class='red'"}} >{{ elem.validation_date }}</td>
+          <td>{{ (elem.actuel != 0) ? "Oui" : " "}}</td>
+          <td>{{ elem.commentaires | raw }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock %}
