@@ -524,7 +524,8 @@ function affiche_perso_ul(){
   }
 
   for(i in tab){
-    var li="<li id='li"+tab[i][1]+"' class='perso_ids_li' data-id='"+tab[i][1]+"'>"+tab[i][0];
+    var style = tab[i][1] == $("#agent_id").val() ? ' style="font-weight:bolder;"' : '';
+    var li="<li" + style + " id='li"+tab[i][1]+"' class='perso_ids_li' data-id='"+tab[i][1]+"'>"+tab[i][0];
 
     if( $('#admin').val() == 1 || tab[i][1] != $('#login_id').val() ){
       li+="<span class='perso-drop' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-drop'></span></span>";
@@ -566,49 +567,64 @@ function supprimeAgent(id){
   affiche_perso_ul();
 }
 
-function updateAgentsListBySites() {
-  selected_sites = JSON.stringify($("input[name='selected_sites']:checked").map(function(){
-      return $(this).val();
-  }).get());
-
+function getAgentsBySites(sites) {
+  var agents = null;
   $.ajax({
     url: "/ajax/agents-by-sites",
-    data: {sites: selected_sites},
+    data: {sites: sites},
     dataType: "json",
     type: "get",
     async: false,
     success: function(result){
-
-        options = '';
-
-        // Check if multiple agents is allowed
-        if ($('#perso_ids option[value="0"]').length > 0) {
-            options += '<option value="0" selected="selected">-- Ajoutez un agent --</option>';
-        }
-
-        // Check if all agents is allowed
-        if ($('#perso_ids option[value="tous"]').length > 0) {
-            options += '<option value="tous">Tous les agents</option>';
-        }
-
-        $.each(result, function(index, value) {
-            options += '<option value="' + value.id + '" id="option' + value.id + '">' + value.nom + ' ' + value.prenom + '</option>';
-        });
-
-        $("#perso_ids").html(options);
-
-        selected_agents = $(".perso_ids_hidden").map(function(){
-            return $(this).val();
-        }).get();
-
-        $.each(result, function(index, value) {
-            // Check if not already added
-            if ($.inArray(value.id, selected_agents) !== -1) {
-                $("#option" + value.id).hide();
-            } 
-        });
+      agents = result;
     }
   });
+  return agents;
+}
+
+function updateAgentsListBySites() {
+
+    managed_sites = JSON.stringify($("input[name='selected_sites']").map(function(){
+      return $(this).val();
+    }).get());
+
+    selected_sites = JSON.stringify($("input[name='selected_sites']:checked").map(function(){
+      return $(this).val();
+    }).get());
+
+    managed_sites_agents = getAgentsBySites(managed_sites);
+    selected_sites_agents = getAgentsBySites(selected_sites);
+    selected_sites_agents = selected_sites_agents.map(x => x.id);
+
+    options = '';
+
+    // Check if multiple agents is allowed
+    if ($('#perso_ids option[value="0"]').length > 0) {
+        options += '<option value="0" selected="selected">-- Ajoutez un agent --</option>';
+    }
+
+    // Check if all agents is allowed
+    if ($('#perso_ids option[value="tous"]').length > 0) {
+        options += '<option value="tous">Tous les agents</option>';
+    }
+
+    $.each(managed_sites_agents, function(index, value) {
+        style = value.id == $("#agent_id").val() ? ' style="font-weight:bolder;"' : '';
+        options += '<option' + style + ' value="' + value.id + '" id="option' + value.id + '">' + value.nom + ' ' + value.prenom + '</option>';
+    });
+
+    $("#perso_ids").html(options);
+
+    selected_agents = $(".perso_ids_hidden").map(function(){
+        return $(this).val();
+    }).get();
+
+    $.each(managed_sites_agents, function(index, value) {
+        // Check if not selected or not already added
+        if ($.inArray(value.id, selected_sites_agents) == -1 || $.inArray(value.id, selected_agents) !== -1) {
+            $("#option" + value.id).hide();
+        }
+    });
 }
 
 $(function(){
@@ -636,7 +652,7 @@ $(function(){
     if(id == 'tous'){
       $("#perso_ids > option").each(function(){
         var id = $(this).val();
-        if(id != 'tous' && id != 0 && $('#hidden'+id).length == 0){
+        if(id != 'tous' && id != 0 && $('#hidden'+id).length == 0 && $(this).css('display') != 'none'){
           change_select_perso_ids(id);
         }
       });

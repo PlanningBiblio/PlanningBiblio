@@ -493,9 +493,13 @@ class HolidayController extends BaseController
         // TODO : différencier les niveau 1 et 2 si demandé par les utilisateurs du plugin
         $admin = false;
         $adminN2 = false;
+        $multisites = false;
+        $sites_select = array();
         for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
             if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
                 $admin = true;
+                $multisites = true;
+                $sites_select[] = array( 'id' => $i, 'name' => $this->config("Multisites-site$i") );
             }
             if (in_array((600+$i), $droits)) {
                 $adminN2 = true;
@@ -529,21 +533,6 @@ class HolidayController extends BaseController
             $balance[4] = 0;
         }
 
-
-        // Multi-sites
-        $multisites = false;
-        $agent = $this->entityManager->find(Agent::class, $perso_id);
-        $sites_agents = json_decode($agent->sites());
-        $sites_selec = array();
-        if ($this->config('Multisites-nombre') > 1 && $sites_agents) {
-            $sites_select = array();
-            $multisites = true;
-            foreach ($sites_agents as $siteid) {
-                $sites_select[] = array( 'id' => $siteid, 'name' => $this->config("Multisites-site$siteid") );
-            }
-            $this->templateParams(array( 'sites_select' => $sites_select ));
-        }
-
         $this->templateParams(array(
             'admin'                 => $admin,
             'agents_multiples'      => $agents_multiples,
@@ -569,6 +558,7 @@ class HolidayController extends BaseController
             'loggedin_name'         => $_SESSION['login_nom'],
             'loggedin_firstname'    => $_SESSION['login_prenom'],
             'multisites'            => $multisites,
+            'sites_select'          => $sites_select,
         ));
 
         // Affichage du formulaire

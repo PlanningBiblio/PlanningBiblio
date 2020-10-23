@@ -23,6 +23,7 @@
           <input type='hidden' name='credit' value='{{ credit }}' />
           <input type='hidden' name='anticipation' value='{{ anticipation }}' />
           <input type='hidden' id='agent' value='{{ agent_name }}' />
+          <input type='hidden' id='agent_id' value='{{ loggedin_id }}' />
           <input type='hidden' id='conges-recup' value='{{ conges_recuperations }}' />
           <input type='hidden' name="conges-mode" id='conges-mode' value='{{ conges_mode }}' />
           <input type='hidden' name="conges-demi-journees" id='conges-demi-journees' value='{{ conges_demi_journee }}' />
@@ -44,7 +45,7 @@
 
                   <ul id='perso_ul1' class='perso_ul'>
                       <li id='li{{ loggedin_id }}' class='perso_ids_li'>
-                        {{ loggedin_name }} {{ loggedin_firstname }}
+                        <b>{{ loggedin_name }} {{ loggedin_firstname }}</b>
                         {% if admin %}
                           <span class='perso-drop' onclick="supprimeAgent({{ loggedin_id }});">
                             <span class='pl-icon pl-icon-drop'></span>
