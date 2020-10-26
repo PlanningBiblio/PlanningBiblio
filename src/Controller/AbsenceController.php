@@ -203,7 +203,7 @@ class AbsenceController extends BaseController
                 $agentsList = implode( ",",$elem['agents']);
                 $rrule = $elem['rrule'] ? $elem['rrule'] : null;
                 $commentaires = $elem['commentaires'];
-                $motif = $elem['motif'];
+                $motif = $elem['rrule'] ? $elem['motif_autre'] : $elem['motif'];
                 $requestDate = dateFr($elem['demande'], true);
 
                 foreach($absdocs as $absdoc){
@@ -486,7 +486,6 @@ class AbsenceController extends BaseController
         $this->dbprefix = $GLOBALS['dbprefix'];
         $this->droits = $GLOBALS['droits'];
         $this->setAdminPermissions();
-        
 
         $session->getFlashBag()->clear();
 
@@ -495,7 +494,7 @@ class AbsenceController extends BaseController
         if ($this->config('Absences-adminSeulement') and !$this->admin) {
             return $this->output('access-denied.html.twig');
         }
-         
+
         $result = $this->save($request, $this->admin);
         $file = $request->files->get('documentFile');
         if (!empty($file)) {
@@ -518,11 +517,11 @@ class AbsenceController extends BaseController
         $succes3 = urlencode("La demande d'absence a été enregistrée");
 
         if ($result['msg'] === $succes || $result['msg'] === $succes2 || $result['msg'] === $succes3){
-            $session->getFlashBag()->add('notice', urldecode($result['msg']));    
+            $session->getFlashBag()->add('notice', urldecode($result['msg']));
         }
 
         if ($result['msg2'] != " " ){
-            $session->getFlashBag()->add('error', urldecode($result['msg2']));    
+            $session->getFlashBag()->add('error', urldecode($result['msg2']));
         }
         return $this->redirectToRoute('absence.index');
     }
