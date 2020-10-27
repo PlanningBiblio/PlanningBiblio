@@ -2,6 +2,7 @@
 - Enhancements
 Move function calculPresence in dedicated class (WorkingHours)
 Allows more permissive entries in working hours
+Update DataTable libraries and remove flash buttons
 
 -Fixes
 Remove HTML entities in closig days
