@@ -1125,6 +1125,20 @@ div.presents-absents {
   background-color:#FEE7DC;
 }
 
+.fg-toolbar {
+    color: inherit;
+}
+
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+    background-color: #fff;
+}
+
+.dt-buttons {
+    width: 100%;
+    text-align: right;
+}
+
 /*	JQuery-UI Accordion	*/
 .ui-accordion .ui-accordion-header{
   margin-bottom: 0px;
