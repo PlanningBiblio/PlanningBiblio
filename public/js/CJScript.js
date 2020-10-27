@@ -263,40 +263,24 @@ $(function(){
       "iDisplayLength" : tableLength,
       "aaSorting" : sort,
       "aoColumns" : aoCol,
-      "oLanguage" : {"sUrl" : jsFileLocation+"/dataTables.french.lang"},
       "sScrollX": scollX,
-      "sDom": sDom,
-      "oTableTools": {
-    "sSwfPath" : jsFileLocation+"/DataTables-1.10.4/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
-	"aButtons": [
-	  {
-	    "sExtends": "xls",
-	    "sButtonText": "Excel",
-	  },
-	  {
-	    "sExtends": "csv",
-	    "sButtonText": "CSV",
-	  },
-	  {
-	    "sExtends": "pdf",
-	    "sButtonText": "PDF",
-	  },
-	  {
-	    "sExtends": "print",
-	    "sButtonText": "Imprimer",
-	  },
-	]
+      "buttons": true,
+      "language" : { "url" : jsFileLocation+"/dataTables.french.lang.json" },
+      "initComplete": function () {
+        $('.fg-toolbar:last').after(CJDataTable.buttons().container());
       },
+
       // On refait le zebra, à chaque fois que le tableau est redessiné.
       // Utile en cas de suppression de ligne et d'utilisation du filtre et des tris
       "fnDrawCallback": CJDataTableStripe,
     });
-    
+
     // Colonnes fixes
     if($(this).attr("data-fixedColumns")){
       var nb=$(this).attr("data-fixedColumns");
       new $.fn.dataTable.FixedColumns(CJDataTable, init={"iLeftColumns" : nb});
     }
+
   });
 
    // Check all checkboxes 
