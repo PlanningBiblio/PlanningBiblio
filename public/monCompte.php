@@ -92,10 +92,10 @@ if ($config['PlanningHebdo']) {
 EOD;
 
     if ($config['PlanningHebdo-Agents']) {
+        echo "<div style='display: inline-block; width:300px; position: absolute; right: 22px; text-align: right; margin-top:22px;'>";
+        echo "<a href='{$config['URL']}/workinghour/add?retour=monCompte.php' class='ui-button'>";
         echo <<<EOD
-    <div style='display: inline-block; width:300px; position: absolute; right: 22px; text-align: right; margin-top:22px;'>
-    <a href='index.php?page=planningHebdo/modif.php&retour=monCompte.php' class='ui-button'>
-      Entrer de nouveaux horaires</a>
+          Entrer de nouveaux horaires</a>
     </div>
 EOD;
     }
@@ -141,7 +141,7 @@ EOD;
         $arrow=$elem['remplace']?"<font style='font-size:20pt;'>&rdsh;</font>":null;
 
         echo "<tr>";
-        echo "<td style='white-space:nowrap;'>$arrow <a href='index.php?page=planningHebdo/modif.php&amp;id={$elem['id']}&amp;retour=monCompte.php'/>";
+        echo "<td style='white-space:nowrap;'>$arrow <a href='{$config['URL']}/workinghour/{$elem['id']}?retour=monCompte.php'/>";
         echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a></td>";
         echo "<td>".dateFr($elem['debut'])."</td>";
         echo "<td>".dateFr($elem['fin'])."</td>";

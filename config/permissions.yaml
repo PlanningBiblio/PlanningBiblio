@@ -15,3 +15,13 @@
     - 100
 "framework.index":
     - 22
+"workinghour.index":
+    - 1101
+"workinghour.add":
+    - 100
+"workinghour.edit":
+    - 100
+"workinghour.save":
+    - 100
+"workinghour.delete":
+    - 1101
