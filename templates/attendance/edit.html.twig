@@ -1,0 +1,252 @@
+{# attendance/edit.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  <h3>Heures de présence</h3>
+  {% if id is not null and tab is empty %}
+    <p> Les heures demandées ne sont plus accessibles à cette adresse. <br/>
+        Veuillez les rechercher dans le menu 
+        <a href="{{ asset('attendance') }}>Administration / Heures de présence</a>
+    </p>
+  {% else %}
+    {% if id is not null and copy is null and request_exception is null  %}
+      <h3>Heures de {{ nomAgent }} du {{ debut1Fr }} au {{ fin1Fr }}</h3>
+    {% endif %}
+    <div id='working_hours'>
+      <form name='form1' method='post' action='index.php' onsubmit='return plHebdoVerifForm();'>
+        {% if id > 0 and copy is null and request_exception is null  %}
+          <input type='hidden' name='perso_id' value='{{ perso_id }}' id='perso_id' />
+        {% else %}
+          {% if request_exception is not null %}
+            <input type='hidden' name='perso_id' value='{{ perso_id }}' id='perso_id' />
+          {% endif %}
+          {% if notAdmin == true %}
+            <h3>Nouveaux horaires pour {{ nomAgent }}</h3>
+          {% elseif copy is not null %}
+            <h3>Copie des heures de {{ nomAgent }} du {{ debut1Fr }} au {{ fin1Fr }}</h3>
+          {% elseif request_exception is not null %}
+            <h3>Création d'une exception au planning de {{ nomAgent }} du {{ debut1Fr }} au {{ fin1Fr }}</h3>
+          {% else %}
+            <h3>Nouveaux horaires</h3>
+          {% endif %}
+          <div id='plHebdo-perso-id'>
+            {% if admin == true and request_exception is null %}
+              <label for='perso_id'>Pour l'agent</label>
+              <select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id' style='position:absolute; left:200px; width:200px; text-align:center;' >
+                <option value=''>&nbsp;</option>
+                {% for elem in tab %}
+                  <option value='{{ elem.id }}' {{ (perso_id == elem.id) ? "selected = 'selected'" : " " }} >{{ elem.nom }} {{ elem.prenom }}</option>
+                {% endfor %}
+              </select>
+            {% else %}
+              <input type='hidden' name='perso_id' value='{{ perso_id }}' id='perso_id' />
+            {% endif %}
+          </div>
+        {% endif %}
+        <div id='periode'>
+          <p>
+            <label for='debut'>Début d'utilisation</label>
+            <input type='text' name='debut' value='{{ debut1Fr }}' class='datepicker' style='position:absolute; left:200px; width:200px;' />
+          </p>
+          <p>
+            <label for='fin'>Fin d'utilisation</label>
+            <input type='text' name='fin' value='{{ fin1Fr }}' class='datepicker' style='position:absolute; left:200px; width:200px;' />
+          </p>
+        </div> <!-- id=periode -->
+        <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
+        <input type='hidden' name='retour' value='{{ retour }}' />
+        <input type='hidden' name='id' value='{{ id }}' />
+        <input type='hidden' name='valide' value='{{ login_id }}' />
+        <input type='hidden' name='remplace' value='{{ remplace }}' />
+        <input type='hidden' name='exception' value='{{ exception_id }}' >
+        {% for j in 0..nbSemaine %}
+          <h3>{{ cellule[j] }}</h3>
+          {% if j > 0 %}
+            {% if modifAutorisee == true %}
+              <p>
+                <input type='checkbox' name="memePlanning{{ j }}" class='memePlanning' data-id="{{ j }}" id="memePlanning{{ j }}" />
+                <label for="memePlanning{{ j }}" >Mêmes heures qu'en {{ cellule[0] }}</label>
+              </p>
+            {% else %}
+              <p style='display:none;' id="memePlanning{{ j }}" ><b>Mêmes heures qu'en {{ cellule[0] }}</b></p>
+            {% endif %}
+          {% endif %}
+          <div id="div{{ j }}">
+            <table border='1' cellspacing='0' id="tableau{{ j }}" class='tableau' data-id="{{ j }}" >
+              <tr style='text-align:center;'>
+                <td style='width:135px;'>{{ cellule[j] }}</td>
+                <td style='width:135px;'>Heure d'arrivée</td>
+                {% if pause2_enabled == true %}
+                  <td style='width:135px;'>Début de pause 1</td>
+                  <td style='width:135px;'>Fin de pause 1</td>
+                  <td style='width:135px;'>Début de pause 2</td>
+                  <td style='width:135px;'>Fin de pause 2</td>
+                {% else %}
+                  <td style='width:135px;'>Début de pause</td>
+                  <td style='width:135px;'>Fin de pause</td>
+                {% endif %}
+                <td style='width:135px;'>Heure de départ</td>
+                {% if pauseLibre_enabled == true %}
+                  <td style='width:135px;'>Temps de pause</td>
+                {% endif %}
+                {% if nbSites > 1 %}
+                  <td style='width:135px;'>Site</td>
+                {% endif %}
+                <td style='width:135px;'>Temps</td>
+              </tr>
+              {% for i in debut[j]..fin[j] %}
+                {% set k = i-(j*7)-1 %}
+                <tr style='text-align:center;'>
+                  <td>{{ jours[k] }}</td>
+                  {% if modifAutorisee == true %}
+                    <td> {{ selectTemps[j][i-1][0] }} </td>
+                    <td> {{ selectTemps[j][i-1][1] }} </td>
+                    <td> {{ selectTemps[j][i-1][2] }} </td>
+                    {% if pause2_enabled == true %}
+                      <td> {{ selectTemps[j][i-1][5] }} </td>
+                      <td> {{ selectTemps[j][i-1][6] }} </td>
+                    {% endif %}
+                    <td> {{ selectTemps[j][i-1][3] }} </td>
+                      {% if pauseLibre_enabled == true %}
+                        <td>
+                          {% set breaktime_ = breaktime[i-1] %}
+                          {% set day_index_ = i-1 %}
+                          {{ include ('weeklyplanning/breakingtime.html.twig', { breaktime : breatime_, day_index : day_index_ }) }}
+                        </td>
+                      {% endif %}
+                  {% else %}
+                    <td id="temps_{{i-1}}_0" class='td_heures'>{{ (temps[i-1] is not empty) ? temps[i-1][0] : " " }} </td>
+                    <td id="temps_{{i-1}}_1" class='td_heures'>{{ (temps[i-1] is not empty) ? temps[i-1][1] : " " }} </td>
+                    <td id="temps_{{i-1}}_2" class='td_heures'>{{ (temps[i-1] is not empty) ? temps[i-1][2] : " " }}</td>
+                    {% if pause2_enabled == true %}
+                      <td id="temps_{{i-1}}_5" class='td_heures'>{{ (temps[i-1] is not empty) ? temps[i-1][5] : " " }}</td>
+                      <td id="temps_{{i-1}}_6" class='td_heures'>{{ (temps[i-1] is not empty) ? temps[i-1][6] : " " }}</td>
+                    {% endif %}
+                    <td id="temps_{{i-1}}_3" class='td_heures'>{{ (temps[i-1] is not empty) ? temps[i-1][3] }}</td>
+                    {% if pauseLibre_enabled == true %}
+                      <td id="breaktime_{{i-1}}">
+                        {{ breaktime_h[i-1] }}
+                        <input type ='hidden' name ="breaktime_{{ i-1 }}" value ="{{ breaktime[i-1] }}"/>
+                      </td>
+                    {% endif %}
+                  {% endif %}
+                  {% if nbSites > 1 %}
+                    {% if modifAutorisee == true %}
+                      <td>
+                        <select name="temps[{{ i-1 }}[4]" class='select selectSite' >
+                          {{ (sites | length > 1) ? "<option value=''>&nbsp;</option>" : " " }}
+                          {% for site in sites %}
+                            {% if temps is not null and temps[i-1][4] == site %}
+                              <option value="{{ site }}" selected='selected' >{{ multisites[site] }}</option>
+                            {% else %}
+                              <option value="{{ site }}">{{ multisites[site] }}</option>
+                            {% endif %}
+                          {% endfor %}
+                        </select>
+                      </td>
+                    {% else %}
+                      {% if temps[i-1][4] is defined %}
+                        <td class = "td_heures"> {{ multisites[temps[i-1][4]] }} </td>
+                      {% else %}
+                        <td class = "td_heures">&nbsp;</td>
+                      {% endif %}
+                    {% endif %}
+                  {% endif %}
+                  <td id="heures_{'{{j}}'}_{{i}}"></td>
+                </tr>
+              {% endfor %}
+            </table>
+            Nombre d'heures : <font id = "heures_{{j}}" style="font-weight:bold;">&nbsp;</font><br/>
+          </div>
+        {% endfor %}
+        <div id='informations' style='margin-top:30px;' >
+          {% if cle is not null %}
+            <p><b class='important'>Les horaires ont été importés depuis une source externe.</b></p>
+          {% elseif not modifAutorisee == true %}
+            <p><b class='important'>Vos horaires ont été validés.</b><br/>Pour les modifier, contactez votre chef de service.</p>
+          {% elseif valide_n2 > 0 and notAdmin == true %}
+            <p>
+              <b class='important'>Vos horaires ont été validés.</b><br/>
+              Si vous souhaitez les changer, modifiez la date de début et/ou de fin d'effet.<br/>
+              Vos nouveaux horaires seront enregistrés et devront être validés par un administrateur.<br/>
+              Les anciens horaires seront conservés en attendant la validation des nouveaux.
+            </p>
+          {% elseif valide_n2 > 0 and admin == true and copy is null) %}
+            <p style='width:850px;text-align:justify;margin-top:30px;'>
+              <b class='important'>Ces horaires ont été validés.</b><br/>
+              Leur modification aura un effet immédiat.
+            </p>
+          {% endif %}
+          {% if (copy is not null or request_exception is not null) and nbSites>1 %}
+            <p id='info_copie' style='display:none;' class='important'>
+              <b>Attention : Veuillez vérifier les affectations aux sites avant d'enregistrer.</b>
+            </p>
+          {% endif %}
+        </div> <!-- id=informations -->
+        {% if cle is null %}
+          {% if admin == true %}
+            <p>
+              <label for='validation'>Validation</label>
+              <select name='validation' id='validation' style='position:absolute; left:200px; width:200px;' >
+                {% if adminN1 == true or (valide_n1 == 0) %}
+                  <option value='0'>Demandé</option>
+                  {% if adminN1 == true or (valide_n1 > 0 and $valide_n2 == 0)) %}
+                    <option value='1' {{ (selected1 == true) ? "selected='selected'" : "" }} >{{ lang[work_hours_dropdown_accepted_pending] }}</option>
+                  {% endif %}
+                  {% if adminN1 == true  or (valide_n1 < 0 and valide_n2 == 0) %}
+                    <option value='-1' {{ (selected2 == true) ? "selected = 'selected'" : " " >{{ lang[work_hours_dropdown_refused_pending]}}</option>
+                  {% endif %}
+                  {% if (adminN2 == true  and (valide_n1 < 0 or validationN2 == 0)) or valide_nb > 0 %}
+                    <option value='2' {{ (selected3 == true) ? "selected = 'selected'" : " " >{{ lang[work_hours_dropdown_accepted] }}</option>
+                  {% endif %}
+                  {% if (adminN2 == true  and (valide_n1 > 0 or validationN2 == 0)) or valide_nb < 0 %}
+                    <option value='-2' {{ (selected4==true) ? "selected = 'selected'" : " " }} >{{ lang[work_hours_dropdown_refused] }}</option>
+                  {% endif %}
+              </select>
+            </p>
+          {% else %}
+            <p>
+              <label>Validation</label>
+              <span style='position:absolute; left:200px;'>{{ validation }}</span>
+            </p>
+          {% endif %}
+        {% endif %}
+        <div id='boutons' style='padding-top:50px;'>
+          <input type='button' value='Retour' onclick='location.href="{{ app.request.getURL() }}/{{ retour }}";' class='ui-button' />
+          {% if admin == true and cle == null %}
+            {% if request_exception == true %}
+              <input id="save-exception" type="submit" value="Enregistrer l'exception" style="margin-left:30px;" class="ui-button" />
+            {% else %}
+              <input type='submit' value='Enregistrer' style='margin-left:30px;' class='ui-button' />
+            {% endif %}
+          {% elseif modifAutorisee == true %}
+            {% if request_exception == true %}
+              <input id="save-exception" type="submit" value="Enregistrer l\'exception" style="margin-left:30px;" class="ui-button" />
+            {% else %}
+              <input type='submit' value='Enregistrer' style='margin-left:30px;' class='ui-button' />
+            {% endif %}
+          {% endif %}
+          {% if ((adminN1 == true or adminN2 == true  or modifAutorisee == true ) and (not request_exception and not is_exception and not copy and not is_new)) %}
+            <input type='button' value='Ajouter une exception' onclick="location.href='{{ asset("attendance/edit") }}?exception={{id}}&retour={{exception_back}}';" style='margin-left:30px;' class='ui-button' />
+          {% endif %}
+        </div> <!-- id=boutons -->
+      </form>
+    </div> <!-- working_hours --> #}
+  {% endif %}
+{% endblock %}
+{% block specificjs %}
+  <script type='text/JavaScript'>
+    $("document").ready(function(){
+      plHebdoCalculHeures2();
+      plHebdoMemePlanning();
+    });
+    $(".select").change(function(){
+      plHebdoCalculHeures($(this),"");
+      plHebdoChangeHiddenSelect();
+    });
+    $("#perso_id").change(function(){
+      $("#info_copie").show();
+    });
+  </script>
+{% endblock %}
