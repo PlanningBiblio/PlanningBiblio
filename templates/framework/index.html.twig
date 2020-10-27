@@ -32,7 +32,7 @@
             <tr id='tr-tableau-{{ elem.tableau }}' >
               <td style='white-space:nowrap;'>
                 <input type='checkbox' name='chk{{ loop.index0 }}' value='{{ elem.tableau }}' class='chk1'/>
-                <a href='{{ asset("framework")}}/{{ elem.tableau }}'>
+                <a href='index.php?page=planning/postes_cfg/modif.php&numero={{ elem.tableau }}'>
                   <span class='pl-icon pl-icon-edit' title='Modifier'></span>
                 </a>
                 <a href='javascript:popup("planning/postes_cfg/copie.php&numero={{ elem.tableau }}",400,260);'>
@@ -130,7 +130,7 @@
                     <span class='pl-icon pl-icon-edit' title='Modifier'></span>
                   </a>
                   {% if elem.delete == true %}
-                    <a href='javascript:supprimeLigne({{ elem.id }});'> 
+                    <a href='javascript:supprimeLigne({{ elem.id }});'>
                       <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
                     </a>
                   {% endif %}
