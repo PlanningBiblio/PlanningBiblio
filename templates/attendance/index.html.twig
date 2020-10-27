@@ -11,7 +11,7 @@
       &nbsp;&nbsp;Fin : <input type='text' name='fin' class='datepicker' value='{{ fin }}' />
       &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />
       &nbsp;&nbsp;<input type='button' value='Effacer' onclick="location.href='{{ asset("attendance") }}?reset=on'" class='ui-button' />
-     <a class='ui-button' href='{{ asset("attendance/add")}}?retour={{ asset("attendance") }}' style='position:absolute; right:10px;'>Entrer de nouveaux horaires</a>
+     <a class='ui-button' href='index.php?page=planningHebdo/modif.php&retour={{ asset("attendance") }}' style='position:absolute; right:10px;'>Entrer de nouveaux horaires</a>
     </form>
   </div>
   <br/>
@@ -38,11 +38,11 @@
         <tr id='tr_{{ elem.id }}'>
           <td style='white-space:nowrap;'>
             {{ (elem.remplace != 0) ? "<font style='font-size:20pt;'>&rdsh;</font>": " " }}
-            <a href='{{ asset("attendance") }}/{{ elem.id }}?retour={{ asset("attendance") }}'/>
+            <a href='index.php?page=planningHebdo/modif.php&id={{ elem.id }}?retour={{ asset("attendance") }}'/>
               <span class='pl-icon pl-icon-edit' title='Voir'></span>
             </a>
             {% if elem.cle == null %}
-              <a href='{{ asset("attendance") }}/{{ elem.id }}?copy={{ elem.id }}&retour={{ asset("attendance") }}'/>
+              <a href='index.php?page=planningHebdo/modif.php&copy={{ elem.id }}&retour={{ asset("attendance") }}'/>
                 <span class='pl-icon pl-icon-copy' title='Copier'></span>
               </a>
               <a href='javascript:plHebdoSupprime({{ elem.id }});' style='margin-left:6px;'/>
