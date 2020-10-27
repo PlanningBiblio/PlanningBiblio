@@ -280,4 +280,4 @@ if (!empty($errors)) {
     $msg2Type="error";
 }
 
-echo "<script type='text/JavaScript'>document.location.href='{$config['URL']}/absence';</script>\n";
+echo "<script type='text/JavaScript'>document.location.href='{$config['URL']}/absence?msg=$msg&msgType=$msgType&msg2=$msg2&msg2Type=$msg2Type';</script>\n";

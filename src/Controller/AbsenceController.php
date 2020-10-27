@@ -513,14 +513,14 @@ class AbsenceController extends BaseController
         }
 
         $succes = urlencode("L'absence a été modifiée avec succès");
-        $succes2 = urlencode("L'absence a bien été enregistrée");
+        $succes2 = urlencode("L'absence a été enregistrée");
         $succes3 = urlencode("La demande d'absence a été enregistrée");
 
         if ($result['msg'] === $succes || $result['msg'] === $succes2 || $result['msg'] === $succes3){
             $session->getFlashBag()->add('notice', urldecode($result['msg']));
         }
-
-        if ($result['msg2'] != " " ){
+        
+        if ($result['msg2'] != " "){
             $session->getFlashBag()->add('error', urldecode($result['msg2']));
         }
         return $this->redirectToRoute('absence.index');
