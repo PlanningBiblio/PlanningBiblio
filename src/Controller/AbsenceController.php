@@ -519,7 +519,7 @@ class AbsenceController extends BaseController
         if ($result['msg'] === $succes || $result['msg'] === $succes2 || $result['msg'] === $succes3){
             $session->getFlashBag()->add('notice', urldecode($result['msg']));
         }
-
+        
         if ($result['msg2'] != " "){
             $session->getFlashBag()->add('error', urldecode($result['msg2']));
         }
@@ -576,7 +576,7 @@ class AbsenceController extends BaseController
         $groupe = $request->get('groupe');
         $etat = $request->get('etat');
         $demande = $request->get('demande');
-
+   
         $hre_debut = !empty($hre_debut) ? $hre_debut : '00:00:00';
         $hre_fin = !empty($hre_fin) ? $hre_fin : '23:59:59';
 
@@ -616,7 +616,7 @@ class AbsenceController extends BaseController
             $a->add();
             $msg2 = $a->msg2;
             $msg2Type = $a->msg2_type;
-
+             
             // Confirmation de l'enregistrement
             if ($this->config('Absences-validation') and !$this->admin) {
                 $msg="La demande d'absence a été enregistrée";
@@ -641,7 +641,7 @@ class AbsenceController extends BaseController
             $so = filter_input(INPUT_GET, "so", FILTER_CALLBACK, array("options"=>"sanitize_on01"));
 
             $fin = $fin ? $fin : $debut;
-
+            
             $debutSQL = dateSQL($debut);
             $finSQL = dateSQL($fin);
             $debut_sql = $debutSQL." ".$hre_debut;
@@ -683,7 +683,7 @@ class AbsenceController extends BaseController
             $iCalKey = $a->elements['ical_key'];
             $cal_name = $a->elements['cal_name'];
             if ($iCalKey and substr($cal_name, 0, 23) != 'PlanningBiblio-Absences') {
-                return $this->redirectToRoute('acces-denied');
+                include "include/accessDenied.php";
             }
 
             // Récuperation des informations des agents concernés par l'absence après sa modification (agents sélectionnés)
@@ -740,7 +740,7 @@ class AbsenceController extends BaseController
                 or $fin1 != $fin_sql
                 or htmlentities($motif1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
                 or htmlentities($motif_autre1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
-                or htmlentities($commentaires1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false)
+                or htmlentities($commentaires1, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) != htmlentities($commentaires, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false) 
                 or $valide1 != $valide
                 or $rrule1 != $rrule
                 or empty($pj1_1) != empty($pj1)
@@ -751,6 +751,7 @@ class AbsenceController extends BaseController
             // Si aucune modification, on retourne directement à la liste des absences
             if (!$modification) {
                 $msg = urlencode("L'absence a été modifiée avec succès");
+                echo "<script type='text/JavaScript'>document.location.href='/holiday?msg=$msg&msgType=success';</script>\n";
             }
 
             // Sécurité
@@ -774,7 +775,9 @@ class AbsenceController extends BaseController
             }
 
             if (!$acces) {
-                $this->redirectToRoute('access-denied');
+                echo "<div id='acces_refuse'>Accès refusé</div>\n";
+                include "include/footer.php";
+                exit;
             }
 
             // Définition des droits d'accès pour les administrateurs en multisites
@@ -800,6 +803,13 @@ class AbsenceController extends BaseController
                     }
                 }
 
+                if (!$admin and !$acces) {
+                    echo "<h3>Modification de l'absence</h3>\n";
+                    echo "Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>\n";
+                    echo "<a href='/holiday'>Retour à la liste des absences</a><br/><br/>\n";
+                    include "include/footer.php";
+                    exit;
+                }
             } else {
                 $admin = in_array(201, $this->droits);
             }
@@ -1110,7 +1120,7 @@ class AbsenceController extends BaseController
              * Les absences validées au niveau 1 sont envoyés aux agents ayant le droit de validation niveau 2
              * Les absences validées au niveau 2 sont envoyés aux agents concernés par l'absence
              */
-
+            
             if ($this->config('Absences-notifications-agent-par-agent')) {
                 $a = new \absences();
                 $a->getRecipients2($agents_tous, $agents_concernes, $notifications, 500, $debutSQL, $finSQL);
@@ -1124,7 +1134,7 @@ class AbsenceController extends BaseController
                 }
 
                 // Pour chaque agent, recherche des destinataires de notification en fonction de la config. (responsables absences, responsables directs, agent).
-                $ids = array_column($agents, 'perso_id');
+                $ids = array_column($agents, 'perso_id'); 
                 $staff_members = $entityManager->getRepository(Agent::class)->findById($ids);
                 $destinataires = array();
                 foreach ($staff_members as $member) {
@@ -1233,7 +1243,7 @@ class AbsenceController extends BaseController
                 $msg2 = urlencode($m->error_CJInfo);
                 $msg2Type = "error";
             }
-
+            
             $msg = urlencode("L'absence a été modifiée avec succès");
         }
 

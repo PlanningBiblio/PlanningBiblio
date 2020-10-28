@@ -42,7 +42,7 @@ $(function() {
 	$("#motifs-sortable li:hidden").each(function(){
 	  $(this).remove();
 	});
-
+	
 	// Enregistre les éléments du formulaire dans un tableau
 	tab=new Array();
 	$("#motifs-sortable li").each(function(){
@@ -65,7 +65,7 @@ $(function() {
             var current_val = $('#motif').val();
             $('#motif').empty();
             $('#motif').append("<option value=''>&nbsp;</option>");
-
+            
             $("#motifs-sortable li").each(function(){
               var id=$(this).attr("id").replace("li_","");
               var val = $("#valeur_"+id).text();
@@ -76,7 +76,7 @@ $(function() {
               var selected = (val == current_val) ? "selected='selected'" : "";
 
               var option = "<option value=\""+val+"\" "+selected+" "+disabled+">"+padding+""+val+"</option>";
-
+              
               $('#motif').append(option);
             });
             $("#add-motif-form").dialog( "close" );
@@ -137,7 +137,7 @@ $(function() {
       $("#add-motif-text").val();
       return;
     }
-
+    
     var number = 1;
     while($('#li_'+number).length){
       number++;
@@ -157,7 +157,7 @@ $(function() {
     // Reset du champ texte une fois l'ajout effectué
     $("#add-motif-text").val(null);
   });
-
+  
   // Modifie la classe de la ligne lors du changement du select type (Boite de dialogue permettant de modifier la liste des motifs)
   $("select[id^=type]").change(function(){
     if($(this).val()==2){
@@ -178,8 +178,8 @@ $(function() {
       $("input[name=motif_autre]").val("");
     }
   });
-
-
+  
+  
   /**
    * Agents multiples
    * Permet d'ajouter plusieurs agents sur une même absence (réunion, formation)
@@ -188,7 +188,7 @@ $(function() {
   $("#perso_ids").change(function(){
     // Variables
     var id=$(this).val();
-
+    
     // Si sélection de "tous" dans le menu déroulant des agents, ajoute tous les id non-sélectionnés
     if(id == 'tous'){
       $("#perso_ids > option").each(function(){
@@ -215,13 +215,12 @@ $(function() {
     if($('#rrule').val() && !$('#recurrence-modif').val()){
       $("#recurrence-alert-suppression").dialog('open');
       return false;
-	  }
-
-    if(confirm("Etes vous sûr de vouloir supprimer cette absence ?")){
-	    var CSRFToken = $('#CSRFSession').val();
-      var id=$("#absence-bouton-supprimer").attr("data-id");
-      var baseURL = $('#baseURL').val();
-      document.location.href = baseURL + "/index.php?page=absences/delete.php&id="+id+"&CSRFToken="+CSRFToken;
+	}
+    var baseURL = $('#baseURL').val();
+  if(confirm("Etes vous sûr de vouloir supprimer cette absence ?")){
+	  var CSRFToken = $('#CSRFSession').val();
+    var id=$("#absence-bouton-supprimer").attr("data-id");
+    document.location.href = baseURL + "/index.php?page=absences/delete.php&id="+id+"&CSRFToken="+CSRFToken;
     }
   });
 
@@ -436,7 +435,7 @@ $(function() {
       $('#recurrence-until').val(null);
     }
   });
-
+  
   $('#recurrence-count').click(function(){
     $('#recurrence-end2').click();
   });
@@ -490,7 +489,7 @@ $(function() {
     },
 
   });
-
+  
   // Récurrences : alerte lors de la suppression d'une absence récurrente
   $("#recurrence-alert-suppression").dialog({
     autoOpen: false,
@@ -546,7 +545,7 @@ function change_select_perso_ids(id){
   $('#perso_ids').before("<input type='hidden' name='perso_ids[]' value='"+id+"' id='hidden"+id+"' class='perso_ids_hidden'/>\n");
 
   $("#option"+id).hide();
-
+  
   // Affichage des agents sélectionnés avec tri alphabétique
   affiche_perso_ul();
 }
@@ -565,15 +564,15 @@ function affiche_perso_ul(){
   tab.sort(function (a, b) {
     return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
   });
-
+  
   $(".perso_ids_li").remove();
-
+  
   // Réparti l'affichage des agents sélectionnés sur 5 colonnes de 10 (ou plus)
   var nb = Math.ceil(tab.length / 5);
   if(nb<10){
     nb=10;
   }
-
+  
   for(i in tab){
     var li="<li id='li"+tab[i][1]+"' class='perso_ids_li' data-id='"+tab[i][1]+"'>"+tab[i][0];
 
@@ -582,7 +581,7 @@ function affiche_perso_ul(){
     }
 
     li+="</li>\n";
-
+    
     if(i < nb){
       $("#perso_ul1").append(li);
     } else if(i < (2*nb)){
@@ -815,12 +814,12 @@ function recurrenceRRuleText2(rrule){
 
 // Vérification des formulaires (ajouter et modifier)
 function verif_absences(ctrl_form){
-
+  
   // Ceci évite d'avoir 2 fois les popup de vérification lors de la modification d'absences récurrentes. Le popup n'est affiché qu'une seule fois, avant le choix des occurrences à modifier
   if($('#recurrence-modif').val()){
     return true;
   }
-
+  
   if(!verif_form(ctrl_form))
     return false;
 
@@ -828,14 +827,14 @@ function verif_absences(ctrl_form){
     CJInfo("Le motif sélectionné n'est pas valide.\nVeuillez le modifier s'il vous plaît.","error");
     return false;
   }
-
+  
   if($("select[name=motif]").val().toLowerCase()=="autre" || $("select[name=motif]").val().toLowerCase()=="other"){
     if($("input[name=motif_autre]").val()==""){
       CJInfo("Veuillez choisir un motif.","error");
       return false;
     }
   }
-
+ 
   // ID des agents
   perso_ids=[];
   $(".perso_ids_hidden").each(function(){
@@ -885,7 +884,7 @@ function verif_absences(ctrl_form){
           autresAbsences.push(result[i]);
         }
       }
-
+      
       if(autresAbsences.length == 1){
         if(autresAbsences[0]["autresAbsences"].length == 1){
           var message = "Une absence est déjà enregistrée pour l'agent "+autresAbsences[0]["nom"]+" "+autresAbsences[0]["autresAbsences"][0]+"\nVoulez-vous continuer ?";
@@ -944,14 +943,14 @@ function verif_absences(ctrl_form){
 	  retour=false;
 	}
       }
-
+      
     },
     error: function(result){
       information("Une erreur est survenue.","error");
       retour=false;
     }
   });
-
+  
   // Modification d'une absence récurrente
   if($('#rrule').val() && !$('#recurrence-modif').val() && retour){
     $("#recurrence-alert").dialog('open');

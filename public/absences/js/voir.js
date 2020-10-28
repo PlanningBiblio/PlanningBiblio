@@ -39,5 +39,5 @@ function absences_reinit(){
   // TODO : réinitialiser le filtre du tableau
   //   $('#tableAbsencesVoir_filter > label > input[type="search"]').val(null);
   var baseURL = $('#baseURL').val();
-  location.href= baseURL + "/absence?reset=1";
+  location.href= baseURL + "/absence&reset=1";
 }

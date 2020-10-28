@@ -234,36 +234,36 @@
               <td>
                 {% if absence.pj1 %}
                   <div class='absences-pj-fiche'>
-                    PJ1
+                    PJ1 
                     <input type='checkbox' name='pj1' id='pj1' checked="checked"/>
                   </div>
                 {% else %}
                   <div class='absences-pj-fiche'>
-                    PJ1
+                    PJ1 
                     <input type='checkbox' name='pj1' id='pj1'/>
                   </div>
                 {% endif %}
 
                 {% if absence.pj2 %}
                   <div class='absences-pj-fiche'>
-                    PJ2
+                    PJ2 
                     <input type='checkbox' name='pj2' id='pj2' checked="checked"/>
                   </div>
                 {% else %}
                   <div class='absences-pj-fiche'>
-                    PJ2
+                    PJ2 
                     <input type='checkbox' name='pj2' id='pj2'/>
                   </div>
                 {% endif %}
 
                 {% if absence.so %}
                   <div class='absences-pj-fiche'>
-                    so
+                    so 
                     <input type='checkbox' name='so' id='so' checked="checked"/>
                   </div>
                 {% else %}
                   <div class='absences-pj-fiche'>
-                    SO
+                    SO 
                     <input type='checkbox' name='so' id='so'/>
                   </div>
                 {% endif %}
@@ -359,8 +359,8 @@
           <tr>
             <td colspan='2'><br/>
               {% if absence.editable %}
-                <input type='button' class='ui-button' value='Supprimer' id='absence-bouton-supprimer' data-id='{{ id }}'/>
-                <a href='{{ asset("absence") }}' class='ui-button'> Annuler </a>
+                <input type='button' class='ui-button' value='Supprimer' id='absence-bouton-supprimer' data-id='{{ id }}'/> 
+                <a href='{{ asset("absence") }}' class='ui-button'> Annuler </a> 
                 <input type='submit' class='ui-button' value='Valider'/>
               {% else %}
                 <a href='{{ asset("absence") }}' class='ui-button'>Retour</a>
