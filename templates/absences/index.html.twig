@@ -114,7 +114,7 @@
               <td> {{ a.state }} </td>
             {% endif %}
           {% endif %}
-          <td>{{ a.motive }}</td>
+          <td>{{ a.motive|raw}}</td>
           <td title={{ a.comments|raw }}>
             <div style='height: 20px; overflow: hidden;'>{{ a.comments|raw }}</div>
           </td>
@@ -123,21 +123,21 @@
           {% if right701 == 1 %}
             <td style='text-align : center;'>
               <div class='absences-pj'>
-                {% if a.pj1 is defined %}
+                {% if a.pj1 == 1 %}
                   <input type='checkbox' id="pj1-'{{ a.id }}'" checked />
                 {% else %}
                   <input type='checkbox' id="pj1-'{{ a.id }}'" />
                 {% endif %}
               </div>
               <div class='absences-pj'>
-                {% if a.pj2 is defined %}
+                {% if a.pj2 == 1 %}
                   <input type='checkbox' id="pj2-'{{ a.id }}'" checked />
                 {% else %}
                   <input type='checkbox' id="pj2-'{{ a.id }}'" />
                 {% endif %}
               </div>
               <div class='absences-pj'>
-                {% if a.so is defined %}
+                {% if a.so == 1 %}
                   <input type='checkbox' id="so-'{{ a.id }}'" checked />
                 {% else %}
                   <input type='checkbox' id="so-'{{ a.id }}'" />
