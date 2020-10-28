@@ -87,7 +87,7 @@ if (!$acces) {
 
 if (!$acces) {
     $msg=urlencode("Suppression refusée");
-    echo "<script type='text/JavaScript'>document.location.href='{$config['URL']}/absence?msg=$msg';</script>\n";
+    echo "<script type='text/JavaScript'>document.location.href='{$config['URL']}/absence?msg=$msg&msgType=error';</script>\n";
     exit;
 }
 
@@ -154,7 +154,7 @@ if ($config['Absences-notifications-agent-par-agent']) {
     }
 
     // Pour chaque agent, recherche des destinataires de notification en fonction de la config. (responsables absences, responsables directs, agent).
-    $ids = array_column($agents, 'perso_id'); 
+    $ids = array_column($agents, 'perso_id');
     $staff_members = $entityManager->getRepository(Agent::class)->findById($ids);
     $destinataires=array();
     foreach ($staff_members as $member) {
