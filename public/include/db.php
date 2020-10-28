@@ -4,16 +4,13 @@ Planning Biblio, Version 2.7.05
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
-
 Fichier : include/db.php
 Création : mai 2011
 Dernière modification : 28 novembre 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
-
 Description :
 Classe db permet d'effectuer des opérations sur la base de données MySQL :
 INSERT, UPDATE, DELETE et autres requetes avec la fonction db::query($requete);
-
 Page appelée par le fichier include/config.php
 */
 
@@ -39,7 +36,8 @@ class db
     public $error = null;
     public $msg = null;
     public $CSRFToken = false;
-  
+    public $sanitize_string = true;
+
     public function __construct()
     {
         $this->host=$GLOBALS['config']['dbhost'];
@@ -62,7 +60,7 @@ class db
             $this->msg=mysqli_connect_error();
         }
     }
-  
+
     /**
       * fonction de protection des caracteres speciaux
       * @param string $str string à échapper
@@ -98,7 +96,11 @@ class db
                     if (isset($isCryptedPassword) and $isCryptedPassword===true) {
                         $result[$key]=filter_var($value, FILTER_UNSAFE_RAW);
                     } else {
-                        $result[$key]=filter_var($value, FILTER_SANITIZE_STRING);
+                        if ($this->sanitize_string) {
+                            $result[$key] = filter_var($value, FILTER_SANITIZE_STRING);
+                        } else {
+                            $result[$key] = filter_var($value, FILTER_UNSAFE_RAW);
+                        }
                     }
                     $isCryptedPassword=($key=="type" and $value=="password")?true:false;
                 }
@@ -240,7 +242,7 @@ class db
             $where[]=$this->makeSearch($key, $value);
         }
         $where=join(" AND ", $where);
-  
+
         // Construction de la requête
         // Assemblage
         $query="SELECT $info FROM `$table1Name` INNER JOIN `$table2Name` ON `$table1Name`.`$table1Index`=`$table2Name`.`$table2Index` ";
@@ -318,7 +320,7 @@ class db
             $where[]=$this->makeSearch($key, $value);
         }
         $where=join(" AND ", $where);
-  
+
         // Construction de la requête
         // Assemblage
         $query="SELECT $info FROM `$table1Name` LEFT JOIN `$table2Name` ON `$table1Name`.`$table1Index`=`$table2Name`.`$table2Index` ";
@@ -335,11 +337,11 @@ class db
             error_log($this->error);
             return false;
         }
-  
+
         $this->connect();
         $dbprefix=$this->dbprefix;
 
-    
+
         if (is_array($set)) {
             $tmp=array();
             $fields=array_keys($set);
@@ -404,7 +406,7 @@ class db
             error_log($this->error);
             return false;
         }
-  
+
 
         $this->connect();
         $dbprefix=$this->dbprefix;
@@ -474,7 +476,7 @@ class db
 
             return "{$key} IN ('$values')";
         }
-    
+
         // NULL
         elseif ($value===null) {
             $operator=" IS NULL";
