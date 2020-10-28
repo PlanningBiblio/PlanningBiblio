@@ -6,7 +6,7 @@
   <script type='text/JavaScript'>
     $( document ).ready(function() {
       $('#form').submit(function() {
-        return verif_absences("debut=date1;fin=date2;motif");
+        return ences("debut=date1;fin=date2;motif");
       });
     });
   </script>
@@ -265,7 +265,7 @@
                   {% if admin %}
                     <select name='valide' class='ui-widget-content ui-corner-all'>
                       <option value='0'>Demandée</option>
-                      <option value='2'>Acceptée (En attente de validation hiérarchique)</option>\
+                      <option value='2'>Acceptée (En attente de validation hiérarchique)</option>
                       <option value='-2' >Refusée (En attente de validation hiérarchique)</option>
                       {% if adminN2 %}
                         <option value='1' >Acceptée</option>
@@ -313,7 +313,7 @@
       <table class='tableauFiches'>
         <tr>
           <td>
-            <label for='recurrence-freq' >Récurrent : 
+            <label for='recurrence-freq' >Récurrent :
           </td>
 
           <td>
@@ -419,14 +419,14 @@
 
               <li style='margin:5px 0;' id='recurrence-end2-li'>
                 <input type='radio' name='recurrence-end' class='recurrence recurrence-end' id='recurrence-end2' value='count'/>
-                <label for='recurrence-end2'>  Après 
+                <label for='recurrence-end2'>  Après
                   <input type='text' name='recurrence-count' id='recurrence-count' style='width:30px;' class='recurrence ui-widget ui-corner-all ui-widget-content'/> répétitions
                 </label>
               </li>
 
               <li style='margin:5px 0;' id='recurrence-end3-li'>
                 <input type='radio' name='recurrence-end' class='recurrence recurrence-end' id='recurrence-end3' value='until'/>
-                <label for='recurrence-end3'> Le 
+                <label for='recurrence-end3'> Le
                   <input type='text' name='recurrence-until' id='recurrence-until' style='width:130px;' class='recurrence datepicker'/>
                 </label>
               </li>
