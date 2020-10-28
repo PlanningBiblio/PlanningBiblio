@@ -74,7 +74,7 @@
           <td>{{ a.status }}</td>
           <td>{{ a.service }}</td>
           {% if nbSites > 1 %}
-            <td>{{ a.sites }}</td>
+            <td>{{ a.sites | raw }}</td>
           {% endif %}
           <td>{{ a.arrival }}</td>
           <td>{{ a.departure }}</td>
