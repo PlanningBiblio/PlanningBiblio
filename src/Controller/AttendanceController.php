@@ -65,6 +65,8 @@ class AttendanceController extends BaseController
         $valide_n2 = 0;
         $remplace = null;
         $sites = array();
+        $nbSemaines = $this->config('nb_semaine');
+        $nbSites = $this->config('Multisites-nombre');
         $multisites = array();
         for ($i = 1; $i < $nbSites+1; $i++) {
             $sites[] = $i;
@@ -93,10 +95,117 @@ class AttendanceController extends BaseController
             $db->select2('personnel', null, array('supprime'=>0), 'order by nom,prenom');
         }
 
+        $nomAgent = nom($perso_id, "prenom nom");
+
         if ($request_exception) {
             $debut1Fr = '';
             $fin1Fr = '';
+            $exception_id = $id;
+            $id = '';
         }
+
+        if ($this->config('PlanningHebdo-notifications-agent-par-agent') and !$adminN2) {
+            // Sélection des agents gérés (table responsables) et de l'agent logué
+
+            $perso_ids = array($_SESSION['login_id']);
+            $db = new \db();
+            $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
+            if ($db->result) {
+                foreach ($db->result as $elem) {
+                    $perso_ids[] = $elem['perso_id'];
+                }
+            }
+
+            $perso_ids = implode(',', $perso_ids);
+            $db = new \db();
+            $db->select2('personnel', null, array('supprime'=>0, 'id' => "IN$perso_ids"), 'order by nom,prenom');
+        } else {
+            $db = new \db();
+            $db->select2('personnel', null, array('supprime'=>0), 'order by nom,prenom');
+        }
+
+        if ($copy) {
+            $id = '';
+        }
+
+        switch ($nbSemaine) {
+            case 2:
+                $cellule = array("Semaine Impaire","Semaine Paire");
+                break;
+            case 3:
+                $cellule = array("Semaine 1","Semaine 2","Semaine 3");
+                break;
+            default:
+                $cellule = array("Jour");
+                break;
+        }
+
+        $fin = $config['Dimanche'] ? array(8,15,22) : array(7,14,21);
+        $debut = array(1,8,15);
+        $jours = array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
+
+        if (!$cle) {
+            if ($admin) {
+                $selected1 = isset($valide_n1) && $valide_n1 > 0 ? true : false;
+                $selected2 = isset($valide_n1) && $valide_n1 < 0 ? true : false;
+                $selected3 = isset($valide_n2) && $valide_n2 > 0 ? true : false;
+                $selected4 = isset($valide_n2) && $valide_n2 < 0 ? true : false;
+                // Si pas admin, affiche le niveau en validation en texte simple
+            } else {
+                $validation = "Demandé";
+                if ($valide_n2 > 0) {
+                    $validation = $lang['work_hours_dropdown_accepted'];
+                } elseif ($valide_n2 < 0) {
+                    $validation = $lang['work_hours_dropdown_refused'];
+                } elseif ($valide_n1 > 0) {
+                    $validation = $lang['work_hours_dropdown_accepted_pending'];
+                } elseif ($valide_n1 < 0) {
+                    $validation = $lang['work_hours_dropdown_refused_pending'];
+                }
+            }
+        }
+
+
+
+        $this->templateParams(
+            array(
+                "admin"              => $admin,
+                "adminN1"            => $adminN1,
+                "adminN2"            => $adminN2,
+                "cellule"            => $cellule,
+                "cle"                => $cle,
+                "copy"               => $copy,
+                "CSRFSession"        => $request->get('CSRFToken'),
+                "debut"              => $debut1,
+                "debut1Fr"           => $debut1Fr,
+                "exception_id"       => $exception_id,
+                "fin"                => $fin1,
+                "fin1Fr"             => $fin1Fr,
+                "id"                 => $id,
+                "is_exception"       => $is_exception,
+                "is_new"             => $is_new,
+                "jours"              => $jours,
+                "login_id"           => $_SESSION['login_id'],
+                "modifAutorisee"     => $modifAutorisee,
+                "multisites"         => $multisites,
+                "nbSites"            => $nbSites,
+                "nbSemaine"          => $nbSemaine,
+                "nomAgent"           => $nomAgent,
+                "notAdmin"           => $notAdmin,
+                "pause2_enabled"     => $pause2_enabled,
+                "pauseLibre_enabled" => $pauseLibre_enabled,
+                "perso_id"           => $perso_id,
+                "retour"             => $retour,
+                "request_exception"  => $request_exception,
+                "sites"              => $sites,
+                "valide_n1"          => $valide_n1,
+                "valide_n2"          => $valide_n2,
+                "validation"         => $validation
+            )
+        );
+
+        return $this->output('/attendance/edit.html.twig');
+
     }
 
     /**
@@ -139,9 +248,6 @@ class AttendanceController extends BaseController
         }
 
         $is_new = 0;
-        if (!$id) {
-            $is_new = 1;
-        }
 
         // Sécurité
         $adminN1 = in_array(1101, $droits);
@@ -151,7 +257,7 @@ class AttendanceController extends BaseController
 
         $cle = null;
 
-        $p=new \planningHebdo();
+        $p = new \planningHebdo();
         $p->id = $id;
         $p->fetch();
 
@@ -231,9 +337,15 @@ class AttendanceController extends BaseController
         }
 
         switch ($nbSemaine) {
-          case 2: $cellule=array("Semaine Impaire","Semaine Paire");		break;
-          case 3: $cellule=array("Semaine 1","Semaine 2","Semaine 3");		break;
-          default: $cellule=array("Jour");					break;
+            case 2:
+                $cellule = array("Semaine Impaire","Semaine Paire");
+                break;
+            case 3:
+                $cellule = array("Semaine 1","Semaine 2","Semaine 3");
+                break;
+            default:
+                $cellule = array("Jour");
+                break;
         }
 
         $fin = $this->config('Dimanche') ? array(8,15,22) : array(7,14,21);
@@ -378,7 +490,7 @@ class AttendanceController extends BaseController
               }
               echo "<script type='text/JavaScript'>document.location.href='index.php?page={$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";
               break;
-           
+
             case "copie":
               $p = new \planningHebdo();
               $p->copy($post);
