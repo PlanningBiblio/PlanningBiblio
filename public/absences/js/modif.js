@@ -215,12 +215,12 @@ $(function() {
     if($('#rrule').val() && !$('#recurrence-modif').val()){
       $("#recurrence-alert-suppression").dialog('open');
       return false;
-	}
-    var baseURL = $('#baseURL').val();
-  if(confirm("Etes vous sûr de vouloir supprimer cette absence ?")){
-	  var CSRFToken = $('#CSRFSession').val();
-    var id=$("#absence-bouton-supprimer").attr("data-id");
-    document.location.href = baseURL + "/index.php?page=absences/delete.php&id="+id+"&CSRFToken="+CSRFToken;
+    }
+    if(confirm("Etes vous sûr de vouloir supprimer cette absence ?")){
+      var CSRFToken = $('#CSRFSession').val();
+      var baseURL = $('#baseURL').val();
+      var id=$("#absence-bouton-supprimer").attr("data-id");
+      document.location.href = baseURL + "/index.php?page=absences/delete.php&id="+id+"&CSRFToken="+CSRFToken;
     }
   });
 
