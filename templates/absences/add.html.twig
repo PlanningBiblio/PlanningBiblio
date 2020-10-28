@@ -1,12 +1,15 @@
 {# absences/add.html.twig #}
 
 {% extends 'base.html.twig' %}
+{% block specificjs %}
+  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/absences/js/modif.js?version={{ version }}'></script>
+{% endblock %}
 
 {% block page %}
   <script type='text/JavaScript'>
     $( document ).ready(function() {
       $('#form').submit(function() {
-        return ences("debut=date1;fin=date2;motif");
+        return verif_absences("debut=date1;fin=date2;motif");
       });
     });
   </script>
@@ -448,8 +451,4 @@
   </div>
   {% include 'absences/reasons.html.twig' %}
 
-{% endblock %}
-
-{% block specificjs %}
-  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/absences/js/modif.js?version={{ version }}'></script>
 {% endblock %}
