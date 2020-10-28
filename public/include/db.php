@@ -450,7 +450,7 @@ class db
         }
         // Par défaut, opérateur =
         $operator="=";
-    
+
         if (!strstr($key, "`") and !strstr($key, ".")) {
             $key="`$key`";
         }

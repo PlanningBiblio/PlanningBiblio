@@ -745,7 +745,7 @@ class absences
     public function fetch($sort="`debut`,`fin`,`nom`,`prenom`", $agent=null, $debut=null, $fin=null, $sites=null)
     {
         $filter="";
-        //	DB prefix
+        //    DB prefix
         $dbprefix=$GLOBALS['config']['dbprefix'];
         // Date, debut, fin
         $date=date("Y-m-d");
@@ -772,12 +772,12 @@ class absences
         // Sort
         $sort=$sort?$sort:"`debut`,`fin`,`nom`,`prenom`";
 
-        //	Select All
+        //    Select All
         $req="SELECT `{$dbprefix}personnel`.`nom` AS `nom`, `{$dbprefix}personnel`.`prenom` AS `prenom`, "
       ."`{$dbprefix}personnel`.`id` AS `perso_id`, `{$dbprefix}personnel`.`sites` AS `sites`, "
       ."`{$dbprefix}absences`.`id` AS `id`, `{$dbprefix}absences`.`debut` AS `debut`, "
       ."`{$dbprefix}absences`.`fin` AS `fin`, "
-      ."`{$dbprefix}absences`.`motif` AS `motif`, `{$dbprefix}absences`.`commentaires` AS `commentaires`, "
+      ."`{$dbprefix}absences`.`motif` AS `motif`, `{$dbprefix}absences`.`motif_autre` AS `motif_autre`, `{$dbprefix}absences`.`commentaires` AS `commentaires`, "
       ."`{$dbprefix}absences`.`valide` AS `valide`, `{$dbprefix}absences`.`validation` AS `validation`, "
       ."`{$dbprefix}absences`.`valide_n1` AS `valide_n1`, `{$dbprefix}absences`.`validation_n1` AS `validation_n1`, "
       ."`{$dbprefix}absences`.`pj1` AS `pj1`, `{$dbprefix}absences`.`pj2` AS `pj2`, `{$dbprefix}absences`.`so` AS `so`, "
@@ -875,10 +875,10 @@ class absences
         }
 
     
-        //	By default $result=$all
+        //    By default $result=$all
         $result=$all;
     
-        //	If name, keep only matching results
+        //    If name, keep only matching results
         if (is_array($all) and $agent) {
             $result=array();
 
@@ -953,7 +953,7 @@ class absences
     {
         $filter = "";
 
-        //	DB prefix
+        //    DB prefix
         $dbprefix = $GLOBALS['config']['dbprefix'];
 
         // Date, debut, fin
@@ -969,7 +969,7 @@ class absences
             $filter .= " AND `{$dbprefix}absences`.`valide`>0 ";
         }
 
-        //	Select All
+        //    Select All
         $req="SELECT `{$dbprefix}absences`.`perso_id` AS `perso_id`, "
         ."`{$dbprefix}absences`.`id` AS `id`, `{$dbprefix}absences`.`debut` AS `debut`, "
         ."`{$dbprefix}absences`.`fin` AS `fin` "
@@ -1079,7 +1079,7 @@ class absences
     {
         $responsables=array();
         $droitsAbsences=array();
-        //	Si plusieurs sites et agents autorisés à travailler sur plusieurs sites, vérifions dans l'emploi du temps quels sont les sites concernés par l'absence
+        //    Si plusieurs sites et agents autorisés à travailler sur plusieurs sites, vérifions dans l'emploi du temps quels sont les sites concernés par l'absence
         if ($GLOBALS['config']['Multisites-nombre']>1) {
             $db=new db();
             $db->select("personnel", "temps", "id='$perso_id'");
@@ -1958,7 +1958,6 @@ class absences
         $db->CSRFToken = $this->CSRFToken;
         $db->update("absences", array($pj => $checked), array("id"=>$id));
     }
-
 
     public function update_time()
     {
