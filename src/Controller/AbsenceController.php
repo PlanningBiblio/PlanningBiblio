@@ -203,8 +203,12 @@ class AbsenceController extends BaseController
                 $agentsList = implode( ",",$elem['agents']);
                 $rrule = $elem['rrule'] ? $elem['rrule'] : null;
                 $commentaires = $elem['commentaires'];
-                $motif = $elem['rrule'] ? $elem['motif_autre'] : $elem['motif'];
+                $motif = $elem['motif_autre'] ? $elem['motif_autre'] : $elem['motif'];
                 $requestDate = dateFr($elem['demande'], true);
+
+                $pj1 = $elem['pj1'] ? 1 : 0;
+                $pj2 = $elem['pj2'] ? 1 : 0;
+                $so = $elem['so'] ? 1 : 0;
 
                 foreach($absdocs as $absdoc){
                    $absLinks[]=array(
@@ -223,11 +227,15 @@ class AbsenceController extends BaseController
                   'comments'      => $commentaires,
                   'requestDate'   => $requestDate,
                   'begin'         => $begin,
-                  'end'           => $end
+                  'end'           => $end,
+                  'pj1'           => $pj1,
+                  'pj2'           => $pj2,
+                  'so'            => $so
                 );
 
             }
-        }
+		}
+		dump($absList);
 
 
         $this->templateParams(array(
@@ -634,11 +642,6 @@ class AbsenceController extends BaseController
                 // ID du groupe (permet de regrouper les informations pour affichage en une seule ligne et modification du groupe)
                 $groupe=time()."-".rand(100, 999);
             }
-
-            // Pièces justificatives
-            $pj1 = filter_input(INPUT_GET, "pj1", FILTER_CALLBACK, array("options"=>"sanitize_on01"));
-            $pj2 = filter_input(INPUT_GET, "pj2", FILTER_CALLBACK, array("options"=>"sanitize_on01"));
-            $so = filter_input(INPUT_GET, "so", FILTER_CALLBACK, array("options"=>"sanitize_on01"));
 
             $fin = $fin ? $fin : $debut;
 
