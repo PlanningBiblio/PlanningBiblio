@@ -234,8 +234,7 @@ class AbsenceController extends BaseController
                 );
 
             }
-		}
-		dump($absList);
+        }
 
 
         $this->templateParams(array(
@@ -633,6 +632,7 @@ class AbsenceController extends BaseController
             }
             $msg=urlencode($msg);
         } else { // Modification
+            $rrule = $request->get('rrule');
             // perso_ids est un tableau de 1 ou plusieurs ID d'agent. Complété même si l'absence ne concerne qu'une personne
             $perso_ids = $request->get('perso_ids');
             $perso_ids=filter_var_array($perso_ids, FILTER_SANITIZE_NUMBER_INT);
