@@ -103,9 +103,7 @@
         {% if admin %}
           <th rowspan='2'>Nom</th>
         {% endif %}
-        {% if conges_validation %}
-            <th colspan='2' class='ui-state-default'>Validation</th>
-        {% endif %}
+        <th colspan='2' class='ui-state-default'>Validation</th>
         {% if conges_mode == 'jours' and not show_recovery %}
           <th rowspan='2'>Jours</th>
         {% else %}
@@ -125,7 +123,6 @@
           <th rowspan='2'>Solde Débiteur</th>
         {% endif %}
       </tr>
-
       <tr>
         <th>&Eacute;tat</th>
         <th class='dataTableDateFR'>Date</th>
@@ -149,16 +146,14 @@
           {% if admin %}
             <td>{{ c.nom }}</td>
           {% endif %}
-          {% if conges_validation %}
-              {% if c.valide < 0 %}
-                  <td style="color: red;">{{ c.status }}</td>
-              {% elseif c.valide or c.information %}
-                  <td>{{ c.status }}</td>
-              {% else %}
-                  <td style="font-weight: bold;">{{ c.status }}</td>
-              {% endif %}
-              <td>{{ c.validationDate }}</td>
+          {% if c.valide < 0 %}
+            <td style="color: red;">{{ c.status }}</td>
+          {% elseif c.valide or c.information %}
+            <td>{{ c.status }}</td>
+          {% else %}
+            <td style="font-weight: bold;">{{ c.status }}</td>
           {% endif %}
+          <td>{{ c.validationDate }}</td>
           <td class='aRight'>{{ c.hours }}</td>
 
           {% if balance %}

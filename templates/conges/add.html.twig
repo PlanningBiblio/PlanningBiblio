@@ -240,7 +240,7 @@
             </td>
           </tr>
 
-          {% if (conges_validation) %}
+          {% if config('Conges-validation') %}
               <tr>
                 <td>
                   <label class='intitule'>État </label>
@@ -269,7 +269,8 @@
                   <textarea name='refus' cols='16' rows='5' style='width:40%;'></textarea>
                 </td>
               </tr>
-
+            {% else %}
+                <input type='hidden' name='valide' id='validation' value='1' />
             {% endif %}
 
           <tr>

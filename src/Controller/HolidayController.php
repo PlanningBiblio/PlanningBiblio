@@ -136,7 +136,6 @@ class HolidayController extends BaseController
             'deleted_agents'        => $agents_supprimes ? 1 : 0,
             'conges_recuperation'   => $this->config('Conges-Recuperations'),
             'conges_mode'           => $this->config('Conges-Mode'),
-            'conges_validation'     => $this->config('Conges-validation'),
             'show_recovery'         => $voir_recup,
             'agent_name'            => nom($perso_id, "prenom nom", $agents),
             'from_year'             => $annee,
@@ -291,8 +290,8 @@ class HolidayController extends BaseController
 
         $this->templateParams(array('CSRFToken' => $GLOBALS['CSRFSession']));
         $valide=$data['valide']>0?true:false;
-        $displayRefus=$data['valide']>=0?"display:none;":null;
-        $displayRefus = ($data['valide_n1'] <0 and ($adminN1 or $adminN2)) ? null : $displayRefus;
+        $displayRefus = ($data['valide_n1'] < 0 and ($adminN1 or $adminN2)) ? null : "display:none;";
+        $displayRefus = $data['valide'] > 0 ? "display:none;" : $displayRefus;
         $perso_id=$data['perso_id'];
         $debut=dateFr(substr($data['debut'], 0, 10));
         $fin=dateFr(substr($data['fin'], 0, 10));
@@ -363,8 +362,8 @@ class HolidayController extends BaseController
             'balance_before'        => heure4($balance[1]),
             'balance2_before'       => heure4($balance[4], true),
             'recup4'                => heure4($balance[1], true),
-            'commentaires'          => $data['commentaires'],
-            'refus'                 => $data['refus'],
+            'commentaires'          => html_entity_decode($data['commentaires'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'),
+            'refus'                 => html_entity_decode($data['refus'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'),
             'saisie'                => dateFr($data['saisie'], true),
             'displayRefus'          => $displayRefus,
         ));
@@ -513,7 +512,6 @@ class HolidayController extends BaseController
             'conges_recuperations'  => $this->config('Conges-Recuperations'),
             'conges_mode'           => $this->config('Conges-Mode'),
             'conges_demi_journee'   => $this->config('Conges-demi-journees'),
-            'conges_validation'     => $this->config('Conges-validation'),
             'CSRFToken'             => $CSRFSession,
             'reliquat'              => $reliquat,
             'reliquat2'             => $holiday_helper->HumanReadableDuration($reliquat),
@@ -576,29 +574,31 @@ class HolidayController extends BaseController
         $commentaires=htmlentities($request->get('commentaires'), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
         $refus = $request->get('refus');
         $valide = $request->get('valide');
-        $perso_id = $_SESSION['login_id'];
+        $login_id = $_SESSION['login_id'];
         $lang = $GLOBALS['lang'];
+
+        $request->request->set('valide_init', $valide);
 
         switch ($valide) {
             case -2:
                 $request->request->set('valide', 0);
-                $request->request->set('valide_n1', $perso_id * -1);
+                $request->request->set('valide_n1', $login_id * -1);
                 $request->request->set('validation_n1', date("Y-m-d H:i:s"));
                 break;
             case -1:
-                $request->request->set('valide', $perso_id * -1);
-                $request->request->set('valide_n1', $perso_id * -1);
+                $request->request->set('valide', $login_id * -1);
+                $request->request->set('valide_n1', $login_id * -1);
                 $request->request->set('validation', date("Y-m-d H:i:s"));
                 $request->request->set('validation_n1', date("Y-m-d H:i:s"));
                 break;
             case 1:
-                $request->request->set('valide', $perso_id);
-                $request->request->set('valide_n1', $perso_id);
+                $request->request->set('valide', $login_id);
+                $request->request->set('valide_n1', $login_id);
                 $request->request->set('validation', date("Y-m-d H:i:s"));
                 $request->request->set('validation_n1', date("Y-m-d H:i:s"));
                 break;
             case 2:
-                $request->request->set('valide_n1', $perso_id);
+                $request->request->set('valide_n1', $login_id);
                 $request->request->set('validation_n1', date("Y-m-d H:i:s"));
                 $request->request->set('valide', 0);
                 break;

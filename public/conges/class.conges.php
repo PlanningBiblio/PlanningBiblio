@@ -69,7 +69,6 @@ class conges
         $data['heures']=$data['heures'].".".$data['minutes'];
         $data['debut']=dateSQL($data['debut']);
         $data['fin']=dateSQL($data['fin']);
-        $data['refus']=htmlentities($data['refus'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
         $data['conges-recup'] = $GLOBALS['config']['Conges-Recuperations'];
 
         $data = $this->applyHalfDays($data);
@@ -84,7 +83,7 @@ class conges
             'start_halfday' => $data['start_halfday'] ?? '',
             'end_halfday'   => $data['end_halfday'] ?? '',
             'commentaires'  => $data['commentaires'],
-            'refus'         => $data['refus'],
+            'refus'         => $data['refus'] ?? null,
             'heures'        => $data['heures'],
             'debit'         => $data['debit'],
             'perso_id'      => $data['perso_id'],
@@ -105,7 +104,7 @@ class conges
         }
 
         // En cas de validation, on débite les crédits dans la fiche de l'agent et on barre l'agent s'il est déjà placé dans le planning
-        if ($data['valide']=="1" and !$db->error) {
+        if ($data['valide_init'] == 1 and !$db->error) {
             $data['id'] = $this->id;
             $this->calcCreditsOnValidation($data);
         }
@@ -873,7 +872,7 @@ class conges
                 // Récupération du numéro du site concerné par la date courante
                 $offset=$jour-1+($semaine*7)-7;
                 if (array_key_exists($offset, $temps)) {
-                    if (array_key_exists(4, $temps[$offset]) && $temps[$offset][4] != '') {
+                    if (!empty($temps[$offset][4])) {
                         $site=$temps[$offset][4];
                     } else {
                         $site=1;
