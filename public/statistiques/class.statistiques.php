@@ -16,6 +16,8 @@ Classe statistiques
 Utilisée par les fichiers du dossier "statistiques"
 */
 
+$version = $GLOBALS['version'] ?? null;
+
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 if (!isset($version)) {
     include_once "../include/accessDenied.php";

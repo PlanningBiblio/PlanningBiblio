@@ -21,7 +21,7 @@
               <tr>
                 <td><label class='intitule'>Tri</label></td>
                 <td>
-				  <select name='tri' class='ui-widget-content ui-corner-all' >
+                  <select name='tri' class='ui-widget-content ui-corner-all' >
                     <option value='cmp_01'{% if tri is same as('cmp_01') %}selected='selected'{% endif %}>Nom du poste</option>
                     <option value='cmp_02' {% if tri is same as('cmp_02') %}selected='selected'{% endif %}>Etage</option>
                     <option value='cmp_03' {% if tri is same as('cmp_03') %}selected='selected'{% endif %}>Obligatoire</option>
@@ -66,9 +66,9 @@
                       <option value='Tous'>Tous</option>
                         {% for i in 1..nbSites %}
                           {% if i in selectedSites %}
-                            <option value='{{ i }}' selected>{{ multisites[i-1] }}</option>
+                            <option value='{{ i }}' selected>{{ multisites[i-1] | raw }}</option>
                           {% else %}
-                            <option value='{{ i }}' >{{ multisites[i-1] }}</option>
+                            <option value='{{ i }}' >{{ multisites[i-1] | raw }}</option>
                           {% endif %}
                         {% endfor %}
                     </select>
@@ -87,8 +87,8 @@
               <tr>
                 <td>Exporter </td>
                 <td>
-                  <a href='javascript:export_stat(\"postes\",\"csv\");'>CSV</a>&nbsp;&nbsp;
-                  <a href='javascript:export_stat(\"postes\",\"xsl\");'>XLS</a>
+                  <a href="javascript:export_stat('postes','csv');">CSV</a>&nbsp;&nbsp;
+                  <a href="javascript:export_stat('postes','xls');">XLS</a>
                 </td>
               </tr>
             </table>

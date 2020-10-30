@@ -789,8 +789,9 @@ function position(object,top,left){
 //	--------------------------------	FIN Aide		---------------------------------	//
 //	--------------------------------	Statistiques		---------------------------------	//
 function export_stat(nom,type){
+  var baseURL = ('#baseURL').val();
   $.ajax({
-    url: "statistiques/export.php",
+    url: baseURL+ "/statistiques/export.php",
     type: "get",
     data: "nom="+nom+"&type="+type,
     success: function(result){
