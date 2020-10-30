@@ -632,7 +632,7 @@ class HolidayController extends BaseController
         switch ($valide) {
         // Modification sans validation
         case 0:
-          $sujet="Modification de congés";
+          $sujet="Demande de congés";
           $notifications='-A2';
           break;
         // Validations Niveau 2
@@ -670,28 +670,12 @@ class HolidayController extends BaseController
         }
 
         // Message qui sera envoyé par email
-        $message="$sujet : $prenom $nom Début : $debut";
-        if ($hre_debut!="00:00:00") {
-            $message.=" ".heure3($hre_debut);
-        }
-        $message.=", Fin : $fin";
-        if ($hre_fin!="23:59:59") {
-            $message.=" ".heure3($hre_fin);
-        }
-        if ($commentaires) {
-            $message.=", Commentaires : $commentaires";
-        }
-        if ($refus and $valide==-1) {
-            $message.=", Motif du refus :$refus,";
-        }
-
-        // ajout d'un lien permettant de rebondir sur la demande
-        $url = $GLOBALS['config']['URL'] . "/holiday/edit/$id";
-        $message.="<br/><br/>Lien vers la demande de cong&eacute; :<br/><a href='$url'>$url</a><br/><br/>";
+        $fin = empty($fin) ? $debut : $fin;
+        $message = $this->makeMail($sujet, "$prenom $nom", $debut, $fin, $hre_debut, $hre_fin, $commentaires, $refus, $valide, $id);
 
         // Envoi du mail
         $m=new \CJMail();
-        $m->subject="Nouveau congés";
+        $m->subject = $sujet;
         $m->message=$message;
         $m->to=$destinataires;
         $m->send();
@@ -787,23 +771,7 @@ class HolidayController extends BaseController
         }
 
         // Message qui sera envoyé par email
-        $message="$sujet : $prenom $nom Début : $debut";
-        if ($hre_debut!="00:00:00") {
-            $message.=" ".heure3($hre_debut);
-        }
-        $message.=", Fin : $fin";
-        if ($hre_fin!="23:59:59") {
-            $message.=" ".heure3($hre_fin);
-        }
-        if ($commentaires) {
-            $message.=", Commentaires : $commentaires";
-        }
-        if ($refus and $valide==-1) {
-            $message.=", Motif du refus :$refus,";
-        }
-
-        // ajout d'un lien permettant de rebondir sur la demande
-        $url=createURL("/holiday/edit/$id");
+        $message = $this->makeMail($sujet, "$prenom $nom", $debut, $fin, $hre_debut, $hre_fin, $commentaires, $refus, $valide, $id);
 
         // Envoi du mail
         $m=new \CJMail();
@@ -888,5 +856,36 @@ class HolidayController extends BaseController
         }
 
         return $agents;
+    }
+
+    /**
+     * Make mail message
+     */
+    private function makeMail($subject, $name, $begin, $end, $begin_hour, $end_hour, $comment, $refusal, $status, $id) {
+        $message  = "<b><u>$subject :</u></b><br/>";
+        $message .= "<ul><li>Agent : <strong>$name</strong></li>";
+        $message .= "<li>Début : <strong>$begin";
+        if ($begin_hour!="00:00:00") {
+            $message.=" ".heure3($begin_hour);
+        }
+        $message .="</strong></li>";
+        $message .= "<li>Fin : <strong>$end";
+        if ($end_hour!="23:59:59") {
+            $message.=" ".heure3($end_hour);
+        }
+        $message .="</strong></li>";
+        if ($comment) {
+            $message.="<li>Commentaires :<br/>$comment</li>";
+        }
+        if ($refusal and $status == -1) {
+            $message.="<li>Motif du refus :<br/>$refusal</li>";
+        }
+        $message .="</ul>";
+
+        // ajout d'un lien permettant de rebondir sur la demande
+        $url = $this->config('URL') . "/holiday/edit/$id";
+        $message.="<p>Lien vers la demande de congé :<br/><a href='$url'>$url</a></p>";
+
+        return $message;
     }
 }
