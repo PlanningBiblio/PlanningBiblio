@@ -56,9 +56,9 @@
                     <option value='Tous'>Tous</option>
                       {% for i in 1..nbSites %}
                         {% if i in selectedSites %}
-                          <option value='{{ i }}' selected='selected'>{{ multisites[i-1] }}</option>
+                          <option value='{{ i }}' selected='selected'>{{ multisites[i-1] | raw }}</option>
                         {% else %}
-                          <option value='{{ i }}'>{{ multisites[i-1] }}</option>
+                          <option value='{{ i }}'>{{ multisites[i-1] | raw }}</option>
                         {% endif %}
                       {% endfor %}
                   </select>
@@ -139,7 +139,7 @@
                       {% for i in 1..nbSites %}
                         {% if elem.sites[i] %}
                           <tr>
-                            <td colspan='2' style='padding-top:20px;'><u>{{ multisites[i-1] }}</u></td>
+                            <td colspan='2' style='padding-top:20px;'><u>{{ multisites[i-1] | raw }}</u></td>
                           </tr>
                           <tr>
                             <td>Total</td>
@@ -159,7 +159,7 @@
                     {% for poste in elem[1] %}
                       <tr style='vertical-align:top;'>
                         <td>
-                          <b>{{ poste[1] }}</b><br/><i>{{ elem.siteEtage[poste[0]] }}</i>
+                          <b>{{ poste[1] }}</b><br/><i>{{ elem.siteEtage[poste[0]] | raw }}</i>
                         </td>
                         <td>{{ poste[3] }}</td>
                       </tr>
