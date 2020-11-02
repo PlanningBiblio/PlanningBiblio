@@ -64,7 +64,7 @@
                     <option value='Tous'>Tous</option>
                     {% for i in 1..nbSites %}
                       {% if i in selectedSites %}
-                          <option value='{{ i }}' selected = 'selected'> {{ multisites[i-1] }}</option>  
+                          <option value='{{ i }}' selected = 'selected'> {{ multisites[i-1] | raw }}</option>  
                       {% endif %}
                     {% endfor %}
                   </select>
@@ -84,7 +84,7 @@
               <td>Exporter </td>
               <td>
                 <a href='javascript:export_stat("statut","csv");'>CSV</a>&nbsp;&nbsp;
-                <a href='javascript:export_stat("statut","xsl");'>XLS</a>
+                <a href='javascript:export_stat("statut","xls");'>XLS</a>
               </td>
             </tr>
             <tr>
@@ -129,7 +129,7 @@
                 <td style='padding-left:8px;'>
                   <table>
                     <tr>
-                      <td colspan='2'><b>{{elem[0]}}</b></td>
+                      <td colspan='2'><b>{{ elem[0] | raw }}</b></td>
                     </tr>
                     <tr>
                       <td>Total</td>
@@ -141,9 +141,9 @@
                     </tr>
                     {% if nbSites > 1 %}
                       {% for i in 1..nbSites %}
-                          {% if elem.sites[i] is defined %}
+                          {% if elem.sites[i] is not null %}
                             <tr>
-                              <td colspan='2' style='padding-top:20px;'><u>{{ multisites[i-1] }}</u></td>
+                              <td colspan='2' style='padding-top:20px;'><u>{{ multisites[i-1] | raw }}</u></td>
                             </tr>
                             <tr>
                               <td>Total</td>
@@ -164,7 +164,7 @@
                       <tr style='vertical-align:top;'>
                         <td>
                           <b>{{ poste[1] }}</b>
-                          <br/><i>{{ poste.siteEtage }}</i>
+                          <br/><i>{{ poste.siteEtage | raw }}</i>
                         </td>
                         <td class='statistiques-heures'>{{ poste[3] }}</td>
                       </tr>
@@ -209,10 +209,12 @@
                 {% endif %}
                 {% for v in heures_tab_global %}
                   <td>
-                    Nb {{ v[2] }} :
-                    {% for k in elem[7].count %}
-                      <br> {{ k }} {{ v }}
-                    {% endfor %}
+                    {% if elem[7][v[2]] is defined and elem[7][v[2]] is not empty %}
+                      Nb {{ v[2] }} : {{ elem[7][v[2]] | length - 1}}
+                      {% for k,c in elem[7][v[2]].count %}
+                        <br> {{ k }} ({{ c }})
+                      {% endfor %}
+                    {% endif %}
                   </td>
                 {% endfor %}
               </tr>

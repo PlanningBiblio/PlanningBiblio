@@ -293,7 +293,8 @@ class StatisticController extends BaseController
                                         }
                         
                                         if ($elem['debut'] == $tmp[0] and $elem['fin'] == $tmp[1]) {
-                                            $heures_tab[$tmp[0].'-'.$tmp[1]][] = $elem['date'];
+                                            $tmp[2] = heure3($tmp[0])."-".heure3($tmp[1]);
+                                            $heures_tab[$tmp[2]][] = $elem['date'];
                                             if (!in_array($tmp, $heures_tab_global)) {
                                                 $heures_tab_global[] = $tmp;
                                             }
@@ -317,6 +318,7 @@ class StatisticController extends BaseController
             }
         }
 
+        sort($heures_tab_global);
         // Heures et jours d'ouverture au public
         $s = new \statistiques();
         $s->debut = $debutSQL;
@@ -325,8 +327,6 @@ class StatisticController extends BaseController
         $s->selectedSites = $selectedSites;
         $s->ouverture();
         $ouverture = $s->ouvertureTexte;
-
-        sort($heures_tab_global);
         
         // passage en session du tableau pour le fichier export.php
         $_SESSION['stat_tab'] = $tab;
@@ -364,7 +364,6 @@ class StatisticController extends BaseController
                         }
                         $elem["sites"][$i] = heure4($elem["sites"][$i]);
                         $elem["site_hebdo"][$i] = heure4($hebdo);
-                        dump($elem["site_hebdo"][$i]);
                     }
                 }
                 //	Affichage du noms des postes et des heures dans la 2eme colonne
@@ -414,31 +413,27 @@ class StatisticController extends BaseController
                 }
         
                 // Statistiques-Heures
-                foreach ($heures_tab_global as &$v) {
-                    $h1 = heure3($v[0]);
-                    $h2 = heure3($v[1]);
-                    $v = $v[0].'-'.$v[1];
-                    $v[2] = $h1.'-'.$h2;
-
-                    if (!empty($elem[7][$v])) {
-                        sort($elem[7][$v]);
+                foreach ($heures_tab_global as $v) {
+                    if (array_key_exists($v[2], $elem[7]) and !empty($elem[7][$v[2]])) {
                         $count = array();     
-                        foreach ($elem[7][$v] as $h) {
+                        foreach ($elem[7][$v[2]] as $h) {
                             if (empty($count[$h])) {
                                 $count[$h] = 1;
                             } else {
                                 $count[$h]++;
                             }
                         }
-                        $elem[7]["count"] = $count;
-                        foreach ($elem[7]["count"] as $k => $v) {
-                            $k = dateFr($k);
+                        $elem[7][$v[2]]["count"] = $count;
+                        ksort($elem[7][$v[2]]["count"]);
+                        foreach ($elem[7][$v[2]]["count"] as $k => $v2) {
+                            $nk = dateFr($k);
+                            $elem[7][$v[2]]["count"][$nk] = $elem[7][$v[2]]["count"][$k];
+                            unset($elem[7][$v[2]]["count"][$k]);
                         }
                     }
                 }
             }
         }
-
         $this->templateParams(
             array(
                 "debut"               => $debut,
