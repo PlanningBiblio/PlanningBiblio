@@ -41,15 +41,15 @@
                           {% if postes is defined %}
                             {% if elem.obligatoire == "Obligatoire" %}
                               {% if elem.id in postes %}
-                                <option value='{{ elem.id }}' selected class='td_obligatoire'> {{ elem.nom | raw}} ({{ elem.etage | raw }})</option>
+                                <option value='{{ elem.id }}' selected="selected" class='td_obligatoire'> {{ elem.nom | raw}} ({{ elem.etage | raw }})</option>
                               {% else %}
                                 <option value='{{ elem.id }}' class='td_obligatoire'>{{ elem.nom | raw}} ({{ elem.etage | raw }})</option>
                               {% endif %}
                             {% else %}
                               {% if elem.id in postes %}
-                                <option value'{{ elem.id }}' selected class='td_renfort'> {{ elem.nom | raw}} ({{ elem.etage | raw }})</option>
+                                <option value='{{ elem.id }}' selected="selected" class='td_renfort'> {{ elem.nom | raw}} ({{ elem.etage | raw }})</option>
                               {% else %}
-                                <option value'{{ elem.id }}' class='td_renfort'>{{ elem.nom | raw}} ({{ elem.etage | raw }})</option>
+                                <option value='{{ elem.id }}' class='td_renfort'>{{ elem.nom | raw}} ({{ elem.etage | raw }})</option>
                               {% endif %}
                             {% endif %}
                           {% endif %}
