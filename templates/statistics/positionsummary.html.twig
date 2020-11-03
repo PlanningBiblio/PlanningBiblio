@@ -38,7 +38,7 @@
                     <option value='Tous'>Tous</option>
                     {% for poste in postes_list %}
                       {% if postes is defined %}
-                        <option value='{{ poste.id }}' {{ (poste.id in postes) ? "selected='selected'" : " " }} {{ (poste.obligatoire == "Obligatoire") ? "class='td_obligatoire'" : "class='td_renfort'" }}>{{ poste.nom }} {{ poste.etage ?? "(elem.etage)" }}</option>                   
+                        <option value='{{ poste.id }}' {{ (poste.id in postes) ? "selected='selected'" : " " }} {{ (poste.obligatoire == "Obligatoire") ? "class='td_obligatoire'" : "class='td_renfort'" }}>{{ poste.nom }} {{ poste.etage ? "(elem.etage)" : "" }}</option>
                       {% endif %}
                     {% endfor %}
                   {% endif %}
@@ -52,7 +52,7 @@
                   <select name='selectedSites[]' multiple='multiple' size='{{ nbSites+1 }}' onchange='verif_select("selectedSites");' class='ui-widget-content ui-corner-all' >
                     <option value='Tous'>Tous</option>
                     {% for i in 1..nbSites %}
-                      <option value='{{ i }}' {{ (i in selectedSites) ? "selected = 'selected'" : " " }}>{{ multisites[i] }}</option> 
+                      <option value='{{ i }}' {{ (i in selectedSites) ? "selected = 'selected'" : " " }}>{{ multisites[i] | raw }}</option> 
                     {% endfor %}
                   </select>
                 </td>
@@ -71,7 +71,7 @@
               <td>Exporter </td>
               <td>
                 <a href='javascript:export_stat("postes_synthese","csv");'>CSV</a>&nbsp;&nbsp;
-                <a href='javascript:export_stat("postes_synthese","xsl");'>XLS</a>
+                <a href='javascript:export_stat("postes_synthese","xls");'>XLS</a>
               </td>
             </tr>
           </table>
