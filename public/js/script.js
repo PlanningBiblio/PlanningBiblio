@@ -790,11 +790,11 @@ function position(object,top,left){
 //	--------------------------------	Statistiques		---------------------------------	//
 function export_stat(nom,type){
   $.ajax({
-    url: "statistiques/export.php",
+    url: "/statistiques/export.php",
     type: "get",
     data: "nom="+nom+"&type="+type,
     success: function(result){
-      window.open("data/"+result);
+      window.open("/data/"+result);
     },
     error: function(){
       information("Une erreur est survenue lors de l'exportation.","error");
