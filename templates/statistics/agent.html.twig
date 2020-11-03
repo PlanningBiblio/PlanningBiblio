@@ -195,7 +195,9 @@
                 {% endif %}
                 {% if exists_absences == true %}
                   <td style='padding-left:8px;'>
-                    Total : {{ elem[5] }}<br/>
+                    {% if elem[5] > 0 %}
+                      Total : {{ elem[5] }}<br/>
+                    {% endif %}
                     {% for absence in elem[4] %}
                       {{ absence[0] }} : {{ absence[1] }}<br/>
                     {% endfor %}
