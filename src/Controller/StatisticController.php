@@ -223,7 +223,7 @@ class StatisticController extends BaseController
                         if (!isset($elem['service_id'])) {
                             continue;
                         }
-                        
+
                         if ($service == $elem['service_id']) {
                             // Vérifie à partir de la table absences si l'agent est absent
                             // S'il est absent, on met à 1 la variable $elem['absent']
@@ -339,7 +339,7 @@ class StatisticController extends BaseController
             $hebdo = $jour*$joursParSemaine;
             $elem[2] = heure4($elem[2]);
             $elem["hebdo"] = heure4($hebdo);
-            
+
             if ($nbSites > 1) {
                 for ($i = 1; $i <= $nbSites; $i++) {
                     if ($elem["sites"][$i]) {
@@ -360,12 +360,14 @@ class StatisticController extends BaseController
                 $poste[3] = heure4($poste[3]);
                 $poste["siteEtage"] = $siteEtage;
             }
+            sort($elem[3]);
             foreach ($elem[3] as &$samedi) {			//	Affiche les dates et heures des samedis
                 $samedi[0] = dateFr($samedi[0]);			//	date
                 $samedi[1] = heure4($samedi[1]);	// heures
             }
 
             if ($this->config('Dimanche')) {
+                sort($elem[6]);
                 foreach ($elem[6] as &$dimanche) {		//	Affiche les dates et heures des dimanches
                     $dimanche[0] = dateFr($dimanche[0]);		//	date
                     $dimanche[1] = heure4($dimanche[1]);	//	heures
@@ -373,6 +375,7 @@ class StatisticController extends BaseController
             }
 
             if ($exists_JF) {
+                sort($elem[8]);
                 foreach ($elem[8] as &$ferie) {		// 	Affiche les dates et heures des jours fériés
                     $ferie[0] = dateFr($ferie[0]);			//	date
                     $ferie[1] = heure4($ferie[1]);	//	heures
@@ -383,14 +386,15 @@ class StatisticController extends BaseController
                 if ($elem[5]) {				//	Affichage du total d'heures d'absences
                     $elem[5] = heure4($elem[5]);
                 }
+                sort($elem[4]);
                 foreach ($elem[4] as &$absences) {		//	Affiche les dates et heures des absences
                     $absences[0] = dateFr($absences[0]);	//	date
                     $absences[1] = heure4($absences[1]);	// heures
                 }
             }
-            
+
             foreach ($heures_tab_global as $v) {
-                if ($elem[7][$v[2]] and !empty($elem[7][$v[2]])) {
+                if (array_key_exists($v[2], $elem[7]) and !empty($elem[7][$v[2]])) {
                     $count = array();
                     foreach ($elem[7][$v[2]] as $h) {
                         if (empty($count[$h])) {
@@ -400,13 +404,13 @@ class StatisticController extends BaseController
                         }
                     }
                     $elem[7][$v[2]]["count"] = $count;
-                    
+                    ksort($elem[7][$v[2]]["count"]);
+
                     foreach ($elem[7][$v[2]]["count"] as $k => $v2) {
                         $nk = dateFr($k);
                         $elem[7][$v[2]]["count"][$nk] = $elem[7][$v[2]]["count"][$k];
                         unset($elem[7][$v[2]]["count"][$k]);
                     }
-                    ksort($elem[7][$v[2]]["count"]);
                 }
             }
         }
