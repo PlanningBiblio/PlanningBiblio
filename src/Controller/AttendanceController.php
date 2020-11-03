@@ -165,8 +165,6 @@ class AttendanceController extends BaseController
             }
         }
 
-
-
         $this->templateParams(
             array(
                 "admin"              => $admin,
@@ -179,6 +177,7 @@ class AttendanceController extends BaseController
                 "debut"              => $debut1,
                 "debut1Fr"           => $debut1Fr,
                 "exception_id"       => $exception_id,
+                "exception_back"     => $exception_back,
                 "fin"                => $fin1,
                 "fin1Fr"             => $fin1Fr,
                 "id"                 => $id,
@@ -225,12 +224,13 @@ class AttendanceController extends BaseController
         $pause2_enabled = $this->config('PlanningHebdo-Pause2');
         $pauseLibre_enabled = $this->config('PlanningHebdo-PauseLibre');
         $nbSites = $this->config('Multisites-nombre');
+        $validation = "";
 
         $sites = array();
         $multisites = array();
         for ($i = 1; $i < $nbSites+1; $i++) {
             $sites[] = $i;
-            $multisites[$i] = $this->config("Multisites-site{$site}");
+            $multisites[$i] = $this->config("Multisites-site{$i}");
         }
 
         $exception_back = 'monCompte.php';
@@ -419,12 +419,14 @@ class AttendanceController extends BaseController
                 "debut"              => $debut,
                 "debut1Fr"           => $debut1Fr,
                 "exception_id"       => $exception_id,
+                "exception_back"     => $exception_back,
                 "fin"                => $fin,
                 "fin1Fr"             => $fin1Fr,
                 "id"                 => $id,
                 "is_exception"       => $is_exception,
                 "is_new"             => $is_new,
                 "jours"              => $jours,
+                "lang"               => $lang,
                 "login_id"           => $_SESSION['login_id'],
                 "modifAutorisee"     => $modifAutorisee,
                 "multisites"         => $multisites,
@@ -441,6 +443,10 @@ class AttendanceController extends BaseController
                 "selectTemps"        => $selectTemps,
                 "tab"                => $tab,
                 "temps"              => $temps,
+                "selected1"          => $selected1,
+                "selected2"          => $selected2,
+                "selected3"          => $selected3,
+                "selected4"          => $selected4,
                 "sites"              => $sites,
                 "valide_n1"          => $valide_n1,
                 "valide_n2"          => $valide_n2,
