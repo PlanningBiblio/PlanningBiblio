@@ -121,7 +121,7 @@
                   <th>J. Feriés</th>
                 {% endif %}
                 {% if exists_absences == true %}
-                  <th>Absences</th> 
+                  <th>Absences</th>
                 {% endif %}
                 {% for v in heures_tab_global %}
                   <th>{{ v[2] }}</th>
@@ -150,8 +150,8 @@
                 {% endif %}
                 {% if exists_absences == true %}
                   <td>
-                    {% if elem[5] is not null %}
-                      Total : {{ elem[5] }}
+                    {% if elem[5] != 0 %}
+                      Total : {{ elem[5] }} <br/>
                     {% endif %}
                     {% for absences in elem[4] %}
                       {{ absences[0] }} {{ absences[1] }}<br/>
