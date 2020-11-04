@@ -288,7 +288,7 @@ function plHebdoVerifForm(){
 
   var retour=false;
   $.ajax({
-    url: "planningHebdo/ajax.verifPlannings.php",
+    url: "/planningHebdo/ajax.verifPlannings.php",
     dataType: "json",
     data: data,
     type: "get",
@@ -356,7 +356,7 @@ $(function(){
   
   $("#perso_id").change(function(){
     $.ajax({
-      url: "planningHebdo/ajax.getSites.php",
+      url: "/planningHebdo/ajax.getSites.php",
       dataType: "json",
       type: "post",
       data: {id: $(this).val()},

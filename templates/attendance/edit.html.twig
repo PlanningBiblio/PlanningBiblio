@@ -4,7 +4,7 @@
 
 {% block page %}
   <h3>Heures de présence</h3>
-  {% if id is not null and tab is empty %}
+  {% if id is not null and tab is null %}
     <p> Les heures demandées ne sont plus accessibles à cette adresse. <br/>
         Veuillez les rechercher dans le menu 
         <a href="{{ asset('attendance') }}">Administration / Heures de présence</a>
@@ -14,7 +14,7 @@
       <h3>Heures de {{ nomAgent }} du {{ debut1Fr }} au {{ fin1Fr }}</h3>
     {% endif %}
     <div id='working_hours'>
-      <form name='form1' method='post' action='index.php' onsubmit='return plHebdoVerifForm();'>
+      <form name='form1' method='post' action="{{ asset('attendance') }}" onsubmit='return plHebdoVerifForm();'>
         {% if id > 0 and copy is null and request_exception is null %}
           <input type='hidden' name='perso_id' value='{{ perso_id }}' id='perso_id' />
         {% else %}
@@ -56,6 +56,7 @@
         </div> <!-- id=periode -->
         <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
         <input type='hidden' name='retour' value='{{ retour }}' />
+        <input type='hidden' name='action' value='{{ action }}' />
         <input type='hidden' name='id' value='{{ id }}' />
         <input type='hidden' name='valide' value='{{ login_id }}' />
         <input type='hidden' name='remplace' value='{{ remplace }}' />
@@ -134,7 +135,7 @@
                   {% if nbSites > 1 %}
                     {% if modifAutorisee == true %}
                       <td>
-                        <select name="temps[{{ i-1 }}[4]" class='select selectSite' >
+                        <select name="temps[{{ i-1 }}][4]" class='select selectSite' >
                           {% if sites | length > 1 %}
                             <option value=''>&nbsp;</option>
                           {% endif %}
@@ -155,7 +156,7 @@
                       {% endif %}
                     {% endif %}
                   {% endif %}
-                  <td id="heures_{'{{j}}'}_{{i}}"></td>
+                  <td id="heures_{{ j ~'_'~ i }}"></td>
                 </tr>
               {% endfor %}
             </table>
@@ -216,7 +217,7 @@
           {% endif %}
         {% endif %}
         <div id='boutons' style='padding-top:50px;'>
-          <input type='button' value='Retour' onclick='location.href="/{{ retour }}";' class='ui-button' />
+          <input type='button' value='Retour' onclick='location.href="/index.php?page={{ retour }}";' class='ui-button' />
           {% if admin == true and (cle == null or cle == "") %}
             {% if request_exception == true %}
               <input id="save-exception" type="submit" value="Enregistrer l'exception" style="margin-left:30px;" class="ui-button" />
@@ -241,6 +242,7 @@
   {% endif %}
 {% endblock %}
 {% block specificjs %}
+  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/planningHebdo/js/script.planningHebdo.js?version={{ version }}'></script>
   <script type='text/JavaScript'>
     $("document").ready(function(){
       plHebdoCalculHeures2();

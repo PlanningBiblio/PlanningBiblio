@@ -28,6 +28,10 @@ class AttendanceController extends BaseController
         $pause2_enabled = $this->config('PlanningHebdo-Pause2');
         $pauseLibre_enabled = $this->config('PlanningHebdo-PauseLibre');
         $nbSites = $this->config('Multisites-nombre');
+        $validation = "";
+        $id = null;
+        $tab = array();
+        $action = "ajout";
 
         $exception_back = 'monCompte.php';
         if ($retour != 'monCompte.php') {
@@ -39,9 +43,6 @@ class AttendanceController extends BaseController
             $id = $copy;
         }
 
-        if ($request_exception) {
-            $id = $request_exception;
-        }
 
         $is_new = 0;
         if (!$id) {
@@ -65,15 +66,16 @@ class AttendanceController extends BaseController
         $valide_n2 = 0;
         $remplace = null;
         $sites = array();
-        $nbSemaines = $this->config('nb_semaine');
+        $nbSemaine = $this->config('nb_semaine');
         $nbSites = $this->config('Multisites-nombre');
         $multisites = array();
         for ($i = 1; $i < $nbSites+1; $i++) {
             $sites[] = $i;
-            $multisites[$i] = $this->config("Multisites-site{$site}");
+            $multisites[$i] = $this->config("Multisites-site{$i}");
         }
         $valide_n1 = 0;
         $valide_n2 = 0;
+        $breaktime = array();
 
         if ($this->config('PlanningHebdo-notifications-agent-par-agent') and !$adminN2) {
         // Sélection des agents gérés (table responsables) et de l'agent logué
@@ -119,14 +121,21 @@ class AttendanceController extends BaseController
             $perso_ids = implode(',', $perso_ids);
             $db = new \db();
             $db->select2('personnel', null, array('supprime'=>0, 'id' => "IN$perso_ids"), 'order by nom,prenom');
+            $tab = $db->result;
         } else {
             $db = new \db();
             $db->select2('personnel', null, array('supprime'=>0), 'order by nom,prenom');
+            $tab = $db->result;
         }
 
         if ($copy) {
             $id = '';
         }
+
+        if (!($adminN1 or $adminN2) and $valide_n2 > 0) {
+            $action = "copie";
+        }
+
 
         switch ($nbSemaine) {
             case 2:
@@ -140,9 +149,44 @@ class AttendanceController extends BaseController
                 break;
         }
 
-        $fin = $config['Dimanche'] ? array(8,15,22) : array(7,14,21);
+        $fin = $this->config('Dimanche') ? array(8,15,22) : array(7,14,21);
         $debut = array(1,8,15);
         $jours = array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
+
+        $selectTemps = array();
+        $breaktime_h = array();
+
+        $GLOBALS['temps'] = $temps;
+
+        for ($j = 0; $j < $nbSemaine; $j++) {
+            for ($i = $debut[$j]; $i < $fin[$j]; $i++) {
+                $k = $i-($j*7)-1;
+                $breaktime[$i-1] = isset($breaktime[$i-1]) ? $breaktime[$i-1] : 0;
+
+                if ($modifAutorisee) {
+                    $selectTemps[$j][$i-1][0] = selectTemps($i-1, 0, null, "select");
+                    $selectTemps[$j][$i-1][1] = selectTemps($i-1, 1, null, "select");
+                    $selectTemps[$j][$i-1][2] = selectTemps($i-1, 2, null, "select");
+                    if ($pause2_enabled == true) {
+                        $selectTemps[$j][$i-1][5] = selectTemps($i-1, 5, null, "select");
+                        $selectTemps[$j][$i-1][6] = selectTemps($i-1, 6, null, "select");
+                    }
+                    $selectTemps[$j][$i-1][3] = selectTemps($i-1, 3, null, "select");
+                } else {
+                    $temps[$i-1][0] = heure2($temps[$i-1][0]);
+                    $temps[$i-1][1] = heure2($temps[$i-1][1]);
+                    $temps[$i-1][2] = heure2($temps[$i-1][2]);
+                    if ($pause2_enabled == true) {
+                        $temps[$i-1][5] = heure2($temps[$i-1][5]);
+                        $temps[$i-1][6] = heure2($temps[$i-1][6]);
+                    }
+                    $temps[$i-1][3] = heure2($temps[$i-1][3]);
+                    if ($pauseLibre_enabled == true) {
+                        $breaktime_h[$i-1] = heure4($breaktime[$i -1]);
+                    }
+                }
+            }
+        }
 
         if (!$cle) {
             if ($admin) {
@@ -167,23 +211,29 @@ class AttendanceController extends BaseController
 
         $this->templateParams(
             array(
+                "action"             => $action,
                 "admin"              => $admin,
                 "adminN1"            => $adminN1,
                 "adminN2"            => $adminN2,
+                "breaktime"          => $breaktime,
+                "breaktime_h"        => $breaktime_h,
                 "cellule"            => $cellule,
                 "cle"                => $cle,
                 "copy"               => $copy,
                 "CSRFSession"        => $request->get('CSRFToken'),
-                "debut"              => $debut1,
+                "debut"              => $debut,
+                "debut1"             => $debut1,
                 "debut1Fr"           => $debut1Fr,
                 "exception_id"       => $exception_id,
                 "exception_back"     => $exception_back,
-                "fin"                => $fin1,
+                "fin"                => $fin,
+                "fin1"               => $fin1,
                 "fin1Fr"             => $fin1Fr,
                 "id"                 => $id,
                 "is_exception"       => $is_exception,
                 "is_new"             => $is_new,
                 "jours"              => $jours,
+                "lang"               => $lang,
                 "login_id"           => $_SESSION['login_id'],
                 "modifAutorisee"     => $modifAutorisee,
                 "multisites"         => $multisites,
@@ -194,9 +244,17 @@ class AttendanceController extends BaseController
                 "pause2_enabled"     => $pause2_enabled,
                 "pauseLibre_enabled" => $pauseLibre_enabled,
                 "perso_id"           => $perso_id,
+                "remplace"           => null,
                 "retour"             => $retour,
                 "request_exception"  => $request_exception,
+                "selected1"          => null,
+                "selected2"          => null,
+                "selected3"          => null,
+                "selected4"          => null,
+                "selectTemps"        => $selectTemps,
                 "sites"              => $sites,
+                "tab"                => $tab,
+                "temps"              => $temps,
                 "valide_n1"          => $valide_n1,
                 "valide_n2"          => $valide_n2,
                 "validation"         => $validation
@@ -260,8 +318,6 @@ class AttendanceController extends BaseController
         $p = new \planningHebdo();
         $p->id = $id;
         $p->fetch();
-
-        $tab = $p->elements;
 
         $debut1 = $p->elements[0]['debut'];
         $fin1 = $p->elements[0]['fin'];
@@ -336,6 +392,10 @@ class AttendanceController extends BaseController
           $id = '';
         }
 
+        if ($copy or $request_exception) {
+            $action = "ajout";
+        }
+
         switch ($nbSemaine) {
             case 2:
                 $cellule = array("Semaine Impaire","Semaine Paire");
@@ -352,8 +412,33 @@ class AttendanceController extends BaseController
         $debut = array(1,8,15);
         $jours = array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
 
+        if ($this->config('PlanningHebdo-notifications-agent-par-agent') and !$adminN2 and $copy) {
+            // Sélection des agents gérés (table responsables) et de l'agent logué
+
+            $perso_ids = array($_SESSION['login_id']);
+            $db = new \db();
+            $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
+            if ($db->result) {
+                foreach ($db->result as $elem) {
+                    $perso_ids[] = $elem['perso_id'];
+                }
+            }
+
+            $perso_ids = implode(',', $perso_ids);
+            $db = new \db();
+            $db->select2('personnel', null, array('supprime'=>0, 'id' => "IN$perso_ids"), 'order by nom,prenom');
+            $tab = $db->result;
+        } else {
+            $db = new \db();
+            $db->select2('personnel', null, array('supprime'=>0), 'order by nom,prenom');
+            $tab = $db->result;
+        }
         $selectTemps = array();
         $breaktime_h = array();
+        if (!$request_exception){
+            $GLOBALS['temps'] = $temps;
+        }
+
         for ($j = 0; $j < $nbSemaine; $j++) {
             for ($i = $debut[$j]; $i < $fin[$j]; $i++) {
                 $k = $i-($j*7)-1;
@@ -407,6 +492,7 @@ class AttendanceController extends BaseController
 
         $this->templateParams(
             array(
+                "action"             => $action,
                 "admin"              => $admin,
                 "adminN1"            => $adminN1,
                 "adminN2"            => $adminN2,
@@ -464,54 +550,51 @@ class AttendanceController extends BaseController
         $post = $request->request->all();
         switch ($post["action"]) {
             case "ajout":
-              $p = new \planningHebdo();
-              $p->add($post);
-              if ($p->error) {
-                  $msg = urlencode("Une erreur est survenue lors de l'enregistrement du planning.");
+                $p = new \planningHebdo();
+                $p->add($post);
+                if ($p->error) {
+                    $msg = urlencode("Une erreur est survenue lors de l'enregistrement du planning.");
 
-                  if ($post['id']) {
-                      $msg = urlencode("Une erreur est survenue lors de la copie du planning.");
-                  }
+                    if ($post['id']) {
+                        $msg = urlencode("Une erreur est survenue lors de la copie du planning.");
+                    }
 
-                  $msgType = "error";
-              } else {
-                  $msg = urlencode("Le planning a été ajouté avec succès.");
-                  if ($post['id']) {
-                      $msg = urlencode("Le planning a été copié avec succès.");
-                  }
-                  $msgType = "success";
-              }
-              echo "<script type='text/JavaScript'>document.location.href='index.php?page={$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";
-              break;
+                    $msgType = "error";
+
+                } else {
+                    $msg = urlencode("Le planning a été ajouté avec succès.");
+                    if ($post['id']) {
+                        $msg = urlencode("Le planning a été copié avec succès.");
+                    }
+                    $msgType = "notice";
+                }
+                break;
 
             case "modif":
-              $p = new \planningHebdo();
-              $p->update($post);
-              if ($p->error) {
-                  $msg = urlencode("Une erreur est survenue lors de la modification du planning.");
-                  $msgType = "error";
-              } else {
-                  $msg = urlencode("Le planning a été modifié avec succès.");
-                  $msgType = "success";
-              }
-              echo "<script type='text/JavaScript'>document.location.href='index.php?page={$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";
-              break;
+                $p = new \planningHebdo();
+                $p->update($post);
+                if ($p->error) {
+                    $msg = urlencode("Une erreur est survenue lors de la modification du planning.");
+                    $msgType = "error";
+                } else {
+                    $msg = urlencode("Le planning a été modifié avec succès.");
+                    $msgType = "notice";
+                }
+                break;
 
             case "copie":
-              $p = new \planningHebdo();
-              $p->copy($post);
-              if ($p->error) {
-                  $msg = urlencode("Une erreur est survenue lors de la modification du planning.");
-                  $msgType = "error";
-              } else {
-                  $msg = urlencode("Le planning a été modifié avec succès.");
-                  $msgType = "success";
-              }
-              echo "<script type='text/JavaScript'>document.location.href='index.php?page={$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";
-              break;
-          }
+                $p = new \planningHebdo();
+                $p->copy($post);
+                if ($p->error) {
+                    $msg = urlencode("Une erreur est survenue lors de la modification du planning.");
+                    $msgType = "error";
+                } else {
+                    $msg = urlencode("Le planning a été modifié avec succès.");
+                    $msgType = "notice";
+                }
+                break;
+        }
 
-
-        return $this->redirectToRoute('attendance.index');
+        return $this->redirect($this->config('URL')."/index.php?page=planningHebdo/index.php&msg=".$msg."&msgType=".$msgType);
     }
 }
