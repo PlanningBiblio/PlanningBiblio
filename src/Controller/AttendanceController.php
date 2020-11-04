@@ -39,15 +39,7 @@ class AttendanceController extends BaseController
             $retour = "planningHebdo/$retour";
         }
 
-        if ($copy) {
-            $id = $copy;
-        }
-
-
-        $is_new = 0;
-        if (!$id) {
-            $is_new = 1;
-        }
+        $is_new = 1;
 
         // Sécurité
         $adminN1 = in_array(1101, $droits);
@@ -126,10 +118,6 @@ class AttendanceController extends BaseController
             $db = new \db();
             $db->select2('personnel', null, array('supprime'=>0), 'order by nom,prenom');
             $tab = $db->result;
-        }
-
-        if ($copy) {
-            $id = '';
         }
 
         if (!($adminN1 or $adminN2) and $valide_n2 > 0) {
@@ -301,10 +289,6 @@ class AttendanceController extends BaseController
             $id = $copy;
         }
 
-        if ($request_exception) {
-            $id = $request_exception;
-        }
-
         $is_new = 0;
 
         // Sécurité
@@ -386,14 +370,6 @@ class AttendanceController extends BaseController
             $fin1Fr = '';
             $exception_id = $id;
             $id = '';
-        }
-
-        if ($copy) {
-          $id = '';
-        }
-
-        if ($copy or $request_exception) {
-            $action = "ajout";
         }
 
         switch ($nbSemaine) {
@@ -566,7 +542,7 @@ class AttendanceController extends BaseController
                     if ($post['id']) {
                         $msg = urlencode("Le planning a été copié avec succès.");
                     }
-                    $msgType = "notice";
+                    $msgType = "success";
                 }
                 break;
 
@@ -578,7 +554,7 @@ class AttendanceController extends BaseController
                     $msgType = "error";
                 } else {
                     $msg = urlencode("Le planning a été modifié avec succès.");
-                    $msgType = "notice";
+                    $msgType = "success";
                 }
                 break;
 
@@ -590,7 +566,7 @@ class AttendanceController extends BaseController
                     $msgType = "error";
                 } else {
                     $msg = urlencode("Le planning a été modifié avec succès.");
-                    $msgType = "notice";
+                    $msgType = "success";
                 }
                 break;
         }
