@@ -103,7 +103,7 @@ class CalendarController extends BaseController
         }
 
         $db = new \db();
-        $db->select2("pl_poste_verrou", array("site","date"), array("verrou2"=>"1", "date"=>"BETWEEN $debutSQL AND $finSQL"));
+        $db->select2("pl_poste_verrou", array("site","date"), array("verrou2"=>">0", "date"=>"BETWEEN $debutSQL AND $finSQL"));
         if ($db->result) {
             foreach ($db->result as $elem) {
                 $verrou[$elem['site']][]=$elem['date'];
