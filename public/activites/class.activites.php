@@ -44,6 +44,7 @@ class activites
     {
         $activites=array();
         $db=new db();
+        $db->sanitize_string = false;
         if ($this->deleted) {
             $db->select2("activites");
         } else {

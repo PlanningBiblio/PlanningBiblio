@@ -107,9 +107,7 @@ class SkillController extends BaseController
     public function edit(Request $request, Session $session){
         $id =  $request->get('id');
         $CSRFSession = $request->get('CSRFSession');
-        $db = new \db();
-        $db->select2("activites", "*", array("id" => $id)) ;
-        $nom=$db->result[0]['nom'];
+        $nom = $this->entityManager->getRepository(Skill::class)->find($id)->getNom();
         $this->templateParams(array(
             'skill_name'=>$nom,
             'CSRFSession' => $CSRFSession,
@@ -153,6 +151,7 @@ class SkillController extends BaseController
                 }
             }else{
                 $skill = $this->entityManager->getRepository(Skill::class)->find($id);
+                $skill->nom($nom);
                 try{
                     $this->entityManager->persist($skill);
                     $this->entityManager->flush();
