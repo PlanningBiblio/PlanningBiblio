@@ -10,11 +10,11 @@ use Symfony\Component\Routing\Annotation\Route;
 require_once(__DIR__. '/../../public/planningHebdo/class.planningHebdo.php');
 require_once(__DIR__. '/../../public/personnel/class.personnel.php');
 
-class AttendanceController extends BaseController
+class WorkingHourController extends BaseController
 {
 
     /**
-     * @Route("/attendance", name="attendance.index", methods={"GET"})
+     * @Route("/workinghour", name="workinghour.index", methods={"GET"})
      */
     public function index(Request $request, Session $session){
         // Initialisation des variables
@@ -145,6 +145,6 @@ class AttendanceController extends BaseController
                 "tab"   => $tab
             )
         );
-        return $this->output('/attendance/index.html.twig');
+        return $this->output('/workinghour/index.html.twig');
     }
 }
