@@ -20,7 +20,8 @@ class FrameworkController extends BaseController
         $CSRFToken = $request->get("CSRFToken");
         $cfgType = $request->get("cfg-type");
         $cfgTypeGet = $request->get("cfg-type");
-        $tableauNumero = $request->request->get("numero");
+		$frameworkType = $request->get("framework_type");
+		$tableauNumero = $request->request->get("numero");
         $tableauGet = $request->get("numero");
         
         // Choix du tableau
@@ -54,7 +55,8 @@ class FrameworkController extends BaseController
                 $multisites[$i] = $this->config("Multisites-site{$i}");
             }
         }
-          
+        return $this->output('framework/edit.html.twig');
+
     }
 
 }

@@ -1,0 +1,251 @@
+{# framework/edit_tab.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  {% if tableauNumero is null %}
+     <h3>Nouveau tableau</h3>
+  {% else %}
+      <h3>Configuration du tableau "{{ tableauNom }}"</h3>
+  {% endif %}
+  <div id='tabs' class='ui-tabs' data-active='{{ cfgType }}'>
+    <ul>
+      <li><a href='#div_infos' id='infos'>Infos générales</a></li>
+      <li><a href='#div_horaires' id='horaires'>Horaires</a></li>
+      <li><a href='#div_lignes' id='lignes'>Lignes</a></li>
+      <li class='ui-tab-cancel'><a href='{{ asset("framework")}}' >Retour</a></li>
+      <li class='ui-tab-submit'><a href='javascript:tableauxInfos();' class='tableaux-valide'>Valider</a></li>
+    </ul>
+
+    <div id='div_infos'>
+      <div style='min-height:350px;'>
+        <form name='form' action='{{ asset("framework") }}' method='get'>
+          <input type='hidden' name='id' id='id' value='{{ tableauNumero }}' />
+          <input type='hidden' name='framework_type' id='framework_type' value='{{ frameworkType }}' />
+          <h3>Informations générales</h3>
+          <table class='tableauFiche'>
+            <tr>
+              <td>Nom :</td>
+              <td>
+                <input type='text' id='nom' value='{{ tableauNom }}'  style='width:300px;'/>
+              </td>
+            </tr>
+            {% if nbSites > 1 %}
+              <tr>
+                <td>Affecter au site :</td>
+                <td>
+                  <select id='site' style='width:300px;'>
+                    <option value=''>&nbsp;</option>
+                    {% for i in 1..nbSites %}
+                       <option value='{{ i }}' {{ (i==site) ? "selected='selected":" "}} >{{ multisites[i] }}</option>
+                    {% endif %}
+                  </select>
+                </td>
+              </tr>
+            {% else %}
+              <input type='hidden' value='1' id='site' />
+            {% endif %}
+            <tr>
+              <td>Nombre de tableaux :</td>
+              <td>
+                <select name='nombre' id='nombre' style='width:300px;'>
+                  {% for i in 1..16 %}
+                    <option value='{{ i }}' {{ (i == nombre) ? "selected='selected":" "}} >{{ i }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+            </tr>
+          </table>
+        </form>
+      </div>
+      <p class='important'>Important : Vous devez cliquer sur "Valider" avant de changer d'onglet</p>
+    </div>
+
+    <div id='div_horaires' style='display:none;'>
+      <div style='min-height:350px;'>
+        <form name='form2' action='{{asset("framework")}}' method='post'>
+          <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}" />
+          <input type='hidden' name='page' value='planning/postes_cfg/modif.php' />
+          <input type='hidden' name='cfg-type' value='1' />
+          <input type='hidden' name='numero' value="{{ tableauNumero }}" />
+          <input type='hidden' name='action' value='modif' />
+          <h3>Configuration des horaires</h3>
+          {% if tableaux is not empty %}
+            {% for t in tableaux %}
+              {% set numero = loop.index1 %}
+              {% set tableau = t.tableau %}
+              <div id='div_horaires_{{tableau}}' style='display:inline-block; width:200px; vertical-align:top; padding-bottom:30px;'>
+                <table id='tab_horaires_{{tableau}}'>
+                  <tr>
+                    <td colspan='2' ><strong>Tableau {{numero}}</strong></td>
+                  </tr>
+                  {% set i = loop.index0 %}
+                  {% for elem in t.horaires %}
+                    <tr id='tr_{{tableau}}_{{i}}' >
+                      <td>
+                        <select name='debut_{{tableau}}_{{i}}' style='width:75px;' > {{ selectHeure[tableau][i].debut}} </select>
+                      </td>
+                      <td style='width:120px;'>
+                        <select name='fin_{{tableau}}_{{i}}' style='width:75px;' onchange='change_horaires(this);'>{{ selectHeure[tableau][i].fin }}</select>
+                        <span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick="document.form2.debut_{{tableau}}_{{i}}.value='';document.form2.fin_{{tableau}}_{{i}}.value='';$('#tr_{{tableau}}_{{i}}').hide();"></span>
+                      </td>
+                    </tr>
+                    {% set i = i+1 %}
+                  {% endfor %}
+                  {% for j in 0..24 %}
+                    <tr id='tr_{{tableau}}_{{j}}' style='display:none;'>
+                      <td>
+                        <select name='debut_{{tableau}}_{{i}}' style='width:75px;'>{{ selectHeure[tableau][i][j].debut }}</select>
+                      </td>
+                      <td style='width:120px;'>
+                        <select name='fin_{{tableau}}_{{i}}' style='width:75px;' onchange='change_horaires(this);'>{{ selectHeure[tableau][i][j].fin }}</select>
+                        <span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick="document.form2.debut_{{tableau}}_{{i}}.value='';document.form2.fin_{{tableau}}_{{i}}.value='';$('#tr_{{tableau}}_{{j}}').hide();"></span>
+                      </td>
+                    </tr>
+                    {% set i = i+1 %}
+                  {% endfor %}
+                  <tr>
+                    <td>
+                      <span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer' onclick="add_horaires('{{tableau}}');"></span>
+                    </td>
+                  </tr>
+                </table>
+              </div> <!-- tab_horaires_{{tableau}} &amp; div_horaires_{{tableau}} -->
+            {% endfor %}
+          {% endif %}
+       </form>
+     </div>
+      <p class='important'>Important : Vous devez cliquer sur "Valider" avant de changer d'onglet</p>
+    </div>
+
+    <div id='div_lignes' style='display:none;'>
+      <div style='min-height:350px;'>
+        <form name='form4' action='{{ asset("framework") }}' method='post'>
+          <input type='hidden' name='page' value='planning/postes_cfg/modif.php' />
+          <input type='hidden' name='cfg-type' value='lignes' />
+          <input type='hidden' name='numero' value='{{ tableauNumero }}' />
+          <h3>Configuration des lignes</h3>
+          {% if tableauNumero is not null %}
+            <table style='min-width:1250px; width:100%;' cellspacing='0' cellpadding='0' border='1' >
+            {% for tab in tabs %}
+              <tr class='tr_horaires' style='text-align:center;'>
+                <td style='white-space:nowrap;text-align:left;'>
+                  Titre <input type='text' name='select_{{ tab.nom }}Titre_0' class='tr_horaires select_titre' style='text-align:center;white-space:nowrap;' value='{{tab.titre}}'/>&nbsp;
+                  Classe<sup>*</sup>
+                  <input type='text' name='select_{{ tab.nom }}Classe_0' class='tr_horaires select_titre' style='text-align:center;width:120px;' value='{{ tab.classe }}'/>
+                  <a href="javascript:ajout('select_{{ tab.nom }}',-1);">
+                    <span class='pl-icon pl-icon-add' title='Ajouter'></span>
+                  </a>
+                </td>
+                {% for horaire in tab.horaire %}
+                   <td colspan='{{horaire.colspan}}'>{{ horaire.heures }}</td>
+                {% endfor %}
+              </tr>
+              {% for i in 0..100 %}
+                <tr id='tr_select_{{ tab.nom }}_{{ i }}' {{ (i in tab.lignes ? " ": "style='display:none;'")}}>
+                  <td id='td_select_{{ tab.nom }}_{{ i }}_0' style='white-space:nowrap;'>
+                    <select name='select_{{ tab.nom }}_{{ i }}' style='width:200px;color:black;font-weight:normal;' class='tab_select'>
+                      <option value=''>&nbsp;</option>
+                      {% if postes is identable %}
+                        {% for poste in postes %}
+                          <option value='{{ poste.id }}' {{ (tab.lignes[i] and tab.lignes[i]['type'] =="poste" and poste.id==tab.lignes[i]['poste']) ? "selected='selected'" : " " }} class='{{poste.obligatoire=="Obligatoire" ? "td_obligatoire" : "td_renfort"}}'>{{ poste.nom }} ({{ poste.etage }})</option>
+                        {% endfor %}
+                      {% endif %}
+                      {% for ligne_sep in lignes_sep %}
+                        <option value='{{ ligne_sep.id }}Ligne' class='tr_horaires' {{ (tab.lignes[i] and tab.lignes[i]['type'] =="ligne" and ligne_sep.id==tab.lignes[i]['poste']) ? "selected='selected'" : " " }} style='font-weight:normal;'>{{ ligne_sep.nom }}</option>
+                      {% endfor %}
+                    </select>&nbsp;&nbsp;
+                    <a href="javascript:ajout('select_{{ tab.nom }}_',{{ i }});">
+                      <span class='pl-icon pl-icon-add' title='Ajouter'></span>
+                    </a>
+                    <a href="javascript:supprime_tab('{{ tab.nom }}_',{{ i }});">
+                      <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
+                    </a>
+                  </td>
+                  {% for horaire in tab.horaires %}
+                    {% set j = loop.index1 %}
+                    <td id='td_select_{{tab.nom}}_{{i}}_{{j}}' {{ i~'_'~j in tab.cellules_grises == true ? "class='cellule_grise'" : ""}} colspan='".nb30($horaire['debut'], $horaire['fin'])."' style='text-align:center;'>
+                      <input type='checkbox' name='checkbox_{{tab.nom}}_{{i}}_{{j}}' {{ i~'_'~j in tab.cellules_grises == true ? "checked='checked'" : "" }} onclick='couleur2(this,\"td_select_{{tab.nom}}_{{i}}_{{j}}\");'/>
+                    </td>
+                  {% endfor %}
+                  <td id='td_select_{{ tab.nom }}_{{ i }}' colspan='{{ horaire.colspan }}' style='display:none;'>
+                </tr>
+              {% endfor %}
+              <tr class='tr_espace'>
+                <td></td>
+              </tr>
+            {% endfor %}
+           </table>
+          {% endif %}
+        </form>
+      </div>
+      <div class='highlight' style='margin-top:40px;'>
+        <p style='margin-left:30px;'>
+          <sup>* Classe CSS appliqué sur le tableau. Permet d'en personnaliser l'affichage.</sup><br/>
+        </p>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+{% block specificjs %}
+  <script type='text/JavaScript' src="{{ app.request.getBaseURL() }}/planning/postes_cfg/js/tableaux.js"></script>
+  <script type='text/JavaScript'>
+    // Applique la même class que l'option selectionnée au select et au td pour chaque select poste lors du chargement
+    $("document").ready(function(){
+      $(".tab_select").each(function(){
+        var myClass=$(this).find(":selected").attr("class");
+        $(this).removeClass();
+        $(this).addClass("tab_select");
+        $(this).addClass(myClass);
+        $(this).closest("td").removeClass();
+        $(this).closest("td").addClass(myClass);
+      });
+    });
+    // Change la class du select et du td lorsque l'on change d'option dans les listes des postes
+    $(".tab_select").change(function(){
+      var myClass=$(this).find(":selected").attr("class");
+      $(this).removeClass();
+      $(this).addClass("tab_select");
+      $(this).addClass(myClass);
+      $(this).closest("td").removeClass();
+      $(this).closest("td").addClass(myClass);
+    });
+    // Validation AJAX pour éviter le problème de limitation à 1000 éléments en post
+    // N'envoie que les éléments sélectionnés et visibles
+    function configLignes(){
+      tab=new Array();
+      // Récupération des titres
+      $(".select_titre").each(function(){
+        tab.push($(this).attr("name")+"="+$(this).val());
+      });
+      // Récupération des postes
+      $(".tab_select:visible").each(function(){
+        tab.push($(this).attr("name")+"="+$(this).val());
+      });
+      // Récupération des cellules grises
+      $("input[type=checkbox]:checked:visible").each(function(){
+        tab.push($(this).attr("name")+"="+$(this).val());
+      });
+      // La variable data contient tous les éléments à enregistrer
+      var data="id="+$("#id").val();
+      data+="&CSRFToken="+$('#CSRFSession').val();
+      for(elem in tab){
+        data+="&"+tab[elem];
+      }
+      // Enregistrement des données en ajax (fichier ajax.lignes.php)
+      $.ajax({
+        url: "/planning/postes_cfg/ajax.lignes.php",
+        type: "post",
+        data: data,
+        success: function(){
+          CJInfo("Le tableau a été enregistré","highlight");
+          return true;
+        },
+        error: function(){
+          CJInfo("Une erreur est survenue lors de l'enregistrement du tableau.","error");
+          return false;
+        }
+      });
+    }
+  </script>
+{% endblock %}

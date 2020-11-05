@@ -78,7 +78,7 @@ foreach ($tableaux as $elem) {
   
     echo "<tr id='tr-tableau-{$elem['tableau']}' ><td style='white-space:nowrap;'>\n";
     echo "<input type='checkbox' name='chk$i' value='{$elem['tableau']}' class='chk1'/>\n";
-    echo "<a href='index.php?page=planning/postes_cfg/modif.php&amp;numero={$elem['tableau']}'>\n";
+    echo "<a href='/framework/{$elem['tableau']}?framework_type=tableau'>\n";
     echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
     echo "<a href='javascript:popup(\"planning/postes_cfg/copie.php&amp;numero={$elem['tableau']}\",400,260);'>\n";
     echo "<span class='pl-icon pl-icon-copy' title='Copier'></span></a>\n";
@@ -144,7 +144,7 @@ echo "<tbody>\n";
 
 if (is_array($groupes)) {
     foreach ($groupes as $elem) {
-        echo "<tr id='tr-groupe-{$elem['id']}'><td><a href='index.php?page=planning/postes_cfg/groupes.php&amp;id={$elem['id']}'>\n";
+        echo "<tr id='tr-groupe-{$elem['id']}'><td><a href='/framework/id={$elem['id']}?framework_type=groupe'>\n";
         echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
         echo "<a href='javascript:supprimeGroupe({$elem['id']});'>\n";
         echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
@@ -195,7 +195,7 @@ if ($db->result) {
         $delete=$db2->result?false:true;
 
         echo "<tr id='tr-ligne-{$elem['id']}' >\n";
-        echo "<td><a href='index.php?page=planning/postes_cfg/lignes_sep.php&amp;action=modif&amp;id={$elem['id']}'>\n";
+        echo "<td><a href='/framework/{$elem['id']}?framework_type=lignes'>\n";
         echo "<span class='pl-icon pl-icon-edit' title='Modifier'></span></a>\n";
         if ($delete) {
             echo "<a href='javascript:supprimeLigne({$elem['id']});'>\n";
