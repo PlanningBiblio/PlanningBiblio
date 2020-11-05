@@ -91,6 +91,7 @@ Symfonise absence deletion
 
 *** Version 21.04.00       (2021-04-22)   ***
 - Enhancements
+Show non validated planning in personal calendar
 Move function calculPresence in dedicated class (WorkingHours)
 Allows more permissive entries in working hours
 Update DataTable libraries and remove flash buttons
@@ -162,12 +163,6 @@ PHP8, fix wrong use of implode and join functions
 Prevent skills to be deleted if used by agents
 Workinghours exception should take into account weeks turnover
 Mark leaved agents as crossed off when importing models
-
--Fixes
-Remove HTML entities in closig days
-Working hours fixes
-Add validate icon
-Use PHP default timezone.
 
 *** Version 20.10.00       (2020-10-09)   ***
 - Enhancements
