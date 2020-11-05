@@ -57,7 +57,7 @@ if ($id) {
     if (empty($p->elements)) {
         echo "<h3>Heures de présence</h3>\n";
         echo "<p>Les heures demandées ne sont plus accessibles à cette adresse.<br/>\n";
-        echo "Veuillez les rechercher dans le menu menu <a href='index.php?page=planningHebdo/index.php'>Administration / Heures de présence</a></p>\n";
+        echo "Veuillez les rechercher dans le menu menu <a href='/workinghour'>Administration / Heures de présence</a></p>\n";
         include "include/footer.php";
         exit;
     }
@@ -452,7 +452,7 @@ if (!$cle) {
 }
 
 echo "<div id='boutons' style='padding-top:50px;'>\n";
-echo "<input type='button' value='Retour' onclick='location.href=\"index.php?page=$retour\";' class='ui-button' />\n";
+echo "<input type='button' value='Retour' onclick='location.href=\"/workinghour\";' class='ui-button' />\n";
 
 // Si le champ clé est renseigné, les heures de présences ont été importées automatiquement depuis une source externe. Donc pas de modif
 if (($adminN1 or $adminN2) and !$cle) {

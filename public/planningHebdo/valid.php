@@ -37,7 +37,7 @@ switch ($post["action"]) {
         }
         $msgType="success";
     }
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page={$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";
+    echo "<script type='text/JavaScript'>document.location.href='/workinghour?msg=$msg&msgType=$msgType';</script>\n";
     break;
 
   case "modif":
@@ -50,7 +50,7 @@ switch ($post["action"]) {
         $msg=urlencode("Le planning a été modifié avec succès.");
         $msgType="success";
     }
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page={$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";
+    echo "<script type='text/JavaScript'>document.location.href='/workinghour?msg=$msg&msgType=$msgType';</script>\n";
     break;
  
   case "copie":
@@ -63,6 +63,6 @@ switch ($post["action"]) {
         $msg=urlencode("Le planning a été modifié avec succès.");
         $msgType="success";
     }
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page={$post['retour']}&msg=$msg&msgType=$msgType';</script>\n";
+    echo "<script type='text/JavaScript'>document.location.href='/workinghour?msg=$msg&msgType=$msgType';</script>\n";
     break;
 }
