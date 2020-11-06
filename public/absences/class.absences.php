@@ -1669,6 +1669,7 @@ class absences
                 }
 
                 // Mise à jour de SUMMARY
+                $db_summary = html_entity_decode($this->motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
                 $summary = $this->motif == 'Autre' ? $this->motif_autre : $this->motif;
                 $summary = html_entity_decode($summary, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
                 $ics_event = preg_replace("/SUMMARY:.*\n/", "SUMMARY:$summary\n", $ics_event);
@@ -1706,6 +1707,7 @@ class absences
                 $ics->pattern = '[SUMMARY]';
                 $ics->status = 'All';
                 $ics->table ="absences";
+                $ics->db_summary = $db_summary;
                 $ics->logs = true;
                 $ics->CSRFToken = $this->CSRFToken;
                 $ics->updateTable();
