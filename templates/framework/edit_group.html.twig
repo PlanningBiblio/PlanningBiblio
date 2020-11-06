@@ -1,0 +1,59 @@
+{# framework/edit_group.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  <h3>{{ titre }}</h3>
+  <form name='form' method='post' action="{{ asset('framework') }}" onsubmit='return ctrl_form({{champs}});'>
+    <input type='hidden' name='page' value='planning/postes_cfg/groupes2.php' />
+    <input type='hidden' name='id' value="{{ id }}" />
+    <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}" />
+    <table class='tableauFiches'>
+      <tr>
+        <td class='intitule'>Nom du groupe</td>
+        <td>
+          <input type='text' name='nom' id='Nom' value="{{ groupe.nom }}" class='ui-widget-content ui-corner-all' onkeyup='ctrl_nom(this);'/>
+        </td>
+        <td style='padding-left:30px;color:red;'><font id='nom_utilise' style='display:none;'>
+          Ce nom est déjé utilisé</font>
+        </td>
+      </tr>
+      {% if config('Multisites-nombre') > 1 %}
+        <tr>
+          <td class='intitule'>Site</td>
+          <td>
+            <select name='site' id='selectSite' class='ui-widget-content ui-corner-all'>
+              <option value=''>&nbsp;</option>
+              {% for i in 1..config('Multisites-nombre') %}
+                <option value="{{ i }}" {{ groupe.site == i ? "selected='selected'" : ""}}>{{ multisites[i] }}</option>
+              {% endfor %}
+            </select>
+          </td>
+        </tr>
+      {% endif %}
+      <tr>
+        <td colspan='2' style='padding-top:20px;text-align:justify;'>
+          Choisissez les tableaux que vous souhaitez affecter à chacun des jours de la semaine
+        </td>
+      </tr>
+      {% for jour in semaine %}
+        <tr>
+          <td style='padding-left:20px;' class='intitule'>{{ jour }}</td>
+          <td>
+            <select name="{{ jour }}" id="{{ jour }}" class='ui-widget-content ui-corner-all'>
+              <option value=''>&nbsp;</option>
+              {% for tab in tableaux %}
+                <option value="{{ tab[tableau] }}" {{ tab[tableau] == groupe[jour] ? "selected='selected'" : ""}} class='optionSite{{tab.site}} hiddenOptions'>{{ tab.nom }}</option>
+              {% endfor %}
+            </select>
+          </td>
+        </tr>
+      {% endfor %}
+      <tr>
+        <td colspan='2' style='text-align:center;padding-top:20px;'>
+          <input type='button' value='Annuler' onclick="document.location.href='{{ asset('index.php?page=planning/postes_cfg/index.php')}}';" class='ui-button'/>
+          <input type='submit' value='Valider' style='margin-left:30px;' id='submit' class='ui-button'/>
+        </td>
+      </tr>
+    </table>
+  </form>
+{% endblock %}
