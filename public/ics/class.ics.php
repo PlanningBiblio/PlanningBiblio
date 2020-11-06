@@ -394,7 +394,7 @@ class CJICS
                   ":validation" => $validation_n2,
                   ":valide_n1"=> $valide_n1,
                   ":validation_n1" => $validation_n1,
-                  ":motif" => $this->db_summary,
+                  ":motif" => $this->db_summary ? $this->db_summary : $motif,
                   ":motif_autre" => $motif_autre,
                   ":commentaires" => $commentaires,
                   ":groupe" => $groupe,
