@@ -100,4 +100,127 @@ class FrameworkController extends BaseController
         );
         return $this->output("/framework/index.html.twig");
     }
+
+    /**
+     * @Route ("/framework-group/add", name="framework.add_group", methods={"GET"})
+     */
+    public function addGroup (Request $request, Session $session){
+        // Initialisation des variables
+        $id = $request->get("id");
+        $CSRFToken = $GLOBALS['CSRFSession'];
+        $multisites = array();
+
+        if($this->config('Multisites-nombre') > 1){
+            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++){
+                $multisites[$i] = $this->config("Multisites-site{$i}");
+            }
+        }
+
+        //	Recherche des tableaux
+        $t = new \tableau();
+        $t->fetchAll();
+        $tableaux = $t->elements;
+
+        //	Recherche des groupes
+        $t = new \tableau();
+        $t->fetchAllGroups();
+        $groupes = $t->elements;
+
+        $groupe = array("nom" => null, "site" => null);
+
+        $semaine = array("lundi","mardi","mercredi","jeudi","vendredi","samedi");
+        if ($this->config('Dimanche')) {
+            $semaine[] = "dimanche";
+        }
+        $champs = '"Nom,'.join(',', $semaine).'"';	
+
+        $this->templateParams(
+            array(
+                "champs"     => $champs,
+                "CSRFToken"  => $CSRFToken,
+                "id"         => null,
+                "groupe"     => $groupe,
+                "groupes"    => $groupes,
+                "multisites" => $multisites,
+                "semaine"    => $semaine,
+                "tableaux"   => $tableaux
+            )
+        );
+
+        return $this->output('framework/edit_group.html.twig');
+    }
+
+    /**
+     * @Route ("/framework-group/{id}", name="framework.edit_group", methods={"GET"})
+     */
+    public function editGroup (Request $request, Session $session){
+        // Initialisation des variables
+        $id = $request->get("id");
+        $CSRFToken = $GLOBALS['CSRFSession'];
+        $multisites = array();
+
+        if($this->config('Multisites-nombre') > 1){
+            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++){
+                $multisites[$i] = $this->config("Multisites-site{$i}");
+            }
+        }
+
+        //	Recherche des tableaux
+        $t = new \tableau();
+        $t->fetchAll();
+        $tableaux = $t->elements;
+
+        //	Recherche des groupes
+        $t = new \tableau();
+        $t->fetchAllGroups();
+        $groupes = $t->elements;
+
+        //	Modification d'un groupe
+        //	Recherche du groupe
+        $t = new \tableau();
+        $t->fetchGroup($id);
+        $groupe=$t->elements;
+
+        //	Supprime le nom actuel de la liste des noms deja utilises
+        $key = array_keys($groupes, $groupe);
+        unset($groupes[$key[0]]);
+
+
+        $semaine = array("lundi","mardi","mercredi","jeudi","vendredi","samedi"); 
+        if ($this->config('Dimanche')) {
+            $semaine[] = "dimanche";
+        }
+        $champs = '"Nom,'.join(',', $semaine).'"';	//	Pour ctrl_form
+
+        $this->templateParams(
+            array(
+                "champs"     => $champs,
+                "CSRFToken"  => $CSRFToken,
+                "id"         => $id,
+                "groupe"     => $groupe,
+                "groupes"    => $groupes,
+                "multisites" => $multisites,
+                "semaine"    => $semaine,
+                "tableaux"   => $tableaux
+            )
+        );
+
+        return $this->output('framework/edit_group.html.twig');	
+    }   
+    
+    /**
+     * @Route ("/framework-group", name="framework.save_group", methods={"POST"})
+     */
+    public function saveGroup (Request $request, Session $session){
+        $post = $request->request->all();
+        $CSRFToken = $post['CSRFToken'];
+        unset($post['CSRFToken']);
+        unset($post['page']);
+        
+        $t = new \tableau();
+        $t->CSRFToken = $CSRFToken;
+        $t->update($post);
+
+        return $this->redirectToRoute('framework.index');
+    }
 }

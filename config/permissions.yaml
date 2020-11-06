@@ -15,6 +15,12 @@
     - 100
 "framework.index":
     - 22
+"framework.add_group":
+    - 22
+"framework.edit_group":
+    - 22
+"framework.save_group":
+    - 22
 "statistics.index":
     - 17
 "workinghour.index":
