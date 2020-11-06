@@ -1,0 +1,141 @@
+{# framework/edit_lines.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  <div style='min-height:350px;'>
+    <form name='form4' action='index.php' method='post'>
+      <input type='hidden' name='page' value='planning/postes_cfg/modif.php' />
+      <input type='hidden' name='cfg-type' value='lignes' />
+      <input type='hidden' name='numero' value="{{ tableauNumero }}" />
+      <h3>Configuration des lignes</h3>
+      {% if tableauNumero %}
+        <table style='min-width:1250px; width:100%;' cellspacing='0' cellpadding='0' border='1' >
+          {% for tab in tabs %}
+            <tr class='tr_horaires' style='text-align:center;'>
+              <td style='white-space:nowrap;text-align:left;'>
+                Titre <input type='text' name="select_{{ tab.nom }}Titre_0" class='tr_horaires select_titre' style='text-align:center;white-space:nowrap;' value="{{ tab.titre }}"/>&nbsp;
+                Classe<sup>*</sup> <input type='text' name="select_{{ tab.nom }}Classe_0" class='tr_horaires select_titre' style='text-align:center;width:120px;' value="{{ tab.classe }}"/>
+                <a href='javascript:ajout(\"select_{{ tab.nom }}_\",-1);'>
+                  <span class='pl-icon pl-icon-add' title='Ajouter'></span>
+                </a>
+              </td>
+              {% for horaire in tab.horaires %}
+                <td colspan="{{ horaire.colspan }}">{{ horaire.debut }} - {{ horaire.fin }}</td>
+              {% endfor %}
+            </tr>
+            {% for i in 0..99 %}
+              <tr id="tr_select_{{ tab.nom }}_{{ i }}" {{ i in tab.lignes == true ? "" : "style='display:none;'" }}>
+                <td id="td_select_{{ tab.nom }}_{{ i }}_0" style='white-space:nowrap;'>
+                  <select name="select_{{ tab.nom }}_{{ i }}" style='width:200px;color:black;font-weight:normal;' class='tab_select'>
+                    <option value=''>&nbsp;</option>
+                    {% if postes is iterable %}
+                      {% for poste in postes %}
+                        {% set class = poste.obligatoire == "Obligatoire"?"td_obligatoire":"td_renfort" %}  
+                        {% set selected = " " %}
+                        {% if i in tab.lignes == true %}
+                          {% set selected = (tab.lignes[i] is not null and (tab.lignes[i].type == "poste") and (poste.id == tab.lignes[i].poste))? "selected='selected'": " " %}
+                        {% endif %}
+                        <option value="{{ poste.id }}" {{ selected }} class="{{ class }}">{{ poste.nom }} ({{ poste.etage }})</option> 
+                      {% endfor %}
+                    {% endif %}
+                    {% for ligne_sep in lignes_sep %}
+                      {% set selected = " " %}
+                        {% if i in tab.lignes == true %}
+                          {% set selected = ((tab.lignes[i].type == "ligne") and (ligne_sep.id == tab.lignes[i].poste))? "selected='selected'": " "%}
+                        {% endif %}
+                        <option value="{{ ligne_sep.id }}Ligne" class='tr_horaires' {{ selected }} style='font-weight:normal;'>{{ ligne_sep.nom }}</option>
+                    {% endfor %}
+                  </select>&nbsp;&nbsp;
+                  <a href="javascript:ajout('select_{{tab.nom}}_',{{ i }});">
+                    <span class='pl-icon pl-icon-add' title='Ajouter'></span>
+                  </a>
+                  <a href="javascript:supprime_tab('{{ tab.nom }}_',{{ i }});">
+                    <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
+                  </a>
+                </td>
+                {% set j = 1 %}
+                {% for horaire in tab.horaires %}
+                  <td id="td_select_{{ tab.nom }}_{{ i }}_{{ j }}" {{ (i ~'_'~ j in tab.cellules_grises == true ) ? "class='cellule_grise'" : ""}} colspan="{{ horaire.colspan }}" style='text-align:center;'>
+                    <input type='checkbox' name="checkbox_{$tab['nom']}_{{ i }}_{{ j }}" {{ (i ~'_'~ j in tab.cellules_grises == true ) ? "checked='checked'" : ""}} onclick="couleur2(this, 'td_select_{{ tab.nom }}_{{ i }}_{{ j }}');"/> 
+                  </td>
+                  {% set j = j + 1 %}
+                {% endfor %}
+                <td id="td_select_{{ tab.nom }}_{{ i }}" colspan="{{ tab[i].colspan }}" style='display:none;'>
+              </tr>
+            {% endfor %}
+            <tr class='tr_espace'>
+              <td></td>
+            </tr>
+          {% endfor %}
+        </table>
+      {% endif %}
+    </form>
+  </div>
+  <div class='highlight' style='margin-top:40px;'>
+    <p style='margin-left:30px;'>
+      <sup>* Classe CSS appliquée sur le tableau. Permet d'en personnaliser l'affichage.</sup><br/>
+    </p>
+  </div>
+{% endblock %}
+
+{% block specificjs %}
+  <script type='text/JavaScript'>
+    // Applique la même class que l'option selectionnée au select et au td pour chaque select poste lors du chargement
+    $("document").ready(function(){
+      $(".tab_select").each(function(){
+        var myClass=$(this).find(":selected").attr("class");
+        $(this).removeClass();
+        $(this).addClass("tab_select");
+        $(this).addClass(myClass);
+        $(this).closest("td").removeClass();
+        $(this).closest("td").addClass(myClass);
+      });
+    });
+    // Change la class du select et du td lorsque l'on change d'option dans les listes des postes
+    $(".tab_select").change(function(){
+      var myClass=$(this).find(":selected").attr("class");
+      $(this).removeClass();
+      $(this).addClass("tab_select");
+      $(this).addClass(myClass);
+      $(this).closest("td").removeClass();
+      $(this).closest("td").addClass(myClass);
+    });
+    // Validation AJAX pour éviter le problème de limitation à 1000 éléments en post
+    // N'envoie que les éléments sélectionnés et visibles
+    function configLignes(){
+      tab=new Array();
+      // Récupération des titres
+      $(".select_titre").each(function(){
+        tab.push($(this).attr("name")+"="+$(this).val());
+      });
+      // Récupération des postes
+      $(".tab_select:visible").each(function(){
+        tab.push($(this).attr("name")+"="+$(this).val());
+      });
+      // Récupération des cellules grises
+      $("input[type=checkbox]:checked:visible").each(function(){
+        tab.push($(this).attr("name")+"="+$(this).val());
+      });
+      // La variable data contient tous les éléments à enregistrer
+      var data="id="+$("#id").val();
+      data+="&CSRFToken="+$('#CSRFSession').val();
+      for(elem in tab){
+        data+="&"+tab[elem];
+      }
+      // Enregistrement des données en ajax (fichier ajax.lignes.php)
+      $.ajax({
+        url: "/planning/postes_cfg/ajax.lignes.php",
+        type: "post",
+        data: data,
+        success: function(){
+          CJInfo("Le tableau a été enregistré","highlight");
+          return true;
+        },
+        error: function(){
+          CJInfo("Une erreur est survenue lors de l'enregistrement du tableau.","error");
+          return false;
+        }
+      });
+    }
+  </script>
+{% endblock %}
