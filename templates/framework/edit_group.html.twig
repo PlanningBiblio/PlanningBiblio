@@ -1,14 +1,18 @@
 {# framework/edit_group.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% if config('Multisites-nombre') > 1 %}
-  {% block specificjs %}
-    <script type='text/JavaScript'>
-      grp_nom=new Array();
-      {% for elem in groupes %}
-        grp_nom.push({{ elem.nom | lower }});
-      {% endfor %}
-    </script>
+{% block specificjs %}
+  <script type='text/JavaScript' src="{{ app.request.getBaseURL() }}/planning/postes_cfg/js/tableaux.js"></script>
+  <script type='text/JavaScript'>
+    grp_nom=new Array();
+    {% for elem in groupes %}
+      grp_nom.push("{{ elem.nom | lower }}");
+    {% endfor %}
+  </script>
+{% endblock %}
+
+{% block page %}
+  {% if config('Multisites-nombre') > 1 %}
     <script type='text/JavaScript'>
       $(document).ready(function(){
         $(".hiddenOptions").hide();
@@ -20,10 +24,7 @@
         $(".selectTableaux").val("");
       });
     </script>
-  {% endblock %}
-{% endif %}
-
-{% block page %}
+  {% endif %}
   {% if id is not null %}
     <h3> Modification du groupe </h3>
   {% else %}
@@ -39,7 +40,7 @@
           <input type='text' name='nom' id='Nom' value="{{ groupe.nom }}" class='ui-widget-content ui-corner-all' onkeyup='ctrl_nom(this);'/>
         </td>
         <td style='padding-left:30px;color:red;'><font id='nom_utilise' style='display:none;'>
-          Ce nom est déjé utilisé</font>
+          Ce nom est déjà utilisé</font>
         </td>
       </tr>
       {% if config('Multisites-nombre') > 1 %}
@@ -67,7 +68,11 @@
             <select name="{{ jour }}" id="{{ jour }}" class='ui-widget-content ui-corner-all'>
               <option value=''>&nbsp;</option>
               {% for tab in tableaux %}
-                <option value="{{ tab.tableau }}" {{ tab.tableau == groupe[jour] ? "selected='selected'" : ""}} class='optionSite{{tab.site}} hiddenOptions'>{{ tab.nom }}</option>
+                {% if id is null %}
+                  <option value="{{ tab.tableau }}" {{ tab.tableau == groupe.site ? "selected='selected'" : ""}} class='optionSite{{tab.site}} hiddenOptions'>{{ tab.nom }}</option>
+                {% else %}
+                  <option value="{{ tab.tableau }}" {{ tab.tableau == groupe[jour] ? "selected='selected'" : ""}} class='optionSite{{tab.site}} hiddenOptions'>{{ tab.nom }}</option>
+                {% endif %}
               {% endfor %}
             </select>
           </td>
