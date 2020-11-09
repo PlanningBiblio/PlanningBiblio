@@ -70,7 +70,7 @@
   <div id='tableaux-groupes' class='tableaux-cfg' >
     <h3>Groupes</h3>
     <p>
-      <input type='button' value='Nouveau groupe' class='ui-button' onclick='location.href="index.php?page=planning/postes_cfg/groupes.php";' />
+      <input type='button' value='Nouveau groupe' class='ui-button' onclick="location.href='{{ asset("framework-group/add") }}';" />
     </p>
     <table class='CJDataTable' id='table-groups' data-noExport='1' data-sort='[[1,"asc"]]'>
       <thead>
@@ -87,7 +87,7 @@
           {% for groupe in groupes %}
             <tr id='tr-groupe-{{ groupe.id }}'>
               <td>
-                <a href='index.php?page=planning/postes_cfg/groupes.php&id={{ groupe.id }}'>
+                <a href="{{ asset('framework-group') }}/{{ groupe.id }}">
                   <span class='pl-icon pl-icon-edit' title='Modifier'></span>
                 </a>
                 <a href='javascript:supprimeGroupe({{ groupe.id }});'>
