@@ -36,6 +36,14 @@ function supprimeGroupe(id){
           tr.addClass(class2);
           tr=tr.next("tr");
         }
+        var tr=$("#tr-groupe-"+id).next("tr");
+        while(tr.length>0){
+          var class1=tr.attr("class");
+          var class2=class1=="tr1"?"tr2":"tr1";
+          tr.removeClass();
+          tr.addClass(class2);
+          tr=tr.next("tr");
+        }
         $("#tr-groupe-"+id).remove();
         CJInfo("Le groupe \""+nom+"\" a été supprimé avec succès","success");
       },
@@ -91,10 +99,10 @@ function supprimeTableau(tableau){
       data: {tableau: tableau, CSRFToken: CSRFToken},
       success: function(){
         msg=encodeURIComponent("Le tableau \""+nom+"\" a été supprimé avec succès");
-        window.location.href=baseURL + "/framework?msgType=success&msg="+msg;
+        window.location.href = baseURL + "/framework?msgType=success&msg="+msg;
       },
       error: function(result){
-    CJInfo("Une erreur est survenue lors de la suppression du tableau \""+nom+"\"\n"+result.responseText,"error");
+        CJInfo("Une erreur est survenue lors de la suppression du tableau \""+nom+"\"\n"+result.responseText,"error");
       }
     });
   }
@@ -231,7 +239,6 @@ function tableauxInfos(){
 }
 
 $(function(){
-  var baseURL = $("#baseURL").val();
   // Adaptation du bouton de validation en fonction de l'onglet actif (page index.php)
   $("#infos").click(function(){
     $(".tableaux-valide").attr("href","javascript:tableauxInfos();");
@@ -248,25 +255,26 @@ $(function(){
   // Récupération de tableaux supprimés (page index.php)
   $("#tableauxSupprimes").change(function(){
     if($(this).val()){
+      var baseURL = $('#baseURL').val();
       var CSRFToken=$('#CSRFSession').val();
       var id=$(this).val();
       var name=$("#tableauxSupprimes option:selected").text();
 
       if(confirm("Etes vous sûr(e) de vouloir récupérer le tableau \""+name+"\" ?")){
-    $.ajax({
-      url: "/planning/postes_cfg/ajax.recupTableau.php",
-      type: "get",
-      dataType: "json",
-      data: {id:id, CSRFToken: CSRFToken},
-      success: function(){
-        var msg=encodeURIComponent("Le tableau \""+name+"\" a été récupéré avec succès");
-        location.href= baseURL +"/framework?cfg-type=0&msg="+msg+"&msgType=success";
-      },
-      error: function(){
-        var msg=encodeURIComponent("Une erreur est survenue lors de la récupération du tableau \""+name+"\".");
-        location.href= baseURL+"/framework?cfg-type=0&msg="+msg+"&msgType=error";
-      }
-    });
+        $.ajax({
+          url: "/planning/postes_cfg/ajax.recupTableau.php",
+          type: "get",
+          dataType: "json",
+          data: {id:id, CSRFToken: CSRFToken},
+          success: function(){
+            var msg=encodeURIComponent("Le tableau \""+name+"\" a été récupéré avec succès");
+            location.href = baseURL + "/framework?cfg-type=0&msg="+msg+"&msgType=success";
+          },
+          error: function(){
+            var msg=encodeURIComponent("Une erreur est survenue lors de la récupération du tableau \""+name+"\".");
+            location.href = baseURL + "/framework?cfg-type=0&msg="+msg+"&msgType=error";
+          }
+        });
       }
     }
   });
