@@ -621,16 +621,16 @@ $sql[]="INSERT INTO `{$dbprefix}select_categories` (`valeur`,`rang`) VALUES ('Ca
 $sql[]="INSERT INTO `{$dbprefix}select_etages` (`valeur`,`rang`) VALUES ('Mezzanine','1'),('RDC','2'),('RDJ','3'),('Magasins','4');";
 
 //	Insertion des noms des services
-$sql[]="INSERT INTO `{$dbprefix}select_services` (`valeur`,`rang`) VALUES ('P&ocirc;le public', '1');";
-$sql[]="INSERT INTO `{$dbprefix}select_services` (`valeur`,`rang`) VALUES ('P&ocirc;le conservation', '2');";
-$sql[]="INSERT INTO `{$dbprefix}select_services` (`valeur`,`rang`) VALUES ('P&ocirc;le collection', '3');";
-$sql[]="INSERT INTO `{$dbprefix}select_services` (`valeur`,`rang`) VALUES ('P&ocirc;le informatique', '4');";
-$sql[]="INSERT INTO `{$dbprefix}select_services` (`valeur`,`rang`) VALUES ('P&ocirc;le administratif', '5');";
+$sql[]="INSERT INTO `{$dbprefix}select_services` (`valeur`,`rang`) VALUES ('Pôle public', '1');";
+$sql[]="INSERT INTO `{$dbprefix}select_services` (`valeur`,`rang`) VALUES ('Pôle conservation', '2');";
+$sql[]="INSERT INTO `{$dbprefix}select_services` (`valeur`,`rang`) VALUES ('Pôle collection', '3');";
+$sql[]="INSERT INTO `{$dbprefix}select_services` (`valeur`,`rang`) VALUES ('Pôle informatique', '4');";
+$sql[]="INSERT INTO `{$dbprefix}select_services` (`valeur`,`rang`) VALUES ('Pôle administratif', '5');";
 $sql[]="INSERT INTO `{$dbprefix}select_services` (`valeur`,`rang`) VALUES ('Direction', '6');";
 
 //	Insertion des statuts
 $sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VALUES ('Conservateur', '1', '1');";
-$sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VALUES ('Biblioth&eacute;caire', '2', '1');";
+$sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VALUES ('Bibliothécaire', '2', '1');";
 $sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VALUES ('AB', '3', '0');";
 $sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VALUES ('BAS', '4', '2');";
 $sql[]="INSERT INTO `{$dbprefix}select_statuts` (`valeur`,`rang`,`categorie`) VALUES ('Magasinier', '5', '3');";
