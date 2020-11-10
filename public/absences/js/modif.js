@@ -11,9 +11,9 @@ Fichier regroupant les fonctions JavaScript utiles à l'ajout et la modification
 */
 
 $(function() {
-
+  
   $(document).ready(function(){
-
+    
     // Affichage de la liste des agents sélectionnés lors du chargement de la page modif.php
     if($('.perso_ul').length){
       affiche_perso_ul();
@@ -197,7 +197,7 @@ $(function() {
           change_select_perso_ids(id);
         }
       });
-
+      
     } else {
       // Ajoute l'agent choisi dans la liste
       change_select_perso_ids(id);
@@ -205,10 +205,10 @@ $(function() {
 
     // Réinitialise le menu déroulant
     $("#perso_ids").val(0);
-
+    
   });
 
-
+  
   $("#absence-bouton-supprimer").click(function(){
 
     // Suppression d'une absence récurrente
@@ -216,6 +216,7 @@ $(function() {
       $("#recurrence-alert-suppression").dialog('open');
       return false;
     }
+    
     if(confirm("Etes vous sûr de vouloir supprimer cette absence ?")){
       var CSRFToken = $('#CSRFSession').val();
       var baseURL = $('#baseURL').val();
@@ -971,3 +972,4 @@ function supprimeAgent(id){
   $("#hidden"+id).remove();
   affiche_perso_ul();
 }
+
