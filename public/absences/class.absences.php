@@ -1359,7 +1359,6 @@ class absences
         $dtend = preg_replace('/(\d+)\/(\d+)\/(\d+)/', '$3$2$1', $this->fin).'T';
         $dtend .= preg_replace('/(\d+):(\d+):(\d+)/', '$1$2$3', $this->hre_fin);
         $dtstamp = !empty($this->dtstamp) ? $this->dtstamp : gmdate('Ymd\THis\Z');
-        $db_summary = html_entity_decode($this->motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
         $summary = $this->motif_autre ? html_entity_decode($this->motif_autre, ENT_QUOTES|ENT_IGNORE, 'UTF-8') : html_entity_decode($this->motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
         $cal_name = !empty($this->cal_name) ? $this->cal_name : "PlanningBiblio-Absences-$perso_id-$dtstamp";
         $uid = !empty($this->uid) ? $this->uid : $dtstart."_".$dtstamp;
@@ -1447,7 +1446,6 @@ class absences
         $ics->pattern = '[SUMMARY]';
         $ics->status = 'All';
         $ics->table ="absences";
-        $ics->db_summary = $db_summary;
         $ics->logs = true;
         $ics->CSRFToken = $this->CSRFToken;
         $ics->updateTable();
@@ -1548,6 +1546,7 @@ class absences
         }
 
         $db = new db();
+        $db->sanitize_string = false;
         $db->select2('absences_recurrentes', 'event', $where);
     
         if ($db->result) {
@@ -1669,7 +1668,6 @@ class absences
                 }
 
                 // Mise à jour de SUMMARY
-                $db_summary = html_entity_decode($this->motif, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
                 $summary = $this->motif == 'Autre' ? $this->motif_autre : $this->motif;
                 $summary = html_entity_decode($summary, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
                 $ics_event = preg_replace("/SUMMARY:.*\n/", "SUMMARY:$summary\n", $ics_event);
@@ -1707,7 +1705,6 @@ class absences
                 $ics->pattern = '[SUMMARY]';
                 $ics->status = 'All';
                 $ics->table ="absences";
-                $ics->db_summary = $db_summary;
                 $ics->logs = true;
                 $ics->CSRFToken = $this->CSRFToken;
                 $ics->updateTable();

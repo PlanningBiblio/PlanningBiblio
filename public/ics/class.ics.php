@@ -53,7 +53,6 @@ class CJICS
     public $status = 'CONFIRMED';
     public $src=null;
     public $table="absences";
-    public $db_summary = null;
 
     /**
      * purge
@@ -123,6 +122,16 @@ class CJICS
 
         if ($this->logs) {
             logs("Agent #$perso_id : Table: $table, src: $src", "ICS", $CSRFToken);
+        }
+
+        // Get available absences reasons
+        $reasons = array();
+        $db = new db();
+        $db->select('select_abs');
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                $reasons[] = $elem['valeur'];
+            }
         }
 
         // Parse le fichier ICS, le tableau $events contient les événements du fichier ICS
@@ -317,8 +326,14 @@ class CJICS
 
                 // Par défaut, nous mettons dans le champ motif l'information enregistrée dans la config, paramètre ICS-PatternX (ex: Agenda personnel)
                 // Mais nous pouvons mettre l'information présente dans le champ SUMMARY de l'événements. Dans ce cas, il faut préciser $this->pattern = "[SUMMARY]"; (exemple d'utilisation : enregistrement d'absences récurrentes dans Planning Biblio)
+
                 $motif = $this->pattern == '[SUMMARY]' ? $elem['SUMMARY'] : $this->pattern;
-                $motif_autre = $this->pattern == '[SUMMARY]' ? $elem['SUMMARY'] : $this->pattern;
+                $motif_autre = '';
+
+                if (!in_array($motif, $reasons)) {
+                    $motif = 'Autre';
+                    $motif_autre = $elem['SUMMARY'];
+                }
 
                 // Si SUMMARY est enregistré dans le champ motif, on ne le met pas dans le champ description
                 if ($this->pattern == '[SUMMARY]') {
@@ -394,7 +409,7 @@ class CJICS
                   ":validation" => $validation_n2,
                   ":valide_n1"=> $valide_n1,
                   ":validation_n1" => $validation_n1,
-                  ":motif" => $this->db_summary ? $this->db_summary : $motif,
+                  ":motif" => $motif,
                   ":motif_autre" => $motif_autre,
                   ":commentaires" => $commentaires,
                   ":groupe" => $groupe,
