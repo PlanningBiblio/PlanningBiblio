@@ -302,4 +302,99 @@ class FrameworkController extends BaseController
         return $this->redirectToRoute('framework.index', array("msg" => $msg, "msgType" => $msgType));
 
     }
+
+    /**
+     * @Route ("/framework/copy/{id}", name="framework.copy_table", methods={"GET", "POST"})
+     */
+    public function copyTable (Request $request, Session $session){
+
+        // Initilisation des variables
+        $confirm = $request->get('confirm');
+        $CSRFToken = $request->get('CSRFToken');
+        $nom = trim($request->get('nom'));
+        $numero1 = $request->get('id');
+        $confirm = filter_var($confirm, FILTER_CALLBACK, array("options"=>"sanitize_on"));
+
+        if ($confirm) {
+            //		Copie des horaires
+            $values = array();
+            $db = new \db();
+            $db->select2("pl_poste_horaires", array("debut","fin","tableau"), array("numero"=>$numero1), "ORDER BY `tableau`,`debut`,`fin`");
+            if ($db->result) {
+                $this->templateParams(array("result" => $db->result));
+                $db2 = new \db();
+                $db2->select2("pl_poste_tab", array(array("name"=>"MAX(tableau)","as"=>"tableau"),"site"));
+                $numero2 = $db2->result[0]['tableau']+1;
+                foreach ($db->result as $elem) {
+                    if (array_key_exists('tableau', $elem)) {
+                        $values[] = array(":debut"=>$elem['debut'], ":fin"=>$elem['fin'], ":tableau"=>$elem['tableau'], ":numero"=>$numero2);
+                    }
+                }
+                $req = "INSERT INTO `{$dbprefix}pl_poste_horaires` (`debut`,`fin`,`tableau`,`numero`) VALUES (:debut, :fin, :tableau, :numero);";
+                $db2 = new \dbh();
+                $db2->CSRFToken = $CSRFToken;
+                $db2->prepare($req);
+                foreach ($values as $elem) {
+                    $db2->execute($elem);
+                }
+
+                // Récupération du site
+                $db2 = new \db();
+                $db2->select2("pl_poste_tab", "site", array("tableau"=>$numero1));
+                $site=$db2->result[0]["site"];
+
+                // Enregistrement du nouveau tableau
+                $db2 = new \db();
+                $db2->CSRFToken = $CSRFToken;
+                $db2->insert("pl_poste_tab", array("nom"=>$nom ,"tableau"=>$numero2, "site"=>$site));
+            } else {		// par sécurité, si pas d'horaires à  copier, on stop le script pour éviter d'avoir une incohérence dans les numéros de tableaux
+                return $this->redirect('index.php?page=planning/postes_cfg/modif.php', array("cfg-type" => "horaires", "numero" => $numero ));
+
+            }
+
+            //		Copie des lignes
+            $values = array();
+            $db->select2("pl_poste_lignes", array("tableau","ligne","poste","type"), array("numero"=>$numero1), "ORDER BY `tableau`,`ligne`");
+            if ($db->result) {
+                foreach ($db->result as $elem) {
+                    if (array_key_exists('ligne', $elem)) {
+                        $values[] = array(":tableau"=>$elem['tableau'], ":ligne"=>$elem['ligne'], ":poste"=>$elem['poste'], ":type"=>$elem['type'],
+            "numero"=>$numero2);
+                    }
+                }
+                $req = "INSERT INTO `{$dbprefix}pl_poste_lignes` (`tableau`,`ligne`,`poste`,`type`,`numero`) ";
+                $req .= "VALUES (:tableau, :ligne, :poste, :type, :numero)";
+                $db2 = new \dbh();
+                $db2->CSRFToken = $CSRFToken;
+                $db2->prepare($req);
+                foreach ($values as $elem) {
+                    $db2->execute($elem);
+                }
+            }
+
+            //		Copie des cellules grises
+            $values = array();
+            $db->select2("pl_poste_cellules", array("ligne","colonne","tableau"), array("numero"=>$numero1), "ORDER BY `tableau`,`ligne`,`colonne`");
+            if ($db->result) {
+                foreach ($db->result as $elem) {
+                    if (array_key_exists('ligne', $elem) and array_key_exists('colonne', $elem)) {
+                        $values[] = array(":ligne"=>$elem['ligne'], ":colonne"=>$elem['colonne'], ":tableau"=>$elem['tableau'], ":numero"=>$numero2);
+                    }
+                }
+                $req = "INSERT INTO `{$dbprefix}pl_poste_cellules` (`ligne`,`colonne`,`tableau`,`numero`) ";
+                $req .= "VALUES (:ligne, :colonne, :tableau, :numero)";
+                $db2 = new \dbh();
+                $db2->CSRFToken = $CSRFToken;
+                $db2->prepare($req);
+                foreach ($values as $elem) {
+                    $db2->execute($elem);
+                }
+            }
+
+            // Retour à  la page principale
+            return $this->redirectToRoute('framework.index', array("cfg-type" => "horaires", "numero" => $numero2 ));
+        } else {
+            return $this->render('framework/index.html.twig', array("numero1" => $numero1, "CSRFToken" => $CSRFToken));
+        }
+    }
 }
