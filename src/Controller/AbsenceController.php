@@ -12,6 +12,9 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+use \DateTime;
+use \DateTimeZone;
+
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
 
 class AbsenceController extends BaseController
@@ -167,11 +170,11 @@ class AbsenceController extends BaseController
             }
             $checked = $agents_supprimes ? true : null;
         }
-
         $absList = array ();
-        $absLinks = array ();
+
         if ($absences) {
             foreach ($absences as $elem) {
+                $absLinks = array ();
                 // Filtre les agents non-gérés (notamment avec l'option Absences-notifications-agent-par-agent)
                 if ($admin) {
                     $continue = true;
@@ -513,7 +516,7 @@ class AbsenceController extends BaseController
             $ad = new AbsenceDocument();
             $ad->absence_id($result['id']);
             $ad->filename($filename);
-            $ad->date(new \DateTime());
+            $ad->date(new DateTime());
             $this->entityManager->persist($ad);
             $this->entityManager->flush();
             $file->move(__DIR__ . AbsenceDocument::UPLOAD_DIR . $result['id'] . '/' . $ad->id(), $filename);
@@ -582,7 +585,6 @@ class AbsenceController extends BaseController
         $allday = $request->get('allday');
         $groupe = $request->get('groupe');
         $etat = $request->get('etat');
-        $demande = $request->get('demande');
 
         $hre_debut = !empty($hre_debut) ? $hre_debut : '00:00:00';
         $hre_fin = !empty($hre_fin) ? $hre_fin : '23:59:59';
@@ -610,7 +612,6 @@ class AbsenceController extends BaseController
             $a->hre_fin = $hre_fin;
             $a->perso_ids = $perso_ids;
             $a->commentaires = $commentaires;
-            $a->demande = $demande;
             $a->etat = $etat;
             $a->motif = $motif;
             $a->motif_autre = $motif_autre;
