@@ -107,7 +107,7 @@ class SkillController extends BaseController
     public function edit(Request $request, Session $session){
         $id =  $request->get('id');
         $CSRFSession = $request->get('CSRFSession');
-        $nom = $this->entityManager->getRepository(Skill::class)->find($id)->getNom();
+        $nom = $this->entityManager->getRepository(Skill::class)->find($id)->nom();
         $this->templateParams(array(
             'skill_name'=>$nom,
             'CSRFSession' => $CSRFSession,

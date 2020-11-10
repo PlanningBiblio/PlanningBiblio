@@ -21,7 +21,4 @@ class Skill extends PLBEntity{
     /** @Column(type="datetime") **/
     protected $supprime;
 
-    public function getNom(){
-        return $this->nom;
-    }
 }
