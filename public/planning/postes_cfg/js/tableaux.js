@@ -52,7 +52,7 @@ function supprimeLigne(id){
   var nom=$("#td-ligne-"+id+"-nom").text();
   if(confirm("Etes-vous sûr(e) de vouloir supprimer la ligne \""+nom+"\" ?")){
     $.ajax({
-      url: "planning/postes_cfg/ajax.supprimeLigne.php",
+      url: "/planning/postes_cfg/ajax.supprimeLigne.php",
       type: "post",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},

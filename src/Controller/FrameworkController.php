@@ -100,4 +100,88 @@ class FrameworkController extends BaseController
         );
         return $this->output("/framework/index.html.twig");
     }
+
+    /**
+     * @Route ("/framework-line/add", name="framework.add_line", methods={"GET"})
+     */
+    public function addLine (Request $request, Session $session){
+        $CSRFToken = $GLOBALS['CSRFSession'];
+        $id = null;
+        $nom = null;
+
+        $this->templateParams(
+            array(
+                "CSRFToken"    => $CSRFToken,
+                "id"           => $id,
+                "nom"          => $nom
+            )
+        );
+        return $this->output("/framework/edit_lines.html.twig");
+    }
+
+    /**
+     * @Route ("/framework-line/{id}", name="framework.edit_line", methods={"GET"})
+     */
+    public function editLine (Request $request, Session $session){
+        // Initialisation des variables
+        $CSRFToken = $GLOBALS['CSRFSession'];
+        $id = $request->get('id');
+
+        // Récupération de la ligne
+        $db = new \db();
+        $db->sanitize_string = false;
+        $db->select2("lignes", "nom", array("id"=>$id));
+        $nom = $db->result[0]['nom'];
+
+        $this->templateParams(
+            array(
+                "CSRFToken"    => $CSRFToken,
+                "id"           => $id,
+                "nom"          => $nom
+            )
+        );
+        return $this->output("/framework/edit_lines.html.twig");
+    }
+
+    /**
+     * @Route ("/framework-line", name="framework.save_line", methods={"POST"})
+     */
+    public function saveLine (Request $request, Session $session){
+        $post = $request->request->all();
+        $id = $post['id'];
+        $nom = $post['nom'];
+        $CSRFToken = $post['CSRFToken'];
+
+        if ($id){
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->update("lignes", array("nom"=>$nom), array("id"=>$id));
+
+            if(!$db->error){
+                $msg = "La ligne a bien été modifiée." ;
+                $msgType = "success";
+            } else {
+                $msg = "Une erreur a eu lieu lors de la modification de la ligne." ;
+                $msgType = "error";
+            }
+
+        } else {
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->insert("lignes", array("nom"=>$nom));
+
+            if(!$db->error){
+                $msg = "La ligne a bien été enregistrée." ;
+                $msgType = "success";
+            } else {
+                $msg = "Une erreur a eu lieu lors de l'enregistrement de la ligne." ;
+                $msgType = "error";
+            }
+
+        }
+
+        return $this->redirectToRoute('framework.index', array("msg" => $msg, "msgType" => $msgType));
+
+    }
+
 }
