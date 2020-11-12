@@ -94,6 +94,7 @@ class AgentController extends BaseController
         }
 
         $db = new \db();
+        $db->sanitize_string = false;
         $db->select2("select_statuts", null, null, "order by rang");
         $statuts = $db->result;
 
@@ -102,6 +103,7 @@ class AgentController extends BaseController
         // Liste des services
         $services = array();
         $db = new \db();
+        $db->sanitize_string = false;
         $db->select2("select_services", null, null, "ORDER BY `rang`");
         if ($db->result) {
             foreach ($db->result as $elem) {
@@ -231,9 +233,11 @@ class AgentController extends BaseController
 
 
         $db = new \db();
+        $db->sanitize_string = false;
         $db->select2("select_statuts", null, null, "order by rang");
         $statuts = $db->result;
         $db = new \db();
+        $db->sanitize_string = false;
         $db->select2("select_categories", null, null, "order by rang");
         $categories = $db->result;
         $db = new \db();
@@ -809,6 +813,7 @@ class AgentController extends BaseController
         switch ($action) {
           case "ajout":
             $db = new \db();
+            $db->sanitize_string = false;
             $db->select2("personnel", array(array("name"=>"MAX(`id`)", "as"=>"id")));
             $id = $db->result[0]['id']+1;
 
@@ -977,6 +982,7 @@ class AgentController extends BaseController
             $update = array_merge($update, $holidays);
 
             $db = new \db();
+            $db->sanitize_string = false;
             $db->CSRFToken = $CSRFToken;
             $db->update("personnel", $update, array("id" => $id));
 
