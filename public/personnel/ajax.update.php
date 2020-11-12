@@ -42,12 +42,11 @@ $actif = filter_input(INPUT_POST, 'actif', FILTER_SANITIZE_STRING);
 $contrat = filter_input(INPUT_POST, 'contrat', FILTER_SANITIZE_STRING);
 $heures_hebdo = filter_input(INPUT_POST, 'heures_hebdo', FILTER_SANITIZE_STRING);
 $heures_travail = filter_input(INPUT_POST, 'heures_travail', FILTER_SANITIZE_STRING);
-$service = filter_input(INPUT_POST, 'service', FILTER_SANITIZE_STRING);
-$statut = filter_input(INPUT_POST, 'statut', FILTER_SANITIZE_STRING);
+$service = filter_input(INPUT_POST, 'service');
+$statut = filter_input(INPUT_POST, 'statut');
 
 $contrat = htmlentities($contrat, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
-$service = htmlentities($service, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
-$statut = htmlentities($statut, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+
 
 // Skills tab
 $postes = filter_input(INPUT_POST, 'postes', FILTER_SANITIZE_STRING);
