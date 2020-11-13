@@ -37,11 +37,19 @@ require_once(__DIR__.'/init_entitymanager.php');
 require_once(__DIR__.'/init_plugins.php');
 
 // Vérification de la version de la base de données
-// Si la version est différente, mise à jour de la base de données
-if ($version!=$config['Version'] && $version != 'ajax') {
-    require_once(__DIR__.'/../public/setup/maj.php');
-}
+// Si une migration n'a pas été effectuée, on est redirigé sur la page de maintenance
+// FIXME Ceci doit être géré par un Listener
+// FIXME Ceci génère une boucle de redirection lorsque la session n'est pas ouverte
+$path = Request::createFromGlobals()->getPathInfo();
+use App\PlanningBiblio\Migration;
 
+if ($path != '/maintenance'){
+    $migration = new Migration;
+    if($migration->check() != 0){
+        header("Location: /maintenance");
+        exit();
+    }
+}
 // Initialisation des variables
 $request = Request::createFromGlobals();
 
