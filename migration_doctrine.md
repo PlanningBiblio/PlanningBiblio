@@ -52,30 +52,28 @@ Le fichier peut également être écrit au format xml, json ou yaml (sous réser
      		- le nom de l'utilisateur accédant à la base de données
      		- son mot de passe
      		- le nom du driver (ici, pdo_mysql)
-     		
      	- Pour ce faire, il est possible de copier-coller ce code dans le fichier migrations-db.php
+	
 		``` php
-<?php
-        require 'vendor/autoload.php';
-        require 'public/include/config.php';
-        use Doctrine\DBAL\DriverManager;
-        use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
-        use Symfony\Component\Console\Helper\HelperSet;
-        
-        $dbParams = array(
-            'dbname' => $config['dbname'],
-            'user' => $config['dbuser'],
-            'password' => $config['dbpass'],
-            'host' => $config['dbhost'],
-            'port' => $config['dbport'],
-            'driver' => 'pdo_mysql'
-        );
-        
-        return $dbParams;
+		<?php
+			require 'vendor/autoload.php';
+			require 'public/include/config.php';
+			use Doctrine\DBAL\DriverManager;
+			use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
+			use Symfony\Component\Console\Helper\HelperSet;
+
+			$dbParams = array(
+			    'dbname' => $config['dbname'],
+			    'user' => $config['dbuser'],
+			    'password' => $config['dbpass'],
+			    'host' => $config['dbhost'],
+			    'port' => $config['dbport'],
+			    'driver' => 'pdo_mysql'
+			);
+
+			return $dbParams;
         ```
 
-
-​     	     
 
 Pour terminer la configuration, il faudra modifier le fichier **doctrine_migrations.yaml** situé dans le répertoire config/packages :
 
