@@ -16,8 +16,4 @@ $dbParams = array(
     'driver' => 'pdo_mysql'
 );
 
-$connection = DriverManager::getConnection($dbParams);
-
-return new HelperSet([
-    'db' => new ConnectionHelper($connection),
-]);
+return $dbParams;
