@@ -167,7 +167,7 @@ final class Version20201116153145 extends AbstractMigration
     * `up()` détecte la migration qui n'a pas exécutée et d'opérer les changements écrits dans la fonction en base de donnée.
     * `down()` détecte la migration précédemment exécutée pour défaire les modifications écrites dans la méthode up.
     * Les méthodes à appeler dans ces deux fonctions sont :
-      * `addSql`: permet de passer une requête SQL et de l'exécuter dans le DBAL. Dans la requête, il sera possible de passer un tabler pour réaliser des insertions simultanées dans la table, par exemple.
+      * `addSql`: permet de passer une requête SQL et de l'exécuter dans le DBAL. Dans la requête, il sera possible de passer un tableau de paramètres pour réaliser des insertions simultanées dans la table, par exemple.
       * `abortIf` : interrompt la migration à une condition donnée.
       * `skipIf` : passe la migration à une condition donnée.
       * `throwIrreversibleMigrationException` : *dans la méthode down() seulement*, renvoie une exception pour signaler qu'on ne peut pas revenir à la version précédant la migration.
@@ -184,7 +184,7 @@ Certaines sont à relever :
 
 * `./vendor/bin/doctrine-migrations status`, qui affiche le statut des migrations
 * `./vendor/bin/doctrine-migrations execute`, qui exécute une ou plusieurs migrations (il faudra donner le nom de chaque migration). Avec l'option --up ou --down, on peut réaliser une migration ou la défaire. Le tout est fait manuellement
-* `./vendor/bin/doctrine-migrations migrate 'nom_de_la_migration'`, qui effectue la migration de notre choix. Si l'on ne met pas de nom, la migration exécutée par défaut est la dernière version disponible.
+* `./vendor/bin/doctrine-migrations migrate 'nom_de_la_migration'`, qui effectue la migration de notre choix. **Si l'on ne met pas de nom, doctrine-migrations effectuera toutes les migrations détectées comme non-exécutées jusqu'à la dernière version disponible.**
 * `./vendor/bin/doctrine-migrations up-to-date`, qui affiche si l'on est ou pas à jour.
   * <u>**Attention :**</u> si une mise à jour est réalisée manuellement, directement dans la base de données, elle n'est pas détectée et le schéma sera considéré comme "pas mis à jour". Il faudra peut-être ajouter la version dont on a reproduit le comporement de la méthode `up`, avec la commande `./vendor/bin/doctrine-migrations version --add 'nom de la version'` 
 
