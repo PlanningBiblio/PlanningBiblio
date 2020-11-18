@@ -16,7 +16,8 @@ Utilisée par les fichiers du dossier "planning/modeles"
 */
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
-if (!isset($version)) {
+$version = $GLOBALS['version'] ?? null;
+if (!isset($version) and php_sapi_name() != 'cli') {
     include_once "../../include/accessDenied.php";
 }
 

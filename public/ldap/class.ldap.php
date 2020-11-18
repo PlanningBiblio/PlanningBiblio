@@ -15,8 +15,10 @@ Fichier inclus par ldap/auth.php
 */
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
-if (!isset($version)) {
-    include_once "../include/accessDenied.php";
+$version = $GLOBALS['version'] ?? null;
+
+if (!isset($version) and php_sapi_name() != 'cli') {
+    include_once __DIR__."/../include/accessDenied.php";
 }
 
 function authCAS()

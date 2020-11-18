@@ -17,8 +17,10 @@ Ce fichier est appelé par le fichier include/menu.php
 */
 
 // pas de $version=acces direct au fichier => Accès refusé
-if (!isset($version)) {
-    include_once "accessDenied.php";
+$version = $GLOBALS['version'] ?? null;
+
+if (!isset($version) and php_sapi_name() != 'cli') {
+    include_once __DIR__."/accessDenied.php";
 }
 
 class menu
