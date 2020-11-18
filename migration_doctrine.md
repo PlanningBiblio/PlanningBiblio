@@ -9,73 +9,23 @@ La mise en place de la migration avec Doctrine requiert donc la bibliothèque do
 > Quid d'orm-pack ?
 
 Ce pack Symfony permet l'installation de Doctrine sur les projets Symfony à partir de la version 4. Il a lui-même besoin, à son installation, de plusieurs bibliothèques dont  doctrine-migrations.
-**L'installation d'orm-pack permet l'installation de doctrine-migrations.** 
+**L'installation d'orm-pack permet l'installation de doctrine-migrations : orm-pack est déjà installé et requiert doctrine-migrations, donc doctrine-migrations est déjà disponible.**
 Sinon, il faudra lancer cette commande depuis le terminal à la racine du projet : ` composer require doctrine/doctrine-migrations-bundle `
+
 ### Configuration
-Doctrine a besoin de deux fichiers à la racine du projet :
 
- 1. un fichier donnant les informations sur les migrations, migrations.php
- Il suffira de copier/coller la configuration par défaut :
-```php
-<?php  
-return [
-    'table_storage' => [
-        'table_name' => 'doctrine_migration_versions',
-        'version_column_name' => 'version',
-        'version_column_length' => 1024,
-        'executed_at_column_name' => 'executed_at',
-        'execution_time_column_name' => 'execution_time',
-    ],  
+Doctrine a besoin de se connecter à la base de données : cela lui permettra d'ajouter dans un tableau les migrations déjà effectuées.
+Sur le projet PLB, la connexion est déjà établie. On évitera les erreurs de métadonnées en modifiant, dans le fichier **config/packages/doctrine.yaml**, la valeur de server_version :
 
-    'migrations_paths' => [
-        'App\Migrations' => 'src/Migrations',
-    ],  
-
-    'all_or_nothing' => true,
-    'check_database_platform' => true
-];
+```yaml
+doctrine:
+    dbal:
+        #configure these for your database server
+        driver: 'pdo_mysql'
+        server_version: 'maria-db-10.4.15'
 ```
-* *table_storage* est utilisé par doctrine-migrations pour suivre les migrations qui sont actuellement exécutées.
-* *all_or_nothing* est un paramètre permettant d'exécuter ou pas plusieurs migrations en une seule fois.
-* *check_database_platform* est un paramètre déterminant la vérification ou pas de la plateforme d'abstraction de la base de données (plus d'informations [ici](https://www.doctrine-project.org/projects/doctrine-dbal/en/2.4/reference/platforms.html) ) au début du code généré.
 
-Le fichier peut également être écrit au format xml, json ou yaml (sous réserve d'avoir installé le composant yaml). 
-
-
- 2. un fichier php retournant les paramètres de connexion à la base de données
-     - S'il existe déjà un fichier de configuration au format php, il faudra le préciser avec l'option `--db-configuration *nomdufichier*` lors de l'utilisation de la commande `doctrine:migrations`
-      -  Sinon, Doctrine recherche automatiquement le fichier migrations-db.php pour se connecter.
-        - Ce fichier doit renvoyer un tableau contenant les paramètres suivants :
-     		- le nom de l'hôte
-     		- le port pour la connexion
-     		- le nom de la base de données
-     		- le nom de l'utilisateur accédant à la base de données
-     		- son mot de passe
-     		- le nom du driver (ici, pdo_mysql)
-     	- Pour ce faire, il est possible de copier-coller ce code dans le fichier migrations-db.php
-	
-		``` php
-		<?php
-			require 'vendor/autoload.php';
-			require 'public/include/config.php';
-			use Doctrine\DBAL\DriverManager;
-			use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
-			use Symfony\Component\Console\Helper\HelperSet;
-
-			$dbParams = array(
-			    'dbname' => $config['dbname'],
-			    'user' => $config['dbuser'],
-			    'password' => $config['dbpass'],
-			    'host' => $config['dbhost'],
-			    'port' => $config['dbport'],
-			    'driver' => 'pdo_mysql'
-			);
-
-			return $dbParams;
-        ```
-
-
-Pour terminer la configuration, il faudra modifier le fichier **doctrine_migrations.yaml** situé dans le répertoire config/packages :
+Pour terminer la configuration, il suffira de modifier le fichier **doctrine_migrations.yaml** situé dans le répertoire config/packages :
 
 ``` yaml
 doctrine_migrations:
@@ -83,13 +33,11 @@ doctrine_migrations:
     # namespace is arbitrary but should be different from App\Migrations
     # as migrations classes should NOT be autoloaded
     #namespace: DoctrineMigrations
-    migration_paths:
-        'App\Migrations': '%kernel.project_dir%/Migrations'
+    migrations_paths:
+        'App\Migrations': '%kernel.project_dir%/src/Migrations'
 
     connection: default
-    
-    em: default
-    
+
     storage:
         # Default (SQL table) metadata storage configuration
         table_storage:
@@ -111,14 +59,15 @@ doctrine_migrations:
     # Adds an extra check in the generated migrations to ensure that is executed on the same database type.
     check_database_platform: true
 ```
-
-
+* *table_storage* est utilisé par doctrine-migrations pour suivre les migrations qui sont actuellement exécutées.
+* *all_or_nothing* est un paramètre permettant d'exécuter ou pas plusieurs migrations en une seule fois.
+* *check_database_platform* est un paramètre déterminant la vérification ou pas de la plateforme d'abstraction de la base de données (plus d'informations [ici](https://www.doctrine-project.org/projects/doctrine-dbal/en/2.4/reference/platforms.html) ) au début du code généré.
 
 ## Création d'une migration
 
 Toute migration devra être définie dans un fichier placé dans le répertoire **src/Migrations**.
 
-Il est possible de générer un squelette de fichier de migration avec la commande `php bin/console doctrine:migrations:generate`. 
+Il est possible de générer un squelette de fichier de migration avec la commande `php bin/console doctrine:migrations:generate`.
 
 * Si bin/console n'est pas accessible depuis le terminal, il faudra écrire la commande suivante : `./vendor/bin/doctrine-migrations generate` 
 * Les migrations sont nommées automatiquement à la date et l'heure de la création du fichier, ce qui évite d'avoir des conflits de fichiers sur master. Il est toutefois possible de changer le nom de version.  Au même titre pour un controller, il faut que le nom du fichier soit cohérent avec le nom de la classe.
