@@ -53,7 +53,7 @@ require_once(__DIR__.'/init_plugins.php');
 // Vérification de la version de la base de données
 // Si la version est différente, mise à jour de la base de données
 if ($version!=$config['Version']) {
-    require_once(__DIR__.'/setup/maj.php');
+    require_once(__DIR__.'/setup/maintenance.php');
 }
 
 // Initialisation des variables
