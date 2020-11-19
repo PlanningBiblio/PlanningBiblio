@@ -18,7 +18,7 @@ Page appelée par les autres fichiers du dossier personnel
 */
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
-if (!isset($version) and php_sapi_name() != 'cli') {
+if (!$version and php_sapi_name() != 'cli') {
     include_once(__DIR__.'/../include/accessDenied.php');
 }
 

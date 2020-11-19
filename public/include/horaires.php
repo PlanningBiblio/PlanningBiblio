@@ -18,7 +18,7 @@ Mise en forme des heures, soustraction d'horaires,
 // pas de $version=acces direct au fichier => Accès refusé
 $version = $GLOBALS['version'] ?? null;
 
-if (!isset($version) and php_sapi_name() != 'cli') {
+if (!$version and php_sapi_name() != 'cli') {
     include_once __DIR__."/accessDenied.php";
 }
 
