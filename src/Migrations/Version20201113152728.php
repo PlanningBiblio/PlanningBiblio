@@ -22,6 +22,7 @@ final class Version20201113152728 extends AbstractMigration
     {
         $this->addSql('CREATE TABLE example_table (id INT AUTO_INCREMENT NOT NULL, title VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql("UPDATE config SET valeur='20.11.00.002' WHERE nom='Version'");
+        $this->addSql("INSERT INTO acces (nom, groupe_id, groupe, page) VALUES ('Maintenance', 99, '', '/maintenance')");
     }
 
     public function down(Schema $schema) : void

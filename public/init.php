@@ -51,9 +51,39 @@ require_once(__DIR__.'/init_entitymanager.php');
 require_once(__DIR__.'/init_plugins.php');
 
 // Vérification de la version de la base de données
-// Si la version est différente, mise à jour de la base de données
-if ($version!=$config['Version']) {
-    require_once(__DIR__.'/setup/maintenance.php');
+// Si une migration n'a pas été effectuée, on est redirigé sur la page de maintenance
+$current_page = $_SERVER['SCRIPT_NAME'];
+if ($current_page != '/maintenance'){
+    require_once(__DIR__.'/include/db.php');
+    $db = new db();
+    $db->select2("doctrine_migration_versions", "version");
+    $migrated_versions = array();
+    $count = 0;
+
+    $migrations_available = glob('../src/Migrations/*.php');
+
+    foreach ($migrations_available as &$m){
+        $m = "App\Migrations\\".substr($m,18,21);
+    }
+
+    foreach ($db->result as $elem){
+        $migrated_versions[] = $elem;
+    }
+
+    if(empty($migrated_versions)){
+        $count++;
+    } else {
+        foreach($migrated_versions as $mv){
+            if(!in_array($mv, $migrations_available)){
+                $count++;
+            }
+        }
+    }
+
+    if ($count > 0) {
+        header("Location: /maintenance");
+        exit();
+    }
 }
 
 // Initialisation des variables
