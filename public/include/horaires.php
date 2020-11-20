@@ -16,6 +16,8 @@ Mise en forme des heures, soustraction d'horaires,
 */
 
 // pas de $version=acces direct au fichier => Accès refusé
+$version = $GLOBALS['version'] ?? null;
+
 if (!isset($version)) {
     include_once "accessDenied.php";
 }
