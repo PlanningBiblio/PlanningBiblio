@@ -1,7 +1,5 @@
 $( document ).ready(function() {
   checkdate('start');
-  calculCredit();
-  calculRestes();
 
   $('#perso_id').on('change', function() {
     document.location.href="/holiday/new/" + this.value;
@@ -43,6 +41,10 @@ $( document ).ready(function() {
       priority = 'end';
     }
     checkdate(priority);
+
+    // WARNING : Keep functions calculCredit and calculRestes after last checkdate().
+    calculCredit();
+    calculRestes();
   });
 });
 
