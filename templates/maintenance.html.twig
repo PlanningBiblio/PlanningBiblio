@@ -3,5 +3,30 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-    <div id='acces_refuse'>Veuillez mettre à jour votre base de données pour utiliser PlanningBiblio</div>
+    <div id='acces_refuse' style='font-weight:normal;'>
+      <b>Veuillez mettre à jour votre base de données pour utiliser PlanningBiblio</b><br/>
+      {% if not toAdd is empty %}
+        Voici la liste des migrations concernées :<br/>
+        <ul>
+        {% for version in toAdd %}
+          <li> <b>{{ version.version }}</b> </li>
+        {% endfor %}
+        </ul>
+        <p> Voici la commande à exécuter dans votre terminal : <br/>
+          <i> php bin/console doctrine:migrations:migrate </i>
+        </p>
+      {% endif %}
+      {% if not toDelete is empty %}
+        Voici la liste des migrations concernées :<br/>
+        <ul>
+        {% for version in toDelete %}
+          <li> <b>{{ version.version }}</b></li>
+        {% endfor %}
+        </ul>
+        <p> Veuillez revenir à la version précédente, puis exécutez dans votre terminal la commande suivante avant de passer à cette version : <br/>
+          <i>php bin/console doctrine:migrations:execute {% for a in toAdd %} {{ a.version }} {%endfor%} --down</i>
+          <br/>Pensez à copier cette ligne dans votre presse-papiers avant de quitter cette version de PlanningBiblio.
+        </p>
+      {% endif %}
+    </div>
 {% endblock %}
