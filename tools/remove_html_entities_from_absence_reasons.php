@@ -27,15 +27,17 @@ foreach ($tables as $table) {
     $db = new db();
     $db->select2($name, array('id', $field), "`$field` LIKE '%&%'");
 
-    foreach ($db->result as $elem) {
-        $id = $elem['id'];
-        $old = $elem[$field];
+    if (is_array($db->result)) {
+        foreach ($db->result as $elem) {
+            $id = $elem['id'];
+            $old = $elem[$field];
 
-        $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+            $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
 
-        if ($new != $old) {
-            $new = addslashes($new);
-            $sql[] = "UPDATE `{$dbprefix}$name` SET `$field` = '$new' WHERE `id` = '$id';";
+            if ($new != $old) {
+                $new = addslashes($new);
+                $sql[] = "UPDATE `{$dbprefix}$name` SET `$field` = '$new' WHERE `id` = '$id';";
+            }
         }
     }
 }
