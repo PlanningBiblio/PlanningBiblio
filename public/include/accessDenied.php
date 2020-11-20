@@ -74,7 +74,7 @@ if (isset($IPBlocker)) {
 </p>
 </center>
 <div class='footer'>
-PlanningBiblio - Copyright &copy; 2011-2018 - J&eacute;r&ocirc;me Combes - 
+Planning Biblio -
 <a href='http://www.planningbiblio.fr' target='_blank' style='font-size:9pt;'>www.planningbiblio.fr</a>
 </div>
 </body>
