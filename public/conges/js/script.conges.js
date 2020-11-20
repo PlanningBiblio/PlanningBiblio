@@ -28,7 +28,7 @@ function calculCredit(){
   fin=document.form.elements["fin"].value;
   hre_debut=document.form.elements["hre_debut"].value;
   hre_fin=document.form.elements["hre_fin"].value;
-  perso_id=$(".perso_ids_hidden").first().val();
+  perso_id=$(".perso_ids_hidden").first().val() || document.form.elements["perso_id"].value;
   halfday = $('input[name="halfday"]').is(':checked') ? 1 : 0;
   conges_mode = $('#conges-mode').val();
   is_recover = $('#is-recover').val();
@@ -352,14 +352,18 @@ function verifConges(){
 
   // ID des agents
   perso_ids=[];
-  $(".perso_ids_hidden").each(function(){
-    perso_ids.push($(this).val());
-  });
+  if ($("#perso_id").length > 0) {
+      perso_ids.push($("#perso_id").val());
+  } else {
+      $(".perso_ids_hidden").each(function(){
+        perso_ids.push($(this).val());
+      });
 
-  // Si aucun agent n'est sélectionné, on quitte en affichant "Veuillez sélectionner ..."
-  if(perso_ids.length<1){
-    CJInfo("Veuillez sélectionner un ou plusieurs agents","error");
-    return false;
+      // Si aucun agent n'est sélectionné, on quitte en affichant "Veuillez sélectionner ..."
+      if(perso_ids.length<1){
+        CJInfo("Veuillez sélectionner un ou plusieurs agents","error");
+        return false;
+      }
   }
 
   // Variable, convertion des dates au format YYYY-MM-DD
@@ -394,6 +398,7 @@ function verifConges(){
   
 
   // Vérifions si un autre congé a été demandé ou validé
+
   var result=$.ajax({
     url: '/conges/ajax.verifConges.php',
     type: "get",
