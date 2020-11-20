@@ -13,6 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 require_once(__DIR__ . '/../../public/conges/class.conges.php');
 require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
+require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
 
 class HolidayController extends BaseController
 {
@@ -585,6 +586,41 @@ class HolidayController extends BaseController
 
         return $this->output('conges/add.html.twig');
     }
+
+    /**
+     * @Route("/ajax/check-planning", name="ajax.checkplanning", methods={"GET"})
+     */
+    public function checkPlanning(Request $request)
+    {
+        $perso_ids = json_decode($request->get('perso_ids'));
+        $start =dateSQL($request->get('start'));
+        $end =dateSQL($request->get('end'));
+
+        // On consulte le planning de présence de l'agent
+        $message = "";
+        #$p=new \planningHebdo();
+        #$p->debut = $start;
+        #$p->fin = $end;
+        foreach ($perso_ids as $perso_id) {
+            $p=new \planningHebdo();
+            $p->debut = $start;
+            $p->fin = $end;
+            $p->perso_id=$perso_id;
+            $p->valide=true;
+            $p->fetch();
+            // Si le planning n'est pas validé pour l'une des dates, on affiche un message d'erreur et on arrête le calcul
+            if (empty($p->elements)) {
+                $agent = new \personnel();
+                $agent->fetchById($perso_id);
+                $agent_infos = $agent->elements[0];
+                error_log(print_r($agent_infos, 1));
+                $message .= "Impossible de déterminer le nombre d'heures correspondant aux congés demandés pour l'agent " . $agent_infos['prenom'] . " " . $agent_infos['nom'] . ".\n";
+            }
+        }
+        return $this->json($message);
+    }
+
+
 
     private function save($request)
     {

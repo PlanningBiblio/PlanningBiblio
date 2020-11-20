@@ -410,6 +410,27 @@ function verifConges(){
       information("Une erreur est survenue lors de l'enregistrement du congé","error");
     },
   });
+
+  // Vérifions les plannings de présence pour le calcul des crédits
+  if (multipleAgentsSelected()) {
+    var baseURL = $('#baseURL').val();
+    var result=$.ajax({
+        url: baseURL + '/ajax/check-planning/',
+        type: "get",
+        data: "perso_ids="+JSON.stringify(perso_ids)+"&start="+debut+"&end="+fin,
+        async: false,
+        success: function(data){
+          if(data){
+            information(data);
+          }else{
+            $("#form").submit();
+          }
+        },
+        error: function(){
+          information("Une erreur est survenue lors de l'enregistrement du congé","error");
+        },
+    });
+  }
 }
 
 function verifRecup(o){
