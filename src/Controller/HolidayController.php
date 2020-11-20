@@ -598,13 +598,10 @@ class HolidayController extends BaseController
 
         // On consulte le planning de présence de l'agent
         $message = "";
-        #$p=new \planningHebdo();
-        #$p->debut = $start;
-        #$p->fin = $end;
+        $p=new \planningHebdo();
+        $p->debut = $start;
+        $p->fin = $end;
         foreach ($perso_ids as $perso_id) {
-            $p=new \planningHebdo();
-            $p->debut = $start;
-            $p->fin = $end;
             $p->perso_id=$perso_id;
             $p->valide=true;
             $p->fetch();
@@ -613,7 +610,6 @@ class HolidayController extends BaseController
                 $agent = new \personnel();
                 $agent->fetchById($perso_id);
                 $agent_infos = $agent->elements[0];
-                error_log(print_r($agent_infos, 1));
                 $message .= "Impossible de déterminer le nombre d'heures correspondant aux congés demandés pour l'agent " . $agent_infos['prenom'] . " " . $agent_infos['nom'] . ".\n";
             }
         }
