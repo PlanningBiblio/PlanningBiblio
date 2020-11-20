@@ -19,7 +19,7 @@ Inclus dans les autres fichiers PHP du dossier conges
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 $version = $GLOBALS['version'] ?? null;
 
-if (!$version and php_sapi_name() != 'cli') {
+if (!isset($version)) {
     include_once __DIR__."/../include/accessDenied.php";
 }
 

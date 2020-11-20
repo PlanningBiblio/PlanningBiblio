@@ -87,6 +87,6 @@ if (file_exists($custom_options_file)) {
 }
 
 // $version not set means direct access to an unauthorized file ==> load the access denied page
-if (!$version and php_sapi_name() != 'cli') {
+if (!isset($version)) {
   include_once "accessDenied.php";
 }

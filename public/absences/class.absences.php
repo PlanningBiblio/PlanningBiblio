@@ -22,7 +22,7 @@ TODO : Si modification des notifications : adapter le message (lister tous les a
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 $version = $GLOBALS['version'] ?? null;
 
-if (!$version and php_sapi_name() != 'cli') {
+if (!isset($version)) {
     require_once __DIR__."/../include/accessDenied.php";
 }
 
