@@ -17,6 +17,8 @@ Ce fichier est appelé par le fichier include/menu.php
 */
 
 // pas de $version=acces direct au fichier => Accès refusé
+$version = $GLOBALS['version'] ?? null;
+
 if (!isset($version)) {
     include_once "accessDenied.php";
 }
