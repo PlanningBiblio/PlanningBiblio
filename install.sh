@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Check PHP version
+phpversion=$(php -r "echo version_compare(phpversion(), '7.4');");
+if [[ $phpversion -lt 0 ]]; then
+    echo "You need PHP version 7.4 or greater to install Planning Biblio";
+    exit
+fi
+
 # Check if .env.local exists.
 if [[ -f .env.local ]]; then
     echo "The file .env.local exists.";
@@ -193,10 +200,29 @@ php -r "unlink('composer-setup.php');"
 if [[ $updatecomposer = 'yes' && -f composer.lock ]]; then
     echo "Removing composer.lock"
     rm composer.lock
+    if [[ -d vendor ]];then
+        echo "Removing vendor folder"
+        rm -r vendor
+    fi
 fi
 
 # Run composer install
 php composer.phar install
+if [[ $? -eq 2 ]]; then
+    if [[ -d vendor ]];then
+        echo "Removing vendor folder"
+        rm -r vendor
+    fi
+    if [[ -e composer.lock ]];then
+        echo "Removing composer.lock"
+        rm composer.lock
+    fi
+    php composer.phar update
+fi
+
+if [[ $? > 0 ]]; then
+    exit;
+fi
 
 # Remove composer.phar
 php -r "unlink('composer.phar');"
