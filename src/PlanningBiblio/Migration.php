@@ -2,6 +2,7 @@
 
 namespace App\PlanningBiblio;
 
+use App\PlanningBiblio\Migration;
 include_once(__DIR__.'/../../public/include/db.php');
 
 class Migration
@@ -39,7 +40,7 @@ class Migration
                     }
                 }
                 foreach($migrations_available as $ma){
-					if(!in_array($ma, $migrated_versions)){
+                    if(!in_array($ma, $migrated_versions)){
                         $toAdd++;
                     }
                 }
@@ -75,11 +76,15 @@ class Migration
         if(empty($migrated_versions) and !empty($migrations_available)){
             foreach($migrations_available as $ma){
                 $toDisplay[]['version'] = $ma;
+        /*        $version = new $ma;
+                $toDisplay[] = array("version" => $ma, "description" => $version->getDescription());*/
             }
         } elseif (!empty($migrated_versions) and !empty($migrations_available)){
             foreach($migrations_available as $ma){
                 if(!in_array($ma, $migrated_versions)){
                     $toDisplay[]['version'] = $ma;
+                   /* $version = new $ma;
+                    $toDisplay[] = array("version" => $ma, "description" => $version->getDescription());*/
                 }
             }
         }
