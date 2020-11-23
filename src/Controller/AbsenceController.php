@@ -104,8 +104,8 @@ class AbsenceController extends BaseController
         $sites = null;
         if ($nbSites>1) {
             $sites = array();
-            for ($i = 1; $i < 11; $i++) {
-                if (in_array((200 + $i), $droits)) {
+            for ($i = 1; $i < 31; $i++) {
+                if (in_array((200 + $i), $droits) or  in_array((500 + $i), $droits)) {
                     $sites[] = $i;
                 }
             }
@@ -138,6 +138,24 @@ class AbsenceController extends BaseController
             $p->fetch();
             $agents_menu = $p->elements;
 
+            // Filtre pour n'afficher que les agents gérés en configuration multisites
+            if ($nbSites > 1) {
+                foreach ($agents_menu as $k => $v) {
+                    $keep = false;
+                    if (!is_array($v['sites'])) {
+                        unset($agents_menu[$k]);
+                        continue;
+                    }
+                    foreach ($v['sites'] as $site) {
+                        if (in_array($site, $sites)) {
+                            $keep = true;
+                        }
+                    }
+                    if ($keep == false) {
+                        unset($agents_menu[$k]);
+                    }
+                }
+            }
             // Filtre pour n'afficher que les agents gérés si l'option "Absences-notifications-agent-par-agent" est cochée
             if ($this->config('Absences-notifications-agent-par-agent') and !$adminN2) {
                 $tmp = array();
@@ -1252,11 +1270,56 @@ class AbsenceController extends BaseController
     }
 
     private function filterAgents($perso_ids) {
-
         $valid_ids = array();
 
         if (!is_array($perso_ids)) {
             $perso_ids = array($perso_ids);
+        }
+
+        foreach ($perso_ids as $elem) {
+            if (!empty($elem)) {
+                $valid_ids[] = $elem;
+            }
+        }
+
+        // Right "add absences for others"
+        if (in_array(9, $_SESSION['droits'])) {
+            return $valid_ids;
+        }
+
+        // Keep only managed agent on multi-sites mode
+        if ($this->config('Multisites-nombre') > 1 and !$this->config('Absences-notifications-agent-par-agent')) {
+
+            $managed_sites = array();
+            for ($i = 1; $i < 31; $i++) {
+                if (in_array((200 + $i), $_SESSION['droits']) or in_array((500 + $i), $_SESSION['droits'])) {
+                    $managed_sites[] = $i;
+                }
+            }
+
+            $agents = array();
+            $agents_db = $this->entityManager->getRepository(Agent::class)->findBy(array('id' => $valid_ids));
+
+            foreach ($agents_db as $elem) {
+                $agents[$elem->id()] = $elem;
+            }
+
+            foreach ($valid_ids as $k => $v) {
+                $keep = false;
+                $agent_sites = json_decode($agents[$v]->sites());
+                if (!is_array($agent_sites)) {
+                    unset($valid_ids[$k]);
+                    continue;
+                }
+                foreach ($agent_sites as $site) {
+                    if (in_array($site, $managed_sites)) {
+                        $keep = true;
+                    }
+                }
+                if ($keep == false) {
+                    unset($valid_ids[$k]);
+                }
+            }
         }
 
         // If Absences-notifications-agent-par-agent is true,
@@ -1271,16 +1334,9 @@ class AbsenceController extends BaseController
                     $accepted_ids[] = $elem['perso_id'];
                 }
             }
-            foreach ($perso_ids as $elem) {
-                if (!empty($elem) and in_array($elem, $accepted_ids)) {
-                    $valid_ids[] = $elem;
-                }
-            }
-        // If Absences-notifications-agent-par-agent is false we get all agents
-        } else {
-            foreach ($perso_ids as $elem) {
-                if (!empty($elem)) {
-                    $valid_ids[] = $elem;
+            foreach ($valid_ids as $k => $v) {
+                if (!in_array($v, $accepted_ids)) {
+                    unset($valid_ids[$k]);
                 }
             }
         }
