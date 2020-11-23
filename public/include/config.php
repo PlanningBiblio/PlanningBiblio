@@ -64,7 +64,7 @@ $config['secret'] = $_ENV['APP_SECRET'];
 
 $dbprefix = $config['dbprefix'];
 
-include 'db.php';
+include_once 'db.php';
 
 // Get config values from DB
 $db = new db();
