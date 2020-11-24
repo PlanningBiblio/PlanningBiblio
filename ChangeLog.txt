@@ -1,7 +1,13 @@
 *** Unreleased ***
+
+*** Version 20.04.06       (2020-11-24)   ***
 - Enhancements
 Move function calculPresence in dedicated class (WorkingHours)
 Allows more permissive entries in working hours
+
+-Fixes
+fix substraction of absences hours in weekly quota
+Save HTTPS URL in config controller
 
 *** Version 20.04.05       (2020-10-02)   ***
 - Enhancements
