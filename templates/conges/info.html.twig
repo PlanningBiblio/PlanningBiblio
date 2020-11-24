@@ -1,0 +1,45 @@
+{# conges/infos.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  <h3> Information sur les congés </h3>
+  <form method='get' action='index.php' name='form' onsubmit='return verif_form("debut=date1;fin=date2;texte");'>
+    <input type='hidden' name='page' value='conges/infos.php'/>
+    <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}"/>
+    <input type='hidden' name='id' value="{{ id }}"/>
+    <table class='tableauFiches'>
+      <tr>
+        <td> Date de début : </td>
+        <td>
+          <input type='text' name='debut' value="{{ debut }}" class='datepicker'/>
+        </td>
+      </tr>
+      <tr>
+        <td>Date de fin : </td>
+        <td>
+          <input type='text' name='fin' value="{{ fin }}" class='datepicker'/>
+        </td>
+      </tr>
+      <tr>
+        <td>Texte : </td>
+        <td>
+          <textarea name='texte' rows='3' cols='25' class='ui-widget-content ui-corner-all' >{{ texte }}</textarea>
+        </td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td colspan='2'>
+          {% if id != 0 %}
+            <input type='button' value='Supprimer' onclick='document.location.href=\"index.php?page=conges/infos.php&amp;id=$id&amp;suppression=1\";'  class='ui-button'/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          {% endif %}
+          <input type='button' value='Annuler' onclick='document.location.href=index.php?page=conges/index.php;' class='ui-button'/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <input type='submit' value='Valider' class='ui-button'/>
+        </td>
+      </tr>
+    </table>
+  </form>
+{% endblock %}
