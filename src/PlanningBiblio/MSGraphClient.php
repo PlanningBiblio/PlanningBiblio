@@ -256,6 +256,7 @@ class MSGraphClient
     private function sendGet($request, $absolute = false, $retry = 0) {
         $token = $this->oauth->getToken();
         $headers['Authorization'] = "Bearer $token";
+        $response = null;
         try {
             \Unirest\Request::timeout(10);
             $response = \Unirest\Request::get($absolute ? $request : $this->base_url . $request, $headers);
