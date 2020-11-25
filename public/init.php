@@ -56,10 +56,6 @@ use App\PlanningBiblio\Migration;
 
 $migration = new App\PlanningBiblio\Migration;
 
-if ($version!=$config['Version']) {
-    require_once(__DIR__.'/setup/maj.php');
-}
-
 if($_SERVER['SCRIPT_NAME']!='/authentification.php'){
      if($migration->check() != 0){
          header("Location: /maintenance");
