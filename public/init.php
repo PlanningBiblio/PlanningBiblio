@@ -56,9 +56,11 @@ use App\PlanningBiblio\Migration;
 
 $migration = new App\PlanningBiblio\Migration;
 
-if($migration->check() != 0){
-      header("Location: /maintenance");
-      exit();
+if($_SERVER['SCRIPT_NAME']!='authentification.php']){
+    if($migration->check() != 0){
+        header("Location: /maintenance");
+        exit();
+    }
 }
 
 // Initialisation des variables
