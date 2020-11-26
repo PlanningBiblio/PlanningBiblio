@@ -64,7 +64,7 @@ $config['secret'] = $_ENV['APP_SECRET'];
 
 $dbprefix = $config['dbprefix'];
 
-include 'db.php';
+include_once 'db.php';
 
 // Get config values from DB
 $db = new db();
@@ -87,6 +87,6 @@ if (file_exists($custom_options_file)) {
 }
 
 // $version not set means direct access to an unauthorized file ==> load the access denied page
-if (!isset($version) and php_sapi_name() != 'cli') {
+if (!isset($version)) {
   include_once "accessDenied.php";
 }

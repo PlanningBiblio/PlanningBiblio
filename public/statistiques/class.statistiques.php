@@ -17,8 +17,10 @@ Utilisée par les fichiers du dossier "statistiques"
 */
 
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
+$version = $GLOBALS['version'] ?? null;
+
 if (!isset($version)) {
-    include_once "../include/accessDenied.php";
+    include_once __DIR__."/../include/accessDenied.php";
 }
 
 // AJouter les html_entity_decode latin1

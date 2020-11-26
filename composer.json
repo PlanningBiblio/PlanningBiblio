@@ -12,8 +12,13 @@
         },
         {
             "name": "Matthias Meusburger",
-            "email": "matthias.meusburger@biblibre.com"            
+            "email": "matthias.meusburger@biblibre.com"
+        },
+        {
+            "name": "Sarah Deborde",
+            "email": "sarah.deborde@biblibre.com"
         }
+
     ],
     "license": "GPL-2.0-or-later",
     "require": {

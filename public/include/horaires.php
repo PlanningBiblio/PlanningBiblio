@@ -16,8 +16,10 @@ Mise en forme des heures, soustraction d'horaires,
 */
 
 // pas de $version=acces direct au fichier => Accès refusé
+$version = $GLOBALS['version'] ?? null;
+
 if (!isset($version)) {
-    include_once "accessDenied.php";
+    include_once __DIR__."/accessDenied.php";
 }
 
 function diff_heures($debut, $fin, $format)
