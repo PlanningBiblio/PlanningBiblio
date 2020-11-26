@@ -47,9 +47,12 @@ class Migration
         if ($toAdd == 0 and $toDelete == 0){
             $count = 0;
         } else {
-            $count = array("available" => $toAdd, "excess" => $toDelete);
+            if ($toAdd == 0 or $toDelete > $toAdd){
+                $count -= $toDelete;
+            } else{
+                $count += $toAdd;
+            }
         }
-
         return $count;
     }
 

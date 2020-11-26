@@ -21,11 +21,11 @@ class MaintenanceController extends BaseController
         $display_add = array();
         $display_delete = array();
 
-        if ($check['available'] > 0){
+        if ($check > 0){
             $display_add = $migration->toUp();
         }
 
-        if ($check['excess'] > 0){
+        if ($check < 0){
             $display_delete = $migration->toDown();
         }
 
