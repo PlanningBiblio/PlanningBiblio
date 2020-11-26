@@ -4,29 +4,37 @@
 
 {% block page %}
     <div id='acces_refuse' style='font-weight:normal;'>
-      <b>Veuillez mettre à jour votre base de données pour utiliser PlanningBiblio</b><br/>
-      {% if not toAdd is empty %}
-        Voici la liste des migrations concernées :<br/>
-        <ul>
-        {% for version in toAdd %}
-          <li> <b>{{ version.version }}</b> </li>
-        {% endfor %}
-        </ul>
-        <p> Voici la commande à exécuter dans votre terminal : <br/>
-          <i> php bin/console doctrine:migrations:migrate </i>
-        </p>
+      <h1>Veuillez mettre à jour votre base de données pour utiliser PlanningBiblio</h1>
+      {% if not toAdd is empty and not toDelete is empty %}
+        <p style='color:red;'> Les migrations incompatibles sont à traiter <b><u>AVANT</u></b> les migrations disponibles</p>
+      {% endif %}
+      <br/>
+      {% if not toAdd is empty and not toDelete is empty %}
+        <hr/>
       {% endif %}
       {% if not toDelete is empty %}
-        Voici la liste des migrations concernées :<br/>
-        <ul>
+        <h3 style='text-align:left;'>Voici la liste des migrations incompatibles avec votre version de PlanningBiblio : </h3>
+        <ul style='text-align:left;'>
         {% for version in toDelete %}
           <li> <b>{{ version.version }}</b></li>
         {% endfor %}
         </ul>
-        <p> Veuillez revenir à la version précédente, puis exécutez dans votre terminal la commande suivante avant de passer à cette version : <br/>
+        <p style='text-align:left;'> Veuillez revenir à la version précédente, puis exécutez dans votre terminal la commande suivante avant de passer à cette version : <br/> <br/>
           <i>php bin/console doctrine:migrations:execute {% for a in toAdd %} {{ a.version }} {%endfor%} --down</i>
-          <br/>Pensez à copier cette ligne dans votre presse-papiers avant de quitter cette version de PlanningBiblio.
+          <br/><br/>Pensez à copier cette ligne dans votre presse-papiers avant de quitter cette version de PlanningBiblio.
         </p>
+      {% endif %}
+      {% if not toAdd is empty and not toDelete is empty %}
+        <hr/>
+      {% endif %}
+      {% if not toAdd is empty %}
+        <h3 style='text-align:left;'>Voici la liste des migrations disponibles à l'ajout :</h3>
+        <ul style='text-align:left;'>
+        {% for version in toAdd %}
+          <li> <b>{{ version.version }}</b> </li>
+        {% endfor %}
+        </ul>
+        <p style='text-align:left;'> Pour les intégrer, veuillez exécuter la commande suivante dans votre terminal :<i> php bin/console doctrine:migrations:migrate </i></p>
       {% endif %}
     </div>
 {% endblock %}

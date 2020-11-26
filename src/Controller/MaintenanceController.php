@@ -26,7 +26,7 @@ class MaintenanceController extends BaseController
         }
 
         if ($check['excess'] > 0){
-            $display_add = $migration->toDown();
+            $display_delete = $migration->toDown();
         }
 
         $this->templateParams(

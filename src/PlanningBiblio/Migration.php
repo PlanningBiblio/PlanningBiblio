@@ -94,6 +94,14 @@ class Migration
         $migrated_versions = array();
         $toDisplay = array();
 
+        $migrations_available = glob('../src/Migrations/*.php');
+
+        if(!empty($migrations_available)){
+            foreach ($migrations_available as &$m){
+                $m = "App\Migrations\\".substr($m,18,21);
+            }
+        }
+
         foreach ($data->result as $elem){
             $migrated_versions[] = $elem['version'];
         }
