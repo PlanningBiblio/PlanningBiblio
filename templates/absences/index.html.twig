@@ -2,6 +2,9 @@
 
 {% extends 'base.html.twig' %}
 
+{% block specificjs %}
+  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/absences/js/voir.js'></script>
+{% endblock %}
 
 {% block page %}
 

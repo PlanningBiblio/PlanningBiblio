@@ -44,6 +44,12 @@ class AbsenceController extends BaseController
         $p->fetch();
         $agents = $p->elements;
 
+        if ($reset) {
+            $debut=null;
+            $fin=null;
+            $agents_supprimes=false;
+        }
+
         $temporary = array();
         foreach ($agents as $elem){
             if ($elem['id']>2){
