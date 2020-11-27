@@ -556,7 +556,7 @@ class AbsenceController extends BaseController
             $session->getFlashBag()->add('notice', urldecode($result['msg']));
         }
 
-        if ($result['msg2'] != " "){
+        if ($result['msg2'] != ""){
             $session->getFlashBag()->add('error', urldecode($result['msg2']));
         }
         return $this->redirectToRoute('absence.index');
