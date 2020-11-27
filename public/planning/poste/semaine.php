@@ -1,13 +1,11 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
 
-Fichier : planning/poste/semaine.php
-Création : 26 mai 2014
-Dernière modification : 10 mars 2018
+@file public/planning/poste/semaine.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Farid Goara <farid.goara@u-pem.fr>
 
@@ -21,6 +19,7 @@ Cette page est appelée par la page index.php
 require_once "class.planning.php";
 require_once "planning/postes_cfg/class.tableaux.php";
 include_once "absences/class.absences.php";
+include_once __DIR__ . "/../../conges/class.conges.php";
 include_once "activites/class.activites.php";
 include_once "personnel/class.personnel.php";
 include "fonctions.php";
@@ -317,9 +316,13 @@ for ($j=0;$j<=$fin;$j++) {
         usort($absences, "cmp_nom_prenom_debut_fin");
 
         // Informations sur les congés
+        $conges = array();
+        global $conges;
         if ($config['Conges-Enable']) {
-            include "conges/planning_cellules.php";
+            $c = new conges();
+            $conges = $c->all($date.' 00:00:00', $date.' 23:59:59');
         }
+
         //--------------	FIN Recherche des infos cellules	------------//
   
         //--------------	Affichage du tableau			------------//
