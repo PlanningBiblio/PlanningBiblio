@@ -218,12 +218,13 @@ class AbsenceController extends BaseController
                 $nom_n1b = $elem['valide_n1'] != -99999 ? nom(-$elem['valide_n1'], 'nom p', $agents).", " : null;
                 $nom_n2a = $elem['valide'] != 99999 ? nom($elem['valide'], 'nom p', $agents).", " : null;
                 $nom_n2b = $elem['valide'] != -99999 ? nom(-$elem['valide'], 'nom p', $agents).", " : null;
-                $etat = "Demand&eacute;e";
+                $etat = "Demandé";
                 $etat = $elem['valide_n1'] > 0 ? "En attente de validation hierarchique, $nom_n1a".dateFr($elem['validation_n1'], true) : $etat;
                 $etat = $elem['valide_n1'] < 0 ? "En attente de validation hierarchique, $nom_n1b".dateFr($elem['validation_n1'], true) : $etat;
-                $etat = $elem['valide'] > 0 ? "Valid&eacute;e, $nom_n2a".dateFr($elem['validation'], true) : $etat;
-                $etat = $elem['valide'] < 0 ? "Refus&eacute;e, $nom_n2b".dateFr($elem['validation'], true) : $etat;
+                $etat = $elem['valide'] > 0 ? "Validé, $nom_n2a".dateFr($elem['validation'], true) : $etat;
+                $etat = $elem['valide'] < 0 ? "Refusé, $nom_n2b".dateFr($elem['validation'], true) : $etat;
 
+                $valide = $elem['valide'];
                 $begin = dateFr($elem['debut'], true);
                 $end = dateFr($elem['fin'], true);
 
@@ -257,7 +258,8 @@ class AbsenceController extends BaseController
                   'end'           => $end,
                   'pj1'           => $pj1,
                   'pj2'           => $pj2,
-                  'so'            => $so
+                  'so'            => $so,
+                  'valide'        => $valide
                 );
 
             }
