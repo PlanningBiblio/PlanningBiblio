@@ -278,6 +278,27 @@ function calculRestes(){
     $("#reliquat4").text(heure4(reliquat));
     $("#credit4").text(heure4(credit));
     $("#anticipation4").text(heure4(anticipation));
+    if ($('#hours_per_day').val()) {
+      var hours_per_day = $('#hours_per_day').val();
+      if (reliquat != 0) {
+        days = reliquat / hours_per_day;
+        days = Math.round(days * 100) / 100;
+        days = days > 1 ? ' / ' + days + ' jours' : ' / ' + days + ' jour';
+        $("#reliquat4").append(days);
+      }
+      if (credit != 0) {
+        days = credit / hours_per_day;
+        days = Math.round(days * 100) / 100;
+        days = days > 1 ? ' / ' + days + ' jours' : ' / ' + days + ' jour';
+        $("#credit4").append(days);
+      }
+      if (anticipation != 0) {
+        days = anticipation / hours_per_day;
+        days = Math.round(days * 100) / 100;
+        days = days > 1 ? ' / ' + days + ' jours' : ' / ' + days + ' jour';
+        $("#anticipation4").append(days);
+      }
+    }
   }
 }
 
