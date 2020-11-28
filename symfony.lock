@@ -250,6 +250,9 @@
     "symfony/dependency-injection": {
         "version": "v3.4.40"
     },
+    "symfony/deprecation-contracts": {
+        "version": "v2.2.0"
+    },
     "symfony/doctrine-bridge": {
         "version": "v3.4.40"
     },
