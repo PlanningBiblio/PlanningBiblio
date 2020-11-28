@@ -215,7 +215,10 @@
 
       {% if conges_mode == 'heures' and hours_per_day is defined %}
         <tr>
-          <td>Nombre de jours ({{ hours_per_day }}h/jour) : </td>
+          <td>
+            Nombre de jours ({{ hours_per_day }}h/jour) :
+            <input type='hidden' name='hours_per_day' id='hours_per_day' value = '{{ hours_per_day }}' />
+          </td>
           <td>
             <div id='nbJours' style='padding:0 5px; width:50px;'></div>
           </td>
@@ -275,7 +278,7 @@
                 {% if conges_recuperations == 0 %}
                   <tr>
                     <td style='width:348px;'>Reliquat : </td>
-                    <td style='width:130px;'>{{ reliquat2 }}</td>
+                    <td style='width:130px;'>{{ reliquat2 }} {{ reliquat_jours }}</td>
                     <td>(après débit : <font id='reliquat4'>{{ reliquat2 }}</font>)</td>
                   </tr>
 
@@ -293,13 +296,13 @@
 
                   <tr>
                     <td>Crédit de congés: </td>
-                    <td>{{ credit2 }}</td>
+                    <td>{{ credit2 }} {{ credit_jours }}</td>
                     <td><font id='credit3'>(après débit : <font id='credit4'>{{ credit2 }}</font>)</font></td>
                   </tr>
 
                   <tr>
                     <td>Solde débiteur : </td>
-                    <td>{{ anticipation2 }}</td>
+                    <td>{{ anticipation2 }} {{ anticipation_jours }}</td>
                     <td><font id='anticipation3'>(après débit : <font id='anticipation4'>{{ anticipation2 }}</font>)</font></td>
                   </tr>
 
@@ -307,19 +310,19 @@
                   {% if debit == 'credit' %}
                     <tr>
                       <td style='width:348px;'>Reliquat : </td>
-                      <td style='width:130px;'>{{ reliquat2 }}</td>
+                      <td style='width:130px;'>{{ reliquat2 }} {{ reliquat_jours }}</td>
                       <td>(après débit : <font id='reliquat4'>{{ reliquat2 }}</font>)</td>
                     </tr>
 
                     <tr>
                       <td>Crédit de congés: </td>
-                      <td>{{ credit2 }}</td>
+                      <td>{{ credit2 }} {{ credit_jours }}</td>
                       <td><font id='credit3'>(après débit : <font id='credit4'>{{ credit2 }}</font>)</font></td>
                     </tr>
 
                     <tr>
                       <td>Solde débiteur : </td>
-                      <td>{{ anticipation2 }}</td>
+                      <td>{{ anticipation2 }} {{ anticipation_jours }}</td>
                       <td><font id='anticipation3'>(après débit : <font id='anticipation4'>{{ anticipation2 }}</font>)</font></td>
                     </tr>
                   {% else %}

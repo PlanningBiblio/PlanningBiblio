@@ -177,10 +177,22 @@ class HolidayHelper extends BaseHelper
         return -1;
     }
 
-    public function hoursToDays($given_hours, $perso_id, $holidays_hours_per_year = null) {
-        if (!isset($given_hours) || $given_hours == '') { return 0; }
+    public function hoursToDays($given_hours, $perso_id, $holidays_hours_per_year = null, $human_readable = false) {
+        if (empty($given_hours) and !$human_readable) { return 0; }
+        if (empty($given_hours) and $human_readable) { return null; }
+
         $hours_per_day = ($holidays_hours_per_year == null) ? $this->hoursPerDay($perso_id) : $this->hoursPerDay(null, $holidays_hours_per_year);
-        return round($given_hours / $hours_per_day, 2);
+
+        $result = round($given_hours / $hours_per_day, 2);
+
+        if ($human_readable) {
+            if (empty($result)) {
+                return null;
+            }
+            return $result  > 1 ? ' / ' . $result . ' jours' : ' / ' . $result . ' jour';
+        }
+
+        return $result;
     }
 
     public function showHoursToDays() {
