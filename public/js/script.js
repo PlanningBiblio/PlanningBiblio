@@ -390,6 +390,12 @@ function deleteAdminInfo(id) {
     }
 }
 
+function deleteHolidayInfo(id) {
+    if (confirm("Etes vous sûr(e) de vouloir supprimer cette information ?")) {
+        $('#form').prepend("<input type='hidden' name='_method' value='DEL' />");
+        $('#form').submit();
+    }
+}
 
 function diffMinutes(debut,fin){		// Calcul la différence en minutes entre 2 heures (formats H:i:s)
   var d=new Date("Mon, 26 Aug 2013 "+debut);

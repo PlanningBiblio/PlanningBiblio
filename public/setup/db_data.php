@@ -94,7 +94,7 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Cong�
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Nouveau','100','/holiday/add');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Modifier','100','/holiday/edit');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe`,`groupe_id`,`categorie`,`ordre`) VALUES ('Gestion des congés, validation niveau 2','Gestion des congés, validation niveau 2',601,'Congés','76');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Infos','100','conges/infos.php');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Infos','100','/holiday-info');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - récuperations','100','conges/recuperations.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Congés - Récupération','100','conges/recuperation_modif.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`categorie`,`ordre`) VALUES ('Gestion des congés, validation niveau 1','401','Gestion des congés, validation niveau 1','Congés','75');";
@@ -412,7 +412,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('15','20','Poser des congés','/holiday/add','config=Conges-Enable'),
   ('15','24','Poser des récupérations','conges/recup_pose.php','config=Conges-Enable;Conges-Recuperations'),
   ('15','26','Récupérations','conges/recuperations.php','config=Conges-Enable'),
-  ('15','30','Informations','conges/infos.php','config=Conges-Enable'),
+  ('15','30','Informations','/holiday-info','config=Conges-Enable'),
   ('15','40','Crédits','conges/credits.php','config=Conges-Enable'),
   ('20','0','Agenda','agenda/index.php',NULL),
   ('30','0','Planning','planning/poste/index.php',NULL),
