@@ -1,4 +1,6 @@
 *** Unreleased ***
+
+*** Version 20.10.01       (2020-11-30)   ***
 - Enhancements
 Display disabled planno-break-timepickers in black
 Holiday: dynamically get current holiday credits (multi-agents form)
