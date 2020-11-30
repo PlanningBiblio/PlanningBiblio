@@ -1,4 +1,6 @@
 *** Unreleased ***
+
+*** Version 20.10.01       (2020-11-30)   ***
 - Enhancements
 Move function calculPresence in dedicated class (WorkingHours)
 Allows more permissive entries in working hours
