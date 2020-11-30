@@ -4,6 +4,10 @@ Move function calculPresence in dedicated class (WorkingHours)
 Allows more permissive entries in working hours
 Update DataTable libraries and remove flash buttons
 Use APP_ENV in legacy code (config.php) and move uploaded files
+Upgrade PHP to 7.4 in composer.json
+Update install.sh : check if PHP version > 7.4, run composer update if needed
+Upgrade symfony/flex to release 1.9.8
+
 
 -Fixes
 Remove HTML entities in closing days
@@ -11,6 +15,9 @@ Working hours fixes
 Add validate icon
 Use PHP default timezone.
 Keep absence's other reason when there is recurrence
+Fix display of agents on vacation on the week schedules
+Prevent warnings in script tools/remove_html_entities_from_absences_reasons.php
+Prevent the redirection to the 'access denied' page on cli and symfony mode
 
 *** Version 20.10.00       (2020-10-09)   ***
 - Enhancements
