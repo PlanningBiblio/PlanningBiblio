@@ -227,6 +227,7 @@ Move planning framework choice in dedicated twig template
 Move planning's menu html code in dedicated twig template
 Functional tests ability
 Show agents firstname and surname in workinghours list
+Absences multi-sites: show only managed agents in list and in add form
 
 -Fixes
 Remove HTML entities in closing days
@@ -254,6 +255,7 @@ PHP8, fix wrong use of implode and join functions
 Prevent skills to be deleted if used by agents
 Workinghours exception should take into account weeks turnover
 Mark leaved agents as crossed off when importing models
+[BSG] Show non validated planning in personal calendar
 
 *** Version 20.10.00       (2020-10-09)   ***
 - Enhancements
