@@ -1,15 +1,15 @@
 <?php
 
-use Symfony\Component\ClassLoader\ClassMapGenerator;
-use Symfony\Component\ClassLoader\MapClassLoader;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 $dispatcher = new EventDispatcher();
 
 if (file_exists(__DIR__ . '/../plugins')) {
-    $mapping = ClassMapGenerator::createMap(__DIR__ . '/../plugins');
-    $loader = new MapClassLoader($mapping);
+    $path = array(__DIR__.'/../plugins');
+    $loader = new \Composer\Autoload\ClassLoader();
+    $loader->addClassMap($path);
     $loader->register();
+
 
     foreach ($mapping as $className => $classPath){
         require_once($classPath);

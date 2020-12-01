@@ -21,7 +21,7 @@ class ControllerAuthorizationListener
         'ajax.changepassword' => array(21),
     );
 
-    public function __construct(\Twig_Environment $twig)
+    public function __construct(\Twig\Environment $twig)
     {
         $this->twig = $twig;
 
