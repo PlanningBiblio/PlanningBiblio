@@ -1,4 +1,3 @@
-
 <?php
 
 namespace App\Controller;
@@ -15,19 +14,18 @@ require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
 class NotificationController extends BaseController {
 
     /**
-     * @Route("/notification", name="notification.index", methods={"GET", "POST"})
+     * @Route("/notification", name="notification.index", methods={"GET"})
      */
     public function index(Request $request){
         // Initialisation des variables
+        $nbSites = $this->config("Multisites-nombre");
         $actif = $request->get("actif");
+        $agents_liste = array();
 
         if (!$actif) {
             $actif = isset($_SESSION['perso_actif']) ? $_SESSION['perso_actif'] : 'Actif';
         }
         $_SESSION['perso_actif'] = $actif;
-
-        $option1 = $actif == 'Actif' ? "selected='selected'" : null;
-        $option2 = $actif == 'Inactif' ? "selected='selected'" : null;
 
         $p = new \personnel();
         $p->supprime = array(0);
@@ -38,25 +36,28 @@ class NotificationController extends BaseController {
         // Agents ayant les droits de validation d'absence N1
         $agents_responsables = array();
         foreach ($agents as $elem) {
-            for ($i = 1; $i <= $config['Multisites-nombre']; $i++) {
-                if (in_array((200+$i), json_decode(html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8')))) {
+            for ($i = 1; $i <= $nbSites; $i++) {
+                $droits = json_decode(html_entity_decode($elem['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
+                if ($droits != null and in_array((200+$i), $droits)) {
                     $agents_responsables[$elem['id']] = $elem;
                 }
             }
         }
 
-        foreach ($agents as $agent) { // Filtre des agents service public / administratif
+        foreach ($agents as &$agent) { // Filtre des agents service public / administratif
             if ($agent['actif'] != $actif) {
                 continue;
             }
-            $id=$agent['id'];
-            $agent['service']=str_replace("`", "'", $agent['service']);
-            if ($config['Multisites-nombre']>1) {
-                $tmp=array();
+            $id = $agent['id'];
+            $sites = null;
+
+            $agent['service'] = str_replace("`", "'", $agent['service']);
+            if ($nbSites > 1) {
+                $tmp = array();
                 if (!empty($agent['sites'])) {
                     foreach ($agent['sites'] as $site) {
                         if ($site) {
-                            $tmp[]=$config["Multisites-site{$site}"];
+                            $tmp[] = $this->config("Multisites-site{$site}");
                         }
                     }
                 }
@@ -76,11 +77,29 @@ class NotificationController extends BaseController {
                     $responsables[] = $tmp;
                 }
             }
+
             if (!empty($responsables)) {
                 usort($responsables, 'cmp_strip_tags');
                 $responsables = implode('<br/>', $responsables);
             }
+
+            $agent['sites_list'] = $sites;
+            $agent['responsables_list'] = $responsables;
+            $agents_liste[] = $agent;
         }
+
+        $this->templateParams(
+            array(
+                "actif"                => $actif,
+                "agents"               => $agents_liste,
+                "agents_responsables"  => $agents_responsables,
+                "CSRFToken"            => $GLOBALS['CSRFSession'],
+                "nbSites"              => $nbSites
+
+            )
+        );
+
+        return $this->output('notifications/index.html.twig');
 
     }
 
