@@ -35,7 +35,7 @@ if (substr($config['Auth-Mode'], 0, 3)=="CAS"
         $url = createURL();
 
         if ($redirURL) {
-            $url .= '/'.$redirURL;
+            $url .= $redirURL;
         }
 
         if (strstr($url, 'authentification.php')) {
