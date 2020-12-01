@@ -410,7 +410,7 @@ function verifConges(){
     data: "perso_id="+perso_id+"&debut="+debut+"&fin="+fin+"&hre_debut="+hre_debut+"&hre_fin="+hre_fin+"&id="+id,
     async: false,
     success: function(data){
-      if(data != "Pas de congé"){
+      if(data.trim() != "Pas de congé"){
         information("Un congé a déjà été demandé " + data,"error");
       }else{
         $("#form").submit();

@@ -224,7 +224,7 @@ else {
     echo "<tr><td style='padding-top:15px;'>\n";
     echo "Journée(s) entière(s) : \n";
     echo "</td><td style='padding-top:15px;'>\n";
-    echo "<input type='checkbox' name='allday' onclick='all_day();'/>\n";
+    echo "<input type='checkbox' name='allday' onclick='all_day();' class='checkdate' />\n";
     echo "</td></tr>\n";
     echo "<tr><td>\n";
     echo "Date de début : \n";
