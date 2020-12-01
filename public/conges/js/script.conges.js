@@ -86,6 +86,19 @@ function calculCredit(){
         $("#recuperation_prev").val(balance_estimated);
         $(".balance_tr").effect("highlight",null,4000);
 
+        if ($('#hours_per_day').val()) {
+          var hours_per_day = $('#hours_per_day').val();
+
+          if (balance != 0) {
+            days= hours_to_days(balance, hours_per_day);
+            $("#balance_before").append(days);
+          }
+          if (balance_estimated != 0) {
+            days= hours_to_days(balance_estimated, hours_per_day);
+            $("#balance2_before").append(days);
+          }
+        }
+
         document.form.elements["heures"].value = result.hours;
         document.form.elements["minutes"].value = result.minutes;
 
@@ -231,7 +244,7 @@ function calculRestes(){
 
     }
   }
-  
+
   // Affichage
   $("#recup4").text(heure4(recuperation));
   $("#balance2_after").text(heure4(recuperation_prev));
@@ -257,27 +270,28 @@ function calculRestes(){
     if ($('#hours_per_day').val()) {
       var hours_per_day = $('#hours_per_day').val();
       if (reliquat != 0) {
-        days = reliquat / hours_per_day;
-        days = Math.round(days * 100) / 100;
-        days = days > 1 ? ' / ' + days + ' jours' : ' / ' + days + ' jour';
+        days= hours_to_days(reliquat, hours_per_day);
         $("#reliquat4").append(days);
       }
       if (credit != 0) {
-        days = credit / hours_per_day;
-        days = Math.round(days * 100) / 100;
-        days = days > 1 ? ' / ' + days + ' jours' : ' / ' + days + ' jour';
+        days= hours_to_days(credit, hours_per_day);
         $("#credit4").append(days);
       }
       if (anticipation != 0) {
-        days = anticipation / hours_per_day;
-        days = Math.round(days * 100) / 100;
-        days = days > 1 ? ' / ' + days + ' jours' : ' / ' + days + ' jour';
+        days= hours_to_days(anticipation, hours_per_day);
         $("#anticipation4").append(days);
+      }
+      if (recuperation != 0) {
+        days= hours_to_days(recuperation, hours_per_day);
+        $("#recup4").append(days);
+      }
+      if (recuperation_prev != 0) {
+        days= hours_to_days(recuperation_prev, hours_per_day);
+        $("#balance2_after").append(days);
       }
     }
   }
 }
-
 
 function googleCalendarIcon(){
   var debut=$("#debut").val();
@@ -314,6 +328,12 @@ function googleCalendarIcon(){
   $("#google-calendar-div").append(link);
 }
 
+function hours_to_days(hours, hours_per_day) {
+  days = hours / hours_per_day;
+  days = Math.round(days * 100) / 100;
+  days = days > 1 || days < -1 ? ' / ' + days + ' jours' : ' / ' + days + ' jour';
+  return days;
+}
 
 function supprimeConges(retour){
   if(retour == undefined){
