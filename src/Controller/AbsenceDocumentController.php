@@ -34,7 +34,7 @@ class AbsenceDocumentController extends BaseController
     /**
      * @Route("/absences/document/{id}", name="absences.document.delete", methods={"DELETE"})
      */
-    public function delete(Request $request, Session $session)
+    public function delete_document(Request $request, Session $session)
     {
         $id = $request->get('id');
         $ad = $this->entityManager->getRepository(AbsenceDocument::class)->find($id);
