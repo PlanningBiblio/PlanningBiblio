@@ -15,6 +15,9 @@
  *   des variables de template,
  */
 
+/*$loader = new FilesystemLoader(__DIR__.'/../templates');
+$twig = new Environment($loader);
+ */
 $loader = new Twig_Loader_Filesystem(__DIR__.'/../templates');
 $twig = new Twig_Environment($loader);
 

@@ -71,7 +71,7 @@ class AbsenceDocumentController extends BaseController
    /**
      * @Route("/absences/documents/{id_absence}", name="absences.document.list", methods={"GET"})
      */
-    public function list(Request $request, Session $session)
+    public function lists(Request $request, Session $session)
     {
         $id = $request->get('id_absence');
         $absdocs = $this->entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);
