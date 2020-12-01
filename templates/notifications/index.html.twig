@@ -2,9 +2,12 @@
 
 {% extends 'base.html.twig' %}
 
+{% block specificjs %}
+  <script type="text/JavaScript" src="{{ app.request.getBaseURL() }}/notifications/js/notifications.js?version={{ version }}"></script>
+{% endblock %}
+
 {% block page %}
-  <form name='form2' action='index.php' method='get'>
-    <input type='hidden' name='page' value='notifications/index.php' />
+  <form name='form2' action="{{ asset('notification') }}" method='get'>
     <table style='margin-bottom:10px;'>
       <tr style='vertical-align:center;'>
         <td style='width:370px;'>
@@ -15,43 +18,48 @@
         </td>
         <td style='width:150px;'>
           <select name='actif' onchange='document.form2.submit();' class='ui-widget-content ui-corner-all'>
-            <option value='Actif' <?php echo $option1; ?> >Service public</option>
-            <option value='Inactif' <?php echo $option2; ?> >Administratif</option>
+            <option value='Actif' {{ actif == 'Actif' ? "selected='selected'" : "" }} >Service public</option>
+            <option value='Inactif' {{ actif == 'Inactif' ? "selected='selected'" : "" }}>Administratif</option>
           </select>
         </td>
       </tr>
-    </table> 
+    </table>
   </form>
-  <form name='form' method='post' action='index.php' onsubmit='return confirm(\"Etes vous sûr de vouloir supprimer les agents sélectionnés ?\");'>
-    <table id='tableAgents' class='CJDataTable' data-sort='[[1,\"asc\"],[2,\"asc\"]]' >
+  <form name="form" method="post" action="{{ asset('notification') }}" onsubmit="return confirm('Etes vous sûr de vouloir supprimer les agents sélectionnés ?');">
+    <table id='tableAgents' class='CJDataTable' data-sort='[[1, "asc"],[2, "asc"]]'>
       <thead>
-      <tr>
-        <th class='dataTableNoSort aLeft' ><input type='checkbox' class='CJCheckAll'/></th>
-        <th>Nom</th>
-        <th>Prénom</th>
-        <th>Service</th>
-        <th>Statut</th>
-        {% if config('Multisites-nombre') > 1 %}
-          <th>Sites</th>
-        {% endif %}
-        <th>Validations / notifications</th>
+        <tr>
+          <th class='dataTableNoSort aLeft' >
+            <input type='checkbox' class='CJCheckAll'/>
+          </th>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Service</th>
+          <th>Statut</th>
+          {% if config('Multisites-nombre') > 1 %}
+            <th>Sites</th>
+          {% endif %}
+          <th>Validations / notifications</th>
+        </tr>
       </thead>
       <tbody>
         {% for agent in agents %}
           <tr>
             <td style='white-space:nowrap;'>
-              <input type='checkbox' name='chk{{loop.index0}}' value='$id' class='checkboxes'/>
-              <span class='pl-icon pl-icon-edit pointer' title='Modifier' data-id='{{ agent.id }}'></span>";
+              <input type='checkbox' name='chk{{loop.index0}}' value="{{ agent.id }}" class='checkboxes'/>
+              <span class='pl-icon pl-icon-edit pointer' title='Modifier' data-id="{{ agent.id }}"></span>
             </td>
             <td>{{ agent.nom }}</td>
             <td>{{ agent.prenom }}</td>
             <td>{{ agent.service }}</td>
             <td>{{ agent.statut }}</td>
-            {% if config('Multisites-nombre')>1 %}
+            {% if config('Multisites-nombre')>1 and agent.sites_list is defined %}
                 <td>{{ agent.sites_list }}</td>
+            {% elseif config('Multisites-nombre')>1 and not agent.sites_list is defined %}
+                <td>&nbsp;</td>
             {% endif %}
-            {% if not agent.responsables_list is empty %}
-                <td>{{ agent.responsables_list }}</td>
+            {% if agent.responsables_list is defined and not agent.responsables_list is empty %}
+                <td>{{ agent.responsables_list | raw }}</td>
             {% else %}
                 <td>&nbsp;</td>
             {% endif %}
@@ -79,9 +87,9 @@
               <td>
                 <select name='responsable-{{i}}' id='responsable-{{i}}' class='responsables' data-id='{{i}}'>
                   <option value=''>&nbsp;</option>
-                  foreach ($agents_responsables as $agent) {
-                      echo "<option value='{$agent['id']}'>{$agent['nom']} {$agent['prenom']}</option>\n";
-                  }
+                  {% for agent in agents_responsables %}
+                      echo "<option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
+                  {% endfor %}
                 </select>
               </td>
               <td>
