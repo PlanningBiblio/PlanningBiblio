@@ -63,6 +63,10 @@ if($_SERVER['SCRIPT_NAME']!='/authentification.php'){
     }
 }
 
+if ($version!=$config['Version']) {
+    require_once(__DIR__.'/setup/maj.php');
+}
+
 // Initialisation des variables
 $request = Request::createFromGlobals();
 

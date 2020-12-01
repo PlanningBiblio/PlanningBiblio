@@ -24,8 +24,8 @@ if(array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER) and strtolower($_SERVER['
 #  * .env.local          uncommitted file with local overrides
 #  * .env.$APP_ENV       committed environment-specific defaults
 #  * .env.$APP_ENV.local uncommitted environment-specific overrides
-
-$dotenv = new Dotenv();
+$usePutEnv = true;
+$dotenv = new Dotenv($usePutEnv);
 if (file_exists(__DIR__ . '/../../.env')) {
     $dotenv->load(__DIR__ . '/../../.env');
 }

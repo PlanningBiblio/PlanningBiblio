@@ -3,7 +3,7 @@
 namespace App\Listener;
 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 use Doctrine\Common\Annotations\Reader;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
@@ -29,7 +29,7 @@ class ControllerAuthorizationListener
         $this->droits = $GLOBALS['droits'];
     }
 
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(RequestEvent $event)
     {
         $route = $event->getRequest()->attributes->get('_route');
 

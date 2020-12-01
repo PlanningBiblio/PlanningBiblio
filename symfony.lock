@@ -47,9 +47,6 @@
             "src/Repository/.gitignore"
         ]
     },
-    "doctrine/doctrine-cache-bundle": {
-        "version": "1.3.5"
-    },
     "doctrine/doctrine-migrations-bundle": {
         "version": "1.2",
         "recipe": {
@@ -84,14 +81,11 @@
     "doctrine/persistence": {
         "version": "1.3.8"
     },
-    "doctrine/reflection": {
-        "version": "1.2.2"
+    "doctrine/sql-formatter": {
+        "version": "1.1.1"
     },
     "egulias/email-validator": {
         "version": "2.1.17"
-    },
-    "fig/link-util": {
-        "version": "1.1.1"
     },
     "friendsofphp/php-cs-fixer": {
         "version": "2.2",
@@ -113,9 +107,6 @@
     },
     "guzzlehttp/psr7": {
         "version": "1.7.0"
-    },
-    "jdorn/sql-formatter": {
-        "version": "v1.2.17"
     },
     "laminas/laminas-code": {
         "version": "3.5.0"
@@ -145,7 +136,7 @@
         "version": "2.0.4"
     },
     "php": {
-        "version": "7.0"
+        "version": "7.4"
     },
     "php-cs-fixer/diff": {
         "version": "v1.3.0"
@@ -210,9 +201,6 @@
     "symfony/cache": {
         "version": "v3.4.40"
     },
-    "symfony/class-loader": {
-        "version": "v3.4.40"
-    },
     "symfony/config": {
         "version": "v3.4.40"
     },
@@ -258,6 +246,9 @@
     },
     "symfony/dotenv": {
         "version": "v3.4.40"
+    },
+    "symfony/error-handler": {
+        "version": "v4.4.17"
     },
     "symfony/event-dispatcher": {
         "version": "v3.4.40"
@@ -328,6 +319,9 @@
             "version": "1.0",
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
         }
+    },
+    "symfony/mime": {
+        "version": "v4.3.11"
     },
     "symfony/monolog-bridge": {
         "version": "v3.4.40"
@@ -410,9 +404,6 @@
             "config/routes.yaml"
         ]
     },
-    "symfony/security": {
-        "version": "v3.4.40"
-    },
     "symfony/security-bundle": {
         "version": "3.3",
         "recipe": {
@@ -425,14 +416,23 @@
             "config/packages/security.yaml"
         ]
     },
+    "symfony/security-core": {
+        "version": "v4.3.11"
+    },
+    "symfony/security-csrf": {
+        "version": "v4.3.11"
+    },
+    "symfony/security-guard": {
+        "version": "v4.3.11"
+    },
+    "symfony/security-http": {
+        "version": "v4.3.11"
+    },
     "symfony/serializer": {
         "version": "v3.4.40"
     },
     "symfony/serializer-pack": {
         "version": "v1.0.3"
-    },
-    "symfony/service-contracts": {
-        "version": "v2.2.0"
     },
     "symfony/stopwatch": {
         "version": "v3.4.40"
