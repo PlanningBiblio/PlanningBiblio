@@ -1,0 +1,180 @@
+{# myAccount.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  <!--	Menu	-->
+  <h3>Mon Compte</h3>
+
+  <div class='ui-tabs'>
+    <ul>
+      {% if config('PlanningHebdo') %}
+        <li><a href='#working_hours'>Mes heures de présence</a></li>
+      {% endif %}
+      {% if config('Conges-Enable') %}
+        <li><a href='#credits'>Mes crédits</a></li>
+      {% endif %}
+      {% if ics %}
+        <li><a href='#credits'>Mes crédits</a></li>
+      {% endif %}
+      <li><a href='#motDePasse'>Mon mot de passe</a></li>
+    </ul>
+    {% if config('PlanningHebdo') %}
+      <!-- Working hours -->
+      <div id='working_hours'>
+        <div style='display: inline-block; width:300px;'>
+          <h3>Heures de présence</h3>
+        </div>
+        {% if config('PlanningHebdo-Agents') %}
+          <div style='display: inline-block; width:300px; position: absolute; right: 22px; text-align: right; margin-top:22px;'>
+            <a href="{{ asset ('workinghour/add') }}?retour=/myaccount" class='ui-button'>Entrer de nouveaux horaires</a>
+          </div>
+        {% endif %}
+    {% endif %}
+     <!-- Working hours history -->
+    <div id='historique'>
+    <br/>
+      <table id='tablePresenceMonCompte' class='CJDataTable' data-sort='[[1],[2],[3]]'>
+        <thead>
+          <tr>
+            <th class='dataTableNoSort'>&nbsp;</th>
+            <th class='dataTableDateFR'>Début</th>
+            <th class='dataTableDateFR'>Fin</th>
+            <th class='dataTableDateFR'>Saisie</th>
+            <th>Validation</th>
+            <th>Actuel</th>
+            <th>Commentaires</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for elem in planning %}
+            <tr>
+              <td style='white-space:nowrap;'>{{ elem.remplace ? "<font style='font-size:20pt;'>&rdsh;</font>": "" }}
+                <a href='/workinghour/{{ elem.id }}?retour=/myaccount'/>
+                  <span class='pl-icon pl-icon-edit' title='Voir'></span>
+                </a>
+              </td>
+              <td>{{ elem.debut }}</td>
+              <td>{{ elem.fin }}</td>
+              <td>{{ elem.saisie }}</td>
+              <td>{{ elem.validation }}</td>
+              <td>{{ elem.actuel ? "Oui" : ""}}</td>
+              <td>{{ elem.commentaires }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div> <!-- Historique' -->
+  </div> <!-- working_hours -->
+  {% if config('Conges-Enable') %}
+    <!-- Crédits -->
+    <div id='credits' style='margin-left:80px;display:none;'>
+      <h3>Crédits</h3>
+      <table class='tableauFiches'>
+        <tr>
+          <td style='font-weight:bold;' colspan='2'>Congés</td>
+        </tr>
+        <tr>
+          <td>Crédit annuel</td>
+          <td style='text-align:right;'>
+            {{ credits.annuel }}
+          </td>
+          <td style='text-align:right;'>
+            {{ credits.joursAnnuel }} jours
+          </td>
+        </tr>
+        <tr>
+          <td>Crédit restant</td>
+          <td style='text-align:right;'>
+            {{ credits.conges }}
+          </td>
+          <td style='text-align:right;'>
+            {{ credits.joursConges }} jours
+          </td>
+        </tr>
+        <tr>
+          <td>Reliquat</td>
+          <td style='text-align:right;'>
+            {{ credits.reliquat }}
+          </td>
+          <td style='text-align:right;'>
+            {{ credits.joursReliquat}} jours
+          </td>
+        </tr>
+        <tr>
+          <td>Solde débiteur</td>
+          <td style='text-align:right;'>
+            {{ credits.anticipation }}</td>
+            <td style='text-align:right;'>
+              {{ credits.joursAnticipation }} jours
+            </td>
+        </tr>
+        <tr>
+          <td style='font-weight:bold;padding-top:20px;' colspan='2'>Récupérations</td>
+        </tr>
+        <tr>
+          <td>Crédit</td>
+          <td style='text-align:right;'>
+            {{ credits.recuperation }}
+          </td>
+          <td style='text-align:right;'>
+            {{ credits.joursRecuperation }} jours
+          </td>
+        </tr>
+      </table>
+      <p style='font-style:italic;margin:30px 0 0 10px;'>Le nombre de jours est calculé sur la base de 7 heures par jour.</p>
+    </div>
+  <!-- Crédits-->
+  {% endif %}
+    <!-- Mot de Passe -->
+    <div id='motDePasse' style='margin-left:80px;display:none;'>
+      {% if auth_mode == "SQL" %}
+        <h3>Modification du mot de passe</h3>
+        <h4>{{ login.surname }} {{ login.name }}</h4>
+        <form name='form' method='get' action="{{ asset('index.php') }}">
+          <input type='hidden' name='page' value='personnel/password.php' />
+          <table class='tableauFiches'>
+            <tr>
+              <td>Ancien mot de passe : </td>
+              <td>
+                <input type='password' name='ancien' class='ui-widget-content ui-corner-all'/>
+              </td>
+            </tr>
+            <tr>
+              <td> Nouveau mot de passe : </td>
+              <td>
+                <input type='password' name='nouveau' class='ui-widget-content ui-corner-all'/>
+              </td>
+            </tr>
+            <tr>
+              <td>  Confirmer le nouveau mot de passe : </td>
+              <td>
+                <input type='password' name='confirm' class='ui-widget-content ui-corner-all'/>
+              </td>
+            </tr>
+            <tr>
+              <td colspan='2' style='text-align:center;'>
+                <br/><input type='button' value='Annuler' onclick="location.href={{ asset('index.php') }};" class='ui-button'/>
+                <input type='submit' value='Modifier' class='ui-button' style='margin-left:30px;'/>
+              </td>
+            </tr>
+          </table>
+        </form>
+      {% else %}
+        <h3>Modification du mot de passe</h3>
+        Vous utilisez un système d'authentification centralisé.<br/>
+        Votre mot de passe ne peut pas être modifié à partir du planning.<br/>
+      {% endif %}
+    </div> <!-- motDePasse -->
+    <!-- Calendrier ICS -->
+    <div id='ics' style='margin-left:80px;display:none;'>
+      <h3>URL de votre calendrier ICS</h3>
+      <p>
+        <span id='url-ics'>{{ ics }}</span>
+        {% if config('ICS-Code') %}
+        <br/><a href="javascript:resetICSURL({{ login.id }}, '{{ CSRFSession }}' );"> Réinitialiser l'URL</a>
+        {% endif %}
+      </p>
+    </div> <!-- Calendrier ICS -->
+  </div> <!-- ui-tabs -->
+{% endblock %}

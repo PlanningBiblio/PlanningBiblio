@@ -168,12 +168,12 @@ class WorkingHourController extends BaseController
         $id = null;
         $tab = array();
         $action = "ajout";
-        $exception_back = 'monCompte.php';
-        if ($retour != 'monCompte.php') {
+        $exception_back = '/myaccount';
+        if ($retour != '/myaccount') {
             $exception_back = $retour;
             $retour = "$retour";
         } else {
-           $retour = "/index.php?page=".$exception_back;
+           $retour = "$exception_back";
         }
 
         $is_new = 1;
@@ -393,12 +393,12 @@ class WorkingHourController extends BaseController
             $sites[] = $i;
             $multisites[$i] = $this->config("Multisites-site{$i}");
         }
-        $exception_back = 'monCompte.php';
-        if ($retour != 'monCompte.php') {
+        $exception_back = '/myaccount';
+        if ($retour != '/myaccount') {
             $exception_back = $retour;
             $retour = "$retour";
         } else {
-           $retour = "/index.php?page=".$exception_back;
+           $retour = "$exception_back";
         }
 
         if ($copy) {
@@ -675,8 +675,8 @@ class WorkingHourController extends BaseController
                 break;
         }
 
-        if($post['retour'] == "/index.php?page=monCompte.php") {
-            return $this->redirect($this->config('URL').$post['retour']."&msg=".$msg."&msgType=".$msgType);
+        if($post['retour'] == "/myaccount") {
+            return $this->redirectToRoute("account.index", array("msg"=>$msg, "msgType" => $msgType));
         } else {
             return $this->redirectToRoute('workinghour.index', array("msg" => $msg, "msgType" => $msgType));
         }
