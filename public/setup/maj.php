@@ -2117,6 +2117,13 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="20.11.00.003";
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[]="UPDATE `{$dbprefix}acces` set `page`='/workinghour' WHERE `page`='planningHebdo/index.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` set `url`='/workinghour' WHERE `url`='planningHebdo/index.php';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
