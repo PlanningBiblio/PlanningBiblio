@@ -2,6 +2,23 @@
 
 {% extends 'base.html.twig' %}
 
+{% block specificjs %}
+  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/planningHebdo/js/script.planningHebdo.js'></script>
+  <script type='text/JavaScript'>
+    $("document").ready(function(){
+      plHebdoCalculHeures2();
+      plHebdoMemePlanning();
+    });
+    $(".select").change(function(){
+      plHebdoCalculHeures($(this),"");
+      plHebdoChangeHiddenSelect();
+    });
+    $("#perso_id").change(function(){
+      $("#info_copie").show();
+    });
+  </script>
+{% endblock %}
+
 {% block page %}
   <h3>Heures de présence</h3>
   {% if id is not null and tab is null %}
@@ -135,7 +152,7 @@
                   {% if nbSites > 1 %}
                     {% if modifAutorisee == true %}
                       <td>
-                        <select name="temps[{{ i-1 }}[4]" class='select selectSite' >
+                        <select name="temps[{{ i-1 }}][4]" class='select selectSite' >
                           {% if sites | length > 1 %}
                             <option value=''>&nbsp;</option>
                           {% endif %}
@@ -217,7 +234,7 @@
           {% endif %}
         {% endif %}
         <div id='boutons' style='padding-top:50px;'>
-          <input type='button' value='Retour' onclick='location.href="/{{ retour }}";' class='ui-button' />
+          <input type='button' value='Retour' onclick='location.href="{{ retour }}";' class='ui-button' />
           {% if admin == true and (cle == null or cle == "") %}
             {% if request_exception == true %}
               <input id="save-exception" type="submit" value="Enregistrer l'exception" style="margin-left:30px;" class="ui-button" />
@@ -240,20 +257,4 @@
       </form>
     </div> <!-- working_hours -->
   {% endif %}
-{% endblock %}
-{% block specificjs %}
-  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/planningHebdo/js/script.planningHebdo.js?version={{ version }}'></script>
-  <script type='text/JavaScript'>
-    $("document").ready(function(){
-      plHebdoCalculHeures2();
-      plHebdoMemePlanning();
-    });
-    $(".select").change(function(){
-      plHebdoCalculHeures($(this),"");
-      plHebdoChangeHiddenSelect();
-    });
-    $("#perso_id").change(function(){
-      $("#info_copie").show();
-    });
-  </script>
 {% endblock %}
