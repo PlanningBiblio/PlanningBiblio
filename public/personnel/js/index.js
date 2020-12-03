@@ -51,7 +51,7 @@ $(function() {
                         },
                     success: function(result){
                         if (result=='ok') {
-                            var msg = 'Les agents ont été modifés avec succés';
+                            var msg = 'Les agents ont été modifés avec succès';
                             var msgType = 'success';
                         } else {
                             var msg = result;
@@ -111,7 +111,7 @@ function agent_list() {
                 dataType: "json",
                 data: {list: list, CSRFToken: $('#CSRFSession').val()},
                 success: function(){
-                    location.href = baseURL +'/agent?msg=Les agents ont été supprimés avec succés&msgType=success';
+                    location.href = baseURL +'/agent?msg=Les agents ont été supprimés avec succès&msgType=success';
                     },
                 error: function(){
                     location.href =  baseURL +'/agent?msg=Une erreur est survenue lors de la suppresion des agents&msgType=error';

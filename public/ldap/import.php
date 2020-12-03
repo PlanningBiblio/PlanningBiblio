@@ -139,7 +139,7 @@ if ($rechercheLdap) {
         echo "</form>\n";
     }
 }
-echo "<br/><a href='index.php?page=personnel/index.php'>Retour &agrave; la liste des agents</a><br/>\n";
+echo "<br/><a href='/agent'>Retour &agrave; la liste des agents</a><br/>\n";
 echo "</div> <!-- ldap -->\n";
 echo "</div>\n";
 ?>
