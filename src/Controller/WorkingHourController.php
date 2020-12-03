@@ -404,6 +404,12 @@ class WorkingHourController extends BaseController
         if ($copy) {
             $id = $copy;
         }
+
+
+        if ($request_exception) {
+            $id = $request_exception;
+        }
+
         $is_new = 0;
         // Sécurité
         $adminN1 = in_array(1101, $droits);
@@ -463,6 +469,7 @@ class WorkingHourController extends BaseController
         if ($copy or $request_exception) {
             $action = "ajout";
         }
+
         $nomAgent = nom($perso_id, "prenom nom");
         if ($request_exception) {
             $is_exception = 1;
@@ -506,9 +513,9 @@ class WorkingHourController extends BaseController
         }
         $selectTemps = array();
         $breaktime_h = array();
-        if (!$request_exception){
-            $GLOBALS['temps'] = $temps;
-        }
+
+        $GLOBALS['temps'] = $temps;
+
         for ($j = 0; $j < $nbSemaine; $j++) {
             for ($i = $debut[$j]; $i < $fin[$j]; $i++) {
                 $k = $i-($j*7)-1;
