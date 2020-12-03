@@ -6,7 +6,7 @@
     <h3>Informations sur les absences</h3>
 
     <div class='top-button-div'>
-        <a href='{{ asset("absences/info/add") }}' class='ui-button'>Ajouter</a>
+        <a href='{{ asset("absence_info/add") }}' class='ui-button'>Ajouter</a>
     </div>
 
     {% if info %}
@@ -20,10 +20,10 @@
                 </tr>
             </thead>
             <tbody>
-                {%for elem in info %}
+                {% for elem in info %}
                     <tr>
                         <td>
-                            <a href='{{ asset('absences/info/') }}{{elem.id}}'>
+                            <a href="{{ asset('absence_info') }}/{{ elem.id }}">
                                 <span class='pl-icon pl-icon-edit' title='Edit'></span>
                             </a>
                         </td>

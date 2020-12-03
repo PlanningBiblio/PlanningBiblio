@@ -13,7 +13,7 @@ use App\Model\AbsenceInfo;
 class AbsenceInfoController extends BaseController
 {
     /**
-     * @Route("/absences/info", name="absences.info.index", methods={"GET"})
+     * @Route("/absence_info", name="absence.info.index", methods={"GET"})
      */
     public function index(Request $request, Session $session)
     {
@@ -33,7 +33,7 @@ class AbsenceInfoController extends BaseController
     }
 
     /**
-     * @Route("/absences/info/add", name="absences.info.add", methods={"GET"})
+     * @Route("/absence_info/add", name="absence.info.add", methods={"GET"})
      */
     public function add(Request $request)
     {
@@ -48,7 +48,7 @@ class AbsenceInfoController extends BaseController
     }
 
     /**
-     * @Route("/absences/info/{id}", name="absences.info.edit", methods={"GET"})
+     * @Route("/absence_info/{id}", name="absence.info.edit", methods={"GET"})
      */
     public function edit(Request $request)
     {
@@ -67,14 +67,14 @@ class AbsenceInfoController extends BaseController
     }
 
     /**
-     * @Route("/absences/info", name="absences.info.update", methods={"POST"})
+     * @Route("/absence_info", name="absence.info.update", methods={"POST"})
      */
     public function update(Request $request, Session $session)
     {
         $submittedToken = $request->request->get('_token');
         if (!$this->isCsrfTokenValid('csrf', $submittedToken)) {
             $session->getFlashBag()->add('error', 'CSRF Token Error');
-            return $this->redirectToRoute('absences.info.index');
+            return $this->redirectToRoute('absence.info.index');
         }
 
         $id = $request->get('id');
@@ -106,18 +106,18 @@ class AbsenceInfoController extends BaseController
         $this->entityManager->flush();
 
         $session->getFlashBag()->add('notice', $flash);
-        return $this->redirectToRoute('absences.info.index');
+        return $this->redirectToRoute('absence.info.index');
     }
 
     /**
-     * @Route("/absences/info", name="absences.info.delete", methods={"DEL"})
+     * @Route("/absence_info", name="absence.info.delete", methods={"DEL"})
      */
     public function delete(Request $request, Session $session)
     {
         $submittedToken = $request->request->get('_token');
         if (!$this->isCsrfTokenValid('csrf', $submittedToken)) {
             $session->getFlashBag()->add('error', 'CSRF Token Error');
-            return $this->redirectToRoute('absences.info.index');
+            return $this->redirectToRoute('absence.info.index');
         }
 
         $id = $request->get('id');
@@ -129,7 +129,7 @@ class AbsenceInfoController extends BaseController
         $flash = "L'information a bien été supprimée.";
 
         $session->getFlashBag()->add('notice', $flash);
-        return $this->redirectToRoute('absences.info.index');
+        return $this->redirectToRoute('absence.info.index');
     }
 
 }

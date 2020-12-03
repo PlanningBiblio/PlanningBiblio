@@ -27,7 +27,7 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUE
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Agenda - index', 100, 'Agenda', 'agenda/index.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Absences - Modif2', 100, '', 'absences/modif2.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Absences - Suppression', 100, '', 'absences/delete.php');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`, `ordre`) VALUES ('Absences - Infos', 201, 'Gestion des absences, validation niveau 1', '/absences/info', 'Absences', 30);";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`, `ordre`) VALUES ('Absences - Infos', 201, 'Gestion des absences, validation niveau 1', '/absence_info', 'Absences', 30);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`categorie`,`ordre`) VALUES (\"Enregistrement d'absences pour plusieurs agents\",'9',\"Enregistrement d'absences pour plusieurs agents\", 'Absences', '25');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Personnel - Index', 4, 'Voir les fiches des agents', 'personnel/index.php', 'Agents', 60);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Personnel - Modif', 4, 'Voir les fiches des agents', '/agent', 'Agents', 60);";
@@ -404,7 +404,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('10','0','Absences','/absence', NULL),
   ('10','10','Voir les absences','/absence',NULL),
   ('10','20','Ajouter une absence','/absence/add',NULL),
-  ('10','30','Informations','/absence/info',NULL),
+  ('10','30','Informations','/absence_info',NULL),
   ('15','0','Congés','/holiday/index','config=Conges-Enable'),
   ('15','10','Liste des cong&eacute;s','/holiday/index','config=Conges-Enable'),
   ('15','15','Liste des r&eacute;cup&eacute;rations','/holiday/index?recup=1','config=Conges-Enable;Conges-Recuperations'),
