@@ -337,6 +337,21 @@ function plHebdoVerifForm(){
 }
 
 $(function(){
+  $("document").ready(function(){
+    plHebdoCalculHeures2();
+    plHebdoMemePlanning();
+  });
+
+  //calcul des heures totales par ligne après la sélection des horaires
+  $(".select").change(function(){
+    plHebdoCalculHeures($(this),"");
+    plHebdoChangeHiddenSelect();
+  });
+
+  $("#perso_id").change(function(){
+    $("#info_copie").show();
+  });
+
   // Action lors du click sur la case à cocher "Même planning qu'en semaine 1"
   $(".memePlanning").click(function(){
     var id=$(this).attr("data-id");

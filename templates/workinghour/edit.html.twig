@@ -4,19 +4,6 @@
 
 {% block specificjs %}
   <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/planningHebdo/js/script.planningHebdo.js'></script>
-  <script type='text/JavaScript'>
-    $("document").ready(function(){
-      plHebdoCalculHeures2();
-      plHebdoMemePlanning();
-    });
-    $(".select").change(function(){
-      plHebdoCalculHeures($(this),"");
-      plHebdoChangeHiddenSelect();
-    });
-    $("#perso_id").change(function(){
-      $("#info_copie").show();
-    });
-  </script>
 {% endblock %}
 
 {% block page %}
