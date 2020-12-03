@@ -478,6 +478,11 @@ class WorkingHourController extends BaseController
             $exception_id = $id;
             $id = '';
         }
+
+        if ($copy) {
+            $id = '';
+        }
+
         switch ($nbSemaine) {
             case 2:
                 $cellule = array("Semaine Impaire","Semaine Paire");
