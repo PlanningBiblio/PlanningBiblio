@@ -147,7 +147,7 @@ class WorkingHourController extends BaseController
         );
         return $this->output('/workinghour/index.html.twig');
     }
-    
+
     /**
      * @Route("/workinghour/add", name="workinghour.add", methods={"GET"})
      */
@@ -171,9 +171,9 @@ class WorkingHourController extends BaseController
         $exception_back = 'monCompte.php';
         if ($retour != 'monCompte.php') {
             $exception_back = $retour;
-            $retour = "/$retour";
+            $retour = "$retour";
         } else {
-           $retour = "index.php?page=".$exception_back;
+           $retour = "/index.php?page=".$exception_back;
         }
 
         $is_new = 1;
@@ -396,9 +396,9 @@ class WorkingHourController extends BaseController
         $exception_back = 'monCompte.php';
         if ($retour != 'monCompte.php') {
             $exception_back = $retour;
-            $retour = "/$retour";
+            $retour = "$retour";
         } else {
-           $retour = "index.php?page=".$exception_back;
+           $retour = "/index.php?page=".$exception_back;
         }
 
         if ($copy) {
@@ -421,10 +421,12 @@ class WorkingHourController extends BaseController
         $perso_id = $p->elements[0]['perso_id'];
         $temps = $p->elements[0]['temps'];
         $breaktime = $p->elements[0]['breaktime'];
+
         if ($p->elements[0]['exception']) {
             $is_exception = 1;
             $exception_id = $p->elements[0]['exception'];
         }
+
         if ($copy or $request_exception) {
             $valide_n1 = 0;
             $valide_n2 = 0;
@@ -463,6 +465,7 @@ class WorkingHourController extends BaseController
         }
         $nomAgent = nom($perso_id, "prenom nom");
         if ($request_exception) {
+            $is_exception = 1;
             $debut1Fr = '';
             $fin1Fr = '';
             $exception_id = $id;
@@ -606,7 +609,7 @@ class WorkingHourController extends BaseController
         return $this->output('/workinghour/edit.html.twig');
     }
 
-	/**
+    /**
      * @Route("/workinghour", name="workinghour.save", methods={"POST"})
      */
     public function save(Request $request, Session $session){
