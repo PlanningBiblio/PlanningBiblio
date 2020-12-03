@@ -94,7 +94,7 @@ EOD;
     if ($config['PlanningHebdo-Agents']) {
         echo <<<EOD
     <div style='display: inline-block; width:300px; position: absolute; right: 22px; text-align: right; margin-top:22px;'>
-    <a href='/workingHour/add?retour=monCompte.php' class='ui-button'>
+    <a href='/workinghour/add?retour=monCompte.php' class='ui-button'>
       Entrer de nouveaux horaires</a>
     </div>
 EOD;
