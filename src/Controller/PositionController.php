@@ -231,7 +231,7 @@ class PositionController extends BaseController
 
         if ($response) {
             foreach ($response as $elem) {
-                $etages_utilises[] = $elem->etage;
+                $etages_utilises[] = $elem['etage'];
             }
         }
 
@@ -254,7 +254,7 @@ class PositionController extends BaseController
         $response = $query->getResult();
         if ($response) {
             foreach ($response as $elem) {
-                $groupes_utilises[] = $elem->groupe;
+                $groupes_utilises[] = $elem['groupe'];
             }
         }
 
