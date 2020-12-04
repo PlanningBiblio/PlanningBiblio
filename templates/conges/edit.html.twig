@@ -60,9 +60,9 @@
           <td style='padding-top:15px;'>Journée(s) entière(s) : </td>
           <td style='padding-top:15px;'>
             {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
-              <input type='checkbox' name='allday' class='checkdate' checked='checked' />
+              <input type='checkbox' name='allday' class='checkdate' checked='checked'/>
             {% else %}
-              <input type='checkbox' name='allday'/>
+              <input type='checkbox' name='allday' class='checkdate'/>
             {% endif %}
           </td>
         </tr>
@@ -120,7 +120,7 @@
       {% endif %}
         <td>Heure de début : </td>
         <td>
-          <select name='hre_debut' id='hre_debut_select' style='width:20%;' class='googleCalendarTrigger'>
+          <select name='hre_debut' id='hre_debut_select' style='width:20%;' class='checkdate googleCalendarTrigger'>
             <option value=""></option>
             {% for i in 6..23 %}
                 {% for j in range(low=0, high=60, step=config('Granularite')) %}
@@ -178,7 +178,7 @@
       {% endif %}
         <td>Heure de fin : </td>
         <td>
-          <select name='hre_fin' id='hre_fin_select' style='width:20%;' class='googleCalendarTrigger'>
+          <select name='hre_fin' id='hre_fin_select' style='width:20%;' class='checkdate googleCalendarTrigger'>
             <option value=""></option>
                 {% for i in 6..23 %}
                     {% for j in range(low=0, high=60, step=config('Granularite')) %}
