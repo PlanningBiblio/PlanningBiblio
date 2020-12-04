@@ -14,6 +14,7 @@ if($db->result){
     }
 }
 
+$db = new db();
 $db->select2('personnel', array('id', 'service'), "`service` LIKE '%&%'");
 
 if($db->result){
@@ -28,6 +29,7 @@ if($db->result){
     }
 }
 
+$db = new db();
 $db->select2('select_statuts', array('id', 'valeur'), "`valeur` LIKE '%&%'");
 if($db->result){
     foreach ($db->result as $elem) {
@@ -41,6 +43,7 @@ if($db->result){
     }
 }
 
+$db = new db();
 $db->select2('select_services', array('id', 'valeur'), "`valeur` LIKE '%&%'");
 if($db->result){
     foreach ($db->result as $elem) {
