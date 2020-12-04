@@ -603,9 +603,9 @@ class AgentController extends BaseController
         $postes = $params['postes'];
         $prenom = trim($params['prenom']);
         $recup = isset($params['recup']) ? trim($params['recup']) : null;
-        $service = htmlentities($params['service'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+        $service = $params['service'];
         $sites = array_key_exists("sites", $params) ? $params['sites'] : null;
-        $statut = htmlentities($params['statut'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+		$statut = $params['statut'];
         $temps=array_key_exists("temps", $params) ? $params['temps'] : null;
 
         // Modification du choix des emplois du temps avec l'option EDTSamedi == 1 (EDT différent les semaines avec samedi travaillé)
@@ -658,6 +658,7 @@ class AgentController extends BaseController
         switch ($action) {
           case "ajout":
             $db=new \db();
+            $db->sanitize_string = false;
             $db->select2("personnel", array(array("name"=>"MAX(`id`)", "as"=>"id")));
             $id=$db->result[0]['id']+1;
 
@@ -702,6 +703,7 @@ class AgentController extends BaseController
             $insert = array_merge($insert, $holidays);
 
             $db=new \db();
+            $db->sanitize_string = false;
             $db->CSRFToken = $CSRFToken;
             $db->insert("personnel", $insert);
 
