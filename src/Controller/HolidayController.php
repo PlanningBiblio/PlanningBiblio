@@ -595,9 +595,12 @@ class HolidayController extends BaseController
         $perso_ids = json_decode($request->get('perso_ids'));
         $start =dateSQL($request->get('start'));
         $end =dateSQL($request->get('end'));
+        $maxAgentsDisplay = 5;
 
         // On consulte le planning de présence de l'agent
         $message = "";
+        $agents = array();
+        $unknownHours = 0;
         $p=new \planningHebdo();
         $p->debut = $start;
         $p->fin = $end;
@@ -610,7 +613,17 @@ class HolidayController extends BaseController
                 $agent = new \personnel();
                 $agent->fetchById($perso_id);
                 $agent_infos = $agent->elements[0];
-                $message .= "Impossible de déterminer le nombre d'heures correspondant aux congés demandés pour l'agent " . $agent_infos['prenom'] . " " . $agent_infos['nom'] . ".\n";
+                $unknownHours++;
+                if ($unknownHours <= $maxAgentsDisplay) {
+                    array_push($agents, $agent_infos['prenom'] . " " . $agent_infos['nom']);
+                }
+            }
+        }
+        if (!empty($agents)) {
+            $message = "Impossible de déterminer le nombre d'heures correspondant aux congés demandés pour les agents suivants: " . join(', ', $agents);
+            if ($unknownHours > $maxAgentsDisplay) {
+                $agentsLeft = $unknownHours - $maxAgentsDisplay;
+                $message .= " et " . $agentsLeft . ($agentsLeft == 1 ? " autre." : " autres.");
             }
         }
         return $this->json($message);
