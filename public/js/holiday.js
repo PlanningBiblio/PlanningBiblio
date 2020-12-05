@@ -1,8 +1,13 @@
 $( document ).ready(function() {
   checkdate('start');
+  calculCredit();
+});
 
+$(function(){
   $('#perso_id').on('change', function() {
-    document.location.href="/holiday/new/" + this.value;
+    if (!window.location.href.includes('recup_pose.php')) {
+      document.location.href="/holiday/new/" + this.value;
+    }
   });
 
   $('select[name="debit"]').on('change', function() {
@@ -33,6 +38,7 @@ $( document ).ready(function() {
 
   $('.checkdate').on('change', function() {
     if (!$('input[name="halfday"]').is(':checked')) {
+      calculCredit();
       return;
     }
 
@@ -42,9 +48,8 @@ $( document ).ready(function() {
     }
     checkdate(priority);
 
-    // WARNING : Keep functions calculCredit and calculRestes after last checkdate().
+    // WARNING : Keep the function calculCredit after last checkdate().
     calculCredit();
-    calculRestes();
   });
 });
 

@@ -3,10 +3,8 @@
 Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : include/function.php
-Création : mai 2011
+@file public/include/function.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié
 
@@ -983,6 +981,11 @@ function getJSFiles($page, $version)
                 echo "<script type='text/JavaScript' src='{$folder}js/{$elem}?version=$version'></script>\n";
             }
         }
+    }
+
+    if ($page == 'conges/recup_pose.php') {
+        echo "<script type='text/JavaScript' src='{$folder}../js/dateUtils.js?version=$version'></script>\n";
+        echo "<script type='text/JavaScript' src='{$folder}../js/holiday.js?version=$version'></script>\n";
     }
 }
 
