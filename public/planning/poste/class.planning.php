@@ -3,10 +3,8 @@
 Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : planning/poste/class.planning.php
-Création : 16 janvier 2013
+@file public/planning/poste/class.planning.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -221,7 +219,7 @@ class planning
       
             // Recherche des sans repas en dehors de la boucle pour optimiser les performances (juillet 2016)
             $p = new planning();
-            $sansRepas = $p->sansRepas($date, $debut, $fin);
+            $sansRepas = $p->sansRepas($date, $debut, $fin, $poste);
 
             foreach ($agents as $elem) {
                 // Heures hebdomadaires (heures à faire en SP)
@@ -689,9 +687,20 @@ class planning
     * @param string $fin
     * @return array / true
     */
-    public function sansRepas($date, $debut, $fin)
+    public function sansRepas($date, $debut, $fin, $poste = null)
     {
         if ($GLOBALS['config']['Planning-sansRepas']==0) {
+            return array();
+        }
+
+        $lunch_position = null;
+        if (!empty($GLOBALS['config']['Position-Lunch'])) {
+            $lunch_position = implode(',', $GLOBALS['config']['Position-Lunch']);
+        }
+
+        if (!empty($GLOBALS['config']['Position-Lunch'])
+            and isset($poste)
+            and in_array($poste, $GLOBALS['config']['Position-Lunch'])) {
             return array();
         }
 
@@ -711,7 +720,13 @@ class planning
 
       // Recherche dans la base de données des autres plages concernées
             $db=new db();
-            $db->select2("pl_poste", "*", array("date"=>$date, "debut"=>"<$sr_fin", "fin"=>">$sr_debut"), "ORDER BY debut,fin");
+
+            if ($lunch_position) {
+                $db->select("pl_poste", "*", "date = '$date' AND debut < '$sr_fin' AND fin > '$sr_debut' AND poste NOT IN ($lunch_position)", "ORDER BY debut,fin");
+            } else {
+                $db->select2("pl_poste", "*", array("date"=>$date, "debut"=>"<$sr_fin", "fin"=>">$sr_debut"), "ORDER BY debut,fin");
+            }
+
             if ($db->result) {
                 $result = array();
                 // On classe les résultats par agent
