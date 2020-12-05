@@ -24,6 +24,8 @@ function afficheRefus(me){
 }
 
 function calculCredit(){
+  if( ! $('input[name=debut]').length) { return; }
+
   debut=document.form.elements["debut"].value;
   fin=document.form.elements["fin"].value;
   hre_debut=document.form.elements["hre_debut"].value;
@@ -382,14 +384,19 @@ function verifConges(){
   }
   
   // Vérifions si le solde des récupérations n'est pas négatif
-  var recuperation = parseFloat( $('#recup4').text() );
-  if(parseFloat(recuperation) < 0 && $('#validation').val() >= 0 ){
+  var recuperation = parseFloat( $('#recup4').text().replace('h', '.') );
+  if(recuperation < 0) {
     $('.recup-alert').remove();
-    CJInfo("Le crédit de récupération ne peut pas être négatif.", "error", null, 5000, 'recup-alert');
     $(".balance_tr").effect("highlight",null,4000);
-    return false;
+    if ($('#validation').val() > 0) {
+      CJInfo("Le crédit de récupération ne peut pas être négatif.", "error", null, 5000, 'recup-alert');
+      return false;
+    } else {
+      if (!confirm("Attention!\nLe crédit de récupération ne peut pas être négatif.\nCette demande ne pourra pas être validée tant que le crédit restera insufisant.\nVoulez-vous continuer ?")) {
+        return false;
+      }
+    }
   }
-  
 
   // Vérifions si un autre congé a été demandé ou validé
   var result=$.ajax({
@@ -490,10 +497,6 @@ function checkSamedi( o, n ) {
 
 
 $(function(){
-  $('.checkdate').on('change', function() {
-    calculCredit();
-  });
-
   $(".googleCalendarTrigger").change(function(){
     googleCalendarIcon();
   });
