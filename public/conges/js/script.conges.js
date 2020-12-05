@@ -1,12 +1,9 @@
 /**
-Planning Biblio, Plugin Congés
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2013-2018 Jérôme Combes
 
-Fichier : conges/js/script.conges.js
-Création : 2 août 2013
-Dernière modification : 12 septembre 2018
+@file public/conges/js/script.conges.js
 @author Jérôme Combes <jerome@planningbiblio.fr>
 @author Etienne Cavalié <etienne.cavalie@unice.fr>
 
@@ -398,7 +395,7 @@ function verifConges(){
     data: "perso_id="+perso_id+"&debut="+debut+"&fin="+fin+"&hre_debut="+hre_debut+"&hre_fin="+hre_fin+"&id="+id,
     async: false,
     success: function(data){
-      if(data != "Pas de congé"){
+      if(data.trim() != "Pas de congé"){
         information("Un congé a déjà été demandé " + data,"error");
       }else{
         $("#form").submit();
