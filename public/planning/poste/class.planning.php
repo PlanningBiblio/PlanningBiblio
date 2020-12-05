@@ -3,10 +3,8 @@
 Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : planning/poste/class.planning.php
-Création : 16 janvier 2013
+@file public/planning/poste/class.planning.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -123,6 +121,8 @@ class planning
         $semaine3=$d->semaine3;
         $site=$this->site;
 
+        $lunch_positions = $config['Position-Lunch'] ?? array();
+
         if ($hide) {
             $display="display:none;";
             $groupe_hide=null;
@@ -180,14 +180,18 @@ class planning
             // Recherche des postes occupés dans la base avec le plus grand intervalle pour limiter les requêtes
             $db_heures = new db();
             $db_heures->selectInnerJoin(
-          array("pl_poste","poste"),
-          array("postes","id"),
-        array("date","debut","fin","perso_id"),
-        array(),
-        array("perso_id"=> "IN $agents_liste", "absent"=>"<>1", "date"=> "BETWEEN {$date1} AND {$date2}"),
-        array("statistiques"=>"1")
+                array("pl_poste","poste"),
+                array("postes","id"),
+                array("date","debut","fin","perso_id", "poste"),
+                array(),
+                array(
+                    'perso_id' => "IN $agents_liste",
+                    'absent'   => "<>1",
+                    'date'     => "BETWEEN {$date1} AND {$date2}",
+                ),
+                array("statistiques"=>"1")
       );
-      
+
             if ($db_heures->result) {
                 // Pour chaqe résultat, on ajoute le nombre d'heures correspondant à l'agent concerné, pour le jour, la semaine et/ou les 4 semaines
                 foreach ($db_heures->result as $elem) {
@@ -198,6 +202,10 @@ class planning
                         if ($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
                             continue 2;
                         }
+                    }
+
+                    if (in_array($elem['poste'], $lunch_positions)) {
+                        continue;
                     }
 
                     // Calcul des heures de service public pour affichage à côté du nom des agents
@@ -220,7 +228,7 @@ class planning
       
             // Recherche des sans repas en dehors de la boucle pour optimiser les performances (juillet 2016)
             $p = new planning();
-            $sansRepas = $p->sansRepas($date, $debut, $fin);
+            $sansRepas = $p->sansRepas($date, $debut, $fin, $poste);
 
             foreach ($agents as $elem) {
                 // Heures hebdomadaires (heures à faire en SP)
@@ -690,9 +698,20 @@ class planning
     * @param string $fin
     * @return array / true
     */
-    public function sansRepas($date, $debut, $fin)
+    public function sansRepas($date, $debut, $fin, $poste = null)
     {
         if ($GLOBALS['config']['Planning-sansRepas']==0) {
+            return array();
+        }
+
+        $lunch_position = null;
+        if (!empty($GLOBALS['config']['Position-Lunch'])) {
+            $lunch_position = implode(',', $GLOBALS['config']['Position-Lunch']);
+        }
+
+        if (!empty($GLOBALS['config']['Position-Lunch'])
+            and isset($poste)
+            and in_array($poste, $GLOBALS['config']['Position-Lunch'])) {
             return array();
         }
 
@@ -712,7 +731,13 @@ class planning
 
       // Recherche dans la base de données des autres plages concernées
             $db=new db();
-            $db->select2("pl_poste", "*", array("date"=>$date, "debut"=>"<$sr_fin", "fin"=>">$sr_debut"), "ORDER BY debut,fin");
+
+            if ($lunch_position) {
+                $db->select("pl_poste", "*", "date = '$date' AND debut < '$sr_fin' AND fin > '$sr_debut' AND poste NOT IN ($lunch_position)", "ORDER BY debut,fin");
+            } else {
+                $db->select2("pl_poste", "*", array("date"=>$date, "debut"=>"<$sr_fin", "fin"=>">$sr_debut"), "ORDER BY debut,fin");
+            }
+
             if ($db->result) {
                 $result = array();
                 // On classe les résultats par agent
