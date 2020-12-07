@@ -28,4 +28,4 @@ $t=new tableau();
 $t->CSRFToken = $CSRFToken;
 $t->update($post);
 
-echo "<script type='text/JavaScript'>location.href='index.php?page=planning/postes_cfg/index.php';</script>\n";
+echo "<script type='text/JavaScript'>location.href='/framework';</script>\n";
