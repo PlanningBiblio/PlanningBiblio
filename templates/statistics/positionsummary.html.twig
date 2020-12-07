@@ -38,7 +38,7 @@
                     <option value='Tous'>Tous</option>
                     {% for poste in postes_list %}
                       {% if postes is defined %}
-                        <option value='{{ poste.id }}' {{ (poste.id in postes) ? "selected='selected'" : " " }} {{ (poste.obligatoire == "Obligatoire") ? "class='td_obligatoire'" : "class='td_renfort'" }}>{{ poste.nom }} {{ poste.etage ? "(elem.etage)" : "" }}</option>
+                        <option value='{{ poste.id }}' {{ (poste.id in postes) ? "selected='selected'" : " " }} {{ (poste.obligatoire == "Obligatoire") ? "class='td_obligatoire'" : "class='td_renfort'" }}>{{ poste.nom }} {{ poste.etage ? "("~poste.etage~")" : "" }}</option>
                       {% endif %}
                     {% endfor %}
                   {% endif %}
