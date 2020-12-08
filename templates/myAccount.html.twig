@@ -27,7 +27,7 @@
         </div>
         {% if config('PlanningHebdo-Agents') %}
           <div style='display: inline-block; width:300px; position: absolute; right: 22px; text-align: right; margin-top:22px;'>
-            <a href='/workingHour/add?retour=monCompte.php' class='ui-button'>Entrer de nouveaux horaires</a>
+            <a href="{{ asset ('workinghour/add') }}?retour=monCompte.php" class='ui-button'>Entrer de nouveaux horaires</a>
           </div>
         {% endif %}
     {% endif %}
@@ -48,7 +48,7 @@
         </thead>
         <tbody>
           {% for elem in planning %}
-            <tr>";
+            <tr>
               <td style='white-space:nowrap;'>{{ elem.remplace ? "<font style='font-size:20pt;'>&rdsh;</font>": "" }}
                 <a href='/workinghour/{{ elem.id }}?retour=monCompte.php'/>
                   <span class='pl-icon pl-icon-edit' title='Voir'></span>
@@ -86,7 +86,7 @@
         <tr>
           <td>Crédit restant</td>
           <td style='text-align:right;'>
-            {{ credits.conges}}
+            {{ credits.conges }}
           </td>
           <td style='text-align:right;'>
             {{ credits.joursConges }} jours
@@ -106,7 +106,7 @@
           <td style='text-align:right;'>
             {{ credits.anticipation }}</td>
             <td style='text-align:right;'>
-              {{ credits.joursAnticipation}} jours
+              {{ credits.joursAnticipation }} jours
             </td>
         </tr>
         <tr>
@@ -115,7 +115,7 @@
         <tr>
           <td>Crédit</td>
           <td style='text-align:right;'>
-            {{ credits.recuperation}}
+            {{ credits.recuperation }}
           </td>
           <td style='text-align:right;'>
             {{ credits.joursRecuperation }} jours
@@ -124,43 +124,42 @@
       </table>
       <p style='font-style:italic;margin:30px 0 0 10px;'>Le nombre de jours est calculé sur la base de 7 heures par jour.</p>
     </div>
-    <!-- Crédits-->
+  <!-- Crédits-->
+  {% endif %}
     <!-- Mot de Passe -->
     <div id='motDePasse' style='margin-left:80px;display:none;'>
       {% if auth_mode == "SQL" %}
         <h3>Modification du mot de passe</h3>
         <h4>{{ login.surname }} {{ login.name }}</h4>
-        {% if not nouveau %}
-          <form name='form' method='get' action='#'>";
-            <input type='hidden' name='page' value='personnel/password.php' />\n";
-            <table class='tableauFiches'>
-              <tr>
-                <td>Ancien mot de passe : </td>
-                <td>
-                  <input type='password' name='ancien' class='ui-widget-content ui-corner-all'/>
-                </td>
-              </tr>
-              <tr>
-                <td> Nouveau mot de passe : </td>
-                <td>
-                  <input type='password' name='nouveau' class='ui-widget-content ui-corner-all'/>
-                </td>
-              </tr>
-              <tr>
-                <td>  Confirmer le nouveau mot de passe : </td>
-                <td>
-                  <input type='password' name='confirm' class='ui-widget-content ui-corner-all'/>
-                </td>
-              </tr>
-              <tr>
-                <td colspan='2' style='text-align:center;'>
-                  <br/><input type='button' value='Annuler' onclick="location.href={{ asset('index.php') }};" class='ui-button'/>
-                  <input type='submit' value='Modifier' class='ui-button' style='margin-left:30px;'/>
-                </td>
-              </tr>
-            </table>
-          </form>
-        {% endif %}
+        <form name='form' method='get' action="{ asset ('index.php'}">
+          <input type='hidden' name='page' value='personnel/password.php' />
+          <table class='tableauFiches'>
+            <tr>
+              <td>Ancien mot de passe : </td>
+              <td>
+                <input type='password' name='ancien' class='ui-widget-content ui-corner-all'/>
+              </td>
+            </tr>
+            <tr>
+              <td> Nouveau mot de passe : </td>
+              <td>
+                <input type='password' name='nouveau' class='ui-widget-content ui-corner-all'/>
+              </td>
+            </tr>
+            <tr>
+              <td>  Confirmer le nouveau mot de passe : </td>
+              <td>
+                <input type='password' name='confirm' class='ui-widget-content ui-corner-all'/>
+              </td>
+            </tr>
+            <tr>
+              <td colspan='2' style='text-align:center;'>
+                <br/><input type='button' value='Annuler' onclick="location.href={{ asset('index.php') }};" class='ui-button'/>
+                <input type='submit' value='Modifier' class='ui-button' style='margin-left:30px;'/>
+              </td>
+            </tr>
+          </table>
+        </form>
       {% else %}
         <h3>Modification du mot de passe</h3>
         Vous utilisez un système d'authentification centralisé.<br/>
