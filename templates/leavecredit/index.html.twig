@@ -1,0 +1,100 @@
+{# leavecredit/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+
+  <h3>Crédits de congés</h3>
+  <form name='form' id='form' method='get' action="{{ asset ('leavecredit') }}" class='noprint'>
+    <input type='hidden' name='get' value='yes' />
+    <table class='tableauStandard'>
+      <tbody>
+        <tr>
+          <td style='text-align:left;'>
+            <span style='padding:5px 40px 5px 0;'>
+                <input type='checkbox' {{ (agents_supprimes == true) ? "checked = 'checked" : null }} name='supprimes' onclick='$("#form").submit();'/>
+               Agents supprimés
+            </span>
+            <span style='padding:5px 40px 5px 0;'>
+                <input type='checkbox' {{ (credits_effectifs == true) ? "checked = 'checked" : null }} name='effectifs' onclick='$("#form").submit();'/>
+              Crédits effectifs
+            </span>
+            <span style='padding:5px 40px 5px 0;' class='orange'>
+                <input type='checkbox' {{ (credits_en_attente == true) ? "checked = 'checked" : null }} name='attente' onclick='$("#form").submit();'/>
+              Crédits en attente
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+  <br/>
+
+  <table id='tableCredits' class='CJDataTable' data-sort='[[0]]'>
+    <thead>
+      <tr>
+        <th rowspan='2'>Agent</th>
+        <th rowspan='2' class='dataTableHeureFR' >Congés / an</th>
+        <th colspan='3'>Crédit congés</th>
+        <th colspan='3'>Crédit reliquat</th>
+        <th colspan='3'>Crédit récupérations</th>
+        <th colspan='3'>Solde débiteur</th>
+      </tr>
+      <tr>
+        <th class='dataTableHeureFR' >Initial</th>
+        <th class='dataTableHeureFR' >Utilisé</th>
+        <th class='dataTableHeureFR' >Restant</th>
+        <th class='dataTableHeureFR' >Initial</th>
+        <th class='dataTableHeureFR' >Utilisé</th>
+        <th class='dataTableHeureFR' >Restant</th>
+        <th class='dataTableHeureFR' >Initial</th>
+        <th class='dataTableHeureFR' >Utilisé</th>
+        <th class='dataTableHeureFR' >Restant</th>
+        <th class='dataTableHeureFR' >Initial</th>
+        <th class='dataTableHeureFR' >Utilisé</th>
+        <th class='dataTableHeureFR' >Restant</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for elem in conges %}
+        {% if credits_effectifs == true %}
+          <tr style='vertical-align:top;'>
+            <td>{{ elem.agent }}</td>
+            <td class='aRight nowrap'>{{ elem.conge_annuel }}</td>
+            <td class='aRight nowrap'>{{ elem.conge_initial }}</td>
+            <td class='aRight nowrap'>{{ elem.conge_utilise }}</td>
+            <td class='aRight nowrap'>{{ elem.conge_restant }}</td>
+            <td class='aRight nowrap'>{{ elem.reliquat_initial }}</td>
+            <td class='aRight nowrap'>{{ elem.reliquat_utilise }}</td>
+            <td class='aRight nowrap'>{{ elem.reliquat_restant }}</td>
+            <td class='aRight nowrap'>{{ elem.recup_initial }}</td>
+            <td class='aRight nowrap'>{{ elem.recup_utilise }}</td>
+            <td class='aRight nowrap'>{{ elem.recup_restant }}</td>
+            <td class='aRight nowrap'>{{ elem.anticipation_initial }}</td>
+            <td class='aRight nowrap'>{{ elem.anticipation_utilise }}</td>
+            <td class='aRight nowrap'>{{ elem.anticipation_restant }}</td>
+          </tr>
+        {% endif %}
+
+        {% if credits_en_attente == true %}
+          <tr style='vertical-align:top;' class='orange'>
+            <td>{{ elem.agent }}</td>
+            <td class='aRight nowrap'>{{ elem.conge_annuel }}</td>
+            <td class='aRight nowrap'>{{ elem.conge_initial }}</td>
+            <td class="aRight nowrap {{ elem.conge_classe }}">{{ elem.conge_demande }}</td>
+            <td class="aRight nowrap {{ elem.conge_classe }}">{{ elem.conge_en_attente }}</td>
+            <td class='aRight nowrap'>{{ elem.reliquat_initial }}</td>
+            <td class="aRight nowrap {{ elem.reliquat_classe }}">{{ elem.reliquat_demande }}</td>
+            <td class="aRight nowrap {{ elem.reliquat_classe }}">{{ elem.reliquat_en_attente }}</td>
+            <td class='aRight nowrap'>{{ elem.recup_initial }}</td>
+            <td class="aRight nowrap {{ elem.recup_classe }}">{{ elem.recup_demande }}</td>
+            <td class="aRight nowrap {{ elem.recup_classe }}">{{ elem.recup_en_attente }}</td>
+            <td class='aRight nowrap'>{{ elem.anticipation_initial }}</td>
+            <td class="aRight nowrap {{ elem.anticipation_classe }}">{{ elem.anticipation_demande }}</td>
+            <td class="aRight nowrap {{ elem.anticipation_classe }}">{{ elem.anticipation_en_attente }}</td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
