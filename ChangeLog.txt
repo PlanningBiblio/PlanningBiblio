@@ -1,4 +1,6 @@
 *** Unreleased ***
+-Fixes
+check if agents are blocked when right copying planning's cell
 
 *** Version 20.10.02       (2020-12-24)   ***
 -Fixes
