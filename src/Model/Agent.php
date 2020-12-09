@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 require_once(__DIR__ . '/../../public/absences/class.absences.php');
+require_once(__DIR__ . '/../../public/include/db.php');
 
 /**
  * @Entity @Table(name="personnel")
@@ -224,5 +225,38 @@ class Agent extends PLBEntity {
         }
 
         return $working_hours->elements[0];
+    }
+
+    public function isBlockedOn($date, $start, $end)
+    {
+        $id = $this->id();
+
+        $db=new \db();
+        $db->select(
+            'pl_poste',
+            'poste',
+            "`perso_id` = $id and `debut` < '$end' and `fin` > '$start' and `date`='$date' and `supprime`='0'"
+        );
+
+        $postes = array();
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                $postes[] = $elem['poste'];
+            }
+        }
+
+        if (empty($postes)) {
+            return false;
+        }
+
+        foreach ($postes as $poste) {
+            $db=new \db();
+            $db->select('postes', 'bloquant', "`id` = $poste");
+            if ($db->result && $db->result[0]['bloquant']) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
