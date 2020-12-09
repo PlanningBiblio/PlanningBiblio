@@ -1,3 +1,4 @@
 <?php
-  $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Congés - Crédits','100','','/leavecredit');";
+  $sql[]="UPDATE `{$dbprefix}acces` SET `page` = '/leavecredit' WHERE `page` = 'conges/credits.php';";
+  $sql[]="UPDATE `{$dbprefix}menu` SET `url` = '/leavecredit' WHERE `url` = 'conges/credits.php';";
 

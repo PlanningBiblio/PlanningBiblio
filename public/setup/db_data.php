@@ -413,7 +413,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('15','24','Poser des récupérations','conges/recup_pose.php','config=Conges-Enable;Conges-Recuperations'),
   ('15','26','Récupérations','conges/recuperations.php','config=Conges-Enable'),
   ('15','30','Informations','/holiday-info','config=Conges-Enable'),
-  ('15','40','Crédits','conges/credits.php','config=Conges-Enable'),
+  ('15','40','Crédits','/leavecredit','config=Conges-Enable'),
   ('20','0','Agenda','agenda/index.php',NULL),
   ('30','0','Planning','planning/poste/index.php',NULL),
   ('30','90','Agents volants','planning/volants/index.php','config=Planning-agents-volants'),
