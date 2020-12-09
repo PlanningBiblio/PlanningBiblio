@@ -41,7 +41,6 @@ class PlanningJobController extends BaseController
                 }
 
                 if ($available and $agent->isOnVacationOn("$date $start", "$date $end")) {
-                    $result['unavailable'][] = $fullname;
                     $available = false;
                 }
 
@@ -51,9 +50,12 @@ class PlanningJobController extends BaseController
                     $working_hours = $agent->getWorkingHoursOn($date);
 
                     if (!calculSiPresent($start, $end, $working_hours['temps'], $day)) {
-                        $result['unavailable'][] = $fullname;
                         $available = false;
                     }
+                }
+
+                if ($available and $agent->isBlockedOn($date, $start, $end)) {
+                    $available = false;
                 }
 
                 if ($available) {
