@@ -240,7 +240,7 @@ class AbsenceController extends BaseController
 
                 foreach($absdocs as $absdoc){
                    $absLinks[]=array(
-                    'link' =>"absences/document/". $absdoc->id() . "target='_blank'",
+                    'link' =>"absences/document/". $absdoc->id(),
                     'name' => $absdoc->filename()
                   );
                 }
@@ -349,7 +349,7 @@ class AbsenceController extends BaseController
         }
 
         $absence = $a->elements;
-        $absence['motif'] = html_entity_decode($a->elements['motif'], ENT_QUOTES);
+        $absence['motif'] = array_search(html_entity_decode($a->elements['motif'], ENT_QUOTES), array_column($this->availablesReasons(), 'valeur')) >= 0 ? html_entity_decode($a->elements['motif'], ENT_QUOTES) : "Autre";
         $absence['motif_autre'] = html_entity_decode($a->elements['motif_autre'], ENT_QUOTES);
         $absence['commentaires'] = html_entity_decode($a->elements['commentaires'], ENT_QUOTES);
 
