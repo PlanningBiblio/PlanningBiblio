@@ -705,13 +705,18 @@ function getAgentsBySites(sites) {
 
 function updateAgentsListBySites() {
 
-    managed_sites = JSON.stringify($("input[name='selected_sites']").map(function(){
-      return $(this).val();
-    }).get());
+    if ($("input#multisites").val()) {
+        managed_sites = JSON.stringify($("input[name='selected_sites']").map(function(){
+          return $(this).val();
+        }).get());
 
-    selected_sites = JSON.stringify($("input[name='selected_sites']:checked").map(function(){
-      return $(this).val();
-    }).get());
+        selected_sites = JSON.stringify($("input[name='selected_sites']:checked").map(function(){
+          return $(this).val();
+        }).get());
+    } else {
+        managed_sites = "[1]";
+        selected_sites = "[1]";
+    }
 
     managed_sites_agents = getAgentsBySites(managed_sites);
     selected_sites_agents = getAgentsBySites(selected_sites);
