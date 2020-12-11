@@ -500,12 +500,14 @@ class HolidayController extends BaseController
         for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
             if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
                 $admin = true;
-                $multisites = true;
                 $sites_select[] = array( 'id' => $i, 'name' => $this->config("Multisites-site$i") );
             }
             if (in_array((600+$i), $droits)) {
                 $adminN2 = true;
             }
+        }
+        if ($this->config('Multisites-nombre') > 1) {
+            $multisites = true;
         }
 
         $agents_multiples = (($this->admin || ($admin && $adminN2)) && $this->config('Conges-Recuperations') == 1);
