@@ -563,11 +563,11 @@ class AgentController extends BaseController
                 'show_hours_to_days'    => $holiday_helper->showHoursToDays(),
             );
             if ($holiday_helper->showHoursToDays()) {
-                $templateParams['annuel_jours'] = $holiday_helper->hoursToDays(heure4($annuelString), $id);
-                $templateParams['credit_jours'] = $holiday_helper->hoursToDays(heure4($creditString), $id);
-                $templateParams['reliquat_jours'] = $holiday_helper->hoursToDays(heure4($reliquatString), $id);
-                $templateParams['anticipation_jours'] = $holiday_helper->hoursToDays(heure4($anticipationString), $id);
-                $templateParams['hours_per_day'] = $holiday_helper->hoursPerDay($id);
+                $templateParams['annuel_jours'] = $id ? $holiday_helper->hoursToDays(heure4($annuelString), $id) : '';
+                $templateParams['credit_jours'] = $id ? $holiday_helper->hoursToDays(heure4($creditString), $id) : '';
+                $templateParams['reliquat_jours'] = $id ? $holiday_helper->hoursToDays(heure4($reliquatString), $id) : '';
+                $templateParams['anticipation_jours'] = $id ? $holiday_helper->hoursToDays(heure4($anticipationString), $id) : '';
+                $templateParams['hours_per_day'] = $id ? $holiday_helper->hoursPerDay($id) : '';
 
             }
             $this->templateParams($templateParams);
