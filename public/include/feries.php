@@ -19,7 +19,8 @@ Code source de Olravet commenté en page de cette page
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
 $version = $GLOBALS['version'] ?? null;
-if (!isset($version)) {
+
+if (!isset($version) and php_sapi_name() != 'cli') {
     include_once "accessDenied.php";
     exit;
 }

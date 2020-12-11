@@ -156,6 +156,71 @@ class HolidayHelper extends BaseHelper
         return $result;
     }
 
+    public function startEndHours($params = array())
+    {
+        foreach (array('halfday', 'start_halfday', 'end_halfday') as $key) {
+            if (!array_key_exists($key, $params)) {
+                return array('', '');
+            }
+        }
+
+        $start_halfday = $params['start_halfday'];
+        $end_halfday = $params['end_halfday'];
+        $halfday = $params['halfday'];
+        $start = $this->data['start'];
+        $end = $this->data['end'];
+        $hour_start = '00:00:00';
+        $hour_end = '23:59:59';
+
+        if ($this->data['hour_start'] && $this->data['hour_start'] != '') {
+            $hour_start = $this->data['hour_start'];
+        }
+
+        if ($this->data['hour_end'] && $this->data['hour_end'] != '') {
+            $hour_end = $this->data['hour_end'];
+        }
+
+
+        if ($this->config('Conges-Mode') == 'jours'
+            && $this->config('Conges-demi-journees')
+            && $params['halfday']) {
+
+            if (strtotime($start) == strtotime($end)) {
+              if ($start_halfday == 'morning') {
+                $hour_start = '00:00:00';
+                $hour_end = '12:00:00';
+              }
+
+              if ($start_halfday == 'afternoon') {
+                $hour_start = '12:00:00';
+                $hour_end = '23:59:59';
+              }
+
+              if ($start_halfday == 'fullday') {
+                $hour_start = '00:00:00';
+                $hour_end = '23:59:59';
+              }
+            }
+
+            if (strtotime($start) < strtotime($end)) {
+              if ($start_halfday == 'afternoon') {
+                $hour_start = '12:00:00';
+              } else {
+                $hour_start = '00:00:00';
+              }
+
+              if ($end_halfday == 'morning') {
+                $hour_end = '12:00:00';
+              } else {
+                $hour_end = '23:59:59';
+              }
+            }
+        }
+
+        return array($hour_start, $hour_end);
+
+    }
+
     private function applyWeekTable($week)
     {
         if($this->config('Conges-Mode') == 'heures' || $this->data['is_recover']) {

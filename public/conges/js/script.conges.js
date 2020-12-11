@@ -33,6 +33,8 @@ function calculCredit(){
   conges_mode = $('#conges-mode').val();
   is_recover = $('#is-recover').val();
   conges_demi_journee = $('#conges-demi-journees')
+  start_halfday = $('select[name="start_halfday"]').val();
+  end_halfday = $('select[name="end_halfday"]').val();
 
   if(!fin){
     fin=debut;
@@ -41,52 +43,21 @@ function calculCredit(){
     return;
   }
 
-  hre_debut=hre_debut?hre_debut:"00:00:00";
-  hre_fin=hre_fin?hre_fin:"23:59:59";
-
-  if (conges_mode == 'jours' && conges_demi_journee && halfday) {
-    start_halfday = $('select[name="start_halfday"]').val();
-    end_halfday = $('select[name="end_halfday"]').val();
-
-    start = ddmmyyyy_to_date(debut);
-    end = ddmmyyyy_to_date(fin);
-
-    if (start.getTime() == end.getTime()) {
-      if (start_halfday == 'morning') {
-        hre_debut = '00:00:00';
-        hre_fin = '12:00:00';
-      }
-
-      if (start_halfday == 'afternoon') {
-        hre_debut = '12:00:00';
-        hre_fin = '23:59:59';
-      }
-
-      if (start_halfday == 'fullday') {
-        hre_debut = '00:00:00';
-        hre_fin = '23:59:59';
-      }
-    }
-
-    if (start.getTime() < end.getTime()) {
-      if (start_halfday == 'afternoon') {
-        hre_debut = '12:00:00';
-      } else {
-        hre_debut = '00:00:00';
-      }
-
-      if (end_halfday == 'morning') {
-        hre_fin = '12:00:00';
-      } else {
-        hre_fin = '23:59:59';
-      }
-    }
-
-  }
+  data = {
+    debut: debut,
+    fin: fin,
+    hre_debut: hre_debut,
+    hre_fin: hre_fin,
+    perso_id: perso_id,
+    is_recover: is_recover,
+    halfday: halfday,
+    start_halfday: start_halfday,
+    end_halfday: end_halfday
+  },
 
   $.ajax({
     url: "/ajax/holiday-credit",
-    data: {debut: debut, fin: fin, hre_debut: hre_debut, hre_fin: hre_fin, perso_id: perso_id, is_recover: is_recover},
+    data: data,
     dataType: "json",
     type: "get",
     async: false,
@@ -366,6 +337,9 @@ function verifConges(){
   var hre_fin=$("#hre_fin_select").val();
   var perso_id=$("#perso_id").val();
   var id=$("#id").val();
+  var halfday = $('input[name="halfday"]').is(':checked') ? 1 : 0;
+  var start_halfday = $('select[name="start_halfday"]').val();
+  var end_halfday = $('select[name="end_halfday"]').val();
   if(hre_fin==""){
     hre_fin="23:59:59";
   }
@@ -393,12 +367,12 @@ function verifConges(){
 
   // Vérifions si un autre congé a été demandé ou validé
   var result=$.ajax({
-    url: '/conges/ajax.verifConges.php',
+    url: '/ajax/holiday/check',
     type: "get",
-    data: "perso_id="+perso_id+"&debut="+debut+"&fin="+fin+"&hre_debut="+hre_debut+"&hre_fin="+hre_fin+"&id="+id,
+    data: "perso_id="+perso_id+"&debut="+debut+"&fin="+fin+"&hre_debut="+hre_debut+"&hre_fin="+hre_fin+"&id="+id+'&halfday='+halfday+'&start_halfday='+start_halfday+'&end_halfday='+end_halfday,
     async: false,
     success: function(data){
-      if(data != "Pas de congé"){
+      if(data != "No holiday"){
         information("Un congé a déjà été demandé " + data,"error");
       }else{
         $("#form").submit();
