@@ -165,7 +165,6 @@ class HolidayHelper extends BaseHelper
                 $holidays_hours_per_year = $agent->conges_annuel();
             }
             $intervals = $this->config['conges-hours-per-day'];
-            arsort($intervals);
             foreach ($intervals as $hours => $hours_per_day) {
                 if ($holidays_hours_per_year >= $hours) {
                     return $hours_per_day;
