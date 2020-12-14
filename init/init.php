@@ -51,14 +51,6 @@ $show_menu = $request->get('menu') == 'off' ? false : true;
 // To control access rights, we keep only the part of the URI before the numbers
 // e.g. : we keep /absences/info when the URI is /absences/info/11/edit
 $page = $request->getPathInfo();
-$page = preg_replace('/([a-z\/]*).*/', "$1", $page);
-$page = rtrim($page, '/add');
-$page = rtrim($page, '/');
-
-$ajax = false;
-if (strpos($page, '/ajax') === 0) {
-    $ajax = true;
-}
 
 $login = $request->get('login');
 
@@ -91,20 +83,7 @@ if ($page == 'planning/poste/index.php' or $page == 'planning/poste/semaine.php'
 // Recupération des droits d'accès de l'agent
 $logged_in = $entityManager->find(Agent::class, $_SESSION['login_id']);
 $droits = $logged_in ? $logged_in->droits() : array();
-
 $_SESSION['droits'] = array_merge($droits, array(99));
-
-// Droits necessaires pour consulter la page en cours
-$accesses = $entityManager->getRepository(Access::class)->findBy(array('page' => $page));
-$authorized = $logged_in ? $logged_in->can_access($accesses) : false;
-
-if ($_SESSION['oups']["Auth-Mode"] == 'Anonyme' ) {
-    foreach ($accesses as $access) {
-        if ($access->groupe_id() == '99') {
-            $authorized = true;
-        }
-    }
-};
 
 $theme=$config['Affichage-theme']?$config['Affichage-theme']:"default";
 if (!file_exists("themes/$theme/$theme.css")) {

@@ -7,6 +7,7 @@ Use APP_ENV in legacy code (config.php) and move uploaded files
 Upgrade PHP to 7.4 in composer.json
 Update install.sh : check if PHP version > 7.4, run composer update if needed
 Upgrade symfony/flex to release 1.9.8
+Start handling permissions in a YAML file
 
 
 -Fixes

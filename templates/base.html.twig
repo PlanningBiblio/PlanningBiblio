@@ -61,14 +61,7 @@
     {% else %}
       <div id='content'>
     {% endif %}
-
-
-    {% if authorized %}
-      {% block page %}{% endblock %}
-    {% else %}
-      <div id='acces_refuse'>Accès refusé</div>
-    {% endif %}
-
+    {% block page %}{% endblock %}
     </div> <!-- content or planningPoste -->
 
     <div class='footer'>

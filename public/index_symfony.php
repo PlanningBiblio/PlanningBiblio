@@ -27,11 +27,6 @@ if (empty($_SESSION['login_id'])) {
     exit();
 }
 
-// Access denied.
-if (!$authorized && !$ajax && $path != '/access-denied') {
-    header("Location: /access-denied");
-    exit();
-}
 
 if ($trustedProxies = $_SERVER['TRUSTED_PROXIES'] ?? $_ENV['TRUSTED_PROXIES'] ?? false) {
     Request::setTrustedProxies(explode(',', $trustedProxies), Request::HEADER_X_FORWARDED_ALL ^ Request::HEADER_X_FORWARDED_HOST);
