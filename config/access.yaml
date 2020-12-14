@@ -1,0 +1,28 @@
+# This file gathers the routes and the rights required to access each of them
+# This file is called by the ControllerAuthorization Listener
+
+routes:
+    "absence.index": 100,
+    "absence.edit": 100,
+    "absence.add": 100,
+    "absence.save": 100,
+    "absences.info.index": 201,
+    "absences.info.add": 201,
+    "absences.info.edit": 201,
+    "absences.info.update": 201,
+    "absences.info.delete": 201,
+    "agent.index": 4,
+    "agent.add": 4,
+    "agent.edit": 4,
+    "agent.save": 21,
+    "agent.delete": 21,
+    "ajax.editabsencereasons": 100,
+    "ajax.holidaydelete": 100,
+    "ajax.changepassword": 21,
+    "calendar.index": 100,
+    "position.index": 5,
+    "position.add": 5,
+    "postion.edit": 5,
+    "position.save": 5,
+    "position.delete": 5
+

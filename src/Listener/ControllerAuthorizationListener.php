@@ -8,6 +8,8 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Doctrine\Common\Annotations\Reader;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 
+use Symfony\Component\Yaml\Yaml;
+
 use ReflectionClass;
 
 class ControllerAuthorizationListener
@@ -23,6 +25,8 @@ class ControllerAuthorizationListener
 
     public function __construct(\Twig_Environment $twig)
     {
+        $file = Yaml::parseFile(__DIR__."/../../config/access.yaml");
+
         $this->twig = $twig;
 
         $this->templateParams = $GLOBALS['templates_params'];
