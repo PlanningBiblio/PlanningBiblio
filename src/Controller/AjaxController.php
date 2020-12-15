@@ -56,12 +56,11 @@ class AjaxController extends BaseController
         $db = new \db();
         $db->select2("personnel", "id, nom, prenom, sites", array("supprime"=>0,"id"=>"<>2"), "order by nom,prenom");
         $agents = array();
-        if ($sites) {
-            foreach ($db->result as $agent) {
-                if ($agent['id'] == $_SESSION['login_id'] ||
-                   ($agent['sites'] != '' && array_intersect($sites, json_decode(html_entity_decode($agent['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true)))) {
-                    array_push($agents, $agent);
-                }
+        foreach ($db->result as $agent) {
+            if ($agent['id'] == $_SESSION['login_id'] ||
+                $this->config('Multisites-nombre') == 1 ||
+               ($sites && $agent['sites'] != '' && array_intersect($sites, json_decode(html_entity_decode($agent['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true)))) {
+                array_push($agents, $agent);
             }
         }
         return $this->json($agents);
