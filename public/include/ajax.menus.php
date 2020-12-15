@@ -31,21 +31,53 @@ $tab = $_POST['tab'];
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-$db->delete("select_$menu");
-foreach ($tab as $elem) {
-    if (!in_array($menu, array('etages', 'groupes'))) {
-        $elem[0] = htmlentities($elem[0], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+if($menu != 'services'){
+    $db->delete("select_$menu");
+    foreach ($tab as $elem) {
+        if (!in_array($menu, array('etages', 'groupes'))) {
+            $elem[0] = htmlentities($elem[0], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+        }
+        $elements = array("valeur"=>$elem[0],"rang"=>$elem[1]);
+        if ($option == 'type') {
+            $elements['type'] = $elem[2];
+        }
+        if ($option == 'categorie') {
+            $elements['categorie'] = $elem[2];
+        }
+
+        $db=new db();
+        $db->CSRFToken = $CSRFToken;
+        $db->insert("select_$menu", $elements);
     }
-    $elements = array("valeur"=>$elem[0],"rang"=>$elem[1]);
-    if ($option == 'type') {
-        $elements['type'] = $elem[2];
-    }
-    if ($option == 'categorie') {
-        $elements['categorie'] = $elem[2];
+} else {
+    $db2 = new db();
+    $db2->select("select_$menu");
+    $res = array();
+    if ($db2->result){
+        foreach($db2->result as $elem){
+            $res[$elem['id']] = $elem['valeur'];
+        }
     }
 
-    $db=new db();
-    $db->CSRFToken = $CSRFToken;
-    $db->insert("select_$menu", $elements);
+    $valeurs_liste = array();
+    foreach($tab as $elem){
+        $valeurs_liste[] = $elem[0];
+    }
+
+    foreach($db2->result as $elem){
+        if(!in_array($elem['valeur'], $valeurs_liste)){
+            $db->delete("select_$menu", array("id" => $elem['id']));
+        }
+    }
+    foreach($tab as $elem){
+        $elements = array("valeur"=>$elem[0],"rang"=>$elem[1]);
+        $id = array_search($elements['valeur'], $res) ?? null;
+        if ($id){ // Si l'on a déjà la valeur dans select_services = modification du rang
+            $db->update("select_$menu", $elements, array("id" => $id));
+        } else {
+            $db->insert("select_$menu", $elements);
+        }
+    }
+
 }
 echo json_encode('ok');
