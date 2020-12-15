@@ -17,15 +17,12 @@ class ControllerAuthorizationListener
 
     private $templateParams = array();
 
-    private $permissions = array(
-        'ajax.editabsencereasons' => array(100),
-        'ajax.holidaydelete' => array(100),
-        'ajax.changepassword' => array(21),
-    );
+    private $permissions = array();
 
     public function __construct(\Twig_Environment $twig)
     {
         $file = Yaml::parseFile(__DIR__."/../../config/access.yaml");
+        $this->permissions = $file;
 
         $this->twig = $twig;
 
