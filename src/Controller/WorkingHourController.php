@@ -28,6 +28,15 @@ class WorkingHourController extends BaseController
         $fin = filter_var($fin, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
         $reset = filter_var($reset, FILTER_CALLBACK, array("options"=>"sanitize_on"));
 
+        $services = array();
+        $db = new \db();
+        $db->select('select_services');
+        if ($db->result){
+            foreach ($db->result as $elem){
+                $services[$elem['id']] = $elem['valeur'];
+            }
+        }
+
         if (!$debut) {
             $debut = array_key_exists("planningHebdoDebut", $_SESSION['oups'])?$_SESSION['oups']['planningHebdoDebut']:null;
         }
@@ -136,6 +145,7 @@ class WorkingHourController extends BaseController
             $elem['validation'] = $validation;
             $elem['validation_date'] = $validation_date;
             $elem['commentaires'] = $commentaires;
+            $elem['service'] = $services[$elem['service']] ?? null;
         }
 
         $this->templateParams(
