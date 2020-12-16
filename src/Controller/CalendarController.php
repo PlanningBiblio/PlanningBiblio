@@ -212,7 +212,6 @@ class CalendarController extends BaseController
             $nom = null;
             // Jours fériés : affiche Bibliothèque fermée et passe au jour suivant
             if (array_key_exists($current, $joursFeries) and $joursFeries[$current]['fermeture']) {
-                $current = date("Y-m-d", mktime(0, 0, 0, $date_tab[1], $date_tab[2]+1, $date_tab[0]));
                 $closed = true;
                 $nom = $joursFeries[$current]['nom'];
             }
