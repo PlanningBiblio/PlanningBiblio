@@ -17,6 +17,7 @@ $displayed_version="20.11.00"; // xx.xx.xx
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Yaml\Yaml;
 
 use App\Model\Agent;
 use App\Model\Access;
@@ -96,7 +97,17 @@ $_SESSION['droits'] = array_merge($droits, array(99));
 
 // Droits necessaires pour consulter la page en cours
 $accesses = $entityManager->getRepository(Access::class)->findBy(array('page' => $page));
-$authorized = $logged_in ? $logged_in->can_access($accesses) : false;
+
+// Permissions are defined in a yaml file too. 
+// If the route is not listed in this file, then we check the authorization in depth.
+$route = $request->attributes->get('_route');
+$permissions = Yaml::parseFile(__DIR__."/../config/permissions.yaml");
+
+$authorized = true;
+
+if (!in_array($route, $permissions)){
+    $authorized = $logged_in ? $logged_in->can_access($accesses) : false;
+}
 
 if ($_SESSION['oups']["Auth-Mode"] == 'Anonyme' ) {
     foreach ($accesses as $access) {
