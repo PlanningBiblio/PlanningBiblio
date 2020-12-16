@@ -4,9 +4,14 @@ namespace App\Listener;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Doctrine\ORM\EntityManagerInterface;
 
 use Doctrine\Common\Annotations\Reader;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use Symfony\Component\Yaml\Yaml;
+
+use App\Model\Agent;
+use App\Model\Access;
 
 use ReflectionClass;
 
@@ -17,21 +22,46 @@ class ControllerAuthorizationListener
 
     private $permissions = array();
 
-    public function __construct(\Twig_Environment $twig)
+    protected $entityManager;
+
+    public function __construct(\Twig_Environment $twig, EntityManagerInterface $em)
     {
-        $this->permissions = $GLOBALS['permissions'];
+        $this->permissions = Yaml::parseFile(__DIR__."/../../config/permissions.yaml");
 
         $this->twig = $twig;
 
         $this->templateParams = $GLOBALS['templates_params'];
         $this->droits = $GLOBALS['droits'];
+        $this->entityManager = $em;
     }
 
     public function onKernelRequest(GetResponseEvent $event)
     {
+        $page = $event->getRequest()->getPathInfo();
+        $page = preg_replace('/([a-z\/]*).*/', "$1", $page);
+        $page = rtrim($page, '/add');
+        $page = rtrim($page, '/');
+
+        // Droits necessair<es pour consulter la page en cours
+        $accesses = $this->entityManager->getRepository(Access::class)->findBy(array('page' => $page));
+        $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
+
+        $authorized = true;
         $route = $event->getRequest()->attributes->get('_route');
 
-        if (!$this->canAccess($route)) {
+        if(!in_array($route, $this->permissions)){
+            $authorized = $logged_in ? $logged_in->can_access($accesses) : false;
+        }
+
+        if ($_SESSION['oups']["Auth-Mode"] == 'Anonyme' ) {
+            foreach ($accesses as $access) {
+                if ($access->groupe_id() == '99') {
+                    $authorized = true;
+                }
+            }
+        }
+
+        if (!($this->canAccess($route) and $authorized == 'true')) {
             $body = $this->twig->render('access-denied.html.twig', $this->templateParams);
 
             $response = new Response();
