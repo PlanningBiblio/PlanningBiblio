@@ -586,7 +586,15 @@ class AgentController extends BaseController
                 $services_tab[$elem['id']] = $elem['valeur'];
             }
         }
-        
+
+        $statuts_tab = array();
+        $db = new \db();
+        $db->select('select_statuts');
+        if ($db->result){
+            foreach ($db->result as $elem){
+                $statuts_tab[$elem['id']] = $elem['valeur'];
+            }
+        }
         $arrivee=filter_input(INPUT_POST, "arrivee", FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
         $CSRFToken = filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
         $depart=filter_input(INPUT_POST, "depart", FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
@@ -614,7 +622,7 @@ class AgentController extends BaseController
         $recup = isset($params['recup']) ? trim($params['recup']) : null;
         $service = array_search($params['service'], $services_tab);
         $sites = array_key_exists("sites", $params) ? $params['sites'] : null;
-        $statut = htmlentities($params['statut'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+        $statut = array_search($params['statut'], $statuts_tab);
         $temps=array_key_exists("temps", $params) ? $params['temps'] : null;
 
         // Modification du choix des emplois du temps avec l'option EDTSamedi == 1 (EDT différent les semaines avec samedi travaillé)

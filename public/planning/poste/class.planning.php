@@ -135,6 +135,15 @@ class planning
             }
         }
 
+        $statuts = array();
+        $db = new db();
+        $db->select('select_statuts');
+        if ($db->result){
+            foreach ($db->result as $elem){
+                $statuts[$elem['id']] = $elem['valeur'];
+            }
+        }
+
         if ($hide) {
             $display="display:none;";
             $groupe_hide=null;
@@ -357,7 +366,7 @@ class planning
                 // Classe en fonction du statut et du service
                 $class_tmp=array();
                 if ($elem['statut']) {
-                    $class_tmp[]="statut_".strtolower(removeAccents(str_replace(" ", "_", $elem['statut'])));
+                    $class_tmp[]="statut_".strtolower(removeAccents(str_replace(" ", "_", $statuts[$elem['statut']])));
                 }
                 if ($elem['service'] > 0) {
                     $class_tmp[]="service_".strtolower(removeAccents(str_replace(" ", "_", $services[$elem['service']])));
