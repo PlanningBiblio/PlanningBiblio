@@ -34,3 +34,37 @@ if($db2->result){
     }
 }
 
+$db = new db();
+$db->select2("select_statuts",array("id","valeur"), null,null);
+$statuts = $db->result;
+if($statuts){
+    foreach($statuts as $elem){
+        $sql[] = "UPDATE `{$dbprefix}personnel` SET `statut`= '{$elem['id']}'  WHERE `statut` = '{$elem['valeur']}';";
+    }
+}
+
+
+$db = new db();
+$db->select("personnel", array("id", "statut"));
+foreach($db->result as $agent){
+    if(!preg_match('/^[0-9]+$/', $agent['statut'])){
+        echo "Le statut de l'agent n°{$agent['id']} n'est pas un id ! \n";
+    }
+}
+
+$sql[] = "ALTER TABLE `{$dbprefix}personnel` MODIFY `statut` int(11) NOT NULL;";
+
+$db2 = new db();
+$db2->select("select_statuts","*", null,null);
+if($db2->result){
+    foreach ($db2->result as $elem) {
+        $id = $elem['id'];
+        $old = $elem['valeur'];
+        $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+        if ($new != $old) {
+            $new = addslashes($new);
+            $sql[] = "UPDATE `{$dbprefix}select_statuts` SET `valeur`= '$new'  WHERE `id` = '$id';";
+        }
+    }
+}
+

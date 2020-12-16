@@ -123,6 +123,11 @@ $db=new db();
 $db->select2("select_statuts");
 $statuts_list=$db->result;
 
+$statuts_tab = array();
+foreach($statuts_list as $statut){
+    $statuts_tab[$statut['id']] = $statut['valeur'];
+}
+
 if (!empty($statuts)) {
     //	Recherche du nombre de jours concernés
     $db=new db();
@@ -141,12 +146,12 @@ if (!empty($statuts)) {
     foreach ($db->result as $elem) {
         $statutId=null;
         foreach ($statuts_list as $stat) {
-            if ($stat['valeur']==$elem['statut']) {
+            if ($stat['id']==$elem['statut']) {
                 $statutId=$stat['id'];
                 continue;
             }
         }
-        $agents[$elem['id']]=array("id"=>$elem['id'],"statut"=>$elem['statut'],"statut_id"=>$statutId);
+        $agents[$elem['id']]=array("id"=>$elem['id'],"statut"=>$statuts_tab[$elem['statut']],"statut_id"=>$statutId);
     }
 
     //	Recherche des infos dans pl_poste et postes pour tous les statuts sélectionnés

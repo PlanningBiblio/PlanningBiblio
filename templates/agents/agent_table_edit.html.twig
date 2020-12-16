@@ -31,7 +31,7 @@
       <select name='statut' id='statut' style='width:405px'>
         <option value=''>Aucun</option>
           {%for elem in statuts %}
-            {% if elem.valeur == statut %}
+            {% if elem.id == statut %}
               <option selected="selected" value="{{ elem.valeur | raw }}">{{ elem.valeur | raw }}</option>
             {% else %}
               <option value="{{ elem.valeur | raw }}">{{ elem.valeur | raw }}</option>
