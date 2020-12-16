@@ -33,9 +33,6 @@ $db=new db();
 $db->CSRFToken = $CSRFToken;
 $db->delete("select_$menu");
 foreach ($tab as $elem) {
-    if (!in_array($menu, array('etages', 'groupes'))) {
-        $elem[0] = htmlentities($elem[0], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
-    }
     $elements = array("valeur"=>$elem[0],"rang"=>$elem[1]);
     if ($option == 'type') {
         $elements['type'] = $elem[2];
@@ -45,6 +42,7 @@ foreach ($tab as $elem) {
     }
 
     $db=new db();
+    $db->sanitize_string = false;
     $db->CSRFToken = $CSRFToken;
     $db->insert("select_$menu", $elements);
 }
