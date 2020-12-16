@@ -109,6 +109,14 @@ if ($config['Multisites-nombre']>1 and is_array($selectedSites)) {
 
 $tab=array();
 
+$services_tab = array();
+$db = new db();
+$db->select('seletc_services');
+if($db->select){
+    foreach($db->select as $elem){
+        $services_tab[$elem['id']] = $elem['valeur'];
+    }
+}
 // Récupération des infos sur les agents
 $p=new personnel();
 $p->fetch();
@@ -202,7 +210,7 @@ if (!empty($postes)) {
                     }
                     $service=isset($service)?$service:"ZZZ_Autre";
                     if (!array_key_exists($service, $services)) {
-                        $services[$service]=array("nom"=>$service,"heures"=>0);
+                        $services[$service]=array("nom"=>$services_tab[$service],"heures"=>0);
                     }
                     $services[$service]["heures"]+=diff_heures($elem['debut'], $elem['fin'], "decimal");
       
