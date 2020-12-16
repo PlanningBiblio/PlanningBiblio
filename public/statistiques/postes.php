@@ -111,7 +111,7 @@ $tab=array();
 
 $services_tab = array();
 $db = new db();
-$db->select('seletc_services');
+$db->select('select_services');
 if($db->select){
     foreach($db->select as $elem){
         $services_tab[$elem['id']] = $elem['valeur'];
