@@ -33,6 +33,14 @@ if ($db->result){
         $services[$elem['id']] = $elem['valeur'];
     }
 }
+$statuts = array();
+$db = new db();
+$db->select('select_statuts');
+if ($db->result){
+    foreach ($db->result as $elem){
+        $statuts[$elem['id']] = $elem['valeur'];
+    }
+}
 ?>
 
 <form name='form2' action='index.php' method='get'>
@@ -117,6 +125,8 @@ foreach ($agents as $agent) {
         $heures.="h00";
     }
     $agent['service']= $agent['service'] > 0 ? str_replace("`", "'", $services[$agent['service']]) : '';
+
+    $agent['statut']= $agent['statut'] > 0 ? str_replace("`", "'", $statuts[$agent['statut']]) : '';
 
     echo "<tr><td style='white-space:nowrap;'>\n";
     if (in_array(21, $droits)){

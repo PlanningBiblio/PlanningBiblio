@@ -66,6 +66,15 @@ while ($current<=$fin) {
     $current=date("Y-m-d", strtotime("+1 day", strtotime($current)));
 }
 
+$statuts = array();
+$db = new db();
+$db->select('select_statuts');
+if ($db->result){
+    foreach ($db->result as $elem){
+        $statuts[$elem['id']] = $elem['valeur'];
+    }
+}
+
 $debutFr=dateFr($debut);
 $finFr=dateFr($fin);
 $heures=array(); 	// Nombre total d'heures pour chaque jour
@@ -199,9 +208,10 @@ if ($db->result) {
         }
   
         if (!array_key_exists($elem['perso_id'], $tab)) {		// création d'un tableau de données par agent (id, nom, heures de chaque jour ...)
+
+            $statut = $elem['statut'] > 0 ? $statuts[$elem['statut']] : null;
             $tab[$elem['perso_id']] = array("perso_id"=>$elem['perso_id'],"nom"=>$elem['nom'],
-      "prenom"=>$elem['prenom'],"statut"=>$elem['statut'],"site1"=>0,"site2"=>0,"total"=>0,
-      "semaine"=>0);
++      "prenom"=>$elem['prenom'],"statut"=>$statut,"site1"=>0,"site2"=>0,"total"=>0,
             foreach ($dates as $d) {
                 $tab[$elem['perso_id']][$d[0]] = array('total'=>0);
                 if (!empty($groupes_keys)) {
@@ -439,7 +449,7 @@ EOD;
     
         // Affichage des lignes : Nom, heures par jour, par semaine, heures prévues
         echo "<tr style='vertical-align:top;'><td>{$elem['nom']} {$elem['prenom']}</td>\n";
-        $elem['statut']=$elem['statut']?$elem['statut']:"&nbsp;";
+        $elem['statut']=$elem['statut']?$statuts[$elem['statut']]:"&nbsp;";
         echo "<td>{$elem['statut']}</td>\n";
         foreach ($dates as $d) {
             $class=$elem[$d[0]]['total']!="-"?"bg-yellow":null;

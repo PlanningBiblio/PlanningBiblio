@@ -277,7 +277,7 @@
                     {% endif %}
                   {% endfor %}
                 </select>
-                {% if elem.valeur not in statuts_utilises %}
+                {% if elem.id not in statuts_utilises %}
                   <span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
                 {% endif %}
               </li>

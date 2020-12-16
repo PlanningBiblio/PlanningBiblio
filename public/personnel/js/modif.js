@@ -252,7 +252,7 @@ $(function() {
 	  type: "post",
           dataType: "json",
 	  data: {tab: tab, menu: "statuts" , option: "categorie", CSRFToken: $('#CSRFSession').val()},
-	  success: function(){
+	  success: function(options){
             var current_val = $('#statut').val();
             $('#statut').empty();
             $('#statut').append("<option value=''>Aucun</option>");
@@ -260,10 +260,10 @@ $(function() {
             $("#statuts-sortable li").each(function(){
               var id=$(this).attr("id").replace("li_","");
               var val = $(this).find("#valeur_"+id).text();
-              if( val == current_val){
-                var option = "<option value='"+val+"' selected='selected'>"+val+"</option>";
+              if( id == current_val){
+                var option = "<option value='"+options[val]+"' selected='selected'>"+val+"</option>";
               } else {
-                var option = "<option value='"+val+"'>"+val+"</option>";
+                var option = "<option value='"+options[val]+"'>"+val+"</option>";
               }
               $('#statut').append(option);
             });

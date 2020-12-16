@@ -25,13 +25,13 @@ class Agent extends PLBEntity {
     /** @Column(type="text") **/
     protected $mail;
 
-    /** @Column(type="text") **/
+    /** @Column(type="integer", length=11) **/
     protected $statut;
 
     /** @Column(type="string") **/
     protected $categorie;
 
-    /** @Column(type="text") **/
+    /** @Column(type="integer", length=11) **/
     protected $service;
 
     /** @Column(type="date") **/

@@ -605,7 +605,7 @@ class AgentController extends BaseController
         $recup = isset($params['recup']) ? trim($params['recup']) : null;
         $service = $params['service'];
         $sites = array_key_exists("sites", $params) ? $params['sites'] : null;
-        $statut = htmlentities($params['statut'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+        $statut = $params['statut'];
         $temps=array_key_exists("temps", $params) ? $params['temps'] : null;
 
         // Modification du choix des emplois du temps avec l'option EDTSamedi == 1 (EDT différent les semaines avec samedi travaillé)
