@@ -10,6 +10,7 @@ use App\Model\AbsenceReason;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Response;
 
 require_once(__DIR__ . '/../../public/conges/class.conges.php');
 require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
@@ -556,6 +557,43 @@ class HolidayController extends BaseController
         return $this->output('conges/add.html.twig');
     }
 
+    /**
+     * @Route("/ajax/holiday/check", name="ajax.holiday.check", methods={"GET"})
+     */
+    public function check(Request $request)
+    {
+        $start =$request->get('debut');
+        $end = $request->get('fin') ? $request->get('fin') : $start;
+        $perso_id = $request->get('perso_id');
+        $id = $request->get('id');
+
+        $holidayHelper = new HolidayHelper(array(
+            'start' => $start,
+            'hour_start' => $request->get('hre_debut'),
+            'end' => $end,
+            'hour_end' => $request->get('hre_fin')
+        ));
+
+        $params = array(
+            'halfday' => $request->get('halfday'),
+            'start_halfday' => $request->get('start_halfday'),
+            'end_halfday' => $request->get('end_halfday')
+        );
+
+        list($hour_start, $hour_end) = $holidayHelper->startEndHours($params);
+
+        $response = new Response();
+        $response->setStatusCode(200);
+        if ($result = \conges::exists($perso_id, "$start $hour_start", "$end $hour_end", $id)) {
+            $response->setContent('du ' . dateFr($result['from'], true) . ' au ' . dateFr($result['to'], true));
+
+            return $response;
+        }
+
+        $response->setContent('No holiday');
+        return $response;
+    }
+
     private function save($request)
     {
         $CSRFToken = $request->get('CSRFToken');
@@ -566,9 +604,28 @@ class HolidayController extends BaseController
         $hre_fin = $request->get('hre_fin') ? $request->get('hre_fin') : "23:59:59";
         $commentaires=htmlentities($request->get('commentaires'), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
 
+        $holiday_data = $request->request->all();
+
         if (!$finSQL) {
             $finSQL = $debutSQL;
         }
+
+        $holidayHelper = new HolidayHelper(array(
+            'start' => $debutSQL,
+            'hour_start' => $request->get('hre_debut'),
+            'end' => $finSQL,
+            'hour_end' => $request->get('hre_fin')
+        ));
+
+        $params = array(
+            'halfday' => $request->get('halfday'),
+            'start_halfday' => $request->get('start_halfday'),
+            'end_halfday' => $request->get('end_halfday')
+        );
+
+        list($hre_debut, $hre_fin) = $holidayHelper->startEndHours($params);
+        $holiday_data['hre_debut'] = $hre_debut;
+        $holiday_data['hre_fin'] = $hre_fin;
 
         if ($result = \conges::exists($perso_id, "$debutSQL $hre_debut", "$finSQL $hre_fin")) {
             $from = dateFr($result['from'], true);
@@ -582,7 +639,7 @@ class HolidayController extends BaseController
         // Enregistrement du congés
         $c = new \conges();
         $c->CSRFToken = $CSRFToken;
-        $c->add($request->request->all());
+        $c->add($holiday_data);
         $id = $c->id;
 
         // Récupération des adresses e-mails de l'agent et des responsables pour l'envoi des alertes
@@ -666,6 +723,23 @@ class HolidayController extends BaseController
         $CSRFToken = $request->get('CSRFToken');
 
         $lang = $GLOBALS['lang'];
+
+        $holidayHelper = new HolidayHelper(array(
+            'start' => $debutSQL,
+            'hour_start' => $request->get('hre_debut'),
+            'end' => $finSQL,
+            'hour_end' => $request->get('hre_fin')
+        ));
+
+        $params = array(
+            'halfday' => $request->get('halfday'),
+            'start_halfday' => $request->get('start_halfday'),
+            'end_halfday' => $request->get('end_halfday')
+        );
+
+        list($hre_debut, $hre_fin) = $holidayHelper->startEndHours($params);
+        $post['hre_debut'] = $hre_debut;
+        $post['hre_fin'] = $hre_fin;
 
         // Enregistre la modification du congés
         $c=new \conges();

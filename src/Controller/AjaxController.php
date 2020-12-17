@@ -32,11 +32,26 @@ class AjaxController extends BaseController
         $c = new \conges();
         $recover = $c->calculCreditRecup($perso_id, $debut);
 
-        $holidayHlper = new HolidayHelper(array(
+        $holidayHelper = new HolidayHelper(array(
             'start' => $debut,
             'hour_start' => $hre_debut,
             'end' => $fin,
             'hour_end' => $hre_fin,
+        ));
+
+        $params = array(
+            'halfday' => $request->get('halfday'),
+            'start_halfday' => $request->get('start_halfday'),
+            'end_halfday' => $request->get('end_halfday')
+        );
+
+        list($hour_start, $hour_end) = $holidayHelper->startEndHours($params);
+
+        $holidayHlper = new HolidayHelper(array(
+            'start' => $debut,
+            'hour_start' => $hour_start,
+            'end' => $fin,
+            'hour_end' => $hour_end,
             'perso_id' => $perso_id,
             'is_recover' => $is_recover
         ));
