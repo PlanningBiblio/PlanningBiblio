@@ -117,6 +117,17 @@ if($db->result){
         $services_tab[$elem['id']] = $elem['valeur'];
     }
 }
+
+// Récupération des statuts
+$db=new db();
+$db->sanitize_string = false;
+$db->select2("select_statuts");
+$statuts_list=$db->result;
+$statuts_tab = array();
+foreach($statuts_list as $statut){
+    $statuts_tab[$statut['id']] = $statut['valeur'];
+}
+
 // Récupération des infos sur les agents
 $p=new personnel();
 $p->fetch();
@@ -220,7 +231,7 @@ if (!empty($postes)) {
                     }
                     $statut=isset($statut)?$statut:"ZZZ_Autre";
                     if (!array_key_exists($statut, $statuts)) {
-                        $statuts[$statut]=array("nom"=>$statut,"heures"=>0);
+                        $statuts[$statut]=array("nom"=>$status_tab[$statut],"heures"=>0);
                     }
                     $statuts[$statut]["heures"]+=diff_heures($elem['debut'], $elem['fin'], "decimal");
 
