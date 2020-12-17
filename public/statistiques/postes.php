@@ -109,6 +109,23 @@ if ($config['Multisites-nombre']>1 and is_array($selectedSites)) {
 
 $tab=array();
 
+$services_tab = array();
+$db = new db();
+$db->select2("select_services");
+if($db->result){
+    foreach($db->result as $elem){
+        $services_tab[$elem['id']] = $elem['valeur'];
+    }
+}
+// Récupération des statuts
+$db=new db();
+$db->sanitize_string = false;
+$db->select2("select_statuts");
+$statuts_list=$db->result;
+$statuts_tab = array();
+foreach($statuts_list as $statut){
+    $statuts_tab[$statut['id']] = $statut['valeur'];
+}
 // Récupération des infos sur les agents
 $p=new personnel();
 $p->fetch();
@@ -202,7 +219,7 @@ if (!empty($postes)) {
                     }
                     $service=isset($service)?$service:"ZZZ_Autre";
                     if (!array_key_exists($service, $services)) {
-                        $services[$service]=array("nom"=>$service,"heures"=>0);
+                        $services[$service]=array("nom"=>$services_tab[$service],"heures"=>0);
                     }
                     $services[$service]["heures"]+=diff_heures($elem['debut'], $elem['fin'], "decimal");
       
@@ -212,7 +229,7 @@ if (!empty($postes)) {
                     }
                     $statut=isset($statut)?$statut:"ZZZ_Autre";
                     if (!array_key_exists($statut, $statuts)) {
-                        $statuts[$statut]=array("nom"=>$statut,"heures"=>0);
+                        $statuts[$statut]=array("nom"=>$statuts_tab[$statut],"heures"=>0);
                     }
                     $statuts[$statut]["heures"]+=diff_heures($elem['debut'], $elem['fin'], "decimal");
 

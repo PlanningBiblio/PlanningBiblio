@@ -25,7 +25,7 @@ class Agent extends PLBEntity {
     /** @Column(type="text") **/
     protected $mail;
 
-    /** @Column(type="text") **/
+    /** @Column(type="integer") **/
     protected $statut;
 
     /** @Column(type="string") **/

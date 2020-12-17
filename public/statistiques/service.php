@@ -123,6 +123,10 @@ $tab=array();
 $db=new db();
 $db->select2("select_services");
 $services_list=$db->result;
+$services_tab = array();
+foreach($services_list as $service){
+    $services_tab[$service['id']]=$service['valeur'];
+}
 
 if (!empty($services)) {
     //	Recherche du nombre de jours concernés
@@ -142,12 +146,12 @@ if (!empty($services)) {
     foreach ($db->result as $elem) {
         $servId=null;
         foreach ($services_list as $serv) {
-            if ($serv['valeur']==$elem['service']) {
+            if ($serv['id']==$elem['service']) {
                 $servId=$serv['id'];
                 continue;
             }
         }
-        $agents[$elem['id']]=array("id"=>$elem['id'],"service"=>$elem['service'],"service_id"=>$servId);
+        $agents[$elem['id']]=array("id"=>$elem['id'],"service"=>$services_tab[$elem['service']],"service_id"=>$servId);
     }
 
     //	Recherche des infos dans pl_poste et postes pour tous les services sélectionnés

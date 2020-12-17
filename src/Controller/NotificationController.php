@@ -27,6 +27,15 @@ class NotificationController extends BaseController {
         }
         $_SESSION['perso_actif'] = $actif;
 
+        $services = array();
+        $db = new \db();
+        $db->select('select_services');
+        if ($db->result){
+            foreach ($db->result as $elem){
+                $services[$elem['id']] = $elem['valeur'];
+            }
+        }
+
         $p = new \personnel();
         $p->supprime = array(0);
         $p->responsablesParAgent = true;
@@ -51,7 +60,7 @@ class NotificationController extends BaseController {
             $id = $agent['id'];
             $sites = null;
 
-            $agent['service'] = str_replace("`", "'", $agent['service']);
+            $agent['service'] = $agent['service'] > 0 ? str_replace("`", "'", $services[$agent['service']]) :  null;
             if ($nbSites > 1) {
                 $tmp = array();
                 if (!empty($agent['sites'])) {
