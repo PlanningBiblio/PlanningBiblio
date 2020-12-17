@@ -16,6 +16,7 @@ require_once(__DIR__ . '/../include/db.php');
 $atomic_dir = __DIR__ . '/../setup/atomicupdate/*.php';
 
 $sql = array();
+$after = array();
 foreach (glob($atomic_dir) as $file) {
     print basename($file) . ": \n";
     try {
@@ -36,6 +37,12 @@ foreach (glob($atomic_dir) as $file) {
         }
         print "Ok\n";
     }
+
+    foreach($after as $func){
+        $func();
+    }
+
     $sql = array();
+
 }
 ?>

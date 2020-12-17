@@ -36,6 +36,7 @@ if (version_compare($config['Version'], "2.0") === -1) {
     exit;
 }
 $sql=array();
+$after=array();
 
 
 $v="2.0";
@@ -282,7 +283,7 @@ if (version_compare($config['Version'], $v) === -1) {
     PRIMARY KEY (`id`)
   ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
-    //	Rappels
+    //    Rappels
     $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
     ('Rappels-Actifs','boolean','0','Rappels', 'Activer les rappels','10');";
     $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeurs`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES 
@@ -299,9 +300,9 @@ if (version_compare($config['Version'], $v) === -1) {
     // IPBlocker
     $sql[]="CREATE TABLE `{$dbprefix}IPBlocker` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
-		`ip` VARCHAR(20) NOT NULL,
-		`login` VARCHAR(100) NULL,
-		`status` VARCHAR(10) NOT NULL,
+        `ip` VARCHAR(20) NOT NULL,
+        `login` VARCHAR(100) NULL,
+        `status` VARCHAR(10) NOT NULL,
     `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     KEY `ip` (`ip`),
@@ -2084,36 +2085,6 @@ $v="20.11.00.002";
 if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}acces` SET `page` = '/notification' WHERE `page` ='notifications/index.php';";
     $sql[] = "UPDATE `{$dbprefix}menu` SET `url` = '/notification' WHERE `url` ='notifications/index.php';";
-
-    $db = new db();
-    $db->select2('personnel', array('id', 'service'),"`service` LIKE '%&%'");
-
-    if($db->result){
-        foreach ($db->result as $elem) {
-            $id = $elem['id'];
-            $old = $elem['service'];
-            $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-            if ($new != $old){
-                 $new = addslashes($new);
-                $sql[] = "UPDATE `{$dbprefix}personnel` SET `service` = '$new' WHERE `id` = '$id';";
-            }
-        }
-    }
-
-    $dn = new db();
-    $db->select2('personnel', array('id', 'statut'),"`statut` LIKE '%&%'");
-
-    if($db->result){
-        foreach ($db->result as $elem) {
-            $id = $elem['id'];
-            $old = $elem['statut'];
-            $new = html_entity_decode($old, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-            if ($new != $old){
-                 $new = addslashes($new);
-                $sql[] = "UPDATE `{$dbprefix}personnel` SET `statut` = '$new' WHERE `id` = '$id';";
-            }
-        }
-    }
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
@@ -2124,7 +2095,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
-//	Execution des requetes et affichage
+//    Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
     $db->query($elem);
@@ -2141,6 +2112,10 @@ foreach ($sql as $elem) {
             echo "$elem : <font style='color:red;'>Erreur</font><br/>\n";
         }
     }
+}
+//  Execution des vérifications après requête et affichage si nécessaire
+foreach($after as $func){
+    $func();
 }
 
 if (isset($check_tables) and $check_tables === true) {

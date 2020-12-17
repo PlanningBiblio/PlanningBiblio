@@ -1,5 +1,19 @@
 <?php
 
+$do_after_services = true;
+
+$personnel = array();
+
+$db = new db();
+$db->select2('personnel', array('id', 'nom', 'prenom', 'service'));
+
+
+if($db->result) {
+    foreach($db->result as $elem) {
+        $personnel[$elem['id']] = array("id" => $elem['id'], "nom" => $elem['nom'], "prenom" => $elem['prenom'], "service" => $elem['service']);
+    }
+}
+
 $db = new db();
 $db->select2("select_services",array("id","valeur"), null,null);
 $services = $db->result;
@@ -10,15 +24,7 @@ if($services){
 }
 
 
-$db = new db();
-$db->select("personnel", array("id", "service"));
-foreach($db->result as $agent){
-    if(!preg_match('/^[0-9]+$/', $agent['service'])){
-        echo "Le service de l'agent n°{$agent['id']} n'est pas un id ! \n";
-    }
-}
-
-$sql[] = "ALTER TABLE `{$dbprefix}personnel` MODIFY `service` int(11) NOT NULL;";
+$sql[] = "ALTER TABLE `{$dbprefix}personnel` MODIFY `service` int(11) NOT NULL DEFAULT 0;";
 
 $db2 = new db();
 $db2->select("select_services","*", null,null);
@@ -34,3 +40,18 @@ if($db2->result){
     }
 }
 
+$after[] = function() {
+    global $do_after_services, $personnel;
+    if(isset($do_after_services)){
+        $db = new db();
+        $db->select2('personnel', array('id', 'nom', 'prenom', 'service'), array("service"=> "= 0"));
+
+        if ($db->result){
+            echo  "Le service des agents suivants doit être vérifié :<br>\n";
+            foreach($db->result as $agent) {
+                $id = $agent['id'];
+                echo"Agent N° {$id} : {$personnel[$id]['prenom']} {$personnel[$id]['nom']}. Service d'origine = \"{$personnel[$id]['service']}\"  \n";
+            }
+        }
+    }
+};
