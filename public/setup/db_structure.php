@@ -203,7 +203,7 @@ $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `nom` text NOT NULL DEFAULT '',
   `prenom` text NOT NULL DEFAULT '',
   `mail` text NOT NULL DEFAULT '',
-  `statut` text NOT NULL DEFAULT '',
+  `statut` int(11) NOT NULL DEFAULT 0,
   `categorie` VARCHAR(30) NOT NULL DEFAULT '',
   `service` int(11) NOT NULL,
   `arrivee` date NOT NULL DEFAULT '0000-00-00',
