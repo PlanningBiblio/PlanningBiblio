@@ -231,7 +231,7 @@ if (!empty($postes)) {
                     }
                     $statut=isset($statut)?$statut:"ZZZ_Autre";
                     if (!array_key_exists($statut, $statuts)) {
-                        $statuts[$statut]=array("nom"=>$status_tab[$statut],"heures"=>0);
+                        $statuts[$statut]=array("nom"=>$statuts_tab[$statut],"heures"=>0);
                     }
                     $statuts[$statut]["heures"]+=diff_heures($elem['debut'], $elem['fin'], "decimal");
 
