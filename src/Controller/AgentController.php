@@ -578,6 +578,15 @@ class AgentController extends BaseController
 
         $params = $request->request->all();
 
+        $services_tab = array();
+        $db = new \db();
+        $db->select('select_services');
+        if ($db->result){
+            foreach ($db->result as $elem){
+                $services_tab[$elem['id']] = $elem['valeur'];
+            }
+        }
+        
         $arrivee=filter_input(INPUT_POST, "arrivee", FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
         $CSRFToken = filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING);
         $depart=filter_input(INPUT_POST, "depart", FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
@@ -603,7 +612,7 @@ class AgentController extends BaseController
         $postes = $params['postes'];
         $prenom = trim($params['prenom']);
         $recup = isset($params['recup']) ? trim($params['recup']) : null;
-        $service = htmlentities($params['service'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
+        $service = array_search($params['service'], $services_tab);
         $sites = array_key_exists("sites", $params) ? $params['sites'] : null;
         $statut = htmlentities($params['statut'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
         $temps=array_key_exists("temps", $params) ? $params['temps'] : null;

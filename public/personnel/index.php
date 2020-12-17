@@ -25,6 +25,14 @@ if (!$actif) {
 
 $_SESSION['perso_actif']=$actif;
 
+$services = array();
+$db = new db();
+$db->select('select_services');
+if ($db->result){
+    foreach ($db->result as $elem){
+        $services[$elem['id']] = $elem['valeur'];
+    }
+}
 ?>
 
 <form name='form2' action='index.php' method='get'>
@@ -108,7 +116,7 @@ foreach ($agents as $agent) {
     if (is_numeric($heures)) {
         $heures.="h00";
     }
-    $agent['service']=str_replace("`", "'", $agent['service']);
+    $agent['service']= $agent['service'] > 0 ? str_replace("`", "'", $services[$agent['service']]) : '';
 
     echo "<tr><td style='white-space:nowrap;'>\n";
     if (in_array(21, $droits)){
