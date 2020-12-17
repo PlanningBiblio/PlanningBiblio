@@ -1,5 +1,6 @@
 $( document ).ready(function() {
   checkdate('start');
+  sethours();
   calculCredit();
 });
 
@@ -48,6 +49,8 @@ $(function(){
     }
     checkdate(priority);
 
+    sethours();
+
     // WARNING : Keep the function calculCredit after last checkdate().
     calculCredit();
   });
@@ -57,8 +60,15 @@ function checkdate(priority) {
   debut = ddmmyyyy_to_date($('input[name="debut"]').val());
   fin = ddmmyyyy_to_date($('input[name="fin"]').val());
 
-  if (!fin || !debut) {
+  // Return if the first date is not given
+  if (!debut) {
     return;
+  }
+
+  // If end date is not given, end = start
+  if (!fin) {
+    fin = debut;
+    $('#fin').val($('#debut').val());
   }
 
   start_half = $('select[name="start_halfday"]');
@@ -101,4 +111,52 @@ function resetSelect() {
       .append('<option value="morning">Matin</option>')
       .append('<option value="afternoon">Après-midi</option>')
       .val(end_val);
+}
+
+function sethours() {
+  // Return if halfday option is disabled
+  if ($('select[name="start_halfday"]').length < 1) {
+    return;
+  }
+
+  // Set default values and return if halfday dropdowns are hidden
+  if ($('select[name="start_halfday"]:visible').length < 1) {
+    $('#hre_debut_select').val('');
+    $('#hre_fin_select').val('');    
+    return;
+  }
+
+  // Get values from DOM
+  start = $('#debut').val().trim();
+  end = $('#fin').val().trim();
+  start_half = $('select[name="start_halfday"]');
+  end_half = $('select[name="end_halfday"]');
+
+  // Set hours for 1 day
+  if (start == end) {
+    if (start_half.val() == 'fullday' ) {
+      $('#hre_debut_select').val('');
+      $('#hre_fin_select').val('');
+    }
+    if (start_half.val() == 'morning' ) {
+      $('#hre_debut_select').val('');
+      $('#hre_fin_select').val('12:00:00');
+    }
+    if (start_half.val() == 'afternoon' ) {
+      $('#hre_debut_select').val('12:00:00');
+      $('#hre_fin_select').val('');
+    }
+  // Set hours for several days
+  } else {
+    if (start_half.val() == 'afternoon' ) {
+      $('#hre_debut_select').val('12:00:00');
+    } else {
+      $('#hre_debut_select').val('');
+    }
+    if (end_half.val() == 'morning' ) {
+      $('#hre_fin_select').val('12:00:00');
+    } else {
+      $('#hre_fin_select').val('');
+    }
+  }
 }
