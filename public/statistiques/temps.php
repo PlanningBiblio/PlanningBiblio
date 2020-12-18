@@ -449,7 +449,7 @@ EOD;
     
         // Affichage des lignes : Nom, heures par jour, par semaine, heures prévues
         echo "<tr style='vertical-align:top;'><td>{$elem['nom']} {$elem['prenom']}</td>\n";
-        $elem['statut']=$elem['statut']?$statuts[$elem['statut']]:"&nbsp;";
+        $elem['statut']=$elem['statut']?$elem['statut']:"&nbsp;";
         echo "<td>{$elem['statut']}</td>\n";
         foreach ($dates as $d) {
             $class=$elem[$d[0]]['total']!="-"?"bg-yellow":null;
