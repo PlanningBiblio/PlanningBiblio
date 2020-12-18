@@ -28,7 +28,7 @@ class Position extends PLBEntity
     /** @Column(type="text", length=15) **/
     protected $obligatoire;
 
-    /** @Column(type="text")**/
+    /** @Column(type="integer", length=11)**/
     protected $etage;
 
     /** @Column(type="json_array")**/

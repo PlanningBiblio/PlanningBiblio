@@ -138,6 +138,17 @@ $db=new db();
 $db->select2("postes", "*", array("statistiques"=>"1"), "ORDER BY `etage`,`nom`");
 $postes_list=$db->result;
 
+
+// Sélection des étages
+$etagesTab = array();
+$db = new db();
+$db->select("select_etages");
+if ($db->result) {
+    foreach ($db->result as $elem) {
+        $etagesTab[$elem["id"]] = $elem["valeur"];
+    }
+}
+
 if (!empty($postes)) {
     //	Recherche du nombre de jours concernés
     $db=new db();
@@ -211,7 +222,8 @@ if (!empty($postes)) {
       
                     foreach ($postes_list as $elem2) {
                         if ($elem2['id']==$poste) {	// on créé un tableau avec le nom et l'étage du poste.
-                            $poste_tab=array($poste,$elem2['nom'],$elem2['etage'],$elem2['obligatoire']);
+                            $etage = $elem2['etage'] > 0 ? $etagesTab[$elem2['etage']] : null;
+                            $poste_tab=array($poste,$elem2['nom'],$etagesTab[$elem2['etage']],$elem2['obligatoire']);
                             break;
                         }
                     }
@@ -294,7 +306,8 @@ if (is_array($postes_list)) {
             $selected=in_array($elem['id'], $postes)?"selected='selected'":null;
         }
         $class=$elem['obligatoire']=="Obligatoire"?"td_obligatoire":"td_renfort";
-        echo "<option value='{$elem['id']}' $selected class='$class' >{$elem['nom']} ({$elem['etage']})</option>\n";
+        $etage = $elem['etage'] > 0 ? $etagesTab[$elem['etage']] : null;
+        echo "<option value='{$elem['id']}' $selected class='$class' >{$elem['nom']} ({$etage})</option>\n";
     }
 }
 echo "</select></td></tr>\n";

@@ -222,6 +222,16 @@ if ($db->result) {
     }
 }
 
+// Récupération des étages
+$etagesTab = array();
+$db = new db();
+$db->select("select_etages");
+if ($db->result) {
+    foreach ($db->result as $elem) {
+        $etagesTab[$elem["id"]] = $elem["valeur"];
+    }
+}
+
 // Récupération des postes
 $db=new db();
 $db->select2("postes", "*", "1", "ORDER BY `id`");
@@ -249,8 +259,9 @@ if ($db->result) {
         }
     
 
-        // Tableau $postes
-        $postes[$elem['id']]=array("nom"=>$elem['nom'], "etage"=>$elem['etage'], "obligatoire"=>$elem['obligatoire'], "classes"=>join(" ", $classesPoste));
+		// Tableau $postes
+		$etage = $elem['etage'] > 0 ? $etagesTab[$elem['etage']] : null;
+        $postes[$elem['id']]=array("nom"=>$elem['nom'], "etage"=>$etage, "obligatoire"=>$elem['obligatoire'], "classes"=>join(" ", $classesPoste));
     }
 }
 

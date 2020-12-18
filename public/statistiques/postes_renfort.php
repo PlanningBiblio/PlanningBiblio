@@ -113,6 +113,16 @@ if ($config['Multisites-nombre']>1 and is_array($selectedSites)) {
     $sitesSQL="0,1";
 }
 
+// Sélection des étages
+$etagesTab = array();
+$db = new db();
+$db->select("select_etages");
+if ($db->result) {
+    foreach ($db->result as $elem) {
+        $etagesTab[$elem["id"]] = $elem["valeur"];
+    }
+}
+
 $tab=array();
 $selected=null;
 
@@ -261,7 +271,8 @@ if (is_array($postes_list)) {
         if (is_array($postes)) {
             $selected=in_array($elem['id'], $postes)?"selected='selected'":null;
         }
-        echo "<option value='{$elem['id']}' $selected class='td_renfort'>{$elem['nom']} ({$elem['etage']})</option>\n";
+        $etage = $elem['etage'] > 0 ? "({$etagesTab[$elem['etage']]})" : null;
+        echo "<option value='{$elem['id']}' $selected class='td_renfort'>{$elem['nom']} $etage</option>\n";
     }
 }
 echo "</select></td></tr>\n";
@@ -315,7 +326,7 @@ if ($tab) {
         }
         // Etages
         if ($elem[0][2]) {
-            $siteEtage[]=$elem[0][2];
+            $siteEtage[]=$etagesTab[$elem[0][2]];
         }
         if (!empty($siteEtage)) {
             $siteEtage="(".join(" ", $siteEtage).")";

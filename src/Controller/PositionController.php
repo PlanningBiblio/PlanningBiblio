@@ -330,12 +330,20 @@ class PositionController extends BaseController
             }
         } else {
 
+            $db = new \db();
+            $db->select('select_etages');
+            $etageTab = array ();
+            if($db->result){
+                foreach($db->result as $elem){
+                    $etageTab[$elem['id']] = $elem['valeur'];
+                }
+            }
             $activites = $request->get('activites', []);
             $categories = $request->get('categories', []);
             $site = $request->get('site');
             $bloquant = $request->get('bloquant');
             $statistiques = $request->get('statistiques');
-            $etage = $request->get('etage',"");
+            $etage = array_search($request->get('etage'), $etageTab) ?? 0;
             $groupe = $request->get('groupe', "");
             $groupe_id = $request->get('group_id', "");
             $obligatoire = $request->get('obligatoire');

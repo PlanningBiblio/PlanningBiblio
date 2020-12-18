@@ -117,6 +117,15 @@ if ($config['Multisites-nombre']>1 and is_array($selectedSites)) {
     $sitesSQL="0,1";
 }
 
+// Sélection des étages
+$etagesTab = array();
+$db = new db();
+$db->select("select_etages");
+if ($db->result) {
+    foreach ($db->result as $elem) {
+        $etagesTab[$elem["id"]] = $elem["valeur"];
+    }
+}
 $tab=array();
 
 //		--------------		Récupération de la liste des services pour le menu déroulant		------------------------
@@ -235,7 +244,8 @@ if (!empty($services)) {
                     if ($elem['absent']!="1") {		// on compte les heures et les samedis pour lesquels l'agent n'est pas absent
                         // on créé un tableau par poste avec son nom, étage et la somme des heures faites par service
                         if (!array_key_exists($elem['poste'], $postes)) {
-                            $postes[$elem['poste']]=array($elem['poste'],$elem['poste_nom'],$elem['etage'],0,"site"=>$elem['site']);
+                            $etage = $elem['etage'] > 0 ? $etagesTab[$elem['etage']] : null;
+                            $postes[$elem['poste']]=array($elem['poste'],$elem['poste_nom'],$etage,0,"site"=>$elem['site']);
                         }
                         $postes[$elem['poste']][3]+=diff_heures($elem['debut'], $elem['fin'], "decimal");
                         // On compte les heures de chaque site

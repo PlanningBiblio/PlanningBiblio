@@ -359,7 +359,7 @@ $sql[]="CREATE TABLE `{$dbprefix}postes` (
   `groupe` TEXT NOT NULL DEFAULT '',
   `groupe_id` int(11) NOT NULL DEFAULT '0',
   `obligatoire` varchar(15) NOT NULL,
-  `etage` TEXT NOT NULL,
+  `etage` INT(11) NOT NULL DEFAULT 0,
   `activites` text NOT NULL,
   `statistiques` ENUM('0','1') DEFAULT '1',
   `bloquant` enum('0','1') DEFAULT '1',

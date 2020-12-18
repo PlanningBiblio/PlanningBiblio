@@ -27,6 +27,15 @@ if ($config['Multisites-nombre']>1) {
 $p->fetch("nom");
 $postes=$p->elements;
 
+// Liste des étages
+$etagesTab = array();
+$db = new db();
+$db->select("select_etages");
+if ($db->result) {
+    foreach ($db->result as $elem) {
+        $etagesTab[$elem["id"]] = $elem["valeur"];
+    }
+}
 // Liste des lignes de séparation
 $db=new db();
 $db->select("lignes", null, null, "ORDER BY nom");
@@ -82,7 +91,8 @@ if ($tableauNumero) {
                     if (array_key_exists($i, $tab['lignes'])) {
                         $selected=($tab['lignes'][$i] and $tab['lignes'][$i]['type']=="poste" and $poste['id']==$tab['lignes'][$i]['poste'])?"selected='selected'":null;
                     }
-                    echo "<option value='{$poste['id']}' $selected class='$class'>{$poste['nom']} ({$poste['etage']})</option>\n";
+                    $etage = $poste['etage'] > 0 ? "({$etagesTab[$poste['etage']]})" : null;
+                    echo "<option value='{$poste['id']}' $selected class='$class'>{$poste['nom']} $etage</option>\n";
                 }
             }
             // Les lignes de séparation

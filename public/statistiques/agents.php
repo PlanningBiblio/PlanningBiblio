@@ -123,7 +123,7 @@ $tab=array();
 
 // Sélection des étages
 $etagesTab = array();
-$db = new \db();
+$db = new db();
 $db->select("select_etages");
 if ($db->result) {
     foreach ($db->result as $elem) {
