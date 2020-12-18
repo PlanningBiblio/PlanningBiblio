@@ -49,38 +49,6 @@ function calculCredit(){
 
     start = ddmmyyyy_to_date(debut);
     end = ddmmyyyy_to_date(fin);
-
-    if (start.getTime() == end.getTime()) {
-      if (start_halfday == 'morning') {
-        hre_debut = '00:00:00';
-        hre_fin = '12:00:00';
-      }
-
-      if (start_halfday == 'afternoon') {
-        hre_debut = '12:00:00';
-        hre_fin = '23:59:59';
-      }
-
-      if (start_halfday == 'fullday') {
-        hre_debut = '00:00:00';
-        hre_fin = '23:59:59';
-      }
-    }
-
-    if (start.getTime() < end.getTime()) {
-      if (start_halfday == 'afternoon') {
-        hre_debut = '12:00:00';
-      } else {
-        hre_debut = '00:00:00';
-      }
-
-      if (end_halfday == 'morning') {
-        hre_fin = '12:00:00';
-      } else {
-        hre_fin = '23:59:59';
-      }
-    }
-
   }
 
   $.ajax({
