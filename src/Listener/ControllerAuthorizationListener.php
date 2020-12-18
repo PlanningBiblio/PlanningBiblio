@@ -45,7 +45,12 @@ class ControllerAuthorizationListener
         // Droits necessair<es pour consulter la page en cours
         $accesses = $this->entityManager->getRepository(Access::class)->findBy(array('page' => $page));
         $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
-        $authorized = $logged_in ? $logged_in->can_access($accesses) : false;
+
+        if(!$logged_in){
+            $this->triggerAccessDenied($event);
+            return;
+        }
+
         $route = $event->getRequest()->attributes->get('_route');
 
         if ($_SESSION['oups']["Auth-Mode"] == 'Anonyme' ) {
@@ -59,7 +64,7 @@ class ControllerAuthorizationListener
         }
 
         if(empty($this->permissions[$route])){
-            if (!$logged_in){
+            if (!$logged_in->can_access($accesses)){
                 $this->triggerAccessDenied($event);
                 return;
             }
