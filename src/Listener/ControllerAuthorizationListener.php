@@ -49,28 +49,30 @@ class ControllerAuthorizationListener
         $authorized = true;
         $route = $event->getRequest()->attributes->get('_route');
 
-        if(!in_array($route, $this->permissions)){
+
+        if(empty($this->permissions[$route])){
             $authorized = $logged_in ? $logged_in->can_access($accesses) : false;
+            if ($authorized == false){
+                $this->isDenied($event);
+                exit;
+            }
         }
 
         if ($_SESSION['oups']["Auth-Mode"] == 'Anonyme' ) {
             foreach ($accesses as $access) {
                 if ($access->groupe_id() == '99') {
                     $authorized = true;
+                } else {
+                    $authorized = false;
+                    $this->isDenied($event);
+                    exit;
                 }
             }
         }
 
-        if (!($this->canAccess($route) and $authorized == 'true')) {
-            $body = $this->twig->render('access-denied.html.twig', $this->templateParams);
-
-            $response = new Response();
-            $response->setContent($body);
-            $response->setStatusCode(403);
-
-            $event->setResponse($response);
+        if (!$this->canAccess($route)) {
+            $this->isDenied($event);
         }
-
     }
 
     private function canAccess($route)
@@ -108,5 +110,16 @@ class ControllerAuthorizationListener
         }
 
         return false;
+    }
+
+    private function isDenied(GetResponseEvent $event){
+
+        $body = $this->twig->render('access-denied.html.twig', $this->templateParams);
+
+        $response = new Response();
+        $response->setContent($body);
+        $response->setStatusCode(403);
+
+        $event->setResponse($response);
     }
 }
