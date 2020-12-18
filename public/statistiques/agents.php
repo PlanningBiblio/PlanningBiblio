@@ -120,6 +120,16 @@ if ($config['Multisites-nombre']>1 and is_array($selectedSites)) {
 }
 
 $tab=array();
+
+// Sélection des étages
+$etagesTab = array();
+$db = new \db();
+$db->select("select_etages");
+if ($db->result) {
+    foreach ($db->result as $elem) {
+        $etagesTab[$elem["id"]] = $elem["valeur"];
+    }
+}
 //		--------------		Récupération de la liste des agents pour le menu déroulant		------------------------
 $db=new db();
 $db->select2("personnel", "*", array("actif"=>"Actif"), "ORDER BY `nom`,`prenom`");
@@ -207,6 +217,7 @@ if (!empty($agents)) {
                     if ($elem['absent']!="1") {		// on compte les heures et les samedis pour lesquels l'agent n'est pas absent
                         // on créé un tableau par poste avec son nom, étage et la somme des heures faites par agent
                         if (!array_key_exists($elem['poste'], $postes)) {
+                            $etage = $elem['etage'] > 0 ? $etagesTab[$elem['etage']] : 0;
                             $postes[$elem['poste']]=array($elem['poste'],$elem['poste_nom'],$elem['etage'],0,"site"=>$elem['site']);
                         }
                         // On compte toutes les heures pour ce poste (index 3)
@@ -427,7 +438,7 @@ if ($tab) {
             if ($poste["site"]>0 and $config['Multisites-nombre']>1) {
                 $site=$config["Multisites-site{$poste['site']}"]." ";
             }
-            $etage=$poste[2]?$poste[2]:null;
+            $etage = $poste[2] > 0 ? $etagesTab[$poste[2]] : null;
 
             $siteEtage=($site or $etage)?"(".trim($site.$etage).")":null;
             echo "<tr style='vertical-align:top;'><td>\n";

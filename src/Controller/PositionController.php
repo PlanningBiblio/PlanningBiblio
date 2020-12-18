@@ -47,6 +47,15 @@ class PositionController extends BaseController
             }
         }
 
+        // Sélection des étages
+        $etagesTab = array();
+        $db = new \db();
+        $db->select("select_etages");
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                $etagesTab[$elem["id"]] = $elem["valeur"];
+            }
+        }
         $p = $this->entityManager->getRepository(Position::class)->findBy(array('supprime' => NULL), array('nom'=>'ASC'));
         $postes = array();
         foreach($p as $poste){
@@ -94,7 +103,7 @@ class PositionController extends BaseController
             $new['activitesAffichees'] = $activitesAffichees;
             $new['id'] = $value->id();
             $new['groupe'] = $value->groupe();
-            $new['etage'] = $value->etage();
+            $new['etage'] = $value->etage() > 0 ? $etagesTab[$value->etage()] : null;
             $new['statistiques'] = $value->statistiques();
             $new['bloquant'] = $value->bloquant();
             $new['obligatoire'] = $value->obligatoire();
@@ -231,7 +240,7 @@ class PositionController extends BaseController
 
         if ($response) {
             foreach ($response as $elem) {
-                $etages_utilises[] = $elem->etage;
+                $etages_utilises[] = $elem['etage'];
             }
         }
 
@@ -254,7 +263,7 @@ class PositionController extends BaseController
         $response = $query->getResult();
         if ($response) {
             foreach ($response as $elem) {
-                $groupes_utilises[] = $elem->groupe;
+                $groupes_utilises[] = $elem['groupe'];
             }
         }
 

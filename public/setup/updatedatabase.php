@@ -43,6 +43,7 @@ foreach (glob($atomic_dir) as $file) {
     }
 
     $sql = array();
+    $after = array();
 
 }
 ?>
