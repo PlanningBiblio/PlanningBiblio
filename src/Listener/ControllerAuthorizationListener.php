@@ -46,32 +46,24 @@ class ControllerAuthorizationListener
         $accesses = $this->entityManager->getRepository(Access::class)->findBy(array('page' => $page));
         $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
 
-        $authorized = true;
         $route = $event->getRequest()->attributes->get('_route');
-
-
-        if(empty($this->permissions[$route])){
-            $authorized = $logged_in ? $logged_in->can_access($accesses) : false;
-            if ($authorized == false){
-                $this->isDenied($event);
-                exit;
-            }
-        }
 
         if ($_SESSION['oups']["Auth-Mode"] == 'Anonyme' ) {
             foreach ($accesses as $access) {
                 if ($access->groupe_id() == '99') {
-                    $authorized = true;
-                } else {
-                    $authorized = false;
-                    $this->isDenied($event);
-                    exit;
+                    return;
                 }
             }
         }
 
+        if(empty($this->permissions[$route])){
+            if (!$logged_in){
+                return $this->triggerAccessDenied($event);
+            }
+        }
+
         if (!$this->canAccess($route)) {
-            $this->isDenied($event);
+            $this->triggerAccessDenied($event);
         }
     }
 
@@ -112,7 +104,7 @@ class ControllerAuthorizationListener
         return false;
     }
 
-    private function isDenied(GetResponseEvent $event){
+    private function triggerAccessDenied(GetResponseEvent $event){
 
         $body = $this->twig->render('access-denied.html.twig', $this->templateParams);
 
