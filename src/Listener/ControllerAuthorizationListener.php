@@ -55,16 +55,19 @@ class ControllerAuthorizationListener
                 }
             }
             $this->triggerAccessDenied($event);
+            return;
         }
 
         if(empty($this->permissions[$route])){
             if (!$logged_in){
                 $this->triggerAccessDenied($event);
+                return;
             }
         }
 
         if (!$this->canAccess($route)) {
             $this->triggerAccessDenied($event);
+            return;
         }
     }
 
