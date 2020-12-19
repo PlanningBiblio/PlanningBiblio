@@ -9,7 +9,7 @@ use App\Model\Agent;
 
 include_once(__DIR__ . '/../../../public/joursFeries/class.joursFeries.php');
 include_once __DIR__ . '/../../../public/planningHebdo/class.planningHebdo.php';
-include_once(__diR__ . '/../../../public/include/function.php');
+include_once(__DIR__ . '/../../../public/include/function.php');
 
 class HolidayHelper extends BaseHelper
 {
@@ -187,6 +187,10 @@ class HolidayHelper extends BaseHelper
         return 0;
     }
 
+    /** NOTE The getTimes function should be on WeekPlanningHelper.
+     * Jérôme added something similar on WeekPlanningHelper (getTimes($date, $agent = null, $planning = null))
+     * TODO : See if WeekPlanningHelper::getTimes can be used instead of HolidayHelper::getTimes
+     */
     private function getTimes($planning, $date)
     {
         // Sinon, on calcule les heures d'absence
@@ -204,6 +208,10 @@ class HolidayHelper extends BaseHelper
         return $wh->hoursOf($day);
     }
 
+    /** NOTE The getPlanning function should be on WeekPlanningHelper.
+     * Jérôme added something similar on WeekPlanningHelper (getPlanning($date, $agent))
+     * TODO : See if WeekPlanningHelper::getPlanning can be used instead of HolidayHelper::getPlanning
+     */
     private function getPlanning($date)
     {
          // On consulte le planning de présence de l'agent
