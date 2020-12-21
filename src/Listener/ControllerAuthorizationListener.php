@@ -38,9 +38,14 @@ class ControllerAuthorizationListener
     public function onKernelRequest(GetResponseEvent $event)
     {
         $page = $event->getRequest()->getPathInfo();
+        $path = $page;
         $page = preg_replace('/([a-z\/]*).*/', "$1", $page);
         $page = rtrim($page, '/add');
         $page = rtrim($page, '/');
+        $ajax = false;
+        if (strpos($page, '/ajax') === 0) {
+            $ajax = true;
+        }
 
         // Droits necessair<es pour consulter la page en cours
         $accesses = $this->entityManager->getRepository(Access::class)->findBy(array('page' => $page));
@@ -63,15 +68,21 @@ class ControllerAuthorizationListener
             return;
         }
 
+
         if(empty($this->permissions[$route])){
             if (!$logged_in->can_access($accesses)){
                 $this->triggerAccessDenied($event);
             }
             return;
         }
+        if (!$logged_in->can_access($accesses) && !$ajax && $path != '/access-denied') {
+            $this->triggerAccessDenied($event);
+            return;
+        }
 
         if (!$this->canAccess($route)) {
             $this->triggerAccessDenied($event);
+            return;
         }
     }
 
