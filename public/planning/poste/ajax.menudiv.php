@@ -132,10 +132,18 @@ if (!empty($categories)) {
 //	Recherche des services
 $db=new db();
 $db->query("SELECT `{$dbprefix}personnel`.`service` AS `service`, `{$dbprefix}select_services`.`couleur` AS `couleur` FROM `{$dbprefix}personnel` INNER JOIN `{$dbprefix}select_services`
-	ON `{$dbprefix}personnel`.`service`=`{$dbprefix}select_services`.`valeur` WHERE `{$dbprefix}personnel`.`service`<>'' GROUP BY `service`;");
+	ON `{$dbprefix}personnel`.`service`=`{$dbprefix}select_services`.`id` WHERE `{$dbprefix}personnel`.`service`<>'' GROUP BY `service`;");
 $services=$db->result;
 $services[]=array("service"=>"Sans service");
 
+$servicesTab = array();
+$db = new db();
+$db->select2("select_services");
+if($db->result){
+    foreach($db->result as $elem){
+        $servicesTab[$elem['id']] = $elem['valeur'];
+    }
+}
 // Recherche des agents volants
 if ($config['Planning-agents-volants']) {
     $v = new volants($date);
@@ -612,11 +620,12 @@ $tableaux[0].="<div>".heure2($debut)." - ".heure2($fin)."</div></td></tr>\n";
 if ($services and $config['ClasseParService']) {
     $i=0;
     foreach ($services as $elem) {
-        $class="service_".strtolower(removeAccents(str_replace(" ", "_", $elem['service'])));
+        $service = $elem['service'] > 0 ? $servicesTab[$elem['service']] : "Sans service";
+        $class="service_".strtolower(removeAccents(str_replace(" ", "_", $service)));
         if (array_key_exists($elem['service'], $newtab) and !$cellule_grise) {
             $tableaux[0].="<tr class='$class menudiv-tr'>\n";
             $tableaux[0].="<td colspan='2' onmouseover='groupe_tab($i,\"$tab_agent\",1,$(this));'>";
-            $tableaux[0].=$elem['service'];
+            $tableaux[0].= $service;
             $tableaux[0].="</td></tr>\n";
         }
         $i++;
