@@ -19,11 +19,8 @@ class Position extends PLBEntity
     /** @Column(type="string") **/
     protected $nom;
 
-    /** @Column(type="string") **/
-    protected $groupe;
-
     /** @Column(type="integer", length=11) **/
-    protected $groupe_id;
+    protected $groupe;
 
     /** @Column(type="text", length=15) **/
     protected $obligatoire;

@@ -356,8 +356,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_verrou` (
 $sql[]="CREATE TABLE `{$dbprefix}postes` (
   `id` int(8) NOT NULL AUTO_INCREMENT,
   `nom` text NOT NULL DEFAULT '',
-  `groupe` TEXT NOT NULL DEFAULT '',
-  `groupe_id` int(11) NOT NULL DEFAULT '0',
+  `groupe` INT(11) NOT NULL DEFAULT '0',
   `obligatoire` varchar(15) NOT NULL,
   `etage` INT(11) NOT NULL DEFAULT 0,
   `activites` text NOT NULL,

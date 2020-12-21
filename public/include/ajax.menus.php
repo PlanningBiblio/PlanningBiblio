@@ -31,7 +31,7 @@ $tab = $_POST['tab'];
 
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-if($menu != 'services' and $menu !='statuts'  and $menu !='etages'){
+if(!in_array($menu, array('services', 'statuts', 'etages', 'groupes'))){
     $db->delete("select_$menu");
     foreach ($tab as $elem) {
         if (!in_array($menu, array('etages', 'groupes'))) {

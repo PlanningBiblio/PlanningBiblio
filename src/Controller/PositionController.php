@@ -56,6 +56,17 @@ class PositionController extends BaseController
                 $etagesTab[$elem["id"]] = $elem["valeur"];
             }
         }
+
+        // Sélection des groupes
+        $groupesTab = array();
+        $db = new \db();
+        $db->select("select_groupes");
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                $groupesTab[$elem["id"]] = $elem["valeur"];
+            }
+        }
+
         $p = $this->entityManager->getRepository(Position::class)->findBy(array('supprime' => NULL), array('nom'=>'ASC'));
         $postes = array();
         foreach($p as $poste){
@@ -102,7 +113,7 @@ class PositionController extends BaseController
             $new['activites'] = $activites;
             $new['activitesAffichees'] = $activitesAffichees;
             $new['id'] = $value->id();
-            $new['groupe'] = $value->groupe();
+            $new['groupe'] = $value->groupe() > 0 ? $groupesTab[$value->groupe()] : null;
             $new['etage'] = $value->etage() > 0 ? $etagesTab[$value->etage()] : null;
             $new['statistiques'] = $value->statistiques();
             $new['bloquant'] = $value->bloquant();
@@ -156,7 +167,6 @@ class PositionController extends BaseController
         $etage ="";
         $activites = "[]";
         $categories = "";
-        $groupe_id  = '0';
         $obligatoire = "checked";
         $bloq1 = "checked";
         $stat1 = "checked";
@@ -175,7 +185,6 @@ class PositionController extends BaseController
             'etages'         => $etages,
             'groupe'         => $groupe,
             'groupes'        => $groupes,
-            'group_id'       => $groupe_id,
             'id'             => null,
             'multisite'      => $sites,
             'nbSites'        => $nbMultisite,
@@ -207,7 +216,6 @@ class PositionController extends BaseController
         $nom =  $position->nom();
         $etage = $position->etage();
         $groupe = $position->groupe();
-        $groupe_id = $position->groupe_id();
         $categories  =  $position->categories() ?  : array();
         $site = $position->site();
         $activites = $position->activites();
@@ -287,7 +295,6 @@ class PositionController extends BaseController
             'nom'           => $nom,
             'etage'         => $etage,
             'groupe'        => $groupe,
-            'group_id'      => $groupe_id,
             'categories'    => $categories,
             'site'          => $site,
             'activites'     => $activites,
@@ -336,11 +343,9 @@ class PositionController extends BaseController
             $bloquant = $request->get('bloquant');
             $statistiques = $request->get('statistiques');
             $etage = $request->get('etage');
-            $groupe = $request->get('groupe', "");
-            $groupe_id = $request->get('group_id', "");
+            $groupe = $request->get('groupe');
             $obligatoire = $request->get('obligatoire');
             $site = $request->get('site', "");
-
             if (!$id){
                 $position = new Position;
                 $position->nom($nom);
@@ -350,7 +355,6 @@ class PositionController extends BaseController
                 $position->statistiques($statistiques);
                 $position->etage($etage);
                 $position->groupe($groupe);
-                $position->groupe_id($groupe_id);
                 $position->obligatoire($obligatoire);
                 $position->site($site);
 
@@ -378,7 +382,6 @@ class PositionController extends BaseController
                 $position->statistiques($statistiques);
                 $position->etage($etage);
                 $position->groupe($groupe);
-                $position->groupe_id($groupe_id);
                 $position->obligatoire($obligatoire);
                 $position->site($site);
 

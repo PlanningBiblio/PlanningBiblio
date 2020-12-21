@@ -13,7 +13,6 @@
   {% endif %}
   <form method='post' action="{{ asset('/position') }}" name='form'>
     <input type='hidden' name='CSRFToken' value="{{ CSRFToken }}"/>
-    <input type='hidden' name='group_id' value='{{ group_id }}'/>
     {% if id is defined %}
         <input type='hidden' name='id' value='{{ id }}'/>
     {% else %}
@@ -64,10 +63,10 @@
                 <select name='groupe' id='groupe' style='width:255px' class='ui-widget-content ui-corner-all'>
                   <option value=''>&nbsp;</option>
                   {% for group in groupes %}
-                    {% if groupe == group.valeur %}
-                      <option value='{{ group.valeur }}' selected=selected  >{{ group.valeur }}</option>
+                    {% if groupe == group.id %}
+                      <option value='{{ group.id }}' selected=selected  >{{ group.valeur }}</option>
                     {% else %}
-                      <option value='{{ group.valeur }}'>{{ group.valeur }}</option>
+                      <option value='{{ group.id }}'>{{ group.valeur }}</option>
                     {% endif %}
                   {% endfor %}
                 </select>
