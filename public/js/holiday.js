@@ -119,8 +119,13 @@ function sethours() {
     return;
   }
 
+  // Return if it's a comp-time
+  if ($('#is-recover').val() == '1') {
+    return;
+  }
+
   // Set default values and return if halfday dropdowns are hidden
-  if ($('select[name="start_halfday"]:visible').length < 1) {
+  if ($('select[name="start_halfday"]').is(':visible') == false) {
     $('#hre_debut_select').val('');
     $('#hre_fin_select').val('');    
     return;
