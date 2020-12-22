@@ -49,7 +49,7 @@ $after[] = function() {
         if ($db->result){
             foreach($db->result as $agent) {
                 $id = $agent['id'];
-                if ($personnel[$id]['service'] != ''){
+                if (in_array($id, $personnel) and $personnel[$id]['service'] == ''){
                     $cpt++;
                 }
             }
