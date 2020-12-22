@@ -58,10 +58,10 @@ $after[] = function() {
                 echo  "Le service des agents suivants doit être vérifié :<br>\n";
                 foreach($db->result as $agent) {
                     $id = $agent['id'];
-                    if ($personnel[$id]['service'] != ''){
-                        $cpt ++;
-                        echo"Agent N° {$id} : {$personnel[$id]['prenom']} {$personnel[$id]['nom']}. Service d'origine = \"{$personnel[$id]['service']}\"  \n";
+                    if (empty($personnel[$id]['service'])) {
+                        continue;
                     }
+                    echo"Agent N° {$id} : {$personnel[$id]['prenom']} {$personnel[$id]['nom']}. Service d'origine = \"{$personnel[$id]['service']}\"  \n";
                 }
             }
         }
