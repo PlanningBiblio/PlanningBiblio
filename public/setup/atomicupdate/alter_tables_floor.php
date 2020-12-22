@@ -50,7 +50,7 @@ $after[] = function() {
         if ($db->result){
             foreach($db->result as $poste) {
                 $id = $poste['id'];
-                if(in_array($id, $postes) and $postes[$id]['etage'] == ''){
+                if(in_array($id, $postes) and $postes[$id]['etage'] != ''){
                     $cpt++;
                 }
             }
