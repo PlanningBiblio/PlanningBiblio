@@ -5,7 +5,7 @@ $do_after_statuts = true;
 $personnel = array();
 
 $db = new db();
-$db->select2('personnel', array('id', 'nom', 'prenom', 'statut'));
+$db->select2('personnel', array('id', 'nom', 'prenom', 'statut'), "WHERE `service` <> ''");
 
 
 if($db->result) {
@@ -50,7 +50,9 @@ $after[] = function() {
             echo  "Le statut des agents suivants doit être vérifié :<br>\n";
             foreach($db->result as $agent) {
                 $id = $agent['id'];
-                echo"Agent N° {$id} : {$personnel[$id]['prenom']} {$personnel[$id]['nom']}. Service d'origine = \"{$personnel[$id]['statut']}\"  \n";
+                if (in_array($id, $personnel) and $personnel[$id]['statut'] == ''){
+                    echo "Agent N° {$id} : {$personnel[$id]['prenom']} {$personnel[$id]['nom']}. Statut d'origine = \"{$personnel[$id]['statut']}\"  \n";
+                }
             }
         }
     }
