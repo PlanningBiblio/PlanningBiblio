@@ -21,6 +21,7 @@ Show non validated planning in personal calendar
 Fix display of agents on vacation on the week schedules
 Prevent warnings in script tools/remove_html_entities_from_absences_reasons.php
 Prevent the redirection to the 'access denied' page on cli and symfony mode
+MT 30866: Replace heredoc string by double quotes string at end of weekly planning
 
 *** Version 20.10.00       (2020-10-09)   ***
 - Enhancements
