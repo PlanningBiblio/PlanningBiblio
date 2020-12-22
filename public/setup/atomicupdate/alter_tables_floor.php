@@ -5,7 +5,7 @@ $do_after_etages = true;
 $postes = array();
 
 $db = new db();
-$db->select2('postes', array('id', 'nom', 'etage'));
+$db->select2('postes', array('id', 'nom', 'etage'), "WHERE `etage` <> ''");
 
 
 if($db->result) {
@@ -42,15 +42,26 @@ if($db2->result){
 
 $after[] = function() {
     global $do_after_etages, $postes;
+    $cpt = 0;
     if(isset($do_after_etages)){
         $db = new db();
         $db->select2('postes', array('id', 'nom', 'etage'), array("etage"=> "= 0"));
 
         if ($db->result){
-            echo  "L'étage des postes suivants doit être vérifié :<br>\n";
             foreach($db->result as $poste) {
                 $id = $poste['id'];
-                echo"Poste N° {$id} : {$postes[$id]['nom']}. Etage d'origine = \"{$postes[$id]['etage']}\"  \n";
+                if(in_array($id, $postes) and $postes[$id]['etage'] == ''){
+                    $cpt++;
+                }
+            }
+            if ($cpt > 0){
+                echo  "L'étage des postes suivants doit être vérifié :<br>\n";
+                foreach($db->result as $poste) {
+                    $id = $poste['id'];
+                    if(in_array($id, $postes) and $postes[$id]['etage'] == ''){
+                        echo"Poste N° {$id} : {$postes[$id]['nom']}. Etage d'origine = \"{$postes[$id]['etage']}\"  \n";
+                    }
+                }
             }
         }
     }
