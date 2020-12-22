@@ -5,7 +5,7 @@ $do_after_statuts = true;
 $personnel = array();
 
 $db = new db();
-$db->select2('personnel', array('id', 'nom', 'prenom', 'statut'), "WHERE `service` <> ''");
+$db->select2('personnel', array('id', 'nom', 'prenom', 'statut'), "WHERE `statut` <> ''");
 
 
 if($db->result) {
