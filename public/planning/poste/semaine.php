@@ -459,11 +459,7 @@ for ($j=0;$j<=$fin;$j++) {
     $notes=$p->notes;
     $notesDisplay=trim($notes)?null:"style='display:none;'";
 
-    echo <<<EOD
-  <div class='pl-notes-div1' $notesDisplay >
-  $notes
-  </div>
-EOD;
+    echo "<div class='pl-notes-div1' $notesDisplay>$notes</div>";
 }
 ?>
 </div>

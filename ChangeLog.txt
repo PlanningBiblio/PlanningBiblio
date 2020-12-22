@@ -1,4 +1,6 @@
 *** Unreleased ***
+-Fixes
+Replace heredoc string by double quotes string at end of weekly planning
 
 *** Version 20.04.06       (2020-11-24)   ***
 - Enhancements
