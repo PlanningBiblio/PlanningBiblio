@@ -42,16 +42,25 @@ if($db2->result){
 
 $after[] = function() {
     global $do_after_statuts, $personnel;
+    $cpt = 0;
     if(isset($do_after_statuts)){
         $db = new db();
         $db->select2('personnel', array('id', 'nom', 'prenom', 'statut'), array("statut"=> "= 0"));
 
         if ($db->result){
-            echo  "Le statut des agents suivants doit être vérifié :<br>\n";
             foreach($db->result as $agent) {
                 $id = $agent['id'];
                 if (in_array($id, $personnel) and $personnel[$id]['statut'] == ''){
-                    echo "Agent N° {$id} : {$personnel[$id]['prenom']} {$personnel[$id]['nom']}. Statut d'origine = \"{$personnel[$id]['statut']}\"  \n";
+                    $cpt++;
+                }
+            }
+            if ($cpt > 0){
+                echo  "Le statut des agents suivants doit être vérifié :<br>\n";
+                foreach($db->result as $agent) {
+                    $id = $agent['id'];
+                    if (in_array($id, $personnel) and $personnel[$id]['statut'] == ''){
+                        echo "Agent N° {$id} : {$personnel[$id]['prenom']} {$personnel[$id]['nom']}. Statut d'origine = \"{$personnel[$id]['statut']}\"  \n";
+                    }
                 }
             }
         }
