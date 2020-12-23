@@ -18,6 +18,5 @@ $templates_params = array(
     'ics_export'          => $config['ICS-Export'],
     'oups_auth_mode'      => $_SESSION['oups']['Auth-Mode'],
     'content_planning'    => $content_planning,
-    'authorized'          => $authorized,
     'CSRFSession'         => $CSRFSession,
 );
