@@ -103,4 +103,27 @@ class NotificationController extends BaseController {
 
     }
 
+    /**
+     * @Route("/notification", name="notification.save", methods={"POST"})
+     */
+    public function save(Request $request){
+        $agents = $request->get('agents');
+        $responsables = $request->get('responsables');
+        $notifications = $request->get('notifications');
+        $CSRFToken = $request->get('CSRFToken');
+
+        $agents = html_entity_decode($agents, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+        $responsables = html_entity_decode($responsables, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+        $notifications = html_entity_decode($notifications, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+
+        $agents = json_decode($agents);
+        $responsables = json_decode($responsables);
+        $notifications = json_decode($notifications);
+
+        $p = new \personnel();
+        $p->CSRFToken = $CSRFToken;
+        $p->updateResponsibles($agents, $responsables, $notifications);
+
+        return $this->json('ok');
+    }
 }
