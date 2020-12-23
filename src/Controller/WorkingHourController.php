@@ -681,4 +681,22 @@ class WorkingHourController extends BaseController
             return $this->redirectToRoute('workinghour.index', array("msg" => $msg, "msgType" => $msgType));
         }
     }
+
+    /**
+     * @Route("/workinghour", name="workinghour.delete", methods={"DELETE"})
+     */
+    public function delete(Request $request, Session $session){
+        $CSRFToken = $request->get('CSRFToken');
+        $id = $request->get("id");
+
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->delete("planning_hebdo", "id=$id");
+
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->update('planning_hebdo', array('remplace'=>'0'), array('remplace'=>$id));
+
+        return $this->json('ok');
+    }
 }

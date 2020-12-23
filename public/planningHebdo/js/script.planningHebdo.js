@@ -242,23 +242,23 @@ function plHebdoMemePlanning(){
 
 function plHebdoSupprime(id){
   if(confirm("Etes vous sûr(e) de vouloir supprimer ce planning de présence ?")){
-    
+
     var CSRFToken = $('#CSRFSession').val();
     // Suppression du planning en arrière plan
-    
+
     $.ajax({
-      url: "planningHebdo/ajax.delete.php",
+      url: "/workinghour",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
-      type: "get",
-    
+      type: "delete",
+
       success: function(){
-	// On cache la ligne du planning supprimée dans le tableau
-	CJDataTableHideRow("#tr_"+id);
-	CJInfo("Le planning a été supprimé","success");
+        // On cache la ligne du planning supprimée dans le tableau
+        CJDataTableHideRow("#tr_"+id);
+        CJInfo("Le planning a été supprimé","success");
       },
       error: function(){
-	CJInfo("Erreur lors de la suppression du planning de pr&eacute;sence","error");
+        CJInfo("Erreur lors de la suppression du planning de présence","error");
       }
     });
   }
