@@ -5,6 +5,10 @@
     - 100
 "agent.index":
     - 4
+"ajax.agentsbysites":
+    - 100
+"ajax.checkplanning":
+    - 100
 "ajax.editabsencereasons":
     - 100
 "ajax.holidaycredit":
