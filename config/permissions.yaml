@@ -3,6 +3,10 @@
 
 "account.index":
     - 100
+"ajax.agentsbysites":
+    - 100
+"ajax.checkplanning":
+    - 100
 "ajax.editabsencereasons":
     - 100
 "ajax.holidaydelete":
