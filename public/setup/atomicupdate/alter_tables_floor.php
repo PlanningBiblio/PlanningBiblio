@@ -5,7 +5,7 @@ $do_after_etages = true;
 $postes = array();
 
 $db = new db();
-$db->select2('postes', array('id', 'nom', 'etage'), "WHERE `etage` <> ''");
+$db->select2('postes', array('id', 'nom', 'etage'), "`etage` <> ''");
 
 
 if($db->result) {
@@ -50,7 +50,7 @@ $after[] = function() {
         if ($db->result){
             foreach($db->result as $poste) {
                 $id = $poste['id'];
-                if(in_array($id, $postes) and $postes[$id]['etage'] != ''){
+                if(!empty($postes[$id])){
                     $cpt++;
                 }
             }
@@ -58,7 +58,7 @@ $after[] = function() {
                 echo  "L'étage des postes suivants doit être vérifié :<br>\n";
                 foreach($db->result as $poste) {
                     $id = $poste['id'];
-                    if(in_array($id, $postes) and $postes[$id]['etage'] == ''){
+                    if(!empty($postes[$id])){
                         echo"Poste N° {$id} : {$postes[$id]['nom']}. Etage d'origine = \"{$postes[$id]['etage']}\"  \n";
                     }
                 }
