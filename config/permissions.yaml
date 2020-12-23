@@ -1,0 +1,7 @@
+# This file gathers the routes and the rights required to access each of them
+# This file is called by the ControllerAuthorization Listener
+
+"ajax.agentsbysites":
+    - 100
+"ajax.checkplanning":
+    - 100
