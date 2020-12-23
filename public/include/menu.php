@@ -97,7 +97,7 @@ echo "<tr><td colspan='2' style='text-align:right;'>\n";
 
 // Si le module PlanningHebdo ou ICS-Export sont activés, remplace "Changer le mot de passe" par "Mon Compte"
 if ($config['PlanningHebdo'] or $config['ICS-Export']) {
-    echo "<a href='index.php?page=monCompte.php' class='myAccountLink'>\n";
+    echo "<a href='/myaccount' class='myAccountLink'>\n";
     echo "Mon Compte</a>\n";
 }
 // Mot de passe modifiable seulement si authentification SQL
