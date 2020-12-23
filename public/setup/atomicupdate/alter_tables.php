@@ -5,7 +5,7 @@ $do_after_services = true;
 $personnel = array();
 
 $db = new db();
-$db->select2('personnel', array('id', 'nom', 'prenom', 'service'), "WHERE  ̀service` <> ''");
+$db->select2('personnel', array('id', 'nom', 'prenom', 'service'), "`service` <> ''");
 
 if($db->result) {
     foreach($db->result as $elem) {
@@ -49,7 +49,7 @@ $after[] = function() {
         if ($db->result){
             foreach($db->result as $agent) {
                 $id = $agent['id'];
-                if (in_array($id, $personnel) and $personnel[$id]['service'] != ''){
+                if (!empty($personnel[$id])){
                     $cpt++;
                 }
             }
@@ -57,7 +57,7 @@ $after[] = function() {
                 echo  "Le service des agents suivants doit être vérifié :<br>\n";
                 foreach($db->result as $agent) {
                     $id = $agent['id'];
-                    if (in_array($id, $personnel) and $personnel[$id]['service'] == ''){
+                    if (!empty($personnel[$id])){
                         echo"Agent N° {$id} : {$personnel[$id]['prenom']} {$personnel[$id]['nom']}. Service d'origine = \"{$personnel[$id]['service']}\"  \n";
                     }
                 }
