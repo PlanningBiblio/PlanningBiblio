@@ -5,7 +5,7 @@ $do_after_services = true;
 $personnel = array();
 
 $db = new db();
-$db->select2('personnel', array('id', 'nom', 'prenom', 'service'));
+$db->select2('personnel', array('id', 'nom', 'prenom', 'service'), "`service` <>  ''");
 
 
 if($db->result) {
@@ -42,15 +42,28 @@ if($db2->result){
 
 $after[] = function() {
     global $do_after_services, $personnel;
+    $cpt = 0;
+
     if(isset($do_after_services)){
         $db = new db();
         $db->select2('personnel', array('id', 'nom', 'prenom', 'service'), array("service"=> "= 0"));
 
         if ($db->result){
-            echo  "Le service des agents suivants doit être vérifié :<br>\n";
             foreach($db->result as $agent) {
                 $id = $agent['id'];
-                echo"Agent N° {$id} : {$personnel[$id]['prenom']} {$personnel[$id]['nom']}. Service d'origine = \"{$personnel[$id]['service']}\"  \n";
+                if(!empty($personnel[$id])){
+                    $cpt++;
+                }
+            }
+
+            if($cpt > 0){
+                echo  "Le service des agents suivants doit être vérifié :<br>\n";
+                foreach($db->result as $agent) {
+                    $id = $agent['id'];
+                    if(!empty($personnel[$id])){
+                        echo"Agent N° {$id} : {$personnel[$id]['prenom']} {$personnel[$id]['nom']}. Service d'origine = \"{$personnel[$id]['service']}\"  \n";
+                    }
+                }
             }
         }
     }
