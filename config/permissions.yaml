@@ -13,3 +13,13 @@
     - 100
 "ajax.holidaycredit":
     - 100
+"workinghour.index":
+    - 1101
+"workinghour.add":
+    - 100
+"workinghour.edit":
+    - 100
+"workinghour.save":
+    - 100
+"workinghour.delete":
+    - 1101

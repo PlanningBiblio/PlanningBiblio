@@ -557,6 +557,11 @@ class WorkingHourController extends BaseController
                 $selected4 = isset($valide_n2) && $valide_n2 < 0 ? true : false;
                 // Si pas admin, affiche le niveau en validation en texte simple
             } else {
+                $selected1 = false;
+                $selected2 = false;
+                $selected3 = false;
+                $selected4 = false;
+
                 $validation = "Demandé";
                 if ($valide_n2 > 0) {
                     $validation = $lang['work_hours_dropdown_accepted'];
@@ -670,8 +675,8 @@ class WorkingHourController extends BaseController
                 break;
         }
 
-        if($post['retour'] == "index.php?page=monCompte.php") {
-            return $this->redirect($this->config('URL')."/".$post['retour']."&msg=".$msg."&msgType=".$msgType);
+        if($post['retour'] == "/index.php?page=monCompte.php") {
+            return $this->redirect($this->config('URL').$post['retour']."&msg=".$msg."&msgType=".$msgType);
         } else {
             return $this->redirectToRoute('workinghour.index', array("msg" => $msg, "msgType" => $msgType));
         }
