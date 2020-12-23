@@ -5,7 +5,7 @@ $do_after_groupes = true;
 $postes = array();
 
 $db = new db();
-$db->select2('postes', array('id', 'nom', 'groupe'));
+$db->select2('postes', array('id', 'nom', 'groupe'), "`groupe` <> ''");
 
 
 if($db->result) {
@@ -48,10 +48,21 @@ $after[] = function() {
         $db->select2('postes', array('id', 'nom', 'groupe'), array("groupe"=> "= 0"));
 
         if ($db->result){
-            echo  "Le groupe des postes suivants doit être vérifié :<br>\n";
             foreach($db->result as $poste) {
                 $id = $poste['id'];
-                echo"Poste N° {$id} : {$postes[$id]['nom']}. Groupe d'origine = \"{$postes[$id]['groupe']}\"  \n";
+                if(!empty($postes[$id])){
+                    $cpt++;
+                }
+            }
+
+            if($cpt > 0){
+                echo  "Le groupe des postes suivants doit être vérifié :<br>\n";
+                foreach($db->result as $poste) {
+                    $id = $poste['id'];
+                    if(!empty($postes[$id])){
+                        echo"Poste N° {$id} : {$postes[$id]['nom']}. Groupe d'origine = \"{$postes[$id]['groupe']}\"  \n";
+                    }
+                }
             }
         }
     }
