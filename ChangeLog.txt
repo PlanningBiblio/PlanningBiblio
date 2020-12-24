@@ -1,6 +1,13 @@
 *** Unreleased ***
+
+*** Version 20.04.07       (2020-12-24)   ***
 -Fixes
+Fix the calculation of half-day holiday credits
+Add missing class 'checkdate' on holiday's forms
+Fix a JS control on holiday forms
 Replace heredoc string by double quotes string at end of weekly planning
+Take in account empty site in agent's times in holiday validation workflow
+Fix a typo on tools/fix_encoding_issues.php
 
 *** Version 20.04.06       (2020-11-24)   ***
 - Enhancements
