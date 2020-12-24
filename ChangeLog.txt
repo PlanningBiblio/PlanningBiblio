@@ -1,5 +1,14 @@
 *** Unreleased ***
 
+*** Version 20.10.02       (2020-12-24)   ***
+-Fixes
+Add missing class 'checkdate' on holiday's forms
+Fix a JS control on holiday forms
+Retrieve correct public holiday name in calendar
+Replace heredoc string by double quotes string at end of weekly planning
+Take in account empty site in agent's times in holiday validation workflow
+Fix a typo on tools/fix_encoding_issues.php
+
 *** Version 20.10.01       (2020-11-30)   ***
 - Enhancements
 Display disabled planno-break-timepickers in black
