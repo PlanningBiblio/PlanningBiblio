@@ -1,18 +1,6 @@
 # This file gathers the routes and the rights required to access each of them
 # This file is called by the ControllerAuthorization Listener
 
-"ajax.editabsencereasons":
-    - 100
-"ajax.holidaydelete":
-    - 100
-"ajax.changepassword":
-    - 21
-"ajax.planningjobcheckcopy":
-    - 100
-"ajax.mailtest":
-    - 100
-"ajax.holidaycredit":
-    - 100
 "account.index":
     - 100
 "workinghour.index":
@@ -25,3 +13,7 @@
     - 100
 "workinghour.delete":
     - 1101
+"account.password":
+    - 100
+"account.password.save":
+    - 100

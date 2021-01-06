@@ -104,11 +104,138 @@ class AccountController extends BaseController
                 "credits"          => $credits,
                 "ics"              => $ics,
                 "login"            => $login,
-                "planning"         => $planning
+                "planning"         => $planning,
+                "toChange"         => true
 
             )
         );
         return $this->output('/myAccount.html.twig');
+    }
+
+    /**
+     * @Route("/myaccount/password", name="account.password", methods={"GET"})
+     */
+    public function password(Request $request){
+        $identifiants = array("name" => $_SESSION['login_prenom'], "surname" => $_SESSION['login_nom']);
+        $page = $request->get('page') ?? null;
+        $success = false;
+        $CJError = false;
+        $incorrectPassword = false;
+        $dontMatch = false;
+
+        if (!$page){
+            $this->templateParams(
+                array(
+                    "CJError"           => $CJError,
+                    "dontMatch"         => $dontMatch,
+                    "incorrectPassword" => $incorrectPassword,
+                    "login"             => $identifiants,
+                    "success"           => $success,
+                    "toChange"          => true
+                )
+            );
+            return $this->output('password.html.twig');
+        } else {
+            $success = $request->get('success') == 1 ? true : false;
+            $CJError = $request->get('CJError') == 1 ? true : false;
+            $incorrectPassword = $request->get('incorrectPassword') == 1 ? true : false;
+            $dontMatch = $request->get('dontMatch') == 1 ? true : false;
+
+            $this->templateParams(
+                array(
+                    "CJError"           => $CJError,
+                    "dontMatch"         => $dontMatch,
+                    "error"             => $request->get('error'),
+                    "incorrectPassword" => $incorrectPassword,
+                    "login"             => $identifiants,
+                    "success"           => $success,
+                    "toChange"          => false
+            ));
+            return $this->output('password.html.twig');
+        }
+    }
+
+    /**
+     * @Route("/myaccount/password", name="account.password.save", methods={"POST"})
+     */
+    public function savePassword(Request $request){
+        $ancien = $request->get("ancien");
+        $confirm = $request->get("confirm");
+        $nouveau = $request->get("nouveau");
+
+        $dbprefix = $GLOBALS['dbprefix'];
+
+        $db = new \db();
+        $db->query("select login,password,mail from {$dbprefix}personnel where id=".$_SESSION['login_id'].";");
+        $login = $db->result[0]['login'];
+        $mail = $db->result[0]['mail'];
+
+        $success = false;
+        $CJError = false;
+        $incorrectPassword = false;
+        $dontMatch = false;
+        $data = null;
+        $error = null;
+
+        if (!password_verify($ancien, $db->result[0]['password'])) {
+            $incorrectPassword = true;
+            $data =
+                array(
+                    "CJError"           => $CJError,
+                    "dontMatch"         => $dontMatch,
+                    "incorrectPassword" => $incorrectPassword,
+                    "page"              => $request->get('page'),
+                    "success"           => $success,
+                    "toChange"          => false,
+            );
+            return $this->redirectToRoute('account.password', $data);
+        } elseif ($nouveau != $confirm) {
+            $dontMatch = true;
+            $data =
+                array(
+                    "CJError"           => $CJError,
+                    "dontMatch"         => $dontMatch,
+                    "incorrectPassword" => $incorrectPassword,
+                    "page"              => $request->get('page'),
+                    "success"           => $success,
+                    "toChange"          => false,
+            );
+            return $this->redirectToRoute('account.password', $data);
+        } else {
+            $mdp = $nouveau;
+            $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
+            $db = new \db();
+            $db->query("update {$dbprefix}personnel set password='".$mdp_crypt."' where id=".$_SESSION['login_id'].";");
+            $success = true;
+
+            $message="Votre mot de passe Planning Biblio a &eacute;t&eacute; modifi&eacute;";
+            $message.="<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
+
+            // Envoi du mail
+            $m = new \CJMail();
+            $m->subject = "Modification du mot de passe";
+            $m->message = $message;
+            $m->to = $mail;
+            $m->send();
+
+            // Si erreur d'envoi de mail, affichage de l'erreur
+            if ($m->error_CJInfo) {
+                $error = '"'.$m->error_CJInfo.'"';
+                $CJError = true;
+            }
+            $data =
+                array(
+                    "CJError"           => $CJError,
+                    "dontMatch"         => $dontMatch,
+                    "error"             => $error,
+                    "incorrectPassword" => $incorrectPassword,
+                    "page"              => $request->get('page'),
+                    "success"           => $success,
+                    "toChange"          => false,
+            );
+            return $this->redirectToRoute('account.password', $data);
+        }
+
     }
 
 }
