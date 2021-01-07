@@ -28,4 +28,4 @@ $t=new tableau();
 $t->CSRFToken = $CSRFToken;
 $t->update($post);
 
-echo "<script type='text/JavaScript'>location.href='/framework';</script>\n";
+echo "<script type='text/JavaScript'> var baseURL = $('#baseURL').val(); parent.location.href = baseURL+'/framework';</script>\n";

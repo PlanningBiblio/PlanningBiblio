@@ -50,7 +50,7 @@ if ($access) {
 }
 
 if (in_array(22, $droits)) {
-    echo "<li><a href='/framework'>Les tableaux</a></li>\n";
+    echo "<li><a href='{$config['URL']}/framework'>Les tableaux</a></li>\n";
 }
 if (in_array(1101, $droits)) {
     echo "<li><a href='index.php?page=admin/feries.php'>Jours feri&eacute;s</a></li>\n";
