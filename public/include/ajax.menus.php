@@ -30,7 +30,7 @@ $option = FILTER_INPUT(INPUT_POST, 'option', FILTER_SANITIZE_STRING);
 $tab = $_POST['tab'];
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-if(!in_array($menu, array('services','statuts')){
+if($menu!='services' and $menu!='statuts')){
     $db->delete("select_$menu");
     foreach ($tab as $elem) {
         if (!in_array($menu, array('etages', 'groupes'))) {
@@ -71,6 +71,9 @@ if(!in_array($menu, array('services','statuts')){
     }
     foreach($tab as $elem){
         $elements = array("valeur"=>$elem[0],"rang"=>$elem[1]);
+        if ($option == 'categorie') {
+            $elements['categorie'] = $elem[2];
+        }
         $id = array_search($elements['valeur'], $res) ?? null;
         if ($id){ // Si l'on a déjà la valeur dans select_services = modification du rang
             $db->update("select_$menu", $elements, array("id" => $id));
