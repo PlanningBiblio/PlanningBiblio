@@ -8,6 +8,7 @@ Upgrade PHP to 7.4 in composer.json
 Update install.sh : check if PHP version > 7.4, run composer update if needed
 Upgrade symfony/flex to release 1.9.8
 Start handling permissions in a YAML file
+Symfonize framework index (planning/postes_cfg/index.php)
 
 
 -Fixes
