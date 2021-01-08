@@ -99,7 +99,7 @@ foreach ($semaine as $jour) {
     <option value=''>&nbsp;</option>
 EOD;
     foreach ($tableaux as $tab) {
-        $selected=$tab['tableau']==$groupe[$jour]?"selected='selected'":null;
+        $selected= !empty($groupe[$jour]) && $tab['tableau']== $groupe[$jour] ?"selected='selected'":null;
         echo "<option value='{$tab['tableau']}' $selected class='optionSite{$tab['site']} hiddenOptions'>{$tab['nom']}</option>\n";
     }
     echo "</select></td></tr>\n";
