@@ -42,7 +42,7 @@
                   <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
                 </a>
               </td>
-              <td id='td-tableau-{{ elem.tableau }}-nom'>{{ elem.nom }}</td>
+              <td id='td-tableau-{{ elem.tableau }}-nom'>{{ elem.nom | raw }}</td>
               {% if nbSites > 1 %}
                 <td>{{ elem.multisite }}
               {% endif %}
@@ -94,7 +94,7 @@
                   <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
                 </a>
               </td>
-              <td id='td-groupe-{{ groupe.id }}-nom'>{{ groupe.nom }}</td>
+              <td id='td-groupe-{{ groupe.id }}-nom'>{{ groupe.nom | raw }}</td>
               {% if nbSites > 1 %}
                 <td>{{ groupe.multisite }} </td>
               {% endif %}
