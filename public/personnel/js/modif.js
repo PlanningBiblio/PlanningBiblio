@@ -353,7 +353,7 @@ $(function() {
 	tab=new Array();
 	$("#services-sortable li").each(function(){
 	  var id=$(this).attr("id").replace("li_","");
- 	  tab.push(new Array($(this).find("#valeur_"+id).text(), $(this).index()));
+ 	  tab.push(new Array($(this).find("#valeur_"+id).text(), $(this).index(), id));
 	});
 
 	// Transmet le tableau à la page de validation ajax
@@ -362,18 +362,18 @@ $(function() {
 	  type: "post",
           dataType: "json",
 	  data: {tab: tab, menu: "services", CSRFToken: $('#CSRFSession').val()},
-	  success: function(){
+	  success: function(options){
             var current_val = $('#service').val();
             $('#service').empty();
             $('#service').append("<option value=''>Aucun</option>");
 
             $("#services-sortable li").each(function(){
-              var id=$(this).attr("id").replace("li_","");
+              var id = $(this).attr("id").replace("li_","");
               var val = $(this).find("#valeur_"+id).text();
-              if( val == current_val){
-                var option = "<option value='"+val+"' selected='selected'>"+val+"</option>";
+              if( id == current_val){
+                var option = "<option value='"+options[val]+"' selected='selected'>"+val+"</option>";
               } else {
-                var option = "<option value='"+val+"'>"+val+"</option>";
+                var option = "<option value='"+options[val]+"'>"+val+"</option>";
               }
               $('#service').append(option);
             });

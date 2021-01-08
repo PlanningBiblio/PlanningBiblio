@@ -28,7 +28,6 @@ $CSRFToken=trim(filter_input(INPUT_POST, "CSRFToken", FILTER_SANITIZE_STRING));
 $menu = FILTER_INPUT(INPUT_POST, 'menu', FILTER_SANITIZE_STRING);
 $option = FILTER_INPUT(INPUT_POST, 'option', FILTER_SANITIZE_STRING);
 $tab = $_POST['tab'];
-
 $db=new db();
 $db->CSRFToken = $CSRFToken;
 if($menu != 'services'){
@@ -49,6 +48,7 @@ if($menu != 'services'){
         $db->CSRFToken = $CSRFToken;
         $db->insert("select_$menu", $elements);
     }
+    echo json_encode('ok');
 } else {
     $db2 = new db();
     $db2->select("select_$menu");
@@ -78,6 +78,14 @@ if($menu != 'services'){
             $db->insert("select_$menu", $elements);
         }
     }
+    $db2 = new db();
+    $db2->select("select_$menu");
+    $options = array();
+    if ($db2->result){
+        foreach($db2->result as $elem){
+            $options[$elem['valeur']] = $elem['id'];
+        }
+    }
+    echo json_encode($options);
 
 }
-echo json_encode('ok');
