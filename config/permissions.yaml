@@ -1,0 +1,11 @@
+# This file gathers the routes and the rights required to access each of them
+# This file is called by the ControllerAuthorization Listener
+
+"agent.index":
+    - 4
+"agent.add":
+    - 4
+"agent.edit":
+    - 4
+"agent.save":
+    - 4
