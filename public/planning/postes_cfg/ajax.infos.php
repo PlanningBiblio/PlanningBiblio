@@ -25,7 +25,7 @@ include "class.tableaux.php";
 $id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
 $CSRFToken = filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
 $nombre=filter_input(INPUT_GET, "nombre", FILTER_SANITIZE_NUMBER_INT);
-$nom=filter_input(INPUT_GET, "nom");
+$nom=filter_input(INPUT_GET, "nom", FILTER_SANITIZE_STRING);
 $site=filter_input(INPUT_GET, "site", FILTER_SANITIZE_NUMBER_INT);
 
 // Ajout
