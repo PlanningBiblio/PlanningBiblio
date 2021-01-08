@@ -244,10 +244,11 @@ function plHebdoSupprime(id){
   if(confirm("Etes vous sûr(e) de vouloir supprimer ce planning de présence ?")){
 
     var CSRFToken = $('#CSRFSession').val();
+    var baseURL = $('#baseURL').val();
     // Suppression du planning en arrière plan
 
     $.ajax({
-      url: "/workinghour",
+      url: baseURL + "/workinghour",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
       type: "delete",
