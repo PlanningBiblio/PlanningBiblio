@@ -30,7 +30,7 @@ $option = FILTER_INPUT(INPUT_POST, 'option', FILTER_SANITIZE_STRING);
 $tab = $_POST['tab'];
 $db=new db();
 $db->CSRFToken = $CSRFToken;
-if($menu!='services' and $menu!='statuts')){
+if(!in_array($menu, array('services','statuts'))){
     $db->delete("select_$menu");
     foreach ($tab as $elem) {
         if (!in_array($menu, array('etages', 'groupes'))) {
