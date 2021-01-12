@@ -69,7 +69,7 @@
               <option value=''>&nbsp;</option>
               {% for tab in tableaux %}
                 {% if id is null %}
-                  <option value="{{ tab.tableau }}" {{ tab.tableau == groupe.site ? "selected='selected'" : ""}} class='optionSite{{tab.site}} hiddenOptions'>{{ tab.nom }}</option>
+                  <option value="{{ tab.tableau }}" {{ (groupe[jour] is not empty and tab.tableau == groupe.site) ? "selected='selected'" : ""}} class='optionSite{{tab.site}} hiddenOptions'>{{ tab.nom }}</option>
                 {% else %}
                   <option value="{{ tab.tableau }}" {{ tab.tableau == groupe[jour] ? "selected='selected'" : ""}} class='optionSite{{tab.site}} hiddenOptions'>{{ tab.nom }}</option>
                 {% endif %}
