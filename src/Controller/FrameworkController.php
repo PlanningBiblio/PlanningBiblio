@@ -181,7 +181,6 @@ class FrameworkController extends BaseController
         $t->fetchGroup($id);
         $groupe=$t->elements;
 
-        dump($groupe);
         //	Supprime le nom actuel de la liste des noms deja utilises
         $key = array_keys($groupes, $groupe);
         unset($groupes[$key[0]]);
