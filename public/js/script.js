@@ -560,7 +560,7 @@ function supprime(page, id, CSRFToken){
     $.ajax({
       url: page+"/ajax.delete.php",
       type: "get",
-      data: "id="+id+"&CSRFToken="+CSRFToken,
+      data: "id="+ encodeURIComponent(id) +"&CSRFToken="+CSRFToken,
       success: function(){
 	window.location.reload(false);
       },
