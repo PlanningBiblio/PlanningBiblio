@@ -151,6 +151,7 @@ class PositionController extends BaseController
         $obligatoire = "checked";
         $bloq1 = "checked";
         $stat1 = "checked";
+        $teleworking2 = "checked";
 
 
 
@@ -176,6 +177,8 @@ class PositionController extends BaseController
             'selectedSites'  => $selectedSites,
             'stat1'          => $stat1,
             'stat2'          => null,
+            'teleworking1'   => null,
+            'teleworking2'   => $teleworking2,
             'usedFloors'     => null,
             'usedGroups'     => null,
 
@@ -208,6 +211,8 @@ class PositionController extends BaseController
         $stat2 = !$position->statistiques()?"checked='checked'":"";
         $bloq1 = $position->bloquant()?"checked='checked'":"";
         $bloq2 = !$position->bloquant()?"checked='checked'":"";
+        $teleworking1 = $position->teleworking() ? "checked='checked'" : "";
+        $teleworking2 = !$position->teleworking() ? "checked='checked'" : "";
 
         $checked = null;
 
@@ -286,6 +291,8 @@ class PositionController extends BaseController
             'renfort'       => $renfort,
             'stat1'         => $stat1,
             'stat2'         => $stat2,
+            'teleworking1'  => $teleworking1,
+            'teleworking2'  => $teleworking2,
             'bloq1'         => $bloq1,
             'bloq2'         => $bloq2,
             'etages'        => $etages,
@@ -326,6 +333,7 @@ class PositionController extends BaseController
             $site = $request->get('site');
             $bloquant = $request->get('bloquant');
             $statistiques = $request->get('statistiques');
+            $teleworking = $request->get('teleworking') ?? 0;
             $etage = $request->get('etage',"");
             $groupe = $request->get('groupe', "");
             $groupe_id = $request->get('group_id', "");
@@ -339,6 +347,7 @@ class PositionController extends BaseController
                 $position->categories($categories);
                 $position->bloquant($bloquant);
                 $position->statistiques($statistiques);
+                $position->teleworking($teleworking);
                 $position->etage($etage);
                 $position->groupe($groupe);
                 $position->groupe_id($groupe_id);
@@ -367,6 +376,7 @@ class PositionController extends BaseController
                 $position->categories($categories);
                 $position->bloquant($bloquant);
                 $position->statistiques($statistiques);
+                $position->teleworking($teleworking);
                 $position->etage($etage);
                 $position->groupe($groupe);
                 $position->groupe_id($groupe_id);

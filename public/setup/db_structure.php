@@ -362,6 +362,7 @@ $sql[]="CREATE TABLE `{$dbprefix}postes` (
   `etage` TEXT NOT NULL,
   `activites` text NOT NULL,
   `statistiques` ENUM('0','1') DEFAULT '1',
+  `teleworking` ENUM('0','1') NOT NULL DEFAULT '0',
   `bloquant` enum('0','1') DEFAULT '1',
   `site` INT(1) DEFAULT '1',
   `categories` TEXT NULL DEFAULT NULL,
