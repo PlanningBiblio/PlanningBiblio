@@ -91,6 +91,7 @@ $db->select2("postes", null, array("id"=>$poste));
 $posteNom=$db->result[0]['nom'];
 $activites = json_decode(html_entity_decode($db->result[0]['activites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
 $stat=$db->result[0]['statistiques'];
+$teleworking = $db->result[0]['teleworking'];
 $bloquant=$db->result[0]['bloquant'];
 $categories = $db->result[0]['categories'] ? json_decode(html_entity_decode($db->result[0]['categories'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true) : array();
 
@@ -273,7 +274,14 @@ $dateSQL=$db->escapeString($date);
 $debutSQL=$db->escapeString($debut);
 $finSQL=$db->escapeString($fin);
 
-$db->select('absences', 'perso_id,valide', "`debut`<'$dateSQL $finSQL' AND `fin` >'$dateSQL $debutSQL'");
+$teleworking_exception = null;
+
+if ($teleworking) {
+    $teleworking_reasons = $config['Absences-teleworking_reasons'] ?? array();
+    $teleworking_exception = !empty($teleworking_reasons) and is_array($teleworking_reasons) ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')" : null;
+}
+
+$db->select('absences', 'perso_id,valide', "`debut`<'$dateSQL $finSQL' AND `fin` >'$dateSQL $debutSQL' $teleworking_exception");
 
 if ($db->result) {
     foreach ($db->result as $elem) {
