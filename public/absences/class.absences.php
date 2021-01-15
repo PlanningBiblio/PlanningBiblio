@@ -63,6 +63,7 @@ class absences
     public $perso_ids=array();
     public $recipients=array();
     public $rrule = null;
+    public $teleworking = true;
     public $validation_n1 = null;
     public $validation_n2 = null;
     public $valide=false;
@@ -765,6 +766,12 @@ class absences
             $filter.=" AND `{$dbprefix}absences`.`valide`>0 ";
         }
 
+        if ($this->teleworking == false
+            and !empty($GLOBALS['config']['Absences-teleworking_reasons'])
+            and is_array($GLOBALS['config']['Absences-teleworking_reasons'])) {
+            $teleworking_reasons = $GLOBALS['config']['Absences-teleworking_reasons'];
+            $filter .= " AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "') ";
+        }
 
         // N'affiche que les absences des agents non supprimés par défaut : $this->agents_supprimes=array(0);
         // Affiche les absences des agents supprimés si précisé : $this->agents_supprimes=array(0,1) ou array(0,1,2)

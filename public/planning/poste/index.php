@@ -204,6 +204,8 @@ echo "</div>";
 echo "</td><td id='td_boutons'>\n";
 
 //	----------------------------	Récupération des postes		-----------------------------//
+// $postes will also be used in the cellule_poste function. Using a global variable will avoid multiple access to the database and enhance performances
+global $postes;
 $postes=array();
 
 // Récupération des activités pour appliquer les classes aux lignes postes en fonction de celles-ci
@@ -250,7 +252,7 @@ if ($db->result) {
     
 
         // Tableau $postes
-        $postes[$elem['id']]=array("nom"=>$elem['nom'], "etage"=>$elem['etage'], "obligatoire"=>$elem['obligatoire'], "classes"=>join(" ", $classesPoste));
+        $postes[$elem['id']]=array("nom"=>$elem['nom'], "etage"=>$elem['etage'], "obligatoire"=>$elem['obligatoire'], "teleworking"=>$elem['teleworking'], "classes"=>join(" ", $classesPoste));
     }
 }
 
@@ -439,7 +441,7 @@ if (!$verrou and !$autorisationN1) {
         array(),
         "ORDER BY `{$dbprefix}personnel`.`nom`, `{$dbprefix}personnel`.`prenom`"
   );
-
+    // $cellules will be used in the cellule_poste function. Using a global variable will avoid multiple access to the database and enhance performances
     global $cellules;
     $cellules=$db->result?$db->result:array();
     usort($cellules, "cmp_nom_prenom");
@@ -460,6 +462,7 @@ if (!$verrou and !$autorisationN1) {
   
     // Recherche des absences
     // Le tableau $absences sera utilisé par la fonction cellule_poste pour barrer les absents dans le plannings et pour afficher les absents en bas du planning
+    // $absences will be used in the cellule_poste function. Using a global variable will avoid multiple access to the database and enhance performances
     $a=new absences();
     $a->valide=false;
     $a->agents_supprimes = array(0,1,2);    // required for history
@@ -490,6 +493,7 @@ if (!$verrou and !$autorisationN1) {
     $absences_planning = $a->elements;
 
     // Informations sur les congés
+    // $conges will be used in the cellule_poste function. Using a global variable will avoid multiple access to the database and enhance performances
     $conges = array();
     global $conges;
     if ($config['Conges-Enable']) {

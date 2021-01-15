@@ -38,6 +38,9 @@ class Position extends PLBEntity
     protected $statistiques;
 
     /** @Column(type="text", columnDefinition="ENUM('0','1')") )**/
+    protected $teleworking;
+
+    /** @Column(type="text", columnDefinition="ENUM('0','1')") )**/
     protected $bloquant;
 
     /** @Column(type="integer", length=1)**/
