@@ -206,7 +206,7 @@
                   {% if adminN1 == true  or (valide_n1 < 0 and valide_n2 == 0) %}
                     <option value='-1' {{ (selected2 == true) ? "selected = 'selected'" : " " }}>{{ lang.work_hours_dropdown_refused_pending }}</option>
                   {% endif %}
-                  {% if (adminN2 == true  and (valide_n1 < 0 or config('PlanningHebdo-Validation-N2') == 0)) or valide_n2 > 0 %}
+                  {% if (adminN2 == true  and (valide_n1 > 0 or config('PlanningHebdo-Validation-N2') == 0)) or valide_n2 > 0 %}
                     <option value='2' {{ (selected3 == true) ? "selected = 'selected'" : " " }}>{{ lang.work_hours_dropdown_accepted }}</option>
                   {% endif %}
                   {% if (adminN2 == true  and (valide_n1 > 0 or config('PlanningHebdo-Validation-N2') == 0)) or valide_n2 < 0 %}
