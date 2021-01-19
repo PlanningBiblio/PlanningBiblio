@@ -2,6 +2,28 @@
 
 {% extends 'base.html.twig' %}
 
+{% block specificjs %}
+  <script type='text/JavaScript'>
+    function confirmDel(id){
+      if (window.confirm("Voulez-vous vraiment supprimer cette activité ?")){
+        CSRFToken = $('#CSRFSession').val();
+        $.ajax({
+          url : '{{ asset("skill") }}',
+          type : 'DELETE',
+          data : {id: id, CSRFToken: CSRFToken},
+          success: function(response){
+            if (response == "Ok"){
+              window.location.reload('/skill');
+            }
+          },
+          error: function(){
+            CJInfo("Une erreur est survenue lors de la suppression","error")
+          }
+        });
+      }
+    }
+  </script>
+{% endblock %}
 {% block page %}
   <form name="form" action='{{ asset("skill") }}'>
     <input type="hidden" id="CSRFSession" value='{{ CSRFSession }}'/>
@@ -29,31 +51,14 @@
           <td>
             <input type="hidden" name="skill_name" value="{{ s.nom }}"/>
             <a href='{{ asset("skill/") }}{{ s.id }}'>
-              <span class="pl-icon pl-icon-edit" title="Modifier"></span>
+              <span class="icones" title="Modifier">
+                <i class="fa fa-pencil-square fa-2x" aria-hidden="true"></i>
+              </span>
             </a>
             {% if s.id in usedSkills == false %}
               &nbsp;&nbsp;
-              <span id='{{ s.id }}' class="pl-icon pl-icon-drop pointer" title="Supprimer" onclick="confirmDel(this.id)">
-                <script>
-                  function confirmDel(id){
-                    if (window.confirm("Voulez-vous vraiment supprimer cette activité ?")){
-                      CSRFToken = $('#CSRFSession').val();
-                      $.ajax({
-                        url : '{{ asset("skill") }}',
-                        type : 'DELETE',
-                        data : {id: id, CSRFToken: CSRFToken},
-                        success: function(response){
-                          if (response == "Ok"){
-                            window.location.reload('/skill');
-                          }
-                        },
-                        error: function(){
-                          CJInfo("Une erreur est survenue lors de la suppression","error")
-                        }
-                      });
-                    }
-                  }
-                </script>
+              <span id='{{ s.id }}' class="icones" title="Supprimer" onclick="confirmDel(this.id)">
+                <i class="fa fa-trash fa-2x" aria-hidden="true"></i>
               </span>
             {% endif %}
           </td>

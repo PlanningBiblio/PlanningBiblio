@@ -91,7 +91,7 @@ echo $_SESSION['login_prenom']." ".$_SESSION['login_nom'];
 echo "</font></td>\n";
 echo "<td id='logout_img'>\n";
 echo "<a href='authentification.php' title='Déconnexion' >\n";
-echo "<span class='pl-icon pl-icon-logout'></span></a></td>\n";
+echo "<span class='icones' style='color:red;'><i class='fa fa-sign-out fa-lg'></i></span></a></td>\n";
 echo "</tr>\n";
 echo "<tr><td colspan='2' style='text-align:right;'>\n";
 

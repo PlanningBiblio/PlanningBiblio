@@ -47,7 +47,9 @@
           <tr>
             <td style='white-space:nowrap;'>
               <input type='checkbox' name='chk{{loop.index0}}' value="{{ agent.id }}" class='checkboxes'/>
-              <span class='pl-icon pl-icon-edit pointer' title='Modifier' data-id="{{ agent.id }}"></span>
+              <span class='icones' title='Modifier' data-id="{{ agent.id }}">
+                <i class="fa fa-pencil-square fa-2x" aria-hidden="true"></i>
+              </span>
             </td>
             <td>{{ agent.nom }}</td>
             <td>{{ agent.prenom }}</td>

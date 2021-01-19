@@ -128,7 +128,7 @@ if (!empty($tableaux)) {
             echo "<select name='fin_{$tableau}_{$i}' style='width:75px;' onchange='change_horaires(this);'>\n";
             selectHeure(6, 23, true, $elem['fin']);
             echo "</select>\n";
-            echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$tableau}_{$i}.value=\"\";document.form2.fin_{$tableau}_{$i}.value=\"\";$(\"#tr_{$tableau}_$i\").hide();''></span>\n";
+            echo "<span class='icones' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$tableau}_{$i}.value=\"\";document.form2.fin_{$tableau}_{$i}.value=\"\";$(\"#tr_{$tableau}_$i\").hide();''><i class='fa fa-trash fa-lg'></i></span>\n";
             echo "</td>\n";
             echo "</tr>\n";
             $i++;
@@ -144,14 +144,14 @@ if (!empty($tableaux)) {
             echo "<select name='fin_{$tableau}_{$i}' style='width:75px;' onchange='change_horaires(this);'>\n";
             selectHeure(6, 23, true);
             echo "</select>\n";
-            echo "<span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$tableau}_{$i}.value=\"\";document.form2.fin_{$tableau}_{$i}.value=\"\";$(\"#tr_{$tableau}_$j\").hide();'></span>\n";
+            echo "<span class='icones' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick='document.form2.debut_{$tableau}_{$i}.value=\"\";document.form2.fin_{$tableau}_{$i}.value=\"\";$(\"#tr_{$tableau}_$j\").hide();'><i class='fa fa-trash fa-lg'></i></span>\n";
             echo "</td>\n";
             echo "</tr>\n";
             $i++;
         }
 
         // Affichage des boutons ajouter
-        echo "<tr><td><span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer' onclick='add_horaires(\"{$tableau}\");'></span></td></tr>\n";
+        echo "<tr><td><span class='icones' title='Ajouter' style='cursor:pointer' onclick='add_horaires(\"{$tableau}\");'><i class='fa fa-plus fa-lg'></i></span></td></tr>\n";
 
         // Fin des tableaux
         echo "</table></div> <!-- tab_horaires_{$tableau} &amp; div_horaires_{$tableau} -->\n";

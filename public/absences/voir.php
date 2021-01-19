@@ -247,10 +247,10 @@ if ($absences) {
         echo "<td style='white-space: nowrap;'>\n";
         if ($admin or (!$config['Absences-adminSeulement'] and in_array(6, $droits))) {
             echo "<a href='absence/$id'>\n";
-            echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a>\n";
+            echo "<span class='icones' title='Voir'><i class='fa fa-pencil-square fa-2x'></i></span></a>\n";
         }
         if ($elem['rrule']) {
-            echo "<span class='pl-icon pl-icon-recurring' title='R&eacute;currence'></span>\n";
+            echo "<span class='icones fa-stack fa-lg' title='R&eacute;currence'><i class='fa fa-repeat fa-stack-2x fa-3x'></i><i class='fa fa-exclamation fa-stack-1x'></i></span>\n";
         }
         echo "</td>\n";
 
