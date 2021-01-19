@@ -4,11 +4,14 @@ Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 @copyright 2011-2018 Jérôme Combes
+
 Fichier : personnel/valid.php
 Création : mai 2011
 @author Jérôme Combes <jerome@planningbiblio.fr>
+
 Description :
 Valide l'ajout ou la modification des agents : enregistrement des infos dans la base de données
+
 Cette page est appelée par le fichier index.php
 */
 
