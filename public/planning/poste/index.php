@@ -267,25 +267,25 @@ if ($autorisationN1) {
     $display2=$verrou?"display:none":null;
 
     echo "<div class='pl-validation' style='$display1'><u>Validation</u><br/>$perso2 $date_validation2 $heure_validation2</div>\n";
-    echo "<span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning' style='$display1'></span></a>\n";
-    echo "<span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning' style='$display2'></span></a>\n";
+    echo "<span id='icon-lock' class='icones pointer noprint' title='Déverrouiller le planning' style='$display1'><i class='fa fa-lock fa-2x'></i></span></a>\n";
+    echo "<span id='icon-unlock' class='icones pointer noprint' title='Verrouiller le planning' style='$display2'><i class='fa fa-unlock-alt fa-2x'></i></span></a>\n";
 }
 
 if ($autorisationN2) {
-    echo "<a href='javascript:popup(\"planning/poste/enregistrer.php&date=$date&site=$site&CSRFToken=$CSRFSession\",500,240);' title='Enregistrer comme modèle'><span class='pl-icon pl-icon-save'></span></a>";
+    echo "<a href='javascript:popup(\"planning/poste/enregistrer.php&date=$date&site=$site&CSRFToken=$CSRFSession\",500,240);' title='Enregistrer comme modèle'><span class='icones'><i class='fa fa-save fa-2x'></i></span></a>";
     if (!$verrou) {
-        echo "<a href='javascript:popup(\"planning/poste/importer.php&date=$date&site=$site\",500,270);' title='Importer un modèle'><span class='pl-icon pl-icon-open'></span></a>";
-        echo "<a href='javascript:popup(\"planning/poste/supprimer.php&date=$date&site=$site\",500,200);' title='Supprimer le planning'><span class='pl-icon pl-icon-drop'></span></a>";
+        echo "<a href='javascript:popup(\"planning/poste/importer.php&date=$date&site=$site\",500,270);' title='Importer un modèle'><span class='icones'><i class='fa fa-upload fa-2x'></i></span></a>";
+        echo "<a href='javascript:popup(\"planning/poste/supprimer.php&date=$date&site=$site\",500,200);' title='Supprimer le planning'><span class='icones'><i class='fa fa-trash fa-2x'></i></span></a>";
     }
 }
 if ($verrou) {
     if (!$autorisationN1) {
         echo "<div class='pl-validation'><u>Validation</u><br/>$perso2 $date_validation2 $heure_validation2</div>\n";
     }
-    echo "<a href='javascript:print();' title='Imprimer le planning'><span class='pl-icon pl-icon-printer'></span></a>\n";
+    echo "<a href='javascript:print();' title='Imprimer le planning'><span class='icones'><i class='fa fa-print fa-2x'></i></span></a>\n";
 }
 
-echo "<a href='index.php?date=$date&amp;site=$site' title='Actualiser'><span class='pl-icon pl-icon-refresh'></a>\n";
+echo "<a href='index.php?date=$date&amp;site=$site' title='Actualiser'><span class='icones'><i class='fa fa-refresh fa-2x'></i></span></a>\n";
 echo "</div>\n";
 
 echo "<div id='planningTips'>&nbsp;</div>";

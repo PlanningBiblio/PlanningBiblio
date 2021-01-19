@@ -57,7 +57,7 @@ if ($tableauNumero) {
         echo "<td style='white-space:nowrap;text-align:left;'>\n";
         echo "Titre <input type='text' name='select_{$tab['nom']}Titre_0' class='tr_horaires select_titre' style='text-align:center;white-space:nowrap;' value='{$tab['titre']}'/>&nbsp;\n";
         echo "Classe<sup>*</sup> <input type='text' name='select_{$tab['nom']}Classe_0' class='tr_horaires select_titre' style='text-align:center;width:120px;' value='{$tab['classe']}'/>\n";
-        echo "<a href='javascript:ajout(\"select_{$tab["nom"]}_\",-1);'><span class='pl-icon pl-icon-add' title='Ajouter'></span></a></td>\n";
+        echo "<a href='javascript:ajout(\"select_{$tab["nom"]}_\",-1);'><span class='icones' title='Ajouter'><i class='fa fa-plus fa-lg'></i></span></a></td>\n";
         $colspan=0;
         foreach ($tab['horaires'] as $horaire) {
             echo "<td colspan='".nb30($horaire['debut'], $horaire['fin'])."'>".heure3($horaire['debut'])."-".heure3($horaire['fin'])."</td>";
@@ -95,8 +95,8 @@ if ($tableauNumero) {
             }
             echo "</select>&nbsp;&nbsp;\n";
             // Boutons ajout et suppression
-            echo "<a href='javascript:ajout(\"select_{$tab["nom"]}_\",$i);'><span class='pl-icon pl-icon-add' title='Ajouter'></span></a>\n";
-            echo "<a href='javascript:supprime_tab(\"{$tab["nom"]}_\",$i);'><span class='pl-icon pl-icon-drop' title='Supprimer'></span></a>\n";
+            echo "<a href='javascript:ajout(\"select_{$tab["nom"]}_\",$i);'><span class='icones' title='Ajouter'><i class='fa fa-plus fa-lg'></i></span></a>\n";
+            echo "<a href='javascript:supprime_tab(\"{$tab["nom"]}_\",$i);'><span class='icones' title='Supprimer'><i class='fa fa-trash fa-lg'></i></span></a>\n";
             echo "</td>\n";
 
             // Cellules (grises ou non)
@@ -109,7 +109,7 @@ if ($tableauNumero) {
                     $checked="checked='checked'";
                 }
                 echo "<td id='td_select_{$tab['nom']}_{$i}_$j' $class colspan='".nb30($horaire['debut'], $horaire['fin'])."' style='text-align:center;'>\n";
-                echo "<input type='checkbox' name='checkbox_{$tab['nom']}_{$i}_$j' $checked onclick='couleur2(this,\"td_select_{$tab['nom']}_{$i}_$j\");'/> G\n";
+                echo "<input type='checkbox' name='checkbox_{$tab['nom']}_{$i}_$j' $checked onclick='couleur2(this,\"td_select_{$tab['nom']}_{$i}_$j\");'/>\n";
                 echo "</td>\n";
                 $j++;
             }

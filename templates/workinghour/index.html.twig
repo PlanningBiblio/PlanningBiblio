@@ -39,14 +39,14 @@
           <td style='white-space:nowrap;'>
             {{ (elem.remplace != 0) ? "<font style='font-size:20pt;'>&rdsh;</font>": " " }}
             <a href='index.php?page=planningHebdo/modif.php&id={{ elem.id }}?retour={{ asset("workinghour") }}'/>
-              <span class='pl-icon pl-icon-edit' title='Voir'></span>
+              <span class='icones' title='Voir'><i class="fa fa-pencil-square fa-2x"></i></span>
             </a>
             {% if elem.cle == null %}
               <a href='index.php?page=planningHebdo/modif.php&copy={{ elem.id }}&retour={{ asset("workinghour") }}'/>
-                <span class='pl-icon pl-icon-copy' title='Copier'></span>
+                <span class='icones' title='Copier'><i class="fa fa-clone fa-2x"></i></span>
               </a>
               <a href='javascript:plHebdoSupprime({{ elem.id }});' style='margin-left:6px;'/>
-                <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
+                <span class='icones' title='Supprimer'><i class="fa fa-trash fa-2x"></i></span>
               </a>
             {% endif %}
           </td>

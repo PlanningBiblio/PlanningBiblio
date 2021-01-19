@@ -35,9 +35,9 @@
         </tr>
         {% for d in days %}
           <tr id='tr{{ d.number }}'>
-            <td>
+            <td style='text-align:center;'>
               <a href='javascript:supprime_jourFerie({{ d.number }});'>
-                <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
+                <span class='icones' title='Supprimer'><i class='fa fa-trash fa-2x'></i></span>
               </a>
             </td>
             <td>
@@ -71,9 +71,9 @@
         {% endfor %}
         {% for j in nbDays..nbExtra %}
           <tr id='tr{{ j }}'>
-            <td>
+            <td style='text-align:center;'>
               <a href='javascript:supprime_jourFerie({{ j }});'>
-                <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
+                <span class='icones' title='Supprimer'><i class='fa fa-trash fa-2x'></i></span>
               </a>
             </td>
             <td>

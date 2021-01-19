@@ -40,12 +40,12 @@
         <tr>
           <td style='white-space:nowrap;'>
             <a href='{{ asset("position/") }}{{ j.id }}'>
-              <span class='pl-icon pl-icon-edit' title='Modifier' ></span>
+              <span class='icones' title='Modifier' ><i class='fa fa-pencil-square fa-2x'></i></span>
             </a>
             {% if j.id in usedPositions == false %}
               &nbsp;
               <a href='#'>
-                <span id='{{ j.id }}' class='pl-icon pl-icon-drop' title='Supprimer' onclick="confirmDel(this.id)"></span>
+                <span id='{{ j.id }}' class='icones' title='Supprimer' onclick="confirmDel(this.id)"><i class='fa fa-trash fa-2x'></i></span>
                 <script>
                   function confirmDel(id){
                     if (window.confirm("Voulez-vous vraiment supprimer ce poste ?")){
