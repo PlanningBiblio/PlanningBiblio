@@ -43,6 +43,7 @@
     - 17
 "workinghour.index":
     - 1101
+    - 1201
 "workinghour.add":
     - 100
 "workinghour.edit":
@@ -51,3 +52,4 @@
     - 100
 "workinghour.delete":
     - 1101
+    - 1201
