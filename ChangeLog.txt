@@ -10,6 +10,7 @@ Upgrade symfony/flex to release 1.9.8
 Start handling permissions in a YAML file
 Symfonize framework index (planning/postes_cfg/index.php)
 Symfonize working hours (edit and save)
+Symfonize statistics index
 
 
 -Fixes
