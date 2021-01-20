@@ -752,7 +752,7 @@ class AgentController extends BaseController
         $postes = $params['postes'];
         $prenom = trim($params['prenom']);
         $recup = isset($params['recup']) ? trim($params['recup']) : null;
-        $service = $params['service'];
+        $service = htmlentities($params['service'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
         $sites = array_key_exists("sites", $params) ? $params['sites'] : null;
         $statut = htmlentities($params['statut'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
         $temps = array_key_exists("temps", $params) ? $params['temps'] : null;
