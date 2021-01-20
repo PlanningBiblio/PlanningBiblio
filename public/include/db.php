@@ -39,7 +39,7 @@ class db
     public $error = null;
     public $msg = null;
     public $CSRFToken = false;
-
+  
     public function __construct()
     {
         $this->host=$GLOBALS['config']['dbhost'];
