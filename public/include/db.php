@@ -39,7 +39,6 @@ class db
     public $error = null;
     public $msg = null;
     public $CSRFToken = false;
-    public $sanitize_string = true;
       
     public function __construct()
     {
