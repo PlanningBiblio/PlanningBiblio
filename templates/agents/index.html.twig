@@ -68,8 +68,8 @@
               </a>
             {% endif %}
           </td>
-          <td>{{ a.name }}</td>
-          <td>{{ a.surname }} </td>
+          <td>{{ a.name | raw }}</td>
+          <td>{{ a.surname | raw}} </td>
           <td>{{ a.hours }}</td>
           <td>{{ a.status | raw }}</td>
           <td>{{ a.service | raw }}</td>

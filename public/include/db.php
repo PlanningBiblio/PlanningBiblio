@@ -99,11 +99,7 @@ class db
                     if (isset($isCryptedPassword) and $isCryptedPassword===true) {
                         $result[$key]=filter_var($value, FILTER_UNSAFE_RAW);
                     } else {
-                        if ($this->sanitize_string) {
-                            $result[$key] = filter_var($value, FILTER_SANITIZE_STRING);
-                        } else {
-                            $result[$key] = filter_var($value, FILTER_UNSAFE_RAW);
-                        }
+                        $result[$key] = filter_var($value, FILTER_SANITIZE_STRING);
                     }
                     $isCryptedPassword=($key=="type" and $value=="password")?true:false;
                 }

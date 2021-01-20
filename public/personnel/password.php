@@ -44,7 +44,7 @@ if (!$nouveau) {
     echo "<input type='password' name='confirm' class='ui-widget-content ui-corner-all'/>\n";
     echo "</td></tr>\n";
     echo "<tr><td colspan='2' style='text-align:center;'>\n";
-    echo "<br/><input type='button' value='Annuler' onclick='location.href=\"\/agent\";' class='ui-button'/>";
+    echo "<br/><input type='button' value='Annuler' onclick='location.href=\"{$config['URL']}\/agent\";' class='ui-button'/>";
     echo "<input type='submit' value='Modifier' class='ui-button' style='margin-left:30px;'/>\n";
     echo "</td></tr>\n";
     echo "</table></form>\n";

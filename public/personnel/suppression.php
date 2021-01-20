@@ -86,7 +86,7 @@ function etape3()
     if ($id == 1) {
         $msg = "Le compte admin ne peut être supprimé !";
         $msg = urlencode($msg);
-        echo "<script type='text/Javascript'>parent.location.href='/agent?msg=$msg&msgType=error';</script>\n";
+        echo "<script type='text/Javascript'>parent.location.href='{$config['URL']}/agent?msg=$msg&msgType=error';</script>\n";
         return false;
     }
 
@@ -124,7 +124,7 @@ function etape4()
     if ($id == 1) {
         $msg = "Le compte admin ne peut être supprimé !";
         $msg = urlencode($msg);
-        echo "<script type='text/Javascript'>parent.location.href='/agent?msg=$msg&msgType=error';</script>\n";
+        echo "<script type='text/Javascript'>parent.location.href='{$config['URL']}/agent?msg=$msg&msgType=error';</script>\n";
         return false;
     }
 

@@ -94,7 +94,6 @@ class AgentController extends BaseController
         }
 
         $db = new \db();
-        $db->sanitize_string = false;
         $db->select2("select_statuts", null, null, "order by rang");
         $statuts = $db->result;
 
@@ -103,7 +102,6 @@ class AgentController extends BaseController
         // Liste des services
         $services = array();
         $db = new \db();
-        $db->sanitize_string = false;
         $db->select2("select_services", null, null, "ORDER BY `rang`");
         if ($db->result) {
             foreach ($db->result as $elem) {
@@ -233,15 +231,12 @@ class AgentController extends BaseController
 
 
         $db = new \db();
-        $db->sanitize_string = false;
         $db->select2("select_statuts", null, null, "order by rang");
         $statuts = $db->result;
         $db = new \db();
-        $db->sanitize_string = false;
         $db->select2("select_categories", null, null, "order by rang");
         $categories = $db->result;
         $db = new \db();
-        $db->sanitize_string = false;
         $db->select2("personnel", "statut", null, "group by statut");
         $statuts_utilises = array();
         if ($db->result) {
@@ -263,7 +258,6 @@ class AgentController extends BaseController
         // Liste des services utilisés
         $services_utilises = array();
         $db = new \db();
-        $db->sanitize_string = false;
         $db->select2('personnel', 'service', null, "GROUP BY `service`");
         if ($db->result) {
             foreach ($db->result as $elem) {
@@ -760,7 +754,7 @@ class AgentController extends BaseController
         $recup = isset($params['recup']) ? trim($params['recup']) : null;
         $service = $params['service'];
         $sites = array_key_exists("sites", $params) ? $params['sites'] : null;
-        $statut = $params['statut'];
+        $statut = htmlentities($params['statut'], ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
         $temps = array_key_exists("temps", $params) ? $params['temps'] : null;
 
         // Modification du choix des emplois du temps avec l'option EDTSamedi == 1 (EDT différent les semaines avec samedi travaillé)
@@ -813,7 +807,6 @@ class AgentController extends BaseController
         switch ($action) {
           case "ajout":
             $db = new \db();
-            $db->sanitize_string = false;
             $db->select2("personnel", array(array("name"=>"MAX(`id`)", "as"=>"id")));
             $id = $db->result[0]['id']+1;
 
@@ -880,7 +873,6 @@ class AgentController extends BaseController
 
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
-            $db->sanitize_string = false;
             $db->insert("personnel", $insert);
 
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
@@ -982,7 +974,6 @@ class AgentController extends BaseController
             $update = array_merge($update, $holidays);
 
             $db = new \db();
-            $db->sanitize_string = false;
             $db->CSRFToken = $CSRFToken;
             $db->update("personnel", $update, array("id" => $id));
 
