@@ -384,6 +384,7 @@ $sql[]="CREATE TABLE `{$dbprefix}select_abs` (
   `rang` int(11) NOT NULL DEFAULT '0',
   `type` INT(1) NOT NULL DEFAULT '0',
   `notification_workflow` CHAR(1) NULL DEFAULT NULL,
+  `teleworking` INT(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 

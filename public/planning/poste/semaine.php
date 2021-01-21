@@ -24,6 +24,8 @@ include_once "activites/class.activites.php";
 include_once "personnel/class.personnel.php";
 include "fonctions.php";
 
+use App\Model\AbsenceReason;
+
 // Initialisation des variables
 $groupe=filter_input(INPUT_GET, "groupe", FILTER_SANITIZE_NUMBER_INT);
 $site=filter_input(INPUT_GET, "site", FILTER_SANITIZE_NUMBER_INT);
@@ -95,6 +97,9 @@ if ($db->result) {
     $messages_infos=join($messages_infos, " - ");
 }
 
+// $absence_reasons will be used in the cellule_poste function. Using a global variable will avoid multiple access to the database and enhance performances
+global $absence_reasons;
+$absence_reasons = $entityManager->getRepository(AbsenceReason::class);
 
 //		---------------		Affichage du titre et du calendrier	--------------------------//
 echo "<div id='planning-semaine'>\n";

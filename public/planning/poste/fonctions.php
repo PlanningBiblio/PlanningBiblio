@@ -69,12 +69,15 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
 
                 // On marque les absents (absences enregistrées dans la table absences)
                 $absence_valide = false;
+                
                 foreach ($GLOBALS['absences'] as $absence) {
-                    if (!empty($GLOBALS['config']['Absences-teleworking_reasons'])
-                        and is_array($GLOBALS['config']['Absences-teleworking_reasons'])
-                        and $GLOBALS['postes'][$poste]['teleworking']
-                        and in_array($absence['motif'], $GLOBALS['config']['Absences-teleworking_reasons'])) {
-                        continue;
+
+                    // Skip teleworking absences if the position is compatible with
+                    if ($GLOBALS['postes'][$poste]['teleworking']) {
+                        $reason = $GLOBALS['absence_reasons']->findOneBy(array('valeur' => $absence['motif']));
+                        if ($reason->teleworking() == 1) {
+                            continue;
+                        }
                     }
 
                     if ($absence["perso_id"] == $elem['perso_id'] and $absence['debut'] < $date." ".$fin and $absence['fin'] > $date." ".$debut) {

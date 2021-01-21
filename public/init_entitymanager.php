@@ -18,6 +18,11 @@ use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 use App\Model\Extensions\TablePrefix;
 
+// When entityManager is called from legacy functions :
+if (empty($config)) {
+    $config = $GLOBALS['config'];
+}
+
 // Instanciating entity manager.
 $entitiesPath = array('src/Model');
 $emConfig = Setup::createAnnotationMetadataConfiguration($entitiesPath, true);
