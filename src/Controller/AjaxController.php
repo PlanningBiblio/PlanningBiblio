@@ -144,11 +144,11 @@ class AjaxController extends BaseController
             $reason->rang($r[1]);
             $reason->type($r[2]);
             $reason->notification_workflow($r[3]);
+            $reason->teleworking($r[4]);
             $this->entityManager->persist($reason);
         }
         $this->entityManager->flush();
 
-        #return $this->json("Ok");
         return $this->json($data);
     }
 
