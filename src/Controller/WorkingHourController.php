@@ -168,12 +168,12 @@ class WorkingHourController extends BaseController
         $id = null;
         $tab = array();
         $action = "ajout";
-        $exception_back = 'myaccount';
-        if ($retour != 'myaccount') {
+        $exception_back = '/myaccount';
+        if ($retour != '/myaccount') {
             $exception_back = $retour;
-            $retour = "/$retour";
+            $retour = "$retour";
         } else {
-           $retour = "/$exception_back";
+           $retour = "$exception_back";
         }
 
         $is_new = 1;
@@ -393,12 +393,12 @@ class WorkingHourController extends BaseController
             $sites[] = $i;
             $multisites[$i] = $this->config("Multisites-site{$i}");
         }
-        $exception_back = 'myaccount';
-        if ($retour != 'myaccount') {
+        $exception_back = '/myaccount';
+        if ($retour != '/myaccount') {
             $exception_back = $retour;
-            $retour = "/$retour";
+            $retour = "$retour";
         } else {
-           $retour = "/$exception_back";
+           $retour = "$exception_back";
         }
 
         if ($copy) {
