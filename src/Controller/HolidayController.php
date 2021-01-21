@@ -749,10 +749,10 @@ class HolidayController extends BaseController
         $message = "";
         $agents = array();
         $unknownHours = 0;
-        $p=new \planningHebdo();
-        $p->debut = $start;
-        $p->fin = $end;
         foreach ($perso_ids as $perso_id) {
+            $p=new \planningHebdo();
+            $p->debut = $start;
+            $p->fin = $end;
             $p->perso_id=$perso_id;
             $p->valide=true;
             $p->fetch();
@@ -815,6 +815,7 @@ class HolidayController extends BaseController
             $c->CSRFToken = $CSRFToken;
             $data = $request->request->all();
             $data['perso_id'] = $perso_id;
+
             $c->add($data);
             $id = $c->id;
 
