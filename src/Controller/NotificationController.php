@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-require_once(__DIR__ . '/../../public/include/config.php');
 require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
 
 class NotificationController extends BaseController {
