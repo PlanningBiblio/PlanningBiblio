@@ -31,6 +31,7 @@ require_once "fonctions.php";
 require_once "class.planning.php";
 require_once __DIR__."/../volants/class.volants.php";
 
+use App\Model\AbsenceReason;
 use App\PlanningBiblio\WorkingHours;
 
 //	Initilisation des variables
@@ -277,7 +278,11 @@ $finSQL=$db->escapeString($fin);
 $teleworking_exception = null;
 
 if ($teleworking) {
-    $teleworking_reasons = $config['Absences-teleworking_reasons'] ?? array();
+    $teleworking_reasons = array();
+    $absence_reasons = $entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
+    foreach ($absence_reasons as $reason) {
+        $teleworking_reasons[] = $reason->valeur();
+    }
     $teleworking_exception = !empty($teleworking_reasons) and is_array($teleworking_reasons) ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')" : null;
 }
 

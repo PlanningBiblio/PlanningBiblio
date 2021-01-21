@@ -20,4 +20,7 @@ class AbsenceReason extends PLBEntity {
 
     /** @Column(type="string") **/
     protected $notification_workflow;
+
+    /** @Column(type="integer") **/
+    protected $teleworking;
 }

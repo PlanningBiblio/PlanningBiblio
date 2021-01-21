@@ -28,6 +28,7 @@ if (!isset($version) and php_sapi_name() != 'cli') {
 
 require_once __DIR__."/../ics/class.ics.php";
 require_once __DIR__."/../personnel/class.personnel.php";
+require_once __DIR__."/../init_entitymanager.php";
 
 use App\Model\Agent;
 use App\Model\AbsenceReason;
@@ -747,6 +748,8 @@ class absences
 
     public function fetch($sort="`debut`,`fin`,`nom`,`prenom`", $agent=null, $debut=null, $fin=null, $sites=null)
     {
+        $entityManager = $GLOBALS['entityManager'];
+
         $filter="";
         //	DB prefix
         $dbprefix=$GLOBALS['config']['dbprefix'];
@@ -766,10 +769,14 @@ class absences
             $filter.=" AND `{$dbprefix}absences`.`valide`>0 ";
         }
 
-        if ($this->teleworking == false
-            and !empty($GLOBALS['config']['Absences-teleworking_reasons'])
-            and is_array($GLOBALS['config']['Absences-teleworking_reasons'])) {
-            $teleworking_reasons = $GLOBALS['config']['Absences-teleworking_reasons'];
+        // Don't look for teleworking absences if the position is compatible with
+        if ($this->teleworking == false ) {
+            $absence_reasons = $entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
+            $teleworking_reasons = array();
+            foreach ($absence_reasons as $reason) {
+                $teleworking_reasons[] = $reason->valeur();
+            }
+
             $filter .= " AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "') ";
         }
 
