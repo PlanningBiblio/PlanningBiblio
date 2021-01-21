@@ -19,7 +19,7 @@
       <table class='tableauFiches' style='width:700px;'>
         <tr>
           <td style='width:150px;'><label for='nom'>Nom</label></td>
-          <td><input type='text' name='nom' value="{{ nom }}" class='ui-widget-content ui-corner-all'/></td>
+          <td><input type='text' name='nom' value="{{ nom | raw }}" class='ui-widget-content ui-corner-all'/></td>
         </tr>
         <tr>
           <td colspan='2' style='text-align:center;padding-top:20px; width:550px;'>
