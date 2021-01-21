@@ -15,6 +15,12 @@
     - 100
 "framework.index":
     - 22
+"framework.add_line":
+    - 22
+"framework.edit_line":
+    - 22
+"framework.save_line":
+    - 22
 "statistics.index":
     - 17
 "workinghour.index":
