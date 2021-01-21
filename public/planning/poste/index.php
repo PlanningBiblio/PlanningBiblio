@@ -30,6 +30,7 @@ echo "<div id='planning'>\n";
 
 include "fonctions.php";
 
+use App\Model\AbsenceReason;
 use App\PlanningBiblio\PresentSet;
 
 // Initialisation des variables
@@ -459,7 +460,11 @@ if (!$verrou and !$autorisationN1) {
             }
         }
     }
-  
+
+    // $absence_reasons will be used in the cellule_poste function. Using a global variable will avoid multiple access to the database and enhance performances
+    global $absence_reasons;
+    $absence_reasons = $entityManager->getRepository(AbsenceReason::class);
+
     // Recherche des absences
     // Le tableau $absences sera utilisé par la fonction cellule_poste pour barrer les absents dans le plannings et pour afficher les absents en bas du planning
     // $absences will be used in the cellule_poste function. Using a global variable will avoid multiple access to the database and enhance performances

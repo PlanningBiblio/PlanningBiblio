@@ -32,7 +32,7 @@ $(function() {
   $("#add-motif-form").dialog({
     autoOpen: false,
     height: 480,
-    width: 780,
+    width: 820,
     modal: true,
     resizable: false,
     draggable: false,
@@ -47,11 +47,13 @@ $(function() {
 	tab=new Array();
 	$("#motifs-sortable li").each(function(){
 	  var id=$(this).attr("id").replace("li_","");
+      var teleworking = $("#teleworking_" + id).prop('checked') ? 1 : 0;
       tab.push(new Array(
         $("#valeur_"+id).text(),
         $(this).index(),
         $("#type_"+id+" option:selected").val(),
         $("#notification-workflow_" + id).val(),
+        teleworking,
       ));
     });
 
