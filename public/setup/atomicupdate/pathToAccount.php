@@ -1,3 +1,3 @@
 <?php
 
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`page`) VALUES ('Planning Hebdo - Mon Compte','100','/myaccount');";
+$sql[]="UPDATE `{$dbprefix}acces` SET `page`='' WHERE `page`='monCompte.php';";

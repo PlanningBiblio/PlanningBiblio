@@ -27,6 +27,7 @@ class AccountController extends BaseController
         $tmp[1] = date("n") < 9 ? (date("Y"))."-".(date("Y")+1) : (date("Y")+1)."-".(date("Y")+2);
         $message = null;
         $CSRFSession = $GLOBALS['CSRFSession'];
+        $credits = array();
 
         // Contrôle si les périodes sont renseignées avant d'afficher les années universitaires dans le menu déroulant
         $annees = array();
