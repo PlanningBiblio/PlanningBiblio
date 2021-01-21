@@ -721,6 +721,7 @@ class HolidayController extends BaseController
         $perso_id = $request->get('perso_id');
         $debut = $request->get('debut');
         $fin = $request->get('fin');
+        $is_recover = $request->get('is_recover');
         $perso_ids = array();
         if (!empty($perso_id)) {
             $perso_ids[] = $perso_id;
@@ -784,6 +785,20 @@ class HolidayController extends BaseController
             $c->CSRFToken = $CSRFToken;
             $data = $request->request->all();
             $data['perso_id'] = $perso_id;
+
+            # In case multiple agents were selected
+            if (!$data['heures']) {
+                $holidayHlper = new HolidayHelper(array(
+                    'start' => $debutSQL,
+                    'hour_start' => $hre_debut,
+                    'end' => $finSQL,
+                    'hour_end' => $hre_fin,
+                    'perso_id' => $perso_id,
+                    'is_recover' => $is_recover
+                ));
+                $result = $holidayHlper->getCountedHours();
+                $data['heures'] = $result['hours'];
+            }
 
             $c->add($data);
             $id = $c->id;
