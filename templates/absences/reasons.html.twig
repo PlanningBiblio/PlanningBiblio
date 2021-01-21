@@ -30,7 +30,7 @@
                 {% endfor %}
               </select>
 
-                <select id="notification-workflow_{{ r.id }}" style="position:absolute;width:190px;left:500px">
+                <select id="notification-workflow_{{ r.id }}" style="position:absolute;width:210px;left:500px">
                   {% if r.notification_workflow == 'A' %}
                     <option value="A" selected="selected">Circuit de notifications A</option>
                   {% else %}
@@ -44,8 +44,14 @@
                   {% endif %}
                 </select>
 
+                {% if r.teleworking %}
+                  <input type='checkbox' id='teleworking_{{ r.id }}' style='position:absolute; left:720px;' checked='checked' />
+                {% else %}
+                  <input type='checkbox' id='teleworking_{{ r.id }}' style='position:absolute; left:720px;' />
+                {% endif %}
+
               {% if r.unused %}
-                <span class='ui-icon ui-icon-trash' style='position:relative;left:655px;top:-20px;cursor:pointer;' onclick="$(this).closest('li').hide();"></span>
+                <span class='ui-icon ui-icon-trash' style='position:relative;left:715px;top:-20px;cursor:pointer;' onclick="$(this).closest('li').hide();"></span>
               {% endif %}
             </li>
           {% endfor %}
