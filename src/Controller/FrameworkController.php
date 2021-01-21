@@ -106,14 +106,10 @@ class FrameworkController extends BaseController
      */
     public function addLine (Request $request, Session $session){
         $CSRFToken = $GLOBALS['CSRFSession'];
-        $id = null;
-        $nom = null;
 
         $this->templateParams(
             array(
                 "CSRFToken"    => $CSRFToken,
-                "id"           => $id,
-                "nom"          => $nom
             )
         );
         return $this->output("/framework/edit_lines.html.twig");

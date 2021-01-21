@@ -7,7 +7,7 @@
 
 {% block page %}
     <h3>Lignes de séparation</h3>
-    {% if id is not null %}
+    {% if id is defined %}
       <b>Modification du nom</b><br/><br/>
     {% else %}
       <b>Ajout d'une nouvelle ligne</b><br/><br/>
@@ -15,11 +15,11 @@
     <form action="{{ asset('framework-line') }}" method='post' >
       <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
       <input type='hidden' name='cfg-type' value='lignes_sep' />
-      <input type='hidden' name='id' value="{{ id }}" />
+      <input type='hidden' name='id' value="{{ (id is defined) ? id : '' }}" />
       <table class='tableauFiches' style='width:700px;'>
         <tr>
           <td style='width:150px;'><label for='nom'>Nom</label></td>
-          <td><input type='text' name='nom' value="{{ nom | raw }}" class='ui-widget-content ui-corner-all'/></td>
+          <td><input type='text' name='nom' value="{{ (nom is defined) ? nom : '' | raw }}" class='ui-widget-content ui-corner-all'/></td>
         </tr>
         <tr>
           <td colspan='2' style='text-align:center;padding-top:20px; width:550px;'>
