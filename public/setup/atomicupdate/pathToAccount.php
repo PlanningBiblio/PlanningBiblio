@@ -1,3 +1,3 @@
 <?php
 
-$sql[]="UPDATE `{$dbprefix}acces` SET `page`='' WHERE `page`='monCompte.php';";
+$sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='monCompte.php';";
