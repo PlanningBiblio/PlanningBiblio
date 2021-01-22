@@ -19,11 +19,12 @@ Fichier intégré par le fichier include/header.php avec la fonction getJSFiles.
 function supprimeGroupe(id){
   var CSRFToken = $('#CSRFSession').val();
   var nom=$("#td-groupe-"+id+"-nom").text();
+  var baseURL = $("#baseURL").val();
 
   if(confirm("Etes vous sûr(e) de vouloir supprimer le groupe \""+nom+"\"?")){
     $.ajax({
-      url: "planning/postes_cfg/ajax.supprimeGroupe.php",
-      type: "post",
+      url: baseURL + "/framework-group",
+      type: "delete",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
       success: function(){
