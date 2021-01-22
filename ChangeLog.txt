@@ -11,6 +11,10 @@ Start handling permissions in a YAML file
 Symfonize framework index (planning/postes_cfg/index.php)
 Symfonize working hours (edit and save)
 Symfonize statistics index
+Symfonize My Account page
+Symfonize framework's seperation lines
+Symfonize framework groups
+
 
 
 -Fixes

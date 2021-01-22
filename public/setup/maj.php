@@ -2121,6 +2121,21 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="20.11.00.007";
+if (version_compare($config['Version'], $v) === -1) {
+    # Symfinization of framework lines
+    $sql[]="UPDATE `{$dbprefix}acces` SET `page`='' WHERE `page`='planning/postes_cfg/lignes_sep.php';";
+
+    # Symfinization of framework groups
+    $sql[]=" UPDATE `{$dbprefix}acces` SET `page`='' WHERE `page` = 'planning/postes_cfg/groupes.php;";
+    $sql[]=" UPDATE `{$dbprefix}acces` SET `page`='' WHERE `page`= 'planning/postes_cfg/groupes2.php';";
+
+    # Symfinization of myaccount
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='monCompte.php';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
