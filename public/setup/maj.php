@@ -2127,7 +2127,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[]="UPDATE `{$dbprefix}acces` SET `page`='' WHERE `page`='planning/postes_cfg/lignes_sep.php';";
 
     # Symfinization of framework groups
-    $sql[]=" UPDATE `{$dbprefix}acces` SET `page`='' WHERE `page` = 'planning/postes_cfg/groupes.php;";
+    $sql[]=" UPDATE `{$dbprefix}acces` SET `page`='' WHERE `page` = 'planning/postes_cfg/groupes.php';";
     $sql[]=" UPDATE `{$dbprefix}acces` SET `page`='' WHERE `page`= 'planning/postes_cfg/groupes2.php';";
 
     # Symfinization of myaccount
