@@ -23,8 +23,8 @@ function supprimeGroupe(id){
 
   if(confirm("Etes vous sûr(e) de vouloir supprimer le groupe \""+nom+"\"?")){
     $.ajax({
-      url: baseURL + "/planning/postes_cfg/ajax.supprimeGroupe.php",
-      type: "post",
+      url: baseURL + "/framework-group",
+      type: "delete",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
       success: function(){

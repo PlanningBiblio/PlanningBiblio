@@ -19,6 +19,7 @@ Symfonize framework table edit/add
 Add a param to define the switching time between half-day and full-day
 Absences for remote working ability
 Symfonize notifications save
+Symfonize framework's group deletion
 
 
 -Fixes
