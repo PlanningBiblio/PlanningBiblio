@@ -224,6 +224,7 @@ class FrameworkController extends BaseController
         return $this->redirectToRoute('framework.index');
     }
 
+    /**
      * @Route ("/framework-line/add", name="framework.add_line", methods={"GET"})
      */
     public function addLine (Request $request, Session $session){
