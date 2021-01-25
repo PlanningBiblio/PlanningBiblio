@@ -67,6 +67,7 @@ class conges
         $data['heures']=$data['heures'].".".$data['minutes'];
         $data['debut']=dateSQL($data['debut']);
         $data['fin']=dateSQL($data['fin']);
+        $data['halfday'] = isset($data['halfday']) && $data['halfday'] == 'on' ? 1 : 0;
 
         // Enregistrement du congé
         $db=new db();
@@ -1060,6 +1061,7 @@ class conges
         $data['hre_fin']=$data['hre_fin']?$data['hre_fin']:"23:59:59";
         $data['heures']=$data['heures'].".".$data['minutes'];
         $data['commentaires']=htmlentities($data['commentaires'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+        $data['halfday'] = isset($data['halfday']) && $data['halfday'] == 'on' ? 1 : 0;
         $data['refus']=htmlentities($data['refus'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
         $data['debut']=dateSQL($data['debut']);
         $data['fin']=dateSQL($data['fin']);
@@ -1067,7 +1069,7 @@ class conges
         $update=array(
             'debut'         => $data['debut'] . ' ' . $data['hre_debut'],
             'fin'           => $data['fin'] . ' ' . $data['hre_fin'],
-            'halfday'       => $data['halfday'] ? 1 : 0,
+            'halfday'       => $data['halfday'],
             'start_halfday' => $data['start_halfday'],
             'end_halfday'   => $data['end_halfday'],
             'commentaires'  => $data['commentaires'],
