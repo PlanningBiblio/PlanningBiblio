@@ -20,6 +20,8 @@ require_once "class.statistiques.php";
 require_once "absences/class.absences.php";
 require_once "include/horaires.php";
 
+use App\Model\AbsenceReason;
+
 // Initialisation des variables :
 $debut=filter_input(INPUT_POST, "debut", FILTER_SANITIZE_STRING);
 $fin=filter_input(INPUT_POST, "fin", FILTER_SANITIZE_STRING);
@@ -132,6 +134,13 @@ $db=new db();
 $db->select2("personnel", "*", array("actif"=>"Actif"), "ORDER BY `nom`,`prenom`");
 $agents_list=$db->result;
 
+// Teleworking
+$teleworking_absence_reasons = array();
+$absences_reasons = $entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
+foreach ($absences_reasons as $elem) {
+    $teleworking_absence_reasons[] = $elem->valeur();
+}
+
 $tab=array();
 if (!empty($agents) and $dates) {
     //	Recherche du nombre de jours concernés
@@ -154,7 +163,7 @@ if (!empty($agents) and $dates) {
         array("pl_poste","poste"),
         array("postes","id"),
         array("debut","fin","date","perso_id","poste","absent"),
-        array(array("name"=>"nom","as"=>"poste_nom"),"etage","site"),
+        array(array("name"=>"nom","as"=>"poste_nom"),"etage","site","teleworking"),
         array("date"=>"IN{$dates}", "supprime"=>"<>1", "perso_id"=>"IN{$agents_select}", "site"=>"IN{$sitesSQL}"),
         array("statistiques"=>"1"),
         "ORDER BY `poste_nom`,`etage`"
@@ -193,7 +202,14 @@ if (!empty($agents) and $dates) {
                     // Vérifie à partir de la table absences si l'agent est absent
                     // S'il est absent : continue
                     if ( !empty($absencesDB[$elem['perso_id']]) ) {
+
                         foreach ($absencesDB[$elem['perso_id']] as $a) {
+
+                            // Ignore teleworking absences for compatible positions
+                            if (in_array($a['motif'], $teleworking_absence_reasons) and $elem['teleworking']) {
+                                continue;
+                            }
+
                             if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
                                 continue 2;
                             }
