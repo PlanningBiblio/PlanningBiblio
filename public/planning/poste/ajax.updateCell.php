@@ -190,7 +190,7 @@ foreach ($tab as $k => $v) {
 
 // Recherche des sans repas en dehors de la boucle pour optimiser les performances (juillet 2016)
 $p = new planning();
-$sansRepas = $p->sansRepas($date, $debut, $fin);
+$sansRepas = $p->sansRepas($date, $debut, $fin, $poste);
 
 // Recherche des absences
 $a=new absences();
