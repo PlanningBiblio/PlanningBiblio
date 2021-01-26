@@ -15,7 +15,7 @@
   </style>
   <script type='text/JavaScript'>
     <!--
-    complet = JSON.parse('{{ postes_completNoms_json|raw }}');
+    complet = JSON.parse('{{ postes_completNoms_json | e('js') }}');
     -->
     function save_password(agent_id, password) {
       $.ajax({
