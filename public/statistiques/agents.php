@@ -243,13 +243,6 @@ if (!empty($agents)) {
                             $exists_JF=true;
                         }
 
-                        foreach ($agents_list as $elem2) {
-                            if ($elem2['id']==$agent) {	// on créé un tableau avec le nom et le prénom de l'agent.
-                                $agent_tab=array($agent,$elem2['nom'],$elem2['prenom']);
-                                break;
-                            }
-                        }
-        
                         // Statistiques-Heures
                         if ($statistiques_heures) {
                             $statistiques_heures_tab = explode(';', $statistiques_heures);
@@ -276,6 +269,14 @@ if (!empty($agents)) {
                         $total_absences+=diff_heures($elem['debut'], $elem['fin'], "decimal");
                         $exists_absences=true;
                     }
+
+                    foreach ($agents_list as $elem2) {
+                        if ($elem2['id']==$agent) {	// on créé un tableau avec le nom et le prénom de l'agent.
+                            $agent_tab=array($agent,$elem2['nom'],$elem2['prenom']);
+                            break;
+                        }
+                    }
+
                     // On met dans tab tous les éléments (infos postes + agents + heures)
                     $tab[$agent]=array($agent_tab,$postes,$heures,$samedi,$absences,$total_absences,$dimanche,$heures_tab,$feries,"sites"=>$sites);
                 }
