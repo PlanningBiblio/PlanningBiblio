@@ -1,6 +1,14 @@
 *** Unreleased ***
+
+*** Version 20.10.03       (2021-01-26)   ***
 -Fixes
-check if agents are blocked when right copying planning's cell
+Fix CAS redirect after authentication
+Handle unset halfday when saving holiday
+Check if agents are blocked when right copying planning's cell
+Handle specifics js chars in id param of supprime function
+
+- Enhancements
+Get working hours information to define meridian break
 
 *** Version 20.10.02       (2020-12-24)   ***
 -Fixes
