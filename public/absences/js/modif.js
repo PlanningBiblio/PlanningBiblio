@@ -31,8 +31,8 @@ $(function() {
   // Paramétrage de la boite de dialogue permettant la modification des motifs
   $("#add-motif-form").dialog({
     autoOpen: false,
-    height: 480,
-    width: 820,
+    height: 600,
+    width: 900,
     modal: true,
     resizable: false,
     draggable: false,
