@@ -20,6 +20,8 @@ require_once "class.statistiques.php";
 require_once "include/horaires.php";
 require_once "absences/class.absences.php";
 
+use App\Model\AbsenceReason;
+
 // Initialisation des variables :
 $debut=filter_input(INPUT_POST, "debut", FILTER_SANITIZE_STRING);
 $fin=filter_input(INPUT_POST, "fin", FILTER_SANITIZE_STRING);
@@ -117,6 +119,13 @@ if ($config['Multisites-nombre']>1 and is_array($selectedSites)) {
     $sitesSQL="0,1";
 }
 
+// Teleworking
+$teleworking_absence_reasons = array();
+$absences_reasons = $entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
+foreach ($absences_reasons as $elem) {
+    $teleworking_absence_reasons[] = $elem->valeur();
+}
+
 $tab=array();
 
 //		--------------		Récupération de la liste des services pour le menu déroulant		------------------------
@@ -161,8 +170,9 @@ if (!empty($services)) {
     $req="SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
     `{$dbprefix}pl_poste`.`date` as `date`, `{$dbprefix}pl_poste`.`perso_id` as `perso_id`, 
     `{$dbprefix}pl_poste`.`poste` as `poste`, `{$dbprefix}pl_poste`.`absent` as `absent`, 
-    `{$dbprefix}postes`.`nom` as `poste_nom`, `{$dbprefix}postes`.`etage` as `etage`,
-    `{$dbprefix}pl_poste`.`site` as `site` 
+    `{$dbprefix}pl_poste`.`site` as `site`,
+    `{$dbprefix}postes`.`nom` as `poste_nom`, `{$dbprefix}postes`.`etage` as `etage`, 
+    `{$dbprefix}postes`.`teleworking` as `teleworking` 
     FROM `{$dbprefix}pl_poste` 
     INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` 
     WHERE `{$dbprefix}pl_poste`.`date`>='$debutREQ' AND `{$dbprefix}pl_poste`.`date`<='$finREQ' 
@@ -222,6 +232,12 @@ if (!empty($services)) {
                     // S'il est absent, on met à 1 la variable $elem['absent']
                     if ( !empty($absencesDB[$elem['perso_id']]) ) {
                         foreach ($absencesDB[$elem['perso_id']] as $a) {
+
+                            // Ignore teleworking absences for compatible positions
+                            if (in_array($a['motif'], $teleworking_absence_reasons) and $elem['teleworking']) {
+                                continue;
+                            }
+
                             if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
                                 $elem['absent']="1";
                             }
