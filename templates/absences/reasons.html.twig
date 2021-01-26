@@ -9,6 +9,12 @@
     </p>
 
     <fieldset>
+      <div style='margin-bottom:20px; font-weight:bold;'>
+        <span style='position:absolute;left:60px;'>Nom</span>
+        <span style='position:absolute;left:335px;' >Niveau</span>
+        <span style='position:absolute;left:515px;'>Circuit de notification</span>
+        <span style='position:absolute;left:700px;'>Télétravail</span>
+      </div>
       <ul id="motifs-sortable">
         {% if reasons is iterable %}
           {% for r in reasons %}
@@ -19,7 +25,7 @@
               {% else %}
                 <font class='bold' id='valeur_{{ r.id}}'>{{ r.valeur }}</font>
               {% endif %}
-              <select id='type_{{ r.id }}' style='position:absolute;left:330px;'>
+              <select id='type_{{ r.id }}' style='position:absolute;width:170px;left:330px;'>
                 <option value='0'>&nbsp;</option>
                 {% for t in reason_types %}
                   {% if t.id == r.type %}
@@ -30,28 +36,28 @@
                 {% endfor %}
               </select>
 
-                <select id="notification-workflow_{{ r.id }}" style="position:absolute;width:210px;left:500px">
+                <select id="notification-workflow_{{ r.id }}" style="position:absolute;width:170px;left:510px">
                   {% if r.notification_workflow == 'A' %}
-                    <option value="A" selected="selected">Circuit de notifications A</option>
+                    <option value="A" selected="selected">Circuit A</option>
                   {% else %}
-                    <option value="A">Circuit de notifications A</option>
+                    <option value="A">Circuit A</option>
                   {% endif %}
 
                   {% if r.notification_workflow == 'B' %}
-                    <option value="B" selected="selected">Circuit de notifications B</option>
+                    <option value="B" selected="selected">Circuit B</option>
                   {% else %}
-                    <option value="B">Circuit de notifications B</option>
+                    <option value="B">Circuit B</option>
                   {% endif %}
                 </select>
 
                 {% if r.teleworking %}
-                  <input type='checkbox' id='teleworking_{{ r.id }}' style='position:absolute; left:720px;' checked='checked' />
+                  <input type='checkbox' id='teleworking_{{ r.id }}' style='position:absolute; left:700px;' checked='checked' />
                 {% else %}
-                  <input type='checkbox' id='teleworking_{{ r.id }}' style='position:absolute; left:720px;' />
+                  <input type='checkbox' id='teleworking_{{ r.id }}' style='position:absolute; left:700px;' />
                 {% endif %}
 
               {% if r.unused %}
-                <span class='ui-icon ui-icon-trash' style='position:relative;left:715px;top:-20px;cursor:pointer;' onclick="$(this).closest('li').hide();"></span>
+                <span class='ui-icon ui-icon-trash' style='position:relative;left:750px;top:-20px;cursor:pointer;' onclick="$(this).closest('li').hide();"></span>
               {% endif %}
             </li>
           {% endfor %}
