@@ -22,6 +22,8 @@ require_once "absences/class.absences.php";
 require_once "personnel/class.personnel.php";
 require_once "include/horaires.php";
 
+use App\Model\AbsenceReason;
+
 // Initialisation des variables :
 $debut=filter_input(INPUT_POST, "debut", FILTER_SANITIZE_STRING);
 $fin=filter_input(INPUT_POST, "fin", FILTER_SANITIZE_STRING);
@@ -107,6 +109,13 @@ if ($config['Multisites-nombre']>1 and is_array($selectedSites)) {
     $sitesSQL="0,1";
 }
 
+// Teleworking
+$teleworking_absence_reasons = array();
+$absences_reasons = $entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
+foreach ($absences_reasons as $elem) {
+    $teleworking_absence_reasons[] = $elem->valeur();
+}
+
 $tab=array();
 
 // Récupération des infos sur les agents
@@ -165,13 +174,29 @@ if (!empty($postes)) {
         $agents=array();
         $services=array();
         $statuts=array();
+
+        // $poste_tab : table of positions with id, name, area, mandatory/reinforcement, teleworking
+        foreach ($postes_list as $elem) {
+            if ($elem['id'] == $poste) {
+                $poste_tab = array($poste, $elem['nom'], $elem['etage'], $elem['obligatoire'], $elem['teleworking']);
+                break;
+            }
+        }
+
         if (is_array($resultat)) {
             foreach ($resultat as $elem) {
+
                 if ($poste==$elem['poste']) {
                     // Vérifie à partir de la table absences si l'agent est absent
                     // S'il est absent : continue
                     if ( !empty($absencesDB[$elem['perso_id']]) ) {
                         foreach ($absencesDB[$elem['perso_id']] as $a) {
+
+                            // Ignore teleworking absences for compatible positions
+                            if (in_array($a['motif'], $teleworking_absence_reasons) and $poste_tab[4]) {
+                                continue;
+                            }
+
                             if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
                                 continue 2;
                             }
@@ -189,13 +214,7 @@ if (!empty($postes)) {
                     }
                     // On compte toutes les heures (globales)
                     $heures+=diff_heures($elem['debut'], $elem['fin'], "decimal");
-      
-                    foreach ($postes_list as $elem2) {
-                        if ($elem2['id']==$poste) {	// on créé un tableau avec le nom et l'étage du poste.
-                            $poste_tab=array($poste,$elem2['nom'],$elem2['etage'],$elem2['obligatoire']);
-                            break;
-                        }
-                    }
+
                     // On créé un tableau par service
                     if (array_key_exists($elem['perso_id'], $agents_infos)) {
                         $service=$agents_infos[$elem['perso_id']]['service'];
