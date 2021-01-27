@@ -77,7 +77,11 @@
               <input type='submit' value='Rechercher' id='button-OK' class='ui-button'/>
             </td>
             <td>
-              <a href='{{ asset("holiday/index/") }}{{ show_recovery }}/?reset=on' class='ui-button' >Effacer</a>
+              {% if show_recovery %}
+                <a href='{{ asset("holiday/index") }}?recup=1&reset=on' class='ui-button' >Réinitialiser</a>
+              {% else %}
+                <a href='{{ asset("holiday/index") }}?reset=on' class='ui-button' >Réinitialiser</a>
+              {% endif %}
             </td>
           </tr>
         </tbody>
