@@ -145,7 +145,7 @@ if ($admin) {
 }
 echo <<<EOD
 <span style='margin-left:30px;'><input type='submit' value='Rechercher' id='button-OK' class='ui-button'/></span>
-<span style='margin-left:30px;'><input type='button' value='Effacer' id='button-Effacer' class='ui-button' onclick='location.href="index.php?page=conges/recuperations.php&reset=on"' /></span>
+<span style='margin-left:30px;'><input type='button' value='Réinitialiser' id='button-Effacer' class='ui-button' onclick='location.href="index.php?page=conges/recuperations.php&reset=on"' /></span>
 </span>
 
 <span style='float:right; vertical-align:top; margin:0px 5px;'>
