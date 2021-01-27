@@ -170,7 +170,7 @@ class StatisticController extends BaseController
                 ORDER BY `poste_nom`,`etage`;";
             $db->query($req);
             $resultat = $db->result;
-  
+
             //    Recherche des infos dans le tableau $resultat (issu de pl_poste et postes)
             //    pour chaques agents sélectionnés
             foreach ($agents as $agent) {
@@ -257,12 +257,6 @@ class StatisticController extends BaseController
                                     $feries[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
                                     $exists_JF = true;
                                 }
-                                foreach ($agents_list as $elem2) {
-                                    if ($elem2['id'] == $agent) {    // on créé un tableau avec le nom et le prénom de l'agent.
-                                        $agent_tab = array($agent, $elem2['nom'], $elem2['prenom']);
-                                        break;
-                                    }
-                                }
 
                                 // Statistiques-Heures
                                 if ($statistiques_heures) {
@@ -290,6 +284,13 @@ class StatisticController extends BaseController
                                 $absences[$elem['date']][1] += diff_heures($elem['debut'], $elem['fin'], "decimal");
                                 $total_absences += diff_heures($elem['debut'], $elem['fin'], "decimal");
                                 $exists_absences = true;
+                            }
+
+                            foreach ($agents_list as $elem2) {
+                                if ($elem2['id'] == $agent) {    // on créé un tableau avec le nom et le prénom de l'agent.
+                                    $agent_tab = array($agent, $elem2['nom'], $elem2['prenom']);
+                                    break;
+                                }
                             }
                             // On met dans tab tous les éléments (infos postes + agents + heures)
                             $tab[$agent] = array(
