@@ -27,7 +27,7 @@ function annuler(nb){
 	  history.go(-nb);
   }
 }
-
+	
 // Fonction permettant d'afficher les heures correspondantes à chaque tableau d'emploi du temps
 // lors de la modification d'un select ou au chargement d'une page
 function calculHeures(object,num,form,tip,numero){
@@ -39,14 +39,14 @@ function calculHeures(object,num,form,tip,numero){
   
   heures=0;
   elements=document.forms[form].elements;
-
+  
   for(i=debut;i<fin;i++){
     if(elements["temps"+num+"["+i+"][0]"]){
       heure0=elements["temps"+num+"["+i+"][0]"].value;
       heure1=elements["temps"+num+"["+i+"][1]"].value;
       heure2=elements["temps"+num+"["+i+"][2]"].value;
       heure3=elements["temps"+num+"["+i+"][3]"].value;
-
+      
       heure5 = null;
       heure6 = null;
       if(elements["temps"+num+"["+i+"][5]"] != undefined){
@@ -67,15 +67,15 @@ function calculHeures(object,num,form,tip,numero){
   /**
    * Tableau affichant les différentes possibilités
    * NB : le paramètre heures[4] est utilisé pour l'affectation du site. Il n'est pas utile ici
-   * NB : la 2ème pause n'est pas implémentée depuis le début, c'est pourquoi les paramètres heures[5] et heures[6] viennent s'intercaler avant $heure[3]
+   * NB : la 2ème pause n'est pas implémentée depuis le début, c'est pourquoi les paramètres heures[5] et heures[6] viennent s'intercaler avant $heure[3]
    *
    *    Heure 0     Heure 1     Heure 2     Heure 5     Heure 6     Heure 3
    * 1                           [ tableau vide]
-   * 2    |-----------|           |-----------|           |-----------|  
-   * 3    |-----------|           |-----------------------------------|  
+   * 2    |-----------|           |-----------|           |-----------|   
+   * 3    |-----------|           |-----------------------------------|   
    * 4    |-----------|                                   |-----------|
    * 5    |-----------|
-   * 6    |-----------------------------------|           |-----------|  
+   * 6    |-----------------------------------|           |-----------|   
    * 7    |-----------------------------------|
    * 8    |-----------------------------------------------------------|
    * 9                            |-----------|
@@ -102,12 +102,12 @@ function calculHeures(object,num,form,tip,numero){
     // 2ème créneau : cas N° 1 et 9
     if (heure2 &&  heure5) {
       tab.push(new Array(heure2, heure5));
-    
+      
     // 2ème créneau fusionné au 3ème : cas N° 3 et 10
     } else if (heure2 && heure3) {
       tab.push(new Array(heure2, heure3));
     }
-
+    
     // 3ème créneau : cas N° 2; 4; 6
     if (heure6 && heure3) {
       tab.push(new Array(heure6, heure3));
@@ -124,7 +124,7 @@ function calculHeures(object,num,form,tip,numero){
     if(diff){
       $("#heures"+num+"_"+numero+"_"+(i+1)).html(heure4(diff/60));
     }
-
+      
   }
   heures=heure4(heures/60);
   $("#"+tip).text(heures);
@@ -560,7 +560,7 @@ function supprime(page, id, CSRFToken){
     $.ajax({
       url: page+"/ajax.delete.php",
       type: "get",
-      data: "id="+id+"&CSRFToken="+CSRFToken,
+      data: "id="+ encodeURIComponent(id) +"&CSRFToken="+CSRFToken,
       success: function(){
 	window.location.reload(false);
       },
@@ -750,7 +750,7 @@ function verif_heure(heure){
     ok=1;
   return ok;
 }
-
+	
 function verif_mail(mail){
   p=mail.indexOf('@');
   if (p<1 || p==(mail.length-1))
@@ -807,6 +807,7 @@ function checkPasswordStrength() {
     if (request) request.abort();
   }, 2000);
 }
+
 //	---------------------------		FIN Fonctions communes		------------------------	//
 //	--------------------------------	Absences		---------------------------------	//
 function all_day(){
@@ -945,5 +946,6 @@ $(function(){
   // Infobulles
   $(document).tooltip();
 });
+
 
 
