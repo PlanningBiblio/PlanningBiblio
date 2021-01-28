@@ -36,7 +36,7 @@ function calculHeures(object,num,form,tip,numero){
   // tip : Affichage qui sera mis à jour
   debut=numero*7;
   fin=debut+7;
-
+  
   heures=0;
   elements=document.forms[form].elements;
 
@@ -62,8 +62,8 @@ function calculHeures(object,num,form,tip,numero){
       heure6=$("#temps"+num+"_"+i+"_6").text().replace("h",":");
       heure3=$("#temps"+num+"_"+i+"_3").text().replace("h",":");
     }
-
-
+    
+    
   /**
    * Tableau affichant les différentes possibilités
    * NB : le paramètre heures[4] est utilisé pour l'affectation du site. Il n'est pas utile ici
@@ -71,11 +71,11 @@ function calculHeures(object,num,form,tip,numero){
    *
    *    Heure 0     Heure 1     Heure 2     Heure 5     Heure 6     Heure 3
    * 1                           [ tableau vide]
-   * 2    |-----------|           |-----------|           |-----------|
-   * 3    |-----------|           |-----------------------------------|
+   * 2    |-----------|           |-----------|           |-----------|  
+   * 3    |-----------|           |-----------------------------------|  
    * 4    |-----------|                                   |-----------|
    * 5    |-----------|
-   * 6    |-----------------------------------|           |-----------|
+   * 6    |-----------------------------------|           |-----------|  
    * 7    |-----------------------------------|
    * 8    |-----------------------------------------------------------|
    * 9                            |-----------|
@@ -85,24 +85,24 @@ function calculHeures(object,num,form,tip,numero){
     // Constitution des groupes de plages horaires
     var diff=0;
     var tab = new Array();
-
+    
     // 1er créneau : cas N° 2; 3; 4; 5
     if (heure0 && heure1) {
       tab.push(new Array(heure0, heure1));
-
+    
     // 1er créneau fusionné avec le 2nd : cas N° 6 et 7
     } else if (heure0 && heure5) {
       tab.push(new Array(heure0, heure5));
-
+    
     // Journée complète : cas N° 8
     } else if (heure0 && heure3) {
       tab.push(new Array(heure0, heure3));
     }
-
+    
     // 2ème créneau : cas N° 1 et 9
     if (heure2 &&  heure5) {
       tab.push(new Array(heure2, heure5));
-
+    
     // 2ème créneau fusionné au 3ème : cas N° 3 et 10
     } else if (heure2 && heure3) {
       tab.push(new Array(heure2, heure3));
@@ -113,13 +113,13 @@ function calculHeures(object,num,form,tip,numero){
       tab.push(new Array(heure6, heure3));
     }
 
-
+    
     for(j in tab){
       diff += diffMinutes(tab[j][0],tab[j][1]);
     }
-
+    
     heures+=diff;
-
+    
     // Affichage du nombre d'heure pour chaque ligne
     if(diff){
       $("#heures"+num+"_"+numero+"_"+(i+1)).html(heure4(diff/60));
@@ -128,7 +128,7 @@ function calculHeures(object,num,form,tip,numero){
   }
   heures=heure4(heures/60);
   $("#"+tip).text(heures);
-
+  
 }
 
 function ctrl_form(champs){
@@ -225,19 +225,19 @@ function dateDiff(date1,date2){
 
   tmp=Math.floor(tmp/1000);
   diff.sec=tmp%60;
-
+  
   tmp=Math.floor((tmp-diff.sec)/60);
   diff.min=tmp%60;
-
+  
   tmp=Math.floor((tmp-diff.min)/60);
   diff.hour=tmp%24;
 
   tmp=Math.floor((tmp-diff.hour)/24);
   diff.day=tmp;
-
+  
   return diff;
 }
-
+  
 function dateFr(date){
   if(date.indexOf("-")>0){
     tab=date.split("-");
@@ -309,7 +309,7 @@ function daysInMonth(month,year) {
 function decompte(dcpt){
   var affiche = '';
 	dcpt=parseInt(dcpt);
-
+     
   if(dcpt > 1){
     var affiche = 'Veuillez réessayer dans '+dcpt+' secondes';
   }else{
@@ -454,7 +454,7 @@ function information(message,type,top,time){
   if(top==undefined){
     top=60;
   }
-
+  
   if(time==undefined){
     time=5000;
   }
@@ -520,7 +520,7 @@ function resetICSURL(id, CSRFToken, nom){
   } else {
     var res = confirm("Etes vous sûr(e) de vouloir réinitialiser l'URL du calendrier de "+nom+" ?");
   }
-
+  
   if(res){
     $.ajax({
       url: "ics/ajax.resetURL.php",
@@ -625,7 +625,7 @@ function updateTips( text , type) {
   else if ( type == "success" ) {
     type = "highlight";
   }
-
+  
   text = text.replace("\n", "<br/>");
 
   $(".validateTips").html(text);
@@ -644,19 +644,19 @@ function verif_date(d){
   var a=(d.substring(0,4));
   var ok=1;
   if ( ((isNaN(j))||(j<1)||(j>31)) && (ok==1) ) {
-  //       alert("Le jour n'est pas correct.");
+  //       alert("Le jour n'est pas correct."); 
     ok=0;
   }
   if ( ((isNaN(m))||(m<1)||(m>12)) && (ok==1) ) {
-  //       alert("Le mois n'est pas correct.");
+  //       alert("Le mois n'est pas correct."); 
     ok=0;
   }
   if ( ((isNaN(a))||(a<amin)||(a>amax)) && (ok==1) ) {
-  //     alert("L'année n'est pas correcte.");
+  //     alert("L'année n'est pas correcte."); 
     ok=0;
   }
   if ( ((d.substring(4,5)!=separateur)||(d.substring(7,8)!=separateur)) && (ok==1) ) {
-  //   alert("Les séparateurs doivent être des "+separateur);
+  //   alert("Les séparateurs doivent être des "+separateur); 
     ok=0;
   }
   if (ok==1){
@@ -672,7 +672,7 @@ function verif_date(d){
   }
   return ok;
 }
-
+ 
 function verif_form(champs,form){
   if(form==undefined){
     form="form";
@@ -723,7 +723,7 @@ function verif_form(champs,form){
       }
     }
   }
-
+  
   if(erreurs){
     CJInfo("Les champs suivants sont obligatoires :<ul>"+erreurs+"</ul>","error");
     return false;
@@ -764,24 +764,48 @@ function verif_mail(mail){
 
 // Vérifie la force du mot de passe entré
 function checkPasswordStrength() {
-  var number = /([0-9])/;
-  var alphabets = /([a-zA-Z])/;
-  var special_characters = /([~,!,@,#,$,%,^,&,*,-,_,+,=,?,>,<])/;
-  if ($('#new_password').val().length < 8) {
-      $('strength-check').removeClass();
-      $('#strength-check').css("color", "red");
-      $('#strength-check').html("Trop faible (il faut au moins 8 caractères)");
-  } else {
-      if ($('#new_password').val().match(number) && $('#new_password').val().match(alphabets) && $('#new_password').val().match(special_characters)) {
+  var baseURL = $("#baseURL").val();
+  var nouveau = $("#new_password").val();
+  var error = false;
+  var request =
+    $.ajax({
+      url : baseURL + "/myaccount/check-password",
+      dataType :"json",
+      type : "post",
+      data : {'nouveau' : nouveau},
+      success: function(result){
+        if (result == "OK"){
           $('#strength-check').removeClass();
           $('#strength-check').css("color", "green");
           $('#strength-check').html("Fort");
-      } else {
-          $('#strength-check').removeClass();
-          $('#strength-check').css("color", "gold");
-          $('#strength-check').html("Moyen (il faut des caractères alpha-numériques et spéciaux)");
+        } else {
+          if(result == "length"){
+            $('#strength-check').removeClass();
+            $('#strength-check').css("color", "red");
+            $('#strength-check').html("Trop faible (il faut au moins 8 caractères)");
+            $('form').submit(function(event) {
+              event.preventDefault();
+              alert("Veuillez saisir un mot de passe fort");
+            });
+          }
+          if(result == "character"){
+            $('#strength-check').removeClass();
+            $('#strength-check').css("color", "orange");
+            $('#strength-check').html("Moyen <br/> (il faut des caractères alphanumériques, majuscules et miniscules, et des caractères spéciaux)");
+            $('form').submit(function(event) {
+              event.preventDefault();
+              alert("Veuillez saisir un mot de passe fort");
+            });
+          }
+        }
+      },
+      error: function(){
       }
-  }
+    });
+  setTimeout(function(){
+  // If the request is still running, abort it.
+    if (request) request.abort();
+  }, 2000);
 }
 //	---------------------------		FIN Fonctions communes		------------------------	//
 //	--------------------------------	Absences		---------------------------------	//
@@ -917,7 +941,7 @@ $(function(){
     $(".ui-tab-cancel").css("right",right);
     $(".ui-tab-cancel").css("top",7);
   });
-
+  
   // Infobulles
   $(document).tooltip();
 });

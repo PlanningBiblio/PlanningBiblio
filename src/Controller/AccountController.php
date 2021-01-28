@@ -203,25 +203,6 @@ class AccountController extends BaseController
             return $this->redirectToRoute('account.password', $data);
         }
 
-        $number = preg_match('@[0-9]@', $nouveau);
-        $uppercase = preg_match('@[A-Z]@', $nouveau);
-        $lowercase = preg_match('@[a-z]@', $nouveau);
-        $specialChars = preg_match('@[^\w]@', $nouveau);
-        if(strlen($password) < 8 || !$number || !$uppercase || !$lowercase || !$specialChars) {
-            $data =
-                array(
-                    "CJError"           => $CJErrot,
-                    "dontMatch"         => $dontMatch,
-                    "error"             => $error,
-                    "incorrectPassword" => $incorrectPassword,
-                    "page"              => $request->get('page'),
-                    "success"           => $success,
-                    "toChange"          => false,
-                    "msg"               => "Votre mot de passe est trop faible, veuillez réessayer",
-                    "msgType"           => "error"
-                );
-                return $this->redirectToRoute('account.password', $data);
-        }
         $mdp = $nouveau;
         $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
         $db = new \db();
@@ -251,10 +232,28 @@ class AccountController extends BaseController
                 "incorrectPassword" => $incorrectPassword,
                 "page"              => $request->get('page'),
                 "success"           => $success,
-                "toChange"          => false,
+                "toChange"          => false
         );
         return $this->redirectToRoute('account.password', $data);
 
     }
+    /**
+     * @Route("/myaccount/check-password", name="account.password.check", methods={"POST"})
+     */
+    public function checkPasswordStrength(Request $request){
+        $nouveau = $request->get("nouveau");
 
+        $number = preg_match('@[0-9]@', $nouveau);
+        $uppercase = preg_match('@[A-Z]@', $nouveau);
+        $lowercase = preg_match('@[a-z]@', $nouveau);
+        $specialChars = preg_match('@[^\w]@', $nouveau);
+
+        if(strlen($nouveau) < 8){
+            return $this->json("length");
+        } else if(!$number || !$uppercase || !$lowercase || !$specialChars) {
+            return $this->json("character");
+        } else {
+           return $this->json("OK");
+        }
+    }
 }

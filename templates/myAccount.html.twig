@@ -153,7 +153,7 @@
             <tr>
               <td title="Votre mot de passe doit être composé d'au moins 8 caractères dont 1 lettre majuscule, 1 lettre minuscule, 1 chiffre et un caractère spécial"> Nouveau mot de passe : </td>
               <td>
-                <input type='password' name='nouveau' id="new_password" onKeyUp="checkPasswordStrength()" class='ui-widget-content ui-corner-all'/>
+                <input type='password' name='nouveau' id="new_password" onKeyUp="checkPasswordStrength()" onBlur="checkPasswordStrength()" class='ui-widget-content ui-corner-all'/>
                 <div id="strength-check"></div>
               </td>
             </tr>

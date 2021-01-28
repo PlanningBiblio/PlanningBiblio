@@ -17,3 +17,5 @@
     - 100
 "account.password.save":
     - 100
+"account.password.check":
+    - 100
