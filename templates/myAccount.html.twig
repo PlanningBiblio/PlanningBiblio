@@ -170,7 +170,7 @@
     <div id='ics' style='margin-left:80px;display:none;'>
       <h3>URL de votre calendrier ICS</h3>
       <p>
-        <span id='url-ics'>{{ ics }}</span>
+        <span id='url-ics'>{{ config('URL') }}{{ ics }}</span>
         {% if config('ICS-Code') %}
         <br/><a href="javascript:resetICSURL({{ login.id }}, '{{ CSRFSession }}' );"> Réinitialiser l'URL</a>
         {% endif %}
