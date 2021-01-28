@@ -67,7 +67,7 @@ function calculHeures(object,num,form,tip,numero){
   /**
    * Tableau affichant les différentes possibilités
    * NB : le paramètre heures[4] est utilisé pour l'affectation du site. Il n'est pas utile ici
-   * NB : la 2ème pause n'est pas implémentée depuis le début, c'est pourquoi les paramètres heures[5] et heures[6] viennent s'intercaler avant $heure[3]
+   * NB : la 2ème pause n'est pas implémentée depuis le début, c'est pourquoi les paramètres heures[5] et heures[6] viennent s'intercaler avant $heure[3]
    *
    *    Heure 0     Heure 1     Heure 2     Heure 5     Heure 6     Heure 3
    * 1                           [ tableau vide]
@@ -762,7 +762,7 @@ function verif_mail(mail){
   return true;
 }
 
-// Vérifie la force du mot de passe entré
+// Check password's strength
 function checkPasswordStrength() {
   var baseURL = $("#baseURL").val();
   var nouveau = $("#new_password").val();
@@ -946,6 +946,5 @@ $(function(){
   // Infobulles
   $(document).tooltip();
 });
-
 
 
