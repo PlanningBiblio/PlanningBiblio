@@ -2,6 +2,18 @@
 
 {% extends 'base.html.twig' %}
 
+{% block specificjs %}
+  <script type="text/JavaScript">
+    $('#strength-check').hide();
+    $('#password').keyup(function(){
+        $('#strength-check').css({
+          height: "1em",
+          visibility: "visible !important"
+        });
+    });
+  </script>
+{% endblock %}
+
 {% block page %}
   <style>
     .password-input {

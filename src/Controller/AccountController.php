@@ -201,40 +201,59 @@ class AccountController extends BaseController
                     "toChange"          => false,
             );
             return $this->redirectToRoute('account.password', $data);
-        } else {
-            $mdp = $nouveau;
-            $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
-            $db = new \db();
-            $db->query("update {$dbprefix}personnel set password='".$mdp_crypt."' where id=".$_SESSION['login_id'].";");
-            $success = true;
+        }
 
-            $message="Votre mot de passe Planning Biblio a &eacute;t&eacute; modifi&eacute;";
-            $message.="<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
-
-            // Envoi du mail
-            $m = new \CJMail();
-            $m->subject = "Modification du mot de passe";
-            $m->message = $message;
-            $m->to = $mail;
-            $m->send();
-
-            // Si erreur d'envoi de mail, affichage de l'erreur
-            if ($m->error_CJInfo) {
-                $error = '"'.$m->error_CJInfo.'"';
-                $CJError = true;
-            }
+        $number = preg_match('@[0-9]@', $nouveau);
+        $uppercase = preg_match('@[A-Z]@', $nouveau);
+        $lowercase = preg_match('@[a-z]@', $nouveau);
+        $specialChars = preg_match('@[^\w]@', $nouveau);
+        if(strlen($password) < 8 || !$number || !$uppercase || !$lowercase || !$specialChars) {
             $data =
                 array(
-                    "CJError"           => $CJError,
+                    "CJError"           => $CJErrot,
                     "dontMatch"         => $dontMatch,
                     "error"             => $error,
                     "incorrectPassword" => $incorrectPassword,
                     "page"              => $request->get('page'),
                     "success"           => $success,
                     "toChange"          => false,
-            );
-            return $this->redirectToRoute('account.password', $data);
+                    "msg"               => "Votre mot de passe est trop faible, veuillez réessayer",
+                    "msgType"           => "error"
+                );
+                return $this->redirectToRoute('account.password', $data);
         }
+        $mdp = $nouveau;
+        $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
+        $db = new \db();
+        $db->query("update {$dbprefix}personnel set password='".$mdp_crypt."' where id=".$_SESSION['login_id'].";");
+        $success = true;
+
+        $message="Votre mot de passe Planning Biblio a &eacute;t&eacute; modifi&eacute;";
+        $message.="<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
+
+        // Envoi du mail
+        $m = new \CJMail();
+        $m->subject = "Modification du mot de passe";
+        $m->message = $message;
+        $m->to = $mail;
+        $m->send();
+
+        // Si erreur d'envoi de mail, affichage de l'erreur
+        if ($m->error_CJInfo) {
+            $error = '"'.$m->error_CJInfo.'"';
+            $CJError = true;
+        }
+        $data =
+            array(
+                "CJError"           => $CJError,
+                "dontMatch"         => $dontMatch,
+                "error"             => $error,
+                "incorrectPassword" => $incorrectPassword,
+                "page"              => $request->get('page'),
+                "success"           => $success,
+                "toChange"          => false,
+        );
+        return $this->redirectToRoute('account.password', $data);
 
     }
 

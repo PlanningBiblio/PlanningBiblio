@@ -241,7 +241,8 @@
       <form>
         <div>
           <label for="new_password">Nouveau mot de passe</label>
-          <input class="password-input" type='password' id="new_password" name="new_password"/>
+          <input class="password-input" type='password' id="new_password" name="new_password" onKeyUp="checkPasswordStrength()"/>
+          <div id="strength-check"></div>
         </div>
 
         <br />

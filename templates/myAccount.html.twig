@@ -1,7 +1,17 @@
 {# myAccount.html.twig #}
 
 {% extends 'base.html.twig' %}
-
+{% block specificjs %}
+  <script type="text/JavaScript">
+    $('#strength-check').hide();
+    $('#password').keyup(function(){
+        $('#strength-check').css({
+          height: "1em",
+          visibility: "visible !important"
+        });
+    });
+  </script>
+{% endblock %}
 {% block page %}
   <!--	Menu	-->
   <h3>Mon Compte</h3>
@@ -141,9 +151,10 @@
               </td>
             </tr>
             <tr>
-              <td> Nouveau mot de passe : </td>
+              <td title="Votre mot de passe doit être composé d'au moins 8 caractères dont 1 lettre majuscule, 1 lettre minuscule, 1 chiffre et un caractère spécial"> Nouveau mot de passe : </td>
               <td>
-                <input type='password' name='nouveau' class='ui-widget-content ui-corner-all'/>
+                <input type='password' name='nouveau' id="new_password" onKeyUp="checkPasswordStrength()" class='ui-widget-content ui-corner-all'/>
+                <div id="strength-check"></div>
               </td>
             </tr>
             <tr>
