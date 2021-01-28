@@ -328,18 +328,27 @@ function verifConges(){
 
   // ID des agents
   perso_ids=[];
+
+  // Only one agent pre-selected
   if ($("#perso_id").length > 0) {
       perso_ids.push($("#perso_id").val());
-  } else {
+
+  // Multiple agents
+  } else if ($("select.agents_multiples").length > 0) {
       $(".perso_ids_hidden").each(function(){
         perso_ids.push($(this).val());
       });
 
-      // Si aucun agent n'est sélectionné, on quitte en affichant "Veuillez sélectionner ..."
-      if(perso_ids.length<1){
-        CJInfo("Veuillez sélectionner un ou plusieurs agents","error");
-        return false;
-      }
+  // Only one agent in a select list
+  } else {
+      console.log("list");
+      perso_ids.push($("#perso_ids").val());
+  }
+
+  // Si aucun agent n'est sélectionné, on quitte en affichant "Veuillez sélectionner ..."
+  if(perso_ids.length<1){
+    CJInfo("Veuillez sélectionner un ou plusieurs agents","error");
+    return false;
   }
 
   // Variable, convertion des dates au format YYYY-MM-DD
