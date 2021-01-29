@@ -68,7 +68,7 @@ foreach ($activites as $elem) {
     $postes_completNoms[]=array($elem['nom'],$elem['id']);
 }
 // traduction en JavaScript du tableau postes_completNoms pour les fonctions seltect_add* et select_drop
-$postes_completNoms_json = json_encode($postes_completNoms);
+$postes_completNoms_json = json_encode($postes_completNoms, JSON_HEX_APOS);
 echo "<script type='text/JavaScript'>\n<!--\n";
 echo "complet = JSON.parse('$postes_completNoms_json');\n";
 echo "\n-->\n</script>\n";
