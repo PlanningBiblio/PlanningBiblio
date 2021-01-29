@@ -126,7 +126,7 @@ if ($admin) {
     echo "<select name='perso_id' id='perso_id' class='ui-widget-content ui-corner-all'>";
     $selected=$perso_id==0?"selected='selected'":null;
     echo "<option value='0' $selected >Tous</option>";
-  
+
     $p = new personnel();
     if ($agents_supprimes) {
         $p->supprime = array(0,1);
@@ -259,9 +259,14 @@ if ($absences) {
         echo "<td>".dateFr($elem['debut'], true)."</td>";
         echo "<td>".datefr($elem['fin'], true)."</td>";
         echo "<td>";
-        echo implode($elem['agents'], ", ");
+        $agents_absents = array();
+        foreach($elem['agents'] as $agent){
+            $infos = explode(" ", $agent);
+            $agents_absents[] = Utils::agentName($infos[1], $infos[0], 'full');
+        }
+        echo implode($agents_absents, ", ");
         echo "</td>\n";
-    
+
         if ($config['Absences-validation']) {
             echo "<td style='$etatStyle'>$etat</td>\n";
         }

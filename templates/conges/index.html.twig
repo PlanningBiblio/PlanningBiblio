@@ -18,7 +18,7 @@
         <tbody>
           <tr>
             <td>
-              Année: 
+              Année:
               <select name='annee'>
                 {% for y in years %}
                   {% if from_year == y[0] %}
@@ -31,7 +31,7 @@
             </td>
 
             <td>
-              Congés: 
+              Congés:
               <select name='congesAffiches'>
                 <option value='tous'>Tous</option>
                 {% if forthcoming %}
@@ -44,7 +44,7 @@
 
             {% if admin %}
               <td style='text-align:left;'>
-                <span style='padding:5px;'>Agents : 
+                <span style='padding:5px;'>Agents :
                   <select name='perso_id' id='perso_id'>
                     {% if perso_id == 0 %}
                       <option value='0' selected="selected">Tous</option>
@@ -63,7 +63,7 @@
                 </span>
 
                 <br/>
-                <span style='padding:5px;'>Agents supprim&eacute;s : 
+                <span style='padding:5px;'>Agents supprim&eacute;s :
                   {% if deleted_agents %}
                     <input type='checkbox' checked="checked" name='supprimes' onclick="updateAgentsList(this, {{ perso_id }});"/>
                   {% else %}
