@@ -333,8 +333,8 @@ class planningHebdo
             foreach ($db->result as $elem) {
                 $elem['temps'] = json_decode(html_entity_decode($elem['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                 $elem['breaktime'] = json_decode(html_entity_decode($elem['breaktime'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-                $elem['nom'] = nom($elem['perso_id'], 'nom p', $agents);
-                $elem['service']=$services[$elem['perso_id']];
+                $elem['nom'] = $elem['perso_id']!=0 ? nom($elem['perso_id'], 'nom p', $agents) : "";
+                $elem['service']= $elem['perso_id']!=0 ? $services[$elem['perso_id']] : "";
                 $this->elements[]=$elem;
             }
         }
