@@ -776,6 +776,29 @@ function checkPasswordStrength() {
         $('#strength-check').removeClass();
         $('#strength-check').css("color", "green");
         $('#strength-check').html("Fort");
+        $('#reset-password-form').dialog({
+          buttons: {
+            Enregistrer: function() {
+              $('#password-dont-match').hide();
+              $('#password-empty').hide();
+
+              password = $('#new_password').val();
+              confirm_password = $('#confirm_new_password').val();
+              if (password != confirm_password) {
+                $('#password-dont-match').show();
+              }
+              else if (password == '') {
+                $('#password-empty').show();
+              } else {
+                agent_id = $('input[name="id"]').val();
+                save_password(agent_id, password);
+              }
+            },
+            Annuler: function() {
+              $(this).dialog( "close" );
+            },
+          },
+        });
       } else {
         if(result == "length"){
           $('#strength-check').removeClass();
