@@ -766,46 +766,61 @@ function verif_mail(mail){
 function checkPasswordStrength() {
   var baseURL = $("#baseURL").val();
   var nouveau = $("#new_password").val();
-  var error = false;
-  var request =
-    $.ajax({
-      url : baseURL + "/myaccount/check-password",
-      dataType :"json",
-      type : "post",
-      data : {'nouveau' : nouveau},
-      success: function(result){
-        if (result == "OK"){
+  $.ajax({
+    url : baseURL + "/myaccount/check-password",
+    dataType :"json",
+    type : "post",
+    data : {'nouveau' : nouveau},
+    success: function(result){
+      if (result == "OK"){
+        $('#strength-check').removeClass();
+        $('#strength-check').css("color", "green");
+        $('#strength-check').html("Fort");
+      } else {
+        if(result == "length"){
           $('#strength-check').removeClass();
-          $('#strength-check').css("color", "green");
-          $('#strength-check').html("Fort");
-        } else {
-          if(result == "length"){
-            $('#strength-check').removeClass();
-            $('#strength-check').css("color", "red");
-            $('#strength-check').html("Trop faible (il faut au moins 8 caractères)");
-            $('form').submit(function(event) {
-              event.preventDefault();
-              alert("Veuillez saisir un mot de passe fort");
-            });
-          }
-          if(result == "character"){
-            $('#strength-check').removeClass();
-            $('#strength-check').css("color", "orange");
-            $('#strength-check').html("Moyen <br/> (il faut des caractères alphanumériques, majuscules et miniscules, et des caractères spéciaux)");
-            $('form').submit(function(event) {
-              event.preventDefault();
-              alert("Veuillez saisir un mot de passe fort");
-            });
-          }
+          $('#strength-check').css("color", "red");
+          $('#strength-check').html("Trop faible (il faut au moins 8 caractères)");
+
+          $('form').submit(function(event) {
+            event.preventDefault();
+            alert("Veuillez saisir un mot de passe fort");
+          });
+          $("#reset-password-form").dialog({
+            buttons: {
+              Enregistrer: function() {
+                alert("Veuillez saisir un mot de passe fort");
+              },
+              Annuler: function() {
+                $(this).dialog( "close" );
+              }
+            }
+          });
         }
-      },
-      error: function(){
+        if(result == "character"){
+          $('#strength-check').removeClass();
+          $('#strength-check').css("color", "orange");
+          $('#strength-check').html("Moyen (il manque 1 majuscule, 1 minuscule, 1 chiffre ou 1 caractère spécial)");
+          $('form').submit(function(event) {
+            event.preventDefault();
+            alert("Veuillez saisir un mot de passe fort");
+          });
+          $("#reset-password-form").dialog({
+            buttons: {
+              Enregistrer: function() {
+                alert("Veuillez saisir un mot de passe fort");
+              },
+              Annuler: function() {
+                $(this).dialog( "close" );
+              }
+            }
+          });
+        }
       }
-    });
-  setTimeout(function(){
-  // If the request is still running, abort it.
-    if (request) request.abort();
-  }, 2000);
+    },
+    error: function(){
+    }
+  });
 }
 
 //	---------------------------		FIN Fonctions communes		------------------------	//

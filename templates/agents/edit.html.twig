@@ -4,12 +4,26 @@
 
 {% block specificjs %}
   <script type="text/JavaScript">
-    $('#strength-check').hide();
-    $('#password').keyup(function(){
-        $('#strength-check').css({
-          height: "1em",
-          visibility: "visible !important"
-        });
+    function debounce(callback, delay) {
+      let timer;
+      return function() {
+          clearTimeout( timer );
+          timer = setTimeout(callback, delay);
+      }
+    }
+    $(document).ready(function() {
+      const text = document.getElementById('new_password');
+      $('#strength-check').hide(); 
+      text.addEventListener(
+        "keyup",
+         debounce(function(){
+            $('#strength-check').css({
+              height: "1em"
+            });
+            $('#strength-check').show(); 
+            checkPasswordStrength();
+          }, 500)
+      );
     });
   </script>
 {% endblock %}
@@ -57,7 +71,6 @@
 
             password = $('#new_password').val();
             confirm_password = $('#confirm_new_password').val();
-
             if (password != confirm_password) {
               $('#password-dont-match').show();
             }
@@ -73,7 +86,7 @@
           },
         },
       });
-
+      
       $('#change-password-link').on('click', function() {
         $("#reset-password-form").dialog( "open" );
       });

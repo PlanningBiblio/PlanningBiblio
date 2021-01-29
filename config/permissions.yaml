@@ -3,6 +3,8 @@
 
 "account.index":
     - 100
+"ajax.changepassword":
+    - 100
 "workinghour.index":
     - 1101
 "workinghour.add":
