@@ -2,6 +2,8 @@
 
 namespace App\PlanningBiblio;
 
+use App\PlanningBiblio\Utils;
+
 class PresentSet
 {
     public $date;
@@ -94,7 +96,8 @@ class PresentSet
                 } else {		// matin et après midi avec pause
                     $horaires=heure2($heures[0])." - ".heure2($heures[1])." &amp; ".heure2($heures[2])." - ".heure2($heures[3]);
                 }
-                $presents[]=array("id"=>$elem['id'],"nom"=>$elem['nom']." ".$elem['prenom'],"site"=>$siteAgent,"heures"=>$horaires);
+                $nom = Utils::agentName($elem['prenom'], $elem['nom'], 'short');
+                $presents[]=array("id"=>$elem['id'],"nom"=>$nom,"site"=>$siteAgent,"heures"=>$horaires);
             }
         }
 

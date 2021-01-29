@@ -31,6 +31,7 @@ echo "<div id='planning'>\n";
 include "fonctions.php";
 
 use App\PlanningBiblio\PresentSet;
+use App\PlanningBiblio\Utils;
 
 // Initialisation des variables
 $CSRFToken=filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
@@ -844,8 +845,9 @@ EOD;
                 $nonValidee = " (non valid&eacute;e)";
             }
         }
+        $nomAgent = Utils::agentName($elem['prenom'], $elem['nom'],'short');
 
-        echo "<tr class='$class $bold'><td>{$elem['nom']} {$elem['prenom']}</td><td style='padding-left:15px;'>{$elem['motif']}{$heures}{$nonValidee}</td></tr>\n";
+        echo "<tr class='$class $bold'><td>{$nomAgent}</td><td style='padding-left:15px;'>{$elem['motif']}{$heures}{$nonValidee}</td></tr>\n";
     }
     echo "</table>\n";
     echo "</td></tr>\n";

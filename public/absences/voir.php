@@ -20,6 +20,7 @@ Page appelée par la page index.php
 require_once "class.absences.php";
 
 use App\Model\AbsenceDocument;
+use App\PlanningBiblio\Utils;
 
 // Initialisation des variables
 $debut=filter_input(INPUT_GET, "debut", FILTER_SANITIZE_STRING);
@@ -159,7 +160,8 @@ if ($admin) {
 
     foreach ($agents_menu as $agent) {
         $selected=$agent['id']==$perso_id?"selected='selected'":null;
-        echo "<option value='{$agent['id']}' $selected >{$agent['nom']} {$agent['prenom']}</option>";
+        $nom = Utils::agentName($agent['prenom'], $agent['nom'], "full");
+        echo "<option value='{$agent['id']}' $selected > $nom </option>";
     }
     echo "</select>\n";
     echo "</span>\n";
