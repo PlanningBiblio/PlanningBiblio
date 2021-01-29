@@ -145,7 +145,7 @@ class AgentController extends BaseController
         foreach ($activites as $elem) {
             $postes_completNoms[] = array($elem['nom'],$elem['id']);
         }
-        $postes_completNoms_json = json_encode($postes_completNoms);
+        $postes_completNoms_json = json_encode($postes_completNoms, JSON_HEX_APOS);
 
         $this->templateParams(array(
             "agents"                 => $agents,
