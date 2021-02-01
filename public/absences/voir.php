@@ -20,6 +20,7 @@ Page appelée par la page index.php
 require_once "class.absences.php";
 
 use App\Model\AbsenceDocument;
+use App\PlanningBiblio\Utils;
 
 // Initialisation des variables
 $debut=filter_input(INPUT_GET, "debut", FILTER_SANITIZE_STRING);
@@ -125,7 +126,7 @@ if ($admin) {
     echo "<select name='perso_id' id='perso_id' class='ui-widget-content ui-corner-all'>";
     $selected=$perso_id==0?"selected='selected'":null;
     echo "<option value='0' $selected >Tous</option>";
-  
+
     $p = new personnel();
     if ($agents_supprimes) {
         $p->supprime = array(0,1);
@@ -159,7 +160,8 @@ if ($admin) {
 
     foreach ($agents_menu as $agent) {
         $selected=$agent['id']==$perso_id?"selected='selected'":null;
-        echo "<option value='{$agent['id']}' $selected >{$agent['nom']} {$agent['prenom']}</option>";
+        $nom = Utils::agentName($agent['prenom'], $agent['nom'], "full");
+        echo "<option value='{$agent['id']}' $selected > $nom </option>";
     }
     echo "</select>\n";
     echo "</span>\n";
@@ -257,9 +259,14 @@ if ($absences) {
         echo "<td>".dateFr($elem['debut'], true)."</td>";
         echo "<td>".datefr($elem['fin'], true)."</td>";
         echo "<td>";
-        echo implode($elem['agents'], ", ");
+        $agents_absents = array();
+        foreach($elem['agents'] as $agent){
+            $infos = explode(" ", $agent);
+            $agents_absents[] = Utils::agentName($infos[1], $infos[0], 'full');
+        }
+        echo implode($agents_absents, ", ");
         echo "</td>\n";
-    
+
         if ($config['Absences-validation']) {
             echo "<td style='$etatStyle'>$etat</td>\n";
         }

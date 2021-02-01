@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 use App\Model\Agent;
 use App\PlanningBiblio\Helper\HolidayHelper;
 use App\PlanningBiblio\Helper\WeekPlanningHelper;
+use App\PlanningBiblio\Utils;
 use App\Model\AbsenceReason;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -119,12 +120,6 @@ class HolidayController extends BaseController
             $perso_ids = array($_SESSION['login_id']);
         }
 
-        // Recherche des agents pour la fonction nom()
-        $p = new \personnel();
-        $p->supprime=array(0,1,2);
-        $p->fetch();
-        $agents=$p->elements;
-
         // Années universitaires
         $annees=array();
         for ($d=date("Y")+2;$d>date("Y")-11;$d--) {
@@ -226,7 +221,9 @@ class HolidayController extends BaseController
                 $elem['validationStyle'] = '';
             }
 
-            $elem['nom'] = $admin ? nom($elem['perso_id'], 'nom p', $agents) : '';
+            $agent = $this->entityManager->find(Agent::class, $elem['perso_id']);
+            $agent_nom = Utils::agentName($agent->prenom(), $agent->nom(), 'short');
+            $elem['nom'] = $admin ? $agent_nom : '';
 
             $holidays[] = $elem;
         }
@@ -858,7 +855,7 @@ class HolidayController extends BaseController
                             continue 2;
                         }
                     }
-                }   
+                }
             }
             $agents = $tmp;
         }

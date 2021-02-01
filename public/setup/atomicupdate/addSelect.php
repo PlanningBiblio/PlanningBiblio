@@ -1,0 +1,4 @@
+<?php
+
+$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Agent-NameFormat','enum2','Name S.','Affiche le nom et le prénom de l\'agent dans les plannings','Affichage','[[\"Name\", \"Prénom seulement\"], [\"Surname\", \"Nom seulement\"], [\"Name S.\", \"Prénom N.\"], [\"N. Surname\", \"P. Nom\"], [\"Surname N.\", \"Nom P.\"], [\"S. Name\", \"N. Prénom\"]]','40');";
+$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Agent-FullNameFormat','enum2','Name Surname','Affiche le nom et le prénom complets de l\'agent hors plannings','Affichage','[[\"Name Surname\", \"Prénom Nom\"], [\"Surname Name\", \"Nom Prénom\"]]','50');";

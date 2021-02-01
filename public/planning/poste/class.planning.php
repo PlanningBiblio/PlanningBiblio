@@ -22,6 +22,7 @@ if (!isset($version)) {
     include_once "../../include/accessDenied.php";
 }
 
+use App\PlanningBiblio\Utils;
 
 class planning
 {
@@ -266,10 +267,7 @@ class planning
                 $title = in_array($elem['id'], $absences_non_validees) ? ' Absence ou congé non valid&eacute;' : $title;
         
                 $nom = "<span class='menudiv-nom' title='$title'>";
-                $nom .= htmlentities($elem['nom'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
-                if ($elem['prenom']) {
-                    $nom.=" ".substr(htmlentities($elem['prenom'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false), 0, 1).".";
-                }
+                $nom .= htmlentities(Utils::agentName($elem['nom'], $elem['prenom'], "short"), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
                 $nom .='</span>';
 
                 //			----------------------		Sans repas		------------------------------------------//
@@ -475,7 +473,7 @@ class planning
             }
 
             // Suppressions
-            // Pour chaque agent présent dans l'ancien tableau
+            // Pour chaque agent ppublic/planning/poste/index.phprésent dans l'ancien tableau
             foreach ($oldData as $key => $value) {
                 foreach ($value["planning"] as $k => $v) {
                     if (!isset($tab[$key])
