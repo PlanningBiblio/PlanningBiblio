@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
+use App\PlanningBiblio\Utils;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -242,18 +244,7 @@ class AccountController extends BaseController
      */
     public function checkPasswordStrength(Request $request){
         $nouveau = $request->get("nouveau");
-
-        $number = preg_match('@[0-9]@', $nouveau);
-        $uppercase = preg_match('@[A-Z]@', $nouveau);
-        $lowercase = preg_match('@[a-z]@', $nouveau);
-        $specialChars = preg_match('@[^\w]@', $nouveau);
-
-        if(strlen($nouveau) < 8){
-            return $this->json("length");
-        } else if(!$number || !$uppercase || !$lowercase || !$specialChars) {
-            return $this->json("character");
-        } else {
-           return $this->json("OK");
-        }
+        $result = Utils::checkStrength($nouveau);
+        return $result;
     }
 }
