@@ -1,0 +1,671 @@
+/**
+Planning Biblio
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.txt et COPYING.txt
+@copyright 2020 Jérôme Combes
+
+@file : public/themes/softness/softness.css
+@author Jérôme Combes <jerome@planningbiblio.fr>
+
+@desc
+included by templates/base.html.twig, public/include/header.php and public/setup/header.php
+*/
+
+/*
+ * Softness
+ * Blue : #1e4c67 / RGB : 85 135 162
+ * Green: #00656b / RGB : 0 101 107
+ * Pink : #F2B2AE / RGB : 242 178 174
+ * Yellow : #ffd700 / RGB : 255 215 0
+ * Old
+ * Red : #EF3340
+ * Grey : #333
+ * White : #FFFFFF
+ * bleu : #009dd9 / pâle : #ccecf8 / texte : #0f6fc6
+ * rouge : #644946 / pâle : #ebd5d3 / texte : #d34717
+ * version 2 : rouge rouge c1322a
+ * jaune : #d7af0d / pâle : #efe0a3 / texte :
+ * version 2 : jaune : d7c942 /
+ * jaune
+ * général bleu : 2da2bf , abdae6 , d5edf3
+ * général rouge : da1f27
+ */
+ @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,700;1,400&display=swap');
+* :not(span.icones>*){
+  font-family: 'Open Sans', sans-serif;
+}
+body{
+  font-family: 'Open Sans', sans-serif;
+  background: #FFFFFF;
+  font-size : 15px;
+}
+
+.menu_li a, .menu_li a:hover {
+	font-size: 14pt;
+}
+
+#auth {
+  display: inline-block;
+  width: 600px;
+  min-height: 370px;
+  margin: 0 auto -40px 0;
+  background:url("images/auth.png") repeat-x center top;
+  border: solid 1px #ABDAE6;
+}
+
+#auth-logo {
+  display: none;
+}
+
+#auth h2{
+  margin: 120px 0 10px 0;
+  font-family: Garamond;
+}
+
+#auth table{
+  margin: 0 0 0 0px;
+}
+
+#logo {
+  margin-left: 3px;
+  margin-top: 0px;
+  width:155px;
+  height:50px;
+  background:url("images/logoBlack.png") no-repeat right top;
+}
+
+.navigation, #topgauche{
+    background: white;
+    color: #1e4c67;
+    white-space:nowrap;
+    height: 70px;
+    border-bottom: 3px solid;
+    border-bottom-color: #ffd700;
+
+}
+td.menu_td2{
+  border-color: transparent;
+}
+
+td.menu_td2, td.menu_td2:hover{
+  background-color: transparent;
+}
+
+#content {
+    padding: 60px 5px 5px 5px;
+}
+
+.fa-stack:hover .fa-square{
+  color: #ffd700 !important;
+ }
+
+ .fa-stack .fa-clone{
+   color : #fff;
+ }
+
+ .fa-stack .fa-clone:hover{
+   color : #1e4c67 !important;
+ }
+
+#content-planning{
+  padding: 0px 0 0 0;
+}
+
+.titreSemFixe{
+  padding-top:20px;
+}
+
+#td_boutons{
+  padding-top:15px;
+}
+
+.td_postes {
+  font-family: 'Open Sans';
+  font-weight:bold;
+  min-width: 200px;
+  padding:4px 10px;
+  white-space:nowrap;
+}
+
+.tr_horaires, .tr_horaires .td_postes, .tr_separation, .tr_separation .td_postes{
+  color:#ffd700;
+  font-family: 'Open Sans';
+  font-weight:bold;
+  padding:0 4px;
+  height: 25px;
+}
+
+body,a,input,select,textarea,button,#auth, .menu2, .right,.titreSemFixe{
+  color:#333;
+}
+
+#ferie,.ferie, .menuRed, a:hover.menuRed, a:hover.menu, .important, #messages_infos,.myAccountLink:hover {
+  color: #da1f27;
+}
+
+td.menu_td:hover,td.menu_td2:hover,.th, td.menu_td2:hover a, #auth input[type="submit"] {
+  color: #FFFFFF;
+}
+
+.menu_li{
+  transition: all 0.2s linear;
+}
+
+.menu_li a {
+  color:  #1e4c67;
+}
+
+.menu_li:hover a{
+  color: #ffd700;
+}
+
+.icones{
+  color : #1e4c67;
+}
+
+li.menu_li:hover {
+  background: #1e4c67;
+  padding: 15px;
+  border-radius : 5px;
+  color: #fff;
+}
+
+td.menu_td{
+  padding-top: 7px;
+}
+
+.menu_table:not(:empty){
+  margin-top: 15px;
+  top: 51px !important;
+  background-color:#fff;
+  border : 1px solid #1e4c67;
+  border-radius: 10px;
+  border-collapse: separate;
+}
+
+.menu_table tbody{
+  border-radius: 10px;
+}
+
+.menu_table tr:first-child td{
+  border-top: none;
+}
+
+.ejsmenu{
+  color: #000;
+}
+
+.ejsmenu:hover{
+  background-color: #1e4c67 ;
+  font-weight: bold;
+  color: #ffd700 !important;
+  border-radius: 10px;
+}
+
+.ui-state-active{
+  background: #ffd700 !important;
+}
+
+.ui-state-hover{
+  background: #ffd700  !important;
+}
+
+#accordion div tr:nth-child(2n){
+  background-color: #e7f0f9;
+}
+#accordion .ui-widget-header{
+  background : #1e4c67;
+}
+
+.ui-widget-header{
+  color: #fff;
+}
+
+#joursFeries table, #menudivtab1, tbody table {
+  border-collapse: separate;
+}
+
+#menudivtab1{
+  border-radius: 10px;
+}
+
+tbody table{
+  border : none;
+}
+
+table .th {
+  background : none;
+}
+
+table .th td{
+  padding: 10px;
+  background : #1e4c67;
+}
+
+table .th td:not( td:last-child) {
+  border-right: solid 1px #fff;
+}
+table .th:first-child td:first-child, #menudivtab1 .menudiv-titre:first-child {
+  border-top-left-radius: 10px;
+}
+table .th:first-child td:last-child, #menudivtab1 .menudiv-titre:last-child {
+  border-top-right-radius: 10px;
+}
+
+#joursFeries form:first-of-type{
+  margin-bottom: 10px;
+}
+
+#menudivtab1 .menudiv-titre:first-child{
+  background-color: #1e4c67;
+}
+
+.menudiv-tr:hover{
+  background: #ffd700;
+  text-decoration: underline;
+}
+
+#content>form:not([action="/skill"], [action="index.php"], [action="config"]), #content #form {
+  background: #e7f0f9;
+  border-radius: 10px;
+  padding: 10px;
+  width: 55vw;
+}
+
+#content form[name="form2"], #content form.noprint, #content form[name="form1"], #content form[action="#"]{
+  width: auto;
+  background: none;
+}
+
+#content form:not(.noprint, [name="form2"], #stat-col1:first-child) table{
+  width: 100%;
+}
+
+#content #stat-col1:first-child form{
+  width: inherit;
+  background: #e7f0f9;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+textarea, input{
+  border-radius: 2px;
+  border: 1px solid lightgray;
+}
+
+#content form .ui-button:hover, #boutons>.ui-button:hover, .ui-tabs li[aria-controls="ui-id-10"]:hover,.ui-tabs li[aria-controls="ui-id-12"]:hover, #joursFeries .ui-button:hover{
+  background: #ffd700 !important;
+
+}
+#content form[action="/agent"], .ui-tabs .ui-tabs-panel  {
+  background: #e7f0f9;
+}
+#form select:not(.checkdate), #form textarea{
+  width : 100% !important;
+}
+
+#form #debut, #form #fin {
+  width : 50% !important;
+}
+
+div:not(#dialog-form) .tableauFiches tbody tr:last-child td {
+  text-align: center;
+}
+
+button[title="Close"]{
+  background : #fff;
+  color : #1e4c67;
+}
+
+button[title="Close"]:hover{
+  background : #fff;
+  color : red;
+}
+
+
+a:hover .icones .fa:not(.icones .fa-sign-out, .icones .fa-repeat, .icones .fa-exclamation, .icones .fa-plus){
+  color:  #00656b;
+}
+
+a:hover .icones .fa-trash:not(#validation .fa-trash){
+  color: red;
+}
+
+
+a:hover .icones .fa-plus{
+  color: green;
+}
+
+.icones .fa-2x{
+  font-size: 1.75em;
+}
+.odd .icones .fa-repeat{
+  -webkit-text-stroke: 2px #dde7ec;
+}
+
+.even .icones .fa-repeat{
+  -webkit-text-stroke: 2px #fff;
+}
+
+.odd .icones .fa-exclamation{
+  -webkit-text-stroke: 1px #dde7ec;
+}
+
+.even .icones .fa-exclamation{
+  -webkit-text-stroke: 1px #fff;
+}
+
+#validation .icones{
+  width: 2em;
+  height: 2em;
+}
+
+#validation .icones:hover{
+  transform: scale(1.5);
+}
+
+input[type=checkbox]{
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  border-radius: 4px;
+  height: 1.5em;
+  width: 1.5em;
+  background: #fff;
+  border: 1px solid #00665b;
+}
+
+input[type=checkbox]:hover{
+  background: #ffd700;
+}
+
+input[type=checkbox]:checked{
+  background: #00665b;
+  position: relative;
+  transition: all 0.2s ease-out;
+}
+
+input[type=checkbox]:checked:before {
+  font-family: FontAwesome;
+  content: '\f00c';
+  display: block;
+  color: #fff;
+  font-size: 1em;
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  -webkit-text-stroke: 1px #00656b;
+}
+
+.ui-state-highlight, .ui-state-error{
+  background-image: none !important;
+}
+
+.orange{
+  color: #00656b;
+  font-style: italic;
+}
+
+
+
+/* Notes affichées en bas des plannings */
+#pl-notes-div1, .pl-notes-div1{
+  border : 1px solid #1e4c67;
+}
+
+#joursFeries table tbody tr:not(:first-of-type) td:nth-child(3), #joursFeries table tbody tr:not(:first-of-type) td:nth-child(4) {
+  text-align: center;
+}
+
+div:not(#tablePlanningHebdo_paginate, .dataTables_paginate) .ui-button:not(.ui-dialog-titlebar-close, #pl-notes-button, #working_hours div:nth-child(2) .ui-button, #table-list_paginate .fg-button, #table-groups_paginate .fg-button, #table-separations_paginate .fg-button), #tablePresenceMonCompte_wrapper .dt-button{
+  border : 1px solid #00656b;
+  border-radius: 10px;
+  background-color: #fff;
+  color : #00656b !important;
+}
+
+div:not(#tablePlanningHebdo_paginate, #boutons) .ui-button:not(.ui-dialog-titlebar-close, #pl-notes-button, #working_hours div:nth-child(2) .ui-button):hover, #tablePresenceMonCompte_wrapper .dt-button:hover{
+  background: #00656b !important;
+  color : #fff !important;
+}
+
+#tablePlanningHebdo_paginate .ui-button:hover, #auth input.ui-button:hover{
+  background: #fff;
+  color : #00656b;
+  text-decoration: underline !important;
+}
+
+.ui-tabs [role="tablist"]{
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-radius: 0px;
+  border-bottom: #00656b 1px solid;
+}
+
+.ui-tabs li[role="tab"]:not([aria-controls="ui-id-10"],[aria-controls="ui-id-12"]):hover{
+  background : #fff !important;
+  color :  #00656b !important;
+}
+
+.ui-tabs .ui-state-active[role="tab"] {
+  background: #e7f0f9 !important;
+  border: 1px solid #e7f0f9;
+}
+
+.ui-tabs li[aria-labelledby="ui-id-9"]:hover, #tabs .ui-tab-cancel:hover{
+  background-color: #FF5E5E !important;
+}
+.ui-tabs li[aria-labelledby="ui-id-11"]:hover, #tabs .ui-tab-submit:hover{
+  background-color: lightgreen !important;
+}
+
+.ui-tabs li[aria-labelledby="ui-id-9"], .ui-tabs li[aria-labelledby="ui-id-11"],  #tabs .ui-tab-cancel, #tabs .ui-tab-submit{
+  background : #fff !important;
+}
+
+.ui-tabs li[aria-labelledby="ui-id-9"] a, .ui-tabs li[aria-labelledby="ui-id-11"] a,  #tabs .ui-tab-cancel a, #tabs .ui-tab-submit a{
+  color :  #00656b !important;
+}
+
+
+#temps table{
+  background-color: #fff;
+}
+.noprint .ui-button:hover, #choix_tableaux .ui-button:hover{
+  background : #ffd700 !important;
+}
+
+.cellule_grise{
+  border : none;
+}
+/*	DataTables */
+.dataTable tbody tr.odd {
+  background-color: #e7f0f9;
+}
+
+.dataTable tbody tr.odd td.sorting_1,
+.dataTable tbody tr.odd td.sorting_2,
+.dataTable tbody tr.odd td.sorting_3{
+  background-color: rgba(85, 135, 162, 0.2);
+}
+
+.dataTable tbody tr.even td.sorting_1,
+.dataTable tbody tr.even td.sorting_2,
+.dataTable tbody tr.even td.sorting_3{
+  background-color: rgba(85, 135, 162, 0.2);
+}
+
+
+.tabsemaine1 span{
+  font-size: 1.1em;
+}
+
+.CJDataTable thead th{
+  background: #ffd700;
+  color: #1e4c67;
+}
+
+.dt-buttons {
+  margin-top : 5px;
+}
+
+#tab_agenda td{
+  border : 1px black solid;
+  border-top: none;
+  border-radius: 0px;
+}
+#tab_agenda tr:last-child :first-child{
+  border-bottom-left-radius: 5px;
+}
+#tab_agenda tr:last-child td:last-child{
+  border-bottom-right-radius: 5px;
+}
+
+#working_hours>div:nth-child(2) .ui-button, #pl-notes-button{
+  background: #00656b;
+  color : #fff !important;
+}
+
+#working_hours>div:nth-child(2) .ui-button:hover, #pl-notes-button:hover{
+  background: #ffd700 !important;
+  color : #00656b !important;
+}
+/*
+ * bleu : #009dd9 / pâle : #ccecf8 / texte : #0f6fc6
+ * rouge : #644946 / pâle : #ebd5d3 / texte : #d34717
+ * jaune  : #d7c942 / pâle : #efe0a3 / texte :
+ */
+
+.cellSpan{
+  font-weight:bold;
+}
+
+/* Style en fonction de la classe "poste" des activités */
+.animation td{
+  font-weight: bold;
+}
+
+.animation td.td_postes{
+  font-size: 1.6em;
+}
+
+.bleu.animation td{
+  background: #daf0f8;
+  border-top: outset 1px #009dd9;
+  border-bottom: outset 1px #009dd9;
+}
+
+.jaune.animation td{
+  background: #efead7;
+  border-top: outset 1px #d7c942;
+  border-bottom: outset 1px #d7c942;
+}
+
+.rouge.animation td{
+  background: #f8dbda;
+  border-top: outset 1px #c1322a;
+  border-bottom: outset 1px #c1322a;
+}
+
+.bg-yellow{
+  background-color: #ffe373;
+
+}
+/* Style en fonction des classes des tableaux (une classe par bibliothèque ) */
+/* Style par défaut */
+.tr_horaires, .tr_separation, .tr_horaires a{
+  background: #1e4c67;
+  color: #ffd700;
+}
+
+td.td_obligatoire, td.td_renfort,
+td.td_obligatoire select, td.td_renfort select,
+td.td_obligatoire a, td.td_renfort a{
+  background: #00656b;
+  color: #FFF;
+}
+
+#div_lignes td.td_obligatoire, #div_lignes td.td_obligatoire>*{
+  background: #fff !important;
+  color: #000;
+}
+
+#div_lignes select{
+  background:  #FFF;
+}
+
+.sticky, .sticky-line{
+    border-color: #FFF;
+}
+
+/* Bleu */
+.bleu.tr_horaires, .bleu.tr_separation, .bleu.tr_horaires td.td_postes{
+  background: rgba(85, 135, 162, 1);
+  color: #FFF;
+}
+
+.bleu td.td_postes{
+  background: rgba(85, 135, 162, 0.3);
+  color: #000;
+}
+
+/* Jaune */
+.jaune.tr_horaires, .jaune.tr_separation, .jaune.tr_horaires td.td_postes{
+  background: rgba(100, 192, 164, 1);
+  color: #000;
+}
+
+.jaune td.td_postes{
+  background: rgba(100, 192, 164, 0.3);
+  color: #000;
+}
+
+/* Rouge */
+.rouge.tr_horaires, .rouge.tr_separation, .rouge.tr_horaires td.td_postes{
+  background: rgba(242, 178, 174, 1);
+  color: #000;
+}
+
+.rouge td.td_postes{
+  background: rgba(242, 178, 174, 0.3);
+  color: #000;
+}
+
+/* Violet */
+.violet.tr_horaires, .violet.tr_separation, .violet.tr_horaires td.td_postes{
+  background: rgba(242, 178, 174, 1);
+  color: #000;
+}
+
+.violet td.td_postes{
+  background: rgba(242, 178, 174, 0.3);
+  color: #000;
+}
+
+/* Vert */
+.vert.tr_horaires, .vert.tr_separation, .vert.tr_horaires td.td_postes{
+  background: rgba(100, 192, 164, 1);
+  color: #000;
+}
+
+.vert td.td_postes{
+  background: rgba(100, 192, 164, 0.3);
+  color: #000;
+}
+
+.tr_espace{
+  display: block;
+  height:20px;
+}
+
+.cellule_grise,.tr1, .animation td.cellule_grise {
+  background: #DDD;
+}
+
+@media print {
+    #content-planning .tableauStandard {
+        display: none;
+    }
+}
