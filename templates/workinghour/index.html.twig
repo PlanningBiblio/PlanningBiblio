@@ -43,7 +43,7 @@
             </a>
             {% if elem.cle == null %}
               <a href='index.php?page=planningHebdo/modif.php&copy={{ elem.id }}&retour={{ asset("workinghour") }}'/>
-                <span class='icones' title='Copier'><i class="fa fa-clone fa-2x"></i></span>
+                <span class='icones fa-stack fa-lg' title='Copier'><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-clone fa-stack-1x"></i>
               </a>
               <a href='javascript:plHebdoSupprime({{ elem.id }});' style='margin-left:6px;'/>
                 <span class='icones' title='Supprimer'><i class="fa fa-trash fa-2x"></i></span>

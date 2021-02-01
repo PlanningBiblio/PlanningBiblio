@@ -209,7 +209,7 @@ foreach ($recup as $elem) {
     }
 
     echo "<tr>";
-    echo "<td><a href='index.php?page=conges/recuperation_modif.php&amp;id={$elem['id']}'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a></td>\n";
+    echo "<td><a href='index.php?page=conges/recuperation_modif.php&amp;id={$elem['id']}'><span class='icones' title='Modifier'><i class='fa fa-pencil-square fa-2x'></i></span></a></td>\n";
     $date2=($elem['date2'] and $elem['date2']!="0000-00-00")?" &amp; ".dateFr($elem['date2']):null;
     echo "<td>".dateFr($elem['date'])."$date2</td>\n";
     if ($admin) {
@@ -401,17 +401,17 @@ $(function() {
 	    type: "post",
 	    success: function(result){
 	      if(result[0]=="Demande-OK"){
-	      
+
 		// Préparation de l'affichage des erreurs et confirmations
 		var msg=encodeURIComponent("Votre demande a été enregistrée");
-		
+
 		var msg2=null;
 		var msg2Type=null;
 		if(result[1]!=undefined){
 		  msg2=encodeURIComponent(result[1]);
 		  msg2Type="error";
 		}
-		
+
 		// Affiche la liste des demandes après enregistrement
 		document.location.href="index.php?page=conges/recuperations.php&msgType=success&msg="+msg+"&msg2Type="+msg2Type+"&msg2="+msg2;
 		// Ferme le dialog

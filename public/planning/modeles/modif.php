@@ -25,7 +25,7 @@ $nom=filter_input(INPUT_GET, "nom", FILTER_SANITIZE_STRING);
 $nom_origine=$nom;
 
 ?>
-<form method='get' action='index.php' name='form'>
+<form method='get' action='index.php' name='form' id="modele">
 <input type='hidden' name='page' value='planning/modeles/valid.php' />
 <input type='hidden' name='action' value='modif' />
 <input type='hidden' name='CSRFToken' value='<?php echo $CSRFSession; ?>' />

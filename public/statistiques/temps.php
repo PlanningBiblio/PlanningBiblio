@@ -34,7 +34,7 @@ $debut=filter_input(INPUT_GET, "debut", FILTER_SANITIZE_STRING);
 if ($debut) {
     $fin=filter_input(INPUT_GET, "fin", FILTER_SANITIZE_STRING);
     $selection_groupe = filter_input(INPUT_GET, 'selection_groupe', FILTER_SANITIZE_STRING);
-  
+
     $debut=filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
     $fin=filter_var($fin, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
     $selection_groupe=filter_var($selection_groupe, FILTER_CALLBACK, array("options"=>"sanitize_on"));
@@ -102,7 +102,7 @@ if (!empty($groupes) and count($groupes)>1) {
 if ($affichage_groupe and $selection_groupe) {
     // $groupes_keys : nom des groupes
     $keys = array_keys($groupes);
-  
+
     // Affichage des groupes selon l'ordre du menu déroulant
     $db=new db();
     $db->select2('select_groupes', 'valeur', null, 'order by rang');
@@ -118,7 +118,7 @@ if ($affichage_groupe and $selection_groupe) {
         $groupes_keys[]='';
     }
 
-  
+
     // Initialisation des totaux (footer)
     foreach ($groupes_keys as $g) {
         $totauxGroupesHeures[$g] = 0;
@@ -189,7 +189,7 @@ $req.="ORDER BY `nom`,`prenom`;";
 $db->query($req);
 if ($db->result) {
     foreach ($db->result as $elem) {
-  
+
     // Vérifie à partir de la table absences si l'agent est absent
         // S'il est absent, on met à 1 la variable $elem['absent']
         foreach ($absencesDB as $a) {
@@ -197,7 +197,7 @@ if ($db->result) {
                 continue 2;
             }
         }
-  
+
         if (!array_key_exists($elem['perso_id'], $tab)) {		// création d'un tableau de données par agent (id, nom, heures de chaque jour ...)
             $tab[$elem['perso_id']] = array("perso_id"=>$elem['perso_id'],"nom"=>$elem['nom'],
       "prenom"=>$elem['prenom'],"statut"=>$elem['statut'],"site1"=>0,"site2"=>0,"total"=>0,
@@ -210,13 +210,13 @@ if ($db->result) {
                     }
                 }
             }
-      
+
             // Totaux par groupe de postes
             foreach ($groupes_keys as $g) {
                 $tab[$elem['perso_id']]['group_'.$g] = 0;
             }
         }
-      
+
         $d=new datePl($elem['date']);
         $position=$d->position!=0?$d->position-1:6;
         $tab[$elem['perso_id']][$elem['date']]['total']+=diff_heures($elem['debut'], $elem['fin'], "decimal");	// ajout des heures par jour
@@ -232,7 +232,7 @@ if ($db->result) {
             $siteHeures[$elem['site']]=0;
         }
         $siteHeures[$elem['site']]+=diff_heures($elem['debut'], $elem['fin'], "decimal");
-    
+
         // Totaux par groupe de postes
         foreach ($groupes_keys as $g) {
             if (in_array($elem['poste'], $groupes[$g])) {
@@ -308,7 +308,7 @@ foreach ($keys as $key) {
     } else {
         $tab[$key]['heuresHebdo']=0;
     }
-  
+
     if (!array_key_exists($key, $totalSP) or !is_numeric($totalSP[$key])) {
         $tab[$key]['max']="Erreur";
     } elseif ($totalSP[$key]>0) {
@@ -432,11 +432,11 @@ EOD;
     foreach ($tab as $elem) {
 
     // Couleurs en fonction de la moyenne hebdo et des heures prévues
-        $color=$elem['semaine']>$elem['heuresHebdo']?"background:red; font-weight:bold;":null;
+        $color=$elem['semaine']>$elem['heuresHebdo']?"background:#FF5E5E; font-weight:bold;":null;
         if (($elem['heuresHebdo']-$elem['semaine'])<=0.5 and ($elem['semaine']-$elem['heuresHebdo'])<=0.5) {		// 0,5 du quota hebdo : vert
             $color="background:lightgreen; font-weight:bold;";
         }
-    
+
         // Affichage des lignes : Nom, heures par jour, par semaine, heures prévues
         echo "<tr style='vertical-align:top;'><td>{$elem['nom']} {$elem['prenom']}</td>\n";
         $elem['statut']=$elem['statut']?$elem['statut']:"&nbsp;";
@@ -456,7 +456,7 @@ EOD;
                     }
                 }
             }
-      
+
             echo "</td>\n";
         }
 
@@ -468,7 +468,7 @@ EOD;
                 }
             }
         }
-    
+
         // Totaux par groupe de postes
         if (!empty($groupes_keys)) {
             foreach ($groupes_keys as $g) {

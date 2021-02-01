@@ -13,7 +13,7 @@
       <a href='index.php?page=planning/postes_cfg/modif.php' class='ui-button'>Nouveau tableau</a>
     </p>
     <form name='form' method='get' action='{{ asset("framework")}}'>
-      <input type="hidden" name="modification" value ="tableau"/> 
+      <input type="hidden" name="modification" value ="tableau"/>
       <table class='CJDataTable' id='table-list' data-noExport='1' data-sort='[[1,"asc"]]'>
         <thead>
           <tr>
@@ -36,7 +36,7 @@
                   <span class='icones' title='Modifier'><i class="fa fa-pencil-square fa-2x"></i></span>
                 </a>
                 <a href='javascript:popup("planning/postes_cfg/copie.php&numero={{ elem.tableau }}",400,260);'>
-                  <span class='icones' title='Copier'><i class="fa fa-clone fa-2x"></i></span>
+                  <span class='icones fa-stack fa-lg' title='Copier'><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-clone fa-stack-1x"></i>
                 </a>
                 <a href='javascript:supprimeTableau({{ elem.tableau }});'>
                   <span class='icones' title='Supprimer'><i class="fa fa-trash fa-2x"></i></span>
@@ -64,7 +64,7 @@
               <option value='{{ item.tableau }}'>{{ item.nom }}&nbsp;(utilisation : {{ item.tabAffect }})</option>
             {% endfor %}
         </select>
-      </p> 
+      </p>
     {% endif %}
   </div>
   <div id='tableaux-groupes' class='tableaux-cfg' >

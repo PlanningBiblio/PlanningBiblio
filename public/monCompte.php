@@ -142,7 +142,7 @@ EOD;
 
         echo "<tr>";
         echo "<td style='white-space:nowrap;'>$arrow <a href='index.php?page=planningHebdo/modif.php&amp;id={$elem['id']}&amp;retour=monCompte.php'/>";
-        echo "<span class='pl-icon pl-icon-edit' title='Voir'></span></a></td>";
+        echo "<span class='icones' title='Voir'><i class='fa fa-pencil-square fa-2x'></i></span></a></td>";
         echo "<td>".dateFr($elem['debut'])."</td>";
         echo "<td>".dateFr($elem['fin'])."</td>";
         echo "<td>".dateFr($elem['saisie'], true)."</td>";
