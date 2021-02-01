@@ -163,7 +163,7 @@ EOD;
 if ($config['Conges-Enable']) {
     echo <<<EOD
   <!-- Crédits -->
-  <div id='credits' style='margin-left:80px;display:none;'>
+  <div id='credits' style='padding-left:80px;display:none;'>
   <h3>Crédits</h3>
   <table class='tableauFiches'>
   <tr><td style='font-weight:bold;' colspan='2'>Congés</td></tr>
@@ -182,7 +182,7 @@ EOD;
 ?>
 
 <!-- Mot de Passe -->
-<div id='motDePasse' style='margin-left:80px;display:none;'>
+<div id='motDePasse' style='padding-left:80px;display:none;'>
 <?php
 // Mot de passe modifiable seulement si authentification SQL
 if ($_SESSION['oups']['Auth-Mode']=="SQL") {
@@ -196,7 +196,7 @@ if ($_SESSION['oups']['Auth-Mode']=="SQL") {
 </div> <!-- motDePasse -->
 
 <!-- Calendrier ICS -->
-<div id='ics' style='margin-left:80px;display:none;'>
+<div id='ics' style='padding-left:80px;display:none;'>
 <h3>URL de votre calendrier ICS</h3>
 <p>
 <?php
