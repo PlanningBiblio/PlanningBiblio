@@ -417,7 +417,7 @@ input[type=checkbox]:checked:before {
   text-align: center;
 }
 
-div:not(#tablePlanningHebdo_paginate, .dataTables_paginate) .ui-button:not(.ui-dialog-titlebar-close, #pl-notes-button, #working_hours div:nth-child(2) .ui-button), #tablePresenceMonCompte_wrapper .dt-button{
+div:not(#tablePlanningHebdo_paginate, .dataTables_paginate) .ui-button:not(.ui-dialog-titlebar-close, #pl-notes-button, #working_hours div:nth-child(2) .ui-button, #table-list_paginate .fg-button, #table-groups_paginate .fg-button, #table-separations_paginate .fg-button), #tablePresenceMonCompte_wrapper .dt-button{
   border : 1px solid #00656b;
   border-radius: 10px;
   background-color: #fff;

@@ -127,6 +127,60 @@ h3{
   margin-right:40px;
 }
 
+/* Icones Font-Awesome*/
+.icones{
+  padding: 0px 5px;
+  display: inline-block;
+  text-align: center;
+  color : #7D3C25;
+}
+
+.icones .fa-2x{
+  font-size: 1.75em;
+}
+
+.fa-stack .fa-clone{
+  color : #FFD8C4;
+}
+
+.odd .icones .fa-repeat{
+  -webkit-text-stroke: 2px #FFD8C4;
+}
+
+.even .icones .fa-repeat{
+  -webkit-text-stroke: 2px #fff;
+}
+
+.odd .icones .fa-exclamation{
+  -webkit-text-stroke: 1px #FFD8C4;
+}
+
+.even .icones .fa-exclamation{
+  -webkit-text-stroke: 1px #fff;
+}
+
+#validation .icones{
+  width: 2em;
+  height: 2em;
+}
+
+#validation .icones:hover{
+  transform: scale(1.5);
+}
+
+#form .tableauStandard{
+  vertical-align: middle;
+  display: table-cell;
+}
+
+tr a{
+  text-decoration: none;
+}
+
+td *{
+  vertical-align: middle;
+}
+
 /* Absences récurrentes */
 #recurrence-summary, #recurrence-summary-form {
   max-width:300px;
@@ -275,7 +329,7 @@ li .agent-acces-checked2{
 .tableauFiches textarea{
   width: 100%;
   height: 100px;
-} 
+}
 
 .tableauFiches input[type=button],.tableauFiches input[type=submit]{
   margin: 0 20px 0 20px;
@@ -284,7 +338,7 @@ li .agent-acces-checked2{
 .tableauFiches .tdValidation{
   padding-top:20px;
   text-align:center;
-} 
+}
 
 /* Menu Principal */
 /* .logo_td : permet de positionner le menu principal, 1ere cellule avant le 1er item du menu */
@@ -600,7 +654,7 @@ div#tabsemaine1{
 /* tr_espace : permet d'ajouter un espace entre les tableaux : ex: display:block; height:20px; */
 .tr_espace{
   display: none;
-  height:20px; 
+  height:20px;
 }
 
 #tabsemaine1 tr.tr_espace td,
@@ -813,7 +867,7 @@ div#tabsemaine1{
 
 .print_only
 	{
-	font-size:13px; 
+	font-size:13px;
 	display:none;
 	}
 
@@ -826,7 +880,7 @@ div#tabsemaine1{
 	font-weight: bold;
 	z-index:3;
 	}
-	
+
 .menuRed
 	{
 	color:#FF5E0E;
@@ -852,7 +906,7 @@ a:hover.menuRed, a:hover.menu {
 	font-family:Verdana;
 	font-weight: bold
 	}
-	
+
 .menu2Red
 	{
 	color:red;
@@ -886,7 +940,7 @@ a:hover.menuRed, a:hover.menu {
 	position:absolute;
 	top:50px;
 	left:380px;
-	color:white; 
+	color:white;
 	font-size:32.0pt;
 	font-family:Verdana;
 	}
@@ -945,12 +999,12 @@ a:hover.menuRed, a:hover.menu {
 	padding: 20px;
 	}
 
-	
+
 #aide {
 	margin:0px 80px 0px 30px;
 	text-align:justify;
 	}
-	
+
 #aide h3 {
 	margin-top:30px;
 	margin-bottom:10px;
@@ -975,7 +1029,7 @@ a:hover.menuRed, a:hover.menu {
 
 /*	Messages d'informations		*/
 #messages_infos {
-	color:#FF5E0E;	
+	color:#FF5E0E;
 	font-weight:bold;
 	font-size:13pt;
 }
@@ -988,7 +1042,7 @@ img{
   vertical-align:top;
 }
 
-#cal_ifram{	
+#cal_ifram{
   width:200px;
   height:160px;
 }
@@ -1235,8 +1289,8 @@ div.presents-absents {
 
 #volants-dispo-div select,
 #volants-selectionnes-div select{
-  height: 400px; 
-  width: 300px; 
+  height: 400px;
+  width: 300px;
   font-size: 1em;
 }
 
