@@ -798,6 +798,7 @@ class HolidayController extends BaseController
                 ));
                 $result = $holidayHlper->getCountedHours();
                 $data['heures'] = $result['hours'];
+                $data['minutes'] = $result['minutes'];
             }
 
             $c->add($data);
