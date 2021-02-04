@@ -588,7 +588,7 @@ if (!$verrou and !$autorisationN1) {
         // Masquer les tableaux
         $masqueTableaux=null;
         if ($config['Planning-TableauxMasques']) {
-            $masqueTableaux="<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer noprint' data-id='$j' ></span>";
+            $masqueTableaux="<span title='Masquer' class='icones masqueTableau pointer noprint' data-id='$j' ><i class='fa fa-eye fa-lg' style='color:white;'></i></span>";
         }
 
         //		Lignes horaires

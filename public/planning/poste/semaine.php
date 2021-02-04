@@ -386,7 +386,7 @@ for ($j=0;$j<=$fin;$j++) {
             // Masquer les tableaux
             $masqueTableaux=null;
             if ($config['Planning-TableauxMasques']) {
-                $masqueTableaux="<span title='Masquer icones' class='masqueTableau pointer' data-id='$l' ><i class='fa fa-eye fa-lg' style='color:white;'></i></span>";
+                $masqueTableaux="<span title='Masquer' class='masqueTableau pointer icones' data-id='$l' ><i class='fa fa-eye fa-lg' style='color:white;'></i></span>";
             }
 
             //		Lignes horaires
