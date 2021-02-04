@@ -161,7 +161,8 @@ echo "<tr><td><div class='noprint'>\n";
 echo "</div></td><td class='titreSemFixe'>\n";
 echo "<div class='noprint'>\n";
 
-switch ($config['nb_semaine']) {
+$nb_semaine = $config['Multisites-site'.$site.'-cycles'] ?? $config['nb_semaine'];
+switch ($nb_semaine) {
   case 2:	$type_sem=$semaine%2?"Impaire":"Paire";	$affSem="$type_sem ($semaine)";	break;
   case 3: 	$type_sem=$semaine3;			$affSem="$type_sem ($semaine)";	break;
   default:	$affSem=$semaine;	break;

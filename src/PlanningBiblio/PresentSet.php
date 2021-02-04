@@ -54,16 +54,7 @@ class PresentSet
                 $jour = 6;
             }
 
-            if ($config['nb_semaine'] == "2" and !($semaine%2)) {
-                $jour+=7;
-            }
-            elseif ($config['nb_semaine']=="3") {
-                if ($semaine3==2) {
-                    $jour+=7;
-                } elseif ($semaine3==3) {
-                    $jour+=14;
-                }
-            }
+            $jour += ($semaine3 - 1) * 7;
 
             // Si l'emploi du temps est renseigné
             if (!empty($temps) and array_key_exists($jour, $temps)) {

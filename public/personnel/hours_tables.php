@@ -1,12 +1,21 @@
 <?php
-
+use App\PlanningBiblio\Helper\HolidayHelper;
 
 # Very very tricky solution but this is this fatsest
 # way to twigizing this part.
 $config = $GLOBALS['config'];
 $temps = $GLOBALS['temps'];
 $hours_tab = '';
-switch ($config['nb_semaine']) {
+
+if ($config['PlanningHebdo']) {
+    $holiday_helper = new HolidayHelper(array("perso_id" => $id));
+    $result = $holiday_helper->getPlanning();
+    $nb_semaine = $result['nb_semaine'] ?? $config['nb_semaine'];
+} else {
+    $nb_semaine = $config['nb_semaine'];
+}
+
+switch ($nb_semaine) {
   case 2: $cellule=array("Semaine Impaire","Semaine Paire");		break;
   case 3: $cellule=array("Semaine 1","Semaine 2","Semaine 3");		break;
   default: $cellule=array("Jour");					break;
@@ -24,7 +33,7 @@ if ($config['EDTSamedi'] == 1) {
     $table_name = array('Emploi du temps standard', 'Emploi du temps des semaines avec samedi travaillé', 'Emploi du temps en ouverture restreinte');
 }
 
-for ($j = 0; $j < $this->config('nb_semaine'); $j++) {
+for ($j = 0; $j < $nb_semaine; $j++) {
     if ($config['EDTSamedi']) {
         $hours_tab .= "<br/><b>{$table_name[$j]}</b>";
     }
