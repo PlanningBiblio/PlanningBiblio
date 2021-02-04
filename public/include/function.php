@@ -72,39 +72,73 @@ class datePl
         $this->dates=array($j1,$j2,$j3,$j4,$j5,$j6,$j7);
 
 
-        // Calcul du numéro de la semaine pour l'utilisation d'un seul planning hebdomadaire : toujours 1
-        if ($GLOBALS['config']['nb_semaine']==1) {
-            $this->semaine3=1;
-        }
-        // Calcul du numéro de la semaine pour l'utilisation de 2 plannings hebdomadaires
-        if ($GLOBALS['config']['nb_semaine']==2) {
-            $this->semaine3=$this->semaine%2?1:2;
-        }
-        // Calcul du numéro de la semaine pour l'utilisation de 3 plannings hebdomadaires
-        if ($GLOBALS['config']['nb_semaine']==3) {
-            $position=date("w", strtotime(dateSQL($GLOBALS['config']['dateDebutPlHebdo'])))-1;
-            $position=$position==-1?6:$position;
-            $dateFrom=new dateTime(dateSQL($GLOBALS['config']['dateDebutPlHebdo']));
-            $dateFrom->sub(new DateInterval("P{$position}D"));
+        switch ($GLOBALS['config']['nb_semaine']) {
+            // Calcul du numéro de la semaine pour l'utilisation d'un seul planning hebdomadaire : toujours 1
+            case 1:
+                $this->semaine3 = 1;
+                break;
 
-            $position=date("w", strtotime($date))-1;
-            $position=$position==-1?6:$position;
-            $dateNow=new dateTime($date);
-            $dateNow->sub(new DateInterval("P{$position}D"));
+            // Calcul du numéro de la semaine pour l'utilisation de 2 plannings hebdomadaires
+            case 2:
+                $this->semaine3 = $this->semaine % 2 ? 1 : 2;
+                break;
 
-            $interval=$dateNow->diff($dateFrom);
-            $interval=$interval->format("%a");
-            $interval=$interval/7;
-            if (!($interval%3)) {
-                $this->semaine3=1;
-            }
-            if (!(($interval+2)%3)) {
-                $this->semaine3=2;
-            }
-            if (!(($interval+1)%3)) {
-                $this->semaine3=3;
-            }
+            // Calcul du numéro de la semaine pour l'utilisation de 3 plannings hebdomadaires
+            case 3:
+                $interval = $this->getNumberOfWeeksSinceStartDate();
+                if (!($interval%3)) {
+                    $this->semaine3=1;
+                }
+                if (!(($interval+2)%3)) {
+                    $this->semaine3=2;
+                }
+                if (!(($interval+1)%3)) {
+                    $this->semaine3=3;
+                }
+                # Or: $this->semaine3 = $this->getCycleNumber($interval, 3);
+                # (can be moved in default case then)
+                break;
+
+            // Calcul du numéro de la semaine pour l'utilisation de 4 plannings hebdomadaires
+            case 4:
+               $this->semaine3 = $this->getCycleNumber($this->semaine, 4);
+
+            default:
+                $interval = $this->getNumberOfWeeksSinceStartDate();
+                $this->semaine3 = $this->getCycleNumber($this->semaine, $GLOBALS['config']['nb_semaine']);
+                break;
         }
+    }
+
+    private function getCycleNumber($weeknumber, $cycles) {
+        $weekcycle = 0;
+
+        for ($i = 1; $i <= $weeknumber; $i++) {
+            if ($weekcycle < $cycles) {
+                $weekcycle++;
+            } else {
+                $weekcycle = 1;
+            }
+            echo "week: $i, cycle: $weekcycle\n";
+        }
+        return $weekcycle;
+    }
+
+    private function getNumberOfWeeksSinceStartDate() {
+        $position=date("w", strtotime(dateSQL($GLOBALS['config']['dateDebutPlHebdo'])))-1;
+        $position=$position==-1?6:$position;
+        $dateFrom=new dateTime(dateSQL($GLOBALS['config']['dateDebutPlHebdo']));
+        $dateFrom->sub(new DateInterval("P{$position}D"));
+
+        $position=date("w", strtotime($date))-1;
+        $position=$position==-1?6:$position;
+        $dateNow=new dateTime($date);
+        $dateNow->sub(new DateInterval("P{$position}D"));
+
+        $interval=$dateNow->diff($dateFrom);
+        $interval=$interval->format("%a");
+        $interval=$interval/7;
+        return $interval;
     }
 
     public function planning_day_index_for($agent_id)
