@@ -180,6 +180,10 @@ class StatedWeekController extends BaseController
 
         $required_skills = array();
         $required_services = array($this->config('statedweek_service_filter'));
+        $required_status = null;
+
+        $excluded_status = $this->config('statedweek_status_filter') ?? null;
+
         if ($job_name) {
             $jobs_conf = $this->config('statedweek_times_job');
             foreach ($jobs_conf as $job_conf) {
@@ -196,6 +200,12 @@ class StatedWeekController extends BaseController
                     } else {
                         $required_services = array();
                     }
+
+                    $required_status = $this->config($job_conf['status_option']) ?? null;
+
+                    if (!empty($required_status)) {
+                        $excluded_status = null;
+                    }
                 }
             }
         }
@@ -207,6 +217,14 @@ class StatedWeekController extends BaseController
             }
 
             if (!$agent->isInService($required_services)) {
+                continue;
+            }
+
+            if ($required_status and $agent->statut() != $required_status) {
+                continue;
+            }
+
+            if ($excluded_status and $agent->statut() == $excluded_status) {
                 continue;
             }
 
