@@ -63,7 +63,6 @@ class ControllerAuthorizationListener
             return;
         }
 
-
         if(empty($this->permissions[$route])){
             if (!$logged_in->can_access($accesses)){
                 $this->triggerAccessDenied($event);

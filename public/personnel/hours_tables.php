@@ -1,18 +1,39 @@
 <?php
-
+use App\PlanningBiblio\Helper\HolidayHelper;
 
 # Very very tricky solution but this is this fatsest
 # way to twigizing this part.
 $config = $GLOBALS['config'];
 $temps = $GLOBALS['temps'];
 $hours_tab = '';
-switch ($config['nb_semaine']) {
-  case 2: $cellule=array("Semaine Impaire","Semaine Paire");		break;
-  case 3: $cellule=array("Semaine 1","Semaine 2","Semaine 3");		break;
-  default: $cellule=array("Jour");					break;
+
+if ($config['PlanningHebdo']) {
+    $holiday_helper = new HolidayHelper(array("perso_id" => $id));
+    $result = $holiday_helper->getPlanning();
+    $nb_semaine = $result['nb_semaine'] ?? $config['nb_semaine'];
+} else {
+    $nb_semaine = $config['nb_semaine'];
 }
-$fin = $config['Dimanche'] ? array(8, 15, 22) : array(7, 14, 21);
-$debut = array(1, 8, 15);
+
+switch ($nb_semaine) {
+  case 1:
+    $cellule = array('Jour');
+    break;
+  case 2:
+    $cellule = array(
+        'Semaine Impaire',
+        'Semaine Paire'
+        );
+    break;
+  default:
+    $cellule = array();
+    for ($i = 1; $i <= $nb_semaine; $i++) {
+        $cellule[] = 'Semaine ' . $i;
+    }
+    break;
+}
+$fin = $config['Dimanche'] ? array(7, 14, 21, 28, 36, 42, 49, 56, 63, 70) : array(6, 13, 20, 27, 35, 41, 48, 55, 62, 69);
+$debut = array(1, 8, 15, 22, 29, 36, 43, 50, 57, 64);
 
 if ($config['EDTSamedi'] == 1) {
     $config['nb_semaine'] = 2;
@@ -24,7 +45,7 @@ if ($config['EDTSamedi'] == 1) {
     $table_name = array('Emploi du temps standard', 'Emploi du temps des semaines avec samedi travaillé', 'Emploi du temps en ouverture restreinte');
 }
 
-for ($j = 0; $j < $this->config('nb_semaine'); $j++) {
+for ($j = 0; $j < $nb_semaine; $j++) {
     if ($config['EDTSamedi']) {
         $hours_tab .= "<br/><b>{$table_name[$j]}</b>";
     }
@@ -43,7 +64,7 @@ for ($j = 0; $j < $this->config('nb_semaine'); $j++) {
   
     $hours_tab .= "<td style='width:135px;'>Temps</td>";
     $hours_tab .= "</tr>\n";
-    for ($i=$debut[$j];$i<$fin[$j];$i++) {
+    for ($i = $debut[$j]; $i <= $fin[$j]; $i++) {
         $k=$i-($j*7)-1;
         if (in_array(21, $droits) and !$config['PlanningHebdo']) {
             $hours_tab .= "<tr><td>{$jours[$k]}</td>\n";

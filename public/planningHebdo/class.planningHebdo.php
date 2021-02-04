@@ -150,7 +150,8 @@ class planningHebdo
                 'valide'        => $valide_n2,
                 'validation'    => $validation_n2,
                 'breaktime'     => json_encode($data['breaktime']),
-                'exception'     => $data['exception']
+                'exception'     => $data['exception'],
+                'nb_semaine'    => $data['number_of_weeks'],
             );
 
             // Dans le cas d'une copie (voir fonction copy)
@@ -395,7 +396,7 @@ class planningHebdo
         foreach ($d->dates as $pl_index => $date ) {
             if ($date >= $start_exception
                 && $date <= $end_exception) {
-                $to['temps'][$pl_index] = $from['temps'][$pl_index];
+                $to['temps'][$pl_index] = $from['temps'][$pl_index] ?? null;
             }
         }
 
@@ -594,7 +595,8 @@ class planningHebdo
             'valide'        => $valide_n2,
             'validation'    => $validation_n2,
             'breaktime'     => $breaktime,
-            'exception'     => $data['exception']
+            'exception'     => $data['exception'],
+            'nb_semaine'    => $data['number_of_weeks'],
         );
 
         if (isset($valide_n1)) {

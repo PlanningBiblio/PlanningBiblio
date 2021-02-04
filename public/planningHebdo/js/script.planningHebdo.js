@@ -271,6 +271,7 @@ function plHebdoVerifForm(){
   id=$("input[name=id]").val();
   perso_id=$("#perso_id").val();
   is_exception = $('input[name="exception"]').val();
+  is_copy = $('input[name="copy"]').val();
 
   if(!debut || !fin){
     alert("Les dates de début et de fin sont obligatoires");
@@ -282,9 +283,12 @@ function plHebdoVerifForm(){
     return false;
   }
 
-  data = {debut: debut, fin: fin, id: id, perso_id: perso_id};
+  data = {debut: debut, fin: fin, perso_id: perso_id};
   if (is_exception) {
     data['exception'] = is_exception;
+  }
+  if (!is_copy) {
+    data['id'] = id;
   }
 
   var retour=false;
@@ -345,7 +349,7 @@ $(function(){
   });
 
   //calcul des heures totales par ligne après la sélection des horaires
-  $(".select").change(function(){
+  $("body").on('change', '.select', function(e){
     plHebdoCalculHeures($(this),"");
     plHebdoChangeHiddenSelect();
   });
@@ -355,7 +359,7 @@ $(function(){
   });
 
   // Action lors du click sur la case à cocher "Même planning qu'en semaine 1"
-  $(".memePlanning").click(function(){
+  $("body").on('click', '.memePlanning', function(e){
     var id=$(this).attr("data-id");
     if($(this).prop("checked")){
 
@@ -371,26 +375,4 @@ $(function(){
     }
   });
   
-  $("#perso_id").change(function(){
-    var baseURL = $('#baseURL').val();
-    $.ajax({
-      url: baseURL+"/planningHebdo/ajax.getSites.php",
-      dataType: "json",
-      type: "post",
-      data: {id: $(this).val()},
-      success: function(result){
-	var options="<option value=''>&nbsp;</option>\n";
-	for(i in result){
-	  options+= "<option value='"+result[i][0]+"'>"+result[i][1]+"</option>\n";
-	}
-	$(".selectSite").html(options);
-      },
-      error: function(result){
-	CJInfo("Imposssible de récupérer la liste des sites de l'agent","error");
-	CJInfo(result.responseText,"error");
-      }
-      
-    });
-    
-  });
 });
