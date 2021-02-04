@@ -7,6 +7,10 @@
     - 100
 "agent.index":
     - 4
+"ajax.agentsites":
+    - 100
+"ajax.agentdistinctsitescycles":
+    - 100
 "ajax.editabsencereasons":
     - 100
 "ajax.holidaycredit":
@@ -24,6 +28,10 @@
 "ajax.mailtest":
     - 100
 "comp-time.index":
+    - 100
+"ajax.holidaycredit":
+    - 100
+"ajax.workinghourtables":
     - 100
 "framework.index":
     - 22

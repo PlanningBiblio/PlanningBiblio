@@ -10,6 +10,7 @@ use App\PlanningBiblio\Helper\HolidayHelper;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Response;
 
 require_once(__DIR__ . "/../../public/personnel/class.personnel.php");
 require_once(__DIR__ . "/../../public/activites/class.activites.php");
@@ -18,6 +19,79 @@ require_once(__DIR__ . "/../../public/conges/class.conges.php");
 
 class AgentController extends BaseController
 {
+
+    /**
+     * @Route("/ajax/agent-sites", name="ajax.agentsites", methods={"GET"})
+     */
+    public function sites(Request $request)
+    {
+        $agent = $request->get('id');
+        $response = new Response();
+        if (!$agent) {
+            $response->setContent('Wrong parameters');
+            $response->setStatusCode(404);
+            return $response;
+        }
+
+        $db = new \db();
+        $result = array();
+        $db->select2("personnel", "sites", array("id"=>$agent));
+        if ($db->result) {
+            $sites = json_decode(html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+            if (is_array($sites)) {
+                foreach ($sites as $elem) {
+                    $result[] = array("id" => $elem, 
+                                    "name" => $this->config("Multisites-site" . $elem), 
+                                    "mail" => $this->config("Multisites-site" . $elem . "-mail"), 
+                                    "cycles" => $this->config("Multisites-site". $elem . "-cycles"));
+                }
+            }
+        }
+
+        $response->setContent(json_encode($result));
+        $response->setStatusCode(200);
+
+        return $response;
+    }
+
+   /**
+     * @Route("/ajax/agent-distinct-sites-cycles", name="ajax.agentdistinctsitescycles", methods={"GET"})
+     */
+    public function distinctSitesCycles(Request $request)
+    {
+        $agent = $request->get('id');
+        $response = new Response();
+        if (!$agent) {
+            $response->setContent('Wrong parameters');
+            $response->setStatusCode(404);
+            return $response;
+        }
+
+        $db = new \db();
+        $result = array();
+        $db->select2("personnel", "sites", array("id"=>$agent));
+        if ($db->result) {
+            $sites = json_decode(html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+            if (is_array($sites)) {
+                foreach ($sites as $elem) {
+                    $cycles = $this->config("Multisites-site". $elem . "-cycles");
+                    array_push($result, $cycles ? $cycles : $this->config('nb_semaine'));
+                }
+                $result = array_values(array_unique($result));
+                sort($result);
+            } else {
+                $result[] = $this->config('nb_semaine');
+            }
+        }
+
+        $response->setContent(json_encode($result));
+        $response->setStatusCode(200);
+
+        return $response;
+    }
+
+
+
     /**
      * @Route("/agent", name="agent.index", methods={"GET"})
      */

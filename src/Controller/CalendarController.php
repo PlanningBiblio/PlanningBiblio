@@ -144,21 +144,14 @@ class CalendarController extends BaseController
                 $jour = 6;
             }
 
-            // Si utilisation de 2 ou 3 plannings hebdo, hors EDTSamedi
-            if (!$this->config('EDTSamedi')) {
-                if ($d->semaine3 == 2) {
-                    $jour = $jour+7;
-                } elseif ($d->semaine3 == 3) {
-                    $jour = $jour+14;
-                }
-            }
-
             // Si utilisation d'un planning pour les semaines sans samedi et un planning pour les semaines avec samedi travaillé
             if ($this->config('EDTSamedi')) {
                 // Pour chaque agent, recherche si la semaine courante est avec samedi travaillé ou non
                 $p = new \personnel();
                 $p->fetchEDTSamedi($perso_id, $j1, $j1);
                 $jour += $p->offset;
+            } else {
+                $jour += ($d->semaine3 - 1) * 7;
             }
 
             // Horaires de travail si le module PlanningHebdo est activé
