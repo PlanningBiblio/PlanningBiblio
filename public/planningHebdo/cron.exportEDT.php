@@ -108,16 +108,8 @@ while ($current < $end) {
 
     // Si utilisation de 2 plannings hebdo (semaine paire et semaine impaire)
     // Si semaine paire, position +=7 : lundi A = 0 , lundi B = 7 , dimanche B = 13
-    if ($config['nb_semaine']=="2" and !($d->semaine % 2) and !$config['EDTSamedi']) {
-        $jour+=7;
-    }
-    // Si utilisation de 3 plannings hebdo
-    elseif ($config['nb_semaine']=="3" and !$config['EDTSamedi']) {
-        if ($d->semaine3 == 2) {
-            $jour+=7;
-        } elseif ($d->semaine3 == 3) {
-            $jour+=14;
-        }
+    if (!$config['EDTSamedi']) {
+        $jour += ($->semaine3 - 1) * 7;
     }
 
     // Recherche les heures de présence valides ce jour pour tous les agents

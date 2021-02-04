@@ -55,8 +55,9 @@ class WeekPlanningHelper extends BaseHelper
             $planning = $this->getPlanning($date, $agent);
         }
 
-        $d = new \datePl($date);
+        $d = new \datePl($date, $nb_semaine);
         $week = $d->semaine3;
+
         $day = $d->position ? $d->position : 7;
         $day = $day + (($week - 1) * 7) - 1;
 
@@ -84,7 +85,8 @@ class WeekPlanningHelper extends BaseHelper
          }
          $times = $p->elements[0]['temps'];
          $breaktimes = $p->elements[0]['breaktime'];
+         $nb_semaine = $p->elements[0]['nb_semaine'];
 
-         return array('times' => $times, 'breaktimes' => $breaktimes);
+         return array('times' => $times, 'breaktimes' => $breaktimes, 'nb_semaine' => $nb_semaine);
     }    
 }
