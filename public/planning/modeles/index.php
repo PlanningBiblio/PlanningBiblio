@@ -39,7 +39,7 @@ echo "<tbody>\n";
 foreach ($modeles as $elem) {
     echo "<tr>\n";
     echo "<td>\n";
-    echo "<a href='index.php?page=planning/modeles/modif.php&amp;nom={$elem['nom']}'><span class='icones' title='Modifier'><i class='fa fa-pencil-square fa-2x'> </i></span></a>";
+    echo "<a href='index.php?page=planning/modeles/modif.php&amp;nom={$elem['nom']}'><span class='icones fa-stack fa-lg' title='Modifier'><i class='fa fa-circle fa-stack-2x fa-3x'></i><i class='fa fa-pencil-square-o fa-stack-1x'></i><</span></a>";
     echo "<a href='javascript:supprime(\"planning/modeles\",\"{$elem['nom']}\",\"$CSRFSession\");'><span class='icones' title='Supprimer'><i class='fa fa-trash fa-2x'> </i></span></a>";
     echo "</td>\n";
     echo "<td>{$elem['nom']}</td>\n";

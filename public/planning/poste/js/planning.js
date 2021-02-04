@@ -43,8 +43,8 @@ $(document).ready(function(){
       var divHeight=$(index).height()/nbDiv;
       $(index).find("div").css("height",divHeight);
     }
-    // Centrer verticalement les textes (span sauf .pl-icon-hide)
-    $(index).find("span:not(.pl-icon-hide)").each(function(j,jtem){
+    // Centrer verticalement les textes (span sauf .fa-eye)
+    $(index).find("span:not(.fa-eye)").each(function(j,jtem){
       var top=(($(jtem).closest("div").height()-$(jtem).height())/2)-4;
       $(jtem).css("position","relative");
       $(jtem).css("top",top);

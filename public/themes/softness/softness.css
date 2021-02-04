@@ -31,7 +31,7 @@ included by templates/base.html.twig, public/include/header.php and public/setup
  * général rouge : da1f27
  */
  @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,700;1,400&display=swap');
-* :not(span.icones>*){
+* :not(.fa){
   font-family: 'Open Sans', sans-serif;
 }
 body{
@@ -81,6 +81,7 @@ body{
     height: 70px;
     border-bottom: 3px solid;
     border-bottom-color: #ffd700;
+    padding-bottom: 10px;
 
 }
 td.menu_td2{
@@ -95,17 +96,17 @@ td.menu_td2, td.menu_td2:hover{
     padding: 60px 5px 5px 5px;
 }
 
-.fa-stack:hover .fa-square{
+.fa-stack:hover .fa-square, .fa-stack:hover .fa-circle  {
   color: #ffd700 !important;
- }
+}
 
- .fa-stack .fa-clone{
-   color : #fff;
- }
+.fa-stack .fa-clone, .fa-stack .fa-pencil-square-o{
+  color : #fff;
+}
 
- .fa-stack .fa-clone:hover{
-   color : #1e4c67 !important;
- }
+.fa-stack .fa-clone:hover, .fa-stack .fa-pencil-square-o:hover{
+  color : #1e4c67 !important;
+}
 
 #content-planning{
   padding: 0px 0 0 0;
@@ -327,12 +328,12 @@ a:hover .icones .fa:not(.icones .fa-sign-out, .icones .fa-repeat, .icones .fa-ex
   color:  #00656b;
 }
 
-a:hover .icones .fa-trash:not(#validation .fa-trash){
+a:hover .icones .fa-trash:not(#validation .fa-trash), .icones:hover .fa-trash:not(#validation .fa-trash){
   color: red;
 }
 
 
-a:hover .icones .fa-plus{
+a:hover .icones .fa-plus, .icones:hover .fa-plus{
   color: green;
 }
 
@@ -407,7 +408,9 @@ input[type=checkbox]:checked:before {
 }
 
 
-
+.fa-eye:hover{
+  color : #ffd700 !important;
+}
 /* Notes affichées en bas des plannings */
 #pl-notes-div1, .pl-notes-div1{
   border : 1px solid #1e4c67;
@@ -417,14 +420,14 @@ input[type=checkbox]:checked:before {
   text-align: center;
 }
 
-div:not(#tablePlanningHebdo_paginate, .dataTables_paginate) .ui-button:not(.ui-dialog-titlebar-close, #pl-notes-button, #working_hours div:nth-child(2) .ui-button, #table-list_paginate .fg-button, #table-groups_paginate .fg-button, #table-separations_paginate .fg-button), #tablePresenceMonCompte_wrapper .dt-button{
+div:not(#tablePlanningHebdo_paginate, .dataTables_paginate) .ui-button:not(.ui-dialog-titlebar-close, #pl-notes-button, #working_hours div:nth-child(2) .ui-button, #table-list_paginate .fg-button, #table-groups_paginate .fg-button, #table-separations_paginate .fg-button, #accordion+div .ui-button), #tablePresenceMonCompte_wrapper .dt-button{
   border : 1px solid #00656b;
   border-radius: 10px;
   background-color: #fff;
   color : #00656b !important;
 }
 
-div:not(#tablePlanningHebdo_paginate, #boutons) .ui-button:not(.ui-dialog-titlebar-close, #pl-notes-button, #working_hours div:nth-child(2) .ui-button):hover, #tablePresenceMonCompte_wrapper .dt-button:hover{
+div:not(#tablePlanningHebdo_paginate, #boutons) .ui-button:not(.ui-dialog-titlebar-close, #pl-notes-button, #working_hours div:nth-child(2) .ui-button, #accordion+div .ui-button):hover, #tablePresenceMonCompte_wrapper .dt-button:hover{
   background: #00656b !important;
   color : #fff !important;
 }

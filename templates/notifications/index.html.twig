@@ -47,8 +47,8 @@
           <tr>
             <td style='white-space:nowrap;'>
               <input type='checkbox' name='chk{{loop.index0}}' value="{{ agent.id }}" class='checkboxes'/>
-              <span class='icones' title='Modifier' data-id="{{ agent.id }}">
-                <i class="fa fa-pencil-square fa-2x" aria-hidden="true"></i>
+              <span class='icones fa-stack fa-lg' title='Modifier' data-id="{{ agent.id }}">
+                <i class='fa fa-circle fa-stack-2x fa-3x'></i><i class='fa fa-pencil-square-o fa-stack-1x' aria-hidden="true"></i>
               </span>
             </td>
             <td>{{ agent.nom }}</td>

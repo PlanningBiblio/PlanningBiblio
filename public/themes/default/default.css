@@ -159,12 +159,12 @@ h3{
   -webkit-text-stroke: 1px #fff;
 }
 
-#validation .icones{
+#validation .icones, #td_boutons .icones{
   width: 2em;
   height: 2em;
 }
 
-#validation .icones:hover{
+#validation .icones:hover, #td_boutons .icones:hover{
   transform: scale(1.5);
 }
 
@@ -180,6 +180,14 @@ tr a{
 td *{
   vertical-align: middle;
 }
+.masqueTableau{
+  position:inherit !important;
+  top : 0px !important;
+}
+
+.fa-eye:hover::before{
+  content:"\f070";
+} 
 
 /* Absences récurrentes */
 #recurrence-summary, #recurrence-summary-form {
@@ -805,7 +813,7 @@ div#tabsemaine1{
 }
 
 #pl-calendar .ui-datepicker {
-  font-size:75%;
+  font-size:85%;
 }
 
 
@@ -1052,7 +1060,7 @@ img{
   text-align:right;
 }
 
-#validation{
+#validation, #td_boutons{
   font-size:13px;
   margin:10px 20px 0 0;
 }

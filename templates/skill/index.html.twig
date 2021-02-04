@@ -51,8 +51,8 @@
           <td>
             <input type="hidden" name="skill_name" value="{{ s.nom }}"/>
             <a href='{{ asset("skill/") }}{{ s.id }}'>
-              <span class="icones" title="Modifier">
-                <i class="fa fa-pencil-square fa-2x" aria-hidden="true"></i>
+              <span class="icones fa-stack fa-lg" title="Modifier">
+                <i class='fa fa-circle fa-stack-2x fa-3x'></i><i class='fa fa-pencil-square-o fa-stack-1x' aria-hidden="true"></i>
               </span>
             </a>
             {% if s.id in usedSkills == false %}

@@ -114,7 +114,7 @@ foreach ($agents as $agent) {
     if (in_array(21, $droits)){
         echo "<input type='checkbox' name='chk$i' value='$id' class='checkbox' />\n";
     }
-    echo "<a href='{$config['URL']}/agent/$id'><span class='icones' title='Modifier'><i class='fa fa-pencil-square fa-2x'></i></span></a>";
+    echo "<a href='{$config['URL']}/agent/$id'><span class='icones fa-stack fa-lg' title='Modifier'><i class='fa fa-circle fa-stack-2x fa-3x'></i><i class='fa fa-pencil-square-o fa-stack-1x'></i><</span></a>";
     if (in_array(21, $droits) and $id!=$_SESSION['login_id'] and $id >1) {
         echo "<a href='javascript:popup(\"personnel/suppression.php&amp;id=".$id."\",450,240);'><span class='icones' title='Supprimer'><i class='fa fa-trash fa-2x'></i></span></a>";
     }

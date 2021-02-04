@@ -578,7 +578,7 @@ function affiche_perso_ul(){
     var li="<li id='li"+tab[i][1]+"' class='perso_ids_li' data-id='"+tab[i][1]+"'>"+tab[i][0];
 
     if( $('#admin').val() == 1 || tab[i][1] != $('#login_id').val() ){
-      li+="<span class='perso-drop' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-drop'></span></span>";
+      li+="<span class='perso-drop' onclick='supprimeAgent("+tab[i][1]+");' ><span class='icones'><i class='fa fa-trash fa-lg'></i></span></span>";
     }
 
     li+="</li>\n";

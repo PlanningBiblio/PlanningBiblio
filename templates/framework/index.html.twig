@@ -33,7 +33,7 @@
               <td style='white-space:nowrap;'>
                 <input type='checkbox' name='chk{{ loop.index0 }}' value='{{ elem.tableau }}' class='chk1'/>
                 <a href='index.php?page=planning/postes_cfg/modif.php&numero={{ elem.tableau }}'>
-                  <span class='icones' title='Modifier'><i class="fa fa-pencil-square fa-2x"></i></span>
+                  <span class='icones fa-stack fa-lg' title='Modifier'><i class='fa fa-circle fa-stack-2x fa-3x'></i><i class='fa fa-pencil-square-o fa-stack-1x'></i></span>
                 </a>
                 <a href='javascript:popup("planning/postes_cfg/copie.php&numero={{ elem.tableau }}",400,260);'>
                   <span class='icones fa-stack fa-lg' title='Copier'><i class="fa fa-square fa-stack-2x"></i><i class="fa fa-clone fa-stack-1x"></i>
@@ -88,7 +88,7 @@
             <tr id='tr-groupe-{{ groupe.id }}'>
               <td>
                 <a href='index.php?page=planning/postes_cfg/groupes.php&id={{ groupe.id }}'>
-                  <span class='icones' title='Voir'><i class="fa fa-pencil-square fa-2x"></i></span>
+                  <span class='icones fa-stack fa-lg' title='Voir'><i class='fa fa-circle fa-stack-2x fa-3x'></i><i class='fa fa-pencil-square-o fa-stack-1x'></i></span>
                 </a>
                 <a href='javascript:supprimeGroupe({{ groupe.id }});'>
                   <span class='icones' title='Supprimer'><i class="fa fa-trash fa-2x"></i></span>
@@ -127,7 +127,7 @@
               <tr id='tr-ligne-{{ elem.id }}' >
                 <td>
                   <a href="index.php?page=planning/postes_cfg/lignes_sep.php&action=modif&id={{ elem.id }}">
-                    <span class='icones' title='Modifier'><i class="fa fa-pencil-square fa-2x"></i></span>
+                    <span class='icones fa-stack fa-lg' title='Modifier'><i class='fa fa-circle fa-stack-2x fa-3x'></i><i class='fa fa-pencil-square-o fa-stack-1x'></i></span>
                   </a>
                   {% if elem.delete == true %}
                     <a href='javascript:supprimeLigne({{ elem.id }});'>

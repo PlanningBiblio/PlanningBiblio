@@ -48,7 +48,7 @@
                         {{ loggedin_name }} {{ loggedin_firstname }}
                         {% if admin %}
                           <span class='perso-drop' onclick="supprimeAgent({{ loggedin_id }});">
-                            <span class='pl-icon pl-icon-drop'></span>
+                            <span class='icones'><i class='fa fa-trash fa-lg'></i></span>
                           </span>
                         {% endif %}
                       </li>
@@ -205,7 +205,7 @@
                 </select>
 
                 {% if admin %}
-                  <span class='pl-icon pl-icon-add' title='Ajouter' id='add-motif-button' style='cursor:pointer'></span>
+                  <span class='icones' title='Ajouter' id='add-motif-button' style='cursor:pointer'><i class='fa fa-plus fa-lg'></i></span>
                 {% endif %}
               </td>
             </tr>

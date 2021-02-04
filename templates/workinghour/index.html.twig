@@ -39,7 +39,9 @@
           <td style='white-space:nowrap;'>
             {{ (elem.remplace != 0) ? "<font style='font-size:20pt;'>&rdsh;</font>": " " }}
             <a href='index.php?page=planningHebdo/modif.php&id={{ elem.id }}?retour={{ asset("workinghour") }}'/>
-              <span class='icones' title='Voir'><i class="fa fa-pencil-square fa-2x"></i></span>
+              <span class='icones fa-stack fa-lg' title='Voir'>
+                <i class='fa fa-circle fa-stack-2x fa-3x'></i><i class='fa fa-pencil-square-o fa-stack-1x'></i>
+              </span>
             </a>
             {% if elem.cle == null %}
               <a href='index.php?page=planningHebdo/modif.php&copy={{ elem.id }}&retour={{ asset("workinghour") }}'/>

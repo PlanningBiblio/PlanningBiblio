@@ -202,8 +202,8 @@ if ($db->result) {
 
 //	-----------------------		FIN Récupération des postes	-----------------------------//
 
-echo "<a href='javascript:print();' title='Imprimer le planning'><span class='pl-icon pl-icon-printer'></span></a>\n";
-echo "<a href='index.php' title='Actualiser'><span class='pl-icon pl-icon-refresh'></a>\n";
+echo "<a href='javascript:print();' title='Imprimer le planning'><span class='icones'><i class='fa fa-print fa-2x'></i></span></a>\n";
+echo "<a href='index.php' title='Actualiser'><span class='icones'><i class='fa fa-refresh fa-2x'></i></a>\n";
 echo "<div id='planningTips'>&nbsp;</div>";
 echo "</td></tr>\n";
 
@@ -386,7 +386,7 @@ for ($j=0;$j<=$fin;$j++) {
             // Masquer les tableaux
             $masqueTableaux=null;
             if ($config['Planning-TableauxMasques']) {
-                $masqueTableaux="<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer' data-id='$l' ></span>";
+                $masqueTableaux="<span title='Masquer icones' class='masqueTableau pointer' data-id='$l' ><i class='fa fa-eye fa-lg' style='color:white;'></i></span>";
             }
 
             //		Lignes horaires

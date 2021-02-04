@@ -175,7 +175,7 @@ foreach ($cet as $elem) {
 
 
     echo "<tr>";
-    echo "<td><a href='javascript:getCET({$elem['id']});'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a></td>\n";
+    echo "<td><a href='javascript:getCET({$elem['id']});'><span class='icon' title='Modifier'><i class='fa fa-pencil-square-o fa-2x'></i></span></a></td>\n";
     if ($adminN1) {
         echo "<td>".nom($elem['perso_id'], 'nom p', $agents)."</td>";
     }
