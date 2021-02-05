@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\PlanningBiblio\Utils;
+use App\Model\Agent;
 
 require_once(__DIR__. '/../../public/planningHebdo/class.planningHebdo.php');
 require_once(__DIR__. '/../../public/personnel/class.personnel.php');
@@ -109,7 +110,9 @@ class WorkingHourController extends BaseController
                 $validation = $lang['work_hours_dropdown_refused_pending'];
                 // 99999 : ID cron : donc pas de nom a afficher
                 if ($elem['valide_n1'] != 99999) {
-                    $validation.=", ".nom(-$elem['valide_n1'], 'nom p', $agents);
+                    $agent = $this->entityManager->find(Agent::class, $elem['valide_n1']);
+                    $agent_nom = Utils::agentName($agent->prenom(), $agent->nom(), 'short');
+                    $validation.=", ".$agent_nom;
                 }
             }
             // Validation niveau 2
@@ -126,9 +129,12 @@ class WorkingHourController extends BaseController
                 $validation_class = 'red';
                 $validation_date = dateFr($elem['validation'], true);
                 $validation = $lang['work_hours_dropdown_refused'];
+                $agent = $this->entityManager->find(Agent::class, $elem['valide_n1']);
+                $agent_nom = Utils::agentName($agent->prenom(), $agent->nom(), 'short');
+                $validation.=", ".$agent_nom;
                 // 99999 : ID cron : donc pas de nom a afficher
                 if ($elem['valide'] != 99999) {
-                    $validation.=", ".nom(-$elem['valide'], 'nom p', $agents);
+                    $validation.=", ".$agent_nom;
                 }
             }
 
