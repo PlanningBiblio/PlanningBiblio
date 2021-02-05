@@ -662,6 +662,8 @@ class StatedWeekController extends BaseController
                     'name'          => $agent->nom() . ' ' .$agent->prenom(),
                     'from'          => $from,
                     'to'            => $to,
+                    'custom_from'   => heure3($t->start_time()),
+                    'custom_to'     => heure3($t->end_time()),
                     'absent'        => $agent->isAbsentOn($date, $date) ? 1 : 0,
                     'status'        => strtolower(removeAccents(str_replace(' ', '_', $agent->statut()))),
                     'interchange'   => 0,
@@ -943,6 +945,98 @@ class StatedWeekController extends BaseController
         $new_to = $column->endtime()->format('H:i');
 
         return $this->json(array('from' => heure3($new_from), 'to' => heure3($new_to)));
+    }
+
+    /**
+     * @Route("/ajax/statedweek/gethours", name="statedweek.gethours", methods={"POST"})
+     */
+    public function getWorkingHours(Request $request)
+    {
+        $response = new Response();
+
+        $agent_id = $request->get('agent_id');
+        $date = $request->get('date');
+
+        $columns = $this->getColumns($date);
+        $column_ids = array();
+        foreach ($columns as $column) {
+            $column_ids[] = $column->id();
+        }
+
+        $agent = $this->entityManager
+            ->getRepository(StatedWeekTimes::class)
+            ->findOneBy(array(
+                'agent_id'  => $agent_id,
+                'column_id' => $column_ids
+            ));
+
+        if (!$agent) {
+            $response->setContent('Agent not found');
+            $response->setStatusCode(404);
+            return $response;
+        }
+        
+        $result = array(
+            'start_time' => $agent->start_time(),
+            'end_time' => $agent->end_time(),
+        );
+
+        $this->entityManager->flush();
+
+        $response->setContent(json_encode($result));
+        $response->setStatusCode(200);
+        return $response;
+    }
+
+    /**
+     * @Route("/ajax/statedweek/sethours", name="statedweek.sethours", methods={"POST"})
+     */
+    public function setWorkingHours(Request $request)
+    {
+        $response = new Response();
+
+        $agent_id = $request->get('agent_id');
+        $date = $request->get('date');
+        $start_time = $request->get('start_time');
+        $end_time = $request->get('end_time');
+
+        $columns = $this->getColumns($date);
+        $column_ids = array();
+        foreach ($columns as $column) {
+            $column_ids[] = $column->id();
+        }
+
+        $agent = $this->entityManager
+            ->getRepository(StatedWeekTimes::class)
+            ->findOneBy(array(
+                'agent_id'  => $agent_id,
+                'column_id' => $column_ids
+            ));
+
+        if (!$agent) {
+            $response->setContent('Agent not found');
+            $response->setStatusCode(404);
+            return $response;
+        }
+
+        if (empty($start_time)) {
+            $agent->set_null('start_time');
+        } else {
+            $agent->start_time($start_time);
+        }
+
+        if (empty($end_time)) {
+            $agent->set_null('end_time');
+        } else {
+            $agent->end_time($end_time);
+        }
+
+        $this->entityManager->persist($agent);
+        $this->entityManager->flush();
+
+        $response->setContent('Working hours updated');
+        $response->setStatusCode(200);
+        return $response;
     }
 
     private function templateToPlanning($times, $planning, $day)

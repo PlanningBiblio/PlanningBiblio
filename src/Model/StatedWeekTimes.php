@@ -14,4 +14,11 @@ class StatedWeekTimes extends PLBEntity {
 
     /** @Column(type="integer") **/
     protected $column_id;
+
+    /** @Column(type="string",nullable=true) **/
+    protected $start_time;
+
+    /** @Column(type="string",nullable=true) **/
+    protected $end_time;
+
 }
