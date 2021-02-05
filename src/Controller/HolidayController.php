@@ -799,6 +799,7 @@ class HolidayController extends BaseController
         $CSRFToken = $request->get('CSRFToken');
         $debutSQL = dateSQL($request->get('debut'));
         $finSQL = dateSQL($request->get('fin'));
+        $is_recover = $request->get('is_recover');
         $hre_debut = $request->get('hre_debut') ? $request->get('hre_debut') :"00:00:00";
         $hre_fin = $request->get('hre_fin') ? $request->get('hre_fin') : "23:59:59";
         $commentaires=htmlentities($request->get('commentaires'), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
@@ -808,6 +809,48 @@ class HolidayController extends BaseController
         $lang = $GLOBALS['lang'];
 
         $request->request->set('valide_init', $valide);
+
+        if (!$finSQL) {
+            $finSQL = $debutSQL;
+        }
+
+        if ($result = \conges::exists($perso_id, "$debutSQL $hre_debut", "$finSQL $hre_fin")) {
+            $from = dateFr($result['from'], true);
+            $to = dateFr($result['to'], true);
+            return array(
+                'msg2'      => "Un congé a déjà été demandé du $from au $to",
+                'msg2Type'  => 'error'
+            );
+        }
+
+        // Enregistrement du congés
+        $c = new \conges();
+        $c->CSRFToken = $CSRFToken;
+        $data = $request->request->all();
+        $data['perso_id'] = $perso_id;
+
+        # In case multiple agents were selected
+        if (!$data['heures']) {
+            $holidayHlper = new HolidayHelper(array(
+                'start' => $debutSQL,
+                'hour_start' => $hre_debut,
+                'end' => $finSQL,
+                'hour_end' => $hre_fin,
+                'perso_id' => $perso_id,
+                'is_recover' => $is_recover
+            ));
+            $result = $holidayHlper->getCountedHours();
+            $data['heures'] = $result['hours'];
+            $data['minutes'] = $result['minutes'];
+        }
+
+        $c->add($data);
+        $id = $c->id;
+
+        // Récupération des adresses e-mails de l'agent et des responsables pour l'envoi des alertes
+        $agent = $this->entityManager->find(Agent::class, $perso_id);
+        $nom = $agent->nom();
+        $prenom = $agent->prenom();
 
         switch ($valide) {
             case -2:
