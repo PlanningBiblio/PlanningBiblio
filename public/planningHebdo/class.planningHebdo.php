@@ -18,6 +18,8 @@ Appelé par les autres fichiers du dossier planningHebdo
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 
 require_once __DIR__."/../absences/class.absences.php";
+require_once __DIR__."/../personnel/class.personnel.php";
+use App\PlanningBiblio\Utils;
 
 class planningHebdo
 {
@@ -174,7 +176,10 @@ class planningHebdo
         }
 
         if (!empty($destinataires)) {
-            $nomAgent = nom($perso_id, "prenom nom");
+            $p = new personnel();
+            $p->fetchById($perso_id);
+            $agent = $p->elements[0];
+            $nomAgent = Utils::agentName($agent['prenom'], $agent['nom'], 'full');
             $sujet="Nouveau planning de présence, ".html_entity_decode($nomAgent, ENT_QUOTES|ENT_IGNORE, "UTF-8");
             $message=$nomAgent;
             $message.=" a enregistré un nouveau planning de présence dans l'application Planning Biblio<br/>";
@@ -333,7 +338,10 @@ class planningHebdo
             foreach ($db->result as $elem) {
                 $elem['temps'] = json_decode(html_entity_decode($elem['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                 $elem['breaktime'] = json_decode(html_entity_decode($elem['breaktime'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-                $elem['nom'] = nom($elem['perso_id'], 'nom p', $agents);
+                $p=new personnel();
+                $p->fetchById($elem['perso_id']);
+                $agent = $p->elements[0];
+                $elem['nom'] = Utils::agentName($agent['prenom'],$agent['nom'], 'short');
                 $elem['service']=$services[$elem['perso_id']];
                 $this->elements[]=$elem;
             }
@@ -641,7 +649,10 @@ class planningHebdo
             $destinataires = $this->recipients;
         }
 
-        $nomAgent = nom($data['perso_id'], "prenom nom");
+        $p=new personnel();
+        $p->fetchById($data['perso_id']);
+        $dataAgent = $p->elements[0];
+        $nomAgent = Utils::agentName($dataAgent['prenom'], $dataAgent['nom'], 'full');
 
         if (!empty($destinataires)) {
             if ($valide_n2 > 0) {

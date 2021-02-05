@@ -16,6 +16,7 @@ Fichier permettant de voir les demandes de récupération
 
 include_once "class.conges.php";
 include_once "personnel/class.personnel.php";
+use App\PlanningBiblio\Utils;
 
 // Initialisation des variables
 $annee=filter_input(INPUT_GET, "annee", FILTER_SANITIZE_STRING);
@@ -114,7 +115,10 @@ for ($d=date("Y")+2;$d>date("Y")-11;$d--) {
 
 // Affichage
 if ($perso_id != 0) {
-    echo "<h3 class='print_only'>Liste des congés de ".nom($perso_id, "prenom nom").", année $annee-".($annee+1)."</h3>\n";
+    $p->fetchById($perso_id);
+    $agent = $p->elements[0];
+    $nom = Utils::agentName($agent['prenom'], $agent['nom'], 'full');
+    echo "<h3 class='print_only'>Liste des congés de {$nom}, année $annee-".($annee+1)."</h3>\n";
 }
 echo <<<EOD
 <h3 class='noprint'>Récupérations</h3>

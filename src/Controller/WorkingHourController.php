@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
+use App\PlanningBiblio\Utils;
+
 require_once(__DIR__. '/../../public/planningHebdo/class.planningHebdo.php');
 require_once(__DIR__. '/../../public/personnel/class.personnel.php');
 
@@ -97,8 +99,10 @@ class WorkingHourController extends BaseController
                 $validation_date = dateFr($elem['validation_n1'], true);
                 $validation = $lang['work_hours_dropdown_accepted_pending'];
                 // 99999 : ID cron : donc pas de nom a afficher
+                $a->fetchById($elem['valide_n1']);
+                $valideNom = $a->elements[0]; 
                 if ($elem['valide_n1'] != 99999) {
-                    $validation .= ", ".nom($elem['valide_n1'], 'nom p', $agents);
+                    $validation .= ", ".Utils::agentName($valideNom['prenom'], $valideNom['nom'], 'short');
                 }
             } elseif ($elem['valide_n1'] < 0) {
                 $validation_date = dateFr($elem['validation_n1'], true);
@@ -112,9 +116,11 @@ class WorkingHourController extends BaseController
             if ($elem['valide'] > 0) {
                 $validation_date = dateFr($elem['validation'], true);
                 $validation = $lang['work_hours_dropdown_accepted'];
+                $a->fetchById($elem['valide']);
+                $valideNom = $a->elements[0]; 
                 // 99999 : ID cron : donc pas de nom a afficher
                 if ($elem['valide'] != 99999) {
-                    $validation.=", ".nom($elem['valide'], 'nom p', $agents);
+                    $validation.=", ".Utils::agentName($valideNom['prenom'], $valideNom['nom'], 'short');
                 }
             } elseif ($elem['valide'] < 0) {
                 $validation_class = 'red';
@@ -220,7 +226,11 @@ class WorkingHourController extends BaseController
             $db = new \db();
             $db->select2('personnel', null, array('supprime'=>0), 'order by nom,prenom');
         }
-        $nomAgent = nom($perso_id, "prenom nom");
+
+        $a = new \personnel();
+        $a->fetchById($perso_id);
+        $agent = $a->elements[0];
+        $nomAgent = Utils::agentName($agent['prenom'], $agent['nom'], 'full');
         if ($request_exception) {
             $debut1Fr = '';
             $fin1Fr = '';
@@ -470,7 +480,10 @@ class WorkingHourController extends BaseController
             $action = "ajout";
         }
 
-        $nomAgent = nom($perso_id, "prenom nom");
+        $a = new \personnel();
+        $a->fetchById($perso_id);
+        $agent = $a->elements[0];
+        $nomAgent = Utils::agentName($agent['prenom'], $agent['nom'], 'full');
         if ($request_exception) {
             $is_exception = 1;
             $debut1Fr = '';

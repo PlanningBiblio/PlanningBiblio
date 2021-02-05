@@ -168,13 +168,14 @@ foreach ($data as $dest) {
     $msg.="<ul>\n";
     foreach ($dest as $conge) {
         $link = $config['URL']."/index.php?page=conges/modif.php&id={$conge['id']}";
+        $pers = explode(' ', $conge['saisie_par']);
     
         $msg.="<li style='margin-bottom:15px;'>\n";
         $msg.="<strong>{$conge['nom']} {$conge['prenom']}</strong><br/>\n";
         $msg.="<strong>Du ".dateFr($conge['debut'], true)." &agrave; ".dateFr($conge['fin'], true)."</strong><br/><br/>\n";
-        $msg.="Demand&eacute; le ".dateFr($conge['saisie'], true)." par ".nom($conge['saisie_par'], $agents)."<br/>\n";
+        $msg.="Demand&eacute; le ".dateFr($conge['saisie'], true)." par ".Utils::agentName($pers[0], $pers[1], 'full')."<br/>\n";
         if ($conge['valide_n1'] > 0) {
-            $msg.="Validation niveau 1 : Accept&eacute; le ".dateFr($conge['validation_n1'], true)." par ".nom($conge['valide_n1'], $agents)."<br/>\n";
+            $msg.="Validation niveau 1 : Accept&eacute; le ".dateFr($conge['validation_n1'], true)." par ".Utils::agentName($pers[0], $pers[1], 'full')."<br/>\n";
         }
         $msg.="<a href='$link' target='_blank'>$link</a>\n";
         $msg.="</li>\n";

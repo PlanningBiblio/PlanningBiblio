@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Model\AbsenceDocument;
+use App\PlanningBiblio\Utils;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -68,8 +69,12 @@ class NotificationController extends BaseController {
             foreach ($agent['responsables'] as $resp) {
                 if (!empty($resp['responsable']) and array_key_exists($resp['responsable'], $agents)) {
                     $notification = $resp['notification'] ? 1 : 0 ;
+                    $a = new \personnel();
+                    $a->fetchById($resp['responsable']);
+                    $agent_r = $a->elements[0];
+                    $nomResp = Utils::agentName($agent_r['prenom'], $agent_r['nom'], 'full');
                     $tmp = "<span class='resp_$id' data-resp='{$resp['responsable']}' data-notif='$notification' >";
-                    $tmp .= nom($resp['responsable'], $format="nom p", $agents);
+                    $tmp .= $nomResp;
                     if ($notification) {
                         $tmp .= ' - Notifications';
                     }

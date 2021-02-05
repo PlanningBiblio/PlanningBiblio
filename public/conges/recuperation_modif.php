@@ -17,6 +17,9 @@ Fichier permettant de modifier et valider les demandes de récupérations des sa
 include_once "class.conges.php";
 include_once "include/horaires.php";
 
+use App\Model\Agent;
+use App\PlanningBiblio\Utils;
+
 // Initialisation des variables
 
 $id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
@@ -34,7 +37,8 @@ list($adminN1, $adminN2) = $roles;
 
 
 // Initialisation des variables (suite)
-$agent=nom($recup['perso_id'], "prenom nom");
+$agent = $entityManager->find(Agent::class, $perso_id);
+$agent = Utils::agentName($agent->prenom(), $agent->nom(), 'full');
 $date=$recup['date'];
 $date2=$recup['date2'];
 $dateAlpha=dateAlpha($date);

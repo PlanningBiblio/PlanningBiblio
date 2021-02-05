@@ -160,8 +160,8 @@ if ($admin) {
 
     foreach ($agents_menu as $agent) {
         $selected=$agent['id']==$perso_id?"selected='selected'":null;
-        $nom = Utils::agentName($agent['prenom'], $agent['nom'], "full");
-        echo "<option value='{$agent['id']}' $selected > $nom </option>";
+        $agent_nom = Utils::agentName($agent['prenom'], $agent['nom'], "full");
+        echo "<option value='{$agent['id']}' $selected >{$agent_nom}</option>";
     }
     echo "</select>\n";
     echo "</span>\n";
@@ -229,10 +229,18 @@ if ($absences) {
 
         $absdocs = $entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);
 
-        $nom_n1a = $elem['valide_n1'] != 99999 ? nom($elem['valide_n1'], 'nom p', $agents).", " : null;
-        $nom_n1b = $elem['valide_n1'] != -99999 ? nom(-$elem['valide_n1'], 'nom p', $agents).", " : null;
-        $nom_n2a = $elem['valide'] != 99999 ? nom($elem['valide'], 'nom p', $agents).", " : null;
-        $nom_n2b = $elem['valide'] != -99999 ? nom(-$elem['valide'], 'nom p', $agents).", " : null;
+        $perso = new personnel();
+        $perso->fetchById($elem['valide_n1']);
+        $agent_nb1 = $perso->elements[0];
+
+        $perso = new personnel();
+        $perso->fetchById($elem['valide']);
+        $agent_nb2 = $perso->elements[0];
+
+        $nom_n1a = $elem['valide_n1'] != 99999 ? Utils::agentName($agent_nb1['prenom'], $agent_nb1['nom'], 'short').", " : null;
+        $nom_n1b = $elem['valide_n1'] != -99999 ? Utils::agentName($agent_nb1['prenom'], $agent_nb1['nom'], 'short').", " : null;
+        $nom_n2a = $elem['valide'] != 99999 ? Utils::agentName($agent_nb2['prenom'], $agent_nb2['nom'], 'short').", " : null;
+        $nom_n2b = $elem['valide'] != -99999 ? Utils::agentName($agent_nb2['prenom'], $agent_nb2['nom'], 'short').", " : null;
         $etat="Demand&eacute;e";
         $etat=$elem['valide_n1']>0?"En attente de validation hierarchique, $nom_n1a".dateFr($elem['validation_n1'], true):$etat;
         $etat=$elem['valide_n1']<0?"En attente de validation hierarchique, $nom_n1b".dateFr($elem['validation_n1'], true):$etat;
@@ -259,14 +267,9 @@ if ($absences) {
         echo "<td>".dateFr($elem['debut'], true)."</td>";
         echo "<td>".datefr($elem['fin'], true)."</td>";
         echo "<td>";
-        $agents_absents = array();
-        foreach($elem['agents'] as $agent){
-            $infos = explode(" ", $agent);
-            $agents_absents[] = Utils::agentName($infos[1], $infos[0], 'full');
-        }
-        echo implode($agents_absents, ", ");
+        echo implode($elem['agents'], ", ");
         echo "</td>\n";
-
+    
         if ($config['Absences-validation']) {
             echo "<td style='$etatStyle'>$etat</td>\n";
         }

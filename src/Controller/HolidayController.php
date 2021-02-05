@@ -126,6 +126,10 @@ class HolidayController extends BaseController
             $annees[]=array($d,$d."-".($d+1));
         }
 
+        // Nom de l'agent
+        $agent = $this->entityManager->find(Agent::class, $perso_id);
+        $agent_name = Utils::agentName($agent->prenom(), $agent->nom(), 'full');
+
         $this->templateParams(array(
             'admin'                 => $admin,
             'perso_id'              => $perso_id,
@@ -134,7 +138,7 @@ class HolidayController extends BaseController
             'conges_recuperation'   => $this->config('Conges-Recuperations'),
             'conges_mode'           => $this->config('Conges-Mode'),
             'show_recovery'         => $voir_recup,
-            'agent_name'            => nom($perso_id, "prenom nom", $agents),
+            'agent_name'            => $agent_name,
             'from_year'             => $annee,
             'to_year'               => $annee + 1,
             'years'                 => $annees,
@@ -195,14 +199,18 @@ class HolidayController extends BaseController
             $elem['anticipation'] = '';
 
             if ($elem['saisie_par'] and $elem['perso_id']!=$elem['saisie_par']) {
-                $elem['status'] .= " par ".nom($elem['saisie_par'], 'nom p', $agents);
+                $agent = $this->entityManager->find(Agent::class, $elem['saisie_par']);
+                $agent_nom = Utils::agentName($agent->prenom(), $agent->nom(), 'short');
+                $elem['status'] .= " par ".$agent_nom;
             }
 
             if ($elem['valide'] < 0) {
                 $elem['status'] = "Refusé, ".nom(-$elem['valide'], 'nom p', $agents);
                 $elem['validationDate'] = dateFr($elem['validation'], true);
             } elseif ($elem['valide'] or $elem['information']) {
-                $elem['status'] = "Validé, ".nom($elem['valide'], 'nom p', $agents);
+                $agent = $this->entityManager->find(Agent::class, $elem['valide']);
+                $agent_nom = Utils::agentName($agent->prenom(), $agent->nom(), 'short');
+                $elem['status'] = "Validé, ".$agent_nom;
                 $elem['validationDate'] = dateFr($elem['validation'], true);
             } elseif ($elem['valide_n1']) {
                 $elem['status'] = $elem['valide_n1'] > 0 ? $lang['leave_table_accepted_pending'] : $lang['leave_table_refused_pending'];
@@ -211,12 +219,16 @@ class HolidayController extends BaseController
             }
 
             if ($elem['information']) {
-                $elem['nom'] = $elem['information']<999999999?nom($elem['information'], 'nom p', $agents).", ":null;	// >999999999 = cron
+                $agent = $this->entityManager->find(Agent::class, $elem['information']);
+                $agent_nom = Utils::agentName($agent->prenom(), $agent->nom(), 'short');
+                $elem['nom'] = $elem['information']<999999999?$agent_nom.", ":null;	// >999999999 = cron
                 $elem['status'] = "Mise à jour des crédits, " . $elem['nom'];
                 $elem['validationDate'] = dateFr($elem['info_date'], true);
                 $elem['validationStyle'] = '';
             } elseif ($elem['supprime']) {
-                $elem['status'] = "Supprimé, ".nom($elem['supprime'], 'nom p', $agents);
+                $agent = $this->entityManager->find(Agent::class, $elem['supprime']);
+                $agent_nom = Utils::agentName($agent->prenom(), $agent->nom(), 'short');
+                $elem['status'] = "Supprimé, ".$agent_nom;
                 $elem['validationDate'] = dateFr($elem['suppr_date'], true);
                 $elem['validationStyle'] = '';
             }

@@ -66,12 +66,6 @@ class AccountController extends BaseController
             $credits['joursRecuperation'] = number_format($credits['recuperation']/7, 2, ",", " ");
         }
 
-        // Liste de tous les agents (pour la fonction nom()
-        $a = new \personnel();
-        $a->supprime = array(0,1,2);
-        $a->fetch();
-        $agents = $a->elements;
-
         $p = new \planningHebdo();
         $p->perso_id = $_SESSION['login_id'];
         $p->merge_exception = false;
@@ -79,9 +73,13 @@ class AccountController extends BaseController
         $planning = $p->elements;
 
         foreach ($planning as &$elem) {
+            // recupère l'agent pour la fonction agentName
+            $a = new \personnel();
+            $a->fetchById($elem['valide']);
+            $agent = $a->elements[0];
             $validation = "N'est pas validé";
             if ($elem['valide']) {
-                $validation = nom($elem['valide'], "nom p", $agents).", ".dateFr($elem['validation'], true);
+                $validation = Utils::agentName($agent['prenom'],$agent['nom'], 'short').", ".dateFr($elem['validation'], true);
             }
             $elem['validation'] = $validation;
 

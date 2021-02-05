@@ -32,7 +32,6 @@ $perso_ids=filter_input(INPUT_GET, "perso_ids", FILTER_SANITIZE_STRING);
 $perso_ids=json_decode(html_entity_decode($perso_ids, ENT_QUOTES|ENT_IGNORE, "UTF-8"), true);
 
 $result=array();
-
 $p = new personnel();
 $p->supprime=array(0,1,2);
 $p->fetch();

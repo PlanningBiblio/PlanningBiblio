@@ -16,6 +16,7 @@ Fichier permettant de voir les CET
 
 include_once "class.conges.php";
 include_once(__DIR__.'/../personnel/class.personnel.php');
+use App\PlanningBiblio\Utils;
 
 // Initialisation des variables
 $annee = filter_input(INPUT_GET, 'annee', FILTER_SANITIZE_NUMBER_INT);
@@ -92,7 +93,11 @@ if ($msg) {
 }
 
 // Affichage
-echo "<h3 class='print_only'>Liste des demandes de CET de ".nom($perso_id, "prenom nom").", année $annee-".($annee+1)."</h3>\n";
+$p=new personnel();
+$p->fetchById($perso_id);
+$agent_affiche = $p->elements[0];
+$nom_affiche = Utils::AgentName($agent_affiche['prenom'], $agent_affiche['nom'], 'full');
+echo "<h3 class='print_only'>Liste des demandes de CET de {$nom_affiche}, année $annee-".($annee+1)."</h3>\n";
 echo <<<EOD
 <h3 class='noprint'>Compte &Eacute;pargne Temps</h3>
 
@@ -148,7 +153,8 @@ EOD;
 foreach ($cet as $elem) {
     $saisie_par=null;
     if ($elem['saisie_par'] and $elem['saisie_par']!=$elem['perso_id']) {
-        $saisie_par=", ".nom($elem['saisie_par'], 'nom p', $agents);
+        $nom_saisi = explode(' ',$elem['saisie_par']);
+        $saisie_par=", ".Utils::agentName($nom_saisi[0], $nom_saisi[1], 'short');
     }
     $validation="Demand&eacute;e";
     $validationStyle="font-weight:bold;";
@@ -156,7 +162,8 @@ foreach ($cet as $elem) {
     $credits=null;
 
     if ($elem['valide_n2']>0) {
-        $validation="Accept&eacute;, ".nom($elem['valide_n2'], 'nom p', $agents);
+        $nom_valide = explode(' ',$elem['valide_n2']);
+        $validation="Accept&eacute;, ".Utils::agentName($nom_valide[0], $nom_valide[1], 'short');
         $validationStyle=null;
         $validationDate=dateFr($elem['validation_n2'], true);
         if ($elem['solde_prec']!=null and $elem['solde_actuel']!=null) {
@@ -164,11 +171,13 @@ foreach ($cet as $elem) {
         }
 
     } elseif ($elem['valide_n2']<0) {
-        $validation="Refus&eacute;, ".nom(-$elem['valide_n2'], 'nom p', $agents);
+        $nom_valide = explode(' ',$elem['valide_n2']);
+        $validation="Refus&eacute;, ".Utils::agentName($nom_valide[0], $nom_valide[1], 'short');
         $validationStyle="color:red;font-weight:bold;";
         $validationDate=dateFr($elem['validation_n2'], true);
     } elseif ($elem['valide_n1']!=0) {
-        $validation="En attente de validation hierarchique, ".nom($elem['valide_n1'], 'nom p', $agents);
+        $nom_valide = explode(' ',$elem['valide_n1']);
+        $validation="En attente de validation hierarchique, ".Utils::agentName($nom_valide[0], $nom_valide[1], 'short');
         $validationStyle="font-weight:bold;";
         $validationDate=dateFr($elem['validation_n1'], true);
     }
@@ -177,7 +186,8 @@ foreach ($cet as $elem) {
     echo "<tr>";
     echo "<td><a href='javascript:getCET({$elem['id']});'><span class='pl-icon pl-icon-edit' title='Modifier'></span></a></td>\n";
     if ($adminN1) {
-        echo "<td>".nom($elem['perso_id'], 'nom p', $agents)."</td>";
+        $nom_affiche = Utils::AgentName($agent_affiche['prenom'], $agent_affiche['nom'], 'short');
+        echo "<td> {$nom_affiche} </td>";
     }
     echo "<td>{$elem['jours']}</td><td>$credits</td><td>".dateFr($elem['saisie'], true)."$saisie_par</td>";
     echo "<td style='$validationStyle'>$validation</td><td>$validationDate</td></tr>\n";
@@ -208,7 +218,7 @@ if ($adminN1) {
 EOD;
     foreach ($agents as $elem) {
         $selected=$elem['id']==$perso_id?"selected='selected'":null;
-        echo "<option value='{$elem['id']}' $selected >".nom($elem['id'], 'nom p', $agents)."</option>\n";
+        echo "<option value='{$elem['id']}' $selected >".Utils::agentName($agent['prenom'], $agent['nom'], 'short')."</option>\n";
     }
     echo "</select></td></tr>\n";
 }
