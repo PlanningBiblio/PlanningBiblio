@@ -185,4 +185,6 @@
   {% else %}
     <center>Le planning du {{ date | date('d/m/Y') }} n'est pas encore validé.</center>
   {% endif %}
+
+  {% include 'statedweek/dialog-box-hours.html.twig' %}
 {% endblock %}
