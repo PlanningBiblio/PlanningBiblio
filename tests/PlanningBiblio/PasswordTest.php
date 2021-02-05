@@ -7,29 +7,30 @@ class PasswordTest extends TestCase
 {
     public function test(){
 
-        $password = Utils::checkStrength('toto');
-        $this->assertEquals(json_encode('length'), $password);
+        $utils = new Utils();
+        $password = $utils->checkStrength('toto');
+        $this->assertEquals('length', $utils->getReason());
 
-        $password = Utils::checkStrength('toto1234');
-        $this->assertEquals(json_encode('character'), $password);
+        $password = $utils->checkStrength('toto1234');
+        $this->assertEquals('character', $utils->getReason());
 
-        $password = Utils::checkStrength('toto123!');
-        $this->assertEquals(json_encode('character'), $password);
+        $password = $utils->checkStrength('toto123!');
+        $this->assertEquals('character', $utils->getReason());
 
-        $password = Utils::checkStrength('toToTo!o');
-        $this->assertEquals(json_encode('character'), $password);
+        $password = $utils->checkStrength('toToTo!o');
+        $this->assertEquals('character', $utils->getReason());
 
-        $password = Utils::checkStrength('totoTOTO');
-        $this->assertEquals(json_encode('character'), $password);
+        $password = $utils->checkStrength('totoTOTO');
+        $this->assertEquals('character', $utils->getReason());
 
-        $password = Utils::checkStrength('totoT0to');
-        $this->assertEquals(json_encode('character'), $password);
+        $password = $utils->checkStrength('totoT0to');
+        $this->assertEquals('character', $utils->getReason());
 
-        $password = Utils::checkStrength('Toto1234');
-        $this->assertEquals(json_encode('character'), $password);
+        $password = $utils->checkStrength('Toto1234');
+        $this->assertEquals('character', $utils->getReason());
 
-        $password = Utils::checkStrength('Toto!234');
-        $this->assertEquals(json_encode('OK'), $password);
+        $password = $utils->checkStrength('Toto!234');
+        $this->assertEquals('OK', $utils->getReason());
 
     }
 }

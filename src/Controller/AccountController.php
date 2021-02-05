@@ -244,7 +244,9 @@ class AccountController extends BaseController
      */
     public function checkPasswordStrength(Request $request){
         $nouveau = $request->get("nouveau");
-        $result = Utils::checkStrength($nouveau);
-        return $result;
+        $utils = new Utils() ;
+        $check = $utils->checkStrength($nouveau);
+        $result = $utils->getReason();
+        return $this->json($result);
     }
 }

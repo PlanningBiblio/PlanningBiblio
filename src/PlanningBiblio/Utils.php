@@ -4,18 +4,28 @@ namespace App\PlanningBiblio;
 
 class Utils
 {
-    public static function checkStrength($password) {
+    private $reason;
+
+    public function getReason(){
+        return $this->reason;
+    }
+
+    public function setReason($reason){
+        $this->reason = $reason;
+    }
+
+    public function checkStrength($password) {
         $number = preg_match('@[0-9]@', $password);
         $uppercase = preg_match('@[A-Z]@', $password);
         $lowercase = preg_match('@[a-z]@', $password);
         $specialChars = preg_match('@[^\w]@', $password);
 
         if(strlen($password) < 8){
-            return json_encode("length");
+            $this->setReason("length");
         } else if(!$number || !$uppercase || !$lowercase || !$specialChars) {
-            return json_encode("character");
+            $this->setReason("character");
         } else {
-           return json_encode("OK");
+            $this->setReason("OK");
         }
     }
 }
