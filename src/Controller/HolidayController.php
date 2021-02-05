@@ -205,7 +205,9 @@ class HolidayController extends BaseController
             }
 
             if ($elem['valide'] < 0) {
-                $elem['status'] = "Refusé, ".nom(-$elem['valide'], 'nom p', $agents);
+                $agent = $this->entityManager->find(Agent::class, $elem['valide']);
+                $agent_nom = Utils::agentName($agent->prenom(), $agent->nom(), 'short');
+                $elem['status'] = "Refusé, ".$agent_nom;
                 $elem['validationDate'] = dateFr($elem['validation'], true);
             } elseif ($elem['valide'] or $elem['information']) {
                 $agent = $this->entityManager->find(Agent::class, $elem['valide']);
