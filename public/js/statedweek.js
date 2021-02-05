@@ -178,6 +178,7 @@ function initializePlanning() {
       information("Une erreur est survenue lors de la récupération du planning", 'error');
     }
   });
+  
 }
 
 function emptyPlanning() {
@@ -321,7 +322,11 @@ $( document ).ready(function() {
       cell = $(this);
       item = $('<span></span>');
       item = $('<span class="status_'+ agent.status + '"></span>');
-      item.append(agent.name);
+      item.append('<span class="agent_name">' + agent.name + '</span>');
+      
+      if (agent.custom_from && agent.custom_to) {
+        item.append('<br/><i style="font-weight:normal;"> - de ' + agent.custom_from + ' à ' + agent.custom_to + '</i>');
+      }
 
       cell.append(item);
       cell.attr('data-agent', agent.id);
@@ -336,13 +341,13 @@ $( document ).ready(function() {
     $(this).init.prototype.addAbsence = function() {
       cell = $(this);
       cell.addClass('absent');
-      cell.append(' <i> - absent(e)</i>');
+      cell.append('<br/><i> - absent(e)</i>');
     };
 
     $(this).init.prototype.addPartialAbsences = function(holidays) {
       cell = $(this);
       cell.addClass('partially-absent');
-      cell.append(' <i> - absent(e)</i>');
+      cell.append('<br/><i> - absent(e)</i>');
       has_partial = 0;
       $.each(holidays, function(index, h) {
         if (has_partial) {
@@ -358,13 +363,13 @@ $( document ).ready(function() {
       cell = $(this);
       cell.addClass('absent');
       cell.children('span').addClass('absent');
-      cell.append('<i> - Congés</i>');
+      cell.append('<br/><i> - Congés</i>');
     };
 
     $(this).init.prototype.addPartialHolidays = function(holidays) {
       cell = $(this);
       cell.addClass('partially-absent');
-      cell.append(' <i> - Congés</i>');
+      cell.append('<br/><i> - Congés</i>');
       has_partial = 0;
       $.each(holidays, function(index, h) {
         if (has_partial) {
@@ -706,6 +711,71 @@ $( document ).ready(function() {
     $(".context-menu").hide(100);
   });
 
+  $(document).on('click', '.set-hours', function() {
+
+    cell_id = $(this).data('cell');
+    agent_name = $('#' + cell_id + ' .agent_name').text();
+
+    var start_time =$('#' + cell_id).attr('data-from');
+    var end_time =$('#' + cell_id).attr('data-to');
+    
+    $('#set_hours_start_time').val(start_time);
+    $('#set_hours_end_time').val(end_time);
+
+    $.ajax({
+      url: '/ajax/statedweek/gethours',
+      type: 'post',
+      data: {agent_id: agent_id, date: date},
+      dataType: 'json',
+      success: function(result) {
+        if (result.start_time) {
+          $('#set_hours_start_time').val(result.start_time);
+        }
+        if (result.end_time) {
+          $('#set_hours_end_time').val(result.end_time);
+        }
+      },
+    });
+
+    $('#dialog-form-hours').dialog('option', 'title', 'Heures de ' + agent_name);
+    $('#dialog-form-hours').dialog('open');
+
+    $(".context-menu").hide(100);
+  });
+
+  $('#dialog-form-hours').dialog({
+    autoOpen: false,
+    resizable: false,
+    width: 500,
+    height: 250,
+    modal: true,
+    buttons: {
+      "Enregistrer": function() {
+        var date = $('input[name="date"]').val();
+        var cell = $('#' + cell_id);
+        var agent_id = cell.data('agent');
+        var start_time = $('#set_hours_start_time').val();
+        var end_time = $('#set_hours_end_time').val();
+
+        $.ajax({
+          url: '/ajax/statedweek/sethours',
+          type: 'post',
+          data: {agent_id: agent_id, date: date, start_time: start_time, end_time: end_time},
+          success: function() {
+            initializePlanning();
+            $('#dialog-form-hours').dialog('close');
+          },
+          error: function() {
+            information("Une erreur est survenue lors de la mise à jour du planning", 'error');
+          }
+        });
+      },
+      "Annuler": function() {
+        $( this ).dialog( "close" );
+      }
+    }
+  });
+
   function hasAgent(cell) {
     if (cell.has( "span" ).length) {
       return true;
@@ -840,14 +910,24 @@ $( document ).ready(function() {
   }
 
   function setContextMenuEditOptions(cell) {
-    agent_name = cell.children('span').html();
     agent_id = cell.data('agent');
+    var agent_name = cell.children('span').children('span').html();
+
+    if (cell.data('from') && cell.data('to')) {
+      $('.context-list').append('<li data-agent="' + agent_id + '" data-cell="' + cell.attr('id') + '" class="set-hours">Modifier les heures</li>');
+      agent_name = '';
+    }
     $('.context-list').append('<li data-agent="' + agent_id + '" data-cell="' + cell.attr('id') + '" class="delete-agent">Supprimer ' + agent_name + '</li>');
   }
 
   function setContextMenuTitle(cell) {
     if (cell.data('from') && cell.data('to')) {
-      $('.context-menu-title').html(heureFr(cell.data('from')) + ' - ' + heureFr(cell.data('to')));
+      var title = heureFr(cell.data('from')) + ' - ' + heureFr(cell.data('to'));
+      var agent_name = cell.children('span').children('span').html();
+      if (agent_name != undefined) {
+        title = title + '<p>' + agent_name + '</p>';
+      }
+      $('.context-menu-title').html(title);
     }
 
     if (cell.data('jobdesc')) {

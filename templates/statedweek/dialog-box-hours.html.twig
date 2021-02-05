@@ -1,0 +1,40 @@
+{# statedweek/dialog-box-hours.html.twig #}
+
+<div id="dialog-form-hours" title="Set Hours" class='noprint' style='display:none;'>
+  <p class="validateTips"></p>
+  <form>
+
+    <table class='tableauFiches'>
+
+      <tr><td><label for="set_hours_start_time">Heure de début</label></td>
+        <td>
+          <select name='set_hours_start_time' id='set_hours_start_time' class='center ui-widget-content ui-corner-all'>
+            <option value=""></option>
+            {% for i in 6..23 %}
+              {% for j in range(low=0, high=60, step=config('Granularite')) %}
+                {% if j != 60 %}
+                  <option value='{{ "%02d:%02d:00"|format(i,j) }}' >{{ "%02dh%02d"|format(i,j) }}</option>
+                {% endif %}
+              {% endfor %}
+            {% endfor %}
+          </select>
+        </td>
+      </tr>
+
+      <tr><td><label for="set_hours_end_time">Heure de fin</label></td>
+        <td>
+          <select name='set_hours_end_time' id='set_hours_end_time' class='center ui-widget-content ui-corner-all'>
+            <option value=""></option>
+            {% for i in 6..23 %}
+              {% for j in range(low=0, high=60, step=config('Granularite')) %}
+                {% if j != 60 %}
+                  <option value='{{ "%02d:%02d:00"|format(i,j) }}' >{{ "%02dh%02d"|format(i,j) }}</option>
+                {% endif %}
+              {% endfor %}
+            {% endfor %}
+          </select>
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>

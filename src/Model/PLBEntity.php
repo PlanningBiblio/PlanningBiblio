@@ -35,4 +35,8 @@ class PLBEntity {
 
         $this->supprime = null;
     }
+
+    public function set_null($name) {
+        $this->$name = null;
+    }
 }
