@@ -22,6 +22,7 @@ function afficheRefus(me){
 
 function calculCredit(){
   if( ! $('input[name=debut]').length) { return; }
+  if (multipleAgentsSelected()) { return; }
 
   debut=document.form.elements["debut"].value;
   fin=document.form.elements["fin"].value;
@@ -389,8 +390,9 @@ function verifConges(){
 
   // Vérifions si un autre congé a été demandé ou validé
 
+  var baseURL = $('#baseURL').val();
   var result=$.ajax({
-    url: '/conges/ajax.verifConges.php',
+    url: baseURL + "/ajax/holiday-absence-control",
     type: "get",
     dataType: "json",
     data: {perso_ids: JSON.stringify(perso_ids), debut: debut, fin: fin, id: id, type:'holiday'},
@@ -701,9 +703,7 @@ function updateAgentsListBySites() {
 
 $(function(){
   $('.checkdate').on('change', function() {
-    if (!multipleAgentsSelected()) {
-        calculCredit();
-    }
+    calculCredit();
   });
 
   $("input[name='selected_sites']").change(function() {

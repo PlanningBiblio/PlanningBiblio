@@ -11,6 +11,8 @@
     - 100
 "ajax.holidaydelete":
     - 100
+"ajax.holiday.absence.control":
+    - 100
 "ajax.changepassword":
     - 21
 "ajax.planningjobcheckcopy":
