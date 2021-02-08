@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 require_once(__DIR__ . '/../../public/planning/postes_cfg/class.tableaux.php');
 
@@ -79,7 +80,7 @@ class FrameworkController extends BaseController
 
         $db = new \db();
         $db->select("lignes", null, null, "order by nom");
-        $lignes = $db->result; 
+        $lignes = $db->result;
         if ($lignes) {
             foreach ($lignes as &$elem) {
                 $db2 = new \db();
@@ -94,6 +95,7 @@ class FrameworkController extends BaseController
                 "groupes"           => $groupes,
                 "lignes"            => $lignes,
                 "nbSites"           => $nbSites,
+                "numero1"           => $numero1,
                 "tableaux"          => $tableaux,
                 "tableauxSupprimes" => $tableauxSupprimes
             )
@@ -132,7 +134,7 @@ class FrameworkController extends BaseController
         if ($this->config('Dimanche')) {
             $semaine[] = "dimanche";
         }
-        $champs = '"Nom,'.join(',', $semaine).'"';	
+        $champs = '"Nom,'.join(',', $semaine).'"';
 
         $this->templateParams(
             array(
@@ -186,7 +188,7 @@ class FrameworkController extends BaseController
         unset($groupes[$key[0]]);
 
 
-        $semaine = array("lundi","mardi","mercredi","jeudi","vendredi","samedi"); 
+        $semaine = array("lundi","mardi","mercredi","jeudi","vendredi","samedi");
         if ($this->config('Dimanche')) {
             $semaine[] = "dimanche";
         }
@@ -205,7 +207,7 @@ class FrameworkController extends BaseController
             )
         );
 
-        return $this->output('framework/edit_group.html.twig');	
+        return $this->output('framework/edit_group.html.twig');
     }
 
     /**
@@ -314,6 +316,7 @@ class FrameworkController extends BaseController
         $nom = trim($request->get('nom'));
         $numero1 = $request->get('id');
         $confirm = filter_var($confirm, FILTER_CALLBACK, array("options"=>"sanitize_on"));
+        $dbprefix = $GLOBALS['dbprefix'];
 
         if ($confirm) {
             //		Copie des horaires
@@ -321,7 +324,6 @@ class FrameworkController extends BaseController
             $db = new \db();
             $db->select2("pl_poste_horaires", array("debut","fin","tableau"), array("numero"=>$numero1), "ORDER BY `tableau`,`debut`,`fin`");
             if ($db->result) {
-                $this->templateParams(array("result" => $db->result));
                 $db2 = new \db();
                 $db2->select2("pl_poste_tab", array(array("name"=>"MAX(tableau)","as"=>"tableau"),"site"));
                 $numero2 = $db2->result[0]['tableau']+1;
@@ -348,7 +350,7 @@ class FrameworkController extends BaseController
                 $db2->CSRFToken = $CSRFToken;
                 $db2->insert("pl_poste_tab", array("nom"=>$nom ,"tableau"=>$numero2, "site"=>$site));
             } else {		// par sécurité, si pas d'horaires à  copier, on stop le script pour éviter d'avoir une incohérence dans les numéros de tableaux
-                return $this->redirect('index.php?page=planning/postes_cfg/modif.php', array("cfg-type" => "horaires", "numero" => $numero ));
+                return new RedirectResponse($this->config('URL')."/index.php?page=planning/postes_cfg/modif.php&cfg-type=horaires&numero={$numero1}");
 
             }
 
@@ -393,8 +395,6 @@ class FrameworkController extends BaseController
 
             // Retour à  la page principale
             return $this->redirectToRoute('framework.index', array("cfg-type" => "horaires", "numero" => $numero2 ));
-        } else {
-            return $this->render('framework/index.html.twig', array("numero1" => $numero1, "CSRFToken" => $CSRFToken));
         }
     }
 }

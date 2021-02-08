@@ -3,6 +3,32 @@
 
 {% block specificjs %}
   <script type="text/JavaScript" src="{{ app.request.getBaseURL() }}/planning/postes_cfg/js/tableaux.js?version={{ version }}"></script>
+  <script type="text/JavaScript">
+    $(document).ready(function(){
+      $("#copy-div").dialog({
+          autoOpen: false,
+          modal: true,
+          width: 400,
+          height: 260
+      });
+
+      $('.copy-table').click(function(e){
+        e.preventDefault();
+        id = $(this).data('id');
+        $("#copy-div").dialog('open');
+        $("#copy-form").attr("action", "/framework/copy/"+id);
+        $("#copy-form#numero").attr("value", id);
+
+      });
+
+      $("#Copy").on('click', function(e){
+        $("#copy-form").submit();
+        e.preventDefault();
+        $("#copy-div").html("<br/><br/><b>Copie en cours. Veuillez patienter ...</b>");
+        $(this).unbind(e).click();
+      });
+    });
+  </script>
 {% endblock %}
 
 {% block page %}
@@ -13,7 +39,7 @@
       <a href='index.php?page=planning/postes_cfg/modif.php' class='ui-button'>Nouveau tableau</a>
     </p>
     <form name='form' method='get' action='{{ asset("framework")}}'>
-      <input type="hidden" name="modification" value ="tableau"/> 
+      <input type="hidden" name="modification" value ="tableau"/>
       <table class='CJDataTable' id='table-list' data-noExport='1' data-sort='[[1,"asc"]]'>
         <thead>
           <tr>
@@ -64,7 +90,7 @@
               <option value='{{ item.tableau }}'>{{ item.nom }}&nbsp;(utilisation : {{ item.tabAffect }})</option>
             {% endfor %}
         </select>
-      </p> 
+      </p>
     {% endif %}
   </div>
   <div id='tableaux-groupes' class='tableaux-cfg' >
