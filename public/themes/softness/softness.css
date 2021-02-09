@@ -6,6 +6,7 @@ Voir les fichiers README.txt et COPYING.txt
 
 @file : public/themes/softness/softness.css
 @author Jérôme Combes <jerome@planningbiblio.fr>
+@author Sarah Deborde <sarah.deborde@outlook.fr>
 
 @desc
 included by templates/base.html.twig, public/include/header.php and public/setup/header.php
@@ -14,9 +15,11 @@ included by templates/base.html.twig, public/include/header.php and public/setup
 /*
  * Softness
  * Blue : #1e4c67 / RGB : 85 135 162
- * Green: #00656b / RGB : 0 101 107
- * Pink : #F2B2AE / RGB : 242 178 174
+ * Light Blue :  #e7f0f9 / RGB : 231 240 249
+ * Teal : #00656b / RGB : 0 101 107
  * Yellow : #ffd700 / RGB : 255 215 0
+ * Red : #da1f27 / RGB : 218 31 39
+ *
  * Old
  * Red : #EF3340
  * Grey : #333
@@ -49,21 +52,58 @@ body{
   width: 600px;
   min-height: 370px;
   margin: 0 auto -40px 0;
-  background:url("images/auth.png") repeat-x center top;
-  border: solid 1px #ABDAE6;
+  border-radius: 5px;
 }
 
 #auth-logo {
-  display: none;
+  content: '';
+  background: url("images/logoBlack.png") no-repeat center bottom;
+  background-size: 100%;
+}
+
+#auth  #title{
+  position: relative;
+  padding-top: 10px;
+}
+
+#auth  #title::after{
+  content:"";
+  position: absolute;
+  bottom: 0;
+  left: 25%;
+  right: 25%;
+  width : 50%;
+  height: 0.5em;
+  border-bottom: 1px solid #ffd700;
 }
 
 #auth h2{
-  margin: 120px 0 10px 0;
-  font-family: Garamond;
+  margin: 10px 0 10px 0;
+  font-family: 'Open Sans';
 }
 
 #auth table{
   margin: 0 0 0 0px;
+}
+
+#content-auth #auth{
+  position: relative;
+}
+
+#content-auth #auth form[action="authentification.php"]{
+  background: #e7f0f9;
+  border-radius: 5px;
+  padding : 15px 10px;
+  width : 75%;
+  position: absolute;
+  left : 10%;
+  right : 10%;
+  font-size : 16px;
+}
+
+#content-auth #auth form input[type="text"], #content-auth #auth form input[type="password"]{
+  color: #00656b;
+  font-size : 14px;
 }
 
 #logo {
@@ -290,14 +330,21 @@ table .th:first-child td:last-child, #menudivtab1 .menudiv-titre:last-child {
 }
 
 textarea, input{
-  border-radius: 2px;
+  border-radius: 5px;
   border: 1px solid lightgray;
 }
 
 #content form .ui-button:hover, #boutons>.ui-button:hover, .ui-tabs li[aria-controls="ui-id-10"]:hover,.ui-tabs li[aria-controls="ui-id-12"]:hover, #joursFeries .ui-button:hover{
-  background: #ffd700 !important;
+  background: #ffd700;
 
 }
+
+input[value="Rechercher"]:hover, input[value="Réinitialiser"]:hover{
+  background: #00656b !important;
+  color : #fff !important;
+}
+
+
 #content form[action="/agent"], .ui-tabs .ui-tabs-panel  {
   background: #e7f0f9;
 }
@@ -424,12 +471,15 @@ div:not(#tablePlanningHebdo_paginate, .dataTables_paginate) .ui-button:not(.ui-d
   border : 1px solid #00656b;
   border-radius: 10px;
   background-color: #fff;
-  color : #00656b !important;
+  color : #00656b;
 }
 
 div:not(#tablePlanningHebdo_paginate, #boutons) .ui-button:not(.ui-dialog-titlebar-close, #pl-notes-button, #working_hours div:nth-child(2) .ui-button, #accordion+div .ui-button):hover, #tablePresenceMonCompte_wrapper .dt-button:hover{
-  background: #00656b !important;
-  color : #fff !important;
+  background: #00656b;
+}
+
+div.dt-buttons .dt-button:hover > span{
+  color: #fff;
 }
 
 #tablePlanningHebdo_paginate .ui-button:hover, #auth input.ui-button:hover{
