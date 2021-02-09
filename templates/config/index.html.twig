@@ -6,7 +6,10 @@
   <script type="text/JavaScript" src="{{ asset('js/config.js') }}"></script>
   <script type="text/JavaScript">
     $( document ).ready(function() {
-      $( "#confirm" ).dialog({
+
+      var previous_nb_semaine = $('#nb_semaine option:selected').val();
+
+      $( "#Conges-Mode_dialog" ).dialog({
         autoOpen: false,
         resizable: false,
         width: 400,
@@ -26,9 +29,37 @@
         conges_mode = $("#Conges-Mode").val();
         conges_recuperations = $("#Conges-Recuperations").val();
         if (conges_mode == 'jours' && conges_recuperations == 0) {
-          $( "#confirm" ).dialog( "open" );
+          $( "#conges_mode_dialog" ).dialog( "open" );
         }
       });
+
+      $( "#nb_semaine_dialog" ).dialog({
+        autoOpen: false,
+        resizable: false,
+        width: 400,
+        modal: true,
+        buttons: {
+          "Je suis d'accord": function() {
+            $( this ).dialog( "close" );
+            $("#PlanningHebdo").prop("checked", true);
+          },
+          "Annuler ma modification": function() {
+            $( this ).dialog( "close" );
+            var previous_nb_semaine = $("#nb_semaine_dialog").data('previous_nb_semaine');
+            $('#nb_semaine option[value="' + previous_nb_semaine + '"]').prop('selected', true);
+          }
+        }
+      });
+
+      $('#nb_semaine').on('change', function() {
+        nb_semaine = $("#nb_semaine").val();
+        planningHebdo = $("#PlanningHebdo").is(':checked');
+        if (nb_semaine > 3 && !planningHebdo) {
+          $( "#nb_semaine_dialog" ).data('previous_nb_semaine', previous_nb_semaine).dialog( "open" );
+        }
+        previous_nb_semaine = nb_semaine;
+      });
+
     });
   </script>
   {% if warning %}
@@ -66,8 +97,12 @@
       </div>
     </form>
 
-    <div id="confirm" title="Modification du mode de congés">
+    <div id="Conges-Mode_dialog" title="Modification du mode de congés">
      Le mode de décompte des congés en jour implique de modifier le paramètre "Conges-Recuperations" en "Dissocier".
+    </div>
+
+    <div id="nb_semaine_dialog" title="Modification du nombre de semaines">
+     Sélectionner un nombre de semaines supérieur à trois implique de cocher le paramètre "PlanningHebdo". 
     </div>
 
 {% endblock %}
