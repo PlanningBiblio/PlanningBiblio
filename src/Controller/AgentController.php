@@ -44,8 +44,8 @@ class AgentController extends BaseController
             $sites = json_decode(html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
             if (is_array($sites)) {
                 foreach ($sites as $elem) {
-                    $result[] = array("id" => $elem, 
-                                    "name" => $this->config("Multisites-site" . $elem), 
+                    $result[] = array("id" => $elem,
+                                    "name" => $this->config("Multisites-site" . $elem),
                                     "mail" => $this->config("Multisites-site" . $elem . "-mail"));
                 }
             }
@@ -954,8 +954,8 @@ class AgentController extends BaseController
                 "sites"=>$sites,
                 "mails_responsables"=>$mailsResponsables,
                 "matricule"=>$matricule,
-                "url_ics"=>$url_ics, 
-                "check_ics"=>$check_ics, 
+                "url_ics"=>$url_ics,
+                "check_ics"=>$check_ics,
                 "check_hamac"=>$check_hamac
             );
             $holidays = $this->save_holidays($params);
@@ -1022,23 +1022,23 @@ class AgentController extends BaseController
                 "nom"=>$nom,
                 "prenom"=>$prenom,
                 "mail"=>$mail,
-                "statut"=>$statut, 
-                "categorie"=>$categorie, 
+                "statut"=>$statut,
+                "categorie"=>$categorie,
                 "service"=>$service,
-                "heures_hebdo"=>$heuresHebdo, 
-                "heures_travail"=>$heuresTravail, 
-                "actif"=>$actif, 
-                "droits"=>$droits, 
+                "heures_hebdo"=>$heuresHebdo,
+                "heures_travail"=>$heuresTravail,
+                "actif"=>$actif,
+                "droits"=>$droits,
                 "arrivee"=>$arrivee,
-                "depart"=>$depart, 
-                "postes"=>$postes, 
-                "informations"=>$informations, 
-                "recup"=>$recup, 
+                "depart"=>$depart,
+                "postes"=>$postes,
+                "informations"=>$informations,
+                "recup"=>$recup,
                 "sites"=>$sites,
-                "mails_responsables"=>$mailsResponsables, 
-                "matricule"=>$matricule, 
-                "url_ics"=>$url_ics, 
-                "check_ics"=>$check_ics, 
+                "mails_responsables"=>$mailsResponsables,
+                "matricule"=>$matricule,
+                "url_ics"=>$url_ics,
+                "check_ics"=>$check_ics,
                 "check_hamac"=>$check_hamac
             );
             // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
@@ -1502,6 +1502,53 @@ class AgentController extends BaseController
             ),
             //Response::HTTP_MOVED_PERMANENTLY // = 301
         );
+    }
+
+    /**
+     * @Route("/agent", name="agent.delete", methods={"DELETE"})
+     */
+    public function deleteAgent(Request $request, Session $session)
+    {
+        // Initialisation des variables
+        $id = $request->get('id');
+        $CSRFToken = $request->get('CSRFToken');
+        $date = $request->get('date');
+
+        // Disallow admin deletion
+        if ($id == 1) {
+            return $this->json("error");
+
+        // If the date parameter is given, even if empty : deletion level 1
+        } elseif ($date !== null) {
+            $date = dateSQL($date);
+            // Mise à jour de la table personnel
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->update("personnel", array("supprime"=>"1","actif"=>"Supprim&eacute;","depart"=>$date), array("id"=>$id));
+
+            // Mise à jour de la table pl_poste
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->update('pl_poste', array('supprime'=>1), array('perso_id' => "$id", 'date' =>">$date"));
+
+            // Mise à jour de la table responsables
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete("responsables", array('responsable' => $id));
+
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete("responsables", array('perso_id' => $id));
+
+            return $this->json("level 1 delete OK");
+
+        // If the date parameter is not given : deletion level 2
+        } else {
+            $p = new \personnel();
+            $p->CSRFToken = $CSRFToken;
+            $p->delete($id);
+            return $this->json("permanent delete OK");
+        }
     }
 
     private function save_holidays($params)

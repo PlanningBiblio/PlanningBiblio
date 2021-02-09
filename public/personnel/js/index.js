@@ -1,11 +1,9 @@
 /**
-Planning Biblio, Version 2.8
+Planno
 Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-@copyright 2011-2019 Jérôme Combes
+@see README.md et LICENSE
 
-Fichier : public/personnel/js/index.js
-@author Jérôme Combes <jerome@planningbiblio.fr>
+@file public/personnel/js/index.js
 
 Description :
 Fichier regroupant les fonctions JavaScript utiles à la gestion des agents (index.php)
@@ -122,3 +120,92 @@ function agent_list() {
             break;
     }
 }
+
+function deleteAgent() {
+    var agentId = $('#agentId').val();
+    var date = $('#delete-date').val();
+    var CSRFToken = $('#CSRFSession').val();
+
+    var data = {id: agentId, CSRFToken: CSRFToken};
+    if ($('#permanentDelete').val() == 0) {
+        data.date = date;
+    }
+
+    $.ajax({
+        url : url('agent'),
+        type : 'DELETE',
+        data : data,
+        success: function(response) {
+            if (response == "level 1 delete OK") {
+                var msg = encodeURI("L'agent a bien été supprimé.");
+                parent.location.href=url('agent') + '?msg=' + msg + '&msgType=success';
+            } else if (response == "permanent delete OK") {
+                var msg = encodeURI("L'agent a été supprimé définitivement.");
+                parent.location.href=url('agent') + '?msg=' + msg + '&msgType=success';
+            } else {
+                var msg = encodeURI("Une erreur est survenue lors de la suppresion de l'agent.");
+                parent.location.href=url('agent') + '?msg=' + msg + '&msgType=error';
+            }
+        },
+        error: function() {
+           var msg = encodeURI("Une erreur est survenue lors de la suppresion de l'agent.");
+           parent.location.href=url('agent') + '?msg=' + msg + '&msgType=error';
+        }
+    });
+}
+
+$(document).ready(function(){
+
+    $('.delete-agent').on('click',function(){ 
+        var agentId = $(this).data('id');
+        var agentName = $(this).data('name');
+
+        $('#agentId').val(agentId);
+        $('#deleteDialog').dialog('open');
+
+        if ($('#showAgentSelect').val() != 'Supprimé') {
+            $('#permanentDelete').val(0);
+            $('#c-text').text("Êtes-vous sûr(e) de vouloir supprimer " + agentName.toString() + " ?");
+        } else {
+            $('#permanentDelete').val(1);
+            $('#c-text').text("Êtes-vous sûr(e) de vouloir supprimer définitivement " + agentName.toString() + " ?");
+        }
+    });
+
+    $('#deleteDialog').dialog({
+        autoOpen: false,
+        modal: true,
+        width: 400,
+        height: 260,
+        buttons: {
+            Non: function() {
+                $(this).dialog('close');
+            },
+            Oui: function(e) {
+                e.preventDefault();
+   
+                  if ($('#permanentDelete').val() == 0) {
+                      $("#deleteDialog").dialog('close');
+                      $("#deleteStep2Dialog").dialog('open');
+                  } else {
+                      deleteAgent();
+                  }
+            }
+        }
+    });
+
+    $('#deleteStep2Dialog').dialog({
+        autoOpen: false,
+        modal: true,
+        width: 400,
+        height: 260,
+        buttons: {
+            Annuler: function() {
+                $(this).dialog('close');
+            },
+            Supprimer: function() {
+                deleteAgent();
+            }
+        }
+   });
+});
