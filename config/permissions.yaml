@@ -46,7 +46,9 @@
 "admin.index":
     - 100
 "agent.add":
-    - 4
+    - 21
+"agent.delete":
+    - 21
 "agent.edit":
     - 4
 "agent.import":

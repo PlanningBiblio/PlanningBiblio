@@ -3,7 +3,7 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-  <form name='form2' action='{{ asset("/agent") }}' method='get'>
+  <form name='form2' action='{{ asset("agent") }}' method='get'>
     <input type = 'hidden' value='{{ actif }}' />
     <table style='margin-bottom:10px;'>
       <tr style='vertical-align:center;'>
@@ -12,7 +12,7 @@
         </td>
         <td>Voir les agents</td>
         <td style='width:150px;'>
-          <select name='actif' onchange='document.form2.submit();'  class='ui-widget-content ui-corner-all'>
+          <select name="actif" id="showAgentSelect" onchange="document.form2.submit();"  class="ui-widget-content ui-corner-all">
             <option value='Actif'{% if actif == 'Actif' %} selected='selected' {% endif %}>Service public</option>
             <option value='Inactif' {% if actif == 'Inactif' %} selected='selected' {% endif %}>Administratif</option>
             {% if rights21 %}
@@ -64,12 +64,12 @@
               {% if rights21 %}
               <input type='checkbox' name='chk{{ loop.index0 }}' value='{{ a.id }}' class='checkbox' />
               {% endif %}
-              <a href="{{ asset ('/agent/')}}{{ a.id }}">
+              <a href="{{ asset ('agent/')}}{{ a.id }}">
                 <span class='pl-icon pl-icon-edit' title='Modifier'></span>
               </a>
               {% if rights21 and a.id != login_id and a.id > 1 %}
-                <a href='javascript:popup("personnel/suppression.php&amp;id={{ a.id }}",450,240);'>
-                  <span class='pl-icon pl-icon-dropblack' title='Supprimer'></span>
+                <a href='#' >
+                  <span class='pl-icon pl-icon-dropblack delete-agent' title='Supprimer' data-id="{{ a.id }}" data-name="{{ a.surname }} {{ a.name }}"></span>
                 </a>
               {% endif %}
             </div>
@@ -228,6 +228,27 @@
         </div> <!-- qualif -->
       </div> <!-- ui-tabs -->
     </form>
+  </div>
+
+  <div id="deleteDialog" style="display: none;">
+    <h3>Suppression</h3>
+    <form id="deleteForm">
+      <input type="hidden" name="agentId" id="agentId" value="" />
+      <input type="hidden" name="permanentDelete" id="permanentDelete" value="0" />
+      <p id="c-text"></p>
+    </form>
+  </div>
+
+  {% if actif != 'Supprimé' %}
+    <div id="deleteStep2Dialog" style="display: none;">
+      <h3>Suppression</h3>
+      <form id="deleteStep2Form">
+        Sélectionner sa date de départ : 
+        <input type="text" name="date" id ="delete-date" value="{{ 'now' | date('d/m/Y') }}" class="datepicker checkdate" tabindex="-1">
+      </form>
+    </div>
+  {% endif %}
+
 {% endblock %}
 
 {% block specificjs %}
