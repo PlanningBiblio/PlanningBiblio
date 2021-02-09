@@ -19,10 +19,11 @@ Fichier intégré par le fichier include/header.php avec la fonction getJSFiles.
 function supprimeGroupe(id){
   var CSRFToken = $('#CSRFSession').val();
   var nom=$("#td-groupe-"+id+"-nom").text();
+  var baseURL = $("#baseURL").val();
 
   if(confirm("Etes vous sûr(e) de vouloir supprimer le groupe \""+nom+"\"?")){
     $.ajax({
-      url: "planning/postes_cfg/ajax.supprimeGroupe.php",
+      url: baseURL + "/planning/postes_cfg/ajax.supprimeGroupe.php",
       type: "post",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
@@ -50,9 +51,11 @@ function supprimeGroupe(id){
 function supprimeLigne(id){
   var CSRFToken = $('#CSRFSession').val();
   var nom=$("#td-ligne-"+id+"-nom").text();
+  var baseURL = $("#baseURL").val();
+  
   if(confirm("Etes-vous sûr(e) de vouloir supprimer la ligne \""+nom+"\" ?")){
     $.ajax({
-      url: "/planning/postes_cfg/ajax.supprimeLigne.php",
+      url: baseURL + "/planning/postes_cfg/ajax.supprimeLigne.php",
       type: "post",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
@@ -82,7 +85,7 @@ function supprimeTableau(tableau){
     var CSRFToken = $('#CSRFSession').val();
     var baseURL = $("#baseURL").val();
     $.ajax({
-      url: "planning/postes_cfg/ajax.supprimeTableau.php",
+      url: baseURL + "/planning/postes_cfg/ajax.supprimeTableau.php",
       type: "post",
       dataType: "json",
       data: {tableau: tableau, CSRFToken: CSRFToken},
@@ -207,17 +210,18 @@ function supprime_select(classe,page){
 }
 
 function tableauxInfos(){
+  var baseURL = $("#baseURL").val();
   $.ajax({
-    url: "planning/postes_cfg/ajax.infos.php",
+    url: baseURL + "/planning/postes_cfg/ajax.infos.php",
     type: "get",
     dataType: "json",
     data: {id:$("#id").val(), nom:$("#nom").val(), nombre:$("#nombre").val(), site:$("#site").val(), CSRFToken:$("#CSRFSession").val()},
     success: function(result){
       var msg=encodeURIComponent("Les informations ont été modifiées avec succès");
       if($("#id").val()){
-        location.href="index.php?page=planning/postes_cfg/modif.php&numero="+$("#id").val()+"&cfg-type=0&msg="+msg+"&msgType=success";
+        location.href= baseURL + "/framework/"+$("#id").val()+"?cfg-type=0&msg="+msg+"&msgType=success";
       }else{
-        location.href="index.php?page=planning/postes_cfg/modif.php&numero="+result+"&cfg-type=0&msg="+msg+"&msgType=success";
+        location.href= baseURL + "/framework/"+result+"?cfg-type=0&msg="+msg+"&msgType=success";
       }
     },
     error: function(result){
@@ -250,7 +254,7 @@ $(function(){
 
       if(confirm("Etes vous sûr(e) de vouloir récupérer le tableau \""+name+"\" ?")){
     $.ajax({
-      url: "planning/postes_cfg/ajax.recupTableau.php",
+      url: "/planning/postes_cfg/ajax.recupTableau.php",
       type: "get",
       dataType: "json",
       data: {id:id, CSRFToken: CSRFToken},
