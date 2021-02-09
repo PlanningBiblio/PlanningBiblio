@@ -95,7 +95,7 @@ class FrameworkController extends BaseController
                 "groupes"           => $groupes,
                 "lignes"            => $lignes,
                 "nbSites"           => $nbSites,
-                "numero1"           => $numero1,
+                "numero1"           => null,
                 "tableaux"          => $tableaux,
                 "tableauxSupprimes" => $tableauxSupprimes
             )
@@ -350,7 +350,7 @@ class FrameworkController extends BaseController
                 $db2->CSRFToken = $CSRFToken;
                 $db2->insert("pl_poste_tab", array("nom"=>$nom ,"tableau"=>$numero2, "site"=>$site));
             } else {		// par sécurité, si pas d'horaires à  copier, on stop le script pour éviter d'avoir une incohérence dans les numéros de tableaux
-                return new RedirectResponse($this->config('URL')."/index.php?page=planning/postes_cfg/modif.php&cfg-type=horaires&numero={$numero1}");
+               return new RedirectResponse($this->config('URL')."/index.php?page=planning/postes_cfg/modif.php&cfg-type=horaires&numero={$numero1}");
 
             }
 

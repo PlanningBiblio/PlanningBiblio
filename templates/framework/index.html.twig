@@ -61,8 +61,8 @@
                 <a href='index.php?page=planning/postes_cfg/modif.php&numero={{ elem.tableau }}'>
                   <span class='pl-icon pl-icon-edit' title='Modifier'></span>
                 </a>
-                <a data-toggle="modal" href="{{ asset('framework/copy') }}/{{ elem.tableau }}" data-target="#myModal">
-                  <span class='pl-icon pl-icon-copy' title='Copier'></span>
+                <a href="" class="copy-table" data-id ="{{ elem.tableau }}">
+                  <span class='pl-icon pl-icon-copy' id="copy-tab-link{{ elem.tableau }}" title='Copier' style="border: none;"></span>
                 </a>
                 <a href='javascript:supprimeTableau({{ elem.tableau }});'>
                   <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
@@ -164,22 +164,18 @@
     </table>
   </div>
 
-  <div id="modal" class="modal hide fade" style="width:400px; height;260px;">
-    {% if result is defined %}
-      <br/><br/><b>Copie en cours. Veuillez patienter ...</b>
-    {% else %}
-      <h3>Copie du tableau</h3>
-      <form name='form' action="{{ asset('framework/copy') }}" method='get'>
-        <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}" />
-        <input type='hidden' name='menu' value='off' />
-        <input type='hidden' name='confirm' value='on' />
-        <input type='hidden' name='numero' value="{{ numero1 }}" />
-        Nom du nouveau tableau<br/>
-        <input type='text' name='nom' />
-        <br/><br/><br/>
-        <input type='button' value='Annuler' onclick='popup_closed();'/>
-        &nbsp;&nbsp;<input type='submit' value='Copier' />
-      </form>
-    {% endif %}
+  <div id="copy-div" style="display: none;">
+    <h3>Copie du tableau</h3>
+    <form name='form' id="copy-form" action="" method='get'>
+      <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}" />
+      <input type='hidden' name='menu' value='off' />
+      <input type='hidden' name='confirm' value='on' />
+      <input type='hidden' name='numero' id='numero' value="" />
+      Nom du nouveau tableau<br/>
+      <input type='text' name='nom' />
+      <br/><br/><br/>
+      <input type='button' id="Cancel" value='Annuler' onclick="$('#copy-div').dialog('close');"/>
+      &nbsp;&nbsp;<input type='button' id="Copy" value='Copier'/>
+    </form>
   </div>
 {% endblock %}
