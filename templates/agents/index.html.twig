@@ -63,8 +63,8 @@
               <span class='pl-icon pl-icon-edit' title='Modifier'></span>
             </a>
             {% if rights21 and a.id != login_id and a.id > 1 %}
-              <a href='javascript:popup("personnel/suppression.php&amp;id={{ a.id }}",450,240);'>
-                <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
+              <a href='#' >
+                <span class='pl-icon pl-icon-drop delete-agent' title='Supprimer' data-id="{{ a.id }}" data-nom="{{ a.surname }} {{ a.name }}"></span>
               </a>
             {% endif %}
           </td>
@@ -218,10 +218,137 @@
         </div> <!-- qualif -->
       </div> <!-- ui-tabs -->
     </form>
+  </div>
+
+  <div id='confirmation'style="display: none;">
+    <h3>Suppression</h3>
+    <form name='form' id='confirmation-form' action="{{ asset('/agent') }}"  method='delete'>
+      <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}" />
+      <input type='hidden' name='id' id='agent-id' value=""/>
+      <input type='hidden' name='menu' value='off' />
+      <p id='c-text'></p>
+      
+      <br/><br/><br/>
+      <input type='button' id="Cancel" value='Non' onclick="$('#confirmation').dialog('close'); "/>
+      &nbsp;&nbsp;<input type='submit' id="Valider" value='Oui'/>
+    </form>
+  </div>
+
+  {% if actif != 'Supprimé' %}
+    <div id='suppression' style="display: none;">
+      <form method='delete' action="{{ asset('/agent') }}" name='form' onsubmit='verif_form("date=date");'>
+        <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}" />
+        <input type='hidden' name='menu' value='off' />
+        <input type='hidden' name='confirm' value='on' />
+        Sélectionner la date de départ : 
+        <input type='text' name='date' id ="delete-date" size='10' value="{{ 'now' | date('d/m/Y') }}" class='datepicker checkdate'>
+        <br/><br/>
+        <input type='button' value='Annuler' onclick="$('#suppression').dialog('close');">
+        &nbsp;&nbsp;
+        <input type='button' value='Supprimer' id='Supprimer' />
+        <input type='hidden' name='id' id='id' value=''>
+        <input type='hidden' name='has-date' id='has-date' value='0'>
+      </form>
+    </div>
+  {% endif %}
+
 {% endblock %}
 
 {% block specificjs %}
-    <script type='text/JavaScript'> var complet = JSON.parse('{{ positionsCompleteNames | e('js') }}'); </script>
+    <script type='text/JavaScript'> var complet = JSON.parse('{{ positionsCompleteNames | raw }}'); </script>
     <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/personnel/js/modif.js'></script>
     <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/personnel/js/index.js'></script>
+    <script type="text/JavaScript">
+      $(document).ready(function(){
+        $('#confirmation').dialog({
+            autoOpen: false,
+            modal: true,
+            width: 400,
+            height: 260
+        });
+        $('.delete-agent').on('click',function(){ 
+          var id = $(this).data('id');
+          var nom = $(this).data('nom');
+          $('#confirmation').dialog('open');
+          document.getElementById('agent-id').value = id+"";
+          var note = document.getElementById('c-text');
+
+          {% if actif != 'Supprimé' %}
+            note.textContent = "Êtes-vous sûr(e) de vouloir supprimer " + nom.toString() + " ?";
+          {% else %}
+            note.textContent = "Êtes-vous sûr(e) de vouloir définitivement supprimer " + nom.toString() + " ?";
+            $('#confirmation-form').method = "delete";
+          {% endif %}
+        });
+        {% if actif != 'Supprimé' %}
+          $('#suppression').dialog({
+              autoOpen: false,
+              modal: true,
+              width: 400,
+              height: 260
+          });
+          $('#Valider').on('click',function(e){ 
+            e.preventDefault();
+            var id = $('#agent-id').val();
+            $("#confirmation").dialog('close');
+            $("#suppression").dialog('open');
+            document.getElementById('id').value = id + "";
+            CSRFToken = $('#CSRFSession').val();
+          });
+
+          $('#Supprimer').on('click', function(){
+            var id = $('#id').val();
+            $("#has-date").attr("value", "1");
+            date = $("#delete-date").val();
+            CSRFToken = $('#CSRFSession').val();
+            var hasDate = document.getElementById('has-date').value;
+            $.ajax({
+              url : '{{ asset("agent") }}',
+              type : 'DELETE',
+              data : {id: id, CSRFToken: CSRFToken, date: date, hasDate: hasDate},
+              success: function(response){
+                if (response == "Ok"){
+                  CJInfo("L'agent a bien été supprimé.","success");
+                }
+                popup_closed();
+                parent.window.location.reload(false);
+              },
+              error: function(){
+                CJInfo("Une erreur est survenue lors de la suppression","error");
+                popup_closed();
+                parent.window.location.reload(false);
+              }
+            });
+          });
+        {% else %}
+          $('#Valider').on('click',function(e){ 
+            e.preventDefault();
+            var id = $('#agent-id').val();
+            CSRFToken = $('#CSRFSession').val();
+            $.ajax({
+              url : '{{ asset("agent") }}',
+              type : 'DELETE',
+              data : {id: id, CSRFToken: CSRFToken, date: null, hasDate: null},
+              success: function(response){
+                if (response == "Definitif"){
+                  CJInfo("L'agent a été définitivement supprimé.","success"); 
+                  popup_closed();
+                  parent.window.location.reload(false);
+                }
+              },
+              error: function(response){
+                if (response == "error"){
+                  CJInfo("Le compte admin ne peut pas être supprimé !","error");
+                } else {
+                  CJInfo("Une erreur est survenue lors de la suppression","error");
+                }
+                popup_closed();
+                parent.window.location.reload(false);
+              }
+            });
+
+          });
+        {% endif %}
+    });
+    </script>
 {% endblock %}
