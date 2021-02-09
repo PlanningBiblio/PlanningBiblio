@@ -189,6 +189,18 @@ td *{
   content:"\f070";
 } 
 
+.fa-pencil-square-o{
+  color : #fff;
+}
+
+a:hover .icones .fa-trash:not(#validation .fa-trash), .icones:hover .fa-trash:not(#validation .fa-trash){
+  color: red;
+}
+
+a:hover .icones .fa-plus, .icones:hover .fa-plus{
+  color: green;
+}
+
 /* Absences récurrentes */
 #recurrence-summary, #recurrence-summary-form {
   max-width:300px;
