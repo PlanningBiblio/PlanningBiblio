@@ -104,6 +104,62 @@ class FrameworkController extends BaseController
         return $this->output("/framework/index.html.twig");
     }
 
+    /**
+     * @Route ("/framework/info", name="framework.save_table_info", methods={"POST"})
+     */
+    public function saveInfo(Request $request, Session $session){
+        $post = $request->request->all();
+        $id = $post["id"];
+        $CSRFToken = $post["CSRFToken"];
+        $nombre = $post["nombre"];
+        $nom = $post["nom"];
+        $site = $post["site"];
+
+        // Ajout
+        if (!$id) {
+
+        // Recherche du numero de tableau à utiliser
+            $db = new \db();
+            $db->select2("pl_poste_tab", array(array("name" => "MAX(tableau)", "as" => "numero")));
+            $numero = $db->result[0]["numero"]+1;
+
+            // Insertion dans la table pl_poste_tab
+            $insert = array("nom" => trim($nom), "tableau" => $numero, "site" => "1");
+            if ($site) {
+                $insert["site"] = $site;
+            }
+        
+            $db = new \db();
+            $db->sanitize_string = false;
+            $db->CSRFToken = $CSRFToken;
+            $db->insert("pl_poste_tab", $insert);
+
+            $t = new \tableau();
+            $t->id = $numero;
+            $t->CSRFToken = $CSRFToken;
+            $t->setNumbers($nombre);
+
+            return $this->json((int) $numero);
+        } else {  // Modification
+            $t = new \tableau();
+            $t->id = $id;
+            $t->CSRFToken = $CSRFToken;
+            $t->setNumbers($nombre);
+
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->sanitize_string = false;
+            $db->update("pl_poste_tab", array("nom" => trim($nom)), array("tableau" => $id));
+
+            if ($site) {
+                $db = new \db();
+                $db->CSRFToken = $CSRFToken;
+                $db->update('pl_poste_tab', array('site' => $site), array('tableau' => $id));
+            }
+
+            return $this->json('OK');
+        }
+    }
      /**
      * @Route ("/framework/add", name="framework.add_table", methods={"GET"})
      */
