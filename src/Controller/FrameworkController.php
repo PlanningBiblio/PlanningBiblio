@@ -396,6 +396,28 @@ class FrameworkController extends BaseController
         $t->deleteTab();
         return $this->json('ok');
     }
+
+     /**
+     * @Route ("/framework-batch_delete", name="framework.delete_selected_tables", methods={"GET"})
+     */
+    public function deleteSelectedTables (Request $request, Session $session){
+        $CSRFToken = $request->get("CSRFToken");
+        $ids = $request->get("ids");
+        $dbprefix = $GLOBALS['dbprefix'];
+
+        $today = date("Y-m-d H:i:s");
+        $set = array("supprime"=>$today);
+        $where = array("tableau"=>"IN $ids");
+
+        $db = new \db();
+        $db->query("UPDATE `{$dbprefix}pl_poste_tab_grp` SET `supprime`='$today' WHERE `lundi` IN ($ids) OR `mardi` IN ($ids) OR `mercredi` IN ($ids) OR `jeudi` IN ($ids) OR `vendredi` IN ($ids) OR `samedi` IN ($ids) OR `dimanche` IN ($ids);");
+
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->update("pl_poste_tab", $set, $where);
+
+        return $this->json('ok');
+    }
     
     /**
      * @Route ("/framework-group/add", name="framework.add_group", methods={"GET"})
