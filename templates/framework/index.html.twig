@@ -54,7 +54,7 @@
       </table>
     </form>
     <p>
-      <input type='button' value='Supprimer la sélection' class='ui-button' onclick="supprime_select('chk1','planning/postes_cfg/ajax.suppression.php');">
+      <input type='button' value='Supprimer la sélection' class='ui-button' onclick="supprime_select('chk1','{{ app.request.getBaseURL() }}/framework-batch_delete');">
     </p>
     {% if tableauxSupprimes is not empty %}
       <p style='margin-top:30px;'>

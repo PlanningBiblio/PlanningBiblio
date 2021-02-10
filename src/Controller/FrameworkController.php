@@ -42,19 +42,20 @@ class FrameworkController extends BaseController
             }
         }
 
-        foreach ($tableaux as &$elem) {
-            if (array_key_exists($elem['tableau'], $tabAffect)) {
-                $utilisation=dateFr($tabAffect[$elem['tableau']]);
-            } else {
-                $utilisation="Jamais";
-            }
-            $elem['tabAffect'] = $utilisation;
+        if($tableaux){
+            foreach ($tableaux as &$elem) {
+                if (array_key_exists($elem['tableau'], $tabAffect)) {
+                    $utilisation=dateFr($tabAffect[$elem['tableau']]);
+                } else {
+                    $utilisation="Jamais";
+                }
+                $elem['tabAffect'] = $utilisation;
 
-            if ($nbSites > 1){
-                $elem['multisite'] = $this->config("Multisites-site{$elem['site']}");
+                if ($nbSites > 1){
+                    $elem['multisite'] = $this->config("Multisites-site{$elem['site']}");
+                }
             }
         }
-
         // Récupération de tableaux supprimés dans l'année
         if (!empty($tableauxSupprimes)) {
             foreach ($tableauxSupprimes as &$elem) {
@@ -472,6 +473,43 @@ class FrameworkController extends BaseController
         return $this->json('ok');
     }
 
+     /**
+     * @Route ("/framework", name="framework.delete_table", methods={"DELETE"})
+     */
+    public function deleteTable (Request $request, Session $session){
+        $post = $request->request->all();
+        $CSRFToken = $post['CSRFToken'];
+        $tableau = $post['tableau'];
+
+        $t = new \tableau();
+        $t->number = $tableau;
+        $t->CSRFToken = $CSRFToken;
+        $t->deleteTab();
+        return $this->json('ok');
+    }
+
+     /**
+     * @Route ("/framework-batch_delete", name="framework.delete_selected_tables", methods={"GET"})
+     */
+    public function deleteSelectedTables (Request $request, Session $session){
+        $CSRFToken = $request->get("CSRFToken");
+        $ids = $request->get("ids");
+        $dbprefix = $GLOBALS['dbprefix'];
+
+        $today = date("Y-m-d H:i:s");
+        $set = array("supprime"=>$today);
+        $where = array("tableau"=>"IN $ids");
+
+        $db = new \db();
+        $db->query("UPDATE `{$dbprefix}pl_poste_tab_grp` SET `supprime`='$today' WHERE `lundi` IN ($ids) OR `mardi` IN ($ids) OR `mercredi` IN ($ids) OR `jeudi` IN ($ids) OR `vendredi` IN ($ids) OR `samedi` IN ($ids) OR `dimanche` IN ($ids);");
+
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->update("pl_poste_tab", $set, $where);
+
+        return $this->json('ok');
+    }
+ 
     /**
      * @Route ("/framework-group/add", name="framework.add_group", methods={"GET"})
      */

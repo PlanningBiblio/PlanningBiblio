@@ -31,6 +31,10 @@
     - 22
 "framework.save_table_line":
     - 22
+"framework.delete_table":
+    - 22
+"framework.delete_selected_tables":
+    - 22
 "framework.add_group":
     - 22
 "framework.edit_group":
