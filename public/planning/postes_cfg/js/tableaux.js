@@ -220,8 +220,8 @@ function supprime_select(classe,page){
 function tableauxInfos(){
   var baseURL = $("#baseURL").val();
   $.ajax({
-    url: baseURL + "/planning/postes_cfg/ajax.infos.php",
-    type: "get",
+    url: baseURL + "/framework/info",
+    type: "post",
     dataType: "json",
     data: {id:$("#id").val(), nom:$("#nom").val(), nombre:$("#nombre").val(), site:$("#site").val(), CSRFToken:$("#CSRFSession").val()},
     success: function(result){
