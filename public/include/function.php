@@ -1317,6 +1317,24 @@ function selectHeure($min, $max, $blank=false, $selectedValue=null)
     }
 }
 
+function myselectHeure($min, $max, $blank=false)
+{
+    $granularite = $GLOBALS['config']['Granularite'];
+    if ($blank) {
+       $option[] = array("raw"=>'', 'human_readable' =>" ");
+    }
+
+    for ($i = $min; $i < $max+1; $i++) {
+        $hre = sprintf("%'.02d", $i);
+
+        for ($j = 0; $j < 60; $j = $j+$granularite) {
+            $min = sprintf("%'.02d", $j);
+            $option[] = array("raw" => "$hre:$min:00", "human_readable" => "{$hre}h$min");
+        }
+    }
+    return $option;
+}
+
 /**
  * Fonction selectTemps
  * Utilisée pour afficher les menus déroulants des heures pour remplir les plannings de présences

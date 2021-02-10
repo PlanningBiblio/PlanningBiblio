@@ -10,10 +10,10 @@
   <div id='tableaux-listes' class='tableaux-cfg'>
     <h3>Liste des tableaux</h3>
     <p>
-      <a href='index.php?page=planning/postes_cfg/modif.php' class='ui-button'>Nouveau tableau</a>
+      <a href="{{ asset('framework/add') }}" class='ui-button'>Nouveau tableau</a>
     </p>
     <form name='form' method='get' action='{{ asset("framework")}}'>
-      <input type="hidden" name="modification" value ="tableau"/> 
+      <input type="hidden" name="modification" value ="tableau"/>
       <table class='CJDataTable' id='table-list' data-noExport='1' data-sort='[[1,"asc"]]'>
         <thead>
           <tr>
@@ -32,7 +32,8 @@
             <tr id='tr-tableau-{{ elem.tableau }}' >
               <td style='white-space:nowrap;'>
                 <input type='checkbox' name='chk{{ loop.index0 }}' value='{{ elem.tableau }}' class='chk1'/>
-                <a href='index.php?page=planning/postes_cfg/modif.php&numero={{ elem.tableau }}'>
+                <input type='hidden' name='numero' id='numero' value ="{{ elem.tableau }}" />
+                <a href="{{ asset('framework') }}/{{ elem.tableau }}">
                   <span class='pl-icon pl-icon-edit' title='Modifier'></span>
                 </a>
                 <a href='javascript:popup("planning/postes_cfg/copie.php&numero={{ elem.tableau }}",400,260);'>
@@ -64,7 +65,7 @@
               <option value='{{ item.tableau }}'>{{ item.nom }}&nbsp;(utilisation : {{ item.tabAffect }})</option>
             {% endfor %}
         </select>
-      </p> 
+      </p>
     {% endif %}
   </div>
   <div id='tableaux-groupes' class='tableaux-cfg' >

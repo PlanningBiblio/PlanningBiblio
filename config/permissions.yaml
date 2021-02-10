@@ -19,6 +19,12 @@
     - 100
 "framework.index":
     - 22
+"framework.add_table":
+    - 22
+"framework.edit_table":
+    - 22
+"framework.save_table":
+    - 22
 "framework.add_group":
     - 22
 "framework.edit_group":
