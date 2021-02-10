@@ -17,6 +17,38 @@ require_once(__DIR__ . "/../../public/conges/class.conges.php");
 
 class AgentController extends BaseController
 {
+
+    /**
+     * @Route("/ajax/agent-sites", name="ajax.agentsites", methods={"GET"})
+     */
+    public function sites(Request $request)
+    {
+        $agent = $request->get('id');
+        $response = new Response();
+        if (!$agent) {
+            $response->setContent('Wrong parameters');
+            $response->setStatusCode(404);
+            return $response;
+        }
+
+        $db = new \db();
+        $db->select2("personnel", "sites", array("id"=>$agent));
+        if ($db->result) {
+            $sites = json_decode(html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+            if (is_array($sites)) {
+                foreach ($sites as $elem) {
+                    $result[]=array($elem,$this->config("Multisites-site".$elem));
+                }
+            }
+        }
+
+        $response->setContent(json_encode($result));
+        $response->setStatusCode(200);
+
+        return $response;
+    }
+
+
     /**
      * @Route("/agent/add", name="agent.add", methods={"GET"})
      * @Route("/agent/{id}", name="agent.edit", methods={"GET"})

@@ -4,6 +4,7 @@
 
 {% block specificjs %}
   <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/planningHebdo/js/script.planningHebdo.js'></script>
+  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/workinghour/js/workinghour.js'></script>
 {% endblock %}
 
 {% block page %}
@@ -58,6 +59,13 @@
             <input type='text' name='fin' value='{{ fin1Fr }}' class='datepicker' style='position:absolute; left:200px; width:200px;' />
           </p>
         </div> <!-- id=periode -->
+        <div id='cycle'>
+            <p>
+                <label for='number_of_weeks'>Cycle (en nombre de semaines)</label>
+                <select name='number_of_weeks' id='number_of_weeks'>
+                </select>
+            </p>
+        </div>
         <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
         <input type='hidden' name='retour' value='{{ retour }}' />
         <input type='hidden' name='action' value='{{ action }}' />

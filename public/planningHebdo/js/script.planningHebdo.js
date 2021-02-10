@@ -374,6 +374,7 @@ $(function(){
   $("#perso_id").change(function(){
     var baseURL = $('#baseURL').val();
     $.ajax({
+      //TODO: Replace me with controller call !
       url: baseURL+"/planningHebdo/ajax.getSites.php",
       dataType: "json",
       type: "post",

@@ -15,6 +15,8 @@ Fichier permettant la récupération des sites d'un agent en arrière plan.
 Appelé par l'évenement $("#perso_id").change() dans la page planningHebdo/modif.php (planningHebdo/js/script.planningHebdo.js)
 */
 
+#TODO: Move me in a Controller !
+
 require_once "../include/config.php";
 
 $options=array();
