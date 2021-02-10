@@ -9,6 +9,7 @@ use App\PlanningBiblio\Event\OnTransformLeaveHours;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Response;
 
 require_once(__DIR__ . "/../../public/personnel/class.personnel.php");
 require_once(__DIR__ . "/../../public/activites/class.activites.php");
@@ -32,6 +33,7 @@ class AgentController extends BaseController
         }
 
         $db = new \db();
+        $result = array();
         $db->select2("personnel", "sites", array("id"=>$agent));
         if ($db->result) {
             $sites = json_decode(html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);

@@ -37,7 +37,6 @@ class ControllerAuthorizationListener
 
     public function onKernelRequest(GetResponseEvent $event)
     {
-        error_log("onKernelRequest");
         $page = $event->getRequest()->getPathInfo();
         $page = preg_replace('/([a-z\/]*).*/', "$1", $page);
         $page = rtrim($page, '/add');
@@ -64,12 +63,9 @@ class ControllerAuthorizationListener
             return;
         }
 
-error_log("route: " . $route);
-error_log(print_r($this->permissions));
         if(empty($this->permissions[$route])){
             if (!$logged_in->can_access($accesses)){
                 $this->triggerAccessDenied($event);
-                error_log("access denied");
             }
             return;
         }
@@ -77,7 +73,6 @@ error_log(print_r($this->permissions));
         if (!$this->canAccess($route)) {
             $this->triggerAccessDenied($event);
         }
-        error_log( "no access denied");
     }
 
     private function canAccess($route)
