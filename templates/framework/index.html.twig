@@ -12,8 +12,8 @@
     <p>
       <a href="{{ asset('framework/add') }}" class='ui-button'>Nouveau tableau</a>
     </p>
-    <form name='form' method='get' action="{{ asset('framework') }}">
-      <input type="hidden" name="modification" value ="tableau"/> 
+    <form name='form' method='get' action='{{ asset("framework")}}'>
+      <input type="hidden" name="modification" value ="tableau"/>
       <table class='CJDataTable' id='table-list' data-noExport='1' data-sort='[[1,"asc"]]'>
         <thead>
           <tr>
@@ -65,13 +65,13 @@
               <option value='{{ item.tableau }}'>{{ item.nom }}&nbsp;(utilisation : {{ item.tabAffect }})</option>
             {% endfor %}
         </select>
-      </p> 
+      </p>
     {% endif %}
   </div>
   <div id='tableaux-groupes' class='tableaux-cfg' >
     <h3>Groupes</h3>
     <p>
-      <input type='button' value='Nouveau groupe' class='ui-button' onclick='location.href="index.php?page=planning/postes_cfg/groupes.php";' />
+      <input type='button' value='Nouveau groupe' class='ui-button' onclick="location.href='{{ asset("framework-group/add") }}';" />
     </p>
     <table class='CJDataTable' id='table-groups' data-noExport='1' data-sort='[[1,"asc"]]'>
       <thead>
@@ -88,7 +88,7 @@
           {% for groupe in groupes %}
             <tr id='tr-groupe-{{ groupe.id }}'>
               <td>
-                <a href='index.php?page=planning/postes_cfg/groupes.php&id={{ groupe.id }}'>
+                <a href="{{ asset('framework-group') }}/{{ groupe.id }}">
                   <span class='pl-icon pl-icon-edit' title='Modifier'></span>
                 </a>
                 <a href='javascript:supprimeGroupe({{ groupe.id }});'>
@@ -107,40 +107,35 @@
   </div>
   <div id='tableaux-separations' class='tableaux-cfg'>
     <h3>Lignes de séparation</h3>
-    <form method='get' action='index.php'>
-      <input type='hidden' name='page' value='planning/postes_cfg/lignes_sep.php' />
-      <input type='hidden' name='action' value='ajout' />
-      <input type='hidden' name='cfg-type' value='lignes_sep' />
-      <p>
-        <input type='submit' value='Nouvelle ligne' class='ui-button'/>
-      </p>
-    </form>
-      <table class='CJDataTable' id='table-separations' data-noExport='1'  data-sort='[[1, "asc"]]'>
-        <thead>
-          <tr>
-            <th class='dataTableNoSort'>&nbsp;</th>
-            <th>Nom</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% if lignes %}
-            {% for elem in lignes %}
-              <tr id='tr-ligne-{{ elem.id }}' >
-                <td>
-                  <a href="index.php?page=planning/postes_cfg/lignes_sep.php&action=modif&id={{ elem.id }}">
-                    <span class='pl-icon pl-icon-edit' title='Modifier'></span>
+    <p>
+      <input type='submit' value='Nouvelle ligne' class='ui-button' onclick='location.href="{{ asset('framework-line/add') }}";'/>
+    </p>
+    <table class='CJDataTable' id='table-separations' data-noExport='1'  data-sort='[[1, "asc"]]'>
+      <thead>
+        <tr>
+          <th class='dataTableNoSort'>&nbsp;</th>
+          <th>Nom</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if lignes %}
+          {% for elem in lignes %}
+            <tr id='tr-ligne-{{ elem.id }}' >
+              <td>
+                <a href="{{ asset('framework-line') }}/{{ elem.id }}">
+                  <span class='pl-icon pl-icon-edit' title='Modifier'></span>
+                </a>
+                {% if elem.delete == true %}
+                  <a href='javascript:supprimeLigne({{ elem.id }});'>
+                    <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
                   </a>
-                  {% if elem.delete == true %}
-                    <a href='javascript:supprimeLigne({{ elem.id }});'>
-                      <span class='pl-icon pl-icon-drop' title='Supprimer'></span>
-                    </a>
-                  {% endif %}
-                </td>
-                <td id='td-ligne-{{ elem.id }}-nom' >{{ elem.nom | raw }}</td>
-              </tr>
-            {% endfor %}
-          {% endif %}
-        </tbody>
-      </table>
+                {% endif %}
+              </td>
+              <td id='td-ligne-{{ elem.id }}-nom' >{{ elem.nom | raw }}</td>
+            </tr>
+          {% endfor %}
+        {% endif %}
+      </tbody>
+    </table>
   </div>
 {% endblock %}
