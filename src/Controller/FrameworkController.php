@@ -382,6 +382,21 @@ class FrameworkController extends BaseController
     }   
 
     /**
+     * @Route ("/framework", name="framework.delete_table", methods={"DELETE"})
+     */
+    public function deleteTable (Request $request, Session $session){
+        $post = $request->request->all();
+        $CSRFToken = $post['CSRFToken'];
+        $tableau = $post['tableau'];
+
+        $t = new \tableau();
+        $t->number = $tableau;
+        $t->CSRFToken = $CSRFToken;
+        $t->deleteTab();
+        return $this->json('ok');
+    }
+    
+    /**
      * @Route ("/framework-group/add", name="framework.add_group", methods={"GET"})
      */
     public function addGroup (Request $request, Session $session){

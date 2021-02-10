@@ -85,8 +85,8 @@ function supprimeTableau(tableau){
     var CSRFToken = $('#CSRFSession').val();
     var baseURL = $("#baseURL").val();
     $.ajax({
-      url: baseURL + "/planning/postes_cfg/ajax.supprimeTableau.php",
-      type: "post",
+      url: baseURL + "/framework",
+      type: "delete",
       dataType: "json",
       data: {tableau: tableau, CSRFToken: CSRFToken},
       success: function(){

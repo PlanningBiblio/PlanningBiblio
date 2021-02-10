@@ -25,6 +25,8 @@
     - 22
 "framework.save_table":
     - 22
+"framework.delete_table":
+    - 22
 "framework.add_group":
     - 22
 "framework.edit_group":
