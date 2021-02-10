@@ -37,6 +37,8 @@
     - 22
 "framework.delete_group":
     - 22
+"framework.delete_line":
+    - 22
 "framework.add_line":
     - 22
 "framework.edit_line":
