@@ -79,7 +79,7 @@ class FrameworkController extends BaseController
 
         $db = new \db();
         $db->select("lignes", null, null, "order by nom");
-        $lignes = $db->result; 
+        $lignes = $db->result;
         if ($lignes) {
             foreach ($lignes as &$elem) {
                 $db2 = new \db();
@@ -132,7 +132,7 @@ class FrameworkController extends BaseController
         if ($this->config('Dimanche')) {
             $semaine[] = "dimanche";
         }
-        $champs = '"Nom,'.join(',', $semaine).'"';	
+        $champs = '"Nom,'.join(',', $semaine).'"';
 
         $this->templateParams(
             array(
@@ -186,7 +186,7 @@ class FrameworkController extends BaseController
         unset($groupes[$key[0]]);
 
 
-        $semaine = array("lundi","mardi","mercredi","jeudi","vendredi","samedi"); 
+        $semaine = array("lundi","mardi","mercredi","jeudi","vendredi","samedi");
         if ($this->config('Dimanche')) {
             $semaine[] = "dimanche";
         }
@@ -205,7 +205,7 @@ class FrameworkController extends BaseController
             )
         );
 
-        return $this->output('framework/edit_group.html.twig');	
+        return $this->output('framework/edit_group.html.twig');
     }
 
     /**
@@ -301,5 +301,20 @@ class FrameworkController extends BaseController
 
         return $this->redirectToRoute('framework.index', array("msg" => $msg, "msgType" => $msgType));
 
+    }
+
+    /**
+     * @Route ("/framework-line", name="framework.delete_line", methods={"DELETE"})
+     */
+    public function deleteLine (Request $request, Session $session){
+        $post = $request->request->all();
+        $id = $post['id'];
+        $CSRFToken = $post['CSRFToken'];
+
+        $t = new \tableau();
+        $t->id = $id;
+        $t->CSRFToken = $CSRFToken;
+        $t->deleteLine();
+        return $this->json('ok');
     }
 }

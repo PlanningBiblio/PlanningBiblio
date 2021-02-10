@@ -50,10 +50,11 @@ function supprimeGroupe(id){
 function supprimeLigne(id){
   var CSRFToken = $('#CSRFSession').val();
   var nom=$("#td-ligne-"+id+"-nom").text();
+  var baseURL = $('#baseURL').val();
   if(confirm("Etes-vous sûr(e) de vouloir supprimer la ligne \""+nom+"\" ?")){
     $.ajax({
-      url: "/planning/postes_cfg/ajax.supprimeLigne.php",
-      type: "post",
+      url: baseURL + "/framework-line",
+      type: "delete",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
       success: function(){
