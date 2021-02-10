@@ -42,19 +42,20 @@ class FrameworkController extends BaseController
             }
         }
 
-        foreach ($tableaux as &$elem) {
-            if (array_key_exists($elem['tableau'], $tabAffect)) {
-                $utilisation=dateFr($tabAffect[$elem['tableau']]);
-            } else {
-                $utilisation="Jamais";
-            }
-            $elem['tabAffect'] = $utilisation;
+        if($tableaux){
+            foreach ($tableaux as &$elem) {
+                if (array_key_exists($elem['tableau'], $tabAffect)) {
+                    $utilisation=dateFr($tabAffect[$elem['tableau']]);
+                } else {
+                    $utilisation="Jamais";
+                }
+                $elem['tabAffect'] = $utilisation;
 
-            if ($nbSites > 1){
-                $elem['multisite'] = $this->config("Multisites-site{$elem['site']}");
+                if ($nbSites > 1){
+                    $elem['multisite'] = $this->config("Multisites-site{$elem['site']}");
+                }
             }
         }
-
         // Récupération de tableaux supprimés dans l'année
         if (!empty($tableauxSupprimes)) {
             foreach ($tableauxSupprimes as &$elem) {
