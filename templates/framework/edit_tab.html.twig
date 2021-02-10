@@ -47,9 +47,10 @@
       for(elem in tab){
         data+="&"+tab[elem];
       }
-      // Enregistrement des données en ajax (fichier ajax.lignes.php)
+      
+      // Enregistrement des données en ajax 
       $.ajax({
-        url: baseURL + "/planning/postes_cfg/ajax.lignes.php",
+        url: baseURL + "/framework-table/save-line",
         type: "post",
         data: data,
         success: function(){
