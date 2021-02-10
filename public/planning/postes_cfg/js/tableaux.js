@@ -55,8 +55,8 @@ function supprimeLigne(id){
   
   if(confirm("Etes-vous sûr(e) de vouloir supprimer la ligne \""+nom+"\" ?")){
     $.ajax({
-      url: baseURL + "/planning/postes_cfg/ajax.supprimeLigne.php",
-      type: "post",
+      url: baseURL + "/framework-line",
+      type: "delete",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
       success: function(){
