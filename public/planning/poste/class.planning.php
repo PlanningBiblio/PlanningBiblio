@@ -121,6 +121,8 @@ class planning
         $semaine3=$d->semaine3;
         $site=$this->site;
 
+        $lunch_positions = $config['Position-Lunch'] ?? array();
+
         if ($hide) {
             $display="display:none;";
             $groupe_hide=null;
@@ -178,14 +180,18 @@ class planning
             // Recherche des postes occupés dans la base avec le plus grand intervalle pour limiter les requêtes
             $db_heures = new db();
             $db_heures->selectInnerJoin(
-          array("pl_poste","poste"),
-          array("postes","id"),
-        array("date","debut","fin","perso_id"),
-        array(),
-        array("perso_id"=> "IN $agents_liste", "absent"=>"<>1", "date"=> "BETWEEN {$date1} AND {$date2}"),
-        array("statistiques"=>"1")
+                array("pl_poste","poste"),
+                array("postes","id"),
+                array("date","debut","fin","perso_id", "poste"),
+                array(),
+                array(
+                    'perso_id' => "IN $agents_liste",
+                    'absent'   => "<>1",
+                    'date'     => "BETWEEN {$date1} AND {$date2}",
+                ),
+                array("statistiques"=>"1")
       );
-      
+
             if ($db_heures->result) {
                 // Pour chaqe résultat, on ajoute le nombre d'heures correspondant à l'agent concerné, pour le jour, la semaine et/ou les 4 semaines
                 foreach ($db_heures->result as $elem) {
@@ -196,6 +202,10 @@ class planning
                         if ($elem['perso_id']==$a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
                             continue 2;
                         }
+                    }
+
+                    if (in_array($elem['poste'], $lunch_positions)) {
+                        continue;
                     }
 
                     // Calcul des heures de service public pour affichage à côté du nom des agents
