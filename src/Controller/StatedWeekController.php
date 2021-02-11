@@ -662,8 +662,8 @@ class StatedWeekController extends BaseController
                     'name'          => $agent->nom() . ' ' .$agent->prenom(),
                     'from'          => $from,
                     'to'            => $to,
-                    'custom_from'   => heure3($t->start_time()),
-                    'custom_to'     => heure3($t->end_time()),
+                    'custom_from'   => $t->start_time() ? heure3($t->start_time()->format('H:i:s')) : null,
+                    'custom_to'     => $t->end_time() ? heure3($t->end_time()->format('H:i:s')) : null,
                     'absent'        => $agent->isAbsentOn($date, $date) ? 1 : 0,
                     'status'        => strtolower(removeAccents(str_replace(' ', '_', $agent->statut()))),
                     'interchange'   => 0,
@@ -977,8 +977,8 @@ class StatedWeekController extends BaseController
         }
         
         $result = array(
-            'start_time' => $agent->start_time(),
-            'end_time' => $agent->end_time(),
+            'start_time' => $agent->start_time() ? $agent->start_time()->format('H:i:s') : null,
+            'end_time' => $agent->end_time() ? $agent->end_time()->format('H:i:s') :null,
         );
 
         $this->entityManager->flush();
@@ -1022,13 +1022,13 @@ class StatedWeekController extends BaseController
         if (empty($start_time)) {
             $agent->set_null('start_time');
         } else {
-            $agent->start_time($start_time);
+            $agent->start_time(\DateTime::createFromFormat('H:i:s', $start_time));
         }
 
         if (empty($end_time)) {
             $agent->set_null('end_time');
         } else {
-            $agent->end_time($end_time);
+            $agent->end_time(\DateTime::createFromFormat('H:i:s', $end_time));
         }
 
         $this->entityManager->persist($agent);

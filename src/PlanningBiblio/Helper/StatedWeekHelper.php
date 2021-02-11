@@ -253,8 +253,8 @@ class StatedWeekHelper extends BaseHelper
             if (isset($planning[$day_index]) && $planning[$day_index]['type'] == 'column') {
                 // Only one column by day is permitted.
                 $time = $planning[$day_index]['times'][0];
-                $today[0] = $time->start_time() ?? $this->columns[$time->column_id()]['from'];
-                $today[1] = $time->end_time() ?? $this->columns[$time->column_id()]['to'];
+                $today[0] = $time->start_time() ? $time->start_time()->format('H:i:s') : $this->columns[$time->column_id()]['from'];
+                $today[1] = $time->end_time() ? $time->end_time()->format('H:i:s') : $this->columns[$time->column_id()]['to'];
                 $break = $this->fixed_breaktime;
             }
 
@@ -301,8 +301,8 @@ class StatedWeekHelper extends BaseHelper
 
             if ($p['type'] == 'column') {
                 $time = $p['times'][0];
-                $today[0] = $time->start_time() ?? $this->columns[$time->column_id()]['from'];
-                $today[1] = $time->end_time() ?? $this->columns[$time->column_id()]['to'];
+                $today[0] = $time->start_time() ? $time->start_time()->format('H:i:s') : $this->columns[$time->column_id()]['from'];
+                $today[1] = $time->end_time() ? $time->end_time()->format('H:i:s') : $this->columns[$time->column_id()]['to'];
             }
 
             $today[4] = $this->config('statedweek_site_filter');
