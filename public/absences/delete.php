@@ -1,19 +1,14 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : absences/delete.php
-Création : mai 2011
-Dernière modification : 30 avril 2018
+@file public/absences/delete.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Permet de supprimer une absence : confirmation et suppression.
-
-Page appelée par la page index.php après avoir cliqué sur l'icône supprimer de la page absences/modif.php
 */
 
 require_once "class.absences.php";
