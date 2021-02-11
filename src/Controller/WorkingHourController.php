@@ -250,18 +250,21 @@ class WorkingHourController extends BaseController
             $action = "copie";
         }
         switch ($nbSemaine) {
+            case 1:
+                $cellule = array("Jour");
+                break;
             case 2:
                 $cellule = array("Semaine Impaire","Semaine Paire");
                 break;
-            case 3:
-                $cellule = array("Semaine 1","Semaine 2","Semaine 3");
-                break;
             default:
-                $cellule = array("Jour");
+                $cellule = array();
+                for ($i = 1; $i <= $nbSemaine; $i++) {
+                    array_push($cellule, "Semaine $i");
+                }
                 break;
         }
-        $fin = $this->config('Dimanche') ? array(8,15,22) : array(7,14,21);
-        $debut = array(1,8,15);
+        $fin = $this->config('Dimanche') ? array(8,15,22,29,36,43,50,57,64,71) : array(7,14,21,30,37,44,51,58,65,72);
+        $debut = array(1,8,15,22,29,36,43,50,57,64);
         $jours = array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
         $selectTemps = array();
         $breaktime_h = array();
