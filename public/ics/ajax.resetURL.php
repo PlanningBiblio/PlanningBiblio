@@ -32,4 +32,4 @@ $p->CSRFToken = $CSRFToken;
 $url = $p->getICSURL($id);
 $url = html_entity_decode($url, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
 
-echo json_encode(array("url" => $url));
+echo json_encode(array("url" => $config['URL'] . $url));
