@@ -19,11 +19,14 @@ class BaseController extends Controller
 
     private $config = array();
 
+    private $request;
+
     private $logger;
 
     public function __construct(RequestStack $requestStack, LoggerInterface $logger)
     {
         $request = $requestStack->getCurrentRequest();
+        $this->request = $request;
 
         $this->entityManager = $GLOBALS['entityManager'];
 
@@ -70,6 +73,11 @@ class BaseController extends Controller
         }
 
         return $this->config[$key];
+    }
+
+    protected function getRequest()
+    {
+        return $this->request;
     }
 
     /**
