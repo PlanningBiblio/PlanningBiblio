@@ -716,8 +716,11 @@ $( document ).ready(function() {
     cell_id = $(this).data('cell');
     agent_name = $('#' + cell_id + ' .agent_name').text();
 
-    $('#set_hours_start_time').val('');
-    $('#set_hours_end_time').val('');
+    var start_time =$('#' + cell_id).attr('data-from');
+    var end_time =$('#' + cell_id).attr('data-to');
+    
+    $('#set_hours_start_time').val(start_time);
+    $('#set_hours_end_time').val(end_time);
 
     $.ajax({
       url: '/ajax/statedweek/gethours',
@@ -725,8 +728,12 @@ $( document ).ready(function() {
       data: {agent_id: agent_id, date: date},
       dataType: 'json',
       success: function(result) {
-        $('#set_hours_start_time').val(result.start_time);
-        $('#set_hours_end_time').val(result.end_time);
+        if (result.start_time) {
+          $('#set_hours_start_time').val(result.start_time);
+        }
+        if (result.end_time) {
+          $('#set_hours_end_time').val(result.end_time);
+        }
       },
     });
 
