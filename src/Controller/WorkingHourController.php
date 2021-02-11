@@ -263,7 +263,7 @@ class WorkingHourController extends BaseController
                 }
                 break;
         }
-        $fin = $this->config('Dimanche') ? array(8,15,22,29,36,43,50,57,64,71) : array(7,14,21,30,37,44,51,58,65,72);
+        $fin = $this->config('Dimanche') ? array(8,15,22,29,36,43,50,57,64,71) : array(7,14,21,28,36,42,49,56,63,70);
         $debut = array(1,8,15,22,29,36,43,50,57,64);
         $jours = array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
         $selectTemps = array();
