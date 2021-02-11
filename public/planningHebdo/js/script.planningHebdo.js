@@ -382,6 +382,7 @@ $(function(){
       success: function(result){
 	var options="<option value=''>&nbsp;</option>\n";
 	for(i in result){
+      // TODO: Associative
 	  options+= "<option value='"+result[i][0]+"'>"+result[i][1]+"</option>\n";
 	}
 	$(".selectSite").html(options);
