@@ -200,7 +200,7 @@ if ($_SESSION['oups']['Auth-Mode']=="SQL") {
 <h3>URL de votre calendrier ICS</h3>
 <p>
 <?php
-echo "<span id='url-ics'>$ics</span>\n";
+echo "<span id='url-ics'>{$config['URL']}$ics</span>\n";
 if ($config['ICS-Code']) {
     echo "<br/><a href='javascript:resetICSURL({$_SESSION['login_id']}, \"$CSRFSession\");'>R&eacute;initialiser l'URL</a>\n";
 }

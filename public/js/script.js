@@ -523,7 +523,7 @@ function resetICSURL(id, CSRFToken, nom){
   
   if(res){
     $.ajax({
-      url: "ics/ajax.resetURL.php",
+      url: "/ics/ajax.resetURL.php",
       type: "post",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
