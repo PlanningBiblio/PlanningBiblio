@@ -80,6 +80,9 @@ class AbsenceController extends BaseController
             if ($perso_id===null) {
                 $perso_id = isset($_SESSION['oups']['absences_perso_id']) ? $_SESSION['oups']['absences_perso_id'] : $_SESSION['login_id'];
             }
+
+            $perso_id = $perso_id == 1 ? 0: $perso_id;
+
         } else {
             $perso_id = $_SESSION['login_id'];
         }
