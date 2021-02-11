@@ -67,6 +67,7 @@ $semaine=$d->semaine;
 $semaine3=$d->semaine3;
 
 $break_countdown = ($config['PlanningHebdo'] && $config['PlanningHebdo-PauseLibre']) ? 1 : 0;
+$lunch_positions = $config['Position-Lunch'] ?? array();
 // PlanningHebdo et EDTSamedi étant incompatibles, EDTSamedi est désactivé si PlanningHebdo est activé
 if ($config['PlanningHebdo']) {
     $config['EDTSamedi']=0;
@@ -256,9 +257,16 @@ if ($break_countdown) {
     $db=new db();
     $dateSQL=$db->escapeString($date);
 
-    $db->query("SELECT perso_id, debut, fin FROM `{$dbprefix}pl_poste` WHERE date = '$dateSQL' AND supprime = '0';");
+    $db->query("SELECT perso_id, poste, debut, fin FROM `{$dbprefix}pl_poste` WHERE date = '$dateSQL' AND supprime = '0';");
     if ($db->result) {
         foreach ($db->result as $elem) {
+
+            // If the current position is a lunch, don't add it to duration
+            // cause this a not worked position
+            if (in_array($elem['poste'], $lunch_positions)) {
+                continue;
+            }
+
             // Get day duration as timestamp
             // for an easier comparison.
             $elem_duration = strtotime($elem['fin']) - strtotime($elem['debut']);
@@ -366,7 +374,9 @@ if ($db->result and $verif) {
 
         if ($break_countdown) {
             $day_hour = isset($day_hours[$elem['id']]) ? $day_hours[$elem['id']] : 0;
-            $requested_hours = strtotime($fin) - strtotime($debut);
+
+            $is_a_break = in_array($poste, $lunch_positions) ? 1 : 0;
+            $requested_hours = $is_a_break ? 0 : strtotime($fin) - strtotime($debut);
 
             $wh = new WorkingHours($temps);
             $tab = $wh->hoursOf($jour);
