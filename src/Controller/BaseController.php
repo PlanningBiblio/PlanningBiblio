@@ -21,6 +21,8 @@ class BaseController extends AbstractController
 
     private $config = array();
 
+    private $request;
+
     private $logger;
 
     protected $notifier;
@@ -28,6 +30,7 @@ class BaseController extends AbstractController
     public function __construct(RequestStack $requestStack, LoggerInterface $logger)
     {
         $request = $requestStack->getCurrentRequest();
+        $this->request = $request;
 
         $this->entityManager = $GLOBALS['entityManager'];
 
@@ -78,6 +81,11 @@ class BaseController extends AbstractController
         }
 
         return $this->config[$key];
+    }
+
+    protected function getRequest()
+    {
+        return $this->request;
     }
 
     /**
