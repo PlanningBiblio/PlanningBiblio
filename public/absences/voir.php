@@ -63,7 +63,7 @@ if ($admin) {
     }
     
     if($_SESSION['page'] == null and $_SERVER['REQUEST_URI']== "/index.php?page=absences/voir.php"){
-        $perso_id = $perso_id == 1 ? 0 : $perso_id;
+        $perso_id = 0;
     }
 
 } else {
