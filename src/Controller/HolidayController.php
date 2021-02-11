@@ -798,7 +798,7 @@ class HolidayController extends BaseController
         }
 
         // ajout d'un lien permettant de rebondir sur la demande
-        $url=createURL("/holiday/edit/$id");
+        $url = $config['URL'] . "/holiday/edit/$id";
 
         // Envoi du mail
         $m=new \CJMail();
