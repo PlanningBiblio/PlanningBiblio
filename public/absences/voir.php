@@ -60,8 +60,12 @@ if ($admin) {
     $perso_id=filter_input(INPUT_GET, "perso_id", FILTER_SANITIZE_NUMBER_INT);
     if ($perso_id===null) {
         $perso_id=isset($_SESSION['oups']['absences_perso_id'])?$_SESSION['oups']['absences_perso_id']:$_SESSION['login_id'];
-    } 
-    $perso_id = $perso_id == 1 ? 0: $perso_id;
+    }
+    
+    if($_SESSION['page'] == null and $_SERVER['REQUEST_URI']== "/index.php?page=absences/voir.php"){
+        $perso_id = $perso_id == 1 ? 0 : $perso_id;
+    }
+
 } else {
     $perso_id=$_SESSION['login_id'];
 }
