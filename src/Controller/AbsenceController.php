@@ -81,7 +81,9 @@ class AbsenceController extends BaseController
                 $perso_id = isset($_SESSION['oups']['absences_perso_id']) ? $_SESSION['oups']['absences_perso_id'] : $_SESSION['login_id'];
             }
 
-            $perso_id = $perso_id == 1 ? 0: $perso_id;
+            if($_SERVER['REQUEST_URI']== "/absence"){
+                $perso_id = 0 ;
+            }
 
         } else {
             $perso_id = $_SESSION['login_id'];
@@ -169,19 +171,15 @@ class AbsenceController extends BaseController
             if ($this->config('Absences-notifications-agent-par-agent') and !$adminN2) {
                 $tmp = array();
                 foreach ($agents_menu as $elem) {
-                    if ($elem['id'] > 2) {
-                        if ($elem['id'] == $_SESSION['login_id']) {
-                            $tmp[$elem['id']] = $elem;
-                        } else {
-                            foreach ($elem['responsables'] as $resp) {
-                                if ($resp['responsable'] == $_SESSION['login_id']) {
-                                    $tmp[$elem['id']] = $elem;
-                                    break;
-                                }
+                    if ($elem['id'] == $_SESSION['login_id']) {
+                        $tmp[$elem['id']] = $elem;
+                    } else {
+                        foreach ($elem['responsables'] as $resp) {
+                            if ($resp['responsable'] == $_SESSION['login_id']) {
+                                $tmp[$elem['id']] = $elem;
+                                break;
                             }
                         }
-                    } else {
-                        continue;
                     }
                 }
                 $agents_menu = $tmp;
