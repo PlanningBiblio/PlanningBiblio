@@ -25,6 +25,8 @@ class BaseController extends AbstractController
 
     protected $logger;
 
+    private $request;
+
     protected $notifier;
 
     protected $permissions;
@@ -32,6 +34,7 @@ class BaseController extends AbstractController
     public function __construct(RequestStack $requestStack, LoggerInterface $logger)
     {
         $request = $requestStack->getCurrentRequest();
+        $this->request = $request;
 
         $this->entityManager = $GLOBALS['entityManager'];
 
@@ -126,6 +129,11 @@ class BaseController extends AbstractController
             return false;
         }
         return true;
+    }
+
+    protected function getRequest()
+    {
+        return $this->request;
     }
 
     protected function returnError($error, $module = 'Planno', $status = 200)
