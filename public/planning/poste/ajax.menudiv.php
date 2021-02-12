@@ -30,6 +30,7 @@ require_once "../../personnel/class.personnel.php";
 require_once "fonctions.php";
 require_once "class.planning.php";
 require_once __DIR__."/../volants/class.volants.php";
+require_once __DIR__."/../../init_ajax.php";
 
 use App\Model\AbsenceReason;
 use App\PlanningBiblio\WorkingHours;
