@@ -14,6 +14,106 @@ class WorkingHourController extends BaseController
 {
 
     /**
+     * @Route("/ajax/workinghour-tables", name="ajax.workinghourtables", methods={"GET"})
+     */
+    public function tables(Request $request)
+    {
+        $nbSemaine = $request->get('weeks');
+        if (!$nbSemaine) {
+            $response = new Response();
+            $response->setContent('Wrong parameters');
+            $response->setStatusCode(404);
+            return $response;
+        }
+
+        switch ($nbSemaine) {
+            case 1:
+                $cellule = array("Jour");
+                break;
+            case 2:
+                $cellule = array("Semaine Impaire","Semaine Paire");
+                break;
+            default:
+                $cellule = array();
+                for ($i = 1; $i <= $nbSemaine; $i++) {
+                    array_push($cellule, "Semaine $i");
+                }
+                break;
+        }
+
+        $temps = null;
+        $breaktime = array();
+        $modifAutorisee = true;
+        $pause2_enabled = $this->config('PlanningHebdo-Pause2');
+        $pauseLibre_enabled = $this->config('PlanningHebdo-PauseLibre');
+        $nbSites = $this->config('Multisites-nombre');
+        $sites = array();
+        $multisites = array();
+        for ($i = 1; $i < $nbSites+1; $i++) {
+            $sites[] = $i;
+            $multisites[$i] = $this->config("Multisites-site{$i}");
+        }
+
+        $fin = $this->config('Dimanche') ? array(8,15,22,29,36,43,50,57,64,71) : array(7,14,21,28,36,42,49,56,63,70);
+        $debut = array(1,8,15,22,29,36,43,50,57,64);
+        $jours = array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
+        $selectTemps = array();
+        $breaktime_h = array();
+        $GLOBALS['temps'] = $temps;
+        for ($j = 0; $j < $nbSemaine; $j++) {
+            for ($i = $debut[$j]; $i < $fin[$j]; $i++) {
+                $k = $i-($j*7)-1;
+                $breaktime[$i-1] = isset($breaktime[$i-1]) ? $breaktime[$i-1] : 0;
+                if ($modifAutorisee) {
+                    $selectTemps[$j][$i-1][0] = selectTemps($i-1, 0, null, "select");
+                    $selectTemps[$j][$i-1][1] = selectTemps($i-1, 1, null, "select");
+                    $selectTemps[$j][$i-1][2] = selectTemps($i-1, 2, null, "select");
+                    if ($pause2_enabled == true) {
+                        $selectTemps[$j][$i-1][5] = selectTemps($i-1, 5, null, "select");
+                        $selectTemps[$j][$i-1][6] = selectTemps($i-1, 6, null, "select");
+                    }
+                    $selectTemps[$j][$i-1][3] = selectTemps($i-1, 3, null, "select");
+                } else {
+                    $temps[$i-1][0] = heure2($temps[$i-1][0]);
+                    $temps[$i-1][1] = heure2($temps[$i-1][1]);
+                    $temps[$i-1][2] = heure2($temps[$i-1][2]);
+                    if ($pause2_enabled == true) {
+                        $temps[$i-1][5] = heure2($temps[$i-1][5]);
+                        $temps[$i-1][6] = heure2($temps[$i-1][6]);
+                    }
+                    $temps[$i-1][3] = heure2($temps[$i-1][3]);
+                    if ($pauseLibre_enabled == true) {
+                        $breaktime_h[$i-1] = heure4($breaktime[$i -1]);
+                    }
+                }
+            }
+        }
+
+        $this->templateParams(
+            array(
+                "breaktime"      => $breaktime,
+                "breaktime_h"    => $breaktime_h,
+                "cellule"        => $cellule,
+                "debut"          => $debut,
+                "fin"            => $fin,
+                "jours"          => $jours,
+                "modifAutorisee" => $modifAutorisee,
+                "multisites"         => $multisites,
+                "nbSemaine"      => $nbSemaine,
+                "nbSites"        => $nbSites,
+                "pause2_enabled" => $pause2_enabled,
+                "pauseLibre_enabled" => $pauseLibre_enabled,
+                "selectTemps"    => $selectTemps,
+                "sites"              => $sites,
+                "temps"          => $temps
+            )
+        );
+        return $this->output('/workinghour/tables.html.twig');
+
+    }
+
+
+    /**
      * @Route("/workinghour", name="workinghour.index", methods={"GET"})
      */
     public function index(Request $request, Session $session){
@@ -163,7 +263,6 @@ class WorkingHourController extends BaseController
         $nbSemaine = $this->config('nb_semaine');
         $pause2_enabled = $this->config('PlanningHebdo-Pause2');
         $pauseLibre_enabled = $this->config('PlanningHebdo-PauseLibre');
-        $nbSites = $this->config('Multisites-nombre');
         $validation = "";
         $id = null;
         $tab = array();
@@ -189,7 +288,6 @@ class WorkingHourController extends BaseController
         $debut1Fr = null;
         $fin1Fr = null;
         $perso_id = $_SESSION['login_id'];
-        $temps = null;
         $valide_n2 = 0;
         $remplace = null;
         $sites = array();
@@ -202,7 +300,6 @@ class WorkingHourController extends BaseController
         }
         $valide_n1 = 0;
         $valide_n2 = 0;
-        $breaktime = array();
         if ($this->config('PlanningHebdo-notifications-agent-par-agent') and !$adminN2) {
         // Sélection des agents gérés (table responsables) et de l'agent logué
             $perso_ids = array($_SESSION['login_id']);
@@ -249,54 +346,6 @@ class WorkingHourController extends BaseController
         if (!($adminN1 or $adminN2) and $valide_n2 > 0) {
             $action = "copie";
         }
-        switch ($nbSemaine) {
-            case 1:
-                $cellule = array("Jour");
-                break;
-            case 2:
-                $cellule = array("Semaine Impaire","Semaine Paire");
-                break;
-            default:
-                $cellule = array();
-                for ($i = 1; $i <= $nbSemaine; $i++) {
-                    array_push($cellule, "Semaine $i");
-                }
-                break;
-        }
-        $fin = $this->config('Dimanche') ? array(8,15,22,29,36,43,50,57,64,71) : array(7,14,21,28,36,42,49,56,63,70);
-        $debut = array(1,8,15,22,29,36,43,50,57,64);
-        $jours = array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
-        $selectTemps = array();
-        $breaktime_h = array();
-        $GLOBALS['temps'] = $temps;
-        for ($j = 0; $j < $nbSemaine; $j++) {
-            for ($i = $debut[$j]; $i < $fin[$j]; $i++) {
-                $k = $i-($j*7)-1;
-                $breaktime[$i-1] = isset($breaktime[$i-1]) ? $breaktime[$i-1] : 0;
-                if ($modifAutorisee) {
-                    $selectTemps[$j][$i-1][0] = selectTemps($i-1, 0, null, "select");
-                    $selectTemps[$j][$i-1][1] = selectTemps($i-1, 1, null, "select");
-                    $selectTemps[$j][$i-1][2] = selectTemps($i-1, 2, null, "select");
-                    if ($pause2_enabled == true) {
-                        $selectTemps[$j][$i-1][5] = selectTemps($i-1, 5, null, "select");
-                        $selectTemps[$j][$i-1][6] = selectTemps($i-1, 6, null, "select");
-                    }
-                    $selectTemps[$j][$i-1][3] = selectTemps($i-1, 3, null, "select");
-                } else {
-                    $temps[$i-1][0] = heure2($temps[$i-1][0]);
-                    $temps[$i-1][1] = heure2($temps[$i-1][1]);
-                    $temps[$i-1][2] = heure2($temps[$i-1][2]);
-                    if ($pause2_enabled == true) {
-                        $temps[$i-1][5] = heure2($temps[$i-1][5]);
-                        $temps[$i-1][6] = heure2($temps[$i-1][6]);
-                    }
-                    $temps[$i-1][3] = heure2($temps[$i-1][3]);
-                    if ($pauseLibre_enabled == true) {
-                        $breaktime_h[$i-1] = heure4($breaktime[$i -1]);
-                    }
-                }
-            }
-        }
         if (!$cle) {
             if ($admin) {
                 $selected1 = isset($valide_n1) && $valide_n1 > 0 ? true : false;
@@ -324,30 +373,23 @@ class WorkingHourController extends BaseController
                 "admin"              => $admin,
                 "adminN1"            => $adminN1,
                 "adminN2"            => $adminN2,
-                "breaktime"          => $breaktime,
-                "breaktime_h"        => $breaktime_h,
-                "cellule"            => $cellule,
                 "cle"                => $cle,
                 "copy"               => $copy,
                 "CSRFSession"        => $request->get('CSRFToken'),
-                "debut"              => $debut,
                 "debut1"             => $debut1,
                 "debut1Fr"           => $debut1Fr,
                 "exception_id"       => $exception_id,
                 "exception_back"     => $exception_back,
-                "fin"                => $fin,
                 "fin1"               => $fin1,
                 "fin1Fr"             => $fin1Fr,
                 "id"                 => $id,
                 "is_exception"       => $is_exception,
                 "is_new"             => $is_new,
-                "jours"              => $jours,
                 "lang"               => $lang,
                 "login_id"           => $_SESSION['login_id'],
                 "modifAutorisee"     => $modifAutorisee,
                 "multisites"         => $multisites,
                 "nbSites"            => $nbSites,
-                "nbSemaine"          => $nbSemaine,
                 "nomAgent"           => $nomAgent,
                 "notAdmin"           => $notAdmin,
                 "pause2_enabled"     => $pause2_enabled,
@@ -360,10 +402,8 @@ class WorkingHourController extends BaseController
                 "selected2"          => null,
                 "selected3"          => null,
                 "selected4"          => null,
-                "selectTemps"        => $selectTemps,
                 "sites"              => $sites,
                 "tab"                => $tab,
-                "temps"              => $temps,
                 "valide_n1"          => $valide_n1,
                 "valide_n2"          => $valide_n2,
                 "validation"         => $validation
@@ -387,7 +427,6 @@ class WorkingHourController extends BaseController
         $lang = $GLOBALS['lang'];
         $nbSemaine = $this->config('nb_semaine');
         $pause2_enabled = $this->config('PlanningHebdo-Pause2');
-        $pauseLibre_enabled = $this->config('PlanningHebdo-PauseLibre');
         $nbSites = $this->config('Multisites-nombre');
         $validation = "";
         $sites = array();
@@ -585,7 +624,6 @@ class WorkingHourController extends BaseController
                 "adminN2"            => $adminN2,
                 "breaktime"          => $breaktime,
                 "breaktime_h"        => $breaktime_h,
-                "cellule"            => $cellule,
                 "cle"                => $cle,
                 "copy"               => $copy,
                 "CSRFSession"        => $request->get('CSRFToken'),
@@ -607,8 +645,6 @@ class WorkingHourController extends BaseController
                 "nbSemaine"          => $nbSemaine,
                 "nomAgent"           => $nomAgent,
                 "notAdmin"           => $notAdmin,
-                "pause2_enabled"     => $pause2_enabled,
-                "pauseLibre_enabled" => $pauseLibre_enabled,
                 "perso_id"           => $perso_id,
                 "remplace"           => $remplace,
                 "retour"             => $retour,

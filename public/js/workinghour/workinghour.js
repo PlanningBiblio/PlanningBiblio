@@ -6,19 +6,34 @@ function updateCycles() {
         type: "get",
         async: false,
         success: function(result) {
-            if (result.length > 1) {
                 var cycle_select = '';
                 result.forEach(function (cycle, index) {
                    cycle_select += '<option value="' + cycle + '">' + cycle + '</option>'; 
                 });
                 $("#number_of_weeks").html(cycle_select);
-            } else {
 
-            }
+            updateTables();
         },
         error: function(result) {
         }
   });
+}
+
+function updateTables() {
+    console.log("updateTables");
+    $.ajax({
+        url: "/ajax/workinghour-tables",
+        data: {weeks: $("#number_of_weeks").val()},
+        dataType: "html",
+        type: "get",
+        async: false,
+        success: function(result) {
+            $("#workinghour_tables").html(result);
+        },
+        error: function(result) {
+        }
+  });
+
 }
 
 $(function(){
@@ -27,5 +42,9 @@ $(function(){
     $("#perso_id").change(function() {
         updateCycles();
     });
+    $("#number_of_weeks").change(function() {
+        updateTables();
+    });
+
   });
 });
