@@ -22,6 +22,8 @@ class WorkingHourController extends BaseController
 
         $nbSemaine = $request->get('weeks');
         $perso_id = $request->get('perso_id');
+        $ph_id = $request->get('ph_id');
+
         if (!$nbSemaine || !$perso_id) {
             $response = new Response();
             $response->setContent('Wrong parameters');
@@ -83,6 +85,23 @@ class WorkingHourController extends BaseController
         $p->fetchById($perso_id);
         $sites = $p->elements[0]['sites'];
 
+        if ($ph_id != null) {
+            $p = new \planningHebdo();
+            $p->id = $ph_id;
+            $p->fetch();
+            $debut1 = $p->elements[0]['debut'];
+            $fin1 = $p->elements[0]['fin'];
+            $debut1Fr = dateFr($debut1);
+            $fin1Fr = dateFr($fin1);
+            $perso_id = $p->elements[0]['perso_id'];
+            $temps = $p->elements[0]['temps'];
+            $breaktime = $p->elements[0]['breaktime'];
+
+            if ($p->elements[0]['exception']) {
+                $is_exception = 1;
+                $exception_id = $p->elements[0]['exception'];
+            }
+        }
 
         $fin = $this->config('Dimanche') ? array(8,15,22,29,36,43,50,57,64,71) : array(7,14,21,28,36,42,49,56,63,70);
         $debut = array(1,8,15,22,29,36,43,50,57,64);

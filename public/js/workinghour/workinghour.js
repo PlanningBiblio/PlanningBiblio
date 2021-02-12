@@ -21,9 +21,10 @@ function updateCycles() {
 
 function updateTables() {
     console.log("updateTables");
+    console.log("ph_id " + $("#id").val());
     $.ajax({
         url: "/ajax/workinghour-tables",
-        data: {weeks: $("#number_of_weeks").val(), perso_id: $("#perso_id").val()},
+        data: {weeks: $("#number_of_weeks").val(), perso_id: $("#perso_id").val(), ph_id: $("#id").val()},
         dataType: "html",
         type: "get",
         async: false,
