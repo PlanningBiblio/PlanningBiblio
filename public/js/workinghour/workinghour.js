@@ -23,7 +23,7 @@ function updateTables() {
     console.log("updateTables");
     $.ajax({
         url: "/ajax/workinghour-tables",
-        data: {weeks: $("#number_of_weeks").val()},
+        data: {weeks: $("#number_of_weeks").val(), perso_id: $("#perso_id").val()},
         dataType: "html",
         type: "get",
         async: false,

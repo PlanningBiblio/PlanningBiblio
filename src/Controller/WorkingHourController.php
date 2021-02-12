@@ -19,7 +19,8 @@ class WorkingHourController extends BaseController
     public function tables(Request $request)
     {
         $nbSemaine = $request->get('weeks');
-        if (!$nbSemaine) {
+        $perso_id = $request->get('perso_id');
+        if (!$nbSemaine || !$perso_id) {
             $response = new Response();
             $response->setContent('Wrong parameters');
             $response->setStatusCode(404);
@@ -43,16 +44,26 @@ class WorkingHourController extends BaseController
 
         $temps = null;
         $breaktime = array();
+
+        //TODO
         $modifAutorisee = true;
+
         $pause2_enabled = $this->config('PlanningHebdo-Pause2');
         $pauseLibre_enabled = $this->config('PlanningHebdo-PauseLibre');
         $nbSites = $this->config('Multisites-nombre');
+
         $sites = array();
         $multisites = array();
         for ($i = 1; $i < $nbSites+1; $i++) {
             $sites[] = $i;
             $multisites[$i] = $this->config("Multisites-site{$i}");
         }
+
+        // Informations sur l'agents
+        $p = new \personnel();
+        $p->fetchById($perso_id);
+        $sites = $p->elements[0]['sites'];
+
 
         $fin = $this->config('Dimanche') ? array(8,15,22,29,36,43,50,57,64,71) : array(7,14,21,28,36,42,49,56,63,70);
         $debut = array(1,8,15,22,29,36,43,50,57,64);
