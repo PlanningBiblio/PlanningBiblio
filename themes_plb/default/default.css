@@ -1,0 +1,1313 @@
+/**
+Planning Biblio
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.md et LICENSE
+
+@file public/themes/default/default.css
+@author Jérôme Combes <jerome@planningbiblio.fr>
+
+Description :
+Feuille de style principale du programme.
+*/
+
+body,a,input,select,textarea,button {
+	color:#7D3C25;
+	font-family:Verdana;
+	font-size:14px;
+	}
+
+input:disabled {
+	color:grey;
+}
+
+input,select,textarea {
+	font-size:12px;
+	}
+
+body {
+	background:url("images/bg_menu.gif") repeat-x top;
+	margin-top:0px;
+	margin-left:10px;
+	}
+
+h3{
+  margin-top:25px;
+  font-size:13pt;
+}
+
+#acces_refuse {
+  margin: 60px 0 80px 0;
+  width:100%;
+  text-align:center;
+  font-weight:bold;
+}
+
+#auth, #auth input {
+  color:#7D3C25;
+  text-align: left;
+
+}
+
+#auth-logo{
+  margin:15px auto 0 auto;
+  width:200px;
+  height:80px;
+  background:url("images/logo200.png") no-repeat right top;
+}
+
+#h2-authentification, #h2-planning-authentification {
+  text-align:center;
+  margin: 30px 0 30px;
+}
+
+#h2-planning-authentification {
+  display:none;
+}
+
+#logo {
+	position: absolute;
+	left: 15px;
+	top: 12px;
+	width:160px;
+	height:54px;
+	background:url("images/logo160.png") no-repeat right top;
+}
+
+#logo2 {
+	position: absolute;
+	left: 140px;
+	top: 23px;
+	font-size: 24pt;
+	color:#BE541A;
+}
+
+#logout_img{
+  text-align:right;
+  width:42px;
+}
+
+#logout_text a{
+  font-size:13pt;
+  display:none;
+}
+
+#title{
+  text-align:center;
+}
+
+#content{
+  margin-top: 10px;
+  padding: 80px 5px 5px 5px;
+}
+
+#content-auth{
+  margin-top: 10px;
+  padding: 40px 0 0 0;
+  text-align: center;
+}
+
+#content-planning{
+  margin-top: 10px;
+  padding: 40px 0 0 0;
+}
+
+#ferie,.ferie,.important {
+  color: #FF5E0E;
+}
+
+.absences-pj{
+  display:inline;
+  padding:0 8px;
+  white-space:nowrap;
+  text-align:center;
+}
+
+.absences-pj-fiche{
+  display:inline;
+  margin-right:40px;
+}
+
+/* Icones Font-Awesome*/
+.icones{
+  padding: 0px 5px;
+  display: inline-block;
+  text-align: center;
+  color : #7D3C25;
+}
+
+.icones .fa-2x{
+  font-size: 1.75em;
+}
+
+.fa-stack .fa-clone{
+  color : #FFD8C4;
+}
+
+.odd .icones .fa-repeat{
+  -webkit-text-stroke: 2px #FFD8C4;
+}
+
+.even .icones .fa-repeat{
+  -webkit-text-stroke: 2px #fff;
+}
+
+.odd .icones .fa-exclamation{
+  -webkit-text-stroke: 1px #FFD8C4;
+}
+
+.even .icones .fa-exclamation{
+  -webkit-text-stroke: 1px #fff;
+}
+
+#validation .icones{
+  width: 2em;
+  height: 2em;
+}
+
+#validation .icones:hover{
+  transform: scale(1.5);
+}
+
+#form .tableauStandard{
+  vertical-align: middle;
+  display: table-cell;
+}
+
+tr a{
+  text-decoration: none;
+}
+
+td *{
+  vertical-align: middle;
+}
+
+/* Absences récurrentes */
+#recurrence-summary, #recurrence-summary-form {
+  max-width:300px;
+  white-space: normal;
+}
+
+/* .perso_ul : sélection des agents dans les pages absences/* */
+.perso_ul{
+  display: inline-block;
+  vertical-align: top;
+  white-space: normal;
+}
+
+/* .perso-drop : suppression des agents sélectionés dans les pages absences/* */
+.perso-drop{
+  float: right;
+  margin-left: 10px;
+}
+
+/*	Icônes		*/
+.pl-icon{
+  padding: 5px 13px 5px 13px;
+  text-decoration:none;
+}
+
+.pl-icon-add {
+  background:url("images/add.png") no-repeat center;
+}
+
+.pl-icon-copy {
+  background:url("images/copy.png") no-repeat center;
+}
+
+.pl-icon-drop {
+  background:url("images/drop.png") no-repeat center;
+}
+
+.pl-icon-edit {
+  background:url("images/edit.png") no-repeat center;
+}
+
+.pl-icon-google-calendar {
+  background:url("images/googlecalendar.png") no-repeat center;
+}
+
+.pl-icon-hide {
+  background:url("images/hide.png") no-repeat center;
+}
+
+.pl-icon-lock {
+  background:url("images/lock.png") no-repeat center;
+}
+
+.pl-icon-logout {
+  background:url("images/logout.png") no-repeat center;
+}
+
+.pl-icon-open {
+  background:url("images/open.png") no-repeat center;
+}
+
+.pl-icon-printer {
+  background:url("images/printer.png") no-repeat center;
+}
+
+.pl-icon-recurring {
+  background:url("images/recurring.png") no-repeat center;
+}
+
+.pl-icon-refresh {
+  background:url("images/refresh.png") no-repeat center;
+}
+
+.pl-icon-save {
+  background:url("images/save.png") no-repeat center;
+}
+
+.pl-icon-unlock {
+  background:url("images/unlock.png") no-repeat center;
+}
+
+.pl-icon-valid {
+  background:url("images/valid.png") no-repeat center/70%;
+}
+
+/* Info-bulles */
+.ui-tooltip{
+  /* Permet les sauts de lignes avec l'entité .&#013; */
+  white-space:pre-wrap;
+}
+
+/* Les agents */
+li .agent-acces-checked2{
+  position:absolute;
+  left:550px;
+}
+
+/* Importation des agents */
+#import-div td {
+  padding: 0 10px 0 10px;
+}
+
+
+/* Les tableaux */
+.tableauStandard,.tableauFiches{
+  border-spacing: 0px;
+  border-collapse: collapse;
+  margin-top:10px;
+}
+
+.tableauStandard td{
+  text-align: center;
+  vertical-align:top;
+  padding: 0 20px 0 20px;
+}
+
+.tableauFiches td{
+  text-align: left;
+  vertical-align:top;
+  padding: 0 60px 10px 10px;
+  white-space: nowrap;
+}
+
+.tableauFiches td:first-child{
+  width: 160px;
+}
+
+.tableauFiches td:nth-child(2){
+  width: 300px;
+}
+
+.tableauFiches .td_validation{
+  text-align: center;
+  padding-top: 20px;
+}
+
+.tableauFiches input[type=text]{
+  width: 200px;
+  text-align:center;
+}
+
+.tableauFiches select, .tableauFiches input[type=text].ui-widget-content{
+  width: 100%;
+}
+
+.tableauFiches textarea{
+  width: 100%;
+  height: 100px;
+}
+
+.tableauFiches input[type=button],.tableauFiches input[type=submit]{
+  margin: 0 20px 0 20px;
+}
+
+.tableauFiches .tdValidation{
+  padding-top:20px;
+  text-align:center;
+}
+
+/* Menu Principal */
+/* .logo_td : permet de positionner le menu principal, 1ere cellule avant le 1er item du menu */
+.logo_td{
+  width:260px;
+}
+
+/*		Menu JavaScript		*/
+.menu_table{
+  position: absolute;
+  min-width:200px;
+/*  border: 1px solid #7D3C25;*/
+}
+
+.menu_table td{
+  padding : 1px 10px;
+  border: 1px outset #7D3C25;
+  border-top: 0px;
+}
+
+.menu_table tr:first-child td{
+  border-top: 1px outset #7D3C25;
+}
+
+.ejsmenu2{
+  padding : 5px;
+}
+
+.navigation { position:relative;height:30px;}
+.popper { position: absolute; visibility: hidden; z-index:20; }
+a.ejsmenu, a:hover.ejsmenu {font-size:16px; text-decoration:none; display:inline-block; width:100%;}
+a.ejsmenu2, a:hover.ejsmenu2 {font-size:16px; text-decoration:none;font-weight:bold;}
+
+
+
+/* Menu top */
+.menu_ul{
+  margin:0px;
+  white-space: nowrap;
+  list-style: none;
+}
+
+.menu_li{
+  display: inline;
+  padding: 5px 15px;
+}
+
+.menu_li a, .menu_li a:hover{
+  font-size:13pt;
+}
+
+/* TD du menu top */
+li.menu_li:hover {
+  background:#FF5E0E;
+}
+
+/* TD des sous menu top */
+.menu_table{
+  margin-top: 15px;
+  z-index: 20;
+}
+
+td.menu_td2{
+	background:#FFFFFF;
+	height:20px;
+	text-align:center;
+}
+td.menu_td2:hover{
+	background:#FF5E0E;
+}
+
+.myAccountLink{
+  font-size:9pt;
+}
+
+.myAccountLink:hover{
+  color: #FF5E0E;
+}
+
+input[type=text],input[type=password]
+	{
+	width:150px;
+	}
+select
+	{
+	width:155px;
+	}
+
+
+#popup {
+	background-color:#FFF;
+	position:absolute;
+	z-index:10;
+	}
+
+#opac {
+	opacity: 0.5;
+	filter: alpha(opacity=50);		/*	Pour IE */
+	background:#000;
+	height:100%;
+	width:100%;
+	position:fixed;
+	left:0px;
+	top:0px;
+	z-index:5;
+	}
+
+.th{
+  background-color:#FF7F3F;	/*FF5E0E;*/
+  font-weight:bold;
+  white-space: nowrap;
+}
+
+.tr1{
+  background-color:#FFD8C4;
+}
+
+.tr2{
+  background-color:#FFFFFF;
+}
+
+.striped{
+  text-decoration:line-through;
+}
+
+.aLeft{
+  text-align:left;
+}
+
+.aRight{
+  text-align:right;
+}
+
+.green{
+  color:green;
+}
+
+/* .out-of-work-time avant .red dans le CSS : permet de donner la priorité au red (absences) par rapport au out-of-work-time (heures de présence) dans le marquage des absences et congés dans le planning */
+.out-of-work-time {
+  color: #6D2C15;
+}
+
+/* .red avant .orange dans le CSS : permet de donner la priorité au orange (congés) par rapport au red (absences) dans le marquage des absences et congés dans le planning */
+.red{
+  color:red;
+}
+
+.orange{
+  color:#FFA500;
+}
+
+.pointer{
+  cursor:pointer;
+}
+
+/*		Plannings				*/
+/* Calendrier, titre (Semaine ...), Boutons de droite */
+#divcalendrier {
+  margin : 10px 0 0 0;
+}
+
+.pl-validation {
+  margin: 0 0 10px 0;
+}
+
+#planning-semaine #td_boutons{
+  padding:30px;
+}
+
+}
+.pl-semaine-header{
+  text-align: left;
+  margin: 50px 0 5px 0;
+  width: 100%;
+}
+
+.pl-semaine-date{
+  font-size: 16pt;
+  font-family: bold;
+}
+
+.pl-semaine-validation{
+  margin: 10px 0 0 0;
+  position: absolute;
+  right:10px;
+}
+
+#planningTips {
+  margin: 20px 0px;
+  color: #FF5E0E;
+  font-weight: bold;
+  display: none;
+}
+
+#date_planning, #semaine_planning {
+  margin-top: 6px;
+  font-weight:bold;
+}
+
+#semaine_planning{
+  display:none;
+}
+
+/*
+table #tabsemaine1 .tabsemaine1
+    -----------------------------------------------------------------------------------------------------
+tr .tr_horaires		|   td					|   td					|
+    -----------------------------------------------------------------------------------------------------
+tr  | td .td_postes	|   td >				|   td >				|
+    | [.td_obligatoire]	|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
+    | [.td_renfort]	|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
+    |			|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
+    -----------------------------------------------------------------------------------------------------
+tr  | td .td_postes	|   td >				|   td >				|
+    | [.td_obligatoire]	|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
+    | [.td_renfort]	|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
+    |			|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
+    -----------------------------------------------------------------------------------------------------
+tr .tr_separation
+    -----------------------------------------------------------------------------------------------------
+tr  | td .td_postes	|   td >				|   td >				|
+    | [.td_obligatoire]	|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
+    | [.td_renfort]	|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
+    |			|	div .cellDiv > span .cellSpan	|	div .cellDiv > span .cellSpan	|
+    -----------------------------------------------------------------------------------------------------
+tr .tr_espace
+*/
+
+/*	Catégories, lignes du planning, en fonction de la catégorie requise par le poste	*/
+/*
+.tr_CategorieA td{
+}
+
+.tr_CategorieA td.td_obligatoire{
+}
+
+.tr_CategorieB td{
+}
+
+.tr_CategorieB td.td_obligatoire{
+}
+
+.tr_CategorieC td{
+}
+
+.tr_CategorieC td.td_obligatoire{
+}
+
+td.cellule_grise{
+}
+*/
+
+/*	Cellules et Statuts
+class cellule = cellule par défaut
+.statut_xxx	 = complète le style de la cellule en fonction du statut
+.service_xxx	 = complète le style de la cellule en fonction du service
+*/
+/*
+.statut_moniteur, td.statut_moniteur{
+  background:yellow;
+}
+*/
+
+
+#tabsemaine1, .tabsemaine1 {
+  width:100%;
+  empty-cells:show;
+}
+
+#tabsemaine1 tr{
+}
+
+#tabsemaine1 td, .tabsemaine1 td{
+  border-width : 1px;
+  border-style : outset;
+}
+
+/* tabsemaine1 est un div sur la page semaine.php : permet l'affichage des tableaux masqués */
+div#tabsemaine1{
+  margin: 20px 0 0 0;
+}
+
+.tr_horaires, .tr_separation, .tr_horaires a{
+  background: #7D3C25;
+  color:#FFFFFF;
+  font-size:12pt;
+  font-weight:bold;
+}
+.sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+  left: 0;
+  z-index: 3;
+}
+.sticky-line {
+  background: inherit;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+  z-index: 1;
+}
+.sticky-col {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+.td_sep {
+  background: inherit;
+}
+
+/* tr_espace : permet d'ajouter un espace entre les tableaux : ex: display:block; height:20px; */
+.tr_espace{
+  display: none;
+  height:20px;
+}
+
+#tabsemaine1 tr.tr_espace td,
+.tabsemaine1 tr.tr_espace td{
+  border: none;
+}
+
+.td_postes {
+  width:192px;
+  font-size:12pt;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.td_obligatoire{
+  background:#00FA92;
+}
+
+.td_renfort{
+  background:#FFFFFF;
+}
+
+.cellDiv{
+}
+
+.cellSpan{
+  display:block;
+  padding:3px;
+  white-space: nowrap;
+}
+
+#afficheTableaux{
+  text-align: left;
+  margin: 2px 0 10px 0;
+}
+
+.noteBasDePage{
+  text-align:left;
+  padding-top:30px;
+  font-style:italic;
+  font-size:10pt;
+}
+
+.menudiv-titre{
+  background:#7B7B7B;
+  color:#FFFFFF;
+  text-align:center;
+  text-decoration:none;
+  font-size:11.0pt;
+  font-family:Verdana;
+  font-weight: bold
+}
+
+#menudiv1{
+  position:absolute;
+  z-index:10;
+  width:250px;
+  overflow:auto;
+}
+
+#menudiv2{
+  position:absolute;
+  z-index:20;
+  width:250px;
+  overflow:auto;
+}
+
+#menudivtab1, #menudivtab2{
+  position:absolute;
+  cursor:pointer;
+  background: #FFFFFF;
+  width: 100%;
+}
+
+#menudivtab1 td{
+  padding-left: 15px;
+}
+
+#menudivtab2 td{
+  padding-left: 10px;
+}
+
+.menudiv-tr:hover{
+  background:#CCCCCC;
+}
+
+.menudiv-tr td{
+  height: 25px;
+  white-space: nowrap;
+}
+
+.menudiv-tr td:first-child{
+  width: 220px;
+  font-weight:normal;
+}
+
+.menudiv-tr a{
+  text-decoration: none;
+  font-size: 1.2em;
+}
+
+.menudiv-nom{
+  font-weight: bold;
+  white-space:nowrap;
+}
+
+.menudiv-heures{
+  width:100%;
+  text-align:right;
+  white-space:nowrap;
+  font-style: italic;
+  font-size: 0.95em;
+}
+
+.menuTrigger {
+  position: relative;
+}
+
+.arrow-right {
+  background:url("images/arrow-right-16.png") no-repeat center;
+  z-index:7;
+  display: none;
+  position:absolute;
+  right: -15px;
+  top: calc(50% - 8px);
+}
+
+/* Configuration des tableaux */
+.tableaux-cfg {
+  display: inline-block;
+  min-width:500px;
+  width: 30%;
+  vertical-align:top;
+  padding: 0 15px;
+}
+
+
+#tab_titre{	/* planning/poste/index.php */
+  width:100%;
+  border: none;
+}
+
+/* Calendrier affiché en haut des plannings */
+#pl-calendar{
+  border:0;
+  background: #FFFFFF;
+  margin: 0 0 10px 12px;
+}
+
+#pl-calendar .ui-datepicker {
+  font-size:75%;
+}
+
+
+#pl-calendar .ui-datepicker a{
+  font-size:110%;
+}
+
+.pl-highlight {
+  background: #f0e68c;
+}
+
+/* Notes affichées en bas des plannings */
+#pl-notes-div1, .pl-notes-div1{
+  margin: 20px 0 0 0;
+  border : 1px solid #7D3C25;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+#pl-notes-div2{
+  position: absolute;
+  left: 10px;
+  display: inline-block;
+  margin: 5px 0 0 0;
+  text-align: left;
+}
+
+#pl-notes-div1-validation{
+  display: inline-block;
+  width: 100%;
+  text-align: right;
+  padding: 5px 0;
+}
+
+#pl-appelDispo-sujet,
+#ics-url-subject{
+  width: 100%;
+}
+
+#pl-appelDispo-text{
+  width: 100%;
+  height: 200px;
+}
+
+#ics-url-text{
+  width: 100%;
+  height: 160px;
+}
+
+#pl-notes-text{
+  width: 100%;
+  height: 240px;
+}
+
+.empty-line,
+.hidden-table{
+  display: none;
+}
+
+.print_only
+	{
+	font-size:13px;
+	display:none;
+	}
+
+.menu
+	{
+	background:white;
+	text-decoration:none;
+	font-size:10.0pt;
+	font-family:Verdana;
+	font-weight: bold;
+	z-index:3;
+	}
+
+.menuRed
+	{
+	color:#FF5E0E;
+	background:white;
+	text-decoration:none;
+	font-size:10.0pt;
+	font-family:Verdana;
+	font-weight: bold;
+	z-index:3;
+	}
+
+a:hover.menuRed, a:hover.menu {
+	color:#FF5E0E;
+	font-size:10.0pt;
+}
+
+.menu2
+	{
+	color:#7D3C25;
+	background:white;
+	text-decoration:none;
+	font-size:8.0pt;
+	font-family:Verdana;
+	font-weight: bold
+	}
+
+.menu2Red
+	{
+	color:red;
+	background:white;
+	text-decoration:none;
+	font-size:8.0pt;
+	font-family:Verdana;
+	font-weight: bold
+	}
+
+.right
+	{
+	color:#7D3C25;
+	text-decoration:none;
+	text-align:right;
+	font-size:10.0pt;
+	font-family:Verdana;
+	font-weight:normal;
+	}
+
+.text,.text_clic
+	{
+	color:#000000;
+	text-decoration:none;
+	font-size:9.0pt;
+	font-family:Verdana;
+	}
+
+.titre
+	{
+	position:absolute;
+	top:50px;
+	left:380px;
+	color:white;
+	font-size:32.0pt;
+	font-family:Verdana;
+	}
+
+.titreSemFixe{
+  color:#7D3C25;
+  text-decoration:none;
+  font-size:10.5pt;
+  font-family:Verdana;
+  width:50%;
+  text-align:center;
+}
+
+.top-button-div {
+    text-align:right;
+    margin: 0 10px 30px 0;
+}
+
+#tab_jours{	/*	planning/poste/index.php	*/
+  margin : 5px auto 0px auto;
+  text-align:center;
+}
+
+.tr
+	{
+	color:#FFF;
+	text-decoration:none;
+	font-size:11.0pt;
+	font-family:Verdana;
+	font-weight: bold
+	}
+
+.cellule_grise {
+	text-align:center;
+	background:#FFCCB3;
+	}
+
+/*																				*/
+/*	Setup																		*/
+/*																				*/
+#setup #auth-logo{
+  position:relative;
+  margin: 20px;
+}
+
+#setup input[type=text], #setup input[type=password]{
+	width:300px;
+	margin:2px;
+	}
+
+#setup input[type=checkbox]{
+  margin:4px;
+}
+#setup fieldset{
+	width:640px;
+	padding: 20px;
+	}
+
+
+#aide {
+	margin:0px 80px 0px 30px;
+	text-align:justify;
+	}
+
+#aide h3 {
+	margin-top:30px;
+	margin-bottom:10px;
+	}
+#aide h4 {
+	margin-left:20px;
+	margin-top:30px;
+	margin-bottom:10px;
+	}
+#aide h5 {
+	font-size:12pt;
+	margin-left:40px;
+	margin-top:30px;
+	margin-bottom:10px;
+	}
+
+#a_retour {
+  position:fixed;
+  right:40px;
+  bottom:40px;
+}
+
+/*	Messages d'informations		*/
+#messages_infos {
+	color:#FF5E0E;
+	font-weight:bold;
+	font-size:13pt;
+}
+
+img{
+  border: none;
+}
+
+#tab_titre tr{
+  vertical-align:top;
+}
+
+#cal_ifram{
+  width:200px;
+  height:160px;
+}
+
+#td_boutons{
+  width:25%;
+  text-align:right;
+}
+
+#validation{
+  font-size:13px;
+  margin:10px 20px 0 0;
+}
+
+#imprimante{
+  cursor:pointer;
+}
+
+#choix_tableaux{
+  margin: 20px 15px;
+}
+
+#choix_tableaux td{
+  width:200px;
+  padding: 10px 0;
+}
+
+#choix_tableaux select{
+  width:180px;
+}
+
+#tableau, .tableau{
+  text-align:center;
+}
+
+/*	Jours Fériés	*/
+#joursFeries table{
+  width:1024px;
+  margin-top:30px;
+}
+
+#joursFeries .c350{
+  width:300px;
+}
+
+#joursFeries .c100{
+  width:100px;
+}
+
+.intitule, label{
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/* Elements "sortable" (gestion des motifs d'absences, des statuts des agents */
+ul[id$="-sortable"] { list-style-type: none; margin: 0; padding: 0; }
+ul[id$="-sortable"] li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; height: 18px; }
+ul[id$="-sortable"] li span { position: absolute; margin-left: -1.3em; }
+
+.bold{
+  font-weight:bold;
+}
+
+option.bold{
+  margin-top:3px;
+}
+
+.center{
+  text-align:center;
+}
+
+.inline{
+  display: inline;
+}
+
+.nowrap{
+  white-space:nowrap;
+}
+
+.padding20{
+  padding-left:20px;
+}
+
+/* Statistiques */
+#stat-col1{
+  width:350px;
+}
+
+#stat-col1 select,#stat-col1 input[type=text] {
+  width:250px;
+}
+
+#stat-col1 textarea {
+  width:244px;
+}
+
+#stat-temps-aff-grp{
+  margin: 0 0 0 30px;
+}
+
+.statistiques-heures{
+  text-align:right;
+  white-space:nowrap;
+}
+
+#table_temps{
+  text-align:center;
+}
+
+div.presents-absents {
+  width: 1000px;
+  margin-left: 25px;
+}
+
+/*	FixedColumns	*/
+.DTFC_LeftBodyLiner{
+  overflow:hidden;
+}
+
+.bg-yellow{
+  background:yellow;
+}
+
+/*	DataTables */
+.dataTable tbody tr.odd {
+  background-color:#FFD8C4;
+}
+
+.dataTable tbody tr.odd td.sorting_1,
+.dataTable tbody tr.odd td.sorting_2,
+.dataTable tbody tr.odd td.sorting_3{
+  background-color:#FFBE9D;
+}
+
+.dataTable tbody tr.even td.sorting_1,
+.dataTable tbody tr.even td.sorting_2,
+.dataTable tbody tr.even td.sorting_3{
+  background-color:#FEE7DC;
+}
+
+.fg-toolbar {
+    color: inherit;
+}
+
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+    background-color: #fff;
+}
+
+.dt-buttons {
+    width: 100%;
+    text-align: right;
+}
+
+/*	JQuery-UI Accordion	*/
+.ui-accordion .ui-accordion-header{
+  margin-bottom: 0px;
+}
+
+/*	Agenda	*/
+#div_agenda{
+  min-height:400px;
+}
+
+#div_agenda .information{
+  display: inline-block;
+}
+
+#tab_agenda td{
+  vertical-align: top;
+}
+
+#tab_agenda td{
+  border-right : 1px outset;
+  border-bottom : 1px outset;
+  border-radius : 0 0 5px 0;
+}
+
+#div_agenda .div_date{
+  font-weight:bold;
+  text-decoration:underline;
+  margin-bottom:10px;
+  text-align:center;
+}
+
+#div_agenda ul{
+  margin-top:0px;
+  padding-left:20px;
+}
+
+#div_agenda .postes{
+  margin-top: 10px;
+}
+
+/* Agents volants */
+#date_planning.volants-title{
+  width: 600px;
+  margin: 0 auto 80px;
+  text-align: center;
+}
+
+.volants-calendar{
+  z-index: 10;
+  position: absolute;
+  top: 100px;
+}
+
+#volants-content{
+  margin: 100px auto;
+  width: 1080px;
+}
+
+#volants-dispo-div,
+#volants-buttons-div,
+#volants-selectionnes-div,
+#volants-validation{
+  display: inline-block;
+  vertical-align: top;
+  width: 300px;
+  float: both;
+}
+
+#volants-buttons-div,
+#volants-calendar{
+  margin-top : 45px;
+}
+
+#volants-buttons-div{
+  padding-top: 90px;
+  text-align: center;
+  width: 240px;
+}
+
+#volants-validation{
+  padding-top: 45px;
+  text-align: right;
+  width: 220px;
+}
+
+#volants-buttons-div input,
+#volants-validation input{
+  width: 180px;
+}
+
+#volants-dispo-div select,
+#volants-selectionnes-div select{
+  height: 400px;
+  width: 300px;
+  font-size: 1em;
+}
+
+.statut_volants{
+   background: #D5F5E3;
+}
+
+/*	Footer	*/
+.footer{
+  text-align:center;
+  margin:50px 30px 0 0;
+  opacity:0.7;
+  font-size:9pt;
+  width:100%;
+}
+
+/*	Congés	*/
+#tableConges td{
+  white-space: nowrap;
+}

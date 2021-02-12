@@ -1,0 +1,303 @@
+/**
+Planning Biblio
+Licence GNU/GPL (version 2 et au dela)
+Voir les fichiers README.txt et COPYING.txt
+@copyright -2018-2019 Jérôme Combes
+
+Fichier : themes/light_blue/light_blue.css
+@author Jérôme Combes <jerome@planningbiblio.fr>
+
+Description :
+Feuille de style personnalisée pour Compiègne
+
+Incluse dans les fichiers include/header.php et setup/header.php
+*/
+
+/*
+ * Red : #EF3340
+ * Grey : #333
+ * White : #FFFFFF
+ * bleu : #009dd9 / pâle : #ccecf8 / texte : #0f6fc6 
+ * rouge : #644946 / pâle : #ebd5d3 / texte : #d34717
+ * version 2 : rouge rouge c1322a
+ * jaune : #d7af0d / pâle : #efe0a3 / texte : 
+ * version 2 : jaune : d7c942 / 
+ * jaune
+ * général bleu : 2da2bf , abdae6 , d5edf3
+ * général rouge : da1f27
+ */
+
+body{
+  font-family:Arial;
+  background: #FFFFFF;
+}
+
+
+#auth {
+  display: inline-block;
+  width: 600px;
+  min-height: 370px;
+  margin: 0 auto -40px 0;
+  background:url("images/auth.png") repeat-x center top;
+  border: solid 1px #ABDAE6;
+}
+
+#auth-logo {
+  display: none;
+}
+
+#auth h2{
+  margin: 120px 0 10px 0;
+  font-family: Garamond;
+}
+
+#auth table{
+  margin: 0 0 0 0px;
+}
+
+#logo {
+  margin-left: 3px;
+  margin-top: 0px;
+  width:155px;
+  height:50px;
+  background:url("images/logoBlack150.png") no-repeat right top;
+}
+
+.navigation, #topgauche{
+  background: #d5edf3;
+    white-space:nowrap;
+
+}
+
+#content-planning{
+  padding: 30px 0 0 0;
+}
+
+.titreSemFixe{
+  padding-top:20px;
+}
+
+#td_boutons{
+  padding-top:15px;
+}
+
+.td_postes {
+  font-family:Arial;
+  font-weight:bold;
+  min-width: 200px;
+  padding:4px 10px;
+  white-space:nowrap;
+}
+
+.tr_horaires, .tr_horaires .td_postes, .tr_separation, .tr_separation .td_postes{
+  color:#FFFFFF;
+  font-family:Arial;
+  font-weight:bold;
+  padding:0 4px;
+  height: 25px;
+}
+
+body,a,input,select,textarea,button,#auth, #auth input, .menu2, .right,.titreSemFixe{
+  color:#333;
+}
+
+#ferie,.ferie, .menuRed, a:hover.menuRed, a:hover.menu, .important, #messages_infos,.myAccountLink:hover {
+  color: #da1f27;
+}
+
+td.menu_td:hover,td.menu_td2:hover,.th, td.menu_td a:hover, td.menu_td2 a:hover {
+  background: #d5edf3;
+  color: #da1f27;
+}
+
+li.menu_li:hover {
+  background: #d5edf3;
+}
+
+
+td.menu_td{
+  padding-top: 7px;
+}
+
+.menu_table{
+  margin-top: 15px;
+}
+
+/* Notes affichées en bas des plannings */
+#pl-notes-div1, .pl-notes-div1{
+  border : 1px solid #2da2bf;
+}
+
+/*	DataTables */
+.dataTable tbody tr.odd {
+  background-color:#d5edf3;
+}
+
+.dataTable tbody tr.odd td.sorting_1,
+.dataTable tbody tr.odd td.sorting_2,
+.dataTable tbody tr.odd td.sorting_3{
+  background-color:#abdae6;
+}
+
+.dataTable tbody tr.even td.sorting_1,
+.dataTable tbody tr.even td.sorting_2,
+.dataTable tbody tr.even td.sorting_3{
+  background-color:#d5edf3;
+}
+
+
+.tabsemaine1 span{
+  font-size: 1.1em;
+}
+
+/** Font-Awesome **/
+
+.icones{
+  color: #009dd9;
+}
+
+.fa-pencil-square-o{
+  color: #d5edf3;
+}
+
+
+/*
+ * bleu : #009dd9 / pâle : #ccecf8 / texte : #0f6fc6
+ * rouge : #644946 / pâle : #ebd5d3 / texte : #d34717
+ * jaune  : #d7c942 / pâle : #efe0a3 / texte : 
+ */
+
+.cellSpan{
+  font-weight:bold;
+}
+
+/* Style en fonction de la classe "poste" des activités */
+.animation td{
+  font-weight: bold;
+}
+
+.animation td.td_postes{
+  font-size: 1.6em;
+}
+
+.bleu.animation td{
+  background: #daf0f8;
+  border-top: outset 1px #009dd9;
+  border-bottom: outset 1px #009dd9;
+}
+
+.jaune.animation td{
+  background: #efead7; 
+  border-top: outset 1px #d7c942;
+  border-bottom: outset 1px #d7c942;
+}
+
+.rouge.animation td{
+  background: #f8dbda;
+  border-top: outset 1px #c1322a;
+  border-bottom: outset 1px #c1322a;
+}
+
+/* Style en fonction des classes des tableaux (une classe par bibliothèque ) */
+/* Style par défaut */
+.tr_horaires, .tr_separation, .tr_horaires a{
+  background: #2da2bf;
+  color: #000;
+}
+
+td.td_obligatoire, td.td_renfort, 
+td.td_obligatoire select, td.td_renfort select, 
+td.td_obligatoire a, td.td_renfort a{
+  background: #d5edf3; 
+  color: #000;
+}
+
+/* Bleu */
+.bleu.tr_horaires, .bleu.tr_separation, .bleu.tr_horaires td.td_postes{
+  background: #009DD9;
+  color: #000;
+}
+
+.bleu td.td_postes{
+  background: #CCECF8; 
+  color: #000;
+}
+
+/* Jazune */
+.jaune.tr_horaires, .jaune.tr_separation, .jaune.tr_horaires td.td_postes{
+  background: #d7c942;
+  color: #000;
+}
+
+.jaune td.td_postes{
+  background: #efe0a3; 
+  color: #000;
+}
+
+/* Rouge */
+.rouge.tr_horaires, .rouge.tr_separation, .rouge.tr_horaires td.td_postes{
+  background: #c1322a;
+  color: #FFF;
+}
+
+.rouge td.td_postes{
+  background: #eacac9; 
+  color: #000;
+}
+
+/* Violet */
+.violet.tr_horaires, .violet.tr_separation, .violet.tr_horaires td.td_postes{
+  background: purple;
+  color: #FFF;
+}
+
+.violet td.td_postes{
+  background: #E3D8F7; 
+  color: #000;
+}
+
+/* Vert */
+.vert.tr_horaires, .vert.tr_separation, .vert.tr_horaires td.td_postes{
+  background: #09B528;
+  color: #FFF;
+}
+
+.vert td.td_postes{
+  background: #BFEEC8; 
+  color: #000;
+}
+
+.tr_espace{
+  display: block;
+  height:20px; 
+}
+
+.cellule_grise,.tr1, .animation td.cellule_grise {
+  background: #DDD;
+}
+
+.bg-yellow {
+       background: transparent;
+}
+
+#auth > #title {
+	margin-top:120px;
+}
+
+#auth h2 {
+	margin-top:40px;
+}
+
+
+@media screen {
+    #content, #content-planning{
+        margin-top:12px;
+        background:url("images/anneau.png") repeat-x center top;
+    }
+}
+
+@media print {
+    #content-planning .tableauStandard {
+        display: none;
+    }
+}
