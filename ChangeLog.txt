@@ -14,7 +14,8 @@ Symfonize statistics index
 Symfonize My Account page
 Symfonize framework's seperation lines
 Symfonize framework groups
-
+Symfonize agents index page
+Symfonize framework table edit/add
 
 
 -Fixes
@@ -29,6 +30,11 @@ Prevent the redirection to the 'access denied' page on cli and symfony mode
 Replace heredoc string by double quotes string at end of weekly
 planning
 check if agents are blocked when right copying planning's cell
+show only managed agents in list and in add form
+Fix/Statistics : Initialize information about agents
+Fix reset URL for holiday index and rename related button
+Write ICS URL from base URL
+Fix a wrong links on absence and holiday notifications
 
 *** Version 20.10.00       (2020-10-09)   ***
 - Enhancements

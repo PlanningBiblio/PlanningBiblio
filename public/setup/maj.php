@@ -2136,6 +2136,19 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="20.11.00.008";
+if (version_compare($config['Version'], $v) === -1) {
+    // Symfonyse frameword edition
+    $sql[]="UPDATE `{$dbprefix}acces` SET `page` = '' WHERE `page` = 'planning/postes_cfg/modif.php';";
+
+    // Symfonyse agent index
+    $sql[]="UPDATE `{$dbprefix}acces`SET `page` = '' WHERE `page`='personnel/index.php';";
+    $sql[]="UPDATE `{$dbprefix}acces` SET `page`= '' WHERE `page`='personnel/valid.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` SET `url` = '/agent' WHERE `url`='personnel/index.php';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
