@@ -147,13 +147,14 @@ $(function() {
 
     $("#motifs-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
       +"<font id='valeur_"+number+"'>"+text+"</font>"
-      +"<select id='type_"+number+"' style='position:absolute;left:330px;'>"
+      +"<select id='type_"+number+"' style='position:absolute;width:170px;left:330px;'>"
       +options
       +"</select>"
-      +"<select id='notification-workflow_"+number+"' style='position:absolute;width:190px;left:500px'>"
+      +"<select id='notification-workflow_"+number+"' style='position:absolute;width:170px;left:510px;'>"
       +options_wf
       +"</select>"
-      +"<span class='ui-icon ui-icon-trash' style='position:relative;left:655px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
+      +"<input type='checkbox' id='teleworking_"+number+"' style='position:absolute; left:700px;' />"
+      +"<span class='ui-icon ui-icon-trash' style='position:relative;left:750px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
       +"</li>");
 
     // Reset du champ texte une fois l'ajout effectué
