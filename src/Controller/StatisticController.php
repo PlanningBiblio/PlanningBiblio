@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
+use App\Model\AbsenceReason;
 use App\PlanningBiblio\PresentSet;
 
 $version = 'symfony';
@@ -149,6 +150,13 @@ class StatisticController extends BaseController
         $db->select2("personnel", "*", array("actif"=>"Actif"), "ORDER BY `nom`,`prenom`");
         $agents_list = $db->result;
 
+        // Teleworking
+        $teleworking_absence_reasons = array();
+        $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
+        foreach ($absences_reasons as $elem) {
+            $teleworking_absence_reasons[] = $elem->valeur();
+        }
+
         $tab = array();
         $nbJours = 0;
         if (!empty($agents) and $dates) {
@@ -171,7 +179,7 @@ class StatisticController extends BaseController
                 array("pl_poste","poste"),
                 array("postes","id"),
                 array("debut","fin","date","perso_id","poste","absent"),
-                array(array("name"=>"nom","as"=>"poste_nom"),"etage","site"),
+                array(array("name"=>"nom","as"=>"poste_nom"),"etage","site","teleworking"),
                 array("date"=>"IN{$dates}", "supprime"=>"<>1", "perso_id"=>"IN{$agents_select}", "site"=>"IN{$sitesSQL}"),
                 array("statistiques"=>"1"),
                 "ORDER BY `poste_nom`,`etage`"
@@ -210,7 +218,14 @@ class StatisticController extends BaseController
                             // Vérifie à partir de la table absences si l'agent est absent
                             // S'il est absent : continue
                             if ( !empty($absencesDB[$elem['perso_id']]) ) {
+
                                 foreach ($absencesDB[$elem['perso_id']] as $a) {
+
+                                    // Ignore teleworking absences for compatible positions
+                                    if (in_array($a['motif'], $teleworking_absence_reasons) and $elem['teleworking']) {
+                                        continue;
+                                    }
+
                                     if ($a['debut'] < $elem['date'].' '.$elem['fin'] and $a['fin'] > $elem['date']." ".$elem['debut']) {
                                         continue 2;
                                     }
