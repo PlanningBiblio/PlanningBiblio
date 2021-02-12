@@ -10,9 +10,6 @@ Voir les fichiers README.md et LICENSE
 Description :
 Page validant la modification d'une absence : enregistrement dans la BDD des modifications
 
-Page appelée par la page index.php
-Page d'entrée : absences/modif.php
-
 Variables
 $agents_tous : tous les agents enregistrés dans l'application
 $agents : les agents qui étaient enregistrés dans l'absence avant la modification
@@ -656,9 +653,8 @@ $message.="</ul>";
 $message.=$infosPlanning;
 
 // Ajout du lien permettant de rebondir sur l'absence
-$url=createURL("absences/modif.php&id=$id");
+$url = $config['URL'] . "/absence/$id";
 $message.="<br/><br/>Lien vers la demande d&apos;absence :<br/><a href='$url'>$url</a><br/><br/>";
-
 // Envoi du mail
 $m=new CJMail();
 $m->subject=$sujet;

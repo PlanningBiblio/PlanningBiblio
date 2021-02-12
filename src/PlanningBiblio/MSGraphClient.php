@@ -49,9 +49,11 @@ class MSGraphClient
         $this->log("Start absences import from MS Graph Calendars");
         $this->log("full scan: $this->full");
         $this->getIncomingEvents();
-        $this->getLocalEvents();
-        $this->deleteEvents();
-        $this->insertOrUpdateEvents();
+        if (!empty($this->graphUsers)) {
+            $this->getLocalEvents();
+            $this->deleteEvents();
+            $this->insertOrUpdateEvents();
+        }
         $this->log("End absences import from MS Graph Calendars");
     }
 
@@ -78,10 +80,10 @@ class MSGraphClient
                         $to = ($this->start_year + $yearCount) . "-12-31";
                         $this->log("Getting events from $from to $to for user ". $user->login());
                         $response = $this->getCalendarView($user, $from, $to);
-                        if ($response->code == 200) {
+                        if ($response && $response->code == 200) {
                             $this->addToIncomingEvents($user, $response, $from, $to);
                         } else {
-                            $this->log("Unable to get events, http status: " . $response->code);
+                            $this->log("Unable to get events");
                         }
                         $yearCount++;
                     }
@@ -91,10 +93,10 @@ class MSGraphClient
                     $to = $range['to'];
                     $this->log("Getting events from $from to $to for user ". $user->login());
                     $response = $this->getCalendarView($user, $from, $to);
-                    if ($response->code == 200) {
+                    if ($response && $response->code == 200) {
                         $this->addToIncomingEvents($user, $response, $from, $to);
                     } else {
-                        $this->log("Unable to get events, http status: " . $response->code);
+                        $this->log("Unable to get events");
                     }
                 }
             }
@@ -105,8 +107,8 @@ class MSGraphClient
     private function addToIncomingEvents($user, $response, $from, $to, $nextLink = null) {
         if ($nextLink) {
             $response = $this->sendGet($nextLink, true);
-            if ($response->code != 200) {
-                $this->log("Unable to get events, http status: " . $response->code);
+            if (!$response || $response->code != 200) {
+                $this->log("Unable to get events");
                 return;
             }
         }
@@ -129,7 +131,7 @@ class MSGraphClient
 
     private function isEventEmpty($login, $iCalUId) {
         $response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar/events/?$filter=iCalUId eq \'' . $iCalUId . '\'');
-        if ($response->code == 200 && !empty($response->body->value)) {
+        if ($response && $response->code == 200 && !empty($response->body->value)) {
             return false;
         }
         return true;
@@ -160,19 +162,16 @@ class MSGraphClient
     private function getCalendarView($user, $from, $to) {
         $login = $user->login();
         $response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar/calendarView?startDateTime=' . $from . 'T00:00:00.0000000&endDateTime=' . $to . 'T00:00:00.0000000&$top=200');
-        if ($response->code == 200) {
+        if ($response && $response->code == 200) {
             return $response;
-        } else {
-            $this->log("Response: $response->code");
-            $this->log($response->raw_body);
-        }
+        } 
         return false;
     }
 
     private function isGraphUser($user) {
         $login = $user->login();
         $response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar');
-        if ($response->code == 200) {
+        if ($response && $response->code == 200) {
             return true;
         }
         return false;
@@ -254,10 +253,21 @@ class MSGraphClient
         }
     }
 
-    private function sendGet($request, $absolute = false) {
+    private function sendGet($request, $absolute = false, $retry = 0) {
         $token = $this->oauth->getToken();
         $headers['Authorization'] = "Bearer $token";
-        $response = \Unirest\Request::get($absolute ? $request : $this->base_url . $request, $headers);
+        $response = null;
+        try {
+            \Unirest\Request::timeout(10);
+            $response = \Unirest\Request::get($absolute ? $request : $this->base_url . $request, $headers);
+        } catch (\Exception $e) {
+            $this->log("Error in Unirest::get: " . $e->getMessage());
+            if ($retry < 5) {
+                $retry++;
+                $this->log("Retry #$retry...");
+                return $this->sendGet($request, $absolute, $retry);
+            }
+        }
         return $response;
     }
 
