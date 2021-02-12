@@ -18,6 +18,8 @@ class WorkingHourController extends BaseController
      */
     public function tables(Request $request)
     {
+        error_log("/workinghour/tables");
+
         $nbSemaine = $request->get('weeks');
         $perso_id = $request->get('perso_id');
         if (!$nbSemaine || !$perso_id) {
@@ -25,6 +27,37 @@ class WorkingHourController extends BaseController
             $response->setContent('Wrong parameters');
             $response->setStatusCode(404);
             return $response;
+        }
+
+        $droits = $GLOBALS['droits'];
+        $lang = $GLOBALS['lang'];
+        $pause2_enabled = $this->config('PlanningHebdo-Pause2');
+        $pauseLibre_enabled = $this->config('PlanningHebdo-PauseLibre');
+        $validation = "";
+        $id = null;
+
+        // Sécurité
+        $adminN1 = in_array(1101, $droits);
+        $adminN2 = in_array(1201, $droits);
+        $notAdmin = !($adminN1 or $adminN2);
+        $modifAutorisee = true;
+        if ($notAdmin and !$this->config('PlanningHebdo-Agents')) {
+            $modifAutorisee = false;
+        }
+        $cle = null;
+        $debut1 = null;
+        $fin1 = null;
+        $debut1Fr = null;
+        $fin1Fr = null;
+        $perso_id = $_SESSION['login_id'];
+        $valide_n2 = 0;
+        $remplace = null;
+        $sites = array();
+        $nbSites = $this->config('Multisites-nombre');
+        $multisites = array();
+        for ($i = 1; $i < $nbSites+1; $i++) {
+            $sites[] = $i;
+            $multisites[$i] = $this->config("Multisites-site{$i}");
         }
 
         switch ($nbSemaine) {
@@ -44,20 +77,6 @@ class WorkingHourController extends BaseController
 
         $temps = null;
         $breaktime = array();
-
-        //TODO
-        $modifAutorisee = true;
-
-        $pause2_enabled = $this->config('PlanningHebdo-Pause2');
-        $pauseLibre_enabled = $this->config('PlanningHebdo-PauseLibre');
-        $nbSites = $this->config('Multisites-nombre');
-
-        $sites = array();
-        $multisites = array();
-        for ($i = 1; $i < $nbSites+1; $i++) {
-            $sites[] = $i;
-            $multisites[$i] = $this->config("Multisites-site{$i}");
-        }
 
         // Informations sur l'agents
         $p = new \personnel();
@@ -263,6 +282,7 @@ class WorkingHourController extends BaseController
      * @Route("/workinghour/add", name="workinghour.add", methods={"GET"})
      */
     public function add(Request $request, Session $session){
+error_log("/workinghour/add");
         // Initialisation des variables
         $copy = $request->get('copy');
         $request_exception = $request->get('exception');
@@ -427,6 +447,7 @@ class WorkingHourController extends BaseController
      * @Route("/workinghour/{id}", name="workinghour.edit", methods={"GET"})
      */
     public function edit(Request $request, Session $session){
+error_log("/workinghour/edit");
         // Initialisation des variables
         $copy = $request->get('copy');
         $request_exception = $request->get('exception');
