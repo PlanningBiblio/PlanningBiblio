@@ -1,4 +1,6 @@
 *** Unreleased ***
+- Enhancements
+Statedweeks : allow modification of hours on main columns
 
 *** Version 20.10.03       (2021-01-26)   ***
 -Fixes
