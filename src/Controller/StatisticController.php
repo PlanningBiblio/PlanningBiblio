@@ -3151,6 +3151,13 @@ class StatisticController extends BaseController
             $sitesSQL = "0,1";
         }
 
+        // Teleworking
+        $teleworking_absence_reasons = array();
+        $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
+        foreach ($absences_reasons as $elem) {
+            $teleworking_absence_reasons[] = $elem->valeur();
+        }
+
         $tab = array();
 
         // Récupération des infos sur les agents
@@ -3206,6 +3213,15 @@ class StatisticController extends BaseController
                 $agents = array();
                 $services = array();
                 $statuts = array();
+
+                // $poste_tab : table of positions with id, name, area, mandatory/reinforcement, teleworking
+                foreach ($postes_list as $elem) {
+                    if ($elem['id'] == $poste) {
+                        $poste_tab = array($poste, $elem['nom'], $elem['etage'], $elem['obligatoire'], $elem['teleworking']);
+                        break;
+                    }
+                }
+
                 if (is_array($resultat)) {
                     foreach ($resultat as $elem) {
                         if ($poste == $elem['poste']) {
@@ -3213,6 +3229,12 @@ class StatisticController extends BaseController
                             // S'il est absent : continue
                             if ( !empty($absencesDB[$elem['perso_id']]) ) {
                                 foreach ($absencesDB[$elem['perso_id']] as $a) {
+
+                                    // Ignore teleworking absences for compatible positions
+                                    if (in_array($a['motif'], $teleworking_absence_reasons) and $poste_tab[4]) {
+                                        continue;
+                                    }
+
                                     if ($a['debut'] < $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
                                         continue 2;
                                     }
@@ -3233,13 +3255,6 @@ class StatisticController extends BaseController
 
                             // On compte toutes les heures (globales)
                             $heures = floatval($heures) + diff_heures($elem['debut'], $elem['fin'], "decimal");
-
-                            foreach ($postes_list as $elem2) {
-                                if ($elem2['id'] == $poste) {    // on créé un tableau avec le nom et l'étage du poste.
-                                    $poste_tab = array($poste,$elem2['nom'],$elem2['etage'],$elem2['obligatoire']);
-                                    break;
-                                }
-                            }
 
                             // On créé un tableau par service
                             if (array_key_exists($elem['perso_id'], $agents_infos)) {
