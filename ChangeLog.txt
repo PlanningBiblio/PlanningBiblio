@@ -598,6 +598,11 @@ PHP8, fix wrong use of implode and join functions
 Prevent skills to be deleted if used by agents
 Workinghours exception should take into account weeks turnover
 Mark leaved agents as crossed off when importing models
+[BSG] Show non validated planning in personal calendar
+
+*** Version 20.10.03       (2021-02-12)   ***
+- Enhancements
+Statedweeks : allow modification of hours on main columns
 
 *** Version 20.10.00       (2020-10-09)   ***
 - Enhancements

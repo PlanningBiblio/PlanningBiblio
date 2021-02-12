@@ -2327,6 +2327,15 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="20.10.03.001";
+if (version_compare($config['Version'], $v) === -1) {
+
+    $sql[] = "alter table `{$dbprefix}stated_week_planning_times` add `start_time` time null default null;";
+    $sql[] = "alter table `{$dbprefix}stated_week_planning_times` add `end_time` time null default null;";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 $v="20.11.00.001";
 if (version_compare($config['Version'], $v) === -1) {
 
