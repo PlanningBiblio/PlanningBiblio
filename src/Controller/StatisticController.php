@@ -921,6 +921,13 @@ class StatisticController extends BaseController
             $sitesSQL="0,1";
         }
 
+        // Teleworking
+        $teleworking_absence_reasons = array();
+        $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
+        foreach ($absences_reasons as $elem) {
+            $teleworking_absence_reasons[] = $elem->valeur();
+        }
+
         $tab = array();
 
         //		--------------		Récupération de la liste des statuts pour le menu déroulant		------------------------
@@ -977,9 +984,13 @@ class StatisticController extends BaseController
                 array(
                     array(
                         "name"=>"nom",
-                        "as"=>"poste_nom")
-                    ,"etage","site"
+                        "as"=>"poste_nom",
+                    ),
+                    "etage",
+                    "site",
+                    "teleworking",
                 ),
+
                 array(
                     "date"    => "BETWEEN{$debutSQL}AND{$finSQL}", 
                     "supprime"=> "<>1", 
@@ -1038,7 +1049,14 @@ class StatisticController extends BaseController
                             // Vérifie à partir de la table absences si l'agent est absent
                             // S'il est absent, on met à 1 la variable $elem['absent']
                             if ( !empty($absencesDB[$elem['perso_id']]) ) {
+
                                 foreach ($absencesDB[$elem['perso_id']] as $a) {
+
+                                    // Ignore teleworking absences for compatible positions
+                                    if (in_array($a['motif'], $teleworking_absence_reasons) and $elem['teleworking']) {
+                                        continue;
+                                    }
+
                                     if ($a['debut'] < $elem['date'].' '.$elem['fin'] and $a['fin'] > $elem['date']." ".$elem['debut']) {
                                         $elem['absent'] = "1";
                                     }
