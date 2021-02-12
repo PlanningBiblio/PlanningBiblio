@@ -28,7 +28,6 @@ if (!isset($version) and php_sapi_name() != 'cli') {
 
 require_once __DIR__."/../ics/class.ics.php";
 require_once __DIR__."/../personnel/class.personnel.php";
-require_once __DIR__."/../init_entitymanager.php";
 
 use App\Model\Agent;
 use App\Model\AbsenceReason;
