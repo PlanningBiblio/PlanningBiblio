@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
+use App\Model\AbsenceReason;
 use App\PlanningBiblio\PresentSet;
 
 $version = 'symfony';
@@ -127,6 +128,13 @@ class StatisticController extends BaseController
             $sitesSQL = "0,1";
         }
 
+        // Teleworking
+        $teleworking_absence_reasons = array();
+        $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
+        foreach ($absences_reasons as $elem) {
+            $teleworking_absence_reasons[] = $elem->valeur();
+        }
+
         $tab = array();
 
         //		--------------		Récupération de la liste des services pour le menu déroulant		------------------------
@@ -171,8 +179,9 @@ class StatisticController extends BaseController
             $req = "SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
             `{$dbprefix}pl_poste`.`date` as `date`, `{$dbprefix}pl_poste`.`perso_id` as `perso_id`, 
             `{$dbprefix}pl_poste`.`poste` as `poste`, `{$dbprefix}pl_poste`.`absent` as `absent`, 
+            `{$dbprefix}pl_poste`.`site` as `site`,
             `{$dbprefix}postes`.`nom` as `poste_nom`, `{$dbprefix}postes`.`etage` as `etage`,
-            `{$dbprefix}pl_poste`.`site` as `site` 
+            `{$dbprefix}postes`.`teleworking` as `teleworking` 
             FROM `{$dbprefix}pl_poste` 
             INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` 
             WHERE `{$dbprefix}pl_poste`.`date`>='$debutREQ' AND `{$dbprefix}pl_poste`.`date`<='$finREQ' 
@@ -228,7 +237,14 @@ class StatisticController extends BaseController
                             // Vérifie à partir de la table absences si l'agent est absent
                             // S'il est absent, on met à 1 la variable $elem['absent']
                             if ( !empty($absencesDB[$elem['perso_id']]) ) {
+
                                 foreach ($absencesDB[$elem['perso_id']] as $a) {
+
+                                    // Ignore teleworking absences for compatible positions
+                                    if (in_array($a['motif'], $teleworking_absence_reasons) and $elem['teleworking']) {
+                                        continue;
+                                    }
+
                                     if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
                                         $elem['absent'] = "1";
                                     }
