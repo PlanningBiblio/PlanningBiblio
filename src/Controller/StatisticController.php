@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\PlanningBiblio\PresentSet;
+use App\Model\AbsenceReason;
 
 $version = 'symfony';
 
@@ -102,8 +103,8 @@ class StatisticController extends BaseController
 
         $p = new \postes();
         $p->fetch();
-        // Rassemble les postes dans un tableau en fonction de leur groupe (ex: $groupe['pret'] = array(1,2,3))
 
+        // Rassemble les postes dans un tableau en fonction de leur groupe (ex: $groupe['pret'] = array(1,2,3))
         foreach ($p->elements as $poste) {
             $groupes[$poste['groupe']][] = $poste['id'];
         }
@@ -138,6 +139,13 @@ class StatisticController extends BaseController
                 $totauxGroupesHeures[$g] = 0;
                 $totauxGroupesPerso[$g] = array();
             }
+        }
+
+        // Teleworking
+        $teleworking_absence_reasons = array();
+        $absences_reasons = $entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
+        foreach ($absences_reasons as $elem) {
+            $teleworking_absence_reasons[] = $elem->valeur();
         }
 
         // Recherche des heures de SP à effectuer pour tous les agents pour toutes les semaines demandées
@@ -195,7 +203,8 @@ class StatisticController extends BaseController
         $req.="`{$dbprefix}pl_poste`.`fin` AS `fin`, `{$dbprefix}personnel`.`id` AS `perso_id`, ";
         $req.="`{$dbprefix}pl_poste`.`site` AS `site`, `{$dbprefix}pl_poste`.`poste` AS `poste`, ";
         $req.="`{$dbprefix}personnel`.`nom` AS `nom`,`{$dbprefix}personnel`.`prenom` AS `prenom`, ";
-        $req.="`{$dbprefix}personnel`.`statut` AS `statut` ";
+        $req.="`{$dbprefix}personnel`.`statut` AS `statut`, ";
+        $req.="`{$dbprefix}postes`.`teleworking` AS `teleworking` ";
         $req.="FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}personnel` ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id` ";
         $req.="INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}postes`.`id`=`{$dbprefix}pl_poste`.`poste` ";
         $req.="WHERE `date`>='$debutREQ' AND `date`<='$finREQ' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' ";
@@ -208,6 +217,12 @@ class StatisticController extends BaseController
                 // Vérifie à partir de la table absences si l'agent est absent
                 // S'il est absent, on met à 1 la variable $elem['absent']
                 foreach ($absencesDB as $a) {
+
+                    // Ignore teleworking absences for compatible positions
+                    if (in_array($a['motif'], $teleworking_absence_reasons) and $elem['teleworking']) {
+                        continue;
+                    }
+
                     if ($elem['perso_id'] == $a['perso_id'] and $a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
                         continue 2;
                     }
