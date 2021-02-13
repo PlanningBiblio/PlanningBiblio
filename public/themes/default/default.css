@@ -351,6 +351,7 @@ td.menu_td2{
 	background:#FFFFFF;
 	height:20px;
 	text-align:center;
+	min-width: 230px;
 }
 td.menu_td2:hover{
 	background:#FF5E0E;
@@ -1507,7 +1508,9 @@ td.menu_td{
 }
 
 .ejsmenu{
+  margin-left: -5px;
   color: #000;
+  padding: 2px 5px;
 }
 
 .ejsmenu:hover{
