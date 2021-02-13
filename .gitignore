@@ -12,6 +12,7 @@ public/lang/custom.php
 ###> themes ###
 public/themes/*
 !public/themes/default
+!public/themes/bulac
 ###< themes ###
 
 public/vendor/*
