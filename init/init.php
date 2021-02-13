@@ -95,6 +95,8 @@ if (!file_exists("themes/$themeJQuery/jquery-ui.min.css")) {
     $themeJQuery="default";
 }
 
+$theme_loader = file_exists("themes/$theme/loader.js") ? "themes/$theme/loader.js" : null;
+
 $favicon = null;
 if (!file_exists("themes/$theme/favicon.png")) {
     $favicon = "themes/$theme/images/favicon.png";

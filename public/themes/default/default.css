@@ -148,64 +148,12 @@ h3{
 
 /*	Icônes		*/
 .pl-icon{
-  padding: 5px 13px 5px 13px;
+  padding: 5px 8px;
   text-decoration:none;
-}
-
-.pl-icon-add {
-  background:url("images/add.png") no-repeat center;
-}
-
-.pl-icon-copy {
-  background:url("images/copy.png") no-repeat center;
-}
-
-.pl-icon-drop {
-  background:url("images/drop.png") no-repeat center;
-}
-
-.pl-icon-edit {
-  background:url("images/edit.png") no-repeat center;
 }
 
 .pl-icon-google-calendar {
   background:url("images/googlecalendar.png") no-repeat center;
-}
-
-.pl-icon-hide {
-  background:url("images/hide.png") no-repeat center;
-}
-
-.pl-icon-lock {
-  background:url("images/lock.png") no-repeat center;
-}
-
-.pl-icon-logout {
-  background:url("images/logout.png") no-repeat center;
-}
-
-.pl-icon-open {
-  background:url("images/open.png") no-repeat center;
-}
-
-.pl-icon-printer {
-  background:url("images/printer.png") no-repeat center;
-}
-
-.pl-icon-recurring {
-  background:url("images/recurring.png") no-repeat center;
-}
-
-.pl-icon-refresh {
-  background:url("images/refresh.png") no-repeat center;
-}
-
-.pl-icon-save {
-  background:url("images/save.png") no-repeat center;
-}
-
-.pl-icon-unlock {
-  background:url("images/unlock.png") no-repeat center;
 }
 
 .pl-icon-valid {
@@ -1427,19 +1375,21 @@ td.menu_td2, td.menu_td2:hover{
   white-space:nowrap;
 }
 
-#tabsemaine1 tr {
+.tabsemaine1 tr {
   background : none;
 }
 
-#tabsemaine1 tr:not(.pl-line, .tr_espace) td{
+.tabsemaine1 tr:not(.pl-line, .tr_espace) td{
   background-color: #1e4c67;
 }
 
-#tabsemaine1 tr:not(.pl-line, .tr_espace) td:first-child{
+.tabsemaine1 tr:not(.pl-line, .tr_espace) td:first-child{
   border-top-left-radius : 10px;
+  height: 35px;
+  
 }
 
-#tabsemaine1 tr:not(.pl-line, .tr_espace) td:last-child{
+.tabsemaine1 tr:not(.pl-line, .tr_espace) td:last-child{
   border-top-right-radius : 10px;
 }
 
@@ -1664,6 +1614,7 @@ a:hover .icones .fa-plus, .icones:hover .fa-plus{
 .icones .fa-2x{
   font-size: 1.75em;
 }
+
 .odd .icones .fa-repeat{
   -webkit-text-stroke: 2px #dde7ec;
 }
@@ -1731,10 +1682,14 @@ input[type=checkbox]:checked:before {
   font-style: italic;
 }
 
-
-.fa-eye:hover{
-  color : #ffd700 !important;
+.fa-eye {
+  color: #ffd700;
 }
+
+.fa-eye:hover {
+  color: #fff !important;
+}
+
 /* Notes affichées en bas des plannings */
 #pl-notes-div1, .pl-notes-div1{
   border : 1px solid #1e4c67;
