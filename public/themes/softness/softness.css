@@ -2,7 +2,6 @@
 Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.txt et COPYING.txt
-@copyright 2020 Jérôme Combes
 
 @file : public/themes/softness/softness.css
 @author Jérôme Combes <jerome@planningbiblio.fr>
@@ -33,11 +32,14 @@ included by templates/base.html.twig, public/include/header.php and public/setup
  * général bleu : 2da2bf , abdae6 , d5edf3
  * général rouge : da1f27
  */
+
  @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,700;1,400&display=swap');
-* :not(.fa){
+ 
+* :not(.fa) {
   font-family: 'Open Sans', sans-serif;
 }
-body{
+
+body {
   font-family: 'Open Sans', sans-serif;
   background: #FFFFFF;
   font-size : 15px;
@@ -47,9 +49,9 @@ body{
 	font-size: 14pt;
 }
 
-.pl-icon{
-  padding: 5px 8px;
-  text-decoration:none;
+.pl-icon {
+  padding: 5px;
+  text-decoration: none;
   background: none;
 }
 
@@ -67,13 +69,13 @@ body{
   background-size: 100%;
 }
 
-#auth  #title{
+#auth #title{
   position: relative;
   padding-top: 10px;
 }
 
-#auth  #title::after{
-  content:"";
+#auth #title:after {
+  content: "";
   position: absolute;
   bottom: 0;
   left: 25%;
@@ -83,20 +85,20 @@ body{
   border-bottom: 1px solid #ffd700;
 }
 
-#auth h2{
+#auth h2 {
   margin: 10px 0 10px 0;
   font-family: 'Open Sans';
 }
 
-#auth table{
+#auth table {
   margin: 0 0 0 0px;
 }
 
-#content-auth #auth{
+#content-auth #auth {
   position: relative;
 }
 
-#content-auth #auth form[action="authentification.php"]{
+#content-auth #auth form[action="authentification.php"] {
   background: #e7f0f9;
   border-radius: 5px;
   padding : 15px 10px;
@@ -107,7 +109,7 @@ body{
   font-size : 16px;
 }
 
-#content-auth #auth form input[type="text"], #content-auth #auth form input[type="password"]{
+#content-auth #auth form input[type="text"], #content-auth #auth form input[type="password"] {
   color: #00656b;
   font-size : 14px;
 }
@@ -120,7 +122,7 @@ body{
   background:url("images/logoBlack.png") no-repeat right top;
 }
 
-.navigation, #topgauche{
+.navigation, #topgauche {
     background: white;
     color: #1e4c67;
     white-space:nowrap;
@@ -130,12 +132,13 @@ body{
     padding-bottom: 10px;
 
 }
-td.menu_td2{
+
+td.menu_td2 {
   border-color: transparent;
   min-width: 230px;
 }
 
-td.menu_td2, td.menu_td2:hover{
+td.menu_td2, td.menu_td2:hover {
   background-color: transparent;
 }
 
@@ -143,75 +146,75 @@ td.menu_td2, td.menu_td2:hover{
     padding: 60px 5px 5px 5px;
 }
 
-.fa-stack:hover .fa-square, .fa-stack:hover .fa-circle  {
+.fa-stack:hover .fa-square, .fa-stack:hover .fa-circle {
   color: #ffd700 !important;
 }
 
-.fa-stack .fa-clone, .fa-stack .fa-pencil-square-o{
-  color : #fff;
+.fa-stack .fa-clone, .fa-stack .fa-pencil-square-o {
+  color: #fff;
 }
 
-.fa-stack .fa-clone:hover, .fa-stack .fa-pencil-square-o:hover{
-  color : #1e4c67 !important;
+.fa-stack .fa-clone:hover, .fa-stack .fa-pencil-square-o:hover {
+  color: #1e4c67 !important;
 }
 
-#content-planning{
+#content-planning {
   padding: 0px 0 0 0;
 }
 
-.titreSemFixe{
-  padding-top:20px;
+.titreSemFixe {
+  padding-top: 20px;
 }
 
-#td_boutons{
-  padding-top:15px;
+#td_boutons {
+  padding-top: 15px;
 }
 
 .td_postes {
   font-family: 'Open Sans';
-  font-weight:bold;
+  font-weight: bold;
   min-width: 200px;
-  padding:4px 10px;
-  white-space:nowrap;
+  padding: 4px 10px;
+  white-space: nowrap;
 }
 
 .tabsemaine1 tr {
   background : none;
 }
 
-.tabsemaine1 tr:not(.pl-line, .tr_espace) td{
+.tabsemaine1 tr:not(.pl-line, .tr_espace) td {
   background-color: #1e4c67;
 }
 
-.tabsemaine1 tr:not(.pl-line, .tr_espace) td:first-child{
-  border-top-left-radius : 10px;
+.tabsemaine1 tr:not(.pl-line, .tr_espace) td:first-child {
+  border-top-left-radius: 10px;
 }
 
-.tabsemaine1 tr:not(.pl-line, .tr_espace) td:last-child{
-  border-top-right-radius : 10px;
+.tabsemaine1 tr:not(.pl-line, .tr_espace) td:last-child {
+  border-top-right-radius: 10px;
 }
 
-.tr_horaires, .tr_horaires .td_postes, .tr_separation, .tr_separation .td_postes{
-  color:#ffd700;
+.tr_horaires, .tr_horaires .td_postes, .tr_separation, .tr_separation .td_postes {
+  color: #ffd700;
   font-family: 'Open Sans';
-  font-weight:bold;
-  padding:0 4px;
+  font-weight: bold;
+  padding: 0 4px;
   height: 25px;
 }
 
-body,a,input,select,textarea,button,#auth, .menu2, .right,.titreSemFixe{
-  color:#333;
+body, a, input, select, textarea, button, #auth, .menu2, .right, .titreSemFixe {
+  color: #333;
 }
 
-#ferie,.ferie, .menuRed, a:hover.menuRed, a:hover.menu, .important, #messages_infos,.myAccountLink:hover {
+#ferie, .ferie, .menuRed, a:hover.menuRed, a:hover.menu, .important, #messages_infos, .myAccountLink:hover {
   color: #da1f27;
 }
 
-td.menu_td:hover,td.menu_td2:hover,.th, td.menu_td2:hover a, #auth input[type="submit"] {
+td.menu_td:hover, td.menu_td2:hover, .th, td.menu_td2:hover a, #auth input[type="submit"] {
   color: #FFFFFF;
 }
 
-.menu_li{
+.menu_li {
   transition: all 0.2s linear;
 }
 
@@ -219,12 +222,12 @@ td.menu_td:hover,td.menu_td2:hover,.th, td.menu_td2:hover a, #auth input[type="s
   color:  #1e4c67;
 }
 
-.menu_li:hover a{
+.menu_li:hover a {
   color: #ffd700;
 }
 
-.icones{
-  color : #1e4c67;
+.icones {
+  color: #1e4c67;
 }
 
 li.menu_li:hover {
@@ -234,55 +237,56 @@ li.menu_li:hover {
   color: #fff;
 }
 
-td.menu_td{
+td.menu_td {
   padding-top: 7px;
 }
 
-.menu_table:not(:empty){
+.menu_table:not(:empty) {
   margin-top: 15px;
   top: 51px !important;
-  background-color:#fff;
+  background-color: #fff;
   border : 1px solid #1e4c67;
   border-radius: 10px;
   border-collapse: separate;
 }
 
-.menu_table tbody{
+.menu_table tbody {
   border-radius: 10px;
 }
 
-.menu_table tr:first-child td{
+.menu_table tr:first-child td {
   border-top: none;
 }
 
-.ejsmenu{
+.ejsmenu {
   color: #000;
   padding: 2px 0;
 }
 
-.ejsmenu:hover{
+.ejsmenu:hover {
   background-color: #1e4c67 ;
   font-weight: bold;
   color: #ffd700 !important;
   border-radius: 10px;
 }
 
-.ui-state-active{
+.ui-state-active {
   background: #ffd700 !important;
 }
 
-.ui-state-hover{
-  background: #ffd700  !important;
+.ui-state-hover {
+  background: #ffd700 !important;
 }
 
-#accordion div tr:nth-child(2n){
+#accordion div tr:nth-child(2n) {
   background-color: #e7f0f9;
 }
-#accordion .ui-widget-header{
-  background : #1e4c67;
+
+#accordion .ui-widget-header {
+  background: #1e4c67;
 }
 
-.ui-widget-header{
+.ui-widget-header {
   color: #fff;
 }
 
@@ -294,12 +298,12 @@ td.menu_td{
   border-radius: 10px;
 }
 
-tbody table{
-  border : none;
+tbody table {
+  border: none;
 }
 
 table .th {
-  background : none;
+  background: none;
 }
 
 table .th td{
@@ -310,22 +314,24 @@ table .th td{
 table .th td:not( td:last-child) {
   border-right: solid 1px #fff;
 }
+
 table .th:first-child td:first-child, #menudivtab1 .menudiv-titre:first-child {
   border-top-left-radius: 10px;
 }
+
 table .th:first-child td:last-child, #menudivtab1 .menudiv-titre:last-child {
   border-top-right-radius: 10px;
 }
 
-#joursFeries form:first-of-type{
+#joursFeries form:first-of-type {
   margin-bottom: 10px;
 }
 
-#menudivtab1 .menudiv-titre:first-child{
+#menudivtab1 .menudiv-titre:first-child {
   background-color: #1e4c67;
 }
 
-.menudiv-tr:hover{
+.menudiv-tr:hover {
   background: #ffd700;
   text-decoration: underline;
 }
@@ -337,107 +343,108 @@ table .th:first-child td:last-child, #menudivtab1 .menudiv-titre:last-child {
   width: 55vw;
 }
 
-#content form[name="form2"], #content form.noprint, #content form[name="form1"], #content form[action="#"]{
+#content form[name="form2"], #content form.noprint, #content form[name="form1"], #content form[action="#"] {
   width: auto;
   background: none;
 }
 
-#content form:not(.noprint, [name="form2"], #stat-col1:first-child) table{
+#content form:not(.noprint, [name="form2"], #stat-col1:first-child) table {
   width: 100%;
 }
 
-#content #stat-col1:first-child form{
+#content #stat-col1:first-child form {
   width: inherit;
   background: #e7f0f9;
   border-radius: 10px;
   padding: 10px;
 }
 
-textarea, input{
+textarea, input {
   border-radius: 5px;
   border: 1px solid lightgray;
 }
 
-#content form .ui-button:hover, #boutons>.ui-button:hover, .ui-tabs li[aria-controls="ui-id-10"]:hover,.ui-tabs li[aria-controls="ui-id-12"]:hover, #joursFeries .ui-button:hover{
+#content form .ui-button:hover, #boutons>.ui-button:hover, .ui-tabs li[aria-controls="ui-id-10"]:hover, .ui-tabs li[aria-controls="ui-id-12"]:hover, #joursFeries .ui-button:hover {
   background: #ffd700;
 
 }
 
-input[value="Rechercher"]:hover, input[value="Réinitialiser"]:hover{
+input[value="Rechercher"]:hover, input[value="Réinitialiser"]:hover {
   background: #00656b !important;
-  color : #fff !important;
+  color: #fff !important;
 }
 
 
-#content form[action="/agent"], .ui-tabs .ui-tabs-panel  {
+#content form[action="/agent"], .ui-tabs .ui-tabs-panel {
   background: #e7f0f9;
 }
-#form select:not(.checkdate), #form textarea{
-  width : 100% !important;
+
+#form select:not(.checkdate), #form textarea {
+  width: 100% !important;
 }
 
 #form #debut, #form #fin {
-  width : 50% !important;
+  width: 50% !important;
 }
 
 div:not(#dialog-form) .tableauFiches tbody tr:last-child td {
   text-align: center;
 }
 
-button[title="Close"]{
-  background : #fff;
-  color : #1e4c67;
+button[title="Close"] {
+  background: #fff;
+  color: #1e4c67;
 }
 
-button[title="Close"]:hover{
-  background : #fff;
-  color : red;
-}
-
-
-a:hover .icones .fa:not(.icones .fa-sign-out, .icones .fa-repeat, .icones .fa-exclamation, .icones .fa-plus){
-  color:  #00656b;
-}
-
-a:hover .icones .fa-trash:not(#validation .fa-trash), .icones:hover .fa-trash:not(#validation .fa-trash){
+button[title="Close"]:hover {
+  background: #fff;
   color: red;
 }
 
 
-a:hover .icones .fa-plus, .icones:hover .fa-plus{
+a:hover .icones .fa:not(.icones .fa-sign-out, .icones .fa-repeat, .icones .fa-exclamation, .icones .fa-plus) {
+  color: #00656b;
+}
+
+a:hover .icones .fa-trash:not(#validation .fa-trash), .icones:hover .fa-trash:not(#validation .fa-trash) {
+  color: red;
+}
+
+
+a:hover .icones .fa-plus, .icones:hover .fa-plus {
   color: green;
 }
 
-.icones .fa-2x{
+.icones .fa-2x {
   font-size: 1.75em;
 }
 
-.odd .icones .fa-repeat{
+.odd .icones .fa-repeat {
   -webkit-text-stroke: 2px #dde7ec;
 }
 
-.even .icones .fa-repeat{
+.even .icones .fa-repeat {
   -webkit-text-stroke: 2px #fff;
 }
 
-.odd .icones .fa-exclamation{
+.odd .icones .fa-exclamation {
   -webkit-text-stroke: 1px #dde7ec;
 }
 
-.even .icones .fa-exclamation{
+.even .icones .fa-exclamation {
   -webkit-text-stroke: 1px #fff;
 }
 
-#validation .icones{
+#validation .icones {
   width: 2em;
   height: 2em;
 }
 
-#validation .icones:hover{
+#validation .icones:hover {
   transform: scale(1.5);
 }
 
-input[type=checkbox]{
+input[type=checkbox] {
   -webkit-appearance: none;
   -moz-appearance: none;
   -ms-appearance: none;
@@ -448,11 +455,11 @@ input[type=checkbox]{
   border: 1px solid #00665b;
 }
 
-input[type=checkbox]:hover{
+input[type=checkbox]:hover {
   background: #ffd700;
 }
 
-input[type=checkbox]:checked{
+input[type=checkbox]:checked {
   background: #00665b;
   position: relative;
   transition: all 0.2s ease-out;
@@ -470,11 +477,11 @@ input[type=checkbox]:checked:before {
   -webkit-text-stroke: 1px #00656b;
 }
 
-.ui-state-highlight, .ui-state-error{
+.ui-state-highlight, .ui-state-error {
   background-image: none !important;
 }
 
-.orange{
+.orange {
   color: #00656b;
   font-style: italic;
 }
@@ -496,28 +503,36 @@ input[type=checkbox]:checked:before {
   text-align: center;
 }
 
-div:not(#tablePlanningHebdo_paginate, .dataTables_paginate) .ui-button:not(.ui-dialog-titlebar-close, #pl-notes-button, #working_hours div:nth-child(2) .ui-button, #table-list_paginate .fg-button, #table-groups_paginate .fg-button, #table-separations_paginate .fg-button, #accordion+div .ui-button), #tablePresenceMonCompte_wrapper .dt-button{
-  border : 1px solid #00656b;
+div:not(#tablePlanningHebdo_paginate, .dataTables_paginate) .ui-button:not(.ui-dialog-titlebar-close, #pl-notes-button, #working_hours div:nth-child(2) .ui-button,
+#table-list_paginate .fg-button,
+#table-groups_paginate .fg-button,
+#table-separations_paginate .fg-button,
+#accordion+div .ui-button),
+#tablePresenceMonCompte_wrapper .dt-button {
+  border: 1px solid #00656b;
   border-radius: 10px;
   background-color: #fff;
-  color : #00656b;
+  color: #00656b;
 }
 
-div:not(#tablePlanningHebdo_paginate, #boutons) .ui-button:not(.ui-dialog-titlebar-close, #pl-notes-button, #working_hours div:nth-child(2) .ui-button, #accordion+div .ui-button):hover, #tablePresenceMonCompte_wrapper .dt-button:hover{
+div:not(#tablePlanningHebdo_paginate, #boutons) .ui-button:not(.ui-dialog-titlebar-close,
+#pl-notes-button, #working_hours div:nth-child(2) .ui-button,
+#accordion+div .ui-button):hover,
+#tablePresenceMonCompte_wrapper .dt-button:hover {
   background: #00656b;
 }
 
-div.dt-buttons .dt-button:hover > span{
+div.dt-buttons .dt-button:hover > span {
   color: #fff;
 }
 
-#tablePlanningHebdo_paginate .ui-button:hover, #auth input.ui-button:hover{
+#tablePlanningHebdo_paginate .ui-button:hover, #auth input.ui-button:hover {
   background: #fff;
-  color : #00656b;
+  color: #00656b;
   text-decoration: underline !important;
 }
 
-.ui-tabs [role="tablist"]{
+.ui-tabs [role="tablist"] {
   background: none;
   border-top: none;
   border-left: none;
@@ -526,9 +541,9 @@ div.dt-buttons .dt-button:hover > span{
   border-bottom: #00656b 1px solid;
 }
 
-.ui-tabs li[role="tab"]:not([aria-controls="ui-id-10"],[aria-controls="ui-id-12"]):hover{
-  background : #fff !important;
-  color :  #00656b !important;
+.ui-tabs li[role="tab"]:not([aria-controls="ui-id-10"], [aria-controls="ui-id-12"]):hover {
+  background: #fff !important;
+  color:  #00656b !important;
 }
 
 .ui-tabs .ui-state-active[role="tab"] {
@@ -536,140 +551,145 @@ div.dt-buttons .dt-button:hover > span{
   border: 1px solid #e7f0f9;
 }
 
-.ui-tabs li[aria-labelledby="ui-id-9"]:hover, #tabs .ui-tab-cancel:hover{
+.ui-tabs li[aria-labelledby="ui-id-9"]:hover, #tabs .ui-tab-cancel:hover {
   background-color: #FF5E5E !important;
 }
-.ui-tabs li[aria-labelledby="ui-id-11"]:hover, #tabs .ui-tab-submit:hover{
+
+.ui-tabs li[aria-labelledby="ui-id-11"]:hover, #tabs .ui-tab-submit:hover {
   background-color: lightgreen !important;
 }
 
-.ui-tabs li[aria-labelledby="ui-id-9"], .ui-tabs li[aria-labelledby="ui-id-11"],  #tabs .ui-tab-cancel, #tabs .ui-tab-submit{
-  background : #fff !important;
+.ui-tabs li[aria-labelledby="ui-id-9"], .ui-tabs li[aria-labelledby="ui-id-11"], #tabs .ui-tab-cancel, #tabs .ui-tab-submit {
+  background: #fff !important;
 }
 
-.ui-tabs li[aria-labelledby="ui-id-9"] a, .ui-tabs li[aria-labelledby="ui-id-11"] a,  #tabs .ui-tab-cancel a, #tabs .ui-tab-submit a{
-  color :  #00656b !important;
+.ui-tabs li[aria-labelledby="ui-id-9"] a, .ui-tabs li[aria-labelledby="ui-id-11"] a, #tabs .ui-tab-cancel a, #tabs .ui-tab-submit a {
+  color: #00656b !important;
 }
 
-
-#temps table{
+#temps table {
   background-color: #fff;
 }
-.noprint .ui-button:hover, #choix_tableaux .ui-button:hover{
-  background : #ffd700 !important;
+
+.noprint .ui-button:hover, #choix_tableaux .ui-button:hover {
+  background: #ffd700 !important;
 }
 
-.cellule_grise{
-  border : none;
+.cellule_grise {
+  border: none;
 }
-/*	DataTables */
+
+/* DataTables */
 .dataTable tbody tr.odd {
   background-color: #e7f0f9;
 }
 
 .dataTable tbody tr.odd td.sorting_1,
 .dataTable tbody tr.odd td.sorting_2,
-.dataTable tbody tr.odd td.sorting_3{
+.dataTable tbody tr.odd td.sorting_3 {
   background-color: rgba(85, 135, 162, 0.2);
 }
 
 .dataTable tbody tr.even td.sorting_1,
 .dataTable tbody tr.even td.sorting_2,
-.dataTable tbody tr.even td.sorting_3{
+.dataTable tbody tr.even td.sorting_3 {
   background-color: rgba(85, 135, 162, 0.2);
 }
 
-
-.tabsemaine1 span{
+.tabsemaine1 span {
   font-size: 1.1em;
 }
 
-.CJDataTable thead th{
+.CJDataTable thead th {
   background: #ffd700;
   color: #1e4c67;
 }
 
 .dt-buttons {
-  margin-top : 5px;
+  margin-top: 5px;
 }
 
-#tab_agenda td{
-  border : 1px black solid;
+#tab_agenda td {
+  border: 1px black solid;
   border-top: none;
   border-radius: 0px;
 }
-#tab_agenda tr:last-child :first-child{
+
+#tab_agenda tr:last-child :first-child {
   border-bottom-left-radius: 5px;
 }
-#tab_agenda tr:last-child td:last-child{
+
+#tab_agenda tr:last-child td:last-child {
   border-bottom-right-radius: 5px;
 }
 
-#working_hours>div:nth-child(2) .ui-button, #pl-notes-button{
+#working_hours>div:nth-child(2) .ui-button, #pl-notes-button {
   background: #00656b;
-  color : #fff !important;
+  color: #fff !important;
 }
 
-#working_hours>div:nth-child(2) .ui-button:hover, #pl-notes-button:hover{
+#working_hours>div:nth-child(2) .ui-button:hover, #pl-notes-button:hover {
   background: #ffd700 !important;
-  color : #00656b !important;
+  color: #00656b !important;
 }
+
 /*
  * bleu : #009dd9 / pâle : #ccecf8 / texte : #0f6fc6
  * rouge : #644946 / pâle : #ebd5d3 / texte : #d34717
  * jaune  : #d7c942 / pâle : #efe0a3 / texte :
  */
 
-.cellSpan{
+.cellSpan {
   font-weight:bold;
 }
 
 /* Style en fonction de la classe "poste" des activités */
-.animation td{
+.animation td {
   font-weight: bold;
 }
 
-.animation td.td_postes{
+.animation td.td_postes {
   font-size: 1.6em;
 }
 
-.bleu.animation td{
+.bleu.animation td {
   background: #daf0f8;
   border-top: outset 1px #009dd9;
   border-bottom: outset 1px #009dd9;
 }
 
-.jaune.animation td{
+.jaune.animation td {
   background: #efead7;
   border-top: outset 1px #d7c942;
   border-bottom: outset 1px #d7c942;
 }
 
-.rouge.animation td{
+.rouge.animation td {
   background: #f8dbda;
   border-top: outset 1px #c1322a;
   border-bottom: outset 1px #c1322a;
 }
 
-.bg-yellow{
+.bg-yellow {
   background-color: #ffe373;
 
 }
+
 /* Style en fonction des classes des tableaux (une classe par bibliothèque ) */
 /* Style par défaut */
-.tr_horaires, .tr_separation, .tr_horaires a{
+.tr_horaires, .tr_separation, .tr_horaires a {
   background: #1e4c67;
   color: #ffd700;
 }
 
 td.td_obligatoire, td.td_renfort,
 td.td_obligatoire select, td.td_renfort select,
-td.td_obligatoire a, td.td_renfort a{
+td.td_obligatoire a, td.td_renfort a {
   background: #00656b;
   color: #FFF;
 }
 
-.tabsemaine1 tr:not(.pl-line) td:not(td:last-child), .tabsemaine1 tr:not(.pl-line) td:not(td:last-child){
+.tabsemaine1 tr:not(.pl-line) td:not(td:last-child), .tabsemaine1 tr:not(.pl-line) td:not(td:last-child) {
   border: 0.1px solid #fff;
   border-right: none;
   border-bottom: none;
@@ -679,85 +699,84 @@ td.td_obligatoire a, td.td_renfort a{
   border: 0.1px solid #00656b;
 }
 
-.tabsemaine1 .pl-line td:not(td:last-child), .tabsemaine1 .pl-line td:not(td:last-child){
+.tabsemaine1 .pl-line td:not(td:last-child), .tabsemaine1 .pl-line td:not(td:last-child) {
   border-right: none;
 }
 
-.pl-line td:first-child{
+.pl-line td:first-child {
   background: rgba(0, 101, 107, 0.75);
-  color : #fff;
+  color: #fff;
 }
 
-
-#div_lignes td.td_obligatoire, #div_lignes td.td_obligatoire>*{
+#div_lignes td.td_obligatoire, #div_lignes td.td_obligatoire>* {
   background: #fff !important;
   color: #000;
 }
 
-#div_lignes select{
-  background:  #FFF;
+#div_lignes select {
+  background: #FFF;
 }
 
-.sticky, .sticky-line{
+.sticky, .sticky-line {
     border-color: #FFF;
 }
 
 /* Bleu */
-.bleu.tr_horaires, .bleu.tr_separation, .bleu.tr_horaires td.td_postes{
+.bleu.tr_horaires, .bleu.tr_separation, .bleu.tr_horaires td.td_postes {
   background: rgba(85, 135, 162, 1);
   color: #FFF;
 }
 
-.bleu td.td_postes{
+.bleu td.td_postes {
   background: rgba(85, 135, 162, 0.3);
   color: #000;
 }
 
 /* Jaune */
-.jaune.tr_horaires, .jaune.tr_separation, .jaune.tr_horaires td.td_postes{
+.jaune.tr_horaires, .jaune.tr_separation, .jaune.tr_horaires td.td_postes {
   background: rgba(100, 192, 164, 1);
   color: #000;
 }
 
-.jaune td.td_postes{
+.jaune td.td_postes {
   background: rgba(100, 192, 164, 0.3);
   color: #000;
 }
 
 /* Rouge */
-.rouge.tr_horaires, .rouge.tr_separation, .rouge.tr_horaires td.td_postes{
+.rouge.tr_horaires, .rouge.tr_separation, .rouge.tr_horaires td.td_postes {
   background: rgba(242, 178, 174, 1);
   color: #000;
 }
 
-.rouge td.td_postes{
+.rouge td.td_postes {
   background: rgba(242, 178, 174, 0.3);
   color: #000;
 }
 
 /* Violet */
-.violet.tr_horaires, .violet.tr_separation, .violet.tr_horaires td.td_postes{
+.violet.tr_horaires, .violet.tr_separation, .violet.tr_horaires td.td_postes {
   background: rgba(242, 178, 174, 1);
   color: #000;
 }
 
-.violet td.td_postes{
+.violet td.td_postes {
   background: rgba(242, 178, 174, 0.3);
   color: #000;
 }
 
 /* Vert */
-.vert.tr_horaires, .vert.tr_separation, .vert.tr_horaires td.td_postes{
+.vert.tr_horaires, .vert.tr_separation, .vert.tr_horaires td.td_postes {
   background: rgba(100, 192, 164, 1);
   color: #000;
 }
 
-.vert td.td_postes{
+.vert td.td_postes {
   background: rgba(100, 192, 164, 0.3);
   color: #000;
 }
 
-.tr_espace{
+.tr_espace {
   display: block;
   height:20px;
 }
