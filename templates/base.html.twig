@@ -13,6 +13,9 @@
     <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/datePickerFr.js?version={{ version }}'></script>
     <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/dataTables.sort.js?version={{ version }}'></script>
     <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/script.js?version={{ version }}'></script>
+    {% if theme_loader %}
+      <script type='text/JavaScript' src='{{ asset(theme_loader) }}?version={{ version }}'></script>
+    {% endif %}
     {% block specificjs %}{% endblock %}
     <link rel='StyleSheet' href='{{ app.request.getBaseURL() }}/js/DataTables/datatables.min.css' type='text/css' media='all'/>
     <link rel='StyleSheet' href='{{ app.request.getBaseURL() }}/themes/{{ themeJQuery }}/jquery-ui.min.css' type='text/css' media='all'/>

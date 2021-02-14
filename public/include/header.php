@@ -27,6 +27,8 @@ if (!file_exists("themes/$theme/$theme.css")) {
     $theme="default";
 }
 
+$theme_loader = file_exists("themes/$theme/loader.js") ? "themes/$theme/loader.js" : null;
+
 $favicon = null;
 if (!file_exists("themes/$theme/favicon.png")) {
     $favicon = "<link rel='icon' type='image/png' href='themes/$theme/images/favicon.png' />\n";
@@ -49,6 +51,10 @@ if (!file_exists("themes/$theme/favicon.png")) {
 <script type='text/JavaScript' src='js/script.js?version=<?php echo $version; ?>'></script>
 <?php
 getJSFiles($page, $version);
+
+if ($theme_loader) {
+   echo "<script type='text/JavaScript' src='$theme_loader?version=$version'></script>\n";
+}
 ?>
 
 <link rel='StyleSheet' href='js/DataTables/datatables.min.css' type='text/css' media='all'/>

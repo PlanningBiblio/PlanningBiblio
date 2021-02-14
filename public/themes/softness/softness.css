@@ -50,6 +50,7 @@ body{
 .pl-icon{
   padding: 5px 8px;
   text-decoration:none;
+  background: none;
 }
 
 #auth {
