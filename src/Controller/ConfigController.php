@@ -22,6 +22,17 @@ class ConfigController extends BaseController
         $request::setTrustedProxies(array($request->server->get('REMOTE_ADDR')));
         $url = $request->getSchemeAndHttpHost() . $request->getBaseUrl();
 
+        // Themes list
+        $themes_folder = __DIR__ . '/../../public/themes/';
+        $themes = scandir($themes_folder);
+        foreach ($themes as $k => $v) {
+            if (!is_dir($themes_folder . $v)
+                or strstr($v, ',')
+                or !file_exists($themes_folder . $v . '/' . $v . '.css')) {
+                unset($themes[$k]);
+            }
+        }
+
         $configParams = $this->entityManager->getRepository(ConfigParam::class)->findBy(
             array(),
             array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
@@ -40,9 +51,17 @@ class ConfigController extends BaseController
             if ($elem['nom'] == 'URL' ) {
                 $elem['valeur'] = $url;
             }
+
             if ($cp->type() == "password") {
                 $elem['valeur']=decrypt($elem['valeur']);
             }
+
+            // Themes list
+            if ($elem['nom'] == 'Affichage-theme') {
+                $elem['type'] = 'enum';
+                $elem['valeurs'] = implode(',', $themes);
+            }
+
             switch ($elem['type']) {
                 case "checkboxes":
                     $elem['valeurs'] = json_decode($elem['valeurs'], true);
@@ -74,6 +93,7 @@ class ConfigController extends BaseController
             $elem['commentaires'] = str_replace("[TEMP]", $tmp_dir, $elem['commentaires']);
             $elem['commentaires'] = str_replace("[SERVER]", $url, $elem['commentaires']);
             $category = str_replace('_', '', $elem['categorie']);
+
             $elements[$category][$cp->nom()] = $elem;
         }
 
