@@ -47,6 +47,11 @@ body{
 	font-size: 14pt;
 }
 
+.pl-icon{
+  padding: 5px 8px;
+  text-decoration:none;
+}
+
 #auth {
   display: inline-block;
   width: 600px;
@@ -126,6 +131,7 @@ body{
 }
 td.menu_td2{
   border-color: transparent;
+  min-width: 230px;
 }
 
 td.menu_td2, td.menu_td2:hover{
@@ -168,19 +174,19 @@ td.menu_td2, td.menu_td2:hover{
   white-space:nowrap;
 }
 
-#tabsemaine1 tr {
+.tabsemaine1 tr {
   background : none;
 }
 
-#tabsemaine1 tr:not(.pl-line, .tr_espace) td{
+.tabsemaine1 tr:not(.pl-line, .tr_espace) td{
   background-color: #1e4c67;
 }
 
-#tabsemaine1 tr:not(.pl-line, .tr_espace) td:first-child{
+.tabsemaine1 tr:not(.pl-line, .tr_espace) td:first-child{
   border-top-left-radius : 10px;
 }
 
-#tabsemaine1 tr:not(.pl-line, .tr_espace) td:last-child{
+.tabsemaine1 tr:not(.pl-line, .tr_espace) td:last-child{
   border-top-right-radius : 10px;
 }
 
@@ -250,6 +256,7 @@ td.menu_td{
 
 .ejsmenu{
   color: #000;
+  padding: 2px 0;
 }
 
 .ejsmenu:hover{
@@ -403,6 +410,7 @@ a:hover .icones .fa-plus, .icones:hover .fa-plus{
 .icones .fa-2x{
   font-size: 1.75em;
 }
+
 .odd .icones .fa-repeat{
   -webkit-text-stroke: 2px #dde7ec;
 }
@@ -470,10 +478,14 @@ input[type=checkbox]:checked:before {
   font-style: italic;
 }
 
-
-.fa-eye:hover{
-  color : #ffd700 !important;
+.fa-eye {
+  color: #ffd700;
 }
+
+.fa-eye:hover {
+  color : #fff !important;
+}
+
 /* Notes affichées en bas des plannings */
 #pl-notes-div1, .pl-notes-div1{
   border : 1px solid #1e4c67;
@@ -656,17 +668,17 @@ td.td_obligatoire a, td.td_renfort a{
   color: #FFF;
 }
 
-#tabsemaine1 tr:not(.pl-line) td:not(td:last-child), .tabsemaine1 tr:not(.pl-line) td:not(td:last-child){
+.tabsemaine1 tr:not(.pl-line) td:not(td:last-child), .tabsemaine1 tr:not(.pl-line) td:not(td:last-child){
   border: 0.1px solid #fff;
   border-right: none;
   border-bottom: none;
 }
 
-#tabsemaine1 .pl-line td, .tabsemaine1 .pl-line td {
+.tabsemaine1 .pl-line td, .tabsemaine1 .pl-line td {
   border: 0.1px solid #00656b;
 }
 
-#tabsemaine1 .pl-line td:not(td:last-child), .tabsemaine1 .pl-line td:not(td:last-child){
+.tabsemaine1 .pl-line td:not(td:last-child), .tabsemaine1 .pl-line td:not(td:last-child){
   border-right: none;
 }
 
