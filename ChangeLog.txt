@@ -1,5 +1,17 @@
 *** Unreleased ***
 
+*** Version 20.10.04       (2021-02-15)   ***
+-Fixes
+Fix datatable with fixed columns
+Don't show right arrow on locked plannings or for agents without authorization
+Fix a wrong links on absence and holiday notifications
+Use baseURL for /ics/ajax.resetURL.php
+Fix/Statistics : Initialize information about agents
+Fix reset URL for holiday index and rename related button
+SSL errors can occur during MS Graph imports.
+Escape json string containing skill in agent's form
+
+
 *** Version 20.10.03       (2021-01-26)   ***
 -Fixes
 Fix CAS redirect after authentication
