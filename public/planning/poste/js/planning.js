@@ -78,6 +78,11 @@ $(document).ready(function(){
 
   $('td.menuTrigger').hover(
     function() {
+      if($("#planning-data").attr("data-verrou") >0 ||
+        $("#planning-data").attr("data-autorisation") != 1){
+        return false;
+      }
+
       if ($(this).is(':last-child')) {
         return;
       }
