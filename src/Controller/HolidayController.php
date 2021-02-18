@@ -681,7 +681,7 @@ class HolidayController extends BaseController
         }
 
         // ajout d'un lien permettant de rebondir sur la demande
-        $url = $GLOBALS['config']['URL'] . "/holiday/edit/$id";
+        $url = $this->config('URL') . "/holiday/edit/$id";
         $message.="<br/><br/>Lien vers la demande de cong&eacute; :<br/><a href='$url'>$url</a><br/><br/>";
 
         // Envoi du mail
@@ -798,7 +798,7 @@ class HolidayController extends BaseController
         }
 
         // ajout d'un lien permettant de rebondir sur la demande
-        $url = $config['URL'] . "/holiday/edit/$id";
+        $url = $this->config('URL') . "/holiday/edit/$id";
 
         // Envoi du mail
         $m=new \CJMail();
