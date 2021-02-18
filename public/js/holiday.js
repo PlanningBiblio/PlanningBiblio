@@ -131,6 +131,13 @@ function sethours() {
     return;
   }
 
+  // All the processes following that check are
+  // related to halfday holidays. So return
+  // if holidays in hours
+  if ( $('#conges-mode').val() == 'heures' ) {
+    return;
+  }
+
   // Set default values and return if halfday dropdowns are hidden
   if ($('select[name="start_halfday"]').is(':visible') == false) {
     $('#hre_debut_select').val('');
