@@ -17,6 +17,8 @@
     - 100
 "ajax.holidaycredit":
     - 100
+"ajax.holiday-halfday-hours":
+    - 100
 "framework.index":
     - 22
 "framework.add_table":
