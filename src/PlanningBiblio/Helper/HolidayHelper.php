@@ -125,8 +125,11 @@ class HolidayHelper extends BaseHelper
             }
 
             if($today > 0 && $this->config('Conges-Mode') == 'jours' && !$this->data['is_recover']) {
-                // 14400 = 4h, 12600 = 3,5h, 25200 = 7h
-                $today = $today <= 14400 ? 12600 : 25200;
+                // 3600 = 1h, 12600 = 3,5h, 25200 = 7h
+                // the default time for switching from half-day to full-day is 4 hours (14400 seconds)
+                $switching_time = (float) ($this->config['holiday_fullday_switching_time'] ?? 4);
+                $switching_time = $switching_time * 3600;
+                $today = $today <= $switching_time ? 12600 : 25200;
             }
 
             $per_week[$week_id]['times'] += number_format($today / 3600, 2, '.', '');
