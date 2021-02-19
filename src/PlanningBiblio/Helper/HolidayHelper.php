@@ -182,7 +182,7 @@ class HolidayHelper extends BaseHelper
 
         $hours_per_day = ($holidays_hours_per_year == null) ? $this->hoursPerDay($perso_id) : $this->hoursPerDay(null, $holidays_hours_per_year);
 
-        $result = round($given_hours / $hours_per_day, 2);
+        $result = round((float) $given_hours / $hours_per_day, 2);
 
         if ($human_readable) {
             if (empty($result)) {
@@ -195,6 +195,10 @@ class HolidayHelper extends BaseHelper
     }
 
     public function showHoursToDays() {
+        if ($this->config('Conges-Mode') != 'heures') {
+            return false;
+        }
+
         return $this->config('conges-hours-per-day');
     }
 

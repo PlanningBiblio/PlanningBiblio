@@ -196,7 +196,7 @@ foreach ($recup as $elem) {
         $validationStyle=null;
         if ($elem['solde_prec']!=null and $elem['solde_actuel']!=null) {
             $credits=heure4($elem['solde_prec'])." &rarr; ".heure4($elem['solde_actuel']);
-            if ($config['Conges-Recuperations'] == 0 && $holiday_helper->showHoursToDays()) {
+            if ($holiday_helper->showHoursToDays()) {
                 $credits .= "<br />" . $holiday_helper->hoursToDays($elem['solde_prec'], $elem['perso_id']) . "j &rarr; " . $holiday_helper->hoursToDays($elem['solde_actuel'], $elem['perso_id']) . "j";
             }
         }
