@@ -284,7 +284,7 @@ if ($teleworking) {
     foreach ($absence_reasons as $reason) {
         $teleworking_reasons[] = $reason->valeur();
     }
-    $teleworking_exception = !empty($teleworking_reasons) and is_array($teleworking_reasons) ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')" : null;
+    $teleworking_exception = (!empty($teleworking_reasons) and is_array($teleworking_reasons)) ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')" : null;
 }
 
 $db->select('absences', 'perso_id,valide', "`debut`<'$dateSQL $finSQL' AND `fin` >'$dateSQL $debutSQL' $teleworking_exception");
