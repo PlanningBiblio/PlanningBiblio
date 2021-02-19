@@ -1,4 +1,7 @@
 *** Unreleased ***
+- Enhancements
+Add a param to define the switching time between half-day and full-day
+Absences for remote working ability
 
 *** Version 20.10.04       (2021-02-15)   ***
 -Fixes
