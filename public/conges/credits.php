@@ -63,12 +63,15 @@ $credits_en_attente=isset($_SESSION['oups']['conges_credits_attente'])?$_SESSION
 $credits_en_attente=(isset($_GET['get']) and isset($_GET['attente']))?true:$credits_en_attente;
 $credits_en_attente=(isset($_GET['get']) and !isset($_GET['attente']))?false:$credits_en_attente;
 
-$hours_to_days=(isset($_GET['get']) and isset($_GET['hours_to_days']));
-
+global $hours_to_days;
+$hours_to_days = $_SESSION['oups']['conges_hours_to_days'] ?? false;
+$hours_to_days = $_GET['hours_to_days'] ?? $hours_to_days;
+$hours_to_days = (isset($_GET['get']) and !isset($_GET['hours_to_days'])) ? false : $hours_to_days;
 
 $_SESSION['oups']['conges_agents_supprimes']=$agents_supprimes;
 $_SESSION['oups']['conges_credits_effectifs']=$credits_effectifs;
 $_SESSION['oups']['conges_credits_attente']=$credits_en_attente;
+$_SESSION['oups']['conges_hours_to_days'] = $hours_to_days;
 
 $checked1=$agents_supprimes?"checked='checked'":null;
 $checked2=$credits_effectifs?"checked='checked'":null;
@@ -87,7 +90,7 @@ $c->fetchAllCredits();
 function display_credits_hours($hours, $perso_id) {
     $holiday_helper = new HolidayHelper();
     $formatted_hour = heure4($hours);
-    $hours_to_days=(isset($_GET['get']) and isset($_GET['hours_to_days']));
+    $hours_to_days = $GLOBALS['hours_to_days'];
     if ($hours && $hours_to_days) {
         $formatted_hour .= "<br />" . $holiday_helper->hoursToDays($hours, $perso_id) . "j";
     }

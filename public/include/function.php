@@ -1026,8 +1026,8 @@ function heure4($heure, $return0=false)
   
     if (stripos($heure, "h")) {
         $tmp = explode('h', $heure);
-        $hre = $tmp[0];
-        $min = $tmp[1];
+        $hre = (int) $tmp[0];
+        $min = (int) $tmp[1];
         $centiemes = $min / 60 ;
         $hre += $centiemes;
         $heure = number_format($hre, 2, '.', '');
