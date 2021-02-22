@@ -16,6 +16,9 @@ Fichier permettant de voir les demandes de récupération
 
 include_once "class.conges.php";
 include_once "personnel/class.personnel.php";
+use App\PlanningBiblio\Helper\HolidayHelper;
+
+$holiday_helper = new HolidayHelper();
 
 // Initialisation des variables
 $annee=filter_input(INPUT_GET, "annee", FILTER_SANITIZE_STRING);
@@ -145,7 +148,7 @@ if ($admin) {
 }
 echo <<<EOD
 <span style='margin-left:30px;'><input type='submit' value='Rechercher' id='button-OK' class='ui-button'/></span>
-<span style='margin-left:30px;'><input type='button' value='Effacer' id='button-Effacer' class='ui-button' onclick='location.href="index.php?page=conges/recuperations.php&reset=on"' /></span>
+<span style='margin-left:30px;'><input type='button' value='Réinitialiser' id='button-Effacer' class='ui-button' onclick='location.href="index.php?page=conges/recuperations.php&reset=on"' /></span>
 </span>
 
 <span style='float:right; vertical-align:top; margin:0px 5px;'>
@@ -193,6 +196,9 @@ foreach ($recup as $elem) {
         $validationStyle=null;
         if ($elem['solde_prec']!=null and $elem['solde_actuel']!=null) {
             $credits=heure4($elem['solde_prec'])." &rarr; ".heure4($elem['solde_actuel']);
+            if ($holiday_helper->showHoursToDays()) {
+                $credits .= "<br />" . $holiday_helper->hoursToDays($elem['solde_prec'], $elem['perso_id']) . "j &rarr; " . $holiday_helper->hoursToDays($elem['solde_actuel'], $elem['perso_id']) . "j";
+            }
         }
     } elseif ($elem['valide']<0) {
         $validation = $lang['leave_table_refused'] ." par ". nom(-$elem['valide']);
@@ -215,7 +221,11 @@ foreach ($recup as $elem) {
     if ($admin) {
         echo "<td>".nom($elem['perso_id'])."</td>";
     }
-    echo "<td>".heure4($elem['heures'])."</td>\n";
+    echo "<td>".heure4($elem['heures']);
+    if ($config['Conges-Recuperations'] == 0 && $holiday_helper->showHoursToDays()) {
+        echo "<br />" . $holiday_helper->hoursToDays($elem['heures'], $elem['perso_id']) . "j";
+    }
+    echo "</td>\n";
     echo "<td style='$validationStyle'>$validation</td>\n";
     echo "<td>$validation_date</td>\n";
     echo "<td>$credits</td>\n";

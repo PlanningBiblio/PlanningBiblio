@@ -2095,6 +2095,75 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="20.11.00.004";
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[]="DELETE from `{$dbprefix}acces` WHERE `page` = 'planning/postes_cfg/index.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` SET `url` = '/framework' WHERE `url` = 'planning/postes_cfg/index.php';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="20.11.00.005";
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[]="UPDATE `{$dbprefix}acces` SET `groupe`='', `page`='/workinghour' WHERE `nom`='Planning Hebdo - suppression'";
+    $sql[]="UPDATE `{$dbprefix}acces` SET `nom`='Planning Hebdo - Admin N1' WHERE `nom`='Planning Hebdo - Index '";
+    $sql[]="UPDATE `{$dbprefix}acces` SET `page`='' WHERE `groupe`!=''  AND (`page` LIKE '%planningHebdo%' OR `page` = '/workinghour')";
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `groupe`='' AND (`page` LIKE '%planningHebdo%' OR `page` = '/workinghour')";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="20.11.00.006";
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[]="UPDATE `{$dbprefix}acces` SET `page` = '' WHERE `page`='statistiques/index.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` SET `url` = '/statistics' WHERE `url`='statistiques/index.php';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="20.11.00.007";
+if (version_compare($config['Version'], $v) === -1) {
+    # Symfinization of framework lines
+    $sql[]="UPDATE `{$dbprefix}acces` SET `page`='' WHERE `page`='planning/postes_cfg/lignes_sep.php';";
+
+    # Symfinization of framework groups
+    $sql[]=" UPDATE `{$dbprefix}acces` SET `page`='' WHERE `page` = 'planning/postes_cfg/groupes.php';";
+    $sql[]=" UPDATE `{$dbprefix}acces` SET `page`='' WHERE `page`= 'planning/postes_cfg/groupes2.php';";
+
+    # Symfinization of myaccount
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='monCompte.php';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="20.11.00.008";
+if (version_compare($config['Version'], $v) === -1) {
+    // Symfonyse frameword edition
+    $sql[]="UPDATE `{$dbprefix}acces` SET `page` = '' WHERE `page` = 'planning/postes_cfg/modif.php';";
+
+    // Symfonyse agent index
+    $sql[]="UPDATE `{$dbprefix}acces`SET `page` = '' WHERE `page`='personnel/index.php';";
+    $sql[]="UPDATE `{$dbprefix}acces` SET `page`= '' WHERE `page`='personnel/valid.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` SET `url` = '/agent' WHERE `url`='personnel/index.php';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="20.11.00.009";
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `ordre`, `commentaires`) VALUES ('Conges-fullday-switching-time', 'text', '4', '', 'Congés', '7', 'Temps définissant la bascule entre une demi-journée et une journée complète lorsque les crédits de congés sont comptés en jours. Format : entier ou décimal. Exemple : pour 3h30, tapez 3.5');";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
+$v="20.11.00.010";
+if (version_compare($config['Version'], $v) === -1) {
+    $sql[] = "ALTER TABLE `{$dbprefix}postes` ADD COLUMN `teleworking` ENUM('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' AFTER `statistiques`;";
+    $sql[] = "ALTER TABLE `{$dbprefix}select_abs` ADD COLUMN `teleworking` INT(1) NOT NULL DEFAULT '0' AFTER `notification_workflow`;";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();

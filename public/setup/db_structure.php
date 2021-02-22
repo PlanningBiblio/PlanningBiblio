@@ -362,6 +362,7 @@ $sql[]="CREATE TABLE `{$dbprefix}postes` (
   `etage` TEXT NOT NULL,
   `activites` text NOT NULL,
   `statistiques` ENUM('0','1') DEFAULT '1',
+  `teleworking` ENUM('0','1') NOT NULL DEFAULT '0',
   `bloquant` enum('0','1') DEFAULT '1',
   `site` INT(1) DEFAULT '1',
   `categories` TEXT NULL DEFAULT NULL,
@@ -383,6 +384,7 @@ $sql[]="CREATE TABLE `{$dbprefix}select_abs` (
   `rang` int(11) NOT NULL DEFAULT '0',
   `type` INT(1) NOT NULL DEFAULT '0',
   `notification_workflow` CHAR(1) NULL DEFAULT NULL,
+  `teleworking` INT(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 

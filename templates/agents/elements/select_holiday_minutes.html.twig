@@ -1,6 +1,6 @@
 {# agents/elements/select_holiday_minutes.html.twig #}
 
-<select name='{{ name }}' style='width:50px;'>
+<select name='{{ name }}' id='{{ name }}' style='width:50px;'>
   {% if minutes == '0' %}
     <option value="0" selected="selected">00</option>
   {% else %}

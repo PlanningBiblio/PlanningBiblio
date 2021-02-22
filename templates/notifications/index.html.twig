@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block page %}
-  <form name='form2' action="{{ asset('notification') }}" method='get'>
+  <form name='form2' action="{{ asset('notification') }}" method='post'>
     <table style='margin-bottom:10px;'>
       <tr style='vertical-align:center;'>
         <td style='width:370px;'>
@@ -51,8 +51,8 @@
             </td>
             <td>{{ agent.nom }}</td>
             <td>{{ agent.prenom }}</td>
-            <td>{{ agent.service }}</td>
-            <td>{{ agent.statut }}</td>
+            <td>{{ agent.service | raw }}</td>
+            <td>{{ agent.statut | raw }}</td>
             {% if config('Multisites-nombre')>1 and agent.sites_list is defined %}
                 <td>{{ agent.sites_list }}</td>
             {% elseif config('Multisites-nombre')>1 and not agent.sites_list is defined %}

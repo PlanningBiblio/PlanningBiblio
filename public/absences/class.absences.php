@@ -63,6 +63,7 @@ class absences
     public $perso_ids=array();
     public $recipients=array();
     public $rrule = null;
+    public $teleworking = true;
     public $validation_n1 = null;
     public $validation_n2 = null;
     public $valide=false;
@@ -746,6 +747,8 @@ class absences
 
     public function fetch($sort="`debut`,`fin`,`nom`,`prenom`", $agent=null, $debut=null, $fin=null, $sites=null)
     {
+        $entityManager = $GLOBALS['entityManager'];
+
         $filter="";
         //	DB prefix
         $dbprefix=$GLOBALS['config']['dbprefix'];
@@ -765,6 +768,16 @@ class absences
             $filter.=" AND `{$dbprefix}absences`.`valide`>0 ";
         }
 
+        // Don't look for teleworking absences if the position is compatible with
+        if ($this->teleworking == false ) {
+            $absence_reasons = $entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
+            $teleworking_reasons = array();
+            foreach ($absence_reasons as $reason) {
+                $teleworking_reasons[] = $reason->valeur();
+            }
+
+            $filter .= " AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "') ";
+        }
 
         // N'affiche que les absences des agents non supprimés par défaut : $this->agents_supprimes=array(0);
         // Affiche les absences des agents supprimés si précisé : $this->agents_supprimes=array(0,1) ou array(0,1,2)
@@ -974,7 +987,7 @@ class absences
         //	Select All
         $req="SELECT `{$dbprefix}absences`.`perso_id` AS `perso_id`, "
         ."`{$dbprefix}absences`.`id` AS `id`, `{$dbprefix}absences`.`debut` AS `debut`, "
-        ."`{$dbprefix}absences`.`fin` AS `fin` "
+        ."`{$dbprefix}absences`.`fin` AS `fin`, `{$dbprefix}absences`.`motif` AS `motif` "
         ."FROM `{$dbprefix}absences` "
         ."WHERE $dates $filter;";
 

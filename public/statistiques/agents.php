@@ -21,6 +21,8 @@ require_once "class.statistiques.php";
 require_once "include/horaires.php";
 require_once "absences/class.absences.php";
 
+use App\Model\AbsenceReason;
+
 // Initialisation des variables :
 $debut=filter_input(INPUT_POST, "debut", FILTER_SANITIZE_STRING);
 $fin=filter_input(INPUT_POST, "fin", FILTER_SANITIZE_STRING);
@@ -119,6 +121,13 @@ if ($config['Multisites-nombre']>1 and is_array($selectedSites)) {
     $sitesSQL="0,1";
 }
 
+// Teleworking
+$teleworking_absence_reasons = array();
+$absences_reasons = $entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
+foreach ($absences_reasons as $elem) {
+    $teleworking_absence_reasons[] = $elem->valeur();
+}
+
 $tab=array();
 //		--------------		Récupération de la liste des agents pour le menu déroulant		------------------------
 $db=new db();
@@ -153,8 +162,9 @@ if (!empty($agents)) {
     $req="SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
     `{$dbprefix}pl_poste`.`date` as `date`, `{$dbprefix}pl_poste`.`perso_id` as `perso_id`, 
     `{$dbprefix}pl_poste`.`poste` as `poste`, `{$dbprefix}pl_poste`.`absent` as `absent`, 
+    `{$dbprefix}pl_poste`.`site` as `site`,
     `{$dbprefix}postes`.`nom` as `poste_nom`, `{$dbprefix}postes`.`etage` as `etage`, 
-    `{$dbprefix}pl_poste`.`site` as `site` 
+    `{$dbprefix}postes`.`teleworking` as `teleworking` 
     FROM `{$dbprefix}pl_poste` 
     INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` 
     WHERE `{$dbprefix}pl_poste`.`date`>='$debutREQ' AND `{$dbprefix}pl_poste`.`date`<='$finREQ' 
@@ -163,7 +173,7 @@ if (!empty($agents)) {
     ORDER BY `poste_nom`,`etage`;";
     $db->query($req);
     $resultat=$db->result;
-  
+
     //	Recherche des infos dans le tableau $resultat (issu de pl_poste et postes)
     //	pour chaques agents sélectionnés
     foreach ($agents as $agent) {
@@ -198,6 +208,12 @@ if (!empty($agents)) {
                     // S'il est absent, on met à 1 la variable $elem['absent']
                     if ( !empty($absencesDB[$elem['perso_id']]) ) {
                         foreach ($absencesDB[$elem['perso_id']] as $a) {
+
+                            // Ignore teleworking absences for compatible positions
+                            if (in_array($a['motif'], $teleworking_absence_reasons) and $elem['teleworking']) {
+                                continue;
+                            }
+
                             if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
                                 $elem['absent']="1";
                             }
@@ -243,13 +259,6 @@ if (!empty($agents)) {
                             $exists_JF=true;
                         }
 
-                        foreach ($agents_list as $elem2) {
-                            if ($elem2['id']==$agent) {	// on créé un tableau avec le nom et le prénom de l'agent.
-                                $agent_tab=array($agent,$elem2['nom'],$elem2['prenom']);
-                                break;
-                            }
-                        }
-        
                         // Statistiques-Heures
                         if ($statistiques_heures) {
                             $statistiques_heures_tab = explode(';', $statistiques_heures);
@@ -276,6 +285,14 @@ if (!empty($agents)) {
                         $total_absences+=diff_heures($elem['debut'], $elem['fin'], "decimal");
                         $exists_absences=true;
                     }
+
+                    foreach ($agents_list as $elem2) {
+                        if ($elem2['id']==$agent) {	// on créé un tableau avec le nom et le prénom de l'agent.
+                            $agent_tab=array($agent,$elem2['nom'],$elem2['prenom']);
+                            break;
+                        }
+                    }
+
                     // On met dans tab tous les éléments (infos postes + agents + heures)
                     $tab[$agent]=array($agent_tab,$postes,$heures,$samedi,$absences,$total_absences,$dimanche,$heures_tab,$feries,"sites"=>$sites);
                 }

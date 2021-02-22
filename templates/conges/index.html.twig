@@ -77,7 +77,11 @@
               <input type='submit' value='Rechercher' id='button-OK' class='ui-button'/>
             </td>
             <td>
-              <a href='{{ asset("holiday/index/") }}{{ show_recovery }}/?reset=on' class='ui-button' >Effacer</a>
+              {% if show_recovery %}
+                <a href='{{ asset("holiday/index") }}?recup=1&reset=on' class='ui-button' >Réinitialiser</a>
+              {% else %}
+                <a href='{{ asset("holiday/index") }}?reset=on' class='ui-button' >Réinitialiser</a>
+              {% endif %}
             </td>
           </tr>
         </tbody>
@@ -107,20 +111,20 @@
         {% if conges_mode == 'jours' and not show_recovery %}
           <th rowspan='2'>Jours</th>
         {% else %}
-          <th rowspan='2'>Heures</th>
+          <th rowspan='2' class='dataTableHeureFR'>Heures</th>
         {% endif %}
 
         {% if balance %}
-          <th rowspan='2'>Crédits</th>
-          <th rowspan='2'>Reliquat</th>
+          <th rowspan='2' class='dataTableHeureFR'>Crédits</th>
+          <th rowspan='2' class='dataTableHeureFR'>Reliquat</th>
         {% endif %}
 
         {% if recovery %}
-          <th rowspan='2'>Récupérations</th>
+          <th rowspan='2' class='dataTableHeureFR'>Récupérations</th>
         {% endif %}
 
         {% if balance %}
-          <th rowspan='2'>Solde Débiteur</th>
+          <th rowspan='2' class='dataTableHeureFR'>Solde Débiteur</th>
         {% endif %}
       </tr>
 
@@ -156,14 +160,15 @@
           {% endif %}
 
           <td>{{ c.validationDate }}</td>
-          <td class='aRight'>{{ c.hours }}</td>
+          <td class='aRight'>{{ c.hours }}{% if show_hours_to_days %}<br />{{ c.days }}j{% endif %}</td>
 
           {% if balance %}
             {% if c.valide or c.information %}
               {% if c.solde_prec != c.solde_actuel %}
-                <td class="bold">{{ c.solde_prec }} →  {{ c.solde_actuel }}</td>
+                <td class="aRight bold">{{ c.solde_prec }} →  {{ c.solde_actuel }}
+                                 {% if show_hours_to_days %}<br />{{ c.solde_prec_days }}j →  {{ c.solde_actuel_days }}j{% endif %}</td>
               {% else %}
-                <td class="aRight">{{ c.solde_prec }}</td>
+                <td class="aRight">{{ c.solde_prec }}{% if show_hours_to_days %}<br />{{ c.solde_prec_days }}j{% endif %}</td>
               {% endif %}
             {% else %}
               <td></td>
@@ -171,9 +176,10 @@
 
             {% if c.valide or c.information %}
               {% if c.reliquat_prec != c.reliquat_actuel %}
-                <td class="bold">{{ c.reliquat_prec }} →  {{ c.reliquat_actuel }}</td>
+                <td class="aRight bold">{{ c.reliquat_prec }} →  {{ c.reliquat_actuel }}
+                                 {% if show_hours_to_days %}<br />{{ c.reliquat_prec_days }}j →  {{ c.reliquat_actuel_days }}j{% endif %}</td>
               {% else %}
-              <td class="aRight">{{ c.reliquat_prec }}</td>
+              <td class="aRight">{{ c.reliquat_prec }}{% if show_hours_to_days %}<br />{{ c.reliquat_prec_days }}j{% endif %}</td>
               {% endif %}
             {% else %}
               <td></td>
@@ -183,9 +189,10 @@
           {% if recovery %}
             {% if c.valide or c.information %}
               {% if c.recup_prec != c.recup_actuel %}
-                <td class="bold">{{ c.recup_prec }} →  {{ c.recup_actuel }}</td>
+                <td class="aRight bold">{{ c.recup_prec }} →  {{ c.recup_actuel }}
+                {% if show_hours_to_days %}<br />{{ c.recup_prec_days }}j →  {{ c.recup_actuel_days }}j{% endif %}</td>
               {% else %}
-                <td class="aRight">{{ c.recup_prec }}</td>
+                <td class="aRight">{{ c.recup_prec }}{% if show_hours_to_days %}<br />{{ c.recup_prec_days }}j{% endif %}</td>
               {% endif %}
             {% else %}
               <td></td>
@@ -195,9 +202,10 @@
           {% if balance %}
             {% if c.valide or c.information %}
               {% if c.anticipation_prec != c.anticipation_actuel %}
-                <td class="bold">{{ c.anticipation_prec }} →  {{ c.anticipation_actuel }}</td>
+                <td class="aRight bold">{{ c.anticipation_prec }} →  {{ c.anticipation_actuel }}
+                {% if show_hours_to_days %}<br />{{ c.anticipation_prec_days }}j →  {{ c.anticipation_actuel_days }}j{% endif %}</td>
               {% else %}
-                <td class="aRight">{{ c.anticipation_prec }}</td>
+                <td class="aRight">{{ c.anticipation_prec }}{% if show_hours_to_days %}<br />{{ c.anticipation_prec_days }}j{% endif %}</td>
               {% endif %}
             {% else %}
               <td></td>

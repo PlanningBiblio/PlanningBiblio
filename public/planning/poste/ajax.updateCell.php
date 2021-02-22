@@ -25,6 +25,7 @@ require_once "../../absences/class.absences.php";
 require_once "../../activites/class.activites.php";
 require_once "class.planning.php";
 require_once __DIR__."/../volants/class.volants.php";
+require_once __DIR__."/../../init_ajax.php";
 
 //	Initialisation des variables
 $ajouter=filter_input(INPUT_POST, "ajouter", FILTER_CALLBACK, array("options"=>"sanitize_on"));
@@ -195,6 +196,7 @@ $sansRepas = $p->sansRepas($date, $debut, $fin);
 // Recherche des absences
 $a=new absences();
 $a->valide=false;
+$a->teleworking=false;
 $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date.' '.$debut, $date.' '.$fin);
 $absences=$a->elements;
 

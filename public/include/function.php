@@ -1026,8 +1026,8 @@ function heure4($heure, $return0=false)
   
     if (stripos($heure, "h")) {
         $tmp = explode('h', $heure);
-        $hre = $tmp[0];
-        $min = $tmp[1];
+        $hre = (int) $tmp[0];
+        $min = (int) $tmp[1];
         $centiemes = $min / 60 ;
         $hre += $centiemes;
         $heure = number_format($hre, 2, '.', '');
@@ -1315,6 +1315,24 @@ function selectHeure($min, $max, $blank=false, $selectedValue=null)
             echo "<option value='$hre:$min:00' $selected>{$hre}h$min</option>\n";
         }
     }
+}
+
+function myselectHeure($min, $max, $blank=false)
+{
+    $granularite = $GLOBALS['config']['Granularite'];
+    if ($blank) {
+       $option[] = array("raw"=>'', 'human_readable' =>" ");
+    }
+
+    for ($i = $min; $i < $max+1; $i++) {
+        $hre = sprintf("%'.02d", $i);
+
+        for ($j = 0; $j < 60; $j = $j+$granularite) {
+            $min = sprintf("%'.02d", $j);
+            $option[] = array("raw" => "$hre:$min:00", "human_readable" => "{$hre}h$min");
+        }
+    }
+    return $option;
 }
 
 /**

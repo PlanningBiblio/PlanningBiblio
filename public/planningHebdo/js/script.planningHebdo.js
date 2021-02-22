@@ -242,23 +242,24 @@ function plHebdoMemePlanning(){
 
 function plHebdoSupprime(id){
   if(confirm("Etes vous sûr(e) de vouloir supprimer ce planning de présence ?")){
-    
+
     var CSRFToken = $('#CSRFSession').val();
+    var baseURL = $('#baseURL').val();
     // Suppression du planning en arrière plan
-    
+
     $.ajax({
-      url: "planningHebdo/ajax.delete.php",
+      url: baseURL + "/workinghour",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
-      type: "get",
-    
+      type: "delete",
+
       success: function(){
-	// On cache la ligne du planning supprimée dans le tableau
-	CJDataTableHideRow("#tr_"+id);
-	CJInfo("Le planning a été supprimé","success");
+        // On cache la ligne du planning supprimée dans le tableau
+        CJDataTableHideRow("#tr_"+id);
+        CJInfo("Le planning a été supprimé","success");
       },
       error: function(){
-	CJInfo("Erreur lors de la suppression du planning de pr&eacute;sence","error");
+        CJInfo("Erreur lors de la suppression du planning de présence","error");
       }
     });
   }
@@ -287,8 +288,9 @@ function plHebdoVerifForm(){
   }
 
   var retour=false;
+  var baseURL = $('#baseURL').val();
   $.ajax({
-    url: "planningHebdo/ajax.verifPlannings.php",
+    url: baseURL + "/planningHebdo/ajax.verifPlannings.php",
     dataType: "json",
     data: data,
     type: "get",
@@ -337,6 +339,21 @@ function plHebdoVerifForm(){
 }
 
 $(function(){
+  $("document").ready(function(){
+    plHebdoCalculHeures2();
+    plHebdoMemePlanning();
+  });
+
+  //calcul des heures totales par ligne après la sélection des horaires
+  $(".select").change(function(){
+    plHebdoCalculHeures($(this),"");
+    plHebdoChangeHiddenSelect();
+  });
+
+  $("#perso_id").change(function(){
+    $("#info_copie").show();
+  });
+
   // Action lors du click sur la case à cocher "Même planning qu'en semaine 1"
   $(".memePlanning").click(function(){
     var id=$(this).attr("data-id");
@@ -355,8 +372,9 @@ $(function(){
   });
   
   $("#perso_id").change(function(){
+    var baseURL = $('#baseURL').val();
     $.ajax({
-      url: "planningHebdo/ajax.getSites.php",
+      url: baseURL+"/planningHebdo/ajax.getSites.php",
       dataType: "json",
       type: "post",
       data: {id: $(this).val()},

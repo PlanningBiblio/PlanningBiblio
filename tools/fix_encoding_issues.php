@@ -226,12 +226,12 @@ $tables = array (
         ),
     ),
     array(
-        'name' => 'pl_cellules',
+        'name' => 'pl_poste_cellules',
         'fields' => array(
         ),
     ),
     array(
-        'name' => 'pl_horaires',
+        'name' => 'pl_poste_horaires',
         'fields' => array(
         ),
     ),

@@ -39,6 +39,7 @@
         <td>
           {% if adminN1 or adminN2 %}
             <select name='perso_id' id='perso_id' style='width:20%;' class='googleCalendarTrigger'>
+              <option value='0' ></option>
               {% for d in db_perso %}
                 {% if d.id == perso_id %}
                   <option value="{{ d.id }}" selected='selected'>{{ d.nom }} {{ d.prenom }}</option>
@@ -59,7 +60,7 @@
           <td style='padding-top:15px;'>Journée(s) entière(s) : </td>
           <td style='padding-top:15px;'>
             {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
-              <input type='checkbox' name='allday' class='checkdate' checked='checked'/>
+              <input type='checkbox' name='allday' class='checkdate' checked='checked' />
             {% else %}
               <input type='checkbox' name='allday' class='checkdate'/>
             {% endif %}
@@ -212,9 +213,12 @@
         </td>
       </tr>
 
-      {% if conges_mode == 'heures' or request_type == 'recover' %}
+      {% if conges_mode == 'heures' and hours_per_day is defined %}
         <tr>
-          <td>Nombre de jours (7h/jour) : </td>
+          <td>
+            Nombre de jours ({{ hours_per_day }}h/jour) :
+            <input type='hidden' name='hours_per_day' id='hours_per_day' value = '{{ hours_per_day }}' />
+          </td>
           <td>
             <div id='nbJours' style='padding:0 5px; width:50px;'></div>
           </td>
@@ -274,7 +278,7 @@
                 {% if conges_recuperations == 0 %}
                   <tr>
                     <td style='width:348px;'>Reliquat : </td>
-                    <td style='width:130px;'>{{ reliquat2 }}</td>
+                    <td style='width:130px;'>{{ reliquat2 }} {{ reliquat_jours }}</td>
                     <td>(après débit : <font id='reliquat4'>{{ reliquat2 }}</font>)</td>
                   </tr>
 
@@ -292,13 +296,13 @@
 
                   <tr>
                     <td>Crédit de congés: </td>
-                    <td>{{ credit2 }}</td>
+                    <td>{{ credit2 }} {{ credit_jours }}</td>
                     <td><font id='credit3'>(après débit : <font id='credit4'>{{ credit2 }}</font>)</font></td>
                   </tr>
 
                   <tr>
                     <td>Solde débiteur : </td>
-                    <td>{{ anticipation2 }}</td>
+                    <td>{{ anticipation2 }} {{ anticipation_jours }}</td>
                     <td><font id='anticipation3'>(après débit : <font id='anticipation4'>{{ anticipation2 }}</font>)</font></td>
                   </tr>
 
@@ -306,19 +310,19 @@
                   {% if debit == 'credit' %}
                     <tr>
                       <td style='width:348px;'>Reliquat : </td>
-                      <td style='width:130px;'>{{ reliquat2 }}</td>
+                      <td style='width:130px;'>{{ reliquat2 }} {{ reliquat_jours }}</td>
                       <td>(après débit : <font id='reliquat4'>{{ reliquat2 }}</font>)</td>
                     </tr>
 
                     <tr>
                       <td>Crédit de congés: </td>
-                      <td>{{ credit2 }}</td>
+                      <td>{{ credit2 }} {{ credit_jours }}</td>
                       <td><font id='credit3'>(après débit : <font id='credit4'>{{ credit2 }}</font>)</font></td>
                     </tr>
 
                     <tr>
                       <td>Solde débiteur : </td>
-                      <td>{{ anticipation2 }}</td>
+                      <td>{{ anticipation2 }} {{ anticipation_jours }}</td>
                       <td><font id='anticipation3'>(après débit : <font id='anticipation4'>{{ anticipation2 }}</font>)</font></td>
                     </tr>
                   {% else %}

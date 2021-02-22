@@ -16,11 +16,12 @@ Classe tableau : classe permettant de manipuler les tableaux (recherche, inserti
 Utilisée par les fichiers du dossier "planning/postes_cfg" et le fichier "planning/poste/index.php"
 */
 
+$version = $GLOBALS['version'] ?? null;
 // pas de $version=acces direct aux pages de ce dossier => Accès refusé
 $version = $GLOBALS['version'] ?? null;
 
 if (!isset($version)) {
-    include_once "../../include/accessDenied.php";
+    include_once __DIR__."/../../include/accessDenied.php";
 }
 
 class tableau
@@ -77,6 +78,7 @@ class tableau
     public function fetchAll()
     {
         $db=new db();
+        $db->sanitize_string = false;
         if ($this->supprime) {
             $date=date("Y-m-d H:i:s", strtotime("- 1 year"));
             $db->select2("pl_poste_tab", null, array("supprime"=>">=$date"));
@@ -93,6 +95,7 @@ class tableau
     public function fetchAllGroups()
     {
         $db=new db();
+        $db->sanitize_string = false;
         $db->select2("pl_poste_tab_grp", null, array("supprime"=>null));
         $tab=$db->result;
         if (is_array($tab)) {
@@ -104,6 +107,7 @@ class tableau
     public function fetchGroup($id)
     {
         $db=new db();
+        $db->sanitize_string = false;
         $db->select2("pl_poste_tab_grp", "*", "`id`='$id'");
         $this->elements=$db->result[0];
     }
@@ -117,6 +121,7 @@ class tableau
         $tableaux=array();
         $db=new db();
         $db->select2("pl_poste_horaires", "tableau", array("numero"=>$tableauNumero), "GROUP BY `tableau`");
+        $db->sanitize_string = false;
         if ($db->result) {
             foreach ($db->result as $elem) {
                 $tableaux[]=$elem['tableau'];

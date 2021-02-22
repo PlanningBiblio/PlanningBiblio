@@ -72,7 +72,7 @@
         <tr>
           <td colspan='2' style='text-align:right;'>
             {% if planninghebdo or ics_export %}
-              <a href='{{ asset("index.php?page=monCompte.php") }}' class='myAccountLink'>Mon Compte</a>
+              <a href='{{ asset("/myaccount") }}' class='myAccountLink'>Mon Compte</a>
             {% elseif oups_auth_mode == 'SQL' %}
               <a href='{{ asset("index.php?page=personnel/password.php") }}' class='myAccountLink'>
                 Changer de mot de passe

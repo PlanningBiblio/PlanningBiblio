@@ -264,6 +264,7 @@ $(function(){
       "aaSorting" : sort,
       "aoColumns" : aoCol,
       "sScrollX": scollX,
+      "autoWidth": false,
       "buttons": true,
       "language" : { "url" : jsFileLocation+"/dataTables.french.lang.json" },
       "initComplete": function () {

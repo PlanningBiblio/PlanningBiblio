@@ -31,8 +31,8 @@ $(function() {
   // Paramétrage de la boite de dialogue permettant la modification des motifs
   $("#add-motif-form").dialog({
     autoOpen: false,
-    height: 480,
-    width: 780,
+    height: 600,
+    width: 900,
     modal: true,
     resizable: false,
     draggable: false,
@@ -47,11 +47,13 @@ $(function() {
 	tab=new Array();
 	$("#motifs-sortable li").each(function(){
 	  var id=$(this).attr("id").replace("li_","");
+      var teleworking = $("#teleworking_" + id).prop('checked') ? 1 : 0;
       tab.push(new Array(
         $("#valeur_"+id).text(),
         $(this).index(),
         $("#type_"+id+" option:selected").val(),
         $("#notification-workflow_" + id).val(),
+        teleworking,
       ));
     });
 
@@ -145,13 +147,14 @@ $(function() {
 
     $("#motifs-sortable").append("<li id='li_"+number+"' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>"
       +"<font id='valeur_"+number+"'>"+text+"</font>"
-      +"<select id='type_"+number+"' style='position:absolute;left:330px;'>"
+      +"<select id='type_"+number+"' style='position:absolute;width:170px;left:330px;'>"
       +options
       +"</select>"
-      +"<select id='notification-workflow_"+number+"' style='position:absolute;width:190px;left:500px'>"
+      +"<select id='notification-workflow_"+number+"' style='position:absolute;width:170px;left:510px;'>"
       +options_wf
       +"</select>"
-      +"<span class='ui-icon ui-icon-trash' style='position:relative;left:655px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
+      +"<input type='checkbox' id='teleworking_"+number+"' style='position:absolute; left:700px;' />"
+      +"<span class='ui-icon ui-icon-trash' style='position:relative;left:750px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>"
       +"</li>");
 
     // Reset du champ texte une fois l'ajout effectué

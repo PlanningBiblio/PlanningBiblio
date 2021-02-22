@@ -25,7 +25,7 @@ include "class.tableaux.php";
 $id=filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
 $CSRFToken = filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
 $nombre=filter_input(INPUT_GET, "nombre", FILTER_SANITIZE_NUMBER_INT);
-$nom=filter_input(INPUT_GET, "nom", FILTER_SANITIZE_STRING);
+$nom=filter_input(INPUT_GET, "nom");
 $site=filter_input(INPUT_GET, "site", FILTER_SANITIZE_NUMBER_INT);
 
 // Ajout
@@ -43,6 +43,7 @@ if (!$id) {
     }
   
     $db=new db();
+    $db->sanitize_string = false;
     $db->CSRFToken = $CSRFToken;
     $db->insert("pl_poste_tab", $insert);
 
@@ -63,6 +64,7 @@ else {
 
     $db=new db();
     $db->CSRFToken = $CSRFToken;
+    $db->sanitize_string = false;
     $db->update("pl_poste_tab", array("nom"=>trim($nom)), array("tableau"=>$id));
 
     if ($site) {

@@ -9,7 +9,7 @@ use App\Model\Agent;
 
 include_once(__DIR__ . '/../../../public/joursFeries/class.joursFeries.php');
 include_once __DIR__ . '/../../../public/planningHebdo/class.planningHebdo.php';
-include_once(__diR__ . '/../../../public/include/function.php');
+include_once(__DIR__ . '/../../../public/include/function.php');
 
 class HolidayHelper extends BaseHelper
 {
@@ -125,8 +125,11 @@ class HolidayHelper extends BaseHelper
             }
 
             if($today > 0 && $this->config('Conges-Mode') == 'jours' && !$this->data['is_recover']) {
-                // 14400 = 4h, 12600 = 3,5h, 25200 = 7h
-                $today = $today <= 14400 ? 12600 : 25200;
+                // 3600 = 1h, 12600 = 3,5h, 25200 = 7h
+                // the default time for switching from half-day to full-day is 4 hours (14400 seconds)
+                $switching_time = (float) ($this->config['Conges-fullday-switching-time'] ?? 4);
+                $switching_time = $switching_time * 3600;
+                $today = $today <= $switching_time ? 12600 : 25200;
             }
 
             $per_week[$week_id]['times'] += number_format($today / 3600, 2, '.', '');
@@ -151,9 +154,55 @@ class HolidayHelper extends BaseHelper
         $result['hours'] = $hours_minutes[0];
         $result['minutes'] = isset($hours_minutes[1]) ? $hours_minutes[1] : 0;
         $result['hr_hours'] = heure4($total); // 2.5 => 2h30
-        $result['days'] = round($total / 7, 2);
+
+        $result['days'] = $this->hoursToDays($total, $perso_id);
 
         return $result;
+    }
+
+    public function hoursPerDay($perso_id, $holidays_hours_per_year = null)
+    {
+        if ($this->config('conges-hours-per-day')) {
+            if ($holidays_hours_per_year == null) {
+                $agent = $this->entityManager->find(Agent::class, $perso_id);
+                $holidays_hours_per_year = $agent->conges_annuel();
+            }
+            $intervals = $this->config['conges-hours-per-day'];
+            foreach ($intervals as $hours => $hours_per_day) {
+                if ($holidays_hours_per_year >= $hours) {
+                    return $hours_per_day;
+                }
+            }
+        } else {
+            return 7;
+        }
+        return -1;
+    }
+
+    public function hoursToDays($given_hours, $perso_id, $holidays_hours_per_year = null, $human_readable = false) {
+        if (empty($given_hours) and !$human_readable) { return 0; }
+        if (empty($given_hours) and $human_readable) { return null; }
+
+        $hours_per_day = ($holidays_hours_per_year == null) ? $this->hoursPerDay($perso_id) : $this->hoursPerDay(null, $holidays_hours_per_year);
+
+        $result = round((float) $given_hours / $hours_per_day, 2);
+
+        if ($human_readable) {
+            if (empty($result)) {
+                return null;
+            }
+            return $result  > 1 ? ' / ' . $result . ' jours' : ' / ' . $result . ' jour';
+        }
+
+        return $result;
+    }
+
+    public function showHoursToDays() {
+        if ($this->config('Conges-Mode') != 'heures') {
+            return false;
+        }
+
+        return $this->config('conges-hours-per-day');
     }
 
     private function applyWeekTable($week)
@@ -187,6 +236,10 @@ class HolidayHelper extends BaseHelper
         return 0;
     }
 
+    /** NOTE The getTimes function should be on WeekPlanningHelper.
+     * Jérôme added something similar on WeekPlanningHelper (getTimes($date, $agent = null, $planning = null))
+     * TODO : See if WeekPlanningHelper::getTimes can be used instead of HolidayHelper::getTimes
+     */
     private function getTimes($planning, $date)
     {
         // Sinon, on calcule les heures d'absence
@@ -204,6 +257,10 @@ class HolidayHelper extends BaseHelper
         return $wh->hoursOf($day);
     }
 
+    /** NOTE The getPlanning function should be on WeekPlanningHelper.
+     * Jérôme added something similar on WeekPlanningHelper (getPlanning($date, $agent))
+     * TODO : See if WeekPlanningHelper::getPlanning can be used instead of HolidayHelper::getPlanning
+     */
     private function getPlanning($date)
     {
          // On consulte le planning de présence de l'agent

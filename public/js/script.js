@@ -522,8 +522,10 @@ function resetICSURL(id, CSRFToken, nom){
   }
   
   if(res){
+    var baseURL = $('#baseURL').val();
+
     $.ajax({
-      url: "ics/ajax.resetURL.php",
+      url: baseURL + '/ics/ajax.resetURL.php',
       type: "post",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
@@ -560,7 +562,7 @@ function supprime(page, id, CSRFToken){
     $.ajax({
       url: page+"/ajax.delete.php",
       type: "get",
-      data: "id="+id+"&CSRFToken="+CSRFToken,
+      data: "id="+ encodeURIComponent(id) +"&CSRFToken="+CSRFToken,
       success: function(){
 	window.location.reload(false);
       },

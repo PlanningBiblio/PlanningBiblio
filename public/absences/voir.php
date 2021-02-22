@@ -90,8 +90,8 @@ $finSQL=dateSQL($fin);
 $sites=null;
 if ($config['Multisites-nombre']>1) {
     $sites=array();
-    for ($i=1; $i<11; $i++) {
-        if (in_array((200 + $i), $droits)) {
+    for ($i=1; $i<31; $i++) {
+        if (in_array((200 + $i), $droits) or in_array((500 + $i), $droits)) {
             $sites[]=$i;
         }
     }
@@ -119,13 +119,6 @@ echo "<td style='vertical-align:middle;'><label class='intitule'>Début :</label
 echo "<td style='vertical-align:middle;'><label class='intitule'>Fin :</label> <input type='text' name='fin' value='$fin'  class='datepicker'/></td>\n";
 
 if ($admin) {
-    echo "<td style='vertical-align:middle;text-align:left;'>\n";
-    echo "<span style='padding:5px;'>\n";
-    echo "<label class='intitule'>Agent :</label> ";
-    echo "<select name='perso_id' id='perso_id' class='ui-widget-content ui-corner-all'>";
-    $selected=$perso_id==0?"selected='selected'":null;
-    echo "<option value='0' $selected >Tous</option>";
-  
     $p = new personnel();
     if ($agents_supprimes) {
         $p->supprime = array(0,1);
@@ -133,6 +126,25 @@ if ($admin) {
     $p->responsablesParAgent = true;
     $p->fetch();
     $agents_menu = $p->elements;
+
+    // Filtre pour n'afficher que les agents gérés en configuration multisites
+    if ($config['Multisites-nombre'] > 1) {
+        foreach ($agents_menu as $k => $v) {
+            $keep = false;
+            if (!is_array($v['sites'])) {
+                unset($agents_menu[$k]);
+                continue;
+            }
+            foreach ($v['sites'] as $site) {
+                if (in_array($site, $sites)) {
+                    $keep = true;
+                }
+            }
+            if ($keep == false) {
+                unset($agents_menu[$k]);
+            }
+        }
+    }
 
     // Filtre pour n'afficher que les agents gérés si l'option "Absences-notifications-agent-par-agent" est cochée
     if ($config['Absences-notifications-agent-par-agent'] and !$adminN2) {
@@ -156,6 +168,14 @@ if ($admin) {
 
     // Liste des agents à conserver :
     $perso_ids = array_keys($agents_menu);
+
+    echo "<td style='vertical-align:middle;text-align:left;'>\n";
+    echo "<span style='padding:5px;'>\n";
+    echo "<label class='intitule'>Agent :</label> ";
+    echo "<select name='perso_id' id='perso_id' class='ui-widget-content ui-corner-all'>";
+    $selected = $perso_id == 0 ? "selected='selected'" : null;
+    echo "<option value='0' $selected >Tous</option>";
+  
 
     foreach ($agents_menu as $agent) {
         $selected=$agent['id']==$perso_id?"selected='selected'":null;

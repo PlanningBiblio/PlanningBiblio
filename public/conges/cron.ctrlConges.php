@@ -167,8 +167,8 @@ foreach ($data as $dest) {
     // Affichage de tous les congés non validé le concernant
     $msg.="<ul>\n";
     foreach ($dest as $conge) {
-        $link = $config['URL']."/index.php?page=conges/modif.php&id={$conge['id']}";
-    
+        $link = $config['URL'] . "/holiday/edit/{$conge['id']}";
+
         $msg.="<li style='margin-bottom:15px;'>\n";
         $msg.="<strong>{$conge['nom']} {$conge['prenom']}</strong><br/>\n";
         $msg.="<strong>Du ".dateFr($conge['debut'], true)." &agrave; ".dateFr($conge['fin'], true)."</strong><br/><br/>\n";

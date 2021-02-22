@@ -1,9 +1,19 @@
 # This file gathers the routes and the rights required to access each of them
 # This file is called by the ControllerAuthorization Listener
 
+"account.index":
+    - 100
+"agent.index":
+    - 4
 "ajax.editabsencereasons":
     - 100
+"ajax.holidaycredit":
+    - 100
 "ajax.holidaydelete":
+    - 100
+"ajax.holiday-halfday-hours":
+    - 100
+"ajax.holidays-hours-to-days":
     - 100
 "ajax.changepassword":
     - 21
@@ -11,7 +21,45 @@
     - 100
 "ajax.mailtest":
     - 100
-"ajax.holidaycredit":
+"framework.index":
+    - 22
+"framework.add_table":
+    - 22
+"framework.edit_table":
+    - 22
+"framework.save_table":
+    - 22
+"framework.add_group":
+    - 22
+"framework.edit_group":
+    - 22
+"framework.save_group":
+    - 22
+"framework.delete_group":
+    - 22
+"framework.add_line":
+    - 22
+"framework.edit_line":
+    - 22
+"framework.save_line":
+    - 22
+"notification.index":
+    - 21
+"notification.save":
+    - 21
+"statistics.index":
+    - 17
+"workinghour.index":
+    - 1101
+    - 1201
+"workinghour.add":
+    - 100
+"workinghour.edit":
+    - 100
+"workinghour.save":
     - 100
 "ajax.holiday.absence.control":
     - 100
+"workinghour.delete":
+    - 1101
+    - 1201
