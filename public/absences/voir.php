@@ -61,6 +61,11 @@ if ($admin) {
     if ($perso_id===null) {
         $perso_id=isset($_SESSION['oups']['absences_perso_id'])?$_SESSION['oups']['absences_perso_id']:$_SESSION['login_id'];
     }
+    
+    if($_SESSION['page'] == null and $_SERVER['REQUEST_URI']== "/index.php?page=absences/voir.php"){
+        $perso_id = 0;
+    }
+
 } else {
     $perso_id=$_SESSION['login_id'];
 }
