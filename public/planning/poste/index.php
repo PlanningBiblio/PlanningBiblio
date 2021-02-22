@@ -609,7 +609,7 @@ if (!$verrou and !$autorisationN1) {
         $colspan=0;
         foreach ($tab['horaires'] as $horaires) {
             $non_places = '';
-            if ($config['Planning-AfficheAgentsDisponibles']) {
+            if ($config['Planning-AfficheAgentsDisponibles'] && $j == 0) {
                 if (!get_config('Planning-AfficheAgentsDisponibles-site') || $site == $config['Planning-AfficheAgentsDisponibles-site']) {
                     $service = null;
                     if (get_config('Planning-AfficheAgentsDisponibles-service')) {
