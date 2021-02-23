@@ -1,0 +1,61 @@
+{# planning/poste/framework_select.html.twig #}
+
+{% if frameworks %}
+  <div id='choix_tableaux'>
+    <b>Choisissez un tableau pour le {{ date | datefull | raw }}</b><br/>
+    <form name='form' action='index.php' method='get'>
+      <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
+      <input type='hidden' name='page' value='planning/poste/index.php' />
+      <input type='hidden' name='site' value='{{ site }}' />
+
+      <table>
+        <tr>
+          <td>Choix d'un tableau : </td>
+          <td>
+            <select name='tableau' class='ui-widget-content ui-corner-all'>
+              <option value=''>&nbsp;</option>
+                {% for framework in frameworks %}
+                  {% if framework.site == site %}
+                    <option value='{{ framework.tableau }}'>{{ framework.nom }}</option>
+                  {% endif %}
+                {% endfor %}
+            </select>
+          </td>
+
+          <td>
+            <input type='submit' value='Valider' class='ui-button' />
+          </td>
+        </tr>
+      </table>
+    </form>
+
+    {% if no_week_planning and groups %}
+      <br/><br/><b>OU un groupe de tableaux pour la semaine {{ week }}</b><br/>
+      <form name='form' action='index.php' method='get'>
+        <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
+        <input type='hidden' name='page' value='planning/poste/index.php' />
+        <input type='hidden' name='site' value='{{ site }}' />
+
+        <table>
+          <tr>
+            <td>Choix d'un groupe : </td>
+            <td>
+              <select name='groupe' class='ui-widget-content ui-corner-all'>
+                <option value=''>&nbsp;</option>
+                {% for group in groups %}
+                  {% if group.site == site or config('Multisites-nombre') < 2 %}
+                    <option value='{{ group.id }}'>{{ group.nom }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </td>
+
+            <td>
+              <input type='submit' value='Valider' class='ui-button' />
+            </td>
+          </tr>
+        </table>
+      </form>
+    {% endif %}
+  </div>
+{% endif %}

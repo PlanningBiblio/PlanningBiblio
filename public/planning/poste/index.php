@@ -220,63 +220,27 @@ echo $twig->render('planning/poste/menu.html.twig',
 
 //		---------------		FIN Affichage du titre et du calendrier		--------------------------//
 //		---------------		Choix du tableau	-----------------------------//
+//
 $db=new db();
 $db->select2("pl_poste_tab_affect", "tableau", array("date"=>$date, "site"=>$site));
 
 if (!isset($db->result[0]['tableau']) and !$tableau and !$groupe and $autorisationN2) {
     $db=new db();
     $db->select2("pl_poste_tab", "*", array("supprime"=>null), "order by `nom` DESC");
-    if ($db->result) {
-        echo <<<EOD
-    <div id='choix_tableaux'>
-    <b>Choisissez un tableau pour le $dateAlpha</b><br/>
-    <form name='form' action='index.php' method='get'>
-    <input type='hidden' name='CSRFToken' value='$CSRFSession' />
-    <input type='hidden' name='page' value='planning/poste/index.php' />
-    <input type='hidden' name='site' value='$site' />
-    <table>
-    <tr><td>Choix d'un tableau : </td>
-      <td>
-      <select name='tableau' class='ui-widget-content ui-corner-all'>
-      <option value=''>&nbsp;</option>
-EOD;
-        foreach ($db->result as $elem) {
-            if ($elem['site']==$site or $config['Multisites-nombre']<2) {
-                echo "<option value='{$elem['tableau']}'>{$elem['nom']}</option>\n";
-            }
-        }
-        echo <<<EOD
-      </select></td>
-      <td><input type='submit' value='Valider' class='ui-button' /></td></tr>
-    </table>
-    </form>
-EOD;
-        if ($pasDeDonneesSemaine and $groupes) {
-            echo <<<EOD
-      <br/><br/><b>OU un groupe de tableaux pour la semaine $semaine</b><br/>
-      <form name='form' action='index.php' method='get'>
-      <input type='hidden' name='CSRFToken' value='$CSRFSession' />
-      <input type='hidden' name='page' value='planning/poste/index.php' />
-      <input type='hidden' name='site' value='$site' />
-      <table>
-      <tr><td>Choix d'un groupe : </td>
-	<td><select name='groupe' class='ui-widget-content ui-corner-all'>
-	<option value=''>&nbsp;</option>
-EOD;
-            foreach ($groupes as $elem) {
-                if ($elem['site']==$site or $config['Multisites-nombre']<2) {
-                    echo "<option value='{$elem['id']}'>{$elem['nom']}</option>\n";
-                }
-            }
-            echo <<<EOD
-	</select></td>
-	<td><input type='submit' value='Valider' class='ui-button' /></td></tr>
-      </table>
-      </form>
-EOD;
-        }
-    }
-    echo "</div>\n";
+    $frameworks = $db->result;
+
+    echo $twig->render('planning/poste/framework_select.html.twig',
+        array(
+            'date' => $date,
+            'site' => $site,
+            'frameworks' => $frameworks,
+            'CSRFSession' => $CSRFSession,
+            'no_week_planning' => $pasDeDonneesSemaine,
+            'groups' => $groupes,
+            'week' => $semaine,
+        )
+    );
+
     if ($config['Planning-CommentairesToujoursActifs']) {
         include "comment.php";
     }
