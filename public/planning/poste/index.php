@@ -58,13 +58,6 @@ $semaine3=$d->semaine3;
 $jour=$d->jour;
 $dates=$d->dates;
 $datesSemaine=join(",", $dates);
-$j1=$dates[0];
-$j2=$dates[1];
-$j3=$dates[2];
-$j4=$dates[3];
-$j5=$dates[4];
-$j6=$dates[5];
-$j7=$dates[6];
 $dateAlpha=dateAlpha($date);
 
 $_SESSION['oups']['week']=false;
@@ -102,16 +95,15 @@ $autorisationNotes = (in_array((300+$site), $droits) or in_array((800+$site), $d
 //		-----------------		FIN Vérification des droits de modification (Autorisation)	----------//
 
 //		---------------		changement de couleur du menu et de la periode en fonction du jour sélectionné	---------//
-$class=array('menu','menu','menu','menu','menu','menu','menu','menu');
 
 switch ($jour) {
-  case "lun":	$jour3="Lundi";		$periode2='semaine';	$class[0]='menuRed';	break;
-  case "mar":	$jour3="Mardi";		$periode2='semaine';	$class[1]='menuRed';	break;
-  case "mer":	$jour3="Mercredi";	$periode2='semaine';	$class[2]='menuRed';	break;
-  case "jeu":	$jour3="Jeudi";		$periode2='semaine';	$class[3]='menuRed';	break;
-  case "ven":	$jour3="Vendredi";	$periode2='semaine';	$class[4]='menuRed';	break;
-  case "sam":	$jour3="Samedi";	$periode2='samedi';	$class[5]='menuRed';	break;
-  case "dim":	$jour3="Dimanche";	$periode2='samedi';	$class[6]='menuRed';	break;
+  case "lun":	$jour3="Lundi";		$periode2='semaine';	break;
+  case "mar":	$jour3="Mardi";		$periode2='semaine';	break;
+  case "mer":	$jour3="Mercredi";	$periode2='semaine';	break;
+  case "jeu":	$jour3="Jeudi";		$periode2='semaine';	break;
+  case "ven":	$jour3="Vendredi";	$periode2='semaine';	break;
+  case "sam":	$jour3="Samedi";	$periode2='samedi';	    break;
+  case "dim":	$jour3="Dimanche";	$periode2='samedi';	    break;
 }
     
 //-----------------------------			Verrouillage du planning			-----------------------//
@@ -145,64 +137,12 @@ if ($db->result) {
     $messages_infos=join($messages_infos, " - ");
 }
 
-//		---------------		Affichage du titre et du calendrier	--------------------------//
-echo "<div id='divcalendrier' class='text'>\n";
-
-echo "<form name='form' method='get' action='#'>\n";
-echo "<input type='hidden' id='date' name='date' value='$date' data-set-calendar='$date' />\n";
-echo "<input type='hidden' id='site' name='date' value='$site' />\n";
-echo "</form>\n";
-
-echo "<table id='tab_titre'>\n";
-echo "<tr><td><div class='noprint'>\n";
-?>
-<div id='pl-calendar' class='datepicker'></div>
-<?php
-echo "</div></td><td class='titreSemFixe'>\n";
-echo "<div class='noprint'>\n";
 
 switch ($config['nb_semaine']) {
   case 2:	$type_sem=$semaine%2?"Impaire":"Paire";	$affSem="$type_sem ($semaine)";	break;
   case 3: 	$type_sem=$semaine3;			$affSem="$type_sem ($semaine)";	break;
   default:	$affSem=$semaine;	break;
 }
-echo "<b>Semaine $affSem</b>\n";
-echo "</div>";
-echo "<div id='semaine_planning'><b>Du ".dateFr($j1)." au ".dateFr($j7)."</b>\n";
-echo "</div>\n";
-echo "<div id='date_planning'>Planning du $dateAlpha";
-if (jour_ferie($date)) {
-    echo " - <font id='ferie'>".jour_ferie($date)."</font>";
-}
-echo <<<EOD
-  </div>
-  <table class='noprint' id='tab_jours'><tr valign='top'>
-    <td><a href='index.php?date=$j1'  class='{$class[0]}' >Lundi</a> / </td>
-    <td><a href='index.php?date=$j2'  class='{$class[1]}' >Mardi</a> / </td>
-    <td><a href='index.php?date=$j3'  class='{$class[2]}' >Mercredi</a> / </td>
-    <td><a href='index.php?date=$j4'  class='{$class[3]}' >Jeudi</a> / </td>
-    <td><a href='index.php?date=$j5'  class='{$class[4]}' >Vendredi</a> / </td>
-    <td><a href='index.php?date=$j6'  class='{$class[5]}' >Samedi</a></td>
-EOD;
-if ($config['Dimanche']) {
-    echo "<td align='center'> / <a href='index.php?date=$j7'  class='".$class[6]."' >Dimanche</a> </td>";
-}
-
-echo "<td> / <a href='index.php?page=planning/poste/semaine.php' class='{$class[7]}' >Semaine</a></td>\n";
-
-echo "</tr></table>";
-  
-if ($config['Multisites-nombre']>1) {
-    echo "<h3 id='h3-Multisites'>{$config['Multisites-site'.$site]}</h3>";
-}
-//	---------------------		Affichage des messages d'informations		-----------------//
-echo "<div id='messages_infos'>\n";
-echo "<marquee>\n";
-echo $messages_infos;
-echo "</marquee>\n";
-echo "</div>";
-
-echo "</td><td id='td_boutons'>\n";
 
 //	----------------------------	Récupération des postes		-----------------------------//
 // $postes will also be used in the cellule_poste function. Using a global variable will avoid multiple access to the database and enhance performances
@@ -259,43 +199,24 @@ if ($db->result) {
 
 //	-----------------------		FIN Récupération des postes	-----------------------------//
 
-// Vérifie si Catégorie A en fin de service si admin et config CatAFinDeService
-if ($autorisationN1 and $config['CatAFinDeService']) {
-    echo "<div id='pl-verif-categorie-A'></div>\n";
-}
 
-echo "<div id='validation'>\n";
-if ($autorisationN1) {
-    $display1=$verrou?null:"display:none";
-    $display2=$verrou?"display:none":null;
-
-    echo "<div class='pl-validation' style='$display1'><u>Validation</u><br/>$perso2 $date_validation2 $heure_validation2</div>\n";
-    echo "<span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning' style='$display1'></span></a>\n";
-    echo "<span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning' style='$display2'></span></a>\n";
-}
-
-if ($autorisationN2) {
-    echo "<a href='javascript:popup(\"planning/poste/enregistrer.php&date=$date&site=$site&CSRFToken=$CSRFSession\",500,240);' title='Enregistrer comme modèle'><span class='pl-icon pl-icon-save'></span></a>";
-    if (!$verrou) {
-        echo "<a href='javascript:popup(\"planning/poste/importer.php&date=$date&site=$site\",500,270);' title='Importer un modèle'><span class='pl-icon pl-icon-open'></span></a>";
-        echo "<a href='javascript:popup(\"planning/poste/supprimer.php&date=$date&site=$site\",500,200);' title='Supprimer le planning'><span class='pl-icon pl-icon-drop'></span></a>";
-    }
-}
-if ($verrou) {
-    if (!$autorisationN1) {
-        echo "<div class='pl-validation'><u>Validation</u><br/>$perso2 $date_validation2 $heure_validation2</div>\n";
-    }
-    echo "<a href='javascript:print();' title='Imprimer le planning'><span class='pl-icon pl-icon-printer'></span></a>\n";
-}
-
-echo "<a href='index.php?date=$date&amp;site=$site' title='Actualiser'><span class='pl-icon pl-icon-refresh'></a>\n";
-echo "</div>\n";
-
-echo "<div id='planningTips'>&nbsp;</div>";
-echo "</td></tr>\n";
-
-//----------------------	FIN Verrouillage du planning		-----------------------//
-echo "</table></div>\n";
+// Show planning's menu
+// (Calendar widget, days, week and action icons)
+echo $twig->render('planning/poste/menu.html.twig',
+    array(
+        'date' => $date, 'dates' => $dates, 'site' => $site,
+        'affSem' => $affSem,
+        'day' => $jour,
+        'public_holiday' => jour_ferie($date),
+        'messages_infos' => $messages_infos,
+        'locked' => $verrou,
+        'perso2' => $perso2,
+        'date_validation2' => $date_validation2,
+        'heure_validation2' => $heure_validation2,
+        'CSRFSession' => $CSRFSession,
+        'week_view' => 0,
+    )
+);
 
 //		---------------		FIN Affichage du titre et du calendrier		--------------------------//
 //		---------------		Choix du tableau	-----------------------------//

@@ -15,6 +15,7 @@ class AppExtension extends AbstractExtension
    public function getFilters()
     {
         return [
+            new TwigFilter('datefull', [$this, 'dateFull']),
         ];
     }
 
@@ -22,7 +23,32 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFunction('config', [$this, 'getConfig']),
+            new TwigFunction('siteName', [$this, 'siteName']),
+            new TwigFunction('userCan', [$this, 'userCan']),
         ];
+    }
+
+    public function dateFull($date)
+    {
+        return dateAlpha($date);
+    }
+
+    public function userCan($right, $site = 1)
+    {
+        $droits = $GLOBALS['droits'];
+
+        return in_array( $right + $site, $droits );
+    }
+
+    public function siteName($site = 1)
+    {
+        $config = $GLOBALS['config'];
+
+        if (!empty($config['Multisites-site' . $site])) {
+            return $config['Multisites-site' . $site];
+        }
+
+        return '';
     }
 
     public function getConfig($key = null)
