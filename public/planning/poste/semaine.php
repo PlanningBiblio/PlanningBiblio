@@ -48,13 +48,6 @@ $semaine=$d->semaine;
 $semaine3=$d->semaine3;
 $jour=$d->jour;
 $dates=$d->dates;
-$j1=$dates[0];
-$j2=$dates[1];
-$j3=$dates[2];
-$j4=$dates[3];
-$j5=$dates[4];
-$j6=$dates[5];
-$j7=$dates[6];
 $dateAlpha=dateAlpha($date);
 
 $_SESSION['oups']['week']=true;
@@ -101,59 +94,11 @@ if ($db->result) {
 global $absence_reasons;
 $absence_reasons = $entityManager->getRepository(AbsenceReason::class);
 
-//		---------------		Affichage du titre et du calendrier	--------------------------//
-echo "<div id='planning-semaine'>\n";
-echo "<div id='divcalendrier' class='text'>\n";
-
-echo "<form name='form' method='get' action='#'>\n";
-echo "<input type='hidden' id='date' name='date' data-set-calendar='$date' />\n";
-echo "</form>\n";
-
-echo "<table id='tab_titre'>\n";
-echo "<tr><td><div class='noprint'>\n";
-?>
-<div id='pl-calendar' class='datepicker datepickerSemaine'></div>
-<?php
-echo "</div></td><td class='titreSemFixe'>\n";
-echo "<div class='noprint'>\n";
-
 switch ($config['nb_semaine']) {
   case 2:	$type_sem=$semaine%2?"Impaire":"Paire";	$affSem="$type_sem ($semaine)";	break;
   case 3: 	$type_sem=$semaine3;			$affSem="$type_sem ($semaine)";	break;
   default:	$affSem=$semaine;	break;
 }
-echo "<b>Semaine $affSem</b>\n";
-echo "</div>";
-echo "<div id='semaine_planning'<b>Du ".dateFr($j1)." au ".dateFr($j7)."</b>\n";
-echo "</div>\n";
-echo <<<EOD
-  <table class='noprint' id='tab_jours'><tr valign='top'>
-    <td><a href='index.php?date=$j1' class='menu' >Lundi</a> / </td>
-    <td><a href='index.php?date=$j2' class='menu' >Mardi</a> / </td>
-    <td><a href='index.php?date=$j3' class='menu' >Mercredi</a> / </td>
-    <td><a href='index.php?date=$j4' class='menu' >Jeudi</a> / </td>
-    <td><a href='index.php?date=$j5' class='menu' >Vendredi</a> / </td>
-    <td><a href='index.php?date=$j6' class='menu' >Samedi</a></td>
-EOD;
-if ($config['Dimanche']) {
-    echo "<td align='center'> / <a href='index.php?date=$j7' class='menu' >Dimanche</a> </td>";
-}
-
-echo "<td> / <a href='index.php?page=planning/poste/semaine.php' class='menuRed' >Semaine</a></td>\n";
-
-echo "</tr></table>";
-  
-if ($config['Multisites-nombre']>1) {
-    echo "<h3 id='h3-Multisites'>{$config['Multisites-site'.$site]}</h3>";
-}
-//	---------------------		Affichage des messages d'informations		-----------------//
-echo "<div id='messages_infos'>\n";
-echo "<marquee>\n";
-echo $messages_infos;
-echo "</marquee>\n";
-echo "</div>";
-
-echo "</td><td id='td_boutons'>\n";
 
 //	----------------------------	Récupération des postes		-----------------------------//
 // $postes will also be used in the cellule_poste function. Using a global variable will avoid multiple access to the database and enhance performances
@@ -209,13 +154,19 @@ if ($db->result) {
 
 //	-----------------------		FIN Récupération des postes	-----------------------------//
 
-echo "<a href='javascript:print();' title='Imprimer le planning'><span class='pl-icon pl-icon-printer'></span></a>\n";
-echo "<a href='index.php' title='Actualiser'><span class='pl-icon pl-icon-refresh'></a>\n";
-echo "<div id='planningTips'>&nbsp;</div>";
-echo "</td></tr>\n";
-
-//----------------------	FIN Verrouillage du planning		-----------------------//
-echo "</table></div>\n";
+// Show planning's menu
+// (Calendar widget, days, week and action icons)
+echo $twig->render('planning/poste/menu.html.twig',
+    array(
+        'date' => '', 'dates' => $dates, 'site' => $site,
+        'affSem' => $affSem,
+        'day' => $jour,
+        'public_holiday' => jour_ferie($date),
+        'messages_infos' => $messages_infos,
+        'CSRFSession' => $CSRFSession,
+        'week_view' => 1,
+    )
+);
 
 // div id='tabsemaine1' : permet d'afficher les tableaux masqués. La fonction JS afficheTableauxDiv utilise $('#tabsemaine1').after() pour afficher les liens de récupération des tableaux
 echo "<div id='tabsemaine1' style='display:none;'>&nbsp;</div>\n";

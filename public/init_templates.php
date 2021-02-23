@@ -15,8 +15,11 @@
  *   des variables de template,
  */
 
+use App\Twig\AppExtension;
+
 $loader = new Twig_Loader_Filesystem(__DIR__.'/../templates');
 $twig = new Twig_Environment($loader);
+$twig->addExtension(new App\Twig\AppExtension());
 
 $templates_params = array(
     'version'             => $version,

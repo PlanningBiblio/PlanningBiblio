@@ -1,0 +1,131 @@
+{# planning/poste/date-menu.html.twig #}
+
+<!-- Show title and calendar widgets -->
+<div id='divcalendrier' class='text'>
+  <form name='form' method='get' action='#'>
+    <input type='hidden' id='date' name='date' value='{{ date }}' data-set-calendar='{{ date }}' />
+    <input type='hidden' id='site' name='date' value='{{ site }}' />
+  </form>
+
+  <table id='tab_titre'>
+    <tr>
+      <td>
+        <div class='noprint'>
+          <div id='pl-calendar' class="datepicker {{ week_view ? 'datepickerSemaine' }}"></div>
+        </div>
+      </td>
+
+      <td class='titreSemFixe'>
+        <div class='noprint'>
+          <b>Semaine {{ affSem }}</b>
+        </div>
+
+        <div id='semaine_planning'>
+          <b>Du {{ dates[0] | date("d/m/Y") }} au {{ dates[6] | date("d/m/Y")}}.</b>
+        </div>
+
+        {% if not week_wiew %}
+          <div id='date_planning'>
+            Planning du {{ date | datefull | raw }}
+            {% if public_holiday %}
+              <font id='ferie'>{{ public_holiday }}</font>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        <table class='noprint' id='tab_jours'>
+          <tr valign='top'>
+            <td><a href='index.php?date={{ dates[0] }}'  class="{{ date == dates[0] ? 'menuRed' : 'menu' }}" >Lundi</a> / </td>
+            <td><a href='index.php?date={{ dates[1] }}'  class="{{ date == dates[1] ? 'menuRed' : 'menu' }}" >Mardi</a> / </td>
+            <td><a href='index.php?date={{ dates[2] }}'  class="{{ date == dates[2] ? 'menuRed' : 'menu' }}" >Mercredi</a> / </td>
+            <td><a href='index.php?date={{ dates[3] }}'  class="{{ date == dates[3] ? 'menuRed' : 'menu' }}" >Jeudi</a> / </td>
+            <td><a href='index.php?date={{ dates[4] }}'  class="{{ date == dates[4] ? 'menuRed' : 'menu' }}" >Vendredi</a> / </td>
+            <td><a href='index.php?date={{ dates[5] }}'  class="{{ date == dates[5] ? 'menuRed' : 'menu' }}" >Samedi</a></td>
+            {% if config('Dimanche') %}
+            <td align='center'> / <a href='index.php?date={{ dates[6] }}'  class="{{ date == dates[6] ? 'menuRed' : 'menu' }}" >Dimanche</a> </td>
+            {% endif %}
+            <td> / <a href='index.php?page=planning/poste/semaine.php' class="{{ week_view ?'menuRed' : 'menu' }}" >Semaine</a></td>
+          </tr>
+        </table>
+
+        {% if config('Multisites-nombre') > 1 %}
+          <h3 id='h3-Multisites'>{{ siteName(site) }}</h3>
+        {% endif %}
+
+        <!-- Show informations -->
+        <div id='messages_infos'>
+          <marquee>
+            {{ messages_infos }}
+          </marquee>
+        </div>
+
+      </td>
+
+      <!-- Show action icons -->
+      <td id='td_boutons'>
+        {% if week_view %}
+          <a href='javascript:print();' title='Imprimer le planning'>
+            <span class='pl-icon pl-icon-printer'></span>
+          </a>
+
+          <a href='index.php' title='Actualiser'>
+            <span class='pl-icon pl-icon-refresh'>
+          </a>
+
+          <div id='planningTips'>&nbsp;</div>
+        {% else %}
+          {% if ( userCan('300', site) or userCan('1000' + site) ) and config('CatAFinDeService') %}
+            <div id='pl-verif-categorie-A'></div>
+          {% endif %}
+
+          <div id='validation'>
+            {% if userCan('300', site) or userCan('1000' + site) %}
+              <div class='pl-validation' style="{{ locked ?: 'display:none'}}">
+                  <u>Validation</u><br/>
+                  {{ perso2 }} {{ date_validation2 }} {{ heure_validation2 }}
+              </div>
+
+              <span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning' style="{{ locked ?: 'display:none'}}"></span></a>
+
+              <span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning' style="{{ locked ? 'display:none'}}"></span></a>
+            {% endif %}
+
+            {% if userCan('300', site) %}
+              <a href='javascript:popup("planning/poste/enregistrer.php&date={{ date }}&site={{ site }}&CSRFToken={{ CSRFSession}}",500,240);' title='Enregistrer comme modèle'>
+                <span class='pl-icon pl-icon-save'></span>
+              </a>
+
+              {% if not locked %}
+                <a href='javascript:popup("planning/poste/importer.php&date={{ date }}&site={{ site }}",500,270);' title='Importer un modèle'>
+                  <span class='pl-icon pl-icon-open'></span>
+                </a>
+
+                <a href='javascript:popup("planning/poste/supprimer.php&date={{ date }}&site={{ site }}",500,200);' title='Supprimer le planning'>
+                  <span class='pl-icon pl-icon-drop'></span>
+                </a>
+              {% endif %}
+            {% endif %}
+
+            {% if locked %}
+              {% if userCan('300', site) == false and userCan('1000' + site) == false %}
+                <div class='pl-validation'>
+                  <u>Validation</u><br/>
+                  {{ perso2 }} {{ date_validation2 }} {{ heure_validation2 }}
+                </div>
+              {% endif %}
+              <a href='javascript:print();' title='Imprimer le planning'>
+                <span class='pl-icon pl-icon-printer'></span>
+              </a>
+            {% endif %}
+
+            <a href='index.php?date={{ date }}&amp;site={{ site }}' title='Actualiser'>
+              <span class='pl-icon pl-icon-refresh'>
+            </a>
+          </div>
+
+          <div id='planningTips'>&nbsp;</div>
+        {% endif %}
+      </td>
+    </tr>
+  </table>
+</div>
