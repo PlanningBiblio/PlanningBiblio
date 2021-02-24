@@ -1,10 +1,16 @@
 *** Unreleased ***
+
+*** Version 20.10.05       (2021-02-24)   ***
 - Enhancements
 Add a param to define the switching time between half-day and full-day
 Absences for remote working ability
 
 -Fixes
 Handle quotes in skills batch modification
+Correctly retrieve URL in HolidayController
+Don't process holidays halfday checking if holidays are in hours
+Conditionally start session in ini_ajax.php
+Restore right for self-removing in absence edition
 
 *** Version 20.10.04       (2021-02-15)   ***
 -Fixes
