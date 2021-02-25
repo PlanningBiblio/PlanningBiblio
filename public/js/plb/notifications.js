@@ -1,12 +1,9 @@
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : notifications/js/notifications.js
-Création : 15 janvier 2018
-Dernière modification : 25 janvier 2018
+@file public/js/plb/notifications.js
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -65,9 +62,11 @@ $(function() {
         
         notifications = JSON.stringify(tab);
 
+        var baseURL = $('#baseURL').val();
+
         // Enregistrement dans la base de données
         $.ajax({
-          url: "/notification",
+          url: baseURL + "/notification",
           type: "post",
           datatype: "json",
           data: {agents: agents, responsables: responsables, notifications: notifications, CSRFToken: $('#CSRFToken').val()},
