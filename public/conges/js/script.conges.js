@@ -374,9 +374,11 @@ function verifConges(){
   var hre_fin=$("#hre_fin_select").val();
   var perso_id=$("#perso_id").val();
   var id=$("#id").val();
-  if(hre_fin==""){
-    hre_fin="23:59:59";
-  }
+  hre_debut=hre_debut?hre_debut:"00:00:00";
+  hre_fin=hre_fin?hre_fin:"23:59:59";
+  debut=debut+" "+hre_debut;
+  fin=fin+" "+hre_fin;
+
   // Vérifions si les dates sont correctement saisies
   if($("#debut").val()==""){
     information("Veuillez choisir la date de début","error");
@@ -384,7 +386,7 @@ function verifConges(){
   }
 
   // Vérifions si les dates sont cohérentes
-  if(debut+" "+hre_debut >= fin+" "+hre_fin){
+  if (debut >= fin) {
     information("La date de fin doit être supérieure à la date de début","error");
     return false;
   }
@@ -404,16 +406,72 @@ function verifConges(){
     }
   }
 
+  var baseURL = $('#baseURL').val();
+  if (baseURL == undefined) {
+      baseURL = '';
+  }
+
   // Vérifions si un autre congé a été demandé ou validé
   var result=$.ajax({
-    url: '/conges/ajax.verifConges.php',
+    url: baseURL + "/ajax/holiday-absence-control",
     type: "get",
-    data: "perso_id="+perso_id+"&debut="+debut+"&fin="+fin+"&hre_debut="+hre_debut+"&hre_fin="+hre_fin+"&id="+id,
+    dataType: "json",
+    data: {perso_ids: JSON.stringify([perso_id]), debut: debut, fin: fin, id: id, type:'holiday'},
     async: false,
-    success: function(data){
-      if(data.trim() != "Pas de congé"){
-        information("Un congé a déjà été demandé " + data,"error");
-      }else{
+    success: function(result){
+      var valid = true;
+      var admin = result['admin'];
+
+      for (i in result['users']) {
+        if (result['users'][i]['holiday'] != undefined) {
+          CJInfo("Un congé a déjà été demandé " + result['users'][i]['holiday'], "error");
+          valid = false;
+        }
+      }
+
+      if (result['planning_started'] && valid == true) {
+        if (admin == true) {
+          if (!confirm("Vous essayer d'enregistrer un congé sur des plannings en cours d'élaboration : "+result["planning_started"]+"\nVoulez-vous continuer ?")) {
+            valid = false;
+          }
+        } else {
+          CJInfo("Vous ne pouvez pas enregistrer d'absences pour les dates suivantes car les plannings sont en cours d'élaboration :#BR#"+result["planning_started"], "error");
+          valid = false;
+        }
+      }
+
+      // Contrôle si les agents apparaissent dans des plannings validés
+      // Pour chaque agent
+      if (valid == true) {
+        var planning_validated = [];
+        for (i in result['users']) {
+          if(result['users'][i]["planning_validated"]){
+            planning_validated.push("\n- " + result['users'][i]['nom'] + "\n-- " + result['users'][i]['planning_validated'].replace(';', "\n-- "));
+          }
+        }
+
+        if (planning_validated.length) {
+          if (planning_validated.length == 1) {
+            var message = "L'agent suivant apparaît dans des plannings validés :";
+            message += planning_validated[0];
+          } else if (planning_validated.length > 1) {
+            var message = "Les agents suivants apparaissent dans des plannings validés :";
+            for (i in planning_validated) {
+              message += planning_validated[i];
+            }
+          }
+
+        if(admin == true){
+          if(!confirm(message +"\nVoulez-vous continuer ?"))
+            valid = false;
+          } else {
+            CJInfo("Vous ne pouvez pas enregsitrer de congés car " + message.replace("\n", "#BR#"), "error");
+            valid = false;
+          }
+        }
+      }
+
+      if (valid == true) {
         $("#form").submit();
       }
     },

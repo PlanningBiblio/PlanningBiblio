@@ -866,29 +866,30 @@ function verif_absences(ctrl_form){
   debut=debut+" "+hre_debut;
   fin=fin+" "+hre_fin;
 
-  var admin=$("#admin").val();
   var retour=true;
+  var baseURL = $('#baseURL').val();
 
   $.ajax({
-    url: "/absences/ajax.control.php",
+    url: baseURL + "/ajax/holiday-absence-control",
     type: "get",
     datatype: "json",
-    data: {perso_ids: JSON.stringify(perso_ids), id: id, groupe: groupe, debut: debut, fin: fin},
+    data: {perso_ids: JSON.stringify(perso_ids), id: id, groupe: groupe, debut: debut, fin: fin, type:'absence'},
     async: false,
     success: function(result){
       result=JSON.parse(result);
+      var admin = result['admin'];
 
       // Contrôle si d'autres absences sont enregistrées
       autresAbsences = new Array();
 
       // Pour chaque agent
-      for(i in result){
+      for(i in result['users']){
         // Contrôle si d'autres absences sont enregistrées
-        if(result[i]["autresAbsences"] && result[i]["autresAbsences"].length){
-          autresAbsences.push(result[i]);
+        if(result['users'][i]["autresAbsences"] && result['users'][i]["autresAbsences"].length){
+          autresAbsences.push(result['users'][i]);
         }
       }
-      
+
       if(autresAbsences.length == 1){
         if(autresAbsences[0]["autresAbsences"].length == 1){
           var message = "Une absence est déjà enregistrée pour l'agent "+autresAbsences[0]["nom"]+" "+autresAbsences[0]["autresAbsences"][0]+"\nVoulez-vous continuer ?";
@@ -919,35 +920,47 @@ function verif_absences(ctrl_form){
         }
       }
 
-      // Contrôle si les agents apparaissent dans des plannings validés
-      // Pour chaque agent
-      for(i in result){
-	if(result[i]["planning"]){
-	  if(admin==1){
-	    if(!confirm("L'agent "+result[i]["nom"]+" apparaît dans des plannings validés : "+result[i]["planning"]+"\nVoulez-vous continuer ?")){
-	      retour=false;
-	    }
-	  }
-	  else{
-	    CJInfo("Vous ne pouvez pas ajouter d'absences pour les dates suivantes<br/>car les plannings sont validés : "+result[i]["planning"]+"<br/>Veuillez modifier vos dates ou contacter le responsable du planning","error");
-	    retour=false;
-	  }
-	}
+      // Contrôle si des plannings sont en cours d'élaboration
+      if(result["planning_started"] && retour == true){
+        if(admin == true){
+          if(!confirm("Vous essayer de placer une absence sur des plannings en cours d'élaboration : "+result["planning_started"]+"\nVoulez-vous continuer ?")){
+            retour=false;
+          }
+        } else {
+          CJInfo("Vous ne pouvez pas enregistrer d'absences pour les dates suivantes car les plannings sont en cours d'élaboration :#BR#"+result["planning_started"], "error");
+          retour=false;
+        }
       }
 
-      // Contrôle si des plannings sont en cours d'élaboration
-      if(result["planningsEnElaboration"]){
-	if(admin==1){
-	  if(!confirm("Vous essayer de placer une absence sur des plannings en cours d'élaboration : "+result["planningsEnElaboration"]+"\nVoulez-vous continuer ?")){
-	    retour=false;
-	  }
-	}
-	else{
-	  CJInfo("Vous essayez de placer une absence sur des plannings en cours d'élaboration : "+result["planningsEnElaboration"],"error");
-	  retour=false;
-	}
+      // Contrôle si les agents apparaissent dans des plannings validés
+      // Pour chaque agent
+      if (retour == true) {
+        var planning_validated = [];
+        for (i in result['users']) {
+          if(result['users'][i]["planning_validated"]){
+            planning_validated.push("\n- " + result['users'][i]['nom'] + "\n-- " + result['users'][i]['planning_validated'].replace(';', "\n-- "));
+          }
+        }
+
+        if (planning_validated.length) {
+          if (planning_validated.length == 1) {
+            var message = "L'agent suivant apparaît dans des plannings validés :";
+            message += planning_validated[0];
+          } else if (planning_validated.length > 1) {
+            var message = "Les agents suivants apparaissent dans des plannings validés :";
+            for (i in planning_validated) {
+              message += planning_validated[i];
+            }
+          }
+        if(admin == true){
+          if(!confirm(message +"\nVoulez-vous continuer ?"))
+            retour=false;
+          } else {
+            CJInfo("Vous ne pouvez pas ajouter d'absences car " + message.replace("\n", "#BR#"), "error");
+            retour=false;
+          }
+        }
       }
-      
     },
     error: function(result){
       information("Une erreur est survenue.","error");

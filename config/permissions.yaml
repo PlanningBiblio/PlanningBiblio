@@ -68,6 +68,8 @@
     - 100
 "workinghour.save":
     - 100
+"ajax.holiday.absence.control":
+    - 100
 "workinghour.delete":
     - 1101
     - 1201

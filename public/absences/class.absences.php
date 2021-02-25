@@ -1975,6 +1975,81 @@ class absences
         $db->update("absences", array($pj => $checked), array("id"=>$id));
     }
 
+    /** roles
+     * @param int $perso_id : ID de l'agent concerné par l'absence
+     * @param boolean $accessDenied default false : afficher "accès refusé" si la page demandée ne concerne pas l'agent logué et s'il n'est pas admin
+     * @return Array($adminN1, $adminN2) : tableau ayant pour 1ère valeur true si l'agent logué est adminN1, false sinon, pour 2ème valeur true s'il est adminN2, false sinon
+     * Affiche "accès refusé" si la page demandée ne concerne pas l'agent logué et s'il n'est pas admin
+     */
+    public function roles($perso_id, $accesDenied = false)
+    {
+
+        // Droits d'administration niveau 1 et niveau 2
+        // Droits nécessaires en mono-site
+        $droitsN1 = array(201);
+        $droitsN2 = array(501);
+
+        // Droits nécessaires en multisites avec vérification des sites attribués à l'agent concerné par l'absence
+        if ($GLOBALS['config']['Multisites-nombre']>1) {
+            $droitsN1 = array();
+            $droitsN2 = array();
+
+            $p=new personnel();
+            $p->fetchById($perso_id);
+
+            if (is_array($p->elements[0]['sites'])) {
+                foreach ($p->elements[0]['sites'] as $site) {
+                    $droitsN1[] = 200 + $site;
+                    $droitsN2[] = 500 + $site;
+                }
+            }
+        }
+
+        // Ai-je le droit d'administration niveau 1 pour l'absence demandée
+        $adminN1 = false;
+
+        // Si le paramètre "Absences-notifications-agent-par-agent" est coché, vérification du droit N1 à partir de la table "responsables"
+        if ($GLOBALS['config']['Absences-notifications-agent-par-agent']) {
+            $db = new db();
+            $db->select2('responsables', 'perso_id', array('responsable' => $_SESSION['login_id']));
+            if ($db->result) {
+                foreach ($db->result as $elem) {
+                    if ($elem['perso_id'] == $perso_id) {
+                        $adminN1 = true;
+                        break;
+                    }
+                }
+            }
+
+        // Si le paramètre "Absences-notifications-agent-par-agent" n'est pascoché, vérification du droit N1 à partir des droits cochés dans la fiche de l'agent logué ($_SESSION['droits']
+        } else {
+            foreach ($droitsN1 as $elem) {
+                if (in_array($elem, $_SESSION['droits'])) {
+                    $adminN1 = true;
+                    break;
+                }
+            }
+        }
+
+        // Ai-je le droit d'administration niveau 2 pour l'absence demandée
+        $adminN2 = false;
+        foreach ($droitsN2 as $elem) {
+            if (in_array($elem, $_SESSION['droits'])) {
+                $adminN2 = true;
+                break;
+            }
+        }
+
+        // Affiche accès refusé si l'absence ne concerne pas l'agent logué et qu'il n'est pas admin
+        if ($accesDenied and !$adminN1 and !$adminN2 and $perso_id != $_SESSION['login_id']) {
+            echo "<h3 style='text-align:center;'>Accès refusé</h3>\n";
+            echo "<p style='text-align:center;' >\n";
+            echo "<a href='javascript:history.back();'>Retour</a></p>\n";
+            include(__DIR__.'/../include/footer.php');
+        }
+
+        return array($adminN1, $adminN2);
+    }
 
     public function update_time()
     {
