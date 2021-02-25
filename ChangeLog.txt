@@ -1,4 +1,5 @@
 *** Unreleased ***
+
 - Enhancements
 Move function calculPresence in dedicated class (WorkingHours)
 Allows more permissive entries in working hours
@@ -20,6 +21,8 @@ Add a param to define the switching time between half-day and full-day
 Absences for remote working ability
 Symfonize notifications save
 Symfonize framework's group deletion
+Deny holidays if planning started or validated
+The user can select the validation level when adding an holiday
 
 
 -Fixes
@@ -39,6 +42,7 @@ Fix/Statistics : Initialize information about agents
 Fix reset URL for holiday index and rename related button
 Write ICS URL from base URL
 Fix a wrong links on absence and holiday notifications
+Restore right for self-removing in absence edition
 
 *** Version 20.10.00       (2020-10-09)   ***
 - Enhancements

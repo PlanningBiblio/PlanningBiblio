@@ -2164,6 +2164,28 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="20.11.00.011";
+if (version_compare($config['Version'], $v) === -1) {
+
+    // MT 29616
+    $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Autoriser l\'enregistrement d\'absences sur des plannings en cours d\'élaboration' WHERE `nom`= 'Absences-planningVide';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Autoriser l\'enregistrement d\'absences après validation des plannings' WHERE `nom`= 'Absences-apresValidation';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '12' WHERE `nom`= 'Conges-Rappels-N1';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `ordre` = '14' WHERE `nom`= 'Conges-Rappels-N2';";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre` ) VALUES ('Conges-planningVide','boolean','1','Congés', 'Autoriser l\'enregistrement de congés sur des plannings en cours d\'élaboration','8');";
+    $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre`) VALUES ('Conges-apresValidation','boolean','1', 'Congés', 'Autoriser l\'enregistrement de congés après validation des plannings', '9');";
+
+    // MT 29619
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre`) VALUES ('Conges-validation','boolean','1', 'Congés', 'Les congés doivent être validés par un administrateur avant d\'être pris en compte','3');";
+
+    // Symfonize framework copy
+    $sql[]="UPDATE `{$dbprefix}acces` SET `page` = '' WHERE `page` = 'planning/postes_cfg/copie.php';";
+
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='/notification';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
