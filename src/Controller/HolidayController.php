@@ -294,6 +294,12 @@ class HolidayController extends BaseController
         $roles = $c->roles($perso_id, true);
         list($adminN1, $adminN2) = $roles;
         if ( $confirm ) {
+
+            $submittedToken = $request->request->get('_token');
+            if (!$this->isCsrfTokenValid('', $submittedToken)) {
+                return $this->output('csrf-error.html.twig');
+            }
+
             $result = $this->update($request);
             $msg = $result['msg'];
             $msg2 = $result['msg2'];
@@ -480,6 +486,11 @@ class HolidayController extends BaseController
      */
     public function add_confirm(Request $request, Session $session)
     {
+        $submittedToken = $request->request->get('_token');
+        if (!$this->isCsrfTokenValid('', $submittedToken)) {
+            return $this->output('csrf-error.html.twig');
+        }
+
         $result = $this->save($request);
 
         if (!empty($result['msg'])) {

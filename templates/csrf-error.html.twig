@@ -1,0 +1,8 @@
+{# csrf-error.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+    <div id='crsf-error'>Invalid CSRF token</div>
+    <a href='javascript:history.back();'>Back</a>
+{% endblock %}
