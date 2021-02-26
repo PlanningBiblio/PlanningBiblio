@@ -476,7 +476,6 @@ error_log("/workinghour/edit");
         $exception_id = '';
         $droits = $GLOBALS['droits'];
         $lang = $GLOBALS['lang'];
-        $nbSemaine = $this->config('nb_semaine');
         $pause2_enabled = $this->config('PlanningHebdo-Pause2');
         $nbSites = $this->config('Multisites-nombre');
         $validation = "";
@@ -498,7 +497,7 @@ error_log("/workinghour/edit");
             $id = $copy;
         }
 
-
+    
         if ($request_exception) {
             $id = $request_exception;
         }
@@ -509,7 +508,7 @@ error_log("/workinghour/edit");
         $adminN2 = in_array(1201, $droits);
         $notAdmin = !($adminN1 or $adminN2);
         $admin = ($adminN1 or $adminN2);
-        $cle = null;
+
         $p = new \planningHebdo();
         $p->id = $id;
         $p->fetch();
@@ -520,6 +519,7 @@ error_log("/workinghour/edit");
         $perso_id = $p->elements[0]['perso_id'];
         $temps = $p->elements[0]['temps'];
         $breaktime = $p->elements[0]['breaktime'];
+        $nbSemaine = $p->elements[0]['nb_semaine'];
 
         if ($p->elements[0]['exception']) {
             $is_exception = 1;
@@ -576,20 +576,6 @@ error_log("/workinghour/edit");
             $id = '';
         }
 
-        switch ($nbSemaine) {
-            case 2:
-                $cellule = array("Semaine Impaire","Semaine Paire");
-                break;
-            case 3:
-                $cellule = array("Semaine 1","Semaine 2","Semaine 3");
-                break;
-            default:
-                $cellule = array("Jour");
-                break;
-        }
-        $fin = $this->config('Dimanche') ? array(8,15,22) : array(7,14,21);
-        $debut = array(1,8,15);
-        $jours = array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
         if ($this->config('PlanningHebdo-notifications-agent-par-agent') and !$adminN2 and $copy) {
             // Sélection des agents gérés (table responsables) et de l'agent logué
             $perso_ids = array($_SESSION['login_id']);
@@ -608,39 +594,6 @@ error_log("/workinghour/edit");
             $db = new \db();
             $db->select2('personnel', null, array('supprime'=>0), 'order by nom,prenom');
             $tab = $db->result;
-        }
-        $selectTemps = array();
-        $breaktime_h = array();
-
-        $GLOBALS['temps'] = $temps;
-
-        for ($j = 0; $j < $nbSemaine; $j++) {
-            for ($i = $debut[$j]; $i < $fin[$j]; $i++) {
-                $k = $i-($j*7)-1;
-                $breaktime[$i-1] = isset($breaktime[$i-1]) ? $breaktime[$i-1] : 0;
-                if ($modifAutorisee) {
-                    $selectTemps[$j][$i-1][0] = selectTemps($i-1, 0, null, "select");
-                    $selectTemps[$j][$i-1][1] = selectTemps($i-1, 1, null, "select");
-                    $selectTemps[$j][$i-1][2] = selectTemps($i-1, 2, null, "select");
-                    if ($pause2_enabled == true) {
-                        $selectTemps[$j][$i-1][5] = selectTemps($i-1, 5, null, "select");
-                        $selectTemps[$j][$i-1][6] = selectTemps($i-1, 6, null, "select");
-                    }
-                    $selectTemps[$j][$i-1][3] = selectTemps($i-1, 3, null, "select");
-                } else {
-                    $temps[$i-1][0] = heure2($temps[$i-1][0]);
-                    $temps[$i-1][1] = heure2($temps[$i-1][1]);
-                    $temps[$i-1][2] = heure2($temps[$i-1][2]);
-                    if ($pause2_enabled == true) {
-                        $temps[$i-1][5] = heure2($temps[$i-1][5]);
-                        $temps[$i-1][6] = heure2($temps[$i-1][6]);
-                    }
-                    $temps[$i-1][3] = heure2($temps[$i-1][3]);
-                    if ($pauseLibre_enabled == true) {
-                        $breaktime_h[$i-1] = heure4($breaktime[$i -1]);
-                    }
-                }
-            }
         }
         if (!$cle) {
             if ($admin) {
@@ -673,21 +626,16 @@ error_log("/workinghour/edit");
                 "admin"              => $admin,
                 "adminN1"            => $adminN1,
                 "adminN2"            => $adminN2,
-                "breaktime"          => $breaktime,
-                "breaktime_h"        => $breaktime_h,
                 "cle"                => $cle,
                 "copy"               => $copy,
                 "CSRFSession"        => $request->get('CSRFToken'),
-                "debut"              => $debut,
                 "debut1Fr"           => $debut1Fr,
                 "exception_id"       => $exception_id,
                 "exception_back"     => $exception_back,
-                "fin"                => $fin,
                 "fin1Fr"             => $fin1Fr,
                 "id"                 => $id,
                 "is_exception"       => $is_exception,
                 "is_new"             => $is_new,
-                "jours"              => $jours,
                 "lang"               => $lang,
                 "login_id"           => $_SESSION['login_id'],
                 "modifAutorisee"     => $modifAutorisee,
@@ -700,7 +648,6 @@ error_log("/workinghour/edit");
                 "remplace"           => $remplace,
                 "retour"             => $retour,
                 "request_exception"  => $request_exception,
-                "selectTemps"        => $selectTemps,
                 "tab"                => $tab,
                 "temps"              => $temps,
                 "selected1"          => $selected1,
