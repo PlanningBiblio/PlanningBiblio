@@ -18,11 +18,11 @@ class WorkingHourController extends BaseController
      */
     public function tables(Request $request)
     {
-        error_log("/workinghour/tables");
 
         $nbSemaine = $request->get('weeks');
         $perso_id = $request->get('perso_id');
         $ph_id = $request->get('ph_id');
+        $copy = $request->get('copy');
 
         if (!$nbSemaine || !$perso_id) {
             $response = new Response();
@@ -147,13 +147,13 @@ class WorkingHourController extends BaseController
                 "fin"            => $fin,
                 "jours"          => $jours,
                 "modifAutorisee" => $modifAutorisee,
-                "multisites"         => $multisites,
+                "multisites"     => $multisites,
                 "nbSemaine"      => $nbSemaine,
                 "nbSites"        => $nbSites,
                 "pause2_enabled" => $pause2_enabled,
                 "pauseLibre_enabled" => $pauseLibre_enabled,
                 "selectTemps"    => $selectTemps,
-                "sites"              => $sites,
+                "sites"          => $sites,
                 "temps"          => $temps
             )
         );
@@ -301,7 +301,6 @@ class WorkingHourController extends BaseController
      * @Route("/workinghour/add", name="workinghour.add", methods={"GET"})
      */
     public function add(Request $request, Session $session){
-error_log("/workinghour/add");
         // Initialisation des variables
         $copy = $request->get('copy');
         $request_exception = $request->get('exception');
@@ -466,7 +465,6 @@ error_log("/workinghour/add");
      * @Route("/workinghour/{id}", name="workinghour.edit", methods={"GET"})
      */
     public function edit(Request $request, Session $session){
-error_log("/workinghour/edit");
         // Initialisation des variables
         $copy = $request->get('copy');
         $request_exception = $request->get('exception');
@@ -508,7 +506,6 @@ error_log("/workinghour/edit");
         $adminN2 = in_array(1201, $droits);
         $notAdmin = !($adminN1 or $adminN2);
         $admin = ($adminN1 or $adminN2);
-
         $p = new \planningHebdo();
         $p->id = $id;
         $p->fetch();
@@ -569,10 +566,6 @@ error_log("/workinghour/edit");
             $debut1Fr = '';
             $fin1Fr = '';
             $exception_id = $id;
-            $id = '';
-        }
-
-        if ($copy) {
             $id = '';
         }
 
