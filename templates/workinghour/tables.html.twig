@@ -80,7 +80,7 @@
                               <option value=''>&nbsp;</option>
                             {% endif %}
                             {% for site in sites %}
-                              {% if temps is not null and site == temps[i-1][4] %}
+                              {% if temps is not null and temps[i-1][4] is defined and site == temps[i-1][4] %}
                                 <option value="{{ site }}" selected='selected' >{{ multisites[site] | raw }}</option>
                               {% else %}
                                 <option value="{{ site }}">{{ multisites[site] | raw }}</option>
