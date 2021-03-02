@@ -6,9 +6,14 @@ function updateCycles() {
         type: "get",
         async: false,
         success: function(result) {
-                var cycle_select = '';
-                var ph_number_of_weeks = $("#ph_number_of_weeks").val();
-console.log("to " + ph_number_of_weeks);
+            var cycle_select = '';
+            var ph_number_of_weeks = $("#ph_number_of_weeks").val();
+
+            if (result.length == 1) {
+                cycle_select += "<input type='hidden' name='number_of_weeks' id='number_of_weeks' value='" + result[0] + "' />";
+            } else {
+                cycle_select += "<p><label for='number_of_weeks'>Cycle (en nombre de semaines)</label>";
+                cycle_select += "<select name='number_of_weeks' id='number_of_weeks'>";
                 result.forEach(function (cycle, index) {
                    cycle_select += '<option value="' + cycle + '"';
                    if (ph_number_of_weeks == cycle) {
@@ -16,8 +21,9 @@ console.log("to " + ph_number_of_weeks);
                    }
                    cycle_select += '>' + cycle + '</option>'; 
                 });
-                $("#number_of_weeks").html(cycle_select);
-
+                cycle_select += "</select></p>";
+            }
+            $("#cycle").html(cycle_select);
             updateTables();
         },
         error: function(result) {
@@ -26,7 +32,6 @@ console.log("to " + ph_number_of_weeks);
 }
 
 function updateTables() {
-    console.log("updateTables");
     $.ajax({
         url: "/ajax/workinghour-tables",
         data: {weeks: $("#number_of_weeks").val(), perso_id: $("#perso_id").val(), ph_id: $("#id").val()},
