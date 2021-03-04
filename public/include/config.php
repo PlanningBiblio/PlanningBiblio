@@ -68,6 +68,7 @@ include 'db.php';
 
 // Get config values from DB
 $db = new db();
+$db->sanitize_string = false;
 $db->query("SELECT * FROM `{$dbprefix}config` ORDER BY `id`;");
 foreach ($db->result as $elem) {
   $config[$elem['nom']] = $elem['valeur'];

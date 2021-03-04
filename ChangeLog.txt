@@ -1,4 +1,6 @@
 *** Unreleased ***
+-Fixes
+Don't sanitize config elements
 
 - Enhancements
 Move function calculPresence in dedicated class (WorkingHours)
