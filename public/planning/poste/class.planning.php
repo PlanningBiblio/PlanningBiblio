@@ -386,6 +386,7 @@ class planning
         $version="ajax";
         require_once "../../personnel/class.personnel.php";
         require_once "../../postes/class.postes.php";
+        $config=$GLOBALS['config'];
     
         // Liste des agents actifs
         $p=new personnel();
@@ -585,7 +586,7 @@ class planning
                 $message.="</ul>";
 
                 // On ajoute le lien vers le planning
-                $url=createURL("planning/poste/index.php&date=$date");
+                $url = $config['URL'] . "/index.php?page=planning/poste/index.php&date=$date";
                 $message.="Lien vers le planning du ".dateFr($date)." : $url";
 
                 // Envoi du mail
@@ -598,7 +599,7 @@ class planning
             // S'il n'y a pas d'éléments, on écrit "Vous n'êtes plus dans le planning ..."
             } else {
                 // On ajoute le lien bers le planning
-                $url=createURL("planning/poste/index.php&date=$date");
+                $url = $config['URL'] . "/index.php?page=planning/poste/index.php&date=$date";
                 $message.="<br/><br/>Vous n&apos;&ecirc;tes plus dans le planning du ".dateFr($date);
                 $message.="<br/><br/>Lien vers le planning du ".dateFr($date)." : $url";
 
