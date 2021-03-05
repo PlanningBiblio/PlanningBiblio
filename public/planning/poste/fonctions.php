@@ -75,7 +75,7 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
                     // Skip teleworking absences if the position is compatible with
                     if ($GLOBALS['postes'][$poste]['teleworking']) {
                         $reason = $GLOBALS['absence_reasons']->findOneBy(array('valeur' => $absence['motif']));
-                        if ($reason->teleworking() == 1) {
+                        if (!empty($reason) and $reason->teleworking() == 1) {
                             continue;
                         }
                     }
