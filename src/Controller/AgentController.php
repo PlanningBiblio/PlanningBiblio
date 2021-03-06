@@ -1074,7 +1074,7 @@ class AgentController extends BaseController
             $tmp[] = $nom;
         }
 
-        $tmp = join($tmp, ".");
+        $tmp = join('.', $tmp);
         $login = removeAccents(strtolower($tmp));
         $login = str_replace(" ", "-", $login);
         $login = substr($login, 0, 95);

@@ -134,7 +134,7 @@ $postes_list=$db->result;
 if (!empty($postes)) {
     //	Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
     //	On stock le tout dans le tableau $resultat
-    $postes_select=join($postes, ",");
+    $postes_select=join(',', $postes);
     $db=new db();
     $debutREQ=$db->escapeString($debutSQL);
     $finREQ=$db->escapeString($finSQL);

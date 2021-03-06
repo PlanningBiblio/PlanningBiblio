@@ -71,7 +71,7 @@ switch ($nom) {
   case "postes": 									// Postes
     $lignes=array("Statistiques par poste du $debut au $fin",null);
     $lignes[]="Les agents";
-    $lignes[]=join(array("Poste","Etage","Obligatoire/renfort","Heures","Moyenne jour","Moyenne hebdo","Nom de l'agent","Prénom de l'agent","Heures par agent"), $separateur);
+    $lignes[]=join($separateur, array("Poste","Etage","Obligatoire/renfort","Heures","Moyenne jour","Moyenne hebdo","Nom de l'agent","Prénom de l'agent","Heures par agent"));
     foreach ($tab as $elem) {
         $jour=$elem[2]/$nbJours;
         $hebdo=$jour*$joursParSemaine;
@@ -86,7 +86,7 @@ switch ($nom) {
     $cellules[]=$agent[1];				// Nom de l'agent
     $cellules[]=$agent[2];				// Prénom
     $cellules[]=number_format($agent[3], 2, ',', ' ');	// Heures par agent
-    $lignes[]=join($cellules, $separateur);
+    $lignes[]=join($separateur, $cellules);
         }
     }
     $lignes[]=null;
@@ -104,7 +104,7 @@ switch ($nom) {
     $cellules[]=number_format($hebdo, 2, ',', ' ');		// moyenne hebdo
     $cellules[]=str_replace("ZZZ_", null, $service["nom"]);	// Nom du service
     $cellules[]=number_format($service["heures"], 2, ',', ' ');// Heures par agent
-    $lignes[]=join($cellules, $separateur);
+    $lignes[]=join($separateur, $cellules);
         }
     }
     $lignes[]=null;
@@ -122,14 +122,14 @@ switch ($nom) {
     $cellules[]=number_format($hebdo, 2, ',', ' ');		// moyenne hebdo
     $cellules[]=str_replace("ZZZ_", null, $statut["nom"]);	// Nom du statut
     $cellules[]=number_format($statut["heures"], 2, ',', ' ');	// Heures par agent
-    $lignes[]=join($cellules, $separateur);
+    $lignes[]=join($separateur, $cellules);
         }
     }
     break;
 
   case "postes_synthese": 							// Postes (synthèse)
     $lignes=array("Statistiques par poste (synthèse) du $debut au $fin",null);
-    $lignes[]=join(array("Poste","Etage","Obligatoire/renfort","Heures","Moyenne jour","Moyenne hebdo"), $separateur);
+    $lignes[]=join($separateur, array("Poste","Etage","Obligatoire/renfort","Heures","Moyenne jour","Moyenne hebdo"));
     foreach ($tab as $elem) {
         $jour=$elem[2]/$nbJours;
         $hebdo=$jour*$joursParSemaine;
@@ -143,14 +143,14 @@ switch ($nom) {
       $cellules[]=number_format($elem[2], 2, ',', ' ');				// Nombre d'heures
       $cellules[]=number_format(round($jour, 2), 2, ',', ' ');		// moyenne jour
       $cellules[]=number_format(round($hebdo, 2), 2, ',', ' ');		// moyenne hebdo
-      $lignes[]=join($cellules, $separateur);
+      $lignes[]=join($separateur, $cellules);
     }
-    $lignes[]=join(array("Total","","",number_format($total_heures, 1, ',', ' '),number_format(round($total_jour, 2), 2, ',', ' '),number_format(round($total_hebdo, 2), 2, ',', ' ')), $separateur);
+    $lignes[]=join($separateur, array("Total","","",number_format($total_heures, 1, ',', ' '),number_format(round($total_jour, 2), 2, ',', ' '),number_format(round($total_hebdo, 2), 2, ',', ' ')));
     break;
 
   case "postes_renfort": 							// Postes de renfort
     $lignes=array("Poste de renfort du $debut au $fin",null);
-    $lignes[]=join(array("Poste","Etage","Heures","Moyenne jour","Moyenne hebdo","Jours","Heures par jour","Début","Fin","Heures"), $separateur);
+    $lignes[]=join($separateur, array("Poste","Etage","Heures","Moyenne jour","Moyenne hebdo","Jours","Heures par jour","Début","Fin","Heures"));
     foreach ($tab as $elem) {
         $jour=$elem[2]/$nbJours;
         $hebdo=$jour*$joursParSemaine;
@@ -167,7 +167,7 @@ switch ($nom) {
       $cellules[]=$horaires[0];									// debut
       $cellules[]=$horaires[1];									// fin
       $cellules[]=number_format($horaires[2], 2, ',', ' ');			// heures
-      $lignes[]=join($cellules, $separateur);
+      $lignes[]=join($separateur, $cellules);
             }
         }
     }
@@ -187,7 +187,7 @@ switch ($nom) {
       $tmp[]=str_replace("<br/>", " ", $m)." Nombre";
       $tmp[]=str_replace("<br/>", " ", $m)." Heures";
   }
-  $lignes[]=join($tmp, $separateur);
+  $lignes[]=join($separateur, $tmp);
 
   // Contenu
   foreach ($tab as $elem) {
@@ -200,7 +200,7 @@ switch ($nom) {
         $cellules[]=$elem[$m]['total'];							// Nombre d'absences par motif
       $cellules[]=$elem[$m]['heures'];							// Heures d'absences par motif
     }
-      $lignes[]=join($cellules, $separateur);
+      $lignes[]=join($separateur, $cellules);
   }
 
   // Totaux (dernière ligne)
@@ -209,7 +209,7 @@ switch ($nom) {
       $cellules[]=$totaux[$m]['frequence'];
       $cellules[]=$totaux[$m]['heures'];
   }
-  $lignes[]=join($cellules, $separateur);
+  $lignes[]=join($separateur, $cellules);
   break;
 
   case "temps":									// Feuille de temps
@@ -246,7 +246,7 @@ switch ($nom) {
   $tmp[]="Max";
   $tmp[]="Moyenne Hebdo.";
   $tmp[]=" Max. Hebdo.";
-  $lignes[]=join($tmp, $separateur);
+  $lignes[]=join($separateur, $tmp);
   foreach ($tab as $elem) {
       $cellules=array();
       $cellules[]=html_entity_decode($elem['nom'], ENT_QUOTES|ENT_IGNORE, "UTF-8");		// Nom et prénom
@@ -272,7 +272,7 @@ switch ($nom) {
     $cellules[] = is_numeric($elem['max']) ? number_format($elem['max'], 2, ',', '') : null;                   // Nombre d'heures maximum sur la période
     $cellules[] = is_numeric($elem['semaine']) ? number_format($elem['semaine'], 2, ',', '') : null;           // Moyenne d'heures par semaine
     $cellules[] = is_numeric($elem['heuresHebdo']) ? number_format($elem['heuresHebdo'], 2, ',', '') : null;   // Quota
-    $lignes[]=join($cellules, $separateur);
+    $lignes[]=join($separateur, $cellules);
   }
   
   // ligne "Nombre d'heures"
@@ -294,7 +294,7 @@ switch ($nom) {
   }
 
   $cellules[] = is_numeric($_SESSION['oups']['stat_totalHeures']) ? number_format($_SESSION['oups']['stat_totalHeures'], 2, ',', '') : null;
-  $lignes[]=join($cellules, $separateur);
+  $lignes[]=join($separateur, $cellules);
   $cellules=array("Nombre d'agents","","");						// Lignes "Nombres d'agents
   foreach ($dates as $d) {
       $cellules[] = is_numeric($_SESSION['oups']['stat_nbAgents'][$d[0]]) ? $_SESSION['oups']['stat_nbAgents'][$d[0]] : null;
@@ -317,7 +317,7 @@ switch ($nom) {
   }
 
   $cellules[]=$total; //$agents[7];
-  $lignes[]=join($cellules, $separateur);
+  $lignes[]=join($separateur, $cellules);
   break;
 
   case "samedis": // Samedis

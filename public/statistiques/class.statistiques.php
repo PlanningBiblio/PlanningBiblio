@@ -44,7 +44,7 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
             $cellules[]="Site";
         }
         $cellules=array_merge($cellules, array("Etage","Heures par poste"));
-        $lignes[]=join($cellules, $separateur);
+        $lignes[]=join($separateur, $cellules);
     } else {
         $cellules=array(ucfirst($nom),"Heures","Moyenne hebdo");
         if ($GLOBALS['config']['Multisites-nombre']>1) {
@@ -58,7 +58,7 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
             $cellules[]="Site";
         }
         $cellules=array_merge($cellules, array("Etage","Heures par poste"));
-        $lignes[]=join($cellules, $separateur);
+        $lignes[]=join($separateur, $cellules);
     }
     foreach ($tab as $elem) {
         $jour=$elem[2]/$nbJours;
@@ -91,16 +91,16 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
             }
             $cellules[]=$poste[2];						// Etage
       $cellules[]=number_format($poste[3], 2, ',', ' ');			// Heures par poste
-      $lignes[]=join($cellules, $separateur);
+      $lignes[]=join($separateur, $cellules);
         }
     }
     $lignes[]=null;
     $lignes[]="Samedis";
   
     if ($nom=="agent") {
-        $lignes[]=join(array("Nom","Prénom","Nombre de samedis","Dates","Heures"), $separateur);
+        $lignes[]=join($separateur, array("Nom","Prénom","Nombre de samedis","Dates","Heures"));
     } else {
-        $lignes[]=join(array(ucfirst($nom),"Nombre de samedis","Dates","Heures"), $separateur);
+        $lignes[]=join($separateur, array(ucfirst($nom),"Nombre de samedis","Dates","Heures"));
     }
     foreach ($tab as $elem) {
         foreach ($elem[3] as $samedi) {
@@ -114,16 +114,16 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
             $cellules[]=count($elem[3]);						// nombre de samedi
       $cellules[]=dateFr($samedi[0]);						// date
       $cellules[]=number_format($samedi[1], 2, ',', ' ');	// heures
-      $lignes[]=join($cellules, $separateur);
+      $lignes[]=join($separateur, $cellules);
         }
     }
     if ($GLOBALS['config']['Dimanche']) {
         $lignes[]=null;
         $lignes[]="Dimanches";
         if ($nom=="agent") {
-            $lignes[]=join(array("Nom","Prénom","Nombre de dimanches","Dates","Heures"), $separateur);
+            $lignes[]=join($separateur, array("Nom","Prénom","Nombre de dimanches","Dates","Heures"));
         } else {
-            $lignes[]=join(array(ucfirst($nom),"Nombre de dimanches","Dates","Heures"), $separateur);
+            $lignes[]=join($separateur, array(ucfirst($nom),"Nombre de dimanches","Dates","Heures"));
         }
         foreach ($tab as $elem) {
             foreach ($elem[6] as $dimanche) {
@@ -137,7 +137,7 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
                 $cellules[]=count($elem[6]);						// nombre de dimanche
     $cellules[]=dateFr($dimanche[0]);						// date
     $cellules[]=number_format($dimanche[1], 2, ',', ' ');	// heures
-    $lignes[]=join($cellules, $separateur);
+    $lignes[]=join($separateur, $cellules);
             }
         }
     }
@@ -146,9 +146,9 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
     $lignes[]=null;
     $lignes[]="Jours fériés";
     if ($nom=="agent") {
-        $lignes[]=join(array("Nom","Prénom","Nombre de jours feriés","Dates","Heures"), $separateur);
+        $lignes[]=join($separateur, array("Nom","Prénom","Nombre de jours feriés","Dates","Heures"));
     } else {
-        $lignes[]=join(array(ucfirst($nom),"Nombre de jours feriés","Dates","Heures"), $separateur);
+        $lignes[]=join($separateur, array(ucfirst($nom),"Nombre de jours feriés","Dates","Heures"));
     }
     foreach ($tab as $elem) {
         foreach ($elem[8] as $ferie) {
@@ -162,7 +162,7 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
             $cellules[]=count($elem[8]);						// nombre de J. Feriés
       $cellules[]=dateFr($ferie[0]);						// date
       $cellules[]=number_format($ferie[1], 2, ',', ' ');	// heures
-      $lignes[]=join($cellules, $separateur);
+      $lignes[]=join($separateur, $cellules);
         }
     }
 
@@ -170,9 +170,9 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
     $lignes[]=null;
     $lignes[]="Absences";
     if ($nom=="agent") {
-        $lignes[]=join(array("Nom","Prénom","Heures d'absences","Dates","Heures"), $separateur);
+        $lignes[]=join($separateur, array("Nom","Prénom","Heures d'absences","Dates","Heures"));
     } else {
-        $lignes[]=join(array(ucfirst($nom),"Heures d'absences","Dates","Heures"), $separateur);
+        $lignes[]=join($separateur, array(ucfirst($nom),"Heures d'absences","Dates","Heures"));
     }
     foreach ($tab as $elem) {
         $total_absences=$elem[5];
@@ -188,7 +188,7 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
             ;						// heures total d'absences
       $cellules[]=dateFr($absences[0]);					// date
       $cellules[]=number_format($absences[1], 2, ',', ' ');	// heures
-      $lignes[]=join($cellules, $separateur);
+      $lignes[]=join($separateur, $cellules);
         }
     }
 
@@ -209,9 +209,9 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
         $lignes[] = $hres;
 
         if ($nom=="agent") {
-            $lignes[]=join(array("Nom","Prénom","Nombre de $hres","Dates"), $separateur);
+            $lignes[]=join($separateur, array("Nom","Prénom","Nombre de $hres","Dates"));
         } else {
-            $lignes[]=join(array(ucfirst($nom),"Nombre de $hres","Dates","Nombre à cette date"), $separateur);
+            $lignes[]=join($separateur, array(ucfirst($nom),"Nombre de $hres","Dates","Nombre à cette date"));
         }
     
     
@@ -230,7 +230,7 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
               $cellules[]=$elem[0][2];	// prénom
               $cellules[]=number_format($count, 2, ',', ' ');
                             $cellules[]=dateFr($e);
-                            $lignes[]=join($cellules, $separateur);
+                            $lignes[]=join($separateur, $cellules);
                         }
                     } else {
                         // $count2 permet de n'afficher qu'une ligne par date et de compter les occurences correspondantes
@@ -248,7 +248,7 @@ function statistiques1($nom, $tab, $debut, $fin, $separateur, $nbJours, $joursPa
                             $cellules[]=number_format($count, 2, ',', ' ');
                             $cellules[]=dateFr($e);
                             $cellules[]=number_format($count2[$e], 2, ',', ' ');
-                            $lignes[]=join($cellules, $separateur);
+                            $lignes[]=join($separateur, $cellules);
                         }
                     }
                 }
@@ -265,7 +265,7 @@ function statistiquesSamedis($tab, $debut, $fin, $separateur, $nbJours, $joursPa
     $lignes=array($titre,null);
 
     $cellules=array("Nom","Prénom","Prime / Temps","Nombre","Total d'heures","Dates","Heures");
-    $lignes[]=join($cellules, $separateur);
+    $lignes[]=join($separateur, $cellules);
   
     foreach ($tab as $elem) {
         $heures=0;
@@ -281,7 +281,7 @@ function statistiquesSamedis($tab, $debut, $fin, $separateur, $nbJours, $joursPa
       $cellules[]=number_format($heures, 2, ',', ' ');	// Total d'heures
       $cellules[]=dateFr($samedi[0]);						// date
       $cellules[]=number_format($samedi[1], 2, ',', ' ');	// heures
-      $lignes[]=join($cellules, $separateur);
+      $lignes[]=join($separateur, $cellules);
         }
     }
   
@@ -301,7 +301,7 @@ function statistiquesSamedis($tab, $debut, $fin, $separateur, $nbJours, $joursPa
         $hres = heure3($tmp[0]).'-'.heure3($tmp[1]);
         $lignes[] = $hres;
 
-        $lignes[]=join(array("Nom","Prénom","Nombre de $hres","Dates"), $separateur);
+        $lignes[]=join($separateur, array("Nom","Prénom","Nombre de $hres","Dates"));
 
         foreach ($tab as $elem) {
             foreach ($elem[7] as $k => $v) {
@@ -317,7 +317,7 @@ function statistiquesSamedis($tab, $debut, $fin, $separateur, $nbJours, $joursPa
             $cellules[]=removeAccents($elem[0][2]);	// prénom
             $cellules[]=number_format($count, 2, ',', ' ');
                         $cellules[]=dateFr($e);
-                        $lignes[]=join($cellules, $separateur);
+                        $lignes[]=join($separateur, $cellules);
                     }
                 }
             }
