@@ -58,7 +58,7 @@ class db
         $this->conn->set_charset("utf8mb4");
 
         mysqli_query($this->conn, "SET SESSION sql_mode = ''");
-        if (mysqli_connect_errno($this->conn)) {
+        if (mysqli_connect_errno()) {
             $this->error=true;
             $this->msg=mysqli_connect_error();
         }
