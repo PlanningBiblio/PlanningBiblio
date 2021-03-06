@@ -184,7 +184,7 @@ foreach ($tab as $k => $v) {
                 $tab[$k]['activites'][] = 'activite_'.strtolower(removeAccents(str_replace(array('/',' ',), '_', $elem['nom'])));
             }
         }
-        $tab[$k]['activites'] = implode($tab[$k]['activites'], ' ');
+        $tab[$k]['activites'] = implode(' ', $tab[$k]['activites']);
     }
 }
 

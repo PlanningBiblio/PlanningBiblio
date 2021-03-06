@@ -277,7 +277,7 @@ if ($absences) {
         echo "<td>".dateFr($elem['debut'], true)."</td>";
         echo "<td>".datefr($elem['fin'], true)."</td>";
         echo "<td>";
-        echo implode($elem['agents'], ", ");
+        echo implode(', ', $elem['agents']);
         echo "</td>\n";
     
         if ($config['Absences-validation']) {

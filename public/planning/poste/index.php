@@ -142,7 +142,7 @@ if ($db->result) {
     foreach ($db->result as $elem) {
         $messages_infos[]=$elem['texte'];
     }
-    $messages_infos=join($messages_infos, " - ");
+    $messages_infos=join(' - ', $messages_infos);
 }
 
 //		---------------		Affichage du titre et du calendrier	--------------------------//

@@ -94,7 +94,7 @@ if ($db->result) {
     foreach ($db->result as $elem) {
         $messages_infos[]=$elem['texte'];
     }
-    $messages_infos=join($messages_infos, " - ");
+    $messages_infos=join(' - ', $messages_infos);
 }
 
 // $absence_reasons will be used in the cellule_poste function. Using a global variable will avoid multiple access to the database and enhance performances

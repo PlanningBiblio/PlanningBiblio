@@ -152,7 +152,7 @@ if (!empty($agents)) {
 
     //	Recherche des infos dans pl_poste et postes pour tous les agents sélectionnés
     //	On stock le tout dans le tableau $resultat
-    $agents_select=join($agents, ",");
+    $agents_select=join(',', $agents);
     $db=new db();
     $debutREQ=$db->escapeString($debutSQL);
     $finREQ=$db->escapeString($finSQL);
