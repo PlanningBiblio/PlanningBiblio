@@ -1,64 +1,41 @@
 <?php
 /**
-Planning Biblio, Version 2.7.15
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : planningHebdo/cron.exportEDT.php
-Création : 10 août 2018
-Dernière modification : 27 septembre 2018
+@file src/Cron/Legacy/cron.planning_hebdo.export.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
 Export les heures de présences vers un fichier CSV
 
 @note : Modifiez le crontab de l'utilisateur Apache (ex: #crontab -eu www-data) en ajoutant les 2 lignes suivantes :
-# Planning Biblio : Exportation des heures de présence tous les jours à minuit
-0 0 * * * /usr/bin/php5 -f /var/www/html/planning/planningHebdo/cron.exportEDT.php
+# Planno : Exportation des heures de présence tous les jours à minuit
+0 0 * * * php  /dossier/planno/src/Cron/Legacy/cron.planning_hebdo.export.php
 Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à ce fichier
-@note : Modifiez la variable $path suivante en renseignant le chemin absolu vers votre dossier planningBiblio
 */
 
-/**
-@note Copie du fichier exporté via la commande ftp système :
-
-Créer un fichier paramFTP.txt avec les infos suivantes :
-open ip_du_serveur_kelio
-user username password
-lcd /dossier/dans/lequel/se/trouve/le/fichier/a/exporter
-put fichier_a_exporter.csv
-bye
-
-ajouter dans le crontab :
-/usr/bin/php -f /var/www/html/planning/cron.exportEDT.php && /usr/bin/ftp -n < /chemin/vers/fichier/paramFTP.txt
-*/
-
-$path="/var/www/html/planning";
-$CSVFile = "/tmp/export-bodet.csv";
+$CSVFile = "/tmp/export-planno-edt.csv";
 $days_before = 15;
 $days_after = 60;
 
 session_start();
 
-/** $version=$argv[0]; permet d'interdire l'execution de ce script via un navigateur
- *  Le fichier config.php affichera une page "accès interdit si la $version n'existe pas
- *  $version prend la valeur de $argv[0] qui ne peut être fournie que en CLI ($argv[0] = chemin du script appelé en CLI)
- */
-$version=$argv[0];
+$version = 'cron';
 
-// chdir($path) : important pour l'execution via le cron
-chdir($path);
+// chdir : important pour l'execution via le cron
+chdir(__DIR__ . '/../../../public');
 
-require_once "$path/include/config.php";
-require_once "$path/personnel/class.personnel.php";
-require_once "$path/planningHebdo/class.planningHebdo.php";
+require_once(__DIR__ . '/../../../public/include/config.php');
+require_once(__DIR__ . '/../../../public/personnel/class.personnel.php');
+require_once(__DIR__ . '/../../../public/planningHebdo/class.planningHebdo.php');
 
 $CSRFToken = CSRFToken();
 
 // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
 $tmp_dir=sys_get_temp_dir();
-$lockFile=$tmp_dir."/planningBiblioExportCSV.lock";
+$lockFile=$tmp_dir."/plannoExportCSV.lock";
 
 if (file_exists($lockFile)) {
     $fileTime = filemtime($lockFile);
@@ -79,7 +56,6 @@ $p= new personnel();
 $p->supprime = array(0);
 $p->fetch();
 
-$agents = array();
 if (empty($p->elements)) {
     exit;
 }
@@ -94,8 +70,6 @@ $current = date('Y-m-d', strtotime("-$days_before days"));
 $end = date('Y-m-d', strtotime("+$days_after days"));
 
 while ($current < $end) {
-
-//   $list[$current] = array();
 
     // Recheche le jour de la semaine (lundi (0) à dimanche (6)) et l'offest (décalage si semaine paire/impaire ou toute autre rotation)
     $d=new datePl($current);
@@ -122,7 +96,7 @@ while ($current < $end) {
     if (!empty($p->elements)) {
         foreach ($p->elements as $elem) {
 
-      // Récupération de l'ID Harpege de l'agent
+            // Récupération de l'ID Harpege de l'agent
             // Si l'agent n'a pas d'ID Harpège, on ne l'importe pas (donc continue) = Demande de la société Bodet
             // TODO : Voir si nous devons rendre ceci paramètrable : utilisation du champ matricule, login, email ou id. Pour Lille, se sera le champ matricule
             if (empty($agents[$elem["perso_id"]]['matricule'])) {
@@ -143,7 +117,7 @@ while ($current < $end) {
       
             if (isset($elem["temps"][$jour])) {
 
-        // Première période : matinée : index 0 (début) et 1 (fin)
+                // Première période : matinée : index 0 (début) et 1 (fin)
                 if (!empty($elem["temps"][$jour][0]) and !empty($elem["temps"][$jour][1])) {
                     $temps[] = substr($elem["temps"][$jour][0], 0, 5);
                     $temps[] = substr($elem["temps"][$jour][1], 0, 5);

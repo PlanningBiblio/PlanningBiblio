@@ -4,7 +4,7 @@ Planno
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
 
-@file src/Cron/Legacy/cron.importCSV.php
+@file src/Cron/Legacy/cron.planning_hebdo.import.php
 @author Jérôme Combes <jerome.combes@biblibre.com>
 
 Description :
@@ -12,7 +12,7 @@ Import les heures de présences depuis un fichier CSV
 
 @note : Modifiez le crontab de l'utilisateur Apache (ex: #crontab -eu www-data) en ajoutant les 2 lignes suivantes :
 # Planno : Importation des heures de présence tous les jours à minuit
-0 0 * * * php /var/www/planno/src/Cron/Legacy/cron.importCSV.php
+0 0 * * * php /dossier/planno/src/Cron/Legacy/cron.planning_hebdo.import.php
 Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à ce fichier
 */
 
@@ -20,14 +20,17 @@ session_start();
 
 $version = 'cron';
 
-require_once __DIR__ . '/../../../public/include/config.php';
-require_once __DIR__ . '/../../../public/personnel/class.personnel.php';
+// chdir : important pour l'execution via le cron
+chdir(__DIR__ . '/../../../public');
+
+require_once(__DIR__ . '/../../../public/include/config.php');
+require_once(__DIR__ . '/../../../public/personnel/class.personnel.php');
 
 $CSRFToken = CSRFToken();
 
 // Créé un fichier .lock dans le dossier temporaire qui sera supprimé à la fin de l'execution du script, pour éviter que le script ne soit lancé s'il est déjà en cours d'execution
 $tmp_dir=sys_get_temp_dir();
-$lockFile=$tmp_dir."/planningBiblioCSV.lock";
+$lockFile=$tmp_dir."/plannoCSV.lock";
 
 if (file_exists($lockFile)) {
     $fileTime = filemtime($lockFile);
