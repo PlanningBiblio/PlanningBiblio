@@ -1,6 +1,4 @@
 *** Unreleased ***
--Fixes
-Don't sanitize config elements
 
 - Enhancements
 Move function calculPresence in dedicated class (WorkingHours)
@@ -25,6 +23,9 @@ Symfonize notifications save
 Symfonize framework's group deletion
 Deny holidays if planning started or validated
 The user can select the validation level when adding an holiday
+Statistics: remove former folder templates/statistiques
+Notification page: move notifications.js to public/js/plb. Add baseURL to Ajax query
+Hamac import: Optimize log
 
 
 -Fixes
@@ -45,6 +46,11 @@ Fix reset URL for holiday index and rename related button
 Write ICS URL from base URL
 Fix a wrong links on absence and holiday notifications
 Restore right for self-removing in absence edition
+Don't sanitize config elements
+LDAP: Change LDAP-ID-Attribute value from supannAliasLogin to supannaliaslogin
+Fix wrong reset URL on statistics/attendeesmissing
+PHP8, fix wrong use of mysqli_connect_errno. Handle id=0 in function nom
+PHP8, fix wrong use of implode and join functions
 
 *** Version 20.10.00       (2020-10-09)   ***
 - Enhancements
