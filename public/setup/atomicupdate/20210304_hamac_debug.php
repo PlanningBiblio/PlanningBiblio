@@ -1,2 +1,0 @@
-<?php
-$sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('Hamac-debug','boolean', '0', '', 'Hamac', 'Active le mode débugage pour l\'importation des absences depuis Hamac. Les informations de débugage sont écrites dans la table \"log\". Attention, si cette option est activée, la taille de la base de données augmente considérablement.','50');";

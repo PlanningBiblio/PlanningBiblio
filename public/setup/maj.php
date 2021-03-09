@@ -2114,6 +2114,19 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="20.10.06.000";
+if (version_compare($config['Version'], $v) === -1) {
+
+    // LDAP supannaliaslogin
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur` = 'supannaliaslogin' WHERE `valeur` = 'supannAliasLogin' AND `nom` = 'LDAP-ID-Attribute';";
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = 'uid,samaccountname,supannaliaslogin' WHERE `nom` = 'LDAP-ID-Attribute';";
+
+    // Hamac debug option
+    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre` ) VALUES ('Hamac-debug','boolean', '0', '', 'Hamac', 'Active le mode débugage pour l\'importation des absences depuis Hamac. Les informations de débugage sont écrites dans la table \"log\". Attention, si cette option est activée, la taille de la base de données augmente considérablement.','50');";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
