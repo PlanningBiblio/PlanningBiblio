@@ -224,7 +224,7 @@ function placeOnJob(agent) {
     cell = $(this);
     if (cell.is(':empty')) {
       cell.addAgent(agent);
-      cell.attr('data-jobtimeid', agent.jobtimeid);
+      cell.data('jobtimeid', agent.jobtimeid);
 
       if (agent.absent) {
         cell.addAbsence();
