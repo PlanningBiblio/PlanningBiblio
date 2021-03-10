@@ -629,6 +629,8 @@ $sql[] = "CREATE TABLE `{$dbprefix}stated_week_planning_times` (
     id INT(11) NOT NULL AUTO_INCREMENT,
     agent_id int(11) NOT NULL DEFAULT '0',
     column_id INT(11),
+    start_time time NULL DEFAULT NULL,
+    end_time time NULL DEFAULT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `agent_column` (`agent_id`,`column_id`),
     FOREIGN KEY (column_id) REFERENCES stated_week_planning_columns(id)
