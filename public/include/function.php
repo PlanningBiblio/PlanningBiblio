@@ -40,8 +40,9 @@ class datePl
     public $semaine = null;
     public $semaine3 = null;
     public $position = null;
+    public $nb_semaine = null;
   
-    public function __construct($date)
+    public function __construct($date, $nb_semaine = null)
     {
         $yyyy = (int) substr($date, 0, 4);
         $mm = (int) substr($date, 5, 2);
@@ -51,6 +52,8 @@ class datePl
         $this->sam="semaine";
         $position=date("w", mktime(0, 0, 0, $mm, $dd, $yyyy));
         $this->position=$position;
+        $this->nb_semaine = $nb_semaine ? $nb_semaine : $GLOBALS['config']['nb_semaine'];
+
         switch ($position) {
       case 1: $this->jour="lun";	$this->jour_complet="lundi";		break;
       case 2: $this->jour="mar";	$this->jour_complet="mardi";		break;
@@ -72,7 +75,7 @@ class datePl
         $this->dates=array($j1,$j2,$j3,$j4,$j5,$j6,$j7);
 
 
-        switch ($GLOBALS['config']['nb_semaine']) {
+        switch ($this->nb_semaine) {
             // Calcul du numéro de la semaine pour l'utilisation d'un seul planning hebdomadaire : toujours 1
             case 1:
                 $this->semaine3 = 1;
@@ -85,7 +88,7 @@ class datePl
 
             // Calcul du numéro de la semaine pour l'utilisation de 3 plannings hebdomadaires
             case 3:
-                $interval = $this->getNumberOfWeeksSinceStartDate();
+                $interval = $this->getNumberOfWeeksSinceStartDate($date);
                 if (!($interval%3)) {
                     $this->semaine3=1;
                 }
@@ -105,7 +108,7 @@ class datePl
 
             default:
                 $interval = $this->getNumberOfWeeksSinceStartDate();
-                $this->semaine3 = $this->getCycleNumber($this->semaine, $GLOBALS['config']['nb_semaine']);
+                $this->semaine3 = $this->getCycleNumber($this->semaine, $this->nb_semaine);
                 break;
         }
     }
@@ -119,12 +122,11 @@ class datePl
             } else {
                 $weekcycle = 1;
             }
-            echo "week: $i, cycle: $weekcycle\n";
         }
         return $weekcycle;
     }
 
-    private function getNumberOfWeeksSinceStartDate() {
+    private function getNumberOfWeeksSinceStartDate($date) {
         $position=date("w", strtotime(dateSQL($GLOBALS['config']['dateDebutPlHebdo'])))-1;
         $position=$position==-1?6:$position;
         $dateFrom=new dateTime(dateSQL($GLOBALS['config']['dateDebutPlHebdo']));
@@ -153,28 +155,15 @@ class datePl
             $day = 6;
         }
 
-        // Using 2 weekly schedule (even odd).
-        // Even: position += 7, Mon A = 0, Mon B = 7, Sun B = 13
-        if ($config['nb_semaine'] == '2' and !($semaine%2) and !$config['EDTSamedi']) {
-            $day += 7;
-        }
-        // Using 3 weekly schedule.
-        elseif ($config['nb_semaine'] == '3' and !$config['EDTSamedi']) {
-            if ($semaine3 == 2) {
-                $day += 7;
-            } elseif ($semaine3 == 3) {
-                $day += 14;
-            }
-        }
-
         // Using a schedule with Saturday and one without.
         if ($config['EDTSamedi']) {
             // Check if the current week has Saturday.
             $p=new personnel();
             $p->fetchEDTSamedi($agent_id, $this->dates[0], $this->dates[0]);
             $day += $p->offset;
+        } else {
+            $day += ($semaine3 - 1) * 7;
         }
-
         return $day;
     }
 }

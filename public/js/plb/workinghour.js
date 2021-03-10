@@ -44,6 +44,7 @@ function updateTables() {
         error: function(result) {
         }
   });
+  plHebdoCalculHeures2();
 
 }
 

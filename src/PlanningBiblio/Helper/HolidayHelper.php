@@ -194,11 +194,11 @@ class HolidayHelper extends BaseHelper
     private function getTimes($planning, $date)
     {
         // Sinon, on calcule les heures d'absence
-        $d = new \datePl($date);
+        $d = new \datePl($date, $planning['nb_semaine']);
         $week = $d->semaine3;
+
         $day = $d->position ? $d->position : 7;
         $day = $day + (($week - 1) * 7) - 1;
-
 
         if ($this->config('PlanningHebdo-PauseLibre')) {
             $wh = new WorkingHours($planning['times'], $planning['breaktimes']);
@@ -229,8 +229,9 @@ class HolidayHelper extends BaseHelper
          }
          $times = $p->elements[0]['temps'];
          $breaktimes = $p->elements[0]['breaktime'];
+         $nb_semaine = $p->elements[0]['nb_semaine'];
 
-         return array('times' => $times, 'breaktimes' => $breaktimes);
+         return array('times' => $times, 'breaktimes' => $breaktimes, 'nb_semaine' => $nb_semaine);
     }
 
     private function isClosingDay($date)
