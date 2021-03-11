@@ -1,4 +1,5 @@
 *** Unreleased ***
+plop
 
 - Enhancements
 Move function calculPresence in dedicated class (WorkingHours)
