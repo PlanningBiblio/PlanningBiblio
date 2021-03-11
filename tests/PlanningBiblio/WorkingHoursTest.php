@@ -199,4 +199,26 @@ class WorkingHoursTest extends TestCase
         $this->assertArrayNotHasKey(1, $times, 'Wednesday second part does not exist');
         $this->assertArrayNotHasKey(2, $times, 'Wednesday third part does not exist');
     }
+
+    public function testWithInvalidTime()
+    {
+        $wh = new WorkingHours(array());
+        $times = $wh->hoursOf(0);
+        $this->assertEquals(array(), $times, 'Empty times array return empty array');
+
+        $wh = new WorkingHours('foo');
+        $times = $wh->hoursOf(0);
+        $this->assertEquals(array(), $times, 'Non array times return empty array');
+
+        $working_hours = array(
+            1 => array('0' => '08:00:00', '1' => '12:15:00', '2' => '', '3' => ''),
+            2 => array('0' => '08:00:00', '1' => '', '2' => '', '3' => '10:00:00'),
+            3 => array('0' => '08:00:00', '1' => '10:00:00', '2' => '11:00:00', '3' => '13:00:00'),
+            4 => array('0' => '08:00:00', '1' => '12:00:00', '2' => '13:00:00', '3' => '14:00:00'),
+            5 => array('0' => '08:00:00', '1' => '12:00:00', '2' => '13:00:00', '3' => '14:00:00'),
+        );
+        $wh = new WorkingHours($working_hours);
+        $times = $wh->hoursOf(0);
+        $this->assertEquals(array(), $times, 'Non existing day index return empty array');
+    }
 }
