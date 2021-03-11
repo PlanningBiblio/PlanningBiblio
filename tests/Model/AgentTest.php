@@ -39,7 +39,7 @@ class AgentTest extends TestCase
         $agent->categorie(isset($data['categorie']) ? $data['categorie'] : 'Titulaire');
         $agent->service(isset($data['service']) ? $data['service'] : 'P&ocirc;le informatique');
         $agent->arrivee(isset($data['arrivee']) ? $data['arrivee'] : new DateTime('2021-01-01'));
-        $agent->depart(isset($data['depart']) ? $data['depart'] : new DateTime('0000-00-00'));
+        $agent->depart(isset($data['depart']) ? $data['depart'] : new DateTime('2999-01-01'));
         $agent->postes(isset($data['postes']) ? $data['postes'] : $default_postes);
         $agent->actif(isset($data['actif']) ? $data['actif'] : 'Actif');
         $agent->login(isset($data['login']) ? $data['login'] : 'lkirby');
