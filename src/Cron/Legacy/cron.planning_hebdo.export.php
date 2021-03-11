@@ -1,13 +1,10 @@
 <?php
 /**
-Planning Biblio, Version 2.7.15
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : planningHebdo/cron.exportEDT.php
-Création : 10 août 2018
-Dernière modification : 27 septembre 2018
+@file src/Cron/Legacy/cron.planning_hebdo.export.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -17,7 +14,6 @@ Export les heures de présences vers un fichier CSV
 # Planning Biblio : Exportation des heures de présence tous les jours à minuit
 0 0 * * * /usr/bin/php5 -f /var/www/html/planning/planningHebdo/cron.exportEDT.php
 Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à ce fichier
-@note : Modifiez la variable $path suivante en renseignant le chemin absolu vers votre dossier planningBiblio
 */
 
 /**
@@ -34,7 +30,6 @@ ajouter dans le crontab :
 /usr/bin/php -f /var/www/html/planning/cron.exportEDT.php && /usr/bin/ftp -n < /chemin/vers/fichier/paramFTP.txt
 */
 
-$path="/var/www/html/planning";
 $CSVFile = "/tmp/export-bodet.csv";
 $days_before = 15;
 $days_after = 60;
@@ -47,12 +42,12 @@ session_start();
  */
 $version=$argv[0];
 
-// chdir($path) : important pour l'execution via le cron
-chdir($path);
+// chdir : important pour l'execution via le cron
+chdir(__DIR__ . '/../../../public');
 
-require_once "$path/include/config.php";
-require_once "$path/personnel/class.personnel.php";
-require_once "$path/planningHebdo/class.planningHebdo.php";
+require_once(__DIR__ . '/../../../public/include/config.php');
+require_once(__DIR__ . '/../../../public/personnel/class.personnel.php');
+require_once(__DIR__ . '/../../../public/planningHebdo/class.planningHebdo.php');
 
 $CSRFToken = CSRFToken();
 

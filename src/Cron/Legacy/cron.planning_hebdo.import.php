@@ -1,11 +1,10 @@
 <?php
 /**
-Planning Biblio, Version 2.7
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : planningHebdo/cron.importCSV.php
+@file src/Cron/Legacy/cron.planning_hebdo.import.php
 Création : 1er juillet 2016
 Dernière modification : 29 août 2017
 @author Jérôme Combes <jerome@planningbiblio.fr>
@@ -17,10 +16,7 @@ Import les heures de présences depuis un fichier CSV
 # Planning Biblio : Importation des heures de présence tous les jours à minuit
 0 0 * * * /usr/bin/php5 -f /var/www/html/planning/planningHebdo/cron.importCSV.php
 Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à ce fichier
-@note : Modifiez la variable $path suivante en renseignant le chemin absolu vers votre dossier planningBiblio
 */
-
-$path="/planning";
 
 session_start();
 
@@ -30,11 +26,11 @@ session_start();
  */
 $version=$argv[0];
 
-// chdir($path) : important pour l'execution via le cron
-chdir($path);
+// chdir : important pour l'execution via le cron
+chdir(__DIR__ . '/../../../public');
 
-require_once "$path/include/config.php";
-require_once "$path/personnel/class.personnel.php";
+require_once(__DIR__ . '/../../../public/include/config.php');
+require_once(__DIR__ . '/../../../public/personnel/class.personnel.php');
 
 $CSRFToken = CSRFToken();
 
