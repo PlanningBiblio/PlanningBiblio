@@ -40,7 +40,7 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: cp .circleci/config_tus.ini tests/config.ini
+      - run: cp .circleci/.env.test .env.test
       - run: cp .circleci/.env.local .env.local
       - run: composer install -n --prefer-dist
 
