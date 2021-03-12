@@ -47,7 +47,8 @@
         "symfony/twig-bundle": "*",
         "symfony/validator": "*",
         "symfony/web-link": "*",
-        "symfony/yaml": "*"
+        "symfony/yaml": "*",
+        "composer/composer": "^2.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.13",
