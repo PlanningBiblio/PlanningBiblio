@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManager;
 use Symfony\Component\Dotenv\Dotenv;
 
 $_SERVER['APP_ENV'] = 'test';
+$_SERVER['KERNEL_CLASS'] = 'App\Kernel';
 
 if (!file_exists(__DIR__ . "/../.env.test")) {
     die('Unable to find the .env.test file');
