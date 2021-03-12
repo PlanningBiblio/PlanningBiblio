@@ -1,6 +1,0 @@
-; Config file for uint tests
-
-dbhost = "localhost"
-dbname = "plb_test_db"
-dbuser = "<root_user>"
-dbpass = "<pass>"

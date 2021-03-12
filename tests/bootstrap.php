@@ -3,8 +3,28 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\Dotenv\Dotenv;
 
-$config = parse_ini_file(__DIR__ . '/config.ini');
+$_SERVER['APP_ENV'] = 'test';
+
+if (!file_exists(__DIR__ . "/../.env.test")) {
+    die('Unable to find the .env.test file');
+}
+
+$dotenv = new Dotenv();
+$dotenv->load(__DIR__ . "/../.env.test");
+$database_url = $_ENV['DATABASE_URL'];
+
+$pattern = '/.[^\/]*\/\/(.[^:]*):(.[^@]*)@(.[^:]*):(\d*)\/(.*)/';
+
+$config['dbuser'] = preg_replace($pattern, '\1', $database_url);
+$config['dbpass'] = preg_replace($pattern, '\2', $database_url);
+$config['dbhost'] = preg_replace($pattern, '\3', $database_url);
+$config['dbport'] = preg_replace($pattern, '\4', $database_url);
+$config['dbname'] = preg_replace($pattern, '\5', $database_url);
+$config['dbprefix'] = $_ENV['DATABASE_PREFIX'];
+
+//$config = parse_ini_file(__DIR__ . '/config.ini');
 
 $dbname = $config['dbname'];
 $dbprefix='';
@@ -26,6 +46,10 @@ if ($dbconn) {
     }
     mysqli_close($dblink);
 }
+
+include_once(__DIR__ . '/../init/init.php');
+include_once(__DIR__.'/../init/init_menu.php');
+include_once(__DIR__.'/../init/init_templates.php');
 
 $entitiesPath = array('src/Model');
 $emConfig = Setup::createAnnotationMetadataConfiguration($entitiesPath, true);
