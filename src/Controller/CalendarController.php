@@ -287,12 +287,12 @@ class CalendarController extends BaseController
             // Si l'agent n'est pas absent toute la journée : affiche ses heures de présences
             $presence = array();
             if (!$absent) {
-                $site = $this->config('Multisites-site1');
+                $site_name = $this->config('Multisites-site1');
+                $site = 1;
                 if ($nbSites > 1 and isset($horaires[4])) {
-                    if ($horaires[4] == '-1') {
-                        $site = "tout site";
-                    } elseif ($horaires[4]) {
-                        $site = $this->config('Multisites-site'.$horaires[4]);
+                    $site = $horaires[4];
+                    if ($site != '-1') {
+                        $site_name = $this->config("Multisites-site$site");
                     }
                 }
                 $schedule = array();
@@ -334,8 +334,9 @@ class CalendarController extends BaseController
 
                 if (!empty($schedule)){
                     $presence = array(
-                    "site"=> $site,
-                    "schedule" => $schedule
+                        'site_name' => $site_name,
+                        'site'      => $site,
+                        'schedule'  => $schedule
                     );
                 }
             }
