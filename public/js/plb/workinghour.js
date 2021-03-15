@@ -45,7 +45,7 @@ function updateTables() {
         }
   });
   plHebdoCalculHeures2();
-
+  plHebdoMemePlanning();
 }
 
 $(function(){

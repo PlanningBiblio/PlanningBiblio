@@ -51,16 +51,8 @@ class WorkingHourController extends BaseController
         $fin1 = null;
         $debut1Fr = null;
         $fin1Fr = null;
-        $perso_id = $_SESSION['login_id'];
         $valide_n2 = 0;
         $remplace = null;
-        $sites = array();
-        $nbSites = $this->config('Multisites-nombre');
-        $multisites = array();
-        for ($i = 1; $i < $nbSites+1; $i++) {
-            $sites[] = $i;
-            $multisites[$i] = $this->config("Multisites-site{$i}");
-        }
 
         switch ($nbSemaine) {
             case 1:
@@ -84,6 +76,11 @@ class WorkingHourController extends BaseController
         $p = new \personnel();
         $p->fetchById($perso_id);
         $sites = $p->elements[0]['sites'];
+        $nbSites = sizeof($sites);
+        $multisites = array();
+        foreach ($sites as $site) {
+            $multisites[$site] = $this->config("Multisites-site{$site}");
+        }
 
         if ($ph_id != null) {
             $p = new \planningHebdo();
