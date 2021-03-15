@@ -76,7 +76,11 @@
                   {% if d.presence is not empty %}
                     {% if d.presence.schedule | length > 1 %}
                       {% if nbSites > 1 %}
-                        <p style='margin-bottom:0;'> Présence / {{ d.presence.site }} : </p>
+                        {% if d.presence.site == -1 %}
+                          <p style='margin-bottom:0;'> Présence sur tous les sites : </p>
+                        {% else %}
+                          <p style='margin-bottom:0;'> Présence à {{ d.presence.site_name }} : </p>
+                        {% endif %}
                       {% else %}
                         <p style='margin-bottom:0;'> Présence :</p>
                       {% endif %}
@@ -87,7 +91,11 @@
                       </ul>
                     {% else %}
                       {% if nbSites > 1 %}
-                        <p> Présent(e) à {{ d.presence.site }} de {{ d.presence.schedule[0].begin }} à {{ d.presence.schedule[0].end }} </p>
+                        {% if d.presence.site == -1 %}
+                          <p> Présent(e) sur tous les sites de {{ d.presence.schedule[0].begin }} à {{ d.presence.schedule[0].end }} </p>
+                        {% else %}
+                          <p> Présent(e) à {{ d.presence.site_name }} de {{ d.presence.schedule[0].begin }} à {{ d.presence.schedule[0].end }} </p>
+                        {% endif %}
                       {% else %}
                         <p> Présent(e) de {{ d.presence.schedule[0].begin }} à {{ d.presence.schedule[0].end }} </p>
                       {% endif %}
