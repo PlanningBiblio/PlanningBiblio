@@ -388,14 +388,9 @@ class planningHebdo
 
     private function merge($from, $to)
     {
-        $start_exception = $from['debut'];
-        $end_exception = $from['fin'];
-
-        $d = new datePl($start_exception);
-        foreach ($d->dates as $pl_index => $date ) {
-            if ($date >= $start_exception
-                && $date <= $end_exception) {
-                $to['temps'][$pl_index] = $from['temps'][$pl_index];
+        foreach ($from['temps'] as $day => $hours ) {
+            if (isset($to['temps'][$day])) {
+                $to['temps'][$day] = $from['temps'][$day];
             }
         }
 
