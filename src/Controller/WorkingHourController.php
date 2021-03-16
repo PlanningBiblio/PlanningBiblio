@@ -281,10 +281,7 @@ class WorkingHourController extends BaseController
     public function add(Request $request, Session $session){
         // Initialisation des variables
         $copy = $request->get('copy');
-        $request_exception = $request->get('exception');
         $retour = $request->get('retour');
-        $is_exception = 0;
-        $exception_id = '';
         $droits = $GLOBALS['droits'];
         $lang = $GLOBALS['lang'];
         $nbSemaine = $this->config('nb_semaine');
@@ -294,13 +291,6 @@ class WorkingHourController extends BaseController
         $id = null;
         $tab = array();
         $action = "ajout";
-        $exception_back = '/myaccount';
-        if ($retour != '/myaccount') {
-            $exception_back = $retour;
-            $retour = "$retour";
-        } else {
-           $retour = "$exception_back";
-        }
 
         $is_new = 1;
         // Sécurité
@@ -345,11 +335,7 @@ class WorkingHourController extends BaseController
             $db->select2('personnel', null, array('supprime'=>0), 'order by nom,prenom');
         }
         $nomAgent = nom($perso_id, "prenom nom");
-        if ($request_exception) {
-            $debut1Fr = '';
-            $fin1Fr = '';
-            $exception_id = $id;
-        }
+
         if ($this->config('PlanningHebdo-notifications-agent-par-agent') and !$adminN2) {
             // Sélection des agents gérés (table responsables) et de l'agent logué
             $perso_ids = array($_SESSION['login_id']);
@@ -404,12 +390,12 @@ class WorkingHourController extends BaseController
                 "CSRFSession"        => $request->get('CSRFToken'),
                 "debut1"             => $debut1,
                 "debut1Fr"           => $debut1Fr,
-                "exception_id"       => $exception_id,
-                "exception_back"     => $exception_back,
+                "exception_id"       => null,
+                "exception_back"     => null,
                 "fin1"               => $fin1,
                 "fin1Fr"             => $fin1Fr,
                 "id"                 => $id,
-                "is_exception"       => $is_exception,
+                "is_exception"       => null,
                 "is_new"             => $is_new,
                 "lang"               => $lang,
                 "login_id"           => $_SESSION['login_id'],
@@ -423,7 +409,7 @@ class WorkingHourController extends BaseController
                 "perso_id"           => $perso_id,
                 "remplace"           => null,
                 "retour"             => $retour,
-                "request_exception"  => $request_exception,
+                "request_exception"  => null,
                 "selected1"          => null,
                 "selected2"          => null,
                 "selected3"          => null,
