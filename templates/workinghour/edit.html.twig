@@ -52,11 +52,11 @@
         <div id='periode'>
           <p>
             <label for='debut'>Début d'utilisation</label>
-            <input type='text' name='debut' value='{{ debut1Fr }}' class='datepicker' style='position:absolute; left:200px; width:200px;' />
+            <input type='text' name='debut' {% if copy is null and request_exception is null %}value='{{ debut1Fr }}'{% endif %} class='datepicker' style='position:absolute; left:200px; width:200px;' />
           </p>
           <p>
             <label for='fin'>Fin d'utilisation</label>
-            <input type='text' name='fin' value='{{ fin1Fr }}' class='datepicker' style='position:absolute; left:200px; width:200px;' />
+            <input type='text' name='fin' {% if copy is null and request_exception is null %}value='{{ fin1Fr }}'{% endif %} class='datepicker' style='position:absolute; left:200px; width:200px;' />
           </p>
         </div> <!-- id=periode -->
         <div id='cycle'>

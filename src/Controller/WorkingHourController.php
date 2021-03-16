@@ -22,7 +22,6 @@ class WorkingHourController extends BaseController
         $nbSemaine = $request->get('weeks');
         $perso_id = $request->get('perso_id');
         $ph_id = $request->get('ph_id');
-        $copy = $request->get('copy');
 
         if (!$nbSemaine || !$perso_id) {
             $response = new Response();
@@ -32,11 +31,8 @@ class WorkingHourController extends BaseController
         }
 
         $droits = $GLOBALS['droits'];
-        $lang = $GLOBALS['lang'];
         $pause2_enabled = $this->config('PlanningHebdo-Pause2');
         $pauseLibre_enabled = $this->config('PlanningHebdo-PauseLibre');
-        $validation = "";
-        $id = null;
 
         // Sécurité
         $adminN1 = in_array(1101, $droits);
@@ -46,13 +42,6 @@ class WorkingHourController extends BaseController
         if ($notAdmin and !$this->config('PlanningHebdo-Agents')) {
             $modifAutorisee = false;
         }
-        $cle = null;
-        $debut1 = null;
-        $fin1 = null;
-        $debut1Fr = null;
-        $fin1Fr = null;
-        $valide_n2 = 0;
-        $remplace = null;
 
         switch ($nbSemaine) {
             case 1:
@@ -86,18 +75,10 @@ class WorkingHourController extends BaseController
             $p = new \planningHebdo();
             $p->id = $ph_id;
             $p->fetch();
-            $debut1 = $p->elements[0]['debut'];
-            $fin1 = $p->elements[0]['fin'];
-            $debut1Fr = dateFr($debut1);
-            $fin1Fr = dateFr($fin1);
             $perso_id = $p->elements[0]['perso_id'];
             $temps = $p->elements[0]['temps'];
             $breaktime = $p->elements[0]['breaktime'];
 
-            if ($p->elements[0]['exception']) {
-                $is_exception = 1;
-                $exception_id = $p->elements[0]['exception'];
-            }
         }
 
         $fin = $this->config('Dimanche') ? array(8,15,22,29,36,43,50,57,64,71) : array(7,14,21,28,36,42,49,56,63,70);
@@ -368,7 +349,6 @@ class WorkingHourController extends BaseController
             $debut1Fr = '';
             $fin1Fr = '';
             $exception_id = $id;
-            $id = '';
         }
         if ($this->config('PlanningHebdo-notifications-agent-par-agent') and !$adminN2) {
             // Sélection des agents gérés (table responsables) et de l'agent logué
@@ -560,10 +540,7 @@ class WorkingHourController extends BaseController
         $nomAgent = nom($perso_id, "prenom nom");
         if ($request_exception) {
             $is_exception = 1;
-            $debut1Fr = '';
-            $fin1Fr = '';
             $exception_id = $id;
-            $id = '';
         }
 
         if ($this->config('PlanningHebdo-notifications-agent-par-agent') and !$adminN2 and $copy) {
