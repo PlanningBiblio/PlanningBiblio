@@ -81,14 +81,14 @@ class WorkingHourController extends BaseController
 
         }
 
-        $fin = $this->config('Dimanche') ? array(8,15,22,29,36,43,50,57,64,71) : array(7,14,21,28,36,42,49,56,63,70);
+        $fin = $this->config('Dimanche') ? array(7,14,21,28,35,42,49,56,63,70) : array(6,13,20,27,34,41,48,55,62,69);
         $debut = array(1,8,15,22,29,36,43,50,57,64);
         $jours = array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
         $selectTemps = array();
         $breaktime_h = array();
         $GLOBALS['temps'] = $temps;
         for ($j = 0; $j < $nbSemaine; $j++) {
-            for ($i = $debut[$j]; $i < $fin[$j]; $i++) {
+            for ($i = $debut[$j]; $i <= $fin[$j]; $i++) {
                 $k = $i-($j*7)-1;
                 $breaktime[$i-1] = isset($breaktime[$i-1]) ? $breaktime[$i-1] : 0;
                 if ($modifAutorisee) {
