@@ -396,7 +396,7 @@ class planningHebdo
         foreach ($d->dates as $pl_index => $date ) {
             if ($date >= $start_exception
                 && $date <= $end_exception) {
-                $to['temps'][$pl_index] = $from['temps'][$pl_index];
+                $to['temps'][$pl_index] = $from['temps'][$pl_index] ?? null;
             }
         }
 
