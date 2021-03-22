@@ -55,9 +55,7 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categ
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Configuration des lignes des tableaux', 22, 'Configuration des tableaux', 'planning/postes_cfg/lignes.php','Planning',140);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Activités - Index', 5, 'Gestion des postes','/skill','Postes',160);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Activités - Création', 5, 'Gestion des postes','/skill/add','Postes',160);";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Planning - Modèles', 301, 'Création / modification des plannings, utilisation et gestion des modèles','planning/modeles/index.php','Planning','110');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Planning - Modèles', 301, 'Création / modification des plannings, utilisation et gestion des modèles','planning/modeles/modif.php','Planning','110');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Planning - Modèles', 301, 'Création / modification des plannings, utilisation et gestion des modèles','planning/modeles/valid.php','Planning','110');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Planning - Modèles', 301, 'Création / modification des plannings, utilisation et gestion des modèles','/model','Planning','110');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Configuration des tableaux - Modif',22,'Configuration des tableaux','','Planning',140);";
 $sql[]="INSERT INTO `{$dbprefix}acces` (id, nom, groupe_id, groupe, page, ordre, categorie) VALUES (NULL, 'Afficher les informations', 23, 'Informations', '/admin/info', 0, 'Informations');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (id, nom, groupe_id, groupe, page, ordre, categorie) VALUES (NULL, 'Ajouter une information', 23, 'Informations', '/admin/info/add', 0, 'Informations');";
@@ -426,7 +424,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('50','20','Les activit&eacute;s','/skill',NULL),
   ('50','30','Les agents','/agent',NULL),
   ('50','40','Les postes','/position',NULL),
-  ('50','50','Les mod&egrave;les','planning/modeles/index.php',NULL),
+  ('50','50','Les mod&egrave;les','/model',NULL),
   ('50','60','Les tableaux','/framework',NULL),
   ('50','70','Jours de fermeture','/closingday',NULL),
   ('50','75','Heures de présence','/workinghour','config=PlanningHebdo'),
