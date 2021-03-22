@@ -285,7 +285,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_lignes` (
 
 $sql[]="CREATE TABLE `{$dbprefix}pl_poste_modeles` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nom` text NOT NULL,
+  `model_id` INT(11) NOT NULL DEFAULT '0',
   `perso_id` int(11) NOT NULL,
   `poste` int(11) NOT NULL,
   `commentaire` TEXT NOT NULL,
@@ -300,6 +300,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_modeles` (
 $sql[]="CREATE TABLE `{$dbprefix}pl_poste_modeles_tab` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `nom` TEXT NOT NULL,
+  `model_id` INT(11) NOT NULL DEFAULT '0',
   `jour` INT NOT NULL,
   `tableau` INT NOT NULL,
   `site` INT(1) NOT NULL DEFAULT '1',

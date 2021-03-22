@@ -3,9 +3,8 @@
 Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2019 Jérôme Combes
 
-Fichier : planning/poste/importer.php
+@file public/planning/poste/importer.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -23,8 +22,9 @@ use App\Model\Agent;
 $CSRFToken=filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
 $date=filter_input(INPUT_GET, "date", FILTER_SANITIZE_STRING);
 $get_absents=filter_input(INPUT_GET, "absents", FILTER_SANITIZE_STRING);
-$get_nom=filter_input(INPUT_GET, "nom", FILTER_SANITIZE_STRING);
+$model = filter_input(INPUT_GET, "model", FILTER_SANITIZE_STRING);
 $site=filter_input(INPUT_GET, "site", FILTER_SANITIZE_NUMBER_INT);
+$week = filter_input(INPUT_GET, "week", FILTER_SANITIZE_NUMBER_INT);
 
 // Contrôle sanitize en 2 temps pour éviter les erreurs CheckMarx
 $date=filter_var($date, FILTER_CALLBACK, array("options"=>"sanitize_dateSQL"));
@@ -45,21 +45,26 @@ echo <<<EOD
   <b>Importation d'un modèle</b>
   <br/><br/>
 EOD;
-if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
+if (!$model) {		// Etape 1 : Choix du modèle à importer
+    $week = 0;
+    $semaine = " ";
+
     $db=new db();
-    $db->select2("pl_poste_modeles", array("nom","jour"), array("site"=>$site), "GROUP BY `nom`");
+    $db->select2("pl_poste_modeles_tab", array("model_id", "nom", "jour"), array("site" => $site), "GROUP BY `nom`");
     if (!$db->result) {			// Aucun modèle enregistré
         echo "Aucun modèle enregistré<br/><br/><a href='javascript:popup_closed();'>Fermer</a>\n";
     } elseif ($db->nb==1) {			// Si un seul modèle est enregistré
         echo $attention;
-        $semaine=$db->result[0]['jour']?"(semaine) ":null;
-        $sem=$db->result[0]['jour']?"###semaine":null;
-        $nom=$db->result[0]['nom'].$sem;
+        $model_id = $db->result[0]['model_id'];
+        if ($db->result[0]['jour'] != 9) {
+            $week = 1;
+            $semaine = "(semaine) ";
+        }
         echo "<form name='form' method='get' action='index.php' onsubmit='return ctrl_form(\"nom\");'>\n";
         echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
         echo "<input type='hidden' name='page' value='planning/poste/importer.php' />\n";
         echo "<input type='hidden' name='menu' value='off' />\n";
-        echo "<input type='hidden' name='nom' value='$nom' />\n";
+        echo "<input type='hidden' name='model' value='$model_id' />\n";
         echo "<input type='hidden' name='date' value='$date' />\n";
         echo "<input type='hidden' name='site' value='$site' />\n";
         echo "Importer le modèle \"{$db->result[0]['nom']}\" $semaine?<br/><br/>\n";
@@ -78,12 +83,15 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
         echo "<input type='hidden' name='menu' value='off' />\n";
         echo "<input type='hidden' name='date' value='$date' />\n";
         echo "<input type='hidden' name='site' value='$site' />\n";
-        echo "<select name='nom' id='nom'>\n";
+        echo "<select name='model' id='model'>\n";
         echo "<option value=''>&nbsp;</option>\n";
         foreach ($db->result as $elem) {
-            $semaine=$elem['jour']?"&nbsp;&nbsp;&nbsp;(semaine)":null;
-            $sem=$elem['jour']?"###semaine":null;
-            echo "<option value='{$elem['nom']}$sem'>{$elem['nom']} $semaine</option>\n";
+            $week = 0;
+            if ($elem['jour'] !=9 ) {
+                $week = 1;
+                $semaine = " (semaine)";
+            }
+            echo "<option value='{$elem['model_id']}_$week'>{$elem['nom']} $semaine</option>\n";
         }
         echo "</select><br/>\n";
         echo "Importer les absents ?&nbsp;&nbsp;";
@@ -94,21 +102,19 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
         echo "</form>\n";
     }
 } else {					// Etape 2 : Insertion des données
-    $semaine=false;
+    $week = preg_replace('/(\d+)_(\d+)/', "$2", $model);
+    $model = preg_replace('/(\d+)_(\d+)/', "$1", $model);
+
     $dates=array();
     $d=new datePl($date);
-    if (substr($get_nom, -10)=="###semaine") {	// S'il s'agit d'un modèle sur une semaine
-        $semaine=true;
+    if ($week) {	// S'il s'agit d'un modèle sur une semaine
         foreach ($d->dates as $elem) {	// Recherche de toute les dates de la semaine en cours pour insérer les données
             $dates[]=$elem;
         }
     } else {
         $dates[0]=$date;			// S'il ne s'agit pas d'un modèle semaine, insertion seulement pour le jour en cours
     }
-    $nom=str_replace("###semaine", "", $get_nom);
-    $nom=htmlentities($nom, ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
-  
-  
+
     // Recherche des agents placés sur d'autres sites
     $autres_sites = array();
     if ($config['Multisites-nombre']>1) {
@@ -143,15 +149,16 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
 
         // Importation du tableau
         // S'il s'agit d'un modèle pour une semaine
-        if ($semaine) {
+        if ($week) {
             $db=new db();
-            $db->select2("pl_poste_modeles_tab", "*", array("nom"=>$nom, "site"=>$site, "jour"=>$i));
+            $db->select2("pl_poste_modeles_tab", "*", array("model_id"=>$model, "site"=>$site, "jour"=>$i));
         // S'il s'agit d'un modèle pour un seul jour
         } else {
             $db=new db();
-            $db->select2("pl_poste_modeles_tab", "*", array("nom"=>$nom, "site"=>$site));
+            $db->select2("pl_poste_modeles_tab", "*", array("model_id"=>$model, "site"=>$site));
         }
 
+        $model = $db->result[0]['model_id'];
         $tableau=$db->result[0]['tableau'];
         $db=new db();
         $db->CSRFToken = $CSRFToken;
@@ -183,13 +190,13 @@ if (!$get_nom) {		// Etape 1 : Choix du modèle à importer
 
         // Importation des agents
         // S'il s'agit d'un modèle pour une semaine
-        if ($semaine) {
+        if ($week) {
             $db=new db();
-            $db->select2("pl_poste_modeles", "*", array("nom"=>$nom, "site"=>$site, "jour"=>$i));
+            $db->select2("pl_poste_modeles", "*", array("model_id" => $model, "site"=>$site, "jour"=>$i));
         // S'il s'agit d'un modèle pour un seul jour
         } else {
             $db=new db();
-            $db->select2("pl_poste_modeles", "*", array("nom"=>$nom, "site"=>$site));
+            $db->select2("pl_poste_modeles", "*", array("model_id" => $model, "site"=>$site));
         }
 
     

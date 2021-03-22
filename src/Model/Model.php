@@ -10,6 +10,9 @@ class Model extends PLBEntity
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 
+    /** @Column(type="integer") **/
+    protected $model_id;
+
     /** @Column(type="string") **/
     protected $nom;
 
