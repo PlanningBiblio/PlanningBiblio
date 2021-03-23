@@ -2199,6 +2199,53 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="20.11.00.013";
+if (version_compare($config['Version'], $v) === -1) {
+    // Symfonize stats saturday
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='statistiques/samedis.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` SET  `url`='/statistics/saturday' WHERE `url`='statistiques/samedis.php';";
+
+
+    // Symfonize admin models
+    $sql[] = "UPDATE `{$dbprefix}menu` SET `url` = '/model' WHERE `url` = 'planning/modeles/index.php';";
+    $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `page` = 'planning/modeles/index.php';";
+    $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `page` = 'planning/modeles/modif.php';";
+    $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `page` = 'planning/modeles/valid.php';";
+
+    $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_modeles_tab` ADD `model_id` INT(11) NOT NULL DEFAULT '0' AFTER `nom`;";
+    $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_modeles` ADD `model_id` INT(11) NOT NULL DEFAULT '0' AFTER `nom`;";
+
+    $db = new db();
+    $db->select2('pl_poste_modeles_tab', array('id', 'nom', 'site'), null, "ORDER BY `site`, `nom`, `id`");
+
+    $last = null;
+    $model = 0;
+
+    if ($db->result) {
+        foreach ($db->result as $elem) {
+            if ($elem['nom'] . '_' . $elem['site'] != $last) {
+                $model++;
+                $last = $elem['nom'] . '_' . $elem['site'];
+            }
+            $sql[] = "UPDATE `{$dbprefix}pl_poste_modeles_tab` SET `model_id` = '$model' WHERE `id` = '{$elem['id']}';";
+            $sql[] = "UPDATE `{$dbprefix}pl_poste_modeles` SET `model_id` = '$model' WHERE `nom` = '{$elem['nom']}';";
+        }
+    }
+
+    $sql[] = "ALTER TABLE `{$dbprefix}pl_poste_modeles` DROP COLUMN `nom`;";
+
+    $db = new db();
+    $db->select2('pl_poste_modeles_tab', array('id', 'nom'), "nom LIKE '%&%'");
+    if ($db->result) {
+        foreach ($db->result as $elem) {
+            $nom = html_entity_decode($elem['nom']);
+            $sql[] = "UPDATE `{$dbprefix}pl_poste_modeles_tab` SET `nom` = '$nom' WHERE `id` = '{$elem['id']}';";
+        }
+    }
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();

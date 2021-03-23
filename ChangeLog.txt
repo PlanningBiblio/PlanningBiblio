@@ -26,6 +26,9 @@ The user can select the validation level when adding an holiday
 Statistics: remove former folder templates/statistiques
 Notification page: move notifications.js to public/js/plb. Add baseURL to Ajax query
 Hamac import: Optimize log
+Symfonize models
+Symfonize stats staturday
+Integration with CircleCI (Continuous integration service)
 
 
 -Fixes
