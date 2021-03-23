@@ -37,6 +37,8 @@
     - 22
 "framework.delete_selected_tables":
     - 22
+"framework.restore_table":
+    - 22
 "framework.add_group":
     - 22
 "framework.edit_group":
