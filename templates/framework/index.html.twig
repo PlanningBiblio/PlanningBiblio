@@ -2,7 +2,7 @@
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
-  <script type="text/JavaScript" src="{{ app.request.getBaseURL() }}/planning/postes_cfg/js/tableaux.js?version={{ version }}"></script>
+  <script type="text/JavaScript" src="{{ app.request.getBaseURL() }}/js/framework.js?version={{ version }}"></script>
   <script type="text/JavaScript">
     $(document).ready(function(){
       $("#copy-div").dialog({
