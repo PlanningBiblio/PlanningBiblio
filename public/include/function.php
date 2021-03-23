@@ -107,7 +107,7 @@ class datePl
                $this->semaine3 = $this->getCycleNumber($this->semaine, 4);
 
             default:
-                $interval = $this->getNumberOfWeeksSinceStartDate();
+                $interval = $this->getNumberOfWeeksSinceStartDate($date);
                 $this->semaine3 = $this->getCycleNumber($this->semaine, $this->nb_semaine);
                 break;
         }
