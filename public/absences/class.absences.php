@@ -33,6 +33,7 @@ use App\Model\Agent;
 use App\Model\AbsenceReason;
 use App\Model\AbsenceDocument;
 use App\PlanningBiblio\WorkingHours;
+use App\PlanningBiblio\PublicHoliday;
 
 
 class absences
@@ -489,8 +490,6 @@ class absences
     {
         $version=$GLOBALS['config']['Version'];
 
-        require_once __DIR__."/../joursFeries/class.joursFeries.php";
-
         $hre_debut=substr($debut, -8);
         $hre_fin=substr($fin, -8);
         $hre_fin=$hre_fin=="00:00:00"?"23:59:59":$hre_fin;
@@ -505,7 +504,7 @@ class absences
         while ($current<=$fin) {
 
       // On ignore les jours de fermeture
-            $j=new joursFeries();
+            $j = new PublicHoliday();
             $j->fetchByDate($current);
             if (!empty($j->elements)) {
                 foreach ($j->elements as $elem) {
@@ -590,8 +589,6 @@ class absences
     {
         $version=$GLOBALS['config']['Version'];
 
-        require_once __DIR__."/../joursFeries/class.joursFeries.php";
-
         $debut=$this->debut;
         $edt=$this->edt;
         $fin=$this->fin;
@@ -611,7 +608,7 @@ class absences
         while ($current<=$fin) {
             // On ignore les jours de fermeture
             if (!$this->ignoreFermeture) {
-                $j=new joursFeries();
+                $j = new PublicHoliday();
                 $j->fetchByDate($current);
                 if (!empty($j->elements)) {
                     foreach ($j->elements as $elem) {

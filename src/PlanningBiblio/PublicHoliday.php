@@ -1,30 +1,10 @@
 <?php
-/**
-Planning Biblio, Version 2.7
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : joursFeries/class.joursFeries.php
-Création : 25 juillet 2013
-Dernière modification : 7 août 2017
-@author Jérôme Combes <jerome@planningbiblio.fr>
+namespace App\PlanningBiblio;
 
-Description :
-Fichier regroupant les fonctions nécessaires à la gestion des jours féries
-Appelée par les autres fichiers de ce dossier
-*/
+require_once(__DIR__ . "/../../public/include/feries.php");
 
-// pas de $version=acces direct aux pages de ce dossier => Accès refusé
-$version = $GLOBALS['version'] ?? null;
-
-if (!isset($version) and php_sapi_name() != 'cli') {
-    include_once "../include/accessDenied.php";
-}
-
-require_once(__DIR__ . "/../include/feries.php");
-
-class joursFeries
+class PublicHoliday
 {
     public $annee=null;
     public $debut=null;

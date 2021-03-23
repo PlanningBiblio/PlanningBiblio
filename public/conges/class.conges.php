@@ -21,11 +21,11 @@ if (!isset($version) and php_sapi_name() != 'cli') {
 }
 
 require_once __DIR__."/../planningHebdo/class.planningHebdo.php";
-require_once __DIR__."/../joursFeries/class.joursFeries.php";
 require_once __DIR__."/../personnel/class.personnel.php";
 require_once __DIR__."/../absences/class.absences.php";
 
 use App\PlanningBiblio\WorkingHours;
+use App\PlanningBiblio\PublicHoliday;
 
 class conges
 {
@@ -116,7 +116,7 @@ class conges
         while ($current<=$fin) {
 
       // On ignore les jours de fermeture
-            $j=new joursFeries();
+            $j = new PublicHoliday();
             $j->fetchByDate($current);
             if (!empty($j->elements)) {
                 foreach ($j->elements as $elem) {

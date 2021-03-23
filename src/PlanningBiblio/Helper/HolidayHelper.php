@@ -5,9 +5,9 @@ namespace App\PlanningBiblio\Helper;
 use App\PlanningBiblio\Helper\BaseHelper;
 use App\PlanningBiblio\Helper\WeekPlanningHelper;
 use App\PlanningBiblio\WorkingHours;
+use App\PlanningBiblio\PublicHoliday;
 use App\Model\Agent;
 
-include_once(__DIR__ . '/../../../public/joursFeries/class.joursFeries.php');
 include_once __DIR__ . '/../../../public/planningHebdo/class.planningHebdo.php';
 include_once(__DIR__ . '/../../../public/include/function.php');
 
@@ -284,7 +284,7 @@ class HolidayHelper extends BaseHelper
 
     private function isClosingDay($date)
     {
-        $j = new \joursFeries();
+        $j = new PublicHoliday();
         $j->fetchByDate($date);
         if (!empty($j->elements)) {
             foreach ($j->elements as $elem) {
