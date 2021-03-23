@@ -20,7 +20,6 @@ Cette page est appelée par la page index.php
 */
 
 require_once "class.planning.php";
-require_once "planning/postes_cfg/class.tableaux.php";
 require_once __DIR__."/../volants/class.volants.php";
 include_once "absences/class.absences.php";
 include_once __DIR__ . "/../../conges/class.conges.php";
@@ -32,6 +31,7 @@ include "fonctions.php";
 
 use App\Model\AbsenceReason;
 use App\PlanningBiblio\PresentSet;
+use App\PlanningBiblio\Framework;
 
 // Initialisation des variables
 $CSRFToken=filter_input(INPUT_GET, "CSRFToken", FILTER_SANITIZE_STRING);
@@ -63,7 +63,7 @@ $dateAlpha=dateAlpha($date);
 $_SESSION['oups']['week']=false;
 //		------------------		FIN DATE		-----------------------//
 //		------------------		TABLEAU		-----------------------//
-$t=new tableau();
+$t = new Framework();
 $t->fetchAllGroups();
 $groupes=$t->elements;
 
@@ -247,7 +247,7 @@ if (!isset($db->result[0]['tableau']) and !$tableau and !$groupe and $autorisati
     include "include/footer.php";
     exit;
 } elseif ($groupe and $autorisationN2) {	//	Si Groupe en argument
-    $t=new tableau();
+    $t = new Framework();
     $t->fetchGroup($groupe);
     $groupeTab=$t->elements;
     $tmp=array();
@@ -404,7 +404,7 @@ if (!$verrou and !$autorisationN1) {
     }
 
     // Récupération de la structure du tableau
-    $t=new tableau();
+    $t = new Framework();
     $t->id=$tab;
     $t->get();
     $tabs=$t->elements;

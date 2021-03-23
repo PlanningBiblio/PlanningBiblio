@@ -35,12 +35,14 @@ $version=$argv[0];
 
 // chdir($path) : important pour l'execution via le cron
 chdir($path);
+require_once "$path/vendor/autoload.php";
 
-require_once "$path/include/config.php";
-require_once "$path/include/function.php";
-require_once "$path/absences/class.absences.php";
-require_once "$path/planning/postes_cfg/class.tableaux.php";
-require_once "$path/postes/class.postes.php";
+use App\PlanningBiblio\Framework;
+
+require_once "$path/public/include/config.php";
+require_once "$path/public/include/function.php";
+require_once "$path/public/absences/class.absences.php";
+require_once "$path/public/postes/class.postes.php";
 
 
 // Génération d'un CSRF Token
@@ -94,6 +96,7 @@ $dbh->CSRFToken = $CSRFToken;
 $dbh->prepare("SELECT `id`,`perso_id`,`absent` FROM `{$dbprefix}pl_poste` 
   WHERE `date`=:date AND `site`=:site AND `poste`=:poste AND `debut`=:debut AND `fin`=:fin AND `absent`='0' AND `supprime`='0';");
 
+
 // Pour chaque date et pour chaque site
 foreach ($dates as $date) {
     foreach ($sites as $site) {
@@ -124,7 +127,7 @@ foreach ($dates as $date) {
 
         // On recherche les plannings qui ne sont pas complets (cellules vides)
         // Recherche des tableaux (structures)
-        $t=new tableau();
+        $t = new Framework();
         $t->id=$tableauId;
         $t->get();
         $tableau=$t->elements;

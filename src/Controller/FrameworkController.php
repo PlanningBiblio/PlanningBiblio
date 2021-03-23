@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
+use App\PlanningBiblio\Framework;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -10,7 +11,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-require_once(__DIR__ . '/../../public/planning/postes_cfg/class.tableaux.php');
 require_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
 require_once(__DIR__ . '/../../public/postes/class.postes.php');
 
@@ -23,12 +23,12 @@ class FrameworkController extends BaseController
         $nbSites = $this->config('Multisites-nombre');
 
         // Tableaux
-        $t = new \tableau();
+        $t = new Framework();
         $t->fetchAll();
         $tableaux = $t->elements;
 
         // Tableaux supprimés
-        $t = new \tableau();
+        $t = new Framework();
         $t->supprime = true;
         $t->fetchAll();
         $tableauxSupprimes = $t->elements;
@@ -69,7 +69,7 @@ class FrameworkController extends BaseController
             }
         }
         //		Groupes
-        $t = new \tableau();
+        $t = new Framework();
         $t->fetchAllGroups();
         $groupes = $t->elements;
 
@@ -137,14 +137,14 @@ class FrameworkController extends BaseController
             $db->CSRFToken = $CSRFToken;
             $db->insert("pl_poste_tab", $insert);
 
-            $t = new \tableau();
+            $t = new Framework();
             $t->id = $numero;
             $t->CSRFToken = $CSRFToken;
             $t->setNumbers($nombre);
 
             return $this->json((int) $numero);
         } else {  // Modification
-            $t = new \tableau();
+            $t = new Framework();
             $t->id = $id;
             $t->CSRFToken = $CSRFToken;
             $t->setNumbers($nombre);
@@ -267,7 +267,7 @@ class FrameworkController extends BaseController
         }
 
         // Nombre de tableaux
-        $t = new \tableau();
+        $t = new Framework();
         $t->id = $tableauNumero;
         $t->getNumbers();
         $nombre = $t->length;
@@ -348,7 +348,7 @@ class FrameworkController extends BaseController
         $lignes_sep = $db->result;
 
         // Le tableau (contenant les sous-tableaux)
-        $t = new \tableau();
+        $t = new Framework();
         $t->id = $tableauNumero;
         $t->get();
         $tabs = $t->elements;
@@ -539,7 +539,7 @@ class FrameworkController extends BaseController
         $CSRFToken = $post['CSRFToken'];
         $tableau = $post['tableau'];
 
-        $t = new \tableau();
+        $t = new Framework();
         $t->number = $tableau;
         $t->CSRFToken = $CSRFToken;
         $t->deleteTab();
@@ -645,12 +645,12 @@ class FrameworkController extends BaseController
         }
 
         //	Recherche des tableaux
-        $t = new \tableau();
+        $t = new Framework();
         $t->fetchAll();
         $tableaux = $t->elements;
 
         //	Recherche des groupes
-        $t = new \tableau();
+        $t = new Framework();
         $t->fetchAllGroups();
         $groupes = $t->elements;
 
@@ -694,18 +694,18 @@ class FrameworkController extends BaseController
         }
 
         //	Recherche des tableaux
-        $t = new \tableau();
+        $t = new Framework();
         $t->fetchAll();
         $tableaux = $t->elements;
 
         //	Recherche des groupes
-        $t = new \tableau();
+        $t = new Framework();
         $t->fetchAllGroups();
         $groupes = $t->elements;
 
         //	Modification d'un groupe
         //	Recherche du groupe
-        $t = new \tableau();
+        $t = new Framework();
         $t->fetchGroup($id);
         $groupe=$t->elements;
 
@@ -745,7 +745,7 @@ class FrameworkController extends BaseController
         unset($post['CSRFToken']);
         unset($post['page']);
 
-        $t = new \tableau();
+        $t = new Framework();
         $t->CSRFToken = $CSRFToken;
         $t->update($post);
 
@@ -759,7 +759,7 @@ class FrameworkController extends BaseController
         $CSRFToken =  $request->request->get("CSRFToken");
         $id = $request->request->get("id");
         
-        $t = new \tableau();
+        $t = new Framework();
         $t->id = $id;
         $t->CSRFToken = $CSRFToken;
         $t->deleteGroup();
@@ -853,7 +853,7 @@ class FrameworkController extends BaseController
         $id = $post['id'];
         $CSRFToken = $post['CSRFToken'];
 
-        $t = new \tableau();
+        $t = new Framework();
         $t->id = $id;
         $t->CSRFToken = $CSRFToken;
         $t->deleteLine();
