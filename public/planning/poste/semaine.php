@@ -17,7 +17,6 @@ Cette page est appelée par la page index.php
 */
 
 require_once "class.planning.php";
-require_once "planning/postes_cfg/class.tableaux.php";
 include_once "absences/class.absences.php";
 include_once __DIR__ . "/../../conges/class.conges.php";
 include_once "activites/class.activites.php";
@@ -25,6 +24,7 @@ include_once "personnel/class.personnel.php";
 include "fonctions.php";
 
 use App\Model\AbsenceReason;
+use App\PlanningBiblio\Framework;
 
 // Initialisation des variables
 $groupe=filter_input(INPUT_GET, "groupe", FILTER_SANITIZE_NUMBER_INT);
@@ -338,7 +338,7 @@ for ($j=0;$j<=$fin;$j++) {
         //--------------	Affichage du tableau			------------//
 
         // Récupération de la structure du tableau
-        $t=new tableau();
+        $t = new Framework();
         $t->id=$tab;
         $t->get();
         $tabs=$t->elements;
