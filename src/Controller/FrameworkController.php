@@ -567,7 +567,68 @@ class FrameworkController extends BaseController
 
         return $this->json('ok');
     }
- 
+
+    /**
+    * @Route ("/framework/restore_table", name="framework.restore_table", methods={"POST"})
+    */
+    public function restoreTable (Request $request, Session $session) {
+        $CSRFToken = $request->get("CSRFToken");
+        $id = $request->get("id");
+
+        $postes=array();
+
+        $db = new \db();
+        $db->selectInnerJoin(
+            array('pl_poste_lignes', 'numero'),
+            array('pl_poste_tab', 'tableau'),
+            array(array('name' => 'poste', 'as' => 'poste')),
+            array(), array(), array('tableau' => $id)
+        );
+
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                $postes[]=$elem['poste'];
+            }
+        }
+
+        if (!empty($postes)) {
+            $postes = implode(',', $postes);
+            $db = new \db();
+            $db->csrftoken = $csrftoken;
+            $db->update('postes', array('supprime' => null), array('id' => "in $postes"));
+
+            // Get skills
+            $activites=array();
+            $db=new \db();
+            $db->select2('postes', 'activites', array('id' => "in $postes"));
+
+            if ($db->result) {
+                foreach ($db->result as $elem) {
+                    $tmp=json_decode(html_entity_decode($elem['activites'], ent_quotes|ent_ignore, 'utf-8'), true);
+                    foreach ($tmp as $e) {
+                        if (!in_array($e, $activites)) {
+                            $activites[]=$e;
+                        }
+                    }
+                }
+            }
+
+            if (!empty($activites)) {
+                $activites=implode(',', $activites);
+                $db=new db();
+                $db->csrftoken = $csrftoken;
+                $db->update('activites', array('supprime' => null), array('id' => "in $activites"));
+            }
+        }
+
+        // Recupération du tableau
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->update('pl_poste_tab', array('supprime' => null), array('tableau' => $id));
+
+        return $this->json('OK');
+    }
+
     /**
      * @Route ("/framework-group/add", name="framework.add_group", methods={"GET"})
      */

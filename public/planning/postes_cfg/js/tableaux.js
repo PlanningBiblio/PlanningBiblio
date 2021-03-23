@@ -262,10 +262,10 @@ $(function(){
 
       if(confirm("Etes vous sûr(e) de vouloir récupérer le tableau \""+name+"\" ?")){
         $.ajax({
-          url: "/planning/postes_cfg/ajax.recupTableau.php",
-          type: "get",
+          url: baseURL + "/framework/restore_table",
+          type: "post",
           dataType: "json",
-          data: {id:id, CSRFToken: CSRFToken},
+          data: {id: id, CSRFToken: CSRFToken},
           success: function(){
             var msg=encodeURIComponent("Le tableau \""+name+"\" a été récupéré avec succès");
             location.href = baseURL + "/framework?cfg-type=0&msg="+msg+"&msgType=success";
