@@ -57,6 +57,14 @@
     - 21
 "notification.save":
     - 21
+"model.index":
+    - 301
+"model.save":
+    - 301
+"model.edit":
+    - 301
+"model.delete":
+    - 301
 "statistics.index":
     - 17
 "statistics.saturday":
