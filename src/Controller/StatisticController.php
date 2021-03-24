@@ -1649,6 +1649,13 @@ class StatisticController extends BaseController
             $sitesSQL = "0,1";
         }
 
+        // Teleworking
+        $teleworking_absence_reasons = array();
+        $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
+        foreach ($absences_reasons as $elem) {
+            $teleworking_absence_reasons[] = $elem->valeur();
+        }
+
         $tab = array();
 
         $total_heures = 0;
@@ -1701,6 +1708,15 @@ class StatisticController extends BaseController
                         $sites[$i] = 0;
                     }
                 }
+
+                // $poste_tab : table of positions with id, name, area, mandatory/reinforcement, teleworking
+                foreach ($postes_list as $elem) {
+                    if ($elem['id'] == $poste) {
+                        $poste_tab = array($poste, $elem['nom'], $elem['etage'], $elem['obligatoire'], $elem['teleworking']);
+                        break;
+                    }
+                }
+
                 $agents = array();
                 if (is_array($resultat)) {
                     foreach ($resultat as $elem) {
@@ -1709,6 +1725,12 @@ class StatisticController extends BaseController
                             // S'il est absent : continue
                             if ( !empty($absencesDB[$elem['perso_id']]) ) {
                                 foreach ($absencesDB[$elem['perso_id']] as $a) {
+
+                                    // Ignore teleworking absences for compatible positions
+                                    if (in_array($a['motif'], $teleworking_absence_reasons) and $poste_tab[4]) {
+                                        continue;
+                                    }
+
                                     if ($a['debut']< $elem['date'].' '.$elem['fin'] and $a['fin']> $elem['date']." ".$elem['debut']) {
                                         continue 2;
                                     }
@@ -1726,12 +1748,6 @@ class StatisticController extends BaseController
                             // On compte toutes les heures (globales)
                             $heures += diff_heures($elem['debut'], $elem['fin'], "decimal");
 
-                            foreach ($postes_list as $elem2) {
-                                if ($elem2['id'] == $poste) {	// on créé un tableau avec le nom et l'étage du poste.
-                                    $poste_tab=  array($poste, $elem2['nom'], $elem2['etage'], $elem2['obligatoire']);
-                                    break;
-                                }
-                            }
                             //	On met dans tab tous les éléments (infos postes + agents + heures du poste)
                             $tab[$poste] = array($poste_tab,$agents,$heures,"sites"=>$sites);
                         }
