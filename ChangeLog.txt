@@ -29,6 +29,11 @@ Hamac import: Optimize log
 Symfonize models
 Symfonize stats staturday
 Integration with CircleCI (Continuous integration service)
+Symfonize statistics absents
+Symfonize_statistics agent
+Symfonize statistics position summary
+Symfonize statistics services
+Symfonize statistics status
 
 
 -Fixes

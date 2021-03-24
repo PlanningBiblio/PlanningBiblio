@@ -2246,6 +2246,31 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="20.11.00.014";
+if (version_compare($config['Version'], $v) === -1) {
+    // Symfonize statistics absents
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='statistiques/absences.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` SET  `url`='/statistics/absence' WHERE `url`='statistiques/absences.php';";
+
+    // Symfonize_statistics agent
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='statistiques/agents.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` SET `url`= '/statistics/agent' WHERE `url` = 'statistiques/agents.php';";
+
+    // Symfonize statistics position summary
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='statistiques/postes_synthese.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` SET `url`='/statistics/positionsummary' WHERE `url`='statistiques/postes_synthese.php';";
+
+    // Symfonize statistics services
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page` = 'statistiques/service.php'";
+    $sql[]="UPDATE `{$dbprefix}menu` SET `url` = '/statistics/service' WHERE `url` = 'statistiques/service.php' ;";
+
+    // Symfonize statistics status
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='statistiques/statut.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` SET  `url`='/statistics/status' WHERE `url`='statistiques/statut.php';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
