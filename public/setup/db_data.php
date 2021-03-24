@@ -41,7 +41,7 @@ $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categ
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('stats agents par poste', 17, 'Accès aux statistiques', 'statistiques/agents.php','Statistiques','170');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('stats postes par agent', 17, 'Accès aux statistiques', 'statistiques/postes.php','Statistiques','170');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Statistiques Postes de renfort', 17, 'Accès aux statistiques', 'statistiques/postes_renfort.php','Statistiques','170');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Statistiques par poste (synthèse)', 17, 'Accès aux statistiques', 'statistiques/postes_synthese.php','Statistiques','170');";
+$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Statistiques par poste (synthèse)', 17, 'Accès aux statistiques', '/statistics/positionsummary','Statistiques','170');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Feuille de temps-  index', 17, 'Accès aux statistiques', 'statistiques/temps.php','Statistiques','170');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`,`categorie`,`ordre`) VALUES ('Liste des agents présents et absents', 1301, 'Accès aux statistiques Présents / Absents', '/statistics/attendeesmissing','Statistiques','171');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Configuration avancée', 20, 'Configuration avancée', '/config');";
@@ -408,7 +408,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('40','10','Feuille de temps','statistiques/temps.php',NULL),
   ('40','20','Par agent','statistiques/agents.php',NULL),
   ('40','30','Par poste','statistiques/postes.php',NULL),
-  ('40','40','Par poste (Synth&egrave;se)','statistiques/postes_synthese.php',NULL),
+  ('40','40','Par poste (Synth&egrave;se)','/statistics/positionsummary',NULL),
   ('40','50','Postes de renfort','statistiques/postes_renfort.php',NULL),
   ('40','24','Par service','/statistics/service',NULL),
   ('40','60','Samedis','/statistics/saturday',NULL),
