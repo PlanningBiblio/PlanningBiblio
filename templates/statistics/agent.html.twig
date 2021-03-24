@@ -26,10 +26,10 @@
                     <option value='Tous'>Tous</option>
                     {% for elem in agents_list %}
                       {% if agents is defined %}
-                        {% if elem.id in agents == true %}
+                        {% if elem.id in agents %}
                           <option value='{{ elem.id }}' selected='selected'>{{ elem.nom }} {{ elem.prenom }}</option>}
                         {% else %}
-                          <option value='{{ elem.id }}' selected='selected'>{{ elem.nom }} {{ elem.prenom }}</option>
+                          <option value='{{ elem.id }}'>{{ elem.nom }} {{ elem.prenom }}</option>
                         {% endif %}
                       {% endif %}
                     {% endfor %}
