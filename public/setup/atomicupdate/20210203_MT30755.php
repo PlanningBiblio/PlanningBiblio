@@ -9,3 +9,5 @@ for ($i = 1; $i <= 10; $i++) {
 $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Nombre de semaines pour la rotation des heures de présence. Les valeurs supérieures à 3 ne peuvent être utilisées que si le paramètre PlanningHebdo est coché' WHERE `nom` = 'nb_semaine';";
 
 $sql[] = "ALTER TABLE `{$dbprefix}planning_hebdo` ADD COLUMN nb_semaine INT AFTER exception";
+
+$sql[] = "UPDATE `{$dbprefix}planning_hebdo` SET nb_semaine=" . $GLOBALS['config']['nb_semaine'] . " WHERE nb_semaine IS NULL";

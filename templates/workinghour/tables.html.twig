@@ -76,9 +76,7 @@
                       {% if modifAutorisee == true %}
                         <td>
                           <select name="temps[{{ i-1 }}][4]" class='select selectSite' >
-                            {% if sites | length > 1 %}
                               <option value=''>&nbsp;</option>
-                            {% endif %}
                             {% for site in sites %}
                               {% if temps is not null and temps[i-1][4] is defined and site == temps[i-1][4] %}
                                 <option value="{{ site }}" selected='selected' >{{ multisites[site] | raw }}</option>

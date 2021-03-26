@@ -65,7 +65,7 @@ class WorkingHourController extends BaseController
         $p = new \personnel();
         $p->fetchById($perso_id);
         $sites = $p->elements[0]['sites'];
-        $nbSites = sizeof($sites);
+        $nbSites = $this->config('Multisites-nombre');
         $multisites = array();
         foreach ($sites as $site) {
             $multisites[$site] = $this->config("Multisites-site{$site}");
