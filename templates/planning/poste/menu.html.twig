@@ -107,7 +107,7 @@
             {% endif %}
 
             {% if locked %}
-              {% if userCan('300', site) or userCan('1000' + site) %}
+              {% if userCan('300', site) == false and userCan('1000' + site) == false %}
                 <div class='pl-validation'>
                   <u>Validation</u><br/>
                   {{ perso2 }} {{ date_validation2 }} {{ heure_validation2 }}

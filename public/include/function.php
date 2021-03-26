@@ -1168,7 +1168,7 @@ function nom($id, $format="nom p", $agents=array())
         return null;
     }
   
-    if (empty($agents)) {
+    if (empty($agents) && $id) {
         $db=new db();
         $db->query("select nom,prenom from {$GLOBALS['config']['dbprefix']}personnel where id=$id;");
         $nom=$db->result[0]['nom'];
