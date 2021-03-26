@@ -322,7 +322,7 @@ if (!$verrou and !$autorisationN1) {
         array("pl_poste","perso_id"),
         array("personnel","id"),
         array("perso_id","debut","fin","poste","absent","supprime","grise"),
-        array("nom","prenom","statut","service","postes"),
+        array("nom","prenom","statut","service","postes", 'depart'),
         array("date"=>$date, "site"=>$site),
         array(),
         "ORDER BY `{$dbprefix}personnel`.`nom`, `{$dbprefix}personnel`.`prenom`"

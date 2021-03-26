@@ -62,6 +62,12 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
                     $class_tmp[]="striped";
                 }
 
+                if ($elem['depart'] > '0000-00-00' && $elem['depart'] <= $date) {
+                    $class_tmp[]="red";
+                    $class_tmp[]="striped";
+                    $title = 'Date de départ dépassée';
+                }
+
                 if ($elem['absent'] == 2) {
                     $class_tmp[] = "out-of-work-time";
                     $title = 'En dehors de ses heures de présences';
