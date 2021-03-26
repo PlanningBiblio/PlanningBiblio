@@ -82,7 +82,7 @@ class WorkingHourController extends BaseController
         $a->fetch();
         $agents = $a->elements;
 
-        $tab = $p->elements ;
+        $tab = $p->elements;
 
         foreach ($tab as &$elem) {
             $actuel = $elem['actuel'] ? "Oui" : null;
@@ -136,6 +136,14 @@ class WorkingHourController extends BaseController
             $elem['validation'] = $validation;
             $elem['validation_date'] = $validation_date;
             $elem['commentaires'] = $commentaires;
+
+            // Show first and surname
+            $elem['firstname'] = '';
+            $elem['surname'] = '';
+            if (isset($agents[$elem['perso_id']])) {
+                $elem['firstname'] = $agents[$elem['perso_id']]['prenom'];
+                $elem['surname'] = $agents[$elem['perso_id']]['nom'];
+            }
         }
 
         $this->templateParams(

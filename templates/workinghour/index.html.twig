@@ -19,7 +19,7 @@
     <thead>
       <tr>
         <th rowspan='2' class='dataTableNoSort'>&nbsp;</th>
-        <th rowspan='2' >Agent</th>
+        <th colspan='2' >Agent</th>
         <th rowspan='2' >Service</th>
         <th rowspan='2' class='dataTableDateFR'>Début</th>
         <th rowspan='2' class='dataTableDateFR'>Fin</th>
@@ -29,6 +29,8 @@
         <th rowspan='2' >Commentaires</th>
       </tr>
       <tr>
+        <th>Nom</th>
+        <th>Prénom</th>
         <th>État</th>
         <th class='dataTableDateFR'>Date</th>
       </tr>
@@ -50,7 +52,8 @@
               </a>
             {% endif %}
           </td>
-          <td>{{ elem.nom }}</td>
+          <td>{{ elem.surname }}</td>
+          <td>{{ elem.firstname }}</td>
           <td>{{ elem.service | raw }}</td>
           <td>{{ elem.debut }}</td>
           <td>{{ elem.fin }}</td>
