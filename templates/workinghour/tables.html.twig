@@ -78,7 +78,7 @@
                           <select name="temps[{{ i-1 }}][4]" class='select selectSite' >
                               <option value=''>&nbsp;</option>
                             {% for site in sites %}
-                              {% if temps is not null and temps[i-1][4] is defined and site == temps[i-1][4] %}
+                              {% if (temps is not null and temps[i-1][4] is defined and site == temps[i-1][4]) or (temps is null and sites | length == 1) %}
                                 <option value="{{ site }}" selected='selected' >{{ multisites[site] | raw }}</option>
                               {% else %}
                                 <option value="{{ site }}">{{ multisites[site] | raw }}</option>
