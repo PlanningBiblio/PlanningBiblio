@@ -96,7 +96,7 @@ Début : <input type='text' name='debut' class='datepicker' value='$debut' />
 <thead>
   <tr>
     <th rowspan='2' class='dataTableNoSort'>&nbsp;</th>
-    <th rowspan='2' >Agent</th>
+    <th colspan='2' >Agent</th>
     <th rowspan='2' >Service</th>
     <th rowspan='2' class='dataTableDateFR'>Début</th>
     <th rowspan='2' class='dataTableDateFR'>Fin</th>
@@ -106,6 +106,8 @@ Début : <input type='text' name='debut' class='datepicker' value='$debut' />
     <th rowspan='2' >Commentaires</th>
   </tr>
   <tr>
+    <th>Nom</th>
+    <th>Prénom</th>
     <th>&Eacute;tat</th>
     <th class='dataTableDateFR'>Date</th>
   </tr>
@@ -162,6 +164,13 @@ foreach ($p->elements as $elem) {
     $commentaires = $elem['exception'] ? 'Exception' : $commentaires;
     $arrow=$elem['remplace']?"<font style='font-size:20pt;'>&rdsh;</font>":null;
 
+    $elem['firstname'] = '';
+    $elem['surname'] = '';
+    if (isset($agents[$elem['perso_id']])) {
+        $elem['firstname'] = $agents[$elem['perso_id']]['prenom'];
+        $elem['surname'] = $agents[$elem['perso_id']]['nom'];
+    }
+
     echo "<tr id='tr_{$elem['id']}'>";
     echo "<td style='white-space:nowrap;'>$arrow \n";
     echo "<a href='index.php?page=planningHebdo/modif.php&amp;id={$elem['id']}&amp;retour=index.php'/>";
@@ -175,7 +184,8 @@ foreach ($p->elements as $elem) {
         echo "<span class='pl-icon pl-icon-drop' title='Supprimer'></span></a></td>";
     }
     
-    echo "<td>{$elem['nom']}</td>";
+    echo "<td>{$elem['surname']}</td>";
+    echo "<td>{$elem['firstname']}</td>";
     echo "<td>{$elem['service']}</td>";
     echo "<td>".dateFr($elem['debut'])."</td>";
     echo "<td>".dateFr($elem['fin'])."</td>";
