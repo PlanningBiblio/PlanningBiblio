@@ -8,12 +8,12 @@ use Symfony\Component\Dotenv\Dotenv;
 $_SERVER['APP_ENV'] = 'test';
 $_SERVER['KERNEL_CLASS'] = 'App\Kernel';
 
-if (!file_exists(__DIR__ . "/../.env.test")) {
-    die('Unable to find the .env.test file');
+if (!file_exists(__DIR__ . "/../.env.test.local")) {
+    die('Unable to find the .env.test.local file');
 }
 
 $dotenv = new Dotenv();
-$dotenv->load(__DIR__ . "/../.env.test");
+$dotenv->load(__DIR__ . "/../.env.test.local");
 $database_url = $_ENV['DATABASE_URL'];
 
 $pattern = '/.[^\/]*\/\/(.[^:]*):(.[^@]*)@(.[^:]*):(\d*)\/(.*)/';

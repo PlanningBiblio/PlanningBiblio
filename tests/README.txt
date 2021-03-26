@@ -1,4 +1,4 @@
-Create a file named .env.test at the root of the project containing:
+Create a file named .env.test.local at the root of the project containing:
 
 ```yaml
 APP_ENV=dev
@@ -15,8 +15,10 @@ MAILER_URL=null://localhost
 !IMPORTANT <dbname> must be different from the production DB name.
 <dbuser> should be able to create a database.
 
+Install composer (needed to run the tests): https://getcomposer.org/doc/00-intro.md
+
 run tests like the following:
 ./vendor/bin/simple-phpunit --bootstrap tests/bootstrap.php tests/
 
-bootstrap.php create a database (named like choosen in .env.test)
+bootstrap.php create a database (named like choosen in .env.test.local)
 and init the ORM.
