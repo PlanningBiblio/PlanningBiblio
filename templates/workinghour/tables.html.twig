@@ -36,7 +36,7 @@
                   {% endif %}
                   <td style='width:135px;'>Temps</td>
                 </tr>
-                {% for i in debut[j]..fin[j]-1 %}
+                {% for i in debut[j]..fin[j] %}
                   {% set k = i-(j*7)-1 %}
                   <tr style='text-align:center;'>
                     <td>{{ jours[k] }}</td>
