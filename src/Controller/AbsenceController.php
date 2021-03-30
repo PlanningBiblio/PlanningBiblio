@@ -241,6 +241,10 @@ class AbsenceController extends BaseController
             }
         }
 
+        if ($acces && $this->config('Absences-validation') == 0) {
+            $absence['editable'] = true;
+        }
+
         // Liste des agents
         $agents_tous = array();
         if ($agents_multiples) {
