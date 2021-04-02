@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-use App\PlanningBiblio\PublicHoliday;
+use App\PlanningBiblio\ClosingDay;
 
 class ClosingDayController extends BaseController
 {
@@ -23,7 +23,7 @@ class ClosingDayController extends BaseController
         $annee_select = $request->get("annee") ?? (isset($_SESSION['oups']['anneeFeries']) ? $_SESSION['oups']['anneeFeries'] : $annee_courante);
         $_SESSION['oups']['anneeFeries'] = $annee_select;
 
-        $j = new PublicHoliday();
+        $j = new ClosingDay();
         $j->fetchYears();
         $annees = $j->elements;
 
@@ -37,7 +37,7 @@ class ClosingDayController extends BaseController
         sort($annees);
 
         // Recherche des jours fériés enregistrés dans la base de données et avec la fonction jour_ferie
-        $j = new PublicHoliday();
+        $j = new ClosingDay();
         $j->annee = $annee_select;
         $j->auto = false;;
         $j->fetch();
@@ -96,7 +96,7 @@ class ClosingDayController extends BaseController
         $post = $request->request->all();
         $CSRFToken = $request->get('CSRFToken');
 
-        $j = new PublicHoliday();
+        $j = new ClosingDay();
         $j->CSRFToken = $CSRFToken;
         $j->update($post);
 

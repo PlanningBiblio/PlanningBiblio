@@ -25,7 +25,7 @@ require_once __DIR__."/../personnel/class.personnel.php";
 require_once __DIR__."/../absences/class.absences.php";
 
 use App\PlanningBiblio\WorkingHours;
-use App\PlanningBiblio\PublicHoliday;
+use App\PlanningBiblio\ClosingDay;
 
 class conges
 {
@@ -116,7 +116,7 @@ class conges
         while ($current<=$fin) {
 
       // On ignore les jours de fermeture
-            $j = new PublicHoliday();
+            $j = new ClosingDay();
             $j->fetchByDate($current);
             if (!empty($j->elements)) {
                 foreach ($j->elements as $elem) {

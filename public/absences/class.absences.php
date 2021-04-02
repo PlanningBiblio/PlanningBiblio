@@ -33,7 +33,7 @@ use App\Model\Agent;
 use App\Model\AbsenceReason;
 use App\Model\AbsenceDocument;
 use App\PlanningBiblio\WorkingHours;
-use App\PlanningBiblio\PublicHoliday;
+use App\PlanningBiblio\ClosingDay;
 
 
 class absences
@@ -504,7 +504,7 @@ class absences
         while ($current<=$fin) {
 
       // On ignore les jours de fermeture
-            $j = new PublicHoliday();
+            $j = new ClosingDay();
             $j->fetchByDate($current);
             if (!empty($j->elements)) {
                 foreach ($j->elements as $elem) {
@@ -608,7 +608,7 @@ class absences
         while ($current<=$fin) {
             // On ignore les jours de fermeture
             if (!$this->ignoreFermeture) {
-                $j = new PublicHoliday();
+                $j = new ClosingDay();
                 $j->fetchByDate($current);
                 if (!empty($j->elements)) {
                     foreach ($j->elements as $elem) {

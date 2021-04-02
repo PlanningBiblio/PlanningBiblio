@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-use App\PlanningBiblio\PublicHoliday;
+use App\PlanningBiblio\ClosingDay;
 
 require_once(__DIR__.'/../../public/personnel/class.personnel.php');
 
@@ -70,7 +70,7 @@ class CalendarController extends BaseController
         }
 
         // Jours fériés
-        $j = new PublicHoliday();
+        $j = new ClosingDay();
         $j->debut=$debutSQL;
         $j->fin=$finSQL;
         $j->index= "date";
