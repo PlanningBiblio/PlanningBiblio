@@ -4,7 +4,7 @@ namespace App\PlanningBiblio;
 
 require_once(__DIR__ . "/../../public/include/feries.php");
 
-class PublicHoliday
+class ClosingDay
 {
     public $annee=null;
     public $debut=null;
@@ -39,7 +39,7 @@ class PublicHoliday
 
         // Recherche des jours fériés enregistrés dans la base de données
         $annees=join("','", $annees);
-        $db=new db();
+        $db=new \db();
         $db->sanitize_string = false;
         $db->select("jours_feries", "*", "annee in ('$annees')", "ORDER BY `jour`");
         if ($db->result) {
@@ -82,7 +82,7 @@ class PublicHoliday
     {
         // Recherche du jour férié correspondant à la date $date
         $tab=array();
-        $db=new db();
+        $db=new \db();
         $db->select("jours_feries", "*", "jour='$date'");
         if ($db->result) {
             $tab=$db->result;
@@ -92,7 +92,7 @@ class PublicHoliday
 
     public function fetchYears()
     {
-        $db=new db();
+        $db=new \db();
         $db->select("jours_feries", "annee", null, "GROUP BY `annee` desc");
         if ($db->result) {
             foreach ($db->result as $elem) {
@@ -113,13 +113,13 @@ class PublicHoliday
                 $data[]=array("annee"=>$p['annee'],"jour"=>dateSQL($p['jour'][$elem]),"ferie"=>$ferie,"fermeture"=>$fermeture,"nom"=>$p['nom'][$elem],"commentaire"=>$p['commentaire'][$elem]);
             }
         }
-        $db=new db();
+        $db=new \db();
         $db->CSRFToken = $this->CSRFToken;
         $db->delete("jours_feries", array('annee' => $p['annee']));
         $error=$db->error?true:$error;
 
         if (!empty($data)) {
-            $db=new db();
+            $db=new \db();
             $db->CSRFToken = $this->CSRFToken;
             $db->insert("jours_feries", $data);
             $error=$db->error?true:$error;
