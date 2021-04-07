@@ -21,6 +21,7 @@ function afficheRefus(me){
 }
 
 function calculCredit(){
+
   if( ! $('input[name=debut]').length) { return; }
   if (multipleAgentsSelected()) { return; }
 
@@ -383,7 +384,6 @@ function verifConges(){
 
   // Only one agent in a select list
   } else {
-      console.log("list");
       perso_ids.push($("#perso_ids").val());
   }
 
@@ -747,10 +747,16 @@ function updateAgentsListBySites() {
             $("#option" + value.id).hide();
         }
     });
+
+    calculCredit();
 }
 
 $(function(){
   $('.checkdate').on('change', function() {
+    calculCredit();
+  });
+
+  $('#perso_ids').on('change', function() {
     calculCredit();
   });
 

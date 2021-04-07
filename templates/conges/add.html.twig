@@ -109,7 +109,7 @@
             <tr>
               <td>Date de début : </td>
               <td>
-                <input type='text' name='debut' id='debut' value='{{ debut }}' class='datepicker googleCalendarTrigger checkdate' style='width:20%;'/>&nbsp;
+                <input type='text' name='debut' id='debut' value='{{ debut }}' class='datepicker googleCalendarTrigger checkdate' />&nbsp;
                 {% if conges_recuperations and conges_demi_journee %}
                   <select name="start_halfday" style="display: none;" class="checkdate">
                     <option value="fullday">Journée complète</option>
@@ -123,7 +123,7 @@
             <tr id='hre_debut' style='display:none;'>
               <td>Heure de début : </td>
               <td>
-                <select name='hre_debut' id='hre_debut_select' style='width:20%;' class='checkdate googleCalendarTrigger'>
+                <select name='hre_debut' id='hre_debut_select' class='checkdate googleCalendarTrigger'>
                     <option value=""></option>
                     {% for i in 6..23 %}
                         {% for j in range(low=0, high=60, step=config('Granularite')) %}
@@ -139,7 +139,7 @@
             <tr>
               <td>Date de fin : </td>
               <td>
-                <input type='text' name='fin' id='fin' value='{{ fin }}'  class='datepicker googleCalendarTrigger checkdate' style='width:20%;'/>&nbsp;
+                <input type='text' name='fin' id='fin' value='{{ fin }}'  class='datepicker googleCalendarTrigger checkdate' />&nbsp;
                 {% if conges_recuperations and conges_demi_journee %}
                   <select name="end_halfday" style="display: none;" class="checkdate">
                     <option value="fullday">Journée complète</option>
@@ -152,7 +152,7 @@
 
             <tr id='hre_fin' style='display:none;'><td>Heure de fin : </td>
               <td>
-                <select name='hre_fin' id='hre_fin_select' style='width:20%;' class='checkdate googleCalendarTrigger' onfocus='setEndHour();'>
+                <select name='hre_fin' id='hre_fin_select' class='checkdate googleCalendarTrigger' onfocus='setEndHour();'>
                     <option value=""></option>
                     {% for i in 6..23 %}
                         {% for j in range(low=0, high=60, step=config('Granularite')) %}
@@ -209,7 +209,7 @@
                 <tr>
                   <td>&nbsp;</td>
                   <td>
-                    <select name='debit' style='width:30%;'>
+                    <select name='debit'>
                       <option value='recuperation'>Le crédit de récupérations</option>
                       <option value='credit'>Le crédit de congés de l'année en cours</option>
                     </select>

@@ -861,15 +861,6 @@ class HolidayController extends BaseController
         $id = $c->id;
 
         foreach ($perso_ids as $perso_id) {
-            if ($result = \conges::exists($perso_id, "$debutSQL $hre_debut", "$finSQL $hre_fin")) {
-                $from = dateFr($result['from'], true);
-                $to = dateFr($result['to'], true);
-                return array(
-                    'msg2'      => "Un congé a déjà été demandé du $from au $to",
-                    'msg2Type'  => 'error'
-                );
-            }
-
             // Enregistrement du congés
             $c = new \conges();
             $c->CSRFToken = $CSRFToken;
@@ -939,8 +930,6 @@ class HolidayController extends BaseController
         return array(
             'msg'       => $msg,
             'msgType'   => 'success',
-            'msg2'      => $msg2,
-            'msg2Type'  => $msg2Type
         );
     }
 
