@@ -3138,7 +3138,7 @@ class StatisticController extends BaseController
         $multisites= [];
         if ($nbSites > 1){
             for ($i = 1; $i <= $nbSites; $i++){
-                $multisites[] = $this->config("Multisites-site{$i}");
+                $multisites[$i] = $this->config("Multisites-site{$i}");
             }
         }
 
@@ -3249,7 +3249,7 @@ class StatisticController extends BaseController
 
                             // On compte les heures de chaque site
                             if ($nbSites > 1) {
-                                $sites[$elem['site']]  = floatval($sites[$elem['site']]) + diff_heures($elem['debut'], $elem['fin'], "decimal");
+                                $sites[$elem['site']] = floatval($sites[$elem['site']]) + diff_heures($elem['debut'], $elem['fin'], "decimal");
                             }
 
                             // On compte toutes les heures (globales)
@@ -3324,10 +3324,13 @@ class StatisticController extends BaseController
 
                 if ($nbSites>1) {
                     for ($i = 1 ; $i <= $nbSites; $i++) {
-                        if ($tab[$key]["sites"][$i] and $tab[$key]["sites"][$i] != $tab[$key][2]) {
-                            $av_jour = $tab[$key]["sites"][$i]/$nbJours;
-                            $av_hebdo = $jour*$joursParSemaine;
-                        }
+                        $total = $tab[$key]["sites"][$i];
+                        $av_jour = $total / $nbJours;
+                        $average = $av_jour * $joursParSemaine;
+                        $tab[$key]["sites"][$i] = array(
+                            'total' => $total,
+                            'average' => $average
+                        );
                     }
                 }
 
