@@ -133,7 +133,7 @@
                       </tr>
                       {% if nbSites>1 %}
                         {% for i in 1..nbSites %}
-                          {% if elem.sites[i] != 0 and not elem.sites[i] == elem[2] %}
+                          {% if elem.sites[i] is defined and elem.sites[i] != elem[2] %}
                             <tr>
                               <td colspan='2' style='padding-top:20px;'>
                                 <u>{{ multisites[i] }}</u>
@@ -141,11 +141,11 @@
                             </tr>
                             <tr>
                               <td>Total</td>
-                              <td class='statistiques-heures'>{{ elem.sites[i] }}</td>
+                              <td class='statistiques-heures'>{{ elem.sites[i].total | hours }}</td>
                             </tr>
                             <tr>
                               <td>Moyenne</td>
-                              <td class='statistiques-heures'>{{ elem.hebdo | hours }}</td>
+                              <td class='statistiques-heures'>{{ elem.sites[i].average | hours }}</td>
                             </tr>
                           {% endif %}
                         {% endfor %}
