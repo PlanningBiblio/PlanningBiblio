@@ -121,15 +121,15 @@
                       </tr>
                       <tr>
                         <td>Total</td>
-                        <td class='statistiques-heures'>{{ elem[2] }}</td>
+                        <td class='statistiques-heures'>{{ elem[2] | hours }}</td>
                       </tr>
                       <tr>
                         <td>Moyenne jour</td>
-                        <td class='statistiques-heures'>{{ elem.jour }}</td>
+                        <td class='statistiques-heures'>{{ elem.jour | hours }}</td>
                       </tr>
                       <tr>
                         <td>Moyenne hebdo.</td>
-                        <td class='statistiques-heures'> {{ elem.hebdo }}</td>
+                        <td class='statistiques-heures'> {{ elem.hebdo | hours }}</td>
                       </tr>
                       {% if nbSites>1 %}
                         {% for i in 1..nbSites %}
@@ -145,7 +145,7 @@
                             </tr>
                             <tr>
                               <td>Moyenne</td>
-                              <td class='statistiques-heures'>{{ elem.hebdo }}</td>
+                              <td class='statistiques-heures'>{{ elem.hebdo | hours }}</td>
                             </tr>
                           {% endif %}
                         {% endfor %}
@@ -157,7 +157,7 @@
                       {% for agent in elem[1] %}
                         <tr>
                           <td>{{ agent[1] }} {{ agent[2] }}</td>
-                          <td class='statistiques-heures'>{{ agent[3] }}</td>
+                          <td class='statistiques-heures'>{{ agent[3] | hours }}</td>
                         </tr>
                       {% endfor %}
                     </table>
@@ -167,7 +167,7 @@
                       {% for service in elem.services %}
                         <tr>
                           <td>{{ service.nom | raw }}</td>
-                          <td class='statistiques-heures'>{{ service.heures }}</td>
+                          <td class='statistiques-heures'>{{ service.heures | hours }}</td>
                         </tr>
                       {% endfor %}
                     </table>
@@ -177,7 +177,7 @@
                       {% for statut in elem.statuts %}
                         <tr>
                           <td>{{ statut.nom | raw  }}</td>
-                          <td class='statistiques-heures'>{{ statut.heures }}</td>
+                          <td class='statistiques-heures'>{{ statut.heures | hours }}</td>
                         </tr>
                       {% endfor %}
                     </table>
