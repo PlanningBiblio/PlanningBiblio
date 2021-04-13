@@ -168,7 +168,7 @@
                 <span class='ui-icon ui-icon-arrowthick-2-n-s'></span>
                 <font id='valeur_{{ e.id }}'>{{ e.valeur }}</font>
                 {% if e.valeur in usedFloors == false %}
-                  <span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>
+                  <span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
                 {% endif %}
               </li>
             {% endfor %}
@@ -192,8 +192,8 @@
             {% for g in groupes %}
               <li class='ui-state-default' id='li_{{ g.id }}'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>
                 <font id='valeur_{{ g.id }}'>{{ g.valeur }}</font>
-                {% if not g.valeur in usedGroups %}
-                  <span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest(\"li\").hide();'></span>
+                {% if g.valeur in usedGroups == false %}
+                  <span class='ui-icon ui-icon-trash' style='position:relative;left:455px;top:-20px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
                 {% endif %}
               </li>
             {% endfor %}
