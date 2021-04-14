@@ -257,27 +257,41 @@ class AjaxController extends BaseController
           // Tableau des plannings en cours d'élaboration
           $planningsEnElaboration=array();
 
-          // Pour chaque dates
-          $date = $date_debut;
-          while ($date <= $date_fin) {
-              // Vérifie si les plannings de tous les sites sont validés
-              $db = new \db();
-              $db->select2("pl_poste_verrou", "*", array("date"=>$date, "verrou2"=>"1"));
-              // S'ils ne sont pas tous validés, vérifie si certains d'entre eux sont commencés
-              if ($db->nb < $this->config('Multisites-nombre')) {
-                  // TODO : ceci peut être amélioré en cherchant en particulier si les sites non validés sont commencés, car les sites non validés et non commencés ne nous interressent pas.
-                  // for($i=1;$i<=$this->config('Multisites-nombre');$i++){} // Attention, faire une première requête si $db->nb=0 pour éviter les erreurs foreach not array
-                  // Le nom des sites pourrait également être retourné
+            // Get comma separated sites for agent
+            $sites = "";
+            $db = new \db();
+            $db->select2("personnel", "sites", array("id"=>$perso_id));
+            if ($db->result) {
+                $sites = json_decode(html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                if (is_array($sites)) {
+                    $sites = join(",", $sites);
+                }
+            }
 
-                  $db2 = new \db();
-                  $db2->select2("pl_poste", "id", array("date"=>$date));
-                  // Si tous les sites ne sont pas validés et si certains sont commencés, on affichera la date correspondante
-                  if ($db2->result) {
-                      $planningsEnElaboration[]=date("d/m/Y", strtotime($date));
+            if ($sites != "") {
+                // Pour chaque dates
+                $date = $date_debut;
+                while ($date <= $date_fin) {
+                  // Vérifie si les plannings de tous les sites sont validés
+                  $db = new \db();
+
+                  $db->select2("pl_poste_verrou", "*", array("date"=>$date, "verrou2"=>"1", "site" => "IN $sites"));
+                  // S'ils ne sont pas tous validés, vérifie si certains d'entre eux sont commencés
+                  if ($db->nb < sizeof($result)) {
+                      // TODO : ceci peut être amélioré en cherchant en particulier si les sites non validés sont commencés, car les sites non validés et non commencés ne nous interressent pas.
+                      // for($i=1;$i<=$this->config('Multisites-nombre');$i++){} // Attention, faire une première requête si $db->nb=0 pour éviter les erreurs foreach not array
+                      // Le nom des sites pourrait également être retourné
+
+                      $db2 = new \db();
+                      $db2->select2("pl_poste", "id", array("date"=>$date, "site" => "IN $sites"));
+                      // Si tous les sites ne sont pas validés et si certains sont commencés, on affichera la date correspondante
+                      if ($db2->result) {
+                          $planningsEnElaboration[]=date("d/m/Y", strtotime($date));
+                      }
                   }
-              }
-              $date = date("Y-m-d", strtotime($date." +1 day"));
-          }
+                  $date = date("Y-m-d", strtotime($date." +1 day"));
+                }
+            }
 
           // Affichage des dates correspondantes aux plannings en cours d'élaboration
           $result["planning_started"] = implode(" ; ", $planningsEnElaboration);
