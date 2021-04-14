@@ -2158,8 +2158,13 @@ if (version_compare($config['Version'], $v) === -1) {
 
 $v="20.11.00.010";
 if (version_compare($config['Version'], $v) === -1) {
-    $sql[] = "ALTER TABLE `{$dbprefix}postes` ADD COLUMN `teleworking` ENUM('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' AFTER `statistiques`;";
-    $sql[] = "ALTER TABLE `{$dbprefix}select_abs` ADD COLUMN `teleworking` INT(1) NOT NULL DEFAULT '0' AFTER `notification_workflow`;";
+
+    if (!column_exists("{$dbprefix}postes", 'teleworking')) {
+        $sql[] = "ALTER TABLE `{$dbprefix}postes` ADD COLUMN `teleworking` ENUM('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' AFTER `statistiques`;";
+    }
+    if (!column_exists("{$dbprefix}select_abs", 'teleworking')) {
+        $sql[] = "ALTER TABLE `{$dbprefix}select_abs` ADD COLUMN `teleworking` INT(1) NOT NULL DEFAULT '0' AFTER `notification_workflow`;";
+    }
 
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
@@ -2399,5 +2404,15 @@ function serializeToJson($table, $field, $id='id', $where=null, $CSRFToken)
     }
 }
 
+function column_exists($table_name, $column_name) {
+    $db=new db();
+    $db->query("SHOW COLUMNS FROM `$table_name` WHERE Field = '$column_name'");
+
+    if ($db->nb > 0) {
+        return true;
+    }
+
+    return false;
+}
 
 exit;
