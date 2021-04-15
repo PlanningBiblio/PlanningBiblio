@@ -3,6 +3,8 @@
 
 "absence.add":
     - 100
+"absence.delete":
+    - 100
 "absence.edit":
     - 100
 "absence.index":
