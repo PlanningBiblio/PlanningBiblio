@@ -1,6 +1,20 @@
 # This file gathers the routes and the rights required to access each of them
 # This file is called by the ControllerAuthorization Listener
 
+"absence.add":
+    - 100
+"absence.edit":
+    - 100
+"absence.save":
+    - 100
+"absences.document.index":
+    - 100
+"absences.document.delete":
+    - 100
+"absences.document.add":
+    - 100
+"absences.document.list":
+    - 100
 "account.index":
     - 100
 "agent.index":
