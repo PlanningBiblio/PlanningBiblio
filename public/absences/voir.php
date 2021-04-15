@@ -198,7 +198,7 @@ echo "<input type='button' value='Réinitialiser' onclick='absences_reinit();'  
 echo "</tr></tbody></table>\n";
 echo "</span>\n";
 echo "<span style='float:right; vertical-align:top; margin:10px 5px;'>\n";
-echo "<a href='absence' class='ui-button'>Ajouter</a>\n";
+echo "<a href='absence/add' class='ui-button'>Ajouter</a>\n";
 echo "</span>\n";
 echo "</form>\n";
 

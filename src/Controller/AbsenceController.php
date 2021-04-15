@@ -16,13 +16,10 @@ class AbsenceController extends BaseController
 {
 
     /**
-     * @Route("/absence", name="absence.add", methods={"GET", "POST"})
+     * @Route("/absence/add", name="absence.add", methods={"GET"})
      */
     public function add(Request $request)
     {
-        $confirm = $request->get('confirm');
-        $id = $request->get('id');
-
         $this->dbprefix = $GLOBALS['dbprefix'];
         $this->droits = $GLOBALS['droits'];
 
@@ -36,40 +33,6 @@ class AbsenceController extends BaseController
 
         $this->setCommonTemplateParams();
 
-        // Save absence(s).
-        if ($confirm) {
-
-            $result = $this->save($request, $this->admin);
-
-            $file = $request->files->get('documentFile');
-            if (!empty($file)) {
-                $token = $request->get("token");
-                if (!$this->isCsrfTokenValid('upload', $token)) {
-                    return new Response("Operation not allowed",  Response::HTTP_BAD_REQUEST,
-                    ['content-type' => 'text/plain']);
-                }
-
-                $filename = $file->getClientOriginalName();
-
-                $ad = new AbsenceDocument();
-                $ad->absence_id($result['id']);
-                $ad->filename($filename);
-                $ad->date(new \DateTime());
-                $this->entityManager->persist($ad);
-                $this->entityManager->flush();
-
-                $absenceDocument = new AbsenceDocument();
-                $file->move($absenceDocument->upload_dir() . $result['id'] . '/' . $ad->id(), $filename);
-
-            }
-
-            $msg = $result['msg'];
-            $msg2 = $result['msg2'];
-            $msg2_type = $result['msg2_type'];
-
-            return $this->redirect("index.php?page=absences/voir.php&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2_type");
-        }
-
         $this->templateParams(array(
             'reasons'               => $this->availablesReasons(),
             'reason_types'          => $this->reasonTypes(),
@@ -78,6 +41,52 @@ class AbsenceController extends BaseController
         ));
 
         return $this->output('absences/add.html.twig');
+    }
+
+    /**
+     * @Route("/absence", name="absence.save", methods={"POST"})
+     */
+    public function save(Request $request)
+    {
+        $this->droits = $GLOBALS['droits'];
+
+        $this->setAdminPermissions();
+
+        $this->agents_multiples = ($this->admin or in_array(9, $this->droits));
+
+        if ($this->config('Absences-adminSeulement') and !$this->admin) {
+            return $this->output('access-denied.html.twig');
+        }
+
+        $result = $this->save_new($request, $this->admin);
+
+        $file = $request->files->get('documentFile');
+        if (!empty($file)) {
+            $token = $request->get("token");
+            if (!$this->isCsrfTokenValid('upload', $token)) {
+                return new Response("Operation not allowed",  Response::HTTP_BAD_REQUEST,
+                ['content-type' => 'text/plain']);
+            }
+
+            $filename = $file->getClientOriginalName();
+
+            $ad = new AbsenceDocument();
+            $ad->absence_id($result['id']);
+            $ad->filename($filename);
+            $ad->date(new \DateTime());
+            $this->entityManager->persist($ad);
+            $this->entityManager->flush();
+
+            $absenceDocument = new AbsenceDocument();
+            $file->move($absenceDocument->upload_dir() . $result['id'] . '/' . $ad->id(), $filename);
+
+        }
+
+        $msg = $result['msg'];
+        $msg2 = $result['msg2'];
+        $msg2_type = $result['msg2_type'];
+
+        return $this->redirect("index.php?page=absences/voir.php&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2_type");
     }
 
     /**
@@ -293,7 +302,7 @@ class AbsenceController extends BaseController
         return $docsarray;
     }
 
-    private function save(Request $request) {
+    private function save_new(Request $request) {
         $perso_id = $request->get('perso_id');
         $perso_ids = array();
         if (!empty($perso_id)) {
