@@ -222,9 +222,8 @@ $(function() {
     
     if(confirm("Etes vous sûr de vouloir supprimer cette absence ?")){
       var CSRFToken = $('#CSRFSession').val();
-      var baseURL = $('#baseURL').val();
       var id=$("#absence-bouton-supprimer").attr("data-id");
-      document.location.href = baseURL + "index.php?page=absences/delete.php&id="+id+"&CSRFToken="+CSRFToken;
+      delete_absence(CSRFToken, id, null);
     }
   });
 
@@ -506,24 +505,24 @@ $(function() {
         var CSRFToken = $('#CSRFSession').val();
         var baseURL = $('#baseURL').val();
         var id=$("#absence-bouton-supprimer").attr("data-id");
-        document.location.href = baseURL + "index.php?page=absences/delete.php&id="+id+"&rec=current&CSRFToken="+CSRFToken;
         $( this ).dialog( "close" );
+        delete_absence(CSRFToken, id, 'current');
       },
 
       "Cet événement et les suivants": function() {
         var CSRFToken = $('#CSRFSession').val();
         var baseURL = $('#baseURL').val();
         var id=$("#absence-bouton-supprimer").attr("data-id");
-        document.location.href = baseURL + "index.php?page=absences/delete.php&id="+id+"&rec=next&CSRFToken="+CSRFToken;
         $( this ).dialog( "close" );
+        delete_absence(CSRFToken, id, 'next');
       },
 
       "Tous les événements": function() {
         var CSRFToken = $('#CSRFSession').val();
         var baseURL = $('#baseURL').val();
         var id=$("#absence-bouton-supprimer").attr("data-id");
-        document.location.href = baseURL + "index.php?page=absences/delete.php&id="+id+"&rec=all&CSRFToken="+CSRFToken;
         $( this ).dialog( "close" );
+        delete_absence(CSRFToken, id, 'all');
       },
 
       Annuler: function() {
@@ -598,6 +597,30 @@ function affiche_perso_ul(){
       $("#perso_ul5").append(li);
     }
   }
+}
+
+function delete_absence(CSRFToken, id, recurrence) {
+  var baseURL = $('#baseURL').val();
+  $.ajax({
+    url: baseURL + 'absence',
+    data: {id: id, CSRFToken: CSRFToken, rec: recurrence},
+    dataType: "json",
+    type: "delete",
+    async: false,
+    success: function(result){
+      msg = result['msg'];
+      msgType = result['msgType'];
+      url = baseURL + 'absence?msg=' + msg + '&msgType=' + msgType;
+      if (result['msg2'] !== undefined) {
+        url += '&msg2=' + result['msg2'] + '&msg2Type=' + result['msg2Type'];
+      }
+      document.location.href = url;
+    },
+    error: function(xhr, ajaxOptions, thrownError) {
+      msg = encodeURI('Une erreur s\'est produite lors de la suppression');
+      document.location.href = baseURL + 'absence?msg=' + msg + '&msgType=error';
+    }
+  });
 }
 
 
