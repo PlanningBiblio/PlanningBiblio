@@ -1,0 +1,327 @@
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+<script type="text/JavaScript" src="{{ asset('conges/js/script.conges.js') }}"></script>
+  <script type='text/JavaScript'>
+    var limitDefaut = {{ recup_delaidefaut }};
+    var limitTitulaire1 = {{ recup_delaititulaire1 }};
+    var limitTitulaire2 = {{ recup_delaititulaire2 }};
+    var limitContractuel1 = {{ recup_delaicontractuel1 }};
+    var limitContractuel2 = {{ recup_delaicontractuel2 }};
+    var perso_id = {{ perso_id }};
+    var categories = JSON.parse('{{ categories | raw }}');
+    var samediSeulement = {{ recup_samediseulement }};
+    var oneRecoveryPerDay = {{ recup_uneparjour }};
+
+    $(function() {
+
+      var date = $( "#date" ),
+        date2 = $( "#date2" ),
+        heures = $( "#heures" ),
+        commentaires = $( "#commentaires" ),
+        allFields = $( [] ).add( date ).add( heures ).add( date2 ).add( commentaires );
+
+      $( "#dialog-form" ).dialog({
+        autoOpen: false,
+        height: 480,
+        width: 650,
+        modal: true,
+        buttons: {
+          "Enregistrer": function() {
+        // Calcul du delai limit pour la demande de récup en fonction de la catégorie de l'agent
+        var admin=false;
+        if($("#agent option:selected").val()){
+          perso_id=$("#agent option:selected").val();
+          admin=true;
+        }
+        if(categories[perso_id]=="Titulaire"){
+          if($("#date2").val()){
+            if(limitTitulaire2 == -1){
+              limitJours=limitDefaut;
+            }else{
+              limitJours=limitTitulaire2*30;
+            }
+          }else{
+            if(limitTitulaire1 == -1){
+              limitJours=limitDefaut;
+            }else{
+              limitJours=limitTitulaire1*30;
+            }
+          }
+        }
+        else if(categories[perso_id]=="Contractuel"){
+          if($("#date2").val()){
+            if(limitContractuel2 == -1){
+              limitJours=limitDefaut;
+            }else{
+              limitJours=limitContractuel2*7;
+            }
+          }else{
+            if(limitContractuel1 == -1){
+              limitJours=limitDefaut;
+            }else{
+              limitJours=limitContractuel1*7;
+            }
+          }
+        }
+        else{
+          limitJours=limitDefaut;
+        }
+
+        var bValid = true;
+        allFields.removeClass( "ui-state-error" );
+        bValid = bValid && checkRegexp( date, /^[0-9]{2}\/[0-9]{2}\/[0-9]{4}/i, "La date doit être au format JJ/MM/AAAA" );
+        if(samediSeulement){
+          bValid = bValid && checkSamedi(date,"Vous devez choisir un samedi");
+        }
+        if (oneRecoveryPerDay) {
+          bValid = bValid && verifRecup($("#date"));
+        }
+        if($("#date2").val()){
+          bValid = bValid && checkRegexp( date2, /^[0-9]{2}\/[0-9]{2}\/[0-9]{4}/i, "La date doit être au format JJ/MM/AAAA" );
+          bValid = bValid && checkDate2(date, date2,"La 2ème date doit être supérieure à la première");
+          if(samediSeulement){
+            bValid = bValid && checkSamedi(date2,"Vous devez choisir un samedi");
+          }
+        }
+        bValid = bValid && checkLength( heures, "heures", 4, 5 );
+        if(admin && checkDateAge( date, limitJours, "La demande de récupération doit être effectuée dans les "+limitJours+" jours",false)==false){
+          res=confirm("Attention, la demande de récupération doit être effectuée dans les "+limitJours+" jours.\nEn tant qu'administrateur, vous pouvez outrepasser cette règle.\nVoulez-vous continuer ?");
+          bValid = bValid && res;
+        }
+        else{
+          bValid = bValid && checkDateAge( date, limitJours, "La demande de récupération doit être effectuée dans les "+limitJours+" jours");
+        }
+
+        {% if recup_deuxsamedis and recup_uneparjour %}
+            if($("#date2").val())
+              bValid = bValid && verifRecup($("#date2"));
+        {% endif %}
+
+        if ( bValid ) {
+          // Enregistre la demande
+          $.ajax({
+            url: "conges/ajax.enregistreRecup.php",
+            dataType: "json",
+            data: {date: date.val(), date2: date2.val(), heures: heures.val(), commentaires: commentaires.val(), perso_id: perso_id, CSRFToken: $('#CSRFSession').val()},
+            type: "post",
+            success: function(result){
+              if(result[0]=="Demande-OK"){
+              
+            // Préparation de l'affichage des erreurs et confirmations
+            var msg=encodeURIComponent("Votre demande a été enregistrée");
+            
+            var msg2=null;
+            var msg2Type=null;
+            if(result[1]!=undefined){
+              msg2=encodeURIComponent(result[1]);
+              msg2Type="error";
+            }
+            
+            // Affiche la liste des demandes après enregistrement
+            document.location.href="/comp-time?msgType=success&msg="+msg+"&msg2Type="+msg2Type+"&msg2="+msg2;
+            // Ferme le dialog
+            $( this ).dialog( "close" );
+              }else{
+            updateTips("Erreur lors de l'enregistrement de la récupération", "error");
+              }
+            },
+            error: function (result){
+              updateTips("Erreur lors de l'enregistrement de la récupération", "error");
+            },
+          });
+        }
+          },
+
+          Annuler: function() {
+        $( this ).dialog( "close" );
+          }
+        },
+
+        close: function() {
+          allFields.val( "" ).removeClass( "ui-state-error" );
+          $('.validateTips').text("Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures à récuperer et un saisir un commentaire.");
+        }
+      });
+
+
+      $( "#dialog-button" )
+        .click(function() {
+          date.datepicker("disable");
+          date2.datepicker("disable");
+          $( "#dialog-form" ).dialog( "open" );
+          date.datepicker("enable");
+          date2.datepicker("enable");
+          return false;
+        });
+
+    });
+    </script>
+{% endblock %}
+
+{% block page %}
+  {% if perso_id != 0 %}
+  <h3 class="print_only">Liste des congés de {{ perso_name }}, année {{ year_from }}-{{ year_to}}</h3>
+  {% endif %}
+    <div id='liste'>
+      <h3 class='noprint'>Récupérations</h3>
+      <h4 class='noprint'>Liste des demandes de récupération</h4>
+      <form name='form' method='get' action='{{ asset("comp-time") }}' class='noprint'>
+        <span style='float:left; vertical-align:top; margin-bottom:20px;'>
+          Année : <select name='annee'>
+            {% for elem in years %}
+              {% if elem[0] == year_from %}
+                <option value="{{ elem[0] }}" selected="selected">{{ elem[1] }}</option>
+              {% else %}
+                <option value="{{ elem[0] }}">{{ elem[1] }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+
+          {% if admin %}
+            <span style='margin-left:30px;'>Agent : </span>
+            <select name='perso_id'>
+              {% if perso_id == 0 %}
+                <option value='0' selected="selected">Tous</option>
+              {% else %}
+                <option value='0'>Tous</option>
+              {% endif %}
+              {% for agent in agents %}
+                {% if agent.id == perso_id %}
+                  <option value="{{ agent.id }}" selected>{{ agent.nom }} {{ agent.prenom }}</option>
+                {% else %}
+                  <option value="{{ agent.id }}">{{ agent.nom }} {{ agent.prenom }}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          {% endif %}
+
+          <span style='margin-left:30px;'><input type='submit' value='Rechercher' id='button-OK' class='ui-button'/></span>
+          <span style='margin-left:30px;'><input type='button' value='Réinitialiser' id='button-Effacer' class='ui-button' onclick='location.href="/comp-time?reset=on"'/></span>
+        </span>
+
+        <span style='float:right; vertical-align:top; margin:0px 5px;'>
+          <button id='dialog-button' class='ui-button'>Nouvelle demande</button>
+        </span>
+      </form>
+
+      <table id='tableRecup' class='CJDataTable' data-sort='[[1]]'>
+        <thead>
+          <tr>
+            <th rowspan='2' class='dataTableNoSort' >&nbsp;</th>
+            <th rowspan='2' class='dataTableDateFR'>Date</th>
+            {% if admin %}
+              <th rowspan='2'>Agent</th>
+            {% endif %}
+            <th rowspan='2'>Heures</th>
+            <th colspan='2' >Validation</th>
+            <th rowspan='2'>Crédits</th>
+            <th rowspan='2'>Commentaires</th>
+          </tr>
+
+          <tr>
+            <th>&Eacute;tat</th>
+            <th class='dataTableDateFR'>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for elem in comptimes %}
+            <tr>
+              <td>
+                <a href='index.php?page=conges/recuperation_modif.php&amp;id={{ elem.id }}'>
+                  <span class='pl-icon pl-icon-edit' title='Modifier'></span>
+                </a>
+              </td>
+
+              <td>{{ elem.date }}{{ elem.date2 }}</td>
+
+              {% if admin %}
+                <td>{{ elem.name }}</td>
+              {% endif %}
+
+              <td>{{ elem.hours }}
+                {% if elem.hourstodays %}
+                  <br />{{ elem.hourstodays }}j;
+                {% endif %}
+              </td>
+
+              <td style="{{ elem.validation_style }}">{{ elem.validation }}</td>
+              <td>{{ elem.validation_date }}</td>
+              <td>{{ elem.credits }}</td>
+              <td>{{ elem.commentaires | nl2br }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div> <!-- liste -->
+
+    <div id="dialog-form" title="Nouvelle demande" class='noprint'>
+      <p class="validateTips">Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures à récuperer et un saisir un commentaire.</p>
+      <form>
+        <fieldset>
+          <table class='tableauFiches'>
+            {% if admin %}
+              <tr>
+                <td><label for="agent">Agent</label></td>
+                <td>
+                  <select id='agent' name='agent' style='text-align:center;'>
+                    <option value=''>&nbsp;</option>
+                    {% for elem in agents %}
+                      {% if elem.id == perso_id %}
+                        <option value="{{ elem.id }}" selected>{{ elem.name }}</option>
+                      {% else %}
+                        <option value="{{ elem.id }}">{{ elem.name }}</option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                </td>
+              </tr>
+            {% endif %}
+
+            <tr>
+              <td>
+                <label for="date">{{ label }}</label>
+              </td>
+
+              <td>
+                <input type="text" name="date" id="date" class="text ui-widget-content ui-corner-all datepicker"/>
+              </td>
+            </tr>
+
+            {% if recup_deuxsamedis %}
+              <tr>
+                <td>
+                  <label for="date2">{{ saturday }}</label>
+                </td>
+
+                <td>
+                  <input type="text" name="date2" id="date2" class="text ui-widget-content ui-corner-all datepicker"/>
+                </td>
+              </tr>
+            {% endif %}
+
+            <tr>
+              <td><label for="heures">Heures</label></td>
+              <td>
+                <select id='heures' name='heures' style='text-align:center;'>
+                  <option value=''>&nbsp;</option>
+                  {% for i in 0..16 %}
+                  <option value='{{ i }}.00' >{{ i }}h00</option>
+                  <option value='{{ i }}.25' >{{ i }}h15</option>
+                  <option value='{{ i }}.50' >{{ i }}h30</option>
+                  <option value='{{ i }}.75' >{{ i }}h45</option>
+                  {% endfor %}
+                </select>
+              </td>
+            </tr>
+
+            <tr>
+              <td><label for="commentaires">Commentaire</label></td>
+              <td><textarea name="commentaires" id="commentaires" ></textarea></td>
+            </tr>
+          </table>
+        </fieldset>
+      </form>
+    </div>
+
+{% endblock %}

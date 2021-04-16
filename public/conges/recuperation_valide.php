@@ -153,4 +153,4 @@ if (isset($update)) {
     }
 }
 
-echo "<script type='text/JavaScript'>document.location.href='index.php?page=conges/recuperations.php&msg=$msg&msgType=$msgType&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
+echo "<script type='text/JavaScript'>document.location.href='/comp-time?msg=$msg&msgType=$msgType&msg2=$msg2&msg2Type=$msg2Type';</script>\n";

@@ -141,7 +141,7 @@ EOD;
 }
 echo <<<EOD
 <tr><td colspan='2' class='td_validation'>
-<input type='button' class='ui-button' value='Retour' onclick='location.href="index.php?page=conges/recuperations.php";' />
+<input type='button' class='ui-button' value='Retour' onclick='location.href="/comp-time";' />
 EOD;
 if ((($adminN1 or $adminN2) and $recup['valide']<=0) or $recup['valide']==0) {
     echo "<input type='submit' class='ui-button' value='Enregistrer'/>";
