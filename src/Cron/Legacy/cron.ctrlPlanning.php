@@ -41,7 +41,6 @@ require_once(__DIR__ . '/../../../public/postes/class.postes.php');
 
 
 // Génération d'un CSRF Token
-session_start();
 $CSRFToken = CSRFToken();
 
 if (!$config['Rappels-Actifs']) {
