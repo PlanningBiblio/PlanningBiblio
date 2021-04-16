@@ -2181,7 +2181,7 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre`) VALUES ('Conges-apresValidation','boolean','1', 'Congés', 'Autoriser l\'enregistrement de congés après validation des plannings', '9');";
 
     // MT 29619
-    $sql[]="INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre`) VALUES ('Conges-validation','boolean','1', 'Congés', 'Les congés doivent être validés par un administrateur avant d\'être pris en compte','3');";
+    $sql[]="INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre`) VALUES ('Conges-validation','boolean','1', 'Congés', 'Les congés doivent être validés par un administrateur avant d\'être pris en compte','3');";
 
     // Symfonize framework copy
     $sql[]="UPDATE `{$dbprefix}acces` SET `page` = '' WHERE `page` = 'planning/postes_cfg/copie.php';";
