@@ -594,7 +594,7 @@ class FrameworkController extends BaseController
         if (!empty($postes)) {
             $postes = implode(',', $postes);
             $db = new \db();
-            $db->csrftoken = $csrftoken;
+            $db->csrftoken = $CSRFToken;
             $db->update('postes', array('supprime' => null), array('id' => "in $postes"));
 
             // Get skills
