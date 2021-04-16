@@ -791,7 +791,7 @@ function position(object,top,left){
 //	--------------------------------	FIN Aide		---------------------------------	//
 //	--------------------------------	Statistiques		---------------------------------	//
 function export_stat(nom,type){
-  var baseURL = ('#baseURL').val();
+  var baseURL = $('#baseURL').val();
   $.ajax({
     url: baseURL+ "/statistiques/export.php",
     type: "get",
