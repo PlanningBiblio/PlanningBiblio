@@ -271,6 +271,7 @@ function plHebdoVerifForm(){
   id=$("input[name=id]").val();
   perso_id=$("#perso_id").val();
   is_exception = $('input[name="exception"]').val();
+  is_copy = $('input[name="copy"]').val();
 
   if(!debut || !fin){
     alert("Les dates de début et de fin sont obligatoires");
@@ -282,9 +283,12 @@ function plHebdoVerifForm(){
     return false;
   }
 
-  data = {debut: debut, fin: fin, id: id, perso_id: perso_id};
+  data = {debut: debut, fin: fin, perso_id: perso_id};
   if (is_exception) {
     data['exception'] = is_exception;
+  }
+  if (!is_copy) {
+    data['id'] = id;
   }
 
   var retour=false;
