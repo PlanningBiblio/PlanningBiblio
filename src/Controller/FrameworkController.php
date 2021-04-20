@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\PlanningBiblio\Framework;
+use App\Model\Position;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -592,32 +593,27 @@ class FrameworkController extends BaseController
         }
 
         if (!empty($postes)) {
-            $postes = implode(',', $postes);
+            $postes_str = implode(',', $postes);
             $db = new \db();
-            $db->csrftoken = $CSRFToken;
-            $db->update('postes', array('supprime' => null), array('id' => "in $postes"));
+            $db->CSRFToken = $CSRFToken;
+            $db->update('postes', array('supprime' => null), array('id' => "IN $postes_str"));
 
             // Get skills
-            $activites=array();
-            $db=new \db();
-            $db->select2('postes', 'activites', array('id' => "in $postes"));
+            $query = $this->entityManager->createQueryBuilder()
+                ->select('p.activites')
+                ->from(Position::class, 'p')
+                ->where('p.id IN (:positions)')
+                ->setParameter('positions', $postes)
+                ->getQuery();
 
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    $tmp=json_decode(html_entity_decode($elem['activites'], ent_quotes|ent_ignore, 'utf-8'), true);
-                    foreach ($tmp as $e) {
-                        if (!in_array($e, $activites)) {
-                            $activites[]=$e;
-                        }
-                    }
-                }
-            }
+            $result = $query->getResult();
+            $skills = array_map(function($s) { return $s['activites'][0]; }, $result);
 
-            if (!empty($activites)) {
-                $activites=implode(',', $activites);
-                $db=new db();
-                $db->csrftoken = $csrftoken;
-                $db->update('activites', array('supprime' => null), array('id' => "in $activites"));
+            if (!empty($skills)) {
+                $skills = implode(',', $skills);
+                $db=new \db();
+                $db->CSRFToken = $CSRFToken;
+                $db->update('activites', array('supprime' => null), array('id' => "IN $skills"));
             }
         }
 
