@@ -157,7 +157,8 @@ class CompTimeController extends BaseController
                 $validationStyle="font-weight:bold;";
             }
 
-            $date2=($elem['date2'] and $elem['date2']!="0000-00-00")?" &amp; ".dateFr($elem['date2']):null;
+            $date2 = ($elem['date2'] and $elem['date2']!="0000-00-00") ? " & ".dateFr($elem['date2']) : null;
+
             $comptime = array(
                 'id'                => $elem['id'],
                 'date'              => dateFr($elem['date']),

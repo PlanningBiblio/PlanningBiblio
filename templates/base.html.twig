@@ -25,11 +25,11 @@
   </head>
   <body>
     <!-- Affichage des messages d'erreur ou de confirmation venant de la page précedente-->
-    {% if msg %}
+    {% if msg  and msg !='null' %}
       <script type='text/JavaScript'>CJInfo('{{ msg | nl2br }}','{{ msgType }}');</script>
     {% endif %}
 
-    {% if msg2 %}
+    {% if msg2 and msg2 !='null' %}
       <script type='text/JavaScript'>CJInfo('{{ msg2 }}','{{ msg2Type }}', 82, 15000);</script>
     {% endif %}
 
