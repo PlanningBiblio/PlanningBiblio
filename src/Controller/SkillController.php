@@ -75,6 +75,17 @@ class SkillController extends BaseController
             }
         }
 
+        // skills used by agents
+        $agents = $this->entityManager->getRepository(Agent::class)->findAll();
+        foreach ($activites as $skill) {
+            foreach ($agents as $agent) {
+                if (in_array($skill->id(), $agent->skills())) {
+                    $activites_utilisees[] = $skill->id();
+                    continue 2;
+                }
+            }
+        }
+
         $CSRFSession = $GLOBALS['CSRFSession'];
 
         $this->templateParams(array(
