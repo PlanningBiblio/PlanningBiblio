@@ -16,16 +16,24 @@ class AdminController extends BaseController
     {
         $droits = $GLOBALS['droits'];
 
-        // Manage models
+        // Manage models and working hours
         $access_model = false;
+        $access_working_hours = false;
+
         for ($i=1; $i<=$this->config('Multisites-nombre'); $i++) {
-            if (in_array((300+$i), $droits)) {
+            if (in_array((300 + $i), $droits)) {
                 $access_model = true;
-                break;
+            }
+
+            if (in_array((1100 + $i), $droits) or in_array((1200 + $i), $droits)) {
+                $access_working_hours = true;
             }
         }
 
-        $this->templateParams( array('access_model' => $access_model) );
+        $this->templateParams( array(
+            'access_model' => $access_model,
+            'access_working_hours' => $access_working_hours,
+        ));
 
         return $this->output('admin/index.html.twig');
     }

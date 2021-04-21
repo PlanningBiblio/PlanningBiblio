@@ -27,11 +27,11 @@
       <li><a href='{{ asset("framework") }}'>Les tableaux</a></li>
     {% endif %}
 
-    {% if userCan('1101') %}
+    {% if userCan('25') %}
       <li><a href='{{ asset("closingday") }}'>Jours de fermeture</a></li>
     {% endif %}
 
-    {% if userCan('1101') and config('PlanningHebdo') %}
+    {% if access_working_hours and config('PlanningHebdo') %}
       <li><a href='{{ asset("workinghour") }}'>Heures de présence</a></li>
     {% endif %}
 
