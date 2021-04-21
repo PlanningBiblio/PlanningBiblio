@@ -74,12 +74,12 @@
 
           <div id='planningTips'>&nbsp;</div>
         {% else %}
-          {% if ( userCan('300', site) or userCan('1000' + site) ) and config('CatAFinDeService') %}
+          {% if ( userCan('300', site) or userCan('1000', site) ) and config('CatAFinDeService') %}
             <div id='pl-verif-categorie-A'></div>
           {% endif %}
 
           <div id='validation'>
-            {% if userCan('300', site) or userCan('1000' + site) %}
+            {% if userCan('300', site) or userCan('1000', site) %}
               <div class='pl-validation' style="{{ locked ?: 'display:none'}}">
                   <u>Validation</u><br/>
                   {{ perso2 }} {{ date_validation2 }} {{ heure_validation2 }}
@@ -107,7 +107,7 @@
             {% endif %}
 
             {% if locked %}
-              {% if userCan('300', site) == false and userCan('1000' + site) == false %}
+              {% if userCan('300', site) == false and userCan('1000', site) == false %}
                 <div class='pl-validation'>
                   <u>Validation</u><br/>
                   {{ perso2 }} {{ date_validation2 }} {{ heure_validation2 }}

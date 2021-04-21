@@ -33,7 +33,7 @@ class AppExtension extends AbstractExtension
         return dateAlpha($date);
     }
 
-    public function userCan($right, $site = 1)
+    public function userCan($right, $site = 0)
     {
         $droits = $GLOBALS['droits'];
 
