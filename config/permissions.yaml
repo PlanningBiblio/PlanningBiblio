@@ -3,6 +3,8 @@
 
 "account.index":
     - 100
+"admin.index":
+    - 100
 "agent.index":
     - 4
 "ajax.editabsencereasons":

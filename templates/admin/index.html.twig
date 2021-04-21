@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  <h3>Administration</h3>
+  <ul>
+    {% if userCan('23') %}
+      <li><a href='{{ asset("admin/info") }}'>Informations</a></li>
+    {% endif %}
+
+    {% if userCan('5') %}
+      <li><a href='{{ asset("skill") }}'>Les activités</a></li>
+    {% endif %}
+
+    {% if userCan('4') %}
+      <li><a href='{{ asset("agent") }}'>Les agents</a></li>
+    {% endif %}
+
+    {% if userCan('5') %}
+      <li><a href='{{ asset("position") }}'>Les postes</a></li>
+    {% endif %}
+
+    {% if access_model %}
+      <li><a href='{{ asset("model") }}'>Les modèles</a></li>
+    {% endif %}
+
+    {% if userCan('22') %}
+      <li><a href='{{ asset("framework") }}'>Les tableaux</a></li>
+    {% endif %}
+
+    {% if userCan('1101') %}
+      <li><a href='{{ asset("closingday") }}'>Jours de fermeture</a></li>
+    {% endif %}
+
+    {% if userCan('1101') and config('PlanningHebdo') %}
+      <li><a href='{{ asset("workinghour") }}'>Heures de présence</a></li>
+    {% endif %}
+
+    {% if userCan('20') %}
+      <li><a href='{{ asset("config") }}'>Configuration</a></li>
+    {% endif %}
+  </ul>
+{% endblock %}
