@@ -171,7 +171,8 @@ class CompTimeController extends BaseController
                 'commentaires'      => html_entity_decode($elem['commentaires'], ENT_QUOTES|ENT_HTML5),
             );
 
-            if ($config['Conges-Recuperations'] == 0 && $holiday_helper->showHoursToDays()) {
+            $comptime['hourstodays'] = null;
+            if ($this->config('Conges-Recuperations') == 0 && $holiday_helper->showHoursToDays()) {
                 $comptime['hourstodays'] = $holiday_helper->hoursToDays($elem['heures'], $elem['perso_id']);
             }
 
