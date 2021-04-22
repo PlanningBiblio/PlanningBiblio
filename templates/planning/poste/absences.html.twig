@@ -1,0 +1,147 @@
+{# planning/poste/absences.html.twig #}
+
+<!-- Absences-planning == simple -->
+{% if config('Absences-planning') == 1 %}
+  {% if absences is not empty %}
+    <h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>
+    <table class='tableauStandard'>
+      {% for absence in absences %}
+        {% if absence.valide > 0 or config('Absences-non-validees') %}
+          {% set bold = '' %}
+          {% if config('Absences-non-validees') and absence.valide > 0 %}
+            {% set bold = 'bold' %}
+          {% endif %}
+          <tr class="{% if loop.index is even %}tr2{% else %}tr1{% endif %} {{ bold }}">
+            <td style='text-align:left;'>
+              {{ absence.nom }} {{ absence.prenom}}
+              <!-- define hours -->
+              {% set start = '' %}
+              {% set end = '' %}
+              {% if absence.debut > today_start %}
+                {% set start = absence.debut[11:5] %}
+              {% endif %}
+              {% if absence.fin < today_end %}
+                {% set end = absence.fin[11:5] %}
+              {% endif %}
+              {% if start and end %}
+                de {{ start | time }} à {{ end | time }}
+              {% elseif start %}
+                à partir de {{ start | time }}
+              {% elseif end %}
+                jusqu'à {{ end | time }}
+              {% endif %}
+              <!-- /define hours -->
+              {% if config('Absences-non-validees') and absence.valide <= 0 %}
+                (non validée)
+              {% endif %}
+            </td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+    </table>
+  {% endif %}
+{% endif %}
+
+<!-- Absences-planning == detailed -->
+{% if config('Absences-planning') == 2 %}
+  {% if absences is not empty %}
+    <h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>
+    <table id='tablePlanningAbsences' class='CJDataTable' data-sort='[[0],[1]]'>
+      <thead>
+        <tr>
+          <th>Nom</th><th>Prénom</th>
+          <th class='dataTableDateFR'>Début</th>
+          <th class='dataTableDateFR'>Fin</th>
+          <th>Motif</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for absence in absences %}
+          {% if absence.valide > 0 or config('Absences-non-validees') %}
+            {% set bold = '' %}
+            {% if config('Absences-non-validees') and absence.valide > 0 %}
+              {% set bold = 'bold' %}
+            {% endif %}
+            <tr class='{{ bold }}'>
+              <td>{{ absence.nom}}</td>
+              <td>{{ absence.prenom }}</td>
+              <td>{{ absence.debutAff }}</td>
+              <td>{{ absence.finAff }}</td>
+              <td>{{ absence.motif }}
+                {% if config('Absences-non-validees') and absence.valide <= 0 %}
+                  (non validée)
+                {% endif %}
+              </td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+{% endif %}
+
+<!-- Absences-planning == presents and absents -->
+{% if config('Absences-planning') == 3 %}
+  <table class='tableauStandard'>
+    <tr>
+      <td><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des présents</h3></td>
+      {% if absences is not empty %}
+        <td><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3></td>
+      {% endif %}
+    </tr>
+
+    <tr style='vertical-align:top;'>
+      <td>
+        <table cellspacing='0'>
+          {% for present in presents %}
+            <tr class='{% if loop.index is even %}tr2{% else %}tr1{% endif %}'>
+              <td>{{ present.nom }}</td>
+              <td style='padding-left:15px;'>
+                {{ present.site }}{{ present.heures }}
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      </td>
+
+      <td>
+        <table cellspacing='0'>
+          {% for absence in absences %}
+            {% if absence.valide > 0 or config('Absences-non-validees') %}
+              {% set bold = '' %}
+              {% if config('Absences-non-validees') and absence.valide > 0 %}
+                {% set bold = 'bold' %}
+              {% endif %}
+              <tr class='{% if loop.index is even %}tr2{% else %}tr1{% endif %} {{ bold }}'>
+                <td>{{ absence.nom }} {{ absence.prenom }}</td>
+                <td style='padding-left:15px;'>
+                  {{ absence.motif }}
+                  <!-- define hours -->
+                  {% set start = '' %}
+                  {% set end = '' %}
+                  {% if absence.debut > today_start %}
+                    {% set start = absence.debut[11:5] %}
+                  {% endif %}
+                  {% if absence.fin < today_end %}
+                    {% set end = absence.fin[11:5] %}
+                  {% endif %}
+                  {% if start and end %}
+                    de {{ start | time }} à {{ end | time }}
+                  {% elseif start %}
+                    à partir de {{ start | time }}
+                  {% elseif end %}
+                    jusqu'à {{ end | time }}
+                  {% endif %}
+                  <!-- /define hours -->
+                  {% if config('Absences-non-validees') and absence.valide <= 0 %}
+                    (non validée)
+                  {% endif %}
+                </td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </table>
+      </td>
+    </tr>
+  </table>
+{% endif %}
