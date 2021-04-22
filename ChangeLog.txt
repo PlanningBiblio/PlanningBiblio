@@ -1,5 +1,17 @@
 *** Unreleased ***
 
+*** Version 20.10.07       (2021-04-22)   ***
+-Fixes
+Position's groups and floors: restore deleting and prevent deleting used
+Allows editing own absences if they are not validated or Absences-validation
+is false
+Mark leaved agents as crossed off when importing models
+Remove html entities on param separator in plannings url
+
+- Enhancements
+Integration with CircleCI / Codecov
+Show agents firstname and surname in workinghours list
+
 *** Version 20.10.06       (2021-03-09)   ***
 -Fixes
 MT 31819: Don't sanitize config elements
