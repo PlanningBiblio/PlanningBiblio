@@ -92,7 +92,7 @@ class PresentSet
                 } elseif (!$heures[0] and !$heures[1]) {	// après midi seulement
                     $horaires=heure2($heures[2])." - ".heure2($heures[3]);
                 } else {		// matin et après midi avec pause
-                    $horaires=heure2($heures[0])." - ".heure2($heures[1])." &amp; ".heure2($heures[2])." - ".heure2($heures[3]);
+                    $horaires=heure2($heures[0])." - ".heure2($heures[1])." & ".heure2($heures[2])." - ".heure2($heures[3]);
                 }
                 $presents[]=array("id"=>$elem['id'],"nom"=>$elem['nom']." ".$elem['prenom'],"site"=>$siteAgent,"heures"=>$horaires);
             }

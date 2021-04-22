@@ -16,6 +16,7 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFilter('datefull', [$this, 'dateFull']),
+            new TwigFilter('time', [$this, 'time']),
         ];
     }
 
@@ -31,6 +32,11 @@ class AppExtension extends AbstractExtension
     public function dateFull($date)
     {
         return dateAlpha($date);
+    }
+
+    public function time($hours)
+    {
+        return heure2($hours);
     }
 
     public function userCan($right, $site = 1)

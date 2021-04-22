@@ -572,101 +572,19 @@ EOD;
     }
 
     // Affichage des absences
-    if ($config['Absences-planning']) {
 
-        // Ajout des congés
-        foreach ($conges as $elem) {
-            $elem['motif'] = 'Congé payé';
-            $absences_planning[] = $elem;
-            $absences_id[] = $elem['perso_id'];
-        }
-
-        usort($absences_planning, 'cmp_nom_prenom_debut_fin');
-
-        switch ($config['Absences-planning']) {
-      case "1":
-    if (!empty($absences_planning)) {
-        echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
-        echo "<table class='tableauStandard'>\n";
-        $class="tr1";
-        foreach ($absences_planning as $elem) {
-            if ($elem['valide'] <= 0 and $config['Absences-non-validees'] == 0) {
-                continue;
-            }
-
-            $heures=null;
-            $debut=null;
-            $fin=null;
-            if ($elem['debut']>"$date 00:00:00") {
-                $debut=substr($elem['debut'], -8);
-            }
-            if ($elem['fin']<"$date 23:59:59") {
-                $fin=substr($elem['fin'], -8);
-            }
-            if ($debut and $fin) {
-                $heures=" de ".heure2($debut)." à ".heure2($fin);
-            } elseif ($debut) {
-                $heures=" à partir de ".heure2($debut);
-            } elseif ($fin) {
-                $heures=" jusqu'à ".heure2($fin);
-            }
-        
-            $bold = null;
-            $nonValidee = null;
-            if ($config['Absences-non-validees'] == 1) {
-                if ($elem['valide'] > 0) {
-                    $bold = 'bold';
-                } else {
-                    $nonValidee = " (non valid&eacute;e)";
-                }
-            }
-
-            $class=$class=="tr1"?"tr2":"tr1";
-            echo "<tr class='$class $bold'><td style='text-align:left;'>{$elem['nom']} {$elem['prenom']}{$heures}{$nonValidee}</td></tr>\n";
-        }
-        echo "</table>\n";
+    // Ajout des congés
+    foreach ($conges as $elem) {
+        $elem['motif'] = 'Congé payé';
+        $absences_planning[] = $elem;
+        $absences_id[] = $elem['perso_id'];
     }
-    break;
 
-      case "2":
-    if (!empty($absences_planning)) {
-        echo "<h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3>\n";
-        echo "<table id='tablePlanningAbsences' class='CJDataTable' data-sort='[[0],[1]]'><thead>\n";
-        echo "<tr><th>Nom</th><th>Pr&eacute;nom</th>\n";
-        echo "<th class='dataTableDateFR'>D&eacute;but</th>\n";
-        echo "<th class='dataTableDateFR'>Fin</th>\n";
-        echo "<th>Motif</th></tr></thead>\n";
-        echo "<tbody>\n";
-        foreach ($absences_planning as $elem) {
-            if ($elem['valide'] <= 0 and $config['Absences-non-validees'] == 0) {
-                continue;
-            }
+    usort($absences_planning, 'cmp_nom_prenom_debut_fin');
 
-            $bold = null;
-            $nonValidee = null;
-            if ($config['Absences-non-validees'] == 1) {
-                if ($elem['valide'] > 0) {
-                    $bold = 'bold';
-                } else {
-                    $nonValidee = " (non valid&eacute;e)";
-                }
-            }
-            
-            echo "<tr class='$bold'><td>{$elem['nom']}</td><td>{$elem['prenom']}</td>";
-            echo "<td>{$elem['debutAff']}</td><td>{$elem['finAff']}</td>";
-            echo "<td>{$elem['motif']}{$nonValidee}</td></tr>\n";
-        }
-        echo "</tbody></table>\n";
-    }
-    break;
-
-      case "3":
     // Sélection des agents présents
-    $heures=null;
-    $presents=array();
-    $absents=array(2);	// 2 = Utilisateur "Tout le monde", on le supprime
-
     // On exclus ceux qui sont absents toute la journée
+    $absents = array();
     if (!empty($absences_planning)) {
         foreach ($absences_planning as $elem) {
             if ($elem['debut']<=$date." 00:00:00" and $elem['fin']>=$date." 23:59:59" and $elem['valide']>0) {
@@ -682,72 +600,15 @@ EOD;
     $presentset = new PresentSet($dateSQL, $d, $absents, $db);
     $presents = $presentset->all();
 
-    echo "<table class='tableauStandard'>\n";
-    echo "<tr><td><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des présents</h3></td>\n";
-    if (!empty($absences_planning)) {
-        echo "<td><h3 style='text-align:left;margin:40px 0 0 0;'>Liste des absents</h3></td>";
-    }
-    echo "</tr>\n";
 
-    // Liste des présents
-    echo "<tr style='vertical-align:top;'><td>";
-    echo "<table cellspacing='0'> ";
-    $class="tr1";
-    foreach ($presents as $elem) {
-        $class=$class=="tr1"?"tr2":"tr1";
-        echo "<tr class='$class'><td>{$elem['nom']}</td><td style='padding-left:15px;'>{$elem['site']}{$elem['heures']}</td></tr>\n";
-    }
-    echo "</table>\n";
-    echo "</td>\n";
-
-    // Liste des absents
-    echo "<td>";
-    echo "<table cellspacing='0'>";
-    $class="tr1";
-    foreach ($absences_planning as $elem) {
-        if ($elem['valide'] <= 0 and $config['Absences-non-validees'] == 0) {
-            continue;
-        }
-          
-        $heures=null;
-        $debut=null;
-        $fin=null;
-        if ($elem['debut']>"$date 00:00:00") {
-            $debut=substr($elem['debut'], -8);
-        }
-        if ($elem['fin']<"$date 23:59:59") {
-            $fin=substr($elem['fin'], -8);
-        }
-        if ($debut and $fin) {
-            $heures=", ".heure2($debut)." - ".heure2($fin);
-        } elseif ($debut) {
-            $heures=" à partir de ".heure2($debut);
-        } elseif ($fin) {
-            $heures=" jusqu'à ".heure2($fin);
-        }
-
-        $class=$class=="tr1"?"tr2":"tr1";
-      
-        $bold = null;
-        $nonValidee = null;
-          
-        if ($config['Absences-non-validees'] == 1) {
-            if ($elem['valide'] > 0) {
-                $bold = 'bold';
-            } else {
-                $nonValidee = " (non valid&eacute;e)";
-            }
-        }
-
-        echo "<tr class='$class $bold'><td>{$elem['nom']} {$elem['prenom']}</td><td style='padding-left:15px;'>{$elem['motif']}{$heures}{$nonValidee}</td></tr>\n";
-    }
-    echo "</table>\n";
-    echo "</td></tr>\n";
-    echo "</table>\n";
-    break;
-
-    }
-    }
+    echo $twig->render('planning/poste/absences.html.twig',
+        array(
+            'absences'      => $absences_planning,
+            'presents'      => $presents,
+            'today_start'   => "$date 00:00:00",
+            'today_end'     => "$date 23:59:59",
+        )
+    );
 }
                     //---------------	FIN Affichage des absences		-----------------//
 ?>
