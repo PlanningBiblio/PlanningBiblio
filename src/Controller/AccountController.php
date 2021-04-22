@@ -10,6 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 require_once (__DIR__."/../../public/personnel/class.personnel.php");
 require_once (__DIR__."/../../public/planningHebdo/class.planningHebdo.php");
+require_once (__DIR__."/../../public/include/function.php");
 
 
 class AccountController extends BaseController
@@ -112,4 +113,82 @@ class AccountController extends BaseController
         return $this->output('/myAccount.html.twig');
     }
 
+    /**
+     * @Route("/myaccount/password", name="account.password", methods={"GET"})
+     */
+    public function password(Request $request, Session $session)
+    {
+        $this->templateParams(
+            array(
+                'op'                => '',
+                "login_name"        => $_SESSION['login_nom'],
+                "login_firstname"   => $_SESSION['login_prenom'],
+            )
+        );
+        return $this->output('/password.html.twig');
+    }
+
+    /**
+     * @Route("/myaccount/password", name="account.updatepassword", methods={"POST"})
+     */
+    public function password_change(Request $request, Session $session)
+    {
+
+        $ancien = $request->get('ancien');
+        $confirm = $request->get('confirm');
+        $nouveau = $request->get('nouveau');
+
+        $this->templateParams(
+            array(
+                'op'                => 'valid',
+                'login_name'        => $_SESSION['login_nom'],
+                'login_firstname'   => $_SESSION['login_prenom'],
+                'cjinfo'            => '',
+            )
+        );
+
+        $db = new \db();
+        $db->query("select login,password,mail from {$dbprefix}personnel where id=".$_SESSION['login_id'].";");
+
+        $login = $db->result[0]['login'];
+        $mail = $db->result[0]['mail'];
+
+        $password_verify = true;
+        $password_match = true;
+
+        if (!password_verify($ancien, $db->result[0]['password'])) {
+            $password_verify = false;
+        } elseif ($nouveau!=$confirm) {
+            $password_match = false;
+        } else {
+            $mdp=$nouveau;
+            $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
+            $db=new \db();
+            $db->query("update {$dbprefix}personnel set password='".$mdp_crypt."' where id=".$_SESSION['login_id'].";");
+
+            $message = "Votre mot de passe Planning Biblio a &eacute;t&eacute; modifi&eacute;";
+            $message .= "<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
+
+            // Send email
+            $m=new \CJMail();
+            $m->subject="Modification du mot de passe";
+            $m->message = $message;
+            $m->to = $mail;
+            $m->send();
+
+            // Pass email error.
+            if ($m->error_CJInfo) {
+                $this->templateParams(array('cjinfo' => $m->error_CJInfo));
+            }
+        }
+
+        $this->templateParams(
+            array(
+                'password_verify'   => $password_verify,
+                'password_match'    => $password_match,
+            )
+        );
+
+        return $this->output('/password.html.twig');
+    }
 }
