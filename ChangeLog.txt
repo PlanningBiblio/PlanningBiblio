@@ -1,5 +1,6 @@
 *** Unreleased ***
 
+*** Version 21.04.00       (2021-04-22)   ***
 - Enhancements
 Move function calculPresence in dedicated class (WorkingHours)
 Allows more permissive entries in working hours
@@ -34,7 +35,17 @@ Symfonize_statistics agent
 Symfonize statistics position summary
 Symfonize statistics services
 Symfonize statistics status
-
+Symfonize admin index
+Symfonize compensatory time
+Symfonize stats by times
+Symfonize support position
+Symfonize framework tables restoring
+Allow the selection of agents on different sites
+Ability to check if SQL column exists  (idempotent DBRevs)
+Move planning framework choice in dedicated twig template
+Move planning's menu html code in dedicated twig template
+Functional tests ability
+Show agents firstname and surname in workinghours list
 
 -Fixes
 Remove HTML entities in closing days
@@ -59,6 +70,9 @@ LDAP: Change LDAP-ID-Attribute value from supannAliasLogin to supannaliaslogin
 Fix wrong reset URL on statistics/attendeesmissing
 PHP8, fix wrong use of mysqli_connect_errno. Handle id=0 in function nom
 PHP8, fix wrong use of implode and join functions
+Prevent skills to be deleted if used by agents
+Workinghours exception should take into account weeks turnover
+Mark leaved agents as crossed off when importing models
 
 *** Version 20.10.00       (2020-10-09)   ***
 - Enhancements

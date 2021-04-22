@@ -2276,6 +2276,28 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="21.04.00.000";
+if (version_compare($config['Version'], $v) === -1) {
+
+    // Symfonize admin index page
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='admin/index.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` SET `url` = '/admin' WHERE `url`='admin/index.php';";
+
+    // Symfonize compensatory times liste page
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='conges/recuperations.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` SET `url` = '/comp-time' WHERE `url`='conges/recuperations.php';";
+
+    // Symfonize stats by time
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='statistiques/temps.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` SET `url` = '/statistics/time' WHERE `url`='statistiques/temps.php';";
+
+    // Symfonize stats by support positions
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='statistiques/postes_renfort.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` SET `url`='/statistics/supportposition' WHERE `url`='statistiques/postes_renfort.php';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
