@@ -503,8 +503,8 @@ function verifConges(){
           if (multipleAgentsSelected()) {
             var baseURL = $('#baseURL').val();
             var result=$.ajax({
-                url: baseURL + '/ajax/check-planning/',
-                type: "get",
+                url: baseURL + '/ajax/check-planning',
+                type: "post",
                 data: "perso_ids="+JSON.stringify(perso_ids)+"&start="+debut+"&end="+fin,
                 async: false,
                 success: function(data){

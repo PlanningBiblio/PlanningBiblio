@@ -738,7 +738,7 @@ class HolidayController extends BaseController
     }
 
     /**
-     * @Route("/ajax/check-planning", name="ajax.checkplanning", methods={"GET"})
+     * @Route("/ajax/check-planning", name="ajax.checkplanning", methods={"POST"})
      */
     public function checkPlanning(Request $request)
     {
@@ -787,7 +787,7 @@ class HolidayController extends BaseController
         $fin = $request->get('fin');
 
         $perso_ids = array();
-        if (!empty($perso_id)) {
+        if (!empty($perso_id) && $perso_id != 0) {
             $perso_ids[] = $perso_id;
         } else {
             $perso_ids = $request->get('perso_ids');
@@ -864,6 +864,7 @@ class HolidayController extends BaseController
             // Enregistrement du congés
             $c = new \conges();
             $c->CSRFToken = $CSRFToken;
+            $request->request->set('perso_id', $perso_id);
             $c->add($request->request->all());
             $id = $c->id;
 
