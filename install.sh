@@ -1,5 +1,7 @@
 #!/bin/bash
 
+version='21.04.00.000'
+
 # Check PHP version
 phpversion=$(php -r "echo version_compare(phpversion(), '7.4');");
 if [[ $phpversion -lt 0 ]]; then
@@ -157,7 +159,7 @@ else
 fi
 
 # Set variables
-planningbdatas=data/planningb_1911_utf8.sql.gz
+planningbdatas=data/planningb_2104.sql.gz
 planningbsecret=$(head /dev/urandom|tr -dc "a-f0-9"|fold -w 32|head -n 1)
 
 # Create the database
@@ -228,7 +230,10 @@ fi
 php -r "unlink('composer.phar');"
 
 # Run database update
-php -f public/index.php
+grep "\$version=\"$version\";" init/init.php
+if [[ $? != 0 ]]; then
+    php -f public/index.php
+fi
 
 echo ""
 echo -e "One more step, run : \e[1m\033[32msudo chmod -R 777 var\e[0m";
