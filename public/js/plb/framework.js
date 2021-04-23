@@ -94,10 +94,9 @@ function supprimeTableau(tableau){
       url: baseURL + "/framework",
       type: "delete",
       dataType: "json",
-      data: {tableau: tableau, CSRFToken: CSRFToken},
+      data: {tableau: tableau, CSRFToken: CSRFToken, name: nom},
       success: function(){
-        msg=encodeURIComponent("Le tableau \""+nom+"\" a été supprimé avec succès");
-        window.location.href = baseURL + "/framework?msgType=success&msg="+msg;
+        window.location.href = baseURL + '/framework';
       },
       error: function(result){
         CJInfo("Une erreur est survenue lors de la suppression du tableau \""+nom+"\"\n"+result.responseText,"error");
@@ -263,14 +262,12 @@ $(function(){
           url: baseURL + "/framework/restore_table",
           type: "post",
           dataType: "json",
-          data: {id: id, CSRFToken: CSRFToken},
+          data: {id: id, CSRFToken: CSRFToken, name: name},
           success: function(){
-            var msg=encodeURIComponent("Le tableau \""+name+"\" a été récupéré avec succès");
-            location.href = baseURL + "/framework?cfg-type=0&msg="+msg+"&msgType=success";
+            location.href = baseURL + '/framework';
           },
           error: function(){
-            var msg=encodeURIComponent("Une erreur est survenue lors de la récupération du tableau \""+name+"\".");
-            location.href = baseURL + "/framework?cfg-type=0&msg="+msg+"&msgType=error";
+            CJInfo('Une erreur est survenue lors de la récupération du tableau "' + name + '".',"error");
           }
         });
       }

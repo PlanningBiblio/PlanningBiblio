@@ -539,11 +539,24 @@ class FrameworkController extends BaseController
         $post = $request->request->all();
         $CSRFToken = $post['CSRFToken'];
         $tableau = $post['tableau'];
+        $name = $post['name'];
 
-        $t = new Framework();
-        $t->number = $tableau;
-        $t->CSRFToken = $CSRFToken;
-        $t->deleteTab();
+        try {
+            $t = new Framework();
+            $t->number = $tableau;
+            $t->CSRFToken = $CSRFToken;
+            $t->deleteTab();
+
+        } catch (Exception $e) {
+            $session->getFlashBag()->add(
+                'error',
+                "Une erreur est survenue lors de la suppression du tableau \"$name\"\n"
+                    . $e->getMessage()
+            );
+            return $this->json('notok');
+        }
+
+        $session->getFlashBag()->add('notice', "Le tableau \"$name\" a été supprimé avec succès");
         return $this->json('ok');
     }
 
@@ -575,6 +588,7 @@ class FrameworkController extends BaseController
     public function restoreTable (Request $request, Session $session) {
         $CSRFToken = $request->get("CSRFToken");
         $id = $request->get("id");
+        $name = $request->get("name");
 
         $postes=array();
 
@@ -622,6 +636,7 @@ class FrameworkController extends BaseController
         $db->CSRFToken = $CSRFToken;
         $db->update('pl_poste_tab', array('supprime' => null), array('tableau' => $id));
 
+        $session->getFlashBag()->add('notice', "Le tableau \"$name\" a été récupéré avec succès");
         return $this->json('OK');
     }
 
