@@ -205,6 +205,58 @@ class HolidayHelper extends BaseHelper
         return $this->config('conges-hours-per-day');
     }
 
+    public function getManagedAgent($adminN2, $deleted_agents = false)
+    {
+        $access_rights = $GLOBALS['droits'];
+
+        $agents = array();
+        $p=new \personnel();
+        $p->responsablesParAgent = true;
+        if ($deleted_agents) {
+            $p->supprime=array(0,1);
+        }
+        $p->fetch();
+        $agents=$p->elements;
+
+        // If config Multi-sites : keep only users that we can manage.
+        if ($this->config('Multisites-nombre') > 1) {
+            $tmp = array();
+
+            foreach ($agents as $elem) {
+                if (is_array($elem['sites'])) {
+                    foreach ($elem['sites'] as $site_agent) {
+                        if (in_array((400+$site_agent), $access_rights) or in_array((600+$site_agent), $access_rights)) {
+                            $tmp[$elem['id']] = $elem;
+                            continue 2;
+                        }
+                    }
+                }
+            }
+            $agents = $tmp;
+        }
+
+        // Filtre pour n'afficher que les agents gérés si l'option "Absences-notifications-agent-par-agent" est cochée
+        if ($this->config('Absences-notifications-agent-par-agent') and !$adminN2) {
+            $tmp = array();
+
+            foreach ($agents as $elem) {
+                if ($elem['id'] == $_SESSION['login_id']) {
+                    $tmp[$elem['id']] = $elem;
+                } else {
+                    foreach ($elem['responsables'] as $resp) {
+                        if ($resp['responsable'] == $_SESSION['login_id']) {
+                            $tmp[$elem['id']] = $elem;
+                            break;
+                        }
+                    }
+                }
+            }
+            $agents = $tmp;
+        }
+
+        return $agents;
+    }
+
     private function applyWeekTable($week)
     {
         if($this->config('Conges-Mode') == 'heures' || $this->data['is_recover']) {

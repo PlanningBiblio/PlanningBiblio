@@ -109,7 +109,8 @@ class HolidayController extends BaseController
 
         // Recherche des agents pour le menu
         if ($admin) {
-            $agents_menu = $this->get_agents($adminN2, $agents_supprimes);
+            $helper = new HolidayHelper();
+            $agents_menu = $helper->getManagedAgent($adminN2, $agents_supprimes);
 
             // Liste des agents à conserver :
             $perso_ids = array_keys($agents_menu);
@@ -426,7 +427,8 @@ class HolidayController extends BaseController
         $this->templateParams($templateParams);
 
         if ($adminN1 or $adminN2) {
-            $agents = $this->get_agents($adminN2);
+            $helper = new HolidayHelper();
+            $agents = $helper->getManagedAgent($adminN2);
             $this->templateParams(array('db_perso' => $agents));
         }
         $saisie_par = '';
@@ -621,7 +623,8 @@ class HolidayController extends BaseController
         // Affichage du formulaire
 
         if ($admin) {
-            $agents = $this->get_agents($adminN2);
+            $helper = new HolidayHelper();
+            $agents = $helper->getManagedAgent($adminN2);
             $this->templateParams(array('db_perso' => $agents));
         }
 
@@ -943,61 +946,6 @@ class HolidayController extends BaseController
         }
 
         return $result;
-    }
-
-    /**
-     * Get managed agents
-     */
-    private function get_agents($adminN2, $deleted_agents = false)
-    {
-        $access_rights = $GLOBALS['droits'];
-
-        $agents = array();
-        $p=new \personnel();
-        $p->responsablesParAgent = true;
-        if ($deleted_agents) {
-            $p->supprime=array(0,1);
-        }
-        $p->fetch();
-        $agents=$p->elements;
-
-        // If config Multi-sites : keep only users that we can manage.
-        if ($this->config('Multisites-nombre') > 1) {
-            $tmp = array();
-
-            foreach ($agents as $elem) {
-                if (is_array($elem['sites'])) {
-                    foreach ($elem['sites'] as $site_agent) {
-                        if (in_array((400+$site_agent), $access_rights) or in_array((600+$site_agent), $access_rights)) {
-                            $tmp[$elem['id']] = $elem;
-                            continue 2;
-                        }
-                    }
-                }   
-            }
-            $agents = $tmp;
-        }
-
-        // Filtre pour n'afficher que les agents gérés si l'option "Absences-notifications-agent-par-agent" est cochée
-        if ($this->config('Absences-notifications-agent-par-agent') and !$adminN2) {
-            $tmp = array();
-
-            foreach ($agents as $elem) {
-                if ($elem['id'] == $_SESSION['login_id']) {
-                    $tmp[$elem['id']] = $elem;
-                } else {
-                    foreach ($elem['responsables'] as $resp) {
-                        if ($resp['responsable'] == $_SESSION['login_id']) {
-                            $tmp[$elem['id']] = $elem;
-                            break;
-                        }
-                    }
-                }
-            }
-            $agents = $tmp;
-        }
-
-        return $agents;
     }
 
     /**

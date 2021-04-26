@@ -70,27 +70,8 @@ class CompTimeController extends BaseController
         // Search agents
         $agents = array();
         if ($this->admin) {
-            $p = new \personnel();
-            $p->responsablesParAgent = true;
-            $p->fetch();
-            $agents = $p->elements;
-
-            // If Absences-notifications-agent-par-agent is enables,
-            // filter unmanaged agents.
-            if ($this->config('Absences-notifications-agent-par-agent') and !$this->adminN2) {
-                $tmp = array();
-
-                foreach ($agents as $elem) {
-                    foreach ($elem['responsables'] as $resp) {
-                        if ($resp['responsable'] == $_SESSION['login_id']) {
-                            $tmp[$elem['id']] = $elem;
-                            break;
-                        }
-                    }
-                }
-
-                $agents = $tmp;
-            }
+            $helper = new HolidayHelper();
+            $agents = $helper->getManagedAgent($this->adminN2, false);
         }
 
         if (empty($agents[$_SESSION['login_id']])) {
