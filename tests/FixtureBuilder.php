@@ -22,6 +22,8 @@ class FixtureBuilder
         $metadata = $this->em->getClassMetadata($model);
         $entity_fields = $metadata->getFieldNames();
 
+        $defaults = $this->getDefaultFixture($model);
+
         $entity = new $model();
         foreach ($entity_fields as $field) {
             $type = $metadata->getTypeOfField($field);
@@ -41,6 +43,14 @@ class FixtureBuilder
                 continue;
             }
 
+            if ($defaults) {
+                $default = $defaults->getFor($field);
+                if (isset($default)) {
+                    $metadata->setFieldValue($entity, $field, $default);
+                    continue;
+                }
+            }
+
             $value = $this->random($type, $mapping);
             $metadata->setFieldValue($entity, $field, $value);
         }
@@ -49,6 +59,22 @@ class FixtureBuilder
         $this->em->flush();
 
         return $entity;
+    }
+
+    private function getDefaultFixture($model)
+    {
+        $namespace = explode('\\', $model);
+        $name = end($namespace);
+
+        $class_name = '\Tests\FixtureBuilder\\' . $name;
+
+        $fixture = null;
+        if (class_exists($class_name)) {
+            $fixture = new $class_name();
+        }
+
+        return $fixture;
+
     }
 
     private function random($type, $mapping)
