@@ -1,5 +1,8 @@
 *** Unreleased ***
 
+- Enhancements
+Add a fixture builder to simplify tests writing
+
 *** Version 21.04.00       (2021-04-22)   ***
 - Enhancements
 Move function calculPresence in dedicated class (WorkingHours)
