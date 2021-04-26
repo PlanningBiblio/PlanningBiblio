@@ -2,7 +2,9 @@
 
 use App\Model\Agent;
 use App\Model\Access;
-use Tests\Utils;
+
+use Tests\FixtureBuilder;
+
 use PHPUnit\Framework\TestCase;
 
 class AgentTest extends TestCase
@@ -23,7 +25,10 @@ class AgentTest extends TestCase
         $access_bad = new Access();
         $access_bad->groupe_id(201);
 
-        $agent = Utils::createAgent();
+        $builder = new FixtureBuilder();
+        $agent = $builder->build(Agent::class, array(
+            'droits' => array('99', '100')
+        ));
 
         $this->assertTrue($agent->can_access(array($access)));
         $this->assertFalse($agent->can_access(array($access_bad)));

@@ -1,7 +1,9 @@
 <?php
 
+use App\Model\Agent;
+
 use Tests\PLBWebTestCase;
-use Tests\Utils;
+use Tests\FixtureBuilder;
 
 class ConfigControllerTest extends PLBWebTestCase
 {
@@ -19,7 +21,8 @@ class ConfigControllerTest extends PLBWebTestCase
 
     public function testAccessWithAuthorizedUser() {
 
-        $agent = Utils::createAgent(array('login' => 'jdevoe'));
+        $builder = new FixtureBuilder();
+        $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
 
         $this->logInAgent($agent, array(20));
 
