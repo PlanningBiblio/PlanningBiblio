@@ -62,7 +62,7 @@ class Agent extends PLBEntity {
     /** @Column(type="datetime") **/
     protected $last_login;
 
-    /** @Column(type="string") **/
+    /** @Column(type="string", length=6) **/
     protected $heures_hebdo;
 
     /** @Column(type="float") **/

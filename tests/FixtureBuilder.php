@@ -25,6 +25,7 @@ class FixtureBuilder
         $entity = new $model();
         foreach ($entity_fields as $field) {
             $type = $metadata->getTypeOfField($field);
+            $mapping = $metadata->getFieldMapping($field);
 
             if (isset($values[$field])) {
                 $metadata->setFieldValue($entity, $field, $values[$field]);
@@ -40,8 +41,7 @@ class FixtureBuilder
                 continue;
             }
 
-            $random_method = "random_$type";
-            $value = $this->$random_method();
+            $value = $this->random($type, $mapping);
             $metadata->setFieldValue($entity, $field, $value);
         }
 
@@ -51,8 +51,41 @@ class FixtureBuilder
         return $entity;
     }
 
-    private function random_text($length = 39)
+    private function random($type, $mapping)
     {
+        $value = '';
+        $length = isset($mapping['length']) ? $mapping['length'] : null;
+
+        switch ($type) {
+            case 'string':
+                $value = $this->random_text($length);
+                break;
+            case 'text':
+                $value = $this->random_text($length);
+                break;
+            case 'date':
+                $value = $this->random_date();
+                break;
+            case 'json_array':
+                $value = $this->random_json_array();
+                break;
+            case 'datetime':
+                $value = $this->random_datetime();
+                break;
+            case 'float':
+                $value = $this->random_float();
+                break;
+            case 'integer':
+                $value = $this->random_integer();
+                break;
+        }
+
+        return $value;
+    }
+
+    private function random_text($length)
+    {
+        $length ??= 20;
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $randstring = '';
         for ($i = 0; $i < $length; $i++) {
@@ -61,11 +94,6 @@ class FixtureBuilder
         }
 
         return $randstring;
-    }
-
-    private function random_string()
-    {
-        return $this->random_text(15);
     }
 
     private function random_date()
