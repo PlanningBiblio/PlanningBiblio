@@ -144,6 +144,6 @@ class FixtureBuilder
 
     private function random_integer()
     {
-        return rand(0, 30);
+        return rand(0, 9);
     }
 }
