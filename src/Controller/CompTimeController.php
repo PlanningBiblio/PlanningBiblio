@@ -210,6 +210,18 @@ class CompTimeController extends BaseController
         return $this->output('comp_time/index.html.twig');
     }
 
+    /**
+     * @Route("/comp-time/new", name="comp-time.new", methods={"GET"})
+     */
+    public function add(Request $request)
+    {
+    }
+
+    public function save(Request $request)
+    {
+    }
+
+
     private function setAdminPermissions()
     {
         // If can validate level 1: admin = true.
