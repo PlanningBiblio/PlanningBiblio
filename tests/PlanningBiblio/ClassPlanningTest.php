@@ -30,7 +30,8 @@ class ClassPlanningTest extends TestCase
                 array("","","","","")
             ),
             'validation'    => 2,
-            'exception:'    => 0
+            'exception:'    => 0,
+            'number_of_weeks' => 1
 
         ));
 
@@ -70,7 +71,8 @@ class ClassPlanningTest extends TestCase
                 array("","","","","")
             ),
             'validation'    => 2,
-            'exception'    => $id
+            'exception'    => $id,
+            'number_of_weeks' => 1
 
         ));
 
@@ -125,7 +127,8 @@ class ClassPlanningTest extends TestCase
                 "12" => ["","","","",""]
             ),
             'validation'    => 2,
-            'exception:'    => 0
+            'exception:'    => 0,
+            'number_of_weeks' => 2
 
         ));
 
@@ -160,7 +163,8 @@ class ClassPlanningTest extends TestCase
                 "12" => ["","","","",""]
             ),
             'validation'    => 2,
-            'exception'    => $id
+            'exception'    => $id,
+            'number_of_weeks' => 2
 
         ));
 
