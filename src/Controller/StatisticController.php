@@ -100,7 +100,7 @@ class StatisticController extends BaseController
             $dates[] = $current;
             $current = date("Y-m-d", strtotime("+1 week", strtotime($current)));
         }
-        $dates = join(",", $dates);
+        $dates = implode(",", $dates);
 
         // Les agents
         if (!array_key_exists('stat_samedis_agents', $_SESSION)) {
@@ -141,7 +141,7 @@ class StatisticController extends BaseController
 
         // Filtre les sites dans les requêtes SQL
         if ($nbSites>1) {
-            $sitesSQL = "0,".join(",", $selectedSites);
+            $sitesSQL = "0,".implode(",", $selectedSites);
         } else {
             $sitesSQL = "0,1";
         }
@@ -173,7 +173,7 @@ class StatisticController extends BaseController
 
             //	Recherche des infos dans pl_poste et postes pour tous les agents sélectionnés
             //	On stock le tout dans le tableau $resultat
-            $agents_select = join(",", $agents);
+            $agents_select = implode(",", $agents);
 
             $db = new \db();
             $db->selectInnerJoin(
@@ -489,7 +489,7 @@ class StatisticController extends BaseController
 
         // Filtre les sites dans les requêtes SQL
         if ($nbSites > 1 and is_array($selectedSites)) {
-            $sitesSQL = "0,".join(",", $selectedSites);
+            $sitesSQL = "0,".implode(",", $selectedSites);
         } else {
             $sitesSQL = "0,1";
         }
@@ -917,7 +917,7 @@ class StatisticController extends BaseController
 
         // Filtre les sites dans les requêtes SQL
         if ($nbSites > 1 and is_array($selectedSites)) {
-            $sitesSQL="0,".join(",", $selectedSites);
+            $sitesSQL="0,".implode(",", $selectedSites);
         } else {
             $sitesSQL="0,1";
         }
@@ -1645,7 +1645,7 @@ class StatisticController extends BaseController
 
         // Filtre les sites dans les requêtes SQL
         if ($nbSites>1 and is_array($selectedSites)) {
-            $sitesSQL =" 0,".join(",", $selectedSites);
+            $sitesSQL =" 0,".implode(",", $selectedSites);
         } else {
             $sitesSQL = "0,1";
         }
@@ -1672,7 +1672,7 @@ class StatisticController extends BaseController
         if (!empty($postes)) {
             //	Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
             //	On stock le tout dans le tableau $resultat
-            $postes_select = join(",", $postes);
+            $postes_select = implode(",", $postes);
             $db = new \db();
             $debutREQ = $db->escapeString($debutSQL);
             $finREQ = $db->escapeString($finSQL);
@@ -1810,7 +1810,7 @@ class StatisticController extends BaseController
                     $siteEtage[]=$elem[0][2];
                 }
                 if (!empty($siteEtage)) {
-                    $siteEtage="(".join(" ", $siteEtage).")";
+                    $siteEtage="(".implode(" ", $siteEtage).")";
                 } else {
                     $siteEtage=null;
                 }
@@ -1947,7 +1947,7 @@ class StatisticController extends BaseController
 
         // Filtre les sites dans les requêtes SQL
         if ($nbSites>1 and is_array($selectedSites)) {
-            $sitesSQL = "0,".join(",", $selectedSites);
+            $sitesSQL = "0,".implode(",", $selectedSites);
         } else {
             $sitesSQL = "0,1";
         }
@@ -1983,7 +1983,7 @@ class StatisticController extends BaseController
 
             //    Recherche des infos dans pl_poste et postes pour tous les agents sélectionnés
             //    On stock le tout dans le tableau $resultat
-            $agents_select = join(",", $agents);
+            $agents_select = implode(",", $agents);
             $db = new \db();
             $debutREQ = $db->escapeString($debutSQL);
             $finREQ = $db->escapeString($finSQL);
@@ -2797,7 +2797,7 @@ class StatisticController extends BaseController
 
         // Filtre les sites dans les requêtes SQL
         if ($nbSites > 1 and is_array($selectedSites)) {
-            $sitesSQL = "0,".join(",", $selectedSites);
+            $sitesSQL = "0,".implode(",", $selectedSites);
         } else {
             $sitesSQL = "0,1";
         }
@@ -2834,7 +2834,7 @@ class StatisticController extends BaseController
 
             //	Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
             //	On stock le tout dans le tableau $resultat
-            $postes_select = join(",", $postes);
+            $postes_select = implode(",", $postes);
 
             $db = new \db();
             $debutREQ = $db->escapeString($debutSQL);
@@ -2959,7 +2959,7 @@ class StatisticController extends BaseController
             }
 
             if (!empty($siteEtage)) {
-                $siteEtage = "(".join(" ", $siteEtage).")";
+                $siteEtage = "(".implode(" ", $siteEtage).")";
             } else {
                 $siteEtage = null;
             }

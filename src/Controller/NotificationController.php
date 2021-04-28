@@ -61,7 +61,7 @@ class NotificationController extends BaseController {
                         }
                     }
                 }
-                $sites=!empty($tmp)?join(", ", $tmp):null;
+                $sites=!empty($tmp)?implode(", ", $tmp):null;
             }
 
             $responsables = array();

@@ -87,7 +87,7 @@ if ($db->result) {
     foreach ($db->result as $elem) {
         $messages_infos[]=$elem['texte'];
     }
-    $messages_infos=join(' - ', $messages_infos);
+    $messages_infos=implode(' - ', $messages_infos);
 }
 
 // $absence_reasons will be used in the cellule_poste function. Using a global variable will avoid multiple access to the database and enhance performances
@@ -148,7 +148,7 @@ if ($db->result) {
     
 
         // Tableau $postes
-        $postes[$elem['id']]=array("nom"=>$elem['nom'], "etage"=>$elem['etage'], "obligatoire"=>$elem['obligatoire'], "teleworking"=>$elem['teleworking'], "classes"=>join(" ", $classesPoste));
+        $postes[$elem['id']]=array("nom"=>$elem['nom'], "etage"=>$elem['etage'], "obligatoire"=>$elem['obligatoire'], "teleworking"=>$elem['teleworking'], "classes"=>implode(" ", $classesPoste));
     }
 }
 

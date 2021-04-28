@@ -79,8 +79,8 @@ class PositionController extends BaseController
                     }
                 }
             }
-            $activites = join(", ", $activites);
-            $activitesAffichees = join(", ", $activitesAffichees);
+            $activites = implode(", ", $activites);
+            $activitesAffichees = implode(", ", $activitesAffichees);
             if (count($activitesPoste)>3) {
                 $activitesAffichees.=" ...";
             }

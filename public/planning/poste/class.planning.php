@@ -82,7 +82,7 @@ class planning
         if (empty($perso_ids)) {
             return false;
         }
-        $perso_ids=join(",", $perso_ids);
+        $perso_ids=implode(",", $perso_ids);
 
         // Sélection des statuts des agents en fin de service
         $statuts=array();
@@ -99,7 +99,7 @@ class planning
         if (empty($statuts)) {
             return false;
         }
-        $statuts=join("','", $statuts);
+        $statuts=implode("','", $statuts);
 
         // Recherche des statuts de catégorie A parmis les statuts fournis
         $db=new db();
@@ -303,7 +303,7 @@ class planning
 
                 // Motifs d'indisponibilité
                 if (array_key_exists($elem['id'], $motifExclusion)) {
-                    $nom.=" (".join(", ", $motifExclusion[$elem['id']]).")";
+                    $nom.=" (".implode(", ", $motifExclusion[$elem['id']]).")";
                 }
 
                 // Affihage des heures faites ce jour et cette semaine + les heures de la cellule
@@ -353,7 +353,7 @@ class planning
                 if ($elem['service']) {
                     $class_tmp[]="service_".strtolower(removeAccents(str_replace(" ", "_", $elem['service'])));
                 }
-                $classe=empty($class_tmp)?null:join(" ", $class_tmp);
+                $classe=empty($class_tmp)?null:implode(" ", $class_tmp);
 
                 //	Affichage des lignes
                 $menudiv.="<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$groupe_hide plMouseOver({$elem['id']});' onmouseout='plMouseOut({$elem['id']});' class='$classe $classTrListe menudiv-tr'>\n";

@@ -455,7 +455,7 @@ class conges
         }
 
         // Filtre pour agents actifs seulement et recherche avec nom de l'agent
-        $perso_ids=join(",", $perso_ids);
+        $perso_ids=implode(",", $perso_ids);
         $filter.=" AND `perso_id` IN ($perso_ids)";
 
         // Valide
@@ -492,7 +492,7 @@ class conges
         // Recheche de tous les crédits de congés afin de les afficher dans la page congés / Crédits
 
         // Affichage ou non des crédits des agents supprimés
-        $supprime=join("','", $this->agents_supprimes);
+        $supprime=implode("','", $this->agents_supprimes);
 
         // Recherche des agents
         // N'affiche que les agents des sites gérés (Multisites seulement)
@@ -502,7 +502,7 @@ class conges
             if (!empty($this->sites)) {
                 foreach ($this->sites as $elem) {
                     $tmp[]="sites LIKE '%\"$elem\"%'";
-                    $sitesReq=" AND (".join(" OR ", $tmp).") ";
+                    $sitesReq=" AND (".implode(" OR ", $tmp).") ";
                 }
             }
         }
@@ -820,7 +820,7 @@ class conges
         }
 
         // Filtre pour agents actifs seulement et recherche avec nom de l'agent
-        $perso_ids=join(",", $perso_ids);
+        $perso_ids=implode(",", $perso_ids);
         $filter.=" AND `perso_id` IN ($perso_ids)";
 
         // Si recupId, le filtre est réinitialisé

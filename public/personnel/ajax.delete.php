@@ -34,7 +34,7 @@ foreach ($tmp as $elem) {
   }
 }
 
-$list = join(',', $tab);
+$list = implode(',', $tab);
 
 if ($_SESSION['perso_actif']=="Supprimé") {
     $p=new personnel();

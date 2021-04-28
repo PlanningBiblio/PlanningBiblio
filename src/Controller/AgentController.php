@@ -76,7 +76,7 @@ class AgentController extends BaseController
                         }
                     }
                 }
-                $sites = !empty($tmp)?join(", ", $tmp):null;
+                $sites = !empty($tmp)?implode(", ", $tmp):null;
             }
 
             $elem = array(
@@ -315,7 +315,7 @@ class AgentController extends BaseController
             $matricule = $db->result[0]['matricule'];
             $url_ics = $db->result[0]['url_ics'];
             $mailsResponsables = explode(";", html_entity_decode($db->result[0]['mails_responsables'], ENT_QUOTES|ENT_IGNORE, "UTF-8"));
-            // $mailsResponsables : html_entity_decode necéssaire sinon ajoute des espaces après les accents ($mailsResponsables=join("; ",$mailsResponsables);)
+            // $mailsResponsables : html_entity_decode necéssaire sinon ajoute des espaces après les accents ($mailsResponsables=implode("; ",$mailsResponsables);)
             $informations = stripslashes($db->result[0]['informations']);
             $recup = stripslashes($db->result[0]['recup']);
             $sites = html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
@@ -377,7 +377,7 @@ class AgentController extends BaseController
         // les activités non attribuées (disponibles)
         $postes_dispo = array();
         if ($postes_attribues) {
-            $postes = join(",", $postes_attribues);    //    activités attribuées séparées par des virgules (valeur transmise à valid.php)
+            $postes = implode(",", $postes_attribues);    //    activités attribuées séparées par des virgules (valeur transmise à valid.php)
             if (is_array($postes_complet)) {
                 foreach ($postes_complet as $elem) {
                     if (!in_array($elem, $postes_attribues)) {
@@ -458,7 +458,7 @@ class AgentController extends BaseController
             'depart'            => $depart,
             'matricule'         => $matricule,
             'mailsResponsables' => $mailsResponsables,
-            'mailsResp_joined'  => join("; ", $mailsResponsables),
+            'mailsResp_joined'  => implode("; ", $mailsResponsables),
             'informations'      => $informations,
             'informations_str'  => str_replace("\n", "<br/>", $informations),
             'recup'             => $recup,
@@ -1074,7 +1074,7 @@ class AgentController extends BaseController
             $tmp[] = $nom;
         }
 
-        $tmp = join('.', $tmp);
+        $tmp = implode('.', $tmp);
         $login = removeAccents(strtolower($tmp));
         $login = str_replace(" ", "-", $login);
         $login = substr($login, 0, 95);
