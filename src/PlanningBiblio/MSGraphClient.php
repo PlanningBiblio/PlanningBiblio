@@ -138,7 +138,7 @@ class MSGraphClient
     }
 
     private function getLocalEvents() {
-        $usersSQLIds = join(',', $this->graphUsers);
+        $usersSQLIds = implode(',', $this->graphUsers);
 
         if ($this->full) {
             $from = $this->start_year . "-01-01";

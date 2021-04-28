@@ -479,7 +479,7 @@ foreach ($tables as $table) {
 
     $sql[] = "ALTER TABLE `{$dbprefix}{$name}` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 
-    $fields_query = '`id`, `' . join('`, `', $table['fields']) . '`';
+    $fields_query = '`id`, `' . implode('`, `', $table['fields']) . '`';
 
     $req = "SELECT $fields_query FROM `{$dbprefix}{$name}`;";
 

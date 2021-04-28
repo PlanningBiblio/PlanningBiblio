@@ -109,7 +109,7 @@ $categories_nb = 0;
 $statuts=array();
 
 if (!empty($categories)) {
-    $categories=join(",", $categories);
+    $categories=implode(",", $categories);
     $db=new db();
     $categories=$db->escapeString($categories);
     $db->select("select_statuts", null, "categorie IN ($categories)");
@@ -220,7 +220,7 @@ if ($bloquant=='1') {
             . "FROM `{$dbprefix}pl_poste` "
             . "INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` "
             . "WHERE `{$dbprefix}pl_poste`.`debut`<'$end_with_journey' AND `{$dbprefix}pl_poste`.`fin`>'$start_with_journey' "
-            . "AND `{$dbprefix}pl_poste`.`poste` IN (" . join(",", $autres_postes) . ") "
+            . "AND `{$dbprefix}pl_poste`.`poste` IN (" . implode(",", $autres_postes) . ") "
             . "AND `{$dbprefix}pl_poste`.`site` = $site "
             . "AND `{$dbprefix}pl_poste`.`date`='$dateSQL' AND `{$dbprefix}postes`.`bloquant`='1'";
         $db = new db();
@@ -434,7 +434,7 @@ if ($db->result) {
         $cellule_grise = $elem['grise'] == 1 ? true : $cellule_grise;
     }
 }
-$exclus=join(',', $tab_exclus);
+$exclus=implode(',', $tab_exclus);
 
 //--------------		Liste du personnel disponible			---------------//
 
@@ -535,9 +535,9 @@ $agents_tous=$agents_dispo;
 foreach ($agents_dispo as $elem) {
     $agents_qualif[]=$elem['id'];
 }
-$agents_qualif=join(',', $agents_qualif);
-$absents=join(',', $absents);
-$tab_deja_place=join(',', $tab_deja_place);
+$agents_qualif=implode(',', $agents_qualif);
+$absents=implode(',', $absents);
+$tab_deja_place=implode(',', $tab_deja_place);
 
 $db=new db();
 $dateSQL=$db->escapeString($date);
@@ -601,7 +601,7 @@ $listparservices=array();
 if (is_array($services)) {
     foreach ($services as $elem) {
         if (array_key_exists($elem['service'], $newtab)) {
-            $listparservices[]=join(',', $newtab[$elem['service']]);
+            $listparservices[]=implode(',', $newtab[$elem['service']]);
         } else {
             $listparservices[]=null;
         }
@@ -609,11 +609,11 @@ if (is_array($services)) {
 }
 
 if (array_key_exists("Autres", $newtab)) {
-    $listparservices[]=join(',', $newtab['Autres']);
+    $listparservices[]=implode(',', $newtab['Autres']);
 } else {
     $listparservices[]=null;
 }
-$tab_agent=join(';', $listparservices);
+$tab_agent=implode(';', $listparservices);
     
 // début d'affichage
 $tableaux[0]="<table frame='box' cellspacing='0' cellpadding='0' id='menudivtab1' rules='rows' border='1'>\n";

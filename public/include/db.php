@@ -155,7 +155,7 @@ class db
                     $tmp[]=$elem;
                 }
             }
-            $infos=join(",", $tmp);
+            $infos=implode(",", $tmp);
         }
 
         // Filtre Where
@@ -169,7 +169,7 @@ class db
             foreach ($where as $key => $value) {
                 $tmp[]=$this->makeSearch($key, $value);
             }
-            $where=join(" AND ", $tmp);
+            $where=implode(" AND ", $tmp);
         }
 
         $requete="SELECT $infos FROM `{$dbprefix}$table` WHERE $where $options";
@@ -231,7 +231,7 @@ class db
                 $info[]="`$table2Name`.`{$elem['name']}` AS `{$elem['as']}`";
             }
         }
-        $info=join(", ", $info);
+        $info=implode(", ", $info);
 
         // Construction de la requête
         // Filtre "Where" et options
@@ -244,7 +244,7 @@ class db
             $key="`$table2Name`.`$key`";
             $where[]=$this->makeSearch($key, $value);
         }
-        $where=join(" AND ", $where);
+        $where=implode(" AND ", $where);
   
         // Construction de la requête
         // Assemblage
@@ -309,7 +309,7 @@ class db
                 $info[]="`$table2Name`.`{$elem['name']}` AS `{$elem['as']}`";
             }
         }
-        $info=join(", ", $info);
+        $info=implode(", ", $info);
 
         // Construction de la requête
         // Filtre "Where" et options
@@ -322,7 +322,7 @@ class db
             $key="`$table2Name`.`$key`";
             $where[]=$this->makeSearch($key, $value);
         }
-        $where=join(" AND ", $where);
+        $where=implode(" AND ", $where);
   
         // Construction de la requête
         // Assemblage
@@ -363,7 +363,7 @@ class db
                     $tmp[]="`{$field}`='{$set[$field]}'";
                 }
             }
-            $set=join(",", $tmp);
+            $set=implode(",", $tmp);
         }
 
         if (is_array($where)) {
@@ -371,7 +371,7 @@ class db
             foreach ($where as $key => $value) {
                 $tmp[]=$this->makeSearch($key, $value);
             }
-            $where=join(" AND ", $tmp);
+            $where=implode(" AND ", $tmp);
         }
         $requete="UPDATE `{$dbprefix}$table` SET $set WHERE $where;";
         $this->query($requete);
@@ -395,7 +395,7 @@ class db
                 $value=mysqli_real_escape_string($this->conn, $where[$key]);
                 $tmp[]=$this->makeSearch($key, $value);
             }
-            $where=join(" AND ", $tmp);
+            $where=implode(" AND ", $tmp);
         }
 
         $requete="DELETE FROM `{$dbprefix}$table` WHERE $where";
@@ -423,21 +423,21 @@ class db
                     $values[$i][$elem]=mysqli_real_escape_string($this->conn, $values[$i][$elem]);
                 }
             }
-            $fields=join("`,`", $fields);
+            $fields=implode("`,`", $fields);
 
             foreach ($values as $elem) {
-                $tab[]="'".join("','", $elem)."'";
+                $tab[]="'".implode("','", $elem)."'";
             }
         } else {
             $fields=array_keys($values);
             foreach ($fields as $elem) {
                 $values[$elem]=mysqli_real_escape_string($this->conn, $values[$elem]);
             }
-            $fields=join("`,`", $fields);
-            $tab[]="'".join("','", $values)."'";
+            $fields=implode("`,`", $fields);
+            $tab[]="'".implode("','", $values)."'";
         }
 
-        $values=join("),(", $tab);
+        $values=implode("),(", $tab);
         $this->query("INSERT INTO `$table` (`$fields`) VALUES ($values);");
     }
 
@@ -475,7 +475,7 @@ class db
             foreach ($tmp as $elem) {
                 $values[]=$this->escapeString(htmlentities(trim($elem), ENT_QUOTES | ENT_IGNORE, "UTF-8", false));
             }
-            $values=join("','", $values);
+            $values=implode("','", $values);
 
             return "{$key} IN ('$values')";
         }
@@ -615,7 +615,7 @@ class dbh
         $table=$this->dbprefix.$table;
 
         if (is_array($infos)) {
-            $infos=join(",", $infos);
+            $infos=implode(",", $infos);
         }
 
         $data=array();
@@ -626,7 +626,7 @@ class dbh
                 $data[":$key"]=$where[$key];
                 $fields[]="$key=:$key";
             }
-            $where=join(" AND ", $fields);
+            $where=implode(" AND ", $fields);
         }
 
         $requete="SELECT $infos FROM `$table` WHERE $where $options";

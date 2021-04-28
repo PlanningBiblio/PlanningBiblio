@@ -28,7 +28,7 @@ class MSCalendarUtils
                 $rrule = 'FREQ=WEEKLY';
                 $rrule .= ';INTERVAL=' . $recurrence->pattern->interval;
                 $rrule .= ";WKST=" . $this->convertWeekDay($recurrence->pattern->firstDayOfWeek);
-                $rrule .= ";BYDAY=" . join(",", array_map(array($this, 'convertWeekDay'), $recurrence->pattern->daysOfWeek));
+                $rrule .= ";BYDAY=" . implode(",", array_map(array($this, 'convertWeekDay'), $recurrence->pattern->daysOfWeek));
                 break;
 
             case "absoluteMonthly":

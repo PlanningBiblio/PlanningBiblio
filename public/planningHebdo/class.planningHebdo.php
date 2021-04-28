@@ -302,7 +302,7 @@ class planningHebdo
         }
 
         // Filtre pour agents actifs seulement et recherche avec nom de l'agent
-        $perso_ids=join(",", $perso_ids);
+        $perso_ids=implode(",", $perso_ids);
         $filter.=" AND `perso_id` IN ($perso_ids)";
 
         // Valide

@@ -656,7 +656,7 @@ class FrameworkController extends BaseController
         if ($this->config('Dimanche')) {
             $semaine[] = "dimanche";
         }
-        $champs = '"Nom,'.join(',', $semaine).'"';
+        $champs = '"Nom,'.implode(',', $semaine).'"';
 
         $this->templateParams(
             array(
@@ -714,7 +714,7 @@ class FrameworkController extends BaseController
         if ($this->config('Dimanche')) {
             $semaine[] = "dimanche";
         }
-        $champs = '"Nom,'.join(',', $semaine).'"';	//	Pour ctrl_form
+        $champs = '"Nom,'.implode(',', $semaine).'"';	//	Pour ctrl_form
 
         $this->templateParams(
             array(

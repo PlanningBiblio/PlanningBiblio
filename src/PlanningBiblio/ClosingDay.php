@@ -38,7 +38,7 @@ class ClosingDay
         }
 
         // Recherche des jours fériés enregistrés dans la base de données
-        $annees=join("','", $annees);
+        $annees=implode("','", $annees);
         $db=new \db();
         $db->sanitize_string = false;
         $db->select("jours_feries", "*", "annee in ('$annees')", "ORDER BY `jour`");

@@ -57,7 +57,7 @@ $semaine=$d->semaine;
 $semaine3=$d->semaine3;
 $jour=$d->jour;
 $dates=$d->dates;
-$datesSemaine=join(",", $dates);
+$datesSemaine=implode(",", $dates);
 $dateAlpha=dateAlpha($date);
 
 $_SESSION['oups']['week']=false;
@@ -134,7 +134,7 @@ if ($db->result) {
     foreach ($db->result as $elem) {
         $messages_infos[]=$elem['texte'];
     }
-    $messages_infos=join(' - ', $messages_infos);
+    $messages_infos=implode(' - ', $messages_infos);
 }
 
 
@@ -193,7 +193,7 @@ if ($db->result) {
     
 
         // Tableau $postes
-        $postes[$elem['id']]=array("nom"=>$elem['nom'], "etage"=>$elem['etage'], "obligatoire"=>$elem['obligatoire'], "teleworking"=>$elem['teleworking'], "classes"=>join(" ", $classesPoste));
+        $postes[$elem['id']]=array("nom"=>$elem['nom'], "etage"=>$elem['etage'], "obligatoire"=>$elem['obligatoire'], "teleworking"=>$elem['teleworking'], "classes"=>implode(" ", $classesPoste));
     }
 }
 

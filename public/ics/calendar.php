@@ -264,7 +264,7 @@ if (isset($planning)) {
 
 $ical[]="END:VCALENDAR";
 
-$ical=join("\n", $ical);
+$ical=implode("\n", $ical);
 
 //set correct content-type-header
 header('Content-type: text/calendar; charset=utf-8');
