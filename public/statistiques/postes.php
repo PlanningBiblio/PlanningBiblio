@@ -104,7 +104,7 @@ $_SESSION['stat_poste_sites']=$selectedSites;
 
 // Filtre les sites dans les requêtes SQL
 if ($config['Multisites-nombre']>1 and is_array($selectedSites)) {
-    $sitesSQL="0,".join(",", $selectedSites);
+    $sitesSQL="0,".implode(",", $selectedSites);
 } else {
     $sitesSQL="0,1";
 }
@@ -142,7 +142,7 @@ if (!empty($postes)) {
 
     //	Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
     //	On stock le tout dans le tableau $resultat
-    $postes_select=join(",", $postes);
+    $postes_select=implode(",", $postes);
     $db=new db();
 
     $db->selectInnerJoin(
@@ -354,7 +354,7 @@ if ($tab) {
             $siteEtage[]=$elem[0][2];
         }
         if (!empty($siteEtage)) {
-            $siteEtage="(".join(" ", $siteEtage).")";
+            $siteEtage="(".implode(" ", $siteEtage).")";
         } else {
             $siteEtage=null;
         }

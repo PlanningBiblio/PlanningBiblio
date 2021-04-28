@@ -214,7 +214,7 @@ class CJMail
         $this->to=$to;
 
         if (!empty($incorrect)) {
-            $this->error.="Les adresses suivantes sont incorrectes : ".join(" ; ", $incorrect)."\n";
+            $this->error.="Les adresses suivantes sont incorrectes : ".implode(" ; ", $incorrect)."\n";
         }
 
         /* Arrête la procédure si aucun destinaire valide */

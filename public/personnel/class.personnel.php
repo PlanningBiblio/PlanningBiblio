@@ -93,7 +93,7 @@ class personnel
         }
 
         // Filtre selon le champ supprime
-        $supprime=join(',', $this->supprime);
+        $supprime=implode(',', $this->supprime);
         $filter['supprime'] = "IN{$supprime}";
 
         if (!$GLOBALS['config']['Absences-notifications-agent-par-agent']) {
@@ -196,7 +196,7 @@ class personnel
             $this->elements[0]['sites'] = $sites ? $sites : array();
             $this->elements[0]['mails_responsables']=explode(";", html_entity_decode($db->result[0]['mails_responsables'], ENT_QUOTES|ENT_IGNORE, "UTF-8"));
         } elseif (is_array($id)) {
-            $ids=join(",", $id);
+            $ids=implode(",", $id);
             $db=new db();
             $db->sanitize_string = false;
             $db->select2("personnel", null, array("id"=>"IN $ids"));

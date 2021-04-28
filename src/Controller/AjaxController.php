@@ -281,7 +281,7 @@ class AjaxController extends BaseController
                   }
               }
               if (!empty($datesValidees)) {
-                  $result['users'][$perso_id]["planning_validated"]=join(" ; ", $datesValidees);
+                  $result['users'][$perso_id]["planning_validated"]=implode(" ; ", $datesValidees);
               }
           }
 

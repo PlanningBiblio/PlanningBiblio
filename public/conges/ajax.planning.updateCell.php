@@ -54,7 +54,7 @@ $perso_ids=array();
 foreach ($tab as $elem) {
     $perso_ids[]=$elem['perso_id'];
 }
-$perso_ids=join(",", $perso_ids);
+$perso_ids=implode(",", $perso_ids);
 
 $c=new conges();
 $c->debut="$date $debut";

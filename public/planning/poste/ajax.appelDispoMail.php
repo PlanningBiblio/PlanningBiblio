@@ -58,7 +58,7 @@ $isSent=$m->send();
 
 // Enregistrement dans la base de données pour signaler que l'envoi a eu lieu
 if ($isSent) {
-    $successAddresses=join(";", $m->successAddresses);
+    $successAddresses=implode(";", $m->successAddresses);
     $db=new db();
     $db->CSRFToken = $CSRFToken;
     $db->insert("appel_dispo", array( "site"=>$site, "poste"=>$poste, "date"=>$date, "debut"=>$debut, "fin"=>$fin,
