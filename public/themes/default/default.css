@@ -1153,6 +1153,10 @@ div.presents-absents {
   min-height:400px;
 }
 
+#div_agenda table {
+  width: 100%;
+}
+
 #div_agenda .information{
   display: inline-block;
 }
