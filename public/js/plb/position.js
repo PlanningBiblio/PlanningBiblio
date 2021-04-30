@@ -1,16 +1,10 @@
 /**
-Planning Biblio, Version 2.7
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
+Planning Biblio
 
-Fichier : postes/js/modif.js
-Création : 5 février 2017
-Dernière modification : 3 août 2017
+@file public/js/plb/position.js
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
-Description :
-Fichier regroupant les fonctions JavaScript utiles à l'ajout et la modification des postes (modif.php)
+@desc Javascript functions used by position's pages
 */
 
 $(function() {
