@@ -3,7 +3,7 @@
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
-  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/postes/js/modif.js?version={{ version }}'></script>
+  <script type='text/JavaScript' src='{{ asset("js/plb/position.js") }}?version={{ version }}'></script>
 {% endblock %}
 {% block page %}
   {% if id is defined %}
