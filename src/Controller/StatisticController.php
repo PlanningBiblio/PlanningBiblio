@@ -60,12 +60,12 @@ class StatisticController extends BaseController
         // Statistiques-Heures
         $heures_tab_global = array();
         if ($statistiques_heures_defaut) {
-            $statistiques_heures = $this->config['Statistiques-Heures'];
+            $statistiques_heures = $this->config('Statistiques-Heures');
         } else {
             if (!$statistiques_heures and !empty($_SESSION['oups']['statistiques_heures'])) {
                 $statistiques_heures = $_SESSION['oups']['statistiques_heures'];
-            } elseif (!$statistiques_heures and !empty($this->config['Statistiques-Heures'])) {
-                $statistiques_heures = $this->config['Statistiques-Heures'];
+            } elseif (!$statistiques_heures and !empty($this->config('Statistiques-Heures'))) {
+                $statistiques_heures = $this->config('Statistiques-Heures');
             }
         }
 
