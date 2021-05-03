@@ -5,6 +5,8 @@
     - 100
 "absence.edit":
     - 100
+"absence.index":
+    - 100
 "absence.save":
     - 100
 "absences.document.index":

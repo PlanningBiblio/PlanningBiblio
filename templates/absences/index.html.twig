@@ -1,0 +1,158 @@
+{# absences/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type="text/JavaScript" src="{{ asset('absences/js/voir.js') }}"></script>
+{% endblock %}
+
+{% block page %}
+  <h3>Liste des absences</h3>
+
+  <form name='form' method='get' action='/absence'>
+    <span style='float:left; vertical-align:top; margin-bottom:20px;'>
+      <table class='tableauStandard'>
+        <tbody>
+          <tr>
+            <td style='vertical-align:middle;'>
+              <label for="debut" class='intitule'>Début :</label>
+              <input type='text' id="debut" name='debut' value='{{ debut }}' class='datepicker'/>
+            </td>
+            <td style='vertical-align:middle;'>
+              <label class='intitule'>Fin :</label>
+              <input type='text' name='fin' value='{{ fin }}'  class='datepicker'/>
+            </td>
+            {% if admin %}
+              <td style='vertical-align:middle;text-align:left;'>
+                <span style='padding:5px;'>
+                  <label class='intitule'>Agent :</label>
+                  <select name='perso_id' id='perso_id' class='ui-widget-content ui-corner-all'>
+                    {% if perso_id == 0 %}
+                      <option value='0' selected >Tous</option>
+                    {% else %}
+                      <option value='0' >Tous</option>
+                    {% endif %}
+
+                    {% for a in agents_menu %}
+                      {% if a.id == perso_id %}
+                        <option value="{{ a.id }}" selected>{{ a.nom }} {{ a.prenom }}</option>
+                      {% else %}
+                        <option value="{{ a.id }}">{{ a.nom }} {{ a.prenom }}</option>
+                      {% endif %}
+                    {% endfor %}
+
+                  </select>
+                </span>
+                <br/>
+                <span style='padding:5px;'>Agents supprimés : 
+                  {% if agents_deleted %}
+                    <input type='checkbox' checked name='supprimes' onclick="updateAgentsList(this,'perso_id');"/>
+                  {% else %}
+                    <input type='checkbox' name='supprimes' onclick="updateAgentsList(this,'perso_id');"/>
+                  {% endif %}
+                </span>
+              </td>
+            {% endif %}
+
+            <td>
+              <input type='submit' value='Rechercher' class='ui-button' style='margin-right:20px;' />
+              <input type='button' value='Réinitialiser' onclick="absences_reinit();"  class='ui-button' />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </span>
+
+    <span style='float:right; vertical-align:top; margin:10px 5px;'>
+      <a href='absence/add' class='ui-button'>Ajouter</a>
+    </span>
+  </form>
+
+  <table id='tableAbsencesVoir' class='CJDataTable' data-sort="{{ sort }}">
+    <thead>
+      <tr>
+        <th class='dataTableNoSort' >&nbsp;</th>
+        <th class='dataTableDateFR' >Début</th>
+        <th class='dataTableDateFR-fin' >Fin</th>
+        <th id='thNom'>Agents</th>
+        {% if config('Absences-validation') %}
+          <th id='thValidation'>État</th>
+        {% endif %}
+        <th>Motif</th>
+        <th>Commentaires</th>
+        <th class='dataTableDateFR' >Demande</th>
+        {% if can_manage_sup_doc %}
+          <th id='thPiecesJustif' class='dataTableNoSort' >
+            <label style='white-space:nowrap'>Pièces justificatives</label><br/>
+            <div class='absences-pj'>PJ 1</div>
+            <div class='absences-pj'>PJ 2</div>
+            <div class='absences-pj'>SO</div>
+          </th>
+        {% endif %}
+        <th>Documents</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for abs in visibles_absences %}
+        <tr>
+          <td style='white-space: nowrap;'>
+            {% if abs.view_details %}
+              <a href='absence/{{ abs.id }}'>
+                <span class='pl-icon pl-icon-edit' title='Voir'></span>
+              </a>
+            {% endif %}
+            {% if abs.rrule %}
+              <span class='pl-icon pl-icon-recurring' title='Récurrence'></span>
+            {% endif %}
+          </td>
+          <td>{{ abs.debut | date('d/m/Y') }}</td>
+          <td>{{ abs.fin | date('d/m/Y') }}</td>
+          <td>{{ abs.agents | join(', ') }}</td>
+
+          {% if config('Absences-validation') %}
+            <td style="{{ abs.status_style }}">{{ abs.status }}</td>
+          {% endif %}
+          <td>{{ abs.motif }}</td>
+          <td title="{{ abs.commentaires }}">
+            <div style='height:20px;overflow:hidden;'>
+              {{ abs.commentaires }}
+            </div>
+          </td>
+          <td>{{ abs.demande | date('d/m/Y') }}</td>
+
+          {% if can_manage_sup_doc %}
+            <td style='text-align:center;'>
+              <div class='absences-pj'>
+                {% if abs.pj1 %}
+                  <input type='checkbox' id="pj1-{{ abs.id }}" checked="checked"/>
+                {% else %}
+                  <input type='checkbox' id="pj1-{{ abs.id }}"/>
+                {% endif %}
+              </div>
+              <div class='absences-pj'>
+                {% if abs.pj2 %}
+                  <input type='checkbox' id="pj2-{{ abs.id }}" checked="checked"/>
+                {% else %}
+                  <input type='checkbox' id="pj2-{{ abs.id }}"/>
+                {% endif %}
+              </div>
+              <div class='absences-pj'>
+                {% if abs.so %}
+                  <input type='checkbox' id="so-{{ abs.id }}" checked="checked"/>
+                {% else %}
+                  <input type='checkbox' id="so-{{ abs.id }}"/>
+                {% endif %}
+              </div>
+            </td>
+          {% endif %}
+          <td>
+            {% for doc in abs.absdocs %}
+              <a href="absences/document/{{ doc.id }}" target='_blank' >{{ doc.filename }}</a>
+              <br/>
+            {% endfor %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
