@@ -1101,7 +1101,7 @@ class absences
     }
 
 
-    public function getResponsables($debut=null, $fin=null, $perso_id, $droit = 200)
+    public function getResponsables($debut=null, $fin=null, $perso_id=0, $droit = 200)
     {
         $responsables=array();
         $droitsAbsences=array();

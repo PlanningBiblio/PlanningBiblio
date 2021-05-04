@@ -872,7 +872,7 @@ class conges
         }
     }
 
-    public function getResponsables($debut=null, $fin=null, $perso_id)
+    public function getResponsables($debut=null, $fin=null, $perso_id=0)
     {
         $responsables=array();
         $droitsConges=array();
