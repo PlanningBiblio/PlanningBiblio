@@ -7,6 +7,7 @@ use App\Model\AbsenceDocument;
 use App\Model\Agent;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -257,7 +258,7 @@ class AbsenceController extends BaseController
     /**
      * @Route("/absence", name="absence.save", methods={"POST"})
      */
-    public function save(Request $request)
+    public function save(Request $request, Session $session)
     {
         $this->droits = $GLOBALS['droits'];
 
@@ -295,9 +296,15 @@ class AbsenceController extends BaseController
 
         $msg = $result['msg'];
         $msg2 = $result['msg2'];
-        $msg2_type = $result['msg2_type'];
+        $msg2_type = $result['msg2_type'] == 'error' ? 'error' : 'notice';
 
-        return $this->redirectToRoute("absence.index", array('msg' => $msg, 'msgType' => 'success', 'msg2' => $msg2, 'msg2Type' => $msg2_type));
+        $session->getFlashBag()->add('notice', $msg);
+
+        if ($msg2 && $msg2 != '<li></li>') {
+            $session->getFlashBag()->add($msg2_type, $msg2);
+        }
+
+        return $this->redirectToRoute("absence.index");
     }
 
     /**
@@ -588,15 +595,9 @@ class AbsenceController extends BaseController
 
         // Confirmation de l'enregistrement
         if ($this->config('Absences-validation') and !$this->admin) {
-            $msg="La demande d&apos;absence a &eacute;t&eacute; enregistr&eacute;e";
+            $msg="La demande d'absence a été enregistrée";
         } else {
-            $msg="L&apos;absence a &eacute;t&eacute; enregistr&eacute;e";
-        }
-        $msg=urlencode($msg);
-
-        // Si erreur d'envoi de mail
-        if ($msg2_type) {
-            $msg2=urlencode("<ul>".$msg2."</ul>");
+            $msg="L'absence a été enregistrée";
         }
 
         return array(

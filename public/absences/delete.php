@@ -267,6 +267,7 @@ if ($rec) {
 $msg=urlencode("L'absence a été supprimée avec succès");
 $msgType="success";
 
+$errors = array_filter($errors);
 if (!empty($errors)) {
     $msg2="<ul>";
     foreach ($errors as $error) {
