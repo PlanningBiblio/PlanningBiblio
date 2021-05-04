@@ -6,11 +6,11 @@ version: 2.1
 executors:
   plb:
     parameters:
-      phpvers:
+      php:
         type: string
         default: '7.4'
     docker:
-      - image: circleci/php:<< parameters.phpvers >>-cli
+      - image: circleci/php:<< parameters.php >>-cli
       - image: circleci/mariadb:10.5-ram
         environment:
           MYSQL_ROOT_PASSWORD: rootplb
@@ -67,10 +67,15 @@ jobs:
 
 workflows:
   version: 2
-  php7-4:
+  build:
     jobs:
       - install-and-test:
-          name: phpvers:7.4
+          name: php:7.4
           e:
             name: plb
-            phpvers: '7.4'
+            php: '7.4'
+      - install-and-test:
+          name: php:8.0
+          e:
+            name: plb
+            php: '8.0'
