@@ -42,7 +42,7 @@ jobs:
 
       - run: cp .circleci/.env.test.local .env.test.local
       - run: cp .circleci/.env.local .env.local
-      - run: composer install -n --prefer-dist
+      - run: composer update -n --prefer-dist
 
       - save_cache:
           key: v1-dependencies-{{ checksum "composer.json" }}
