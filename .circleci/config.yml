@@ -2,12 +2,15 @@
 #
 # Check https://circleci.com/docs/2.0/language-php/ for more details
 #
-version: 2
-jobs:
-  build:
+version: 2.1
+executors:
+  plb:
+    parameters:
+      phpvers:
+        type: string
+        default: '7.4'
     docker:
-      # Specify the version you desire here
-      - image: circleci/php:7.4-cli
+      - image: circleci/php:<< parameters.phpvers >>-cli
       - image: circleci/mariadb:10.5-ram
         environment:
           MYSQL_ROOT_PASSWORD: rootplb
@@ -15,15 +18,12 @@ jobs:
           MYSQL_USER: plb
           MYSQL_PASSWORD: plb
 
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # Using the RAM variation mitigates I/O contention
-      # for database intensive operations.
-      # - image: circleci/mysql:5.7-ram
-      #
-      # - image: redis:2.8.19
-
+jobs:
+  install-and-test:
+    parameters:
+      e:
+        type: executor
+    executor: << parameters.e >>
     steps:
       - checkout
 
@@ -54,3 +54,13 @@ jobs:
       - run: sudo cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini && echo 'xdebug.mode=coverage' | sudo tee -a $PHP_INI_DIR/php.ini
       - run: ./vendor/bin/simple-phpunit --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php tests/
       - run: bash <(curl -s https://codecov.io/bash)
+
+workflows:
+  version: 2
+  php7-4:
+    jobs:
+      - install-and-test:
+          name: phpvers:7.4
+          e:
+            name: plb
+            phpvers: '7.4'
