@@ -2,28 +2,28 @@
 #
 # Check https://circleci.com/docs/2.0/language-php/ for more details
 #
-version: 2
-jobs:
-  build:
+version: 2.1
+executors:
+  plb:
+    parameters:
+      php:
+        type: string
+        default: '7.4'
     docker:
-      # Specify the version you desire here
-      - image: circleci/php:7.4-cli
-      - image: circleci/mariadb:10.5-ram
+      - image: cimg/php:<< parameters.php >>
+      - image: cimg/mariadb:10.6
         environment:
           MYSQL_ROOT_PASSWORD: rootplb
           MYSQL_DATABASE: planningb
           MYSQL_USER: plb
           MYSQL_PASSWORD: plb
 
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # Using the RAM variation mitigates I/O contention
-      # for database intensive operations.
-      # - image: circleci/mysql:5.7-ram
-      #
-      # - image: redis:2.8.19
-
+jobs:
+  install-and-test:
+    parameters:
+      e:
+        type: executor
+    executor: << parameters.e >>
     steps:
       - checkout
 
@@ -32,9 +32,7 @@ jobs:
       - run: wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 
       - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
-      - run: sudo docker-php-ext-install zip
-      - run: sudo docker-php-ext-install mysqli
-      - run: sudo docker-php-ext-install pdo_mysql
+      - run: sudo -E install-php-extensions zip mysqli pdo_mysql
       - run: sudo apt install -y google-chrome-stable
 
       # Chrome driver.
@@ -64,3 +62,23 @@ jobs:
       - run: sudo cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini && echo 'xdebug.mode=coverage' | sudo tee -a $PHP_INI_DIR/php.ini
       - run: ./vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php tests/
       - run: bash <(curl -s https://codecov.io/bash)
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - install-and-test:
+          name: php:7.4
+          e:
+            name: plb
+            php: '7.4'
+      - install-and-test:
+          name: php:8.0
+          e:
+            name: plb
+            php: '8.0'
+      - install-and-test:
+          name: php:8.1
+          e:
+            name: plb
+            php: '8.1'

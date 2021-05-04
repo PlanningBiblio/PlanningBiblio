@@ -1183,7 +1183,7 @@ function loginSuccess($login, $CSRFToken)
     $db->insert("ip_blocker", $insert);
 }
 
-function logs($msg, $program=null, $CSRFToken)
+function logs($msg, $program=null, $CSRFToken=null)
 {
     $db=new db();
     $db->CSRFToken = $CSRFToken;
