@@ -45,7 +45,7 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
                 $resultat = $nom_affiche;
         
                 //		Affichage des sans repas
-                if ($sansRepas === true or in_array($elem['perso_id'], $sansRepas)) {
+                if ($elem['nom'] and ($sansRepas === true or in_array($elem['perso_id'], $sansRepas))) {
                     $resultat.="<font class='sansRepas'>&nbsp;(SR)</font>";
                 }
 

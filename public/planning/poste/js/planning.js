@@ -91,6 +91,10 @@ $(document).ready(function(){
         return;
       }
 
+      if ($(this).text() == '') {
+        return;
+      }
+
       if ($(this).next().hasClass('cellule_grise')) {
         return;
       }
