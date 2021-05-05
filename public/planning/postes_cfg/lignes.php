@@ -30,8 +30,10 @@ $postes=$p->elements;
 // Liste des lignes de séparation
 $db=new db();
 $db->select("lignes", null, null, "ORDER BY nom");
-$lignes_sep=$db->result;
-
+$lignes_sep = array();
+if ($db->result) {
+    $lignes_sep = $db->result;
+}
 
 // Le tableau (contenant les sous-tableaux)
 $t=new tableau();
