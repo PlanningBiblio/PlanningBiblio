@@ -503,9 +503,202 @@ function fillContextMenuLevel2(data) {
     border: '1'
   });
 
-  menu2.append(data.menu2);
+  $.each(data.menu2.agents, function(index, agent) {
+    menu2.append(ContextMenu2agents(data, agent));
+  });
+  //menu2.append(data.menu2.html);
 
   menu2.appendTo('#menudiv2');
+}
+
+function ContextMenu2agents(data, agent) {
+  td = $('<td>').attr({
+    onclick: 'bataille_navale("' + data.position_id + '","' + data.date + '","'
+              + data.start + '","' + data.end + '",' + agent.id + ',0,0,"' + data.site + '");'
+  });
+
+  font = $('<font>').attr({
+    style: 'color:' + agent.color
+  });
+
+  // Agent's name
+  sp_name = $('<span>').attr({
+    class: 'menudiv-nom',
+    title: agent.name_title
+  }).html(agent.name);
+  font.append(sp_name);
+
+  // No lunch
+  if (agent.no_lunch) {
+    font.append('&nbsp;');
+    nolunch = $('<span>').attr({
+      class: 'red bold',
+      title: "Sans Repas, l'agent n'a aucun créneau horaire pour prendre son repas"
+    }).html('(SR)');
+    font.append(nolunch);
+  }
+
+  // Already placed
+  if (agent.placed) {
+    font.append('&nbsp;');
+    placed = $('<span>').attr({
+      class: 'red bold',
+      title: "L'agent est déjà placé sur ce poste dans la journée"
+    }).html('(DP)');
+    font.append(placed);
+  }
+
+  // 2 public service
+  if (agent.two_sr) {
+    font.append('&nbsp;');
+    two_sp = $('<span>').attr({
+      class: 'red bold',
+      title: "2 plages de service public consécutives"
+    }).html('(2 SP)');
+    font.append(two_sp);
+  }
+
+  // Journey time too short
+  if (agent.journey) {
+    font.append('&nbsp;');
+    journey = $('<span>').attr({
+      class: 'red bold',
+      title: "Temps de trajet insuffisant pour rejoindre le poste"
+    }).html('(T)');
+    font.append(journey);
+  }
+
+  // Time between absence and position
+  if (agent.time_limit) {
+    font.append('&nbsp;');
+    time_limit = $('<span>').attr({
+      class: 'red bold',
+      title: "Délai insuffisant entre une indisponibilité et une plage de service public"
+    }).html('(A)');
+    font.append(time_limit);
+  }
+
+  // Exclusion.
+  if (agent.exclusion.length !== 0) {
+    font.append('&nbsp;(');
+    separator = '';
+    $.each(agent.exclusion, function(index, e) {
+      title_attr = '';
+      content = separator + '';
+      separator = ', ';
+
+      if (e == 'times') {
+        title_attr = "Les horaires de l'agent ne lui permettent pas d'occuper ce poste";
+        content = 'Horaires';
+      }
+
+      if (e == 'break') {
+        title_attr = "La pause de cet agent n'est pas respectée";
+        content += 'Pause';
+      }
+
+      if (e == 'other_site') {
+        title_attr = "L'agent est prévu sur un autre site";
+        content += 'Autre site';
+      }
+
+      if (e == 'site') {
+        title_attr = "L'agent n'est pas prévu sur ce site";
+        content += 'Site';
+      }
+
+      if (e == 'skills') {
+        title_attr = "L'agent n'a pas toutes les qualifications requises pour occuper ce poste";
+        content += 'Activités';
+      }
+
+      if (e == 'no_cat') {
+        title_attr = "L'agent n'appartient à aucune des catégories requises" + data.category + " pour occuper ce poste";
+        content += 'Catégorie';
+      }
+
+      if (e == 'wrong_cat') {
+        title_attr = "L'agent n'appartient pas à la catégorie requise" + data.category + " pour occuper ce poste";
+        content += 'Catégorie';
+      }
+
+      exclusion = $('<span>').attr({
+        title: title_attr
+      }).html(content);
+      font.append(exclusion);
+
+    });
+    font.append(')');
+  }
+
+  div_times = $('<div>').attr({
+    class: 'menudiv-heures'
+  });
+
+  times_day = $('<font>').attr({
+    title: 'Heures du jour'
+  }).html(agent.times.day);
+  div_times.append(times_day);
+  div_times.append(' / ');
+
+  times_week = $('<font>').attr({
+    title: 'Heures de la semaine'
+  }).html(agent.times.week);
+  div_times.append(times_week);
+  div_times.append(' / ');
+
+  times_quota = $('<font>').attr({
+    title: agent.times.quota_title
+  }).html(agent.times.quota);
+  div_times.append(times_quota);
+
+  if (data.last_four_weeks) {
+    div_times.append(' / ');
+    times_four = $('<font>').attr({
+      title: 'Heures des 4 dernières semaines'
+    }).html(agent.times.times_four_weeks);
+    div_times.append(times_four);
+  }
+
+  font.append(div_times);
+
+  td.append(font);
+
+  td2 = $('<td>').attr({
+    style: 'text-align:right;width:20px'
+  });
+
+  tr = $('<tr>').attr({
+    id: 'tr' + agent.id,
+    style: 'height:21px;' + agent.display,
+    onmouseover: agent.group_hide + ' plMouseOver(' + agent.id + ');',
+    onmouseout: 'plMouseOut(' + agent.id + ');',
+    class: agent.class + ' ' + agent.class_tr_list + ' menudiv-tr'
+  });
+
+  tr.append(td);
+
+  if (data.nb_agents > 0 && data.nb_agents < data.max_agents) {
+    add = $('<a>').attr({
+      href: 'javascript:bataille_navale("' + data.position_id + '","'
+            + data.date + '","' + data.start + '","' + data.end + '",'
+            + agent.id + ',0,1,"' + data.site + '");'
+    }).html('+');
+
+    replace = $('<a>').attr({
+      style: 'color:red',
+      href: 'javascript:bataille_navale("' + data.position_id + '","'
+            + data.date + '","' + data.start + '","' + data.end + '",'
+            + agent.id + ',1,1,"' + data.site + '");'
+    }).html(' x&nbsp;');
+
+    td2.append(add);
+    td2.append(replace);
+  }
+
+  tr.append(td2);
+
+  return tr;
 }
 
 function fillContextMenuLevel1(data) {
@@ -531,7 +724,9 @@ function fillContextMenuLevel1(data) {
 
   // Agents (ClasseParService disabled)
   if (data.menu1.agents !== undefined) {
-    menu1.append(data.menu1.agents);
+    $.each(data.menu1.agents, function(index, agent) {
+      menu1.append(ContextMenu2agents(data, agent));
+    });
   }
 
   // Unavailables agents main menu (agentsIndispo enabled)
