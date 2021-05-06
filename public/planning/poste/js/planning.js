@@ -390,8 +390,7 @@ $(function() {
     site=$("#site").val();
 
     // On supprime l'ancien menu (s'il existe) pour eviter les problemes de remanence
-    $("#menudiv1").remove();
-    $("#menudiv2").remove();
+    emptyContextMenu();
 
     $.ajax({
       url: "planning/poste/ajax.menudiv.php",
@@ -399,16 +398,16 @@ $(function() {
       data: {cellule: cellule, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, poste: poste, site: site, perso_nom: perso_nom_origine, perso_id:perso_id_origine},
       type: "get",
       success: function(result){
-	// si pas de result : on quitte (pas de droit admin)
-	if(!result){
-	  return false;
-	}
-	// result = tableau1 et tableau2
-	result=JSON.parse(result);
+        // si pas de result : on quitte (pas de droit admin)
+        if(!result){
+          return false;
+        }
 
-	// Affichage des tableaux
-	$("body").append("<div id='menudiv1'>"+result[0]+"</div>");
-	$("body").append("<div id='menudiv2'>"+result[1]+"</div>");
+        // result = tableau1 et tableau2
+        result=JSON.parse(result);
+
+        // Affichage des tableaux
+        initContextMenu(result);
 
         
         // Largeur du tableau 1 (on s'adapte à la longueur des lignes)
@@ -462,16 +461,14 @@ $(function() {
 
   // Masque le menu lorsque l'on clique en dehors
   $(document).click(function(){
-    $("#menudiv1").remove();
-    $("#menudiv2").remove();
+    emptyContextMenu();
   });
   
   // Masque le menu lorsque l'on appuye sur échappe
   $(document).keydown(function(e) {
     // ESCAPE key pressed
     if (e.keyCode == 27) {
-      $("#menudiv1").remove();
-      $("#menudiv2").remove();
+      emptyContextMenu();
     }
   });
   
@@ -488,6 +485,299 @@ $(function() {
 
 
 // Fonctions JavaScript
+
+function initContextMenu(data) {
+  fillContextMenuLevel1(data);
+  $('#menudiv1').show();
+  fillContextMenuLevel2(data);
+  $('#menudiv2').show();
+}
+
+function fillContextMenuLevel2(data) {
+  // Table for level two.
+  menu2 = $('<table>').attr({
+    cellspacing: '0',
+    cellpadding: '0',
+    id: 'menudivtab2',
+    rules: 'rows',
+    border: '1'
+  });
+
+  menu2.append(data.menu2);
+
+  menu2.appendTo('#menudiv2');
+}
+
+function fillContextMenuLevel1(data) {
+  // Table for level one
+  menu1 = $('<table>').attr({
+    frame: 'box',
+    cellspacing: '0',
+    cellpadding: '0',
+    id: 'menudivtab1',
+    rules: 'rows',
+    border: '1'
+  });
+
+  // Add menu title
+  menu1.append(contextMenuTitle(data));
+
+  // Service (ClasseParService enabled)
+  if (data.services !== undefined) {
+    $.each(data.services, function(index, service) {
+      menu1.append(contextMenuServices(service));
+    });
+  }
+
+  // Agents (ClasseParService disabled)
+  if (data.menu1.agents !== undefined) {
+    menu1.append(data.menu1.agents);
+  }
+
+  // Unavailables agents main menu (agentsIndispo enabled)
+  if (data.unavailables_agents !== undefined) {
+    menu1.append(contextMenuUnavailable(data));
+  }
+
+  // Everybody (toutlemonde enabled)
+  if (data.everybody && data.cell_enabled) {
+    menu1.append(contextMenuEverybody(data));
+  }
+
+  if (data.nb_agents > 0 && data.cell_enabled) {
+    // Remove agent.
+    menu1.append(contextMenuRemove(data));
+
+    // Score off agent.
+    menu1.append(contextMenuScoreOff(data));
+  }
+
+  if (data.nb_agents > 1 && data.cell_enabled) {
+    // Remove all.
+    menu1.append(contextMenuRemoveAll(data));
+
+    // Score off all.
+    menu1.append(contextMenuScoreOffAll(data));
+  }
+
+  // Call for available agents.
+  if (data.call_for_help && data.cell_enabled) {
+    menu1.append(contextMenuCallForhelp(data));
+  }
+
+  // Disable ans enable cell.
+  if (data.can_disable_cell) {
+    menu1.append(contextMenuDisableCell(data));
+  }
+
+  menu1.appendTo('#menudiv1');
+
+}
+
+function contextMenuDisableCell(data) {
+  on = 'bataille_navale("' + data.position_id + '","' + data.date + '","'
+            + data.start + '","' + data.end + '",0,0,0,"' + data.site + '",1,-1);';
+  title = 'Dégriser la cellule';
+
+  if (data.cell_enabled) {
+    on = 'bataille_navale("' + data.position_id + '","' + data.date + '","'
+              + data.start + '","' + data.end + '",0,0,0,"' + data.site + '",1,1);';
+    title = 'Griser la cellule';
+  }
+
+  td = $('<td>').attr({
+    colspan: '2',
+    onclick: on
+  }).html(title);
+
+  tr = $('<tr>').attr({
+    class: 'menudiv-tr',
+    onmouseover: 'groupe_tab_hide();'
+  }).append(td);
+
+  return tr;
+}
+
+function contextMenuCallForhelp(data) {
+  td = $('<td>').attr({
+    colspan: '2',
+    id: 'td-appelDispo',
+    onclick: 'appelDispo("' + data.site + '","' + data.site_name + '","'
+              + data.position_id + '","' + data.position_name + '","'
+              + data.date + '","' + data.start + '","' + data.end + '");'
+  }).html('Appel à disponibilité');
+  td.data('agents', data.call_for_help_agents);
+
+  if (data.call_for_help_nb) {
+    nb_call = $('<strong>').html(data.call_for_help_nb);
+
+    info = $('<span>').attr({
+      title: data.call_for_help_info,
+      style: 'position:absolute; right:5px;'
+    }).append(nb_call);
+
+    td.append(info);
+  }
+
+  tr = $('<tr>').attr({
+    onmouseover: 'groupe_tab_hide()',
+    class: 'menudiv-tr',
+  }).append(td);
+
+  return tr;
+}
+
+function contextMenuScoreOffAll(data) {
+  td = $('<td>').attr({
+    colspan: '2',
+    class: 'red',
+    onclick: 'bataille_navale("' + data.position_id + '","' + data.date + '","'
+              + data.start + '","' + data.end + '",0,1,0,"' + data.site + '",1);'
+  }).html('Tout barrer');
+
+  tr = $('<tr>').attr({
+    class: 'menudiv-tr'
+  });
+
+  attr = '';
+  if (data.group_tab_hide) {
+    attr = 'groupe_tab("vide","' + data.tab_agent + '",1,$(this));';
+  }
+  attr += ' groupe_tab_hide();';
+  tr.attr('onmouseover', attr);
+
+  tr.append(td);
+  return tr;
+}
+
+function contextMenuRemoveAll(data) {
+  td = $('<td>').attr({
+    colspan: '2',
+    onclick: 'bataille_navale("' + data.position_id + '","' + data.date + '","'
+              + data.start + '","' + data.end + '",0,0,0,"' + data.site + '",1);'
+  }).html('Tout supprimer');
+
+  tr = $('<tr>').attr({
+    class: 'menudiv-tr'
+  });
+
+  attr = '';
+  if (data.group_tab_hide) {
+    attr = 'groupe_tab("vide","' + data.tab_agent + '",1,$(this));';
+  }
+  attr += ' groupe_tab_hide();';
+  tr.attr('onmouseover', attr);
+
+  tr.append(td);
+  return tr;
+}
+
+function contextMenuScoreOff(data) {
+  td = $('<td>').attr({
+    class: 'red',
+    onclick: 'bataille_navale("' + data.position_id + '","' + data.date + '","'
+              + data.start + '","' + data.end + '",0,1,0,"' + data.site + '");',
+    onmouseover: 'plMouseOver(' + data.agent_id + ');',
+    onmouseout: 'plMouseOut(' + data.agent_id + ');',
+  }).html('Barrer ' + data.agent_name);
+
+  tr = $('<tr>').attr({
+    class: 'menudiv-tr'
+  });
+
+  attr = '';
+  if (data.group_tab_hide) {
+    attr = 'groupe_tab("vide","' + data.tab_agent + '",1,$(this));';
+  }
+  attr += ' groupe_tab_hide();';
+  tr.attr('onmouseover', attr);
+
+  tr.append(td);
+  return tr;
+}
+
+function contextMenuRemove(data) {
+  td = $('<td>').attr({
+    colspan: '2',
+    onclick: 'bataille_navale("' + data.position_id + '","' + data.date + '","'
+              + data.start + '","' + data.end + '",0,0,0,"' + data.site + '");',
+    onmouseover: 'plMouseOver(' + data.agent_id + ');',
+    onmouseout: 'plMouseOut(' + data.agent_id + ');'
+  }).html('Supprimer ' + data.agent_name);
+
+  tr = $('<tr>').attr({
+    class: 'menudiv-tr'
+  });
+
+  attr = '';
+  if (data.group_tab_hide) {
+    attr = 'groupe_tab("vide","' + data.tab_agent + '",1,$(this));';
+  }
+  attr += ' groupe_tab_hide();';
+  tr.attr('onmouseover', attr);
+
+  tr.append(td);
+  return tr;
+}
+
+function contextMenuEverybody(data) {
+  td = $('<td>').attr({
+    colspan: '2',
+    style: 'color:black;',
+    onclick: 'bataille_navale("' + data.position_id + '","' + data.date + '","'
+              + data.start + '","' + data.end + '",2,0,0,"' + data.site + '");',
+  }).html('Tout le monde');
+
+  tr = $('<tr>').attr({
+    onmouseover: 'groupe_tab_hide();',
+    class: 'menudiv-tr',
+  }).append(td);
+
+  return tr;
+}
+
+function contextMenuUnavailable(data) {
+  unavailables = data.unavailables_agents;
+  td = $('<td>').attr({
+    colspan: '2',
+    onmouseover: 'groupe_tab(' + unavailables.id
+      + ',"' + data.tab_agent + '",'
+      + data.group_tab_hide + ',$(this));'
+  }).html('Agents indisponibles');
+
+  tr = $('<tr>').attr({ class: 'menudiv-tr'}).append(td);
+
+  return tr;
+}
+
+function contextMenuServices(data) {
+  td = $('<td>').attr({
+    colspan: '2',
+    onmouseover: 'groupe_tab(' + data.id + ',"' + data.tab_agent + '",1,$(this));'
+  }).html(data.service);
+
+  tr = $('<tr>').attr({
+    class: data.class + ' menudiv-tr',
+  }).append(td);
+
+  return tr;
+}
+
+function contextMenuTitle(data) {
+  position = $('<div>').html(data.position_name);
+  times = $('<div>').html(data.start_hr + ' - ' + data.end_hr);
+
+  td = $('<td>').attr({ colspan: '2'}).append(position).append(times);
+
+  tr = $('<tr>').attr({ class: 'menudiv-titre'}).append(td);
+
+  return tr;
+}
+
+function emptyContextMenu() {
+  $("#menudiv1").html('').hide();
+  $("#menudiv2").html('').hide();
+}
 
 /**
  * Affiche les tableaux masqués de la page planning
@@ -771,8 +1061,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
       });
 
       // cacher le menudiv
-      $("#menudiv1").remove();
-      $("#menudiv2").remove();
+      emptyContextMenu();
 
       },
       error: function(result){
