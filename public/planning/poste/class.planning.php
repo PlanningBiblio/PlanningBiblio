@@ -112,11 +112,6 @@ class planning
     // Affiche la liste des agents dans le menudiv
     public function menudivAfficheAgents($poste, $agents, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey)
     {
-        $msg_deja_place="&nbsp;<span class='red bold' title='L&apos;agent est d&eacute;j&agrave; plac&eacute; sur ce poste dans la journ&eacute;e'>(DP)</span>";
-        $msg_deuxSP="&nbsp;<span class='red bold' title='2 plages de service public cons&eacute;cutives'>(2 SP)</span>";
-        $msg_SR="&nbsp;<span class='red bold' title='Sans Repas, l&apos;agent n&apos; aucun cr&eacute;neau horaire pour prendre son repas'>(SR)</span>";
-        $msg_T="&nbsp;<span class='red bold' title='Temps de trajet insuffisant pour rejoindre le poste'>(T)</span>";
-        $msg_A="&nbsp;<span class='red bold' title='Délai insuffisant entre une indisponibilité et une plage de service public'>(A)</span>";
         $config=$GLOBALS['config'];
         $dbprefix=$config['dbprefix'];
         $d=new datePl($date);
@@ -136,7 +131,9 @@ class planning
             $classTrListe=null;
         }
 
-        $menudiv=null;
+        $menudiv = array();
+        $menudiv['html'] = '';
+        $menudiv['agents'] = array();
     
         // Calcul des heures de SP à effectuer pour tous les agents
         $heuresSP=calculHeuresSP($date, $this->CSRFToken);
@@ -264,46 +261,50 @@ class planning
                 $title = htmlentities($elem['nom'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
                 $title.= ' '.htmlentities($elem['prenom'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
                 $title = in_array($elem['id'], $absences_non_validees) ? ' Absence ou congé non valid&eacute;' : $title;
+
+                $elem['name_title'] = $title;
         
-                $nom = "<span class='menudiv-nom' title='$title'>";
-                $nom .= htmlentities($elem['nom'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+                $nom = htmlentities($elem['nom'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
                 if ($elem['prenom']) {
                     $nom.=" ".substr(htmlentities($elem['prenom'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false), 0, 1).".";
                 }
-                $nom .='</span>';
 
-                //			----------------------		Sans repas		------------------------------------------//
                 // Si sans repas, on ajoute (SR) à l'affichage
+                $elem['no_lunch'] = 0;
                 if ($sansRepas === true or in_array($elem['id'], $sansRepas)) {
-                    $nom.=$msg_SR;
+                    $elem['no_lunch'] = 1;
                 }
 
-                //			----------------------		Déjà placés		-----------------------------------------------------//
+                // Déjà placés
+                $elem['placed'] = 0;
                 if ($config['Planning-dejaPlace']) {
                     if (in_array($elem['id'], $deja)) {	// Déjà placé pour ce poste
-                        $nom.=$msg_deja_place;
+                        $elem['placed'] = 1;
                     }
                 }
-                //			----------------------		FIN Déjà placés		-----------------------------------------------------//
-        
+
                 // Vérifie si l'agent fera 2 plages de service public de suite
+                $elem['two_sr'] = 0;
                 if ($config['Alerte2SP']) {
                     if (in_array($elem['id'], $deuxSP)) {
-                        $nom.=$msg_deuxSP;
+                        $elem['two_sr'] = 1;
                     }
                 }
 
+                $elem['journey'] = 0;
                 if (in_array($elem['id'], $journey)) {
-                    $nom .= $msg_T;
+                    $elem['journey'] = 1;
                 }
 
+                $elem['time_limit'] = 0;
                 if (in_array($elem['id'], $absences_journey)) {
-                    $nom .= $msg_A;
+                    $elem['time_limit'] = 1;
                 }
 
                 // Motifs d'indisponibilité
+                $elem['exclusion'] = array();
                 if (array_key_exists($elem['id'], $motifExclusion)) {
-                    $nom.=" (".join(", ", $motifExclusion[$elem['id']]).")";
+                    $elem['exclusion'] = $motifExclusion[$elem['id']];
                 }
 
                 // Affihage des heures faites ce jour et cette semaine + les heures de la cellule
@@ -321,27 +322,26 @@ class planning
                         $hres_4sem = isset($heures[$elem['id']]['4semaines']) ? $heures[$elem['id']]['4semaines'] : 0;
                         $hres_4sem += $hres_cellule;
                         $hres_4sem = round($hres_4sem, 2);
-                        $hres_4sem=" / <font title='Heures des 4 derni&egrave;res semaines'>".heure4($hres_4sem, true)."</font>";
+                        $hres_4sem = heure4($hres_4sem, true);
                     }
 
-                    //	Mise en forme de la ligne avec le nom et les heures et la couleur en fonction des heures faites
-                    $nom.="<div class='menudiv-heures'>\n";
-                    $nom.="&nbsp;<font title='Heures du jour'>".heure4($hres_jour, true)."</font> / ";
-                    $nom.="<font title='Heures de la semaine'>".heure4($hres_sem, true)."</font> / ";
-
-                    $nom.="<font title='$heuresHebdoTitle'>".heure4($heuresHebdo, true)."</font>";
-                    $nom.=$hres_4sem;
-                    $nom.="</div>\n";
+                    $elem['times'] = array(
+                        'day' => heure4($hres_jour, true),
+                        'week' => heure4($hres_sem, true),
+                        'quota' => heure4($heuresHebdo, true),
+                        'quota_title' => $heuresHebdoTitle,
+                        'times_four_weeks' => $hres_4sem
+                    );
 
                     // Si absence non validée : affichage en rouge
                     if (in_array($elem['id'], $absences_non_validees)) {
-                        $nom="<font style='color:red'>$nom</font>\n";
+                        $elem['color'] = 'red';
                     } elseif ($hres_jour>7) {			// plus de 7h:jour : rouge
-                        $nom="<font style='color:red'>$nom</font>\n";
+                        $elem['color'] = 'red';
                     } elseif (($heuresHebdo-$hres_sem)<=0.5 and ($hres_sem-$heuresHebdo)<=0.5) {		// 0,5 du quota hebdo : vert
-                        $nom="<font style='color:green'>$nom</font>\n";
+                        $elem['color'] = 'green';
                     } elseif ($hres_sem>$heuresHebdo) {			// plus du quota hebdo : rouge
-                        $nom="<font style='color:red'>$nom</font>\n";
+                        $elem['color'] = 'red';
                     }
                 }
 
@@ -355,21 +355,13 @@ class planning
                 }
                 $classe=empty($class_tmp)?null:join(" ", $class_tmp);
 
-                //	Affichage des lignes
-                $menudiv.="<tr id='tr{$elem['id']}' style='height:21px;$display' onmouseover='$groupe_hide plMouseOver({$elem['id']});' onmouseout='plMouseOut({$elem['id']});' class='$classe $classTrListe menudiv-tr'>\n";
-                $menudiv.="<td onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},0,0,\"$site\");'>";
-                $menudiv.=$nom;
+                $elem['display'] = $display;
+                $elem['class'] = $classe;
+                $elem['class_tr_list'] = $classTrListe;
+                $elem['group_hide'] = $groupe_hide ? $groupe_hide : '';
+                $elem['name'] = $nom;
 
-                //	Afficher ici les horaires si besoin
-                $menudiv.="</td><td style='text-align:right;width:20px'>";
-        
-                //	Affichage des liens d'ajout et de remplacement
-                $max_perso=$nbAgents>=$GLOBALS['config']['Planning-NbAgentsCellule']?true:false;
-                if ($nbAgents>0 and !$max_perso) {
-                    $menudiv.="<a href='javascript:bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},0,1,\"$site\");'>+</a>";
-                    $menudiv.="&nbsp;<a style='color:red' href='javascript:bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",{$elem['id']},1,1,\"$site\");'>x</a>&nbsp;";
-                }
-                $menudiv.="</td></tr>\n";
+                $menudiv['agents'][] = $elem;
             }
         }
         $this->menudiv=$menudiv;

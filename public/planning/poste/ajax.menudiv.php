@@ -504,27 +504,26 @@ if ($agents_tmp) {
         // On renseigne les motifs d'exclusions
         else {
             if (in_array('horaires', $exclusion[$elem['id']])) {
-                $motifExclusion[$elem['id']][]="<span title='Les horaires de l&apos;agent ne lui permettent pas d&apos;occuper ce poste'>Horaires</span>";
+                $motifExclusion[$elem['id']][]="times";
             } elseif (in_array('break', $exclusion[$elem['id']])) {
-                $motifExclusion[$elem['id']][]="<span title='La pause de cet agent n&apos;est pas respectée'>Pause</span>";
+                $motifExclusion[$elem['id']][]="break";
             }
             if (in_array('autre_site', $exclusion[$elem['id']])) {
-                $motifExclusion[$elem['id']][]="<span title='L&apos;agent est pr&eacute;vu sur un autre site'>Autre site</span>";
+                $motifExclusion[$elem['id']][]="other_site";
             }
             if (in_array('sites', $exclusion[$elem['id']])) {
-                $motifExclusion[$elem['id']][]="<span title='L&apos;agent n&apos;est pas pr&eacute;vu sur ce site'>Site</span>";
+                $motifExclusion[$elem['id']][]="site";
             }
             if (in_array('activites', $exclusion[$elem['id']])) {
-                $motifExclusion[$elem['id']][]="<span title='L&apos;agent n&apos;a pas toutes les qualifications requises pour occuper ce poste'>Activit&eacute;s</span>";
+                $motifExclusion[$elem['id']][]="skills";
             }
             if (in_array('categories', $exclusion[$elem['id']])) {
                 if ($categories_nb > 1) {
-                    $title = "L&apos;agent n&apos;appartient &agrave; aucune des cat&eacute;gories requises{$categorie} pour occuper ce poste";
+                    $motifExclusion[$elem['id']][]="no_cat";
                 } else {
-                    $title = "L&apos;agent n&apos;appartient pas &agrave; la cat&eacute;gorie requise{$categorie} pour occuper ce poste";
+                    $motifExclusion[$elem['id']][]="wrong_cat";
                 }
 
-                $motifExclusion[$elem['id']][]="<span title='$title'>Cat&eacute;gorie</span>";
             }
         }
     }
@@ -633,10 +632,13 @@ $tableaux['group_tab_hide'] = $config['ClasseParService'] ? 1 : 0;
 $tableaux['everybody'] = $config['toutlemonde'] ? 1 : 0;
 $tableaux['cell_enabled'] = $cellule_grise ? 0 : 1;
 $tableaux['nb_agents'] = $nbAgents;
+$tableaux['max_agents'] = $config['Planning-NbAgentsCellule'];
+$tableaux['last_four_weeks'] = $config['hres4semaines'] ? 1 : 0;
 $tableaux['agent_id'] = $perso_id;
 $tableaux['agent_name'] = $perso_nom;
 $tableaux['call_for_help'] = $config['Planning-AppelDispo'] ? 1 : 0;
 $tableaux['can_disable_cell'] = in_array( 900 + $site, $droits) ? 1 : 0;
+$tableaux['category'] = $categorie;
 
 $tableaux['menu1'] = array();
 
@@ -662,7 +664,7 @@ if (!$config['ClasseParService'] and !$cellule_grise) {
     $p->site=$site;
     $p->CSRFToken = $CSRFToken;
     $p->menudivAfficheAgents($poste, $agents_dispo, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey);
-    $tableaux['menu1']['agents']=$p->menudiv;
+    $tableaux['menu1']=$p->menudiv;
 }
 
 if (array_key_exists("Autres", $newtab) and $config['agentsIndispo'] and !$cellule_grise) {
@@ -707,12 +709,7 @@ if ($config['Planning-AppelDispo'] and !$cellule_grise) {
     $tableaux['call_for_help_agents'] = $agents_appel_dispo;
 }
 
-
-//$tableaux[0].="</table>\n";
-
 //	--------------		Affichage des agents			----------------//
-//$tableaux[1]="<table cellspacing='0' cellpadding='0' id='menudivtab2' rules='rows' border='1'>\n";
-
 //		-----------		Affichage de la liste des agents s'ils sont classés par services		----------//
 $tableaux['menu2'] = array();
 if ($agents_tous and $config['ClasseParService']) {
@@ -721,8 +718,6 @@ if ($agents_tous and $config['ClasseParService']) {
     $p->site=$site;
     $p->CSRFToken = $CSRFToken;
     $p->menudivAfficheAgents($poste, $agents_tous, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey);
-//$foo = $p->menudiv;
-//var_dump($foo);
     $tableaux['menu2']=$p->menudiv;
 }
 
