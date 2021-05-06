@@ -20,6 +20,9 @@ Cette page est appelée par la fonction ItemSelMenu(e) déclendhée lors d'un cl
 
 session_start();
 
+// TMP For test
+$version = 'ajax';
+
 ini_set("display_error", 0);
 
 require_once "../../include/config.php";
@@ -616,22 +619,37 @@ if (array_key_exists("Autres", $newtab)) {
 $tab_agent=join(';', $listparservices);
     
 // début d'affichage
-$tableaux[0]="<table frame='box' cellspacing='0' cellpadding='0' id='menudivtab1' rules='rows' border='1'>\n";
+$tableaux['position_name'] = $posteNom;
+$tableaux['position_id'] = $poste;
+$tableaux['date'] = $date;
+$tableaux['start'] = $debut;
+$tableaux['start_hr'] = heure2($debut);
+$tableaux['end'] = $fin;
+$tableaux['end_hr'] = heure2($fin);
+$tableaux['site'] = $site;
+$tableaux['site_name'] = $siteNom ? $siteNom : '';
+$tableaux['tab_agent'] = $tab_agent;
+$tableaux['group_tab_hide'] = $config['ClasseParService'] ? 1 : 0;
+$tableaux['everybody'] = $config['toutlemonde'] ? 1 : 0;
+$tableaux['cell_enabled'] = $cellule_grise ? 0 : 1;
+$tableaux['nb_agents'] = $nbAgents;
+$tableaux['agent_id'] = $perso_id;
+$tableaux['agent_name'] = $perso_nom;
+$tableaux['call_for_help'] = $config['Planning-AppelDispo'] ? 1 : 0;
+$tableaux['can_disable_cell'] = in_array( 900 + $site, $droits) ? 1 : 0;
 
-    //		Affichage du nom du poste et des heures
-$tableaux[0].="<tr class='menudiv-titre'><td colspan='2'><div>$posteNom</div>";
-$tableaux[0].="<div>".heure2($debut)." - ".heure2($fin)."</div></td></tr>\n";
+$tableaux['menu1'] = array();
 
 //		-----------		Affichage de la liste des services		----------//
 if ($services and $config['ClasseParService']) {
+    $tableaux['services'] = array();
     $i=0;
     foreach ($services as $elem) {
-        $class="service_".strtolower(removeAccents(str_replace(" ", "_", $elem['service'])));
         if (array_key_exists($elem['service'], $newtab) and !$cellule_grise) {
-            $tableaux[0].="<tr class='$class menudiv-tr'>\n";
-            $tableaux[0].="<td colspan='2' onmouseover='groupe_tab($i,\"$tab_agent\",1,$(this));'>";
-            $tableaux[0].=$elem['service'];
-            $tableaux[0].="</td></tr>\n";
+            $elem['class'] = "service_".strtolower(removeAccents(str_replace(" ", "_", $elem['service'])));
+            $elem['tab_agent'] = $tab_agent;
+            $elem['id'] = $i;
+            $tableaux['services'][] = $elem;
         }
         $i++;
     }
@@ -644,44 +662,19 @@ if (!$config['ClasseParService'] and !$cellule_grise) {
     $p->site=$site;
     $p->CSRFToken = $CSRFToken;
     $p->menudivAfficheAgents($poste, $agents_dispo, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey);
-    $tableaux[0].=$p->menudiv;
+    $tableaux['menu1']['agents']=$p->menudiv;
 }
 
-//		-----------		Affichage des agents indisponibles		----------//
 if (array_key_exists("Autres", $newtab) and $config['agentsIndispo'] and !$cellule_grise) {
-    $i=count($services);
-    $groupe_tab_hide=$config['ClasseParService']?1:0;
-    $tableaux[0].="<tr class='menudiv-tr'>\n";
-    $tableaux[0].="<td colspan='2' onmouseover='groupe_tab($i,\"$tab_agent\",$groupe_tab_hide,$(this));' >";
-    $tableaux[0].="Agents indisponibles";
-    $tableaux[0].="</td></tr>\n";
+    $tableaux['unavailables_agents'] = array('id' => count($services));
 }
 
 //		-----------		Affichage de l'utilisateur "tout le monde"		----------//
 if ($config['toutlemonde'] and !$cellule_grise) {
-    $tableaux[0].="<tr onmouseover='groupe_tab_hide();' class='menudiv-tr' >\n";
-    $tableaux[0].="<td colspan='2' style='color:black;' ";
-    $tableaux[0].="onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",2,0,0,\"$site\");'>Tout le monde</td></tr>\n";
 }
+
 //~ -----				Affiche de la "Case vide"  (suppression)	--------------------------//
 if ($nbAgents>0 and !$cellule_grise) {
-    $groupe_tab=$config['ClasseParService']?"groupe_tab(\"vide\",\"$tab_agent\",1,$(this));":null;
-    $tableaux[0].="<tr onmouseover='$groupe_tab groupe_tab_hide();' class='menudiv-tr'>";
-    $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,0,0,\"$site\");' onmouseover='plMouseOver($perso_id);' onmouseout='plMouseOut($perso_id);'>";
-    $tableaux[0].="Supprimer $perso_nom</td><tr>\n";
-    $tableaux[0].="<tr onmouseover='$groupe_tab groupe_tab_hide();' class='menudiv-tr'>";
-    $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,1,0,\"$site\");' onmouseover='plMouseOver($perso_id);' onmouseout='plMouseOut($perso_id);' class='red'>";
-    $tableaux[0].="Barrer $perso_nom</td></tr>";
-
-    // Ne pas afficher les lignes suivantes si un seul agent dans la cellule
-    if ($nbAgents>1) {
-        $tableaux[0].="<tr onmouseover='$groupe_tab groupe_tab_hide();' class='menudiv-tr'>";
-        $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,0,0,\"$site\",1);'>";
-        $tableaux[0].="Tout supprimer</td><tr>\n";
-        $tableaux[0].="<tr onmouseover='$groupe_tab groupe_tab_hide();' class='menudiv-tr'>";
-        $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,1,0,\"$site\",1);' class='red'>";
-        $tableaux[0].="Tout barrer</td></tr>";
-    }
 }
 
 // Ajout du lien pour les appels à disponibilité
@@ -690,6 +683,7 @@ if ($config['Planning-AppelDispo'] and !$cellule_grise) {
     $db=new db();
     $db->select2("appel_dispo", null, array("site"=>$site,"poste"=>$poste,"date"=>$date,"debut"=>$debut,"fin"=>$fin), "ORDER BY `timestamp` desc");
     $nbEnvoi=$db->nb;
+    $nbEnvoiInfo = '';
     if ($db->result) {
         $dateEnvoi=dateFr($db->result[0]['timestamp']);
         $heureEnvoi=heure2(substr($db->result[0]['timestamp'], 11, 5));
@@ -708,43 +702,28 @@ if ($config['Planning-AppelDispo'] and !$cellule_grise) {
     $agents_appel_dispo=json_encode($agents_appel_dispo);
     $agents_appel_dispo=htmlentities($agents_appel_dispo, ENT_QUOTES|ENT_IGNORE, 'UTF-8', false);
 
-    $tableaux[0].="<tr onmouseover='groupe_tab_hide();' class='menudiv-tr'>";
-    $tableaux[0].="<td colspan='2' data-agents='$agents_appel_dispo' id='td-appelDispo' onclick='appelDispo(\"$site\",\"$siteNom\",\"$poste\",\"$posteNom\",\"$date\",\"$debut\",\"$fin\");'>";
-    $tableaux[0].="Appel &agrave; disponibilit&eacute;\n";
-    if ($nbEnvoi) {
-        $tableaux[0].="<span title='$nbEnvoiInfo' style='position:absolute; right:5px;'><strong>$nbEnvoi</strong></span>\n";
-    }
-    $tableaux[0].="</td><tr>\n";
+    $tableaux['call_for_help_info'] = $nbEnvoiInfo;
+    $tableaux['call_for_help_nb'] = $nbEnvoi;
+    $tableaux['call_for_help_agents'] = $agents_appel_dispo;
 }
 
-// Griser la cellule
-$droit_griser_cellule = 900 + $site;
-if (in_array($droit_griser_cellule, $droits)) {
-    $tableaux[0].="<tr onmouseover='groupe_tab_hide();' class='menudiv-tr'>";
-    if ($cellule_grise == false) {
-        $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,0,0,\"$site\",1,1);'>\n";
-        $tableaux[0].="Griser la cellule\n";
-    } else {
-        $tableaux[0].="<td colspan='2' onclick='bataille_navale(\"$poste\",\"$date\",\"$debut\",\"$fin\",0,0,0,\"$site\",1,-1);'>\n";
-        $tableaux[0].="D&eacute;griser la cellule\n";
-    }
 
-    $tableaux[0].="</td><tr>\n";
-}
-
-$tableaux[0].="</table>\n";
+//$tableaux[0].="</table>\n";
 
 //	--------------		Affichage des agents			----------------//
-$tableaux[1]="<table cellspacing='0' cellpadding='0' id='menudivtab2' rules='rows' border='1'>\n";
+//$tableaux[1]="<table cellspacing='0' cellpadding='0' id='menudivtab2' rules='rows' border='1'>\n";
 
 //		-----------		Affichage de la liste des agents s'ils sont classés par services		----------//
+$tableaux['menu2'] = array();
 if ($agents_tous and $config['ClasseParService']) {
     $hide=true;
     $p=new planning();
     $p->site=$site;
     $p->CSRFToken = $CSRFToken;
     $p->menudivAfficheAgents($poste, $agents_tous, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey);
-    $tableaux[1].=$p->menudiv;
+//$foo = $p->menudiv;
+//var_dump($foo);
+    $tableaux['menu2']=$p->menudiv;
 }
 
 //		-----------		Affichage de la liste des agents indisponibles 'ils ne sont pas classés par services	----------//
@@ -754,9 +733,8 @@ if ($autres_agents and !$config['ClasseParService'] and $config['agentsIndispo']
     $p->site=$site;
     $p->CSRFToken = $CSRFToken;
     $p->menudivAfficheAgents($poste, $autres_agents, $date, $debut, $fin, $deja, $stat, $nbAgents, $sr_init, $hide, $deuxSP, $motifExclusion, $absences_non_validees, $journey, $absences_journey);
-    $tableaux[1].=$p->menudiv;
+    $tableaux['menu2']=$p->menudiv;
 }
 
-$tableaux[1].="</table>";
 //--------------		FIN Liste du personnel disponible			---------------//
 echo json_encode($tableaux);
