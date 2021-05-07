@@ -95,6 +95,8 @@
     - 301
 "model.delete":
     - 301
+"planningjob.contextmenu":
+    - 100
 "statistics.absence":
     - 17
 "statistics.agent":

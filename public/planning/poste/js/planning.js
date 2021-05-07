@@ -393,18 +393,16 @@ $(function() {
     emptyContextMenu();
 
     $.ajax({
-      url: "planning/poste/ajax.menudiv.php",
+      url: '/planningjob/contextmenu',
       datatype: "json",
       data: {cellule: cellule, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, poste: poste, site: site, perso_nom: perso_nom_origine, perso_id:perso_id_origine},
       type: "get",
       success: function(result){
+console.log(result);
         // si pas de result : on quitte (pas de droit admin)
         if(!result){
           return false;
         }
-
-        // result = tableau1 et tableau2
-        result=JSON.parse(result);
 
         // Affichage des tableaux
         initContextMenu(result);
