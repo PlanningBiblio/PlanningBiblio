@@ -253,6 +253,7 @@ class AgentController extends BaseController
         $lang = $GLOBALS['lang'];
         $currentTab = '';
         global $temps;
+        global $breaktimes;
 
         $actif = null;
         $droits = $GLOBALS['droits'];
@@ -372,11 +373,13 @@ class AgentController extends BaseController
                 $p->fetch();
                 if (!empty($p->elements)) {
                     $temps = $p->elements[0]['temps'];
+                    $breaktimes = $p->elements[0]['breaktime'];
                 } else {
                     $temps = array();
                 }
             } else {
                 $temps = json_decode(html_entity_decode($db->result[0]['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                $breaktimes = $db->result[0]['breaktime'];
                 if (!is_array($temps)) {
                     $temps = array();
                 }

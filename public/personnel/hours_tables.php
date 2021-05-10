@@ -5,6 +5,7 @@ use App\PlanningBiblio\Helper\HolidayHelper;
 # way to twigizing this part.
 $config = $GLOBALS['config'];
 $temps = $GLOBALS['temps'];
+$breaktimes = $GLOBALS['breaktimes'];
 $hours_tab = '';
 
 if ($config['PlanningHebdo']) {
@@ -58,6 +59,11 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         $hours_tab .= "<td style='width:135px;'>Début de pause</td><td style='width:135px;'>Fin de pause</td>";
     }
     $hours_tab .= "<td style='width:135px;'>Heure de départ</td>";
+
+    if ($config['PlanningHebdo-PauseLibre']) {
+        $hours_tab .= "<td>Temps de pause</td>";
+    }
+
     if ($config['Multisites-nombre']>1) {
         $hours_tab .= "<td>Site</td>";
     }
@@ -107,6 +113,11 @@ for ($j = 0; $j < $nb_semaine; $j++) {
             $heure = isset($temps[$i-1][0]) ? heure2($temps[$i-1][3]) : null;
             $hours_tab .= "<td id='temps_".($i-1)."_3'>$heure</td>\n";
 
+            if ($config['PlanningHebdo-PauseLibre']) {
+                $hours_tab .= '<td id="break_' . ($i-1) . '" data-break="' . $breaktimes[$i -1] . '">';
+                $hours_tab .= heure4($breaktimes[$i -1]);
+                $hours_tab .= '</td>';
+            }
 
             if ($config['Multisites-nombre']>1) {
                 $site=null;

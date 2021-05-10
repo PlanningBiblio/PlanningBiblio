@@ -61,6 +61,7 @@ function calculHeures(object,num,form,tip,numero){
       heure5=$("#temps"+num+"_"+i+"_5").text().replace("h",":");
       heure6=$("#temps"+num+"_"+i+"_6").text().replace("h",":");
       heure3=$("#temps"+num+"_"+i+"_3").text().replace("h",":");
+      breaktime = $('#break'+num+'_'+i).data('break');
     }
     
     
@@ -116,6 +117,10 @@ function calculHeures(object,num,form,tip,numero){
     
     for(j in tab){
       diff += diffMinutes(tab[j][0],tab[j][1]);
+    }
+
+    if (breaktime !== 'undefined' && breaktime > 0) {
+        diff = diff - (breaktime * 60);
     }
     
     heures+=diff;
