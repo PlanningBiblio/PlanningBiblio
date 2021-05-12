@@ -27,6 +27,8 @@
     - 100
 "comp-time.new":
     - 100
+"comp-time.save":
+    - 100
 "framework.index":
     - 22
 "framework.add_table":
