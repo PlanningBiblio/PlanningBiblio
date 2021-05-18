@@ -523,6 +523,9 @@ function resetICSURL(id, CSRFToken, nom){
   
   if(res){
     var baseURL = $('#baseURL').val();
+    if (typeof baseURL == 'undefined') {
+      baseURL = '';
+    }
 
     $.ajax({
       url: baseURL + '/ics/ajax.resetURL.php',
