@@ -20,7 +20,7 @@ Page incluse dans le fichier "planning/postes_cfg/modif.php"
 require_once "class.tableaux.php";
 
 $post = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-$CSRFToken = $post['CSRFToken'];
+$CSRFToken = $post['CSRFToken'] ?? null;
 unset($post['CSRFToken']);
 
 //	Mise à jour du tableau (après validation)
