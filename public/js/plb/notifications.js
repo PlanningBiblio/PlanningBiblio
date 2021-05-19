@@ -66,7 +66,7 @@ $(function() {
 
         // Enregistrement dans la base de données
         $.ajax({
-          url: baseURL + "/notification",
+          url: baseURL + "notification",
           type: "post",
           datatype: "json",
           data: {agents: agents, responsables: responsables, notifications: notifications, CSRFToken: $('#CSRFToken').val()},

@@ -2,7 +2,7 @@
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
-  <script type="text/JavaScript" src="{{ app.request.getBaseURL() }}/js/plb/framework.js?version={{ version }}"></script>
+  <script type="text/JavaScript" src='{{ asset("js/plb/framework.js") }}'></script>
   <script type="text/JavaScript">
     $(document).ready(function(){
       $("#copy-div").dialog({
@@ -13,10 +13,11 @@
       });
 
       $('.copy-table').click(function(e){
+        var baseURL = $('#baseURL').val();
         e.preventDefault();
         id = $(this).data('id');
         $("#copy-div").dialog('open');
-        $("#copy-form").attr("action", "/framework/copy/"+id);
+        $("#copy-form").attr("action", baseURL + "framework/copy/"+id);
         $("#copy-form#numero").attr("value", id);
 
       });
@@ -80,7 +81,7 @@
       </table>
     </form>
     <p>
-      <input type='button' value='Supprimer la sélection' class='ui-button' onclick="supprime_select('chk1','{{ app.request.getBaseURL() }}/framework-batch_delete');">
+      <input type='button' value='Supprimer la sélection' class='ui-button' onclick="supprime_select('chk1','{{ asset("framework-batch_delete") }}');">
     </p>
     {% if tableauxSupprimes is not empty %}
       <p style='margin-top:30px;'>
