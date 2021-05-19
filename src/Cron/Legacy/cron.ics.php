@@ -1,13 +1,10 @@
 <?php
 /**
-Planning Biblio, Version 2.8
+Planning Biblio
 Licence GNU/GPL (version 2 et au dela)
 Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
 
-Fichier : ics/cron.ics.php
-Création : 28 juin 2016
-Dernière modification : 7 février 2018
+@file src/Cron/Legacy/cron.ics.php
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
@@ -18,10 +15,7 @@ Intègre les absences et congés des fichiers ICS dans la table absences
 * /5 * /usr/bin/php5 -f /var/www/html/planning/ics/cron.ics.php
 Pour la ligne précédente, ne mettez pas d'espace entre l'étoile et le /5
 Remplacer si besoin le chemin d'accès au programme php et le chemin d'accès à ce fichier
-@note : Modifiez la variable $path suivante en renseignant le chemin absolu vers votre dossier planningBiblio
 */
-
-$path="/var/www/html/planning";
 
 session_start();
 
@@ -31,12 +25,12 @@ session_start();
  */
 $version=$argv[0];
 
-// chdir($path) : important pour l'execution via le cron
-chdir($path);
+// chdir(__DIR__ . '/../../../public/') : important pour l'execution via le cron
+chdir(__DIR__ . '/../../../public/');
 
-require_once "$path/include/config.php";
-require_once "$path/ics/class.ics.php";
-require_once "$path/personnel/class.personnel.php";
+require_once __DIR__ . '/../../../public/include/config.php';
+require_once __DIR__ . '/../../../public/ics/class.ics.php';
+require_once __DIR__ . '/../../../public/personnel/class.personnel.php';
 
 $CSRFToken = CSRFToken();
 

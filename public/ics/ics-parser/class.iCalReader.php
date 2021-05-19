@@ -361,8 +361,17 @@ class ICal
             return false;
         }
         $date_array=$event[$key."_array"];
-        $date=$event[$key];
-    
+
+        /* Keep only the date.
+         * If the timezone contains ":", a part of it still remains in $event[$key]
+         * 
+         * ei : DTSTART;TZID="(UTC+01:00) Bruxelles, Copenhague, Madrid, Paris":20210214T1500    
+         * $event[$key] = 00) Bruxelles, Copenhague, Madrid, Paris":20210214T1500
+         * $date = 20210214T1500
+         */
+
+        $date = preg_replace('/.*:(.[^:]*)$/', "$1", $event[$key]);
+
         if (isset($date_array[0]['TZID']) and preg_match("/[a-z]*\/[a-z_]*/i",$date_array[0]['TZID'])) {
             $timeZone = $date_array[0]['TZID'];
         }
@@ -372,8 +381,8 @@ class ICal
             $timeZone = $defaultTimeZone;
         }
 
-        $dateTime = new dateTime($event[$key]);
-    
+        $dateTime = new dateTime($date);
+
         if (substr($date,-1) == 'Z') {
             $date=substr($date,0,-1);
             $tz = new dateTimeZone($defaultTimeZone);
