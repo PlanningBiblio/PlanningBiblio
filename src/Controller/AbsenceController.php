@@ -219,10 +219,11 @@ class AbsenceController extends BaseController
                 $visibles_absences[] = $elem;
             }
 
-            $this->templateParams(array(
-                'visibles_absences' => $visibles_absences,
-            ));
         }
+
+        $this->templateParams(array(
+            'visibles_absences' => $visibles_absences,
+        ));
 
         return $this->output('absences/index.html.twig');
     }
