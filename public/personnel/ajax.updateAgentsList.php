@@ -19,7 +19,7 @@ Appelé en Ajax via la fonction JS updateAgentsList à partir de la page voir.ph
 ini_set('display_errors', 0);
 
 include "../include/config.php";
-include "class.personnel.php";
+include_once "class.personnel.php";
 
 $p=new personnel();
 if ($_GET['deleted']=="yes") {
