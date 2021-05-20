@@ -639,6 +639,7 @@ class PlanningJobController extends BaseController
             'agent_name' => $perso_nom, 'call_for_help' => $this->config('Planning-AppelDispo') ? 1 : 0,
             'can_disable_cell' => in_array( 900 + $site, $this->droits) ? 1 : 0,
             'category' => $categorie, 'menu1' => array(),
+            'display_times' => $this->config('Planning-Heures') ? 1 : 0,
         );
 
         // Prepare displaying of services.
