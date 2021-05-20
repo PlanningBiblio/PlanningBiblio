@@ -394,7 +394,6 @@ $(function() {
       data: {cellule: cellule, CSRFToken: CSRFToken, date: date, debut: debut, fin: fin, poste: poste, site: site, perso_nom: perso_nom_origine, perso_id:perso_id_origine},
       type: "get",
       success: function(result){
-console.log(result);
         // si pas de result : on quitte (pas de droit admin)
         if(!result){
           return false;
@@ -625,36 +624,38 @@ function ContextMenu2agents(data, agent) {
     font.append(')');
   }
 
-  div_times = $('<div>').attr({
-    class: 'menudiv-heures'
-  });
+  if (data.display_times) {
+    div_times = $('<div>').attr({
+      class: 'menudiv-heures'
+    });
 
-  times_day = $('<font>').attr({
-    title: 'Heures du jour'
-  }).html(agent.times.day);
-  div_times.append(times_day);
-  div_times.append(' / ');
-
-  times_week = $('<font>').attr({
-    title: 'Heures de la semaine'
-  }).html(agent.times.week);
-  div_times.append(times_week);
-  div_times.append(' / ');
-
-  times_quota = $('<font>').attr({
-    title: agent.times.quota_title
-  }).html(agent.times.quota);
-  div_times.append(times_quota);
-
-  if (data.last_four_weeks) {
+    times_day = $('<font>').attr({
+      title: 'Heures du jour'
+    }).html(agent.times.day);
+    div_times.append(times_day);
     div_times.append(' / ');
-    times_four = $('<font>').attr({
-      title: 'Heures des 4 dernières semaines'
-    }).html(agent.times.times_four_weeks);
-    div_times.append(times_four);
-  }
 
-  font.append(div_times);
+    times_week = $('<font>').attr({
+      title: 'Heures de la semaine'
+    }).html(agent.times.week);
+    div_times.append(times_week);
+    div_times.append(' / ');
+
+    times_quota = $('<font>').attr({
+      title: agent.times.quota_title
+    }).html(agent.times.quota);
+    div_times.append(times_quota);
+
+    if (data.last_four_weeks) {
+      div_times.append(' / ');
+      times_four = $('<font>').attr({
+        title: 'Heures des 4 dernières semaines'
+      }).html(agent.times.times_four_weeks);
+      div_times.append(times_four);
+    }
+
+    font.append(div_times);
+  }
 
   td.append(font);
 
