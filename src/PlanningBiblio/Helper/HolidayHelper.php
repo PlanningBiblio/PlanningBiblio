@@ -70,6 +70,8 @@ class HolidayHelper extends BaseHelper
         );
 
         $per_week = array();
+        $rest_total = 0;
+
         // For each requested date.
         while ($current <= $fin) {
 
@@ -129,7 +131,22 @@ class HolidayHelper extends BaseHelper
                 // the default time for switching from half-day to full-day is 4 hours (14400 seconds)
                 $switching_time = (float) ($this->config['Conges-fullday-switching-time'] ?? 4);
                 $switching_time = $switching_time * 3600;
-                $today = $today <= $switching_time ? 12600 : 25200;
+
+                // By default reference time is 7h (25200) for a day
+                // or 3h30 (12600) for half a day.
+                $reference_time = $today <= $switching_time ? 12600 : 25200;
+
+                if (is_numeric($this->config('Conges-fullday-reference-time'))) {
+                    $reference_time = $this->config('Conges-fullday-reference-time') * 3600;
+                    $reference_time = $today <= $switching_time
+                        ? $reference_time / 2 : $reference_time;
+                    $rest = $reference_time - $today;
+                    $rest_hours = $rest / 3600;
+                    $rest_total += $rest_hours;
+
+                }
+
+                $today = $reference_time;
             }
 
             $per_week[$week_id]['times'] += number_format($today / 3600, 2, '.', '');
@@ -154,6 +171,13 @@ class HolidayHelper extends BaseHelper
         $result['hours'] = $hours_minutes[0];
         $result['minutes'] = isset($hours_minutes[1]) ? $hours_minutes[1] : 0;
         $result['hr_hours'] = heure4($total); // 2.5 => 2h30
+        $result['rest'] = $rest_total;
+
+        $result['hr_rest'] = heure4($rest_total) ?? '';
+        if ($rest_total < 0) {
+            $hr_rest = heure4(abs($rest_total));
+            $result['hr_rest'] = $hr_rest;
+        }
 
         $result['days'] = $this->hoursToDays($total, $perso_id);
 
@@ -173,6 +197,8 @@ class HolidayHelper extends BaseHelper
                     return $hours_per_day;
                 }
             }
+        } elseif (is_numeric($this->config('Conges-fullday-reference-time'))) {
+            return $this->config('Conges-fullday-reference-time');
         } else {
             return 7;
         }
