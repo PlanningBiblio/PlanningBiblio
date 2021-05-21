@@ -10,10 +10,9 @@
       var previous_nb_semaine = $('#nb_semaine option:selected').val();
       {% for i in 1..10 %}
         var previous_Multisites_site{{ i }}_cycles = $('#Multisites-site{{ i }}-cycles option:selected').val();
-        console.log(previous_Multisites_site{{ i }}_cycles);
       {% endfor %}
 
-      $( "#Conges-Mode_dialog" ).dialog({
+      $( "#conges_mode_dialog" ).dialog({
         autoOpen: false,
         resizable: false,
         width: 400,
@@ -131,7 +130,7 @@
       </div>
     </form>
 
-    <div id="Conges-Mode_dialog" title="Modification du mode de congés">
+    <div id="conges_mode_dialog" title="Modification du mode de congés">
      Le mode de décompte des congés en jour implique de modifier le paramètre "Conges-Recuperations" en "Dissocier".
     </div>
 
