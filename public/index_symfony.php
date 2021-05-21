@@ -22,7 +22,7 @@ $path = $request->getPathInfo();
 
 // Session has expired. Redirect to authentication page.
 if (empty($_SESSION['login_id'])) {
-    $redirect = $config['URL'] . "$path";
+    $redirect = ltrim($path, '/');
     header("Location: {$config['URL']}/authentification.php?redirURL=$redirect");
     exit();
 }
