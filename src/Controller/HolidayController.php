@@ -335,8 +335,6 @@ class HolidayController extends BaseController
         // Crédits
         $p = new \personnel();
         $p->fetchById($perso_id);
-        $nom=$p->elements[0]['nom']; //FIXME utile?
-        $prenom=$p->elements[0]['prenom']; //FIXME utile?
 
         $conges_anticipation = $p->elements[0]['conges_anticipation'];
         $conges_credit = $p->elements[0]['conges_credit'];
@@ -553,8 +551,6 @@ class HolidayController extends BaseController
         $perso_id=$perso_id?$perso_id:$_SESSION['login_id'];
         $p=new \personnel();
         $p->fetchById($perso_id);
-        $nom=$p->elements[0]['nom'];
-        $prenom=$p->elements[0]['prenom'];
         $conges_anticipation = $p->elements[0]['conges_anticipation'];
         $conges_credit = $p->elements[0]['conges_credit'];
         $conges_reliquat = $p->elements[0]['conges_reliquat'];

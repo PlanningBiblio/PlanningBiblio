@@ -70,6 +70,8 @@ class HolidayHelper extends BaseHelper
         );
 
         $per_week = array();
+        $regul_total = 0;
+
         // For each requested date.
         while ($current <= $fin) {
 
@@ -129,6 +131,61 @@ class HolidayHelper extends BaseHelper
                 // the default time for switching from half-day to full-day is 4 hours (14400 seconds)
                 $switching_time = (float) ($this->config['Conges-fullday-switching-time'] ?? 4);
                 $switching_time = $switching_time * 3600;
+
+                if (is_numeric($this->config('Conges-fullday-reference-time'))) {
+                    $reference_time = $this->config('Conges-fullday-reference-time') * 3600;
+                    $regul = $reference_time - $today;
+                    $regul_hours = $regul / 3600;
+                    $regul_total += $regul_hours;
+
+                    // TEST MT32844
+                    error_log("\n");
+                    error_log($current."\n");
+                    error_log($regul_hours."\n");
+                    error_log($regul_total."\n");
+
+                    // NOTE : les jours cochés "fermeture" dans la table "jours_feries" ne doivent pas décompter de crédit de congés (c'est déjà le cas)
+                    // MAIS ils doivent être pris en compte pour la régul s'ils sont habituellement travaillés (présence non-vide).
+                    // Les jours fermés sont écartés à un plus haut niveau et ne passe donc pas dans cette boucle.
+                    // TODO : voir comment les récupérer pour les comptabiliser
+
+                    // NOTE : les jours de présence vides sont ignorés, pas de débit de congés, pas de régul : c'est parfait.
+
+                    // TODO : display $total_regul in the holiday form (human readable) under "Nombre de jours :"
+                    // TODO : When the holiday is validated (level 2), store a new comp-time (table recuperations) with :
+                    //  -- perso_id = $perso_id
+                    //  -- date = [Holiday_begining_date]
+                    //  -- date2 = null
+                    //  -- heures = $regul_total
+                    //  -- etat = null
+                    //  -- commentaires = "Régularisation congés du [Holiday_begining_date] au [holiday_ending_date]"
+                    //  -- saisies = current_time
+                    //  -- saisies_par = $_SESSION['login_id']
+                    //  -- modif = $_SESSION['login_id']
+                    //  -- modification = current_time
+                    //  -- valide_n1 = 0
+                    //  -- validation_n1 = null
+                    //  -- valide = $_SESSION['login_id']
+                    //  -- validation = current_time
+                    //  -- refus = null
+                    //  -- solde_prec = le solde précédent
+                    //  -- solde_actuel = le nouveau solde
+                    //  -- holiday_id (nouveau champ, voir plus bas) = ID du congé
+
+                    // TODO : à cette même occasion, il faut additionner $regul_total au champ comp_time de la table personnel (si total_regul <0, ça fera automatiquement la soustraction : OK)
+                    
+                    // NOTE : la valeur de $regul_total peut être négative. ça ne devrait pas poser problème pour le champ comp_time de la table personnel, ni pour l'enregistrement dans la table recuperations : à vérifier
+                    // TEST : enregistrement d'un crédit négatif depuis la fiche agent = OK
+
+                    // TODO : Si un congé validé a généré une régul et qu'il est ensuite supprimé, il faut supprimer déduire du champ comp_time de la table personnel la valeur créditée (ou recréditer ce qui a été débité).
+                    // Pour ceci :
+                    // -- Ajouter un champ "holiday_id" dans la table "recuperations" et y stocker l'ID du congés qui a généré la régul
+                    // -- Lors de la suppression du congés, nous pourrons alors vérifier la table recuperations, trouver l'ID correspondant, et s'il existe, adapter la valeur du champ comp_time de la table personnel.
+                    // TODO : Cette mise à jour de compteurs devra générer un log  : ajouter la ligne adéquate dans la table congés avec le champ information = $_SESSION['login_id']
+                    // Voir la ligne créée dans la table congés lors de la modification des crédits depuis la fiche agent : faire pareil.
+                    // Résultat : les lignes "Mise à jour des crédits" sont visibles dans les tables de congés et de récup.
+                }
+
                 $today = $today <= $switching_time ? 12600 : 25200;
             }
 
