@@ -81,6 +81,7 @@ function etape2()
 function etape3()
 {
     global $id;
+    $config = $GLOBALS['config'];
 
     // Disalow admin deletion
     if ($id == 1) {
@@ -112,13 +113,14 @@ function etape3()
     $db->CSRFToken = $CSRFToken;
     $db->delete("responsables", array('perso_id' => $id));
 
-    echo "<script type='text/JavaScript'>parent.window.location.reload(false);</script>";
+    echo "<script type='text/Javascript'>parent.location.href='{$config['URL']}/index.php?page=personnel/index.php';</script>\n";
     echo "<script type='text/JavaScript'>popup_closed();</script>";
 }
 
 function etape4()
 {
     global $id;
+    $config = $GLOBALS['config'];
 
     // Disalow admin deletion
     if ($id == 1) {
@@ -134,6 +136,6 @@ function etape4()
     $p=new personnel();
     $p->CSRFToken = $CSRFToken;
     $p->delete($id);
-    echo "<script type='text/JavaScript'>parent.window.location.reload(false);</script>";
+    echo "<script type='text/Javascript'>parent.location.href='{$config['URL']}/index.php?page=personnel/index.php';</script>\n";
     echo "<script type='text/JavaScript'>popup_closed();</script>";
 }
