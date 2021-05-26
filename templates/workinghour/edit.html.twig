@@ -3,8 +3,8 @@
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
-  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/planningHebdo/js/script.planningHebdo.js'></script>
-  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/plb/workinghour.js'></script>
+  <script type='text/JavaScript' src='{{ asset("planningHebdo/js/script.planningHebdo.js") }}'></script>
+  <script type='text/JavaScript' src='{{ asset("js/plb/workinghour.js") }}'></script>
 {% endblock %}
 
 {% block page %}

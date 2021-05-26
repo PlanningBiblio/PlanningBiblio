@@ -57,10 +57,10 @@ $(function() {
                             var msg = result;
                             var msgType = 'error';
                         }
-                        location.href = baseURL +'/agent?msg='+msg+'&msgType='+msgType;
+                        location.href = baseURL +'agent?msg='+msg+'&msgType='+msgType;
                         },
                     error: function(){
-                        location.href = baseURL + '/agent?msg=Une erreur est survenue lors de la modification des agents&msgType=error';
+                        location.href = baseURL + 'agent?msg=Une erreur est survenue lors de la modification des agents&msgType=error';
                         }
                     });
                 },
@@ -111,10 +111,10 @@ function agent_list() {
                 dataType: "json",
                 data: {list: list, CSRFToken: $('#CSRFSession').val()},
                 success: function(){
-                    location.href = baseURL +'/agent?msg=Les agents ont été supprimés avec succès&msgType=success';
+                    location.href = baseURL +'agent?msg=Les agents ont été supprimés avec succès&msgType=success';
                     },
                 error: function(){
-                    location.href =  baseURL +'/agent?msg=Une erreur est survenue lors de la suppresion des agents&msgType=error';
+                    location.href =  baseURL +'agent?msg=Une erreur est survenue lors de la suppresion des agents&msgType=error';
                     }
                 });
 

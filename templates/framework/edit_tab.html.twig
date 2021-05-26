@@ -2,7 +2,7 @@
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
-  <script type='text/JavaScript' src="{{ app.request.getBaseURL() }}/js/plb/framework.js"></script>
+  <script type='text/JavaScript' src='{{ asset("js/plb/framework.js") }}'></script>
   <script type='text/JavaScript'>
     // Applique la même class que l'option selectionnée au select et au td pour chaque select poste lors du chargement
     $("document").ready(function(){
@@ -50,7 +50,7 @@
       
       // Enregistrement des données en ajax 
       $.ajax({
-        url: baseURL + "/framework-table/save-line",
+        url: baseURL + "framework-table/save-line",
         type: "post",
         data: data,
         success: function(){

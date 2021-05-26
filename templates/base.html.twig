@@ -5,23 +5,23 @@
   <head>
     <title>Planning</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/jquery-1.11.1.min.js'></script>
-    <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/jquery-ui-1.11.2/jquery-ui.js'></script>
-    <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/carhartl-jquery-cookie-3caf209/jquery.cookie.js'></script>
-    <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/DataTables/datatables.min.js'></script>
-    <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/CJScript.js?version={{ version }}'></script>
-    <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/datePickerFr.js?version={{ version }}'></script>
-    <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/dataTables.sort.js?version={{ version }}'></script>
-    <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/script.js?version={{ version }}'></script>
+    <script type='text/JavaScript' src='{{ asset("js/jquery-1.11.1.min.js") }}'></script>
+    <script type='text/JavaScript' src='{{ asset("js/jquery-ui-1.11.2/jquery-ui.js") }}'></script>
+    <script type='text/JavaScript' src='{{ asset("js/carhartl-jquery-cookie-3caf209/jquery.cookie.js") }}'></script>
+    <script type='text/JavaScript' src='{{ asset("js/DataTables/datatables.min.js") }}'></script>
+    <script type='text/JavaScript' src='{{ asset("js/CJScript.js") }}'></script>
+    <script type='text/JavaScript' src='{{ asset("js/datePickerFr.js") }}'></script>
+    <script type='text/JavaScript' src='{{ asset("js/dataTables.sort.js") }}'></script>
+    <script type='text/JavaScript' src='{{ asset("js/script.js") }}'></script>
     {% block specificjs %}{% endblock %}
-    <link rel='StyleSheet' href='{{ app.request.getBaseURL() }}/js/DataTables/datatables.min.css' type='text/css' media='all'/>
-    <link rel='StyleSheet' href='{{ app.request.getBaseURL() }}/themes/{{ themeJQuery }}/jquery-ui.min.css' type='text/css' media='all'/>
-    <link rel='StyleSheet' href='{{ app.request.getBaseURL() }}/themes/default/default.css?version={{ version }}' type='text/css' media='all'/>
-    <link rel='StyleSheet' href='{{ app.request.getBaseURL() }}/themes/default/print.css?version={{ version }}' type='text/css' media='print'/>
+    <link rel='StyleSheet' href='{{ asset("js/DataTables/datatables.min.css") }}' type='text/css' media='all'/>
+    <link rel='StyleSheet' href='{{ asset("themes/" ~ themeJQuery ~ "/jquery-ui.min.css") }}' type='text/css' media='all'/>
+    <link rel='StyleSheet' href='{{ asset("themes/default/default.css") }}' type='text/css' media='all'/>
+    <link rel='StyleSheet' href='{{ asset("themes/default/print.css") }}' type='text/css' media='print'/>
     {% if theme != 'default' %}
-      <link rel='StyleSheet' href='{{ app.request.getBaseURL() }}/themes/{{ theme }}/{{ theme }}.css?version={{ version }}' type='text/css' media='all'/>
+    <link rel='StyleSheet' href='{{ asset("themes/" ~ theme ~ "/" ~ theme ~ ".css") }}' type='text/css' media='all'/>
     {% endif %}
-    <link rel='icon' type='image/png' href='{{ app.request.getBaseURL() }}/themes/{{ theme }}/favicon.ico' />
+    <link rel='icon' type='image/png' href='{{ asset("themes/" ~  theme ~ "/favicon.ico") }}' />
   </head>
   <body>
     <!-- Affichage des messages d'erreur ou de confirmation venant de la page précedente-->
@@ -53,7 +53,7 @@
     </form>
 
     <form name='baseURLForm' action='#' method='get'>
-      <input type='hidden' name='baseURL' id='baseURL' value='{{ app.request.getBaseURL() }}' />
+      <input type='hidden' name='baseURL' id='baseURL' value='{{ app.request.getSchemeAndHttpHost }}{{ asset("") }}' />
     </form>
 
     {% if content_planning %}

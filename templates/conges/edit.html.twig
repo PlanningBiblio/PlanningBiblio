@@ -3,9 +3,9 @@
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
-  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/conges/js/script.conges.js?version={{ version }}'></script>
-  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/dateUtils.js?version={{ version }}'></script>
-  <script type='text/JavaScript' src='{{ app.request.getBaseURL() }}/js/holiday.js?version={{ version }}'></script>
+  <script type='text/JavaScript' src='{{ asset("conges/js/script.conges.js") }}'></script>
+  <script type='text/JavaScript' src='{{ asset("js/dateUtils.js") }}'></script>
+  <script type='text/JavaScript' src='{{ asset("js/holiday.js") }}'></script>
 
 {% endblock %}
 

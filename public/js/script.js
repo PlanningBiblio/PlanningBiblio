@@ -525,7 +525,7 @@ function resetICSURL(id, CSRFToken, nom){
     var baseURL = $('#baseURL').val();
 
     $.ajax({
-      url: baseURL + '/ics/ajax.resetURL.php',
+      url: baseURL + 'ics/ajax.resetURL.php',
       type: "post",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},

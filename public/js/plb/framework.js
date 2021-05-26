@@ -21,7 +21,7 @@ function supprimeGroupe(id){
 
   if(confirm("Etes vous sûr(e) de vouloir supprimer le groupe \""+nom+"\"?")){
     $.ajax({
-      url: baseURL + "/framework-group",
+      url: baseURL + "framework-group",
       type: "delete",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
@@ -61,7 +61,7 @@ function supprimeLigne(id){
   
   if(confirm("Etes-vous sûr(e) de vouloir supprimer la ligne \""+nom+"\" ?")){
     $.ajax({
-      url: baseURL + "/framework-line",
+      url: baseURL + "framework-line",
       type: "delete",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
@@ -91,13 +91,13 @@ function supprimeTableau(tableau){
     var CSRFToken = $('#CSRFSession').val();
     var baseURL = $("#baseURL").val();
     $.ajax({
-      url: baseURL + "/framework",
+      url: baseURL + "framework",
       type: "delete",
       dataType: "json",
       data: {tableau: tableau, CSRFToken: CSRFToken},
       success: function(){
         msg=encodeURIComponent("Le tableau \""+nom+"\" a été supprimé avec succès");
-        window.location.href = baseURL + "/framework?msgType=success&msg="+msg;
+        window.location.href = baseURL + "framework?msgType=success&msg="+msg;
       },
       error: function(result){
         CJInfo("Une erreur est survenue lors de la suppression du tableau \""+nom+"\"\n"+result.responseText,"error");
@@ -206,7 +206,7 @@ function supprime_select(classe,page){
       data: "ids="+ids+"&CSRFToken="+CSRFToken,
       success: function(result){
         msg=encodeURIComponent("Les éléments sélectionnés ont été supprimés avec succès");
-        window.location.href= baseURL + "/framework?msgType=success&msg="+msg;
+        window.location.href= baseURL + "framework?msgType=success&msg="+msg;
       },
       error: function(){
         CJInfo("Une erreur est survenue lors de la suppression.","error");
@@ -218,16 +218,16 @@ function supprime_select(classe,page){
 function tableauxInfos(){
   var baseURL = $("#baseURL").val();
   $.ajax({
-    url: baseURL + "/framework/info",
+    url: baseURL + "framework/info",
     type: "post",
     dataType: "json",
     data: {id:$("#id").val(), nom:$("#nom").val(), nombre:$("#nombre").val(), site:$("#site").val(), CSRFToken:$("#CSRFSession").val()},
     success: function(result){
       var msg=encodeURIComponent("Les informations ont été modifiées avec succès");
       if($("#id").val()){
-        location.href= baseURL + "/framework/"+$("#id").val()+"?cfg-type=0&msg="+msg+"&msgType=success";
+        location.href= baseURL + "framework/"+$("#id").val()+"?cfg-type=0&msg="+msg+"&msgType=success";
       }else{
-        location.href= baseURL + "/framework/"+result+"?cfg-type=0&msg="+msg+"&msgType=success";
+        location.href= baseURL + "framework/"+result+"?cfg-type=0&msg="+msg+"&msgType=success";
       }
     },
     error: function(result){
@@ -260,17 +260,17 @@ $(function(){
 
       if(confirm("Etes vous sûr(e) de vouloir récupérer le tableau \""+name+"\" ?")){
         $.ajax({
-          url: baseURL + "/framework/restore_table",
+          url: baseURL + "framework/restore_table",
           type: "post",
           dataType: "json",
           data: {id: id, CSRFToken: CSRFToken},
           success: function(){
             var msg=encodeURIComponent("Le tableau \""+name+"\" a été récupéré avec succès");
-            location.href = baseURL + "/framework?cfg-type=0&msg="+msg+"&msgType=success";
+            location.href = baseURL + "framework?cfg-type=0&msg="+msg+"&msgType=success";
           },
           error: function(){
             var msg=encodeURIComponent("Une erreur est survenue lors de la récupération du tableau \""+name+"\".");
-            location.href = baseURL + "/framework?cfg-type=0&msg="+msg+"&msgType=error";
+            location.href = baseURL + "framework?cfg-type=0&msg="+msg+"&msgType=error";
           }
         });
       }

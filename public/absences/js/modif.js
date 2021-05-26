@@ -224,7 +224,7 @@ $(function() {
       var CSRFToken = $('#CSRFSession').val();
       var baseURL = $('#baseURL').val();
       var id=$("#absence-bouton-supprimer").attr("data-id");
-      document.location.href = baseURL + "/index.php?page=absences/delete.php&id="+id+"&CSRFToken="+CSRFToken;
+      document.location.href = baseURL + "index.php?page=absences/delete.php&id="+id+"&CSRFToken="+CSRFToken;
     }
   });
 
@@ -506,7 +506,7 @@ $(function() {
         var CSRFToken = $('#CSRFSession').val();
         var baseURL = $('#baseURL').val();
         var id=$("#absence-bouton-supprimer").attr("data-id");
-        document.location.href = baseURL + "/index.php?page=absences/delete.php&id="+id+"&rec=current&CSRFToken="+CSRFToken;
+        document.location.href = baseURL + "index.php?page=absences/delete.php&id="+id+"&rec=current&CSRFToken="+CSRFToken;
         $( this ).dialog( "close" );
       },
 
@@ -514,7 +514,7 @@ $(function() {
         var CSRFToken = $('#CSRFSession').val();
         var baseURL = $('#baseURL').val();
         var id=$("#absence-bouton-supprimer").attr("data-id");
-        document.location.href = baseURL + "/index.php?page=absences/delete.php&id="+id+"&rec=next&CSRFToken="+CSRFToken;
+        document.location.href = baseURL + "index.php?page=absences/delete.php&id="+id+"&rec=next&CSRFToken="+CSRFToken;
         $( this ).dialog( "close" );
       },
 
@@ -522,7 +522,7 @@ $(function() {
         var CSRFToken = $('#CSRFSession').val();
         var baseURL = $('#baseURL').val();
         var id=$("#absence-bouton-supprimer").attr("data-id");
-        document.location.href = baseURL + "/index.php?page=absences/delete.php&id="+id+"&rec=all&CSRFToken="+CSRFToken;
+        document.location.href = baseURL + "index.php?page=absences/delete.php&id="+id+"&rec=all&CSRFToken="+CSRFToken;
         $( this ).dialog( "close" );
       },
 
@@ -870,7 +870,7 @@ function verif_absences(ctrl_form){
   var baseURL = $('#baseURL').val();
 
   $.ajax({
-    url: baseURL + "/ajax/holiday-absence-control",
+    url: baseURL + "ajax/holiday-absence-control",
     type: "get",
     datatype: "json",
     data: {perso_ids: JSON.stringify(perso_ids), id: id, groupe: groupe, debut: debut, fin: fin, type:'absence'},
