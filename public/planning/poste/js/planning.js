@@ -364,7 +364,6 @@ $(function() {
     }
   });
 
-
   $(".cellDiv").contextmenu(function(){
     $(this).closest("td").attr("data-perso-id",$(this).attr("data-perso-id"));
     majPersoOrigine($(this).attr("data-perso-id"));
@@ -487,6 +486,10 @@ function initContextMenu(data) {
 }
 
 function fillContextMenuLevel2(data) {
+  if (data.menu2.agents === undefined) {
+    return;
+  }
+
   // Table for level two.
   menu2 = $('<table>').attr({
     cellspacing: '0',
@@ -499,7 +502,6 @@ function fillContextMenuLevel2(data) {
   $.each(data.menu2.agents, function(index, agent) {
     menu2.append(ContextMenu2agents(data, agent));
   });
-  //menu2.append(data.menu2.html);
 
   menu2.appendTo('#menudiv2');
 }
