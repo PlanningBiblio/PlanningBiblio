@@ -479,10 +479,10 @@ $(function() {
 // Fonctions JavaScript
 
 function initContextMenu(data) {
+  $("body").append("<div id='menudiv1'></div>");
+  $("body").append("<div id='menudiv2'></div>");
   fillContextMenuLevel1(data);
-  $('#menudiv1').show();
   fillContextMenuLevel2(data);
-  $('#menudiv2').show();
 }
 
 function fillContextMenuLevel2(data) {
@@ -967,8 +967,8 @@ function contextMenuTitle(data) {
 }
 
 function emptyContextMenu() {
-  $("#menudiv1").html('').hide();
-  $("#menudiv2").html('').hide();
+  $("#menudiv1").remove();
+  $("#menudiv2").remove();
 }
 
 /**

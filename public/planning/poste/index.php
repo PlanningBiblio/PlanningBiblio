@@ -754,6 +754,3 @@ EOD;
 ?>
 </div>
 </div>
-<!-- Div for contextual menu -->
-<div id='menudiv1'></div>
-<div id='menudiv2'></div>
