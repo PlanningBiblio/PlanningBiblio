@@ -132,7 +132,6 @@ class planning
         }
 
         $menudiv = array();
-        $menudiv['html'] = '';
         $menudiv['agents'] = array();
     
         // Calcul des heures de SP à effectuer pour tous les agents
