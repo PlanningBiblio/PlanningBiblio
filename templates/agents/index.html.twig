@@ -321,12 +321,12 @@
                   CJInfo("L'agent a bien été supprimé.","success");
                 }
                 popup_closed();
-                parent.window.location.reload(false);
+                parent.location.href=url('agent');
               },
               error: function(){
                 CJInfo("Une erreur est survenue lors de la suppression","error");
                 popup_closed();
-                parent.window.location.reload(false);
+                parent.location.href=url('agent');
               }
             });
           });
@@ -343,7 +343,7 @@
                 if (response == "Definitif"){
                   CJInfo("L'agent a été définitivement supprimé.","success"); 
                   popup_closed();
-                  parent.window.location.reload(false);
+                  parent.location.href=url('agent');
                 }
               },
               error: function(response){
@@ -353,7 +353,7 @@
                   CJInfo("Une erreur est survenue lors de la suppression","error");
                 }
                 popup_closed();
-                parent.window.location.reload(false);
+                parent.location.href=url('agent');
               }
             });
 
