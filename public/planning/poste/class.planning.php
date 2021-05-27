@@ -257,15 +257,14 @@ class planning
                     }
                 }
         
-                $title = htmlentities($elem['nom'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
-                $title.= ' '.htmlentities($elem['prenom'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+                $title = $elem['nom'] . ' ' . $elem['prenom'];
                 $title = in_array($elem['id'], $absences_non_validees) ? ' Absence ou congé non valid&eacute;' : $title;
 
                 $elem['name_title'] = $title;
         
-                $nom = htmlentities($elem['nom'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+                $nom = $elem['nom'];
                 if ($elem['prenom']) {
-                    $nom.=" ".substr(htmlentities($elem['prenom'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false), 0, 1).".";
+                    $nom.=" ".substr($elem['prenom'], 0, 1).".";
                 }
 
                 // Si sans repas, on ajoute (SR) à l'affichage
