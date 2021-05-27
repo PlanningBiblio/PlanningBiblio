@@ -163,17 +163,17 @@ planningbdatas=data/planningb_2104.sql.gz
 planningbsecret=$(head /dev/urandom|tr -dc "a-f0-9"|fold -w 32|head -n 1)
 
 # Create the database
-mysql -h $planningdbhost -u $dbroot --password=$dbpass -e "DROP USER IF EXISTS '$planningbdbuser'@'$planningdbuserhost';"
-mysql -h $planningdbhost -u $dbroot --password=$dbpass -e "DROP DATABASE IF EXISTS $planningbdbname;"
+mysql --defaults-file=/dev/null -h $planningdbhost -u $dbroot --password=$dbpass -e "DROP USER IF EXISTS '$planningbdbuser'@'$planningdbuserhost';"
+mysql --defaults-file=/dev/null -h $planningdbhost -u $dbroot --password=$dbpass -e "DROP DATABASE IF EXISTS $planningbdbname;"
 
-mysql -h $planningdbhost -u $dbroot --password=$dbpass -e "CREATE DATABASE IF NOT EXISTS $planningbdbname CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"
+mysql --defaults-file=/dev/null -h $planningdbhost -u $dbroot --password=$dbpass -e "CREATE DATABASE IF NOT EXISTS $planningbdbname CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"
 
-mysql -h $planningdbhost -u $dbroot --password=$dbpass -e "CREATE USER '$planningbdbuser'@'$planningdbuserhost' IDENTIFIED BY '$planningbdbpass';"
-mysql -h $planningdbhost -u $dbroot --password=$dbpass -e "GRANT ALL PRIVILEGES ON $planningbdbname.* TO '$planningbdbuser'@'$planningdbuserhost' IDENTIFIED BY '$planningbdbpass'"
+mysql --defaults-file=/dev/null -h $planningdbhost -u $dbroot --password=$dbpass -e "CREATE USER '$planningbdbuser'@'$planningdbuserhost' IDENTIFIED BY '$planningbdbpass';"
+mysql --defaults-file=/dev/null -h $planningdbhost -u $dbroot --password=$dbpass -e "GRANT ALL PRIVILEGES ON $planningbdbname.* TO '$planningbdbuser'@'$planningdbuserhost' IDENTIFIED BY '$planningbdbpass'"
 
-mysql -h $planningdbhost -u $dbroot --password=$dbpass -e "FLUSH PRIVILEGES"
+mysql --defaults-file=/dev/null -h $planningdbhost -u $dbroot --password=$dbpass -e "FLUSH PRIVILEGES"
 zcat $planningbdatas | mysql -h $planningdbhost -u $dbroot --password=$dbpass $planningbdbname
-mysql -h $planningdbhost -u $planningbdbuser --password=$planningbdbpass -e "UPDATE $planningbdbname.\`personnel\` SET \`nom\`='$planningbadminlastname', \`prenom\`='$planningbadminfirstname', \`mail\`='$planningbadminemail', \`password\`=MD5('$planningbadminpass') WHERE \`id\` = 1;"
+mysql --defaults-file=/dev/null -h $planningdbhost -u $planningbdbuser --password=$planningbdbpass -e "UPDATE $planningbdbname.\`personnel\` SET \`nom\`='$planningbadminlastname', \`prenom\`='$planningbadminfirstname', \`mail\`='$planningbadminemail', \`password\`=MD5('$planningbadminpass') WHERE \`id\` = 1;"
 
 if [[ $? -ne 0 ]]; then
     exit;
