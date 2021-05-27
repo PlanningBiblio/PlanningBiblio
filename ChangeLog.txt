@@ -2,6 +2,16 @@
 
 - Enhancements
 Add a fixture builder to simplify tests writing
+Symfonize absences index
+Use asset function for links and add an asset version strategy package
+Optimize calendars display
+Add more working hours cycles
+Add a fixture builder to simplify tests writing
+
+- Fixes
+ICS parser gets the right date when the TimeZone contains ":" (#438)
+broken link to import agents from LDAP (#437)
+
 
 *** Version 21.04.00       (2021-04-22)   ***
 - Enhancements

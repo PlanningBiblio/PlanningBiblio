@@ -2298,6 +2298,37 @@ if (version_compare($config['Version'], $v) === -1) {
     $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
 }
 
+$v="21.05.00.001";
+if (version_compare($config['Version'], $v) === -1) {
+
+    // MT 30755.
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeurs` = '0,1,2,3,4,5,6,7,8,9,10' WHERE `nom` = 'nb_semaine';";
+
+    for ($i = 1; $i <= 10; $i++) {
+        $sql[] = "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `ordre`) VALUES ('Multisites-site$i-cycles','enum','','Nombre de semaines pour la rotation des heures de présence (prendra la valeur de l\'option de configuration nb_semaine si non définie)','Multisites',',1,2,3,4,5,6,7,8,9,10','" . ($i + 1) . "7');";
+    }
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `commentaires` = 'Nombre de semaines pour la rotation des heures de présence. Les valeurs supérieures à 3 ne peuvent être utilisées que si le paramètre PlanningHebdo est coché' WHERE `nom` = 'nb_semaine';";
+
+    $sql[] = "ALTER TABLE `{$dbprefix}planning_hebdo` ADD COLUMN nb_semaine INT AFTER exception";
+
+    $sql[] = "UPDATE `{$dbprefix}planning_hebdo` SET nb_semaine=" . $GLOBALS['config']['nb_semaine'] . " WHERE nb_semaine IS NULL";
+
+    // Fix absences routes names.
+    $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `page`='/absence';";
+    $sql[] = "UPDATE `{$dbprefix}menu` SET `url` = '/absence/add' WHERE `url`='/absence';";
+
+    $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `page`='/absences/document';";
+    $sql[] = "DELETE FROM `{$dbprefix}acces` WHERE `page`='/absences/documents';";
+
+    // Symfoize absences index
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='absences/voir.php';";
+    $sql[]="DELETE FROM `{$dbprefix}acces` WHERE `page`='absences/index.php';";
+    $sql[]="UPDATE `{$dbprefix}menu` SET `url` = '/absence' WHERE `url`='absences/voir.php';";
+
+    $sql[] = "UPDATE `{$dbprefix}config` SET `valeur`='$v' WHERE `nom`='Version';";
+}
+
 //	Execution des requetes et affichage
 foreach ($sql as $elem) {
     $db=new db();
