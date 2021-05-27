@@ -37,6 +37,7 @@ $valide=filter_input(INPUT_GET, "valide", FILTER_SANITIZE_NUMBER_INT);
 $groupe=filter_input(INPUT_GET, "groupe", FILTER_SANITIZE_STRING);
 $rrule=filter_input(INPUT_GET, "rrule", FILTER_SANITIZE_STRING);
 $recurrenceModif=filter_input(INPUT_GET, "recurrence-modif", FILTER_SANITIZE_STRING);
+$baseurl = $config['URL'];
 
 // perso_ids est un tableau de 1 ou plusieurs ID d'agent. Complété même si l'absence ne concerne qu'une personne
 $perso_ids=$_GET['perso_ids'];
@@ -165,7 +166,7 @@ $modification = (
 // Si aucune modification, on retourne directement à la liste des absences
 if (!$modification) {
     $msg=urlencode("L'absence a été modifiée avec succès");
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success';</script>\n";
+    echo "<script type='text/JavaScript'>document.location.href='$baseurl/absence?msg=$msg&msgType=success';</script>\n";
 }
 
 // Sécurité
@@ -220,7 +221,7 @@ if ($config['Multisites-nombre']>1) {
     if (!$admin and !$acces) {
         echo "<h3>Modification de l'absence</h3>\n";
         echo "Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>\n";
-        echo "<a href='index.php?page=absences/voir.php'>Retour à la liste des absences</a><br/><br/>\n";
+        echo "<a href='$baseurl/absence'>Retour à la liste des absences</a><br/><br/>\n";
         include "include/footer.php";
         exit;
     }
@@ -672,4 +673,4 @@ if ($m->error) {
 
   
 $msg=urlencode("L'absence a été modifiée avec succès");
-echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
+echo "<script type='text/JavaScript'>document.location.href='$baseurl/absence?msg=$msg&msgType=success&msg2=$msg2&msg2Type=$msg2Type';</script>\n";

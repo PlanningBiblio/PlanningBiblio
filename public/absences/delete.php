@@ -40,6 +40,7 @@ $uid=$a->elements['uid'];
 // Droit 20x = modification de toutes les absences
 // Droit 6 = modification de ses propres absences
 $acces = false;
+$baseurl = $config['URL'];
 
 $adminN1 = false;
 $adminN2 = false;
@@ -82,7 +83,7 @@ if (!$acces) {
 
 if (!$acces) {
     $msg=urlencode("Suppression refusée");
-    echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=error';</script>\n";
+    echo "<script type='text/JavaScript'>document.location.href='$baseurl/absence?msg=$msg&msgType=error';</script>\n";
     exit;
 }
 
@@ -276,4 +277,4 @@ if (!empty($errors)) {
     $msg2Type="error";
 }
 
-echo "<script type='text/JavaScript'>document.location.href='index.php?page=absences/voir.php&msg=$msg&msgType=$msgType&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
+echo "<script type='text/JavaScript'>document.location.href='$baseurl/absence?msg=$msg&msgType=$msgType&msg2=$msg2&msg2Type=$msg2Type';</script>\n";
