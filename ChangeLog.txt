@@ -1,5 +1,9 @@
 *** Unreleased ***
 
+*** Version 20.10.09       (2021-05-28)   ***
+-Fixes
+[followup] Redirect on route /agent after agent deletion
+
 *** Version 20.10.08       (2021-05-28)   ***
 -Fixes
 Fix the reset ICS URL function (#430)
