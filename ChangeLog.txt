@@ -1,5 +1,17 @@
 *** Unreleased ***
 
+*** Version 20.10.08       (2021-05-28)   ***
+-Fixes
+Fix the reset ICS URL function (#430)
+Fix display of lines on frameworks configuration (#431)
+Prevent skills to be deleted if used by agents
+Make ICS parser gets the right date when the TimeZone contains ":" (#439)
+Redirect on route /agent after agent deletion
+Don't show SR on grey cells, don't show right arrow on grey cells
+
+- Enhancements
+Make installer ignore default /home/plb/.my.cnf
+
 *** Version 20.10.07       (2021-04-22)   ***
 -Fixes
 Position's groups and floors: restore deleting and prevent deleting used
