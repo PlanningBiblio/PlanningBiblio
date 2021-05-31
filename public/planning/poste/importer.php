@@ -147,6 +147,10 @@ if (!$model) {		// Etape 1 : Choix du modèle à importer
         $values=array();
         $absents=array();
 
+        $db = new db();
+        $db->CSRFToken = $CSRFToken;
+        $db->delete("pl_poste_tab_affect", array("date"=>$elem, "site"=>$site));
+
         // Importation du tableau
         // S'il s'agit d'un modèle pour une semaine
         if ($week) {
@@ -158,33 +162,30 @@ if (!$model) {		// Etape 1 : Choix du modèle à importer
             $db->select2("pl_poste_modeles_tab", "*", array("model_id"=>$model, "site"=>$site));
         }
 
-        $model = $db->result[0]['model_id'];
-        $tableau=$db->result[0]['tableau'];
-        $db=new db();
-        $db->CSRFToken = $CSRFToken;
-        $db->delete("pl_poste_tab_affect", array("date"=>$elem, "site"=>$site));
-        $db=new db();
-        $db->CSRFToken = $CSRFToken;
-        $db->insert("pl_poste_tab_affect", array("date"=>$elem ,"tableau"=>$tableau ,"site"=>$site ));
-
-
-        // N'importe pas les agents placés sur des postes supprimés (si tableau modifié)
-        $postes = array();
-        $db = new db();
-        $db->select2('pl_poste_lignes', 'poste', array('type'=>'poste', 'numero'=>$tableau));
         if ($db->result) {
-            foreach ($db->result as $elem2) {
-                $postes[] = $elem2['poste'];
+            $tableau=$db->result[0]['tableau'];
+            $db=new db();
+            $db->CSRFToken = $CSRFToken;
+            $db->insert("pl_poste_tab_affect", array("date"=>$elem ,"tableau"=>$tableau ,"site"=>$site ));
+
+            // N'importe pas les agents placés sur des postes supprimés (si tableau modifié)
+            $postes = array();
+            $db = new db();
+            $db->select2('pl_poste_lignes', 'poste', array('type'=>'poste', 'numero'=>$tableau));
+            if ($db->result) {
+                foreach ($db->result as $elem2) {
+                    $postes[] = $elem2['poste'];
+                }
             }
-        }
 
-        // N'importe pas les agents placés sur des horaires supprimés (si tableau modifié)
-        $horaires = array();
-        $db = new db();
-        $db->select2('pl_poste_horaires', array('debut','fin'), array('numero'=>$tableau));
-        if ($db->result) {
-            foreach ($db->result as $elem2) {
-                $horaires[] = array('debut'=>$elem2['debut'], 'fin'=>$elem2['fin']);
+            // N'importe pas les agents placés sur des horaires supprimés (si tableau modifié)
+            $horaires = array();
+            $db = new db();
+            $db->select2('pl_poste_horaires', array('debut','fin'), array('numero'=>$tableau));
+            if ($db->result) {
+                foreach ($db->result as $elem2) {
+                    $horaires[] = array('debut'=>$elem2['debut'], 'fin'=>$elem2['fin']);
+                }
             }
         }
 
