@@ -223,6 +223,10 @@ class HolidayHelper extends BaseHelper
             $tmp = array();
 
             foreach ($agents as $elem) {
+                if ($elem['id'] == $_SESSION['login_id']) {
+                    $tmp[$elem['id']] = $elem;
+                    continue;
+                }
                 if (is_array($elem['sites'])) {
                     foreach ($elem['sites'] as $site_agent) {
                         if (in_array((400+$site_agent), $access_rights) or in_array((600+$site_agent), $access_rights)) {
