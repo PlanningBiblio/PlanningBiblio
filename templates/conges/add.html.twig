@@ -31,7 +31,7 @@
             <tr>
               <td style='width:350px;'> Nom, prénom : </td>
               <td>
-                {% if db_perso | length > 0 %}
+                {% if db_perso | length > 1 %}
                   <select name='perso_id' id='perso_id' style='width:20%;'>
                     <option value='0' ></option>
                     {% for a in db_perso %}
