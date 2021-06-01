@@ -529,17 +529,8 @@ class HolidayController extends BaseController
         // NOTE : Ici, pas de différenciation entre les droits niveau 1 et niveau 2
         // NOTE : Les agents ayant les droits niveau 1 ou niveau 2 sont admin ($admin, droits 40x et 60x)
         // TODO : différencier les niveau 1 et 2 si demandé par les utilisateurs du plugin
-
-        $admin = false;
-        $adminN2 = false;
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-            if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
-                $admin = true;
-            }
-            if (in_array((600+$i), $droits)) {
-                $adminN2 = true;
-            }
-        }
+        $c = new \conges();
+        list($admin, $adminN2) = $c->roles($perso_id, true);
 
         // Si pas de droits de gestion des congés, on force $perso_id = son propre ID
         if (!$admin) {
@@ -622,11 +613,9 @@ class HolidayController extends BaseController
 
         // Affichage du formulaire
 
-        if ($admin) {
-            $helper = new HolidayHelper();
-            $agents = $helper->getManagedAgent($adminN2);
-            $this->templateParams(array('db_perso' => $agents));
-        }
+        $helper = new HolidayHelper();
+        $agents = $helper->getManagedAgent($adminN2);
+        $this->templateParams(array('db_perso' => $agents));
 
         $date = date("Y-m-d");
         $db = new \db();
