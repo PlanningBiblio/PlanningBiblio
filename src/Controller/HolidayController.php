@@ -426,11 +426,10 @@ class HolidayController extends BaseController
 
         $this->templateParams($templateParams);
 
-        if ($adminN1 or $adminN2) {
-            $helper = new HolidayHelper();
-            $agents = $helper->getManagedAgent($adminN2);
-            $this->templateParams(array('db_perso' => $agents));
-        }
+        $helper = new HolidayHelper();
+        $agents = $helper->getManagedAgent($adminN2);
+        $this->templateParams(array('db_perso' => $agents));
+
         $saisie_par = '';
         if ($data['saisie_par'] and $data['saisie_par'] != $data['perso_id']) {
             $saisie_par = nom($data['saisie_par']);
