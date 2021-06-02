@@ -173,7 +173,7 @@ class AuthorizationsController extends BaseController
             and !isset($_POST['login'])
             and !isset($_POST['acces'])) {
 
-            $redirURL = $_GET['redirURL'];
+            $redirURL = $_GET['redirURL'] ?? '';
             $_SESSION['oups']['Auth-Mode']="CAS";
 
             // authCAS function redirect user to the CAS server.
@@ -185,7 +185,7 @@ class AuthorizationsController extends BaseController
             if ($login) {
 
                 // Redirection vers le planning
-                header("Location: {$this->config['URL']}/$redirURL");
+                header('Location: ' . $this->config('URL') . "/$redirURL");
                 exit;
             }
         }

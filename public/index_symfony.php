@@ -27,6 +27,13 @@ if (empty($_SESSION['login_id']) && $path != '/login' && $path != 'logout') {
     exit();
 }
 
+// Prevent user accessing to login page
+// if he is already authenticated.
+if (!empty($_SESSION['login_id']) && $path == '/login') {
+    header("Location: {$config['URL']}");
+    exit();
+}
+
 
 if ($trustedProxies = $_SERVER['TRUSTED_PROXIES'] ?? $_ENV['TRUSTED_PROXIES'] ?? false) {
     Request::setTrustedProxies(explode(',', $trustedProxies), Request::HEADER_X_FORWARDED_ALL ^ Request::HEADER_X_FORWARDED_HOST);
