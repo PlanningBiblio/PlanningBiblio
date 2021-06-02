@@ -74,6 +74,7 @@ if ($erreur) {
 } else {
     echo "<h3>L'installation est terminée.</h3>\n";
     echo "Veuillez verifier l'installation.<br/>Si tout fonctionne, supprimez le dossier \"setup\".<br/>\n";
-    echo "<p><a href='../authentification.php?newlogin=admin' class='ui-button'>Se connecter au planning</a><br/><br/></p>\n";
+    // FIXME At this point, $config['URL'] is not set properly.
+    echo "<p><a href='{$config['URL']}/login?newlogin=admin' class='ui-button'>Se connecter au planning</a><br/><br/></p>\n";
 }
 include "footer.php";

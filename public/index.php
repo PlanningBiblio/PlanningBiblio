@@ -35,13 +35,25 @@ if (empty($_SESSION['login_id'])) {
         echo "<div style='margin:60px 30px;'>\n";
         echo "<center>\n";
         echo "Votre session a expiré.<br/><br/>\n";
-        echo "<a href='authentification.php' target='_top'>Cliquez ici pour vous reconnecter</a>\n";
+        echo "<a href='{$config['URL']}/login' target='_top'>Cliquez ici pour vous reconnecter</a>\n";
         echo "<center></div>\n";
         exit;
     } else {
         // Session perdue, on affiche la page d'authentification
-        $redirURL="index.php?".$_SERVER['QUERY_STRING'];
-        include_once(__DIR__.'/authentification.php');
+        $noCAS = false;
+        if (isset($_GET['noCAS'])) {
+            $noCAS = true;
+            unset($_GET['noCAS']);
+        }
+
+        $login_params = array();
+        $login_params['redirURL'] = 'index.php?' . http_build_query($_GET);
+        if ($noCAS) {
+            $login_params['noCAS'] = '';
+        }
+        // FIXME Here, $config['URL'] should not be set yet.
+        $login_url = "{$config['URL']}/login?" . http_build_query($login_params);
+        header("Location: $login_url");
         exit;
     }
 }

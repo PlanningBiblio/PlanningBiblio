@@ -1,0 +1,105 @@
+{# login.html.twig #}
+<html>
+  <head>
+    <title>Planning</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type='text/JavaScript' src='{{ asset("js/jquery-1.11.1.min.js") }}'></script>
+    <script type='text/JavaScript' src='{{ asset("js/jquery-ui-1.11.2/jquery-ui.js") }}'></script>
+    <script type='text/JavaScript' src='{{ asset("js/carhartl-jquery-cookie-3caf209/jquery.cookie.js") }}'></script>
+    <script type='text/JavaScript' src='{{ asset("js/DataTables/datatables.min.js") }}'></script>
+    <script type='text/JavaScript' src='{{ asset("js/CJScript.js") }}'></script>
+    <script type='text/JavaScript' src='{{ asset("js/datePickerFr.js") }}'></script>
+    <script type='text/JavaScript' src='{{ asset("js/dataTables.sort.js") }}'></script>
+    <script type='text/JavaScript' src='{{ asset("js/script.js") }}'></script>
+    {% block specificjs %}{% endblock %}
+    <link rel='StyleSheet' href='{{ asset("js/DataTables/datatables.min.css") }}' type='text/css' media='all'/>
+
+
+    <link rel='StyleSheet' href='{{ asset("themes/" ~ themeJQuery ~ "/jquery-ui.min.css") }}' type='text/css' media='all'/>
+    <link rel='StyleSheet' href='{{ asset("themes/default/default.css") }}' type='text/css' media='all'/>
+    <link rel='StyleSheet' href='{{ asset("themes/default/print.css") }}' type='text/css' media='print'/>
+    {% if theme != 'default' %}
+      <link rel='StyleSheet' href='{{ asset("themes/" ~ theme ~ "/" ~ theme ~ ".css") }}' type='text/css' media='all'/>
+    {% endif %}
+  </head>
+
+  <body>
+    <div id='content-auth'>
+      <div id='auth'>
+        <center>
+          <div id='auth-logo'></div>
+        </center>
+
+        <h1 id='title'>{{ config('Affichage-titre') }}</h1>
+        <h2 id='h2-planning-authentification'>Planning - Authentification</h2>
+        <h2 id='h2-authentification'>Authentification</h2>
+
+        {% if error is defined %}
+          <div style='text-align:center'>
+            <br/><br/>
+            {% if error == 'unknown_user' %}
+              <h3 style='color:red'>L'utilisateur n'existe pas dans le planning</h3>
+              <br/>
+              <a href='{{ asset("login") }}{{ auth_args }}'>Re-essayer</a>
+            {% elseif error == 'login_failed' %}
+              <h3 style='color:red'>Erreur lors de l'authentification</h3>
+              <br/>
+              <a href='{{ asset("login") }}{{ auth_args }}'>Re-essayer</a>
+            {% endif %}
+          </div>
+        {% else %}
+          <form name='form' method='post' action='{{ asset("login") }}'>
+            <input type='hidden' name='auth' value='' />
+            <input type='hidden' name='redirURL' value="{{ redirect_url }}" />
+            <table style='width:100%;'>
+              <tr>
+                <td style='text-align:right;width:48%;'>Utilisateur : </td>
+                <td>
+                  <input type='text' name='login' value="{{ new_login }}" />
+                </td>
+              </tr>
+
+              <tr>
+                <td align='right'>Mot de passe : </td>
+                <td>
+                  <input type='password' name='password' />
+                </td>
+              </tr>
+
+              <tr>
+                <td colspan='2' align='center'><br/>
+                  <input type='submit' class='ui-button' value='Valider' />
+                </td>
+              </tr>
+
+              {% if demo_mode %}
+                <tr>
+                  <td colspan='2' align='center'>
+                    <p>Pour les essais, vous pouvez utiliser les identifiants suivants :<br/>
+                    <br/>Utilisateur : admin<br/>Mot de passe : {{ config('demo-password') }}<br/><br/>
+                    Attention : cette plateforme de tests est réinitialisée tous les dimanches.</p>
+                  </td>
+                </tr>
+              {% endif %}
+
+              {% if config("Auth-Anonyme") %}
+                <tr>
+                  <td colspan="2" align="center"><br/>
+                    <a href="/index.php?login=anonyme">Accès anonyme</a>
+                  </td>
+                </tr>
+              {% endif %}
+            </table>
+
+            <input type="hidden" name="width" />
+          </form>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class='footer'>
+      Planning Biblio ({{ displayed_version }}) -
+      <a href='http://www.planningbiblio.fr' target='_blank' style='font-size:9pt;'>www.planningbiblio.fr</a>
+    </div>
+  </body>
+</html>

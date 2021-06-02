@@ -42,7 +42,9 @@ class BaseController extends Controller
             return $this->templateParams;
         }
 
-        $this->templateParams = array_merge($params, $this->templateParams);
+        foreach ($params as $key => $value) {
+            $this->templateParams[$key] = $value;
+        }
 
         return $this;
     }

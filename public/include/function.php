@@ -768,11 +768,6 @@ function createURL($page=null)
         $url = substr($url, 0, $pos);
     }
 
-    if (strstr($url, '/authentification.php')) {
-        $pos = strpos($url, '/authentification.php');
-        $url = substr($url, 0, $pos);
-    }
-
     if ($page) {
         $url .= "/index.php?page=".$page;
     }

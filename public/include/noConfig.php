@@ -13,7 +13,7 @@ Dernière modification : 8 avril 2015
 Description :
 Affiche une page renvoyant vers le fichier setup/index.php si le fichier de configuration est absent
 
-Page appelée (include) par les fichiers authentification.php et index.php si le fichier include/config.php est absent
+Page appelée (include) par le fichier et index.php si le fichier include/config.php est absent
 */
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte

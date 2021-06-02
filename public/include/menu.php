@@ -90,7 +90,7 @@ echo "<td align='right'  ><font  class='noprint' style='font-size:19px'>\n";
 echo $_SESSION['login_prenom']." ".$_SESSION['login_nom'];
 echo "</font></td>\n";
 echo "<td id='logout_img'>\n";
-echo "<a href='authentification.php' title='Déconnexion' >\n";
+echo "<a href='{$config['URL']}/logout' title='Déconnexion' >\n";
 echo "<span class='pl-icon pl-icon-logout'></span></a></td>\n";
 echo "</tr>\n";
 echo "<tr><td colspan='2' style='text-align:right;'>\n";
@@ -105,7 +105,7 @@ elseif ($_SESSION['oups']['Auth-Mode']=="SQL") {
     echo "<a href='index.php?page=personnel/password.php' class='myAccountLink'>\n";
     echo "Changer de mot de passe\n";
 }
-echo "<div id='logout_text'><a href='authentification.php' >Déconnexion</a></div>\n";
+echo "<div id='logout_text'><a href='{$config['URL']}/logout' >Déconnexion</a></div>\n";
 ?>
 </td>
 </tr>
