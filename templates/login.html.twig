@@ -8,8 +8,6 @@
     <script type='text/JavaScript' src='{{ asset("js/carhartl-jquery-cookie-3caf209/jquery.cookie.js") }}'></script>
     <script type='text/JavaScript' src='{{ asset("js/DataTables/datatables.min.js") }}'></script>
     <script type='text/JavaScript' src='{{ asset("js/CJScript.js") }}'></script>
-    <script type='text/JavaScript' src='{{ asset("js/datePickerFr.js") }}'></script>
-    <script type='text/JavaScript' src='{{ asset("js/dataTables.sort.js") }}'></script>
     <script type='text/JavaScript' src='{{ asset("js/script.js") }}'></script>
     {% block specificjs %}{% endblock %}
     <link rel='StyleSheet' href='{{ asset("js/DataTables/datatables.min.css") }}' type='text/css' media='all'/>
@@ -30,11 +28,13 @@
           <div id='auth-logo'></div>
         </center>
 
-        <h1 id='title'>{{ config('Affichage-titre') }}</h1>
-        <h2 id='h2-planning-authentification'>Planning - Authentification</h2>
-        <h2 id='h2-authentification'>Authentification</h2>
+        {% if error is not defined and error != 'cas_unknown_user' %}
+          <h1 id='title'>{{ config('Affichage-titre') }}</h1>
+          <h2 id='h2-planning-authentification'>Planning - Authentification</h2>
+          <h2 id='h2-authentification'>Authentification</h2>
+        {% endif %}
 
-        {% if error is defined %}
+        {% if error is defined and error != '' %}
           <div style='text-align:center'>
             <br/><br/>
             {% if error == 'unknown_user' %}
@@ -45,6 +45,15 @@
               <h3 style='color:red'>Erreur lors de l'authentification</h3>
               <br/>
               <a href='{{ asset("login") }}{{ auth_args }}'>Re-essayer</a>
+            {% elseif error == 'cas_unknown_user' %}
+            <div id='JSInformation' style="max-width: 40%; margin-left: auto; margin-right: auto;">
+              Vous avez été correctement identifié(e) mais vous n'êtes pas autorisé(e) à 
+              utiliser cette application.<br/>
+              <b>Veuillez fermer votre navigateur et recommencer avec un autre identifiant</b>.
+            </div>
+            <script type='text/JavaScript'>
+              errorHighlight($("#JSInformation"),"error");
+            </script>
             {% endif %}
           </div>
         {% else %}

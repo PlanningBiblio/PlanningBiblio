@@ -18,7 +18,8 @@ class AuthorizationsController extends BaseController
      */
     public function login(Request $request)
     {
-        $this->redirectCAS();
+
+        $error = $this->redirectCAS();
 
         if (loginFailedWait() > 0) {
             return $this->redirectToRoute('access-denied');
@@ -32,6 +33,7 @@ class AuthorizationsController extends BaseController
             'redirect_url' => $redirect_url,
             'new_login' => $new_login,
             'demo_mode' => empty($this->config('demo')) ? 0 : 1,
+            'error' => $error,
         ));
 
         return $this->output('login.html.twig');
@@ -181,13 +183,39 @@ class AuthorizationsController extends BaseController
             // If yes, it create the session and log the action.
             $login = authCAS();
 
-            // If login succes, redirect to requested page
-            if ($login) {
+            // Vérifions si l'utilisateur existe dans le planning
+            $db = new \db();
+            $db->select2("personnel", array("id","nom","prenom"), array("login"=>$login, "supprime"=>"0"));
 
-                // Redirection vers le planning
-                header('Location: ' . $this->config('URL') . "/$redirURL");
-                exit;
+            // Si l'utilisateur n'existe pas dans le planning ou s'il a été supprimé, on affiche un message disant qu'il n'est pas autorisé à utiliser cette application
+            if (!$db->result) {
+                // Redirect to error page
+                return 'cas_unknown_user';
             }
+
+            // Si l'utilisateur existe, on continue : on ouvre la session et on log les infos nécessaires
+            // Création de la session
+            $_SESSION['login_id']=$db->result[0]['id'];
+            $_SESSION['login_nom']=$db->result[0]['nom'];
+            $_SESSION['login_prenom']=$db->result[0]['prenom'];
+
+            // Génération d'un CSRF Token
+            $CSRFToken = CSRFToken();
+            $_SESSION['oups']['CSRFToken'] = $CSRFToken;
+
+            // Log le login et l'IP du client en cas de succès, pour information
+            loginSuccess($login, $CSRFToken);
+
+            // Mise à jour du champ last_login
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->update("personnel", array("last_login"=>date("Y-m-d H:i:s")), array("id"=>$_SESSION['login_id']));
+
+            // Redirection vers le planning
+            header('Location: ' . $this->config('URL') . "/$redirURL");
+            exit;
         }
+
+        return '';
     }
 }
