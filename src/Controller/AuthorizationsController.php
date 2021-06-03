@@ -183,35 +183,36 @@ class AuthorizationsController extends BaseController
             // If yes, it create the session and log the action.
             $login = authCAS();
 
-            // Vérifions si l'utilisateur existe dans le planning
+            // Check if user login exists in database.
             $db = new \db();
             $db->select2("personnel", array("id","nom","prenom"), array("login"=>$login, "supprime"=>"0"));
 
-            // Si l'utilisateur n'existe pas dans le planning ou s'il a été supprimé, on affiche un message disant qu'il n'est pas autorisé à utiliser cette application
+            // If user's login doesn't exist,
+            // show an unauthorized message
             if (!$db->result) {
                 // Redirect to error page
                 return 'cas_unknown_user';
             }
 
-            // Si l'utilisateur existe, on continue : on ouvre la session et on log les infos nécessaires
             // Création de la session
+            // If login exists, create session.
             $_SESSION['login_id']=$db->result[0]['id'];
             $_SESSION['login_nom']=$db->result[0]['nom'];
             $_SESSION['login_prenom']=$db->result[0]['prenom'];
 
-            // Génération d'un CSRF Token
+            // Create CSRF Token
             $CSRFToken = CSRFToken();
             $_SESSION['oups']['CSRFToken'] = $CSRFToken;
 
-            // Log le login et l'IP du client en cas de succès, pour information
+            // Log cient's login and IP.
             loginSuccess($login, $CSRFToken);
 
-            // Mise à jour du champ last_login
+            // Update last_login field.
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
             $db->update("personnel", array("last_login"=>date("Y-m-d H:i:s")), array("id"=>$_SESSION['login_id']));
 
-            // Redirection vers le planning
+            // Redirect
             header('Location: ' . $this->config('URL') . "/$redirURL");
             exit;
         }
