@@ -185,7 +185,12 @@ EOD;
 <div id='motDePasse' style='margin-left:80px;display:none;'>
 <?php
 // Mot de passe modifiable seulement si authentification SQL
-if ($_SESSION['oups']['Auth-Mode']=="SQL") {
+if ($config['demo']) {
+    echo "<h3>Modification du mot de passe</h3>";
+    echo "Vous utilisez une version de démonstration.<br/>";
+    echo "Votre mot de passe ne peut pas être modifié.<br/>";
+}
+else if ($_SESSION['oups']['Auth-Mode']=="SQL") {
     include "personnel/password.php";
 } else {
     echo "<h3>Modification du mot de passe</h3>\n";
