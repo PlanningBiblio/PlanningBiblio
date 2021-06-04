@@ -450,7 +450,7 @@ class absences
                     if (is_numeric($h)) {
                         $h=$h+$h1;
                     } else {
-                        $h="N/A";
+                        $h=0;
                     }
 
                     $heures[$perso_id]=$h;
@@ -630,9 +630,9 @@ class absences
             if (!$GLOBALS['config']['PlanningHebdo']) {
                 $this->error=true;
                 $this->message="Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
-                $this->minutes="N/A";
-                $this->heures="N/A";
-                $this->heures2="N/A";
+                $this->minutes=0;
+                $this->heures=0;
+                $this->heures2=0;
                 return false;
             }
 
@@ -655,9 +655,9 @@ class absences
                 if (empty($edt)) {
                     $this->error=true;
                     $this->message="Impossible de déterminer le nombre d'heures correspondant aux congés demandés.";
-                    $this->minutes="N/A";
-                    $this->heures="N/A";
-                    $this->heures2="N/A";
+                    $this->minutes=0;
+                    $this->heures=0;
+                    $this->heures2=0;
                     return false;
                 }
 
