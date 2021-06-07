@@ -1,0 +1,25 @@
+{# planning/poste/comments.html.twig #}
+
+<div id='pl-notes-div1' {{ comments.notesDisplay }} >
+  {{ comments.notes | raw_black_listed }}
+</div>
+
+<div id='pl-notes-div1-validation'>
+  {{ comments.notesSuppression }}{{comments.notesValidation }}
+</div>
+
+{% if autorisationNotes %}
+  <div id='pl-notes-div2' class='noprint'>
+    <input type='button' class='ui-button ui-button-type2 noprint' id='pl-notes-button' value='Ajouter un commentaire' />
+  </div>
+
+  <div id="pl-notes-form" title="Commentaire" class='noprint' style='display:none;'>
+    <p class="validateTips" id='pl-notes-tips'>
+      Vous pouvez écrire ici un commentaire qui sera affiché en bas du planning.
+    </p>
+
+    <form>
+      <textarea id='pl-notes-text'>{{ comments.notesTextarea | raw_black_listed }}</textarea>
+    </form>
+  </div>
+{% endif %}

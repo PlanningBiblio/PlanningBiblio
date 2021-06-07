@@ -73,6 +73,11 @@ if (empty($_SESSION['login_id'])) {
     }
 }
 
+if (!$page && $path == '/') {
+    header("Location: {$config['URL']}/index");
+    exit();
+}
+
 include(__DIR__.'/include/header.php');
 if ($show_menu) {
     include(__DIR__.'/include/menu.php');
