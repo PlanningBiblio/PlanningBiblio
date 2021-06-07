@@ -61,7 +61,7 @@ class menu
             for ($i=0;$i<$GLOBALS['config']['Multisites-nombre'];$i++) {
                 $j=$i+1;
                 $menu[30][$j]['titre']=$GLOBALS['config']["Multisites-site".$j];
-                $menu[30][$j]['url']="index.php?page=planning/poste/index.php&site=$j";
+                $menu[30][$j]['url']="index?site=$j";
             }
         }
 

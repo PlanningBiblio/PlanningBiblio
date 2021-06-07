@@ -9,7 +9,7 @@ Création : 2 juin 2014
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
-Fichier regroupant les scripts JS nécessaires à la page planning/poste/index.php (affichage et modification des plannings)
+Fichier regroupant les scripts JS nécessaires à la page /index (affichage et modification des plannings)
 Fichier intégré par le fichier include/header.php avec la fonction getJSFiles.
 */
 

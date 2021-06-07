@@ -21,6 +21,8 @@ class BaseController extends Controller
 
     private $logger;
 
+    protected $permissions;
+
     public function __construct(RequestStack $requestStack, LoggerInterface $logger)
     {
         $request = $requestStack->getCurrentRequest();
@@ -34,6 +36,9 @@ class BaseController extends Controller
         $this->config = $GLOBALS['config'];
 
         $this->logger = $logger;
+
+        $this->permissions = $GLOBALS['droits'];
+
     }
 
     protected function templateParams( array $params = array() )

@@ -35,14 +35,16 @@
 
         <table class='noprint' id='tab_jours'>
           <tr valign='top'>
-            <td><a href='index.php?date={{ dates[0] }}'  class="{{ date == dates[0] and not week_view ? 'menuRed' : 'menu' }}" >Lundi</a> / </td>
-            <td><a href='index.php?date={{ dates[1] }}'  class="{{ date == dates[1] and not week_view ? 'menuRed' : 'menu' }}" >Mardi</a> / </td>
-            <td><a href='index.php?date={{ dates[2] }}'  class="{{ date == dates[2] and not week_view ? 'menuRed' : 'menu' }}" >Mercredi</a> / </td>
-            <td><a href='index.php?date={{ dates[3] }}'  class="{{ date == dates[3] and not week_view ? 'menuRed' : 'menu' }}" >Jeudi</a> / </td>
-            <td><a href='index.php?date={{ dates[4] }}'  class="{{ date == dates[4] and not week_view ? 'menuRed' : 'menu' }}" >Vendredi</a> / </td>
-            <td><a href='index.php?date={{ dates[5] }}'  class="{{ date == dates[5] and not week_view ? 'menuRed' : 'menu' }}" >Samedi</a></td>
+            <!-- We can't use asset function for the moment
+            because this menu is used in non-symfonyzed page (week view).-->
+            <td><a href='{{ base_url }}/index?date={{ dates[0] }}'  class="{{ date == dates[0] and not week_view ? 'menuRed' : 'menu' }}" >Lundi</a> / </td>
+            <td><a href='{{ base_url }}/index?date={{ dates[1] }}'  class="{{ date == dates[1] and not week_view ? 'menuRed' : 'menu' }}" >Mardi</a> / </td>
+            <td><a href='{{ base_url }}/index?date={{ dates[2] }}'  class="{{ date == dates[2] and not week_view ? 'menuRed' : 'menu' }}" >Mercredi</a> / </td>
+            <td><a href='{{ base_url }}/index?date={{ dates[3] }}'  class="{{ date == dates[3] and not week_view ? 'menuRed' : 'menu' }}" >Jeudi</a> / </td>
+            <td><a href='{{ base_url }}/index?date={{ dates[4] }}'  class="{{ date == dates[4] and not week_view ? 'menuRed' : 'menu' }}" >Vendredi</a> / </td>
+            <td><a href='{{ base_url }}/index?date={{ dates[5] }}'  class="{{ date == dates[5] and not week_view ? 'menuRed' : 'menu' }}" >Samedi</a></td>
             {% if config('Dimanche') %}
-            <td align='center'> / <a href='index.php?date={{ dates[6] }}'  class="{{ date == dates[6] ? 'menuRed' : 'menu' }}" >Dimanche</a> </td>
+            <td align='center'> / <a href='{{ base_url }}/index?date={{ dates[6] }}'  class="{{ date == dates[6] ? 'menuRed' : 'menu' }}" >Dimanche</a> </td>
             {% endif %}
             <td> / <a href='index.php?page=planning/poste/semaine.php' class="{{ week_view ?'menuRed' : 'menu' }}" >Semaine</a></td>
           </tr>
@@ -68,7 +70,7 @@
             <span class='pl-icon pl-icon-printer'></span>
           </a>
 
-          <a href='index.php' title='Actualiser'>
+          <a href='{{ base_url }}/index' title='Actualiser'>
             <span class='pl-icon pl-icon-refresh'>
           </a>
 
@@ -118,7 +120,7 @@
               </a>
             {% endif %}
 
-            <a href='index.php?date={{ date }}&amp;site={{ site }}' title='Actualiser'>
+            <a href='{{ base_url }}/index?date={{ date }}&amp;site={{ site }}' title='Actualiser'>
               <span class='pl-icon pl-icon-refresh'>
             </a>
           </div>

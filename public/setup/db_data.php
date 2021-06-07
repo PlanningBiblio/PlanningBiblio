@@ -17,7 +17,6 @@ fichier setup/createdb.php
 
 // Insertion des droits d'accés
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Planning - Index', 99, '', 'planning/index.php');";
-$sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Planning par poste - Index', 99, '', 'planning/poste/index.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Planning par poste - Semaine', 99, '', 'planning/poste/semaine.php');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Aide', 99, '', '/help');";
 $sql[]="INSERT INTO `{$dbprefix}acces` (`nom`,`groupe_id`,`groupe`,`page`) VALUES ('Personnel - Password', 100, '', 'personnel/password.php');";
@@ -402,7 +401,7 @@ $sql[]="INSERT INTO `{$dbprefix}menu` (`niveau1`,`niveau2`,`titre`,`url`,`condit
   ('15','30','Informations','conges/infos.php','config=Conges-Enable'),
   ('15','40','Cr&eacute;dits','conges/credits.php','config=Conges-Enable'),
   ('20','0','Agenda','/calendar',NULL),
-  ('30','0','Planning','planning/poste/index.php',NULL),
+  ('30','0','Planning','/index',NULL),
   ('30','90','Agents volants','planning/volants/index.php','config=Planning-agents-volants'),
   ('40','0','Statistiques','/statistics',NULL),
   ('40','10','Feuille de temps','/statistics/time',NULL),

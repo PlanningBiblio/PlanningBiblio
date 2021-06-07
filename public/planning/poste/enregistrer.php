@@ -8,7 +8,7 @@ Voir les fichiers README.md et LICENSE
 @author Jérôme Combes <jerome@planningbiblio.fr>
 
 Description :
-Permet d'enregistrer un modèle de planning à partir de la page affichant le planning (planning/poste/index.php),
+Permet d'enregistrer un modèle de planning à partir de la page affichant le planning (/index),
 icône disquette.
 Etape 1 : Affiche un formulaire permettant de saisir un nom, de choisir l'enregistement du jour ou de la semaine.
 Etape 2 : Vérification de l'existance du nom : si le nom existe : confirmation avant remplacement

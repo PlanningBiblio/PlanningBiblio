@@ -3,9 +3,8 @@
 {% if frameworks %}
   <div id='choix_tableaux'>
     <b>Choisissez un tableau pour le {{ date | datefull | raw }}</b><br/>
-    <form name='form' action='index.php' method='get'>
+    <form name='form' action='{{ asset("index") }}' method='get'>
       <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
-      <input type='hidden' name='page' value='planning/poste/index.php' />
       <input type='hidden' name='site' value='{{ site }}' />
 
       <table>
@@ -31,9 +30,8 @@
 
     {% if no_week_planning and groups %}
       <br/><br/><b>OU un groupe de tableaux pour la semaine {{ week }}</b><br/>
-      <form name='form' action='index.php' method='get'>
+      <form name='form' action='{{ asset("index") }}' method='get'>
         <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
-        <input type='hidden' name='page' value='planning/poste/index.php' />
         <input type='hidden' name='site' value='{{ site }}' />
 
         <table>
