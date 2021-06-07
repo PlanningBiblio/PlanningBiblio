@@ -13,7 +13,7 @@ Dernière modification : 21 avril 2017
 Description :
 Permet de récupérer les préférences sur les tableaux cachés
 
-Cette page est appelée en Ajax lors de l'affichage du planning (planning/poste/index.php)
+Cette page est appelée en Ajax lors de l'affichage du planning (/index)
 */
 
 ini_set("display_errors", 0);

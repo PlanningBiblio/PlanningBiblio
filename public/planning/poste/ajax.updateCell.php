@@ -9,7 +9,7 @@ Voir les fichiers README.md et LICENSE
 
 Description :
 Permet la mise à jour en arrière plan de la base de données (table pl_poste) lors de l'utilisation du menu contextuel de la
-page planning/poste/index.php pour placer les agents
+page /index pour placer les agents
 
 Cette page est appelée par la function JavaScript "bataille_navale" utilisé par le fichier planning/poste/menudiv.php
 */

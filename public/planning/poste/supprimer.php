@@ -15,7 +15,7 @@ Permet de supprimer un planning. Demande si l'on veut supprimer le jour ou la se
 Confirmation est suppression des informations dans la base de données
 
 Cette page est appelée par la fonction JavaScript "popup" qui affiche cette page dans un cadre flottant lors du click sur
-l'icône "Suppression" de la page planning/poste/index.php
+l'icône "Suppression" de la page /index
 */
 
 require_once "class.planning.php";
@@ -88,7 +88,7 @@ if (!$semaineJour) {		// Etape 1 : Suppression du jour ou de la semaine ?
         $db->CSRFToken = $CSRFToken;
         $db->delete("pl_poste_tab_affect", array("site"=>$site, "date"=>$date));
     }
-    echo "<script type='text/JavaScript'>top.document.location.href=\"index.php\";</script>\n";
+    echo "<script type='text/JavaScript'>top.document.location.href=\"/index\";</script>\n";
 }
 ?>
 </div>

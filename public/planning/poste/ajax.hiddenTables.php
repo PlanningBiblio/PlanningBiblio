@@ -13,7 +13,7 @@ Dernière modification : 3 août 2017
 Description :
 Permet l'enregistrement des préférences sur les tableaux cachés
 
-Cette page est appelée par la function JavaScript "afficheTableauxDiv" utilisé par le fichier planning/poste/index.php
+Cette page est appelée par la function JavaScript "afficheTableauxDiv" utilisé dans la page /index
 */
 
 ini_set("display_errors", 0);

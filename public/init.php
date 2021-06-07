@@ -61,7 +61,8 @@ $request = Request::createFromGlobals();
 
 $date = $request->get('date');
 $show_menu = $request->get('menu') == 'off' ? false : true;
-$page = $request->get('page', 'planning/poste/index.php');
+$page = $request->get('page');
+$path = $request->getPathInfo();
 $login = $request->get('login');
 
 // Login Anonyme
@@ -80,13 +81,8 @@ if (!array_key_exists("oups", $_SESSION)) {
     $_SESSION['oups']=array("week" => false);
 }
 
-// Affichage de tous les plannings de la semaine
-if ($page=="planning/poste/index.php" and !$date and $_SESSION['oups']['week']) {
-    $page="planning/poste/semaine.php";
-}
-
 $content_planning = 0;
-if ($page == 'planning/poste/index.php' or $page == 'planning/poste/semaine.php' or !$show_menu) {
+if ($page == 'planning/poste/semaine.php' or !$show_menu) {
     $content_planning = 1;
 }
 
