@@ -5,8 +5,17 @@
 {% block page %}
 <form action="/poc" method="get">
   <select name="mode">
-    <option value="jour">Mode jour</option>
-    <option value="heure">Mode heure</option>
+    {% if mode == 'jour' %}
+      <option value="jour" selected="selected">Mode jour</option>
+    {% else %}
+      <option value="jour">Mode jour</option>
+    {% endif %}
+
+    {% if mode == 'heure' %}
+      <option value="heure" selected="selected">Mode heure</option>
+    {% else %}
+      <option value="heure">Mode heure</option>
+    {% endif %}
   </select>
 
   <input type="submit" value="Submit"/>

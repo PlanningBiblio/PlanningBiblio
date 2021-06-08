@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\Controller\PocHeureController;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,7 +19,6 @@ class PocController extends BaseController
         $controller = $this->getController($mode);
 
         $response = $this->forward("$controller::indexAction");
-        //$response = $this->forward('App\Controller\PocHeureController::indexAction');
 
         return $response;
     }
