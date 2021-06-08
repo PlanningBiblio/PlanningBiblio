@@ -1,0 +1,18 @@
+{# poc/poc.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+<form action="/poc" method="get">
+  <select name="mode">
+    <option value="jour">Mode jour</option>
+    <option value="heure">Mode heure</option>
+  </select>
+
+  <input type="submit" value="Submit"/>
+</form>
+
+{% block heure %}{% endblock %}
+
+<h3>Mode de congés: {{ mode }}</h3>
+{% endblock %}

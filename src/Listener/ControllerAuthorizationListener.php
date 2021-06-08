@@ -48,6 +48,10 @@ class ControllerAuthorizationListener
 
         $route = $event->getRequest()->attributes->get('_route');
 
+        if ($page == '/poc') {
+            $route = 'poc';
+        }
+
         if ($_SESSION['oups']["Auth-Mode"] == 'Anonyme' ) {
             foreach ($accesses as $access) {
                 if ($access->groupe_id() == '99') {
