@@ -1,11 +1,9 @@
 # This file gathers the routes and the rights required to access each of them
 # This file is called by the ControllerAuthorization Listener
 
-"poc":
+"poc.absence":
     - 100
-"poc.heure":
-    - 100
-"poc.jour":
+"poc.holiday":
     - 100
 "absence.add":
     - 100
