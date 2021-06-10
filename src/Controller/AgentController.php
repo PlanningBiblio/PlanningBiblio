@@ -739,6 +739,10 @@ class AgentController extends BaseController
             if ($this->config('Conges-Mode') == 'jours' ) {
                 $event = new OnTransformLeaveHours($conges);
                 $this->dispatcher->dispatch($event::ACTION, $event);
+                $fulldayreferencetime = 7;
+                if (is_numeric($this->config('Conges-fullday-reference-time'))) {
+                    $fulldayreferencetime = $this->config('Conges-fullday-reference-time');
+                }
 
                 if ($event->hasResponse()) {
                     $response = $event->response();
@@ -751,16 +755,16 @@ class AgentController extends BaseController
                     $anticipationHeures = $response['anticipation'];
                     $anticipationString = $anticipationHeures;
                 } else {
-                    $annuelHeures = $conges['annuel'] / 7;
+                    $annuelHeures = $conges['annuel'] / $fulldayreferencetime;
                     $annuelHeures = round($annuelHeures * 2) / 2;
                     $annuelString = $annuelHeures;
-                    $creditHeures = $conges['credit'] / 7;
+                    $creditHeures = $conges['credit'] / $fulldayreferencetime;
                     $creditHeures = round($creditHeures * 2) / 2;
                     $creditString = $creditHeures;
-                    $reliquatHeures = $conges['reliquat'] / 7;
+                    $reliquatHeures = $conges['reliquat'] / $fulldayreferencetime;
                     $reliquatHeures = round($reliquatHeures * 2) / 2;
                     $reliquatString = $reliquatHeures;
-                    $anticipationHeures = $conges['anticipation'] / 7;
+                    $anticipationHeures = $conges['anticipation'] / $fulldayreferencetime;
                     $anticipationHeures = round($anticipationHeures * 2) / 2;
                     $anticipationString = $anticipationHeures;
                 }
@@ -1107,16 +1111,20 @@ class AgentController extends BaseController
         if ($this->config('Conges-Mode') == 'jours' ) {
             $event = new OnTransformLeaveDays($params);
             $this->dispatcher->dispatch($event::ACTION, $event);
+            $fulldayreferencetime = 7;
+            if (is_numeric($this->config('Conges-fullday-reference-time'))) {
+                $fulldayreferencetime = $this->config('Conges-fullday-reference-time');
+            }
 
             if ($event->hasResponse()) {
                 $credits = $event->response();
             } else {
                 $credits = array(
-                    'conges_credit' => $params['conges_credit'] *= 7,
-                    'conges_reliquat' => $params['conges_reliquat'] *= 7,
-                    'conges_anticipation' => $params['conges_anticipation'] *= 7,
+                    'conges_credit' => $params['conges_credit'] *= $fulldayreferencetime,
+                    'conges_reliquat' => $params['conges_reliquat'] *= $fulldayreferencetime,
+                    'conges_anticipation' => $params['conges_anticipation'] *= $fulldayreferencetime,
                     'comp_time' => $params['comp_time'] + $params['comp_time_min'],
-                    'conges_annuel' => $params['conges_annuel'] *= 7,
+                    'conges_annuel' => $params['conges_annuel'] *= $fulldayreferencetime,
                 );
             }
         } else {

@@ -26,6 +26,7 @@
           <input type='hidden' id='conges-recup' value='{{ conges_recuperations }}' />
           <input type='hidden' name="conges-mode" id='conges-mode' value='{{ conges_mode }}' />
           <input type='hidden' name="conges-demi-journees" id='conges-demi-journees' value='{{ conges_demi_journee }}' />
+          <input type='hidden' name="fullday_reference_time" id='fullday_reference_time' value='{{ fullday_reference_time }}' />
 
           <table border='0' style="width: 100%">
             <tr>
@@ -142,6 +143,16 @@
               </td>
             </tr>
 
+            {% if conges_mode == 'jours' %}
+              <tr style="display: none;">
+                <td style="padding-top:15px;">Régularisation sur récupération: </td>
+                <td style="padding-top:15px;">
+                  <div id='hr_rest' style='padding:0 5px; width:110px;'></div>
+                  <input name="rest" id="rest" type="hidden" value=""/>
+                </td>
+              </tr>
+            {% endif %}
+
             {% if conges_mode == 'heures' and hours_per_day is defined %}
               <tr>
                 <td>
@@ -207,6 +218,33 @@
                         </tr>
 
                         <tr class='balance_tr'>
+                          <td>Crédit de récupérations prévisionnel<sup>*</sup> au 
+                            <span class='balance_date'>{{ balance0 }}</span> : 
+                          </td>
+
+                          <td id='balance2_before'>{{ balance4 }}</td>
+
+                          <td>(après débit : 
+                            <span id='balance2_after'>{{ balance4 }}</span>)
+                          </td>
+                        </tr>
+                      <! --
+                        Put the comp time information but hidden.
+                        If there is rest, it will be shown.
+                      -->
+                      {% elseif conges_mode == 'jours' and conges_recuperations == 1 %}
+                        <tr class='balance_tr' style="display: none">
+                          <td>Crédit de récupérations disponible au 
+                            <span class='balance_date'>{{ balance0 }}</span> : 
+                          </td>
+
+                          <td id='balance_before'>{{ balance1 }}</td>
+                          <td>(après débit : 
+                            <span id='recup4'>{{ balance1 }}</span>)
+                          </td>
+                        </tr>
+
+                        <tr class='balance_tr' style="display: none">
                           <td>Crédit de récupérations prévisionnel<sup>*</sup> au 
                             <span class='balance_date'>{{ balance0 }}</span> : 
                           </td>

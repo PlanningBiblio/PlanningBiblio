@@ -40,8 +40,13 @@ class HolidayHelper extends BaseHelper
             return heure4($hours, true);
         }
 
+        $fulldayreferencetime = 7;
+        if (is_numeric($this->config('Conges-fullday-reference-time'))) {
+          $fulldayreferencetime = $this->config('Conges-fullday-reference-time');
+        }
+
         // TODO: should be altered by a plugin.
-        $days = $hours / 7;
+        $days = $hours / $fulldayreferencetime;
         $days = round($days * 2) / 2;
 
         // Handle plurals
@@ -70,7 +75,7 @@ class HolidayHelper extends BaseHelper
         );
 
         $per_week = array();
-        $rest_total = 0;
+        $regul_total = 0;
 
         // For each requested date.
         while ($current <= $fin) {
@@ -141,8 +146,8 @@ class HolidayHelper extends BaseHelper
                     $reference_time = $today <= $switching_time
                         ? $reference_time / 2 : $reference_time;
                     $rest = $reference_time - $today;
-                    $rest_hours = $rest / 3600;
-                    $rest_total += $rest_hours;
+                    $regul_hours = $rest / 3600;
+                    $regul_total += $regul_hours;
 
                 }
 
@@ -171,11 +176,11 @@ class HolidayHelper extends BaseHelper
         $result['hours'] = $hours_minutes[0];
         $result['minutes'] = isset($hours_minutes[1]) ? $hours_minutes[1] : 0;
         $result['hr_hours'] = heure4($total); // 2.5 => 2h30
-        $result['rest'] = $rest_total;
+        $result['rest'] = $regul_total;
 
-        $result['hr_rest'] = heure4($rest_total) ?? '';
-        if ($rest_total < 0) {
-            $hr_rest = heure4(abs($rest_total));
+        $result['hr_rest'] = heure4($regul_total) ?? '';
+        if ($regul_total < 0) {
+            $hr_rest = heure4(abs($regul_total));
             $result['hr_rest'] = $hr_rest;
         }
 

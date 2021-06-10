@@ -32,6 +32,7 @@ function calculCredit(){
   conges_mode = $('#conges-mode').val();
   is_recover = $('#is-recover').val();
   conges_demi_journee = $('#conges-demi-journees')
+  congesRecup = $('#conges-recup').val();
 
   if(!fin){
     fin=debut;
@@ -74,8 +75,12 @@ function calculCredit(){
 
         var balance_estimated = result.recover[4];       // Crédits de récupérations prévisionnels à la date choisie
 
-        if($('#conges-recup').val() == 0 && balance_estimated < 0 ){
+        if(congesRecup == 0 && balance_estimated < 0 ){
           balance_estimated = 0;
+        }
+
+        if (congesRecup != 0) {
+          $(".balance_tr").hide();
         }
 
 
@@ -84,7 +89,10 @@ function calculCredit(){
         $('#balance_before').text(heure4(balance));
         $('#balance2_before').text(heure4(balance_estimated));
         $("#recuperation_prev").val(balance_estimated);
-        $(".balance_tr").effect("highlight",null,4000);
+
+        if (congesRecup == 0 || result.rest != 0) {
+          $(".balance_tr").effect("highlight",null,4000);
+        }
 
         if ($('#hours_per_day').val()) {
           var hours_per_day = $('#hours_per_day').val();
@@ -107,6 +115,20 @@ function calculCredit(){
         $("#nbHeures").effect("highlight",null,4000);
         $("#nbJours").effect("highlight",null,4000);
         $("#erreurCalcul").val("false");
+
+        $("#rest").val(0);
+        $("#hr_rest").text('');
+        $("#rest").parent().parent().hide();
+        if (result.rest != 0) {
+          if (result.rest > 0) {
+            $("#hr_rest").text(result.hr_rest + ' créditée(s)');
+          } else {
+            $("#hr_rest").text(result.hr_rest + ' débitée(s)');
+          }
+          $("#rest").val(result.rest);
+          $("#rest").parent().parent().show();
+          $("#hr_rest").effect("highlight",null,4000);
+        }
       }
     },
     error: function(xhr, ajaxOptions, thrownError){
@@ -120,6 +142,27 @@ function calculCredit(){
     },
   });
   calculRestes();
+  calculRegul();
+}
+
+function calculRegul() {
+  regul = $('#rest').val();
+  if (regul != 0) {
+    recuperation = $('#recuperation').val();
+    recuperation_prev = $('#recuperation_prev').val();
+
+    if (Math.sign(regul) < 0) {
+      regul = Math.abs(regul);
+    } else {
+      regul = -Math.abs(regul);
+    }
+
+    recuperation = recuperation - regul;
+    recuperation_prev = recuperation_prev - regul;
+
+    $('#recup4').text(heure4(recuperation));
+    $('#balance2_after').text(heure4(recuperation_prev));
+  }
 }
 
 function calculRestes(){
@@ -245,21 +288,23 @@ function calculRestes(){
     }
   }
 
+  fulldayreferencetime = $('#fullday_reference_time').val();
+
   // Affichage
   $("#recup4").text(heure4(recuperation));
   $("#balance2_after").text(heure4(recuperation_prev));
   if (congesMode == 'jours') {
-    day_reliquat = reliquat / 7;
+    day_reliquat = reliquat / fulldayreferencetime;
     day_reliquat = Math.round(day_reliquat * 2) / 2;
     day_reliquat = day_reliquat > 1 ? day_reliquat + ' jours' : day_reliquat + ' jour';
     $("#reliquat4").text(day_reliquat);
 
-    day_credit = credit / 7;
+    day_credit = credit / fulldayreferencetime;
     day_credit = Math.round(day_credit * 2) / 2;
     day_credit = day_credit > 1 ? day_credit + ' jours' : day_credit + ' jour';
     $("#credit4").text(day_credit);
 
-    day_anticipation = anticipation / 7;
+    day_anticipation = anticipation / fulldayreferencetime;
     day_anticipation = Math.round(day_anticipation * 2) / 2;
     day_anticipation = day_anticipation > 1 ? day_anticipation + ' jours' : day_anticipation + ' jour';
     $("#anticipation4").text(day_anticipation);
