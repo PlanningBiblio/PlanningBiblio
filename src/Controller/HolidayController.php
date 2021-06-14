@@ -240,6 +240,18 @@ class HolidayController extends BaseController
                 $elem['validationStyle'] = '';
             }
 
+            // This holiday is not a regularization,
+            // but there is one related to.
+            if (!$elem['information'] && $elem['regul_id']) {
+              $r = new \conges();
+              $r->id = $elem['regul_id'];
+              $r->fetch();
+              $data = $r->elements[0];
+              $regul = $data['recup_actuel'] - $data['recup_prec'];
+              $elem['regul'] = $regul;
+              $elem['hr_regul'] = heure4($regul);
+            }
+
             $elem['nom'] = $admin ? nom($elem['perso_id'], 'nom p', $agents) : '';
 
             $holidays[] = $elem;

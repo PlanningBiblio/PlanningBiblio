@@ -126,6 +126,7 @@
         {% if balance %}
           <th rowspan='2' class='dataTableHeureFR'>Solde Débiteur</th>
         {% endif %}
+          <th rowspan='2' class='information'>Informations</th>
       </tr>
       <tr>
         <th>&Eacute;tat</th>
@@ -209,6 +210,18 @@
               <td></td>
             {% endif %}
           {% endif %}
+          <td>
+            {% if c.regul_id and c.information %}
+              Régularisation sur prise de congés <a href='{{ asset("holiday/edit") }}/{{ c.regul_id }}'>lien</a>
+            {% elseif c.regul_id %}
+              Régularisation en récupération: 
+              {% if c.regul > 0 %}
+                {{ c.hr_regul }} créditée(s)
+              {% else %}
+                {{ c.hr_regul }} débitée(s)
+              {% endif %}
+            {% endif %}
+          </td>
         </tr>
       {% endfor %}
     </tbody>
