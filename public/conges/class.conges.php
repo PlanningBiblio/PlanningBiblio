@@ -26,6 +26,7 @@ require_once __DIR__."/../absences/class.absences.php";
 
 use App\PlanningBiblio\WorkingHours;
 use App\PlanningBiblio\ClosingDay;
+use App\PlanningBiblio\Helper\HolidayHelper;
 
 class conges
 {
@@ -1222,6 +1223,35 @@ class conges
         $db=new db();
         $db->CSRFToken = $this->CSRFToken;
         $db->update("conges", $updateConges, array("id"=>$data['id']));
+
+        $holidayHlper = new HolidayHelper(array(
+            'start' => $data['debut'],
+            'hour_start' => $data['hre_debut'],
+            'end' => $data['fin'],
+            'hour_end' => $data['hre_fin'],
+            'perso_id' => $data['perso_id'],
+            'is_recover' => false
+        ));
+        $result = $holidayHlper->getCountedHours();
+        $regul = $result['rest'];
+
+        if ($regul != 0) {
+            $new_comp_time = $recuperation + $regul;
+            $credits = array(
+                'conges_credit' => $credit,
+                'conges_reliquat' => $reliquat,
+                'conges_anticipation' => $anticipation,
+                'comp_time' => $new_comp_time,
+            );
+            $c = new \conges();
+            $c->perso_id = $data['perso_id'];
+            $c->CSRFToken = $this->CSRFToken;
+            $c->maj($credits, 'modif');
+
+            $db=new db();
+            $db->CSRFToken = $this->CSRFToken;
+            $db->update("personnel", array('comp_time' => $new_comp_time), array('id' => $data["perso_id"]));
+        }
     }
 
 
