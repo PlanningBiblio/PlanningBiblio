@@ -955,7 +955,15 @@ class conges
     }
 
 
-    public function maj($credits, $action="modif", $cron=false)
+    /**
+    * @method maj
+    * @param array $credits
+    * @param string $modif
+    * @param bool $cron
+    * @param int $origin_id. Holiday id that generated this regularization.
+    * Les crédits obtenus à des dates supérieures sont déduits
+    */
+    public function maj($credits, $action="modif", $cron=false, $origin_id = 0)
     {
         // Ajoute une ligne faisant apparaître la mise à jour des crédits dans le tableau Congés
         if ($action=="modif") {
@@ -984,9 +992,14 @@ class conges
             $insert["information"]=$cron?999999999:$_SESSION['login_id'];
             $insert["info_date"]=date("Y-m-d H:i:s");
 
+            if ($origin_id) {
+                $insert['regul_id'] = $origin_id;
+            }
+
             $db=new db();
             $db->CSRFToken = $this->CSRFToken;
-            $db->insert("conges", $insert);
+            $inserted_id = $db->insert("conges", $insert);
+            return $inserted_id;
         }
     }
 
@@ -1218,11 +1231,7 @@ class conges
         $db->CSRFToken = $this->CSRFToken;
         $db->update("personnel", $updateCredits, array("id"=>$data["perso_id"]));
 
-        // Mise à jour des compteurs dans la table conges
         $updateConges=array_merge($updateConges, array("solde_actuel"=>$credit,"reliquat_actuel"=>$reliquat,"recup_actuel"=>$recuperation,"anticipation_actuel"=>$anticipation));
-        $db=new db();
-        $db->CSRFToken = $this->CSRFToken;
-        $db->update("conges", $updateConges, array("id"=>$data['id']));
 
         $holidayHlper = new HolidayHelper(array(
             'start' => $data['debut'],
@@ -1236,22 +1245,44 @@ class conges
         $regul = $result['rest'];
 
         if ($regul != 0) {
-            $new_comp_time = $recuperation + $regul;
-            $credits = array(
-                'conges_credit' => $credit,
-                'conges_reliquat' => $reliquat,
-                'conges_anticipation' => $anticipation,
-                'comp_time' => $new_comp_time,
-            );
-            $c = new \conges();
-            $c->perso_id = $data['perso_id'];
-            $c->CSRFToken = $this->CSRFToken;
-            $c->maj($credits, 'modif');
-
-            $db=new db();
-            $db->CSRFToken = $this->CSRFToken;
-            $db->update("personnel", array('comp_time' => $new_comp_time), array('id' => $data["perso_id"]));
+            $regul_id = $this->applyRegularization($data, $regul);
+            $updateConges['regul_id'] = $regul_id;
         }
+
+        // Mise à jour des compteurs dans la table conges
+        $db=new db();
+        $db->CSRFToken = $this->CSRFToken;
+        $db->update("conges", $updateConges, array("id"=>$data['id']));
+    }
+
+    private function applyRegularization($data, $regul) {
+        $perso_id = $data['perso_id'];
+
+        $p = new personnel();
+        $p->fetchById($perso_id);
+        $credit = floatval($p->elements[0]['conges_credit']);
+        $reliquat = floatval($p->elements[0]['conges_reliquat']);
+        $recuperation = floatval($p->elements[0]['comp_time']);
+        $anticipation = floatval($p->elements[0]['conges_anticipation']);
+
+        $new_comp_time = $recuperation + $regul;
+        $credits = array(
+            'conges_credit' => $credit,
+            'conges_reliquat' => $reliquat,
+            'conges_anticipation' => $anticipation,
+            'comp_time' => $new_comp_time,
+        );
+
+        $c = new \conges();
+        $c->perso_id = $perso_id;
+        $c->CSRFToken = $this->CSRFToken;
+        $new_id = $c->maj($credits, 'modif', false, $data['id']);
+
+        $db = new db();
+        $db->CSRFToken = $this->CSRFToken;
+        $db->update('personnel', array('comp_time' => $new_comp_time), array('id' => $perso_id));
+
+        return $new_id;
     }
 
 

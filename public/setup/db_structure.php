@@ -540,7 +540,8 @@ $sql[]="CREATE TABLE `{$dbprefix}conges` (
   `supprime` INT(11) NOT NULL DEFAULT 0,
   `suppr_date` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
   `information` INT(11) NOT NULL DEFAULT 0,
-  `info_date` TIMESTAMP NULL DEFAULT NULL
+  `info_date` TIMESTAMP NULL DEFAULT NULL,
+  `regul_id` INT(11) NULL DEFAULT NULL
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 // Création de la table conges_infos

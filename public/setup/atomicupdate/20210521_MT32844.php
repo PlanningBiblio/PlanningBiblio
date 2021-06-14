@@ -7,3 +7,5 @@ $sql[] = "UPDATE `{$dbprefix}config` SET `ordre`= '9' WHERE `nom` = 'Conges-full
 $sql[] = "UPDATE `{$dbprefix}config` SET `ordre`= '11' WHERE `nom` = 'Conges-planningVide';";
 $sql[] = "UPDATE `{$dbprefix}config` SET `ordre`= '12' WHERE `nom` = 'Conges-apresValidation';";
 $sql[] = "UPDATE `{$dbprefix}config` SET `ordre`= '13' WHERE `nom` = 'Conges-Rappels-N1';";
+
+$sql[] = "ALTER TABLE `{$dbprefix}conges` ADD COLUMN `regul_id` INT(11) NULL DEFAULT NULL AFTER `info_date`;";
