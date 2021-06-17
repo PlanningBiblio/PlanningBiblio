@@ -288,23 +288,21 @@ function calculRestes(){
     }
   }
 
-  fulldayreferencetime = $('#fullday_reference_time').val();
-
   // Affichage
   $("#recup4").text(heure4(recuperation));
   $("#balance2_after").text(heure4(recuperation_prev));
   if (congesMode == 'jours') {
-    day_reliquat = reliquat / fulldayreferencetime;
+    day_reliquat = reliquat / 7;
     day_reliquat = Math.round(day_reliquat * 2) / 2;
     day_reliquat = day_reliquat > 1 ? day_reliquat + ' jours' : day_reliquat + ' jour';
     $("#reliquat4").text(day_reliquat);
 
-    day_credit = credit / fulldayreferencetime;
+    day_credit = credit / 7;
     day_credit = Math.round(day_credit * 2) / 2;
     day_credit = day_credit > 1 ? day_credit + ' jours' : day_credit + ' jour';
     $("#credit4").text(day_credit);
 
-    day_anticipation = anticipation / fulldayreferencetime;
+    day_anticipation = anticipation / 7;
     day_anticipation = Math.round(day_anticipation * 2) / 2;
     day_anticipation = day_anticipation > 1 ? day_anticipation + ' jours' : day_anticipation + ' jour';
     $("#anticipation4").text(day_anticipation);

@@ -40,13 +40,8 @@ class HolidayHelper extends BaseHelper
             return heure4($hours, true);
         }
 
-        $fulldayreferencetime = 7;
-        if (is_numeric($this->config('Conges-fullday-reference-time'))) {
-          $fulldayreferencetime = $this->config('Conges-fullday-reference-time');
-        }
-
         // TODO: should be altered by a plugin.
-        $days = $hours / $fulldayreferencetime;
+        $days = $hours / 7;
         $days = round($days * 2) / 2;
 
         // Handle plurals
@@ -137,21 +132,16 @@ class HolidayHelper extends BaseHelper
                 $switching_time = (float) ($this->config['Conges-fullday-switching-time'] ?? 4);
                 $switching_time = $switching_time * 3600;
 
-                // By default reference time is 7h (25200) for a day
-                // or 3h30 (12600) for half a day.
-                $reference_time = $today <= $switching_time ? 12600 : 25200;
-
                 if (is_numeric($this->config('Conges-fullday-reference-time'))) {
                     $reference_time = $this->config('Conges-fullday-reference-time') * 3600;
-                    $reference_time = $today <= $switching_time
-                        ? $reference_time / 2 : $reference_time;
+                    $reference_time = $today <= $switching_time ? $reference_time / 2 : $reference_time;
                     $rest = $reference_time - $today;
                     $regul_hours = $rest / 3600;
                     $regul_total += $regul_hours;
 
                 }
 
-                $today = $reference_time;
+                $today = $today <= $switching_time ? 12600 : 25200;
             }
 
             $per_week[$week_id]['times'] += number_format($today / 3600, 2, '.', '');
@@ -202,8 +192,6 @@ class HolidayHelper extends BaseHelper
                     return $hours_per_day;
                 }
             }
-        } elseif (is_numeric($this->config('Conges-fullday-reference-time'))) {
-            return $this->config('Conges-fullday-reference-time');
         } else {
             return 7;
         }

@@ -581,10 +581,6 @@ class HolidayController extends BaseController
             $balance[4] = 0;
         }
 
-        $fulldayreferencetime = 7;
-        if (is_numeric($this->config('Conges-fullday-reference-time'))) {
-          $fulldayreferencetime = $this->config('Conges-fullday-reference-time');
-        }
         $templateParams = array(
             'admin'                 => $admin,
             'adminN2'               => $adminN2,
@@ -592,7 +588,6 @@ class HolidayController extends BaseController
             'conges_recuperations'  => $this->config('Conges-Recuperations'),
             'conges_mode'           => $this->config('Conges-Mode'),
             'conges_demi_journee'   => $this->config('Conges-demi-journees'),
-            'fullday_reference_time'=> $fulldayreferencetime,
             'CSRFToken'             => $CSRFSession,
             'hours_per_day'         => $hoursPerDay,
             'reliquat'              => $reliquat,

@@ -114,8 +114,8 @@ class HolidayHelperTest extends TestCase
         $result = $holidayHlper->getCountedHours();
 
         $this->assertEquals(7, $result['hours'], 'request 9h on 1 day');
-        $this->assertEquals(50, $result['minutes'], 'request 9h on 1 day');
-        $this->assertEquals('7h30', $result['hr_hours'], 'request 9h on 1 day');
+        $this->assertEquals(0, $result['minutes'], 'request 9h on 1 day');
+        $this->assertEquals('7h00', $result['hr_hours'], 'request 9h on 1 day');
         $this->assertEquals(-1.5, $result['rest'], 'request 9h on 1 day');
         $this->assertEquals('1h30', $result['hr_rest'], 'request 9h on 1 day');
         $this->assertEquals(1, $result['days'], 'request 9h on 1 day');
@@ -135,8 +135,8 @@ class HolidayHelperTest extends TestCase
         $result = $holidayHlper->getCountedHours();
 
         $this->assertEquals(3, $result['hours'], 'request 3h30 on 1 day');
-        $this->assertEquals(75, $result['minutes'], 'request 3h30 on 1 day');
-        $this->assertEquals('3h45', $result['hr_hours'], 'request 3h30 on 1 day');
+        $this->assertEquals(50, $result['minutes'], 'request 3h30 on 1 day');
+        $this->assertEquals('3h30', $result['hr_hours'], 'request 3h30 on 1 day');
         $this->assertEquals(0.25, $result['rest'], 'request 3h30 on 1 day');
         $this->assertEquals('0h15', $result['hr_rest'], 'request 3h30 on 1 day');
         $this->assertEquals(0.5, $result['days'], 'request 3h30 on 1 day');
@@ -156,8 +156,8 @@ class HolidayHelperTest extends TestCase
         $result = $holidayHlper->getCountedHours();
 
         $this->assertEquals(7, $result['hours'], 'request 6h on 1 day');
-        $this->assertEquals(50, $result['minutes'], 'request 6h on 1 day');
-        $this->assertEquals('7h30', $result['hr_hours'], 'request 6h on 1 day');
+        $this->assertEquals(0, $result['minutes'], 'request 6h on 1 day');
+        $this->assertEquals('7h00', $result['hr_hours'], 'request 6h on 1 day');
         $this->assertEquals(1.5, $result['rest'], 'request 6h on 1 day');
         $this->assertEquals('1h30', $result['hr_rest'], 'request 6h on 1 day');
         $this->assertEquals(1, $result['days'], 'request 6h on 1 day');
@@ -176,9 +176,9 @@ class HolidayHelperTest extends TestCase
         ));
         $result = $holidayHlper->getCountedHours();
 
-        $this->assertEquals(18, $result['hours'], 'request 18h30 on 3 day');
-        $this->assertEquals(75, $result['minutes'], 'request 18h30 on 3 day');
-        $this->assertEquals('18h45', $result['hr_hours'], 'request 18h30 on 3 day');
+        $this->assertEquals(17, $result['hours'], 'request 18h30 on 3 day');
+        $this->assertEquals(50, $result['minutes'], 'request 18h30 on 3 day');
+        $this->assertEquals('17h30', $result['hr_hours'], 'request 18h30 on 3 day');
         $this->assertEquals(0.25, $result['rest'], 'request 18h30 on 3 day');
         $this->assertEquals('0h15', $result['hr_rest'], 'request 18h30 on 3 day');
         $this->assertEquals(2.5, $result['days'], 'request 18h30 on 3 day');
