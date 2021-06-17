@@ -339,6 +339,7 @@ class conges
             $recup=floatval($result['recup_prec'])-floatval($result['recup_actuel']);
             $reliquat=floatval($result['reliquat_prec'])-floatval($result['reliquat_actuel']);
             $anticipation=floatval($result['anticipation_actuel'])-floatval($result['anticipation_prec']);
+            $regul_id = $result['regul_id'] ?? 0;
 
             // Si le congés a été validé, mise à jour des crédits dans la table personnel
             if ($valide>0) {
@@ -382,6 +383,17 @@ class conges
                     $db=new db();
                     $db->CSRFToken = $this->CSRFToken;
                     $db->insert("conges", $insert);
+                }
+
+                // This holiday has created a regularization.
+                // The regul should be reverted.
+                if ($regul_id) {
+                    $r = new \conges();
+                    $r->id = $regul_id;
+                    $r->fetch();
+                    $data = $r->elements[0];
+                    $regul = $data['recup_prec'] - $data['recup_actuel'];
+                    $this->applyRegularization($result, $regul);
                 }
             }
         }

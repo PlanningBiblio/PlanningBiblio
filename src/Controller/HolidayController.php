@@ -249,7 +249,7 @@ class HolidayController extends BaseController
               $data = $r->elements[0];
               $regul = $data['recup_actuel'] - $data['recup_prec'];
               $elem['regul'] = $regul;
-              $elem['hr_regul'] = heure4($regul);
+              $elem['hr_regul'] = heure4(abs($regul));
             }
 
             $elem['nom'] = $admin ? nom($elem['perso_id'], 'nom p', $agents) : '';
