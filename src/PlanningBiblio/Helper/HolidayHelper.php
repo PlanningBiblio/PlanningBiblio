@@ -218,26 +218,27 @@ class HolidayHelper extends BaseHelper
         $p->fetch();
         $agents=$p->elements;
 
-        // If config Multi-sites : keep only users that we can manage.
-        if ($this->config('Multisites-nombre') > 1) {
-            $tmp = array();
+        $tmp = array();
+        foreach ($agents as $elem) {
+            if ($elem['id'] == $_SESSION['login_id']) {
+                $tmp[$elem['id']] = $elem;
+                continue;
+            }
 
-            foreach ($agents as $elem) {
-                if ($elem['id'] == $_SESSION['login_id']) {
-                    $tmp[$elem['id']] = $elem;
-                    continue;
-                }
-                if (is_array($elem['sites'])) {
-                    foreach ($elem['sites'] as $site_agent) {
-                        if (in_array((400+$site_agent), $access_rights) or in_array((600+$site_agent), $access_rights)) {
-                            $tmp[$elem['id']] = $elem;
-                            continue 2;
-                        }
+            if ($this->config('Multisites-nombre') == 1) {
+                $elem['sites'] = array(1);
+            }
+
+            if (is_array($elem['sites'])) {
+                foreach ($elem['sites'] as $site_agent) {
+                    if (in_array((400+$site_agent), $access_rights) or in_array((600+$site_agent), $access_rights)) {
+                        $tmp[$elem['id']] = $elem;
+                        continue 2;
                     }
                 }
             }
-            $agents = $tmp;
         }
+        $agents = $tmp;
 
         // Filtre pour n'afficher que les agents gérés si l'option "Absences-notifications-agent-par-agent" est cochée
         if ($this->config('Absences-notifications-agent-par-agent') and !$adminN2) {
