@@ -365,10 +365,14 @@ class conges
                 $insert=array();
                 $keys=array_keys($result);
                 foreach ($keys as $key) {
+                    if ($key == 'regul_id'){
+                        continue;
+                    }
                     if ($key!="id" and !is_numeric($key)) {
                         $insert[$key]=$result[$key];
                     }
                 }
+
                 if (!empty($insert)) {
                     $insert["solde_prec"]=$perso_credit;
                     $insert["recup_prec"]=$perso_recup;
@@ -382,18 +386,27 @@ class conges
                     $insert["info_date"]=date("Y-m-d H:i:s");
                     $db=new db();
                     $db->CSRFToken = $this->CSRFToken;
-                    $db->insert("conges", $insert);
-                }
+                    $new_id = $db->insert("conges", $insert);
 
-                // This holiday has created a regularization.
-                // The regul should be reverted.
-                if ($regul_id) {
-                    $r = new \conges();
-                    $r->id = $regul_id;
-                    $r->fetch();
-                    $data = $r->elements[0];
-                    $regul = $data['recup_prec'] - $data['recup_actuel'];
-                    $this->applyRegularization($result, $regul);
+                    // This holiday has created a regularization.
+                    // The regul should be reverted.
+                    if ($regul_id) {
+                        $r = new \conges();
+                        $r->id = $regul_id;
+                        $r->fetch();
+                        $data = $r->elements[0];
+                        $regul = $data['recup_prec'] - $data['recup_actuel'];
+                        $regul_id = $this->applyRegularization(
+                            array('id' => $new_id, 'perso_id' => $perso_id), $regul);
+
+                        // Mise à jour des compteurs dans la table conges
+                        $db=new db();
+                        $db->CSRFToken = $this->CSRFToken;
+                        $db->update('conges',
+                            array('regul_id' => $regul_id),
+                            array('id' => $new_id)
+                        );
+                    }
                 }
             }
         }
@@ -1005,7 +1018,7 @@ class conges
             $insert["info_date"]=date("Y-m-d H:i:s");
 
             if ($origin_id) {
-                $insert['regul_id'] = $origin_id;
+                $insert['origin_id'] = $origin_id;
             }
 
             $db=new db();

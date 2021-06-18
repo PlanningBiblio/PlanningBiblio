@@ -211,9 +211,11 @@
             {% endif %}
           {% endif %}
           <td>
-            {% if c.regul_id and c.information %}
+            {% if c.origin_id %}
               Régularisation liée au congé du {{ c.origin_start }} au {{ c.origin_end }}
-            {% elseif c.regul_id %}
+            {% endif %}
+
+            {% if c.regul_id %}
               Régularisation en récupération: 
               {% if c.regul > 0 %}
                 {{ c.hr_regul }} créditée(s)

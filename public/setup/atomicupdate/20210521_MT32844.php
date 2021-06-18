@@ -9,3 +9,4 @@ $sql[] = "UPDATE `{$dbprefix}config` SET `ordre`= '12' WHERE `nom` = 'Conges-apr
 $sql[] = "UPDATE `{$dbprefix}config` SET `ordre`= '13' WHERE `nom` = 'Conges-Rappels-N1';";
 
 $sql[] = "ALTER TABLE `{$dbprefix}conges` ADD COLUMN `regul_id` INT(11) NULL DEFAULT NULL AFTER `info_date`;";
+$sql[] = "ALTER TABLE `{$dbprefix}conges` ADD COLUMN `origin_id` INT(11) NULL DEFAULT NULL AFTER `regul_id`;";
