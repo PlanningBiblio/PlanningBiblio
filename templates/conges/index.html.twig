@@ -212,7 +212,7 @@
           {% endif %}
           <td>
             {% if c.regul_id and c.information %}
-              Régularisation sur prise de congés <a href='{{ asset("holiday/edit") }}/{{ c.regul_id }}'>lien</a>
+              Régularisation liée au congé du {{ c.origin_start }} au {{ c.origin_end }}
             {% elseif c.regul_id %}
               Régularisation en récupération: 
               {% if c.regul > 0 %}
