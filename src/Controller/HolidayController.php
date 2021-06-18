@@ -256,7 +256,7 @@ class HolidayController extends BaseController
             // This is a regularization.
             if ($elem['origin_id']) {
                 $origin = new \conges();
-                $origin->id = $elem['regul_id'];
+                $origin->id = $elem['origin_id'];
                 $origin->fetch();
                 $data = $origin->elements[0];
 
