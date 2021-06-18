@@ -11,7 +11,7 @@ class HolidayHelperTest extends TestCase
     public function testgetManagedAgentMultiSitesNonAdmin() {
         $GLOBALS['config']['Multisites-nombre'] = 2;
 
-        // Logged in user can manage holidays for agent in site 1.
+        // Logged in user can't manage holidays on any site.
         $GLOBALS['droits'] = array(
             23,6,9,701,3,4,21,1101,
             1201,22,5,17,1301,25,201,
@@ -28,6 +28,26 @@ class HolidayHelperTest extends TestCase
 
         $this->assertArrayNotHasKey($luc_site1->id(), $managed_agents);
         $this->assertArrayNotHasKey($eric_site2->id(), $managed_agents);
+    }
+
+    public function testgetManagedAgentMonoSitesNonAdmin() {
+        $GLOBALS['config']['Multisites-nombre'] = 1;
+
+        // Logged in user can't manage holidays.
+        $GLOBALS['droits'] = array(
+            23,6,9,701,3,4,21,1101,
+            1201,22,5,17,1301,25,201,
+            202,501,502,301,302,
+            1001,1002,901,801,802,6,9,99,100,20
+        );
+
+        $builder = new FixtureBuilder();
+        $dupont = $builder->build(Agent::class, array('login' => 'a.dupont', 'sites' => ''));
+
+        $helper = new HolidayHelper();
+        $managed_agents = $helper->getManagedAgent(true, false);
+
+        $this->assertArrayNotHasKey($dupont->id(), $managed_agents, 'Dupont is not a managed agent');
     }
 
     public function testgetManagedAgentMultiSites() {
