@@ -98,12 +98,12 @@ class HolidayHelper extends BaseHelper
             }
 
             // We ignore closing day
+            $closingday = false;
             if ($this->isClosingDay($current)) {
+                $closingday = true;
                 if ($week_helper->isWorkingDay($date_current)) {
                     $per_week[$week_id]['requested_days']--;
                 }
-                $current = date("Y-m-d", strtotime("+1 day", strtotime($current)));
-                continue;
             }
 
 
@@ -144,7 +144,11 @@ class HolidayHelper extends BaseHelper
                 $today = $today <= $switching_time ? 12600 : 25200;
             }
 
-            $per_week[$week_id]['times'] += number_format($today / 3600, 2, '.', '');
+            // If this is a closing day, don't check for
+            // "normal" hours. Only take into account regularization.
+            if (!$closingday) {
+                $per_week[$week_id]['times'] += number_format($today / 3600, 2, '.', '');
+            }
 
             $current = date("Y-m-d", strtotime("+1 day", strtotime($current)));
         }
