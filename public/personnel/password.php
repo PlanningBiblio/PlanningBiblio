@@ -53,7 +53,12 @@ if (!$nouveau) {
     $db->query("select login,password,mail from {$dbprefix}personnel where id=".$_SESSION['login_id'].";");
     $login=$db->result[0]['login'];
     $mail=$db->result[0]['mail'];
-    if (!password_verify($ancien, $db->result[0]['password'])) {
+    if (!empty($config['demo'])) {
+        echo "Vous utilisez une version de démonstration.<br/>";
+        echo "Votre mot de passe ne peut pas être modifié.<br/>";
+        echo "<br/>\n";
+        echo "<a href='javascript:history.back();'>Retour</a>\n";
+    } elseif (!password_verify($ancien, $db->result[0]['password'])) {
         echo "Ancien mot de passe incorrect";
         echo "<br/><br/>\n";
         echo "<a href='javascript:history.back();'>Retour</a>\n";
