@@ -8,6 +8,7 @@ local Pipeline(phpVersion, dbImage) = {
             image: 'php:' + phpVersion,
             commands: [
                 'apt update',
+                'apt install -y libzip-dev',
                 'docker-php-ext-install zip',
                 'docker-php-ext-install mysqli',
                 'docker-php-ext-install pdo_mysql',
