@@ -377,7 +377,7 @@ class PlanningJobController extends BaseController
                     $day_hour = isset($day_hours[$elem['id']]) ? $day_hours[$elem['id']] : 0;
                     $requested_hours = strtotime($fin) - strtotime($debut);
 
-                    $wh = new \WorkingHours($temps);
+                    $wh = new WorkingHours($temps);
                     $tab = $wh->hoursOf($jour);
 
                     $hours_limit = 0;
