@@ -1,0 +1,32 @@
+{# poc/poc.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+<form action="/poc" method="get">
+  <select name="mode">
+    {% if mode == 'jour' %}
+      <option value="jour" selected="selected">Mode jour</option>
+    {% else %}
+      <option value="jour">Mode jour</option>
+    {% endif %}
+
+    {% if mode == 'heure' %}
+      <option value="heure" selected="selected">Mode heure</option>
+    {% else %}
+      <option value="heure">Mode heure</option>
+    {% endif %}
+  </select>
+
+  <input type="submit" value="Submit"/>
+</form>
+
+{% block heure %}{% endblock %}
+
+<div>
+lslksdjflksfdj
+</div>
+{% block truc %}{% endoblock %}
+
+<h3>Mode de congés: {{ mode }}</h3>
+{% endblock %}
