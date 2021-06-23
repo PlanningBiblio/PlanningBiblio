@@ -14,7 +14,8 @@ local Pipeline(phpVersion, dbImage) = {
                 'docker-php-ext-install pdo_mysql',
                 'cp .drone/.env.test.local .env.test.local',
                 'cp .drone/.env.local .env.local',
-                'composer install -n --prefer-dist',
+                '.drone/install-composer.sh',
+                'php composer.phar install -n --prefer-dist',
                 'cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini && echo "xdebug.mode=coverage" | tee -a $PHP_INI_DIR/php.ini',
                 './vendor/bin/simple-phpunit --coverage-text --coverage-clover coverage.xml --bootstrap tests/bootstrap.php tests/'
             ],
@@ -35,5 +36,5 @@ local Pipeline(phpVersion, dbImage) = {
 };
 
 [
-    Pipeline('7.4', 'mariadb:10.5-ram'),
+    Pipeline('7.4', 'mariadb:10.5'),
 ]
