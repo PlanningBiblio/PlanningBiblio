@@ -37,4 +37,5 @@ local Pipeline(phpVersion, dbImage) = {
 
 [
     Pipeline('7.4', 'mariadb:10.5'),
+    Pipeline('7.4', 'mysql:8.0'),
 ]
