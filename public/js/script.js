@@ -831,6 +831,7 @@ $(function(){
     });
 
     $(".datepicker").addClass("center ui-widget-content ui-corner-all");
+    $(".datepicker").attr('autocomplete','off');
 
     /**
     * Initialiser le calendrier avec la date choisie
