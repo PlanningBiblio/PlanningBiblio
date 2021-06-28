@@ -65,9 +65,9 @@
                 <br/>
                 <span style='padding:5px;'>Agents supprim&eacute;s : 
                   {% if deleted_agents %}
-                    <input type='checkbox' checked="checked" name='supprimes' onclick="updateAgentsList(this, {{ perso_id }});"/>
+                    <input type='checkbox' checked="checked" name='supprimes' onclick="updateAgentsList(this, 'perso_id');"/>
                   {% else %}
-                    <input type='checkbox' name='supprimes' onclick="updateAgentsList(this, {{ perso_id }});"/>
+                    <input type='checkbox' name='supprimes' onclick="updateAgentsList(this, 'perso_id');"/>
                   {% endif %}
                 </span>
               </td>
