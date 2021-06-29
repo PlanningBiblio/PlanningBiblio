@@ -527,7 +527,7 @@ class planning
                         }
                     }
                     $bold=$exists?null:"font-weight:bold;";
-                    $striped=$e['absent']?"text-decoration:line-through; color:red;":null;
+                    $striped = $e['absent'] == '1' ?"text-decoration:line-through; color:red;":null;
 
                     // Affichage de la ligne avec horaires et poste
                     $poste = html_entity_decode($postes[$e['poste']]['nom'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
