@@ -310,6 +310,11 @@ class HolidayController extends BaseController
         $data = $c->elements[0];
         $perso_id = $data['perso_id'];
 
+        // FIXME: move into a dedicated model's method when possible: $holiday->isEditable().
+        if ($c->elements[0]['information'] != 0 or $c->elements[0]['supprime'] != 0) {
+            return $this->output('access-denied.html.twig');
+        }
+
         // Calcul des crédits de récupération disponibles lors de l'ouverture du formulaire (date du jour)
         $c = new \conges();
         $balance = $c->calculCreditRecup($perso_id);
