@@ -436,7 +436,11 @@ function verifConges(){
   
   // Vérifions si le solde des récupérations n'est pas négatif
   var recuperation = parseFloat( $('#recup4').text().replace('h', '.') );
-  if(recuperation < 0) {
+  var isRegularization = false;
+  if ($("#rest").val()) {
+    isRegularization = true;
+  }
+  if(recuperation < 0 && isRegularization == false) {
     $('.recup-alert').remove();
     $(".balance_tr").effect("highlight",null,4000);
     if ($('#validation').val() > 0) {
