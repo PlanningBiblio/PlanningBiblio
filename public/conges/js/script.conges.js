@@ -147,7 +147,7 @@ function calculCredit(){
 
 function calculRegul() {
   regul = $('#rest').val();
-  if (regul != 0) {
+  if (regul != 0 && regul !== undefined) {
     recuperation = $('#recuperation').val();
     recuperation_prev = $('#recuperation_prev').val();
 
