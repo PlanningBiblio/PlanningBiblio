@@ -98,7 +98,11 @@
   </form>
 
   <br/>
-  <table id="tableConges" class="CJDataTable" data-sort="[[1],[2]]">
+  {% if show_recovery %}
+    <table id="tableRecovery" class="CJDataTable" data-sort="[[1],[2]]">
+  {% else %}
+    <table id="tableConges" class="CJDataTable" data-sort="[[1],[2]]">
+  {% endif %}
     <thead>
       <tr>
         <th rowspan='2' class='dataTableNoSort'>&nbsp;</th>
