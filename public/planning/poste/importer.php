@@ -75,7 +75,7 @@ if (!$model_id) {		// Etape 1 : Choix du modèle à importer
         echo "<input type='hidden' name='CSRFToken' value='$CSRFSession' />\n";
         echo "<input type='hidden' name='page' value='planning/poste/importer.php' />\n";
         echo "<input type='hidden' name='menu' value='off' />\n";
-        echo "<input type='hidden' name='model' value='{$model->id()}' />\n";
+        echo "<input type='hidden' name='model' value='{$model->model_id()}' />\n";
         echo "<input type='hidden' name='date' value='$date' />\n";
         echo "<input type='hidden' name='site' value='$site' />\n";
         echo "Importer le modèle \"{$model->nom()}\" $semaine?<br/><br/>\n";
@@ -99,10 +99,11 @@ if (!$model_id) {		// Etape 1 : Choix du modèle à importer
         echo "<select name='model' id='model'>\n";
         echo "<option value=''>&nbsp;</option>\n";
         foreach ($models as $model) {
+            $semaine = " ";
             if ($model->isWeek()) {
                 $semaine = " (semaine)";
             }
-            echo "<option value='{$model->id()}'>{$model->nom()} $semaine</option>\n";
+            echo "<option value='{$model->model_id()}'>{$model->nom()} $semaine</option>\n";
         }
         echo "</select><br/>\n";
         echo "Importer les absents ?&nbsp;&nbsp;";
@@ -116,7 +117,7 @@ if (!$model_id) {		// Etape 1 : Choix du modèle à importer
 
     $model = $entityManager
         ->getRepository(Model::Class)
-        ->find($model_id);
+        ->findOneBy(array('model_id' => $model_id));
 
     $dates=array();
     $d=new datePl($date);
@@ -169,11 +170,11 @@ if (!$model_id) {		// Etape 1 : Choix du modèle à importer
         // S'il s'agit d'un modèle pour une semaine
         if ($model->isWeek()) {
             $db=new db();
-            $db->select2("pl_poste_modeles_tab", "*", array("model_id"=>$model->id(), "site"=>$site, "jour"=>$i));
+            $db->select2("pl_poste_modeles_tab", "*", array("model_id"=>$model_id, "site"=>$site, "jour"=>$i));
         // S'il s'agit d'un modèle pour un seul jour
         } else {
             $db=new db();
-            $db->select2("pl_poste_modeles_tab", "*", array("model_id"=>$model->id(), "site"=>$site));
+            $db->select2("pl_poste_modeles_tab", "*", array("model_id"=>$model_id, "site"=>$site));
         }
 
         if ($db->result) {
@@ -207,11 +208,11 @@ if (!$model_id) {		// Etape 1 : Choix du modèle à importer
         // S'il s'agit d'un modèle pour une semaine
         if ($model->isWeek()) {
             $db=new db();
-            $db->select2("pl_poste_modeles", "*", array("model_id" => $model->id(), "site"=>$site, "jour"=>$i));
+            $db->select2("pl_poste_modeles", "*", array("model_id" => $model_id, "site"=>$site, "jour"=>$i));
         // S'il s'agit d'un modèle pour un seul jour
         } else {
             $db=new db();
-            $db->select2("pl_poste_modeles", "*", array("model_id" => $model->id(), "site"=>$site));
+            $db->select2("pl_poste_modeles", "*", array("model_id" => $model_id, "site"=>$site));
         }
 
     
