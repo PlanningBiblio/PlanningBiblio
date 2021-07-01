@@ -1,0 +1,33 @@
+{# planning/poste/save_model_form.html.twig #}
+
+<div id="save-model-dialog" title="Enregistrement du planning du {{ dateFr }} comme modèle">
+  <div style="text-align:center">
+    <form name='save-model-form'>
+
+      <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
+      <input type='hidden' name='date' value='{{ date }}' />
+      <input type='hidden' name='site' value='{{ site }}' />
+
+      Nom du modèle&nbsp;&nbsp;
+      <input type='text' name='name' value='{{ date }}' />
+      <br/><br/>
+      Enregistrer toute la semaine&nbsp;&nbsp;
+      <input type='checkbox' name='semaine' />
+      <br/><br/>
+    </form>
+  </div>
+</div>
+
+<div id="duplicate-model-dialog" title="Enregistrement du planning du {{ dateFr }} comme modèle">
+    <div style="text-align:center">
+      <b>Le modèle <span id="duplicate-model-name"></span> existe</b><br/><br/>
+      Voulez vous le remplacer ?<br/><br/>
+    </div>
+</div>
+
+<div id="finish-model-dialog" title="Enregistrement du planning du {{ dateFr }} comme modèle">
+    <div style="text-align:center">
+      <br/>
+      Le modèle "<span id="finish-model-name"></span>" a été enregistré<br/><br/>
+    </div>
+</div>

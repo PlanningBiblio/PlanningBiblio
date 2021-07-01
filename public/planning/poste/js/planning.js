@@ -26,6 +26,85 @@ cellules = new Array();
 
 // Chargement de la page
 $(document).ready(function(){
+
+  model_finish = $( "#finish-model-dialog" ).dialog({
+    autoOpen: false,
+    modal: true,
+    height: 250,
+    width: 550,
+    buttons: {
+      "Fermer": function() {
+        model_finish.dialog('close');
+      }
+    }
+  });
+
+  duplicate_model = $( "#duplicate-model-dialog" ).dialog({
+    autoOpen: false,
+    modal: true,
+    height: 250,
+    width: 550,
+    buttons: {
+      "Oui": function() {
+        save_model(true);
+      },
+      "Non": function() {
+        duplicate_model.dialog('close');
+      }
+    },
+  });
+
+  model_form = $( "#save-model-dialog" ).dialog({
+    autoOpen: false,
+    modal: true,
+    height: 250,
+    width: 550,
+    buttons: {
+      "Enregistrer": function() {
+        save_model();
+      },
+      Annuler: function() {
+        model_form.dialog('close');
+      }
+    },
+  });
+
+  function save_model(erase = 0) {
+    name = $('form[name="save-model-form"] input[name="name"]').val()
+    site = $('form[name="save-model-form"] input[name="site"]').val()
+    date = $('form[name="save-model-form"] input[name="date"]').val()
+    week = $('form[name="save-model-form"] input[name="semaine"]').is(':checked') ? 1 : 0;
+    csrftoken = $('#CSRFSession').val();
+
+    $.ajax({
+      url: '/model-add',
+      type: 'post',
+      //dataType: 'json',
+      data: {name: name, site: site, date: date, week: week, CSRFToken: csrftoken, erase: erase},
+      success: function(result){
+        if (result == 'model exists' && erase == false) {
+          model_form.dialog('close');
+          $('#duplicate-model-name').html(name);
+          duplicate_model.dialog('open');
+        }
+
+        if (result == 'ok') {
+          model_form.dialog('close');
+          duplicate_model.dialog('close');
+          $('#finish-model-name').html(name);
+          model_finish.dialog('open');
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown){
+        CJInfo(result.responseText,"error");
+      }
+    });
+  }
+
+  $('.pl-icon-save').on('click', function() {
+    model_form.dialog('open');
+    return false;
+  });
   // Vérifions si un agent de catégorie A est placé en fin de service
   verif_categorieA();
 
