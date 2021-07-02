@@ -597,8 +597,13 @@ function updateAgentsList(me,select_id){
   var index=$("#perso_id").val();
   var in_array=false;
 
+  var baseURL = '/';
+  if ($('#baseURL').val()) {
+    baseURL = $('#baseURL').val();
+  }
+
   $.ajax({
-    url: "personnel/ajax.updateAgentsList.php",
+    url: baseURL + 'personnel/ajax.updateAgentsList.php',
     type: "get",
     data: "deleted="+deleted,
     success: function(result){
