@@ -97,6 +97,8 @@
     - 21
 "model.add":
     - 301
+"model.import":
+    - 100
 "model.index":
     - 301
 "model.save":
@@ -105,6 +107,8 @@
     - 301
 "model.delete":
     - 301
+"model.form":
+    - 100
 "planning.delete":
     - 100
 "planningjob.contextmenu":

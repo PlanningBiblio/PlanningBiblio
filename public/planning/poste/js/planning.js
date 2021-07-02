@@ -26,6 +26,13 @@ cellules = new Array();
 
 // Chargement de la page
 $(document).ready(function(){
+  import_model = $( "#import-model-dialog" ).dialog({
+    autoOpen: false,
+    modal: true,
+    height: 300,
+    width: 480,
+  });
+
 
   delete_planning_week_confirm = $( "#delete-planning-dialog-confirm-week" ).dialog({
     autoOpen: false,
@@ -150,6 +157,16 @@ $(document).ready(function(){
       }
     });
   }
+
+  $('.pl-icon-open').on('click', function() {
+    date = $('input[name="date"]').val();
+    site = $('input[name="site"]').val();
+    CSRFSession = $('input[name="CSRFSession"]').val();
+    params = '?date=' + date + '&site=' + site + '&CSRFToken=' + CSRFSession;
+    $('#import-model-dialog').load('/modelform' + params);
+    import_model.dialog('open');
+    return false;
+  });
 
   $('.pl-icon-save').on('click', function() {
     model_form.dialog('open');

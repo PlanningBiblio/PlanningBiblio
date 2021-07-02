@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Model\AbsenceReason;
+use App\Model\Agent;
+use App\Model\Model;
 use App\PlanningBiblio\PresentSet;
 use App\PlanningBiblio\Framework;
 
@@ -19,6 +21,8 @@ require_once(__DIR__ . '/../../public/conges/class.conges.php');
 require_once(__DIR__ . '/../../public/activites/class.activites.php');
 require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
 require_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
+require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
+require_once(__DIR__ . '/../../public/include/function.php');
 
 class IndexController extends BaseController
 {
@@ -541,6 +545,275 @@ class IndexController extends BaseController
         );
 
         return $this->redirectToRoute('index');
+    }
+
+    /**
+     * @Route("/modelimport", name="model.import", methods={"POST"})
+     */
+    public function model_import(Request $request, Session $session)
+    {
+        $CSRFToken = $request->get('CSRFToken');
+        $date = $request->get('date');;
+        $site = $request->get('site');
+        $get_absents = $request->get('absents');
+        $model_id = $request->get('model');
+        $droits = $GLOBALS['droits'];
+        $dbprefix = $GLOBALS['dbprefix'];
+
+        if (!in_array((300+$site), $droits)) {
+            return $this->output('access-denied.html.twig');
+        }
+
+        $model = $this->entityManager
+            ->getRepository(Model::Class)
+            ->findOneBy(array('model_id' => $model_id));
+
+        $dates = array();
+        $d = new \datePl($date);
+
+        if ($model->isWeek()) {
+            // Search for all current dates
+            // of the week.
+            foreach ($d->dates as $elem) {
+                $dates[] = $elem;
+            }
+        } else {
+            // If it is not a week model,
+            // insert only current date.
+            $dates[0] = $date;
+        }
+
+        // Search for agents on other sites.
+        $autres_sites = array();
+        if ($this->config('Multisites-nombre') > 1) {
+            $db = new \db();
+            $db->select2('pl_poste', array('perso_id','date','debut','fin'), array('date' => "BETWEEN {$dates[0]} AND ".end($dates), 'site' => "<>$site"));
+            if ($db->result) {
+                foreach ($db->result as $as) {
+                    $autres_sites[$as['perso_id'].'_'.$as['date']][] = array('debut' => $as['debut'], 'fin' => $as['fin']);
+                }
+            }
+        }
+
+        // Find all agents that are not deleted
+        $agents = $this->entityManager
+            ->getRepository('App\Model\Agent')
+            ->findBy(array('supprime' =>'0'));
+
+        if (!empty($agents)) {
+            foreach ($agents as $agent) {
+                $agent_list[] = $agent->id();
+            }
+        }
+
+        // if module PlanningHebdo: search related plannings.
+        $tempsPlanningHebdo = array();
+        if ($this->config('PlanningHebdo')) {
+            $p = new \planningHebdo();
+            $p->debut = $date;
+            $p->fin = $date;
+            $p->valide = true;
+            $p->fetch();
+
+            if (!empty($p->elements)) {
+                foreach ($p->elements as $elem) {
+                    $tempsPlanningHebdo[$elem["perso_id"]]=$elem["temps"];
+                }
+            }
+        }
+
+        $i=0;
+        foreach ($dates as $elem) {
+            $i++; // Key of the day (1=Monday, 2=Tuesday ...) start with 1.
+            $sql = null;
+            $values = array();
+            $absents = array();
+
+            $db = new \db();
+            $db->CSRFToken = $CSRFToken;
+            $db->delete('pl_poste_tab_affect', array('date' => $elem, 'site' => $site));
+
+            // Import frameworf
+            // if it's a week model.
+            if ($model->isWeek()) {
+                $db = new \db();
+                $db->select2('pl_poste_modeles_tab', '*', array('model_id'=>$model_id, 'site'=>$site, 'jour'=>$i));
+            // Model for one day.
+            } else {
+                $db = new \db();
+                $db->select2('pl_poste_modeles_tab', '*', array('model_id'=>$model_id, 'site'=>$site));
+            }
+
+            if ($db->result) {
+                $tableau=$db->result[0]['tableau'];
+                $db=new \db();
+                $db->CSRFToken = $CSRFToken;
+                $db->insert("pl_poste_tab_affect", array("date"=>$elem ,"tableau"=>$tableau ,"site"=>$site ));
+
+                // N'importe pas les agents placés sur des postes supprimés (si tableau modifié)
+                $postes = array();
+                $db = new \db();
+                $db->select2('pl_poste_lignes', 'poste', array('type'=>'poste', 'numero'=>$tableau));
+                if ($db->result) {
+                    foreach ($db->result as $elem2) {
+                        $postes[] = $elem2['poste'];
+                    }
+                }
+
+                // Do not import agents that are
+                // on deleted time renges.
+                $horaires = array();
+                $db = new \db();
+                $db->select2('pl_poste_horaires', array('debut','fin'), array('numero'=>$tableau));
+                if ($db->result) {
+                    foreach ($db->result as $elem2) {
+                        $horaires[] = array('debut'=>$elem2['debut'], 'fin'=>$elem2['fin']);
+                    }
+                }
+            }
+
+            // Import agents
+            // Week model.
+            if ($model->isWeek()) {
+                $db = new \db();
+                $db->select2('pl_poste_modeles', '*', array('model_id' => $model_id, 'site'=>$site, 'jour'=>$i));
+            // Day model.
+            } else {
+                $db = new \db();
+                $db->select2('pl_poste_modeles', '*', array('model_id' => $model_id, 'site'=>$site));
+            }
+
+            $filter = $this->config('Absences-validation') ? 'AND `valide`>0' : null;
+            if ($db->result) {
+                foreach ($db->result as $elem2) {
+
+                    // Don't import deleted agents
+                    if ($elem2['perso_id'] > 0 and !in_array($elem2['perso_id'], $agent_list)) {
+                        continue;
+                    }
+
+                    $value = array();
+
+                    // Do not import agents placed on other site
+                    if (isset($autres_sites[$elem2['perso_id'].'_'.$elem])) {
+                        foreach ($autres_sites[$elem2['perso_id'].'_'.$elem] as $as) {
+                            if ($as['debut'] < $elem2['fin'] and $as['fin'] > $elem2['debut']) {
+                                continue 2;
+                            }
+                        }
+                    }
+
+                    $grise = $elem2['perso_id'] == 0 ? 1 : 0;
+
+                    $value = array(
+                        ':date' => $elem,
+                        ':perso_id' => $elem2['perso_id'],
+                        ':poste' => $elem2['poste'],
+                        ':debut' => $elem2['debut'],
+                        ':fin' => $elem2['fin'],
+                        ':site' => $site,
+                        ':absent' => 0,
+                        ':grise' => $grise
+                    );
+
+
+                    $debut=$elem." ".$elem2['debut'];
+                    $fin=$elem." ".$elem2['fin'];
+
+                    // Look for absences
+                    $db2 = new \db();
+                    $db2->select('absences', '*', "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' $filter ");
+                    $absent = $db2->result ? true : false;
+
+                    // Look for hollidays
+                    $db2 = new \db();
+                    $db2->select("conges", "*", "`debut`<'$fin' AND `fin`>'$debut' AND `perso_id`='{$elem2['perso_id']}' AND `valide`>0");
+                    $absent = $db2->result ? true : $absent ;
+
+                    // Don't import if absent and get_absents not checked
+                    if (!$get_absents and $absent) {
+                        continue;
+                    }
+
+                    // Check if the agent is out of his schedule (schedule has been changed).
+                    if ($this->config('PlanningHebdo')) {
+                        $temps = !empty($tempsPlanningHebdo[$elem2['perso_id']]) ? $tempsPlanningHebdo[$elem2['perso_id']] : array();
+                    } else {
+                        $agent = $this->entityManager->find(Agent::class, $elem2['perso_id']);
+                        if (!empty($agent)) {
+                            $temps = json_decode(html_entity_decode($agent->temps(), ENT_QUOTES, 'UTF-8'), true);
+                        } else {
+                            $temps = array();
+                        }
+                    }
+
+                    $d = new \datePl($elem);
+                    $day_index = $d->planning_day_index_for($elem2['perso_id']);
+                    if (!calculSiPresent($elem2['debut'], $elem2['fin'], $temps, $day_index)) {
+                        $value[':absent'] = 2;
+                    }
+
+                    if (isset($value[':absent'])) {
+                        $values[] = $value;
+                    }
+                }
+
+                // insertion des données dans le planning du jour
+                if (!empty($values)) {
+                    // Suppression des anciennes données
+                    $db=new \db();
+                    $db->CSRFToken = $CSRFToken;
+                    $db->delete("pl_poste", array("date"=>$elem, "site"=>$site));
+
+                    // Insertion des nouvelles données
+                    $req="INSERT INTO `{$dbprefix}pl_poste` (`date`,`perso_id`,`poste`,`debut`,`fin`,`absent`,`site`,`grise`) ";
+                    $req.="VALUES (:date, :perso_id, :poste, :debut, :fin, :absent, :site, :grise);";
+                    $dbh=new \dbh();
+                    $dbh->CSRFToken = $CSRFToken;
+                    $dbh->prepare($req);
+                    foreach ($values as $value) {
+                        $dbh->execute($value);
+                    }
+                }
+            }
+        }
+        return $this->redirectToRoute('index', array('date' => $date));
+    }
+
+    /**
+     * @Route("/modelform", name="model.form", methods={"GET"})
+     */
+    public function model_form(Request $request)
+    {
+        $CSRFToken = $request->get('CSRFToken');
+        $date = $request->get('date');;
+        $site = $request->get('site');
+        $droits = $GLOBALS['droits'];
+
+        if (!in_array((300+$site), $droits)) {
+            return $this->output('access-denied.html.twig');
+        }
+
+        $semaine = " ";
+
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+
+        $models = $queryBuilder->select(array('m'))
+        ->from(Model::class, 'm')
+        ->where('m.site = :site')
+        ->setParameter('site', $site)
+        ->groupBy('m.nom')
+        ->getQuery()
+        ->getResult();
+
+        $this->templateParams(array(
+            'models'    => $models,
+            'CSRFToken' => $CSRFToken,
+            'date'      => $date,
+            'site'      => $site,
+        ));
+
+        return $this->output('planning/poste/model_form.html.twig');
     }
 
     private function setDate($date)
