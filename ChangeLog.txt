@@ -1,5 +1,22 @@
 *** Unreleased ***
 
+*** Version 21.04.02       (2021-07-02)   ***
+-Fixes
+Check the rights with agent's site instead of all sites
+Always keep logged in agent in holiday's agents list
+show holiday's agents list according only to getManagedAgents function
+Apply right checking on mono-site mode
+Fix import of models
+Planning: notifiy deleted agents
+Don't sanitize skills data in position index page
+When checking Deleted agents, update agents dropdown in holidays index
+Fix day models import
+
+- Enhancements
+Show refused reason for refused level 1compensatory time
+Prevent user to change its own password via /myaccount with demo mode enabled
+Remove autocomplete on datepicker elements
+
 *** Version 21.04.01       (2021-05-28)   ***
 -Fixes
 Installer load an up-to-date SQL file + disable web_profiler
