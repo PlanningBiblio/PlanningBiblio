@@ -1,5 +1,16 @@
 *** Unreleased ***
 
+*** Version 20.10.10       (2021-07-02)   ***
+-Fixes
+Remove autocomplete on datepicker elements
+Planning: notifiy deleted agents
+Don't sanitize skills data in position index page
+When checking Deleted agents, update agents dropdown
+
+- Enhancements
+Show refused reason for refused level 1compensatory time
+Prevent user to change its own password via /myaccount with demo mode enabled
+
 *** Version 20.10.09       (2021-05-28)   ***
 -Fixes
 [followup] Redirect on route /agent after agent deletion
