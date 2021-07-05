@@ -1029,6 +1029,13 @@ class conges
             $insert["info_date"]=date("Y-m-d H:i:s");
 
             if ($origin_id) {
+                $db = new db();
+                $db->select('conges', 'debut, fin', "id=$origin_id");
+                if ($db->result) {
+                    $insert['debut'] = $db->result[0]['debut'];
+                    $insert['fin'] = $db->result[0]['fin'];
+                }
+                $insert["heures"] = $old['comp_time'] - $credits['comp_time'];
                 $insert['origin_id'] = $origin_id;
             }
 
