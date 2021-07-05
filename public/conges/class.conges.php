@@ -767,6 +767,13 @@ class conges
                 $recup = $db->result[0]['comp_time'] ? $db->result[0]['comp_time'] : 0;
                 $reliquat = $db->result[0]['conges_reliquat'] ? $db->result[0]['conges_reliquat'] : 0;
 
+                // Take into account negative compensatory time.
+                $negative = false;
+                if ($recup < 0) {
+                    $negative = true;
+                    $recup = abs($recup);
+                }
+
                 $annuelHeures=floor($annuel);
                 $anticipationHeures=floor($anticipation);
                 $creditHeures=floor($credit);
@@ -784,6 +791,10 @@ class conges
                 $creditMinutes=$creditCents*0.6;
                 $recupMinutes=$recupCents*0.6;
                 $reliquatMinutes=$reliquatCents*0.6;
+
+                if ($negative) {
+                    $recupHeures = "-$recupHeures";
+                }
 
                 $this->elements=array("annuel"=>$annuel, "anticipation"=>$anticipation, "credit"=>$credit, "recup"=>$recup, "reliquat"=>$reliquat,
       "annuelHeures"=>$annuelHeures, "anticipationHeures"=>$anticipationHeures, "creditHeures"=>$creditHeures, "recupHeures"=>$recupHeures, "reliquatHeures"=>$reliquatHeures,

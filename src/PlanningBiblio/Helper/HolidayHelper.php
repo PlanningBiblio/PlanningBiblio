@@ -31,13 +31,25 @@ class HolidayHelper extends BaseHelper
           $hours = 0;
         }
 
+        $negative = $hours < 0 ? true : false;
+        if ($negative) {
+            $hours = abs($hours);
+        }
+
+
         $mode = $this->config('Conges-Mode');
         if ($force && ($force == 'heures' || $force == 'jours')) {
             $mode = $force;
         }
 
         if ($mode == 'heures') {
-            return heure4($hours, true);
+            $human_readable = heure4($hours, true);
+
+            if ($negative) {
+                $human_readable = "-$human_readable";
+            }
+
+            return $human_readable;
         }
 
         // TODO: should be altered by a plugin.
