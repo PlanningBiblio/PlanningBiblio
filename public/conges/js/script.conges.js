@@ -443,7 +443,7 @@ function verifConges(){
     url: baseURL + "/ajax/holiday-absence-control",
     type: "get",
     dataType: "json",
-    data: {perso_ids: JSON.stringify([perso_id]), debut: debut, fin: fin, id: id, type:'holiday'},
+    data: {perso_ids: JSON.stringify(perso_ids), debut: debut, fin: fin, id: id, type:'holiday'},
     async: false,
     success: function(result){
       var valid = true;
