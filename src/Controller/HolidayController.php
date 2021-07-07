@@ -837,11 +837,7 @@ class HolidayController extends BaseController
         }
 
         // Enregistrement du congés
-        $c = new \conges();
-        $c->CSRFToken = $CSRFToken;
         $data = $request->request->all();
-        $data['perso_id'] = $perso_id;
-
         # In case multiple agents were selected
         if (!$data['heures']) {
             $holidayHlper = new HolidayHelper(array(
@@ -857,15 +853,12 @@ class HolidayController extends BaseController
             $data['minutes'] = $result['minutes'];
         }
 
-        $c->add($data);
-        $id = $c->id;
-
         foreach ($perso_ids as $perso_id) {
             // Enregistrement du congés
             $c = new \conges();
             $c->CSRFToken = $CSRFToken;
-            $request->request->set('perso_id', $perso_id);
-            $c->add($request->request->all());
+            $data['perso_id'] = $perso_id;
+            $c->add($data);
             $id = $c->id;
 
             // Récupération des adresses e-mails de l'agent et des responsables pour l'envoi des alertes
