@@ -146,7 +146,7 @@ if (!$model_id) {		// Etape 1 : Choix du modèle à importer
     $agents = $entityManager->getRepository('App\Model\Agent')->findBy(array('supprime' =>'0'));
     if (!empty($agents)) {
         foreach ($agents as $agent) {
-            $agent_list[] = $agent->id();
+            $agent_list[$agent->id()] = $agent;
         }
     }
 
@@ -222,10 +222,11 @@ if (!$model_id) {		// Etape 1 : Choix du modèle à importer
             foreach ($db->result as $elem2) {
 
                 // Don't import deleted agents
-                if ($elem2['perso_id'] > 0 and !in_array($elem2['perso_id'], $agent_list)) {
+                if ($elem2['perso_id'] > 0 and !isset($agent_list[$elem2['perso_id']])) {
                     continue;
                 }
 
+                $agent = $agent_list[$elem2['perso_id']];
                 $value = array();
 
                 // On n'importe pas les agents s'ils sont placés sur un autre site
@@ -250,6 +251,12 @@ if (!$model_id) {		// Etape 1 : Choix du modèle à importer
                     ':grise' => $grise
                 );
 
+                $leaving = $agent->depart()->format('Y-m-d');
+                // Agent left since model creation.
+                if ($leaving > '0000-00-00' and $leaving < $elem) {
+                    $value[':absent'] = 1;
+                }
+
 
                 $debut=$elem." ".$elem2['debut'];
                 $fin=$elem." ".$elem2['fin'];
@@ -273,7 +280,6 @@ if (!$model_id) {		// Etape 1 : Choix du modèle à importer
                 if ($config['PlanningHebdo']) {
                     $temps = !empty($tempsPlanningHebdo[$elem2['perso_id']]) ? $tempsPlanningHebdo[$elem2['perso_id']] : array();
                 } else {
-                    $agent = $entityManager->find(Agent::class, $elem2['perso_id']);
                     if (!empty($agent)) {
                         $temps = json_decode(html_entity_decode($agent->temps(), ENT_QUOTES, 'UTF-8'), true);
                     } else {
