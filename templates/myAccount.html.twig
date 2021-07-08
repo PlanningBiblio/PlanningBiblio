@@ -135,8 +135,7 @@
       {% elseif auth_mode == "SQL" %}
         <h3>Modification du mot de passe</h3>
         <h4>{{ login.surname }} {{ login.name }}</h4>
-        <form name='form' method='get' action="{{ asset('index.php') }}">
-          <input type='hidden' name='page' value='personnel/password.php' />
+        <form name='form' method='post' action="{{ asset('myaccount/password') }}">
           <table class='tableauFiches'>
             <tr>
               <td>Ancien mot de passe : </td>

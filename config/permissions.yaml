@@ -19,6 +19,10 @@
     - 100
 "account.index":
     - 100
+"account.password":
+    - 100
+"account.updatepassword":
+    - 100
 "admin.index":
     - 100
 "agent.index":
