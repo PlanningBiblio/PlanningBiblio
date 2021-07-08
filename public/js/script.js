@@ -898,6 +898,21 @@ $(function(){
     $(".ui-tab-cancel").css("position","absolute");
     $(".ui-tab-cancel").css("right",right);
     $(".ui-tab-cancel").css("top",7);
+
+    // Planno Time Picker settings.
+    $('.planno-timepicker').attr('autocomplete', 'off');
+
+    $('.planno-timepicker').timepicker({
+      timeFormat: 'HH:mm',
+      interval: 60,
+      minTime: '06:00',
+      maxTime: '23:59',
+      defaultTime: '', 
+      startTime: '06:00',
+      dynamic: true,
+      dropdown: true,
+      scrollbar: true
+    });
   });
   
   // Infobulles

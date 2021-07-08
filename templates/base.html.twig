@@ -6,6 +6,7 @@
     <title>Planning</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <script type='text/JavaScript' src='{{ asset("js/jquery-1.11.1.min.js") }}'></script>
+    <script type='text/JavaScript' src='{{ asset("js/jquery.timepicker.min.js") }}'></script>
     <script type='text/JavaScript' src='{{ asset("js/jquery-ui-1.11.2/jquery-ui.js") }}'></script>
     <script type='text/JavaScript' src='{{ asset("js/carhartl-jquery-cookie-3caf209/jquery.cookie.js") }}'></script>
     <script type='text/JavaScript' src='{{ asset("js/DataTables/datatables.min.js") }}'></script>
@@ -16,6 +17,7 @@
     {% block specificjs %}{% endblock %}
     <link rel='StyleSheet' href='{{ asset("js/DataTables/datatables.min.css") }}' type='text/css' media='all'/>
     <link rel='StyleSheet' href='{{ asset("themes/" ~ themeJQuery ~ "/jquery-ui.min.css") }}' type='text/css' media='all'/>
+    <link rel='StyleSheet' href='{{ asset("themes/" ~ themeJQuery ~ "/jquery.timepicker.min.css") }}' type='text/css' media='all'/>
     <link rel='StyleSheet' href='{{ asset("themes/default/default.css") }}' type='text/css' media='all'/>
     <link rel='StyleSheet' href='{{ asset("themes/default/print.css") }}' type='text/css' media='print'/>
     {% if theme != 'default' %}

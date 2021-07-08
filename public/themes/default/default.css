@@ -1261,3 +1261,7 @@ div.presents-absents {
 #tableConges td{
   white-space: nowrap;
 }
+
+.abs-timepicker {
+  width: 100%;
+}
