@@ -552,7 +552,7 @@ function sanitize_string(a){
 */
 function setEndHour(){
   if($("select[name=hre_debut]").val() != "" && $("select[name=hre_fin]").val() == ""){
-    $("select[name=hre_fin]").prop("selectedIndex",$("select[name=hre_debut]").prop("selectedIndex"));
+    $('select[name=hre_fin]').val($('select[name=hre_debut]'));
   }
 }
 
@@ -911,10 +911,19 @@ $(function(){
       startTime: '06:00',
       dynamic: true,
       dropdown: true,
-      scrollbar: true
+      scrollbar: true,
+      change: function(time) {
+        timePickerChange(time, this);
+      }
     });
   });
-  
+
+  function timePickerChange(time, obj) {
+    if ($(obj).hasClass('checkdate')) {
+      dateChange(obj);
+    }
+  }
+
   // Infobulles
   $(document).tooltip();
 });

@@ -109,20 +109,7 @@
               <label class='intitule'>Heure de début</label>
             </td>
             <td>
-              <select name='hre_debut' class='center ui-widget-content ui-corner-all'>
-                <option value=""></option>
-                {% for i in 6..23 %}
-                    {% for j in range(low=0, high=60, step=config('Granularite')) %}
-                      {% if j != 60 %}
-                        {% if hre_debut == "%02d:%02d:00"|format(i,j) %}
-                          <option value='{{ "%02d:%02d:00"|format(i,j) }}' selected='selected' >{{ "%02dh%02d"|format(i,j) }}</option>
-                        {% else %}
-                          <option value='{{ "%02d:%02d:00"|format(i,j) }}' >{{ "%02dh%02d"|format(i,j) }}</option>
-                        {% endif %}
-                      {% endif %}
-                    {% endfor %}
-                {% endfor %}
-              </select>
+              <input name="hre_debut" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker" value="{{ hre_debut | date('H:i') }}"/>
             </td>
           </tr>
           <tr>
@@ -134,26 +121,13 @@
             </td>
           </tr>
             {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
-              <tr id='hre_fin' style="display:none;">
+              <tr id='hre_fin' style="display:none;" data-hr="{{ hre_fin }}">
             {% else %}
               <tr id='hre_fin'>
             {% endif %}
               <td><label class='intitule'>Heure de fin</label></td>
               <td>
-                <select name='hre_fin' class='center ui-widget-content ui-corner-all' onfocus='setEndHour();'>
-                <option value=""></option>
-                {% for i in 6..23 %}
-                    {% for j in range(low=0, high=60, step=config('Granularite')) %}
-                      {% if j != 60 %}
-                        {% if hre_fin == "%02d:%02d:00"|format(i,j) %}
-                          <option value='{{ "%02d:%02d:00"|format(i,j) }}' selected='selected' >{{ "%02dh%02d"|format(i,j) }}</option>
-                        {% else %}
-                          <option value='{{ "%02d:%02d:00"|format(i,j) }}' >{{ "%02dh%02d"|format(i,j) }}</option>
-                        {% endif %}
-                      {% endif %}
-                    {% endfor %}
-                {% endfor %}
-              </select>
+                <input name="hre_fin" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker" value="{{ hre_fin | date('H:i') }}"/>
             </td>
           </tr>
 

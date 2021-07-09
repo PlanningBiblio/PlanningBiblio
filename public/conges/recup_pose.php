@@ -239,9 +239,7 @@ else {
     echo "<tr id='hre_debut'><td>\n";
     echo "Heure de début : \n";
     echo "</td><td>\n";
-    echo "<select name='hre_debut' id='hre_debut_select' style='width:98%;' class='googleCalendarTrigger checkdate'>\n";
-    selectHeure(7, 23, true);
-    echo "</select>\n";
+    echo "<input name='hre_debut' id='hre_debut_select' class='planno-timepicker center ui-widget-content ui-corner-all checkdate' value='' style='width:97%;'/>";
     echo "</td></tr>\n";
     echo "<tr><td>\n";
     echo "Date de fin : \n";
@@ -251,9 +249,7 @@ else {
     echo "<tr id='hre_fin'><td>\n";
     echo "Heure de fin : \n";
     echo "</td><td>\n";
-    echo "<select name='hre_fin' id='hre_fin_select' style='width:98%;' class='googleCalendarTrigger checkdate' onfocus='setEndHour();'>\n";
-    selectHeure(7, 23, true);
-    echo "</select>\n";
+    echo "<input name='hre_fin' id='hre_fin_select' class='planno-timepicker center ui-widget-content ui-corner-all checkdate' value='' style='width:97%;'/>";
     echo "</td></tr>\n";
   
     echo <<<EOD
