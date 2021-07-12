@@ -1265,3 +1265,7 @@ div.presents-absents {
 .abs-timepicker {
   width: 100%;
 }
+
+.wh-timepicker {
+  width: 150px;
+}

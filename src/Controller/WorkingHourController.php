@@ -81,45 +81,21 @@ class WorkingHourController extends BaseController
 
         }
 
+        // Decimal breaktime to time (H:i).
+        foreach ($breaktime as $index => $time) {
+            $breaktime[$index] = $breaktime[$index]
+                ? gmdate('H:i', floor($breaktime[$index] * 3600)) : '';
+        }
+
         $fin = $this->config('Dimanche') ? array(7,14,21,28,35,42,49,56,63,70) : array(6,13,20,27,34,41,48,55,62,69);
         $debut = array(1,8,15,22,29,36,43,50,57,64);
         $jours = array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
         $selectTemps = array();
-        $breaktime_h = array();
         $GLOBALS['temps'] = $temps;
-        for ($j = 0; $j < $nbSemaine; $j++) {
-            for ($i = $debut[$j]; $i <= $fin[$j]; $i++) {
-                $k = $i-($j*7)-1;
-                $breaktime[$i-1] = isset($breaktime[$i-1]) ? $breaktime[$i-1] : 0;
-                if ($modifAutorisee) {
-                    $selectTemps[$j][$i-1][0] = selectTemps($i-1, 0, null, "select");
-                    $selectTemps[$j][$i-1][1] = selectTemps($i-1, 1, null, "select");
-                    $selectTemps[$j][$i-1][2] = selectTemps($i-1, 2, null, "select");
-                    if ($pause2_enabled == true) {
-                        $selectTemps[$j][$i-1][5] = selectTemps($i-1, 5, null, "select");
-                        $selectTemps[$j][$i-1][6] = selectTemps($i-1, 6, null, "select");
-                    }
-                    $selectTemps[$j][$i-1][3] = selectTemps($i-1, 3, null, "select");
-                } else {
-                    $temps[$i-1][0] = heure2($temps[$i-1][0]);
-                    $temps[$i-1][1] = heure2($temps[$i-1][1]);
-                    $temps[$i-1][2] = heure2($temps[$i-1][2]);
-                    if ($pause2_enabled == true) {
-                        $temps[$i-1][5] = heure2($temps[$i-1][5]);
-                        $temps[$i-1][6] = heure2($temps[$i-1][6]);
-                    }
-                    $temps[$i-1][3] = heure2($temps[$i-1][3]);
-                    if ($pauseLibre_enabled == true) {
-                        $breaktime_h[$i-1] = heure4($breaktime[$i -1]);
-                    }
-                }
-            }
-        }
 
         $this->templateParams(
             array(
                 "breaktime"      => $breaktime,
-                "breaktime_h"    => $breaktime_h,
                 "cellule"        => $cellule,
                 "debut"          => $debut,
                 "fin"            => $fin,
@@ -631,6 +607,11 @@ class WorkingHourController extends BaseController
         $post = $request->request->all();
         $msg = null;
         $msgType = null;
+
+        foreach ($post['breaktime'] as $index => $time) {
+          $post['breaktime'][$index] = $this->time_to_decimal($time);
+        }
+
         switch ($post["action"]) {
             case "ajout":
                 $p = new \planningHebdo();
@@ -696,5 +677,13 @@ class WorkingHourController extends BaseController
         $db->update('planning_hebdo', array('remplace'=>'0'), array('remplace'=>$id));
 
         return $this->json('ok');
+    }
+
+    // FIXME put this in a helper or
+    // a service container.
+    private function time_to_decimal($time)
+    {
+      $hm = explode(":", $time);
+      return ($hm[0] + ($hm[1] / 60));
     }
 }

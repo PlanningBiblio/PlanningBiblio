@@ -899,28 +899,71 @@ $(function(){
     $(".ui-tab-cancel").css("right",right);
     $(".ui-tab-cancel").css("top",7);
 
-    // Planno Time Picker settings.
-    $('.planno-timepicker').attr('autocomplete', 'off');
+    $('body').on('focus',".planno-timepicker", function(){
+      // Planno Time Picker settings.
+      $('.planno-timepicker').attr('autocomplete', 'off');
 
-    $('.planno-timepicker').timepicker({
-      timeFormat: 'HH:mm',
-      interval: 60,
-      minTime: '06:00',
-      maxTime: '23:59',
-      defaultTime: '', 
-      startTime: '06:00',
-      dynamic: true,
-      dropdown: true,
-      scrollbar: true,
-      change: function(time) {
-        timePickerChange(time, this);
-      }
+      $('.planno-timepicker').timepicker({
+        timeFormat: 'HH:mm',
+        interval: 60,
+        minTime: '06:00',
+        maxTime: '23:59',
+        defaultTime: '',
+        startTime: '06:00',
+        dynamic: true,
+        dropdown: true,
+        scrollbar: true,
+        change: function(time) {
+          timePickerChange(time, this);
+        }
+      });
     });
+
+    $('body').on('focus',".planno-break-timepicker", function(){
+      $('.planno-break-timepicker').attr('autocomplete', 'off');
+
+      $('.planno-break-timepicker').timepicker({
+        timeFormat: 'HH:mm',
+        interval: 15,
+        minTime: '00:00',
+        maxTime: '02:00',
+        defaultTime: '',
+        startTime: '00:00',
+        dynamic: false,
+        dropdown: true,
+        scrollbar: true,
+        change: function(time) {
+          timePickerChange(time, this);
+        }
+      });
+    });
+
   });
 
   function timePickerChange(time, obj) {
     if ($(obj).hasClass('checkdate')) {
       dateChange(obj);
+    }
+
+    if ($(obj).hasClass('select')) {
+      plHebdoCalculHeures($(obj),"");
+      plHebdoChangeHiddenSelect();
+    }
+
+    if ($(obj).hasClass('select0')) {
+      calculHeures($(obj),'','form','heures0',0);
+    }
+
+    if ($(obj).hasClass('select1')) {
+      calculHeures($(obj),'','form','heures1',1);
+    }
+
+    if ($(obj).hasClass('select2')) {
+      calculHeures($(obj),'','form','heures2',2);
+    }
+
+    if ($(obj).hasClass('select3')) {
+      calculHeures($(obj),'','form','heures3',3);
     }
   }
 
