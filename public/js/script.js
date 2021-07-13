@@ -916,8 +916,9 @@ $(function(){
         dynamic: true,
         dropdown: true,
         scrollbar: true,
-        change: function(time) {
-          timePickerChange(time, this);
+        change: function(date) {
+          roundTimePiker(this);
+          timePickerChange(date, this);
         }
       });
     });
@@ -935,15 +936,16 @@ $(function(){
         dynamic: false,
         dropdown: true,
         scrollbar: true,
-        change: function(time) {
-          timePickerChange(time, this);
+        change: function(date) {
+          roundBreakTimePiker(this);
+          timePickerChange(date, this);
         }
       });
     });
 
   });
 
-  function timePickerChange(time, obj) {
+  function timePickerChange(date, obj) {
     if ($(obj).hasClass('checkdate')) {
       dateChange(obj);
     }
@@ -980,6 +982,65 @@ $(function(){
     }
 
     return granularity;
+  }
+
+  function roundTimePiker(obj) {
+
+    time = $(obj).val();
+
+    var times = time.split(':');
+    var hours = times[0];
+    var minutes = times[1];
+    var rounded = Math.round(minutes / granularity) * granularity;
+
+    if (rounded == 60) {
+      rounded = 00;
+      hours++;
+    }
+
+    if (rounded == 0) {
+      rounded = '00';
+    }
+
+    if (hours > 23) {
+      hours = 23;
+    }
+
+    if (hours < 6) {
+      hours = 6;
+    }
+
+    $(obj).val(hours + ':' + rounded);
+  }
+
+  function roundBreakTimePiker(obj) {
+
+    time = $(obj).val();
+
+    var times = time.split(':');
+    var hours = times[0];
+    var minutes = times[1];
+    var rounded = Math.round(minutes / 15) * 15;
+
+    if (rounded == 60) {
+      rounded = 00;
+      hours++;
+    }
+
+    if (rounded == 0) {
+      rounded = '00';
+    }
+
+    if (hours > 2) {
+      hours = '02';
+    }
+
+    if (hours == 2 && minutes < 0) {
+      hours = '02';
+      minutes = '00';
+    }
+
+    $(obj).val(hours + ':' + rounded);
   }
 
   // Infobulles
