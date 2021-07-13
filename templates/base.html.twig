@@ -50,6 +50,11 @@
       {% include 'menu.html.twig' %}
     {% endif %}
 
+
+    <form name='Config' action='#' method='get'>
+      <input type='hidden' name='granularity' id='granularity' value='{{ granularity }}' />
+    </form>
+
     <form name='CSRFForm' action='#' method='get'>
       <input type='hidden' name='CSRFSession' id='CSRFSession' value='{{ CSRFSession }}' />
     </form>

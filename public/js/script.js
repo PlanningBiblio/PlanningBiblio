@@ -899,13 +899,16 @@ $(function(){
     $(".ui-tab-cancel").css("right",right);
     $(".ui-tab-cancel").css("top",7);
 
+    granularity = $('form #granularity').val();
+    step = setTimePickerStep(granularity);
+
     $('body').on('focus',".planno-timepicker", function(){
       // Planno Time Picker settings.
       $('.planno-timepicker').attr('autocomplete', 'off');
 
       $('.planno-timepicker').timepicker({
         timeFormat: 'HH:mm',
-        interval: 60,
+        interval: step,
         minTime: '06:00',
         maxTime: '23:59',
         defaultTime: '',
@@ -969,6 +972,14 @@ $(function(){
     if ($(obj).hasClass('framework-timepicker')) {
       change_horaires($(obj));
     }
+  }
+
+  function setTimePickerStep(granularity) {
+    if (granularity == 0 || granularity == 15 || granularity == 5) {
+      return 30;
+    }
+
+    return granularity;
   }
 
   // Infobulles

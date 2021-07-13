@@ -16,6 +16,7 @@ $templates_params = array(
     'user_firstname'      => $_SESSION['login_prenom'],
     'planninghebdo'       => $config['PlanningHebdo'],
     'ics_export'          => $config['ICS-Export'],
+    'granularity'         => $config['Granularite'],
     'oups_auth_mode'      => $_SESSION['oups']['Auth-Mode'],
     'content_planning'    => $content_planning,
     'CSRFSession'         => $CSRFSession,
