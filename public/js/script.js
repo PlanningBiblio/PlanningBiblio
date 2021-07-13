@@ -965,6 +965,10 @@ $(function(){
     if ($(obj).hasClass('select3')) {
       calculHeures($(obj),'','form','heures3',3);
     }
+
+    if ($(obj).hasClass('framework-timepicker')) {
+      change_horaires($(obj));
+    }
   }
 
   // Infobulles
