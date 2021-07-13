@@ -551,8 +551,8 @@ function sanitize_string(a){
 * @author Farid Goara <farid.goara@u-pem.fr>
 */
 function setEndHour(){
-  if($("select[name=hre_debut]").val() != "" && $("select[name=hre_fin]").val() == ""){
-    $('select[name=hre_fin]').val($('select[name=hre_debut]'));
+  if($("input[name=hre_debut]").val() != "" && $("input[name=hre_fin]").val() == ""){
+    $('input[name=hre_fin]').val($('input[name=hre_debut]'));
   }
 }
 
