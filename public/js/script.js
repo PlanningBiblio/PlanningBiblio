@@ -903,145 +903,30 @@ $(function(){
     step = setTimePickerStep(granularity);
 
     $('body').on('focus',".planno-timepicker", function(){
-      // Planno Time Picker settings.
-      $('.planno-timepicker').attr('autocomplete', 'off');
-
-      $('.planno-timepicker').timepicker({
-        timeFormat: 'HH:mm',
+      $('.planno-timepicker').plannoTimepicker({
         interval: step,
-        minTime: '06:00',
+        granularity: granularity,
+        minTime: '6:00',
+        minHour: 6,
         maxTime: '23:59',
-        defaultTime: '',
-        startTime: '06:00',
-        dynamic: true,
-        dropdown: true,
-        scrollbar: true,
-        change: function(date) {
-          roundTimePiker(this);
-          timePickerChange(date, this);
-        }
+        maxHour: 23,
+        startTime: '6:00',
       });
     });
 
     $('body').on('focus',".planno-break-timepicker", function(){
-      $('.planno-break-timepicker').attr('autocomplete', 'off');
-
-      $('.planno-break-timepicker').timepicker({
-        timeFormat: 'HH:mm',
+      $('.planno-break-timepicker').plannoTimepicker({
         interval: 15,
+        granularity: 15,
         minTime: '00:00',
+        minHour: '0',
         maxTime: '02:00',
-        defaultTime: '',
-        startTime: '00:00',
+        maxHour: '2',
         dynamic: false,
-        dropdown: true,
-        scrollbar: true,
-        change: function(date) {
-          roundBreakTimePiker(this);
-          timePickerChange(date, this);
-        }
       });
     });
 
   });
-
-  function timePickerChange(date, obj) {
-    if ($(obj).hasClass('checkdate')) {
-      dateChange(obj);
-    }
-
-    if ($(obj).hasClass('select')) {
-      plHebdoCalculHeures($(obj),"");
-      plHebdoChangeHiddenSelect();
-    }
-
-    if ($(obj).hasClass('select0')) {
-      calculHeures($(obj),'','form','heures0',0);
-    }
-
-    if ($(obj).hasClass('select1')) {
-      calculHeures($(obj),'','form','heures1',1);
-    }
-
-    if ($(obj).hasClass('select2')) {
-      calculHeures($(obj),'','form','heures2',2);
-    }
-
-    if ($(obj).hasClass('select3')) {
-      calculHeures($(obj),'','form','heures3',3);
-    }
-
-    if ($(obj).hasClass('framework-timepicker')) {
-      change_horaires($(obj));
-    }
-  }
-
-  function setTimePickerStep(granularity) {
-    if (granularity == 0 || granularity == 15 || granularity == 5) {
-      return 30;
-    }
-
-    return granularity;
-  }
-
-  function roundTimePiker(obj) {
-
-    time = $(obj).val();
-
-    var times = time.split(':');
-    var hours = times[0];
-    var minutes = times[1];
-    var rounded = Math.round(minutes / granularity) * granularity;
-
-    if (rounded == 60) {
-      rounded = 00;
-      hours++;
-    }
-
-    if (rounded == 0) {
-      rounded = '00';
-    }
-
-    if (hours > 23) {
-      hours = 23;
-    }
-
-    if (hours < 6) {
-      hours = 6;
-    }
-
-    $(obj).val(hours + ':' + rounded);
-  }
-
-  function roundBreakTimePiker(obj) {
-
-    time = $(obj).val();
-
-    var times = time.split(':');
-    var hours = times[0];
-    var minutes = times[1];
-    var rounded = Math.round(minutes / 15) * 15;
-
-    if (rounded == 60) {
-      rounded = 00;
-      hours++;
-    }
-
-    if (rounded == 0) {
-      rounded = '00';
-    }
-
-    if (hours > 2) {
-      hours = '02';
-    }
-
-    if (hours == 2 && minutes < 0) {
-      hours = '02';
-      minutes = '00';
-    }
-
-    $(obj).val(hours + ':' + rounded);
-  }
 
   // Infobulles
   $(document).tooltip();

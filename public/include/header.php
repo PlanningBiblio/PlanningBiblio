@@ -41,6 +41,7 @@ if (!file_exists("themes/$theme/favicon.png")) {
 
 <script type='text/JavaScript' src='js/jquery-1.11.1.min.js'></script>
 <script type='text/JavaScript' src='js/jquery.timepicker.min.js'></script>
+<script type='text/JavaScript' src='js/plb/planno-timepicker.js'></script>
 <script type='text/JavaScript' src='js/jquery-ui-1.11.2/jquery-ui.js'></script>
 <script type='text/JavaScript' src='js/carhartl-jquery-cookie-3caf209/jquery.cookie.js'></script>
 <script type='text/JavaScript' src='js/DataTables/datatables.min.js'></script>
