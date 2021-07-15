@@ -54,7 +54,7 @@ getJSFiles($page, $version);
 
 <link rel='StyleSheet' href='js/DataTables/datatables.min.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/<?php echo $themeJQuery; ?>/jquery-ui.min.css' type='text/css' media='all'/>
-<link rel='StyleSheet' href='themes/<?php echo $themeJQuery; ?>/jquery.timepicker.min.css' type='text/css' media='all'/>
+<link rel='StyleSheet' href='themes/default/jquery.timepicker.min.css' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/default.css?version=<?php echo $version; ?>' type='text/css' media='all'/>
 <link rel='StyleSheet' href='themes/default/print.css?version=<?php echo $version; ?>' type='text/css' media='print'/>
 <?php
