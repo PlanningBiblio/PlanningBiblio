@@ -99,6 +99,7 @@ class PositionController extends BaseController
             $new['statistiques'] = $value->statistiques();
             $new['bloquant'] = $value->bloquant();
             $new['obligatoire'] = $value->obligatoire();
+            $new['position'] = str_replace(['backOffice', 'frontOffice'], ['Back Office', 'Front Office'], $value->position());
             $positions[] = $new;
         }
 
@@ -153,12 +154,14 @@ class PositionController extends BaseController
         $bloq1 = "checked";
         $stat1 = "checked";
         $teleworking2 = "checked";
-
+        $backOffice = "";
+        $frontOffice = "checked";
 
 
         $this->templateParams(array(
             'activites'      => $activites,
             'actList'        => $actList,
+            'backOffice'     => $backOffice,
             'categories'     => $categories,
             'bloq1'          => $bloq1,
             'bloq2'          => null,
@@ -166,6 +169,7 @@ class PositionController extends BaseController
             'categoriesList' => $categories_list,
             'etage'          => $etage,
             'etages'         => $etages,
+            'frontOffice'    => $frontOffice,
             'groupe'         => $groupe,
             'groupes'        => $groupes,
             'group_id'       => $groupe_id,
@@ -216,6 +220,9 @@ class PositionController extends BaseController
         $teleworking2 = !$position->teleworking() ? "checked='checked'" : "";
 
         $checked = null;
+
+	$backOffice = $position->position() == 'backOffice' ? 'checked' : '';
+	$frontOffice = $position->position() == 'frontOffice' ? 'checked' : '';
 
         // Recherche des étages
         $db = new \db();
@@ -294,6 +301,8 @@ class PositionController extends BaseController
             'stat2'         => $stat2,
             'teleworking1'  => $teleworking1,
             'teleworking2'  => $teleworking2,
+            'backOffice'    => $backOffice,
+            'frontOffice'   => $frontOffice,
             'bloq1'         => $bloq1,
             'bloq2'         => $bloq2,
             'etages'        => $etages,
@@ -340,6 +349,7 @@ class PositionController extends BaseController
             $groupe_id = $request->get('group_id', "");
             $obligatoire = $request->get('obligatoire');
             $site = $request->get('site', "");
+            $front_back = $request->get('position', "");
 
             if (!$id){
                 $position = new Position;
@@ -353,6 +363,7 @@ class PositionController extends BaseController
                 $position->groupe($groupe);
                 $position->groupe_id($groupe_id);
                 $position->obligatoire($obligatoire);
+                $position->position($front_back);
                 $position->site($site);
 
                 try{
@@ -382,6 +393,7 @@ class PositionController extends BaseController
                 $position->groupe($groupe);
                 $position->groupe_id($groupe_id);
                 $position->obligatoire($obligatoire);
+                $position->position($front_back);
                 $position->site($site);
 
                 try{
