@@ -56,6 +56,9 @@ echo <<<EOD
 <form name='CSRFForm' action='#' method='get'>
 <input type='hidden' name='CSRFSession' id='CSRFSession' value='$CSRFSession' />
 </form>
+<form name='Config' action='#' method='get'>
+  <input type='hidden' name='granularity' id='granularity' value="{$config['Granularite']}" />
+</form>
 EOD;
 
 if ($content_planning) {

@@ -928,12 +928,12 @@ $(function(){
 
     $('.comptime-timepicker').plannoTimepicker({
       zindex: 9999999,
-      interval: 15,
-      granularity: 15,
-      minTime: '00:15',
+      interval: step,
+      granularity: granularity,
+      minTime: '00:00',
       minHour: '0',
-      maxTime: '16:45',
-      maxHour: '16',
+      maxTime: '17:00',
+      maxHour: '17',
     });
 
   });
