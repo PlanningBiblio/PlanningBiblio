@@ -13,40 +13,6 @@
     var samediSeulement = {{ recup_samediseulement }};
     var oneRecoveryPerDay = {{ recup_uneparjour }};
 
-    $(document).ready(function() {
-      $('.comptime-timepicker').attr('autocomplete', 'off');
-      $('.comptime-timepicker').timepicker({
-        zindex: 9999999,
-        timeFormat: 'HH:mm',
-        interval: 15,
-        minTime: '00:15',
-        maxTime: '16:45',
-        defaultTime: '',
-        startTime: '00:15',
-        dynamic: true,
-        dropdown: true,
-        scrollbar: true,
-        change: function(date) {
-          time = $(this).val();
-          var times = time.split(':');
-          var hours = times[0];
-          var minutes = times[1];
-          var rounded = Math.round(minutes / 15) * 15;
-          if (rounded == 60) {
-            rounded = 00;
-            hours++;
-          }
-          if (rounded == 0) {
-            rounded = '00';
-          }
-          if (hours > 16) {
-            hours = 16;
-          }
-          $(this).val(hours + ':' + rounded);
-        }
-      });
-    });
-
     $(function() {
 
       var date = $( "#date" ),
@@ -337,7 +303,7 @@
             <tr>
               <td><label for="heures">Heures</label></td>
               <td>
-                <input id="heures" name="heures" class="comptime-timepicker" value=""/>
+                <input id="heures" name="heures" class="comptime-timepicker ui-widget-content ui-corner-all" value=""/>
               </td>
             </tr>
 

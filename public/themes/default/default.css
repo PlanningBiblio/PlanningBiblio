@@ -1262,7 +1262,7 @@ div.presents-absents {
   white-space: nowrap;
 }
 
-.abs-timepicker {
+.abs-timepicker, .comptime-timepicker {
   width: 100%;
 }
 

@@ -926,6 +926,16 @@ $(function(){
       });
     });
 
+    $('.comptime-timepicker').plannoTimepicker({
+      zindex: 9999999,
+      interval: 15,
+      granularity: 15,
+      minTime: '00:15',
+      minHour: '0',
+      maxTime: '16:45',
+      maxHour: '16',
+    });
+
   });
 
   // Infobulles
