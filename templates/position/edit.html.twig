@@ -77,8 +77,15 @@
                   </td>
                 </tr>
                 <tr>
-                  <td style='padding-top:20px;'>Obligatoire / renfort :</td>
+                  <td style='padding-top:20px;'>Position :</td>
                   <td style='padding-top:20px;'>
+                    <input type='radio' name='position' value='frontOffice' {{ frontOffice }} /> Front Office
+                    <input type='radio' name='position' value='backOffice' {{ backOffice }} /> Back Office
+                  </td>
+                </tr>
+                <tr>
+                  <td>Obligatoire / renfort :</td>
+                  <td>
                     <input type='radio' name='obligatoire' value='Obligatoire' {{ obligatoire }}/> Obligatoire
                     <input type='radio' name='obligatoire' value='Renfort' {{ renfort }}/> Renfort
                   </td>
