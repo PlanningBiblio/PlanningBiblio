@@ -42,6 +42,9 @@ class Position extends PLBEntity
     /** @Column(type="boolean")**/
     protected $lunch = false;
 
+    /** @Column(type="text")**/
+    protected $position;
+
     /** @Column(type="integer", length=1)**/
     protected $site;
 

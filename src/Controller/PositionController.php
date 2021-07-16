@@ -104,6 +104,7 @@ class PositionController extends BaseController
             $new['statistiques'] = $value->statistiques();
             $new['bloquant'] = $value->bloquant();
             $new['obligatoire'] = $value->obligatoire();
+            $new['position'] = str_replace(['backOffice', 'frontOffice'], ['Back Office', 'Front Office'], $value->position());
             $positions[] = $new;
         }
 
@@ -140,6 +141,8 @@ class PositionController extends BaseController
             $teleworking2 = !$position->teleworking() ? "checked='checked'" : "";
             $lunch1 = $position->lunch() ? "checked='checked'" : "";
             $lunch2 = !$position->lunch() ? "checked='checked'" : "";
+            $backOffice = $position->position() == 'backOffice' ? 'checked' : null;
+            $frontOffice = $position->position() == 'frontOffice' ? 'checked' : null;
         } else {
             $id = null;
             $nom =  null;
@@ -159,6 +162,8 @@ class PositionController extends BaseController
             $teleworking2 = 'checked';
             $lunch1 = null;
             $lunch2 = 'checked';
+            $backOffice = null;
+            $frontOffice = null;
         }
 
         // Floors, groups and skills
@@ -237,6 +242,8 @@ class PositionController extends BaseController
             'teleworking2'  => $teleworking2,
             'lunch1'        => $lunch1,
             'lunch2'        => $lunch2,
+            'backOffice'    => $backOffice,
+            'frontOffice'   => $frontOffice,
             'bloq1'         => $bloq1,
             'bloq2'         => $bloq2,
             'floors'        => $floors,
@@ -284,6 +291,7 @@ class PositionController extends BaseController
             $groupe_id = $request->get('group_id', "");
             $obligatoire = $request->get('obligatoire', 'Obligatoire');
             $site = $request->get('site', "");
+            $front_back = $request->get('position', "");
 
             if (!$id){
                 $position = new Position;
@@ -298,6 +306,7 @@ class PositionController extends BaseController
                 $position->groupe($groupe);
                 $position->groupe_id($groupe_id);
                 $position->obligatoire($obligatoire);
+                $position->position($front_back);
                 $position->site($site);
 
                 try{
@@ -328,6 +337,7 @@ class PositionController extends BaseController
                 $position->groupe($groupe);
                 $position->groupe_id($groupe_id);
                 $position->obligatoire($obligatoire);
+                $position->position($front_back);
                 $position->site($site);
 
                 try{

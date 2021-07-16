@@ -31,6 +31,7 @@
         {% if not config('Planook') %}
           <th>Activités</th>
           <th>Groupe</th>
+          <th>Position</th>
           <th>Obligatoire/renfort</th>
           <th>Bloquant</th>
           <th>Statistiques</th>
@@ -82,6 +83,7 @@
           {% if not config('Planook') %}
             <td title='{{j.activites}}' size='100'>{{ j.activitesAffichees }}</td>
             <td>{{j.groupe}}</td>
+            <td>{{j.position}}</td>
             <td>{{j.obligatoire}}</td>
             <td>{{j.bloquant ? "Oui" : "Non"}}</td>
             <td>{{j.statistiques ? "Oui" : "Non"}}</td>
