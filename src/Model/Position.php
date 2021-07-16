@@ -39,6 +39,9 @@ class Position extends PLBEntity
     /** @Column(type="text", columnDefinition="ENUM('0','1')") )**/
     protected $bloquant;
 
+    /** @Column(type="text")**/
+    protected $position;
+
     /** @Column(type="integer", length=1)**/
     protected $site;
 
