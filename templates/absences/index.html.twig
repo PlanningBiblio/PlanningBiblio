@@ -105,8 +105,20 @@
               <span class='pl-icon pl-icon-recurring' title='Récurrence'></span>
             {% endif %}
           </td>
-          <td>{{ abs.debut | date('d/m/Y') }}</td>
-          <td>{{ abs.fin | date('d/m/Y') }}</td>
+          <td>
+            {% if abs.debut | date('H:i:s') == '00:00:00' %}
+              {{ abs.debut | date('d/m/Y') }}
+            {% else %}
+              {{ abs.debut | date('d/m/Y H\\hi') }}
+            {% endif %}
+          </td>
+          <td>
+            {% if abs.fin | date('H:i:s') == '23:59:59' %}
+              {{ abs.fin | date('d/m/Y') }}
+            {% else %}
+              {{ abs.fin | date('d/m/Y H\\hi') }}
+            {% endif %}
+          </td>
           <td>{{ abs.agents | join(', ') }}</td>
 
           {% if config('Absences-validation') %}
