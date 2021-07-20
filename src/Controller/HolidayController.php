@@ -240,6 +240,30 @@ class HolidayController extends BaseController
                 $elem['validationStyle'] = '';
             }
 
+            // This holiday is not a regularization,
+            // but there is one related to.
+            if ($elem['regul_id']) {
+                $r = new \conges();
+                $r->id = $elem['regul_id'];
+                $r->fetch();
+                $data = $r->elements[0];
+
+                $regul = $data['recup_actuel'] - $data['recup_prec'];
+                $elem['regul'] = $regul;
+                $elem['hr_regul'] = heure4(abs($regul));
+            }
+
+            // This is a regularization.
+            if ($elem['origin_id']) {
+                $origin = new \conges();
+                $origin->id = $elem['origin_id'];
+                $origin->fetch();
+                $data = $origin->elements[0];
+
+                $elem['origin_start'] = str_replace("00h00", "", dateFr($data['debut'], true));
+                $elem['origin_end'] = str_replace("23h59", "", dateFr($data['fin'], true));
+            }
+
             $elem['nom'] = $admin ? nom($elem['perso_id'], 'nom p', $agents) : '';
 
             $holidays[] = $elem;
@@ -285,6 +309,11 @@ class HolidayController extends BaseController
         $c->fetch();
         $data = $c->elements[0];
         $perso_id = $data['perso_id'];
+
+        // FIXME: move into a dedicated model's method when possible: $holiday->isEditable().
+        if ($c->elements[0]['information'] != 0 or $c->elements[0]['supprime'] != 0) {
+            return $this->output('access-denied.html.twig');
+        }
 
         // Calcul des crédits de récupération disponibles lors de l'ouverture du formulaire (date du jour)
         $c = new \conges();
@@ -336,8 +365,6 @@ class HolidayController extends BaseController
         // Crédits
         $p = new \personnel();
         $p->fetchById($perso_id);
-        $nom=$p->elements[0]['nom']; //FIXME utile?
-        $prenom=$p->elements[0]['prenom']; //FIXME utile?
 
         $conges_anticipation = $p->elements[0]['conges_anticipation'];
         $conges_credit = $p->elements[0]['conges_credit'];
@@ -545,8 +572,6 @@ class HolidayController extends BaseController
         $perso_id=$perso_id?$perso_id:$_SESSION['login_id'];
         $p=new \personnel();
         $p->fetchById($perso_id);
-        $nom=$p->elements[0]['nom'];
-        $prenom=$p->elements[0]['prenom'];
         $conges_anticipation = $p->elements[0]['conges_anticipation'];
         $conges_credit = $p->elements[0]['conges_credit'];
         $conges_reliquat = $p->elements[0]['conges_reliquat'];

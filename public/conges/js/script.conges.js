@@ -32,6 +32,7 @@ function calculCredit(){
   conges_mode = $('#conges-mode').val();
   is_recover = $('#is-recover').val();
   conges_demi_journee = $('#conges-demi-journees')
+  congesRecup = $('#conges-recup').val();
 
   if(!fin){
     fin=debut;
@@ -74,8 +75,12 @@ function calculCredit(){
 
         var balance_estimated = result.recover[4];       // Crédits de récupérations prévisionnels à la date choisie
 
-        if($('#conges-recup').val() == 0 && balance_estimated < 0 ){
+        if(congesRecup == 0 && balance_estimated < 0 ){
           balance_estimated = 0;
+        }
+
+        if (congesRecup != 0) {
+          $(".balance_tr").hide();
         }
 
 
@@ -84,7 +89,10 @@ function calculCredit(){
         $('#balance_before').text(heure4(balance));
         $('#balance2_before').text(heure4(balance_estimated));
         $("#recuperation_prev").val(balance_estimated);
-        $(".balance_tr").effect("highlight",null,4000);
+
+        if (congesRecup == 0 || result.rest != 0) {
+          $(".balance_tr").effect("highlight",null,4000);
+        }
 
         if ($('#hours_per_day').val()) {
           var hours_per_day = $('#hours_per_day').val();
@@ -107,6 +115,20 @@ function calculCredit(){
         $("#nbHeures").effect("highlight",null,4000);
         $("#nbJours").effect("highlight",null,4000);
         $("#erreurCalcul").val("false");
+
+        $("#rest").val(0);
+        $("#hr_rest").text('');
+        $("#rest").parent().parent().hide();
+        if (result.rest != 0) {
+          if (result.rest > 0) {
+            $("#hr_rest").text(result.hr_rest + ' créditée(s)');
+          } else {
+            $("#hr_rest").text(result.hr_rest + ' débitée(s)');
+          }
+          $("#rest").val(result.rest);
+          $("#rest").parent().parent().show();
+          $("#hr_rest").effect("highlight",null,4000);
+        }
       }
     },
     error: function(xhr, ajaxOptions, thrownError){
@@ -120,6 +142,27 @@ function calculCredit(){
     },
   });
   calculRestes();
+  calculRegul();
+}
+
+function calculRegul() {
+  regul = $('#rest').val();
+  if (regul != 0 && regul !== undefined) {
+    recuperation = $('#recuperation').val();
+    recuperation_prev = $('#recuperation_prev').val();
+
+    if (Math.sign(regul) < 0) {
+      regul = Math.abs(regul);
+    } else {
+      regul = -Math.abs(regul);
+    }
+
+    recuperation = recuperation - regul;
+    recuperation_prev = recuperation_prev - regul;
+
+    $('#recup4').text(heure4(recuperation));
+    $('#balance2_after').text(heure4(recuperation_prev));
+  }
 }
 
 function calculRestes(){
@@ -393,7 +436,11 @@ function verifConges(){
   
   // Vérifions si le solde des récupérations n'est pas négatif
   var recuperation = parseFloat( $('#recup4').text().replace('h', '.') );
-  if(recuperation < 0) {
+  var isRegularization = false;
+  if ($("#rest").val()) {
+    isRegularization = true;
+  }
+  if(recuperation < 0 && isRegularization == false) {
     $('.recup-alert').remove();
     $(".balance_tr").effect("highlight",null,4000);
     if ($('#validation').val() > 0) {

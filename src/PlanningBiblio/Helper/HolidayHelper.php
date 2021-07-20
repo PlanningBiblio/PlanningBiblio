@@ -31,13 +31,25 @@ class HolidayHelper extends BaseHelper
           $hours = 0;
         }
 
+        $negative = $hours < 0 ? true : false;
+        if ($negative) {
+            $hours = abs($hours);
+        }
+
+
         $mode = $this->config('Conges-Mode');
         if ($force && ($force == 'heures' || $force == 'jours')) {
             $mode = $force;
         }
 
         if ($mode == 'heures') {
-            return heure4($hours, true);
+            $human_readable = heure4($hours, true);
+
+            if ($negative) {
+                $human_readable = "-$human_readable";
+            }
+
+            return $human_readable;
         }
 
         // TODO: should be altered by a plugin.
@@ -70,6 +82,8 @@ class HolidayHelper extends BaseHelper
         );
 
         $per_week = array();
+        $regul_total = 0;
+
         // For each requested date.
         while ($current <= $fin) {
 
@@ -96,12 +110,12 @@ class HolidayHelper extends BaseHelper
             }
 
             // We ignore closing day
+            $closingday = false;
             if ($this->isClosingDay($current)) {
+                $closingday = true;
                 if ($week_helper->isWorkingDay($date_current)) {
                     $per_week[$week_id]['requested_days']--;
                 }
-                $current = date("Y-m-d", strtotime("+1 day", strtotime($current)));
-                continue;
             }
 
 
@@ -129,10 +143,24 @@ class HolidayHelper extends BaseHelper
                 // the default time for switching from half-day to full-day is 4 hours (14400 seconds)
                 $switching_time = (float) ($this->config['Conges-fullday-switching-time'] ?? 4);
                 $switching_time = $switching_time * 3600;
+
+                if (is_numeric($this->config('Conges-fullday-reference-time'))) {
+                    $reference_time = $this->config('Conges-fullday-reference-time') * 3600;
+                    $reference_time = $today <= $switching_time ? $reference_time / 2 : $reference_time;
+                    $rest = $reference_time - $today;
+                    $regul_hours = $rest / 3600;
+                    $regul_total += $regul_hours;
+
+                }
+
                 $today = $today <= $switching_time ? 12600 : 25200;
             }
 
-            $per_week[$week_id]['times'] += number_format($today / 3600, 2, '.', '');
+            // If this is a closing day, don't check for
+            // "normal" hours. Only take into account regularization.
+            if (!$closingday) {
+                $per_week[$week_id]['times'] += number_format($today / 3600, 2, '.', '');
+            }
 
             $current = date("Y-m-d", strtotime("+1 day", strtotime($current)));
         }
@@ -154,6 +182,13 @@ class HolidayHelper extends BaseHelper
         $result['hours'] = $hours_minutes[0];
         $result['minutes'] = isset($hours_minutes[1]) ? $hours_minutes[1] : 0;
         $result['hr_hours'] = heure4($total); // 2.5 => 2h30
+        $result['rest'] = $regul_total;
+
+        $result['hr_rest'] = heure4($regul_total) ?? '';
+        if ($regul_total < 0) {
+            $hr_rest = heure4(abs($regul_total));
+            $result['hr_rest'] = $hr_rest;
+        }
 
         $result['days'] = $this->hoursToDays($total, $perso_id);
 

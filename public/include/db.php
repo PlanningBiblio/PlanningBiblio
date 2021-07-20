@@ -40,6 +40,7 @@ class db
     public $msg = null;
     public $CSRFToken = false;
     public $sanitize_string = true;
+    public $inserted_id = null;
   
     public function __construct()
     {
@@ -79,13 +80,17 @@ class db
         return $str;
     }
 
-    public function query($requete)
+    public function query($requete, $request_inserted_id = false)
     {
         if (!$this->conn) {
             $this->connect();
         }
 
         $req=mysqli_query($this->conn, $requete);
+
+        if ($request_inserted_id && $req) {
+            $this->inserted_id = mysqli_insert_id($this->conn);
+        }
 
         if (!$req) {
             $this->error=true;
@@ -438,7 +443,9 @@ class db
         }
 
         $values=implode("),(", $tab);
-        $this->query("INSERT INTO `$table` (`$fields`) VALUES ($values);");
+        $this->query("INSERT INTO `$table` (`$fields`) VALUES ($values);", true);
+
+        return $this->inserted_id;
     }
 
 

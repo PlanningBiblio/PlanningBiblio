@@ -98,7 +98,11 @@
   </form>
 
   <br/>
-  <table id="tableConges" class="CJDataTable" data-sort="[[1],[2]]">
+  {% if show_recovery %}
+    <table id="tableRecovery" class="CJDataTable" data-sort="[[1],[2]]">
+  {% else %}
+    <table id="tableConges" class="CJDataTable" data-sort="[[1],[2]]">
+  {% endif %}
     <thead>
       <tr>
         <th rowspan='2' class='dataTableNoSort'>&nbsp;</th>
@@ -126,6 +130,7 @@
         {% if balance %}
           <th rowspan='2' class='dataTableHeureFR'>Solde Débiteur</th>
         {% endif %}
+          <th rowspan='2' class='information'>Informations</th>
       </tr>
       <tr>
         <th>&Eacute;tat</th>
@@ -209,6 +214,20 @@
               <td></td>
             {% endif %}
           {% endif %}
+          <td>
+            {% if c.origin_id %}
+              Régularisation liée au congé du {{ c.origin_start }} au {{ c.origin_end }}
+            {% endif %}
+
+            {% if c.regul_id %}
+              Régularisation en récupération: 
+              {% if c.regul > 0 %}
+                {{ c.hr_regul }} créditée(s)
+              {% else %}
+                {{ c.hr_regul }} débitée(s)
+              {% endif %}
+            {% endif %}
+          </td>
         </tr>
       {% endfor %}
     </tbody>

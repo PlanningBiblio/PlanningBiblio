@@ -213,6 +213,16 @@
         </td>
       </tr>
 
+      {% if conges_mode == 'jours' %}
+        <tr style="display: none;">
+          <td style="padding-top:15px;">Régularisation sur récupération: </td>
+          <td style="padding-top:15px;">
+            <div id='hr_rest' style='padding:0 5px; width:110px;'></div>
+            <input name="rest" id="rest" type="hidden" value=""/>
+          </td>
+        </tr>
+      {% endif %}
+
       {% if conges_mode == 'heures' and hours_per_day is defined %}
         <tr>
           <td>
@@ -313,6 +323,20 @@
                       <td style='width:130px;'>{{ reliquat2 }} {{ reliquat_jours }}</td>
                       <td>(après débit : <font id='reliquat4'>{{ reliquat2 }}</font>)</td>
                     </tr>
+
+                    {% if conges_mode == 'jours' %}
+                      <tr class='balance_tr' style="display: none">
+                        <td>Crédit de récupérations disponible au <span class='balance_date'>{{ balance_date }}</span> : </td>
+                        <td id='balance_before'>{{ balance_before }}</td>
+                        <td>(après débit : <span id='recup4'>{{ recup4 }}</span>)</td>
+                      </tr>
+
+                      <tr class='balance_tr' style="display: none">
+                        <td>Crédit de récupérations prévisionnel<sup>*</sup> au <span class='balance_date'>{{ balance_date }}</span> : </td>
+                        <td id='balance2_before'>{{ balance2_before }}</td>
+                        <td>(après débit : <span id='balance2_after'>{{ balance2_before }}</span>)</td>
+                      </tr>
+                    {% endif %}
 
                     <tr>
                       <td>Crédit de congés: </td>

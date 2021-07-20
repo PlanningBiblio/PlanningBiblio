@@ -1111,11 +1111,21 @@ class AgentController extends BaseController
             if ($event->hasResponse()) {
                 $credits = $event->response();
             } else {
+
+                $comptime_hours = $params['comp_time'];
+                $negative = false;
+                if ($params['comp_time'] < 0 || $params['comp_time'] == -0) {
+                    $negative = true;
+                    $comptime_hours = abs($params['comp_time']);
+                }
+
+                $comp_time = $comptime_hours + $params['comp_time_min'];
+
                 $credits = array(
                     'conges_credit' => $params['conges_credit'] *= 7,
                     'conges_reliquat' => $params['conges_reliquat'] *= 7,
                     'conges_anticipation' => $params['conges_anticipation'] *= 7,
-                    'comp_time' => $params['comp_time'] + $params['comp_time_min'],
+                    'comp_time' => $negative ? 0 - $comp_time : $comp_time,
                     'conges_annuel' => $params['conges_annuel'] *= 7,
                 );
             }
