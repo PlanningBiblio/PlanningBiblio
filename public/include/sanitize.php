@@ -12,7 +12,7 @@ Dernière modification : 22 janvier 2016
 
 Description :
 Page contenant les fonctions PHP de nettoyages de variables
-Page appelée par les fichiers index.php, et authentification.php
+Page appelée par le fichier index.php
 */
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès direct et quitte

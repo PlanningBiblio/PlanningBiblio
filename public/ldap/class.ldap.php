@@ -21,12 +21,12 @@ if (!isset($version)) {
     include_once "../include/accessDenied.php";
 }
 
-function authCAS()
+function authCAS($logger)
 {
-    include __DIR__."/../../vendor/apereo/phpcas/CAS.php";
     if ($GLOBALS['config']['CAS-Debug']) {
         $tmp_dir=sys_get_temp_dir();
-        phpCAS::setDebug("$tmp_dir/cas_debug.txt");
+        phpCAS::setLogger($logger);
+        phpCAS::setVerbose(true);
     }
     phpCAS::client($GLOBALS['config']['CAS-Version'], $GLOBALS['config']['CAS-Hostname'], intval($GLOBALS['config']['CAS-Port']), $GLOBALS['config']['CAS-URI'], false);
     phpCAS::setExtraCurlOption(CURLOPT_SSLVERSION, intval($GLOBALS['config']['CAS-SSLVersion']));
@@ -44,45 +44,6 @@ function authCAS()
 
     $login=phpCAS::getUser();
     $login=filter_var($login, FILTER_SANITIZE_STRING);
-
-
-    // Vérifions si l'utilisateur existe dans le planning
-    $db=new db();
-    $db->select2("personnel", array("id","nom","prenom"), array("login"=>$login, "supprime"=>"0"));
-
-    // Si l'utilisateur n'existe pas dans le planning ou s'il a été supprimé, on affiche un message disant qu'il n'est pas autorisé à utiliser cette application
-    if (!$db->result) {
-        include __DIR__.'/../include/header.php';
-        echo <<<EOD
-    <div style='height:200px;'>&nbsp;</div>
-    <div id='JSInformation'>Vous avez &eacute;t&eacute; correctement identifi&eacute;(e) mais vous n&apos;est pas autoris&eacute;(e) &agrave; 
-      utiliser cette application.<br/><b>Veuillez fermer votre navigateur et recommencer avec un autre identifiant</b>.</div>
-    <script type='text/JavaScript'>
-      errorHighlight($("#JSInformation"),"error");
-      position($("#JSInformation"),120,"center");
-    </script>
-EOD;
-        include __DIR__.'/../include/footer.php';
-        return false;
-    }
-
-    // Si l'utilisateur existe, on continue : on ouvre la session et on log les infos nécessaires
-    // Création de la session
-    $_SESSION['login_id']=$db->result[0]['id'];
-    $_SESSION['login_nom']=$db->result[0]['nom'];
-    $_SESSION['login_prenom']=$db->result[0]['prenom'];
-
-    // Génération d'un CSRF Token
-    $CSRFToken = CSRFToken();
-    $_SESSION['oups']['CSRFToken'] = $CSRFToken;
-
-    // Log le login et l'IP du client en cas de succès, pour information
-    loginSuccess($login, $CSRFToken);
-
-    // Mise à jour du champ last_login
-    $db=new db();
-    $db->CSRFToken = $CSRFToken;
-    $db->update("personnel", array("last_login"=>date("Y-m-d H:i:s")), array("id"=>$_SESSION['login_id']));
 
     // Si authentification CAS et utilisateur existe : retourne son login
     return $login;

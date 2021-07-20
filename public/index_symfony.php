@@ -21,9 +21,16 @@ $request = Request::createFromGlobals();
 $path = $request->getPathInfo();
 
 // Session has expired. Redirect to authentication page.
-if (empty($_SESSION['login_id'])) {
+if (empty($_SESSION['login_id']) && $path != '/login' && $path != 'logout') {
     $redirect = ltrim($path, '/');
-    header("Location: {$config['URL']}/authentification.php?redirURL=$redirect");
+    header("Location: {$config['URL']}/login?redirURL=$redirect");
+    exit();
+}
+
+// Prevent user accessing to login page
+// if he is already authenticated.
+if (!empty($_SESSION['login_id']) && $path == '/login') {
+    header("Location: {$config['URL']}");
     exit();
 }
 

@@ -42,6 +42,10 @@ class ControllerAuthorizationListener
         $page = rtrim($page, '/add');
         $page = rtrim($page, '/');
 
+        if ($page == '/login' || $page == '/logout') {
+            return;
+        }
+
         // Droits necessair<es pour consulter la page en cours
         $accesses = $this->entityManager->getRepository(Access::class)->findBy(array('page' => $page));
         $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
