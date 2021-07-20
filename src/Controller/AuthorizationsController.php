@@ -7,6 +7,8 @@ use App\Controller\BaseController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
+use Psr\Log\LoggerInterface;
+
 include_once(__DIR__ . '/../../public/include/function.php');
 include_once(__DIR__ . '/../../public/ldap/class.ldap.php');
 
@@ -16,10 +18,10 @@ class AuthorizationsController extends BaseController
     /**
      * @Route("/login", name="login", methods={"GET"})
      */
-    public function login(Request $request)
+    public function login(Request $request, LoggerInterface $logger = null)
     {
 
-        $error = $this->redirectCAS();
+        $error = $this->redirectCAS($logger);
 
         if (loginFailedWait() > 0) {
             return $this->redirectToRoute('access-denied');
@@ -42,9 +44,9 @@ class AuthorizationsController extends BaseController
     /**
      * @Route("/login", name="login.check", methods={"POST"})
      */
-    public function check_login(Request $request)
+    public function check_login(Request $request, LoggerInterface $logger = null)
     {
-        $this->redirectCAS();
+        $this->redirectCAS($logger);
 
         $login = $request->get('login');
         $password = $request->get('password');
@@ -167,7 +169,7 @@ class AuthorizationsController extends BaseController
         return $this->output('access-denied.html.twig');
     }
 
-    private function redirectCAS()
+    private function redirectCAS($logger)
     {
         if (substr($this->config('Auth-Mode'), 0, 3)=="CAS"
             and !isset($_GET['noCAS'])
@@ -181,7 +183,7 @@ class AuthorizationsController extends BaseController
             // authCAS function redirect user to the CAS server.
             // Once authenticated, it checks if the login exists.
             // If yes, it create the session and log the action.
-            $login = authCAS();
+            $login = authCAS($logger);
 
             // Check if user login exists in database.
             $db = new \db();

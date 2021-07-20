@@ -21,12 +21,12 @@ if (!isset($version)) {
     include_once "../include/accessDenied.php";
 }
 
-function authCAS()
+function authCAS($logger)
 {
-    include __DIR__."/../../vendor/apereo/phpcas/CAS.php";
     if ($GLOBALS['config']['CAS-Debug']) {
         $tmp_dir=sys_get_temp_dir();
-        phpCAS::setDebug("$tmp_dir/cas_debug.txt");
+        phpCAS::setLogger($logger);
+        phpCAS::setVerbose(true);
     }
     phpCAS::client($GLOBALS['config']['CAS-Version'], $GLOBALS['config']['CAS-Hostname'], intval($GLOBALS['config']['CAS-Port']), $GLOBALS['config']['CAS-URI'], false);
     phpCAS::setExtraCurlOption(CURLOPT_SSLVERSION, intval($GLOBALS['config']['CAS-SSLVersion']));
