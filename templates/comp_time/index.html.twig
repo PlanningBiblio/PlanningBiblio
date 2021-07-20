@@ -303,15 +303,7 @@
             <tr>
               <td><label for="heures">Heures</label></td>
               <td>
-                <select id='heures' name='heures' style='text-align:center;'>
-                  <option value=''>&nbsp;</option>
-                  {% for i in 0..16 %}
-                  <option value='{{ i }}.00' >{{ i }}h00</option>
-                  <option value='{{ i }}.25' >{{ i }}h15</option>
-                  <option value='{{ i }}.50' >{{ i }}h30</option>
-                  <option value='{{ i }}.75' >{{ i }}h45</option>
-                  {% endfor %}
-                </select>
+                <input id="heures" name="heures" class="comptime-timepicker ui-widget-content ui-corner-all" value=""/>
               </td>
             </tr>
 

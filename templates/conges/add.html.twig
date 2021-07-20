@@ -82,16 +82,9 @@
             <tr id='hre_debut' style='display:none;'>
               <td>Heure de début : </td>
               <td>
-                <select name='hre_debut' id='hre_debut_select' style='width:20%;' class='checkdate googleCalendarTrigger'>
-                    <option value=""></option>
-                    {% for i in 6..23 %}
-                        {% for j in range(low=0, high=60, step=config('Granularite')) %}
-                            {% if j != 60 %}
-                                <option value='{{ "%02d:%02d:00"|format(i,j) }}' >{{ "%02dh%02d"|format(i,j) }}</option>
-                            {% endif %}
-                        {% endfor %}
-                    {% endfor %}
-                </select>
+                <input name="hre_debut" id="hre_debut_select"
+                  class="planno-timepicker checkdate" style="width: 20%"
+                  value="{{ hre_debut ? hre_debut | date('H:i') : '' }}"/>
               </td>
             </tr>
 
@@ -111,16 +104,9 @@
 
             <tr id='hre_fin' style='display:none;'><td>Heure de fin : </td>
               <td>
-                <select name='hre_fin' id='hre_fin_select' style='width:20%;' class='checkdate googleCalendarTrigger' onfocus='setEndHour();'>
-                    <option value=""></option>
-                    {% for i in 6..23 %}
-                        {% for j in range(low=0, high=60, step=config('Granularite')) %}
-                        {% if j != 60 %}
-                            <option value='{{ "%02d:%02d:00"|format(i,j) }}' >{{ "%02dh%02d"|format(i,j) }}</option>
-                        {% endif %}
-                        {% endfor %}
-                    {% endfor %}
-                </select>
+                <input name="hre_fin" id="hre_fin_select"
+                  class="planno-timepicker checkdate" style="width: 20%"
+                  value="{{ hre_fin ? hre_fin | date('H:i') : '' }}"/>
               </td>
             </tr>
 

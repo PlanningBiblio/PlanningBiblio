@@ -46,40 +46,23 @@ function plHebdoCalculHeures(object,num){
     
     
     // Si modification possible (select)
-    if(elements["temps"+num+"["+i+"][0]"]){
-      debut1 = $("select[name*='temps"+num+"["+i+"][0]']").val();
-      fin1 = $("select[name*='temps"+num+"["+i+"][1]']").val();
-      debut2 = $("select[name*='temps"+num+"["+i+"][2]']").val();
-      fin3 = $("select[name*='temps"+num+"["+i+"][3]']").val();              // Passe à fin3 pour pouvoir intércaler une 2nde pause
+    debut1 = $("input[name*='temps"+num+"["+i+"][0]']").val();
+    fin1 = $("input[name*='temps"+num+"["+i+"][1]']").val();
+    debut2 = $("input[name*='temps"+num+"["+i+"][2]']").val();
+    fin3 = $("input[name*='temps"+num+"["+i+"][3]']").val(); // Passe à fin3 pour pouvoir intércaler une 2nde pause
 
-      // Si 2 pauses (PlanningHebdo-Pause2)
-      if($("select[name*='temps"+num+"["+i+"][5]']")){
-        fin2 = $("select[name*='temps"+num+"["+i+"][5]']").val();
-        debut3 = $("select[name*='temps"+num+"["+i+"][6]']").val();
-      }
-
-      if ($("select[name*='breaktime["+i+"]']").val()){
-        breaktime = $("select[name*='breaktime["+i+"]']").val();
-      }
-    
-    // Si lecture seule
-    }else{
-      debut1 = $("#temps"+num+"_"+i+"_0").text().replace("h",":");
-      fin1 = $("#temps"+num+"_"+i+"_1").text().replace("h",":");
-      debut2 = $("#temps"+num+"_"+i+"_2").text().replace("h",":");
-      fin3 = $("#temps"+num+"_"+i+"_3").text().replace("h",":");    // Passe à fin3 pour pouvoir intércaler une 2nde pause
-
-      // Si 2 pauses (PlanningHebdo-Pause2)
-      if($("#temps"+num+"_"+i+"_5")){
-        fin2 = $("#temps"+num+"_"+i+"_5").text().replace("h",":");
-        debut3 = $("#temps"+num+"_"+i+"_6").text().replace("h",":");
-      }
-
-      if ($("input[name='breaktime_" + i + "']").val()) {
-        breaktime = $("input[name='breaktime_" + i + "']").val();
-      }
+    // Si 2 pauses (PlanningHebdo-Pause2)
+    if($("input[name*='temps"+num+"["+i+"][5]']")){
+      fin2 = $("input[name*='temps"+num+"["+i+"][5]']").val();
+      debut3 = $("input[name*='temps"+num+"["+i+"][6]']").val();
     }
 
+    if ($("input[name*='breaktime["+i+"]']").val()){
+      breaktime = $("input[name*='breaktime["+i+"]']").val();
+      hm = breaktime.split(':');
+      breaktime = (hm[0] + (hm[1] / 60))
+    }
+    
     diff=0;
     
     // Journée avec 2 pauses
@@ -170,8 +153,8 @@ ou lorsque l'on modifie les select du tableau 1 est que la case "Même Planning"
 function plHebdoCopySelect(id){
   // Copie les infos du tableau 1 vers le tableau sélectionné
   var i=0;
-  $("#div"+id).find("select").each(function(){
-    var val=$("#div0").find("select:eq("+i+")").val();
+  $("#div"+id).find(".select").each(function(){
+    var val=$("#div0").find(".select:eq("+i+")").val();
     $(this).val(val);
     i++;
   });
@@ -202,7 +185,7 @@ function plHebdoMemePlanning(){
     var empty=true;
 
     if(modif){
-      $(this).find("select").each(function(){
+      $(this).find(".select").each(function(){
 	var value=$(this).val();
 	tab[i].push(value);
 

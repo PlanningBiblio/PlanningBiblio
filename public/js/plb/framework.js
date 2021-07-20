@@ -116,12 +116,12 @@ function add_horaires(tableau){
 }
 
 function change_horaires(elem){
-  tmp=elem.name.split("_");
+  tmp = elem.attr('name').split('_');
   tmp[2]++;
-  elem2="debut_"+tmp[1]+"_"+tmp[2];
+  elem2 = 'debut_' + tmp[1] + '_' + tmp[2];
   for(i=0;i<document.form2.elements.length;i++){
     if(document.form2.elements[i].name==elem2){
-      document.form2.elements[i].selectedIndex=elem.selectedIndex;
+      document.form2.elements[i].value=elem.val();
       break;
     }
   }

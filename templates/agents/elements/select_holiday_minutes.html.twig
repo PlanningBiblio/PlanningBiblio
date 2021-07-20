@@ -1,75 +1,11 @@
 {# agents/elements/select_holiday_minutes.html.twig #}
 
 <select name='{{ name }}' id='{{ name }}' style='width:50px;'>
-  {% if minutes == '0' %}
-    <option value="0" selected="selected">00</option>
-  {% else %}
-    <option value="0">00</option>
-  {% endif %}
-
-  {% if minutes == '5' %}
-    <option value="0.083333333333333" selected="selected">05</option>
-  {% else %}
-    <option value="0.083333333333333">05</option>
-  {% endif %}
-
-  {% if minutes == '10' %}
-    <option value="0.16666666666667" selected="selected">10</option>
-  {% else %}
-    <option value="0.16666666666667">10</option>
-  {% endif %}
-
-  {% if minutes == '15' %}
-    <option value="0.25" selected="selected">15</option>
-  {% else %}
-    <option value="0.25">15</option>
-  {% endif %}
-
-  {% if minutes == '20' %}
-    <option value="0.33333333333333" selected="selected">20</option>
-  {% else %}
-    <option value="0.33333333333333">20</option>
-  {% endif %}
-
-  {% if minutes == '25' %}
-    <option value="0.41666666666667" selected="selected">25</option>
-  {% else %}
-    <option value="0.41666666666667">25</option>
-  {% endif %}
-
-  {% if minutes == '30' %}
-    <option value="0.5" selected="selected">30</option>
-  {% else %}
-    <option value="0.5">30</option>
-  {% endif %}
-
-  {% if minutes == '35' %}
-    <option value="0.58333333333333" selected="selected">35</option>
-  {% else %}
-    <option value="0.58333333333333">35</option>
-  {% endif %}
-
-  {% if minutes == '40' %}
-    <option value="0.66666666666667" selected="selected">40</option>
-  {% else %}
-    <option value="0.66666666666667">40</option>
-  {% endif %}
-
-  {% if minutes == '45' %}
-    <option value="0.75" selected="selected">45</option>
-  {% else %}
-    <option value="0.75">45</option>
-  {% endif %}
-
-  {% if minutes == '50' %}
-    <option value="0.83333333333333" selected="selected">50</option>
-  {% else %}
-    <option value="0.83333333333333">50</option>
-  {% endif %}
-
-  {% if minutes == '55' %}
-    <option value="0.91666666666667" selected="selected">55</option>
-  {% else %}
-    <option value="0.91666666666667">55</option>
-  {% endif %}
+  {% for i in range(low=0, high=59, step=config('Granularite')) %}
+    {% if minutes == i %}
+      <option value="{{ i * 0.016666666666667 }}" selected="selected">{{ "%02d"|format(i) }}</option>
+    {% else %}
+      <option value="{{ i * 0.016666666666667 }}" >{{ "%02d"|format(i) }}</option>
+    {% endif %}
+  {% endfor %}
 </select>

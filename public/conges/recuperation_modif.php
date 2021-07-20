@@ -94,19 +94,10 @@ echo "</td></td></tr>\n";
 echo "<tr><td>Heures demandées : </td>";
 
 if ($recup['valide'] <= 0) {
-    echo "<td><select id='heures' name='heures' style='font-weight:bold;' >\n";
-    echo "<option value=''>&nbsp;</option>\n";
-    for ($i=0;$i<17;$i++) {
-        $select1=$recup['heures']=="{$i}.00"?"selected='selected'":null;
-        $select2=$recup['heures']=="{$i}.25"?"selected='selected'":null;
-        $select3=$recup['heures']=="{$i}.50"?"selected='selected'":null;
-        $select4=$recup['heures']=="{$i}.75"?"selected='selected'":null;
-        echo "<option value='{$i}.00' $select1>{$i}h00</option>\n";
-        echo "<option value='{$i}.25' $select2>{$i}h15</option>\n";
-        echo "<option value='{$i}.50' $select3>{$i}h30</option>\n";
-        echo "<option value='{$i}.75' $select4>{$i}h45</option>\n";
-    }
-    echo "</select></td></tr>\n";
+    $heures = gmdate('H:i', floor($recup['heures'] * 3600));
+    echo "<td>\n";
+    echo "<input id='heures' name='heures' class='comptime-timepicker ui-widget-content ui-corner-all' value='$heures'/>";
+    echo "</td></tr>\n";
 } else {
     echo "<td>".heure4($recup['heures'])."</td></tr>\n";
 }

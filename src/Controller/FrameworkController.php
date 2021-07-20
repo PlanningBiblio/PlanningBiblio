@@ -211,7 +211,6 @@ class FrameworkController extends BaseController
                 "postes"        => null,
                 "nbSites"       => $nbSites,
                 "nombre"        => null,
-                "selectHeure"   => null,
                 "site"          => null,
                 "tableauNom"    => $tableauNom,
                 "tableauNumero" => $tableauNumero,
@@ -315,26 +314,6 @@ class FrameworkController extends BaseController
             }
         }
 
-        $selectHeure= array();
-        if (!empty($tableaux)) {
-            foreach ($tableaux as $t) {
-                $tableau=$t['tableau'];
-                $i=0;
-                foreach ($t['horaires'] as $elem) {
-                    $selectHeure[$tableau][$i]['debut'] = myselectHeure(6, 23, true);
-                    $selectHeure[$tableau][$i]['fin'] = myselectHeure(6, 23, true);
-                    $i++;
-                }
-
-                // Affichage des select cachés pour les ajouts
-                for ($j = 0; $j < 25; $j++) {
-                    $selectHeure[$tableau][$i]['debut'] = myselectHeure(6, 23, true);
-                    $selectHeure[$tableau][$i]['fin'] = myselectHeure(6, 23, true);
-                    $i++;
-                }
-            }
-        }
-
         // Liste des postes
         $p = new \postes();
         if ($nbSites > 1) {
@@ -377,7 +356,6 @@ class FrameworkController extends BaseController
                 "postes"        => $postes,
                 "nbSites"       => $nbSites,
                 "nombre"        => $nombre,
-                "selectHeure"   => $selectHeure,
                 "site"          => $site,
                 "tableauNom"    => $tableauNom,
                 "tableauNumero" => $tableauNumero,

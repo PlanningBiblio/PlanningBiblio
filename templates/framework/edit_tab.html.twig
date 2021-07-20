@@ -146,7 +146,7 @@
             {% for t in tableaux %}
               {% set numero = loop.index %}
               {% set tableau = t.tableau %}
-              <div id='div_horaires_{{tableau}}' style='display:inline-block; width:200px; vertical-align:top; padding-bottom:30px;'>
+              <div id='div_horaires_{{tableau}}' style='display:inline-block; vertical-align:top; padding-bottom:30px;'>
                 <table id='tab_horaires_{{tableau}}'>
                   <tr>
                     <td colspan='2' ><strong>Tableau {{numero}}</strong></td>
@@ -155,18 +155,14 @@
                   {% for elem in t.horaires %}
                     <tr id='tr_{{tableau}}_{{i}}' >
                       <td>
-                        <select name='debut_{{tableau}}_{{i}}' style='width:75px;' >
-                          {% for option in selectHeure[tableau][i].debut %}
-                            <option value="{{ option.raw }}" {{ elem.debut == option.raw ? "selected='selected'" : "" }}> {{ option.human_readable }} </option>
-                          {% endfor %}
-                        </select>
+                        <input name="debut_{{tableau}}_{{i}}"
+                           class="planno-timepicker framework-timepicker"
+                           value="{{ elem.debut ? elem.debut | date('H:i') : '' }}"/>
                       </td>
                       <td style='width:120px;'>
-                        <select name='fin_{{tableau}}_{{i}}' style='width:75px;' onchange='change_horaires(this);'>
-                          {% for option in selectHeure[tableau][i].fin %}
-                            <option value="{{ option.raw }}" {{ elem.fin == option.raw ? "selected='selected'" : "" }}> {{ option.human_readable }} </option>
-                          {% endfor %}
-                        </select>
+                        <input name="fin_{{tableau}}_{{i}}"
+                           class="planno-timepicker framework-timepicker"
+                           value="{{ elem.fin ? elem.fin | date('H:i') : '' }}"/>
                         <span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick="document.form2.debut_{{tableau}}_{{i}}.value='';document.form2.fin_{{tableau}}_{{i}}.value='';$('#tr_{{tableau}}_{{i}}').hide();"></span>
                       </td>
                     </tr>
@@ -175,18 +171,14 @@
                   {% for j in 0..25 %}
                     <tr id='tr_{{tableau}}_{{j}}' style='display:none;'>
                       <td>
-                        <select name='debut_{{tableau}}_{{i}}' style='width:75px;'>
-                          {% for option in selectHeure[tableau][j].debut %}
-                            <option value="{{ option.raw }}"> {{ option.human_readable }} </option>
-                          {% endfor %}
-                        </select>
+                        <input name="debut_{{tableau}}_{{i}}"
+                           class="planno-timepicker framework-timepicker"
+                           value=""/>
                       </td>
                       <td style='width:120px;'>
-                        <select name='fin_{{tableau}}_{{i}}' style='width:75px;' onchange='change_horaires(this);'>
-                          {% for option in selectHeure[tableau][j].fin %}
-                            <option value="{{ option.raw }}"> {{ option.human_readable }} </option>
-                          {% endfor %}
-                        </select>
+                        <input name="fin_{{tableau}}_{{i}}"
+                           class="planno-timepicker framework-timepicker"
+                           value=""/>
                         <span class='pl-icon pl-icon-drop' title='Supprimer' style='margin-left:5px;cursor:pointer;' onclick="document.form2.debut_{{tableau}}_{{i}}.value='';document.form2.fin_{{tableau}}_{{i}}.value='';$('#tr_{{tableau}}_{{j}}').hide();"></span>
                       </td>
                     </tr>
