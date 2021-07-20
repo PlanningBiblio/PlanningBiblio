@@ -14,7 +14,7 @@ Description :
 Permet de verrouiller (et de déverrouiller) le planning du jour courant pour en interdire la modification et le rendre
 visible aux agents n'ayant pas le droit de modifier les plannings
 
-Page appelée en ajax lors du click sur les cadenas de la page planning/poste/index.php
+Page appelée en ajax lors du click sur les cadenas de la page /index
 (événements $("#icon-lock").click et $("#icon-unlock").click, page planning/poste/js/planning.js)
 */
 

@@ -72,12 +72,12 @@ if (!array_key_exists("oups", $_SESSION)) {
 }
 
 // Affichage de tous les plannings de la semaine
-if ($page=="planning/poste/index.php" and !$date and $_SESSION['oups']['week']) {
+if ($page=='/index' and !$date and $_SESSION['oups']['week']) {
     $page="planning/poste/semaine.php";
 }
 
 $content_planning = 0;
-if ($page == 'planning/poste/index.php' or $page == 'planning/poste/semaine.php' or !$show_menu) {
+if ($page == 'planning/poste/semaine.php' or !$show_menu) {
     $content_planning = 1;
 }
 

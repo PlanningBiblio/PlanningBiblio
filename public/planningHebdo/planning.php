@@ -12,10 +12,10 @@ Dernière modification : 7 novembre 2015
 
 Description :
 Fichier permettant de trouver le bon emploi du temps et le bon site de chaque agent
-Inclus dans planning/poste/index.php pour afficher ces informations dans la liste des agents présents
+Inclus dans /index et src/PlanningBiblio/PresentSet.php pour afficher ces informations dans la liste des agents présents
 Inclus dans planning/poste/menudiv.php pour exclure les agents non prévus sur le site séléctionné
 
-Variables initialisées dans planning/poste/index.php et dans  planning/poste/menudiv.php :
+Variables initialisées dans /index et dans  planning/poste/menudiv.php :
 $elem['id'] = id de l'agent
 $date = date courante
 */
