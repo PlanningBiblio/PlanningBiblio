@@ -15,7 +15,7 @@ Classe absences : contient les fonctions de recherches des absences
 
 Page appelée par les autres pages du dossier absences
 
-TODO : Il serait intéressant de sortir de la boucle la gestion des notifications de la méthode add() comme ce qui a été fait pour les modifications (modif2.php).
+TODO : Il serait intéressant de sortir de la boucle la gestion des notifications de la méthode add() comme ce qui a été fait pour les modifications.
 TODO : Si modification des notifications : adapter le message (lister tous les agents), adapter les variables fournies à getRecipients2, refaire une boucle pour getRecipients ou adapter getRecipients
 */
 
@@ -280,7 +280,7 @@ class absences
             $infosPlanning = $a->message;
 
             // N'envoie la notification que s'il s'agit d'un ajout simple, et non s'il s'agit d'un ajout qui suit la modification d'une récurrrence (exception ou modification des événements suivants sans modifier les précédents)
-            // Si $this->uid : Ajout simple. Si !$this->uid : Modification, donc pas d'envoi de notification à ce niveau (envoyée via modif2.php)
+            // Si $this->uid : Ajout simple. Si !$this->uid : Modification, donc pas d'envoi de notification à ce niveau (envoyée via POST /absence)
             if (!$this->uid) {
                 // Titre différent si titre personnalisé (config) ou si validation ou non des absences (config)
                 if ($GLOBALS['config']['Absences-notifications-titre']) {
