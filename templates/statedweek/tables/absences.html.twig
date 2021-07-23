@@ -23,11 +23,12 @@
                 {% else %}
                   jusqu'à {{ absence.fin | hour }}
                 {% endif %}
-              <span>
+              </span>
             {% endif %}
             {% if absence.valide < 1 %}
               <strong> (Non validée)</strong>
             {% endif %}
+              ({{ absence.motif }})
           </td>
           {% set index = index + 1 %}
         {% else %}
@@ -47,11 +48,12 @@
                 {% else %}
                   jusqu'à {{ absence.fin | hour }}
                 {% endif %}
-              <span>
+              </span>
             {% endif %}
             {% if absence.valide < 1 %}
               <strong> (Non validée)</strong>
             {% endif %}
+              ({{ absence.motif }})
           </td>
           {% set index = index + 1 %}
         {% else %}
@@ -71,11 +73,12 @@
                 {% else %}
                   jusqu'à {{ absence.fin | hour }}
                 {% endif %}
-              <span>
+              </span>
             {% endif %}
             {% if absence.valide < 1 %}
               <strong> (Non validée)</strong>
             {% endif %}
+              ({{ absence.motif }})
           </td>
           {% set index = index + 1 %}
         {% else %}
