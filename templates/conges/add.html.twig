@@ -48,14 +48,15 @@
               </td>
             </tr>
 
-            {% if not conges_recuperations %}
+            {% if conges_heures %}
               <tr>
                 <td style='padding-top:15px;'>Journée(s) entière(s) : </td>
                 <td style='padding-top:15px;'>
                   <input type='checkbox' name='allday' class='checkdate' checked='checked' />
                 </td>
               </tr>
-            {% elseif conges_demi_journee %}
+            {% endif %}
+            {% if conges_recuperations and conges_demi_journee %}
               <tr>
                 <td style='padding-top:15px;'>Demi-journée(s) : </td>
                 <td style='padding-top:15px;'>
