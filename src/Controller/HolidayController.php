@@ -309,18 +309,9 @@ class HolidayController extends BaseController
         $adminN1 = false;
         $adminN2 = false;
 
-        // Si droit de gestion des absences N1 ou N2 sur l'un des sites : accès à cette page autorisé
-        // Les droits d'administration des absences seront ajustés ensuite
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-            if (in_array((200+$i), $this->droits)) {
-                $adminN1 = true;
-            }
-            if (in_array((500+$i), $this->droits)) {
-                $adminN2 = true;
-            }
-        }
+        $this->setAdminPermissions();
 
-        $agents_multiples = (($adminN1 or $adminN2) && $this->config('Conges-Recuperations') == 1);
+        $agents_multiples = (($this->admin or $this->adminN2) && $this->config('Conges-Recuperations') == 1);
 
         // Elements du congé demandé
         $c = new \conges();
