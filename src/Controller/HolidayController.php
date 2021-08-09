@@ -858,20 +858,18 @@ class HolidayController extends BaseController
 
         foreach ($perso_ids as $perso_id) {
 
-            # In case multiple agents were selected
-            if (!array_key_exists('heures', $data)) {
-                $holidayHlper = new HolidayHelper(array(
-                    'start' => $debutSQL,
-                    'hour_start' => $hre_debut,
-                    'end' => $finSQL,
-                    'hour_end' => $hre_fin,
-                    'perso_id' => $perso_id,
-                    'is_recover' => $is_recover
-                ));
-                $result = $holidayHlper->getCountedHours();
-                $data['heures'] = $result['hours'];
-                $data['minutes'] = $result['minutes'];
-            }
+            $holidayHlper = new HolidayHelper(array(
+                'start' => $debutSQL,
+                'hour_start' => $hre_debut,
+                'end' => $finSQL,
+                'hour_end' => $hre_fin,
+                'perso_id' => $perso_id,
+                'is_recover' => $is_recover
+            ));
+            $result = $holidayHlper->getCountedHours();
+            error_log("getCountedHhours" . $perso_id . " : " . $result['hours']);
+            $data['heures'] = $result['hours'];
+            $data['minutes'] = $result['minutes'];
 
             // Enregistrement du congés
             $c = new \conges();
@@ -937,7 +935,6 @@ class HolidayController extends BaseController
             $m->to=$destinataires;
             $m->send();
 
-            unset($data['heures']);
         }
 
         $msg = 'La demande de congé a été enregistrée';
