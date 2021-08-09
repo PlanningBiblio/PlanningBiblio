@@ -85,13 +85,78 @@ class HolidayHelperTest extends TestCase
 
     }
 
+    public function testGetCountedHoursWithFreeBreak() {
+
+        $GLOBALS['config']['Conges-Mode'] = 'jours';
+        $GLOBALS['config']['Conges-fullday-switching-time'] = 4.25;
+        $GLOBALS['config']['Conges-fullday-reference-time'] = 7.5;
+
+
+        $builder = new FixtureBuilder();
+        $agent = $builder->build(Agent::class, array('login' => 'me3'));
+
+        // No model for workinghours yet. Use db function.
+        $working_hours = array(
+            0 => array('0' => '09:00:00', '1' => '12:30:00', '2' => '', '3' => ''),
+            // Agent is working 9 hours on Tuesday.
+            1 => array('0' => '09:00:00', '1' => '', '2' => '', '3' => '18:00:00'),
+            // Agent is working 6 hours on Wednesday.
+            2 => array('0' => '09:00:00', '1' => '', '2' => '', '3' => '15:00:00'),
+            // Agent is working 7 hours on Thursday.
+            3 => array('0' => '09:00:00', '1' => '', '2' => '', '3' => '16:00:00'),
+            4 => array('0' => '', '1' => '', '2' => '', '3' => ''),
+            5 => array('0' => '', '1' => '', '2' => '', '3' => ''),
+        );
+
+        $_SESSION['oups']['CSRFToken'] = '00000';
+        $db = new \db();
+        $db->CSRFToken = '00000';
+        $db->delete('planning_hebdo');
+        $db->insert(
+            'planning_hebdo',
+            array(
+                'perso_id' => $agent->id(),
+                'debut' => '2021-01-01',
+                'fin' => '2021-12-31',
+                'temps' => json_encode($working_hours),
+                'valide' => 1,
+                'nb_semaine' => 1
+            )
+        );
+
+        // Request holiday on a Tuesday for all the day.
+        // Agent works 9h this day. Reference day is 7h30
+        // We debit 1 day and 1h30 as regularization (compensatory time)
+        // hours are 7 (one day) to debit
+        // rest is -1.5 (-1h30) to debit
+        $holidayHlper = new HolidayHelper(array(
+            'start' => '2021-06-01',
+            'hour_start' => '00:00:00',
+            'end' => '2021-06-01',
+            'hour_end' => '23:59:59',
+            'perso_id' => $agent->id(),
+            'is_recover' => 0,
+        ));
+        $result = $holidayHlper->getCountedHours();
+
+        $this->assertEquals(7, $result['hours'], 'request 9h on 1 day');
+        $this->assertEquals(0, $result['minutes'], 'request 9h on 1 day');
+        $this->assertEquals('7h00', $result['hr_hours'], 'request 9h on 1 day');
+        $this->assertEquals(-1.5, $result['rest'], 'request 9h on 1 day');
+        $this->assertEquals('1h30', $result['hr_rest'], 'request 9h on 1 day');
+        $this->assertEquals(1, $result['days'], 'request 9h on 1 day');
+
+
+
+    }
+
     public function testgetCountedHoursWithCongesFulldayReferenceTime() {
         $GLOBALS['config']['Conges-Mode'] = 'jours';
         $GLOBALS['config']['Conges-fullday-switching-time'] = 4.25;
         $GLOBALS['config']['Conges-fullday-reference-time'] = 7.5;
 
         $builder = new FixtureBuilder();
-        $agent = $builder->build(Agent::class, array('login' => 'me'));
+        $agent = $builder->build(Agent::class, array('login' => 'me2'));
 
         // No model for workinghours yet. Use db function.
         $working_hours = array(
