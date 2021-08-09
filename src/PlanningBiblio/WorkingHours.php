@@ -7,10 +7,11 @@ class WorkingHours
     private $times;
     private $breaks;
 
-    function __construct($times, $breaks = array())
+    function __construct($times, $breaks = array(), $free_break_already_removed = false)
     {
         $this->times = $times;
         $this->breaks = $breaks;
+        $this->free_break_already_removed = $free_break_already_removed;
     }
 
     public function hoursOf($day)
@@ -74,8 +75,8 @@ class WorkingHours
         if ($pause2 and !empty($heures[6]) and !empty($heures[3])) {
             $tab[] = array($heures[6], $heures[3]);
         }
-
-        if ($break) {
+        if ($break && !$this->free_break_already_removed) {
+            // Free break is substracted at the end of the day
             $substracted = 0;
             foreach (array(2, 1, 0) as $i) {
                 if (isset($tab[$i])) {
@@ -94,9 +95,7 @@ class WorkingHours
                 }
             }
         }
-
         return $tab;
-
     }
 
     private function substractBreak($hour, $interval)
