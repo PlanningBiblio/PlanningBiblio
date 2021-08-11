@@ -395,7 +395,6 @@ class WorkingHourController extends BaseController
                 "adminN2"            => $adminN2,
                 "cle"                => $cle,
                 "copy"               => $copy,
-                "CSRFSession"        => $request->get('CSRFToken'),
                 "debut1"             => $debut1,
                 "debut1Fr"           => $debut1Fr,
                 "exception_id"       => null,
