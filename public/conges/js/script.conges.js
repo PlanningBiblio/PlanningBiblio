@@ -485,7 +485,6 @@ function verifConges(){
 
   // Vérifions si un autre congé a été demandé ou validé
 
-  var baseURL = $('#baseURL').val();
   var result=$.ajax({
     url: baseURL + "ajax/holiday-absence-control",
     type: "get",

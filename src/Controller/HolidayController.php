@@ -244,7 +244,7 @@ class HolidayController extends BaseController
 
             // This holiday is not a regularization,
             // but there is one related to.
-            if (array_key_exists('regul_id', $elem) && $elem['regul_id']) {
+            if (!empty($elem['regul_id'])) {
                 $r = new \conges();
                 $r->id = $elem['regul_id'];
                 $r->fetch();
@@ -256,7 +256,7 @@ class HolidayController extends BaseController
             }
 
             // This is a regularization.
-            if (array_key_exists('origin_id', $elem) && $elem['origin_id']) {
+            if (!empty($elem['origin_id'])) {
                 $origin = new \conges();
                 $origin->id = $elem['origin_id'];
                 $origin->fetch();
