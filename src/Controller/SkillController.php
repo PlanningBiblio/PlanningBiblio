@@ -103,10 +103,8 @@ class SkillController extends BaseController
      */
     public function add(Request $request, Session $session){
 
-        $CSRFSession = $request->get('CSRFSession');
         $this->templateParams(array(
             'skill_name'=>'',
-            'CSRFSession' => $CSRFSession,
        ));
 
         return $this->output('skill/edit.html.twig');
@@ -116,12 +114,12 @@ class SkillController extends BaseController
      * @Route("/skill/{id}", name = "skill.edit", methods={"GET"})
      */
     public function edit(Request $request, Session $session){
+
         $id =  $request->get('id');
-        $CSRFSession = $request->get('CSRFSession');
         $nom = $this->entityManager->getRepository(Skill::class)->find($id)->nom();
+
         $this->templateParams(array(
             'skill_name'=>$nom,
-            'CSRFSession' => $CSRFSession,
             'id' => $id,
         ));
 
