@@ -1,46 +1,18 @@
-function updateCycles() {
-    $.ajax({
-        url: "/ajax/agent-distinct-sites-cycles",
-        data: {id: $("#perso_id").val()},
-        dataType: "json",
-        type: "get",
-        async: false,
-        success: function(result) {
-            var cycle_select = '';
-            var ph_number_of_weeks = $("#ph_number_of_weeks").val();
+function updateTables(selected_weeks) {
 
-            if (result.length == 1 && (ph_number_of_weeks == undefined || result[0] == ph_number_of_weeks)) {
-                cycle_select += "<input type='hidden' name='number_of_weeks' id='number_of_weeks' value='" + result[0] + "' />";
-            } else {
-                cycle_select += "<p><label for='number_of_weeks'>Cycle (en nombre de semaines)</label>";
-                cycle_select += "<select name='number_of_weeks' id='number_of_weeks' onchange='updateTables();'>";
+    var weeks;
+    if (selected_weeks) {
+        weeks = selected_weeks;
+    } else if ($("#this_number_of_weeks").val()) {
+        weeks = $("#this_number_of_weeks").val();
+    }  else {
+        weeks = $("#number_of_weeks").val();
+    }
+    $('#select_number_of_weeks').val(weeks);
 
-                if (ph_number_of_weeks != undefined && result.indexOf(ph_number_of_weeks.toString()) === -1) {
-                  result.push(ph_number_of_weeks);
-                  result.sort();
-                }
-
-                result.forEach(function (cycle, index) {
-                   cycle_select += '<option value="' + cycle + '"';
-                   if (ph_number_of_weeks == cycle) {
-                        cycle_select += ' selected="selected"';
-                   }
-                   cycle_select += '>' + cycle + '</option>'; 
-                });
-                cycle_select += "</select></p>";
-            }
-            $("#cycle").html(cycle_select);
-            updateTables();
-        },
-        error: function(result) {
-        }
-  });
-}
-
-function updateTables() {
     $.ajax({
         url: "/ajax/workinghour-tables",
-        data: {weeks: $("#number_of_weeks").val(), perso_id: $("#perso_id").val(), ph_id: $("#id").val()},
+        data: {weeks: weeks, perso_id: $("#perso_id").val(), ph_id: $("#id").val()},
         dataType: "html",
         type: "get",
         async: false,
@@ -55,12 +27,16 @@ function updateTables() {
 }
 
 $(function(){
-  $("document").ready(function(){
-    updateCycles();
-  });
+    $("document").ready(function(){
+        updateTables();
+    });
 
-  $("#perso_id").change(function() {
-      updateCycles();
-  });
+    $("#perso_id").change(function() {
+        updateTables();
+    });
+
+    $("#select_number_of_weeks").change(function() {
+        updateTables(this.value);
+    });
 
 });
