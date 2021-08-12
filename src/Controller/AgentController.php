@@ -810,6 +810,7 @@ class AgentController extends BaseController
      */
     public function save(Request $request)
     {
+        $this->csrf_protection($request);
 
         $params = $request->request->all();
 

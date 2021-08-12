@@ -72,6 +72,15 @@ class BaseController extends Controller
         return $this->config[$key];
     }
 
+    protected function csrf_protection(Request $request)
+    {
+        $submittedToken = $request->request->get('_token');
+
+        if (!$this->isCsrfTokenValid('', $submittedToken)) {
+            die("The CSRF token is not valid !");
+        }
+    }
+
     /**
      * @Route("/index.php", name="default", methods={"GET"})
      */

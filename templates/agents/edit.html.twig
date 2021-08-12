@@ -96,6 +96,7 @@
 
     <form method='post' action='{{ asset("/agent") }}' name='form'>
       <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
+      <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
 
       <div id='main' style='margin-left:70px;padding-top:30px;'>
         <input type='hidden' value='{{ action }}' name='action' />

@@ -395,7 +395,6 @@ class WorkingHourController extends BaseController
                 "adminN2"            => $adminN2,
                 "cle"                => $cle,
                 "copy"               => $copy,
-                "CSRFSession"        => $request->get('CSRFToken'),
                 "debut1"             => $debut1,
                 "debut1Fr"           => $debut1Fr,
                 "exception_id"       => null,
@@ -589,7 +588,6 @@ class WorkingHourController extends BaseController
                 "adminN2"            => $adminN2,
                 "cle"                => $cle,
                 "copy"               => $copy,
-                "CSRFSession"        => $request->get('CSRFToken'),
                 "debut1Fr"           => $debut1Fr,
                 "exception_id"       => $exception_id,
                 "exception_back"     => $exception_back,
@@ -627,7 +625,10 @@ class WorkingHourController extends BaseController
     /**
      * @Route("/workinghour", name="workinghour.save", methods={"POST"})
      */
-    public function save(Request $request, Session $session){
+    public function save(Request $request, Session $session)
+    {
+        $this->csrf_protection($request);
+
         $post = $request->request->all();
         $msg = null;
         $msgType = null;
@@ -683,7 +684,10 @@ class WorkingHourController extends BaseController
     /**
      * @Route("/workinghour", name="workinghour.delete", methods={"DELETE"})
      */
-    public function delete(Request $request, Session $session){
+    public function delete(Request $request, Session $session)
+    {
+        $this->csrf_protection($request);
+
         $CSRFToken = $request->get('CSRFToken');
         $id = $request->get("id");
 

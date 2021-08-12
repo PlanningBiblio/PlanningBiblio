@@ -3,6 +3,7 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
+  <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
 
   <h3>Heures de présence</h3>
   <div id='buttons'>

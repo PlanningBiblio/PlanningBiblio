@@ -67,6 +67,7 @@
             </p>
         </div>
         <input type='hidden' name='CSRFToken' value='{{ CSRFSession }}' />
+        <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
         <input type='hidden' name='retour' value='{{ retour }}' />
         <input type='hidden' name='action' value='{{ action }}' />
         <input type='hidden' name='id' id='id' value='{{ id }}' />
