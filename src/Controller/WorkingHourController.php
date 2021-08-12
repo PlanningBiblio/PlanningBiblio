@@ -26,7 +26,7 @@ class WorkingHourController extends BaseController
         if (!$nbSemaine || !$perso_id) {
             $response = new Response();
             $response->setContent('Wrong parameters');
-            $response->setStatusCode(404);
+            $response->setStatusCode(400);
             return $response;
         }
 
@@ -292,7 +292,6 @@ class WorkingHourController extends BaseController
         $retour = $request->get('retour');
         $droits = $GLOBALS['droits'];
         $lang = $GLOBALS['lang'];
-        $nbSemaine = $this->config('nb_semaine');
         $pause2_enabled = $this->config('PlanningHebdo-Pause2');
         $pauseLibre_enabled = $this->config('PlanningHebdo-PauseLibre');
         $validation = "";
@@ -395,7 +394,6 @@ class WorkingHourController extends BaseController
                 "adminN2"            => $adminN2,
                 "cle"                => $cle,
                 "copy"               => $copy,
-                "CSRFSession"        => $request->get('CSRFToken'),
                 "debut1"             => $debut1,
                 "debut1Fr"           => $debut1Fr,
                 "exception_id"       => null,
@@ -410,6 +408,7 @@ class WorkingHourController extends BaseController
                 "modifAutorisee"     => $modifAutorisee,
                 "multisites"         => $multisites,
                 "nbSites"            => $nbSites,
+                "nbSemaine"          => $nbSemaine,
                 "nomAgent"           => $nomAgent,
                 "notAdmin"           => $notAdmin,
                 "pause2_enabled"     => $pause2_enabled,
@@ -589,7 +588,6 @@ class WorkingHourController extends BaseController
                 "adminN2"            => $adminN2,
                 "cle"                => $cle,
                 "copy"               => $copy,
-                "CSRFSession"        => $GLOBALS['CSRFSession'],
                 "debut1Fr"           => $debut1Fr,
                 "exception_id"       => $exception_id,
                 "exception_back"     => $exception_back,
