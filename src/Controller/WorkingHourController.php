@@ -445,6 +445,7 @@ class WorkingHourController extends BaseController
         $droits = $GLOBALS['droits'];
         $lang = $GLOBALS['lang'];
         $pause2_enabled = $this->config('PlanningHebdo-Pause2');
+        $nbSemaine = $this->config('nb_semaine');
         $nbSites = $this->config('Multisites-nombre');
         $validation = "";
         $sites = array();
@@ -486,7 +487,7 @@ class WorkingHourController extends BaseController
         $perso_id = $p->elements[0]['perso_id'];
         $temps = $p->elements[0]['temps'];
         $breaktime = $p->elements[0]['breaktime'];
-        $nbSemaine = $p->elements[0]['nb_semaine'];
+        $thisNbSemaine = $p->elements[0]['nb_semaine'];
 
         if ($p->elements[0]['exception']) {
             $is_exception = 1;
@@ -609,6 +610,7 @@ class WorkingHourController extends BaseController
                 "request_exception"  => $request_exception,
                 "tab"                => $tab,
                 "temps"              => $temps,
+                "thisNbSemaine"      => $thisNbSemaine,
                 "selected1"          => $selected1,
                 "selected2"          => $selected2,
                 "selected3"          => $selected3,

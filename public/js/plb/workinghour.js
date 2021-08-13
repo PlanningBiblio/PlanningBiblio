@@ -15,6 +15,12 @@ function updateTables() {
   plHebdoMemePlanning();
 }
 
-$("document").ready(function(){
-    updateTables();
+$(function(){
+    $("document").ready(function(){
+        updateTables();
+    });
+
+    $("#perso_id").change(function() {
+        updateTables();
+    });
 });
