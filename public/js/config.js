@@ -57,11 +57,30 @@ function ldaptest(){
   });
 }
 
+function mail_config() {
+  if (document.getElementById('Mail-IsMail-IsSMTP').value == 'IsMail') {
+    document.getElementById('Mail-Hostname_tr').style.display = 'none';
+    document.getElementById('Mail-Host_tr').style.display = 'none';
+    document.getElementById('Mail-Port_tr').style.display = 'none';
+    document.getElementById('Mail-SMTPSecure_tr').style.display = 'none';
+    document.getElementById('Mail-SMTPAuth_tr').style.display = 'none';
+    document.getElementById('Mail-Username_tr').style.display = 'none';
+    document.getElementById('Mail-Password_tr').style.display = 'none';
+  } else {
+    document.getElementById('Mail-Hostname_tr').style.display = '';
+    document.getElementById('Mail-Host_tr').style.display = '';
+    document.getElementById('Mail-Port_tr').style.display = '';
+    document.getElementById('Mail-SMTPSecure_tr').style.display = '';
+    document.getElementById('Mail-SMTPAuth_tr').style.display = '';
+    document.getElementById('Mail-Username_tr').style.display = '';
+    document.getElementById('Mail-Password_tr').style.display = '';
+  }
+}
+
 function mailtest(){
  
   var enabled = $('#Mail-IsEnabled').prop('checked');
   var mailSmtp = $('#Mail-IsMail-IsSMTP').val();
-  var wordwrap = $('#Mail-WordWrap').val();
   var hostname = $('#Mail-Hostname').val();
   var host = $('#Mail-Host').val();
   var port = $('#Mail-Port').val();
@@ -93,7 +112,7 @@ function mailtest(){
     url: 'ajax/mail-test',
     type: 'post',
     dataType: 'json',
-    data: {mailSmtp: mailSmtp, wordwrap: wordwrap, hostanme: hostname, host: host, port: port, secure: secure, auth: auth, user: user, password: password, fromMail: fromMail, fromName: fromName, signature: signature, planning: planning},
+    data: {mailSmtp: mailSmtp, hostanme: hostname, host: host, port: port, secure: secure, auth: auth, user: user, password: password, fromMail: fromMail, fromName: fromName, signature: signature, planning: planning},
     success: function(result){
       if(result == 'ok'){
         CJInfo('Le mail de test a été envoyé avec succès. Vérifiez votre messagerie.','success',top1,8000);

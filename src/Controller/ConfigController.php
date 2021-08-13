@@ -35,6 +35,7 @@ class ConfigController extends BaseController
                 'valeurs'       => html_entity_decode($cp->valeurs(), ENT_QUOTES|ENT_HTML5),
                 'categorie'     => $cp->categorie(),
                 'commentaires'  => html_entity_decode($cp->commentaires(), ENT_QUOTES|ENT_HTML5),
+                'extra'       => $cp->extra(),
             );
 
             if ($elem['nom'] == 'URL' ) {

@@ -254,7 +254,7 @@ class CJMail
             $mail->IsSMTP();
         }
         $mail->CharSet="utf-8";
-        $mail->WordWrap =$GLOBALS['config']['Mail-WordWrap'];
+        $mail->WordWrap = 50;
         $mail->Hostname =$GLOBALS['config']['Mail-Hostname'];
         $mail->Host =$GLOBALS['config']['Mail-Host'];
         $mail->Port =$GLOBALS['config']['Mail-Port'];

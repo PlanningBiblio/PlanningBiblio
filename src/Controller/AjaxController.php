@@ -76,7 +76,6 @@ class AjaxController extends BaseController
         include_once(__DIR__ . '/../../public/include/function.php');
 
         $mailSmtp = $request->get('mailSmtp');
-        $wordwrap = $request->get('wordwrap');
         $hostname = $request->get('hostname');
         $host = $request->get('host');
         $port = $request->get('port');
@@ -93,7 +92,6 @@ class AjaxController extends BaseController
         if ($fp=@fsockopen($host, $port, $errno, $errstr, 5)) {
             $config['Mail-IsEnabled'] = 1;
             $config['Mail-IsMail-IsSMTP'] = $mailSmtp;
-            $config['Mail-WordWrap'] = $wordwrap;
             $config['Mail-Hostname'] = $hostname;
             $config['Mail-Host'] = $host;
             $config['Mail-Port'] = $port;
