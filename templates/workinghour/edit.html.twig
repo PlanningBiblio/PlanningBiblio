@@ -59,11 +59,11 @@
             <input type='text' name='fin' {% if request_exception is null %}value='{{ fin1Fr }}'{% endif %} class='datepicker' style='position:absolute; left:200px; width:200px;' />
           </p>
         </div> <!-- id=periode -->
-        {% if thisNbSemaine is defined and copy is defined and nbSemaine is defined and thisNbSemaine != nbSemaine %}
+        {% if thisNbSemaine is defined and copy is defined and copy != '' and nbSemaine is defined and thisNbSemaine != nbSemaine %}
         <div id='cycle'>
             <p>
-                <label for='number_of_weeks'>Cycle (en nombre de semaines)</label>
-                <select name='number_of_weeks' id='number_of_weeks' onchange='updateTables();'>
+                <label for='select_number_of_weeks'>Cycle (en nombre de semaines)</label>
+                <select name='select_number_of_weeks' id='select_number_of_weeks'>
                     <option value="{{ thisNbSemaine }}">{{ thisNbSemaine }} (ces heures de présence)</option>
                     <option value="{{ nbSemaine }}">{{ nbSemaine }} (configuration actuelle)</option>
                 </select>

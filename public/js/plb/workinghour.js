@@ -1,7 +1,19 @@
-function updateTables() {
+function updateTables(selected_weeks) {
+
+    var weeks;
+    if (selected_weeks) {
+        weeks = selected_weeks;
+    } else if ($("#this_number_of_weeks").val()) {
+    console.log("this");
+        weeks = $("#this_number_of_weeks").val();
+    }  else {
+        weeks = $("#number_of_weeks").val();
+    }
+    $('#select_number_of_weeks').val(weeks);
+
     $.ajax({
         url: "/ajax/workinghour-tables",
-        data: {weeks: $("#number_of_weeks").val(), perso_id: $("#perso_id").val(), ph_id: $("#id").val()},
+        data: {weeks: weeks, perso_id: $("#perso_id").val(), ph_id: $("#id").val()},
         dataType: "html",
         type: "get",
         async: false,
@@ -23,4 +35,9 @@ $(function(){
     $("#perso_id").change(function() {
         updateTables();
     });
+
+    $("#select_number_of_weeks").change(function() {
+        updateTables(this.value);
+    });
+
 });
