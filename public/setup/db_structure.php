@@ -113,6 +113,7 @@ $sql[]="CREATE TABLE `{$dbprefix}config` (
   `commentaires` text NOT NULL,
   `categorie` VARCHAR( 100 ) NOT NULL,
   `valeurs` TEXT NOT NULL,
+  `extra` VARCHAR(100) NULL DEFAULT NULL,
   `ordre` INT(2) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `nom` (`nom`)
