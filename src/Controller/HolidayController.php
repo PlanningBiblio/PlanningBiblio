@@ -392,10 +392,15 @@ class HolidayController extends BaseController
         if ($this->config('Conges-Recuperations') == 1 and $data['debit']=="recuperation") {
             $request_type = 'recover';
         }
+
         $show_allday = 0;
-        if (!$this->config('Conges-Recuperations') or $data['debit']=="recuperation") {
+        if ($this->config('Conges-Mode') == 'heures'
+            and (!$this->config('Conges-Recuperations')
+                or $this->config('Conges-Heures')
+                or $data['debit']=="recuperation")) {
             $show_allday = 1;
         }
+
         $displayHeures=null;
         if ($hre_debut=="00:00:00" and $hre_fin=="23:59:59") {
             $displayHeures="style='display:none;'";
@@ -628,8 +633,14 @@ class HolidayController extends BaseController
             $balance[4] = 0;
         }
 
-        $lang = $GLOBALS['lang'];
+        $show_allday = 0;
+        if ($this->config('Conges-Mode') == 'heures'
+            and (!$this->config('Conges-Recuperations')
+                or $this->config('Conges-Heures'))) {
+            $show_allday = 1;
+        }
 
+        $lang = $GLOBALS['lang'];
         $templateParams = array(
             'admin'                 => $admin,
             'adminN2'               => $adminN2,
@@ -666,6 +677,7 @@ class HolidayController extends BaseController
             'loggedin_firstname'    => $_SESSION['login_prenom'],
             'multisites'            => $multisites,
             'sites_select'          => $sites_select,
+            'show_allday'           => $show_allday,
         );
 
         $this->templateParams($templateParams);
