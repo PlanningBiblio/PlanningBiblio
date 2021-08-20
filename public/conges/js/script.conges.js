@@ -20,6 +20,16 @@ function afficheRefus(me){
   }
 }
 
+function adaptDisplay() {
+  if (multipleAgentsSelected()) {
+    $("#credits_summary").hide();
+    $("#nbHeures").text('');
+    $("#nbJours").text('');
+  } else {
+    $("#credits_summary").show();
+  }
+}
+
 function calculCredit(){
 
   if( ! $('input[name=debut]').length) { return; }
@@ -722,12 +732,9 @@ function supprimeAgent(id){
   $("#option"+id).show();
   $("#li"+id).remove();
   $("#hidden"+id).remove();
-  if (multipleAgentsSelected()) {
-    $("#credits_summary").hide();
-  } else {
-    $("#credits_summary").show();
-  }
+  adaptDisplay();
   affiche_perso_ul();
+  calculCredit();
 }
 
 function getAgentsBySites(sites) {
@@ -835,11 +842,7 @@ $(function(){
       change_select_perso_ids(id);
     }
 
-    if (multipleAgentsSelected()) {
-        $("#credits_summary").hide();
-    } else {
-        $("#credits_summary").show();
-    }
+    adaptDisplay();
 
     // Réinitialise le menu déroulant
     $("#perso_ids").val(0);
