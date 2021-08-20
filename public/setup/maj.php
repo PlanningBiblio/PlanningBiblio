@@ -26,13 +26,18 @@ $CSRFToken = CSRFToken();
 
 $cli = isset($argv[0]);
 
-echo "Mise à jour de la base de données version {$config['Version']} --> $version\n";
-if (! $cli) {
-    echo "<br/>\n";
+if ($cli) {
+    echo "\033[33mMise à jour de la base de données version {$config['Version']} --> $version\e[0m\n";
+} else {
+    echo "Mise à jour de la base de données version {$config['Version']} --> $version<br/>\n";
 }
 
 if (version_compare($config['Version'], "2.0") === -1) {
-    echo "<br/>Vous devez d'abord installer la version 2.0<br/>\n";
+    if ($cli) {
+        echo "\033[31mVous devez d'abord installer la version 2.0\e[0m\n";
+    } else {
+        echo "<br/>Vous devez d'abord installer la version 2.0<br/>\n";
+    }
     exit;
 }
 $sql=array();
