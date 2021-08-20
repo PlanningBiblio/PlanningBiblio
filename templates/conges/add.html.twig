@@ -84,7 +84,7 @@
               <td>
                 <input name="hre_debut" id="hre_debut_select"
                   class="planno-timepicker checkdate" style="width: 20%"
-                  value="{{ hre_debut ? hre_debut | date('H:i') : '' }}"/>
+                  value="{{ hre_debut is defined ? hre_debut | date('H:i') : '' }}"/>
               </td>
             </tr>
 
@@ -106,7 +106,7 @@
               <td>
                 <input name="hre_fin" id="hre_fin_select"
                   class="planno-timepicker checkdate" style="width: 20%"
-                  value="{{ hre_fin ? hre_fin | date('H:i') : '' }}"/>
+                  value="{{ hre_fin is defined ? hre_fin | date('H:i') : '' }}"/>
               </td>
             </tr>
 
