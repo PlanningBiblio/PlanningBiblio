@@ -12,10 +12,13 @@ include_once(__DIR__ . '/../../public/include/feries.php');
 class AppExtension extends AbstractExtension
 {
 
+    private $blacklistedTags = ['script'];
+
    public function getFilters()
     {
         return [
             new TwigFilter('datefull', [$this, 'dateFull']),
+            new TwigFilter('raw_black_listed', [$this, 'htmlFilter'], ['is_safe' => ['html']]),
         ];
     }
 
@@ -31,6 +34,15 @@ class AppExtension extends AbstractExtension
     public function dateFull($date)
     {
         return dateAlpha($date);
+    }
+
+    public function htmlFilter($html)
+    {
+        foreach ($this->blacklistedTags as $tag) {
+            $html = preg_replace("/<$tag.*?>(.*)?<\/$tag>/im","$1",$html);
+        }
+
+        return $html;
     }
 
     public function userCan($right, $site = 0)

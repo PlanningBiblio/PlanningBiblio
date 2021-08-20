@@ -242,7 +242,7 @@ class planning
                             }
                         }
                     } else {
-                        $heuresHebdoTitle="Quota hebdomadaire : Erreur de calcul des heures d&apos;absences";
+                        $heuresHebdoTitle="Quota hebdomadaire : Erreur de calcul des heures d'absences";
                         $heuresHebdo="Erreur";
                     }
                 }
@@ -609,6 +609,7 @@ class planning
     {
         $this->notes=null;
         $db=new db();
+        $db->sanitize_string = false;
         $db->select2("pl_notes", "*", array("date"=>$this->date, "site"=>$this->site), "ORDER BY `timestamp` DESC");
         if ($db->result) {
             $notes=$db->result[0]['text'];

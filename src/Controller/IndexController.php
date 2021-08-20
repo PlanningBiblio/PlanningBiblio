@@ -839,8 +839,11 @@ class IndexController extends BaseController
         $a->valide = false;
         $a->agents_supprimes = array(0,1,2);    // required for history
         $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date);
+        $absences = $a->elements;
 
-        return usort($a->elements, "cmp_nom_prenom_debut_fin");
+        usort($absences, "cmp_nom_prenom_debut_fin");
+
+        return $absences;
     }
 
     private function getAbsencesPlanning($date, $site)
