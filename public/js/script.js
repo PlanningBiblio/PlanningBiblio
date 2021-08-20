@@ -551,8 +551,8 @@ function sanitize_string(a){
 * @author Farid Goara <farid.goara@u-pem.fr>
 */
 function setEndHour(){
-  if($("select[name=hre_debut]").val() != "" && $("select[name=hre_fin]").val() == ""){
-    $("select[name=hre_fin]").prop("selectedIndex",$("select[name=hre_debut]").prop("selectedIndex"));
+  if($("input[name=hre_debut]").val() != "" && $("input[name=hre_fin]").val() == ""){
+    $('input[name=hre_fin]').val($('input[name=hre_debut]'));
   }
 }
 
@@ -898,8 +898,46 @@ $(function(){
     $(".ui-tab-cancel").css("position","absolute");
     $(".ui-tab-cancel").css("right",right);
     $(".ui-tab-cancel").css("top",7);
+
+    granularity = $('form #granularity').val();
+    step = setTimePickerStep(granularity);
+
+    $('body').on('focus',".planno-timepicker", function(){
+      $('.planno-timepicker').plannoTimepicker({
+        interval: step,
+        granularity: granularity,
+        minTime: '6:00',
+        minHour: 6,
+        maxTime: '23:59',
+        maxHour: 23,
+        startTime: '6:00',
+      });
+    });
+
+    $('body').on('focus',".planno-break-timepicker", function(){
+      $('.planno-break-timepicker').plannoTimepicker({
+        interval: 15,
+        granularity: 15,
+        minTime: '00:00',
+        minHour: '0',
+        maxTime: '02:00',
+        maxHour: '2',
+        dynamic: false,
+      });
+    });
+
+    $('.comptime-timepicker').plannoTimepicker({
+      zindex: 9999999,
+      interval: step,
+      granularity: granularity,
+      minTime: '00:00',
+      minHour: '0',
+      maxTime: '17:00',
+      maxHour: '17',
+    });
+
   });
-  
+
   // Infobulles
   $(document).tooltip();
 });

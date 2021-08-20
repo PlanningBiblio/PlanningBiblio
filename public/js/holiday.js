@@ -45,13 +45,18 @@ $(function(){
   });
   
   $('.checkdate').on('change', function() {
+    dateChange(this);
+  });
+});
+
+function dateChange(obj) {
     if (!$('input[name="halfday"]').is(':checked')) {
       calculCredit();
       return;
     }
 
     priority = 'start';
-    if ($(this).attr('name') == 'end_halfday') {
+    if ($(obj).attr('name') == 'end_halfday') {
       priority = 'end';
     }
     checkdate(priority);
@@ -60,8 +65,7 @@ $(function(){
 
     // WARNING : Keep the function calculCredit after last checkdate().
     calculCredit();
-  });
-});
+}
 
 function checkdate(priority) {
   debut = ddmmyyyy_to_date($('input[name="debut"]').val());

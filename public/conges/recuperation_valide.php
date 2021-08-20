@@ -26,6 +26,9 @@ $heures=filter_input(INPUT_POST, "heures", FILTER_SANITIZE_STRING);
 $refus=trim(filter_input(INPUT_POST, "refus", FILTER_SANITIZE_STRING));
 $validation=filter_input(INPUT_POST, "validation", FILTER_SANITIZE_NUMBER_INT);
 
+list($hours, $minutes) = explode(':', $heures);
+$heures = intVal($hours) + intVal($minutes) / 60;
+
 $msg=urlencode("Une erreur est survenue lors de la validation de vos modifications.");
 $msgType="error";
 

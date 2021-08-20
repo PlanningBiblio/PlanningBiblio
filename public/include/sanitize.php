@@ -100,18 +100,6 @@ function sanitize_time($input)
     return $reponse_filtre;
 }
 
-// sanitize_time_end retourne "23:59:59" par défaut
-function sanitize_time_end($input)
-{
-    $reponse_filtre = "23:59:59";
-    // Vérifions si le format est valide
-    if (preg_match('#^(\d{1,2}):(\d{2}):(\d{2})$#', $input, $matches)) {
-        $reponse_filtre = $input;
-    }
-    return $reponse_filtre;
-}
-
-
 // sanitize_on retourne false par défaut
 // Permet par exemple de controler les checkboxes
 function sanitize_on($input)

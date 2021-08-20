@@ -27,6 +27,9 @@ $date2=filter_input(INPUT_POST, "date2", FILTER_CALLBACK, array("options"=>"sani
 $heures=filter_input(INPUT_POST, "heures", FILTER_SANITIZE_STRING);
 $perso_id=filter_input(INPUT_POST, "perso_id", FILTER_SANITIZE_NUMBER_INT);
 
+list($hours, $minutes) = explode(':', $heures);
+$heures = intVal($hours) + intVal($minutes) / 60;
+
 // Les dates sont au format DD/MM/YYYY et converti en YYYY-MM-DD
 $date=dateSQL($date);
 $date2=dateSQL($date2);
