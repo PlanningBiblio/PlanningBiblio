@@ -26,7 +26,7 @@ class WorkingHourController extends BaseController
         if (!$nbSemaine || !$perso_id) {
             $response = new Response();
             $response->setContent('Wrong parameters');
-            $response->setStatusCode(404);
+            $response->setStatusCode(400);
             return $response;
         }
 
@@ -266,7 +266,6 @@ class WorkingHourController extends BaseController
         $retour = $request->get('retour');
         $droits = $GLOBALS['droits'];
         $lang = $GLOBALS['lang'];
-        $nbSemaine = $this->config('nb_semaine');
         $pause2_enabled = $this->config('PlanningHebdo-Pause2');
         $pauseLibre_enabled = $this->config('PlanningHebdo-PauseLibre');
         $validation = "";
@@ -383,6 +382,7 @@ class WorkingHourController extends BaseController
                 "modifAutorisee"     => $modifAutorisee,
                 "multisites"         => $multisites,
                 "nbSites"            => $nbSites,
+                "nbSemaine"          => $nbSemaine,
                 "nomAgent"           => $nomAgent,
                 "notAdmin"           => $notAdmin,
                 "pause2_enabled"     => $pause2_enabled,
@@ -419,6 +419,7 @@ class WorkingHourController extends BaseController
         $droits = $GLOBALS['droits'];
         $lang = $GLOBALS['lang'];
         $pause2_enabled = $this->config('PlanningHebdo-Pause2');
+        $nbSemaine = $this->config('nb_semaine');
         $nbSites = $this->config('Multisites-nombre');
         $validation = "";
         $sites = array();
@@ -460,7 +461,7 @@ class WorkingHourController extends BaseController
         $perso_id = $p->elements[0]['perso_id'];
         $temps = $p->elements[0]['temps'];
         $breaktime = $p->elements[0]['breaktime'];
-        $nbSemaine = $p->elements[0]['nb_semaine'];
+        $thisNbSemaine = $p->elements[0]['nb_semaine'];
 
         if ($p->elements[0]['exception']) {
             $is_exception = 1;
@@ -583,6 +584,7 @@ class WorkingHourController extends BaseController
                 "request_exception"  => $request_exception,
                 "tab"                => $tab,
                 "temps"              => $temps,
+                "thisNbSemaine"      => $thisNbSemaine,
                 "selected1"          => $selected1,
                 "selected2"          => $selected2,
                 "selected3"          => $selected3,

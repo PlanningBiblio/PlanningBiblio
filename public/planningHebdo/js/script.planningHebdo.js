@@ -326,10 +326,6 @@ function plHebdoVerifForm(){
 }
 
 $(function(){
-  $("document").ready(function(){
-    plHebdoCalculHeures2();
-    plHebdoMemePlanning();
-  });
 
   //calcul des heures totales par ligne après la sélection des horaires
   $("body").on('change', '.select', function(e){
