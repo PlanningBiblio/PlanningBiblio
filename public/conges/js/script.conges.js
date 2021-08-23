@@ -30,6 +30,8 @@ function adaptDisplay() {
 
 function calculCredit(){
 
+  $("#erreurCalcul").val("false");
+
   if( ! $('input[name=debut]').length) { return; }
   if (multipleAgentsSelected()) { return; }
 
@@ -124,7 +126,6 @@ function calculCredit(){
         $("#nbJours").text(result.days);
         $("#nbHeures").effect("highlight",null,4000);
         $("#nbJours").effect("highlight",null,4000);
-        $("#erreurCalcul").val("false");
 
         $("#rest").val(0);
         $("#hr_rest").text('');
