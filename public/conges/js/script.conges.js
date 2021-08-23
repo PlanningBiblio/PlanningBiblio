@@ -22,11 +22,9 @@ function afficheRefus(me){
 
 function adaptDisplay() {
   if (multipleAgentsSelected()) {
-    $("#credits_summary").hide();
-    $("#nbHeures").text('');
-    $("#nbJours").text('');
+    $(".hideWhenMultipleAgents").hide();
   } else {
-    $("#credits_summary").show();
+    $(".hideWhenMultipleAgents").show();
   }
 }
 
@@ -721,7 +719,7 @@ function affiche_perso_ul(){
 }
 
 function multipleAgentsSelected() {
-    return $(".perso_ids_hidden").length > 1 ? true : false;
+    return $(".perso_ids_hidden").length == 1 ? false : true;
 }
 
 /**
@@ -846,6 +844,8 @@ $(function(){
 
     // Réinitialise le menu déroulant
     $("#perso_ids").val(0);
+
+    calculCredit();
 
   });
 });
