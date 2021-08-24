@@ -31,6 +31,8 @@ function adaptDisplay() {
 function calculCredit(){
 
   $("#erreurCalcul").val("false");
+  $("#nbJours").text('');
+  $("#nbHeures").text('');
 
   if( ! $('input[name=debut]').length) { return; }
   if (multipleAgentsSelected()) { return; }
@@ -720,6 +722,10 @@ function affiche_perso_ul(){
 }
 
 function multipleAgentsSelected() {
+    if (!$('#agents-multiples').val()) {
+      return false;
+    }
+
     return $(".perso_ids_hidden").length == 1 ? false : true;
 }
 
@@ -808,10 +814,6 @@ $(function(){
     calculCredit();
   });
 
-  $('#perso_ids').on('change', function() {
-    calculCredit();
-  });
-
   $("input[name='selected_sites']").change(function() {
     updateAgentsListBySites();
   });
@@ -823,28 +825,31 @@ $(function(){
     googleCalendarIcon();
   });
 
-  $("#perso_ids.agents_multiples").change(function(){
-    // Variables
-    var id=$(this).val();
+  $("#perso_ids").change(function(){
 
-    // Si sélection de "tous" dans le menu déroulant des agents, ajoute tous les id non-sélectionnés
-    if(id == 'tous'){
-      $("#perso_ids > option").each(function(){
-        var id = $(this).val();
-        if(id != 'tous' && id != 0 && $('#hidden'+id).length == 0 && $(this).css('display') != 'none'){
-          change_select_perso_ids(id);
-        }
-      });
+    if ($('#perso_ids').hasClass('agents_multiples')) {
+      // Variables
+      var id=$(this).val();
 
-    } else {
-      // Ajoute l'agent choisi dans la liste
-      change_select_perso_ids(id);
+      // Si sélection de "tous" dans le menu déroulant des agents, ajoute tous les id non-sélectionnés
+      if(id == 'tous'){
+	$("#perso_ids > option").each(function(){
+	  var id = $(this).val();
+	  if(id != 'tous' && id != 0 && $('#hidden'+id).length == 0 && $(this).css('display') != 'none'){
+	    change_select_perso_ids(id);
+	  }
+	});
+
+      } else {
+	// Ajoute l'agent choisi dans la liste
+	change_select_perso_ids(id);
+      }
+
+      adaptDisplay();
+
+      // Réinitialise le menu déroulant
+      $("#perso_ids").val(0);
     }
-
-    adaptDisplay();
-
-    // Réinitialise le menu déroulant
-    $("#perso_ids").val(0);
 
     calculCredit();
 
