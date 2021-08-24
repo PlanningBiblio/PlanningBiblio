@@ -27,6 +27,10 @@
     - 4
 "ajax.agentsites":
     - 100
+"ajax.agentsbysites":
+    - 100
+"ajax.checkplanning":
+    - 100
 "ajax.editabsencereasons":
     - 100
 "ajax.holidaycredit":
@@ -36,6 +40,8 @@
 "ajax.holiday-halfday-hours":
     - 100
 "ajax.holidays-hours-to-days":
+    - 100
+"ajax.holiday.absence.control":
     - 100
 "ajax.changepassword":
     - 21
