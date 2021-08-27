@@ -18,10 +18,6 @@ class ConfigController extends BaseController
         // Temporary folder
         $tmp_dir=sys_get_temp_dir();
 
-        // App URL
-        $request::setTrustedProxies(array($request->server->get('REMOTE_ADDR')), Request::HEADER_X_FORWARDED_ALL ^ Request::HEADER_X_FORWARDED_HOST);
-        $url = $request->getSchemeAndHttpHost() . $request->getBaseUrl();
-
         $configParams = $this->entityManager->getRepository(ConfigParam::class)->findBy(
             array(),
             array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
