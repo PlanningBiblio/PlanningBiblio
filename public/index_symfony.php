@@ -10,6 +10,7 @@ require dirname(__DIR__).'/config/bootstrap.php';
 include_once(__DIR__.'/../init/init.php');
 include_once(__DIR__.'/../init/init_menu.php');
 include_once(__DIR__.'/../init/init_templates.php');
+include_once(__DIR__ . '/../init/common.php');
 
 if ($_SERVER['APP_DEBUG']) {
     #umask(0000);
@@ -22,8 +23,10 @@ $path = $request->getPathInfo();
 
 // Session has expired. Redirect to authentication page.
 if (empty($_SESSION['login_id']) && $path != '/login' && $path != 'logout') {
+
     $redirect = ltrim($path, '/');
-    header("Location: {$config['URL']}/login?redirURL=$redirect");
+    $base_url = plannoBaseUrl($request);
+    header("Location: $base_url/login?redirURL=$redirect");
     exit();
 }
 

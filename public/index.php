@@ -19,9 +19,12 @@ Inclut au départ les fichiers config.php, doctype.php et header.php
 Inclut à la fin le fichier footer.php
 */
 
+use Symfony\Component\HttpFoundation\Request;
+
 include_once('init.php');
 include_once(__DIR__.'/init_menu.php');
 include_once('init_templates.php');
+include_once(__DIR__ . '/../init/common.php');
 
 require_once(__DIR__.'/include/feries.php');
 if (isset($_SESSION['login_id'])) {
@@ -51,8 +54,8 @@ if (empty($_SESSION['login_id'])) {
         if ($noCAS) {
             $login_params['noCAS'] = '';
         }
-        // FIXME Here, $config['URL'] should not be set yet.
-        $login_url = "{$config['URL']}/login?" . http_build_query($login_params);
+        $base_url = plannoBaseUrl($request);
+        $login_url = "$base_url/login?" . http_build_query($login_params);
         header("Location: $login_url");
         exit;
     }
