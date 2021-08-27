@@ -1023,7 +1023,7 @@ class AbsenceController extends BaseController
 
             $admin = false;
             foreach ($sites_agents as $site) {
-                if (in_array((200+$i), $this->droits) or in_array((500+$i), $this->droits)) {
+                if (in_array((200+$site), $this->droits) or in_array((500+$site), $this->droits)) {
                     $admin = true;
                     break;
                 }
