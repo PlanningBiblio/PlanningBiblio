@@ -34,6 +34,8 @@ class ConfigController extends BaseController
                 'extra'       => $cp->extra(),
             );
 
+	    $url = plannoBaseUrl($request);
+
             if ($elem['nom'] == 'URL' ) {
                 $elem['valeur'] = $url;
             }
