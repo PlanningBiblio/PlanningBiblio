@@ -124,6 +124,10 @@ class HolidayHelper extends BaseHelper
             $debutConges = strtotime($debutConges);
             $finConges = strtotime($finConges);
 
+#            $times = $this->getTimes($planning, $current);
+            $day_idx = $date_current->format("w") -1;
+            $finPlanning = strtotime($planning["times"][$day_idx][3]);
+ 
             $times = $this->getTimes($planning, $current);
 
             $today = 0;
@@ -133,6 +137,25 @@ class HolidayHelper extends BaseHelper
 
                 $debutConges1 = $debutConges > $t0 ? $debutConges : $t0;
                 $finConges1 = $finConges < $t1 ? $finConges : $t1;
+
+          // heure de fin recalculée selon les modalités BUlyon3
+                if ($planning["breaktimes"][$day_idx] != 0 && $finConges <= $finPlanning) {
+                    if ( $debutConges < strtotime("14:00:00")) {
+                        if ($finConges <= strtotime("13:00:00"))
+                            $finConges1 = $finConges;
+                        else
+                            $finConges1 = $finConges - 3600;
+                    } elseif ($debutConges >= strtotime("13:00:00")) {
+                        $finConges1 = $finConges;
+                    }
+                } elseif ($debutConges >= strtotime("14:00:00")) {
+                    if ($finConges <= $finPlanning)
+                        $finConges1 = $finConges;
+                    else
+                        $finConges1 = $finPlanning;
+                }
+
+
                 if ($finConges1 > $debutConges1) {
                     $today += $finConges1 - $debutConges1;
                 }
@@ -164,7 +187,6 @@ class HolidayHelper extends BaseHelper
 
             $current = date("Y-m-d", strtotime("+1 day", strtotime($current)));
         }
-
         $total = 0;
         foreach ($per_week as $week) {
             $counted = $this->applyWeekTable($week);

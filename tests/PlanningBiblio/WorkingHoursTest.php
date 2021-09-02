@@ -114,6 +114,7 @@ class WorkingHoursTest extends TestCase
         $this->assertEquals('16:00:00', $times[2][1], 'Thursday third part ends at 16:00');
     }
 
+    //TODO: Check me
     public function testWithFreeBreaks()
     {
         $working_hours = array(

@@ -75,6 +75,7 @@ class WorkingHours
             $tab[] = array($heures[6], $heures[3]);
         }
 
+        //TODO: FIXME here
         if ($break) {
             $substracted = 0;
             foreach (array(2, 1, 0) as $i) {
