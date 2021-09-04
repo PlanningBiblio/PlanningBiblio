@@ -59,7 +59,7 @@ class ICal
         if (is_array($filename)) {
             $lines = $filename;
         } else {
-            $lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            $lines = @file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         }
         
         if ($weekStart) {
@@ -111,6 +111,10 @@ class ICal
      */
     public function initLines($lines)
     {
+        if (!is_array($lines)) {
+            return false;
+        }
+
         if (stristr($lines[0], 'BEGIN:VCALENDAR') === false) {
             return false;
         } else {
@@ -775,6 +779,10 @@ class ICal
      */
     public function events()
     {
+        if (!is_array($this->cal)) {
+            return false;
+        }
+
         $array = $this->cal;
         return $array['VEVENT'];
     }
@@ -786,6 +794,10 @@ class ICal
      */
     public function calendarName()
     {
+        if (!is_array($this->cal)) {
+            return false;
+        }
+
         if (!isset($this->cal['VCALENDAR']['X-WR-CALNAME'])) {
             return '';
         }
