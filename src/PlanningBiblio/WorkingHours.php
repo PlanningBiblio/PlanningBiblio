@@ -74,8 +74,9 @@ class WorkingHours
         if ($pause2 and !empty($heures[6]) and !empty($heures[3])) {
             $tab[] = array($heures[6], $heures[3]);
         }
-
         //TODO: FIXME here
+#echo "---------\n";
+#var_dump($tab);
         if ($break) {
             $substracted = 0;
             foreach (array(2, 1, 0) as $i) {
@@ -95,7 +96,6 @@ class WorkingHours
                 }
             }
         }
-
         return $tab;
 
     }

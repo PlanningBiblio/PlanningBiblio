@@ -125,6 +125,7 @@ class HolidayHelper extends BaseHelper
             $finConges = strtotime($finConges);
 
 #            $times = $this->getTimes($planning, $current);
+
             $day_idx = $date_current->format("w") -1;
             $finPlanning = strtotime($planning["times"][$day_idx][3]);
  
@@ -160,6 +161,7 @@ class HolidayHelper extends BaseHelper
                     $today += $finConges1 - $debutConges1;
                 }
             }
+#            echo "today: $today\n";
 
             if($today > 0 && $this->config('Conges-Mode') == 'jours' && !$this->data['is_recover']) {
                 // 3600 = 1h, 12600 = 3,5h, 25200 = 7h
