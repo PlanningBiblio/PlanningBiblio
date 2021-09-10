@@ -297,21 +297,13 @@ class FrameworkController extends BaseController
             }
         }
 
-        //	Liste des tableaux utilisés
-        $used = array();
+        //Is the framework in use ?
+        // If yes, no edition.
+        $used = false;
         $db = new \db();
-        $db->select("pl_poste_tab_affect", "tableau", null, "group by tableau");
+        $db->select('pl_poste_tab_affect', null, "tableau = $tableauNumero");
         if ($db->result) {
-            foreach ($db->result as $elem) {
-                $used[] = $elem['tableau'];
-            }
-        }
-        $db = new \db();
-        $db->select("pl_poste_modeles_tab", "tableau", null, "group by tableau");
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $used[] = $elem['tableau'];
-            }
+            $used = true;
         }
 
         // Liste des postes
@@ -361,6 +353,7 @@ class FrameworkController extends BaseController
                 "tableauNumero" => $tableauNumero,
                 "tableaux"      => $tableaux,
                 "tabs"          => $tabs,
+                'used'          => $used ? 1 : 0
             )
         );
 

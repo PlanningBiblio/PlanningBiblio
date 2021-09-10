@@ -72,7 +72,7 @@
   {% else %}
       <h3>Configuration du tableau "{{ tableauNom }}"</h3>
   {% endif %}
-  <div id='tabs' class='ui-tabs' data-active="{{ cfgType }}">
+  <div id='tabs' class='ui-tabs' data-active="{{ cfgType }}" {% if used %}data-disabled="[1, 2]"{% endif %}>
     <ul>
       <li>
         <a href='#div_infos' id='infos'>Infos générales</a>
@@ -107,7 +107,7 @@
               <tr>
                 <td>Affecter au site :</td>
                 <td>
-                  <select id='site' style='width:300px;'>
+                  <select id='site' style='width:300px;' {% if used %}disabled{% endif %}>
                     <option value=''>&nbsp;</option>
                     {% for i in 1..nbSites %}
                        <option value='{{ i }}' {{ (i == site) ? "selected='selected'":" "}} >{{ multisites[i] }}</option>
@@ -121,7 +121,7 @@
             <tr>
               <td>Nombre de tableaux :</td>
               <td>
-                <select name='nombre' id='nombre' style='width:300px;'>
+                <select name='nombre' id='nombre' style='width:300px;' {% if used %}disabled{% endif %}>
                   {% for i in 1..16 %}
                     <option value='{{ i }}' {{ (i == nombre) ? "selected='selected'":" "}} >{{ i }}</option>
                   {% endfor %}
