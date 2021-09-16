@@ -215,7 +215,7 @@ echo $twig->render('planning/poste/menu.html.twig',
         'date_validation2' => $date_validation2,
         'heure_validation2' => $heure_validation2,
         'CSRFSession' => $CSRFSession,
-        'week_view' => 0,
+        'week_view' => false,
     )
 );
 
