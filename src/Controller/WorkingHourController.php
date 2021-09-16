@@ -679,8 +679,12 @@ class WorkingHourController extends BaseController
     // a service container.
     private function time_to_decimal($time)
     {
-      $hm = explode(":", $time);
-      return ($hm[0] + ($hm[1] / 60));
+        if (!$time) {
+            return 0;
+        }
+
+        $hm = explode(":", $time);
+        return ($hm[0] + ($hm[1] / 60));
     }
 
     private function can_edit()
