@@ -164,7 +164,7 @@ echo $twig->render('planning/poste/menu.html.twig',
         'public_holiday' => jour_ferie($date),
         'messages_infos' => $messages_infos,
         'CSRFSession' => $CSRFSession,
-        'week_view' => 1,
+        'week_view' => true,
     )
 );
 
@@ -208,7 +208,7 @@ for ($j=0;$j<=$fin;$j++) {
     //		---------------		Choix du tableau	-----------------------------//
     $db=new db();
     $db->select2("pl_poste_tab_affect", "tableau", array("date"=>$date, "site"=>$site));
-    $tab=$db->result[0]['tableau'];
+    $tab = $db->result ? $db->result[0]['tableau'] : null;
 
     if (!$tab) {
         continue 1;
