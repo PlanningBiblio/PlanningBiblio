@@ -24,7 +24,7 @@
           <b>Du {{ dates[0] | date("d/m/Y") }} au {{ dates[6] | date("d/m/Y")}}.</b>
         </div>
 
-        {% if not week_wiew %}
+        {% if not week_view %}
           <div id='date_planning'>
             Planning du {{ date | datefull | raw }}
             {% if public_holiday %}
