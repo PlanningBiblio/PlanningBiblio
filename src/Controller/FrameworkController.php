@@ -232,7 +232,6 @@ class FrameworkController extends BaseController
     public function editTable (Request $request, Session $session){
         $CSRFToken = $GLOBALS['CSRFSession'];
         $cfgType = $request->get("cfg-type");
-        $cfgTypeGet = $request->get("cfg-type");
         $tableauNumero = $request->request->get("id");
         $tableauGet = $request->get("id");
         $nbSites = $this->config('Multisites-nombre');
@@ -243,14 +242,8 @@ class FrameworkController extends BaseController
         }
 
         // Choix de l'onglet (cfg-type)
-        if ($cfgTypeGet) {
-            $cfgType = $cfgTypeGet;
-        }
         if (!$cfgType and in_array("cfg_type", $_SESSION)) {
-            $cfgType = $_SESSION['cfg_type'];
-        }
-        if (!$cfgType and !in_array("cfg_type", $_SESSION)) {
-            $cfgType = "infos";
+            $cfgType = in_array("cfg_type", $_SESSION) ? $_SESSION['cfg_type'] : 'infos';
         }
         $_SESSION['cfg_type'] = $cfgType;
 
@@ -276,6 +269,10 @@ class FrameworkController extends BaseController
         $t->getNumbers();
         $nombre = $t->length;
         $site = 1;
+
+        if ($t->is_used()) {
+            $cfgType = 'infos';
+        }
 
 
         // Site
