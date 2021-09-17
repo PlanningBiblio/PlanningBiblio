@@ -148,14 +148,18 @@ class FrameworkController extends BaseController
             $t = new Framework();
             $t->id = $id;
             $t->CSRFToken = $CSRFToken;
-            $t->setNumbers($nombre);
+
+            $not_used = $t->is_used() ? false : true;
+            if ($not_used) {
+                $t->setNumbers($nombre);
+            }
 
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
             $db->sanitize_string = false;
             $db->update("pl_poste_tab", array("nom" => trim($nom)), array("tableau" => $id));
 
-            if ($site) {
+            if ($site && $not_used) {
                 $db = new \db();
                 $db->CSRFToken = $CSRFToken;
                 $db->update('pl_poste_tab', array('site' => $site), array('tableau' => $id));
@@ -297,15 +301,6 @@ class FrameworkController extends BaseController
             }
         }
 
-        //Is the framework in use ?
-        // If yes, no edition.
-        $used = false;
-        $db = new \db();
-        $db->select('pl_poste_tab_affect', null, "tableau = $tableauNumero");
-        if ($db->result) {
-            $used = true;
-        }
-
         // Liste des postes
         $p = new \postes();
         if ($nbSites > 1) {
@@ -353,7 +348,7 @@ class FrameworkController extends BaseController
                 "tableauNumero" => $tableauNumero,
                 "tableaux"      => $tableaux,
                 "tabs"          => $tabs,
-                'used'          => $used ? 1 : 0
+                'used'          => $t->is_used() ? 1 : 0
             )
         );
 
@@ -367,6 +362,18 @@ class FrameworkController extends BaseController
         $post = $request->request->all();
         $CSRFToken = $post['CSRFToken'];
         $tableauNumero = $post['numero'];
+
+        $framework = new Framework();
+        $framework->id = $tableauNumero;
+        if ($framework->is_used()) {
+            return $this->redirectToRoute('framework.edit_table',
+                array(
+                    'id' => $tableauNumero,
+                    'cfg-type' => 0,
+                    'msg' => 'Tableau déjà utilisé. Vous ne pouvez pas modifier les horaires.',
+                    'msgType' => 'error'
+                ));
+        }
 
         if (isset($post['action'])) {
             $db = new \db();
@@ -410,7 +417,7 @@ class FrameworkController extends BaseController
 
             return $this->redirectToRoute('framework.edit_table', array("id" => $tableauNumero, "cfg-type"=> $post['cfg-type'], "msg" => $msg, "msgType" => $msgType));
         }
-    }   
+    }
 
     /**
      * @Route ("framework-table/save-line", name="framework.save_table_line", methods={"POST"})
@@ -420,6 +427,12 @@ class FrameworkController extends BaseController
         $CSRFToken = $form_post['CSRFToken'];
         $tableauNumero = $form_post['id'];
         $dbprefix = $GLOBALS['dbprefix'];
+
+        $framework = new Framework();
+        $framework->id = $tableauNumero;
+        if ($framework->is_used()) {
+            return $this->json('used', 403);
+        }
 
         $post=array();
         foreach ($_POST as $key => $value) {

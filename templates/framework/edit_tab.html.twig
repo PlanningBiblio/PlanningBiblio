@@ -57,8 +57,12 @@
           CJInfo("Le tableau a été enregistré","highlight");
           return true;
         },
-        error: function(){
-          CJInfo("Une erreur est survenue lors de l'enregistrement du tableau.","error");
+        error: function(request, status, error){
+          if (request.responseText == '"used"') {
+            CJInfo('Tableau déjà utilisé. Vous ne pouvez pas modifier les horaires.','error');
+          } else {
+            CJInfo("Une erreur est survenue lors de l'enregistrement du tableau.","error");
+          }
           return false;
         }
       });
