@@ -60,7 +60,7 @@ function plHebdoCalculHeures(object,num){
     if ($("input[name*='breaktime["+i+"]']").val()){
       breaktime = $("input[name*='breaktime["+i+"]']").val();
       hm = breaktime.split(':');
-      breaktime = (hm[0] + (hm[1] / 60))
+      breaktime = (parseInt(hm[0]) + (hm[1] / 60))
     }
     
     diff=0;

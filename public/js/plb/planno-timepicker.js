@@ -75,6 +75,14 @@ function roundTimePiker(obj) {
     hours = tp.options.minHour;
   }
 
+  if (isNaN(hours)) {
+    hours = 0;
+  }
+
+  if (isNaN(rounded)) {
+    rounded = 0;
+  }
+
   $(obj).val(formatHHmm(hours, rounded));
 }
 
