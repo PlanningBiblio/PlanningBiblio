@@ -1164,7 +1164,7 @@ function nom($id, $format="nom p", $agents=array())
 {
 
   // id 99999 == cron (tâche planifiée)
-    if ($id == 99999) {
+    if ($id == 99999 || !$id) {
         return null;
     }
   

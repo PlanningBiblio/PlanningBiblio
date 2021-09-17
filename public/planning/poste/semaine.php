@@ -257,7 +257,7 @@ for ($j=0;$j<=$fin;$j++) {
     //		---------------		Choix du tableau	-----------------------------//
     $db=new db();
     $db->select2("pl_poste_tab_affect", "tableau", array("date"=>$date, "site"=>$site));
-    $tab=$db->result[0]['tableau'];
+    $tab = isset($db->result) ? $db->result[0]['tableau'] :  null;
 
     if (!$tab) {
         continue 1;
