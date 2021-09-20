@@ -13,6 +13,11 @@ require_once(__DIR__. '/../../public/personnel/class.personnel.php');
 class WorkingHourController extends BaseController
 {
 
+    private $imported = false;
+    private $adminN1 = false;
+    private $adminN2 = false;
+    private $workinghours = array();
+
     /**
      * @Route("/ajax/workinghour-tables", name="ajax.workinghourtables", methods={"GET"})
      */
@@ -35,13 +40,8 @@ class WorkingHourController extends BaseController
         $pauseLibre_enabled = $this->config('PlanningHebdo-PauseLibre');
 
         // Sécurité
-        $adminN1 = in_array(1101, $droits);
-        $adminN2 = in_array(1201, $droits);
-        $notAdmin = !($adminN1 or $adminN2);
-        $modifAutorisee = true;
-        if ($notAdmin and !$this->config('PlanningHebdo-Agents')) {
-            $modifAutorisee = false;
-        }
+        $this->adminN1 = in_array(1101, $droits);
+        $this->adminN2 = in_array(1201, $droits);
 
         switch ($nbSemaine) {
             case 1:
@@ -75,11 +75,15 @@ class WorkingHourController extends BaseController
             $p = new \planningHebdo();
             $p->id = $ph_id;
             $p->fetch();
+            $this->workinghours = $p->elements[0];
+            $cle = $p->elements[0]['cle'];
+            $this->imported = $cle ? true : false;
             $perso_id = $p->elements[0]['perso_id'];
             $temps = $p->elements[0]['temps'];
             $breaktime = $p->elements[0]['breaktime'];
-
         }
+
+        $modifAutorisee = $this->can_edit();
 
         // Decimal breaktime to time (H:i).
         foreach ($breaktime as $index => $time) {
@@ -447,13 +451,12 @@ class WorkingHourController extends BaseController
 
         $is_new = 0;
         // Sécurité
-        $adminN1 = in_array(1101, $droits);
-        $adminN2 = in_array(1201, $droits);
-        $notAdmin = !($adminN1 or $adminN2);
-        $admin = ($adminN1 or $adminN2);
+        $this->adminN1 = in_array(1101, $droits);
+        $this->adminN2 = in_array(1201, $droits);
         $p = new \planningHebdo();
         $p->id = $id;
         $p->fetch();
+        $this->workinghours = $p->elements[0];
         $debut1 = $p->elements[0]['debut'];
         $fin1 = $p->elements[0]['fin'];
         $debut1Fr = dateFr($debut1);
@@ -477,28 +480,23 @@ class WorkingHourController extends BaseController
         }
         $remplace = $p->elements[0]['remplace'];
         $cle = $p->elements[0]['cle'];
+        $this->imported = $cle ? true : false;
         // Informations sur l'agents
         $p = new \personnel();
         $p->fetchById($perso_id);
         $sites = $p->elements[0]['sites'];
         // Droits de gestion des plannings de présence agent par agent
-        if ($adminN1 and $this->config('PlanningHebdo-notifications-agent-par-agent')) {
+        if ($this->adminN1 and $this->config('PlanningHebdo-notifications-agent-par-agent')) {
             $db = new \db();
             $db->select2('responsables', 'perso_id', array('perso_id' => $perso_id, 'responsable' => $_SESSION['login_id']));
-            $adminN1 = $db->result ? true : false;
+            $this->adminN1 = $db->result ? true : false;
         }
         // Modif autorisée si n'est pas validé ou si validé avec des périodes non définies (BSB).
         // Dans le 2eme cas copie des heures de présence avec modification des dates
         $action = "modif";
-        $modifAutorisee = true;
-        if ($notAdmin and !$this->config('PlanningHebdo-Agents')) {
-            $modifAutorisee = false;
-        }
-        // Si le champ clé est renseigné, les heures de présences ont été importées automatiquement depuis une source externe. Donc pas de modif
-        if ($cle) {
-            $modifAutorisee = false;
-        }
-        if (!($adminN1 or $adminN2) and $valide_n2 > 0) {
+        $modifAutorisee = $this->can_edit();
+
+        if (!($this->adminN1 or $this->adminN2) and $valide_n2 > 0) {
             $action = "copie";
         }
         if ($copy or $request_exception) {
@@ -511,7 +509,7 @@ class WorkingHourController extends BaseController
             $exception_id = $id;
         }
 
-        if ($this->config('PlanningHebdo-notifications-agent-par-agent') and !$adminN2 and $copy) {
+        if ($this->config('PlanningHebdo-notifications-agent-par-agent') and !$this->adminN2 and $copy) {
             // Sélection des agents gérés (table responsables) et de l'agent logué
             $perso_ids = array($_SESSION['login_id']);
             $db = new \db();
@@ -530,8 +528,9 @@ class WorkingHourController extends BaseController
             $db->select2('personnel', null, array('supprime'=>0), 'order by nom,prenom');
             $tab = $db->result;
         }
+
         if (!$cle) {
-            if ($admin) {
+            if ($modifAutorisee) {
                 $selected1 = isset($valide_n1) && $valide_n1 > 0 ? true : false;
                 $selected2 = isset($valide_n1) && $valide_n1 < 0 ? true : false;
                 $selected3 = isset($valide_n2) && $valide_n2 > 0 ? true : false;
@@ -558,9 +557,9 @@ class WorkingHourController extends BaseController
         $this->templateParams(
             array(
                 "action"             => $action,
-                "admin"              => $admin,
-                "adminN1"            => $adminN1,
-                "adminN2"            => $adminN2,
+                "admin"              => ($adminN1 or $adminN2),
+                "adminN1"            => $this->adminN1,
+                "adminN2"            => $this->adminN2,
                 "cle"                => $cle,
                 "copy"               => $copy,
                 "debut1Fr"           => $debut1Fr,
@@ -683,5 +682,26 @@ class WorkingHourController extends BaseController
     {
       $hm = explode(":", $time);
       return ($hm[0] + ($hm[1] / 60));
+    }
+
+    private function can_edit()
+    {
+        // Working hours imported from external
+        // sources cannot be edited.
+        if ($this->imported) {
+            return false;
+        }
+
+        $admin = ($this->adminN1 or $this->adminN2);
+        if (!$admin and !$this->config('PlanningHebdo-Agents')) {
+            return false;
+        }
+
+        $valide_n2 = $this->workinghours['valide'] ?? 0;
+        if ($valide_n2 && !$this->adminN2) {
+            return false;
+        }
+
+        return true;
     }
 }
