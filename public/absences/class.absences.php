@@ -68,6 +68,7 @@ class absences
     public $validation_n1 = null;
     public $validation_n2 = null;
     public $valide=false;
+    public $rejected = true;
     public $valide_n1 = null;
     public $valide_n2 = null;
     public $uid=null;
@@ -763,6 +764,10 @@ class absences
 
         if ($this->valide and $GLOBALS['config']['Absences-validation']) {
             $filter.=" AND `{$dbprefix}absences`.`valide`>0 ";
+        }
+
+        if (!$this->rejected) {
+            $filter.=" AND `{$dbprefix}absences`.`valide` != -1 ";
         }
 
         // Don't look for teleworking absences if the position is compatible with
