@@ -38,8 +38,10 @@ function cellule_poste($date, $debut, $fin, $colspan, $output, $poste, $site)
             if ($elem['poste']==$poste and $elem['debut']==$debut and $elem['fin']==$fin) {
                 //		Affichage du nom et du prénom
                 $nom_affiche=$elem['nom'];
+                $title = $elem['nom'];
                 if ($elem['prenom']) {
                     $nom_affiche.=" ".substr($elem['prenom'], 0, 1).".";
+                    $title .= ' ' . $elem['prenom'];
                 }
 
                 $resultat = $nom_affiche;
