@@ -356,6 +356,7 @@ if (!$verrou and !$autorisationN1) {
     // $absences will be used in the cellule_poste function. Using a global variable will avoid multiple access to the database and enhance performances
     $a=new absences();
     $a->valide=false;
+    $a->rejected = false;
     $a->agents_supprimes = array(0,1,2);    // required for history
     $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date);
     $absences=$a->elements;
