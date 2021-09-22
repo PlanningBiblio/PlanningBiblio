@@ -672,7 +672,7 @@ function bataille_navale(poste,date,debut,fin,perso_id,barrer,ajouter,site,tout,
         // Exemple de cellule
         // <div id='cellule11_0' class='cellule statut_bibas service_permanent' >Christophe C.</div>
 
-        var title = '';
+        var title = result[i]["nom"] + ' ' + result[i]["prenom"];
         
         var agent=result[i]["nom"]+" "+result[i]["prenom"].substr(0,1)+".";
         var perso_id=result[i]["perso_id"];
