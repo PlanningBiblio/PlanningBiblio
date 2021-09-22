@@ -279,7 +279,7 @@ class PlanningJobController extends BaseController
             $teleworking_exception = (!empty($teleworking_reasons) and is_array($teleworking_reasons)) ? "AND `motif` NOT IN ('" . implode("','", $teleworking_reasons) . "')" : null;
         }
 
-        $db->select('absences', 'perso_id,valide', "`debut`<'$dateSQL $finSQL' AND `fin` >'$dateSQL $debutSQL' $teleworking_exception");
+        $db->select('absences', 'perso_id,valide', "`debut`<'$dateSQL $finSQL' AND `fin` >'$dateSQL $debutSQL' AND `valide` != -1 $teleworking_exception");
 
         if ($db->result) {
             foreach ($db->result as $elem) {

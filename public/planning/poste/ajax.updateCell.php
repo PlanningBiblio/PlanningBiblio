@@ -196,6 +196,7 @@ $sansRepas = $p->sansRepas($date, $debut, $fin);
 // Recherche des absences
 $a=new absences();
 $a->valide=false;
+$a->rejected = false;
 $a->teleworking=false;
 $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date.' '.$debut, $date.' '.$fin);
 $absences=$a->elements;
