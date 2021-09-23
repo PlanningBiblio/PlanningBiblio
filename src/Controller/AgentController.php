@@ -881,21 +881,21 @@ class AgentController extends BaseController
                 $mdp = gen_trivial_password();
                 $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
 
-                // Envoi du mail
-                $message = "Votre compte Planning Biblio a &eacute;t&eacute; cr&eacute;&eacute; :";
-                $message.= "<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
-
-                $m = new \CJMail();
-                $m->subject = "Création de compte";
-                $m->message = $message;
-                $m->to = $mail;
-                $m->send();
+                $notifier = $this->container->get('notifier');
+                $notifier->setTransporter(new \CJMail())
+                         ->setRecipients($mail);
+                         ->setMessageCode('create_account')
+                         ->setMessageParameters(array(
+                             'login' => $login,
+                             'password' => $mdp
+                         ));
+                $notifier->send();
 
                 // Si erreur d'envoi de mail, affichage de l'erreur
                 $msg = null;
                 $msgType = null;
-                if ($m->error) {
-                    $msg = $m->error_CJInfo;
+                if ($notifier->getError()) {
+                    $msg = $notifier->getError();
                     $msgType = "error";
                 }
             }
