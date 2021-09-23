@@ -254,7 +254,8 @@
                     {% for horaire in tab.horaires %}
                       {% set j = loop.index %}
                       <td id='td_select_{{tab.nom}}_{{i}}_{{j}}' {{ i ~'_'~ j in tab.cellules_grises == true ? "class='cellule_grise'" : ""}} colspan='{{ horaire.colspan }}' style='text-align:center;'>
-                        <input type='checkbox' name='checkbox_{{tab.nom}}_{{i}}_{{j}}' {{ i ~'_'~ j in tab.cellules_grises == true ? "checked='checked'" : "" }} onclick='couleur2(this,\"td_select_{{tab.nom}}_{{i}}_{{j}}\");'/>
+                        <input type='checkbox' name='checkbox_{{tab.nom}}_{{i}}_{{j}}' {{ i ~'_'~ j in tab.cellules_grises == true ? "checked='checked'" : "" }} onclick='couleur2(this,"td_select_{{tab.nom}}_{{i}}_{{j}}");'/>
+                        <span> G </span>
                       </td>
                     {% endfor %}
                     <td id='td_select_{{ tab.nom }}_{{ i }}' colspan='{{ tab.colspan }}' style='display:none;'>
