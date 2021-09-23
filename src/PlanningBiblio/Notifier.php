@@ -2,6 +2,8 @@
 
 namespace App\PlanningBiblio;
 
+use App\PlanningBiblio\NotificationTransporter\NotificationTransporterInterface;
+
 class Notifier
 {
     private $transporter;
@@ -59,17 +61,17 @@ class Notifier
         }
 
         $transporter = $this->transporter;
-        $transporter->subject = $this->subject;
-        $transporter->message = $this->body;
-        $transporter->to = $this->recipients;
-        $transporter->send();
+        $transporter->setSubject($this->subject)
+            ->setBody($this->body)
+            ->setRecipients($this->recipients)
+            ->send();
 
         if ($transporter->error) {
             $this->error = $transporter->error_CJInfo;
         }
     }
 
-    public function setTransporter($transporter)
+    public function setTransporter(NotificationTransporterInterface $transporter)
     {
         $this->transporter = $transporter;
 

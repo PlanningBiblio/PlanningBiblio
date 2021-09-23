@@ -15,6 +15,7 @@ Page appelée par les fichiers index.php, setup/index.php et planning/poste/menu
 
 use App\Model\Agent;
 use App\PlanningBiblio\WorkingHours;
+use App\PlanningBiblio\NotificationTransporter\NotificationTransporterInterface;
 
 // Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
 if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
@@ -168,7 +169,7 @@ class datePl
     }
 }
 
-class CJMail
+class CJMail implements NotificationTransporterInterface
 {
     public $message=null;
     public $to=null;
@@ -183,6 +184,26 @@ class CJMail
     {
     }
 
+    public function setSubject($subject)
+    {
+        $this->subject = $subject;
+
+        return $this;
+    }
+
+    public function setBody($body)
+    {
+        $this->message = $body;
+
+        return $this;
+    }
+
+    public function setRecipients($recipients)
+    {
+        $this->to = $recipients;
+
+        return $this;
+    }
 
     private function prepare()
     {
