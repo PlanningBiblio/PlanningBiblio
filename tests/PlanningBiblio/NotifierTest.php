@@ -3,6 +3,8 @@
 use App\PlanningBiblio\Notifier;
 use PHPUnit\Framework\TestCase;
 
+require_once(__DIR__ . '/../../public/include/function.php');
+
 class NotifierTest extends TestCase
 {
     public function testWithErrors() {
@@ -51,5 +53,17 @@ class NotifierTest extends TestCase
             <ul><li>Login : joe</li><li>Mot de passe : foo</li></ul>';
 
         $this->assertEquals($expected, $notifier->body, 'Get body with placeholders replacements');
+    }
+
+    public function testTransporter()
+    {
+        $GLOBALS['config']['Mail-IsEnabled'] = 1;
+
+        $notifier = new Notifier();
+
+        $notifier->setMessageCode('create_account');
+        $notifier->setTransporter(new \CJMail());
+        $notifier->send();
+        $this->assertEquals('', $notifier->getError(), 'No transporter error');
     }
 }
