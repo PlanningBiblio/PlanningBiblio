@@ -786,6 +786,10 @@ class ICal
      */
     public function calendarName()
     {
+        if (!isset($this->cal['VCALENDAR']['X-WR-CALNAME'])) {
+            return '';
+        }
+
         return $this->cal['VCALENDAR']['X-WR-CALNAME'];
     }
 
