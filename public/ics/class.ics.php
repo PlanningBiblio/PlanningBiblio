@@ -263,7 +263,7 @@ class CJICS
             // Pour chaque événement
             foreach ($db->result as $elem) {
                 // Si l'évenement n'est plus dans le fichier ICS ou s'il a été modifié dans le fichier ICS, on le supprime : complète le tableau $delete
-                if (!in_array($elem['ical_key'], $iCalKeys)) {
+                if (!in_array($elem['ical_key'], $iCalKeys) && $elem['ical_key'] != null) {
                     $deleted[]=array(":id"=>$elem['id']);
                 } else {
                     // Sinon, on complète le table $tableKeys avec la clé de l'évenement pour ne pas le réinsérer dans la table
