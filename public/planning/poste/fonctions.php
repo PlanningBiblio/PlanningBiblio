@@ -194,7 +194,7 @@ function isAnEmptyLine($poste)
         return false;
     }
     foreach ($GLOBALS['cellules'] as $elem) {
-        if ($poste==$elem['poste']) {
+        if ($poste==$elem['poste'] && $elem['perso_id']) {
             return false;
         }
     }
