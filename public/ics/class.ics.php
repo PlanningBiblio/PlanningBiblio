@@ -187,7 +187,8 @@ class CJICS
 
             // Exclusion des dates EXDATE (ics-parser ne le gère pas correctement)
             if (isset($elem['EXDATE'])) {
-                $exdate_array = explode(",", $elem['EXDATE']);
+                $exdate1 = preg_replace('/.*:(.[^:]*)$/', "$1", $elem['EXDATE']);
+                $exdate_array = explode(",", $exdate1);
                 if ($exdate_array and !empty($exdate_array)) {
                     foreach ($exdate_array as $exdate) {
                         $exdate = date("Ymd\THis", strtotime($exdate));
