@@ -76,6 +76,11 @@
   {% else %}
       <h3>Configuration du tableau "{{ tableauNom }}"</h3>
   {% endif %}
+
+  {% if used %}
+    <p class="ui-state-error-text" style="text-align:center">Ce tableau est utilisé sur un planning et ne peut être édité</p>
+  {% endif %}
+
   <div id='tabs' class='ui-tabs' data-active="{{ cfgType }}" {% if used %}data-disabled="[1, 2]"{% endif %}>
     <ul>
       <li>
