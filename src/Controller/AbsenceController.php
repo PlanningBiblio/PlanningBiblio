@@ -112,7 +112,7 @@ class AbsenceController extends BaseController
         $a->fetchById($id);
 
         if (empty($a->elements)) {
-            include __DIR__.'/../include/accessDenied.php';
+            return $this->output('access-denied.html.twig');
         }
 
         $absence = $a->elements;
