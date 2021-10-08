@@ -1,5 +1,15 @@
 *** Unreleased ***
 
+*** Version 20.10.11       (2021-10-08)   ***
+-Fixes
+Remove BibLibre address from Mail-From's settings
+Stop returning errors when importing ICS events
+Remove PHP warnings in planning/poste/semaine.php
+Return access denied when editing unknown absence id
+Make ICS parser gets the right EXDATE when the TimeZone contains (MT 34284)
+
+- Enhancements
+
 *** Version 20.10.10       (2021-07-02)   ***
 -Fixes
 Remove autocomplete on datepicker elements
