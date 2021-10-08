@@ -48,6 +48,7 @@ class CJICS
     public $CSRFToken = null;
     public $error=null;
     public $logs=null;
+    public $number = 0;
     public $pattern=null;
     public $perso_id=0;
     public $status = 'CONFIRMED';
@@ -139,8 +140,12 @@ class CJICS
         $events = $ical->events();
 
         // Récupération du nom du calendrier
-        $calName=$ical->calendarName();
+        $calName = $ical->calendarName();
         $calName = removeAccents($calName);
+
+        if (empty($calName)) {
+            $calName = "imported_calendar_{$this->number}_for_agent_$perso_id";
+        }
 
         // Product ID / Product name
         $prodID = $ical->calendarProdID();
