@@ -1307,8 +1307,13 @@ function updatePlanningAlert(debut, fin) {
             } else {
                 tooltip = result['names'].join(', ');
             }
-            trid = debut.replace(/:/g, "") + fin.replace(/:/g, "");
-            $("#" + trid + " a").replaceWith("<a href='#' title='" + tooltip + "'> (" + result['amount'] + ")</a>");
+            tridstart = debut.replace(/:/g, "");
+            tridend = fin.replace(/:/g, "");
+            $('[id^=' + tridstart + '], [id$=' + tridend + ']').each(function() {
+                if ($(this).find("a").length > 0) {
+                    $(this).find("a").replaceWith("<a href='#' title='" + tooltip + "'> (" + result['amount'] + ")</a>");
+                }
+            });
         },
     });
 }
