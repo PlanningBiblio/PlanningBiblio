@@ -26,7 +26,7 @@ $_SESSION['oups']['Auth-Mode'] = isset($_SESSION['oups']['Auth-Mode']) ? $_SESSI
 $_SESSION['oups']['week'] = isset($_SESSION['oups']['week']) ? $_SESSION['oups']['week'] : '';
 
 // Version
-$version="21.04.02.000"; // xx.xx.xx.xxx
+$version="21.04.03.000"; // xx.xx.xx.xxx
 $displayed_version="21.04.02"; // xx.xx.xx
 require_once __DIR__.'/../vendor/autoload.php';
 

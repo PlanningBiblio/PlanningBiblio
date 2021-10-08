@@ -1,5 +1,19 @@
 *** Unreleased ***
 
+*** Version 21.04.03       (2021-10-08)   ***
+- Enhancements
+
+-Fixes
+Remove BibLibre address from Mail-From's setting
+ICS: Prevent deleting non-imported absences
+Lines with cells specifically disabled are never considered as empty
+Stop returning errors when importing ICS events
+Return access denied when editing unknown absence id
+Make ICS parser gets the right EXDATE when the TimeZone contains (MT 34284)
+
+-Plumbing
+Use session flash bag for notice and error messages in framework delete and restore
+
 *** Version 21.04.02       (2021-07-02)   ***
 -Fixes
 Check the rights with agent's site instead of all sites
