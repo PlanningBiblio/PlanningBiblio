@@ -13,7 +13,7 @@ $_SESSION['oups']['week'] = isset($_SESSION['oups']['week']) ? $_SESSION['oups']
 // Version
 $version="21.04.03.000"; // xx.xx.xx.xxx
 $GLOBALS['version'] = $version;
-$displayed_version="21.04.02"; // xx.xx.xx
+$displayed_version="21.04.03"; // xx.xx.xx
 
 require_once __DIR__.'/../vendor/autoload.php';
 
