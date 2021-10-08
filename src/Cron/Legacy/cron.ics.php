@@ -176,6 +176,7 @@ foreach ($agents as $agent) {
         $ics->perso_id=$agent["id"];
         $ics->pattern = $config["ICS-Pattern$i"];
         $ics->status = $config["ICS-Status$i"];
+        $ics->number = $i;
         $ics->table="absences";
         $ics->logs=true;
         $ics->CSRFToken = $CSRFToken;
