@@ -1,16 +1,69 @@
 *** Unreleased ***
 
 - Enhancements
-Add a fixture builder to simplify tests writing
-Symfonize absences index
-Use asset function for links and add an asset version strategy package
 Optimize calendars display
-Add more working hours cycles
-Add a fixture builder to simplify tests writing
+Add more working hours cycles (MT 30755)
+Make installer ignore default /home/plb/.my.cnf
+Remove autocomplete on datepicker elements
+Planning: notifiy deleted agents
+Compensatory time regularization (#457)
+Replace HTML select with jquery timepicker input (#469)
+Hide unused mail settings (MT 33801)
+Add green/red color on queries status in updatedabase.php
+Multiple agents for holidays (#474)
 
 - Fixes
 ICS parser gets the right date when the TimeZone contains ":" (#438)
 broken link to import agents from LDAP (#437)
+Defined length for check_ics and default for check_hamac
+Restore rights for /absences/document
+Fix misuse of ->config in StatisticController
+Make ICS parser gets the right date when the TimeZone contains ":" (#438)
+Fix redirect to authentication page
+Remove http host from redirect url
+Config : Fix display of conges_mode dialogbox + remove console.log
+Fix misuse of join function
+Check the rights with agent's site instead of all sites (MT 32916)
+Always keep logged in agent in holiday's agents list (MT 32916)
+Show holiday's agents list according only to getManagedAgents function (MT 32916)
+Take into account Planning-Heures config params
+Fix bad instantiation of WorkingHours class
+Show refused reason for refused level 1compensatory time (MT 32917)
+Prevent user to change its own password via /myaccount with demo mode enabled (MT 32845)
+Apply right checking on mono-site mode (MT 33166)
+Fix import of models
+Don't sanitize skills data in position index page
+When checking Deleted agents, update agents dropdown in holidays index
+Fix day models import
+Use model_id field instead of id. Initialize variable in models' loop
+Restore absences start and end hours displaying in absences list
+Don't override CSRFSession in working hours edition
+Check if hre_debut and hre_fin are defined (MT 33011)
+Remove BibLibre address from Mail-From's setting
+ICS: Prevent deleting non-imported absences
+Lines with cells specifically disabled are never considered as empty
+Stop returning errors when importing ICS events
+Return access denied when editing unknown absence id
+Make ICS parser gets the right EXDATE when the TimeZone contains (MT 34284)
+
+- Plumbing
+Load an up-to-date SQL file
+Add a fixture builder to simplify tests writing
+Absences: use route names according to PLB naming convention
+Symfonize absences index
+Use asset function for links and add an asset version strategy package
+Move agenda.js to js/plb/caldendar.js
+Delete unused file class.modeles.php
+Move postes/js/modif.js to js/plb/position.js
+Move statistiques.js to js/plb/statistics.js
+move cron.ics.php from public/ics to src/Cron/Legacy
+Use common function for getting managed agents in holiday and comptime controllers
+Use fixture builder in HolidayHelperTest instead of Tests\Utils
+Symfonyze contextual menu in planning page
+Add units tests on getManagedAgent
+Use session flash bag for notice and error messages in framework delete and restore
+Symfonize login and logout process (#451)
+Symfonise absence deletion
 
 
 *** Version 21.04.00       (2021-04-22)   ***
