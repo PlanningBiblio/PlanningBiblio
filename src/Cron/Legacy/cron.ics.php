@@ -135,7 +135,12 @@ foreach ($agents as $agent) {
         if ($i == 3) {
             $url = $agent['url_ics'];
         }
-  
+
+        if (empty(json_decode($agent['check_ics'])[$i-1])) {
+            logs("Agent #{$agent['id']} : Check ICS $i is disabled", "ICS", $CSRFToken);
+            continue;
+        }
+
         if (!$url) {
             logs("Agent #{$agent['id']} : Impossible de constituer une URL valide", "ICS", $CSRFToken);
             continue;
