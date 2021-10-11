@@ -1,8 +1,11 @@
 <?php
 
+use App\Model\Agent;
+
 use App\PlanningBiblio\Helper\HolidayHelper;
 use PHPUnit\Framework\TestCase;
 use Tests\Utils;
+use Tests\FixtureBuilder;
 
 class HolidayHelperTest extends TestCase
 {
