@@ -95,7 +95,7 @@ class Agent extends PLBEntity {
     /** @Column(type="text") **/
     protected $url_ics;
 
-    /** @Column(type="string") **/
+    /** @Column(type="string", length=10) **/
     protected $check_ics;
 
     /** @Column(type="integer") **/
