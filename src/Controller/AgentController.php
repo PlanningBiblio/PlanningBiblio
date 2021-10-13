@@ -883,7 +883,7 @@ class AgentController extends BaseController
 
                 $notifier = $this->container->get('notifier');
                 $notifier->setTransporter(new \CJMail())
-                         ->setRecipients($mail);
+                         ->setRecipients($mail)
                          ->setMessageCode('create_account')
                          ->setMessageParameters(array(
                              'login' => $login,
