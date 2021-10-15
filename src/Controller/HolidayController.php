@@ -695,6 +695,91 @@ class HolidayController extends BaseController
     }
 
     /**
+     * @Route("/holiday/accounts", name="holiday.accounts", methods={"GET"})
+     */
+    public function account(Request $request)
+    {
+
+        $droits = $GLOBALS['droits'];
+        $admin = false;
+        $sites = array();
+
+        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+            if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
+                $admin = true;
+                $sites[] = $i;
+            }
+        }
+
+        if (!$admin) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $holiday_helper = new HolidayHelper();
+        $show_hours_to_days = $holiday_helper->showHoursToDays();
+
+        // Initialisation des variables
+        $agents_supprimes = isset($_SESSION['oups']['conges_agents_supprimes'])
+            ? $_SESSION['oups']['conges_agents_supprimes'] : false;
+        $agents_supprimes = (isset($_GET['get']) and isset($_GET['supprimes']))
+            ? true: $agents_supprimes;
+        $agents_supprimes = (isset($_GET['get']) and !isset($_GET['supprimes']))
+            ? false : $agents_supprimes;
+
+        $credits_effectifs = isset($_SESSION['oups']['conges_credits_effectifs'])
+            ? $_SESSION['oups']['conges_credits_effectifs'] : true;
+        $credits_effectifs = (isset($_GET['get']) and isset($_GET['effectifs']))
+            ?true : $credits_effectifs;
+        $credits_effectifs = (isset($_GET['get']) and !isset($_GET['effectifs']))
+            ? false: $credits_effectifs;
+
+        $credits_en_attente = isset($_SESSION['oups']['conges_credits_attente'])
+            ? $_SESSION['oups']['conges_credits_attente'] : true;
+        $credits_en_attente = (isset($_GET['get']) and isset($_GET['attente']))
+            ? true : $credits_en_attente;
+        $credits_en_attente = (isset($_GET['get']) and !isset($_GET['attente']))
+            ?false : $credits_en_attente;
+
+        global $hours_to_days;
+        $hours_to_days = $_SESSION['oups']['conges_hours_to_days'] ?? false;
+        $hours_to_days = $_GET['hours_to_days'] ?? $hours_to_days;
+        $hours_to_days = (isset($_GET['get']) and !isset($_GET['hours_to_days']))
+            ? false : $hours_to_days;
+
+        $_SESSION['oups']['conges_agents_supprimes'] = $agents_supprimes;
+        $_SESSION['oups']['conges_credits_effectifs'] = $credits_effectifs;
+        $_SESSION['oups']['conges_credits_attente'] = $credits_en_attente;
+        $_SESSION['oups']['conges_hours_to_days'] = $hours_to_days;
+
+        $checked1=$agents_supprimes?"checked='checked'":null;
+        $checked2=$credits_effectifs?"checked='checked'":null;
+        $checked3=$credits_en_attente?"checked='checked'":null;
+        $checked4=$hours_to_days?"checked='checked'":null;
+
+        $c = new \conges();
+        if ($agents_supprimes) {
+            $c->agents_supprimes = array(0,1);
+        }
+        if ($this->config('Multisites-nombre') > 1) {
+            $c->sites = $sites;
+        }
+        $c->fetchAllCredits();
+
+        $this->templateParams(array(
+            'deleted_agents'        => $agents_supprimes,
+            'effective_account'     => $credits_effectifs,
+            'waiting_credits'       => $credits_en_attente,
+            'hours_to_days'         => $hours_to_days,
+            'show_hours_to_days'    => $show_hours_to_days,
+            'accounts'              => $c->elements
+        ));
+
+        $this->templateParams(array('bar' => 'foo'));
+
+        return $this->output('conges/accounts.html.twig');
+    }
+
+    /**
      * @Route("/ajax/holiday-halfday-hours", name="ajax.holiday-halfday-hours", methods={"GET"})
      */
     public function halfdayHours(Request $request)

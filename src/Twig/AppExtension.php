@@ -6,6 +6,8 @@ use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 
+use App\PlanningBiblio\Helper\HolidayHelper;
+
 include_once(__DIR__ . '/../../public/include/function.php');
 include_once(__DIR__ . '/../../public/include/feries.php');
 
@@ -16,6 +18,8 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFilter('datefull', [$this, 'dateFull']),
+            new TwigFilter('hours', [$this, 'hours']),
+            new TwigFilter('hoursToDays', [$this, 'hoursToDays']),
         ];
     }
 
@@ -33,6 +37,15 @@ class AppExtension extends AbstractExtension
         return dateAlpha($date);
     }
 
+    public function hours($hours)
+    {
+        if ($hours) {
+            return heure4($hours);
+        }
+
+        return '';
+    }
+
     public function userCan($right, $site = 0)
     {
         $droits = $GLOBALS['droits'];
@@ -46,6 +59,16 @@ class AppExtension extends AbstractExtension
 
         if (!empty($config['Multisites-site' . $site])) {
             return $config['Multisites-site' . $site];
+        }
+
+        return '';
+    }
+
+    public function hoursToDays($hours, $perso_id)
+    {
+        $holiday_helper = new HolidayHelper();
+        if ($hours && $perso_id) {
+            return $holiday_helper->hoursToDays($hours, $perso_id) .'j';
         }
 
         return '';
