@@ -258,7 +258,7 @@ class planning
                 }
         
                 $title = $elem['nom'] . ' ' . $elem['prenom'];
-                $title = in_array($elem['id'], $absences_non_validees) ? ' Absence ou congé non valid&eacute;' : $title;
+                $title = in_array($elem['id'], $absences_non_validees) ? ' Absence ou congé non validé' : $title;
 
                 $elem['name_title'] = $title;
         
