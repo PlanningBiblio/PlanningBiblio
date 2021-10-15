@@ -7,11 +7,11 @@ class WorkingHours
     private $times;
     private $breaks;
 
-    function __construct($times, $breaks = array(), $free_break_period)
+    function __construct($times, $breaks = array(), $free_break_already_removed)
     {
         $this->times = $times;
         $this->breaks = $breaks;
-        $this->free_break_period = $free_break_period;
+        $this->free_break_already_removed = $free_break_already_removed;
     }
 
     public function hoursOf($day, $current = null)
@@ -50,10 +50,6 @@ class WorkingHours
         $tab = array();
         $heures = $this->times[$day];
 
-if ($this->free_break_period) {
-            var_dump($heures);
-        }
-
         $break = isset($this->breaks[$day]) ? $this->breaks[$day] : 0;
 
         // 1er créneau : cas N° 2; 3; 4; 5
@@ -82,48 +78,14 @@ if ($this->free_break_period) {
         if ($pause2 and !empty($heures[6]) and !empty($heures[3])) {
             $tab[] = array($heures[6], $heures[3]);
         }
-        //TODO: FIXME here
-echo "---------\n";
-var_dump($tab);
         if ($break) {
-            // Pause normale, Début
-            if ($this->free_break_period) {
-/*
-                // Toujours cas 8?
-                // TODO: params
-                $free_break_start = "12:00";
-                $free_break_end = "14:00";
-                $free_break_duration = 1;
-
-                // Free break is substracted on its own period
-                echo "Free break is substracted on its own period: ";
-                echo "$this->free_break_period\n";
-                if ($this->free_break_period == "end") {
-                    $day_start = $tab[0][1];
-                    $this_free_break_start = $this->substractBreak($free_break_end, $free_break_duration);
-                } else {
-
-                }
-                $i = 0;
-                $day_end = $tab[$i][1];
-                // free break start
-                $tab[$i][1] = $free_break_start;
-                // free break end
-                #$tab[$i][2] = $this->addBreak($free_break_start, $free_break_duration);
-                // Day end
-                #$tab[$i][3] = $day_end;
-                $tab[$i][2] = $day_end;
-
-var_dump($tab);
-*/
-            } else {
+            if (!$this->free_break_already_removed) {
                 // Free break is substracted at the end of the day
                 echo "Free break is substracted at the end of the day\n";
                 $substracted = 0;
                 foreach (array(2, 1, 0) as $i) {
                     if (isset($tab[$i])) {
                         if (!$substracted) {
-    #echo "substract";
                             $tab[$i][1] = $this->substractBreak($tab[$i][1], $break);
                         }
                         $substracted = 1;
@@ -139,9 +101,7 @@ var_dump($tab);
                 }
             }
         }
-#var_dump($tab);
         return $tab;
-
     }
 
     private function substractBreak($hour, $interval)
@@ -151,14 +111,4 @@ var_dump($tab);
 
          return $new_hour;
     }
-
-    private function addBreak($hour, $interval)
-    {
-         $minutes = $interval * 60;
-         $new_hour = date('H:i:s', strtotime("+ $minutes minutes $hour"));
-
-         return $new_hour;
-    }
-
-
 }

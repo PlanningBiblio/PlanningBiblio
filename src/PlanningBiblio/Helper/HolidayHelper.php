@@ -125,28 +125,31 @@ class HolidayHelper extends BaseHelper
             $debutConges = $current == $debut ? $hre_debut : "00:00:00";
             $finConges = $current == $fin ? $hre_fin : "23:59:59";
 
-            $free_break_period = null;
+            $free_break_already_removed = false;
             //FIXME: Check for 2nd break too ?
             $has_fixed_break = isset($planning['times'][$day_id][1]) && $planning['times'][$day_id][1] != "";
-#            echo "$day_id\n";
-#            var_dump($planning['times']);
-#            echo "fixed : $has_fixed_break\n";
-            
             if (isset($planning['breaktimes']) && !$has_fixed_break) {
 
+                $free_break_already_removed = true;
                 //TODO: params
+                $free_break_start = "12:00";
+                $free_break_end = "14:00"; 
+                $free_break_duration = 60;
+
                 // TODO: Add special rule
-                    var_dump($planning["times"][$day_id]);
                 if (substr($debutConges, 0, 2) >= 12) {
                     // If the holiday is in the afternoon, the free break is at the end of its period.
-                   $free_break_period = "end"; 
-                    $planning["times"][$day_id][1] = "13:00:00";
-                    $planning["times"][$day_id][2] = "14:00:00";
+                    echo "Free break is substracted at the end of its period: ";
+                    $fixed_free_break_start = date('H:i:s', strtotime("- $free_break_duration minutes $free_break_end"));
+                    echo $fixed_free_break_start;
+                    $planning["times"][$day_id][1] = $fixed_free_break_start;
+                    $planning["times"][$day_id][2] = $free_break_end;
                 } else {
                     // If the holiday is in the morning, the free break is at the beginning of its period.
-                   $free_break_period = "start"; 
-                    $planning["times"][$day_id][1] = "12:00:00";
-                    $planning["times"][$day_id][2] = "13:00:00";
+                    echo "Free break is substracted at the beginning of its period: ";
+                    $fixed_free_break_end = date('H:i:s', strtotime("+ $free_break_duration minutes $free_break_start"));
+                    $planning["times"][$day_id][1] = $free_break_start;
+                    $planning["times"][$day_id][2] = $fixed_free_break_end;
                 }
             }
 
@@ -154,7 +157,7 @@ class HolidayHelper extends BaseHelper
             $finConges = strtotime($finConges);
 
         
-            $times = $this->getTimes($planning, $current, $free_break_period);
+            $times = $this->getTimes($planning, $current, $free_break_already_removed);
 
             $day_idx = $date_current->format("w") -1;
             $finPlanning = strtotime($planning["times"][$day_idx][3]);
@@ -170,17 +173,6 @@ class HolidayHelper extends BaseHelper
                 $debutConges1 = $debutConges > $t0 ? $debutConges : $t0;
                 $finConges1 = $finConges < $t1 ? $finConges : $t1;
 
-
-                //TODO: Fix free break
-                if ($free_break_period) {
-                    if ($free_break_period == "end") {
-
-                    } else {
-
-
-                    }
-
-                }
 
           // heure de fin recalculée selon les modalités BUlyon3
 /*
@@ -400,7 +392,7 @@ class HolidayHelper extends BaseHelper
      * Jérôme added something similar on WeekPlanningHelper (getTimes($date, $agent = null, $planning = null))
      * TODO : See if WeekPlanningHelper::getTimes can be used instead of HolidayHelper::getTimes
      */
-    private function getTimes($planning, $date, $free_break_period)
+    private function getTimes($planning, $date, $free_break_already_removed)
     {
         // Sinon, on calcule les heures d'absence
         $d = new \datePl($date, $planning['nb_semaine']);
@@ -410,7 +402,7 @@ class HolidayHelper extends BaseHelper
         $day = $day + (($week - 1) * 7) - 1;
 
         if ($this->config('PlanningHebdo-PauseLibre')) {
-            $wh = new WorkingHours($planning['times'], $planning['breaktimes'], $free_break_period);
+            $wh = new WorkingHours($planning['times'], $planning['breaktimes'], $free_break_already_removed);
         } else {
             $wh = new WorkingHours($planning['times']);
         }
