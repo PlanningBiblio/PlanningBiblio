@@ -130,12 +130,9 @@ class HolidayHelper extends BaseHelper
             if (isset($planning['breaktimes']) && !$has_fixed_break) {
 
                 $free_break_already_removed = true;
-                //TODO: params
-                $free_break_start = "12:00";
-                $free_break_end = "14:00"; 
+                $free_break_start = $this->config('PlanningHebdo-DebutPauseLibre');
+                $free_break_end = $this->config('PlanningHebdo-FinPauseLibre')
                 $free_break_duration = $planning['breaktimes'][$day_id] * 60;
-                $free_break_duration = 60;
-                echo "free_break_duration $free_break_duration\n";
 
                 if (strtotime($debutConges) >= strtotime($free_break_start) && 
                     strtotime($finConges)   <= strtotime($free_break_end)) {
