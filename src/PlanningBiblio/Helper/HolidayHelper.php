@@ -90,7 +90,7 @@ class HolidayHelper extends BaseHelper
             $date_current = new \DateTime($current);
             $week_id = $date_current->format("W");
             $day_id = $date_current->format("N") - 1;
-            echo "date_current: $current\n";
+#            echo "date_current: $current\n";
 #            echo "day_id: $day_id\n";
 
             // Check agent's planning.
@@ -137,16 +137,24 @@ class HolidayHelper extends BaseHelper
                 $free_break_duration = 60;
 
                 // TODO: Add special rule
-                if (substr($debutConges, 0, 2) >= 12) {
+                echo "strtotime($debutConges) >= ";
+                echo "strtotime($free_break_start) &&\n";
+                echo "strtotime($finConges) <= ";
+                echo "strtotime($free_break_end)\n";
+                if (strtotime($debutConges) >= strtotime($free_break_start) && 
+                    strtotime($finConges)   <= strtotime($free_break_end)) {
+                    echo "Special case\n";
+                    $planning["times"][$day_id][1] = $debutConges;
+                    $planning["times"][$day_id][2] = date('H:i:s', strtotime("+ $free_break_duration minutes $debutConges"));
+                } elseif (substr($debutConges, 0, 2) >= 12) {
                     // If the holiday is in the afternoon, the free break is at the end of its period.
-                    echo "Free break is substracted at the end of its period: ";
+                    echo "Free break is substracted at the end of its period: \n";
                     $fixed_free_break_start = date('H:i:s', strtotime("- $free_break_duration minutes $free_break_end"));
-                    echo $fixed_free_break_start;
                     $planning["times"][$day_id][1] = $fixed_free_break_start;
                     $planning["times"][$day_id][2] = $free_break_end;
                 } else {
                     // If the holiday is in the morning, the free break is at the beginning of its period.
-                    echo "Free break is substracted at the beginning of its period: ";
+                    echo "Free break is substracted at the beginning of its period: \n";
                     $fixed_free_break_end = date('H:i:s', strtotime("+ $free_break_duration minutes $free_break_start"));
                     $planning["times"][$day_id][1] = $free_break_start;
                     $planning["times"][$day_id][2] = $fixed_free_break_end;
