@@ -4,7 +4,9 @@
     <title>Planning</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <script type='text/JavaScript' src='{{ asset("js/jquery-1.11.1.min.js") }}'></script>
+    <script type='text/JavaScript' src='{{ asset("js/jquery.timepicker.min.js") }}'></script>
     <script type='text/JavaScript' src='{{ asset("js/jquery-ui-1.11.2/jquery-ui.js") }}'></script>
+    <script type='text/JavaScript' src='{{ asset("js/plb/planno-timepicker.js") }}'></script>
     <script type='text/JavaScript' src='{{ asset("js/carhartl-jquery-cookie-3caf209/jquery.cookie.js") }}'></script>
     <script type='text/JavaScript' src='{{ asset("js/DataTables/datatables.min.js") }}'></script>
     <script type='text/JavaScript' src='{{ asset("js/CJScript.js") }}'></script>
@@ -28,11 +30,9 @@
           <div id='auth-logo'></div>
         </center>
 
-        {% if error is not defined and error != 'cas_unknown_user' %}
-          <h1 id='title'>{{ config('Affichage-titre') }}</h1>
-          <h2 id='h2-planning-authentification'>Planning - Authentification</h2>
-          <h2 id='h2-authentification'>Authentification</h2>
-        {% endif %}
+        <h1 id='title'>{{ config('Affichage-titre') }}</h1>
+        <h2 id='h2-planning-authentification'>Planning - Authentification</h2>
+        <h2 id='h2-authentification'>Authentification</h2>
 
         {% if error is defined and error != '' %}
           <div style='text-align:center'>
