@@ -89,4 +89,5 @@ class WeekPlanningHelper extends BaseHelper
 
          return array('times' => $times, 'breaktimes' => $breaktimes, 'nb_semaine' => $nb_semaine);
     }    
+
 }
