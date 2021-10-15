@@ -173,7 +173,6 @@ class HolidayHelperFreeBreakTest extends TestCase
         $this->assertEquals('4h00', $result['hr_hours'], 'morning');
 */
 
-
         // Afternoon
         $working_hours = array(
             0 => array('0' => '14:00:00', '1' => '', '2' => '', '3' => '18:30:00'),
@@ -300,8 +299,37 @@ class HolidayHelperFreeBreakTest extends TestCase
         $this->assertEquals('3h30', $result['hr_hours'], 'partial morning');
 */
 
-
         // Special cases:
+        // Special case 6
+        $holidayHlper = new HolidayHelper(array(
+            'start' => '2021-08-30',
+            'hour_start' => '12:00:00',
+            'end' => '2021-08-30',
+            'hour_end' => '13:00:00',
+            'perso_id' => $agent->id(),
+            'is_recover' => 0,
+        ));
+        $result = $holidayHlper->getCountedHours();
+
+        $this->assertEquals(0, $result['hours'], 'special case 6');
+        $this->assertEquals(00, $result['minutes'], 'special case 6');
+        $this->assertEquals('0h00', $result['hr_hours'], 'special case 6');
+
+        // Special case 8
+        $holidayHlper = new HolidayHelper(array(
+            'start' => '2021-08-30',
+            'hour_start' => '13:30:00',
+            'end' => '2021-08-30',
+            'hour_end' => '14:30:00',
+            'perso_id' => $agent->id(),
+            'is_recover' => 0,
+        ));
+        $result = $holidayHlper->getCountedHours();
+
+        $this->assertEquals(0, $result['hours'], 'special case 8');
+        $this->assertEquals(00, $result['minutes'], 'special case 8');
+        $this->assertEquals('0h00', $result['hr_hours'], 'special case 8');
+
         // Special case 9
         $holidayHlper = new HolidayHelper(array(
             'start' => '2021-08-30',
@@ -317,8 +345,5 @@ class HolidayHelperFreeBreakTest extends TestCase
         $this->assertEquals(00, $result['minutes'], 'special case 9');
         $this->assertEquals('0h00', $result['hr_hours'], 'special case 9');
 
-        //TODO: special cases 6 & 8
-
     }
-
 }

@@ -81,7 +81,6 @@ class WorkingHours
         if ($break) {
             if (!$this->free_break_already_removed) {
                 // Free break is substracted at the end of the day
-                echo "Free break is substracted at the end of the day\n";
                 $substracted = 0;
                 foreach (array(2, 1, 0) as $i) {
                     if (isset($tab[$i])) {

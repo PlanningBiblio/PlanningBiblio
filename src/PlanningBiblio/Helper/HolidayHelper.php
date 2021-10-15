@@ -90,8 +90,6 @@ class HolidayHelper extends BaseHelper
             $date_current = new \DateTime($current);
             $week_id = $date_current->format("W");
             $day_id = $date_current->format("N") - 1;
-#            echo "date_current: $current\n";
-#            echo "day_id: $day_id\n";
 
             // Check agent's planning.
             $planning = $this->getPlanning($current);
@@ -125,36 +123,32 @@ class HolidayHelper extends BaseHelper
             $debutConges = $current == $debut ? $hre_debut : "00:00:00";
             $finConges = $current == $fin ? $hre_fin : "23:59:59";
 
+            // Convert free break as fixed break if needed
             $free_break_already_removed = false;
-            //FIXME: Check for 2nd break too ?
             $has_fixed_break = isset($planning['times'][$day_id][1]) && $planning['times'][$day_id][1] != "";
+
             if (isset($planning['breaktimes']) && !$has_fixed_break) {
 
                 $free_break_already_removed = true;
                 //TODO: params
                 $free_break_start = "12:00";
                 $free_break_end = "14:00"; 
+                $free_break_duration = $planning['breaktimes'][$day_id] * 60;
                 $free_break_duration = 60;
+                echo "free_break_duration $free_break_duration\n";
 
-                // TODO: Add special rule
-                echo "strtotime($debutConges) >= ";
-                echo "strtotime($free_break_start) &&\n";
-                echo "strtotime($finConges) <= ";
-                echo "strtotime($free_break_end)\n";
                 if (strtotime($debutConges) >= strtotime($free_break_start) && 
                     strtotime($finConges)   <= strtotime($free_break_end)) {
-                    echo "Special case\n";
+                    // If the holiday is shorter than the free break, the free break starts at the beginning of the holiday
                     $planning["times"][$day_id][1] = $debutConges;
                     $planning["times"][$day_id][2] = date('H:i:s', strtotime("+ $free_break_duration minutes $debutConges"));
                 } elseif (substr($debutConges, 0, 2) >= 12) {
                     // If the holiday is in the afternoon, the free break is at the end of its period.
-                    echo "Free break is substracted at the end of its period: \n";
                     $fixed_free_break_start = date('H:i:s', strtotime("- $free_break_duration minutes $free_break_end"));
                     $planning["times"][$day_id][1] = $fixed_free_break_start;
                     $planning["times"][$day_id][2] = $free_break_end;
                 } else {
                     // If the holiday is in the morning, the free break is at the beginning of its period.
-                    echo "Free break is substracted at the beginning of its period: \n";
                     $fixed_free_break_end = date('H:i:s', strtotime("+ $free_break_duration minutes $free_break_start"));
                     $planning["times"][$day_id][1] = $free_break_start;
                     $planning["times"][$day_id][2] = $fixed_free_break_end;
@@ -167,12 +161,6 @@ class HolidayHelper extends BaseHelper
         
             $times = $this->getTimes($planning, $current, $free_break_already_removed);
 
-            $day_idx = $date_current->format("w") -1;
-            $finPlanning = strtotime($planning["times"][$day_idx][3]);
- 
-            
-            //$times = $this->getTimes($planning, $current);
-
             $today = 0;
             foreach ($times as $t) {
                 $t0 = strtotime($t[0]);
@@ -181,31 +169,10 @@ class HolidayHelper extends BaseHelper
                 $debutConges1 = $debutConges > $t0 ? $debutConges : $t0;
                 $finConges1 = $finConges < $t1 ? $finConges : $t1;
 
-
-          // heure de fin recalculée selon les modalités BUlyon3
-/*
-                if ($planning["breaktimes"][$day_idx] != 0 && $finConges <= $finPlanning) {
-                    if ( $debutConges < strtotime("14:00:00")) {
-                        if ($finConges <= strtotime("13:00:00"))
-                            $finConges1 = $finConges;
-                        else
-                            $finConges1 = $finConges - 3600;
-                    } elseif ($debutConges >= strtotime("13:00:00")) {
-                        $finConges1 = $finConges;
-                    }
-                } elseif ($debutConges >= strtotime("14:00:00")) {
-                    if ($finConges <= $finPlanning)
-                        $finConges1 = $finConges;
-                    else
-                        $finConges1 = $finPlanning;
-                }
-*/
-
                 if ($finConges1 > $debutConges1) {
                     $today += $finConges1 - $debutConges1;
                 }
             }
-#            echo "today: $today\n";
 
             if($today > 0 && $this->config('Conges-Mode') == 'jours' && !$this->data['is_recover']) {
                 // 3600 = 1h, 12600 = 3,5h, 25200 = 7h
