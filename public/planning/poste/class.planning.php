@@ -263,7 +263,7 @@ class planning
         
                 $title = htmlentities($elem['nom'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
                 $title.= ' '.htmlentities($elem['prenom'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
-                $title = in_array($elem['id'], $absences_non_validees) ? ' Absence ou congé non valid&eacute;' : $title;
+                $title = in_array($elem['id'], $absences_non_validees) ? ' Absence ou congé non validé' : $title;
         
                 $nom = "<span class='menudiv-nom' title='$title'>";
                 $nom .= htmlentities($elem['nom'], ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
