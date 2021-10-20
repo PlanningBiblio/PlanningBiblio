@@ -93,6 +93,16 @@
     - 22
 "holiday.accounts":
     - 100
+"holiday_info.index":
+    - 100
+"holiday_info.add":
+    - 100
+"holiday_info.edit":
+    - 100
+"holiday_info.update":
+    - 100
+"holiday_info.delete":
+    - 100
 "notification.index":
     - 21
 "notification.save":
