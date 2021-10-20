@@ -1,0 +1,48 @@
+{# holidayInfo/infos.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  <h3>Informations sur les congés</h3>
+    {% if id !=0 %}
+      <h4>Modification des informations sur les congés</h4>
+    {% else %}
+      <h4>Ajout d'une information</h4>
+    {% endif %}
+    <form id="form" method='post' action="{{ asset('holiday-info') }}" name='form' onsubmit='return verif_form("debut=date1;fin=date2;texte");'>
+      <input type='hidden' name='CSRFToken' value="{{ CSRFSession }}"/>
+      <input type='hidden' name='id' value="{{ id }}"/>
+      <table class='tableauFiches'>
+        <tr>
+          <td> Date de début : </td>
+          <td>
+            <input type='text' name='debut' value="{{ debut }}" class='datepicker'/>
+          </td>
+        </tr>
+        <tr>
+          <td>Date de fin : </td>
+          <td>
+            <input type='text' name='fin' value="{{ fin }}" class='datepicker'/>
+          </td>
+        </tr>
+        <tr>
+          <td>Texte : </td>
+          <td>
+            <textarea name='texte' rows='3' cols='25' class='ui-widget-content ui-corner-all' >{{ texte }}</textarea>
+          </td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td colspan='2' style='text-align:center;'>
+            {% if id != 0 %}
+              <a href="javascript:deleteHolidayInfo({{ id }});" class='ui-button' style='margin-left:30px;' >Supprimer</a>
+            {% endif %}
+            <a href='{{ asset('holiday-info') }}' class='ui-button' style='margin-left:30px;'>Annuler</a>
+            <input type='submit' value='Valider' class='ui-button'/>
+          </td>
+        </tr>
+      </table>
+    </form>
+{% endblock %}
