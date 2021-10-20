@@ -22,13 +22,11 @@
         <tbody>
           {% for elem in info %}
             <tr>
-              {% if admin == true %}
-                <td>
-                  <a href="{{ asset('holiday-info') }}/{{ elem.id }}">
-                    <span class='pl-icon pl-icon-edit' title='Edit'></span>
-                  </a>
-                </td>
-              {% endif %}
+              <td>
+                <a href="{{ asset('holiday-info') }}/{{ elem.id }}">
+                  <span class='pl-icon pl-icon-edit' title='Edit'></span>
+                </a>
+              </td>
               <td>{{ elem.debut | date("d/m/Y") }}</td>
               <td>{{ elem.fin | date("d/m/Y")  }}</td>
               <td>{{ elem.texte }}</td>

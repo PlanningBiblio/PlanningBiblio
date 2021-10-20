@@ -18,18 +18,13 @@ class HolidayInfoController extends BaseController
     public function index(Request $request, Session $session)
     {
         $CSRFSession = $GLOBALS['CSRFSession'];
-        $nbSites = $this->config('Multisites-nombre');
-        $droits = $GLOBALS['droits'];
         $dbprefix = $GLOBALS['dbprefix'];
         $admin = false;
         $today = date("Y-m-d");
         $information = null;
 
-        for ($i = 1; $i <= $nbSites ; $i++) {
-            if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
-                $admin = true;
-                break;
-            }
+        if (!$this->isAdmin()) {
+            return $this->redirectToRoute('access-denied');
         }
 
         $db = new \db();
@@ -55,19 +50,7 @@ class HolidayInfoController extends BaseController
      */
     public function add(Request $request)
     {
-        $admin = false;
-        $nbSites = $this->config('Multisites-nombre');
-        $droits = $GLOBALS['droits'];
-        $admin = false;
-
-        for ($i = 1; $i <= $nbSites ; $i++) {
-            if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
-                $admin = true;
-                break;
-            }
-        }
-
-        if(!$admin){
+        if(!$this->isAdmin()){
             return $this->redirectToRoute('access-denied');
         }
 
@@ -88,23 +71,11 @@ class HolidayInfoController extends BaseController
      */
     public function edit(Request $request)
     {
-        $id = $request->get('id');
-
-        $admin = false;
-        $nbSites = $this->config('Multisites-nombre');
-        $droits = $GLOBALS['droits'];
-        $admin = false;
-
-        for ($i = 1; $i <= $nbSites ; $i++) {
-            if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
-                $admin = true;
-                break;
-            }
-        }
-
-        if(!$admin){
+        if(!$this->isAdmin()){
             return $this->redirectToRoute('access-denied');
         }
+
+        $id = $request->get('id');
 
         $db = new \db();
         $db->sanitize_string = false;
@@ -130,6 +101,10 @@ class HolidayInfoController extends BaseController
      */
     public function save(Request $request, Session $session)
     {
+        if(!$this->isAdmin()){
+            return $this->redirectToRoute('access-denied');
+        }
+
         $CSRFToken = $request->request->get('CSRFToken');
 
         $id = $request->get('id');
@@ -163,6 +138,10 @@ class HolidayInfoController extends BaseController
      */
     public function delete(Request $request, Session $session)
     {
+        if(!$this->isAdmin()){
+            return $this->redirectToRoute('access-denied');
+        }
+
         $CSRFToken = $request->request->get('CSRFToken');
         $id = $request->get('id');
 
@@ -175,4 +154,16 @@ class HolidayInfoController extends BaseController
         return $this->redirectToRoute('holiday_info.index');
     }
 
+    private function isAdmin()
+    {
+        $droits = $GLOBALS['droits'];
+
+        for ($i = 1; $i <= $this->config('Multisites-nombre') ; $i++) {
+            if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
