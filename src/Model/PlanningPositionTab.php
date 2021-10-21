@@ -9,28 +9,23 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
- * @Entity @Table(name="acces")
+ * @Entity(repositoryClass="App\Repository\PlanningPositionTabRepository") @Table(name="pl_poste_tab")
  **/
-class Access extends PLBEntity
+class PlanningPositionTab extends PLBEntity
 {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
+
+    /** @Column(type="integer") **/
+    protected $tableau;
 
     /** @Column(type="text") **/
     protected $nom;
 
     /** @Column(type="integer") **/
-    protected $groupe_id;
+    protected $site;
 
-    /** @Column(type="text") **/
-    protected $groupe;
+    /** @Column(type="datetime") **/
+    protected $supprime;
 
-    /** @Column(type="string") **/
-    protected $page;
-
-    /** @Column(type="integer") **/
-    protected $ordre;
-
-    /** @Column(type="string") **/
-    protected $categorie;
 }

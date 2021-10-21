@@ -9,20 +9,24 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
- * @Entity @Table(name="infos")
+ * @Entity @Table(name="hidden_tables")
  **/
-class AdminInfo extends PLBEntity
+class HiddenTables extends PLBEntity
 {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 
-    /** @Column(type="string") **/
-    protected $debut;
+    /** @Column(type="integer") **/
+    protected $perso_id;
 
-    /** @Column(type="string") **/
-    protected $fin;
+    /** @Column(type="integer") **/
+    protected $tableau;
 
     /** @Column(type="text") **/
-    protected $texte;
+    protected $hidden_tables;
 
+    public function purge()
+    {
+        error_log("hidden tables purge");
+    }
 }

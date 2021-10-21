@@ -9,20 +9,23 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
- * @Entity @Table(name="infos")
+ * @Entity @Table(name="ip_blocker")
  **/
-class AdminInfo extends PLBEntity
+class IPBlocker extends PLBEntity
 {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 
     /** @Column(type="string") **/
-    protected $debut;
+    protected $ip;
 
     /** @Column(type="string") **/
-    protected $fin;
+    protected $login;
 
-    /** @Column(type="text") **/
-    protected $texte;
+    /** @Column(type="string") **/
+    protected $status;
+
+    /** @Column(type="datetime") **/
+    protected $timestamp;
 
 }

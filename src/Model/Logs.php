@@ -9,20 +9,20 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
- * @Entity @Table(name="infos")
+ * @Entity @Table(name="log")
  **/
-class AdminInfo extends PLBEntity
+class Logs extends PLBEntity
 {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 
-    /** @Column(type="string") **/
-    protected $debut;
-
-    /** @Column(type="string") **/
-    protected $fin;
-
     /** @Column(type="text") **/
-    protected $texte;
+    protected $msg;
+
+    /** @Column(type="string") **/
+    protected $program;
+
+    /** @Column(type="datetime") */
+    protected $timestamp;
 
 }

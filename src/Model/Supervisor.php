@@ -9,20 +9,19 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
- * @Entity @Table(name="infos")
+ * @Entity @Table(name="responsables")
  **/
-class AdminInfo extends PLBEntity
-{
+class Supervisor extends PLBEntity {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 
-    /** @Column(type="string") **/
-    protected $debut;
+    /** @Column(type="integer") **/
+    protected $perso_id;
 
-    /** @Column(type="string") **/
-    protected $fin;
+    /** @Column(type="integer") **/
+    protected $responsable;
 
-    /** @Column(type="text") **/
-    protected $texte;
+    /** @Column(type="integer") **/
+    protected $notification;
 
 }

@@ -9,20 +9,19 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
- * @Entity @Table(name="infos")
+ * @Entity @Table(name="edt_samedi")
  **/
-class AdminInfo extends PLBEntity
+class HoursAbsence extends PLBEntity
 {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 
-    /** @Column(type="string") **/
-    protected $debut;
+    /** @Column(type="date") **/
+    protected $semaine;
 
-    /** @Column(type="string") **/
-    protected $fin;
+    /** @Column(type="integer") **/
+    protected $update_time;
 
     /** @Column(type="text") **/
-    protected $texte;
-
+    protected $heures;
 }

@@ -9,28 +9,25 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
- * @Entity @Table(name="acces")
+ * @Entity @Table(name="pl_poste_lignes")
  **/
-class Access extends PLBEntity
+class PlanningPositionLines extends PLBEntity
 {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 
-    /** @Column(type="text") **/
-    protected $nom;
+    /** @Column(type="integer") **/
+    protected $numero;
 
     /** @Column(type="integer") **/
-    protected $groupe_id;
-
-    /** @Column(type="text") **/
-    protected $groupe;
-
-    /** @Column(type="string") **/
-    protected $page;
+    protected $tableau;
 
     /** @Column(type="integer") **/
-    protected $ordre;
+    protected $ligne;
 
     /** @Column(type="string") **/
-    protected $categorie;
+    protected $poste;
+
+    /** @Column(type="string", columnDefinition="enum('poste', 'ligne', 'titre', 'classe')") **/
+    protected $type;
 }

@@ -9,20 +9,22 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
- * @Entity @Table(name="infos")
+ * @Entity @Table(name="pl_poste_horaires")
  **/
-class AdminInfo extends PLBEntity
+class PlanningPositionHours extends PLBEntity
 {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 
-    /** @Column(type="string") **/
+    /** @Column(type="time") **/
     protected $debut;
 
-    /** @Column(type="string") **/
+    /** @Column(type="time") **/
     protected $fin;
 
-    /** @Column(type="text") **/
-    protected $texte;
+    /** @Column(type="integer") **/
+    protected $tableau;
 
+    /** @Column(type="integer") **/
+    protected $numero;
 }

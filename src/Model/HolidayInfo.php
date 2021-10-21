@@ -9,20 +9,23 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
- * @Entity @Table(name="infos")
+ * @Entity @Table(name="conges_infos")
  **/
-class AdminInfo extends PLBEntity
+class HolidayInfo extends PLBEntity
 {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 
-    /** @Column(type="string") **/
+    /** @Column(type="date") **/
     protected $debut;
 
-    /** @Column(type="string") **/
+    /** @Column(type="date") **/
     protected $fin;
 
     /** @Column(type="text") **/
     protected $texte;
+
+    /** @Column(type="datetime") **/
+    protected $saisie;
 
 }

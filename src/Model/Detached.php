@@ -9,20 +9,17 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
- * @Entity @Table(name="infos")
+ * @Entity @Table(name="volants")
  **/
-class AdminInfo extends PLBEntity
+class Detached extends PLBEntity
 {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 
-    /** @Column(type="string") **/
-    protected $debut;
+    /** @Column(type="date") **/
+    protected $date;
 
-    /** @Column(type="string") **/
-    protected $fin;
-
-    /** @Column(type="text") **/
-    protected $texte;
+    /** @Column(type="integer") **/
+    protected $perso_id;
 
 }

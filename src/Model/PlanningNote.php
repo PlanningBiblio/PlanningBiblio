@@ -9,28 +9,26 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
- * @Entity @Table(name="acces")
+ * @Entity @Table(name="pl_notes")
  **/
-class Access extends PLBEntity
+class PlanningNote extends PLBEntity
 {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 
-    /** @Column(type="text") **/
-    protected $nom;
+    /** @Column(type="date") **/
+    protected $date;
 
     /** @Column(type="integer") **/
-    protected $groupe_id;
+    protected $site;
 
-    /** @Column(type="text") **/
-    protected $groupe;
-
-    /** @Column(type="string") **/
-    protected $page;
+    /** @Column(type="text") */
+    protected $text;
 
     /** @Column(type="integer") **/
-    protected $ordre;
+    protected $perso_id;
 
-    /** @Column(type="string") **/
-    protected $categorie;
+    /** @Column(type="datetime") **/
+    protected $timestamp;
+
 }
