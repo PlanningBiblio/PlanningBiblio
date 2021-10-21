@@ -7,9 +7,10 @@ require_once(__DIR__ . '/../../public/absences/class.absences.php');
 require_once(__DIR__ . '/../../public/include/db.php');
 
 /**
- * @Entity @Table(name="personnel")
+ * @Entity(repositoryClass="App\Repository\AgentRepository") @Table(name="personnel")
  **/
-class Agent extends PLBEntity {
+class Agent extends PLBEntity
+{
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 

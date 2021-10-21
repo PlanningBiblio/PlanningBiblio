@@ -7,7 +7,8 @@ use Doctrine\ORM\Mapping\{Entity, Table, Id, Column, GeneratedValue};
 /**
  * @Entity @Table(name="select_abs")
  **/
-class AbsenceReason extends PLBEntity {
+class AbsenceReason extends PLBEntity
+{
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 
