@@ -38,7 +38,7 @@
         <td style='width:350px;'>Nom, prénom : </td>
         <td>
           {% if db_perso | length > 1 %}
-            <select name='perso_id' id='perso_id' style='width:20%;' class='googleCalendarTrigger'>
+            <select name='perso_id' id='perso_id' style='width:40%;' class='googleCalendarTrigger'>
               <option value='0' ></option>
               {% for d in db_perso %}
                 {% if d.id == perso_id %}
@@ -82,7 +82,7 @@
       <tr>
         <td>Date de début : </td>
         <td>
-          <input type='text' name='debut' id='debut' value="{{ debut }}" class='datepicker googleCalendarTrigger checkdate' style='width:20%;'/>
+          <input type='text' name='debut' id='debut' value="{{ debut }}" class='datepicker googleCalendarTrigger checkdate' style='width:40%;'/>
           {% if halfday %}
             <select name="start_halfday" class="checkdate">
               {% if start_halfday == 'fullday' %}
@@ -120,14 +120,14 @@
       {% endif %}
         <td>Heure de début : </td>
         <td>
-          <input name="hre_debut" id="hre_debut_select" class="planno-timepicker checkdate" value="{{ hre_debut | date('H:i') }}" style="width: 20%"/>
+          <input name="hre_debut" id="hre_debut_select" class="planno-timepicker checkdate center ui-widget-content ui-corner-all" value="{{ hre_debut | date('H:i') }}" style="width:40%"/>
         </td>
       </tr>
 
       <tr>
         <td>Date de fin : </td>
         <td>
-          <input type='text' name='fin' id='fin' value="{{ fin }}"  class='datepicker googleCalendarTrigger checkdate' style='width:20%;'/>
+          <input type='text' name='fin' id='fin' value="{{ fin }}"  class='datepicker googleCalendarTrigger checkdate' style='width:40%;'/>
           {% if halfday %}
             <select name="end_halfday" class="checkdate">
               {% if end_halfday == 'fullday' %}
@@ -165,7 +165,7 @@
       {% endif %}
         <td>Heure de fin : </td>
         <td>
-          <input name="hre_fin" id="hre_fin_select" class="planno-timepicker checkdate" value="{{ hre_fin | date('H:i') }}" style="width: 20%"/>
+          <input name="hre_fin" id="hre_fin_select" class="planno-timepicker checkdate center ui-widget-content ui-corner-all" value="{{ hre_fin | date('H:i') }}" style="width:40%"/>
         </td>
       </tr>
 
