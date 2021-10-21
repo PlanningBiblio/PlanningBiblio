@@ -125,7 +125,7 @@ class HolidayHelper extends BaseHelper
 
             // Convert free break as fixed break if needed
             $free_break_already_removed = false;
-            $has_fixed_break = isset($planning['times'][$day_id][1]) && $planning['times'][$day_id][1] != "";
+            $has_fixed_break = !empty($planning['times'][$day_id][1]) || !empty($planning['times'][$day_id][5]);
 
             if (isset($planning['breaktimes']) && !$has_fixed_break) {
 
