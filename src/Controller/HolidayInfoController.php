@@ -108,8 +108,8 @@ class HolidayInfoController extends BaseController
         $CSRFToken = $request->request->get('CSRFToken');
 
         $id = $request->get('id');
-        $debut = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $request->get('debut'));
-        $fin = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $request->get('fin'));
+        $debut = $request->get('debut');
+        $fin = $request->get('fin');
 
         if (empty($fin)) {
           $fin = $debut;
@@ -145,7 +145,7 @@ class HolidayInfoController extends BaseController
         $CSRFToken = $request->request->get('CSRFToken');
         $id = $request->get('id');
 
-        $db = new \db(); 
+        $db = new \db();
         $db->CSRFToken = $CSRFToken;
         $db->delete('conges_infos', array('id'=>$id));
         $flash = "L'information a bien été supprimée.";
