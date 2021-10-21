@@ -517,6 +517,9 @@ class AbsenceController extends BaseController
      */
     public function delete_absence(Request $request)
     {
+
+        // TODO: Refacto and call purge instead of deleteAllDocuments and db->delete
+
         $CSRFToken = $request->get('CSRFToken');
         $id = $request->get('id');
         $recurrent = $request->get('rec');

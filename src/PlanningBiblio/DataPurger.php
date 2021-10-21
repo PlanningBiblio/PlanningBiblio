@@ -2,6 +2,9 @@
 
 namespace App\PlanningBiblio;
 
+include_once __DIR__ . '/../../public/absences/class.absences.php';
+
+use App\Model\Absence;
 use App\PlanningBiblio\Logger;
 
 class DataPurger
@@ -21,7 +24,17 @@ class DataPurger
     }
 
     public function purge() {
+        $GLOBALS['entityManager'] = $this->entityManager;
         $this->log("Start purging $this->delay years old data");
+        $absences = $this->entityManager->getRepository(Absence::class)->findBy(['id' => 14203]);
+        foreach ($absences as $absenceModel) {
+//            $this->log(print_r($absence, 1));
+            $this->log("Purging absence id " . $absenceModel->id() . " perso_id " . $absenceModel->perso_id());
+            $absence = new \absences();
+            $absence->fetchById($absenceModel->id());
+            $absence->purge();
+        }
+        
         $this->log("End purging old data");
     }
 

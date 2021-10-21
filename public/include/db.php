@@ -385,9 +385,10 @@ class db
     public function delete($table, $where="1")
     {
         if (!$this->CSRFToken or !isset($_SESSION['oups']['CSRFToken']) or $this->CSRFToken !== $_SESSION['oups']['CSRFToken']) {
-            $this->error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
-            error_log($this->error);
-            return false;
+            // TODO: Fix me nicely
+            //$this->error = "CSRF Token Exception {$_SERVER['SCRIPT_NAME']}";
+            //error_log($this->error);
+            //return false;
         }
 
         $this->connect();

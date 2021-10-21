@@ -2,12 +2,17 @@
 
 namespace App\Model;
 
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Table;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\GeneratedValue;
+
 /**
  * @Entity @Table(name="absences")
  **/
 class Absence extends PLBEntity
 {
-
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
 
@@ -59,9 +64,6 @@ class Absence extends PLBEntity
     /** @Column(type="string") */
     protected $groupe;
 
-    /** @Column(type="string") */
-    protected $groupe;
-    
     /** @Column(type="text") */
     protected $cal_name;
 
