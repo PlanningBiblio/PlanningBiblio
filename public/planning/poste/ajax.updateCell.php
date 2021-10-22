@@ -14,12 +14,15 @@ page planning/poste/index.php pour placer les agents
 Cette page est appelée par la function JavaScript "bataille_navale" utilisé par le fichier planning/poste/menudiv.php
 */
 
+use App\Model\Position;
+
 ini_set("display_errors", 0);
 
 session_start();
 
 // Includes
 require_once "../../include/config.php";
+require_once "../../init_ajax.php";
 require_once "../../include/function.php";
 require_once "../../absences/class.absences.php";
 require_once "../../activites/class.activites.php";
@@ -194,11 +197,15 @@ $p = new planning();
 $sansRepas = $p->sansRepas($date, $debut, $fin);
 
 // Recherche des absences
+
+$p = $entityManager->getRepository(Position::class)->find($poste);
+
 $a=new absences();
 $a->valide=false;
 $a->rejected = false;
-$a->teleworking=false;
+$a->teleworking = !$p->teleworking();
 $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date.' '.$debut, $date.' '.$fin);
+
 $absences=$a->elements;
 
 // Recherche des agents volants
