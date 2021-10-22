@@ -729,13 +729,8 @@ class absences
     public function purge()
     {
         $this->deleteAllDocuments();
-
-        // TODO: Delete reccurrent ICS Events and absences ?
-        // TODO: $db->delete("absences", array("groupe"=>$groupe)); ?        
-
         $db=new \db();
-        $db->delete("absences", array("id"=>$id));
-
+        $db->delete("absences", array("id"=>$this->id));
     }
 
     public function deleteAllDocuments() {
