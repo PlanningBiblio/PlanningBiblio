@@ -18,6 +18,8 @@ class ConfigController extends BaseController
         // Temporary folder
         $tmp_dir=sys_get_temp_dir();
 
+        $url = plannoBaseUrl($request);
+
         $configParams = $this->entityManager->getRepository(ConfigParam::class)->findBy(
             array(),
             array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
@@ -34,7 +36,6 @@ class ConfigController extends BaseController
                 'extra'       => $cp->extra(),
             );
 
-	    $url = plannoBaseUrl($request);
 
             if ($elem['nom'] == 'URL' ) {
                 $elem['valeur'] = $url;
